@@ -45,7 +45,7 @@ function resizeSpecificVideos() {
         // Create a marquee element for scrolling from right to left
         var marquee = document.createElement('marquee');
         marquee.direction = 'left';
-        marquee.innerText = 'MP4, video skin';
+        marquee.innerText = window.lmT ? window.lmT('lmx.vs.marquee') : 'lmx.vs.marquee';
         scrollingText.appendChild(marquee);
 
         // Append the scrolling text to the anchor element

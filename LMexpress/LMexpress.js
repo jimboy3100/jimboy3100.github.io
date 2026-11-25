@@ -3,6 +3,18 @@
  *************/
 var semimodVersion = "30"; // the version 1.1-> 1.11
 
+/* Texts shown to the player come from the language packs (developers/i18n/src/lmx.json, keys "lmx.ex.*"):
+ * _lmxT gives the text in the chosen language, _lmxE the same escaped for HTML and attributes. */
+function _lmxT(k, v) { return window.lmT ? window.lmT(k, v) : String(k); }
+function _lmxE(k, v) { return String(_lmxT(k, v)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+/* Choose Language: every language under its own name (the same in every language), value = languagemod number */
+function _lmxLanguageOptions() {
+    var names = (window.LMi18n && window.LMi18n.names) || ['English', 'Greek', 'Spanish', 'Bulgarian', 'French', 'Arabic', 'Chinese', 'Russian', 'German', 'Turkish', 'Polish', 'Dutch'];
+    var html = '';
+    for (var i = 0; i < names.length; i++) html += '<option value="' + (i + 1) + '" data-itr=""' + (i === 0 ? ' selected' : '') + '>' + String(names[i]).replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</option>';
+    return html;
+}
+
 
 loadericon();
 
@@ -125,7 +137,7 @@ var modVersion;
 if (_lmOnLegendWebsite()) {
     window.legendModFromWebsite = true; // Flag: loaded from website, not Agar.io userscript (private servers only)
     if (location.protocol !== 'https:') {
-        toastr.warning("Legend mod over http. Many functions cannot work properly. To join Non SSL servers use <font color='blue'>ws://</font> in front of websocket.<br>e.g <font color='blue'>ws://34.89.203.157:3000/</font>").css("width", "350px");
+        toastr.warning(_lmxT('lmx.ex.httpWarning', ["<font color='blue'>ws://</font>", "<font color='blue'>ws://34.89.203.157:3000/</font>"])).css("width", "350px");
     }
     $("#region").val("Private").change();
     $("#region").hide();
@@ -142,7 +154,7 @@ if (_lmOnLegendWebsite()) {
     /* LW: Show both buttons like agar.io — Play as Guest (left) + Login And Play (right) */
     /* Don't hide login button — keep it visible */
     /* Don't make Play guest 100% width — leave room for Login And Play */
-    $(".btn.btn-play-guest.btn-success.btn-needs-server").text("Play As Guest")
+    $(".btn.btn-play-guest.btn-success.btn-needs-server").text(_lmxT('pack.playAsGuest'))
     $("#ogario-party").hide() /* party section stays hidden on private servers */
     //$("#openskinchanger").hide() // LW: show skin changer
     $(".quick.quick-bots.ogicon-trophy").hide()
@@ -336,7 +348,7 @@ function startLM(modVersion) {
         //toastr.info('<b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">'+'Legend mod </span></font> is back!<br><font color="red"></b>Enable Vanilla skins on Settings</font>').css("width", "350px");
         window.LMVersion = modVersion;
         if (!modVersion.startsWith("1.8")) {
-            toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + Premadeletter16 + ' <font color="yellow"><b>v1.8</b></font>. <br>visit: <a target="_blank" href="https://jimboy3100.github.io"><font color="yellow"><b><u>jimboy3100.github.io</u></b></font></a>');
+            toastr.info(_lmxT('lmx.ex.canBeUpdated', ['<font color="yellow"><b>v' + _lmEscHtml(modVersion) + '</b></font>', '<font color="yellow"><b>v1.8</b></font>', '<a target="_blank" href="https://jimboy3100.github.io"><font color="yellow"><b><u>jimboy3100.github.io</u></b></font></a>']));
         }
 
         //$("#ogario-party").wrap('<div style="display: none;" id="hidendivtoken"></div>');
@@ -458,7 +470,7 @@ function PremiumUsersFFAScore() {
 
             if (new Date() > expiryDate && window.proLicenceUID) {
                 window.proLicenceUID = null;
-                toastr.warning("<b>[SERVER]:</b> Your Giveaway licence has ended. Thank you for using our mod!").css("width", "350px");
+                toastr.warning(_lmxT('lmx.ex.giveawayEnded')).css("width", "350px");
             }
         }
         else {
@@ -515,7 +527,7 @@ function PremiumUsers() {
 
                     toastr
                         .warning(
-                            "<b>[SERVER]:</b> Your Giveaway licence has ended. Thank you for using our mod!"
+                            _lmxT('lmx.ex.giveawayEnded')
                         )
                         .css("width", "350px");
                 } else if (expDate >= todayYYYYMMDD) {
@@ -528,13 +540,11 @@ function PremiumUsers() {
 
                         toastr
                             .warning(
-                                "<b>[SERVER]:</b> Your licence is stored as Giveaway Premium until " +
-                                expDateText.slice(0, 4) +
+                                _lmxT('lmx.ex.giveawayUntil', [expDateText.slice(0, 4) +
                                 "/" +
                                 expDateText.slice(4, 6) +
                                 "/" +
-                                expDateText.slice(6, 8) +
-                                ". Thank you for using our mod!"
+                                expDateText.slice(6, 8)])
                             )
                             .css("width", "350px");
                     }
@@ -543,7 +553,7 @@ function PremiumUsers() {
             else {
                 window.proLicenceUID = ProLicenceUsersTable.ProLicenceUsers[window.agarioUID].reason
                 localStorage.setItem("proLicenceUID", window.proLicenceUID);
-                toastr.warning("<b>[SERVER]:</b> Your licence is stored as Premium. Thank you for using our mod!").css("width", "350px");
+                toastr.warning(_lmxT('lmx.ex.premiumStored')).css("width", "350px");
             }
         }
         /* stored giveaway licence whose entry was removed from the loaded table: it has ended */
@@ -551,7 +561,7 @@ function PremiumUsers() {
             ProLicenceUsersTable && ProLicenceUsersTable.ProLicenceUsers) {
             window.proLicenceUID = null;
             localStorage.removeItem("proLicenceUID");
-            toastr.warning("<b>[SERVER]:</b> Your Giveaway licence has ended. Thank you for using our mod!").css("width", "350px");
+            toastr.warning(_lmxT('lmx.ex.giveawayEnded')).css("width", "350px");
         }
         localStorage.setItem("proLicenceUID", window.proLicenceUID);
     }
@@ -560,7 +570,7 @@ function PremiumUsersLMscore() {
     if (!window.proLicenceUID) {
         window.proLicenceUID = "permanent";
         localStorage.setItem("proLicenceUID", "permanent");
-        toastr.warning("<b>[SERVER]:</b> Congratulations! Your LM level is " + window.LMscore + ". Your licence is stored as Premium permanently. Thank you for using our mod!").css("width", "350px");
+        toastr.warning(_lmxT('lmx.ex.premiumByLevel', [_lmEscHtml(window.LMscore)])).css("width", "350px");
     }
 }
 function getaccesstoken() {
@@ -843,7 +853,7 @@ function changeServer(fromSearchTimer) {
         if (timerId) clearInterval(timerId);
         searching = false;
         $("#searchSpan>i").removeClass("fa fa-times").addClass("fa fa-search");
-        toastr.info("Search stopped: you are playing.").css("width", "210px");
+        toastr.info(_lmxT('lmx.ex.searchStoppedPlaying')).css("width", "210px");
         return;
     }
     $("#server-reconnect").click();
@@ -1179,9 +1189,9 @@ function copyToClipboard(element) {
 function copyToClipboardAll() {
     $("#CopyTkPwLb").remove();
     if ($("#top5-pos").text() != "") {
-        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmEscHtml($("#leaderboard-positions").text()) + '<br>Teamboard:' + _lmEscHtml($("#top5-pos").text()) + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>');
+        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmEscHtml($("#leaderboard-positions").text()) + '<br>Teamboard:' + _lmEscHtml($("#top5-pos").text()) + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>'); // i18n-ok: copied text is pasted to teammates/Discord, kept the same for everyone
     } else {
-        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmEscHtml($("#leaderboard-positions").text()) + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>');
+        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmEscHtml($("#leaderboard-positions").text()) + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>'); // i18n-ok: copied text is pasted to teammates/Discord, kept the same for everyone
     }
     copyToClipboard('er#CopyTkPwLb');
 }
@@ -1241,20 +1251,8 @@ function BeforeReportFakesSkin() {
 }
 
 function ReportFakesSkin() {
-    var Temporaryletter1;
-    var Temporaryletter2;
-    var Languageletter320; //Leaderboard
-    var Languageletter321; //Teamboard
-    if (Languageletter320 != null) {
-        Temporaryletter2 = Languageletter320
-    } else {
-        Temporaryletter2 = "Leaderboard";
-    }
-    if (Languageletter321 != null) {
-        Temporaryletter1 = Languageletter321
-    } else {
-        Temporaryletter1 = "Teamboard";
-    }
+    var Temporaryletter1 = _lmxE('pack.teamboard');
+    var Temporaryletter2 = _lmxE('pack.leaderboard');
 
     $('body').append(
         '<div class="modal fade in" id="SkinChanger" aria-hidden="false" style="display:none;">' +
@@ -1272,26 +1270,26 @@ function ReportFakesSkin() {
         '<p style="color:white; font-size:12px; margin-bottom: -4px;" align="middle">' + Premadeletter120 +
         //'<br><br><font id= "Leadboardlet1" style="color:white; size:12px; margin-right: 70px;">' + Temporaryletter2 + '</font><font id= "Teamboardlet1" style="color:white; size:12px; margin-left: 70px;">' + Temporaryletter1 + '</font></p><br>' +
         '<br><br><font id= "Leadboardlet1" style="color:white; size:12px; ">' + Temporaryletter2 + '</p><br>' +
-        '<input id="LeaderboardInput1" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline; " " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        //' <input id="TeamboardInput1" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput2" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        //' <input id="TeamboardInput2" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput3" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        //' <input id="TeamboardInput3" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput4" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        //' <input id="TeamboardInput4" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput5" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        //' <input id="TeamboardInput5" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput6" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        //' <input id="TeamboardInput6" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput7" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        //' <input id="TeamboardInput7" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput8" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        //' <input id="TeamboardInput8" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput9" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        // ' <input id="TeamboardInput9" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        '<input id="LeaderboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
-        //' <input id="TeamboardInput10" class="form-control" placeholder="Nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput1" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline; " " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        //' <input id="TeamboardInput1" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput2" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        //' <input id="TeamboardInput2" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput3" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        //' <input id="TeamboardInput3" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput4" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        //' <input id="TeamboardInput4" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput5" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        //' <input id="TeamboardInput5" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput6" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        //' <input id="TeamboardInput6" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput7" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        //' <input id="TeamboardInput7" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput8" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        //' <input id="TeamboardInput8" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput9" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        // ' <input id="TeamboardInput9" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        '<input id="LeaderboardInput10" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-right: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
+        //' <input id="TeamboardInput10" class="form-control" placeholder="' + _lmxE('lmx.ex.nickname') + '" data-i18n-placeholder="lmx.ex.nickname" value="" style="margin-top: 0px; margin-left: 2px; width: 30%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="" >' +
         '</div><p style="color:white; font-size:12px";" align="middle">' + Premadeletter121 + '<br>' + Premadeletter122 + '</u></p>' +
         '</div>' +
         '</div></div></div></div>');
@@ -1616,7 +1614,7 @@ function copy(text) {
     return ok;
 }
 function LegendSettingsfirst() {
-    $('#export-settings').before('<label><input type="checkbox" id="export-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> Legend Mod settings</label>');
+    $('#export-settings').before('<label><input type="checkbox" id="export-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> <span data-i18n="lmx.ex.legendModSettings">' + _lmxE('lmx.ex.legendModSettings') + '</span></label>');
     var elemLegendSwitch = document.querySelector('#export-LegendSettings');
     var ogarioswitchbackcolor = $("input#export-ogarioThemeSettings.js-switch").next().css("background-color");
     var switcheryLegendSwitch = new Switchery(elemLegendSwitch, {
@@ -1624,7 +1622,7 @@ function LegendSettingsfirst() {
         color: ogarioswitchbackcolor,
         jackColor: 'rgb(250, 250, 250)'
     });
-    $('#import-settings').before('<label><input type="checkbox" id="import-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> Legend Mod settings</label>');
+    $('#import-settings').before('<label><input type="checkbox" id="import-LegendSettings" class="js-switch" data-switchery="true" checked style="display: none;"> <span data-i18n="lmx.ex.legendModSettings">' + _lmxE('lmx.ex.legendModSettings') + '</span></label>');
     var elemLegendSwitch2 = document.querySelector('#import-LegendSettings');
     var switcheryLegendSwitch2 = new Switchery(elemLegendSwitch2, {
         size: 'small',
@@ -1639,17 +1637,17 @@ function LegendSettingsfirst() {
          * rewrote the text without the API part (also what Upload sends): add it after that. */
         setTimeout(function () {
             LegendSettingsfirstAPI(LegendJSON, switcheryLegendSwitch);
-            if (copy($("#export-settings").val()) && window.toastr) toastr.success('Settings copied to the clipboard.');
+            if (copy($("#export-settings").val()) && window.toastr) toastr.success(_lmxT('lmx.ex.settingsCopied'));
         }, 0);
     });
 
     /* Save the export as a file and load an import from a file (no copy/paste needed) */
     if (!document.getElementById('lm-export-download')) {
-        $('<button id="lm-export-download" class="btn btn-block btn-primary" type="button">Download settings (.json)</button>')
+        $('<button id="lm-export-download" class="btn btn-block btn-primary" type="button" data-i18n="lmx.ex.downloadSettings">' + _lmxE('lmx.ex.downloadSettings') + '</button>')
             .insertAfter('#export-settings-btn')
             .on('click', function () {
                 var text = $('#export-settings').val() || '';
-                if (!text) { if (window.toastr) toastr.warning('Press Export first.'); return; }
+                if (!text) { if (window.toastr) toastr.warning(_lmxT('lmx.ex.pressExportFirst')); return; }
                 var a = document.createElement('a');
                 a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
                 a.download = 'legendmod-settings.json';
@@ -1659,7 +1657,7 @@ function LegendSettingsfirst() {
                 setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
             });
         var fileIn = $('<input type="file" accept=".json,.txt,application/json,text/plain" style="display:none">');
-        $('<button id="lm-import-file" class="btn btn-block btn-primary" type="button">Load settings from a file</button>')
+        $('<button id="lm-import-file" class="btn btn-block btn-primary" type="button" data-i18n="lmx.ex.loadSettingsFile">' + _lmxE('lmx.ex.loadSettingsFile') + '</button>')
             .insertBefore('#import-settings')
             .on('click', function () { fileIn.val(''); fileIn.trigger('click'); });
         fileIn.insertBefore('#import-settings').on('change', function () {
@@ -1668,9 +1666,9 @@ function LegendSettingsfirst() {
             var reader = new FileReader();
             reader.onload = function () {
                 $('#import-settings').val(String(reader.result || ''));
-                if (window.toastr) toastr.info('File loaded. Press Import to apply it.');
+                if (window.toastr) toastr.info(_lmxT('lmx.ex.fileLoaded'));
             };
-            reader.onerror = function () { if (window.toastr) toastr.error('The file could not be read.'); };
+            reader.onerror = function () { if (window.toastr) toastr.error(_lmxT('lmx.ex.fileReadError')); };
             reader.readAsText(file);
         });
     }
@@ -1944,7 +1942,7 @@ function LegendSettingsImport(switcheryLegendSwitch2) {
         try { LegendJSON = JSON.parse(document.getElementById("import-settings").value); } catch (e) {
             console.warn("Invalid import JSON:", e);
             /* the player saw nothing before */
-            if (window.toastr) toastr.error('Import failed: this is not valid Legend Mod settings text.');
+            if (window.toastr) toastr.error(_lmxT('lmx.ex.importInvalid'));
             return;
         }
         //        parseLegendJSONAPI(LegendJSON);
@@ -1984,9 +1982,7 @@ function _lmImportUserscripts(ls) {
         var v = String(ls[k]);
         return v !== "" && v !== "null" && confirmed[k] !== v;
     });
-    if (ask && !confirm("The imported settings contain user scripts (" + changed.join(", ") + ").\n\n" +
-        "User scripts run inside Legend Mod on every start and can read your login. Import them only if you trust where these settings came from.\n\n" +
-        "OK = import them, Cancel = keep your current ones")) return;
+    if (ask && !confirm(_lmxT('lmx.ex.importScriptsAsk', [changed.join(", ")]))) return;
     changed.forEach(function (k) {
         localStorage.setItem(k, ls[k]);
         var slot = k.charAt(k.length - 1);
@@ -2095,10 +2091,6 @@ function _lmYoutubeId(url) {
     return /^[A-Za-z0-9_-]{6,20}$/.test(String(id || '')) ? id : null;
 }
 
-function _lmTagLabel(name, fallback) {
-    return typeof window[name] === 'string' ? window[name] : fallback;
-}
-
 /* Several call sites outside the scope that defines escapeHtml use it as a global. */
 if (typeof window.escapeHtml !== "function") window.escapeHtml = _lmEscHtml;
 
@@ -2140,7 +2132,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         MSGCOMMANDS = MSGCOMMANDS.split("[tag]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/tag]')[0];
         if (MSGCOMMANDS != "") {
-            var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63a', 'wants you to use the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmxE('pack.wantsYouToUse') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
@@ -2150,7 +2142,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
                 newsubmit();
             });
         } else {
-            var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmTagLabel('Premadeletter63b', 'wants you to remove the tag') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + _lmxE('pack.wantsYouToRemove') + ': <i id="visiturl"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></i></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "250px");
@@ -2321,7 +2313,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
          * the user has to press the button. */
         if (LegendClanSymbol.indexOf("℄") !== 0) {
             console.log("Step2");
-            var _lmRejoinToast = toastr.warning("<b>" + MSGNICK + ":</b> asks you to reconnect to the server" + '<br><button class="btn btn-sm btn-primary btn-lm-rejoin" style="margin-top: 10px;border-color: darkblue;">Reconnect</button><br><button class="btn btn-sm btn-warning btn-lm-norejoin" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
+            var _lmRejoinToast = toastr.warning(_lmxT('lmx.ex.asksReconnect', ["<b>" + MSGNICK + "</b>"]) + '<br><button class="btn btn-sm btn-primary btn-lm-rejoin" style="margin-top: 10px;border-color: darkblue;">' + _lmxE('lmx.ex.reconnect') + '</button><br><button class="btn btn-sm btn-warning btn-lm-norejoin" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "210px");
@@ -2341,7 +2333,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         window.targetingLeadX = parseFloat(window.targetingLeadclientX) - legendmod.mapOffsetX
         window.targetingLeadY = parseFloat(window.targetingLeadclientY) - legendmod.mapOffsetY
         legendmod.drawCommander2 = true;
-        toastr.warning("<b>" + MSGNICK + ":</b> Attack " + application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)).css("width", "210px");
+        toastr.warning(_lmxT('lmx.ex.cmdAttack', ["<b>" + MSGNICK + "</b>", application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)])).css("width", "210px");
     } else if (MSGCOMMANDS.includes("[DosFight]")) {
         if ($("#nick").val().includes("DosFight") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[DosFight]").pop();
@@ -2354,7 +2346,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         window.targetingLeadX = parseFloat(window.targetingLeadclientX) - legendmod.mapOffsetX
         window.targetingLeadY = parseFloat(window.targetingLeadclientY) - legendmod.mapOffsetY
         legendmod.drawCommander2 = true;
-        toastr.warning("<b>" + MSGNICK + ":</b> Fight " + application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)).css("width", "210px");
+        toastr.warning(_lmxT('lmx.ex.cmdFight', ["<b>" + MSGNICK + "</b>", application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)])).css("width", "210px");
     } else if (MSGCOMMANDS.includes("[DosRun]")) {
         if ($("#nick").val().includes("DosRun") == false) _lmRemoveCmdMsg();
         MSGCOMMANDS = MSGCOMMANDS.split("[DosRun]").pop();
@@ -2367,7 +2359,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         window.targetingLeadX = parseFloat(window.targetingLeadclientX) - legendmod.mapOffsetX
         window.targetingLeadY = parseFloat(window.targetingLeadclientY) - legendmod.mapOffsetY
         legendmod.drawCommander2 = true;
-        toastr.warning("<b>" + MSGNICK + ":</b> Run from " + application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)).css("width", "210px");
+        toastr.warning(_lmxT('lmx.ex.cmdRunFrom', ["<b>" + MSGNICK + "</b>", application.calculateMapSector(window.targetingLeadX, window.targetingLeadY, true)])).css("width", "210px");
     }
 }
 
@@ -2462,7 +2454,7 @@ function MsgServCommandsreturner() {
             messageNick +
             " " +
             Premadeletter67 +
-            "<br>Server (Party mode): " +
+            "<br>" + _lmxE('lmx.ex.serverPartyMode') + ": " +
             escapeHtml(String(MSGCOMMANDSA)) +
             '<button id="acceptServer" class="btn btn-block btn-info" ' +
             'style="margin-top:10px;border-color:darkblue;">' +
@@ -2497,11 +2489,11 @@ function MsgServCommandsreturner() {
             .replace(".agar.io", "");
 
     var displayMode =
-        serverMode || "Unknown";
+        serverMode || _lmxT('lmx.ex.unknown');
 
     var displayPass =
         serverPass ||
-        "No Password Loaded";
+        _lmxT('lmx.ex.noPasswordLoaded');
 
     var detailsHtml =
         '<div>' +
@@ -2512,19 +2504,19 @@ function MsgServCommandsreturner() {
         messageNick +
         " " +
         Premadeletter67 +
-        "<br>Server: " +
+        "<br>" + _lmxE('mhServer') + ": " +
         escapeHtml(displayServer);
 
     if (serverRegion) {
         detailsHtml +=
-            "<br>Mode: " +
+            "<br>" + _lmxE('roomMode') + ": " +
             escapeHtml(displayMode) +
-            "<br>Region: " +
+            "<br>" + _lmxE('pack.region') + ": " +
             escapeHtml(String(serverRegion));
     }
 
     detailsHtml +=
-        "<br>Password: " +
+        "<br>" + _lmxE('roomPass') + ": " +
         escapeHtml(String(displayPass)) +
         '<button id="acceptServer" class="btn btn-block btn-info" ' +
         'style="margin-top:10px;border-color:darkblue;">' +
@@ -2749,7 +2741,7 @@ function universalchat() {
         local_style += '}';
         $("head").append('<style>\n' + local_style + '\n</style>');
         $("#top5-hud").append('' +
-            '<div id="ao2t-hud"><span class="hud-main-color">Universal:' +
+            '<div id="ao2t-hud"><span class="hud-main-color"><span data-i18n="pack.universal">' + _lmxE('pack.universal') + '</span>:' +
             ' <span id="ao2t-capture"><i class="fa fa-universal-access" aria-hidden="true"></i></span>' +
             ' <span id="ao2t-config"><i class="fa fa-wrench" aria-hidden="true"></i></span></span>' +
             //                 '<div id="ao2t-top5" style="padding-left: 1em;"></div>'+
@@ -2884,7 +2876,7 @@ function universalchat() {
         var flg = flg_ || {};
         if (!stat.connected) {
             if ($("#ao2t-capture").hasClass("connected")) {
-                global.toastr.error("L.M:->A.T: not connected");
+                global.toastr.error(_lmxT('lmx.ex.atNotConnected'));
                 return;
             }
         }
@@ -2945,41 +2937,41 @@ function universalchat() {
         $("#overlays").append('<div id="ao2t-cfg-dlg"' +
             '  style="width:400px; height:480px; top:150px; left:300px; display: none;' +
             '">' +
-            'Agar Tool/Legend Mod tools' +
+            '<span data-i18n="lmx.ex.atTitle">' + _lmxE('lmx.ex.atTitle') + '</span>' +
             '<div style="overflow: scroll; ' +
             'position: relative; top:1.5em; left:0.5em; right:0.5em; bottom:1.5em;">' +
             '<div id="ao2t-cfg-base">' +
             '</div>' +
             '</div><br><br>' +
-            '&nbsp;<span id="ao2t-cfg-default" class="btn btn-primary">' + Languageletter309.toUpperCase() + '</span>' +
-            '&nbsp;<span id="ao2t-cfg-ok" class="btn btn-success">' + Languageletter171 + '</span>' +
-            '&nbsp;<span id="ao2t-cfg-cancel" class="btn btn-danger">' + Languageletter283 + '</span>' +
+            '&nbsp;<span id="ao2t-cfg-default" class="btn btn-primary" style="text-transform: uppercase;"><span data-i18n="pack.default">' + _lmxE('pack.default') + '</span></span>' +
+            '&nbsp;<span id="ao2t-cfg-ok" class="btn btn-success"><span data-i18n="pack.saveSettings">' + _lmxE('pack.saveSettings') + '</span></span>' +
+            '&nbsp;<span id="ao2t-cfg-cancel" class="btn btn-danger"><span data-i18n="pack.close">' + _lmxE('pack.close') + '</span></span>' +
             '</div>');
         $('#ao2t-cfg-base').append('' +
-            '&nbsp;&nbsp;&nbsp;Update frequency [milliseconds]:<input type="text" data-ao2t-config="update_interval" style="width:6em;"/>' +
-            '<br/>Agar Tool Obtained from' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="user_show"/>user list</label>' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="minimap_show"/>minimap</label>' +
-            '&nbsp;Prefix:<input type="text" data-ao2t-config="tgar_prefix" style="width:4em;"/>' +
-            '&nbsp;&nbsp;color:<input type="text" data-ao2t-config="tgar_color" style="width:6em;"/>' +
+            '&nbsp;&nbsp;&nbsp;<span data-i18n="lmx.ex.atUpdateFreq">' + _lmxE('lmx.ex.atUpdateFreq') + '</span>:<input type="text" data-ao2t-config="update_interval" style="width:6em;"/>' +
+            '<br/><span data-i18n="lmx.ex.atObtainedFrom">' + _lmxE('lmx.ex.atObtainedFrom') + '</span>' +
+            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="user_show"/><span data-i18n="lmx.ex.atUserList">' + _lmxE('lmx.ex.atUserList') + '</span></label>' +
+            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="minimap_show"/><span data-i18n="pack.minimap2">' + _lmxE('pack.minimap2') + '</span></label>' +
+            '&nbsp;<span data-i18n="lmx.ex.atPrefix">' + _lmxE('lmx.ex.atPrefix') + '</span>:<input type="text" data-ao2t-config="tgar_prefix" style="width:4em;"/>' +
+            '&nbsp;&nbsp;<span data-i18n="lmx.ex.atColor">' + _lmxE('lmx.ex.atColor') + '</span>:<input type="text" data-ao2t-config="tgar_color" style="width:6em;"/>' +
             //    '<span class="input-group-addon"><i id="tgar_color" style="background-color: rgb(0, 0, 0);"></i></span>'+
-            '<br/>Send to Agar Tool' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="ogar_user"/>user info</label>' +
-            '&nbsp;Prefix:<input type="text" data-ao2t-config="ogar_prefix" style="width:4em;"/>' +
-            '<br/>LMB-Mouse split correction' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_teamtop"/>Teamboard</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_chat"/>chat</label>' +
-            '<br/>Chat option' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="chat_close"/>close</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_unpause"/>unpause</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_vcenter"/>vcenter</label>' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="chat_alt"/>Alt>T</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_ctrlalt"/>Ctrl+Alt>O+T</label>' +
-            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_ctrl"/>Ctrl>Close</label>' +
-            '<br/>Other' +
-            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="skin_toggle_auto"/>skin auto toggle</label>' +
-            '&nbsp;&nbsp;&nbsp;Frequency [milliseconds]:<input type="text" data-ao2t-config="skin_toggle_interval" style="width:6em;"/>' +
-            '<br/>&nbsp;&nbsp;* Changes will be reflected after restart' +
+            '<br/><span data-i18n="lmx.ex.atSendTo">' + _lmxE('lmx.ex.atSendTo') + '</span>' +
+            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="ogar_user"/><span data-i18n="lmx.ex.atUserInfo">' + _lmxE('lmx.ex.atUserInfo') + '</span></label>' +
+            '&nbsp;<span data-i18n="lmx.ex.atPrefix">' + _lmxE('lmx.ex.atPrefix') + '</span>:<input type="text" data-ao2t-config="ogar_prefix" style="width:4em;"/>' +
+            '<br/><span data-i18n="lmx.ex.atSplitFix">' + _lmxE('lmx.ex.atSplitFix') + '</span>' +
+            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_teamtop"/><span data-i18n="pack.teamboard">' + _lmxE('pack.teamboard') + '</span></label>' +
+            '&nbsp;<label><input type="checkbox" data-ao2t-config="lmsa_chat"/><span data-i18n="lmx.ex.atChat">' + _lmxE('lmx.ex.atChat') + '</span></label>' +
+            '<br/><span data-i18n="lmx.ex.atChatOptions">' + _lmxE('lmx.ex.atChatOptions') + '</span>' +
+            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="chat_close"/><span data-i18n="lmx.ex.atClose">' + _lmxE('lmx.ex.atClose') + '</span></label>' +
+            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_unpause"/><span data-i18n="lmx.ex.atUnpause">' + _lmxE('lmx.ex.atUnpause') + '</span></label>' +
+            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_vcenter"/><span data-i18n="lmx.ex.atVcenter">' + _lmxE('lmx.ex.atVcenter') + '</span></label>' +
+            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="chat_alt"/>Alt>T</label>' + // i18n-ok: key names
+            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_ctrlalt"/>Ctrl+Alt>O+T</label>' + // i18n-ok: key names
+            '&nbsp;<label><input type="checkbox" data-ao2t-config="chat_ctrl"/>Ctrl><span data-i18n="lmx.ex.atClose">' + _lmxE('lmx.ex.atClose') + '</span></label>' + // i18n-ok: Ctrl is a key name
+            '<br/><span data-i18n="lmx.ex.atOther">' + _lmxE('lmx.ex.atOther') + '</span>' +
+            '<br/>&nbsp;<label><input type="checkbox" data-ao2t-config="skin_toggle_auto"/><span data-i18n="lmx.ex.atSkinToggle">' + _lmxE('lmx.ex.atSkinToggle') + '</span></label>' +
+            '&nbsp;&nbsp;&nbsp;<span data-i18n="lmx.ex.atFrequency">' + _lmxE('lmx.ex.atFrequency') + '</span>:<input type="text" data-ao2t-config="skin_toggle_interval" style="width:6em;"/>' +
+            '<br/>&nbsp;&nbsp;* <span data-i18n="lmx.ex.atRestart">' + _lmxE('lmx.ex.atRestart') + '</span>' +
             '');
         $("#ao2t-cfg-default").click(function () {
             my.cfg_load(cfg_org);
@@ -3336,7 +3328,7 @@ function universalchat() {
                 }
                 else {
                     if (!cmd.playerName) {
-                        cmd.playerName = "An unnamed cell";
+                        cmd.playerName = _lmxT('agario.page_unnamed_cell');
                     }
                     my.addBallToMinimap(!1, cmd.socketID, cmd.playerName, cmd.x, cmd.y, cfg.tgar_color, !0);
                 }
@@ -3370,7 +3362,7 @@ function universalchat() {
                 else {
                     //console.log(cmd);
                     if (!cmd.playerName) {
-                        cmd.playerName = "An unnamed cell";
+                        cmd.playerName = _lmxT('agario.page_unnamed_cell');
                     }
                     //                my.log("chat:"+ cmd.playerName +":"+ cmd.message);
                     my.log("" + cmd.playerName + ": " + cmd.message);
@@ -3383,7 +3375,7 @@ function universalchat() {
                 else {
                     //console.log(cmd);
                     if (!cmd.playerName) {
-                        cmd.playerName = "An unnamed cell";
+                        cmd.playerName = _lmxT('agario.page_unnamed_cell');
                     }
                     //                my.log("chat:"+ cmd.playerName +":"+ cmd.message);
                     my.log("@" + cmd.playerName + ": " + cmd.message);
@@ -3760,7 +3752,7 @@ function hideSearchHud() {
 function showBotNameHud() {
     $("#searchHud").fadeOut();
     if (legendmod.botNicks.length == 0) {
-        appendLog2("<span class='main-color'><span id='playerBots'>No bots found</span></span> (" + _lmEscHtml(legendmod.ws) + "</span>)");
+        appendLog2("<span class='main-color'><span id='playerBots'>" + _lmxE('lmx.ex.noBotsFound') + "</span></span> (" + _lmEscHtml(legendmod.ws) + "</span>)");
     }
     else {
         for (var i = 0; i < legendmod.botNicks.length; i++) {
@@ -3975,7 +3967,7 @@ function connectto(message2) {
     $('#server-join').click();
     setTimeout(function () {
         if ($('#server-token').val() != message2) { /* #searchInput may hold a nickname */
-            toastr.error("Server not available!");
+            toastr.error(_lmxT('lmx.ex.serverNotAvailable'));
         }
     }, 1500);
 }
@@ -3985,7 +3977,7 @@ function connectto1a(message2) {
     $('#server-connect').click();
     setTimeout(function () {
         if ($('#server-token').val() != $('#searchInput').val()) {
-            toastr.error("Server not available!");
+            toastr.error(_lmxT('lmx.ex.serverNotAvailable'));
         }
     }, 1500);
 }
@@ -4576,7 +4568,7 @@ function StartEditGameNames() {
                         if (t.l.names.length > 200) t.l.names.shift();
                         var list = document.getElementById("tcm-names");
                         if (!list) return;
-                        list.insertAdjacentHTML("beforeend", t.u.span("cell name", s));
+                        list.insertAdjacentHTML("beforeend", t.u.span(_lmxT('lmx.ex.cellName'), s));
                         while (list.children.length > 200) list.removeChild(list.firstElementChild);
                     },
                     hotkeys: function (e) {
@@ -4588,7 +4580,7 @@ function StartEditGameNames() {
                         return '<link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet" type="text/css" />'
                     },
                     html: function () {
-                        return '<div id="tcm" style="display:block;"><div id="tcm-header"><span>Copy Tools</span><p>Copy cell names (press x to show/hide)</p></div><div id="tcm-main"><div><span style="display: none;">leaderboard names</span><div id="tcm-leaderboard" style="display: none;"></div></div><div><span>cell names</span><div id="tcm-names"></div></div><div></div></div></div>'
+                        return '<div id="tcm" style="display:block;"><div id="tcm-header"><span data-i18n="lmx.ex.copyTools">' + _lmxE('lmx.ex.copyTools') + '</span><p data-i18n="lmx.ex.copyCellNamesHint">' + _lmxE('lmx.ex.copyCellNamesHint') + '</p></div><div id="tcm-main"><div><span style="display: none;" data-i18n="lmx.ex.leaderboardNames">' + _lmxE('lmx.ex.leaderboardNames') + '</span><div id="tcm-leaderboard" style="display: none;"></div></div><div><span data-i18n="lmx.ex.cellNames">' + _lmxE('lmx.ex.cellNames') + '</span><div id="tcm-names"></div></div><div></div></div></div>'
                     },
                     span: function (e, o) {
                         var safeLabel =
@@ -4647,7 +4639,7 @@ function StartEditGameNames() {
                         prompt(
                             target.getAttribute(
                                 "data-copy-label"
-                            ) || "cell name",
+                            ) || _lmxT('lmx.ex.cellName'),
                             target.getAttribute(
                                 "data-copy-value"
                             ) || ""
@@ -5693,24 +5685,21 @@ function _lmCloudRequest(method, headers, body, cb) {
     } catch (e) { cb(null); }
 }
 function _lmCloudNeedLogin(expired) {
-    toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + (expired
-        ? 'Your login has expired. Log in with Google or Facebook again, then try once more.'
-        : 'Log in with Google or Facebook to keep your settings in the cloud.'));
+    toastr.warning(_lmxT(expired ? 'lmx.ex.cloudLoginExpired' : 'lmx.ex.cloudNeedLogin'));
 }
 function SNEZOgarUpload() {
     IdfromLegendmod();
     var login = _lmCloudLogin();
     if (!login) { _lmCloudNeedLogin(false); return; }
     _lmCloudRequest('POST', { username: login.user, 'lm-auth': login.auth }, encodeURIComponent($('#export-settings').val()), function (x) {
-        if (!x) { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (network).'); return; }
+        if (!x) { toastr.error(_lmxT('lmx.ex.cloudUploadNetwork')); return; }
         if (x.status === 401) { _lmCloudNeedLogin(true); return; }
-        if (x.status !== 200) { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud upload failed (' + x.status + ').'); return; }
+        if (x.status !== 200) { toastr.error(_lmxT('lmx.ex.cloudUploadFailed', [x.status])); return; }
         /* the old records could be read by anyone who knew the id (or the sync code): blank them */
         postSNEZ("https://api.legendmod.ml/lm-settings", login.user, _lmCloudPass(''), '{}');
         var code = _lmCloudCode();
         if (code) postSNEZ("https://api.legendmod.ml/lm-settings", login.user, _lmCloudPass(code), '{}');
-        toastr.info('<b>[' + Premadeletter123 + ']:</b> Settings saved to the cloud for your ' +
-            (login.auth.indexOf('google:') === 0 ? 'Google' : 'Facebook') + ' account. Log in with it on any device and press Download.');
+        toastr.info(_lmxT('lmx.ex.cloudSaved', [login.auth.indexOf('google:') === 0 ? 'Google' : 'Facebook']));
     });
 }
 
@@ -5733,9 +5722,7 @@ function _lmCloudSettingsFilter(text) {
         changed.push(keys[i]);
     }
     if (!changed.length) return text;
-    if (confirm("The downloaded settings contain user scripts or Discord webhooks (" + changed.join(", ") + ").\n\n" +
-        "User scripts will run on every start of Legend Mod. Import them only if you uploaded these settings yourself.\n\n" +
-        "OK = import them, Cancel = keep your current ones")) {
+    if (confirm(_lmxT('lmx.ex.cloudScriptsAsk', [changed.join(", ")]))) {
         /* the import itself does not ask again for these values */
         window._lmCloudConfirmedScripts = {};
         changed.forEach(function (k) { window._lmCloudConfirmedScripts[k] = String(ls[k]); });
@@ -5766,17 +5753,17 @@ function SNEZOgarDownload() {
     if (code) legacy.push(_lmCloudPass(code));
     legacy.push(_lmCloudPass(''));
     var nextLegacy = function () {
-        if (!legacy.length) { toastr.warning('<b>[' + Premadeletter123 + ']:</b> No cloud settings found for this account.'); return; }
+        if (!legacy.length) { toastr.warning(_lmxT('lmx.ex.cloudNone')); return; }
         _lmCloudRequest('GET', { username: login.user, password: legacy.shift() }, null, function (x) {
             if (!x || x.status !== 200 || empty(x)) return nextLegacy();
             apply(x);
         });
     };
     _lmCloudRequest('GET', { username: login.user, 'lm-auth': login.auth }, null, function (x) {
-        if (!x) { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud settings could not be loaded (network).'); return; }
+        if (!x) { toastr.error(_lmxT('lmx.ex.cloudLoadNetwork')); return; }
         if (x.status === 401) { _lmCloudNeedLogin(true); return; }
         if (empty(x)) return nextLegacy();
-        if (x.status !== 200) { toastr.error('<b>[' + Premadeletter123 + ']:</b> Cloud settings could not be loaded.'); return; }
+        if (x.status !== 200) { toastr.error(_lmxT('lmx.ex.cloudLoadFailed')); return; }
         apply(x);
     });
 }
@@ -6662,7 +6649,7 @@ function getSNEZServers(ifcalled) {
                 ifcalled == null
             ) {
                 toastr.info(
-                    "Result found. Revealing server information..."
+                    _lmxT('lmx.ex.resultFound')
                 );
             }
 
@@ -6671,7 +6658,7 @@ function getSNEZServers(ifcalled) {
                 ifcalled == null
             ) {
                 toastr.warning(
-                    "Server / Leaderboard not found."
+                    _lmxT('lmx.ex.notFound')
                 );
             }
 
@@ -6759,26 +6746,26 @@ function initializeLM(modVersion) {
     PremiumUsersFFAScore()
 
 
-    $("button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', 'Spectate');
-    $("button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', 'Logout');
+    $("button:contains('Spectate')").html('<span class="glyphicon glyphicon-globe"></span>').attr('data-toggle', "tooltip").prop('title', _lmxT('pack.spectate'));
+    $("button:contains('Logout')").html('<span class="glyphicon glyphicon-off"></span>').attr('data-toggle', "tooltip").prop('title', _lmxT('pack.logout'));
     $("button:contains('Copy')").removeClass("btn-info").addClass("btn-link");
 
     $("#create-party-btn-2").html('<span class="glyphicon glyphicon-plus"></span>');
-    $("#create-party-btn-2").attr('data-toggle', "tooltip").prop('title', "Create party");
+    $("#create-party-btn-2").attr('data-toggle', "tooltip").prop('title', _lmxT('lmx.ex.createParty'));
 
-    $("#join-party-btn").html('<span class="glyphicon glyphicon-save"></span>').attr('data-toggle', "tooltip").prop('title', "Join party").attr("style", "width: 49% !important; float: right;");
+    $("#join-party-btn").html('<span class="glyphicon glyphicon-save"></span>').attr('data-toggle', "tooltip").prop('title', _lmxT('lmx.ex.joinParty')).attr("style", "width: 49% !important; float: right;");
 
     //backgroud div
     $("body").prepend('<div id="backgroundFade" style="width: 100%; height: 100%; position: absolute; background: black; z-index: 100; opacity: 0.6; display: none;"></div>');
 
 
     $("#overlays-hud").prepend('<div id="statsInfo" class="main-color" style="pointer-events: auto;display: none;font-size: 13px;margin-top: 3px;float: left;font-weight: 700;background-color: rgba(0, 0, 0, 0.2);padding: 3px;border-radius: 4px;width: 65%;height: 44px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 85px;position: fixed;pointer-events: auto;color: #ffffff;">' +
-        '<p style="float: right; margin-right: 10px;"><span id="notesServer">Servers: </span><span id="numServers"></span> (<span id="pps"></span> <span data-toggle="tooltip" data-placement="top" data-original-title="Players per server">PPS</span>)</p>' +
-        '<p style="float: right;margin-right: 100px;"><span id="notesPlayers">Players: </span><span id="numPlayers"></span> / <span id="totalPlayers"  data-toggle="tooltip" data-placement="top" data-original-title="Total players online"></span></p></div>' +
+        '<p style="float: right; margin-right: 10px;"><span id="notesServer">' + _lmxE('pack.servers') + ': </span><span id="numServers"></span> (<span id="pps"></span> <span data-toggle="tooltip" data-placement="top" data-i18n-title="lmx.ex.playersPerServer" data-original-title="' + _lmxE('lmx.ex.playersPerServer') + '">PPS</span>)</p>' +
+        '<p style="float: right;margin-right: 100px;"><span id="notesPlayers">' + _lmxE('pack.players') + ': </span><span id="numPlayers"></span> / <span id="totalPlayers"  data-toggle="tooltip" data-placement="top" data-i18n-title="lmx.ex.totalPlayersOnline" data-original-title="' + _lmxE('lmx.ex.totalPlayersOnline') + '"></span></p></div>' +
         '<div id="searchHud" class="hud" style="width: 65%; height: 60px; z-index: 15; margin: auto; top: 0; right: 0; left: 0; bottom: 0; position: fixed;">' +
         '<div id="" style="margin-top: 10px;">' +
-        '<input id="searchInput" class="form-control" title="" placeholder="Enter friend\'s token, IP, leaderboard, name or clan tag..." style="pointer-events: auto;background-color: var(--lm-pc2, #002f52);color: var(--lm-tc, #fff);border: 1px solid var(--lm-pc2, #002f52);margin-bottom: 10px;float: left;width: 80% !important;text-align: center;">' +
-        '<button id="searchBtn" class="btn btn-copy-token copy-party-token btn-primary" data-toggle="tooltip" data-placement="bottom" data-original-title="Cancel search" style="pointer-events: auto;margin-bottom:10px;width: 15%;"><span id="searchSpan"><i class="fa fa-search"></i></span></button>' +
+        '<input id="searchInput" class="form-control" title="" placeholder="' + _lmxE('pack.enterFriendTokenIp') + '" style="pointer-events: auto;background-color: var(--lm-pc2, #002f52);color: var(--lm-tc, #fff);border: 1px solid var(--lm-pc2, #002f52);margin-bottom: 10px;float: left;width: 80% !important;text-align: center;">' +
+        '<button id="searchBtn" class="btn btn-copy-token copy-party-token btn-primary" data-toggle="tooltip" data-placement="bottom" data-i18n-title="lmx.ex.cancelSearch" data-original-title="' + _lmxE('lmx.ex.cancelSearch') + '" style="pointer-events: auto;margin-bottom:10px;width: 15%;"><span id="searchSpan"><i class="fa fa-search"></i></span></button>' +
         '</div></div>'
     );
     $("#regionmodecheck").hide();
@@ -6787,7 +6774,7 @@ function initializeLM(modVersion) {
         title: "Leave it empty for Public, or insert password of Clan, or use it as Tag",
         placement: "bottom"
     });*/
-    $("#clantag").attr('placeholder', 'Password');
+    $("#clantag").attr('placeholder', _lmxT('pack.passwordTag'));
     /*$("#skin").tooltip({
         title: "Insert your manual skin weblink",
         placement: "left"
@@ -6806,7 +6793,7 @@ function initializeLM(modVersion) {
     });*/
 
     $("#optimizedMass").parent().tooltip({
-        title: "When ENABLED: Optimized mass (+/-2%) ON, Merge Timer BETA OFF. Suggested to be ENABLED for Lag reduce.",
+        title: function () { return _lmxT('lmx.ex.optimizedMassTip'); },
         placement: "bottom"
     });
     //$('#animation-value').parent().before("1. Type on browser: <b>chrome://settings/system</b> , ensure <i>Use hardware acceleration when available</i> checkbox, is <b>ENABLED</b>. 2. Prefer <b>Opera GX</b><br><br>");
@@ -6814,10 +6801,10 @@ function initializeLM(modVersion) {
 
 
     $("#videoSkins").parent().parent().tooltip({
-        title: "For more info on how to use video skins visit: https://www.legendmod.ml/developers/ videoskins.html",
+        title: function () { return _lmxT('lmx.ex.videoSkinsTip', ['https://www.legendmod.ml/developers/videoskins.html']); },
         placement: "top"
     });
-    $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">Save for later</h5>' +
+    $("#statsInfo").before('<div id="notes" class="main-color" style="display:none;font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 147px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: 400px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;background-color: rgba(0, 0, 0, 0.2);"><h5 id="notesaveforlater" class="main-color text-center" style="margin-top: 0px;">' + _lmxE('pack.saveForLater') + '</h5>' +
         '<input id="note1" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 25%;float:left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-right: 7px; text-align: center;">' +
         '<input id="note2" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 24%; float: left; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-left: 0px; margin-right: 7px; text-align: center; ">' +
         '<input id="note3" class="form-control main-color note" style="background: transparent;color: lightgrey; width: 49%; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-left: 10px; text-align: center; ">' +
@@ -6826,14 +6813,14 @@ function initializeLM(modVersion) {
         '<input id="note6" class="form-control main-color note" style="background: transparent;color: lightgrey;  width: 49%; border: none; border-bottom: 1px solid; border-color: darkgrey; margin-left: 10px; text-align: center; ">' +
         '<input id="note7" class="form-control main-color note" style="background: transparent;color: lightgrey;  border: none; border-bottom: 1px solid; border-color: darkgrey; text-align: center; ">' +
         '</div>');
-    $("#notes").append('<button id="closeBtn" class="btn btn-danger" style="margin-top: 20px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
+    $("#notes").append('<button id="closeBtn" class="btn btn-danger" style="margin-top: 20px;" data-original-title="" title="">' + _lmxE('pack.close') + '</button>');
 
     $("#minimap-hud").prepend('<div id="timertools-hud" class="hud" align="center" style="width: 50%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -90px; display: block;">' +
-        '<button id="playtimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: block;" onclick="startTimer();" data-toggle="tooltip" data-original-title="Start Timer"" ><i id="playtime" class="fa fa-play-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="stoptimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%; display: none;" onclick="stopTimer();" data-toggle="tooltip" data-original-title="Pause Timer""><i id="pausetime" class="fa fa-pause-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="cleartimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%; display: none;" onclick="clearTimer();" data-toggle="tooltip" data-original-title="Stop Timer"><i id="cleartime" class="fa fa-stop-circle" style="padding-left: 0px;"></i></button>' +
+        '<button id="playtimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: block;" onclick="startTimer();" data-toggle="tooltip" data-i18n-title="lmx.ex.startTimer" data-original-title="' + _lmxE('lmx.ex.startTimer') + '" ><i id="playtime" class="fa fa-play-circle" style="padding-left: 0px;"></i></button>' +
+        '<button id="stoptimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%; display: none;" onclick="stopTimer();" data-toggle="tooltip" data-i18n-title="lmx.ex.pauseTimer" data-original-title="' + _lmxE('lmx.ex.pauseTimer') + '"><i id="pausetime" class="fa fa-pause-circle" style="padding-left: 0px;"></i></button>' +
+        '<button id="cleartimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%; display: none;" onclick="clearTimer();" data-toggle="tooltip" data-i18n-title="lmx.ex.stopTimer" data-original-title="' + _lmxE('lmx.ex.stopTimer') + '"><i id="cleartime" class="fa fa-stop-circle" style="padding-left: 0px;"></i></button>' +
         '<a id="timer" style="padding: 0px; color: #d6d3d3; width: 12%; height: 100% position: absolute; right: 0px;">00:00</a>');
-    $(".menu-tabs>:nth-child(2)").after('<li class="legend-tab" style="width: 16.66%; padding:12px;" data-toggle="tooltip" data-original-title="API" data-placement="top"><a style="margin-top: 2px; height: 100%; padding:12px;" onclick="$(\'#main-menu\').children(\'div\').hide(); $(\'.menu-tabs\').children(\'li\').removeClass(\'active\'); $(\'.menu-tabs\').children(\'li\').children(\'a\').removeClass(\'active\'); $(\'#legend\').fadeIn(); $(this).addClass(\'active\'); $(this).parent().addClass(\'active\'); " href="javascript:void(0);" class="fa fa-puzzle-piece fa-lg"></a></li>');
+    $(".menu-tabs>:nth-child(2)").after('<li class="legend-tab" style="width: 16.66%; padding:12px;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.tools') + '" data-placement="top"><a style="margin-top: 2px; height: 100%; padding:12px;" onclick="$(\'#main-menu\').children(\'div\').hide(); $(\'.menu-tabs\').children(\'li\').removeClass(\'active\'); $(\'.menu-tabs\').children(\'li\').children(\'a\').removeClass(\'active\'); $(\'#legend\').fadeIn(); $(this).addClass(\'active\'); $(this).parent().addClass(\'active\'); " href="javascript:void(0);" class="fa fa-puzzle-piece fa-lg"></a></li>');
     $(".menu-tabs").children().attr("style", "width: 14.28%");
     //$(".profile-tab").hide();
     $("#main-menu>#profile").after('<div id="legend" class="menu-panel"><div class="agario-panel legend-panel">' + //<h5 class="menu-main-color">Main Tools</h5>
@@ -6848,95 +6835,84 @@ function initializeLM(modVersion) {
         '</div></div>' +*/
         '<button id="SHOSHOBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-puzzle-piece"></i>' + Premadeletter42 + '</button>' +
         '<button id="MAINBTBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-minus"></i>' + Premadeletter45a + '</button>' +
-        '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="Temporarily Hide/Show Everything. Function for Youtubers" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
+        '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" data-toggle="button" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('lmx.ex.hideAllTip') + '" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
         '<button id="TIMEcalBtn" type="button" class="btn btn-sm btn-warning" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-calculator"></i>' + Premadeletter50 + '</button>' +
 
-        '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>User Scripts</button>' +
-        '<button id="SpecialDealsBtn" class="btn btn-primary btn btn-shop" type="submit" disabled="disabled" onclick="BeforeSpecialDeals(); return false;" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="Log in with Google/Facebook and play a game session first" data-itr="page_shop"><i class="fa fa-paint-brush"></i>Agar.io Skins<div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;">LOGIN & PLAY NEEDED</div></button>' +
-        '<button id="LegendmodShop" class="btn btn-primary btn" type="submit" onclick="BeforeLegendmodShop(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-briefcase"></i>Shop</button>' +
+        '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>' + _lmxE('pack.userScripts') + '</button>' +
+        '<button id="SpecialDealsBtn" class="btn btn-primary btn btn-shop" type="submit" disabled="disabled" onclick="BeforeSpecialDeals(); return false;" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="' + _lmxE('lmx.ex.loginPlayFirst') + '" data-itr="page_shop"><i class="fa fa-paint-brush"></i><span data-i18n="lmx.ex.agarioSkins">' + _lmxE('lmx.ex.agarioSkins') + '</span><div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;" data-i18n="needLogin">' + _lmxE('needLogin') + '</div></button>' +
+        '<button id="LegendmodShop" class="btn btn-primary btn" type="submit" onclick="BeforeLegendmodShop(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-briefcase"></i>' + _lmxE('agario.page_shop') + '</button>' +
         //'<button id="UserLeaguesInfo" class="btn btn-primary btn" type="submit" onclick="preUserLeaguesInfoRequest(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-star"></i>User Leagues Info (BETA)</button>' +
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;"><span id="legendmanualback" class="title" style="">Manual background:  </span>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;"><span id="legendmanualback" class="title" style="">' + _lmxE('pack.manualBackground') + ':  </span>' +
         '<select id="backgroundPic" class="form-control" onchange="changePicFun();" required="" data-original-title="" title="" style="display:inline; width: 40%" >' +
-        '<option value="1" data-itr="">Minimap</option>' +
-        '<option value="2" data-itr="">Leaderboard</option>' +
-        '<option value="3" data-itr="">Teamboard</option>' +
-        '<option value="4" data-itr="">Main Canvas</option>' +
-        '<option value="5" data-itr="">Main Banner</option>' +
+        '<option value="1" data-itr="">' + _lmxE('pack.minimap2') + '</option>' +
+        '<option value="2" data-itr="">' + _lmxE('pack.leaderboard') + '</option>' +
+        '<option value="3" data-itr="">' + _lmxE('pack.teamboard') + '</option>' +
+        '<option value="4" data-itr="">' + _lmxE('pack.mainCanvas') + '</option>' +
+        '<option value="5" data-itr="">' + _lmxE('pack.mainBanner') + '</option>' +
         '</select>' +
 
-        '<input id="minimapPicture" class="form-control" placeholder="Minimap Image URL" value="" style="margin-top: 2px; display: block;" onblur="setminbgname();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with https://... or https://..." >' +
-        '<input id="minbtext" class="form-control" placeholder="Minimap Text" value="" style="margin-top: 2px; display: block;" onblur="setminbtext();">' +
-        '<input id="leadbPicture" class="form-control" placeholder="Leaderboard Image URL" value="" style="margin-top: 2px; display: none;" onblur="setleadbgname();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with https://... or https://..." >' +
-        '<input id="leadbtext" class="form-control" placeholder="Leaderboard Logo Text" value="" style="margin-top: 2px; display: none; " onblur="setleadbtext();">' +
-        '<input id="teambPicture" class="form-control" placeholder="Teamboard Image URL" value="" style="margin-top: 2px; display: none;" onblur="setteambgname();" data-toggle="tooltip" data-placement="right"  data-original-title="Url of image starting with https://... or https://..." >' +
-        '<input id="teambtext" class="form-control" placeholder="Teamboard Logo Text" value="" style="margin-top: 2px; display: none; " onblur="setteambtext();">' +
-        '<input id="canvasPicture" class="form-control" placeholder="Main Canvas Image URL" value="" style="margin-top: 2px; display: none;" onblur="setcanvasbgname();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with https://... or https://..." >' +
-        '<input id="imgUrl" class="form-control" placeholder="Main Banner Icon URL" value="" style="margin-top: 2px; display: none; " onblur="setimgUrl();" data-toggle="tooltip" data-placement="right" data-original-title="Url of image starting with http://... or https://..." >' +
-        '<input id="imgHref" class="form-control" placeholder="Main Banner Link URL" value="" style="margin-top: 2px; display: none; " onblur="setimgHref();" data-toggle="tooltip" data-placement="right" data-original-title="Url of link to redirect" >' +
+        '<input id="minimapPicture" class="form-control" placeholder="' + _lmxE('pack.minimapImageUrl') + '" value="" style="margin-top: 2px; display: block;" onblur="setminbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
+        '<input id="minbtext" class="form-control" placeholder="' + _lmxE('pack.minimapText') + '" value="" style="margin-top: 2px; display: block;" onblur="setminbtext();">' +
+        '<input id="leadbPicture" class="form-control" placeholder="' + _lmxE('pack.leaderboardImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setleadbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
+        '<input id="leadbtext" class="form-control" placeholder="' + _lmxE('lmx.ex.leaderboardLogoText') + '" value="" style="margin-top: 2px; display: none; " onblur="setleadbtext();">' +
+        '<input id="teambPicture" class="form-control" placeholder="' + _lmxE('pack.teamboardImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setteambgname();" data-toggle="tooltip" data-placement="right"  data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
+        '<input id="teambtext" class="form-control" placeholder="' + _lmxE('pack.teamboardLogoText') + '" value="" style="margin-top: 2px; display: none; " onblur="setteambtext();">' +
+        '<input id="canvasPicture" class="form-control" placeholder="' + _lmxE('pack.mainCanvasImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setcanvasbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
+        '<input id="imgUrl" class="form-control" placeholder="' + _lmxE('pack.mainBannerIconUrl') + '" value="" style="margin-top: 2px; display: none; " onblur="setimgUrl();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
+        '<input id="imgHref" class="form-control" placeholder="' + _lmxE('pack.mainBannerLinkUrl') + '" value="" style="margin-top: 2px; display: none; " onblur="setimgHref();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfLinkTo') + '" >' +
         '</div>' +
 
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 4px 0 0px 0;"><span id="legendmanualmess" class="title" style="">Manual Message Icons&Youtube:  </span>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 4px 0 0px 0;"><span id="legendmanualmess" class="title" style="">' + _lmxE('pack.manualMessageIconsYoutube') + ':  </span>' +
         '<select id="changephotos" class="form-control" onchange="changePhotoFun();" required="" data-original-title="" title="" style="display:inline; width: 35%" >' +
-        '<option value="1" data-itr="">Icon 1</option>' +
-        '<option value="2" data-itr="">Icon 2</option>' +
-        '<option value="3" data-itr="">Icon 3</option>' +
-        '<option value="4" data-itr="">Icon 4</option>' +
-        '<option value="5" data-itr="">Icon 5</option>' +
-        '<option value="6" data-itr="">Icon 6</option>' +
-        '<option value="7" data-itr="">Youtube 1</option>' +
-        '<option value="8" data-itr="">Youtube 2</option>' +
-        '<option value="9" data-itr="">Youtube 3</option>' +
-        '<option value="10" data-itr="">Youtube 4</option>' +
-        '<option value="11" data-itr="">Youtube 5</option>' +
-        '<option value="12" data-itr="">Youtube 6</option>' +
+        '<option value="1" data-itr="">' + _lmxE('pack.icon') + ' 1</option>' +
+        '<option value="2" data-itr="">' + _lmxE('pack.icon') + ' 2</option>' +
+        '<option value="3" data-itr="">' + _lmxE('pack.icon') + ' 3</option>' +
+        '<option value="4" data-itr="">' + _lmxE('pack.icon') + ' 4</option>' +
+        '<option value="5" data-itr="">' + _lmxE('pack.icon') + ' 5</option>' +
+        '<option value="6" data-itr="">' + _lmxE('pack.icon') + ' 6</option>' +
+        '<option value="7" data-itr="">Youtube 1</option>' + // i18n-ok: brand name and number
+        '<option value="8" data-itr="">Youtube 2</option>' + // i18n-ok: brand name and number
+        '<option value="9" data-itr="">Youtube 3</option>' + // i18n-ok: brand name and number
+        '<option value="10" data-itr="">Youtube 4</option>' + // i18n-ok: brand name and number
+        '<option value="11" data-itr="">Youtube 5</option>' + // i18n-ok: brand name and number
+        '<option value="12" data-itr="">Youtube 6</option>' + // i18n-ok: brand name and number
         '</select>' +
 
-        '<input id="pic1data" class="form-control" placeholder="Message Icon Text 1" value="" style="margin-top: 2px; display: block; " onblur="setpic1data();">' +
-        '<input id="pic2data" class="form-control" placeholder="Message Icon Text 2" value="" style="margin-top: 2px; display: none; " onblur="setpic2data();">' +
-        '<input id="pic3data" class="form-control" placeholder="Message Icon Text 3" value="" style="margin-top: 2px; display: none; " onblur="setpic3data();">' +
-        '<input id="pic4data" class="form-control" placeholder="Message Icon Text 4" value="" style="margin-top: 2px; display: none; " onblur="setpic4data();">' +
-        '<input id="pic5data" class="form-control" placeholder="Message Icon Text 5" value="" style="margin-top: 2px; display: none; " onblur="setpic5data();">' +
-        '<input id="pic6data" class="form-control" placeholder="Message Icon Text 6" value="" style="margin-top: 2px; display: none; " onblur="setpic6data();">' +
-        '<input id="yt1data" class="form-control" placeholder="Youtube Message Text 1" value="" style="margin-top: 2px; display: none; " onblur="setyt1data();">' +
-        '<input id="yt2data" class="form-control" placeholder="Youtube Message Text 2" value="" style="margin-top: 2px; display: none; " onblur="setyt2data();">' +
-        '<input id="yt3data" class="form-control" placeholder="Youtube Message Text 3" value="" style="margin-top: 2px; display: none; " onblur="setyt3data();">' +
-        '<input id="yt4data" class="form-control" placeholder="Youtube Message Text 4" value="" style="margin-top: 2px; display: none; " onblur="setyt4data();">' +
-        '<input id="yt5data" class="form-control" placeholder="Youtube Message Text 5" value="" style="margin-top: 2px; display: none; " onblur="setyt5data();">' +
-        '<input id="yt6data" class="form-control" placeholder="Youtube Message Text 6" value="" style="margin-top: 2px; display: none; " onblur="setyt6data();">' +
+        '<input id="pic1data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 1" value="" style="margin-top: 2px; display: block; " onblur="setpic1data();">' +
+        '<input id="pic2data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 2" value="" style="margin-top: 2px; display: none; " onblur="setpic2data();">' +
+        '<input id="pic3data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 3" value="" style="margin-top: 2px; display: none; " onblur="setpic3data();">' +
+        '<input id="pic4data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 4" value="" style="margin-top: 2px; display: none; " onblur="setpic4data();">' +
+        '<input id="pic5data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 5" value="" style="margin-top: 2px; display: none; " onblur="setpic5data();">' +
+        '<input id="pic6data" class="form-control" placeholder="' + _lmxE('pack.messageIconText') + ' 6" value="" style="margin-top: 2px; display: none; " onblur="setpic6data();">' +
+        '<input id="yt1data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 1" value="" style="margin-top: 2px; display: none; " onblur="setyt1data();">' +
+        '<input id="yt2data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 2" value="" style="margin-top: 2px; display: none; " onblur="setyt2data();">' +
+        '<input id="yt3data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 3" value="" style="margin-top: 2px; display: none; " onblur="setyt3data();">' +
+        '<input id="yt4data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 4" value="" style="margin-top: 2px; display: none; " onblur="setyt4data();">' +
+        '<input id="yt5data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 5" value="" style="margin-top: 2px; display: none; " onblur="setyt5data();">' +
+        '<input id="yt6data" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageText') + ' 6" value="" style="margin-top: 2px; display: none; " onblur="setyt6data();">' +
 
-        '<input id="pic1url" class="form-control" placeholder="Message Icon Imgur Url 1" value="" style="margin-top: 2px; display: block;" onblur="setpic1url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic2url" class="form-control" placeholder="Message Icon Imgur Url 2" value="" style="margin-top: 2px; display: none;" onblur="setpic2url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic3url" class="form-control" placeholder="Message Icon Imgur Url 3" value="" style="margin-top: 2px; display: none;" onblur="setpic3url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic4url" class="form-control" placeholder="Message Icon Imgur Url 4" value="" style="margin-top: 2px; display: none;" onblur="setpic4url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic5url" class="form-control" placeholder="Message Icon Imgur Url 5" value="" style="margin-top: 2px; display: none;" onblur="setpic5url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="pic6url" class="form-control" placeholder="Message Icon Imgur Url 6" value="" style="margin-top: 2px; display: none;" onblur="setpic6url();" data-toggle="tooltip" data-placement="right" data-original-title="e.g. https://i.imgur.com/RVBi3T1.gif" >' +
-        '<input id="yt1url" class="form-control" placeholder="Youtube Message Url 1" value="" style="margin-top: 2px; display: none;" onblur="setyt1url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt2url" class="form-control" placeholder="Youtube Message Url 2" value="" style="margin-top: 2px; display: none;" onblur="setyt2url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt3url" class="form-control" placeholder="Youtube Message Url 3" value="" style="margin-top: 2px; display: none;" onblur="setyt3url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt4url" class="form-control" placeholder="Youtube Message Url 4" value="" style="margin-top: 2px; display: none;" onblur="setyt4url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt5url" class="form-control" placeholder="Youtube Message Url 5" value="" style="margin-top: 2px; display: none;" onblur="setyt5url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
-        '<input id="yt6url" class="form-control" placeholder="Youtube Message Url 6" value="" style="margin-top: 2px; display: none;" onblur="setyt6url();" data-toggle="tooltip" data-placement="right" data-original-title="Url of youtube to be shown" >' +
+        '<input id="pic1url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 1" value="" style="margin-top: 2px; display: block;" onblur="setpic1url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
+        '<input id="pic2url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 2" value="" style="margin-top: 2px; display: none;" onblur="setpic2url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
+        '<input id="pic3url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 3" value="" style="margin-top: 2px; display: none;" onblur="setpic3url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
+        '<input id="pic4url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 4" value="" style="margin-top: 2px; display: none;" onblur="setpic4url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
+        '<input id="pic5url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 5" value="" style="margin-top: 2px; display: none;" onblur="setpic5url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
+        '<input id="pic6url" class="form-control" placeholder="' + _lmxE('pack.messageIconImgurUrl') + ' 6" value="" style="margin-top: 2px; display: none;" onblur="setpic6url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.eG') + ' https://i.imgur.com/RVBi3T1.gif" >' +
+        '<input id="yt1url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 1" value="" style="margin-top: 2px; display: none;" onblur="setyt1url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt2url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 2" value="" style="margin-top: 2px; display: none;" onblur="setyt2url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt3url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 3" value="" style="margin-top: 2px; display: none;" onblur="setyt3url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt4url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 4" value="" style="margin-top: 2px; display: none;" onblur="setyt4url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt5url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 5" value="" style="margin-top: 2px; display: none;" onblur="setyt5url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
+        '<input id="yt6url" class="form-control" placeholder="' + _lmxE('pack.youtubeMessageUrl') + ' 6" value="" style="margin-top: 2px; display: none;" onblur="setyt6url();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfYoutubeTo') + '" >' +
         '</div></div>' +
 
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-original-title="Visit https://www.legendmod.ml/languages/LanguagePackEnglish.js to Upload a Language Pack">Choose Language:  </span>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 0px 0 0px 0;"><span id="legendlanguagetext" class="title" style="" data-toggle="tooltip" data-placement="right" data-i18n-title="lmx.ex.languageUploadTip" data-original-title="' + _lmxE('lmx.ex.languageUploadTip', ['https://www.legendmod.ml/languages/LanguagePackEnglish.js']) + '" data-i18n-vars=\'{"0":"https://www.legendmod.ml/languages/LanguagePackEnglish.js"}\'><span data-i18n="lmx.ex.chooseLanguage">' + _lmxE('lmx.ex.chooseLanguage') + '</span>:  </span>' +
         '<select id="legendlanguages" class="form-control" onchange="changeModLanguage(true);" required="" data-original-title="" title="" style="display:inline; width: 50%" >' +
-        '<option value="1" data-itr="" selected>English</option>' +
-        '<option value="6" data-itr="">Arabic</option>' +
-        '<option value="4" data-itr="">Bulgarian</option>' +
-        '<option value="5" data-itr="">French - Francais</option>' +
-        '<option value="9" data-itr="">German - Deutsch</option>' +
-        '<option value="2" data-itr="">Greek - Ελληνικά</option>' +
-        '<option value="11" data-itr="">Polish - Polskie</option>' +
-        '<option value="8" data-itr="">Russian</option>' +
-        '<option value="3" data-itr="">Spanish - Espanol</option>' +
-        '<option value="7" data-itr="">Trad. Chinese</option>' +
-        '<option value="10" data-itr="">Turkish - Turk</option>' +
-        '<option value="12" data-itr="">Dutch</option>' +
+        _lmxLanguageOptions() +
         '</select></div>' +
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legenddiscordwebh" class="title" style="">Discord Webhook Url (for sending TOKEN)  </span>' +
-        '<input id="discwebhook1" class="form-control" placeholder="Discord Webhook 1 Url" value="" data-toggle="tooltip" data-placement="right" data-original-title="Must be filled for function to work. https://discord.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%; display: inline-block; " onblur="setdiscwebhook1();">' +
-        '<input id="discwebhook2" class="form-control" placeholder="Discord Webhook 2 Url" value="" data-toggle="tooltip" data-placement="right" data-original-title="Secondary Webhook(optional). https://discord.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%; display: inline-block;" onblur="setdiscwebhook2();">' +
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legendotherscripts" class="title" style="">Expansions: </span>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legenddiscordwebh" class="title" style="">' + _lmxE('pack.discordWebhookUrlFor') + '  </span>' +
+        '<input id="discwebhook1" class="form-control" placeholder="' + _lmxE('pack.discordWebhookUrl') + ' 1" value="" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.mustBeFilledFor') + '. https://discord.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%; display: inline-block; " onblur="setdiscwebhook1();">' +
+        '<input id="discwebhook2" class="form-control" placeholder="' + _lmxE('pack.discordWebhookUrl') + ' 2" value="" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.secondaryWebhookOptional') + '. https://discord.com/api/webhooks/.../..." style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%; display: inline-block;" onblur="setdiscwebhook2();">' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legendotherscripts" class="title" style="">' + _lmxE('pack.expansions') + ': </span>' +
         '</div><div id="LEGENDAds2"></div><div id="LEGENDAds3"></div>' +
         '</div></div>');
     //fix userprofile
@@ -6989,9 +6965,9 @@ function initializeLM(modVersion) {
     });
     var initialMusicUrl = (localStorage.getItem("musicUrl") == null ? defaultMusicUrl : localStorage.getItem("musicUrl"));
     //	var savemusic=$(".agario-panel.sounds-panel").html();
-    $('.agario-panel.radio-panel').after('<div id="youtubeplayer" style="margin-left: 0px;"><h5 class="main-color" style="margin-right: 15px;">Youtube player</h5>' +
+    $('.agario-panel.radio-panel').after('<div id="youtubeplayer" style="margin-left: 0px;"><h5 class="main-color" style="margin-right: 15px;">' + _lmxE('pack.youtubePlayer') + '</h5>' +
         '<iframe id="musicFrame" width="350" height="180" src="' + _lmEscHtml(getEmbedUrl(initialMusicUrl) || getEmbedUrl(defaultMusicUrl)) + '" frameborder="0" allowfullscreen=""></iframe></div>' +
-        '<div id="afteryoutubeplayer"><input id="musicUrl" onclick="$(this).select();" type="text" placeholder="Youtube Url" value="' + _lmEscHtml(initialMusicUrl) + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="Paste your video/playlist here">');
+        '<div id="afteryoutubeplayer"><input id="musicUrl" onclick="$(this).select();" type="text" placeholder="' + _lmxE('pack.youtubeUrl') + '" value="' + _lmEscHtml(initialMusicUrl) + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.pasteYourVideoPlaylist') + '">');
     //			'<button id="YoutubeBackgroundBtn" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter61 + '</button></div>' +
 
     $('.agario-panel.radio-panel').hide();
@@ -7026,66 +7002,66 @@ function initializeLM(modVersion) {
     // save notes
 
     $("#import-settings-btn").attr('class', 'btn btn-success');
-    $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;display: none;background-color: rgba(0, 0, 0, 0.2);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">Results</h5>' +
+    $("#searchHud").after('<div id="searchLog" class="main-color" style="font-size: 13px;float: left;font-weight: 700;border-radius: 4px;width: 65%;height: 270px;z-index: 15;margin: auto;top: 0px;right: 0px;left: 0px;bottom: -390px;position: fixed;pointer-events: auto;color: rgb(255, 255, 255);padding: 10px;display: none;background-color: rgba(0, 0, 0, 0.2);"><h5 id="logTitle" class="main-color text-center" style="margin-top: 0px;">' + _lmxE('lmx.ex.results') + '</h5>' +
         '<div id="log" style="font-weight: normal; overflow-x: hidden; overflow-y: auto;height: 90%;">' +
         '</div></div>');
 
     $("#minimap-hud").prepend('<div id="shortcuts-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -30px; display: block;">' +
-        '<button id="VoiceBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" data-toggle="tooltip" data-original-title="Voice & Camera Chat"><i id="VoiceBtn1" class="fa fa-microphone" style="padding-left: 0px;"></i></button>' +
-        '<button id="MiniScripts" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setscriptingfunction();" data-toggle="tooltip" data-original-title="Mini Scripts"><i id="MiniScripts1" class="fa fa-linode" style="padding-left: 0px;"></i></button>' +
-        '<button id="SendCommands" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setmessagecomfunction();" data-toggle="tooltip" data-original-title="Message Script Commands"><i id="SendCommands1" class="fa fa-sitemap" style="padding-left: 0px;"></i></button>' +
-        '<button id="Images" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="seticonfunction();" data-toggle="tooltip" data-original-title="Message Imgur Icons"><i id="Images1" class="fa fa-picture-o" style="padding-left: 0px;"></i></button>' +
-        '<button id="yout" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setytfunction();" data-toggle="tooltip" data-original-title="Message Youtube Videos"><i id="yout1" class="fa fa-youtube" style="padding-left: 0px;"></i></button>' +
-        '<button id="playerBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" data-toggle="tooltip" data-original-title="Click play on youtube tab at first"><i id="playerI" class="fa fa-play-circle" style="padding-center: 0px;"></i></button>' +
+        '<button id="VoiceBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.voiceCameraChat') + '"><i id="VoiceBtn1" class="fa fa-microphone" style="padding-left: 0px;"></i></button>' +
+        '<button id="MiniScripts" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setscriptingfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.miniScripts') + '"><i id="MiniScripts1" class="fa fa-linode" style="padding-left: 0px;"></i></button>' +
+        '<button id="SendCommands" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setmessagecomfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageScriptCommands') + '"><i id="SendCommands1" class="fa fa-sitemap" style="padding-left: 0px;"></i></button>' +
+        '<button id="Images" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="seticonfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageImgurIcons') + '"><i id="Images1" class="fa fa-picture-o" style="padding-left: 0px;"></i></button>' +
+        '<button id="yout" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setytfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageYoutubeVideos') + '"><i id="yout1" class="fa fa-youtube" style="padding-left: 0px;"></i></button>' +
+        '<button id="playerBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.playPause') + '"><i id="playerI" class="fa fa-play-circle" style="padding-center: 0px;"></i></button>' +
         '</div>');
 
 
     $("#minimap-hud").prepend('<div id="images-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-        '<button id="sendicon1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon1();" data-toggle="tooltip" data-original-title="Bad Choice!"><i id="sendicon11" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendicon2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon2();" data-toggle="tooltip" data-original-title="Why?"><i id="sendicon21" class="fa fa-question-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendicon3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon3();" data-toggle="tooltip" data-original-title="Yow!!"><i id="sendicon31" class="fa fa-wheelchair" style="padding-center: 0px;"></i></button>' +
-        '<button id="sendicon4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon4();" data-toggle="tooltip" data-original-title="Death!"><i id="sendicon41" class="fa fa-cutlery" style="padding-center: 0px;"></i></button>' +
-        '<button id="sendicon5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon5();" data-toggle="tooltip" data-original-title="Relax!"><i id="sendicon51" class="fa fa-bed" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendicon6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon6();" data-toggle="tooltip" data-original-title="Legend!"><i id="sendicon61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
+        '<button id="sendicon1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon1();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.icon1') + '"><i id="sendicon11" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button>' +
+        '<button id="sendicon2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon2();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.icon2') + '"><i id="sendicon21" class="fa fa-question-circle" style="padding-left: 0px;"></i></button>' +
+        '<button id="sendicon3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon3();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.icon3') + '"><i id="sendicon31" class="fa fa-wheelchair" style="padding-center: 0px;"></i></button>' +
+        '<button id="sendicon4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon4();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.icon4') + '"><i id="sendicon41" class="fa fa-cutlery" style="padding-center: 0px;"></i></button>' +
+        '<button id="sendicon5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon5();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.icon5') + '"><i id="sendicon51" class="fa fa-bed" style="padding-left: 0px;"></i></button>' +
+        '<button id="sendicon6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendicon6();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.icon6') + '"><i id="sendicon61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
 
     $("#minimap-hud").prepend('<div id="yt-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-        '<button id="sendyt1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt1();" data-toggle="tooltip" data-original-title="Rick Astley - Never Gonna Give You Up"><i id="sendyt11" class="fa fa-music" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendyt2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt2();" data-toggle="tooltip" data-original-title="Survivor - Eye Of The Tiger"><i id="sendyt21" class="fa fa-music" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendyt3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt3();" data-toggle="tooltip" data-original-title="Lion king - The Lion Sleeps Tonight"><i id="sendyt31" class="fa fa-music" style="padding-center: 0px;"></i></button>' +
-        '<button id="sendyt4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt4();" data-toggle="tooltip" data-original-title="Agario - Jumbo Solo vs Teams"><i id="sendyt41" class="fa fa-video-camera" style="padding-center: 0px;"></i></button>' +
-        '<button id="sendyt5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt5();" data-toggle="tooltip" data-original-title="Agario - Kill3r vs Teams"><i id="sendyt51" class="fa fa-video-camera" style="padding-left: 0px;"></i></button>' +
-        '<button id="sendyt6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt6();" data-toggle="tooltip" data-original-title="Promotional Video"><i id="sendyt61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
+        '<button id="sendyt1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt1();" data-toggle="tooltip" data-original-title="Rick Astley - Never Gonna Give You Up"><i id="sendyt11" class="fa fa-music" style="padding-left: 0px;"></i></button>' + // i18n-ok: song title (proper name), the player can change it
+        '<button id="sendyt2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt2();" data-toggle="tooltip" data-original-title="Survivor - Eye Of The Tiger"><i id="sendyt21" class="fa fa-music" style="padding-left: 0px;"></i></button>' + // i18n-ok: song title (proper name), the player can change it
+        '<button id="sendyt3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt3();" data-toggle="tooltip" data-original-title="Lion king - The Lion Sleeps Tonight"><i id="sendyt31" class="fa fa-music" style="padding-center: 0px;"></i></button>' + // i18n-ok: song title (proper name), the player can change it
+        '<button id="sendyt4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt4();" data-toggle="tooltip" data-original-title="Agario - Jumbo Solo vs Teams"><i id="sendyt41" class="fa fa-video-camera" style="padding-center: 0px;"></i></button>' + // i18n-ok: video title (proper name), the player can change it
+        '<button id="sendyt5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt5();" data-toggle="tooltip" data-original-title="Agario - Kill3r vs Teams"><i id="sendyt51" class="fa fa-video-camera" style="padding-left: 0px;"></i></button>' + // i18n-ok: video title (proper name), the player can change it
+        '<button id="sendyt6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="sendyt6();" data-toggle="tooltip" data-original-title="' + _lmxE('lmx.ex.promoVideo') + '"><i id="sendyt61" class="fa fa-telegram" style="padding-left: 0px;"></i></button></div>');
 
     $("#minimap-hud").prepend('<div id="msgcommands-hud" class="hud" style="width: 70%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-        '<button id="msgcommand1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand1f();" data-toggle="tooltip" data-original-title="Hello Team!"><i id="msgcommand11" class="fa fa-coffee" style="padding-left: 0px;"></i></button>' +
-        '<button id="msgcommand2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand2f();" data-toggle="tooltip" data-original-title="Laugh to Team"><i id="msgcommand21" class="fa fa-smile-o" style="padding-left: 0px;"></i></button>' +
-        '<button id="msgcommand3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand3f();" data-toggle="tooltip" data-original-title="Team Change Name to yours"><i id="msgcommand31" class="fa fa-magic" style="padding-center: 0px;"></i></button>' +
-        '<button id="msgcommand4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand4f();" data-toggle="tooltip" data-original-title="Troll Teammate"><i id="msgcommand41" class="fa fa-bath" style="padding-center: 0px;"></i></button>' +
-        '<button id="msgcommand5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand5f();" data-toggle="tooltip" data-original-title="Open Youtube Music"><i id="msgcommand51" class="fa fa-youtube-play" style="padding-left: 0px;"></i></button>' +
-        '<button id="msgcommand6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand6f();" data-toggle="tooltip" data-original-title="Insane mode (Hide Everything)"><i id="msgcommand" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button></div>');
+        '<button id="msgcommand1" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand1f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.helloTeam') + '"><i id="msgcommand11" class="fa fa-coffee" style="padding-left: 0px;"></i></button>' +
+        '<button id="msgcommand2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand2f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.laughToTeam') + '"><i id="msgcommand21" class="fa fa-smile-o" style="padding-left: 0px;"></i></button>' +
+        '<button id="msgcommand3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand3f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.teamChangeNameTo') + '"><i id="msgcommand31" class="fa fa-magic" style="padding-center: 0px;"></i></button>' +
+        '<button id="msgcommand4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand4f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.trollOnDeath') + '"><i id="msgcommand41" class="fa fa-bath" style="padding-center: 0px;"></i></button>' +
+        '<button id="msgcommand5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand5f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.openYoutubeMusic') + '"><i id="msgcommand51" class="fa fa-youtube-play" style="padding-left: 0px;"></i></button>' +
+        '<button id="msgcommand6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand6f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.insaneModeHideEverything') + '"><i id="msgcommand" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button></div>');
 
     $("#minimap-hud").prepend('<div id="scripting-hud" class="hud" style="width: 12.5%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
-        '<button id="Cutnames" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 100%; height: 100%;" data-toggle="tooltip" data-original-title="Edit names"><i id="Cutnames1" class="fa fa-scissors" style="padding-left: 0px;"></i></button>' +
+        '<button id="Cutnames" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 100%; height: 100%;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.editNames') + '"><i id="Cutnames1" class="fa fa-scissors" style="padding-left: 0px;"></i></button>' +
         //'<button id="Ultimouse" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 50%; height: 100%;" onclick="Ultimouse();" data-toggle="tooltip" data-original-title="Ultimouse Control"><i id="Ultimouse1" class="fa fa-mouse-pointer" style="padding-left: 0px;"></i></button>'+
         '</div>');
 
     $("#leaderboard-hud").append('<div id="leaderboard-menu" style="pointer-events: auto;">' +
-        '<a id="searchShortcut" class="btn btn-info" data-toggle="tooltip" data-placement="left" data-original-title="Join server (Backspace)" style="width: 33.3%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ; " data-toggle="tooltip" data-original-title="Search leaderboards" title=""><i class="fa fa-search fa-lg"></i></a>' +
-        '<a id="copySIPBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 33.3%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;/* border: none; */border-left-style: none;border-right-style: none;border-bottom-style: none;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP">Copy</a>' +
-        '<a id="reconnectBtn" class="btn btn-info" title="" data-toggle="tooltip" data-placement="bottom" data-original-title="Change server (+)" style="' +
-        'background-color: transparent;color: ' + legmaincolor + ' ;width: 33.3%; text-shadow: 0.3px 0.3px #000000; font-size: small; margin-top: 0px; border: none;"><i class="fa fa-refresh fa-lg"></i></a>' +
+        '<a id="searchShortcut" class="btn btn-info" data-toggle="tooltip" data-placement="left" data-original-title="' + _lmxE('pack.joinServerBackspace') + '" style="width: 33.3%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ; " title=""><i class="fa fa-search fa-lg"></i></a>' +
+        '<a id="copySIPBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 33.3%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;/* border: none; */border-left-style: none;border-right-style: none;border-bottom-style: none;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="' + _lmxE('pack.copyTokenSip') + '">' + _lmxE('pack.copy') + '</a>' +
+        '<a id="reconnectBtn" class="btn btn-info" title="" data-toggle="tooltip" data-placement="bottom" data-original-title="' + _lmxE('pack.changeServer') + '" style="' +
+        'background-color: transparent;color: ' + legmaincolor + ' ;width: 33.3%; text-shadow: 0.3px 0.3px #000000; font-size: small; margin-top: 0px; border: none;"><i class="fa fa-refresh fa-lg"></i></a>' + // i18n-ok: CSS
 
         '<div id="dropDown3" class="hud" style="position: absolute; pointer-events: auto; width: 33%; height: 60px; left: 0px; padding: 0px; border-radius: 0px;">' +
-        '<a id="checkServerBots" data-disabled="true" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="width: 100%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ;" data-toggle="tooltip" data-html="true" data-placement="left" data-original-title="<p style=&quot;margin-top:3px; margin-bottom:0px; margin-right: 2px;&quot; align=&quot;center&quot;><span class=&quot;hud-main-color&quot; style=&quot;position:absolute; left: 15px;&quot;></span>  Bot names</p><hr style=&quot;margin-top:5px; margin-bottom:10px; border-color:darkslategray;&quot;/><p class=&quot;&quot; style=&quot;margin-bottom:3px; font-weight:normal;&quot; align=&quot;justify&quot;>   View bots nicknames</p>"><i class="fa fa-exclamation fa-lg"></i></a><br>' +
-        '<a id="lastIPBtn" data-disabled="true" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="width: 100%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ;" data-toggle="tooltip" data-html="true" data-placement="left" data-original-title="<p style=&quot;margin-top:3px; margin-bottom:0px; margin-right: 2px;&quot; align=&quot;center&quot;><span class=&quot;hud-main-color&quot; style=&quot;position:absolute; left: 15px;&quot;></span>Join back</p><hr style=&quot;margin-top:5px; margin-bottom:10px; border-color:darkslategray;&quot;/><p class=&quot;&quot; style=&quot;margin-bottom:3px; font-weight:normal;&quot; align=&quot;justify&quot;>Connect to last IP you played</p>"><i class="fa fa-arrow-circle-down fa-lg"></i></a>' +
+        '<a id="checkServerBots" data-disabled="true" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="width: 100%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ;" data-toggle="tooltip" data-html="true" data-placement="left" data-original-title="<p style=&quot;margin-top:3px; margin-bottom:0px; margin-right: 2px;&quot; align=&quot;center&quot;><span class=&quot;hud-main-color&quot; style=&quot;position:absolute; left: 15px;&quot;></span>  ' + _lmxE('lmx.ex.botNames') + '</p><hr style=&quot;margin-top:5px; margin-bottom:10px; border-color:darkslategray;&quot;/><p class=&quot;&quot; style=&quot;margin-bottom:3px; font-weight:normal;&quot; align=&quot;justify&quot;>   ' + _lmxE('lmx.ex.botNamesHint') + '</p>"><i class="fa fa-exclamation fa-lg"></i></a><br>' + // i18n-ok: attribute markup only: its texts come from the packs
+        '<a id="lastIPBtn" data-disabled="true" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="width: 100%;text-shadow: 0.3px 0.3px #000000;font-size: small;margin-top: 0px;border-top-color: rgb(141, 201, 64);border-bottom-style: none;border-left-style: none;border: none;margin-top: 0px; background-color: transparent;color: ' + legmaincolor + ' ;" data-toggle="tooltip" data-html="true" data-placement="left" data-original-title="<p style=&quot;margin-top:3px; margin-bottom:0px; margin-right: 2px;&quot; align=&quot;center&quot;><span class=&quot;hud-main-color&quot; style=&quot;position:absolute; left: 15px;&quot;></span>' + _lmxE('lmx.ex.joinBack') + '</p><hr style=&quot;margin-top:5px; margin-bottom:10px; border-color:darkslategray;&quot;/><p class=&quot;&quot; style=&quot;margin-bottom:3px; font-weight:normal;&quot; align=&quot;justify&quot;>' + _lmxE('lmx.ex.joinBackHint') + '</p>"><i class="fa fa-arrow-circle-down fa-lg"></i></a>' + // i18n-ok: attribute markup only: its texts come from the packs
         '</div>' +
         '<div id="dropDown2" class="hud" style="position: absolute; pointer-events: auto; width: 33%; height: 90px; left: 67px; padding: 0px; border-radius: 0px;">' +
-        '<a id="copySIPandPass" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP&Password">TK&PW</a>' +
-        '<a id="copyLBBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Leaderboard (L)">LB</a>' +
-        '<a id="copySIPPassLB" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Token/SIP, Password, Leaderboard...">TK&ALL</a>' +
+        '<a id="copySIPandPass" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="' + _lmxE('pack.copyTokenSipPassword') + '">' + _lmxE('pack.tkPw') + '</a>' +
+        '<a id="copyLBBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="' + _lmxE('pack.copyLeaderboardL') + '">' + _lmxE('pack.board') + '</a>' +
+        '<a id="copySIPPassLB" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="' + _lmxE('pack.copyTokenSipPassword2') + '">' + _lmxE('pack.tkAll') + '</a>' +
         '</div>' +
         '<div id="dropDown" class="hud" style="position: absolute; pointer-events: auto; width: 33%; height: 30px; left: 67px; padding: -30px; border-radius: 0px;">' +
-        '<a id="copyLBBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="Copy Leaderboard (L)">LB</a>' +
+        '<a id="copyLBBtn" href="javascript:void(0);" class="btn btn-sm btn-copy-leaderboard btn-info" style="background-color: transparent;color: ' + legmaincolor + ' ; width: 100%;text-shadow: rgb(0, 0, 0) 0.3px 0.3px;font-size: small;margin-top: 0px;display: block;border: none; user-drag: none; user-select: none; -moz-user-select: none; -webkit-user-drag: none; -webkit-user-select: none; -ms-user-select: none;" data-toggle="tooltip" data-placement="left" data-original-title="' + _lmxE('pack.copyLeaderboardL') + '">' + _lmxE('pack.board') + '</a>' +
         '</div>' +
 
         '<input id="tempCopy" style="display: none;" value="">' +
@@ -7117,7 +7093,7 @@ function initializeLM(modVersion) {
     });
     $("#copySIPBtn").mouseenter(function () {
         $("#dropDown3")[0].style.setProperty("display", "none", "important");
-        $("#copySIPBtn").text("Token");
+        $("#copySIPBtn").text(_lmxT('pack.token'));
         if ($("#clantag").val() != "") {
             $("#dropDown2")[0].style.setProperty("display", "block", "important");
         } else {
@@ -7128,10 +7104,10 @@ function initializeLM(modVersion) {
         $("#dropDown")[0].style.setProperty("display", "none", "important");
         $("#dropDown2")[0].style.setProperty("display", "none", "important");
         $("#dropDown3")[0].style.setProperty("display", "none", "important");
-        $("#copySIPBtn").text("Copy");
+        $("#copySIPBtn").text(_lmxT('pack.copy'));
     });
 
-    $("#logTitle").after('<a href="#" id="notesclear" style="color: lightgrey;float: right;position: absolute;right: 12px;top: 9px;" class="main-color" onclick="$(\'#log\').html(\'\');" data-toggle="" data-placement="left" data-original-title="Clear list"><i class="fa fa-trash fa-2"></i></a>');
+    $("#logTitle").after('<a href="#" id="notesclear" style="color: lightgrey;float: right;position: absolute;right: 12px;top: 9px;" class="main-color" onclick="$(\'#log\').html(\'\');" data-toggle="" data-placement="left" data-original-title="' + _lmxE('pack.clearList') + '"><i class="fa fa-trash fa-2"></i></a>');
     $("#searchBtn").tooltip('disable');
     $("#copyLBBtn").click(function () {
         copy($("#leaderboard-positions").text());
@@ -7252,7 +7228,7 @@ function initializeLM(modVersion) {
     $("#reconnectBtn").mouseenter(function () {
         $("#dropDown")[0].style.setProperty("display", "none", "important");
         $("#dropDown2")[0].style.setProperty("display", "none", "important");
-        $("#copySIPBtn").text("Copy");
+        $("#copySIPBtn").text(_lmxT('pack.copy'));
     });
 
     $("#searchBtn").click(function () {
@@ -7273,7 +7249,7 @@ function initializeLM(modVersion) {
             var _lmFallback = function () {
                 if (_lmOpened || _lmFellBack) return;
                 _lmFellBack = true;
-                if (window.toastr) toastr.warning("The player search server is not reachable. Searching the text as a server or token instead.");
+                if (window.toastr) toastr.warning(_lmxT('lmx.ex.searchServerDown'));
                 if (_lmQ) searchHandler(_lmQ);
             };
             client.onOpenCallback = function () { _lmOpened = true; };
@@ -7310,7 +7286,7 @@ function initializeLM(modVersion) {
     $("#searchShortcut").mouseenter(function () {
         $("#dropDown").hide();
         $("#dropDown3").show(100);
-        $("#copySIPBtn").text("Copy");
+        $("#copySIPBtn").text(_lmxT('pack.copy'));
     });
 
     $("#searchHud").css("pointer-events", "auto");
@@ -7337,7 +7313,7 @@ function initializeLM(modVersion) {
         var animatedkey;
         for (animatedkey in animatedskins) {
             if (animatedkey == $("#nick").val()) {
-                toastr.info("Nickname reserved for <font color='yellow'><b>Animated Skins</font></b>");
+                toastr.info(_lmxT('lmx.ex.nickReserved', ["<font color='yellow'><b>", "</b></font>"]));
             }
         }
         //
@@ -7544,7 +7520,7 @@ function initializeLM(modVersion) {
     });
 
     $("#HideAllBthn").tooltip({
-        title: "Temporarily Hide/Show Everything. Function for Youtubers",
+        title: function () { return _lmxT('lmx.ex.hideAllTip'); },
         placement: "bottom"
     });
 
@@ -7672,8 +7648,8 @@ function initializeLM(modVersion) {
     $("#menu-footer").text("");
     //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
     //$("#LEGENDAds4").load("https://www.legendmod.ml/banners/bannerLMdevs"); //
-    $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="Website" data-placement="left">v' + modVersion + semimodVersion +
-        '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="How to improve performance" data-placement="top" style ="font-size: 13px"; target="_blank">More FPS</a></span>' +
+    $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.website') + '" data-placement="left">v' + modVersion + semimodVersion +
+        '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.improvePerformance') + '" data-placement="top" style ="font-size: 13px"; target="_blank">' + _lmxE('pack.moreFps') + '</a></span>' +
         '<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">☕︎</a>');
     /* Build number next to the release label (bug reports can name it), plus a one-time
      * "What's new" toast when the build changes for someone who played before. */
@@ -7683,13 +7659,9 @@ function initializeLM(modVersion) {
         try {
             var _lmSeenVer = localStorage.getItem('lmLastSeenOgVer');
             if (_lmSeenVer && _lmSeenVer !== String(window.OgVer) && window.toastr) {
-                toastr.info('<b>Legend Mod updated (' + String(window.OgVer) + ')</b><br>' +
-                    '• Expanding Land: daily challenges, server events with a countdown, match history on your account<br>' +
-                    '• Settings presets (with Undo) and NEW badges; settings in 12 languages<br>' +
-                    '• Team pings (Help, Danger, Go here, Virus here) and gamepad support<br>' +
-                    '• Replays: pause, speed, seek and a progress bar; Game Over card extras<br>' +
-                    '• New options are off: type a word in the settings search to find them<br>' +
-                    '<a href="#" class="lm-dc-toast-link" style="text-decoration:underline;">Discover features</a>', '', { timeOut: 14000, extendedTimeOut: 4000 });
+                toastr.info('<b>' + _lmxE('lmx.ex.updatedTitle', [String(window.OgVer)]) + '</b><br>' +
+                    _lmxT('lmx.ex.updatedNews') + '<br>' +
+                    '<a href="#" class="lm-dc-toast-link" style="text-decoration:underline;">' + _lmxE('lmx.ex.discoverFeatures') + '</a>', '', { timeOut: 14000, extendedTimeOut: 4000 });
             }
             localStorage.setItem('lmLastSeenOgVer', String(window.OgVer));
         } catch (e) { }
@@ -7710,7 +7682,7 @@ function initializeLM(modVersion) {
     $("#close-exp-imp").before('<button id="SNEZOgarUploadBtn" onclick="SNEZOgarUpload(); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109 + '</button>');
     $("#close-exp-imp").before('<button id="SNEZOgarDownloadBtn" onclick="SNEZOgarDownload(event); return false" style="margin-right: 25px;" class="btn btn-success" data-original-title="" title="">' + Premadeletter109a + '</button>');
     if (_lmOnLegendWebsite()) {
-        $("#close-exp-imp").after('<br><div id="UserProfileUID2">Social ID: <input id="UserProfileID2a" class="user-name" style="display:inline-block"></div>');
+        $("#close-exp-imp").after('<br><div id="UserProfileUID2">' + _lmxE('pack.socialId') + ': <input id="UserProfileID2a" class="user-name" style="display:inline-block"></div>');
         if (localStorage.getItem("userid") != "" && localStorage.getItem("userid") != null && localStorage.getItem("userid") != "null") {
             userid = localStorage.getItem("userid");
             $("#UserProfileID2a").val(window.userid)
@@ -7937,7 +7909,7 @@ function joinSIPonstart() {
             if (sipTarget == $("#server-token").val()) return; /* matched */
             _sipRetries++;
             if (_sipRetries >= 2) {
-                toastr.error("Server not found!");
+                toastr.error(_lmxT('lmx.ex.serverNotFound'));
                 return;
             }
             /* Retry join */
@@ -8002,15 +7974,10 @@ function joinPLAYERonstart() {
             var record = results[0];
 
             toastr.info(
-                "Player <font color='yellow'>" +
-                escapeHtml(
-                    record.nickname
-                ) +
-                "</font> contains <font color='yellow'>" +
-                escapeHtml(
-                    searchedplayer
-                ) +
-                "!</font>. Connected into Server"
+                _lmxT('lmx.ex.playerFoundConnected', [
+                    "<font color='yellow'>" + escapeHtml(record.nickname) + "</font>",
+                    "<font color='yellow'>" + escapeHtml(searchedplayer) + "</font>"
+                ])
             );
 
             connectto(record.token);
@@ -8241,15 +8208,9 @@ function joinSERVERfindinfo() {
                     maxMode
             ) {
                 var finalText =
-                    "<font color='yellow'>Best choice: Region:" +
-                    escapeHtml(
-                        maxRegion
-                    ) +
-                    ", Mode" +
-                    escapeHtml(
-                        maxMode
-                    ) +
-                    "</font><br>Information changed!";
+                    "<font color='yellow'>" +
+                    _lmxE('lmx.ex.bestChoice', [escapeHtml(maxRegion), escapeHtml(maxMode)]) +
+                    "</font><br>" + _lmxE('lmx.ex.infoChanged');
 
                 toastr
                     .info(finalText)
@@ -8355,7 +8316,7 @@ function BeforeSpecialDeals(tab) {
     if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
     if (typeof window.checkUserUID === 'function' && !window.checkUserUID()) {
         if (window.toastr) {
-            toastr.error('<b>[SHOP]:</b> You must be logged in and have a valid Agar.io UID to access Skins & Deals.');
+            toastr.error(_lmxT('lmx.ex.shopNeedLogin'));
         }
         return false;
     }
@@ -8443,7 +8404,7 @@ function BeforeSpecialDeals(tab) {
     if (!isLoggedIn || !hasUID) {
         if (window.toastr) {
             toastr.error(
-                '<b>[SHOP]:</b> You must be logged in and have a valid Agar.io UID to access Skins & Deals.'
+                _lmxT('lmx.ex.shopNeedLogin')
             );
         }
 
@@ -8554,7 +8515,7 @@ function BeforeSpecialDeals(tab) {
         }
 
         if (window.toastr) {
-            toastr.error('<b>[SHOP]:</b> Failed to load the shop script.');
+            toastr.error(_lmxT('lmx.ex.shopLoadFailed'));
         } else {
             console.error('[SHOP] Failed to load skinsAndDeals.js');
         }
@@ -8734,7 +8695,7 @@ function _lmCheckBannedUID() {
         localStorage.setItem("bannedUID", true);
         document.documentElement.innerHTML = "";
         window.localStorage.setItem('HSLO[Saigo]:settings', defaultSettings.lbTeammateColor)
-        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + 'You are banned from Legend mod' + ' <br><a target="_blank" href="https://www.legendmod.ml/"><font color="blue"><b><u>jimboy3100.github.io</u></b></font></a><br>' + 'Script Terminated').css("width", "350px");
+        toastr.error(_lmxT('lmx.ex.banned', ['<a target="_blank" href="https://www.legendmod.ml/"><font color="blue"><b><u>jimboy3100.github.io</u></b></font></a>'])).css("width", "350px");
 
     }
 }
@@ -8778,7 +8739,7 @@ function _lmBanAdminKey(forcePrompt) {
     var key = '';
     try { key = localStorage.getItem('lmBanAdminKey') || ''; } catch (e) { }
     if (!key || forcePrompt) {
-        key = String(window.prompt('Ban list admin key (from /etc/lm-settings/admin.key on the VPS):') || '').trim();
+        key = String(window.prompt(_lmxT('lmx.ex.banKeyPrompt', ['/etc/lm-settings/admin.key'])) || '').trim();
         if (key) { try { localStorage.setItem('lmBanAdminKey', key); } catch (e) { } }
     }
     return key;
@@ -8787,7 +8748,7 @@ function _lmBanAdminKey(forcePrompt) {
 function _lmPostBanList() {
     var key = _lmBanAdminKey(false);
     if (!key) {
-        toastr.error('<b>[ADMIN]:</b> Ban list not saved: no admin key entered.');
+        toastr.error(_lmxT('lmx.ex.banNoKey'));
         AgarBannedUIDsResync();
         return;
     }
@@ -8799,19 +8760,19 @@ function _lmPostBanList() {
         xhttp.setRequestHeader("x-lm-admin", key);
         xhttp.onload = function () {
             if (xhttp.status === 200) {
-                toastr.success('<b>[ADMIN]:</b> Ban list saved.');
+                toastr.success(_lmxT('lmx.ex.banSaved'));
                 return;
             }
             if (xhttp.status === 403) {
                 try { localStorage.removeItem('lmBanAdminKey'); } catch (e) { }
-                toastr.error('<b>[ADMIN]:</b> Wrong admin key: the ban list was not changed. Try again to enter it.');
+                toastr.error(_lmxT('lmx.ex.banWrongKey'));
             } else {
-                toastr.error('<b>[ADMIN]:</b> Ban list not saved (HTTP ' + xhttp.status + ').');
+                toastr.error(_lmxT('lmx.ex.banHttp', [xhttp.status]));
             }
             AgarBannedUIDsResync();
         };
         xhttp.onerror = function () {
-            toastr.error('<b>[ADMIN]:</b> Ban list not saved (network error).');
+            toastr.error(_lmxT('lmx.ex.banNetwork'));
             AgarBannedUIDsResync();
         };
         xhttp.send(JSON.stringify(window.bannedUserUIDs));
@@ -8866,16 +8827,16 @@ function BannedUIDS() {
                 '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
                 '<div class="modal-content">' +
                 '<div id="CloseBannedUIDS2" class="modal-header"><button id="CloseBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQBannedUIDS" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-                '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Banned User IDs' + '</h4>' +
+                '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + _lmxE('lmx.ex.bannedIds') + '</h4>' +
                 '</div>' +
-                '<div class="modal-body"><input type="text" class="form-control" id="Bannedagario_uid_input" placeholder="*UID (' + 'to be banned' + ')" style="width: 85%; display: inline-block">' +
-                '<button id="AddBannedUID" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 20%; padding: 4px 0px 6px; text-transform: capitalize;">Add</button>' +
-                '<br><color="red" style="display:inline"> ' + '<b>Banned UIDs:</b>' + '</color>' +
+                '<div class="modal-body"><input type="text" class="form-control" id="Bannedagario_uid_input" placeholder="*' + _lmxE('lmx.ex.uidToBan') + '" style="width: 85%; display: inline-block">' +
+                '<button id="AddBannedUID" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 20%; padding: 4px 0px 6px; text-transform: capitalize;">' + _lmxE('lmx.ex.add') + '</button>' +
+                '<br><span style="display:inline; color: red;"> <b>' + _lmxE('lmx.ex.bannedUids') + ':</b></span>' +
                 '<br><br>' +
                 '<select id="ss-select-BannedUIDS" class="form-control" required="" style="display:inline; width: 80%; margin-top: -30px;"></select>' +
-                '<button id="RemoveBannedUID" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 20%; padding: 4px 0px 6px; text-transform: capitalize;">Remove</button>' +
+                '<button id="RemoveBannedUID" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 20%; padding: 4px 0px 6px; text-transform: capitalize;">' + _lmxE('lmx.ex.remove') + '</button>' +
                 '<br>' +
-                '<p class="alert-warning text-center">' + 'Please be careful with the UIDs.' + '<br>Your UID is: <span class="alert-success" id="exp-uid">' + window.agarioUID + '</span></p>' +
+                '<p class="alert-warning text-center">' + _lmxE('lmx.ex.careUids') + '<br>' + _lmxE('lmx.ex.yourUid') + ': <span class="alert-success" id="exp-uid">' + _lmEscHtml(window.agarioUID) + '</span></p>' +
                 '</div>' +
                 '</div>' +
                 '</div>' +
@@ -8898,9 +8859,9 @@ function BannedUIDS() {
                     var opt = document.createElement("option");
                     opt.text = temp;
                     document.getElementById('ss-select-BannedUIDS').options.add(opt);
-                    toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'UID: ' + temp + " successfully added on UID BAN list");
+                    toastr.info(_lmxT('lmx.ex.banAdded', [_lmEscHtml(temp)]));
                 } else {
-                    toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'UID: ' + temp + " seems mistaken or is already on the list");
+                    toastr.info(_lmxT('lmx.ex.banBadUid', [_lmEscHtml(temp)]));
                 }
             });
             $("#RemoveBannedUID").click(function () {
@@ -8908,13 +8869,13 @@ function BannedUIDS() {
                 var x = document.getElementById("ss-select-BannedUIDS");
                 x.remove(x.selectedIndex);
                 RemoveAgarBannedUIDs(temp);
-                toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'UID: ' + temp + " successfully removed from UID BAN list");
+                toastr.info(_lmxT('lmx.ex.banRemoved', [_lmEscHtml(temp)]));
             });
         } else {
-            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'Please play the game before you can use that feature');
+            toastr.info(_lmxT('lmx.ex.playFirst'));
         }
     } else {
-        toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'You do not name the authority');
+        toastr.info(_lmxT('lmx.ex.noAuthority'));
     }
 }
 
@@ -9198,7 +9159,7 @@ function LMnoBotsPromo() {
         '</button>' +
 
         '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' +
-        'No Bots • No Crashers' +
+        '' + _lmxE('lmx.ex.noBotsTitle') + '' +
         '</h4>' +
 
         '</div>' +
@@ -9244,7 +9205,7 @@ function LMLegendFFAPromo() {
         '</button>' +
 
         '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' +
-        '\ud83d\udc51 Expanding Land FFA Server' +
+        '\ud83d\udc51 ' + _lmxE('lmx.ex.ffaServerTitle') + '' +
         '</h4>' +
 
         '</div>' +
@@ -9293,7 +9254,7 @@ function LMrewardDay() {
         '</button>' +
 
         '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' +
-        'Reward Day' +
+        '' + _lmxE('lmx.ex.rewardDay') + '' +
         '</h4>' +
 
         '</div>' +
@@ -9324,7 +9285,7 @@ function VideoSkinsPromo() {
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 922px;">' +
         '<div class="modal-content">' +
         '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + 'Video Skin Promo' + '</h4>' +
+        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + _lmxE('lmx.ex.videoSkinPromo') + '</h4>' +
         '</div>' +
         '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/developers/videoskins.html" width="920" height="550" >' +
         '</div>' +
@@ -9355,15 +9316,15 @@ function adminstuff() {
 
     var legbgpic = $("#menuBg").val();
     var legbgcolor = $("#menuPanelColor").val();
-    $("#menu-footer").after('<div id="administrationtools" style="display: none; background-image: url(' + _lmCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + '; border: 1px solid black; height: 165px; width: 500px; ";>' +
+    $("#menu-footer").after('<div id="administrationtools" style="display: none; background-image: url(' + _lmCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + '; border: 1px solid black; height: 165px; width: 500px; ";>' + // i18n-ok: CSS
         '<div id="administrationtoolshud" style="display:block; margin-left: 10px; margin-right: 10px;">' + //margin-left: 10px"
-        '<div id="administrationtoolshud1" align="middle"><h5 class="main-color">ADMINISTRATOR TOOLS</h5>' +
-        '<p style="color:white; font-size:12px";" align="middle">Enter your Clan symbol and ADMIN Password</p>' +
-        '<input id="AdminClanSymbol" class="form-control" placeholder="Clan Symbol" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="The symbol of Clan you belong" >' +
-        '<input id="AdminPassword" type="password" class="form-control" placeholder="Password" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="Put ADMIN password" >' +
-        '</div><p style="color:white; font-size:12px";" align="middle">IMPORTANT NOTICE: Admin Tools can only be used by the Admins of the Legend mod</u></p>' +
+        '<div id="administrationtoolshud1" align="middle"><h5 class="main-color">' + _lmxE('lmx.ex.adminTools') + '</h5>' +
+        '<p style="color:white; font-size:12px";" align="middle">' + _lmxE('lmx.ex.adminEnter') + '</p>' +
+        '<input id="AdminClanSymbol" class="form-control" placeholder="' + _lmxE('lmx.ex.clanSymbol') + '" value="" style="margin-top: 2px; margin-right: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="' + _lmxE('lmx.ex.clanSymbolTip') + '" >' +
+        '<input id="AdminPassword" type="password" class="form-control" placeholder="' + _lmxE('roomPass') + '" value="" style="margin-top: 2px; margin-left: 2px; width: 40%; display: inline;" " data-toggle="tooltip" data-placement="top" data-original-title="' + _lmxE('lmx.ex.adminPasswordTip') + '" >' +
+        '</div><p style="color:white; font-size:12px";" align="middle">' + _lmxE('lmx.ex.adminNotice') + '</p>' +
         '</div></div>');
-    $("#administrationtoolshud").after('<button id="AdminBacktomenu" onclick="administrationtools(); return false" class="btn btn-danger"  style="margin-left: 10px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
+    $("#administrationtoolshud").after('<button id="AdminBacktomenu" onclick="administrationtools(); return false" class="btn btn-danger"  style="margin-left: 10px;" data-original-title="" title="">' + _lmxE('pack.close') + '</button>');
     $("#AdminClanSymbol").val("℄");
     if (localStorage.getItem("AdminClanSymbol") && localStorage.getItem("AdminClanSymbol") != "") {
         $('#AdminClanSymbol').val(localStorage.getItem("AdminClanSymbol"));
@@ -9381,7 +9342,7 @@ function adminstuff() {
             if (AdminPassword == atob("TEVHRU5ENjk=")) {
 
                 localStorage.setItem("AdminPassword", AdminPassword);
-                toastr["warning"]('<b>[SERVER]: Welcome to Administrative tools my MASTER <font color="yellow">' + $('<div>').text(document.getElementById("nick").value).html() + '</font></b>!');
+                toastr["warning"]('<b>' + _lmxT('lmx.ex.adminWelcome', ['<font color="yellow">' + $('<div>').text(document.getElementById("nick").value).html() + '</font>']) + '</b>');
                 $("#main-menu").show();
                 $("#skins-panel").show();
                 $("#quick-menu").show();
@@ -9398,9 +9359,9 @@ function adminstuff() {
                 //				$("#administrationtool2").attr("data-original-title", "Disconnect enemies in now " + $("#AdminClanSymbol").val() + " Symbol" );
                 return AdminRights = 1;
             }
-            else { toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + 'Access denied!'); }
+            else { toastr["info"](_lmxT('lmx.ex.accessDenied')); }
         }
-        else { toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + 'You must register your Clan Symbol first'); }
+        else { toastr["info"](_lmxT('lmx.ex.registerClanFirst')); }
     });
     //setTimeout(function () {	
     $("#nick").blur(function () {
@@ -9426,7 +9387,7 @@ function disconnect2min() {
         commandMsg = "EU-London";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will be asked to reconnect");
+        toastr["info"](_lmxT('lmx.ex.adminRejoinAsk'));
     }
 }
 
@@ -9435,7 +9396,7 @@ function disconnectnow() {
         commandMsg = "RU-Russia";
         otherMsg = ""; //otherMsg=$("#AdminClanSymbol").val();
         dosendadmincommand();
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Those who use Legend mod (except those who use ℄ symbol), same password will be asked to reconnect now");
+        toastr["info"](_lmxT('lmx.ex.adminRejoinNow'));
     }
 }
 /*function showstatsphp(){
@@ -9450,7 +9411,7 @@ function dosendadmincommand() {
         setTimeout(function () { $("#message").val("https://agar.io/sip=151.80.91.73:1511&?do=" + otherMsg + "&?com=" + commandMsg); KeyEvent.simulate(13, 13); if ($('#message').css('display') == 'block') { KeyEvent.simulate(13, 13); }; if ($('#message-box').css('display') == 'block') { KeyEvent.simulate(13, 13); } }, 100);
     }
     else {
-        toastr["info"]('<b>[' + Premadeletter123 + ']:</b> ' + "Something gone wrong");
+        toastr["info"](_lmxT('lmx.ex.somethingWrong'));
     }
 }
 
@@ -9468,7 +9429,7 @@ function LMadvertisementMegaFFA() {
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 622px;">' +
         '<div class="modal-content">' +
         '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + '2020 development' + '</h4>' +
+        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + _lmxE('lmx.ex.dev2020') + '</h4>' +
         '</div>' +
         '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/extras/2020.html" width="620" height="490" >' +
         '</div>' +
