@@ -9,124 +9,22 @@
     if (window._lmGamepadUILoaded) return;
     window._lmGamepadUILoaded = true;
 
-    var TEXT = {
-        en: {
-            title: 'Gamepad',
-            tabButtons: 'Buttons',
-            tabTuning: 'Sensitivity',
-            tabProfiles: 'Profiles',
-            tabTest: 'Test',
-            close: 'Close',
-            off: 'Gamepad support is off: the pad does nothing in the game until it is on.',
-            enable: 'Gamepad / controller support',
-            none: '(none)',
-            groupGamepad: 'Gamepad',
-            groupHotkeys: 'Hotkeys',
-            unknown: 'Unknown command',
-            buttonsHint: 'A hotkey that has a release action (macro feed, scan trick...) stays held as long as the button is.',
-            resetButtons: 'Default buttons',
-            resetTuning: 'Default sensitivity',
-            gamepadDeadzone: 'Stick dead zone',
-            gamepadMoveRange: 'Movement range (part of the screen)',
-            gamepadMoveCurve: 'Movement curve (1 = linear, higher = finer small moves)',
-            gamepadZoomSens: 'Zoom speed (right stick)',
-            gamepadTrigger: 'LT / RT pressed from',
-            gamepadInvertX: 'Invert left stick left / right',
-            gamepadInvertY: 'Invert left stick up / down',
-            gamepadInvertZoom: 'Invert zoom direction',
-            gamepadVibrate: 'Vibrate on split and death (pads that support it)',
-            testVibration: 'Test vibration',
-            noVibration: 'No connected pad reports vibration support in this browser.',
-            profileName: 'Profile name',
-            save: 'Save',
-            load: 'Load',
-            del: 'Delete',
-            profilesHint: 'A profile keeps the buttons and the sensitivity settings. Saving with an existing name replaces it.',
-            noProfiles: 'No profiles saved yet.',
-            saved: 'Saved',
-            loaded: 'Loaded',
-            deleted: 'Deleted',
-            saveFailed: 'Could not save: enter a name (20 profiles at most), or the browser storage is full.',
-            confirmDelete: 'Delete this profile?',
-            noPad: 'No controller found. Connect one and press any button on it (browsers show a pad only after a button press).',
-            pad: 'Pad',
-            standard: 'standard mapping',
-            otherMapping: 'non-standard mapping: buttons may differ',
-            vibration: 'vibration',
-            yes: 'yes',
-            no: 'no',
-            leftStick: 'Left stick (move)',
-            rightStick: 'Right stick (zoom)',
-            measure: 'Measure stick drift',
-            measuring: 'Leave the sticks alone...',
-            drift: 'Rest drift: left {l}, right {r}. Suggested dead zone: {s}',
-            use: 'Use {s}',
-            deadzoneSet: 'Dead zone set to {s}',
-            paused: 'The pad is paused in the game while this window is open.'
-        },
-        el: {
-            title: 'Gamepad',
-            tabButtons: 'Κουμπιά',
-            tabTuning: 'Ευαισθησία',
-            tabProfiles: 'Προφίλ',
-            tabTest: 'Δοκιμή',
-            close: 'Κλείσιμο',
-            off: 'Η υποστήριξη gamepad είναι κλειστή: το χειριστήριο δεν κάνει τίποτα στο παιχνίδι μέχρι να ανοίξει.',
-            enable: 'Υποστήριξη gamepad / χειριστηρίου',
-            none: '(κανένα)',
-            groupGamepad: 'Gamepad',
-            groupHotkeys: 'Πλήκτρα συντόμευσης',
-            unknown: 'Άγνωστη εντολή',
-            buttonsHint: 'Μια συντόμευση με ενέργεια αφήματος (macro feed, scan trick...) μένει πατημένη όσο είναι πατημένο το κουμπί.',
-            resetButtons: 'Προεπιλεγμένα κουμπιά',
-            resetTuning: 'Προεπιλεγμένη ευαισθησία',
-            gamepadDeadzone: 'Νεκρή ζώνη μοχλού',
-            gamepadMoveRange: 'Εύρος κίνησης (μέρος της οθόνης)',
-            gamepadMoveCurve: 'Καμπύλη κίνησης (1 = γραμμική, μεγαλύτερη = πιο λεπτές μικρές κινήσεις)',
-            gamepadZoomSens: 'Ταχύτητα ζουμ (δεξής μοχλός)',
-            gamepadTrigger: 'LT / RT πατημένα από',
-            gamepadInvertX: 'Αντιστροφή αριστερού μοχλού αριστερά / δεξιά',
-            gamepadInvertY: 'Αντιστροφή αριστερού μοχλού πάνω / κάτω',
-            gamepadInvertZoom: 'Αντιστροφή κατεύθυνσης ζουμ',
-            gamepadVibrate: 'Δόνηση σε split και θάνατο (όπου υποστηρίζεται)',
-            testVibration: 'Δοκιμή δόνησης',
-            noVibration: 'Κανένα συνδεδεμένο χειριστήριο δεν υποστηρίζει δόνηση σε αυτόν τον browser.',
-            profileName: 'Όνομα προφίλ',
-            save: 'Αποθήκευση',
-            load: 'Φόρτωση',
-            del: 'Διαγραφή',
-            profilesHint: 'Ένα προφίλ κρατά τα κουμπιά και τις ρυθμίσεις ευαισθησίας. Αποθήκευση με υπάρχον όνομα το αντικαθιστά.',
-            noProfiles: 'Δεν υπάρχουν αποθηκευμένα προφίλ.',
-            saved: 'Αποθηκεύτηκε',
-            loaded: 'Φορτώθηκε',
-            deleted: 'Διαγράφηκε',
-            saveFailed: 'Δεν αποθηκεύτηκε: γράψε ένα όνομα (έως 20 προφίλ) ή ο χώρος του browser είναι γεμάτος.',
-            confirmDelete: 'Διαγραφή αυτού του προφίλ;',
-            noPad: 'Δεν βρέθηκε χειριστήριο. Σύνδεσε ένα και πάτησε ένα κουμπί του (οι browsers δείχνουν το χειριστήριο μόνο μετά από πάτημα).',
-            pad: 'Χειριστήριο',
-            standard: 'τυπική αντιστοίχιση',
-            otherMapping: 'μη τυπική αντιστοίχιση: τα κουμπιά μπορεί να διαφέρουν',
-            vibration: 'δόνηση',
-            yes: 'ναι',
-            no: 'όχι',
-            leftStick: 'Αριστερός μοχλός (κίνηση)',
-            rightStick: 'Δεξής μοχλός (ζουμ)',
-            measure: 'Μέτρηση απόκλισης μοχλών',
-            measuring: 'Άφησε τους μοχλούς ελεύθερους...',
-            drift: 'Απόκλιση σε ηρεμία: αριστερός {l}, δεξής {r}. Προτεινόμενη νεκρή ζώνη: {s}',
-            use: 'Χρήση {s}',
-            deadzoneSet: 'Νεκρή ζώνη: {s}',
-            paused: 'Το χειριστήριο δεν δρα στο παιχνίδι όσο είναι ανοιχτό αυτό το παράθυρο.'
-        }
-    };
-    function lang() {
-        try { return window.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
+    /* texts: developers/i18n/src (modules.gamepadui.*); vars: { l: .., r: .. } for {l} {r} */
+    var P = 'modules.gamepadui.';
+    function t(k, vars) { return typeof window.lmT === 'function' ? window.lmT(P + k, vars) : k; }
+    /* the label of a gamepad action (LMGamepad.ACTIONS keeps English ones: used when a key is missing) */
+    var ACTION_KEYS = { split: 'actSplit', feed: 'actFeed', doubleSplit: 'actDoubleSplit', split16: 'actSplit16', multiboxSwap: 'actMultiboxSwap', respawn: 'actRespawn', menu: 'actMenu' };
+    function actionLabel(a, fallback) {
+        if (!Object.prototype.hasOwnProperty.call(ACTION_KEYS, a)) return fallback;
+        var s = t(ACTION_KEYS[a]);
+        return s === P + ACTION_KEYS[a] || s === ACTION_KEYS[a] ? fallback : s;
     }
-    function t(k, vars) {
-        var l = TEXT[lang()] || TEXT.en;
-        var s = l[k] || TEXT.en[k] || k;
-        if (vars) for (var v in vars) s = s.split('{' + v + '}').join(String(vars[v]));
-        return s;
+    /* button names: the letters printed on a pad stay, the D-pad directions are translated */
+    var DPAD = { 'D-pad up': 'dpadUp', 'D-pad down': 'dpadDown', 'D-pad left': 'dpadLeft', 'D-pad right': 'dpadRight' };
+    function buttonTitle(name) { return Object.prototype.hasOwnProperty.call(DPAD, name) ? t('dpad', [t(DPAD[name])]) : name; }
+    function buttonChip(name) { return Object.prototype.hasOwnProperty.call(DPAD, name) ? '\u271a ' + t(DPAD[name]) : name; }
+    function setDir(e) {
+        try { if (e && window.LMi18n && window.LMi18n.dir) e.setAttribute('dir', window.LMi18n.dir()); } catch (er) { }
     }
 
     var MEASURE_MS = 2000;
@@ -191,12 +89,14 @@
         var s = document.createElement('style');
         s.id = 'lm-gp-style';
         s.textContent =
+            // i18n-ok: CSS
             '#lm-gp-modal select,#lm-gp-modal input[type=text]{background:' + c.pc2 + ';color:' + c.tc + ';border:1px solid rgba(255,255,255,0.15);border-radius:4px;height:30px;font-size:12px;padding:0 6px;min-width:0;}' +
             '#lm-gp-modal input[type=range]{width:100%;height:28px;margin:0;}' +
             '#lm-gp-modal input[type=checkbox]{width:18px;height:18px;margin:0 8px 0 0;flex:none;}' +
             '#lm-gp-modal .btn{min-height:30px;}' +
             '#lm-gp-modal label{font-weight:400;margin:0;}' +
             '#lm-gp-modal .lm-gp-chip{flex:none;min-width:62px;box-sizing:border-box;padding:0 6px;height:26px;line-height:26px;border-radius:4px;text-align:center;font-size:11px;font-weight:700;background:rgba(255,255,255,0.08);transition:background .05s;}' +
+            // i18n-ok: CSS
             '#lm-gp-modal .lm-gp-chip.on{background:' + c.mc + ';color:' + c.pc + ';}';
         document.head.appendChild(s);
     }
@@ -224,11 +124,11 @@
         o.textContent = t('none');
         s.appendChild(o);
         var og = document.createElement('optgroup');
-        og.label = t('groupGamepad');
+        og.label = t('title');
         for (var a in g.ACTIONS) {
             o = document.createElement('option');
             o.value = a;
-            o.textContent = g.ACTIONS[a];
+            o.textContent = actionLabel(a, g.ACTIONS[a]);
             og.appendChild(o);
         }
         s.appendChild(og);
@@ -251,7 +151,7 @@
         /* a hotkey that no longer exists (or not loaded yet): keep it visible */
         var o = document.createElement('option');
         o.value = value;
-        o.textContent = t('unknown') + ': ' + value;
+        o.textContent = t('unknown', [value]);
         sel.appendChild(o);
         sel.value = value;
     }
@@ -291,9 +191,9 @@
         var chips = [];
         g.BUTTON_NAMES.forEach(function (name, i) {
             var row = el('div', 'display:flex;align-items:center;gap:6px;min-width:0;');
-            var chip = el('div', '', name.replace('D-pad ', '✚ '));
+            var chip = el('div', '', buttonChip(name));
             chip.className = 'lm-gp-chip';
-            chip.title = name;
+            chip.title = buttonTitle(name);
             chips.push(chip);
             var sel = tpl.cloneNode(true);
             sel.id = 'lm-gp-btn-' + i;
@@ -406,7 +306,7 @@
         save.id = 'lm-gp-profile-save';
         var doSave = function () {
             var n = g.saveProfile(inp.value);
-            if (n) { show('profiles'); note(t('saved') + ': ' + n); } else note(t('saveFailed'));
+            if (n) { show('profiles'); note(t('saved', [n])); } else note(t('saveFailed'));
         };
         save.addEventListener('click', doSave);
         inp.addEventListener('keydown', function (e) {
@@ -425,12 +325,12 @@
             r.appendChild(el('div', 'flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;', name));
             var ld = btn(t('load'), 'btn-primary');
             ld.addEventListener('click', function () {
-                if (g.loadProfile(name)) note(t('loaded') + ': ' + name);
+                if (g.loadProfile(name)) note(t('loaded', [name]));
             });
             var dl = btn(t('del'), 'btn-danger');
             dl.addEventListener('click', function () {
                 if (!window.confirm(t('confirmDelete') + '\n' + name)) return;
-                if (g.deleteProfile(name)) { show('profiles'); note(t('deleted') + ': ' + name); }
+                if (g.deleteProfile(name)) { show('profiles'); note(t('deleted', [name])); }
             });
             r.appendChild(ld);
             r.appendChild(dl);
@@ -450,6 +350,7 @@
         cv.style.cssText = 'width:96px;height:96px;';
         box.appendChild(cv);
         var v = el('div', 'font-size:11px;font-family:monospace;', '0.00, 0.00');
+        v.setAttribute('dir', 'ltr');
         box.appendChild(v);
         return { box: box, cv: cv, val: v };
     }
@@ -480,8 +381,9 @@
         var chipRow = el('div', 'display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;');
         var chips = [];
         g.BUTTON_NAMES.forEach(function (name) {
-            var chip = el('div', '', name.replace('D-pad ', '✚ '));
+            var chip = el('div', '', buttonChip(name));
             chip.className = 'lm-gp-chip';
+            chip.title = buttonTitle(name);
             chips.push(chip);
             chipRow.appendChild(chip);
         });
@@ -541,10 +443,10 @@
                 rb.addEventListener('change', function () { if (rb.checked) testPad = p.index; });
                 row.appendChild(rb);
             }
-            row.appendChild(el('span', 'color:' + c.mc + ';font-weight:700;flex:none;', t('pad') + ' ' + (p.index + 1)));
+            row.appendChild(el('span', 'color:' + c.mc + ';font-weight:700;flex:none;', t('pad', [p.index + 1])));
             row.appendChild(el('span', 'min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', String(p.id || '').slice(0, 120)));
             row.appendChild(el('span', 'flex:none;font-size:11px;color:' + c.tc2 + ';',
-                (p.mapping === 'standard' ? t('standard') : t('otherMapping')) + ', ' + t('vibration') + ': ' + (g.canVibrate(p) ? t('yes') : t('no'))));
+                (p.mapping === 'standard' ? t('standard') : t('otherMapping')) + ', ' + t(g.canVibrate(p) ? 'vibrationYes' : 'vibrationNo')));
             info.appendChild(row);
         });
     }
@@ -654,8 +556,9 @@
             'background:' + c.pc + ';border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:6px;' +
             'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:12px;overflow:hidden;text-align:left;');
         modal.id = 'lm-gp-modal';
+        setDir(modal);
         var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:1px solid ' + c.pc2 + ';background:linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%);');
-        head.appendChild(el('div', 'font-size:15px;font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;flex:none;', '🎮 ' + t('title')));
+        head.appendChild(el('div', 'font-size:15px;font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;flex:none;', '\ud83c\udfae ' + t('title')));
         tabsEl = el('div', 'flex:1;min-width:0;display:flex;align-items:center;gap:4px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;');
         [['buttons', t('tabButtons')], ['tuning', t('tabTuning')], ['profiles', t('tabProfiles')], ['test', t('tabTest')]].forEach(function (d) {
             var b = el('div', 'flex:none;cursor:pointer;font-size:12px;padding:0 10px;height:30px;line-height:30px;border-radius:4px;border:1px solid ' + c.pc2 + ';', d[1]);
@@ -665,7 +568,7 @@
             tabsEl.appendChild(b);
         });
         head.appendChild(tabsEl);
-        var x = el('div', 'flex:none;cursor:pointer;font-size:18px;color:' + c.tc2 + ';width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.06);', '✕');
+        var x = el('div', 'flex:none;cursor:pointer;font-size:18px;color:' + c.tc2 + ';width:34px;height:34px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.06);', '\u2715');
         x.id = 'lm-gp-close';
         x.title = t('close');
         x.setAttribute('role', 'button');
@@ -684,6 +587,9 @@
         show(tab);
         raf = requestAnimationFrame(tick);
     }
+
+    /* a language change while the window is open: build it again on the same tab */
+    if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () { if (modal) open(); });
 
     window.LMGamepadUI = {
         open: open,

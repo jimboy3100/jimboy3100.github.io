@@ -67,21 +67,9 @@
     if (window._lmLabLoaded) return;
     window._lmLabLoaded = true;
 
-    var STR = {
-        intro: { en: 'Experimental features: they may change or go away. All are off until you turn them on; these switches are kept apart from your settings (not exported).', el: 'Πειραματικές λειτουργίες: μπορεί να αλλάξουν ή να αφαιρεθούν. Όλες είναι ανενεργές μέχρι να τις ενεργοποιήσεις· οι διακόπτες φυλάσσονται χωριστά από τις ρυθμίσεις σου (δεν εξάγονται).' },
-        none: { en: 'No experiments right now.', el: 'Δεν υπάρχουν πειράματα αυτή τη στιγμή.' },
-        reset: { en: 'Reset Lab', el: 'Επαναφορά Lab' },
-        confirmReset: { en: 'Turn every Lab experiment off?', el: 'Απενεργοποίηση όλων των πειραμάτων του Lab;' },
-        resetDone: { en: 'Lab reset: every experiment is off.', el: 'Το Lab επαναφέρθηκε: όλα τα πειράματα είναι ανενεργά.' },
-        plugins: { en: 'User Scripts (plugins)', el: 'User Scripts (plugins)' },
-        fromPlugin: { en: 'added by a plugin', el: 'από plugin' },
-        frameTime: { en: 'Frame time in the FPS counter', el: 'Χρόνος καρέ στον μετρητή FPS' },
-        frameTimeDesc: { en: 'Shows how long one frame takes next to the FPS in the stats line, e.g. "FPS: 60 (16.7 ms)". Needs "FPS" on in Stats.', el: 'Δείχνει πόσο διαρκεί ένα καρέ δίπλα στα FPS στη γραμμή στατιστικών, π.χ. "FPS: 60 (16.7 ms)". Χρειάζεται το "FPS" ενεργό στα Στατιστικά.' }
-    };
-    function lang() {
-        try { return window.localStorage.getItem('languagemod') === '2' ? 'el' : 'en'; } catch (e) { return 'en'; }
-    }
-    function tx(k) { var r = STR[k]; return r ? (r[lang()] || r.en) : k; }
+    /* texts: developers/i18n/src (modules.lab.*) */
+    var P = 'modules.lab.';
+    function tx(k, vars) { return typeof window.lmT === 'function' ? window.lmT(P + k, vars) : k; }
 
     function load() { var raw = null; try { raw = window.localStorage.getItem(STORE_KEY); } catch (e) { } return validateStore(raw); }
     function save(st) { try { window.localStorage.setItem(STORE_KEY, JSON.stringify(validateStore(st))); } catch (e) { } }
@@ -101,6 +89,8 @@
         var x = validateExperiment(def);
         if (!x || hasOwn(byId, x.id)) return false;
         x.builtIn = !!(def && def._builtIn);
+        /* a built-in experiment names its texts by key, so they follow a language change */
+        if (x.builtIn && typeof def._key === 'string') x.key = def._key;
         byId[x.id] = x;
         list.push(x);
         if (load().on[x.id]) apply(x, true);
@@ -117,6 +107,9 @@
         sync();
         return !!on;
     }
+    /* the name / description shown: built-ins in the chosen language, plugins as they gave them */
+    function nameOf(x) { return x.key ? tx(x.key) : x.name; }
+    function descOf(x) { return x.key ? tx(x.key + 'Desc') : x.description; }
     function isEnabled(id) { return !!active[id]; }
     function reset(skipConfirm) {
         if (!skipConfirm && !window.confirm(tx('confirmReset'))) return false;
@@ -154,6 +147,7 @@
         var box = document.querySelector('#og-options .lmLabGroup');
         if (!box) return false;
         css();
+        try { if (window.LMi18n && window.LMi18n.dir) box.setAttribute('dir', window.LMi18n.dir()); } catch (e) { }
         var keep = box.querySelector('h5');
         while (box.lastChild && box.lastChild !== keep) box.removeChild(box.lastChild);
         if (keep && keep !== box.firstChild) box.insertBefore(keep, box.firstChild);
@@ -161,8 +155,9 @@
         if (!list.length) box.appendChild(el('div', 'lm-lab-note', tx('none')));
         list.forEach(function (x) {
             var row = el('label', 'lm-lab-row');
-            var txt = el('span', '', x.name);
-            var d = x.description + (x.builtIn ? '' : (x.description ? ' · ' : '') + tx('fromPlugin'));
+            var txt = el('span', '', nameOf(x));
+            var desc = descOf(x);
+            var d = desc + (x.builtIn ? '' : (desc ? ' \u00b7 ' : '') + tx('fromPlugin'));
             if (d) txt.appendChild(el('span', 'lm-lab-desc', d));
             row.appendChild(txt);
             var cb = document.createElement('input');
@@ -223,7 +218,7 @@
         isEnabled: isEnabled,
         reset: reset,
         open: open,
-        list: function () { return list.map(function (x) { return { id: x.id, name: x.name, description: x.description, enabled: !!active[x.id] }; }); },
+        list: function () { return list.map(function (x) { return { id: x.id, name: nameOf(x), description: descOf(x), enabled: !!active[x.id] }; }); },
         _mount: mount,
         _pure: pure
     };
@@ -232,13 +227,15 @@
 
     /* the stats line reads window._lmLabFrameTime (ogario.v4.js, "FPS: ") */
     register({
-        id: 'frameTime', name: tx('frameTime'), description: tx('frameTimeDesc'), _builtIn: true,
+        id: 'frameTime', name: tx('frameTime'), description: tx('frameTimeDesc'), _builtIn: true, _key: 'frameTime',
         onEnable: function () { window._lmLabFrameTime = true; },
         onDisable: function () { window._lmLabFrameTime = false; }
     });
 
     /* the section is made by the settings menu: fill it once it is there */
     var tries = 0;
+    /* a language change rebuilds the section (it keeps the switch states) */
+    if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () { mount(); });
     (function wait() {
         if (mount() || ++tries > 120) return;
         setTimeout(wait, 500);

@@ -33,7 +33,11 @@
     "ogario/modules/analytics.js",
     "ogario/modules/smalltools.js",
     "ogario/modules/accessibility.js",
-    "ogario/modules/hudhelpers.js"
+    "ogario/modules/hudhelpers.js",
+    "ogario/modules/plugins.js",
+    "ogario/modules/lab.js",
+    "ogario/modules/macroeditor.js",
+    "ogario/modules/gamepad-ui.js"
   ],
   "groups": {
     "a: ogario/modules": [

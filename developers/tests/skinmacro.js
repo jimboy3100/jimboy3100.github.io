@@ -6,6 +6,7 @@
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const dir = path.join(__dirname, '..', '..', 'ogario', 'modules');
 const macroSrc = fs.readFileSync(path.join(dir, 'macroeditor.js'), 'utf8');
+const i18n = require('./lib/i18n-env');
 
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
@@ -29,9 +30,10 @@ function boot(src, opts) {
   const timers = [];
   let now = 0;
   const sent = [];
+  const toasts = [];
   const win = {
     localStorage: opts.storage || makeStorage(),
-    toastr: { info() {}, warning() {}, success() {}, error() {} },
+    toastr: { info(m) { toasts.push(m); }, warning(m) { toasts.push(m); }, success() {}, error() {} },
     application: { split() { sent.push(['split', now]); }, feed() { sent.push(['feed', now]); } },
     legendmod: { play: true, socket: {}, sendPosition() { sent.push(['mouse', now]); } },
     multiboxPlayerEnabled: 0,
@@ -49,6 +51,8 @@ function boot(src, opts) {
     console, Math, JSON, Date, Number, String, Array, Object, isFinite, RegExp, Error
   };
   vm.createContext(ctx);
+  /* the real translation runtime with the built language packs */
+  i18n(ctx, opts.lang);
   vm.runInContext(src, ctx);
   const advance = ms => {
     const end = now + ms;
@@ -63,12 +67,12 @@ function boot(src, opts) {
   /* the page is busy for ms: time passes, no timer runs */
   const stall = ms => { now += ms; };
   const fire = m => n => (m[n] || []).slice().forEach(f => f({ type: n }));
-  return { win, doc, sent, advance, stall, timers, fireWin: fire(lis.win), fireDoc: fire(lis.doc) };
+  return { win, doc, sent, toasts, advance, stall, timers, fireWin: fire(lis.win), fireDoc: fire(lis.doc) };
 }
 
 /* ═══ Custom macros ═══ */
 {
-  const { win, sent, advance } = boot(macroSrc);
+  const { win, sent, toasts, advance } = boot(macroSrc);
   const ME = win.LMMacroEditor;
   check('macro: LMMacroEditor defined', !!(ME && ME.core && typeof ME.runSlot === 'function'));
   const c = ME.core, L = c.LIMITS;
@@ -81,7 +85,7 @@ function boot(src, opts) {
   const many = []; for (let i = 0; i < 40; i++) many.push({ a: 'feed' });
   check('macro: at most ' + L.maxSteps + ' steps', c.cleanMacro({ steps: many }).steps.length === L.maxSteps);
   const d = c.cleanData('{"slots":[{"name":"<b>Pop</b>\\u0000","steps":[{"a":"split"},{"a":"x"}]},5]}');
-  check('macro: data validated', d.slots.length === 3 && d.slots[0].name === 'bPop/b' && d.slots[0].steps.length === 1 && d.slots[1].name === 'Macro 2' && d.slots[2].steps.length === 0);
+  check('macro: data validated', d.slots.length === 3 && d.slots[0].name === 'bPop/b' && d.slots[0].steps.length === 1 && d.slots[1].name === i18n.t('modules.macroeditor.defaultName', 2) && d.slots[1].name === 'Macro 2' && d.slots[2].steps.length === 0);
   check('macro: broken JSON -> empty slots', c.cleanData('{x').slots.every(m => m.steps.length === 0));
 
   /* timeline */
@@ -104,6 +108,11 @@ function boot(src, opts) {
 
   /* runner */
   check('macro: empty slot does not run', ME.runSlot(1) === false && sent.length === 0);
+  check('macro: empty slot message from the language pack', toasts[toasts.length - 1] === i18n.t('modules.macroeditor.noSteps', 1));
+  win.LMi18n.setLang('el', { save: false });
+  ME.runSlot(1);
+  check('macro: the message follows a language change', toasts[toasts.length - 1] === i18n.t('modules.macroeditor.noSteps', 1, 'el') && toasts[toasts.length - 1] !== i18n.t('modules.macroeditor.noSteps', 1));
+  win.LMi18n.setLang('en', { save: false });
   ME.setMacro(1, { name: 'Pop', steps: [{ a: 'mouse' }, { a: 'split' }, { a: 'wait', ms: 100 }, { a: 'split' }, { a: 'feed', n: 2 }] });
   check('macro: saved to storage', JSON.parse(win.localStorage.getItem(c.KEY)).slots[0].name === 'Pop');
   check('macro: run starts', ME.runSlot(1) === true && ME.isRunning());
