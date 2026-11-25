@@ -17,7 +17,16 @@
      * An action is one of the gamepad actions below, a hotkey id from hotkeysCommand ('hk-...',
      * keyDown on press, keyUp on release) or 'none'. These defaults are the fixed map from
      * before the buttons could be changed. */
-    var BUTTON_NAMES = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Back', 'Start', 'LS', 'RS', 'D-pad up', 'D-pad down', 'D-pad left', 'D-pad right'];
+    /* the texts come from the language packs (developers/i18n/src/game2.json); the key itself when the
+     * translations are not loaded (unit tests) */
+    function T(key) { return window.lmT ? window.lmT(key) : key; }
+    /* button names: letters and LB/RB/LT/RT/LS/RS are printed on the pads (i18n-ok); the rest is translated,
+     * read anew each time (LMGamepad.BUTTON_NAMES is a getter) so a language change shows at once */
+    function buttonNames() {
+        return ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', T('game2.gpBack'), T('game2.gpStart'), 'LS', 'RS', // i18n-ok: pad labels
+            T('game2.gpUp'), T('game2.gpDown'), T('game2.gpLeft'), T('game2.gpRight')];
+    }
+    var BUTTON_NAMES = buttonNames();
     var BUTTON_COUNT = BUTTON_NAMES.length;
     var DEFAULT_MAP = {
         0: 'split',        // A
@@ -28,15 +37,15 @@
         5: 'split16',      // RB
         9: 'menu'          // Start (toggle menu, like Esc)
     };
-    /* the gamepad's own actions (English labels for the window) */
+    /* the gamepad's own actions (labels for the window: getters, in the chosen language) */
     var ACTIONS = {
-        split: 'Split',
-        feed: 'Feed (hold = macro feed)',
-        doubleSplit: 'Double split',
-        split16: 'Split x16',
-        multiboxSwap: 'Multibox swap (existing units only)',
-        respawn: 'Quick respawn / Play',
-        menu: 'Menu (like Esc)'
+        get split() { return T('game2.gpSplit'); },
+        get feed() { return T('game2.gpFeed'); },
+        get doubleSplit() { return T('game2.gpDoubleSplit'); },
+        get split16() { return T('game2.gpSplit16'); },
+        get multiboxSwap() { return T('game2.gpMultiboxSwap'); },
+        get respawn() { return T('game2.gpRespawn'); },
+        get menu() { return T('game2.gpMenu'); }
     };
     var TRIGGERS = { 6: 1, 7: 1 };  // LT, RT: analog, pressed from the trigger threshold
     var AXIS_MOVE_X = 0, AXIS_MOVE_Y = 1, AXIS_ZOOM = 3;
@@ -242,7 +251,7 @@
     function announce(pad) {
         if (!pad || announced[pad.index + ':' + pad.id]) return;
         announced[pad.index + ':' + pad.id] = true;
-        try { if (window.toastr) window.toastr.info('Gamepad connected: ' + esc(pad.id)); } catch (e) { }
+        try { if (window.toastr) window.toastr.info(T('game2.gpConnected') + ' ' + esc(pad.id)); } catch (e) { }
     }
 
     function canvasEl() {
@@ -626,7 +635,7 @@
             s.onerror = function () {
                 uiLoading = false;
                 if (s.parentNode) s.parentNode.removeChild(s);
-                try { if (window.toastr) window.toastr.error('Could not load the gamepad window. Check the connection and try again.'); } catch (e) { }
+                try { if (window.toastr) window.toastr.error(T('game2.gpUiFailed')); } catch (e) { }
             };
             document.body.appendChild(s);
         } catch (e) { uiLoading = false; }
@@ -635,7 +644,7 @@
     load();
 
     window.LMGamepad = {
-        BUTTON_NAMES: BUTTON_NAMES.slice(),
+        get BUTTON_NAMES() { return buttonNames(); },
         ACTIONS: ACTIONS,
         OPTS: OPTS,
         defaultMap: function () { return cleanMap(null); },

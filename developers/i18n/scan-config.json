@@ -14,7 +14,17 @@
     "LMexpress/i18n.js",
     "languages/lm-i18n.js",
     "lib/lm-i18n.js",
-    "developers/i18n/runtime.js"
+    "developers/i18n/runtime.js",
+    "ogario/hotkeysCommand.js",
+    "ogario/spect.js",
+    "ogario/gamepad.js",
+    "ogario/fullzoom.js",
+    "ogario/mergetimer.js",
+    "ogario/autoplay.js",
+    "ogario/captcha.js",
+    "ogario/anti.js",
+    "ogario/ogario.v4.static.js",
+    "ogario/senpa_module.js"
   ],
   "groups": {
     "a: ogario/modules": [

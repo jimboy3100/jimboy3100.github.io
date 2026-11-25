@@ -81,7 +81,7 @@ function addFullSpectator() {
             }
         }
     } else {
-        toastr.error("Full spectator does not work for Private servers. <br>There is not such thing as <i>FreeSpectate</i> on Private Servers")
+        toastr.error(lmT('game2.spPrivateNoFull'))
         //toastr.error("Too many spects needed: " + times/2 + "<br> Attempt canceled")
         window.fullSpectator = false
     }
@@ -442,7 +442,7 @@ class Spect {
                  * blocking alert inside the socket handler. Play this unit as guest. */
                 if (!this._fbUnavailableToastShown && typeof toastr !== "undefined") {
                     this._fbUnavailableToastShown = true;
-                    toastr.warning("<b>[MULTIBOX]:</b> Facebook login is unavailable, the multibox unit plays as guest.");
+                    toastr.warning('<b>[' + lmT('game2.tag.multibox') + ']:</b> ' + lmT('game2.spFbGuest'));
                 }
                 this.handleSendNick()
             } else {
@@ -1111,7 +1111,7 @@ class Spect {
                 break;
 
             case 85:
-                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Captcha requested from Multibox client. Multibox closed");
+                toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game2.spCaptchaClosed'));
                 console.log('[SPECT] case 85');
                 this.terminate()
                 /* The v2 captcha is not answered on this socket, so really close the
@@ -1157,7 +1157,7 @@ class Spect {
                 //console.log(Date.now() - this.timeStarted, this.player, this.active, this.annoucementTold)
                 if (Date.now() - this.timeStarted > 4000 && this.player && !this.active && !this.annoucementTold) {
                     this.annoucementTold = true
-                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Seems there is an excessive delay for Multibox to start. Please hold the line...");
+                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game2.spSlowStart'));
                 }
                 break;
             case 103:

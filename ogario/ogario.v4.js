@@ -42474,9 +42474,9 @@ function thelegendmodproject() {
                                 console.log('%c[ADMIN NOTICE]%c ' + toastMsg, 'color:#fa0;font-weight:bold;', 'color:inherit;');
                                 if (window.toastr) {
                                     var toastMsgSafe = application.escapeHTML(toastMsg);
-                                    if (toastType === 1) toastr.warning(toastMsgSafe, "Admin Notice");
-                                    else if (toastType === 2) toastr.error(toastMsgSafe, "Admin Notice");
-                                    else toastr.info(toastMsgSafe, "Admin Notice");
+                                    if (toastType === 1) toastr.warning(toastMsgSafe, lmT('game2.adminNotice'));
+                                    else if (toastType === 2) toastr.error(toastMsgSafe, lmT('game2.adminNotice'));
+                                    else toastr.info(toastMsgSafe, lmT('game2.adminNotice'));
                                 }
                             }
                         }
@@ -42509,8 +42509,8 @@ function thelegendmodproject() {
                                 console.log('%c[ADMIN RESPONSE]%c ' + adminMsg, 'color:#0f0;font-weight:bold;', 'color:inherit;');
                                 if (window.toastr) {
                                     var adminMsgSafe = application.escapeHTML(adminMsg);
-                                    if (adminStatus === 0) toastr.success(adminMsgSafe, "Admin Command");
-                                    else toastr.error(adminMsgSafe, "Admin Command");
+                                    if (adminStatus === 0) toastr.success(adminMsgSafe, lmT('game2.adminCommand'));
+                                    else toastr.error(adminMsgSafe, lmT('game2.adminCommand'));
                                 }
                             }
                         }
@@ -42606,7 +42606,7 @@ function thelegendmodproject() {
                     //var wait = Math.max(3000, 1000 + message.length * 150);
                     var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
                     if (message.includes("E = split bots")) {
-                        message = "For bot commands look at Hotkeys"
+                        message = lmT('game2.botCommandsHint')
                     }
                     this.chatableServer = true;
                     /* Opcode 99 has no sender id (all of it used id 1000, so the mute button did nothing):
@@ -43444,11 +43444,11 @@ function thelegendmodproject() {
                             'name': ogarcopythelb
                         });
                     }
-                    var temp = '<b>[' + Premadeletter123 + ']:</b> <font color="yellow"><b>Battle Royal Ranks:</b></font>';
+                    var temp = '<b>[' + Premadeletter123 + ']:</b> <font color="yellow"><b>' + lmT('game2.brRanks') + '</b></font>';
                     for (var i = 0; i < legendmod.battleRoyale.rank.length; i++) {
                         temp += '<br>' + legendmod.battleRoyale.rank[i].place + ". " + application.escapeHTML(String(legendmod.battleRoyale.rank[i].name || ''));
                     }
-                    temp += '<br>' + 'Your rank: <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
+                    temp += '<br>' + lmT('game2.brYourRank') + ' <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
                     toastr.info(temp);
                     break;
                 case 226: //227
@@ -43603,7 +43603,7 @@ function thelegendmodproject() {
                             for (var gci = 0; gci < gcLen && 2 + gci < data.byteLength; gci++) gcProvider += String.fromCharCode(data.getUint8(2 + gci));
                             console.warn('%c[Garix]%c Captcha requested (provider=' + gcProvider + '), not supported', 'color:#f8a', 'color:inherit');
                             /* The provider string comes from the server: escape it, toastr renders HTML. */
-                            if (window.toastr) toastr.warning('Garix requires a captcha (' + application.escapeHTML(gcProvider) + ') that Legend Mod cannot solve. Spawning may be refused; use the official Garix client.');
+                            if (window.toastr) toastr.warning(lmT('game2.garixCaptcha', [application.escapeHTML(gcProvider)]));
                         }
                         break;
                     }
@@ -44073,14 +44073,14 @@ function thelegendmodproject() {
                      * server login (protobuf type-11). Uses server-confirmed data. */
                     if (window.expandingLand || window.legendModFromWebsite) {
                         try {
-                            var _provider = 'Unknown';
+                            var _provider = lmT('game2.unknown');
                             if (u.userInfo && u.userInfo.userId) {
                                 var _prov = u.userInfo.userId.split('$')[0];
                                 if (_prov === 'google') _provider = 'Google';
                                 else if (_prov === 'facebook') _provider = 'Facebook';
                                 else if (_prov === 'discord') _provider = 'Discord';
                             }
-                            var _name = (u.userInfo && u.userInfo.displayName) || 'Player';
+                            var _name = (u.userInfo && u.userInfo.displayName) || lmT('game2.player');
                             window._lw_showLoginSuccess(_provider, _name);
                         } catch (e) { console.error('[LW 102] loginSuccess notification error:', e); }
                     }
@@ -44605,7 +44605,7 @@ function thelegendmodproject() {
                             );
 
                             toastr.error(
-                                "<b>[SERVER]:</b> Invalid purchase response."
+                                _lmG2Tag('server') + lmT('game2.invalidPurchase')
                             );
 
                             break;
@@ -44680,7 +44680,7 @@ function thelegendmodproject() {
                                 !handledSuccess
                             ) {
                                 toastr.success(
-                                    "<b>[SERVER]:</b> Purchase successful! &#x2714; " +
+                                    _lmG2Tag('server') + lmT('game2.purchaseOk') + ' &#x2714; ' +
                                     spId.replace(
                                         /^com\.miniclip\.agar\.io\./i,
                                         ""
@@ -44755,17 +44755,17 @@ function thelegendmodproject() {
                                     spResult === 2
                                 ) {
                                     toastr.error(
-                                        "<b>[SERVER]:</b> Purchase failed — not enough DNA/coins."
+                                        _lmG2Tag('server') + lmT('game2.purchaseNoFunds')
                                     );
                                 } else if (
                                     spResult === 3
                                 ) {
                                     toastr.error(
-                                        "<b>[SERVER]:</b> Purchase failed — item not available."
+                                        _lmG2Tag('server') + lmT('game2.purchaseUnavailable')
                                     );
                                 } else {
                                     toastr.warning(
-                                        "<b>[SERVER]:</b> Purchase response: code " +
+                                        _lmG2Tag('server') + lmT('game2.purchaseCode') + ' ' +
                                         spResult
                                     );
                                 }
@@ -44786,14 +44786,14 @@ function thelegendmodproject() {
                         if (iap) {
                             console.log("[LM] IAP Response — result: " + iap.result + ", txn: " + iap.transactionId);
                             if (iap.result === 1) { // 0 = field absent, not success
-                                toastr.success('<b>[SERVER]:</b> In-app purchase confirmed! &#x2714;');
+                                toastr.success(_lmG2Tag('server') + lmT('game2.iapOk') + ' &#x2714;');
                                 if (iap.productUpdates && iap.productUpdates.length) {
                                     this.updateProducts(iap.productUpdates);
                                 }
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                                 if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else {
-                                toastr.error('<b>[SERVER]:</b> In-app purchase failed (code ' + iap.result + ')');
+                                toastr.error(_lmG2Tag('server') + lmT('game2.iapFailed', [iap.result]));
                             }
                         }
                     } catch (iapErr) {
@@ -44838,7 +44838,7 @@ function thelegendmodproject() {
                             var obResult = ob.result || 0;
                             console.log("[LM] Offer Bundle Response — result: " + obResult);
                             if (obResult === 1) { // 0 = field absent, not success
-                                toastr.success('<b>[SERVER]:</b> Bundle purchased successfully! &#x2714;');
+                                toastr.success(_lmG2Tag('server') + lmT('game2.bundleOk') + ' &#x2714;');
                                 if (ob.productUpdates && ob.productUpdates.length) {
                                     this.updateProducts(ob.productUpdates);
                                 }
@@ -44846,11 +44846,11 @@ function thelegendmodproject() {
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                                 if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else if (obResult === 2) {
-                                toastr.error('<b>[SERVER]:</b> Offer bundle rejected — offer not active.');
+                                toastr.error(_lmG2Tag('server') + lmT('game2.bundleInactive'));
                             } else if (obResult === 3) {
-                                toastr.error('<b>[SERVER]:</b> Offer bundle rejected — preconditions failed (e.g. not enough skin pieces or progression requirements not met).');
+                                toastr.error(_lmG2Tag('server') + lmT('game2.bundlePreconditions'));
                             } else {
-                                toastr.warning('<b>[SERVER]:</b> Offer bundle response: unknown result code ' + obResult);
+                                toastr.warning(_lmG2Tag('server') + lmT('game2.bundleCode', [obResult]));
                             }
                         } else {
                             console.log("returnMessage = r.get_offerBundleResponseField(); (no data)");
@@ -44886,7 +44886,7 @@ function thelegendmodproject() {
                                     allTimeScore: (function (v) { return (v && typeof v === 'object' && v.toNumber) ? v.toNumber() : (v == null ? null : Number(v)); })(st.userStats.allTimeScore)
                                 });
                             } else {
-                                toastr.info('<b>[STATS]:</b> Level ' + (st.level || 1) + ' | Mass Consumed: ' + stMass.toLocaleString() + ' | Highest Mass: ' + (st.userStats.highestMass || 0));
+                                toastr.info(_lmG2Tag('stats') + lmT('game2.statsLine', [(st.level || 1), stMass.toLocaleString(), (st.userStats.highestMass || 0)]));
                             }
                         }
                     } catch (stErr) { console.warn("[LM] Error parsing user stats response:", stErr); }
@@ -44899,7 +44899,7 @@ function thelegendmodproject() {
                             // productUpdates is singular in this response (not repeated)
                             var puArr = Array.isArray(cg.productUpdates) ? cg.productUpdates : [cg.productUpdates];
                             this.updateProducts(puArr);
-                            toastr.success('<b>[SERVER]:</b> Gift claimed successfully! &#x2714;');
+                            toastr.success(_lmG2Tag('server') + lmT('game2.giftClaimed') + ' &#x2714;');
                         }
                     } catch (cgErr) { console.warn("[LM] Error parsing claim gifts response:", cgErr); }
                     break;
@@ -44908,7 +44908,7 @@ function thelegendmodproject() {
                     try {
                         var cgr = r.uncompressedData.consumeRequestsField;
                         console.log("[LM] Consume Gift Requests confirmed", cgr);
-                        toastr.info('<b>[SERVER]:</b> Gift requests consumed');
+                        toastr.info(_lmG2Tag('server') + lmT('game2.giftConsumed'));
                     } catch (cgrErr) { console.warn("[LM] Error parsing consume requests:", cgrErr); }
                     break;
                 case 104:
@@ -44916,7 +44916,7 @@ function thelegendmodproject() {
                     try {
                         var rgr = r.uncompressedData.requestGiftsField;
                         console.log("[LM] Request Gifts confirmed", rgr);
-                        toastr.info('<b>[SERVER]:</b> Gift requests sent');
+                        toastr.info(_lmG2Tag('server') + lmT('game2.giftSent'));
                     } catch (rgrErr) { console.warn("[LM] Error parsing request gifts:", rgrErr); }
                     break;
                 case 105:
@@ -44928,7 +44928,7 @@ function thelegendmodproject() {
                             if (fbr.productUpdates) {
                                 var puArr = Array.isArray(fbr.productUpdates) ? fbr.productUpdates : [fbr.productUpdates];
                                 this.updateProducts(puArr);
-                                toastr.success('<b>[SERVER]:</b> Invitation reward received! &#x1F381;');
+                                toastr.success(_lmG2Tag('server') + lmT('game2.inviteReward') + ' &#x1F381;');
                             }
                         }
                     } catch (fbrErr) {
@@ -44954,7 +44954,7 @@ function thelegendmodproject() {
                             /* the claim was silent for the player (console only) */
                             if (te.productUpdates && te.productUpdates.length && window.toastr) {
                                 var _lmNext = te.userTimedEvent ? Math.floor((te.userTimedEvent.nextAvailableInSeconds || 0) / 60) : 0;
-                                toastr.success('<b>[REWARD]:</b> ' + _lmTH('rewardCollected', 'Reward collected!') + (_lmNext > 0 ? ' ' + _lmTH('nextInMin', 'Next one in {0} min.').replace('{0}', _lmNext) : ''));
+                                toastr.success(_lmG2Tag('reward') + _lmTH('rewardCollected', '') + (_lmNext > 0 ? ' ' + _lmTH('nextInMin', '').replace('{0}', _lmNext) : ''));
                             }
                             if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
@@ -44976,7 +44976,7 @@ function thelegendmodproject() {
                             var newBoostSecs = newBoost ? (Number(newBoost.expiresInSeconds) || 0) : 0;
                             if (!newBoost || !newBoost.productId || newBoostSecs <= 0) {
                                 /* Official handleUserBoostUpdate: no product or no time left = useProductFailed. */
-                                toastr.error('<b>[SERVER]:</b> Boost could not be activated.');
+                                toastr.error(_lmG2Tag('server') + lmT('game2.boostFailed'));
                             } else {
                                 /* Official client keeps the other active boosts and only replaces the one
                                  * of the same category; this used to clear every other active boost. */
@@ -44996,7 +44996,7 @@ function thelegendmodproject() {
                                 mergedBoosts.push(newBoost);
                                 this.displayActiveBoosts(mergedBoosts);
                                 var expMins = Math.floor(newBoostSecs / 60);
-                                toastr.success('<b>[SERVER]:</b> ' + _lmTH('boostActivated', 'Boost activated!') + ' &#x1F680; ' + _lmTH('expiresInMin', 'Expires in {0} min').replace('{0}', expMins));
+                                toastr.success(_lmG2Tag('server') + _lmTH('boostActivated', '') + ' &#x1F680; ' + _lmTH('expiresInMin', '').replace('{0}', expMins));
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
@@ -45019,12 +45019,12 @@ function thelegendmodproject() {
                             if (!_qaRefused) this._questActivationSent = {};
                             if (_qaRefused) {
                                 /* Expanding Land answers a refused activation (no activation item) with goal 0. */
-                                toastr.error('<b>[SERVER]:</b> Quest could not be activated.');
+                                toastr.error(_lmG2Tag('server') + lmT('game2.questFailed'));
                             } else if (qa.userQuest) {
                                 this.displayActiveQuests([qa.userQuest]);
-                                toastr.success('<b>[SERVER]:</b> ' + _lmTH('questActivated', 'Quest activated!') + ' &#x1F3AF; ' + _lmTH('questType', 'Type: {0}').replace('{0}', String(qa.userQuest.type || 'unknown').replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; })));
+                                toastr.success(_lmG2Tag('server') + _lmTH('questActivated', '') + ' &#x1F3AF; ' + _lmTH('questType', '').replace('{0}', String(qa.userQuest.type || lmT('game2.unknown')).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; })));
                             } else {
-                                toastr.success('<b>[SERVER]:</b> ' + _lmTH('questActivated', 'Quest activated!') + ' &#x1F3AF;');
+                                toastr.success(_lmG2Tag('server') + _lmTH('questActivated', '') + ' &#x1F3AF;');
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
@@ -45088,15 +45088,15 @@ function thelegendmodproject() {
                                             detail: { rewards: opprRewards }
                                         }));
                                     } catch (opprEvtErr) {
-                                        toastr.success('<b>[SERVER]:</b> ' + _lmTH('potionOpened', 'Potion opened!') + ' &#x1F9EA;');
+                                        toastr.success(_lmG2Tag('server') + _lmTH('potionOpened', '') + ' &#x1F9EA;');
                                     }
                                 } else {
-                                    toastr.success('<b>[SERVER]:</b> ' + _lmTH('potionOpened', 'Potion opened!') + ' &#x1F9EA;');
+                                    toastr.success(_lmG2Tag('server') + _lmTH('potionOpened', '') + ' &#x1F9EA;');
                                 }
                             } else if (opprResult === 2) {
-                                toastr.error('<b>[SERVER]:</b> Potion not opened — not enough currency.');
+                                toastr.error(_lmG2Tag('server') + lmT('game2.potionNoFunds'));
                             } else {
-                                toastr.warning('<b>[SERVER]:</b> Potion not opened (code ' + opprResult + ').');
+                                toastr.warning(_lmG2Tag('server') + lmT('game2.potionCode', [opprResult]));
                             }
                         }
                     } catch (opprErr) {
@@ -45113,7 +45113,7 @@ function thelegendmodproject() {
                                 /* Success */
                                 this.updatePotions(u.userPotions);
                                 if (typeof window._lmSyncOfficialPotionSlots === 'function') window._lmSyncOfficialPotionSlots(u.userPotions);
-                                if (window.toastr) toastr.success('<b>[POTION]:</b> ' + _lmTH('brewingStarted', 'Brewing started!') + ' \u2615');
+                                if (window.toastr) toastr.success(_lmG2Tag('potion') + _lmTH('brewingStarted', '') + ' \u2615');
                                 /* Official onStartBrewing: activate the potionSkipBrew timed event
                                  * once the brew is running (skip-brew price timer). */
                                 if (window.application && typeof window.application.activateTimedEvent === 'function') {
@@ -45121,10 +45121,10 @@ function thelegendmodproject() {
                                 }
                             } else if (brewResult === 3) {
                                 /* Already brewing another slot */
-                                if (window.toastr) toastr.warning('<b>[POTION]:</b> Already brewing another potion. Wait for it to finish.');
+                                if (window.toastr) toastr.warning(_lmG2Tag('potion') + lmT('game2.potionBusy'));
                             } else if (brewResult === 2) {
                                 /* Not collected / unavailable */
-                                if (window.toastr) toastr.warning('<b>[POTION]:</b> Potion not available to brew.');
+                                if (window.toastr) toastr.warning(_lmG2Tag('potion') + lmT('game2.potionNotBrewable'));
                             } else if (u.userPotions && u.userPotions.length) {
                                 /* Unknown result but has potions — update anyway */
                                 this.updatePotions(u.userPotions);
@@ -45150,8 +45150,8 @@ function thelegendmodproject() {
                                 window._userInitiatedPotionOpen = false;
                                 if (window.toastr) {
                                     toastr.warning(openResult === 2
-                                        ? '<b>[POTION]:</b> Potion is not ready yet.'
-                                        : '<b>[POTION]:</b> Potion not opened (code ' + openResult + ').');
+                                        ? _lmG2Tag('potion') + lmT('game2.potionNotReady')
+                                        : _lmG2Tag('potion') + lmT('game2.potionCode', [openResult]));
                                 }
                                 /* An expired brew is promoted to 3 locally (the server sends no
                                  * status change); receive delay or rounding can leave it brewing on
@@ -45315,13 +45315,13 @@ function thelegendmodproject() {
                             if (!(lpuType >= 1 && lpuType <= 4)) lpuType = 0;
                             var lpuSay = function (key, en, name) { return _lmTH(key + lpuType, en).replace('{name}', function () { return name; }); };
                             if (isMe(passedBy) && passedWho && passedWho.displayName) {
-                                if (lpuType) toastr.info('<b>[LEAGUE]:</b> ' + lpuSay('leaguePassMe', 'You passed {name}!', application.escapeHTML(String(passedWho.displayName))));
+                                if (lpuType) toastr.info(_lmG2Tag('league') + lpuSay('leaguePassMe', '', application.escapeHTML(String(passedWho.displayName))));
                                 else
-                                toastr.info('<b>[LEAGUE]:</b> You passed ' + application.escapeHTML(String(passedWho.displayName)) + ' in the league!');
+                                toastr.info(_lmG2Tag('league') + lmT('game2.leaguePassMe', [application.escapeHTML(String(passedWho.displayName))]));
                             } else if (passedBy && passedBy.displayName && !isMe(passedBy)) {
-                                if (lpuType) toastr.info('<b>[LEAGUE]:</b> ' + lpuSay('leaguePassYou', '{name} passed you!', application.escapeHTML(String(passedBy.displayName))));
+                                if (lpuType) toastr.info(_lmG2Tag('league') + lpuSay('leaguePassYou', '', application.escapeHTML(String(passedBy.displayName))));
                                 else
-                                toastr.info('<b>[LEAGUE]:</b> ' + application.escapeHTML(String(passedBy.displayName)) + ' passed you in the league!');
+                                toastr.info(_lmG2Tag('league') + lmT('game2.leaguePassYou', [application.escapeHTML(String(passedBy.displayName))]));
                             }
                             /* Our rank, when the server filled it in on our entry. */
                             var myEntry = isMe(passedBy) ? passedBy : (isMe(passedWho) ? passedWho : null);
@@ -45347,9 +45347,9 @@ function thelegendmodproject() {
                             var pmuCode = pmu.code ? String(pmu.code).trim() : '';
                             if (Number(pmu.updateType) === 3 && pmuCode && window.toastr &&
                                 typeof window.joinAgarPartyToken === 'function') {
-                                var pmuName = (pmu.member && pmu.member.displayName) ? String(pmu.member.displayName) : 'A friend';
+                                var pmuName = (pmu.member && pmu.member.displayName) ? String(pmu.member.displayName) : lmT('game2.aFriend');
                                 /* another player's name: escape before toastr HTML */
-                                toastr.info('<b>[PARTY]:</b> ' + application.escapeHTML(pmuName) + ' invited you to a party. Click to join.', '', {
+                                toastr.info(_lmG2Tag('party') + lmT('game2.partyInvite', [application.escapeHTML(pmuName)]), '', {
                                     timeOut: 15000,
                                     extendedTimeOut: 5000,
                                     /* bind this invite's code: pmuCode is reused by the next 145 */
@@ -45534,12 +45534,12 @@ function thelegendmodproject() {
                                         window
                                             ._lmFinishSkinUploadUi(
                                                 false,
-                                                "Server accepted upload but returned no skin ID."
+                                                lmT('game2.skinNoId')
                                             );
                                     }
 
                                     toastr.error(
-                                        '<b>[SERVER]:</b> Agar.io accepted the transaction but did not return a published custom skin.'
+                                        _lmG2Tag('server') + lmT('game2.skinNotPublished')
                                     );
 
                                     break;
@@ -45634,12 +45634,12 @@ function thelegendmodproject() {
                                     window
                                         ._lmFinishSkinUploadUi(
                                             true,
-                                            "Skin created successfully!"
+                                            lmT('game2.skinCreated')
                                         );
                                 }
 
                                 toastr.success(
-                                    '<b>[SERVER]:</b> Custom skin created and registered: ' +
+                                    _lmG2Tag('server') + lmT('game2.skinRegistered') + ' ' +
                                     createdSkinId
                                 );
 
@@ -45662,34 +45662,34 @@ function thelegendmodproject() {
                                     .fadeOut(200);
                             } else {
                                 var uploadErrorMessage =
-                                    "Skin creation failed.";
+                                    lmT('game2.skinFailed');
 
                                 if (
                                     skinResult === 2
                                 ) {
                                     uploadErrorMessage =
-                                        "Insufficient funds.";
+                                        lmT('game2.insufficientFunds');
 
                                     toastr.error(
-                                        '<b>[SERVER]:</b> Skin creation failed — insufficient funds.'
+                                        _lmG2Tag('server') + lmT('game2.skinNoFunds')
                                     );
                                 } else if (
                                     skinResult === 3
                                 ) {
                                     uploadErrorMessage =
-                                        "Temporary transaction error.";
+                                        lmT('game2.txError');
 
                                     toastr.error(
-                                        '<b>[SERVER]:</b> Temporary transaction error. Please try again.'
+                                        _lmG2Tag('server') + lmT('game2.txErrorRetry')
                                     );
                                 } else {
                                     uploadErrorMessage =
-                                        "Result code " +
+                                        lmT('game2.resultCode') + ' ' +
                                         skinResult +
                                         ".";
 
                                     toastr.warning(
-                                        '<b>[SERVER]:</b> Skin create response: code ' +
+                                        _lmG2Tag('server') + lmT('game2.skinCode') + ' ' +
                                         skinResult
                                     );
                                 }
@@ -45733,7 +45733,7 @@ function thelegendmodproject() {
                             window
                                 ._lmFinishSkinUploadUi(
                                     false,
-                                    "Failed to process skin creation response."
+                                    lmT('game2.skinResponseFailed')
                                 );
                         }
 
@@ -45762,10 +45762,10 @@ function thelegendmodproject() {
                                 localStorage.removeItem('equippedSkinId');
                                 localStorage.removeItem('equippedSkinImage');
                             }
-                            toastr.info('<b>[SERVER]:</b> Custom skin deleted' + (deletedId ? ' (' + deletedId.substring(0, 20) + '...)' : ''));
+                            toastr.info(_lmG2Tag('server') + lmT('game2.skinDeleted') + (deletedId ? ' (' + deletedId.substring(0, 20) + '...)' : ''));
                         } else {
                             console.log("[LM] Skin Delete — opcode 152 received (no response data)");
-                            toastr.info('<b>[SERVER]:</b> Custom skin deleted');
+                            toastr.info(_lmG2Tag('server') + lmT('game2.skinDeleted'));
                         }
                         try { this.createSkinsHTML(); } catch (e) { }
                         if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
@@ -45781,9 +45781,9 @@ function thelegendmodproject() {
                         var u = r.uncompressedData.actionCountersUpdateField;
                         var prev = (this.user && this.user.actionCounters) || {};
                         if (u) {
-                            if (u.potionsObtained > (prev.potionsObtained || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> New potion');
-                            if (u.questsCompleted > (prev.questsCompleted || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> Quest completed');
-                            if (u.skinsCreated > (prev.skinsCreated || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> Skin created');
+                            if (u.potionsObtained > (prev.potionsObtained || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.newPotion'));
+                            if (u.questsCompleted > (prev.questsCompleted || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.questCompleted'));
+                            if (u.skinsCreated > (prev.skinsCreated || 0)) toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.skinCreatedShort'));
                             this.user.actionCounters = u;
                             if (this.user.info) this.user.info.actionCounters = u;
                             this.renderUserInfoPanel(this.user.info || { actionCounters: u });
@@ -45799,19 +45799,19 @@ function thelegendmodproject() {
                             var rlrResult = Number(rlr.result) || 0;
                             console.log("[LM] Reward Link Response received, result: " + rlrResult);
                             if (rlrResult === 2) {
-                                toastr.error('<b>[SERVER]:</b> This reward link was already claimed.');
+                                toastr.error(_lmG2Tag('server') + lmT('game2.rewardLinkClaimed'));
                             } else if (rlrResult === 3) {
-                                toastr.error('<b>[SERVER]:</b> This reward link has expired.');
+                                toastr.error(_lmG2Tag('server') + lmT('game2.rewardLinkExpired'));
                             } else if (rlrResult !== 1) {
-                                toastr.warning('<b>[SERVER]:</b> Reward link not activated (code ' + rlrResult + ').');
+                                toastr.warning(_lmG2Tag('server') + lmT('game2.rewardLinkCode', [rlrResult]));
                             } else if (rlr.productUpdates && rlr.productUpdates.length) {
                                 this.updateProducts(rlr.productUpdates);
-                                toastr.success('<b>[SERVER]:</b> Reward link activated! &#x2714; ' + rlr.productUpdates.length + ' item(s) claimed');
+                                toastr.success(_lmG2Tag('server') + lmT('game2.rewardLinkOk', [rlr.productUpdates.length]));
                                 try { this.createSkinsHTML(); } catch (e) { }
                                 if (window.refreshSkinGrid) setTimeout(window.refreshSkinGrid, 500);
                                 if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                             } else {
-                                toastr.info('<b>[SERVER]:</b> Reward link processed (no items)');
+                                toastr.info(_lmG2Tag('server') + lmT('game2.rewardLinkEmpty'));
                             }
                         }
                     } catch (rlrErr) {
@@ -45825,14 +45825,14 @@ function thelegendmodproject() {
                         if (vatr && vatr.token) {
                             window.videoAdRewardToken = vatr.token;
                             console.log("[LM] Video Ad Reward Token received: " + vatr.token.substring(0, 20) + "...");
-                            toastr.success('<b>[SERVER]:</b> Ad reward token received! &#x1F4FA;');
+                            toastr.success(_lmG2Tag('server') + lmT('game2.adTokenOk') + ' &#x1F4FA;');
                         } else {
                             console.log("[LM] Video Ad Token Response — no token in payload");
-                            toastr.info('<b>[SERVER]:</b> Ad reward processed (no token)');
+                            toastr.info(_lmG2Tag('server') + lmT('game2.adTokenEmpty'));
                         }
                         // Reset ad reward button UI
                         var arBtn = document.getElementById('adRewardBtn');
-                        if (arBtn) { arBtn.disabled = false; arBtn.innerHTML = '📺 Ad Reward'; arBtn.style.opacity = '1'; arBtn.style.pointerEvents = 'auto'; }
+                        if (arBtn) { arBtn.disabled = false; arBtn.textContent = '📺 ' + lmT('game2.adReward'); arBtn.style.opacity = '1'; arBtn.style.pointerEvents = 'auto'; }
                         if (window._adRewardTimeout) { clearTimeout(window._adRewardTimeout); window._adRewardTimeout = null; }
                     } catch (vatrErr) {
                         console.warn("[LM] Error parsing video ad token response:", vatrErr);
@@ -45848,55 +45848,55 @@ function thelegendmodproject() {
         disconnectMessage(type) {
             switch (type) {
                 case 1:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Incompatible client')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.incompatible')]))
                     break;
                 case 2:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Packet not authorized')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.packet')]))
                     break;
                 case 3:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Login elsewhere')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.elsewhere')]))
                     break;
                 case 4:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Server offline')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.offline')]))
                     break;
                 case 5:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. User banned')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.banned')]))
                     break;
                 case 6:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Ping error')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.ping')]))
                     break;
                 case 7:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Unknown game type')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.gameType')]))
                     break;
                 case 8:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Too many operations')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.tooMany')]))
                     break;
                 case 9:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Unreachable realm')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.realm')]))
                     break;
                 case 10:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. User deleted')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.deleted')]))
                     break;
                 case 11:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Not authorized by realm')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.realmAuth')]))
                     break;
                 case 12:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Bad request')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.badRequest')]))
                     break;
                 case 13:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Reset by peer')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.reset')]))
                     break;
                 case 14:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Invalid token')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.invalidToken')]))
                     break;
                 case 15:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Expired token')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.expiredToken')]))
                     break;
                 case 16:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. State transfer error')
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.stateTransfer')]))
                     break;
                 default:
-                    toastr.error('<b>[' + Premadeletter123 + ']:</b> User disconnected. Unknown error: ' + type)
+                    toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.disconnected', [lmT('game2.disc.unknown', [type])]))
             }
         },
         updateProducts(prod) {
@@ -46246,24 +46246,24 @@ function thelegendmodproject() {
 
             /* Stat rows data */
             var stats = [
-                { icon: '💀', label: _lmTH('finalMass', 'Final Mass'),       value: fmtMass(u.finalMass),        accent: true },
-                { icon: '👑', label: _lmTH('highestMass', 'Highest Mass'),     value: fmtMass(u.highestMass),       accent: true },
-                { icon: '🏆', label: _lmTH('topPosition', 'Top Position'),     value: u.topPosition ? '#' + u.topPosition : '—' },
-                { icon: '📍', label: _lmTH('finalPosition', 'Final Position'),   value: u.finalPosition ? '#' + u.finalPosition : '—' },
-                { icon: '⏱️', label: _lmTH('timeAlive', 'Time Alive'),       value: fmtTime(u.timeTotal || u.longestTimeAlive) },
-                { icon: '📊', label: _lmTH('timeOnLb', 'Time on LB'),       value: fmtTime(u.timeInLeaderboard) },
-                { icon: '🍽️', label: _lmTH('massConsumed', 'Mass Consumed'),    value: fmtMass(u.massConsumed) },
-                { icon: '🔵', label: _lmTH('foodEaten', 'Food Eaten'),       value: (u.foodEaten || 0).toLocaleString() },
-                { icon: '⚔️', label: _lmTH('playersEaten', 'Players Eaten'),    value: (u.playersEaten || 0).toLocaleString() },
-                { icon: '🟢', label: _lmTH('cellsEaten', 'Cells Eaten'),      value: (u.normalCellsEaten || 0).toLocaleString() },
-                { icon: '🦠', label: _lmTH('virusesEaten', 'Viruses Eaten'),    value: (u.virusesEaten || 0).toLocaleString() }
+                { icon: '💀', label: _lmTH('finalMass', ''),       value: fmtMass(u.finalMass),        accent: true },
+                { icon: '👑', label: _lmTH('highestMass', ''),     value: fmtMass(u.highestMass),       accent: true },
+                { icon: '🏆', label: _lmTH('topPosition', ''),     value: u.topPosition ? '#' + u.topPosition : '—' },
+                { icon: '📍', label: _lmTH('finalPosition', ''),   value: u.finalPosition ? '#' + u.finalPosition : '—' },
+                { icon: '⏱️', label: _lmTH('timeAlive', ''),       value: fmtTime(u.timeTotal || u.longestTimeAlive) },
+                { icon: '📊', label: _lmTH('timeOnLb', ''),       value: fmtTime(u.timeInLeaderboard) },
+                { icon: '🍽️', label: _lmTH('massConsumed', ''),    value: fmtMass(u.massConsumed) },
+                { icon: '🔵', label: _lmTH('foodEaten', ''),       value: (u.foodEaten || 0).toLocaleString() },
+                { icon: '⚔️', label: _lmTH('playersEaten', ''),    value: (u.playersEaten || 0).toLocaleString() },
+                { icon: '🟢', label: _lmTH('cellsEaten', ''),      value: (u.normalCellsEaten || 0).toLocaleString() },
+                { icon: '🦠', label: _lmTH('virusesEaten', ''),    value: (u.virusesEaten || 0).toLocaleString() }
             ];
 
             /* optional: who ate the last cell (recorded in the eat loop, at most 15 s ago) */
             var _lmK = this._lmKiller;
             if (defaultmapsettings.showKiller && _lmK && Date.now() - _lmK.at < 15000) {
-                var _lmKName = _lmK.virus ? 'Virus' : (_lmK.nick ? application.escapeHTML(_lmK.nick) : 'An unnamed cell');
-                stats.unshift({ icon: '\ud83d\udde1\ufe0f', label: _lmTH('eatenBy', 'Eaten by'), value: _lmKName + (_lmK.virus ? '' : ' (' + fmtMass(_lmK.mass) + ')'), accent: true });
+                var _lmKName = _lmK.virus ? _lmTH('game2.virus', '') : (_lmK.nick ? application.escapeHTML(_lmK.nick) : _lmTH('game2.unnamedCell', ''));
+                stats.unshift({ icon: '\ud83d\udde1\ufe0f', label: _lmTH('eatenBy', ''), value: _lmKName + (_lmK.virus ? '' : ' (' + fmtMass(_lmK.mass) + ')'), accent: true });
             }
             /* "Watch killer": only when the server sent the eating cell's id (lmKiller field 5) */
             var _lmKWatch = defaultmapsettings.showKiller && _lmK && Date.now() - _lmK.at < 15000 && _lmK.cellId && !_lmK.virus;
@@ -46308,28 +46308,28 @@ function thelegendmodproject() {
                 ' onmouseover="this.style.color=\'' + mc + '\';this.style.background=\'rgba(255,255,255,0.1)\'"' +
                 ' onmouseout="this.style.color=\'' + tc2 + '\';this.style.background=\'rgba(255,255,255,0.05)\'"' +
                 '>✕</div>' +
-                '<div id="lm-go-copy" title="' + _lmTH('copyStats', 'Copy stats') + '" style="' +
+                '<div id="lm-go-copy" title="' + _lmTH('copyStats', '') + '" style="' +
                 'position:absolute;top:8px;left:12px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
                 'border-radius:4px;background:rgba(255,255,255,0.05);">📋</div>' +
-                '<div id="lm-go-share" title="' + _lmTH('shareStats', 'Share') + '" style="' +
+                '<div id="lm-go-share" title="' + _lmTH('shareStats', '') + '" style="' +
                 'position:absolute;top:8px;left:40px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
-                'border-radius:4px;background:rgba(255,255,255,0.05);">\ud83d\udd17</div>' +
-                '<div id="lm-go-dlcard" title="Download match card" style="' +
+                'border-radius:4px;background:rgba(255,255,255,0.05);">\ud83d\udd17</div>' + // i18n-ok: an icon
+                '<div id="lm-go-dlcard" title="' + _lmTH('game2.downloadCard', '') + '" style="' +
                 'position:absolute;top:8px;left:68px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
                 'border-radius:4px;background:rgba(255,255,255,0.05);">📸</div>' +
                 '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
-                '☠️ ' + _lmTH('gameOver', 'Game Over') + '</div>' +
+                '☠️ ' + _lmTH('gameOver', '') + '</div>' +
                 '</div>' +
 
                 /* Stats */
                 '<div style="padding:8px 12px 12px;">' + rows + '</div>' +
-                (_lmKWatch ? '<div style="padding:0 12px 10px;text-align:center;"><button id="lm-go-watch" type="button" style="background:' + mc + ';color:#fff;border:0;border-radius:4px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udc41\ufe0f ' + _lmTH('watchKiller', 'Watch killer') + '</button></div>' : '') +
+                (_lmKWatch ? '<div style="padding:0 12px 10px;text-align:center;"><button id="lm-go-watch" type="button" style="background:' + mc + ';color:#fff;border:0;border-radius:4px;padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udc41\ufe0f ' + _lmTH('watchKiller', '') + '</button></div>' : '') + // i18n-ok: an icon before the translated label
                 (_lmGraph ? '<div style="padding:0 12px 12px;"><canvas id="lm-go-graph" width="276" height="60" style="width:276px;height:60px;display:block;border-radius:4px;background:rgba(0,0,0,0.2);"></canvas></div>' : '') +
 
                 /* Share match card button + referral link (hidden on very small viewports to keep card compact) */
@@ -46340,7 +46340,7 @@ function thelegendmodproject() {
                 'padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;width:100%;' +
                 'letter-spacing:0.5px;transition:opacity 0.2s;' +
                 '" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">' +
-                '📸 Share Match Card</button></div>' +
+                '📸 ' + _lmTH('game2.shareCard', '') + '</button></div>' +
 
                 /* Referral / invite link */
                 '<div style="padding:0 12px 10px;text-align:center;">' +
@@ -46355,7 +46355,7 @@ function thelegendmodproject() {
                 'flex:1;background:transparent;border:0;color:' + tc2 + ';' +
                 'font-size:10px;font-family:monospace;cursor:pointer;outline:0;' +
                 'overflow:hidden;text-overflow:ellipsis;" value="">' +
-                '<span style="font-size:10px;color:' + mc + ';font-weight:700;white-space:nowrap;">Copy</span>' +
+                '<span style="font-size:10px;color:' + mc + ';font-weight:700;white-space:nowrap;">' + _lmTH('game2.copy', '') + '</span>' +
                 '</div></div>' +
                 '</div>' + /* close .lm-go-extra */
 
@@ -46377,11 +46377,11 @@ function thelegendmodproject() {
                     '@keyframes lmGoSlideIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.92)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}' +
                     '@keyframes lmGoSlideOut{from{opacity:1;transform:translate(-50%,-50%) scale(1)}to{opacity:0;transform:translate(-50%,-50%) scale(0.92)}}' +
                     '@keyframes lmGoRowIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}' +
-                    '.lm-go-row{display:flex;align-items:center;padding:4px 4px;border-radius:4px;' +
+                    /* i18n-ok: CSS */ '.lm-go-row{display:flex;align-items:center;padding:4px 4px;border-radius:4px;' +
                     'animation:lmGoRowIn 0.35s ease forwards;opacity:0;transition:background 0.15s}' +
                     '.lm-go-row:hover{background:rgba(255,255,255,0.05)}' +
                     '.lm-go-icon{font-size:14px;width:24px;text-align:center;flex-shrink:0}' +
-                    '.lm-go-label{flex:1;font-size:11px;color:' + tc2 + ';padding-left:6px}' +
+                    /* i18n-ok: CSS */ '.lm-go-label{flex:1;font-size:11px;color:' + tc2 + ';padding-left:6px}' +
                     '.lm-go-value{font-size:13px;font-weight:700;text-align:right;min-width:60px}' +
                     '@media(max-height:500px){.lm-go-extra{display:none}}';
                 document.head.appendChild(style);
@@ -46429,8 +46429,8 @@ function thelegendmodproject() {
                     card.appendChild(row);
                 }
                 var rec = fresh && (nb.mass || nb.time);
-                row.textContent = (rec ? '\ud83c\udfc5 New best ' + [nb.mass ? 'mass' : '', nb.time ? 'time alive' : ''].filter(Boolean).join(' + ') + '! \u00b7 ' : '') +
-                    'All-time: ' + fmtMass(b.m) + ' \u00b7 ' + fmtTime(Math.round(b.t / 1000)) + ' \u00b7 ' + b.g + ' games';
+                row.textContent = (rec ? '\ud83c\udfc5 ' + (nb.mass && nb.time ? lmT('game2.newBestBoth') : (nb.mass ? lmT('game2.newBestMass') : lmT('game2.newBestTime'))) + ' \u00b7 ' : '') +
+                    lmT('game2.allTime', [fmtMass(b.m), fmtTime(Math.round(b.t / 1000)), b.g]);
                 row.style.color = rec ? mc : tc2;
             };
             this._lmRefreshBestRow();
@@ -46448,8 +46448,8 @@ function thelegendmodproject() {
                     var lb = rowsEl[ri].querySelector('.lm-go-label'), vl = rowsEl[ri].querySelector('.lm-go-value');
                     if (lb && vl) lines.push(lb.textContent + ': ' + vl.textContent);
                 }
-                var text = 'Legend Mod - ' + (window.lmT ? window.lmT('gameOver') : 'Game Over') + '\n' + lines.join('\n');
-                var done = function (ok) { if (window.toastr) ok ? toastr.success(window.lmT ? window.lmT('copyStats') + ' ✓' : 'Copied') : toastr.warning('Could not copy.'); };
+                var text = 'Legend Mod - ' + window.lmT('gameOver') + '\n' + lines.join('\n');
+                var done = function (ok) { if (window.toastr) ok ? toastr.success(_lmTH('copyStats', '') + ' ✓') : toastr.warning(_lmTH('game2.copyFailed', '')); };
                 try {
                     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
                     else done(false);
@@ -46461,13 +46461,13 @@ function thelegendmodproject() {
                 e.stopPropagation();
                 var where = '';
                 try { where = [$('#region').val() === 'Private' ? '' : $('#region option:selected').text(), $('#gamemode option:selected').text()].map(function (v) { return String(v || '').trim(); }).filter(Boolean).join(' '); } catch (err) { }
-                var text = 'I reached ' + fmtMass(u.highestMass || u.finalMass) + ' mass and survived ' + fmtTime(u.timeTotal || u.longestTimeAlive || 0) + (where ? ' on ' + where.slice(0, 60) : '') + ' - Legend Mod';
+                var text = (where ? lmT('game2.shareTextOn', [fmtMass(u.highestMass || u.finalMass), fmtTime(u.timeTotal || u.longestTimeAlive || 0), where.slice(0, 60)]) : lmT('game2.shareText', [fmtMass(u.highestMass || u.finalMass), fmtTime(u.timeTotal || u.longestTimeAlive || 0)])) + ' - Legend Mod';
                 var _sNick = '';
                 try { _sNick = String($('#nick').val() || '').trim().replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 30); } catch(e2) {}
                 var url = 'https://www.legendmod.ml/' + (_sNick ? '?ref=' + _sNick : '');
                 var tweet = function () { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener'); };
                 try {
-                    if (navigator.share) navigator.share({ title: 'Legend Mod', text: text, url: url }).catch(function (err) { if (!err || err.name !== 'AbortError') tweet(); });
+                    /* i18n-ok: AbortError is an error name */ if (navigator.share) navigator.share({ title: 'Legend Mod', text: text, url: url }).catch(function (err) { if (!err || err.name !== 'AbortError') tweet(); });
                     else tweet();
                 } catch (err) { tweet(); }
             });
@@ -46512,7 +46512,7 @@ function thelegendmodproject() {
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'bold 42px "Segoe UI", Arial, sans-serif';
                 ctx.letterSpacing = '2px';
-                ctx.fillText('MATCH COMPLETE', W / 2, 100);
+                ctx.fillText(lmT('game2.matchComplete'), W / 2, 100);
 
                 /* Divider line */
                 var divGrad = ctx.createLinearGradient(200, 0, W - 200, 0);
@@ -46524,10 +46524,10 @@ function thelegendmodproject() {
 
                 /* Stat cards — 2×2 grid */
                 var cardStats = [
-                    { label: 'Highest Mass', value: fmtMass(u.highestMass || u.finalMass), icon: '👑' },
-                    { label: 'Best Rank', value: u.topPosition ? '#' + u.topPosition : '—', icon: '🏆' },
-                    { label: 'Survival', value: fmtTime(u.timeTotal || u.longestTimeAlive || 0), icon: '⏱️' },
-                    { label: 'Eliminations', value: String(u.playersEaten || 0), icon: '⚔️' }
+                    { label: window.lmT('highestMass'), value: fmtMass(u.highestMass || u.finalMass), icon: '👑' },
+                    { label: lmT('game2.bestRank'), value: u.topPosition ? '#' + u.topPosition : '—', icon: '🏆' },
+                    { label: lmT('game2.survival'), value: fmtTime(u.timeTotal || u.longestTimeAlive || 0), icon: '⏱️' },
+                    { label: lmT('game2.eliminations'), value: String(u.playersEaten || 0), icon: '⚔️' }
                 ];
 
                 var cardW = 240, cardH = 150, gapX = 40, gapY = 30;
@@ -46568,9 +46568,9 @@ function thelegendmodproject() {
 
                 /* Additional stats row */
                 var extraStats = [
-                    { label: 'Food Eaten', value: String(u.foodEaten || 0) },
-                    { label: 'Mass Consumed', value: fmtMass(u.massConsumed || 0) },
-                    { label: 'Viruses Eaten', value: String(u.virusesEaten || 0) }
+                    { label: window.lmT('foodEaten'), value: String(u.foodEaten || 0) },
+                    { label: window.lmT('massConsumed'), value: fmtMass(u.massConsumed || 0) },
+                    { label: window.lmT('virusesEaten'), value: String(u.virusesEaten || 0) }
                 ];
                 var extraY = startY + 2 * (cardH + gapY) + 10;
                 var extraW = (cardW * 2 + gapX) / 3 - 10;
@@ -46592,7 +46592,7 @@ function thelegendmodproject() {
                 ctx.fillStyle = '#ffffff';
                 ctx.font = 'italic 22px "Segoe UI", Arial, sans-serif';
                 ctx.textAlign = 'center';
-                ctx.fillText('Can you beat my score?', W / 2, H - 70);
+                ctx.fillText(lmT('game2.beatMyScore'), W / 2, H - 70);
 
                 /* Bottom bar with URL */
                 ctx.fillStyle = 'rgba(0,0,0,0.3)';
@@ -46639,7 +46639,7 @@ function thelegendmodproject() {
                 e.stopPropagation();
                 if (goSelf && goSelf._gameOverDismissTimer) { clearTimeout(goSelf._gameOverDismissTimer); goSelf._gameOverDismissTimer = null; }
                 _lmRenderMatchCard(function (blob) {
-                    if (!blob) { if (window.toastr) toastr.warning('Could not generate card.'); return; }
+                    if (!blob) { if (window.toastr) toastr.warning(_lmTH('game2.cardFailed', '')); return; }
                     var url = URL.createObjectURL(blob);
                     var a = document.createElement('a');
                     a.href = url;
@@ -46648,7 +46648,7 @@ function thelegendmodproject() {
                     a.click();
                     document.body.removeChild(a);
                     setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
-                    if (window.toastr) toastr.success('Match card downloaded! 📸');
+                    if (window.toastr) toastr.success(_lmTH('game2.cardDownloaded', '') + ' 📸');
                 });
             });
 
@@ -46658,15 +46658,15 @@ function thelegendmodproject() {
                 e.stopPropagation();
                 /* Pause auto-dismiss while generating */
                 if (goSelf && goSelf._gameOverDismissTimer) { clearTimeout(goSelf._gameOverDismissTimer); goSelf._gameOverDismissTimer = null; }
-                shareCardBtn.textContent = '⏳ Generating...';
+                shareCardBtn.textContent = '⏳ ' + lmT('game2.generating');
                 shareCardBtn.style.pointerEvents = 'none';
                 _lmRenderMatchCard(function (blob) {
-                    shareCardBtn.textContent = '📸 Share Match Card';
+                    shareCardBtn.textContent = '📸 ' + lmT('game2.shareCard');
                     shareCardBtn.style.pointerEvents = '';
-                    if (!blob) { if (window.toastr) toastr.warning('Could not generate card.'); return; }
+                    if (!blob) { if (window.toastr) toastr.warning(_lmTH('game2.cardFailed', '')); return; }
                     var file = new File([blob], 'legend-mod-match.png', { type: 'image/png' });
-                    var text = 'I reached ' + fmtMass(u.highestMass || u.finalMass) + ' mass and survived ' + fmtTime(u.timeTotal || u.longestTimeAlive || 0) + ' - Legend Mod';
-                    var shareData = { title: 'Legend Mod - Match Complete', text: text, url: 'https://www.legendmod.ml/' };
+                    var text = lmT('game2.shareText', [fmtMass(u.highestMass || u.finalMass), fmtTime(u.timeTotal || u.longestTimeAlive || 0)]) + ' - Legend Mod';
+                    /* i18n-ok: Legend Mod is the name */ var shareData = { title: 'Legend Mod - ' + lmT('game2.matchCompleteTitle'), text: text, url: 'https://www.legendmod.ml/' };
                     /* Try sharing with image file first (mobile), then text-only share, then download */
                     try {
                         if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -46696,7 +46696,7 @@ function thelegendmodproject() {
                 a.click();
                 document.body.removeChild(a);
                 setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
-                if (window.toastr) toastr.success('Match card saved! Share it on social media 🚀');
+                if (window.toastr) toastr.success(_lmTH('game2.cardSaved', '') + ' 🚀');
             }
 
             /* Referral / invite link: populate and wire up */
@@ -46714,16 +46714,16 @@ function thelegendmodproject() {
                     try {
                         if (navigator.clipboard && navigator.clipboard.writeText) {
                             navigator.clipboard.writeText(_refUrl).then(function() {
-                                if (window.toastr) toastr.success('Invite link copied! 🔗 Share it with friends!');
+                                if (window.toastr) toastr.success(_lmTH('game2.inviteCopiedShare', ''));
                             }, function() {
                                 refUrlEl.select();
                                 document.execCommand('copy');
-                                if (window.toastr) toastr.success('Invite link copied! 🔗');
+                                if (window.toastr) toastr.success(_lmTH('game2.inviteCopied', '') + ' 🔗');
                             });
                         } else {
                             refUrlEl.select();
                             document.execCommand('copy');
-                            if (window.toastr) toastr.success('Invite link copied! 🔗');
+                            if (window.toastr) toastr.success(_lmTH('game2.inviteCopied', '') + ' 🔗');
                         }
                     } catch(err) {
                         refUrlEl.select();
@@ -49158,13 +49158,13 @@ function thelegendmodproject() {
             window.updateLegendXpPanel();
 
             $("#stats-content").html(`
-All time score     : ${allTimeScore}<br/>
-Games played      : ${gamesPlayed}<br/>
-${_lmTH('avgMass', 'Average mass')}      : ${_lmAvgMass}<br/>
-Highest mass      : ${highestMass}<br/>
-Longest time alive : ${_lmLtaText}<br/>
-Mass consumed     : ${massConsumed}<br/>
-Most cells eaten   : ${mostCellsEaten}
+<span data-i18n="game2.stAllTime">${lmT('game2.stAllTime')}</span> : ${allTimeScore}<br/>
+<span data-i18n="game2.stGames">${lmT('game2.stGames')}</span> : ${gamesPlayed}<br/>
+<span data-i18n="avgMass">${_lmTH('avgMass', '')}</span> : ${_lmAvgMass}<br/>
+<span data-i18n="game2.stHighest">${lmT('game2.stHighest')}</span> : ${highestMass}<br/>
+<span data-i18n="game2.stLongest">${lmT('game2.stLongest')}</span> : ${_lmLtaText}<br/>
+<span data-i18n="game2.stConsumed">${lmT('game2.stConsumed')}</span> : ${massConsumed}<br/>
+<span data-i18n="game2.stMostCells">${lmT('game2.stMostCells')}</span> : ${mostCellsEaten}
       `)
             /* badges grid in the profile and at most one "Badge unlocked" toast (computed after this update) */
             try { if (typeof window._lmBadgesSchedule === 'function') window._lmBadgesSchedule(s, this.user); } catch (e) { }
@@ -49343,16 +49343,16 @@ Most cells eaten   : ${mostCellsEaten}
                 ? Math.floor(accountAgeRaw)
                 : ~~(accountAgeRaw / 3600 / 24);
             /* server strings: escape before .html() */
-            var country = application.escapeHTML(String(i.latestCountryCode || 'N/A'));
-            var gameName = application.escapeHTML(String(i.displayName || 'Player'));
+            var country = application.escapeHTML(String(i.latestCountryCode || lmT('game2.na')));
+            var gameName = application.escapeHTML(String(i.displayName || lmT('game2.player')));
 
             $("#user-info").html(
-                'Account age     : ' + accountAge + 'D<br/>' +
-                'Potions obtained : ' + potions + '<br/>' +
-                'Quests completed : ' + quests + '<br/>' +
-                'Skins created   : ' + skins + '<br/>' +
-                'Country         : ' + country + '<br/>' +
-                'Game name       : ' + gameName + '<br/>'
+                '<span data-i18n="game2.uiAccountAge">' + lmT('game2.uiAccountAge') + '</span> : ' + lmT('game2.uiDays', [accountAge]) + '<br/>' +
+                '<span data-i18n="game2.uiPotions">' + lmT('game2.uiPotions') + '</span> : ' + potions + '<br/>' +
+                '<span data-i18n="game2.uiQuests">' + lmT('game2.uiQuests') + '</span> : ' + quests + '<br/>' +
+                '<span data-i18n="game2.uiSkins">' + lmT('game2.uiSkins') + '</span> : ' + skins + '<br/>' +
+                '<span data-i18n="game2.uiCountry">' + lmT('game2.uiCountry') + '</span> : ' + country + '<br/>' +
+                '<span data-i18n="game2.uiGameName">' + lmT('game2.uiGameName') + '</span> : ' + gameName + '<br/>'
             )
         },
         /* ── LW: Agar.io-style login success notification ──────────── */
@@ -49557,7 +49557,7 @@ Most cells eaten   : ${mostCellsEaten}
             // Expanding Land: Use server-sent player/bot counts (opcode 203)
             // Only active when currently connected to Expanding Land
             if (LM.isLegendWorld && typeof ogario.elPlayerCount !== 'undefined' && ogario.elPlayerCount !== null) {
-                teamText += '<span class="me">' + Languageletter313 + ': ' + ogario.elPlayerCount + ' Bots: ' + ogario.elBotCount + '</span>';
+                teamText += '<span class="me">' + Languageletter313 + ': ' + ogario.elPlayerCount + ' ' + lmT('game2.bots') + ': ' + ogario.elBotCount + '</span>';
             }
             // Standard Agar.io or non-Expanding Land servers
             else if (legendmod.gameMode != ":battleroyale" && LM.ws) {
@@ -49585,14 +49585,14 @@ Most cells eaten   : ${mostCellsEaten}
                      * players with the same name one player (the server list counts the same way) */
                     var totalRealPlayers = legendmod.leaderboard.length - counterNicks;
                     if (counterNicks > 0) {
-                        teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' Bots: ' + counterNicks + '</span>';
+                        teamText += '<span class="me">' + Languageletter313 + ': ' + totalRealPlayers + ' ' + lmT('game2.bots') + ': ' + counterNicks + '</span>';
                     }
                     else {
                         teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
                     }
 
                     if (defaultmapsettings.FBTracking && legendmod.friends && legendmod.friends > 0) {
-                        teamText += '<span class="teammate">' + 'Friends' + ': ' + legendmod.friends + '</span>';
+                        teamText += '<span class="teammate">' + lmT('game2.friends') + ': ' + legendmod.friends + '</span>';
                     }
                 } else {
                     teamText += '<span class="me">' + Premadeletter130 + ': ' + this.leaderboard.length + '</span>';
@@ -49600,9 +49600,9 @@ Most cells eaten   : ${mostCellsEaten}
             } else if (legendmod.gameMode === ":battleroyale") {
                 teamText = '<span>';
                 if (legendmod.battleRoyale.shrinkTime - Date.now() / 1000 > 0) {
-                    teamText += '<span>Shrink time: ' + legendmod.battleRoyale.timeLeft + '</span>';
+                    teamText += '<span>' + lmT('game2.shrinkTime') + ': ' + legendmod.battleRoyale.timeLeft + '</span>';
                 }
-                teamText += '<span class="me">' + 'Players: ' + legendmod.battleRoyale.players + '</span>';
+                teamText += '<span class="me">' + Languageletter313 + ': ' + legendmod.battleRoyale.players + '</span>';
                 teamText += '</span>';
             }
             if (defaultmapsettings.showLbData) {
@@ -49694,7 +49694,7 @@ Most cells eaten   : ${mostCellsEaten}
                 document.body.appendChild(el);
             }
             this._lmSpecFollowTop(el);
-            var label = (typeof textLanguage !== 'undefined' && textLanguage.lmSpecFollowing) || 'Following';
+            var label = lmT('settings.lmSpecFollowing');
             var sector = '';
             try { sector = application.calculateMapSector(g.x + this.mapOffsetX, g.y + this.mapOffsetY); } catch (e) { }
             el.textContent = label + ' #' + (i + 1) + ' \u00B7 ' + application.shortMassFormat(g.mass) + (sector ? ' \u00B7 ' + sector : '');
@@ -49751,7 +49751,7 @@ Most cells eaten   : ${mostCellsEaten}
                 }
                 if (g) { t.x = g.x; t.y = g.y; if (g.mass) t.mass = g.mass; t.at = now; }
                 else if (now - t.at > (t.wait || 2000)) {
-                    if (t.id && window.toastr) toastr.info(_lmTH('watchKillerGone', 'Your killer is no longer in view'));
+                    if (t.id && window.toastr) toastr.info(_lmTH('watchKillerGone', ''));
                     this._lmSpecCellStop(); return null;
                 }
             }
@@ -49808,7 +49808,7 @@ Most cells eaten   : ${mostCellsEaten}
                 document.body.appendChild(el);
             }
             this._lmSpecFollowTop(el);
-            var label = (typeof textLanguage !== 'undefined' && textLanguage.lmSpecFollowing) || 'Following';
+            var label = lmT('settings.lmSpecFollowing');
             var txt = label + ' ' + (t.nick || '?') + ' \u00B7 ' + application.shortMassFormat(t.mass);
             if (el.textContent !== txt) el.textContent = txt;
             if (el.style.display !== 'block') el.style.display = 'block';
@@ -50351,8 +50351,9 @@ Most cells eaten   : ${mostCellsEaten}
                     var daySuffix = (expiryDay === 1 || expiryDay === 21 || expiryDay === 31) ? "st" :
                         (expiryDay === 2 || expiryDay === 22) ? "nd" :
                             (expiryDay === 3 || expiryDay === 23) ? "rd" : "th";
-                    var tempdateNow2 = expiryDay + daySuffix + " of " + expiryMonth;
-                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> <span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Congratulations</span> for your score on FFA PowerUp.<br>  Your licence is stored as Giveaway Premium until <font color='blue'><b>" + tempdateNow2 + "</font></b>. Thank you for using our mod!").css("width", "350px");
+                    /* the date in the chosen language (day and month name) */
+                    var tempdateNow2 = expiryDate.toLocaleDateString(window.LMi18n ? (LMi18n.lang() === 'zh' ? 'zh-TW' : LMi18n.lang()) : undefined, { day: 'numeric', month: 'long' });
+                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game2.megaFfaWin', [tempdateNow2])).css("width", "350px");
                     /* the reset to 0 is stored at once, with the licence */
                     this._lmBigFFADirty = true;
                     this.flushMegaFFAscore();
@@ -53218,7 +53219,7 @@ Most cells eaten   : ${mostCellsEaten}
         updateScanTrickStatus() {
             var text = '';
             if (defaultmapsettings.scanTrickStatus && defaultmapsettings.scanTrick && this.scanTrickActive) {
-                text = 'Scan Trick' + (this.scanTrickSnapped ? ' (' + this.getScanTrickDirectionCount() + ' directions)' : '');
+                text = lmT('settings.scanTrickGroup') + (this.scanTrickSnapped ? ' (' + lmT('game2.directions', [this.getScanTrickDirectionCount()]) + ')' : '');
             }
             if (text === this._scanTrickStatusText) return;
             this._scanTrickStatusText = text;
@@ -53428,7 +53429,7 @@ Most cells eaten   : ${mostCellsEaten}
         updateLineSplitStatus() {
             var text = '';
             if (this.lineSplitActive && defaultmapsettings.lineSplitStatus) {
-                text = (textLanguage.lineSplitGroup || 'Line Split') + ' x' + Math.pow(2, this.lineSplitSplits);
+                text = lmT('settings.lineSplitGroup') + ' x' + Math.pow(2, this.lineSplitSplits);
             }
             if (text === this._lineSplitStatusText) return;
             this._lineSplitStatusText = text;
@@ -53804,14 +53805,14 @@ Most cells eaten   : ${mostCellsEaten}
             if (!this.hudEl) return;
             var s = this.stats;
             this.hudEl.innerHTML =
-                '<div style="font-weight:bold;color:#fff;border-bottom:1px solid #334;margin-bottom:4px;padding-bottom:2px;">⚡ CLIENT PROFILER</div>' +
-                '<div><b>CPU Load:</b> <span style="color:#ffcc00;font-weight:bold;">' + s.cpuAvgPct + '%</span></div>' +
-                '<div><b>Frame Time:</b> ' + s.frameMs.toFixed(2) + 'ms (Avg ' + s.frameAvgMs + 'ms)</div>' +
-                '<div><b>WebGL Draw:</b> ' + s.webglMs.toFixed(2) + 'ms (Avg ' + s.webglAvgMs + 'ms)</div>' +
-                '<div><b>Text Pass:</b> ' + s.textMs.toFixed(2) + 'ms (Avg ' + s.textAvgMs + 'ms)</div>' +
-                '<div><b>Packet 16:</b> ' + s.packetMs.toFixed(2) + 'ms (Avg ' + s.packetAvgMs + 'ms)</div>' +
-                '<div><b>Physics:</b> ' + s.physicsMs.toFixed(2) + 'ms (Avg ' + s.physicsAvgMs + 'ms)</div>' +
-                '<div><b>Leaderboard:</b> ' + s.lbMs.toFixed(2) + 'ms</div>';
+                '<div style="font-weight:bold;color:#fff;border-bottom:1px solid #334;margin-bottom:4px;padding-bottom:2px;">⚡ ' + lmT('game2.profTitle') + '</div>' +
+                '<div><b>' + lmT('game2.profCpu') + ':</b> <span style="color:#ffcc00;font-weight:bold;">' + s.cpuAvgPct + '%</span></div>' +
+                '<div><b>' + lmT('game2.profFrame') + ':</b> ' + lmT('game2.profMs', [s.frameMs.toFixed(2), s.frameAvgMs]) + '</div>' +
+                '<div><b>' + lmT('game2.profWebgl') + ':</b> ' + lmT('game2.profMs', [s.webglMs.toFixed(2), s.webglAvgMs]) + '</div>' +
+                '<div><b>' + lmT('game2.profText') + ':</b> ' + lmT('game2.profMs', [s.textMs.toFixed(2), s.textAvgMs]) + '</div>' +
+                '<div><b>' + lmT('game2.profPacket') + ':</b> ' + lmT('game2.profMs', [s.packetMs.toFixed(2), s.packetAvgMs]) + '</div>' +
+                '<div><b>' + lmT('game2.profPhysics') + ':</b> ' + lmT('game2.profMs', [s.physicsMs.toFixed(2), s.physicsAvgMs]) + '</div>' +
+                '<div><b>' + lmT('game2.profLb') + ':</b> ' + s.lbMs.toFixed(2) + 'ms</div>';
         },
         printReport() {
             var frameAvg = parseFloat(this.stats.frameAvgMs) || 0.001;
@@ -53842,6 +53843,8 @@ Most cells eaten   : ${mostCellsEaten}
     window.printClientProfile = function () { window.clientProfiler.printReport(); };
     window.startProfile = function (label) { console.profile(label || 'LegendMod_ClientProfile'); };
     window.stopProfile = function (label) { console.profileEnd(label || 'LegendMod_ClientProfile'); };
+/* The bold "[SERVER]:" style prefix of the toasts in the chosen language (game2.tag.* in developers/i18n/src/game2.json). */
+function _lmG2Tag(tag) { /* i18n-ok: the key is game2.tag.<tag> */ return '<b>[' + window.lmT('game2.tag.' + tag) + ']:</b> '; }
 
 /*
  * Select the actual smallest/biggest player cell by size.
@@ -79233,7 +79236,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         this.ctx.font = defaultSettings.namesFontWeight + " " + this.nickSize + "px " + defaultSettings.namesFontFamily;
                         var angle = Math.PI * 0.8;
 
-                        var ghostNick = ghost.nick || (LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : "Ghost cell");
+                        var ghostNick = ghost.nick || (LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : lmT('game2.ghostCell'));
                         /* Cache cleaned text on ghost cell — only recompute when nick changes */
                         if (!ghost._cleanedText || ghost._cleanedNick !== ghostNick) {
                             ghost._cleanedNick = ghostNick;
@@ -79818,7 +79821,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setHotkeysMenu() {
             //var t = this;
             const setup = this;
-            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"lm-hk-title\" class=\"menu-main-color\">' + String(textLanguage.hotkeys || 'Hotkeys').replace(/[&<>"']/g, function (c) { return escapeChar[c]; }) + '</div><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\">' + textLanguage.restoreSettings + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\">' + textLanguage.saveSett + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\">' + textLanguage['close'] + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li>' + textLanguage['hk-inst-assign'] + '</li><li>' + textLanguage['hk-inst-delete'] + '</li><li>' + textLanguage['hk-inst-keys'] + '</li></ul></div></div>'), hotkeysCommand)
+            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"lm-hk-title\" class=\"menu-main-color\" data-i18n=\"settings.hotkeys\">' + _lmTH('settings.hotkeys', '') + '</div><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\" data-i18n=\"settings.restoreSettings\">' + _lmTH('settings.restoreSettings', '') + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\" data-i18n=\"settings.saveSett\">' + _lmTH('settings.saveSett', '') + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\" data-i18n=\"settings.close\">' + _lmTH('settings.close', '') + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li data-i18n=\"settings.hk-inst-assign\">' + _lmTH('settings.hk-inst-assign', '') + '</li><li data-i18n=\"settings.hk-inst-delete\">' + _lmTH('settings.hk-inst-delete', '') + '</li><li data-i18n=\"settings.hk-inst-keys\">' + _lmTH('settings.hk-inst-keys', '') + '</li></ul></div></div>'), hotkeysCommand)
                 if (hotkeysCommand.hasOwnProperty(command)) {
                     var currentCommand = hotkeysCommand[command],
                         text = '';
@@ -79833,9 +79836,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         var replaceHk = command.replace('hk-', '');
                         /* chat command texts are user/imported text: escape them for the value attribute (a quote cut the text off) */
                         var commandText = String(chatCommand[replaceHk] == null ? '' : chatCommand[replaceHk]).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
-                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
-                    } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"Clear\">×</a></div></div>');
+                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"' + _lmTH('game2.hkClear', '') + '\" data-i18n-title=\"game2.hkClear\">×</a></div></div>');
+                    } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"' + _lmTH('game2.hkClear', '') + '\" data-i18n-title=\"game2.hkClear\">×</a></div></div>');
                 }
+            /* the command names follow a language change too (their labels are getters reading the packs) */
+            if (window.LMi18n && !setup._lmHkI18n) setup._lmHkI18n = LMi18n.onChange(function () {
+                $('#hotkeys-cfg .custom-key-in').each(function () {
+                    var c = hotkeysCommand[this.id];
+                    if (c && c.type !== 'command') $(this).closest('.row').find('.key-label').text(c.label);
+                });
+            });
             $(document).on('click', '#reset-hotkeys', function (event) {
                 event.preventDefault();
                 //hotkeysSetup.resetHotkeys();
@@ -80036,16 +80046,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (key !== 'DEL') {
                     var _lmKc = null;
                     try { _lmKc = window.LMSmallTools && typeof window.LMSmallTools.keyCheck === 'function' ? window.LMSmallTools.keyCheck(key) : null; } catch (eKc) { }
-                    if (!_lmKc && /^(CTRL\+W|CTRL\+T|CTRL\+N|CTRL\+TAB|ALT\+TAB|ALT\+F4|ESC)$/.test(key)) _lmKc = { level: 'block', what: 'is kept by the browser' };
+                    if (!_lmKc && /^(CTRL\+W|CTRL\+T|CTRL\+N|CTRL\+TAB|ALT\+TAB|ALT\+F4|ESC)$/.test(key)) _lmKc = { level: 'block', what: lmT('game2.hkKeptByBrowser') };
                     var _lmKe = function (t) { return $('<div>').text(t).html(); };
                     if (_lmKc && _lmKc.level === 'block') {
                         var _lmKeep = '';
                         for (var _lmK in hotkeys) { if (hotkeys.hasOwnProperty(_lmK) && _lmK !== 'spec-messageKey' && hotkeys[_lmK] === id) { _lmKeep = _lmK; break; } }
                         $('#' + id).val(_lmKeep);
-                        if (window.toastr) toastr.warning('<b>' + _lmKe(key) + '</b> cannot be used: it ' + _lmKe(_lmKc.what) + '.');
+                        if (window.toastr) toastr.warning(lmT('game2.hkBlocked', [_lmKe(key), _lmKe(_lmKc.what)]));
                         return;
                     }
-                    if (_lmKc && _lmKc.level === 'warn' && window.toastr) toastr.warning('<b>' + _lmKe(key) + '</b> is set, but the browser may still use it: it ' + _lmKe(_lmKc.what) + '.');
+                    if (_lmKc && _lmKc.level === 'warn' && window.toastr) toastr.warning(lmT('game2.hkBrowserWarn', [_lmKe(key), _lmKe(_lmKc.what)]));
                 }
                 var value = $('#' + id).val();
                 /* the key really bound to this command (the field text could differ) */
@@ -80066,7 +80076,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                          * Labels can be player-typed command text: escape before toastr (HTML). */
                         if (window.toastr) {
                             var _lmHkLbl = $('<div>').text((hotkeysCommand[hotkey] && hotkeysCommand[hotkey].label) || hotkey).html();
-                            toastr.info('<b>' + _lmHkLbl + '</b> ' + (defaultKey ? 'moved to <b>' + $('<div>').text(defaultKey).html() + '</b>' : 'is now unbound'));
+                            toastr.info(defaultKey ? lmT('game2.hkMoved', [_lmHkLbl, $('<div>').text(defaultKey).html()]) : lmT('game2.hkUnbound', [_lmHkLbl]));
                         }
                     }
                     hotkeys[key] = id,
@@ -80405,7 +80415,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* middle click in a hotkey field assigns MOUSE WHEEL (no key event produces it) */
         if (event.which === 2 && _lmMT.className === hotkeysSetup.inputClassName && _lmMT.id) {
             event.preventDefault && event.preventDefault();
-            hotkeysSetup.setHotkey('MOUSE WHEEL', _lmMT.id);
+            hotkeysSetup.setHotkey('MOUSE WHEEL', _lmMT.id); // i18n-ok: a key name, stored in the hotkey settings
             return;
         }
         if (_lmMT.tagName === 'INPUT' || _lmMT.tagName === 'TEXTAREA' || _lmMT.tagName === 'SELECT' || _lmMT.tagName === 'BUTTON' || _lmMT.isContentEditable === true) return;
@@ -80794,7 +80804,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             window.lastRecaptchaResponseToken = token;
             window.botscaptcha = false;
             //toastr.info('Captcha token sent to node.js', token)
-            toastr.info('<b>[' + Premadeletter123 + ']:</b> Thank you for solving Captcha for bots')
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.botsCaptchaThanks'))
             window.connectionBots.send(window.buffers.captchatoken(token))
         },
         setClientVersion(version, strVersion) {
@@ -81024,9 +81034,9 @@ function setGUIEvents() {
 
                     if (legendmod.gameMode != ":party") window.connectionBots.send(window.buffers.sendMode(window.unescape(window.encodeURIComponent(ogarcopythelb.nick))))
                     //window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.botsSpawncode[window.botsSpawncodeNum], window.bots.amount))                     					
-                } else toastr.info('<b>[' + Premadeletter123 + ']:</b> Bots amount required (max 190)')
+                } else toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.botsAmount'))
             } else {
-                toastr.info('<b>[' + Premadeletter123 + ']:</b> Party bots only available for Party mode')
+                toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.botsPartyOnly'))
             }
         }
     })
@@ -81244,7 +81254,7 @@ const menuLeft = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
         'icon': 'download',
-        'name': 'Attack',
+        get name() { return lmT('game2.ctxAttack'); },
         action: () => {
             leftClickAttack()
 
@@ -81252,14 +81262,14 @@ const menuLeft = new ContextMenu({
     },
     {
         'icon': 'question',
-        'name': 'Fight',
+        get name() { return lmT('game2.ctxFight'); },
         action: () => {
             leftClickFight()
         }
     },
     {
         'icon': 'exclamation-triangle',
-        'name': 'Run',
+        get name() { return lmT('game2.ctxRun'); },
         action: () => {
             leftClickRun()
         }
@@ -81270,7 +81280,7 @@ const menuLeft2 = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
         'icon': 'download',
-        'name': 'Open',
+        get name() { return lmT('game2.ctxOpen'); },
         action: () => {
             leftClickOpen()
             menuLeft2.hide();
@@ -81281,7 +81291,7 @@ const menuLeft3 = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
         'icon': 'download',
-        'name': 'Open',
+        get name() { return lmT('game2.ctxOpen'); },
         action: () => {
             leftClickOpen2()
             menuLeft3.hide();
@@ -81292,7 +81302,7 @@ const menuLeft4 = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
         'icon': 'download',
-        'name': 'Open',
+        get name() { return lmT('game2.ctxOpen'); },
         action: () => {
             leftClickOpen3()
             menuLeft4.hide();
@@ -81634,7 +81644,8 @@ setInterval(function () {
         if (show && !el) {
             el = document.createElement('div');
             el.id = 'lm-nofocus';
-            el.textContent = 'NO FOCUS';
+            el.textContent = lmT('game2.noFocus');
+            el.setAttribute('data-i18n', 'game2.noFocus');
             el.style.cssText = 'position:fixed;top:38%;left:50%;transform:translateX(-50%);z-index:150;pointer-events:none;' +
                 'font:700 28px sans-serif;letter-spacing:3px;color:#ff4d4d;text-shadow:0 0 6px #000,0 0 2px #000;';
             document.body.appendChild(el);
@@ -81681,13 +81692,13 @@ window.lmToggleNetGraph = function () {
             line(g.fps, 144, '#5fe35f');
             line(g.ping, pMax, '#ffb84d');
             x.font = '10px sans-serif'; x.textBaseline = 'top';
-            x.fillStyle = '#5fe35f'; x.fillText('FPS ' + f, 4, 2);
+            x.fillStyle = '#5fe35f'; x.fillText('FPS ' + f, 4, 2); // i18n-ok: FPS and PING are the usual names
             x.fillStyle = '#ffb84d'; x.fillText('PING ' + (p || '-'), 70, 2);
             /* renderer of the last frame: WebGL, or Canvas (WebGL off in settings, GPU reset
              * cooldown, or a frame WebGL cannot draw such as a selected cell or a video skin) */
             if (dr) {
-                var rl = dr._lmFrameGL ? 'WebGL' : defaultmapsettings.webgl2Acceleration === false ? 'Canvas off' :
-                    (dr._webglDisabledUntil && Date.now() < dr._webglDisabledUntil) ? 'Canvas reset' : 'Canvas';
+                var rl = dr._lmFrameGL ? 'WebGL' : defaultmapsettings.webgl2Acceleration === false ? lmT('game2.ngCanvasOff') : // i18n-ok: WebGL and Canvas are renderer names
+                    (dr._webglDisabledUntil && Date.now() < dr._webglDisabledUntil) ? lmT('game2.ngCanvasReset') : 'Canvas'; // i18n-ok: Canvas is the renderer name
                 x.fillStyle = 'rgba(255,255,255,0.75)'; x.textAlign = 'right'; x.fillText(rl, w - 4, 2); x.textAlign = 'left';
             }
         } catch (e) { }
@@ -81966,7 +81977,7 @@ function openhelper() {
         s2.type = "text/javascript";
         s2.src = "https://jimboy3100.github.io/extras/legendhelper.js";
         s2.onerror = function () {
-            if (window.toastr) toastr.error('Could not load Mod Info & Templates.');
+            if (window.toastr) toastr.error(lmT('game2.helperFailed'));
         };
         document.body.appendChild(s2);
     };
@@ -82058,7 +82069,7 @@ function rotateminimapsectors() {
                 "<b>[" +
                 Premadeletter123 +
                 "]:</b> " +
-                "Rotation can work only before the creation of Multi-Viewports"
+                lmT('game2.rotationBeforeViewports')
             );
         }
 
@@ -82344,12 +82355,13 @@ function appendLMhiFbPs() {
         tickMs: 1000
     });
 
+    /* getters: the names in the chosen language each time they are shown */
     var SB_MODE_LABELS = {
-        ':ffa': 'FFA',
-        ':battleroyale': 'Battle Royale',
-        ':teams': 'Teams',
-        ':experimental': 'Experimental',
-        ':party': 'Party'
+        get ':ffa'() { return lmT('agario.page_gamemode_ffa'); },
+        get ':battleroyale'() { return lmT('agario.page_gamemode_battle_royale'); },
+        get ':teams'() { return lmT('agario.page_gamemode_teams'); },
+        get ':experimental'() { return lmT('agario.page_gamemode_experimental'); },
+        get ':party'() { return lmT('game2.modeParty'); }
     };
 
     /* ---------- pure helpers ---------- */
@@ -82394,7 +82406,7 @@ function appendLMhiFbPs() {
         return String(region || '')
             .replace(/^[A-Z]{2}-/i, '')
             .replace(/[-_]+/g, ' ')
-            .trim() || 'Server';
+            .trim() || lmT('game2.sbServer');
     }
 
     function sbEscHtml(value) {
@@ -82404,12 +82416,12 @@ function appendLMhiFbPs() {
     }
 
     function sbPlayers(n) {
-        return n + (n === 1 ? ' player' : ' players');
+        return n === 1 ? lmT('game2.sbPlayer', [n]) : lmT('game2.sbPlayers', [n]);
     }
 
     /* "74 players · 27 bots": bots as the leaderboard footer counts them */
     function sbPopulationText(players, bots) {
-        return sbPlayers(players) + (bots > 0 ? ' · ' + bots + (bots === 1 ? ' bot' : ' bots') : '');
+        return sbPlayers(players) + (bots > 0 ? ' · ' + (bots === 1 ? lmT('game2.sbBot', [bots]) : lmT('game2.sbBots', [bots])) : '');
     }
 
     /* Players and bots in a leaderboard (an array of nicks). The footer's rule: a name
@@ -82808,7 +82820,7 @@ function appendLMhiFbPs() {
         if (!ctx.scannable) return false;
         var m = window.master;
         if (!m || typeof m.makeMasterRequest !== 'function' || typeof m.setRequestMsg !== 'function') {
-            sbScan.error = 'Matchmaking is not ready yet. Try again in a moment.';
+            sbScan.error = lmT('game2.sbNotReady');
             return false;
         }
         if (sbScan.running) {
@@ -82861,7 +82873,7 @@ function appendLMhiFbPs() {
             m.makeMasterRequest(endpointVersion + '/findServer', m.setRequestMsg(list.region, list.mode), function (response) {
                 if (token !== sbScan.token) return;
                 if (response && response.status === 'invalid_client') {
-                    finish('Matchmaking refused this client version. Reload the page and scan again.');
+                    finish(lmT('game2.sbRefused'));
                     return;
                 }
                 var endpoint = response && response.endpoints && response.endpoints.https;
@@ -82878,7 +82890,7 @@ function appendLMhiFbPs() {
             }, function () {
                 if (token !== sbScan.token) return;
                 if (++errors >= SB.scanMaxErrors) {
-                    finish('Matchmaking did not answer. Press Scan to try again.');
+                    finish(lmT('game2.sbNoAnswer'));
                     return;
                 }
                 next();
@@ -82974,7 +82986,7 @@ function appendLMhiFbPs() {
             entry.checkedAt = Date.now();
             entry.names = result.names || null;
             entry.namesAt = result.names ? entry.checkedAt : 0;
-            entry.status = result.count + (result.bots || 0) === 0 ? 'empty' : result.capped ? 'minimap list (at most 20)' : 'measured';
+            entry.status = result.count + (result.bots || 0) === 0 ? 'empty' : result.capped ? 'capped' : 'measured';
             entry.fails = 0;
             entry.offline = false;
         } else if (result.reason !== 'cancelled') {
@@ -83180,7 +83192,7 @@ function appendLMhiFbPs() {
         var entry = list && list.servers.get(host);
         var m = window.master;
         if (!entry || entry.offline || !m || typeof m.connect !== 'function') return false;
-        if (ctx.alive && !window.confirm('Leave this game and join ' + entry.alias + '?')) return false;
+        if (ctx.alive && !window.confirm(lmT('game2.sbLeaveJoin', [entry.alias]))) return false;
 
         sbCancelScan();
         sbStopProbes();
@@ -83197,12 +83209,12 @@ function appendLMhiFbPs() {
             m.connect(entry.endpoint, generation);
         } catch (e) {
             sbJoin = null;
-            sbSetNotice('Could not switch server: ' + (e && e.message ? e.message : e));
+            sbSetNotice(lmT('game2.sbSwitchFailed', [(e && e.message ? e.message : e)]));
             console.error('[Servers] Join failed:', e);
             return false;
         }
         console.log('[Servers] Joining ' + entry.alias + ' (' + entry.endpoint + ')');
-        if (window.toastr) toastr.info('<b>[Servers]:</b> Joining ' + sbEscHtml(entry.alias) + '…');
+        if (window.toastr) toastr.info(_lmG2Tag('servers') + lmT('game2.sbJoining', [sbEscHtml(entry.alias)]));
         return true;
     }
 
@@ -83213,7 +83225,7 @@ function appendLMhiFbPs() {
         } else if (ctx.currentHost === sbJoin.host && ctx.connected) {
             sbJoin = null;
         } else if (Date.now() - sbJoin.startedAt > SB.joinTimeoutMs) {
-            sbSetNotice('Could not join ' + sbJoin.alias + '. Pick it again to retry.');
+            sbSetNotice(lmT('game2.sbJoinFailed', [sbJoin.alias]));
             sbJoin = null;
         }
     }
@@ -83245,8 +83257,8 @@ function appendLMhiFbPs() {
         row.className = 'clearfix';
         row.style.display = 'none';
         row.innerHTML =
-            '<select id="lm-server-list" class="form-control" aria-label="Switch server"></select>' +
-            '<button type="button" id="lm-server-scan" class="btn btn-primary"><i class="fa fa-search"></i> <span>Scan</span></button>' +
+            '<select id="lm-server-list" class="form-control" aria-label="' + _lmTH('game2.sbSwitch', '') + '" data-i18n-aria-label="game2.sbSwitch"></select>' +
+            '<button type="button" id="lm-server-scan" class="btn btn-primary"><i class="fa fa-search"></i> <span>' + _lmTH('game2.sbScan', '') + '</span></button>' +
             '<div id="lm-server-status"></div>';
         var party = document.getElementById('ogario-party');
         if (party && party.parentNode === info) info.insertBefore(row, party);
@@ -83269,7 +83281,7 @@ function appendLMhiFbPs() {
             sbRender();
         });
         row.querySelector('#lm-server-scan').addEventListener('click', function () {
-            if (sbScan.running) sbCancelScan('Scan stopped.');
+            if (sbScan.running) sbCancelScan(lmT('game2.sbStopped'));
             else sbStartScan(true);
             sbRender();
         });
@@ -83279,15 +83291,15 @@ function appendLMhiFbPs() {
 
     function sbCountText(entry) {
         if (entry.players !== null) return sbPopulationText(entry.players, entry.bots || 0);
-        if (entry.active || entry.queued) return 'checking…';
-        return '? players';
+        if (entry.active || entry.queued) return lmT('game2.sbChecking');
+        return lmT('game2.sbPlayers', ['?']);
     }
 
     function sbEntryTitle(entry) {
         var title = entry.alias + ' — ' + sbHostTail(entry.host);
-        if (entry.checkedAt) title += '\nCounted at ' + new Date(entry.checkedAt).toLocaleTimeString();
-        if (entry.bots) title += '\nBots: names on the leaderboard 3 or more times';
-        if (entry.status && entry.status !== 'live' && entry.status !== 'measured') title += '\nLast check: ' + entry.status;
+        if (entry.checkedAt) title += '\n' + lmT('game2.sbCountedAt', [new Date(entry.checkedAt).toLocaleTimeString()]);
+        if (entry.bots) title += '\n' + lmT('game2.sbBotsTip');
+        if (entry.status && entry.status !== 'live' && entry.status !== 'measured') title += '\n' + lmT('game2.sbLastCheck', [entry.status === 'empty' ? lmT('game2.sbStEmpty') : entry.status === 'capped' ? lmT('game2.sbStCapped') : entry.status]); // i18n-ok: other statuses are error codes
         return title;
     }
 
@@ -83300,11 +83312,11 @@ function appendLMhiFbPs() {
             var current = list && list.servers.get(ctx.currentHost);
             var count = sbCurrentCount(ctx);
             var partyToken = window.master && window.master.partyToken;
-            var name = ctx.mode === ':party' ? 'Party' + (partyToken ? ' ' + partyToken : ' server')
-                : current ? current.alias : 'This server';
+            var name = ctx.mode === ':party' ? (partyToken ? lmT('game2.modeParty') + ' ' + partyToken : lmT('game2.sbPartyServer'))
+                : current ? current.alias : lmT('game2.sbThisServer');
             currentItem = {
                 value: ctx.currentHost,
-                text: '★ ' + name + ' · ' + (count !== null ? sbPopulationText(count, sbCurrent.bots || 0) : ctx.connected ? 'counting…' : 'connecting…') + ' · you’re here',
+                text: '★ ' + name + ' · ' + (count !== null ? sbPopulationText(count, sbCurrent.bots || 0) : ctx.connected ? lmT('game2.sbCounting') : lmT('game2.sbConnecting')) + ' · ' + lmT('game2.sbYouHere'),
                 title: (current ? sbEntryTitle(current) : name + ' — ' + sbHostTail(ctx.currentHost)),
                 current: true
             };
@@ -83328,14 +83340,14 @@ function appendLMhiFbPs() {
             others.forEach(function (entry) {
                 for (var d = 0; d < shown.length; d++) {
                     if (sbSameArena(entry.names, entry.namesAt, shown[d].names, shown[d].at)) {
-                        shown[d].item.title += '\nSame arena as ' + entry.alias + ' (' + sbHostTail(entry.host) + ')';
+                        shown[d].item.title += '\n' + lmT('game2.sbSameArena', [entry.alias + ' (' + sbHostTail(entry.host) + ')']);
                         return;
                     }
                 }
                 var joining = sbJoin && sbJoin.host === entry.host;
                 var item = {
                     value: entry.host,
-                    text: entry.alias + ' · ' + (joining ? 'joining…' : sbCountText(entry)),
+                    text: entry.alias + ' · ' + (joining ? lmT('game2.sbJoiningShort') : sbCountText(entry)),
                     title: sbEntryTitle(entry),
                     current: false
                 };
@@ -83344,7 +83356,7 @@ function appendLMhiFbPs() {
             });
         }
         if (!items.length) {
-            items.push({ value: '', text: sbScan.running ? 'Looking for servers…' : 'No servers found yet', title: '', current: false, disabled: true });
+            items.push({ value: '', text: sbScan.running ? lmT('game2.sbLooking') : lmT('game2.sbNoneYet'), title: '', current: false, disabled: true });
         }
         return items;
     }
@@ -83360,11 +83372,11 @@ function appendLMhiFbPs() {
     function sbStatusText(ctx) {
         var list = ctx.key ? sbLists.get(ctx.key) : null;
         var where = sbRegionLabel(ctx.region) + ' ' + (SB_MODE_LABELS[ctx.mode] || '');
-        if (sbJoin) return 'Joining ' + sbJoin.alias + '…';
+        if (sbJoin) return lmT('game2.sbJoining', [sbJoin.alias]);
         if (sbNotice && sbNotice.text && Date.now() - sbNotice.at < SB.noticeMs) return sbNotice.text;
-        if (ctx.mode === ':party') return 'Party servers belong to one party each, so only yours is listed.';
+        if (ctx.mode === ':party') return lmT('game2.sbPartyOnlyYours');
         if (sbScan.running && sbScan.key === ctx.key) {
-            return 'Looking for ' + where + ' servers ' + sbScan.attempt + '/' + SB.scanMaxRequests + '…';
+            return lmT('game2.sbLookingFor', [where, sbScan.attempt + '/' + SB.scanMaxRequests]);
         }
         if (sbScan.error && sbScan.key === ctx.key) return sbScan.error;
         var known = 0;
@@ -83373,9 +83385,9 @@ function appendLMhiFbPs() {
                 if (!entry.offline) known++;
             });
         }
-        if (!known) return ctx.connected ? 'Press Scan to look for other ' + where + ' servers.' : 'Waiting for the connection…';
-        return known + ' ' + where + ' server' + (known === 1 ? '' : 's') +
-            (ctx.alive ? ' · counts pause while you play' : ' · counts refresh every ' + Math.round(SB.probeRefreshMs / 1000) + ' s');
+        if (!known) return ctx.connected ? lmT('game2.sbPressScan', [where]) : lmT('game2.sbWaiting');
+        return (known === 1 ? lmT('game2.sbKnownOne', [known, where]) : lmT('game2.sbKnown', [known, where])) +
+            ' · ' + (ctx.alive ? lmT('game2.sbPaused') : lmT('game2.sbRefresh', [Math.round(SB.probeRefreshMs / 1000)]));
     }
 
     function sbRender(ctx) {
@@ -83429,10 +83441,11 @@ function appendLMhiFbPs() {
         var scanning = sbScan.running && sbScan.key === ctx.key;
         button.disabled = !ctx.scannable || !!sbJoin;
         button.className = 'btn ' + (scanning ? 'btn-danger' : 'btn-primary');
-        button.title = ctx.scannable ? (scanning ? 'Stop looking for servers' : 'Look for more ' + sbRegionLabel(ctx.region) + ' ' + SB_MODE_LABELS[ctx.mode] + ' servers') : 'Party servers can’t be scanned';
+        button.title = ctx.scannable ? (scanning ? lmT('game2.sbStopTip') : lmT('game2.sbMoreTip', [sbRegionLabel(ctx.region) + ' ' + SB_MODE_LABELS[ctx.mode]])) : lmT('game2.sbPartyNoScan');
         var label = button.querySelector('span');
         var icon = button.querySelector('i');
-        if (label.textContent !== (scanning ? 'Stop' : 'Scan')) label.textContent = scanning ? 'Stop' : 'Scan';
+        var _lmSbLbl = scanning ? lmT('game2.sbStop') : lmT('game2.sbScan');
+        if (label.textContent !== _lmSbLbl) label.textContent = _lmSbLbl;
         icon.className = scanning ? 'fa fa-stop' : 'fa fa-search';
 
         var status = row.querySelector('#lm-server-status');
@@ -83638,7 +83651,7 @@ var reverseTrick = {
             //legendmod.selected = null
             //
 
-            $('#pause-hud').text("Avoiding reverse split...");
+            $('#pause-hud').text(lmT('game2.avoidReverseSplit'));
             $('#pause-hud').show()
             /* Called per update packet: keep a single pending hide timer
              * instead of one per packet (and no per-packet console dump). */
@@ -83658,7 +83671,7 @@ function LMadvertisement2020() {
         '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 622px;">' +
         '<div class="modal-content">' +
         '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + '2020 development' + '</h4>' +
+        '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif">' + lmT('game2.promoTitle') + '</h4>' +
         '</div>' +
         '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/extras/banneranimatedLegendmod2020.html" width="620" height="490" >' +
         '</div>' +
@@ -83745,7 +83758,7 @@ function playReplayLM(temp, startAt) {
         if (window.LMReplayStudio && typeof window.LMReplayStudio.takeOver === 'function' && window.LMReplayStudio.takeOver(temp, startAt)) return;
         //if (parseInt(window.replayTiming, 10) < 0) {
         if (parseFloat(window.replayTiming) < 0) {
-            toastr.warning("<b>[SERVER]:</b> When time traveling, wierd things happens...").css("width", "350px");
+            toastr.warning(_lmG2Tag('server') + lmT('game2.replayBackwards')).css("width", "350px");
             legendmod.playingReplayRewind = true
         }
         //if (parseInt(window.replayTiming, 10)<0) legendmod.playingReplayRecord = window.RecordedProtocol[legendmod.playingReplayServer].length-1
@@ -83790,7 +83803,7 @@ function lmReplayActive() {
 }
 function lmReplayNeedActive() {
     if (lmReplayActive()) return true;
-    if (window.toastr) toastr.info('Replay only: watch a replay first.');
+    if (window.toastr) toastr.info(lmT('game2.replayOnly'));
     return false;
 }
 /* a replay played by Replay Studio takes these commands itself (true = handled) */
@@ -83809,7 +83822,7 @@ function lmReplayTogglePause() {
     } else {
         clearTimeout(window.replayTimeOuts);
         window._lmReplayPaused = true;
-        $('#pause-hud').text('Replay paused').show();
+        $('#pause-hud').text(lmT('game2.replayPaused')).show();
     }
 }
 function lmReplaySpeed(f) {
@@ -83819,12 +83832,12 @@ function lmReplaySpeed(f) {
     v = Math.min(200, Math.max(1, Math.round(Math.abs(v) * f))) * s;
     window.replayTiming = v;
     try { localStorage.setItem('replayTiming', v); } catch (e) { }
-    if (window.toastr) toastr.info('Replay delay: ' + Math.abs(v) + ' ms per packet');
+    if (window.toastr) toastr.info(lmT('game2.replayDelay', [Math.abs(v)]));
 }
 function lmReplaySeek(delta) {
     if (lmReplayStudioCmd('seek', delta)) return;
     if (!lmReplayNeedActive()) return;
-    if (parseFloat(window.replayTiming) < 0) { if (window.toastr) toastr.info('Seeking is not available while playing backwards.'); return; }
+    if (parseFloat(window.replayTiming) < 0) { if (window.toastr) toastr.info(lmT('game2.replayNoSeek')); return; }
     var srv = window.legendmod.playingReplayServer;
     var cur = window.legendmod.playingReplayRecord || 0;
     var last = window.RecordedProtocol[srv].length - 2;
@@ -83877,7 +83890,8 @@ function lmReplayBarTick() {
     if (!bar) {
         bar = document.createElement('div');
         bar.id = 'lm-replay-bar';
-        bar.title = 'Replay: click to seek';
+        bar.title = lmT('game2.replaySeekTip');
+        bar.setAttribute('data-i18n-title', 'game2.replaySeekTip');
         bar.style.cssText = 'position:fixed;left:30%;width:40%;bottom:14px;height:10px;z-index:200;cursor:pointer;' +
             'background:rgba(0,0,0,0.45);border:1px solid rgba(255,255,255,0.25);border-radius:5px;overflow:hidden;pointer-events:auto;';
         bar.innerHTML = '<div class="lm-rb-fill" style="height:100%;width:0;background:var(--lm-mc,' + ((window.defaultSettings && defaultSettings.menuMainColor) || '#01d9cc') + ');"></div>' +
@@ -83917,11 +83931,11 @@ function intervalPlayingRecord() {
     var temp1 = parseInt(window.startReplayTime, 10)
     var temp2 = parseInt(window.endReplayTime, 10)
     if (temp1 < 0 || temp2 <= 0) {
-        toastr.warning("<b>[SERVER]:</b> Start and end time should be non negative").css("width", "350px");
+        toastr.warning(_lmG2Tag('server') + lmT('game2.replayTimes')).css("width", "350px");
     } else if (legendmod.playingReplayRewind && !legendmod.playingReplayRewindNow) {
         //console.log('a')
         window.replayTiming2 = 0
-        $('#pause-hud').text("Loading...");
+        $('#pause-hud').text(lmT('game2.loading'));
         $('#pause-hud').show()
     } else if (legendmod.playingReplayRecord >= temp1 && legendmod.playingReplayRecord <= temp2) {
 
@@ -83936,7 +83950,7 @@ function intervalPlayingRecord() {
         if (window.replayTiming2 != 0) {
             //console.log('b')
             window.replayTiming2 = 0
-            $('#pause-hud').text("Loading...");
+            $('#pause-hud').text(lmT('game2.loading'));
             $('#pause-hud').show()
         }
     }
@@ -84236,7 +84250,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
             rsScript.onerror = function () {
                 _lmRsQueue = null;
                 rsScript.remove();
-                if (window.toastr) toastr.error('Replay Studio could not be loaded.');
+                if (window.toastr) toastr.error(lmT('game2.replayStudioFailed'));
             };
             document.body.appendChild(rsScript);
         } catch (e) {
@@ -84286,7 +84300,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         var prFail = function (s) {
             _lmPrQueue = null;
             if (s) s.remove();
-            if (window.toastr) toastr.error('Practice arena could not be loaded.');
+            if (window.toastr) toastr.error(lmT('game2.practiceFailed'));
         };
         var prLoad = function (name, next) {
             var s = document.createElement('script');
@@ -84374,7 +84388,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
                 script.onerror = function () {
                     queue = null;
                     script.remove();
-                    if (window.toastr) toastr.error(what + ' could not be loaded.');
+                    if (window.toastr) toastr.error(lmT('game2.moduleFailed', [lmT(what)]));
                 };
                 document.body.appendChild(script);
             } catch (e) {
@@ -84384,7 +84398,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         };
     };
     /* Skin editor removed — use the standalone Skin Checker & Editor at legendmod.ml/skins/skinchecker.html */
-    window.lmMacroEditor = _lmLazyModule('macroeditor.js', 'LMMacroEditor', 'The macro editor');
+    window.lmMacroEditor = _lmLazyModule('macroeditor.js', 'LMMacroEditor', 'game2.macroEditor'); /* the name is a key: the load error toast translates it */
     try { if (localStorage.getItem('lmCustomMacros')) window.lmMacroEditor('load'); } catch (e) { }
     /* Discover features guide and "What works on this server" (Command Centre; opens by itself once
      * after an update, only for players who had it before) */
