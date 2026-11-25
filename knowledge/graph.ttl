@@ -1,13 +1,29 @@
 @prefix schema: <https://schema.org/> .
 @prefix lm: <https://www.legendmod.ml/knowledge/vocabulary.ttl#> .
+
 <https://www.legendmod.ml/#app> a schema:SoftwareApplication, schema:WebApplication ;
   schema:name "Legend Mod" ;
   schema:url <https://www.legendmod.ml/> ;
   schema:description "Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools." ;
   schema:applicationCategory "GameApplication" ;
   schema:operatingSystem "Web browser" ;
-  schema:featureList "Custom skins", "Themes", "Configurable controls", "Multiboxing", "Replay tools" ;
-  schema:isRelatedTo <https://expanding.land/#game> .
+  schema:softwareVersion "3.629" ;
+  schema:inLanguage "en", "ar", "bg", "de", "el", "es", "fr", "id", "it", "ja", "nl", "pl", "pt", "ru", "tr", "zh" ;
+  schema:featureList "Custom skins", "Video skins", "Themes", "Configurable controls", "Command Centre", "Multiboxing", "Replay tools", "Gamepad support", "Mobile touch controls", "Settings profiles", "Performance diagnostics", "Adaptive performance", "Second-screen companion", "Chat system", "HUD helpers", "Accessibility features", "Streamer mode" ;
+  schema:offers [ a schema:Offer ; schema:price "0" ; schema:priceCurrency "USD" ] ;
+  schema:isRelatedTo <https://expanding.land/#game> ;
+  lm:hasFeature <https://www.legendmod.ml/knowledge/#feature-controls>, <https://www.legendmod.ml/knowledge/#feature-skins>, <https://www.legendmod.ml/knowledge/#feature-themes>, <https://www.legendmod.ml/knowledge/#feature-commandcentre>, <https://www.legendmod.ml/knowledge/#feature-multibox>, <https://www.legendmod.ml/knowledge/#feature-replays>, <https://www.legendmod.ml/knowledge/#feature-gamepad>, <https://www.legendmod.ml/knowledge/#feature-performance>, <https://www.legendmod.ml/knowledge/#feature-companion>, <https://www.legendmod.ml/knowledge/#feature-accessibility> .
+
+<https://www.legendmod.ml/#extension> a schema:SoftwareApplication ;
+  schema:name "Legend Express" ;
+  schema:description "Chrome extension for Legend Mod. Adds custom skins, themes, controls and more to Agar.io-style games. Does NOT collect, store or transmit personal data externally." ;
+  schema:applicationCategory "BrowserExtension" ;
+  schema:operatingSystem "Chrome" ;
+  schema:softwareVersion "1.8.4" ;
+  schema:installUrl <https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja> ;
+  schema:browserRequirements "Google Chrome" ;
+  schema:offers [ a schema:Offer ; schema:price "0" ; schema:priceCurrency "USD" ] ;
+  schema:isPartOf <https://www.legendmod.ml/#app> .
 
 <https://expanding.land/#game> a schema:VideoGame, schema:WebApplication ;
   schema:name "Expanding Land" ;
@@ -17,10 +33,20 @@
   schema:gamePlatform "Web browser" ;
   schema:operatingSystem "Web browser" ;
   schema:applicationCategory "GameApplication" ;
-  schema:featureList "Dynamic circular map", "FFA and Teams modes", "Spectator mode" ;
+  schema:numberOfPlayers [ a schema:QuantitativeValue ; schema:maxValue 3840 ] ;
+  schema:featureList "Dynamic circular map", "FFA and Teams modes", "Spectator mode", "Anti-teaming system", "Anti-cheat", "Ghost cells", "Session stats", "In-game chat", "Encrypted connections" ;
+  schema:playMode "MultiPlayer" ;
+  schema:offers [ a schema:Offer ; schema:price "0" ; schema:priceCurrency "USD" ] ;
   schema:isRelatedTo <https://www.legendmod.ml/#app> ;
-  lm:hasMechanic <https://help.expanding.land/knowledge/#mechanic-dynamic-map>, <https://help.expanding.land/knowledge/#mechanic-cell-growth>, <https://help.expanding.land/knowledge/#mechanic-split>, <https://help.expanding.land/knowledge/#mechanic-mass>, <https://help.expanding.land/knowledge/#mechanic-bots>, <https://help.expanding.land/knowledge/#mechanic-spectate> ;
+  lm:hasMechanic <https://help.expanding.land/knowledge/#mechanic-dynamic-map>, <https://help.expanding.land/knowledge/#mechanic-cell-growth>, <https://help.expanding.land/knowledge/#mechanic-split>, <https://help.expanding.land/knowledge/#mechanic-mass>, <https://help.expanding.land/knowledge/#mechanic-decay>, <https://help.expanding.land/knowledge/#mechanic-virus>, <https://help.expanding.land/knowledge/#mechanic-merge>, <https://help.expanding.land/knowledge/#mechanic-ghost-cells>, <https://help.expanding.land/knowledge/#mechanic-bots>, <https://help.expanding.land/knowledge/#mechanic-spectate>, <https://help.expanding.land/knowledge/#mechanic-anti-teaming>, <https://help.expanding.land/knowledge/#mechanic-coordinate-scrambling> ;
   lm:hasGameMode <https://help.expanding.land/knowledge/#mode-ffa>, <https://help.expanding.land/knowledge/#mode-teams> .
+
+<https://expanding.land/#android> a schema:SoftwareApplication ;
+  schema:name "Expanding Land" ;
+  schema:description "Android app for Expanding Land. PWA with fullscreen landscape play." ;
+  schema:applicationCategory "GameApplication" ;
+  schema:operatingSystem "Android" ;
+  schema:isPartOf <https://expanding.land/#game> .
 
 <https://www.legendmod.ml/#website> a schema:WebSite ;
   schema:name "Legend Mod" ;
@@ -37,29 +63,99 @@
   schema:url <https://help.expanding.land/> ;
   schema:about <https://expanding.land/#game> .
 
+<https://www.legendmod.ml/knowledge/#feature-controls> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Configurable controls and hotkeys" ;
+  schema:description "Fully rebindable keyboard, mouse and gamepad controls with Command Centre search." .
+
+<https://www.legendmod.ml/knowledge/#feature-skins> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Custom skins, video skins and skin tools" ;
+  schema:description "Custom image URLs, video skins, skin collections, skin checker, IndexedDB cache." .
+
+<https://www.legendmod.ml/knowledge/#feature-themes> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Themes and HUD customization" ;
+  schema:description "CSS variable-based themes, 8 presets, Theme Workshop with live preview." .
+
+<https://www.legendmod.ml/knowledge/#feature-commandcentre> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Command Centre" ;
+  schema:description "Fuzzy-search palette (Ctrl+K) for every setting, hotkey, theme and window." .
+
+<https://www.legendmod.ml/knowledge/#feature-multibox> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Multibox controls" ;
+  schema:description "Control up to 4 connections with colour-coded rings and middle camera view." .
+
+<https://www.legendmod.ml/knowledge/#feature-replays> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Replay tools" ;
+  schema:description "Packet recording, instant replay, Replay Studio, match history, personal bests." .
+
+<https://www.legendmod.ml/knowledge/#feature-gamepad> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Gamepad support" ;
+  schema:description "Full controller support with customizable mapping, dead zone, response curve and vibration." .
+
+<https://www.legendmod.ml/knowledge/#feature-performance> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Performance diagnostics" ;
+  schema:description "WebGL2 acceleration, adaptive performance, FPS cap, diagnostics window." .
+
+<https://www.legendmod.ml/knowledge/#feature-companion> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Second-screen companion" ;
+  schema:description "Broadcast live game state to a second window via BroadcastChannel." .
+
+<https://www.legendmod.ml/knowledge/#feature-accessibility> a schema:DefinedTerm, lm:Feature ;
+  schema:name "Accessibility features" ;
+  schema:description "Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset." .
+
 <https://help.expanding.land/knowledge/#mechanic-dynamic-map> a schema:DefinedTerm, lm:GameMechanic ;
-  schema:name "Server-controlled circular arena that expands and contracts" ;
+  schema:name "Dynamic circular arena" ;
+  schema:description "Server-controlled circular boundary that expands and contracts (0.25x to 8x)." ;
   schema:url <https://help.expanding.land/dynamic-map.html> .
 
 <https://help.expanding.land/knowledge/#mechanic-cell-growth> a schema:DefinedTerm, lm:GameMechanic ;
-  schema:name "Collect food and consume smaller cells to grow" ;
+  schema:name "Cell growth" ;
+  schema:description "Collect food pellets and consume smaller cells to grow." ;
   schema:url <https://help.expanding.land/guide.html> .
 
 <https://help.expanding.land/knowledge/#mechanic-split> a schema:DefinedTerm, lm:GameMechanic ;
-  schema:name "Split cells as a gameplay technique" ;
+  schema:name "Splitting" ;
+  schema:description "Divide cell into two halves (Space key), up to 16 fragments." ;
   schema:url <https://help.expanding.land/guide.html#splitting> .
 
 <https://help.expanding.land/knowledge/#mechanic-mass> a schema:DefinedTerm, lm:GameMechanic ;
-  schema:name "Mass management and ejection" ;
+  schema:name "Mass ejection" ;
+  schema:description "Eject mass toward cursor (W key), costs ~15-16 mass per press." ;
   schema:url <https://help.expanding.land/guide.html#mass> .
 
+<https://help.expanding.land/knowledge/#mechanic-decay> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Mass decay" ;
+  schema:description "Cells lose approximately 0.8% of mass every 4 seconds." .
+
+<https://help.expanding.land/knowledge/#mechanic-virus> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Viruses" ;
+  schema:description "Spiky green circles that pop big cells into ~16 pieces. Feed 7 W-presses to shoot." .
+
+<https://help.expanding.land/knowledge/#mechanic-merge> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Merge timer" ;
+  schema:description "Split cells rejoin after a timer based on mass." .
+
+<https://help.expanding.land/knowledge/#mechanic-ghost-cells> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Ghost cells" ;
+  schema:description "Transparent cells showing death location (Expanding Land exclusive)." .
+
 <https://help.expanding.land/knowledge/#mechanic-bots> a schema:DefinedTerm, lm:GameMechanic ;
-  schema:name "Human and server-controlled bot populations vary by arena" ;
+  schema:name "Server-controlled bots" ;
+  schema:description "Human and server-controlled bot populations vary by arena." ;
   schema:url <https://help.expanding.land/no-bots.html> .
 
 <https://help.expanding.land/knowledge/#mechanic-spectate> a schema:DefinedTerm, lm:GameMechanic ;
   schema:name "Spectator mode" ;
+  schema:description "200+ spectator slots with free-roam camera." ;
   schema:url <https://help.expanding.land/glossary.html> .
+
+<https://help.expanding.land/knowledge/#mechanic-anti-teaming> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Anti-teaming system" ;
+  schema:description "Exponential multiplier decay: base × pow(1.086, multiplier)." .
+
+<https://help.expanding.land/knowledge/#mechanic-coordinate-scrambling> a schema:DefinedTerm, lm:GameMechanic ;
+  schema:name "Coordinate scrambling" ;
+  schema:description "Anti-cheat: each player receives different coordinate offsets." .
 
 <https://help.expanding.land/knowledge/#mode-ffa> a schema:DefinedTerm, lm:GameMode ;
   schema:name "Free-for-all" ;
@@ -68,3 +164,42 @@
 <https://help.expanding.land/knowledge/#mode-teams> a schema:DefinedTerm, lm:GameMode ;
   schema:name "Teams" ;
   schema:description "Team-based play on supported arenas." .
+
+<https://www.legendmod.ml/#faq> a schema:FAQPage ;
+  schema:name "Legend Mod and Expanding Land FAQ" ;
+  schema:mainEntity [
+    a schema:Question ;
+    schema:name "Is Expanding Land the official Agar.io service?" ;
+    schema:acceptedAnswer [ a schema:Answer ; schema:text "No. Expanding Land is an independent multiplayer cell game built from scratch in C." ]
+  ], [
+    a schema:Question ;
+    schema:name "Does the map change?" ;
+    schema:acceptedAnswer [ a schema:Answer ; schema:text "Yes. The server controls expansion and contraction of the circular arena (0.25x to 8x)." ]
+  ], [
+    a schema:Question ;
+    schema:name "Are all opponents human?" ;
+    schema:acceptedAnswer [ a schema:Answer ; schema:text "Not necessarily. Human and server-controlled bot counts vary by arena." ]
+  ], [
+    a schema:Question ;
+    schema:name "What is Legend Mod?" ;
+    schema:acceptedAnswer [ a schema:Answer ; schema:text "A browser client and Chrome extension that adds custom skins, themes, controls, multiboxing and replays to Agar.io-style cell games." ]
+  ], [
+    a schema:Question ;
+    schema:name "Is Legend Mod free?" ;
+    schema:acceptedAnswer [ a schema:Answer ; schema:text "Yes. Legend Mod and Expanding Land are free to use with no subscription required." ]
+  ] .
+
+<https://www.legendmod.ml/#breadcrumb> a schema:BreadcrumbList ;
+  schema:itemListElement [
+    a schema:ListItem ; schema:position 1 ; schema:name "Legend Mod" ; schema:item <https://www.legendmod.ml/>
+  ], [
+    a schema:ListItem ; schema:position 2 ; schema:name "Play" ; schema:item <https://www.legendmod.ml/play.html>
+  ], [
+    a schema:ListItem ; schema:position 3 ; schema:name "Features" ; schema:item <https://www.legendmod.ml/features.html>
+  ], [
+    a schema:ListItem ; schema:position 4 ; schema:name "Skins" ; schema:item <https://www.legendmod.ml/skins/>
+  ], [
+    a schema:ListItem ; schema:position 5 ; schema:name "Themes" ; schema:item <https://www.legendmod.ml/themes/>
+  ], [
+    a schema:ListItem ; schema:position 6 ; schema:name "Knowledge" ; schema:item <https://www.legendmod.ml/knowledge/>
+  ] .

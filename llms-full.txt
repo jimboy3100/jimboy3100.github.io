@@ -15,27 +15,88 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 
 ## Default Controls
 
-### Keyboard
-- Space: Split (divide cell into two halves, up to 16 fragments)
-- W: Eject mass (small pellet fired toward cursor, costs ~15-16 mass)
-- E: Split macro (rapid double/triple/16-split with configurable timing)
-- Q: Toggle multibox (swap control between main and multibox unit)
-- Escape: Open menu / enter free spectate
-- Enter: Open chat input / send message
-- Tab: Toggle leaderboard view or minimap details
-- Ctrl+K: Open Command Centre (fuzzy search for every setting, hotkey, window and action)
+### Keyboard — Core Gameplay
+| Key | Action |
+|-----|--------|
+| Space | Split (divide cell into two halves, up to 16 fragments) |
+| W | Eject mass (small pellet fired toward cursor, costs ~15-16 mass) |
+| E | Macro feed (hold to rapid-fire mass ejection) |
+| Ctrl+E | Permanent macro feed (toggle on/off) |
+| Q | Double split (two rapid splits for extended range) |
+| Alt+Q | Pop split (virus pop combined with split) |
+| Shift | Split into 16 fragments (maximum split) |
+| R | Pause cell movement (freeze position) |
+| Alt+R | Dance (hold — cells wiggle in place) |
+| Enter | Open chat input / send message |
+| Y | Quick response (send preset message) |
+| Escape | Open menu / enter free spectate |
+| Tab | Toggle leaderboard / team panel |
+| Ctrl+K | Open Command Centre (fuzzy search palette) |
+| J | Autoplay |
+| Z | Reset zoom (hold) |
+| + | Quit game (respawn) |
+| - | Switch server mode |
+| = | Voice chat (push-to-talk) |
+| ~ (Tilde) | Multibox follow mouse |
+
+### Keyboard — Toggle Hotkeys
+| Key | Action |
+|-----|--------|
+| T | Toggle top 5 / team panel |
+| Alt+T | Toggle time display |
+| U | Toggle split range circles |
+| I | Toggle split indicators |
+| Alt+I | Toggle teammates indicators |
+| O | Toggle opponent colours |
+| A | Toggle skins (all) |
+| S | Toggle custom skins |
+| Alt+S | Toggle stats HUD |
+| D | Toggle cells (ghost cells) |
+| F | Toggle food visibility |
+| G | Toggle grid |
+| Alt+G | Toggle minimap guides |
+| H | Hide/show chat |
+| Alt+H | Toggle HUD |
+| K | Toggle ghost cells info |
+| L | Copy leaderboard |
+| Alt+L | Toggle leaderboard |
+| M | Toggle mass display |
+| Alt+M | Toggle minimap |
+| N | Toggle names |
+| B | Toggle background sectors |
+| Alt+B | Hide small bots |
+| V | Toggle spectator mode |
+| C | Show/clear chat history (hold) |
+| X | Toggle death location |
+
+### Keyboard — Zoom Levels
+| Key | Zoom Factor |
+|-----|-------------|
+| Alt+1 | 0.5 (closest) |
+| Alt+2 | 0.25 |
+| Alt+3 | 0.125 |
+| Alt+4 | 0.075 |
+| Alt+5 | 0.05 (farthest) |
+
+### Chat Commands (50 Slots)
+Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
+
+### Hotkeys Without Default Keys (All Configurable)
+Triple split, crazy double split, line split, custom macro 1-3, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, instant replay, replay pause/speed/seek, Command Centre, radial menu, radial editor, gamepad window, profiles window, theme workshop, copy server link, net graph, performance diagnostics, chat sounds toggle, notification centre, team pings (Help/Danger/Go here/Virus), spectate next top player, spectator director controls (8 hotkeys), scan trick (hold), screenshot mode/capture/tool, skin collections, limit position (hold), multibox swap, middle multi-view, multibox rings, enlarge minimap, auto zoom toggle, hotkey conflicts window, HUD editor, user scripts/plugins, Lab (experimental), transparent skins, hide teammates names, private minimap, in-game spectator, camera lock, precision zoom (hold), zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
 
 ### Mouse
-- Movement: Cell follows cursor direction
-- Left click: Macro feed (default binding, configurable)
-- Right click: Split (default binding, configurable)
-- Middle click: Multibox swap (default binding, configurable)
-- Mouse 4 (back): Double split
-- Mouse 5 (forward): 16-split
-- Scroll wheel: Zoom in/out
+| Button | Default Action |
+|--------|---------------|
+| Movement | Cell follows cursor direction |
+| Left click | Macro feed (configurable) |
+| Right click | Split (configurable) |
+| Middle click | Multibox swap (configurable) |
+| Mouse 4 (back) | Double split |
+| Mouse 5 (forward) | 16-split |
+| Scroll wheel | Zoom in/out |
 
 ### Gamepad
-Full gamepad/controller support with customizable button mapping, dead zone (0.05-0.5), response curve (0.5-3), zoom sensitivity (0.2-4), trigger threshold, axis inversion, and haptic vibration on split and death.
+Full gamepad/controller support with customizable button mapping (16 buttons). Default map: A=split, B=feed(macro), X=doubleSplit, Y=respawn, LB=multiboxSwap, RB=split16, Start=menu. Settings: dead zone (0.05-0.5), move range, response curve (0.5-3), zoom sensitivity (0.2-4), trigger threshold, axis inversion, haptic vibration on split and death.
 
 ### Mobile Touch
 Dedicated mobile touch controls with on-screen buttons for split, feed, and other actions. The game page supports fullscreen, screen wake lock (phone stays awake), and landscape orientation.
@@ -43,22 +104,25 @@ Dedicated mobile touch controls with on-screen buttons for split, feed, and othe
 ## Features
 
 ### 1. Custom Skins
-Apply custom images to cells. Supports PNG, JPG, GIF and SVG image URLs. Skins are stored in an IndexedDB cache (up to 1,000 entries with LRU eviction). Features include:
-- **Vanilla skins**: Original game skins
+Apply custom images to cells. Supports PNG, JPG, GIF and SVG image URLs. Skins are stored in an IndexedDB cache (up to 1,000 entries with LRU eviction, plus 600 audio entries). Features include:
+- **Vanilla skins**: Original game skins (from VanillaSkinUrlMap)
 - **Custom skins**: User-provided image URLs
 - **Video skins**: Play MP4, WebM or OGV video files as cell skins with configurable audio level and ducking
-- **Skin Collections**: Organise skins into folders/collections for quick switching
+- **Skin Collections**: Organise skins into folders/collections with tags and favourites for quick switching
 - **Skin Checker**: Tool to test whether a skin URL loads correctly before using it in-game
 - **Transparent skins**: Make your own cell skin semi-transparent
 - **No Skins mode**: Disable all skins for a cleaner view
-- **Skin Rotator**: Automatically cycle through a set of skins
+- **Skin Rotator**: Automatically cycle through a set of skins (dedicated page)
 URL: https://www.legendmod.ml/skins/
 
 ### 2. Themes and HUD Customization
 Full visual customization of the game interface using CSS variables and theme presets. The theme system includes:
-- **Built-in presets**: Several default theme options
-- **Theme Bridge**: Synchronises theme settings between the original game CSS variables and Legend Mod's settings panel
-- **Streamer preset**: A one-click preset that configures privacy-friendly settings
+- **8 Built-in presets**: Legend v2 (default, teal #01d9cc), Legend v1 (orange #ff7800), Legend Original (gold #b5a642), Crazy Style 2 (pink/purple), Crazy Style 1 (purple #651fff), Agar.io Light, Agar.io Dark, Colour-blind Safe (Okabe-Ito palette)
+- **Menu presets**: Legend v2, Legend v1, Agar.io
+- **Graphics quality presets**: High, Medium, Low, Very Low
+- **~160 theme properties**: Colors for background, borders, grid, sectors, names, mass, virus, food, teammates, cursor tracking, split range, 6 enemy size tiers, ghost cells, safe/danger areas, border glow, cell shadow, HUD elements, chat messages/commands, minimap elements. Fonts (ubuntu, roboto, oswald, shojumaru, allura). Sizing (namesScale, massScale, foodSize, cellsAlpha, skinsAlpha, backgroundAlpha, etc.). Menu theming. Custom background image URL, cursor URL, brightness, saturation.
+- **Theme Bridge**: Synchronises theme settings between game CSS variables (`--lm-radius`, `--lm-radius-s`, `--lm-pc2`, `--lm-tc2`, `--lm-mc`) and Legend Mod's settings panel
+- **Streamer preset**: One-click preset that configures privacy-friendly settings
 - **Custom colours**: Background, cell, grid, border, food, virus, and HUD element colours
 - **Cell contours**: Outlines around cells
 - **Rainbow food**: Coloured food pellets
@@ -68,20 +132,37 @@ Full visual customization of the game interface using CSS variables and theme pr
 - **Grid and sector display**: Toggle grid lines and sector labels
 URL: https://www.legendmod.ml/themes/
 
-### 3. Settings Profiles
-Save and load up to 15 named settings profiles. Each profile stores all gameplay and visual settings. Profiles are stored in localStorage and can be switched instantly during gameplay. Useful for different play styles (aggressive, defensive, streaming, mobile).
+### 3. Theme Workshop
+Save, rename, copy and delete custom themes. Features:
+- **My Themes library**: Up to 30 themes, 5 saved versions each
+- **Live preview**: Apply theme temporarily with 15-second auto-revert (Keep/Revert buttons)
+- **Side-by-side comparison**: Compare any two themes
+- **Gallery**: Browse shipped themes from catalogue
+- **Theme packages**: Export/import format includes theme, sounds, cursor, background, and HUD layout
+- **Validation**: All values checked against LM_THEME_DEFAULTS schema; URLs must be HTTPS
+- Opens via hotkey (no default key) or Command Centre
 
-### 4. Command Centre
+### 4. Settings Profiles
+Save and load up to 30 named settings profiles. Each profile stores gameplay settings, theme, hotkeys and phone controls. Features:
+- **Built-in starter templates**: Pre-configured profile sets
+- **Auto-switching**: Automatically change profile per server type, game mode, or input device (keyboard/gamepad/touch) — off by default
+- **Comparison**: Side-by-side comparison of any two profiles
+- **5 automatic backups**: Last 5 settings snapshots, recoverable
+- **Hotkeys**: Open window, next/prev profile, undo
+- Import/export as JSON blob
+
+### 5. Command Centre
 A fuzzy-search palette (Ctrl+K) for every hotkey command, gameplay setting, theme option and menu window in Legend Mod. Features:
 - Multi-language search (normalised, accent-insensitive, works with Greek tonos)
 - Scoring: exact match (1000), prefix (900), word-start (750), substring (500), multi-word (400-500), fuzzy letter-order (1-349)
 - **Favourites**: Star up to 30 items for quick access
 - **Recent items**: Last 12 accessed items shown when no query
 - **Quick bar**: Optional in-game floating toolbar of favourite commands, automatically placed to avoid HUD overlap
-- Item types: hotkey commands (hk:), options/toggles (opt:), settings (set:), sections (sec:), tabs (tab:), windows (win:)
+- **Item types**: hk (hotkey commands), opt (options/checkboxes), set (settings/sliders), sec (sections), tab (menu tabs), win (windows)
+- **Actions**: Toggle switches, run hotkey commands (brief press for hold-actions), open menu sections, navigate tabs
 Activated by: Ctrl+K, assignable hotkey, or settings search button
 
-### 5. Multiboxing
+### 6. Multiboxing
 Control up to 4 game connections simultaneously. Features:
 - **Multibox rings**: Colour-coded rings inside cell edges (Player 1 and Player 2 have independent enable, colour, and size settings)
 - **Active-only rings**: Show rings only on the currently controlled player's cells
@@ -90,29 +171,40 @@ Control up to 4 game connections simultaneously. Features:
 - **Switch after death**: Auto-switch control to the surviving player
 - **Freeze mode**: Keep the inactive player's mouse position frozen
 - **Camera smoothing**: Lerp-based camera transitions when switching
+- **Multibox shadow**: Visual indicator on inactive player's cells
+- **Bot controls**: Bot feed, bot split, bot macro feed, double/pop/16 bot split hotkeys
 
-### 6. Replay System
+### 7. Replay System
 Record and replay game sessions. Features:
 - **Packet recording**: Captures all server packets for faithful replay
-- **Instant replay hotkey**: Plays back the last 15-60 seconds (configurable) via Replay Studio
+- **Replay Studio**: Full playback with timeline, automatic bookmarks at key events, variable speed (0.25x-4x), pause, packet-by-packet stepping, forward/backward seeking, timeline scrubbing
+- **Instant replay hotkey**: Plays back the last 15-60 seconds (configurable via `instantReplaySecs`)
+- **Replay library**: Stored in IndexedDB for persistent access
+- **Clip export**: Save replays as `.lm` files (JSON format)
+- **Backward seeking**: Re-reads from last world reset to target, in responsive slices
 - **Match history**: Last 50 lives stored in localStorage with mass, time alive, killer, server and mode
 - **Personal bests**: Best mass, longest life and game count tracked per browser
-- **Death events**: Marks deaths, spawns, kills, virus pops and splits in the recorded timeline
-- **Replay Studio**: Full playback controls for recorded replays
 
-### 7. Performance and Rendering
+### 8. Performance and Rendering
 - **WebGL2 acceleration**: Enabled by default with automatic Canvas2D fallback when unsupported or visually ambiguous
 - **High DPI rendering**: Optional crisp rendering on high-density screens
 - **FPS cap**: Limit frames per second (0-240 in steps of 10) to reduce heat/battery
 - **Menu FPS cap**: 25 FPS while the menu is open and you are not playing
 - **Performance mode**: Single switch that disables costly effects for weak PCs and phones
-- **Adaptive performance**: When FPS drops below target (30/60/90/120), automatically disables effects and optionally lowers resolution; re-enables when FPS recovers
+- **Adaptive performance**: Monitors real frame times. When FPS drops below target (30/60/90/120 FPS), automatically disables effects in 3 levels:
+  - Level 1: Decorative effects off (suckAnimation, eatPulse, borderGlow, animatedRainbowColor, showBgSectors, hudBlur)
+  - Level 2: Jelly physics and video skins off
+  - Level 3: Lower internal resolution (optional, `adaptivePerfRes`)
+  - Self-healing: Effects re-enable when performance improves
+  - Smart detection: Only counts slow when drawing takes ≥40% of frame time
+  - Toasts: Notifications on level changes
 - **Antialiasing**: WebGL MSAA toggle
-- **Performance diagnostics window**: Real-time rendering metrics
+- **Performance diagnostics window**: Frame time graph, percentiles, long frames, render time, renderer info, freeze breakdown with contributor attribution, Chrome Long Animation Frames API integration
+- **Net graph**: Toggle network quality overlay
 - **Unlocked FPS**: Remove frame rate limits
 - **Network history**: Ping/jitter/packet rate/disconnect summary across sessions
 
-### 8. Animation and Visual Effects
+### 9. Animation and Visual Effects
 - **Animation speed**: Configurable animation delay slider (0-120)
 - **Jelly physics**: Wobbly cell deformation
 - **Animated rainbow colour**: Cycling colour effect on cells
@@ -123,23 +215,44 @@ Record and replay game sessions. Features:
 - **Mass-weighted camera**: Camera target at mass-weighted centre of own cells (Delta-style)
 - **Zoom speed and smoothness**: Configurable zoom speed and glide rate
 
-### 9. Chat System
+### 10. Chat System
 In-game text chat with rich features:
 - **Image sharing**: Paste and display images in chat
 - **Video sharing**: Embed videos in chat messages
 - **Emoticons**: Built-in emoticon support
 - **Chat translation**: Auto-translate incoming messages
+- **Universal chat**: Cross-server chat
 - **Mention notifications**: Desktop notifications when mentioned while tab is hidden
 - **Chat sounds**: Configurable notification sounds for messages and commands
-- **Audio ducking**: Incoming chat sounds lower video skin volume temporarily
+- **Audio ducking**: Incoming chat sounds lower video skin volume temporarily (1.5s, 0.3 volume)
 - **Chat history**: Up/Down arrow recalls last 20 sent messages
 - **Chat popups limited**: Maximum 6 chat popups on screen (prevents spam)
 - **Hide words filter**: Block chat lines containing specific words
 - **Player ID display**: Show player relay IDs before nicknames
 - **Chat box toggle**: Show/hide the persistent chat panel
-- **Sound mixer**: Independent volume controls for chat, commands, gameplay, video skins, and notifications (0-100%)
+- **Coloured nicks**: Different colours for different users
+- **Hide country**: Hide country flag from chat
+- **Voice chat**: Push-to-talk with = key
+- **Quick response**: Y key sends preset message
+- **Auto response**: Automatic responses
+- **Chat position**: 4 options (bottom-left, bottom-right, top-left, top-right)
+- **Chat commands**: 50 customizable chat command slots with one-keypress sending
+- **Team pings**: Help, Danger, Go here, Virus pings at cursor position (configurable hotkeys)
 
-### 10. Minimap Features
+### 11. Sound Mixer
+Independent volume controls per channel, all multiplied by master volume:
+| Channel | Key | Description |
+|---------|-----|-------------|
+| Master | volMaster | Overall volume multiplier (0-100%) |
+| Chat | volChat | Chat message sounds |
+| Commands | volCommands | Chat command sounds |
+| Gameplay | volGameplay | Gameplay sounds (merge, virus pop, etc.) |
+| Video | volVideo | Video skin audio |
+| Notifications | volNotifications | Notification sounds |
+
+Additional sound toggles: virusSound, x16Sound, non16Sound, virusPopSound, virusEatSound, audioDucking (chat sounds lower video volume).
+
+### 12. Minimap Features
 - **Rotating minimap**: Rotates to match camera orientation
 - **Grid overlay**: Optional grid on the minimap
 - **Guides**: Lines showing cardinal directions and cell position
@@ -147,24 +260,40 @@ In-game text chat with rich features:
 - **Ghost cells**: Show death locations on the minimap
 - **Trail**: Last ~60 seconds of your movement path traced on the minimap
 - **Click-to-spectate**: Click on the minimap to move the spectator camera (Expanding Land World Spectate)
+- **Enlarge minimap**: Hotkey to temporarily enlarge to ~1.8x
+- **Private minimap**: Hotkey to hide minimap from view
+- **One-coloured teammates**: All teammates shown in same colour on minimap
+- **Customizable theming**: Sections colour, sector colour, guides colour, nick colour/stroke, cell colours, death location colour, font, sizes
 
-### 11. HUD Helpers
-- **Split range circles**: Rings showing split distance around enemies (single, double, and triple split)
+### 13. HUD Helpers
+- **Split range circles**: Rings showing split distance around enemies (single, double, triple, and quad split)
 - **Split prediction**: Dim cursor lines on own cells that cannot split
 - **Move direction arrow**: Arrow showing real movement direction
 - **Merge countdown**: Seconds until each own cell can recombine
 - **Merge sound**: Audio cue when cells can merge
 - **Merge progress rings**: Visual progress rings on own cells
-- **Relative mass display**: Other players' mass shown as ratio to your biggest cell
+- **Relative mass display**: Other players' mass shown as ratio to your biggest cell (e.g. 1.75x, 0.40x)
 - **Edge teammates arrows**: Screen-edge indicators for off-screen teammates
 - **Edge threats arrows**: Screen-edge indicators for large cells that left the screen
-- **Cell mass panel**: Detailed panel showing each own cell's mass
-- **Mass format**: Short/exact/12.3k/auto mass display modes
+- **Cell mass panel**: Detailed panel showing each own cell's mass sorted, count/16, largest, smallest, total
+- **Mass format**: 4 modes (0=short, 1=exact, 2=12.3k, 3=auto)
 - **Virus range circles**: Rings showing virus ejection range
 - **Mass in tab title**: Browser tab shows current mass
 - **FPS/stats positioning**: FPS at top or centre of screen, configurable stats elements
+- **Precision zoom**: Hold-action for fine zoom control
+- **Zoom bookmarks**: 3 save/recall zoom slots
+- **Camera lock**: Lock camera at current position
 
-### 12. Leaderboard Features
+### 14. HUD Editor
+Drag and resize HUD elements with named layouts. Features:
+- **Movable elements**: Leaderboard, minimap, stats, team panel, time, target, chat, cell panel
+- **Named layouts**: Up to 20 saved in localStorage
+- **Snapping**: Snap to grid (8/16/32px options)
+- **Lock/unlock**: Lock layout to prevent accidental moves
+- **Responsive positioning**: Positions relative to nearest screen edge
+- Opens via hotkey (no default key) or Command Centre
+
+### 15. Leaderboard Features
 - **Configurable limit**: Show top 5-20 entries
 - **Top 5 skins**: Display skins of leaderboard leaders
 - **Centred leaderboard**: Position leaderboard at centre-right
@@ -172,85 +301,162 @@ In-game text chat with rich features:
 - **Pass toast**: Notification when climbing the leaderboard
 - **Click-to-spectate**: Click a leaderboard entry to follow that player in spectate
 
-### 13. Stats and Analytics
-- **Live stats HUD**: Mass, FPS, ping, PPS (packets per second), server Hz, jitter, alive time, world size, decay info
+### 16. Stats and Analytics
+- **Live stats HUD**: Mass, FPS, ping, PPS (packets per second), server Hz, jitter, alive time, world size, decay info, 16-cell count
 - **Game Over card**: Displays session statistics after death
 - **Mass graph**: Graph of mass over your life on the Game Over card
-- **Kill feed**: Fading list of your kills and deaths, left of the leaderboard
-- **Death recap**: Last 20 seconds as summarised steps with mass sparkline
+- **Kill feed**: Fading list of your kills and deaths, left of leaderboard (stays 6 seconds, max 5 visible)
+- **Death recap**: Last 20 seconds as 3-6 summarised steps with mass sparkline, showing splits, virus pops, being eaten. Attributes killer from eat events. Expanding Land uses server-provided killer info.
 - **Killer display**: "Eaten by: nick (mass)" on the Game Over card
 - **Mass loss alerts**: Notification when you lose a configurable percentage (10-90%) of mass within 2 seconds
-- **Analytics window**: Detailed game analytics stored in localStorage with caps
-- **Notification centre**: Bell icon with a scrollable list of recent toast notifications
+- **Analytics window**: Statistics dashboard with heatmaps, play pattern analysis (coach), personal objectives (up to 8 custom goals), up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis.
+- **Notification centre**: Bell icon with unread count, filterable list by category (achievements, bests, party, replay, connection, settings, chat, other), mark read, clear, suppress toasts by category. Up to 200 notifications, max 120KB in localStorage.
 - **Network history**: Ping, jitter, packet rate and disconnect statistics across sessions
+- **Session stats**: Games played, best mass, time played per tab session (sessionStorage)
 
-### 14. Scan Trick and Line Split
-- **Scan trick**: Snap cursor movement to fixed directional increments (8-32 directions, configurable distance) for precise cell positioning
-- **Line split**: Straight-line rapid split (3 = x8, 4 = x16) with configurable delay and lock duration
+### 17. Scan Trick and Line Split
+- **Scan trick**: Snap cursor movement to fixed directional increments (8-32 directions, configurable distance) for precise cell positioning. Options: rounded, left-mouse-only, status display
+- **Line split**: Straight-line rapid split (3 = x8, 4 = x16) with configurable delay, hold time, and guide lines
 - **Guides**: Visual guide lines showing scan trick and line split directions
 
-### 15. Second-Screen Companion
-Broadcast live game state to a second browser window or device via BroadcastChannel. The companion page shows real-time minimap, mass, cell positions and optionally chat messages. Useful for streaming setups or multi-monitor play.
+### 18. Second-Screen Companion
+Broadcast live game state to a second browser window or device via BroadcastChannel ('legendmod-live') at up to 4 states/second. Features:
+- **Data published**: Mass, rank, cells, time alive, eaten cells, server/mode, leaderboard top 10, minimap data, events, trail (last ~60s), chat lines (optional)
+- **Widgets**: Card, mass, rank, time, minimap, leaderboard, stats, events, chat
+- **Layouts**: Column, row, grid
+- **Privacy-aware**: Stream mode, hide skin URL, hide country applied before publishing
+- **Cross-origin support**: When game runs on agar.io, opens companion.html via window.postMessage
+- Works as OBS source or second screen
 URL: https://www.legendmod.ml/companion-guide.html
 
-### 16. Privacy and Streamer Mode
-- **Streamer preset**: One-click preset that hides personal information
-- **Stream mode**: Hides identifying details during gameplay
+### 19. Privacy and Streamer Mode
+- **Streamer preset**: One-click preset that hides country, chat, chat images/videos, dev console
+- **Stream mode**: Blurs nick, clan tag, and skin URL fields in menu
 - **Hide skin URL**: Remove the skin URL from the settings display
 - **Hide my name**: Remove your own name from cells
 - **Hide country flag**: Remove country flag from chat
 
-### 17. Accessibility
-- **Reduced motion**: Disables death screen shake, death particles, and entrance animations
-- **Text scale**: Adjust menu text size (a11yTextScale)
-- **HUD text scale**: Adjust in-game HUD text independently
-- **Indicators**: Bigger/smaller symbols on opponent cells for visibility
-- **Focus warning**: Toast notification when keyboard/mouse input is not reaching the game (e.g., after Alt+Tab)
+### 20. Accessibility
+- **Reduced motion**: Disables death screen shake, death particles, entrance animations, and Expanding Land entrance spin
+- **Text scale**: Adjust menu text size (1.0-1.6x) independently from HUD scale
+- **HUD text scale**: Adjust in-game HUD text (leaderboard, stats, clock, chat) independently
+- **Indicators**: Bigger/smaller symbols on opponent cells — up triangles for bigger cells (two: can split on you), down triangles for smaller (two: you can split on them)
+- **Colour-blind safe theme preset**: Okabe-Ito palette with opaque HUD, bigger minimap marks
+- **Clean HUD preset**: Strips non-essential HUD elements
+- **Focus warning**: Toast notification when keyboard/mouse input is not reaching the game
 
-### 18. Food Display
-- **Rainbow food**: Coloured food pellets
-- **Auto-hide food**: Hide food below certain zoom levels
-- **Auto-hide food on zoom**: Hide food when zoomed out
+### 21. Practice Arena
+Offline practice mode against bots (no server needed). Features:
+- Uses MultiOgar protocol to feed packets to the normal renderer
+- Personal bests tracked and ghost of your best run
+- All keyboard/mouse/touch/gamepad controls work unchanged
+- Useful for practising split tricks, virus shots, and movement techniques
+- Opens via hotkey (no default key) or Command Centre
+
+### 22. Spectator Director
+Automatic camera system for spectating. Features:
+- **Auto-camera**: Follows most interesting action (scoring: big cells near each other, mass changes, splits, #1 player)
+- **Watchlist**: Track players by nick, cycle with hotkeys
+- **Map bookmarks**: Save/recall up to 20 positions with zoom level
+- **Cinematic camera**: Transition time, easing, follow smoothing
+- **Broadcast HUD**: Clean overlay for viewers with player info and leaderboard ticker
+- **Leaderboard history**: Positions over time while spectating
+- 8 dedicated spectator director hotkeys (all configurable, no default keys)
+
+### 23. Custom Macros
+Create automated action sequences. Features:
+- **3 macro slots**, each a sequence of actions: split, feed, wait N ms, move to mouse
+- **Up to 24 steps**, 8 repeats, 2000ms max wait, 5000ms max total, 48 max events
+- **Dry run mode**: Test macros without affecting gameplay
+- **Safety limits**: Minimum gaps enforced (20ms between splits, 10ms between feeds)
+- Opens via hotkey (no default key) or Command Centre
+
+### 24. Radial Menu
+Hold-point-release radial command menu. Features:
+- **Up to 8 slots**: Assign any hotkey command to a slot
+- **Quick access**: Hold radial menu key, point to slot, release to activate
+- **Radial editor**: Customize slot assignments
+- Opens via hotkey (no default key)
+
+### 25. User Scripts / Plugins
+Extend Legend Mod with custom JavaScript. Features:
+- **5 script slots**: Load by URL or paste code
+- **Plugin header format**: `// ==LMPlugin== ... // ==/LMPlugin==`
+- **Plugin fields**: name, version, description, author, minVersion, maxVersion, permissions
+- **Settings API**: `LMPlugins.ready({ settings, onSettingsChange, onEnable, onDisable })`
+- **Catalogue**: Browse example plugins
+- **Version compatibility checking**: minVersion/maxVersion enforcement
+
+### 26. Lab (Experimental Features)
+Toggle experimental features with on/off switches. Features:
+- Modules register experiments via `LMLab.register({ id, name, description, onEnable, onDisable })`
+- Stored separately from settings in localStorage `lmLab`
+- Reset Lab button to disable all experiments
+- Opens via hotkey (no default key) or Command Centre
+
+### 27. Discovery / Feature Guide
+Feature guide cards that introduce Legend Mod features. Features:
+- **One-tap option switches**: Try features directly from guide cards
+- **Auto-opens**: Shows after updates for returning players
+- **Server compatibility table**: "What works on this server" per server type (agar.io, Expanding Land, private servers)
+
+### 28. Additional Presets
+Beyond Streamer, Legend Mod offers one-click presets:
+- **Competitive**: Enables opponent colours, rings, virus colours, split range, merge rings, mass, FPS/PPS stats
+- **Battery saver**: FPS cap 60, no jelly physics, no video skins, no animated rainbow colour
+- **Reduced motion**: No motion effects, no jelly, no suck animation
+- **Custom HUD / Clean HUD**: Strips non-essential HUD elements
 
 ## Settings Categories
 
 Legend Mod organises its 300+ settings into the following categories accessible via the settings panel:
-- **Presets**: Quick setup options (Competitive, Casual, Streamer, Custom HUD)
-- **Animation**: Speed, jelly physics, death particles, eat pulse, camera smoothing, spawn effects
-- **Skins**: Custom skins, video skins, collections, transparency, vanilla skins, skin checker
+- **Presets**: Quick setup options (Competitive, Battery Saver, Streamer, Reduced Motion, Clean HUD)
+- **Animation**: Speed, jelly physics, death particles, eat pulse, camera smoothing, spawn effects, zoom speed/smooth
+- **Skins**: Custom skins, video skins, collections, transparency, vanilla skins, skin checker, skin rotator, video ducking
 - **Food**: Rainbow food, auto-hide food, food opacity
-- **Performance and Network**: WebGL, High DPI, FPS cap, adaptive performance, performance mode, anti-aliasing, network history
-- **Minimap**: Show/rotate, grid, guides, ghost cells, trail, click-spectate
-- **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, edge arrows, cell panel, stats display
-- **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter
+- **Performance and Network**: WebGL, High DPI, FPS cap, adaptive performance (target, toasts, resolution), performance mode, anti-aliasing, network history, net graph
+- **Minimap**: Show/rotate, grid, guides, ghost cells, trail, click-spectate, one-coloured teammates
+- **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, edge arrows, cell panel, stats display, indicators, online status, sticky cell
+- **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter, coloured nicks, hide country, universal chat, player ID
+- **Sounds**: Sound mixer (6 channels), individual sound toggles, audio ducking
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots, click-spectate, pass toast
-- **Multibox**: Amount (2-4), rings (P1/P2 colour, size, active-only), freeze, auto-respawn, switch after death, camera view
+- **Multibox**: Amount (2-4), rings (P1/P2 colour, size, active-only), freeze, auto-respawn, switch after death, camera view, shadow
 - **Scan Trick**: Enable, directions, distance, rounded, left-mouse-only, status display
 - **Line Split**: Count, delay, hold time, guide lines
-- **Sounds**: Sound mixer (master, chat, commands, gameplay, video, notifications), individual sound toggles
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
 - **Gamepad**: Enable, dead zone, move range, curve, zoom sensitivity, trigger, axis inversion, vibrate
-- **Privacy**: Streamer mode, hide skin URL, hide name, hide country
+- **Privacy/Extras**: Streamer mode, hide skin URL, hide name, hide country, block popups
 - **Stats**: Game Over card stats, mass graph, kill feed, death recap, mass loss alerts, analytics, personal bests, match history
-- **Advanced**: Zoom speed, domination/dominated rate, border glow, virus spikes/glow, cell contours
-
-### Settings Profiles
-Up to 15 named profiles can be saved/loaded. Each stores all settings. Import/export is available as a JSON blob.
+- **Merge**: Countdown, sound, progress rings
+- **Indicators**: Opponent colours, rings, virus colours, split range (single/double/triple/quad), virus range, cursor tracking, split prediction, bubble indicators, teammates indicators
+- **Accessibility**: Reduced motion, text scale (1.0-1.6x), HUD text scale, indicators
+- **Grid/Borders**: Grid, sectors, map borders, border glow, rainbow borders
+- **Effects**: No colours, custom colour, transparent skins/cells/viruses, virus glow, cell contours, cell shadows, animated rainbow, death particles, eat pulse
+- **Zoom**: Auto zoom, mass-weighted camera
+- **Respawn**: Quick respawn, auto respawn, spawn effects
+- **Names**: No names, optimized, auto-hide, hide mine, hide teammates, stroke
+- **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, short mass, virus spikes, virus mass shots, stroke, relative mass
+- **Spectate**: Leaderboard click-spectate, minimap click-spectate, companion live/chat
+- **Replay**: Record replays, match history, personal bests, analytics
+- **Macro**: Feeding speed, split delay, pop-split delay
+- **Config**: Settings profiles
+- **Lab**: Experimental features
 
 ## Supported Languages
 
 Legend Mod is translated into 16 languages:
 Arabic (ar), Bulgarian (bg), German (de), Greek (el), English (en), Spanish (es), French (fr), Indonesian (id, beta), Italian (it, beta), Japanese (ja, beta), Dutch (nl), Polish (pl), Portuguese (pt, beta), Russian (ru), Turkish (tr), Traditional Chinese (zh)
 
-The website pages (index, features, FAQ, changelog, skins, themes, privacy, terms, compare, nicknames, skin checker, skin rotator, 404) each have per-language translation files. The game client translations cover over 2,000 strings.
+Each language has: core language pack (lm-XX.js), plus separate translation packs for each site page (index, features, compare, faq, changelog, skins, skin checker, skin rotator, themes, privacy, terms, 404, nicknames). The game client translations cover over 2,000 strings.
 
 ## Technical Details
 
 - **Rendering**: WebGL2 with per-frame preflight and atomic Canvas2D fallback
-- **Storage**: localStorage for settings/hotkeys/profiles/history; IndexedDB for skin and audio caching (LRU eviction)
-- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus modular scripts: commandcentre.js, themebridge.js, accessibility.js, analytics.js, companion.js, deathrecap.js, gamepad.js, gamepad-ui.js, hudhelpers.js, notifications.js, replaystudio.js, smalltools.js
-- **PWA**: Progressive Web App with fullscreen game mode, manifest.json, and service worker support
-- **Extension**: Chrome extension "Legend Express" available on Chrome Web Store. Permissions are limited to game domains; the extension does NOT collect, store or transmit personal data externally.
+- **Storage**: localStorage for settings/hotkeys/profiles/history; IndexedDB for skin caching (1,000 skins, 600 audio, LRU eviction)
+- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: commandcentre.js (1069 lines), themebridge.js, accessibility.js (246), analytics.js (1159), companion.js (685), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), notifications.js (812), replaystudio.js (1615), profiles.js (1386), practice.js (707), director.js (1598), macroeditor.js (511), plugins.js (940), lab.js (245), discovery.js (613), smalltools.js (1219), perf.js (1848), themeworkshop.js (1254), hotkeysCommand.js (2056)
+- **PWA**: Progressive Web App with fullscreen game mode, manifest.json ("Legend Mod - Expanding Land"), landscape orientation, theme_color #00243e, service worker support
+- **Extension**: Chrome extension "Legend Express" (manifest v3, version 1.8.4, author Jimboy3100). Permissions: storage, declarativeNetRequest. Host permissions: agar.io, jimboy3100.github.io, legendmod.ml, sigmally.com, senpa.io, mi.com. Content scripts run on agar.io at document_start. Background: service worker. Does NOT collect, store or transmit personal data externally.
+- **LMEvents API**: Hook system for user scripts (developers/LMEvents.md). Frozen plain data for listeners, failing listeners logged but don't stop the game.
 
 ## Expanding Land (Game)
 
@@ -362,7 +568,22 @@ A rapid multi-split technique (x8 or x16) in a straight line toward the cursor. 
 A feature that broadcasts live game state (minimap, mass, cell positions, chat) to a second browser window or device via BroadcastChannel. Useful for multi-monitor setups or streaming.
 
 **What is the death recap?**
-A Game Over card feature showing the last 20 seconds of your life as summarised steps with a mass sparkline, plus the killer's name and mass.
+A Game Over card feature showing the last 20 seconds of your life as 3-6 summarised steps with a mass sparkline, plus the killer's name and mass.
+
+**What is the Practice Arena?**
+An offline mode where you practice against bots without connecting to a server. Uses MultiOgar protocol. Tracks personal bests and replays ghost of your best run.
+
+**What is the Theme Workshop?**
+A tool to create, save, rename, copy and delete custom themes. Supports up to 30 themes with 5 versions each, live preview with auto-revert, side-by-side comparison, and a gallery of shipped themes.
+
+**What are Settings Profiles?**
+Named sets of all gameplay and visual settings that can be switched instantly. Supports up to 30 profiles, auto-switching per server/mode/input device, and 5 automatic backups.
+
+**What is the Spectator Director?**
+An automatic camera system that follows the most interesting action while spectating. Includes watchlist, map bookmarks (up to 20), cinematic camera, broadcast HUD, and leaderboard history.
+
+**What are User Scripts / Plugins?**
+Legend Mod supports 5 user script slots for custom JavaScript extensions. Plugins use a standard header format and can register settings via the LMPlugins API. A catalogue of example plugins is available.
 
 ## Glossary of Key Terms
 
@@ -386,6 +607,13 @@ A Game Over card feature showing the last 20 seconds of your life as summarised 
 - **Multiboxing**: Controlling multiple game connections simultaneously (up to 4 in EL)
 - **Spectator**: 200+ slots with free-roam camera in Expanding Land
 - **Coordinate scrambling**: Anti-cheat system giving different position offsets per player
+- **Command Centre**: Fuzzy-search palette (Ctrl+K) for all settings and commands
+- **Theme Workshop**: Tool to create, save and manage up to 30 custom themes
+- **Settings Profile**: Named snapshot of all settings, switchable instantly
+- **Practice Arena**: Offline mode for practising against bots
+- **Replay Studio**: Full playback tool for recorded game replays
+- **LMEvents**: Hook API for user scripts to listen to game events
+- **HUD Editor**: Tool for dragging and resizing HUD elements into named layouts
 
 ## Official Resources
 

@@ -18,15 +18,66 @@
       "description": "Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools.",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Web browser",
+      "softwareVersion": "3.629",
+      "inLanguage": ["en", "ar", "bg", "de", "el", "es", "fr", "id", "it", "ja", "nl", "pl", "pt", "ru", "tr", "zh"],
       "featureList": [
         "Custom skins",
+        "Video skins",
         "Themes",
         "Configurable controls",
+        "Command Centre",
         "Multiboxing",
-        "Replay tools"
+        "Replay tools",
+        "Gamepad support",
+        "Mobile touch controls",
+        "Settings profiles",
+        "Performance diagnostics",
+        "Adaptive performance",
+        "Second-screen companion",
+        "Chat system",
+        "HUD helpers",
+        "Accessibility features",
+        "Streamer mode"
       ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
       "isRelatedTo": {
         "@id": "https://expanding.land/#game"
+      },
+      "lm:hasFeature": [
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-controls" },
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-skins" },
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-themes" },
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-commandcentre" },
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-multibox" },
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-replays" },
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-gamepad" },
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-performance" },
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-companion" },
+        { "@id": "https://www.legendmod.ml/knowledge/#feature-accessibility" }
+      ]
+    },
+    {
+      "@id": "https://www.legendmod.ml/#extension",
+      "@type": "SoftwareApplication",
+      "name": "Legend Express",
+      "description": "Chrome extension for Legend Mod. Adds custom skins, themes, controls and more to Agar.io-style games. Does NOT collect, store or transmit personal data externally.",
+      "applicationCategory": "BrowserExtension",
+      "operatingSystem": "Chrome",
+      "softwareVersion": "1.8.4",
+      "installUrl": "https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja",
+      "browserRequirements": "Google Chrome",
+      "permissions": ["storage", "declarativeNetRequest"],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "isPartOf": {
+        "@id": "https://www.legendmod.ml/#app"
       }
     },
     {
@@ -45,10 +96,20 @@
       "gamePlatform": "Web browser",
       "operatingSystem": "Web browser",
       "applicationCategory": "GameApplication",
+      "numberOfPlayers": {
+        "@type": "QuantitativeValue",
+        "maxValue": 3840
+      },
       "featureList": [
         "Dynamic circular map",
         "FFA and Teams modes",
-        "Spectator mode"
+        "Spectator mode",
+        "Anti-teaming system",
+        "Anti-cheat",
+        "Ghost cells",
+        "Session stats",
+        "In-game chat",
+        "Encrypted connections"
       ],
       "playMode": "MultiPlayer",
       "offers": {
@@ -60,33 +121,34 @@
         "@id": "https://www.legendmod.ml/#app"
       },
       "lm:hasMechanic": [
-        {
-          "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map"
-        },
-        {
-          "@id": "https://help.expanding.land/knowledge/#mechanic-cell-growth"
-        },
-        {
-          "@id": "https://help.expanding.land/knowledge/#mechanic-split"
-        },
-        {
-          "@id": "https://help.expanding.land/knowledge/#mechanic-mass"
-        },
-        {
-          "@id": "https://help.expanding.land/knowledge/#mechanic-bots"
-        },
-        {
-          "@id": "https://help.expanding.land/knowledge/#mechanic-spectate"
-        }
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-cell-growth" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-split" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-mass" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-decay" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-virus" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-merge" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-ghost-cells" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-bots" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-spectate" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-anti-teaming" },
+        { "@id": "https://help.expanding.land/knowledge/#mechanic-coordinate-scrambling" }
       ],
       "lm:hasGameMode": [
-        {
-          "@id": "https://help.expanding.land/knowledge/#mode-ffa"
-        },
-        {
-          "@id": "https://help.expanding.land/knowledge/#mode-teams"
-        }
+        { "@id": "https://help.expanding.land/knowledge/#mode-ffa" },
+        { "@id": "https://help.expanding.land/knowledge/#mode-teams" }
       ]
+    },
+    {
+      "@id": "https://expanding.land/#android",
+      "@type": "SoftwareApplication",
+      "name": "Expanding Land",
+      "description": "Android app for Expanding Land. PWA with fullscreen landscape play.",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Android",
+      "isPartOf": {
+        "@id": "https://expanding.land/#game"
+      }
     },
     {
       "@id": "https://www.legendmod.ml/#website",
@@ -116,76 +178,243 @@
       }
     },
     {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-controls",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Configurable controls and hotkeys",
+      "description": "Fully rebindable keyboard, mouse and gamepad controls with Command Centre search."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-skins",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Custom skins, video skins and skin tools",
+      "description": "Custom image URLs, video skins, skin collections, skin checker, IndexedDB cache."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-themes",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Themes and HUD customization",
+      "description": "CSS variable-based themes, 8 presets, Theme Workshop with live preview."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-commandcentre",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Command Centre",
+      "description": "Fuzzy-search palette (Ctrl+K) for every setting, hotkey, theme and window."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-multibox",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Multibox controls",
+      "description": "Control up to 4 connections with colour-coded rings and middle camera view."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-replays",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Replay tools",
+      "description": "Packet recording, instant replay, Replay Studio, match history, personal bests."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-gamepad",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Gamepad support",
+      "description": "Full controller support with customizable mapping, dead zone, response curve and vibration."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-performance",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Performance diagnostics",
+      "description": "WebGL2 acceleration, adaptive performance, FPS cap, diagnostics window."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-companion",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Second-screen companion",
+      "description": "Broadcast live game state to a second window via BroadcastChannel."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-accessibility",
+      "@type": ["DefinedTerm", "lm:Feature"],
+      "name": "Accessibility features",
+      "description": "Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset."
+    },
+    {
       "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map",
-      "@type": [
-        "DefinedTerm",
-        "lm:GameMechanic"
-      ],
-      "name": "Server-controlled circular arena that expands and contracts",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Dynamic circular arena",
+      "description": "Server-controlled circular boundary that expands and contracts (0.25x to 8x).",
       "url": "https://help.expanding.land/dynamic-map.html"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-cell-growth",
-      "@type": [
-        "DefinedTerm",
-        "lm:GameMechanic"
-      ],
-      "name": "Collect food and consume smaller cells to grow",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Cell growth",
+      "description": "Collect food pellets and consume smaller cells to grow.",
       "url": "https://help.expanding.land/guide.html"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-split",
-      "@type": [
-        "DefinedTerm",
-        "lm:GameMechanic"
-      ],
-      "name": "Split cells as a gameplay technique",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Splitting",
+      "description": "Divide cell into two halves (Space key), up to 16 fragments.",
       "url": "https://help.expanding.land/guide.html#splitting"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-mass",
-      "@type": [
-        "DefinedTerm",
-        "lm:GameMechanic"
-      ],
-      "name": "Mass management and ejection",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Mass ejection",
+      "description": "Eject mass toward cursor (W key), costs ~15-16 mass per press.",
       "url": "https://help.expanding.land/guide.html#mass"
     },
     {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-decay",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Mass decay",
+      "description": "Cells lose approximately 0.8% of mass every 4 seconds."
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-virus",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Viruses",
+      "description": "Spiky green circles that pop big cells into ~16 pieces. Feed 7 W-presses to shoot."
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-merge",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Merge timer",
+      "description": "Split cells rejoin after a timer based on mass."
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-ghost-cells",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Ghost cells",
+      "description": "Transparent cells showing death location (Expanding Land exclusive)."
+    },
+    {
       "@id": "https://help.expanding.land/knowledge/#mechanic-bots",
-      "@type": [
-        "DefinedTerm",
-        "lm:GameMechanic"
-      ],
-      "name": "Human and server-controlled bot populations vary by arena",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Server-controlled bots",
+      "description": "Human and server-controlled bot populations vary by arena.",
       "url": "https://help.expanding.land/no-bots.html"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-spectate",
-      "@type": [
-        "DefinedTerm",
-        "lm:GameMechanic"
-      ],
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
       "name": "Spectator mode",
+      "description": "200+ spectator slots with free-roam camera.",
       "url": "https://help.expanding.land/glossary.html"
     },
     {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-anti-teaming",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Anti-teaming system",
+      "description": "Exponential multiplier decay: base × pow(1.086, multiplier)."
+    },
+    {
+      "@id": "https://help.expanding.land/knowledge/#mechanic-coordinate-scrambling",
+      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "name": "Coordinate scrambling",
+      "description": "Anti-cheat: each player receives different coordinate offsets."
+    },
+    {
       "@id": "https://help.expanding.land/knowledge/#mode-ffa",
-      "@type": [
-        "DefinedTerm",
-        "lm:GameMode"
-      ],
+      "@type": ["DefinedTerm", "lm:GameMode"],
       "name": "Free-for-all",
       "description": "Competitive individual play."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mode-teams",
-      "@type": [
-        "DefinedTerm",
-        "lm:GameMode"
-      ],
+      "@type": ["DefinedTerm", "lm:GameMode"],
       "name": "Teams",
       "description": "Team-based play on supported arenas."
+    },
+    {
+      "@id": "https://www.legendmod.ml/#faq",
+      "@type": "FAQPage",
+      "name": "Legend Mod and Expanding Land FAQ",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Expanding Land the official Agar.io service?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. Expanding Land is an independent multiplayer cell game built from scratch in C."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does the map change?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The server controls expansion and contraction of the circular arena (0.25x to 8x)."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Are all opponents human?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not necessarily. Human and server-controlled bot counts vary by arena."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is Legend Mod?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A browser client and Chrome extension that adds custom skins, themes, controls, multiboxing and replays to Agar.io-style cell games."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is Legend Mod free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Legend Mod and Expanding Land are free to use with no subscription required."
+          }
+        }
+      ]
+    },
+    {
+      "@id": "https://www.legendmod.ml/#breadcrumb",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Legend Mod",
+          "item": "https://www.legendmod.ml/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Play",
+          "item": "https://www.legendmod.ml/play.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Features",
+          "item": "https://www.legendmod.ml/features.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Skins",
+          "item": "https://www.legendmod.ml/skins/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Themes",
+          "item": "https://www.legendmod.ml/themes/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "Knowledge",
+          "item": "https://www.legendmod.ml/knowledge/"
+        }
+      ]
     }
   ]
 }

@@ -8,12 +8,72 @@
     <schema:description>Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools.</schema:description>
     <schema:applicationCategory>GameApplication</schema:applicationCategory>
     <schema:operatingSystem>Web browser</schema:operatingSystem>
+    <schema:softwareVersion>3.629</schema:softwareVersion>
+    <schema:inLanguage>en</schema:inLanguage>
+    <schema:inLanguage>ar</schema:inLanguage>
+    <schema:inLanguage>bg</schema:inLanguage>
+    <schema:inLanguage>de</schema:inLanguage>
+    <schema:inLanguage>el</schema:inLanguage>
+    <schema:inLanguage>es</schema:inLanguage>
+    <schema:inLanguage>fr</schema:inLanguage>
+    <schema:inLanguage>id</schema:inLanguage>
+    <schema:inLanguage>it</schema:inLanguage>
+    <schema:inLanguage>ja</schema:inLanguage>
+    <schema:inLanguage>nl</schema:inLanguage>
+    <schema:inLanguage>pl</schema:inLanguage>
+    <schema:inLanguage>pt</schema:inLanguage>
+    <schema:inLanguage>ru</schema:inLanguage>
+    <schema:inLanguage>tr</schema:inLanguage>
+    <schema:inLanguage>zh</schema:inLanguage>
     <schema:featureList>Custom skins</schema:featureList>
+    <schema:featureList>Video skins</schema:featureList>
     <schema:featureList>Themes</schema:featureList>
     <schema:featureList>Configurable controls</schema:featureList>
+    <schema:featureList>Command Centre</schema:featureList>
     <schema:featureList>Multiboxing</schema:featureList>
     <schema:featureList>Replay tools</schema:featureList>
+    <schema:featureList>Gamepad support</schema:featureList>
+    <schema:featureList>Mobile touch controls</schema:featureList>
+    <schema:featureList>Settings profiles</schema:featureList>
+    <schema:featureList>Performance diagnostics</schema:featureList>
+    <schema:featureList>Adaptive performance</schema:featureList>
+    <schema:featureList>Second-screen companion</schema:featureList>
+    <schema:featureList>Chat system</schema:featureList>
+    <schema:featureList>HUD helpers</schema:featureList>
+    <schema:featureList>Accessibility features</schema:featureList>
+    <schema:featureList>Streamer mode</schema:featureList>
+    <schema:offers rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/Offer"/>
+      <schema:price>0</schema:price>
+      <schema:priceCurrency>USD</schema:priceCurrency>
+    </schema:offers>
     <schema:isRelatedTo rdf:resource="https://expanding.land/#game"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-controls"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-skins"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-themes"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-commandcentre"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-multibox"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-replays"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-gamepad"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-performance"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-companion"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-accessibility"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/#extension">
+    <rdf:type rdf:resource="https://schema.org/SoftwareApplication"/>
+    <schema:name>Legend Express</schema:name>
+    <schema:description>Chrome extension for Legend Mod. Adds custom skins, themes, controls and more to Agar.io-style games. Does NOT collect, store or transmit personal data externally.</schema:description>
+    <schema:applicationCategory>BrowserExtension</schema:applicationCategory>
+    <schema:operatingSystem>Chrome</schema:operatingSystem>
+    <schema:softwareVersion>1.8.4</schema:softwareVersion>
+    <schema:installUrl rdf:resource="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja"/>
+    <schema:browserRequirements>Google Chrome</schema:browserRequirements>
+    <schema:offers rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/Offer"/>
+      <schema:price>0</schema:price>
+      <schema:priceCurrency>USD</schema:priceCurrency>
+    </schema:offers>
+    <schema:isPartOf rdf:resource="https://www.legendmod.ml/#app"/>
   </rdf:Description>
   <rdf:Description rdf:about="https://expanding.land/#game">
     <rdf:type rdf:resource="https://schema.org/VideoGame"/>
@@ -26,18 +86,48 @@
     <schema:gamePlatform>Web browser</schema:gamePlatform>
     <schema:operatingSystem>Web browser</schema:operatingSystem>
     <schema:applicationCategory>GameApplication</schema:applicationCategory>
+    <schema:numberOfPlayers rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/QuantitativeValue"/>
+      <schema:maxValue>3840</schema:maxValue>
+    </schema:numberOfPlayers>
     <schema:featureList>Dynamic circular map</schema:featureList>
     <schema:featureList>FFA and Teams modes</schema:featureList>
     <schema:featureList>Spectator mode</schema:featureList>
+    <schema:featureList>Anti-teaming system</schema:featureList>
+    <schema:featureList>Anti-cheat</schema:featureList>
+    <schema:featureList>Ghost cells</schema:featureList>
+    <schema:featureList>Session stats</schema:featureList>
+    <schema:featureList>In-game chat</schema:featureList>
+    <schema:featureList>Encrypted connections</schema:featureList>
+    <schema:playMode>MultiPlayer</schema:playMode>
+    <schema:offers rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/Offer"/>
+      <schema:price>0</schema:price>
+      <schema:priceCurrency>USD</schema:priceCurrency>
+    </schema:offers>
     <schema:isRelatedTo rdf:resource="https://www.legendmod.ml/#app"/>
     <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-dynamic-map"/>
     <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-cell-growth"/>
     <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-split"/>
     <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-mass"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-decay"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-virus"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-merge"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-ghost-cells"/>
     <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-bots"/>
     <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-spectate"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-anti-teaming"/>
+    <lm:hasMechanic rdf:resource="https://help.expanding.land/knowledge/#mechanic-coordinate-scrambling"/>
     <lm:hasGameMode rdf:resource="https://help.expanding.land/knowledge/#mode-ffa"/>
     <lm:hasGameMode rdf:resource="https://help.expanding.land/knowledge/#mode-teams"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://expanding.land/#android">
+    <rdf:type rdf:resource="https://schema.org/SoftwareApplication"/>
+    <schema:name>Expanding Land</schema:name>
+    <schema:description>Android app for Expanding Land. PWA with fullscreen landscape play.</schema:description>
+    <schema:applicationCategory>GameApplication</schema:applicationCategory>
+    <schema:operatingSystem>Android</schema:operatingSystem>
+    <schema:isPartOf rdf:resource="https://expanding.land/#game"/>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/#website">
     <rdf:type rdf:resource="https://schema.org/WebSite"/>
@@ -57,41 +147,143 @@
     <schema:url rdf:resource="https://help.expanding.land/"/>
     <schema:about rdf:resource="https://expanding.land/#game"/>
   </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-controls">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Configurable controls and hotkeys</schema:name>
+    <schema:description>Fully rebindable keyboard, mouse and gamepad controls with Command Centre search.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-skins">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Custom skins, video skins and skin tools</schema:name>
+    <schema:description>Custom image URLs, video skins, skin collections, skin checker, IndexedDB cache.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-themes">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Themes and HUD customization</schema:name>
+    <schema:description>CSS variable-based themes, 8 presets, Theme Workshop with live preview.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-commandcentre">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Command Centre</schema:name>
+    <schema:description>Fuzzy-search palette (Ctrl+K) for every setting, hotkey, theme and window.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-multibox">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Multibox controls</schema:name>
+    <schema:description>Control up to 4 connections with colour-coded rings and middle camera view.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-replays">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Replay tools</schema:name>
+    <schema:description>Packet recording, instant replay, Replay Studio, match history, personal bests.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-gamepad">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Gamepad support</schema:name>
+    <schema:description>Full controller support with customizable mapping, dead zone, response curve and vibration.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-performance">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Performance diagnostics</schema:name>
+    <schema:description>WebGL2 acceleration, adaptive performance, FPS cap, diagnostics window.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-companion">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Second-screen companion</schema:name>
+    <schema:description>Broadcast live game state to a second window via BroadcastChannel.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-accessibility">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Accessibility features</schema:name>
+    <schema:description>Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset.</schema:description>
+  </rdf:Description>
   <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-dynamic-map">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
-    <schema:name>Server-controlled circular arena that expands and contracts</schema:name>
+    <schema:name>Dynamic circular arena</schema:name>
+    <schema:description>Server-controlled circular boundary that expands and contracts (0.25x to 8x).</schema:description>
     <schema:url rdf:resource="https://help.expanding.land/dynamic-map.html"/>
   </rdf:Description>
   <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-cell-growth">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
-    <schema:name>Collect food and consume smaller cells to grow</schema:name>
+    <schema:name>Cell growth</schema:name>
+    <schema:description>Collect food pellets and consume smaller cells to grow.</schema:description>
     <schema:url rdf:resource="https://help.expanding.land/guide.html"/>
   </rdf:Description>
   <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-split">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
-    <schema:name>Split cells as a gameplay technique</schema:name>
+    <schema:name>Splitting</schema:name>
+    <schema:description>Divide cell into two halves (Space key), up to 16 fragments.</schema:description>
     <schema:url rdf:resource="https://help.expanding.land/guide.html#splitting"/>
   </rdf:Description>
   <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-mass">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
-    <schema:name>Mass management and ejection</schema:name>
+    <schema:name>Mass ejection</schema:name>
+    <schema:description>Eject mass toward cursor (W key), costs ~15-16 mass per press.</schema:description>
     <schema:url rdf:resource="https://help.expanding.land/guide.html#mass"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-decay">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Mass decay</schema:name>
+    <schema:description>Cells lose approximately 0.8% of mass every 4 seconds.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-virus">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Viruses</schema:name>
+    <schema:description>Spiky green circles that pop big cells into ~16 pieces. Feed 7 W-presses to shoot.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-merge">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Merge timer</schema:name>
+    <schema:description>Split cells rejoin after a timer based on mass.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-ghost-cells">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Ghost cells</schema:name>
+    <schema:description>Transparent cells showing death location (Expanding Land exclusive).</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-bots">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
-    <schema:name>Human and server-controlled bot populations vary by arena</schema:name>
+    <schema:name>Server-controlled bots</schema:name>
+    <schema:description>Human and server-controlled bot populations vary by arena.</schema:description>
     <schema:url rdf:resource="https://help.expanding.land/no-bots.html"/>
   </rdf:Description>
   <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-spectate">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
     <schema:name>Spectator mode</schema:name>
+    <schema:description>200+ spectator slots with free-roam camera.</schema:description>
     <schema:url rdf:resource="https://help.expanding.land/glossary.html"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-anti-teaming">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Anti-teaming system</schema:name>
+    <schema:description>Exponential multiplier decay: base × pow(1.086, multiplier).</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-coordinate-scrambling">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMechanic"/>
+    <schema:name>Coordinate scrambling</schema:name>
+    <schema:description>Anti-cheat: each player receives different coordinate offsets.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mode-ffa">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
@@ -104,5 +296,88 @@
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#GameMode"/>
     <schema:name>Teams</schema:name>
     <schema:description>Team-based play on supported arenas.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/#faq">
+    <rdf:type rdf:resource="https://schema.org/FAQPage"/>
+    <schema:name>Legend Mod and Expanding Land FAQ</schema:name>
+    <schema:mainEntity rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/Question"/>
+      <schema:name>Is Expanding Land the official Agar.io service?</schema:name>
+      <schema:acceptedAnswer rdf:parseType="Resource">
+        <rdf:type rdf:resource="https://schema.org/Answer"/>
+        <schema:text>No. Expanding Land is an independent multiplayer cell game built from scratch in C.</schema:text>
+      </schema:acceptedAnswer>
+    </schema:mainEntity>
+    <schema:mainEntity rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/Question"/>
+      <schema:name>Does the map change?</schema:name>
+      <schema:acceptedAnswer rdf:parseType="Resource">
+        <rdf:type rdf:resource="https://schema.org/Answer"/>
+        <schema:text>Yes. The server controls expansion and contraction of the circular arena (0.25x to 8x).</schema:text>
+      </schema:acceptedAnswer>
+    </schema:mainEntity>
+    <schema:mainEntity rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/Question"/>
+      <schema:name>Are all opponents human?</schema:name>
+      <schema:acceptedAnswer rdf:parseType="Resource">
+        <rdf:type rdf:resource="https://schema.org/Answer"/>
+        <schema:text>Not necessarily. Human and server-controlled bot counts vary by arena.</schema:text>
+      </schema:acceptedAnswer>
+    </schema:mainEntity>
+    <schema:mainEntity rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/Question"/>
+      <schema:name>What is Legend Mod?</schema:name>
+      <schema:acceptedAnswer rdf:parseType="Resource">
+        <rdf:type rdf:resource="https://schema.org/Answer"/>
+        <schema:text>A browser client and Chrome extension that adds custom skins, themes, controls, multiboxing and replays to Agar.io-style cell games.</schema:text>
+      </schema:acceptedAnswer>
+    </schema:mainEntity>
+    <schema:mainEntity rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/Question"/>
+      <schema:name>Is Legend Mod free?</schema:name>
+      <schema:acceptedAnswer rdf:parseType="Resource">
+        <rdf:type rdf:resource="https://schema.org/Answer"/>
+        <schema:text>Yes. Legend Mod and Expanding Land are free to use with no subscription required.</schema:text>
+      </schema:acceptedAnswer>
+    </schema:mainEntity>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/#breadcrumb">
+    <rdf:type rdf:resource="https://schema.org/BreadcrumbList"/>
+    <schema:itemListElement rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/ListItem"/>
+      <schema:position>1</schema:position>
+      <schema:name>Legend Mod</schema:name>
+      <schema:item rdf:resource="https://www.legendmod.ml/"/>
+    </schema:itemListElement>
+    <schema:itemListElement rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/ListItem"/>
+      <schema:position>2</schema:position>
+      <schema:name>Play</schema:name>
+      <schema:item rdf:resource="https://www.legendmod.ml/play.html"/>
+    </schema:itemListElement>
+    <schema:itemListElement rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/ListItem"/>
+      <schema:position>3</schema:position>
+      <schema:name>Features</schema:name>
+      <schema:item rdf:resource="https://www.legendmod.ml/features.html"/>
+    </schema:itemListElement>
+    <schema:itemListElement rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/ListItem"/>
+      <schema:position>4</schema:position>
+      <schema:name>Skins</schema:name>
+      <schema:item rdf:resource="https://www.legendmod.ml/skins/"/>
+    </schema:itemListElement>
+    <schema:itemListElement rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/ListItem"/>
+      <schema:position>5</schema:position>
+      <schema:name>Themes</schema:name>
+      <schema:item rdf:resource="https://www.legendmod.ml/themes/"/>
+    </schema:itemListElement>
+    <schema:itemListElement rdf:parseType="Resource">
+      <rdf:type rdf:resource="https://schema.org/ListItem"/>
+      <schema:position>6</schema:position>
+      <schema:name>Knowledge</schema:name>
+      <schema:item rdf:resource="https://www.legendmod.ml/knowledge/"/>
+    </schema:itemListElement>
   </rdf:Description>
 </rdf:RDF>
