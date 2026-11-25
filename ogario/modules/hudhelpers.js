@@ -174,6 +174,9 @@
     var api;
 
     function S() { return window.legendmod5 || {}; }
+    /* texts from the language packs (developers/i18n/src, keys modules.hudhelpers.*) */
+    var TP = 'modules.hudhelpers.';
+    function tr(k, vars) { return typeof window.lmT === 'function' ? window.lmT(TP + k, vars) : k; }
     function fontPx(px) {
         px = Math.max(6, Math.min(2000, Math.round(px)));
         return _fonts[px] || (_fonts[px] = '700 ' + px + 'px Ubuntu, Arial, sans-serif');
@@ -546,6 +549,7 @@
         panelHead.style.whiteSpace = 'pre-line';
         panelList = document.createElement('div');
         panelList.style.cssText = 'opacity:.85;font-weight:400';
+        panelList.dir = 'ltr';
         panel.appendChild(panelHead);
         panel.appendChild(panelList);
         document.body.appendChild(panel);
@@ -600,6 +604,7 @@
         }
     }
 
+    var SEP = ' \u00b7 ';
     function updatePanel(LM, now, s) {
         if (now - _panelAt < 250) return;
         _panelAt = now;
@@ -620,14 +625,20 @@
          * otherwise fall back to the standard 16. */
         var maxCells = (window.legendmod && +window.legendmod.maxCells) || 16;
         /* say which unit it shows when it is not the main player */
-        var a = (refOwner ? 'Unit ' + refOwner + ' · ' : '') + 'Cells ' + o.n + '/' + maxCells + ' · Total ' + formatMass(total, mode, sm) + '\n' +
-            'Max ' + formatMass(_masses[0], mode, sm) + ' · Min ' + formatMass(_masses[_masses.length - 1], mode, sm);
+        var a = (refOwner ? tr('panelUnit', refOwner) + SEP : '') + tr('panelCells', [o.n, maxCells]) + SEP + tr('panelTotal', formatMass(total, mode, sm)) + '\n' +
+            tr('panelMax', formatMass(_masses[0], mode, sm)) + SEP + tr('panelMin', formatMass(_masses[_masses.length - 1], mode, sm));
         var b = '';
         var shown = small ? Math.min(_masses.length, 8) : _masses.length;
         for (i = 0; i < shown; i++) b += (i ? ' ' : '') + formatMass(_masses[i], mode, sm);
         if (shown < _masses.length) b += ' …';
         var changed = false;
-        if (a !== _panelTxtA) { _panelTxtA = a; panelHead.textContent = a; changed = true; }
+        if (a !== _panelTxtA) {
+            _panelTxtA = a;
+            panelHead.textContent = a;
+            /* the words follow the language (Arabic right to left); the mass list below stays LTR */
+            panelHead.dir = window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr';
+            changed = true;
+        }
         if (b !== _panelTxtB) { _panelTxtB = b; panelList.textContent = b; changed = true; }
         if (!panelShown) {
             panel.style.display = 'block';
@@ -745,13 +756,13 @@
         /* a held precision zoom is temporary: keep the zoom it returns to */
         b[n - 1] = _precisionSaved !== null ? precisionBase(LM) : clampZoom(LM.zoomValue);
         writeBookmarks(b);
-        toast('Zoom ' + n + ' saved');
+        toast(tr('zoomSaved', n));
     }
     function zoomRecall(n) {
         var LM = window.legendmod;
         if (!LM || !(n >= 1 && n <= 3)) return;
         var z = readBookmarks()[n - 1];
-        if (!z) { toast('Zoom ' + n + ' is not saved yet'); return; }
+        if (!z) { toast(tr('zoomEmpty', n)); return; }
         if (_precisionSaved !== null) {
             /* held: show the bookmark zoomed in, and return to it on release */
             z = clampZoom(z);
@@ -767,15 +778,15 @@
         var LM = window.legendmod, R = window.drawRender;
         if (api.camLocked) {
             api.camLocked = false;
-            toast('Camera unlocked');
+            toast(tr('camUnlocked'));
             return;
         }
-        if (!spectating(LM)) { toast('Camera lock works while spectating'); return; }
+        if (!spectating(LM)) { toast(tr('camSpectate')); return; }
         if (!R || !Number.isFinite(R.camX) || !Number.isFinite(R.camY)) return;
         api.camLockX = R.camX;
         api.camLockY = R.camY;
         api.camLocked = true;
-        toast('Camera locked (press again to unlock)');
+        toast(tr('camLocked'));
     }
     /* setView(): the locked point, or false (and unlocked) once you play again */
     function camLockTarget(LM, out) {

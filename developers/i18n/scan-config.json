@@ -29,7 +29,11 @@
     "ogario/modules/replaystudio.js",
     "ogario/modules/practice.js",
     "ogario/modules/practice-sim.js",
-    "ogario/modules/deathrecap.js"
+    "ogario/modules/deathrecap.js",
+    "ogario/modules/analytics.js",
+    "ogario/modules/smalltools.js",
+    "ogario/modules/accessibility.js",
+    "ogario/modules/hudhelpers.js"
   ],
   "groups": {
     "a: ogario/modules": [

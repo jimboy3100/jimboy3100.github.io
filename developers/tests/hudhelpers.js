@@ -2,17 +2,21 @@
  * mass formatting, merge countdown, edge arrows) and the mass text / camera lock it gives the game.
  * node developers/tests/hudhelpers.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'hudhelpers.js'), 'utf8');
 const store = {};
+const toasts = [];
 const ctx = {
     console, Math, Number, JSON, Map, Array, String, Date, isFinite,
     performance: { now: () => 0 },
     localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } },
-    document: { body: null, getElementById: () => null, createElement: () => ({ style: {} }) }
+    document: { body: null, getElementById: () => null, createElement: () => ({ style: {} }) },
+    toastr: { info: m => toasts.push(m) }
 };
 ctx.window = ctx;
 ctx.legendmod5 = { massFormat: 0, shortMass: false, hudRelativeMass: false };
 vm.createContext(ctx);
+i18n(ctx);
 vm.runInContext(src, ctx);
 vm.runInContext(src, ctx); /* loading twice must keep the first copy */
 const H = ctx.LMHudHelpers, P = H._pure;
@@ -131,6 +135,11 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     ctx.legendmod.zoomValue = 1;
     H.zoomRecall(2);
     check('zoom bookmark saved and recalled', ctx.legendmod.zoomValue === 0.5);
+    check('zoom saved toast from the language pack', toasts[toasts.length - 1] === i18n.t('modules.hudhelpers.zoomSaved', 2) && toasts[toasts.length - 1] === 'Zoom 2 saved');
+    ctx.LMi18n.setLang('el', { save: false });
+    H.zoomSave(2);
+    check('zoom saved toast follows the language (Greek)', toasts[toasts.length - 1] === i18n.t('modules.hudhelpers.zoomSaved', 2, 'el') && toasts[toasts.length - 1] !== 'Zoom 2 saved');
+    ctx.LMi18n.setLang('en', { save: false });
     store['lm-zoom-bookmarks'] = '[1e9, "x", 0.25]';
     H.zoomRecall(1);
     check('zoom bookmark: bad stored value ignored', ctx.legendmod.zoomValue === 0.5);

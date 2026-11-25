@@ -3,10 +3,12 @@
  * and ogario/modules/accessibility.js, loaded in a vm without a document).
  * node developers/tests/smalltools.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const dir = path.join(__dirname, '..', '..', 'ogario', 'modules');
 const ctx = { console };
 ctx.window = ctx;
 vm.createContext(ctx);
+i18n(ctx);
 vm.runInContext(fs.readFileSync(path.join(dir, 'smalltools.js'), 'utf8'), ctx);
 vm.runInContext(fs.readFileSync(path.join(dir, 'accessibility.js'), 'utf8'), ctx);
 const C = ctx.LMSmallTools && ctx.LMSmallTools._core;
@@ -58,6 +60,15 @@ check('conflicts: Ctrl+W is kept by the browser (error)', has(r, c => c.kind ===
 check('conflicts: Ctrl+Tab is kept by the browser (error)', has(r, c => c.kind === 'browser' && c.key === 'CTRL+TAB' && c.level === 'error'));
 check('conflicts: F5 is a browser shortcut the game takes (note)', has(r, c => c.kind === 'browser' && c.key === 'F5' && c.level === 'info'));
 check('conflicts: Ctrl+1 switches tabs (note)', has(r, c => c.key === 'CTRL+1' && c.level === 'info'));
+check('conflicts: reason from the language pack', has(r, c => c.key === 'CTRL+W' && c.what === i18n.t('modules.smalltools.bk.closeTab') && c.what === 'closes the tab'));
+check('conflicts: tab number in the reason', has(r, c => c.key === 'CTRL+1' && c.what === i18n.t('modules.smalltools.bk.tabN', 1) && c.what.indexOf('1') !== -1));
+ctx.LMi18n.setLang('el', { save: false });
+{
+    const g = C.findConflicts({ keys: [['CTRL+W', 'hk-split'], ['ESC', 'hk-feed']] });
+    check('conflicts: reasons follow the language (Greek)', has(g, c => c.key === 'CTRL+W' && c.what === i18n.t('modules.smalltools.bk.closeTab', null, 'el') && c.what !== 'closes the tab'));
+    check('conflicts: Legend Mod key name follows the language (Greek)', has(g, c => c.key === 'ESC' && c.builtin === i18n.t('modules.smalltools.menuEsc', null, 'el')));
+}
+ctx.LMi18n.setLang('en', { save: false });
 r = C.findConflicts({ keys: [['F11', 'hk-split'], ['CTRL+Q', 'hk-feed']] });
 check('conflicts: F11 and Ctrl+Q may still reach the browser (warning)', r.length === 2 && r.every(c => c.level === 'warn'));
 r = C.findConflicts({ keys: [['ESC', 'hk-split']] });

@@ -421,86 +421,15 @@
         return { value: v, target: goal.target, frac: clamp01(frac), done: done };
     }
 
-    /* ------------------------------------------------------------------ text */
-    var TEXT = {
-        en: {
-            title: 'Analytics', close: 'Close', tabDash: 'Dashboard', tabHeat: 'Heatmaps', tabCoach: 'Coach', tabGoals: 'Objectives',
-            recOff: 'Recording is off. Turn on "Analytics" in Settings (Stats) to record new games; until then this shows your match history.',
-            recOffShort: 'Recording is off: turn on "Analytics" in Settings (Stats).',
-            noGames: 'No games yet. Play a game with Analytics recording on.',
-            games: 'Games played', highest: 'Highest mass', avgSurv: 'Average survival', avgPeak: 'Average peak mass', top10: 'Top-10 finishes',
-            perMin: 'Mass per minute', first: 'Time in 1st place', weekChart: 'Average peak mass per week', thisWeek: 'This week', lastWeek: 'Last week',
-            change: 'Change', bestServers: 'Best servers', bestModes: 'Best modes', gamesN: '{0} games', none: 'none yet',
-            layer: 'Show', move: 'Movement', death: 'Deaths', spawn: 'Spawns', lastN: 'Last games', mapSize: 'Map size',
-            heatInfo: '{0} games · {1} points', fewer: 'fewer', more: 'more', noTracks: 'No heatmap data yet. Play with Analytics recording on.',
-            coachNone: 'No Coach reports yet. Play a game with Analytics recording on.',
-            overall: 'Overall', survival: 'Survival', growth: 'Mass growth', splits: 'Split efficiency', movement: 'Map movement', retention: 'Mass retention',
-            vsAvg: 'vs your average', noData: 'no data', prev: 'Previous game', next: 'Next game', suggestions: 'Suggestions',
-            coachToast: 'Coach: {0}/100. {1}', coachToastMore: 'Tap for the report.',
-            today: 'Today', yours: 'Your objectives', add: 'Add', goalDone: 'Objective complete: {0}',
-            goalsNote: 'Objectives are kept in this browser only and give no rewards.', delete: 'Delete', customFull: 'At most 8 objectives.',
-            gMass: 'Reach {0} mass in one game', gSurvive: 'Survive {0} min in one game', gTop: 'Reach the top {0}', gTop1: 'Reach 1st place',
-            gGames: 'Play {0} games', gBeatAvg: 'Beat your average peak mass ({0})',
-            tMass: 'Reach mass', tSurvive: 'Survive (min)', tTop: 'Top place', tGames: 'Play games', tBeatAvg: 'Beat average peak',
-            sgFinal: 'You lost {0}% of your peak mass in the final 20 s. When you are big, keep away from bigger cells and viruses and avoid risky splits late in a run.',
-            sgSplits: '{0} of your {1} splits lost mass within 5 s (average loss {2}%). Split only at targets you can reach, with no bigger cell close behind you.',
-            sgEdge: 'You spent {0}% of the game near the map border, where you have fewer ways out. Move back toward open space when it is safe.',
-            sgCoverage: 'You stayed in {0}% of the map. Roaming further finds more food and smaller players.',
-            sgShort: 'This life was {0}% shorter than your recent average ({1}). Play safer in the first minutes while you are small.',
-            sgGrowth: 'Your mass grew {0} per minute, below your recent average of {1}. Collect food steadily and look for smaller players to chase.',
-            sgRetention: 'You had {0}% of your peak mass left when you died. After a big gain, merge and play defensively.',
-            sgFirst: 'You held 1st place for {0}. Nice!',
-            sgBetter: 'Your overall score is {0} points above your recent average. Keep it up.',
-            sgTipSurvival: 'Survival was your lowest score: avoid fights with players close to your size until you have grown.',
-            sgTipGrowth: 'Mass growth was your lowest score: keep eating food and small cells instead of waiting.',
-            sgTipSplits: 'Split efficiency was your lowest score: check what is behind you before you split.',
-            sgTipMovement: 'Map movement was your lowest score: use more of the map and stay off the border.',
-            sgTipRetention: 'Mass retention was your lowest score: protect your mass once you are big.',
-            sgKeep: 'Play a few more games to compare against your own average.'
-        },
-        el: {
-            title: 'Αναλυτικά', close: 'Κλείσιμο', tabDash: 'Πίνακας', tabHeat: 'Θερμικοί χάρτες', tabCoach: 'Προπονητής', tabGoals: 'Στόχοι',
-            recOff: 'Η καταγραφή είναι ανενεργή. Ενεργοποίησε το «Αναλυτικά» στις Ρυθμίσεις (Στατιστικά) για να καταγράφονται νέα παιχνίδια· μέχρι τότε εμφανίζεται το ιστορικό αγώνων.',
-            recOffShort: 'Η καταγραφή είναι ανενεργή: ενεργοποίησε το «Αναλυτικά» στις Ρυθμίσεις (Στατιστικά).',
-            noGames: 'Δεν υπάρχουν ακόμη παιχνίδια. Παίξε με ενεργή την καταγραφή.',
-            games: 'Παιχνίδια', highest: 'Μέγιστη μάζα', avgSurv: 'Μέση επιβίωση', avgPeak: 'Μέση μέγιστη μάζα', top10: 'Τερματισμοί στο top 10',
-            perMin: 'Μάζα ανά λεπτό', first: 'Χρόνος στην 1η θέση', weekChart: 'Μέση μέγιστη μάζα ανά εβδομάδα', thisWeek: 'Αυτή την εβδομάδα', lastWeek: 'Προηγούμενη εβδομάδα',
-            change: 'Αλλαγή', bestServers: 'Καλύτεροι διακομιστές', bestModes: 'Καλύτερες λειτουργίες', gamesN: '{0} παιχνίδια', none: 'κανένα ακόμη',
-            layer: 'Εμφάνιση', move: 'Κίνηση', death: 'Θάνατοι', spawn: 'Εμφανίσεις', lastN: 'Τελευταία παιχνίδια', mapSize: 'Μέγεθος χάρτη',
-            heatInfo: '{0} παιχνίδια · {1} σημεία', fewer: 'λιγότερα', more: 'περισσότερα', noTracks: 'Δεν υπάρχουν ακόμη δεδομένα. Παίξε με ενεργή την καταγραφή.',
-            coachNone: 'Δεν υπάρχουν ακόμη αναφορές. Παίξε με ενεργή την καταγραφή.',
-            overall: 'Συνολικά', survival: 'Επιβίωση', growth: 'Αύξηση μάζας', splits: 'Αποδοτικότητα split', movement: 'Κίνηση στον χάρτη', retention: 'Διατήρηση μάζας',
-            vsAvg: 'σε σχέση με τον μέσο όρο σου', noData: 'χωρίς δεδομένα', prev: 'Προηγούμενο', next: 'Επόμενο', suggestions: 'Συμβουλές',
-            coachToast: 'Προπονητής: {0}/100. {1}', coachToastMore: 'Πάτησε για την αναφορά.',
-            today: 'Σήμερα', yours: 'Οι στόχοι σου', add: 'Προσθήκη', goalDone: 'Στόχος ολοκληρώθηκε: {0}',
-            goalsNote: 'Οι στόχοι μένουν μόνο σε αυτόν τον browser και δεν δίνουν ανταμοιβές.', delete: 'Διαγραφή', customFull: 'Έως 8 στόχοι.',
-            gMass: 'Φτάσε τη μάζα {0} σε ένα παιχνίδι', gSurvive: 'Επίζησε {0} λεπτά σε ένα παιχνίδι', gTop: 'Φτάσε στο top {0}', gTop1: 'Φτάσε στην 1η θέση',
-            gGames: 'Παίξε {0} παιχνίδια', gBeatAvg: 'Ξεπέρασε τη μέση μέγιστη μάζα σου ({0})',
-            tMass: 'Μάζα', tSurvive: 'Επιβίωση (λεπτά)', tTop: 'Θέση', tGames: 'Παιχνίδια', tBeatAvg: 'Πάνω από τον μέσο όρο',
-            sgFinal: 'Έχασες το {0}% της μέγιστης μάζας σου στα τελευταία 20 δευτ. Όταν είσαι μεγάλος, μείνε μακριά από μεγαλύτερα κύτταρα και ιούς και απόφυγε ριψοκίνδυνα split.',
-            sgSplits: '{0} από τα {1} split σου έχασαν μάζα μέσα σε 5 δευτ. (μέση απώλεια {2}%). Κάνε split μόνο σε στόχους που φτάνεις, χωρίς μεγαλύτερο κύτταρο πίσω σου.',
-            sgEdge: 'Πέρασες το {0}% του παιχνιδιού κοντά στο όριο του χάρτη, όπου έχεις λιγότερες διεξόδους. Γύρνα σε ανοιχτό χώρο όταν είναι ασφαλές.',
-            sgCoverage: 'Έμεινες στο {0}% του χάρτη. Αν κινηθείς περισσότερο θα βρεις περισσότερη τροφή και μικρότερους παίκτες.',
-            sgShort: 'Αυτή η ζωή ήταν {0}% μικρότερη από τον πρόσφατο μέσο όρο σου ({1}). Παίξε πιο προσεκτικά στα πρώτα λεπτά.',
-            sgGrowth: 'Η μάζα σου αυξήθηκε {0} ανά λεπτό, κάτω από τον πρόσφατο μέσο όρο σου ({1}). Μάζευε τροφή σταθερά και κυνήγα μικρότερους παίκτες.',
-            sgRetention: 'Σου είχε μείνει το {0}% της μέγιστης μάζας όταν χάθηκες. Μετά από μεγάλο κέρδος ένωσε τα κύτταρα και παίξε αμυντικά.',
-            sgFirst: 'Κράτησες την 1η θέση για {0}. Μπράβο!',
-            sgBetter: 'Η συνολική βαθμολογία σου είναι {0} πόντους πάνω από τον μέσο όρο σου. Συνέχισε έτσι.',
-            sgTipSurvival: 'Η επιβίωση ήταν η χαμηλότερη βαθμολογία: απόφυγε μάχες με παίκτες παρόμοιου μεγέθους μέχρι να μεγαλώσεις.',
-            sgTipGrowth: 'Η αύξηση μάζας ήταν η χαμηλότερη βαθμολογία: συνέχισε να τρως αντί να περιμένεις.',
-            sgTipSplits: 'Η αποδοτικότητα split ήταν η χαμηλότερη βαθμολογία: κοίτα τι έχεις πίσω σου πριν κάνεις split.',
-            sgTipMovement: 'Η κίνηση στον χάρτη ήταν η χαμηλότερη βαθμολογία: χρησιμοποίησε περισσότερο τον χάρτη και μείνε μακριά από τα όρια.',
-            sgTipRetention: 'Η διατήρηση μάζας ήταν η χαμηλότερη βαθμολογία: προστάτεψε τη μάζα σου όταν είσαι μεγάλος.',
-            sgKeep: 'Παίξε μερικά ακόμη παιχνίδια για σύγκριση με τον δικό σου μέσο όρο.'
-        }
-    };
-    /* Greek when the Legend Mod language picker is set to Greek (value 2), English otherwise */
-    function lang() { try { return String(window.localStorage.getItem('languagemod')) === '2' ? 'el' : 'en'; } catch (e) { return 'en'; } }
-    function T(key, vals) {
-        var s = TEXT[lang()][key] || TEXT.en[key] || key;
-        if (vals) s = s.replace(/\{(\d)\}/g, function (m, i) { return vals[+i] === undefined ? m : String(vals[+i]); });
-        return s;
-    }
+    /* ------------------------------------------------------------------ text
+     * From the language packs (developers/i18n/src, keys modules.analytics.*): the chosen language,
+     * else English. vals fill {0} {1} {2}. */
+    var TP = 'modules.analytics.';
+    function T(key, vals) { return typeof window.lmT === 'function' ? window.lmT(TP + key, vals) : key; }
+    function closeText() { return typeof window.lmT === 'function' ? window.lmT('settings.close') : 'Close'; }
+    function langDir() { return window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr'; }
+    /* dates in the chosen language (zh is Traditional Chinese) */
+    function locale() { var c = window.LMi18n && window.LMi18n.lang ? window.LMi18n.lang() : 'en'; return c === 'zh' ? 'zh-TW' : c; }
     function goalText(goal) {
         var t = goal.target;
         if (goal.type === 'mass') return T('gMass', [fmtNum(t)]);
@@ -795,11 +724,14 @@
         md.id = 'lm-analytics';
         md.setAttribute('role', 'dialog');
         md.setAttribute('aria-label', T('title'));
+        md.dir = langDir();
         var head = el('div', 'display:flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-bottom:1px solid ' + t.pc2 + ';background:linear-gradient(180deg,' + t.pc2 + ' 0%,' + t.pc + ' 100%);flex:0 0 auto;');
-        head.appendChild(el('div', 'font-size:14px;font-weight:700;color:' + t.mc + ';letter-spacing:1px;text-transform:uppercase;white-space:nowrap;', T('title')));
+        var ttl = el('div', 'font-size:14px;font-weight:700;color:' + t.mc + ';letter-spacing:1px;text-transform:uppercase;white-space:nowrap;', T('title'));
+        ttl.id = 'lm-analytics-title';
+        head.appendChild(ttl);
         var tabs = el('div', 'display:flex;gap:4px;flex:1 1 auto;overflow-x:auto;-webkit-overflow-scrolling:touch;');
         tabs.id = 'lm-analytics-tabs';
-        [['dash', 'tabDash'], ['heat', 'tabHeat'], ['coach', 'tabCoach'], ['goals', 'tabGoals']].forEach(function (x) {
+        TABS.forEach(function (x) {
             var b = btn(T(x[1]), 'white-space:nowrap;', function () { tab = x[0]; if (x[0] === 'coach') coachIdx = -1; paint(); });
             b.id = 'lm-analytics-tab-' + x[0];
             b.setAttribute('data-tab', x[0]);
@@ -809,8 +741,8 @@
         /* 36 px close target for touch */
         var x = btn('✕', 'flex:0 0 auto;width:36px;height:36px;padding:0;font-size:16px;line-height:1;color:' + t.tc2 + ';background:rgba(255,255,255,0.05);', close);
         x.id = 'lm-analytics-close';
-        x.title = T('close');
-        x.setAttribute('aria-label', T('close'));
+        x.title = closeText();
+        x.setAttribute('aria-label', closeText());
         head.appendChild(x);
         md.appendChild(head);
         var body = el('div', 'padding:6px 10px 10px;overflow:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0;');
@@ -822,6 +754,18 @@
         window.addEventListener('keydown', onKey, true);
         document.body.appendChild(md);
         paint();
+    }
+    var TABS = [['dash', 'tabDash'], ['heat', 'tabHeat'], ['coach', 'tabCoach'], ['goals', 'tabGoals']];
+    /* the header texts again after a language change (the body is drawn again by paint) */
+    function relabel() {
+        if (!md) return;
+        md.setAttribute('aria-label', T('title'));
+        md.dir = langDir();
+        var ttl = md.querySelector('#lm-analytics-title');
+        if (ttl) ttl.textContent = T('title');
+        TABS.forEach(function (x) { var b = md.querySelector('#lm-analytics-tab-' + x[0]); if (b) b.textContent = T(x[1]); });
+        var c = md.querySelector('#lm-analytics-close');
+        if (c) { c.title = closeText(); c.setAttribute('aria-label', closeText()); }
     }
     function paint() {
         if (!md) return;
@@ -1040,7 +984,7 @@
         nav.appendChild(nx);
         var d = new Date(g.t);
         nav.appendChild(el('div', 'flex:1 1 auto;min-width:0;color:' + t.tc2 + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;',
-            d.toLocaleString() + ' · ' + fmtNum(g.peak) + ' · ' + fmtTime(g.ms) + (g.srv ? ' · ' + g.srv : '')));
+            d.toLocaleString(locale()) + ' · ' + fmtNum(g.peak) + ' · ' + fmtTime(g.ms) + (g.srv ? ' · ' + g.srv : '')));
         body.appendChild(nav);
         var wrap = el('div', 'display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;');
         var left = el('div', 'flex:1 1 260px;min-width:0;');
@@ -1088,7 +1032,7 @@
         mid.appendChild(bar);
         row.appendChild(mid);
         var val = goal.type === 'top' ? (prog.value ? '#' + prog.value : '—') + ' / #' + goal.target
-            : goal.type === 'survive' ? prog.value + ' / ' + goal.target + ' min' : fmtNum(prog.value) + ' / ' + fmtNum(goal.target);
+            : goal.type === 'survive' ? T('surviveVal', [prog.value, goal.target]) : fmtNum(prog.value) + ' / ' + fmtNum(goal.target);
         row.appendChild(el('div', 'flex:0 0 auto;color:' + t.tc2 + ';white-space:nowrap;', val));
         if (onDelete) {
             var x = btn('✕', 'min-width:32px;padding:0;', onDelete);
@@ -1155,10 +1099,11 @@
 
     /* ------------------------------------------------------------------ entry points */
     /* "Analytics" button in the profile stats (#user-stats, shown by clicking the profile picture) */
+    var ICON = '\ud83d\udcca ';
     function ensureButton() {
         var host = document.getElementById('user-stats');
         if (!host || document.getElementById('lm-analytics-btn')) return;
-        var b = btn('📊 ' + T('title'), 'display:block;clear:both;margin:6px 0 0;font-size:11px;min-height:26px;', function () { open('dash'); });
+        var b = btn(ICON + T('title'), 'display:block;clear:both;margin:6px 0 0;font-size:11px;min-height:26px;', function () { open('dash'); });
         b.id = 'lm-analytics-btn';
         var badges = document.getElementById('lm-badges');
         if (badges && badges.parentNode === host) host.insertBefore(b, badges); else host.appendChild(b);
@@ -1172,7 +1117,7 @@
         if (!foot || !foot.parentNode) return;
         var ref = document.getElementById('lm-mh-btn') || document.getElementById('lm-session-stats');
         if (!ref || ref.parentNode !== foot.parentNode) ref = foot;
-        b = el('div', 'font-size:11px;text-align:center;margin-top:2px;cursor:pointer;text-decoration:underline;opacity:.85;', '📊 ' + T('title'));
+        b = el('div', 'font-size:11px;text-align:center;margin-top:2px;cursor:pointer;text-decoration:underline;opacity:.85;', ICON + T('title'));
         b.id = 'lm-analytics-link';
         b.className = 'menu-main-color';
         b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open('dash'); });
@@ -1200,4 +1145,12 @@
     });
     if (typeof setInterval === 'function') setInterval(tick, 1000);
     tick();
+    /* language change: the open window, the profile button and the footer link follow it */
+    if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
+        try {
+            if (md) { relabel(); paint(); }
+            if (typeof document === 'undefined' || !document.getElementById) return;
+            ['lm-analytics-btn', 'lm-analytics-link'].forEach(function (id) { var n = document.getElementById(id); if (n) n.textContent = ICON + T('title'); });
+        } catch (e) { }
+    });
 })();

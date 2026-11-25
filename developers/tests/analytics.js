@@ -2,6 +2,7 @@
  * recorded life, against ogario/modules/analytics.js loaded in a vm with stubs.
  * node developers/tests/analytics.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'analytics.js'), 'utf8');
 
 const RealDate = Date;
@@ -35,6 +36,7 @@ const ctx = {
 };
 ctx.window = ctx;
 vm.createContext(ctx);
+i18n(ctx);
 vm.runInContext(src, ctx);
 const A = ctx.LMAnalytics, C = A.core;
 
@@ -150,6 +152,11 @@ check('track validation', C.sanitizeTrack({ t: 1, p: 'AAB' }) === null && C.sani
     const good = G({ ms: 12 * MIN, peak: 20000, end: 20000, first: 95000, n: 700, cov: 24, edge: 0.05, spl: 0 });
     const t2 = C.coachSuggestions(good, C.coachScores(good), { n: 0 });
     check('good game: praise for 1st place plus a tip (2 lines)', t2.length === 2 && t2[0][0] === 'sgFirst' && C.text(t2[0][0], t2[0][1]).indexOf('1:35') !== -1 && /^sgTip/.test(t2[1][0]));
+    check('suggestion texts come from the language pack', C.text('sgFirst', ['1:35']) === i18n.t('modules.analytics.sgFirst', ['1:35']));
+    ctx.LMi18n.setLang('el', { save: false });
+    const el = C.text(t2[0][0], t2[0][1]);
+    check('suggestions follow the language (Greek)', el === i18n.t('modules.analytics.sgFirst', t2[0][1], 'el') && el.indexOf('1:35') !== -1 && el !== i18n.t('modules.analytics.sgFirst', t2[0][1]));
+    ctx.LMi18n.setLang('en', { save: false });
     const same = C.coachSuggestions(g, C.coachScores(g), rec);
     check('suggestions are deterministic', JSON.stringify(same) === JSON.stringify(tips));
 }
