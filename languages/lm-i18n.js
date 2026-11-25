@@ -630,9 +630,15 @@
     var cs = document.currentScript;
     /* the ?v= of this script: the language files are asked for with the same version */
     var ver = (function () { var m = cs && /[?&]v=([^&#]+)/.exec(cs.src || ''); return m ? m[1] : ''; })();
+    /* the files this page needs per language: the mod: 'mod' (lm-<code>.js); a web page: 'site' (texts
+     * shared by the pages, lm-site-<code>.js) and its own areas named in the script tag,
+     * data-areas="site-index" -> lm-site-index-<code>.js (from developers/i18n/src/site-index.json);
+     * data-areas may also name 'mod' for a page that shows the mod's texts */
     var bundles = (function () {
-        var b = cs && cs.getAttribute && cs.getAttribute('data-bundles');
-        return b ? b.split(/[\s,]+/).filter(function (x) { return x === 'site' || x === 'mod'; }) : [BUNDLE];
+        var b = cs && cs.getAttribute && cs.getAttribute('data-areas');
+        var list = b ? b.split(/[\s,]+/).filter(function (x) { return /^(mod|site(-[a-z0-9-]+)?)$/.test(x); }) : [];
+        if (list.indexOf(BUNDLE) < 0) list.unshift(BUNDLE);
+        return list;
     })();
 
     function toCode(x) {
@@ -725,7 +731,7 @@
         delete waiting[id];
         if (cbs) for (var i = 0; i < cbs.length; i++) { try { cbs[i](); } catch (e) { } }
     }
-    function fileFor(code, bundle) { return (bundle === 'site' ? 'lm-site-' : 'lm-') + code + '.js'; }
+    function fileFor(code, bundle) { return 'lm-' + (bundle === 'mod' ? '' : bundle + '-') + code + '.js'; }
     function urlFor(code, bundle, host) { return (host || HOSTS[0]) + 'languages/' + fileFor(code, bundle) + (ver ? '?v=' + ver : ''); }
 
     /* loads one language file (absolute URL, utf-8: on agar.io relative URLs point at agar.io and the
@@ -753,8 +759,7 @@
         code = toCode(code) || 'en';
         var need = [];
         for (var i = 0; i < bundles.length; i++) {
-            /* the web pages keep their English in the HTML: they need no English file */
-            if (!(SITE && bundles[i] === 'site' && code !== 'en')) need.push(['en', bundles[i]]);
+            need.push(['en', bundles[i]]);
             if (code !== 'en') need.push([code, bundles[i]]);
         }
         var left = need.length;
@@ -795,12 +800,12 @@
         return true;
     }
 
-    var ATTRS = ['title', 'placeholder', 'aria-label', 'alt', 'value'];
+    var ATTRS = ['title', 'placeholder', 'aria-label', 'alt', 'value', 'data-original-title'];
     var SELECTOR = '[data-i18n],[data-i18n-html]' + ATTRS.map(function (a) { return ',[data-i18n-' + a + ']'; }).join('');
     /* Fills elements marked in the HTML (pages, and menus built by the mod):
      *   data-i18n="key"        text (the element should hold only the text)
      *   data-i18n-html="key"   HTML: for texts from the packs only (trusted), never player input
-     *   data-i18n-title / -placeholder / -aria-label / -alt / -value="key"   that attribute (a title also
+     *   data-i18n-title / -placeholder / -aria-label / -alt / -value / -data-original-title="key"   that attribute (a title also
      *                          updates Bootstrap's data-original-title tooltip copy)
      *   data-i18n-vars='{"0":"5"}'   values for {0} / {name}
      * A key the packs do not have leaves the element as it is (its English stays). */
@@ -879,6 +884,9 @@
         onChange: onChange,
         prefixed: prefixed,
         format: format,
+        /* fn runs once the current language's files (and English) are there: for texts a page's own
+         * script builds (lmT before that returns the key) */
+        ready: function (fn) { load(current, fn); },
         missing: function () { var o = {}; for (var k in misses) if (own(misses, k)) o[k] = misses[k]; return o; },
         /* the language files call this (they may run before this file: see _lmI18nQueue) */
         _drain: function () {
@@ -936,7 +944,7 @@
                 sel = document.createElement('select');
                 sel.className = 'lm-lang-select';
                 sel.setAttribute('aria-label', 'Language');
-                sel.setAttribute('data-i18n-aria-label', 'site.common.language');
+                sel.setAttribute('data-i18n-aria-label', 'site.language');
                 for (var j = 0; j < CODES.length; j++) {
                     var o = document.createElement('option');
                     o.value = String(j + 1);
@@ -954,27 +962,34 @@
     api._startSite = function () {
         if (started) return;
         started = true;
-        bundles = bundles.indexOf('site') >= 0 ? bundles : ['site'].concat(bundles);
         var code = pick();
         current = code;
         setDocLang();
+        if (!document.getElementById('lm-i18n-css')) {
+            var st = document.createElement('style');
+            st.id = 'lm-i18n-css';
+            st.textContent = '.lm-lang-select{font:inherit;font-size:.85em;padding:2px 4px;border-radius:4px;max-width:9em;cursor:pointer}';
+            (document.head || document.documentElement).appendChild(st);
+        }
         var ready = function () {
             renderPickers(document);
-            if (current !== 'en' || have['en:site']) apply(document);
+            apply(document);
         };
         var whenDom = function (fn) {
             if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
             else fn();
         };
-        if (code !== 'en') {
-            if (document.readyState === 'loading' && cs && !cs.async && !cs.defer) {
-                /* parsed with the page: the texts are there before it is shown (no English flash) */
-                for (var i = 0; i < bundles.length; i++) document.write('<script src="' + urlFor(code, bundles[i]) + '" charset="utf-8"><\/script>');
-                whenDom(function () { load(code, ready); });
-            } else {
-                load(code, function () { whenDom(ready); });
+        if (document.readyState === 'loading' && cs && !cs.async && !cs.defer) {
+            /* parsed with the page: the texts are there before it is shown (no English flash), and
+             * the page's own scripts can use lmT (English too: the fallback, and lmT on an English page) */
+            for (var i = 0; i < bundles.length; i++) {
+                document.write('<script src="' + urlFor('en', bundles[i]) + '" charset="utf-8"><\/script>');
+                if (code !== 'en') document.write('<script src="' + urlFor(code, bundles[i]) + '" charset="utf-8"><\/script>');
             }
-        } else whenDom(ready);
+            whenDom(function () { load(code, ready); });
+        } else {
+            load(code, function () { whenDom(ready); });
+        }
         onChange(function () { renderPickers(document); });
         W.addEventListener('message', function (ev) {
             var d = ev && ev.data;

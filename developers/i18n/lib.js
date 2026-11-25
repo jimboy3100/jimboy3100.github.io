@@ -66,8 +66,10 @@ function writeArea(area, obj) {
     fs.writeFileSync(path.join(SRC, area + '.json'), serializeArea(obj));
 }
 
-/* Site areas (site.json, site-*.json) go to languages/lm-site-<code>.js, the rest to lm-<code>.js:
- * the web pages then do not download the mod's ~2000 texts. */
+/* Site areas (site.json, site-<page>.json) each go to their own languages/lm-<area>-<code>.js, the
+ * rest to lm-<code>.js: a web page loads the shared site texts and its own, not the mod's ~2000. */
+/* the key prefix of an area: site-index -> site.index. (core.json also holds the old un-prefixed lmT keys) */
+const areaPrefix = (area) => area.replace(/-/g, '.') + '.';
 const isSiteArea = (area) => area === 'site' || area.indexOf('site-') === 0;
 
 /* the parts of a text that must stay the same in every language */
@@ -81,4 +83,4 @@ function placeholders(s) {
     return out.sort();
 }
 
-module.exports = { ROOT, SRC, CODES, NAMES, PACK_NAMES, slug, isLang, orderEntry, areaFiles, readAll, serializeArea, writeArea, isSiteArea, placeholders };
+module.exports = { ROOT, SRC, CODES, NAMES, PACK_NAMES, slug, isLang, orderEntry, areaFiles, readAll, serializeArea, writeArea, isSiteArea, areaPrefix, placeholders };

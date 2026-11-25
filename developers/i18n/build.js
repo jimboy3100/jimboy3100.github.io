@@ -7,7 +7,7 @@
  *
  * Output (all committed: the site has no build step):
  *   languages/lm-<code>.js         the mod's texts (every area except site*), one per language
- *   languages/lm-site-<code>.js    the web pages' texts (site.json, site-*.json)
+ *   languages/lm-site-<code>.js, lm-site-<page>-<code>.js   the web pages' texts (site.json, site-<page>.json: one file each)
  *   languages/lm-i18n.js           runtime for the mod (developers/i18n/runtime.js + old global names)
  *   lib/lm-i18n.js                 runtime for the web pages (same file in page mode)
  *   languages/LanguagePack<Name>.js  the old addresses: small loaders for the files above
@@ -33,11 +33,13 @@ const safe = (s) => s.split(String.fromCharCode(0x2028)).join('\\u2028').split(S
 function build() {
     const all = I.readAll();
     const files = {};
-    const bundles = { mod: {}, site: {} };
-    I.CODES.forEach((c) => { bundles.mod[c] = {}; bundles.site[c] = {}; });
+    /* the mod gets every non-site area in one file per language; each site area is its own file, so a
+     * page loads only the shared site texts and its own */
+    const bundles = {};
     const aliases = {};
     Object.keys(all).forEach((area) => {
-        const b = I.isSiteArea(area) ? 'site' : 'mod';
+        const b = I.isSiteArea(area) ? area : 'mod';
+        if (!bundles[b]) { bundles[b] = {}; I.CODES.forEach((c) => { bundles[b][c] = {}; }); }
         Object.keys(all[area]).forEach((key) => {
             const e = all[area][key];
             if (e.global) aliases[e.global] = key;
@@ -48,10 +50,9 @@ function build() {
             });
         });
     });
-    ['mod', 'site'].forEach((b) => {
-        if (b === 'site' && !Object.keys(bundles.site.en).length) return;
+    Object.keys(bundles).sort().forEach((b) => {
         I.CODES.forEach((c) => {
-            const name = (b === 'site' ? 'lm-site-' : 'lm-') + c + '.js';
+            const name = 'lm-' + (b === 'mod' ? '' : b + '-') + c + '.js';
             files['languages/' + name] = HEADER +
                 '/* ' + I.PACK_NAMES[c] + ' (' + c + ', languagemod ' + (I.CODES.indexOf(c) + 1) + '): ' + Object.keys(bundles[b][c]).length + ' texts */\n' +
                 '(window._lmI18nQueue = window._lmI18nQueue || []).push([' + JSON.stringify(c) + ', ' + JSON.stringify(b) + ', ' + safe(dictLines(bundles[b][c])) + ']);\n' +

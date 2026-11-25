@@ -1,0 +1,72 @@
+{
+  "keyFunctions": [
+    "lmT",
+    "window.lmT",
+    "_lmTH",
+    "_lmUR",
+    "_lmMT",
+    "_lmMhT",
+    "_lmBdgT",
+    "_lmTx",
+    "LMi18n.t"
+  ],
+  "strict": [
+    "LMexpress/i18n.js",
+    "languages/lm-i18n.js",
+    "lib/lm-i18n.js",
+    "developers/i18n/runtime.js"
+  ],
+  "groups": {
+    "a: ogario/modules": [
+      "ogario/modules/*.js"
+    ],
+    "b: LMexpress": [
+      "LMexpress/*.js"
+    ],
+    "c: ogario.v4.js + hotkeysCommand.js + spect.js": [
+      "ogario/ogario.v4.js",
+      "ogario/hotkeysCommand.js",
+      "ogario/spect.js"
+    ],
+    "d: LMmobile + play.html + ogario.v4.master.js + extras (scripts) + languages": [
+      "LMmobile/*.js",
+      "play.html",
+      "ogario/ogario.v4.master.js",
+      "extras/*.js",
+      "languages/LanguagePackHandler.js"
+    ],
+    "e: site pages (root, nicks, themes, skins)": [
+      "index.html",
+      "features.html",
+      "faq.html",
+      "compare.html",
+      "changelog.html",
+      "privacy.html",
+      "terms.html",
+      "companion.html",
+      "skinrotator.html",
+      "404.html",
+      "nicks/index.html",
+      "themes/index.html",
+      "skins/*.html"
+    ],
+    "f: extras pages and Lc": [
+      "extras/*.html",
+      "Lc/**.html"
+    ]
+  },
+  "skip": [
+    "\\.min\\.js$",
+    "^LMexpress/i18n\\.js$"
+  ],
+  "allow": {
+    "*": [
+      "/^[\\d\\s.,:;%x+\\-*/()#|<>=_]+$/",
+      "/^(Legend Mod|LM|agar\\.io|Agar\\.io|Expanding Land|Discord|YouTube|GitHub|Twitch|Imsolo|Delta|Sigmally|Legend Clan|Jimboy3100)$/i",
+      "/^[A-Z]{1,5}(\\+[A-Z0-9]{1,5})*$/"
+    ],
+    "index.html": [
+      "setTimeout(function() {drawRender.render()}, 0)"
+    ]
+  }
+}

@@ -5,7 +5,8 @@
  *   node developers/i18n/add.js <area> <key> "<English text>"
  *   node developers/i18n/add.js <area> --file new.json      new.json: { "key": "English text", ... }
  *                                                           or { "key": { "en": "..", "el": "..", ... } }
- * Keys must start with "<area>." (core.json also holds the old un-prefixed lmT keys). An existing key
+ * Keys must start with the area name, dashes as dots: core -> "core.", site-index -> "site.index." (core.json
+ * also holds the old un-prefixed lmT keys). An existing key
  * keeps its translations unless its English changed (then they are emptied: they need a new look).
  * Then: node developers/i18n/todo.js --lang el --area <area> > el.json, translate, merge.js, build.js.
  */
@@ -28,7 +29,7 @@ const all = I.readAll();
 let added = 0, changed = 0;
 const errors = [];
 Object.keys(items).forEach((k) => {
-    if (k.indexOf(area + '.') !== 0) { errors.push(k + ': must start with "' + area + '."'); return; }
+    if (k.indexOf(I.areaPrefix(area)) !== 0) { errors.push(k + ': must start with "' + I.areaPrefix(area) + '"'); return; }
     Object.keys(all).forEach((a) => { if (a !== area && all[a][k]) errors.push(k + ': already in ' + a + '.json'); });
     const v = items[k];
     const row = typeof v === 'string' ? { en: v } : v;
