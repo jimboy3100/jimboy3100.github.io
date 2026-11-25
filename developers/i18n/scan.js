@@ -172,7 +172,7 @@ function htmlParts(html, onText, onAttr, onScript) {
                 onAttr(a, found[a], m.index);
             });
             Object.keys(found).forEach((a) => {
-                if (/^data-i18n/.test(a) && found[a]) onAttr('key', found[a], m.index, true);
+                if (/^data-i18n/.test(a) && a !== 'data-i18n-vars' && found[a]) onAttr('key', found[a], m.index, true); /* vars: values, not keys */
             });
         }
         if (tag === 'script' || tag === 'style') {
