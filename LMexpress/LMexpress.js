@@ -2731,7 +2731,8 @@ function universalchat() {
         local_style += '}';
         local_style += '#ao2t-cfg-dlg {';
         local_style += ' border-radius:0; font-size: 80%; padding: 2px 10px; position: fixed;';
-        local_style += ' pointer-events: auto; background-image: url(' + _lmxCssUrl(legbgpic) + '); background-color: ' + _lmCssColor(legbgcolor) + ' ; color: #ffffff;';
+        /* the current menu theme (the values of the moment it was made are the fallback) */
+        local_style += ' pointer-events: auto; background-image: var(--lm-menu-bg, url(' + _lmxCssUrl(legbgpic) + ')); background-size: cover; background-color: var(--lm-pc, ' + _lmCssColor(legbgcolor) + '); color: var(--lm-tc, #ffffff);';
         local_style += ' overflow: hidden;';
         local_style += '}';
         local_style += '#ao2t-cfg-dlg * {';

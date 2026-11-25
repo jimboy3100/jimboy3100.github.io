@@ -21483,9 +21483,10 @@ function thelegendmodproject() {
             /* HUD parts outside #overlays-hud (bell, kill feed, command bar...) read the font from here */
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
             this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
-                /* the newer in-game parts are added to body, not #overlays-hud: same HUD font, weight and size
-                 * (bell, quick command bar, cell panel, kill feed, broadcast, practice HUD, radial menu, screenshot chip) */
-                '#lm-notif-bell,#lm-notif-panel,#lm-cc-bar,#lm-hh-cells,#lm-hh-edge,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
+                /* the newer in-game parts are added to body, not #overlays-hud: same HUD font and weight
+                 * (bell, quick command bar, cell panel, kill feed, broadcast, practice HUD, radial menu, screenshot chip);
+                 * the notification list is a window (menu theme, lmUiKit in LMexpress.js) */
+                '#lm-notif-bell,#lm-cc-bar,#lm-hh-cells,#lm-hh-edge,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
         },
         setHudScale() {
             /* Issue #8: clamp hudScale to the slider max so saved values from bigger screens don't overflow */
@@ -21503,9 +21504,9 @@ function thelegendmodproject() {
             var r = Math.floor(20 * defaultSettings.hudScale);
 
             $('#overlays-hud').css('font-size', t + 'px');
-            /* HUD parts outside #overlays-hud scale with these; the font-size follows the same scale */
-            this.addCustomCSS('hudScaleVarCSS', ':root{--lm-hud-scale:' + _lmCssNum(defaultSettings.hudScale, 0.3, 2, 1) + ';--lm-hud-fs:' + t + 'px}' +
-                '#lm-notif-bell,#lm-notif-panel,#lm-cc-bar,#lm-hh-cells,#lm-hh-edge,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-size:var(--lm-hud-fs,' + t + 'px)}');
+            /* HUD parts outside #overlays-hud scale with these: each sizes its text as calc(Npx * var(--lm-hud-scale))
+             * (a 20 px font on their boxes did nothing: their texts have their own sizes) */
+            this.addCustomCSS('hudScaleVarCSS', ':root{--lm-hud-scale:' + _lmCssNum(defaultSettings.hudScale, 0.3, 2, 1) + ';--lm-hud-fs:' + t + 'px}');
             $('#time-hud').width(e);
             $('#leaderboard-hud').css('transform', 'scale(' + defaultSettings.hudScale + ')');
             $('#top5-hud').css('transform', 'scale(' + defaultSettings.hudScale + ')');

@@ -542,8 +542,9 @@
         panel = document.createElement('div');
         panel.id = 'lm-hh-cells';
         panel.style.cssText = 'position:fixed;left:8px;top:40%;z-index:100;pointer-events:none;display:none;' +
-            'max-width:240px;padding:5px 8px;border-radius:var(--lm-radius,6px);background:var(--lm-hud-bg,rgba(0,0,0,.42));color:var(--lm-hud-tc,#fff);' +
-            'font-weight:600;font-size:12px;line-height:1.35;font-family:inherit;text-shadow:0 1px 2px rgba(0,0,0,.7);' +
+            /* HUD font weight and scale (Theme > HUD); the place is computed from the measured size */
+            'max-width:calc(240px * var(--lm-hud-scale,1));padding:5px 8px;border-radius:var(--lm-radius,6px);background:var(--lm-hud-bg,rgba(0,0,0,.42));color:var(--lm-hud-tc,#fff);' +
+            'font-weight:var(--lm-hud-fw,600);font-size:calc(12px * var(--lm-hud-scale,1));line-height:1.35;font-family:inherit;text-shadow:0 1px 2px rgba(0,0,0,.7);' +
             'user-select:none;-webkit-user-select:none;white-space:normal;word-spacing:2px';
         panelHead = document.createElement('div');
         panelHead.style.whiteSpace = 'pre-line';
