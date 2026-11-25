@@ -154,6 +154,24 @@
     /* A set of settings: s gameplay, t theme, h hotkeys (k: the hotkey commands that existed when
      * it was saved), m phone controls. A part that is missing (or has nothing valid) is not applied. */
     var PART_FNS = { s: cleanSettings, t: cleanTheme, h: cleanHotkeys, m: cleanMobile };
+    /* The multibox ring colours are theme settings now (Theme > Basic theming); the gameplay
+     * settings only keep a copy of them. A set saved before has them in its gameplay part: a theme
+     * part without them takes them from there, so the set keeps its colours. The copy itself is
+     * left out (it would show as a second change and be put back by the theme). Returns true when
+     * the gameplay part had nothing else (it is then dropped). */
+    var RING_KEYS = ['mbRingColorP1', 'mbRingColorP2'];
+    function moveRingColors(out) {
+        if (!out.s) return false;
+        RING_KEYS.forEach(function (k) {
+            if (!own.call(out.s, k)) return;
+            var v = themeValue(k, out.s[k]);
+            delete out.s[k];
+            if (v !== undefined && out.t && !own.call(out.t, k)) out.t[k] = v;
+        });
+        if (Object.keys(out.s).length) return false;
+        delete out.s;
+        return true;
+    }
     function cleanBundle(b) {
         if (!isObj(b)) return null;
         var out = {}, any = false;
@@ -162,6 +180,7 @@
             var c = PART_FNS[p](b[p]);
             if (c) { out[p] = c; any = true; }
         }
+        if (moveRingColors(out)) any = !!(out.t || out.h || out.m);
         if (out.h) { var k = cleanKnown(b.k); if (k) out.k = k; }
         /* phone preferences that did not exist (Undo / backups): restoring them removes the store */
         if (isAbsent(b.m)) { out.m = absentPart(); any = true; }

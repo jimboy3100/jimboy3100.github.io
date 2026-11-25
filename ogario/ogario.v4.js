@@ -1723,6 +1723,7 @@ function lmMultiboxRing(cell, radius, scale) {
     var LM = window.legendmod;
     var s = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null;
     if (!s || !LM || !LM.multiBoxPlayerExists) return null;
+    var t = typeof defaultSettings !== 'undefined' ? defaultSettings : null;
     if (!(radius > 0) || !Number.isFinite(radius)) return null;
     var player = lmMultiboxRingPlayer(cell);
     if (!player) return null;
@@ -1735,7 +1736,9 @@ function lmMultiboxRing(cell, radius, scale) {
     if (scale > 0) width = Math.max(width, LM_MB_RING_MIN_SCREEN_PX / scale);
     return {
         player: player,
-        color: lmMultiboxRingColor(player === 1 ? s.mbRingColorP1 : s.mbRingColorP2, LM_MB_RING_DEFAULT_COLORS[player]),
+        /* the theme's colour (Theme > Basic theming); the old gameplay key if the theme has none */
+        color: lmMultiboxRingColor(t && (player === 1 ? t.mbRingColorP1 : t.mbRingColorP2),
+            lmMultiboxRingColor(player === 1 ? s.mbRingColorP1 : s.mbRingColorP2, LM_MB_RING_DEFAULT_COLORS[player])),
         width: Math.min(width, radius)
     };
 }
@@ -18583,6 +18586,9 @@ var defaultSettings = {
     mVirusStrokeColor: '#b95959',
     foodColor: '#0057ff',
     teammatesIndColor: '#ffffff',
+    /* the multibox rings (lmMultiboxRing); they were gameplay settings before (lmMbRingThemeCarry) */
+    mbRingColorP1: '#FF2FD6',
+    mbRingColorP2: '#00E5FF',
     cursorTrackingColor: '#ffffff',
     splitRangeColor: '#ffffff',
     enemyBSTEDColor: '#8000ff', //Sonia2
@@ -18821,6 +18827,34 @@ function lmThemeValue(key, value) {
         return undefined;
     }
     return typeof value === typeof def ? value : undefined;
+}
+/* The multibox ring colours moved from the gameplay settings (Settings > Multibox rings) to the
+ * theme (Theme > Basic theming). The gameplay keys stay valid and hold a copy of the theme values,
+ * so old scripts, exports and profiles still find the colours there. */
+var LM_MB_RING_THEME_KEYS = ['mbRingColorP1', 'mbRingColorP2'];
+/* A player's own ring colour from the stored gameplay settings goes into the theme once: only
+ * when the stored theme has no value for it (saved by an older version, or none saved) and the
+ * gameplay value is a ring colour other than the default. Returns true when one was carried. */
+function lmMbRingThemeCarry(storedTheme, storedGame, theme) {
+    var carried = false;
+    if (!storedGame || typeof storedGame !== 'object') return false;
+    LM_MB_RING_THEME_KEYS.forEach(function (k) {
+        if (storedTheme && typeof storedTheme === 'object' && Object.prototype.hasOwnProperty.call(storedTheme, k)) return;
+        if (!Object.prototype.hasOwnProperty.call(storedGame, k)) return;
+        var v = storedGame[k];
+        if (typeof v !== 'string' || !/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(v) || lmThemeValue(k, v) !== v) return;
+        if (v.toLowerCase() === String(LM_THEME_DEFAULTS[k]).toLowerCase()) return;
+        theme[k] = v;
+        carried = true;
+    });
+    return carried;
+}
+/* the gameplay copy of the theme's ring colours (kept for old readers of legendmod5) */
+function lmMbRingMirror(theme, game) {
+    if (!theme || !game) return;
+    LM_MB_RING_THEME_KEYS.forEach(function (k) {
+        if (typeof theme[k] === 'string') game[k] = theme[k];
+    });
 }
 
 cimg2 = new Image;
@@ -20818,8 +20852,13 @@ function thelegendmodproject() {
                     }
                 }
             }
+            /* the ring colours a player chose in Settings > Multibox rings come along once */
+            if (lmMbRingThemeCarry(storage, readLocalStorageJSON('ogarioSettings', null), defaultSettings)) {
+                try { this.saveThemeSettings(); } catch (eRc) { }
+            }
         },
         saveThemeSettings() {
+            if (typeof defaultmapsettings !== 'undefined') lmMbRingMirror(defaultSettings, defaultmapsettings);
             var _lmTs = defaultSettings;
             if (this._lmMiniBigOrig) {
                 /* the enlarged minimap (hotkey) is temporary: save the normal width */
@@ -20850,6 +20889,12 @@ function thelegendmodproject() {
             /* a Theme Workshop preview ends first */
             if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
             if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
+                /* the gameplay copy of the ring colours is reset too: kept, it would come back into
+                 * the reset theme (lmMbRingThemeCarry) */
+                try {
+                    LM_MB_RING_THEME_KEYS.forEach(function (k) { defaultmapsettings[k] = LM_SETTINGS_DEFAULTS[k]; });
+                    application.saveSettings(defaultmapsettings, 'ogarioSettings');
+                } catch (eRr) { }
                 window.localStorage.removeItem('ogarioThemeSettings');
                 window._lmSettingsReload = true;
                 window.location.reload();
@@ -21222,6 +21267,8 @@ function thelegendmodproject() {
             this.addColorBox('#theme-main', 'virusGlowColor');
             this.addColorBox('#theme-main', 'foodColor', 'setFoodColor');
             this.addColorBox('#theme-main', 'teammatesIndColor', 'setIndicatorColor');
+            this.addColorBox('#theme-main', 'mbRingColorP1');
+            this.addColorBox('#theme-main', 'mbRingColorP2');
             this.addColorBox('#theme-main', 'cursorTrackingColor');
             this.addColorBox('#theme-main', 'splitRangeColor');
             this.addColorBox('#theme-main', 'enemyBSTEDColor'); //Sonia2
@@ -23766,6 +23813,8 @@ function thelegendmodproject() {
             if (settings && settings.mbRings === false && !Object.prototype.hasOwnProperty.call(settings, 'mbRingsP2')) {
                 defaultmapsettings.mbRingsP2 = false;
             }
+            /* the ring colours are theme settings (loaded first): their gameplay copy follows them */
+            lmMbRingMirror(defaultSettings, defaultmapsettings);
             /* the loaded values are the ones later changes are compared with (settingsChange) */
             _lmSettingsSeen = null;
             lmSettingsCommit(lmSettingsUserView());
@@ -24728,23 +24777,6 @@ function thelegendmodproject() {
             $(section).append('<label>' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
             $('#' + option).prop('checked', defaultmapsettings[option]);
         },
-        /*
-         * Color picker for a hex color in defaultmapsettings (the theme's
-         * addColorBox stores into the theme settings instead). Same markup and
-         * picker as the theme's color boxes; saved on every change.
-         */
-        addMapColorBox(id, name) {
-            var app = this;
-            $(id).append('<div class=\"color-box\" style=\"padding:6px 0;\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"input-group ' + name + '-picker\"><input type=\"text\" id=\"' + name + '\" class=\"form-control\" /><span class=\"input-group-addon\"><i></i></span></div></div>');
-            /* Value set as a property: imported settings must not be parsed as HTML. */
-            $(id + ' .' + name + '-picker input').val(defaultmapsettings[name] == null ? '' : String(defaultmapsettings[name]));
-            $(id + ' .' + name + '-picker').colorpicker({
-                'format': 'hex'
-            }).on('changeColor.colorpicker', function (event) {
-                defaultmapsettings[name] = event.color.toHex();
-                app.saveSettings(defaultmapsettings, 'ogarioSettings');
-            });
-        },
         addInputBox(id, name, holder, callback) {
             $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" ' + _lmG1a('placeholder', holder) + ' /></div>');
             /* Set the value as a property: imported settings must not be parsed as HTML. */
@@ -25365,14 +25397,15 @@ function thelegendmodproject() {
                 .attr('data-i18n', 'lmRecClear').text(lmT('lmRecClear'))
                 .on('click', function () { window._lmRecClearMemory(true); return false; }));
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
-            /* Multibox rings: per player on/off, color and size; both off = no rings. */
+            /* Multibox rings: per player on/off and size; both off = no rings. Their colours are
+             * in Theme > Basic theming (with the other colours of the game). */
             this.addOptions(["mbRingsP1"], "mbRingsGroup");
-            this.addMapColorBox(".mbRingsGroup", "mbRingColorP1");
             this.addSliderBox(".mbRingsGroup", "mbRingSizeP1", 1, 100, 1);
             this.addOptionTo(".mbRingsGroup", "mbRingsP2");
-            this.addMapColorBox(".mbRingsGroup", "mbRingColorP2");
             this.addSliderBox(".mbRingsGroup", "mbRingSizeP2", 1, 100, 1);
             this.addOptionTo(".mbRingsGroup", "mbRingsActiveOnly");
+            $('<div class="lm-mb-ring-colors-note" style="margin:4px 0 2px;font-size:11px;opacity:.82;"></div>')
+                .attr('data-i18n', 'pkg.w.mbRingColorsNote').text(lmT('pkg.w.mbRingColorsNote')).appendTo('.mbRingsGroup');
             /* Scan Trick section: was never built, so its settings could not be changed. */
             this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
             Settings.addScanTrickControls();

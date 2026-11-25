@@ -1,0 +1,21 @@
+{
+  "pkg.w.mbRingColorsNote": {
+    "en": "Ring colors: Theme > Basic theming",
+    "el": "Χρώματα κύκλων: Θέμα > Βασικό θέμα",
+    "es": "Colores de los anillos: Tema > Personalización básica",
+    "bg": "Цветове на кръговете: Тема > Основна тема",
+    "fr": "Couleurs des anneaux : Thème > Thème de base",
+    "ar": "ألوان الحلقات: الثيم > الثيم الأساسي",
+    "zh": "光環顏色：主題 > 基本主題",
+    "ru": "Цвета колец: Тема > Основное оформление",
+    "de": "Ringfarben: Theme > Theme-Basis",
+    "tr": "Halka renkleri: Tema > Temel tema",
+    "pl": "Kolory pierścieni: Motyw > Podstawy motywu",
+    "nl": "Ringkleuren: Thema > Basisopmaak",
+    "pt": "Cores dos anéis: Tema > Tema básico",
+    "id": "Warna cincin: Tema > Tema dasar",
+    "ja": "リングの色：テーマ > 基本テーマ",
+    "it": "Colori degli anelli: Tema > Tema di base",
+    "note": "Line in Settings > Multibox rings: the two ring colors are set in the Theme tab, section Basic theming (use the same words as settings.theme and settings.basicTheming)."
+  }
+}
