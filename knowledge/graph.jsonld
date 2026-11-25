@@ -19,7 +19,24 @@
       "applicationCategory": "GameApplication",
       "operatingSystem": "Web browser",
       "softwareVersion": "3.629",
-      "inLanguage": ["en", "ar", "bg", "de", "el", "es", "fr", "id", "it", "ja", "nl", "pl", "pt", "ru", "tr", "zh"],
+      "inLanguage": [
+        "en",
+        "ar",
+        "bg",
+        "de",
+        "el",
+        "es",
+        "fr",
+        "id",
+        "it",
+        "ja",
+        "nl",
+        "pl",
+        "pt",
+        "ru",
+        "tr",
+        "zh"
+      ],
       "featureList": [
         "Custom skins",
         "Video skins",
@@ -48,16 +65,36 @@
         "@id": "https://expanding.land/#game"
       },
       "lm:hasFeature": [
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-controls" },
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-skins" },
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-themes" },
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-commandcentre" },
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-multibox" },
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-replays" },
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-gamepad" },
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-performance" },
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-companion" },
-        { "@id": "https://www.legendmod.ml/knowledge/#feature-accessibility" }
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-controls"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-skins"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-themes"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-commandcentre"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-multibox"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-replays"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-gamepad"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-performance"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-companion"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-accessibility"
+        }
       ]
     },
     {
@@ -70,7 +107,10 @@
       "softwareVersion": "1.8.4",
       "installUrl": "https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja",
       "browserRequirements": "Google Chrome",
-      "permissions": ["storage", "declarativeNetRequest"],
+      "permissions": [
+        "storage",
+        "declarativeNetRequest"
+      ],
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -121,22 +161,50 @@
         "@id": "https://www.legendmod.ml/#app"
       },
       "lm:hasMechanic": [
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-cell-growth" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-split" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-mass" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-decay" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-virus" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-merge" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-ghost-cells" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-bots" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-spectate" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-anti-teaming" },
-        { "@id": "https://help.expanding.land/knowledge/#mechanic-coordinate-scrambling" }
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-cell-growth"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-split"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-mass"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-decay"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-virus"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-merge"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-ghost-cells"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-bots"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-spectate"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-anti-teaming"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mechanic-coordinate-scrambling"
+        }
       ],
       "lm:hasGameMode": [
-        { "@id": "https://help.expanding.land/knowledge/#mode-ffa" },
-        { "@id": "https://help.expanding.land/knowledge/#mode-teams" }
+        {
+          "@id": "https://help.expanding.land/knowledge/#mode-ffa"
+        },
+        {
+          "@id": "https://help.expanding.land/knowledge/#mode-teams"
+        }
       ]
     },
     {
@@ -179,151 +247,223 @@
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-controls",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Configurable controls and hotkeys",
       "description": "Fully rebindable keyboard, mouse and gamepad controls with Command Centre search."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-skins",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Custom skins, video skins and skin tools",
       "description": "Custom image URLs, video skins, skin collections, skin checker, IndexedDB cache."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-themes",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Themes and HUD customization",
       "description": "CSS variable-based themes, 8 presets, Theme Workshop with live preview."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-commandcentre",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Command Centre",
       "description": "Fuzzy-search palette (Ctrl+K) for every setting, hotkey, theme and window."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-multibox",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Multibox controls",
       "description": "Control up to 4 connections with colour-coded rings and middle camera view."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-replays",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Replay tools",
       "description": "Packet recording, instant replay, Replay Studio, match history, personal bests."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-gamepad",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Gamepad support",
       "description": "Full controller support with customizable mapping, dead zone, response curve and vibration."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-performance",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Performance diagnostics",
       "description": "WebGL2 acceleration, adaptive performance, FPS cap, diagnostics window."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-companion",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Second-screen companion",
       "description": "Broadcast live game state to a second window via BroadcastChannel."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-accessibility",
-      "@type": ["DefinedTerm", "lm:Feature"],
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
       "name": "Accessibility features",
       "description": "Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Dynamic circular arena",
       "description": "Server-controlled circular boundary that expands and contracts (0.25x to 8x).",
       "url": "https://help.expanding.land/dynamic-map.html"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-cell-growth",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Cell growth",
       "description": "Collect food pellets and consume smaller cells to grow.",
       "url": "https://help.expanding.land/guide.html"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-split",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Splitting",
       "description": "Divide cell into two halves (Space key), up to 16 fragments.",
       "url": "https://help.expanding.land/guide.html#splitting"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-mass",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Mass ejection",
       "description": "Eject mass toward cursor (W key), costs ~15-16 mass per press.",
       "url": "https://help.expanding.land/guide.html#mass"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-decay",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Mass decay",
       "description": "Cells lose approximately 0.8% of mass every 4 seconds."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-virus",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Viruses",
       "description": "Spiky green circles that pop big cells into ~16 pieces. Feed 7 W-presses to shoot."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-merge",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Merge timer",
       "description": "Split cells rejoin after a timer based on mass."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-ghost-cells",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Ghost cells",
       "description": "Transparent cells showing death location (Expanding Land exclusive)."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-bots",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Server-controlled bots",
       "description": "Human and server-controlled bot populations vary by arena.",
       "url": "https://help.expanding.land/no-bots.html"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-spectate",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Spectator mode",
       "description": "200+ spectator slots with free-roam camera.",
       "url": "https://help.expanding.land/glossary.html"
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-anti-teaming",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Anti-teaming system",
       "description": "Exponential multiplier decay: base × pow(1.086, multiplier)."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-coordinate-scrambling",
-      "@type": ["DefinedTerm", "lm:GameMechanic"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMechanic"
+      ],
       "name": "Coordinate scrambling",
       "description": "Anti-cheat: each player receives different coordinate offsets."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mode-ffa",
-      "@type": ["DefinedTerm", "lm:GameMode"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMode"
+      ],
       "name": "Free-for-all",
       "description": "Competitive individual play."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mode-teams",
-      "@type": ["DefinedTerm", "lm:GameMode"],
+      "@type": [
+        "DefinedTerm",
+        "lm:GameMode"
+      ],
       "name": "Teams",
       "description": "Team-based play on supported arenas."
     },
