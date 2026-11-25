@@ -3037,7 +3037,7 @@ function _showSkinPacksModal(skinName, productId) {
     var modal = document.createElement('div');
     modal.id = 'skin-packs-modal';
     modal.className = 'lm-modal-overlay';
-    modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
+    modal.style.cssText = 'position: fixed; inset: 0; z-index:999990; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML =
         '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 420px; max-width: calc(100vw - 32px); text-align: center; border-radius:var(--lm-radius,6px); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' + // i18n-ok: CSS
@@ -3413,7 +3413,7 @@ function _showMobileSkinBundlesModal(skinName, productId) {
     var modal = document.createElement('div');
     modal.id = 'mobile-bundles-modal';
     modal.className = 'lm-modal-overlay';
-    modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
+    modal.style.cssText = 'position: fixed; inset: 0; z-index:999990; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML =
         '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 460px; max-width: calc(100vw - 32px); text-align: center; border-radius:var(--lm-radius,6px); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: #ff9800; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
@@ -4064,7 +4064,7 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm, headerText)
     var modal = document.createElement('div');
     modal.id = 'deal-buy-confirm-modal';
     modal.className = 'lm-modal-overlay';
-    modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
+    modal.style.cssText = 'position: fixed; inset: 0; z-index:999990; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML = 
         '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; max-width: calc(100vw - 32px); text-align: center; border-radius:var(--lm-radius,6px); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' + // i18n-ok: CSS
@@ -4230,7 +4230,7 @@ function _showIAPBetaRiskModal(
     modal.style.cssText =
         'position:fixed;' +
         'inset:0;' +
-        'z-index:2100000;' +
+        'z-index:999996;' +
         'display:flex;' +
         'align-items:center;' +
         'justify-content:center;' +
@@ -8645,7 +8645,7 @@ function buySkin(productId) {
     modal.style.cssText =
         'position:fixed;' +
         'inset:0;' +
-        'z-index:2000000;' +
+        'z-index:999990;' +
         'display:flex;' +
         'align-items:center;' +
         'justify-content:center;' +
