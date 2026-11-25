@@ -35997,10 +35997,9 @@ function thelegendmodproject() {
             this.setStrokeSize();
             this.margin = 0;
         };
-        this.drawNick = function (ctx) {
-            if (!this.nick || !this.nickCanvas || this.isVirus) {
-                return;
-            }
+        /* Rasterises the nick and sets this.margin from it (the chat bubble and merge timer are
+         * placed with it); also used for WebGL cells, whose nick itself is a GPU label. */
+        this.layoutNick = function () {
             var nickCanvas = this.nickCanvas;
             nickCanvas.setDrawing(defaultSettings.namesColor, defaultSettings.namesFontFamily, defaultSettings.namesFontWeight, this.strokeNick, this.nickStrokeSize, defaultSettings.namesStrokeColor);
             nickCanvas.setTxt(this.nick);
@@ -36011,12 +36010,50 @@ function thelegendmodproject() {
             nickCanvas.setScale(this.scale);
             var nickImg = nickCanvas.drawTxt();
             var _dpr = window.LM_DPR || 1;
-            var w = ~~(nickImg.width / (this.scale * _dpr));
-            var h = ~~(nickImg.height / (this.scale * _dpr));
-            this.margin = ~~(h / 2);
+            this._lmNickW = ~~(nickImg.width / (this.scale * _dpr));
+            this._lmNickH = ~~(nickImg.height / (this.scale * _dpr));
+            this.margin = ~~(this._lmNickH / 2);
+            return nickImg;
+        };
+        this.drawNick = function (ctx) {
+            if (!this.nick || !this.nickCanvas || this.isVirus) {
+                return;
+            }
+            var nickImg = this.layoutNick();
+            var w = this._lmNickW, h = this._lmNickH;
             try {
                 ctx.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
             } catch (e) { }
+        };
+        /* The labels the Canvas2D text block of draw() shows on this cell: bit 2 the nick, bit 1
+         * the mass (the merge timer and chat bubble only come with it); 0 = no text block.
+         * node = its custom skin (hideTeammatesNames). Shared with the WebGL cells so a chat
+         * bubble shows on exactly the same cells in both renderers. */
+        this.lmLabels = function (y, node) {
+            var ms = defaultmapsettings;
+            if (ms.noNames && !ms.showMass || this._lmDrawNoText) return 0;
+            var hide = false;
+            if (!this.isPlayerCell && (hide = application.setAutoHideCellInfo(y)) && ms.autoHideNames && ms.autoHideMass) return 0;
+            var f = 0;
+            if (!(ms.noNames || hide && ms.autoHideNames || this.isPlayerCell && ms.hideMyName || node && ms.hideTeammatesNames)) f = 2;
+            if (!(!ms.showMass || hide && ms.autoHideMass || this.isPlayerCell && ms.hideMyMass || ms.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) f |= 1;
+            return f;
+        };
+        /* The Facebook friend badge the Canvas2D branch of draw() puts on this cell, or null:
+         * only over a custom skin, not in Teams, once the image has loaded. */
+        this.lmFbBadge = function () {
+            var app = application;
+            if (!defaultmapsettings.FBTracking || !defaultmapsettings.customSkins || !LM.showCustomSkins ||
+                this.isEjected || LM.gameMode == ":teams" || !app.customSkinsMap) return null;
+            /* map key kept per nick: no new string per cell and frame */
+            if (this._lmFbNick !== this.targetNick) {
+                this._lmFbNick = this.targetNick;
+                this._lmFbKey = this.targetNick + "facebookskin";
+            }
+            var key = app.customSkinsMap[this._lmFbKey];
+            var img = key && app.customSkinsCache[key + "_cached4"];
+            if (!img || img._failed || !(img.naturalWidth > 0 || img.width > 0)) return null;
+            return app.getCustomSkin(this.targetNick, this.color, this.skin) ? img : null;
         };
         this.drawChat = function (context) {
             if (this.chatCanvas && !(this.size <= 40) && this.nick !== "") {
@@ -36040,6 +36077,11 @@ function thelegendmodproject() {
                 var width = ~~(data.width / (this.scale * _dpr2));
                 var height = ~~(data.height / (this.scale * _dpr2));
                 var textureY = this.margin === 0 ? ~~(this.y + height * 1 / 2) : ~~this.y - 4 * this.margin;
+                /* where it went, for canUseWebGLScene (it keeps WebGL only while no later cell covers it) */
+                this._lmChatAt = _ce.time;
+                this._lmChatW = width;
+                this._lmChatH = height;
+                this._lmChatDy = textureY - this.y;
                 // Fade relative to the inherited alpha (textAlpha, removed-cell fade),
                 // so the bubble does not jump at 2 s and 13 s.
                 var chatBaseAlpha = context.globalAlpha;
@@ -36671,6 +36713,33 @@ function thelegendmodproject() {
                             style.globalAlpha *= 0.45;
                             style.stroke();
                             style.restore();
+                        }
+                        /* The FB friend badge and the special effects (hats, crowns, smoke...), in
+                         * the order of the Canvas2D branch. There they sit under the cell's own
+                         * labels, which an overlay cannot do: canUseWebGLScene keeps the frames
+                         * with one of them on screen on Canvas2D, so this only draws them for
+                         * cells it did not check (outside the frame). */
+                        var _fbImg = defaultmapsettings.FBTracking ? this.lmFbBadge() : null;
+                        var _spFx = typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers[this.targetNick];
+                        if (_fbImg || _spFx) {
+                            var _fg1 = drawRender._lmFgFor(style), _c1 = _fg1 || style;
+                            try {
+                                if (_fbImg) {
+                                    var _a1 = _c1.globalAlpha;
+                                    /* the skin alpha it is drawn with in the Canvas2D branch */
+                                    if ((defaultmapsettings.transparentSkins && !(this.isPlayerCell && !defaultmapsettings.myTransparentSkin)) ||
+                                        (this.isPlayerCell && defaultmapsettings.myTransparentSkin && defaultSettings.skinsAlpha < 0.99)) {
+                                        _c1.globalAlpha = _a1 * defaultSettings.skinsAlpha;
+                                    }
+                                    try {
+                                        _c1.drawImage(_fbImg, this.x - 1 / 2 * y, this.y - y, y, y);
+                                    } catch (e) { }
+                                    _c1.globalAlpha = _a1;
+                                }
+                                if (_spFx) this.drawSpecialSkin(_c1, y);
+                            } finally {
+                                if (_fg1) _fg1.restore();
+                            }
                         }
                     } else {
 
@@ -37735,9 +37804,14 @@ function thelegendmodproject() {
                     if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
                         window.teammatenicks && this.targetNick != "" &&
                         (window._lmTeammateNickSet ? window._lmTeammateNickSet.has(this.targetNick) : window.teammatenicks.includes(this.targetNick))) {
-                        /* WebGL frames: use overlay canvas so the indicator is visible
-                         * above the GL cell layer (main canvas sits below it). */
-                        drawRender.drawTeammatesInd(_wasWebGL ? (drawRender._foregroundCtx || style) : style, this.x, this.y, y)
+                        /* WebGL cell: on the overlay canvas above the GL layer (this.ctx is
+                         * below it), with this cell's transform and alpha */
+                        var _fgT = _wasWebGL ? drawRender._lmFgFor(style) : null;
+                        try {
+                            drawRender.drawTeammatesInd(_fgT || style, this.x, this.y, y);
+                        } finally {
+                            if (_fgT) _fgT.restore();
+                        }
                     }
 
                     /* Skip Canvas2D nick/mass text for WebGL-rendered cells — text is now drawn
@@ -37776,40 +37850,38 @@ function thelegendmodproject() {
 
                         }
                     } else {
-                        /* WebGL cell: draw chat/merge/special effects on the OVERLAY canvas
-                         * (the main canvas sits below the GL canvas in DOM z-order, so
-                         * anything drawn on `style` = this.ctx would be hidden). Use
-                         * drawRender._foregroundCtx which points to overlayCtx during
-                         * GPU frames, falling back to style for Canvas2D-only frames. */
-                        var _fgCtx = drawRender._foregroundCtx || style;
-                        /* Special effects (hats, crowns, smoke, etc.) — drawn above the cell body */
-                        if (typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers[this.targetNick]) {
-                            this.drawSpecialSkin(_fgCtx, y);
-                        }
-                        /* Facebook tracking skin badge — mirrored from Canvas-only branch.
-                         * Draws the small FB profile image overlay on the cell using the
-                         * overlay canvas so it stays visible above WebGL-rendered bodies. */
-                        if (defaultmapsettings.FBTracking) {
-                            var nodeFb = application.customSkinsMap[this.targetNick + "facebookskin"];
-                            if (nodeFb && application.customSkinsCache[nodeFb + "_cached4"]) {
-                                var nodeFB = application.customSkinsCache[nodeFb + "_cached4"];
-                                if (nodeFB && !nodeFB._failed && (nodeFB.naturalWidth > 0 || nodeFB.width > 0)) {
-                                    try {
-                                        _fgCtx.drawImage(nodeFB, this.x - 1 / 2 * y, this.y - y, y, y);
-                                    } catch (e) { }
-                                }
+                        /* WebGL cell: its nick and mass are GPU labels. The merge timer and chat
+                         * bubble the Canvas2D branch draws after them go on the overlay canvas,
+                         * on the same cells (lmLabels), at the same place (this.margin from the
+                         * nick layout) and with the same alpha (textAlpha). Only cells with a
+                         * live chat line get this far. */
+                        var _cm = defaultmapsettings.showChat ? drawRender._chatLookup : null;
+                        if (_cm && !(_cm.size && (_cm.has(this.targetNick) || _cm.has(this.nick)))) _cm = null;
+                        var _mergeOn = !!(window.ExternalScripts && !window.legendmod5.optimizedMass);
+                        if (_cm || _mergeOn) {
+                            var _lab = cellMoved ? 0 : this.lmLabels(y,
+                                (defaultmapsettings.hideTeammatesNames && defaultmapsettings.customSkins && LM.showCustomSkins && !this.isEjected)
+                                    ? application.getCustomSkin(this.targetNick, this.color, this.skin) : null);
+                            var _ce = null;
+                            if (_cm && (_lab & 1)) {
+                                var _cn = (_lab & 2) ? this.targetNick : this.nick;
+                                _ce = _cn ? _cm.get(_cn) : null;
+                                if (_ce && !(_ce.message && LM.time - _ce.time >= 0 && LM.time - _ce.time < 15000)) _ce = null;
                             }
-                        }
-                        if (defaultmapsettings.showChat || (window.ExternalScripts && !window.legendmod5.optimizedMass)) {
-                            this.setDrawing();
-                            this.setDrawingScale();
-                            if (this.mass > 0 && !this.isVirus) {
+                            if ((_lab & 1) && (_ce || _mergeOn)) {
+                                this.setDrawing();
+                                this.setDrawingScale();
+                                if ((_lab & 2) && this.setNick(this.targetNick)) this.layoutNick();
                                 if (this.setMass(this.size)) {
-                                    if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
-                                        this.drawMerge(_fgCtx);
-                                    }
-                                    if (defaultmapsettings.showChat) {
-                                        this.drawChat(_fgCtx);
+                                    var _fg2 = drawRender._lmFgFor(style), _c2 = _fg2 || style;
+                                    var _a2 = _c2.globalAlpha;
+                                    try {
+                                        if (defaultSettings.textAlpha != 1) _c2.globalAlpha = _a2 * defaultSettings.textAlpha;
+                                        if (_mergeOn) this.drawMerge(_c2);
+                                        if (_ce) this.drawChat(_c2);
+                                    } finally {
+                                        if (_fg2) _fg2.restore();
+                                        else _c2.globalAlpha = _a2;
                                     }
                                 }
                             }
@@ -58889,6 +58961,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         ) {
             /* once per rendered frame: skin layers drawn in this frame are never reused in it */
             this._glSkinFrame = (this._glSkinFrame || 0) + 1;
+            /* no per-cell overlay marks until the cell loop below finds some */
+            this._lmFgFxN = 0;
 
             /*
              * ================================================================
@@ -59260,6 +59334,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var visibleBodyCount =
                 0;
 
+            /*
+             * Per-cell marks above a WebGL cell (teammate indicator, chat bubble) are
+             * drawn on the overlay canvas, above every GL body and label. In Canvas2D a
+             * later (bigger) cell and its labels cover them: keep WebGL only while no
+             * later cell comes near a mark (boxes in this._lmFxBoxes, conservative).
+             * Marks that sit under the cell's own labels in Canvas2D (FB friend badge,
+             * special effects) cannot be ordered like that, so their frames stay on
+             * Canvas2D. Nothing of this runs while those options are off.
+             */
+            var _glSpFx = (typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers) ? SpecialEffectPlayers : null;
+            var _glFxCheck = !!(_glTeamNicks || _glTeamList || _glFbSkins || _glChatMap || _glSpFx);
+            var _glFxN = 0;
+
 
             for (
                 var i = 0;
@@ -59277,12 +59364,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     !cell ||
                     cell.invisible ||
                     cell.removed ||
-                    cell.isFood ||
-                    !this
-                        ._isCellInsideFrame(
-                            cell,
-                            250
-                        )
+                    cell.isFood
                 ) {
                     continue;
                 }
@@ -59295,24 +59377,28 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ) {
                     continue;
                 }
-                /* ── HYBRID RENDERER (step 3) ──
-                 * Chat bubbles, teammate indicators, and FB skins no longer
-                 * force the entire frame to Canvas2D.
-                 *
-                 * Chat bubbles: cell.draw() already draws them on Canvas2D
-                 * for WebGL cells (line ~37747-37762), so the overlay works.
-                 *
-                 * Teammate indicators: drawn outside the WebGL/Canvas2D
-                 * branch (line ~37706-37710), so they work regardless.
-                 *
-                 * FB skin images: the per-cell skin overlay is a Canvas2D
-                 * drawImage inside the non-WebGL branch; for WebGL cells
-                 * the skin is uploaded as a texture. FB skin lookup in
-                 * the skin resolver already maps these. The small FB badge
-                 * image that appears above the cell body is now drawn on
-                 * the overlay canvas by the post-cell overlay pass.
-                 */
-                /* (chat, teammate, FB-skin, special-effects checks removed — overlays stay) */
+
+                /* drawn after the cells with marks so far: it must not reach one */
+                if (_glFxN && this._lmFxCovered(cell, _glFxN)) {
+                    return false;
+                }
+
+                if (
+                    !this
+                        ._isCellInsideFrame(
+                            cell,
+                            250
+                        )
+                ) {
+                    continue;
+                }
+
+                if (_glFxCheck) {
+                    _glFxN = this._lmCellFx(cell, _glFxN, _glTeamNicks, _glTeamList, _glChatMap, _glSpFx);
+                    if (_glFxN < 0) {
+                        return false;
+                    }
+                }
 
 
                 /*
@@ -59343,6 +59429,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return false;
             }
 
+            /* the join entrance and the death cinematic keep the overlay for themselves
+             * (renderFrame does not prepare it then): marks need Canvas2D */
+            if (_glFxN && ((LM._elWorldEntrance && LM._elWorldEntrance.active) ||
+                (typeof _elDeathVisual !== 'undefined' && _elDeathVisual && _elDeathVisual.active))) {
+                return false;
+            }
+            /* renderFrame prepares the overlay before the cell pass when this is > 0 */
+            this._lmFgFxN = _glFxN;
+
 
             /*
              * More than 128 distinct skins no longer rebuild the texture array
@@ -59354,6 +59449,130 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             return true;
+        },
+
+        /* canUseWebGLScene: the overlay marks of one on-screen cell. Returns the new box
+         * count (4 numbers per box in this._lmFxBoxes), or -1 when the frame needs Canvas2D. */
+        _lmCellFx(cell, n, teamSet, teamList, chatMap, spFx) {
+            var nick = cell.targetNick;
+            /* under the cell's own labels in Canvas2D */
+            if (spFx && nick && spFx[nick]) return -1;
+            if (defaultmapsettings.FBTracking && cell.lmFbBadge && cell.lmFbBadge()) return -1;
+            /* teammate indicator (same rule and image as cell.draw / drawTeammatesInd) */
+            if ((teamSet || teamList) && nick && !cell.isPlayerCell && cell.size <= 800 && this.indicator &&
+                (teamSet ? teamSet.has(nick) : teamList.includes(nick))) {
+                var ind = defaultSettings.indicators, img = null, dx = 0, dy = 0;
+                if (ind === "normal") { img = this.indicator; dx = -45; dy = -90; }
+                else if (ind === "heart") { img = this.heartIndicator; dx = -25; dy = -90; }
+                else if (ind === "smile") { img = this.smileIndicator; dx = -55; dy = -150; }
+                if (img && img.width > 0 && img.height > 0) {
+                    var tx = cell.x + dx;
+                    /* the eat pulse may draw the cell up to that much bigger */
+                    var ty0 = cell.y - cell.size * (1 + _EAT_PULSE_MAGNITUDE) + dy;
+                    var ty1 = cell.y - cell.size + dy + img.height;
+                    /* drawn before the cell's own labels in Canvas2D: they must not meet */
+                    this._lmLabelExt(cell);
+                    if (this._lmExtW > 0 && tx < cell.x + this._lmExtW && tx + img.width > cell.x - this._lmExtW &&
+                        ty0 < cell.y + this._lmExtH && ty1 > cell.y - this._lmExtH) return -1;
+                    n = this._lmFxPush(n, tx, ty0, tx + img.width, ty1);
+                }
+            }
+            /* chat bubble: drawn after the cell's own labels, so only later cells matter */
+            if (chatMap && cell.size > 40 && cell.lmLabels && (chatMap.has(nick) || chatMap.has(cell.nick))) {
+                var lab = cell.lmLabels(cell.size,
+                    (defaultmapsettings.hideTeammatesNames && defaultmapsettings.customSkins && LM.showCustomSkins && !cell.isEjected)
+                        ? application.getCustomSkin(nick, cell.color, cell.skin) : null);
+                if (lab & 1) {
+                    var cn = (lab & 2) ? nick : cell.nick;
+                    var ce = cn ? chatMap.get(cn) : null;
+                    if (ce && ce.message && LM.time - ce.time >= 0 && LM.time - ce.time < 15000) {
+                        /* its size is known once Canvas2D has drawn this line */
+                        if (cell._lmChatAt !== ce.time) return -1;
+                        /* (1 unit or less: drawChat draws nothing) */
+                        if (cell._lmChatW > 1 && cell._lmChatH > 1) {
+                            var cw = cell._lmChatW * 0.55 + 4, cy0 = cell.y + cell._lmChatDy;
+                            n = this._lmFxPush(n, cell.x - cw, cy0 - 0.1 * cell._lmChatH, cell.x + cw, cy0 + 1.1 * cell._lmChatH);
+                        }
+                    }
+                }
+            }
+            return n;
+        },
+        _lmFxPush(n, x0, y0, x1, y1) {
+            var b = this._lmFxBoxes;
+            if (!b || n + 4 > b.length) {
+                var nb = new Float64Array(Math.max(64, b ? b.length * 2 : 0));
+                if (b) nb.set(b);
+                this._lmFxBoxes = b = nb;
+            }
+            /* a few world units of slack */
+            b[n] = x0 - 4;
+            b[n + 1] = y0 - 4;
+            b[n + 2] = x1 + 4;
+            b[n + 3] = y1 + 4;
+            return n + 4;
+        },
+        /* true when this cell's body or labels may reach a mark box. Bodies: jelly can bulge
+         * and the eat pulse grows them, hence 1.15. */
+        _lmFxCovered(cell, n) {
+            var hw = cell.size * 1.15 + 4, hh = hw;
+            this._lmLabelExt(cell);
+            if (this._lmExtW > hw) hw = this._lmExtW;
+            if (this._lmExtH > hh) hh = this._lmExtH;
+            var b = this._lmFxBoxes, x = cell.x, y = cell.y;
+            for (var k = 0; k < n; k += 4) {
+                if (x - hw < b[k + 2] && x + hw > b[k] && y - hh < b[k + 3] && y + hh > b[k + 1]) return true;
+            }
+            return false;
+        },
+        /* Half width/height (world units, around the cell centre) the WebGL nick and mass of
+         * a cell can take (drawWebGLCellText sizes): an upper bound, 1 em per UTF-16 unit is
+         * wider than any glyph. Into this._lmExtW/_lmExtH (0 = no labels). */
+        _lmLabelExt(cell) {
+            var ms = defaultmapsettings, ds = defaultSettings, w = 0, h = 0;
+            if (!cell.isFood && !cell.isEjected && (cell.targetNick || cell.size > 40) && !(ms.noNames && !ms.showMass)) {
+                var f = Math.max(cell.size * 0.3, 26) * (ds.namesScale || 1);
+                var mf = 0;
+                if (ms.showMass && cell.size > 40) {
+                    mf = cell.isVirus ? 26 * Math.max(0, Number(ds.virMassScale) || 3) : f * 0.85 * Math.max(0, Number(ds.massScale) || 1) / 3;
+                    /* up to 10 characters (HUD mass formats included) */
+                    w = 5 * mf + mf;
+                    h = 1.6 * mf;
+                }
+                if (!cell.isVirus && cell.targetNick && !ms.noNames) {
+                    var nw = 0.5 * cell.targetNick.length * f + f;
+                    if (nw > w) w = nw;
+                    h += 0.9 * f;
+                }
+                h += 0.2 * f;
+            }
+            this._lmExtW = w;
+            this._lmExtH = h;
+        },
+        /* The prepared overlay context for a mark of a WebGL cell, set to that cell's transform
+         * (style may carry a per-cell offset) and alpha; null when this frame has none. The
+         * caller restores it. */
+        _lmFgFor(style) {
+            var fg = this._foregroundCtx;
+            if (!fg || fg === style) return null;
+            fg.save();
+            if (typeof style.getTransform === 'function') fg.setTransform(style.getTransform());
+            fg.globalAlpha = style.globalAlpha;
+            return fg;
+        },
+        /* Overlay backing store at the size of the frame (physical pixels). Resizing clears
+         * it, so this runs before anything is drawn on it in a frame. */
+        _lmFitOverlay() {
+            var c = this.overlayCanvas;
+            if (!c) return;
+            var d = this.dpr || 1;
+            var pw = Math.round((this.canvasWidth || window.innerWidth) * d);
+            var ph = Math.round((this.canvasHeight || window.innerHeight) * d);
+            if (Math.abs(c.width - pw) > 1 || Math.abs(c.height - ph) > 1) {
+                c.width = pw;
+                c.height = ph;
+                this._lmOverlayDirty = false;
+            }
         },
 
         setWebGLFrameMode(active) {
@@ -76534,9 +76753,41 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 /* read by the net graph (renderer label) */
                 this._lmFrameGL = unifiedWebGLWorldOK;
-                /* per-cell overlay draws (chat/teammate/FB/effects) need the right context */
                 this._gpuSceneActive = unifiedWebGLWorldOK;
-                this._foregroundCtx = (unifiedWebGLWorldOK && this.overlayCtx) ? this.overlayCtx : this.ctx;
+                /*
+                 * Overlay canvas (above the GL canvas) for what goes above GL cells: the
+                 * per-cell marks of the cell pass below (canUseWebGLScene counted them) and
+                 * the later effects (cursor lines, spawn burst, death particles, pings, HUD,
+                 * FB arrow). Prepared HERE, before the cell pass draws on it: sized, cleared
+                 * once, DPR + world transform. Nothing clears it again this frame. Frames
+                 * without any of it keep this.ctx and the overlay hidden: no clear, no
+                 * compositing. The join entrance / death cinematic keep this.ctx as before.
+                 */
+                var _lmFxCtx = this.ctx;
+                var _lmFgOn = !!(unifiedWebGLWorldOK && this.overlayCanvas && this.overlayCtx &&
+                    typeof this.ctx.getTransform === 'function' &&
+                    !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active) &&
+                    (this._lmFgFxN > 0 || this._glFbArrowActive ||
+                        ((LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) && defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) ||
+                        (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length) ||
+                        (window.LMHudHelpers && window.LMHudHelpers.worldActive(LM))));
+                if (_lmFgOn) {
+                    this._lmFitOverlay();
+                    _lmFxCtx = this.overlayCtx;
+                    _lmFxCtx.setTransform(1, 0, 0, 1, 0, 0);
+                    /* only when something is on it (a resize leaves it empty) */
+                    if (this._lmOverlayDirty !== false) _lmFxCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+                    this._lmOverlayDirty = true;
+                    _lmFxCtx.setTransform(this.ctx.getTransform());
+                    this._lmOverlayFxFrame = true;
+                    if (this.overlayCanvas.style.display !== 'block') this.overlayCanvas.style.display = 'block';
+                    this._lmOverlayFxShown = true;
+                } else if (this._lmOverlayFxShown && this.overlayCanvas) {
+                    this.overlayCanvas.style.display = 'none';
+                    this._lmOverlayFxShown = false;
+                }
+                /* cell.draw() draws the marks of WebGL cells here (null: on this.ctx) */
+                this._foregroundCtx = _lmFgOn ? _lmFxCtx : null;
                 /*
                  * ═══════════════════════════════════════════════════════════
                  * CELL DRAW PASS
@@ -76611,24 +76862,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * Opponent rings and opponent bubbles were already rendered
                  * underneath cells and viruses by drawHelpers().
                  */
-                /* The main canvas is below the WebGL canvas: when WebGL drew the cells, draw
-                 * the above-cell effects on the overlay canvas with the same world transform.
-                 * Canvas frames (and the death cinematic / join entrance) keep this.ctx. */
-                var _lmFxCtx = this.ctx;
-                if (unifiedWebGLWorldOK && this.overlayCanvas && this.overlayCtx &&
-                    typeof this.ctx.getTransform === 'function' &&
-                    !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active)) {
-                    _lmFxCtx = this.overlayCtx;
-                    _lmFxCtx.setTransform(1, 0, 0, 1, 0, 0);
-                    _lmFxCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
-                    _lmFxCtx.setTransform(this.ctx.getTransform());
-                    this._lmOverlayFxFrame = true;
-                    if (this.overlayCanvas.style.display !== 'block') this.overlayCanvas.style.display = 'block';
-                    this._lmOverlayFxShown = true;
-                } else if (this._lmOverlayFxShown && this.overlayCanvas) {
-                    this.overlayCanvas.style.display = 'none';
-                    this._lmOverlayFxShown = false;
-                }
+                /* The main canvas is below the WebGL canvas: in WebGL frames the above-cell
+                 * effects go on the overlay prepared before the cell pass (_lmFxCtx). */
                 this.drawPostCellOverlays(_lmFxCtx);
                 /* HUD helpers (ogario/modules/hudhelpers.js): world marks on the same context, edge
                  * arrows and the cell panel on their own layers; returns at once while all are off */
@@ -76803,26 +77038,25 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (oCtx) {
                     var oW = this.canvasWidth || window.innerWidth;
                     var oH = this.canvasHeight || window.innerHeight;
-                    /* resizeCanvas sizes the backing store in physical pixels
-                     * (CSS size * dpr): keep that size and draw in CSS pixels
-                     * through a DPR transform, instead of shrinking it to 1x. */
-                    var oDpr = this.dpr || 1;
-                    var oPW = Math.round(oW * oDpr);
-                    var oPH = Math.round(oH * oDpr);
-                    if (Math.abs(this.overlayCanvas.width - oPW) > 1 || Math.abs(this.overlayCanvas.height - oPH) > 1) {
-                        /* resize clears the backing store: only resize when no overlay draws
-                         * were done this frame (otherwise defer until the next non-overlay frame) */
-                        if (!this._lmOverlayFxFrame) {
-                            this.overlayCanvas.width = oPW;
-                            this.overlayCanvas.height = oPH;
+                    if (this._lmOverlayFxFrame) {
+                        /* sized and cleared before the cell pass and holding this frame's
+                         * marks: keep them (no resize, no clear) */
+                        this._lmOverlayFxFrame = false;
+                    } else {
+                        /* resizeCanvas sizes the backing store in physical pixels
+                         * (CSS size * dpr): keep that size and draw in CSS pixels
+                         * through a DPR transform, instead of shrinking it to 1x. */
+                        this._lmFitOverlay();
+                        if (this._lmOverlayDirty !== false) {
+                            oCtx.setTransform(1, 0, 0, 1, 0, 0);
+                            oCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+                            this._lmOverlayDirty = false;
                         }
                     }
-                    oCtx.setTransform(1, 0, 0, 1, 0, 0);
-                    /* already cleared this frame when it holds the above-cell effects */
-                    if (!this._lmOverlayFxFrame) oCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
-                    this._lmOverlayFxFrame = false;
+                    /* screen space (CSS pixels) for the pie and the death cinematic */
                     oCtx.setTransform(this.overlayCanvas.width / oW, 0, 0, this.overlayCanvas.height / oH, 0, 0);
                     if (_lmPieOnOverlay && this.pieChart && !this.pieChart._failed && (this.pieChart.width > 0 || this.pieChart.naturalWidth > 0)) {
+                        this._lmOverlayDirty = true;
                         try {
                             oCtx.drawImage(this.pieChart, _lmPieX(oW - this.pieChart.width - 10, this.pieChart.width), 10);
                         } catch (ePieDraw) {
@@ -76836,6 +77070,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
                     if (_elDeathVisual && _elDeathVisual.active) {
+                        this._lmOverlayDirty = true;
                         var dNow = Date.now();
                         var dElapsed = dNow - _elDeathVisual.startTime;
 
@@ -77235,9 +77470,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 if (defaultmapsettings.FBTracking && LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) {
                     /* When WebGL drew the cells, the main canvas is below the GL layer:
-                     * draw the FB arrow on the overlay canvas so it stays visible. */
-                    var _fbCtx = (this._glFbArrowActive && this._gpuSceneActive && this.overlayCtx)
-                        ? this.overlayCtx : this.ctx;
+                     * draw the FB arrow on the overlay prepared for this frame. */
+                    var _fbCtx = (this._gpuSceneActive && this._foregroundCtx) || this.ctx;
                     this.drawFBTracking(_fbCtx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
                 }
             }

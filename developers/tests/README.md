@@ -110,3 +110,10 @@ with labels on (`--bodies`, `--frames`, `--repeat`); `on*` rows change the point
 frame. `--profile N` prints the CPU self time of the working copy's frames.
 Skipped (exit 0) without Chrome. `renderbatch.js` checks the index lists and the jelly batch against
 a recording stub WebGL context in Node, over many frames of a changing world.
+
+`overlayfx.js` checks the marks drawn above WebGL cells on the overlay canvas (teammate indicator,
+chat bubble, FB badge and arrow, special effects): the real frame block of renderFrame, its late
+overlay pass, canUseWebGLScene and the cell methods run on a small software 2D canvas, and each
+frame (main + GL + overlay) must equal, pixel by pixel, the same scene in Canvas2D order. Covers
+overlapping cells, Canvas2D/WebGL switches, frames without marks, DPR 2, resize and context loss.
+Bodies and labels are models and no GPU runs. `node developers/tests/overlayfx.js [ogario.v4.js]`
