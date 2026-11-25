@@ -24414,7 +24414,10 @@ function thelegendmodproject() {
             });
             /* HUD parts outside #overlays-hud (bell, kill feed, command bar...) read the font from here */
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
-            this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}');
+            this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
+                /* the newer in-game parts are added to body, not #overlays-hud: same HUD font
+                 * (bell, quick command bar, cell panel, kill feed, broadcast, practice HUD, radial menu, screenshot chip) */
+                '#lm-notif-bell,#lm-notif-panel,#lm-cc-bar,#lm-hh-cells,#lm-hh-edge,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important}');
         },
         setHudScale() {
             /* Issue #8: clamp hudScale to the slider max so saved values from bigger screens don't overflow */
