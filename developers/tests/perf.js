@@ -474,6 +474,10 @@ const lf = P.parseLoaf(loafEntry, 'www.legendmod.ml');
 check('LoAF parsed: offsets, longest script first', lf.dur === 280 && lf.block === 230 && lf.render === 250 && lf.style === 262 && lf.scriptMs === 261 && lf.scripts[0].fn === 'uploadSkinTexture' && lf.scripts[0].pos === 12345678 && lf.scripts[0].file === 'ogario.v4.js');
 check('LoAF sanitized: no token anywhere', JSON.stringify(lf).indexOf('SECRET') < 0 && JSON.stringify(lf).indexOf('token') < 0);
 check('LoAF keeps at most 5 scripts', P.parseLoaf({ startTime: 0, duration: 200, scripts: new Array(9).fill(loafEntry.scripts[0]) }).scripts.length === 5);
+/* the report line of a long frame with several scripts (it threw from the second one on) */
+let lfLine = '';
+try { lfLine = P.loafLine(lf); } catch (e) { lfLine = 'threw ' + e.message; }
+check('LoAF line with 2 scripts lists both (English report)', /uploadSkinTexture \(ogario\.v4\.js:12345678\) 241 ms.*; render \(ogario\.v4\.js:3456789\) 20 ms/.test(lfLine));
 
 /* ---- function names from character positions (anonymous callbacks) ---- */
 const srcText = 'var app = window.app = {\n    init() {\n        setInterval(function () {\n            tick();\n        }, 10000);\n    },\n    draw(a) {\n        if (a) { x(); }\n        return 1;\n    }\n};\nfunction lone() { return 2; }\n';

@@ -615,7 +615,8 @@
     function loafLine(l) {
         return Math.round(l.dur) + ' ms (blocking ' + l.block + ' ms, scripts ' + l.scriptMs + ' ms' +
             (l.style >= 0 ? ', style/layout ' + Math.max(0, l.dur - l.style) + ' ms' : '') + ')' +
-            (l.scripts.length ? ': ' + l.scripts.map(scriptText).join('; ') : ': no script');
+            /* not map(scriptText): map passes the index as tr and the report threw from the 2nd script on */
+            (l.scripts.length ? ': ' + l.scripts.map(function (s) { return scriptText(s); }).join('; ') : ': no script');
     }
 
     /* The name of the function at, or around, a character position of a script's text: a
