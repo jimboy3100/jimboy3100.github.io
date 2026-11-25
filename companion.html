@@ -64,8 +64,8 @@ canvas.map { display: block; width: 14em; height: 14em; }
 #setup .link input { flex: 1 1 20em; }
 #setup button, #setup a.btn { background: var(--accent); color: #002; border: 0; border-radius: 0.25em; padding: 0.4em 0.9em; font: inherit; font-weight: 700; cursor: pointer; text-decoration: none; min-height: 2em; }
 </style>
-<!-- same origin like companion.js; opened from Legend Mod: the page follows the player's menu theme (#lm=...); direct visitors keep this design -->
-<script src="lib/lm-theme-bridge.js" charset="utf-8" data-lm-css="site"></script>
+<!-- same origin like companion.js; opened from Legend Mod: the page follows the player's menu theme (#lm=...); direct visitors keep this design; no Restore button (OBS captures this page) -->
+<script src="lib/lm-theme-bridge.js" charset="utf-8" data-lm-css="site" data-lm-reset="off"></script>
 <style>
 /* only when opened from Legend Mod with a theme (html.lm-themed-root): the setup page in theme colours */
 html.lm-themed-root #setup { background: var(--lm-pc2); border-radius: var(--lm-radius, 0.4em); }

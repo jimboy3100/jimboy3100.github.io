@@ -20667,6 +20667,8 @@ function thelegendmodproject() {
             /* text, not html: the CSS is built from (importable) theme values, and jQuery's html()
              * falls back to append() for strings containing <script/<style, which runs the scripts. */
             this[name].text(css);
+            /* a menu / HUD theme setter: open Legend pages get the new theme (LMexpress.js, debounced) */
+            if (typeof window.lmThemeChanged === 'function' && /^(menu\w*CSS|lmWinCSS|hudCSS|hudFontVarCSS|hudScaleVarCSS)$/.test(name)) window.lmThemeChanged();
         },
         addPresetBox(id, name, options, value, callback) {
             for (var option in $(id).append('<div class=\"preset-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><div class=\"select-wrapper\"><select id=\"' + name + '\" class=\"form-control\"></select></div></div>'), options) {

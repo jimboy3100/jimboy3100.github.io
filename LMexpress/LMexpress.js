@@ -7619,6 +7619,8 @@ function initializeLM(modVersion) {
         /* --lm-radius for windows and panels, --lm-radius-s for their buttons and fields */
         document.documentElement.style.setProperty('--lm-radius', rounded ? '10px' : '0px');
         document.documentElement.style.setProperty('--lm-radius-s', rounded ? '6px' : '0px');
+        /* open Legend pages follow the corners too */
+        if (typeof lmThemeChanged === 'function') lmThemeChanged();
         if (document.getElementById('RNCN')) return;
         var R = 'var(--lm-radius)', R15 = 'calc(var(--lm-radius) * 1.5)';
         $('head').append($('<style type="text/css" id="RNCN">').text(
@@ -9068,42 +9070,83 @@ function changeFrameWork() {
 function changeFrameWorkStart() {
     defaultmapsettings.unlockedFPS = false;
 }
-/* ── Legend Mod Theme Bridge (mod-side helpers), the receiver is lib/lm-theme-bridge.js ──
- * lmThemeData()  → only visual values and the language: {pc, pc2, mc, tc, tc2, bg, op, btc, b1..b4, b1b..b4b, rad, lang}
- * lmThemeQuery() → returns "?lm=<base64 JSON>" to append to any URL
- * lmThemeHash()  → returns "#lm=<base64 JSON>"
- * lmThemeSend(iframe) → sends the theme with postMessage, only to a Legend page
+/* -- Legend Mod Theme Bridge (mod-side helpers), the receiver is lib/lm-theme-bridge.js --
+ * lmThemeData()  -> only visual values and the language: {pc, pc2, mc, tc, tc2, bg, op, btc, b1..b4, b1b..b4b,
+ *                   hm, hb, ht (HUD colours), hf, hw, hs (HUD font, weight, scale), rad, rs (corners), lang}
+ * lmThemeQuery() -> returns "?lm=<base64url JSON>" to append to any URL
+ * lmThemeHash()  -> returns "#lm=<base64url JSON>"
+ * lmThemeSend(iframe) -> sends the theme with postMessage, only to a Legend page
+ * lmThemeChanged() -> the theme setters call it: open Legend pages that said "lm-theme-ready" get the new theme
  * lang: the Choose Language number (1 English .. 12 Dutch): the web pages (lib/lm-i18n.js) show
  * that language; on agar.io the site cannot read the mod's localStorage. */
-/* UTF-8 safe base64 encode (btoa only handles Latin-1; Unicode bg URLs would throw) */
+/* the exact HTTPS origins of the Legend pages: nothing else gets the theme */
+var LM_THEME_ORIGINS = ['https://www.legendmod.ml', 'https://legendmod.ml', 'https://jimboy3100.github.io'];
+/* the longest theme value in a link (base64url characters); the page reads at most 4096 */
+var LM_THEME_MAX = 4000;
+/* UTF-8 safe base64url (btoa only handles Latin-1; Unicode bg URLs would throw) */
 function _lmUtf8ToBase64(str) {
-    try { return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (_, p) { return String.fromCharCode(parseInt(p, 16)); })); }
-    catch (e) { return ''; }
+    try {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function (_, p) { return String.fromCharCode(parseInt(p, 16)); }))
+            .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    } catch (e) { return ''; }
+}
+/* a colour as the page accepts it (hex, rgb()/hsl() or a colour word), else the default */
+function _lmThemeColor(v, d) {
+    v = typeof v === 'string' ? v.trim() : '';
+    return v.length <= 64 && /^(#[0-9a-fA-F]{3,8}|(rgba?|hsla?)\([0-9.,%\s\/-]+\)|[a-zA-Z]{3,20})$/.test(v) ? v : d;
+}
+/* The menu background for a web page: https only, no user:pass@, no fragment, and only query values
+ * that cannot carry a login or token (raw, w, h, size ...). '' when the address cannot be made safe. */
+function lmThemeSafeImage(v) {
+    if (typeof v !== 'string') return '';
+    v = v.trim();
+    if (!v || v.length > 1024 || /[\s"'()\\<>\u0000-\u001f\u007f]/.test(v)) return '';
+    var u;
+    try { u = new URL(v); } catch (e) { return ''; }
+    if (u.protocol !== 'https:' || u.username || u.password || !u.hostname) return '';
+    var q = [];
+    (u.search ? u.search.slice(1).split('&') : []).forEach(function (p) {
+        var kv = p.split('='), val = kv.length > 1 ? kv.slice(1).join('=') : '';
+        if (/^(raw|v|ver|version|w|h|width|height|size|format|fm|fit|auto|quality|dpr)$/.test(kv[0]) && /^[A-Za-z0-9._-]{0,32}$/.test(val)) q.push(p);
+    });
+    u.search = q.length ? '?' + q.join('&') : '';
+    u.hash = '';
+    return u.href.length <= 1024 && !/[\s"'()\\<>]/.test(u.href) ? u.href : '';
 }
 function lmThemeData() {
     var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
+    var c = _lmThemeColor;
     var d = {
-        pc: ds.menuPanelColor || $('#menuPanelColor').val() || '#00243e',
-        pc2: ds.menuPanelColor2 || $('#menuPanelColor2').val() || '#002f52',
-        mc: ds.menuMainColor || $('#hudMainColor').val() || '#01d9cc',
-        tc: ds.menuTextColor || '#ffffff',
-        tc2: ds.menuTextColor2 || '#8096a7',
-        bg: ds.menuBg || $('#menuBg').val() || '',
-        op: String(ds.menuOpacity != null ? ds.menuOpacity : '0.96'),
-        btc: ds.menuBtnTextColor || '#ffffff',
-        b1: ds.btn1Color || '#018cf6',
-        b2: ds.btn2Color || '#00b9e8',
-        b3: ds.btn3Color || '#8d5fe6',
-        b4: ds.btn4Color || '#bf00aa',
-        b1b: ds.btn1Color2 || '#0176ce',
-        b2b: ds.btn2Color2 || '#0099c0',
-        b3b: ds.btn3Color2 || '#814ee3',
-        b4b: ds.btn4Color2 || '#a80096'
+        pc: c(ds.menuPanelColor || $('#menuPanelColor').val(), '#00243e'),
+        pc2: c(ds.menuPanelColor2 || $('#menuPanelColor2').val(), '#002f52'),
+        mc: c(ds.menuMainColor || $('#hudMainColor').val(), '#01d9cc'),
+        tc: c(ds.menuTextColor, '#ffffff'),
+        tc2: c(ds.menuTextColor2, '#8096a7'),
+        bg: lmThemeSafeImage(ds.menuBg || $('#menuBg').val() || ''),
+        op: String(ds.menuOpacity != null && isFinite(parseFloat(ds.menuOpacity)) ? parseFloat(ds.menuOpacity) : '0.96'),
+        btc: c(ds.menuBtnTextColor, '#ffffff'),
+        b1: c(ds.btn1Color, '#018cf6'),
+        b2: c(ds.btn2Color, '#00b9e8'),
+        b3: c(ds.btn3Color, '#8d5fe6'),
+        b4: c(ds.btn4Color, '#bf00aa'),
+        b1b: c(ds.btn1Color2, '#0176ce'),
+        b2b: c(ds.btn2Color2, '#0099c0'),
+        b3b: c(ds.btn3Color2, '#814ee3'),
+        b4b: c(ds.btn4Color2, '#a80096'),
+        /* the HUD palette and typography (separate from the menu) */
+        hm: c(ds.hudMainColor, '#01d9cc'),
+        hb: c(ds.hudColor, 'rgba(0,0,0,0.4)'),
+        ht: c(ds.hudTextColor, '#ffffff'),
+        hf: String(ds.hudFontFamily || '').replace(/[^A-Za-z0-9 ,-]/g, '').trim().slice(0, 64),
+        hw: String(parseInt(ds.hudFontWeight, 10) || ''),
+        hs: String(isFinite(parseFloat(ds.hudScale)) ? parseFloat(ds.hudScale) : '')
     };
-    /* the corners of Rounded / Square HUD, when the player chose one */
+    /* the corners of Rounded / Square HUD, when the player chose one: windows and buttons / fields */
     try {
-        var rad = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lm-radius'));
+        var st = getComputedStyle(document.documentElement);
+        var rad = parseFloat(st.getPropertyValue('--lm-radius')), rs = parseFloat(st.getPropertyValue('--lm-radius-s'));
         if (isFinite(rad)) d.rad = String(rad);
+        if (isFinite(rad) && isFinite(rs)) d.rs = String(rs);
     } catch (e) { }
     /* the Legend Mod language (languagemod 1 English ... 12 Dutch): the only setting that goes with the theme.
      * The language on screen (LMi18n.num()) first: a first-time player's browser language is not saved yet. */
@@ -9114,25 +9157,35 @@ function lmThemeData() {
     } catch (e) { d.lang = '1'; }
     return d;
 }
+/* the theme as one bounded base64url value; without the background when it would be too long */
+function lmThemeToken() {
+    try {
+        var d = lmThemeData(), s = _lmUtf8ToBase64(JSON.stringify(d));
+        if (s.length > LM_THEME_MAX && d.bg) { d.bg = ''; s = _lmUtf8ToBase64(JSON.stringify(d)); }
+        return s && s.length <= LM_THEME_MAX ? s : '';
+    } catch (e) { return ''; }
+}
 function lmThemeQuery() {
-    try { return '?lm=' + _lmUtf8ToBase64(JSON.stringify(lmThemeData())); }
-    catch (e) { return ''; }
+    var t = lmThemeToken();
+    return t ? '?lm=' + t : '';
 }
 function lmThemeHash() {
-    try { return '#lm=' + _lmUtf8ToBase64(JSON.stringify(lmThemeData())); }
-    catch (e) { return ''; }
+    var t = lmThemeToken();
+    return t ? '#lm=' + t : '';
 }
 /* The one navigation helper: a Legend page that the mod opens gets the theme in its URL (#lm=...),
- * replacing an older one; files, the game page and other sites are returned unchanged. */
+ * replacing an older one; an anchor stays first (#controls&lm=...), the page takes the theme out and
+ * goes to #controls. Only exact HTTPS Legend origins: http links, files, the game page and other
+ * sites are returned unchanged. */
 function lmThemeUrl(url) {
     try {
         var u = new URL(url, location.href);
-        if (!/^((www\.)?legendmod\.ml|jimboy3100\.github\.io)$/.test(u.hostname)) return url;
+        if (u.protocol !== 'https:' || LM_THEME_ORIGINS.indexOf(u.origin) < 0) return url;
         if (/\.(js|css|json|png|jpe?g|gif|webp|svg|ico|mp3|txt|zip|xml|pdf)$/i.test(u.pathname) || /\/play\.html$/.test(u.pathname)) return url;
-        var h = lmThemeHash();
-        if (!h) return url;
+        var t = lmThemeToken();
+        if (!t) return url;
         var keep = u.hash.replace(/^#/, '').split('&').filter(function (p) { return p && p.indexOf('lm=') !== 0; });
-        keep.push(h.slice(1));
+        keep.push('lm=' + t);
         u.hash = keep.join('&');
         return u.href;
     } catch (e) { return url; }
@@ -9150,28 +9203,67 @@ function lmThemeUrl(url) {
     }
     document.addEventListener('click', onLink, true);
     document.addEventListener('auxclick', onLink, true);
+    /* right click: Open in new tab / Copy link address get the theme too */
+    document.addEventListener('contextmenu', onLink, true);
 })();
 /* The origins a Legend page can have: jimboy3100.github.io redirects to www.legendmod.ml,
  * so a frame opened on one of them may be on the other. Empty for any other site. */
 function lmThemeOrigins(url) {
-    var LEGEND = ['https://www.legendmod.ml', 'https://legendmod.ml', 'https://jimboy3100.github.io'];
     try {
         var o = new URL(url, location.href).origin;
-        if (/^https:\/\/((www\.)?legendmod\.ml|jimboy3100\.github\.io)$/.test(o)) return LEGEND;
-        if (o === location.origin) return [o];
+        if (LM_THEME_ORIGINS.indexOf(o) >= 0) return LM_THEME_ORIGINS.slice();
+        if (o === location.origin && location.protocol === 'https:') return [o];
     } catch (e) { }
     return [];
+}
+/* Live theme: the Legend pages that said "lm-theme-ready" (embedded frames, tabs the mod opened),
+ * at most 16, each with its exact origin. They get the theme in answer and on every change. */
+var _lmThemePeers = [], _lmThemeTimer = 0;
+function _lmThemePeer(win) {
+    for (var i = 0; i < _lmThemePeers.length; i++) if (_lmThemePeers[i].win === win) return _lmThemePeers[i];
+    return null;
 }
 function lmThemeSend(iframeEl) {
     if (!iframeEl || !iframeEl.contentWindow) return;
     /* never '*': the theme goes only to a Legend page, a third-party frame gets nothing */
-    var to = lmThemeOrigins(iframeEl.src || '');
+    var p = _lmThemePeer(iframeEl.contentWindow);
+    var to = p ? [p.origin] : lmThemeOrigins(iframeEl.src || '');
     if (!to.length) return;
     var msg = { type: 'lm-theme', theme: lmThemeData() };
     to.forEach(function (o) {
         try { iframeEl.contentWindow.postMessage(msg, o); } catch (e) { }
     });
 }
+function _lmThemeBroadcast() {
+    _lmThemePeers = _lmThemePeers.filter(function (p) { try { return !!p.win && !p.win.closed; } catch (e) { return false; } });
+    if (!_lmThemePeers.length) return;
+    var msg = { type: 'lm-theme', theme: lmThemeData() };
+    _lmThemePeers.forEach(function (p) { try { p.win.postMessage(msg, p.origin); } catch (e) { } });
+}
+/* called by the theme setters (ogario addCustomCSS), Rounded / Square HUD and a language change;
+ * many changes in a row (dragging a colour) send once */
+function lmThemeChanged() {
+    if (!_lmThemePeers.length) return;
+    clearTimeout(_lmThemeTimer);
+    _lmThemeTimer = setTimeout(_lmThemeBroadcast, 150);
+}
+window.lmThemeChanged = lmThemeChanged;
+window.addEventListener('message', function (ev) {
+    var d = ev && ev.data;
+    if (!d || typeof d !== 'object' || d.type !== 'lm-theme-ready' || !ev.source || ev.source === window) return;
+    if (LM_THEME_ORIGINS.indexOf(ev.origin) < 0) return;
+    var p = _lmThemePeer(ev.source);
+    if (p) {
+        /* a frame that moves between Legend pages says ready on each one; bounded */
+        if (++p.n > 50) return;
+        p.origin = ev.origin;
+    } else {
+        if (_lmThemePeers.length >= 16) _lmThemePeers.shift();
+        _lmThemePeers.push({ win: ev.source, origin: ev.origin, n: 1 });
+    }
+    try { ev.source.postMessage({ type: 'lm-theme', theme: lmThemeData() }, ev.origin); } catch (e) { }
+});
+try { if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(lmThemeChanged); } catch (e) { }
 /* After any lm-promo modal is built, send theme to its iframes */
 function lmThemeSendToModalIframes(sel) {
     setTimeout(function () {

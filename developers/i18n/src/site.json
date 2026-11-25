@@ -222,5 +222,19 @@
     "tr": "© 2026 Legend Mod Projesi",
     "pl": "© 2026 Legend Mod Project",
     "nl": "© 2026 Legend Mod Project"
+  },
+  "site.restoreTheme": {
+    "en": "Restore website theme",
+    "el": "Επαναφορά θέματος ιστοτόπου",
+    "es": "Restaurar el tema del sitio",
+    "bg": "Възстанови темата на сайта",
+    "fr": "Rétablir le thème du site",
+    "ar": "استعادة سمة الموقع",
+    "zh": "恢復網站主題",
+    "ru": "Вернуть тему сайта",
+    "de": "Website-Design wiederherstellen",
+    "tr": "Site temasını geri yükle",
+    "pl": "Przywróć motyw strony",
+    "nl": "Websitethema herstellen"
   }
 }
