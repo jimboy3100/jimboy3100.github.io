@@ -43,6 +43,17 @@ check('slow stretch broken by a fast second starts again', run(st, 40, 2).length
  * would not help, nothing is lowered */
 st = P.newController();
 check('slow with light drawing (4 of 16.7 ms): nothing lowered', run(st, 40, 60, 60, 4).length === 0 && st.level === 0);
+/* the share of the frames as they really come: 30 FPS (33.3 ms) with 9 ms of drawing is 27% */
+st = P.newController();
+check('30 FPS of 60 with 9 ms drawing (27% of the real frame): nothing lowered', run(st, 30, 60, 60, 9).length === 0 && st.level === 0);
+st = P.newController();
+check('drawing time unknown: nothing lowered', run(st, 40, 60, 60, null).length === 0 && st.level === 0);
+st = P.newController();
+run(st, 40, 3, 60, 14);
+let gapCh = run(st, 40, 8, 60, null);
+check('unknown seconds during a check: not counted (no decision, no next level)', st.level === 1 && gapCh.length === 0);
+gapCh = run(st, 40, 6, 60, 14);
+check('the check then uses measured seconds only: did not help, undone', st.level === 0 && gapCh.length === 1 && gapCh[0][1] === -1);
 st = P.newController();
 let ch = run(st, 40, 3, 60, 14);
 check('3 s slow with heavy drawing: level 1', st.level === 1 && ch.length === 1);

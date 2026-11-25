@@ -79040,6 +79040,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* HUD helpers (ogario/modules/hudhelpers.js): world marks on the same context, edge
                  * arrows and the cell panel on their own layers; returns at once while all are off */
                 if (window.LMHudHelpers) window.LMHudHelpers.frame(this, _lmFxCtx, LM);
+                /* accessibility size symbols (ogario/modules/accessibility.js): drawn with this frame
+                 * instead of their own animation loop; returns at once while they are off */
+                if (window.LMAccessibility && window.LMAccessibility.frame) window.LMAccessibility.frame();
                 /* Expanding Land: spawn burst effect (drawn above cells) */
                 if (this._spawnEffect && this._spawnEffect.active) {
                     this.drawSpawnEffect(_lmFxCtx);

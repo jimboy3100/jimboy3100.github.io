@@ -303,6 +303,37 @@ check('zoom bookmarks: [0, 0, 0] is kept (explicitly none: the Undo / backup of 
   check('a plain snapshot (profiles) still leaves missing parts out', !!cap && !('zb' in cap) && !('gp' in cap) && !('ml' in cap));
 }
 {
+  // phone preferences: the first ones on a device, applied live; Undo removes them again
+  const e = bootApply();
+  e.ls.removeItem('lm-mobile-prefs');
+  e.c._lmMobileHost = { reloadPrefs() { e.calls.push('m-reload'); } };
+  e.calls.length = 0;
+  const r = e.P.applySet({ m: { btnScale: 1.2 } }, 'first-mobile');
+  check('phone preferences on a fresh device: applied', !!r && r.length === 1 && JSON.parse(e.ls.getItem('lm-mobile-prefs') || 'null').btnScale === 1.2);
+  check('phone preferences: the phone controls apply them at once', e.calls.indexOf('m-reload') >= 0);
+  e.calls.length = 0;
+  e.P.undo();
+  check('phone preferences: Undo removes the first ones again (and applies that)', e.ls.getItem('lm-mobile-prefs') === null && e.calls.indexOf('m-reload') >= 0);
+  e.ls.setItem('lm-mobile-prefs', J({ btnScale: 1, btnOpacity: 0.5 }));
+  e.calls.length = 0;
+  e.P.applySet({ m: { btnScale: 0.8 } }, 'smaller');
+  const mp = JSON.parse(e.ls.getItem('lm-mobile-prefs'));
+  check('phone preferences: a change keeps the others and is applied at once', mp.btnScale === 0.8 && mp.btnOpacity === 0.5 && e.calls.indexOf('m-reload') >= 0);
+  delete e.c._lmMobileHost.reloadPrefs;
+  e.P.applySet({ m: { btnScale: 1.1 } }, 'old-host');
+  check('phone controls without the live call (older cached file): a reload is asked for', e.toasts.some(t => /reload/i.test(t[1])));
+}
+{
+  // gamepad buttons have their own switch: a desktop player has no phone preferences
+  const e = bootApply();
+  e.ls.removeItem('lm-mobile-prefs');
+  e.ls.setItem('lmGamepad', J({ v: 1, map: ['split'] }));
+  const cap = e.P.core.captureCurrent({ m: false, g: true });
+  check('gamepad captured without the phone controls', !!cap && !!cap.gp && cap.gp.map[0] === 'split' && !('m' in cap) && !('ml' in cap));
+  const cap2 = e.P.core.captureCurrent({ m: true, g: false });
+  check('phone controls captured without the gamepad', !!cap2 && !('gp' in cap2));
+}
+{
   // ChatGPT 3.599 re-verification (2): the same settings, only the Performance mode copy differs
   const e = bootApply();
   e.S.performanceMode = true; e.S.jellyPhisycs = false; e.els.performanceMode.checked = true;

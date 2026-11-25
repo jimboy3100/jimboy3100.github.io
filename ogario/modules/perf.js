@@ -50,9 +50,11 @@
         maxUpAfter: 120,
         bounceWindow: 20,   /* too slow again this soon after a level came back: wait twice as long */
         calmAfter: 60,      /* this long fine after a level came back: forget the earlier bounces */
-        renderShare: 0.5,   /* slow counts only while drawing takes at least half the frame budget:
-                             * when the time goes to packets, scripts or the browser, fewer effects
-                             * cannot make it faster and only make the game look worse */
+        renderShare: 0.4,   /* slow counts only while drawing takes at least 40% of the frames as they
+                             * really come (1000 / measured FPS): when the time goes to packets,
+                             * scripts or the browser, fewer effects cannot make it faster and only
+                             * make the game look worse. A second without a drawing time is unknown:
+                             * it neither lowers a level nor counts in the check of one. */
         judgeAfter: 6,      /* seconds after a level down to see whether it helped */
         gainFps: 1.05,      /* it helped: FPS up at least 5%, */
         gainRender: 0.85,   /* or drawing at least 15% faster, or the target reached */
@@ -128,8 +130,10 @@
         if (st.t < st.capUntil) top = Math.min(top, st.capLevel);
         var budget = target > 0 ? 1000 / target : 0;
         var spare = renderP90 == null || !budget || renderP90 < budget * CTL.headroom;
-        var renderBound = renderP90 == null || !budget || renderP90 >= budget * CTL.renderShare;
-        var rt = renderP90 == null ? 0 : renderP90;
+        var known = renderP90 != null && isFinite(renderP90) && renderP90 >= 0;
+        var frameMs = fps > 0 ? 1000 / fps : 0;
+        var renderBound = known && frameMs > 0 && renderP90 >= frameMs * CTL.renderShare;
+        var rt = known ? renderP90 : 0;
         if (fps < target * CTL.lowRatio && renderBound) {
             st.low += dt;
             st.high = 0;
@@ -146,7 +150,7 @@
         }
         /* did the last level down help? */
         var j = st.judge;
-        if (j) {
+        if (j && known) {
             j.fps += fps * dt; j.render += rt * dt; j.n += dt;
             if (j.n >= CTL.judgeAfter) {
                 st.judge = null;
