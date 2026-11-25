@@ -49,6 +49,12 @@
     },
     {
       "url": "https://www.legendmod.ml/knowledge/presets.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/changelog.json"
+    },
+    {
+      "url": "https://www.legendmod.ml/knowledge/modules.json"
     }
   ]
 }

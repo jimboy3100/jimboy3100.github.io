@@ -1,0 +1,174 @@
+{
+  "entity": "https://www.legendmod.ml/#app",
+  "updated": "2026-11-25",
+  "mainScript": {
+    "file": "ogario/ogario.v4.js",
+    "lines": "~85,000",
+    "description": "Main Legend Mod client script containing core game rendering, networking, settings and UI."
+  },
+  "modules": [
+    {
+      "id": "commandcentre",
+      "file": "ogario/modules/commandcentre.js",
+      "lines": 1069,
+      "description": "Fuzzy-search palette (Ctrl+K) for all settings, hotkeys, theme options and windows. Multi-language search with accent normalisation.",
+      "feature": "Command Centre"
+    },
+    {
+      "id": "themebridge",
+      "file": "ogario/modules/themebridge.js",
+      "lines": null,
+      "description": "Synchronises theme settings between game CSS variables and the settings panel. Handles --lm-radius, --lm-pc2, --lm-tc2, --lm-mc variables.",
+      "feature": "Themes"
+    },
+    {
+      "id": "accessibility",
+      "file": "ogario/modules/accessibility.js",
+      "lines": 246,
+      "description": "Accessibility features: reduced motion, text scale, HUD text scale, opponent indicators, focus warnings.",
+      "feature": "Accessibility"
+    },
+    {
+      "id": "analytics",
+      "file": "ogario/modules/analytics.js",
+      "lines": 1159,
+      "description": "Statistics dashboard with heatmaps, play pattern analysis (coach), personal objectives, game summaries. Tracks position samples, splits, kills.",
+      "feature": "Stats and Analytics"
+    },
+    {
+      "id": "companion",
+      "file": "ogario/modules/companion.js",
+      "lines": 685,
+      "description": "Second-screen companion broadcasting live game state via BroadcastChannel. Mass, rank, minimap, leaderboard, chat widgets.",
+      "feature": "Companion"
+    },
+    {
+      "id": "deathrecap",
+      "file": "ogario/modules/deathrecap.js",
+      "lines": 685,
+      "description": "Death recap showing last 20 seconds of life as 3-6 summarised steps with mass sparkline. 128-sample ring buffer, 64-event ring buffer.",
+      "feature": "Death Recap"
+    },
+    {
+      "id": "gamepad",
+      "file": "ogario/modules/gamepad.js",
+      "lines": 748,
+      "description": "Full gamepad/controller support with customizable button mapping (16 buttons), dead zone, response curve, haptic vibration.",
+      "feature": "Gamepad"
+    },
+    {
+      "id": "hudhelpers",
+      "file": "ogario/modules/hudhelpers.js",
+      "lines": 826,
+      "description": "Split range circles, merge countdown, relative mass, edge arrows, cell panel, mass format modes, virus range circles.",
+      "feature": "HUD Helpers"
+    },
+    {
+      "id": "hudeditor",
+      "file": "ogario/modules/hudeditor.js",
+      "lines": 588,
+      "description": "Drag and resize HUD elements with named layouts. Up to 20 saved layouts, grid snapping (8/16/32px).",
+      "feature": "HUD Editor"
+    },
+    {
+      "id": "notifications",
+      "file": "ogario/modules/notifications.js",
+      "lines": 812,
+      "description": "Notification centre with bell icon, unread count, 8 categories, 4 types. Up to 200 notifications, 120KB storage limit.",
+      "feature": "Notifications"
+    },
+    {
+      "id": "replaystudio",
+      "file": "ogario/modules/replaystudio.js",
+      "lines": 1615,
+      "description": "Full replay playback with timeline, bookmarks, variable speed (0.25x-4x), backward seeking, packet-by-packet stepping.",
+      "feature": "Replay Studio"
+    },
+    {
+      "id": "profiles",
+      "file": "ogario/modules/profiles.js",
+      "lines": 1386,
+      "description": "Settings profiles management. Up to 30 named profiles, auto-switching per server/mode/input device, 5 automatic backups.",
+      "feature": "Settings Profiles"
+    },
+    {
+      "id": "practice",
+      "file": "ogario/modules/practice.js",
+      "lines": 707,
+      "description": "Offline practice mode against bots using MultiOgar protocol. Personal bests, ghost replay, deterministic physics (mulberry32 RNG).",
+      "feature": "Practice Arena"
+    },
+    {
+      "id": "director",
+      "file": "ogario/modules/director.js",
+      "lines": 1598,
+      "description": "Spectator Director: auto-camera following action, watchlist (20), map bookmarks (20), cinematic camera, broadcast HUD, leaderboard history.",
+      "feature": "Spectator Director"
+    },
+    {
+      "id": "macroeditor",
+      "file": "ogario/modules/macroeditor.js",
+      "lines": 511,
+      "description": "Custom macro editor. 3 slots, up to 24 steps, dry run mode, safety limits (20ms split gap, 10ms feed gap).",
+      "feature": "Custom Macros"
+    },
+    {
+      "id": "plugins",
+      "file": "ogario/modules/plugins.js",
+      "lines": 940,
+      "description": "User scripts/plugins system. 5 slots, LMPlugins API with settings registration, version compatibility checking.",
+      "feature": "User Scripts"
+    },
+    {
+      "id": "lab",
+      "file": "ogario/modules/lab.js",
+      "lines": 245,
+      "description": "Experimental features toggle. Modules register experiments with on/off switches stored separately from settings.",
+      "feature": "Lab"
+    },
+    {
+      "id": "discovery",
+      "file": "ogario/modules/discovery.js",
+      "lines": 613,
+      "description": "Feature guide cards introducing Legend Mod features. One-tap option switches, auto-opens after updates.",
+      "feature": "Discovery"
+    },
+    {
+      "id": "smalltools",
+      "file": "ogario/modules/smalltools.js",
+      "lines": 1219,
+      "description": "Collection of small utility tools: sound mixer, minimap features, leaderboard features, various UI helpers.",
+      "feature": "Various"
+    },
+    {
+      "id": "perf",
+      "file": "ogario/modules/perf.js",
+      "lines": 1848,
+      "description": "Performance diagnostics, adaptive performance (3 levels), frame time tracking, Chrome Long Animation Frames API, net graph.",
+      "feature": "Performance"
+    },
+    {
+      "id": "themeworkshop",
+      "file": "ogario/modules/themeworkshop.js",
+      "lines": 1254,
+      "description": "Theme creation and management. Up to 30 themes with 5 versions each, live preview, gallery, export/import.",
+      "feature": "Theme Workshop"
+    },
+    {
+      "id": "hotkeysCommand",
+      "file": "ogario/modules/hotkeysCommand.js",
+      "lines": 2056,
+      "description": "Hotkey command system with 146+ unique hotkey bindings. Toggle hotkeys, zoom levels, chat commands, bot controls.",
+      "feature": "Controls"
+    },
+    {
+      "id": "LMexpress",
+      "file": "LMexpress/LMexpress.js",
+      "lines": null,
+      "description": "Chrome extension bridge script. Handles extension-to-page communication, theme queries and hashing.",
+      "feature": "Extension"
+    }
+  ],
+  "totalModules": 23,
+  "totalHotkeyBindings": "146+"
+}

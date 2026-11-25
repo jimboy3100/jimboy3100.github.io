@@ -203,3 +203,34 @@
   ], [
     a schema:ListItem ; schema:position 6 ; schema:name "Knowledge" ; schema:item <https://www.legendmod.ml/knowledge/>
   ] .
+
+<https://www.legendmod.ml/knowledge/#catalog> a schema:DataCatalog ;
+  schema:name "Legend Mod Knowledge API" ;
+  schema:description "Public read-only JSON knowledge resources for Legend Mod and Expanding Land. Machine-readable facts for LLMs, search engines and developers." ;
+  schema:url <https://www.legendmod.ml/knowledge/> ;
+  schema:license <https://www.legendmod.ml/terms.html> ;
+  schema:dataset [
+    a schema:DataDownload ; schema:name "Features" ; schema:contentUrl <https://www.legendmod.ml/knowledge/features.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Game" ; schema:contentUrl <https://www.legendmod.ml/knowledge/game.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Controls" ; schema:contentUrl <https://www.legendmod.ml/knowledge/controls.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Glossary" ; schema:contentUrl <https://www.legendmod.ml/knowledge/glossary.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Techniques" ; schema:contentUrl <https://www.legendmod.ml/knowledge/techniques.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Settings" ; schema:contentUrl <https://www.legendmod.ml/knowledge/settings.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Extension" ; schema:contentUrl <https://www.legendmod.ml/knowledge/extension.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Presets" ; schema:contentUrl <https://www.legendmod.ml/knowledge/presets.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Changelog" ; schema:contentUrl <https://www.legendmod.ml/knowledge/changelog.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Modules" ; schema:contentUrl <https://www.legendmod.ml/knowledge/modules.json> ; schema:encodingFormat "application/json"
+  ], [
+    a schema:DataDownload ; schema:name "Knowledge Graph" ; schema:contentUrl <https://www.legendmod.ml/knowledge/graph.jsonld> ; schema:encodingFormat "application/ld+json"
+  ], [
+    a schema:DataDownload ; schema:name "Consolidated Documentation" ; schema:contentUrl <https://www.legendmod.ml/llms-full.txt> ; schema:encodingFormat "text/plain"
+  ] .

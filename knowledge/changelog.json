@@ -1,0 +1,65 @@
+{
+  "entity": "https://expanding.land/#game",
+  "updated": "2026-11-25",
+  "changelog": [
+    {
+      "date": "2026-08",
+      "version": "August 2026",
+      "type": "server",
+      "changes": [
+        "Cinematic death sequence: particle bursts, eater pulse, camera shake, 600ms absorption animation",
+        "Virus jelly physics: dynamic spring physics + jagged spikes",
+        "Client connection and skin loading stability improvements"
+      ]
+    },
+    {
+      "date": "2026-04",
+      "version": "April 2026",
+      "type": "server",
+      "changes": [
+        "Anti-teaming rewrite: Delta Server-style exponential decay (8 bytes vs 788 bytes/player)",
+        "Live /status endpoint (player count, spectators, uptime, map scale)",
+        "Live ONLINE/OFFLINE badge on help site",
+        "Map scale indicator (0.25x to 8x)",
+        "Quadtree MAX_QUERY_NODES increased from 8,192 to 65,536",
+        "Single quadtree rebuild per tick (saves ~0.3-0.5ms at 5000+ cells)",
+        "Incremental food grid with O(1) bucket removal",
+        "Viewport culling (only visible nodes sent to each client)",
+        "Spectator #1 follow flickering fix (asymmetric hysteresis)",
+        "EMA smoothing on spectator scale"
+      ]
+    },
+    {
+      "date": "2026-03",
+      "version": "March 2026",
+      "type": "server",
+      "changes": [
+        "Cell merging stabilised",
+        "Mobile touch controls restored",
+        "Multibox auto-spectate fix",
+        "Full Map spectate button added",
+        "Login disconnects fixed",
+        "Encrypted WebSocket enforced (WSS/TLS)"
+      ]
+    },
+    {
+      "date": "2025-2026",
+      "version": "Foundation (2025-2026)",
+      "type": "server",
+      "changes": [
+        "Pure C server engine (~5ms tick, 8x faster than Node.js)",
+        "3,840 concurrent real players per arena",
+        "Resizable dynamic circular map 0.25x to 8x",
+        "200+ spectator slots with free-roam camera",
+        "Ghost cells (death location markers)",
+        "Session stats tracking",
+        "Full Legend Mod/Delta/Agar2 compatibility",
+        "Android APK support",
+        "Discord OAuth login",
+        "Google Sign-In for account features",
+        "Coordinate scrambling anti-cheat"
+      ]
+    }
+  ],
+  "fullChangelog": "https://help.expanding.land/changelog.html"
+}

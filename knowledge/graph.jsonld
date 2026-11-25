@@ -415,6 +415,106 @@
           "item": "https://www.legendmod.ml/knowledge/"
         }
       ]
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#catalog",
+      "@type": "DataCatalog",
+      "name": "Legend Mod Knowledge API",
+      "description": "Public read-only JSON knowledge resources for Legend Mod and Expanding Land. Machine-readable facts for LLMs, search engines and developers.",
+      "url": "https://www.legendmod.ml/knowledge/",
+      "license": "https://www.legendmod.ml/terms.html",
+      "dataset": [
+        {
+          "@type": "DataDownload",
+          "name": "Features",
+          "contentUrl": "https://www.legendmod.ml/knowledge/features.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Game",
+          "contentUrl": "https://www.legendmod.ml/knowledge/game.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Mechanics",
+          "contentUrl": "https://www.legendmod.ml/knowledge/mechanics.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Controls",
+          "contentUrl": "https://www.legendmod.ml/knowledge/controls.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "FAQ",
+          "contentUrl": "https://www.legendmod.ml/knowledge/faq.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Glossary",
+          "contentUrl": "https://www.legendmod.ml/knowledge/glossary.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Techniques",
+          "contentUrl": "https://www.legendmod.ml/knowledge/techniques.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Settings",
+          "contentUrl": "https://www.legendmod.ml/knowledge/settings.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Extension",
+          "contentUrl": "https://www.legendmod.ml/knowledge/extension.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Presets",
+          "contentUrl": "https://www.legendmod.ml/knowledge/presets.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Changelog",
+          "contentUrl": "https://www.legendmod.ml/knowledge/changelog.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Modules",
+          "contentUrl": "https://www.legendmod.ml/knowledge/modules.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Resources",
+          "contentUrl": "https://www.legendmod.ml/knowledge/resources.json",
+          "encodingFormat": "application/json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Knowledge Graph",
+          "contentUrl": "https://www.legendmod.ml/knowledge/graph.jsonld",
+          "encodingFormat": "application/ld+json"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "Consolidated Documentation",
+          "contentUrl": "https://www.legendmod.ml/llms-full.txt",
+          "encodingFormat": "text/plain"
+        }
+      ]
     }
   ]
 }
