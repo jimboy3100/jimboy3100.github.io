@@ -30,10 +30,10 @@
     "tr": "Tarayıcınız iframe desteklemiyor.",
     "pl": "Twoja przeglądarka nie obsługuje ramek iframe.",
     "nl": "Je browser ondersteunt geen iframes.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Seu navegador não suporta iframes.",
+    "id": "Browser-mu tidak mendukung iframe.",
+    "ja": "お使いのブラウザはiframeに対応していません。",
+    "it": "Il tuo browser non supporta gli iframe."
   },
   "misc.page.nameLabel": {
     "en": "Name:",
@@ -48,10 +48,10 @@
     "tr": "Ad:",
     "pl": "Nazwa:",
     "nl": "Naam:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nome:",
+    "id": "Nama:",
+    "ja": "名前：",
+    "it": "Nome:"
   },
   "misc.page.uidLabel": {
     "en": "UID:",
@@ -66,10 +66,10 @@
     "tr": "UID:",
     "pl": "UID:",
     "nl": "UID:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "UID:",
+    "id": "UID:",
+    "ja": "UID：",
+    "it": "UID:"
   },
   "misc.page.socialIdLabel": {
     "en": "Social ID:",
@@ -84,10 +84,10 @@
     "tr": "Sosyal ID:",
     "pl": "ID społecznościowe:",
     "nl": "Sociale ID:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "ID social:",
+    "id": "ID sosial:",
+    "ja": "ソーシャルID：",
+    "it": "ID social:"
   },
   "misc.page.timesUsedLabel": {
     "en": "Times Used:",
@@ -102,10 +102,10 @@
     "tr": "Kullanım sayısı:",
     "pl": "Liczba użyć:",
     "nl": "Keer gebruikt:",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vezes usado:",
+    "id": "Jumlah dipakai:",
+    "ja": "使用回数：",
+    "it": "Volte usato:"
   },
   "misc.page.guest": {
     "en": "Guest",
@@ -120,10 +120,10 @@
     "tr": "Misafir",
     "pl": "Gość",
     "nl": "Gast",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Convidado",
+    "id": "Tamu",
+    "ja": "ゲスト",
+    "it": "Ospite"
   },
   "misc.page.selectBoost": {
     "en": "-- Select boost --",
@@ -138,10 +138,10 @@
     "tr": "-- Takviye seçin --",
     "pl": "-- Wybierz wzmocnienie --",
     "nl": "-- Kies een boost --",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "-- Escolha um boost --",
+    "id": "-- Pilih boost --",
+    "ja": "-- ブーストを選択 --",
+    "it": "-- Scegli un boost --"
   },
   "misc.page.boostMass": {
     "en": "Mass boost {0}x, {1} h ({2})",
@@ -156,10 +156,10 @@
     "tr": "Kütle takviyesi {0}x, {1} sa ({2})",
     "pl": "Wzmocnienie masy {0}x, {1} h ({2})",
     "nl": "Massaboost {0}x, {1} u ({2})",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Boost de massa {0}x, {1} h ({2})",
+    "id": "Boost massa {0}x, {1} jam ({2})",
+    "ja": "質量ブースト {0}倍、{1}時間（{2}）",
+    "it": "Boost massa {0}x, {1} h ({2})"
   },
   "misc.page.boostXp": {
     "en": "XP boost {0}x, {1} h ({2})",
@@ -174,10 +174,10 @@
     "tr": "XP takviyesi {0}x, {1} sa ({2})",
     "pl": "Wzmocnienie XP {0}x, {1} h ({2})",
     "nl": "XP-boost {0}x, {1} u ({2})",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Boost de XP {0}x, {1} h ({2})",
+    "id": "Boost XP {0}x, {1} jam ({2})",
+    "ja": "XPブースト {0}倍、{1}時間（{2}）",
+    "it": "Boost XP {0}x, {1} h ({2})"
   },
   "misc.page.buy": {
     "en": "BUY",
@@ -192,10 +192,10 @@
     "tr": "SATIN AL",
     "pl": "KUP",
     "nl": "KOPEN",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "COMPRAR",
+    "id": "BELI",
+    "ja": "購入",
+    "it": "COMPRA"
   },
   "misc.page.use": {
     "en": "USE",
@@ -210,10 +210,10 @@
     "tr": "KULLAN",
     "pl": "UŻYJ",
     "nl": "GEBRUIK",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "USAR",
+    "id": "PAKAI",
+    "ja": "使う",
+    "it": "USA"
   },
   "misc.page.potionEmpty": {
     "en": "empty",
@@ -228,10 +228,10 @@
     "tr": "boş",
     "pl": "puste",
     "nl": "leeg",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "vazio",
+    "id": "kosong",
+    "ja": "空き",
+    "it": "vuoto"
   },
   "misc.page.private": {
     "en": "Private",
@@ -246,10 +246,10 @@
     "tr": "Özel",
     "pl": "Prywatne",
     "nl": "Privé",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Privados",
+    "id": "Privat",
+    "ja": "プライベート",
+    "it": "Privati"
   },
   "misc.page.privacy": {
     "en": "Privacy Policy",
@@ -282,10 +282,10 @@
     "tr": "İstatistikleri kapat",
     "pl": "Zamknij statystyki",
     "nl": "Statistieken sluiten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Fechar as estatísticas",
+    "id": "Tutup statistik",
+    "ja": "統計を閉じる",
+    "it": "Chiudi le statistiche"
   },
   "misc.login.tagMaster": {
     "en": "Master",
@@ -300,10 +300,10 @@
     "tr": "Ana sunucu",
     "pl": "Główny",
     "nl": "Master",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Central",
+    "id": "Pusat",
+    "ja": "マスター",
+    "it": "Centrale"
   },
   "misc.login.loggedInTo": {
     "en": "Logged in to {0}!",
@@ -318,10 +318,10 @@
     "tr": "{0} ile giriş yapıldı!",
     "pl": "Zalogowano do {0}!",
     "nl": "Ingelogd bij {0}!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Conectado ao {0}!",
+    "id": "Berhasil login ke {0}!",
+    "ja": "{0}にログインしました！",
+    "it": "Accesso effettuato su {0}!"
   },
   "misc.login.loggedOut": {
     "en": "Logged out!",
@@ -336,10 +336,10 @@
     "tr": "Çıkış yapıldı!",
     "pl": "Wylogowano!",
     "nl": "Uitgelogd!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você saiu da conta!",
+    "id": "Berhasil logout!",
+    "ja": "ログアウトしました！",
+    "it": "Disconnesso!"
   },
   "misc.login.fbUnavailable": {
     "en": "Facebook login is unavailable. Check browser extensions and privacy settings.",
@@ -354,10 +354,10 @@
     "tr": "Facebook ile giriş kullanılamıyor. Tarayıcı eklentilerini ve gizlilik ayarlarını kontrol edin.",
     "pl": "Logowanie przez Facebooka jest niedostępne. Sprawdź rozszerzenia przeglądarki i ustawienia prywatności.",
     "nl": "Inloggen met Facebook is niet beschikbaar. Controleer je browserextensies en privacy-instellingen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O login com Facebook não está disponível. Verifique as extensões do navegador e as configurações de privacidade.",
+    "id": "Login Facebook tidak tersedia. Periksa ekstensi browser dan pengaturan privasi.",
+    "ja": "Facebookログインを利用できません。ブラウザの拡張機能とプライバシー設定を確認してください。",
+    "it": "L'accesso con Facebook non è disponibile. Controlla le estensioni del browser e le impostazioni sulla privacy."
   },
   "misc.login.fbBlocked": {
     "en": "Facebook login is blocked in your browser. Please check your extensions (ad/tracker blockers) and try again.",
@@ -372,10 +372,10 @@
     "tr": "Facebook ile giriş tarayıcınızda engellenmiş. Eklentilerinizi (reklam/izleyici engelleyiciler) kontrol edip tekrar deneyin.",
     "pl": "Logowanie przez Facebooka jest zablokowane w przeglądarce. Sprawdź rozszerzenia (blokery reklam/śledzenia) i spróbuj ponownie.",
     "nl": "Inloggen met Facebook is geblokkeerd in je browser. Controleer je extensies (advertentie-/trackerblokkers) en probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O login com Facebook está bloqueado no seu navegador. Verifique suas extensões (bloqueadores de anúncios/rastreadores) e tente de novo.",
+    "id": "Login Facebook diblokir di browser-mu. Periksa ekstensimu (pemblokir iklan/pelacak) lalu coba lagi.",
+    "ja": "Facebookログインがブラウザでブロックされています。拡張機能（広告ブロッカー/トラッカーブロッカー）を確認して、もう一度お試しください。",
+    "it": "L'accesso con Facebook è bloccato nel tuo browser. Controlla le estensioni (blocco pubblicità/tracker) e riprova."
   },
   "misc.login.googleBlocked": {
     "en": "Google sign-in is blocked by an extension or a privacy setting.",
@@ -390,10 +390,10 @@
     "tr": "Google ile giriş bir eklenti veya gizlilik ayarı tarafından engelleniyor.",
     "pl": "Logowanie przez Google blokuje rozszerzenie lub ustawienie prywatności.",
     "nl": "Inloggen met Google wordt geblokkeerd door een extensie of privacy-instelling.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O login com Google está bloqueado por uma extensão ou configuração de privacidade.",
+    "id": "Login Google diblokir oleh ekstensi atau pengaturan privasi.",
+    "ja": "Googleログインが拡張機能またはプライバシー設定によってブロックされています。",
+    "it": "L'accesso con Google è bloccato da un'estensione o da un'impostazione sulla privacy."
   },
   "misc.login.googleLoading": {
     "en": "Google sign-in is still loading. Please try again in a moment.",
@@ -408,10 +408,10 @@
     "tr": "Google ile giriş hâlâ yükleniyor. Lütfen birazdan tekrar deneyin.",
     "pl": "Logowanie przez Google wciąż się ładuje. Spróbuj ponownie za chwilę.",
     "nl": "Inloggen met Google wordt nog geladen. Probeer het zo opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O login com Google ainda está carregando. Tente de novo em instantes.",
+    "id": "Login Google masih dimuat. Coba lagi sebentar lagi.",
+    "ja": "Googleログインを読み込み中です。少し待ってからもう一度お試しください。",
+    "it": "L'accesso con Google si sta ancora caricando. Riprova tra un momento."
   },
   "misc.login.googleAgain": {
     "en": "Click Google to sign in again.",
@@ -426,10 +426,10 @@
     "tr": "Tekrar giriş yapmak için Google'a tıklayın.",
     "pl": "Kliknij Google, aby zalogować się ponownie.",
     "nl": "Klik op Google om opnieuw in te loggen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Clique em Google para entrar de novo.",
+    "id": "Klik Google untuk login lagi.",
+    "ja": "もう一度ログインするには「Google」をクリックしてください。",
+    "it": "Clicca su Google per accedere di nuovo."
   },
   "misc.login.googleCancelled": {
     "en": "Google sign-in was cancelled.",
@@ -444,10 +444,10 @@
     "tr": "Google ile giriş iptal edildi.",
     "pl": "Logowanie przez Google zostało anulowane.",
     "nl": "Inloggen met Google is geannuleerd.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O login com Google foi cancelado.",
+    "id": "Login Google dibatalkan.",
+    "ja": "Googleログインがキャンセルされました。",
+    "it": "Accesso con Google annullato."
   },
   "misc.login.googleFailed": {
     "en": "Google sign-in failed. Allow popups and third-party cookies for this site, then try again.",
@@ -462,10 +462,10 @@
     "tr": "Google ile giriş başarısız oldu. Bu site için açılır pencerelere ve üçüncü taraf çerezlere izin verip tekrar deneyin.",
     "pl": "Logowanie przez Google nie powiodło się. Zezwól tej stronie na wyskakujące okna i pliki cookie innych firm, a potem spróbuj ponownie.",
     "nl": "Inloggen met Google is mislukt. Sta pop-ups en cookies van derden toe voor deze site en probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Falha no login com Google. Permita pop-ups e cookies de terceiros para este site e tente de novo.",
+    "id": "Login Google gagal. Izinkan pop-up dan cookie pihak ketiga untuk situs ini, lalu coba lagi.",
+    "ja": "Googleログインに失敗しました。このサイトのポップアップとサードパーティCookieを許可してから、もう一度お試しください。",
+    "it": "Accesso con Google non riuscito. Consenti popup e cookie di terze parti per questo sito, poi riprova."
   },
   "misc.login.partyJoinFailed": {
     "en": "Could not join the party ({0}).",
@@ -480,10 +480,10 @@
     "tr": "Partiye katılınamadı ({0}).",
     "pl": "Nie udało się dołączyć do grupy ({0}).",
     "nl": "Kon niet bij de party komen ({0}).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível entrar na party ({0}).",
+    "id": "Tidak bisa bergabung ke party ({0}).",
+    "ja": "パーティーに参加できませんでした（{0}）。",
+    "it": "Impossibile entrare nel party ({0})."
   },
   "misc.mobile.rotate": {
     "en": "Rotate your phone<br>for better gameplay",
@@ -498,10 +498,10 @@
     "tr": "Daha iyi oyun için<br>telefonunuzu çevirin",
     "pl": "Obróć telefon<br>dla lepszej gry",
     "nl": "Draai je telefoon<br>voor een betere speelervaring",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Gire o celular<br>para jogar melhor",
+    "id": "Putar ponselmu<br>agar main lebih nyaman",
+    "ja": "スマホを横にすると<br>プレイしやすくなります",
+    "it": "Ruota il telefono<br>per giocare meglio"
   },
   "misc.mobile.landscape": {
     "en": "Landscape mode required",
@@ -516,10 +516,10 @@
     "tr": "Yatay mod gerekli",
     "pl": "Wymagany tryb poziomy",
     "nl": "Liggende stand vereist",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "É necessário o modo paisagem",
+    "id": "Mode lanskap diperlukan",
+    "ja": "横画面にしてください",
+    "it": "Serve la modalità orizzontale"
   },
   "misc.mobile.joystick": {
     "en": "Joystick",
@@ -534,10 +534,10 @@
     "tr": "Joystick",
     "pl": "Joystick",
     "nl": "Joystick",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Joystick",
+    "id": "Joystick",
+    "ja": "ジョイスティック",
+    "it": "Joystick"
   },
   "misc.mobile.opacity": {
     "en": "Opacity",
@@ -570,10 +570,10 @@
     "tr": "Düğme boyutu",
     "pl": "Rozmiar przycisków",
     "nl": "Knopgrootte",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tamanho dos botões",
+    "id": "Ukuran tombol",
+    "ja": "ボタンのサイズ",
+    "it": "Dimensione pulsanti"
   },
   "misc.mobile.flickSplit": {
     "en": "Flick split (left half: right = split, up = double)",
@@ -588,10 +588,10 @@
     "tr": "Kaydırarak bölünme (sol yarı: sağa = bölün, yukarı = çift)",
     "pl": "Podział machnięciem (lewa połowa: w prawo = podział, w górę = podwójny)",
     "nl": "Veegsplit (linkerhelft: rechts = splitsen, omhoog = dubbel)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Split por deslize (metade esquerda: direita = split, cima = duplo)",
+    "id": "Split dengan usap (separuh kiri: kanan = split, atas = double)",
+    "ja": "フリック分裂（画面左半分：右 = 分裂、上 = 2回分裂）",
+    "it": "Split con swipe (metà sinistra: destra = split, su = doppio)"
   },
   "misc.mobile.noVibration": {
     "en": "No vibration on death and chat",
@@ -606,10 +606,10 @@
     "tr": "Ölüm ve sohbette titreşim yok",
     "pl": "Bez wibracji przy śmierci i czacie",
     "nl": "Geen trilling bij dood en chat",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sem vibração ao morrer e no chat",
+    "id": "Tanpa getaran saat mati dan chat",
+    "ja": "死亡時とチャットでバイブしない",
+    "it": "Niente vibrazione alla morte e in chat"
   },
   "misc.mobile.stopRelease": {
     "en": "Stop on release (cell stops when you lift the joystick thumb)",
@@ -624,10 +624,10 @@
     "tr": "Bırakınca dur (başparmağınızı joystickten kaldırınca hücre durur)",
     "pl": "Zatrzymaj po puszczeniu (komórka staje, gdy zdejmiesz kciuk z joysticka)",
     "nl": "Stop bij loslaten (de cel stopt als je je duim van de joystick haalt)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Parar ao soltar (a célula para quando você tira o dedo do joystick)",
+    "id": "Berhenti saat dilepas (sel berhenti saat jempol diangkat dari joystick)",
+    "ja": "離すと停止（ジョイスティックから指を離すとセルが止まる）",
+    "it": "Fermati al rilascio (la cellula si ferma quando alzi il pollice dal joystick)"
   },
   "misc.mobile.tapHaptic": {
     "en": "Short vibration on Split / Feed",
@@ -642,10 +642,10 @@
     "tr": "Bölünme / Besleme sırasında kısa titreşim",
     "pl": "Krótka wibracja przy Podziale / Karmieniu",
     "nl": "Korte trilling bij Splitsen / Voeren",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vibração curta no Split / Feed",
+    "id": "Getaran singkat saat Split / Feed",
+    "ja": "分裂 / エサ出しで短くバイブ",
+    "it": "Vibrazione breve su Split / Feed"
   },
   "misc.mobile.quickChat": {
     "en": "Quick chat buttons (commands 1-4)",
@@ -660,10 +660,10 @@
     "tr": "Hızlı sohbet düğmeleri (komut 1-4)",
     "pl": "Przyciski szybkiego czatu (polecenia 1-4)",
     "nl": "Snelchatknoppen (commando 1-4)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Botões de chat rápido (comandos 1-4)",
+    "id": "Tombol chat cepat (perintah 1-4)",
+    "ja": "クイックチャットボタン（コマンド1-4）",
+    "it": "Pulsanti chat rapida (comandi 1-4)"
   },
   "misc.mobile.mbButton": {
     "en": "Multibox button (second player; uses more data)",
@@ -678,10 +678,10 @@
     "tr": "Multibox düğmesi (ikinci oyuncu; daha fazla veri kullanır)",
     "pl": "Przycisk multiboxa (drugi gracz; zużywa więcej danych)",
     "nl": "Multiboxknop (tweede speler; gebruikt meer data)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Botão de multibox (segundo jogador; usa mais dados)",
+    "id": "Tombol multibox (pemain kedua; memakai lebih banyak data)",
+    "ja": "マルチボックスボタン（2人目のプレイヤー、通信量が増えます）",
+    "it": "Pulsante multibox (secondo giocatore; usa più dati)"
   },
   "misc.mobile.pingButton": {
     "en": "Team ping button (tap = Go here; hold and slide = Help, Danger, Virus here)",
@@ -696,10 +696,10 @@
     "tr": "Takım işaret düğmesi (dokun = Buraya gel; basılı tut ve kaydır = Yardım, Tehlike, Burada virüs)",
     "pl": "Przycisk sygnału drużyny (dotknięcie = Idź tutaj; przytrzymaj i przesuń = Pomoc, Niebezpieczeństwo, Wirus tutaj)",
     "nl": "Teampingknop (tik = Ga hierheen; vasthouden en schuiven = Help, Gevaar, Virus hier)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Botão de aviso para a equipe (toque = Vá aqui; segure e deslize = Ajuda, Perigo, Vírus aqui)",
+    "id": "Tombol ping tim (ketuk = Ke sini; tahan dan geser = Bantu, Bahaya, Ada virus)",
+    "ja": "チームピンボタン（タップ = ここへ行こう、長押ししてスライド = 助けて、危険、ここにウイルス）",
+    "it": "Pulsante ping squadra (tocca = Vai qui; tieni premuto e scorri = Aiuto, Pericolo, Virus qui)"
   },
   "misc.mobile.netGraph": {
     "en": "Net graph (FPS and ping of the last 30 seconds)",
@@ -714,10 +714,10 @@
     "tr": "Ağ grafiği (son 30 saniyenin FPS ve ping değeri)",
     "pl": "Wykres sieci (FPS i ping z ostatnich 30 sekund)",
     "nl": "Netwerkgrafiek (FPS en ping van de laatste 30 seconden)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Gráfico de rede (FPS e ping dos últimos 30 segundos)",
+    "id": "Grafik jaringan (FPS dan ping 30 detik terakhir)",
+    "ja": "ネットグラフ（直近30秒のFPSとPing）",
+    "it": "Grafico di rete (FPS e ping degli ultimi 30 secondi)"
   },
   "misc.mobile.touchDir": {
     "en": "Direction on touch (no joystick): the cell moves toward where your finger touches",
@@ -732,10 +732,10 @@
     "tr": "Dokunarak yön (joystick yok): hücre parmağınızın dokunduğu yere gider",
     "pl": "Kierunek dotykiem (bez joysticka): komórka płynie tam, gdzie dotyka palec",
     "nl": "Richting met aanraking (geen joystick): de cel gaat naar waar je vinger raakt",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Direção pelo toque (sem joystick): a célula vai para onde seu dedo toca",
+    "id": "Arah dengan sentuhan (tanpa joystick): sel bergerak ke arah jarimu menyentuh",
+    "ja": "タッチで方向指定（ジョイスティックなし）：指が触れた方向へセルが動く",
+    "it": "Direzione al tocco (senza joystick): la cellula va dove tocca il dito"
   },
   "misc.mobile.editControls": {
     "en": "Edit controls",
@@ -750,10 +750,10 @@
     "tr": "Kontrolleri düzenle",
     "pl": "Edytuj sterowanie",
     "nl": "Bediening aanpassen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Editar controles",
+    "id": "Edit kontrol",
+    "ja": "操作ボタンを編集",
+    "it": "Modifica controlli"
   },
   "misc.mobile.split": {
     "en": "SPLIT",
@@ -822,10 +822,10 @@
     "tr": "Tehlike",
     "pl": "Niebezpieczeństwo",
     "nl": "Gevaar",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Perigo",
+    "id": "Bahaya",
+    "ja": "危険",
+    "it": "Pericolo"
   },
   "misc.mobile.pingGo": {
     "en": "Go here",
@@ -840,10 +840,10 @@
     "tr": "Buraya gel",
     "pl": "Idź tutaj",
     "nl": "Ga hierheen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vá aqui",
+    "id": "Ke sini",
+    "ja": "ここへ行こう",
+    "it": "Vai qui"
   },
   "misc.mobile.pingVirus": {
     "en": "Virus here",
@@ -858,10 +858,10 @@
     "tr": "Burada virüs",
     "pl": "Wirus tutaj",
     "nl": "Virus hier",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vírus aqui",
+    "id": "Ada virus",
+    "ja": "ここにウイルス",
+    "it": "Virus qui"
   },
   "misc.mobile.hudZoom": {
     "en": "HUD {0}%",
@@ -876,10 +876,10 @@
     "tr": "HUD %{0}",
     "pl": "HUD {0}%",
     "nl": "HUD {0}%",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "HUD {0}%",
+    "id": "HUD {0}%",
+    "ja": "HUD {0}%",
+    "it": "HUD {0}%"
   },
   "misc.editor.ctlJoystick": {
     "en": "Joystick zone",
@@ -894,10 +894,10 @@
     "tr": "Joystick alanı",
     "pl": "Strefa joysticka",
     "nl": "Joystickzone",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Área do joystick",
+    "id": "Area joystick",
+    "ja": "ジョイスティック領域",
+    "it": "Zona joystick"
   },
   "misc.editor.ctlSplit": {
     "en": "Split",
@@ -948,10 +948,10 @@
     "tr": "4x bölünme",
     "pl": "Podział 4x",
     "nl": "4x splitsen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Split 4x",
+    "id": "Split 4x",
+    "ja": "4分裂",
+    "it": "Split 4x"
   },
   "misc.editor.ctlX16": {
     "en": "16x split",
@@ -966,10 +966,10 @@
     "tr": "16x bölünme",
     "pl": "Podział 16x",
     "nl": "16x splitsen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Split 16x",
+    "id": "Split 16x",
+    "ja": "16分裂",
+    "it": "Split 16x"
   },
   "misc.editor.ctlMultibox": {
     "en": "Multibox",
@@ -1002,10 +1002,10 @@
     "tr": "Hızlı sohbet {0}",
     "pl": "Szybki czat {0}",
     "nl": "Snelchat {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Chat rápido {0}",
+    "id": "Chat cepat {0}",
+    "ja": "クイックチャット{0}",
+    "it": "Chat rapida {0}"
   },
   "misc.editor.ctlMenu": {
     "en": "Menu",
@@ -1020,10 +1020,10 @@
     "tr": "Menü",
     "pl": "Menu",
     "nl": "Menu",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Menu",
+    "id": "Menu",
+    "ja": "メニュー",
+    "it": "Menu"
   },
   "misc.editor.ctlMinimap": {
     "en": "Minimap",
@@ -1056,10 +1056,10 @@
     "tr": "Sol düğmeler",
     "pl": "Lewe przyciski",
     "nl": "Linkerknoppen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Botões da esquerda",
+    "id": "Tombol kiri",
+    "ja": "左側のボタン",
+    "it": "Pulsanti a sinistra"
   },
   "misc.editor.saveFailed": {
     "en": "Could not save the layout: the browser storage is full or blocked.",
@@ -1074,10 +1074,10 @@
     "tr": "Düzen kaydedilemedi: tarayıcı depolama alanı dolu veya engelli.",
     "pl": "Nie udało się zapisać układu: pamięć przeglądarki jest pełna lub zablokowana.",
     "nl": "De indeling kon niet worden opgeslagen: de browseropslag is vol of geblokkeerd.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível salvar o layout: o armazenamento do navegador está cheio ou bloqueado.",
+    "id": "Tata letak tidak bisa disimpan: penyimpanan browser penuh atau diblokir.",
+    "ja": "レイアウトを保存できませんでした：ブラウザのストレージがいっぱいか、ブロックされています。",
+    "it": "Impossibile salvare il layout: lo spazio del browser è pieno o bloccato."
   },
   "misc.editor.openFailed": {
     "en": "The control editor could not open.",
@@ -1092,10 +1092,10 @@
     "tr": "Kontrol düzenleyicisi açılamadı.",
     "pl": "Nie udało się otworzyć edytora sterowania.",
     "nl": "De bedieningseditor kon niet worden geopend.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível abrir o editor de controles.",
+    "id": "Editor kontrol tidak bisa dibuka.",
+    "ja": "操作ボタンエディターを開けませんでした。",
+    "it": "Impossibile aprire l'editor dei controlli."
   },
   "misc.editor.savedLandscape": {
     "en": "Control layout saved (landscape).",
@@ -1110,10 +1110,10 @@
     "tr": "Kontrol düzeni kaydedildi (yatay).",
     "pl": "Układ sterowania zapisany (poziomo).",
     "nl": "Bedieningsindeling opgeslagen (liggend).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Layout dos controles salvo (paisagem).",
+    "id": "Tata letak kontrol disimpan (lanskap).",
+    "ja": "操作レイアウトを保存しました（横画面）。",
+    "it": "Layout dei controlli salvato (orizzontale)."
   },
   "misc.editor.savedPortrait": {
     "en": "Control layout saved (portrait).",
@@ -1128,10 +1128,10 @@
     "tr": "Kontrol düzeni kaydedildi (dikey).",
     "pl": "Układ sterowania zapisany (pionowo).",
     "nl": "Bedieningsindeling opgeslagen (staand).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Layout dos controles salvo (retrato).",
+    "id": "Tata letak kontrol disimpan (potret).",
+    "ja": "操作レイアウトを保存しました（縦画面）。",
+    "it": "Layout dei controlli salvato (verticale)."
   },
   "misc.editor.save": {
     "en": "Save",
@@ -1164,10 +1164,10 @@
     "tr": "Bu düzeni kaydet",
     "pl": "Zapisz ten układ",
     "nl": "Deze indeling opslaan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Salvar este layout",
+    "id": "Simpan tata letak ini",
+    "ja": "このレイアウトを保存",
+    "it": "Salva questo layout"
   },
   "misc.editor.cancel": {
     "en": "Cancel",
@@ -1200,10 +1200,10 @@
     "tr": "Kaydetmeden kapat",
     "pl": "Zamknij bez zapisywania",
     "nl": "Sluiten zonder opslaan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Fechar sem salvar",
+    "id": "Tutup tanpa menyimpan",
+    "ja": "保存せずに閉じる",
+    "it": "Chiudi senza salvare"
   },
   "misc.editor.reset": {
     "en": "Reset",
@@ -1236,10 +1236,10 @@
     "tr": "Tüm kontroller olağan yerine (bu yön)",
     "pl": "Wszystkie przyciski na zwykłe miejsce (ta orientacja)",
     "nl": "Alle bediening terug naar de gewone plek (deze stand)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Todos os controles de volta ao lugar padrão (nesta orientação)",
+    "id": "Kembalikan semua kontrol ke tempat semula (orientasi ini)",
+    "ja": "すべてのボタンを元の位置に戻す（この向き）",
+    "it": "Riporta tutti i controlli al loro posto (questo orientamento)"
   },
   "misc.editor.snapTitle": {
     "en": "Snap to a {0} px grid and to the screen edges",
@@ -1254,10 +1254,10 @@
     "tr": "{0} px ızgaraya ve ekran kenarlarına hizala",
     "pl": "Przyciągaj do siatki {0} px i do krawędzi ekranu",
     "nl": "Uitlijnen op een raster van {0} px en de schermranden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Encaixar numa grade de {0} px e nas bordas da tela",
+    "id": "Tempelkan ke grid {0} px dan ke tepi layar",
+    "ja": "{0} pxのグリッドと画面端に吸着",
+    "it": "Aggancia a una griglia di {0} px e ai bordi dello schermo"
   },
   "misc.editor.snapOn": {
     "en": "Snap: on",
@@ -1272,10 +1272,10 @@
     "tr": "Hizalama: açık",
     "pl": "Przyciąganie: wł.",
     "nl": "Uitlijnen: aan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Encaixe: ligado",
+    "id": "Snap: aktif",
+    "ja": "吸着：オン",
+    "it": "Aggancio: sì"
   },
   "misc.editor.snapOff": {
     "en": "Snap: off",
@@ -1290,10 +1290,10 @@
     "tr": "Hizalama: kapalı",
     "pl": "Przyciąganie: wył.",
     "nl": "Uitlijnen: uit",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Encaixe: desligado",
+    "id": "Snap: mati",
+    "ja": "吸着：オフ",
+    "it": "Aggancio: no"
   },
   "misc.editor.layouts": {
     "en": "Layouts",
@@ -1308,10 +1308,10 @@
     "tr": "Düzenler",
     "pl": "Układy",
     "nl": "Indelingen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Layouts",
+    "id": "Tata letak",
+    "ja": "レイアウト",
+    "it": "Layout"
   },
   "misc.editor.layoutsTitle": {
     "en": "Named layouts: save, load, delete",
@@ -1326,10 +1326,10 @@
     "tr": "Adlandırılmış düzenler: kaydet, yükle, sil",
     "pl": "Nazwane układy: zapisz, wczytaj, usuń",
     "nl": "Benoemde indelingen: opslaan, laden, verwijderen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Layouts com nome: salvar, carregar, excluir",
+    "id": "Tata letak bernama: simpan, muat, hapus",
+    "ja": "名前付きレイアウト：保存、読み込み、削除",
+    "it": "Layout con nome: salva, carica, elimina"
   },
   "misc.editor.barEdge": {
     "en": "Move this bar to the other edge",
@@ -1344,10 +1344,10 @@
     "tr": "Bu çubuğu diğer kenara taşı",
     "pl": "Przenieś ten pasek na drugą krawędź",
     "nl": "Deze balk naar de andere rand verplaatsen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Mover esta barra para a outra borda",
+    "id": "Pindahkan bilah ini ke tepi lain",
+    "ja": "このバーを反対側の端へ移動",
+    "it": "Sposta questa barra sull'altro bordo"
   },
   "misc.editor.smaller": {
     "en": "Smaller",
@@ -1362,10 +1362,10 @@
     "tr": "Daha küçük",
     "pl": "Mniejszy",
     "nl": "Kleiner",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Menor",
+    "id": "Lebih kecil",
+    "ja": "小さく",
+    "it": "Più piccolo"
   },
   "misc.editor.bigger": {
     "en": "Bigger",
@@ -1380,10 +1380,10 @@
     "tr": "Daha büyük",
     "pl": "Większy",
     "nl": "Groter",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Maior",
+    "id": "Lebih besar",
+    "ja": "大きく",
+    "it": "Più grande"
   },
   "misc.editor.opacityTitle": {
     "en": "Opacity of this control",
@@ -1398,10 +1398,10 @@
     "tr": "Bu kontrolün opaklığı",
     "pl": "Krycie tego przycisku",
     "nl": "Dekking van deze knop",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Opacidade deste controle",
+    "id": "Opasitas kontrol ini",
+    "ja": "このボタンの不透明度",
+    "it": "Opacità di questo controllo"
   },
   "misc.editor.hide": {
     "en": "Hide",
@@ -1416,10 +1416,10 @@
     "tr": "Gizle",
     "pl": "Ukryj",
     "nl": "Verbergen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ocultar",
+    "id": "Sembunyikan",
+    "ja": "隠す",
+    "it": "Nascondi"
   },
   "misc.editor.show": {
     "en": "Show",
@@ -1434,10 +1434,10 @@
     "tr": "Göster",
     "pl": "Pokaż",
     "nl": "Tonen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Mostrar",
+    "id": "Tampilkan",
+    "ja": "表示",
+    "it": "Mostra"
   },
   "misc.editor.hideTitle": {
     "en": "Hide or show this control",
@@ -1452,10 +1452,10 @@
     "tr": "Bu kontrolü gizle veya göster",
     "pl": "Ukryj lub pokaż ten przycisk",
     "nl": "Deze knop verbergen of tonen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ocultar ou mostrar este controle",
+    "id": "Sembunyikan atau tampilkan kontrol ini",
+    "ja": "このボタンを隠す/表示する",
+    "it": "Nascondi o mostra questo controllo"
   },
   "misc.editor.hidden": {
     "en": "hidden",
@@ -1470,10 +1470,10 @@
     "tr": "gizli",
     "pl": "ukryty",
     "nl": "verborgen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "oculto",
+    "id": "tersembunyi",
+    "ja": "非表示",
+    "it": "nascosto"
   },
   "misc.editor.def": {
     "en": "Default",
@@ -1506,10 +1506,10 @@
     "tr": "Bu kontrol olağan yerine",
     "pl": "Ten przycisk na zwykłe miejsce",
     "nl": "Deze knop terug naar de gewone plek",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Este controle de volta ao lugar padrão",
+    "id": "Kembalikan kontrol ini ke tempat semula",
+    "ja": "このボタンを元の位置に戻す",
+    "it": "Riporta questo controllo al suo posto"
   },
   "misc.editor.overlaps": {
     "en": "{0} overlaps {1}",
@@ -1524,10 +1524,10 @@
     "tr": "{0}, {1} ile çakışıyor",
     "pl": "{0} nachodzi na {1}",
     "nl": "{0} overlapt {1}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} sobrepõe {1}",
+    "id": "{0} menimpa {1}",
+    "ja": "{0}が{1}と重なっています",
+    "it": "{0} si sovrappone a {1}"
   },
   "misc.editor.landscape": {
     "en": "Landscape",
@@ -1542,10 +1542,10 @@
     "tr": "Yatay",
     "pl": "Poziomo",
     "nl": "Liggend",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Paisagem",
+    "id": "Lanskap",
+    "ja": "横画面",
+    "it": "Orizzontale"
   },
   "misc.editor.portrait": {
     "en": "Portrait",
@@ -1560,10 +1560,10 @@
     "tr": "Dikey",
     "pl": "Pionowo",
     "nl": "Staand",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Retrato",
+    "id": "Potret",
+    "ja": "縦画面",
+    "it": "Verticale"
   },
   "misc.editor.choose": {
     "en": "Choose control",
@@ -1578,10 +1578,10 @@
     "tr": "Kontrol seç",
     "pl": "Wybierz przycisk",
     "nl": "Kies een knop",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Escolher controle",
+    "id": "Pilih kontrol",
+    "ja": "ボタンを選択",
+    "it": "Scegli controllo"
   },
   "misc.editor.named": {
     "en": "Named layouts",
@@ -1596,10 +1596,10 @@
     "tr": "Adlandırılmış düzenler",
     "pl": "Nazwane układy",
     "nl": "Benoemde indelingen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Layouts com nome",
+    "id": "Tata letak bernama",
+    "ja": "名前付きレイアウト",
+    "it": "Layout con nome"
   },
   "misc.editor.none": {
     "en": "None yet. A named layout keeps both orientations.",
@@ -1614,10 +1614,10 @@
     "tr": "Henüz yok. Adlandırılmış bir düzen iki yönü de saklar.",
     "pl": "Jeszcze brak. Nazwany układ zachowuje obie orientacje.",
     "nl": "Nog geen. Een benoemde indeling bewaart beide standen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nenhum ainda. Um layout com nome guarda as duas orientações.",
+    "id": "Belum ada. Tata letak bernama menyimpan kedua orientasi.",
+    "ja": "まだありません。名前付きレイアウトは縦横両方の配置を保存します。",
+    "it": "Ancora nessuno. Un layout con nome conserva entrambi gli orientamenti."
   },
   "misc.editor.load": {
     "en": "Load",
@@ -1632,10 +1632,10 @@
     "tr": "Yükle",
     "pl": "Wczytaj",
     "nl": "Laden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Carregar",
+    "id": "Muat",
+    "ja": "読み込む",
+    "it": "Carica"
   },
   "misc.editor.loadTitle": {
     "en": "Edit this layout (Save keeps it)",
@@ -1650,10 +1650,10 @@
     "tr": "Bu düzeni düzenle (Kaydet onu saklar)",
     "pl": "Edytuj ten układ (Zapisz go zachowa)",
     "nl": "Deze indeling bewerken (Opslaan bewaart hem)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Editar este layout (Salvar o mantém)",
+    "id": "Edit tata letak ini (Simpan untuk menyimpannya)",
+    "ja": "このレイアウトを編集（「保存」で確定）",
+    "it": "Modifica questo layout (Salva lo conserva)"
   },
   "misc.editor.del": {
     "en": "Delete",
@@ -1686,10 +1686,10 @@
     "tr": "Ad, ör. Rekabetçi",
     "pl": "Nazwa, np. Turniejowy",
     "nl": "Naam, bijv. Competitief",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nome, ex.: Competitivo",
+    "id": "Nama, mis. Kompetitif",
+    "ja": "名前（例：競技向け）",
+    "it": "Nome, es. Competitivo"
   },
   "misc.editor.saveAs": {
     "en": "Save as",
@@ -1704,10 +1704,10 @@
     "tr": "Farklı kaydet",
     "pl": "Zapisz jako",
     "nl": "Opslaan als",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Salvar como",
+    "id": "Simpan sebagai",
+    "ja": "名前を付けて保存",
+    "it": "Salva come"
   },
   "misc.editor.saveAsTitle": {
     "en": "Keep the layout being edited under this name",
@@ -1722,10 +1722,10 @@
     "tr": "Düzenlenen düzeni bu adla sakla",
     "pl": "Zachowaj edytowany układ pod tą nazwą",
     "nl": "De bewerkte indeling onder deze naam bewaren",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Guardar o layout em edição com este nome",
+    "id": "Simpan tata letak yang sedang diedit dengan nama ini",
+    "ja": "編集中のレイアウトをこの名前で保存",
+    "it": "Salva il layout in modifica con questo nome"
   },
   "misc.editor.nameNeeded": {
     "en": "Give the layout a name (up to {0} characters).",
@@ -1740,10 +1740,10 @@
     "tr": "Düzene bir ad verin (en fazla {0} karakter).",
     "pl": "Nadaj układowi nazwę (do {0} znaków).",
     "nl": "Geef de indeling een naam (tot {0} tekens).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Dê um nome ao layout (até {0} caracteres).",
+    "id": "Beri nama tata letaknya (maksimal {0} karakter).",
+    "ja": "レイアウトに名前を付けてください（{0}文字以内）。",
+    "it": "Dai un nome al layout (massimo {0} caratteri)."
   },
   "misc.editor.maxNamed": {
     "en": "At most {0} named layouts: delete one first.",
@@ -1758,10 +1758,10 @@
     "tr": "En fazla {0} adlandırılmış düzen: önce birini silin.",
     "pl": "Najwyżej {0} nazwanych układów: najpierw usuń jeden.",
     "nl": "Hoogstens {0} benoemde indelingen: verwijder er eerst een.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "No máximo {0} layouts com nome: exclua um primeiro.",
+    "id": "Maksimal {0} tata letak bernama: hapus satu dulu.",
+    "ja": "名前付きレイアウトは最大{0}個です。先に1つ削除してください。",
+    "it": "Al massimo {0} layout con nome: eliminane uno prima."
   },
   "misc.editor.namedSaved": {
     "en": "Layout \"{0}\" saved.",
@@ -1776,10 +1776,10 @@
     "tr": "\"{0}\" düzeni kaydedildi.",
     "pl": "Układ „{0}” zapisany.",
     "nl": "Indeling \"{0}\" opgeslagen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Layout \"{0}\" salvo.",
+    "id": "Tata letak \"{0}\" disimpan.",
+    "ja": "レイアウト「{0}」を保存しました。",
+    "it": "Layout \"{0}\" salvato."
   },
   "misc.helper.nickChars": {
     "en": "Nickname Characters",
@@ -1794,10 +1794,10 @@
     "tr": "Takma ad karakterleri",
     "pl": "Znaki do nicku",
     "nl": "Tekens voor bijnaam",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Caracteres para nick",
+    "id": "Karakter untuk nick",
+    "ja": "ニックネーム用の文字",
+    "it": "Caratteri per il nick"
   },
   "misc.helper.agarioWhite": {
     "en": "Agario Default (White)",
@@ -1812,10 +1812,10 @@
     "tr": "Agario varsayılan (Beyaz)",
     "pl": "Agario domyślny (Biały)",
     "nl": "Agario-standaard (Wit)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Padrão do Agario (branco)",
+    "id": "Bawaan Agario (Putih)",
+    "ja": "Agario標準（白）",
+    "it": "Agario predefinito (bianco)"
   },
   "misc.helper.noSoups": {
     "en": "No Soups Settings (Black)",
@@ -1830,10 +1830,10 @@
     "tr": "No Soups ayarları (Siyah)",
     "pl": "Ustawienia No Soups (Czarny)",
     "nl": "No Soups-instellingen (Zwart)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Configurações No Soups (preto)",
+    "id": "Pengaturan No Soups (Hitam)",
+    "ja": "No Soups設定（黒）",
+    "it": "Impostazioni No Soups (nero)"
   },
   "misc.helper.vanillaBetter": {
     "en": "Vanilla better (Grey)",
@@ -1848,10 +1848,10 @@
     "tr": "Geliştirilmiş Vanilla (Gri)",
     "pl": "Ulepszony Vanilla (Szary)",
     "nl": "Vanilla verbeterd (Grijs)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vanilla melhorado (cinza)",
+    "id": "Vanilla lebih baik (Abu-abu)",
+    "ja": "改良版バニラ（グレー）",
+    "it": "Vanilla migliorato (grigio)"
   },
   "misc.helper.galaxy": {
     "en": "Galaxy (Black)",
@@ -1866,10 +1866,10 @@
     "tr": "Galaksi (Siyah)",
     "pl": "Galaktyka (Czarny)",
     "nl": "Melkweg (Zwart)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Galáxia (preto)",
+    "id": "Galaksi (Hitam)",
+    "ja": "ギャラクシー（黒）",
+    "it": "Galassia (nero)"
   },
   "misc.helper.legendDefault": {
     "en": "Legend Default (Dark Blue)",
@@ -1884,10 +1884,10 @@
     "tr": "Legend varsayılan (Koyu mavi)",
     "pl": "Legend domyślny (Ciemnoniebieski)",
     "nl": "Legend-standaard (Donkerblauw)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Padrão Legend (azul-escuro)",
+    "id": "Bawaan Legend (Biru tua)",
+    "ja": "Legend標準（濃い青）",
+    "it": "Legend predefinito (blu scuro)"
   },
   "misc.helper.vanillaLike": {
     "en": "Vanilla like (Grey)",
@@ -1902,10 +1902,10 @@
     "tr": "Vanilla benzeri (Gri)",
     "pl": "Jak Vanilla (Szary)",
     "nl": "Zoals Vanilla (Grijs)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Estilo Vanilla (cinza)",
+    "id": "Mirip Vanilla (Abu-abu)",
+    "ja": "バニラ風（グレー）",
+    "it": "Stile Vanilla (grigio)"
   },
   "misc.rotate.unrotated": {
     "en": "Minimap is still unrotated, only sectors rotate",
@@ -1920,10 +1920,10 @@
     "tr": "Mini harita henüz dönmüyor, yalnızca sektörler dönüyor",
     "pl": "Minimapa jeszcze się nie obraca, obracają się tylko sektory",
     "nl": "De minikaart draait nog niet, alleen de sectoren draaien",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O minimapa ainda não gira, só os setores giram",
+    "id": "Peta mini belum berputar, hanya sektor yang berputar",
+    "ja": "ミニマップ自体は回転せず、セクターだけが回転します",
+    "it": "La minimappa non ruota ancora, ruotano solo i settori"
   },
   "misc.dl.confirm": {
     "en": "Are you sure you want to load the Dying Light template?<br>Save your settings to a file, because they will be lost.",
@@ -1938,10 +1938,10 @@
     "tr": "Dying Light şablonunu yüklemek istediğinize emin misiniz?<br>Ayarlarınızı bir dosyaya kaydedin, yoksa kaybolacaklar.",
     "pl": "Na pewno wczytać szablon Dying Light?<br>Zapisz ustawienia do pliku, bo zostaną utracone.",
     "nl": "Weet je zeker dat je het Dying Light-sjabloon wilt laden?<br>Sla je instellingen op in een bestand, want ze gaan verloren.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tem certeza de que quer carregar o modelo Dying Light?<br>Salve suas configurações em um arquivo, porque elas serão perdidas.",
+    "id": "Yakin mau memuat template Dying Light?<br>Simpan pengaturanmu ke file, karena pengaturan akan hilang.",
+    "ja": "Dying Lightテンプレートを読み込みますか？<br>現在の設定は失われるので、ファイルに保存しておいてください。",
+    "it": "Sei sicuro di voler caricare il modello Dying Light?<br>Salva le impostazioni su un file, perché andranno perse."
   },
   "misc.dl.hudMap": {
     "en": "The Map",
@@ -1956,10 +1956,10 @@
     "tr": "Harita",
     "pl": "Mapa",
     "nl": "De Kaart",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O Mapa",
+    "id": "Peta",
+    "ja": "マップ",
+    "it": "La Mappa"
   },
   "misc.dl.hudLead": {
     "en": "The Most Dead",
@@ -1974,10 +1974,10 @@
     "tr": "En Ölüler",
     "pl": "Najbardziej martwi",
     "nl": "De Doodsten",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os Mais Mortos",
+    "id": "Paling Mati",
+    "ja": "最も死んだ者たち",
+    "it": "I Più Morti"
   },
   "misc.dl.hudTeam": {
     "en": "The Alive",
@@ -1992,10 +1992,10 @@
     "tr": "Hayatta Kalanlar",
     "pl": "Żywi",
     "nl": "De Levenden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os Vivos",
+    "id": "Yang Hidup",
+    "ja": "生存者たち",
+    "it": "I Vivi"
   },
   "misc.dl.pic1": {
     "en": "Volatile Attack",
@@ -2010,10 +2010,10 @@
     "tr": "Volatile saldırısı",
     "pl": "Atak Zmiennego",
     "nl": "Volatile-aanval",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ataque de Volátil",
+    "id": "Serangan Volatile",
+    "ja": "ボラタイルの襲撃",
+    "it": "Attacco di Volatile"
   },
   "misc.dl.pic2": {
     "en": "Screamer",
@@ -2028,10 +2028,10 @@
     "tr": "Çığlıkçı",
     "pl": "Krzykacz",
     "nl": "Schreeuwer",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Screamer",
+    "id": "Screamer",
+    "ja": "スクリーマー",
+    "it": "Screamer"
   },
   "misc.dl.pic3": {
     "en": "Killing Volatile",
@@ -2046,10 +2046,10 @@
     "tr": "Volatile öldürmek",
     "pl": "Zabijanie Zmiennego",
     "nl": "Volatile doden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Matando um Volátil",
+    "id": "Membunuh Volatile",
+    "ja": "ボラタイルを倒す",
+    "it": "Uccidere un Volatile"
   },
   "misc.dl.pic4": {
     "en": "Too weak to kill",
@@ -2064,10 +2064,10 @@
     "tr": "Öldüremeyecek kadar zayıf",
     "pl": "Za słaby, by zabić",
     "nl": "Te zwak om te doden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Fraco demais para matar",
+    "id": "Terlalu lemah untuk membunuh",
+    "ja": "弱すぎて倒せない",
+    "it": "Troppo debole per uccidere"
   },
   "misc.dl.pic5": {
     "en": "Talking zombie",
@@ -2082,10 +2082,10 @@
     "tr": "Konuşan zombi",
     "pl": "Gadający zombie",
     "nl": "Pratende zombie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Zumbi falante",
+    "id": "Zombi yang bicara",
+    "ja": "しゃべるゾンビ",
+    "it": "Zombie parlante"
   },
   "misc.dl.yt1": {
     "en": "Dying Light Song",
@@ -2100,10 +2100,10 @@
     "tr": "Dying Light şarkısı",
     "pl": "Piosenka z Dying Light",
     "nl": "Dying Light-nummer",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Música do Dying Light",
+    "id": "Lagu Dying Light",
+    "ja": "Dying Lightの曲",
+    "it": "Canzone di Dying Light"
   },
   "misc.dl.yt2": {
     "en": "Super Aggressive Zombies",
@@ -2118,10 +2118,10 @@
     "tr": "Süper agresif zombiler",
     "pl": "Superagresywne zombie",
     "nl": "Superagressieve zombies",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Zumbis superagressivos",
+    "id": "Zombi super agresif",
+    "ja": "超凶暴なゾンビ",
+    "it": "Zombie super aggressivi"
   },
   "misc.dl.yt3": {
     "en": "Finishing Moves Night Hunter",
@@ -2136,10 +2136,10 @@
     "tr": "Night Hunter bitirme hareketleri",
     "pl": "Wykończenia Nocnego Łowcy",
     "nl": "Finishing moves van de Night Hunter",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Finalizações do Night Hunter",
+    "id": "Gerakan pamungkas Night Hunter",
+    "ja": "ナイトハンターのフィニッシュ技",
+    "it": "Mosse finali del Night Hunter"
   },
   "misc.dl.yt4": {
     "en": "Volatile Massacre",
@@ -2154,10 +2154,10 @@
     "tr": "Volatile katliamı",
     "pl": "Masakra Zmiennych",
     "nl": "Volatile-bloedbad",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Massacre de Voláteis",
+    "id": "Pembantaian Volatile",
+    "ja": "ボラタイル大虐殺",
+    "it": "Massacro di Volatile"
   },
   "misc.dl.yt5": {
     "en": "End Game 3rd Person",
@@ -2172,10 +2172,10 @@
     "tr": "Üçüncü şahıs oyun sonu",
     "pl": "Zakończenie w trzeciej osobie",
     "nl": "Einde van het spel in derde persoon",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Final do jogo em terceira pessoa",
+    "id": "Akhir game sudut pandang orang ketiga",
+    "ja": "エンディング（三人称視点）",
+    "it": "Finale in terza persona"
   },
   "misc.dl.disableHint": {
     "en": "To disable Dying Light, click the \"Dying Light\" icon on the <b><font color=\"blue\">API</font></b> tab!",
@@ -2190,10 +2190,10 @@
     "tr": "Dying Light'ı kapatmak için <b><font color=\"blue\">API</font></b> sekmesindeki \"Dying Light\" simgesine tıklayın!",
     "pl": "Aby wyłączyć Dying Light, kliknij ikonę „Dying Light” na karcie <b><font color=\"blue\">API</font></b>!",
     "nl": "Klik op het pictogram \"Dying Light\" op het tabblad <b><font color=\"blue\">API</font></b> om Dying Light uit te zetten!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Para desativar o Dying Light, clique no ícone \"Dying Light\" na aba <b><font color=\"blue\">API</font></b>!",
+    "id": "Untuk menonaktifkan Dying Light, klik ikon \"Dying Light\" di tab <b><font color=\"blue\">API</font></b>!",
+    "ja": "Dying Lightを無効にするには、<b><font color=\"blue\">API</font></b>タブの「Dying Light」アイコンをクリック！",
+    "it": "Per disattivare Dying Light, clicca l'icona \"Dying Light\" nella scheda <b><font color=\"blue\">API</font></b>!"
   },
   "misc.dl.songHint": {
     "en": "Play the song from the last tab <b><font color=\"blue\">(YOUTUBE)</font></b>!",
@@ -2208,10 +2208,10 @@
     "tr": "Şarkıyı son sekmeden <b><font color=\"blue\">(YOUTUBE)</font></b> çalın!",
     "pl": "Odtwórz piosenkę z ostatniej karty <b><font color=\"blue\">(YOUTUBE)</font></b>!",
     "nl": "Speel het nummer af via het laatste tabblad <b><font color=\"blue\">(YOUTUBE)</font></b>!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Toque a música na última aba <b><font color=\"blue\">(YOUTUBE)</font></b>!",
+    "id": "Putar lagunya dari tab terakhir <b><font color=\"blue\">(YOUTUBE)</font></b>!",
+    "ja": "最後のタブ<b><font color=\"blue\">（YOUTUBE）</font></b>から曲を再生しよう！",
+    "it": "Fai partire la canzone dall'ultima scheda <b><font color=\"blue\">(YOUTUBE)</font></b>!"
   },
   "misc.dl.quoteNight": {
     "en": "This is GRE speaking, get to the nearest safe house and wait until dawn. Good night, and good luck!",
@@ -2226,10 +2226,10 @@
     "tr": "Burası GRE, en yakın güvenli eve gidin ve şafağı bekleyin. İyi geceler ve bol şans!",
     "pl": "Mówi GRE, dotrzyjcie do najbliższej kryjówki i czekajcie do świtu. Dobranoc i powodzenia!",
     "nl": "Hier spreekt de GRE: ga naar het dichtstbijzijnde safehouse en wacht tot de ochtend. Goedenacht en veel geluk!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aqui é a GRE falando: vão para o abrigo mais próximo e esperem até o amanhecer. Boa noite e boa sorte!",
+    "id": "Di sini GRE, segera ke rumah aman terdekat dan tunggu sampai fajar. Selamat malam, dan semoga beruntung!",
+    "ja": "こちらGRE。最寄りのセーフハウスへ向かい、夜明けまで待機せよ。おやすみ、幸運を祈る！",
+    "it": "Qui parla il GRE: raggiungete il rifugio più vicino e aspettate l'alba. Buona notte e buona fortuna!"
   },
   "misc.dl.quoteAntizin": {
     "en": "You get Antizin when I say you get it, not one second before!",
@@ -2244,10 +2244,10 @@
     "tr": "Antizin'i ben ne zaman dersem o zaman alırsın, bir saniye bile önce değil!",
     "pl": "Dostaniesz Antizin, kiedy ja powiem, ani sekundy wcześniej!",
     "nl": "Je krijgt Antizin wanneer ik het zeg, geen seconde eerder!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você ganha Antizin quando eu disser, nem um segundo antes!",
+    "id": "Kamu dapat Antizin kalau aku bilang dapat, tidak sedetik pun lebih cepat!",
+    "ja": "アンチジンは俺が渡すと言った時に渡す。1秒たりとも早くはない！",
+    "it": "Avrai l'Antizin quando lo dico io, non un secondo prima!"
   },
   "misc.dl.quoteBravo": {
     "en": "Well, you not only did the job, Kyle, but you made it back in one piece.<br>Bravo!<br>Did you think I would be satisfied so easily? There is still plenty to prove!",
@@ -2262,10 +2262,10 @@
     "tr": "Eh, Kyle, işi yapmakla kalmadın, bir de sağ salim döndün.<br>Bravo!<br>Bu kadar kolay tatmin olacağımı mı sandın? Kanıtlaman gereken daha çok şey var!",
     "pl": "No cóż, Kyle, nie tylko wykonałeś zadanie, ale wróciłeś w jednym kawałku.<br>Brawo!<br>Myślałeś, że tak łatwo mnie zadowolisz? Wciąż masz wiele do udowodnienia!",
     "nl": "Nou, Kyle, je hebt niet alleen de klus geklaard, je bent ook heelhuids teruggekomen.<br>Bravo!<br>Dacht je dat ik zo snel tevreden zou zijn? Er valt nog genoeg te bewijzen!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Bem, você não só fez o trabalho, Kyle, como voltou inteiro.<br>Bravo!<br>Achou que eu ficaria satisfeito tão fácil? Ainda há muito a provar!",
+    "id": "Kamu bukan cuma menyelesaikan tugasnya, Kyle, tapi juga kembali dengan utuh.<br>Bravo!<br>Kamu kira aku akan puas semudah itu? Masih banyak yang harus dibuktikan!",
+    "ja": "仕事をやり遂げただけでなく、無事に帰ってきたな、カイル。<br>ブラボー！<br>これで満足するとでも思ったか？ 証明すべきことはまだ山ほどある！",
+    "it": "Beh, non solo hai fatto il lavoro, Kyle, ma sei anche tornato tutto intero.<br>Bravo!<br>Pensavi che mi sarei accontentato così facilmente? C'è ancora molto da dimostrare!"
   },
   "misc.dl.serverChanged": {
     "en": "Server Changed",
@@ -2280,10 +2280,10 @@
     "tr": "Sunucu değişti",
     "pl": "Zmieniono serwer",
     "nl": "Server gewijzigd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Servidor alterado",
+    "id": "Server diganti",
+    "ja": "サーバーを変更しました",
+    "it": "Server cambiato"
   },
   "misc.dl.quoteRules": {
     "en": "The creation of one's own rules, <font color=\"red\">THAT</font> is what makes a man!<br>Do you live by your own rules, Crane?<br>Or are you merely someone else's puppet???",
@@ -2298,10 +2298,10 @@
     "tr": "Kendi kurallarını koymak, <font color=\"red\">İŞTE</font> insanı adam yapan budur!<br>Kendi kurallarınla mı yaşıyorsun, Crane?<br>Yoksa sadece başkasının kuklası mısın???",
     "pl": "Tworzenie własnych zasad, <font color=\"red\">TO</font> czyni człowieka mężczyzną!<br>Żyjesz według własnych zasad, Crane?<br>Czy jesteś tylko czyjąś marionetką???",
     "nl": "Je eigen regels maken, <font color=\"red\">DÁT</font> maakt een man!<br>Leef jij volgens je eigen regels, Crane?<br>Of ben je slechts andermans marionet???",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Criar as próprias regras, <font color=\"red\">ISSO</font> é o que faz um homem!<br>Você vive pelas suas próprias regras, Crane?<br>Ou é só uma marionete de outra pessoa???",
+    "id": "Membuat aturan sendiri, <font color=\"red\">ITULAH</font> yang membuat seseorang jadi pria sejati!<br>Apa kamu hidup dengan aturanmu sendiri, Crane?<br>Atau kamu cuma boneka orang lain???",
+    "ja": "自分のルールを作ること、<font color=\"red\">それこそ</font>が男というものだ！<br>お前は自分のルールで生きているか、クレイン？<br>それともただの誰かの操り人形か？？？",
+    "it": "Creare le proprie regole, <font color=\"red\">QUESTO</font> è ciò che fa un uomo!<br>Vivi secondo le tue regole, Crane?<br>O sei solo il burattino di qualcun altro???"
   },
   "misc.dl.quoteProphecy": {
     "en": "I am researching traces of the prophecy about the god of the sun in the relics of local culture. It seems like a matter of life and death to the Mother, and I am in no position to ask why.",
@@ -2316,9 +2316,9 @@
     "tr": "Yerel kültürün kalıntılarında güneş tanrısı kehanetinin izlerini araştırıyorum. Ana için bu bir ölüm kalım meselesi gibi görünüyor ve nedenini sormak bana düşmez.",
     "pl": "Badam ślady proroctwa o bogu słońca w reliktach miejscowej kultury. Dla Matki to chyba sprawa życia i śmierci, a ja nie mogę pytać dlaczego.",
     "nl": "Ik onderzoek sporen van de profetie over de zonnegod in de relikwieën van de plaatselijke cultuur. Voor de Moeder lijkt het een kwestie van leven of dood, en ik kan niet vragen waarom.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Estou pesquisando vestígios da profecia sobre o deus do sol nas relíquias da cultura local. Parece ser questão de vida ou morte para a Mãe, e não estou em posição de perguntar por quê.",
+    "id": "Aku sedang meneliti jejak ramalan tentang dewa matahari di peninggalan budaya setempat. Sepertinya ini soal hidup dan mati bagi Sang Ibu, dan aku tidak dalam posisi untuk bertanya kenapa.",
+    "ja": "地元文化の遺物に残る太陽神の予言の痕跡を調べている。マザーにとっては生死に関わる問題らしいが、理由を尋ねられる立場ではない。",
+    "it": "Sto cercando tracce della profezia sul dio del sole nelle reliquie della cultura locale. Per la Madre sembra una questione di vita o di morte, e non sono nella posizione di chiedere perché."
   }
 }

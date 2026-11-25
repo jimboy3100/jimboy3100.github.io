@@ -84,10 +84,10 @@
     "tr": "Sunuculara bağlanamıyorsan, bağlantıyı engelleyen bir antivirüs veya güvenlik duvarı olup olmadığını kontrol et.",
     "pl": "Jeśli nie możesz połączyć się z serwerami, sprawdź, czy antywirus lub zapora nie blokuje połączenia.",
     "nl": "Kun je geen verbinding maken met de servers? Controleer of een antivirusprogramma of firewall de verbinding blokkeert.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Se você não consegue se conectar aos servidores, verifique se algum antivírus ou firewall está bloqueando a conexão.",
+    "id": "Jika kamu tidak bisa terhubung ke server, periksa apakah ada antivirus atau firewall yang memblokir koneksi.",
+    "ja": "サーバーに接続できない場合は、ウイルス対策ソフトやファイアウォールが接続をブロックしていないか確認してください。",
+    "it": "Se non riesci a connetterti ai server, controlla che nessun antivirus o firewall stia bloccando la connessione."
   },
   "agario.page_connecting": {
     "en": "Connecting",
@@ -192,10 +192,10 @@
     "tr": "Daha iyisini yapabilir misin? Gel ve oyna!",
     "pl": "Dasz radę lepiej? Przyjdź i zagraj!",
     "nl": "Kun jij het beter? Kom spelen!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você consegue fazer melhor? Venha jogar!",
+    "id": "Bisakah kamu lebih baik? Ayo main!",
+    "ja": "あなたはもっと上を目指せる？ 遊びに来よう！",
+    "it": "Sai fare di meglio? Vieni a giocare!"
   },
   "agario.page_fb_matchresults_subtitle": {
     "en": "I survived %@m %@s and got a score of %@",
@@ -210,10 +210,10 @@
     "tr": "%@d %@sn hayatta kaldım ve %@ puan aldım",
     "pl": "Przetrwałem %@m %@s i zdobyłem %@ punktów",
     "nl": "Ik overleefde %@m %@s en haalde een score van %@",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sobrevivi %@m %@s e fiz %@ pontos",
+    "id": "Aku bertahan %@m %@d dan mendapat skor %@",
+    "ja": "%@分%@秒生き残り、スコア%@を獲得しました",
+    "it": "Sono sopravvissuto %@m %@s e ho fatto %@ punti"
   },
   "agario.page_fb_matchresults_title": {
     "en": "Got a new score in Agar.io",
@@ -228,10 +228,10 @@
     "tr": "Agar.io'da yeni bir skor",
     "pl": "Nowy wynik w Agar.io",
     "nl": "Nieuwe score in Agar.io",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nova pontuação no Agar.io",
+    "id": "Skor baru di Agar.io",
+    "ja": "Agar.ioで新しいスコアを獲得",
+    "it": "Nuovo punteggio su Agar.io"
   },
   "agario.page_g_plus_share_stats": {
     "en": "I survived %@m %@s and got a score of %@ in Agar.io! Can you do better? Come and play!",
@@ -246,10 +246,10 @@
     "tr": "Agar.io'da %@d %@sn hayatta kaldım ve %@ puan aldım! Daha iyisini yapabilir misin? Gel ve oyna!",
     "pl": "Przetrwałem %@m %@s i zdobyłem %@ punktów w Agar.io! Dasz radę lepiej? Przyjdź i zagraj!",
     "nl": "Ik overleefde %@m %@s en haalde een score van %@ in Agar.io! Kun jij het beter? Kom spelen!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sobrevivi %@m %@s e fiz %@ pontos no Agar.io! Você consegue fazer melhor? Venha jogar!",
+    "id": "Aku bertahan %@m %@d dan mendapat skor %@ di Agar.io! Bisakah kamu lebih baik? Ayo main!",
+    "ja": "Agar.ioで%@分%@秒生き残り、スコア%@を獲得しました！ あなたはもっと上を目指せる？ 遊びに来よう！",
+    "it": "Sono sopravvissuto %@m %@s e ho fatto %@ punti su Agar.io! Sai fare di meglio? Vieni a giocare!"
   },
   "agario.page_gamemode_experimental": {
     "en": "Experimental",
@@ -606,10 +606,10 @@
     "tr": "Parti moduna girmek üzeresin.\n\nBir partiye katılmak istiyor musun?",
     "pl": "Za chwilę wejdziesz w tryb party.\n\nCzy chcesz dołączyć do party?",
     "nl": "Je gaat de partymodus in.\n\nWil je deelnemen aan een party?",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você está prestes a entrar no modo grupo.\n\nQuer entrar em um grupo?",
+    "id": "Kamu akan masuk ke mode grup.\n\nMau bergabung ke grup?",
+    "ja": "パーティーモードに入ろうとしています。\n\nパーティーに参加しますか？",
+    "it": "Stai per entrare in modalità gruppo.\n\nVuoi unirti a un gruppo?"
   },
   "agario.page_join_party_instructions": {
     "en": "Share the link with more friends!",
@@ -624,10 +624,10 @@
     "tr": "Bağlantıyı daha fazla arkadaşınla paylaş!",
     "pl": "Udostępnij link kolejnym znajomym!",
     "nl": "Deel de link met meer vrienden!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Compartilhe o link com mais amigos!",
+    "id": "Bagikan tautannya ke lebih banyak teman!",
+    "ja": "リンクをもっと友達に共有しよう！",
+    "it": "Condividi il link con altri amici!"
   },
   "agario.page_joined_party_instructions": {
     "en": "You have joined this party, share the link with more friends!",
@@ -642,10 +642,10 @@
     "tr": "Bu partiye katıldın, bağlantıyı daha fazla arkadaşınla paylaş!",
     "pl": "Dołączyłeś do tego party, udostępnij link kolejnym znajomym!",
     "nl": "Je doet mee aan deze party, deel de link met meer vrienden!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você entrou neste grupo, compartilhe o link com mais amigos!",
+    "id": "Kamu sudah bergabung ke grup ini, bagikan tautannya ke lebih banyak teman!",
+    "ja": "このパーティーに参加しました。リンクをもっと友達に共有しよう！",
+    "it": "Ti sei unito a questo gruppo, condividi il link con altri amici!"
   },
   "agario.page_joining_party": {
     "en": "Joining party...",
@@ -984,10 +984,10 @@
     "tr": "Facebook profil resmini göster",
     "pl": "Pokaż zdjęcie profilowe z Facebooka",
     "nl": "Facebook-profielfoto tonen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Mostrar foto de perfil do Facebook",
+    "id": "Tampilkan foto profil Facebook",
+    "ja": "Facebookのプロフィール写真を表示",
+    "it": "Mostra la foto del profilo Facebook"
   },
   "agario.page_option_dark_theme": {
     "en": "Dark theme",
@@ -1182,10 +1182,10 @@
     "tr": "Katılmaya çalıştığın parti dolu",
     "pl": "Party, do którego próbujesz dołączyć, jest pełne",
     "nl": "De party waaraan je wilt deelnemen is vol",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O grupo em que você está tentando entrar está cheio",
+    "id": "Party yang ingin kamu masuki sudah penuh",
+    "ja": "参加しようとしているパーティーは満員です",
+    "it": "Il gruppo a cui stai cercando di unirti è pieno"
   },
   "agario.page_party_join_error": {
     "en": "There was a problem joining that party, please make sure the code is correct, or try creating another party",
@@ -1200,10 +1200,10 @@
     "tr": "Partiye katılırken bir sorun oluştu, kodun doğru olduğundan emin ol veya yeni bir parti oluşturmayı dene",
     "pl": "Nie mozna dolaczyc do tego party. Upewnij sie, ze token jest prawidlowy lub stworz nowy.",
     "nl": "Er ging iets mis bij het deelnemen aan die party. Controleer of de code klopt, of maak een andere party aan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Houve um problema ao entrar nesse grupo. Verifique se o código está correto ou tente criar outro grupo",
+    "id": "Terjadi masalah saat bergabung ke grup itu. Pastikan kodenya benar, atau coba buat grup lain",
+    "ja": "パーティーに参加できませんでした。コードが正しいか確認するか、別のパーティーを作成してください",
+    "it": "Si è verificato un problema nell'unirsi a quel gruppo. Controlla che il codice sia corretto o prova a creare un altro gruppo"
   },
   "agario.page_party_leave_ffa": {
     "en": "You are in <b>%mode%</b> mode.<br><br>Do you want to continue or create a party?",
@@ -1218,10 +1218,10 @@
     "tr": "<b>%mode%</b> modundasın.<br><br>Devam etmek mi yoksa parti oluşturmak mı istiyorsun?",
     "pl": "Jesteś w trybie <b>%mode%</b>.<br><br>Chcesz kontynuować czy utworzyć party?",
     "nl": "Je zit in de modus <b>%mode%</b>.<br><br>Wil je doorgaan of een party aanmaken?",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você está no modo <b>%mode%</b>.<br><br>Quer continuar ou criar um grupo?",
+    "id": "Kamu sedang di mode <b>%mode%</b>.<br><br>Mau lanjut atau buat grup?",
+    "ja": "現在<b>%mode%</b>モードです。<br><br>このまま続けますか？それともパーティーを作成しますか？",
+    "it": "Sei in modalità <b>%mode%</b>.<br><br>Vuoi continuare o creare un gruppo?"
   },
   "agario.page_party_leave_party": {
     "en": "Are you sure you want to leave the party?",
@@ -1236,10 +1236,10 @@
     "tr": "Partiden ayrılmak istediğine emin misin?",
     "pl": "Na pewno chcesz opuścić party?",
     "nl": "Weet je zeker dat je de party wilt verlaten?",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tem certeza de que quer sair do grupo?",
+    "id": "Yakin mau keluar dari grup?",
+    "ja": "本当にパーティーから退出しますか？",
+    "it": "Sei sicuro di voler lasciare il gruppo?"
   },
   "agario.page_play": {
     "en": "Play",
@@ -1308,10 +1308,10 @@
     "tr": "Birinci",
     "pl": "Pierwsze",
     "nl": "Eerste",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Primeiro",
+    "id": "Pertama",
+    "ja": "1位",
+    "it": "Primo"
   },
   "agario.page_position_10": {
     "en": "Tenth",
@@ -1326,10 +1326,10 @@
     "tr": "Onuncu",
     "pl": "Dziesiąte",
     "nl": "Tiende",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Décimo",
+    "id": "Kesepuluh",
+    "ja": "10位",
+    "it": "Decimo"
   },
   "agario.page_position_2": {
     "en": "Second",
@@ -1344,10 +1344,10 @@
     "tr": "İkinci",
     "pl": "Drugie",
     "nl": "Tweede",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Segundo",
+    "id": "Kedua",
+    "ja": "2位",
+    "it": "Secondo"
   },
   "agario.page_position_3": {
     "en": "Third",
@@ -1362,10 +1362,10 @@
     "tr": "Üçüncü",
     "pl": "Trzecie",
     "nl": "Derde",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Terceiro",
+    "id": "Ketiga",
+    "ja": "3位",
+    "it": "Terzo"
   },
   "agario.page_position_4": {
     "en": "Fourth",
@@ -1380,10 +1380,10 @@
     "tr": "Dördüncü",
     "pl": "Czwarte",
     "nl": "Vierde",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Quarto",
+    "id": "Keempat",
+    "ja": "4位",
+    "it": "Quarto"
   },
   "agario.page_position_5": {
     "en": "Fifth",
@@ -1398,10 +1398,10 @@
     "tr": "Beşinci",
     "pl": "Piąte",
     "nl": "Vijfde",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Quinto",
+    "id": "Kelima",
+    "ja": "5位",
+    "it": "Quinto"
   },
   "agario.page_position_6": {
     "en": "Sixth",
@@ -1416,10 +1416,10 @@
     "tr": "Altıncı",
     "pl": "Szóste",
     "nl": "Zesde",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sexto",
+    "id": "Keenam",
+    "ja": "6位",
+    "it": "Sesto"
   },
   "agario.page_position_7": {
     "en": "Seventh",
@@ -1434,10 +1434,10 @@
     "tr": "Yedinci",
     "pl": "Siódme",
     "nl": "Zevende",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sétimo",
+    "id": "Ketujuh",
+    "ja": "7位",
+    "it": "Settimo"
   },
   "agario.page_position_8": {
     "en": "Eighth",
@@ -1452,10 +1452,10 @@
     "tr": "Sekizinci",
     "pl": "Ósme",
     "nl": "Achtste",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Oitavo",
+    "id": "Kedelapan",
+    "ja": "8位",
+    "it": "Ottavo"
   },
   "agario.page_position_9": {
     "en": "Ninth",
@@ -1470,10 +1470,10 @@
     "tr": "Dokuzuncu",
     "pl": "Dziewiąte",
     "nl": "Negende",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nono",
+    "id": "Kesembilan",
+    "ja": "9位",
+    "it": "Nono"
   },
   "agario.page_privacy_policy": {
     "en": "Privacy Policy",
@@ -1506,10 +1506,10 @@
     "tr": "Avustralya",
     "pl": "Australia",
     "nl": "Australië",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Austrália",
+    "id": "Australia",
+    "ja": "オーストラリア",
+    "it": "Australia"
   },
   "agario.page_region_china": {
     "en": "China",
@@ -1524,10 +1524,10 @@
     "tr": "Çin",
     "pl": "Chiny",
     "nl": "China",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "China",
+    "id": "Tiongkok",
+    "ja": "中国",
+    "it": "Cina"
   },
   "agario.page_region_east_asia": {
     "en": "East Asia",
@@ -1542,10 +1542,10 @@
     "tr": "Doğu Asya",
     "pl": "Azja Wschodnia",
     "nl": "Oost-Azië",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ásia Oriental",
+    "id": "Asia Timur",
+    "ja": "東アジア",
+    "it": "Asia orientale"
   },
   "agario.page_region_europe": {
     "en": "Europe",
@@ -1560,10 +1560,10 @@
     "tr": "Avrupa",
     "pl": "Europa",
     "nl": "Europa",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Europa",
+    "id": "Eropa",
+    "ja": "ヨーロッパ",
+    "it": "Europa"
   },
   "agario.page_region_north_america": {
     "en": "North America",
@@ -1578,10 +1578,10 @@
     "tr": "Kuzey Amerika",
     "pl": "Ameryka Północna",
     "nl": "Noord-Amerika",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "América do Norte",
+    "id": "Amerika Utara",
+    "ja": "北米",
+    "it": "Nord America"
   },
   "agario.page_region_oceania": {
     "en": "Oceania",
@@ -1596,10 +1596,10 @@
     "tr": "Okyanusya",
     "pl": "Oceania",
     "nl": "Oceanië",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Oceania",
+    "id": "Oseania",
+    "ja": "オセアニア",
+    "it": "Oceania"
   },
   "agario.page_region_players": {
     "en": "players",
@@ -1632,10 +1632,10 @@
     "tr": "Polonya",
     "pl": "Polska",
     "nl": "Polen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Polônia",
+    "id": "Polandia",
+    "ja": "ポーランド",
+    "it": "Polonia"
   },
   "agario.page_region_russia": {
     "en": "Russia",
@@ -1650,10 +1650,10 @@
     "tr": "Rusya",
     "pl": "Rosja",
     "nl": "Rusland",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Rússia",
+    "id": "Rusia",
+    "ja": "ロシア",
+    "it": "Russia"
   },
   "agario.page_region_select": {
     "en": " -- Select a Region -- ",
@@ -1668,10 +1668,10 @@
     "tr": " -- Bölge Seç -- ",
     "pl": " -- Wybierz region -- ",
     "nl": " -- Kies een regio -- ",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": " -- Selecione uma região -- ",
+    "id": " -- Pilih wilayah -- ",
+    "ja": " -- 地域を選択 -- ",
+    "it": " -- Seleziona una regione -- "
   },
   "agario.page_region_south_america": {
     "en": "South America",
@@ -1686,10 +1686,10 @@
     "tr": "Güney Amerika",
     "pl": "Ameryka Południowa",
     "nl": "Zuid-Amerika",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "América do Sul",
+    "id": "Amerika Selatan",
+    "ja": "南米",
+    "it": "Sud America"
   },
   "agario.page_region_turkey": {
     "en": "Turkey",
@@ -1704,10 +1704,10 @@
     "tr": "Türkiye",
     "pl": "Turcja",
     "nl": "Turkije",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Turquia",
+    "id": "Turki",
+    "ja": "トルコ",
+    "it": "Turchia"
   },
   "agario.page_region_us_east": {
     "en": "US East",
@@ -1722,10 +1722,10 @@
     "tr": "ABD Doğu",
     "pl": "USA Wschód",
     "nl": "VS Oost",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "EUA Leste",
+    "id": "AS Timur",
+    "ja": "米国東部",
+    "it": "USA Est"
   },
   "agario.page_region_us_west": {
     "en": "US West",
@@ -1740,10 +1740,10 @@
     "tr": "ABD Batı",
     "pl": "USA Zachód",
     "nl": "VS West",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "EUA Oeste",
+    "id": "AS Barat",
+    "ja": "米国西部",
+    "it": "USA Ovest"
   },
   "agario.page_results_party_share_link": {
     "en": "Share the link with your friends!<br>Press Play to enter party!",
@@ -1758,10 +1758,10 @@
     "tr": "Bağlantıyı arkadaşlarınla paylaş!<br>Partiye girmek için Oyna'ya bas!",
     "pl": "Udostępnij link znajomym!<br>Naciśnij Graj, aby wejść do party!",
     "nl": "Deel de link met je vrienden!<br>Druk op Spelen om de party in te gaan!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Compartilhe o link com seus amigos!<br>Clique em Jogar para entrar no grupo!",
+    "id": "Bagikan tautannya ke teman-temanmu!<br>Tekan Main untuk masuk ke grup!",
+    "ja": "リンクを友達に共有しよう！<br>「プレイ」を押してパーティーに入ろう！",
+    "it": "Condividi il link con i tuoi amici!<br>Premi Gioca per entrare nel gruppo!"
   },
   "agario.page_rush_details_message": {
     "en": "You have %i minutes.\\\\nGet as big as you can!",
@@ -1776,10 +1776,10 @@
     "tr": "%i dakikan var.\\\\nOlabildiğince büyü!",
     "pl": "Masz %i minut.\\\\nUrośnij jak najbardziej!",
     "nl": "Je hebt %i minuten.\\\\nWord zo groot als je kunt!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você tem %i minutos.\\\\nFique o maior possível!",
+    "id": "Kamu punya %i menit.\\\\nJadilah sebesar mungkin!",
+    "ja": "制限時間は%i分。\\\\nできるだけ大きくなろう！",
+    "it": "Hai %i minuti.\\\\nDiventa più grande che puoi!"
   },
   "agario.page_rush_details_placedesc_a": {
     "en": "1st Place",
@@ -1794,10 +1794,10 @@
     "tr": "1. Sıra",
     "pl": "1. miejsce",
     "nl": "1e plaats",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "1º lugar",
+    "id": "Juara 1",
+    "ja": "1位",
+    "it": "1° posto"
   },
   "agario.page_rush_details_placedesc_d": {
     "en": "Finish",
@@ -1812,10 +1812,10 @@
     "tr": "Bitiş",
     "pl": "Meta",
     "nl": "Finish",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Fim",
+    "id": "Selesai",
+    "ja": "終了",
+    "it": "Fine"
   },
   "agario.page_rush_mode_unlock_fee": {
     "en": "Fee: %rush_fee%",
@@ -1830,10 +1830,10 @@
     "tr": "Ücret: %rush_fee%",
     "pl": "Opłata: %rush_fee%",
     "nl": "Kosten: %rush_fee%",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Taxa: %rush_fee%",
+    "id": "Biaya: %rush_fee%",
+    "ja": "参加費：%rush_fee%",
+    "it": "Costo: %rush_fee%"
   },
   "agario.page_rush_unavail_footer": {
     "en": "Unlock at Level %i",
@@ -1848,10 +1848,10 @@
     "tr": "Seviye %i'de açılır",
     "pl": "Odblokuj na poziomie %i",
     "nl": "Ontgrendeld op level %i",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Desbloqueia no nível %i",
+    "id": "Terbuka di Level %i",
+    "ja": "レベル%iで解放",
+    "it": "Si sblocca al livello %i"
   },
   "agario.page_score": {
     "en": "Score",
@@ -1956,10 +1956,10 @@
     "tr": "yenen hücre",
     "pl": "zjedzone komórki",
     "nl": "gegeten cellen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "células comidas",
+    "id": "sel dimakan",
+    "ja": "食べたセル",
+    "it": "cellule mangiate"
   },
   "agario.page_stats_food_eaten": {
     "en": "food eaten",
@@ -1974,10 +1974,10 @@
     "tr": "yenen yem",
     "pl": "zjedzone jedzenie",
     "nl": "gegeten voedsel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "comida ingerida",
+    "id": "makanan dimakan",
+    "ja": "食べたエサ",
+    "it": "cibo mangiato"
   },
   "agario.page_stats_highest_mass": {
     "en": "highest mass",
@@ -2028,10 +2028,10 @@
     "tr": "hayatta kalma süresi",
     "pl": "czas przetrwania",
     "nl": "tijd in leven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "tempo vivo",
+    "id": "waktu hidup",
+    "ja": "生存時間",
+    "it": "tempo in vita"
   },
   "agario.page_stats_top_position": {
     "en": "top position",
@@ -2046,10 +2046,10 @@
     "tr": "en iyi sıra",
     "pl": "najlepsza pozycja",
     "nl": "hoogste positie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "melhor posição",
+    "id": "posisi tertinggi",
+    "ja": "最高順位",
+    "it": "posizione migliore"
   },
   "agario.page_survival_time": {
     "en": "Survival Time",
@@ -2064,10 +2064,10 @@
     "tr": "Hayatta Kalma Süresi",
     "pl": "Czas przetrwania",
     "nl": "Overlevingstijd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tempo de sobrevivência",
+    "id": "Waktu bertahan",
+    "ja": "生存時間",
+    "it": "Tempo di sopravvivenza"
   },
   "agario.page_terms_of_service": {
     "en": "Terms of Service",
@@ -2082,10 +2082,10 @@
     "tr": "Hizmet Şartları",
     "pl": "Warunki korzystania",
     "nl": "Servicevoorwaarden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Termos de Serviço",
+    "id": "Ketentuan Layanan",
+    "ja": "利用規約",
+    "it": "Termini di servizio"
   },
   "agario.page_top_position": {
     "en": "Top Position",
@@ -2100,10 +2100,10 @@
     "tr": "En İyi Sıra",
     "pl": "Najlepsza pozycja",
     "nl": "Hoogste positie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Melhor posição",
+    "id": "Posisi tertinggi",
+    "ja": "最高順位",
+    "it": "Posizione migliore"
   },
   "agario.page_total_cells_eaten": {
     "en": "Total cells eaten",
@@ -2118,10 +2118,10 @@
     "tr": "Toplam yenen hücre",
     "pl": "Łącznie zjedzonych komórek",
     "nl": "Totaal gegeten cellen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Total de células comidas",
+    "id": "Total sel dimakan",
+    "ja": "食べたセルの合計",
+    "it": "Totale cellule mangiate"
   },
   "agario.page_total_mass_eaten": {
     "en": "Total mass eaten",
@@ -2136,10 +2136,10 @@
     "tr": "Toplam yenen kütle",
     "pl": "Łącznie zjedzonej masy",
     "nl": "Totaal gegeten massa",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Total de massa comida",
+    "id": "Total massa dimakan",
+    "ja": "食べた質量の合計",
+    "it": "Totale massa mangiata"
   },
   "agario.page_tt_share_stats": {
     "en": "I survived %@m %@s and got a score of %@ in Agar.io! Can you do better? Come and play! http://r.agar.io",
@@ -2154,10 +2154,10 @@
     "tr": "Agar.io'da %@d %@sn hayatta kaldım ve %@ puan aldım! Daha iyisini yapabilir misin? Gel ve oyna! http://r.agar.io",
     "pl": "Przetrwałem %@m %@s i zdobyłem %@ punktów w Agar.io! Dasz radę lepiej? Przyjdź i zagraj! http://r.agar.io",
     "nl": "Ik overleefde %@m %@s en haalde een score van %@ in Agar.io! Kun jij het beter? Kom spelen! http://r.agar.io",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sobrevivi %@m %@s e fiz %@ pontos no Agar.io! Você consegue fazer melhor? Venha jogar! http://r.agar.io",
+    "id": "Aku bertahan %@m %@d dan mendapat skor %@ di Agar.io! Bisakah kamu lebih baik? Ayo main! http://r.agar.io",
+    "ja": "Agar.ioで%@分%@秒生き残り、スコア%@を獲得しました！ あなたはもっと上を目指せる？ 遊びに来よう！ http://r.agar.io",
+    "it": "Sono sopravvissuto %@m %@s e ho fatto %@ punti su Agar.io! Sai fare di meglio? Vieni a giocare! http://r.agar.io"
   },
   "agario.page_unnamed_cell": {
     "en": "An unnamed cell",
@@ -2172,10 +2172,10 @@
     "tr": "İsimsiz bir hücre",
     "pl": "Komórka bez nazwy",
     "nl": "Een naamloze cel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Uma célula sem nome",
+    "id": "Sel tanpa nama",
+    "ja": "名無しのセル",
+    "it": "Una cellula senza nome"
   },
   "agario.page_web_disconnect_title": {
     "en": "Disconnected",
@@ -2208,10 +2208,10 @@
     "tr": "Lütfen internet bağlantını kontrol et.",
     "pl": "Sprawdź połączenie z internetem.",
     "nl": "Controleer je internetverbinding.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Verifique sua conexão com a internet.",
+    "id": "Periksa koneksi internetmu.",
+    "ja": "インターネット接続を確認してください。",
+    "it": "Controlla la tua connessione a Internet."
   },
   "agario.menu_force_update_action_web": {
     "en": "Refresh now!",
@@ -2226,10 +2226,10 @@
     "tr": "Şimdi yenile!",
     "pl": "Odśwież teraz!",
     "nl": "Nu vernieuwen!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Atualizar agora!",
+    "id": "Muat ulang sekarang!",
+    "ja": "今すぐ更新！",
+    "it": "Aggiorna ora!"
   },
   "agario.menu_settings_sfx": {
     "en": "Menu Sounds",
@@ -2244,10 +2244,10 @@
     "tr": "Menü Sesleri",
     "pl": "Dźwięki menu",
     "nl": "Menugeluiden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sons do menu",
+    "id": "Suara menu",
+    "ja": "メニュー効果音",
+    "it": "Suoni del menu"
   },
   "agario.menu_settings_arena_sfx": {
     "en": "Game Sounds",
@@ -2262,10 +2262,10 @@
     "tr": "Oyun Sesleri",
     "pl": "Dźwięki gry",
     "nl": "Spelgeluiden",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sons do jogo",
+    "id": "Suara permainan",
+    "ja": "ゲーム効果音",
+    "it": "Suoni di gioco"
   },
   "agario.soft_update_title": {
     "en": "Time to update!",
@@ -2280,10 +2280,10 @@
     "tr": "Güncelleme zamanı!",
     "pl": "Czas na aktualizację!",
     "nl": "Tijd voor een update!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Hora de atualizar!",
+    "id": "Saatnya memperbarui!",
+    "ja": "アップデートの時間です！",
+    "it": "È ora di aggiornare!"
   },
   "agario.soft_update_title_web": {
     "en": "A new Agar.io version is available.",
@@ -2298,9 +2298,9 @@
     "tr": "Yeni bir Agar.io sürümü mevcut.",
     "pl": "Dostępna jest nowa wersja Agar.io.",
     "nl": "Er is een nieuwe versie van Agar.io beschikbaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Uma nova versão do Agar.io está disponível.",
+    "id": "Versi baru Agar.io sudah tersedia.",
+    "ja": "Agar.ioの新しいバージョンが利用可能です。",
+    "it": "È disponibile una nuova versione di Agar.io."
   }
 }

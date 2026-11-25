@@ -66,10 +66,10 @@
     "tr": "Premium",
     "pl": "Premium",
     "nl": "Premium",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Premium",
+    "id": "Premium",
+    "ja": "プレミアム",
+    "it": "Premium"
   },
   "shop.watermarks": {
     "en": "Watermarks",
@@ -84,10 +84,10 @@
     "tr": "Filigranlar",
     "pl": "Znaki wodne",
     "nl": "Watermerken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Marcas d'água",
+    "id": "Watermark",
+    "ja": "透かし",
+    "it": "Filigrane"
   },
   "shop.animatedFree": {
     "en": "Free animated",
@@ -102,10 +102,10 @@
     "tr": "Ücretsiz animasyonlu",
     "pl": "Darmowe animowane",
     "nl": "Gratis geanimeerd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Animadas grátis",
+    "id": "Animasi gratis",
+    "ja": "無料アニメーション",
+    "it": "Animate gratis"
   },
   "shop.free": {
     "en": "Free",
@@ -120,10 +120,10 @@
     "tr": "Ücretsiz",
     "pl": "Darmowe",
     "nl": "Gratis",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Grátis",
+    "id": "Gratis",
+    "ja": "無料",
+    "it": "Gratis"
   },
   "shop.inUse": {
     "en": "In use",
@@ -138,10 +138,10 @@
     "tr": "Kullanımda",
     "pl": "W użyciu",
     "nl": "In gebruik",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Em uso",
+    "id": "Dipakai",
+    "ja": "使用中",
+    "it": "In uso"
   },
   "shop.effect": {
     "en": "Special skin effect",
@@ -156,10 +156,10 @@
     "tr": "Özel görünüm efekti",
     "pl": "Specjalny efekt skórki",
     "nl": "Speciaal skin-effect",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Efeito especial de skin",
+    "id": "Efek skin spesial",
+    "ja": "スキン特殊エフェクト",
+    "it": "Effetto speciale della skin"
   },
   "shop.use": {
     "en": "Use",
@@ -174,10 +174,10 @@
     "tr": "Kullan",
     "pl": "Użyj",
     "nl": "Gebruiken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Usar",
+    "id": "Pakai",
+    "ja": "使う",
+    "it": "Usa"
   },
   "shop.stop": {
     "en": "Stop",
@@ -210,10 +210,10 @@
     "tr": "<b>[SUNUCU]:</b> Özel efekt kaldırıldı",
     "pl": "<b>[SERWER]:</b> Usunięto efekt specjalny",
     "nl": "<b>[SERVER]:</b> Speciaal effect verwijderd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<b>[SERVIDOR]:</b> Efeito especial removido",
+    "id": "<b>[SERVER]:</b> Efek spesial dihapus",
+    "ja": "<b>[サーバー]:</b> 特殊エフェクトを解除しました",
+    "it": "<b>[SERVER]:</b> Effetto speciale rimosso"
   },
   "shop.activated": {
     "en": "<b>[SERVER]:</b> Special effect {0} activated",
@@ -228,10 +228,10 @@
     "tr": "<b>[SUNUCU]:</b> Özel efekt {0} etkinleştirildi",
     "pl": "<b>[SERWER]:</b> Aktywowano efekt specjalny {0}",
     "nl": "<b>[SERVER]:</b> Speciaal effect {0} geactiveerd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<b>[SERVIDOR]:</b> Efeito especial {0} ativado",
+    "id": "<b>[SERVER]:</b> Efek spesial {0} diaktifkan",
+    "ja": "<b>[サーバー]:</b> 特殊エフェクト「{0}」を有効にしました",
+    "it": "<b>[SERVER]:</b> Effetto speciale {0} attivato"
   },
   "shop.notPremium": {
     "en": "<b>[SERVER]:</b> No Premium account found. If you donated in the past, please contact Legend Mod on Discord.<br>Thank you for using our scripts!",
@@ -246,10 +246,10 @@
     "tr": "<b>[SUNUCU]:</b> Premium hesap bulunamadı. Daha önce bağış yaptıysanız Discord üzerinden Legend Mod ile iletişime geçin.<br>Betiklerimizi kullandığınız için teşekkürler!",
     "pl": "<b>[SERWER]:</b> Nie znaleziono konta Premium. Jeśli wcześniej przekazano darowiznę, skontaktuj się z Legend Mod na Discordzie.<br>Dziękujemy za korzystanie z naszych skryptów!",
     "nl": "<b>[SERVER]:</b> Geen Premium-account gevonden. Als je eerder hebt gedoneerd, neem dan contact op met Legend Mod op Discord.<br>Bedankt voor het gebruiken van onze scripts!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<b>[SERVIDOR]:</b> Nenhuma conta Premium encontrada. Se você já doou antes, fale com a Legend Mod no Discord.<br>Obrigado por usar nossos scripts!",
+    "id": "<b>[SERVER]:</b> Akun Premium tidak ditemukan. Kalau kamu pernah donasi sebelumnya, hubungi Legend Mod di Discord.<br>Terima kasih sudah memakai script kami!",
+    "ja": "<b>[サーバー]:</b> プレミアムアカウントが見つかりません。以前に寄付したことがある場合は、DiscordでLegend Modに連絡してください。<br>私たちのスクリプトを使ってくれてありがとう！",
+    "it": "<b>[SERVER]:</b> Nessun account Premium trovato. Se hai fatto una donazione in passato, contatta Legend Mod su Discord.<br>Grazie per usare i nostri script!"
   },
   "shop.noEffect": {
     "en": "<b>[SERVER]:</b> No effect selected",
@@ -264,9 +264,9 @@
     "tr": "<b>[SUNUCU]:</b> Efekt seçilmedi",
     "pl": "<b>[SERWER]:</b> Nie wybrano efektu",
     "nl": "<b>[SERVER]:</b> Geen effect geselecteerd",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "<b>[SERVIDOR]:</b> Nenhum efeito selecionado",
+    "id": "<b>[SERVER]:</b> Belum ada efek yang dipilih",
+    "ja": "<b>[サーバー]:</b> エフェクトが選択されていません",
+    "it": "<b>[SERVER]:</b> Nessun effetto selezionato"
   }
 }

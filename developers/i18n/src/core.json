@@ -300,10 +300,10 @@
     "tr": "{0}: {1} kaldı",
     "pl": "{0}: zostało {1}",
     "nl": "{0}: nog {1}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0}: faltam {1}",
+    "id": "{0}: sisa {1}",
+    "ja": "{0}：残り{1}",
+    "it": "{0}: mancano {1}"
   },
   "lmPresetReducedMotion": {
     "en": "Reduced motion",
@@ -516,10 +516,10 @@
     "tr": "Toplam {n} kütle tüket",
     "pl": "Zjedz łącznie {n} masy",
     "nl": "Eet in totaal {n} massa",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Consuma {n} de massa no total",
+    "id": "Makan total {n} massa",
+    "ja": "合計{n}の質量を食べる",
+    "it": "Mangia {n} di massa in totale"
   },
   "bdgLife": {
     "en": "Survivor",
@@ -552,10 +552,10 @@
     "tr": "Tek canda {n} hayatta kal",
     "pl": "Przeżyj {n} w jednym życiu",
     "nl": "Overleef {n} in één leven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sobreviva {n} em uma única vida",
+    "id": "Bertahan hidup {n} dalam satu nyawa",
+    "ja": "1回のライフで{n}生き残る",
+    "it": "Sopravvivi {n} in una sola vita"
   },
   "bdgAlive": {
     "en": "Veteran",
@@ -588,10 +588,10 @@
     "tr": "Toplam {n} hayatta kal",
     "pl": "Przeżyj łącznie {n}",
     "nl": "Overleef in totaal {n}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sobreviva {n} no total",
+    "id": "Bertahan hidup total {n}",
+    "ja": "合計{n}生き残る",
+    "it": "Sopravvivi {n} in totale"
   },
   "bdgLevel": {
     "en": "Experienced",
@@ -624,10 +624,10 @@
     "tr": "{n}. seviyeye ulaş",
     "pl": "Osiągnij poziom {n}",
     "nl": "Bereik level {n}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Alcance o nível {n}",
+    "id": "Capai level {n}",
+    "ja": "レベル{n}に到達する",
+    "it": "Raggiungi il livello {n}"
   },
   "bdgTop": {
     "en": "Champion",
@@ -660,10 +660,10 @@
     "tr": "Son 50 oyunundan birinde sıralamada #1 ol",
     "pl": "Zdobądź #1 w rankingu w jednej z ostatnich 50 gier",
     "nl": "Bereik #1 op het scorebord in een van je laatste 50 potjes",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Chegue ao #1 do ranking em uma das suas últimas 50 partidas",
+    "id": "Raih #1 di papan peringkat dalam salah satu dari 50 permainan terakhirmu",
+    "ja": "直近50試合のいずれかでランキング1位になる",
+    "it": "Arriva al #1 in classifica in una delle tue ultime 50 partite"
   },
   "bdgHunt": {
     "en": "Hunter",
@@ -696,10 +696,10 @@
     "tr": "Son 50 oyunundan birinde {n} oyuncu ye",
     "pl": "Zjedz {n} graczy w jednej z ostatnich 50 gier",
     "nl": "Eet {n} spelers in een van je laatste 50 potjes",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Coma {n} jogadores em uma das suas últimas 50 partidas",
+    "id": "Makan {n} pemain dalam salah satu dari 50 permainan terakhirmu",
+    "ja": "直近50試合のいずれかでプレイヤーを{n}人食べる",
+    "it": "Mangia {n} giocatori in una delle tue ultime 50 partite"
   },
   "watchKiller": {
     "en": "Watch killer",
@@ -786,10 +786,10 @@
     "tr": "{name} Dünya sıralamasında seni geçti!",
     "pl": "{name} wyprzedził cię w rankingu światowym!",
     "nl": "{name} heeft je ingehaald in het Wereldklassement!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{name} passou você no ranking mundial!",
+    "id": "{name} menyalipmu di papan peringkat Dunia!",
+    "ja": "{name}がワールドランキングであなたを抜きました！",
+    "it": "{name} ti ha superato nella classifica mondiale!"
   },
   "leaguePassYou2": {
     "en": "{name} passed you in the Country leaderboard!",
@@ -804,10 +804,10 @@
     "tr": "{name} Ülke sıralamasında seni geçti!",
     "pl": "{name} wyprzedził cię w rankingu kraju!",
     "nl": "{name} heeft je ingehaald in het Landenklassement!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{name} passou você no ranking do país!",
+    "id": "{name} menyalipmu di papan peringkat Negara!",
+    "ja": "{name}が国別ランキングであなたを抜きました！",
+    "it": "{name} ti ha superato nella classifica nazionale!"
   },
   "leaguePassYou3": {
     "en": "{name} passed you in your League!",
@@ -822,10 +822,10 @@
     "tr": "{name} Liginde seni geçti!",
     "pl": "{name} wyprzedził cię w twojej lidze!",
     "nl": "{name} heeft je ingehaald in je Competitie!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{name} passou você na sua liga!",
+    "id": "{name} menyalipmu di Liga-mu!",
+    "ja": "{name}がリーグであなたを抜きました！",
+    "it": "{name} ti ha superato nella tua lega!"
   },
   "leaguePassYou4": {
     "en": "{name} passed you in the Friends leaderboard!",
@@ -840,10 +840,10 @@
     "tr": "{name} Arkadaş sıralamasında seni geçti!",
     "pl": "{name} wyprzedził cię w rankingu znajomych!",
     "nl": "{name} heeft je ingehaald in het Vriendenklassement!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{name} passou você no ranking de amigos!",
+    "id": "{name} menyalipmu di papan peringkat Teman!",
+    "ja": "{name}がフレンドランキングであなたを抜きました！",
+    "it": "{name} ti ha superato nella classifica degli amici!"
   },
   "leaguePassMe1": {
     "en": "You passed {name} in the World leaderboard!",
@@ -858,10 +858,10 @@
     "tr": "Dünya sıralamasında {name} oyuncusunu geçtin!",
     "pl": "Wyprzedziłeś {name} w rankingu światowym!",
     "nl": "Je hebt {name} ingehaald in het Wereldklassement!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você passou {name} no ranking mundial!",
+    "id": "Kamu menyalip {name} di papan peringkat Dunia!",
+    "ja": "ワールドランキングで{name}を抜きました！",
+    "it": "Hai superato {name} nella classifica mondiale!"
   },
   "leaguePassMe2": {
     "en": "You passed {name} in the Country leaderboard!",
@@ -876,10 +876,10 @@
     "tr": "Ülke sıralamasında {name} oyuncusunu geçtin!",
     "pl": "Wyprzedziłeś {name} w rankingu kraju!",
     "nl": "Je hebt {name} ingehaald in het Landenklassement!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você passou {name} no ranking do país!",
+    "id": "Kamu menyalip {name} di papan peringkat Negara!",
+    "ja": "国別ランキングで{name}を抜きました！",
+    "it": "Hai superato {name} nella classifica nazionale!"
   },
   "leaguePassMe3": {
     "en": "You passed {name} in your League!",
@@ -894,10 +894,10 @@
     "tr": "Liginde {name} oyuncusunu geçtin!",
     "pl": "Wyprzedziłeś {name} w twojej lidze!",
     "nl": "Je hebt {name} ingehaald in je Competitie!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você passou {name} na sua liga!",
+    "id": "Kamu menyalip {name} di Liga-mu!",
+    "ja": "リーグで{name}を抜きました！",
+    "it": "Hai superato {name} nella tua lega!"
   },
   "leaguePassMe4": {
     "en": "You passed {name} in the Friends leaderboard!",
@@ -912,10 +912,10 @@
     "tr": "Arkadaş sıralamasında {name} oyuncusunu geçtin!",
     "pl": "Wyprzedziłeś {name} w rankingu znajomych!",
     "nl": "Je hebt {name} ingehaald in het Vriendenklassement!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você passou {name} no ranking de amigos!",
+    "id": "Kamu menyalip {name} di papan peringkat Teman!",
+    "ja": "フレンドランキングで{name}を抜きました！",
+    "it": "Hai superato {name} nella classifica degli amici!"
   },
   "room": {
     "en": "Private room",
@@ -1470,10 +1470,10 @@
     "tr": "Oda adı: en fazla 24 karakter, < veya > olmadan.",
     "pl": "Nazwa pokoju: do 24 znaków, bez < i >.",
     "nl": "Kamernaam: maximaal 24 tekens, geen < of >.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nome da sala: até 24 caracteres, sem < ou >.",
+    "id": "Nama room: maksimal 24 karakter, tanpa < atau >.",
+    "ja": "ルーム名：24文字以内、< と > は使えません。",
+    "it": "Nome della stanza: massimo 24 caratteri, senza < o >."
   },
   "roomErrNotFound": {
     "en": "Room not found. Check the code (a room closes after 10 minutes without players).",
@@ -1488,10 +1488,10 @@
     "tr": "Oda bulunamadı. Kodu kontrol edin (oda 10 dakika oyuncusuz kalınca kapanır).",
     "pl": "Nie znaleziono pokoju. Sprawdź kod (pokój zamyka się po 10 min bez graczy).",
     "nl": "Kamer niet gevonden. Controleer de code (een kamer sluit na 10 minuten zonder spelers).",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sala não encontrada. Confira o código (uma sala fecha após 10 minutos sem jogadores).",
+    "id": "Room tidak ditemukan. Periksa kodenya (room ditutup setelah 10 menit tanpa pemain).",
+    "ja": "ルームが見つかりません。コードを確認してください（プレイヤーがいない状態が10分続くとルームは閉じます）。",
+    "it": "Stanza non trovata. Controlla il codice (una stanza si chiude dopo 10 minuti senza giocatori)."
   },
   "roomErrPassword": {
     "en": "Wrong password.",
@@ -1542,10 +1542,10 @@
     "tr": "Oda şu anda dolu. Birkaç saniye sonra tekrar deneyin.",
     "pl": "Pokój jest teraz pełny. Spróbuj ponownie za kilka sekund.",
     "nl": "De kamer is nu vol. Probeer het over een paar seconden opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A sala está cheia agora. Tente de novo em alguns segundos.",
+    "id": "Room sedang penuh. Coba lagi dalam beberapa detik.",
+    "ja": "ルームは現在満員です。数秒後にもう一度お試しください。",
+    "it": "La stanza è piena in questo momento. Riprova tra qualche secondo."
   },
   "roomConnected": {
     "en": "Connected to the room.",
@@ -1578,10 +1578,10 @@
     "tr": "Çok fazla istek. Biraz bekleyip tekrar deneyin.",
     "pl": "Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.",
     "nl": "Te veel verzoeken. Wacht even en probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Muitas solicitações. Espere um pouco e tente de novo.",
+    "id": "Terlalu banyak permintaan. Tunggu sebentar lalu coba lagi.",
+    "ja": "リクエストが多すぎます。しばらく待ってからもう一度お試しください。",
+    "it": "Troppe richieste. Aspetta un po' e riprova."
   },
   "roomErrOwn": {
     "en": "You already have an open room.",
@@ -1596,10 +1596,10 @@
     "tr": "Zaten açık bir odanız var.",
     "pl": "Masz już otwarty pokój.",
     "nl": "Je hebt al een open kamer.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você já tem uma sala aberta.",
+    "id": "Kamu sudah punya room yang terbuka.",
+    "ja": "すでに開いているルームがあります。",
+    "it": "Hai già una stanza aperta."
   },
   "roomErrBusy": {
     "en": "All private rooms are in use. Try again later.",
@@ -1614,10 +1614,10 @@
     "tr": "Tüm özel odalar kullanımda. Daha sonra tekrar deneyin.",
     "pl": "Wszystkie prywatne pokoje są zajęte. Spróbuj później.",
     "nl": "Alle privékamers zijn in gebruik. Probeer het later opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Todas as salas privadas estão em uso. Tente mais tarde.",
+    "id": "Semua room privat sedang dipakai. Coba lagi nanti.",
+    "ja": "プライベートルームはすべて使用中です。後でもう一度お試しください。",
+    "it": "Tutte le stanze private sono occupate. Riprova più tardi."
   },
   "roomErrNetwork": {
     "en": "Could not reach the room server. Check your connection and try again.",
@@ -1632,10 +1632,10 @@
     "tr": "Oda sunucusuna ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.",
     "pl": "Nie można połączyć się z serwerem pokoi. Sprawdź połączenie i spróbuj ponownie.",
     "nl": "De kamerserver is niet bereikbaar. Controleer je verbinding en probeer het opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível acessar o servidor de salas. Verifique sua conexão e tente de novo.",
+    "id": "Tidak bisa menghubungi server room. Periksa koneksimu lalu coba lagi.",
+    "ja": "ルームサーバーに接続できませんでした。接続を確認してもう一度お試しください。",
+    "it": "Impossibile raggiungere il server delle stanze. Controlla la connessione e riprova."
   },
   "roomErrServer": {
     "en": "The room server could not do this (error {n}). Try again later.",
@@ -1650,10 +1650,10 @@
     "tr": "Oda sunucusu bunu yapamadı (hata {n}). Daha sonra tekrar deneyin.",
     "pl": "Serwer pokoi nie mógł tego wykonać (błąd {n}). Spróbuj później.",
     "nl": "De kamerserver kon dit niet uitvoeren (fout {n}). Probeer het later opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O servidor de salas não conseguiu fazer isso (erro {n}). Tente mais tarde.",
+    "id": "Server room tidak bisa memproses ini (error {n}). Coba lagi nanti.",
+    "ja": "ルームサーバーで処理できませんでした（エラー{n}）。後でもう一度お試しください。",
+    "it": "Il server delle stanze non è riuscito a farlo (errore {n}). Riprova più tardi."
   },
   "roomProtected": {
     "en": "Password protected",
@@ -1686,10 +1686,10 @@
     "tr": "Özel odalarda mağaza kapalı; hiçbir şey kaydedilmez.",
     "pl": "Sklep jest wyłączony w prywatnych pokojach; nic nie jest zapisywane.",
     "nl": "De winkel staat uit in privékamers; er wordt niets opgeslagen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A loja fica desativada nas salas privadas; nada é salvo.",
+    "id": "Toko nonaktif di room privat; tidak ada yang disimpan.",
+    "ja": "プライベートルームではショップは使えず、何も保存されません。",
+    "it": "Il negozio è disattivato nelle stanze private; non viene salvato nulla."
   },
   "roomCloseBtn": {
     "en": "Close room",
@@ -1812,10 +1812,10 @@
     "tr": "Oda zaten kapalı.",
     "pl": "Pokój jest już zamknięty.",
     "nl": "De kamer is al gesloten.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A sala já está fechada.",
+    "id": "Room sudah ditutup.",
+    "ja": "ルームはすでに閉じています。",
+    "it": "La stanza è già chiusa."
   },
   "roomCloseDenied": {
     "en": "This room cannot be closed from this device.",
@@ -1830,10 +1830,10 @@
     "tr": "Bu oda bu cihazdan kapatılamaz.",
     "pl": "Tego pokoju nie można zamknąć z tego urządzenia.",
     "nl": "Deze kamer kan niet vanaf dit apparaat worden gesloten.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esta sala não pode ser fechada deste dispositivo.",
+    "id": "Room ini tidak bisa ditutup dari perangkat ini.",
+    "ja": "このルームはこの端末からは閉じられません。",
+    "it": "Questa stanza non può essere chiusa da questo dispositivo."
   },
   "roomYours": {
     "en": "Your room",
@@ -1920,10 +1920,10 @@
     "tr": "Sunucu yanıt vermedi. Daha sonra tekrar dene.",
     "pl": "Serwer nie odpowiedział. Spróbuj później.",
     "nl": "De server heeft niet geantwoord. Probeer het later opnieuw.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O servidor não respondeu. Tente mais tarde.",
+    "id": "Server tidak merespons. Coba lagi nanti.",
+    "ja": "サーバーから応答がありません。後でもう一度お試しください。",
+    "it": "Il server non ha risposto. Riprova più tardi."
   },
   "mhTop": {
     "en": "Best place",
@@ -1992,10 +1992,10 @@
     "tr": "Tek canda {0} oyuncu hücresi ye",
     "pl": "Zjedz {0} komórek graczy w jednym życiu",
     "nl": "Eet {0} spelercellen in één leven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Coma {0} células de jogadores em uma única vida",
+    "id": "Makan {0} sel pemain dalam satu nyawa",
+    "ja": "1回のライフでプレイヤーのセルを{0}個食べる",
+    "it": "Mangia {0} cellule di giocatori in una sola vita"
   },
   "chTimeAlive": {
     "en": "Survive {0} minutes in one life",
@@ -2010,10 +2010,10 @@
     "tr": "Tek canda {0} dakika hayatta kal",
     "pl": "Przetrwaj {0} minut w jednym życiu",
     "nl": "Overleef {0} minuten in één leven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Sobreviva {0} minutos em uma única vida",
+    "id": "Bertahan hidup {0} menit dalam satu nyawa",
+    "ja": "1回のライフで{0}分生き残る",
+    "it": "Sopravvivi {0} minuti in una sola vita"
   },
   "chTopPosition": {
     "en": "Reach the top {0} of the leaderboard",
@@ -2028,10 +2028,10 @@
     "tr": "Liderlik tablosunda ilk {0} içine gir",
     "pl": "Wejdź do top {0} rankingu",
     "nl": "Haal de top {0} van het klassement",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Chegue ao top {0} do ranking",
+    "id": "Masuk top {0} papan peringkat",
+    "ja": "ランキングで上位{0}位に入る",
+    "it": "Entra nella top {0} della classifica"
   },
   "chVirusesEaten": {
     "en": "Eat {0} viruses in one life",
@@ -2046,10 +2046,10 @@
     "tr": "Tek canda {0} virüs ye",
     "pl": "Zjedz {0} wirusów w jednym życiu",
     "nl": "Eet {0} virussen in één leven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Coma {0} vírus em uma única vida",
+    "id": "Makan {0} virus dalam satu nyawa",
+    "ja": "1回のライフでウイルスを{0}個食べる",
+    "it": "Mangia {0} virus in una sola vita"
   },
   "chClaim": {
     "en": "Claim",
@@ -2100,10 +2100,10 @@
     "tr": "+{0} altın, +{1} DNA",
     "pl": "+{0} monet, +{1} DNA",
     "nl": "+{0} munten, +{1} DNA",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "+{0} moedas, +{1} DNA",
+    "id": "+{0} koin, +{1} DNA",
+    "ja": "+{0}コイン、+{1} DNA",
+    "it": "+{0} monete, +{1} DNA"
   },
   "chNewIn": {
     "en": "New challenges in {0}",
@@ -2118,10 +2118,10 @@
     "tr": "Yeni meydan okumalara kalan: {0}",
     "pl": "Nowe wyzwania za {0}",
     "nl": "Nieuwe uitdagingen over {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Novos desafios em {0}",
+    "id": "Tantangan baru dalam {0}",
+    "ja": "新しいチャレンジまで{0}",
+    "it": "Nuove sfide tra {0}"
   },
   "chCompleted": {
     "en": "Daily challenge complete: {0}. Claim it in Challenges.",
@@ -2136,10 +2136,10 @@
     "tr": "Günlük meydan okuma tamamlandı: {0}. Ödülü Meydan Okumalar bölümünden al.",
     "pl": "Codzienne wyzwanie ukończone: {0}. Odbierz nagrodę w Wyzwaniach.",
     "nl": "Dagelijkse uitdaging voltooid: {0}. Haal de beloning op bij Uitdagingen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Desafio diário concluído: {0}. Resgate em Desafios.",
+    "id": "Tantangan harian selesai: {0}. Klaim di Tantangan.",
+    "ja": "デイリーチャレンジ達成：{0}。「チャレンジ」で受け取ってください。",
+    "it": "Sfida giornaliera completata: {0}. Riscattala in Sfide."
   },
   "chClaimedToast": {
     "en": "Challenge reward claimed: {0}",
@@ -2154,10 +2154,10 @@
     "tr": "Meydan okuma ödülü alındı: {0}",
     "pl": "Odebrano nagrodę za wyzwanie: {0}",
     "nl": "Beloning opgehaald: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Recompensa do desafio resgatada: {0}",
+    "id": "Hadiah tantangan diklaim: {0}",
+    "ja": "チャレンジ報酬を受け取りました：{0}",
+    "it": "Ricompensa della sfida riscattata: {0}"
   },
   "chClaimFailed": {
     "en": "The challenge could not be claimed.",
@@ -2172,10 +2172,10 @@
     "tr": "Meydan okuma ödülü alınamadı.",
     "pl": "Nie udało się odebrać wyzwania.",
     "nl": "De uitdaging kon niet worden opgehaald.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível resgatar o desafio.",
+    "id": "Tantangan tidak bisa diklaim.",
+    "ja": "チャレンジ報酬を受け取れませんでした。",
+    "it": "Impossibile riscattare la sfida."
   },
   "chFooter": {
     "en": "Daily challenges change at 00:00 UTC. Each one is met in a single life.",
@@ -2190,10 +2190,10 @@
     "tr": "Günlük meydan okumalar 00:00 UTC'de değişir. Her biri tek canda tamamlanır.",
     "pl": "Codzienne wyzwania zmieniają się o 00:00 UTC. Każde wykonuje się w jednym życiu.",
     "nl": "Dagelijkse uitdagingen wisselen om 00:00 UTC. Elke uitdaging haal je in één leven.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Os desafios diários mudam às 00:00 UTC. Cada um precisa ser cumprido em uma única vida.",
+    "id": "Tantangan harian berganti pukul 00:00 UTC. Setiap tantangan harus diselesaikan dalam satu nyawa.",
+    "ja": "デイリーチャレンジは00:00 UTCに切り替わります。各チャレンジは1回のライフ内で達成する必要があります。",
+    "it": "Le sfide giornaliere cambiano alle 00:00 UTC. Ognuna va completata in una sola vita."
   },
   "itemChallenge": {
     "en": "daily challenge",
@@ -2208,10 +2208,10 @@
     "tr": "günlük meydan okuma",
     "pl": "codzienne wyzwanie",
     "nl": "dagelijkse uitdaging",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "desafio diário",
+    "id": "tantangan harian",
+    "ja": "デイリーチャレンジ",
+    "it": "sfida giornaliera"
   },
   "lmPresets": {
     "en": "Presets",
@@ -2226,10 +2226,10 @@
     "tr": "Hazır ayarlar",
     "pl": "Presety",
     "nl": "Voorinstellingen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Predefinições",
+    "id": "Preset",
+    "ja": "プリセット",
+    "it": "Preset"
   },
   "lmPresetCompetitive": {
     "en": "Competitive",
@@ -2244,10 +2244,10 @@
     "tr": "Rekabetçi",
     "pl": "Rywalizacja",
     "nl": "Competitief",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Competitivo",
+    "id": "Kompetitif",
+    "ja": "競技向け",
+    "it": "Competitivo"
   },
   "lmPresetBattery": {
     "en": "Battery saver",
@@ -2262,10 +2262,10 @@
     "tr": "Pil tasarrufu",
     "pl": "Oszczędzanie baterii",
     "nl": "Batterij sparen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Economia de bateria",
+    "id": "Hemat baterai",
+    "ja": "省電力",
+    "it": "Risparmio batteria"
   },
   "lmPresetStreamer": {
     "en": "Streamer",
@@ -2280,10 +2280,10 @@
     "tr": "Yayıncı",
     "pl": "Streamer",
     "nl": "Streamer",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Streamer",
+    "id": "Streamer",
+    "ja": "配信者",
+    "it": "Streamer"
   },
   "lmPresetCleanHud": {
     "en": "Clean HUD",
@@ -2298,10 +2298,10 @@
     "tr": "Sade HUD",
     "pl": "Czysty HUD",
     "nl": "Schone HUD",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "HUD limpo",
+    "id": "HUD bersih",
+    "ja": "すっきりHUD",
+    "it": "HUD pulito"
   },
   "lmPresetUndo": {
     "en": "Undo preset",
@@ -2316,10 +2316,10 @@
     "tr": "Hazır ayarı geri al",
     "pl": "Cofnij preset",
     "nl": "Voorinstelling ongedaan maken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Desfazer predefinição",
+    "id": "Batalkan preset",
+    "ja": "プリセットを元に戻す",
+    "it": "Annulla preset"
   },
   "lmSettingsProfiles": {
     "en": "Settings profiles",
@@ -2334,10 +2334,10 @@
     "tr": "Ayar profilleri",
     "pl": "Profile ustawień",
     "nl": "Instellingsprofielen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Perfis de configurações",
+    "id": "Profil pengaturan",
+    "ja": "設定プロファイル",
+    "it": "Profili impostazioni"
   },
   "lmPresetConfirm": {
     "en": "Apply this preset? These settings change (Undo puts them back):",
@@ -2352,10 +2352,10 @@
     "tr": "Bu hazır ayar uygulansın mı? Şu ayarlar değişir (Geri al eski hâline getirir):",
     "pl": "Zastosować ten preset? Zmienią się te ustawienia (Cofnij je przywraca):",
     "nl": "Deze voorinstelling toepassen? Deze instellingen veranderen (Ongedaan maken zet ze terug):",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aplicar esta predefinição? Estas configurações vão mudar (Desfazer as restaura):",
+    "id": "Terapkan preset ini? Pengaturan berikut akan berubah (Batalkan mengembalikannya):",
+    "ja": "このプリセットを適用しますか？ 次の設定が変わります（「元に戻す」で戻せます）：",
+    "it": "Applicare questo preset? Queste impostazioni cambiano (Annulla le ripristina):"
   },
   "lmShowNewOptions": {
     "en": "Show new options",
@@ -2370,10 +2370,10 @@
     "tr": "Yeni seçenekleri göster",
     "pl": "Pokaż nowe opcje",
     "nl": "Nieuwe opties tonen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Mostrar opções novas",
+    "id": "Tampilkan opsi baru",
+    "ja": "新しいオプションを表示",
+    "it": "Mostra nuove opzioni"
   },
   "lmNewBadge": {
     "en": "NEW",
@@ -2388,10 +2388,10 @@
     "tr": "YENİ",
     "pl": "NOWE",
     "nl": "NIEUW",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "NOVO",
+    "id": "BARU",
+    "ja": "NEW",
+    "it": "NUOVO"
   },
   "eatenBy": {
     "en": "Eaten by",
@@ -2406,10 +2406,10 @@
     "tr": "Seni yiyen",
     "pl": "Zjedzony przez",
     "nl": "Opgegeten door",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Comido por",
+    "id": "Dimakan oleh",
+    "ja": "あなたを食べた相手",
+    "it": "Mangiato da"
   },
   "copyStats": {
     "en": "Copy stats",
@@ -2424,10 +2424,10 @@
     "tr": "İstatistikleri kopyala",
     "pl": "Kopiuj statystyki",
     "nl": "Statistieken kopiëren",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Copiar estatísticas",
+    "id": "Salin statistik",
+    "ja": "統計をコピー",
+    "it": "Copia statistiche"
   },
   "rewardReady": {
     "en": "A reward is ready to claim.",
@@ -2442,10 +2442,10 @@
     "tr": "Alınacak bir ödül var.",
     "pl": "Nagroda gotowa do odebrania.",
     "nl": "Er staat een beloning klaar.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Há uma recompensa pronta para resgatar.",
+    "id": "Ada hadiah yang siap diklaim.",
+    "ja": "受け取れる報酬があります。",
+    "it": "C'è una ricompensa pronta da riscattare."
   },
   "remindOn": {
     "en": "You will be reminded when a reward is ready.",
@@ -2460,10 +2460,10 @@
     "tr": "Bir ödül hazır olduğunda hatırlatılacaksın.",
     "pl": "Przypomnimy, gdy nagroda będzie gotowa.",
     "nl": "Je krijgt een herinnering als er een beloning klaarstaat.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Você será avisado quando uma recompensa estiver pronta.",
+    "id": "Kamu akan diingatkan saat hadiah sudah siap.",
+    "ja": "報酬を受け取れるようになったらお知らせします。",
+    "it": "Ti avviseremo quando una ricompensa sarà pronta."
   },
   "remindOff": {
     "en": "Reward reminder off.",
@@ -2478,10 +2478,10 @@
     "tr": "Ödül hatırlatıcısı kapalı.",
     "pl": "Przypomnienie o nagrodach wyłączone.",
     "nl": "Beloningsherinnering uit.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Lembrete de recompensas desativado.",
+    "id": "Pengingat hadiah dimatikan.",
+    "ja": "報酬リマインダーをオフにしました。",
+    "it": "Promemoria ricompense disattivato."
   },
   "sessionLine": {
     "en": "This session: {0} games · best mass {1} · {2} played",
@@ -2496,10 +2496,10 @@
     "tr": "Bu oturum: {0} oyun · en iyi kütle {1} · {2} oynandı",
     "pl": "Ta sesja: {0} gier · najlepsza masa {1} · {2} gry",
     "nl": "Deze sessie: {0} spellen · beste massa {1} · {2} gespeeld",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esta sessão: {0} partidas · maior massa {1} · {2} jogados",
+    "id": "Sesi ini: {0} permainan · massa terbaik {1} · {2} bermain",
+    "ja": "今回のセッション：{0}試合 · 最高質量 {1} · プレイ時間 {2}",
+    "it": "Questa sessione: {0} partite · massa migliore {1} · {2} di gioco"
   },
   "searchSettings": {
     "en": "Search settings...",
@@ -2514,10 +2514,10 @@
     "tr": "Ayarlarda ara...",
     "pl": "Szukaj ustawień...",
     "nl": "Instellingen zoeken...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pesquisar configurações...",
+    "id": "Cari pengaturan...",
+    "ja": "設定を検索...",
+    "it": "Cerca impostazioni..."
   },
   "itemHourly": {
     "en": "hourly bonus",
@@ -2532,10 +2532,10 @@
     "tr": "saatlik bonus",
     "pl": "bonus godzinny",
     "nl": "uurbonus",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "bônus por hora",
+    "id": "bonus per jam",
+    "ja": "毎時ボーナス",
+    "it": "bonus orario"
   },
   "itemDaily": {
     "en": "daily quest",
@@ -2550,10 +2550,10 @@
     "tr": "günlük görev",
     "pl": "codzienne zadanie",
     "nl": "dagelijkse missie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "missão diária",
+    "id": "misi harian",
+    "ja": "デイリークエスト",
+    "it": "missione giornaliera"
   },
   "itemGift": {
     "en": "gift",
@@ -2568,10 +2568,10 @@
     "tr": "hediye",
     "pl": "prezent",
     "nl": "cadeau",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "presente",
+    "id": "hadiah",
+    "ja": "ギフト",
+    "it": "regalo"
   },
   "itemIn": {
     "en": "{0} in {1}",
@@ -2586,10 +2586,10 @@
     "tr": "{0}: {1} sonra",
     "pl": "{0} za {1}",
     "nl": "{0} over {1}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} em {1}",
+    "id": "{0} dalam {1}",
+    "ja": "{0}まで{1}",
+    "it": "{0} tra {1}"
   },
   "dailyRunning": {
     "en": "daily quest still running",
@@ -2604,10 +2604,10 @@
     "tr": "günlük görev hâlâ sürüyor",
     "pl": "codzienne zadanie wciąż trwa",
     "nl": "dagelijkse missie loopt nog",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "missão diária ainda em andamento",
+    "id": "misi harian masih berjalan",
+    "ja": "デイリークエスト進行中",
+    "it": "missione giornaliera ancora in corso"
   },
   "nextDaily": {
     "en": "next daily quest",
@@ -2622,10 +2622,10 @@
     "tr": "sonraki günlük görev",
     "pl": "następne codzienne zadanie",
     "nl": "volgende dagelijkse missie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "próxima missão diária",
+    "id": "misi harian berikutnya",
+    "ja": "次のデイリークエスト",
+    "it": "prossima missione giornaliera"
   },
   "statsTitle": {
     "en": "Player Profile Stats",
@@ -2640,10 +2640,10 @@
     "tr": "Profil istatistikleri",
     "pl": "Statystyki profilu",
     "nl": "Profielstatistieken",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Estatísticas do perfil do jogador",
+    "id": "Statistik profil pemain",
+    "ja": "プレイヤープロフィール統計",
+    "it": "Statistiche del profilo giocatore"
   },
   "levelWord": {
     "en": "Level",
@@ -2694,10 +2694,10 @@
     "tr": "Ödül alındı!",
     "pl": "Nagroda odebrana!",
     "nl": "Beloning ontvangen!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Recompensa coletada!",
+    "id": "Hadiah diambil!",
+    "ja": "報酬を受け取りました！",
+    "it": "Ricompensa raccolta!"
   },
   "nextInMin": {
     "en": "Next one in {0} min.",
@@ -2712,10 +2712,10 @@
     "tr": "Sonraki {0} dk sonra.",
     "pl": "Następna za {0} min.",
     "nl": "Volgende over {0} min.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A próxima em {0} min.",
+    "id": "Berikutnya dalam {0} menit.",
+    "ja": "次は{0}分後。",
+    "it": "La prossima tra {0} min."
   },
   "boostActivated": {
     "en": "Boost activated!",
@@ -2730,10 +2730,10 @@
     "tr": "Takviye etkin!",
     "pl": "Wzmocnienie włączone!",
     "nl": "Boost geactiveerd!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Boost ativado!",
+    "id": "Boost diaktifkan!",
+    "ja": "ブースト発動！",
+    "it": "Boost attivato!"
   },
   "expiresInMin": {
     "en": "Expires in {0} min",
@@ -2748,10 +2748,10 @@
     "tr": "{0} dk sonra bitiyor",
     "pl": "Wygasa za {0} min",
     "nl": "Verloopt over {0} min",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Expira em {0} min",
+    "id": "Berakhir dalam {0} menit",
+    "ja": "残り{0}分で期限切れ",
+    "it": "Scade tra {0} min"
   },
   "questActivated": {
     "en": "Quest activated!",
@@ -2766,10 +2766,10 @@
     "tr": "Görev etkin!",
     "pl": "Zadanie włączone!",
     "nl": "Missie geactiveerd!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Missão ativada!",
+    "id": "Misi diaktifkan!",
+    "ja": "クエスト開始！",
+    "it": "Missione attivata!"
   },
   "questType": {
     "en": "Type: {0}",
@@ -2784,10 +2784,10 @@
     "tr": "Tür: {0}",
     "pl": "Typ: {0}",
     "nl": "Type: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tipo: {0}",
+    "id": "Jenis: {0}",
+    "ja": "種類：{0}",
+    "it": "Tipo: {0}"
   },
   "potionOpened": {
     "en": "Potion opened!",
@@ -2802,10 +2802,10 @@
     "tr": "İksir açıldı!",
     "pl": "Eliksir otwarty!",
     "nl": "Drankje geopend!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Poção aberta!",
+    "id": "Ramuan dibuka!",
+    "ja": "ポーションを開けました！",
+    "it": "Pozione aperta!"
   },
   "brewingStarted": {
     "en": "Brewing started!",
@@ -2820,10 +2820,10 @@
     "tr": "Demleme başladı!",
     "pl": "Warzenie rozpoczęte!",
     "nl": "Brouwen gestart!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Preparo iniciado!",
+    "id": "Mulai meracik!",
+    "ja": "調合を開始しました！",
+    "it": "Preparazione avviata!"
   },
   "activatingQuest": {
     "en": "Activating quest...",
@@ -2838,10 +2838,10 @@
     "tr": "Görev etkinleştiriliyor...",
     "pl": "Włączanie zadania...",
     "nl": "Missie activeren...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ativando missão...",
+    "id": "Mengaktifkan misi...",
+    "ja": "クエストを開始中...",
+    "it": "Attivazione missione..."
   },
   "activatingBoost": {
     "en": "Activating boost...",
@@ -2856,10 +2856,10 @@
     "tr": "Takviye etkinleştiriliyor...",
     "pl": "Włączanie wzmocnienia...",
     "nl": "Boost activeren...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Ativando boost...",
+    "id": "Mengaktifkan boost...",
+    "ja": "ブーストを発動中...",
+    "it": "Attivazione boost..."
   },
   "claimed": {
     "en": "Claimed: {0}",
@@ -2874,10 +2874,10 @@
     "tr": "Alındı: {0}",
     "pl": "Odebrano: {0}",
     "nl": "Ontvangen: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Resgatado: {0}",
+    "id": "Diklaim: {0}",
+    "ja": "受け取り済み：{0}",
+    "it": "Riscattato: {0}"
   },
   "claimWaiting": {
     "en": "Waiting: {0}",
@@ -2892,10 +2892,10 @@
     "tr": "Bekleyen: {0}",
     "pl": "Oczekuje: {0}",
     "nl": "Wachtend: {0}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aguardando: {0}",
+    "id": "Menunggu: {0}",
+    "ja": "待機中：{0}",
+    "it": "In attesa: {0}"
   },
   "nothingToClaim": {
     "en": "Nothing to claim right now",
@@ -2910,10 +2910,10 @@
     "tr": "Şu an alınacak bir şey yok",
     "pl": "Nie ma teraz nic do odebrania",
     "nl": "Er is nu niets op te halen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nada para resgatar agora",
+    "id": "Belum ada yang bisa diklaim",
+    "ja": "今は受け取れるものがありません",
+    "it": "Niente da riscattare al momento"
   },
   "levelRewardsNote": {
     "en": "Level rewards are given by the server on level-up.",
@@ -2928,10 +2928,10 @@
     "tr": "Seviye ödülleri seviye atlayınca sunucu tarafından verilir.",
     "pl": "Nagrody za poziom serwer daje po awansie.",
     "nl": "Levelbeloningen geeft de server bij een level-up.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "As recompensas de nível são dadas pelo servidor quando você sobe de nível.",
+    "id": "Hadiah level diberikan oleh server saat naik level.",
+    "ja": "レベル報酬はレベルアップ時にサーバーから付与されます。",
+    "it": "Le ricompense di livello vengono date dal server quando sali di livello."
   },
   "rewardsTimers": {
     "en": "ACCOUNT REWARDS & TIMERS",
@@ -2946,10 +2946,10 @@
     "tr": "HESAP ÖDÜLLERİ VE SÜRELER",
     "pl": "NAGRODY I LICZNIKI",
     "nl": "BELONINGEN & TIMERS",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "RECOMPENSAS E TIMERS DA CONTA",
+    "id": "HADIAH & TIMER AKUN",
+    "ja": "アカウント報酬とタイマー",
+    "it": "RICOMPENSE E TIMER DELL'ACCOUNT"
   },
   "levelNext": {
     "en": "Level {0} → {1}",
@@ -2964,10 +2964,10 @@
     "tr": "Seviye {0} → {1}",
     "pl": "Poziom {0} → {1}",
     "nl": "Level {0} → {1}",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nível {0} → {1}",
+    "id": "Level {0} → {1}",
+    "ja": "レベル {0} → {1}",
+    "it": "Livello {0} → {1}"
   },
   "noReward": {
     "en": "No configured reward",
@@ -2982,10 +2982,10 @@
     "tr": "Ayarlı ödül yok",
     "pl": "Brak ustawionej nagrody",
     "nl": "Geen beloning ingesteld",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nenhuma recompensa configurada",
+    "id": "Tidak ada hadiah yang diatur",
+    "ja": "設定された報酬はありません",
+    "it": "Nessuna ricompensa configurata"
   },
   "hourlyBonus": {
     "en": "Hourly Bonus",
@@ -3000,10 +3000,10 @@
     "tr": "Saatlik bonus",
     "pl": "Bonus godzinny",
     "nl": "Uurbonus",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Bônus por hora",
+    "id": "Bonus per jam",
+    "ja": "毎時ボーナス",
+    "it": "Bonus orario"
   },
   "timedReward": {
     "en": "Configured timed reward",
@@ -3018,10 +3018,10 @@
     "tr": "Zamanlı ödül",
     "pl": "Nagroda czasowa",
     "nl": "Tijdbeloning",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Recompensa por tempo configurada",
+    "id": "Hadiah berjangka yang diatur",
+    "ja": "設定済みの時間報酬",
+    "it": "Ricompensa a tempo configurata"
   },
   "dailyQuest": {
     "en": "Daily Quest",
@@ -3036,10 +3036,10 @@
     "tr": "Günlük görev",
     "pl": "Codzienne zadanie",
     "nl": "Dagelijkse missie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Missão diária",
+    "id": "Misi harian",
+    "ja": "デイリークエスト",
+    "it": "Missione giornaliera"
   },
   "ready": {
     "en": "READY",
@@ -3054,10 +3054,10 @@
     "tr": "HAZIR",
     "pl": "GOTOWE",
     "nl": "KLAAR",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "PRONTO",
+    "id": "SIAP",
+    "ja": "準備完了",
+    "it": "PRONTO"
   },
   "waitingServer": {
     "en": "Waiting for server",
@@ -3072,10 +3072,10 @@
     "tr": "Sunucu bekleniyor",
     "pl": "Czekam na serwer",
     "nl": "Wachten op server",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Aguardando o servidor",
+    "id": "Menunggu server",
+    "ja": "サーバー待機中",
+    "it": "In attesa del server"
   },
   "pEmpty": {
     "en": "EMPTY",
@@ -3090,10 +3090,10 @@
     "tr": "BOŞ",
     "pl": "PUSTE",
     "nl": "LEEG",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "VAZIO",
+    "id": "KOSONG",
+    "ja": "空き",
+    "it": "VUOTO"
   },
   "pBrew": {
     "en": "BREW",
@@ -3108,10 +3108,10 @@
     "tr": "DEMLE",
     "pl": "WARZ",
     "nl": "BROUWEN",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "PREPARAR",
+    "id": "RACIK",
+    "ja": "調合",
+    "it": "PREPARA"
   },
   "pWaiting": {
     "en": "WAITING",
@@ -3126,10 +3126,10 @@
     "tr": "BEKLİYOR",
     "pl": "CZEKA",
     "nl": "WACHT",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "AGUARDANDO",
+    "id": "MENUNGGU",
+    "ja": "待機中",
+    "it": "IN ATTESA"
   },
   "pOpen": {
     "en": "OPEN",
@@ -3162,10 +3162,10 @@
     "tr": "Başka bir iksir demleniyor",
     "pl": "Warzy się inny eliksir",
     "nl": "Er wordt een ander drankje gebrouwen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Outra poção está sendo preparada",
+    "id": "Ramuan lain sedang diracik",
+    "ja": "別のポーションを調合中です",
+    "it": "Un'altra pozione è in preparazione"
   },
   "skip": {
     "en": "Skip",
@@ -3180,10 +3180,10 @@
     "tr": "Atla",
     "pl": "Pomiń",
     "nl": "Overslaan",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pular",
+    "id": "Lewati",
+    "ja": "スキップ",
+    "it": "Salta"
   },
   "skipOwned": {
     "en": "Skip (owned)",
@@ -3198,10 +3198,10 @@
     "tr": "Atla (sahipsin)",
     "pl": "Pomiń (posiadasz)",
     "nl": "Overslaan (in bezit)",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Pular (já é seu)",
+    "id": "Lewati (sudah dimiliki)",
+    "ja": "スキップ（所持済み）",
+    "it": "Salta (già tuo)"
   },
   "gameOver": {
     "en": "Game Over",
@@ -3234,10 +3234,10 @@
     "tr": "Son kütle",
     "pl": "Masa końcowa",
     "nl": "Eindmassa",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Massa final",
+    "id": "Massa akhir",
+    "ja": "最終質量",
+    "it": "Massa finale"
   },
   "highestMass": {
     "en": "Highest Mass",
@@ -3270,10 +3270,10 @@
     "tr": "En iyi sıra",
     "pl": "Najlepsza pozycja",
     "nl": "Beste positie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Melhor posição",
+    "id": "Posisi tertinggi",
+    "ja": "最高順位",
+    "it": "Posizione migliore"
   },
   "finalPosition": {
     "en": "Final Position",
@@ -3288,10 +3288,10 @@
     "tr": "Son sıra",
     "pl": "Pozycja końcowa",
     "nl": "Eindpositie",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Posição final",
+    "id": "Posisi akhir",
+    "ja": "最終順位",
+    "it": "Posizione finale"
   },
   "timeAlive": {
     "en": "Time Alive",
@@ -3306,10 +3306,10 @@
     "tr": "Hayatta kalma",
     "pl": "Czas życia",
     "nl": "Tijd in leven",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tempo vivo",
+    "id": "Waktu hidup",
+    "ja": "生存時間",
+    "it": "Tempo in vita"
   },
   "timeOnLb": {
     "en": "Time on LB",
@@ -3324,10 +3324,10 @@
     "tr": "Sıralamada süre",
     "pl": "Czas w rankingu",
     "nl": "Tijd in ranglijst",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Tempo no ranking",
+    "id": "Waktu di papan peringkat",
+    "ja": "ランキング滞在時間",
+    "it": "Tempo in classifica"
   },
   "massConsumed": {
     "en": "Mass Consumed",
@@ -3342,10 +3342,10 @@
     "tr": "Yenen kütle",
     "pl": "Zjedzona masa",
     "nl": "Gegeten massa",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Massa consumida",
+    "id": "Massa dimakan",
+    "ja": "食べた質量",
+    "it": "Massa mangiata"
   },
   "foodEaten": {
     "en": "Food Eaten",
@@ -3360,10 +3360,10 @@
     "tr": "Yenen yem",
     "pl": "Zjedzone jedzenie",
     "nl": "Gegeten voedsel",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Comida ingerida",
+    "id": "Makanan dimakan",
+    "ja": "食べたエサ",
+    "it": "Cibo mangiato"
   },
   "playersEaten": {
     "en": "Players Eaten",
@@ -3378,10 +3378,10 @@
     "tr": "Yenen oyuncular",
     "pl": "Zjedzeni gracze",
     "nl": "Gegeten spelers",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Jogadores comidos",
+    "id": "Pemain dimakan",
+    "ja": "食べたプレイヤー",
+    "it": "Giocatori mangiati"
   },
   "cellsEaten": {
     "en": "Cells Eaten",
@@ -3396,10 +3396,10 @@
     "tr": "Yenen hücreler",
     "pl": "Zjedzone komórki",
     "nl": "Gegeten cellen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Células comidas",
+    "id": "Sel dimakan",
+    "ja": "食べたセル",
+    "it": "Cellule mangiate"
   },
   "virusesEaten": {
     "en": "Viruses Eaten",
@@ -3414,10 +3414,10 @@
     "tr": "Yenen virüsler",
     "pl": "Zjedzone wirusy",
     "nl": "Gegeten virussen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Vírus comidos",
+    "id": "Virus dimakan",
+    "ja": "食べたウイルス",
+    "it": "Virus mangiati"
   },
   "mapExpanding": {
     "en": "Map expanding — new territory ahead!",
@@ -3432,10 +3432,10 @@
     "tr": "Harita genişliyor — yeni bölge geliyor!",
     "pl": "Mapa się powiększa — nowy teren przed tobą!",
     "nl": "De kaart wordt groter — nieuw gebied!",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O mapa está crescendo — novo território à frente!",
+    "id": "Peta meluas — wilayah baru di depan!",
+    "ja": "マップ拡大中 — 新しいエリアが出現！",
+    "it": "La mappa si espande — nuovo territorio in arrivo!"
   },
   "mapShrinking": {
     "en": "Map shrinking in {0}s — move inward",
@@ -3450,10 +3450,10 @@
     "tr": "Harita {0} sn içinde küçülüyor — içeri ilerle",
     "pl": "Mapa zmniejszy się za {0}s — idź do środka",
     "nl": "Kaart krimpt over {0}s — ga naar binnen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "O mapa vai encolher em {0}s — vá para o centro",
+    "id": "Peta menyusut dalam {0} dtk — bergerak ke tengah",
+    "ja": "{0}秒後にマップが縮小 — 内側へ移動しよう",
+    "it": "La mappa si restringe tra {0}s — spostati verso il centro"
   },
   "dangerZone": {
     "en": "Danger zone — leave the red area",
@@ -3468,10 +3468,10 @@
     "tr": "Tehlike bölgesi — kırmızı alandan çık",
     "pl": "Strefa zagrożenia — opuść czerwony obszar",
     "nl": "Gevarenzone — verlaat het rode gebied",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Zona de perigo — saia da área vermelha",
+    "id": "Zona bahaya — keluar dari area merah",
+    "ja": "危険地帯 — 赤いエリアから出よう",
+    "it": "Zona di pericolo — esci dall'area rossa"
   },
   "noServer": {
     "en": "Could not find a server. Press Play, or change the region or mode, to try again.",
@@ -3486,10 +3486,10 @@
     "tr": "Sunucu bulunamadı. Tekrar denemek için Oyna'ya basın veya bölgeyi ya da modu değiştirin.",
     "pl": "Nie znaleziono serwera. Naciśnij Graj albo zmień region lub tryb, aby spróbować ponownie.",
     "nl": "Geen server gevonden. Druk op Spelen of kies een andere regio of modus om het opnieuw te proberen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nenhum servidor encontrado. Clique em Jogar ou mude a região ou o modo para tentar de novo.",
+    "id": "Server tidak ditemukan. Tekan Main, atau ganti wilayah atau mode, untuk mencoba lagi.",
+    "ja": "サーバーが見つかりませんでした。「プレイ」を押すか、地域やモードを変えてもう一度お試しください。",
+    "it": "Nessun server trovato. Premi Gioca o cambia regione o modalità per riprovare."
   },
   "noRegion": {
     "en": "Could not determine your region. Select a region manually.",
@@ -3504,10 +3504,10 @@
     "tr": "Bölgeniz belirlenemedi. Lütfen bölgeyi elle seçin.",
     "pl": "Nie udało się ustalić Twojego regionu. Wybierz region ręcznie.",
     "nl": "Je regio kon niet worden bepaald. Kies handmatig een regio.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Não foi possível identificar sua região. Selecione uma região manualmente.",
+    "id": "Wilayahmu tidak bisa ditentukan. Pilih wilayah secara manual.",
+    "ja": "地域を判別できませんでした。手動で地域を選択してください。",
+    "it": "Impossibile determinare la tua regione. Selezionala manualmente."
   },
   "partyRejoin": {
     "en": "Connection lost. Trying to rejoin your party...",
@@ -3522,10 +3522,10 @@
     "tr": "Bağlantı koptu. Partinize yeniden katılmaya çalışılıyor...",
     "pl": "Utracono połączenie. Próba ponownego dołączenia do drużyny...",
     "nl": "Verbinding verbroken. Bezig met opnieuw deelnemen aan je party...",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Conexão perdida. Tentando voltar para a sua party...",
+    "id": "Koneksi terputus. Mencoba masuk kembali ke party-mu...",
+    "ja": "接続が切れました。パーティーに再参加しています...",
+    "it": "Connessione persa. Tentativo di rientrare nel tuo party..."
   },
   "loginExpired": {
     "en": "Your login expired. Please log in again.",
@@ -3540,10 +3540,10 @@
     "tr": "Oturumunuzun süresi doldu. Lütfen tekrar giriş yapın.",
     "pl": "Sesja logowania wygasła. Zaloguj się ponownie.",
     "nl": "Je login is verlopen. Log opnieuw in.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Seu login expirou. Entre novamente.",
+    "id": "Login-mu kedaluwarsa. Silakan login lagi.",
+    "ja": "ログインの有効期限が切れました。もう一度ログインしてください。",
+    "it": "Il tuo accesso è scaduto. Accedi di nuovo."
   },
   "connDrops": {
     "en": "The connection keeps dropping. Press Play or change the server to try again.",
@@ -3558,10 +3558,10 @@
     "tr": "Bağlantı sürekli kopuyor. Tekrar denemek için Oyna'ya basın veya sunucuyu değiştirin.",
     "pl": "Połączenie ciągle się zrywa. Naciśnij Graj albo zmień serwer, aby spróbować ponownie.",
     "nl": "De verbinding valt steeds weg. Druk op Spelen of kies een andere server om het opnieuw te proberen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "A conexão continua caindo. Clique em Jogar ou mude de servidor para tentar de novo.",
+    "id": "Koneksi terus terputus. Tekan Main atau ganti server untuk mencoba lagi.",
+    "ja": "接続が何度も切れています。「プレイ」を押すか、サーバーを変えてもう一度お試しください。",
+    "it": "La connessione continua a cadere. Premi Gioca o cambia server per riprovare."
   },
   "partyFull": {
     "en": "This party is full.",
@@ -3576,10 +3576,10 @@
     "tr": "Bu parti dolu.",
     "pl": "Ta drużyna jest pełna.",
     "nl": "Deze party is vol.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Esta party está cheia.",
+    "id": "Party ini sudah penuh.",
+    "ja": "このパーティーは満員です。",
+    "it": "Questo party è pieno."
   },
   "partyToken": {
     "en": "Enter a valid party token.",
@@ -3594,10 +3594,10 @@
     "tr": "Geçerli bir parti kodu girin.",
     "pl": "Wpisz prawidłowy kod drużyny.",
     "nl": "Voer een geldige partycode in.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Digite um código de party válido.",
+    "id": "Masukkan kode party yang valid.",
+    "ja": "有効なパーティーコードを入力してください。",
+    "it": "Inserisci un codice party valido."
   },
   "needLogin": {
     "en": "LOGIN & PLAY NEEDED",
@@ -3612,10 +3612,10 @@
     "tr": "GİRİŞ VE OYUN GEREKLİ",
     "pl": "ZALOGUJ SIĘ I ZAGRAJ",
     "nl": "INLOGGEN & SPELEN NODIG",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "É PRECISO ENTRAR E JOGAR",
+    "id": "PERLU LOGIN & MAIN",
+    "ja": "ログインしてプレイが必要",
+    "it": "SERVE ACCEDERE E GIOCARE"
   },
   "lmRecClear": {
     "en": "Clear recordings in memory",
@@ -3630,10 +3630,10 @@
     "tr": "Bellekteki kayıtları temizle",
     "pl": "Wyczyść nagrania z pamięci",
     "nl": "Opnames in geheugen wissen",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Limpar gravações da memória",
+    "id": "Hapus rekaman di memori",
+    "ja": "メモリ内の録画を消去",
+    "it": "Cancella le registrazioni in memoria"
   },
   "lmRecClearNone": {
     "en": "No replay recordings in memory to clear.",
@@ -3648,10 +3648,10 @@
     "tr": "Bellekte temizlenecek tekrar kaydı yok.",
     "pl": "Brak nagrań powtórek w pamięci do wyczyszczenia.",
     "nl": "Geen replay-opnames in het geheugen om te wissen.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Nenhuma gravação de replay na memória para limpar.",
+    "id": "Tidak ada rekaman replay di memori untuk dihapus.",
+    "ja": "消去できるリプレイ録画はメモリにありません。",
+    "it": "Nessuna registrazione replay in memoria da cancellare."
   },
   "lmRecClearAsk": {
     "en": "Free {0} replay recording(s) kept in memory? This cannot be undone. Replays saved in the Replay Studio library and .lm files stay.",
@@ -3666,10 +3666,10 @@
     "tr": "Bellekteki {0} tekrar kaydı silinsin mi? Bu geri alınamaz. Replay Studio kütüphanesine kaydedilen tekrarlar ve .lm dosyaları kalır.",
     "pl": "Zwolnić {0} nagrań powtórek z pamięci? Tej operacji nie można cofnąć. Powtórki zapisane w bibliotece Replay Studio i pliki .lm zostaną.",
     "nl": "{0} replay-opname(s) uit het geheugen vrijgeven? Dit kan niet ongedaan worden gemaakt. Replays in de Replay Studio-bibliotheek en .lm-bestanden blijven bewaard.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "Liberar {0} gravação(ões) de replay mantida(s) na memória? Isso não pode ser desfeito. Os replays salvos na biblioteca do Replay Studio e os arquivos .lm continuam.",
+    "id": "Bebaskan {0} rekaman replay yang tersimpan di memori? Ini tidak bisa dibatalkan. Replay yang disimpan di pustaka Replay Studio dan file .lm tetap ada.",
+    "ja": "メモリに保持されている{0}件のリプレイ録画を解放しますか？ 元に戻せません。Replay Studioのライブラリに保存したリプレイと.lmファイルは残ります。",
+    "it": "Liberare {0} registrazioni replay tenute in memoria? Non si può annullare. I replay salvati nella libreria di Replay Studio e i file .lm restano."
   },
   "lmRecCleared": {
     "en": "Freed {0} replay recording(s) from memory.",
@@ -3684,10 +3684,10 @@
     "tr": "Bellekten {0} tekrar kaydı silindi.",
     "pl": "Zwolniono {0} nagrań powtórek z pamięci.",
     "nl": "{0} replay-opname(s) uit het geheugen vrijgegeven.",
-    "pt": "",
-    "id": "",
-    "ja": "",
-    "it": ""
+    "pt": "{0} gravação(ões) de replay liberada(s) da memória.",
+    "id": "{0} rekaman replay dibebaskan dari memori.",
+    "ja": "{0}件のリプレイ録画をメモリから解放しました。",
+    "it": "Liberate {0} registrazioni replay dalla memoria."
   },
   "core.langChanged": {
     "en": "Language changed. Reload the page to update the settings rows too.",
