@@ -69790,10 +69790,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     gl.deleteTexture(entry.tex);
                     entry.tex = null;
                 }
-                gl.activeTexture(gl.TEXTURE1);
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
-                gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, slot.x, slot.y, slot.page, w, h, 1, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
-                gl.activeTexture(gl.TEXTURE0);
+                this._lmTextAtlasPut(a, slot, w, h);
                 entry.slot = slot;
                 entry.atlas = a;
                 return;
@@ -69814,6 +69811,35 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             }
             gl.bindTexture(gl.TEXTURE_2D, null);
+        },
+        /*
+         * Copies the text on _textCanvas (w x h) into its atlas slot: the canvas goes into a scratch
+         * 2D texture (the upload each label texture had before the atlas, done on the GPU) and the
+         * GPU copies it into the slot. texSubImage3D straight from the canvas has no GPU path in
+         * the browser: it read the canvas back and waited for the GPU to finish the frames before,
+         * 6 to 70 ms per label on an Intel UHD (developers/tests/bench.js), against 0.2 ms here.
+         */
+        _lmTextAtlasPut(a, slot, w, h) {
+            var gl = this.gl;
+            if (!a.upTex) {
+                a.upTex = gl.createTexture();
+                a.upFb = gl.createFramebuffer();
+                gl.activeTexture(gl.TEXTURE1);
+                gl.bindTexture(gl.TEXTURE_2D, a.upTex);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+            }
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, a.upTex);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            var prev = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, a.upFb);
+            gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, a.upTex, 0);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
+            gl.copyTexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, slot.x, slot.y, slot.page, 0, 0, w, h);
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, prev);
+            gl.activeTexture(gl.TEXTURE0);
         },
         /* frees what holds a text entry's pixels (atlas slot or own texture) */
         _lmTextRelease(e) {
@@ -70102,7 +70128,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var atl = this._lmTextAtlas;
             if (!this._lmTextIdleDraining && atl) {
                 /* nothing left in it: the atlas texture goes too */
-                if (live && atl.tex && atl.gl === gl) gl.deleteTexture(atl.tex);
+                if (live && atl.gl === gl) {
+                    if (atl.tex) gl.deleteTexture(atl.tex);
+                    if (atl.upTex) gl.deleteTexture(atl.upTex);
+                    if (atl.upFb) gl.deleteFramebuffer(atl.upFb);
+                }
                 this._lmTextAtlas = null;
             }
             if (this._lmTextIdleDraining) {

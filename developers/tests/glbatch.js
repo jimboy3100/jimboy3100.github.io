@@ -347,7 +347,53 @@ function pageLib() {
         return { st: st, remove: function () { names.forEach(function (k) { delete gl[k]; }); } };
     }
     function median(a) { var s = a.slice().sort(function (x, y) { return x - y; }); return s.length ? s[(s.length - 1) >> 1] : 0; }
+    /* Label atlas uploads of the working copy: each label made through getOrCreateTextTexture must
+     * hold, in its atlas slot, exactly the texels its own texture gets from the same raster
+     * (texImage2D, the per-label path before the atlas), and no texSubImage3D may read a canvas
+     * (that read waits for the GPU: tens of ms per label on integrated GPUs). */
+    function atlasUploads(src, defaults) {
+        var o = setup(src, defaults, { scale: 0.35, jelly: true }, []), R = o.R, gl = R.gl;
+        var labels = [['Legend', '700 34px Ubuntu', '#ffffff', '#000000', 3], ['1.5k', '700 26px Ubuntu', '#ffffff', '#000000', 3], ['7', '700 12px Ubuntu', '#ffffff', '#000000', 2],
+            ['ΛΕΓΕΝΤ ★', '700 40px Ubuntu', '#ffcc00', '#202020', 4], ['P123', '400 18px Arial', 'rgba(255,255,255,0.7)', '', 0],
+            ['玩家🔥', '700 64px Ubuntu', '#33ff33', '#000', 5], ['half', '700 30px Ubuntu', 'rgba(200,100,50,0.5)', 'rgba(0,0,0,0.3)', 3]];
+        var canvasReads = 0, t3 = gl.texSubImage3D;
+        gl.texSubImage3D = function () { var s = arguments[arguments.length - 1]; if (s && s.getContext) canvasReads++; return t3.apply(gl, arguments); };
+        var res = { canvasReads: 0, inAtlas: 0, max: 0, differing: 0, labels: labels.length };
+        var fb = gl.createFramebuffer(), own = gl.createTexture();
+        function read(attach, w, h) {
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fb);
+            attach();
+            var b = new Uint8Array(w * h * 4);
+            gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, b);
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
+            return b;
+        }
+        try {
+            for (var i = 0; i < labels.length; i++) {
+                var l = labels[i], e = R.getOrCreateTextTexture(l[0], l[1], l[2], l[3], l[4]);
+                if (!e || !e.slot) continue;
+                res.inAtlas++;
+                var a = R._lmTextAtlas, sl = e.slot;
+                var got = read(function () { gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, a.tex, 0, sl.page); }, 2048, 1024);
+                R._lmRasterText(l[0], l[1], l[2], l[3], l[4]);
+                gl.bindTexture(gl.TEXTURE_2D, own);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, R._textCanvas);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                var want = read(function () { gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, own, 0); }, e.w, e.h);
+                for (var y = 0; y < e.h; y++) for (var x = 0; x < e.w * 4; x++) {
+                    var d = Math.abs(got[((sl.y + y) * 2048 + sl.x) * 4 + x] - want[y * e.w * 4 + x]);
+                    if (d) { res.differing++; if (d > res.max) res.max = d; }
+                }
+            }
+        } finally { gl.texSubImage3D = t3; }
+        res.canvasReads = canvasReads;
+        res.glError = gl.getError();
+        gl.deleteFramebuffer(fb); gl.deleteTexture(own);
+        gl.getExtension('WEBGL_lose_context').loseContext();
+        return res;
+    }
     return {
+        atlasUploads: atlasUploads,
         compare: async function (oldSrc, newSrc, defaults, cfg, scene) {
             var a = setup(oldSrc, defaults, cfg, scene), b = setup(newSrc, defaults, cfg, scene);
             /* two frames: textures are made in the first, the second is the steady state */
@@ -496,6 +542,10 @@ async function main() {
         }
         /* the labels are really drawn: labels on and off give different pictures */
         check('labels are drawn (labels on and off differ)', stats[0].hashNew !== stats[2].hashNew && stats[1].hashNew !== stats[3].hashNew);
+        const au = await evaluate('__glb.atlasUploads(__glbNew, __glbDefaults)');
+        console.log('     label atlas: ' + au.inAtlas + '/' + au.labels + ' labels in the atlas, texels differing from their own texture ' + au.differing + ' (max ' + au.max + '), canvas reads by texSubImage3D ' + au.canvasReads);
+        check('label atlas: every label in the atlas, the same texels as its own texture, no GL error', au.inAtlas === au.labels && au.differing === 0 && au.glError === 0);
+        check('label atlas: no texSubImage3D from a canvas (a GPU wait per label)', au.canvasReads === 0);
         if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); failed++; }
         if (opt('--out', null)) fs.writeFileSync(path.join(opt('--out'), 'glbatch-diff.json'), JSON.stringify(stats, null, 2));
 

@@ -265,7 +265,7 @@ const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').repl
         createTexture() { return { id: 't' + (++texN) }; }, deleteTexture(t) { log.push('del ' + (t && t.id)); },
         texStorage3D(t, l, f, w, h, d) { log.push('storage ' + d); }, texParameteri() { }, texSubImage3D(t, l, x, y, z) { log.push('sub3d ' + z); },
         texImage2D() { log.push('img'); }, texSubImage2D() { log.push('sub'); },
-        createFramebuffer() { return {}; }, bindFramebuffer() { }, deleteFramebuffer() { }, framebufferTextureLayer() { },
+        createFramebuffer() { return {}; }, bindFramebuffer() { }, deleteFramebuffer() { }, framebufferTextureLayer() { }, framebufferTexture2D() { },
         copyTexSubImage3D(t, l, x, y, z) { log.push('copy ' + z); },
         vertexAttribDivisor() { }, uniform1f() { }, uniform1i() { },
         drawArraysInstanced(m, f, c, n) { log.push('inst ' + n); }, drawArrays() { log.push('one'); }
@@ -284,12 +284,13 @@ const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').repl
     const Fn = 'bold 100px Ubuntu';
     T._lmTextFrameBegin();
     const e1 = T.getOrCreateTextTexture('nick', Fn, '#fff', '#000', 10);
-    check('nick texture goes into the atlas (no texture of its own), bytes counted as before', !!e1.slot && !e1.tex && T._lmTextBytes === e1.w * e1.h * 4 && log.join() === 'storage 1,sub3d 0');
+    /* into the atlas through a 2D upload and a GPU copy: texSubImage3D from the canvas waited for the GPU */
+    check('nick texture goes into the atlas (no texture of its own, 2D upload + GPU copy), bytes counted as before', !!e1.slot && !e1.tex && T._lmTextBytes === e1.w * e1.h * 4 && log.join() === 'storage 1,img,copy 0');
     const cell = {};
     const m1 = T._lmMassTexture(cell, '1234', Fn, '#fff', '#000', 10), slot1 = m1.slot;
     log.length = 0;
     T._lmMassTexture(cell, '1235', Fn, '#fff', '#000', 10);
-    check('mass value of the same width: drawn again in its own slot', m1.slot === slot1 && log.join() === 'sub3d 0');
+    check('mass value of the same width: drawn again in its own slot', m1.slot === slot1 && log.join() === 'img,copy 0');
     T._lmMassTexture(cell, '123456789', Fn, '#fff', '#000', 10);
     check('mass value wider than its slot: a new slot, the old one freed', m1.slot !== slot1 && slot1.freed === true);
     /* no room left: the atlas cannot get more pages */
