@@ -64,17 +64,22 @@
         ]
     }
     </script>
-	</head>
+	    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-nicknamechars" charset="utf-8"></script>
+</head>
     <body>
+<!-- the page language (Legend Mod's language packs) -->
+<div class="lm-lang-bar" style="text-align:right;padding:6px 12px;font-size:14px;line-height:1.4"><span data-lm-lang-picker></span></div>
+
 <div class="modal fade in" id="myModal" style="display: block; padding-right: 17px;" align="middle">
     <div class="modal-dialog">
         <div class="modal-content">
-			<button onclick="generateWordComboName()">Generate Word Combo Name</button>
-			<button onclick="generateNameWithUrbanWord()">Generate Name with Urban Word</button>		
+			<button data-i18n="site.nicknamechars.generateWordComboName" onclick="generateWordComboName()">Generate Word Combo Name</button>
+			<button data-i18n="site.nicknamechars.generateNameWithUrban" onclick="generateNameWithUrbanWord()">Generate Name with Urban Word</button>		
             <div class="modal-header">
-                <h4 class="modal-title">Generate Nick</h4>
+                <h4 data-i18n="site.nicknamechars.generateNick" class="modal-title">Generate Nick</h4>
             </div>
-            <div class="modal-body"><input type="text" class="form-control" id="nick_generator" placeholder="Start typing your Nick..." style="text-align: center;">
+            <div class="modal-body"><input data-i18n-placeholder="site.nicknamechars.startTypingYourNick" type="text" class="form-control" id="nick_generator" placeholder="Start typing your Nick..." style="text-align: center;">
                 <div class="form-group" style="margin-top:10px;font-size:18px;color:#859096;line-height:1.228571">
                     <div id="nick_generator_result"></div>
                 </div>
@@ -1792,7 +1797,7 @@ async function generateWordComboName() {
 	generateNameWithUrbanWord();
 	}	
   } else {
-    document.getElementById("gamerName").innerHTML = "Failed to generate name";
+    document.getElementById("gamerName").textContent = (window.lmT && lmT("site.nicknamechars.failedToGenerate") !== "site.nicknamechars.failedToGenerate") ? lmT("site.nicknamechars.failedToGenerate") : "Failed to generate name"; /* i18n-ok: English when the language files did not load */
   }
 }
 
@@ -1811,7 +1816,7 @@ async function generateNameWithUrbanWord() {
 	generateNameWithUrbanWord();
 	}
   } else {
-    document.getElementById("gamerName").innerHTML = "Failed to generate name";
+    document.getElementById("gamerName").textContent = (window.lmT && lmT("site.nicknamechars.failedToGenerate") !== "site.nicknamechars.failedToGenerate") ? lmT("site.nicknamechars.failedToGenerate") : "Failed to generate name"; /* i18n-ok: English when the language files did not load */
   }
 }
 

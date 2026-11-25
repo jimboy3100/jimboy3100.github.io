@@ -259,24 +259,26 @@
             window.parent.postMessage("resize", "*");
         }
     </script>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-legendffa" charset="utf-8"></script>
 </head>
 
 <body translate="no">
 
     <nav class="site-nav">
-        <a href="https://help.expanding.land/guide.html" target="_top">Guide</a>
-        <a href="https://help.expanding.land/changelog.html" target="_top">Changelog</a>
-        <a href="https://help.expanding.land/best-io-games.html" target="_top">Best IO Games</a>
-        <a href="https://help.expanding.land/glossary.html" target="_top">Glossary</a>
-        <a href="https://help.expanding.land/no-bots.html" target="_top">Players and bots</a>
-        <a href="https://help.expanding.land/alternative.html" target="_top">Alternative</a>
+        <a data-i18n="site.legendffa.guide" href="https://help.expanding.land/guide.html" target="_top">Guide</a>
+        <a data-i18n="site.changelog" href="https://help.expanding.land/changelog.html" target="_top">Changelog</a>
+        <a data-i18n="site.legendffa.bestIoGames" href="https://help.expanding.land/best-io-games.html" target="_top">Best IO Games</a>
+        <a data-i18n="site.legendffa.glossary" href="https://help.expanding.land/glossary.html" target="_top">Glossary</a>
+        <a data-i18n="site.legendffa.playersAndBots" href="https://help.expanding.land/no-bots.html" target="_top">Players and bots</a>
+        <a data-i18n="site.legendffa.alternative" href="https://help.expanding.land/alternative.html" target="_top">Alternative</a>
     </nav>
 
     <div class="panel">
 
-        <div class="brand">THE LEGEND MOD PROJECT</div>
-        <div class="headline">EXPANDING LAND FFA SERVER</div>
-        <div class="sub">Dynamic multiplayer arena &bull; C-based server</div>
+        <div data-i18n="site.legendffa.theLegendModProject" class="brand">THE LEGEND MOD PROJECT</div>
+        <div data-i18n="site.legendffa.expandingLandFfaServer" class="headline">EXPANDING LAND FFA SERVER</div>
+        <div data-i18n="site.legendffa.dynamicMultiplayerArenaC" class="sub">Dynamic multiplayer arena &bull; C-based server</div>
 
         <div style="margin: 24px auto 14px; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); max-width: 800px; width: 100%; aspect-ratio: 16/9;">
             <iframe width="100%" height="100%" src="https://www.youtube.com/embed/fWlrAHVtZHc?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="display:block;"></iframe>
@@ -285,37 +287,37 @@
         <div class="row">
 
             <div class="card">
-                <h3><span class="emoji">&#9889;</span> What is this?</h3>
-                <p>
+                <h3 data-i18n-html="site.legendffa.whatIsThis"><span class="emoji">&#9889;</span> What is this?</h3>
+                <p data-i18n-html="site.legendffa.aHighPerformanceFfa">
                     A <span class="accent">high-performance FFA server</span> built entirely in C from the
                     ground up.
                     Zero GC pauses, pre-allocated memory pools, split quadtree optimization &mdash;
                     designed for <span class="strong">authentic Agar.io mechanics</span> with blazing speed.
                 </p>
                 <div class="divider"></div>
-                <p>
+                <p data-i18n-html="site.legendffa.thisIsTheOnly">
                     This is <span class="accent">the only IO game server in the world</span> capable of handling
                     <span class="strong">1024 concurrent players per arena</span> &mdash; with the architecture
                     to scale even further in the future.
                 </p>
-                <p>
+                <p data-i18n-html="site.legendffa.serverLocationNurembergGermany">
                     <span class="accent">&#128205; Server location:</span> Nuremberg, Germany (Hetzner) &mdash; optimal latency
                     for EU players.
                 </p>
             </div>
 
             <div class="card">
-                <h3><span class="emoji">&#127918;</span> Features</h3>
+                <h3 data-i18n-html="site.legendffa.features"><span class="emoji">&#127918;</span> Features</h3>
                 <ul>
-                    <li><span class="strong">Full Agar.io protocol</span> &mdash; leaderboard, ghost cells, skins,
+                    <li data-i18n-html="site.legendffa.fullAgarIoProtocol"><span class="strong">Full Agar.io protocol</span> &mdash; leaderboard, ghost cells, skins,
                         names, chat, spectate</li>
-                    <li><span class="strong">Real anti-teaming</span> &mdash; authentic Agar.io decay mechanics (see
+                    <li data-i18n-html="site.legendffa.realAntiTeamingAuthentic"><span class="strong">Real anti-teaming</span> &mdash; authentic Agar.io decay mechanics (see
                         below)</li>
-                    <li><span class="strong">Anti-cheat scramble</span> &mdash; coordinate scrambling per player</li>
-                    <li><span class="strong">Session stats</span> &mdash; time alive, highest mass, food/players eaten
+                    <li data-i18n-html="site.legendffa.antiCheatScrambleCoordinate"><span class="strong">Anti-cheat scramble</span> &mdash; coordinate scrambling per player</li>
+                    <li data-i18n-html="site.legendffa.sessionStatsTimeAlive"><span class="strong">Session stats</span> &mdash; time alive, highest mass, food/players eaten
                         on death</li>
-                    <li><span class="strong">WSS/TLS encrypted</span> &mdash; secure WebSocket connections</li>
-                    <li><span class="strong">1024 player capacity</span> &mdash; the largest IO game arena in the world,
+                    <li data-i18n-html="site.legendffa.wssTlsEncryptedSecure"><span class="strong">WSS/TLS encrypted</span> &mdash; secure WebSocket connections</li>
+                    <li data-i18n-html="site.legendffa.playerCapacityTheLargest"><span class="strong">1024 player capacity</span> &mdash; the largest IO game arena in the world,
                         ~5 ms tick time vs ~40 ms on Node.js servers</li>
                 </ul>
             </div>
@@ -324,8 +326,8 @@
 
         <div class="row">
             <div class="card" style="width:min(940px, 100%);">
-                <h3><span class="emoji">&#128737;&#65039;</span> Anti-Teaming System &mdash; Exponential Decay</h3>
-                <p>
+                <h3 data-i18n-html="site.legendffa.antiTeamingSystemExponential"><span class="emoji">&#128737;&#65039;</span> Anti-Teaming System &mdash; Exponential Decay</h3>
+                <p data-i18n-html="site.legendffa.thisServerUsesAn">
                     This server uses an <span class="accent">exponential multiplier-based anti-teaming system</span>
                     (ported from the Delta Server architecture).
                     Each player has a single <span class="strong">extra decay multiplier</span> &mdash; teaming actions increase it,
@@ -333,147 +335,147 @@
                 </p>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">How It Works</span></p>
-                <p>
+                <p style="margin-bottom:6px;"><span data-i18n="site.legendffa.howItWorks" class="strong" style="font-size:1.2em;">How It Works</span></p>
+                <p data-i18n="site.legendffa.everyDecayCycleEvery">
                     Every decay cycle (every 4 seconds), your effective decay is calculated as:
                 </p>
                 <p style="text-align:center; font-size:1.2em; margin:10px 0;">
-                    <span class="accent">effective decay = base decay &times; pow(1.086, multiplier)</span>
+                    <span data-i18n="site.legendffa.effectiveDecayBaseDecay" class="accent">effective decay = base decay &times; pow(1.086, multiplier)</span>
                 </p>
-                <p>
+                <p data-i18n-html="site.legendffa.whenYourMultiplierIs">
                     When your multiplier is <span class="accent">0</span>, your decay is exactly the base rate (<span class="accent">&minus;0.8%/4s</span>).
                     As the multiplier grows, decay increases <span class="strong">exponentially</span> &mdash; light play barely notices,
                     but heavy teamers get punished fast.
                 </p>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Multiplier Bumps</span></p>
-                <p>These actions increase your multiplier:</p>
+                <p style="margin-bottom:6px;"><span data-i18n="site.legendffa.multiplierBumps" class="strong" style="font-size:1.2em;">Multiplier Bumps</span></p>
+                <p data-i18n="site.legendffa.theseActionsIncreaseYour">These actions increase your multiplier:</p>
                 <ul>
-                    <li><span class="strong">&#9673;&#10138;&#9673; Split</span> &mdash; <span class="accent">+0.5</span> per split action</li>
-                    <li><span class="strong">&#11044; W (eject mass)</span> &mdash; <span class="accent">+0.1</span> per W press (flat, not per cell)</li>
-                    <li><span class="strong">&#9763; Virus (pop)</span> &mdash; <span class="accent">+0.5</span> per virus consumed</li>
-                    <li><span class="strong">&#9888; Danger Zone</span> &mdash; <span class="accent">+0.01</span> per decay cycle while in the outer ring during map contraction</li>
+                    <li data-i18n-html="site.legendffa.split05Per"><span class="strong">&#9673;&#10138;&#9673; Split</span> &mdash; <span class="accent">+0.5</span> per split action</li>
+                    <li data-i18n-html="site.legendffa.wEjectMass0"><span class="strong">&#11044; W (eject mass)</span> &mdash; <span class="accent">+0.1</span> per W press (flat, not per cell)</li>
+                    <li data-i18n-html="site.legendffa.virusPop05"><span class="strong">&#9763; Virus (pop)</span> &mdash; <span class="accent">+0.5</span> per virus consumed</li>
+                    <li data-i18n-html="site.legendffa.dangerZone001"><span class="strong">&#9888; Danger Zone</span> &mdash; <span class="accent">+0.01</span> per decay cycle while in the outer ring during map contraction</li>
                 </ul>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Natural Recovery</span></p>
-                <p>
+                <p style="margin-bottom:6px;"><span data-i18n="site.legendffa.naturalRecovery" class="strong" style="font-size:1.2em;">Natural Recovery</span></p>
+                <p data-i18n-html="site.legendffa.everyDecayCycleThe">
                     Every decay cycle, the multiplier decreases by <span class="accent">0.005</span> (the <span class="strong">compensation</span> constant).
                     This means your multiplier naturally cools down during normal play. If you stop teaming, your decay
                     returns to normal &mdash; no waiting for event timers to expire.
                 </p>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Decay Examples</span></p>
+                <p style="margin-bottom:6px;"><span data-i18n="site.legendffa.decayExamples" class="strong" style="font-size:1.2em;">Decay Examples</span></p>
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; margin:10px 0; font-size:1.05em;">
                         <tr style="border-bottom:1px solid rgba(255,255,255,.2);">
-                            <th style="text-align:left; padding:6px 10px; color:#01d9cc;">Multiplier</th>
-                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Decay Rate</th>
-                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">What It Means</th>
+                            <th data-i18n="site.legendffa.multiplier" style="text-align:left; padding:6px 10px; color:#01d9cc;">Multiplier</th>
+                            <th data-i18n="site.legendffa.decayRate" style="text-align:center; padding:6px 10px; color:#01d9cc;">Decay Rate</th>
+                            <th data-i18n="site.legendffa.whatItMeans" style="text-align:center; padding:6px 10px; color:#01d9cc;">What It Means</th>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
-                            <td style="padding:6px 10px;">0 (clean)</td>
-                            <td style="text-align:center; padding:6px 10px;">1.00&times; base (0.8%/4s)</td>
-                            <td style="text-align:center; padding:6px 10px;">Normal play</td>
+                            <td data-i18n="site.legendffa.clean" style="padding:6px 10px;">0 (clean)</td>
+                            <td data-i18n="site.legendffa.timesBase08" style="text-align:center; padding:6px 10px;">1.00&times; base (0.8%/4s)</td>
+                            <td data-i18n="site.legendffa.normalPlay" style="text-align:center; padding:6px 10px;">Normal play</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">1</td>
-                            <td style="text-align:center; padding:6px 10px;">1.09&times; base</td>
-                            <td style="text-align:center; padding:6px 10px;">Barely noticeable</td>
+                            <td data-i18n="site.legendffa.timesBase" style="text-align:center; padding:6px 10px;">1.09&times; base</td>
+                            <td data-i18n="site.legendffa.barelyNoticeable" style="text-align:center; padding:6px 10px;">Barely noticeable</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">5</td>
-                            <td style="text-align:center; padding:6px 10px;">1.51&times; base</td>
-                            <td style="text-align:center; padding:6px 10px;">Moderate teaming</td>
+                            <td data-i18n="site.legendffa.timesBase2" style="text-align:center; padding:6px 10px;">1.51&times; base</td>
+                            <td data-i18n="site.legendffa.moderateTeaming" style="text-align:center; padding:6px 10px;">Moderate teaming</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">10</td>
-                            <td style="text-align:center; padding:6px 10px;">2.28&times; base</td>
-                            <td style="text-align:center; padding:6px 10px;">Heavy teaming</td>
+                            <td data-i18n="site.legendffa.timesBase3" style="text-align:center; padding:6px 10px;">2.28&times; base</td>
+                            <td data-i18n="site.legendffa.heavyTeaming" style="text-align:center; padding:6px 10px;">Heavy teaming</td>
                         </tr>
                         <tr>
                             <td style="padding:6px 10px;">20</td>
-                            <td style="text-align:center; padding:6px 10px;">5.19&times; base</td>
-                            <td style="text-align:center; padding:6px 10px;">Extreme &mdash; mass melts</td>
+                            <td data-i18n="site.legendffa.timesBase4" style="text-align:center; padding:6px 10px;">5.19&times; base</td>
+                            <td data-i18n="site.legendffa.extremeMassMelts" style="text-align:center; padding:6px 10px;">Extreme &mdash; mass melts</td>
                         </tr>
                     </table>
                 </div>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">&#8734; Constant Decay</span></p>
-                <p>
+                <p style="margin-bottom:6px;"><span data-i18n="site.legendffa.constantDecay" class="strong" style="font-size:1.2em;">&#8734; Constant Decay</span></p>
+                <p data-i18n-html="site.legendffa.theBaseDecayIs">
                     The base decay is always active: <span class="accent">&minus;0.8%/4s</span> (vanilla Agar.io rate, verified from 97,806 real packets).
                     A 10,000 mass cell loses ~80, a 100 mass cell loses ~0.8.
                     This rate is the same regardless of how many players are in the arena.
                 </p>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">Live Stats HUD</span></p>
-                <p>
+                <p style="margin-bottom:6px;"><span data-i18n="site.legendffa.liveStatsHud" class="strong" style="font-size:1.2em;">Live Stats HUD</span></p>
+                <p data-i18n="site.legendffa.whenConnectedToExpanding">
                     When connected to Expanding Land FFA, the stats bar shows your current multiplier and effective decay rate.
                     Multiplier = 0 means you're clean. The higher the number, the more extra decay you're taking.
                 </p>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">&#128202; Enable / Disable the Display</span></p>
-                <p>
+                <p style="margin-bottom:6px;"><span data-i18n="site.legendffa.enableDisableTheDisplay" class="strong" style="font-size:1.2em;">&#128202; Enable / Disable the Display</span></p>
+                <p data-i18n-html="site.legendffa.theDecayStatsAre">
                     The decay stats are <span class="accent">enabled by default</span> in Legend Mod.
                     To toggle them:
                 </p>
                 <ol>
-                    <li>Open <span class="strong">Settings</span> (gear icon)</li>
-                    <li>Find the <span class="strong">Stats</span> section</li>
-                    <li>Toggle <span class="accent">"Decay Info (Expanding Land)"</span> on or off</li>
+                    <li data-i18n-html="site.legendffa.openSettingsGearIcon">Open <span class="strong">Settings</span> (gear icon)</li>
+                    <li data-i18n-html="site.legendffa.findTheStatsSection">Find the <span class="strong">Stats</span> section</li>
+                    <li data-i18n-html="site.legendffa.toggleDecayInfoExpanding">Toggle <span class="accent">"Decay Info (Expanding Land)"</span> on or off</li>
                 </ol>
-                <p class="tiny">This setting only affects Expanding Land FFA. It has no effect on other servers.</p>
+                <p data-i18n="site.legendffa.thisSettingOnlyAffects" class="tiny">This setting only affects Expanding Land FFA. It has no effect on other servers.</p>
 
                 <div class="divider"></div>
-                <p style="margin-bottom:6px;"><span class="strong" style="font-size:1.2em;">&#9881;&#65039; Current Tuning Values</span></p>
-                <p>These are the values we currently use. <span class="warn">We need your feedback to get them right!</span></p>
-                <p style="margin:6px 0 0;"><span class="accent">Tick rate: 25 ticks/sec</span> &mdash; <span class="warn">non-negotiable</span>, verified from real Agar.io.</p>
+                <p style="margin-bottom:6px;"><span data-i18n="site.legendffa.currentTuningValues" class="strong" style="font-size:1.2em;">&#9881;&#65039; Current Tuning Values</span></p>
+                <p data-i18n-html="site.legendffa.theseAreTheValues">These are the values we currently use. <span class="warn">We need your feedback to get them right!</span></p>
+                <p data-i18n-html="site.legendffa.tickRate25Ticks" style="margin:6px 0 0;"><span class="accent">Tick rate: 25 ticks/sec</span> &mdash; <span class="warn">non-negotiable</span>, verified from real Agar.io.</p>
                 <div style="overflow-x:auto;">
                     <table style="width:100%; border-collapse:collapse; margin:10px 0; font-size:1.05em;">
                         <tr style="border-bottom:1px solid rgba(255,255,255,.2);">
-                            <th style="text-align:left; padding:6px 10px; color:#01d9cc;">Setting</th>
-                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Value</th>
-                            <th style="text-align:center; padding:6px 10px; color:#01d9cc;">Description</th>
+                            <th data-i18n="site.legendffa.setting" style="text-align:left; padding:6px 10px; color:#01d9cc;">Setting</th>
+                            <th data-i18n="site.legendffa.value" style="text-align:center; padding:6px 10px; color:#01d9cc;">Value</th>
+                            <th data-i18n="site.legendffa.description" style="text-align:center; padding:6px 10px; color:#01d9cc;">Description</th>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">at_extra_decay_base</td>
                             <td style="text-align:center; padding:6px 10px;">1.086</td>
-                            <td style="text-align:center; padding:6px 10px;">Exponential curve steepness</td>
+                            <td data-i18n="site.legendffa.exponentialCurveSteepness" style="text-align:center; padding:6px 10px;">Exponential curve steepness</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">at_compensation</td>
                             <td style="text-align:center; padding:6px 10px;">0.005</td>
-                            <td style="text-align:center; padding:6px 10px;">Multiplier recovery per decay cycle</td>
+                            <td data-i18n="site.legendffa.multiplierRecoveryPerDecay" style="text-align:center; padding:6px 10px;">Multiplier recovery per decay cycle</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">at_split_loss</td>
                             <td style="text-align:center; padding:6px 10px;">0.5</td>
-                            <td style="text-align:center; padding:6px 10px;">Multiplier bump per split</td>
+                            <td data-i18n="site.legendffa.multiplierBumpPerSplit" style="text-align:center; padding:6px 10px;">Multiplier bump per split</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">at_eject_loss</td>
                             <td style="text-align:center; padding:6px 10px;">0.1</td>
-                            <td style="text-align:center; padding:6px 10px;">Multiplier bump per W press</td>
+                            <td data-i18n="site.legendffa.multiplierBumpPerW" style="text-align:center; padding:6px 10px;">Multiplier bump per W press</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">at_virus_pop_loss</td>
                             <td style="text-align:center; padding:6px 10px;">0.5</td>
-                            <td style="text-align:center; padding:6px 10px;">Multiplier bump per virus pop</td>
+                            <td data-i18n="site.legendffa.multiplierBumpPerVirus" style="text-align:center; padding:6px 10px;">Multiplier bump per virus pop</td>
                         </tr>
                         <tr style="border-bottom:1px solid rgba(255,255,255,.08);">
                             <td style="padding:6px 10px;">at_danger_loss</td>
                             <td style="text-align:center; padding:6px 10px;">0.01</td>
-                            <td style="text-align:center; padding:6px 10px;">Multiplier bump per danger zone cycle</td>
+                            <td data-i18n="site.legendffa.multiplierBumpPerDanger" style="text-align:center; padding:6px 10px;">Multiplier bump per danger zone cycle</td>
                         </tr>
                         <tr>
                             <td style="padding:6px 10px;">player_decay_rate</td>
                             <td style="text-align:center; padding:6px 10px;">0.002 (0.8%/4s)</td>
-                            <td style="text-align:center; padding:6px 10px;">Base decay rate</td>
+                            <td data-i18n="site.legendffa.baseDecayRate" style="text-align:center; padding:6px 10px;">Base decay rate</td>
                         </tr>
                     </table>
                 </div>
@@ -483,23 +485,23 @@
                 <div style="background:rgba(1,217,204,.12); border:2px solid rgba(1,217,204,.35); border-radius:10px; padding:16px 18px; margin:10px 0; text-align:center;">
                     <p style="font-size:1.3em; margin:0 0 8px;">
                         <span class="emoji">&#127919;</span>
-                        <span class="strong">We Need YOUR Help to Tune These Numbers!</span>
+                        <span data-i18n="site.legendffa.weNeedYourHelp" class="strong">We Need YOUR Help to Tune These Numbers!</span>
                     </p>
-                    <p style="margin:0 0 10px;">
+                    <p data-i18n-html="site.legendffa.theAntiTeamingSystem" style="margin:0 0 10px;">
                         The anti-teaming system uses Delta Server's exponential curve and we need the community's input to fine-tune the values.
                         Does the multiplier grow too fast? Too slow? Is recovery too quick?
                         <span class="strong">Your gameplay experience is crucial.</span>
                     </p>
-                    <p style="margin:0 0 6px;">
+                    <p data-i18n="site.legendffa.watchYourMultiplierIn" style="margin:0 0 6px;">
                         Watch your multiplier in the stats bar and tell us what you think:
                     </p>
                     <p style="margin:0;">
-                        <a class="link" href="https://discord.com/invite/JUfpR9k" target="_blank" rel="noopener"
+                        <a data-i18n="site.legendffa.joinOurDiscordShare" class="link" href="https://discord.com/invite/JUfpR9k" target="_blank" rel="noopener"
                             style="font-size:1.3em; border-bottom-width:2px;">
                             &#128172; Join our Discord &amp; share your feedback
                         </a>
                     </p>
-                    <p class="tiny" style="margin:8px 0 0;">
+                    <p data-i18n="site.legendffa.tellUsYourMultiplier" class="tiny" style="margin:8px 0 0;">
                         Tell us your multiplier numbers (e.g., "after 10 splits my multiplier was 5.0 and it felt too harsh").
                         Screenshots of your stats display are very helpful!
                     </p>
@@ -510,14 +512,14 @@
         <div class="row">
 
             <div class="card">
-                <h3><span class="emoji">&#128640;</span> How to Play (Legend Mod)</h3>
+                <h3 data-i18n-html="site.legendffa.howToPlayLegend"><span class="emoji">&#128640;</span> How to Play (Legend Mod)</h3>
                 <ol>
-                    <li>Select region <span class="accent">Private</span></li>
-                    <li>Choose <span class="accent">&#128081; Expanding Land FFA</span> (it's the default!)</li>
-                    <li>Click <span class="strong">Play</span> and enjoy!</li>
+                    <li data-i18n-html="site.legendffa.selectRegionPrivate">Select region <span class="accent">Private</span></li>
+                    <li data-i18n-html="site.legendffa.chooseExpandingLandFfa">Choose <span class="accent">&#128081; Expanding Land FFA</span> (it's the default!)</li>
+                    <li data-i18n-html="site.legendffa.clickPlayAndEnjoy">Click <span class="strong">Play</span> and enjoy!</li>
                 </ol>
                 <div class="divider"></div>
-                <p>
+                <p data-i18n-html="site.legendffa.deltaUsersUpdateThe">
                     <span class="strong" style="color:#f1c40f;">Delta users:</span> Update the addon for full
                     support:<br>
                     <a class="link" href="https://deltio.pages.dev/" target="_blank" rel="noopener">Install Delta</a>
@@ -528,15 +530,15 @@
             </div>
 
             <div class="card">
-                <h3><span class="emoji">&#127760;</span> Other Mods / Custom Clients</h3>
-                <p>
+                <h3 data-i18n-html="site.legendffa.otherModsCustomClients"><span class="emoji">&#127760;</span> Other Mods / Custom Clients</h3>
+                <p data-i18n-html="site.legendffa.youCanConnectFrom">
                     You can connect from <span class="strong">any</span> Agar.io mod or custom client using this server
                     address:
                 </p>
                 <div class="wss-box">
                     <code>wss://ffa.legendmod.ml:8080</code>
                 </div>
-                <p class="tiny">
+                <p data-i18n-html="site.legendffa.pasteThisUrlInto" class="tiny">
                     Paste this URL into your mod's server/WebSocket field and play.
                     Works with OGARio, Delta, <a class="link" href="https://agar2.com/" target="_blank" rel="noopener">Agar2</a>, and any OgarII-compatible client.
                 </p>
@@ -546,39 +548,39 @@
 
         <div class="row">
             <div class="card" style="width:min(940px, 100%);">
-                <h3><span class="emoji">&#128241;</span> Expanding Land &mdash; Android App</h3>
-                <p>
+                <h3 data-i18n-html="site.legendffa.expandingLandAndroidApp"><span class="emoji">&#128241;</span> Expanding Land &mdash; Android App</h3>
+                <p data-i18n-html="site.legendffa.wantToPlayExpanding">
                     Want to play <span class="accent">Expanding Land</span> as a native Android app?
                     Install it directly on your phone &mdash; no Play Store account needed.
                     This is a standalone app that runs fullscreen without a browser.
                 </p>
                 <div class="divider"></div>
                 <p style="text-align:center; margin:10px 0;">
-                    <a class="link" href="https://github.com/jimboy3100/jimboy3100.github.io/raw/refs/heads/master/LMexpress/mobileApp/ExpandingLand-v2.apk"
+                    <a data-i18n="site.legendffa.downloadApkExpandinglandV2" class="link" href="https://github.com/jimboy3100/jimboy3100.github.io/raw/refs/heads/master/LMexpress/mobileApp/ExpandingLand-v2.apk"
                         style="font-size:1.4em; border-bottom-width:2px; color:#01d9cc;">
                         &#11015;&#65039; Download APK (ExpandingLand-v2.apk)
                     </a>
                 </p>
-                <p class="tiny" style="text-align:center;">
+                <p data-i18n="site.legendffa.androidMayAskYou" class="tiny" style="text-align:center;">
                     Android may ask you to allow installs from unknown sources &mdash; this is normal for apps distributed outside the Play Store.
                     We distribute directly because we are an independent open-source project and prefer not to go through Google's paid developer verification process.
                 </p>
             </div>
         </div>
 
-        <div class="footer">PLAY EXPANDING LAND &bull; <a class="link" href="https://join.lc" style="color:#01d9cc; border-bottom-color:rgba(1,217,204,.55);">LEGEND CLAN</a></div>
-        <div class="stamp">Legend Mod Community &bull; legendmod.ml</div>
+        <div data-i18n-html="site.legendffa.playExpandingLandLegend" class="footer">PLAY EXPANDING LAND &bull; <a class="link" href="https://join.lc" style="color:#01d9cc; border-bottom-color:rgba(1,217,204,.55);">LEGEND CLAN</a></div>
+        <div data-i18n="site.legendffa.legendModCommunityLegendmod" class="stamp">Legend Mod Community &bull; legendmod.ml</div>
 
     </div>
 
     <footer class="site-footer">
-        <a href="https://help.expanding.land/guide.html" target="_top">Guide</a>
-        <a href="https://help.expanding.land/changelog.html" target="_top">Changelog</a>
-        <a href="https://help.expanding.land/best-io-games.html" target="_top">Best IO Games</a>
-        <a href="https://help.expanding.land/glossary.html" target="_top">Glossary</a>
-        <a href="https://help.expanding.land/no-bots.html" target="_top">Players and bots</a>
-        <a href="https://help.expanding.land/alternative.html" target="_top">Alternative</a>
-        <a href="https://expanding.land/terms.html" target="_top">Terms of Service</a>
+        <a data-i18n="site.legendffa.guide" href="https://help.expanding.land/guide.html" target="_top">Guide</a>
+        <a data-i18n="site.changelog" href="https://help.expanding.land/changelog.html" target="_top">Changelog</a>
+        <a data-i18n="site.legendffa.bestIoGames" href="https://help.expanding.land/best-io-games.html" target="_top">Best IO Games</a>
+        <a data-i18n="site.legendffa.glossary" href="https://help.expanding.land/glossary.html" target="_top">Glossary</a>
+        <a data-i18n="site.legendffa.playersAndBots" href="https://help.expanding.land/no-bots.html" target="_top">Players and bots</a>
+        <a data-i18n="site.legendffa.alternative" href="https://help.expanding.land/alternative.html" target="_top">Alternative</a>
+        <a data-i18n="site.legendffa.termsOfService" href="https://expanding.land/terms.html" target="_top">Terms of Service</a>
         <a href="https://discord.com/invite/JUfpR9k" target="_blank" rel="noopener">Discord</a>
         <a href="https://expanding.land" target="_top">Expanding Land</a>
     </footer>

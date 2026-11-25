@@ -69,14 +69,19 @@
         /* only when opened from Legend Mod with a theme (html.lm-themed-root) */
         html.lm-themed-root .main-content, html.lm-themed-root .page-header { color: var(--lm-tc) !important; }
     </style>
-    </head>
+        <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-developers" charset="utf-8"></script>
+</head>
     <body>
+<!-- the page language (Legend Mod's language packs) -->
+<div class="lm-lang-bar" style="text-align:right;padding:6px 12px;font-size:14px;line-height:1.4"><span data-lm-lang-picker></span></div>
+
         <section height="100px" style="padding-top: 0px;padding-bottom: 0px;background-image: url();background-size: 100%; background-position-x: -240px;background-position-y: -100px;color: black;text-align: center;">
             <section height="200px" style="padding-top: 0px;padding-bottom: 0px; background-image: url();background-repeat: no-repeat; background-position: center; background-size: 100%;  color: black;text-align: center;">
 			</section>
 	<script>
 	setTimeout(function(){
-	document.title = "OGARio Developers"; 
+	document.title = "OGARio Developers"; /* i18n-ok: the old OGARio tool name in the tab */
 	(function() {
     var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon';
@@ -87,29 +92,29 @@
 	}, 1000);
 	</script>
 			<br>
-           <h2>OGARio Developers - The OGARio ongoing project</h2>
+           <h2 data-i18n="site.developers.ogarioDevelopersTheOgario">OGARio Developers - The OGARio ongoing project</h2>
 		  <br><img class="irc_mi" src="https://jimboy3100.github.io/banners/ogario.png" width="810" height="100">
 		  <br>
 <iframe width="560" height="315" src="https://www.youtube.com/embed/Jr5hvKbXEwM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <br>
-<b>Welcome to the community for developing custom OGARio scripts</b>
+<b data-i18n="site.developers.welcomeToTheCommunity">Welcome to the community for developing custom OGARio scripts</b>
 <br>
 <br>
-<br><b>Please note:</b>
-<br><font color="red"><b>Making mods is hard work, needs much searching and testing.</font></b>
+<br><b data-i18n="site.developers.pleaseNote">Please note:</b>
+<br><font color="red"><b><span data-i18n="site.developers.makingModsIsHard">Making mods is hard work, needs much searching and testing.</span></font></b>
 <br>
-<h2>Steps:</h2>
+<h2 data-i18n="site.developers.steps">Steps:</h2>
 
-<br>1. If you don't own a website, make a github account and repo with same name + .github.io (otherwise you will be forced to use code as raw).
+<br><span data-i18n="site.developers.ifYouDonT">1. If you don't own a website, make a github account and repo with same name + .github.io (otherwise you will be forced to use code as raw).</span>
 		  <br><img class="irc_mi" src="https://jimboy3100.github.io/developers/icons/iconcreatenewrepo.png" width="810" height="300">
-<br>2. Copy our ogario.js and ogario.master.js (see example for the source code) files to your github repo.
+<br><span data-i18n="site.developers.copyOurOgarioJs">2. Copy our ogario.js and ogario.master.js (see example for the source code) files to your github repo.</span>
 <br>
-<br>3. Use notepad++, Visual Studio or any integrated development environment.
+<br><span data-i18n="site.developers.useNotepadVisualStudio">3. Use notepad++, Visual Studio or any integrated development environment.</span>
 <br>
-<br><b style="color:#c00">Note (2026): cdn.ogario.ovh is offline. Use the Legend Mod copies in this repository instead (ogario/ogario.v4.js, ogario/ogario.v4.master.js) and host your version on your own GitHub Pages.</b>
-<br>4. Use the source from <b>http://cdn.ogario.ovh:9000/v4/beta/</b> , type on your browser: <b>view-source:http://cdn.ogario.ovh:9000/v4/beta/</b>
+<br><b data-i18n="site.developers.note2026CdnOgario" style="color:#c00">Note (2026): cdn.ogario.ovh is offline. Use the Legend Mod copies in this repository instead (ogario/ogario.v4.js, ogario/ogario.v4.master.js) and host your version on your own GitHub Pages.</b>
+<br><span data-i18n="site.developers.useTheSourceFrom">4. Use the source from</span> <b>http://cdn.ogario.ovh:9000/v4/beta/</b> <span data-i18n="site.developers.typeOnYourBrowser">, type on your browser:</span> <b data-i18n="site.developers.viewSourceHttpCdn">view-source:http://cdn.ogario.ovh:9000/v4/beta/</b>
 <br>
-<br>5. Change the line: 
+<br><span data-i18n="site.developers.changeTheLine">5. Change the line:</span> 
 <textarea rows="1" cols="80">
 <script src="https://cdn.ogario.ovh/v4/beta/ogario.v4.master.js?v=40035">
 </textarea>
@@ -117,7 +122,7 @@
 <textarea rows="1" cols="80">
 <script src="https://mygithubrepo.github.io/ogario.yourversion.master.js?v=40035">
 </textarea>
-<br> and the line:
+<br> <span data-i18n="site.developers.andTheLine">and the line:</span>
 <textarea rows="1" cols="80">
 <script src="https://cdn.ogario.ovh/v4/beta/ogario.v4.js?v=40035">
 </textarea>
@@ -126,7 +131,7 @@
 <script src="https://mygithubrepo.github.io/ogario.yourversion.js?v=40035">
 </textarea>
 <br>
-<br>6. Make your own ogario.v4.user.js testing script on <a href="https://tampermonkey.net/" target="_blank" rel="noopener">tampermonkey</a>:
+<br><span data-i18n="site.developers.makeYourOwnOgario">6. Make your own ogario.v4.user.js testing script on</span> <a href="https://tampermonkey.net/" target="_blank" rel="noopener">tampermonkey</a>:
 <br><textarea rows="5" cols="80">
 // ==UserScript==
 // @name         OGARio Devs [Yourname]
@@ -161,12 +166,12 @@ GM_xmlhttpRequest({
 });
 </textarea> 
 <br>
-<br>7. Change the line: <b>// @connect      cdn.ogario.ovh</b> to your webpage e.g: <b>// @connect      mygithubrepo.github.io</b> 
-<br>Change the line: <b>url : "https://cdn.ogario.ovh/v4/beta/",</b> to your html webpage url e.g: <b>url : "https://mygithubrepo.github.io/ogario.html",</b>
+<br><span data-i18n="site.developers.changeTheLine2">7. Change the line:</span> <b>// @connect      cdn.ogario.ovh</b> <span data-i18n="site.developers.toYourWebpageE">to your webpage e.g:</span> <b>// @connect      mygithubrepo.github.io</b> 
+<br><span data-i18n="site.developers.changeTheLine3">Change the line:</span> <b data-i18n="site.developers.urlHttpsCdnOgario">url : "https://cdn.ogario.ovh/v4/beta/",</b> <span data-i18n="site.developers.toYourHtmlWebpage">to your html webpage url e.g:</span> <b data-i18n="site.developers.urlHttpsMygithubrepoGithub">url : "https://mygithubrepo.github.io/ogario.html",</b>
 <br>
-<br><a href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank" rel="noopener">Example</a>
-<br><br>* Note that the newest scripts need 5-10 minutes for being used. Refresh your <b>https://mygithubrepo.github.io/ogario.yourversion.js</b> file on browser.
-<br>Watch it on chrome sources [F12].
+<br><a data-i18n="site.developers.example" href="http://jimboy3100.github.io/LMexpress/LMexpress.user.js" target="_blank" rel="noopener">Example</a>
+<br><br><span data-i18n="site.developers.noteThatTheNewest">* Note that the newest scripts need 5-10 minutes for being used. Refresh your</span> <b>https://mygithubrepo.github.io/ogario.yourversion.js</b> <span data-i18n="site.developers.fileOnBrowser">file on browser.</span>
+<br><span data-i18n="site.developers.watchItOnChrome">Watch it on chrome sources [F12].</span>
 <br>
 <br>
 <br>

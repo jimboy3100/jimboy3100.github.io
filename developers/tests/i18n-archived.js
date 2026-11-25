@@ -35,7 +35,9 @@ const live = files.map((f) => {
 archived.forEach((a) => {
     ok(fs.existsSync(path.join(repo, a)), 'archived file is missing: ' + a);
     const base = path.basename(a);
-    const hits = live.filter((x) => x.src.indexOf(base) >= 0);
+    /* a folder's index.html is linked as the folder (dir/ or dir/index.html); dir/style.css is not a link to it */
+    const dirRe = base === 'index.html' ? new RegExp(path.dirname(a).replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '/(index\\.html)?(["\'#?\\s<)`]|$)', 'm') : null;
+    const hits = live.filter((x) => (dirRe ? dirRe.test(x.src) : x.src.indexOf(base) >= 0));
     const fn = DEAD_FN[a];
     if (!fn) { ok(hits.length === 0, a + ' is linked from live code: ' + hits.map((h) => h.f).join(', ')); return; }
     /* every link sits in that function, and no live code calls it */

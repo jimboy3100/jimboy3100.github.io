@@ -25,7 +25,8 @@
     "lmShopSpan",
     "lmxExtText",
     "lmxText",
-    "_lmDiscordT"
+    "_lmDiscordT",
+    "_lmMonT"
   ],
   "strict": [
     "LMexpress/i18n.js",
@@ -160,7 +161,21 @@
     "Lc/PROJETOX.HTML/arquivo.js",
     "agarscripts/DiscordSIP.user.js",
     "LMexpress/shop/shop.js",
-    "LMexpress/shop/shopscript.js"
+    "LMexpress/shop/shopscript.js",
+    "extras/legendffa.html",
+    "ExampleScripts/expanding-land-description.html",
+    "monitor/index.html",
+    "monitor/history.html",
+    "developers/videoskins.html",
+    "knowledge/index.html",
+    "LMexpress/privacy.html",
+    "developers/index.html",
+    "companion-guide.html",
+    "LMexpress/LMexpress.html",
+    "nicks/nicknamechars.html",
+    "LMmobile/index.html",
+    "LMexpress/olddeals.html",
+    "nicks/emoji/index.html"
   ],
   "groups": {
     "a: ogario/modules": [
@@ -241,7 +256,8 @@
     "extras/nobots.html": "LMnoBotsPromo() in LMexpress.js is never called",
     "extras/rewardday.html": "no link anywhere (the gift button opens rewardday2.html)",
     "extras/skinrotator2.html": "no link anywhere (skinrotator.html is the live one)",
-    "extras/skinrotator3.html": "no link anywhere (skinrotator.html is the live one)"
+    "extras/skinrotator3.html": "no link anywhere (skinrotator.html is the live one)",
+    "extras/website/index.html": "the old copy of the home page (index.html is the live one); other pages use only its CSS files"
   },
   "skip": [
     "\\.min\\.js$",
@@ -289,6 +305,9 @@
       "Crazy Style 2",
       "Crazy Style 1",
       "LM express"
+    ],
+    "monitor/history.html": [
+      "/^(EU-London|US-Atlanta|JP-Tokyo|BR-Brazil|East-Asia|South-America|Oceania|Russia|Turkey|China)$/"
     ]
   }
 }

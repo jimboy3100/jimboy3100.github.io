@@ -129,6 +129,19 @@ texts (menu, footer) go in `site.json`.
 From the mod (agar.io or another origin), links to www.legendmod.ml / jimboy3100.github.io pages
 get `#lm=` with the language and theme (LMexpress.js `lmThemeHash`), iframes get the postMessage.
 
+Other Legend sites (expanding.land, help.expanding.land) load the same `lib/lm-i18n.js` with their own
+areas (`site-expandingland*`, `site-help*`, `site-knowledge`, built here into `languages/`). Their storage is
+their own, so the language the visitor **chose** (saved `languagemod`, never a browser fallback) is passed on,
+and nothing else (no theme, no login data):
+- iframes marked `data-lm-lang-frame` get `{type: 'lm-lang', lang: 1-16}` when they load and on every choice,
+  sent to the exact origin of their `src`; a choice made inside such a frame (page or mod runtime) is sent back
+  to the embedding window (its exact origin) and on to the other marked frames;
+- links to the other sites get `#lm=<base64url {"lang": n}>` (not play.html, whose hash is a party code, nor
+  files); the page that opens reads it, saves it and takes it out of the address; a Theme Bridge theme on the
+  link is left as it is;
+- accepted only from the embedding window, the opener or a marked frame, on the origins in `PEERS`
+  (runtime.js: www.legendmod.ml, jimboy3100.github.io, expanding.land, help.expanding.land).
+
 ## Tests
 
 - `node developers/tests/i18n.js`: all 16 packs complete (same placeholders/tags), key names,
@@ -140,6 +153,12 @@ get `#lm=` with the language and theme (LMexpress.js `lmThemeHash`), iframes get
   language on screen and picked in the window, the list without Beta), the website with each of those
   four browsers, and with English stored (never shown). The smoke test pins the
   browser to English and hides the first-visit window (`SMOKE_LANG`, `SMOKE_FIRSTRUN`, `SMOKE_STORAGE`).
+- `node developers/tests/i18n-sitemap.js`: every sitemap.xml page loads a runtime (or is a documented
+  exception / archived page), loads no old LanguagePack*.js, is strict, and every key it uses is in its areas.
+- `node developers/tests/i18n-crosssite.js`: headless expanding.land / help.expanding.land test pages: language
+  passed into frames (page and mod runtime) and back, rogue messages ignored, `#lm=` on links, a Theme Bridge
+  page and LMexpress.html starting in the saved language (`CROSS_EL_DIR` / `CROSS_HELP_DIR`: serve the real
+  checkouts of those sites instead).
 
 ## Hard-coded text scanner
 

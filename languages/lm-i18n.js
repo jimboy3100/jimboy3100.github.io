@@ -931,9 +931,31 @@
         /* base64url (- and _) or the older base64 */
         try { var d = JSON.parse(atob(decodeURIComponent(m[1]).replace(/-/g, '+').replace(/_/g, '/'))); return d && toCode(d.lang); } catch (e) { return null; }
     }
+    /* an #lm= value that holds only { lang: 1-16 } (another Legend site's link), not a Theme Bridge theme */
+    function langOnly(tok) {
+        if (!tok || tok.length > 64) return false;
+        try {
+            var d = JSON.parse(atob(decodeURIComponent(tok).replace(/-/g, '+').replace(/_/g, '/')));
+            return !!d && typeof d === 'object' && Object.keys(d).length === 1 && langNum(d.lang) !== null;
+        } catch (e) { return false; }
+    }
+    /* #lm= that carries only the language: taken out of the address after reading */
+    function dropLangToken() {
+        try {
+            var h = (W.location.hash || '').replace(/^#/, '');
+            if (!/(^|&)lm=/.test(h) || !W.history || !W.history.replaceState) return;
+            var rest = [], only = false;
+            h.split('&').forEach(function (p) {
+                if (p.indexOf('lm=') !== 0) { if (p) rest.push(p); return; }
+                only = langOnly(p.slice(3));
+                if (!only) rest.push(p);
+            });
+            if (only) W.history.replaceState(W.history.state, '', W.location.pathname + W.location.search + (rest.length ? '#' + rest.join('&') : ''));
+        } catch (e) { }
+    }
     function pick() {
         var b = fromBridge();
-        if (b) { save(b); return b; }
+        if (b) { save(b); dropLangToken(); return b; }
         return stored() || browserLang() || 'en';
     }
     /* [data-lm-lang-picker]: a list of the supported languages (native names, Choose Language numbers) that
@@ -964,6 +986,54 @@
         }
     }
     api.renderPickers = renderPickers;
+
+    /* ---------- the language across Legend sites (www.legendmod.ml, expanding.land, help.expanding.land) ----------
+     * Their storage is separate, so a language the visitor chose (saved) is passed on explicitly, and nothing else:
+     * a message { type: 'lm-lang', lang: 1-16 } to the embedding window and to iframes marked data-lm-lang-frame,
+     * always to their exact origin, and #lm= { lang } on links to the other sites. Accepted only from those
+     * windows and these origins; nothing else in the message is read. */
+    var PEERS = ['https://www.legendmod.ml', 'https://jimboy3100.github.io', 'https://expanding.land', 'https://help.expanding.land'];
+    function originOf(url) { try { return new URL(url, W.location.href).origin; } catch (e) { return ''; } }
+    function langNum(v) { var s = String(v); return /^(?:[1-9]|1[0-6])$/.test(s) ? s : null; }
+    /* the chosen (saved) language number, or null while the page only follows the browser */
+    function chosen() { var c = stored(); return c ? String(CODES.indexOf(c) + 1) : null; }
+    function tell(win, origin, n) {
+        if (!win || !n || PEERS.indexOf(origin) < 0 || origin === W.location.origin) return;
+        try { win.postMessage({ type: 'lm-lang', lang: Number(n) }, origin); } catch (e) { }
+    }
+    function parentOrigin() {
+        var o = '';
+        try { var a = W.location.ancestorOrigins; if (a && a.length) o = a[0]; } catch (e) { }
+        return o || originOf(document.referrer || '');
+    }
+    function frames() { return document.querySelectorAll ? document.querySelectorAll('iframe[data-lm-lang-frame]') : []; }
+    function tellFrame(f, n) { if (f && f.contentWindow) tell(f.contentWindow, originOf(f.getAttribute('src') || ''), n); }
+    function fromFrame(src) {
+        var list = frames();
+        for (var i = 0; i < list.length; i++) if (list[i].contentWindow === src) return list[i];
+        return null;
+    }
+    function crossSite() {
+        W.addEventListener('message', function (ev) {
+            var d = ev && ev.data;
+            if (!d || typeof d !== 'object' || d.type !== 'lm-lang' || PEERS.indexOf(ev.origin) < 0) return;
+            var src = ev.source, frame = SITE ? fromFrame(src) : null;
+            if (!src || !((W.parent !== W && src === W.parent) || (SITE && src === W.opener) || frame)) return;
+            /* a frame only speaks for the origin its address points to */
+            if (frame && originOf(frame.getAttribute('src') || '') !== ev.origin) return;
+            var n = langNum(d.lang);
+            if (n && CODES[n - 1] !== current) setLang(n);
+        });
+        /* a choice made here goes to the other windows (not the start-up language, not a browser fallback) */
+        onChange(function (code, prev) {
+            var n = chosen();
+            if (code === prev || !n || CODES[n - 1] !== code) return;
+            if (W.parent !== W) tell(W.parent, parentOrigin(), n);
+            if (SITE) { var list = frames(); for (var i = 0; i < list.length; i++) tellFrame(list[i], n); }
+        });
+    }
+    crossSite();
+    api._peers = PEERS.slice();
 
     if (!SITE) {
         /* the game page: a language passed with the Theme Bridge (#lm= in its address, saved), else the one
@@ -1021,6 +1091,35 @@
             load(code, function () { whenDom(ready); });
         }
         onChange(function () { renderPickers(document); });
+        /* an embedded Legend page gets the chosen language once it has loaded (load does not bubble: capture) */
+        document.addEventListener('load', function (ev) {
+            var f = ev.target;
+            if (f && f.tagName === 'IFRAME' && f.hasAttribute('data-lm-lang-frame')) tellFrame(f, chosen());
+        }, true);
+        /* links to the other Legend sites carry the chosen language (#lm= with only { lang }) */
+        var onLink = function (ev) {
+            var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null, n = chosen();
+            if (!a || !n) return;
+            try {
+                var u = new URL(a.getAttribute('href'), W.location.href);
+                if (PEERS.indexOf(u.origin) < 0 || u.origin === W.location.origin) return;
+                /* not the game page (its address hash is a party code) nor files */
+                if (/\/play\.html$/.test(u.pathname) || /\.(js|css|json|png|jpe?g|gif|webp|svg|ico|mp3|txt|zip|xml|pdf|apk|exe)$/i.test(u.pathname)) return;
+                var parts = u.hash.replace(/^#/, '').split('&'), rest = [];
+                for (var i = 0; i < parts.length; i++) {
+                    if (parts[i].indexOf('lm=') !== 0) { if (parts[i]) rest.push(parts[i]); continue; }
+                    /* a theme from the Theme Bridge (it has the language too) stays; an older language is replaced */
+                    if (!langOnly(parts[i].slice(3))) return;
+                }
+                var tok = btoa(JSON.stringify({ lang: Number(n) })).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+                rest.push('lm=' + tok);
+                u.hash = rest.join('&');
+                a.href = u.href;
+            } catch (e) { }
+        };
+        document.addEventListener('click', onLink, true);
+        document.addEventListener('auxclick', onLink, true);
+        document.addEventListener('contextmenu', onLink, true);
         W.addEventListener('message', function (ev) {
             var d = ev && ev.data;
             if (!d || d.type !== 'lm-theme' || !d.theme) return;

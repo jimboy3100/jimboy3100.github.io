@@ -240,31 +240,33 @@
         .footer a { color: #0984e3; text-decoration: none; }
     </style>
     <script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8"></script>
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-monitor" charset="utf-8"></script>
 </head>
 <body>
     <div class="header" id="main-content" style="display:none;">
         <div class="header-left">
             <img src="https://jimboy3100.github.io/banners/icon48.png" alt="LM">
-            <h1>Legend <span>Mod</span> — Player Monitor</h1>
+            <h1 data-i18n-html="site.monitor.legendModPlayerMonitor">Legend <span>Mod</span> — Player Monitor</h1>
         </div>
         <div class="header-right">
-            <a href="history.html" style="font-size:12px; font-weight:600; padding:6px 14px; border-radius:6px; text-decoration:none; color:#fff; background:#6c5ce7; margin-right:12px;">📜 History</a>
+            <a data-i18n="site.monitor.history" href="history.html" style="font-size:12px; font-weight:600; padding:6px 14px; border-radius:6px; text-decoration:none; color:#fff; background:#6c5ce7; margin-right:12px;">📜 History</a>
             <span id="last-update"></span>
-            <span><span class="live-dot" id="ws-dot"></span><span id="ws-status">Connecting...</span></span>
+            <span><span class="live-dot" id="ws-dot"></span><span data-i18n="site.monitor.connecting" id="ws-status">Connecting...</span></span>
         </div>
     </div>
 
     <div class="stats-row">
         <div class="stat-card">
-            <div class="label">Online</div>
+            <div data-i18n="site.monitor.online" class="label">Online</div>
             <div class="value green" id="online-count">0</div>
         </div>
         <div class="stat-card">
-            <div class="label">Servers</div>
+            <div data-i18n="site.monitor.servers" class="label">Servers</div>
             <div class="value purple" id="server-count">0</div>
         </div>
         <div class="stat-card">
-            <div class="label">Countries</div>
+            <div data-i18n="site.monitor.countries" class="label">Countries</div>
             <div class="value orange" id="country-count">0</div>
         </div>
     </div>
@@ -275,20 +277,20 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th data-col="nickname" class="sorted">Nick ▼</th>
-                        <th data-col="tag">Tag</th>
-                        <th data-col="name">Name</th>
-                        <th data-col="aid">Agar ID</th>
-                        <th data-col="server_id">Server</th>
-                        <th data-col="region">Region</th>
-                        <th data-col="mode">Mode</th>
-                        <th data-col="agario_level">Level</th>
-                        <th data-col="country">Country</th>
-                        <th data-col="updated">Last Seen</th>
+                        <th data-i18n="site.monitor.nick" data-col="nickname" class="sorted">Nick ▼</th>
+                        <th data-i18n="site.monitor.tag" data-col="tag">Tag</th>
+                        <th data-i18n="site.monitor.name" data-col="name">Name</th>
+                        <th data-i18n="site.monitor.agarId" data-col="aid">Agar ID</th>
+                        <th data-i18n="site.monitor.server" data-col="server_id">Server</th>
+                        <th data-i18n="site.monitor.region" data-col="region">Region</th>
+                        <th data-i18n="site.monitor.mode" data-col="mode">Mode</th>
+                        <th data-i18n="site.monitor.level" data-col="agario_level">Level</th>
+                        <th data-i18n="site.monitor.country" data-col="country">Country</th>
+                        <th data-i18n="site.monitor.lastSeen" data-col="updated">Last Seen</th>
                     </tr>
                 </thead>
                 <tbody id="players-body">
-                <tr><td colspan="20" class="no-players"><div class="emoji">🌐</div>Connecting...</td></tr>
+                <tr><td colspan="20" class="no-players"><div class="emoji">🌐</div><span data-i18n="site.monitor.connecting">Connecting...</span></td></tr>
                 </tbody>
             </table>
         </div>
@@ -305,17 +307,19 @@
     <div id="login-overlay" style="position:fixed; inset:0; background:#f5f6fa; z-index:1000; display:flex; align-items:center; justify-content:center;">
         <div style="background:#fff; border-radius:12px; padding:36px 40px; box-shadow:0 4px 24px rgba(0,0,0,0.08); border:1px solid #e8eaed; text-align:center; min-width:320px;">
             <img src="https://jimboy3100.github.io/banners/icon48.png" alt="Legend Mod" style="height:40px; margin-bottom:12px;">
-            <h2 style="font-size:18px; margin-bottom:4px; color:#1a1a2e;">Legend <span style="color:#e94560">Mod</span> Monitor</h2>
-            <p style="color:#999; font-size:12px; margin-bottom:20px;">Enter credentials to access</p>
-            <input id="login-user" type="text" placeholder="Username" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:8px; font-family:inherit; outline:none;">
-            <input id="login-pass" type="password" placeholder="Password" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:16px; font-family:inherit; outline:none;">
-            <button id="login-btn" style="width:100%; padding:10px; background:#e94560; color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">Sign In</button>
-            <p id="login-error" style="color:#d63031; font-size:12px; margin-top:10px; display:none;">Invalid credentials</p>
+            <h2 data-i18n-html="site.monitor.legendModMonitor" style="font-size:18px; margin-bottom:4px; color:#1a1a2e;">Legend <span style="color:#e94560">Mod</span> Monitor</h2>
+            <p data-i18n="site.monitor.enterCredentialsToAccess" style="color:#999; font-size:12px; margin-bottom:20px;">Enter credentials to access</p>
+            <input data-i18n-placeholder="site.monitor.username" id="login-user" type="text" placeholder="Username" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:8px; font-family:inherit; outline:none;">
+            <input data-i18n-placeholder="site.monitor.password" id="login-pass" type="password" placeholder="Password" style="width:100%; padding:10px 14px; border:1px solid #e8eaed; border-radius:6px; font-size:13px; margin-bottom:16px; font-family:inherit; outline:none;">
+            <button data-i18n="site.monitor.signIn" id="login-btn" style="width:100%; padding:10px; background:#e94560; color:#fff; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;">Sign In</button>
+            <p data-i18n="site.monitor.invalidCredentials" id="login-error" style="color:#d63031; font-size:12px; margin-top:10px; display:none;">Invalid credentials</p>
         </div>
     </div>
 
 <script>
 const API_URL = 'https://api.legendmod.ml/stats';
+/* texts in the visitor's language (developers/i18n); English when the language files did not load */
+function _lmMonT(k, en) { var s = window.lmT ? window.lmT(k) : ''; return s && s !== k ? s : en; }
 const WS_URL = 'wss://api.legendmod.ml/lm-ws';
 
 let players = [];
@@ -431,13 +435,13 @@ function connectWS() {
 
     try { ws = new WebSocket(WS_URL); } catch (e) {
         dot.className = 'live-dot off';
-        status.textContent = 'Error';
+        status.textContent = _lmMonT('site.monitor.error', 'Error');
         return;
     }
 
     ws.onopen = function() {
         dot.className = 'live-dot on';
-        status.textContent = 'Live';
+        status.textContent = _lmMonT('site.monitor.live', 'Live');
         ws.send(JSON.stringify({ type: 'search', data: '' }));
     };
 
@@ -455,13 +459,13 @@ function connectWS() {
 
     ws.onclose = function() {
         dot.className = 'live-dot off';
-        status.textContent = 'Reconnecting...';
+        status.textContent = _lmMonT('site.monitor.reconnecting', 'Reconnecting...');
         setTimeout(connectWS, 5000);
     };
 
     ws.onerror = function() {
         dot.className = 'live-dot off';
-        status.textContent = 'Error';
+        status.textContent = _lmMonT('site.monitor.error', 'Error');
     };
 }
 
@@ -511,7 +515,7 @@ function updateUI() {
     });
 
     if (sorted.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="20" class="no-players"><div class="emoji">😴</div>No players online</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="20" class="no-players"><div class="emoji">😴</div>' + _lmMonT('site.monitor.noPlayersOnline', 'No players online') + '</td></tr>';
         document.getElementById('pagination').innerHTML = '';
     } else {
         const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
@@ -570,7 +574,7 @@ function renderPagination(containerId, totalItems, current, onPageClick) {
     if (totalPages <= 1) { container.innerHTML = ''; return; }
 
     let html = '';
-    html += `<button ${current === 0 ? 'disabled' : ''} data-page="${current - 1}">‹ Prev</button>`;
+    html += `<button ${current === 0 ? 'disabled' : ''} data-page="${current - 1}">‹ ${_lmMonT('site.monitor.prev', 'Prev')}</button>`;
 
     const maxButtons = 7;
     let pages = [];
@@ -593,7 +597,7 @@ function renderPagination(containerId, totalItems, current, onPageClick) {
         else html += `<button class="${p === current ? 'active' : ''}" data-page="${p}">${p + 1}</button>`;
     }
 
-    html += `<button ${current === totalPages - 1 ? 'disabled' : ''} data-page="${current + 1}">Next ›</button>`;
+    html += `<button ${current === totalPages - 1 ? 'disabled' : ''} data-page="${current + 1}">${_lmMonT('site.monitor.next', 'Next')} ›</button>`;
     const from = current * PAGE_SIZE + 1;
     const to = Math.min((current + 1) * PAGE_SIZE, totalItems);
     html += `<span class="page-info">${from}–${to} of ${totalItems}</span>`;

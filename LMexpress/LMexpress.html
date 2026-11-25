@@ -74,7 +74,36 @@
   <script src="https://jimboy3100.github.io/lib/Youtubeiframe_api.js"></script>
   <script src="https://jimboy3100.github.io/extras/key-event.js"></script>
   <script src="https://jimboy3100.github.io/extras/foggy.js"></script>
-  <script src="https://jimboy3100.github.io/languages/LanguagePackEnglish.js"></script>
+  <!-- the same start as play.html (the old LanguagePackEnglish.js switched the saved language back to English) -->
+    <!-- Texts in the language chosen in Legend Mod (built from developers/i18n/src): lm-i18n.js writes the
+         chosen language's file right after itself; English (lm-en.js) is the fallback for missing texts. -->
+    <script src="https://www.legendmod.ml/languages/lm-i18n.js" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/languages/lm-en.js" charset="utf-8"></script>
+    <script>
+        /* On agar.io this page is written with document.write and Chrome may refuse such scripts: then the
+         * texts come synchronously (the mod reads them while it starts). Nothing happens when they are there. */
+        (function () {
+            var en = document.querySelector('script[src*="/languages/lm-en.js"]');
+            var q = en ? (/\?v=[^&#]+/.exec(en.src) || [''])[0] : '';
+            var need = function (file) {
+                try {
+                    var x = new XMLHttpRequest();
+                    x.open('GET', 'https://www.legendmod.ml/languages/' + file + q, false);
+                    x.send();
+                    if (x.status !== 200) return;
+                    var s = document.createElement('script');
+                    s.text = x.responseText;
+                    (document.head || document.documentElement).appendChild(s);
+                } catch (e) { }
+            };
+            if (!window.LMi18n) need('lm-i18n.js');
+            var L = window.LMi18n;
+            if (!L) return;
+            if (!L.loaded('en')) need('lm-en.js');
+            var c = L.lang();
+            if (c !== 'en' && !L.loaded(c)) need('lm-' + c + '.js');
+        })();
+    </script>
   <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff2.js"></script>
   <script src="https://jimboy3100.github.io/LMexpress/i18n.js"></script>
   <script src="https://jimboy3100.github.io/LMexpress/proto.decoder.js"></script>
@@ -172,10 +201,10 @@ var CutNameConflictwithMessage=false;
                                         <div id="stats-content" style="float: right; width: 50%; display: inline-block; font-size: 12px;"></div>
                                         <div id="user-info" style="font-size: 12px;"></div>
 										<div style="font-size: 12px;">
-										<div id="UserProfileName">Name: <div id="UserProfileName1" class="user-name" style="display:inline-block" >Guest</div></div>
-										<div id="UserProfileUUID">UID: <input id="UserProfileUUID1" class="user-name" style="display:inline-block; width: 180px; font-size: 9px;"></div>
-										<div id="UserProfileUID">Social ID: <input id="UserProfileUID1" class="user-name" style="display:inline-block"></div>
-										<div id="TimesUsedPanel" class="user-name" style="display:inline-block;">Times Used: <div id="TimesUsed" style="display:inline-block"></div></div>
+										<div id="UserProfileName"><span data-i18n="misc.page.nameLabel">Name:</span> <div id="UserProfileName1" class="user-name" style="display:inline-block" data-i18n="misc.page.guest">Guest</div></div>
+										<div id="UserProfileUUID"><span data-i18n="misc.page.uidLabel">UID:</span> <input id="UserProfileUUID1" class="user-name" style="display:inline-block; width: 180px; font-size: 9px;"></div>
+										<div id="UserProfileUID"><span data-i18n="misc.page.socialIdLabel">Social ID:</span> <input id="UserProfileUID1" class="user-name" style="display:inline-block"></div>
+										<div id="TimesUsedPanel" class="user-name" style="display:inline-block;"><span data-i18n="misc.page.timesUsedLabel">Times Used:</span> <div id="TimesUsed" style="display:inline-block"></div></div>
 										</div>
                                     </div>
      </div>
@@ -231,7 +260,7 @@ var CutNameConflictwithMessage=false;
      <div role="form" novalidate>
       <div class="form-group clearfix"></div>
        <div class="form-group clearfix">
-        <input id="nick" class="form-control" placeholder="Nick" autofocus />
+        <input id="nick" class="form-control" placeholder="Nick" data-i18n-placeholder="pack.name" autofocus />
         <select id="gamemode" class="form-control" required>
          <option value=":ffa" data-itr="page_gamemode_ffa"></option>
          <option value=":battleroyale" data-itr="page_gamemode_battle_royale"></option>
@@ -243,7 +272,7 @@ var CutNameConflictwithMessage=false;
        <div id="locationUnknown">
         <select id="region" class="form-control" onchange="changeregion()" required>
          <option selected value="" data-itr="page_region_select"></option>
-	 <option value="Private" data-itr="Private">Private</option>
+	 <option value="Private" data-i18n="misc.page.private">Private</option>
          <option value="US-Atlanta" data-itr="page_region_north_america"></option>
          <option value="BR-Brazil" data-itr="page_region_south_america"></option>
          <option value="EU-London" data-itr="page_region_europe"></option>
@@ -281,8 +310,8 @@ var CutNameConflictwithMessage=false;
         <div id="locationKnown"></div>
        </div>
        <div style="float: right; width: 120px;">
-        <button class="btn btn-warning btn-spectate btn-needs-server" data-itr="page_spectate">Spectate</button>
-        <button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>
+        <button class="btn btn-warning btn-spectate btn-needs-server" data-itr="page_spectate" data-i18n="agario.page_spectate">Spectate</button>
+        <button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout" data-i18n="agario.page_logout">Logout</button>
        </div>
        <br clear="both"/>
       </div>
@@ -325,7 +354,11 @@ var CutNameConflictwithMessage=false;
  <script src="//apis.google.com/js/client:platform.js?onload=gapiAsyncInit" async defer></script>
  <div style="font-family:'Ubuntu'">&nbsp;</div>
  <!-- Universal Analytics removed (UA shut down 2023-07-01); no-op ga() stub for old calls -->
- <script>window.ga = window.ga || function () { };</script>	
+ <script>window.ga = window.ga || function () { };</script>
+ <script>
+  /* the texts marked data-i18n above in the chosen language (as play.html); a language change fills them again */
+  if (window.LMi18n) window.LMi18n.apply(document.body);
+ </script>	
  <!--script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script-->	
  </body>	
 </html>
