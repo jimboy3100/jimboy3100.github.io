@@ -24329,7 +24329,7 @@ function thelegendmodproject() {
             $('#helloContainer').css('opacity', defaultSettings.menuOpacity);
             this.addCustomCSS('lmWinCSS',
                 /* in the stylesheet, not inline: #hotkeys is built after the theme is applied */
-                '#hotkeys,#exp-imp{opacity:1;border-top-width:3px;border-radius:6px;box-shadow:0 0 0 100vmax rgba(0,0,0,.55),0 8px 32px rgba(0,0,0,.5)}' +
+                '#hotkeys,#exp-imp{opacity:1;border-top-width:3px;border-radius:var(--lm-radius,6px);box-shadow:0 0 0 100vmax rgba(0,0,0,.55),0 8px 32px rgba(0,0,0,.5)}' +
                 /* an unbound key slot is a quiet field; the button colour marks bound keys only */
                 '#hotkeys-cfg .custom-key-in:placeholder-shown{background-color:var(--lm-pc2,#002f52);border-color:var(--lm-tc2,#8096a7)}' +
                 /* window title like the other LM windows; narrow screens need the row for the buttons */

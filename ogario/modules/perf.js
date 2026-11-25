@@ -1487,15 +1487,15 @@
         var mc = V('mc', ds.menuMainColor, '#01d9cc'), pc = V('pc', ds.menuPanelColor, '#00243e'), pc2 = V('pc2', ds.menuPanelColor2, '#002f52');
         var tc = V('tc', ds.menuTextColor, '#ffffff'), tc2 = V('tc2', ds.menuTextColor2, '#8096a7');
         /* the stats boxes: Bootstrap gives <pre> a light grey background, so they set their own */
-        var box = 'background:rgba(0,0,0,0.25);border:1px solid ' + pc2 + ';border-radius:3px;padding:4px 6px;word-break:normal;';
+        var box = 'background:rgba(0,0,0,0.25);border:1px solid ' + pc2 + ';border-radius:var(--lm-radius-s,3px);padding:4px 6px;word-break:normal;';
         /* fits a 915x412 phone: narrow, scrolls inside, the close cross is a large tap target */
         var md = el('div', 'position:fixed;top:8px;left:8px;width:380px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
             'display:flex;flex-direction:column;z-index:2147481000;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
-            'border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:11px;line-height:1.35;overflow:hidden;');
+            'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:11px;line-height:1.35;overflow:hidden;');
         md.id = 'lm-perf-diag';
         var head = el('div', 'padding:7px 44px 6px 10px;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
         head.appendChild(el('div', 'font-size:13px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;', T('lmPerfDiag', 'Performance diagnostics')));
-        var x = el('div', 'position:absolute;top:2px;right:4px;cursor:pointer;font-size:18px;color:' + tc2 + ';width:34px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,0.05);', '✕');
+        var x = el('div', 'position:absolute;top:2px;right:4px;cursor:pointer;font-size:18px;color:' + tc2 + ';width:34px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', '✕');
         x.id = 'lm-perf-diag-close';
         x.title = T('close', 'Close');
         var stop = function (e) { e.preventDefault(); e.stopPropagation(); };
@@ -1506,7 +1506,7 @@
         makeDraggable(md, head, x);
         var body = el('div', 'padding:6px 10px 8px;overflow:auto;-webkit-overflow-scrolling:touch;');
         md.appendChild(body);
-        var cv = el('canvas', 'display:block;width:100%;height:64px;background:rgba(0,0,0,0.35);border-radius:3px;');
+        var cv = el('canvas', 'display:block;width:100%;height:64px;background:rgba(0,0,0,0.35);border-radius:var(--lm-radius-s,3px);');
         cv.width = 360; cv.height = 64;
         body.appendChild(cv);
         var stats = el('pre', 'margin:4px 0 6px;white-space:pre-wrap;font:11px/1.35 monospace;color:' + tc + ';' + box);
@@ -1515,7 +1515,7 @@
         var evs = el('pre', 'margin:2px 0 6px;white-space:pre-wrap;font:10px/1.35 monospace;color:' + tc2 + ';max-height:84px;overflow:auto;' + box);
         body.appendChild(evs);
         body.appendChild(el('div', 'font-weight:700;color:' + mc + ';margin-top:2px;', T('lmNetQuality', 'Network quality (this session)')));
-        var nv = el('canvas', 'display:block;width:100%;height:56px;background:rgba(0,0,0,0.35);border-radius:3px;margin-top:2px;');
+        var nv = el('canvas', 'display:block;width:100%;height:56px;background:rgba(0,0,0,0.35);border-radius:var(--lm-radius-s,3px);margin-top:2px;');
         nv.width = 360; nv.height = 56;
         body.appendChild(nv);
         var nstats = el('pre', 'margin:4px 0 6px;white-space:pre-wrap;font:11px/1.35 monospace;color:' + tc + ';' + box);
@@ -1525,7 +1525,7 @@
         body.appendChild(hist);
         var row = el('div', 'display:flex;gap:6px;flex-wrap:wrap;');
         var btn = function (id, text, fn) {
-            var b = el('button', 'cursor:pointer;font-family:inherit;font-size:11px;padding:5px 10px;border-radius:4px;border:1px solid ' + pc2 + ';background:rgba(255,255,255,0.05);color:' + tc + ';', text);
+            var b = el('button', 'cursor:pointer;font-family:inherit;font-size:11px;padding:5px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + pc2 + ';background:rgba(255,255,255,0.05);color:' + tc + ';', text);
             b.type = 'button';
             b.id = id;
             b.addEventListener('click', function (e) { stop(e); fn(); });
