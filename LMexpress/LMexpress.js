@@ -9122,10 +9122,16 @@ function lmThemeSendToModalIframes(sel) {
         try {
             var _td = lmThemeData();
             var _r = document.documentElement.style;
-            /* --lm-pc, --lm-pc2, --lm-mc, --lm-tc and --lm-tc2 come from the theme setters of ogario.v4.js
-             * (a stylesheet that follows every theme change); inline values here would win over it
-             * and keep the old colours after a change, so any set before are removed */
-            ['--lm-pc', '--lm-pc2', '--lm-mc', '--lm-tc', '--lm-tc2'].forEach(function (k) { _r.removeProperty(k); });
+            /* Set ALL --lm-* vars from the user's actual theme so CSS fallbacks
+             * never show the wrong (hardcoded) colour.  ogario.v4.js also sets
+             * --lm-mc/pc/tc via stylesheet rules when the user changes theme;
+             * inline properties here have higher priority, so we re-read and
+             * re-set whenever the theme is applied (see lmPromoChrome). */
+            _r.setProperty('--lm-pc',  _td.pc);
+            _r.setProperty('--lm-pc2', _td.pc2);
+            _r.setProperty('--lm-mc',  _td.mc);
+            _r.setProperty('--lm-tc',  _td.tc);
+            _r.setProperty('--lm-tc2', _td.tc2);
             _r.setProperty('--lm-op',  _td.op);
             _r.setProperty('--lm-btc', _td.btc);
             _r.setProperty('--lm-b1',  _td.b1);
@@ -9141,16 +9147,16 @@ function lmThemeSendToModalIframes(sel) {
  * Private room) with the --lm-* menu colours, the close cross on the right and "?" on the left,
  * centred and kept on screen, and only this dialog drags (by its title bar). */
 function lmPromoChrome(sel) {
-    /* Ensure the user's actual theme colors are set as CSS custom properties
-     * on the document root so every var(--lm-*) reference resolves to the
-     * user-chosen color instead of falling through to the hardcoded fallback. */
+    /* Set ALL --lm-* vars from the user's actual theme so CSS fallbacks
+     * never show the wrong (hardcoded) colour. */
     try {
         var _td = lmThemeData();
         var _r = document.documentElement.style;
-        /* --lm-pc, --lm-pc2, --lm-mc, --lm-tc and --lm-tc2 come from the theme setters of ogario.v4.js
-         * (a stylesheet that follows every theme change); inline values here would win over it
-         * and keep the old colours after a change, so any set before are removed */
-        ['--lm-pc', '--lm-pc2', '--lm-mc', '--lm-tc', '--lm-tc2'].forEach(function (k) { _r.removeProperty(k); });
+        _r.setProperty('--lm-pc',  _td.pc);
+        _r.setProperty('--lm-pc2', _td.pc2);
+        _r.setProperty('--lm-mc',  _td.mc);
+        _r.setProperty('--lm-tc',  _td.tc);
+        _r.setProperty('--lm-tc2', _td.tc2);
         _r.setProperty('--lm-op',  _td.op);
         _r.setProperty('--lm-btc', _td.btc);
         _r.setProperty('--lm-b1',  _td.b1);
