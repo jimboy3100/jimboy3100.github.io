@@ -205,7 +205,8 @@ function img(name, w, h) { return { _id: nextId++, name: name, width: w, height:
 const LM = { cells: [], playerCells: [], playerCellsMulti: [], play: false, showCustomSkins: true, gameMode: ':ffa', hideSmallBots: false, indexedCells: {}, selected: null, time: 100000, arrowFB: null, cursorX: 0, cursorY: 0 };
 const ogario = { viewScale: 1 };
 const window = { teammatenicks: [], _lmTeammateNickSet: new Set(), LM_DPR: 1, legendmod5: { optimizedMass: true }, innerWidth: 240, innerHeight: 160 };
-const SEP = {};
+/* an Array, as SpecialEffectPlayers in ogario.v4.js */
+const SEP = [];
 const document = { createElement: () => new SoftCanvas(0, 0, 'txt') };
 const fbImage = img('fbBadge', 40, 40);
 const application = {
@@ -311,7 +312,7 @@ function paintCellCanvas(c, ctx, realText) {
         if (im) ctx.drawImage(im, c.x - y / 2, c.y - y, y, y);
     }
     ctx.globalAlpha = pre;
-    if (SEP[c.targetNick] && ms.customSkins && LM.showCustomSkins) c.drawSpecialSkin(ctx, y);
+    if (typeof SEP[c.targetNick] === 'string' && SEP[c.targetNick] && ms.customSkins && LM.showCustomSkins) c.drawSpecialSkin(ctx, y);
     const ring = lmRing(c, y, R.scale);
     if (ring) R.strokeMultiboxRing(ctx, c.x, c.y, y, ring);
     if (ms.teammatesInd && !c.isPlayerCell && y <= 800 && window.teammatenicks && c.targetNick != '' && window._lmTeammateNickSet.has(c.targetNick)) R.drawTeammatesInd(ctx, c.x, c.y, y);
@@ -375,8 +376,12 @@ function frame(s) {
     if (gl) {
         /* the GL layer: bodies and labels in cell order */
         gctx.save(); worldTransform(gctx, s);
+        /* the GL batch leaves out bodies outside the view (cell.draw then draws them in its
+         * Canvas2D branch) */
+        const vx = s.W / 2 / s.zoom, vy = s.H / 2 / s.zoom;
         for (const c of LM.cells) {
             if (!drawable(c)) continue;
+            if (c.x + c.size < s.camX - vx || c.x - c.size > s.camX + vx || c.y + c.size < s.camY - vy || c.y - c.size > s.camY + vy) continue;
             c._webglRendered = true;
             gctx.disc(c.x, c.y, c.size, c.body);
             const pre = gctx.globalAlpha;
@@ -566,6 +571,17 @@ const splasher = makeCell({ x: -880, y: 0, size: 500, targetNick: 'splasher' });
 scene([makeCell({ x: 80, y: 50, size: 20, targetNick: 'dot' }), splasher]);
 r = frame(S1);
 check('effect of a cell outside the frame reaching in: WebGL, equal', r.gl && marks(r, window.iconSpecialSkinEffectsSplash) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+/* a big cell just below the screen (the GL batch leaves its body out): its hat reaches in over
+ * an earlier small cell and lies above it, as in Canvas2D */
+{
+    SEP.lowhat = 'Hat';
+    const lowHat = makeCell({ x: 0, y: 190, size: 100, targetNick: 'lowhat' }), small = makeCell({ x: 0, y: 60, size: 25, targetNick: 's' });
+    scene([small, lowHat]);
+    const g = frame(S1);
+    check('hat of a cell below the screen over an earlier cell: WebGL, hat above that cell, equal', g.gl && marks(g, hat) > 0 && g.d.n === 0,
+        'gl ' + g.gl + ' ' + why() + ' hat px ' + marks(g, hat) + ' ' + g.d.n + ' px');
+    delete SEP.lowhat;
+}
 /* (a teammate on screen: the overlay is in use this frame; no labels on the big cell, whose
  * label box would reach the teammate's indicator) */
 team(['dot']); setSettings({ map: { showMass: false } });
@@ -582,6 +598,27 @@ r = frame(S5);
 check('effect + teammate indicator + chat bubble on one cell, DPR 2: WebGL, equal', r.gl && marks(r, hat) > 0 && marks(r, R.indicator) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 check('  order: hat > indicator > nick > mass > bubble', fgOps(r).join(' ') === 'hat teamInd txt txt txt', fgOps(r).join(' '));
 hatter.size = 50;
+
+/* nicks that name an Array member ("at", "map"...) or an effect that is not a string: no
+ * effect, no draw error, the labels stay where they are (they were moved to the overlay and
+ * then lost when drawSpecialSkin threw on a method of the list) */
+reset();
+{
+    let errs = 0, ok = true, info = '';
+    const ce = console.error;
+    console.error = function () { errs++; };
+    SEP.num = 5;
+    for (const nick of ['at', 'map', 'num']) {
+        const c = makeCell({ x: 0, y: 10, size: 60, targetNick: nick });
+        scene([c]);
+        const g = frame(S1);
+        if (!(g.gl && !R._lmLabelsOnFg(c) && g.d.n === 0)) { ok = false; info += ' [' + nick + ': gl ' + g.gl + ' ' + why() + ' onFg ' + R._lmLabelsOnFg(c) + ' ' + g.d.n + ' px]'; }
+    }
+    console.error = ce;
+    delete SEP.num;
+    check('nicks "at" / "map", an effect that is not a string: WebGL, no effect, labels kept on the GL layer, equal', ok, info);
+    check('  no cell draw errors', errs === 0, errs + ' errors');
+}
 
 /* ---- overlapping cells ---- */
 

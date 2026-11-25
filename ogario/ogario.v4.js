@@ -36636,7 +36636,10 @@ function thelegendmodproject() {
             }
         };
         this.drawSpecialSkin = function (style, y) {
-            if (SpecialEffectPlayers[this.targetNick]) {
+            /* effect strings only: the list is an Array, so a nick such as "map" or "at" found one
+             * of its methods (split threw in every frame and the cell lost its labels) */
+            var _spRaw = SpecialEffectPlayers[this.targetNick];
+            if (typeof _spRaw === 'string' && _spRaw) {
                 /* Cache split result on cell — only recompute when nick changes */
                 /* Re-split when the effect string itself changes, not only the nick. */
                 if (!this.SpecialEffect || this._specialEffectNick !== this.targetNick || this._specialEffectRaw !== SpecialEffectPlayers[this.targetNick]) {
@@ -36994,7 +36997,8 @@ function thelegendmodproject() {
                         var _fbImg = defaultmapsettings.FBTracking ? this.lmFbBadge() : null;
                         /* (Canvas2D draws the effects only with custom skins on) */
                         var _spFx = defaultmapsettings.customSkins && LM.showCustomSkins &&
-                            typeof SpecialEffectPlayers !== 'undefined' && SpecialEffectPlayers[this.targetNick];
+                            typeof SpecialEffectPlayers !== 'undefined' && typeof SpecialEffectPlayers[this.targetNick] === 'string' &&
+                            SpecialEffectPlayers[this.targetNick];
                         var _onFg = drawRender._lmLabelsOnFg(this);
                         if (_fbImg || _spFx) {
                             var _fg1 = drawRender._lmFgFor(style), _c1 = _fg1 || style;
@@ -59918,7 +59922,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 on = true;
             }
             /* drawSpecialSkin runs with custom skins on, as in the Canvas2D branch */
-            if (spFx && nick && spFx[nick] && ms.customSkins && LM.showCustomSkins) {
+            if (spFx && nick && typeof spFx[nick] === 'string' && spFx[nick] && ms.customSkins && LM.showCustomSkins) {
                 var k = this._lmSpFxReach(spFx[nick]) * r;
                 n = this._lmFxPush(n, x - k, y - k, x + k, y + k, this.GLW.COVER_FX);
                 on = true;
@@ -77455,7 +77459,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     /* EXPANDING LAND — deform Canvas2D cell position (jelly ON = no-op) */
                     this.drawLegendWorldDeformedCanvasCell(
                         drawCell,
-                        this.ctx
+                        /* A cell whose body the GL batch left out (outside the view) but whose FB
+                         * badge or effect canUseWebGLScene checked: what reaches the screen of it
+                         * (badge, effect, labels) lies above the GL cells drawn before it, as in
+                         * Canvas2D, so it goes on the overlay (on this.ctx it was under them). */
+                        _lmFgOn && !drawCell._webglRendered && this._lmLabelsOnFg(drawCell) ? _lmFxCtx : this.ctx
                     );
 
 
