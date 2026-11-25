@@ -131,7 +131,7 @@ check('1 cell wording', P.stepText(steps[0]) === T('mass', ['500', T('cell')]), 
 check('English pack texts reach the steps', P.stepText({ kind: 'split', c: 8 }) === 'split into 8 cells');
 /* the language follows the runtime live: no reload */
 ctx.LMi18n.setLang('el', { save: false });
-check('Greek text after a language change', P.stepText({ kind: 'split', c: 8 }) === 'χωρίστηκες σε 8 κύτταρα' &&
+check('Greek text after a language change', P.stepText({ kind: 'split', c: 8 }) === 'έκανες split σε 8 κύτταρα' &&
   P.stepText({ kind: 'split', c: 8 }) === T('split', [cells(8, 'el')], 'el'));
 ctx.LMi18n.setLang('en', { save: false });
 check('back to English', P.stepText({ kind: 'split', c: 8 }) === T('split', [cells(8)]));
