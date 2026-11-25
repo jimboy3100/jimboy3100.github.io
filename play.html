@@ -48,21 +48,25 @@
         })();
     </script>
     <!-- Loading screen: the page was white until every script below had loaded. It names the file
-         being loaded, shows the progress and goes away when the menu is there. Clicks pass through. -->
-    <div id="lm-boot" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;pointer-events:none;background:#00243e;color:#fff;font:15px/1.5 Ubuntu,Arial,sans-serif;display:flex;align-items:center;justify-content:center;transition:opacity .4s;">
-        <div style="width:min(360px,80vw);text-align:center;">
-            <div style="font-size:26px;font-weight:700;letter-spacing:1px;">Legend Mod</div>
-            <div id="lm-boot-text" style="margin:10px 0 12px;opacity:.85;">Loading...</div>
-            <div style="height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden;">
-                <div id="lm-boot-bar" style="height:100%;width:3%;border-radius:3px;background:#01d9cc;transition:width .25s;"></div>
-            </div>
-            <div id="lm-boot-file" style="margin-top:8px;font-size:12px;opacity:.6;min-height:18px;word-break:break-all;"></div>
-        </div>
-    </div>
+         being loaded, shows the progress and goes away when the menu is there. Clicks pass through.
+         It is made by the script below, not written as markup: a <div> here ends <head> for the
+         parser, and the stylesheets after it then came after the theme's style tags (appended to
+         <head>), so their default colours beat the player's menu theme. -->
     <script>
         (function () {
-            var boot = document.getElementById('lm-boot'), bar = document.getElementById('lm-boot-bar');
-            var text = document.getElementById('lm-boot-text'), file = document.getElementById('lm-boot-file');
+            /* added to <html> itself, next to <head>: the parser stays in <head> for the stylesheets */
+            var boot = document.createElement('div');
+            boot.id = 'lm-boot';
+            boot.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:2147483000;pointer-events:none;background:#00243e;color:#fff;font:15px/1.5 Ubuntu,Arial,sans-serif;display:flex;align-items:center;justify-content:center;transition:opacity .4s;';
+            boot.innerHTML = '<div style="width:min(360px,80vw);text-align:center;">' +
+                '<div style="font-size:26px;font-weight:700;letter-spacing:1px;">Legend Mod</div>' +
+                '<div id="lm-boot-text" style="margin:10px 0 12px;opacity:.85;">Loading...</div>' +
+                '<div style="height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden;">' +
+                '<div id="lm-boot-bar" style="height:100%;width:3%;border-radius:3px;background:#01d9cc;transition:width .25s;"></div></div>' +
+                '<div id="lm-boot-file" style="margin-top:8px;font-size:12px;opacity:.6;min-height:18px;word-break:break-all;"></div></div>';
+            document.documentElement.appendChild(boot);
+            var bar = boot.querySelector('#lm-boot-bar');
+            var text = boot.querySelector('#lm-boot-text'), file = boot.querySelector('#lm-boot-file');
             /* the language chosen in Legend Mod (localStorage languagemod: 1 English, 2 Greek ... 12 Dutch,
              * as in the Choose Language list); never chosen: the browser's language, else English.
              * The Legend Express extension's loading screen (LMexpress/extension/content.js) has the same list. */
