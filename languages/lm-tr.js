@@ -2942,7 +2942,7 @@
 "pack.rmbMouseFeed": "Sağ tık - Fareyle feed",
 "pack.invertMouseButtons": "Fare tuşlarını ters çevir",
 "pack.hud": "HUD",
-"pack.team": "Takım",
+"pack.team": "Takım sıralamasını göster",
 "pack.showTargeting": "Hedeflemeyi göster",
 "pack.showLeaderboardMass": "Sıralamada kütleyi göster",
 "pack.centeredLeaderboard": "Ortalanmış sıralama",

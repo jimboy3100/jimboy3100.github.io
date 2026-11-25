@@ -2942,7 +2942,7 @@
 "pack.rmbMouseFeed": "RMB - Mouse feed",
 "pack.invertMouseButtons": "Invert mouse buttons",
 "pack.hud": "HUD",
-"pack.team": "Team",
+"pack.team": "Show teamboard",
 "pack.showTargeting": "Show targeting",
 "pack.showLeaderboardMass": "Show leaderboard mass",
 "pack.centeredLeaderboard": "Centered leaderboard",

@@ -2942,7 +2942,7 @@
 "pack.rmbMouseFeed": "Klik kanan - feed dengan mouse",
 "pack.invertMouseButtons": "Balik tombol mouse",
 "pack.hud": "HUD",
-"pack.team": "Leaderboard tim",
+"pack.team": "Tampilkan leaderboard tim",
 "pack.showTargeting": "Tampilkan target",
 "pack.showLeaderboardMass": "Tampilkan massa di leaderboard",
 "pack.centeredLeaderboard": "Leaderboard di tengah",

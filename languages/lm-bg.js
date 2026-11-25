@@ -2942,7 +2942,7 @@
 "pack.rmbMouseFeed": "RMB - Фийд с мишката",
 "pack.invertMouseButtons": "Разменете бутоните на мишката",
 "pack.hud": "HUD",
-"pack.team": "Отбор",
+"pack.team": "Покажи класацията на отбора",
 "pack.showTargeting": "Покажи проследяването на цел",
 "pack.showLeaderboardMass": "Покажи масата в класацията",
 "pack.centeredLeaderboard": "Центрирана класация",

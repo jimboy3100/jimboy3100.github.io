@@ -2942,7 +2942,7 @@
 "pack.rmbMouseFeed": "Tasto destro - feed con il mouse",
 "pack.invertMouseButtons": "Inverti i tasti del mouse",
 "pack.hud": "HUD",
-"pack.team": "Classifica squadra",
+"pack.team": "Mostra classifica squadra",
 "pack.showTargeting": "Mostra bersaglio",
 "pack.showLeaderboardMass": "Mostra massa in classifica",
 "pack.centeredLeaderboard": "Classifica centrata",

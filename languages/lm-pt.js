@@ -2942,7 +2942,7 @@
 "pack.rmbMouseFeed": "Botão direito - feed com o mouse",
 "pack.invertMouseButtons": "Inverter botões do mouse",
 "pack.hud": "HUD",
-"pack.team": "Ranking da equipe",
+"pack.team": "Mostrar ranking da equipe",
 "pack.showTargeting": "Mostrar alvo",
 "pack.showLeaderboardMass": "Mostrar massa no ranking",
 "pack.centeredLeaderboard": "Ranking centralizado",
