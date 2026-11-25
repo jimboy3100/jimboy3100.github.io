@@ -1,33 +1,37 @@
 //v0.1t
+/* Texts from the language packs (developers/i18n/src/lmx.json, lmx.rp.*). The window stays in the page:
+ * its data-i18n attributes let LMi18n.apply switch the texts when the language changes. */
+function _lmrpT(k, v) { return window.lmT ? window.lmT(k, v) : String(k); }
+function _lmrpE(k, v) { return String(_lmrpT(k, v)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 $('#helloContainer').after('<div class="modal fade in" id="replayModal" aria-hidden="false" style="display: block;">' +
     '<div class="modal-backdrop fade in"></div>' +
     '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 500px;">' +
     '<div class="modal-content" style="background:var(--lm-pc,#00243e);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);">' +
-    '<div id="CloseReplay2" class="modal-header" style="border-bottom:1px solid var(--lm-pc2,#002f52);background:linear-gradient(180deg,var(--lm-pc2,#002f52) 0%,var(--lm-pc,#00243e) 100%);cursor:move"><button id="CloseReplay" type="button" class="close" data-dismiss="modal" style="color:var(--lm-tc2,#8096a7);opacity:1;text-shadow:none"><span aria-hidden="true">×</span><span class="sr-only">' + (typeof Premadeletter113 !== 'undefined' ? Premadeletter113 : 'Close') + '</span></button> <button id="FAQReplay" type="button" class="close" data-dismiss="modal" style="color:var(--lm-tc2,#8096a7);opacity:1;text-shadow:none"><span aria-hidden="true">?</span><span class="sr-only">' + (typeof Premadeletter113 !== 'undefined' ? Premadeletter113 : 'Close') + '</span></button>' +
-    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif;color:var(--lm-mc,#01d9cc);font-weight:700;text-transform:uppercase;letter-spacing:1px">' + 'Replay' + '</h4>' +
+    '<div id="CloseReplay2" class="modal-header" style="border-bottom:1px solid var(--lm-pc2,#002f52);background:linear-gradient(180deg,var(--lm-pc2,#002f52) 0%,var(--lm-pc,#00243e) 100%);cursor:move"><button id="CloseReplay" type="button" class="close" data-dismiss="modal" style="color:var(--lm-tc2,#8096a7);opacity:1;text-shadow:none"><span aria-hidden="true">×</span><span class="sr-only" data-i18n="pack.close2">' + _lmrpE('pack.close2') + '</span></button> <button id="FAQReplay" type="button" class="close" data-dismiss="modal" style="color:var(--lm-tc2,#8096a7);opacity:1;text-shadow:none"><span aria-hidden="true">?</span><span class="sr-only" data-i18n="help">' + _lmrpE('help') + '</span></button>' +
+    '<h4 class="modal-title" style="font-family: Roboto Condensed, sans-serif;color:var(--lm-mc,#01d9cc);font-weight:700;text-transform:uppercase;letter-spacing:1px" data-i18n="lmx.rp.title">' + _lmrpE('lmx.rp.title') + '</h4>' +
     '</div>' +
     '<div class="modal-body" style="background:transparent;color:var(--lm-tc,#fff);padding:12px 15px">' +
     '<select id="savedArenas" class="form-control" required="" style="display:inline; margin-bottom: 10px; width: 70%"></select>' +	
-	'<button id="watchReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal">Watch</button>' +
-	'<button onclick="saveTextAsFile()" style="display:inline;">Save</button>' +
-	'<button id="openReplayStudiobtn" style="display:inline;" type="button" title="Timeline, bookmarks, instant replay and replay library">Studio</button>' +
-    '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="Predicted values" style="width: 95%; display: inline-block" disabled>' +
+	'<button id="watchReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal" data-i18n="lmx.rp.watch">' + _lmrpE('lmx.rp.watch') + '</button>' +
+	'<button onclick="saveTextAsFile()" style="display:inline;" data-i18n="lmx.rp.save">' + _lmrpE('lmx.rp.save') + '</button>' +
+	'<button id="openReplayStudiobtn" style="display:inline;" type="button" title="' + _lmrpE('lmx.rp.studioTip') + '" data-i18n-title="lmx.rp.studioTip" data-i18n="lmx.rp.studio">' + _lmrpE('lmx.rp.studio') + '</button>' +
+    '<input type="text" class="form-control" id="arenaReplaySpecifications" placeholder="' + _lmrpE('lmx.rp.predicted') + '" data-i18n-placeholder="lmx.rp.predicted" style="width: 95%; display: inline-block" disabled>' +
     '<br>' +
     '<br>' +
-    '<color="red" style="display:inline" title="Milliseconds per recorded packet: lower = faster"> Delay (ms):</color><input id="arenaReplaySpeed" value="20" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 15%; margin-top: -30px;">' +	
+    '<color="red" style="display:inline" title="' + _lmrpE('lmx.rp.delayTip') + '" data-i18n-title="lmx.rp.delayTip"> <span data-i18n="lmx.rp.delay">' + _lmrpE('lmx.rp.delay') + '</span></color><input id="arenaReplaySpeed" value="20" type="number" min="1" max="100" step="1" class="form-control" required="" style="display:inline; width: 15%; margin-top: -30px;">' +	
 	//'<color="red" style="display:inline;"> PPS:</color><div id="arenaReplayPPS" style="display:inline;width: 10%;"></div><input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +
-    '<color="red" style="display:inline;"> <input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +	
+    '<color style="display:inline;"> <input type="file" id="fileToLoad" style="display:inline;" onchange="loadFileAsText()">' +	
     '<br>' +
 	'<br>' +
-	'Start:<input type="number" class="form-control" id="startReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
-	' End:<input type="number" class="form-control" id="endReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
-	' Current:<input type="text" class="form-control" id="totalReplayPackets" placeholder="" style="width: 19%; display: inline-block" disabled>' +
-	'<button id="stopReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal">Stop</button>' +
+	'<span data-i18n="lmx.rp.start">' + _lmrpE('lmx.rp.start') + '</span><input type="number" class="form-control" id="startReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
+	' <span data-i18n="lmx.rp.end">' + _lmrpE('lmx.rp.end') + '</span><input type="number" class="form-control" id="endReplayTime" placeholder="" style="width: 19%; display: inline-block">' +
+	' <span data-i18n="lmx.rp.current">' + _lmrpE('lmx.rp.current') + '</span><input type="text" class="form-control" id="totalReplayPackets" placeholder="" style="width: 19%; display: inline-block" disabled>' +
+	'<button id="stopReplaybtn" style="display:inline; margin-left: 12px;" type="button" data-dismiss="modal" data-i18n="lmx.rp.stop">' + _lmrpE('lmx.rp.stop') + '</button>' +
 	'<br>' +
 	'<br>' +
-	'Greyscale: <input type="checkbox" id="greyScale">' +
-	' Sepia: <input type="checkbox" id="sepia">' +
-	' Hue-rotate: <input type="checkbox" id="hueRotate">' +
+	'<span data-i18n="lmx.rp.greyscale">' + _lmrpE('lmx.rp.greyscale') + '</span> <input type="checkbox" id="greyScale">' +
+	' <span data-i18n="lmx.rp.sepia">' + _lmrpE('lmx.rp.sepia') + '</span> <input type="checkbox" id="sepia">' +
+	' <span data-i18n="lmx.rp.hueRotate">' + _lmrpE('lmx.rp.hueRotate') + '</span> <input type="checkbox" id="hueRotate">' +
 	
 	'<br>' +	
 	'</div>' +
@@ -174,7 +178,7 @@ function saveTextAsFile()
 /* nothing selected (or a removed recording) threw on RecordedProtocol[null].length */
 var _lmSel = $('#savedArenas').val();
 if (!_lmSel || !window.RecordedProtocol[_lmSel]) {
-	if (window.toastr) toastr.warning('Choose a recorded game first.');
+	if (window.toastr) toastr.warning(_lmrpE('lmx.rp.chooseFirst'));
 	return;
 }
 savedBuffedReplayProtocol=[]
@@ -195,7 +199,7 @@ var tempo = JSON.stringify(savedBuffedReplayProtocol);
  
     var downloadLink = document.createElement("a");
     downloadLink.download = fileNameToSaveAs;
-    downloadLink.innerHTML = "Download File";
+    downloadLink.textContent = _lmrpT('lmx.rp.downloadFile');
     downloadLink.href = textToSaveAsURL;
     downloadLink.onclick = destroyClickedElement;
     downloadLink.style.display = "none";
@@ -231,7 +235,7 @@ function loadFileAsText(file, onDone)
 var tempo2;
 try { tempo2 = JSON.parse(tempo); } catch (e) { tempo2 = null; }
 if (!Array.isArray(tempo2) || tempo2.length < 2) {
-	if (window.toastr) toastr.error('This replay file could not be read.');
+	if (window.toastr) toastr.error(_lmrpE('lmx.rp.unreadable'));
 	return;
 }
 window.RecordedProtocol[fileToLoad.name]=[]
@@ -309,7 +313,7 @@ function loadReplayFromWeb(temp2){
 	temp2 = String(temp2).replace(/^(https?:)?\/\/jimboy3100\.github\.io\//i, "https://www.legendmod.ml/");
 	$.ajax(temp2, {
         error() {
-			toastr.error("<b>[" + Premadeletter123 + "]:</b> " + "Could not download the replay file");
+			toastr.error("<b>[" + _lmrpE('pack.server') + "]:</b> " + _lmrpE('lmx.rp.downloadFailed'));
 		},
         success(sketchContents) {
 			if (temp2.includes(".lm")){
@@ -333,7 +337,7 @@ function loadReplayFromWeb(temp2){
 				});				
 			}
 			else{
-				toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + "Requested file is not .lm");
+				toastr.warning("<b>[" + _lmrpE('pack.server') + "]:</b> " + _lmrpE('lmx.rp.notLm'));
 			}
         },
         method: "GET",

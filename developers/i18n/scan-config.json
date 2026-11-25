@@ -8,7 +8,23 @@
     "_lmMhT",
     "_lmBdgT",
     "_lmTx",
-    "LMi18n.t"
+    "LMi18n.t",
+    "_lmxT",
+    "_lmxE",
+    "_lmUE",
+    "_lmsdT",
+    "_lmsdE",
+    "_lmsnT",
+    "_lmsnE",
+    "_lmrpT",
+    "_lmrpE",
+    "_lmlgT",
+    "_lmlgE",
+    "_lmvoT",
+    "_lmvoE",
+    "lmShopSpan",
+    "lmxExtText",
+    "lmxText"
   ],
   "strict": [
     "LMexpress/i18n.js",
@@ -38,6 +54,27 @@
     "ogario/modules/lab.js",
     "ogario/modules/macroeditor.js",
     "ogario/modules/gamepad-ui.js",
+    "LMexpress/LMexpress.js",
+    "LMexpress/lm_extended_ui.js",
+    "LMexpress/skinsAndDeals.js",
+    "LMexpress/replay.js",
+    "LMexpress/userLeaguesInfoRequest.js",
+    "LMexpress/standby-server.js",
+    "LMexpress/LMexpress.sniff.js",
+    "LMexpress/LMexpress.sniff2.js",
+    "LMexpress/LMexpress.sniff3.js",
+    "LMexpress/LMexpress.user.js",
+    "LMexpress/LMImplements.js",
+    "LMexpress/LMImplementsStart.js",
+    "LMexpress/bannedUID.js",
+    "LMexpress/fixVideoSkinsPreview.js",
+    "LMexpress/legend.sniff2.js",
+    "LMexpress/proto.decoder.js",
+    "LMexpress/extension/content.js",
+    "LMexpress/extension/popup.js",
+    "LMexpress/extension/background.js",
+    "LMexpress/extension/popup.html",
+    "LMexpress/extension/texts.js",
     "index.html",
     "features.html",
     "faq.html"
@@ -93,6 +130,9 @@
     ],
     "index.html": [
       "setTimeout(function() {drawRender.render()}, 0)"
+    ],
+    "LMexpress/extension/popup.html": [
+      "Legend Express"
     ]
   }
 }

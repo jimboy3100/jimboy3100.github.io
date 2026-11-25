@@ -5,6 +5,9 @@
  * node developers/tests/extension.js */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const src = fs.readFileSync(path.join(__dirname, '..', '..', 'LMexpress', 'extension', 'content.js'), 'utf8');
+/* the manifest runs texts.js (the generated texts) before content.js, in the same scope */
+const texts = fs.readFileSync(path.join(__dirname, '..', '..', 'LMexpress', 'extension', 'texts.js'), 'utf8');
+const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'LMexpress', 'extension', 'manifest.json'), 'utf8'));
 let fail = 0;
 const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) fail++; };
 
@@ -32,6 +35,7 @@ function run(pathname, stored, enabled) {
     ctx.window = ctx;
     ctx.window.stop = () => log.push('stop');
     vm.createContext(ctx);
+    vm.runInContext(texts, ctx);
     vm.runInContext(src, ctx);
     const sync = log.slice();
     if (storageCb) storageCb({ enabled: enabled });
@@ -39,6 +43,7 @@ function run(pathname, stored, enabled) {
     return { log, sync, ls, written, ctx };
 }
 
+check('manifest: texts.js runs before content.js', manifest.content_scripts[0].js.join() === 'texts.js,content.js');
 let r = run('/', {}, true);
 check('first visit, switch on: agar.io stopped at once, before the switch answers', r.sync.join() === 'stop,clear,loading');
 check('then the page is fetched and written with the init call', r.log.indexOf('fetch') > 0 && /LEGEND/.test(r.written) && /init\("1\.8\.4"\)/.test(r.written) && r.ls.lmExpressEnabled === '1');

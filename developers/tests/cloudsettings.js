@@ -17,6 +17,18 @@ const check = (name, ok) => { if (!ok) { failed++; console.log('FAIL ' + name); 
 
 check('no sync code prompt left', !/prompt\(/.test(code));
 
+// the English texts of the language packs (developers/i18n/src), as lmT gives them with no language file loaded
+const I = require(path.join(__dirname, '..', 'i18n', 'lib'));
+const EN = {};
+(function () { const all = I.readAll(); Object.keys(all).forEach((a) => Object.keys(all[a]).forEach((k) => { EN[k] = all[a][k].en; })); })();
+function lmT(k, v) {
+  const t = k in EN ? EN[k] : k;
+  if (v == null) return t;
+  if (typeof v !== 'object') v = [v];
+  return t.replace(/\{([A-Za-z0-9_]+)\}/g, (m, n) => (v[n] != null ? String(v[n]) : m));
+}
+const esc = (x) => String(x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 function b64url(o) { return Buffer.from(JSON.stringify(o)).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
 const jwt = 'h.' + b64url({ sub: '1122334455', aud: 'x' }) + '.s';
 
@@ -27,6 +39,7 @@ function setup(opts) {
     console, JSON, String, Object, Array, Math, Date, encodeURIComponent, decodeURIComponent, unescape,
     atob: s => Buffer.from(s, 'base64').toString('binary'),
     Premadeletter123: 'SERVER',
+    lmT, _lmxT: lmT, _lmxE: (k, v) => esc(lmT(k, v)),
     userid: opts.userid === undefined ? '1122334455' : opts.userid,
     localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } },
     toastr: { warning: m => toasts.push(['w', m]), info: m => toasts.push(['i', m]), error: m => toasts.push(['e', m]) },

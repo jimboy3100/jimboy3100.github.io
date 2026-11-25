@@ -1,93 +1,25 @@
-/* Skin shop text in the Legend Mod language (language picker; 1 = English). The rest of the
- * new UI is still English; more keys can be added here. */
-var _LM_SHOP_LANGS = { '1': 'en', '2': 'el', '3': 'es', '4': 'bg', '5': 'fr', '6': 'ar', '7': 'zh', '8': 'ru', '9': 'de', '10': 'tr', '11': 'pl', '12': 'nl' };
-var _LM_SHOP_TEXT = {
-    "tabSkins": {"en":"Agar.io Skins","el":"Skins του Agar.io","es":"Skins de Agar.io","bg":"Скинове за Agar.io","fr":"Skins Agar.io","ar":"سكنات Agar.io","zh":"Agar.io 造型","ru":"Скины Agar.io","de":"Agar.io-Skins","tr":"Agar.io Kostümleri","pl":"Skiny Agar.io","nl":"Agar.io-skins"},
-    "tabUpload": {"en":"Custom Skin Uploader","el":"Ανέβασμα δικού σου skin","es":"Subir skin personalizado","bg":"Качване на собствен скин","fr":"Importer un skin personnalisé","ar":"رفع سكن مخصص","zh":"上傳自訂造型","ru":"Загрузка своего скина","de":"Eigenen Skin hochladen","tr":"Özel kostüm yükle","pl":"Wgraj własny skin","nl":"Eigen skin uploaden"},
-    "tabDeals": {"en":"Special Deals","el":"Ειδικές προσφορές","es":"Ofertas especiales","bg":"Специални оферти","fr":"Offres spéciales","ar":"عروض خاصة","zh":"特別優惠","ru":"Спецпредложения","de":"Sonderangebote","tr":"Özel fırsatlar","pl":"Oferty specjalne","nl":"Speciale aanbiedingen"},
-    "titleDeals": {"en":"Special & Daily Deals","el":"Ειδικές & ημερήσιες προσφορές","es":"Ofertas especiales y diarias","bg":"Специални и дневни оферти","fr":"Offres spéciales et du jour","ar":"عروض خاصة ويومية","zh":"特別與每日優惠","ru":"Спецпредложения и предложения дня","de":"Sonder- & Tagesangebote","tr":"Özel ve günlük fırsatlar","pl":"Oferty specjalne i dnia","nl":"Speciale & dagaanbiedingen"},
-    "equipped": {"en":"Currently Equipped Skin","el":"Τρέχον skin","es":"Skin equipado actualmente","bg":"Текущо екипиран скин","fr":"Skin équipé actuellement","ar":"السكن المجهز حاليًا","zh":"目前裝備的造型","ru":"Текущий скин","de":"Aktuell ausgerüsteter Skin","tr":"Şu an kullanılan kostüm","pl":"Aktualnie założony skin","nl":"Huidige skin"},
-    "unequip": {"en":"Unequip","el":"Αφαίρεση","es":"Quitar","bg":"Свали","fr":"Retirer","ar":"إزالة","zh":"卸下","ru":"Снять","de":"Ablegen","tr":"Çıkar","pl":"Zdejmij","nl":"Verwijderen"},
-    "search": {
-        "en": "Search skins by name...",
-        "el": "Αναζήτηση skin με όνομα...",
-        "es": "Buscar skins por nombre...",
-        "bg": "Търсене на скинове по име...",
-        "fr": "Rechercher un skin par nom...",
-        "ar": "ابحث عن السكنات بالاسم...",
-        "zh": "按名稱搜尋造型...",
-        "ru": "Поиск скинов по названию...",
-        "de": "Skins nach Namen suchen...",
-        "tr": "Kostümleri ada göre ara...",
-        "pl": "Szukaj skinów po nazwie...",
-        "nl": "Zoek skins op naam..."
-    },
-    "more": {
-        "en": "Load More Skins",
-        "el": "Περισσότερα skins",
-        "es": "Cargar más skins",
-        "bg": "Още скинове",
-        "fr": "Plus de skins",
-        "ar": "تحميل المزيد",
-        "zh": "載入更多造型",
-        "ru": "Загрузить ещё",
-        "de": "Mehr Skins laden",
-        "tr": "Daha fazla kostüm",
-        "pl": "Więcej skinów",
-        "nl": "Meer skins laden"
-    },
-    "left": {
-        "en": "remaining",
-        "el": "απομένουν",
-        "es": "restantes",
-        "bg": "остават",
-        "fr": "restants",
-        "ar": "متبقية",
-        "zh": "剩餘",
-        "ru": "осталось",
-        "de": "übrig",
-        "tr": "kaldı",
-        "pl": "pozostało",
-        "nl": "over"
-    },
-    "nomatch": {
-        "en": "No skins match",
-        "el": "Κανένα skin δεν ταιριάζει με",
-        "es": "Ningún skin coincide con",
-        "bg": "Няма скинове за",
-        "fr": "Aucun skin ne correspond à",
-        "ar": "لا توجد سكنات مطابقة لـ",
-        "zh": "沒有符合的造型：",
-        "ru": "Нет скинов по запросу",
-        "de": "Keine Skins für",
-        "tr": "Eşleşen kostüm yok:",
-        "pl": "Brak skinów dla",
-        "nl": "Geen skins voor"
-    },
-    "none": {
-        "en": "No skins to show.",
-        "el": "Δεν υπάρχουν skins.",
-        "es": "No hay skins para mostrar.",
-        "bg": "Няма скинове.",
-        "fr": "Aucun skin à afficher.",
-        "ar": "لا توجد سكنات.",
-        "zh": "沒有可顯示的造型。",
-        "ru": "Нет скинов.",
-        "de": "Keine Skins vorhanden.",
-        "tr": "Gösterilecek kostüm yok.",
-        "pl": "Brak skinów.",
-        "nl": "Geen skins om te tonen."
-    }
-};
-function lmShopT(key) {
-    var code = 'en';
-    try { code = _LM_SHOP_LANGS[String(localStorage.getItem('languagemod'))] || 'en'; } catch (e) { }
-    var row = _LM_SHOP_TEXT[key] || {};
-    return row[code] || row.en || '';
-}
+/* Shop texts come from the language packs (developers/i18n/src/lmx.json, keys "lmx.sd.*"), in the
+ * language chosen in Choose Language. Every helper takes a full key: _lmsdT(key, vars) is the text,
+ * _lmsdE the same HTML-escaped (vars included). lmShopT/lmShopTH("name") are the short forms
+ * ("lmx.sd." + name) kept for scripts that call window.lmShopT. */
+function _lmsdT(key, vars) { return window.lmT ? window.lmT(key, vars) : String(key); }
+function _lmsdEsc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function _lmsdE(key, vars) { return _lmsdEsc(_lmsdT(key, vars)); }
+function lmShopT(name, vars) { return _lmsdT('lmx.sd.' + name, vars); } // i18n-ok: short-name form for other scripts
 window.lmShopT = lmShopT;
-/* HTML-escaped lmShopT for markup ("&" in "Special & Daily Deals") */
-function lmShopTH(key) { return String(lmShopT(key)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function lmShopTH(name, vars) { return _lmsdE('lmx.sd.' + name, vars); } // i18n-ok: short-name form for other scripts
+/* a text element that follows a language change while it is shown (LMi18n.apply fills data-i18n) */
+function lmShopSpan(key, vars) {
+    return '<span data-i18n="' + key + '"' + (vars != null ? ' data-i18n-vars="' + _lmsdEsc(JSON.stringify(typeof vars === 'object' ? vars : [vars])) + '"' : '') + '>' + _lmsdE(key, vars) + '</span>';
+}
+/* ' title="..." data-i18n-title="key"' for an attribute (title, placeholder, aria-label, alt) */
+function lmShopAttr(attr, key) { return ' ' + attr + '="' + _lmsdE(key) + '" data-i18n-' + attr + '="' + key + '"'; }
+/* toast text "<b>[SHOP]:</b> message": tag is shop, upload, skin, server or error (lmx.sd.tagShop...).
+ * The message and its vars are escaped, unless html is true (a text with its own tags: escape vars yourself). */
+var _SD_TAGS = { shop: 'lmx.sd.tagShop', upload: 'lmx.sd.tagUpload', skin: 'lmx.sd.tagSkin', server: 'lmx.sd.tagServer', error: 'lmx.sd.tagError' };
+function lmShopMsg(tag, key, vars, html) {
+    return '<b>' + _lmsdE(_SD_TAGS[tag] || _SD_TAGS.shop) + ':</b> ' + (html ? _lmsdT(key, vars) : _lmsdE(key, vars));
+}
 
 //OLD DEALS
 //v2.23
@@ -268,7 +200,7 @@ function SpecialDeals(defaultTab) {
     if (!window.agarioEncodedUID) {
         if (window.toastr) {
             toastr.warning(
-                '<b>[SHOP]:</b> The Agar.io payment UID is not ready. Log out, log in again, and wait for the profile to load.'
+                lmShopMsg('shop', 'lmx.sd.uidNotReady')
             );
         }
 
@@ -298,13 +230,13 @@ function SpecialDeals(defaultTab) {
         var styleEl = document.createElement('style');
         styleEl.id = 'skinShopStyles';
         styleEl.textContent = [
-            '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid ' + pc2 + ' !important; border-top: 3px solid ' + mc + ' !important; border-radius: 6px !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; resize: both; overflow: hidden; min-width: 340px; min-height: 300px; }',
+            '#specialShopModal .modal-content { background: ' + pc + ' !important; color: ' + tc + ' !important; border: 1px solid ' + pc2 + ' !important; border-top: 3px solid ' + mc + ' !important; border-radius: 6px !important; box-shadow: 0 8px 32px rgba(0,0,0,0.5) !important; resize: both; overflow: hidden; min-width: 340px; min-height: 300px; }', // i18n-ok: CSS
             /* header laid out like every other Legend window (lmPromoChrome): centred title, close at the top right, help at the top left */
-            '#specialShopModal .modal-header { border-bottom: 1px solid ' + pc2 + '; min-height: 0; padding: 10px 52px 8px; text-align: center; position: relative; background: linear-gradient(180deg, ' + pc2 + ' 0%, ' + pc + ' 100%); }',
-            '#CloseSpecialDeals { position: absolute; top: 6px; right: 10px; float: none; margin: 0 !important; z-index: 1050; opacity: 1; color: ' + tc2 + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 0; border: none; background: rgba(255,255,255,.05); transition: all 0.2s; outline: none; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: 400; }',
-            '#CloseSpecialDeals:hover { color: ' + tc + ' !important; background: rgba(255,255,255,.12); }',
-            '#FAQSpecialDeals { position: absolute; top: 6px; left: 10px; float: none; margin: 0 !important; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: rgba(255,255,255,.05) !important; font-size: 14px !important; z-index: 1050; opacity: 0.85; color: ' + mc + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 8px; border: none; transition: all 0.2s; outline: none; }',
-            '#FAQSpecialDeals:hover { opacity: 1; color: ' + mc + ' !important; transform: scale(1.15); filter: brightness(1.3); }',
+            '#specialShopModal .modal-header { border-bottom: 1px solid ' + pc2 + '; min-height: 0; padding: 10px 52px 8px; text-align: center; position: relative; background: linear-gradient(180deg, ' + pc2 + ' 0%, ' + pc + ' 100%); }', // i18n-ok: CSS
+            '#CloseSpecialDeals { position: absolute; top: 6px; right: 10px; float: none; margin: 0 !important; z-index: 1050; opacity: 1; color: ' + tc2 + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 0; border: none; background: rgba(255,255,255,.05); transition: all 0.2s; outline: none; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; font-weight: 400; }', // i18n-ok: CSS
+            '#CloseSpecialDeals:hover { color: ' + tc + ' !important; background: rgba(255,255,255,.12); }', // i18n-ok: CSS
+            '#FAQSpecialDeals { position: absolute; top: 6px; left: 10px; float: none; margin: 0 !important; min-width: 28px; min-height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 4px; background: rgba(255,255,255,.05) !important; font-size: 14px !important; z-index: 1050; opacity: 0.85; color: ' + mc + ' !important; font-size: 18px; line-height: 1; cursor: pointer; padding: 2px 8px; border: none; transition: all 0.2s; outline: none; }', // i18n-ok: CSS
+            '#FAQSpecialDeals:hover { opacity: 1; color: ' + mc + ' !important; transform: scale(1.15); filter: brightness(1.3); }', // i18n-ok: CSS
             '#specialShopModal .shop-tabs { display: flex; border-bottom: 2px solid ' + pc2 + '; margin: 0 -15px; padding: 0 15px; background: rgba(0,0,0,0.2); }',
             '#specialShopModal .shop-tab { flex: 1; text-align: center; padding: 10px 0; cursor: pointer; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: 700; color: ' + tc2 + ' !important; border-bottom: 3px solid transparent; transition: all 0.2s; text-transform: uppercase; letter-spacing: 1px; }',
             '#specialShopModal .shop-tab:hover { color: ' + mc + ' !important; background: rgba(0,0,0,0.15); }',
@@ -385,8 +317,8 @@ function SpecialDeals(defaultTab) {
         var isSkins = (!isDeals && !isUpload);
 
         var initialTabTitle = isDeals
-            ? '<i class="fa fa-briefcase"></i> ' + lmShopTH('titleDeals')
-            : (isUpload ? '<i class="fa fa-upload"></i> ' + lmShopTH('tabUpload') : '<i class="fa fa-paint-brush"></i> ' + lmShopTH('tabSkins'));
+            ? '<i class="fa fa-briefcase"></i> ' + lmShopSpan('lmx.sd.titleDeals')
+            : (isUpload ? '<i class="fa fa-upload"></i> ' + lmShopSpan('lmx.sd.tabUpload') : '<i class="fa fa-paint-brush"></i> ' + lmShopSpan('lmx.sd.tabSkins'));
 
         var skinsTabClass = isSkins ? 'shop-tab active' : 'shop-tab';
         var uploadTabClass = isUpload ? 'shop-tab active' : 'shop-tab';
@@ -404,16 +336,16 @@ function SpecialDeals(defaultTab) {
 
         // Header
         '<div id="CloseSpecialDeals2" class="modal-header">' +
-        '<button id="CloseSpecialDeals" type="button" class="close" title="Close" onclick="window.closeSpecialShopModal(); return false;"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>' +
-        '<button id="FAQSpecialDeals" type="button" class="close" title="Help & FAQ"><span aria-hidden="true"><b>?</b></span><span class="sr-only">Help</span></button>' +
+        '<button id="CloseSpecialDeals" type="button" class="close"' + lmShopAttr('title', 'close') + ' onclick="window.closeSpecialShopModal(); return false;"><span aria-hidden="true">&times;</span><span class="sr-only" data-i18n="close">' + _lmsdE('close') + '</span></button>' +
+        '<button id="FAQSpecialDeals" type="button" class="close"' + lmShopAttr('title', 'lmx.sd.helpFaq') + '><span aria-hidden="true"><b>?</b></span><span class="sr-only" data-i18n="help">' + _lmsdE('help') + '</span></button>' +
         '<h4 class="modal-title" style="font-weight: 700; color: ' + mc + '; font-size: 16px; letter-spacing: 1px; text-transform: uppercase;">' + initialTabTitle + '</h4>' +
         '</div>' +
 
         // Tab bar
         '<div class="shop-tabs">' +
-        '<div class="' + skinsTabClass + '" data-tab="skins"><i class="fa fa-paint-brush"></i> ' + lmShopTH('tabSkins') + '</div>' +
-        '<div class="' + uploadTabClass + '" data-tab="upload"><i class="fa fa-upload"></i> ' + lmShopTH('tabUpload') + '</div>' +
-        '<div class="' + dealsTabClass + '" data-tab="deals"><i class="fa fa-briefcase"></i> ' + lmShopTH('tabDeals') + '</div>' +
+        '<div class="' + skinsTabClass + '" data-tab="skins"><i class="fa fa-paint-brush"></i> ' + lmShopSpan('lmx.sd.tabSkins') + '</div>' +
+        '<div class="' + uploadTabClass + '" data-tab="upload"><i class="fa fa-upload"></i> ' + lmShopSpan('lmx.sd.tabUpload') + '</div>' +
+        '<div class="' + dealsTabClass + '" data-tab="deals"><i class="fa fa-briefcase"></i> ' + lmShopSpan('lmx.sd.tabDeals') + '</div>' +
         '</div>' +
 
         // === 1. Skins tab ===
@@ -422,37 +354,37 @@ function SpecialDeals(defaultTab) {
 
             // Active Skin Banner
             '<div class="active-skin-banner" id="activeSkinBanner">' +
-            '<img id="activeSkinImg" src="" alt="Active Skin" onerror="this.src=\'https://jimboy3100.github.io/banners/icondeal2.png\'">' +
+            '<img id="activeSkinImg" src=""' + lmShopAttr('alt', 'lmx.sd.activeSkin') + ' onerror="this.src=\'https://jimboy3100.github.io/banners/icondeal2.png\'">' +
             '<div class="info">' +
-            '<div class="title">&#x2714; ' + lmShopTH('equipped') + '</div>' +
-            '<div class="name" id="activeSkinName">None (Default)</div>' +
+            '<div class="title">&#x2714; ' + lmShopSpan('lmx.sd.equipped') + '</div>' +
+            '<div class="name" id="activeSkinName">' + _lmsdE('lmx.sd.noneDefault') + '</div>' +
             '</div>' +
-            '<button class="unequip-btn" id="unequipSkinBtn" onclick="unequipSkin();">' + lmShopTH('unequip') + '</button>' +
+            '<button class="unequip-btn" id="unequipSkinBtn" onclick="unequipSkin();">' + lmShopSpan('lmx.sd.unequip') + '</button>' +
             '</div>' +
 
             '<div class="skin-filter-bar" style="display: flex; gap: 6px; margin-bottom: 10px;">' +
-            '<button class="btn btn-xs skin-filter-btn active" data-filter="all" style="flex: 1; background: ' + b1 + '; color: ' + btc + '; font-weight: 700; border: none; padding: 6px 0; border-radius: 4px;">All Skins (955+)</button>' +
-            '<button class="btn btn-xs skin-filter-btn" data-filter="owned" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x2B50; My Owned Skins</button>' +
-            '<button class="btn btn-xs skin-filter-btn" data-filter="new" title="The newest Agar.io skins, newest first" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x1F195; New Skins</button>' +
-            '<button class="btn btn-xs" id="checkForOffersBtn" onclick="window._lmCheckForOffersManual()" title="Scan for active Agar.io promotional offers" style="flex: 0 0 auto; background: #ff9800; color: #fff; font-weight: 700; border: none; padding: 6px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">&#x1F514; Offers</button>' +
+            '<button class="btn btn-xs skin-filter-btn active" data-filter="all" style="flex: 1; background: ' + b1 + '; color: ' + btc + '; font-weight: 700; border: none; padding: 6px 0; border-radius: 4px;">' + _lmsdE('lmx.sd.allSkinsN', ['955+']) + '</button>' +
+            '<button class="btn btn-xs skin-filter-btn" data-filter="owned" style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x2B50; ' + _lmsdE('lmx.sd.ownedSkins') + '</button>' +
+            '<button class="btn btn-xs skin-filter-btn" data-filter="new"' + lmShopAttr('title', 'lmx.sd.newSkinsTip') + ' style="flex: 1; background: rgba(255,255,255,0.1); color: ' + tc2 + '; font-weight: 700; border: 1px solid ' + pc2 + '; padding: 6px 0; border-radius: 4px;">&#x1F195; ' + _lmsdE('lmx.sd.newSkins') + '</button>' +
+            '<button class="btn btn-xs" id="checkForOffersBtn" onclick="window._lmCheckForOffersManual()"' + lmShopAttr('title', 'lmx.sd.offersTip') + ' style="flex: 0 0 auto; background: #ff9800; color: #fff; font-weight: 700; border: none; padding: 6px 10px; border-radius: 4px; font-size: 11px; cursor: pointer;">&#x1F514; ' + lmShopSpan('lmx.sd.offers') + '</button>' +
             '</div>' +
-            '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; ' + $('<div>').text(lmShopT('search')).html() + '">' +
+            '<input type="text" id="skinSearchBar" placeholder="&#x1F50D; ' + _lmsdE('lmx.sd.search') + '">' +
             '<div class="skin-grid" id="skinGrid"></div>' +
-            '<div class="skin-stats"><span id="skinCount">0</span> skins shown <span id="skinTotal">0</span> total</div>' +
-            '<button type="button" class="skin-load-more" id="skinLoadMore" style="display:none;">' + $('<div>').text(lmShopT('more')).html() + '</button>' +
+            '<div class="skin-stats">' + _lmsdE('lmx.sd.statsLine', ['\u0001', '\u0002']).replace('\u0001', '<span id="skinCount">0</span>').replace('\u0002', '<span id="skinTotal">0</span>') + '</div>' +
+            '<button type="button" class="skin-load-more" id="skinLoadMore" style="display:none;">' + _lmsdE('lmx.sd.more') + '</button>' +
             '</div>' +
             '</div>' +
 
             // === 2. Custom Skin Uploader tab ===
             '<div class="' + uploadPaneClass + '" id="tab-upload">' +
             '<div class="modal-body" style="text-align: center;">' +
-            '<h5 style="color: ' + mc + '; font-weight: 700; margin-top: 0;">Upload Custom Skin</h5>' +
-            '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius: 12px; border: 1px solid ' + mc + '4d;">🧬 DNA: <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="coinsCountModal">0</span></div>' +
+            '<h5 style="color: ' + mc + '; font-weight: 700; margin-top: 0;">' + lmShopSpan('lmx.sd.uploadTitle') + '</h5>' +
+            '<div id="userDnaBalanceDisplay" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 8px; background: rgba(0,0,0,0.3); display: inline-block; padding: 3px 10px; border-radius: 12px; border: 1px solid ' + mc + '4d;">🧬 ' + lmShopSpan('lmx.sd.dnaLabel') + ' <span id="dnaCountModal">0</span> &nbsp;|&nbsp; 💰 ' + lmShopSpan('lmx.sd.coinsLabel') + ' <span id="coinsCountModal">0</span></div>' +
             '<div class="upload-drop-zone" id="uploadDropZone">' +
 
-            '<p style="color: ' + tc2 + '; font-size: 11px; margin-bottom: 12px;">Select an image file. It will be formatted into a 512x512 16-color PNG and submitted directly to Agar.io via Protobuf. Agar.io accepts about 31KB, so detailed images are simplified automatically.</p>' +
+            '<p style="color: ' + tc2 + '; font-size: 11px; margin-bottom: 12px;">' + lmShopSpan('lmx.sd.uploadInfo') + '</p>' +
             '<div style="display: flex; gap: 8px; margin-bottom: 12px; max-width: 360px; margin-left: auto; margin-right: auto;">' +
-            '<input id="legendSkinNameModal" class="form-control" placeholder="Skin Name (required)" style="width: 70%;" maxlength="15" required aria-required="true" autocomplete="off">' +
+            '<input id="legendSkinNameModal" class="form-control"' + lmShopAttr('placeholder', 'lmx.sd.skinNamePh') + ' style="width: 70%;" maxlength="15" required aria-required="true" autocomplete="off">' +
             '<div class="input-group legendSkinColor-picker" style="width: 30%;">' +
             '<input id="legendSkinColorModal" type="hidden" value="#FFFF00">' +
             '<span class="input-group-addon" style="cursor:pointer; background: ' + pc + '; border: 1px solid ' + pc2 + '; border-radius: 4px;"><i style="background-color: #FFFF00;"></i></span>' +
@@ -461,15 +393,15 @@ function SpecialDeals(defaultTab) {
             '<div style="text-align: center; margin-bottom: 12px;">' +
             '<canvas id="legendCanvasModal" width="512" height="512" style="width: 140px; height: 140px; border-radius: 50%; border: 3px solid ' + mc + '; background-color: #000; box-shadow: 0 0 12px ' + mc + '4d;"></canvas>' +
             '</div>' +
-            '<label for="legendUploadInputModal" class="btn" id="legendChooseFileBtn" style="background: ' + b2 + '; color: ' + btc + '; margin-bottom: 8px; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s; display: inline-block;">&#x1F4C2; Choose Image File</label>' +
+            '<label for="legendUploadInputModal" class="btn" id="legendChooseFileBtn" style="background: ' + b2 + '; color: ' + btc + '; margin-bottom: 8px; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s; display: inline-block;">&#x1F4C2; ' + lmShopSpan('lmx.sd.chooseFile') + '</label>' +
             '<input type="file" id="legendUploadInputModal" accept="image/*" style="display:none;" />' +
             '<div style="display: flex; gap: 4px; max-width: 320px; margin: 0 auto 8px; align-items: center;">' +
-            '<input type="text" id="legendSkinUrlInput" class="form-control" placeholder="...or paste image URL" style="flex: 1; height: 32px; font-size: 11px; border: 1px solid ' + pc2 + '; background: rgba(0,0,0,0.3); color: ' + tc + ';">' +
-            '<button id="legendLoadUrlBtn" class="btn" style="background: ' + b2 + '; color: ' + btc + '; font-weight: 800; font-size: 11px; border: none; border-radius: 6px; padding: 6px 14px; white-space: nowrap; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">Load</button>' +
+            '<input type="text" id="legendSkinUrlInput" class="form-control"' + lmShopAttr('placeholder', 'lmx.sd.urlPh') + ' style="flex: 1; height: 32px; font-size: 11px; border: 1px solid ' + pc2 + '; background: rgba(0,0,0,0.3); color: ' + tc + ';">' +
+            '<button id="legendLoadUrlBtn" class="btn" style="background: ' + b2 + '; color: ' + btc + '; font-weight: 800; font-size: 11px; border: none; border-radius: 6px; padding: 6px 14px; white-space: nowrap; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">' + lmShopSpan('lmx.sd.load') + '</button>' +
             '</div>' +
-            '<button id="legendSaveBtnModal" class="btn" disabled style="background: ' + b2 + '; color: ' + btc + '; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius: 6px; padding: 8px 16px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">' + (typeof window.getSkinUploadButtonLabel === 'function' ? window.getSkinUploadButtonLabel().replace(/&/g, '&amp;') : 'Upload &amp; Buy') + '</button>' +
-            '<br><button id="legendClearBtn" class="upload-clear-btn" style="display:none;">&#x2716; Clear Image</button>' +
-            '<div id="legendStatusModal" style="font-size: 11px; margin-top: 6px; color: ' + tc2 + ';">Select an image, drag &amp; drop, or paste a URL</div>' +
+            '<button id="legendSaveBtnModal" class="btn" disabled style="background: ' + b2 + '; color: ' + btc + '; width: 220px; font-weight: 800; font-size: 12px; border: none; border-radius: 6px; padding: 8px 16px; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.3); transition: all 0.2s;">' + (typeof window.getSkinUploadButtonLabel === 'function' ? window.getSkinUploadButtonLabel().replace(/&/g, '&amp;') : _lmsdE('lmx.sd.uploadBuy')) + '</button>' +
+            '<br><button id="legendClearBtn" class="upload-clear-btn" style="display:none;">&#x2716; ' + lmShopSpan('lmx.sd.clearImage') + '</button>' +
+            '<div id="legendStatusModal" style="font-size: 11px; margin-top: 6px; color: ' + tc2 + ';">' + _lmsdE('lmx.sd.uploadHint') + '</div>' +
             '</div>' + // close drop zone
             '</div>' +
             '</div>' +
@@ -480,7 +412,7 @@ function SpecialDeals(defaultTab) {
 
             // Balance display
             '<div id="dealsBalanceBar" style="font-size: 12px; color: ' + mc + '; font-weight: 700; margin-bottom: 10px; background: rgba(0,0,0,0.3); text-align: center; padding: 5px 12px; border-radius: 12px; border: 1px solid ' + mc + '4d;">' +
-            '🧬 DNA: <span id="dealsDnaCount">0</span> &nbsp;|&nbsp; 💰 Coins: <span id="dealsCoinsCount">0</span></div>' +
+            '🧬 ' + lmShopSpan('lmx.sd.dnaLabel') + ' <span id="dealsDnaCount">0</span> &nbsp;|&nbsp; 💰 ' + lmShopSpan('lmx.sd.coinsLabel') + ' <span id="dealsCoinsCount">0</span></div>' +
 
             // Deal cards container
             '<div id="dealsGrid" style="max-height: 260px; overflow-y: auto; margin-bottom: 10px;"></div>' +
@@ -489,17 +421,17 @@ function SpecialDeals(defaultTab) {
 
             // Encoded UID & Config section (collapsible)
             '<details style="margin-top: 8px; border-top: 1px solid ' + pc2 + '; padding-top: 8px;">' +
-            '<summary style="cursor: pointer; color: ' + tc2 + '; font-size: 12px; font-weight: 700;">⚙️ Advanced — UID &amp; Config</summary>' +
+            '<summary style="cursor: pointer; color: ' + tc2 + '; font-size: 12px; font-weight: 700;">⚙️ ' + lmShopSpan('lmx.sd.advanced') + '</summary>' +
             '<div style="margin-top: 8px;">' +
-            '<input type="text" class="form-control" id="agario_uid_input" placeholder="Encoded UID" style="width: 85%; display: inline-block; margin-bottom: 6px;">' +
-            '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> Friend UID <input id="checkBoxLockUID" type="checkbox" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
+            '<input type="text" class="form-control" id="agario_uid_input"' + lmShopAttr('placeholder', 'lmx.sd.encodedUid') + ' style="width: 85%; display: inline-block; margin-bottom: 6px;">' +
+            '<div class="custom-checkbox" style="display: inline-block; margin-left: 10px; vertical-align: sub;"> ' + lmShopSpan('lmx.sd.friendUid') + ' <input id="checkBoxLockUID" type="checkbox" style="width: 20px; height: 20px"><label for="cb1"></label></div>' +
             '<div style="display: flex; gap: 6px; margin-bottom: 6px;">' +
             '<select id="BuyDealCurrency" class="form-control" style="width: 25%;"><option value="USD">USD</option><option value="EUR">EUR</option></select>' +
             '<select id="ss-select-agarVersionDestinations" class="form-control" style="width: 35%;"></select>' +
             '<span style="color: ' + tc2 + '; font-size: 11px; line-height: 34px;">' + Premadeletter117 + '</span>' +
             '</div>' +
             '<input type="text" class="form-control" id="GameConfigurationUrl" value="' + window.MiniclipConfigDestination + '" placeholder="GameConfiguration.json URL" style="width: 100%; margin-bottom: 6px;">' +
-            '<p class="alert-warning text-center" style="font-size: 11px; padding: 6px; border-radius: 4px;">' + Premadeletter116 + '<br>UID: <span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font></p>' +
+            '<p class="alert-warning text-center" style="font-size: 11px; padding: 6px; border-radius: 4px;">' + Premadeletter116 + '<br>UID: <span class="alert-success" id="exp-uid" style="font-size: 2px;">' + window.agarioEncodedUID + '</span> <font color="red" onclick=copy(window.agarioEncodedUID);><b><u>' + Premadeletter114 + '</u></b></font></p>' + // i18n-ok: "UID" is the same technical term in every language
             '</div>' +
             '</details>' +
 
@@ -656,19 +588,20 @@ function SpecialDeals(defaultTab) {
         };
 
         window.validateShopIntegrity = function validateShopIntegrity(actionName) {
-            var label = actionName || 'this action';
+            /* callers (this file, ogario.v4.js, lm_extended_ui.js) pass an English action id: shown in the language */
+            var label = _sdActionLabel(actionName);
 
             // 1. Logged In check
             var isLoggedIn = window.checkUserLoggedIn();
             if (!isLoggedIn) {
-                if (window.toastr) toastr.error('<b>[SHOP]:</b> You must be logged in with Google/Facebook to ' + label + '.');
+                if (window.toastr) toastr.error(lmShopMsg('shop', label ? 'lmx.sd.needLoginFor' : 'lmx.sd.needLogin', [label]));
                 return false;
             }
 
             // 2. Agar.io UID check
             var hasUID = window.checkUserUID();
             if (!hasUID) {
-                if (window.toastr) toastr.error('<b>[SHOP]:</b> No Agar.io payment UID found. Log out and log in again to refresh it.');
+                if (window.toastr) toastr.error(lmShopMsg('shop', 'lmx.sd.noUidFound'));
                 return false;
             }
 
@@ -682,7 +615,7 @@ function SpecialDeals(defaultTab) {
 
             if (!hasGameConnection) {
                 if (window.toastr) {
-                    toastr.error('<b>[SHOP]:</b> No active Agar.io server connection. Join a server before attempting to ' + label + '.');
+                    toastr.error(lmShopMsg('shop', label ? 'lmx.sd.noServerFor' : 'lmx.sd.noServer', [label]));
                 }
                 return false;
             }
@@ -748,10 +681,10 @@ function SpecialDeals(defaultTab) {
                     ((Number(labelUser.skinCreateVIPTokens) || 0) > 0 && !!(labelVip && labelVip.active === true));
                 uploadBtn.text(
                     ownsUsableToken
-                        ? 'Upload (uses token)'
+                        ? _lmsdT('lmx.sd.uploadToken')
                         : (typeof window.getSkinUploadButtonLabel === 'function'
                             ? window.getSkinUploadButtonLabel()
-                            : 'Upload & Buy')
+                            : _lmsdT('lmx.sd.uploadBuy'))
                 );
                 if (labelUploadState) labelUploadState.originalButtonText = null;
             }
@@ -781,8 +714,8 @@ function SpecialDeals(defaultTab) {
                     uploadBtn
                         .prop('disabled', true)
                         .attr({
-                            title: 'Upload in progress...',
-                            'aria-label': 'Upload in progress...'
+                            title: _lmsdT('lmx.sd.uploadBusy'),
+                            'aria-label': _lmsdT('lmx.sd.uploadBusy')
                         })
                         .css({ opacity: 0.5, cursor: 'not-allowed' });
                 } else if (
@@ -809,16 +742,16 @@ function SpecialDeals(defaultTab) {
                         !hasRequiredSkinName
                     ) {
                         uploadDisabledReason =
-                            'Enter a skin name first — the name is required.';
+                            _lmsdT('lmx.sd.needName');
                     } else if (
                         !processedBufferModal &&
                         hasRequiredSkinName
                     ) {
                         uploadDisabledReason =
-                            'Choose and process an image first.';
+                            _lmsdT('lmx.sd.needImage');
                     } else {
                         uploadDisabledReason =
-                            'Choose an image and enter a required skin name first.';
+                            _lmsdT('lmx.sd.needImageName');
                     }
 
                     uploadBtn
@@ -864,10 +797,11 @@ function SpecialDeals(defaultTab) {
             if (uploadBanner) {
                 if (!allReady) {
                     var ureasons = [];
-                    if (!isLoggedIn) ureasons.push('Log in');
-                    if (!hasUID) ureasons.push('Play a game to get your UID');
-                    if (!hasConnection) ureasons.push('Join a server');
-                    uploadBanner.innerHTML = '⚠️ ' + ureasons.join(' &bull; ') + ' — to upload custom skins';
+                    if (!isLoggedIn) ureasons.push(_lmsdE('lmx.sd.reasonLogin'));
+                    if (!hasUID) ureasons.push(_lmsdE('lmx.sd.reasonUid'));
+                    if (!hasConnection) ureasons.push(_lmsdE('lmx.sd.reasonJoin'));
+                    /* refreshed every 3 s while the shop is open: follows a language change */
+                    uploadBanner.innerHTML = '⚠️ ' + _lmsdT('lmx.sd.bannerUpload', [ureasons.join(' &bull; ')]);
                     uploadBanner.style.display = 'block';
                 } else {
                     uploadBanner.style.display = 'none';
@@ -888,11 +822,11 @@ function SpecialDeals(defaultTab) {
             if (loginBanner) {
                 if (!allReady) {
                     var reasons = [];
-                    if (!isLoggedIn) reasons.push('Log in with Google/Facebook');
-                    if (!hasUID) reasons.push('Play a game to get your UID');
-                    if (!hasConnection) reasons.push('Join a server first');
+                    if (!isLoggedIn) reasons.push(_lmsdE('lmx.sd.reasonLoginGF'));
+                    if (!hasUID) reasons.push(_lmsdE('lmx.sd.reasonUid'));
+                    if (!hasConnection) reasons.push(_lmsdE('lmx.sd.reasonJoinFirst'));
                     var debugInfo = ' <span style="font-size:9px;opacity:0.6;">[L:' + (isLoggedIn?1:0) + ' U:' + (hasUID?1:0) + ' C:' + (hasConnection?1:0) + ' O:' + (window.legendmod ? (window.legendmod.connectionOpened?1:0) : 'X') + ' S:' + (window.legendmod && typeof window.legendmod.isSocketOpen==='function' ? (window.legendmod.isSocketOpen()?1:0) : 'X') + ' T:' + (window.legendmod ? (window.legendmod.serverType||'?') : 'X') + ']</span>';
-                    loginBanner.innerHTML = '⚠️ ' + reasons.join(' &bull; ') + ' — to buy/equip skins' + debugInfo;
+                    loginBanner.innerHTML = '⚠️ ' + _lmsdT('lmx.sd.bannerBuy', [reasons.join(' &bull; ')]) + debugInfo;
                     loginBanner.style.display = 'block';
                 } else {
                     loginBanner.style.display = 'none';
@@ -922,7 +856,7 @@ function SpecialDeals(defaultTab) {
             menuBtns.prop('disabled', !menuBtnsEnabled);
             if (!menuBtnsEnabled) {
                 menuBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' })
-                        .attr('title', 'Log in with Google/Facebook and play a game session first to access Skins, Deals, Boosts & Leagues');
+                        .attr('title', _lmsdT('lmx.sd.menuLockedTip'));
             } else {
                 menuBtns.css({ opacity: 1, cursor: 'pointer', pointerEvents: 'auto' })
                         .removeAttr('title');
@@ -1762,19 +1696,13 @@ function SpecialDeals(defaultTab) {
 
                     if (stepIndex >= LM_SKIN_ENCODE_STEPS.length) {
                         throw new Error(
-                            'image is too detailed (smallest version is ' +
-                            (png.length / 1024).toFixed(1) +
-                            'KB, Agar.io accepts about 31KB). Try a simpler image.'
+                            _lmsdT('lmx.sd.tooDetailed', [(png.length / 1024).toFixed(1)])
                         );
                     }
 
                     $('#legendStatusModal')
                         .text(
-                            'Image is too large for Agar.io (' +
-                            (png.length / 1024).toFixed(1) +
-                            'KB) — simplifying (step ' +
-                            (stepIndex + 1) + '/' +
-                            LM_SKIN_ENCODE_STEPS.length + ')...'
+                            _lmsdT('lmx.sd.simplifying', [(png.length / 1024).toFixed(1), stepIndex + 1, LM_SKIN_ENCODE_STEPS.length])
                         )
                         .css('color', getShopTheme().mc);
 
@@ -1817,9 +1745,7 @@ function SpecialDeals(defaultTab) {
 
             if (pngBytes.length > lmSkinMaxPngBytes()) {
                 throw new Error(
-                    'Agar PNG8 is too large: ' +
-                    kb +
-                    'KB; Agar.io accepts about 31KB'
+                    _lmsdT('lmx.sd.pngTooLarge', [kb])
                 );
             }
 
@@ -1836,14 +1762,9 @@ function SpecialDeals(defaultTab) {
 
             $('#legendStatusModal')
                 .text(
-                    'Agar PNG8 Ready: ' +
-                    kb +
-                    'KB (512x512, ' +
-                    validation
-                        .paletteEntries +
-                    ' colors)' +
+                    _lmsdT('lmx.sd.pngReady', [kb, validation.paletteEntries]) +
                     (encodeInfo && encodeInfo.reduced
-                        ? ' — simplified to fit the Agar.io size limit'
+                        ? ' — ' + _lmsdT('lmx.sd.pngSimplified')
                         : '') +
                     (pngBytes[25] !== 3
                         ? ' ⚠ colorType=' +
@@ -1868,7 +1789,7 @@ function SpecialDeals(defaultTab) {
                 return {
                     valid: false,
                     error:
-                        'Encoded PNG is empty or truncated'
+                        _lmsdT('lmx.sd.pngEmpty')
                 };
             }
 
@@ -1890,7 +1811,7 @@ function SpecialDeals(defaultTab) {
                     return {
                         valid: false,
                         error:
-                            'Encoded data is not a PNG file'
+                            _lmsdT('lmx.sd.pngNotPng')
                     };
                 }
             }
@@ -1960,7 +1881,7 @@ function SpecialDeals(defaultTab) {
                     return {
                         valid: false,
                         error:
-                            'PNG contains a truncated chunk'
+                            _lmsdT('lmx.sd.pngTruncated')
                     };
                 }
 
@@ -1985,11 +1906,7 @@ function SpecialDeals(defaultTab) {
                 return {
                     valid: false,
                     error:
-                        'PNG dimensions are ' +
-                        width +
-                        'x' +
-                        height +
-                        ', not 512x512'
+                        _lmsdT('lmx.sd.pngSize', [width + 'x' + height])
                 };
             }
 
@@ -2005,7 +1922,7 @@ function SpecialDeals(defaultTab) {
                 return {
                     valid: false,
                     error:
-                        'PNG is not an indexed palette image with 16 colors or fewer'
+                        _lmsdT('lmx.sd.pngNotIndexed')
                 };
             }
 
@@ -2018,7 +1935,7 @@ function SpecialDeals(defaultTab) {
                 return {
                     valid: false,
                     error:
-                        'PNG has an invalid indexed bit depth'
+                        _lmsdT('lmx.sd.pngBitDepth')
                 };
             }
 
@@ -2085,7 +2002,7 @@ function SpecialDeals(defaultTab) {
                 if (!ctx) {
                     $('#legendStatusModal')
                         .text(
-                            'Canvas image processing is unavailable'
+                            _lmsdT('lmx.sd.noCanvas')
                         )
                         .css(
                             'color',
@@ -2111,7 +2028,7 @@ function SpecialDeals(defaultTab) {
 
                 $('#legendStatusModal')
                     .text(
-                        'Image loaded \u2014 preparing Agar.io PNG8...'
+                        _lmsdT('lmx.sd.preparing')
                     )
                     .css(
                         'color',
@@ -2158,8 +2075,7 @@ function SpecialDeals(defaultTab) {
 
                         $('#legendStatusModal')
                             .text(
-                                'Agar.io PNG8 encoder failed: ' +
-                                error.message
+                                _lmsdT('lmx.sd.encoderFailed', [error && error.message])
                             )
                             .css(
                                 'color',
@@ -2185,7 +2101,7 @@ function SpecialDeals(defaultTab) {
 
                 $('#legendStatusModal')
                     .text(
-                        'Error loading image'
+                        _lmsdT('lmx.sd.imageError')
                     )
                     .css(
                         'color',
@@ -2199,7 +2115,7 @@ function SpecialDeals(defaultTab) {
         $('#legendChooseFileBtn').off('click').on('click', function(e) {
             if (!window.checkUserLoggedIn() || !window.checkUserUID()) {
                 if (window.toastr) {
-                    toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to upload skins.');
+                    toastr.warning(lmShopMsg('upload', 'lmx.sd.needLoginUpload'));
                 }
                 e.preventDefault();
                 e.stopPropagation();
@@ -2216,7 +2132,7 @@ function SpecialDeals(defaultTab) {
             if (!window.checkUserLoggedIn() || !window.checkUserUID()) {
                 $(this).val('');
                 if (window.toastr) {
-                    toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to upload skins.');
+                    toastr.warning(lmShopMsg('upload', 'lmx.sd.needLoginUpload'));
                 }
                 return;
             }
@@ -2264,7 +2180,7 @@ function SpecialDeals(defaultTab) {
                     };
                     reader.readAsDataURL(file);
                 } else {
-                    toastr && toastr.warning('<b>[UPLOAD]:</b> Please drop an image file.');
+                    toastr && toastr.warning(lmShopMsg('upload', 'lmx.sd.dropImage'));
                 }
             });
         }
@@ -2281,7 +2197,7 @@ function SpecialDeals(defaultTab) {
             }
             $('#legendUploadInputModal').val('');
             $('#legendSaveBtnModal').prop('disabled', true).css({ opacity: 0.5, cursor: 'not-allowed' });
-            $('#legendStatusModal').text('Select an image, drag & drop, or paste a URL').css('color', getShopTheme().tc2);
+            $('#legendStatusModal').text(_lmsdT('lmx.sd.uploadHint')).css('color', getShopTheme().tc2);
             $(this).hide();
         });
 
@@ -2289,7 +2205,7 @@ function SpecialDeals(defaultTab) {
         $('#legendLoadUrlBtn').off('click').on('click', function() {
             if (!window.checkUserLoggedIn() || !window.checkUserUID()) {
                 if (window.toastr) {
-                    toastr.warning('<b>[UPLOAD]:</b> You must be logged in and have a valid UID to load skins.');
+                    toastr.warning(lmShopMsg('upload', 'lmx.sd.needLoginLoad'));
                 }
                 return;
             }
@@ -2298,11 +2214,11 @@ function SpecialDeals(defaultTab) {
             }
             var url = $('#legendSkinUrlInput').val().trim();
             if (!url) {
-                toastr && toastr.warning('<b>[UPLOAD]:</b> Paste an image URL first.');
+                toastr && toastr.warning(lmShopMsg('upload', 'lmx.sd.pasteUrl'));
                 return;
             }
             // Also accept skin URL field (#skin) if no explicit URL
-            $('#legendStatusModal').text('Loading from URL...').css('color', getShopTheme().mc);
+            $('#legendStatusModal').text(_lmsdT('lmx.sd.loadingUrl')).css('color', getShopTheme().mc);
             processAndFormatModal(url);
             $('#legendClearBtn').show();
         });
@@ -2345,7 +2261,7 @@ function SpecialDeals(defaultTab) {
 
             if (!name) {
                 toastr.warning(
-                    '<b>[SKIN]:</b> Enter a skin name before uploading.'
+                    lmShopMsg('skin', 'lmx.sd.needNameUpload')
                 );
 
                 $(
@@ -2373,12 +2289,12 @@ function SpecialDeals(defaultTab) {
                 return;
             }
             if (!(window.core && window.core.proxyMobileData)) {
-                toastr.error("<b>[ERROR]:</b> No server connection. Join a game first!");
+                toastr.error(lmShopMsg('error', 'lmx.sd.noConnJoin'));
                 return;
             }
 
             if (!processedBufferModal) {
-                toastr.warning("<b>[SERVER]:</b> Select an image first.");
+                toastr.warning(lmShopMsg('server', 'lmx.sd.selectImage'));
                 return;
             }
 
@@ -2391,7 +2307,7 @@ function SpecialDeals(defaultTab) {
                 (window._lmSkinUploadState && window._lmSkinUploadState.busy) ||
                 window._lmSkinCreatePending
             ) {
-                toastr.warning('<b>[SKIN]:</b> An upload is already in progress.');
+                toastr.warning(lmShopMsg('skin', 'lmx.sd.uploadAlready'));
                 return;
             }
 
@@ -2403,7 +2319,7 @@ function SpecialDeals(defaultTab) {
             if (window.application && typeof window.application.uploadCustomSkin === 'function') {
                 uploadStarted = window.application.uploadCustomSkin(processedBufferModal, name, color) === true;
             } else {
-                toastr.warning("<b>[SERVER]:</b> Not connected. Play a game first.");
+                toastr.warning(lmShopMsg('server', 'lmx.sd.notConnectedPlay'));
             }
 
             if (!uploadStarted) {
@@ -2424,11 +2340,11 @@ function SpecialDeals(defaultTab) {
 
             var headerTitle = $('#specialShopModal .modal-title');
             if (tab === 'deals') {
-                headerTitle.html('<i class="fa fa-briefcase"></i> ' + lmShopTH('titleDeals'));
+                headerTitle.html('<i class="fa fa-briefcase"></i> ' + lmShopSpan('lmx.sd.titleDeals'));
             } else if (tab === 'upload') {
-                headerTitle.html('<i class="fa fa-upload"></i> ' + lmShopTH('tabUpload'));
+                headerTitle.html('<i class="fa fa-upload"></i> ' + lmShopSpan('lmx.sd.tabUpload'));
             } else {
-                headerTitle.html('<i class="fa fa-paint-brush"></i> ' + lmShopTH('tabSkins'));
+                headerTitle.html('<i class="fa fa-paint-brush"></i> ' + lmShopSpan('lmx.sd.tabSkins'));
             }
 
             if (tab === 'skins') {
@@ -2496,7 +2412,7 @@ function SpecialDeals(defaultTab) {
             /* Clear current deals grid immediately so user sees loading indicator */
             var grid = document.getElementById('dealsGrid');
             if (grid) {
-                grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals for version ' + _sdEscHtml(selectedVer) + '...</div>';
+                grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>' + _lmsdE('lmx.sd.loadingVersion', [selectedVer]) + '</div>';
             }
 
             LoadGameConfiguration();
@@ -2519,7 +2435,7 @@ function SpecialDeals(defaultTab) {
             /* Clear current deals grid immediately */
             var grid = document.getElementById('dealsGrid');
             if (grid) {
-                grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals from custom URL...</div>';
+                grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>' + _lmsdE('lmx.sd.loadingCustom') + '</div>';
             }
 
             LoadGameConfiguration();
@@ -2647,7 +2563,7 @@ function SpecialDeals(defaultTab) {
             window.open('https://jimboy3100.github.io/LMexpress/olddeals.html', '_blank');
         });
         $(".xpmt-buy-content").click(function() {
-            toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">' + Premadeletter90 + ' v0.5<br>' + 'This is a BETA function, it may not work and you may loose your money' + '<br><font color="red">' + Premadeletter91a + '</font>' + '</br> <button class="btn btn-sm btn-primary" style="width: 100%; margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button></div>', "", {
+            toastr["warning"]('<div id="tutorial" style="background-image: url(https://jimboy3100.github.io/banners/v25toastricon.jpg); color:#018cf6; font-size:16px; text-align:center">' + Premadeletter90 + ' v0.5<br>' + _lmsdE('lmx.sd.betaWarnShort') + '<br><font color="red">' + Premadeletter91a + '</font>' + '</br> <button class="btn btn-sm btn-primary" style="width: 100%; margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button></div>', "", {
                 timeOut: 20000,
                 extendedTimeOut: 20000
             }).css("width", "300px");
@@ -2675,14 +2591,14 @@ function SpecialDeals(defaultTab) {
                 var manualUID = String($('#agario_uid_input').val() || '').trim();
                 if (manualUID.length > 10) {
                     $("#exp-uid").text(manualUID);
-                    toastr["info"]("Using Friend UID for purchases").css("width", "250px");
+                    toastr["info"](_lmsdE('lmx.sd.usingFriendUid')).css("width", "250px");
                 } else {
                     this.checked = false;
-                    toastr["warning"]("Enter a valid UID first").css("width", "210px");
+                    toastr["warning"](_lmsdE('lmx.sd.enterValidUid')).css("width", "210px");
                 }
             } else {
                 $("#exp-uid").text(window.agarioEncodedUID);
-                toastr["info"]("Using your own UID for purchases").css("width", "250px");
+                toastr["info"](_lmsdE('lmx.sd.usingOwnUid')).css("width", "250px");
             }
         });
         $('#ss-select-purchases').on('change', function() {
@@ -2737,22 +2653,22 @@ function SpecialDeals(defaultTab) {
 //EU OR USD
 function buydeals() {
     if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to buy deals');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.needLoginDeals'));
         return;
     }
     if (!window.agarioEncodedUID) {
-        toastr && toastr.error('<b>[SHOP]:</b> No payment UID. Log out and log in again.');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.noPaymentUid'));
         return;
     }
     var purchaseId = $("#ss-select-purchases option:selected").val();
     if (!purchaseId) {
-        toastr && toastr.warning('<b>[SHOP]:</b> Select a deal first');
+        toastr && toastr.warning(lmShopMsg('shop', 'lmx.sd.selectDeal'));
         return;
     }
     /* Use the official IPayment service instead of the dead payments.agar.io hostname */
     var started = openOfficialAgarIAP(purchaseId, { description: purchaseId });
     if (!started) {
-        toastr && toastr.error('<b>[SHOP]:</b> Could not open the official payment flow');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.payFlowFailed'));
     }
 }
 
@@ -2821,17 +2737,17 @@ function updateUploadBalance() {
 function claimFreeCoins() {
     if (window._lmRoomShopOff && window._lmRoomShopOff()) return;
     if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.needLoginShort'));
         return;
     }
     if (!window.application || !window.application.activateTimedEvent) {
-        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Play a game first!');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.protocolPlay'));
         return;
     }
     var btn = document.getElementById('claimFreeCoinsBtn');
     if (btn) {
         btn.disabled = true;
-        btn.textContent = 'Claiming...';
+        btn.textContent = _lmsdT('lmx.sd.claiming');
         btn.style.opacity = '0.6';
     }
     window.application.activateTimedEvent('hourlyBonus');
@@ -2840,7 +2756,7 @@ function claimFreeCoins() {
     window._freeCoinsTimeout = setTimeout(function() {
         if (btn && btn.disabled) {
             btn.disabled = false;
-            btn.textContent = 'Claim!';
+            btn.textContent = _lmsdT('lmx.sd.claim');
             btn.style.opacity = '1';
         }
         updateDealsBalance();
@@ -2872,52 +2788,52 @@ function showPotionProductSelector() {
                 activePotions.push({
                     slot: ps[pKey].slot,
                     type: ps[pKey].type,
-                    status: ps[pKey].status === 3 ? 'Ready to Open' : (ps[pKey].status === 2 ? 'Brewing' : 'Ready to Brew')
+                    status: ps[pKey].status === 3 ? _lmsdT('lmx.sd.potionReady') : (ps[pKey].status === 2 ? _lmsdT('lmx.sd.potionBrewing') : _lmsdT('lmx.sd.potionToBrew'))
                 });
             }
         }
     }
 
     var defaultPotions = [
-        { type: 'potion_common_1', name: 'Common Potion' },
-        { type: 'potion_rare_1', name: 'Rare Potion' },
-        { type: 'potion_epic_1', name: 'Epic Potion' },
-        { type: 'potion_exotic_1', name: 'Exotic Potion' }
+        { type: 'potion_common_1', name: _lmsdE('lmx.sd.potionCommon') },
+        { type: 'potion_rare_1', name: _lmsdE('lmx.sd.potionRare') },
+        { type: 'potion_epic_1', name: _lmsdE('lmx.sd.potionEpic') },
+        { type: 'potion_exotic_1', name: _lmsdE('lmx.sd.potionExotic') }
     ];
 
     var html = `
         <div class="lm-modal-container" style="background: ${t.pc}; border-color: ${t.mc}; width: 440px;">
             <div class="lm-modal-header" style="background: ${t.pc2};">
                 <div class="lm-modal-title" style="color: ${t.mc}; font-size: 16px;">
-                    🧪 Select Potion to Open
+                    🧪 ${_lmsdE('lmx.sd.selectPotion')}
                 </div>
-                <button class="lm-modal-close" onclick="document.getElementById('lm-potion-selector-modal').remove();">&times;</button>
+                <button class="lm-modal-close"${lmShopAttr('title', 'close')} onclick="document.getElementById('lm-potion-selector-modal').remove();">&times;</button>
             </div>
             <div class="lm-modal-body" style="padding: 16px;">
     `;
 
     if (activePotions.length) {
-        html += `<div style="font-weight: 700; margin-bottom: 8px; color: ${t.tc}; font-size: 12px;">Active Account Potions:</div>`;
+        html += `<div style="font-weight: 700; margin-bottom: 8px; color: ${t.tc}; font-size: 12px;">${_lmsdE('lmx.sd.activePotions')}</div>`;
         activePotions.forEach(function(p) {
             var name = p.type.replace(/_/g, ' ').toUpperCase();
             html += `
                 <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);">
                     <div>
-                        <div style="font-weight: 700; color: ${t.tc}; font-size: 13px;">${name} (Slot ${p.slot})</div>
-                        <div style="font-size: 11px; color: ${t.tc2};">${p.status}</div>
+                        <div style="font-weight: 700; color: ${t.tc}; font-size: 13px;">${_lmsdE('lmx.sd.potionSlot', [name, p.slot])}</div>
+                        <div style="font-size: 11px; color: ${t.tc2};">${_sdEscHtml(p.status)}</div>
                     </div>
-                    <button class="btn btn-sm btn-success" style="font-weight: 700; padding: 4px 12px;" onclick="if(window.openPotion) window.openPotion(${p.slot}); document.getElementById('lm-potion-selector-modal').remove();">Open</button>
+                    <button class="btn btn-sm btn-success" style="font-weight: 700; padding: 4px 12px;" onclick="if(window.openPotion) window.openPotion(${p.slot}); document.getElementById('lm-potion-selector-modal').remove();">${_lmsdE('lmx.sd.open')}</button>
                 </div>
             `;
         });
     }
 
-    html += `<div style="font-weight: 700; margin: 12px 0 8px 0; color: ${t.tc}; font-size: 12px;">Standard Potion Types:</div>`;
+    html += `<div style="font-weight: 700; margin: 12px 0 8px 0; color: ${t.tc}; font-size: 12px;">${_lmsdE('lmx.sd.standardPotions')}</div>`;
     defaultPotions.forEach(function(p) {
         html += `
             <div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; margin-bottom: 6px; background: rgba(255,255,255,0.03); border-radius: 6px; border: 1px solid rgba(255,255,255,0.05);">
                 <div style="font-weight: 600; color: ${t.tc}; font-size: 13px;">${p.name}</div>
-                <button class="btn btn-sm btn-primary" style="font-weight: 700; padding: 4px 12px;" onclick="if(window.application && window.application.openPotionForProduct) window.application.openPotionForProduct('${p.type}'); document.getElementById('lm-potion-selector-modal').remove();">Open</button>
+                <button class="btn btn-sm btn-primary" style="font-weight: 700; padding: 4px 12px;" onclick="if(window.application && window.application.openPotionForProduct) window.application.openPotionForProduct('${p.type}'); document.getElementById('lm-potion-selector-modal').remove();">${_lmsdE('lmx.sd.open')}</button>
             </div>
         `;
     });
@@ -2966,7 +2882,7 @@ function _sdDealPriceLabel(tier) {
     }
     /* Never expose the internal tier identifier as a price.
      * Xsolla will still provide the authoritative checkout amount. */
-    return 'Price at checkout';
+    return _lmsdT('lmx.sd.priceAtCheckout');
 }
 
 /*
@@ -3113,7 +3029,7 @@ function _showSkinPacksModal(skinName, productId) {
         rows += '</div>';
         rows += '<div style="text-align: right; min-width: 70px;">';
         rows += '<div style="font-size: 14px; font-weight: 700; color: ' + t.mc + ';">' + _sdEscHtml(p.price) + '</div>';
-        rows += '<button type="button" class="btn btn-xs deal-buy-btn" data-pack-index="' + i + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">Buy</button>';
+        rows += '<button type="button" class="btn btn-xs deal-buy-btn" data-pack-index="' + i + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
         rows += '</div>';
         rows += '</div>';
     }
@@ -3123,13 +3039,13 @@ function _showSkinPacksModal(skinName, productId) {
     modal.className = 'lm-modal-overlay';
     modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML =
-        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 420px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' +
-            '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
-                '&#x1F381; Packs with ' + _sdEscHtml(skinName) +
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 420px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
+            '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' + // i18n-ok: CSS
+                '&#x1F381; ' + _lmsdE('lmx.sd.packsWith', [skinName]) +
             '</div>' +
             '<div style="padding: 14px 16px; max-height: 60vh; overflow-y: auto;">' + rows + '</div>' +
             '<div style="display: flex; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="skin-packs-close" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">Close</button>' +
+                '<button id="skin-packs-close" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('close') + '</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(modal);
@@ -3300,19 +3216,20 @@ function _lmStartPromoRefresh() {
         );
         for (var i = 0; i < promoButtons.length; i++) {
             var btn = promoButtons[i];
-            if (!btn || btn.textContent.indexOf('Promo Only') === -1) continue;
+            if (!btn || (btn.getAttribute('data-promo-only') !== '1' && btn.textContent.indexOf(_lmsdT('lmx.sd.promoOnly')) === -1)) continue;
             var pid = btn.getAttribute('data-product-id');
             if (!pid) continue;
             /* Check if this skin is in the promo */
             if (!_lmPromoHasSkin(promo, pid)) continue;
             /* Update to Active Offer */
-            btn.textContent = '\uD83C\uDF81 Active Offer!';
+            btn.removeAttribute('data-promo-only');
+            btn.textContent = '\uD83C\uDF81 ' + _lmsdT('lmx.sd.activeOffer');
             btn.disabled = false;
             btn.style.opacity = '1';
             btn.style.cursor = 'pointer';
             btn.style.pointerEvents = 'auto';
             btn.style.background = '#ff9800';
-            btn.title = 'This skin is in a live promotional offer right now! Click to open it.';
+            btn.title = _lmsdT('lmx.sd.activeOfferTip');
             btn.setAttribute('data-purchase-state', 'promo-active');
             (function (cb, button) {
                 button.addEventListener('click', function (evt) {
@@ -3338,12 +3255,12 @@ function _lmCheckForOffersManual() {
     var hasPromo = !!window._lmOfficialPromotion;
 
     if (hasPromo && !hadPromo) {
-        if (typeof toastr !== 'undefined') toastr.success('<b>[SHOP]:</b> Promotional offer detected! Updating skin cards...');
+        if (typeof toastr !== 'undefined') toastr.success(lmShopMsg('shop', 'lmx.sd.promoDetected'));
         if (typeof window._skinShopRefresh === 'function') window._skinShopRefresh();
     } else if (hasPromo) {
-        if (typeof toastr !== 'undefined') toastr.info('<b>[SHOP]:</b> Active promotion still available.');
+        if (typeof toastr !== 'undefined') toastr.info(lmShopMsg('shop', 'lmx.sd.promoStill'));
     } else {
-        if (typeof toastr !== 'undefined') toastr.info('<b>[SHOP]:</b> No promotional offers detected right now. They rotate — check back later!');
+        if (typeof toastr !== 'undefined') toastr.info(lmShopMsg('shop', 'lmx.sd.promoNone'));
     }
 }
 window._lmCheckForOffersManual = _lmCheckForOffersManual;
@@ -3445,7 +3362,7 @@ function getMobileSkinTransactions(skinProductId) {
             purchaseId: txn.purchaseId,
             contents: contents,
             priceTier: tier,
-            priceLabel: _lmPriceTierUSD[tier] || ('Tier ' + tier)
+            priceLabel: _lmPriceTierUSD[tier] || _lmsdT('lmx.sd.tierN', [tier])
         });
     }
     results.sort(function (a, b) { return a.priceTier - b.priceTier; });
@@ -3459,7 +3376,7 @@ window.getMobileSkinTransactions = getMobileSkinTransactions;
 function _showMobileSkinBundlesModal(skinName, productId) {
     var txns = getMobileSkinTransactions(productId);
     if (!txns.length) {
-        if (window.toastr) toastr.info('<b>[SHOP]:</b> No promotional bundles found for ' + skinName + '. Try again after the mobile config loads.');
+        if (window.toastr) toastr.info(lmShopMsg('shop', 'lmx.sd.noPromoBundles', [skinName]));
         return;
     }
     var old = document.getElementById('mobile-bundles-modal');
@@ -3473,11 +3390,11 @@ function _showMobileSkinBundlesModal(skinName, productId) {
         for (var j = 0; j < txn.contents.length; j++) {
             var c = txn.contents[j];
             var pname = c.productId.replace(/_/g, ' ').replace(/^skin /, '🎨 ');
-            if (c.productId === 'coin') pname = '🪙 ' + c.quantity.toLocaleString() + ' Coins';
-            else if (c.productId === 'dna') pname = '🧬 ' + c.quantity.toLocaleString() + ' DNA';
-            else if (c.productId.indexOf('xp_boost') !== -1) pname = '⚡ XP Boost ' + c.productId.replace('xp_boost_', '');
-            else if (c.productId.indexOf('mass_boost') !== -1) pname = '💪 Mass Boost ' + c.productId.replace('mass_boost_', '');
-            else if (c.productId.indexOf('potion') !== -1) pname = '🧪 ' + c.productId.replace(/_/g, ' ').replace('potion ', 'Potion (') + ')';
+            if (c.productId === 'coin') pname = '🪙 ' + _lmsdT('lmx.sd.coinsN', [c.quantity.toLocaleString()]);
+            else if (c.productId === 'dna') pname = '🧬 ' + _lmsdT('lmx.sd.dnaN', [c.quantity.toLocaleString()]);
+            else if (c.productId.indexOf('xp_boost') !== -1) pname = '⚡ ' + _lmsdT('lmx.sd.xpBoostN', [c.productId.replace('xp_boost_', '')]);
+            else if (c.productId.indexOf('mass_boost') !== -1) pname = '💪 ' + _lmsdT('lmx.sd.massBoostN', [c.productId.replace('mass_boost_', '')]);
+            else if (c.productId.indexOf('potion') !== -1) pname = '🧪 ' + _lmsdT('lmx.sd.potionN', [c.productId.replace(/_/g, ' ').replace('potion ', '')]);
             else if (c.productId.indexOf('skin_') !== -1) pname = '🎨 ' + c.productId.replace('skin_', '').replace(/_/g, ' ');
             else pname = c.quantity + 'x ' + pname;
             contentsHtml += '<span style="display: inline-block; background: rgba(255,255,255,0.06); border-radius: 4px; padding: 2px 6px; margin: 2px; font-size: 10px;">' + _sdEscHtml(pname) + '</span>';
@@ -3489,7 +3406,7 @@ function _showMobileSkinBundlesModal(skinName, productId) {
         rows += '</div>';
         rows += '<div style="text-align: right; min-width: 70px;">';
         rows += '<div style="font-size: 14px; font-weight: 700; color: #4caf50;">' + _sdEscHtml(txn.priceLabel) + '</div>';
-        rows += '<button type="button" class="btn btn-xs mobile-bundle-buy" data-purchase-id="' + _sdEscHtml(txn.purchaseId) + '" data-txn-id="' + _sdEscHtml(txn.id) + '" style="background: #4caf50; color: #fff; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">Buy</button>';
+        rows += '<button type="button" class="btn btn-xs mobile-bundle-buy" data-purchase-id="' + _sdEscHtml(txn.purchaseId) + '" data-txn-id="' + _sdEscHtml(txn.id) + '" style="background: #4caf50; color: #fff; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
         rows += '</div></div></div>';
     }
 
@@ -3498,16 +3415,16 @@ function _showMobileSkinBundlesModal(skinName, productId) {
     modal.className = 'lm-modal-overlay';
     modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML =
-        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 460px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' +
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 460px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
             '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: #ff9800; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
-                '&#x1F3AF; Promotional Bundles: ' + _sdEscHtml(skinName) +
+                '&#x1F3AF; ' + _lmsdE('lmx.sd.promoBundlesFor', [skinName]) +
             '</div>' +
             '<div style="padding: 8px 16px; font-size: 11px; color: #ff9800; background: rgba(255,152,0,0.1);">' +
-                '\u26A0 These are promotional offers from Agar.io\'s mobile config. Purchase uses the official Xsolla payment flow. Prices are approximate USD equivalents of Apple/Google tier pricing and may vary by region.' +
+                '\u26A0 ' + _lmsdE('lmx.sd.promoBundlesNote') +
             '</div>' +
             '<div style="padding: 14px 16px; max-height: 50vh; overflow-y: auto;">' + rows + '</div>' +
             '<div style="display: flex; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="mobile-bundles-close" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">Close</button>' +
+                '<button id="mobile-bundles-close" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('close') + '</button>' +
             '</div>' +
         '</div>';
 
@@ -3527,7 +3444,7 @@ function _showMobileSkinBundlesModal(skinName, productId) {
                 modal.remove();
                 window.openOfficialAgarIAP(pid, { description: tid || pid });
             } else {
-                toastr && toastr.error('<b>[SHOP]:</b> Payment system not ready. Log in and join a game first.');
+                toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.payNotReady'));
             }
         });
     }
@@ -3562,13 +3479,14 @@ function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
     var _promoHasSkin = _lmPromoHasSkin(_promo, productId);
     if (_promoHasSkin) {
         button.setAttribute('data-purchase-state', 'promo-active');
-        button.textContent = '\uD83C\uDF81 Active Offer!';
+        button.removeAttribute('data-promo-only');
+        button.textContent = '\uD83C\uDF81 ' + _lmsdT('lmx.sd.activeOffer');
         button.disabled = false;
         button.style.opacity = '1';
         button.style.cursor = 'pointer';
         button.style.pointerEvents = 'auto';
         button.style.background = '#ff9800';
-        button.title = 'This skin is in a live promotional offer right now! Click to open it.';
+        button.title = _lmsdT('lmx.sd.activeOfferTip');
         button.addEventListener('click', (function (cb) {
             return function (evt) {
                 evt.preventDefault();
@@ -3585,13 +3503,13 @@ function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
             /* Check if mobile config has transactions for this skin */
             var mobileTxns = getMobileSkinTransactions(productId);
             if (mobileTxns.length > 0) {
-                button.textContent = '\uD83D\uDED2 ' + mobileTxns.length + ' Bundle' + (mobileTxns.length > 1 ? 's' : '');
+                button.textContent = '\uD83D\uDED2 ' + _lmsdT(mobileTxns.length > 1 ? 'lmx.sd.bundlesN' : 'lmx.sd.bundleN', [mobileTxns.length]);
                 button.disabled = false;
                 button.style.opacity = '1';
                 button.style.cursor = 'pointer';
                 button.style.pointerEvents = 'auto';
                 button.style.background = '#4caf50';
-                button.title = 'Buy through promotional bundles (from $' + mobileTxns[0].priceLabel.replace('$','') + ')';
+                button.title = _lmsdT('lmx.sd.bundlesFromTip', ['$' + mobileTxns[0].priceLabel.replace('$','')]);
                 button.addEventListener('click', (function (pId, dName) {
                     return function (evt) {
                         evt.preventDefault();
@@ -3600,11 +3518,12 @@ function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
                     };
                 })(productId, displayName));
             } else if (_lmMobileFetchState === 'loading') {
-                button.textContent = '\u231B Loading...';
-                button.title = 'Loading promotional offers from mobile config...';
+                button.textContent = '\u231B ' + _lmsdT('lmx.sd.loading');
+                button.title = _lmsdT('lmx.sd.loadingPromosTip');
             } else {
-                button.textContent = 'Promo Only';
-                button.title = 'This skin is available only through Agar.io\u2019s rotating promotional offers (like The Doctor\u2019s Curiosities). Check in-game for active offers!';
+                button.textContent = _lmsdT('lmx.sd.promoOnly');
+                button.setAttribute('data-promo-only', '1');
+                button.title = _lmsdT('lmx.sd.promoOnlyTipLong');
             }
         }
         return;
@@ -3616,8 +3535,8 @@ function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
     button.style.cursor = 'pointer';
     button.style.pointerEvents = 'auto';
     button.textContent = packs.length > 1
-        ? packs.length + ' Packs'
-        : (packs[0].price === 'Price at checkout' ? 'Pack' : 'Pack ' + packs[0].price);
+        ? _lmsdT('lmx.sd.packsN', [packs.length])
+        : (packs[0].price === _lmsdT('lmx.sd.priceAtCheckout') ? _lmsdT('lmx.sd.pack') : _lmsdT('lmx.sd.packPrice', [packs[0].price]));
     button.title = packs.map(function (p) { return p.desc + ' - ' + p.price; }).join('\n');
     button.addEventListener('click', function (event) {
         event.preventDefault();
@@ -3649,7 +3568,7 @@ function populateDealsGrid() {
         if (window.master && window.master.GameConfiguration && window.master.GameConfiguration.gameConfig) {
             window.GameConfiguration = window.master.GameConfiguration;
         } else {
-            grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>Loading deals...</div>';
+            grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;"><i class="fa fa-spinner fa-spin fa-2x"></i><br><br>' + _lmsdE('lmx.sd.loadingDeals') + '</div>';
             /* LoadGameConfiguration() manages _isLoadingGameConfig itself; setting the
              * flag here made it return immediately, so the deals never loaded. */
             LoadGameConfiguration();
@@ -3664,7 +3583,7 @@ function populateDealsGrid() {
     var bundleProducts = window.GameConfiguration.gameConfig['Wallet - Product Bundles'] || window.GameConfiguration.gameConfig['Wallet - Bundle Products'] || [];
 
     if (iaps.length === 0 && softPurchases.length === 0 && offerableBundles.length === 0) {
-        grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;">No deals available.</div>';
+        grid.innerHTML = '<div style="text-align: center; color: ' + getShopTheme().tc2 + '; padding: 20px;">' + _lmsdE('lmx.sd.noDeals') + '</div>';
         return;
     }
 
@@ -3729,14 +3648,14 @@ function populateDealsGrid() {
             var cleanPid = pid.replace(/^(shop_skin_|skin_)/, '');
             if (resolvedSkinPids[pid] || resolvedSkinPids[cleanPid]) continue;
             var label = pid.replace(/_/g, ' ');
-            if (pid.indexOf('coins') !== -1) label = '💰 ' + qty.toLocaleString() + ' Coins';
-            else if (pid.indexOf('dna') !== -1) label = '🧬 ' + qty.toLocaleString() + ' DNA';
+            if (pid.indexOf('coins') !== -1) label = '💰 ' + _lmsdT('lmx.sd.coinsN', [qty.toLocaleString()]);
+            else if (pid.indexOf('dna') !== -1) label = '🧬 ' + _lmsdT('lmx.sd.dnaN', [qty.toLocaleString()]);
             else if (pid.indexOf('skin') !== -1) label = '🎨 ' + cleanPid.replace(/_/g, ' ');
             else if (pid.indexOf('boost') !== -1) label = '🚀 ' + pid.replace(/_/g, ' ');
             else label = qty + 'x ' + label;
             contentText += '<span style="font-size: 10px; display: inline-block; background: rgba(255,255,255,0.08); padding: 1px 6px; border-radius: 3px; margin: 1px;">' + _sdEscHtml(label) + '</span> ';
         }
-        if (!contentText) contentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">Bundle</span>';
+        if (!contentText) contentText = '<span style="font-size: 10px; color: ' + t.tc2 + ';">' + _lmsdE('lmx.sd.bundle') + '</span>';
 
         // Resolve all deal skin entries and render small skin icons
         var skinImgs = getDealSkinImages(deal.bundleId).map(_sdEscHtml);
@@ -3775,7 +3694,7 @@ function populateDealsGrid() {
         html += '</div>';
         html += '<div style="text-align: right; min-width: 70px;">';
         html += '<div style="font-size: 14px; font-weight: 700; color: ' + t.mc + ';">' + price + '</div>';
-        html += '<button class="btn btn-xs deal-buy-btn" data-deal-id="' + _sdEscHtml(deal.id) + '" data-deal-desc="' + _sdEscHtml(desc) + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '<button class="btn btn-xs deal-buy-btn" data-deal-id="' + _sdEscHtml(deal.id) + '" data-deal-desc="' + _sdEscHtml(desc) + '" style="background: ' + t.b1 + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
         html += '</div>';
         html += '</div>';
     }
@@ -3806,7 +3725,7 @@ function populateDealsGrid() {
         html += '<div style="font-weight: 700; font-size: 13px; color: ' + dealBorder + ';">' + spDesc + '</div>';
         html += '<div style="font-size: 11px; color: ' + t.tc2 + ';">' + currIcon + ' ' + currAmount.toLocaleString() + ' ' + currType + '</div>';
         html += '</div>';
-        html += '<button class="btn btn-xs" onclick="buyDealSoft(\'' + sp.purchaseId + '\', ' + currAmount + ', \'' + currType + '\')" style="background: ' + dealBorder + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Buy</button>';
+        html += '<button class="btn btn-xs" onclick="buyDealSoft(\'' + sp.purchaseId + '\', ' + currAmount + ', \'' + currType + '\')" style="background: ' + dealBorder + '; color: ' + t.btc + '; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
         html += '</div>';
     }
 
@@ -3821,14 +3740,14 @@ function populateDealsGrid() {
             boostHtml += '<div class="deal-icon" style="min-width: 50px; width: 50px; height: 50px; border-radius: 50%; background: ' + t.mc + '22; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid ' + t.mc + ';">🚀</div>';
             boostHtml += '<div style="flex: 1; min-width: 0;">';
             boostHtml += '<div style="font-weight: 700; font-size: 13px; color: ' + t.mc + ';">' + _sdEscHtml(bName) + '</div>';
-            boostHtml += '<div style="font-size: 11px; color: ' + t.tc2 + ';">Owned: ' + bQty + 'x</div>';
+            boostHtml += '<div style="font-size: 11px; color: ' + t.tc2 + ';">' + _lmsdE('lmx.sd.ownedQty', [bQty]) + '</div>';
             boostHtml += '</div>';
-            boostHtml += '<button class="btn btn-xs" onclick="activateBoost(\'' + pid + '\')" style="background: ' + t.mc + '; color: #000; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">Activate</button>';
+            boostHtml += '<button class="btn btn-xs" onclick="activateBoost(\'' + pid + '\')" style="background: ' + t.mc + '; color: #000; font-weight: 700; border: none; border-radius: 4px; padding: 4px 14px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.activate') + '</button>';
             boostHtml += '</div>';
         }
     }
     if (boostHtml) {
-        html += '<div style="font-weight: 700; font-size: 12px; color: ' + t.mc + '; margin: 12px 0 6px; padding-top: 8px; border-top: 1px solid ' + t.pc2 + ';">🚀 Your Boosts</div>';
+        html += '<div style="font-weight: 700; font-size: 12px; color: ' + t.mc + '; margin: 12px 0 6px; padding-top: 8px; border-top: 1px solid ' + t.pc2 + ';">🚀 ' + _lmsdE('lmx.sd.yourBoosts') + '</div>';
         html += boostHtml;
     }
 
@@ -3859,10 +3778,10 @@ function populateDealsGrid() {
 
         var obBorder = isConfirmed ? '#ff9800' : t.b3;
         var obIcon = isConfirmed ? '🎁' : '🎲';
-        var obLabel = isConfirmed ? 'Active Offer' : 'Try Purchase';
+        var obLabel = isConfirmed ? _lmsdE('lmx.sd.activeOfferShort') : _lmsdE('lmx.sd.tryPurchase');
         var obWarning = isConfirmed
             ? ''
-            : '<div style="font-size:9px;color:#ff9800;margin-top:2px;">⚠ Server may reject if not active for your session</div>';
+            : '<div style="font-size:9px;color:#ff9800;margin-top:2px;">⚠ ' + _lmsdE('lmx.sd.mayReject') + '</div>';
 
         var obFromDate = new Date(ob.availableFrom).toLocaleDateString();
         var obToDate = new Date(ob.availableTo).toLocaleDateString();
@@ -3892,7 +3811,7 @@ function populateDealsGrid() {
     }
 
     if (!html) {
-        html = '<div style="text-align: center; color: ' + t.tc2 + '; padding: 20px;">No deals found in configuration.</div>';
+        html = '<div style="text-align: center; color: ' + t.tc2 + '; padding: 20px;">' + _lmsdE('lmx.sd.noDealsConfig') + '</div>';
     }
 
     /* loading="lazy" is in the markup itself, so hidden-tab images are not fetched
@@ -3954,10 +3873,10 @@ window.refreshDealsTab = function() {
     }
     // Reset ad reward button
     var arBtn = document.getElementById('adRewardBtn');
-    if (arBtn) { arBtn.disabled = false; arBtn.innerHTML = '📺 Ad Reward'; arBtn.style.opacity = '1'; arBtn.style.pointerEvents = 'auto'; }
+    if (arBtn) { arBtn.disabled = false; arBtn.innerHTML = '📺 ' + _lmsdE('lmx.sd.adReward'); arBtn.style.opacity = '1'; arBtn.style.pointerEvents = 'auto'; }
     // Reset free coins button
     var fcBtn = document.getElementById('claimFreeCoinsBtn');
-    if (fcBtn) { fcBtn.disabled = false; fcBtn.textContent = 'Claim!'; fcBtn.style.opacity = '1'; }
+    if (fcBtn) { fcBtn.disabled = false; fcBtn.textContent = _lmsdT('lmx.sd.claim'); fcBtn.style.opacity = '1'; }
 };
 
 /**
@@ -4147,18 +4066,18 @@ function _showDealBuyConfirmationModal(title, priceLabel, onConfirm, headerText)
     modal.className = 'lm-modal-overlay';
     modal.style.cssText = 'position: fixed; inset: 0; z-index: 2000000; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
     modal.innerHTML = 
-        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' +
-            '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
-                _sdEscHtml(headerText || '🛒 Purchase Confirmation') +
+        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 380px; max-width: calc(100vw - 32px); text-align: center; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
+            '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: ' + t.mc + '; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' + // i18n-ok: CSS
+                (headerText ? _sdEscHtml(headerText) : '🛒 ' + _lmsdE('lmx.sd.purchaseConfirm')) +
             '</div>' +
             '<div style="padding: 20px 24px;">' +
                 '<div style="font-size: 15px; font-weight: 800; color: ' + t.tc + '; margin-bottom: 8px;">' + _sdEscHtml(title) + '</div>' +
-                (priceLabel ? ('<div style="font-size: 13px; font-weight: 700; color: ' + t.mc + '; margin-bottom: 14px;">Price: ' + _sdEscHtml(priceLabel) + '</div>') : '') +
-                '<div style="font-size: 11px; color: ' + t.tc2 + ';">Are you sure you want to proceed?</div>' +
+                (priceLabel ? ('<div style="font-size: 13px; font-weight: 700; color: ' + t.mc + '; margin-bottom: 14px;">' + _lmsdE('lmx.sd.priceIs', [priceLabel]) + '</div>') : '') +
+                '<div style="font-size: 11px; color: ' + t.tc2 + ';">' + _lmsdE('lmx.sd.sureProceed') + '</div>' +
             '</div>' +
             '<div style="display: flex; gap: 10px; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="deal-confirm-cancel" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">Cancel</button>' +
-                '<button id="deal-confirm-buy" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none;">Confirm</button>' +
+                '<button id="deal-confirm-cancel" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('agario.page_menu_shop_cancel') + '</button>' +
+                '<button id="deal-confirm-buy" type="button" style="flex: 1; padding: 10px; border-radius: 8px; font-weight: 900; font-size: 14px; cursor: pointer; background: ' + t.b1 + '; color: ' + t.btc + '; border: none;">' + _lmsdE('lmx.sd.confirm') + '</button>' +
             '</div>' +
         '</div>';
     document.body.appendChild(modal);
@@ -4321,7 +4240,7 @@ function _showIAPBetaRiskModal(
 
     modal.innerHTML =
         '<div style="' +
-            'background:' + t.pc + ';' +
+            'background:' + t.pc + ';' + // i18n-ok: CSS
             'border:2px solid #ff5252;' +
             'width:460px;' +
             'max-width:calc(100vw - 30px);' +
@@ -4340,7 +4259,7 @@ function _showIAPBetaRiskModal(
                 'text-align:center;' +
                 'letter-spacing:0.5px;' +
             '">' +
-                '\u26A0 BETA REAL-MONEY PURCHASE' +
+                '\u26A0 ' + _lmsdE('lmx.sd.betaTitle') +
             '</div>' +
 
             '<div style="' +
@@ -4370,10 +4289,9 @@ function _showIAPBetaRiskModal(
                     'padding:12px;' +
                     'margin-bottom:14px;' +
                 '">' +
-                    '<b>This purchase route is experimental.</b><br>' +
-                    'You may be charged but not receive the displayed deal, skin, coins, or other items. ' +
-                    'Legend Mod cannot guarantee delivery, correction, or a refund. ' +
-                    '<b>Proceed only at your own responsibility.</b>' +
+                    '<b>' + _lmsdE('lmx.sd.betaExperimental') + '</b><br>' +
+                    _lmsdE('lmx.sd.betaRisk') + ' ' +
+                    '<b>' + _lmsdE('lmx.sd.betaOwnRisk') + '</b>' +
                 '</div>' +
 
                 '<label style="' +
@@ -4384,7 +4302,7 @@ function _showIAPBetaRiskModal(
                     'font-weight:700;' +
                 '">' +
                     '<input id="iap-beta-risk-checkbox" type="checkbox" style="margin-top:3px;">' +
-                    '<span>I understand the BETA risk and accept full responsibility for continuing.</span>' +
+                    '<span>' + _lmsdE('lmx.sd.betaAccept') + '</span>' +
                 '</label>' +
 
             '</div>' +
@@ -4408,7 +4326,7 @@ function _showIAPBetaRiskModal(
                     'color:' + t.tc + ';' +
                     'border:1px solid rgba(255,255,255,0.18);' +
                 '">' +
-                    'Disagree \u2014 Cancel' +
+                    _lmsdE('lmx.sd.betaDisagree') +
                 '</button>' +
 
                 '<button id="iap-beta-agree" type="button" disabled style="' +
@@ -4423,7 +4341,7 @@ function _showIAPBetaRiskModal(
                     'border:none;' +
                     'opacity:0.45;' +
                 '">' +
-                    'I Agree \u2014 Open Xsolla' +
+                    _lmsdE('lmx.sd.betaAgree') +
                 '</button>' +
 
             '</div>' +
@@ -4442,7 +4360,7 @@ function _showIAPBetaRiskModal(
             String(
                 title ||
                 purchaseId ||
-                'Agar.io deal'
+                _lmsdT('lmx.sd.agarDeal')
             );
 
     document
@@ -4450,10 +4368,7 @@ function _showIAPBetaRiskModal(
             'iap-beta-purchase-id'
         )
         .textContent =
-            'Purchase ID: ' +
-            String(
-                purchaseId || ''
-            );
+            _lmsdT('lmx.sd.purchaseIdIs', [String(purchaseId || '')]);
 
     var checkbox =
         document.getElementById(
@@ -4779,7 +4694,7 @@ function getOfficialAgarPaymentService() {
                     if (xhr.status < 200 || xhr.status >= 300) {
                         console.error('[SHOP] Agar.io payment endpoint returned HTTP ' + xhr.status);
                         if (window.toastr) {
-                            toastr.error('<b>[SHOP]:</b> Agar.io payment endpoint returned HTTP ' + xhr.status + '.');
+                            toastr.error(lmShopMsg('shop', 'lmx.sd.payHttp', [xhr.status]));
                         }
                         return;
                     }
@@ -4943,7 +4858,7 @@ function getOfficialAgarPaymentService() {
                                 window.toastr
                             ) {
                                 toastr.error(
-                                    '<b>[SHOP]:</b> Payment blocked because Agar.io did not return a trusted Xsolla Pay Station URL.'
+                                    lmShopMsg('shop', 'lmx.sd.payBlocked')
                                 );
                             }
                         }
@@ -4951,13 +4866,13 @@ function getOfficialAgarPaymentService() {
                 xhr.onerror = function() {
                     console.error('[SHOP] Network error contacting Agar.io payment endpoint');
                     if (window.toastr) {
-                        toastr.error('<b>[SHOP]:</b> Network error contacting Agar.io payment endpoint.');
+                        toastr.error(lmShopMsg('shop', 'lmx.sd.payNetwork'));
                     }
                 };
                 xhr.ontimeout = function() {
                     console.error('[SHOP] Agar.io payment endpoint timed out');
                     if (window.toastr) {
-                        toastr.error('<b>[SHOP]:</b> Agar.io payment endpoint timed out.');
+                        toastr.error(lmShopMsg('shop', 'lmx.sd.payTimeout'));
                     }
                 };
                 xhr.send();
@@ -4994,7 +4909,7 @@ function openOfficialAgarIAP(
             window.toastr
         ) {
             toastr.error(
-                '<b>[SHOP]:</b> Missing or invalid purchase ID.'
+                lmShopMsg('shop', 'lmx.sd.badPurchaseId')
             );
         }
 
@@ -5020,7 +4935,7 @@ function openOfficialAgarIAP(
             window.toastr
         ) {
             toastr.error(
-                '<b>[SHOP]:</b> This offer cannot be bought on web. It is only available through Agar.io’s in-game promotions.'
+                lmShopMsg('shop', 'lmx.sd.notOnWeb')
             );
         }
 
@@ -5038,7 +4953,7 @@ function openOfficialAgarIAP(
             window.toastr
         ) {
             toastr.error(
-                '<b>[SHOP]:</b> This item comes from an older agar.io version and is not sold the same way today. Switch the shop back to the latest version to buy.'
+                lmShopMsg('shop', 'lmx.sd.oldVersionItem')
             );
         }
 
@@ -5079,7 +4994,7 @@ function openOfficialAgarIAP(
             window.toastr
         ) {
             toastr.error(
-                '<b>[SHOP]:</b> The Agar.io payment token is unavailable. Log out, log in again, and wait for the profile to load.'
+                lmShopMsg('shop', 'lmx.sd.noPayToken')
             );
         }
 
@@ -5099,7 +5014,7 @@ function openOfficialAgarIAP(
             window.toastr
         ) {
             toastr.error(
-                '<b>[SHOP]:</b> Official Agar.io payment service is not ready. Wait for the Agar.io client to load and try again.'
+                lmShopMsg('shop', 'lmx.sd.payServiceNotReady')
             );
         }
 
@@ -5170,7 +5085,7 @@ function openOfficialAgarIAP(
                     window.toastr
                 ) {
                     toastr.info(
-                        '<b>[SHOP]:</b> Agar.io payment request started. Waiting for Xsolla...'
+                        lmShopMsg('shop', 'lmx.sd.payStarted')
                     );
                 }
             }
@@ -5299,7 +5214,7 @@ function openOfficialAgarIAP(
 
         if (window.toastr) {
             toastr.error(
-                '<b>[SHOP]:</b> Agar.io could not create this payment session.'
+                lmShopMsg('shop', 'lmx.sd.paySessionFailed')
             );
         }
 
@@ -5352,13 +5267,14 @@ function buyDealSoft(purchaseId, cost, currencyType) {
         return;
     }
     if (typeof window.softPurchase !== 'function') {
-        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Join a game session first!');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.protocolJoin'));
         return;
     }
 
     var title = purchaseId.replace(/com\.miniclip\.agar\.io\./g, '').replace(/_/g, ' ');
-    var currLabel = (currencyType || '').indexOf('dna') !== -1 ? '🧬 DNA' : '💰 Coins';
-    var priceText = cost.toLocaleString() + ' ' + currLabel;
+    var priceText = (currencyType || '').indexOf('dna') !== -1
+        ? _lmsdT('lmx.sd.dnaN', [cost.toLocaleString()]) + ' 🧬'
+        : _lmsdT('lmx.sd.coinsN', [cost.toLocaleString()]) + ' 💰';
 
     _showDealBuyConfirmationModal(title, priceText, function() {
         // Disable all deal Buy buttons to prevent double-clicks
@@ -5379,7 +5295,7 @@ function buyDealSoft(purchaseId, cost, currencyType) {
             updateDealsBalance();
         }
 
-        toastr.info('<b>[SHOP]:</b> Sending purchase request...');
+        toastr.info(lmShopMsg('shop', 'lmx.sd.sendingPurchase'));
         /*
          * Re-enable the buttons only when Agar.io answered (opcode 71) or the
          * request timed out. The old fixed 10s re-enable was shorter than the
@@ -5388,21 +5304,21 @@ function buyDealSoft(purchaseId, cost, currencyType) {
         var dealSent = window.softPurchase(purchaseId, {
             kind: 'deal',
             onSuccess: function () {
-                toastr.success('<b>[SHOP]:</b> Purchase successful!');
+                toastr.success(lmShopMsg('shop', 'lmx.sd.purchaseOk'));
                 reenableDealButtons();
             },
             onFailure: function (resultCode) {
-                toastr.error('<b>[SHOP]:</b> ' + (resultCode === 2 ? 'Purchase failed \u2014 not enough DNA/coins.' : 'Purchase failed.'));
+                toastr.error(lmShopMsg('shop', resultCode === 2 ? 'lmx.sd.purchaseNoFunds' : 'lmx.sd.purchaseFailed'));
                 reenableDealButtons();
             },
             onTimeout: function () {
-                toastr.error('<b>[SHOP]:</b> Agar.io did not confirm the purchase. Check your wallet before trying again.');
+                toastr.error(lmShopMsg('shop', 'lmx.sd.purchaseUnconfirmed'));
                 reenableDealButtons();
             }
         }) === true;
 
         if (!dealSent) {
-            toastr.error('<b>[SHOP]:</b> Could not send the purchase request.');
+            toastr.error(lmShopMsg('shop', 'lmx.sd.purchaseSendFailed'));
             reenableDealButtons();
         }
     });
@@ -5440,16 +5356,16 @@ function buyDealBundle(bundleId, dealDesc) {
     });
 
     if (!isOfferable) {
-        if (window.toastr) toastr.error('<b>[SHOP]:</b> This bundle is neither an IAP nor an offerable bundle in the selected configuration.');
+        if (window.toastr) toastr.error(lmShopMsg('shop', 'lmx.sd.bundleUnknown'));
         return false;
     }
 
     if (!(window.core && window.core.proxyMobileData) || !window.application || !window.application.sendProto) {
-        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Join a game session first!');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.protocolJoin'));
         return;
     }
 
-    _showDealBuyConfirmationModal(dealDesc || bundleId, 'Offerable Bundle', function() {
+    _showDealBuyConfirmationModal(dealDesc || bundleId, _lmsdT('lmx.sd.offerableBundle'), function() {
         var allBtns = document.querySelectorAll('#dealsGrid .btn');
         for (var bi = 0; bi < allBtns.length; bi++) {
             allBtns[bi].disabled = true;
@@ -5466,11 +5382,11 @@ function buyDealBundle(bundleId, dealDesc) {
             if (window.application.sendProto(77, { offerBundleRequestField: { bundleId: bundleId } }) !== true) {
                 throw new Error('Offer bundle request was not sent');
             }
-            toastr.info('<b>[SHOP]:</b> Bundle purchase request sent...');
+            toastr.info(lmShopMsg('shop', 'lmx.sd.bundleSent'));
             console.log('[SHOP] Sent offer bundle request for ' + bundleId);
         } catch (error) {
             console.error('[SHOP] Official offer purchase failed:', error);
-            toastr && toastr.error('<b>[SHOP]:</b> Could not send the bundle purchase request');
+            toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.bundleSendFailed'));
             for (var ri = 0; ri < allBtns.length; ri++) {
                 allBtns[ri].disabled = false;
                 allBtns[ri].style.opacity = '1';
@@ -5501,12 +5417,12 @@ function activateBoost(productId) {
         return;
     }
     if (!(window.core && window.core.proxyMobileData) || !window.application || !window.application.activateBoost) {
-        toastr && toastr.error('<b>[SHOP]:</b> Protocol not ready. Join a game session first!');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.protocolJoin'));
         return;
     }
     var displayName = productId.replace(/_/g, ' ');
 
-    _showDealBuyConfirmationModal('Activate ' + displayName, null, function() {
+    _showDealBuyConfirmationModal(_lmsdT('lmx.sd.activateName', [displayName]), null, function() {
         // Disable all deal buttons to prevent double-clicks
         var allBtns = document.querySelectorAll('#dealsGrid .btn');
         for (var bi = 0; bi < allBtns.length; bi++) {
@@ -5517,7 +5433,7 @@ function activateBoost(productId) {
 
         var sent = window.application.activateBoost(productId);
         if (!sent) {
-            toastr.error('<b>[SHOP]:</b> Failed to activate boost');
+            toastr.error(lmShopMsg('shop', 'lmx.sd.boostFailed'));
             var btns3 = document.querySelectorAll('#dealsGrid .btn');
             for (var j2 = 0; j2 < btns3.length; j2++) { btns3[j2].disabled = false; btns3[j2].style.opacity = '1'; btns3[j2].style.pointerEvents = 'auto'; }
             return;
@@ -5755,9 +5671,9 @@ function populateSkins() {
             grid.innerHTML =
                 '<div style="grid-column:1/-1;text-align:center;padding:30px;color:' +
                 getShopTheme().tc2 + ';font-size:13px;">' +
-                'No owned skins detected on this session.<br>' +
+                _lmsdE('lmx.sd.noOwned') + '<br>' +
                 '<span style="font-size:11px;color:' + getShopTheme().tc2 +
-                ';">Log in with Google/Facebook or switch to <b>All Skins</b> to equip any skin.</span></div>';
+                ';">' + _lmsdT('lmx.sd.noOwnedHint') + '</span></div>';
             $('#skinCount').text(0);
             $('#skinTotal').text(0);
             $('#skinLoadMore').hide();
@@ -5768,9 +5684,9 @@ function populateSkins() {
             grid.innerHTML =
                 '<div style="grid-column:1/-1;text-align:center;padding:30px;color:' +
                 getShopTheme().tc2 + ';font-size:13px;">' +
-                '&#x2705; You\u2019re up to date!<br>' +
+                '&#x2705; ' + _lmsdE('lmx.sd.upToDate') + '<br>' +
                 '<span style="font-size:11px;color:' + getShopTheme().tc2 +
-                ';">No new skins since your last visit. Check back after an Agar.io update!</span></div>';
+                ';">' + _lmsdE('lmx.sd.noNewSkins') + '</span></div>';
             $('#skinCount').text(0);
             $('#skinTotal').text(0);
             $('#skinLoadMore').hide();
@@ -5789,7 +5705,7 @@ function populateSkins() {
             grid.innerHTML =
                 '<div style="grid-column:1/-1;text-align:center;padding:30px;color:' +
                 getShopTheme().tc2 + ';font-size:13px;">' +
-                (_lmQ ? $('<div>').text(lmShopT('nomatch')).html() + ' “' + $('<div>').text(_lmQ).html() + '”.' : $('<div>').text(lmShopT('none')).html()) +
+                (_lmQ ? _lmsdE('lmx.sd.nomatch', [_lmQ]) : _lmsdE('lmx.sd.none')) +
                 '</div>';
             $('#skinCount').text(0);
             $('#skinTotal').text(0);
@@ -5890,26 +5806,25 @@ function populateSkins() {
     applySkinFilters(true);
     updateEquippedSkinUI();
 
-    // Update filter button with actual skin count
-    $('.skin-filter-btn[data-filter="all"]').text('All Skins (' + skins.length + ')');
-    var newSkinsList = getNewestSkins(skins, NEW_SKINS_CAP);
-    var newCount = newSkinsList.length;
-    $('.skin-filter-btn[data-filter="new"]').html('&#x1F195; New Skins' + (newCount > 0 ? ' (' + newCount + ')' : ''));
+    /* Filter buttons with the skin counts; again after a language change (_lmsdLangChanged) */
+    window._lmsdFilterLabels = function () {
+        $('.skin-filter-btn[data-filter="all"]').text(_lmsdT('lmx.sd.allSkinsN', [skins.length]));
+        var newCount = getNewestSkins(skins, NEW_SKINS_CAP).length;
+        $('.skin-filter-btn[data-filter="new"]').html('&#x1F195; ' + (newCount > 0 ? _lmsdE('lmx.sd.newSkinsN', [newCount]) : _lmsdE('lmx.sd.newSkins')));
+        var ownedSkinsObj = getOwnedSkinsMap();
+        var ownedCount = 0;
+        skins.concat(getOwnedCustomSkinEntries(ownedSkinsObj)).forEach(function(s) {
+            if (s.productId !== 'skin_empty' && isSkinOwned(s, ownedSkinsObj)) ownedCount++;
+        });
+        $('.skin-filter-btn[data-filter="owned"]').html('&#x2B50; ' + (ownedCount > 0 ? _lmsdE('lmx.sd.ownedSkinsN', [ownedCount]) : _lmsdE('lmx.sd.ownedSkins')));
+    };
+    window._lmsdFilterLabels();
 
     /* Pack prices in the New Skins view follow the deal currency. */
     $('#BuyDealCurrency').off('change.newSkins').on('change.newSkins', function () {
         if (window._skinShopNewMode) applySkinFilters(false);
     });
 
-    // Update owned skin count
-    var ownedSkinsObj = getOwnedSkinsMap();
-    var ownedCount = 0;
-    skins.concat(getOwnedCustomSkinEntries(ownedSkinsObj)).forEach(function(s) {
-        if (s.productId !== 'skin_empty' && isSkinOwned(s, ownedSkinsObj)) ownedCount++;
-    });
-    if (ownedCount > 0) {
-        $('.skin-filter-btn[data-filter="owned"]').html('&#x2B50; My Owned Skins (' + ownedCount + ')');
-    }
 
     // Expose for external refresh (server wallet updates, purchases, etc.)
     window._skinShopRefresh =
@@ -5956,9 +5871,22 @@ window.refreshSkinGrid = refreshSkinGrid;
  * account messages until this connection's login response arrived. Refuse
  * instead of reporting a success that never reached the server.
  */
+/* the shown name of an action id given to validateShopIntegrity / _sdAccountReadyFor ('' when unknown) */
+var _SD_ACTIONS = {
+    'open potions': 'lmx.sd.actOpenPotions', 'choose image file': 'lmx.sd.actChooseImage', 'upload custom skin': 'lmx.sd.actUploadSkin',
+    'load custom skin URL': 'lmx.sd.actLoadUrl', 'upload and buy custom skin': 'lmx.sd.actUploadBuy', 'buy deal': 'lmx.sd.actBuyDeal',
+    'purchase deal bundle': 'lmx.sd.actBuyBundle', 'activate boost': 'lmx.sd.actActivateBoost', 'equip skins': 'lmx.sd.actEquip',
+    'unequip skins': 'lmx.sd.actUnequip', 'equip the skin': 'lmx.sd.actEquip', 'unequip the skin': 'lmx.sd.actUnequip',
+    'delete the skin': 'lmx.sd.actDelete', 'buy premium potion': 'lmx.sd.actBuyPotion', 'buy VIP subscription': 'lmx.sd.actBuyVip',
+    'claim promo reward': 'lmx.sd.actClaimPromo'
+};
+function _sdActionLabel(action) {
+    var k = action && Object.prototype.hasOwnProperty.call(_SD_ACTIONS, action) ? _SD_ACTIONS[action] : null;
+    return k ? _lmsdT(k) : '';
+}
 function _sdAccountReadyFor(label) {
     if (typeof window.lmAccountReady === 'function' && !window.lmAccountReady()) {
-        if (window.toastr) toastr.warning('<b>[SHOP]:</b> Login not confirmed on this server yet. Wait a moment, then ' + label + ' again.');
+        if (window.toastr) toastr.warning(lmShopMsg('shop', 'lmx.sd.loginNotConfirmed', [_sdActionLabel(label)]));
         return false;
     }
     return true;
@@ -5966,22 +5894,22 @@ function _sdAccountReadyFor(label) {
 
 function deleteCustomSkin(skinId) {
     if (!window.loggedIn) {
-        toastr && toastr.error('<b>[SHOP]:</b> You must be logged in to delete skins');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.needLoginDelete'));
         return;
     }
     if (!skinId || !skinId.includes('custom_')) {
-        toastr && toastr.error('<b>[SHOP]:</b> Only custom skins can be deleted');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.onlyCustomDelete'));
         return;
     }
     if (!(window.core && window.core.proxyMobileData)) {
-        toastr && toastr.error('<b>[SHOP]:</b> No server connection. Join a game first!');
+        toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.noConnJoin'));
         return;
     }
     if (!_sdAccountReadyFor('delete the skin')) return;
 
     // Disable the delete button on this skin card to prevent double-clicks
     var cardBtn = $('.skin-card[data-product-id="' + skinId + '"] .skin-btn-delete, .skin-card[data-product-id="' + skinId + '"] .skin-btn-buy');
-    cardBtn.prop('disabled', true).css({ opacity: 0.5, pointerEvents: 'none' }).text('Deleting...');
+    cardBtn.prop('disabled', true).css({ opacity: 0.5, pointerEvents: 'none' }).text(_lmsdT('lmx.sd.deleting'));
 
     // Official client flow (agario.js:38643-38644):
     //   createDeleteUserSkinRequestMessage(skinId) → set_skinId(skinId)
@@ -5999,22 +5927,22 @@ function deleteCustomSkin(skinId) {
             }).finish();
             window.core.proxyMobileData(buffer);
             console.log('[SKIN] Sent delete request for ' + skinId);
-            toastr && toastr.info('<b>[SERVER]:</b> Delete request sent for custom skin...');
+            toastr && toastr.info(lmShopMsg('server', 'lmx.sd.deleteSent'));
         } catch (e) {
             console.error('[SKIN] Delete encode error:', e);
-            toastr && toastr.error('<b>[ERROR]:</b> Failed to encode delete request');
-            cardBtn.prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' }).text('Delete');
+            toastr && toastr.error(lmShopMsg('error', 'lmx.sd.deleteEncodeFailed'));
+            cardBtn.prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' }).text(_lmsdT('lmx.sd.delete'));
             return;
         }
     } else {
-        toastr && toastr.error('<b>[ERROR]:</b> Protobuf not loaded');
-        cardBtn.prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' }).text('Delete');
+        toastr && toastr.error(lmShopMsg('error', 'lmx.sd.protobufMissing'));
+        cardBtn.prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' }).text(_lmsdT('lmx.sd.delete'));
         return;
     }
     // ogario.v4.js case 152 handles response → refreshSkinGrid rebuilds grid.
     // Safety fallback to restore the button if response is lost:
     window._deleteTimeout = setTimeout(function() {
-        cardBtn.prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' }).text('Delete');
+        cardBtn.prop('disabled', false).css({ opacity: 1, pointerEvents: 'auto' }).text(_lmsdT('lmx.sd.delete'));
     }, 10000);
 }
 window.deleteCustomSkin = deleteCustomSkin;
@@ -6099,7 +6027,7 @@ function updateEquippedSkinUI() {
 
     if (equippedId && equippedId !== 'skin_empty' && equippedId !== '') {
         var displayName = equippedId.indexOf('skin_custom_') === 0
-            ? 'Custom Skin'
+            ? _lmsdT('lmx.sd.customSkin')
             : equippedId.replace('skin_', '').replace(/_/g, ' ').replace(/\b\w/g, function(c) { return c.toUpperCase(); });
         bannerName.text(displayName);
 
@@ -6168,7 +6096,7 @@ function updateEquippedSkinUI() {
 
         unequipBtn.show();
     } else {
-        bannerName.text('None (Default Skin)');
+        bannerName.text(_lmsdT('lmx.sd.noneDefaultSkin'));
         bannerImg.attr('src', 'https://jimboy3100.github.io/banners/icondeal2.png');
         bannerImg.css({
             'border-color': t.mc,
@@ -6181,12 +6109,12 @@ function updateEquippedSkinUI() {
     // Highlight cards in the grid
     $('.skin-card').removeClass('equipped');
     $('.skin-card .equipped-badge').remove();
-    $('.skin-card .skin-btn-equip').text('Equip');
+    $('.skin-card .skin-btn-equip').text(_lmsdT('lmx.sd.equip'));
 
     if (equippedId) {
         $('.skin-card[data-product-id="' + equippedId + '"]').each(function() {
             $(this).addClass('equipped');
-            $(this).find('.skin-btn-equip').text('Equipped');
+            $(this).find('.skin-btn-equip').text(_lmsdT('lmx.sd.equippedShort'));
         });
     }
 }
@@ -6767,7 +6695,7 @@ function getSkinPurchaseInfo(
         currency: 'unknown',
         type: 'UNAVAILABLE',
         reason:
-            'No direct purchase is configured.',
+            _lmsdT('lmx.sd.noDirectPurchase'),
         shopEntry: null,
         purchaseEntry: null
     };
@@ -6779,7 +6707,7 @@ function getSkinPurchaseInfo(
 
     if (!skinKey) {
         result.reason =
-            'Invalid skin product ID.';
+            _lmsdT('lmx.sd.badSkinId');
 
         return result;
     }
@@ -6789,7 +6717,7 @@ function getSkinPurchaseInfo(
 
     if (!index) {
         result.reason =
-            'Game configuration is unavailable.';
+            _lmsdT('lmx.sd.noGameConfig');
 
         return result;
     }
@@ -6986,7 +6914,7 @@ function getSkinPurchaseInfo(
                 'REWARD';
 
             result.reason =
-                'This skin is unlocked as a reward, not bought directly.';
+                _lmsdT('lmx.sd.rewardOnly');
 
             result.shopEntry =
                 typeCandidate;
@@ -7004,7 +6932,7 @@ function getSkinPurchaseInfo(
                 'INAPP';
 
             result.reason =
-                'This skin is available only through an official offer or bundle.';
+                _lmsdT('lmx.sd.offerOnlyReason');
 
             result.shopEntry =
                 typeCandidate;
@@ -7020,7 +6948,7 @@ function getSkinPurchaseInfo(
             'REWARD';
 
         result.reason =
-            'This skin is unlocked as a reward, not bought directly.';
+            _lmsdT('lmx.sd.rewardOnly');
     } else if (
         fallbackType === 'INAPP' ||
         fallbackType === 'IAP'
@@ -7029,12 +6957,12 @@ function getSkinPurchaseInfo(
             'INAPP';
 
         result.reason =
-            'This skin is available only through an official offer or bundle.';
+            _lmsdT('lmx.sd.offerOnlyReason');
     } else if (
         candidates.length
     ) {
         result.reason =
-            'The skin exists in the catalog but has no valid soft-purchase mapping.';
+            _lmsdT('lmx.sd.noSoftMapping');
     }
 
     return result;
@@ -7196,7 +7124,7 @@ function setSkinBuyButtonPending(
             'none';
 
         button.textContent =
-            'Buying...';
+            _lmsdT('lmx.sd.buying');
 
         return;
     }
@@ -7232,16 +7160,16 @@ function setSkinBuyButtonPending(
             'REWARD'
         ) {
             button.textContent =
-                'Reward';
+                _lmsdT('lmx.sd.reward');
         } else if (
             info.type ===
             'INAPP'
         ) {
             button.textContent =
-                'Offer Only';
+                _lmsdT('lmx.sd.offerOnly');
         } else {
             button.textContent =
-                'Unavailable';
+                _lmsdT('lmx.sd.unavailable');
         }
 
         return;
@@ -7253,7 +7181,7 @@ function setSkinBuyButtonPending(
     ) {
         if (info.amount === 0) {
             button.textContent =
-                'Get';
+                _lmsdT('lmx.sd.get');
         } else {
             button.textContent =
                 info.amount
@@ -7270,7 +7198,7 @@ function setSkinBuyButtonPending(
         }
     } else {
         button.textContent =
-            'Buy';
+            _lmsdT('lmx.sd.buy');
     }
 }
 
@@ -7472,9 +7400,7 @@ function updatePaginationUI() {
             .css('display', 'block')
             .show()
             .text(
-                lmShopT('more') + ' (' +
-                (total - renderedCount) + ' ' + lmShopT('left') +
-                ')'
+                _lmsdT('lmx.sd.moreLeft', [total - renderedCount])
             );
     } else {
         loadMoreButton.hide();
@@ -7609,7 +7535,7 @@ function renderSkinPage(
                     'skin_custom_'
                 ) === 0
         ) {
-            return 'Custom Skin';
+            return _lmsdT('lmx.sd.customSkin');
         }
 
         return String(
@@ -7863,7 +7789,7 @@ function renderSkinPage(
                 0
             ) {
                 priceLabel =
-                    'Available';
+                    _lmsdT('lmx.sd.available');
             } else if (
                 purchaseInfo.currency ===
                 'dna'
@@ -7912,7 +7838,7 @@ function renderSkinPage(
                 createElement(
                     'div',
                     'owned-badge',
-                    'Reward'
+                    _lmsdT('lmx.sd.reward')
                 );
 
             badge.style.color =
@@ -7928,7 +7854,7 @@ function renderSkinPage(
                 createElement(
                     'div',
                     'owned-badge',
-                    'Offer'
+                    _lmsdT('lmx.sd.offer')
                 );
         }
 
@@ -8044,8 +7970,8 @@ function renderSkinPage(
                     'button',
                     'skin-btn-equip',
                     isEquipped
-                        ? 'Equipped'
-                        : 'Equip'
+                        ? _lmsdT('lmx.sd.equippedShort')
+                        : _lmsdT('lmx.sd.equip')
                 );
 
             equipButton.type =
@@ -8097,7 +8023,7 @@ function renderSkinPage(
                     createElement(
                         'button',
                         'skin-btn-buy skin-btn-delete',
-                        'Delete'
+                        _lmsdT('lmx.sd.delete')
                     );
 
                 deleteButton.type =
@@ -8134,14 +8060,14 @@ function renderSkinPage(
 
                                 /* Deleting a paid custom skin cannot be undone: confirm first. */
                                 _showDealBuyConfirmationModal(
-                                    'Delete this custom skin permanently? This cannot be undone.',
+                                    _lmsdT('lmx.sd.deleteConfirm'),
                                     null,
                                     function () {
                                         deleteCustomSkin(
                                             selectedProductId
                                         );
                                     },
-                                    '🗑 Delete Custom Skin'
+                                    '🗑 ' + _lmsdT('lmx.sd.deleteCustomTitle')
                                 );
                             };
                         }
@@ -8182,7 +8108,7 @@ function renderSkinPage(
                     isPurchasePending
                 ) {
                     buyButton.textContent =
-                        'Buying...';
+                        _lmsdT('lmx.sd.buying');
 
                     buyButton.disabled =
                         true;
@@ -8210,7 +8136,7 @@ function renderSkinPage(
                             .amount === 0
                     ) {
                         buyButton.textContent =
-                            'Get';
+                            _lmsdT('lmx.sd.get');
                     } else if (
                         purchaseInfo
                             .amount !== null
@@ -8232,7 +8158,7 @@ function renderSkinPage(
                             );
                     } else {
                         buyButton.textContent =
-                            'Buy';
+                            _lmsdT('lmx.sd.buy');
                     }
 
                     buyButton.addEventListener(
@@ -8284,7 +8210,7 @@ function renderSkinPage(
                     'REWARD'
                 ) {
                     buyButton.textContent =
-                        'Reward';
+                        _lmsdT('lmx.sd.reward');
                 } else if (
                     purchaseInfo.type ===
                     'INAPP'
@@ -8296,13 +8222,13 @@ function renderSkinPage(
                     if (_promoHasSkin) {
                         buyButton.setAttribute('data-purchase-state', 'promo-active');
                         buyButton.textContent =
-                            '\uD83C\uDF81 Active Offer!';
+                            '\uD83C\uDF81 ' + _lmsdT('lmx.sd.activeOffer');
                         buyButton.disabled = false;
                         buyButton.style.opacity = '1';
                         buyButton.style.cursor = 'pointer';
                         buyButton.style.pointerEvents = 'auto';
                         buyButton.style.background = '#ff9800';
-                        buyButton.title = 'This skin is in a live promotional offer right now! Click to open it.';
+                        buyButton.title = _lmsdT('lmx.sd.activeOfferTip');
                         buyButton.addEventListener('click', (function (cb) {
                             return function (evt) {
                                 evt.preventDefault();
@@ -8314,13 +8240,13 @@ function renderSkinPage(
                         /* Check mobile config for purchasable bundles */
                         var _mobileTxns = getMobileSkinTransactions(productId);
                         if (_mobileTxns.length > 0) {
-                            buyButton.textContent = '\uD83D\uDED2 ' + _mobileTxns.length + ' Bundle' + (_mobileTxns.length > 1 ? 's' : '');
+                            buyButton.textContent = '\uD83D\uDED2 ' + _lmsdT(_mobileTxns.length > 1 ? 'lmx.sd.bundlesN' : 'lmx.sd.bundleN', [_mobileTxns.length]);
                             buyButton.disabled = false;
                             buyButton.style.opacity = '1';
                             buyButton.style.cursor = 'pointer';
                             buyButton.style.pointerEvents = 'auto';
                             buyButton.style.background = '#4caf50';
-                            buyButton.title = 'Buy through promotional bundles (from ' + _mobileTxns[0].priceLabel + ')';
+                            buyButton.title = _lmsdT('lmx.sd.bundlesFromTip', [_mobileTxns[0].priceLabel]);
                             buyButton.addEventListener('click', (function (_pId, _dName) {
                                 return function (_evt) {
                                     _evt.preventDefault();
@@ -8329,16 +8255,17 @@ function renderSkinPage(
                                 };
                             })(productId, displayName));
                         } else if (_lmMobileFetchState === 'loading') {
-                            buyButton.textContent = '\u231B Loading...';
-                            buyButton.title = 'Loading promotional offers from mobile config...';
+                            buyButton.textContent = '\u231B ' + _lmsdT('lmx.sd.loading');
+                            buyButton.title = _lmsdT('lmx.sd.loadingPromosTip');
                         } else {
-                            buyButton.textContent = 'Promo Only';
-                            buyButton.title = 'Available only through Agar.io\u2019s rotating promotional offers. Check in-game for active offers!';
+                            buyButton.textContent = _lmsdT('lmx.sd.promoOnly');
+                            buyButton.setAttribute('data-promo-only', '1');
+                            buyButton.title = _lmsdT('lmx.sd.promoOnlyTip');
                         }
                     }
                 } else {
                     buyButton.textContent =
-                        'Unavailable';
+                        _lmsdT('lmx.sd.unavailable');
                 }
                 if (window._skinShopNewMode) {
                     setNewSkinPackButton(
@@ -8442,7 +8369,7 @@ function buySkin(productId) {
 
     if (!productId) {
         toastr.error(
-            '<b>[SHOP]:</b> Invalid skin product ID.'
+            lmShopMsg('shop', 'lmx.sd.badSkinId')
         );
 
         return false;
@@ -8450,7 +8377,7 @@ function buySkin(productId) {
 
     if (!window.loggedIn) {
         toastr.error(
-            '<b>[SHOP]:</b> You must be logged in to buy skins.'
+            lmShopMsg('shop', 'lmx.sd.needLoginSkins')
         );
 
         return false;
@@ -8458,7 +8385,7 @@ function buySkin(productId) {
 
     if (!window.agarioEncodedUID) {
         toastr.error(
-            '<b>[SHOP]:</b> No payment UID. Log out and log in again.'
+            lmShopMsg('shop', 'lmx.sd.noPaymentUid')
         );
 
         return false;
@@ -8473,7 +8400,7 @@ function buySkin(productId) {
         )
     ) {
         toastr.error(
-            '<b>[SHOP]:</b> No server connection. Join a game first.'
+            lmShopMsg('shop', 'lmx.sd.noConnJoin')
         );
 
         return false;
@@ -8508,10 +8435,10 @@ function buySkin(productId) {
         );
 
         toastr.warning(
-            '<b>[SHOP]:</b> ' +
-            (
+            '<b>' + _lmsdE('lmx.sd.tagShop') + ':</b> ' +
+            _sdEscHtml(
                 purchaseInfo.reason ||
-                'This skin cannot be purchased directly.'
+                _lmsdT('lmx.sd.notDirect')
             )
         );
 
@@ -8529,7 +8456,7 @@ function buySkin(productId) {
             )
     ) {
         toastr.warning(
-            '<b>[SHOP]:</b> This skin purchase is already pending.'
+            lmShopMsg('shop', 'lmx.sd.alreadyPending')
         );
 
         return false;
@@ -8743,7 +8670,7 @@ function buySkin(productId) {
                 '<div id="skin-confirm-title" ' +
                     'style="font-size:16px;font-weight:900;' +
                     'text-transform:uppercase;letter-spacing:1px;">' +
-                    'Confirm Purchase' +
+                    _lmsdE('lmx.sd.confirmPurchase') +
                 '</div>' +
             '</div>' +
 
@@ -8793,13 +8720,13 @@ function buySkin(productId) {
                     'font-weight:800;font-size:14px;cursor:pointer;' +
                     'background:rgba(255,255,255,0.08);' +
                     'border:1px solid rgba(255,255,255,0.15);">' +
-                    'Cancel' +
+                    _lmsdE('agario.page_menu_shop_cancel') +
                 '</button>' +
 
                 '<button id="skin-confirm-buy" type="button" ' +
                     'style="flex:1;padding:10px;border-radius:8px;' +
                     'font-weight:900;font-size:14px;border:none;">' +
-                    'Buy Now' +
+                    _lmsdE('lmx.sd.buyNow') +
                 '</button>' +
             '</div>' +
         '</div>';
@@ -8930,15 +8857,11 @@ function buySkin(productId) {
         purchaseInfo.amount !==
         null
     ) {
-        var currencyName =
-            purchaseInfo.currency ===
-            'dna'
-                ? 'DNA'
-                : purchaseInfo
-                    .currency ===
-                    'coin'
-                    ? 'Coins'
-                    : 'Currency';
+        /* the balance and warning texts per currency (each language words them its own way) */
+        var balanceKey = purchaseInfo.currency === 'dna' ? 'lmx.sd.balanceDna'
+            : purchaseInfo.currency === 'coin' ? 'lmx.sd.balanceCoins' : 'lmx.sd.balanceOther';
+        var notEnoughKey = purchaseInfo.currency === 'dna' ? 'lmx.sd.notEnoughDna'
+            : purchaseInfo.currency === 'coin' ? 'lmx.sd.notEnoughCoins' : 'lmx.sd.notEnoughOther';
 
         var currencyIcon =
             purchaseInfo.currency ===
@@ -8960,10 +8883,7 @@ function buySkin(productId) {
             currentBalance !== null
         ) {
             balanceElement.textContent =
-                'Your ' +
-                currencyName +
-                ': ' +
-                currentBalance.toLocaleString();
+                _lmsdT(balanceKey, [currentBalance.toLocaleString()]);
         } else {
             balanceElement.textContent =
                 '';
@@ -8974,13 +8894,11 @@ function buySkin(productId) {
                 'block';
 
             warningElement.textContent =
-                '⚠️ You may not have enough ' +
-                currencyName +
-                '!';
+                '⚠️ ' + _lmsdT(notEnoughKey);
         }
     } else {
         costElement.textContent =
-            'Available';
+            _lmsdT('lmx.sd.available');
 
         balanceElement.textContent =
             '';
@@ -9062,7 +8980,7 @@ function _executeSkinPurchase(
         !purchaseInfo.purchaseId
     ) {
         toastr.error(
-            '<b>[SHOP]:</b> This skin is not available for direct purchase.'
+            lmShopMsg('shop', 'lmx.sd.notDirectAvail')
         );
 
         return false;
@@ -9077,7 +8995,7 @@ function _executeSkinPurchase(
         )
     ) {
         toastr.error(
-            '<b>[SHOP]:</b> Application purchase interface is not available.'
+            lmShopMsg('shop', 'lmx.sd.noPurchaseApi')
         );
 
         return false;
@@ -9120,7 +9038,7 @@ function _executeSkinPurchase(
 
                 onSuccess: function () {
                     setSkinBuyButtonPending(productId, false);
-                    toastr.success('<b>[SHOP]:</b> Purchase successful!');
+                    toastr.success(lmShopMsg('shop', 'lmx.sd.purchaseOk'));
                     equipSkin(productId);
                     if (typeof window.renderSkinPage === 'function') {
                         window.renderSkinPage(false);
@@ -9130,16 +9048,13 @@ function _executeSkinPurchase(
                 onFailure: function (resultCode) {
                     setSkinBuyButtonPending(productId, false);
                     toastr.error(
-                        '<b>[SHOP]:</b> ' +
-                        (resultCode === 2
-                            ? 'Purchase failed \u2014 not enough DNA/coins.'
-                            : 'Purchase failed.')
+                        lmShopMsg('shop', resultCode === 2 ? 'lmx.sd.purchaseNoFunds' : 'lmx.sd.purchaseFailed')
                     );
                 },
 
                 onTimeout: function () {
                     setSkinBuyButtonPending(productId, false);
-                    toastr.error('<b>[SHOP]:</b> Agar.io did not confirm the purchase. Check your wallet before trying again.');
+                    toastr.error(lmShopMsg('shop', 'lmx.sd.purchaseUnconfirmed'));
                 }
             }
         ) === true;
@@ -9151,7 +9066,7 @@ function _executeSkinPurchase(
         );
 
         toastr.error(
-            '<b>[SHOP]:</b> Could not send purchase request.'
+            lmShopMsg('shop', 'lmx.sd.purchaseSendFailed')
         );
 
         return false;
@@ -9222,7 +9137,7 @@ function populateSD() {
 	}
 	}
 	if ($('#ss-select-purchases').children().length==0)
-		$('#ss-select-purchases').append('<option value="" selected>Nothing found that is not already on latest version</option>');
+		$('#ss-select-purchases').append('<option value="" selected>' + _lmsdE('lmx.sd.nothingOld') + '</option>');
 }
 
 function findSDescription() {
@@ -9241,7 +9156,7 @@ function findSDescription() {
             return;
         }
     }
-    $("#dealtype").text("Unknown");
+    $("#dealtype").text(_lmsdT('lmx.sd.unknown'));
 }
 
 function letterCount(string, letter, caseSensitive) {
@@ -9504,7 +9419,7 @@ function _fetchConfigFallback(callback) {
             if (!info || typeof info !== 'object' || !info.gameConfig) {
                 window._isLoadingGameConfig = false;
                 console.warn('[Shop] Config URL did not return a GameConfiguration:', targetUrl);
-                if (typeof toastr !== 'undefined') toastr.error('<b>[SHOP]:</b> The config URL did not return a valid GameConfiguration.');
+                if (typeof toastr !== 'undefined') toastr.error(lmShopMsg('shop', 'lmx.sd.badConfigUrl'));
                 return;
             }
             window.GameConfiguration = info;
@@ -9534,3 +9449,22 @@ function populateLibConfig() {
     }
 }
 
+/* A language change while the shop is open: LMi18n.apply already refreshed the data-i18n texts (tabs,
+ * labels, placeholders); rebuild the parts made in code (skin cards, deals, banners, counts). */
+function _lmsdLangChanged() {
+    if (!document.getElementById('specialShopModal')) return;
+    var steps = [
+        function () { if (typeof window._skinShopRefresh === 'function') window._skinShopRefresh(); },
+        function () { if (typeof window._lmsdFilterLabels === 'function') window._lmsdFilterLabels(); },
+        function () { if (typeof updateEquippedSkinUI === 'function') updateEquippedSkinUI(); },
+        function () { if (document.getElementById('dealsGrid') && window.GameConfiguration) populateDealsGrid(); },
+        function () { if (typeof window.updateShopLoginState === 'function') window.updateShopLoginState(); }
+    ];
+    for (var i = 0; i < steps.length; i++) {
+        try { steps[i](); } catch (err) { console.warn('[SHOP] language refresh:', err); }
+    }
+}
+if (window.LMi18n && typeof window.LMi18n.onChange === 'function' && !window._lmsdLangHooked) {
+    window._lmsdLangHooked = true;
+    window.LMi18n.onChange(_lmsdLangChanged);
+}

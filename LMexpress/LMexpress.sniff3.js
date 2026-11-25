@@ -1,4 +1,8 @@
 //Legend Mod Sniff 3.34 by jimboy3100
+/* Texts from the language packs (developers/i18n/src/lmx.json, lmx.vo.*); the voice settings carry
+ * data-i18n attributes, so LMi18n.apply switches them when the language changes. */
+function _lmvoT(k, v) { return window.lmT ? window.lmT(k, v) : String(k); }
+function _lmvoE(k, v) { return String(_lmvoT(k, v)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
 //Prevent Image crash
 
@@ -65,7 +69,7 @@ var textspeach="";
         function initialize() {
             var lang_hash = {
 				"en-US": "English",
-                "default": "All (not suggested)",
+                "default": _lmvoT('lmx.vo.allLanguages'),
                 "ja": "日本語",
 				"ar": "عربي",				
                 "el-GR": "Ελληνικά",
@@ -142,7 +146,7 @@ var textspeach="";
                 recognition.addEventListener('error', function(event) {
                     if (event && (event.error === 'not-allowed' || event.error === 'service-not-allowed')) {
                         window.voiceStarted = null;
-                        toastr.warning("Microphone access is blocked; voice chat stopped.");
+                        toastr.warning(_lmvoE('lmx.vo.micBlocked'));
                     }
                 }, false);
             } else {
@@ -163,7 +167,7 @@ var textspeach="";
 					fn_recognition_start();
 				}
 				else{
-					toastr.info("Voice to text stopped");
+					toastr.info(_lmvoE('lmx.vo.stopped'));
 				}				
 			}
             function fn_recognition_start() {
@@ -173,7 +177,7 @@ var textspeach="";
                 if (recognition) {
                     recognition.start();
                 } else {
-                    toastr.warning("Speech recognition is not supported in this browser.");
+                    toastr.warning(_lmvoE('lmx.vo.unsupported'));
                 }
             }
 
@@ -186,19 +190,19 @@ var textspeach="";
             	}, 500);				
             }
             $("#og-options").append('<div id="voice-config" class="options-box voiceGroup"></div>');
-            $("#voice-config").append('<h5 class="menu-main-color">Voice</h5>');
-            $("#voice-config").append('<label>Voice-Prefix:<input type="text" id="voice-prefix" style="width:4em; float:none;"/></label>');
+            $("#voice-config").append('<h5 class="menu-main-color" data-i18n="lmx.vo.title">' + _lmvoE('lmx.vo.title') + '</h5>');
+            $("#voice-config").append('<label><span data-i18n="lmx.vo.prefix">' + _lmvoE('lmx.vo.prefix') + '</span><input type="text" id="voice-prefix" style="width:4em; float:none;"/></label>');
             /* as a property: a prefix with a quote broke the attribute */
             $("#voice-prefix").val(cfg.prefix);
 			$("#voice-prefix").blur(function() {
 					fn_config_save();
 			});
             function fn_lang_make() {
-                $("#voice-config").append('<label>Voice-lang:<select id="voice-lang"/></select></label>');
+                $("#voice-config").append('<label><span data-i18n="lmx.vo.lang">' + _lmvoE('lmx.vo.lang') + '</span><select id="voice-lang"/></select></label>');
                 for (var code in lang_hash) {
                     var desc = lang_hash[code];
                     var selected = (code === cfg.lang) ? ' selected' : '';
-                    $("#voice-lang").append('<option value="' + code + '"' + selected + '>' + desc + '</option>');
+                    $("#voice-lang").append('<option value="' + code + '"' + selected + (code === 'default' ? ' data-i18n="lmx.vo.allLanguages"' : '') + '>' + desc + '</option>');
                 }
 				$("#voice-lang").change(function() {
 					//console.log('changed');

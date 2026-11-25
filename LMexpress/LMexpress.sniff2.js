@@ -1,4 +1,11 @@
 //Legend mod Sniff2 by jimboy3100
+/* Texts from the language packs (developers/i18n/src: lmx.sn.*, and pack.* for the old Externalletter
+ * texts). The data-i18n attributes let LMi18n.apply switch them when the language changes. */
+function _lmsnT(k, v) { return window.lmT ? window.lmT(k, v) : String(k); }
+function _lmsnE(k, v) { return String(_lmsnT(k, v)).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+/* the default name of script slot n (1..5), shown while the player gave it no name */
+function _lmUsDefaultName(n) { return _lmsnT('lmx.sn.scriptN', [n]); }
+
 //v2.8c
 /*
 (function() {
@@ -150,24 +157,6 @@ $("#exp-bar").hide();
 $("#userscripts").show();
 */
 
-var Externalletter6;
-var Externalletter7;
-var Externalletter8;
-var Externalletter9;
-var Externalletter10;
-var Externalletter11;
-var Externalletter12;
-var Externalletter13;
-
-if(Externalletter6==null){Externalletter6 = "Paste your Script in this Textarea, you can load multiple Scripts";}
-if(Externalletter7==null){Externalletter7 = "Load Script from Textarea";}
-if(Externalletter8==null){Externalletter8 = "Choose";}
-if(Externalletter9==null){Externalletter9 = "Erase Script";}
-if(Externalletter10==null){Externalletter10 = "Name";}
-if(Externalletter11==null){Externalletter11 = "Url of Raw Github, or other Raw Script, starting with";}
-if(Externalletter12==null){Externalletter12 = "Leave this empty if script not imported from URL";}
-if(Externalletter13==null){Externalletter13 = "IMPORTANT NOTICE: Do not keep URLs which do not work, because they are used as onload events. If Scenario damages onload events, then DELETE COOKIES";}
-
 
 /* Read theme values at point-of-use — LMexpress.js globals may not exist yet */
 /* Theme values can come from imported or cloud settings: keep only characters that
@@ -175,50 +164,42 @@ if(Externalletter13==null){Externalletter13 = "IMPORTANT NOTICE: Do not keep URL
 var _legbgpic = String((typeof legbgpic !== 'undefined') ? legbgpic : ($("#menuBg").val() || '')).replace(/["'()<>\\\s`]/g, '');
 var _legbgcolor = String((typeof legbgcolor !== 'undefined') ? legbgcolor : ($("#menuPanelColor").val() || '')).replace(/[^#a-zA-Z0-9(),.%\s-]/g, '');
 
-$("#menu-footer").after('<div id="userscripts" style="background-image: url('+_legbgpic+'); background-color: '+_legbgcolor+'; border: 1px solid black; height: 600px; width: 600px; ";>'+
-	'<div id="Userscriptshud" style="display:block; margin-left: 10px; margin-right: 10px;">'+ //margin-left: 10px"
-	'<div id="Userscriptshud2" align="middle"><h5 class="main-color">USER SCRIPTS</h5>'+
-	
-	'<p id="userscripter1" style="color:white; font-size:12px";" align="middle">'+Externalletter6+'</p>'+
-	
-	
-   '<textarea id="Userscripttexture1" class="form-control ps-container ps-theme-default" rows="14" cols="100" spellcheck="false" align="middle" style="display: block;"></textarea>'+
-   '<textarea id="Userscripttexture2" class="form-control ps-container ps-theme-default" rows="14" cols="100" spellcheck="false" align="middle" style="display: none;"></textarea>'+
-   '<textarea id="Userscripttexture3" class="form-control ps-container ps-theme-default" rows="14" cols="100" spellcheck="false" align="middle" style="display: none;"></textarea>'+
-   '<textarea id="Userscripttexture4" class="form-control ps-container ps-theme-default" rows="14" cols="100" spellcheck="false" align="middle" style="display: none;"></textarea>'+
-   '<textarea id="Userscripttexture5" class="form-control ps-container ps-theme-default" rows="14" cols="100" spellcheck="false" align="middle" style="display: none;"></textarea>'+
-	'<button id="userscriptBtn1" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; display: block;"><i class="fa fa-code"></i>'+Externalletter7+'</button>'+
-	'<button id="userscriptBtn2" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; display: none;"><i class="fa fa-code"></i>'+Externalletter7+'</button>'+
-	'<button id="userscriptBtn3" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; display: none;"><i class="fa fa-code"></i>'+Externalletter7+'</button>'+
-	'<button id="userscriptBtn4" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; display: none;"><i class="fa fa-code"></i>'+Externalletter7+'</button>'+
-	'<button id="userscriptBtn5" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; display: none;"><i class="fa fa-code"></i>'+Externalletter7+'</button>'+
-	
-		'<br>'+
-											'<div class="input-box" style=" color:white; font-size:12px";" text-align: center; font-size: 12px; margin-top: 4px; padding: 4px 0 6px 0;"><span id="userscriptpages" class="title" style="">'+Externalletter8+' User Script:  </span>' +
-											'<select id="Userscriptpages3" class="form-control" onchange="userscriptpages();" required="" data-original-title="" title="" style="display:inline; width: 40%" >' +
-											'<option value="1" data-itr="">User Script 1</option>' +
-											'<option value="2" data-itr="">User Script 2</option>' +
-											'<option value="3" data-itr="">User Script 3</option>' +
-											'<option value="4" data-itr="">User Script 4</option>' +
-											'<option value="5" data-itr="">User Script 5</option>' +
-											'</select>' +
-											'<button id="EraseScripter" align="left" onclick="erasescripter(); return false" class="btn btn-primary btn" data-itr="page_login_and_play" data-original-title="" title="" style="display:inline; margin-top: -4px; margin-left: 60px; width: 30%; ">'+Externalletter9+'</button>' +
-											'<input id="UserscripttextA" class="form-control" placeholder="User Script 1 '+Externalletter10+'" value="" style="margin-top: 2px; display: block;" onblur="Userscripttext11();" >' +
-											
-											'<input id="UserscripttextB" class="form-control" placeholder="User Script 2 '+Externalletter10+'" value="" style="margin-top: 2px; display: none;" onblur="Userscripttext12();"  >' +
-											'<input id="UserscripttextC" class="form-control" placeholder="User Script 3 '+Externalletter10+'" value="" style="margin-top: 2px; display: none;" onblur="Userscripttext13();"  >' +						
-											'<input id="UserscripttextD" class="form-control" placeholder="User Script 4 '+Externalletter10+'" value="" style="margin-top: 2px; display: none;" onblur="Userscripttext14();"  >' +
-											'<input id="UserscripttextE" class="form-control" placeholder="User Script 5 '+Externalletter10+'" value="" style="margin-top: 2px; display: none;" onblur="Userscripttext15();"  >' +	
-											'<input id="UserscriptA" class="form-control" placeholder="User Script 1 .js URL ('+Externalletter12+')" text="Url 1" style="margin-top: 2px; display: block;" " data-toggle="tooltip" data-placement="top" data-original-title="'+Externalletter11+' http://... or https://..." >' +	
-											'<input id="UserscriptB" class="form-control" placeholder="User Script 2 .js URL ('+Externalletter12+')" text="Url 2" style="margin-top: 2px; display: none;" " data-toggle="tooltip" data-placement="top" data-original-title="'+Externalletter11+' http://... or https://..." >' +		
-											'<input id="UserscriptC" class="form-control" placeholder="User Script 3 .js URL ('+Externalletter12+')" text="Url 3" style="margin-top: 2px; display: none;" " data-toggle="tooltip" data-placement="top" data-original-title="'+Externalletter11+' http://... or https://..." >' +		
-											'<input id="UserscriptD" class="form-control" placeholder="User Script 4 .js URL ('+Externalletter12+')" text="Url 4" style="margin-top: 2px; display: none;" " data-toggle="tooltip" data-placement="top" data-original-title="'+Externalletter11+' http://... or https://..." >' +		
-											'<input id="UserscriptE" class="form-control" placeholder="User Script 5 .js URL ('+Externalletter12+')" text="Url 5" style="margin-top: 2px; display: none;" " data-toggle="tooltip" data-placement="top" data-original-title="'+Externalletter11+' http://... or https://..." >' +												
-											'</div>' +	
-											'<p id="userscripter2" style="color:white; font-size:12px";" align="middle">'+Externalletter13+': <u>chrome://settings/clearBrowserData</u></p>'+											
-											'</div>'+
-											'</div>');
-$("#Userscriptshud").after('<button id="Backtomenu" onclick="closeuserscripts(); return false" class="btn btn-danger" style="margin-left: 10px;" data-itr="page_login_and_play" data-original-title="" title="">Close</button>');
+(function () {
+	var letters = ['A', 'B', 'C', 'D', 'E'];
+	var areas = '', buttons = '', options = '', names = '', urls = '';
+	for (var n = 1; n <= 5; n++) {
+		var shown = n === 1 ? 'block' : 'none';
+		var vars = ' data-i18n-vars=\'{"0":"' + n + '"}\'';
+		areas += '<textarea id="Userscripttexture' + n + '" class="form-control ps-container ps-theme-default" rows="14" cols="100" spellcheck="false" align="middle" style="display: ' + shown + ';"></textarea>';
+		buttons += '<button id="userscriptBtn' + n + '" type="button" class="btn btn-block btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; display: ' + shown + ';"><i class="fa fa-code"></i><span data-i18n="pack.loadScriptFromTextarea">' + _lmsnE('pack.loadScriptFromTextarea') + '</span></button>';
+		options += '<option value="' + n + '">' + _lmsnE('lmx.sn.scriptN', [n]) + '</option>';
+		names += '<input id="Userscripttext' + letters[n - 1] + '" class="form-control" placeholder="' + _lmsnE('lmx.sn.scriptNameN', [n]) + '" data-i18n-placeholder="lmx.sn.scriptNameN"' + vars + ' value="" style="margin-top: 2px; display: ' + shown + ';" onblur="Userscripttext1' + n + '();" >';
+		urls += '<input id="Userscript' + letters[n - 1] + '" class="form-control" placeholder="' + _lmsnE('lmx.sn.scriptUrlN', [n]) + '" data-i18n-placeholder="lmx.sn.scriptUrlN"' + vars + ' style="margin-top: 2px; display: ' + shown + ';" data-toggle="tooltip" data-placement="top" data-original-title="' + _lmsnE('lmx.sn.scriptUrlTip') + '" data-i18n-data-original-title="lmx.sn.scriptUrlTip" >';
+	}
+	$("#menu-footer").after('<div id="userscripts" style="background-image: url(' + _legbgpic + '); background-color: ' + _legbgcolor + '; border: 1px solid black; height: 600px; width: 600px;">' + // i18n-ok: CSS
+		'<div id="Userscriptshud" style="display:block; margin-left: 10px; margin-right: 10px;">' +
+		'<div id="Userscriptshud2" align="middle"><h5 class="main-color" data-i18n="lmx.sn.title">' + _lmsnE('lmx.sn.title') + '</h5>' +
+		'<p id="userscripter1" style="color:white; font-size:12px;" align="middle" data-i18n="pack.pasteYourScriptIn">' + _lmsnE('pack.pasteYourScriptIn') + '</p>' +
+		areas + buttons +
+		'<br>' +
+		'<div class="input-box" style="color:white; font-size:12px; text-align: center; margin-top: 4px; padding: 4px 0 6px 0;"><span id="userscriptpages" class="title" data-i18n="lmx.sn.chooseScript">' + _lmsnE('lmx.sn.chooseScript') + '</span> ' +
+		'<select id="Userscriptpages3" class="form-control" onchange="userscriptpages();" required="" data-original-title="" title="" style="display:inline; width: 40%" >' + options + '</select>' +
+		'<button id="EraseScripter" align="left" onclick="erasescripter(); return false" class="btn btn-primary btn" data-original-title="" title="" style="display:inline; margin-top: -4px; margin-left: 60px; width: 30%; " data-i18n="pack.eraseScript">' + _lmsnE('pack.eraseScript') + '</button>' +
+		names + urls +
+		'</div>' +
+		/* the address is not translated: it is typed into the browser */
+		'<p id="userscripter2" style="color:white; font-size:12px;" align="middle"><span data-i18n="pack.importantNoticeDoNot">' + _lmsnE('pack.importantNoticeDoNot') + '</span>: <u>chrome://settings/clearBrowserData</u></p>' + // i18n-ok: browser address
+		'</div>' +
+		'</div>');
+	$("#Userscriptshud").after('<button id="Backtomenu" onclick="closeuserscripts(); return false" class="btn btn-danger" style="margin-left: 10px;" data-original-title="" title="" data-i18n="close">' + _lmsnE('close') + '</button>');
+	/* the slot names the player did not set follow the language (named slots keep their name) */
+	if (window.LMi18n) window.LMi18n.onChange(function () {
+		for (var i = 1; i <= 5; i++) {
+			var named = $('#Userscripttext' + letters[i - 1]).val();
+			if (!named) $('#Userscriptpages3>option:nth-child(' + i + ')').text(_lmUsDefaultName(i));
+		}
+	});
+})();
 
 
 $("#userscripts").hide();
@@ -414,15 +395,15 @@ function userscriptpages(){
 function erasescripter(){
 	/* also reset UserscriptN, so the same URL can be added again without a reload */
 	if ($("#Userscriptpages3").val()==1){
-		$("#Userscripttexture1").val(""); localStorage.setItem("Userscripttexture1", ""); $('#Userscriptpages3>option:nth-child(1)').text("User Script 1"); $("#UserscripttextA").val(""); localStorage.setItem("Userscripttext11", ""); $("#UserscriptA").val(""); localStorage.setItem("Userscript1", ""); Userscript1 = ""; _lmUserscriptSetEnabled(1, false);}
+		$("#Userscripttexture1").val(""); localStorage.setItem("Userscripttexture1", ""); $('#Userscriptpages3>option:nth-child(1)').text(_lmUsDefaultName(1)); $("#UserscripttextA").val(""); localStorage.setItem("Userscripttext11", ""); $("#UserscriptA").val(""); localStorage.setItem("Userscript1", ""); Userscript1 = ""; _lmUserscriptSetEnabled(1, false);}
 	if ($("#Userscriptpages3").val()==2){
-		$("#Userscripttexture2").val(""); localStorage.setItem("Userscripttexture2", ""); $('#Userscriptpages3>option:nth-child(2)').text("User Script 2"); $("#UserscripttextB").val(""); localStorage.setItem("Userscripttext12", ""); $("#UserscriptB").val(""); localStorage.setItem("Userscript2", ""); Userscript2 = ""; _lmUserscriptSetEnabled(2, false);}
+		$("#Userscripttexture2").val(""); localStorage.setItem("Userscripttexture2", ""); $('#Userscriptpages3>option:nth-child(2)').text(_lmUsDefaultName(2)); $("#UserscripttextB").val(""); localStorage.setItem("Userscripttext12", ""); $("#UserscriptB").val(""); localStorage.setItem("Userscript2", ""); Userscript2 = ""; _lmUserscriptSetEnabled(2, false);}
 	if ($("#Userscriptpages3").val()==3){
-		$("#Userscripttexture3").val(""); localStorage.setItem("Userscripttexture3", ""); $('#Userscriptpages3>option:nth-child(3)').text("User Script 3"); $("#UserscripttextC").val(""); localStorage.setItem("Userscripttext13", ""); $("#UserscriptC").val(""); localStorage.setItem("Userscript3", ""); Userscript3 = ""; _lmUserscriptSetEnabled(3, false);}
+		$("#Userscripttexture3").val(""); localStorage.setItem("Userscripttexture3", ""); $('#Userscriptpages3>option:nth-child(3)').text(_lmUsDefaultName(3)); $("#UserscripttextC").val(""); localStorage.setItem("Userscripttext13", ""); $("#UserscriptC").val(""); localStorage.setItem("Userscript3", ""); Userscript3 = ""; _lmUserscriptSetEnabled(3, false);}
 	if ($("#Userscriptpages3").val()==4){
-		$("#Userscripttexture4").val(""); localStorage.setItem("Userscripttexture4", ""); $('#Userscriptpages3>option:nth-child(4)').text("User Script 4"); $("#UserscripttextD").val(""); localStorage.setItem("Userscripttext14", ""); $("#UserscriptD").val(""); localStorage.setItem("Userscript4", ""); Userscript4 = ""; _lmUserscriptSetEnabled(4, false);}
+		$("#Userscripttexture4").val(""); localStorage.setItem("Userscripttexture4", ""); $('#Userscriptpages3>option:nth-child(4)').text(_lmUsDefaultName(4)); $("#UserscripttextD").val(""); localStorage.setItem("Userscripttext14", ""); $("#UserscriptD").val(""); localStorage.setItem("Userscript4", ""); Userscript4 = ""; _lmUserscriptSetEnabled(4, false);}
 	if ($("#Userscriptpages3").val()==5){
-		$("#Userscripttexture5").val(""); localStorage.setItem("Userscripttexture5", ""); $('#Userscriptpages3>option:nth-child(5)').text("User Script 5"); $("#UserscripttextE").val(""); localStorage.setItem("Userscripttext15", ""); $("#UserscriptE").val(""); localStorage.setItem("Userscript5", ""); Userscript5 = ""; _lmUserscriptSetEnabled(5, false);}
+		$("#Userscripttexture5").val(""); localStorage.setItem("Userscripttexture5", ""); $('#Userscriptpages3>option:nth-child(5)').text(_lmUsDefaultName(5)); $("#UserscripttextE").val(""); localStorage.setItem("Userscripttext15", ""); $("#UserscriptE").val(""); localStorage.setItem("Userscript5", ""); Userscript5 = ""; _lmUserscriptSetEnabled(5, false);}
 }
 
 
