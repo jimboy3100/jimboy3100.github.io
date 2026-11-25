@@ -24269,6 +24269,10 @@ function thelegendmodproject() {
         setMenuMainColor() {
             var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,.main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
             css += ':root{--lm-mc:' + _lmCssVal(defaultSettings.menuMainColor, '#01d9cc') + '}';
+            /* Switchery paints a switch's colour inline when it is created, so a later theme change
+             * never reached the switches: the switched-on colour now follows the theme */
+            var swc = _lmCssVal(defaultSettings.menuMainColor, '#01d9cc');
+            css += 'input:checked+.switchery{background-color:' + swc + '!important;border-color:' + swc + '!important;box-shadow:' + swc + ' 0 0 0 16px inset!important}';
             this.addCustomCSS('menuMainColorCSS', css);
             /* Keep the inline --lm-mc in sync so it always wins over CSS fallbacks */
             try { document.documentElement.style.setProperty('--lm-mc', _lmCssVal(defaultSettings.menuMainColor, '#01d9cc')); } catch(e){}
@@ -24289,6 +24293,11 @@ function thelegendmodproject() {
         },
         setMenuButtons() {
             var css = 'a,a:hover{color:' + defaultSettings.btn1Color + '}.btn,#hotkeys-cfg .custom-key-in{color:' + defaultSettings.menuBtnTextColor + '}.btn-primary{background-color:' + defaultSettings.btn1Color + '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:' + defaultSettings.btn1Color2 + '!important}.btn-success{background-color:' + defaultSettings.btn2Color + '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:' + defaultSettings.btn2Color2 + '!important}.btn-warning{background-color:' + defaultSettings.btn3Color + '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:' + defaultSettings.btn3Color2 + '!important}.btn-danger{background-color:' + defaultSettings.btn4Color + '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:' + defaultSettings.btn4Color2 + '!important}#hotkeys-cfg .custom-key-in{background-color:' + defaultSettings.btn4Color2 + ';border-color:' + defaultSettings.btn4Color2 + '}';
+            /* .btn-info (Theme Workshop, many Legend buttons) used Bootstrap's own light blue: it takes
+             * button colour 2. Not !important, so buttons styled inline (e.g. transparent) keep their look */
+            css += '.btn.btn-info{background-color:' + defaultSettings.btn2Color + ';border-color:' + defaultSettings.btn2Color + ';color:' + defaultSettings.menuBtnTextColor + '}.btn.btn-info:active,.btn.btn-info:focus,.btn.btn-info:hover{background-color:' + defaultSettings.btn2Color2 + ';border-color:' + defaultSettings.btn2Color2 + ';color:' + defaultSettings.menuBtnTextColor + '}';
+            /* information pop-ups (toastr info) were always #018cf6, the default of button colour 1 */
+            css += '#toast-container>.toast-info{background-color:' + defaultSettings.btn1Color + '}';
             var cv = function (k, d) { return _lmCssVal(defaultSettings[k], d); };
             css += ':root{--lm-btn-tc:' + cv('menuBtnTextColor', '#ffffff') +
                 ';--lm-btn1:' + cv('btn1Color', '#018cf6') + ';--lm-btn1b:' + cv('btn1Color2', '#0176ce') +
@@ -24316,8 +24325,10 @@ function thelegendmodproject() {
             this.setHudScale();
         },
         setHudColors() {
+            /* ".hud,.hud-b,#.emoji-picker" was not a valid selector list, so the browser dropped the
+             * whole rule and the HUD background colour setting never reached the HUD */
             var css = '.hud-main-color,#top5-hud a,#target-panel-hud a:hover,#target-panel-hud a.active,#message-menu a{color:' + defaultSettings.hudMainColor + '}.hud,' +
-                '.hud-b,#.emoji-picker{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
+                '.hud-b,.emoji-picker{background-color:' + defaultSettings.hudColor + '}.hud,.hud-b,#top5-hud a:hover,#target-panel-hud a{color:' + defaultSettings.hudTextColor + '}.stats-hud-color{color:' + defaultSettings.statsHudColor + '}.time-hud-color{color:' + defaultSettings.timeHudColor + '}.top5-mass-color{color:' + defaultSettings.top5MassColor + '}#leaderboard-positions .me{color:' + defaultSettings.lbMeColor + '}#leaderboard-positions .teammate{color:' + defaultSettings.lbTeammateColor2 + '}';
             $('.top5-mass-bar').css('background-color', $('#hudMainColor')[0].value)
             /* in-game panels (HUD helpers, death recap, ...) read these */
             css += ':root{--lm-hud-mc:' + _lmCssVal(defaultSettings.hudMainColor, '#01d9cc') + ';--lm-hud-bg:' + _lmCssVal(defaultSettings.hudColor, 'rgba(0,0,0,0.4)') + ';--lm-hud-tc:' + _lmCssVal(defaultSettings.hudTextColor, '#ffffff') + '}';
