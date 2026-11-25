@@ -766,7 +766,7 @@
         return e;
     }
     function btn(label, css, on) {
-        var b = el('button', 'cursor:pointer;font:inherit;font-size:12px;min-height:28px;padding:3px 10px;border-radius:4px;border:1px solid var(--lm-pc2,rgba(255,255,255,0.15));background:rgba(255,255,255,0.06);color:inherit;touch-action:manipulation;' + (css || ''), label);
+        var b = el('button', 'cursor:pointer;font:inherit;font-size:12px;min-height:28px;padding:3px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid var(--lm-pc2,rgba(255,255,255,0.15));background:rgba(255,255,255,0.06);color:inherit;touch-action:manipulation;' + (css || ''), label);
         b.type = 'button';
         b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); on(e); });
         return b;
@@ -791,7 +791,7 @@
         var t = theme();
         md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:720px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);' +
             'display:flex;flex-direction:column;z-index:2147483647;background:' + t.pc + ';border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';' +
-            'border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + t.tc + ';font-family:inherit;font-size:12px;overflow:hidden;box-sizing:border-box;');
+            'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + t.tc + ';font-family:inherit;font-size:12px;overflow:hidden;box-sizing:border-box;');
         md.id = 'lm-analytics';
         md.setAttribute('role', 'dialog');
         md.setAttribute('aria-label', T('title'));
@@ -844,10 +844,10 @@
         } catch (e) { try { console.warn('[LM Analytics] could not draw the tab:', e); } catch (e2) { } }
     }
     function note(body, text) {
-        body.appendChild(el('div', 'padding:6px 8px;margin:4px 0;border-radius:4px;background:rgba(255,255,255,0.05);color:' + theme().tc2 + ';', text));
+        body.appendChild(el('div', 'padding:6px 8px;margin:4px 0;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);color:' + theme().tc2 + ';', text));
     }
     function tile(row, label, value) {
-        var t = theme(), b = el('div', 'flex:1 1 120px;min-width:110px;padding:6px 8px;border-radius:4px;background:rgba(255,255,255,0.05);box-sizing:border-box;');
+        var t = theme(), b = el('div', 'flex:1 1 120px;min-width:110px;padding:6px 8px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);box-sizing:border-box;');
         b.appendChild(el('div', 'font-size:11px;color:' + t.tc2 + ';', label));
         b.appendChild(el('div', 'font-size:16px;font-weight:700;color:' + t.tc + ';', value));
         row.appendChild(b);
@@ -965,7 +965,7 @@
         });
         side.appendChild(lrow);
         var sel = function (label, opts, val, on) {
-            var r = el('label', 'display:flex;gap:6px;align-items:center;'), s = el('select', 'font:inherit;font-size:12px;min-height:28px;max-width:180px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:4px;');
+            var r = el('label', 'display:flex;gap:6px;align-items:center;'), s = el('select', 'font:inherit;font-size:12px;min-height:28px;max-width:180px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:var(--lm-radius-s,4px);');
             r.appendChild(el('span', 'color:' + t.tc2 + ';', label));
             opts.forEach(function (o) { var op = el('option', null, o[1]); op.value = String(o[0]); if (o[0] === val) op.selected = true; s.appendChild(op); });
             s.addEventListener('change', function () { on(+s.value); paint(); });
@@ -985,7 +985,7 @@
         side.appendChild(leg);
         /* canvas fits the window: at most 320 px, less on a short phone screen */
         var avail = Math.min(320, Math.max(140, (window.innerHeight || 412) - 120), Math.max(140, (md.clientWidth || 300) - 40));
-        var cv = el('canvas', 'width:' + avail + 'px;height:' + avail + 'px;flex:0 0 auto;border-radius:4px;background:rgba(0,0,0,0.25);');
+        var cv = el('canvas', 'width:' + avail + 'px;height:' + avail + 'px;flex:0 0 auto;border-radius:var(--lm-radius-s,4px);background:rgba(0,0,0,0.25);');
         cv.id = 'lm-analytics-heat';
         var dpr = Math.min(2, window.devicePixelRatio || 1);
         cv.width = Math.round(avail * dpr);
@@ -1056,8 +1056,8 @@
             var row = el('div', 'display:flex;align-items:center;gap:6px;padding:2px 0;');
             row.setAttribute('data-part', k);
             row.appendChild(el('span', 'flex:0 0 112px;color:' + t.tc2 + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', T(k)));
-            var track = el('span', 'flex:1 1 auto;height:8px;border-radius:4px;background:rgba(255,255,255,0.08);position:relative;overflow:hidden;');
-            if (s[k] !== null) track.appendChild(el('span', 'position:absolute;left:0;top:0;bottom:0;width:' + s[k] + '%;background:' + BLUE + ';border-radius:4px;'));
+            var track = el('span', 'flex:1 1 auto;height:8px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.08);position:relative;overflow:hidden;');
+            if (s[k] !== null) track.appendChild(el('span', 'position:absolute;left:0;top:0;bottom:0;width:' + s[k] + '%;background:' + BLUE + ';border-radius:var(--lm-radius-s,4px);'));
             if (rec[k] !== null && rec[k] !== undefined) track.appendChild(el('span', 'position:absolute;top:-1px;bottom:-1px;width:2px;left:calc(' + rec[k] + '% - 1px);background:' + t.tc + ';opacity:.7;'));
             row.appendChild(track);
             row.appendChild(el('span', 'flex:0 0 28px;text-align:right;font-weight:700;', s[k] === null ? '—' : String(s[k])));
@@ -1079,12 +1079,12 @@
         row.className = 'lm-analytics-goal';
         var mid = el('div', 'flex:1 1 auto;min-width:0;');
         mid.appendChild(el('div', 'overflow:hidden;text-overflow:ellipsis;' + (prog.done ? 'color:' + t.mc + ';font-weight:700;' : ''), (prog.done ? '✓ ' : '') + goalText(goal)));
-        var bar = el('div', 'height:8px;border-radius:4px;background:rgba(255,255,255,0.08);overflow:hidden;margin-top:2px;');
+        var bar = el('div', 'height:8px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.08);overflow:hidden;margin-top:2px;');
         bar.setAttribute('role', 'progressbar');
         bar.setAttribute('aria-valuemin', '0');
         bar.setAttribute('aria-valuemax', '100');
         bar.setAttribute('aria-valuenow', String(pct(prog.frac)));
-        bar.appendChild(el('div', 'height:100%;width:' + pct(prog.frac) + '%;background:' + (prog.done ? t.mc : BLUE) + ';border-radius:4px;'));
+        bar.appendChild(el('div', 'height:100%;width:' + pct(prog.frac) + '%;background:' + (prog.done ? t.mc : BLUE) + ';border-radius:var(--lm-radius-s,4px);'));
         mid.appendChild(bar);
         row.appendChild(mid);
         var val = goal.type === 'top' ? (prog.value ? '#' + prog.value : '—') + ' / #' + goal.target
@@ -1121,12 +1121,12 @@
         });
         body.appendChild(custom);
         var form = el('div', 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;');
-        var type = el('select', 'font:inherit;font-size:12px;min-height:28px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:4px;');
+        var type = el('select', 'font:inherit;font-size:12px;min-height:28px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:var(--lm-radius-s,4px);');
         type.id = 'lm-analytics-goal-type';
         [['mass', 'tMass'], ['survive', 'tSurvive'], ['top', 'tTop'], ['games', 'tGames'], ['beatAvg', 'tBeatAvg']].forEach(function (o) {
             var op = el('option', null, T(o[1])); op.value = o[0]; type.appendChild(op);
         });
-        var inp = el('input', 'font:inherit;font-size:12px;min-height:28px;width:90px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:4px;padding:0 6px;box-sizing:border-box;');
+        var inp = el('input', 'font:inherit;font-size:12px;min-height:28px;width:90px;color:var(--lm-tc,#000);background:var(--lm-pc2,#fff);border:1px solid rgba(255,255,255,0.2);border-radius:var(--lm-radius-s,4px);padding:0 6px;box-sizing:border-box;');
         inp.id = 'lm-analytics-goal-target';
         inp.type = 'number';
         inp.min = '1';

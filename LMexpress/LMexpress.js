@@ -7606,11 +7606,26 @@ function initializeLM(modVersion) {
             return seticon = "YES";
         }
     });
-    /* the chosen corners (rounded or square) win over the stylesheets: ogario.v3.css comes later in
-     * the page with the same selectors (.btn, .form-control...) and kept buttons and inputs square */
-    function _lmHudCornersWin() {
-        var st = document.getElementById('RNCN');
-        if (st) st.textContent = st.textContent.replace(/border-radius:\s*([^;}!]+?)\s*(?=[;}])/g, 'border-radius: $1 !important');
+    /* Rounded / Square HUD: the choice sets --lm-radius (10px rounded, 0 square) and one stylesheet gives the
+     * menu and HUD corners as multiples of it; Legend windows use var(--lm-radius, 6px), so they follow too.
+     * !important: ogario.v3.css comes later in the page with the same selectors (.btn, .form-control...) */
+    function _lmHudCorners(rounded) {
+        /* --lm-radius for windows and panels, --lm-radius-s for their buttons and fields */
+        document.documentElement.style.setProperty('--lm-radius', rounded ? '10px' : '0px');
+        document.documentElement.style.setProperty('--lm-radius-s', rounded ? '6px' : '0px');
+        if (document.getElementById('RNCN')) return;
+        var R = 'var(--lm-radius)', R15 = 'calc(var(--lm-radius) * 1.5)';
+        $('head').append($('<style type="text/css" id="RNCN">').text(
+            '.agario-panel,#main-menu,.center-container,.btn,.form-control,.input-group-addon,#chat-box,.input-group-sm>.input-group-addon,' +
+            '.agario-party,.agario-side-panel,#skins-panel,#quick-menu,#exp-bar,#exp-bar .progress,#hotkeys,#legendAdImg,#stats-hud,#time-hud,#timertools-hud{border-radius:' + R + '!important}' +
+            '.menu-tabs,#main-panel,#profile,#legend,#og-settings,#theme,#music{border-radius:' + R + ' ' + R + ' 0 0!important}' +
+            '.skin,.input-group-btn,.input-group.nick{border-radius:0 ' + R15 + ' ' + R15 + ' 0!important}' +
+            /* round colour dots and profile picture when rounded, square when square */
+            '.colorpicker-element .input-group-addon i,.colorpicker-element .add-on i{border-radius:calc(var(--lm-radius) * 5)!important}' +
+            '.agario-profile-picture{border-radius:calc(var(--lm-radius) * 3.2)!important}' +
+            '#menu-footer{border-radius:0 0 ' + R + ' ' + R + '!important}' +
+            '#leaderboard-hud,#dropDown,#dropDown2,#top5-hud,#target-hud{border-radius:' + R15 + '!important}' +
+            '#minimap-hud{border-radius:0 0 ' + R15 + ' ' + R15 + '!important}'));
     }
     $("#MAINBTBtn").click(function () {
         /* Toggle state manually: do NOT rely on Bootstrap's button.js toggling
@@ -7619,33 +7634,9 @@ function initializeLM(modVersion) {
         var checked = !wasPressed;
         $(this).attr('aria-pressed', String(checked));
         $(this).toggleClass('active', checked);
-        if (checked) {
-            localStorage.setItem("MAINBTBtn", true);
-            var headID = document.getElementsByTagName("head")[0];
-            $('#RNCN').remove(); /* one style tag, not one more per toggle */
-            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, #main-menu, .center-container, .btn, .form-control, ' +
-                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, #skins-panel, #quick-menu, #exp-bar, #exp-bar .progress{border-radius: 10px!important;}.menu-tabs,' +
-                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys{border-radius: 10px 10px 0 0!important;} #hotkeys {border-radius: 10px!important;} .skin, .input-group-btn, .input-group.nick {border-radius: 0 15px 15px 0!important;}  ' +
-                '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i{ border-radius: 50%!important; }.agario-profile-picture { border-radius: 32px!important;}' +
-                '#menu-footer { border-radius: 0 0 10px 10px!important; } #leaderboard-hud { border-radius: 15px!important;} #dropDown, #dropDown2 { border-radius: 15px!important;} #minimap-hud { border-radius: 0 0 15px 15px!important;}' +
-                '#top5-hud{ border-radius: 15px!important; } #target-hud{ border-radius: 15px!important; } #legendAdImg, #stats-hud { border-radius: 10px!important; } ' +
-                '#time-hud, #timertools-hud { border-radius: 10px!important; } </style>');
-            _lmHudCornersWin();
-            $(this).html('<i class="fa fa-minus"></i>' + Premadeletter45b);
-        } else {
-            localStorage.setItem("MAINBTBtn", false);
-            var headID = document.getElementsByTagName("head")[0];
-            $('#RNCN').remove(); /* one style tag, not one more per toggle */
-            $(headID).append('<style type="text/css" id="RNCN">.agario-panel, #main-menu, .center-container, .btn, .form-control, ' +
-                '.input-group-addon,#chat-box, .input-group-sm>.input-group-addon, .agario-party, .agario-side-panel, #skins-panel, #quick-menu, #exp-bar, #exp-bar .progress, .menu-tabs,' +
-                '#main-panel, #profile, #legend, #og-settings, #theme, #music, #hotkeys, .skin, .input-group-btn, .input-group.nick,  ' +
-                '.colorpicker-element .input-group-addon i, .colorpicker-element .add-on i, .agario-profile-picture,' +
-                '#menu-footer, #leaderboard-hud, #dropDown, #dropDown2, #minimap-hud,' +
-                '#top5-hud, #target-hud, #legendAdImg, #stats-hud, ' +
-                '#time-hud, #timertools-hud { border-radius: 0!important; } </style>');
-            _lmHudCornersWin();
-            $(this).html('<i class="fa fa-minus"></i>' + Premadeletter45a);
-        }
+        localStorage.setItem("MAINBTBtn", checked);
+        _lmHudCorners(checked);
+        $(this).html('<i class="fa fa-minus"></i>' + (checked ? Premadeletter45b : Premadeletter45a));
     });
 
 
@@ -9182,16 +9173,16 @@ function lmPromoChrome(sel) {
         st.textContent =
             '.modal.lm-promo .modal-backdrop{background:#000;opacity:.55}' +
             '.modal.lm-promo .modal-dialog{max-width:calc(100vw - 16px)}' +
-            '.modal.lm-promo .modal-content{background:var(--lm-pc,#00243e);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;font-family:inherit}' +
+            '.modal.lm-promo .modal-content{background:var(--lm-pc,#00243e);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;font-family:inherit}' +
             '.modal.lm-promo .modal-header{position:relative;min-height:0;padding:10px 52px 8px;text-align:center;border-bottom:1px solid var(--lm-pc2,#002f52);background:linear-gradient(180deg,var(--lm-pc2,#002f52) 0%,var(--lm-pc,#00243e) 100%);cursor:move}' +
             '.modal.lm-promo .modal-title{font-family:inherit!important;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;line-height:1.4;color:var(--lm-mc,#01d9cc)}' +
-            '.modal.lm-promo .modal-header .close{position:absolute;top:6px;right:10px;float:none;margin:0;padding:0;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;background:rgba(255,255,255,.05);color:var(--lm-tc2,#8096a7);opacity:1;text-shadow:none;font-size:18px;font-weight:400;line-height:1;cursor:pointer}' +
+            '.modal.lm-promo .modal-header .close{position:absolute;top:6px;right:10px;float:none;margin:0;padding:0;min-width:28px;min-height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,.05);color:var(--lm-tc2,#8096a7);opacity:1;text-shadow:none;font-size:18px;font-weight:400;line-height:1;cursor:pointer}' +
             '.modal.lm-promo .modal-header .close+.close{right:auto;left:10px;font-size:14px;font-weight:700}' +
             '.modal.lm-promo .modal-header .close:hover{color:var(--lm-tc,#fff);background:rgba(255,255,255,.12)}' +
             '.modal.lm-promo iframe{display:block;max-width:100%;max-height:calc(100vh - 100px);border:0;background:var(--lm-pc,#00243e)}' +
             '.modal.lm-promo .modal-body .form-control{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52)}' +
             '.modal.lm-promo .modal-body{background:transparent;color:var(--lm-tc,#fff);padding:12px 15px}' +
-            '.modal.lm-promo .modal-body button:not(.btn){background:var(--lm-pc2,#002f52);color:var(--lm-tc,#fff);border:1px solid rgba(255,255,255,.12);border-radius:4px;padding:4px 12px;cursor:pointer}' +
+            '.modal.lm-promo .modal-body button:not(.btn){background:var(--lm-pc2,#002f52);color:var(--lm-tc,#fff);border:1px solid rgba(255,255,255,.12);border-radius:var(--lm-radius-s,4px);padding:4px 12px;cursor:pointer}' +
             '.modal.lm-promo .modal-body button:not(.btn):hover{background:rgba(255,255,255,.12)}' +
             '.modal.lm-promo .modal-body select.form-control{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52)}' +
             '.modal.lm-promo .modal-body input[type="number"]{background:rgba(0,0,0,.25);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-radius:3px;padding:3px 6px}' +

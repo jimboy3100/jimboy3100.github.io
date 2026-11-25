@@ -453,7 +453,7 @@
             row = document.createElement('div');
             row._lmKind = kind; row._lmKey = key;
             var col = kind === 'ate' ? '#7dff8a' : (kind === 'alert' ? '#ffb347' : '#ff6b6b');
-            row.style.cssText = 'margin-top:2px;padding:1px 8px;border-radius:4px;background:var(--lm-hud-bg,rgba(0,0,0,.55));color:' + col +
+            row.style.cssText = 'margin-top:2px;padding:1px 8px;border-radius:var(--lm-radius-s,4px);background:var(--lm-hud-bg,rgba(0,0,0,.55));color:' + col +
                 ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-shadow:0 1px 2px #000;transition:opacity .6s;';
             row.textContent = text;
             box.appendChild(row);
@@ -532,7 +532,7 @@
         var cv = document.createElement('canvas');
         var cw = recapEl._lmWide ? 228 : 276;
         cv.width = cw; cv.height = 28;
-        cv.style.cssText = 'width:' + cw + 'px;height:28px;display:block;border-radius:4px;background:rgba(0,0,0,0.2);margin-bottom:4px;';
+        cv.style.cssText = 'width:' + cw + 'px;height:28px;display:block;border-radius:var(--lm-radius-s,4px);background:rgba(0,0,0,0.2);margin-bottom:4px;';
         recapEl.appendChild(cv);
         try { drawSpark(cv, rc, th); } catch (e) { }
         for (var i = 0; i < rc.steps.length; i++) {
@@ -551,7 +551,7 @@
                 a.textContent = '▶';
                 a.title = tr('watch', null, code);
                 a.setAttribute('role', 'button');
-                a.style.cssText = 'flex:0 0 auto;cursor:pointer;color:' + th.v.mc + ';padding:0 4px;min-width:18px;text-align:center;border-radius:3px;background:rgba(255,255,255,0.06);';
+                a.style.cssText = 'flex:0 0 auto;cursor:pointer;color:' + th.v.mc + ';padding:0 4px;min-width:18px;text-align:center;border-radius:var(--lm-radius-s,3px);background:rgba(255,255,255,0.06);';
                 (function (slot, pkt) {
                     a.addEventListener('click', function (ev) {
                         ev.stopPropagation();
@@ -577,7 +577,7 @@
         if (wide) {
             /* beside the card (a 915x412 phone has room for both; the card alone is already tall) */
             el.style.cssText = 'position:absolute;left:calc(100% + 8px);top:0;width:252px;box-sizing:border-box;max-height:calc(100vh - 8px);overflow-y:auto;' +
-                'background:' + th.v.pc + ';border:1px solid ' + th.v.pc2 + ';border-top:3px solid ' + th.v.mc + ';border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,0.5);padding:8px 10px;color:' + th.v.tc + ';';
+                'background:' + th.v.pc + ';border:1px solid ' + th.v.pc2 + ';border-top:3px solid ' + th.v.mc + ';border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);padding:8px 10px;color:' + th.v.tc + ';';
             modal.style.marginLeft = '-130px';
             modal.appendChild(el);
             try {
@@ -604,7 +604,7 @@
         var b = document.createElement('button');
         b.type = 'button';
         b.textContent = tr('turnOn');
-        b.style.cssText = 'background:' + th.v.mc + ';color:' + th.v.pc + ';border:0;font-family:inherit;border-radius:4px;padding:3px 10px;margin-top:4px;font-size:11px;font-weight:700;cursor:pointer;min-height:26px;';
+        b.style.cssText = 'background:' + th.v.mc + ';color:' + th.v.pc + ';border:0;font-family:inherit;border-radius:var(--lm-radius-s,4px);padding:3px 10px;margin-top:4px;font-size:11px;font-weight:700;cursor:pointer;min-height:26px;';
         b.addEventListener('click', function (ev) {
             ev.stopPropagation();
             setOption('deathRecap', true);

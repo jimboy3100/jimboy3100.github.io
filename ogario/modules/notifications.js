@@ -416,12 +416,12 @@
         'background:#d9213a;color:#fff;font-weight:700;font-size:10px;line-height:16px;font-family:inherit;box-sizing:border-box}' +
         '#lm-notif-panel{position:fixed;z-index:100001;top:8px;left:50%;transform:translateX(-50%);width:400px;max-width:calc(100vw - 16px);' +
         'max-height:calc(100vh - 16px);display:flex;flex-direction:column;box-sizing:border-box;background:var(--lm-pc,#12141a);color:var(--lm-tc,#eee);overflow:hidden;' +
-        'border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid var(--lm-mc,rgba(255,255,255,.15));border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.5);font-size:13px;line-height:1.35;font-family:inherit}' +
+        'border:1px solid var(--lm-pc2,rgba(255,255,255,.15));border-top:3px solid var(--lm-mc,rgba(255,255,255,.15));border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);font-size:13px;line-height:1.35;font-family:inherit}' +
         '#lm-notif-panel .lmn-head,#lm-notif-panel .lmn-bar{display:flex;align-items:center;gap:6px;padding:6px 8px;flex-wrap:wrap}' +
         '#lm-notif-panel .lmn-head{border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.1));background:linear-gradient(180deg,var(--lm-pc2,transparent) 0%,var(--lm-pc,transparent) 100%)}' +
         '#lm-notif-panel .lmn-title{font-weight:700;flex:1;white-space:nowrap;color:var(--lm-mc,inherit);text-transform:uppercase;letter-spacing:1px}' +
         '#lm-notif-panel button,#lm-notif-panel select{background:rgba(255,255,255,.05);color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,rgba(255,255,255,.2));' +
-        'border-radius:4px;padding:4px 8px;min-height:30px;font:inherit;cursor:pointer;touch-action:manipulation}' +
+        'border-radius:var(--lm-radius-s,4px);padding:4px 8px;min-height:30px;font:inherit;cursor:pointer;touch-action:manipulation}' +
         '#lm-notif-panel select option{background:var(--lm-pc,#22252c);color:var(--lm-tc,#eee)}' +
         '#lm-notif-panel button:hover{background:rgba(255,255,255,.12)}' +
         '#lm-notif-panel .lmn-close{min-width:32px;font-size:18px;line-height:1;padding:2px 6px;color:var(--lm-tc2,#eee)}' +
