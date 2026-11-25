@@ -35,6 +35,13 @@
   var saved = null;
   try { saved = localStorage.getItem('languagemod'); } catch (e) { }
   info.start = L.lang();
+  /* the smoke test can start the mod in another browser language (SMOKE_LANG): English first, as the baseline */
+  var selEn = document.getElementById('legendlanguages');
+  if (info.start !== 'en') {
+    if (selEn) { $(selEn).val('1'); changeModLanguage(false); } else L.setLang(1);
+    need('English baseline', await wait(function () { return L.lang() === 'en'; }, 10000));
+    await new Promise(function (r) { setTimeout(r, 500); });
+  }
   var english = { leagues: lmT('leagues'), showMass: textLanguage.showMass, cog: window.Languageletter2 };
   /* the player's way: the Choose Language list */
   var sel = document.getElementById('legendlanguages');
@@ -65,6 +72,8 @@
   if (sel) { $(sel).val('1'); changeModLanguage(false); } else L.setLang(1);
   await wait(function () { return L.lang() === 'en'; }, 5000);
   need('back to English', lmT('leagues') === english.leagues && textLanguage.showMass === english.showMass);
+  /* a run in another browser language goes back to it (not saved, as before the probe) */
+  if (info.start !== 'en') { L.setLang(info.start); await wait(function () { return L.lang() === info.start; }, 5000); }
   try { if (saved == null) localStorage.removeItem('languagemod'); else localStorage.setItem('languagemod', saved); } catch (e) { }
   window.languagemod = saved;
   return { fail: fail, info: info };

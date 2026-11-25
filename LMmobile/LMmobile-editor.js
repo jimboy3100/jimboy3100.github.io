@@ -257,7 +257,8 @@
         '.lm-ed-zh{position:absolute;z-index:2;width:30px;height:30px;border-radius:6px;background:#ffd54f;color:#3c3000;' +
         'display:flex;align-items:center;justify-content:center;font:700 16px/1 sans-serif;touch-action:none}' +
         '.lm-ed-fix{position:absolute;z-index:0;box-sizing:border-box;border:1px dashed rgba(255,255,255,.3);pointer-events:none}' +
-        '#lm-ed-bar{position:absolute;z-index:5;left:50%;transform:translateX(-50%);top:4px;max-width:calc(100% - 16px);' +
+        /* width:max-content: with left:50% the bar could only use half the screen and wrapped longer texts (Greek) */
+        '#lm-ed-bar{position:absolute;z-index:5;left:50%;transform:translateX(-50%);top:4px;width:max-content;max-width:calc(100% - 16px);' +
         'box-sizing:border-box;background:rgba(0,36,62,.95);background:color-mix(in srgb,var(--lm-pc,#00243e) 95%,transparent);border:1px solid rgba(1,217,204,.45);border:1px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 45%,transparent);border-radius:10px;' +
         'padding:4px 6px;display:flex;flex-direction:column;gap:4px;transition:opacity .15s}' +
         '#lm-ed-bar.bottom{top:auto;bottom:4px}' +

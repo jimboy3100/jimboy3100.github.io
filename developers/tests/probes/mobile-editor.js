@@ -62,7 +62,9 @@
     await dragTo(pSplit, f.x, f.y);
     var warn = document.getElementById('lm-ed-warn').textContent;
     info.warn = warn;
-    if (!/Split overlaps Feed|Feed overlaps Split/.test(warn) || !pSplit.classList.contains('bad')) fail.push('no overlap warning with Split on Feed');
+    /* the names are in the chosen language: English is checked word for word, others by the warning sign */
+    var enUi = !window.LMi18n || window.LMi18n.lang() === 'en';
+    if (!(enUi ? /Split overlaps Feed|Feed overlaps Split/.test(warn) : /^⚠ \S/.test(warn)) || !pSplit.classList.contains('bad')) fail.push('no overlap warning with Split on Feed');
     // away from everything
     var tx = Math.round(innerWidth * 0.45), ty = Math.round(innerHeight * 0.55);
     await dragTo(pSplit, tx, ty);
