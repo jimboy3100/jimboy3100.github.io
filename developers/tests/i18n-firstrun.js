@@ -35,6 +35,11 @@ const probeFirst = `(async () => {
   function need(n, ok) { if (!ok) fail.push(n); }
   var wait = async function (c, ms) { var t0 = Date.now(); while (!c() && Date.now() - t0 < ms) await new Promise(function (r) { setTimeout(r, 100); }); return c(); };
   info.navigator = navigator.language;
+  /* the probe starts after a fixed time and a slow boot may not have built the settings yet: wait for the
+   * Choose Language list (triggerLMbtns builds it, languagemodfun then picks the language in the same call) */
+  info.listWaitMs = Date.now();
+  await wait(function () { return $('#legendlanguages').length > 0; }, 20000);
+  info.listWaitMs = Date.now() - info.listWaitMs;
   need('mod in Greek (browser language)', window.LMi18n && LMi18n.lang() === 'el');
   need('not saved', localStorage.getItem('languagemod') == null);
   need('Choose Language list shows 2', $('#legendlanguages').val() === '2');
@@ -44,7 +49,8 @@ const probeFirst = `(async () => {
   if (!box) return { fail: fail, info: info };
   var sel = box.querySelector('select.lm-lang-select');
   need('Greek picked', sel && sel.value === '2');
-  need('focused', document.activeElement === sel);
+  /* the window focuses its list just after it is added (a timer), and the poll above can see it first */
+  need('focused', await wait(function () { return document.activeElement === sel; }, 2000));
   need('Greek title', box.querySelector('.modal-title').textContent === ${JSON.stringify(el)});
   box.querySelector('.lm-lang-first-ok').click();
   need('closed by OK', !document.getElementById('lm-lang-first'));
@@ -59,6 +65,9 @@ const probeFirst = `(async () => {
 const probeStored = `(async () => {
   var fail = [], info = {};
   function need(n, ok) { if (!ok) fail.push(n); }
+  var wait = async function (c, ms) { var t0 = Date.now(); while (!c() && Date.now() - t0 < ms) await new Promise(function (r) { setTimeout(r, 100); }); return c(); };
+  /* after the boot (see probeFirst), then long enough for the window's 500 ms menu check to have shown it */
+  await wait(function () { return $('#legendlanguages').length > 0; }, 20000);
   await new Promise(function (r) { setTimeout(r, 3000); });
   info.navigator = navigator.language;
   need('English chosen wins over a Greek browser', window.LMi18n && LMi18n.lang() === 'en' && $('#legendlanguages').val() === '1');
