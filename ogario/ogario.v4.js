@@ -41828,9 +41828,6 @@ function thelegendmodproject() {
         },
         sendNick(nick) {
             window.multiboxPlayerEnabled = null;
-            window.fullSpectator = false;
-            window.ingameSpectator = false;
-            this.fullSpectator = false;
             /* LW: Don't send spawn if already alive — flushCellsData clears
              * client view and causes cells to disappear even though server
              * ignores the join (cell_count > 0). */
@@ -41838,6 +41835,13 @@ function thelegendmodproject() {
                 /* Play also resumes the game from the menu: no client-made "[SERVER]" chat line each time */
                 return;
             }
+            /* Spawning ends the in-game and full spectator: close their sockets with the flags. Since
+             * spawn flushes keep the multibox sockets only the flags were cleared here, the spectator
+             * stayed open unseen and the next toggle did nothing (it found a socket, added none). */
+            if (typeof this._lmCloseSpectatorUnits === 'function') this._lmCloseSpectatorUnits();
+            window.fullSpectator = false;
+            window.ingameSpectator = false;
+            this.fullSpectator = false;
 
             // ===== Garix join: [0x00][tabID LE16][nick UTF-8 null-terminated] =====
             if (this.serverType === 'garix') {
@@ -51412,8 +51416,23 @@ function thelegendmodproject() {
             var keep = [];
             for (var i = 0; i < sp.length; i++) if (sp[i] && sp[i].player) keep.push(sp[i]);
             if (!keep.length) return this.flushSpecsData();
-            for (var j = 0; j < sp.length; j++) if (sp[j] && !sp[j].player) sp[j].closeConnection();
-            window.spects = keep;
+            this._lmCloseSpectatorUnits();
+        },
+        /* Close the spectator sockets (in-game / full spectator), keep the multibox units. */
+        _lmCloseSpectatorUnits() {
+            var sp = window.spects || [];
+            var keep = [];
+            for (var i = 0; i < sp.length; i++) {
+                if (sp[i] && sp[i].player) keep.push(sp[i]);
+                else if (sp[i] && typeof sp[i].closeConnection === 'function') sp[i].closeConnection();
+            }
+            if (keep.length !== sp.length) window.spects = keep;
+        },
+        /* An in-game or full spectator socket is open (multibox units are not spectators). */
+        _lmHasSpectatorUnit() {
+            var sp = window.spects || [];
+            for (var i = 0; i < sp.length; i++) if (sp[i] && !sp[i].player) return true;
+            return false;
         },
         flushSpecsData() {
             this.isSpectateEnabled = false;
@@ -51691,9 +51710,10 @@ function thelegendmodproject() {
                     $('#set-fullSpectator').show();
                     $('#set-ingameSpectator').show();
                 }
-                if (window.fullSpectator && spects.length === 0) {
+                /* a multibox unit is in spects too: it blocked both spectators */
+                if (window.fullSpectator && !this._lmHasSpectatorUnit()) {
                     addFullSpectator();
-                } else if (window.ingameSpectator && spects.length === 0) {
+                } else if (window.ingameSpectator && !this._lmHasSpectatorUnit()) {
                     addSpectator();
                 }
             } else {
