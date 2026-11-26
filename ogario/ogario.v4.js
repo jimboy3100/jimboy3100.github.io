@@ -515,6 +515,26 @@ function _lmMatchHistoryPaint(host) {
     var fill = function () {
         while (body.firstChild) body.removeChild(body.firstChild);
         var list = _lmMatchHistory().slice().reverse();
+        /* option off: say so (with Analytics on the Dashboard counts games this list never got;
+         * "No games recorded yet" read as if nothing was recorded at all) and offer to turn it on */
+        if (!(typeof defaultmapsettings !== 'undefined' && defaultmapsettings.matchHistory)) {
+            var off = el('div', 'padding:8px;margin:4px 0;text-align:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);color:' + tc2 + ';', lmT('pkg.r14.mhOff') + ' ');
+            off.id = 'lm-mh-off';
+            var on = el('button', 'cursor:pointer;font:inherit;font-weight:700;border:0;border-radius:var(--lm-radius-s,4px);padding:3px 10px;min-height:var(--lm-w-ctl,26px);background:' + mc + ';color:' + pc + ';', lmT('pkg.r14.mhTurnOn'));
+            on.type = 'button';
+            on.id = 'lm-mh-on';
+            on.addEventListener('click', function (e) {
+                e.stopPropagation();
+                /* the Settings switch itself: its change handler saves and adds the footer link */
+                var cb = document.getElementById('matchHistory');
+                if (cb && cb.type === 'checkbox' && !cb.checked) { cb.checked = true; try { cb.dispatchEvent(new Event('change', { bubbles: true })); } catch (er) { } }
+                if (!defaultmapsettings.matchHistory && window.application && typeof application.setSettings === 'function') { application.setSettings('matchHistory', true); }
+                fill();
+            });
+            off.appendChild(on);
+            body.appendChild(off);
+            if (!list.length) return;
+        }
         if (!list.length) { body.appendChild(el('div', 'padding:16px;text-align:center;color:' + tc2 + ';', _lmMhT('mhEmpty', 'No games recorded yet.'))); return; }
         var tb = el('table', 'width:100%;border-collapse:collapse;white-space:nowrap;');
         var tr = el('tr');
