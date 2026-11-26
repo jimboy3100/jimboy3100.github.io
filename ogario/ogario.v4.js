@@ -32781,14 +32781,18 @@ function thelegendmodproject() {
             for (var i = 0; i < this._lmHideWords.length; i++) if (s.indexOf(this._lmHideWords[i]) !== -1) return true;
             return false;
         },
-        /* unnamed: the label of an Expanding Land guest with no nick (_lmElChatSender), else empty */
-        displayChatMessage(time, caseof, plId, msg, unnamed) {
+        /* unnamed: the label of an Expanding Land guest with no nick (_lmElChatSender), else empty.
+         * srvName: the sender name from the Expanding Land chat packet's own name field, else empty */
+        displayChatMessage(time, caseof, plId, msg, unnamed, srvName) {
             var mcolor = ""
 
             //mcolor = "blue";
             if (0 !== msg.length) {
                 //console.log(msg);
-                var a = msg.split(': ', 1).toString();
+                /* the server wrote this name (it is not parsed from the text, which cannot fake it):
+                 * kept whole, also when it holds ": " */
+                var _lmSrv = !!srvName && msg.indexOf(srvName + ': ') === 0;
+                var a = _lmSrv ? String(srvName) : msg.split(': ', 1).toString();
                 n = this.parseMessage(msg.replace(a + ': ', ''));
                 //coloredNicks
                 if (defaultmapsettings.coloredNicks) {
@@ -32814,7 +32818,16 @@ function thelegendmodproject() {
                 }
                 /* the label is ours, not a nick: the nick length limit does not drop it */
                 var _lmUnn = !!unnamed && a === unnamed;
-                if (!(0 === a.length || (!_lmUnn && fancyCount2(_lmBaseNick) > 15) || 0 === n.length)) {
+                /* The 15-character limit (agar.io's nick length) drops lines whose "nick" no client
+                 * could have sent: relay lines are plain "nick: text", so a longer one is a made-up
+                 * name or a line without a nick. Expanding Land sends a logged-in player without a
+                 * nick under the account name, which can be longer: shown, the name cut short on
+                 * screen only (full in the text, the tooltip, the mute list and for the bubbles). */
+                var _lmLong = fancyCount2(_lmBaseNick) > 15;
+                var _lmNickOut = function (h) {
+                    return _lmSrv && _lmLong ? '<span class=\"lm-chat-longnick\" title=\"' + h + '\" style=\"display:inline-block;max-width:11em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom;\">' + h + '</span>' : h;
+                };
+                if (!(0 === a.length || (!_lmUnn && !_lmSrv && _lmLong) || 0 === n.length)) {
                     //if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
                     /* History entries feed the canvas chat bubbles (plain text, matched to the
                      * raw cell nick): store the raw nick, and the raw text unless the parsed
@@ -32862,7 +32875,7 @@ function thelegendmodproject() {
                         /* scroll only if the reader is already at the bottom (it pulled readers back down) */
                         var _lmBoxEl = document.getElementById('chat-box');
                         var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message' + (_lmMention ? ' lm-mention' : '') + '\"><span class=\"message-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message' + (_lmMention ? ' lm-mention' : '') + '\"><span class=\"message-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
@@ -32871,7 +32884,7 @@ function thelegendmodproject() {
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 200) : 0),
                             void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && plId != this.playerID && this.playSound(this.messageSound)); /* own messages: no sound */ /* hidden chat box: silent, like the popups */
-                        defaultmapsettings.hideChat || (toastr.success(_lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"message-text\">' + n + '</span>' + r),
+                        defaultmapsettings.hideChat || (toastr.success(_lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span>' + r),
                             defaultmapsettings.chatSounds && plId != this.playerID && this.playSound(this.messageSound));
                         // this.chatHistory.length > 15 && this.chatHistory.shift();
                         window._lmTrimChatToasts && window._lmTrimChatToasts();
@@ -32887,7 +32900,7 @@ function thelegendmodproject() {
                         /* scroll only if the reader is already at the bottom (it pulled readers back down) */
                         var _lmBoxEl = document.getElementById('chat-box');
                         var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span></div>'),
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
@@ -32896,7 +32909,7 @@ function thelegendmodproject() {
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 200) : 0),
                             void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && plId != this.playerID && this.playSound(this.commandSound));
-                        defaultmapsettings.hideChat || (toastr.warning(_lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + a + ': </span><span class=\"command-text\">' + n + '</span>' + r),
+                        defaultmapsettings.hideChat || (toastr.warning(_lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"command-text\">' + n + '</span>' + r),
                             defaultmapsettings.chatSounds && plId != this.playerID && this.playSound(this.commandSound));
                         window._lmTrimChatToasts && window._lmTrimChatToasts();
                     } else {
@@ -43478,7 +43491,8 @@ function thelegendmodproject() {
                         var _lmTeamNoTag = this.isLegendWorld && !(flag & 0xE0) && _lmElTeamsActive(this) && message.indexOf(name + ': ') === 0;
                         /* a guest with no nick: labelled, never over a cell (_lmElChatSender) */
                         var _lmUnnamed = _lmElChatSender(name, server || admin || mod, this.isLegendWorld);
-                        if (!application.isChatUserMuted(_lmSrvChatId)) application.displayChatMessage(time, caseof, _lmSrvChatId, _lmElChatRelabel(_lmTeamNoTag ? message : name + ": " + message, _lmUnnamed), _lmUnnamed); //this.displayChatMessage(time, caseof, plId, msg);	
+                        /* Expanding Land: the name comes from the packet (an account name can be over 15 characters) */
+                        if (!application.isChatUserMuted(_lmSrvChatId)) application.displayChatMessage(time, caseof, _lmSrvChatId, _lmElChatRelabel(_lmTeamNoTag ? message : name + ": " + message, _lmUnnamed), _lmUnnamed, this.isLegendWorld && !_lmUnnamed ? name : null); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
                     /* Expanding Land team chat (sent as opcode 202) comes back as a plain opcode 99 with
                      * no server/admin/mod flag, only to same-tag players; the text already has "nick: ". */

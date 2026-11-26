@@ -5,7 +5,9 @@
  * flags, colour, name, text); a guest with no nick comes as "An unnamed cell". Checked: such a
  * line reaches the chat box under a translated label (also a label longer than the 15-character
  * nick limit), it never becomes a bubble (also not over a player really named like the
- * placeholder), named lines and agar.io / other servers behave as before.
+ * placeholder), named lines and agar.io / other servers behave as before. Also: a logged-in
+ * player without a nick (sent under the account name, which can be longer than 15 characters) is
+ * shown with the full name kept, while relay / team / other-server lines keep the nick limit.
  * node developers/tests/chatunnamed.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs');
@@ -49,6 +51,8 @@ const dcmHead = src.search(/\n {8}displayChatMessage\(time, caseof, plId, msg[^)
 const dcm = between(src.slice(dcmHead), 'displayChatMessage(', '        displayUserList(').replace(/\},\s*$/, '}');
 const lookup = between(src, '            var _ch = application.chatHistory;', '            var _cmd = application.commandHistory;');
 const fancy = fnFrom(master, 'function fancyCount2(');
+/* the relay (agar.io / Delta chat) packet reader */
+const rcm = between(src, '        readChatMessage(t) {', '        sendChatMessage(type, message) {').replace(/\},\s*$/, '}');
 
 function boot(lang) {
   const box = [], toasts = [];
@@ -88,6 +92,7 @@ function boot(lang) {
   };
   ctx.application = app;
   vm.runInContext('application.displayChatMessage = function ' + dcm + ';', ctx);
+  vm.runInContext('application.readChatMessage = function ' + rcm.replace(/^readChatMessage/, '') + ';', ctx);
   /* the opcode 99 case run as the packet handler runs it */
   const onChat = vm.runInContext('(function (data) {\n var textDecoder = new TextDecoder();\n' + reader + ' var s = 1;\n switch (99) {\n' + case99 + ' }\n})', ctx);
   const bubbles = vm.runInContext('(function (now, myNick) {\n var _chatMap = new Map(), _now = now, _chOn = defaultmapsettings.showChat, _myNick = myNick, _lastSentNick = null, _showOwn = defaultmapsettings.showChatMyOwn;\n' + lookup + ' return _chatMap;\n})', ctx);
@@ -99,7 +104,14 @@ function boot(lang) {
       const bytes = [99, flags || 0, 10, 200, 30].concat(enc(name), enc(text));
       onChat.call(c || client, new DataView(new Uint8Array(bytes).buffer));
     },
-    bubbles: () => bubbles(Date.now(), 'Me')
+    bubbles: () => bubbles(Date.now(), 'Me'),
+    /* a relay chat packet: [op][type][u32 player id][u32 target][UTF-16LE "nick: text"] */
+    relay(line, plId) {
+      const v = new DataView(new ArrayBuffer(10 + 2 * line.length + 2));
+      v.setUint8(0, 100); v.setUint8(1, 101); v.setUint32(2, plId || 7, true); v.setUint32(6, 0, true);
+      for (let i = 0; i < line.length; i++) v.setUint16(10 + 2 * i, line.charCodeAt(i), true);
+      app.readChatMessage(v);
+    }
   };
 }
 
@@ -137,8 +149,6 @@ check('the label is in the language packs (English and Greek differ)', label() &
   b.send('An unnamed cell', 'restart soon', 128);
   const last = b.box[b.box.length - 1] || '';
   check('a server line is not relabelled', last.indexOf('[SERVER] An unnamed cell') !== -1, last);
-  b.send('ThisNameIsWayTooLongForChat', 'spam');
-  check('other nicks over 15 characters still dropped (as before)', b.box.length === 1);
 }
 {
   /* agar.io and other private servers: the name is a nick like any other */
@@ -154,6 +164,65 @@ check('the label is in the language packs (English and Greek differ)', label() &
   b.send('An unnamed cell', 'An unnamed cell: go left');
   const last = b.box[b.box.length - 1] || '';
   check('team line of a guest: labelled, no bubble', last.indexOf(label() + ': </span>') !== -1 && last.indexOf('go left') !== -1 && b.bubbles().size === 0, last);
+}
+
+/* Expanding Land names longer than the 15-character nick limit: a logged-in player without a nick
+ * is sent under the account name (LegendWorld server_send_chat: nick, else display_name), which
+ * the server does not cut to 15 characters (player_set_identity only cuts nicks). */
+const LONG = 'Christopher Alexander Smith';
+const nickText = (html) => {
+  const m = /<span class="message-nick"[^>]*>(.*?: )<\/span><span class="message-text">/.exec(html);
+  return m ? m[1].replace(/<[^>]+>/g, '') : null;
+};
+{
+  const b = boot();
+  b.send(LONG, 'anyone up for teams?');
+  const last = b.box[b.box.length - 1] || '';
+  check('account name over 15 characters: line shown', b.box.length === 1 && last.indexOf('anyone up for teams?') !== -1, last);
+  check('the full name stays in the nick text (click to reply), cut short only on screen', nickText(last) === LONG + ': ' && /class="lm-chat-longnick"[^>]*title="Christopher Alexander Smith"[^>]*text-overflow:ellipsis/.test(last), last);
+  check('history and bubble keyed by the full name (the cells carry it too)', b.app.chatHistory.length === 1 && b.app.chatHistory[0].nick === LONG && b.bubbles().has(LONG) && b.bubbles().get(LONG).message === 'anyone up for teams?');
+  check('mute list under the full name', Object.keys(b.app.chatUsers).map(k => b.app.chatUsers[k]).indexOf(LONG) !== -1);
+  b.send('Bob', 'hi');
+  const bob = b.box[b.box.length - 1] || '';
+  check('short nick: no cut-short markup', nickText(bob) === 'Bob: ' && bob.indexOf('lm-chat-longnick') === -1, bob);
+}
+{
+  const b = boot();
+  b.send('Dr: Who of Gallifrey', 'exterminate');
+  const last = b.box[b.box.length - 1] || '';
+  check('account name holding ": " kept whole', nickText(last) === 'Dr: Who of Gallifrey: ' && b.app.chatHistory[0].nick === 'Dr: Who of Gallifrey' && b.app.chatHistory[0].message === 'exterminate', last);
+}
+{
+  const b = boot();
+  b.send(LONG, 'server notice', 64);
+  const last = b.box[b.box.length - 1] || '';
+  check('admin with a long account name shown', b.box.length === 1 && nickText(last) === '[ADMIN] ' + LONG + ': ', last);
+  b.send('An <b>unnamed</b> xxxxxxxxxxx', 'x');
+  check('long name escaped in the text and the tooltip', b.box[1] && b.box[1].indexOf('<b>') === -1 && b.box[1].indexOf('title="An &lt;b&gt;') !== -1, b.box[1]);
+}
+{
+  /* the name is only trusted from the packet's name field: text that looks like a long nick is not */
+  const b = boot();
+  b.send('Bob', 'ThisNameIsWayTooLongForChat: spam');
+  const last = b.box[b.box.length - 1] || '';
+  check('a long "nick" inside the text is just text', nickText(last) === 'Bob: ' && last.indexOf('ThisNameIsWayTooLongForChat: spam') !== -1, last);
+}
+{
+  /* team chat with a clan tag: the nick is the one the sender's client wrote into the text */
+  const b = boot();
+  b.ctx._tag = 'LM';
+  b.send('Bob', 'ThisNameIsWayTooLongForChat: spam');
+  check('team line with a long nick in the text: still dropped', b.box.length === 0);
+}
+{
+  /* agar.io / Delta / chat relay lines and other private servers keep the 15-character limit */
+  const b = boot();
+  b.relay('ThisNameIsWayTooLongForChat: spam');
+  check('relay line with a long nick: still dropped', b.box.length === 0);
+  b.relay('Tom: hello there');
+  check('relay line with a normal nick: shown as before', b.box.length === 1 && nickText(b.box[0]) === 'Tom: ' && b.box[0].indexOf('lm-chat-longnick') === -1, b.box[0]);
+  b.send(LONG, 'spam', 0, Object.assign({}, b.client, { serverType: 'imsolo', isLegendWorld: false }));
+  check('other private servers: long name still dropped', b.box.length === 1);
 }
 
 console.log(failed ? failed + ' FAILED' : 'all ok');
