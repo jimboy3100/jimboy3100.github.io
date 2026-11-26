@@ -39,6 +39,35 @@
   info.after1500 = st.pos;
   info.firstAt = arr._lm.t[0];
   if (!(st.pos > 0)) fail.push('playback did not advance');
+  /* while the replay plays, real typing in a text box (the Command Centre search) types every
+   * letter: the keys the Studio keeps from the game (space, W, E, R, T, Enter, Esc) were not
+   * typed either until 3.693, and Esc there did not close the Command Centre */
+  var CCr = window.LMCommandCentre;
+  if (typeof window.__lmInput === 'function' && CCr && CCr.open) {
+    var sendR = function (q) {
+      return new Promise(function (res) {
+        q.id = 'rt' + Date.now() + Math.random();
+        var t = setTimeout(function () { res(false); }, 15000);
+        window.__lmInputDone = function (i) { if (i === q.id) { clearTimeout(t); res(true); } };
+        window.__lmInput(JSON.stringify(q));
+      });
+    };
+    CCr.open();
+    await sleep(150);
+    var qIn = document.getElementById('lm-cc-q');
+    if (qIn) qIn.focus();
+    var word = 'tree wet';
+    for (var ci = 0; ci < word.length; ci++) {
+      var ch = word.charAt(ci);
+      await sendR(ch === ' ' ? { type: 'key', key: ' ', code: 'Space', keyCode: 32, text: ' ' } : { type: 'key', key: ch, code: 'Key' + ch.toUpperCase(), keyCode: ch.toUpperCase().charCodeAt(0), text: ch });
+    }
+    await sleep(100);
+    info.typedWhilePlaying = qIn ? qIn.value : null;
+    if (qIn && qIn.value !== word) fail.push('typing "' + word + '" in the Command Centre while a replay plays gave "' + qIn.value + '"');
+    await sendR({ type: 'key', key: 'Escape', code: 'Escape', keyCode: 27 });
+    await sleep(150);
+    if (CCr.isOpen()) { fail.push('Esc did not close the Command Centre while a replay plays'); CCr.close(); }
+  }
   RS.command('pause');
   var p0 = RS.state().pos;
   document.querySelector('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('modules.replaystudio.stepF')) + '"]').click();

@@ -1704,11 +1704,14 @@
          * from firing, the player from accidentally spawning, and camera desyncs.
          * active(): a paused replay left for a live server must not keep blocking them. */
         var BLOCK_KEYS = { ' ': 1, w: 1, W: 1, e: 1, E: 1, r: 1, R: 1, t: 1, T: 1, Enter: 1, Escape: 1 };
+        /* typing in a text box is not game input: those letters, space, Enter and Esc could not be
+         * typed (Command Centre search, chat, renaming a recording) and Esc did not close the box */
+        var typingIn = function (t) { return !!(t && (/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName) || t.isContentEditable)); };
         document.addEventListener('keydown', function (e) {
-            if (P.driving && BLOCK_KEYS[e.key] && active()) { e.stopImmediatePropagation(); e.preventDefault(); }
+            if (P.driving && BLOCK_KEYS[e.key] && !typingIn(e.target) && active()) { e.stopImmediatePropagation(); e.preventDefault(); }
         }, true);
         document.addEventListener('keyup', function (e) {
-            if (P.driving && BLOCK_KEYS[e.key] && active()) { e.stopImmediatePropagation(); e.preventDefault(); }
+            if (P.driving && BLOCK_KEYS[e.key] && !typingIn(e.target) && active()) { e.stopImmediatePropagation(); e.preventDefault(); }
         }, true);
         /* header */
         /* header, timeline and transport stay left-to-right in Arabic too (close button on the right) */
