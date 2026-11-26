@@ -904,11 +904,14 @@
         return tn === 'INPUT' || tn === 'TEXTAREA' || tn === 'SELECT' || el.isContentEditable === true;
     }
     W.addEventListener('keydown', function (e) {
-        /* Esc with the focus outside the palette (phone, or after a click elsewhere) closes it
-         * and does not also open the game menu */
-        if (isOpen() && (e.keyCode === 27 || e.key === 'Escape') && !root.contains(e.target)) {
+        /* Esc while the palette is open closes it, wherever the focus is (phone, or after a click
+         * elsewhere), and nothing else: not the game menu, nor a window under it that closes on Esc
+         * (Custom macros, Gamepad...: their own window listeners took the Esc typed in the search
+         * box first, closed, and the palette stayed open) */
+        if (isOpen() && (e.keyCode === 27 || e.key === 'Escape')) {
             e.preventDefault();
-            e.stopPropagation();
+            e.stopImmediatePropagation();
+            e._lmEscTaken = true;
             close();
             return;
         }
