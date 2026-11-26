@@ -11151,8 +11151,6 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         var menuBtns = $(
             '#SpecialDealsBtn, ' +
-            '#SpecialDealsQuickBtn, ' +
-            '.lm-skins-btn, ' +
             '#lm-extended-menu-btns button:not(#lm-claim-remind)' /* the reminder bell is a local setting */
         );
 

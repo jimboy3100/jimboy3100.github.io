@@ -2225,7 +2225,7 @@ function lmMultiboxPlayerBox(cells, cx, cy, size) {
             refreshIdentityUI();
 
             /* Immediately disable all shop/profile buttons on logout */
-            var allMenuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn, #lm-friends-btn, #lm-official-offer-btn, #adRewardBtn');
+            var allMenuBtns = $('#SpecialDealsBtn, #lm-daily-deal-btn, #lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn, #lm-friends-btn, #lm-official-offer-btn, #adRewardBtn');
             allMenuBtns.prop('disabled', true);
             allMenuBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' })
                 .attr('title', window._lmLoginHint ? window._lmLoginHint() : lmT('game1.login.hintGeneric'));

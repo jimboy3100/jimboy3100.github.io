@@ -852,7 +852,7 @@ function SpecialDeals(defaultTab) {
 
             // Main menu & profile buttons state (Skins, Daily Deals, Leagues, Buy/Use Boosts, Rewards)
             var menuBtnsEnabled = isLoggedIn && hasUID;
-            var menuBtns = $('#SpecialDealsBtn, #SpecialDealsQuickBtn, .lm-skins-btn, #lm-daily-deal-btn, .lm-deals-btn, #lm-leagues-btn, .lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn');
+            var menuBtns = $('#SpecialDealsBtn, #lm-daily-deal-btn, #lm-leagues-btn, #buy-boost, #use-boost, #s-boost, #lm-claim-all-btn');
             menuBtns.prop('disabled', !menuBtnsEnabled);
             if (!menuBtnsEnabled) {
                 menuBtns.css({ opacity: 0.5, cursor: 'not-allowed', pointerEvents: 'none' })
