@@ -7,181 +7,428 @@
       "id": "presets",
       "name": "Presets",
       "description": "Quick setup options that configure multiple settings at once.",
-      "settings": ["Competitive", "Battery Saver", "Streamer", "Reduced Motion", "Clean HUD", "Custom HUD"]
+      "settings": [
+        "Competitive",
+        "Battery Saver",
+        "Streamer",
+        "Reduced Motion",
+        "Clean HUD",
+        "Custom HUD"
+      ]
     },
     {
       "id": "animation",
       "name": "Animation",
       "description": "Visual animation and camera settings.",
-      "settings": ["animationSpeed", "jellyPhysics", "deathParticles", "eatPulse", "cameraSmoothing", "spawnEffects", "zoomSpeed", "zoomSmooth", "suckAnimation", "animatedRainbowColor"]
+      "settings": [
+        "animationSpeed",
+        "jellyPhysics",
+        "deathParticles",
+        "eatPulse",
+        "cameraSmoothing",
+        "spawnEffects",
+        "zoomSpeed",
+        "zoomSmooth",
+        "suckAnimation",
+        "animatedRainbowColor"
+      ]
     },
     {
       "id": "skins",
       "name": "Skins",
       "description": "Custom cell skin appearance settings.",
-      "settings": ["customSkins", "vanillaSkins", "videoSkins", "videoPreloadToCanvas", "transparentSkins", "noSkins", "skinChecker", "skinRotator", "videoDucking", "videoSkinVolume", "skinCollections"]
+      "settings": [
+        "customSkins",
+        "vanillaSkins",
+        "videoSkins",
+        "videoPreloadToCanvas",
+        "transparentSkins",
+        "noSkins",
+        "skinChecker",
+        "skinRotator",
+        "videoDucking",
+        "videoSkinVolume",
+        "skinCollections"
+      ]
     },
     {
       "id": "food",
       "name": "Food",
       "description": "Food pellet visibility and appearance.",
-      "settings": ["rainbowFood", "autoHideFood", "foodOpacity"]
+      "settings": [
+        "rainbowFood",
+        "autoHideFood",
+        "foodOpacity"
+      ]
     },
     {
       "id": "performance",
       "name": "Performance and Network",
       "description": "Rendering engine and network quality settings.",
-      "settings": ["webGL", "highDPI", "fpsCap", "menuFPSCap", "performanceMode", "adaptivePerf", "adaptivePerfTarget", "adaptivePerfRes", "adaptivePerfToasts", "antiAliasing", "netGraph", "networkHistory", "unlockedFPS"]
+      "settings": [
+        "webGL",
+        "highDPI",
+        "fpsCap",
+        "menuFPSCap",
+        "performanceMode",
+        "adaptivePerf",
+        "adaptivePerfTarget",
+        "adaptivePerfRes",
+        "adaptivePerfToasts",
+        "antiAliasing",
+        "netGraph",
+        "networkHistory"
+      ]
     },
     {
       "id": "minimap",
       "name": "Minimap",
       "description": "Minimap display and interaction settings.",
-      "settings": ["showMinimap", "rotateMinimap", "minimapGrid", "minimapGuides", "minimapExtraGuides", "minimapGhostCells", "minimapTrail", "minimapClickSpectate", "enlargeMinimap", "privateMinimap", "oneColouredTeammates"]
+      "settings": [
+        "showMinimap",
+        "rotateMinimap",
+        "minimapGrid",
+        "minimapGuides",
+        "minimapExtraGuides",
+        "minimapGhostCells",
+        "minimapTrail",
+        "minimapClickSpectate",
+        "enlargeMinimap",
+        "privateMinimap",
+        "oneColouredTeammates"
+      ]
     },
     {
       "id": "hud",
       "name": "HUD",
       "description": "Head-up display element settings.",
-      "settings": ["showNames", "showMass", "cellContours", "splitRanges", "mergeRings", "relativeMass", "edgeArrows", "cellPanel", "statsDisplay", "indicators", "onlineStatus", "stickyCell", "massInTab"]
+      "settings": [
+        "showNames",
+        "showMass",
+        "cellContours",
+        "splitRanges",
+        "mergeRings",
+        "relativeMass",
+        "edgeArrows",
+        "cellPanel",
+        "statsDisplay",
+        "indicators",
+        "onlineStatus",
+        "stickyCell",
+        "massInTab"
+      ]
     },
     {
       "id": "chat",
       "name": "Chat",
       "description": "In-game chat system settings.",
-      "settings": ["chatEnabled", "chatImages", "chatVideos", "chatEmoticons", "chatTranslation", "chatMentions", "chatSounds", "chatPopups", "wordFilter", "colouredNicks", "hideCountry", "universalChat", "playerID", "chatPosition", "autoResponse", "voiceChat"]
+      "settings": [
+        "chatEnabled",
+        "chatImages",
+        "chatVideos",
+        "chatEmoticons",
+        "chatTranslation",
+        "chatMentions",
+        "chatSounds",
+        "chatPopups",
+        "wordFilter",
+        "colouredNicks",
+        "hideCountry",
+        "universalChat",
+        "playerID",
+        "chatPosition",
+        "autoResponse",
+        "voiceChat"
+      ]
     },
     {
       "id": "sounds",
       "name": "Sounds",
       "description": "Sound mixer and audio settings.",
-      "settings": ["volMaster", "volChat", "volCommands", "volGameplay", "volNotifications", "virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "audioDucking"]
+      "settings": [
+        "volMaster",
+        "volChat",
+        "volCommands",
+        "volGameplay",
+        "volNotifications",
+        "virusSound",
+        "x16Sound",
+        "non16Sound",
+        "virusPopSound",
+        "virusEatSound",
+        "audioDucking"
+      ]
     },
     {
       "id": "leaderboard",
       "name": "Leaderboard",
       "description": "Leaderboard display settings.",
-      "settings": ["leaderboardLimit", "top5Skins", "centredLeaderboard", "hideBots", "clickSpectate", "passToast"]
+      "settings": [
+        "leaderboardLimit",
+        "top5Skins",
+        "centredLeaderboard",
+        "hideBots",
+        "clickSpectate",
+        "passToast"
+      ]
     },
     {
       "id": "multibox",
       "name": "Multibox",
       "description": "Multiple game connection settings.",
-      "settings": ["multiboxAmount", "multiboxRingsP1", "multiboxRingsP2", "multiboxRingSize", "activeOnlyRings", "multiboxFreeze", "autoRespawn", "switchAfterDeath", "middleCameraView", "multiboxShadow"]
+      "settings": [
+        "multiboxAmount",
+        "multiboxRingsP1",
+        "multiboxRingsP2",
+        "multiboxRingSize",
+        "activeOnlyRings",
+        "multiboxFreeze",
+        "autoRespawn",
+        "switchAfterDeath",
+        "middleCameraView",
+        "multiboxShadow"
+      ]
     },
     {
       "id": "scantrick",
       "name": "Scan Trick",
       "description": "Cursor snapping technique settings.",
-      "settings": ["scanTrickEnabled", "scanDirections", "scanDistance", "scanRounded", "scanLeftMouseOnly", "scanStatusDisplay"]
+      "settings": [
+        "scanTrickEnabled",
+        "scanDirections",
+        "scanDistance",
+        "scanRounded",
+        "scanLeftMouseOnly",
+        "scanStatusDisplay"
+      ]
     },
     {
       "id": "linesplit",
       "name": "Line Split",
       "description": "Straight-line multi-split technique settings.",
-      "settings": ["lineSplitCount", "lineSplitDelay", "lineSplitHoldTime", "lineSplitGuideLines"]
+      "settings": [
+        "lineSplitCount",
+        "lineSplitDelay",
+        "lineSplitHoldTime",
+        "lineSplitGuideLines"
+      ]
     },
     {
       "id": "mouse",
       "name": "Mouse",
       "description": "Mouse button bindings.",
-      "settings": ["mouseLeft", "mouseRight", "mouseMiddle", "mouse4", "mouse5", "invertMouse"]
+      "settings": [
+        "mouseLeft",
+        "mouseRight",
+        "mouseMiddle",
+        "mouse4",
+        "mouse5"
+      ]
     },
     {
       "id": "gamepad",
       "name": "Gamepad",
       "description": "Controller/gamepad settings.",
-      "settings": ["gamepadEnabled", "deadZone", "moveRange", "responseCurve", "zoomSensitivity", "triggerThreshold", "axisInversion", "hapticVibration"]
+      "settings": [
+        "deadZone",
+        "moveRange",
+        "responseCurve",
+        "zoomSensitivity",
+        "triggerThreshold",
+        "axisInversion",
+        "hapticVibration"
+      ]
     },
     {
       "id": "privacy",
       "name": "Privacy / Extras",
       "description": "Privacy and streamer settings.",
-      "settings": ["streamerMode", "streamMode", "hideSkinURL", "hideMyName", "hideCountry", "blockPopups"]
+      "settings": [
+        "streamerMode",
+        "streamMode",
+        "hideSkinURL",
+        "hideMyName",
+        "hideCountry",
+        "blockPopups"
+      ]
     },
     {
       "id": "stats",
       "name": "Stats",
       "description": "Statistics and analytics settings.",
-      "settings": ["gameOverCard", "massGraph", "killFeed", "deathRecap", "massLossAlerts", "analytics", "personalBests", "matchHistory", "notificationCentre"]
+      "settings": [
+        "gameOverCard",
+        "massGraph",
+        "killFeed",
+        "deathRecap",
+        "massLossAlerts",
+        "analytics",
+        "personalBests",
+        "matchHistory"
+      ]
     },
     {
       "id": "merge",
       "name": "Merge",
       "description": "Cell merge feedback settings.",
-      "settings": ["mergeCountdown", "mergeSound", "mergeProgressRings"]
+      "settings": [
+        "mergeCountdown",
+        "mergeSound",
+        "mergeProgressRings"
+      ]
     },
     {
       "id": "indicators",
       "name": "Indicators",
       "description": "Visual indicators for opponent cells and threats.",
-      "settings": ["opponentColours", "opponentRings", "virusColours", "splitRangeSingle", "splitRangeDouble", "splitRangeTriple", "splitRangeQuad", "virusRange", "cursorTracking", "splitPrediction", "bubbleIndicators", "teammatesIndicators"]
+      "settings": [
+        "opponentColours",
+        "opponentRings",
+        "virusColours",
+        "splitRangeSingle",
+        "splitRangeDouble",
+        "splitRangeTriple",
+        "splitRangeQuad",
+        "virusRange",
+        "cursorTracking",
+        "splitPrediction",
+        "bubbleIndicators",
+        "teammatesIndicators"
+      ]
     },
     {
       "id": "accessibility",
       "name": "Accessibility",
       "description": "Accessibility and motion settings.",
-      "settings": ["reducedMotion", "textScale", "hudTextScale", "indicatorSize", "colourBlindSafe"]
+      "settings": [
+        "reducedMotion",
+        "textScale",
+        "hudTextScale",
+        "indicatorSize",
+        "colourBlindSafe"
+      ]
     },
     {
       "id": "grid",
       "name": "Grid / Borders",
       "description": "Grid and map border display settings.",
-      "settings": ["showGrid", "showSectors", "mapBorders", "borderGlow", "rainbowBorders"]
+      "settings": [
+        "showGrid",
+        "showSectors",
+        "mapBorders",
+        "borderGlow",
+        "rainbowBorders"
+      ]
     },
     {
       "id": "effects",
       "name": "Effects",
       "description": "Visual effect settings.",
-      "settings": ["noColours", "customColour", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", "cellContours", "cellShadows", "animatedRainbow", "deathParticles", "eatPulse"]
+      "settings": [
+        "noColours",
+        "customColour",
+        "transparentCells",
+        "transparentViruses",
+        "virusGlow",
+        "cellShadows",
+        "animatedRainbow",
+        "deathParticles",
+        "eatPulse"
+      ]
     },
     {
       "id": "zoom",
       "name": "Zoom",
       "description": "Camera zoom settings.",
-      "settings": ["autoZoom", "massWeightedCamera", "precisionZoom", "zoomBookmarks"]
+      "settings": [
+        "autoZoom",
+        "massWeightedCamera",
+        "precisionZoom",
+        "zoomBookmarks"
+      ]
     },
     {
       "id": "respawn",
       "name": "Respawn",
       "description": "Respawn behaviour settings.",
-      "settings": ["quickRespawn", "autoRespawn", "spawnEffects"]
+      "settings": [
+        "quickRespawn",
+        "autoRespawn",
+        "spawnEffects"
+      ]
     },
     {
       "id": "names",
       "name": "Names",
       "description": "Player name display settings.",
-      "settings": ["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "nameStroke"]
+      "settings": [
+        "noNames",
+        "optimizedNames",
+        "autoHideNames",
+        "hideMyName",
+        "hideTeammatesNames",
+        "nameStroke"
+      ]
     },
     {
       "id": "mass",
       "name": "Mass",
       "description": "Mass number display settings.",
-      "settings": ["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "massFormat", "virusSpikes", "virusMassShots", "massStroke", "relativeMass"]
+      "settings": [
+        "showMass",
+        "optimizedMass",
+        "autoHideMass",
+        "hideMyMass",
+        "hideEnemiesMass",
+        "massFormat",
+        "virusSpikes",
+        "virusMassShots",
+        "massStroke",
+        "relativeMass"
+      ]
     },
     {
       "id": "spectate",
       "name": "Spectate",
       "description": "Spectator mode settings.",
-      "settings": ["leaderboardClickSpectate", "minimapClickSpectate", "companionLive", "companionChat"]
+      "settings": [
+        "leaderboardClickSpectate",
+        "minimapClickSpectate",
+        "companionLive",
+        "companionChat"
+      ]
     },
     {
       "id": "replay",
       "name": "Replay",
       "description": "Replay recording and playback settings.",
-      "settings": ["recordReplays", "matchHistory", "personalBests", "instantReplaySecs", "analytics"]
+      "settings": [
+        "recordReplays",
+        "matchHistory",
+        "personalBests",
+        "instantReplaySecs",
+        "analytics"
+      ]
     },
     {
       "id": "macro",
       "name": "Macro",
       "description": "Macro feeding and split timing settings.",
-      "settings": ["feedingSpeed", "splitDelay", "popSplitDelay"]
+      "settings": [
+        "feedingSpeed",
+        "splitDelay",
+        "popSplitDelay"
+      ]
     },
     {
       "id": "config",
       "name": "Config",
       "description": "Settings profiles management.",
-      "settings": ["settingsProfiles", "autoSwitchProfile", "profileBackups"]
+      "settings": [
+        "settingsProfiles",
+        "autoSwitchProfile",
+        "profileBackups"
+      ]
     }
   ]
 }
