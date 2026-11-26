@@ -7133,6 +7133,13 @@ window.buffers = {
         writer.writeUint8(8)
         writer.writeInt32(x)
         return writer.dataView.buffer
+    },
+    playerPosition(x, y) {
+        const writer = new Writer(9)
+        writer.writeUint8(11)
+        writer.writeInt32(x)
+        writer.writeInt32(y)
+        return writer.dataView.buffer
     }
 }
 window.addEventListener('beforeunload', function (e) {
@@ -7285,6 +7292,7 @@ window.connectionBots = {
         document.getElementById('connectBots').style.color = 'white'
         window.userBots.startedBots = false
         window.bots.ai = false
+        if (window.userBots.playerPosInterval) { clearInterval(window.userBots.playerPosInterval); window.userBots.playerPosInterval = null }
         for (i = 0; i < window.captchaOpenedWindow; i++) {
             if (window.capthaWindow[i]) {
                 window.capthaWindow[i].close()
@@ -7306,7 +7314,8 @@ window.userBots = {
     mouseY: 0,
     offsetX: 0,
     offsetY: 0,
-    macroFeedInterval: null
+    macroFeedInterval: null,
+    playerPosInterval: null
 }
 window.bots = {
     nameLM: 'Legendmod|ml',
@@ -21933,7 +21942,7 @@ function thelegendmodproject() {
                 /* the URL comes from (importable) settings: quotes, brackets and spaces cannot close the url() */
                 var bgUrl = _lmCssUrl(defaultSettings.menuBg);
                 $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', bgUrl);
-                this.addCustomCSS('menuBgCSS', '.menu-panel,.agario-side-panel,#hotkeys,#exp-imp{background-image:' + bgUrl + '!important;background-size:cover!important;background-position:center!important}');
+                this.addCustomCSS('menuBgCSS', '.menu-panel,.agario-side-panel,#hotkeys,#exp-imp{background-image:' + bgUrl + '!important;background-size:100vw 100vh!important;background-attachment:fixed!important;background-position:center!important}');
             } else {
                 $('.menu-panel, .agario-side-panel, #hotkeys, #exp-imp').css('background-image', 'none');
                 this.addCustomCSS('menuBgCSS', '');
@@ -23522,11 +23531,11 @@ function thelegendmodproject() {
         /* ─── §4.4 Display Methods ─── */
         displayPartyBots() {
             setTimeout(function () {
-                //if (defaultmapsettings.showPartyBots) {                   
-                $(".quick.quick-bots.ogicon-trophy").hide();
-                /*} else {
+                if (legendmod.gameMode === ":party" || legendmod.gameMode === ":ffa" || legendmod.gameMode === ":experimental" || legendmod.gameMode === ":battleroyale") {
+                    $(".quick.quick-bots.ogicon-trophy").show();
+                } else {
                     $(".quick.quick-bots.ogicon-trophy").hide();
-                }*/
+                }
             }, 50);
         },
         setBlockPopups() {
@@ -42758,7 +42767,10 @@ function thelegendmodproject() {
             if (window.userBots.startedBots && window.userBots.isAlive) {
                 window.userBots.mouseX = this.cursorX - window.userBots.offsetX;
                 window.userBots.mouseY = this.cursorY - window.userBots.offsetY;
-                if (window.connectionBots && window.connectionBots.readyState === 1) window.connectionBots.send(window.buffers.mousePosition(window.userBots.mouseX, window.userBots.mouseY))
+                window.connectionBots.send(window.buffers.mousePosition(window.userBots.mouseX, window.userBots.mouseY))
+                if (typeof legendmod !== 'undefined' && legendmod.playerX != null) {
+                    window.connectionBots.send(window.buffers.playerPosition(~~legendmod.playerX, ~~legendmod.playerY))
+                }
             }
         },
         /*            sendAccessToken(t, e, i) {
@@ -84000,7 +84012,7 @@ function setGUIEvents() {
     })
     document.getElementById('startBots').addEventListener('click', () => {
         if (legendmod.ws && window.EnvConfig.configVersion && window.master.clientVersion && !window.userBots.startedBots) {
-            if (legendmod.gameMode === ":party" || $("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc || window.AdminRights === 1 || window.IamNeo === true) {
+            if (legendmod.gameMode === ":party" || legendmod.gameMode === ":ffa" || legendmod.gameMode === ":experimental" || legendmod.gameMode === ":battleroyale" || $("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc || window.AdminRights === 1 || window.IamNeo === true) {
                 if (window.bots.amount) {
                     if (window.bots.amount + legendmod.leaderboard.length > 197) window.bots.amount = 197 - legendmod.leaderboard.length;
                     //if (window.bots.nameLM && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') {

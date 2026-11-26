@@ -252,5 +252,48 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('server-fast.js URL regex validates match', fastSrc.includes('urlMatch') || !fastSrc.includes('game.url.match'));
 }
 
+// ---- ogario.v4.js: built-in bot client integration ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+
+    // playerPosition buffer uses opcode 11 (not 7, which conflicts with sendMode)
+    check('ogario: playerPosition buffer exists', ogSrc.includes('playerPosition(x, y)'));
+    check('ogario: playerPosition uses opcode 11', /playerPosition\(x,\s*y\)\s*\{[^}]*writeUint8\(11\)/.test(ogSrc));
+
+    // Mouse position sending uses connectionBots.send() (not broken readyState check)
+    check('ogario: mouse position uses connectionBots.send', ogSrc.includes('window.connectionBots.send(window.buffers.mousePosition('));
+    check('ogario: no broken readyState===1 check on connectionBots', !ogSrc.includes('window.connectionBots.readyState === 1'));
+
+    // Player position sent alongside mouse position
+    check('ogario: player position sent with mouse', ogSrc.includes('window.connectionBots.send(window.buffers.playerPosition('));
+
+    // displayPartyBots shows button in FFA/EXP/BR
+    check('ogario: displayPartyBots shows in FFA', ogSrc.includes('legendmod.gameMode === ":ffa"') && ogSrc.includes('.show()'));
+    check('ogario: displayPartyBots shows in EXP', ogSrc.includes('legendmod.gameMode === ":experimental"'));
+    check('ogario: displayPartyBots shows in BR', ogSrc.includes('legendmod.gameMode === ":battleroyale"'));
+
+    // Start bots gate allows FFA/EXP/BR
+    const startGate = ogSrc.match(/getElementById\('startBots'\).*?addEventListener.*?(\{[\s\S]*?\n\s*\})\)/);
+    check('ogario: start bots gate includes FFA', ogSrc.includes('":ffa"') && ogSrc.includes('":experimental"') && ogSrc.includes('":battleroyale"'));
+
+    // playerPosInterval on userBots
+    check('ogario: userBots has playerPosInterval', ogSrc.includes('playerPosInterval'));
+
+    // onclose cleans up playerPosInterval
+    check('ogario: onclose clears playerPosInterval', ogSrc.includes('clearInterval(window.userBots.playerPosInterval)'));
+
+    // Menu background uses fixed attachment for shared background
+    check('ogario: menu bg uses background-attachment:fixed', ogSrc.includes('background-attachment:fixed'));
+    check('ogario: menu bg uses viewport sizing', ogSrc.includes('100vw 100vh'));
+}
+
+// ---- Both servers accept opcode 11 (alias for opcode 7) ----
+{
+    const serverSrc = fs.readFileSync(path.join(botsDir, 'server.js'), 'utf8');
+    const fastSrc = fs.readFileSync(path.join(botsDir, 'server-fast.js'), 'utf8');
+    check('server.js accepts opcode 11', serverSrc.includes('case 11:'));
+    check('server-fast.js accepts opcode 11', fastSrc.includes('case 11:'));
+}
+
 console.log('\n' + (fail ? 'FAIL: ' + fail + ' failure(s)' : 'ALL PASS'));
 process.exit(fail ? 1 : 0);

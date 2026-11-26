@@ -655,6 +655,7 @@ new WebSocket.Server({
                 user.mouseY = reader.readInt32()
                 break
             case 7:
+            case 11:
                 // Player's absolute world position (for AI bots to orbit near the player)
                 user.playerX = reader.readInt32()
                 user.playerY = reader.readInt32()
