@@ -41135,6 +41135,8 @@ function thelegendmodproject() {
                 window._lmRecLive = defaultmapsettings.recordReplays !== false;
                 if (window._lmRecLive) {
                     window.RecordedProtocol[window.temporaryRecordedProtocol]._lm = { v: 1, t0: Date.now(), ct: 0, st: 0, t: [], s: [], e: [], c: [] };
+                    /* the server's protocol, so a replay is read the same way whatever its file is called */
+                    if (window.LM_REPLAY_PROTOCOLS && window.LM_REPLAY_PROTOCOLS.indexOf(this.serverType) !== -1) window.RecordedProtocol[window.temporaryRecordedProtocol]._lm.p = this.serverType;
                 }
                 window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)
                 window.RecordedArenasSpecifications[window.temporaryRecordedProtocol] = [Date.now(), application.gameMode, application.region, $("#nick").val()]
@@ -44781,6 +44783,10 @@ function thelegendmodproject() {
 
                         LM.serverType =
                             'expandingland';
+                        /* the recording of this connection is an Expanding Land one too (a proxied
+                         * address started it as 'private'); never set from a replay */
+                        var _lmRecA = window._lmRecLive && window.RecordedProtocol ? window.RecordedProtocol[window.temporaryRecordedProtocol] : null;
+                        if (_lmRecA && _lmRecA._lm) _lmRecA._lm.p = 'expandingland';
 
                         this.gameMode =
                             ':expandingland';
@@ -86015,6 +86021,41 @@ function _lmEvReplay(on, reason, start) {
     } else window.LMEvents.emit(name, { reason: String(reason || 'stopped') });
 }
 window._lmEvReplay = _lmEvReplay;
+/* Replay packets are read as the server they were recorded on sends them (legendmod.serverType).
+ * The replay URL imsolo.pro.replay made every replay Imsolo, so agar.io cell updates were read
+ * with the MultiOgar layout (flag 0x80 = cell type + party code instead of the extended flags
+ * byte) and food/ejected cells broke them. New recordings store the type (._lm.p, written to
+ * files and the Replay Studio library as the Studio data's p); for older ones it is guessed from
+ * the key (that server's token, or the file name, which a renamed file fools). */
+var LM_REPLAY_PROTOCOLS = Object.freeze(['agario', 'imsolo', 'agar2', 'garix', 'sigmally', 'senpa', 'deltio', 'expandingland', 'private']);
+window.LM_REPLAY_PROTOCOLS = LM_REPLAY_PROTOCOLS;
+var LM_REPLAY_HOSTS = [['agario', ['agario', 'agar.io']], ['imsolo', ['imsolo.pro']], ['agar2', ['agar2.com']], ['garix', ['garix.io']],
+    ['sigmally', ['sigmally.com']], ['senpa', ['senpa.io', 'mi.com']], ['deltio', ['delt.io']], ['expandingland', ['legendmod.ml', 'expanding.land']]];
+/* info.unsure: the key names none of the servers (the type is only the default) */
+function lmReplayGuessType(key, info) {
+    var k = String(key == null ? '' : key).replace(/\.lm$/i, '').toLowerCase();
+    for (var i = 0; i < LM_REPLAY_HOSTS.length; i++) {
+        for (var j = 0; j < LM_REPLAY_HOSTS[i][1].length; j++) if (k.indexOf(LM_REPLAY_HOSTS[i][1][j]) !== -1) return LM_REPLAY_HOSTS[i][0];
+    }
+    if (info) info.unsure = true;
+    return /[.:\/]/.test(k) ? 'private' : 'agario';
+}
+/* arr: the recording; the type stored with it (or chosen in Replay Studio) wins over the name */
+function lmReplaySourceType(key, arr, info) {
+    var s = arr && arr._lmSide, m = arr && arr._lm;
+    var p = s && s.p ? s.p : m && m.p;
+    if (LM_REPLAY_PROTOCOLS.indexOf(p) !== -1) return p;
+    return lmReplayGuessType(key, info);
+}
+function lmReplayApplyType(key) {
+    var info = {}, t = lmReplaySourceType(key, window.RecordedProtocol && window.RecordedProtocol[key], info);
+    legendmod.serverType = t;
+    legendmod.connectionIntegrity = t === 'agario' || t === 'deltio';
+    if (info.unsure && typeof console.info === 'function') console.info('[Replays] The server is not saved in this replay and its name does not show it: read as ' + t + ' (Replay Studio can change it)');
+    return t;
+}
+window.lmReplayGuessType = lmReplayGuessType;
+window.lmReplayApplyType = lmReplayApplyType;
 /* The replay connection (token replay^<key>) is open: empty the world and let Replay Studio
  * (ogario/modules/replaystudio.js) play the recording. */
 function playReplayLM(temp, startAt) {
@@ -86025,22 +86066,7 @@ function playReplayLM(temp, startAt) {
         legendmod.playingReplayRecord = 0
 
         legendmod.playingReplayServer = temp
-        /* Parse the packets as the server they were recorded on (the key is that server's
-         * token or file name). The replay URL imsolo.pro.replay made every replay Imsolo, so
-         * agar.io cell updates were read with the MultiOgar layout (flag 0x80 = cell type +
-         * party code instead of the extended flags byte) and food/ejected cells broke them. */
-        var _lmRk = String(temp).replace(/\.lm$/i, '').toLowerCase();
-        var _lmRt = (_lmRk.indexOf('agario') !== -1 || _lmRk.indexOf('agar.io') !== -1) ? 'agario'
-            : _lmRk.indexOf('imsolo.pro') !== -1 ? 'imsolo'
-                : _lmRk.indexOf('agar2.com') !== -1 ? 'agar2'
-                    : _lmRk.indexOf('garix.io') !== -1 ? 'garix'
-                        : _lmRk.indexOf('sigmally.com') !== -1 ? 'sigmally'
-                            : (_lmRk.indexOf('senpa.io') !== -1 || _lmRk.indexOf('mi.com') !== -1) ? 'senpa'
-                                : _lmRk.indexOf('delt.io') !== -1 ? 'deltio'
-                                    : (_lmRk.indexOf('legendmod.ml') !== -1 || _lmRk.indexOf('expanding.land') !== -1) ? 'expandingland'
-                                        : /[.:\/]/.test(_lmRk) ? 'private' : 'agario';
-        legendmod.serverType = _lmRt
-        legendmod.connectionIntegrity = _lmRt === 'agario' || _lmRt === 'deltio'
+        lmReplayApplyType(temp)
         /* Replay Studio drives the playback it started itself (real packet times, stepping, seeking) */
         if (window.LMReplayStudio && typeof window.LMReplayStudio.takeOver === 'function' && window.LMReplayStudio.takeOver(temp, startAt)) return;
         /* joined some other way (a typed replay^ token, the recent servers list): the Studio

@@ -152,6 +152,7 @@ const coreSrc = {
   events: cut4('/* LMEvents: hooks for user scripts', 'window.spects = window.spects'),
   reset: cut4('function lmReplayResetWorld() {', 'window.lmReplayResetWorld = lmReplayResetWorld;'),
   ev: cut4('function _lmEvReplay(on, reason, start) {', 'window._lmEvReplay = _lmEvReplay;'),
+  types: cut4('var LM_REPLAY_PROTOCOLS = ', '/* The replay connection (token replay^<key>)'),
   play: cut4('function playReplayLM(temp, startAt) {', '/* Replay controls (hotkeys'),
   rf: cut4('        replayfunctions() {\n', '        closeConnection() {'),
   death: cut4('        onPlayerDeath() {\n', '        findOwnedVanillaSkin() {')
@@ -228,7 +229,7 @@ function driverEnv(packets, opts) {
   env.l = l;
   /* LMEvents: the game emits spawn / death from the packets and massUpdate every frame while playing */
   vm.createContext(g);
-  vm.runInContext(coreSrc.events + '\n' + coreSrc.reset + '\nwindow.lmReplayResetWorld = lmReplayResetWorld;\n' + coreSrc.ev + '\nwindow._lmEvReplay = _lmEvReplay;\n' + coreSrc.play + '\nwindow.playReplayLM = playReplayLM;', g);
+  vm.runInContext(coreSrc.events + '\n' + coreSrc.reset + '\nwindow.lmReplayResetWorld = lmReplayResetWorld;\n' + coreSrc.ev + '\nwindow._lmEvReplay = _lmEvReplay;\n' + coreSrc.types + '\n' + coreSrc.play +'\nwindow.playReplayLM = playReplayLM;', g);
   ['spawn', 'death', 'massUpdate'].forEach(n => g.LMEvents.on(n, d => env.ctxLog.push(n + ':' + d.context)));
   ['replayStart', 'replayStop'].forEach(n => g.LMEvents.on(n, d => env.log.push(n + (d.reason ? ':' + d.reason : ''))));
   env.spawned = () => g.LMEvents.emit('spawn', { time: clock });

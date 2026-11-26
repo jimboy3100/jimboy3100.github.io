@@ -30,6 +30,20 @@
     var MAX_PACKETS = 200000;
     var MAX_SPAN = 24 * 3600 * 1000;  /* longest believable recording */
     var EV_TYPES = 'dskvpf';
+    /* Size budgets for replays read from .lm files and ?replay= links (lib.LIMITS; scripts may
+     * change them). A recording stops at 90000 packets or 100 MiB of packets (lmRecRoom in
+     * ogario.v4.js); older versions had no byte limit, hence the room above that. A .lm file is
+     * 2 to 6 times its packet bytes (3.7 for extras/jim.lm, about 2.1 for compressed agar.io
+     * packets, 6 when every byte is a control byte written as \u00XX), so a 100 MiB recording is
+     * a file of about 200-370 MiB; 512 MiB is also about the longest text a browser tab holds. */
+    var LIMITS = {
+        packets: MAX_PACKETS,          /* packets in one replay */
+        packetBytes: 4 * 1048576,      /* one packet (a live WebSocket message is far smaller) */
+        bytes: 256 * 1048576,          /* all packets of one replay together */
+        fileBytes: 512 * 1048576       /* a .lm file, or a link's download, as text */
+    };
+    function limitErr(what) { var e = new Error('replay too large: ' + what); e.lmBig = true; return e; }
+    function staleErr() { var e = new Error('replaced by a newer request'); e.lmStale = true; return e; }
 
     function isNum(v) { return typeof v === 'number' && isFinite(v); }
 
@@ -129,12 +143,20 @@
         side.c = meta && meta.c ? meta.c.slice() : [];
         if (!side.t) delete side.t;
         if (extra && extra.start > 0) side.start = extra.start;
+        if (protoOk(meta && meta.p)) side.p = meta.p;
         return side;
     }
+    /* p: the protocol of the server the packets came from (legendmod.serverType when it was
+     * recorded, one of window.LM_REPLAY_PROTOCOLS in ogario.v4.js). Not the replay connection,
+     * which is never the original server. Files without it (older ones) guess it from the name. */
+    function protoOk(p) {
+        var list = window.LM_REPLAY_PROTOCOLS;
+        return typeof p === 'string' && !!list && list.indexOf(p) !== -1;
+    }
     /* validates an untrusted sidecar (files can come from links); returns
-     * { t: absolute times or null, est, s, e, c, start } */
+     * { t: absolute times or null, est, s, e, c, start, p } */
     function readSidecar(o, n) {
-        var r = { t: null, est: true, s: [], e: [], c: [], start: 0 };
+        var r = { t: null, est: true, s: [], e: [], c: [], start: 0, p: '' };
         if (!o || typeof o !== 'object' || Array.isArray(o) || o.lmrs !== 1) return r;
         var t = decodeTimes(o.t, n);
         if (t) { r.t = t; r.est = false; }
@@ -142,7 +164,16 @@
         r.e = cleanFlat(o.e, 3, 60000, 1);
         r.c = cleanFlat(o.c, 3, 150000);
         if (Number.isInteger(o.start) && o.start > 0 && o.start < n) r.start = o.start;
+        if (protoOk(o.p)) r.p = o.p;
         return r;
+    }
+    /* readSidecar's form (an in-memory recording) back to the stored form */
+    function sideOut(rs, n) {
+        var o = { lmrs: 1, s: rs.s || [], e: rs.e || [], c: rs.c || [] };
+        if (rs.t && !rs.est) o.t = encodeTimes(rs.t, n);
+        if (rs.start > 0) o.start = rs.start;
+        if (protoOk(rs.p)) o.p = rs.p;
+        return o;
     }
     function findSidecar(spec) {
         if (!Array.isArray(spec)) return null;
@@ -335,6 +366,9 @@
     function packPackets(list) {
         var total = 0, i;
         for (i = 0; i < list.length; i++) total += list[i] ? list[i].byteLength : 0;
+        /* checked before the copy is allocated */
+        if (list.length > LIMITS.packets) throw limitErr('packets');
+        if (total > LIMITS.bytes) throw limitErr('bytes');
         var buf = new Uint8Array(total), lens = new Uint32Array(list.length), off = 0;
         for (i = 0; i < list.length; i++) {
             if (!list[i]) continue;
@@ -347,8 +381,13 @@
     /* each packet gets its own buffer, like live ones (some handlers read data.buffer) */
     function unpackPackets(buf, lens) {
         if (!(buf instanceof ArrayBuffer) || !(lens instanceof ArrayBuffer) || lens.byteLength % 4) return null;
-        var L = new Uint32Array(lens), out = new Array(L.length), off = 0;
-        for (var i = 0; i < L.length; i++) {
+        var L = new Uint32Array(lens), off = 0, i, sum = 0;
+        /* the lengths must fit the stored bytes before any packet is copied */
+        if (L.length > LIMITS.packets) return null;
+        for (i = 0; i < L.length; i++) sum += L[i];
+        if (sum > buf.byteLength) return null;
+        var out = new Array(L.length);
+        for (i = 0; i < L.length; i++) {
             if (off + L[i] > buf.byteLength) return null;
             out[i] = new DataView(buf.slice(off, off + L[i]));
             off += L[i];
@@ -363,8 +402,14 @@
         return out;
     }
     function strView(str) {
-        var buf = new ArrayBuffer(str.length), v = new Uint8Array(buf);
-        for (var i = 0; i < str.length; i++) v[i] = str.charCodeAt(i) & 255;
+        var n = str.length, buf = new ArrayBuffer(n), v = new Uint8Array(buf);
+        for (var i = 0; i < n; i++) {
+            var c = str.charCodeAt(i);
+            /* every character is one byte: a bigger one means the file is not a replay (it was
+             * cut to its low byte, which turned the text into other packets) */
+            if (c > 255) throw new Error('packet byte ' + i + ' out of range');
+            v[i] = c;
+        }
         return new DataView(buf);
     }
     /* game info for a file: [date, mode, region, nick, skins JSON, ..., Studio data] */
@@ -386,16 +431,114 @@
         return parts;
     }
     function parseLmText(text) {
+        if (text.length > LIMITS.fileBytes) throw limitErr('file');
         var a = JSON.parse(text);
-        if (!Array.isArray(a) || a.length < 2 || a.length > MAX_PACKETS + 1) throw new Error('not a replay file');
-        var n = a.length - 1, packets = new Array(n);
-        for (var i = 0; i < n; i++) {
+        if (!Array.isArray(a) || a.length < 2) throw new Error('not a replay file');
+        if (a.length - 1 > LIMITS.packets) throw limitErr('packets');
+        var n = a.length - 1, packets = new Array(n), i, total = 0;
+        /* all packets are checked before their bytes are allocated */
+        for (i = 0; i < n; i++) {
             if (typeof a[i] !== 'string') throw new Error('packet ' + i + ' is not a string');
-            packets[i] = strView(a[i]);
+            if (a[i].length > LIMITS.packetBytes) throw limitErr('packet ' + i);
+            total += a[i].length;
         }
+        if (total > LIMITS.bytes) throw limitErr('bytes');
+        for (i = 0; i < n; i++) packets[i] = strView(a[i]);
         var spec = Array.isArray(a[n]) ? a[n] : [];
         return { packets: packets, spec: spec, side: readSidecar(findSidecar(spec), n) };
     }
+
+    /* ?replay= links: an http(s) address of a .lm file (https from an https page, where the
+     * browser blocks http anyway) without a user name or password in it. Files on any site
+     * load (links point to several), when that site allows it (CORS). { url, name } or null. */
+    function replayUrl(raw, page) {
+        raw = String(raw == null ? '' : raw).trim();
+        /* jimboy3100.github.io answers with a 301 that has no CORS header; www.legendmod.ml allows the load */
+        raw = raw.replace(/^(https?:)?\/\/jimboy3100\.github\.io\//i, 'https://www.legendmod.ml/');
+        if (!raw || raw.length > 2048 || typeof URL !== 'function') return null;
+        var u;
+        try { u = new URL(raw, page || undefined); } catch (e) { return null; }
+        var pageHttps = !page || /^https:/i.test(page);
+        if (!(u.protocol === 'https:' || (u.protocol === 'http:' && !pageHttps))) return null;
+        if (u.username || u.password) return null;
+        var lmName = function (s) {
+            var x;
+            try { x = decodeURIComponent(String(s || '')); } catch (e) { return ''; }
+            x = x.split(/[\/\\]/).pop();
+            return /\.lm$/i.test(x) ? x : '';
+        };
+        var name = lmName(u.pathname);
+        /* a download address that names the file in its query (?file=match.lm) */
+        if (!name && u.searchParams) u.searchParams.forEach(function (v) { if (!name) name = lmName(v); });
+        if (!name) return null;
+        return { url: u.href, name: cleanText(name, 100) };
+    }
+    /* a download's text, refused as soon as it passes max bytes (Content-Length first, then
+     * while it streams); cur() false = the download was replaced: it stops */
+    function readCapped(r, max, cur) {
+        var len = parseInt(r.headers && typeof r.headers.get === 'function' ? r.headers.get('content-length') : '', 10);
+        if (len > max) return Promise.reject(limitErr('download'));
+        var rd = r.body && typeof r.body.getReader === 'function' && typeof TextDecoder === 'function' ? r.body.getReader() : null;
+        if (!rd) return Promise.resolve(r.text()).then(function (t) { if (t.length > max) throw limitErr('download'); return t; });
+        var dec = new TextDecoder('utf-8'), parts = [], got = 0;
+        var stop = function (e) { try { rd.cancel(); } catch (x) { } throw e; };
+        var next = function () {
+            return rd.read().then(function (c) {
+                if (!cur()) return stop(staleErr());
+                if (c.done) { parts.push(dec.decode()); return parts.join(''); }
+                got += c.value.byteLength;
+                if (got > max) return stop(limitErr('download'));
+                parts.push(dec.decode(c.value, { stream: true }));
+                return next();
+            });
+        };
+        return next();
+    }
+    /* one link download at a time: a newer load() or cancel() makes the older one stale (its
+     * result is dropped even when it still arrives) and aborts its request.
+     * o: { fetch(url, opts), done(text, job), fail(error, job), limit() } */
+    function urlLoader(o) {
+        var id = 0, ctl = null, busy = false;
+        var api = {
+            load: function (job) {
+                api.cancel();
+                var my = id, cur = function () { return my === id; };
+                ctl = typeof AbortController === 'function' ? new AbortController() : null;
+                busy = true;
+                var opt = { cache: 'no-store' };
+                if (ctl) opt.signal = ctl.signal;
+                /* started at once: the request it replaces is already aborted */
+                var req;
+                try { req = Promise.resolve(o.fetch(job.url, opt)); } catch (e) { req = Promise.reject(e); }
+                return req.then(function (r) {
+                    if (!cur()) throw staleErr();
+                    if (!r || !r.ok) throw new Error('HTTP ' + (r && r.status));
+                    return readCapped(r, o.limit(), cur);
+                }).then(function (text) {
+                    if (!cur()) return false;
+                    busy = false; ctl = null;
+                    o.done(text, job);
+                    return true;
+                }).catch(function (e) {
+                    if (!cur() || (e && (e.name === 'AbortError' || e.lmStale))) return false;
+                    busy = false; ctl = null;
+                    o.fail(e, job);
+                    return false;
+                });
+            },
+            cancel: function () {
+                id++;
+                if (ctl) { try { ctl.abort(); } catch (e) { } }
+                ctl = null; busy = false;
+            },
+            pending: function () { return busy; }
+        };
+        return api;
+    }
+    /* what a finished link download does: 'watch' plays it at once (a link opened at start or
+     * from the menu, or another replay playing); 'ask' while a live game is played: the Studio
+     * shows it and Play asks before leaving the game, like any replay started while playing */
+    function urlPlan(l, replaying) { return l && l.play && !replaying ? 'ask' : 'watch'; }
 
     function fmtTime(ms) {
         ms = Math.max(0, ms || 0);
@@ -418,7 +561,9 @@
         detectBookmarks: detectBookmarks, peakMass: peakMass, cutInterval: cutInterval, cutSide: cutSide,
         validateRecord: validateRecord, parseTags: parseTags, sortRecords: sortRecords, searchRecords: searchRecords,
         packPackets: packPackets, unpackPackets: unpackPackets, lmFileParts: lmFileParts, parseLmText: parseLmText,
-        fileSpec: fileSpec, fmtTime: fmtTime, serverLabel: serverLabel
+        fileSpec: fileSpec, fmtTime: fmtTime, serverLabel: serverLabel,
+        LIMITS: LIMITS, strView: strView, sideOut: sideOut, replayUrl: replayUrl, readCapped: readCapped,
+        urlLoader: urlLoader, urlPlan: urlPlan
     };
 
     var RS = window.LMReplayStudio = { lib: lib };
@@ -432,7 +577,9 @@
     var TK = 'modules.replaystudio.';
     /* the backwards play, colour filter and ?replay= link texts (developers/i18n/src/pkg-rp.json) */
     var TK2 = { playRev: 1, fx: 1, fxNone: 1, fxGrey: 1, fxSepia: 1, fxHue: 1, urlFailed: 1, urlNotLm: 1 };
-    function T(k, v) { return typeof window.lmT === 'function' ? window.lmT((TK2[k] ? 'pkg.rp.' : TK) + k, v) : k; }
+    /* size limit, link check and source server texts (developers/i18n/src/pkg-n56.json) */
+    var TK3 = { tooBig: 1, urlBad: 1, proto: 1, protoGuess: 1, protoPriv: 1 };
+    function T(k, v) { return typeof window.lmT === 'function' ? window.lmT((TK3[k] ? 'pkg.n56.' : TK2[k] ? 'pkg.rp.' : TK) + k, v) : k; }
     /* K('play'): a label read again after a language change (see relabels) */
     function K(k) { return function () { return T(k); }; }
     function dirNow() { return window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr'; }
@@ -1201,9 +1348,15 @@
         var spec = (window.RecordedArenasSpecifications || {})[key] || [];
         var side;
         if (arr._lm) side = makeSidecar(arr._lm, arr.length);
-        else if (arr._lmSide && arr._lmSide.t) side = { lmrs: 1, t: encodeTimes(arr._lmSide.t, arr.length), s: arr._lmSide.s, e: arr._lmSide.e, c: arr._lmSide.c, start: arr._lmSide.start || undefined };
+        else if (arr._lmSide) side = sideOut(arr._lmSide, arr.length);
         else side = { lmrs: 1, s: [], e: [], c: [] };
-        var entry = buildEntry({ packets: arr.slice(0, arr.length), spec: spec, side: side, key: key, name: defaultName(key, spec) });
+        var entry;
+        try { entry = buildEntry({ packets: arr.slice(0, arr.length), spec: spec, side: side, key: key, name: defaultName(key, spec) }); } catch (e) {
+            /* over the size budget (LIMITS): nothing was allocated */
+            arr._lmSaving = false;
+            importError(e);
+            return;
+        }
         return libPut(entry.meta, entry.data).then(function (m) {
             arr._lmSaving = false;
             /* a recording still in progress can be saved again later (it keeps growing) */
@@ -1261,7 +1414,7 @@
         if (!arr) return;
         var spec = (window.RecordedArenasSpecifications || {})[key] || [];
         var side = arr._lm ? makeSidecar(arr._lm, arr.length)
-            : arr._lmSide && !arr._lmSide.est ? { lmrs: 1, t: encodeTimes(arr._lmSide.t, arr.length), s: arr._lmSide.s, e: arr._lmSide.e, c: arr._lmSide.c, start: arr._lmSide.start || undefined } : null;
+            : arr._lmSide && (!arr._lmSide.est || arr._lmSide.p) ? sideOut(arr._lmSide, arr.length) : null;
         download(lmFileParts(arr.slice(0, arr.length), spec, side), String(key).replace(/\.lm$/i, ''));
     }
     function exportLibrary(meta) {
@@ -1271,15 +1424,23 @@
             download(lmFileParts(packets, o.data.spec, o.data.side), meta.name);
         }, libError);
     }
+    /* a file or link that could not be opened: told, the game goes on */
+    function importError(e) {
+        console.warn('[Replay Studio] replay not opened:', e && e.message);
+        toast('error', e && e.lmBig ? T('tooBig') : T('badFile'));
+    }
     /* a .lm file's text: into memory and the library; returns the recording's key or null */
     function importText(text, name) {
-        var parsed;
-        try { parsed = parseLmText(String(text || '')); } catch (e) { toast('error', T('badFile')); return null; }
+        var parsed, side, entry;
         name = String(name || 'replay.lm');
-        var side = parsed.side.t ? { lmrs: 1, t: encodeTimes(parsed.side.t), s: parsed.side.s, e: parsed.side.e, c: parsed.side.c, start: parsed.side.start || undefined } : { lmrs: 1, s: parsed.side.s, e: parsed.side.e, c: parsed.side.c, start: parsed.side.start || undefined };
+        try {
+            parsed = parseLmText(String(text || ''));
+            side = sideOut(parsed.side, parsed.packets.length);
+            /* the library copy first: over the budget nothing is kept in memory */
+            entry = buildEntry({ packets: parsed.packets, spec: parsed.spec, side: side, key: name, name: name.replace(/\.lm$/i, ''), clip: parsed.side.start > 0 });
+        } catch (e) { importError(e); return null; }
         var key = addMemory(name, parsed.packets, parsed.spec, side, null);
         if (!key) return null;
-        var entry = buildEntry({ packets: parsed.packets, spec: parsed.spec, side: side, key: name, name: name.replace(/\.lm$/i, ''), clip: parsed.side.start > 0 });
         libPut(entry.meta, entry.data).then(function (m) {
             var a = recArr(key);
             if (a) a._lmLib = m.id;
@@ -1289,6 +1450,8 @@
     }
     function importFile(file) {
         if (!file) return;
+        /* refused before the whole file is read into memory */
+        if (file.size > LIMITS.fileBytes) { importError(limitErr('file')); return; }
         var fr = new FileReader();
         fr.onload = function () {
             var key = importText(fr.result, file.name);
@@ -1300,32 +1463,92 @@
         fr.readAsText(file, 'UTF-8');
     }
     /* ?replay=<.lm URL>&replayStart=<packet>&replayEnd=<packet> (the links on the website):
-     * downloads the file, plays it from Start and pauses at End */
+     * downloads the file, plays it from Start and pauses at End. Only the newest link counts:
+     * a newer one, closing the Studio or watching another replay cancels the download. */
+    var urlJob = urlLoader({
+        fetch: function (u, o) { return fetch(u, o); },
+        limit: function () { return LIMITS.fileBytes; },
+        done: function (text, job) {
+            var key = importText(text, job.name);
+            if (key) urlOpen(key, job.start, job.end);
+        },
+        fail: function (e, job) {
+            console.warn('[Replay Studio] ' + job.url + ':', e);
+            if (e && e.lmBig) importError(e); else toast('error', T('urlFailed'));
+        }
+    });
     function loadUrl(url, start, end) {
-        /* jimboy3100.github.io answers with a 301 that has no CORS header; www.legendmod.ml allows the load */
-        url = String(url || '').replace(/^(https?:)?\/\/jimboy3100\.github\.io\//i, 'https://www.legendmod.ml/');
-        if (url.indexOf('.lm') === -1) { toast('warning', T('urlNotLm')); return; }
+        var u = replayUrl(url, location.href);
+        if (!u) { toast('warning', String(url || '').indexOf('.lm') === -1 ? T('urlNotLm') : T('urlBad')); return; }
         if (typeof fetch !== 'function') { toast('error', T('urlFailed')); return; }
-        fetch(url, { cache: 'no-store' }).then(function (r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.text();
-        }).then(function (text) {
-            var key = importText(text, url.split(/[?#]/)[0].split('/').pop() || 'replay.lm');
-            if (!key) return;
-            open(key);
-            setTab('player');
-            var last = REC.n - 1, a = parseInt(start, 10), b = parseInt(end, 10);
-            a = a >= 0 && a <= last ? a : 0;
-            b = b > a && b <= last ? b : 0;
-            if (b) { P.inMs = tAt(a + 1); P.outMs = tAt(b + 1); }
-            watch(key, a);
-            /* after watch(): the new playback clears an End left from before */
+        urlJob.load({ url: u.url, name: u.name, start: start, end: end });
+    }
+    function urlOpen(key, start, end) {
+        open(key);
+        setTab('player');
+        var last = REC.n - 1, a = parseInt(start, 10), b = parseInt(end, 10);
+        a = a >= 0 && a <= last ? a : 0;
+        b = b > a && b <= last ? b : 0;
+        if (b) { P.inMs = tAt(a + 1); P.outMs = tAt(b + 1); }
+        if (urlPlan(LM(), inReplay()) === 'ask') {
+            /* the download finished during a live game: it is not left by itself; this is the
+             * usual notice, and Play (within a few seconds) watches from Start */
+            P.pos = a;
             P.stopAt = b ? b + 1 : 0;
-            if (window.application && typeof application.onSpectate === 'function') { try { application.onSpectate(); } catch (e) { } }
-        }).catch(function (e) {
-            console.warn('[Replay Studio] ' + url + ':', e);
-            toast('error', T('urlFailed'));
-        });
+            leaveAt = 0;
+            startReplay(key, a, true, true);
+            ui();
+            return;
+        }
+        watch(key, a);
+        /* after watch(): the new playback clears an End left from before */
+        P.stopAt = b ? b + 1 : 0;
+        if (window.application && typeof application.onSpectate === 'function') { try { application.onSpectate(); } catch (e) { } }
+    }
+    /* The server a recording comes from decides how its packets are read (ogario.v4.js
+     * lmReplaySourceType). New recordings store it; for older files it is guessed from the
+     * name, which a renamed file fools: the list shows the guess and lets the player choose. */
+    var PROTO_NAMES = { agario: 'Agar.io', expandingland: 'Expanding Land', imsolo: 'Imsolo', agar2: 'Agar2', garix: 'Garix', sigmally: 'Sigmally', senpa: 'Senpa', deltio: 'Delt.io' };
+    function protoName(p) { return p === 'private' ? T('protoPriv') : PROTO_NAMES[p] || p; }
+    function recProto(r) {
+        var s = r && r.side, p = s && (s.p || (s.live && s.live.p));
+        return protoOk(p) ? p : '';
+    }
+    function protoUi() {
+        if (!W || !W.proto) return;
+        var list = window.LM_REPLAY_PROTOCOLS || [];
+        var guess = REC && typeof window.lmReplayGuessType === 'function' ? window.lmReplayGuessType(REC.key) : '';
+        W.proto.style.display = REC && list.length ? '' : 'none';
+        if (!REC) return;
+        var first = T('protoGuess', [protoName(guess)]), sig = REC.key + '|' + first + '|' + T('proto');
+        if (W.protoSig !== sig) {
+            W.protoSig = sig;
+            while (W.proto.firstChild) W.proto.removeChild(W.proto.firstChild);
+            var o = el('option', '', first);
+            o.value = '';
+            W.proto.appendChild(o);
+            list.forEach(function (k) { var x = el('option', '', protoName(k)); x.value = k; W.proto.appendChild(x); });
+            W.proto.title = T('proto');
+            W.proto.setAttribute('aria-label', T('proto'));
+        }
+        var p = recProto(REC);
+        if (W.proto.value !== p) W.proto.value = p;
+    }
+    /* the player's choice ('' = guess from the name); kept in saves, exports and clips made after it */
+    function setProto(v) {
+        if (!REC || (v && !protoOk(v))) return;
+        REC.side.p = v;
+        if (REC.side.live) { if (v) REC.side.live.p = v; else delete REC.side.live.p; }
+        if (active() && typeof window.lmReplayApplyType === 'function') {
+            window.lmReplayApplyType(REC.key);
+            /* the packets so far were read the other way: read them again up to here */
+            var at = P.pos, go = P.playing || !!(P.ff && P.ff.resume);
+            /* starting states kept at "clear all" packets were read the other way too */
+            if (P.cpRec) { P.cpRec = {}; P.cpN = 0; }
+            seekTo(0, false);
+            seekTo(at, go);
+        }
+        ui();
     }
     /* clip [In, Out] of the shown recording */
     function makeClip() {
@@ -1348,6 +1571,8 @@
         var cs = cutSide(REC.side, cut.base, cut.base, cut.endT);
         var side = { lmrs: 1, t: encodeTimes(cut.times), s: cs.s, e: cs.e, c: cs.c };
         if (cut.start > 0) side.start = cut.start;
+        /* a clip comes from the same server */
+        if (recProto(REC)) side.p = recProto(REC);
         var packets = cut.idx.map(function (i) { return REC.arr[i]; });
         var spec = REC.spec.filter(function (v) { return !(v && typeof v === 'object'); }).slice();
         if (+spec[0] > 0) spec[0] = +spec[0] + Math.round(P.inMs);
@@ -1555,6 +1780,10 @@
         W.fx.value = OPT.fx;
         W.fx.addEventListener('change', function () { OPT.fx = FX.indexOf(W.fx.value) !== -1 ? W.fx.value : ''; saveOpt(); applyFx(); });
         r3.appendChild(W.fx);
+        /* the server the replay was recorded on (see protoUi) */
+        W.proto = el('select', 'margin-right:6px;max-width:150px;');
+        W.proto.addEventListener('change', function () { setProto(W.proto.value); });
+        r3.appendChild(W.proto);
         W.chips = el('div', 'display:flex;flex:1 1 auto;');
         r3.appendChild(W.chips);
         pv.appendChild(r3);
@@ -1623,6 +1852,8 @@
     function close() {
         if (W) W.style.display = 'none';
         if (uiTimer) { clearInterval(uiTimer); uiTimer = 0; }
+        /* a ?replay= download still running would open the Studio again when it arrives */
+        urlJob.cancel();
         /* closing ends the playback session (see dispose): the stopped replay world stays shown,
          * still as a replay, until a server is joined */
         dispose('stopped');
@@ -1661,6 +1892,7 @@
             W.playB.disabled = true;
             W.revB.disabled = true;
             W.backB.style.display = inReplay() ? '' : 'none';
+            protoUi();
             return;
         }
         refreshRec();
@@ -1693,6 +1925,7 @@
         W.revB.title = rev ? T('pause') : T('playRev');
         W.revB.classList.toggle('on', rev);
         if (W.fx.value !== OPT.fx) W.fx.value = OPT.fx;
+        protoUi();
         if (String(P.speed) !== W.spd.value) W.spd.value = String(P.speed);
         if (String(instantSecs()) !== W.secs.value) W.secs.value = String(instantSecs());
         W.backB.style.display = inReplay() ? '' : 'none';
@@ -1820,6 +2053,9 @@
 
     /* entry point used by ogario.v4.js (window.lmReplayStudio) and the hotkeys */
     RS.run = function (action, arg) {
+        /* another replay asked for (Death recap, instant replay, a replay^ token): a pending
+         * ?replay= download no longer is what the player wants */
+        if (action === 'instant' || action === 'watch') urlJob.cancel();
         if (action === 'instant') return instant();
         if (action === 'toggle') return isOpen() ? close() : open(arg);
         if (action === 'close') return close();
