@@ -537,7 +537,9 @@
         } catch (e) { }
         d[k] = v;
         var sl = $('#' + k + '-slider');
-        if (sl.length && sl.closest('#theme').length) { sl.val(v); $('#' + k + '-value').text(v); }
+        /* the change moves the slider's knob (rangeslider) to the value: with val() alone the knob
+         * stayed where it was (the Theme tab's auto-save skips it, St._lmThemeQuiet) */
+        if (sl.length && sl.closest('#theme').length) { sl.val(v).trigger('change'); $('#' + k + '-value').text(v); }
         var box = $('#theme input[type=text]#' + k + ', #theme select#' + (SELECT_IDS[k] || k));
         if (box.length) box.val(v);
         if (k === 'customCursor') {
