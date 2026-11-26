@@ -655,6 +655,22 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
     check('N4 real gamepad file: the old setup moved, the stored buttons are the ones in use, no old list left', n === 1 && !('profiles' in st) && st.map[1] === 'hk-tripleSplit' && G.getMap()[1] === 'hk-tripleSplit' && J(oldHeld(e)) === '[]');
   }
 }
+{
+  /* Rename (the profile's Rename button): the name of another profile gets a number like a new
+   * profile does; until 3.689 two profiles could both be called "Alpha" */
+  const e = bootApply();
+  e.ls.setItem('lmSettingsProfiles', J([{ id: 'a1', name: 'Alpha', data: { s: { showMass: true } } }, { id: 'b1', name: 'Beta', data: { s: { showMass: false } } }]));
+  const names = () => JSON.parse(e.ls.getItem('lmSettingsProfiles')).map(p => p.name).join(',');
+  e.c.prompt = () => 'alpha';
+  e.P.core.act('rename', 'b1');
+  check('rename: to the name of another profile gives a numbered name', names() === 'Alpha,alpha 2');
+  e.c.prompt = () => 'Gamma';
+  e.P.core.act('rename', 'b1');
+  check('rename: a free name is taken as typed', names() === 'Alpha,Gamma');
+  e.c.prompt = () => 'ALPHA';
+  e.P.core.act('rename', 'a1');
+  check('rename: a profile may change the case of its own name', names() === 'ALPHA,Gamma');
+}
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');

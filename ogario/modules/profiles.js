@@ -1621,7 +1621,9 @@
         } else if (a === 'rename' && p) {
             var nn = cleanName(window.prompt(tx('renamePrompt'), p.name));
             if (!nn || nn === p.name) return;
-            p.name = nn;
+            /* the name of another profile gets a number, as a new profile does (two "Alpha" could
+             * not be told apart in the lists, the compare and the automatic switching) */
+            p.name = uniqueName(nn, list.filter(function (x) { return x !== p; }));
             p.updated = now;
             saveProfiles(list);
         } else if (a === 'dup' && p) {
