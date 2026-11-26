@@ -38,21 +38,27 @@ function findChrome() {
 }
 const chrome = findChrome();
 if (!chrome) { console.log('chrome not found: set CHROME_PATH'); process.exit(2); }
-const port = 9300 + Math.floor(Math.random() * 500);
 fs.mkdirSync(out, { recursive: true });
 const profile = path.join(out, 'profile');
+/* --remote-debugging-port=0: Chrome takes a free port and writes it to DevToolsActivePort in this
+ * run's own profile, so runs in parallel never talk to each other's Chrome (a random fixed port
+ * could belong to another run's browser, whose pages load another checkout) */
+const portFile = path.join(profile, 'DevToolsActivePort');
+try { fs.rmSync(portFile, { force: true }); } catch (e) { console.log('chrome did not start: the profile is in use by another Chrome (' + profile + ')'); process.exit(2); }
 
 const types = { '.js': 'application/javascript', '.css': 'text/css', '.html': 'text/html', '.json': 'application/json',
   '.png': 'image/png', '.gif': 'image/gif', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.mp3': 'audio/mpeg',
   '.ogg': 'audio/ogg', '.wav': 'audio/wav', '.woff': 'font/woff', '.woff2': 'font/woff2', '.ttf': 'font/ttf', '.ico': 'image/x-icon', '.wasm': 'application/wasm' };
 
-const proc = spawn(chrome, ['--headless=new', '--remote-debugging-port=' + port, '--user-data-dir=' + profile,
+const proc = spawn(chrome, ['--headless=new', '--remote-debugging-port=0', '--user-data-dir=' + profile,
   '--no-first-run', '--no-default-browser-check', '--window-size=1600,900', '--autoplay-policy=no-user-gesture-required',
   /* the browser language: English unless SMOKE_LANG says otherwise (the mod follows it when no language is chosen) */
   '--lang=' + (process.env.SMOKE_LANG || 'en-US'),
   ...(process.platform === 'linux' ? ['--no-sandbox', '--disable-dev-shm-usage', '--enable-unsafe-swiftshader'] : []),
   'about:blank'], { stdio: 'ignore' });
 proc.on('error', e => { console.log('chrome failed to start:', e.message); process.exit(2); });
+let procExit = null;
+proc.on('exit', c => { procExit = c; });
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let id = 0; const pending = new Map(); const errors = []; const logs = [];
@@ -69,11 +75,20 @@ function probeMark(name) {
 }
 
 (async () => {
-  let ver;
-  for (let i = 0; i < 50; i++) { try { ver = await (await fetch('http://127.0.0.1:' + port + '/json/version')).json(); break; } catch (e) { await sleep(200); } }
-  if (!ver) { console.log('chrome did not start'); proc.kill(); process.exit(2); }
+  /* DevToolsActivePort: line 1 the port, line 2 the browser's own /devtools/browser/<id> path */
+  let port = 0, browserPath = '', ver;
+  for (let i = 0; i < 150 && !port && procExit === null; i++) {
+    try { const l = fs.readFileSync(portFile, 'utf8').split(/\r?\n/); if (Number(l[0]) > 0 && l[1]) { port = Number(l[0]); browserPath = l[1].trim(); } } catch (e) { }
+    if (!port) await sleep(200);
+  }
+  if (!port) { console.log('chrome did not start' + (procExit !== null ? ' (it exited, code ' + procExit + ')' : ': no DevToolsActivePort in ' + profile)); proc.kill(); process.exit(2); }
+  for (let i = 0; i < 50 && procExit === null; i++) { try { ver = await (await fetch('http://127.0.0.1:' + port + '/json/version')).json(); break; } catch (e) { await sleep(200); } }
+  if (!ver) { console.log('chrome did not start: no answer on DevTools port ' + port); proc.kill(); process.exit(2); }
+  /* the browser on that port must be the one this run started, not another run's */
+  if (!String(ver.webSocketDebuggerUrl || '').endsWith(browserPath)) { console.log('chrome did not start: DevTools port ' + port + ' belongs to another Chrome (' + ver.webSocketDebuggerUrl + ', expected ' + browserPath + ')'); proc.kill(); process.exit(2); }
   const targets = await (await fetch('http://127.0.0.1:' + port + '/json/list')).json();
   const page = targets.find(t => t.type === 'page');
+  if (!page) { console.log('chrome did not start: no page target on DevTools port ' + port); proc.kill(); process.exit(2); }
   const ws = new WebSocket(page.webSocketDebuggerUrl);
   const send = (method, params = {}) => new Promise(res => { const i = ++id; pending.set(i, res); ws.send(JSON.stringify({ id: i, method, params })); });
   ws.onmessage = async ev => {
