@@ -26593,9 +26593,7 @@ function thelegendmodproject() {
                     }
                 }
 
-                if (window.addKeyListeners) {
-                    window.addKeyListeners();
-                }
+                /* agar.io's own key handler is not installed (window.addKeyListeners below spectateBlind) */
 
                 if (
                     defaultmapsettings.autoHideFood
@@ -26720,9 +26718,7 @@ function thelegendmodproject() {
 
             this.play();
             this.hideMenu();
-            if (window.addKeyListeners) {
-                window.addKeyListeners();
-            }
+            /* agar.io's own key handler is not installed (window.addKeyListeners below spectateBlind) */
             if (defaultmapsettings.autoHideFood) {
                 ogario.showFood = true
             };
@@ -26734,9 +26730,7 @@ function thelegendmodproject() {
             this.onJoin();
             this.sendPlayerJoin();
             this.hideMenu();
-            if (window.addKeyListeners) {
-                window.addKeyListeners();
-            }
+            /* agar.io's own key handler is not installed (window.addKeyListeners below spectateBlind) */
             if (defaultmapsettings.autoHideFood) {
                 ogario.showFood = false;
             }
@@ -82027,6 +82021,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
     }
     document.onkeyup = function (event) {
+        try { event._lmKeyupDone = true; } catch (e) { }
         var pressedKey = hotkeysSetup.getPressedKey(event);
         var heldKey = _lmHeldByCode[event.keyCode];
         delete _lmHeldByCode[event.keyCode];
@@ -82051,11 +82046,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         }
     }
+    /* A window that keeps keyup events from reaching the document (the Command Centre opened
+     * with Ctrl+K, dialogs with text boxes) left a key the game had taken held: Ctrl stayed
+     * down for the hotkeys, and a hold command (macro feed) kept running until that key was
+     * pressed and released again. Such a keyup is released here after the event is done. */
+    window.addEventListener('keyup', function (event) {
+        if (!_lmHeldByCode[event.keyCode]) return;
+        setTimeout(function () {
+            if (!event._lmKeyupDone && typeof document.onkeyup === 'function') document.onkeyup(event);
+        }, 0);
+    }, true);
     /*
      * A key held while the window loses focus never gets its keyup, so its
      * keyUp action (e.g. stopping macro feed) never ran and keyBlind stayed set.
+     * Hiding the tab (Ctrl+Tab, Alt+Tab, a phone app switch) releases them too.
      */
-    window.addEventListener('blur', function () {
+    function _lmReleaseHeldInputs() {
         for (var heldKey in keyBlind) {
             if (!keyBlind[heldKey]) continue;
             var heldCommand = hotkeys[heldKey];
@@ -82072,7 +82078,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* the keyUps already ran above: a later keyup of that key (e.g. typing in chat)
          * must not run them again */
         _lmHeldByCode = {};
-    });
+    }
+    window.addEventListener('blur', _lmReleaseHeldInputs);
+    document.addEventListener('visibilitychange', function () { if (document.hidden) _lmReleaseHeldInputs(); });
     var _lmMouseHeld = {};
     /* mouse button -> command whose keyDown it ran; cleared on mouseup */
     var _lmMouseCmdHeld = {};
@@ -82300,6 +82308,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
         //ogarhusettingsImportExportMobile();
     };
     spectateBlind();
+    /* agar.io's own key handler: when agar.io's page ran before the loader replaced it (loaders
+     * before extension 1.8.4 / userscript 1.8.5), its window.addKeyListeners stayed in the window,
+     * and Play, Spectate and agar.io's leftover code installed it next to Legend Mod's hotkeys:
+     * one Space sent two splits and one W two ejects, whatever keys the player had bound.
+     * Legend Mod's hotkeys handle every key. */
+    window.addKeyListeners = function () { };
 
     function Node(view, offset) {
         this.view = view;
