@@ -77,7 +77,7 @@ function grabVar(src, name) {
 const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim',
     'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch',
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing',
-    'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers'];
+    'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages'];
 const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX'];
 
 function rendererFactory(src) {
@@ -385,6 +385,42 @@ function pageLib() {
                     if (d) { res.differing++; if (d > res.max) res.max = d; }
                 }
             }
+            /* the atlas full (no more pages): a new label keeps its own texture; once slots are
+             * freed it is copied into the atlas (_lmTextAdopt) and must hold the same texels */
+            if (typeof R._lmTextAdopt === 'function') {
+                var at = R._lmTextAtlas, fillers = [], late = null, lf = ['L000000', '700 150px Ubuntu', '#ff8040', '#000000', 6];
+                at.alloc.maxPages = at.alloc.pages.length;
+                for (var k = 0; k < 400 && !late; k++) {
+                    var fe = R.getOrCreateTextTexture('L' + (100000 + k), lf[1], lf[2], lf[3], lf[4]);
+                    if (fe && fe.tex) late = { e: fe, text: 'L' + (100000 + k) };
+                    else if (fe) fillers.push('L' + (100000 + k) + '|' + lf[1] + '|' + lf[2] + '|' + lf[3] + '|' + lf[4]);
+                }
+                res.adoptFallback = !!late;
+                if (late) {
+                    /* the first labels of that size give their slots back */
+                    for (var q = 0; q < 6 && q < fillers.length; q++) {
+                        var old = R.glTextCache.get(fillers[q]);
+                        R._lmTextRelease(old);
+                        R._lmTextBytes -= old.bytes;
+                        R.glTextCache.delete(fillers[q]);
+                    }
+                    var e2 = R.getOrCreateTextTexture(late.text, lf[1], lf[2], lf[3], lf[4]);
+                    res.adopted = e2 === late.e && !!e2.slot && !e2.tex;
+                    if (res.adopted) {
+                        var sl2 = e2.slot;
+                        var got2 = read(function () { gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, at.tex, 0, sl2.page); }, 2048, 1024);
+                        R._lmRasterText(late.text, lf[1], lf[2], lf[3], lf[4]);
+                        gl.bindTexture(gl.TEXTURE_2D, own);
+                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, R._textCanvas);
+                        gl.bindTexture(gl.TEXTURE_2D, null);
+                        var want2 = read(function () { gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, own, 0); }, e2.w, e2.h);
+                        res.adoptDiffering = 0;
+                        for (var y2 = 0; y2 < e2.h; y2++) for (var x2 = 0; x2 < e2.w * 4; x2++) {
+                            if (got2[((sl2.y + y2) * 2048 + sl2.x) * 4 + x2] !== want2[y2 * e2.w * 4 + x2]) res.adoptDiffering++;
+                        }
+                    }
+                }
+            }
         } finally { gl.texSubImage3D = t3; }
         res.canvasReads = canvasReads;
         res.glError = gl.getError();
@@ -392,8 +428,41 @@ function pageLib() {
         gl.getExtension('WEBGL_lose_context').loseContext();
         return res;
     }
+    /* A dense world's labels (the bench's 1500 big cells: about a thousand mass texts at the
+     * fixed 100 px raster and hundreds of nicks in many sizes, 17 pages of texels) need more than the 16 pages the
+     * atlas was held to: every label must still get a slot (no texture and draw call of its own),
+     * within the page limit of the memory budget. capPages: the old limit, for comparison. */
+    function atlasCapacity(src, defaults, capPages) {
+        var o = setup(src, defaults, { scale: 0.35, jelly: true }, []), R = o.R, gl = R.gl;
+        var res = { labels: 0, own: 0, pages: 0, layers: 0, maxPages: 0, texels: 0 };
+        if (typeof R._lmTextAtlasGet !== 'function') { gl.getExtension('WEBGL_lose_context').loseContext(); return null; }
+        R._lmTextFrame = 5;
+        var a = R._lmTextAtlasGet();
+        if (capPages) a.alloc.maxPages = Math.min(a.alloc.maxPages, capPages);
+        var sizes = [16, 18, 20, 23, 26, 29, 33, 37, 41, 47, 53, 59, 67, 75, 84];
+        for (var i = 0; i < 450; i++) {
+            var e = R.getOrCreateTextTexture('Player ' + i, '700 ' + sizes[i % sizes.length] + 'px Ubuntu', '#ffffff', '#000000', Math.round(sizes[i % sizes.length] * 0.1));
+            res.labels++;
+            if (!e || !e.slot) res.own++;
+            if (e) res.texels += e.w * e.h;
+        }
+        /* mass texts until the labels hold 17 pages of texels: more than 16 pages can take */
+        for (var m = 0; m < 3000 && res.texels < 17 * a.w * a.h; m++) {
+            var me = R._lmMassTexture({ id: m }, String(1000 + (m * 7) % 9000), '700 100px Ubuntu', '#ffffff', '#000000', 10);
+            res.labels++;
+            if (!me || !me.slot) res.own++;
+            if (me) res.texels += me.w * me.h;
+        }
+        res.pages = R._lmTextAtlas.alloc.pages.length;
+        res.layers = R._lmTextAtlas.layers;
+        res.maxPages = R._lmTextAtlas.alloc.maxPages;
+        res.glError = gl.getError();
+        gl.getExtension('WEBGL_lose_context').loseContext();
+        return res;
+    }
     return {
         atlasUploads: atlasUploads,
+        atlasCapacity: atlasCapacity,
         compare: async function (oldSrc, newSrc, defaults, cfg, scene) {
             var a = setup(oldSrc, defaults, cfg, scene), b = setup(newSrc, defaults, cfg, scene);
             /* two frames: textures are made in the first, the second is the steady state */
@@ -545,6 +614,18 @@ async function main() {
         const au = await evaluate('__glb.atlasUploads(__glbNew, __glbDefaults)');
         console.log('     label atlas: ' + au.inAtlas + '/' + au.labels + ' labels in the atlas, texels differing from their own texture ' + au.differing + ' (max ' + au.max + '), canvas reads by texSubImage3D ' + au.canvasReads);
         check('label atlas: every label in the atlas, the same texels as its own texture, no GL error', au.inAtlas === au.labels && au.differing === 0 && au.glError === 0);
+        const capOld = await evaluate('__glb.atlasCapacity(__glbNew, __glbDefaults, 16)');
+        const cap = await evaluate('__glb.atlasCapacity(__glbNew, __glbDefaults, 0)');
+        if (cap) {
+            console.log('     dense labels: ' + cap.labels + ' labels, ' + cap.own + ' with their own texture, ' + cap.pages + ' pages used (' + cap.layers + ' allocated, limit ' + cap.maxPages + '), ' + (cap.texels / 2097152).toFixed(1) + ' pages of label texels' +
+                (capOld ? '; held to 16 pages: ' + capOld.own + ' with their own texture' : ''));
+            check('label atlas: a dense world\'s labels all get a slot (more than 16 pages, within the memory budget), no GL error',
+                cap.own === 0 && cap.pages > 16 && cap.layers <= cap.maxPages && cap.glError === 0);
+        }
+        if (au.adoptFallback !== undefined) {
+            console.log('     full atlas: a new label kept its own texture ' + au.adoptFallback + ', moved into the atlas once slots were freed ' + au.adopted + ', texels differing ' + au.adoptDiffering);
+            check('label atlas full: the label keeps its own texture, then goes into a freed slot with the same texels', au.adoptFallback && au.adopted && au.adoptDiffering === 0 && au.glError === 0);
+        }
         check('label atlas: no texSubImage3D from a canvas (a GPU wait per label)', au.canvasReads === 0);
         if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); failed++; }
         if (opt('--out', null)) fs.writeFileSync(path.join(opt('--out'), 'glbatch-diff.json'), JSON.stringify(stats, null, 2));

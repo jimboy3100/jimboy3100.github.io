@@ -151,7 +151,7 @@ Prints the max/mean pixel difference per case. `--bench` adds a table for 100/50
 with labels on (`--bodies`, `--frames`, `--repeat`); `on*` rows change the point counts in every
 frame. `--profile N` prints the CPU self time of the working copy's frames.
 It also checks the label atlas uploads: each label's atlas slot must hold exactly the texels its
-own texture would get, and no `texSubImage3D` may read a canvas (that read waits for the GPU).
+own texture would get, and no `texSubImage3D` may read a canvas (that read waits for the GPU). With the atlas full, a new label keeps its own texture and, once slots are freed, must go into the atlas with the same texels.
 Skipped (exit 0) without Chrome. `renderbatch.js` checks the index lists and the jelly batch against
 a recording stub WebGL context in Node, over many frames of a changing world.
 

@@ -21925,7 +21925,22 @@ function thelegendmodproject() {
      * change. Pages are filled lowest first, so the last ones empty out and can be given back.
      */
     function lmTextAtlasNew(w, h, maxPages) {
-        return { w: w, h: h, maxPages: maxPages, pages: [] };
+        /* freed: slots given back so far (a label left without a slot tries again after one) */
+        return { w: w, h: h, maxPages: maxPages, pages: [], freed: 0 };
+    }
+    /* layers to allocate for n pages: powers of two up to 16, then steps of about a quarter, so a
+     * big atlas is grown (and copied) only a few times and holds at most a quarter more than it uses */
+    function lmTextAtlasStep(n, max) {
+        var l = 1;
+        while (l < n && l < 16) l *= 2;
+        while (l < n) l += Math.max(4, Math.pow(2, Math.floor(Math.log(l) / Math.LN2)) / 4);
+        return Math.min(l, max);
+    }
+    /* pages the atlas may have: twice the text + mass byte budgets in w x h RGBA pages, within the
+     * GPU's layer limit (it was also held to 16 pages: dense scenes filled them and every label
+     * after that was drawn with its own texture and draw call) */
+    function lmTextAtlasMaxPages(budget, w, h, maxLayers) {
+        return Math.max(2, Math.min(maxLayers || 256, Math.ceil(2 * (budget + budget / 2) / (w * h * 4))));
     }
     /* a slot { page, x, y, cw, h, shelf } for a w x h label, or null (too big, or all pages full);
      * may add a page (at.pages.length grows: the caller makes the texture array bigger) */
@@ -21975,6 +21990,7 @@ function thelegendmodproject() {
         if (i + 2 < fr.length && fr[i] + fr[i + 1] === fr[i + 2]) { fr[i + 1] += fr[i + 3]; fr.splice(i + 2, 2); }
         if (i >= 2 && fr[i - 2] + fr[i - 1] === fr[i]) { fr[i - 1] += fr[i + 1]; fr.splice(i, 2); }
         sh.used--;
+        at.freed = (at.freed || 0) + 1;
         var page = at.pages[slot.page];
         while (page && page.shelves.length && !page.shelves[page.shelves.length - 1].used) {
             page.top = page.shelves.pop().y;
@@ -69712,6 +69728,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * key is always the least recently used (O(1) eviction). */
                 this.glTextCache.delete(cacheKey);
                 this.glTextCache.set(cacheKey, cached);
+                if (cached.tex) this._lmTextAdopt(cached);
                 return cached;
             }
 
@@ -69835,8 +69852,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var budget = this._lmTextBudget || (this._lmTextBudget = lmTextTexBudget(window.navigator && Number(window.navigator.deviceMemory)));
             var W = 2048, H = 1024;
             var maxLayers = Number(gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS)) || 256;
-            var pages = Math.max(2, Math.min(maxLayers, 16, Math.ceil(2 * (budget + budget / 2) / (W * H * 4))));
-            a = this._lmTextAtlas = { gl: gl, tex: null, layers: 0, w: W, h: H, alloc: lmTextAtlasNew(W, H, pages) };
+            var pages = lmTextAtlasMaxPages(budget, W, H, maxLayers);
+            a = this._lmTextAtlas = { gl: gl, tex: null, layers: 0, w: W, h: H, alloc: lmTextAtlasNew(W, H, pages), reclaimFrame: -1, adoptFreed: -1, adoptFrame: -1, adoptN: 0 };
             return a;
         },
         /* the atlas texture with room for layers pages; the pages in use are copied over on the
@@ -69890,22 +69907,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (a && entry.atlas === a) lmTextAtlasFree(a.alloc, slot);
                 slot = entry.slot = null;
             }
-            if (a && !slot) {
-                slot = lmTextAtlasAlloc(a.alloc, w, h);
-                if (slot && a.alloc.pages.length > a.layers) {
-                    var want = 1;
-                    while (want < a.alloc.pages.length) want *= 2;
-                    want = Math.min(want, a.alloc.maxPages);
-                    if (!this._lmTextAtlasResize(a, want)) {
-                        /* no GPU memory for more pages: keep the ones there are */
-                        lmTextAtlasFree(a.alloc, slot);
-                        slot = null;
-                        a.alloc.pages.length = Math.max(a.layers, lmTextAtlasLayers(a.alloc));
-                        a.alloc.maxPages = a.alloc.pages.length;
-                        if (!a.layers) this._lmTextAtlasOff = true;
-                    }
-                }
-            }
+            if (a && !slot) slot = this._lmTextAtlasSlot(a, w, h, true);
             if (slot) {
                 if (entry.tex) {
                     gl.deleteTexture(entry.tex);
@@ -69932,6 +69934,105 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
             }
             gl.bindTexture(gl.TEXTURE_2D, null);
+        },
+        /* a slot for a w x h label (the texture array made bigger when it opens a new page), or
+         * null; with reclaim, a full atlas first gives up the slots of labels not drawn lately */
+        _lmTextAtlasSlot(a, w, h, reclaim) {
+            var slot = lmTextAtlasAlloc(a.alloc, w, h);
+            if (!slot && reclaim) slot = this._lmTextAtlasReclaim(a, w, h);
+            if (slot && a.alloc.pages.length > a.layers) {
+                var want = lmTextAtlasStep(a.alloc.pages.length, a.alloc.maxPages);
+                if (!this._lmTextAtlasResize(a, want)) {
+                    /* no GPU memory for more pages: keep the ones there are */
+                    lmTextAtlasFree(a.alloc, slot);
+                    slot = null;
+                    a.alloc.pages.length = Math.max(a.layers, lmTextAtlasLayers(a.alloc));
+                    a.alloc.maxPages = a.alloc.pages.length;
+                    if (!a.layers) this._lmTextAtlasOff = true;
+                }
+            }
+            return slot;
+        },
+        /*
+         * Every page is in use and full: frees the slots of labels not drawn in this or the last
+         * frame (least recently drawn nicks first, then the mass texts of cells gone from view)
+         * whose shelf can take a w x h label, until it fits; 16 at most. Each map is walked once
+         * per frame (a walk goes on where the last call stopped) and a search that found nothing
+         * is not repeated in the same frame, so a full atlas of labels on screen costs one walk
+         * a frame. The slot, or null (the label then keeps its own texture).
+         */
+        _lmTextAtlasReclaim(a, w, h) {
+            var frame = this._lmTextFrame || 0;
+            if (a.reclaimFrame === frame || w > a.w || h > a.h) return null;
+            if (a.walkFrame !== frame) {
+                a.walkFrame = frame;
+                a.walkCache = this.glTextCache && this.glTextCache.size ? this.glTextCache.entries() : null;
+                a.walkMass = this._lmMassTex && this._lmMassTex.size ? this._lmMassTex.entries() : null;
+            }
+            var keep = frame - 1, maxH = h + (h >> 3) + 2, slot = null, n = 0;
+            for (var m = 0; m < 2 && !slot && n < 16; m++) {
+                var it = m ? a.walkMass : a.walkCache;
+                if (!it) continue;
+                var map = m ? this._lmMassTex : this.glTextCache;
+                for (var r = it.next(); ; r = it.next()) {
+                    if (r.done) {
+                        if (m) a.walkMass = null;
+                        else a.walkCache = null;
+                        break;
+                    }
+                    var e = r.value[1];
+                    if (e.frame >= keep) {
+                        /* the nick cache is least recently drawn first: the rest were drawn lately too */
+                        if (!m) {
+                            a.walkCache = null;
+                            break;
+                        }
+                        continue;
+                    }
+                    var sl = e.slot, sh = sl && sl.shelf;
+                    if (!sh || e.atlas !== a || sl.freed || sh.h < h || sh.h > (sh.used > 1 ? maxH : 2 * h)) continue;
+                    this._lmTextRelease(e);
+                    if (m) this._lmMassBytes -= e.bytes || 0;
+                    else this._lmTextBytes -= e.bytes || 0;
+                    map.delete(r.value[0]);
+                    slot = lmTextAtlasAlloc(a.alloc, w, h);
+                    if (slot || ++n >= 16) break;
+                }
+            }
+            if (!slot) a.reclaimFrame = frame;
+            return slot;
+        },
+        /* A label drawn with its own texture (the atlas was full when it was made) goes into the
+         * atlas once slots have been freed: copied there on the GPU (the same texels) and its own
+         * texture deleted. Up to 8 a frame; none is tried again until another slot is freed. */
+        _lmTextAdopt(e) {
+            var a = this._lmTextAtlas, gl = this.gl, frame = this._lmTextFrame || 0;
+            if (!a || a.gl !== gl || !a.tex || !e.tex || e.slot || a.adoptFreed === a.alloc.freed || this._lmTextAtlasOff) return;
+            if (a.adoptFrame !== frame) {
+                a.adoptFrame = frame;
+                a.adoptN = 0;
+            }
+            if (a.adoptN >= 8) return;
+            a.adoptN++;
+            var slot = this._lmTextAtlasSlot(a, e.w, e.h, false);
+            if (!slot) {
+                a.adoptFreed = a.alloc.freed;
+                return;
+            }
+            if (!a.upFb) a.upFb = gl.createFramebuffer();
+            var prev = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, a.upFb);
+            gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, e.tex, 0);
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
+            gl.copyTexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, slot.x, slot.y, slot.page, 0, 0, e.w, e.h);
+            gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, null, 0);
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, prev);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.deleteTexture(e.tex);
+            e.tex = null;
+            e.slot = slot;
+            e.atlas = a;
         },
         /*
          * Copies the text on _textCanvas (w x h) into its atlas slot: the canvas goes into a scratch
@@ -70109,6 +70210,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var due = lmMassTexDue(entry, text, style, t0, this._lmMassSpent || 0, 2, this._lmMassForced || 0, 6, this._lmMassBusy);
             if (!due) {
                 if (!entry || entry.txt !== text || entry.style !== style) this._lmMassDeferred = (this._lmMassDeferred || 0) + 1;
+                if (entry && entry.tex) this._lmTextAdopt(entry);
                 return entry || null;
             }
             if (due === 2) this._lmMassForced = (this._lmMassForced || 0) + 1;
@@ -70197,9 +70299,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* every 60 frames: atlas pages above the last one in use are given back */
             var atl = this._lmTextAtlas;
             if (atl && atl.gl === gl && atl.tex && frame % 60 === 0) {
-                var used = lmTextAtlasLayers(atl.alloc), want = 1;
-                while (want < used) want *= 2;
-                if (want < atl.layers) {
+                var used = lmTextAtlasLayers(atl.alloc), want = lmTextAtlasStep(used, atl.alloc.maxPages);
+                /* only when it frees a quarter or more: no copy every 60 frames at a step's edge */
+                if (want * 4 <= atl.layers * 3) {
                     atl.alloc.pages.length = used;
                     this._lmTextAtlasResize(atl, want);
                 }

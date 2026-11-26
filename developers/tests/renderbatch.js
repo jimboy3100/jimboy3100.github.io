@@ -214,7 +214,15 @@ check('after the renderer is set up again (context restore) every index is uploa
 
 /* ---- label atlas: the shelf allocator ---- */
 const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').replace(/var R = [\s\S]*$/, '') +
-    'return { New: lmTextAtlasNew, Alloc: lmTextAtlasAlloc, Free: lmTextAtlasFree, Layers: lmTextAtlasLayers };')({});
+    'return { New: lmTextAtlasNew, Alloc: lmTextAtlasAlloc, Free: lmTextAtlasFree, Layers: lmTextAtlasLayers, Step: lmTextAtlasStep, MaxPages: lmTextAtlasMaxPages };')({});
+{
+    const steps = [1, 2, 3, 5, 9, 16, 17, 21, 25, 33, 41].map((n) => A.Step(n, 1000));
+    check('atlas layers: powers of two up to 16, then steps of a quarter (' + steps.join(',') + ')', steps.join() === '1,2,4,8,16,16,20,24,28,40,48' && A.Step(30, 24) === 24);
+    const MB = 1048576;
+    check('atlas pages: twice the text + mass budgets (64 MB: 24 pages, no longer held to 16), within the GPU layer limit, at least 2',
+        A.MaxPages(64 * MB, 2048, 1024, 2048) === 24 && A.MaxPages(64 * MB, 2048, 1024, 20) === 20 && A.MaxPages(32 * MB, 2048, 1024, 2048) === 12 &&
+        A.MaxPages(16 * MB, 2048, 1024, 2048) === 6 && A.MaxPages(1 * MB, 2048, 1024, 2048) === 2);
+}
 {
     const arng = makeRng(99);
     const at = A.New(2048, 1024, 6);
@@ -316,6 +324,66 @@ const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').repl
     T._lmTextPassAt = 0;
     for (let k = 0; k < 20 && (T.glTextCache.size || (T._lmMassTex && T._lmMassTex.size)); k++) T._lmTextIdle();
     check('idle: every label freed and the atlas texture deleted', !T.glTextCache.size && !T._lmMassTex.size && T._lmTextAtlas === null && T._lmTextBytes === 0 && T._lmMassBytes === 0);
+
+    /* a full atlas: slots of labels not drawn in this or the last frame are given to new ones;
+     * a label left with its own texture goes into the atlas once a slot is free */
+    const T2 = new Function('return (' + F.factory + ')')()(env2);
+    Object.assign(T2, { gl: tg, glTextProgram: {}, glTextVAO: {} });
+    T2.initWebGLTextAtlas(tg, () => ({}), {});
+    Object.assign(T2, { glTextCache: new Map(), glTextCacheMaxSize: 100000, _lmTextBytes: 0, _lmMassTex: null, _lmMassBytes: 0, _lmTextFrame: 0, _lmTextIdleTimer: 1,
+        _lmTextBudget: 1 << 30, _textCanvas: { width: 0, height: 0 }, scale: 1, camX: 0, camY: 0, canvasWidth: 1920, canvasHeight: 1080,
+        _textCtx: T._textCtx, getLegendWorldAttachedRenderPoint: (x, y) => ({ x, y }) });
+    const nick = (i) => T2.getOrCreateTextTexture('n' + String(i).padStart(3, '0'), Fn, '#fff', '#000', 10);
+    T2._lmTextFrameBegin();
+    nick(0);
+    T2._lmTextAtlas.alloc.maxPages = 2;
+    const made = [];
+    let fallback = null;
+    for (let i = 0; i < 400 && !fallback; i++) { const e = nick(i); if (e.tex) fallback = { i, e }; else made.push(e); }
+    check('full atlas of labels drawn this frame: nothing is evicted, the new label keeps its own texture', !!fallback && made.length > 50 && made.every((e) => e.slot && !e.slot.freed) && T2.glTextCache.size === made.length + 1);
+    T2._lmTextFrameBegin();
+    for (let i = 10; i < 20; i++) nick(i);
+    T2._lmTextFrameBegin();
+    for (let i = 0; i < 10; i++) nick(i);
+    const before = T2.glTextCache.size;
+    log.length = 0;
+    const fresh = T2.getOrCreateTextTexture('zzzz', Fn, '#fff', '#000', 10);
+    const sumBytes = () => { let b = 0; T2.glTextCache.forEach((e) => (b += e.bytes)); return b; };
+    check('full atlas: a new label takes the slot of the least recently drawn one (not drawn this or last frame)', !!fresh.slot && !fresh.tex && !T2.glTextCache.has('n020|' + Fn + '|#fff|#000|10') &&
+        T2.glTextCache.size === before && T2._lmTextBytes === sumBytes());
+    let keptRecent = true;
+    for (let i = 0; i < 20; i++) { const e = T2.glTextCache.get('n' + String(i).padStart(3, '0') + '|' + Fn + '|#fff|#000|10'); if (!e || !e.slot || e.slot.freed) keptRecent = false; }
+    check('full atlas: labels drawn this or last frame keep their slots', keptRecent);
+    /* the label with its own texture: no free slot yet (the reclaimed one was taken) */
+    log.length = 0;
+    nick(fallback.i);
+    check('label with its own texture and no free slot: stays as it is', !!fallback.e.tex && !fallback.e.slot && log.indexOf('copy 0') < 0 && log.indexOf('copy 1') < 0);
+    const gone = T2.glTextCache.get('n021|' + Fn + '|#fff|#000|10');
+    T2._lmTextRelease(gone);
+    T2._lmTextBytes -= gone.bytes;
+    T2.glTextCache.delete('n021|' + Fn + '|#fff|#000|10');
+    log.length = 0;
+    const back = nick(fallback.i);
+    check('a slot freed: the label with its own texture is copied into the atlas on the GPU and its texture deleted', back === fallback.e && !!back.slot && !back.tex &&
+        log.some((l) => /^copy /.test(l)) && log.some((l) => /^del /.test(l)) && !log.some((l) => l === 'img'));
+    /* mass texts of cells gone from view give their slots too */
+    T2._lmMassTex = new Map();
+    T2._lmTextFrameBegin();
+    for (let i = 0; i < 20; i++) nick(i);
+    const cells = [];
+    let massSlots = 0;
+    for (let i = 0; i < 40; i++) { const c = { id: i }; cells.push(c); const m = T2._lmMassTexture(c, String(1000 + i), Fn, '#fff', '#000', 10); if (m && m.slot) massSlots++; }
+    T2._lmTextFrameBegin();
+    T2._lmTextFrameBegin();
+    /* every nick drawn in this frame: only the mass texts are stale */
+    T2.glTextCache.forEach((e) => (e.frame = T2._lmTextFrame));
+    const massBefore = T2._lmMassTex.size;
+    let fresh2 = 0;
+    for (let i = 0; i < 6; i++) { const e = T2.getOrCreateTextTexture('m' + i, Fn, '#fff', '#000', 10); if (e.slot) fresh2++; }
+    let massBytes = 0;
+    T2._lmMassTex.forEach((e) => (massBytes += e.bytes));
+    check('full atlas: mass texts of cells not drawn lately give their slots (' + massSlots + ' mass slots, ' + fresh2 + '/6 new labels in the atlas, pool ' + massBefore + ' -> ' + T2._lmMassTex.size + ')',
+        massSlots === 40 && fresh2 === 6 && T2._lmMassTex.size < massBefore && T2._lmMassTex.size >= massBefore - 6 && T2._lmMassBytes === massBytes && T2._lmTextBytes === sumBytes());
 }
 
 if (failed) { console.log(failed + ' check(s) failed'); process.exit(1); }
