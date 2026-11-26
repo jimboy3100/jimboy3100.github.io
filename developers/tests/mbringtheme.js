@@ -214,6 +214,36 @@ const undoOk = pc.LMProfiles.undo();
 const themeAfterUndo = JSON.parse(pc.localStorage.getItem('ogarioThemeSettings'));
 check('profiles: the Undo of an old gameplay set brings its ring colour back and keeps the rest of the saved theme', undoOk && PD.mbRingColorP1 === '#3c3d3e' && themeAfterUndo.bgColor === bgBefore && Object.keys(themeAfterUndo).length > 20);
 
+// ── Update / Duplicate of an old gameplay-only set (its theme part is only the ring colour patch)
+pc.confirm = () => true;
+const storedProfile = id => JSON.parse(pc.localStorage.getItem('lmSettingsProfiles')).filter(p => p.id === id)[0];
+const ringKeysOnly = t => !!t && Object.keys(t).length > 0 && Object.keys(t).every(k => KEYS.indexOf(k) >= 0);
+pc.localStorage.setItem('lmSettingsProfiles', JSON.stringify([
+  { id: 'oldgp', name: 'Old gameplay', data: { s: { showMass: true, mbRingColorP1: '#123456', mbRingColorP2: '#654321' } } },
+  { id: 'oldring', name: 'Old rings', data: { s: { mbRingColorP1: '#111111' } } },
+  { id: 'full', name: 'Full', data: { s: { showMass: true }, t: { bgColor: '#000000', mbRingColorP1: '#222222' } } }
+]));
+PD.mbRingColorP1 = '#a1b2c3'; PD.mbRingColorP2 = '#c3b2a1'; PS.mbRingColorP1 = '#a1b2c3'; PS.mbRingColorP2 = '#c3b2a1';
+PD.bgColor = '#0f1e2d';
+P.act('update', 'oldgp');
+const upd = storedProfile('oldgp');
+check('profiles: Update of an old gameplay-only set keeps it without a theme (only its ring colours)', upd && ringKeysOnly(upd.data.t) && !('bgColor' in upd.data.t));
+check('profiles: Update stores the current ring colours in that patch', upd && upd.data.t.mbRingColorP1 === '#a1b2c3' && upd.data.t.mbRingColorP2 === '#c3b2a1');
+check('profiles: Update captures the gameplay settings, without the ring copy', upd && upd.data.s && upd.data.s.showMass === PS.showMass && !('mbRingColorP1' in upd.data.s));
+P.act('update', 'oldring');
+const updR = storedProfile('oldring');
+check('profiles: Update of an old set of one ring colour keeps just that colour', updR && updR.data.t && Object.keys(updR.data.t).join() === 'mbRingColorP1' && updR.data.t.mbRingColorP1 === '#a1b2c3');
+check('profiles: the badge of an old gameplay-only set says gameplay, not theme', P.partsBadge({ s: { showMass: true }, t: { mbRingColorP1: '#111111' } }) === P.partsBadge({ s: {} }) && P.partsBadge({ t: { mbRingColorP1: '#111111' } }) === P.partsBadge({ s: {} }));
+P.act('update', 'full');
+const updF = storedProfile('full');
+check('profiles: Update of a set with a theme still saves the whole theme', updF && updF.data.t && updF.data.t.bgColor === '#0f1e2d' && updF.data.t.mbRingColorP1 === '#a1b2c3' && Object.keys(updF.data.t).length > 20);
+P.act('dup', 'oldgp');
+const dupP = JSON.parse(pc.localStorage.getItem('lmSettingsProfiles')).filter(p => p.id !== 'oldgp' && p.name.indexOf('Old gameplay') === 0)[0];
+check('profiles: Duplicate keeps the scope (ring colours only)', dupP && ringKeysOnly(dupP.data.t));
+PD.bgColor = '#334455'; PD.mbRingColorP1 = '#000001';
+pc.LMProfiles.applyById('oldgp');
+check('profiles: applying the updated set brings its ring colours and leaves the rest of the theme', PD.mbRingColorP1 === '#a1b2c3' && PD.bgColor === '#334455' && JSON.parse(pc.localStorage.getItem('ogarioThemeSettings')).bgColor === '#334455');
+
 // ── "Video skins volume" (volVideo, removed): an old set keeps its loudness (the core's own fold)
 const vv = (s) => { const b = P.cleanBundle({ s: s }); return b && b.s ? b.s.videoSkinSoundLevel : undefined; };
 check('profiles: old set with video skins muted (volVideo 0) stays muted', vv({ videoSkinSoundLevel: 0.7, volVideo: 0 }) === 0);

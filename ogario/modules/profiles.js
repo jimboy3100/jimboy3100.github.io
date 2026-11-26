@@ -757,6 +757,22 @@
         else if (noZoomMarks(cleanZoomMarks(data.zb))) delete data.zb;
         return cleanBundle(data);
     }
+    /* Update: the current settings in the parts the set has. The theme part of an old
+     * gameplay-only set is just its ring colours (moveRingColors): only those colours are
+     * updated, the set never gets the whole theme. */
+    function updatedSet(d) {
+        var patch = ringPatch(d.t);
+        var data = captureCurrent({ t: !!d.t && !patch, h: !!d.h, m: !!(d.m || d.ml), g: !!d.gp, hl: false });
+        if (data && patch) {
+            var live = T(), t = {};
+            Object.keys(d.t).forEach(function (k) {
+                var v = themeValue(k, live && own.call(live, k) ? live[k] : d.t[k]);
+                if (v !== undefined) t[k] = v;
+            });
+            if (Object.keys(t).length) data.t = t;
+        }
+        return data;
+    }
     /* the saved settings (what a reload would load): the state before a change that is being saved */
     function snapshotFromStorage() {
         /* P2 fix #82: guard against empty {} in storage bypassing defaults.
@@ -1330,8 +1346,10 @@
     function partsBadge(d, only) {
         if (only === 'gp') return gt('pkg.pt.gpBadge') || tx('partGP');
         var p = [];
-        if (d.s) p.push(tx('partS'));
-        if (d.t) p.push(tx('partT'));
+        /* the ring colour patch of an old gameplay-only set is part of its gameplay settings */
+        var rp = ringPatch(d.t);
+        if (d.s || rp) p.push(tx('partS'));
+        if (d.t && !rp) p.push(tx('partT'));
         if (d.h) p.push(tx('partH'));
         if (d.m) p.push(tx('partM'));
         return p.join(' + ');
@@ -1580,7 +1598,7 @@
             applyProfile(p);
         } else if (a === 'update' && p) {
             if (!window.confirm(tx('confirmUpdate', p.name))) return;
-            p.data = (p.only === 'gp' ? captureGamepad() : captureCurrent({ t: !!p.data.t, h: !!p.data.h, m: !!(p.data.m || p.data.ml), g: !!p.data.gp, hl: false })) || p.data;
+            p.data = (p.only === 'gp' ? captureGamepad() : updatedSet(p.data)) || p.data;
             p.updated = now;
             if (saveProfiles(list)) toast('success', esc(tx('saved', p.name)));
         } else if (a === 'rename' && p) {
@@ -1666,7 +1684,7 @@
             diffBundles: diffBundles, effective: effective, applyTemplate: applyTemplate, pushBackup: pushBackup, saveBackups: saveBackups,
             writeTransaction: writeTransaction, fillNewDefaults: fillNewDefaults, pickRule: pickRule,
             captureCurrent: captureCurrent, presets: presets, TPL_OLD: TPL_OLD, gamepadSet: gamepadSet, captureGamepad: captureGamepad, migrateGamepadProfiles: migrateGamepadProfiles, loadProfiles: loadProfiles, MAX_PROFILES: MAX_PROFILES, MAX_BACKUPS: MAX_BACKUPS, KEY_BACKUPS: KEY_BACKUPS,
-            listen: listen, evaluateRules: evaluateRules
+            listen: listen, evaluateRules: evaluateRules, act: act, partsBadge: partsBadge
         }
     };
 })();
