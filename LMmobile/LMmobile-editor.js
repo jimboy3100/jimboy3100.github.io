@@ -885,6 +885,22 @@
             if (n) { showLayouts(); }
         }));
         layDlg.appendChild(row);
+        /* M3: Built-in preset section */
+        var preHd = el('div', 'hd');
+        preHd.appendChild(el('span', '', T('misc.editor.presets')));
+        layDlg.appendChild(preHd);
+        Object.keys(PRESETS).forEach(function (pn) {
+            var pit = el('div', 'it');
+            pit.appendChild(el('span', '', pn));
+            pit.appendChild(btn('misc.editor.load', 'misc.editor.loadTitle', function () {
+                var p = PRESETS[pn];
+                if (!p) return;
+                work = { landscape: copy(p.landscape), portrait: copy(p.portrait) };
+                showLayouts();
+                render();
+            }));
+            layDlg.appendChild(pit);
+        });
         ov.appendChild(layDlg);
     }
     function saveNamed(name) {
@@ -909,6 +925,42 @@
     }
 
     api.open = open;
+    /* M3: Built-in layout presets — available in the named layouts dialog.
+     * These never overwrite saved layouts; the player must explicitly load one. */
+    var PRESETS = {
+        'Classic': { landscape: { controls: {
+            split: { cx: 0.88, cy: 0.75, s: 1.2 },
+            feed: { cx: 0.88, cy: 0.55, s: 1.2 },
+            x4: { cx: 0.78, cy: 0.42, s: 0.8 },
+            x16: { cx: 0.88, cy: 0.42, s: 0.8 },
+            joystick: { cx: 0.2, cy: 0.5, w: 0.4, h: 1 }
+        }}, portrait: null },
+        'Left-handed': { landscape: { controls: {
+            split: { cx: 0.12, cy: 0.75, s: 1.2 },
+            feed: { cx: 0.12, cy: 0.55, s: 1.2 },
+            x4: { cx: 0.22, cy: 0.42, s: 0.8 },
+            x16: { cx: 0.12, cy: 0.42, s: 0.8 },
+            menu: { cx: 0.95, cy: 0.5, s: 1.0 },
+            joystick: { cx: 0.8, cy: 0.5, w: 0.4, h: 1 }
+        }}, portrait: null },
+        'Competitive': { landscape: { controls: {
+            split: { cx: 0.9, cy: 0.8, s: 1.4 },
+            feed: { cx: 0.9, cy: 0.55, s: 1.0 },
+            x4: { cx: 0.78, cy: 0.8, s: 1.1 },
+            x16: { cx: 0.78, cy: 0.55, s: 0.9 },
+            multibox: { cx: 0.78, cy: 0.35, s: 0.8 },
+            joystick: { cx: 0.2, cy: 0.5, w: 0.4, h: 1 }
+        }}, portrait: null },
+        'Multibox': { landscape: { controls: {
+            split: { cx: 0.88, cy: 0.8, s: 1.3 },
+            feed: { cx: 0.88, cy: 0.6, s: 1.0 },
+            x4: { cx: 0.78, cy: 0.5, s: 0.9 },
+            x16: { cx: 0.88, cy: 0.5, s: 0.9 },
+            multibox: { cx: 0.78, cy: 0.8, s: 1.1 },
+            joystick: { cx: 0.2, cy: 0.5, w: 0.4, h: 1 }
+        }}, portrait: null }
+    };
+    api.PRESETS = PRESETS;
     /* a language change while the editor is open: the bar's marked texts follow (LMi18n.apply), the
      * texts render() writes (names, warnings, Snap, Show/Hide, the control list) are written again */
     if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {

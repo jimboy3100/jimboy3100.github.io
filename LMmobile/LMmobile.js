@@ -490,7 +490,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 12, lbCompact: false };
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
          * settings profile or its Undo that removed the store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
@@ -519,6 +519,9 @@
                     if (saved.stopOnRelease !== undefined) prefs.stopOnRelease = !!saved.stopOnRelease;
                     if (saved.pingBtn !== undefined) prefs.pingBtn = !!saved.pingBtn;
                     if (saved.netGraph !== undefined) prefs.netGraph = !!saved.netGraph;
+                    if (saved.fixedJoystick !== undefined) prefs.fixedJoystick = !!saved.fixedJoystick;
+                    if (saved.joystickDeadZone !== undefined) prefs.joystickDeadZone = num(saved.joystickDeadZone, 0, 40, prefs.joystickDeadZone);
+                    if (saved.lbCompact !== undefined) prefs.lbCompact = !!saved.lbCompact;
                 }
             } catch (e) { }
         }
@@ -586,6 +589,10 @@
             '<label><input type="checkbox" id="lm-pingbtn"' + (prefs.pingBtn ? ' checked' : '') + '> ' + tx('misc.mobile.pingButton', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-netgraph"' + (prefs.netGraph ? ' checked' : '') + '> ' + tx('misc.mobile.netGraph', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-tdir"' + (prefs.targetMode ? ' checked' : '') + '> ' + tx('misc.mobile.touchDir', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-fixjs"' + (prefs.fixedJoystick ? ' checked' : '') + '> ' + tx('misc.mobile.fixedJoystick', 'lm-t') + '</label>' +
+            '<label>' + tx('misc.mobile.deadZone', 'lm-t') + ' <span id="lm-dz-v">' + prefs.joystickDeadZone + '</span></label>' +
+            '<input type="range" id="lm-dz" min="0" max="40" step="2" value="' + prefs.joystickDeadZone + '">' +
+            '<label><input type="checkbox" id="lm-lbc"' + (prefs.lbCompact ? ' checked' : '') + '> ' + tx('misc.mobile.lbCompact', 'lm-t') + '</label>' +
             /* move, resize, fade or hide each touch control (LMmobile-editor.js, loaded on the first tap) */
             '<button type="button" id="lm-ed-open">' + tx('misc.mobile.editControls') + '</button>';
         drawer.appendChild(sp);
@@ -614,23 +621,25 @@
             layoutRefresh();
         }
 
-        /* slider handlers */
+        /* slider handlers — M6: save on 'change' (slider release) not every 'input' tick */
         sp.querySelector('#lm-js').addEventListener('input', function () {
             prefs.jsSensitivity = parseInt(this.value, 10);
             sp.querySelector('#lm-js-v').textContent = this.value;
-            savePrefs();
         });
+        sp.querySelector('#lm-js').addEventListener('change', function () { savePrefs(); });
         sp.querySelector('#lm-op').addEventListener('input', function () {
             prefs.btnOpacity = parseInt(this.value, 10) / 100;
             sp.querySelector('#lm-op-v').textContent = this.value + '%';
-            applyPrefs(); savePrefs();
+            applyPrefs();
         });
+        sp.querySelector('#lm-op').addEventListener('change', function () { savePrefs(); });
         sp.querySelector('#lm-ed-open').addEventListener('click', function () { openEditor(); });
         sp.querySelector('#lm-bs').addEventListener('input', function () {
             prefs.btnScale = parseInt(this.value, 10) / 100;
             sp.querySelector('#lm-bs-v').textContent = this.value + '%';
-            applyPrefs(); savePrefs();
+            applyPrefs();
         });
+        sp.querySelector('#lm-bs').addEventListener('change', function () { savePrefs(); });
         /* (HUD Fade slider removed: nothing read prefs.hudFade) */
         sp.querySelector('#lm-sw').addEventListener('change', function () {
             prefs.swipeSplit = this.checked;
@@ -674,6 +683,13 @@
         sp.querySelector('#lm-mbbtn').addEventListener('change', function () { prefs.mbButton = this.checked; savePrefs(); buildMbButton(); if (typeof repositionButtons === 'function') repositionButtons(); layoutRefresh(); });
         sp.querySelector('#lm-pingbtn').addEventListener('change', function () { prefs.pingBtn = this.checked; savePrefs(); buildPingButton(); });
         sp.querySelector('#lm-netgraph').addEventListener('change', function () { prefs.netGraph = this.checked; savePrefs(); syncNetGraph(); });
+        sp.querySelector('#lm-fixjs').addEventListener('change', function () { prefs.fixedJoystick = this.checked; savePrefs(); });
+        sp.querySelector('#lm-dz').addEventListener('input', function () {
+            prefs.joystickDeadZone = parseInt(this.value, 10);
+            sp.querySelector('#lm-dz-v').textContent = this.value;
+        });
+        sp.querySelector('#lm-dz').addEventListener('change', function () { savePrefs(); });
+        sp.querySelector('#lm-lbc').addEventListener('change', function () { prefs.lbCompact = this.checked; savePrefs(); fitLeaderboard(); });
 
         /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
@@ -703,7 +719,7 @@
                 e.preventDefault(); e.stopPropagation();
                 debounced(function () {
                     if (typeof application !== 'undefined' && application && typeof application.multiboxswap === 'function') application.multiboxswap();
-                }, 'mbswap', 400);
+                }, 'mbswap', 250);
             }, { passive: false });
             /* in the left row (the 4x/16x row above the minimap could reach over SPLIT) */
             drawer.insertBefore(bMb, bCfg);
@@ -747,15 +763,24 @@
                 rad.style.top = Math.max(70, Math.min(window.innerHeight - 70, sy)) + 'px';
                 rad.style.display = 'block';
             }
+            /* M6: Cache radial colors — only refresh on theme change, not every touch move */
+            var _cachedSelBg = '', _cachedDefBg = '';
+            function refreshRadColors() {
+                var _lmSt = getComputedStyle(document.documentElement);
+                _cachedSelBg = 'rgba(1,160,150,.95)'; _cachedDefBg = 'rgba(0,36,62,.88)';
+                try { var _mc = _lmSt.getPropertyValue('--lm-mc').trim(); if (_mc) _cachedSelBg = _mc; } catch(e){}
+                try { var _pc = _lmSt.getPropertyValue('--lm-pc').trim(); if (_pc) _cachedDefBg = _pc; } catch(e){}
+            }
+            refreshRadColors();
+            /* refresh on theme change (a theme changes --lm-mc and --lm-pc) */
+            if (typeof MutationObserver !== 'undefined') {
+                new MutationObserver(refreshRadColors).observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+            }
             function setPick(x, y) {
                 var dx = x - sx, dy = y - sy;
                 pick = 0;
                 if (dx * dx + dy * dy >= 256) pick = Math.abs(dx) > Math.abs(dy) ? (dx < 0 ? 6 : 7) : (dy < 0 ? 5 : 8);
-                var _lmSt = getComputedStyle(document.documentElement);
-                var _lmSelBg = 'rgba(1,160,150,.95)', _lmDefBg = 'rgba(0,36,62,.88)';
-                try { var _mc = _lmSt.getPropertyValue('--lm-mc').trim(); if (_mc) _lmSelBg = _mc; } catch(e){}
-                try { var _pc = _lmSt.getPropertyValue('--lm-pc').trim(); if (_pc) _lmDefBg = _pc; } catch(e){}
-                items.forEach(function (it, i) { it.style.background = PING_DIRS[i][0] === pick ? _lmSelBg : _lmDefBg; });
+                items.forEach(function (it, i) { it.style.background = PING_DIRS[i][0] === pick ? _cachedSelBg : _cachedDefBg; });
             }
             function findT(e) {
                 for (var i = 0; i < e.changedTouches.length; i++) if (e.changedTouches[i].identifier === tid) return e.changedTouches[i];
@@ -831,8 +856,10 @@
             setRange('lm-js', prefs.jsSensitivity, String(prefs.jsSensitivity));
             setRange('lm-op', Math.round(prefs.btnOpacity * 100), Math.round(prefs.btnOpacity * 100) + '%');
             setRange('lm-bs', Math.round(prefs.btnScale * 100), Math.round(prefs.btnScale * 100) + '%');
+            setRange('lm-dz', prefs.joystickDeadZone, String(prefs.joystickDeadZone));
             [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'], ['lm-taphap', 'tapHaptic'],
-                ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-netgraph', 'netGraph'], ['lm-tdir', 'targetMode']
+                ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-netgraph', 'netGraph'], ['lm-tdir', 'targetMode'],
+                ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact']
             ].forEach(function (c) { var el = q(c[0]); if (el) el.checked = !!prefs[c[1]]; });
             bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
             if (prefs.targetMode) jHide();
@@ -1190,14 +1217,22 @@
             if (!inJoyZone(t.clientX, t.clientY)) return;
             jId = t.identifier;
             jStartTime = Date.now();
-            org.x = t.clientX; org.y = t.clientY;
+            /* M4: Fixed joystick uses a constant origin at bottom-left quarter;
+             * floating joystick appears where the thumb lands */
+            if (prefs.fixedJoystick) {
+                var jz = joyZone;
+                org.x = jz ? (jz.l + jz.r) / 2 : window.innerWidth * 0.2;
+                org.y = jz ? (jz.t + jz.b) / 2 : window.innerHeight * 0.7;
+            } else {
+                org.x = t.clientX; org.y = t.clientY;
+            }
             /* Direction on touch: the cell goes toward the touch point, no joystick shown */
             if (prefs.targetMode) { mouseAt(t.clientX, t.clientY); return; }
             /* no mouseAt(thumb position) here: it turned the cell toward wherever the thumb
              * landed (usually bottom-left) on every re-grip; keep the last direction until the
              * thumb moves */
             
-            jShow(org.x, org.y, org.x, org.y);
+            jShow(org.x, org.y, prefs.fixedJoystick ? t.clientX : org.x, prefs.fixedJoystick ? t.clientY : org.y);
             /* swStart is kept: the swipe touchend decides by duration (this listener runs after the swipe one) */
         }, { passive: true });
 
@@ -1238,7 +1273,9 @@
             // Both modes use virtual joystick scaling
             var rx0 = t.clientX - org.x, ry0 = t.clientY - org.y;
             var rawD = Math.sqrt(rx0 * rx0 + ry0 * ry0);
-            if (rawD < 8) return;
+            /* M4: Dead zone — movements inside the threshold are ignored */
+            var dz = prefs.joystickDeadZone || 0;
+            if (rawD < Math.max(8, dz)) return;
 
             var dx = rx0 * prefs.jsSensitivity;
             var dy = ry0 * prefs.jsSensitivity;
@@ -1692,7 +1729,28 @@
             }
             var t = 'scale(' + Math.round(s * 1000) / 1000 + ')';
             if (lb.style.getPropertyValue('transform') !== t) lb.style.setProperty('transform', t, 'important');
+            /* M5: Compact leaderboard — show only 5 rows, tap to expand */
+            var rows = lb.querySelectorAll('.leaderboard-row, tr');
+            if (rows.length > 5) {
+                var compactOn = prefs.lbCompact && !lb._lmExpanded;
+                for (var ri = 5; ri < rows.length; ri++) {
+                    rows[ri].style.display = compactOn ? 'none' : '';
+                }
+            }
         }
+        /* M5: Tap leaderboard to toggle compact/expanded */
+        (function () {
+            var lb = document.getElementById('leaderboard-hud');
+            if (!lb) return;
+            lb._lmExpanded = false;
+            lb.style.setProperty('pointer-events', 'auto', 'important');
+            lb.addEventListener('touchstart', function (e) {
+                if (!prefs.lbCompact) return;
+                e.stopPropagation();
+                lb._lmExpanded = !lb._lmExpanded;
+                fitLeaderboard();
+            }, { passive: true });
+        })();
 
         /* ═══════════════════════════════════════════════════════
          *  CONTROL EDITOR HOOKS (LMmobile-editor.js)
