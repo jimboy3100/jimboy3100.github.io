@@ -10,7 +10,7 @@
   if (!A || !L || !ms || typeof A.customSkinKey !== 'function' || typeof L.vanillaskins !== 'function') return { fail: ['skin functions missing'], info: info };
   var keys = ['customSkins', 'vanillaSkins', 'ownVanillaSkin', 'noSkins'];
   var before = {}; keys.forEach(function (k) { before[k] = ms[k]; });
-  var showBefore = L.showCustomSkins, mapBefore = Object.assign({}, A.customSkinsMap), vkBefore = Object.assign({}, A.vanillaSkinKeys || {});
+  var showBefore = L.showCustomSkins, mapBefore = Object.assign(Object.create(null), A.customSkinsMap), vkBefore = Object.assign(Object.create(null), A.vanillaSkinKeys || {});
   var vmapBefore = window.VanillaSkinUrlMap;
   var C_OWN = 'https://example.invalid/lm-probe-own-custom.png', V_ID = 'https://example.invalid/lm-probe-vanilla.png';
   var stored = function () { try { return JSON.parse(localStorage.getItem('ogarioSettings') || '{}'); } catch (e) { return {}; } };

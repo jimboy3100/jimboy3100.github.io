@@ -7190,7 +7190,8 @@ window.bots = {
     remoteIP: 'ws://localhost:1337'
 }
 
-SpecialEffectPlayers = [];
+/* nick -> effect; no prototype, so nicks such as "map", "length" or "__proto__" are plain keys */
+SpecialEffectPlayers = Object.create(null);
 
 var Socket3;
 window.socket3Opened = false;
@@ -17547,7 +17548,8 @@ function _initGameConfigSectionsBody(gc) {
 
 
     /* ── Vanilla Skin URL Map ── */
-    window.VanillaSkinUrlMap = {};
+    /* no prototype: cells look up their skin name here ("constructor" found Object) */
+    window.VanillaSkinUrlMap = Object.create(null);
     var mirrorBase =
         "https://jimboy3000.github.io/vanillaskins/";
     for (
@@ -22209,9 +22211,11 @@ function thelegendmodproject() {
         chatMutedUsers: {},
         chatMutedUserIDs: [],
         customSkinsCache: {},
-        customSkinsMap: {},
+        /* nick -> skin URL; no prototype, so nicks such as "constructor" or "__proto__" find
+         * nothing (they found Object's members and every frame threw on them) */
+        customSkinsMap: Object.create(null),
         /* key -> URL for the customSkinsMap entries that are agar.io skins (see _lmSkinSet) */
-        vanillaSkinKeys: {},
+        vanillaSkinKeys: Object.create(null),
         cacheQueue: [],
         cacheQueue2: [],
         cacheQueue3: [],
@@ -28777,7 +28781,7 @@ function thelegendmodproject() {
          * skin stored later under the same key (teammate data) makes the entry custom again. */
         _lmSkinSet(key, url, vanilla) {
             this.customSkinsMap[key] = url;
-            var vk = this.vanillaSkinKeys || (this.vanillaSkinKeys = {});
+            var vk = this.vanillaSkinKeys || (this.vanillaSkinKeys = Object.create(null));
             if (vanilla) vk[key] = url;
             else if (vk[key] !== undefined) delete vk[key];
         },
@@ -28799,14 +28803,16 @@ function thelegendmodproject() {
             } else { hexColor = '#000000'; }
             var _k = this._lmSkinKeys(nick, color, hexColor);
             var cleanNick = _k.cn;
+            /* the map has no prototype (nick keys such as "constructor"), so no method of its own */
+            var own = Object.prototype.hasOwnProperty, map = this.customSkinsMap;
             return !!(
-                this.customSkinsMap.hasOwnProperty(nick) ||
-                this.customSkinsMap.hasOwnProperty(_k.nh) ||
-                this.customSkinsMap.hasOwnProperty(_k.n0) ||
+                own.call(map, nick) ||
+                own.call(map, _k.nh) ||
+                own.call(map, _k.n0) ||
                 (cleanNick && (
-                    this.customSkinsMap.hasOwnProperty(cleanNick) ||
-                    this.customSkinsMap.hasOwnProperty(_k.c0) ||
-                    this.customSkinsMap.hasOwnProperty(_k.ch)
+                    own.call(map, cleanNick) ||
+                    own.call(map, _k.c0) ||
+                    own.call(map, _k.ch)
                 ))
             );
         },
@@ -29452,8 +29458,8 @@ function thelegendmodproject() {
             //
             //if (window.temporaryRecordedProtocol2 && RecordedArenasSpecifications[window.temporaryRecordedProtocol2]) window.RecordedArenasSpecifications[window.temporaryRecordedProtocol2].push(JSON.stringify(this.customSkinsMap))
             if (window.temporaryRecordedProtocol && RecordedArenasSpecifications[window.temporaryRecordedProtocol]) window.RecordedArenasSpecifications[window.temporaryRecordedProtocol].push(JSON.stringify(this.customSkinsMap))
-            this.customSkinsMap = {};
-            this.vanillaSkinKeys = {};
+            this.customSkinsMap = Object.create(null);
+            this.vanillaSkinKeys = Object.create(null);
         },
         flushChatData() {
             this.chatUsers = {};
@@ -37207,7 +37213,7 @@ function thelegendmodproject() {
                         /* no name, no video skin either (a skin mapped to '' would show on every unnamed cell) */
                         if (defaultmapsettings.videoSkins && this.targetNick && String(this.targetNick).trim()) {
                             node2 = LM.gameMode != ":party" ? application.customSkinsMap[this.targetNick] : application.customSkinsMap[this.targetNick + this.color];
-                            if (node2) {
+                            if (typeof node2 === 'string' && node2) {
                                 /* cached per URL (a string cannot carry a property: defineProperty threw
                                  * for every skinned cell in every frame) */
                                 var _lmVc = window._lmVideoUrlCache || (window._lmVideoUrlCache = new Map());
@@ -38909,7 +38915,9 @@ function thelegendmodproject() {
         removedCells: [],
         food: [],
         viruses: [],
-        cellcolors: [],
+        /* nick -> colour; no prototype (it was an Array: a nick "map" got a function as its
+         * colour and "length" threw in the cell update) */
+        cellcolors: Object.create(null),
         playerCells: [],
         playerCellIDs: [],
         playerCellsMulti: [],
@@ -44863,7 +44871,7 @@ function thelegendmodproject() {
                         if (typeof window._lmAddAgarVersion === 'function') window._lmAddAgarVersion(freshVersion);
                         /* Rebuild VanillaSkinUrlMap with correct CDN version */
                         if (window.EquippableSkins) {
-                            window.VanillaSkinUrlMap = {};
+                            window.VanillaSkinUrlMap = Object.create(null);
                             var cdnBase = "https://jimboy3000.github.io/vanillaskins/";
                             for (var sk = 0; sk < window.EquippableSkins.length; sk++) {
                                 var skn = window.EquippableSkins[sk];
@@ -59995,14 +60003,26 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     _glFxN = this._lmCellFg(cell, _glFxN, _glSpFx);
                 }
 
-                if (
-                    !this
-                        ._isCellInsideFrame(
-                            cell,
-                            250
-                        )
-                ) {
-                    continue;
+                /* outside the view the GL batch draws (200 around the screen): cell.draw draws
+                 * this cell in its Canvas2D branch, on this.ctx under the GL layer */
+                var _glOut = !this._isCellInsideFrame(cell, 200);
+                if (_glOut) {
+                    if (_glFxCheck) {
+                        _glFxN = this._lmOutCellFx(cell, _glFxN, _glTeamNicks, _glTeamList, _glChatMap, _glSpFx);
+                        if (_glFxN < 0) {
+                            /* _lmCellFx set the reason */
+                            return false;
+                        }
+                    }
+                    if (
+                        !this
+                            ._isCellInsideFrame(
+                                cell,
+                                250
+                            )
+                    ) {
+                        continue;
+                    }
                 }
 
                 if (_glShadows && !cell.isEjected) {
@@ -60010,7 +60030,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     return this._lmNoGL(this.GLW.SHADOWS);
                 }
 
-                if (_glFxCheck) {
+                if (_glFxCheck && !_glOut) {
                     _glFxN = this._lmCellFx(cell, _glFxN, _glTeamNicks, _glTeamList, _glChatMap, _glSpFx);
                     if (_glFxN < 0) {
                         /* _lmCellFx set the reason */
@@ -60148,6 +60168,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmFxFail(why) {
             this._lmGlWhy = why;
             return -1;
+        },
+        /* canUseWebGLScene: the teammate indicator and chat bubble of a cell outside the view
+         * the GL batch draws. A mark of it that reaches the screen lies above the GL cells
+         * drawn before it in Canvas2D, so the cell goes onto the overlay with its labels, as a
+         * cell with an FB badge does (_lmLabelsOnFg; on this.ctx the mark was under them). */
+        _lmOutCellFx(cell, n, teamSet, teamList, chatMap, spFx) {
+            var was = cell._lmFgLab;
+            /* its labels come after its marks there (no own-label rule) */
+            cell._lmFgLab = this._glSkinFrame;
+            var m = this._lmCellFx(cell, n, teamSet, teamList, chatMap, spFx);
+            if (m < 0) return m;
+            var s = this.scale || 1, hw = this.canvasWidth / s / 2, hh = this.canvasHeight / s / 2;
+            var b = this._lmFxBoxes, on = false;
+            for (var k = n; k < m && !on; k += 4) {
+                on = b[k] < this.camX + hw && b[k + 2] > this.camX - hw && b[k + 1] < this.camY + hh && b[k + 3] > this.camY - hh;
+            }
+            if (!on) {
+                /* nothing of it on screen: it stays on this.ctx, no boxes */
+                cell._lmFgLab = was;
+                return n;
+            }
+            this._lmLabelExt2D(cell);
+            if (this._lmExtW > 0) m = this._lmFxPush(m, cell.x - this._lmExtW, cell.y - this._lmExtH, cell.x + this._lmExtW, cell.y + this._lmExtH, this.GLW.COVER_LABELS);
+            return m;
         },
         /* true when cell.draw puts this WebGL cell's nick, mass and multibox ring on the
          * overlay this frame (above its FB badge / special effect): the GL passes skip them */
@@ -60345,6 +60389,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         /* a new generation of measured widths when the label fonts change or web fonts load */
         _lmEmCheck() {
+            /* once per frame (all callers run inside canUseWebGLScene, which counts the frames):
+             * read for every later cell once a frame had marks, ~0.8 ms per 1000 cells */
+            var frame = this._glSkinFrame || 0;
+            if (frame && this._lmEmFrame === frame) return;
+            this._lmEmFrame = frame;
             var ds = defaultSettings;
             var fam = ds.namesFontFamily || 'Ubuntu', wt = ds.namesFontWeight || 'bold';
             var mfam = ds.massFontFamily || fam, mwt = ds.massFontWeight || wt;
@@ -77739,9 +77788,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.drawLegendWorldDeformedCanvasCell(
                         drawCell,
                         /* A cell whose body the GL batch left out (outside the view) but whose FB
-                         * badge or effect canUseWebGLScene checked: what reaches the screen of it
-                         * (badge, effect, labels) lies above the GL cells drawn before it, as in
-                         * Canvas2D, so it goes on the overlay (on this.ctx it was under them). */
+                         * badge, effect, teammate indicator or chat bubble canUseWebGLScene
+                         * checked: what reaches the screen of it (marks, labels) lies above the GL
+                         * cells drawn before it, as in Canvas2D, so it goes on the overlay (on
+                         * this.ctx it was under them). */
                         _lmFgOn && !drawCell._webglRendered && this._lmLabelsOnFg(drawCell) ? _lmFxCtx : this.ctx
                     );
 
@@ -83358,7 +83408,8 @@ function animateCustomSkin(nick, id) {
      * invalidated if animatedskins is reassigned. */
     if (!animateCustomSkin._idx || animateCustomSkin._src !== animatedskins) {
         animateCustomSkin._src = animatedskins;
-        var idx = {};
+        /* no prototype: the id comes from a teammate ("constructor" found Object) */
+        var idx = Object.create(null);
         var keys = Object.keys(animatedskins);
         for (var i = 0; i < keys.length; i++) {
             var entry = animatedskins[keys[i]];
@@ -83367,7 +83418,8 @@ function animateCustomSkin(nick, id) {
         animateCustomSkin._idx = idx;
     }
     var match = animateCustomSkin._idx[id];
-    if (match) animatedskins[nick] = match;
+    /* a nick "__proto__" would replace the prototype of the list instead of adding a skin */
+    if (match && nick !== '__proto__') animatedskins[nick] = match;
 }
 
 function PreLcCelebration() {
@@ -85571,7 +85623,7 @@ function lmReplayResetWorld() {
     legendmod.removedCells = []
     legendmod.food = []
     legendmod.viruses = []
-    legendmod.cellcolors = []
+    legendmod.cellcolors = Object.create(null)
     legendmod.playerCells = []
     legendmod.playerCellIDs = []
     if (legendmod._playerCellIDSet) legendmod._playerCellIDSet.clear();
@@ -85899,7 +85951,7 @@ function playReplayLM(temp){
         legendmod.removedCells=[]
         legendmod.food=[]
         legendmod.viruses=[]
-        legendmod.cellcolors=[]
+        legendmod.cellcolors=Object.create(null)
         legendmod.playerCells=[]
         legendmod.playerCellIDs=[]
         if (legendmod._playerCellIDSet) legendmod._playerCellIDSet.clear();

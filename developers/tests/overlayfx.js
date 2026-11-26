@@ -21,7 +21,7 @@
  * It does not run a GPU: drawWebGLCellBatch and the text pass are not executed here.
  * Cases: teammate only, chat only, FB badge (with its nick and mass, multibox ring, text and
  * skin alpha, Teams, no skin), FB arrow, special effects (custom skins off, an effect of a
- * cell outside the frame), overlapping cells (later cell over a mark or the moved labels,
+ * cell outside the frame), the chat bubble of a cell outside the GL view, overlapping cells (later cell over a mark or the moved labels,
  * earlier cell under it, own labels), Canvas/WebGL transitions, frames with no marks (no
  * clear, overlay hidden), high DPI, resize between frames, WebGL context loss, the order of
  * the overlay calls, and the frame counters by Canvas2D reason (Performance diagnostics).
@@ -376,9 +376,10 @@ function frame(s) {
     if (gl) {
         /* the GL layer: bodies and labels in cell order */
         gctx.save(); worldTransform(gctx, s);
-        /* the GL batch leaves out bodies outside the view (cell.draw then draws them in its
-         * Canvas2D branch) */
-        const vx = s.W / 2 / s.zoom, vy = s.H / 2 / s.zoom;
+        /* the GL batch leaves out bodies outside the view and 200 around it, as
+         * drawWebGLCellBatch (cell.draw then draws them in its Canvas2D branch) */
+        const cull = s.cull != null ? s.cull : 200;
+        const vx = s.W / 2 / s.zoom + cull, vy = s.H / 2 / s.zoom + cull;
         for (const c of LM.cells) {
             if (!drawable(c)) continue;
             if (c.x + c.size < s.camX - vx || c.x - c.size > s.camX + vx || c.y + c.size < s.camY - vy || c.y - c.size > s.camY + vy) continue;
@@ -571,11 +572,11 @@ const splasher = makeCell({ x: -880, y: 0, size: 500, targetNick: 'splasher' });
 scene([makeCell({ x: 80, y: 50, size: 20, targetNick: 'dot' }), splasher]);
 r = frame(S1);
 check('effect of a cell outside the frame reaching in: WebGL, equal', r.gl && marks(r, window.iconSpecialSkinEffectsSplash) > 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
-/* a big cell just below the screen (the GL batch leaves its body out): its hat reaches in over
+/* a big cell below the screen (beyond the GL view, the batch leaves its body out): its hat reaches in over
  * an earlier small cell and lies above it, as in Canvas2D */
 {
     SEP.lowhat = 'Hat';
-    const lowHat = makeCell({ x: 0, y: 190, size: 100, targetNick: 'lowhat' }), small = makeCell({ x: 0, y: 60, size: 25, targetNick: 's' });
+    const lowHat = makeCell({ x: 0, y: 790, size: 500, targetNick: 'lowhat' }), small = makeCell({ x: 0, y: 60, size: 25, targetNick: 's' });
     scene([small, lowHat]);
     const g = frame(S1);
     check('hat of a cell below the screen over an earlier cell: WebGL, hat above that cell, equal', g.gl && marks(g, hat) > 0 && g.d.n === 0,
@@ -620,6 +621,74 @@ reset();
     check('  no cell draw errors', errs === 0, errs + ' errors');
 }
 
+/* The teammate indicator and chat bubble of a cell whose body the GL batch leaves out: the
+ * cell is drawn in the Canvas2D branch, on the main canvas under the GL layer, so a mark of it
+ * reaching the screen was under the GL cells drawn before it; it goes on the overlay with the
+ * cell, as in Canvas2D. A chat bubble keeps its size on screen, so zoomed out it reaches far. */
+{
+    reset();
+    const S4 = Object.assign({}, S1, { zoom: 0.25 });
+    R._chatLookup = new Map([['far', { message: 'a chat line long enough to reach well across the edge of the screen, and then some more words', time: LM.time - 3000 }]]);
+    const far = makeCell({ x: 480 + 200 + 80, y: 0, size: 45, targetNick: 'far' }), under = makeCell({ x: 450, y: -66, size: 30, targetNick: '' });
+    scene([under, far]);
+    let g = frame(S4);
+    g = frame(S4);
+    const col = far.chatCanvas && far.chatCanvas.txtCanvas ? far.chatCanvas.txtCanvas.color : [9, 9, 9];
+    check('chat bubble of a cell beyond the GL view reaching in over an earlier cell: WebGL, bubble above that cell, equal', g.gl && R._lmLabelsOnFg(far) &&
+        marked(g.out, col) > 0 && g.d.n === 0, 'gl ' + g.gl + ' ' + why() + ' far w ' + far._lmChatW + ' h ' + far._lmChatH + ' dy ' + far._lmChatDy + ' chat px ' + marked(g.out, col) + ' ' + g.d.n + ' px');
+    /* a later cell over that bubble: Canvas2D */
+    const big = makeCell({ x: 470, y: -66, size: 50, targetNick: '' });
+    scene([under, far, big]);
+    g = frame(S4);
+    check('  a later cell over it: Canvas2D (coveredChat), equal', !g.gl && why() === 'coveredChat' && g.d.n === 0, 'gl ' + g.gl + ' ' + why() + ' ' + g.d.n + ' px');
+    /* the bubble off screen: WebGL, nothing on the overlay for it */
+    far.x = 480 + 200 + 2000;
+    scene([under, far]);
+    frame(S4);
+    g = frame(S4);
+    check('  the bubble wholly off screen: WebGL, no overlay mark for it, equal', g.gl && R._lmFgFxN === 0 && !R._lmLabelsOnFg(far) && g.d.n === 0, 'gl ' + g.gl + ' ' + why() + ' boxes ' + R._lmFgFxN + ' ' + g.d.n + ' px');
+    /* a teammate just below the screen: inside the GL view, its indicator on the overlay */
+    reset(); team(['mate']);
+    const mate = makeCell({ x: 0, y: 80 + 45, size: 40, targetNick: 'mate' }), dot = makeCell({ x: 0, y: 60, size: 20, targetNick: '' });
+    scene([dot, mate]);
+    g = frame(S1);
+    check('teammate just below the screen, indicator over an earlier cell: WebGL, equal', g.gl && !R._lmLabelsOnFg(mate) && marks(g, R.indicator) > 0 && g.d.n === 0,
+        'gl ' + g.gl + ' ' + why() + ' ind px ' + marks(g, R.indicator) + ' ' + g.d.n + ' px');
+}
+/* label widths (the mark boxes): the font check runs once per frame, not for every later cell
+ * (two document.fonts reads per cell); a web font load or a font change in a later frame still
+ * measures again */
+{
+    reset(); team(['mate']);
+    const saved = globalThis.document;
+    let reads = 0, st = 'loading';
+    globalThis.document = { fonts: { get status() { reads++; return st; } } };
+    /* the text canvas the widths are measured on */
+    const savedTc = R._textCtx;
+    R._textCtx = { font: '', measureText: (t) => ({ width: 55 * String(t).length }) };
+    try {
+        const cs = [makeCell({ x: -100, y: -40, size: 15, targetNick: 'mate' })];
+        for (let i = 0; i < 20; i++) cs.push(makeCell({ x: -60 + i * 9, y: 40, size: 16 + i * 0.1, targetNick: 'n' + i }));
+        scene(cs);
+        let g = frame(S1);
+        reads = 0;
+        const gen0 = R._lmEmGen;
+        g = frame(S1);
+        check('label widths: the font check reads document.fonts once in a frame with marks and 20 later cells', g.gl && R._lmFgFxN > 0 && reads === 1 && R._lmEmGen === gen0,
+            'gl ' + g.gl + ' ' + why() + ' boxes ' + R._lmFgFxN + ' reads ' + reads);
+        st = 'loaded';
+        g = frame(S1);
+        check('  web fonts loaded in a later frame: measured again', R._lmEmGen === gen0 + 1);
+        ds.namesFontFamily = 'Arial';
+        g = frame(S1);
+        check('  a nick font change in a later frame: measured again (new font)', R._lmEmGen === gen0 + 2 && R._lmEmFont === (ds.namesFontWeight || 'bold') + ' 100px Arial');
+        check('  still equal', g.gl && g.d.n === 0, 'gl ' + g.gl + ' ' + g.d.n + ' px');
+    } finally {
+        globalThis.document = saved;
+        R._textCtx = savedTc;
+        setSettings();
+    }
+}
 /* ---- overlapping cells ---- */
 
 reset(); team(['mate']);

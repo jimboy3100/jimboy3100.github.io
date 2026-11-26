@@ -7,7 +7,7 @@ const i18n = require('./lib/i18n-env');
 const root = path.join(__dirname, '..', '..');
 const simSrc = fs.readFileSync(path.join(root, 'ogario', 'modules', 'practice-sim.js'), 'utf8');
 let fail = 0;
-const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
+const check = (n, c, info) => { console.log((c ? 'ok   ' : 'FAIL ') + n + (c || info === undefined ? '' : '  [' + info + ']')); if (!c) fail++; };
 const near = (a, b, e) => Math.abs(a - b) <= (e || 1e-6);
 
 /* load like a page: only window.LMPracticeSim may appear */
@@ -259,9 +259,12 @@ check('determinism: every exercise runs and repeats exactly', allEx);
         try {
             vm.runInContext(code, g);
             const L = g.__h;
+            /* the colour by nick map as the game starts it */
+            const ccInit = /\n {8}cellcolors: ([^\n]+),\r?\n/.exec(src);
+            const newCellColors = () => vm.runInContext('(' + (ccInit ? ccInit[1] : 'null') + ')', g);
             Object.assign(L, {
                 serverType: 'private', connectionIntegrity: false, integrity: false, gameMode: ':ffa', playerNick: 'Me', leaderboard: [], fbOnline: [],
-                cells: [], food: [], viruses: [], removedCells: [], playerCells: [], playerCellIDs: [], indexedCells: {}, cellcolors: {}, playerCellsMulti: [],
+                cells: [], food: [], viruses: [], removedCells: [], playerCells: [], playerCellIDs: [], indexedCells: {}, cellcolors: newCellColors(), playerCellsMulti: [],
                 vector: [[0, 0]], vnr: 0, play: false, time: 0, mapEvent: {}, decayInfo: {},
                 countPps: noop, megaFFAscore: noop, vanillaskins: noop, handleLeaderboard: noop, setMapOffset: noop, _lmOnServerBorder: noop, flushCellsData() { this.cells = []; this.food = []; this.playerCells = []; this.indexedCells = {}; },
                 rgb2Hex: (r, gg, b) => '#' + [r, gg, b].map(v => (v | 0).toString(16).padStart(2, '0')).join(''), _lmKeepMainSuppressed: () => false
@@ -311,6 +314,34 @@ check('determinism: every exercise runs and repeats exactly', allEx);
             for (let i = 0; i < 3; i++) { S.step(kw); S.encodeFrame(kw, kv).forEach(b => L.handleMessage(new DataView(b))); }
             check('game handler: being eaten ends the game (death once) and the run', g.deaths === 1 && L.play === false && kw.over && kw.result.reason === 'eaten');
             check('game handler: nothing logged as an error', g.errors.length === 0);
+            /* players named like members of Object / Array: their cells arrive with the colours
+             * the same world gives with ordinary names (the colour map was an Array: "map" got
+             * a function as its colour, "length" threw in the cell update) */
+            {
+                const NICKS = ['constructor', 'toString', 'valueOf', 'hasOwnProperty', '__proto__', 'at', 'map', 'length'];
+                const runNames = (names) => {
+                    const nw = S.createWorld(S.withDefaults({ seed: 5, bots: names.length, viruses: 0 }, 'free')), nv = S.createView();
+                    const bots = nw.players.filter(p => !p.human).slice(0, names.length);
+                    const h = S.human(nw).cells[0];
+                    /* all in view, apart */
+                    bots.forEach((p, i) => { p.name = names[i]; p.cells.forEach(c => { c.name = p.name; c.x = h.x + 260 * (i - 3.5); c.y = h.y + 420; p.mx = c.x; p.my = c.y; }); });
+                    L.flushCellsData(); L.play = false; L.playerCellIDs = []; L.cellcolors = newCellColors(); g.errors.length = 0;
+                    const r = { err: '', cells: {} };
+                    try { for (let i = 0; i < 5; i++) { S.step(nw); S.encodeFrame(nw, nv).forEach(b => L.handleMessage(new DataView(b))); } } catch (e) { r.err = String(e && e.message || e); }
+                    r.errors = g.errors.slice();
+                    bots.forEach(p => p.cells.filter(c => nv.known.has(c.id)).forEach(c => {
+                        const lc = L.indexedCells[c.id];
+                        r.cells[c.id] = lc ? lc.targetNick + ' ' + (typeof lc.color === 'string' ? lc.color : typeof lc.color) : 'missing';
+                    }));
+                    return r;
+                };
+                const plain = runNames(NICKS.map((n, i) => 'Player' + i)), odd = runNames(NICKS);
+                const bad = Object.keys(plain.cells).filter(id => odd.cells[id] !== plain.cells[id].replace(/^Player(\d)/, (m, i) => NICKS[i]))
+                    .map(id => odd.cells[id] + ' / ' + plain.cells[id]);
+                check('game handler: players named "constructor", "__proto__", "map", "length"...: cells with the colours of ordinary names, nothing thrown',
+                    !plain.err && !odd.err && !odd.errors.length && Object.keys(plain.cells).length >= NICKS.length && !bad.length, odd.err || odd.errors[0] || bad.join('; '));
+                check('  no prototype changed', vm.runInContext('typeof [].map === "function" && [].length === 0 && typeof ({}).toString === "function"', g));
+            }
         } catch (e) {
             console.log(e.stack);
             check('game handler runs the practice packets', false);
