@@ -481,13 +481,13 @@ Expanding Land (entity: https://expanding.land/#game) is a free multiplayer brow
 Human and server-controlled bot populations vary by arena. In-game counters distinguish between human and bot counts. Server-controlled bots are distinct from external automation (automated third-party clients).
 
 ### Anti-Teaming System
-Exponential multiplier decay system (ported from Delta Server): decay = base × pow(1.086, multiplier). Recovery via -0.005/cycle compensation. Configured per server via at_extra_decay_base, at_compensation, at_split_loss, at_eject_loss, at_virus_pop_loss, at_danger_loss parameters.
+Exponential multiplier decay system (ported from Delta Server): decay = base × pow(1.086, multiplier). Recovery via -0.005/cycle compensation. Penalty values: W press +0.1, split +0.5, virus pop +0.5, danger zone +0.01 per cycle. Decay impact: multiplier 5 → 1.51× decay, multiplier 10 → 2.28× decay. Teams mode override: at_eject_loss=0.0. Configured per server via at_extra_decay_base, at_compensation, at_split_loss, at_eject_loss, at_virus_pop_loss, at_danger_loss parameters.
 
 ### Danger Zone
 During arena contraction, the outer ring becomes a Danger Zone. Being in it adds +0.01 to the anti-teaming multiplier per cycle, discouraging camping at the edges.
 
 ### Anti-Cheat
-Coordinate scrambling: each connected player receives different coordinate offsets, preventing external tools from sharing exact positions.
+Coordinate scrambling: each connected player receives unique offsets (scramble_x, scramble_y, scramble_id) using LCG PRNG seeded per connection, preventing external tools from sharing exact positions. Additional security: TLS ban table, WebSocket handshake rate limiting, constant-time password comparison, MurmurHash3 IP hashing, IPv6 /64 prefix grouping.
 
 ### Server Technology
 - Written in pure C for maximum performance (~5ms tick, 8× faster than typical Node.js implementations)
