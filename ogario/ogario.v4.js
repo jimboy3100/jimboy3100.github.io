@@ -7552,11 +7552,18 @@ function checkIfPlayerIsInView(b, a) {
 }
 
 function checkVideos3(o) {
-    if (o.readyState > 0 && o.src === $("#skin").val()) {
+    /* compare with the address the skin is saved and played with: a link typed without https://
+     * never equalled the video's src, so the warning was skipped */
+    var own = String($("#skin").val() || '');
+    try { own = new URL(application.checkSkinURL(own)).href; } catch (e) { }
+    /* the skin preview and the profile box both check the same video: warn once per skin link */
+    if (checkVideos3._warned !== own) checkVideos3._warned = null;
+    if (o.readyState > 0 && o.src === own && checkVideos3._warned !== own) {
 
         const minutes = parseInt(o.duration / 60, 10);
         const seconds = o.duration % 60;
         if (o.videoWidth > 1080 || minutes > 4) {
+            checkVideos3._warned = own;
             toastr.error("<b>[" + Premadeletter123 + "]:</b> " + lmT('game1.video.tooLong'));
 
             //toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + Premadeletter124);
