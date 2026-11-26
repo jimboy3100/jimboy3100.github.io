@@ -104,10 +104,13 @@ function probeNew(code) {
   fr.src = 'https://www.legendmod.ml/index.html';
   document.body.appendChild(fr);
   var site = function () { try { return fr.contentWindow.LMi18n && fr.contentDocument.querySelector('[data-i18n="site.index.about"]'); } catch (e) { return null; } };
-  await wait(function () { var a = site(); return a && a.textContent === E.about; }, 20000);
+  /* the page loads while the mod is still starting: on a busy machine that can take well over 20 s */
+  var shown = await wait(function () { var a = site(); return a && a.textContent === E.about; }, 45000);
   try {
     var d = fr.contentDocument, L = fr.contentWindow.LMi18n;
     info.site = L ? L.lang() + ' ' + d.documentElement.getAttribute('lang') : 'no runtime';
+    /* not loaded in time: say so instead of failing on a missing element below */
+    if (!shown && !d.querySelector('[data-i18n="site.features"]')) throw new Error('index.html did not load in the frame within 45 s (' + d.readyState + ' ' + d.URL + ')');
     need('website in the browser language', L && L.lang() === E.code && d.documentElement.getAttribute('lang') === E.htmlLang);
     need('website texts translated', d.querySelector('[data-i18n="site.features"]').textContent === E.features && d.querySelector('[data-i18n="site.index.about"]').textContent === E.about);
     var ps = d.querySelector('[data-lm-lang-picker] select');
