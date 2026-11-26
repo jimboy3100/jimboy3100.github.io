@@ -13,6 +13,10 @@
   if (!$('#lm-settings-search').closest('#og-settings').length) fail.push('settings search missing');
   // no control bindings in Settings: mouse buttons, sticky cells and gamepad are in the Hotkeys window
   if ($('#og-settings').find('#stickyCell, #mouseSplit, #mouseFeed, #mouseWheelClick, #mouseCommand4, #mouseCommand5, #gamepadEnabled, #gamepadDeadzone-slider, #lm-gamepad-btn, select[id$="2"][id^="mouse"], .mouseGroup, .controlsGroup').length) fail.push('control bindings in the Settings tab');
+  // one link to the skins page: the skins panel's Add skins button (the left column had a second one)
+  if ($('#quick-menu .quick-more-skins').length) fail.push('second Skins link in the left column');
+  if ($('#skins-panel #more-skins').attr('href') !== 'https://www.legendmod.ml/skins/') fail.push('Add skins button missing or not the skins page');
+  if (!$('#quick-menu #ModInfoQuick').length) fail.push('left column lost Mod Info');
   // every checkbox option maps to a known setting
   var unknown = [];
   $('#og-options input[type=checkbox]').each(function () {

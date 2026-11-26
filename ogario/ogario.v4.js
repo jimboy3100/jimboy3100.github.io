@@ -25319,7 +25319,8 @@ function thelegendmodproject() {
             $("#tags-container").appendTo($("#profile"));
             //$('.btn.btn-warning.btn-spectate.btn-needs-server').after('<button id="logoutbtn" onclick="logout(); return false;" class="btn btn-danger btn-logout" data-itr="page_logout">Logout</button>');
             //$(".btn-logout").appendTo($("#profile"));
-            $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel"><a href="https://www.legendmod.ml/skins/" class="quick-more-skins ogicon-grin" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.skins + '"></a>' +
+            /* no Skins link here: the skins panel's "Add skins" button (#more-skins) opens the same page */
+            $(".left-container").append('<div id="quick-menu" class="agario-panel agario-side-panel">' +
                 //'<a href="https://www.youtube.com/watch?v=CnIfNSpCf70" class="quick-yt ogicon-youtube2" id="legendid" target="_blank" data-toggle="tab-tooltip" data-placement="left" title="Legend Promo Video"></a>' +
                 '<a id="themesBtn" target="_blank" href="https://www.legendmod.ml/themes/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title=""' + _lmG1a('data-original-title', 'game1.menu.themes') + '></a>' +
                 //'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
