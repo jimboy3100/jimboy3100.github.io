@@ -1651,6 +1651,8 @@
             if (saveProfiles(list)) {
                 /* rules that pointed at it go (cleanRules drops unknown ids) */
                 writeText(KEY_RULES, JSON.stringify(cleanRules(readJSON(KEY_RULES), list)));
+                /* its link to a HUD layout goes too (the layout itself stays, others may use it) */
+                try { var HE = window.LMHudEditor; if (HE && typeof HE.linkProfile === 'function' && HE.profileLayout(p.id)) HE.linkProfile(p.id, ''); } catch (e) { }
                 /* the place is free for an old gamepad setup that was waiting */
                 migrateGamepadProfiles();
             }

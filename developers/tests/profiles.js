@@ -671,6 +671,24 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
   e.P.core.act('rename', 'a1');
   check('rename: a profile may change the case of its own name', names() === 'ALPHA,Gamma');
 }
+{
+  /* Delete: the profile's link to a HUD layout goes with it, the layout stays; rename keeps it
+   * (until 3.693 a deleted profile left its link behind in lmHudLayouts) */
+  const e = bootApply();
+  e.ls.setItem('lmSettingsProfiles', J([{ id: 'a1', name: 'Alpha', data: { s: { showMass: true } } }, { id: 'b1', name: 'Beta', data: { s: { showMass: false } } }]));
+  e.HE.saveLayout('L', { leaderboard: { h: 'l', x: 1, v: 't', y: 1, s: 1 } });
+  e.HE.linkProfile('a1', 'L');
+  e.HE.linkProfile('b1', 'L');
+  e.c.prompt = () => 'Alpha new';
+  e.P.core.act('rename', 'a1');
+  check('rename: the HUD layout link stays', e.HE.profileLayout('a1') === 'L');
+  e.c.confirm = () => true;
+  e.P.core.act('del', 'a1');
+  const st = JSON.parse(e.ls.getItem('lmHudLayouts'));
+  check('delete: the profile is gone', JSON.parse(e.ls.getItem('lmSettingsProfiles')).map(p => p.id).join() === 'b1');
+  check('delete: its HUD layout link is dropped (also in storage)', e.HE.profileLayout('a1') === '' && !('a1' in st.links));
+  check('delete: the layout and the link of another profile stay', st.list.some(l => l.name === 'L') && st.links.b1 === 'L');
+}
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');
