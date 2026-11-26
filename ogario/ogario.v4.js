@@ -21862,6 +21862,10 @@ function thelegendmodproject() {
             if (defaultSettings.customCursor) var css = '*{cursor:url(' + defaultSettings.customCursor + '), auto !important}';
             else css = '*{cursor: auto}';
             this.addCustomCSS('cursorCSS', css);
+            /* the cursor list marks the cursor in use (an address typed in the box, a profile): it
+             * kept marking the one picked before */
+            var cur = defaultSettings.customCursor;
+            $('#theme-images .cursor-box a').each(function () { $(this).toggleClass('active', !!cur && $('img', this).attr('src') === cur); });
         },
         setMenu() {
             this.setMenuOpacity();
