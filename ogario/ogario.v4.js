@@ -19125,6 +19125,23 @@ function _lmElTeamsActive(client) {
     return !!(client && client.socket && client._lmElTeamsSocket === client.socket &&
         (client.serverType === 'expandingland' || client.isLegendWorld === true));
 }
+/* Expanding Land chat (opcode 99) carries the sender's name, flags and the colour of one of their
+ * cells, but no player or cell id (LegendWorld pkt_chat_message). A guest with no nick is sent as
+ * the placeholder "An unnamed cell" (a logged-in player without a nick gets the account name, on
+ * the cells too). Nothing tells which cells are a guest's, so such lines get a translated label in
+ * the chat box and popups and are never drawn over a cell (else a player really named "An unnamed
+ * cell" would show every guest's lines). Returns the label, or null for any other sender. */
+var LM_EL_UNNAMED_SENDER = 'An unnamed cell';
+function _lmElChatSender(name, official, isLegendWorld) {
+    if (!isLegendWorld || official || name !== LM_EL_UNNAMED_SENDER) return null;
+    var label = typeof lmT === 'function' ? lmT('pkg.z2.unnamedSender') : '';
+    return label && label !== 'pkg.z2.unnamedSender' ? label : name;
+}
+/* "An unnamed cell: text" with the label in front instead (other lines unchanged) */
+function _lmElChatRelabel(line, label) {
+    var pre = LM_EL_UNNAMED_SENDER + ': ';
+    return label && line.indexOf(pre) === 0 ? label + ': ' + line.slice(pre.length) : line;
+}
 /* Expanding Land team chat (opcode 202, no public chat 99): with a clan tag (same-tag players),
  * or in Teams mode without one (the server sends it to your own team) */
 function _lmElTeamChat(client) {
@@ -32688,7 +32705,8 @@ function thelegendmodproject() {
             for (var i = 0; i < this._lmHideWords.length; i++) if (s.indexOf(this._lmHideWords[i]) !== -1) return true;
             return false;
         },
-        displayChatMessage(time, caseof, plId, msg) {
+        /* unnamed: the label of an Expanding Land guest with no nick (_lmElChatSender), else empty */
+        displayChatMessage(time, caseof, plId, msg, unnamed) {
             var mcolor = ""
 
             //mcolor = "blue";
@@ -32718,7 +32736,9 @@ function thelegendmodproject() {
                         if (_lmBaseNick.indexOf(_lmPre[_lmPi]) === 0) { _lmBaseNick = _lmBaseNick.slice(_lmPre[_lmPi].length); _lmCut = true; }
                     }
                 }
-                if (!(0 === a.length || fancyCount2(_lmBaseNick) > 15 || 0 === n.length)) {
+                /* the label is ours, not a nick: the nick length limit does not drop it */
+                var _lmUnn = !!unnamed && a === unnamed;
+                if (!(0 === a.length || (!_lmUnn && fancyCount2(_lmBaseNick) > 15) || 0 === n.length)) {
                     //if (!(0 == a.length || a.length > 15 || 0 == n.length)) {
                     /* History entries feed the canvas chat bubbles (plain text, matched to the
                      * raw cell nick): store the raw nick, and the raw text unless the parsed
@@ -32742,7 +32762,9 @@ function thelegendmodproject() {
                             'message': n.indexOf('<') !== -1 ? n : rawText,
                             'nickHtml': a,
                             'messageHtml': n,
-                            'time': Date.now()
+                            'time': Date.now(),
+                            /* no bubble: the sender's cells are not known */
+                            'noBubble': _lmUnn
                         });
                         this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
                         /* highlight a line that mentions my nick (only a fixed class is added; the
@@ -43379,13 +43401,16 @@ function thelegendmodproject() {
                         /* Expanding Land Teams without a tag: a team mate's team chat (202) comes back as plain
                          * 99 whose text already starts with "nick: " (shown like tagged team chat) */
                         var _lmTeamNoTag = this.isLegendWorld && !(flag & 0xE0) && _lmElTeamsActive(this) && message.indexOf(name + ': ') === 0;
-                        if (!application.isChatUserMuted(_lmSrvChatId)) application.displayChatMessage(time, caseof, _lmSrvChatId, _lmTeamNoTag ? message : name + ": " + message); //this.displayChatMessage(time, caseof, plId, msg);	
+                        /* a guest with no nick: labelled, never over a cell (_lmElChatSender) */
+                        var _lmUnnamed = _lmElChatSender(name, server || admin || mod, this.isLegendWorld);
+                        if (!application.isChatUserMuted(_lmSrvChatId)) application.displayChatMessage(time, caseof, _lmSrvChatId, _lmElChatRelabel(_lmTeamNoTag ? message : name + ": " + message, _lmUnnamed), _lmUnnamed); //this.displayChatMessage(time, caseof, plId, msg);	
                     }
                     /* Expanding Land team chat (sent as opcode 202) comes back as a plain opcode 99 with
                      * no server/admin/mod flag, only to same-tag players; the text already has "nick: ". */
                     else if (this.isLegendWorld && $("#clantag").val() !== "" && !(flag & 0xE0)) {
                         var _lmTeamChatId = application.serverChatUserId(message.split(': ', 1)[0]);
-                        if (!application.isChatUserMuted(_lmTeamChatId)) application.displayChatMessage(time, 101, _lmTeamChatId, message);
+                        var _lmUnnamedT = _lmElChatSender(message.split(': ', 1)[0], false, true);
+                        if (!application.isChatUserMuted(_lmTeamChatId)) application.displayChatMessage(time, 101, _lmTeamChatId, _lmElChatRelabel(message, _lmUnnamedT), _lmUnnamedT);
                     }
                     /* ── Auto-reconnect on server restart chat ── */
                     if (server && message.toLowerCase().includes('restarting') && !(window._lmIsRoomUrl && window._lmIsRoomUrl(this.ws))) {
@@ -75720,7 +75745,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             for (var _ci = _chOn ? _ch.length - 1 : -1; _ci >= 0; _ci--) {
                 var _ce = _ch[_ci];
                 if (!(_now - _ce.time < 15000)) break;
-                if (_ce.nick && !_chatMap.has(_ce.nick)) {
+                if (_ce.nick && !_ce.noBubble && !_chatMap.has(_ce.nick)) {
                     var _msg = _ce.message;
                     if (_msg && !_msg.includes('emoticon') && !_msg.includes('<img src') &&
                         !_msg.includes('DosAttack') && !_msg.includes('DosFight') &&

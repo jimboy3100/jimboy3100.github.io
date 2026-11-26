@@ -1,0 +1,20 @@
+{
+  "pkg.z2.unnamedSender": {
+    "en": "Unnamed player",
+    "el": "Παίκτης χωρίς όνομα",
+    "es": "Jugador sin nombre",
+    "bg": "Играч без име",
+    "fr": "Joueur sans pseudo",
+    "ar": "لاعب بلا اسم",
+    "zh": "无名玩家",
+    "ru": "Игрок без ника",
+    "de": "Spieler ohne Namen",
+    "tr": "İsimsiz oyuncu",
+    "pl": "Gracz bez nicku",
+    "nl": "Speler zonder naam",
+    "pt": "Jogador sem nome",
+    "id": "Pemain tanpa nama",
+    "ja": "名前なしのプレイヤー",
+    "it": "Giocatore senza nome"
+  }
+}
