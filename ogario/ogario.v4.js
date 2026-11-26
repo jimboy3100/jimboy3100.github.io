@@ -82361,6 +82361,31 @@ function pickPlayerCellBySize(players, selectBiggest) {
         st.raf = requestAnimationFrame(function () { st.raf = 0; ogarhusettings(); });
     }
     function _lmMenuFitVisible(el) { return !!(el && el.getClientRects().length); }
+    function _lmMenuFitRail(el) { return /(^|\s)ps-scrollbar-/.test(String(el.className)); }
+    /* The open list's rows. Late module rows, a language or text scale change or an opened
+     * section change what a height-capped list holds, but not its height nor the menu's size,
+     * so the menu's observer does not see them and the scrollbar kept its old thumb and range.
+     * Its rows (not the scrollbar rails) are watched too, with the same refit in the next frame. */
+    function _lmMenuFitWatch(st, region) {
+        if (st.watched === region || typeof ResizeObserver !== 'function') return;
+        if (!st.rowRo) {
+            st.rowRo = new ResizeObserver(_lmMenuFitQueue);
+            if (typeof MutationObserver === 'function') st.rowMo = new MutationObserver(function (recs) {
+                for (var i = 0; i < recs.length; i++) {
+                    var a = recs[i].addedNodes, r = recs[i].removedNodes, j;
+                    for (j = 0; j < a.length; j++) if (a[j].nodeType === 1 && !_lmMenuFitRail(a[j])) st.rowRo.observe(a[j]);
+                    for (j = 0; j < r.length; j++) if (r[j].nodeType === 1) st.rowRo.unobserve(r[j]);
+                }
+                _lmMenuFitQueue();
+            });
+        }
+        st.rowRo.disconnect();
+        if (st.rowMo) st.rowMo.disconnect();
+        st.watched = region;
+        if (!region) return;
+        for (var c = region.firstElementChild; c; c = c.nextElementSibling) if (!_lmMenuFitRail(c)) st.rowRo.observe(c);
+        if (st.rowMo) st.rowMo.observe(region, { childList: true });
+    }
     function ogarhusettings() {
         var st = _lmMenuFitState || (_lmMenuFitState = {});
         var hc = document.getElementById('helloContainer');
@@ -82391,6 +82416,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (c.classList.contains('submenu-panel') && _lmMenuFitVisible(c)) { region = c; break; }
             }
         }
+        _lmMenuFitWatch(st, region);
         var col = region;
         while (col && col.parentNode !== hc) col = col.parentNode;
         var colB = 0, othersB = 0;
@@ -82418,10 +82444,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
         var p = _lmMenuFitPlan(o);
         st.input = o;
         if (region) {
-            var mh = p.region + 'px';
-            if (region.style.maxHeight !== mh) {
-                region.style.maxHeight = mh;
+            var mh = p.region + 'px', resized = region.style.maxHeight !== mh;
+            if (resized) region.style.maxHeight = mh;
+            /* the plugin's thumb and range follow the list's content too (a list that scrolls
+             * natively while the plugin is missing needs nothing) */
+            var psFn = typeof $ === 'function' && $.fn ? $.fn.perfectScrollbar : null, sh = region.scrollHeight;
+            if (resized || (typeof psFn === 'function' && !psFn._lmStandIn && (region !== st.psRegion || sh !== st.psSH))) {
                 try { $(region).perfectScrollbar('update'); } catch (e) { }
+                st.psRegion = region;
+                st.psSH = region.scrollHeight;
             }
         }
         var par = hc.offsetParent, pr = par && par !== document.body ? par.getBoundingClientRect() : { left: 0, top: 0 };

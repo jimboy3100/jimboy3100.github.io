@@ -97,6 +97,46 @@
       reg.dispatchEvent(new WheelEvent('wheel', { deltaY: 120, deltaMode: 0, bubbles: true, cancelable: true }));
       await frames();
       if (!(reg.scrollTop > 0)) fail.push('wheel does not scroll the settings list');
+      /* rows added to (or removed from) the height-capped list, a new section, a section opened:
+       * the scrollbar's thumb is the one a fresh update gives, without any scroll in between
+       * (it kept its old size and range), and the last row is reached; then nothing more runs */
+      var ps = $.fn.perfectScrollbar;
+      if (typeof ps === 'function' && !ps._lmStandIn) {
+        var thumb = function () { var t = reg.querySelector('.ps-scrollbar-y'); return t ? Math.round(t.getBoundingClientRect().height * 10) / 10 : -1; };
+        var fresh = async function (tag) {
+          await sleep(60); await frames();
+          var a = thumb(); $(reg).perfectScrollbar('update'); var b = thumb();
+          if (Math.abs(a - b) > 0.5) fail.push('capped list, ' + tag + ': scrollbar thumb ' + a + ' px, ' + b + ' px after an update');
+        };
+        reg.scrollTop = 0; await frames();
+        var box = reg.firstElementChild, added = [];
+        for (var ri = 0; ri < 60; ri++) { var row = document.createElement('div'); row.textContent = 'late row ' + ri; row.style.height = '40px'; box.appendChild(row); added.push(row); }
+        await fresh('rows added');
+        var sec = document.createElement('div'); sec.style.height = '1500px'; reg.appendChild(sec); added.push(sec);
+        await fresh('section added');
+        sec.style.height = '3000px';
+        await fresh('section opened');
+        /* the last row is reached by the plugin's range: thumb at the rail's end */
+        reg.scrollTop = reg.scrollHeight; await frames();
+        var tb = reg.querySelector('.ps-scrollbar-y'), rl = reg.querySelector('.ps-scrollbar-y-rail');
+        if (tb && rl && Math.abs(tb.getBoundingClientRect().bottom - rl.getBoundingClientRect().bottom) > 2) fail.push('capped list: thumb not at the end with the last row shown');
+        var sr = sec.getBoundingClientRect(), lr0 = reg.getBoundingClientRect();
+        if (sr.bottom > lr0.bottom + 2) fail.push('capped list: last row not reachable');
+        reg.scrollTop = 0; await frames();
+        added.forEach(function (n) { n.remove(); });
+        await fresh('rows removed');
+        var a11 = window.legendmod5 || window.defaultmapsettings || {}, ts1 = a11.a11yTextScale;
+        if (window.LMAccessibility && typeof LMAccessibility.sync === 'function') {
+          a11.a11yTextScale = 1.6; LMAccessibility.sync(true);
+          await sleep(150); await fresh('text scale 1.6');
+          a11.a11yTextScale = ts1; LMAccessibility.sync(true);
+          await sleep(150); await fresh('text scale back');
+        }
+        var updates = 0, idle = $.fn.perfectScrollbar;
+        $.fn.perfectScrollbar = function () { if (this[0] === reg) updates++; return idle.apply(this, arguments); };
+        try { await sleep(700); await frames(); } finally { $.fn.perfectScrollbar = idle; }
+        if (updates) fail.push('capped list: ' + updates + ' scrollbar updates while nothing changed');
+      }
       reg.scrollTop = 0;
       info.list = Math.round(reg.getBoundingClientRect().height) + 'px';
     }
