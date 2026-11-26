@@ -394,6 +394,13 @@ function _lmMatchHistoryButton() {
     b.textContent = '📜 ' + _lmMhT('matchHistory', 'Match history');
 }
 window._lmMatchHistoryButton = _lmMatchHistoryButton;
+/* another language: the session line, the "Match history" link and the private room link under
+ * the menu footer are written again (they kept the language they were first written in) */
+if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
+    try { _lmSessionStats(); } catch (e) { }
+    try { _lmMatchHistoryButton(); } catch (e) { }
+    try { _lmRoomButton(); } catch (e) { }
+});
 /* The match history list is the History tab of the Analytics window (ogario/modules/analytics.js),
  * next to the statistics made from the same games; it was a window of its own. */
 function _lmMatchHistoryOpen() {
