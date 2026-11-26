@@ -24162,14 +24162,15 @@ function thelegendmodproject() {
             return view;
         },
         /* true once for the echo of a line this socket sent in the last 5 s (same text); the
-         * echo then counts as our own line: no sound, mute button, word filter or mention */
+         * echo then counts as our own line: no sound, mute button, word filter or mention.
+         * 'team' for a team line (202), which is already shown when it is sent */
         _lmElOwnChatEcho(text, socket) {
             var q = this._lmElSentChat;
             if (!q || !q.length || !socket) return false;
             var now = Date.now();
             for (var i = 0; i < q.length; i++) {
                 if (now - q[i].at > 5000 || q[i].socket !== socket) { q.splice(i--, 1); continue; }
-                if (q[i].text === text) { q.splice(i, 1); return true; }
+                if (q[i].text === text) { var _lmTeam = q[i].team; q.splice(i, 1); return _lmTeam ? 'team' : true; }
             }
             return false;
         },
@@ -33373,6 +33374,15 @@ function thelegendmodproject() {
                     teamView.setUint16(2 + 2 * fullMsg.length, 0, true); // null term
                     legendmod.sendMessage(teamView);
                     this.lastMessageSentTime = Date.now();
+                    /* the server sends team chat to the team mates only, not back to the sender
+                     * (teams_chat_recipient): show it here as our own line, like a team mate's line.
+                     * Remembered so an echo from a server that does send it back is not shown twice. */
+                    var _lmSentT = this._lmElSentChat || (this._lmElSentChat = []);
+                    _lmSentT.push({ text: fullMsg, at: Date.now(), socket: legendmod.socket, team: true });
+                    if (_lmSentT.length > 8) _lmSentT.shift();
+                    try {
+                        this.displayChatMessage(new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1'), 101, this.playerID, fullMsg, null, currentNick);
+                    } catch (eT) { }
                     return true;
                 }
                 /* All other servers: use chat relay websocket (shared with Delta) */
@@ -44238,6 +44248,8 @@ function thelegendmodproject() {
                     /* Expanding Land: the echo of what this socket just sent is our own line (the packet has
                      * no sender id; the name alone could be anyone's): shown under our relay id */
                     var _lmOwnEcho = this.isLegendWorld && !(flag & 0xE0) && application._lmElOwnChatEcho(message, this.socket);
+                    /* our own team line (202) came back: it was shown when it was sent */
+                    var _lmOwnTeamEcho = _lmOwnEcho === 'team';
                     if (message.includes("E = split bots")) {
                         message = lmT('game2.botCommandsHint')
                     }
@@ -44252,7 +44264,7 @@ function thelegendmodproject() {
                      * prefix is replaced, so no text can pass for another sender. */
                     if (this.isLegendWorld && !(flag & 0xE0) && name !== 'Unnamed' && message.indexOf('Unnamed: ') === 0 &&
                         (_lmElTeamsActive(this) || $("#clantag").val() !== "")) message = name + ': ' + message.slice(9);
-                    if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && ($("#clantag").val() === "" || server || admin || mod)) {
+                    if (!_lmOwnTeamEcho && message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && ($("#clantag").val() === "" || server || admin || mod)) {
                         var _lmSrvChatId = _lmOwnEcho ? application.playerID : application.serverChatUserId(name);
                         /* Expanding Land Teams without a tag: a team mate's team chat (202) comes back as plain
                          * 99 whose text already starts with "nick: " (shown like tagged team chat) */
@@ -44264,7 +44276,7 @@ function thelegendmodproject() {
                     }
                     /* Expanding Land team chat (sent as opcode 202) comes back as a plain opcode 99 with
                      * no server/admin/mod flag, only to same-tag players; the text already has "nick: ". */
-                    else if (this.isLegendWorld && $("#clantag").val() !== "" && !(flag & 0xE0)) {
+                    else if (!_lmOwnTeamEcho && this.isLegendWorld && $("#clantag").val() !== "" && !(flag & 0xE0)) {
                         /* the server's name when the text starts with it (it can hold ": " or be over 15 characters) */
                         var _lmTeamNick = message.indexOf(name + ': ') === 0 ? name : message.split(': ', 1)[0];
                         var _lmTeamChatId = application.serverChatUserId(_lmTeamNick);
