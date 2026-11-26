@@ -47388,15 +47388,9 @@ function thelegendmodproject() {
                 (_lmKWatch ? '<div style="padding:0 12px 10px;text-align:center;"><button id="lm-go-watch" type="button" style="background:' + mc + ';color:var(--lm-btn-tc,#fff);border:0;border-radius:var(--lm-radius-s,4px);padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udc41\ufe0f ' + _lmTH('watchKiller', '') + '</button></div>' : '') + // i18n-ok: an icon before the translated label
                 (_lmGraph ? '<div style="padding:0 12px 12px;"><canvas id="lm-go-graph" width="276" height="60" style="width:276px;height:60px;display:block;max-width:100%;border-radius:var(--lm-radius-s,4px);background:rgba(0,0,0,0.2);"></canvas></div>' : '') +
 
-                /* Share match card button + referral link (hidden on very small viewports to keep card compact) */
+                /* referral link (hidden on very small viewports to keep card compact); sharing the
+                 * match card is the share icon in the header */
                 '<div class="lm-go-extra">' +
-                '<div style="padding:0 12px 12px;text-align:center;">' +
-                '<button id="lm-go-sharecard" type="button" style="' +
-                'background:linear-gradient(135deg,' + mc + ',var(--lm-btn3,#7c3aed));color:var(--lm-btn-tc,#fff);border:0;border-radius:var(--lm-radius-s,6px);' +
-                'padding:8px 18px;font-size:12px;font-weight:700;cursor:pointer;width:100%;' +
-                'letter-spacing:0.5px;transition:opacity 0.2s;' +
-                '" onmouseover="this.style.opacity=\'0.85\'" onmouseout="this.style.opacity=\'1\'">' +
-                '📸 ' + _lmTH('game2.shareCard', '') + '</button></div>' +
 
                 /* Referral / invite link */
                 '<div style="padding:0 12px 10px;text-align:center;">' +
@@ -47511,10 +47505,16 @@ function thelegendmodproject() {
                     else done(false);
                 } catch (err) { done(false); }
             });
-            /* Share: the phone/browser share sheet, else a tweet in a new tab (cancelling the sheet is no error) */
+            /* Share (the one share button; there was also a "Share match card" button): the match card
+             * image with the text and your link through the phone/browser share sheet, the text and
+             * link alone where files cannot be shared, else a tweet in a new tab. Cancelling the sheet
+             * is no error. Saving the image is the camera icon. */
             var shareBtn = document.getElementById('lm-go-share');
             if (shareBtn) shareBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
+                if (shareBtn._lmBusy) return;
+                /* no auto-dismiss while the card is drawn and the sheet is open */
+                if (goSelf && goSelf._gameOverDismissTimer) { clearTimeout(goSelf._gameOverDismissTimer); goSelf._gameOverDismissTimer = null; }
                 var where = '';
                 try { where = [$('#region').val() === 'Private' ? '' : $('#region option:selected').text(), $('#gamemode option:selected').text()].map(function (v) { return String(v || '').trim(); }).filter(Boolean).join(' '); } catch (err) { }
                 var text = (where ? lmT('game2.shareTextOn', [fmtMass(u.highestMass || u.finalMass), fmtTime(u.timeTotal || u.longestTimeAlive || 0), where.slice(0, 60)]) : lmT('game2.shareText', [fmtMass(u.highestMass || u.finalMass), fmtTime(u.timeTotal || u.longestTimeAlive || 0)])) + ' - Legend Mod';
@@ -47522,10 +47522,28 @@ function thelegendmodproject() {
                 try { _sNick = String($('#nick').val() || '').trim().replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 30); } catch(e2) {}
                 var url = 'https://www.legendmod.ml/' + (_sNick ? '?ref=' + _sNick : '');
                 var tweet = function () { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener'); };
-                try {
-                    /* i18n-ok: AbortError is an error name */ if (navigator.share) navigator.share({ title: 'Legend Mod', text: text, url: url }).catch(function (err) { if (!err || err.name !== 'AbortError') tweet(); });
-                    else tweet();
-                } catch (err) { tweet(); }
+                /* i18n-ok: Legend Mod is the name */ var data = { title: 'Legend Mod - ' + lmT('game2.matchCompleteTitle'), text: text, url: url };
+                var textOnly = function () {
+                    try {
+                        /* i18n-ok: AbortError is an error name */ if (navigator.share) navigator.share(data).catch(function (err) { if (!err || err.name !== 'AbortError') tweet(); });
+                        else tweet();
+                    } catch (err) { tweet(); }
+                };
+                if (!navigator.share || !navigator.canShare || typeof File !== 'function') { textOnly(); return; }
+                shareBtn._lmBusy = true;
+                shareBtn.style.opacity = '0.5';
+                _lmRenderMatchCard(function (blob) {
+                    shareBtn._lmBusy = false;
+                    shareBtn.style.opacity = '';
+                    var file = null;
+                    try { file = blob ? new File([blob], 'legend-mod-match.png', { type: 'image/png' }) : null; } catch (err) { file = null; }
+                    var withFile = null;
+                    try { if (file && navigator.canShare({ files: [file] })) withFile = { title: data.title, text: data.text, url: data.url, files: [file] }; } catch (err) { withFile = null; }
+                    if (!withFile) { textOnly(); return; }
+                    try {
+                        /* i18n-ok: AbortError is an error name */ navigator.share(withFile).catch(function (err) { if (!err || err.name !== 'AbortError') textOnly(); });
+                    } catch (err) { textOnly(); }
+                });
             });
 
             /* ═══ MATCH CARD RENDERER ═══ */
@@ -47707,53 +47725,6 @@ function thelegendmodproject() {
                     if (window.toastr) toastr.success(_lmTH('game2.cardDownloaded', '') + ' 📸');
                 });
             });
-
-            /* Share Match Card button (big button at bottom of card) */
-            var shareCardBtn = document.getElementById('lm-go-sharecard');
-            if (shareCardBtn) shareCardBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                /* Pause auto-dismiss while generating */
-                if (goSelf && goSelf._gameOverDismissTimer) { clearTimeout(goSelf._gameOverDismissTimer); goSelf._gameOverDismissTimer = null; }
-                shareCardBtn.textContent = '⏳ ' + lmT('game2.generating');
-                shareCardBtn.style.pointerEvents = 'none';
-                _lmRenderMatchCard(function (blob) {
-                    shareCardBtn.textContent = '📸 ' + lmT('game2.shareCard');
-                    shareCardBtn.style.pointerEvents = '';
-                    if (!blob) { if (window.toastr) toastr.warning(_lmTH('game2.cardFailed', '')); return; }
-                    var file = new File([blob], 'legend-mod-match.png', { type: 'image/png' });
-                    var text = lmT('game2.shareText', [fmtMass(u.highestMass || u.finalMass), fmtTime(u.timeTotal || u.longestTimeAlive || 0)]) + ' - Legend Mod';
-                    /* i18n-ok: Legend Mod is the name */ var shareData = { title: 'Legend Mod - ' + lmT('game2.matchCompleteTitle'), text: text, url: 'https://www.legendmod.ml/' };
-                    /* Try sharing with image file first (mobile), then text-only share, then download */
-                    try {
-                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                            shareData.files = [file];
-                            navigator.share(shareData).catch(function (err) {
-                                if (err && err.name !== 'AbortError') _lmFallbackDownload(blob);
-                            });
-                        } else if (navigator.share) {
-                            navigator.share(shareData).catch(function () { });
-                            _lmFallbackDownload(blob);
-                        } else {
-                            _lmFallbackDownload(blob);
-                        }
-                    } catch (err) {
-                        _lmFallbackDownload(blob);
-                    }
-                });
-            });
-
-            /* Fallback: download the card image */
-            function _lmFallbackDownload(blob) {
-                var url = URL.createObjectURL(blob);
-                var a = document.createElement('a');
-                a.href = url;
-                a.download = 'legend-mod-match-' + Date.now() + '.png';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
-                if (window.toastr) toastr.success(_lmTH('game2.cardSaved', '') + ' 🚀');
-            }
 
             /* Referral / invite link: populate and wire up */
             var refLinkEl = document.getElementById('lm-go-reflink');
