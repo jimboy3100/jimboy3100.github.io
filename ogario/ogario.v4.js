@@ -55172,7 +55172,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
         overlayCtx: null,
         _gpuSceneActive: false,
         _webglBackgroundActive: false,
-        _webglPhase: 'none',
         _foregroundCtx: null,
         _webglDisabledUntil: 0,
         _overlayFramePrepared: false,
@@ -60607,34 +60606,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 c.width = pw;
                 c.height = ph;
                 this._lmOverlayDirty = false;
-            }
-        },
-
-        setWebGLFrameMode(active) {
-            this._gpuSceneActive = !!active;
-
-            this._foregroundCtx =
-                this._gpuSceneActive && this.overlayCtx
-                    ? this.overlayCtx
-                    : this.ctx;
-
-            this._webglPhase =
-                this._gpuSceneActive
-                    ? 'background'
-                    : 'none';
-
-            if (this.glCanvas) {
-                this.glCanvas.style.display =
-                    this._gpuSceneActive
-                        ? 'block'
-                        : 'none';
-            }
-
-            if (this.overlayCanvas) {
-                this.overlayCanvas.style.display =
-                    this._gpuSceneActive
-                        ? 'block'
-                        : 'none';
             }
         },
 
@@ -68176,12 +68147,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             );
 
             return true;
-        },
-        drawWebGLFoodBatch(cellsArray) {
-            return this.drawWebGLBatch(cellsArray);
-        },
-        drawWebGLViruses(virusesArray) {
-            return this.drawWebGLBatch(virusesArray);
         },
         /* Filled circle batch with uniform color — used by ghost cells and similar
          * cases where Canvas2D uses ctx.fill() (not ctx.stroke()). */
