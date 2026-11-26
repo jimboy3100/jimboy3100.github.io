@@ -6,7 +6,7 @@
 // Needs Node 22+ (global fetch and WebSocket) and Chrome/Chromium.
 // Chrome: env CHROME_PATH, otherwise the usual install locations are tried.
 // If <outDir>/probe.js exists it is evaluated in the page after [seconds]. A probe can send real mouse
-// clicks / touch taps with window.__lmInput (see Runtime.bindingCalled below).
+// clicks / touch taps and key presses with window.__lmInput (see Runtime.bindingCalled below).
 // A machine-readable summary is written to <outDir>/result.json.
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -96,12 +96,17 @@ let served = 0, missing = [], probeValue;
       errors.push('CONSOLE.ERROR ' + txt.slice(0, 300) + (fr ? ' @' + fr.url.replace(/^https:\/\/[^/]+\//, '') + ':' + fr.lineNumber : ''));
     } else if (m.method === 'Runtime.bindingCalled' && m.params.name === '__lmInput') {
       /* a probe asks for a real click or tap (trusted input, like a player's): window.__lmInput(JSON
-       * { id, type: 'click' | 'tap', x, y }) in viewport pixels; window.__lmInputDone(id) is called after */
+       * { id, type: 'click' | 'tap', x, y }) in viewport pixels, or a real key press on the focused
+       * element: { id, type: 'key', key, code, keyCode, shift }; window.__lmInputDone(id) is called after */
       let q = null;
       try { q = JSON.parse(m.params.payload); } catch (e) { }
       if (!q) return;
       const x = Number(q.x) || 0, y = Number(q.y) || 0;
-      if (q.type === 'tap') {
+      if (q.type === 'key') {
+        const k = { key: String(q.key || ''), code: String(q.code || q.key || ''), windowsVirtualKeyCode: Number(q.keyCode) || 0, nativeVirtualKeyCode: Number(q.keyCode) || 0, modifiers: q.shift ? 8 : 0 };
+        await send('Input.dispatchKeyEvent', Object.assign({ type: 'rawKeyDown' }, k));
+        await send('Input.dispatchKeyEvent', Object.assign({ type: 'keyUp' }, k));
+      } else if (q.type === 'tap') {
         await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
         await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
       } else {

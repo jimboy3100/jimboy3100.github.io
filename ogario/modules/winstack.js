@@ -11,10 +11,12 @@
  * The menu takes part only when a page of it is opened from outside it (LMWinStack.front from the
  * User Scripts hotkey and the Command Centre). It keeps its own value (the Hotkeys window, colour
  * pickers and tooltips stay above it): the older windows go just under it until it closes or
- * another window is opened or touched, then everything is as usual again.
- * A window's backdrop of its own (an empty full-screen element just before it) moves with it.
- * Nothing runs per frame: a MutationObserver on <body>'s children and the windows' style, and one
- * pointerdown listener. */
+ * another window is opened or touched, or Esc is pressed in the menu, then everything is as usual
+ * again. Opened from the menu's own tabs, Esc or menu button, the menu stays under the windows.
+ * A window's backdrop of its own (an empty full-screen element just before it, taking taps, under
+ * it) moves with it. A z-index a window's module sets while it is stacked becomes its own value.
+ * Nothing runs per frame: a MutationObserver on <body>'s children and the windows' attributes,
+ * pointerdown and focusin listeners, and one Esc keydown listener. */
 (function () {
     'use strict';
     var W = window, D = W.document;
@@ -58,22 +60,34 @@
         var cs = W.getComputedStyle(el);
         return cs.display !== 'none' && cs.visibility !== 'hidden' && el.getClientRects().length > 0;
     }
-    /* an empty full-screen element right before the window: its backdrop */
+    /* an empty full-screen element right before the window that takes taps and lies under it: its
+     * backdrop (a layer above the window or one taps go through is something else, e.g. an effect) */
     function backdropOf(el) {
         var p = el.previousElementSibling;
-        if (!p || p.children.length || W.getComputedStyle(p).position !== 'fixed') return null;
+        if (!p || p.children.length) return null;
+        var cs = W.getComputedStyle(p);
+        if (cs.position !== 'fixed' || cs.pointerEvents === 'none' || baseZ(p) > el._lmWs.base) return null;
         var r = p.getBoundingClientRect();
         return r.width >= W.innerWidth - 2 && r.height >= W.innerHeight - 2 ? p : null;
     }
+    /* the z-index on the element is still the one set here (not one its module set since) */
+    function ours(el) {
+        var o = el._lmWsZ;
+        return !!o && el.style.getPropertyValue('z-index') === o.set && el.style.getPropertyPriority('z-index') === 'important';
+    }
     function setZ(el, z) {
         if (!el) return;
-        if (!el._lmWsZ) el._lmWsZ = { v: el.style.getPropertyValue('z-index'), p: el.style.getPropertyPriority('z-index') };
+        /* the element's own value, read again when its module changed it meanwhile */
+        if (!el._lmWsZ || !ours(el)) el._lmWsZ = { v: el.style.getPropertyValue('z-index'), p: el.style.getPropertyPriority('z-index') };
+        el._lmWsZ.set = String(z);
         if (el.style.getPropertyValue('z-index') !== String(z) || el.style.getPropertyPriority('z-index') !== 'important') el.style.setProperty('z-index', String(z), 'important');
     }
     function restoreZ(el) {
         if (!el || !el._lmWsZ) return;
-        var o = el._lmWsZ;
+        var mine = ours(el), o = el._lmWsZ;
         el._lmWsZ = null;
+        /* a value its module set meanwhile stays */
+        if (!mine) return;
         if (o.v) el.style.setProperty('z-index', o.v, o.p); else el.style.removeProperty('z-index');
     }
     function untrack(el) {
@@ -87,7 +101,7 @@
         if (!el._lmWs) {
             /* its own value, read before anything is changed */
             el._lmWs = { base: baseZ(el), menu: !!menu, vis: true };
-            if (mo) try { mo.observe(el, { attributes: true, attributeFilter: ['style', 'class'] }); } catch (e) { }
+            if (mo) try { mo.observe(el, { attributes: true, attributeFilter: ['style', 'class', 'hidden'] }); } catch (e) { }
         }
         var i = stack.indexOf(el);
         if (i >= 0) stack.splice(i, 1);
@@ -141,6 +155,12 @@
                 Array.prototype.forEach.call(m.removedNodes, function (n) { if (n._lmWs) { untrack(n); changed = true; } });
             } else if (m.target._lmWs) {
                 var el = m.target, was = el._lmWs.vis, now = visible(el);
+                /* its module set another z-index: that is its own value from now on */
+                if (el._lmWsZ ? !ours(el) : !el._lmWs.menu && baseZ(el) !== el._lmWs.base) {
+                    el._lmWsZ = null;
+                    el._lmWs.base = baseZ(el);
+                    changed = true;
+                }
                 /* shown again: opened last; hidden: the others may go back to their own values */
                 if (now && !was) raise.push(el);
                 else if (!now && was) changed = true;
@@ -156,11 +176,41 @@
             mo = new MutationObserver(onMutations);
             mo.observe(D.body, { childList: true });
         }
-        /* a touch or click on a window brings it to the front */
-        D.addEventListener('pointerdown', function (e) {
+        /* a touch or click on a window, or the keyboard focus moving into one (Tab), brings it to
+         * the front */
+        var touched = function (e) {
             var r = rootOf(e.target);
             if (r && (r._lmWs || eligible(r)) && stack[stack.length - 1] !== r) front(r);
+        };
+        D.addEventListener('pointerdown', touched, true);
+        D.addEventListener('focusin', touched, true);
+        /* Esc while a menu page is in front of windows (opened over them from the Command Centre or
+         * a hotkey): the windows come back in front, instead of one of them closing unseen under the
+         * menu (their own Esc handlers on window are added when they open, after this one). Only
+         * for a key in the menu or on the page: not while typing in a field (a search box clears),
+         * nor with the Hotkeys window or anything above the windows open (Command Centre, HUD
+         * editor, gamepad window), whose Esc is their own. */
+        W.addEventListener('keydown', function (e) {
+            if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+            var top = stack[stack.length - 1], t = e.target || {};
+            if (!top || !top._lmWs.menu || !visible(top)) return;
+            if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable) return;
+            if (t !== D.body && t !== D.documentElement && t !== D && !top.contains(t)) return;
+            if (!stack.some(function (el) { return !el._lmWs.menu && el.isConnected && visible(el); })) return;
+            for (var c = D.body.children, i = 0; i < c.length; i++) {
+                var o = c[i];
+                if (o === top || o._lmWs) continue;
+                var cs = W.getComputedStyle(o), z = parseInt(cs.zIndex, 10);
+                if ((o.id === 'hotkeys' || z > MAX) && cs.display !== 'none' && cs.visibility !== 'hidden' && cs.pointerEvents !== 'none' && o.getClientRects().length) return;
+            }
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            untrack(top);
+            restack();
         }, true);
+        /* windows already open when this loads, in the order they were added */
+        Array.prototype.forEach.call(D.body.children, function (el) { if (eligible(el) && visible(el)) track(el, false); });
+        if (stack.length > 1) restack();
         return true;
     }
     if (!init()) D.addEventListener('DOMContentLoaded', init);

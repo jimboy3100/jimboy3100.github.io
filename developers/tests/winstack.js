@@ -7,15 +7,17 @@ let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 
 const listeners = [];
-const doc = { body: {}, addEventListener: (t, f, c) => listeners.push([t, c]) };
-const ctx = { document: doc, MutationObserver: function () { this.observe = () => {}; } };
+const doc = { body: { children: [] }, addEventListener: (t, f, c) => listeners.push([t, c]) };
+const winListeners = [];
+const ctx = { document: doc, MutationObserver: function () { this.observe = () => {}; }, addEventListener: (t, f, c) => winListeners.push([t, c]) };
 ctx.window = ctx;
 vm.createContext(ctx);
 vm.runInContext(src, ctx);
 const WS = ctx.LMWinStack;
 check('LMWinStack loaded once', !!WS && typeof WS.front === 'function' && ctx._lmWinStackLoaded === true);
 vm.runInContext(src, ctx);
-check('a second load adds no listener', listeners.filter(l => l[0] === 'pointerdown').length === 1 && listeners[0][1] === true);
+check('a second load adds no listener', listeners.filter(l => l[0] === 'pointerdown').length === 1 && listeners[0][1] === true &&
+  listeners.filter(l => l[0] === 'focusin').length === 1 && winListeners.filter(l => l[0] === 'keydown' && l[1] === true).length === 1);
 
 const order = WS._core.order;
 const eq = (a, b) => JSON.stringify(Array.from(a)) === JSON.stringify(b);
