@@ -195,7 +195,9 @@
             var top = stack[stack.length - 1], t = e.target || {};
             if (!top || !top._lmWs.menu || !visible(top)) return;
             if (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.tagName === 'SELECT' || t.isContentEditable) return;
-            if (t !== D.body && t !== D.documentElement && t !== D && !top.contains(t)) return;
+            /* a target that is not a Node (window, from window.dispatchEvent, or none) is left to the
+             * other Esc handlers: contains() throws on it */
+            if (t !== D.body && t !== D.documentElement && t !== D && !(t.nodeType && top.contains(t))) return;
             if (!stack.some(function (el) { return !el._lmWs.menu && el.isConnected && visible(el); })) return;
             for (var c = D.body.children, i = 0; i < c.length; i++) {
                 var o = c[i];
