@@ -47604,6 +47604,8 @@ function thelegendmodproject() {
                 _lmRenderMatchCard(function (blob) {
                     try { shareCard = blob ? new File([blob], 'legend-mod-match.png', { type: 'image/png' }) : null; } catch (err) { shareCard = null; }
                     cardState = 2;
+                    /* readable flag only (the tests wait for it instead of a fixed delay) */
+                    if (shareBtn) shareBtn._lmCardReady = true;
                     var w = cardWait;
                     cardWait = [];
                     w.forEach(function (f) { f(); });

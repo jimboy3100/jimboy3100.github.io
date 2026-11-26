@@ -17,6 +17,12 @@
   var card = function () { lm.showSessionStats(u); return sleep(400); };
   /* the card is drawn and encoded first (slow on a busy machine) */
   var waitCalls = async function (n) { for (var i = 0; i < 150 && calls.length + opened.length < n; i++) await sleep(100); };
+  /* the card image is drawn while the card is shown: wait for it to be ready (no fixed delay) */
+  var waitReady = async function (what) {
+    var b = document.getElementById('lm-go-share');
+    for (var i = 0; i < 200 && !(b && b._lmCardReady); i++) { await sleep(100); b = document.getElementById('lm-go-share'); }
+    need(what + ': the card image got ready', !!(b && b._lmCardReady));
+  };
   try {
     window.open = function (url) { opened.push(String(url)); return null; };
     put('share', function (d) { calls.push(d); return Promise.resolve(); });
@@ -45,7 +51,7 @@
     var settle = null;
     put('share', function (d) { calls.push(d); return new Promise(function (res, rej) { settle = { res: res, rej: rej }; }); });
     await card();
-    await sleep(1200); /* the card image is drawn while the card is shown */
+    await waitReady('rapid taps');
     var sb = document.getElementById('lm-go-share');
     sb.click(); sb.click(); sb.click();
     await sleep(50);
@@ -64,7 +70,7 @@
     var refuse = function () { var e = new Error('refused'); e.name = 'NotAllowedError'; return e; };
     put('share', function (d) { calls.push(d); return Promise.reject(refuse()); });
     await card();
-    await sleep(1200);
+    await waitReady('refused');
     sb = document.getElementById('lm-go-share');
     sb.click();
     await sleep(100);
@@ -79,7 +85,7 @@
     calls = []; opened = [];
     put('share', function (d) { calls.push(d); var e = new Error('cancel'); e.name = 'AbortError'; return Promise.reject(e); });
     await card();
-    await sleep(1200);
+    await waitReady('cancel');
     sb = document.getElementById('lm-go-share');
     sb.click();
     await sleep(100);

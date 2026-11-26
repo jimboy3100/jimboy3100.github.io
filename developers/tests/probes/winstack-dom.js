@@ -24,14 +24,35 @@
       window.__lmInput(JSON.stringify(q));
     });
   };
-  /* a busy machine can be slow to answer: one more try, counted */
-  var click = async function (x, y) {
-    var q = function () { return send({ type: mobile ? 'tap' : 'click', x: Math.round(x), y: Math.round(y) }); };
-    if (await q()) return true;
-    info.inputRetries = (info.inputRetries || 0) + 1;
-    return q();
+  /* the harness answers once the input is sent, but a busy page can handle a tap only at its next
+   * frame (seconds apart at a low frame rate): wait until the page has seen it (its up or click,
+   * after the down that raises a window; a cancel when the busy page answered late), at most 10 s;
+   * late ones are counted */
+  var seen = function (w, types) {
+    var o = { got: false };
+    o.p = new Promise(function (res) {
+      var fin = function () { if (o.got) return; o.got = true; clearTimeout(t); types.forEach(function (ty) { w.removeEventListener(ty, fin, true); }); res(true); };
+      var t = setTimeout(function () { types.forEach(function (ty) { w.removeEventListener(ty, fin, true); }); res(false); }, 10000);
+      types.forEach(function (ty) { w.addEventListener(ty, fin, true); });
+    });
+    return o;
   };
-  var key = function (k, kc) { return send({ type: 'key', key: k, code: k, keyCode: kc }); };
+  var handled = async function (o) {
+    if (!o.got) info.lateInput = (info.lateInput || 0) + 1;
+    if (!(await o.p)) info.inputUnseen = (info.inputUnseen || 0) + 1;
+  };
+  /* a busy machine can be slow to answer: one more try, counted */
+  var click = async function (x, y, w) {
+    var o = seen(w || window, ['pointerup', 'pointercancel', 'touchend', 'touchcancel', 'mouseup', 'click']);
+    var q = function () { return send({ type: mobile ? 'tap' : 'click', x: Math.round(x), y: Math.round(y) }); };
+    if (!(await q())) { info.inputRetries = (info.inputRetries || 0) + 1; await q(); }
+    await handled(o);
+  };
+  var key = async function (k, kc, w) {
+    var o = seen(w || window, ['keyup']);
+    await send({ type: 'key', key: k, code: k, keyCode: kc });
+    await handled(o);
+  };
   var src = '';
   try { src = await (await fetch('https://www.legendmod.ml/ogario/modules/winstack.js?wsdom=' + Date.now())).text(); } catch (e) { }
   if (src.indexOf('LMWinStack') < 0) return { fail: ['could not read ogario/modules/winstack.js'] };
@@ -128,18 +149,18 @@
     C = await h.add(h.win('C', 999990, 480, 160, 260, 200));
     if (h.at(500, 200) !== 'C') fail.push('a window opened over one with a backdrop opened behind (' + h.at(500, 200) + ')');
     if (h.at(400, 100) !== 'B') fail.push('the window went under its own backdrop (' + h.at(400, 100) + ')');
-    await click(400, 100); await sleep(100);
+    await click(400, 100, h.W); await sleep(100);
     info.pair = [h.z(A), h.z(BD), h.z(B), h.z(C)].join('/');
     if (h.at(500, 200) !== 'B') fail.push('a real ' + (mobile ? 'tap' : 'click') + ' did not bring the window with a backdrop in front (' + h.at(500, 200) + ')');
     if (!(+h.z(BD) <= +h.z(B))) fail.push('the backdrop went above its window (' + info.pair + ')');
     /* in front, its backdrop covers the other windows again (a tap there is the backdrop's) */
     if (h.at(700, 300) !== 'BD') fail.push('the window in front no longer has its backdrop over the others (' + h.at(700, 300) + ')');
     h.f.style.width = '760px'; h.f.style.height = '380px'; await sleep(100);
-    await click(310, 250); await sleep(100);
+    await click(310, 250, h.W); await sleep(100);
     if (h.at(400, 100) !== 'B') fail.push('after a resize the window went under its backdrop (' + h.at(400, 100) + ')');
     /* closed with its backdrop: the others are back to their own values and usable */
     BD.remove(); B.remove(); await sleep(60);
-    await click(700, 300); await sleep(100);
+    await click(700, 300, h.W); await sleep(100);
     info.closedPair = [h.z(A), h.z(C)].join('/');
     if (h.at(700, 300) !== 'C') fail.push('after the window with a backdrop closed a real ' + (mobile ? 'tap' : 'click') + ' did not reach the window (' + h.at(700, 300) + ')');
     if (!(+h.z(C) > +h.z(A)) || +h.z(C) > 999990) fail.push('after the window with a backdrop closed the other two are not in their order (' + info.closedPair + ')');
@@ -157,7 +178,7 @@
     B = await h.add(h.win('B', 999992, 30, 30, 300, 200));
     h.W.focus(); S.focus(); await sleep(30);
     info.tab0 = h.d.activeElement && h.d.activeElement.id;
-    await key('Tab', 9); await sleep(80);
+    await key('Tab', 9, h.W); await sleep(80);
     info.tab = (h.d.activeElement && h.d.activeElement.id) + ' ' + h.at(200, 150);
     if (h.d.activeElement !== h.d.getElementById('A-in')) fail.push('the real Tab did not reach the window (' + info.tab + ')');
     else if (h.at(200, 150) !== 'A') fail.push('a real Tab into a window behind another left it behind (' + info.tab + ')');
@@ -187,6 +208,7 @@
       var px = pr.left + 12, py = pr.top + 12;
       if (px > rr.left && px < rr.right && py > rr.top && py < rr.bottom) { px = pr.left + 12; py = pr.bottom - 12; }
       var stackIds = function () { return LMWinStack._stack().map(function (e) { return e.id; }).join(','); };
+      info.pdTap = rootAt(px, py) + ' ' + stackIds();
       await click(px, py); await sleep(150);
       if (!/lm-perf-diag$/.test(stackIds())) fail.push('a real ' + (mobile ? 'tap' : 'click') + ' on Performance diagnostics did not bring it in front (' + stackIds() + ')');
       var rp = mid(rm);
