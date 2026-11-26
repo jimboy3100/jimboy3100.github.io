@@ -53,24 +53,6 @@
     "ja": "自動（10000 未満は正確、以降 12.3k、123k、1.2M）",
     "it": "Auto (esatta sotto 10000, poi 12.3k, 123k, 1.2M)"
   },
-  "pkg.mg.statsPos": {
-    "en": "Game stats position",
-    "el": "Θέση στατιστικών παιχνιδιού",
-    "es": "Posición de las estadísticas",
-    "bg": "Позиция на статистиката",
-    "fr": "Position des statistiques",
-    "ar": "موضع إحصاءات اللعبة",
-    "zh": "遊戲統計位置",
-    "ru": "Положение статистики",
-    "de": "Position der Spielstatistik",
-    "tr": "Oyun istatistiklerinin yeri",
-    "pl": "Położenie statystyk gry",
-    "nl": "Positie van de spelstatistieken",
-    "pt": "Posição das estatísticas",
-    "id": "Posisi statistik game",
-    "ja": "ゲーム統計の位置",
-    "it": "Posizione delle statistiche"
-  },
   "pkg.mg.statsTop": {
     "en": "Top left",
     "el": "Πάνω αριστερά",

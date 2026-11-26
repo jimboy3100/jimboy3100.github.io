@@ -12943,5 +12943,23 @@
     "id": "Tampilkan stopwatch (di atas minimap)",
     "ja": "ストップウォッチを表示（ミニマップの上）",
     "it": "Mostra cronometro (sopra la minimappa)"
+  },
+  "settings.statsPosition": {
+    "en": "Game stats position",
+    "el": "Θέση στατιστικών παιχνιδιού",
+    "es": "Posición de las estadísticas",
+    "bg": "Позиция на статистиката",
+    "fr": "Position des statistiques",
+    "ar": "موضع إحصاءات اللعبة",
+    "zh": "遊戲統計位置",
+    "ru": "Положение статистики",
+    "de": "Position der Spielstatistik",
+    "tr": "Oyun istatistiklerinin yeri",
+    "pl": "Położenie statystyk gry",
+    "nl": "Positie van de spelstatistieken",
+    "pt": "Posição das estatísticas",
+    "id": "Posisi statistik game",
+    "ja": "ゲーム統計の位置",
+    "it": "Posizione delle statistiche"
   }
 }

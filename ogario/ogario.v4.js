@@ -26001,7 +26001,7 @@ function thelegendmodproject() {
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar"], "hudGroup");
             /* one choice for where the game stats line is ("at the top" and "at the bottom centre" were two switches) */
-            this.addChoiceBox(".hudGroup", "statsPosition", "pkg.mg.statsPos", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
+            this.addChoiceBox(".hudGroup", "statsPosition", "settings.statsPosition", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
             /* Spectating and streaming: click to follow, the stream overlay and the spectator director */
             this.addOptions(["lbClickSpectate", "clickSpectate", "minimapClickSpectate", "companionLive", "companionChat"], "spectateGroup");
             $('<button type="button" id="lm-director-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
