@@ -59,6 +59,8 @@
         /* the note that the English text is the binding one: only shown in the other languages */
         html[lang="en"] .lm-binding { display: none; }
         .lm-binding { font-style: italic; opacity: .85; }
+        /* with a theme from the game its background image fills the window, not only the text column (the body) */
+        html.lm-themed-root.lm-bg-set { background: var(--lm-pc) var(--lm-menu-bg) center / cover no-repeat fixed !important; }
     </style>
     <script type="application/ld+json">
     {
@@ -92,7 +94,8 @@
     </script>
     <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
     <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-privacy" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" data-lm-css="site" charset="utf-8"></script>
+    <!-- the full Theme Bridge stylesheet (no data-lm-css="site"): this page has no colour variables of its own, so the theme sets its text and background -->
+    <script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8"></script>
 </head>
 
 <body>
