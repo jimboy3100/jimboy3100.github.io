@@ -273,7 +273,7 @@
         st.id = 'lm-dc-style';
         st.textContent =
             '#lm-dc{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999993;display:flex;align-items:center;justify-content:center;' +
-            'background:rgba(0,0,0,.55);padding:8px;box-sizing:border-box;font-family:inherit}' +
+            'background:rgba(0,0,0,.55);padding:8px;box-sizing:border-box;font-family:inherit}#lm-dc:focus{outline:none}' +
             '#lm-dc *{box-sizing:border-box}' +
             // i18n-ok: CSS
             '#lm-dc .lm-dc-panel{width:760px;max-width:100%;max-height:100%;display:flex;flex-direction:column;background:var(--lm-w-bg,var(--lm-pc,#1b1d22));color:var(--lm-tc,#e8e8e8);font-size:var(--lm-w-fs,12px);' +
@@ -323,6 +323,9 @@
         root.id = 'lm-dc';
         root.setAttribute('role', 'dialog');
         root.setAttribute('aria-modal', 'true');
+        /* the focus stays in the window when its text is clicked: on the page, Esc did not close
+         * it and keys went to the game */
+        root.tabIndex = -1;
         /* the game reads mouse buttons, the wheel and keys from window handlers */
         ['mousedown', 'mouseup', 'click', 'dblclick', 'contextmenu', 'wheel', 'pointerdown', 'pointerup', 'keyup', 'keypress'].forEach(function (ev) {
             root.addEventListener(ev, stop, false);
@@ -505,7 +508,13 @@
             if (s.id === viewType) o.selected = true;
             sel.appendChild(o);
         });
-        sel.addEventListener('change', function () { viewType = sel.value; renderServer(); });
+        /* the list is drawn again with a new select: the focus goes to it (it fell to the page) */
+        sel.addEventListener('change', function () {
+            viewType = sel.value;
+            renderServer();
+            var ns = D.getElementById('lm-dc-type');
+            try { if (ns) ns.focus(); } catch (e) { }
+        });
         row.appendChild(sel);
         row.appendChild(mk('span', 'lm-dc-note', connected && cur ? t('current', typeName(cur)) : t('notConnected')));
         body.appendChild(row);
