@@ -1100,6 +1100,8 @@
             if (s2.custom.length >= MAX_CUSTOM) { toast('warning', esc(T('customFull'))); return; }
             var target = type.value === 'beatAvg' ? Math.round(avg(games.slice(-30).map(function (g) { return g.peak; }))) : Math.round(+inp.value);
             var goal = sanitizeGoal({ id: 'c' + Date.now().toString(36), type: type.value, target: target, since: Date.now() }, true);
+            /* "beat average" has no field to focus: without games it has no average yet, say so */
+            if (!goal && type.value === 'beatAvg') { toast('info', esc(T('noGames'))); return; }
             if (!goal) { inp.focus(); return; }
             s2.custom.push(goal);
             saveGoals(s2);
