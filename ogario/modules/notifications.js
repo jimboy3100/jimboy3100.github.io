@@ -593,7 +593,9 @@
             ['keydown', 'keyup', 'wheel', 'mousedown', 'pointerdown', 'touchstart', 'contextmenu'].forEach(function (n) {
                 p.addEventListener(n, function (ev) { ev.stopPropagation(); }, { passive: n === 'wheel' || n === 'touchstart' });
             });
-            p.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') ui.close(); });
+            /* Esc closes it wherever the focus is (after a tap on the bell the focus is on the bell,
+             * and Esc opened the menu with the panel still open); only the window in front closes */
+            p._lmEsc = true;
             d.body.appendChild(p);
             this.panel = p;
         },
@@ -626,9 +628,11 @@
             if (!this.panel) this.build();
             this.panel.style.display = '';
             this.renderList();
+            root.addEventListener('keydown', onEsc, true);
         },
         close: function () {
             if (this.panel) this.panel.style.display = 'none';
+            root.removeEventListener('keydown', onEsc, true);
             saveNow();
         },
         toggle: function () {
@@ -647,6 +651,13 @@
         }
     };
 
+    function onEsc(e) {
+        if (!(e.key === 'Escape' || e.keyCode === 27) || !ui.panel || ui.panel.style.display === 'none') return;
+        if (root.LMWinStack && typeof root.LMWinStack.escFor === 'function' && !root.LMWinStack.escFor(ui.panel, e)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        ui.close();
+    }
     function el(tag, cls, text) {
         var e = root.document.createElement(tag);
         if (cls) e.className = cls;
