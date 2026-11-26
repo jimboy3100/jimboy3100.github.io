@@ -1,0 +1,104 @@
+/* "Show viewports" (debug, top bar set-debug): the numbered boxes 1 (the main connection's server
+ * view) and 2, 3 ... (each multibox unit's), with the real code cut out of ogario/ogario.v4.js:
+ * drawViewPorts, _lmUnitFoodBox, calMinMax and drawViewport (drawn on a recording context).
+ * Cases: a unit's box is its own server view (the food its connection received) and does not
+ * change with the main camera's zoom, so World Spectate (zoomed out over the whole map) no longer
+ * blows boxes 2, 3 up past the map; food of another unit or of the main connection is not counted;
+ * a unit without food keeps the old screen-sized box; box 1 is gone once the food is (disconnect,
+ * server switch) instead of staying at the last server's place; box 1 ignores the units' food.
+ * node developers/tests/debugviewports.js [ogario.v4.js] */
+'use strict';
+const fs = require('fs'), path = require('path'), vm = require('vm');
+const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+let failed = 0;
+const check = (name, ok, info) => { console.log((ok ? 'ok   ' : 'FAIL ') + name + (ok || info === undefined ? '' : '  [' + info + ']')); if (!ok) failed++; };
+
+function block(start, from) {
+    const i = src.indexOf(start, from || 0);
+    if (i < 0) return null;
+    let d = 0;
+    for (let k = src.indexOf('{', i); k < src.length; k++) {
+        if (src[k] === '{') d++;
+        else if (src[k] === '}' && !--d) return src.slice(i, k + 1);
+    }
+    return null;
+}
+const methods = ['        drawViewPorts(ctx) {', '        _lmUnitFoodBox(sp) {', '        calMinMax() {'].map((m) => [m, block(m)]);
+/* drawViewport is written "drawViewport: function (...)" */
+const dv = block('        drawViewport: function (ctx, text');
+methods.forEach((m) => { if (!m[1] && m[0].indexOf('_lm') >= 0) m[1] = '        _lmUnitFoodBox() { return null; }'; });
+const missing = methods.filter((m) => !m[1]).map((m) => m[0].trim()).concat(dv ? [] : ['drawViewport']);
+if (missing.length) { console.log('FAIL code not found: ' + missing.join(', ')); process.exit(1); }
+
+function env(o) {
+    const LM = { food: [], foodMulti: [], viewXTrue: 0, viewYTrue: 0, multiBoxPlayerExists: true };
+    const boxes = [];
+    const ctx2d = {
+        fillText(text, x, y) { this._t = text; },
+        beginPath() { this._p = []; }, moveTo(x, y) { this._p.push([x, y]); }, lineTo(x, y) { this._p.push([x, y]); },
+        closePath() { }, stroke() {
+            const xs = this._p.map((p) => p[0]), ys = this._p.map((p) => p[1]);
+            boxes.push({ label: this._t, minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) });
+        }
+    };
+    const win = { fullSpectator: false, spects: o.spects || [] };
+    const c = { window: win, LM, legendmod: LM, spects: win.spects, defaultSettings: { foodSize: 5, bordersColor: '#ff0000' },
+        defaultmapsettings: { multiboxAmount: 3 }, Math, Number, String, console, document: { hidden: false } };
+    vm.createContext(c);
+    vm.runInContext('var drawRender = {' + methods.map((m) => m[1]).concat([dv]).join(',\n') + '};', c);
+    const dr = c.drawRender;
+    dr.ctx = ctx2d; dr.canvasWidth = 1600; dr.canvasHeight = 900; dr.scale = o.scale || 0.5;
+    return { LM, dr, boxes, frame() { boxes.length = 0; dr.calMinMax(); dr.drawViewPorts(ctx2d); return boxes.slice(); } };
+}
+/* food spread +-r around (cx, cy), owned by connection `spectator` (0 = main) */
+function food(list, cx, cy, r, spectator) {
+    for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) list.push({ x: cx - r + i * r / 5, y: cy - r + j * r / 5, spectator });
+}
+const unit = (number, x, y) => ({ number, player: true, playerCellIDs: [number * 1e9 + 1], playerX: x, playerY: y });
+const byLabel = (bs, l) => bs.find((b) => b.label === l);
+const MAP = 15957;
+
+/* 1. normal view and World Spectate zoom: unit boxes stay the units' server views */
+{
+    const u1 = unit(1, 4000, 3000), u2 = unit(2, -6000, -2000);
+    const e = env({ spects: [u1, u2], scale: 0.5 });
+    food(e.LM.food, 0, 0, 2500, 0);
+    food(e.LM.foodMulti, 4000, 3000, 2000, 1);
+    food(e.LM.foodMulti, -6000, -2000, 1500, 2);
+    const normal = e.frame();
+    const b2 = byLabel(normal, '2'), b3 = byLabel(normal, '3');
+    check('normal view: box 2 is unit 1\'s food box', b2 && Math.round(b2.minX) === 4000 - 2000 - 15 && Math.round(b2.maxX) === 4000 + 2000 - 15, b2 && [b2.minX, b2.maxX]);
+    check('normal view: box 3 is unit 2\'s food box (not unit 1\'s food)', b3 && Math.round(b3.minX) === -6000 - 1500 - 15 && Math.round(b3.maxY) === -2000 + 1500 - 15, b3 && [b3.minX, b3.maxY]);
+    e.dr.scale = 0.02; /* World Spectate zoomed out over the whole map */
+    const world = e.frame();
+    const w2 = byLabel(world, '2'), w3 = byLabel(world, '3');
+    check('World Spectate: box 2 unchanged by the zoom', w2 && w2.minX === b2.minX && w2.maxX === b2.maxX && w2.minY === b2.minY && w2.maxY === b2.maxY, w2 && [w2.minX, w2.maxX]);
+    check('World Spectate: box 3 unchanged by the zoom', w3 && w3.minX === b3.minX && w3.maxY === b3.maxY);
+    check('World Spectate: unit boxes inside the map', [w2, w3].every((b) => b && b.minX > -MAP && b.maxX < MAP && b.minY > -MAP && b.maxY < MAP),
+        w2 && [w2.minX, w2.maxX, w2.minY, w2.maxY]);
+    const w1 = byLabel(world, '1');
+    check('box 1 is the main connection\'s food only', w1 && Math.round(w1.minX) === -2515 && Math.round(w1.maxX) === 2485, w1 && [w1.minX, w1.maxX]);
+}
+/* 2. a unit whose connection has no food yet keeps the old box (main screen size around it) */
+{
+    const u1 = unit(1, 1000, 500);
+    const e = env({ spects: [u1], scale: 0.5 });
+    food(e.LM.food, 0, 0, 2500, 0);
+    const b = byLabel(e.frame(), '2');
+    check('unit without food: screen-sized box around it', b && b.minX === 1000 - 1600 && b.maxX === 1000 + 1600 && b.minY === 500 - 900, b && [b.minX, b.maxX, b.minY]);
+}
+/* 3. no stale box 1 after the food is gone (disconnect, server switch) */
+{
+    const e = env({ spects: [], scale: 0.5 });
+    food(e.LM.food, 9000, 9000, 2000, 0);
+    check('box 1 drawn while there is food', !!byLabel(e.frame(), '1'));
+    e.LM.food = [];
+    check('no food: box 1 not drawn at the old server view', !byLabel(e.frame(), '1'));
+    e.LM.viewXTrue = -3000; /* the food box starts at the main view, like the camera */
+    food(e.LM.food, -3000, 0, 1000, 0);
+    const b = byLabel(e.frame(), '1');
+    check('new server food: box 1 at the new view', b && Math.round(b.maxX) === -2015, b && b.maxX);
+}
+
+console.log(failed ? 'FAILED ' + failed : 'all debugviewports checks passed');
+process.exit(failed ? 1 : 0);

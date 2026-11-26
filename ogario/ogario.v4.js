@@ -79555,6 +79555,27 @@ function pickPlayerCellBySize(players, selectBiggest) {
             ctx.globalAlpha =
                 previousAlpha;
         },
+        /* Box of the food one multibox unit's connection received (its server view), started at the
+         * unit like calMinMax starts at the main view. Debug boxes only; null without food. */
+        _lmUnitFoodBox(sp) {
+            var food = LM.foodMulti;
+            if (!sp || !food || !food.length || !Number.isFinite(sp.playerX) || !Number.isFinite(sp.playerY)) return null;
+            var box = this._lmUnitBoxScratch || (this._lmUnitBoxScratch = { minX: 0, minY: 0, maxX: 0, maxY: 0 });
+            var foodOffset = 10 + defaultSettings.foodSize;
+            var minX = sp.playerX, maxX = sp.playerX, minY = sp.playerY, maxY = sp.playerY, n = 0;
+            for (var i = 0; i < food.length; i++) {
+                var f = food[i];
+                if (!f || f.removed || f.spectator !== sp.number) continue;
+                var x = f.x - foodOffset, y = f.y - foodOffset;
+                if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+                if (x < minX) minX = x; if (x > maxX) maxX = x;
+                if (y < minY) minY = y; if (y > maxY) maxY = y;
+                n++;
+            }
+            if (!n) return null;
+            box.minX = minX; box.minY = minY; box.maxX = maxX; box.maxY = maxY;
+            return box;
+        },
         drawViewPorts(ctx) {
             /* the server's view of the player (food box, calMinMax). It drew LM.camMin/Max, which since
              * the per-frame culling bounds (3.477) is the screen itself, so the box was never visible. */
@@ -79568,13 +79589,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 for (var sI = 0; sI < neededSpects; sI++) {
                     var sp = spects[sI];
                     if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
+                        var labelName = String(sI + 2);
+                        /* the unit's server view, by the same food-box rule as box 1. A box of the main
+                         * screen's size around the unit grew with the main camera's zoom, so World
+                         * Spectate (zoomed out over the whole map) blew it up far past the map. */
+                        var unitBox = this._lmUnitFoodBox(sp);
+                        if (unitBox) {
+                            this.drawViewport(this.ctx, labelName, unitBox.minX, unitBox.minY, unitBox.maxX, unitBox.maxY, defaultSettings.bordersColor || '#ffffff', 15);
+                            continue;
+                        }
                         var spX = sp.playerX;
                         var spY = sp.playerY;
                         var spMinX = spX - halfW;
                         var spMinY = spY - halfH;
                         var spMaxX = spX + halfW;
                         var spMaxY = spY + halfH;
-                        var labelName = String(sI + 2);
                         this.drawViewport(this.ctx, labelName, spMinX, spMinY, spMaxX, spMaxY, defaultSettings.bordersColor || '#ffffff', 15);
                     }
                 }
@@ -80423,7 +80452,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         calMinMax() {
             var food = LM.food;
-            if (!food || !food.length) return;
+            if (!food || !food.length) {
+                /* no food (disconnect, server switch, ClearAll): no server view to show, not the last one */
+                LM.srvViewMinX = LM.srvViewMinY = LM.srvViewMaxX = LM.srvViewMaxY = NaN;
+                return;
+            }
             var tempX = legendmod.viewXTrue;
             var tempY = legendmod.viewYTrue;
             /*
