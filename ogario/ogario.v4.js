@@ -63718,7 +63718,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
         /* src (size x size) into the layer; copy: src is a CPU canvas (copied onto a GPU canvas
-         * first). False when the program is missing. Throws as texImage2D does (tainted canvas). */
+         * first). False when the program is missing or the layer cannot be drawn into (then the
+         * caller uploads from the canvas). Throws as texImage2D does (tainted canvas). */
         _lmSkinGpuPut(src, layer, copy) {
             var g = this._lmSkinPut, gl = this.gl, size = this.glSkinTexSize || 512;
             if (!g || !gl || !this.glSkinArray) return false;
@@ -63750,24 +63751,40 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 gl.activeTexture(unit);
             }
             var prog = gl.getParameter(gl.CURRENT_PROGRAM), vao = gl.getParameter(gl.VERTEX_ARRAY_BINDING), fb = gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING);
-            var caps = [gl.BLEND, gl.DEPTH_TEST, gl.SCISSOR_TEST, gl.CULL_FACE, gl.STENCIL_TEST, gl.DITHER], on = [], i;
+            var caps = [gl.BLEND, gl.DEPTH_TEST, gl.SCISSOR_TEST, gl.CULL_FACE, gl.STENCIL_TEST, gl.DITHER], on = [], i, drawn = false;
             for (i = 0; i < caps.length; i++) {
                 on.push(gl.isEnabled(caps[i]));
                 if (on[i]) gl.disable(caps[i]);
             }
-            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, g.fb);
-            gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, this.glSkinArray, 0, layer);
-            gl.viewport(0, 0, size, size);
-            gl.useProgram(g.prog);
-            gl.bindVertexArray(g.vao);
-            gl.drawArrays(gl.TRIANGLES, 0, 3);
-            gl.bindVertexArray(vao);
-            gl.useProgram(prog);
-            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, fb);
-            /* the viewport the resize handler sets on this canvas */
-            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-            for (i = 0; i < caps.length; i++) if (on[i]) gl.enable(caps[i]);
-            return true;
+            try {
+                gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, g.fb);
+                gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, this.glSkinArray, 0, layer);
+                /* WebGL reports no error by throwing: whether the layers can be drawn into is asked
+                 * once per texture array (every layer has the same format), not per skin (the
+                 * question waits for the GPU) */
+                if (g.checked !== this.glSkinArray) {
+                    g.checked = this.glSkinArray;
+                    g.complete = gl.checkFramebufferStatus(gl.DRAW_FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+                    if (!g.complete) console.warn('[LegendMod WebGL] skin layers cannot be drawn into; skins are uploaded from their canvas');
+                }
+                if (g.complete) {
+                    gl.viewport(0, 0, size, size);
+                    gl.useProgram(g.prog);
+                    gl.bindVertexArray(g.vao);
+                    gl.drawArrays(gl.TRIANGLES, 0, 3);
+                    drawn = true;
+                }
+            } finally {
+                /* the frame's state back, also when a call above threw */
+                gl.bindVertexArray(vao);
+                gl.useProgram(prog);
+                gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, fb);
+                /* the viewport the resize handler sets on this canvas (this context draws nothing
+                 * with another one) */
+                gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+                for (i = 0; i < caps.length; i++) if (on[i]) gl.enable(caps[i]);
+            }
+            return drawn;
         },
 
         /* Skin layer bookkeeping around lmSkinLayersNew / lmSkinLayerPick / lmSkinLayerTake.

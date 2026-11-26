@@ -640,6 +640,26 @@ function pageLib() {
             if (d) { res.differing++; if (d > res.max) res.max = d; }
         }
         res.glError = gl.getError();
+        /* a texture array that cannot be drawn into (no storage: incomplete attachment): false,
+         * so the caller uploads from the canvas, and the frame's state as before */
+        var realArr = R.glSkinArray, bad = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, bad);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+        gl.useProgram(R.glProgram);
+        gl.bindVertexArray(vao);
+        gl.enable(gl.BLEND); gl.disable(gl.DEPTH_TEST);
+        gl.viewport(0, 0, W, H);
+        gl.activeTexture(gl.TEXTURE0);
+        var before2 = snap();
+        R.glSkinArray = bad;
+        var put2;
+        try { put2 = R._lmSkinGpuPut(cv, 0, true); } catch (e) { put2 = 'threw ' + e; }
+        R.glSkinArray = realArr;
+        res.incomplete = { result: put2, stateKept: snap() === before2, glError: gl.getError() };
+        /* the real array again: drawn on the GPU (asked once per array) */
+        var put3 = R._lmSkinGpuPut(cv, 5, true);
+        res.incomplete.realAgain = put3;
+        gl.bindVertexArray(null);
         gl.getExtension('WEBGL_lose_context').loseContext();
         return res;
     }
@@ -838,6 +858,9 @@ async function main() {
             (sw.stateKept ? '' : ' (' + sw.state.join(' -> ') + ')'));
         check('GPU skin upload: the same texels as texSubImage3D from the canvas for every premultiplied value, GL state as before, no GL error',
             sw.available && sw.differing === 0 && sw.stateKept && sw.glError === 0);
+        console.log('     GPU skin upload into a layer that cannot be drawn into: ' + JSON.stringify(sw.incomplete));
+        check('GPU skin upload: a layer that cannot be drawn into gives false (the canvas upload runs), GL state as before; the real layers still go on the GPU',
+            !!sw.incomplete && sw.incomplete.result === false && sw.incomplete.stateKept && sw.incomplete.realAgain === true);
         if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); failed++; }
         if (opt('--out', null)) fs.writeFileSync(path.join(opt('--out'), 'glbatch-diff.json'), JSON.stringify(stats, null, 2));
 
