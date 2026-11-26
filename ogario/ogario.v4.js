@@ -21831,6 +21831,25 @@ function thelegendmodproject() {
     window.legendmod5 = defaultmapsettings;
 
     /*
+     * The colour bytes the browser gives WebGL for a pixel of a canvas (stored premultiplied)
+     * when it reads the canvas on the CPU: entry a * 256 + p is the colour of premultiplied
+     * value p at alpha a. Chrome divides in 32-bit floats and rounds half to even (checked for
+     * every value by developers/tests/glbatch.js). The skin upload on the GPU (_lmSkinGpuPut)
+     * looks its colours up here, so a skin layer gets the same texels as the CPU upload it
+     * replaces; the browser's own GPU conversion differs by 1 in about 1% of these values.
+     */
+    function lmSkinUnpremulLut() {
+        var lut = new Uint8Array(65536), f = Math.fround, k = f(1 / 255);
+        for (var a = 1; a < 256; a++) {
+            var s = f(1 / f(a * k));
+            for (var p = 0; p < 256; p++) {
+                var v = f(Math.min(1, f(f(p * k) * s)) * 255), lo = Math.floor(v), d = v - lo;
+                lut[a * 256 + p] = d > 0.5 || (d === 0.5 && (lo & 1)) ? lo + 1 : lo;
+            }
+        }
+        return lut;
+    }
+    /*
      * Skin cache bookkeeping, kept as plain functions so developers/tests/skincache.js can
      * check them without a browser.
      *
@@ -62055,6 +62074,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.glSkinAlphaMode = new WeakMap();
                 /* which skin owns each layer and when it was last drawn (lmSkinLayerPick) */
                 this._glSkinLayers = lmSkinLayersNew(this.glSkinMaxLayers);
+                /* new skins go into their layer on the GPU (_lmSkinGpuPut) */
+                this.initWebGLSkinPut(gl, createAndLinkProgram);
 
                 /*
                  * Delta-style dynamic jelly polygons use the SAME raw WebGL2
@@ -63300,8 +63321,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var layer = this._lmSkinLayerFree();
             if (layer < 0) return -1;
 
-            /* Decoded skin images go the async way: a canvas as texSubImage3D source is read
-             * back from the GPU synchronously (15-65 ms main-thread stall per new skin). */
+            /* Decoded skin images and canvases go the async way: a canvas as texSubImage3D source
+             * is read back from the GPU synchronously (15-65 ms main-thread stall per new skin).
+             * Only image elements without createImageBitmap (or that it cannot decode) stay here. */
             if (this._lmQueueSkinUpload(node, typeof sourceNode === 'string' ? sourceNode : null)) {
                 return -1;
             }
@@ -63310,21 +63332,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var size = this.glSkinTexSize || 512;
 
             try {
-                var srcCanvas = node;
-                if (node.width && node.height && (node.width !== size || node.height !== size)) {
-                    /* one reused scratch canvas instead of a new canvas per skin (stutter when many
-                     * skins load at once). Cleared first (transparent skins), and dropped on any
-                     * failure below: a canvas tainted by a non-CORS image stays tainted. */
-                    var tmp = this._lmSkinScratch || (this._lmSkinScratch = document.createElement('canvas'));
-                    if (tmp.width !== size || tmp.height !== size) {
-                        tmp.width = size;
-                        tmp.height = size;
-                    }
-                    var tmpCtx = tmp.getContext('2d');
-                    tmpCtx.clearRect(0, 0, size, size);
-                    tmpCtx.drawImage(node, 0, 0, size, size);
-                    srcCanvas = tmp;
-                }
+                var srcCanvas = this._lmSkinSized(node, size);
 
                 gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
 
@@ -63363,21 +63371,37 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return -1;
             }
         },
+        /* node at size x size: itself, or drawn scaled onto one reused scratch canvas instead of a
+         * new canvas per skin (stutter when many skins load at once). Cleared first (transparent
+         * skins); callers drop it on any failure: a canvas tainted by a non-CORS image stays tainted. */
+        _lmSkinSized(node, size) {
+            if (!node.width || !node.height || (node.width === size && node.height === size)) return node;
+            var tmp = this._lmSkinScratch || (this._lmSkinScratch = document.createElement('canvas'));
+            if (tmp.width !== size || tmp.height !== size) {
+                tmp.width = size;
+                tmp.height = size;
+            }
+            var tmpCtx = tmp.getContext('2d');
+            tmpCtx.clearRect(0, 0, size, size);
+            tmpCtx.drawImage(node, 0, 0, size, size);
+            return tmp;
+        },
 
         /* Off-main-thread skin upload: createImageBitmap decodes and resizes the source image
          * in the background (from the skin's Blob when loadSkin kept it: decoding from an
          * image element still costs ~4 ms on the main thread), then the bitmap is cut to the same circle as cacheSkin into a
-         * CPU-backed canvas and uploaded from there (about 1.5 ms instead of 15-65 ms).
-         * Uploads run from requestAnimationFrame with a small time budget per frame. The cell
-         * is drawn body-only (as while its skin loads) until its layer is ready. Returns false
-         * when the node cannot use this path (the synchronous upload is used then). */
+         * CPU-backed canvas, and _lmSkinGpuPut puts that into the layer (about 1 ms instead of 20-70 ms).
+         * A canvas with no decodable image behind it is put into its layer the same way, from
+         * the same frame job. Uploads run from requestAnimationFrame with a small time budget per
+         * frame. The cell is drawn body-only (as while its skin loads) until its layer is ready.
+         * Returns false when the node cannot use this path (the synchronous upload is used then). */
         _lmQueueSkinUpload(node, key) {
-            if (typeof createImageBitmap !== 'function' || !node || node._lmBmpFail) return false;
+            if (!node) return false;
             var src = node._lmSrc || node;
-            if (typeof HTMLImageElement === 'undefined' || !(src instanceof HTMLImageElement) ||
-                !src.complete || !(src.naturalWidth > 0) || src._failed) {
-                return false;
-            }
+            var bitmap = typeof createImageBitmap === 'function' && !node._lmBmpFail && typeof HTMLImageElement !== 'undefined' &&
+                src instanceof HTMLImageElement && src.complete && src.naturalWidth > 0 && !src._failed;
+            var canvas = !bitmap && typeof HTMLCanvasElement !== 'undefined' && node instanceof HTMLCanvasElement && node.width > 0 && node.height > 0;
+            if (!bitmap && !canvas) return false;
             var size = this.glSkinTexSize || 512;
             /* same intermediate size as before: the cacheSkin canvas (512 / graphics) */
             var w = node !== src && node.width > 0 ? node.width : size;
@@ -63387,6 +63411,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
             pend.nodes.set(node, job);
             if (key) pend.keys[key] = job;
             var self = this;
+            if (canvas) {
+                /* the canvas itself is the picture (as the synchronous upload used it) */
+                (this._lmSkinReady || (this._lmSkinReady = [])).push([job, null]);
+                this._lmScheduleSkinUploads();
+                return true;
+            }
             var opts = { resizeWidth: w, resizeHeight: h, resizeQuality: 'high' };
             var r = node !== src && node._lmSrcRect;
             var make = function (from) {
@@ -63454,32 +63484,42 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var layer = this._lmSkinLayerFree();
                     if (layer < 0) return;
                     var size = this.glSkinTexSize || 512;
-                    var cv = this._lmSkinCpuScratch;
-                    if (!cv) {
-                        cv = this._lmSkinCpuScratch = document.createElement('canvas');
-                        cv._lmCtx = cv.getContext('2d', { willReadFrequently: true });
+                    var cv;
+                    if (bmp) {
+                        /* cut on the CPU canvas as before: a GPU canvas draws the circle edge a little differently */
+                        cv = this._lmSkinCpuScratch;
+                        if (!cv) {
+                            cv = this._lmSkinCpuScratch = document.createElement('canvas');
+                            cv._lmCtx = cv.getContext('2d', { willReadFrequently: true });
+                        }
+                        if (cv.width !== size || cv.height !== size) {
+                            cv.width = size;
+                            cv.height = size;
+                        }
+                        var ctx = cv._lmCtx;
+                        ctx.save();
+                        ctx.clearRect(0, 0, size, size);
+                        if (job.clip) {
+                            ctx.beginPath();
+                            ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI, false);
+                            ctx.clip();
+                        }
+                        ctx.drawImage(bmp, 0, 0, size, size);
+                        ctx.restore();
                     }
-                    if (cv.width !== size || cv.height !== size) {
-                        cv.width = size;
-                        cv.height = size;
-                    }
-                    var ctx = cv._lmCtx;
-                    ctx.save();
-                    ctx.clearRect(0, 0, size, size);
-                    if (job.clip) {
-                        ctx.beginPath();
-                        ctx.arc(size / 2, size / 2, size / 2, 0, 2 * Math.PI, false);
-                        ctx.clip();
-                    }
-                    ctx.drawImage(bmp, 0, 0, size, size);
-                    ctx.restore();
                     try {
-                        gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
-                        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, cv);
-                        gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+                        /* a canvas without an image: the canvas itself, at the layer size (as the synchronous upload) */
+                        if (!bmp) cv = this._lmSkinSized(node, size);
+                        if (!this._lmSkinGpuPut(cv, layer, !!bmp)) {
+                            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+                            gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+                            gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+                        }
                     } catch (upErr) {
                         /* as the synchronous path: a tainted canvas stays tainted, start a fresh one */
                         this._lmSkinCpuScratch = null;
+                        this._lmSkinGpuScratch = null;
+                        this._lmSkinScratch = null;
                         try { gl.bindTexture(gl.TEXTURE_2D_ARRAY, null); } catch (unbindError) { }
                         if (this.glSkinMap) {
                             for (i = 0; i < keys.length; i++) this.glSkinMap[keys[i]] = -1;
@@ -63501,8 +63541,106 @@ function pickPlayerCellBySize(players, selectBiggest) {
             } catch (err) {
                 this._lmSkinCpuScratch = null;
             } finally {
-                try { bmp.close(); } catch (closeErr) { }
+                try { if (bmp) bmp.close(); } catch (closeErr) { }
             }
+        },
+        /*
+         * Skin pictures go into their layer on the GPU. texSubImage3D (or texImage2D) from a canvas
+         * kept in CPU memory waits until the GPU has done every frame queued before it: 20-70 ms
+         * per new skin with Expanding Land's bots (developers/tests/bench.js --preset bots). From a
+         * GPU canvas into a 2D texture the browser copies on the GPU. So the picture is copied 1:1
+         * onto a GPU canvas (the same premultiplied pixels), into a scratch texture as stored
+         * (premultiplied), and one draw into the layer turns that into colours with the browser's
+         * own CPU conversion (lmSkinUnpremulLut): the same texels as the upload from the canvas
+         * (developers/tests/glbatch.js). Units 2 and 3 hold the scratch and the table; nothing else
+         * uses them. Without this program the caller uploads from the canvas as before.
+         */
+        initWebGLSkinPut(gl, createAndLinkProgram) {
+            this._lmSkinPut = null;
+            try {
+                var vs = '#version 300 es\n' +
+                    'void main() { gl_Position = vec4(float((gl_VertexID & 1) << 2) - 1.0, float((gl_VertexID & 2) << 1) - 1.0, 0.0, 1.0); }';
+                var fs = '#version 300 es\nprecision highp float;\nuniform highp sampler2D u_src;\nuniform highp sampler2D u_lut;\nout vec4 o;\n' +
+                    'void main() {\n' +
+                    '    ivec4 q = ivec4(texelFetch(u_src, ivec2(gl_FragCoord.xy), 0) * 255.0 + 0.5);\n' +
+                    '    o = vec4(texelFetch(u_lut, ivec2(q.r, q.a), 0).r, texelFetch(u_lut, ivec2(q.g, q.a), 0).r,\n' +
+                    '        texelFetch(u_lut, ivec2(q.b, q.a), 0).r, float(q.a) / 255.0);\n' +
+                    '}';
+                var prog = createAndLinkProgram(gl, vs, fs);
+                if (!prog) return;
+                var g = { prog: prog, vao: gl.createVertexArray(), fb: gl.createFramebuffer(), src: gl.createTexture(), lut: gl.createTexture() };
+                gl.useProgram(prog);
+                gl.uniform1i(gl.getUniformLocation(prog, 'u_src'), 2);
+                gl.uniform1i(gl.getUniformLocation(prog, 'u_lut'), 3);
+                gl.useProgram(null);
+                gl.activeTexture(gl.TEXTURE3);
+                gl.bindTexture(gl.TEXTURE_2D, g.lut);
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.R8, 256, 256, 0, gl.RED, gl.UNSIGNED_BYTE, lmSkinUnpremulLut());
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+                gl.activeTexture(gl.TEXTURE2);
+                gl.bindTexture(gl.TEXTURE_2D, g.src);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+                gl.activeTexture(gl.TEXTURE0);
+                this._lmSkinPut = g;
+            } catch (e) {
+                console.warn('[LegendMod WebGL] GPU skin upload unavailable; skins are uploaded from their canvas:', e);
+                try { gl.activeTexture(gl.TEXTURE0); } catch (e2) { }
+                this._lmSkinPut = null;
+            }
+        },
+        /* src (size x size) into the layer; copy: src is a CPU canvas (copied onto a GPU canvas
+         * first). False when the program is missing. Throws as texImage2D does (tainted canvas). */
+        _lmSkinGpuPut(src, layer, copy) {
+            var g = this._lmSkinPut, gl = this.gl, size = this.glSkinTexSize || 512;
+            if (!g || !gl || !this.glSkinArray) return false;
+            if (copy) {
+                var gc = this._lmSkinGpuScratch;
+                if (!gc) {
+                    gc = this._lmSkinGpuScratch = document.createElement('canvas');
+                    gc._lmCtx = gc.getContext('2d');
+                }
+                if (gc.width !== size || gc.height !== size) {
+                    gc.width = size;
+                    gc.height = size;
+                }
+                gc._lmCtx.globalCompositeOperation = 'copy';
+                gc._lmCtx.drawImage(src, 0, 0);
+                src = gc;
+            }
+            /* these are kept on the JS side by the browser: no wait for the GPU */
+            var unit = gl.getParameter(gl.ACTIVE_TEXTURE), pre = gl.getParameter(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL);
+            gl.activeTexture(gl.TEXTURE3);
+            gl.bindTexture(gl.TEXTURE_2D, g.lut);
+            gl.activeTexture(gl.TEXTURE2);
+            gl.bindTexture(gl.TEXTURE_2D, g.src);
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+            try {
+                gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, src);
+            } finally {
+                gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, pre);
+                gl.activeTexture(unit);
+            }
+            var prog = gl.getParameter(gl.CURRENT_PROGRAM), vao = gl.getParameter(gl.VERTEX_ARRAY_BINDING), fb = gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING);
+            var caps = [gl.BLEND, gl.DEPTH_TEST, gl.SCISSOR_TEST, gl.CULL_FACE, gl.STENCIL_TEST, gl.DITHER], on = [], i;
+            for (i = 0; i < caps.length; i++) {
+                on.push(gl.isEnabled(caps[i]));
+                if (on[i]) gl.disable(caps[i]);
+            }
+            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, g.fb);
+            gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, this.glSkinArray, 0, layer);
+            gl.viewport(0, 0, size, size);
+            gl.useProgram(g.prog);
+            gl.bindVertexArray(g.vao);
+            gl.drawArrays(gl.TRIANGLES, 0, 3);
+            gl.bindVertexArray(vao);
+            gl.useProgram(prog);
+            gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, fb);
+            /* the viewport the resize handler sets on this canvas */
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+            for (i = 0; i < caps.length; i++) if (on[i]) gl.enable(caps[i]);
+            return true;
         },
 
         /* Skin layer bookkeeping around lmSkinLayersNew / lmSkinLayerPick / lmSkinLayerTake.

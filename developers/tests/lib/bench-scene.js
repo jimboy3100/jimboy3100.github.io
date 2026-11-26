@@ -690,12 +690,18 @@
         return r2(times[3]);
     }
 
+    /* asked once per context: this getParameter waits until the GPU has done every frame
+     * queued before it (seconds on a busy GPU), which showed as the top cost in --profile */
+    var gpuNameOf = null, gpuNameVal = '';
     function gpuName() {
         try {
             var gl = DR().gl;
             if (!gl) return 'no WebGL';
+            if (gpuNameOf === gl) return gpuNameVal;
             var ext = gl.getExtension('WEBGL_debug_renderer_info');
-            return String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+            gpuNameVal = String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+            gpuNameOf = gl;
+            return gpuNameVal;
         } catch (e) { return '?'; }
     }
     function heapMB() {

@@ -17,7 +17,7 @@ function grab(name) {
 const ctx = {};
 vm.createContext(ctx);
 vm.runInContext(['lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch',
-    'lmSkinCachePickEvict', 'lmSkinBytes', 'lmSkinByteBudget', 'lmSkinQueueTrim'].map(grab).join('\n'), ctx);
+    'lmSkinCachePickEvict', 'lmSkinBytes', 'lmSkinByteBudget', 'lmSkinQueueTrim', 'lmSkinUnpremulLut'].map(grab).join('\n'), ctx);
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) failed++; };
 const C = ctx;
@@ -111,6 +111,17 @@ check('queue cap: newest tasks kept in order', q[q.length - 1].id === 'n299' && 
 const all = C.lmSkinQueueTrim(q, 0);
 check('server change: every waiting normal task dropped, priority ones kept', all.length === 195 && q.length === 5 && q.every(t => t.prio));
 check('under the cap: nothing dropped', C.lmSkinQueueTrim([{ prio: false }], 200).length === 0);
+
+/* colour table of the GPU skin upload (the browser's CPU conversion of premultiplied pixels; every
+ * value is checked against the browser in developers/tests/glbatch.js): opaque pixels keep their
+ * colour, transparent ones are black, and colours grow with the premultiplied value */
+const lut = C.lmSkinUnpremulLut();
+let lutOk = lut.length === 65536, lutMono = true;
+for (let p = 0; p < 256; p++) lutOk = lutOk && lut[255 * 256 + p] === p && lut[p] === 0;
+for (let a = 1; a < 256; a++) for (let p = 1; p < 256; p++) if (lut[a * 256 + p] < lut[a * 256 + p - 1]) lutMono = false;
+check('unpremultiply table: alpha 255 keeps the colour, alpha 0 gives 0, 255 at p >= a', lutOk && lut[128 * 256 + 128] === 255 && lut[200 * 256 + 255] === 255);
+check('unpremultiply table: rises with the premultiplied value', lutMono);
+check('unpremultiply table: rounds half to even in 32-bit floats (p 5 at alpha 6 gives 212, half up would give 213)', lut[6 * 256 + 5] === 212 && lut[6 * 256 + 1] === 42 && lut[2 * 256 + 1] === 128);
 
 /* one skin lookup: the WebGL cell batch asks application.customSkinKey (the lookup of getCustomSkin,
  * which follows loadSkin's URL aliases and a cell's own skin URL) instead of a copy of its own,

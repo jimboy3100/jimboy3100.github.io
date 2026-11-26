@@ -75,7 +75,7 @@ function grabVar(src, name) {
  * (the real rule spreads new mass textures over frames, which would make the comparison depend
  * on timing). */
 const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim',
-    'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch',
+    'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch', 'lmSkinUnpremulLut',
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing',
     'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages',
     'lmSkinsShown', 'lmColorInt'];
@@ -475,10 +475,179 @@ function pageLib() {
         gl.getExtension('WEBGL_lose_context').loseContext();
         return { ok: ok, px: Array.prototype.slice.call(px), glError: err };
     }
+    /* Skin layer uploads: the same skins go through uploadSkinTexture of the reference and of the
+     * working copy (decoded off the main thread, cut to the circle, put into a layer from a
+     * requestAnimationFrame job; the canvas path for nodes without an image behind them) and
+     * every layer must hold the same texels in both. Skins: opaque, with soft transparency, an
+     * odd-sized one (resized), a 2-frame sheet (_lmSrcRect), one decoded from its Blob, a 256 px
+     * cacheSkin canvas (graphics medium), an image without a canvas (no circle cut) and a canvas
+     * without an image behind it. Also counts texSubImage3D / texImage2D calls that read a canvas
+     * the browser keeps in CPU memory (that upload waits for the GPU: 20-70 ms per skin). */
+    async function skinUploads(oldSrc, newSrc, defaults) {
+        function paint(w, h, kind) {
+            var c = document.createElement('canvas');
+            c.width = w; c.height = h;
+            var x = c.getContext('2d');
+            for (var i = 0; i < 12; i++) {
+                x.fillStyle = 'hsl(' + (i * 37 + kind * 50) + ',80%,' + (35 + (i % 3) * 15) + '%)';
+                x.fillRect((i % 4) * w / 4, ((i / 4) | 0) * h / 3, w / 4 + 1, h / 3 + 1);
+            }
+            x.strokeStyle = '#fff'; x.lineWidth = 7;
+            x.beginPath(); x.moveTo(0, 0); x.lineTo(w, h); x.moveTo(w, 0); x.lineTo(0, h); x.stroke();
+            x.font = '700 ' + Math.round(h / 4) + 'px Arial'; x.fillStyle = '#000'; x.fillText('LM' + kind, w / 5, h / 2);
+            if (kind === 1 || kind === 4) {
+                /* soft transparency: an alpha ramp and a hole */
+                x.globalCompositeOperation = 'destination-out';
+                var g = x.createLinearGradient(0, 0, w, 0);
+                g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.9)');
+                x.fillStyle = g; x.fillRect(0, 0, w, h);
+                x.fillStyle = 'rgba(0,0,0,0.5)'; x.beginPath(); x.arc(w / 2, h / 2, h / 6, 0, 7); x.fill();
+            }
+            return c;
+        }
+        function load(c) {
+            return new Promise(function (done) { c.toBlob(done, 'image/png'); }).then(function (blob) {
+                var img = new Image();
+                img.src = URL.createObjectURL(blob);
+                return img.decode().then(function () { return { img: img, blob: blob }; });
+            });
+        }
+        function cutCanvas(img, depth, rect) {
+            var c = document.createElement('canvas');
+            c.width = c.height = depth;
+            var x = c.getContext('2d');
+            x.beginPath(); x.arc(depth / 2, depth / 2, depth / 2, 0, 2 * Math.PI, false); x.clip();
+            if (rect) x.drawImage(img, rect[0], rect[1], rect[2], rect[3], 0, 0, depth, depth);
+            else x.drawImage(img, 0, 0, depth, depth);
+            c._lmSrc = img; c._lmCircle = true;
+            if (rect) c._lmSrcRect = rect;
+            return c;
+        }
+        var specs = [[512, 512, 0, 'canvas'], [512, 512, 1, 'canvas'], [300, 220, 2, 'canvas'], [1024, 512, 3, 'sheet'], [512, 512, 4, 'blob'],
+            [512, 512, 5, 'canvas256'], [400, 400, 6, 'image'], [512, 512, 7, 'plain']];
+        var imgs = [];
+        for (var s = 0; s < specs.length; s++) imgs.push(await load(paint(specs[s][0], specs[s][1], specs[s][2])));
+        function nodes() {
+            return specs.map(function (sp, i) {
+                var im = imgs[i].img;
+                if (sp[3] === 'image') return im;
+                if (sp[3] === 'plain') { var p = cutCanvas(im, 512); p._lmSrc = null; p._lmCircle = true; return p; }
+                if (sp[3] === 'sheet') return cutCanvas(im, 512, [0, 0, sp[0] / 2, sp[1]]);
+                if (sp[3] === 'blob') { var b = new Image(); b.src = im.src; b._lmBlob = imgs[i].blob; return b.decode().then(function () { return cutCanvas(b, 512); }); }
+                return cutCanvas(im, sp[3] === 'canvas256' ? 256 : 512);
+            });
+        }
+        async function run(src) {
+            var o = setup(src, defaults, { scale: 0.35, jelly: true }, []), R = o.R, gl = R.gl;
+            var st = { cpuReads: 0, canvasReads3D: 0 };
+            var t3 = gl.texSubImage3D, t2 = gl.texImage2D;
+            /* a canvas made with willReadFrequently (or one Chrome moved to the CPU) */
+            var cpu = function (c) { try { return !!(c && c.getContext && c._lmCtx && c._lmCtx.getContextAttributes && c._lmCtx.getContextAttributes().willReadFrequently); } catch (e) { return false; } };
+            gl.texSubImage3D = function () { var c = arguments[arguments.length - 1]; if (c && c.getContext) st.canvasReads3D++; if (cpu(c)) st.cpuReads++; return t3.apply(gl, arguments); };
+            gl.texImage2D = function () { var c = arguments[arguments.length - 1]; if (cpu(c)) st.cpuReads++; return t2.apply(gl, arguments); };
+            var ns = await Promise.all(nodes()), layers = [];
+            for (var i = 0; i < ns.length; i++) {
+                var url = 'https://skins.test/up' + i + '.png';
+                R._glSkinFrame = (R._glSkinFrame || 0) + 3;
+                R.uploadSkinTexture(url, ns[i]);
+                for (var f = 0; f < 200 && !(R.glSkinMap[url] >= 0) && R.glSkinMap[url] !== -1; f++) await new Promise(function (d) { requestAnimationFrame(d); });
+                layers.push(R.glSkinMap[url]);
+            }
+            gl.texSubImage3D = t3; gl.texImage2D = t2;
+            var fb = gl.createFramebuffer(), texels = [];
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fb);
+            for (var l = 0; l < layers.length; l++) {
+                var b = new Uint8Array(512 * 512 * 4);
+                if (layers[l] >= 0) {
+                    gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, R.glSkinArray, 0, layers[l]);
+                    gl.readPixels(0, 0, 512, 512, gl.RGBA, gl.UNSIGNED_BYTE, b);
+                }
+                texels.push(b);
+            }
+            gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
+            gl.deleteFramebuffer(fb);
+            st.layers = layers;
+            st.glError = gl.getError();
+            st.texels = texels;
+            gl.getExtension('WEBGL_lose_context').loseContext();
+            return st;
+        }
+        var a = await run(oldSrc), b = await run(newSrc);
+        var res = { skins: specs.length, uploadedOld: 0, uploadedNew: 0, differing: 0, max: 0, partial: 0, perSkin: [], cpuReadsOld: a.cpuReads, cpuReadsNew: b.cpuReads,
+            canvasReads3DNew: b.canvasReads3D, glError: b.glError };
+        for (var k = 0; k < specs.length; k++) {
+            if (a.layers[k] >= 0) res.uploadedOld++;
+            if (b.layers[k] >= 0) res.uploadedNew++;
+            var ta = a.texels[k], tb = b.texels[k], dn = 0, partial = 0;
+            for (var q = 0; q < ta.length; q++) {
+                var d = Math.abs(ta[q] - tb[q]);
+                if (d) { dn++; if (d > res.max) res.max = d; }
+                if ((q & 3) === 3 && ta[q] > 0 && ta[q] < 255) partial++;
+            }
+            res.differing += dn;
+            res.partial += partial;
+            res.perSkin.push(specs[k][3] + specs[k][2] + ':' + dn);
+        }
+        res.sweep = gpuPutSweep(newSrc, defaults);
+        return res;
+    }
+    /* Every premultiplied colour value at every alpha (a CPU canvas filled with putImageData)
+     * through _lmSkinGpuPut must give the texels texSubImage3D from that canvas gives (the
+     * browser's CPU conversion), and the GL state the frame relies on must be as before. */
+    function gpuPutSweep(src, defaults0) {
+        var o = setup(src, defaults0, { scale: 0.35, jelly: true }, []), R = o.R, gl = R.gl;
+        var res = { available: typeof R._lmSkinGpuPut === 'function' && !!R._lmSkinPut, differing: 0, max: 0, state: [] };
+        if (!res.available) { gl.getExtension('WEBGL_lose_context').loseContext(); return res; }
+        var cv = document.createElement('canvas');
+        cv.width = cv.height = 512;
+        var cx = cv.getContext('2d', { willReadFrequently: true }), id = cx.createImageData(512, 512);
+        for (var y = 0; y < 512; y++) for (var x = 0; x < 512; x++) {
+            /* quadrants: colour value x & 255 at alpha y & 255, with different channel orders */
+            var u = x & 255, al = y & 255, q = (x >> 8) + 2 * (y >> 8), i = (y * 512 + x) * 4;
+            id.data[i] = q & 1 ? 255 - u : u; id.data[i + 1] = q & 2 ? u : 255 - u; id.data[i + 2] = (u * 7 + q * 50) & 255; id.data[i + 3] = al;
+        }
+        cx.putImageData(id, 0, 0);
+        /* the frame's state before the upload job */
+        var vao = gl.createVertexArray();
+        gl.useProgram(R.glProgram);
+        gl.bindVertexArray(vao);
+        gl.enable(gl.BLEND); gl.disable(gl.DEPTH_TEST);
+        gl.viewport(0, 0, W, H);
+        gl.activeTexture(gl.TEXTURE0);
+        var snap = function () {
+            return [gl.getParameter(gl.CURRENT_PROGRAM) === R.glProgram, gl.getParameter(gl.VERTEX_ARRAY_BINDING) === vao, gl.getParameter(gl.DRAW_FRAMEBUFFER_BINDING) === null,
+                Array.from(gl.getParameter(gl.VIEWPORT)).join(), gl.isEnabled(gl.BLEND), gl.isEnabled(gl.DEPTH_TEST), gl.isEnabled(gl.DITHER), gl.getParameter(gl.ACTIVE_TEXTURE),
+                gl.getParameter(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL)].join('|');
+        };
+        var before = snap();
+        R._lmSkinGpuPut(cv, 5, true);
+        var after = snap();
+        res.stateKept = before === after;
+        res.state = [before, after];
+        gl.bindVertexArray(null);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, R.glSkinArray);
+        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, 6, 512, 512, 1, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+        var fb = gl.createFramebuffer(), got = new Uint8Array(512 * 512 * 4), want = new Uint8Array(512 * 512 * 4);
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fb);
+        gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, R.glSkinArray, 0, 5);
+        gl.readPixels(0, 0, 512, 512, gl.RGBA, gl.UNSIGNED_BYTE, got);
+        gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, R.glSkinArray, 0, 6);
+        gl.readPixels(0, 0, 512, 512, gl.RGBA, gl.UNSIGNED_BYTE, want);
+        gl.bindFramebuffer(gl.READ_FRAMEBUFFER, null);
+        for (var k = 0; k < got.length; k++) {
+            var d = Math.abs(got[k] - want[k]);
+            if (d) { res.differing++; if (d > res.max) res.max = d; }
+        }
+        res.glError = gl.getError();
+        gl.getExtension('WEBGL_lose_context').loseContext();
+        return res;
+    }
     return {
         atlasUploads: atlasUploads,
         atlasCapacity: atlasCapacity,
         virusPixel: virusPixel,
+        skinUploads: skinUploads,
         compare: async function (oldSrc, newSrc, defaults, cfg, scene) {
             var a = setup(oldSrc, defaults, cfg, scene), b = setup(newSrc, defaults, cfg, scene);
             /* two frames: textures are made in the first, the second is the steady state */
@@ -658,6 +827,17 @@ async function main() {
                 check('jelly ' + (jelly ? 'on' : 'off') + ': a virus coloured ' + col + ' is drawn in that colour on WebGL', nw.ok && nw.glError === 0 && near);
             }
         }
+        const su = await evaluate('__glb.skinUploads(__glbOld, __glbNew, __glbDefaults)');
+        console.log('     skin layers: ' + su.uploadedNew + '/' + su.skins + ' uploaded (reference ' + su.uploadedOld + '), texels differing from the reference ' + su.differing + ' (max ' + su.max + ', ' +
+            su.partial + ' semi-transparent texels) [' + su.perSkin.join(' ') + '], uploads from a CPU canvas: reference ' + su.cpuReadsOld + ', now ' + su.cpuReadsNew +
+            ', texSubImage3D from a canvas now ' + su.canvasReads3DNew);
+        check('skin layers: every skin uploaded, the same texels as the reference upload, no GL error', su.uploadedNew === su.skins && su.uploadedOld === su.skins && su.differing === 0 && su.glError === 0);
+        check('skin layers: no upload from a CPU canvas and no texSubImage3D from a canvas (a GPU wait of 20-70 ms per new skin)', su.cpuReadsNew === 0 && su.canvasReads3DNew === 0);
+        const sw = su.sweep;
+        console.log('     GPU skin upload, every colour value at every alpha: texels differing from the canvas upload ' + sw.differing + ' (max ' + sw.max + '), GL state kept ' + sw.stateKept +
+            (sw.stateKept ? '' : ' (' + sw.state.join(' -> ') + ')'));
+        check('GPU skin upload: the same texels as texSubImage3D from the canvas for every premultiplied value, GL state as before, no GL error',
+            sw.available && sw.differing === 0 && sw.stateKept && sw.glError === 0);
         if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); failed++; }
         if (opt('--out', null)) fs.writeFileSync(path.join(opt('--out'), 'glbatch-diff.json'), JSON.stringify(stats, null, 2));
 
