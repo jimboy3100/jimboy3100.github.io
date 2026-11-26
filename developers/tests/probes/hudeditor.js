@@ -56,6 +56,24 @@
     });
     var rows = panel.querySelectorAll('.lm-he-c').length;
     if (rows !== HE.components.length) fail.push('component list has ' + rows + ' rows');
+    /* phones fold the full stats line (shown by a tap on the phone stats): it can still be placed */
+    var phStats = document.getElementById('lm-stats'), stEl = document.getElementById('stats-hud');
+    info.phone = !!phStats;
+    if (phStats && stEl && stEl.getBoundingClientRect().width < 1) {
+      var sm = ui()._measure('stats');
+      if (!sm || !sm.ghost) fail.push('phone: the folded stats line has no frame (cannot be placed)');
+    }
+    /* every frame can be grabbed: at its centre it is on top, or a smaller frame lies over it */
+    var fArea = function (el) { return el.offsetWidth * el.offsetHeight; };
+    Array.prototype.forEach.call(document.querySelectorAll('#lm-he .lm-he-f'), function (f) {
+      if (f.style.display === 'none') return;
+      var b = f.getBoundingClientRect(), x = b.left + b.width / 2, y = b.top + b.height / 2;
+      if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) return;
+      var hit = document.elementFromPoint(x, y), hf = hit && hit.closest ? hit.closest('.lm-he-f') : null;
+      /* the panel, or the popups themselves (they are drawn above the editor) */
+      if (hit && hit.closest && (hit.closest('#lm-he-p') || hit.closest('#toast-container'))) return;
+      if (hf !== f && !(hf && fArea(hf) < fArea(f))) fail.push('frame ' + f.getAttribute('data-id') + ' covered by ' + (hf ? hf.getAttribute('data-id') : (hit && (hit.id || hit.className))));
+    });
     var frame = document.querySelector('#lm-he .lm-he-f[data-id="leaderboard"]');
     if (!frame || frame.style.display === 'none') fail.push('no frame for the leaderboard');
     else {

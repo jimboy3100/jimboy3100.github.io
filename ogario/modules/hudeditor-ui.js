@@ -52,7 +52,7 @@
             '#lm-he{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999993;touch-action:none;user-select:none;-webkit-user-select:none;background:rgba(0,0,0,.12);font-size:13px;line-height:1.35;font-family:inherit;color:var(--lm-tc,#eee)}' +
             '#lm-he.lm-he-grid{background-image:linear-gradient(rgba(255,255,255,.09) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.09) 1px,transparent 1px)}' +
             '.lm-he-f{position:absolute;box-sizing:border-box;border:2px solid var(--lm-mc,#01d9cc);background:rgba(1,217,204,.10);cursor:move;touch-action:none;min-width:16px;min-height:16px}' +
-            '.lm-he-f.sel{border-color:#ffd200;background:rgba(255,210,0,.14);z-index:2}' +
+            '.lm-he-f.sel{border-color:#ffd200;background:rgba(255,210,0,.14)}' +
             '.lm-he-f.ghost{border-style:dashed}' +
             '.lm-he-f.locked{border-color:#999;cursor:not-allowed}' +
             '.lm-he-f.hid{border-color:#e0605c;background:rgba(224,96,92,.12)}' +
@@ -61,8 +61,8 @@
             '.lm-he-rs{position:absolute;right:-9px;bottom:-9px;width:18px;height:18px;box-sizing:border-box;border:2px solid #000;background:var(--lm-mc,#01d9cc);border-radius:var(--lm-radius-s,3px);cursor:nwse-resize;touch-action:none}' +
             '.lm-he-f.rs-in .lm-he-rs{right:auto;bottom:auto;left:-2px;top:-2px}' +
             '.lm-he-f.sel .lm-he-rs{background:#ffd200}.lm-he-f.locked .lm-he-rs{display:none}' +
-            '.lm-he-gd{position:absolute;background:#ffd200;pointer-events:none;display:none;z-index:3}' +
-            '#lm-he-p{position:fixed;z-index:4;left:50%;top:8px;transform:translateX(-50%);width:390px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);box-sizing:border-box;display:flex;flex-direction:column;font-size:var(--lm-w-fs,13px);background:var(--lm-w-bg,var(--lm-pc,#081018));border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);color:var(--lm-tc,#eee);overflow:hidden;cursor:default;touch-action:auto}' +
+            '.lm-he-gd{position:absolute;background:#ffd200;pointer-events:none;display:none;z-index:90}' +
+            '#lm-he-p{position:fixed;z-index:91;left:50%;top:8px;transform:translateX(-50%);width:390px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);box-sizing:border-box;display:flex;flex-direction:column;font-size:var(--lm-w-fs,13px);background:var(--lm-w-bg,var(--lm-pc,#081018));border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);color:var(--lm-tc,#eee);overflow:hidden;cursor:default;touch-action:auto}' +
             '#lm-he-p .lm-he-h{display:flex;align-items:center;gap:4px;padding:var(--lm-w-hpad,4px 6px);border-bottom:1px solid var(--lm-pc2,#002f52);background:var(--lm-w-head,linear-gradient(180deg,var(--lm-pc2,#002f52) 0%,var(--lm-pc,#081018) 100%));cursor:grab;touch-action:none}' +
             '#lm-he-p .lm-he-t{flex:1;font-size:var(--lm-w-title,13px);font-weight:700;color:var(--lm-mc,#01d9cc);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
             '#lm-he-p .lm-he-body{overflow-y:auto;padding:var(--lm-w-pad,6px);-webkit-overflow-scrolling:touch;touch-action:pan-y}' +
@@ -105,9 +105,19 @@
         return ov.offsetParent !== null || ov.offsetHeight > 0;
     }
 
+    /* unscaled border-box width with fractions (0 when it cannot be read) */
+    function layoutWidth(el) {
+        var cs = W.getComputedStyle(el), w = parseFloat(cs.width);
+        if (!(w > 0)) return 0;
+        if (cs.boxSizing !== 'border-box') {
+            ['paddingLeft', 'paddingRight', 'borderLeftWidth', 'borderRightWidth'].forEach(function (k) { w += parseFloat(cs[k]) || 0; });
+        }
+        return w;
+    }
     /* Rect of a box and of the parts outside it. A box hidden by the game (option off, chat input
      * closed) is shown invisibly for the measurement, so it can still be placed; a box hidden by an
-     * !important rule (phone stylesheet) stays hidden and is "not on screen now". */
+     * !important rule (phone stylesheet) stays hidden and is "not on screen now", unless the player
+     * can show it with a tap (shownOnTap: the full stats line on a phone). */
     function measure(comp) {
         var el = D.querySelector(comp.sel);
         if (!el) return null;
@@ -119,7 +129,7 @@
                 d: el.style.getPropertyValue('display'), dp: el.style.getPropertyPriority('display'),
                 v: el.style.getPropertyValue('visibility'), vp: el.style.getPropertyPriority('visibility')
             };
-            el.style.setProperty('display', 'block');
+            el.style.setProperty('display', 'block', comp.shownOnTap ? 'important' : '');
             el.style.setProperty('visibility', 'hidden', 'important');
             r = el.getBoundingClientRect();
             ghost = true;
@@ -136,7 +146,8 @@
                     u.right = Math.max(u.right, q.right); u.bottom = Math.max(u.bottom, q.bottom);
                 }
             }
-            var ow = el.offsetWidth || r.width;
+            /* offsetWidth is rounded: the computed width keeps the scale of an unscaled box at 1 */
+            var ow = layoutWidth(el) || el.offsetWidth || r.width;
             out = {
                 main: { left: r.left, top: r.top, width: r.width, height: r.height },
                 union: { left: u.left, top: u.top, width: u.right - u.left, height: u.bottom - u.top },
@@ -246,7 +257,9 @@
         f.classList.toggle('rs-in', u.left + u.width > v.w - 16 || u.top + u.height > v.h - 16);
     }
     function placeFrames() {
-        core.COMPONENTS.forEach(function (c) { placeFrame(c, measure(c)); });
+        var ms = core.COMPONENTS.map(function (c) { var m = measure(c); placeFrame(c, m); return m ? m.union : null; });
+        var z = core.frameLayers(ms);
+        core.COMPONENTS.forEach(function (c, i) { if (frames[c.id]) frames[c.id].style.zIndex = z[i] ? String(z[i]) : ''; });
     }
     function otherRects(id) {
         var out = [];

@@ -292,6 +292,23 @@ const J = o => JSON.parse(JSON.stringify(o));
   check('storeText: the stored layouts with another active one, nothing changed', typeof txt === 'string' && JSON.parse(txt).active === 'A' && api.active() === 'B' && api.storeText('Nope') === null && JSON.parse(api.storeText('')).active === '');
 }
 
+/* ── frame stacking: a smaller box above a bigger one, so a box inside another can be grabbed ── */
+{
+  const { core } = boot();
+  const f = core.frameLayers;
+  check('frameLayers exists', typeof f === 'function');
+  if (typeof f === 'function') {
+    /* the phone case: the stats line (346x22) lies on the chat box (400x200), which comes later in the list */
+    const z = f([{ width: 346, height: 22 }, null, { width: 400, height: 200 }, { width: 16, height: 16 }]);
+    check('smaller box above the bigger one it lies on', z[0] > z[2] && z[3] > z[0]);
+    check('no frame: no layer', z[1] === 0 && z.filter(Boolean).length === 3 && Math.min.apply(null, z.filter(Boolean)) === 1);
+    const e = f([{ width: 10, height: 10 }, { width: 10, height: 10 }]);
+    check('equal sizes: the later one on top (as before)', e[1] > e[0]);
+  }
+  const st = core.COMPONENTS.filter(c => c.id === 'stats')[0];
+  check('stats line can be placed while the phone keeps it folded', !!(st && st.shownOnTap) && core.COMPONENTS.filter(c => c.shownOnTap).length === 1);
+}
+
 /* ── texts: the box names come from the language packs and follow a language change ── */
 {
   const b = boot();

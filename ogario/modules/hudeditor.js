@@ -33,7 +33,9 @@
     var COMPONENTS = [
         { id: 'leaderboard', sel: '#leaderboard-hud', extra: '#leaderboard-hud > *' },
         { id: 'minimap', sel: '#minimap-hud', extra: '#minimap-hud > *' },
-        { id: 'stats', sel: '#stats-hud' },
+        /* phones hide the full stats line with an !important rule until the phone stats are tapped:
+         * shownOnTap lets the editor still measure and place it there */
+        { id: 'stats', sel: '#stats-hud', shownOnTap: true },
         { id: 'phoneStats', sel: '#lm-stats' },
         { id: 'team', sel: '#top5-hud' },
         { id: 'time', sel: '#time-hud' },
@@ -203,6 +205,21 @@
         var ax = axis(r.left, r.width, view.w, xs), ay = axis(r.top, r.height, view.h, ys);
         return { left: ax.pos, top: ay.pos, gx: ax.line, gy: ay.line };
     }
+    /* Stacking of the editor frames: a smaller box above a bigger one, so a box drawn inside or
+     * over another (the stats line under the chat box on a phone) can still be grabbed.
+     * rects: [{ width, height }] or null (no frame); returns a z-index per rect (1 = bottom). */
+    function frameLayers(rects) {
+        var idx = [], out = [];
+        for (var i = 0; i < rects.length; i++) {
+            out.push(0);
+            if (rects[i]) idx.push(i);
+        }
+        var area = function (r) { return Math.max(0, r.width) * Math.max(0, r.height); };
+        /* biggest first; equal sizes keep the list order (the later one on top, as before) */
+        idx.sort(function (a, b) { return area(rects[b]) - area(rects[a]) || a - b; });
+        for (var j = 0; j < idx.length; j++) out[idx[j]] = j + 1;
+        return out;
+    }
     /* the stylesheet rule of one box */
     function cssFor(sel, e, editing) {
         if (!e) return '';
@@ -229,7 +246,8 @@
     var core = {
         COMPONENTS: COMPONENTS, KEY: KEY, MAX_LAYOUTS: MAX_LAYOUTS, NAME_MAX: NAME_MAX, S_MIN: S_MIN, S_MAX: S_MAX, GRIDS: GRIDS,
         cleanName: cleanName, cleanEntry: cleanEntry, cleanComps: cleanComps, cleanStore: cleanStore, findIndex: findIndex,
-        visualPos: visualPos, entryFromRect: entryFromRect, clampEntry: clampEntry, rectIn: rectIn, snapRect: snapRect, cssFor: cssFor
+        visualPos: visualPos, entryFromRect: entryFromRect, clampEntry: clampEntry, rectIn: rectIn, snapRect: snapRect, cssFor: cssFor,
+        frameLayers: frameLayers
     };
     var api = W.LMHudEditor = { core: core, components: COMPONENTS };
 
