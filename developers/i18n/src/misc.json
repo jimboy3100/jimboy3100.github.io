@@ -791,6 +791,24 @@
     "ja": "コンパクトリーダーボード：上位5名を表示、タップで展開",
     "it": "Classifica compatta: mostra i primi 5, tocca per espandere"
   },
+  "misc.mobile.hudFade": {
+    "en": "Auto-fade opacity",
+    "el": "Αδιαφάνεια εξασθένισης",
+    "es": "Opacidad de desvanecimiento",
+    "bg": "Прозрачност при затихване",
+    "fr": "Opacité de fondu",
+    "ar": "شفافية التلاشي",
+    "zh": "自動淡出透明度",
+    "ru": "Прозрачность затухания",
+    "de": "Ausblenddurchlässigkeit",
+    "tr": "Otomatik solma opaklığı",
+    "pl": "Przezroczystość zanikania",
+    "nl": "Vervagingsondoorzichtigheid",
+    "pt": "Opacidade de esmaecimento",
+    "id": "Opasitas pudar otomatis",
+    "ja": "自動フェード不透明度",
+    "it": "Opacità dissolvenza"
+  },
   "misc.mobile.editControls": {
     "en": "Edit controls",
     "el": "Επεξεργασία χειριστηρίων",
@@ -1114,6 +1132,24 @@
     "id": "Ping tim",
     "ja": "チームピング",
     "it": "Ping squadra"
+  },
+  "misc.editor.ctlWave": {
+    "en": "Wave",
+    "el": "Χαιρετισμός",
+    "es": "Saludo",
+    "bg": "Поздрав",
+    "fr": "Saluer",
+    "ar": "تلويحة",
+    "zh": "招手",
+    "ru": "Помахать",
+    "de": "Winken",
+    "tr": "El salla",
+    "pl": "Pozdrowienie",
+    "nl": "Zwaaien",
+    "pt": "Acenar",
+    "id": "Lambaikan",
+    "ja": "手を振る",
+    "it": "Saluta"
   },
   "misc.editor.ctlAutoplay": {
     "en": "Autoplay",

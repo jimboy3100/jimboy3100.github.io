@@ -247,7 +247,8 @@
         '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
         'font:600 12px/1 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);color:rgba(255,255,255,.85);' +
         'text-shadow:0 1px 3px rgba(0,0,0,.6);pointer-events:auto;' +
-        'user-select:none;-webkit-user-select:none;cursor:pointer}' +
+        'user-select:none;-webkit-user-select:none;cursor:pointer;' +
+        'transition:top .25s ease}' +
         '#time-hud{position:fixed!important;right:4px!important;' +
         'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
         '#chat-box,#messages{position:fixed!important;left:4px!important}' +
@@ -545,6 +546,8 @@
         var bChat = mkd('💬');
         var bAI = mkd('►');
         var bPaus = mkd('❚❚');
+        /* wave button: sends an ordinary team wave (the hand-wave, type 4) */
+        var bWave = mkd('👋');
         
         drawer.appendChild(bAI);
         drawer.appendChild(bPaus);
@@ -554,6 +557,7 @@
         drawer.appendChild(bRwd);
         drawer.appendChild(bFwd);
         drawer.appendChild(bChat);
+        drawer.appendChild(bWave);
 
         var bStop = mkd(prefs.targetMode ? '⌖' : '⇶');
         bStop.style.display = 'none';
@@ -580,6 +584,8 @@
             '<input type="range" id="lm-op" min="20" max="100" step="5" value="' + Math.round(prefs.btnOpacity * 100) + '">' +
             '<label>' + tx('misc.mobile.btnSize', 'lm-t') + ' <span id="lm-bs-v">' + Math.round(prefs.btnScale * 100) + '%</span></label>' +
             '<input type="range" id="lm-bs" min="50" max="150" step="5" value="' + Math.round(prefs.btnScale * 100) + '">' +
+            '<label>' + tx('misc.mobile.hudFade', 'lm-t') + ' <span id="lm-hf-v">' + Math.round(prefs.hudFade * 100) + '%</span></label>' +
+            '<input type="range" id="lm-hf" min="10" max="80" step="5" value="' + Math.round(prefs.hudFade * 100) + '">' +
             '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> ' + tx('misc.mobile.flickSplit', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> ' + tx('misc.mobile.noVibration', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-stoprel"' + (prefs.stopOnRelease ? ' checked' : '') + '> ' + tx('misc.mobile.stopRelease', 'lm-t') + '</label>' +
@@ -646,7 +652,11 @@
             applyPrefs();
         });
         sp.querySelector('#lm-bs').addEventListener('change', function () { savePrefs(); });
-        /* (HUD Fade slider removed: nothing read prefs.hudFade) */
+        sp.querySelector('#lm-hf').addEventListener('input', function () {
+            prefs.hudFade = parseInt(this.value, 10) / 100;
+            sp.querySelector('#lm-hf-v').textContent = this.value + '%';
+        });
+        sp.querySelector('#lm-hf').addEventListener('change', function () { savePrefs(); });
         sp.querySelector('#lm-sw').addEventListener('change', function () {
             prefs.swipeSplit = this.checked;
             savePrefs();
@@ -884,6 +894,7 @@
             setRange('lm-op', Math.round(prefs.btnOpacity * 100), Math.round(prefs.btnOpacity * 100) + '%');
             setRange('lm-bs', Math.round(prefs.btnScale * 100), Math.round(prefs.btnScale * 100) + '%');
             setRange('lm-dz', Math.max(8, prefs.joystickDeadZone), String(Math.max(8, prefs.joystickDeadZone)));
+            setRange('lm-hf', Math.round(prefs.hudFade * 100), Math.round(prefs.hudFade * 100) + '%');
             [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'], ['lm-taphap', 'tapHaptic'],
                 ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-netgraph', 'netGraph'], ['lm-tdir', 'targetMode'],
                 ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact']
@@ -905,11 +916,19 @@
         }
 
         /* ── Press effects ── */
-        [bMenu, bChat, bSplit, bFeed, bDbl, b16, bAI, bPaus, bRwd, bFwd].forEach(function (b) {
+        [bMenu, bChat, bSplit, bFeed, bDbl, b16, bAI, bPaus, bRwd, bFwd, bWave].forEach(function (b) {
             b.addEventListener('touchstart', function () { b.classList.add('p'); }, { passive: true });
             b.addEventListener('touchend', function () { b.classList.remove('p'); }, { passive: true });
             b.addEventListener('touchcancel', function () { b.classList.remove('p'); }, { passive: true });
         });
+
+        /* wave button handler */
+        bWave.addEventListener('touchstart', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            debounced(function () {
+                if (typeof application !== 'undefined' && application && typeof application.sendTeamWave === 'function') application.sendTeamWave(1);
+            }, 'wave', 600);
+        }, { passive: false });
 
         /* ═══════════════════════════════════════════════════════
          *  MENU — toggles helloContainer (show/hide game menu)
@@ -1631,7 +1650,7 @@
 
         canvas.addEventListener('touchstart', function () {
             if (isMenuVisible()) return;
-            rootL.style.opacity = '0.35';
+            rootL.style.opacity = String(prefs.hudFade);
             if (_fadeTimer) clearTimeout(_fadeTimer);
             _fadeTimer = setTimeout(function () {
                 rootL.style.opacity = prefs.btnOpacity;
@@ -1654,7 +1673,10 @@
         /* ═══════════════════════════════════════════════════════
          *  COMPACT STATS OVERLAY + CONNECTION DOT
          *  Replaces verbose #stats-hud with "mass · cells/16 🟢 42ms"
-         *  Tap to expand shows original full stats
+         *  Tap to expand shows original full stats.
+         *  Automatically positions below #top5-hud (teamboard)
+         *  when it is visible, so they never overlap.
+         *  Respects desktop showStats toggle: hidden when stats off.
          * ═══════════════════════════════════════════════════════ */
         (function compactStats() {
             var mStats = mk('div');
@@ -1676,6 +1698,34 @@
                     orig.style.setProperty('display', expanded ? 'block' : 'none', 'important');
                 }
             }, { passive: false });
+
+            /* position #lm-stats below the teamboard (#top5-hud) when it is
+             * visible, otherwise at the CSS default (top:4px).  Also respect
+             * the desktop "Show game stats" toggle: hide the compact overlay
+             * when stats are turned off.  Runs every 500 ms together with the
+             * data refresh — cheap because DOM writes are skipped when the
+             * value hasn't changed. */
+            var _prevTop = '';
+            var _prevVis = '';
+            function positionStats() {
+                /* desktop "Show game stats" toggle */
+                var statsOff = typeof defaultmapsettings !== 'undefined' && defaultmapsettings.showStats === false;
+                var vis = statsOff ? 'none' : '';
+                if (_prevVis !== vis) { mStats.style.display = vis; _prevVis = vis; }
+                if (statsOff) return;
+
+                var t5 = document.getElementById('top5-hud');
+                var newTop;
+                if (t5 && t5.offsetParent !== null && t5.style.display !== 'none') {
+                    /* t5 is scaled 0.75× with transform-origin: top left, so the
+                     * visual bottom = top + offsetHeight × scale */
+                    var scale = parseFloat(t5.dataset.lmBaseScale) || 0.75;
+                    newTop = Math.round(t5.offsetTop + t5.offsetHeight * scale + 4) + 'px';
+                } else {
+                    newTop = '4px';
+                }
+                if (_prevTop !== newTop) { mStats.style.top = newTop; _prevTop = newTop; }
+            }
 
             setInterval(function () {
                 // Mass + cells
@@ -1703,7 +1753,11 @@
                     dotText = icon + ' ' + Math.round(ping) + 'ms';
                 }
                 if (dot.textContent !== dotText) dot.textContent = dotText;
+
+                positionStats();
             }, 500);
+            /* initial position on load */
+            positionStats();
         })();
 
         /* ═══════════════════════════════════════════════════════
@@ -1785,12 +1839,14 @@
                 var t = 'scale(' + Math.round(s * 1000) / 1000 + ')';
                 if (lb.style.getPropertyValue('transform') !== t) lb.style.setProperty('transform', t, 'important');
             }
-            /* M5: Compact leaderboard — show only 5 rows, tap to expand */
+            /* M5: Compact leaderboard — show limited rows, tap to expand.
+             * _lmExpanded cycles: 0 = compact (5 rows), 1 = top 10, 2 = all */
             var rows = lb.querySelectorAll('.leaderboard-row, tr');
             if (rows.length > 5) {
-                var compactOn = prefs.lbCompact && !lb._lmExpanded;
-                for (var ri = 5; ri < rows.length; ri++) {
-                    rows[ri].style.display = compactOn ? 'none' : '';
+                var compactOn = prefs.lbCompact && lb._lmExpanded < 2;
+                var visibleCount = lb._lmExpanded === 0 ? 5 : (lb._lmExpanded === 1 ? 10 : rows.length);
+                for (var ri = 0; ri < rows.length; ri++) {
+                    rows[ri].style.display = (compactOn && ri >= visibleCount) ? 'none' : '';
                 }
             }
         }
@@ -1798,13 +1854,14 @@
         (function () {
             var lb = document.getElementById('leaderboard-hud');
             if (!lb) return;
-            lb._lmExpanded = false;
+            lb._lmExpanded = 0;
             /* A4: only enable pointer-events when compact mode is on */
             if (prefs.lbCompact) lb.style.setProperty('pointer-events', 'auto', 'important');
             lb.addEventListener('touchstart', function (e) {
                 if (!prefs.lbCompact) return;
                 e.stopPropagation();
-                lb._lmExpanded = !lb._lmExpanded;
+                /* cycle: compact (5) → top 10 → all → compact */
+                lb._lmExpanded = (lb._lmExpanded + 1) % 3;
                 fitLeaderboard();
             }, { passive: true });
         })();
@@ -1862,7 +1919,7 @@
             controls: function () {
                 return { split: bSplit, feed: bFeed, x4: bDbl, x16: b16, multibox: bMb,
                     q1: quickBtns[0] || null, q2: quickBtns[1] || null, q3: quickBtns[2] || null, q4: quickBtns[3] || null,
-                    chat: bChat, ping: bPing || null, autoplay: bAI, pause: bPaus,
+                    chat: bChat, ping: bPing || null, wave: bWave, autoplay: bAI, pause: bPaus,
                     rewind: bRwd, forward: bFwd, gear: bCfg, menu: bMenu };
             },
             home: ctlHome,

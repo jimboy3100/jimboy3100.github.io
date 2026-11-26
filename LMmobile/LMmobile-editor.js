@@ -39,6 +39,7 @@
         { id: 'q4', lk: 'misc.editor.ctlQuick', lv: [4], icon: '4', hide: true },
         { id: 'chat', lk: 'misc.editor.ctlChat', icon: '💬', hide: true },
         { id: 'ping', lk: 'misc.editor.ctlPing', icon: '📍', hide: true },
+        { id: 'wave', lk: 'misc.editor.ctlWave', icon: '👋', hide: true, act: true },
         { id: 'autoplay', lk: 'misc.editor.ctlAutoplay', icon: '►', hide: true },
         { id: 'pause', lk: 'misc.editor.ctlPause', icon: '❚❚', hide: true },
         { id: 'rewind', lk: 'misc.editor.ctlRewind', icon: '⏪', hide: true },
