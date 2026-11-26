@@ -21573,7 +21573,9 @@ function thelegendmodproject() {
                 var i = $('img', this).attr('src');
                 defaultSettings.customCursor = i;
                 Settings.setCustomCursor();
-                $('#customCursor').val(i);
+                /* a change event, so the Theme tab saves it like its other controls (a cursor
+                 * picked here was lost on reload unless Save was pressed) */
+                $('#customCursor').val(i).trigger('change');
                 $('#theme-images .cursor-box a').removeClass('active');
                 $(this).addClass('active');
             }),
