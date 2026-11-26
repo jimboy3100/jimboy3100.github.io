@@ -57,8 +57,8 @@
    * them by row position: from the first added row on they had the names of other settings) */
   var norm = function (s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').replace(/:\s*$/, '').trim(); };
   var wrong = [];
-  $('#theme .color-box, #theme .font-box, #theme .preset-box, #theme .input-box, #theme .slider-box').each(function () {
-    var f = $(this).find('input[id], select[id]')[0], t = $(this).find('.title-box, .value-label')[0];
+  $('#theme .color-box, #theme .font-box, #theme .preset-box, #theme .input-box, #theme .slider-box, #theme .lm-theme-switch').each(function () {
+    var f = $(this).find('input[id], select[id]')[0], t = $(this).find('.title-box, .value-label, .lm-theme-switch-name')[0];
     if (!f || !t || t.hasAttribute('data-i18n')) return;
     var want = textLanguage[f.id.replace(/-slider$/, '')];
     if (typeof want !== 'string' || !want) return;

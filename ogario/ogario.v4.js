@@ -20948,8 +20948,8 @@ if (window.LMi18n) window.LMi18n.onChange(function () {
         for (var n = el.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && /\S/.test(n.nodeValue)) { n.nodeValue = s; return; }
         el.insertBefore(document.createTextNode(s), el.firstChild);
     };
-    $('#theme .color-box, #theme .font-box, #theme .preset-box, #theme .input-box, #theme .slider-box').each(function () {
-        var t = this.querySelector('.title-box, .value-label'), f = this.querySelector('input[id], select[id]');
+    $('#theme .color-box, #theme .font-box, #theme .preset-box, #theme .input-box, #theme .slider-box, #theme .lm-theme-switch').each(function () {
+        var t = this.querySelector('.title-box, .value-label, .lm-theme-switch-name'), f = this.querySelector('input[id], select[id]');
         if (!t || !f || t.hasAttribute('data-i18n')) return;
         var s = textLanguage[f.id.replace(/-slider$/, '')];
         if (typeof s === 'string' && s) name(t, s);
@@ -21271,7 +21271,7 @@ function thelegendmodproject() {
         /* A theme switch (a boolean theme setting), like the Settings switches; the Theme tab saves it
          * shortly after a change (its input / change handler) */
         addThemeCheckBox(id, name, callback) {
-            $(id).append('<label class="lm-theme-switch" style="float:left;padding:6px 0;">' + this._lmThemeText(name) + ' <input type="checkbox" class="js-switch" id="' + name + '"></label>');
+            $(id).append('<label class="lm-theme-switch" style="float:left;padding:6px 0;"><span class="lm-theme-switch-name">' + this._lmThemeText(name) + '</span> <input type="checkbox" class="js-switch" id="' + name + '"></label>');
             $('#' + name).prop('checked', defaultSettings[name] === true);
             var app = this;
             $('#' + name).on('change', function () {
