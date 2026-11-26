@@ -83362,6 +83362,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
      * Hiding the tab (Ctrl+Tab, Alt+Tab, a phone app switch) releases them too.
      */
     function _lmReleaseHeldInputs() {
+        /* the radial menu closes without running anything: released below, its key ran the
+         * command pointed at as if the player had let go there */
+        if (window.LMSmallTools && typeof window.LMSmallTools.radialClose === 'function') {
+            try { window.LMSmallTools.radialClose(); } catch (e) { }
+        }
         for (var heldKey in keyBlind) {
             if (!keyBlind[heldKey]) continue;
             var heldCommand = hotkeys[heldKey];
