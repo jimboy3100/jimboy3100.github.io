@@ -152,7 +152,8 @@
         var out = { v: 1, map: cleanMap(null), profiles: [] };
         if (!c || typeof c !== 'object' || Array.isArray(c)) return out;
         out.map = cleanMap(c.map);
-        var seen = {};
+        /* no prototype: a profile named "constructor" is a name like any other */
+        var seen = Object.create(null);
         var list = Array.isArray(c.profiles) ? c.profiles : [];
         for (var i = 0; i < list.length && out.profiles.length < MAX_PROFILES; i++) {
             var p = cleanProfile(list[i]);
@@ -700,6 +701,8 @@
         _cleanOpt: cleanOpt,
         _stickOffset: stickOffset,
         _buttonDown: buttonDown,
-        _reload: load
+        _reload: load,
+        /* profiles.js has the old list now: it leaves this file's copy, the buttons in use are saved */
+        _dropLegacy: function () { if (!map) load(); legacyProfiles = []; return save(); }
     };
 })();

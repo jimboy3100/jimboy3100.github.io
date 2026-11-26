@@ -20876,6 +20876,12 @@ function lmExportExtras(ls) {
             if (lmExportFits(e, v)) out[e.key] = v;
         } catch (err) { }
     });
+    /* old Gamepad window setups still waiting for a free profile go with the buttons, in the old
+     * list (ogario/modules/profiles.js moves them again after the import) */
+    try {
+        var P = window.LMProfiles, gp = P && typeof P.exportGamepad === 'function' ? P.exportGamepad(out.lmGamepad) : null;
+        if (lmExportFits({ type: 'o' }, gp)) out.lmGamepad = gp;
+    } catch (err) { }
     return out;
 }
 /* writes the registered keys of an import through set(key, text) / remove(key) (the import's

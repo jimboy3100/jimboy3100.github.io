@@ -510,11 +510,152 @@ check('zoom bookmarks: [0, 0, 0] is kept (explicitly none: the Undo / backup of 
   e.ls.setItem('lmGamepad', J({ v: 1, map: {}, profiles: [{ name: 'A', map: {}, opts: {} }] }));
   const set = e.ls.setItem;
   e.ls.setItem = (k, v) => { if (k === 'lmSettingsProfiles') throw new Error('QuotaExceededError'); set(k, v); };
-  check('gamepad migration: storage full keeps the old list', e.P.core.migrateGamepadProfiles() === 0 && JSON.parse(e.ls.getItem('lmGamepad')).profiles.length === 1);
+  check('gamepad migration: storage full keeps the old setup (in lmGamepad or the pending store)', e.P.core.migrateGamepadProfiles() === 0 && J(oldHeld(e)) === J(['A']));
   e.ls.setItem = set;
   check('gamepad migration: next try moves it', e.P.core.migrateGamepadProfiles() === 1 && !('profiles' in JSON.parse(e.ls.getItem('lmGamepad'))));
 }
-check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
+// ── N3 / N4: no old Gamepad window setup is lost on the way to the gamepad profiles
+/* the names of the old Gamepad window setups that are not profiles yet, wherever they are kept */
+function oldHeld(e) {
+  const g = JSON.parse(e.ls.getItem('lmGamepad') || 'null'), pend = JSON.parse(e.ls.getItem('lmGamepadPending') || 'null');
+  return [].concat(g && Array.isArray(g.profiles) ? g.profiles.map(x => x.name) : [], pend && Array.isArray(pend.items) ? pend.items.map(x => x.name) : []).sort();
+}
+function gpProfiles(e) { return JSON.parse(e.ls.getItem('lmSettingsProfiles') || '[]').filter(p => p.only === 'gp'); }
+function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f' + i, name: 'Full ' + i, data: { s: { showMass: i % 2 === 0 } } })); }
+{
+  /* the fixture of the audit: a gamepad profile Xbox, and the old list with another Xbox and a
+   * Second that has the same buttons as the profile */
+  const e = bootApply(), PC = e.P.core;
+  e.ls.setItem('lmSettingsProfiles', J([{ id: 'x1', name: 'Xbox', data: { gp: { v: 1, map: { 0: 'split' } } }, only: 'gp' }]));
+  const oldList = [{ name: 'Xbox', map: { 0: 'feed' }, opts: { gamepadDeadzone: 0.3 } }, { name: 'Second', map: { 0: 'split' }, opts: {} }];
+  e.ls.setItem('lmGamepad', J({ v: 1, map: { 0: 'split' }, profiles: oldList }));
+  const n = PC.migrateGamepadProfiles(), pads = gpProfiles(e);
+  check('N3 migration: an old setup with the name of a gamepad profile but other buttons is kept under a numbered name', n === 2 && pads.some(p => p.name === 'Xbox 2' && p.data.gp.map[0] === 'feed' && !!p.data.s && p.data.s.gamepadDeadzone === 0.3));
+  check('N3 migration: an old setup with the buttons of a profile but its own name is kept', pads.some(p => p.name === 'Second' && p.data.gp.map[0] === 'split'));
+  check('N3 migration: the existing profile stays as it was', pads.length === 3 && pads[0].id === 'x1' && pads[0].name === 'Xbox' && pads[0].data.gp.map[0] === 'split');
+  check('N3 migration: nothing old is left over, a second run adds nothing', J(oldHeld(e)) === '[]' && PC.migrateGamepadProfiles() === 0 && gpProfiles(e).length === 3);
+  /* the same list again (an old set or backup that still carries it): no copies */
+  e.ls.setItem('lmGamepad', J({ v: 1, map: { 0: 'split' }, profiles: oldList }));
+  check('N3 migration: the same old list found again adds no copies', PC.migrateGamepadProfiles() === 0 && gpProfiles(e).length === 3 && J(oldHeld(e)) === '[]');
+}
+{
+  const e = bootApply(), PC = e.P.core;
+  const names = ['constructor', 'toString', '__proto__', 'hasOwnProperty', 'valueOf'];
+  e.ls.setItem('lmGamepad', J({ v: 1, map: {}, profiles: names.map((nm, i) => ({ name: nm, map: { 0: i % 2 ? 'feed' : 'split', 1: 'menu' }, opts: {} })) }));
+  const n = PC.migrateGamepadProfiles();
+  check('N3 migration: names like built-in object properties are names too (same buttons, own names)', n === 5 && J(gpProfiles(e).map(p => p.name)) === J(names));
+  check('N3 unique names: "constructor" is free in an empty list, a taken name gets a number', typeof PC.uniqueName === 'function' && PC.uniqueName('constructor', []) === 'constructor' && PC.uniqueName('toString', [{ name: 'TOSTRING' }]) === 'toString 2');
+}
+{
+  /* the profiles are saved but the pending store cannot be written afterwards: the next try
+   * neither adds the moved setup again nor loses the one still waiting */
+  const e = bootApply(), PC = e.P.core;
+  e.ls.setItem('lmSettingsProfiles', J(fullProfiles(49)));
+  e.ls.setItem('lmGamepad', J({ v: 1, map: {}, profiles: [{ name: 'A', map: { 0: 'feed' } }, { name: 'B', map: { 0: 'menu' } }] }));
+  const set = e.ls.setItem;
+  let pendWrites = 0;
+  e.ls.setItem = (k, v) => { if (k === 'lmGamepadPending' && ++pendWrites === 2) throw new Error('QuotaExceededError'); set(k, v); };
+  const n1 = PC.migrateGamepadProfiles();
+  e.ls.setItem = set;
+  check('N3 retry: one place free: A moved, B waits', n1 === 1 && J(gpProfiles(e).map(p => p.name)) === J(['A']) && oldHeld(e).indexOf('B') >= 0);
+  check('N3 retry: the next try adds no second A, B still waits', PC.migrateGamepadProfiles() === 0 && gpProfiles(e).length === 1 && J(oldHeld(e)) === J(['B']));
+  e.ls.setItem('lmSettingsProfiles', J(JSON.parse(e.ls.getItem('lmSettingsProfiles')).slice(1)));
+  check('N3 retry: a place free again: B moves', PC.migrateGamepadProfiles() === 1 && J(gpProfiles(e).map(p => p.name)) === J(['A', 'B']) && J(oldHeld(e)) === '[]');
+}
+{
+  /* 50 profiles: the old setups wait; applying a gamepad profile, Undo and a backup keep them */
+  const e = bootApply(), PC = e.P.core;
+  e.ls.setItem('lmSettingsProfiles', J(fullProfiles(49).concat([{ id: 'gpx', name: 'Pad', data: { gp: { v: 1, map: { 0: 'hk-tripleSplit' } }, s: { gamepadMoveRange: 0.7 } }, only: 'gp' }])));
+  e.ls.setItem('lmGamepad', J({ v: 1, map: { 0: 'split' }, profiles: [{ name: 'Old one', map: { 0: 'feed' }, opts: { gamepadMoveRange: 0.4 } }, { name: 'Old two', map: { 0: 'menu' } }] }));
+  const both = J(['Old one', 'Old two']);
+  check('N4 50 profiles: nothing moves, both old setups wait', PC.migrateGamepadProfiles() === 0 && J(oldHeld(e)) === both);
+  e.S.gamepadMoveRange = 0.45;
+  const r = e.P.applyById('gpx');
+  check('N4 applying a gamepad profile while old setups wait: the buttons change, the old setups stay', !!r && JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'hk-tripleSplit' && e.S.gamepadMoveRange === 0.7 && J(oldHeld(e)) === both);
+  check('N4 the old setups are not part of a capture', !('profiles' in PC.captureGamepad().gp) && !('profiles' in (PC.captureCurrent().gp || {})));
+  e.P.undo();
+  check('N4 Undo: the buttons come back, the old setups stay', JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'split' && J(oldHeld(e)) === both);
+  const bk = JSON.parse(e.ls.getItem('lmSettingsBackups') || '[]')[0];
+  const r2 = bk ? e.P.applySet(bk.data, 'backup') : null;
+  check('N4 a backup applied: the old setups stay', !!r2 && J(oldHeld(e)) === both);
+  e.ls.setItem('lmSettingsProfiles', J(JSON.parse(e.ls.getItem('lmSettingsProfiles')).slice(2)));
+  const n = PC.migrateGamepadProfiles(), pads = gpProfiles(e);
+  check('N4 places free: the waiting setups become gamepad profiles with their buttons and tuning', n === 2 && J(oldHeld(e)) === '[]' &&
+    pads.some(p => p.name === 'Old one' && p.data.gp.map[0] === 'feed' && p.data.s.gamepadMoveRange === 0.4) && pads.some(p => p.name === 'Old two' && p.data.gp.map[0] === 'menu'));
+}
+{
+  /* the storage is full: the old list cannot even be moved out of lmGamepad */
+  const e = bootApply(), PC = e.P.core;
+  e.ls.setItem('lmSettingsProfiles', J([{ id: 'gpx', name: 'Pad', data: { gp: { v: 1, map: { 0: 'hk-tripleSplit' } } }, only: 'gp' }]));
+  e.ls.setItem('lmGamepad', J({ v: 1, map: { 0: 'split' }, profiles: [{ name: 'Old', map: { 0: 'feed' } }] }));
+  const set = e.ls.setItem;
+  let full = true;
+  e.ls.setItem = (k, v) => { if (full && (k === 'lmGamepadPending' || k === 'lmSettingsProfiles')) throw new Error('QuotaExceededError'); set(k, v); };
+  check('N4 storage full: the old setup is not moved and not lost', PC.migrateGamepadProfiles() === 0 && J(oldHeld(e)) === J(['Old']));
+  const r = e.P.applyById('gpx');
+  check('N4 storage full: applying a gamepad profile keeps the old setup next to the new buttons', !!r && JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'hk-tripleSplit' && J(oldHeld(e)) === J(['Old']));
+  check('N4 storage full: the old list is still not part of a capture', !('profiles' in PC.captureGamepad().gp) && !('profiles' in (PC.captureCurrent().gp || {})));
+  e.P.undo();
+  check('N4 storage full: Undo keeps it too', JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'split' && J(oldHeld(e)) === J(['Old']));
+  full = false;
+  e.ls.setItem = set;
+  check('N4 storage free again: the next try moves it', PC.migrateGamepadProfiles() === 1 && gpProfiles(e).some(p => p.name === 'Old' && p.data.gp.map[0] === 'feed') && J(oldHeld(e)) === '[]');
+}
+{
+  /* the settings export and import */
+  const e = bootApply(), PC = e.P.core;
+  e.ls.setItem('lmSettingsProfiles', J(fullProfiles(50)));
+  e.ls.setItem('lmGamepad', J({ v: 1, map: { 0: 'split' }, profiles: [{ name: 'Waiting', map: { 0: 'feed' }, opts: { gamepadMoveRange: 0.4 } }] }));
+  PC.migrateGamepadProfiles();
+  const out = JSON.parse(J(e.c.lmExportExtras(e.ls)));
+  check('N4 export: a waiting setup goes with the gamepad buttons (in the old list)', out.lmGamepad.map[0] === 'split' && J((out.lmGamepad.profiles || []).map(p => p.name)) === J(['Waiting']));
+  e.c.lmImportExtras({ lmGamepad: { v: 1, map: { 0: 'menu' } } }, (k, t) => e.ls.setItem(k, t), k => e.ls.removeItem(k));
+  PC.migrateGamepadProfiles();
+  check('N4 import of a file without it: the waiting setup stays', JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'menu' && J(oldHeld(e)) === J(['Waiting']));
+  const e2 = bootApply();
+  e2.c.lmImportExtras(out, (k, t) => e2.ls.setItem(k, t), k => e2.ls.removeItem(k));
+  check('N4 the export imported elsewhere (50 profiles there too): it waits there', e2.P.core.migrateGamepadProfiles() === 0 && J(oldHeld(e2)) === J(['Waiting']));
+  e2.ls.setItem('lmSettingsProfiles', J(fullProfiles(49)));
+  check('N4 ... and becomes a gamepad profile there once a place is free', e2.P.core.migrateGamepadProfiles() === 1 && gpProfiles(e2).some(p => p.name === 'Waiting' && p.data.s.gamepadMoveRange === 0.4) && J(oldHeld(e2)) === '[]');
+}
+{
+  /* saving a gamepad profile takes the buttons in use */
+  const e = bootApply(), PC = e.P.core;
+  e.ls.setItem('lmGamepad', J({ v: 1, map: { 0: 'split' } }));
+  e.c.LMGamepad.getMap = () => ({ 0: 'hk-tripleSplit', 1: 'feed', 2: 'none' });
+  const g = PC.captureGamepad();
+  check('N4 capture: the buttons in use (a change the full storage did not keep), not the stored ones', g.gp.map[0] === 'hk-tripleSplit' && g.gp.map[2] === 'none');
+  delete e.c.LMGamepad.getMap;
+  e.c.LMGamepad._cleanConfig = c => ({ v: 1, map: { 0: c && c.map && c.map[0] === 'split' ? 'split' : 'none', 5: 'split16' }, profiles: [] });
+  check('N4 capture: without the live buttons, the stored ones through the gamepad file validator', PC.captureGamepad().gp.map[5] === 'split16' && PC.captureGamepad().gp.map[0] === 'split');
+  delete e.c.LMGamepad._cleanConfig;
+  check('N4 capture: without the gamepad file, the stored buttons', PC.captureGamepad().gp.map[0] === 'split' && !('5' in PC.captureGamepad().gp.map));
+}
+{
+  /* with the real ogario/gamepad.js: the move keeps the buttons in use, the old list leaves its copy */
+  const e = bootApply();
+  e.ls.setItem('lmGamepad', J({ v: 1, map: { 0: 'split' }, profiles: [{ name: 'Old', map: { 0: 'feed' } }] }));
+  Object.assign(e.c, { requestAnimationFrame() { return 0; }, innerWidth: 1000, innerHeight: 800, MouseEvent: function () { }, WheelEvent: function () { } });
+  Object.assign(e.c.document, { hidden: false, hasFocus: () => true, activeElement: null, querySelector: () => null, dispatchEvent() { } });
+  e.c.legendmod5 = e.S;
+  delete e.c.LMGamepad;
+  let loaded = true;
+  try { vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'gamepad.js'), 'utf8'), e.c); } catch (err) { loaded = false; console.log('   ' + err.message); }
+  const G = e.c.LMGamepad;
+  check('N4 real gamepad file: loaded', loaded && !!G && typeof G.setButton === 'function');
+  if (G) {
+    const set = e.ls.setItem;
+    e.ls.setItem = (k, v) => { if (k === 'lmGamepad') throw new Error('QuotaExceededError'); set(k, v); };
+    G.setButton(1, 'hk-tripleSplit');
+    e.ls.setItem = set;
+    check('N4 real gamepad file: a button changed while the storage was full is in use, not stored', G.getMap()[1] === 'hk-tripleSplit' && JSON.parse(e.ls.getItem('lmGamepad')).map[1] !== 'hk-tripleSplit');
+    check('N4 real gamepad file: a gamepad profile saved now has that button', e.P.core.captureGamepad().gp.map[1] === 'hk-tripleSplit');
+    const n = e.P.core.migrateGamepadProfiles();
+    const st = JSON.parse(e.ls.getItem('lmGamepad'));
+    check('N4 real gamepad file: the old setup moved, the stored buttons are the ones in use, no old list left', n === 1 && !('profiles' in st) && st.map[1] === 'hk-tripleSplit' && G.getMap()[1] === 'hk-tripleSplit' && J(oldHeld(e)) === '[]');
+  }
+}
+check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');
 process.exit(fail ? 1 : 0);

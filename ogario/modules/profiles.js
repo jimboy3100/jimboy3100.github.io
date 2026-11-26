@@ -22,6 +22,9 @@
     var KEY_BACKUPS = 'lmSettingsBackups';
     var KEY_UNDO = 'lmSettingsProfilesUndo';
     var KEY_LAST = 'lmSettingsProfilesLast';
+    /* the Gamepad window's old named setups that are not profiles yet (no room, or the storage
+     * was full): kept apart from the buttons, so applying or undoing a set never removes them */
+    var KEY_GP_PENDING = 'lmGamepadPending';
     /* 30 own sets + the up to 20 named profiles moved over from the Gamepad window */
     var MAX_PROFILES = 50;
     var MAX_BACKUPS = 5;
@@ -231,6 +234,8 @@
         var out = { id: id, name: name, created: num(p.created), updated: num(p.updated), data: data };
         /* only: 'gp' a set of the gamepad buttons and tuning alone (Update keeps it that way) */
         if (p.only === 'gp') out.only = 'gp';
+        /* src: the old Gamepad window setup it was made from (the move is not done twice) */
+        if (typeof p.src === 'string' && /^g[0-9a-f]{16}$/.test(p.src)) out.src = p.src;
         /* the preset it was made from (the old built-in templates are presets now) */
         var tpl = typeof p.tpl === 'string' && has(TPL_OLD, p.tpl) ? TPL_OLD[p.tpl] : p.tpl;
         if (typeof tpl === 'string' && /^[A-Za-z][A-Za-z0-9]{0,30}$/.test(tpl)) out.tpl = tpl;
@@ -531,10 +536,15 @@
         var d = window.LM_SETTINGS_DEFAULTS || {};
         return Object.keys(d).filter(function (k) { return /^gamepad[A-Z]/.test(k) && k !== 'gamepadEnabled'; });
     }
-    /* lmGamepad without the old named-profile list (that list lives here now) */
+    /* lmGamepad without the old named-profile list (that list lives here now); a store that only
+     * held the list (kept while the list could not be moved) has no buttons: none */
     function readGamepad() {
         var g = readJSON('lmGamepad');
-        if (isObj(g) && has(g, 'profiles')) { g = Object.assign({}, g); delete g.profiles; }
+        if (isObj(g) && has(g, 'profiles')) {
+            g = Object.assign({}, g);
+            delete g.profiles;
+            if (!has(g, 'map')) return null;
+        }
         return g;
     }
     /* a button map as stored: index -> action name (ogario/gamepad.js checks it again on load) */
@@ -559,43 +569,139 @@
         if (Object.keys(s).length) d.s = s;
         return cleanBundle(d);
     }
-    /* the current gamepad buttons and tuning */
+    /* the current gamepad buttons and tuning. The buttons in use come from ogario/gamepad.js (a
+     * button changed while the storage was full is only there), else from the storage, checked
+     * by the gamepad file's own validator when it is loaded. */
     function captureGamepad() {
-        var live = S(), g = readGamepad(), o = {};
+        var live = S(), G = window.LMGamepad, map = null, o = {};
         if (live && typeof live.toJSON === 'function') live = live.toJSON();
         gpKeys().forEach(function (k) { if (live && has(live, k)) o[k] = live[k]; });
-        return gamepadSet(isObj(g) ? g.map : null, o);
+        try { if (G && typeof G.getMap === 'function') map = G.getMap(); } catch (e) { map = null; }
+        if (!isObj(map)) {
+            var g = readGamepad();
+            map = isObj(g) ? g.map : null;
+            try { if (map && G && typeof G._cleanConfig === 'function') map = G._cleanConfig({ map: map }).map; } catch (e) { }
+        }
+        return gamepadSet(map, o);
     }
-    /* Moves the Gamepad window's named profiles here, as gamepad-only profiles (a name that is
-     * already one is skipped), then takes the list out of lmGamepad. Nothing is removed while the
-     * profiles cannot be saved (storage full): the next start tries again. Returns how many moved. */
+
+    /* ── The old named setups of the Gamepad window ({ name, map, opts }) ── */
+    /* FNV-1a over a text: two seeds make the 64-bit identity of an old setup */
+    function hash32(t, h) {
+        for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+        return ('0000000' + (h >>> 0).toString(16)).slice(-8);
+    }
+    /* an old setup as kept until it is a profile: its name, buttons and tuning values, and an id
+     * made of them (the same setup found again has the same id). null when it has no name. */
+    function legacyItem(g) {
+        if (!isObj(g)) return null;
+        var name = cleanName(typeof g.name === 'string' ? g.name.replace(/[<>]/g, '') : '');
+        if (!name) return null;
+        var map = cleanPadMap(g.map), opts = {};
+        if (isObj(g.opts)) Object.keys(g.opts).sort().forEach(function (k) {
+            var v = g.opts[k];
+            if (/^gamepad[A-Z][A-Za-z0-9]{0,40}$/.test(k) && (typeof v === 'boolean' || (typeof v === 'number' && isFinite(v)))) opts[k] = v;
+        });
+        var t = JSON.stringify([name, map, opts]);
+        return { sid: 'g' + hash32(t, 2166136261) + hash32(t, 3735928559), name: name, map: map, opts: opts };
+    }
+    function readPending() {
+        var raw = readJSON(KEY_GP_PENDING), out = [], seen = Object.create(null);
+        var list = isObj(raw) && Array.isArray(raw.items) ? raw.items : [];
+        for (var i = 0; i < list.length && out.length < 200; i++) {
+            var it = legacyItem(list[i]);
+            if (!it || seen[it.sid]) continue;
+            seen[it.sid] = true;
+            out.push(it);
+        }
+        return out;
+    }
+    function writePending(items) {
+        if (!items.length) { removeKey(KEY_GP_PENDING); return readJSON(KEY_GP_PENDING) === null; }
+        return writeText(KEY_GP_PENDING, JSON.stringify({ v: 1, items: items.map(function (it) { return { name: it.name, map: it.map, opts: it.opts }; }) }));
+    }
+    /* Takes the old list out of lmGamepad into the pending store (nothing leaves lmGamepad
+     * before the store has it). Returns the pending setups, or null when the store could not be
+     * written (the list then stays in lmGamepad and the next try moves it). */
+    function stashLegacyGamepad() {
+        var pend = readPending(), raw = readJSON('lmGamepad');
+        if (!isObj(raw) || !has(raw, 'profiles')) return pend;
+        var seen = Object.create(null), add = 0;
+        pend.forEach(function (it) { seen[it.sid] = true; });
+        (Array.isArray(raw.profiles) ? raw.profiles : []).forEach(function (g) {
+            var it = legacyItem(g);
+            if (!it || seen[it.sid]) return;
+            seen[it.sid] = true;
+            pend.push(it);
+            add++;
+        });
+        if (add && !writePending(pend)) return null;
+        /* the gamepad file drops its copy of the list and saves the buttons in use; without it
+         * the stored buttons are written back without the list and read again */
+        var G = window.LMGamepad;
+        try {
+            if (G && typeof G._dropLegacy === 'function') G._dropLegacy();
+            else {
+                var rest = Object.assign({}, raw);
+                delete rest.profiles;
+                if (writeText('lmGamepad', JSON.stringify(rest)) && G && typeof G._reload === 'function') G._reload();
+            }
+        } catch (e) { }
+        return pend;
+    }
+    /* Makes gamepad-only Settings profiles of the old named setups. Each keeps its name (a taken
+     * name gets a number); a setup is left out only when it is a profile already: one made from
+     * it (src), or one of the same name (or that name numbered) with the same buttons and tuning.
+     * What does not fit (50 profiles) waits in the pending store for a free place. Nothing is
+     * removed before the profiles are saved, so a full storage loses nothing: the next try goes
+     * on where this one stopped. Returns how many moved. */
     function migrateGamepadProfiles() {
-        var raw = readJSON('lmGamepad');
-        if (!isObj(raw) || !has(raw, 'profiles')) return 0;
-        var old = Array.isArray(raw.profiles) ? raw.profiles : [];
-        var list = loadProfiles(), before = list.slice(), now = Date.now(), added = 0, left = [], taken = {};
-        list.forEach(function (p) { if (p.only === 'gp') taken[p.name.toLowerCase()] = true; });
-        old.forEach(function (g) {
-            if (!isObj(g)) return;
-            var name = cleanName(typeof g.name === 'string' ? g.name.replace(/[<>]/g, '') : '');
-            if (!name || taken[name.toLowerCase()]) return;
-            var data = gamepadSet(g.map, g.opts);
+        var pend = stashLegacyGamepad();
+        /* the tuning values are checked by the core's schema: without it they would be dropped */
+        if (!pend || !pend.length || typeof window.lmSettingValue !== 'function') return 0;
+        var list = loadProfiles(), now = Date.now(), added = 0, left = [], src = Object.create(null);
+        list.forEach(function (p) { if (p.src) src[p.src] = true; });
+        pend.forEach(function (it) {
+            if (src[it.sid]) return;
+            var data = gamepadSet(it.map, it.opts);
             if (!data) return;
-            /* moved before under another name (a full profile had the name) */
-            var dj = JSON.stringify(data);
-            if (before.some(function (p) { return p.only === 'gp' && JSON.stringify(p.data) === dj; })) return;
-            if (list.length >= MAX_PROFILES) { left.push(g); return; }
-            taken[name.toLowerCase()] = true;
-            list.push({ id: newId(), name: uniqueName(name, list), created: now, updated: now, data: data, only: 'gp' });
+            var dj = JSON.stringify(data), ln = it.name.toLowerCase();
+            if (list.some(function (p) {
+                var pn = p.name.toLowerCase();
+                return p.only === 'gp' && (pn === ln || (pn.indexOf(ln) === 0 && /^ \d{1,2}$/.test(pn.slice(ln.length)))) && JSON.stringify(p.data) === dj;
+            })) return;
+            if (list.length >= MAX_PROFILES) { left.push(it); return; }
+            list.push({ id: newId(), name: uniqueName(it.name, list), created: now, updated: now, data: data, only: 'gp', src: it.sid });
+            src[it.sid] = true;
             added++;
         });
         if (added && !saveProfiles(list)) return 0;
-        var rest = Object.assign({}, raw);
-        if (left.length) rest.profiles = left; else delete rest.profiles;
-        if (!writeText('lmGamepad', JSON.stringify(rest))) return 0;
-        /* the gamepad file reads its buttons again (without the list) */
-        try { var G = window.LMGamepad; if (G && typeof G._reload === 'function') G._reload(); } catch (e) { }
+        /* when this write fails they stay pending, and the next try finds them by src */
+        if (left.length !== pend.length) writePending(left);
         return added;
+    }
+    /* how many old setups wait for a free place */
+    function pendingGamepadCount() { return readPending().length; }
+    /* The text lmGamepad gets when a set is applied: an old list that could not be moved yet
+     * (storage full) stays with the new buttons (it is not part of the set). */
+    function gamepadText(gp) {
+        var raw = readJSON('lmGamepad'), v = isAbsent(gp) ? null : gp;
+        var keep = isObj(raw) && Array.isArray(raw.profiles) && raw.profiles.length ? raw.profiles : null;
+        if (!keep) return v ? JSON.stringify(v) : null;
+        var out = Object.assign({ v: 1 }, v || {});
+        out.profiles = (Array.isArray(out.profiles) ? out.profiles : []).concat(keep);
+        return JSON.stringify(out);
+    }
+    /* the settings export: old setups that are still waiting travel in the old list, so an import
+     * (here or on another device) brings them back to the pending store */
+    function exportGamepad(v) {
+        var pend = readPending();
+        if (!pend.length) return v;
+        var out = Object.assign({ v: 1 }, isObj(v) ? v : {}), have = Object.create(null);
+        out.profiles = Array.isArray(out.profiles) ? out.profiles.slice() : [];
+        out.profiles.forEach(function (g) { var it = legacyItem(g); if (it) have[it.sid] = true; });
+        pend.forEach(function (it) { if (!have[it.sid]) out.profiles.push({ name: it.name, map: it.map, opts: it.opts }); });
+        return out;
     }
 
     /* ── The live settings ── */
@@ -808,6 +914,8 @@
             return rows;
         }
         var app = window.application;
+        /* the old Gamepad window setups leave lmGamepad before its buttons are replaced */
+        if (c.gp) stashLegacyGamepad();
         /* 1. the target state in storage, all or nothing (a full storage changes nothing) */
         var entries = [];
         /* P1 fix #26: for restore/undo operations, do not merge current settings
@@ -823,7 +931,7 @@
         if (c.m) entries.push({ key: 'lm-mobile-prefs', text: isAbsent(data.m) ? null : JSON.stringify(isRestore ? Object.assign({}, data.m) : Object.assign({}, curM, data.m)) });
         /* P0 fix: write mobile layouts and gamepad config when present in the profile */
         if (c.ml) entries.push({ key: 'lm-mobile-layouts', text: isAbsent(data.ml) ? null : JSON.stringify(data.ml) });
-        if (c.gp) entries.push({ key: 'lmGamepad', text: isAbsent(data.gp) ? null : JSON.stringify(data.gp) });
+        if (c.gp) entries.push({ key: 'lmGamepad', text: gamepadText(data.gp) });
         /* P2 fix #97: restore zoom bookmarks when present in the profile */
         if (c.zb) entries.push({ key: 'lm-zoom-bookmarks', text: noZoomMarks(data.zb) ? null : JSON.stringify(data.zb) });
         /* the HUD layout is part of the same transaction (and so of the backup and the Undo) */
@@ -1271,6 +1379,9 @@
             var r4 = $('<div class="lm-sp-row"></div>').appendTo(body);
             btn(tx('undoLast') + (u.name ? ' (' + u.name + ')' : ''), 'undo', null, 'lm-sp-undo').appendTo(r4);
         }
+        /* old Gamepad window setups that wait for a free place */
+        var waiting = pendingGamepadCount();
+        if (waiting && typeof window.lmT === 'function') $('<div class="lm-sp-note"></div>').text(window.lmT('pkg.n34.gpPending', [waiting])).appendTo(body);
         var list = loadProfiles().filter(function (p) { return !gpView || p.only === 'gp'; });
         if (!list.length) { $('<div class="lm-sp-note"></div>').text(gt(gpView ? 'pkg.pt.gpEmpty' : 'pkg.pt.empty')).appendTo(body); return; }
         var last = null;
@@ -1416,7 +1527,8 @@
         }
     }
     function uniqueName(name, list) {
-        var taken = {};
+        /* no prototype: names like "constructor" are names too */
+        var taken = Object.create(null);
         list.forEach(function (p) { taken[p.name.toLowerCase()] = true; });
         if (!taken[name.toLowerCase()]) return name;
         for (var i = 2; i < 100; i++) {
@@ -1489,6 +1601,8 @@
             if (saveProfiles(list)) {
                 /* rules that pointed at it go (cleanRules drops unknown ids) */
                 writeText(KEY_RULES, JSON.stringify(cleanRules(readJSON(KEY_RULES), list)));
+                /* the place is free for an old gamepad setup that was waiting */
+                migrateGamepadProfiles();
             }
         } else if (a === 'cmp') {
             cmpA = 'cur';
@@ -1543,8 +1657,11 @@
         applyById: function (id) { var p = findProfile(id); return p ? applyProfile(p) : null; },
         /* applies a set { s, t, h, m } like a profile (with backup and Undo); for scripts and the smoke test */
         applySet: function (data, name) { return applyBundle(data, { name: cleanName(name) || tx('script'), reason: 'profile' }); },
+        /* the settings export: lmGamepad with the old setups still waiting (ogario.v4.js) */
+        exportGamepad: exportGamepad,
         /* pure parts, used by developers/tests/profiles.js */
         core: {
+            readPending: readPending, uniqueName: uniqueName,
             cleanBundle: cleanBundle, cleanProfiles: cleanProfiles, cleanBackups: cleanBackups, cleanRules: cleanRules,
             diffBundles: diffBundles, effective: effective, applyTemplate: applyTemplate, pushBackup: pushBackup, saveBackups: saveBackups,
             writeTransaction: writeTransaction, fillNewDefaults: fillNewDefaults, pickRule: pickRule,

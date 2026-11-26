@@ -151,6 +151,16 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('profiles: an old list not moved yet survives a button change',s3.map[1]==='hk-doubleSplit'&&s3.profiles.length===1&&s3.profiles[0].name==='Phone'&&s3.profiles[0].opts.gamepadMoveRange===0.7);
   old.store.lmGamepad=JSON.stringify({v:1,map:s3.map});old.G._reload();old.G.setButton(2,'none');
   check('profiles: once moved (gone from storage), a save does not bring it back',!('profiles' in JSON.parse(old.store.lmGamepad))); }
+/* the old list kept until profiles.js has it: unusual names are names, the move keeps the buttons in use */
+{ const names=['constructor','toString','__proto__','hasOwnProperty'];
+  const o={store:{lmGamepad:JSON.stringify({v:1,map:{0:'split'},profiles:names.map(n=>({name:n,map:{0:'menu'}}))})}};
+  const c=page(o);
+  check('profiles: old setups named like built-in object properties are kept',c.G._cleanConfig(JSON.parse(o.store.lmGamepad)).profiles.map(p=>p.name).join()===names.join());
+  o.full=true;c.G.setButton(1,'hk-tripleSplit');o.full=false;
+  check('profiles: a button changed while the storage is full is in use',c.G.getMap()[1]==='hk-tripleSplit'&&JSON.parse(o.store.lmGamepad).map[1]!=='hk-tripleSplit');
+  check('profiles: once profiles.js has the old list, this copy goes and the buttons in use are saved',typeof c.G._dropLegacy==='function'&&c.G._dropLegacy()===true&&!('profiles' in JSON.parse(o.store.lmGamepad))&&JSON.parse(o.store.lmGamepad).map[1]==='hk-tripleSplit'&&JSON.parse(o.store.lmGamepad).map[0]==='split');
+  c.G.setButton(2,'none');
+  check('profiles: a later save does not bring the old list back',!('profiles' in JSON.parse(o.store.lmGamepad))); }
 { const G=page().G;
   check('calibration: suggested dead zone',G.suggestDeadzone(0)===0.05&&G.suggestDeadzone(0.06)===0.11&&G.suggestDeadzone(0.071)===0.13&&G.suggestDeadzone(0.9)===0.5&&G.suggestDeadzone('x')===0.05); }
 { const c=page();let rum=[];const p=gp({0:true});p.vibrationActuator={playEffect(t,o){rum.push(o.duration);return Promise.resolve();}};
