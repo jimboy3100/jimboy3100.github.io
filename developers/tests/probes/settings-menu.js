@@ -11,8 +11,10 @@
   // (the Command Centre stays on Ctrl+K and its own hotkey; the settings search stays)
   if ($('#og-settings #lm-open-hotkeys-btn, #og-settings #lm-cc-open, #og-settings .lm-cc-open-btn').length) fail.push('hotkeys / Command Centre button in the Settings tab');
   if (!$('#lm-settings-search').closest('#og-settings').length) fail.push('settings search missing');
-  // no control bindings in Settings: mouse buttons, sticky cells and gamepad are in the Hotkeys window
-  if ($('#og-settings').find('#stickyCell, #mouseSplit, #mouseFeed, #mouseWheelClick, #mouseCommand4, #mouseCommand5, #gamepadEnabled, #gamepadDeadzone-slider, #lm-gamepad-btn, select[id$="2"][id^="mouse"], .mouseGroup, .controlsGroup').length) fail.push('control bindings in the Settings tab');
+  // no control bindings in Settings: mouse buttons are keys of the Hotkeys window, the gamepad is there
+  // too; Sticky cells (a behaviour of the buttons, not a binding) is in Settings > Helpers, once
+  if ($('[id="stickyCell"]').length !== 1 || !$('#stickyCell').closest('#og-options .options-box.helpersGroup').length) fail.push('Sticky cells not once in Settings > Helpers');
+  if ($('#og-settings').find('#mouseSplit, #mouseFeed, #mouseWheelClick, #mouseCommand4, #mouseCommand5, #gamepadEnabled, #gamepadDeadzone-slider, #lm-gamepad-btn, select[id$="2"][id^="mouse"], .mouseGroup, .controlsGroup').length) fail.push('control bindings in the Settings tab');
   // the Lab experiments are in the User Scripts window: no Lab section, note or Reset Lab in Settings
   if ($('#og-settings').find('.lmLabGroup, .lm-lab-note, #lm-lab-reset, [id^="lmLab-"]').length) fail.push('Lab section in the Settings tab');
   // one link to the skins page: the skins panel's Add skins button (the left column had a second one)

@@ -158,35 +158,9 @@
         sel.value = value;
     }
 
-    function offNotice(c) {
-        var s = window.legendmod5;
-        var box = el('div', 'display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding:6px 8px;margin-bottom:6px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);');
-        var lab = el('label', 'display:flex;align-items:center;cursor:pointer;');
-        var cb = document.createElement('input');
-        cb.type = 'checkbox';
-        cb.id = 'lm-gp-enable';
-        cb.checked = !!(s && s.gamepadEnabled);
-        lab.appendChild(cb);
-        lab.appendChild(el('span', 'color:' + c.mc + ';font-weight:700;', t('enable')));
-        box.appendChild(lab);
-        var hint = el('div', 'flex-basis:100%;font-size:11px;color:' + c.tc2 + ';', t('off'));
-        hint.style.display = cb.checked ? 'none' : '';
-        box.appendChild(hint);
-        cb.addEventListener('change', function () {
-            if (!s) return;
-            s.gamepadEnabled = cb.checked;
-            hint.style.display = cb.checked ? 'none' : '';
-            /* the switch in the Hotkeys window shows it and saves the settings */
-            var a = window.application;
-            try { if (a && a.syncHotkeyOption) a.syncHotkeyOption('gamepadEnabled'); else if (a && a.saveSettings) a.saveSettings(s, 'ogarioSettings'); } catch (e) { }
-        });
-        return box;
-    }
-
     function buildButtons(c) {
         var g = G();
         var wrap = el('div');
-        wrap.appendChild(offNotice(c));
         var grid = el('div', 'display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:5px 12px;');
         var m = g.getMap();
         var tpl = actionSelect();
@@ -225,7 +199,6 @@
         var g = G();
         var o = g.getOpts();
         var wrap = el('div');
-        wrap.appendChild(offNotice(c));
         var grid = el('div', 'display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px 16px;');
         SLIDERS.forEach(function (d) {
             var k = d[0];

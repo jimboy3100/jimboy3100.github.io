@@ -1,6 +1,7 @@
 /* Legend Mod gamepad / controller support (standard browser Gamepad API).
- * Off by default: option "gamepadEnabled" (Hotkeys window > Gamepad).
- * While the option is off this file only checks the option once a second.
+ * Always on: it reads the pads only while one is connected (gamepadconnected starts the frame
+ * loop, which ends when none is left), so without a controller it costs nothing. The old option
+ * "gamepadEnabled" is ignored (old profiles and imports may still have it).
  * Buttons, stick sensitivity, triggers, inverted axes and vibration are set in the Gamepad window
  * (Hotkeys window > Gamepad, or its hotkey). The window lives in ogario/modules/gamepad-ui.js and
  * is loaded the first time it opens. Named gamepad setups are Settings profiles (gamepad-only
@@ -230,11 +231,6 @@
         } catch (e) { }
         /* (the dead zone slider is only in the Gamepad window, not in the menu) */
         watchDeath();
-    }
-
-    function enabled() {
-        var s = window.legendmod5;
-        return !!(s && s.gamepadEnabled);
     }
 
     function pads() {
@@ -478,9 +474,8 @@
     }
 
     function frame() {
-        if (!enabled()) { running = false; release(); return; }
         var list = pads();
-        if (!list.length) { running = false; release(); return; }
+        if (!list.length) { running = false; release(); watchDeath(); return; }
         if (!map) load();
         var off = away() || suspended;
         var blockAll = off || (typing() && !menuOpen());
@@ -577,13 +572,13 @@
     });
 
     function start() {
-        if (running || !enabled() || !pads().length) return;
+        if (running || !pads().length) return;
         running = true;
+        watchDeath();
         requestAnimationFrame(frame);
     }
 
     window.addEventListener('gamepadconnected', function (e) {
-        if (!enabled()) return;
         if (e && e.gamepad) announce(e.gamepad);
         start();
     });
@@ -593,14 +588,14 @@
         var pre = e.gamepad.index + ':';
         for (var k in prevPressed) if (k.indexOf(pre) === 0) delete prevPressed[k];
     });
-    /* vibration on death (option, off by default). Listens only while the option is on: the
-     * game skips building an event nobody listens to. */
+    /* vibration on death (option, off by default). Listens only while the option is on and a
+     * pad is read: the game skips building an event nobody listens to. */
     var deathOn = false;
     function onDeath() {
-        if (enabled() && !suspended && pads().length) rumble(padByIndex(lastPadIndex), 300, 0.8);
+        if (!suspended && pads().length) rumble(padByIndex(lastPadIndex), 300, 0.8);
     }
     function watchDeath() {
-        var want = enabled() && opt('gamepadVibrate');
+        var want = running && opt('gamepadVibrate');
         if (want === deathOn) return;
         try {
             var E = window.LMEvents;
@@ -610,11 +605,9 @@
         } catch (e) { }
     }
 
-    /* option turned on later, or a pad that was already connected */
-    setInterval(function () {
-        if (!running && enabled()) start();
-        watchDeath();
-    }, 1000);
+    /* a pad already connected when this file loaded (no polling: gamepadconnected starts the
+     * loop for any pad connected later) */
+    start();
 
     /* the Gamepad window: ogario/modules/gamepad-ui.js, loaded the first time it opens */
     var uiLoading = false;

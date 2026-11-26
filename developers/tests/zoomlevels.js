@@ -60,7 +60,7 @@ function loadCommands(helpers) {
     function run(stored) {
         const ctx = { JSON, Object, String, hotkeys: null, chatCommand: {}, readLocalStorageJSON: k => (k === 'ogarioHotkeys' ? JSON.parse(JSON.stringify(stored)) : null) };
         vm.createContext(ctx);
-        vm.runInContext('var setup = {' + body + ', migrateBrowserSpecificHotkeys() {}, addMissingDefaultHotkeys() {}, syncMessageKey() {}, loadDefaultHotkeys() {} }; setup.loadHotkeys(); var out = hotkeys;', ctx);
+        vm.runInContext('var setup = {' + body + ', migrateBrowserSpecificHotkeys() {}, addMissingDefaultHotkeys() {}, syncMessageKey() {}, loadDefaultHotkeys() {}, migrateMouseControls() {} }; setup.loadHotkeys(); var out = hotkeys;', ctx);
         return ctx.out;
     }
     let h = run({ 'X': 'hk-zoomRecall1', 'ALT+2': 'hk-zoom2', 'Y': 'hk-zoomRecall2', 'Q': 'hk-feed' });

@@ -27,7 +27,7 @@
      * language, else English. vars fill {0} {1}. A few labels are the same as settings / hotkey labels
      * and use those keys. */
     var TP = 'modules.smalltools.';
-    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-screenshotMode', skinsTitle: 'settings.hk-skinCollections' };
+    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-screenshotMode', skinsTitle: 'settings.hk-skinCollections', cMouseOff: 'pkg.mb.cMouseOff', cMoved: 'pkg.mb.cMoved', cMovedOk: 'pkg.mb.cMovedOk' };
     function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(own(SHARED, k) ? SHARED[k] : TP + k, vars) : k; }
     function langDir() { return W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'; }
 
@@ -103,11 +103,13 @@
     var PAD_SAME = { split: 'hk-split', doubleSplit: 'hk-doubleSplit', split16: 'hk-split16', feed: 'hk-macroFeed', multiboxSwap: 'hk-multiboxswap' };
 
     /* Conflicts of the key / mouse / gamepad bindings.
-     * inp.keys: [[keyName, commandId], ...] (the hotkeys map; may hold the same key twice)
-     * inp.mouse: [{ id, name, on, cmd }] (mouse button settings), inp.pad: { buttonIndex: action },
-     * inp.padNames: [name per button], inp.padOn: bool, inp.builtin: { key: label } (default
-     * BUILTIN_KEYS), inp.exists(cmd): command still defined.
-     * Result: [{ kind: 'dup'|'browser'|'mouse'|'pad', level: 'error'|'warn'|'info', key, cmds, ... }] */
+     * inp.keys: [[keyName, commandId], ...] (the hotkeys map, mouse buttons included ('MOUSE
+     * RIGHT'...); may hold the same key twice), inp.mouseOff: { mouseKey: { what, opt } } (buttons
+     * another setting uses instead: sticky cells), inp.moved: [{ key, from, to }] (buttons the old
+     * mouse settings gave to another command), inp.pad: { buttonIndex: action },
+     * inp.padNames: [name per button], inp.builtin: { key: label } (default BUILTIN_KEYS),
+     * inp.exists(cmd): command still defined.
+     * Result: [{ kind: 'dup'|'browser'|'mouseOff'|'moved'|'pad', level: 'error'|'warn'|'info', key, cmds, ... }] */
     function findConflicts(inp) {
         inp = inp || {};
         var out = [], byKey = {}, keyOfCmd = {}, order = [];
@@ -133,11 +135,14 @@
                 var b = BROWSER_KEYS[key];
                 out.push({ kind: 'browser', level: b[0] === 'block' ? 'error' : b[0], key: key, cmds: cmds.slice(), what: browserWhat(b) });
             }
+            var off = isObj(inp.mouseOff) && own(inp.mouseOff, key) && isObj(inp.mouseOff[key]) ? inp.mouseOff[key] : null;
+            if (off) out.push({ kind: 'mouseOff', level: 'warn', key: key, cmds: cmds.slice(), what: String(off.what || ''), opt: typeof off.opt === 'string' ? off.opt : '' });
         });
-        var mouse = Array.isArray(inp.mouse) ? inp.mouse : [];
-        mouse.forEach(function (m) {
-            if (!m || !m.on || typeof m.cmd !== 'string' || !own(keyOfCmd, m.cmd)) return;
-            out.push({ kind: 'mouse', level: 'info', key: keyOfCmd[m.cmd], cmds: [m.cmd], button: m.id, name: m.name || m.id });
+        (Array.isArray(inp.moved) ? inp.moved : []).forEach(function (m) {
+            if (!isObj(m) || typeof m.key !== 'string' || typeof m.to !== 'string' || typeof m.from !== 'string') return;
+            /* only while the button still runs what the old setting gave it */
+            if (!own(byKey, m.key) || byKey[m.key].indexOf(m.to) < 0) return;
+            out.push({ kind: 'moved', level: 'warn', key: m.key, cmds: exists(m.from) && m.from !== m.to ? [m.to, m.from] : [m.to], from: m.from, to: m.to });
         });
         if (isObj(inp.pad)) {
             var names = Array.isArray(inp.padNames) ? inp.padNames : [];
@@ -146,7 +151,7 @@
                 if (typeof a !== 'string') return;
                 var cmd = HK_RE.test(a) ? a : (own(PAD_SAME, a) ? PAD_SAME[a] : null);
                 if (!cmd || !own(keyOfCmd, cmd)) return;
-                out.push({ kind: 'pad', level: 'info', key: keyOfCmd[cmd], cmds: [cmd], button: +bi, name: names[bi] || t('padButton', bi), padOn: !!inp.padOn });
+                out.push({ kind: 'pad', level: 'info', key: keyOfCmd[cmd], cmds: [cmd], button: +bi, name: names[bi] || t('padButton', bi) });
             });
         }
         return out;
@@ -466,12 +471,12 @@
     function ringKey(e) {
         if (ring && (e.key === 'Escape' || e.keyCode === 27)) { e.preventDefault(); e.stopPropagation(); ringClose(false); }
     }
-    /* the right stick of the first connected pad (window.LMGamepad), only with gamepad support on */
+    /* the right stick of the first connected pad (window.LMGamepad) */
     function ringPad() {
         if (!ring) return;
         ring.raf = requestAnimationFrame(ringPad);
-        var g = W.LMGamepad, s = settings();
-        if (!g || typeof g.pads !== 'function' || !s.gamepadEnabled) return;
+        var g = W.LMGamepad;
+        if (!g || typeof g.pads !== 'function') return;
         var p = g.pads()[0];
         if (!p || !p.axes || p.axes.length < 4) return;
         var x = +p.axes[2] || 0, y = +p.axes[3] || 0;
@@ -570,8 +575,6 @@
 
     /* ═══ 2. Hotkey conflicts ═══ */
 
-    var MOUSE = [['leftClick', 'mouseSplit'], ['rightClick', 'mouseFeed'], ['middleClick', 'mouseWheelClick'], ['mouse4Click', 'mouseCommand4'], ['mouse5Click', 'mouseCommand5']];
-    var MOUSE_SELECT = { mouseSplit: 'mouseSplit2', mouseFeed: 'mouseFeed2', mouseWheelClick: 'mouseWheelClick2', mouseCommand4: 'mouseCommand42', mouseCommand5: 'mouseCommand52' };
     function padMap() {
         var g = W.LMGamepad;
         if (g && typeof g.getMap === 'function') { try { return g.getMap(); } catch (e) { } }
@@ -582,14 +585,18 @@
     function currentConflicts() {
         var hk = W.hotkeys, s = settings(), tl = W.textLanguage || {}, keys = [];
         if (isObj(hk)) for (var k in hk) if (own(hk, k) && typeof hk[k] === 'string') keys.push([k, hk[k]]);
-        var g = W.LMGamepad;
+        var g = W.LMGamepad, hs = W.legendmod6, moved = [];
+        try { if (hs && typeof hs.mouseNotes === 'function') moved = hs.mouseNotes(); } catch (e) { }
+        /* sticky cells and the reverse trick take the left and right button on the game */
+        var off = {}, offBy = s.stickyCell ? 'stickyCell' : s.reverseTrick ? 'reverseTrick' : '';
+        if (offBy) off['MOUSE LEFT'] = off['MOUSE RIGHT'] = { what: plain(tl[offBy]) || offBy, opt: offBy };
         return findConflicts({
             keys: keys,
             exists: hkExists,
-            mouse: MOUSE.map(function (m) { return { id: m[0], name: plain(tl[m[1]]) || m[1], on: !!s[m[1]], cmd: s[m[0]], opt: m[1] }; }),
+            mouseOff: off,
+            moved: moved,
             pad: padMap(),
-            padNames: g && g.BUTTON_NAMES ? g.BUTTON_NAMES : ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Back', 'Start', 'LS', 'RS', t('dpadUp'), t('dpadDown'), t('dpadLeft'), t('dpadRight')],
-            padOn: !!s.gamepadEnabled
+            padNames: g && g.BUTTON_NAMES ? g.BUTTON_NAMES : ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Back', 'Start', 'LS', 'RS', t('dpadUp'), t('dpadDown'), t('dpadLeft'), t('dpadRight')]
         });
     }
     function showMenu() {
@@ -623,8 +630,9 @@
     function jumpSetting(id) {
         closeWin();
         var cc = W.LMCommandCentre;
+        if (cc && typeof cc.reveal === 'function' && cc.reveal(id)) return;
         if (cc && typeof cc.run === 'function' && cc.run('set:' + id)) return;
-        /* the mouse button commands are in the Hotkeys window */
+        /* a control of the Hotkeys window */
         var hkEl = D.getElementById(id);
         if (hkEl && hkEl.closest && hkEl.closest('#hotkeys')) { jumpHotkey(id); return; }
         showMenu();
@@ -637,8 +645,9 @@
         if (c.kind === 'dup' && c.builtin) return [c.key, t('cBuiltin', [c.builtin, labels])];
         if (c.kind === 'dup') return [c.key, t('cDup', labels)];
         if (c.kind === 'browser') return [c.key, t(c.level === 'error' ? 'cBrowserBlock' : c.level === 'warn' ? 'cBrowserWarn' : 'cBrowserInfo', [c.what, labels])];
-        if (c.kind === 'mouse') return [c.name, t('cMouse', [c.key, labels])];
-        return [t('padName', c.name), t('cMouse', [c.key, labels]) + (c.padOn ? '' : ' ' + t('padOff'))];
+        if (c.kind === 'mouseOff') return [c.key, t('cMouseOff', [labels, c.what])];
+        if (c.kind === 'moved') return [c.key, t('cMoved', [hkLabel(c.to), hkLabel(c.from)])];
+        return [t('padName', c.name), t('cMouse', [c.key, labels])];
     }
     /* The list of all conflicts, shown in the Hotkeys window (its "Hotkey conflicts" button,
      * ogario.v4.js buildHotkeysControls): keys bound twice or kept by the browser, and mouse
@@ -671,13 +680,25 @@
                 a.addEventListener('click', function (e) { e.preventDefault(); jumpHotkey(cmd); });
                 row.appendChild(a);
             });
-            if (c.kind === 'mouse') {
-                var opt = MOUSE.filter(function (m) { return m[0] === c.button; })[0];
-                var am = el('a', '', t('jumpTo', c.name));
+            /* the setting that takes the button (sticky cells is in Settings) */
+            if (c.kind === 'mouseOff' && c.opt && D.getElementById(c.opt)) {
+                var am = el('a', 'margin-right:8px;', t('jumpTo', c.what));
                 am.className = 'lm-st-link';
                 am.href = '#';
-                am.addEventListener('click', function (e) { e.preventDefault(); jumpSetting(MOUSE_SELECT[opt[1]] || opt[1]); });
+                am.addEventListener('click', function (e) { e.preventDefault(); jumpSetting(c.opt); });
                 row.appendChild(am);
+            }
+            /* a change the old mouse settings made: listed until it is seen */
+            if (c.kind === 'moved') {
+                var ok = el('a', '', t('cMovedOk'));
+                ok.className = 'lm-st-link';
+                ok.href = '#';
+                ok.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    try { if (W.legendmod6 && W.legendmod6.dismissMouseNote) W.legendmod6.dismissMouseNote(c.key); } catch (e2) { }
+                    renderConflicts(box);
+                });
+                row.appendChild(ok);
             }
             if (c.kind === 'pad' && W.LMGamepad && typeof W.LMGamepad.openWindow === 'function') {
                 var ap = el('a', '', t('jumpTo', t('cPad')));

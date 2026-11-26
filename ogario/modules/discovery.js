@@ -188,7 +188,7 @@
         { id: 'analytics', opts: ['analytics'], win: opener('LMAnalytics.open') },
         { id: 'deathRecap', opts: ['deathRecap', 'killFeed', 'massLossAlert'] },
         { id: 'adaptivePerf', opts: ['adaptivePerf', 'netHistory'], win: opener('LMPerf.openDiag') },
-        { id: 'gamepad', opts: ['gamepadEnabled'], win: opener('LMGamepad.openWindow') },
+        { id: 'gamepad', opts: [], win: opener('LMGamepad.openWindow') },
         { id: 'profiles', opts: [], win: opener('LMProfiles.open') },
         { id: 'notifications', opts: ['notificationCentre'], show: { notificationCentre: '#lm-notif-bell' }, win: opener('LMNotifications.open') },
         { id: 'hudEditor', opts: [], win: opener('LMHudEditor.open') },

@@ -75,19 +75,20 @@ r = C.findConflicts({ keys: [['ESC', 'hk-split']] });
 check('conflicts: Esc is also the menu key', has(r, c => c.kind === 'dup' && c.builtin && c.key === 'ESC'));
 r = C.findConflicts({ keys: [['spec-messageKey', 'ENTER'], ['', 'hk-split'], ['E', 'hk-gone'], [5, 'x'], 'junk'], exists });
 check('conflicts: message key entry, empty keys, removed commands and junk ignored', r.length === 0);
-const mouse = [
-    { id: 'leftClick', name: 'Left mouse button', on: true, cmd: 'hk-split' },
-    { id: 'rightClick', name: 'Right mouse button', on: false, cmd: 'hk-feed' },
-    { id: 'middleClick', name: 'Mouse wheel click', on: true, cmd: 'hk-other' }
-];
-r = C.findConflicts({ keys: [['SPACE', 'hk-split'], ['W', 'hk-feed']], mouse });
-check('conflicts: an enabled mouse button with a key command is listed', has(r, c => c.kind === 'mouse' && c.button === 'leftClick' && c.key === 'SPACE' && c.level === 'info'));
-check('conflicts: a disabled mouse button is not', !has(r, c => c.kind === 'mouse' && c.button === 'rightClick'));
-check('conflicts: a mouse command without a key is not', !has(r, c => c.kind === 'mouse' && c.button === 'middleClick'));
-r = C.findConflicts({ keys: [['SPACE', 'hk-split'], ['W', 'hk-macroFeed'], ['R', 'hk-cameraLock']], pad: { 0: 'split', 1: 'feed', 2: 'hk-cameraLock', 3: 'respawn', 4: 'none', 5: 7 }, padNames: ['A', 'B', 'X', 'Y', 'LB', 'RB'], padOn: false });
+/* mouse buttons are keys of the hotkeys map ('MOUSE RIGHT'...) */
+r = C.findConflicts({ keys: [['SPACE', 'hk-split'], ['MOUSE RIGHT', 'hk-split'], ['MOUSE LEFT', 'hk-feed'], ['MOUSE 4', 'hk-other']], exists,
+    mouseOff: { 'MOUSE LEFT': { what: 'Sticky cells', opt: 'stickyCell' }, 'MOUSE RIGHT': { what: 'Sticky cells', opt: 'stickyCell' } } });
+check('conflicts: a key and a mouse button of one command are no conflict', !has(r, c => c.kind === 'dup'));
+check('conflicts: a mouse button sticky cells takes is listed (warning)', has(r, c => c.kind === 'mouseOff' && c.key === 'MOUSE LEFT' && c.level === 'warn' && c.cmds.join() === 'hk-feed' && c.opt === 'stickyCell' && c.what === 'Sticky cells') && has(r, c => c.kind === 'mouseOff' && c.key === 'MOUSE RIGHT'));
+check('conflicts: an unbound taken button and other buttons are not', r.filter(c => c.kind === 'mouseOff').length === 2);
+r = C.findConflicts({ keys: [['MOUSE WHEEL', 'hk-multiboxswap'], ['MOUSE 4', 'hk-split']], exists: (c) => c !== 'hk-gone',
+    moved: [{ key: 'MOUSE WHEEL', from: 'hk-comm10', to: 'hk-multiboxswap' }, { key: 'MOUSE 4', from: 'hk-feed', to: 'hk-doubleSplit' }, { key: 'MOUSE 5', from: 'hk-gone', to: 'hk-split16' }, 'junk', { key: 3 }] });
+check('conflicts: a button the old mouse settings moved is listed with both commands', has(r, c => c.kind === 'moved' && c.key === 'MOUSE WHEEL' && c.level === 'warn' && c.cmds.join() === 'hk-multiboxswap,hk-comm10'));
+check('conflicts: a moved button rebound since (or junk) is not', r.filter(c => c.kind === 'moved').length === 1);
+r = C.findConflicts({ keys: [['SPACE', 'hk-split'], ['W', 'hk-macroFeed'], ['R', 'hk-cameraLock']], pad: { 0: 'split', 1: 'feed', 2: 'hk-cameraLock', 3: 'respawn', 4: 'none', 5: 7 }, padNames: ['A', 'B', 'X', 'Y', 'LB', 'RB'] });
 check('conflicts: gamepad Split = key split', has(r, c => c.kind === 'pad' && c.button === 0 && c.name === 'A' && c.key === 'SPACE'));
 check('conflicts: gamepad feed = macro feed key', has(r, c => c.kind === 'pad' && c.button === 1 && c.key === 'W'));
-check('conflicts: gamepad hotkey action = same key command', has(r, c => c.kind === 'pad' && c.button === 2 && c.key === 'R' && c.padOn === false));
+check('conflicts: gamepad hotkey action = same key command', has(r, c => c.kind === 'pad' && c.button === 2 && c.key === 'R'));
 check('conflicts: gamepad respawn / none / junk not listed', r.filter(c => c.kind === 'pad').length === 3);
 check('conflicts: nothing given = nothing found', C.findConflicts().length === 0 && C.findConflicts({ keys: 'x', pad: [1], mouse: 3 }).length === 0);
 

@@ -20509,7 +20509,7 @@ var defaultmapsettings = {
     lineSplitGuide: true,
 
     stickyCell: false,
-    gamepadEnabled: false, /* gamepad / controller support (ogario/gamepad.js) */
+    gamepadEnabled: false, /* no longer used: gamepad support is always on (kept for old profiles and imports) */
     gamepadDeadzone: 0.2, /* stick dead zone (0.05-0.5); 0.2 was the fixed value before */
     /* Gamepad window (ogario/modules/gamepad-ui.js); the button map and profiles are in localStorage 'lmGamepad' */
     gamepadMoveRange: 0.45, /* stick at full tilt = this part of the smaller screen side (0.15-1) */
@@ -25134,37 +25134,20 @@ function thelegendmodproject() {
             $(section).append('<label>' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
             $('#' + option).prop('checked', defaultmapsettings[option]);
         },
-        /* Mouse buttons and gamepad in the Hotkeys window, above the keys: every input binding is
-         * there and none is in Settings (owner's rule). Same setting keys, switches (setSettings),
-         * command lists (addPresetBox3) and ids as when they were in Settings. They take effect
-         * and are saved at once: the window's Save / Close / Restore are for the keys only. */
+        /* The gamepad and the conflict list in the Hotkeys window, above the keys: every input
+         * binding is there and none is in Settings (owner's rule). Mouse buttons are bound in the
+         * key fields themselves (hotkeysSetup.mouseKeys); gamepad support is always on (the
+         * Gamepad window sets its buttons). */
         buildHotkeysControls() {
             var cfg = $('#hotkeys-cfg');
             if (!cfg.length || document.getElementById('lm-hk-controls')) return;
-            var app = this;
             /* the first child is a heading, so the old row-index selectors of
              * languages/LanguagePackHandler.js (#hotkeys-cfg>div>div:nth-child(1)) still meet the key rows only */
             var box = $('<div id="lm-hk-controls"></div>');
             var head = function (key, sec) {
                 return $('<h5 class="lm-hk-head menu-main-color"></h5>').attr({ 'data-i18n': key, 'data-lm-sec': sec }).text(lmT(key));
             };
-            var row = function (opt) {
-                var r = $('<div class="row lm-hk-ctl"></div>').attr('data-lm-opt', opt);
-                r.append($('<div class="key-label"></div>').attr('data-i18n', 'settings.' + opt).text(app._lmMenuText(opt)));
-                r.append($('<div class="lm-hk-sw"></div>').append($('<input type="checkbox" class="lm-hk-switch">').attr('id', opt).prop('checked', !!defaultmapsettings[opt])));
-                r.append('<div class="lm-hk-act"></div>');
-                return r;
-            };
-            box.append(head('settings.mouseGroup', 'mouseGroup'));
-            var mouse = [['mouseSplit', 'leftClick', 'changeleftCmd'], ['mouseFeed', 'rightClick', 'changerightCmd'], ['mouseWheelClick', 'middleClick', 'changemiddleCmd'], ['mouseCommand4', 'mouse4Click', 'change4Cmd'], ['mouseCommand5', 'mouse5Click', 'change5Cmd']];
-            mouse.forEach(function (m) {
-                var r = row(m[0]);
-                r.find('.lm-hk-act').append($('<span></span>').attr('id', 'lm-hk-at-' + m[0]));
-                box.append(r);
-            });
-            box.append(row('stickyCell'));
             box.append(head('modules.gamepadui.title', 'lmHkGamepad'));
-            box.append(row('gamepadEnabled'));
             /* Gamepad window: button map, sensitivity, dead zone, a shortcut to the gamepad
              * profiles (Settings profiles) and a live test
              * (ogario/gamepad.js loads ogario/modules/gamepad-ui.js the first time it opens) */
@@ -25178,9 +25161,9 @@ function thelegendmodproject() {
                     else if (window.toastr) toastr.info(lmT('game1.set.gamepadLoading'));
                 });
             box.append(gpRow);
-            box.append($('<p class="lm-hk-note"></p>').attr('data-i18n', 'pkg.hk.instantNote').text(lmT('pkg.hk.instantNote')));
-            /* All conflicts at once: keys bound twice or kept by the browser, mouse and gamepad
-             * buttons that run a command a key runs too, each with a jump to its row (the list:
+            /* All conflicts at once: keys and mouse buttons bound twice, kept by the browser or
+             * taken by another setting, gamepad buttons that run a command a key runs too, each
+             * with a jump to its row (the list:
              * LMSmallTools.renderConflicts, ogario/modules/smalltools.js; built again after each
              * key change while it is shown) */
             box.append(head('settings.hk-hotkeyConflicts', 'lmHkConflicts'));
@@ -25201,38 +25184,16 @@ function thelegendmodproject() {
             box.append(cfRow, cfList);
             cfg.prepend(box);
             box.after(head('pkg.hk.keyboard', 'lmHkKeyboard'));
-            mouse.forEach(function (m) {
-                Settings.addPresetBox3('#lm-hk-at-' + m[0], m[0] + '2', hotkeysCommand, 'preset', m[2]);
-                $('#lm-hk-at-' + m[0]).remove();
-                $('#' + m[0] + '2').closest('.select-wrapper').removeAttr('style');
-                $('#' + m[0] + '2 option').filter(function () { return this.value === String(defaultmapsettings[m[1]]); }).prop('selected', 'selected').change();
-            });
-            if (typeof Switchery === 'function') {
-                box.find('input.lm-hk-switch').each(function () {
-                    try { new Switchery(this, { color: defaultSettings.menuMainColor, size: 'small' }); } catch (e) { }
-                });
-            }
-            box.find('.switchery').attr({ tabindex: '0', role: 'switch' });
-            $(document).on('change', '#lm-hk-controls input.lm-hk-switch', function () {
-                app.setSettings(this.id, this.checked);
-            });
-            /* a mouse button or its command changed: the conflict list (when shown) follows */
-            $(document).on('change', '#lm-hk-controls input.lm-hk-switch, #lm-hk-controls select', function () {
-                if (window.LMSmallTools && typeof window.LMSmallTools.refreshConflicts === 'function') { try { window.LMSmallTools.refreshConflicts(); } catch (eRc) { } }
-            });
             if (!document.getElementById('lm-hk-controls-style')) {
                 var st = document.createElement('style');
                 st.id = 'lm-hk-controls-style';
                 st.textContent = '#hotkeys-cfg .lm-hk-head{display:block;margin:0;padding:14px 2% 6px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid currentColor}' +
                     '#hotkeys-cfg #lm-hk-controls{display:block;width:100%}' +
-                    '#hotkeys-cfg .lm-hk-ctl .key-label{width:46%}' +
-                    '#hotkeys-cfg .lm-hk-ctl .lm-hk-sw{width:16%;text-align:center;padding:0 2%}' +
-                    '#hotkeys-cfg .lm-hk-ctl .lm-hk-act{width:38%;padding:0 2%}' +
-                    '#hotkeys-cfg .lm-hk-ctl .lm-hk-act .select-wrapper{display:block;width:100%}' +
-                    '#hotkeys-cfg .lm-hk-ctl .lm-hk-act select{width:100%;color:inherit;background-color:var(--lm-pc2,#002f52);border-color:var(--lm-tc2,#8096a7)}' +
                     '#hotkeys-cfg div.row.lm-hk-btnrow{padding:8px 2%}' +
                     '#hotkeys-cfg .lm-hk-btnrow .btn{white-space:normal}' +
-                    '#hotkeys-cfg .lm-hk-note{margin:0;padding:6px 2% 4px;font-size:11px;font-weight:400;opacity:.8}';
+                    /* a key and mouse buttons in one field: smaller text, its title has it all */
+                    '#hotkeys-cfg .custom-key-in{text-overflow:ellipsis}' +
+                    '#hotkeys-cfg .custom-key-in[data-lm-two]{font-size:10px;padding-left:2px;padding-right:2px}';
                 document.head.appendChild(st);
             }
         },
@@ -25600,6 +25561,9 @@ function thelegendmodproject() {
                         var txt = $.trim(r.children('.key-label').text() || r.find('.btn').text());
                         if (ctl.length && txt && norm(txt).indexOf(q) >= 0) hits.push([ctl.attr('id'), txt]);
                     });
+                    /* mouse buttons are bound in the key fields: the window's line that says how */
+                    var mLab = lmT('pkg.mb.mouseButtons'), mInst = $('#hotkeys-inst [data-i18n="pkg.mb.hkInstMouse"]');
+                    if (q && !newOnly && mInst.length && (norm(mLab).indexOf(q) >= 0 || (q.length >= 4 && norm(mInst.text()).indexOf(q) >= 0))) hits.push(['hotkeys-inst', mLab]);
                     if (!hits.length) { hkHint.hide(); return; }
                     hkHint.append($('<span style="margin-right:4px;"></span>').attr('data-i18n', 'pkg.hk.searchHint').text(lmT('pkg.hk.searchHint')));
                     hits.forEach(function (h) {
@@ -25843,6 +25807,9 @@ function thelegendmodproject() {
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
             this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "hudMoveDir", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
+            /* Sticky cells: what the left and right button do on cells (a behaviour, not a binding,
+             * so here and not in the Hotkeys window) */
+            this.addOptionTo('.helpersGroup', 'stickyCell');
             /* Merging: countdown, sound and rings together, with what each needs from the server */
             this.addOptions(["hudMergeCountdown", "hudMergeSound", "mergeRings"], "mergeGroup");
             $('<div class="lm-group-note"></div>').text(this._lmMenuText('mergeNote')).appendTo('.mergeGroup');
@@ -82078,6 +82045,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             } else {
                 this.loadDefaultHotkeys();
             }
+            /* the old mouse button settings (also those of an import) */
+            this.migrateMouseControls();
 
             var storedCommands =
                 readLocalStorageJSON(
@@ -82186,6 +82155,76 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
         },
+        /*
+         * The old "Mouse control" settings (a switch and a command list per button) are gone:
+         * mouse buttons are keys of the Hotkeys window. Each switch that is on becomes its
+         * button on its command's row, once: the switch is then turned off and saved, so this
+         * runs again only when settings bring one back on (an older import or profile). A stored
+         * command that no longer exists gets what the button then did (split for the left and
+         * right button, multibox swap for the wheel). A button another command had (the wheel:
+         * quick chat 10 by default) goes to the old setting, which is what it did while the
+         * switch was on; that change is kept for the conflict list, not made silently.
+         * Returns how many buttons were bound.
+         */
+        mouseNotesKey: 'lmHkMouseMoved',
+        mouseNotes() {
+            var raw = readLocalStorageJSON(this.mouseNotesKey, null);
+            var list = raw && typeof raw === 'object' && Array.isArray(raw.items) ? raw.items : [];
+            var setup = this;
+            return list.filter(function (n) {
+                return n && setup.isMouseKey(n.key) && typeof n.to === 'string' && typeof n.from === 'string' && /^hk-[A-Za-z0-9_-]{1,60}$/.test(n.to) && /^hk-[A-Za-z0-9_-]{1,60}$/.test(n.from);
+            }).slice(0, 5);
+        },
+        saveMouseNotes(list) {
+            try {
+                if (list.length) window.localStorage.setItem(this.mouseNotesKey, JSON.stringify({ v: 1, items: list }));
+                else window.localStorage.removeItem(this.mouseNotesKey);
+            } catch (e) { }
+        },
+        dismissMouseNote(key) {
+            this.saveMouseNotes(this.mouseNotes().filter(function (n) { return n.key !== key; }));
+        },
+        migrateMouseControls() {
+            var s = typeof defaultmapsettings === 'object' ? defaultmapsettings : null;
+            if (!s || !hotkeys || typeof hotkeys !== 'object') return 0;
+            var old = [['mouseSplit', 'leftClick', 1, 'hk-split'], ['mouseFeed', 'rightClick', 3, 'hk-split'], ['mouseWheelClick', 'middleClick', 2, 'hk-multiboxswap'], ['mouseCommand4', 'mouse4Click', 4, ''], ['mouseCommand5', 'mouse5Click', 5, '']];
+            var on = old.filter(function (m) { return s[m[0]] === true; });
+            if (!on.length) return 0;
+            var setup = this, bound = 0, notes = this.mouseNotes(), noted = false;
+            var exists = function (c) { return typeof c === 'string' && hotkeysCommand.hasOwnProperty(c) && !!hotkeysCommand[c] && typeof hotkeysCommand[c].keyDown === 'function'; };
+            on.forEach(function (m) {
+                var cmd = exists(s[m[1]]) ? s[m[1]] : m[3];
+                if (!exists(cmd)) return;
+                var key = setup.mouseKey(m[2]), had = hotkeys[key];
+                if (had === cmd) return;
+                hotkeys[key] = cmd;
+                bound++;
+                if (typeof had === 'string' && had) {
+                    notes = notes.filter(function (n) { return n.key !== key; });
+                    notes.push({ key: key, from: had, to: cmd });
+                    noted = true;
+                }
+            });
+            this.syncMessageKey();
+            try {
+                window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
+                window.localStorage.setItem('ogarioHotkeysKnown', JSON.stringify(Object.keys(hotkeysCommand)));
+            } catch (e) {
+                /* storage full: the buttons work now, the switches stay on and the next load tries again */
+                return bound;
+            }
+            if (noted) this.saveMouseNotes(notes.slice(-5));
+            on.forEach(function (m) { s[m[0]] = false; });
+            try {
+                if (window.application && typeof application.saveSettings === 'function') application.saveSettings(s, 'ogarioSettings');
+            } catch (e) { }
+            if (bound && window.toastr) {
+                setTimeout(function () {
+                    try { toastr.info(lmT('pkg.mb.migrated', [bound]) + (noted ? ' ' + lmT('pkg.mb.migratedNotes') : '')); } catch (e) { }
+                }, 4000);
+            }
+            return bound;
+        },
         saveHotkeys() {
             window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
             try {
@@ -82208,23 +82247,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this.loadDefaultHotkeys();
             this.lastPressedKey = '';
             this.lastKeyId = '';
-            $('#hotkeys-cfg .custom-key-in').each(function () {
-                var t = $(this).attr('id');
-                hotkeysCommand[t] && $(this).val(hotkeysCommand[t].defaultKey);
-            });
+            var setup = this;
+            $('#hotkeys-cfg .custom-key-in').each(function () { if (hotkeysCommand[this.id]) setup.showKeys(this.id); });
         },
         setHotkeysMenu() {
             //var t = this;
             const setup = this;
-            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"lm-hk-title\" class=\"menu-main-color\" data-i18n=\"settings.hotkeys\">' + _lmTH('settings.hotkeys', '') + '</div><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\" data-i18n=\"settings.restoreSettings\">' + _lmTH('settings.restoreSettings', '') + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\" data-i18n=\"settings.saveSett\">' + _lmTH('settings.saveSett', '') + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\" data-i18n=\"settings.close\">' + _lmTH('settings.close', '') + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li data-i18n=\"settings.hk-inst-assign\">' + _lmTH('settings.hk-inst-assign', '') + '</li><li data-i18n=\"settings.hk-inst-delete\">' + _lmTH('settings.hk-inst-delete', '') + '</li><li data-i18n=\"settings.hk-inst-keys\">' + _lmTH('settings.hk-inst-keys', '') + '</li></ul></div></div>'), hotkeysCommand)
+            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"lm-hk-title\" class=\"menu-main-color\" data-i18n=\"settings.hotkeys\">' + _lmTH('settings.hotkeys', '') + '</div><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\" data-i18n=\"settings.restoreSettings\">' + _lmTH('settings.restoreSettings', '') + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\" data-i18n=\"settings.saveSett\">' + _lmTH('settings.saveSett', '') + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\" data-i18n=\"settings.close\">' + _lmTH('settings.close', '') + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li data-i18n=\"settings.hk-inst-assign\">' + _lmTH('settings.hk-inst-assign', '') + '</li><li data-i18n=\"settings.hk-inst-delete\">' + _lmTH('settings.hk-inst-delete', '') + '</li><li data-i18n=\"settings.hk-inst-keys\">' + _lmTH('settings.hk-inst-keys', '') + '</li><li data-i18n=\"pkg.mb.hkInstMouse\">' + _lmTH('pkg.mb.hkInstMouse', '') + '</li></ul></div></div>'), hotkeysCommand)
                 if (hotkeysCommand.hasOwnProperty(command)) {
                     var currentCommand = hotkeysCommand[command],
                         text = '';
-                    for (var key in hotkeys)
-                        if (hotkeys.hasOwnProperty(key) && hotkeys[key] === command) {
-                            text = key;
-                            break;
-                        } if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
+                    text = setup.keysText(command);
+                    if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
                     /* stored/imported key names go into a value attribute too */
                     text = String(text).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
                     if ('command' === currentCommand.type) {
@@ -82240,13 +82274,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var c = hotkeysCommand[this.id];
                     if (c && c.type !== 'command') $(this).closest('.row').find('.key-label').text(c.label);
                 });
-                /* and the command lists of the mouse buttons */
-                $('#lm-hk-controls select option').each(function () {
-                    var c = hotkeysCommand[this.value];
-                    if (c) this.textContent = c.label;
-                });
             });
-            /* mouse buttons and gamepad, above the keys */
+            /* a field with a key and mouse buttons may be wider than its text */
+            $('#hotkeys-cfg .custom-key-in').each(function () { if (this.id) setup.showKeys(this.id); });
+            /* gamepad and the conflict list, above the keys */
             if (application && typeof application.buildHotkeysControls === 'function') application.buildHotkeysControls();
             $(document).on('click', '#reset-hotkeys', function (event) {
                 event.preventDefault();
@@ -82427,16 +82458,45 @@ function pickPlayerCellBySize(players, selectBiggest) {
             return normalKey;
             //return '' !== specialKey ? '' !== normalKey ? specialKey + '+' + normalKey : specialKey : normalKey;
         },
+        /* Mouse buttons are key names too ('MOUSE WHEEL' was the only one): a field takes them
+         * like keys (right button, wheel, 4 and 5 by pressing them on it, the left button with
+         * Shift + left click, since a plain click focuses the field) and they run their command
+         * through the same keyDown / keyUp as a key (window.onmousedown / onmouseup). */
+        mouseKeys: { 1: 'MOUSE LEFT', 2: 'MOUSE WHEEL', 3: 'MOUSE RIGHT', 4: 'MOUSE 4', 5: 'MOUSE 5' }, // i18n-ok: key names, stored in the hotkey settings
+        mouseKey(which) {
+            return Object.prototype.hasOwnProperty.call(this.mouseKeys, which) ? this.mouseKeys[which] : '';
+        },
+        isMouseKey(key) {
+            return /^MOUSE (LEFT|WHEEL|RIGHT|4|5)$/.test(key);
+        },
+        /* every key of a command: a row holds one key and the mouse buttons of its command (the
+         * old mouse settings gave a command a key and a button), the key first */
+        keysOf(id) {
+            var keys = [], mouse = [];
+            for (var k in hotkeys) {
+                if (hotkeys.hasOwnProperty(k) && k !== 'spec-messageKey' && hotkeys[k] === id) (this.isMouseKey(k) ? mouse : keys).push(k);
+            }
+            return keys.concat(mouse);
+        },
+        /* the text of a command's field */
+        keysText(id) {
+            return this.keysOf(id).join(' / ');
+        },
+        showKeys(id) {
+            var text = this.keysText(id);
+            /* an attribute, not a class: the fields are found by their exact className */
+            $('#' + id).val(text).attr('title', text).attr('data-lm-two', text.indexOf(' / ') >= 0 ? '1' : null);
+        },
         deleteHotkey(name, id) {
             delete hotkeys[name];
-            $('#' + id).val('');
+            this.showKeys(id);
             /* the field changed: pressing the previous key again must assign it */
             this.lastPressedKey = '';
             this.lastKeyId = '';
         },
         setDefaultHotkey(id) {
             var key = false;
-            if (hotkeysCommand[id] && !hotkeys.hasOwnProperty(hotkeysCommand[id].defaultKey)) {
+            if (hotkeysCommand[id] && hotkeysCommand[id].defaultKey && !hotkeys.hasOwnProperty(hotkeysCommand[id].defaultKey)) {
                 key = hotkeysCommand[id].defaultKey;
                 hotkeys[key] = id;
             }
@@ -82453,38 +82513,39 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!_lmKc && /^(CTRL\+W|CTRL\+T|CTRL\+N|CTRL\+TAB|ALT\+TAB|ALT\+F4|ESC)$/.test(key)) _lmKc = { level: 'block', what: lmT('game2.hkKeptByBrowser') };
                     var _lmKe = function (t) { return $('<div>').text(t).html(); };
                     if (_lmKc && _lmKc.level === 'block') {
-                        var _lmKeep = '';
-                        for (var _lmK in hotkeys) { if (hotkeys.hasOwnProperty(_lmK) && _lmK !== 'spec-messageKey' && hotkeys[_lmK] === id) { _lmKeep = _lmK; break; } }
-                        $('#' + id).val(_lmKeep);
+                        this.showKeys(id);
                         if (window.toastr) toastr.warning(lmT('game2.hkBlocked', [_lmKe(key), _lmKe(_lmKc.what)]));
                         return;
                     }
                     if (_lmKc && _lmKc.level === 'warn' && window.toastr) toastr.warning(lmT('game2.hkBrowserWarn', [_lmKe(key), _lmKe(_lmKc.what)]));
                 }
-                var value = $('#' + id).val();
-                /* the key really bound to this command (the field text could differ) */
-                for (var _lmOldKey in hotkeys) {
-                    if (hotkeys.hasOwnProperty(_lmOldKey) && hotkeys[_lmOldKey] === id) { value = _lmOldKey; break; }
+                /* DEL clears the row; a key replaces the row's key and a mouse button its mouse
+                 * buttons, so a command keeps a key and a button */
+                var _lmMouseNew = this.isMouseKey(key), _lmOld = this.keysOf(id);
+                for (var _lmOi = 0; _lmOi < _lmOld.length; _lmOi++) {
+                    if (key === 'DEL' || this.isMouseKey(_lmOld[_lmOi]) === _lmMouseNew) delete hotkeys[_lmOld[_lmOi]];
                 }
-                if (this.deleteHotkey(value, id), 'DEL' !== key) {
+                this.showKeys(id);
+                /* the field changed: pressing the previous key again must assign it */
+                this.lastPressedKey = '';
+                this.lastKeyId = '';
+                if ('DEL' !== key) {
                     if (hotkeys[key] && hotkeys[key] !== id) {
-                        var hotkey = hotkeys[key],
-                            defaultKey = this.setDefaultHotkey(hotkey);
-                        if (defaultKey) {
-                            hotkeys[defaultKey] = hotkey;
-                            $('#' + hotkey).val(defaultKey)
-                        } else {
-                            this.deleteHotkey(key, hotkey);
-                        }
+                        var hotkey = hotkeys[key];
+                        hotkeys[key] = id;
+                        /* the default key only when the other command has none left */
+                        var defaultKey = this.keysOf(hotkey).length ? '' : this.setDefaultHotkey(hotkey);
+                        this.showKeys(hotkey);
                         /* the other command lost this key: say so (it used to happen silently).
                          * Labels can be player-typed command text: escape before toastr (HTML). */
                         if (window.toastr) {
                             var _lmHkLbl = $('<div>').text((hotkeysCommand[hotkey] && hotkeysCommand[hotkey].label) || hotkey).html();
-                            toastr.info(defaultKey ? lmT('game2.hkMoved', [_lmHkLbl, $('<div>').text(defaultKey).html()]) : lmT('game2.hkUnbound', [_lmHkLbl]));
+                            var _lmHkNow = this.keysText(hotkey);
+                            toastr.info(_lmHkNow ? lmT('game2.hkMoved', [_lmHkLbl, $('<div>').text(_lmHkNow).html()]) : lmT('game2.hkUnbound', [_lmHkLbl]));
                         }
                     }
-                    hotkeys[key] = id,
-                        $('#' + id).val(key);
+                    hotkeys[key] = id;
+                    this.showKeys(id);
                     this.lastPressedKey = key;
                     this.lastKeyId = id;
                 }
@@ -82514,15 +82575,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* refill the dialog fields from hotkeys / chatCommand */
         refreshHotkeysMenu() {
             $('#hotkeys-cfg .custom-key-in').each(function () {
-                var id = this.id;
-                var text = '';
-                for (var key in hotkeys) {
-                    if (hotkeys.hasOwnProperty(key) && key !== 'spec-messageKey' && hotkeys[key] === id) {
-                        text = key;
-                        break;
-                    }
-                }
-                $(this).val(text);
+                hotkeysSetup.showKeys(this.id);
             });
             $('#hotkeys-cfg .command-in').each(function () {
                 var id = this.id;
@@ -82834,7 +82887,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return event.preventDefault(), void (application && application.showMenu());
             }
             if (event.target.className === hotkeysSetup.inputClassName) {
-                return event.preventDefault(), void hotkeysSetup.setHotkey(8 === event.keyCode ? 'DEL' : pressedKey, event.target.id); /* Backspace clears, like DEL */
+                event.preventDefault();
+                /* a bare Shift is bound when it is released: Shift + left click binds the left button */
+                if (pressedKey === 'SHIFT') { hotkeysSetup._lmShiftPending = event.target.id; return; }
+                hotkeysSetup._lmShiftPending = '';
+                hotkeysSetup.setHotkey(8 === event.keyCode ? 'DEL' : pressedKey, event.target.id); /* Backspace clears, like DEL */
+                return;
             }
             if (hotkeys[pressedKey]) {
                 event.preventDefault();
@@ -82849,6 +82907,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
     }
     document.onkeyup = function (event) {
         try { event._lmKeyupDone = true; } catch (e) { }
+        if (event.keyCode === 16 && hotkeysSetup._lmShiftPending) {
+            var _lmShiftId = hotkeysSetup._lmShiftPending;
+            hotkeysSetup._lmShiftPending = '';
+            if (event.target && event.target.className === hotkeysSetup.inputClassName && event.target.id === _lmShiftId) hotkeysSetup.setHotkey('SHIFT', _lmShiftId);
+        }
         var pressedKey = hotkeysSetup.getPressedKey(event);
         var heldKey = _lmHeldByCode[event.keyCode];
         delete _lmHeldByCode[event.keyCode];
@@ -82939,23 +83002,46 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
         return false;
     };
+    /* the command a mouse button runs ('' when none): its key in the Hotkeys window */
+    function _lmMouseCmd(which) {
+        var k = hotkeysSetup.mouseKey(which), c = k && hotkeys[k];
+        return c && hotkeysCommand[c] && typeof hotkeysCommand[c].keyDown === 'function' ? c : '';
+    }
+    function _lmIsHkField(t) {
+        return !!(t && t.className === hotkeysSetup.inputClassName && t.id);
+    }
+    /* Chromium goes back / forward on buttons 4 and 5: not while they run a command, nor on a
+     * hotkey field that takes them */
+    function _lmNoNav(event) {
+        var w = event.button === 3 ? 4 : event.button === 4 ? 5 : 0;
+        return w && (_lmMouseCmd(w) || _lmIsHkField(event.target));
+    }
     window.addEventListener('auxclick', function (event) {
-        if ((event.button === 3 && defaultmapsettings.mouseCommand4) || (event.button === 4 && defaultmapsettings.mouseCommand5)) {
-            event.preventDefault();
-        }
+        if (_lmNoNav(event)) event.preventDefault();
     });
+    /* a right click on a hotkey field binds the right button: no browser menu there (on the game
+     * canvas the menu never opens, see the canvas contextmenu handler) */
+    document.addEventListener('contextmenu', function (event) {
+        if (_lmIsHkField(event.target)) event.preventDefault();
+    }, true);
     window.onmousedown = function (event) {
         _lmMouseHeld[event.which] = true;
         /* clicking into the chat input or a HUD button/select must not split or feed */
         var _lmMT = event.target || {};
-        /* middle click in a hotkey field assigns MOUSE WHEEL (no key event produces it) */
-        if (event.which === 2 && _lmMT.className === hotkeysSetup.inputClassName && _lmMT.id) {
-            event.preventDefault && event.preventDefault();
-            hotkeysSetup.setHotkey('MOUSE WHEEL', _lmMT.id); // i18n-ok: a key name, stored in the hotkey settings
-            return;
+        /* a mouse button on a hotkey field binds it (no key event produces it): right button,
+         * wheel, 4 and 5 as they are, the left button with Shift (a plain click focuses the field) */
+        if (_lmIsHkField(_lmMT) && (event.which !== 1 || event.shiftKey)) {
+            var _lmMk = hotkeysSetup.mouseKey(event.which);
+            if (_lmMk) {
+                event.preventDefault && event.preventDefault();
+                hotkeysSetup._lmShiftPending = '';
+                try { _lmMT.focus(); } catch (eF) { }
+                hotkeysSetup.setHotkey(_lmMk, _lmMT.id);
+                return;
+            }
         }
         if (_lmMT.tagName === 'INPUT' || _lmMT.tagName === 'TEXTAREA' || _lmMT.tagName === 'SELECT' || _lmMT.tagName === 'BUTTON' || _lmMT.isContentEditable === true) return;
-        /* HUD icons are <a> links (fullscreen, targeting, rotate...): with mouse split/feed on,
+        /* HUD icons are <a> links (fullscreen, targeting, rotate...): with a mouse button bound,
          * clicking them also split or fed */
         if (_lmMT.closest && _lmMT.closest('a, label, .switchery')) return;
         /* optional (clickSpectate): in free spectate a left click on a player cell follows it and a
@@ -82965,76 +83051,31 @@ function pickPlayerCellBySize(players, selectBiggest) {
             LM._lmSpecCellPick(LM.cursorX, LM.cursorY);
         }
         if (!$("#overlays").is(":visible")) {
-            //console.log(event.which)
+            /* a mouse button runs the command its key is bound to in the Hotkeys window, like a
+             * key: keyDown now, keyUp on mouseup (held commands such as macro feed) */
+            var _lmCmd = _lmMouseCmd(event.which);
             if (2 === event.which) {
                 event.preventDefault();
-                if (application && defaultmapsettings.mouseWheelClick) {
-                    /* a stored command that no longer exists (e.g. hk-multiboxback) threw */
-                    if (!defaultmapsettings.middleClick || !hotkeysCommand[defaultmapsettings.middleClick]) {
-                        application.multiboxswap()
-                    }
-                    else {
-                        _lmMouseCmdDown(2, defaultmapsettings.middleClick)
-                    }
-                }
-                else if (application && hotkeys['MOUSE WHEEL']) {
-                    /* "Mouse wheel click" off: a hotkey bound to MOUSE WHEEL runs (the
-                     * default of chat command 10, which getPressedKey can never produce) */
-                    _lmMouseCmdDown(2, hotkeys['MOUSE WHEEL']);
-                }
+                if (application && _lmCmd) _lmMouseCmdDown(2, _lmCmd);
                 if (defaultmapsettings.stickyCell) {
                     LM.selected = null
                 }
             }
-            else if (defaultmapsettings.stickyCell) {
+            /* sticky cells and the reverse trick use the left and right button themselves */
+            else if (defaultmapsettings.stickyCell && (1 === event.which || 3 === event.which)) {
                 if (1 === event.which) {
                     drawRender.LMB = true
                 }
-                else if (3 === event.which) {
-                    /* only the real right button (4/5 never release RMB) */
+                else {
                     drawRender.RMB = true
                 }
             }
-            else if (defaultmapsettings.reverseTrick) {
+            else if (defaultmapsettings.reverseTrick && (1 === event.which || 3 === event.which)) {
                 reverseTrick.pointInCircle(legendmod.cursorX, legendmod.cursorY, event.which);
             }
-            else {
-                //if (defaultmapsettings.mouseSplit && (1 === event.which && !defaultmapsettings.mouseInvert || 3 === event.which && defaultmapsettings.mouseInvert)) {
-                if (defaultmapsettings.mouseSplit && (1 === event.which)) {
-                    event.preventDefault();
-                    if (application) {
-                        if (!defaultmapsettings.leftClick || !hotkeysCommand[defaultmapsettings.leftClick]) {
-                            application.split();
-                        }
-                        else {
-                            _lmMouseCmdDown(1, defaultmapsettings.leftClick)
-                        }
-                    }
-                }
-                //if (defaultmapsettings.mouseFeed && (3 === event.which && !defaultmapsettings.mouseInvert || 1 === event.which && defaultmapsettings.mouseInvert)) {
-                if (defaultmapsettings.mouseFeed && (3 === event.which)) {
-                    event.preventDefault();
-                    if (application) {
-                        if (!defaultmapsettings.rightClick || !hotkeysCommand[defaultmapsettings.rightClick]) {
-                            application.split();
-                        }
-                        else {
-                            _lmMouseCmdDown(3, defaultmapsettings.rightClick)
-                        }
-                    }
-                }
-                if (defaultmapsettings.mouseCommand4 && (4 === event.which)) {
-                    event.preventDefault();
-                    if (application && hotkeysCommand[defaultmapsettings.mouse4Click]) {
-                        _lmMouseCmdDown(4, defaultmapsettings.mouse4Click)
-                    }
-                }
-                if (defaultmapsettings.mouseCommand5 && (5 === event.which)) {
-                    event.preventDefault();
-                    if (application && hotkeysCommand[defaultmapsettings.mouse5Click]) {
-                        _lmMouseCmdDown(5, defaultmapsettings.mouse5Click)
-                    }
-                }
+            else if (_lmCmd) {
+                event.preventDefault();
+                if (application) _lmMouseCmdDown(event.which, _lmCmd);
             }
         }
     }
@@ -83042,54 +83083,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
         delete _lmMouseHeld[event.which];
         var _lmMouseCmdWas = _lmMouseCmdHeld[event.which];
         delete _lmMouseCmdHeld[event.which];
-        /* Chromium navigates back/forward on the mouseup of buttons 4/5; cancel it
-         * when those buttons are bound to commands. */
-        if (event.preventDefault && ((event.which === 4 && defaultmapsettings.mouseCommand4) || (event.which === 5 && defaultmapsettings.mouseCommand5))) {
+        /* Chromium navigates back/forward on the mouseup of buttons 4/5 */
+        if (event.preventDefault && (event.which === 4 || event.which === 5) && (_lmMouseCmd(event.which) || _lmIsHkField(event.target))) {
             event.preventDefault();
         }
-        //if (defaultmapsettings.mouseFeed) {
-        //if (1 === event.which && hotkeysCommand[defaultmapsettings.leftClick]===textLanguage['hk-macroFeed'] || 2 === event.which && hotkeysCommand[defaultmapsettings.middleClick]===textLanguage['hk-macroFeed'] || 3 === event.which && hotkeysCommand[defaultmapsettings.rightClick]===textLanguage['hk-macroFeed'] || 4 === event.which && hotkeysCommand[defaultmapsettings.mouse4Click]===textLanguage['hk-macroFeed'] || 5 === event.which && hotkeysCommand[defaultmapsettings.mouse5Click]===textLanguage['hk-macroFeed']) {
-        //if (3 === event.which && !defaultmapsettings.mouseInvert || 1 === event.which && defaultmapsettings.mouseInvert) {
-        //application && application.macroFeed(false);
-        //}
-        /*
-         * Always release the reverse-trick / sticky-cell button flags. The
-         * else-branch below is skipped whenever a mouse command handles the
-         * button, which used to leave LMB/RMB stuck at true.
-         */
+        /* Always release the reverse-trick / sticky-cell button flags */
         if (event.which === 1) {
             drawRender.LMB = false;
         } else if (event.which === 3) {
             drawRender.RMB = false;
         }
-        if (defaultmapsettings.mouseSplit && (1 === event.which) && defaultmapsettings.leftClick) {
-            if (hotkeysCommand[defaultmapsettings.leftClick] && hotkeysCommand[defaultmapsettings.leftClick].keyUp) hotkeysCommand[defaultmapsettings.leftClick].keyUp()
-        }
-        else if (defaultmapsettings.mouseWheelClick && (2 === event.which) && defaultmapsettings.middleClick) {
-            if (hotkeysCommand[defaultmapsettings.middleClick] && hotkeysCommand[defaultmapsettings.middleClick].keyUp) hotkeysCommand[defaultmapsettings.middleClick].keyUp()
-        }
-        else if (!defaultmapsettings.mouseWheelClick && (2 === event.which) && _lmMouseCmdWas) {
-            /* the MOUSE WHEEL hotkey started on mousedown */
-            if (hotkeysCommand[_lmMouseCmdWas] && hotkeysCommand[_lmMouseCmdWas].keyUp) hotkeysCommand[_lmMouseCmdWas].keyUp()
-        }
-        else if (defaultmapsettings.mouseFeed && (3 === event.which) && defaultmapsettings.rightClick) {
-            if (hotkeysCommand[defaultmapsettings.rightClick] && hotkeysCommand[defaultmapsettings.rightClick].keyUp) hotkeysCommand[defaultmapsettings.rightClick].keyUp()
-        }
-        else if (defaultmapsettings.mouseCommand4 && (4 === event.which) && defaultmapsettings.mouse4Click) {
-            if (hotkeysCommand[defaultmapsettings.mouse4Click] && hotkeysCommand[defaultmapsettings.mouse4Click].keyUp) hotkeysCommand[defaultmapsettings.mouse4Click].keyUp()
-        }
-        else if (defaultmapsettings.mouseCommand5 && (5 === event.which) && defaultmapsettings.mouse5Click) {
-            if (hotkeysCommand[defaultmapsettings.mouse5Click] && hotkeysCommand[defaultmapsettings.mouse5Click].keyUp) hotkeysCommand[defaultmapsettings.mouse5Click].keyUp()
-        }
-        else {
-            //1=leftclick, 3=rightclick, 2=wheelclick
-            if (event.which === 1) { //for reversetrick or stickycell
-                drawRender.LMB = false
-            }
-            else {
-                drawRender.RMB = false
-            }
-        }
+        /* the command this button started on mousedown (also when its binding changed meanwhile) */
+        if (_lmMouseCmdWas && hotkeysCommand[_lmMouseCmdWas] && hotkeysCommand[_lmMouseCmdWas].keyUp) hotkeysCommand[_lmMouseCmdWas].keyUp();
     };
     window.onbeforeunload = function (event) {
         if (window._lmSettingsReload) return;
@@ -83906,7 +83911,9 @@ function leftClickRun() {
 }
 
 function openContextMenu(evt) {
-    if (legendmod.play && !$("#overlays:hover").length && !defaultmapsettings.mouseSplit && !defaultmapsettings.mouseFeed && (legendmod.gameMode === ":party" || !legendmod.integrity)) {
+    /* not while the left or right button runs a hotkey (they were the mouse split / feed switches) */
+    var _lmHk = window.hotkeys || {};
+    if (legendmod.play && !$("#overlays:hover").length && !_lmHk['MOUSE LEFT'] && !_lmHk['MOUSE RIGHT'] && (legendmod.gameMode === ":party" || !legendmod.integrity)) {
         evt.preventDefault();
         window._lmContextMenuX = legendmod.cursorX;
         window._lmContextMenuY = legendmod.cursorY;
@@ -86567,7 +86574,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading perf script:', e);
     }
-    /* Gamepad / controller support (does nothing while its option is off) */
+    /* Gamepad / controller support (always on; it reads pads only while one is connected) */
     try {
         var gamepadScript = document.createElement('script');
         gamepadScript.type = 'text/javascript';

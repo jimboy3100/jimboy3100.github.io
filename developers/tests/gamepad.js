@@ -37,7 +37,7 @@ focus=true;pads=[pad(0,true,true)];calls=[];step();
 check('refocus: held feed resumes',calls.includes('feed:true'));
 // 4 customization: a fresh page per case (own storage, hotkeys and settings)
 function page(o={}){
- const st=o.store||{},c={raf:[],moves:[],wheels:[],calls:[],L:{},focus:true,pads:[]};
+ const st=o.store||{},c={raf:[],moves:[],wheels:[],calls:[],L:{},focus:true,pads:o.pads||[]};
  const cv={dispatchEvent(e){if(e.type==='mousemove')c.moves.push([e.clientX,e.clientY]);if(e.type==='wheel')c.wheels.push(e.deltaY);}};
  const w={innerWidth:1000,innerHeight:800,navigator:{getGamepads:()=>c.pads},
   document:{hidden:false,hasFocus:()=>c.focus,activeElement:null,getElementById:id=>id==='canvas'?cv:null,querySelector:()=>null,addEventListener(){},dispatchEvent(){}},
@@ -164,7 +164,7 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 { const G=page().G;
   check('calibration: suggested dead zone',G.suggestDeadzone(0)===0.05&&G.suggestDeadzone(0.06)===0.11&&G.suggestDeadzone(0.071)===0.13&&G.suggestDeadzone(0.9)===0.5&&G.suggestDeadzone('x')===0.05); }
 { const c=page();let rum=[];const p=gp({0:true});p.vibrationActuator={playEffect(t,o){rum.push(o.duration);return Promise.resolve();}};
-  c.pads=[p];c.go();c.tick();
+  c.pads=[p];c.go();
   check('vibration off: no rumble on split, no death listener',c.calls.includes('split')&&rum.length===0&&!(c.ev.death||[]).length);
   c.G.setOpts({gamepadVibrate:true});
   check('vibration on: listens to death',(c.ev.death||[]).length===1);
@@ -175,4 +175,15 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   c.G.setOpts({gamepadVibrate:false});
   check('vibration off again: death listener removed',!(c.ev.death||[]).length);
   check('test button rumbles with the option off',c.G.testRumble(q)===true&&rum.length===3); }
+/* always on: the old gamepadEnabled option is ignored, nothing polls while no pad is connected */
+{ const c=page({settings:{gamepadEnabled:false}});
+  check('always on: no timer and no frame loop without a pad',c.tick===undefined&&c.raf.length===0);
+  c.pads=[gp({0:true})];c.go();
+  check('always on: a pad that connects works with gamepadEnabled false (old profile)',c.calls.includes('split'));
+  c.pads=[];c.step();
+  check('always on: the frame loop ends when the pad is gone',c.raf.length===0);
+  c.pads=[gp()];c.L.gamepadconnected({gamepad:c.pads[0]});c.step();c.pads=[gp({0:true})];c.step();
+  check('always on: a pad connected again works again',c.calls.filter(x=>x==='split').length===2); }
+{ const c=page({pads:[gp()]});
+  check('always on: a pad connected before the file loaded is read',c.raf.length===1&&c.tick===undefined); }
 console.log(fail?fail+' failed':'all gamepad checks passed');process.exit(fail?1:0);

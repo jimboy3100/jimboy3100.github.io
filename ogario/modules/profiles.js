@@ -845,17 +845,15 @@
         return parts.join(', ');
     }
 
-    /* the mouse button selects have their own ids; these switches call their own updater */
-    var SELECTS = { leftClick: 'mouseSplit2', rightClick: 'mouseFeed2', middleClick: 'mouseWheelClick2', mouse4Click: 'mouseCommand42', mouse5Click: 'mouseCommand52' };
+    /* these switches call their own updater */
     var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl' };
     /* settings that take effect on the next load (their own options say so) */
     var RELOAD_KEYS = { glAntialias: 1, webgl2Acceleration: 1 };
-    /* One gameplay setting through its control, as the presets do (the mouse button and
-     * gamepad switches are in the Hotkeys window). */
+    /* One gameplay setting through its control, as the presets do. */
     function setOpt(k, v) {
         var $ = jq(), s = S(), app = window.application;
         var el = document.getElementById(k);
-        if (el && el.type === 'checkbox' && $(el).closest('#og-options, #lm-hk-controls').length) {
+        if (el && el.type === 'checkbox' && $(el).closest('#og-options').length) {
             v = !!v;
             if (el.checked !== v) {
                 el.checked = v;
@@ -875,7 +873,6 @@
         }
         s[k] = v;
         if (window.ogario && has(window.ogario, k)) window.ogario[k] = v;
-        if (SELECTS[k]) { var sel = document.getElementById(SELECTS[k]); if (sel) $(sel).val(v); }
         if (AFTER[k] && app && typeof app[AFTER[k]] === 'function') { try { app[AFTER[k]](); } catch (e) { } }
     }
     /* One theme value, as a theme preset sets it (Settings.changePreset); setTheme runs after all. */
@@ -1030,6 +1027,13 @@
                 try { if (St && St.saveThemeSettings) St.saveThemeSettings(); } catch (e) { }
             }
             if (c.h) applyHotkeysLive(data.h);
+            /* a set from before mouse buttons were hotkeys: its mouse switches become them */
+            if (c.s || c.h) {
+                try {
+                    var hs = window.legendmod6;
+                    if (hs && typeof hs.migrateMouseControls === 'function' && hs.migrateMouseControls() && hs.refreshHotkeysMenu) hs.refreshHotkeysMenu();
+                } catch (e) { }
+            }
             /* gamepad buttons: what is held goes up first, then the new buttons are read */
             if (c.gp && window.LMGamepad) {
                 var G = window.LMGamepad;

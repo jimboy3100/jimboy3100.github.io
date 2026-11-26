@@ -328,7 +328,8 @@
         if (!hk || typeof hk !== 'object') return keyOf;
         for (var k in hk) {
             if (!own(hk, k) || !k || k === 'spec-messageKey' || typeof hk[k] !== 'string') continue;
-            if (!own(keyOf, hk[k])) keyOf[hk[k]] = k;
+            /* a key before a mouse button (a command can have both) */
+            if (!own(keyOf, hk[k]) || (/^MOUSE /.test(keyOf[hk[k]]) && !/^MOUSE /.test(k))) keyOf[hk[k]] = k;
         }
         return keyOf;
     }
@@ -399,22 +400,16 @@
             var sec = inTheme ? t('theme') + ' \u00b7 ' + themePanelTitle(el) : sectionOf(el);
             add({ id: 'set:' + key, kind: 'set', label: plain(tl[key]) || boxLabel(el), en: plain(en[key]), key: key, section: sec, el: el, theme: inTheme });
         }
-        /* the mouse buttons and gamepad of the Hotkeys window (ogario.v4.js buildHotkeysControls):
-         * same ids as when they were in Settings; switches toggle, the rest open that window */
+        /* the gamepad and conflict blocks of the Hotkeys window (ogario.v4.js buildHotkeysControls):
+         * they open that window there */
         var hkHeads = D.querySelectorAll('#lm-hk-controls h5[data-lm-sec]');
         for (i = 0; i < hkHeads.length; i++) {
             var hh = hkHeads[i], hs = hh.getAttribute('data-lm-sec');
             add({ id: 'sec:' + hs, kind: 'sec', label: plain(hh.textContent), en: enKey(hh.getAttribute('data-i18n')), key: hs, section: hkSection(hh), el: hh });
         }
-        var hkCtl = D.querySelectorAll('#lm-hk-controls .lm-hk-ctl[data-lm-opt]');
-        for (i = 0; i < hkCtl.length; i++) {
-            var hr = hkCtl[i], ho = hr.getAttribute('data-lm-opt'), lab = hr.querySelector('.key-label');
-            var hl = plain(lab ? lab.textContent : ''), he = enKey(lab && lab.getAttribute('data-i18n')), hsec = hkSection(hr);
-            var hcb = D.getElementById(ho);
-            if (hcb && hcb.type === 'checkbox') add({ id: 'opt:' + ho, kind: 'opt', label: hl, en: he, key: ho, section: hsec, el: hcb });
-            var hsel = hr.querySelector('select[id]');
-            if (hsel) add({ id: 'set:' + hsel.id, kind: 'set', label: hl, en: he, key: hsel.id, section: hsec, el: hsel });
-        }
+        /* mouse buttons are bound in the key fields of the Hotkeys window: its line that says how */
+        var hkMouse = D.querySelector('#hotkeys-inst [data-i18n="pkg.mb.hkInstMouse"]');
+        if (hkMouse) add({ id: 'sec:lmHkMouse', kind: 'sec', label: plain(typeof W.lmT === 'function' ? W.lmT('pkg.mb.mouseButtons') : ''), en: enKey('pkg.mb.mouseButtons'), key: 'lmHkMouse', section: hkSection(hkMouse), el: hkMouse });
         cache = items;
         cacheAt = Date.now();
         return items;
