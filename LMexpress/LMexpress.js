@@ -1432,6 +1432,7 @@ function OpenSkinChanger() {
     $("#quick-menu").hide();
     $("#exp-bar").hide();
     $("#SkinChanger").show().addClass('in').attr('aria-hidden', 'false');
+    if (typeof lmPromoCentre === 'function') lmPromoCentre('#SkinChanger');
 }
 
 //function LeaderboardController(){core.registerSkin(otherMsg, null, 'https://www.legendmod.ml/banners/iconfake1.png', 1, null);}
@@ -9305,6 +9306,14 @@ setTimeout(_lmSyncThemeVars, 500);
 /* Promo and admin windows (Bootstrap modal markup): themed like the LM windows (Match history,
  * Private room) with the --lm-* menu colours, the close cross on the right and "?" on the left,
  * centred and kept on screen, and only this dialog drags (by its title bar). */
+/* Bootstrap gives the dialog a 30px top margin; centre what is left. A dialog built hidden has no
+ * height yet (it was placed half a screen down and ran off the bottom): it is centred when shown. */
+function lmPromoCentre(sel) {
+    var d = $(sel).last().find('.modal-dialog');
+    var h = d.outerHeight() || 0;
+    if (!h) return;
+    d.css('top', Math.max(0, Math.round((window.innerHeight - h) / 2) - 30) + 'px');
+}
 function lmPromoChrome(sel) {
     _lmSyncThemeVars();
     if (!document.getElementById('lm-promo-css')) {
@@ -9312,7 +9321,10 @@ function lmPromoChrome(sel) {
         st.id = 'lm-promo-css';
         st.textContent =
             '.modal.lm-promo .modal-backdrop{background:#000;opacity:.55}' +
-            '.modal.lm-promo .modal-dialog{max-width:calc(100vw - 16px)}' +
+            /* centred on narrow screens too (Bootstrap puts it at the left edge below 768 px, under the
+             * team list); a dialog taller than the screen scrolls by touch instead of running off it */
+            '.modal.lm-promo{overflow-y:auto;-webkit-overflow-scrolling:touch}' +
+            '.modal.lm-promo .modal-dialog{max-width:calc(100vw - 16px);margin-left:auto;margin-right:auto}' +
             '.modal.lm-promo .modal-content{background:var(--lm-pc,#00243e);color:var(--lm-tc,#fff);border:1px solid var(--lm-pc2,#002f52);border-top:3px solid var(--lm-mc,#01d9cc);border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);overflow:hidden;font-family:inherit}' +
             '.modal.lm-promo .modal-header{position:relative;min-height:0;padding:10px 52px 8px;text-align:center;border-bottom:1px solid var(--lm-pc2,#002f52);background:linear-gradient(180deg,var(--lm-pc2,#002f52) 0%,var(--lm-pc,#00243e) 100%);cursor:move}' +
             '.modal.lm-promo .modal-title{font-family:inherit!important;font-size:16px;font-weight:700;letter-spacing:1px;text-transform:uppercase;line-height:1.4;color:var(--lm-mc,#01d9cc)}' +
@@ -9335,9 +9347,7 @@ function lmPromoChrome(sel) {
      * (notifications bell, theme previews) remain usable while a promo is open */
     var m = $(sel).last().addClass('lm-promo');
     var d = m.find('.modal-dialog');
-    /* Bootstrap gives the dialog a 30px top margin; centre what is left */
-    var h = d.outerHeight() || 0;
-    d.css('top', Math.max(0, Math.round((window.innerHeight - h) / 2) - 30) + 'px');
+    lmPromoCentre(sel);
     if (typeof d.draggable === 'function') d.draggable({ handle: '.modal-header', cancel: '.close' });
     /* Send theme to any iframes inside this modal */
     lmThemeSendToModalIframes(sel);
