@@ -11,7 +11,10 @@ node developers/tests/run.js
 ```
 
 Options: `--secs N` (wait before probing, default 14, or env `SMOKE_SECS`),
-`--only desktop` / `--only mobile`, `--keep` (keep the Chrome profile in the output folder).
+`--only desktop` / `--only mobile`, `--keep` (keep the Chrome profile in the output folder),
+`--probes a,b` (only these probes from `probes/`, or env `SMOKE_PROBES`), `--limit N` (seconds the probes
+may take per run, or env `SMOKE_LIMIT`; default 10 per probe, at least 120). Each probe line shows its time;
+when the limit is hit the probes that finished are still reported and the one that was running is named.
 Chrome is found automatically; set `CHROME_PATH` to use a specific binary.
 Output goes to `developers/tests/out/` (ignored by git).
 

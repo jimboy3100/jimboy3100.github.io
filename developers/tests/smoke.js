@@ -3,6 +3,8 @@
 // Usage: node smoke.js <repoDir> <outDir> [seconds] [url] [mobile]
 // Env: SMOKE_LANG (browser language, default en-US), SMOKE_STORAGE (JSON of localStorage values set
 // before the page runs), SMOKE_FIRSTRUN=1 (show the one-time language window; hidden otherwise).
+// SMOKE_PROBE_LIMIT=N: the probe may take N seconds; then result.json keeps the results so far
+// (window.__lmProbeRes), timedOut names the probe that was running (console.debug('[lm-probe]', name)) and the exit code is 4.
 // Needs Node 22+ (global fetch and WebSocket) and Chrome/Chromium.
 // Chrome: env CHROME_PATH, otherwise the usual install locations are tried.
 // If <outDir>/probe.js exists it is evaluated in the page after [seconds]. A probe can send real mouse
@@ -55,6 +57,16 @@ proc.on('error', e => { console.log('chrome failed to start:', e.message); proce
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let id = 0; const pending = new Map(); const errors = []; const logs = [];
 let served = 0, missing = [], probeValue;
+/* console.debug('[lm-probe]', name) from the probe (run.js) starts the probe of that name ('' after
+ * the last one): its time goes to probeTimes and <outDir>/progress.json names the running one */
+let probeStart = 0, probeNow = { name: '', at: 0 }, timedOut = null;
+const probeTimes = {};
+function probeMark(name) {
+  const now = Date.now();
+  if (probeNow.name) probeTimes[probeNow.name] = Math.round((now - probeNow.at) / 100) / 10;
+  probeNow = { name: name, at: now };
+  try { fs.writeFileSync(path.join(out, 'progress.json'), JSON.stringify({ probe: name, at: now, start: probeStart, times: probeTimes })); } catch (e) { }
+}
 
 (async () => {
   let ver;
@@ -87,6 +99,8 @@ let served = 0, missing = [], probeValue;
     } else if (m.method === 'Runtime.exceptionThrown') {
       const d = m.params.exceptionDetails;
       errors.push('EXC ' + ((d.exception && d.exception.description) || d.text).split('\n').slice(0, 3).join(' | ') + ' @' + (d.url || '').replace(/^https:\/\/[^/]+\//, '') + ':' + d.lineNumber);
+    } else if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'debug' && m.params.args[0] && m.params.args[0].value === '[lm-probe]') {
+      probeMark(String((m.params.args[1] && m.params.args[1].value) || ''));
     } else if (m.method === 'Runtime.consoleAPICalled' && m.params.type === 'warning' && m.params.args[0] && String(m.params.args[0].value || '').indexOf('JQMIGRATE') === 0) {
       const fr = m.params.stackTrace && m.params.stackTrace.callFrames.find(c => c.url.indexOf('jquery-3.7.1') < 0);
       errors.push('MIGRATE ' + String(m.params.args[0].value).slice(0, 200) + (fr ? ' @' + fr.url.replace(/^https:\/\/[^/]+\//, '') + ':' + fr.lineNumber : ''));
@@ -140,12 +154,25 @@ let served = 0, missing = [], probeValue;
   // run optional probe expression
   const probeFile = path.join(out, 'probe.js');
   if (fs.existsSync(probeFile)) {
-    const r = await send('Runtime.evaluate', { expression: fs.readFileSync(probeFile, 'utf8'), awaitPromise: true, returnByValue: true });
-    probeValue = r && r.result && r.result.value !== undefined ? r.result.value : r;
-    console.log('PROBE:', JSON.stringify(probeValue).slice(0, 4000));
-    await sleep(1500);
+    probeStart = Date.now();
+    /* SMOKE_PROBE_LIMIT (seconds, 0 = none): the probes stop there; the results so far
+     * (window.__lmProbeRes, run.js) are kept and the probe that was running is named */
+    const lim = Number(process.env.SMOKE_PROBE_LIMIT) || 0;
+    const ev = send('Runtime.evaluate', { expression: fs.readFileSync(probeFile, 'utf8'), awaitPromise: true, returnByValue: true });
+    const r = await (lim > 0 ? Promise.race([ev, sleep(lim * 1000).then(() => 'timeout')]) : ev);
+    if (r === 'timeout') {
+      const now = probeNow;
+      timedOut = { probe: now.name, probeSecs: now.name ? Math.round((Date.now() - now.at) / 1000) : 0, secs: Math.round((Date.now() - probeStart) / 1000) };
+      console.log('PROBE TIMEOUT after ' + timedOut.secs + ' s' + (now.name ? ', in ' + now.name + ' (for ' + timedOut.probeSecs + ' s)' : ''));
+      const pr = await Promise.race([send('Runtime.evaluate', { expression: 'JSON.stringify(window.__lmProbeRes || null)', returnByValue: true }), sleep(10000)]);
+      probeValue = pr && pr.result && typeof pr.result.value === 'string' && pr.result.value !== 'null' ? pr.result.value : null;
+    } else {
+      probeValue = r && r.result && r.result.value !== undefined ? r.result.value : r;
+      console.log('PROBE:', JSON.stringify(probeValue).slice(0, 4000));
+      await sleep(1500);
+    }
   }
-  const shot = await send('Page.captureScreenshot', { format: 'png' });
+  const shot = await Promise.race([send('Page.captureScreenshot', { format: 'png' }), sleep(15000)]);
   if (shot && shot.data) fs.writeFileSync(path.join(out, 'shot.png'), Buffer.from(shot.data, 'base64'));
   console.log('served from repo:', served, ' missing on disk:', [...new Set(missing)].slice(0, 15).join(', '));
   console.log('errors:', errors.length);
@@ -153,6 +180,6 @@ let served = 0, missing = [], probeValue;
   console.log('log errors:', logs.length);
   [...new Set(logs)].slice(0, 25).forEach(e => console.log('  ' + e));
   fs.writeFileSync(path.join(out, 'result.json'), JSON.stringify({ served, missing: [...new Set(missing)], errors: [...new Set(errors)], errorCount: errors.length,
-    logErrors: [...new Set(logs)], logErrorCount: logs.length, probe: probeValue === undefined ? null : probeValue }, null, 2));
-  ws.close(); proc.kill(); process.exit(0);
+    logErrors: [...new Set(logs)], logErrorCount: logs.length, probe: probeValue === undefined ? null : probeValue, probeTimes, timedOut }, null, 2));
+  ws.close(); proc.kill(); process.exit(timedOut ? 4 : 0);
 })().catch(e => { console.log('harness error', e); proc.kill(); process.exit(3); });

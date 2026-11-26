@@ -25,7 +25,8 @@
     out.sort();
     return JSON.stringify({ cells: out, own: (L.playerCellIDs || []).slice().sort(), border: [L.mapMinX, L.mapMinY, L.mapMaxX, L.mapMaxY], lb: (L.leaderboard || []).map(function (e) { return e && e.nick; }) });
   };
-  var settle = async function (pos) { for (var i = 0; i < 80 && (RS.state().seeking || (pos != null && RS.state().pos !== pos)); i++) await sleep(50); };
+  /* a rebuild can take seconds on a slow machine: wait for it to end (bounded) */
+  var settle = async function (pos) { for (var i = 0; i < 400 && (RS.state().seeking || (pos != null && RS.state().pos !== pos)); i++) await sleep(50); };
   /* the play button: its title, and the play sign (in Greek the Player tab has the same title) */
   var playB = Array.prototype.filter.call(document.querySelectorAll('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('modules.replaystudio.play')) + '"]'), function (b) { return b.textContent === '▶'; })[0];
   if (!playB) return { fail: ['no play button'] };
@@ -93,10 +94,13 @@
   if (!revB) fail.push('no play backwards button');
   else {
     revB.click();
-    var p1 = mid, back = 0;
-    for (w = 0; w < 12; w++) { await sleep(100); if (RS.state().seeking) continue; var pw = RS.state().pos; if (pw < p1) back++; if (pw > p1) back = -100; p1 = pw; }
-    /* not in the middle of a step being rebuilt (on a slow machine one can take seconds) */
-    for (w = 0; w < 100 && RS.state().seeking; w++) await sleep(50);
+    /* 1.2 s, and on until a step is shown: on a slow machine one step (a rebuild of every
+     * packet up to it, then its first frame) can take seconds, so the first one may come later */
+    var p1 = mid, back = 0, tw = performance.now();
+    for (w = 0; w < 300 && (back === 0 || performance.now() - tw < 1200); w++) { await sleep(100); if (RS.state().seeking) continue; var pw = RS.state().pos; if (pw < p1) back++; if (pw > p1) back = -100; p1 = pw; }
+    info.backMs = Math.round(performance.now() - tw);
+    /* not in the middle of a step being rebuilt */
+    for (w = 0; w < 400 && RS.state().seeking; w++) await sleep(50);
     st = RS.state();
     info.backwards = { from: mid, to: st.pos, dir: st.dir, steps: back };
     if (!(st.dir === -1 && st.playing && st.pos < mid && back > 0)) fail.push('backwards playback did not step back: ' + JSON.stringify(info.backwards));
@@ -128,11 +132,13 @@
     L3.handleMessage = function (d) { var t = performance.now(); while (performance.now() - t < 1) { } return hm3.call(this, d); };
     try {
       RS.command('seek', RS.state().n - RS.state().pos);
-      for (w = 0; w < 300 && (RS.state().seeking || RS.state().pos !== RS.state().n); w++) await sleep(50);
+      /* bounded by the packets (each one 1 ms slower here) */
+      var lsMax = 300 + Math.ceil(RS.state().n / 10);
+      for (w = 0; w < lsMax && (RS.state().seeking || RS.state().pos !== RS.state().n); w++) await sleep(50);
       var tgt = Math.floor(RS.state().n * 0.6), tl = performance.now();
       fr.during = 0; fr.all = 0;
       RS.command('seek', tgt - RS.state().pos);
-      for (w = 0; w < 300 && (RS.state().seeking || RS.state().pos !== tgt); w++) await sleep(50);
+      for (w = 0; w < lsMax && (RS.state().seeking || RS.state().pos !== tgt); w++) await sleep(50);
       var lsMs = Math.round(performance.now() - tl), lsFrames = fr.all;
       await sleep(300);
       info.longStep = { to: tgt, ms: lsMs, framesDuring: fr.during, framesBy: lsFrames, framesAfter: fr.all - lsFrames };

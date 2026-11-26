@@ -4,9 +4,11 @@
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  /* waits for the simulation itself (its ticks, its cells), not for a number of frames: a slow
+   * machine runs the arena's 40 ms ticks later (bounded) */
+  var until = async function (cond, ms) { for (var t = performance.now(); !cond() && performance.now() - t < ms;) await sleep(50); return cond(); };
   var lm = window.legendmod;
   if (typeof window.lmPractice !== 'function') return { fail: ['window.lmPractice missing'] };
-  var before = { slot: window.temporaryRecordedProtocol, serverType: lm.serverType, token: (document.getElementById('server-token') || {}).value };
   window.lmPractice('open');
   for (var w = 0; w < 60 && !(window.LMPractice && window.LMPractice.run); w++) await sleep(100);
   var P = window.LMPractice;
@@ -22,11 +24,18 @@
   }
   var sent = 0, realSend = null;
   if (lm.socket && lm.socket.send && !lm.socket._lmPractice) { realSend = lm.socket.send; }
+  /* what the session replaces, taken right before it (the page may join its server while the module loads) */
+  var before = { slot: window.temporaryRecordedProtocol, serverType: lm.serverType, token: (document.getElementById('server-token') || {}).value };
+  var simT0 = performance.now();
   P.start({ exercise: 'free', seed: 42, bots: 4, startMass: 300, duration: 120 }, { confirm: true });
   var st = P.state();
   if (!st.on) return { fail: fail.concat(['session did not start']), info: info };
   if (P.isOpen()) fail.push('window still open after start');
   await sleep(1500);
+  await until(function () { return P.state().tick >= 20 && (lm.cells || []).length > 0 && (lm.food || []).length > 0 && (lm.playerCells || []).length === 1; }, 10000);
+  var simMs = performance.now() - simT0;
+  info.tick = P.state().tick;
+  info.ticksPerSec = Math.round(info.tick / simMs * 10000) / 10;
   var sock = lm.socket;
   if (!sock || !sock._lmPractice) fail.push('stand-in socket not in place');
   if (lm.ws !== 'lm-practice://local') fail.push('ws is ' + lm.ws);
@@ -37,15 +46,19 @@
   if (!(info.food > 0)) fail.push('no food');
   if (info.own !== 1) fail.push('own cells: ' + info.own);
   if (!lm.play) fail.push('not playing');
-  if (P.state().tick < 20) fail.push('simulation did not advance: ' + P.state().tick);
+  if (info.tick < 20) fail.push('simulation did not advance: ' + info.tick + ' ticks in ' + Math.round(simMs) + ' ms');
+  /* on the real clock: never faster than one 40 ms tick each 40 ms */
+  if (info.tick * 40 > simMs + 80) fail.push('simulation faster than real time: ' + info.tick + ' ticks in ' + Math.round(simMs) + ' ms');
   /* input through the normal paths */
   lm.cursorX = (lm.playerX || 0) + 600; lm.cursorY = lm.playerY || 0;
   if (window.application && application.split) application.split();
   await sleep(400);
+  await until(function () { return P.state().humanCells >= 2 && (lm.playerCells || []).length >= 2; }, 5000);
   info.afterSplit = (lm.playerCells || []).length;
   if (P.state().humanCells < 2 || info.afterSplit < 2) fail.push('split did not reach the simulation: ' + P.state().humanCells + ' / ' + info.afterSplit);
   if (window.application && application.feed) application.feed();
   await sleep(300);
+  await until(function () { return P.state().ejects > 0; }, 5000);
   info.ejected = (lm.cells || []).filter(function (c) { return c.isEjected; }).length;
   info.feeds = P.state().ejects;
   if (!(info.feeds > 0)) fail.push('feed did not reach the simulation');
@@ -68,6 +81,7 @@
   if (P.state().tick !== t0) fail.push('arena not paused while the window is open');
   P.close();
   await sleep(300);
+  await until(function () { return P.state().tick > t0; }, 5000);
   if (!(P.state().tick > t0)) fail.push('arena did not resume');
   if (P.state().errors) fail.push('packet errors: ' + P.state().errors);
   P.stop(false);
