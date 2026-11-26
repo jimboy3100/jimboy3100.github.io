@@ -71,10 +71,7 @@
 | 5.2 | `monitor/history.html` | ☐ | ☐ |
 | 5.3 | `privacy.html` | ☐ | ☐ |
 | 5.4 | `terms.html` | ☐ | ☐ |
-| 5.5 | `skins/skins.html` | ☐ | ☐ |
-| 5.6 | `skins/skins3.html` | ☐ | ☐ |
-| 5.7 | `skins/skinsworking.html` | ☐ | ☐ |
-| 5.8 | `LMexpress/olddeals.html` | ☐ | ☐ |
+| 5.5 | `LMexpress/olddeals.html` | ☐ | ☐ |
 
 ## 6. Theme Handoff for Links (T6)
 

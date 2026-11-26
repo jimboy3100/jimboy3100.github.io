@@ -359,7 +359,7 @@
 	                        _react2.default.createElement(
 	                            "span",
 	                            { style: styles.skinGuideWrapper },
-	                            _react2.default.createElement(_FlatButton2.default, { label: "Example", target: "_blank", href: "https://jimboy3100.github.io/skins/skins.html" })
+	                            _react2.default.createElement(_FlatButton2.default, { label: "Example", target: "_blank", href: "https://www.legendmod.ml/skins/" })
 	                        )
 	                    )
 	                ),
