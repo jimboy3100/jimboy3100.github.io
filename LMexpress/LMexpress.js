@@ -4325,36 +4325,6 @@ function YessetScriptingComReturn() {
 }
 
 
-function changePicFun() {
-    $("#minimapPicture").hide();
-    $("#leadbPicture").hide();
-    $("#teambPicture").hide();
-    $("#canvasPicture").hide();
-    $("#leadbtext").hide();
-    $("#teambtext").hide();
-    $("#imgUrl").hide();
-    $("#imgHref").hide();
-    $("#minbtext").hide();
-    if ($("#backgroundPic").val() == 1) {
-        $("#minimapPicture").show();
-        $("#minbtext").show();
-    }
-    if ($("#backgroundPic").val() == 2) {
-        $("#leadbPicture").show();
-        $("#leadbtext").show();
-    }
-    if ($("#backgroundPic").val() == 3) {
-        $("#teambPicture").show();
-        $("#teambtext").show();
-    }
-    if ($("#backgroundPic").val() == 4) {
-        $("#canvasPicture").show();
-    }
-    if ($("#backgroundPic").val() == 5) {
-        $("#imgUrl").show();
-        $("#imgHref").show();
-    }
-}
 
 function changePhotoFun() {
     $("#pic1url").hide();
@@ -6921,14 +6891,7 @@ function initializeLM(modVersion) {
         '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>' + _lmxE('pack.userScripts') + '</button>' +
         '<button id="SpecialDealsBtn" class="btn btn-primary btn btn-shop" type="submit" disabled="disabled" onclick="BeforeSpecialDeals(); return false;" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="' + _lmxE('lmx.ex.loginPlayFirst') + '" data-itr="page_shop"><i class="fa fa-paint-brush"></i><span data-i18n="lmx.ex.agarioSkins">' + _lmxE('lmx.ex.agarioSkins') + '</span><div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;" data-i18n="needLogin">' + _lmxE('needLogin') + '</div></button>' +
         '<button id="LegendmodShop" class="btn btn-primary btn" type="submit" onclick="BeforeLegendmodShop(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-briefcase"></i>' + _lmxE('agario.page_shop') + '</button>' +
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;"><span id="legendmanualback" class="title" style="">' + _lmxE('pack.manualBackground') + ':  </span>' +
-        '<select id="backgroundPic" class="form-control" onchange="changePicFun();" required="" data-original-title="" title="" style="display:inline; width: 40%" >' +
-        '<option value="1" data-itr="">' + _lmxE('pack.minimap2') + '</option>' +
-        '<option value="2" data-itr="">' + _lmxE('pack.leaderboard') + '</option>' +
-        '<option value="3" data-itr="">' + _lmxE('pack.teamboard') + '</option>' +
-        '<option value="4" data-itr="">' + _lmxE('pack.mainCanvas') + '</option>' +
-        '<option value="5" data-itr="">' + _lmxE('pack.mainBanner') + '</option>' +
-        '</select>' +
+        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;"><span id="legendmanualback" class="title" style="">' + _lmxE('pack.mainBanner') + ':  </span>' +
 
         '<input id="minimapPicture" class="form-control" placeholder="' + _lmxE('pack.minimapImageUrl') + '" value="" style="margin-top: 2px; display: block;" onblur="setminbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
         '<input id="minbtext" class="form-control" placeholder="' + _lmxE('pack.minimapText') + '" value="" style="margin-top: 2px; display: block;" onblur="setminbtext();">' +
@@ -6937,8 +6900,8 @@ function initializeLM(modVersion) {
         '<input id="teambPicture" class="form-control" placeholder="' + _lmxE('pack.teamboardImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setteambgname();" data-toggle="tooltip" data-placement="right"  data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
         '<input id="teambtext" class="form-control" placeholder="' + _lmxE('pack.teamboardLogoText') + '" value="" style="margin-top: 2px; display: none; " onblur="setteambtext();">' +
         '<input id="canvasPicture" class="form-control" placeholder="' + _lmxE('pack.mainCanvasImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setcanvasbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
-        '<input id="imgUrl" class="form-control" placeholder="' + _lmxE('pack.mainBannerIconUrl') + '" value="" style="margin-top: 2px; display: none; " onblur="setimgUrl();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
-        '<input id="imgHref" class="form-control" placeholder="' + _lmxE('pack.mainBannerLinkUrl') + '" value="" style="margin-top: 2px; display: none; " onblur="setimgHref();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfLinkTo') + '" >' +
+        '<input id="imgUrl" class="form-control" placeholder="' + _lmxE('pack.mainBannerIconUrl') + '" value="" style="margin-top: 2px; display: block; " onblur="setimgUrl();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
+        '<input id="imgHref" class="form-control" placeholder="' + _lmxE('pack.mainBannerLinkUrl') + '" value="" style="margin-top: 2px; display: block; " onblur="setimgHref();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfLinkTo') + '" >' +
         '</div>' +
 
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 4px 0 0px 0;"><span id="legendmanualmess" class="title" style="">' + _lmxE('pack.manualMessageIconsYoutube') + ':  </span>' +
@@ -6994,6 +6957,28 @@ function initializeLM(modVersion) {
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legendotherscripts" class="title" style="">' + _lmxE('pack.expansions') + ': </span>' +
         '</div><div id="LEGENDAds2"></div><div id="LEGENDAds3"></div>' +
         '</div></div>');
+    /* The images and titles of the minimap, leaderboard and teamboard and the screen background image
+     * are appearance settings: they are in the Theme tab next to the other settings of the same part
+     * (they were a "Manual background" chooser in the Tools tab). Same ids, storage and handlers.
+     * The screen image is not Theme > Images > Custom background image: that one is drawn on the map
+     * (it moves with the camera), this one stays still on the screen over it. */
+    (function _lmManualImagesToTheme() {
+        var rows = [['#theme-minimap', 'minimapPicture', 'pack.minimapImageUrl'], ['#theme-minimap', 'minbtext', 'pack.minimapText'],
+            ['#theme-hud', 'leadbPicture', 'pack.leaderboardImageUrl'], ['#theme-hud', 'leadbtext', 'lmx.ex.leaderboardLogoText'],
+            ['#theme-hud', 'teambPicture', 'pack.teamboardImageUrl'], ['#theme-hud', 'teambtext', 'pack.teamboardLogoText'],
+            ['#theme-images', 'canvasPicture', 'pkg.d1.screenBg']];
+        rows.forEach(function (r) {
+            var host = $(r[0]), inp = $('#' + r[1]);
+            /* no Theme tab: the field stays where it was, shown */
+            if (!host.length || !inp.length) { inp.css('display', 'block'); return; }
+            var row = $('<div class="input-box lm-manual-img"><span class="title-box"></span></div>');
+            row.find('.title-box').attr('data-i18n', r[2]).text(_lmxT(r[2]));
+            inp.css({ display: '', marginTop: '' }).appendTo(row);
+            /* the screen image right under the map background image and its transparency */
+            var after = r[1] === 'canvasPicture' ? $('#backgroundAlpha-slider').closest('.slider-box') : $();
+            if (after.length && after.parent().is(host)) row.insertAfter(after); else row.appendTo(host);
+        });
+    })();
     //fix userprofile
     $("#UserProfile").css("font-size", "12px");
     //$("#UserProfilePic").click(function() {

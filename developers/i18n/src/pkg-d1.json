@@ -1,0 +1,20 @@
+{
+  "pkg.d1.screenBg": {
+    "en": "Screen background image (stays still on the screen, over the map)",
+    "el": "Εικόνα φόντου οθόνης (μένει σταθερή στην οθόνη, πάνω από τον χάρτη)",
+    "es": "Imagen de fondo de pantalla (fija en la pantalla, sobre el mapa)",
+    "bg": "Фоново изображение на екрана (стои неподвижно, над картата)",
+    "fr": "Image de fond de l'écran (fixe à l'écran, par-dessus la carte)",
+    "ar": "صورة خلفية الشاشة (ثابتة على الشاشة، فوق الخريطة)",
+    "zh": "螢幕背景圖片（固定在螢幕上，覆蓋在地圖之上）",
+    "ru": "Фоновое изображение экрана (неподвижно на экране, поверх карты)",
+    "de": "Bildschirm-Hintergrundbild (bleibt fest auf dem Bildschirm, über der Karte)",
+    "tr": "Ekran arka plan resmi (ekranda sabit kalır, haritanın üstünde)",
+    "pl": "Obraz tła ekranu (nieruchomy na ekranie, nad mapą)",
+    "nl": "Schermachtergrond (blijft stil op het scherm, over de kaart)",
+    "pt": "Imagem de fundo da tela (fica parada na tela, sobre o mapa)",
+    "id": "Gambar latar layar (diam di layar, di atas peta)",
+    "ja": "画面の背景画像（画面に固定、マップの上に表示）",
+    "it": "Immagine di sfondo dello schermo (ferma sullo schermo, sopra la mappa)"
+  }
+}

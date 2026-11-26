@@ -25,6 +25,27 @@
     else if (el.value !== String(defaultmapsettings[k] == null ? '' : defaultmapsettings[k])) fail.push('#' + k + ' does not show its setting');
   });
   if ($('#virusSoundurl').closest('.input-box').prev().find('#virusSound').length !== 1) fail.push('virus sound file not next to its switch');
+  // the HUD box images / titles and the screen background image are in the Theme tab (no chooser in Tools)
+  if ($('#backgroundPic').length) fail.push('Manual background chooser still in the Tools tab');
+  [['minimapPicture', 'theme-minimap'], ['minbtext', 'theme-minimap'], ['leadbPicture', 'theme-hud'], ['leadbtext', 'theme-hud'],
+    ['teambPicture', 'theme-hud'], ['teambtext', 'theme-hud'], ['canvasPicture', 'theme-images']].forEach(function (p) {
+    var el = document.getElementById(p[0]);
+    if (!el || !$(el).closest('#' + p[1] + ' .input-box').length) fail.push('#' + p[0] + ' not in Theme #' + p[1]);
+    else if (!$(el).closest('.input-box').find('.title-box').text().trim()) fail.push('#' + p[0] + ' has no label');
+    else if (el.style.display === 'none') fail.push('#' + p[0] + ' hidden');
+  });
+  if (!$('#canvasPicture').closest('.input-box').prev().find('#backgroundAlpha-slider').length) fail.push('screen image not under the map background');
+  if (!$('#legend #imgUrl').is(':visible') && $('#legend').is(':visible')) fail.push('main banner fields hidden');
+  // the moved field still works: stored and shown on the game view, then put back
+  try {
+    var cbOld = localStorage.getItem('canvasbimg'), cbBg = $('#canvas').css('background-image');
+    $('#canvasPicture').val('https://www.legendmod.ml/banners/IconCustomServer1.png');
+    window.setcanvasbgname();
+    if (localStorage.getItem('canvasbimg') !== 'https://www.legendmod.ml/banners/IconCustomServer1.png' || String($('#canvas').css('background-image')).indexOf('IconCustomServer1') < 0) fail.push('screen background image from Theme not applied');
+    if (cbOld === null) localStorage.removeItem('canvasbimg'); else localStorage.setItem('canvasbimg', cbOld);
+    $('#canvasPicture').val(cbOld || '');
+    $('#canvas').css('background-image', cbBg);
+  } catch (e) { fail.push('screen image check: ' + e); }
   // cell animations in Animation, the developer console (profiler) in Performance, once each
   [['jellyPhisycs', 'animationGroup'], ['suckAnimation', 'animationGroup'], ['showDevConsole', 'perfGroup']].forEach(function (p) {
     if ($('#og-options [id="' + p[0] + '"]').length !== 1 || !$('#' + p[0]).closest('.options-box.' + p[1]).length) fail.push('#' + p[0] + ' not once in .' + p[1]);
