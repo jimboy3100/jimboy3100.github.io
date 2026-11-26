@@ -86,5 +86,25 @@ check('phone portrait: width decides, list at its full stylesheet height', Math.
 const bad = plan({ vw: 1366, vh: 768, margin: 8, minRegion: 160, menuW: 920, desired: NaN, hasRegion: false, othersH: 0, fixedH: 605 });
 check('a broken hudScale counts as 1', bad.scale === 1);
 
+/* extreme windows (a split screen, a tiny embed): the menu still fits; below the lowest usual
+ * scale (0.2) the list gives up its rows first, then the scale goes lower; never outside */
+const inside = (o, p) => {
+  const listH = o.hasRegion ? Math.min(o.regionContent, p.region) : 0, h = Math.max(o.fixedH + listH, o.othersH || 0);
+  const half = p.scale * o.menuW / 2;
+  return p.top >= 8 - 0.5 && p.top + p.scale * h <= o.vh - 8 + 0.5 && p.left - half >= 8 - 0.5 && p.left + half <= o.vw - 8 + 0.5;
+};
+const tiny = [
+  { vw: 160, vh: 300, margin: 8, minRegion: 160, menuW: 974, desired: 1, hasRegion: true, othersH: 500, designMax: 640, regionContent: 12000, fixedH: 150 },
+  { vw: 800, vh: 100, margin: 8, minRegion: 160, menuW: 974, desired: 1, hasRegion: true, othersH: 0, designMax: 640, regionContent: 12000, fixedH: 500 },
+  { vw: 800, vh: 100, margin: 8, minRegion: 160, menuW: 974, desired: 1, hasRegion: false, othersH: 0, fixedH: 690 },
+  { vw: 120, vh: 900, margin: 8, minRegion: 160, menuW: 920, desired: 1.5, hasRegion: false, othersH: 0, fixedH: 300 }
+];
+tiny.forEach((o) => {
+  const p = plan(o);
+  check(o.vw + 'x' + o.vh + (o.hasRegion ? ' with list' : ' no list') + ': inside the window (scale ' + p.scale + ', list ' + p.region + ')', inside(o, p) && p.scale > 0 && (!o.hasRegion || p.region >= 0));
+});
+const atFloor = plan({ vw: 1366, vh: 200, margin: 8, minRegion: 160, menuW: 920, desired: 1, hasRegion: true, othersH: 0, designMax: 640, regionContent: 12000, fixedH: 850 });
+check('short window: at the lowest usual scale the list is shorter, the scale stays 0.2 (' + atFloor.scale + ', list ' + atFloor.region + ')', atFloor.scale === 0.2 && atFloor.region < 160 && atFloor.region >= 0 && atFloor.top + 0.2 * (850 + atFloor.region) <= 192.5);
+
 console.log(fail ? 'FAILED ' + fail : 'all menu layout checks passed');
 process.exit(fail ? 1 : 0);

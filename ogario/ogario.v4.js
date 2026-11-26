@@ -82290,19 +82290,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
     function _lmMenuFitPlan(o) {
         var m = o.margin, aw = Math.max(1, o.vw - 2 * m), ah = Math.max(1, o.vh - 2 * m);
         var s = isFinite(o.desired) && o.desired > 0 ? o.desired : 1;
+        /* the width always fits (no sideways overflow) */
         s = Math.min(s, aw / Math.max(1, o.menuW));
         var others = Math.max(0, o.othersH || 0), region = -1, h;
         if (o.hasRegion) {
             var content = Math.max(0, Math.min(o.regionContent, o.designMax));
-            /* the list keeps a few rows; below that the menu is scaled down instead */
+            /* the list keeps a few rows; below that the menu is scaled down instead, to 0.2 at
+             * least; in a window too small even for that the list gives up rows first, and only
+             * then the scale goes lower, so the header, tab bar and footer always fit */
             var need = Math.min(content, o.minRegion);
-            s = Math.min(s, ah / Math.max(1, o.fixedH + need), ah / Math.max(1, others));
-            s = Math.max(0.2, s);
-            region = Math.max(need, Math.min(o.designMax, Math.floor(ah / s - o.fixedH + 1e-6)));
+            s = Math.min(s, Math.max(0.2, Math.min(ah / Math.max(1, o.fixedH + need), ah / Math.max(1, others))));
+            s = Math.min(s, ah / Math.max(1, o.fixedH), ah / Math.max(1, others));
+            region = Math.max(0, Math.min(o.designMax, Math.floor(ah / s - o.fixedH + 1e-6)));
             h = Math.max(o.fixedH + Math.min(content, region), others);
         } else {
             h = Math.max(o.fixedH, others);
-            s = Math.max(0.2, Math.min(s, ah / Math.max(1, h)));
+            s = Math.min(s, ah / Math.max(1, h));
         }
         s = Math.floor(s * 10000) / 10000;
         /* centred, never above the top margin (the top bar stays visible) */
