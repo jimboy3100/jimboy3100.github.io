@@ -217,5 +217,29 @@ check('far and small cells are not "near"', last.nick == null, last);
 ctx.legendmod5.deathRecap = false; ctx.legendmod5.massLossAlert = false; D.sync();
 check('off again: listeners removed, flag off', !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false);
 
+/* who ate me (ogario.v4.js lmKillerWanted): one rule for the server's report, the remove packets
+ * and the guard against naming my own multibox unit; the death recap and the kill feed alone need
+ * it too (before, the remove-packet killer and that guard ran only with Eaten by / Match history,
+ * so with only the death recap on, my multibox unit could be named as my killer on Expanding Land) */
+{
+  const core = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+  const a = core.indexOf('\nfunction lmKillerWanted(');
+  check('lmKillerWanted in the core', a >= 0);
+  if (a >= 0) {
+    const b = core.indexOf('\n}\n', a);
+    const kc = { defaultmapsettings: { showKiller: false, matchHistory: false, deathRecap: false, killFeed: false } };
+    vm.createContext(kc);
+    vm.runInContext(core.slice(a, b + 3), kc);
+    const W = (o) => kc.lmKillerWanted(Object.assign({ showKiller: false, matchHistory: false, deathRecap: false, killFeed: false }, o));
+    check('killer: not kept with all four off', W({}) === false && kc.lmKillerWanted() === false);
+    check('killer: kept for each of Eaten by, Match history, Death recap, Kill feed alone', W({ showKiller: true }) && W({ matchHistory: true }) && W({ deathRecap: true }) && W({ killFeed: true }));
+    kc.defaultmapsettings.deathRecap = true;
+    check('killer: reads the live settings by default', kc.lmKillerWanted() === true);
+    /* every place that keeps the killer or the multibox guard uses the one rule */
+    const sites = (core.match(/lmKillerWanted\(\)/g) || []).length;
+    check('killer: the server report, the remove-packet killer and the multibox guard use it (' + sites + ')', sites >= 3 && !/\(defaultmapsettings\.showKiller \|\| defaultmapsettings\.matchHistory\)/.test(core));
+  }
+}
+
 console.log(fail ? fail + ' failed' : 'all death recap checks passed');
 process.exit(fail ? 1 : 0);

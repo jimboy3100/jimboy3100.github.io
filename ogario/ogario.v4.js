@@ -20798,6 +20798,14 @@ function lmFoldVideoVolume(s) {
     s.videoSkinSoundLevel = lmSchemaFit(LM_SETTINGS_SCHEMA.videoSkinSoundLevel, lv * Math.max(0, f));
     return true;
 }
+/* Who ate me: kept while anything shows it: the Game Over card's "Eaten by" (showKiller), the
+ * match history, the death recap and the kill feed. One rule for the server's report (lmKiller)
+ * and the one seen in the remove packets, and for the guard against my own multibox unit being
+ * named, so no switch combination gets the killer from one and not the other. */
+function lmKillerWanted(s) {
+    s = s || defaultmapsettings;
+    return !!(s && (s.showKiller || s.matchHistory || s.deathRecap || s.killFeed));
+}
 /* S5: one place announces gameplay setting changes. Every path that changes one (switch,
  * slider, text box, select, hotkey toggle, profile, preset, gamepad, import of a part) saves
  * through application.saveSettings(defaultmapsettings, 'ogarioSettings'); the save compares
@@ -45274,7 +45282,7 @@ function thelegendmodproject() {
                     /* Expanding Land killer info (lmKiller, sent only after our opcode 240 caps):
                      * the server's "Eaten by" for the Game Over card. Skipped when my own multibox
                      * unit ate my cell just before (the server sees that unit as another player). */
-                    if (u.lmKiller && (defaultmapsettings.showKiller || defaultmapsettings.matchHistory || defaultmapsettings.deathRecap || defaultmapsettings.killFeed) && !(Date.now() - (this._lmKillerMultiAt || 0) < 3000)) {
+                    if (u.lmKiller && lmKillerWanted() && !(Date.now() - (this._lmKillerMultiAt || 0) < 3000)) {
                         this._lmKiller = { nick: String(u.lmKiller.nick || ''), mass: Number(u.lmKiller.mass) || 0, virus: !!u.lmKiller.virus, bot: !!u.lmKiller.bot, server: true, at: Date.now() };
                         /* field 5 (newer servers): the eating cell's id, for "Watch killer" */
                         if (u.lmKiller.cellId) this._lmKiller.cellId = Number(u.lmKiller.cellId) >>> 0;
@@ -52376,14 +52384,14 @@ function thelegendmodproject() {
                 /* not when the eater is one of mine: own cell (ownership set of this packet) or my
                  * multibox unit (its copy is stored under lmUnitCellId(id, unit number) with isPlayerCellMulti) */
                 /* (a server report from this death, lmKiller, is kept: the last remove packet can come after it) */
-                if ((defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1 &&
+                if (lmKillerWanted() && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && !eaterID.isPlayerCellMulti && this.playerCells.indexOf(eaterID) === -1 &&
                     !(this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)) &&
                     !(window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[lmUnitCellId(eaterRawID, s.number)]; return !!(c && c.isPlayerCellMulti); }) &&
                     !(this._lmKiller && this._lmKiller.server && Date.now() - this._lmKiller.at < 3000)) {
                     this._lmKiller = { nick: String(eaterID.targetNick || ''), mass: ~~(eaterID.size * eaterID.size / 100), virus: !!eaterID.isVirus, at: Date.now() };
                 }
                 /* my multibox unit ate my cell: a server lmKiller report right after would name that unit */
-                if ((defaultmapsettings.showKiller || defaultmapsettings.matchHistory) && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && (eaterID.isPlayerCellMulti ||
+                if (lmKillerWanted() && _victimWasPlayer && eaterID && !eaterID.isPlayerCell && (eaterID.isPlayerCellMulti ||
                     (window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[lmUnitCellId(eaterRawID, s.number)]; return !!(c && c.isPlayerCellMulti); }))) {
                     this._lmKillerMultiAt = Date.now();
                 }
