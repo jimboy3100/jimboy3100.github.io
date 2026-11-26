@@ -117,7 +117,12 @@ there), label rasters, jelly points submitted / indexed, cells / food and the JS
 `out/bench-<label>.json` (every number) and `.md` (a table), and per scene a deterministic world
 frame `<scene>.png` for pixel comparisons.
 
-`--run` takes the options of `lib/bench-client.js`: `--preset quick|default|full`, `--scenes a,b`,
+`--run --preset bots` runs scenes like Expanding Land with its bots (150 bodies, every player with its own
+name and skin image, players dying and coming back with a new id, name and skin), next to the same
+world without skins, with skins but almost no respawns, and with names only: what bots cost in skins,
+labels and packets.
+
+`--run` takes the options of `lib/bench-client.js`: `--preset quick|default|full|bots`, `--scenes a,b`,
 `--repo DIR` (serve another checkout, e.g. a `git worktree` of an older commit, for an A/B),
 `--compare LABEL` (deltas and a pixel diff of the world frames against an earlier run),
 `--warm MS` / `--measure MS`, `--repeat N`, `--profile` (top functions by CPU self time),

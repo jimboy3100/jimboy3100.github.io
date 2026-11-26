@@ -7,7 +7,7 @@
  *   developers/tests/out/bench-<label>/       per scene: <scene>.png (deterministic world frame)
  *                                             and <scene>-page.png (the whole page)
  * Started by node developers/tests/bench.js (see there) with these options:
- *   --preset quick|default|full   scene list (default: default)
+ *   --preset quick|default|full|bots   scene list (default: default)
  *   --scenes a,b                  only these scene names (from the preset)
  *   --repo DIR                    the checkout to serve (default: this one)
  *   --label NAME                  output name (default: date and time)

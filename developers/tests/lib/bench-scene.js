@@ -46,23 +46,41 @@
     /* One scene: bodies (non-food), food, sockets (1 = main, 2 = main + one multibox unit),
      * jelly and labels (nick + mass) on/off, layout 'spread', 'crowd' (all bodies overlapping
      * in a small area) or 'wide' (bodies and food over 4 x 4 views, most of them off screen),
-     * sizeMul (bigger cells: more jelly points). */
+     * sizeMul (bigger cells: more jelly points), bots: like Expanding Land's bots, every player has
+     * its own name and skin URL (a different image per player, BOT_SKINS) and this share of the
+     * players dies and comes back each tick with a new id, name and skin (0: names only, as before;
+     * botSkins false: no skins). */
     function scene(o) {
         var s = {
             bodies: o.bodies | 0, food: o.food | 0, sockets: o.sockets || 1, jelly: o.jelly !== false, labels: o.labels !== false,
             layout: o.layout || 'spread', sizeMul: o.sizeMul || 1, seed: o.seed || 4242,
             /* socketIds: every connection numbers the cells itself, as agar.io does (the unit's ids
              * differ from the main socket's, so copies are matched by position, not by id) */
-            socketIds: !!o.socketIds
+            socketIds: !!o.socketIds, bots: +o.bots || 0, botSkins: o.botSkins !== false
         };
         s.name = o.name || ('b' + s.bodies + '-f' + s.food + '-s' + s.sockets + (s.jelly ? '' : '-nojelly') + (s.labels ? '' : '-nolabels') +
-            (s.layout !== 'spread' ? '-' + s.layout : '') + (s.sizeMul !== 1 ? '-x' + s.sizeMul : '') + (s.socketIds ? '-ids' : ''));
+            (s.layout !== 'spread' ? '-' + s.layout : '') + (s.sizeMul !== 1 ? '-x' + s.sizeMul : '') + (s.socketIds ? '-ids' : '') + (s.bots ? '-bots' + s.bots + (s.botSkins ? '' : '-noskins') : ''));
         return s;
     }
+    /* skins of the bot scenes: 512 px images of this repository (the flag skins) */
+    var BOT_SKINS = ('2ch,4chan,8ch,9gag,alan,alaska,argentina,asiatic,australia,austria,ayy-lmao,bait,bangladesh,bart,beavis,belarus,belgium,' +
+        'boris,bosnia,botswana,brazil,bread,brian,bulgaria,bush,byzantium,cambodia,canada,chile,china,cia,cobra,confederate,croatia,croco,cuba,' +
+        'denmark,doge,dollar,doraemon,earth,estonia,european-union,facebook,facepunch,finland,france,french-kingdom,german-empire,germany,greece,' +
+        'greyzilla,heisenberg,homer,hong-kong,horror,hungary,illuminati,imperial-japan,india,indiana,indonesia,iran,iraq,ireland,israel,italy,' +
+        'jamaica,japan,latvia,lithuania,luigi,luxembourg,mario,mars,mexico,nasa,netherlands,nigeria,ninja,north-korea,norway,pakistan,peru,' +
+        'poland,portugal,prussia,python,quebec,reddit,romania,scotland,slovakia,somalia,sonic,spain,superman,sweden,switzerland,thailand,' +
+        'vendetta,venezuela,watermelon,yoda,yugoslavia,zelda').split(',').map(function (n) { return 'https://www.legendmod.ml/agario/live/flags/' + n + '.png'; });
     /* quick: a few scenes; default: the bodies x food table plus the variations at 1000 bodies /
      * 10k food and the crowded / many-points scenes; full: every combination. */
     function matrix(kind) {
         var out = [];
+        /* bots: like Expanding Land with ~110 bots in view, names and skins; with respawns
+         * (0.004 of the players per 40 ms tick, about 4 new players a second) and without */
+        if (kind === 'bots') {
+            out.push(scene({ bodies: 150, food: 2000 }), scene({ bodies: 150, food: 2000, bots: 0.004, botSkins: false }),
+                scene({ bodies: 150, food: 2000, bots: 0.0001 }), scene({ bodies: 150, food: 2000, bots: 0.004 }));
+            return out;
+        }
         if (kind === 'quick') {
             out.push(scene({ bodies: 100, food: 2000 }), scene({ bodies: 1000, food: 10000 }), scene({ bodies: 1000, food: 10000, sockets: 2 }),
                 scene({ bodies: 500, food: 2000, layout: 'crowd' }));
@@ -94,7 +112,7 @@
     function createWorld(spec) {
         var rnd = makeRng(spec.seed + spec.bodies * 7 + spec.food * 3 + (spec.layout === 'crowd' ? 11 : 0));
         var vw = VIEW.w / VIEW.scale, vh = VIEW.h / VIEW.scale;
-        var w = { spec: spec, rnd: rnd, tick: 0, nextId: 10, bodies: [], food: [], own: [], vw: vw, vh: vh, removedFood: [], addedFood: [] };
+        var w = { spec: spec, rnd: rnd, tick: 0, nextId: 10, bodies: [], food: [], own: [], vw: vw, vh: vh, removedFood: [], addedFood: [], removedBodies: [], players: 0 };
         /* main socket's own cell in the middle, the unit's own cell to the right */
         w.own.push({ id: 1, x: 0, y: 0, r: 150, vx: 0, vy: 0, color: [0, 200, 255], name: 'Bench', unit: 0 });
         if (spec.sockets > 1) w.own.push({ id: 2, x: 700, y: 120, r: 130, vx: 0, vy: 0, color: [255, 120, 0], name: 'Unit', unit: 1 });
@@ -117,14 +135,16 @@
             player++;
             var n = 1 + ((rnd() * 8) | 0), cx = (rnd() - 0.5) * spanX, cy = (rnd() - 0.5) * spanY;
             if (!crowd && rnd() < 0.06) cx = (rnd() < 0.5 ? -1 : 1) * (vw / 2 + 600 + rnd() * 1500);
-            var col = PALETTE[(rnd() * PALETTE.length) | 0], nick = 'P' + player, vx = (rnd() - 0.5) * 16, vy = (rnd() - 0.5) * 16;
+            var col = PALETTE[(rnd() * PALETTE.length) | 0], nick = spec.bots ? 'Bot ' + player : 'P' + player, vx = (rnd() - 0.5) * 16, vy = (rnd() - 0.5) * 16;
+            var skin = spec.bots && spec.botSkins ? BOT_SKINS[player % BOT_SKINS.length] : null;
             var coincident = rnd() < 0.15, s0 = size();
             for (var k = 0; k < n && made < spec.bodies; k++, made++) {
                 var s1 = coincident ? s0 : size();
                 var px = coincident ? cx : cx + (rnd() - 0.5) * 500, py = coincident ? cy : cy + (rnd() - 0.5) * 500;
-                w.bodies.push({ id: w.nextId++, x: Math.round(px), y: Math.round(py), r: s1, vx: vx, vy: vy, virus: false, color: col, name: nick });
+                w.bodies.push({ id: w.nextId++, x: Math.round(px), y: Math.round(py), r: s1, vx: vx, vy: vy, virus: false, color: col, name: nick, skin: skin, pl: player });
             }
         }
+        w.players = player;
         var fx = vw * (wide ? 4 : 1.5), fy = vh * (wide ? 4 : 1.5);
         for (var f = 0; f < spec.food; f++) w.food.push(newFood(w, fx, fy));
         w.foodSpan = [fx, fy];
@@ -155,6 +175,27 @@
             if (g && !g.virus) g.r = Math.max(32, g.r + (w.rnd() < 0.7 ? 1 + ((w.rnd() * 3) | 0) : -2));
         }
         w.removedFood.length = 0; w.addedFood.length = 0;
+        /* bot scenes: players die (their pieces are removed) and come back elsewhere as a new
+         * player (new ids, name and skin), as Expanding Land's bots respawn */
+        w.removedBodies.length = 0;
+        if (w.spec.bots) {
+            for (i = 0; i < w.bodies.length; i++) w.bodies[i]._new = false;
+            var deaths = w.spec.bots * w.players, pick;
+            w.botAcc = (w.botAcc || 0) + deaths;
+            while (w.botAcc >= 1) {
+                w.botAcc--;
+                pick = w.bodies[(w.rnd() * w.bodies.length) | 0];
+                if (!pick || pick.virus) continue;
+                var dead = pick.pl, np = ++w.players, nx = (w.rnd() - 0.5) * w.box[0] * 2, ny = (w.rnd() - 0.5) * w.box[1] * 2;
+                for (var d = 0; d < w.bodies.length; d++) {
+                    var bd = w.bodies[d];
+                    if (bd.pl !== dead) continue;
+                    w.removedBodies.push(bd.id);
+                    bd.id = w.nextId++; bd.pl = np; bd.name = 'Bot ' + np; bd.skin = w.spec.botSkins ? BOT_SKINS[np % BOT_SKINS.length] : null;
+                    bd.x = Math.round(nx + (w.rnd() - 0.5) * 300); bd.y = Math.round(ny + (w.rnd() - 0.5) * 300); bd._new = true;
+                }
+            }
+        }
         var churn = Math.max(1, Math.round(w.food.length * 0.005));
         for (i = 0; i < churn && w.food.length; i++) {
             var at = (w.rnd() * w.food.length) | 0;
@@ -202,9 +243,10 @@
         b.u16(0);
         function cell(c, type) {
             var isNew = fresh || c._new;
-            var flags = (main ? 0x80 : 0) | (type === 2 ? 1 : 0) | (isNew ? 2 : 0) | (isNew && c.name ? 8 : 0);
+            var flags = (main ? 0x80 : 0) | (type === 2 ? 1 : 0) | (isNew ? 2 : 0) | (isNew && c.skin ? 4 : 0) | (isNew && c.name ? 8 : 0);
             b.u32(socketId(w.spec, unit, c.id)); b.i32(Math.round(c.x)); b.i32(Math.round(c.y)); b.u16(Math.round(c.r)); b.u8(flags);
             if (flags & 2) { b.u8(c.color[0]); b.u8(c.color[1]); b.u8(c.color[2]); }
+            if (flags & 4) b.str(c.skin);
             if (flags & 8) b.str(c.name);
             if (main) { b.u16(type); b.u8(0); }
         }
@@ -213,7 +255,7 @@
         if (fresh) { for (i = 0; i < w.food.length; i++) { c = w.food[i]; if (sees(unit, c.x)) cell(c, 1); } }
         else for (i = 0; i < w.addedFood.length; i++) { c = w.addedFood[i]; if (sees(unit, c.x)) { c._new = true; cell(c, 1); c._new = false; } }
         b.u32(0);
-        var rem = fresh ? [] : w.removedFood;
+        var rem = fresh ? [] : w.removedBodies.length ? w.removedFood.concat(w.removedBodies) : w.removedFood;
         b.u16(rem.length);
         for (i = 0; i < rem.length; i++) b.u32(socketId(w.spec, unit, rem[i]));
         return b.done();
@@ -238,7 +280,7 @@
      * movePoints loop: with prepare and build timed on their own, its self time is the loop */
     var STAGES = ['packets', 'cells update', 'unit packets', 'render', 'cell sort', 'cell compare', 'grid', 'helpers',
         'food', 'jelly physics', 'jelly prepare', 'jelly build', 'eligibility', 'WebGL cells', 'WebGL batch', 'multibox rings',
-        'text pass', 'text raster', 'post overlays', 'rings/HUD pass', 'minimap', 'leaderboard', 'teamboard', 'stats HUD'];
+        'text pass', 'text raster', 'post overlays', 'rings/HUD pass', 'minimap', 'leaderboard', 'teamboard', 'stats HUD', 'skin jobs', 'skin upload'];
     function createScopes(clock, names) {
         var n = names.length, ids = {}, i;
         for (i = 0; i < n; i++) ids[names[i]] = i;
@@ -275,7 +317,7 @@
         ['drawRender', 'canUseWebGLScene', 'eligibility'], ['drawRender', 'drawWebGLCellBatch', 'WebGL cells'], ['drawRender', 'drawWebGLBatch', 'WebGL batch'],
         ['drawRender', 'drawWebGLMultiboxRings', 'multibox rings'], ['drawRender', '_lmRasterText', 'text raster'], ['drawRender', 'drawPostCellOverlays', 'post overlays'],
         ['application', 'drawMiniMap', 'minimap'], ['legendmod', 'handleLeaderboard', 'leaderboard'], ['application', 'displayTop5', 'teamboard'],
-        ['application', 'displayStats', 'stats HUD']
+        ['application', 'displayStats', 'stats HUD'], ['application', '_lmSkinJobRun', 'skin jobs'], ['drawRender', '_lmUploadSkinJob', 'skin upload']
     ];
 
     /* Speed of the machine right now: the median ms of a fixed CPU workload (seeded fill, sort,
