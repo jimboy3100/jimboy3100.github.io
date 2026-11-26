@@ -25,6 +25,11 @@
     else if (el.value !== String(defaultmapsettings[k] == null ? '' : defaultmapsettings[k])) fail.push('#' + k + ' does not show its setting');
   });
   if ($('#virusSoundurl').closest('.input-box').prev().find('#virusSound').length !== 1) fail.push('virus sound file not next to its switch');
+  // cell animations in Animation, the developer console (profiler) in Performance, once each
+  [['jellyPhisycs', 'animationGroup'], ['suckAnimation', 'animationGroup'], ['showDevConsole', 'perfGroup']].forEach(function (p) {
+    if ($('#og-options [id="' + p[0] + '"]').length !== 1 || !$('#' + p[0]).closest('.options-box.' + p[1]).length) fail.push('#' + p[0] + ' not once in .' + p[1]);
+    else if ($('#' + p[0]).prop('checked') !== !!defaultmapsettings[p[0]]) fail.push('#' + p[0] + ' does not show its setting');
+  });
   // every checkbox option maps to a known setting
   var unknown = [];
   $('#og-options input[type=checkbox]').each(function () {
