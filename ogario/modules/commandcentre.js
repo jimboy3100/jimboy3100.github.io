@@ -486,6 +486,8 @@
     }
     function showMenu() {
         try { if (!menuOpen() && W.application && typeof W.application.showMenu === 'function') W.application.showMenu(); } catch (e) { }
+        /* the menu page asked for comes in front of a window already open (ogario/modules/winstack.js) */
+        if (W.LMWinStack) W.LMWinStack.front(D.getElementById('overlays'));
     }
     function openTab(href) {
         showMenu();

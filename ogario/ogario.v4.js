@@ -86585,4 +86585,14 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading theme workshop script:', e);
     }
+    /* Window stacking: the window opened or touched last comes in front of the other open ones */
+    try {
+        var winStackScript = document.createElement('script');
+        winStackScript.type = 'text/javascript';
+        winStackScript.src = 'https://www.legendmod.ml/ogario/modules/winstack.js?v=' + (window.OgVer || '');
+        winStackScript.charset = 'utf-8';
+        document.body.appendChild(winStackScript);
+    } catch (e) {
+        console.warn('[LM] Error loading window stacking script:', e);
+    }
 })();
