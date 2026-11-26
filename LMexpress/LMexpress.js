@@ -9224,7 +9224,9 @@ function _lmThemeBroadcast() {
 /* called by the theme setters (ogario addCustomCSS), Rounded / Square HUD and a language change;
  * many changes in a row (dragging a colour) send once */
 function lmThemeChanged() {
-    if (!_lmThemePeers.length) return;
+    /* a saved Rounded HUD is applied on load before the list above is set: nothing to send yet
+     * (it threw there and stopped the rest of the load: timer, HUD images and titles not restored) */
+    if (!_lmThemePeers || !_lmThemePeers.length) return;
     clearTimeout(_lmThemeTimer);
     _lmThemeTimer = setTimeout(_lmThemeBroadcast, 150);
 }

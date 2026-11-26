@@ -224,7 +224,7 @@ function sender(ds, opt) {
     sctx.window = sctx;
     sctx.addEventListener = (t, fn) => { wl[t] = fn; };
     vm.createContext(sctx);
-    vm.runInContext(block, sctx);
+    try { vm.runInContext((opt.prefix || '') + block, sctx); sctx.ok = true; } catch (e) { if (!opt.prefix) throw e; sctx.ok = false; }
     sctx._msg = wl.message;
     sctx._flush = () => { const t = timers.splice(0); t.forEach(fn => fn && fn()); };
     return sctx;
@@ -291,6 +291,13 @@ check('live: the page applies what the sender sends', pg.props['--lm-mc'] === '#
 check('live: the theme setters notify (ogario addCustomCSS) and Rounded / Square HUD too',
     /window\.lmThemeChanged === 'function' && \/\^\(menu\\w\*CSS\|lmWinCSS\|hudCSS\|hudFontVarCSS\|hudScaleVarCSS\)\$\/\.test\(name\)\) window\.lmThemeChanged\(\)/.test(fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8')) &&
     /setProperty\('--lm-radius-s'[^\n]*\n[^\n]*\n\s*if \(typeof lmThemeChanged === 'function'\) lmThemeChanged\(\);/.test(lm));
+
+/* a saved Rounded HUD is applied while LMexpress.js loads, before the peer list is set (the function
+ * is hoisted, the list not yet): the notice must not throw (it stopped the rest of the load) */
+const early = sender(DS, { prefix: 'lmThemeChanged();' + String.fromCharCode(10) });
+check('live: a theme notice before the peer list exists does not throw', early.ok === true);
+early.lmThemeChanged(); early._flush();
+check('live: and later notices still work', typeof early.lmThemeChanged === 'function');
 
 console.log(failed ? 'RESULT: FAIL (' + failed + ')' : 'RESULT: PASS');
 process.exit(failed ? 1 : 0);
