@@ -8,7 +8,8 @@
 <link rel="canonical" href="https://www.legendmod.ml/privacy.html#extension">
 <meta name="robots" content="noindex, follow">
 <meta http-equiv="refresh" content="0; url=https://www.legendmod.ml/privacy.html#extension">
-<script>location.replace('https://www.legendmod.ml/privacy.html#extension' + '');</script>
+<script>/* keeps what the address carried (#lm= language and theme from the game or another Legend site, ?lm=) after #extension */
+location.replace('https://www.legendmod.ml/privacy.html' + location.search + '#' + ['extension'].concat(location.hash.replace(/^#/, '').split('&').filter(function (p) { return p && p !== 'extension'; })).join('&'));</script>
 <style>body { background: #111; color: #ddd; font-family: sans-serif; text-align: center; padding-top: 40px; } a { color: #01d9cc; }</style>
 </head>
 <body>

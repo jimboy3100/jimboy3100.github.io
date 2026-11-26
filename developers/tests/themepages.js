@@ -7,6 +7,8 @@
  *   Restore website theme on index.html            -> the same computed styles as the direct visit
  *   faq.html#lm=... with Greek                     -> site mode with the image, the button in Greek
  *   changelog.html#v...&lm=...                     -> anchor back in the address and scrolled to
+ *   privacy.html / terms.html with a theme         -> theme background, text and heading colours
+ *   LMexpress/privacy.html#lm=... (moved page)     -> privacy.html#extension with the language and theme
  *   an embedded videoskins.html / faq.html          -> handshake theme, live update after a theme change,
  *                                                    http links not decorated, no Restore button
  * Screenshots: developers/tests/out/themepages-<case>/shot.png
@@ -116,6 +118,19 @@ const t3 = run('changelog-anchor', senderUrl(L + 'changelog.html#' + anchor), 'a
 check('changelog: #' + anchor + ' is back in the address', t3.hash === '#' + anchor && !/lm=/.test(t3.href), t3.href);
 check('changelog: the page is scrolled to the anchor', t3.scrollY > 0 && t3.anchorTop !== null && (Math.abs(t3.anchorTop) <= 2 || (t3.atEnd && t3.anchorTop > 0)), { scrollY: t3.scrollY, top: t3.anchorTop, atEnd: t3.atEnd });
 check('changelog: full stylesheet, heading = main colour, small corners', t3.themed && t3.bodyBg === rgb(DS.menuPanelColor) && t3.heading === rgb(DS.menuMainColor) && t3.btnRadius === '3px' && t3.inRadius === '3px', t3);
+
+/* ---- privacy.html / terms.html: plain pages without colour variables (in site mode their dark text stayed on the
+ * theme's background image); the old LMexpress/privacy.html forwards to privacy.html#extension with the theme ---- */
+const back = 'var a = document.querySelector("[data-i18n$=\\".backToExpandingLand\\"]"); r.back = a ? a.href : null;';
+['privacy', 'terms'].forEach((pg) => {
+    const p = run(pg + '-themed', senderUrl(L + pg + '.html', 2), 'await sleep(600); var r = lmRead(document); ' + back + ' return r;');
+    check(pg + ' themed: theme background, text and heading colours', p.themed && p.bodyBg === rgb(DS.menuPanelColor) && p.color === rgb(DS.menuTextColor) && p.heading === rgb(DS.menuMainColor), p);
+    check(pg + ': "Back to Expanding Land" goes to expanding.land', p.back === 'https://expanding.land/', p.back);
+});
+const pv = run('privacy-moved', senderUrl(L + 'LMexpress/privacy.html', 2), 'await sleep(900); var r = lmRead(document); var e = document.getElementById("extension");' +
+    ' r.extTop = e ? Math.round(e.getBoundingClientRect().top) : null; return r;');
+check('LMexpress/privacy.html: forwarded to privacy.html#extension with the language and theme', /\/privacy\.html#extension$/.test(pv.href || '') && pv.lang === 'el' && pv.themed &&
+    pv.bodyBg === rgb(DS.menuPanelColor) && pv.scrollY > 0 && Math.abs(pv.extTop) <= 2, { href: pv.href, lang: pv.lang, themed: pv.themed, scrollY: pv.scrollY, extTop: pv.extTop });
 
 /* ---- embedded pages: ready handshake and live update (the sender block runs in the host page) ---- */
 const host = 'window.defaultSettings = ' + JSON.stringify(DS) + '; window.$ = function () { return { val: function () { return ""; } }; };\n' +
