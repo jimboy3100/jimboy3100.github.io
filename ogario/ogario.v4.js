@@ -25885,13 +25885,17 @@ function thelegendmodproject() {
              * clipboard. Nothing is sent anywhere; the player pastes it into Discord. */
             $("#og-settings").append('<div class="restore-settings"><a href="#" id="lm-copy-debug">' + _lmG1s('game1.set.copyDebug') + '</a></div>');
             $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">' + _lmG1s('game1.menu.radio') + ' (' + textLanguage.thanks + ')</h5><audio controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + textLanguage.playlist + "</a></span></div>");
-            $("#music").append('<div class="agario-panel sounds-panel"><h5 class="menu-main-color">' + textLanguage.sounds + "</h5></div>");
             $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'); /* i18n-ok: Legend Clan is a clan name, the tag a symbol */
             /*$('#music').append('<div class="agario-panel facebook-panel"><h5 class="menu-main-color">' + 'Facebook' + '</h5></div>'),*/
             this.addInputBox(".chatGroup", "chatHideWords", "game1.ph.chatWords", "setChatHideWords");
-            this.addInputBox(".sounds-panel", "messageSound", "game1.ph.soundUrl", "setMessageSound");
-            this.addInputBox(".sounds-panel", "commandSound", "game1.ph.soundUrl", "setCommandSound");
-            this.addInputBox(".sounds-panel", "virusSoundurl", "game1.ph.soundUrl", "setvirusSound");
+            /* The sound files are in Settings > Sounds next to their switch or volume (one place for the
+             * sounds; they were a separate Sounds panel in the Youtube & Sounds tab). Same ids and keys. */
+            this.addInputBox(".soundsGroup", "messageSound", "game1.ph.soundUrl", "setMessageSound");
+            this.addInputBox(".soundsGroup", "commandSound", "game1.ph.soundUrl", "setCommandSound");
+            this.addInputBox(".soundsGroup", "virusSoundurl", "game1.ph.soundUrl", "setvirusSound");
+            $('#messageSound').closest('.input-box').insertAfter($('#volChat-slider').closest('.slider-box'));
+            $('#commandSound').closest('.input-box').insertAfter($('#volCommands-slider').closest('.slider-box'));
+            $('#virusSoundurl').closest('.input-box').insertAfter($('#virusSound').closest('label'));
             $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color" style="font-size: 19px">' + _lmG1s('game1.menu.team') + '<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                 textLanguage.totalPartyPlayers + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' +
                 textLanguage.totalPartyMass + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' +

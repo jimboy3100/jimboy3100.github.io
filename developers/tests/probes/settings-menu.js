@@ -17,6 +17,14 @@
   if ($('#quick-menu .quick-more-skins').length) fail.push('second Skins link in the left column');
   if ($('#skins-panel #more-skins').attr('href') !== 'https://www.legendmod.ml/skins/') fail.push('Add skins button missing or not the skins page');
   if (!$('#quick-menu #ModInfoQuick').length) fail.push('left column lost Mod Info');
+  // the sound files are in Settings > Sounds (no second Sounds panel in the Youtube & Sounds tab)
+  if ($('#music .sounds-panel').length) fail.push('second Sounds panel in the Youtube & Sounds tab');
+  ['messageSound', 'commandSound', 'virusSoundurl'].forEach(function (k) {
+    var el = document.getElementById(k);
+    if (!el || !$(el).closest('.options-box.soundsGroup').length) fail.push('#' + k + ' not in Settings > Sounds');
+    else if (el.value !== String(defaultmapsettings[k] == null ? '' : defaultmapsettings[k])) fail.push('#' + k + ' does not show its setting');
+  });
+  if ($('#virusSoundurl').closest('.input-box').prev().find('#virusSound').length !== 1) fail.push('virus sound file not next to its switch');
   // every checkbox option maps to a known setting
   var unknown = [];
   $('#og-options input[type=checkbox]').each(function () {
