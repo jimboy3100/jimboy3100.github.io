@@ -928,15 +928,31 @@
         toggle();
     }, true);
 
-    /* ═══ Button next to the settings search — REMOVED ═══
-     * The Command Centre is already accessible via Ctrl+K, its own bindable
-     * hotkey, and the Command Centre tab; it does not need a button in the
-     * settings presets row. The function is kept as a no-op so callers
-     * (the interval and the language-change handler) do not break. */
+    /* ═══ Button in the Tools tab, under User Scripts ═══
+     * The one direct way in without a keyboard (phones, tablets): Ctrl+K and the hotkey need
+     * keys, the quick bar is off by default. Not in the Settings tab (its presets row stays
+     * free of it). The menu builds the Tools tab late, so the 1 s timer below tries again. */
 
-    function addMenuButton() { return true; }
+    function addMenuButton() {
+        if (D.getElementById('lm-cc-open')) return true;
+        var us = D.getElementById('OpenuserScripts');
+        if (!us || !us.parentNode) return false;
+        var b = mk('button', 'btn btn-primary lm-cc-open-btn');
+        b.id = 'lm-cc-open';
+        b.type = 'button';
+        b.style.cssText = 'margin-top:2px;display:block;width:100%;padding:4px 0 6px 0;';
+        menuButtonTexts(b);
+        b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); open(); });
+        us.parentNode.insertBefore(b, us.nextSibling);
+        return true;
+    }
 
-    function menuButtonTexts() { }
+    function menuButtonTexts(b) {
+        /* the icon like the other Tools buttons */
+        b.textContent = t('title');
+        b.insertBefore(mk('i', 'fa fa-search'), b.firstChild);
+        b.title = t('title') + ' (Ctrl+K)';
+    }
 
     /* ═══ Quick bar with the favourites (option commandCentreBar) ═══ */
 

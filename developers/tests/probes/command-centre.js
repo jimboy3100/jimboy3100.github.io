@@ -26,10 +26,54 @@
     if (!kinds.tab || !kinds.win) fail.push('no menu tabs / windows');
     if (all.some(function (it) { return it.id === 'hk:hk-commandCentre'; })) fail.push('lists its own hotkey');
     if (all.some(function (it) { return !it.label; })) fail.push('item without a label');
-    /* no Command Centre button in the Settings tab (removed on purpose: Ctrl+K and its own hotkey
-     * open it); the old 1 s retry must not bring it back */
+    /* no Command Centre button in the Settings tab (removed on purpose); the one direct way in
+     * without a keyboard is the button of the Tools tab (one of them, under User Scripts) */
     await sleep(1200);
-    if (document.querySelector('#lm-cc-open, .lm-cc-open-btn, #og-settings [id^="lm-cc"]')) fail.push('Command Centre button is in the Settings tab');
+    if (document.querySelector('#og-settings #lm-cc-open, #og-settings .lm-cc-open-btn, #og-settings [id^="lm-cc"]')) fail.push('Command Centre button is in the Settings tab');
+    var ccBtns = document.querySelectorAll('#lm-cc-open, .lm-cc-open-btn');
+    var ccBtn = document.getElementById('lm-cc-open');
+    if (ccBtns.length !== 1 || !ccBtn || !ccBtn.closest('#legend')) fail.push('Command Centre button: not once in the Tools tab (' + ccBtns.length + ')');
+    else {
+      /* by touch, no keyboard, quick bar off, no hotkey: the Tools tab, a tap on the button, a tap on X */
+      var barWas = defaultmapsettings.commandCentreBar;
+      defaultmapsettings.commandCentreBar = false;
+      var prevTab = document.querySelector('.menu-tabs li.active a');
+      var toolsTab = document.querySelector('.menu-tabs li.legend-tab a');
+      if (toolsTab) toolsTab.click();
+      await sleep(500);
+      var br0 = ccBtn.getBoundingClientRect();
+      info.ccButton = Math.round(br0.left) + ',' + Math.round(br0.top) + ' ' + Math.round(br0.width) + 'x' + Math.round(br0.height);
+      if (!(br0.width > 40 && br0.height > 16)) fail.push('Command Centre button not shown in the Tools tab');
+      if (/\.cc/.test(ccBtn.textContent) || !ccBtn.textContent.trim()) fail.push('Command Centre button text: ' + ccBtn.textContent);
+      var tap = function (el) {
+        var r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+        var o = { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerType: 'touch', isPrimary: true };
+        try { el.dispatchEvent(new PointerEvent('pointerdown', o)); el.dispatchEvent(new PointerEvent('pointerup', o)); } catch (e) { }
+        el.dispatchEvent(new MouseEvent('click', o));
+      };
+      if (document.elementFromPoint(br0.left + br0.width / 2, br0.top + br0.height / 2) !== ccBtn && br0.width > 0) {
+        var top = document.elementFromPoint(br0.left + br0.width / 2, br0.top + br0.height / 2);
+        /* a promo dialog of the live site may lie over the whole menu for a moment */
+        if (top && top.closest && top.closest('.modal')) info.ccCoveredByDialog = top.id || top.className;
+        else if (!(top && ccBtn.contains(top))) fail.push('Command Centre button is covered by ' + (top ? (top.id || top.className) : 'nothing'));
+      }
+      tap(ccBtn);
+      await sleep(100);
+      if (!CC.isOpen()) fail.push('a tap on the Tools tab button did not open it');
+      var xb = document.querySelector('#lm-cc .lm-cc-x');
+      if (!xb) fail.push('no close button');
+      else {
+        var xr = xb.getBoundingClientRect();
+        if (xr.left < 0 || xr.top < 0 || xr.right > innerWidth || xr.bottom > innerHeight) fail.push('close button off screen');
+        tap(xb);
+        await sleep(100);
+        if (CC.isOpen()) fail.push('a tap on X did not close it');
+      }
+      if (CC.isOpen()) CC.close();
+      defaultmapsettings.commandCentreBar = barWas;
+      if (prevTab) prevTab.click();
+      await sleep(300);
+    }
 
     // Ctrl+K on the page (unless the player bound Ctrl+K to a hotkey)
     var bound = window.hotkeys && hotkeys['CTRL+K'];
