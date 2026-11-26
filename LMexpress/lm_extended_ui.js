@@ -2899,7 +2899,8 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
                     break;
             }
 
-            console.error(
+            /* an expected state (no prize data for this league), told by the toast below: not an error */
+            console.warn(
                 '[LM LEAGUES] More Prizes unavailable:',
                 resolvedPrizeData
             );
