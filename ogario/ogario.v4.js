@@ -83468,6 +83468,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
     }
     window.onmouseup = function (event) {
+        try { event._lmMouseupDone = true; } catch (e) { }
         delete _lmMouseHeld[event.which];
         var _lmMouseCmdWas = _lmMouseCmdHeld[event.which];
         delete _lmMouseCmdHeld[event.which];
@@ -83484,6 +83485,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* the command this button started on mousedown (also when its binding changed meanwhile) */
         if (_lmMouseCmdWas && hotkeysCommand[_lmMouseCmdWas] && hotkeysCommand[_lmMouseCmdWas].keyUp) hotkeysCommand[_lmMouseCmdWas].keyUp();
     };
+    /* A button pressed on the game and released over a layer that keeps mouseup from the window
+     * (the radial menu its own press opened, the Command Centre, editor windows) was never
+     * released: the radial menu stayed open without running its command, macro feed kept going.
+     * Like the keyup above, such a mouseup is released here after the event is done. */
+    window.addEventListener('mouseup', function (event) {
+        if (!_lmMouseHeld[event.which]) return;
+        setTimeout(function () {
+            if (!event._lmMouseupDone && _lmMouseHeld[event.which] && typeof window.onmouseup === 'function') window.onmouseup(event);
+        }, 0);
+    }, true);
     window.onbeforeunload = function (event) {
         if (window._lmSettingsReload) return;
         if (ogario.play) {

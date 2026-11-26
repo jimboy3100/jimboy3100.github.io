@@ -126,15 +126,28 @@ function probeMark(name) {
     } else if (m.method === 'Runtime.bindingCalled' && m.params.name === '__lmInput') {
       /* a probe asks for a real click or tap (trusted input, like a player's): window.__lmInput(JSON
        * { id, type: 'click' | 'tap', x, y }) in viewport pixels, or a real key press on the focused
-       * element: { id, type: 'key', key, code, keyCode, shift }; window.__lmInputDone(id) is called after */
+       * element: { id, type: 'key', key, code, keyCode, shift }; window.__lmInputDone(id) is called after.
+       * A key with text: '3' types it. Held input: type 'keydown' / 'keyup' (one half of a key press; ctrl / alt / shift modifiers),
+       * 'move' { x, y }, 'mousedown' / 'mouseup' { x, y, button: 'left' | 'middle' | 'right' | 'back' | 'forward' } */
       let q = null;
       try { q = JSON.parse(m.params.payload); } catch (e) { }
       if (!q) return;
       const x = Number(q.x) || 0, y = Number(q.y) || 0;
-      if (q.type === 'key') {
-        const k = { key: String(q.key || ''), code: String(q.code || q.key || ''), windowsVirtualKeyCode: Number(q.keyCode) || 0, nativeVirtualKeyCode: Number(q.keyCode) || 0, modifiers: q.shift ? 8 : 0 };
-        await send('Input.dispatchKeyEvent', Object.assign({ type: 'rawKeyDown' }, k));
-        await send('Input.dispatchKeyEvent', Object.assign({ type: 'keyUp' }, k));
+      const BTN = { left: 1, right: 2, middle: 4, back: 8, forward: 16 };
+      const button = BTN[q.button] ? q.button : 'left';
+      if (q.type === 'key' || q.type === 'keydown' || q.type === 'keyup') {
+        const mods = (q.alt ? 1 : 0) | (q.ctrl ? 2 : 0) | (q.shift ? 8 : 0);
+        const k = { key: String(q.key || ''), code: String(q.code || q.key || ''), windowsVirtualKeyCode: Number(q.keyCode) || 0, nativeVirtualKeyCode: Number(q.keyCode) || 0, modifiers: mods };
+        /* text: the key also types it into the focused field (a rawKeyDown types nothing) */
+        if (q.type !== 'keyup') await send('Input.dispatchKeyEvent', Object.assign(q.text ? { type: 'keyDown', text: String(q.text), unmodifiedText: String(q.text) } : { type: 'rawKeyDown' }, k));
+        if (q.type !== 'keydown') await send('Input.dispatchKeyEvent', Object.assign({ type: 'keyUp' }, k));
+      } else if (q.type === 'move') {
+        await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
+      } else if (q.type === 'mousedown') {
+        await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
+        await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button, buttons: BTN[button], clickCount: 1 });
+      } else if (q.type === 'mouseup') {
+        await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button, buttons: 0, clickCount: 1 });
       } else if (q.type === 'tap') {
         await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
         await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
