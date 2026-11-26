@@ -13,8 +13,10 @@
  * strings) with the game info array last; the Studio data is one extra object at the end of
  * that info array ({lmrs: 1, ...}), which older versions never read.
  *
- * Seeking back replays the packets from the last world reset (packet 0 or a "clear all" packet)
- * up to the target, in slices so the page stays responsive; forward seeks only run ahead. */
+ * Seeking back empties the world and replays the packets from the newest complete starting point
+ * (packet 0, or a "clear all" packet the playback has passed: see CARRY) up to the target, in slices
+ * so the page stays responsive; forward seeks only run ahead. Playing backwards goes in such steps
+ * (the packets only say what changed, so they cannot be undone one by one); it is not continuous. */
 (function () {
     'use strict';
     if (window._lmReplayStudioLoaded) return;
@@ -487,7 +489,7 @@
             if (!meta && !side.t) side.est = true;
             arr._lmSide = side;
         }
-        REC = { key: key, arr: arr, spec: Array.isArray(spec) ? spec : [], side: side, n: 0, t: null, marks: [], cps: [0], cpsScan: 1, marksAt: -1 };
+        REC = { key: key, arr: arr, spec: Array.isArray(spec) ? spec : [], side: side, n: 0, t: null, marks: [], cps: [0], cpSet: {}, cpsScan: 1, marksAt: -1 };
         refreshRec();
         return REC;
     }
@@ -525,7 +527,7 @@
                     try { var m = l.decompressMessage(d); if (m && m.length) op = m.readUInt8(0); } catch (e) { }
                 }
             }
-            if (op === 18) r.cps.push(i);
+            if (op === 18) { r.cps.push(i); r.cpSet[i] = 1; }
         }
         r.cpsScan = n;
         r.endT = n ? r.t[n - 1] : 0;
@@ -539,7 +541,9 @@
     /* Playback driver                                                     */
     /* ------------------------------------------------------------------ */
     /* dir: 1 forwards, -1 backwards; stopAt: pause there (the End packet of a ?replay= link) */
-    var P = { driving: false, playing: false, pos: 0, speed: 1, dir: 1, stopAt: 0, baseWall: 0, baseT: 0, timer: 0, ff: null, pending: null, warnCount: 0, inMs: null, outMs: null };
+    /* driving: the playback session (the Studio plays the replay connection shown); playing / paused /
+     * at the end is only the transport inside it. base, cpRec: the starting states (see CARRY) */
+    var P = { driving: false, playing: false, pos: 0, speed: 1, dir: 1, stopAt: 0, baseWall: 0, baseT: 0, timer: 0, ff: null, pending: null, warnCount: 0, inMs: null, outMs: null, base: null, cpRec: null, cpN: 0 };
     var SPEEDS = [0.25, 0.5, 1, 2, 4];
     /* fx: colour filter of the replay's cells ('' none, grey, sepia, hue) */
     var FX = ['', 'grey', 'sepia', 'hue'];
@@ -569,7 +573,16 @@
     function vNow(now) { return P.baseT + (now - P.baseWall) * P.speed * P.dir; }
     /* the replay bar and the phone pause button show the paused state */
     function setPaused(on) { window._lmReplayPaused = !!on; }
-    function evReplay(on, reason) { if (typeof window._lmEvReplay === 'function') window._lmEvReplay(on, reason, P.pos); }
+    /* The replay context (window._lmEvReplayOn, LMEvents context 'replay'; Analytics, Death recap,
+     * macros and the match history skip it): on at the take-over of a replay connection, off only once
+     * that connection is left for a live server (dispose 'left', from ogario.v4.js). Pause, the end,
+     * stepping, seeking and closing the Studio keep it: the replay world is still what is shown.
+     * ctxKey: the recording it was started for (another one gets its own replayStart). */
+    var ctxKey = null;
+    function evReplay(on, reason, start) {
+        ctxKey = on && REC ? REC.key : null;
+        if (typeof window._lmEvReplay === 'function') window._lmEvReplay(on, reason, start == null ? P.pos : start);
+    }
 
     function active() {
         return !!(P.driving && REC && inReplayOf(REC.key) && recArr(REC.key) === REC.arr);
@@ -579,20 +592,75 @@
         if (P.ff && P.ff.timer) clearTimeout(P.ff.timer);
         P.ff = null;
     }
-    function stopDriving() {
+    /* The one end of a playback session: another recording chosen or imported, the recording gone,
+     * the Studio closed, Back to game, the replay connection lost, or a live server joined ('left').
+     * Close and Back to game differ only in what follows: closing leaves the stopped replay world on
+     * screen until a server is joined, Back to game joins the previous server. Safe to call again. */
+    function dispose(reason) {
         stopTimers();
-        var was = P.driving;
         P.driving = false;
         P.playing = false;
         P.stopAt = 0;
+        P.base = P.cpRec = null;
+        P.cpN = 0;
+        if (reason === 'left') P.pending = null;
         setPaused(false);
         restoreSkins();
-        if (was) evReplay(false, 'stopped');
+        overlayClear();
+        if (window._lmEvReplayOn && !inReplay()) evReplay(false, reason === 'left' ? 'left' : 'stopped');
         ui();
+    }
+
+    /* What a world reset (lmReplayResetWorld) keeps but the packets change: the map border (Expanding
+     * Land grows and shrinks it), the camera, the leaderboard, the colours by name. A rebuild puts back
+     * the copy taken at its starting packet, so it ends where playing forwards got: P.base is taken at
+     * the take-over (before packet 0), P.cpRec[i] before "clear all" packet i when the playback passes
+     * it (only those checkpoints are used). Own cells and every other cell go with the reset. */
+    var CARRY = ['mapMinX', 'mapMinY', 'mapMaxX', 'mapMaxY', 'mapMidX', 'mapMidY', 'mapOffsetX', 'mapOffsetY', 'mapOffset', 'mapOffsetFixed',
+        'mapSize', 'mapTier', 'viewMinX', 'viewMinY', 'viewMaxX', 'viewMaxY', '_lmServerBorder', 'isLegendWorld', 'gameMode',
+        'viewX', 'viewY', 'viewXTrue', 'viewYTrue', 'scale', 'play', 'playerColor', 'leaderboard', 'playerPosition', 'pieChart', 'ghostCells', 'cellcolors'];
+    var CP_MAX = 64;
+    /* a copy one level deep (leaderboard rows, colours by name); frozen values are shared */
+    function copy1(v) {
+        if (!v || typeof v !== 'object' || Object.isFrozen(v)) return v;
+        if (Array.isArray(v)) return v.map(copy1Obj);
+        return copy1Obj(v);
+    }
+    function copy1Obj(v) {
+        if (!v || typeof v !== 'object' || Object.isFrozen(v)) return v;
+        return Array.isArray(v) ? v.slice() : Object.assign(Object.create(Object.getPrototypeOf(v)), v);
+    }
+    function grab() {
+        var l = LM(), o = {};
+        if (!l) return null;
+        for (var i = 0; i < CARRY.length; i++) o[CARRY[i]] = copy1(l[CARRY[i]]);
+        return o;
+    }
+    function putBack(o) {
+        var l = LM();
+        if (!l || !o) return;
+        for (var i = 0; i < CARRY.length; i++) l[CARRY[i]] = copy1(o[CARRY[i]]);
+    }
+    /* the newest checkpoint at or before packet i whose starting state is known (else 0) */
+    function startFor(i) {
+        var cps = REC.cps, c = checkpointBefore(cps, i);
+        for (var j = cps.length - 1; j > 0 && c > 0; j--) {
+            if (cps[j] <= c && P.cpRec && P.cpRec[cps[j]]) return cps[j];
+        }
+        return 0;
+    }
+    /* an empty world as it was before the newest complete starting point for target; returns it */
+    function rebuildAt(target) {
+        var c = target > 0 ? startFor(target - 1) : 0;
+        if (window.lmReplayResetWorld) window.lmReplayResetWorld();
+        putBack(c ? P.cpRec[c] : P.base);
+        P.pos = c; /* the replay bar follows the rebuild (setPos) */
+        return c;
     }
     function handle(i) {
         var d = REC.arr[i], l = LM();
         if (!d || !l) return;
+        if (P.cpRec && REC.cpSet[i] && !P.cpRec[i] && P.cpN < CP_MAX) { P.cpRec[i] = grab(); P.cpN++; }
         try { l.handleMessage(d); } catch (e) {
             /* P1 fix #48: allow up to 5 warnings per replay instead of silencing after the first */
             if (P.warnCount < 5) { P.warnCount++; console.warn('[Replay Studio] packet ' + i + ' failed:', e); }
@@ -601,22 +669,24 @@
     function setPos(pos) {
         P.pos = pos;
         var l = LM();
-        if (l) l.playingReplayRecord = pos;
+        /* the replay bar: not the rebuild of a step backwards running up to it */
+        if (l && !(P.ff && P.ff.rev)) l.playingReplayRecord = pos;
     }
     function tick() {
         P.timer = 0;
-        if (!active()) { if (P.driving) stopDriving(); return; }
+        if (!active()) { if (P.driving) dispose('stopped'); return; }
         if (!P.playing) return;
         refreshRec();
         var now = performance.now(), vt = vNow(now), k = 0;
         if (P.dir < 0) {
-            /* backwards: the packets are handled again from the newest down, at their recorded
-             * spacing (packet pos-2 shows the world before packet pos-1), until the first one */
-            if (P.pos > 1 && vt - REC.t[P.pos - 2] > 3000) { P.baseT = vt = REC.t[P.pos - 2] + 40; P.baseWall = now; }
-            while (P.pos > 1 && REC.t[P.pos - 2] >= vt && k < 300) { handle(P.pos - 2); setPos(P.pos - 1); k++; }
-            if (k >= 300) { P.baseT = tAt(P.pos); P.baseWall = now; }
-            if (P.pos <= 1) { P.playing = false; setPaused(true); ui(); return; }
-            P.timer = setTimeout(tick, Math.max(0, Math.min(250, (vt - REC.t[P.pos - 2]) / P.speed)));
+            /* backwards, in steps: handling an earlier packet again does not undo a later one (a cell
+             * it removed stays removed), so each step rebuilds the world at the earlier packet
+             * (seekTo). The playback time runs on meanwhile: a slow rebuild gives fewer, longer steps */
+            if (P.pos <= 1) { atEnd(); return; }
+            if (vt - REC.t[P.pos - 2] > 3000) { P.baseT = vt = REC.t[P.pos - 2] + 40; P.baseWall = now; }
+            var back = Math.max(1, posAtTime(REC.t, REC.n, vt));
+            if (back < P.pos) { seekTo(back, true, true); return; }
+            P.timer = setTimeout(tick, Math.max(0, Math.min(250, (vt - REC.t[P.pos - 1]) / P.speed + 1)));
             return;
         }
         /* the End packet of a ?replay= link */
@@ -635,7 +705,7 @@
                 P.timer = setTimeout(tick, 200);
                 return;
             }
-            P.playing = false; setPaused(true); evReplay(false, 'end'); ui(); return;
+            atEnd(); return;
         }
         if (P.stopAt && P.pos >= P.stopAt) { P.stopAt = 0; pause(); return; }
         var d = (REC.t[P.pos] - vt) / P.speed;
@@ -655,7 +725,6 @@
         /* backwards from the start: from the end, like the old replay window's negative delay */
         if (P.dir < 0 && P.pos <= 1) { seekTo(REC.n, true); return; }
         setPaused(false);
-        evReplay(true);
         P.playing = true;
         P.baseT = tAt(P.pos);
         P.baseWall = performance.now();
@@ -665,6 +734,22 @@
         ui();
         overlayOn();
     }
+    /* the end of the playback, either way: the session goes on (paused there; step, seek or play again) */
+    function atEnd() {
+        P.playing = false;
+        setPaused(true);
+        ui();
+    }
+    /* a step backwards is rebuilt (revStep): show it, then the next one after at least REV_GAP ms
+     * and at least as long as the rebuild took (never more than half of the time rebuilding) */
+    var REV_GAP = 100;
+    function revStepDone(job) {
+        P.playing = true;
+        setPaused(false);
+        if (P.timer) clearTimeout(P.timer);
+        P.timer = setTimeout(tick, Math.max(REV_GAP, performance.now() - job.t0));
+        ui();
+    }
     function pause() {
         P.playing = false;
         if (P.driving) setPaused(true);
@@ -672,8 +757,8 @@
         if (P.ff) P.ff.resume = false;
         ui();
     }
-    /* run packets until target (packets handled), in slices of ~25 ms */
-    function seekTo(target, resume) {
+    /* run packets until target (packets handled), in slices of ~25 ms; rev: a step of playing backwards */
+    function seekTo(target, resume, rev) {
         if (!REC) return;
         refreshRec();
         target = Math.max(0, Math.min(REC.n, target | 0));
@@ -682,20 +767,15 @@
         if (P.stopAt && target >= P.stopAt) P.stopAt = 0;
         stopTimers();
         P.playing = false;
-        if (target < P.pos) {
-            var c = checkpointBefore(REC.cps, target - 1);
-            /* P1 fix #39: always reset the world when seeking backward, even when
-             * jumping to a checkpoint > 0. Without this, cells from the abandoned
-             * position persist as ghosts because the replay engine only adds/updates
-             * cells going forward - it never removes ones from future packets. */
-            if (window.lmReplayResetWorld) window.lmReplayResetWorld();
-            setPos(c > 0 && target > 0 ? c : 0);
-        }
-        var job = P.ff = { target: target, resume: wasPlaying, timer: 0, from: P.pos };
+        /* back: the packets only add, change and remove, so the world is emptied and rebuilt from a
+         * complete starting point (cells of the later position would stay as ghosts) */
+        if (target < P.pos) rebuildAt(target);
+        var job = P.ff = { target: target, resume: wasPlaying, timer: 0, from: P.pos, rev: !!rev, t0: performance.now() };
+        if (rev && LM()) LM().playingReplayRecord = target;
         var step = function () {
             job.timer = 0;
             if (P.ff !== job) return;
-            if (!active()) { stopDriving(); return; }
+            if (!active()) { dispose('stopped'); return; }
             var t0 = performance.now();
             while (P.pos < job.target) {
                 handle(P.pos);
@@ -707,18 +787,23 @@
             }
             if (P.pos < job.target) { job.timer = setTimeout(step, 0); ui(); return; }
             P.ff = null;
-            if (job.resume) play(); else ui();
+            setPos(P.pos);
+            if (job.resume && job.rev && P.dir < 0) revStepDone(job);
+            else if (job.resume) play(); else ui();
             overlayOn();
         };
         step();
     }
     function seekTime(ms, resume) { if (REC) seekTo(posAtTime(REC.t, REC.n, ms), resume); }
+    /* the position shown: while a seek or a step backwards is rebuilt, where it goes */
+    function shownPos() { return P.ff ? P.ff.target : P.pos; }
     function stepPacket(dir) {
         if (!REC) return;
         if (!P.driving || !active()) { startReplay(REC.key, Math.max(0, P.pos + dir), false); return; }
+        var at = shownPos();
         pause();
-        if (dir > 0) { if (P.pos < REC.n) { handle(P.pos); setPos(P.pos + 1); } ui(); }
-        else seekTo(P.pos - 1, false);
+        if (dir > 0 && !P.ff) { if (P.pos < REC.n) { handle(P.pos); setPos(P.pos + 1); } ui(); }
+        else seekTo(at + (dir > 0 ? 1 : -1), false);
     }
     var leaveAt = 0;
     /* opens the replay connection (the live server is left) and takes over in takeOver() */
@@ -759,17 +844,24 @@
         var p = P.pending;
         P.pending = null;
         if (!p || p.key !== key || Date.now() - p.at > 30000 || !recArr(key)) {
-            if (P.driving) stopDriving();
+            if (P.driving) dispose('stopped');
             return false;
         }
+        if (P.driving && REC && REC.key !== key) dispose('stopped');
         stopTimers();
         openRec(key);
         P.driving = true;
         P.playing = false;
         P.warnCount = 0;
         setPos(0);
+        /* playReplayLM has just emptied the world: the state before packet 0, no checkpoints yet */
+        P.base = grab();
+        P.cpRec = {};
+        P.cpN = 0;
         applySkins(REC.spec);
-        if (typeof window._lmEvReplay === 'function') window._lmEvReplay(true, '', p.pos || 0);
+        /* one replayStart per recording shown (switching recordings: the old one stops first) */
+        if (window._lmEvReplayOn && ctxKey !== key) evReplay(false, 'stopped');
+        evReplay(true, '', p.pos || 0);
         setPaused(!p.autoplay);
         $('#pause-hud').hide();
         seekTo(p.pos || 0, !!p.autoplay);
@@ -777,22 +869,26 @@
         return true;
     };
     RS.isDriving = function () { return active(); };
+    /* ogario.v4.js (replayfunctions): a live server was joined, the replay is left */
+    RS.dispose = function (reason) { dispose(reason === 'left' ? 'left' : 'stopped'); };
     /* the replay hotkeys (ogario.v4.js lmReplayTogglePause / Speed / Seek) */
     RS.command = function (cmd, arg) {
         if (cmd === 'pause') { if (P.playing || (P.ff && P.ff.resume)) pause(); else play(); return true; }
         if (cmd === 'speed') { setSpeed(arg < 1 ? P.speed * 2 : P.speed / 2); toast('info', T('speed') + ' ' + P.speed + 'x'); return true; }
-        if (cmd === 'seek') { seekTo(P.pos + (arg | 0)); return true; }
+        if (cmd === 'seek') { seekTo(shownPos() + (arg | 0)); return true; }
         return false;
     };
     function setSpeed(v) {
         v = Math.max(0.25, Math.min(4, v));
-        if (P.playing) { var now = performance.now(); P.baseT = vNow(now); P.baseWall = now; }
+        /* playing backwards, the clock also runs while a step is rebuilt */
+        if (P.playing || (P.ff && P.ff.rev && P.ff.resume)) { var now = performance.now(); P.baseT = vNow(now); P.baseWall = now; }
         P.speed = v;
         OPT.speed = v;
         saveOpt();
         /* P2 fix #88: reschedule the active tick timer so the new speed takes
-         * effect immediately, rather than waiting for the old-speed timer to fire. */
-        if (P.playing && P.timer) { clearTimeout(P.timer); P.timer = setTimeout(tick, 0); }
+         * effect immediately, rather than waiting for the old-speed timer to fire.
+         * Backwards the timer is the pause between two rebuilt steps (revStepDone): it stays. */
+        if (P.playing && P.timer && P.dir > 0) { clearTimeout(P.timer); P.timer = setTimeout(tick, 0); }
         ui();
     }
     /* skins saved with the recording: plain nick -> http(s) URL pairs (as playReplayLM).
@@ -1432,9 +1528,8 @@
             $('#instantReplaySecs-slider').val(d.instantReplaySecs); $('#instantReplaySecs-value').text(d.instantReplaySecs);
         });
         r2.appendChild(W.secs);
-        /* P1 fix #46: stopDriving() clears P.driving and restores skins before
-         * leaving the replay server. pause() alone left P.driving = true. */
-        W.backB = btn(K('backGame'), '', function () { stopDriving(); if (window._lmJoinPrevServer) window._lmJoinPrevServer(); });
+        /* leave the replay: end the session (skins back), then join the previous server */
+        W.backB = btn(K('backGame'), '', function () { dispose('stopped'); if (window._lmJoinPrevServer) window._lmJoinPrevServer(); });
         r2.appendChild(W.backB);
         pv.appendChild(r2);
         /* overlay toggles + bookmark chips */
@@ -1506,7 +1601,8 @@
     }
     function select(key) {
         if (!recArr(key)) return;
-        if (P.driving && REC && REC.key !== key) { pause(); P.driving = false; }
+        /* another recording (chosen, imported, from the library): the playing one's session ends */
+        if (P.driving && REC && REC.key !== key) dispose('stopped');
         if (!REC || REC.key !== key) { openRec(key); P.pos = P.driving ? P.pos : 0; P.inMs = P.outMs = null; P.stopAt = 0; W && (W.marksSig = ''); }
         ui();
     }
@@ -1527,18 +1623,18 @@
     function close() {
         if (W) W.style.display = 'none';
         if (uiTimer) { clearInterval(uiTimer); uiTimer = 0; }
-        /* P0 fix: stop playback, driving and overlay - not just hide the dialog */
-        if (P.playing) { P.playing = false; clearTimeout(P.timer); P.timer = 0; }
-        if (P.driving) stopDriving();
+        /* closing ends the playback session (see dispose): the stopped replay world stays shown,
+         * still as a replay, until a server is joined */
+        dispose('stopped');
         cancelDeathTimer();
-        try { if (typeof overlayClear === 'function') overlayClear(); } catch (e) { }
     }
     function isOpen() { return !!(W && W.style.display !== 'none'); }
     function ui() {
-        if (!W || W.style.display === 'none') return;
-        if (REC && recArr(REC.key) !== REC.arr) { REC = null; P.driving = false; P.playing = false; }
+        /* the shown recording was dropped from memory (newer ones pushed it out) */
+        if (REC && recArr(REC.key) !== REC.arr) { REC = null; if (P.driving) { dispose('stopped'); return; } P.playing = false; }
         /* the replay was left while paused (a live server joined): nothing ticks to notice it */
-        if (P.driving && !P.ff && !active()) { stopDriving(); return; }
+        if (P.driving && !P.ff && !active()) { dispose('stopped'); return; }
+        if (!W || W.style.display === 'none') return;
         /* recordings list */
         var keys = recKeys(), sig = keys.join('\n') + '|' + liveKey();
         if (W.selSig !== sig) {
@@ -1577,10 +1673,11 @@
             ' \u00b7 ' + T('packets', [REC.n]) + (REC.side.est ? ' \u00b7 ' + T('est') : '') + (REC.key === liveKey() ? ' \u00b7 ' + T('live') : '') +
             (REC.arr._lmLib ? ' \u00b7 ' + T('saved') : '');
         var total = Math.max(1, REC.endT);
-        var cur = tAt(P.pos);
+        /* a step of playing backwards shows where it goes, not the rebuild running up to it */
+        var revJob = P.ff && P.ff.rev, cur = tAt(revJob ? P.ff.target : P.pos);
         if (!(W.isDragging && W.isDragging())) {
             W.headEl.style.left = Math.min(100, cur / total * 100) + '%';
-            W.time.textContent = (P.ff ? T('seeking') + ' ' + Math.round((P.pos - P.ff.from) / Math.max(1, P.ff.target - P.ff.from) * 100) + '%' : fmtTime(cur) + ' / ' + fmtTime(REC.endT));
+            W.time.textContent = (P.ff && !revJob ? T('seeking') + ' ' + Math.round((P.pos - P.ff.from) / Math.max(1, P.ff.target - P.ff.from) * 100) + '%' : fmtTime(cur) + ' / ' + fmtTime(REC.endT));
         }
         W.fill.style.width = Math.min(100, cur / total * 100) + '%';
         if (P.inMs != null || P.outMs != null) {
@@ -1737,6 +1834,8 @@
     /* the library for scripts and the smoke test */
     RS.store = { list: libList, get: libGet, put: libPut, update: libUpdateMeta, remove: libDelete };
     RS.state = function () {
-        return { open: isOpen(), key: REC && REC.key, pos: P.pos, n: REC ? REC.n : 0, playing: P.playing, driving: P.driving, speed: P.speed, dir: P.dir, fx: OPT.fx, stopAt: P.stopAt, marks: REC ? REC.marks.length : 0, armed: armed };
+        return { open: isOpen(), key: REC && REC.key, pos: P.pos, n: REC ? REC.n : 0, playing: P.playing, driving: P.driving, speed: P.speed, dir: P.dir, fx: OPT.fx, stopAt: P.stopAt, marks: REC ? REC.marks.length : 0, armed: armed, seeking: !!P.ff };
     };
+    /* the transport without the window, for scripts and developers/tests/replaystudio.js */
+    RS.drive = { play: play, pause: pause, seek: seekTo, step: stepPacket, select: select };
 })();

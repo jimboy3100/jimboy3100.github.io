@@ -27315,8 +27315,9 @@ function thelegendmodproject() {
             //
             pauseVideos();
             /* a practice arena life (ogario/modules/practice.js) is not a game: no session stats,
-             * personal bests or match history for it */
-            var _lmPracticeLife = !!(window.LMPractice && window.LMPractice.on);
+             * personal bests or match history for it. Nor is a death in a replay (Replay Studio
+             * handles it again at every seek and every step played backwards) */
+            var _lmPracticeLife = !!(window.LMPractice && window.LMPractice.on) || !!window._lmEvReplayOn;
             /* session summary: this life's best mass and time alive */
             if (!_lmPracticeLife) try { _lmSessionStats({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 }); } catch (e) { }
             if (defaultmapsettings.personalBests && !_lmPracticeLife) {
@@ -41088,8 +41089,10 @@ function thelegendmodproject() {
             }
         },
         replayfunctions() {
-            /* a live server was joined: Replay Studio stops by itself (its replay is gone) */
+            /* a live server was joined: the replay is left (Replay Studio ends its session at once:
+             * the recording's skins go before the live cells come, replayStop 'left') */
             if (this.ws && !this.ws.includes("replay")) {
+                if (window.LMReplayStudio && typeof window.LMReplayStudio.dispose === 'function') { try { window.LMReplayStudio.dispose('left'); } catch (e) { } }
                 if (window._lmEvReplayOn && typeof _lmEvReplay === 'function') _lmEvReplay(false, 'left');
                 window._lmReplayPaused = false;
             }
@@ -85994,6 +85997,8 @@ function lmReplayResetWorld() {
     legendmod.playerCellIDs = []
     if (legendmod._playerCellIDSet) legendmod._playerCellIDSet.clear();
     legendmod.playerCellsMulti = []
+    /* the cells come again from the first packet: none is known any more (as a ClearAll does) */
+    if (legendmod._lmCellIdentity) legendmod._lmCellIdentity.clear();
 }
 window.lmReplayResetWorld = lmReplayResetWorld;
 /* LMEvents 'replayStart' / 'replayStop': once per replay (seeking restarts the playback

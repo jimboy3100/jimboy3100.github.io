@@ -13,6 +13,19 @@
   var RS = window.LMReplayStudio;
   if (!RS || !RS.run) return { fail: ['module did not load'] };
   if (window.legendmod.play) { info.skipped = 'playing'; return { fail: fail, info: info }; }
+  /* what the stats modules see (Analytics, Death recap, macros go by the context) and the replay edges */
+  var ctxSeen = [], edges = [], ctxOn = function (n) { return function (d) { ctxSeen.push(n + ':' + d.context); }; };
+  ['spawn', 'death', 'massUpdate', 'kill', 'leaderboard', 'merge', 'split'].forEach(function (n) { LMEvents.on(n, ctxOn(n)); });
+  LMEvents.on('replayStart', function () { edges.push('start'); });
+  LMEvents.on('replayStop', function (d) { edges.push('stop:' + d.reason); });
+  /* the world as the packets left it: cells (target position and size), own cells, border, leaderboard */
+  var worldSig = function () {
+    var L = window.legendmod, r = function (v) { return Math.round(+v || 0); }, out = [];
+    Object.keys(L.indexedCells || {}).forEach(function (id) { var c = L.indexedCells[id]; if (c && !c.removed) out.push(id + ':' + r(c.targetX) + ',' + r(c.targetY) + ',' + r(c.targetSize) + (c.isFood ? 'f' : '') + (c.isVirus ? 'v' : '')); });
+    out.sort();
+    return JSON.stringify({ cells: out, own: (L.playerCellIDs || []).slice().sort(), border: [L.mapMinX, L.mapMinY, L.mapMaxX, L.mapMaxY], lb: (L.leaderboard || []).map(function (e) { return e && e.nick; }) });
+  };
+  var settle = async function (pos) { for (var i = 0; i < 80 && (RS.state().seeking || (pos != null && RS.state().pos !== pos)); i++) await sleep(50); };
   /* the play button: its title, and the play sign (in Greek the Player tab has the same title) */
   var playB = Array.prototype.filter.call(document.querySelectorAll('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('modules.replaystudio.play')) + '"]'), function (b) { return b.textContent === '▶'; })[0];
   if (!playB) return { fail: ['no play button'] };
@@ -73,20 +86,52 @@
     if (sampled && colored) fail.push('greyscale replay: ' + colored + ' of ' + sampled + ' cells still coloured');
     setFx(fxBefore);
   }
-  // backwards: the reverse play button steps back through the packets
+  // backwards: the reverse play button steps back (each step is rebuilt: the position runs up to it
+  // while a step is rebuilt, so only the positions shown between rebuilds count)
   var mid = RS.state().pos;
   var revB = Array.prototype.filter.call(document.querySelectorAll('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('pkg.rp.playRev')) + '"]'), function (b) { return b.textContent === '◀'; })[0];
   if (!revB) fail.push('no play backwards button');
   else {
     revB.click();
     var p1 = mid, back = 0;
-    for (w = 0; w < 12; w++) { await sleep(100); var pw = RS.state().pos; if (pw < p1) back++; if (pw > p1) back = -100; p1 = pw; }
+    for (w = 0; w < 12; w++) { await sleep(100); if (RS.state().seeking) continue; var pw = RS.state().pos; if (pw < p1) back++; if (pw > p1) back = -100; p1 = pw; }
     st = RS.state();
     info.backwards = { from: mid, to: st.pos, dir: st.dir, steps: back };
     if (!(st.dir === -1 && st.playing && st.pos < mid && back > 0)) fail.push('backwards playback did not step back: ' + JSON.stringify(info.backwards));
     RS.command('pause');
     if (RS.state().playing) fail.push('still playing backwards after pause');
+    /* the world reached by playing backwards is the one the packets up to there make */
+    await settle();
+    var q = RS.state().pos, sq = worldSig();
+    RS.command('seek', 25);
+    await settle(Math.min(q + 25, RS.state().n));
+    var tb = performance.now();
+    RS.command('seek', q - RS.state().pos);
+    await settle(q);
+    info.rebuild = { pos: q, ms: Math.round(performance.now() - tb) };
+    var sr = worldSig();
+    info.backwardsWorld = { cells: JSON.parse(sq).cells.length, rebuilt: JSON.parse(sr).cells.length, same: sq === sr };
+    if (RS.state().pos !== q || sq !== sr) {
+      var a1 = JSON.parse(sq).cells, b1 = JSON.parse(sr).cells;
+      fail.push('world after playing backwards differs from the packets up to ' + q + ': ' + a1.filter(function (x) { return b1.indexOf(x) === -1; }).length + ' extra/changed, ' + b1.filter(function (x) { return a1.indexOf(x) === -1; }).length + ' missing');
+    }
   }
+  /* the end: paused there, still a replay; stepping and seeking after it are replay too */
+  RS.command('seek', RS.state().n - 5 - RS.state().pos);
+  await settle(RS.state().n - 5);
+  if (RS.state().playing) RS.command('pause');
+  playB.click();
+  for (w = 0; w < 40 && (RS.state().playing || RS.state().pos < RS.state().n); w++) await sleep(100);
+  st = RS.state();
+  info.end = { pos: st.pos, n: st.n, playing: st.playing, ctx: window._lmEvReplayOn, paused: window._lmReplayPaused };
+  if (st.playing || st.pos !== st.n || !st.driving) fail.push('end not reached or not paused there: ' + JSON.stringify(info.end));
+  if (window._lmEvReplayOn !== true) fail.push('the end of the replay counts as live (_lmEvReplayOn ' + window._lmEvReplayOn + ')');
+  document.querySelector('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('modules.replaystudio.stepB')) + '"]').click();
+  await settle(st.n - 1);
+  RS.command('seek', -10);
+  await settle(st.n - 11);
+  await sleep(600);
+  if (window._lmEvReplayOn !== true) fail.push('stepping / seeking after the end counts as live');
   // Death recap links (lmReplayWatchAt) play from a packet in the Studio
   if (window.lmReplayWatchAt(key, 10)) {
     for (w = 0; w < 30 && !(RS.state().playing && RS.state().pos >= 10 && RS.state().dir === 1); w++) await sleep(100);
@@ -98,6 +143,13 @@
   RS.run('close');
   await sleep(100);
   if (RS.state().open || RS.state().driving) fail.push('close did not stop the Studio');
+  /* closed, the stopped replay is still on screen: still a replay until a server is joined */
+  if (window._lmEvReplayOn !== true || window._lmReplayPaused) fail.push('after close: replay context ' + window._lmEvReplayOn + ', paused flag ' + window._lmReplayPaused);
+  info.contexts = ctxSeen.length;
+  info.edges = edges.join(' ');
+  var live = ctxSeen.filter(function (x) { return /:live$/.test(x); });
+  if (live.length) fail.push('live events during the replay: ' + live.slice(0, 5).join(' '));
+  if (edges.indexOf('stop:end') !== -1 || edges.filter(function (x) { return x === 'start'; }).length > 1) fail.push('replay events: ' + info.edges);
   window.playReplayLM(key);
   for (w = 0; w < 30 && !(RS.state().open && RS.state().driving); w++) await sleep(100);
   st = RS.state();
