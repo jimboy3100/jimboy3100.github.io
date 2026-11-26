@@ -454,6 +454,8 @@
         });
     }
     var catalogue = null, catalogueState = '';
+    /* the player opens the catalogue again: a failed load is tried once more */
+    function retryCatalogue() { if (catalogueState === 'fail') catalogueState = ''; }
     function loadCatalogue() {
         if (catalogue) return Promise.resolve(catalogue);
         catalogueState = 'loading';
@@ -707,7 +709,9 @@
         body.appendChild(el('div', 'lm-us-note', tx('catNote')));
         if (!catalogue) {
             body.appendChild(el('div', 'lm-us-note', catalogueState === 'fail' ? tx('catFail') : tx('catLoading')));
-            if (catalogueState !== 'loading') loadCatalogue().then(refresh, refresh);
+            /* one try per opening: a failed load drew this again and loaded again at once, without end
+             * (about 90 requests a second while offline, also with the panel closed) */
+            if (!catalogueState) loadCatalogue().then(refresh, refresh);
             return;
         }
         var have = {};
@@ -862,7 +866,7 @@
         panel.addEventListener('click', function (e) {
             var t = e.target;
             var vb = t.closest ? t.closest('#lm-us-bar button') : null;
-            if (vb) { e.preventDefault(); view = vb.getAttribute('data-view'); settingsFor = 0; render(); return; }
+            if (vb) { e.preventDefault(); view = vb.getAttribute('data-view'); settingsFor = 0; retryCatalogue(); render(); return; }
             var a = t.closest ? t.closest('#lm-us-ext [data-act], #lm-us-info [data-act]') : null;
             if (a && !a.disabled) { e.preventDefault(); onAct(a.getAttribute('data-act'), +a.getAttribute('data-n') || 0, a.getAttribute('data-id')); }
         });
@@ -894,6 +898,7 @@
         /* the list of slots unless a view is asked for */
         view = v === 'catalogue' || v === 'editor' ? v : 'plugins';
         settingsFor = 0;
+        retryCatalogue();
         try { if (window.application && typeof window.application.showMenu === 'function') window.application.showMenu(); } catch (e) { }
         /* the click below is this call's own: it keeps the view asked for */
         opening = true;
