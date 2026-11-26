@@ -147,5 +147,59 @@ function boot() {
   });
 }
 
+/* 7. the Theme tab auto-save (its real handler from ogario.v4.js; the colour pickers the preview
+ * sets fire it, here from Settings.setTheme): a preview and its Revert never write the stored
+ * theme, a player's change just before the preview is still saved, later input saves again */
+{
+  const b = boot(), d = b.ctx.defaultSettings, St = b.ctx.Settings;
+  const core = main.replace(/\r\n/g, '\n');
+  const i = core.indexOf('            var _lmThemeSaveT = null;'), j = core.indexOf("$('#theme').append('<div class=\\\"restore-settings", i);
+  check('Theme tab auto-save found in ogario.v4.js', i > 0 && j > i);
+  let input = null;
+  const st = (f, ms) => { const t = { f, at: b.clock.now + ms }; b.clock.timers.push(t); return t; };
+  const ct = t => { if (t && typeof t === 'object') t.dead = true; };
+  vm.runInContext('(function ($, document, Settings, setTimeout, clearTimeout) {\n' + core.slice(i, j) + '\n})', b.ctx)(
+    () => ({ on(ev, sel, f) { if (/changeColor/.test(ev)) input = f; } }), {}, St, st, ct);
+  check('handler and flush installed', typeof input === 'function' && typeof St.lmFlushThemeSave === 'function');
+  const quietSeen = [];
+  St.setTheme = function () { quietSeen.push(!!St._lmThemeQuiet); input(); };
+  /* a player who never saved a theme (nothing stored) */
+  b.TW.preview({ theme: { bgColor: '#010203' } }, 'probe');
+  b.advance(b.clock.now + 1000);
+  check('preview: nothing stored', b.m.get('ogarioThemeSettings') === undefined && b.TW.previewing());
+  b.TW.revert();
+  b.advance(b.clock.now + 1000);
+  check('Revert: still nothing stored (no auto-save of the reverted theme)', b.m.get('ogarioThemeSettings') === undefined && !b.TW.previewing());
+  check('the preview and Revert set the controls quietly, the flag is cleared after', quietSeen.length === 2 && quietSeen.every(Boolean) && !St._lmThemeQuiet);
+  /* the player changes a colour, then previews within 600 ms */
+  d.mainColor = '#abcdef';
+  input();
+  b.advance(b.clock.now + 200);
+  b.TW.preview({ theme: { bgColor: '#010203' } }, 'probe');
+  check('a pending player change is saved before the preview', JSON.parse(b.m.get('ogarioThemeSettings') || '{}').mainColor === '#abcdef');
+  b.TW.revert();
+  b.advance(b.clock.now + 1000);
+  const kept = JSON.parse(b.m.get('ogarioThemeSettings'));
+  check('after Revert the player change is what is stored and shown', kept.mainColor === '#abcdef' && d.mainColor === '#abcdef' && kept.bgColor !== '#010203');
+  d.mainColor = '#123123';
+  input();
+  b.advance(b.clock.now + 700);
+  check('player input after a preview saves again', JSON.parse(b.m.get('ogarioThemeSettings')).mainColor === '#123123');
+}
+
+/* 8. a short preview on a slow device: applying the theme takes longer than the preview time;
+ * it is still shown for that time from when it is applied */
+{
+  const b = boot(), d = b.ctx.defaultSettings, base = d.bgColor;
+  b.ctx.Settings.setTheme = function () { b.clock.now += 1000; };
+  check('slow apply: preview applied', b.TW.preview({ theme: { bgColor: '#010203' } }, 'probe', 400) === true && d.bgColor === '#010203');
+  check('slow apply: still previewing right after', b.TW.previewing());
+  b.ctx.Settings.setTheme = function () { };
+  b.advance(b.clock.now + 300);
+  check('slow apply: still previewing 300 ms later', b.TW.previewing() && d.bgColor === '#010203');
+  b.advance(b.clock.now + 400);
+  check('slow apply: reverted by itself after its time', !b.TW.previewing() && d.bgColor === base);
+}
+
 console.log(fail ? fail + ' failed' : 'all theme preview checks passed');
 process.exit(fail ? 1 : 0);

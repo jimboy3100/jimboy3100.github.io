@@ -112,7 +112,10 @@
     // the automatic revert, with a short time
     TW.preview({ theme: { bgColor: '#010203' } }, 'probe', 400);
     if (defaultSettings.bgColor !== '#010203') fail.push('scripted preview not applied');
+    if (!TW.previewing()) fail.push('scripted preview ended before it was shown');
     await wait(1000);
+    /* its timer checks 4 times a second; a slow machine runs it later (bounded) */
+    for (i = 0; i < 40 && TW.previewing(); i++) await wait(200);
     if (TW.previewing()) fail.push('preview did not revert by itself');
     if (JSON.stringify(defaultSettings) !== themeBefore) fail.push('automatic revert did not restore the theme exactly');
     if (JSON.stringify([defaultmapsettings.messageSound, defaultmapsettings.commandSound, defaultmapsettings.virusSoundurl]) !== soundsBefore) fail.push('sounds changed');

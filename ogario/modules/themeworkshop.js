@@ -550,6 +550,14 @@
         var d = T(), St = W.Settings, changed = [];
         Object.keys(target).forEach(function (k) { if (has(d, k) && !same(d[k], target[k])) changed.push(k); });
         if (!changed.length) return changed;
+        /* the colour pickers set here fire the Theme tab's change events: they are not the
+         * player's input, so they start no auto-save (a preview and its Revert never save) */
+        var quiet = St._lmThemeQuiet;
+        St._lmThemeQuiet = true;
+        try { setValuesNow(target, exact, d, St, changed); } finally { St._lmThemeQuiet = quiet; }
+        return changed;
+    }
+    function setValuesNow(target, exact, d, St, changed) {
         changed.forEach(function (k) { try { setThemeOpt(k, target[k]); } catch (e) { d[k] = target[k]; } });
         var put = function (keys) {
             keys.forEach(function (k) {
@@ -563,7 +571,6 @@
         ['setGameFilter', 'setFoodColor', 'setIndicatorColor'].forEach(function (f) { try { if (typeof St[f] === 'function') St[f](); } catch (e) { } });
         if (changed.indexOf('chatPos') >= 0) { try { St.setChatPosition(); } catch (e) { } }
         if (exact) put(Object.keys(target));
-        return changed;
     }
     function setSounds(map) {
         var s = S(), app = W.application, $ = jq(), changed = [];
@@ -596,12 +603,18 @@
         if (preview) endPreview(false, true);
         guardSave();
         var St = W.Settings;
+        /* a Theme tab change the player made just before is saved now: the preview's own control
+         * changes do not save, so its pending auto-save would otherwise be lost */
+        if (typeof St.lmFlushThemeSave === 'function') { try { St.lmFlushThemeSave(); } catch (e) { } }
         var snap = snapshot();
-        preview = { snap: snap, name: name || '', deadline: Date.now() + (ms > 0 ? ms : PREVIEW_MS), timer: null, sounds: [] };
+        preview = { snap: snap, name: name || '', deadline: 0, timer: null, sounds: [] };
         /* the theme sets the minimap width: the enlarged minimap (hotkey) ends */
         if (St._lmMiniBigOrig) St._lmMiniBigOrig = 0;
         setValues(target || effectiveTheme(body, T()), false);
         preview.sounds = setSounds(body.sounds);
+        /* the time runs from when the preview is shown: applying a whole theme can take longer than
+         * a short preview (a slow device), which then ended before it was ever seen */
+        preview.deadline = Date.now() + (ms > 0 ? ms : PREVIEW_MS);
         /* what the preview set: a value that differs from it later is a newer change (it is kept) */
         preview.applied = Object.assign({}, T());
         preview.appliedS = snapshot().s;

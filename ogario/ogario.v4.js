@@ -21597,9 +21597,18 @@ function thelegendmodproject() {
              * that other code changes for itself are never written. */
             var _lmThemeSaveT = null;
             $(document).on('changeColor.colorpicker input change', '#theme input, #theme select, #theme .input-group', function () {
+                /* the Theme workshop setting the controls for a preview or its Revert is not input */
+                if (Settings._lmThemeQuiet) return;
                 clearTimeout(_lmThemeSaveT);
-                _lmThemeSaveT = setTimeout(function () { Settings.saveThemeSettings(); }, 600);
+                _lmThemeSaveT = setTimeout(function () { _lmThemeSaveT = null; Settings.saveThemeSettings(); }, 600);
             });
+            /* a pending auto-save is done now (the Theme workshop, before a preview changes the controls) */
+            Settings.lmFlushThemeSave = function () {
+                if (!_lmThemeSaveT) return;
+                clearTimeout(_lmThemeSaveT);
+                _lmThemeSaveT = null;
+                Settings.saveThemeSettings();
+            };
             $('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + textLanguage.restoreThemeSettings + '</a></div>'),
                 $(document).on('click', '#theme .restore-settings a', function (e) {
                     e.preventDefault();
