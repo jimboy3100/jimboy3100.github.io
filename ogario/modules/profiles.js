@@ -158,9 +158,11 @@
     var PART_FNS = { s: cleanSettings, t: cleanTheme, h: cleanHotkeys, m: cleanMobile };
     /* The multibox ring colours are theme settings now (Theme > Basic theming); the gameplay
      * settings only keep a copy of them. A set saved before has them in its gameplay part: a theme
-     * part without them takes them from there, so the set keeps its colours. The copy itself is
-     * left out (it would show as a second change and be put back by the theme). Returns true when
-     * the gameplay part had nothing else (it is then dropped). */
+     * part without them takes them from there, so the set keeps its colours; a set without a theme
+     * part (gameplay only) gets a theme part of just these colours. The copy itself is left out (it
+     * would show as a second change and be put back by the theme). A set captured now never has
+     * the copy without its theme (captureCurrent leaves it out). Returns true when the gameplay
+     * part had nothing else (it is then dropped). */
     var RING_KEYS = ['mbRingColorP1', 'mbRingColorP2'];
     function moveRingColors(out) {
         if (!out.s) return false;
@@ -168,21 +170,38 @@
             if (!own.call(out.s, k)) return;
             var v = themeValue(k, out.s[k]);
             delete out.s[k];
-            if (v !== undefined && out.t && !own.call(out.t, k)) out.t[k] = v;
+            if (v === undefined) return;
+            if (!out.t) out.t = {};
+            if (!own.call(out.t, k)) out.t[k] = v;
         });
         if (Object.keys(out.s).length) return false;
         delete out.s;
         return true;
+    }
+    /* only ring colours: the theme part an old gameplay-only set gets (moveRingColors) */
+    function ringPatch(t) {
+        if (!isObj(t)) return false;
+        var k = Object.keys(t);
+        return k.length > 0 && k.every(function (x) { return RING_KEYS.indexOf(x) >= 0; });
+    }
+    /* A set saved while "Video skins volume" (volVideo) existed: the core's own migration folds
+     * it into "Video skin sound level" (on a copy) before the check drops the old key, so an old
+     * set with the video skins muted stays muted. */
+    function foldLegacySettings(s) {
+        if (!isObj(s) || !own.call(s, 'volVideo') || typeof window.lmFoldVideoVolume !== 'function') return s;
+        var c = Object.assign({}, s);
+        try { window.lmFoldVideoVolume(c); } catch (e) { return s; }
+        return c;
     }
     function cleanBundle(b) {
         if (!isObj(b)) return null;
         var out = {}, any = false;
         for (var p in PART_FNS) {
             if (!own.call(PART_FNS, p)) continue;
-            var c = PART_FNS[p](b[p]);
+            var c = PART_FNS[p](p === 's' ? foldLegacySettings(b[p]) : b[p]);
             if (c) { out[p] = c; any = true; }
         }
-        if (moveRingColors(out)) any = !!(out.t || out.h || out.m);
+        if (moveRingColors(out) || out.t) any = !!(out.s || out.t || out.h || out.m);
         if (out.h) { var k = cleanKnown(b.k); if (k) out.k = k; }
         /* phone preferences that did not exist (Undo / backups): restoring them removes the store */
         if (isAbsent(b.m)) { out.m = absentPart(); any = true; }
@@ -599,6 +618,12 @@
         } else {
             sData = liveS;
         }
+        /* without the theme the gameplay copy of the ring colours stays out (it would be taken
+         * for the colours of a set saved before they moved to the theme) */
+        if ((parts.t === false || !T()) && isObj(sData) && RING_KEYS.some(function (k) { return own.call(sData, k); })) {
+            sData = Object.assign({}, sData);
+            RING_KEYS.forEach(function (k) { delete sData[k]; });
+        }
         var data = { s: sData };
         if (parts.t !== false && T()) {
             var t = Object.assign({}, T());
@@ -791,7 +816,8 @@
          * Profile-apply still merges, so switching profiles preserves new settings. */
         var isRestore = opts.reason === 'restore' || opts.reason === 'undo';
         if (c.s) entries.push({ key: 'ogarioSettings', text: JSON.stringify(isRestore ? Object.assign({}, data.s) : Object.assign({}, cur.s, data.s)) });
-        if (c.t) entries.push({ key: 'ogarioThemeSettings', text: JSON.stringify(isRestore ? Object.assign({}, data.t) : Object.assign({}, cur.t, data.t)) });
+        /* the ring colours of an old gameplay set are a patch, never a whole theme */
+        if (c.t) entries.push({ key: 'ogarioThemeSettings', text: JSON.stringify(isRestore && !ringPatch(data.t) ? Object.assign({}, data.t) : Object.assign({}, cur.t, data.t)) });
         if (c.h) entries.push({ key: 'ogarioHotkeys', text: JSON.stringify(data.h) });
         var curM = isObj(cur.m) && !isAbsent(cur.m) ? cur.m : {};
         if (c.m) entries.push({ key: 'lm-mobile-prefs', text: isAbsent(data.m) ? null : JSON.stringify(isRestore ? Object.assign({}, data.m) : Object.assign({}, curM, data.m)) });

@@ -190,5 +190,46 @@ check('profiles: the gameplay copy follows', PS.mbRingColorP1 === '#556677');
 pc.LMProfiles.applySet({ t: { mbRingColorP2: '#778899' } }, 'theme');
 check('profiles: a theme part with a ring colour is applied', PD.mbRingColorP2 === '#778899' && PS.mbRingColorP2 === '#778899');
 
+// ── a gameplay-only set saved before the move (no theme part): its colours become a theme patch
+const gpOld = P.cleanBundle({ s: { mbRingColorP1: '#123456', showMass: true } });
+check('profiles: an old gameplay-only set keeps its ring colour (as a theme patch of that key only)', gpOld && gpOld.s && gpOld.s.showMass === true && gpOld.t && gpOld.t.mbRingColorP1 === '#123456' && Object.keys(gpOld.t).length === 1);
+const ringOnly = P.cleanBundle({ s: { mbRingColorP1: '#123456', mbRingColorP2: '#654321' } });
+check('profiles: an old set of only ring colours is not dropped', ringOnly && !ringOnly.s && ringOnly.t && ringOnly.t.mbRingColorP1 === '#123456' && ringOnly.t.mbRingColorP2 === '#654321');
+check('profiles: an unusable old ring colour gives no theme patch', !P.cleanBundle({ s: { mbRingColorP1: 'red;}' } }) && !P.cleanBundle({ s: { mbRingColorP1: 'url(x)', showMass: true } }).t);
+check('profiles: cleaning twice changes nothing', JSON.stringify(P.cleanBundle(gpOld)) === JSON.stringify(gpOld));
+PD.mbRingColorP1 = '#0b0b0b'; PS.mbRingColorP1 = '#0b0b0b';
+const gpNew = P.captureCurrent({ t: false, h: false, m: false, g: false, hl: false });
+check('profiles: a new gameplay-only set has no ring colours (not in its gameplay part, no theme patch)', gpNew && gpNew.s && !('mbRingColorP1' in gpNew.s) && !gpNew.t);
+check('profiles: capturing it leaves the live gameplay copy alone', PS.mbRingColorP1 === '#0b0b0b');
+const bgBefore = PD.bgColor;
+pc.LMProfiles.applySet({ s: { mbRingColorP1: '#2a2b2c', showMass: true } }, 'old gameplay-only');
+check('profiles: applying an old gameplay-only set sets the ring colour, the rest of the theme stays', PD.mbRingColorP1 === '#2a2b2c' && PS.mbRingColorP1 === '#2a2b2c' && PD.bgColor === bgBefore);
+const themeStored = JSON.parse(pc.localStorage.getItem('ogarioThemeSettings'));
+check('profiles: the saved theme keeps its other values', themeStored.mbRingColorP1 === '#2a2b2c' && themeStored.bgColor === bgBefore && Object.keys(themeStored).length > 20);
+/* an old Undo with only a ring colour in its gameplay part: the restore merges the patch
+ * (a restore otherwise writes its theme part as the whole theme) */
+pc.LMProfiles.undo(); /* uses up the in-memory Undo of the apply above */
+pc.localStorage.setItem('lmSettingsProfilesUndo', JSON.stringify({ t: Date.now(), name: 'x', data: { s: Object.assign({}, PS, { mbRingColorP1: '#3c3d3e' }) } }));
+const undoOk = pc.LMProfiles.undo();
+const themeAfterUndo = JSON.parse(pc.localStorage.getItem('ogarioThemeSettings'));
+check('profiles: the Undo of an old gameplay set brings its ring colour back and keeps the rest of the saved theme', undoOk && PD.mbRingColorP1 === '#3c3d3e' && themeAfterUndo.bgColor === bgBefore && Object.keys(themeAfterUndo).length > 20);
+
+// ── "Video skins volume" (volVideo, removed): an old set keeps its loudness (the core's own fold)
+const vv = (s) => { const b = P.cleanBundle({ s: s }); return b && b.s ? b.s.videoSkinSoundLevel : undefined; };
+check('profiles: old set with video skins muted (volVideo 0) stays muted', vv({ videoSkinSoundLevel: 0.7, volVideo: 0 }) === 0);
+check('profiles: old set at half (volVideo 0.5) folds into the level', Math.abs(vv({ videoSkinSoundLevel: 0.8, volVideo: 0.5 }) - 0.4) < 1e-9);
+check('profiles: old set at full (volVideo 1) keeps its level', vv({ videoSkinSoundLevel: 0.7, volVideo: 1 }) === 0.7);
+check('profiles: old set with only volVideo 0 (no level saved) is muted', vv({ volVideo: 0 }) === 0);
+check('profiles: the old key itself is left out; the input object is not changed', (function () { const s = { videoSkinSoundLevel: 0.7, volVideo: 0 }; const b = P.cleanBundle({ s: s }); return !('volVideo' in b.s) && s.volVideo === 0 && s.videoSkinSoundLevel === 0.7; })());
+check('profiles: a set without volVideo is unchanged', vv({ videoSkinSoundLevel: 0.3 }) === 0.3);
+check('profiles: stored profiles and backups fold too', (function () {
+  const pr = P.cleanProfiles([{ id: 'a1', name: 'old', data: { s: { videoSkinSoundLevel: 0.6, volVideo: 0 } } }]);
+  const bk = P.cleanBackups([{ t: 5, reason: 'change', data: { s: { videoSkinSoundLevel: 0.6, volVideo: 0 }, t: { bgColor: '#000000' } } }]);
+  return pr.length === 1 && pr[0].data.s.videoSkinSoundLevel === 0 && bk.length === 1 && bk[0].data.s.videoSkinSoundLevel === 0;
+})());
+PS.videoSkinSoundLevel = 0.9;
+pc.LMProfiles.applySet({ s: { videoSkinSoundLevel: 0.9, volVideo: 0 } }, 'old muted');
+check('profiles: applying an old muted set mutes the video skins', PS.videoSkinSoundLevel === 0);
+
 console.log(fail ? fail + ' multibox ring colour check(s) FAILED' : 'all multibox ring colour checks passed');
 process.exit(fail ? 1 : 0);
