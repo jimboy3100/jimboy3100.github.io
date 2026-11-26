@@ -299,7 +299,7 @@ class Spect {
         /* a kicked/dropped unit kept the focus: the main cell and camera stayed frozen for
          * the whole reconnect backoff (and no menu when the main player was dead) */
         if (this.active) this.terminate();
-        else if (window.multiboxPlayerEnabled === this.number && legendmod.play) window.multiboxPlayerEnabled = null;
+        else if (window.multiboxPlayerEnabled === this.number && legendmod.play) lmSetMbUnit(0);
         this.flushCellsData()
         this.resetConnectionState()
         console.log('closed')
@@ -1130,7 +1130,7 @@ class Spect {
                 this.closeConnection()
                 var closedIndex = spects.indexOf(this)
                 if (closedIndex !== -1) spects.splice(closedIndex, 1)
-                if (window.multiboxPlayerEnabled === this.number) window.multiboxPlayerEnabled = null
+                if (window.multiboxPlayerEnabled === this.number) lmSetMbUnit(0)
                 if (this.player && !spects.some(function (s) { return s && s.player; })) legendmod.multiBoxPlayerExists = false
 
                 break;
@@ -1749,15 +1749,16 @@ class Spect {
         if (window.multiboxPlayerEnabled === this.number) {
             /* no other living unit: the focus stayed on this dead one and spectating then
              * followed nobody (the main camera ignores its view while a unit has focus) */
-            window.multiboxPlayerEnabled = null;
+            var nextUnit = 0;
             if (!legendmod.play) {
                 for (var s = 0; s < spects.length; s++) {
                     if (spects[s] && spects[s] !== this && spects[s].active) {
-                        window.multiboxPlayerEnabled = spects[s].number;
+                        nextUnit = spects[s].number;
                         break;
                     }
                 }
             }
+            lmSetMbUnit(nextUnit);
         }
 
         // Check if any unit is still alive (main player or other spects)
@@ -2163,20 +2164,21 @@ class Spect {
                 /* first spawn of this unit, a spawn the player asked for (Tab), or the main
                  * cell is dead: focus it. A background reconnect + auto-respawn used to take
                  * the focus mid-fight and freeze the main cell. */
-                if (!this._lmSpawnedOnce || this._lmFocusOnSpawn || !legendmod.play) window.multiboxPlayerEnabled = this.number;
+                if (!this._lmSpawnedOnce || this._lmFocusOnSpawn || !legendmod.play) lmSetMbUnit(this.number);
                 this._lmSpawnedOnce = true;
                 this._lmFocusOnSpawn = false;
             }
             this.calculatePlayerMassAndPosition(ownCells);
         } else if (window.multiboxPlayerEnabled === this.number &&
             !(this._lmWantFocusAt && Date.now() - this._lmWantFocusAt < 25000)) {
-            window.multiboxPlayerEnabled = null;
+            let nextUnit = 0;
             for (let i = 0; i < spects.length; i++) {
                 if (spects[i] && spects[i] !== this && spects[i].active) {
-                    window.multiboxPlayerEnabled = spects[i].number;
+                    nextUnit = spects[i].number;
                     break;
                 }
             }
+            lmSetMbUnit(nextUnit);
         }
     }
 

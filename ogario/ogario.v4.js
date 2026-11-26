@@ -217,6 +217,16 @@ function getActiveSpect(unitNumber) {
     }
     return null;
 }
+/* The one place that changes the multibox unit you control (window.multiboxPlayerEnabled:
+ * a unit number, null = the main player). LMEvents 'multiboxSwap' is sent from here, once per
+ * real change, so every path reports it: hotkeys, a unit dying, focus at spawn, reconnects. */
+function lmSetMbUnit(unit) {
+    var prev = +window.multiboxPlayerEnabled || 0;
+    unit = +unit || 0;
+    window.multiboxPlayerEnabled = unit || null;
+    if (unit !== prev && window.LMEvents._has('multiboxSwap')) window.LMEvents.emit('multiboxSwap', { unit: unit, previous: prev });
+}
+window.lmSetMbUnit = lmSetMbUnit;
 window.OgVer = 3.696;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
@@ -23333,18 +23343,16 @@ function thelegendmodproject() {
         },
         multiboxchange() {
             this.hideMenu();
-            var _lmEvMbPrev = window.multiboxPlayerEnabled || 0;
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
                 window.fullSpectator = false;
                 LM.flushSpecsData();
                 if (typeof window.addBox === "function") window.addBox();
                 else if (typeof addBox === "function") addBox();
-                window.multiboxPlayerEnabled = 1;
+                lmSetMbUnit(1);
                 window.multiboxPlayerEnabledSaved = null;
                 if (!legendmod.play) {
                     play();
                 }
-                this._lmEvMbSwap(_lmEvMbPrev);
                 return;
             }
 
@@ -23360,13 +23368,13 @@ function thelegendmodproject() {
             var nextIdx = (currentIdx + 1) % totalUnits;
 
             if (nextIdx === 0) {
-                window.multiboxPlayerEnabled = null;
+                lmSetMbUnit(0);
                 if (!legendmod.play) {
                     play();
                 }
             } else {
                 var spectIdx = nextIdx - 1;
-                window.multiboxPlayerEnabled = (spects[spectIdx] && spects[spectIdx].number) || nextIdx;
+                lmSetMbUnit((spects[spectIdx] && spects[spectIdx].number) || nextIdx);
                 if (spects[spectIdx]) {
                     if (!spects[spectIdx].active) {
                         spects[spectIdx].respawn();
@@ -23384,22 +23392,19 @@ function thelegendmodproject() {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
-            this._lmEvMbSwap(_lmEvMbPrev);
         },
         multiboxback() {
             this.hideMenu();
-            var _lmEvMbPrev = window.multiboxPlayerEnabled || 0;
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
                 window.fullSpectator = false;
                 LM.flushSpecsData();
                 if (typeof window.addBox === "function") window.addBox();
                 else if (typeof addBox === "function") addBox();
-                window.multiboxPlayerEnabled = 1;
+                lmSetMbUnit(1);
                 window.multiboxPlayerEnabledSaved = null;
                 if (!legendmod.play) {
                     play();
                 }
-                this._lmEvMbSwap(_lmEvMbPrev);
                 return;
             }
 
@@ -23414,13 +23419,13 @@ function thelegendmodproject() {
             var prevIdx = (currentIdx - 1 + totalUnits) % totalUnits;
 
             if (prevIdx === 0) {
-                window.multiboxPlayerEnabled = null;
+                lmSetMbUnit(0);
                 if (!legendmod.play) {
                     play();
                 }
             } else {
                 var spectIdx2 = prevIdx - 1;
-                window.multiboxPlayerEnabled = (spects[spectIdx2] && spects[spectIdx2].number) || prevIdx;
+                lmSetMbUnit((spects[spectIdx2] && spects[spectIdx2].number) || prevIdx);
                 if (spects[spectIdx2]) {
                     if (!spects[spectIdx2].active) {
                         spects[spectIdx2].respawn();
@@ -23438,14 +23443,6 @@ function thelegendmodproject() {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
-            this._lmEvMbSwap(_lmEvMbPrev);
-        },
-        /* LMEvents 'multiboxSwap': the unit you control changed (0 = the main player);
-         * nothing is built while nobody listens */
-        _lmEvMbSwap(prev) {
-            if (!window.LMEvents._has('multiboxSwap')) return;
-            var unit = window.multiboxPlayerEnabled || 0;
-            if (unit !== prev) window.LMEvents.emit('multiboxSwap', { unit: +unit || 0, previous: +prev || 0 });
         },
         multiboxFollowMouse() {
             if (!window.multiboxFollowMouse) {
@@ -27767,9 +27764,8 @@ function thelegendmodproject() {
                 for (var _i = 0; _i < spects.length; _i++) {
                     if (spects[_i] && spects[_i].active) {
                         /* multiboxPlayerEnabled is the unit number, not index + 1 (units can be spliced) */
-                        window.multiboxPlayerEnabled = spects[_i].number || (_i + 1);
+                        lmSetMbUnit(spects[_i].number || (_i + 1));
                         console.log('[MB] Main player died, auto-switched to spect ' + window.multiboxPlayerEnabled);
-                        if (typeof this._lmEvMbSwap === 'function') this._lmEvMbSwap(0);
 
                         // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
                         legendmod.playerCells = lmIdxClear(legendmod.playerCells, '_playerIdx');
@@ -42002,7 +41998,7 @@ function thelegendmodproject() {
             }
         },
         sendNick(nick) {
-            window.multiboxPlayerEnabled = null;
+            lmSetMbUnit(0);
             /* LW: Don't send spawn if already alive — flushCellsData clears
              * client view and causes cells to disappear even though server
              * ignores the join (cell_count > 0). */
@@ -51509,7 +51505,7 @@ function thelegendmodproject() {
                 if (typeof ogario !== 'undefined') ogario.mapOffsetFixed = false;
             }
             if (_connectionLevelFlush) {
-                window.multiboxPlayerEnabled = null;
+                lmSetMbUnit(0);
             }
             /* cell identities (updateCells _lmIdMem) belong to this connection; the Expanding Land
              * respawn wipe (true) keeps them: the server still counts those cells as ours */
@@ -51638,7 +51634,7 @@ function thelegendmodproject() {
             if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
             /* every unit is closed: a focus left on one froze the main cell and camera
              * (HUD "[MB 2/1]") */
-            window.multiboxPlayerEnabled = null;
+            lmSetMbUnit(0);
             window.multiboxPlayerEnabledSaved = null;
         },
         /* A map border is four finite numbers with max above min on both axes. */

@@ -63,7 +63,9 @@ function attachFlush(J) {
     const a = src.indexOf('        flushCellsData(preserveMapGeometry) {');
     const b = src.indexOf('        /* Spectator toggles', a);
     if (a < 0 || b < 0) throw new Error('flushCellsData not found in ogario.v4.js');
-    const holder = new Function('LM', 'drawRender', 'spects', 'window', 'return {\n' + src.slice(a, b) + '};')(J.LM, J.drawRender, [], {});
+    const win = {};
+    /* the page-level setter of the controlled multibox unit (ogario.v4.js lmSetMbUnit) */
+    const holder = new Function('LM', 'drawRender', 'spects', 'window', 'lmSetMbUnit', 'return {\n' + src.slice(a, b) + '};')(J.LM, J.drawRender, [], win, (u) => { win.multiboxPlayerEnabled = +u || null; });
     J.LM.flushCellsData = holder.flushCellsData;
     J.LM.flushSpecsData = function () { };
 }

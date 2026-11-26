@@ -50,7 +50,9 @@ function env(o) {
         $: (sel) => ({ val: () => (sel === '#nick' ? 'player' : ''), show() { return this; }, hide() { return this; } }),
         addSpectator: () => win.spects.push(new Spect()),
         addFullSpectator: () => { for (let i = 0; i < 3; i++) win.spects.push(new Spect()); },
-        ogario: { play: !!o.playing }
+        ogario: { play: !!o.playing },
+        /* the page-level setter of the controlled multibox unit (ogario.v4.js lmSetMbUnit) */
+        lmSetMbUnit: (u) => { win.multiboxPlayerEnabled = +u || null; }
     };
     vm.createContext(ctx);
     vm.runInContext('var LM = window.legendmod = {' + lmMethods.map((m) => m[1]).join(',\n') + ',\n' + sendNick + '\n};' +
