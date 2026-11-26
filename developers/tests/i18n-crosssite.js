@@ -14,7 +14,7 @@
 //     skins / themes pages of expanding.land and legendffa on help.expanding.land do) gets and sends the language.
 //  9. the game (play.html) in a frame, as on help.expanding.land/unblocked.html: a language passed from the shell
 //     also shows in its Choose Language list (languagemod), and one chosen there comes back to the shell.
-// 10. the Mod Info page, its FAQ and the gift page of the mod show the language passed in #lm=.
+// 10. the Mod Info page, its FAQ and banner and the gift page of the mod show the language passed in #lm=.
 // Usage: node developers/tests/i18n-crosssite.js
 'use strict';
 const { spawn } = require('child_process');
@@ -251,7 +251,8 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
     const ar = '#lm=' + Buffer.from('{"lang":6}').toString('base64').replace(/=+$/, '');
     const ARABIC = /[؀-ۿ]/;
     for (const [url, sel, links] of [['https://www.legendmod.ml/extras/helper.html', '[data-i18n-html="site.helper.thanks"]', 4],
-        ['https://www.legendmod.ml/extras/banneranimated7.html', '[data-i18n="site.helper.faq.q6"]', 0], ['https://www.legendmod.ml/extras/rewardday2.html', '[data-i18n-html="site.rewardday.granted"]', 0]]) {
+        ['https://www.legendmod.ml/extras/banneranimated7.html', '[data-i18n="site.helper.faq.q6"]', 0], ['https://www.legendmod.ml/extras/rewardday2.html', '[data-i18n-html="site.rewardday.granted"]', 0],
+        ['https://www.legendmod.ml/extras/banneranimated3c.html', '[data-i18n="site.banners.welcomeText"]', 0]]) {
         await go(url + ar);
         const t10 = (await frameIds()).top;
         const q10 = 'JSON.stringify({ lang: window.LMi18n && LMi18n.lang(), dir: document.documentElement.dir, miss: Object.keys(LMi18n.missing()), text: (document.querySelector(\'' + sel + '\') || {}).textContent || "", links: document.querySelectorAll(\'' + sel + ' a\').length, marked: document.querySelectorAll("[data-i18n],[data-i18n-html]").length })';
