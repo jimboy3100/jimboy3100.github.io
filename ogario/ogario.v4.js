@@ -43518,6 +43518,12 @@ function thelegendmodproject() {
                      * each nick gets its own id, which the mute list checks. */
                     /* With a clan tag, public chat stays hidden (team only), but official
                      * [SERVER]/[ADMIN]/[MOD] messages (restart warnings, notices) are shown too. */
+                    /* Expanding Land team chat (202) of a player without a nick: his client writes "Unnamed: "
+                     * (sendChatMessage) while the server sends its own name for him (the account name, or
+                     * the guest placeholder): the line goes under the server's name. Only that literal
+                     * prefix is replaced, so no text can pass for another sender. */
+                    if (this.isLegendWorld && !(flag & 0xE0) && name !== 'Unnamed' && message.indexOf('Unnamed: ') === 0 &&
+                        (_lmElTeamsActive(this) || $("#clantag").val() !== "")) message = name + ': ' + message.slice(9);
                     if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && ($("#clantag").val() === "" || server || admin || mod)) {
                         var _lmSrvChatId = application.serverChatUserId(name);
                         /* Expanding Land Teams without a tag: a team mate's team chat (202) comes back as plain
@@ -43531,9 +43537,11 @@ function thelegendmodproject() {
                     /* Expanding Land team chat (sent as opcode 202) comes back as a plain opcode 99 with
                      * no server/admin/mod flag, only to same-tag players; the text already has "nick: ". */
                     else if (this.isLegendWorld && $("#clantag").val() !== "" && !(flag & 0xE0)) {
-                        var _lmTeamChatId = application.serverChatUserId(message.split(': ', 1)[0]);
-                        var _lmUnnamedT = _lmElChatSender(message.split(': ', 1)[0], false, true);
-                        if (!application.isChatUserMuted(_lmTeamChatId)) application.displayChatMessage(time, 101, _lmTeamChatId, _lmElChatRelabel(message, _lmUnnamedT), _lmUnnamedT);
+                        /* the server's name when the text starts with it (it can hold ": " or be over 15 characters) */
+                        var _lmTeamNick = message.indexOf(name + ': ') === 0 ? name : message.split(': ', 1)[0];
+                        var _lmTeamChatId = application.serverChatUserId(_lmTeamNick);
+                        var _lmUnnamedT = _lmElChatSender(_lmTeamNick, false, true);
+                        if (!application.isChatUserMuted(_lmTeamChatId)) application.displayChatMessage(time, 101, _lmTeamChatId, _lmElChatRelabel(message, _lmUnnamedT), _lmUnnamedT, _lmTeamNick === name && !_lmUnnamedT ? name : null);
                     }
                     /* ── Auto-reconnect on server restart chat ── */
                     if (server && message.toLowerCase().includes('restarting') && !(window._lmIsRoomUrl && window._lmIsRoomUrl(this.ws))) {

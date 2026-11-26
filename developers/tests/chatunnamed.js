@@ -225,5 +225,46 @@ const nickText = (html) => {
   check('other private servers: long name still dropped', b.box.length === 1);
 }
 
+/* Team chat (202) of a player without a nick: his client writes "Unnamed: text" (sendChatMessage),
+ * the server forwards it as 99 under its own name for him (account name, or the guest placeholder;
+ * LegendWorld server_send_team_chat) */
+const msgText = (html) => { const m = /<span class="message-text">(.*?)<\/span>/.exec(html); return m ? m[1] : null; };
+{
+  const b = boot();
+  b.ctx._lmElTeamsActive = () => true;
+  b.send(LONG, 'Unnamed: push left');
+  let last = b.box[b.box.length - 1] || '';
+  check('Teams, no tag: account-name team mate shown under the account name, no "Unnamed:" in the text', nickText(last) === LONG + ': ' && msgText(last) === 'push left', last);
+  check('... bubble and mute list under the account name', b.bubbles().has(LONG) && Object.keys(b.app.chatUsers).map(k => b.app.chatUsers[k]).indexOf(LONG) !== -1);
+  b.send('An unnamed cell', 'Unnamed: hi');
+  last = b.box[b.box.length - 1] || '';
+  check('Teams, no tag: guest team mate under the label, no bubble', nickText(last) === label() + ': ' && msgText(last) === 'hi' && !b.bubbles().has(label()), last);
+  b.send('Bob', 'Bob: hi');
+  last = b.box[b.box.length - 1] || '';
+  check('Teams, no tag: named team mate as before', nickText(last) === 'Bob: ' && msgText(last) === 'hi', last);
+  b.send('Unnamed', 'Unnamed: me');
+  last = b.box[b.box.length - 1] || '';
+  check('a player really named Unnamed: as before', nickText(last) === 'Unnamed: ' && msgText(last) === 'me', last);
+  b.send('Bob', 'Alice: I am Alice');
+  last = b.box[b.box.length - 1] || '';
+  check('another nick written in the text is not taken as the sender', nickText(last) === 'Bob: ' && msgText(last) === 'Alice: I am Alice', last);
+}
+{
+  const b = boot();
+  b.ctx._tag = 'LM';
+  b.send(LONG, 'Unnamed: go');
+  const last = b.box[b.box.length - 1] || '';
+  check('clan tag: no-nick account team mate under the account name (not one shared "Unnamed")', nickText(last) === LONG + ': ' && msgText(last) === 'go' && Object.keys(b.app.chatUsers).map(k => b.app.chatUsers[k]).indexOf(LONG) !== -1, last);
+  b.send('Bob', 'Bob: hi');
+  check('clan tag: named team mate as before', nickText(b.box[b.box.length - 1]) === 'Bob: ' && msgText(b.box[b.box.length - 1]) === 'hi', b.box[b.box.length - 1]);
+}
+{
+  const b = boot();
+  b.ctx._lmElTeamsActive = () => true;
+  b.send('Bob', 'Unnamed: hi', 0, Object.assign({}, b.client, { serverType: 'imsolo', isLegendWorld: false }));
+  const last = b.box[b.box.length - 1] || '';
+  check('other servers: text untouched', nickText(last) === 'Bob: ' && msgText(last) === 'Unnamed: hi', last);
+}
+
 console.log(failed ? failed + ' FAILED' : 'all ok');
 process.exit(failed ? 1 : 0);
