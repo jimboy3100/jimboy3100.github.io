@@ -1,0 +1,20 @@
+{
+  "pkg.r10.roomCodeChars": {
+    "en": "Room codes never contain I, O, 0 or 1: check the code again.",
+    "el": "Οι κωδικοί δωματίου δεν περιέχουν ποτέ I, O, 0 ή 1: έλεγξε ξανά τον κωδικό.",
+    "es": "Los códigos de sala nunca llevan I, O, 0 ni 1: revisa el código.",
+    "bg": "Кодовете на стаите никога не съдържат I, O, 0 или 1: провери кода отново.",
+    "fr": "Les codes de salon ne contiennent jamais I, O, 0 ni 1 : vérifiez le code.",
+    "ar": "رموز الغرف لا تحتوي أبدًا على I أو O أو 0 أو 1: تحقق من الرمز مرة أخرى.",
+    "zh": "房間代碼不會包含 I、O、0 或 1：請再檢查一次代碼。",
+    "ru": "В кодах комнат не бывает I, O, 0 и 1: проверьте код ещё раз.",
+    "de": "Raumcodes enthalten nie I, O, 0 oder 1: prüfe den Code noch einmal.",
+    "tr": "Oda kodlarında asla I, O, 0 veya 1 olmaz: kodu tekrar kontrol et.",
+    "pl": "Kody pokojów nigdy nie zawierają I, O, 0 ani 1: sprawdź kod jeszcze raz.",
+    "nl": "Kamercodes bevatten nooit I, O, 0 of 1: controleer de code nog eens.",
+    "pt": "Os códigos de sala nunca têm I, O, 0 ou 1: confira o código.",
+    "id": "Kode ruang tidak pernah berisi I, O, 0 atau 1: periksa lagi kodenya.",
+    "ja": "ルームコードに I、O、0、1 は使われません。コードをもう一度確認してください。",
+    "it": "I codici stanza non contengono mai I, O, 0 o 1: controlla di nuovo il codice."
+  }
+}

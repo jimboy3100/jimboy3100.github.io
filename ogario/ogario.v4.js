@@ -1348,7 +1348,9 @@ function _lmRoomOpen(tab, code) {
     var joinCode = function () {
         if (busy) return;
         var c = _lmRoomCode(jCode.value);
-        if (!c) { say(_lmMhT('roomErrCode', 'Enter the 6-character room code.'), true); return; }
+        /* codes never hold I, O, 0 or 1 (all four are left out of the alphabet, so none can be
+         * mapped to another): a code read with one of them gets told which, not "enter the code" */
+        if (!c) { say(/[IO01]/.test(String(jCode.value).toUpperCase()) ? _lmMhT('pkg.r10.roomCodeChars', 'Room codes never contain I, O, 0 or 1: check the code again.') : _lmMhT('roomErrCode', 'Enter the 6-character room code.'), true); return; }
         setBusy(true);
         say(_lmMhT('roomConnecting', 'Connecting…'), false);
         var pw = String(jPass.value || '').slice(0, 32);
