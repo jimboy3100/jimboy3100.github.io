@@ -21840,6 +21840,8 @@ function thelegendmodproject() {
             $('#leaderboard-hud').css('transform', 'scale(' + hs + ')');
             $('#top5-hud').css('transform', 'scale(' + hs + ')');
             $('#time-hud').css('top', a + 'px');
+            /* the clock's own top: it moves up from there only when the minimap would cover it (_lmClockClear) */
+            window._lmClockTop = a;
             $('#pause-hud').css('top', n + 'px');
             $('#target-hud').css('padding-top', r + 'px');
             /* a HUD layout keeps the resized boxes on screen */
@@ -23567,6 +23569,7 @@ function thelegendmodproject() {
                 else if (_lmTf === 2) time = ('0' + _lmNowD.getHours()).slice(-2) + ':' + ('0' + _lmNowD.getMinutes()).slice(-2) + ':' + ('0' + _lmNowD.getSeconds()).slice(-2);
                 else time = _lmNowD.toLocaleString();
                 this.timeHUD.textContent = time;
+                this._lmClockClear();
                 if (!this._displayTimeInterval) {
                     var app = this;
                     this._displayTimeInterval = setInterval(function () {
@@ -23580,6 +23583,39 @@ function thelegendmodproject() {
                     this._displayTimeInterval = null;
                 }
             }
+        },
+        /* The clock has a fixed top (setHudScale) and the minimap is at the bottom of the window: on a
+         * lower window the minimap and its button rows above it (shortcuts, timer, images...) came over
+         * the clock and hid it. Then the clock goes just above them, or, when the leaderboard reaches down
+         * there too, next to the minimap on its left; elsewhere it stays where it was. A HUD layout that
+         * places the clock keeps its place. Runs with the clock's 1 s update. */
+        _lmClockClear() {
+            var t = this.timeHUD, mm = document.getElementById('minimap-hud');
+            if (!t || !mm || t.style.display === 'none' || !t.getClientRects().length) return;
+            if (window.LMHudEditor && typeof window.LMHudEditor.owns === 'function' && window.LMHudEditor.owns('time')) return;
+            /* phones place the clock themselves (LMmobile.js, loaded for touch-only devices like this) */
+            if (this._lmClockPhone === undefined) this._lmClockPhone = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches);
+            if (this._lmClockPhone) return;
+            var base = window._lmClockTop;
+            if (!(base >= 0)) return;
+            var top = base, right = '', m = mm.getBoundingClientRect();
+            if (m.height && mm.getClientRects().length) {
+                var rowsTop = m.top;
+                for (var c = mm.firstElementChild; c; c = c.nextElementSibling) {
+                    if (c.offsetTop >= 0 || !c.getClientRects().length) continue;
+                    var r = c.getBoundingClientRect();
+                    if (r.height && r.top < rowsTop) rowsTop = r.top;
+                }
+                var h = t.offsetHeight;
+                if (base + h + 4 > rowsTop) {
+                    var lb = document.getElementById('leaderboard-hud'), lbBottom = 0;
+                    if (lb && lb.getClientRects().length) lbBottom = lb.getBoundingClientRect().bottom;
+                    if (rowsTop - h - 4 >= lbBottom + 4) top = Math.floor(rowsTop - h - 4);
+                    else { top = Math.max(0, Math.floor(m.top)); right = Math.max(0, Math.round(window.innerWidth - m.left + 6)) + 'px'; }
+                }
+            }
+            if (t.style.top !== top + 'px') t.style.top = top + 'px';
+            if (t.style.right !== right) t.style.right = right;
         },
         displayParties() {
             let text = '';
@@ -35201,6 +35237,8 @@ function thelegendmodproject() {
             this.setTop5();
             this.setTargetingHUD();
             this.setQuest();
+            /* a clock switched on before is shown again (nothing showed it on load) */
+            if (defaultmapsettings.showTime) $('#time-hud').show();
             this.displayTime();
             this.setCenteredLb();
             //this.setNormalLb();

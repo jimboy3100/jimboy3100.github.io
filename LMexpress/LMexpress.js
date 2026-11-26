@@ -7751,7 +7751,9 @@ function initializeLM(modVersion) {
     }
     $("#shortcuts-hud").hide();
     $("#exp-bar").hide();
-    $("#time-hud").hide();
+    /* the clock stays when Settings > Stats > Show current time is on (it was hidden on every load,
+     * so a clock switched on never came back after a reload) */
+    if (!(window.legendmod5 && window.legendmod5.showTime)) $("#time-hud").hide();
 
     $("#timertools-hud").hide();
 
