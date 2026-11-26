@@ -46,6 +46,37 @@
     window._lmMatchHistoryOpen();
     need('Match history opens the Analytics window at History', A.isOpen() && document.getElementById('lm-analytics-tab-history').getAttribute('aria-pressed') === 'true' &&
       document.querySelectorAll('#lm-mh-view .lm-mh-row').length === 2 && !document.getElementById('lm-mh-modal'));
+    /* Expanding Land, logged in: the chosen "Account (server)" list stays chosen when the window
+     * is drawn again (opened again, a language change); after a logout the list of this device */
+    var lm = window.legendmod, lwSaved = window._lwAuth, elSaved = lm && lm.isLegendWorld, sockOwn = lm && Object.prototype.hasOwnProperty.call(lm, 'isSocketOpen'), sockSaved = lm && lm.isSocketOpen, elOwn = lm && Object.prototype.hasOwnProperty.call(lm, 'isLegendWorld'), smhSaved = window._lmServerMatchHistory;
+    if (lm) {
+      try {
+        lm.isLegendWorld = true;
+        lm.isSocketOpen = function () { return true; };
+        window._lwAuth = { state: 'logged_in' };
+        /* asked just now: no request is sent (at most one per 2 s) */
+        window._lmServerMatchHistory = { state: 'done', askedAt: Date.now(), games: [{ time: Math.floor(now / 1000) - 50, aliveSecs: 70, highestMass: 777, finalMass: 700, topPosition: 3, playersEaten: 2, virusesEaten: 1, killerKnown: false }] };
+        A.open('history');
+        var st = document.getElementById('lm-mh-tab-server');
+        need('account tab on Expanding Land while logged in', !!st);
+        if (st) st.click();
+        need('account list shown', document.querySelectorAll('#lm-mh-view .lm-mh-srow').length === 1);
+        A.open('history');
+        need('account list stays chosen when drawn again', document.querySelectorAll('#lm-mh-view .lm-mh-srow').length === 1 && document.getElementById('lm-mh-clear').style.display === 'none');
+        A.close();
+        window._lmMatchHistoryOpen();
+        need('account list stays chosen when opened again', document.querySelectorAll('#lm-mh-view .lm-mh-srow').length === 1);
+        /* logout: the previous account's list goes */
+        window._lwAuth = { state: 'logged_out' };
+        window._lmServerMatchHistory = null;
+        window._lmMatchHistoryRefreshOpen();
+        need('after a logout the open window shows this device, not the account list', !document.getElementById('lm-mh-tab-server') && document.querySelectorAll('#lm-mh-view .lm-mh-srow').length === 0 &&
+          document.querySelectorAll('#lm-mh-view .lm-mh-row').length === 2);
+      } finally {
+        if (elOwn) lm.isLegendWorld = elSaved; else delete lm.isLegendWorld;
+        if (sockOwn) lm.isSocketOpen = sockSaved; else delete lm.isSocketOpen; window._lwAuth = lwSaved; window._lmServerMatchHistory = smhSaved;
+      }
+    }
     window.confirm = function () { return true; };
     document.getElementById('lm-mh-clear').click();
     window.confirm = origConfirm;

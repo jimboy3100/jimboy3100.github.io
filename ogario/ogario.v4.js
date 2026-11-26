@@ -396,9 +396,33 @@ window._lmMatchHistoryButton = _lmMatchHistoryButton;
 /* The match history list is the History tab of the Analytics window (ogario/modules/analytics.js),
  * next to the statistics made from the same games; it was a window of its own. */
 function _lmMatchHistoryOpen() {
-    if (window.LMAnalytics && typeof window.LMAnalytics.open === 'function') window.LMAnalytics.open('history');
+    if (window.LMAnalytics && typeof window.LMAnalytics.open === 'function') { window.LMAnalytics.open('history'); return; }
+    /* the window is not there yet (still loading, or its download failed): a message instead of
+     * nothing, the file is asked for again after a failure, and the list opens once it is there */
+    if (window._lmAnalyticsLoadFailed && typeof window._lmAnalyticsLoad === 'function') window._lmAnalyticsLoad();
+    if (window.toastr) toastr.info(_lmMhT('mhLoading', 'Loading…'));
+    var tries = 0, start = Date.now();
+    clearTimeout(_lmMatchHistoryOpen._t);
+    (function wait() {
+        if (window.LMAnalytics && typeof window.LMAnalytics.open === 'function') { window.LMAnalytics.open('history'); return; }
+        if (window._lmAnalyticsLoadFailed || Date.now() - start > 15000) {
+            if (window.toastr) toastr.error(lmT('pkg.hf.analyticsLoadFailed'));
+            return;
+        }
+        _lmMatchHistoryOpen._t = setTimeout(wait, ++tries < 8 ? 250 : 1000);
+    })();
 }
 window._lmMatchHistoryOpen = _lmMatchHistoryOpen;
+/* the chosen list ("This device" or "Account (server)"): kept while the window is drawn again
+ * (opened again, another tab, a language change); the account list only while it can be shown */
+var _lmMhViewWanted = 'local';
+/* an open list after a logout or an account change: drawn again, so the account
+ * list of the previous account is never left on screen */
+function _lmMatchHistoryRefreshOpen() {
+    var m = document.getElementById('lm-mh-view');
+    if (m && m._lmRepaint) m._lmRepaint();
+}
+window._lmMatchHistoryRefreshOpen = _lmMatchHistoryRefreshOpen;
 /* fills host with the list: newest first, built with textContent only; "This device | Account
  * (server)" on Expanding Land while logged in; Clear for this device's list */
 function _lmMatchHistoryPaint(host) {
@@ -420,12 +444,13 @@ function _lmMatchHistoryPaint(host) {
     /* Expanding Land while logged in: "This device | Account (server)" */
     var view = 'local', tabs = null;
     if (_lmMhServerAvailable()) {
+        view = _lmMhViewWanted === 'server' ? 'server' : 'local';
         tabs = el('div', 'display:flex;gap:6px;justify-content:center;');
         tabs.id = 'lm-mh-tabs';
         [['local', _lmMhT('mhThisDevice', 'This device')], ['server', _lmMhT('mhAccount', 'Account (server)')]].forEach(function (t) {
             var b = el('div', 'cursor:pointer;font-size:11px;padding:3px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + pc2 + ';', t[1]);
             b.id = 'lm-mh-tab-' + t[0];
-            b.addEventListener('click', function (e) { e.stopPropagation(); if (view === t[0]) return; view = t[0]; paint(); });
+            b.addEventListener('click', function (e) { e.stopPropagation(); if (view === t[0]) return; view = _lmMhViewWanted = t[0]; paint(); });
             tabs.appendChild(b);
         });
         bar.appendChild(tabs);
@@ -470,7 +495,15 @@ function _lmMatchHistoryPaint(host) {
         clr.style.display = view === 'local' ? '' : 'none';
         if (view === 'server') { _lmMatchHistoryServerRequest(); fillServer(); } else fill();
     };
-    md._lmServerRefresh = function () { if (view === 'server') fillServer(); };
+    md._lmServerRefresh = function () { if (view === 'server') { if (_lmMhServerAvailable()) fillServer(); else md._lmRepaint(); } };
+    /* the whole list again in the same place (the tabs come and go with the account) */
+    md._lmRepaint = function () {
+        var h = md.parentNode;
+        if (!h) return;
+        var y = h.scrollTop;
+        _lmMatchHistoryPaint(h);
+        h.scrollTop = y;
+    };
     var fill = function () {
         while (body.firstChild) body.removeChild(body.firstChild);
         var list = _lmMatchHistory().slice().reverse();
@@ -495,8 +528,8 @@ function _lmMatchHistoryPaint(host) {
         body.appendChild(tb);
     };
     bar.appendChild(clr);
-    fill();
     if (tabs) paint();
+    else fill();
     clr.addEventListener('click', function (e) {
         e.stopPropagation();
         if (!window.confirm(_lmMhT('mhClearConfirm', 'Clear the match history?'))) return;
@@ -3555,6 +3588,7 @@ if (/(^|\.)jimboy3100\.github\.io$|(^|\.)legendmod\.ml$|(^|\.)expanding\.land$/i
             window._lmActiveQuests = []; /* an array, as in displayActiveQuests */
             window._lmDailyChallenges = null; /* Expanding Land daily challenges (102 type 220) */
             window._lmServerMatchHistory = null; /* server match history of that account (102 type 1081) */
+            if (window._lmMatchHistoryRefreshOpen) window._lmMatchHistoryRefreshOpen();
             window._lmActiveBoosts = Object.create(null);
             if (window._lmBoostTicker) { clearInterval(window._lmBoostTicker); window._lmBoostTicker = null; }
             if (window._lmQuestTicker) { clearInterval(window._lmQuestTicker); window._lmQuestTicker = null; }
@@ -86195,6 +86229,17 @@ Object.defineProperty(Array.prototype, 'stDev', {
         analyticsScript.type = 'text/javascript';
         analyticsScript.src = 'https://www.legendmod.ml/ogario/modules/analytics.js?v=' + (window.OgVer || '');
         analyticsScript.charset = 'utf-8';
+        /* a failed download is noted: Match history asks for the file again (_lmMatchHistoryOpen) */
+        window._lmAnalyticsLoad = function () {
+            window._lmAnalyticsLoadFailed = false;
+            var s = document.createElement('script');
+            s.type = 'text/javascript';
+            s.src = 'https://www.legendmod.ml/ogario/modules/analytics.js?v=' + (window.OgVer || '');
+            s.charset = 'utf-8';
+            s.onerror = function () { window._lmAnalyticsLoadFailed = true; };
+            document.body.appendChild(s);
+        };
+        analyticsScript.onerror = function () { window._lmAnalyticsLoadFailed = true; };
         document.body.appendChild(analyticsScript);
     } catch (e) {
         console.warn('[LM] Error loading analytics script:', e);
