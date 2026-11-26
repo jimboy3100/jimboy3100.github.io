@@ -794,6 +794,10 @@
             tabs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
         }
         var body = md.querySelector('#lm-analytics-body');
+        /* Objectives drawn again (a language change, a game that ends): the objective being typed,
+         * its type, the focus and the scroll stay (they were lost mid-typing) */
+        var keep = null, gt = md.querySelector('#lm-analytics-goal-type'), gn = md.querySelector('#lm-analytics-goal-target');
+        if (tab === 'goals' && gt && gn) keep = { type: gt.value, n: gn.value, focus: document.activeElement === gn ? gn.id : document.activeElement === gt ? gt.id : '', y: body.scrollTop };
         while (body.firstChild) body.removeChild(body.firstChild);
         try {
             if (tab === 'history') { if (typeof window._lmMatchHistoryPaint === 'function') window._lmMatchHistoryPaint(body); }
@@ -802,6 +806,19 @@
             else if (tab === 'goals') paintGoals(body);
             else paintDash(body);
         } catch (e) { try { console.warn('[LM Analytics] could not draw the tab:', e); } catch (e2) { } }
+        if (keep) restoreGoalForm(body, keep);
+    }
+    function restoreGoalForm(body, k) {
+        var gt = md.querySelector('#lm-analytics-goal-type'), gn = md.querySelector('#lm-analytics-goal-target');
+        if (!gt || !gn) return;
+        if (gt.value !== k.type && gt.querySelector('option[value="' + k.type + '"]')) {
+            gt.value = k.type;
+            try { gt.dispatchEvent(new Event('change')); } catch (e) { }
+        }
+        gn.value = k.n;
+        body.scrollTop = k.y;
+        var f = k.focus && md.querySelector('#' + k.focus);
+        if (f) { try { f.focus({ preventScroll: true }); } catch (e) { f.focus(); } }
     }
     function note(body, text) {
         body.appendChild(el('div', 'padding:6px 8px;margin:4px 0;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);color:' + theme().tc2 + ';', text));
@@ -1105,6 +1122,8 @@
             if (!goal) { inp.focus(); return; }
             s2.custom.push(goal);
             saveGoals(s2);
+            /* added: the field starts empty again (a redraw keeps what is typed) */
+            inp.value = '';
             paint();
         });
         add.id = 'lm-analytics-goal-add';
