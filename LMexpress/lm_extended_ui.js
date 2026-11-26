@@ -6401,7 +6401,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         var token = window.legendmod ? window.legendmod.accessToken : null;
         if (!token && !isLoggedIn) {
-            alert(_lmUR('lmx.ui.friendsLoginAlert'));
+            /* a toast only, like the other login messages here (an alert stopped the game and said it twice) */
             if (window.toastr) toastr.error('<b>[' + _lmUE('lmx.ui.tagFriendsUpper') + ']:</b> ' + _lmUE('lmx.ui.friendsLogin'));
             return;
         }
