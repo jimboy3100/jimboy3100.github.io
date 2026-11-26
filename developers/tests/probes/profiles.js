@@ -57,6 +57,35 @@
       LMProfiles.undo();
       if (defaultmapsettings.oppColors !== before) fail.push('Undo did not put oppColors back');
     }
+    // "From a preset": the same list as the Settings presets row
+    $('#lm-sp-overlay .lm-sp-tabs button[data-tab=profiles]').trigger('click');
+    var tplOpts = $('#lm-sp-tpl option').map(function () { return this.value; }).get().join(',');
+    if (!application.lmPresets || tplOpts !== Object.keys(application.lmPresets).join(',')) fail.push('"From a preset" differs from the Settings presets: ' + tplOpts);
+    // gamepad profiles: their own view, saved and applied with only the gamepad buttons and tuning
+    var gpStored = localStorage.getItem('lmGamepad'), moveBefore = defaultmapsettings.gamepadMoveRange;
+    try {
+      $('#lm-sp-overlay [data-act=gpview]').trigger('click');
+      $('#lm-sp-name').val('Probe pad');
+      $('#lm-sp-overlay [data-act=savegp]').trigger('click');
+      var gpl = JSON.parse(localStorage.getItem('lmSettingsProfiles') || '[]').filter(function (p) { return p.only === 'gp'; });
+      if (gpl.length !== 1 || gpl[0].name !== 'Probe pad' || gpl[0].data.t || gpl[0].data.h || !gpl[0].data.gp) fail.push('gamepad profile not saved as gamepad only');
+      else {
+        if ($('#lm-sp-overlay .lm-sp-item').length !== 1) fail.push('the gamepad view does not list only the gamepad profiles');
+        defaultmapsettings.gamepadMoveRange = moveBefore === 0.5 ? 0.6 : 0.5;
+        var oppBefore = defaultmapsettings.oppColors;
+        $('#lm-sp-overlay [data-act=apply][data-id=' + gpl[0].id + ']').trigger('click');
+        if (defaultmapsettings.gamepadMoveRange !== moveBefore) fail.push('the gamepad profile did not put its tuning back');
+        if (defaultmapsettings.oppColors !== oppBefore) fail.push('the gamepad profile changed a setting that is not the gamepad');
+        LMProfiles.undo();
+      }
+      $('#lm-sp-overlay [data-act=gpview]').trigger('click');
+      if (!$('#lm-sp-overlay [data-act=save]').length) fail.push('"All profiles" does not go back');
+    } finally {
+      defaultmapsettings.gamepadMoveRange = moveBefore;
+      application.saveSettings(defaultmapsettings, 'ogarioSettings');
+      try { if (gpStored === null) localStorage.removeItem('lmGamepad'); else localStorage.setItem('lmGamepad', gpStored); } catch (e) { }
+      if (window.LMGamepad && LMGamepad._reload) LMGamepad._reload();
+    }
     // theme and hotkeys apply live, and Undo puts them back
     var mw = defaultSettings.miniMapWidth, hkBefore = JSON.stringify(hotkeys);
     var hk2 = JSON.parse(hkBefore); hk2['CTRL+F9'] = 'hk-lmProfilesWindow';

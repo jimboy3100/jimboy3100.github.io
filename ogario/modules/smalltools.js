@@ -1,4 +1,4 @@
-/* Legend Mod small tools: radial command menu, hotkey conflicts, screenshot mode and skin
+/* Legend Mod small tools: radial command menu, the conflict list of the Hotkeys window, screenshot mode and skin
  * collections. Everything is off until used: windows and hotkeys without default keys
  * (all listed in the Command Centre), and the "Collections" button of the skins panel only with
  * the option skinCollections. Nothing runs per frame while no tool is open.
@@ -27,7 +27,7 @@
      * language, else English. vars fill {0} {1}. A few labels are the same as settings / hotkey labels
      * and use those keys. */
     var TP = 'modules.smalltools.';
-    var SHARED = { close: 'settings.close', conflictsTitle: 'settings.hk-hotkeyConflicts', shotStart: 'settings.hk-screenshotMode', skinsTitle: 'settings.hk-skinCollections' };
+    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-screenshotMode', skinsTitle: 'settings.hk-skinCollections' };
     function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(own(SHARED, k) ? SHARED[k] : TP + k, vars) : k; }
     function langDir() { return W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'; }
 
@@ -336,7 +336,7 @@
             '.lm-st-win .lm-st-btn.main{background:' + c.mc + ';color:' + c.pc + ';border-color:' + c.mc + ';font-weight:700;}' +
             '.lm-st-win .lm-st-help{opacity:.8;font-size:var(--lm-w-fs-s,11px);line-height:1.45;margin:0 0 8px;}' +
             // i18n-ok: CSS
-            '.lm-st-win a.lm-st-link{color:' + c.mc + ';cursor:pointer;text-decoration:underline;white-space:nowrap;}' +
+            '.lm-st-win a.lm-st-link,#lm-hk-conf-list a.lm-st-link{color:' + c.mc + ';cursor:pointer;text-decoration:underline;white-space:nowrap;}' +
             '.lm-st-row{display:flex;align-items:center;gap:8px;margin:0 0 6px;}' +
             '.lm-st-flash{outline:3px solid ' + c.mc + ' !important;outline-offset:1px;}' +
             /* screenshot mode: only the game view and the exit chip stay visible */
@@ -636,8 +636,17 @@
         if (c.kind === 'mouse') return [c.name, t('cMouse', [c.key, labels])];
         return [t('padName', c.name), t('cMouse', [c.key, labels]) + (c.padOn ? '' : ' ' + t('padOff'))];
     }
-    function openConflicts() {
-        var w = openWin('lm-st-conflicts', t('conflictsTitle'), 620);
+    /* The list of all conflicts, shown in the Hotkeys window (its "Hotkey conflicts" button,
+     * ogario.v4.js buildHotkeysControls): keys bound twice or kept by the browser, and mouse
+     * buttons / gamepad buttons that run a command a key runs too, each with a jump to its row.
+     * Built again after each key change while it is shown. Returns how many there are. */
+    var confBox = null;
+    function renderConflicts(box) {
+        if (!box) return 0;
+        addStyle();
+        confBox = box;
+        while (box.firstChild) box.removeChild(box.firstChild);
+        var w = { body: box };
         var rank = { error: 0, warn: 1, info: 2 };
         var list = currentConflicts().sort(function (a, b) { return rank[a.level] - rank[b.level]; });
         if (!list.length) w.body.appendChild(el('p', 'margin:6px 0;', t('noConflicts')));
@@ -675,7 +684,11 @@
             }
             w.body.appendChild(row);
         });
-        w.foot.appendChild(button(t('close'), false, closeWin));
+        return list.length;
+    }
+    /* the list again when it is shown (a key changed, the language changed) */
+    function refreshConflicts() {
+        if (confBox && confBox.isConnected && confBox.firstChild && confBox.style.display !== 'none') renderConflicts(confBox);
     }
 
     /* ═══ 3. Screenshot mode + capture ═══ */
@@ -1164,8 +1177,8 @@
 
     /* ═══ Wiring ═══ */
 
-    var WINS = { radial: openRadialEditor, conflicts: openConflicts, screenshot: openShotWindow, skins: openSkins };
-    var WIN_IDS = { radial: 'lm-st-radial', conflicts: 'lm-st-conflicts', screenshot: 'lm-st-shot', skins: 'lm-st-skins' };
+    var WINS = { radial: openRadialEditor, screenshot: openShotWindow, skins: openSkins };
+    var WIN_IDS = { radial: 'lm-st-radial', screenshot: 'lm-st-shot', skins: 'lm-st-skins' };
     api.open = function (name) { if (own(WINS, name)) WINS[name](); };
     api.toggle = function (name) { if (!own(WINS, name)) return; if (isOpen(WIN_IDS[name])) closeWin(); else WINS[name](); };
     api.close = closeWin;
@@ -1183,6 +1196,8 @@
     api.compose = function () { return composeShot(shotOpts()); };
     api.redactReport = redactReport;
     api.conflicts = currentConflicts;
+    api.renderConflicts = renderConflicts;
+    api.refreshConflicts = refreshConflicts;
     /* Checked by the hotkeys window when a key is pressed for a command (ogario.v4.js setHotkey):
      * null = fine; { level: 'block' } = the browser or Legend Mod keeps that key, so it is refused;
      * { level: 'warn' } = allowed, but the browser may still act on it. */
@@ -1213,6 +1228,7 @@
     if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {
         try {
             if (win) for (var n in WIN_IDS) if (own(WIN_IDS, n) && WIN_IDS[n] === win.id) { WINS[n](); break; }
+            refreshConflicts();
             var cap = D.getElementById('lm-shot-cap'), sx = D.getElementById('lm-shot-x'), sb = D.getElementById('lm-skin-collections');
             if (cap) cap.textContent = t('shotCapture');
             if (sx) sx.title = t('close');

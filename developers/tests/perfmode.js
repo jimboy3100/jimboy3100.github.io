@@ -170,15 +170,15 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     const p = page({ settings: ON });
     p.user('performanceMode', true);
     p.preset('battery');                 /* sets jelly, video skins, rainbow, glow, suck off, blur 0 */
-    check('preset over the mode: its keys leave the copy', !['jellyPhisycs', 'videoSkins', 'animatedRainbowColor', 'borderGlow', 'suckAnimation', 'hudBlur'].some((k) => k in p.backup()) &&
-        p.backup().highDPI === true && p.backup().eatPulse === true);
+    check('preset over the mode: its keys leave the copy', !['jellyPhisycs', 'videoSkins', 'animatedRainbowColor', 'borderGlow', 'suckAnimation', 'hudBlur', 'highDPI', 'showBgSectors'].some((k) => k in p.backup()) &&
+        p.backup().glAntialias === true && p.backup().eatPulse === true);
     p.user('performanceMode', false);
     check('mode off after a preset: the preset values stay, the rest comes back', p.S.jellyPhisycs === false && p.S.videoSkins === false && p.S.hudBlur === 0 &&
-        p.S.highDPI === true && p.S.eatPulse === true && p.S.glAntialias === true);
+        p.S.highDPI === false && p.S.showBgSectors === false && p.S.eatPulse === true && p.S.glAntialias === true);
     /* the preset Undo has the values from before the preset: the mode's (they were in place) */
     p.user('performanceMode', true);
     p.undo();
-    check('Undo while the mode is on: its values are the player\'s choice too', p.backup() && !('jellyPhisycs' in p.backup()) && p.backup().highDPI === true);
+    check('Undo while the mode is on: its values are the player\'s choice too', p.backup() && !('jellyPhisycs' in p.backup()) && !('highDPI' in p.backup()) && p.backup().eatPulse === true);
 }
 
 /* 6. a preset while Adaptive performance has lowered a value: Undo gets the player's value */
@@ -250,12 +250,36 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     check('Reduced motion confirmed: jelly off, Undo has it on', q.S.jellyPhisycs === false && q.S.reducedMotion === true && JSON.parse(q.store.lmPresetUndo).jellyPhisycs === true);
     q.undo();
     check('Undo: jelly on again', q.S.jellyPhisycs === true && q.S.reducedMotion === false);
-    const before = { streamMode: q.S.streamMode, hideSkinUrl: q.S.hideSkinUrl, disableChat: q.S.disableChat, companionChat: q.S.companionChat };
+    const before = { disableChat: q.S.disableChat, companionChat: q.S.companionChat };
+    const eyes = [];
+    q.A.setStreamMode = () => eyes.push('stream:' + q.S.streamMode);
+    q.A.setHideSkinUrl = () => eyes.push('url:' + q.S.hideSkinUrl);
     q.preset('streamer');
     const msg = q.confirms[q.confirms.length - 1];
-    check('Streamer preset: the confirmation says what it is not, and names the privacy controls', msg.indexOf(i18n.t('pkg.i.streamerTip')) > 0 && /not a privacy guarantee/.test(i18n.t('pkg.i.streamerTip')) && /Stream mode/.test(i18n.t('pkg.i.streamerTip')));
-    check('Streamer preset: only its display keys change (no Stream mode, chat box, overlay chat)', q.S.hidecountry === true && q.S.showChat === false &&
-        JSON.stringify(before) === JSON.stringify({ streamMode: q.S.streamMode, hideSkinUrl: q.S.hideSkinUrl, disableChat: q.S.disableChat, companionChat: q.S.companionChat }));
+    check('Streamer preset: the confirmation says what it is not, and names the privacy controls', msg.indexOf(i18n.t('pkg.pt.streamerTip')) > 0 && /not a privacy guarantee/.test(i18n.t('pkg.pt.streamerTip')) && /Stream mode/.test(i18n.t('pkg.pt.streamerTip')));
+    check('Streamer preset: the confirmation lists Stream mode and Hide skin URL by name', msg.indexOf('- ' + i18n.t('pkg.pt.streamMode') + ': ON') >= 0 && msg.indexOf('- ' + i18n.t('pkg.pt.hideSkinUrl') + ': ON') >= 0);
+    check('Streamer preset: its display keys, Stream mode and Hide skin URL change (as the Streaming template did), the chat box and overlay chat do not', q.S.hidecountry === true && q.S.showChat === false &&
+        q.S.streamMode === true && q.S.hideSkinUrl === true && JSON.stringify(before) === JSON.stringify({ disableChat: q.S.disableChat, companionChat: q.S.companionChat }));
+    check('Streamer preset: the eye buttons follow', eyes.join() === 'stream:true,url:true');
+    q.undo();
+    check('Streamer preset Undo: Stream mode and Hide skin URL off again, the eye buttons follow', q.S.streamMode === false && q.S.hideSkinUrl === false && q.S.hidecountry === false && eyes.slice(2).sort().join() === 'stream:false,url:false');
+}
+
+/* 11b. the merged presets: the profiles' templates are presets now (one list) */
+{
+    const q = page();
+    check('one list: the menu publishes the presets for Settings profiles', !!q.A.lmPresets && Object.keys(q.A.lmPresets).join() === 'competitive,battery,streamer,reducedMotion,cleanHud,ffa,teams,multibox');
+    q.preset('battery');
+    check('Battery saver: also High DPI and background sectors off (from the Mobile template)', q.S.highDPI === false && q.S.showBgSectors === false && q.S.jellyPhisycs === false);
+    q.undo();
+    q.preset('competitive');
+    check('Competitive: also split prediction (from the profiles template)', q.S.splitPrediction === true && q.S.oppColors === true);
+    q.undo();
+    check('Competitive Undo: split prediction back off', q.S.splitPrediction === false);
+    q.preset('multibox');
+    check('Multibox preset: the multibox rings and switching on', q.S.mbRingsP1 === true && q.S.mbSwitchAfterDeath === true);
+    q.undo();
+    check('Multibox preset Undo: player 1 ring back to its default', q.S.mbRingsP1 === false);
 }
 
 /* 12. without perf.js (it failed to load): the copy rules still hold */
@@ -268,7 +292,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
 }
 
 /* the texts: in every complete language, and Greek differs from English */
-['pkg.i.streamerTip', 'pkg.i.streamModeTip', 'pkg.i.companionShares'].forEach((k) => {
+['pkg.pt.streamerTip', 'pkg.i.streamModeTip', 'pkg.i.companionShares', 'pkg.pt.presetTeams', 'pkg.pt.streamMode', 'pkg.pt.hideSkinUrl'].forEach((k) => {
     check(k + ': English and Greek', i18n.t(k) !== k && i18n.t(k, null, 'el') !== k && i18n.t(k, null, 'el') !== i18n.t(k));
 });
 check('legacy textStroke / mouseInvert kept with their defaults (saved settings and old scripts)', (() => {

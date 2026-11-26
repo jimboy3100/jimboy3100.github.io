@@ -137,19 +137,20 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('validate: at most 20 profiles',G._cleanConfig({profiles:many}).profiles.length===20);
   check('validate: NaN / Infinity refused',G._cleanOpt('gamepadZoomSens',NaN)===undefined&&G._cleanOpt('gamepadZoomSens',Infinity)===undefined);
   const broken=page({store:{lmGamepad:'{not json'}});
-  check('validate: broken JSON in storage gives the defaults',same(broken.G.getMap(),G.defaultMap())&&broken.G.profiles().length===0); }
-{ const c=page({settings:{gamepadMoveRange:0.7}});
+  check('validate: broken JSON in storage gives the defaults',same(broken.G.getMap(),G.defaultMap())); }
+/* named profiles are Settings profiles now (ogario/modules/profiles.js moves the old list):
+ * this file has no profile functions, but keeps an old list in storage until it is moved */
+{ const c=page();
+  check('profiles: no named-profile functions here any more',['profiles','saveProfile','loadProfile','deleteProfile'].every(k=>!(k in c.G)));
   c.G.setButton(0,'hk-tripleSplit');
-  check('profile: saved',c.G.saveProfile('  Phone ')==='Phone'&&same(c.G.profiles(),['Phone']));
-  c.G.resetMap();c.w.legendmod5.gamepadMoveRange=0.3;
-  check('profile: load restores buttons and tuning',c.G.loadProfile('Phone')&&c.G.getMap()[0]==='hk-tripleSplit'&&c.w.legendmod5.gamepadMoveRange===0.7&&c.calls.includes('saved'));
-  check('profile: same name (any case) replaces',c.G.saveProfile('phone')==='phone'&&c.G.profiles().length===1);
-  check('profile: empty name refused',c.G.saveProfile('  ')===false&&c.G.saveProfile(null)===false);
-  check('profile: delete',c.G.deleteProfile('phone')&&c.G.profiles().length===0&&!c.G.deleteProfile('phone'));
   const s2=JSON.parse(c.store.lmGamepad);
-  check('profile: storage holds valid JSON',s2.v===1&&Array.isArray(s2.profiles));
-  const full=page({full:true});
-  check('profile: full storage is reported and nothing is half saved',full.G.saveProfile('A')===false&&full.G.profiles().length===0); }
+  check('profiles: a save without an old list stores none',s2.v===1&&s2.map[0]==='hk-tripleSplit'&&!('profiles' in s2));
+  const old=page({store:{lmGamepad:JSON.stringify({v:1,map:{0:'split'},profiles:[{name:'Phone',map:{0:'hk-tripleSplit'},opts:{gamepadMoveRange:0.7}}]})}});
+  old.G.setButton(1,'hk-doubleSplit');
+  const s3=JSON.parse(old.store.lmGamepad);
+  check('profiles: an old list not moved yet survives a button change',s3.map[1]==='hk-doubleSplit'&&s3.profiles.length===1&&s3.profiles[0].name==='Phone'&&s3.profiles[0].opts.gamepadMoveRange===0.7);
+  old.store.lmGamepad=JSON.stringify({v:1,map:s3.map});old.G._reload();old.G.setButton(2,'none');
+  check('profiles: once moved (gone from storage), a save does not bring it back',!('profiles' in JSON.parse(old.store.lmGamepad))); }
 { const G=page().G;
   check('calibration: suggested dead zone',G.suggestDeadzone(0)===0.05&&G.suggestDeadzone(0.06)===0.11&&G.suggestDeadzone(0.071)===0.13&&G.suggestDeadzone(0.9)===0.5&&G.suggestDeadzone('x')===0.05); }
 { const c=page();let rum=[];const p=gp({0:true});p.vibrationActuator={playEffect(t,o){rum.push(o.duration);return Promise.resolve();}};

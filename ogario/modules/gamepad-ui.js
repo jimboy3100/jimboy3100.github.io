@@ -1,4 +1,4 @@
-/* Legend Mod Gamepad window: button map, stick / zoom / trigger tuning, named profiles and a live
+/* Legend Mod Gamepad window: button map, stick / zoom / trigger tuning, a shortcut to the gamepad profiles (Settings profiles) and a live
  * controller test with dead zone calibration. Loaded by ogario/gamepad.js (LMGamepad.openWindow)
  * the first time the window opens; it only shows and edits what LMGamepad keeps.
  * While the window is open the pad's buttons are only shown here, not used in the game.
@@ -293,51 +293,22 @@
         return wrap;
     }
 
+    /* Named gamepad setups are Settings profiles (ogario/modules/profiles.js, gamepad-only ones:
+     * buttons and sensitivity, nothing else); this tab opens them there. */
     function buildProfiles(c) {
-        var g = G();
         var wrap = el('div');
-        var row = el('div', 'display:flex;gap:8px;align-items:center;');
-        var inp = document.createElement('input');
-        inp.type = 'text';
-        inp.id = 'lm-gp-profile-name';
-        inp.maxLength = 32;
-        inp.placeholder = t('profileName');
-        inp.autocomplete = 'off';
-        inp.style.flex = '1';
-        var save = btn(t('save'), 'btn-success');
-        save.id = 'lm-gp-profile-save';
-        var doSave = function () {
-            var n = g.saveProfile(inp.value);
-            if (n) { show('profiles'); note(t('saved', [n])); } else note(t('saveFailed'));
-        };
-        save.addEventListener('click', doSave);
-        inp.addEventListener('keydown', function (e) {
-            e.stopPropagation();
-            if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); doSave(); }
+        var tg = function (k) { return typeof window.lmT === 'function' ? window.lmT(k) : k; };
+        wrap.appendChild(el('div', 'font-size:12px;color:' + c.tc2 + ';margin:4px 0 10px;line-height:1.5;', tg('pkg.pt.gpMoved')));
+        var go = btn(tg('pkg.pt.gpOpen'), 'btn-primary');
+        go.id = 'lm-gp-profiles-open';
+        go.addEventListener('click', function () {
+            var P = window.LMProfiles;
+            if (!P || typeof P.open !== 'function') { note(tg('game1.set.profilesLoading')); return; }
+            /* the pad works again while the profiles are chosen and applied */
+            close();
+            P.open({ only: 'gp' });
         });
-        row.appendChild(inp);
-        row.appendChild(save);
-        wrap.appendChild(row);
-        wrap.appendChild(el('div', 'font-size:11px;color:' + c.tc2 + ';margin:4px 0 8px;', t('profilesHint')));
-        var list = g.profiles();
-        if (!list.length) wrap.appendChild(el('div', 'padding:10px;text-align:center;color:' + c.tc2 + ';', t('noProfiles')));
-        list.forEach(function (name) {
-            var r = el('div', 'display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.06);');
-            r.className = 'lm-gp-profile';
-            r.appendChild(el('div', 'flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;', name));
-            var ld = btn(t('load'), 'btn-primary');
-            ld.addEventListener('click', function () {
-                if (g.loadProfile(name)) note(t('loaded', [name]));
-            });
-            var dl = btn(t('del'), 'btn-danger');
-            dl.addEventListener('click', function () {
-                if (!window.confirm(t('confirmDelete') + '\n' + name)) return;
-                if (g.deleteProfile(name)) { show('profiles'); note(t('deleted', [name])); }
-            });
-            r.appendChild(ld);
-            r.appendChild(dl);
-            wrap.appendChild(r);
-        });
+        wrap.appendChild(go);
         live = null;
         return wrap;
     }

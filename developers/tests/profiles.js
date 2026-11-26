@@ -30,6 +30,8 @@ vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
 vm.runInContext(mod, ctx);
+/* the presets of Settings (the one list of starter setups), as the menu publishes them */
+vm.runInContext('(function () {\n' + cut('                var presets = {', '                application.lmPresets = presets;') + '\nwindow.application = { lmPresets: presets }; })();', ctx);
 const C = ctx.LMProfiles && ctx.LMProfiles.core;
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
@@ -65,7 +67,7 @@ const profs = C.cleanProfiles([
 ]);
 check('profiles: duplicates, bad ids, empty names and empty data dropped', profs.length === 2 && profs[0].name === 'Mine' && profs[1].id === 'e');
 check('profiles: names capped at 40, bad dates 0, known template kept', profs[1].name.length === 40 && profs[1].created === 0 && profs[1].tpl === 'ffa');
-check('profiles: at most 30', C.cleanProfiles(Array.from({ length: 40 }, (_, i) => ({ id: 'p' + i, name: 'n' + i, data: { s: { showMass: true } } }))).length === 30);
+check('profiles: at most 50 (30 own + the 20 moved from the Gamepad window)', C.MAX_PROFILES === 50 && C.cleanProfiles(Array.from({ length: 60 }, (_, i) => ({ id: 'p' + i, name: 'n' + i, data: { s: { showMass: true } } }))).length === 50);
 check('profiles: not an array -> empty', C.cleanProfiles({ a: 1 }).length === 0);
 
 // ── comparison
@@ -89,11 +91,39 @@ check('a default key already used is not taken', C.fillNewDefaults({ N: 'hk-feed
 check('without a known list nothing is added', J(C.fillNewDefaults({ W: 'hk-feed' }, null, ctx.hotkeysCommand)) === J({ W: 'hk-feed' }));
 check('effective(): the set as applied', C.effective(C.cleanBundle({ h: { W: 'hk-feed' }, k: ['hk-feed', 'hk-split'] })).h.N === 'hk-newThing');
 
-// ── templates
-const tplIds = Object.keys(C.TEMPLATES);
-check('six templates: FFA, Teams, Multibox, Streaming, Mobile, Competitive', J(tplIds) === J(['ffa', 'teams', 'multibox', 'streaming', 'mobile', 'competitive']));
+// ── a new profile from a preset: the presets of Settings are the one list
+const PR = C.presets();
+const tplIds = Object.keys(PR);
+check('the profiles use the Settings presets (the same object, no list of their own)', PR === ctx.application.lmPresets && C.TEMPLATES === undefined);
+check('eight presets: the five of Settings + FFA, Teams, Multibox', J(tplIds) === J(['competitive', 'battery', 'streamer', 'reducedMotion', 'cleanHud', 'ffa', 'teams', 'multibox']));
+/* the six built-in templates the profiles had before (3.656): nothing of them is lost */
+const OLD_TPL = {
+  ffa: { oppColors: true, oppRings: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showTop5: false, showTargeting: false },
+  teams: { showTop5: true, teammatesInd: true, showTargeting: true, showMiniMap: true, showMiniMapGhostCells: true, hideTeammatesNames: false, oneColoredTeammates: false, showChat: true },
+  multibox: { mbRingsP1: true, mbRingsP2: true, mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true },
+  streaming: { streamMode: true, hideSkinUrl: true, hidecountry: true, showChatImages: false, showChatVideos: false, showDevConsole: false },
+  mobile: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, highDPI: false, showGhostCells: false, borderGlow: false, virusGlow: false, suckAnimation: false, showBgSectors: false, hudBlur: 0 },
+  competitive: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, splitPrediction: true, showStatsFPS: true, showStatsPPS: true }
+};
+Object.keys(OLD_TPL).forEach(id => {
+  const to = C.TPL_OLD[id] || id, set = PR[to] && PR[to].set;
+  const lost = set ? Object.keys(OLD_TPL[id]).filter(k => set[k] !== OLD_TPL[id][k]) : ['(no preset)'];
+  check('old template ' + id + ': every value is in the preset ' + to, lost.length === 0 || !console.log('   lost: ' + lost.join(', ')));
+});
+/* what the presets did before (3.656) still happens */
+const OLD_PRESET = {
+  battery: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0 },
+  streamer: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false }
+};
+Object.keys(OLD_PRESET).forEach(id => {
+  check('preset ' + id + ': its old values are kept', Object.keys(OLD_PRESET[id]).every(k => PR[id].set[k] === OLD_PRESET[id][k]));
+});
+check('Streamer: an honest tip (what it turns on, not a privacy guarantee) in the packs, labels for the settings without a menu label',
+  PR.streamer.tip === 'pkg.pt.streamerTip' && /not a privacy guarantee/.test(i18n.t('pkg.pt.streamerTip')) && /Stream mode/.test(i18n.t('pkg.pt.streamerTip')) &&
+  i18n.t('pkg.pt.streamerTip', null, 'el') !== i18n.t('pkg.pt.streamerTip') && i18n.t(PR.streamer.lbl.streamMode) !== PR.streamer.lbl.streamMode && i18n.t(PR.streamer.lbl.hideSkinUrl) !== PR.streamer.lbl.hideSkinUrl);
+check('preset names: from the packs in every language', tplIds.every(id => i18n.t(PR[id].key) !== PR[id].key && ['el', 'ru', 'zh', 'ja', 'it'].every(l => !!i18n.t(PR[id].key, null, l))));
 tplIds.forEach(id => {
-  const set = C.TEMPLATES[id].set;
+  const set = PR[id].set;
   const bad = Object.keys(set).filter(k => !Object.prototype.hasOwnProperty.call(D, k) || ctx.lmSettingValue(k, set[k]) !== set[k]);
   check('template ' + id + ': every key is a gameplay setting with a valid value', bad.length === 0 || !console.log('   bad: ' + bad.join(', ')));
   const res = C.applyTemplate(cur, id);
@@ -104,6 +134,17 @@ tplIds.forEach(id => {
 });
 check('template: the base set is not changed', J(C.applyTemplate(cur, 'ffa').data) !== J(cur) && cur.s.showTop5 === D.showTop5);
 check('unknown template: the set unchanged', J(C.applyTemplate(cur, 'nope').data) === J(cur));
+{
+  /* profiles saved from the old templates keep working: same data, the template id moved */
+  const old = C.cleanProfiles([
+    { id: 'a', name: 'Stream', data: { s: { streamMode: true, hidecountry: true } }, tpl: 'streaming' },
+    { id: 'b', name: 'Phone', data: { s: { fpsLimit: 60 } }, tpl: 'mobile' },
+    { id: 'c', name: 'Mine', data: { s: { showMass: true } }, tpl: 'competitive' },
+    { id: 'd', name: 'Odd', data: { s: { showMass: true } }, tpl: '<b>' }
+  ]);
+  check('old templates: Streaming is Streamer, Mobile is Battery saver, others kept, bad ids dropped', old.length === 4 && old[0].tpl === 'streamer' && old[1].tpl === 'battery' && old[2].tpl === 'competitive' && !('tpl' in old[3]));
+  check('old templates: their settings unchanged', old[0].data.s.streamMode === true && old[0].data.s.hidecountry === true && old[1].data.s.fpsLimit === 60);
+}
 
 // ── backup rotation
 const snap = n => ({ s: { fpsLimit: n } });
@@ -414,6 +455,66 @@ check('zoom bookmarks: [0, 0, 0] is kept (explicitly none: the Undo / backup of 
   const el = e.toasts.pop();
   check('texts: after switching to Greek the message is Greek', el && el[1].includes(i18n.t('modules.profiles.nothingUndo', null, 'el')) && i18n.t('modules.profiles.nothingUndo', null, 'el') !== i18n.t('modules.profiles.nothingUndo'));
 }
+
+// ── gamepad-only profiles: the named profiles of the Gamepad window moved here
+{
+  const e = bootApply();
+  const PC = e.P.core;
+  const oldPad = {
+    v: 1, map: { 0: 'hk-tripleSplit', 1: 'feed' },
+    profiles: [
+      { name: 'Phone', map: { 0: 'hk-tripleSplit', 1: 'feed', 2: '<x>' }, opts: { gamepadMoveRange: 0.7, gamepadVibrate: true, gamepadEnabled: true, nope: 1 } },
+      { name: 'Xbox', map: { 0: 'split' }, opts: { gamepadDeadzone: 9 } },
+      { name: '', map: {} }, 'junk'
+    ]
+  };
+  e.ls.setItem('lmGamepad', J(oldPad));
+  e.ls.setItem('lmSettingsProfiles', J([{ id: 'p1', name: 'Phone', data: { s: { showMass: true } } }]));
+  const n = PC.migrateGamepadProfiles();
+  const list = JSON.parse(e.ls.getItem('lmSettingsProfiles'));
+  const pads = list.filter(p => p.only === 'gp');
+  check('gamepad migration: both named gamepad profiles became gamepad-only Settings profiles, the own one kept', n === 2 && list.length === 3 && list[0].id === 'p1' && pads.length === 2);
+  check('gamepad migration: a name a full profile has gets a number', pads[0].name === 'Phone 2' && pads[1].name === 'Xbox');
+  check('gamepad migration: buttons and tuning carried, unusable values dropped', pads[0].data.gp.map[0] === 'hk-tripleSplit' && pads[0].data.gp.map[1] === 'feed' && !('2' in pads[0].data.gp.map) &&
+    pads[0].data.s.gamepadMoveRange === 0.7 && pads[0].data.s.gamepadVibrate === true && !('gamepadEnabled' in pads[0].data.s) && Object.keys(pads[0].data).sort().join() === 'gp,s');
+  check('gamepad migration: a value out of range is fitted (as the slider would)', pads[1].data.s.gamepadDeadzone === 0.5);
+  const after = JSON.parse(e.ls.getItem('lmGamepad'));
+  check('gamepad migration: the list leaves lmGamepad, the current buttons stay, the pad reads them again', !('profiles' in after) && J(after.map) === J(oldPad.map) && e.calls.indexOf('gp-reload') >= 0);
+  check('gamepad migration: a second run does nothing', PC.migrateGamepadProfiles() === 0 && JSON.parse(e.ls.getItem('lmSettingsProfiles')).length === 3);
+  /* an old backup or profile that still carries the list brings no duplicates */
+  e.ls.setItem('lmGamepad', J(oldPad));
+  check('gamepad migration: names already moved are not added twice', PC.migrateGamepadProfiles() === 0 && JSON.parse(e.ls.getItem('lmSettingsProfiles')).length === 3 && !('profiles' in JSON.parse(e.ls.getItem('lmGamepad'))));
+  /* applying a gamepad profile changes the buttons and the tuning, nothing else */
+  e.S.gamepadMoveRange = 0.45; e.S.gamepadVibrate = false;
+  e.ls.setItem('lmGamepad', J({ v: 1, map: { 0: 'split' } }));
+  const showMass = e.S.showMass;
+  e.calls.length = 0;
+  const r = e.P.applyById(pads[0].id);
+  check('gamepad profile: applied, only the gamepad changes', !!r && e.S.gamepadMoveRange === 0.7 && e.S.gamepadVibrate === true && e.S.showMass === showMass &&
+    JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'hk-tripleSplit' && e.calls.indexOf('gp-release') >= 0);
+  check('gamepad profile: the message names the tuning as the Gamepad window does', /Movement range/.test(e.toasts[e.toasts.length - 1][1]));
+  e.P.undo();
+  check('gamepad profile: Undo puts the tuning and the buttons back', e.S.gamepadMoveRange === 0.45 && e.S.gamepadVibrate === false && JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'split');
+  /* capture: the current buttons and tuning only, without the old list */
+  e.ls.setItem('lmGamepad', J({ v: 1, map: { 3: 'hk-feed' }, profiles: [] }));
+  e.S.gamepadZoomSens = 2;
+  const g = PC.captureGamepad();
+  check('gamepad profile: saving takes the buttons and every tuning setting, nothing else', g.gp.map[3] === 'hk-feed' && !('profiles' in g.gp) && g.s.gamepadZoomSens === 2 &&
+    Object.keys(g.s).every(k => /^gamepad[A-Z]/.test(k) && k !== 'gamepadEnabled') && Object.keys(g.s).length === 9 && !g.t && !g.h);
+  check('a full capture leaves the old gamepad list out too', !('profiles' in (PC.captureCurrent().gp || {})));
+  check('gamepad-only kept on read', C.cleanProfiles([{ id: 'g', name: 'G', data: { gp: { v: 1, map: {} } }, only: 'gp' }, { id: 'h', name: 'H', data: { gp: { v: 1, map: {} } }, only: 'x' }]).map(p => p.only || '-').join() === 'gp,-');
+}
+{
+  /* storage full: nothing removed from lmGamepad, the next start tries again */
+  const e = bootApply();
+  e.ls.setItem('lmGamepad', J({ v: 1, map: {}, profiles: [{ name: 'A', map: {}, opts: {} }] }));
+  const set = e.ls.setItem;
+  e.ls.setItem = (k, v) => { if (k === 'lmSettingsProfiles') throw new Error('QuotaExceededError'); set(k, v); };
+  check('gamepad migration: storage full keeps the old list', e.P.core.migrateGamepadProfiles() === 0 && JSON.parse(e.ls.getItem('lmGamepad')).profiles.length === 1);
+  e.ls.setItem = set;
+  check('gamepad migration: next try moves it', e.P.core.migrateGamepadProfiles() === 1 && !('profiles' in JSON.parse(e.ls.getItem('lmGamepad'))));
+}
+check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');
 process.exit(fail ? 1 : 0);

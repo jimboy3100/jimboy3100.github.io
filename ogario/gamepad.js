@@ -1,11 +1,12 @@
 /* Legend Mod gamepad / controller support (standard browser Gamepad API).
  * Off by default: option "gamepadEnabled" (Hotkeys window > Gamepad).
  * While the option is off this file only checks the option once a second.
- * Buttons, stick sensitivity, triggers, inverted axes, vibration and named profiles are set in the
- * Gamepad window (button in Mouse control, or its hotkey). The window lives in
- * ogario/modules/gamepad-ui.js and is loaded the first time it opens.
- * The button map and the profiles are kept in localStorage 'lmGamepad' (JSON, checked on load);
- * the sliders and toggles are ordinary gameplay settings (gamepad* in defaultmapsettings).
+ * Buttons, stick sensitivity, triggers, inverted axes and vibration are set in the Gamepad window
+ * (Hotkeys window > Gamepad, or its hotkey). The window lives in ogario/modules/gamepad-ui.js and
+ * is loaded the first time it opens. Named gamepad setups are Settings profiles (gamepad-only
+ * ones, ogario/modules/profiles.js).
+ * The button map is kept in localStorage 'lmGamepad' (JSON, checked on load); the sliders and
+ * toggles are ordinary gameplay settings (gamepad* in defaultmapsettings).
  */
 (function () {
     'use strict';
@@ -81,7 +82,9 @@
     var lastPadIndex = -1;   // pad that pressed a button last (vibration on death)
     var suspended = false;   // the Gamepad window is open: buttons are tested there, not used
     var map = null;          // current button map (from storage, else the defaults)
-    var profiles = [];
+    /* the named profiles of older versions ({ name, map, opts }): only kept in storage until
+     * ogario/modules/profiles.js has made Settings profiles of them */
+    var legacyProfiles = [];
 
     function hasOwn(o, k) {
         return Object.prototype.hasOwnProperty.call(o, k);
@@ -173,7 +176,7 @@
         } catch (e) { c = null; }
         c = cleanConfig(c);
         map = c.map;
-        profiles = c.profiles;
+        legacyProfiles = c.profiles;
     }
 
     /* false when the storage is full or blocked (the change still applies until a reload) */
@@ -181,7 +184,9 @@
         try {
             var ls = storage();
             if (!ls) return false;
-            ls.setItem(STORE_KEY, JSON.stringify({ v: 1, map: map, profiles: profiles }));
+            var out = { v: 1, map: map };
+            if (legacyProfiles.length) out.profiles = legacyProfiles;
+            ls.setItem(STORE_KEY, JSON.stringify(out));
             return true;
         } catch (e) { return false; }
     }
@@ -673,46 +678,6 @@
             var o = {};
             for (var k in OPTS) o[k] = typeof OPTS[k] === 'boolean' ? OPTS[k] : OPTS[k][2];
             applyOpts(o);
-        },
-        profiles: function () {
-            if (!map) load();
-            return profiles.map(function (p) { return p.name; });
-        },
-        /* saves the current buttons and tuning under a name (same name: replaced); the stored
-         * name, or false (no usable name, 20 profiles already, storage full) */
-        saveProfile: function (name) {
-            if (!map) load();
-            var p = cleanProfile({ name: name, map: map, opts: currentOpts() });
-            if (!p) return false;
-            var at = -1;
-            for (var i = 0; i < profiles.length; i++) if (profiles[i].name.toLowerCase() === p.name.toLowerCase()) at = i;
-            if (at < 0 && profiles.length >= MAX_PROFILES) return false;
-            var before = profiles.slice();
-            if (at < 0) profiles.push(p); else profiles[at] = p;
-            if (!save()) { profiles = before; return false; }
-            return p.name;
-        },
-        loadProfile: function (name) {
-            if (!map) load();
-            for (var i = 0; i < profiles.length; i++) {
-                if (profiles[i].name === name) {
-                    setHolds({});
-                    setFeed(false);
-                    map = cleanMap(profiles[i].map);
-                    save();
-                    applyOpts(profiles[i].opts);
-                    return true;
-                }
-            }
-            return false;
-        },
-        deleteProfile: function (name) {
-            if (!map) load();
-            var n = profiles.length;
-            profiles = profiles.filter(function (p) { return p.name !== name; });
-            if (profiles.length === n) return false;
-            save();
-            return true;
         },
         /* Gamepad window open: the buttons are only shown there, not used in the game */
         setSuspended: function (on) {

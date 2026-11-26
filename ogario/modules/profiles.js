@@ -1,6 +1,7 @@
 /* Legend Mod settings profiles.
  * Named sets of the gameplay settings, the theme, the hotkeys and (optionally) the phone controls,
- * built-in starter templates, optional automatic switching per server type / game mode / input
+ * new ones from the Settings presets, gamepad-only sets (buttons and tuning: the named profiles the
+ * Gamepad window had), optional automatic switching per server type / game mode / input
  * device (off by default), a comparison of any two sets, and the last 5 automatic settings backups.
  * Opened from Settings (next to Presets) or a hotkey (no default keys).
  * These are not the player profiles (ogarioPlayerProfiles: nick and skin).
@@ -21,7 +22,8 @@
     var KEY_BACKUPS = 'lmSettingsBackups';
     var KEY_UNDO = 'lmSettingsProfilesUndo';
     var KEY_LAST = 'lmSettingsProfilesLast';
-    var MAX_PROFILES = 30;
+    /* 30 own sets + the up to 20 named profiles moved over from the Gamepad window */
+    var MAX_PROFILES = 50;
     var MAX_BACKUPS = 5;
     /* characters of JSON (about bytes x2 in the browser): profiles and backups never fill the
      * storage the settings themselves need */
@@ -208,7 +210,11 @@
         var data = cleanBundle(p.data);
         if (!id || !name || !data) return null;
         var out = { id: id, name: name, created: num(p.created), updated: num(p.updated), data: data };
-        if (typeof p.tpl === 'string' && has(TEMPLATES, p.tpl)) out.tpl = p.tpl;
+        /* only: 'gp' a set of the gamepad buttons and tuning alone (Update keeps it that way) */
+        if (p.only === 'gp') out.only = 'gp';
+        /* the preset it was made from (the old built-in templates are presets now) */
+        var tpl = typeof p.tpl === 'string' && has(TPL_OLD, p.tpl) ? TPL_OLD[p.tpl] : p.tpl;
+        if (typeof tpl === 'string' && /^[A-Za-z][A-Za-z0-9]{0,30}$/.test(tpl)) out.tpl = tpl;
         return out;
     }
     function cleanProfiles(raw) {
@@ -353,20 +359,37 @@
         return c;
     }
 
-    /* ── Templates: the current settings with a few changes for that use. Only keys that exist
-     * in the shipped gameplay defaults are used (checked again when a template is applied). ── */
-    var TEMPLATES = {
-        ffa: { set: { oppColors: true, oppRings: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showTop5: false, showTargeting: false } },
-        teams: { set: { showTop5: true, teammatesInd: true, showTargeting: true, showMiniMap: true, showMiniMapGhostCells: true, hideTeammatesNames: false, oneColoredTeammates: false, showChat: true } },
-        multibox: { set: { mbRingsP1: true, mbRingsP2: true, mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true } },
-        streaming: { set: { streamMode: true, hideSkinUrl: true, hidecountry: true, showChatImages: false, showChatVideos: false, showDevConsole: false } },
-        mobile: { set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, highDPI: false, showGhostCells: false, borderGlow: false, virusGlow: false, suckAnimation: false, showBgSectors: false, hudBlur: 0 } },
-        competitive: { set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, splitPrediction: true, showStatsFPS: true, showStatsPPS: true } }
-    };
-    function templateName(id) { return has(TEMPLATES, id) ? tx('tpl.' + id) : id; }
-    /* a set based on `base` with the template's gameplay changes on top: { data, keys } */
+    /* ── Starter setups: the presets of Settings (the Presets row; application.lmPresets in
+     * ogario.v4.js), one list for both. A profile from a preset is the current settings with that
+     * preset's changes. Only keys that exist in the shipped gameplay defaults are used (checked
+     * again when the profile is applied). ── */
+    function presets() {
+        var a = window.application;
+        return a && isObj(a.lmPresets) ? a.lmPresets : {};
+    }
+    /* the old built-in templates that a preset replaced (the others kept their id) */
+    var TPL_OLD = { streaming: 'streamer', mobile: 'battery' };
+    /* a text of the shared packs that is not under modules.profiles. ('' when missing) */
+    function gt(key) {
+        var s = typeof window.lmT === 'function' ? window.lmT(key) : '';
+        return s && s !== key ? s : '';
+    }
+    function templateName(id) {
+        var p = presets();
+        return has(p, id) && isObj(p[id]) ? gt(p[id].key) || p[id].en || id : id;
+    }
+    /* the label of a setting that has no menu label, from a preset that sets it */
+    function presetLabel(key) {
+        var p = presets();
+        for (var id in p) {
+            if (has(p, id) && isObj(p[id]) && isObj(p[id].lbl) && has(p[id].lbl, key)) return gt(p[id].lbl[key]);
+        }
+        return '';
+    }
+    /* a set based on `base` with the preset's gameplay changes on top: { data, keys } */
     function applyTemplate(base, id) {
-        var t = TEMPLATES[id];
+        var all = presets();
+        var t = has(all, id) && isObj(all[id]) && isObj(all[id].set) ? all[id] : null;
         var data = clone(base) || {};
         if (!t) return { data: cleanBundle(data), keys: [] };
         data.s = isObj(data.s) ? data.s : {};
@@ -482,6 +505,80 @@
     }
     function newId() { return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
 
+    /* ── Gamepad-only sets: the buttons (lmGamepad) and the gamepad tuning settings, nothing
+     * else. They replace the named profiles the Gamepad window had (lmGamepad.profiles). ── */
+    /* the tuning settings of ogario/gamepad.js (the gamepad* gameplay settings but the on switch) */
+    function gpKeys() {
+        var d = window.LM_SETTINGS_DEFAULTS || {};
+        return Object.keys(d).filter(function (k) { return /^gamepad[A-Z]/.test(k) && k !== 'gamepadEnabled'; });
+    }
+    /* lmGamepad without the old named-profile list (that list lives here now) */
+    function readGamepad() {
+        var g = readJSON('lmGamepad');
+        if (isObj(g) && has(g, 'profiles')) { g = Object.assign({}, g); delete g.profiles; }
+        return g;
+    }
+    /* a button map as stored: index -> action name (ogario/gamepad.js checks it again on load) */
+    function cleanPadMap(m) {
+        var out = {};
+        if (!isObj(m)) return out;
+        for (var i = 0; i < 16; i++) {
+            var v = m[String(i)];
+            if (typeof v === 'string' && /^(?:[A-Za-z0-9]{1,30}|hk-[A-Za-z0-9_-]{1,40})$/.test(v)) out[i] = v;
+        }
+        return out;
+    }
+    /* a gamepad-only set from a button map and tuning values ({ gamepadDeadzone: 0.2, ... }) */
+    function gamepadSet(map, opts) {
+        var s = {};
+        gpKeys().forEach(function (k) {
+            if (!isObj(opts) || !has(opts, k)) return;
+            var v = settingValue(k, opts[k]);
+            if (v !== undefined) s[k] = v;
+        });
+        var d = { gp: { v: 1, map: cleanPadMap(map) } };
+        if (Object.keys(s).length) d.s = s;
+        return cleanBundle(d);
+    }
+    /* the current gamepad buttons and tuning */
+    function captureGamepad() {
+        var live = S(), g = readGamepad(), o = {};
+        if (live && typeof live.toJSON === 'function') live = live.toJSON();
+        gpKeys().forEach(function (k) { if (live && has(live, k)) o[k] = live[k]; });
+        return gamepadSet(isObj(g) ? g.map : null, o);
+    }
+    /* Moves the Gamepad window's named profiles here, as gamepad-only profiles (a name that is
+     * already one is skipped), then takes the list out of lmGamepad. Nothing is removed while the
+     * profiles cannot be saved (storage full): the next start tries again. Returns how many moved. */
+    function migrateGamepadProfiles() {
+        var raw = readJSON('lmGamepad');
+        if (!isObj(raw) || !has(raw, 'profiles')) return 0;
+        var old = Array.isArray(raw.profiles) ? raw.profiles : [];
+        var list = loadProfiles(), before = list.slice(), now = Date.now(), added = 0, left = [], taken = {};
+        list.forEach(function (p) { if (p.only === 'gp') taken[p.name.toLowerCase()] = true; });
+        old.forEach(function (g) {
+            if (!isObj(g)) return;
+            var name = cleanName(typeof g.name === 'string' ? g.name.replace(/[<>]/g, '') : '');
+            if (!name || taken[name.toLowerCase()]) return;
+            var data = gamepadSet(g.map, g.opts);
+            if (!data) return;
+            /* moved before under another name (a full profile had the name) */
+            var dj = JSON.stringify(data);
+            if (before.some(function (p) { return p.only === 'gp' && JSON.stringify(p.data) === dj; })) return;
+            if (list.length >= MAX_PROFILES) { left.push(g); return; }
+            taken[name.toLowerCase()] = true;
+            list.push({ id: newId(), name: uniqueName(name, list), created: now, updated: now, data: data, only: 'gp' });
+            added++;
+        });
+        if (added && !saveProfiles(list)) return 0;
+        var rest = Object.assign({}, raw);
+        if (left.length) rest.profiles = left; else delete rest.profiles;
+        if (!writeText('lmGamepad', JSON.stringify(rest))) return 0;
+        /* the gamepad file reads its buttons again (without the list) */
+        try { var G = window.LMGamepad; if (G && typeof G._reload === 'function') G._reload(); } catch (e) { }
+        return added;
+    }
+
     /* ── The live settings ── */
     function S() { return window.legendmod5 || window.defaultmapsettings || null; }
     function T() { return window.defaultSettings || null; }
@@ -516,7 +613,7 @@
         }
         if (parts.m !== false) data.m = readJSON('lm-mobile-prefs');
         if (parts.m !== false) data.ml = readJSON('lm-mobile-layouts');
-        if (parts.g !== false) data.gp = readJSON('lmGamepad');
+        if (parts.g !== false) data.gp = readGamepad();
         /* P2 fix #97: include zoom bookmarks in the profile snapshot */
         data.zb = readJSON('lm-zoom-bookmarks');
         /* the active HUD layout (backups and Undo; a profile brings one only through its link) */
@@ -545,7 +642,7 @@
             k: readJSON('ogarioHotkeysKnown'),
             m: readJSON('lm-mobile-prefs'),
             ml: readJSON('lm-mobile-layouts'),
-            gp: readJSON('lmGamepad'),
+            gp: readGamepad(),
             /* P2 fix #97: include zoom bookmarks in storage snapshot */
             zb: readJSON('lm-zoom-bookmarks'),
             hl: window.LMHudEditor ? (isObj(hud) && typeof hud.active === 'string' ? hud.active : '') : undefined,
@@ -555,7 +652,8 @@
     function label(part, key) {
         if (EXTRA_PARTS.indexOf(part) >= 0 || part === 'pb') return tx(PART_NAMES[part]);
         var tl = window.textLanguage || {};
-        if (part === 's' || part === 't') return stripTags(tl[key]) || key;
+        /* gamepad tuning: the labels of the Gamepad window */
+        if (part === 's' || part === 't') return stripTags(tl[key]) || (part === 's' && (presetLabel(key) || gt('modules.gamepadui.' + key))) || key;
         if (part === 'm') return has(MOBILE_SCHEMA, key) ? tx('m_' + key) : key;
         if (key === 'spec-messageKey') return tx('chatKey');
         var c = window.hotkeysCommand && window.hotkeysCommand[key], l = '';
@@ -826,6 +924,8 @@
         /* the toast's own text colour on a light veil: readable on every toast colour (it was black) */
         if (opts.reason !== 'undo') html += ' <button type="button" class="btn btn-xs lm-sp-undo-btn" style="margin-left:4px;padding:0 6px;color:inherit;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.6)">' + esc(tx('undo')) + '</button>';
         toast(opts.reason === 'undo' ? 'info' : 'success', html);
+        /* a set saved before the gamepad profiles moved here can bring the old list back */
+        if (c.gp) migrateGamepadProfiles();
         if (isOpen()) render();
         return rows;
     }
@@ -1006,6 +1106,7 @@
 
     /* ── Window ── */
     var tab = 'profiles';
+    var gpView = false;
     var TABS = { profiles: 'tabProfiles', compare: 'tabCompare', auto: 'tabAuto', backups: 'tabBackups' };
     var cmpA = 'cur', cmpB = '';
     function isOpen() { return !!document.getElementById('lm-sp-overlay'); }
@@ -1047,8 +1148,12 @@
             '#lm-sp-overlay .lm-sp-grid > div{display:flex;align-items:center;justify-content:space-between;gap:6px}';
         document.head.appendChild(st);
     }
-    function open() {
+    /* o.only 'gp': at the gamepad profiles (the Gamepad window's shortcut) */
+    function open(o) {
         if (!ready()) { toast('info', esc(tx('loading'))); return; }
+        /* the Gamepad window's shortcut opens the gamepad profiles, the Settings button all of them */
+        if (!isOpen() || isObj(o)) gpView = !!(isObj(o) && o.only === 'gp');
+        if (gpView) tab = 'profiles';
         if (isOpen()) { render(); return; }
         css();
         var $ = jq();
@@ -1088,7 +1193,8 @@
     if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(relabel);
     function close() { var el = document.getElementById('lm-sp-overlay'); if (el) el.parentNode.removeChild(el); }
     function toggle() { if (isOpen()) close(); else open(); }
-    function partsBadge(d) {
+    function partsBadge(d, only) {
+        if (only === 'gp') return gt('pkg.pt.gpBadge') || tx('partGP');
         var p = [];
         if (d.s) p.push(tx('partS'));
         if (d.t) p.push(tx('partT'));
@@ -1125,36 +1231,29 @@
     }
     function renderProfiles(body) {
         var $ = jq(), inc = includes();
+        /* the gamepad profiles (buttons and tuning only): their own view, also opened from the
+         * Gamepad window */
+        if (gpView) $('<div class="lm-sp-note"></div>').text(gt('pkg.pt.gpNote')).appendTo(body);
         var r1 = $('<div class="lm-sp-row"></div>').appendTo(body);
         $('<input type="text" id="lm-sp-name" maxlength="40" autocomplete="off">').attr('placeholder', tx('namePh')).appendTo(r1);
-        btn(tx('saveCurrent'), 'save', null, 'lm-sp-go').appendTo(r1);
-        var r2 = $('<div class="lm-sp-row"></div>').appendTo(body);
-        $('<span></span>').text(tx('include')).appendTo(r2);
-        [['t', 'partT'], ['h', 'partH'], ['m', 'partM'], ['g', 'partGP']].forEach(function (p) {
-            var l = $('<label></label>').appendTo(r2);
-            $('<input type="checkbox">').attr('data-inc', p[0]).prop('checked', !!inc[p[0]]).appendTo(l);
-            l.append(document.createTextNode(tx(p[1])));
-        });
-        var r3 = $('<div class="lm-sp-row"></div>').appendTo(body);
-        $('<span></span>').text(tx('template')).appendTo(r3);
-        var sel = $('<select id="lm-sp-tpl"></select>').appendTo(r3);
-        Object.keys(TEMPLATES).forEach(function (id) { $('<option></option>').val(id).text(templateName(id)).appendTo(sel); });
-        btn(tx('create'), 'tpl').appendTo(r3);
-        $('<div class="lm-sp-note"></div>').text(tx('tplNote')).appendTo(body);
+        if (gpView) btn(gt('pkg.pt.saveGp') || tx('saveCurrent'), 'savegp', null, 'lm-sp-go').appendTo(r1);
+        else btn(tx('saveCurrent'), 'save', null, 'lm-sp-go').appendTo(r1);
+        btn(gpView ? gt('pkg.pt.allView') : gt('pkg.pt.gpView'), 'gpview', null, 'lm-sp-gpview').appendTo(r1);
+        if (!gpView) renderProfileSetup(body, inc);
         var u = loadUndo();
         if (u) {
             var r4 = $('<div class="lm-sp-row"></div>').appendTo(body);
             btn(tx('undoLast') + (u.name ? ' (' + u.name + ')' : ''), 'undo', null, 'lm-sp-undo').appendTo(r4);
         }
-        var list = loadProfiles();
-        if (!list.length) { $('<div class="lm-sp-note"></div>').text(tx('empty')).appendTo(body); return; }
+        var list = loadProfiles().filter(function (p) { return !gpView || p.only === 'gp'; });
+        if (!list.length) { $('<div class="lm-sp-note"></div>').text(gt(gpView ? 'pkg.pt.gpEmpty' : 'pkg.pt.empty')).appendTo(body); return; }
         var last = null;
         try { last = window.localStorage.getItem(KEY_LAST); } catch (e) { }
         list.forEach(function (p) {
             var it = $('<div class="lm-sp-item"></div>').appendTo(body);
             var nm = $('<div class="lm-sp-name"></div>').appendTo(it);
             $('<b></b>').text(p.name).appendTo(nm);
-            $('<small></small>').text(partsBadge(p.data) + (p.updated ? ' \u00b7 ' + when(p.updated) : '') + (p.id === last ? ' \u00b7 ' + tx('lastApplied') : '')).appendTo(nm);
+            $('<small></small>').text(partsBadge(p.data, p.only) + (p.updated ? ' \u00b7 ' + when(p.updated) : '') + (p.id === last ? ' \u00b7 ' + tx('lastApplied') : '')).appendTo(nm);
             var acts = $('<div class="lm-sp-acts"></div>').appendTo(it);
             btn(tx('apply'), 'apply', p.id, 'lm-sp-go').appendTo(acts);
             btn(tx('update'), 'update', p.id).appendTo(acts);
@@ -1163,6 +1262,27 @@
             btn(tx('compare'), 'cmp', 'p:' + p.id).appendTo(acts);
             btn(tx('del'), 'del', p.id, 'lm-sp-warn').appendTo(acts);
         });
+    }
+    /* what a full profile takes, and a new one from a preset */
+    function renderProfileSetup(body, inc) {
+        var $ = jq();
+        var r2 = $('<div class="lm-sp-row"></div>').appendTo(body);
+        $('<span></span>').text(tx('include')).appendTo(r2);
+        [['t', 'partT'], ['h', 'partH'], ['m', 'partM'], ['g', 'partGP']].forEach(function (p) {
+            var l = $('<label></label>').appendTo(r2);
+            $('<input type="checkbox">').attr('data-inc', p[0]).prop('checked', !!inc[p[0]]).appendTo(l);
+            l.append(document.createTextNode(tx(p[1])));
+        });
+        /* a new profile from one of the Settings presets (the menu builds the list) */
+        var pids = Object.keys(presets());
+        if (pids.length) {
+            var r3 = $('<div class="lm-sp-row"></div>').appendTo(body);
+            $('<span></span>').text(gt('pkg.pt.fromPreset')).appendTo(r3);
+            var sel = $('<select id="lm-sp-tpl"></select>').appendTo(r3);
+            pids.forEach(function (id) { $('<option></option>').val(id).text(templateName(id)).appendTo(sel); });
+            btn(tx('create'), 'tpl').appendTo(r3);
+            $('<div class="lm-sp-note"></div>').text(gt('pkg.pt.fromPresetNote')).appendTo(body);
+        }
     }
     function sourceOptions(sel, value) {
         var $ = jq();
@@ -1283,7 +1403,8 @@
         var $ = jq(), list = loadProfiles(), p = null, i;
         for (i = 0; i < list.length; i++) if (list[i].id === id) { p = list[i]; break; }
         var now = Date.now();
-        if (a === 'save' || a === 'tpl' || a === 'dup') {
+        if (a === 'gpview') { gpView = !gpView; render(); return; }
+        if (a === 'save' || a === 'savegp' || a === 'tpl' || a === 'dup') {
             if (list.length >= MAX_PROFILES) { toast('warning', esc(tx('tooMany'))); return; }
         }
         if (a === 'save') {
@@ -1295,9 +1416,17 @@
             var np = { id: newId(), name: uniqueName(name, list), created: now, updated: now, data: data };
             list.push(np);
             if (saveProfiles(list)) toast('success', esc(tx('saved', np.name)));
+        } else if (a === 'savegp') {
+            var gname = cleanName($('#lm-sp-name').val());
+            if (!gname) { toast('info', esc(tx('needName'))); $('#lm-sp-name').focus(); return; }
+            var gdata = captureGamepad();
+            if (!gdata) return;
+            var gpp = { id: newId(), name: uniqueName(gname, list), created: now, updated: now, data: gdata, only: 'gp' };
+            list.push(gpp);
+            if (saveProfiles(list)) toast('success', esc(tx('saved', gpp.name)));
         } else if (a === 'tpl') {
             var tid = $('#lm-sp-tpl').val();
-            if (!has(TEMPLATES, tid)) return;
+            if (!has(presets(), tid)) return;
             var inc2 = includes();
             var cur = captureCurrent({ t: inc2.t, h: inc2.h, m: inc2.m, g: inc2.g, hl: false });
             var res = applyTemplate(cur, tid);
@@ -1313,7 +1442,7 @@
             applyProfile(p);
         } else if (a === 'update' && p) {
             if (!window.confirm(tx('confirmUpdate', p.name))) return;
-            p.data = captureCurrent({ t: !!p.data.t, h: !!p.data.h, m: !!(p.data.m || p.data.ml), g: !!p.data.gp, hl: false }) || p.data;
+            p.data = (p.only === 'gp' ? captureGamepad() : captureCurrent({ t: !!p.data.t, h: !!p.data.h, m: !!(p.data.m || p.data.ml), g: !!p.data.gp, hl: false })) || p.data;
             p.updated = now;
             if (saveProfiles(list)) toast('success', esc(tx('saved', p.name)));
         } else if (a === 'rename' && p) {
@@ -1325,6 +1454,7 @@
         } else if (a === 'dup' && p) {
             var dp = { id: newId(), name: uniqueName(cleanName(p.name.slice(0, NAME_MAX - 12) + tx('copySuffix')), list), created: now, updated: now, data: clone(p.data) };
             if (p.tpl) dp.tpl = p.tpl;
+            if (p.only) dp.only = p.only;
             list.splice(i + 1, 0, dp);
             saveProfiles(list);
         } else if (a === 'del' && p) {
@@ -1360,6 +1490,7 @@
         if (started) return;
         started = true;
         installHooks();
+        migrateGamepadProfiles();
         var $ = jq();
         $(document).on('click', '.lm-sp-undo-btn', function (e) { e.preventDefault(); e.stopPropagation(); undo(); });
         $(document).on('click', '.lm-sp-auto-now', function (e) { e.preventDefault(); e.stopPropagation(); if (deferredKey) evaluateRules(true); });
@@ -1391,7 +1522,7 @@
             cleanBundle: cleanBundle, cleanProfiles: cleanProfiles, cleanBackups: cleanBackups, cleanRules: cleanRules,
             diffBundles: diffBundles, effective: effective, applyTemplate: applyTemplate, pushBackup: pushBackup, saveBackups: saveBackups,
             writeTransaction: writeTransaction, fillNewDefaults: fillNewDefaults, pickRule: pickRule,
-            captureCurrent: captureCurrent, TEMPLATES: TEMPLATES, MAX_BACKUPS: MAX_BACKUPS, KEY_BACKUPS: KEY_BACKUPS,
+            captureCurrent: captureCurrent, presets: presets, TPL_OLD: TPL_OLD, gamepadSet: gamepadSet, captureGamepad: captureGamepad, migrateGamepadProfiles: migrateGamepadProfiles, loadProfiles: loadProfiles, MAX_PROFILES: MAX_PROFILES, MAX_BACKUPS: MAX_BACKUPS, KEY_BACKUPS: KEY_BACKUPS,
             listen: listen, evaluateRules: evaluateRules
         }
     };

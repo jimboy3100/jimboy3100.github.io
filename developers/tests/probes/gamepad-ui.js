@@ -37,16 +37,36 @@
     if (!tab) { fail.push('tab ' + t + ' missing'); return; }
     tab.click();
     if (t === 'tuning' && !document.getElementById('lm-gp-gamepadMoveRange')) fail.push('sensitivity sliders missing');
-    if (t === 'profiles' && !document.getElementById('lm-gp-profile-name')) fail.push('profile name field missing');
+    /* named setups are Settings profiles: this tab only opens them */
+    if (t === 'profiles' && (!document.getElementById('lm-gp-profiles-open') || document.getElementById('lm-gp-profile-name'))) fail.push('profiles tab: no shortcut to the gamepad profiles, or an own profile list');
     if (t === 'test' && !document.getElementById('lm-gp-stick-l')) fail.push('stick view missing');
   });
-  // a profile round trip, then the storage as it was
-  var saved = G.saveProfile('probe profile');
-  if (saved !== 'probe profile' || G.profiles().indexOf('probe profile') < 0) fail.push('profile not saved');
-  if (!G.deleteProfile('probe profile')) fail.push('profile not deleted');
+  if ('saveProfile' in G || 'profiles' in G) fail.push('the gamepad still has profile functions of its own');
+  // the shortcut: the Gamepad window closes (the pad works again) and Settings profiles open at the gamepad profiles
+  document.getElementById('lm-gp-tab-profiles').click();
+  var go = document.getElementById('lm-gp-profiles-open');
+  if (go && window.LMProfiles) {
+    go.click();
+    await sleep(80);
+    if (document.getElementById('lm-gp-modal')) fail.push('the shortcut left the Gamepad window open');
+    var ov = document.getElementById('lm-sp-overlay');
+    if (!ov) fail.push('the shortcut did not open Settings profiles');
+    else {
+      if (!ov.querySelector('[data-act=savegp]')) fail.push('Settings profiles not at the gamepad profiles (no Save gamepad)');
+      if (ov.querySelector('#lm-sp-tpl') || ov.querySelector('[data-act=save]')) fail.push('the gamepad view shows the full-profile controls');
+      var wr = ov.querySelector('.lm-sp-win').getBoundingClientRect();
+      if (wr.left < 0 || wr.top < 0 || wr.right > innerWidth + 1 || wr.bottom > innerHeight + 1) fail.push('gamepad profiles view does not fit the screen');
+      var back = ov.querySelector('[data-act=gpview]');
+      if (back) back.click();
+      if (!document.querySelector('#lm-sp-overlay [data-act=save]')) fail.push('"All profiles" does not go back to the full view');
+      $('#lm-sp-overlay .lm-sp-x').trigger('click');
+    }
+    G.openWindow();
+    for (var k = 0; k < 40 && !document.getElementById('lm-gp-modal'); k++) await sleep(100);
+  }
   try { if (stored === null) localStorage.removeItem('lmGamepad'); else localStorage.setItem('lmGamepad', stored); } catch (e) { }
   G._reload();
-  document.getElementById('lm-gp-close').click();
+  if (document.getElementById('lm-gp-close')) document.getElementById('lm-gp-close').click();
   await sleep(50);
   if (document.getElementById('lm-gp-modal') || document.getElementById('lm-gp-backdrop')) fail.push('close button did not close the window');
   // the hotkey opens and closes it

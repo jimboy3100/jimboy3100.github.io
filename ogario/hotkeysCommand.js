@@ -869,17 +869,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-hotkeyConflicts': {
-				get label() {
-					return lmT('settings.hk-hotkeyConflicts');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMSmallTools) window.LMSmallTools.toggle('conflicts');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-screenshotMode': {
 				get label() {
 					return lmT('settings.hk-screenshotMode');

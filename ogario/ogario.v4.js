@@ -25025,7 +25025,8 @@ function thelegendmodproject() {
             box.append(row('stickyCell'));
             box.append(head('modules.gamepadui.title', 'lmHkGamepad'));
             box.append(row('gamepadEnabled'));
-            /* Gamepad window: button map, sensitivity, dead zone, profiles and a live test
+            /* Gamepad window: button map, sensitivity, dead zone, a shortcut to the gamepad
+             * profiles (Settings profiles) and a live test
              * (ogario/gamepad.js loads ogario/modules/gamepad-ui.js the first time it opens) */
             var gpRow = $('<div class="row lm-hk-ctl lm-hk-btnrow"></div>');
             $('<button type="button" id="lm-gamepad-btn" class="btn btn-sm btn-block btn-primary"></button>')
@@ -25038,6 +25039,26 @@ function thelegendmodproject() {
                 });
             box.append(gpRow);
             box.append($('<p class="lm-hk-note"></p>').attr('data-i18n', 'pkg.hk.instantNote').text(lmT('pkg.hk.instantNote')));
+            /* All conflicts at once: keys bound twice or kept by the browser, mouse and gamepad
+             * buttons that run a command a key runs too, each with a jump to its row (the list:
+             * LMSmallTools.renderConflicts, ogario/modules/smalltools.js; built again after each
+             * key change while it is shown) */
+            box.append(head('settings.hk-hotkeyConflicts', 'lmHkConflicts'));
+            var cfRow = $('<div class="row lm-hk-ctl lm-hk-btnrow"></div>');
+            var cfList = $('<div id="lm-hk-conf-list" style="display:none;text-align:left;font-size:12px;padding:0 2% 6px;"></div>');
+            $('<button type="button" id="lm-hk-conf-btn" class="btn btn-sm btn-block btn-warning"></button>')
+                .attr('data-i18n', 'pkg.pt.hkCheck').text(lmT('pkg.pt.hkCheck'))
+                .appendTo(cfRow)
+                .on('click', function (e) {
+                    e.preventDefault();
+                    var st = window.LMSmallTools;
+                    if (!st || typeof st.renderConflicts !== 'function') { if (window.toastr) toastr.info(lmT('pkg.pt.hkLoading')); return; }
+                    if (cfList.is(':visible')) { cfList.hide().empty(); return; }
+                    cfList.show();
+                    st.renderConflicts(cfList[0]);
+                    try { cfg.perfectScrollbar('update'); } catch (eP) { }
+                });
+            box.append(cfRow, cfList);
             cfg.prepend(box);
             box.after(head('pkg.hk.keyboard', 'lmHkKeyboard'));
             mouse.forEach(function (m) {
@@ -25054,6 +25075,10 @@ function thelegendmodproject() {
             box.find('.switchery').attr({ tabindex: '0', role: 'switch' });
             $(document).on('change', '#lm-hk-controls input.lm-hk-switch', function () {
                 app.setSettings(this.id, this.checked);
+            });
+            /* a mouse button or its command changed: the conflict list (when shown) follows */
+            $(document).on('change', '#lm-hk-controls input.lm-hk-switch, #lm-hk-controls select', function () {
+                if (window.LMSmallTools && typeof window.LMSmallTools.refreshConflicts === 'function') { try { window.LMSmallTools.refreshConflicts(); } catch (eRc) { } }
             });
             if (!document.getElementById('lm-hk-controls-style')) {
                 var st = document.createElement('style');
@@ -25485,15 +25510,22 @@ function thelegendmodproject() {
                  * their side effects run); the old values are kept for Undo. Nothing changes
                  * without a click. */
                 var _lmTx = function (k, en) { var s = window.lmT && window.lmT(k); return (!s || s === k) ? en : s; };
+                /* The one list of starter setups: this row applies one, and Settings profiles
+                 * (ogario/modules/profiles.js, application.lmPresets) create a profile from one.
+                 * lbl: text keys of settings that have no menu label. */
                 var presets = {
-                    competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStatsFPS: true, showStatsPPS: true } },
-                    battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0 } },
-                    /* tip: what it changes and what it leaves (it is not a privacy switch: Stream
-                     * mode, Hide skin URL and the stream overlay's own switches are) */
-                    streamer: { key: 'lmPresetStreamer', en: 'Streamer', tip: 'pkg.i.streamerTip', set: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false } },
+                    competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStatsFPS: true, showStatsPPS: true, splitPrediction: true } },
+                    battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0, highDPI: false, showBgSectors: false } },
+                    /* tip: what it changes and what it leaves (not a privacy guarantee: nothing drawn
+                     * in the game is hidden, and the stream overlay has its own switches) */
+                    streamer: { key: 'lmPresetStreamer', en: 'Streamer', tip: 'pkg.pt.streamerTip', set: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false, streamMode: true, hideSkinUrl: true }, lbl: { streamMode: 'pkg.pt.streamMode', hideSkinUrl: 'pkg.pt.hideSkinUrl' } },
                     reducedMotion: { key: 'lmPresetReducedMotion', en: 'Reduced motion', set: { reducedMotion: true, jellyPhisycs: false, suckAnimation: false, animatedRainbowColor: false, rainbowMapBorders: false, tweenMaxEffect: false } },
-                    cleanHud: { key: 'lmPresetCleanHud', en: 'Clean HUD', set: { showTop5: false, showTargeting: false, showTime: false, showLbData: false, top5skins: false, showStatsN16: false, showStatsWorldSize: false, showStatsDecayInfo: false, showStatsServerHz: false, showMiniMapGuides: false, showExtraMiniMapGuides: false } }
+                    cleanHud: { key: 'lmPresetCleanHud', en: 'Clean HUD', set: { showTop5: false, showTargeting: false, showTime: false, showLbData: false, top5skins: false, showStatsN16: false, showStatsWorldSize: false, showStatsDecayInfo: false, showStatsServerHz: false, showMiniMapGuides: false, showExtraMiniMapGuides: false } },
+                    ffa: { key: 'pkg.pt.presetFfa', en: 'FFA', set: { oppColors: true, oppRings: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showTop5: false, showTargeting: false } },
+                    teams: { key: 'pkg.pt.presetTeams', en: 'Teams', set: { showTop5: true, teammatesInd: true, showTargeting: true, showMiniMap: true, showMiniMapGhostCells: true, hideTeammatesNames: false, oneColoredTeammates: false, showChat: true } },
+                    multibox: { key: 'pkg.pt.presetMultibox', en: 'Multibox', set: { mbRingsP1: true, mbRingsP2: true, mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true } }
                 };
+                application.lmPresets = presets;
                 var setOpt = function (k, v) {
                     var cb = document.getElementById(k);
                     if (cb && cb.type === 'checkbox' && $(cb).closest('#og-options').length) {
@@ -25509,6 +25541,9 @@ function thelegendmodproject() {
                     var sl = $('#' + k + '-slider');
                     if (sl.length && sl.closest('#og-options').length) { sl.val(v).trigger('input').trigger('change'); return; }
                     defaultmapsettings[k] = v;
+                    /* the eye buttons next to the nick and the skin (no switch in Settings) */
+                    var after = k === 'streamMode' ? 'setStreamMode' : k === 'hideSkinUrl' ? 'setHideSkinUrl' : '';
+                    if (after && typeof application[after] === 'function') application[after]();
                 };
                 var undoKey = 'lmPresetUndo';
                 var undoSnap = null;
@@ -25536,7 +25571,7 @@ function thelegendmodproject() {
                     var keys = Object.keys(p.set).filter(function (k) { return defaultmapsettings.hasOwnProperty(k); });
                     var lines = keys.map(function (k) {
                         var v = p.set[k];
-                        return '- ' + String(textLanguage[k] || k).replace(/<[^>]*>/g, '').trim() + ': ' + (v === true ? 'ON' : v === false ? 'OFF' : v);
+                        return '- ' + String(textLanguage[k] || (p.lbl && p.lbl[k] && _lmTx(p.lbl[k], '')) || k).replace(/<[^>]*>/g, '').trim() + ': ' + (v === true ? 'ON' : v === false ? 'OFF' : v);
                     });
                     var tip = p.tip ? _lmTx(p.tip, '') : '';
                     if (!window.confirm(_lmTx(p.key, p.en) + '\n' + _lmTx('lmPresetConfirm', 'Apply this preset? These settings change (Undo puts them back):') + '\n\n' + lines.join('\n') + (tip ? '\n\n' + tip : ''))) return false;
@@ -81684,6 +81719,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 !Array.isArray(storedHotkeys)
             ) {
                 hotkeys = storedHotkeys;
+                /* removed commands: their key is free again (Hotkey conflicts is a list in this
+                 * window now, no window of its own) */
+                for (var _lmGone in hotkeys) {
+                    if (hotkeys.hasOwnProperty(_lmGone) && hotkeys[_lmGone] === 'hk-hotkeyConflicts') delete hotkeys[_lmGone];
+                }
                 this.migrateBrowserSpecificHotkeys();
                 this.addMissingDefaultHotkeys();
                 this.syncMessageKey();
@@ -81889,6 +81929,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         setup.openSnapshot = JSON.stringify(hotkeys);
                     }
                     $('#hotkeys').fadeIn(500);
+                    /* a conflict list left open shows the keys as they are now */
+                    if (window.LMSmallTools && typeof window.LMSmallTools.refreshConflicts === 'function') { try { window.LMSmallTools.refreshConflicts(); } catch (eRc) { } }
                     $('#hotkeys-cfg').perfectScrollbar('update');
                     resetonkeydown();
                 }),
@@ -82100,6 +82142,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 /* also when the chat key was taken by another command or deleted */
                 this.syncMessageKey();
+                /* the conflict list of this window, when it is shown */
+                if (window.LMSmallTools && typeof window.LMSmallTools.refreshConflicts === 'function') { try { window.LMSmallTools.refreshConflicts(); } catch (eRc) { } }
             }
         },
         /*
