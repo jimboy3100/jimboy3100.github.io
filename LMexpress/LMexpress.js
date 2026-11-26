@@ -1184,12 +1184,18 @@ function copyToClipboard(element) {
     $temp.remove();
 }
 
+/* a board's rows on their own lines (application.boardText): .text() ran the rows together */
+function _lmBoardHtml(id) {
+    var t = window.application && typeof application.boardText === 'function' ? application.boardText(id) : $('#' + id).text();
+    return (t.indexOf('\n') !== -1 ? '<br>' : '') + _lmEscHtml(t).replace(/\n/g, '<br>');
+}
+
 function copyToClipboardAll() {
     $("#CopyTkPwLb").remove();
     if ($("#top5-pos").text() != "") {
-        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmEscHtml($("#leaderboard-positions").text()) + '<br>Teamboard:' + _lmEscHtml($("#top5-pos").text()) + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>'); // i18n-ok: copied text is pasted to teammates/Discord, kept the same for everyone
+        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmBoardHtml('leaderboard-positions') + '<br>Teamboard:' + _lmBoardHtml('top5-pos') + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>'); // i18n-ok: copied text is pasted to teammates/Discord, kept the same for everyone
     } else {
-        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmEscHtml($("#leaderboard-positions").text()) + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>'); // i18n-ok: copied text is pasted to teammates/Discord, kept the same for everyone
+        $("#server-join").after('<er id="CopyTkPwLb" style="display: none;">Server: ' + _lmEscHtml(CopyTkPwLb2) + '<br>Leaderboard: ' + _lmBoardHtml('leaderboard-positions') + '<br>My Game Name: ' + _lmEscHtml($("#nick").val()) + '</er>'); // i18n-ok: copied text is pasted to teammates/Discord, kept the same for everyone
     }
     copyToClipboard('er#CopyTkPwLb');
 }
@@ -7165,11 +7171,12 @@ function initializeLM(modVersion) {
 
     $("#logTitle").after('<a href="#" id="notesclear" style="color: lightgrey;float: right;position: absolute;right: 12px;top: 9px;" class="main-color" onclick="$(\'#log\').html(\'\');" data-toggle="" data-placement="left" data-original-title="' + _lmxE('pack.clearList') + '"><i class="fa fa-trash fa-2"></i></a>');
     $("#searchBtn").tooltip('disable');
+    /* the same copy as the hotkey (one row per line) */
     $("#copyLBBtn").click(function () {
-        copy($("#leaderboard-positions").text());
+        if (window.application && typeof application.copyLb === 'function') application.copyLb(); else copy($("#leaderboard-positions").text());
     });
     $("#dropDown>#copyLBBtn").click(function () {
-        copy($("#leaderboard-positions").text());
+        if (window.application && typeof application.copyLb === 'function') application.copyLb(); else copy($("#leaderboard-positions").text());
     });
     $("#lastIPBtn").click(function () {
         lastIP = localStorage.getItem("lastIP");

@@ -23241,10 +23241,29 @@ function thelegendmodproject() {
             this.displayChatInfo(defaultmapsettings.autoResp, 'autoRespMsg');
             this.syncHotkeyOption('autoResp');
         },
+        /* a board (leaderboard-positions, top5-pos) as text, one row per line: .text() ran the
+         * rows together ("1. Alice2. Bob3. ..."). A row made only of other rows (the battle
+         * royale lines) is split into them; line breaks inside a row become spaces. */
+        boardText(id) {
+            var rows = [];
+            var add = function (box) {
+                for (var c = box.firstElementChild; c; c = c.nextElementSibling) {
+                    var own = false;
+                    for (var n = c.firstChild; n && !own; n = n.nextSibling) own = n.nodeType === 3 && /\S/.test(n.nodeValue);
+                    if (!own && c.tagName === 'SPAN' && c.firstElementChild && c.firstElementChild.tagName === 'SPAN') { add(c); continue; }
+                    var s = String(c.textContent || '').replace(/\s*\n\s*/g, ' ').trim();
+                    if (s) rows.push(s);
+                }
+            };
+            var el = document.getElementById(id);
+            if (el) add(el);
+            return rows.join('\n');
+        },
         copyLb() {
-            var input = $('<input>');
+            /* a textarea keeps the line breaks (an input drops them) */
+            var input = $('<textarea style="position:fixed;left:-9999px;top:0;">');
             $('body').append(input);
-            input.val($('#leaderboard-positions').text()).select();
+            input.val(this.boardText('leaderboard-positions')).select();
             try {
                 document.execCommand('copy');
             } catch (ogarcopierlbcather) { }
