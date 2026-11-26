@@ -7,14 +7,14 @@
 
 // By comparing Url and Websocket, imagine how your websocket should below
 // If repl.it not loading, wait or make a new repo. Sometimes repl.it bugs
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'; // TODO: Remove when agar.io proxies use valid certs
+// TLS: only skip cert verification on request-promise calls to agar.io proxies
+// (they use self-signed certs). Do NOT globally disable TLS via process.env.
 const WebSocket = require('ws'),
     { murmur2 } = require('murmurhash-js'),
     buffers = require('./buffers'),
     algorithm = require('./algorithm'),
     Reader = require('./reader'),
     Entity = require('./entity'),
-	//requester = require("request-promise"),
     requester = require("request-promise").defaults({
     strictSSL: false,
     rejectUnauthorized: false
@@ -37,14 +37,18 @@ logger.warn(`[SERVER]: If error occurs on port ${config.server.port} try 8083 on
 if (config.server.update) {
     requester(config.server.link, (err, req, data) => {
         if (err) { logger.error('[SERVER]: Update check failed:', err.message); return; }
-        const requesterData = Buffer.from(data).toString()
-        requesterConfig = JSON.parse(requesterData)
+        try {
+            const requesterData = Buffer.from(data).toString()
+            const requesterConfig = JSON.parse(requesterData)
 
-        if (config.server.version < requesterConfig.server.version) {
-            logger.warn('[SERVER]: A new update was found!')
-            logger.warn('[SERVER]: Download -> https://jimboy3100.github.io/ExampleScripts/agario-bots2')
-        } else {
-            logger.good('[SERVER]: No updates found!')
+            if (config.server.version < requesterConfig.server.version) {
+                logger.warn('[SERVER]: A new update was found!')
+                logger.warn('[SERVER]: Download -> https://jimboy3100.github.io/ExampleScripts/agario-bots2')
+            } else {
+                logger.good('[SERVER]: No updates found!')
+            }
+        } catch (e) {
+            logger.error('[SERVER]: Update check: invalid response:', e.message)
         }
     })
 } else {
@@ -224,8 +228,13 @@ class Bot {
                 this.followMouseTimeout = null
             }
             this.followMouse = false
-            //userWS.send(Buffer.from([4, connectedBots, spawnedBots, serverPlayers]))
-            //if(!this.gotCaptcha) setTimeout(this.connect.bind(this), 1000)
+        }
+        // Null the ws reference so GC can collect the socket
+        if (this.ws) {
+            this.ws.onmessage = null
+            this.ws.onerror = null
+            this.ws.onclose = null
+            this.ws = null
         }
     }
 	handletokens(){
@@ -500,10 +509,13 @@ class Bot {
     }
 }
 
+let shutdownInterval = null
+
 new WebSocket.Server({
     port: config.server.port
 }).on('connection', ws => {
-    if (statusInterval) clearInterval(statusInterval)
+    // Clear any previous status interval before creating a new one
+    if (statusInterval) { clearInterval(statusInterval); statusInterval = null; }
     statusInterval = setInterval(() => {
         if (userWS && userWS.readyState === WebSocket.OPEN) {
             userWS.send(Buffer.from([4, connectedBots, spawnedBots]))
@@ -515,19 +527,20 @@ new WebSocket.Server({
     ws.on('message', buffer => {
 		var bufStr = buffer.toString()
 		if (bufStr.includes('"message"')){
-			var data = JSON.parse(bufStr).msg;
-			//console.log(JSON.parse(data))
-			//console.log(Object.values(JSON.parse(data)))
-			var temp = Object.values(JSON.parse(data))	
-			global.globalDataCounter++;
-			global.globalData[global.globalDataCounter]=temp.join("")
-			//console.log("Captcha token " + global.globalDataCounter + " recieved")
-			
-                        if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && user.startedBots){
-							userBots.push(new Bot())
-						}
+			try {
+				var data = JSON.parse(bufStr).msg;
+				var temp = Object.values(JSON.parse(data))
+				global.globalDataCounter++;
+				global.globalData[global.globalDataCounter]=temp.join("")
+
+				if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && user.startedBots){
+					userBots.push(new Bot())
+				}
+			} catch (e) {
+				logger.error('[SERVER]: Malformed control message:', e.message)
+			}
 		}
-		else{		
+		else{
         const reader = new Reader(buffer)
         switch (reader.readUint8()) {
             case 0:
@@ -537,7 +550,6 @@ new WebSocket.Server({
                     game.clientVersion = reader.readUint32()
 					logger.good('[SERVER]: Server:', game.url, ' protocol version:', game.protocolVersion, ' client version: ', game.clientVersion)
                     user.isAlive = !!reader.readUint8()
-                    //bots.name = decodeURIComponent(escape(reader.readString()))
 					bots.name = reader.readString()
                     bots.amount = reader.readUint8()
                     dataBot.connect()
@@ -553,9 +565,12 @@ new WebSocket.Server({
                     stoppingBots = true
                     ws.send(Buffer.from([1]))
                     let seconds = 0
-                    setInterval(() => {
+                    if (shutdownInterval) clearInterval(shutdownInterval)
+                    shutdownInterval = setInterval(() => {
                         if (seconds === 1) {
                             ws.send(Buffer.from([2]))
+                            clearInterval(shutdownInterval)
+                            shutdownInterval = null
                             setTimeout(process.exit, 1000)
                         } else {
                             logger.warn(`[SERVER]: Stopping bots in ${1 - seconds} seconds`)
@@ -588,17 +603,25 @@ new WebSocket.Server({
 		}
     })
     ws.on('close', () => {
+        // Clean up status interval on disconnect
+        if (statusInterval) { clearInterval(statusInterval); statusInterval = null; }
         if (user.startedBots && !stoppingBots) {
             stoppingBots = true
             let seconds = 0
-            setInterval(() => {
-                if (seconds === 1) process.exit()
+            if (shutdownInterval) clearInterval(shutdownInterval)
+            shutdownInterval = setInterval(() => {
+                if (seconds === 1) {
+                    clearInterval(shutdownInterval)
+                    shutdownInterval = null
+                    process.exit()
+                }
                 else {
                     logger.warn(`[SERVER]: Stopping bots in ${1 - seconds} seconds`)
                     seconds++
                 }
             }, 1000)
         }
+        userWS = null
         logger.error('[SERVER]: User disconnected!')
     })
 })
