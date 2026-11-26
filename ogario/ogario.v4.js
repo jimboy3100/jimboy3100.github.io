@@ -21975,6 +21975,8 @@ function thelegendmodproject() {
             this.addCustomCSS('hudScaleVarCSS', ':root{--lm-hud-scale:' + _lmCssNum(hs, 0.3, 2, 1) + ';--lm-hud-fs:' + t + 'px}');
             $('#time-hud').width(e);
             $('#leaderboard-hud').css('transform', 'scale(' + hs + ')');
+            /* smaller when that leaderboard would reach over the minimap */
+            if (window.application && typeof window.application._lmLbFit === 'function') window.application._lmLbFit();
             $('#top5-hud').css('transform', 'scale(' + hs + ')');
             $('#time-hud').css('top', a + 'px');
             /* the clock's own top: it moves up from there only when the minimap would cover it (_lmClockClear) */
@@ -23745,12 +23747,7 @@ function thelegendmodproject() {
             if (!(base >= 0)) return;
             var top = base, right = '', m = mm.getBoundingClientRect();
             if (m.height && mm.getClientRects().length) {
-                var rowsTop = m.top;
-                for (var c = mm.firstElementChild; c; c = c.nextElementSibling) {
-                    if (c.offsetTop >= 0 || !c.getClientRects().length) continue;
-                    var r = c.getBoundingClientRect();
-                    if (r.height && r.top < rowsTop) rowsTop = r.top;
-                }
+                var rowsTop = this._lmMmRowsTop(mm, m);
                 var h = t.offsetHeight;
                 if (base + h + 4 > rowsTop) {
                     var lb = document.getElementById('leaderboard-hud'), lbBottom = 0;
@@ -23761,6 +23758,57 @@ function thelegendmodproject() {
             }
             if (t.style.top !== top + 'px') t.style.top = top + 'px';
             if (t.style.right !== right) t.style.right = right;
+        },
+        /* the top of the minimap with the button rows shown above it (shortcuts, timer, images...) */
+        _lmMmRowsTop(mm, m) {
+            var rowsTop = m.top;
+            for (var c = mm.firstElementChild; c; c = c.nextElementSibling) {
+                if (c.offsetTop >= 0 || !c.getClientRects().length) continue;
+                var r = c.getBoundingClientRect();
+                if (r.height && r.top < rowsTop) rowsTop = r.top;
+            }
+            return rowsTop;
+        },
+        /* A long leaderboard (20 rows on a 768 px high window, e.g. on Expanding Land) reached down over
+         * the minimap and its button rows: then it is drawn smaller from its top right corner until it
+         * ends above them (at most down to half the HUD scale; it is never hidden), and at the HUD scale
+         * again once it fits. A HUD layout that moves the leaderboard or the minimap keeps its own place
+         * and size; phones fit their leaderboard themselves (LMmobile.js). Runs when the leaderboard, the
+         * minimap or the window changes size and with setHudScale, never per frame. */
+        _lmLbFit() {
+            var lb = document.getElementById('leaderboard-hud'), mm = document.getElementById('minimap-hud');
+            if (!lb || lb.style.getPropertyPriority('transform') === 'important') return;
+            if (this._lmClockPhone === undefined) this._lmClockPhone = !!(window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches);
+            if (this._lmClockPhone) return;
+            this._lmLbFitWatch(lb, mm);
+            var hs = _lmHudScaleNow(), s = hs, ed = window.LMHudEditor;
+            var owned = ed && typeof ed.owns === 'function' && (ed.owns('leaderboard') || ed.owns('minimap'));
+            if (!owned && mm && lb.getClientRects().length && mm.getClientRects().length) {
+                var r = lb.getBoundingClientRect(), m = mm.getBoundingClientRect(), oh = lb.offsetHeight;
+                if (oh && m.height && r.left < m.right && r.right > m.left) {
+                    var room = this._lmMmRowsTop(mm, m) - 6 - r.top;
+                    if (oh * hs > room) s = Math.max(hs / 2, Math.floor(room / oh * 1000) / 1000);
+                }
+            }
+            var v = 'scale(' + s + ')';
+            if (lb.style.transform !== v) lb.style.transform = v;
+        },
+        /* once: a size change of the leaderboard (rows), the minimap or its button rows, or of the
+         * window refits it in the next frame (the scale itself changes no observed size) */
+        _lmLbFitWatch(lb, mm) {
+            if (this._lmLbFitRo || typeof ResizeObserver !== 'function') return;
+            var app = this, raf = 0;
+            var queue = function () {
+                if (raf) return;
+                raf = requestAnimationFrame(function () { raf = 0; app._lmLbFit(); });
+            };
+            this._lmLbFitRo = new ResizeObserver(queue);
+            this._lmLbFitRo.observe(lb);
+            if (mm) {
+                this._lmLbFitRo.observe(mm);
+                for (var c = mm.firstElementChild; c; c = c.nextElementSibling) this._lmLbFitRo.observe(c);
+            }
+            window.addEventListener('resize', queue);
         },
         displayParties() {
             let text = '';
