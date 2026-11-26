@@ -1483,6 +1483,61 @@ window._lmRecentErrors = window._lmRecentErrors || [];
         keep('unhandled promise: ' + (r && (r.message || r)) );
     });
 })();
+/* "Copy debug info" (Settings): the one report for a bug report. The Performance diagnostics
+ * window's Copy button gives the same text: its performance report (ogario/modules/perf.js) is
+ * the second part, so a player never sends half of it. */
+function lmDebugReport() {
+    var lines = [];
+    try {
+        var gpu = '';
+        try {
+            var _gl = window.drawRender && drawRender.gl;
+            var _dbg = _gl && _gl.getExtension('WEBGL_debug_renderer_info');
+            gpu = _dbg ? _gl.getParameter(_dbg.UNMASKED_RENDERER_WEBGL) : (_gl ? 'WebGL2' : 'no WebGL');
+        } catch (e) { gpu = '?'; }
+        var lm = window.legendmod || {};
+        var val = function (sel) { var e = document.querySelector(sel); return e ? e.value : undefined; };
+        lines.push('Legend Mod build ' + window.OgVer + ', loader ' + (window.LMVersion || '?'));
+        lines.push('Page: ' + location.hostname + ', browser: ' + navigator.userAgent);
+        lines.push('Screen: ' + window.innerWidth + 'x' + window.innerHeight + ' @' + (window.devicePixelRatio || 1) + ', GPU: ' + gpu);
+        lines.push('Server: ' + (lm.ws || '-') + ' (' + (lm.serverType || '-') + '), region ' + val('#region') + ', mode ' + val('#gamemode'));
+        var errs = window._lmRecentErrors || [];
+        lines.push('Last errors (' + errs.length + '):');
+        for (var i = 0; i < errs.length; i++) lines.push('  ' + errs[i]);
+    } catch (e) { lines.push('debug info error: ' + e); }
+    try { if (window.LMPerf && typeof window.LMPerf.report === 'function') lines.push('', window.LMPerf.report()); } catch (e) { lines.push('performance report error: ' + e); }
+    var text = lines.join('\n');
+    /* nicks, clan tags, skin URLs, tokens and room paths out (ogario/modules/smalltools.js) */
+    try { if (window.LMSmallTools && typeof LMSmallTools.redactReport === 'function') text = LMSmallTools.redactReport(text); } catch (e) { }
+    return text;
+}
+window.lmDebugReport = lmDebugReport;
+function lmCopyDebugInfo() {
+    var text = lmDebugReport();
+    var done = function (ok) {
+        try { if (window.toastr) ok ? toastr.success(lmT('game1.set.debugCopied')) : toastr.warning(lmT('game1.set.debugCopyFailed')); } catch (e) { }
+        if (!ok) console.log(text);
+    };
+    /* where the clipboard API is missing or refused (http, iframes): a hidden text box and copy */
+    var fallback = function () {
+        var ok = false;
+        try {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.style.cssText = 'position:fixed;left:-9999px;top:0;';
+            document.body.appendChild(ta);
+            ta.select();
+            ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+        } catch (e) { ok = false; }
+        done(!!ok);
+    };
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(function () { done(true); }, fallback); return; }
+    } catch (e) { }
+    fallback();
+}
+window.lmCopyDebugInfo = lmCopyDebugInfo;
 
 /*
  * ═══════════════════════════════════════════════════════════════════════════
@@ -26125,32 +26180,7 @@ function thelegendmodproject() {
             $(document).on("click", "#lm-copy-debug", function (ev) {
                 ev.preventDefault();
                 ev.stopImmediatePropagation();
-                var lines = [];
-                try {
-                    var gpu = '';
-                    try {
-                        var _gl = window.drawRender && drawRender.gl;
-                        var _dbg = _gl && _gl.getExtension('WEBGL_debug_renderer_info');
-                        gpu = _dbg ? _gl.getParameter(_dbg.UNMASKED_RENDERER_WEBGL) : (_gl ? 'WebGL2' : 'no WebGL');
-                    } catch (e) { gpu = '?'; }
-                    var lm = window.legendmod || {};
-                    lines.push('Legend Mod build ' + window.OgVer + ', loader ' + (window.LMVersion || '?'));
-                    lines.push('Page: ' + location.hostname + ', browser: ' + navigator.userAgent);
-                    lines.push('Screen: ' + window.innerWidth + 'x' + window.innerHeight + ' @' + (window.devicePixelRatio || 1) + ', GPU: ' + gpu);
-                    lines.push('Server: ' + (lm.ws || '-') + ' (' + (lm.serverType || '-') + '), region ' + $('#region').val() + ', mode ' + $('#gamemode').val());
-                    var errs = window._lmRecentErrors || [];
-                    lines.push('Last errors (' + errs.length + '):');
-                    for (var i = 0; i < errs.length; i++) lines.push('  ' + errs[i]);
-                } catch (e) { lines.push('debug info error: ' + e); }
-                var text = lines.join('\n');
-                /* nicks, clan tags, skin URLs, tokens and room paths out (ogario/modules/smalltools.js) */
-                try { if (window.LMSmallTools && typeof LMSmallTools.redactReport === 'function') text = LMSmallTools.redactReport(text); } catch (e) { }
-                var done = function (ok) { if (window.toastr) ok ? toastr.success(lmT('game1.set.debugCopied')) : toastr.warning(lmT('game1.set.debugCopyFailed')); if (!ok) console.log(text); };
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
-                } else {
-                    done(false);
-                }
+                lmCopyDebugInfo();
             });
             $(document).on("click", "#og-settings .restore-settings a", function (result) {
                 if (this.id === 'lm-copy-debug') return;

@@ -657,7 +657,7 @@ check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')'
         const e = { tagName: tag.toUpperCase(), style: {}, children: [], attrs: {}, textContent: '', title: '', dir: '', fills: [],
             appendChild(c) { c.parentNode = e; e.children.push(c); return c; },
             removeChild(c) { e.children = e.children.filter(x => x !== c); c.parentNode = null; },
-            addEventListener() { }, setAttribute(k, v) { e.attrs[k] = String(v); }, getAttribute(k) { return e.attrs[k]; },
+            addEventListener(t, f) { (e.on = e.on || {})[t] = f; }, setAttribute(k, v) { e.attrs[k] = String(v); }, getAttribute(k) { return e.attrs[k]; },
             getBoundingClientRect: () => ({ left: 8, top: 8, width: 380, height: 300 }),
             classList: { add() { } } };
         if (tag === 'canvas') {
@@ -679,9 +679,15 @@ check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')'
     const title = md.children[0].children[0];
     const stats = nodes.find(n => n.tagName === 'PRE');
     check('window: title, buttons and stats from the packs (English)', md.id === 'lm-perf-diag' && title.textContent === i18n.t('settings.lmPerfDiag') &&
-        byId('lm-perf-copy').textContent === i18n.t('settings.lmPerfCopy') && byId('lm-perf-keep').textContent === i18n.t(PFX + 'keepOff') &&
+        byId('lm-perf-copy').textContent === i18n.t('game1.set.copyDebug') && byId('lm-perf-keep').textContent === i18n.t(PFX + 'keepOff') &&
         byId('lm-perf-diag-close').title === i18n.t('settings.close') && stats.textContent.indexOf(i18n.t(PFX + 'statAdaptiveOff')) >= 0 && md.dir === 'ltr');
     const canv = nodes.filter(n => n.tagName === 'CANVAS');
+    /* its Copy button gives the one report of Settings > Copy debug info (ogario.v4.js lmCopyDebugInfo) */
+    let copied = 0;
+    wp.ctx.lmCopyDebugInfo = () => { copied++; };
+    byId('lm-perf-copy').on.click({ preventDefault() { }, stopPropagation() { } });
+    check('window: Copy is Copy debug info (one report)', copied === 1);
+    check('report: LMPerf.report is the performance part of it', typeof wp.ctx.LMPerf.report === 'function' && /performance report/.test(wp.ctx.LMPerf.report()));
     check('window: graph labels from the packs', canv[0].fills.some(t => t === i18n.t(PFX + 'graphFrames', [50, 60])) && canv[1].fills.some(t => t === i18n.t(PFX + 'graphWaiting')));
     wp.ctx.LMi18n.setLang('el');
     check('window: a language change redraws it in Greek', title.textContent === i18n.t('settings.lmPerfDiag', null, 'el') && title.textContent !== i18n.t('settings.lmPerfDiag') &&

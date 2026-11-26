@@ -1499,26 +1499,6 @@
             (h.reasons.length ? ' [' + h.reasons.map(function (r) { return r.code + (r.reason ? ' ' + r.reason : '') + (r.n > 1 ? ' x' + r.n : ''); }).join('; ') + ']' : '');
     }
 
-    function copyText(text) {
-        var done = function () { if (window.toastr) try { toastr.info(TS('lmPerfCopied')); } catch (e) { } };
-        var fallback = function () {
-            try {
-                var ta = document.createElement('textarea');
-                ta.value = text;
-                ta.style.cssText = 'position:fixed;left:-9999px;top:0;';
-                document.body.appendChild(ta);
-                ta.select();
-                document.execCommand('copy');
-                document.body.removeChild(ta);
-                done();
-            } catch (e) { }
-        };
-        try {
-            if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, fallback); return; }
-        } catch (e) { }
-        fallback();
-    }
-
     function el(tag, css, text) {
         var e = document.createElement(tag);
         if (css) e.style.cssText = css;
@@ -1645,7 +1625,9 @@
             row.appendChild(b);
             return b;
         };
-        var bCopy = btn('lm-perf-copy', '', function () { copyText(reportLines().join('\n')); });
+        /* the one report (ogario.v4.js lmCopyDebugInfo, also Settings > Copy debug info): the general
+         * part and this window's performance report (LMPerf.report) */
+        var bCopy = btn('lm-perf-copy', '', function () { if (typeof window.lmCopyDebugInfo === 'function') window.lmCopyDebugInfo(); });
         var bClear = btn('lm-perf-clear', '', function () {
             try { window.localStorage.removeItem(HISTORY_KEY); } catch (e) { }
             updateDiag();
@@ -1689,7 +1671,7 @@
         diag.hEvents.textContent = TS('lmPerfEvents');
         diag.hNet.textContent = TS('lmNetQuality');
         diag.hSessions.textContent = TS('lmNetSessions');
-        diag.bCopy.textContent = TS('lmPerfCopy');
+        diag.bCopy.textContent = typeof window.lmT === 'function' ? window.lmT('game1.set.copyDebug') : 'game1.set.copyDebug';
         diag.bClear.textContent = TS('lmNetClear');
         diag.bKeep.textContent = keepText();
     }
