@@ -13015,5 +13015,23 @@
     "id": "Tritanopia (biru lemah)",
     "ja": "3型色覚（青が見えにくい）",
     "it": "Tritanopia (blu debole)"
+  },
+  "settings.showStatsFrameTime": {
+    "en": "Frame time in the FPS counter",
+    "el": "Χρόνος καρέ στον μετρητή FPS",
+    "es": "Tiempo de fotograma en el contador de FPS",
+    "bg": "Време на кадър в брояча на FPS",
+    "fr": "Temps d'image dans le compteur FPS",
+    "ar": "زمن الإطار في عداد FPS",
+    "zh": "在 FPS 計數器顯示每幀時間",
+    "ru": "Время кадра в счётчике FPS",
+    "de": "Frame-Zeit in der FPS-Anzeige",
+    "tr": "FPS sayacında kare süresi",
+    "pl": "Czas klatki w liczniku FPS",
+    "nl": "Frametijd in de FPS-teller",
+    "pt": "Tempo de quadro no contador de FPS",
+    "id": "Waktu frame di penghitung FPS",
+    "ja": "FPSカウンターにフレーム時間を表示",
+    "it": "Tempo per frame nel contatore FPS"
   }
 }

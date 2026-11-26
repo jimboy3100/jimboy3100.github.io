@@ -244,14 +244,9 @@
         _pure: pure
     };
 
-    /* ---------- built-in experiments ---------- */
-
-    /* the stats line reads window._lmLabFrameTime (ogario.v4.js, "FPS: ") */
-    register({
-        id: 'frameTime', name: tx('frameTime'), description: tx('frameTimeDesc'), _builtIn: true, _key: 'frameTime',
-        onEnable: function () { window._lmLabFrameTime = true; },
-        onDisable: function () { window._lmLabFrameTime = false; }
-    });
+    /* ---------- built-in experiments ----------
+     * none now: "Frame time in the FPS counter" became the stats option showStatsFrameTime
+     * (Settings > Stats, next to FPS); ogario.v4.js loadSettings carries a switch left on here */
 
     /* the section is made by the settings menu: fill it once it is there */
     var tries = 0;

@@ -4,7 +4,7 @@
 (async () => {
   var fail = [], info = {};
   var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
-  for (var i = 0; i < 40 && !(window.LMPlugins && window.LMLab && document.getElementById('lm-us-bar') && document.querySelector('#og-options .lmLabGroup .lm-lab-cb')); i++) await wait(250);
+  for (var i = 0; i < 40 && !(window.LMPlugins && window.LMLab && document.getElementById('lm-us-bar') && document.querySelector('#og-options .lmLabGroup .lm-lab-acts')); i++) await wait(250);
   if (!window.LMPlugins) return { fail: ['LMPlugins missing (ogario/modules/plugins.js not loaded)'] };
   if (!window.LMLab) return { fail: ['LMLab missing (ogario/modules/lab.js not loaded)'] };
   if (!document.getElementById('lm-us-bar')) fail.push('no Editor / Plugins / Catalogue switch in the User Scripts panel');
@@ -103,17 +103,23 @@
     info.settingsChange = got.length;
     if (got.length !== 2 || got[0].key !== 'showGrid' || got[0].value !== !before || got[1].value !== before) fail.push('settingsChange events: ' + JSON.stringify(got));
     if (got[0] && !Object.isFrozen(got[0])) fail.push('settingsChange data not frozen');
-    /* Lab */
-    var cb = document.getElementById('lmLab-frameTime');
-    if (!cb) fail.push('Lab demo switch missing');
+    /* Lab: no built-in experiment (the frame time one is the stats option showStatsFrameTime) */
+    if (document.getElementById('lmLab-frameTime')) fail.push('Lab still shows the frame time experiment');
+    var ft = document.getElementById('showStatsFrameTime');
+    if (!ft || !$(ft).closest('#og-options').length) fail.push('Settings > Stats: no frame time switch');
+    else if (ft.checked || defaultmapsettings.showStatsFrameTime) fail.push('frame time switch on by default');
+    var probeOn = 0;
+    LMLab.register({ id: 'probeDemo', name: 'Probe demo', onEnable: function () { probeOn++; }, onDisable: function () { probeOn--; } });
+    var cb = document.getElementById('lmLab-probeDemo');
+    if (!cb) fail.push('Lab switch of a registered experiment missing');
     else {
-      if (cb.checked || LMLab.isEnabled('frameTime')) fail.push('Lab demo on by default');
+      if (cb.checked || LMLab.isEnabled('probeDemo')) fail.push('Lab experiment on by default');
       cb.checked = true;
       cb.dispatchEvent(new Event('change', { bubbles: true }));
-      if (!window._lmLabFrameTime) fail.push('Lab switch did not turn the demo on');
-      if (!(JSON.parse(localStorage.getItem('lmLab') || '{}').on || {}).frameTime) fail.push('Lab state not stored in lmLab');
+      if (probeOn !== 1) fail.push('Lab switch did not turn the experiment on');
+      if (!(JSON.parse(localStorage.getItem('lmLab') || '{}').on || {}).probeDemo) fail.push('Lab state not stored in lmLab');
       document.getElementById('lm-lab-reset').click();
-      if (window._lmLabFrameTime || cb.checked) fail.push('Reset Lab did not turn the demo off');
+      if (probeOn !== 0 || cb.checked) fail.push('Reset Lab did not turn the experiment off');
     }
   } finally {
     window.confirm = origConfirm;

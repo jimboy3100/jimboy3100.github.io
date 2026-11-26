@@ -20527,6 +20527,7 @@ var defaultmapsettings = {
     massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
     showStatsJitter: false,       /* standard deviation of the last 20 pings, shown as PING: 45 ±6 */
+    showStatsFrameTime: false,    /* frame time next to the FPS: FPS: 60 (16.7 ms) (was the Lab experiment "frameTime") */
     showStatsServerHz: true,
 
     blockPopups: false,
@@ -23369,8 +23370,7 @@ function thelegendmodproject() {
                 }
                 if (defaultmapsettings.showStatsFPS) {
                     t += 'FPS: ' + drawRender.fps;
-                    /* Lab experiment "Frame time in the FPS counter" (ogario/modules/lab.js) */
-                    if (window._lmLabFrameTime && drawRender.fps > 0) t += ' (' + (1000 / drawRender.fps).toFixed(1) + ' ms)';
+                    if (defaultmapsettings.showStatsFrameTime && drawRender.fps > 0) t += ' (' + (1000 / drawRender.fps).toFixed(1) + ' ms)';
                     var activeSpect = (window.multiboxPlayerEnabled && typeof spects !== "undefined" && getActiveSpect(window.multiboxPlayerEnabled)) ? getActiveSpect(window.multiboxPlayerEnabled) : null;
                     var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
                     if (currentPing) t += ' | PING: ' + currentPing;
@@ -23950,11 +23950,27 @@ function thelegendmodproject() {
             if (settings && settings.mbRings === false && !Object.prototype.hasOwnProperty.call(settings, 'mbRingsP2')) {
                 defaultmapsettings.mbRingsP2 = false;
             }
+            /* the Lab experiment "Frame time in the FPS counter" became the stats option
+             * showStatsFrameTime: a switch left on in Lab comes along once */
+            var _lmLabS = null;
+            try {
+                _lmLabS = JSON.parse(window.localStorage.getItem('lmLab') || 'null');
+                if (!(_lmLabS && _lmLabS.on && typeof _lmLabS.on === 'object' && Object.prototype.hasOwnProperty.call(_lmLabS.on, 'frameTime'))) _lmLabS = null;
+                else if (_lmLabS.on.frameTime === true && !(settings && Object.prototype.hasOwnProperty.call(settings, 'showStatsFrameTime'))) defaultmapsettings.showStatsFrameTime = true;
+            } catch (eLab) { _lmLabS = null; }
             /* the ring colours are theme settings (loaded first): their gameplay copy follows them */
             lmMbRingMirror(defaultSettings, defaultmapsettings);
             /* the loaded values are the ones later changes are compared with (settingsChange) */
             _lmSettingsSeen = null;
             lmSettingsCommit(lmSettingsUserView());
+            /* saved first, then taken out of the Lab switches (a full storage keeps both as they were) */
+            if (_lmLabS) {
+                try {
+                    if (defaultmapsettings.showStatsFrameTime) this.saveSettings(defaultmapsettings, 'ogarioSettings');
+                    delete _lmLabS.on.frameTime;
+                    window.localStorage.setItem('lmLab', JSON.stringify(_lmLabS));
+                } catch (eLab2) { }
+            }
         },
         saveSettings(option, name) {
             if (name === 'ogarioSettings' && option === defaultmapsettings) {
@@ -25389,7 +25405,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -25526,7 +25542,7 @@ function thelegendmodproject() {
                     if (window.LMDirector && typeof window.LMDirector.toggle === 'function') window.LMDirector.toggle();
                     else if (window.toastr) toastr.info(lmT('game1.set.directorLoading'));
                 });
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "massGraph", "showKiller", "hideEventBanner", "showTime", "showDevConsole", "deathRecap", "killFeed", "massLossAlert", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "massGraph", "showKiller", "hideEventBanner", "showTime", "showDevConsole", "deathRecap", "killFeed", "massLossAlert", "analytics"], "statsGroup");
             /* Replays and history: the instant replay length slider is added below */
             this.addOptions(["recordReplays", "matchHistory", "personalBests"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
@@ -25641,6 +25657,7 @@ function thelegendmodproject() {
             (function (app) {
                 var DEPS = {
                     showStats: ['showStatsMass', 'showStatsWorldSize', 'showStatsDecayInfo', 'showStatsServerHz', 'showStatsESTE', 'showStatsEMTE', 'showStatsMTE', 'showStatsSTE', 'showStatsTTE', 'showStatsPTE', 'showStatsN16', 'showStatsFPS', 'showStatsPPS', 'showStatsJitter', 'showStatsAlive'],
+                    showStatsFPS: ['showStatsFrameTime'],
                     showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass', 'massFormat'],
                     gamepadEnabled: ['gamepadDeadzone'],

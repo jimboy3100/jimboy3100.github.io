@@ -186,18 +186,14 @@ check('lab experiment needs an id and a name', !L.validateExperiment({ id: '1a',
     i18n(ctx);
     vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'lab.js'), 'utf8'), ctx);
     const Lab = ctx.LMLab;
-    check('lab: built-in demo registered, off', Lab.list().length === 1 && Lab.list()[0].id === 'frameTime' && !Lab.isEnabled('frameTime') && !ctx._lmLabFrameTime);
-    check('lab: built-in name from the language pack', Lab.list()[0].name === i18n.t('modules.lab.frameTime') && Lab.list()[0].description === i18n.t('modules.lab.frameTimeDesc'));
-    ctx.LMi18n.setLang('el', { save: false });
-    check('lab: built-in name follows a language change', Lab.list()[0].name === i18n.t('modules.lab.frameTime', null, 'el') && Lab.list()[0].name !== i18n.t('modules.lab.frameTime'));
-    ctx.LMi18n.setLang('en', { save: false });
+    /* the frame time experiment is the stats option showStatsFrameTime now (developers/tests/frametime.js) */
+    check('lab: no built-in experiment left', Lab.list().length === 0 && !Lab.isEnabled('frameTime'));
     let on = 0, off = 0;
     check('lab: register', Lab.register({ id: 'demo', name: 'Demo', onEnable: () => on++, onDisable: () => off++ }) === true);
     check('lab: same id twice is refused', Lab.register({ id: 'demo', name: 'Again' }) === false);
     Lab.set('demo', true);
     check('lab: on calls onEnable and is stored in its own key', on === 1 && JSON.parse(store.lmLab).on.demo === true && !('ogarioSettings' in store));
-    Lab.set('frameTime', true);
-    check('lab: the demo sets its flag', ctx._lmLabFrameTime === true);
+    check('lab: an unknown id is not switched', Lab.set('frameTime', true) === false && !Lab.isEnabled('frameTime'));
     Lab.set('demo', false);
     check('lab: off calls onDisable', off === 1 && !JSON.parse(store.lmLab).on.demo);
     Lab.register({ id: 'thrower', name: 'T', onEnable: () => { throw new Error('x'); } });
@@ -206,7 +202,7 @@ check('lab experiment needs an id and a name', !L.validateExperiment({ id: '1a',
     console.warn = ow;
     check('lab: a throwing onEnable does not break it', Lab.isEnabled('thrower'));
     Lab.reset(true);
-    check('lab: reset turns all off and clears the key', !Lab.isEnabled('frameTime') && !Lab.isEnabled('thrower') && ctx._lmLabFrameTime === false && !('lmLab' in store));
+    check('lab: reset turns all off and clears the key', !Lab.isEnabled('demo') && !Lab.isEnabled('thrower') && !('lmLab' in store));
     store.lmLab = JSON.stringify({ v: 1, on: { later: true } });
     let late = 0;
     Lab.register({ id: 'later', name: 'Later', onEnable: () => late++ });
