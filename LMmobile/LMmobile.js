@@ -590,8 +590,8 @@
             '<label><input type="checkbox" id="lm-netgraph"' + (prefs.netGraph ? ' checked' : '') + '> ' + tx('misc.mobile.netGraph', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-tdir"' + (prefs.targetMode ? ' checked' : '') + '> ' + tx('misc.mobile.touchDir', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-fixjs"' + (prefs.fixedJoystick ? ' checked' : '') + '> ' + tx('misc.mobile.fixedJoystick', 'lm-t') + '</label>' +
-            '<label>' + tx('misc.mobile.deadZone', 'lm-t') + ' <span id="lm-dz-v">' + prefs.joystickDeadZone + '</span></label>' +
-            '<input type="range" id="lm-dz" min="0" max="40" step="2" value="' + prefs.joystickDeadZone + '">' +
+            '<label>' + tx('misc.mobile.deadZone', 'lm-t') + ' <span id="lm-dz-v">' + Math.max(8, prefs.joystickDeadZone) + '</span></label>' +
+            '<input type="range" id="lm-dz" min="8" max="40" step="2" value="' + Math.max(8, prefs.joystickDeadZone) + '">' +
             '<label><input type="checkbox" id="lm-lbc"' + (prefs.lbCompact ? ' checked' : '') + '> ' + tx('misc.mobile.lbCompact', 'lm-t') + '</label>' +
             /* move, resize, fade or hide each touch control (LMmobile-editor.js, loaded on the first tap) */
             '<button type="button" id="lm-ed-open">' + tx('misc.mobile.editControls') + '</button>';
@@ -601,6 +601,12 @@
          * sensitivity, opacity, button size and flick split could not be changed. */
         var bCfg = mkd('⚙');
         drawer.insertBefore(bCfg, sp);
+        /* stable insertion point for drawer controls: sp (the settings panel) is never moved
+         * by the editor, so inserting before it always works. When the editor moves bCfg to a
+         * slot, insertBefore(el, bCfg) would throw — this helper avoids that everywhere. */
+        function drawerInsert(el) {
+            drawer.insertBefore(el, sp);
+        }
         bCfg.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             sp.classList.toggle('on');
@@ -673,7 +679,7 @@
                             if (typeof application !== 'undefined' && application && typeof application.sendCommand === 'function') application.sendCommand(n);
                         }, 'qcmd' + n, 600);
                     }, { passive: false });
-                    drawer.insertBefore(b, bCfg);
+                    drawerInsert(b);
                     quickBtns.push(b);
                 })(qi);
             }
@@ -732,7 +738,7 @@
                 }, 'mbswap', 250);
             }, { passive: false });
             /* in the left row (the 4x/16x row above the minimap could reach over SPLIT) */
-            drawer.insertBefore(bMb, bCfg);
+            drawerInsert(bMb);
         }
         buildMbButton();
         /* optional team ping (the desktop ping hotkeys): tap = "Go here"; hold (or slide) opens a
@@ -747,12 +753,16 @@
         }
         /* A3 fix: single theme-change observer for radial colors, disconnected on rebuild */
         var _pingThemeObs = null;
+        /* Exposed cancel callback so _syncMenuState can cancel the radial from outside
+         * buildPingButton's lexical scope (the holdT timer lives inside it). */
+        var _cancelPing = null;
         function buildPingButton() {
             if (bPing && bPing.parentNode) bPing.parentNode.removeChild(bPing);
             if (pingRad && pingRad.parentNode) pingRad.parentNode.removeChild(pingRad);
             /* A3: disconnect the previous observer before creating a new one */
             if (_pingThemeObs) { _pingThemeObs.disconnect(); _pingThemeObs = null; }
             bPing = null; pingRad = null;
+            _cancelPing = null;
             if (!prefs.pingBtn) return;
             var b = bPing = mkd('\uD83D\uDCCD');
             var rad = pingRad = mk('div'); rad.id = 'lm-ping-rad';
@@ -836,7 +846,9 @@
                 finish(true);
             }, { passive: false });
             b.addEventListener('touchcancel', function (e) { if (findT(e)) finish(false); }, { passive: true });
-            drawer.insertBefore(b, bCfg);
+            /* expose finish(false) so the menu sync can cancel a held radial from outside */
+            _cancelPing = function () { finish(false); };
+            drawerInsert(b);
         }
         buildPingButton();
         /* net graph (the desktop hotkey), kept in step with the setting */
@@ -871,7 +883,7 @@
             setRange('lm-js', prefs.jsSensitivity, String(prefs.jsSensitivity));
             setRange('lm-op', Math.round(prefs.btnOpacity * 100), Math.round(prefs.btnOpacity * 100) + '%');
             setRange('lm-bs', Math.round(prefs.btnScale * 100), Math.round(prefs.btnScale * 100) + '%');
-            setRange('lm-dz', prefs.joystickDeadZone, String(prefs.joystickDeadZone));
+            setRange('lm-dz', Math.max(8, prefs.joystickDeadZone), String(Math.max(8, prefs.joystickDeadZone)));
             [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'], ['lm-taphap', 'tapHaptic'],
                 ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-netgraph', 'netGraph'], ['lm-tdir', 'targetMode'],
                 ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact']
@@ -882,6 +894,12 @@
             buildMbButton();
             buildPingButton();
             syncNetGraph();
+            /* sync leaderboard pointer-events with compact setting */
+            var lb = document.getElementById('leaderboard-hud');
+            if (lb) {
+                if (prefs.lbCompact) lb.style.setProperty('pointer-events', 'auto', 'important');
+                else lb.style.removeProperty('pointer-events');
+            }
             applyPrefs();
             repositionButtons();
         }
@@ -1083,6 +1101,10 @@
          *  CHAT — Enter (keyCode 13)
          * ═══════════════════════════════════════════════════════ */
         var chatOn = false;
+        /* generation counter: every chatOpen increments it; delayed callbacks from an older
+         * generation (enter handler's 50ms chatClose, cleanup Enter) are discarded, preventing
+         * stale closures from interfering when the player reopens chat quickly. */
+        var _chatGen = 0;
 
         bChat.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
@@ -1095,6 +1117,7 @@
         var _chatFocusTimer = null;
         function chatOpen() {
             chatOn = true;
+            var gen = ++_chatGen;
             // Open chat box — dispatch Enter on document to open game's chat
             emitKey(13);
             // Focus immediately (user gesture context) for Firefox
@@ -1106,7 +1129,7 @@
             if (_chatFocusTimer) clearTimeout(_chatFocusTimer);
             _chatFocusTimer = setTimeout(function () {
                 _chatFocusTimer = null;
-                if (!chatOn) return; /* chat closed before this fired — do not refocus */
+                if (!chatOn || gen !== _chatGen) return; /* chat closed or reopened — stale */
                 var inp2 = document.getElementById('message');
                 if (inp2) {
                     inp2.focus();
@@ -1115,7 +1138,7 @@
                         if (ev.keyCode === 13 || ev.key === 'Enter') {
                             inp2.removeEventListener('keydown', onEnter);
                             chatEnterFn = null;
-                            setTimeout(function () { chatClose(true); }, 50);
+                            setTimeout(function () { if (gen === _chatGen) chatClose(true); }, 50);
                         }
                     };
                     inp2.addEventListener('keydown', chatEnterFn);
@@ -1146,9 +1169,12 @@
 
             /* Only send the cleanup Enter when we actually sent a message.
              * Dismiss (send=false) should NOT dispatch Enter — it was closing the
-             * game's chat UI even when the user just tapped away to dismiss. */
+             * game's chat UI even when the user just tapped away to dismiss.
+             * Guard with generation to prevent stale callback from closing a reopened chat. */
             if (send) {
+                var closeGen = _chatGen;
                 setTimeout(function () {
+                    if (closeGen !== _chatGen) return; /* chat reopened — do not send Enter */
                     var msgBox = document.getElementById('message');
                     if (msgBox && (msgBox.offsetParent !== null || msgBox.offsetHeight > 0)) {
                         emitKey(13);
@@ -1805,10 +1831,7 @@
             else if (id === 'x16') smallR.appendChild(el);
             else if (id === 'menu') rootL.insertBefore(el, rootL.firstChild);
             else if (id === 'gear') drawer.insertBefore(el, sp);
-            /* guard: bCfg may have been moved to a slot by the editor — insertBefore fails
-             * when the reference node is not a child of the target parent */
-            else if (bCfg.parentNode === drawer) drawer.insertBefore(el, bCfg);
-            else drawer.appendChild(el);
+            else drawerInsert(el);
         }
         var edLoading = false, edQueue = [];
         function loadEditor(cb) {
@@ -1930,8 +1953,8 @@
                     if (typeof window._lmMobileFeedStop === 'function') window._lmMobileFeedStop();
                     /* Cancel any pending radial / flick / pinch / quick-command state */
                     pOn = false; swStart = null;
-                    /* Cancel pending flick split timer and radial hold timer */
-                    if (typeof holdT !== 'undefined') clearTimeout(holdT);
+                    /* Cancel pending radial hold timer via the exposed callback */
+                    if (_cancelPing) _cancelPing();
                     /* Release joystick so the cell does not drift while in the menu */
                     if (jId !== null) { jId = null; jHide(); }
                     /* Close chat if open */
