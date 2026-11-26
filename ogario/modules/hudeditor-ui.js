@@ -614,6 +614,10 @@
         var tag = e.target && e.target.tagName, typing = (tag === 'INPUT' && e.target.type === 'text') || tag === 'SELECT' || tag === 'TEXTAREA';
         /* key releases go through: a key held when the editor opened is released in the game too */
         if (e.type !== 'keydown') return;
+        /* keys typed in another window over the editor (the Command Centre opened with Ctrl+K)
+         * are that window's: Enter there closed the editor, Esc and the arrows never reached it */
+        var tg = e.target;
+        if (tg && tg !== D.body && tg !== D.documentElement && tg.nodeType === 1 && !root.contains(tg)) return;
         e.stopPropagation();
         if (e.key === 'Escape' || e.key === 'Esc') {
             e.preventDefault();
