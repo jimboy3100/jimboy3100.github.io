@@ -179,8 +179,6 @@
                 connectionIntegrity: l.connectionIntegrity, gameMode: l.gameMode,
                 gm: (function () { try { return String($('#gamemode').val() || ''); } catch (e) { return ''; } })()
             };
-            /* leave the live server (or a replay) like a replay start does */
-            if (window.replayTimeOuts) { clearTimeout(window.replayTimeOuts); window.replayTimeOuts = null; }
             /* a pending automatic reconnect or delayed join of the old connection would replace the
              * session mid-run: cancel them as connect() does for a new server */
             if (l._reconnTimer) { clearTimeout(l._reconnTimer); l._reconnTimer = null; }

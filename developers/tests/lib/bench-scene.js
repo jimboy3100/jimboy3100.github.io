@@ -461,7 +461,6 @@
             sc: createScopes(now, STAGES), prevScope: window._lmScope, random: Math.random
         };
         /* leave the live server like the Practice arena (no reconnect, no delayed join) */
-        if (window.replayTimeOuts) { clearTimeout(window.replayTimeOuts); window.replayTimeOuts = null; }
         if (l._reconnTimer) { clearTimeout(l._reconnTimer); l._reconnTimer = null; }
         l._reconnAttempts = 0; l._reconnStartTime = 0; l._lmReconnWs = null;
         if (l._accountDomainSwitchTimer) { clearTimeout(l._accountDomainSwitchTimer); l._accountDomainSwitchTimer = null; }

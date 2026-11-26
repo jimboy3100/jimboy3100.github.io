@@ -26,7 +26,7 @@
       if (el.textContent !== want) fail.push(c[0] + ': "' + el.textContent + '" is not the Greek "' + want + '"');
       info[key] = el.textContent;
     });
-    if (window.lmT('lmx.rp.watch') === 'Watch') fail.push('lmx.rp.watch has no Greek text');
+    if (window.lmT('lmx.lg.playFirst') === 'Play a game first to use this feature') fail.push('lmx.lg.playFirst has no Greek text');
     var missing = Object.keys(L.missing()).filter(function (k) { return k.indexOf('lmx.') === 0; });
     if (missing.length) fail.push('missing lmx keys: ' + missing.join(', '));
   } finally {

@@ -62,6 +62,8 @@ lower case inside a sentence.
 | multibox / bot / macro | multibox / bot / macro | EN. packs: Μακροεντολές (use macros) |
 | hotkey | πλήκτρο | packs: Πλήκτρα συντόμευσης, Άμεσα Πλήκτρα. Πλήκτρα συντόμευσης for the settings section |
 | replay | replay | EN. packs: Επανάληψη |
+| play backwards | αναπαραγωγή προς τα πίσω | Replay Studio (backwards playback) |
+| color filter | φίλτρο χρώματος | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | respawn | EN. packs: Συνεχιση, Επαναγέννηση |
 | game over | Game Over | EN on the card, Τέλος παιχνιδιού in sentences |
 | death recap | ανασκόπηση θανάτου | |
@@ -165,6 +167,8 @@ are short nouns. Sentence case, not Title Case.
 | multibox / bot / macro | multibox / bot / macro | EN |
 | hotkey | atajo | packs: Tecla, Teclas rápidas, Teclas. Section: Atajos de teclado |
 | replay | repetición | verify: replay is common in chat |
+| play backwards | reproducir hacia atrás | Replay Studio (backwards playback) |
+| color filter | filtro de color | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | reaparecer | |
 | game over | fin de la partida | packs: Fin del juego |
 | death recap | resumen de muerte | |
@@ -268,6 +272,8 @@ in Cyrillic (скин, сплит, сървър, пинг, бот); keep FPS and
 | multibox / bot / macro | мултибокс / бот / макро | packs: Multibox (Latin) |
 | hotkey | бърз клавиш | |
 | replay | повторение | verify: реплей is common |
+| play backwards | пусни назад | Replay Studio (backwards playback) |
+| color filter | цветови филтър | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | съживяване | packs: Възраждане. verify: респаун |
 | game over | край на играта | |
 | death recap | обзор на смъртта | verify |
@@ -371,6 +377,8 @@ French players keep split, feed, skin, ping, lag, bot, multibox and replay in En
 | multibox / bot / macro | multibox / bot / macro | EN |
 | hotkey | raccourci | packs: Raccourcisn claver (typo) |
 | replay | replay | EN |
+| play backwards | lire à l'envers | Replay Studio (backwards playback) |
+| color filter | filtre de couleur | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | réapparaître | verify: respawn is common |
 | game over | partie terminée | |
 | death recap | récap de la mort | |
@@ -477,6 +485,8 @@ for headings (الإعدادات). Pick one form per window. Arab agar.io player
 | multibox / bot / macro | Multibox / بوت / ماكرو | packs: متعدد, التعدد, روبوتات |
 | hotkey | اختصار | |
 | replay | الإعادة | |
+| play backwards | تشغيل عكسي | Replay Studio (backwards playback) |
+| color filter | مرشّح ألوان | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | إعادة الظهور | packs: إعادة البدء |
 | game over | انتهت اللعبة | |
 | death recap | ملخص الموت | |
@@ -582,6 +592,8 @@ No second-person pronoun needed; where one is used, 你.
 | multibox / bot / macro | 多開 / 機器人 / 巨集 | |
 | hotkey | 快捷鍵 | packs: 熱鍵 |
 | replay | 重播 | |
+| play backwards | 倒轉播放 | Replay Studio (backwards playback) |
+| color filter | 色彩濾鏡 | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | 重生 | |
 | game over | 遊戲結束 | |
 | death recap | 死亡回顧 | |
@@ -686,6 +698,8 @@ the packs already do.
 | multibox / bot / macro | мультибокс / бот / макрос | packs: Multibox (Latin) |
 | hotkey | горячая клавиша | short: клавиша. verify: бинд in gamer slang |
 | replay | реплей | packs: Повтор. verify |
+| play backwards | воспроизвести назад | Replay Studio (backwards playback) |
+| color filter | цветовой фильтр | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | респавн | packs: Возрождение |
 | game over | игра окончена | |
 | death recap | итоги гибели | |
@@ -790,6 +804,8 @@ English is involved (Clan-Tag, Party-Code, Streamer-Modus).
 | multibox / bot / macro | Multibox / Bot / Makro | |
 | hotkey | Hotkey | packs: Tastenkürzel (×5). Section heading: Tastenbelegung. verify |
 | replay | Replay | packs: Wiederholung |
+| play backwards | rückwärts abspielen | Replay Studio (backwards playback) |
+| color filter | Farbfilter | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | Respawn | packs: Wiederbeleben |
 | game over | Game Over | packs: Spiel vorbei |
 | death recap | Todesrückblick | |
@@ -894,6 +910,8 @@ skin'ler) and take an apostrophe only after an abbreviation or a name (FPS'i, Di
 | multibox / bot / macro | multibox / bot / makro | |
 | hotkey | kısayol tuşu | packs: Tuş Ayarları |
 | replay | tekrar | verify: replay |
+| play backwards | geriye oynat | Replay Studio (backwards playback) |
+| color filter | renk filtresi | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | yeniden doğ | |
 | game over | oyun bitti | |
 | death recap | ölüm özeti | |
@@ -998,6 +1016,8 @@ skin, ping, lag, bot and multibox and inflect them (skiny, splitem).
 | multibox / bot / macro | multibox / bot / makro | |
 | hotkey | skrót | section: Skróty klawiszowe. packs: Przyciski |
 | replay | powtórka | |
+| play backwards | odtwórz wstecz | Replay Studio (backwards playback) |
+| color filter | filtr kolorów | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | odrodzenie | verify: respawn |
 | game over | koniec gry | |
 | death recap | podsumowanie śmierci | |
@@ -1102,6 +1122,8 @@ it reads better (clantag, partycode, streamermodus).
 | multibox / bot / macro | multibox / bot / macro | |
 | hotkey | sneltoets | |
 | replay | replay | packs: Herhaling |
+| play backwards | achteruit afspelen | Replay Studio (backwards playback) |
+| color filter | kleurfilter | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | respawn | packs: Opnieuw spelen |
 | game over | game over | |
 | death recap | doodsoverzicht | verify |
@@ -1206,6 +1228,8 @@ them ("dar split", "dar feed", "respawnar"), so keep the loan word and build the
 | multibox / bot / macro | multibox / bot / macro | EN |
 | hotkey | atalho | section: Teclas de atalho (packs agree) |
 | replay | replay | EN |
+| play backwards | reproduzir de trás para frente | Replay Studio (backwards playback) |
+| color filter | filtro de cor | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | respawn | EN. In sentences renascer / respawnar. packs: Renascimento |
 | game over | Game Over | EN on the card, fim de jogo in sentences |
 | death recap | resumo da morte | |
@@ -1311,6 +1335,8 @@ English verbs work in sentences as they are: "untuk split", "jangan feed".
 | multibox / bot / macro | multibox / bot / macro | EN. packs: Makro |
 | hotkey | hotkey | EN. packs: Tombol pintas |
 | replay | replay | EN. packs: Tayangan ulang |
+| play backwards | putar mundur | Replay Studio (backwards playback) |
+| color filter | filter warna | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | respawn | EN. packs: Muncul kembali |
 | game over | Game Over | EN |
 | death recap | ringkasan kematian | |
@@ -1417,6 +1443,8 @@ FPS, Ping, XP, DNA and key names.
 | multibox / bot / macro | マルチボックス / ボット / マクロ | |
 | hotkey | ショートカットキー | section: ショートカット (packs agree). verify: ホットキー |
 | replay | リプレイ | |
+| play backwards | 逆再生 | Replay Studio (backwards playback) |
+| color filter | カラーフィルター | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | リスポーン | |
 | game over | ゲームオーバー | |
 | death recap | 死亡レポート | verify |
@@ -1521,6 +1549,8 @@ noun, in sentences the Italian verb form is fine.
 | multibox / bot / macro | multibox / bot / macro | EN |
 | hotkey | tasto rapido | section: Tasti rapidi. packs: Scorciatoie |
 | replay | replay | EN |
+| play backwards | riproduci al contrario | Replay Studio (backwards playback) |
+| color filter | filtro colore | Replay Studio: greyscale / sepia / hue rotate of the cells |
 | respawn | respawn | EN (packs agree) |
 | game over | Game Over | EN |
 | death recap | riepilogo morte | |

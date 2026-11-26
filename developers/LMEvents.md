@@ -44,7 +44,7 @@ All three return `LMEvents`, so calls can be chained.
 | `gameModeChange` | `{ mode, previous }` | the game mode changes, e.g. `'ffa'`, `'teams'`, `'party'`, `'experimental'`, `'battleroyale'` (no leading `:`). Not sent for the mode that is set when you start listening |
 | `multiboxSwap` | `{ unit, previous }` | the multibox unit you control changes (swap / back hotkeys, adding a unit, the switch after your main player died); `0` is the main player, other numbers are the unit numbers |
 | `replayStart` | `{ packets, start }` | a recorded replay starts playing: its packet count and the start packet. Seeking inside a replay sends no new event |
-| `replayStop` | `{ reason }` | the replay stops: `'end'` (finished), `'stopped'` (Stop button) or `'left'` (you joined a live server) |
+| `replayStop` | `{ reason }` | the replay stops: `'end'` (finished), `'stopped'` (Replay Studio closed or Back to game) or `'left'` (you joined a live server) |
 | `settingsChange` | `{ key, value }` | a gameplay setting changed and was saved, whatever changed it: a switch, a slider, a text box or list in the settings menu, `application.setSettings`, a hotkey that toggles an option, a preset, a settings profile, the Command Centre or the gamepad window; `key` is the setting name (e.g. `'showGrid'`), `value` the new boolean, number or text. One event per changed setting, none when the value stays the same; a slider is reported once it rests or is released, not for every step. Theme settings are not reported |
 
 `time` values are `Date.now()` milliseconds.

@@ -102,6 +102,18 @@ check('file: Studio data read back', !back.side.est && same(back.side.t, [0, 20,
 const old = L.parseLmText(JSON.stringify(['\u0010\u0001', '\u0012', [1, 'm', 'r', 'n']]));
 check('file: old file without Studio data', old.packets.length === 2 && old.side.est === true);
 check('file: old file ending with null', L.parseLmText(JSON.stringify(['\u0010', null])).packets.length === 1);
+/* a file saved by the old replay window (LMexpress/replay.js saveTextAsFile, now removed):
+ * each packet's whole buffer as a binary string (ab2str, in 32 KB chunks), the game info last */
+const oldAb2str = buf => { const b = new Uint8Array(buf); let o = ''; for (let i = 0; i < b.length; i += 32768) o += String.fromCharCode.apply(null, b.subarray(i, i + 32768)); return o; };
+const big = new Uint8Array(70000); for (let i = 0; i < big.length; i++) big[i] = (i * 7) & 255;
+const oldPk = [new Uint8Array([16, 0, 128, 255]).buffer, new Uint8Array([18]).buffer, big.buffer];
+const oldSpec = [1600000000000, ':party', 'EU-London', 'old nick', '{"old nick":"https://example.com/s.png"}'];
+const oldWin = L.parseLmText(JSON.stringify(oldPk.map(oldAb2str).concat([oldSpec])));
+check('file: old replay window file opens (bytes, big packet, game info, estimated times)', oldWin.packets.length === 3 &&
+  same(Array.from(new Uint8Array(oldWin.packets[0].buffer)), [16, 0, 128, 255]) && oldWin.packets[2].byteLength === 70000 &&
+  oldWin.packets[2].getUint8(69999) === big[69999] && same(oldWin.spec, oldSpec) && oldWin.side.est === true && oldWin.side.start === 0);
+const resaved = JSON.parse(L.lmFileParts(oldWin.packets, oldWin.spec, null).join(''));
+check('file: an old file exported again keeps the old layout', resaved.length === 4 && resaved[0] === oldAb2str(oldPk[0]) && same(resaved[3], oldSpec));
 let threw = false; try { L.parseLmText('{"a":1}'); } catch (e) { threw = true; }
 check('file: not a replay is rejected', threw);
 check('file: game info padded for old readers (skins slot)', same(L.fileSpec([5], null), [5, '', '', '', '{}']));

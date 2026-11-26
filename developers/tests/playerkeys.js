@@ -47,7 +47,6 @@ const INIT = {
     flushSkinsMap: init(/\n {8}flushSkinsMap\(\) \{[^]*?this\.customSkinsMap = ([^;\n]+);/),
     cellcolors: init(/\n {8}cellcolors: ([^\n]+),\n/),
     cellcolorsReplay: init(/\n {4}legendmod\.cellcolors = ([^\n;]+)\n/),
-    cellcolorsPlay: init(/\n {8}legendmod\.cellcolors=([^\n;]+)\n/),
     SpecialEffectPlayers: init(/\nSpecialEffectPlayers = ([^;\n]+);/),
     VanillaSkinUrlMap: init(/\n {4}window\.VanillaSkinUrlMap = ([^;\n]+);/),
     VanillaSkinUrlMapCdn: init(/\n {28}window\.VanillaSkinUrlMap = ([^;\n]+);/)

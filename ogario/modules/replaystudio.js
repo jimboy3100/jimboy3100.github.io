@@ -1,6 +1,8 @@
 /* Replay Studio for Legend Mod: a timeline with automatic bookmarks, playback at the recorded
- * speed (0.25x-4x), pause and packet-by-packet stepping, instant replay of the last seconds,
- * a replay library in IndexedDB and clip export (.lm).
+ * speed (0.25x-4x) forwards or backwards, pause and packet-by-packet stepping, colour filters,
+ * instant replay of the last seconds, a replay library in IndexedDB and clip export (.lm).
+ * It plays every replay: the Replay button, a replay^ server token, Death recap links and
+ * ?replay= links (with ?replayStart= / ?replayEnd= packet numbers) all open it.
  *
  * Loaded the first time it is opened (window.lmReplayStudio in ogario.v4.js). The recording side
  * lives in ogario.v4.js: every recording (window.RecordedProtocol[key]) gets ._lm with the time of
@@ -351,7 +353,8 @@
         }
         return out;
     }
-    /* .lm text (same layout as LMexpress/replay.js saveTextAsFile) */
+    /* .lm text: a JSON array of packets as binary strings, the game info array last (the layout
+     * of the old replay window's files, which open here unchanged) */
     function binStr(dv) {
         var bytes = viewBytes(dv), out = '';
         for (var i = 0; i < bytes.length; i += 32768) out += String.fromCharCode.apply(null, bytes.subarray(i, i + 32768));
@@ -425,7 +428,9 @@
     /* ------------------------------------------------------------------ */
     /* texts come from the language packs (developers/i18n/src/modules*.json) */
     var TK = 'modules.replaystudio.';
-    function T(k, v) { return typeof window.lmT === 'function' ? window.lmT(TK + k, v) : k; }
+    /* the backwards play, colour filter and ?replay= link texts (developers/i18n/src/pkg-rp.json) */
+    var TK2 = { playRev: 1, fx: 1, fxNone: 1, fxGrey: 1, fxSepia: 1, fxHue: 1, urlFailed: 1, urlNotLm: 1 };
+    function T(k, v) { return typeof window.lmT === 'function' ? window.lmT((TK2[k] ? 'pkg.rp.' : TK) + k, v) : k; }
     /* K('play'): a label read again after a language change (see relabels) */
     function K(k) { return function () { return T(k); }; }
     function dirNow() { return window.LMi18n && window.LMi18n.dir ? window.LMi18n.dir() : 'ltr'; }
@@ -533,9 +538,12 @@
     /* ------------------------------------------------------------------ */
     /* Playback driver                                                     */
     /* ------------------------------------------------------------------ */
-    var P = { driving: false, playing: false, pos: 0, speed: 1, baseWall: 0, baseT: 0, timer: 0, ff: null, pending: null, warnCount: 0, inMs: null, outMs: null };
+    /* dir: 1 forwards, -1 backwards; stopAt: pause there (the End packet of a ?replay= link) */
+    var P = { driving: false, playing: false, pos: 0, speed: 1, dir: 1, stopAt: 0, baseWall: 0, baseT: 0, timer: 0, ff: null, pending: null, warnCount: 0, inMs: null, outMs: null };
     var SPEEDS = [0.25, 0.5, 1, 2, 4];
-    var OPT = { cur: true, spl: true, compact: true, speed: 1, sort: 'new' };
+    /* fx: colour filter of the replay's cells ('' none, grey, sepia, hue) */
+    var FX = ['', 'grey', 'sepia', 'hue'];
+    var OPT = { cur: true, spl: true, compact: true, speed: 1, sort: 'new', fx: '' };
     try {
         var _o = JSON.parse(localStorage.getItem('lmReplayStudio') || 'null');
         if (_o && typeof _o === 'object') {
@@ -544,10 +552,24 @@
             if (typeof _o.compact === 'boolean') OPT.compact = _o.compact;
             if (SPEEDS.indexOf(_o.speed) !== -1) OPT.speed = _o.speed;
             if (typeof _o.sort === 'string' && /^(new|old|name|duration|mass|size)$/.test(_o.sort)) OPT.sort = _o.sort;
+            if (FX.indexOf(_o.fx) !== -1) OPT.fx = _o.fx;
         }
     } catch (e) { }
     P.speed = OPT.speed;
     function saveOpt() { try { localStorage.setItem('lmReplayStudio', JSON.stringify(OPT)); } catch (e) { } }
+    /* the cell renderer (ogario.v4.js) reads these flags while a replay is shown; with one set,
+     * replays draw with Canvas2D, which has the filters */
+    function applyFx() {
+        window.replayGreyScale = OPT.fx === 'grey';
+        window.replaySepia = OPT.fx === 'sepia';
+        window.replayHueRotate = OPT.fx === 'hue';
+    }
+    applyFx();
+    /* where the playback is (ms of the recording) at the time now */
+    function vNow(now) { return P.baseT + (now - P.baseWall) * P.speed * P.dir; }
+    /* the replay bar and the phone pause button show the paused state */
+    function setPaused(on) { window._lmReplayPaused = !!on; }
+    function evReplay(on, reason) { if (typeof window._lmEvReplay === 'function') window._lmEvReplay(on, reason, P.pos); }
 
     function active() {
         return !!(P.driving && REC && inReplayOf(REC.key) && recArr(REC.key) === REC.arr);
@@ -559,9 +581,13 @@
     }
     function stopDriving() {
         stopTimers();
+        var was = P.driving;
         P.driving = false;
         P.playing = false;
+        P.stopAt = 0;
+        setPaused(false);
         restoreSkins();
+        if (was) evReplay(false, 'stopped');
         ui();
     }
     function handle(i) {
@@ -577,17 +603,28 @@
         var l = LM();
         if (l) l.playingReplayRecord = pos;
     }
-    /* the Stop button of the old replay window pauses the Studio playback too */
-    $(document).on('click', '#stopReplaybtn', function () { if (active()) pause(); });
     function tick() {
         P.timer = 0;
         if (!active()) { if (P.driving) stopDriving(); return; }
         if (!P.playing) return;
         refreshRec();
-        var now = performance.now(), vt = P.baseT + (now - P.baseWall) * P.speed, k = 0;
+        var now = performance.now(), vt = vNow(now), k = 0;
+        if (P.dir < 0) {
+            /* backwards: the packets are handled again from the newest down, at their recorded
+             * spacing (packet pos-2 shows the world before packet pos-1), until the first one */
+            if (P.pos > 1 && vt - REC.t[P.pos - 2] > 3000) { P.baseT = vt = REC.t[P.pos - 2] + 40; P.baseWall = now; }
+            while (P.pos > 1 && REC.t[P.pos - 2] >= vt && k < 300) { handle(P.pos - 2); setPos(P.pos - 1); k++; }
+            if (k >= 300) { P.baseT = tAt(P.pos); P.baseWall = now; }
+            if (P.pos <= 1) { P.playing = false; setPaused(true); ui(); return; }
+            P.timer = setTimeout(tick, Math.max(0, Math.min(250, (vt - REC.t[P.pos - 2]) / P.speed)));
+            return;
+        }
+        /* the End packet of a ?replay= link */
+        if (P.stopAt && P.pos >= P.stopAt) { P.stopAt = 0; pause(); return; }
         /* skip dead air: gaps over 3 s (a hidden tab while recording) */
         if (P.pos < REC.n && REC.t[P.pos] - vt > 3000) { P.baseT = vt = REC.t[P.pos] - 40; P.baseWall = now; }
-        while (P.pos < REC.n && REC.t[P.pos] <= vt && k < 300) { handle(P.pos); setPos(P.pos + 1); k++; }
+        var lim = P.stopAt ? Math.min(REC.n, P.stopAt) : REC.n;
+        while (P.pos < lim && REC.t[P.pos] <= vt && k < 300) { handle(P.pos); setPos(P.pos + 1); k++; }
         if (k >= 300) { P.baseT = tAt(P.pos); P.baseWall = now; } /* the page cannot keep up: slow down instead of freezing */
         if (P.pos >= REC.n) {
             /* P1 fix #43: when playing a live recording, the playhead can reach the end
@@ -598,17 +635,27 @@
                 P.timer = setTimeout(tick, 200);
                 return;
             }
-            P.playing = false; ui(); return;
+            P.playing = false; setPaused(true); evReplay(false, 'end'); ui(); return;
         }
+        if (P.stopAt && P.pos >= P.stopAt) { P.stopAt = 0; pause(); return; }
         var d = (REC.t[P.pos] - vt) / P.speed;
         P.timer = setTimeout(tick, Math.max(0, Math.min(250, d)));
     }
-    function play() {
+    /* dir: 1 forwards, -1 backwards, none: the direction it played last */
+    function play(dir) {
+        if (dir) P.dir = dir < 0 ? -1 : 1;
         if (!REC) return;
-        if (!P.driving || !active()) { startReplay(REC.key, P.driving ? P.pos : (P.pos || REC.side.start || 0), true); return; }
+        if (!P.driving || !active()) {
+            var at = P.driving ? P.pos : (P.pos || REC.side.start || 0);
+            startReplay(REC.key, P.dir < 0 && at <= 1 ? REC.n : at, true);
+            return;
+        }
         if (P.ff) { P.ff.resume = true; return; }
-        if (P.pos >= REC.n) { seekTo(REC.side.start || 0, true); return; }
-        $('#stopReplaybtn').prop('disabled', false);
+        if (P.dir > 0 && P.pos >= REC.n) { seekTo(REC.side.start || 0, true); return; }
+        /* backwards from the start: from the end, like the old replay window's negative delay */
+        if (P.dir < 0 && P.pos <= 1) { seekTo(REC.n, true); return; }
+        setPaused(false);
+        evReplay(true);
         P.playing = true;
         P.baseT = tAt(P.pos);
         P.baseWall = performance.now();
@@ -620,6 +667,7 @@
     }
     function pause() {
         P.playing = false;
+        if (P.driving) setPaused(true);
         if (P.timer) { clearTimeout(P.timer); P.timer = 0; }
         if (P.ff) P.ff.resume = false;
         ui();
@@ -631,6 +679,7 @@
         target = Math.max(0, Math.min(REC.n, target | 0));
         if (!P.driving || !active()) { startReplay(REC.key, target, resume == null ? P.playing : resume); return; }
         var wasPlaying = resume == null ? (P.playing || !!(P.ff && P.ff.resume)) : resume;
+        if (P.stopAt && target >= P.stopAt) P.stopAt = 0;
         stopTimers();
         P.playing = false;
         if (target < P.pos) {
@@ -673,7 +722,8 @@
     }
     var leaveAt = 0;
     /* opens the replay connection (the live server is left) and takes over in takeOver() */
-    function startReplay(key, pos, autoplay) {
+    /* quiet: joined for the player (a link, Death recap), not added to the recent servers */
+    function startReplay(key, pos, autoplay, quiet) {
         var l = LM();
         if (!l || !recArr(key)) return;
         if (inReplayOf(key)) {
@@ -689,7 +739,20 @@
         leaveAt = 0;
         P.pending = { key: key, pos: pos, autoplay: autoplay, at: Date.now() };
         $('#server-token').val('replay^' + key);
-        $('#server-join').trigger('click');
+        if (quiet && window.application && typeof application.gameServerJoin === 'function') application.gameServerJoin('replay^' + key);
+        else $('#server-join').trigger('click');
+    }
+    /* plays a recording from packet pos on, in the Studio window (Death recap links, a replay^
+     * token joined without the Studio, ?replay= links); seeks when it already plays */
+    function watch(key, pos) {
+        if (!recArr(key)) return false;
+        open(key);
+        P.dir = 1;
+        pos = Math.max(0, pos | 0);
+        if (active() && REC.key === key) { seekTo(pos, true); return true; }
+        leaveAt = Date.now(); /* asked for: no "leaves the game" notice */
+        startReplay(key, pos, true, true);
+        return true;
     }
     /* called by playReplayLM after it emptied the world: true = the Studio plays this replay */
     RS.takeOver = function (key, startAt) {
@@ -706,7 +769,8 @@
         P.warnCount = 0;
         setPos(0);
         applySkins(REC.spec);
-        $('#stopReplaybtn').prop('disabled', false);
+        if (typeof window._lmEvReplay === 'function') window._lmEvReplay(true, '', p.pos || 0);
+        setPaused(!p.autoplay);
         $('#pause-hud').hide();
         seekTo(p.pos || 0, !!p.autoplay);
         ui();
@@ -722,7 +786,7 @@
     };
     function setSpeed(v) {
         v = Math.max(0.25, Math.min(4, v));
-        if (P.playing) { P.baseT = P.baseT + (performance.now() - P.baseWall) * P.speed; P.baseWall = performance.now(); }
+        if (P.playing) { var now = performance.now(); P.baseT = vNow(now); P.baseWall = now; }
         P.speed = v;
         OPT.speed = v;
         saveOpt();
@@ -770,7 +834,7 @@
     function instant() {
         if (dms().recordReplays === false) { toast('warning', T('recOff')); return; }
         if (inReplay()) {
-            if (active()) seekTime(REC.endT - instantSecs() * 1000, true);
+            if (active()) { P.dir = 1; seekTime(REC.endT - instantSecs() * 1000, true); }
             return;
         }
         var key = liveKey(), arr = recArr(key);
@@ -825,6 +889,7 @@
         open(key);
         openRec(key);
         P.pos = 0;
+        P.dir = 1;
         leaveAt = Date.now(); /* asked for: no "leaves the game" notice */
         startReplay(key, posAtTime(REC.t, REC.n, REC.endT - instantSecs() * 1000), true);
     }
@@ -878,7 +943,7 @@
         var k = (r.width / (dr.canvasWidth || r.width || 1)) * dpr;
         var sx = function (x) { return ((x - dr.camX) * dr.scale + (dr.canvasWidth || r.width) / 2) * k; };
         var sy = function (y) { return ((y - dr.camY) * dr.scale + (dr.canvasHeight || r.height) / 2) * k; };
-        var vt = P.playing ? Math.min(tAt(P.pos + 1), P.baseT + (performance.now() - P.baseWall) * P.speed) : tAt(P.pos);
+        var vt = !P.playing ? tAt(P.pos) : P.dir < 0 ? Math.max(tAt(P.pos - 1), vNow(performance.now())) : Math.min(tAt(P.pos + 1), vNow(performance.now()));
         /* own cells' centre */
         var cx = 0, cy = 0, cn = 0, cs = 0;
         (l.playerCells || []).forEach(function (c) { if (c && isNum(c.x)) { cx += c.x; cy += c.y; cn++; cs = Math.max(cs, c.size || 0); } });
@@ -1110,27 +1175,61 @@
             download(lmFileParts(packets, o.data.spec, o.data.side), meta.name);
         }, libError);
     }
+    /* a .lm file's text: into memory and the library; returns the recording's key or null */
+    function importText(text, name) {
+        var parsed;
+        try { parsed = parseLmText(String(text || '')); } catch (e) { toast('error', T('badFile')); return null; }
+        name = String(name || 'replay.lm');
+        var side = parsed.side.t ? { lmrs: 1, t: encodeTimes(parsed.side.t), s: parsed.side.s, e: parsed.side.e, c: parsed.side.c, start: parsed.side.start || undefined } : { lmrs: 1, s: parsed.side.s, e: parsed.side.e, c: parsed.side.c, start: parsed.side.start || undefined };
+        var key = addMemory(name, parsed.packets, parsed.spec, side, null);
+        if (!key) return null;
+        var entry = buildEntry({ packets: parsed.packets, spec: parsed.spec, side: side, key: name, name: name.replace(/\.lm$/i, ''), clip: parsed.side.start > 0 });
+        libPut(entry.meta, entry.data).then(function (m) {
+            var a = recArr(key);
+            if (a) a._lmLib = m.id;
+            refreshLibrary();
+        }, libError);
+        return key;
+    }
     function importFile(file) {
         if (!file) return;
         var fr = new FileReader();
         fr.onload = function () {
-            var parsed;
-            try { parsed = parseLmText(String(fr.result || '')); } catch (e) { toast('error', T('badFile')); return; }
-            var name = String(file.name || 'replay.lm');
-            var side = parsed.side.t ? { lmrs: 1, t: encodeTimes(parsed.side.t), s: parsed.side.s, e: parsed.side.e, c: parsed.side.c, start: parsed.side.start || undefined } : { lmrs: 1, s: parsed.side.s, e: parsed.side.e, c: parsed.side.c, start: parsed.side.start || undefined };
-            var key = addMemory(name, parsed.packets, parsed.spec, side, null);
+            var key = importText(fr.result, file.name);
             if (!key) return;
-            var entry = buildEntry({ packets: parsed.packets, spec: parsed.spec, side: side, key: name, name: name.replace(/\.lm$/i, ''), clip: parsed.side.start > 0 });
-            libPut(entry.meta, entry.data).then(function (m) {
-                var a = recArr(key);
-                if (a) a._lmLib = m.id;
-                refreshLibrary();
-            }, libError);
             select(key);
             setTab('player');
         };
         fr.onerror = function () { toast('error', T('badFile')); };
         fr.readAsText(file, 'UTF-8');
+    }
+    /* ?replay=<.lm URL>&replayStart=<packet>&replayEnd=<packet> (the links on the website):
+     * downloads the file, plays it from Start and pauses at End */
+    function loadUrl(url, start, end) {
+        /* jimboy3100.github.io answers with a 301 that has no CORS header; www.legendmod.ml allows the load */
+        url = String(url || '').replace(/^(https?:)?\/\/jimboy3100\.github\.io\//i, 'https://www.legendmod.ml/');
+        if (url.indexOf('.lm') === -1) { toast('warning', T('urlNotLm')); return; }
+        if (typeof fetch !== 'function') { toast('error', T('urlFailed')); return; }
+        fetch(url, { cache: 'no-store' }).then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.text();
+        }).then(function (text) {
+            var key = importText(text, url.split(/[?#]/)[0].split('/').pop() || 'replay.lm');
+            if (!key) return;
+            open(key);
+            setTab('player');
+            var last = REC.n - 1, a = parseInt(start, 10), b = parseInt(end, 10);
+            a = a >= 0 && a <= last ? a : 0;
+            b = b > a && b <= last ? b : 0;
+            if (b) { P.inMs = tAt(a + 1); P.outMs = tAt(b + 1); }
+            watch(key, a);
+            /* after watch(): the new playback clears an End left from before */
+            P.stopAt = b ? b + 1 : 0;
+            if (window.application && typeof application.onSpectate === 'function') { try { application.onSpectate(); } catch (e) { } }
+        }).catch(function (e) {
+            console.warn('[Replay Studio] ' + url + ':', e);
+            toast('error', T('urlFailed'));
+        });
     }
     /* clip [In, Out] of the shown recording */
     function makeClip() {
@@ -1231,13 +1330,14 @@
         });
         /* P0 fix: block game-action keys (split, feed, spawn, spectate) from reaching
          * the game engine while Replay Studio is driving playback. This prevents macros
-         * from firing, the player from accidentally spawning, and camera desyncs. */
+         * from firing, the player from accidentally spawning, and camera desyncs.
+         * active(): a paused replay left for a live server must not keep blocking them. */
         var BLOCK_KEYS = { ' ': 1, w: 1, W: 1, e: 1, E: 1, r: 1, R: 1, t: 1, T: 1, Enter: 1, Escape: 1 };
         document.addEventListener('keydown', function (e) {
-            if (P.driving && BLOCK_KEYS[e.key]) { e.stopImmediatePropagation(); e.preventDefault(); }
+            if (P.driving && BLOCK_KEYS[e.key] && active()) { e.stopImmediatePropagation(); e.preventDefault(); }
         }, true);
         document.addEventListener('keyup', function (e) {
-            if (P.driving && BLOCK_KEYS[e.key]) { e.stopImmediatePropagation(); e.preventDefault(); }
+            if (P.driving && BLOCK_KEYS[e.key] && active()) { e.stopImmediatePropagation(); e.preventDefault(); }
         }, true);
         /* header */
         /* header, timeline and transport stay left-to-right in Arabic too (close button on the right) */
@@ -1291,7 +1391,10 @@
         r2.appendChild(btn('\u23ee', K('toStart'), function () { seekTo(REC ? REC.side.start || 0 : 0); }));
         r2.appendChild(btn('-5', K('back5'), function () { seekTime(tAt(P.pos) - 5000); }));
         r2.appendChild(btn('\u25c0|', K('stepB'), function () { stepPacket(-1); }));
-        W.playB = btn('\u25b6', K('play'), function () { if (P.playing || (P.ff && P.ff.resume)) pause(); else play(); }, 'min-width:42px;');
+        /* backwards at the chosen speed (the old replay window's negative delay) */
+        W.revB = btn('\u25c0', K('playRev'), function () { if ((P.playing || (P.ff && P.ff.resume)) && P.dir < 0) pause(); else play(-1); }, 'min-width:42px;');
+        r2.appendChild(W.revB);
+        W.playB = btn('\u25b6', K('play'), function () { if ((P.playing || (P.ff && P.ff.resume)) && P.dir > 0) pause(); else play(1); }, 'min-width:42px;');
         r2.appendChild(W.playB);
         r2.appendChild(btn('|\u25b6', K('stepF'), function () { stepPacket(1); }));
         r2.appendChild(btn('+5', K('fwd5'), function () { seekTime(tAt(P.pos) + 5000); }));
@@ -1347,6 +1450,16 @@
         r3.appendChild(chk('cur', 'cursor'));
         r3.appendChild(chk('spl', 'splits'));
         r3.appendChild(chk('compact', 'compact', 'compactT'));
+        /* colour filter of the replay's cells */
+        W.fx = el('select', 'margin-right:6px;');
+        [['', 'fxNone'], ['grey', 'fxGrey'], ['sepia', 'fxSepia'], ['hue', 'fxHue']].forEach(function (f) {
+            var o = el('option'); o.value = f[0]; W.fx.appendChild(o);
+            L(function () { o.textContent = T(f[1]); });
+        });
+        L(function () { W.fx.title = T('fx'); W.fx.setAttribute('aria-label', T('fx')); });
+        W.fx.value = OPT.fx;
+        W.fx.addEventListener('change', function () { OPT.fx = FX.indexOf(W.fx.value) !== -1 ? W.fx.value : ''; saveOpt(); applyFx(); });
+        r3.appendChild(W.fx);
         W.chips = el('div', 'display:flex;flex:1 1 auto;');
         r3.appendChild(W.chips);
         pv.appendChild(r3);
@@ -1394,7 +1507,7 @@
     function select(key) {
         if (!recArr(key)) return;
         if (P.driving && REC && REC.key !== key) { pause(); P.driving = false; }
-        if (!REC || REC.key !== key) { openRec(key); P.pos = P.driving ? P.pos : 0; P.inMs = P.outMs = null; W && (W.marksSig = ''); }
+        if (!REC || REC.key !== key) { openRec(key); P.pos = P.driving ? P.pos : 0; P.inMs = P.outMs = null; P.stopAt = 0; W && (W.marksSig = ''); }
         ui();
     }
     function open(key) {
@@ -1424,6 +1537,8 @@
     function ui() {
         if (!W || W.style.display === 'none') return;
         if (REC && recArr(REC.key) !== REC.arr) { REC = null; P.driving = false; P.playing = false; }
+        /* the replay was left while paused (a live server joined): nothing ticks to notice it */
+        if (P.driving && !P.ff && !active()) { stopDriving(); return; }
         /* recordings list */
         var keys = recKeys(), sig = keys.join('\n') + '|' + liveKey();
         if (W.selSig !== sig) {
@@ -1448,13 +1563,17 @@
             W.fill.style.width = '0';
             W.headEl.style.left = '0';
             W.playB.disabled = true;
+            W.revB.disabled = true;
             W.backB.style.display = inReplay() ? '' : 'none';
             return;
         }
         refreshRec();
         W.playB.disabled = false;
+        W.revB.disabled = false;
         var spec = REC.spec, d = +spec[0] > 0 ? new Date(+spec[0]) : null;
-        W.info.textContent = (d ? d.toLocaleString() + ' \u00b7 ' : '') + serverLabel(REC.key) + (typeof spec[3] === 'string' && spec[3] ? ' \u00b7 ' + spec[3] : '') +
+        /* game info of the recording: region and mode as the old replay window showed them, then the nick */
+        var si = function (v) { return typeof v === 'string' && v ? ' \u00b7 ' + v.slice(0, 40) : ''; };
+        W.info.textContent = (d ? d.toLocaleString() + ' \u00b7 ' : '') + serverLabel(REC.key) + si(spec[2]) + si(spec[1]) + si(spec[3]) +
             ' \u00b7 ' + T('packets', [REC.n]) + (REC.side.est ? ' \u00b7 ' + T('est') : '') + (REC.key === liveKey() ? ' \u00b7 ' + T('live') : '') +
             (REC.arr._lmLib ? ' \u00b7 ' + T('saved') : '');
         var total = Math.max(1, REC.endT);
@@ -1470,9 +1589,13 @@
             W.io.style.left = (a / total * 100) + '%';
             W.io.style.width = Math.max(0, (b - a) / total * 100) + '%';
         } else W.io.style.display = 'none';
-        var playing = P.playing || !!(P.ff && P.ff.resume);
-        W.playB.textContent = playing ? '\u275a\u275a' : '\u25b6';
-        W.playB.title = playing ? T('pause') : T('play');
+        var playing = P.playing || !!(P.ff && P.ff.resume), fwd = playing && P.dir > 0, rev = playing && P.dir < 0;
+        W.playB.textContent = fwd ? '\u275a\u275a' : '\u25b6';
+        W.playB.title = fwd ? T('pause') : T('play');
+        W.revB.textContent = rev ? '\u275a\u275a' : '\u25c0';
+        W.revB.title = rev ? T('pause') : T('playRev');
+        W.revB.classList.toggle('on', rev);
+        if (W.fx.value !== OPT.fx) W.fx.value = OPT.fx;
         if (String(P.speed) !== W.spd.value) W.spd.value = String(P.speed);
         if (String(instantSecs()) !== W.secs.value) W.secs.value = String(instantSecs());
         W.backB.style.display = inReplay() ? '' : 'none';
@@ -1546,7 +1669,7 @@
                 if (!key) return;
                 select(key);
                 setTab('player');
-                play();
+                play(1);
             }, libError);
         }));
         top.appendChild(btn('\u270e', T('rename'), function () { editField(it, m, 'name'); }));
@@ -1603,6 +1726,10 @@
         if (action === 'instant') return instant();
         if (action === 'toggle') return isOpen() ? close() : open(arg);
         if (action === 'close') return close();
+        /* arg: [recording key, start packet] */
+        if (action === 'watch') return Array.isArray(arg) ? watch(arg[0], arg[1]) : watch(arg, 0);
+        /* arg: [URL, start packet, end packet] */
+        if (action === 'url') return Array.isArray(arg) ? loadUrl(arg[0], arg[1], arg[2]) : loadUrl(arg);
         return open(arg);
     };
     RS.open = open;
@@ -1610,6 +1737,6 @@
     /* the library for scripts and the smoke test */
     RS.store = { list: libList, get: libGet, put: libPut, update: libUpdateMeta, remove: libDelete };
     RS.state = function () {
-        return { open: isOpen(), key: REC && REC.key, pos: P.pos, n: REC ? REC.n : 0, playing: P.playing, driving: P.driving, speed: P.speed, marks: REC ? REC.marks.length : 0, armed: armed };
+        return { open: isOpen(), key: REC && REC.key, pos: P.pos, n: REC ? REC.n : 0, playing: P.playing, driving: P.driving, speed: P.speed, dir: P.dir, fx: OPT.fx, stopAt: P.stopAt, marks: REC ? REC.marks.length : 0, armed: armed };
     };
 })();

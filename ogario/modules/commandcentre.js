@@ -457,7 +457,7 @@
     function winLabel(w) { return plain(typeof W.lmT === 'function' ? W.lmT(winKey(w)) : w.id); }
     var WINDOWS = [
         { id: 'matchHistory', key: 'matchHistory', avail: function () { return typeof W._lmMatchHistoryOpen === 'function'; }, run: function () { W._lmMatchHistoryOpen(); } },
-        { id: 'replays', avail: function () { return typeof W.BeforeReplay === 'function'; }, run: function () { W.BeforeReplay(); } },
+        { id: 'replays', avail: function () { return typeof W.lmReplayStudio === 'function'; }, run: function () { W.lmReplayStudio('open'); } },
         { id: 'exportImport', key: 'settings.exportImport', avail: function () { return !!D.querySelector('#og-settings .btn-export'); }, run: function () { clickEl('#og-settings .btn-export'); } },
         { id: 'searchSettings', avail: function () { return !!D.getElementById('lm-settings-search'); }, run: function () { openTab('og-settings'); setTimeout(function () { var s = D.getElementById('lm-settings-search'); if (s) s.focus(); }, 250); } },
         { id: 'friends', avail: function () { var b = D.getElementById('lm-friends-btn'); return !!(b && !b.disabled); }, run: function () { clickEl('#lm-friends-btn'); } },

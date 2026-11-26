@@ -4357,9 +4357,6 @@ window._lmRecSample = function (lm) {
     m.st = n;
     m.s.push(n - m.t0, Math.round(+lm.playerMass || 0), lm.playerCells ? lm.playerCells.length : 0, ~~lm.playerPosition);
 };
-window.replayTiming = 20
-window.replayTimeOuts = []
-window.replaySkippedLoops = 100 //100 times more frames from timing 0 replays
 //window.fpsloopsetter=60
 window.renderDelay = 0;
 //window.specificRecordedProtocol = []
@@ -26026,7 +26023,7 @@ function thelegendmodproject() {
             });
             $(document).on("click", ".quick-replay", function (event) {
                 event.preventDefault();
-                BeforeReplay()
+                if (typeof window.lmReplayStudio === 'function') window.lmReplayStudio('open');
             });
             $(document).on("click", ".quick-skins", function (event) {
                 event.preventDefault();
@@ -29652,10 +29649,7 @@ function thelegendmodproject() {
                     $('#server-token').val(window.replayToken)
                     window.replayToken = null
                     //console.log("replay")
-                    /* lmReplayWatchAt (Death recap links) asks for a start packet */
-                    var _lmRepAt = window._lmReplayStartAt;
-                    window._lmReplayStartAt = null;
-                    playReplayLM(specialReplay, _lmRepAt != null ? _lmRepAt : undefined)
+                    playReplayLM(specialReplay)
 
                 }, 500);
                 //return null
@@ -41011,19 +41005,10 @@ function thelegendmodproject() {
             }
         },
         replayfunctions() {
-            /* replayTimeOuts holds one setTimeout id (playReplayLM), not an array, so the old
-             * ".length" test never stopped a running replay when a live server was joined */
+            /* a live server was joined: Replay Studio stops by itself (its replay is gone) */
             if (this.ws && !this.ws.includes("replay")) {
-                if (window.replayTimeOuts) {
-                    clearTimeout(window.replayTimeOuts);
-                    window.replayTimeOuts = null;
-                }
                 if (window._lmEvReplayOn && typeof _lmEvReplay === 'function') _lmEvReplay(false, 'left');
-                if ($('#pause-hud').text() === "Loading..." || window._lmReplayPaused) { /* i18n-ok: compares with the text the replay player sets (pause-hud "Loading..."), not shown from here */
-                    window._lmReplayPaused = false;
-                    $('#pause-hud').text(textLanguage.pause);
-                    $('#pause-hud').hide()
-                }
+                window._lmReplayPaused = false;
             }
             //if (!window.RecordedProtocol[$("#server-token").val()]){
             //console.log('a'+$("#server-token").val())		
@@ -85871,30 +85856,25 @@ function lmReplayResetWorld() {
 }
 window.lmReplayResetWorld = lmReplayResetWorld;
 /* LMEvents 'replayStart' / 'replayStop': once per replay (seeking restarts the playback
- * without a new event); the data is built only while a script listens */
-function _lmEvReplay(on, reason) {
+ * without a new event); the data is built only while a script listens. start: the packet
+ * the playback starts at (Replay Studio passes it). */
+function _lmEvReplay(on, reason, start) {
     if (!!window._lmEvReplayOn === on) return;
     window._lmEvReplayOn = on;
     var name = on ? 'replayStart' : 'replayStop';
     if (!window.LMEvents._has(name)) return;
     if (on) {
         var rec = window.RecordedProtocol && window.legendmod && window.RecordedProtocol[window.legendmod.playingReplayServer];
-        window.LMEvents.emit(name, { packets: rec && rec.length ? Math.max(0, rec.length - 2) : 0, start: parseInt(window.startReplayTime, 10) || 0 });
+        window.LMEvents.emit(name, { packets: rec && rec.length ? Math.max(0, rec.length - 2) : 0, start: Math.max(0, parseInt(start, 10) || 0) });
     } else window.LMEvents.emit(name, { reason: String(reason || 'stopped') });
 }
 window._lmEvReplay = _lmEvReplay;
+/* The replay connection (token replay^<key>) is open: empty the world and let Replay Studio
+ * (ogario/modules/replaystudio.js) play the recording. */
 function playReplayLM(temp, startAt) {
     if (temp && window.RecordedProtocol[temp]) {
         window._lmReplayPaused = false;
-        /*if (window.replayTimeOuts.length){
-            for (var i=0;i<window.replayTimeOuts;i++){
-                clearTimeout(window.replayTimeOuts[i])
-            }
-            window.replayTimeOuts=[]
-        }*/
-        clearTimeout(window.replayTimeOuts)
         lmReplayResetWorld()
-        $('#pause-hud').text(textLanguage.pause);
 
         legendmod.playingReplayRecord = 0
 
@@ -85915,130 +85895,45 @@ function playReplayLM(temp, startAt) {
                                         : /[.:\/]/.test(_lmRk) ? 'private' : 'agario';
         legendmod.serverType = _lmRt
         legendmod.connectionIntegrity = _lmRt === 'agario' || _lmRt === 'deltio'
-        legendmod.playingReplayRewind = false
-        legendmod.playingReplayRewindNow = false
         /* Replay Studio drives the playback it started itself (real packet times, stepping, seeking) */
         if (window.LMReplayStudio && typeof window.LMReplayStudio.takeOver === 'function' && window.LMReplayStudio.takeOver(temp, startAt)) return;
-        //if (parseInt(window.replayTiming, 10) < 0) {
-        if (parseFloat(window.replayTiming) < 0) {
-            toastr.warning(_lmG2Tag('server') + lmT('game2.replayBackwards')).css("width", "350px");
-            legendmod.playingReplayRewind = true
-        }
-        //if (parseInt(window.replayTiming, 10)<0) legendmod.playingReplayRecord = window.RecordedProtocol[legendmod.playingReplayServer].length-1
-        //start
-        //window.playrecord = 0
-        /* Read the range first: the first tick used the previous run's values. */
-        window.startReplayTime = startAt != null ? startAt : ($("#startReplayTime").val() || 0)
-        /* End falls back to the last packet (with the replay window closed it was undefined: the
-         * whole replay then ran in "Loading..." skip mode) */
-        window.endReplayTime = $("#endReplayTime").val() || (window.RecordedProtocol[temp].length - 2)
-        intervalPlayingRecord()
-        _lmEvReplay(true);
-
-        $("#stopReplaybtn").prop('disabled', false);
-        if ($("#savedArenas").val() && window.RecordedArenasSpecifications[$("#savedArenas").val()] && window.RecordedArenasSpecifications[$("#savedArenas").val()][4]) {
-
-            /* Replay files can come from a ?replay= link: copy only plain nick -> http(s) URL
-             * pairs (jQuery 3.2.1 deep extend does not filter __proto__). */
-            try {
-                var _lmReplaySkins = JSON.parse(window.RecordedArenasSpecifications[$("#savedArenas").val()][4]);
-                if (_lmReplaySkins && typeof _lmReplaySkins === 'object') {
-                    Object.keys(_lmReplaySkins).forEach(function (skinKey) {
-                        var skinUrl = _lmReplaySkins[skinKey];
-                        if (skinKey === '__proto__' || skinKey === 'constructor' || skinKey === 'prototype') return;
-                        if (typeof skinUrl !== 'string' || !/^https?:\/\/[^\s"'<>`]+$/i.test(skinUrl)) return;
-                        application.customSkinsMap[skinKey] = skinUrl;
-                    });
-                }
-            } catch (e) {
-                console.warn('[Replay] Ignoring invalid skins data:', e);
-            }
-        }
+        /* joined some other way (a typed replay^ token, the recent servers list): the Studio
+         * opens on this recording and plays it */
+        if (typeof window.lmReplayStudio === 'function') window.lmReplayStudio('watch', [temp, startAt || 0]);
     }
 }
 
-/* Replay controls (hotkeys, no default keys): pause/resume, speed, seek by 250 packets.
- * The playback chain handles one packet per tick and then schedules the next, so clearing
- * the pending timer pauses at the next unhandled packet; resuming restarts the chain. */
+/* Replay controls (hotkeys without default keys, the replay bar, the phone buttons):
+ * pause/resume, speed, seek by 250 packets. Replay Studio plays every replay and runs them. */
 function lmReplayActive() {
-    var srv = window.legendmod && window.legendmod.playingReplayServer;
-    return !!(srv && window.RecordedProtocol && window.RecordedProtocol[srv] && String($("#server-token").val() || '').indexOf('replay^' + srv) !== -1 && !$("#stopReplaybtn").prop('disabled'));
+    var rs = window.LMReplayStudio;
+    return !!(rs && typeof rs.isDriving === 'function' && rs.isDriving());
 }
 function lmReplayNeedActive() {
     if (lmReplayActive()) return true;
     if (window.toastr) toastr.info(lmT('game2.replayOnly'));
     return false;
 }
-/* a replay played by Replay Studio takes these commands itself (true = handled) */
-function lmReplayStudioCmd(cmd, arg) {
-    var rs = window.LMReplayStudio;
-    return !!(rs && typeof rs.isDriving === 'function' && rs.isDriving() && rs.command(cmd, arg) !== false);
-}
 function lmReplayTogglePause() {
-    if (lmReplayStudioCmd('pause')) return;
-    if (!lmReplayNeedActive()) return;
-    if (window._lmReplayPaused) {
-        window._lmReplayPaused = false;
-        $('#pause-hud').text(textLanguage.pause).hide();
-        clearTimeout(window.replayTimeOuts);
-        intervalPlayingRecord();
-    } else {
-        clearTimeout(window.replayTimeOuts);
-        window._lmReplayPaused = true;
-        $('#pause-hud').text(lmT('game2.replayPaused')).show();
-    }
+    if (lmReplayNeedActive()) window.LMReplayStudio.command('pause');
 }
 function lmReplaySpeed(f) {
-    if (lmReplayStudioCmd('speed', f)) return;
-    if (!lmReplayNeedActive()) return;
-    var v = parseFloat(window.replayTiming) || 20, s = v < 0 ? -1 : 1;
-    v = Math.min(200, Math.max(1, Math.round(Math.abs(v) * f))) * s;
-    window.replayTiming = v;
-    try { localStorage.setItem('replayTiming', v); } catch (e) { }
-    if (window.toastr) toastr.info(lmT('game2.replayDelay', [Math.abs(v)]));
+    if (lmReplayNeedActive()) window.LMReplayStudio.command('speed', f);
 }
 function lmReplaySeek(delta) {
-    if (lmReplayStudioCmd('seek', delta)) return;
-    if (!lmReplayNeedActive()) return;
-    if (parseFloat(window.replayTiming) < 0) { if (window.toastr) toastr.info(lmT('game2.replayNoSeek')); return; }
-    var srv = window.legendmod.playingReplayServer;
-    var cur = window.legendmod.playingReplayRecord || 0;
-    var last = window.RecordedProtocol[srv].length - 2;
-    var target = Math.max(0, Math.min(last, cur + delta));
-    if (target === cur) return;
-    clearTimeout(window.replayTimeOuts);
-    if (window._lmReplayPaused) $('#pause-hud').text(textLanguage.pause).hide();
-    window._lmReplayPaused = false;
-    if (target > cur) {
-        /* forward: the existing skip runs to the new start */
-        window.startReplayTime = target;
-        intervalPlayingRecord();
-    } else {
-        /* back: restart and skip forward to the target */
-        playReplayLM(srv, target);
-    }
+    if (lmReplayNeedActive()) window.LMReplayStudio.command('seek', delta);
 }
 window.lmReplayTogglePause = lmReplayTogglePause;
 window.lmReplaySpeed = lmReplaySpeed;
 window.lmReplaySeek = lmReplaySeek;
-/* Watch a recording from one packet on (Death recap step links). Seeks when that recording is
- * already playing; else joins it like the replay window's Watch button, without adding the
- * replay to the recent servers list. False when the recording is gone. */
+/* Watch a recording from one packet on (Death recap step links): Replay Studio seeks when that
+ * recording already plays, else joins it without adding the replay to the recent servers
+ * list. False when the recording is gone. */
 function lmReplayWatchAt(slot, packet) {
     if (!slot || !window.RecordedProtocol || !window.RecordedProtocol[slot] || window.RecordedProtocol[slot].length < 12) return false;
+    if (typeof window.lmReplayStudio !== 'function') return false;
     var last = window.RecordedProtocol[slot].length - 2;
-    packet = Math.max(0, Math.min(last, packet | 0));
-    if (lmReplayActive() && window.legendmod.playingReplayServer === slot) {
-        lmReplaySeek(packet - (window.legendmod.playingReplayRecord || 0));
-        return true;
-    }
-    if (!window.application || typeof application.gameServerJoin !== 'function') return false;
-    window._lmReplayStartAt = packet;
-    /* the replay window's range may belong to another recording */
-    $('#startReplayTime').val(packet);
-    $('#endReplayTime').val(last);
-    $('#server-token').val('replay^' + slot);
-    application.gameServerJoin('replay^' + slot);
+    window.lmReplayStudio('watch', [slot, Math.max(0, Math.min(last, packet | 0))]);
     return true;
 }
 window.lmReplayWatchAt = lmReplayWatchAt;
@@ -86081,139 +85976,6 @@ function lmReplayBarTick() {
     bar.lastChild.textContent = (window._lmReplayPaused ? '\u275A\u275A ' : '') + cur + ' / ' + total;
 }
 setInterval(function () { try { lmReplayBarTick(); } catch (e) { } }, 250);
-function intervalPlayingRecord() {
-    if ($("#greyScale").length) {
-        window.replayGreyScale = $("#greyScale").prop("checked") === true
-    }
-    if ($("#sepia").length) {
-        window.replaySepia = $("#sepia").prop("checked") === true
-    }
-    if ($("#hueRotate").length) {
-        window.replayHueRotate = $("#hueRotate").prop("checked") === true
-    }
-    var temp1 = parseInt(window.startReplayTime, 10)
-    var temp2 = parseInt(window.endReplayTime, 10)
-    if (temp1 < 0 || temp2 <= 0) {
-        toastr.warning(_lmG2Tag('server') + lmT('game2.replayTimes')).css("width", "350px");
-    } else if (legendmod.playingReplayRewind && !legendmod.playingReplayRewindNow) {
-        //console.log('a')
-        window.replayTiming2 = 0
-        $('#pause-hud').text(lmT('game2.loading'));
-        $('#pause-hud').show()
-    } else if (legendmod.playingReplayRecord >= temp1 && legendmod.playingReplayRecord <= temp2) {
-
-        if (window.replayTiming2 === 0) {
-            $('#pause-hud').text(textLanguage.pause);
-            $('#pause-hud').hide()
-        }
-        window.replayTiming2 = Math.abs(parseFloat(window.replayTiming))
-        //window.replayTiming2 = Math.abs(parseInt(window.replayTiming, 10))
-
-    } else {
-        if (window.replayTiming2 != 0) {
-            //console.log('b')
-            window.replayTiming2 = 0
-            $('#pause-hud').text(lmT('game2.loading'));
-            $('#pause-hud').show()
-        }
-    }
-    window.replayTimeOuts = setTimeout(function () {
-        var tempo = legendmod.playingReplayServer
-        if ($("#server-token").val().includes("replay^" + tempo)) {
-
-            var replayPacket = window.RecordedProtocol[tempo][legendmod.playingReplayRecord];
-            if (replayPacket) legendmod.handleMessage(replayPacket) //main fuction for replay
-            //
-            /* Skipping (before Start, after End, or the rewind's run to the end): handle packets in
-             * one synchronous batch. It used 9 setTimeout(0) calls per tick (about 10 packets per
-             * 4 ms) and nothing at all during rewind, so a rewind showed "Loading..." for minutes.
-             * Packets are still handled in order, each exactly once. */
-            if (window.replayTiming2 === 0 && !legendmod.playingReplayRewindNow) {
-                var _lmRecArr = window.RecordedProtocol[tempo];
-                var _lmRecStart = parseInt(window.startReplayTime, 10) || 0;
-                /* skip to Start when before it, to the end only when past End (or for the rewind run);
-                 * at Start itself nothing is skipped (it used to run straight to the end: Start and
-                 * seeking did not work) */
-                var _lmRecEnd = parseInt(window.endReplayTime, 10);
-                if (!(_lmRecEnd >= 0)) _lmRecEnd = _lmRecArr.length - 2;
-                var _lmRecTarget = legendmod.playingReplayRewind ? _lmRecArr.length - 2
-                    : (legendmod.playingReplayRecord < _lmRecStart ? _lmRecStart - 1
-                        : (legendmod.playingReplayRecord > _lmRecEnd ? _lmRecArr.length - 2 : legendmod.playingReplayRecord));
-                var _lmRecBatch = Math.min(200, Math.max(10, window.replaySkippedLoops || 100));
-                for (var _lmRecN = 0; _lmRecN < _lmRecBatch && legendmod.playingReplayRecord + 1 < _lmRecTarget; _lmRecN++) {
-                    legendmod.playingReplayRecord++;
-                    if (_lmRecArr[legendmod.playingReplayRecord]) legendmod.handleMessage(_lmRecArr[legendmod.playingReplayRecord]);
-                }
-            }
-            //
-            $("#totalReplayPackets").val(legendmod.playingReplayRecord + "/" + window.RecordedProtocolPackets)
-
-            /* Playing backwards stops at packet 0: stepping on scheduled packet -1, which
-             * threw in handleMessage and never reached "Finished". */
-            var replayGoingBack = !(parseFloat(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow);
-            if (legendmod.playingReplayRecord < window.RecordedProtocol[tempo].length - 1 && legendmod.playingReplayRecord >= 0 &&
-                !(replayGoingBack && legendmod.playingReplayRecord <= 0)) {
-                intervalPlayingRecord();
-                if (parseFloat(window.replayTiming) >= 0 || !legendmod.playingReplayRewindNow) {
-                    //if (parseInt(window.replayTiming, 10) >= 0 || !legendmod.playingReplayRewindNow) {
-                    legendmod.playingReplayRecord++
-                } else {
-                    legendmod.playingReplayRecord--
-                }
-            } else if (legendmod.playingReplayRewind && !legendmod.playingReplayRewindNow && legendmod.playingReplayRecord >= 0) {
-                /* Fast-forwarded to the end: now play backwards. (The flag was only set
-                 * inside a branch that required it already, so rewind never started.) */
-                legendmod.playingReplayRewindNow = true
-                legendmod.playingReplayRecord--
-                intervalPlayingRecord();
-            } else {
-                /* Finished (end reached, or rewound to the start). */
-                $("#stopReplaybtn").prop('disabled', true);
-                _lmEvReplay(false, 'end');
-                $('#pause-hud').text(textLanguage.pause);
-                $('#pause-hud').hide()
-            }
-        }
-    }, window.replayTiming2);
-}
-
-/*
-function playReplayLM(temp){		
-    if (temp && window.RecordedProtocol[temp]){
-        //if (window.replayTimeOuts.length){
-            //for (var i=0;i<window.replayTimeOuts;i++){
-                //clearTimeout(window.replayTimeOuts[i])
-            //}
-            //window.replayTimeOuts=[]
-        //}
-        legendmod.indexedCells={}
-        legendmod.cells=[]
-        legendmod.removedCells=[]
-        legendmod.food=[]
-        legendmod.viruses=[]
-        legendmod.cellcolors=Object.create(null)
-        legendmod.playerCells=[]
-        legendmod.playerCellIDs=[]
-        if (legendmod._playerCellIDSet) legendmod._playerCellIDSet.clear();
-        legendmod.playerCellsMulti=[]	
-        legendmod.playingRecord=0
-    	
-        for (var legendmod.playingRecord=0;legendmod.playingRecord<window.RecordedProtocol[temp].length-1;legendmod.playingRecord++){
-            window.playrecord = 0
-            //window.replayTimeOuts[i] = setTimeout(function() {
-                setTimeout(function() {
-                if ($("#server-token").val().includes("replay^"+temp)){	
-            	
-                    legendmod.handleMessage(window.RecordedProtocol[temp][window.playrecord])
-                	
-            //console.log(window.playrecord)
-                }
-                window.playrecord++
-            }, window.replayTiming*legendmod.playingRecord);
-        }		
-    }
-}
-*/
 
 function findOcc(arr, key) {
     let arr2 = [];

@@ -8090,16 +8090,11 @@ function joinROOMonstart() {
         if (typeof window._lmRoomOpen === "function") window._lmRoomOpen("join", code);
     }, 1500);
 }
+/* ?replay=<.lm URL>&replayStart=<packet>&replayEnd=<packet>: Replay Studio downloads and plays it */
 function joinreplayURLonstart() {
     setTimeout(function () {
-        if (replayURL) {
-
-            BeforeReplay()
-            setTimeout(function () {
-                loadReplayFromWeb(replayURL)
-            }, 2000);
-        }
-    }, 1000);
+        if (replayURL && typeof window.lmReplayStudio === 'function') window.lmReplayStudio('url', [replayURL, replayStart, replayEnd]);
+    }, 3000);
 }
 
 function autoplayplaying() {
@@ -8611,20 +8606,6 @@ function BeforeLegendmodShop() {
     SpecialDealsJS.type = "text/javascript";
     SpecialDealsJS.src = "https://www.legendmod.ml/LMexpress/shop/shop.js?v=" + (window.OgVer || "");
     $("body").append(SpecialDealsJS);
-}
-function BeforeReplay() {
-    /* every click added another #replayModal (and both X buttons closed the first) */
-    if ($("#replayModal").length) {
-        $("#replayModal").show();
-        return;
-    }
-    /* replay.js builds the window when it runs: replace the old tag instead of stacking them */
-    $("#lmReplayJS").remove();
-    var ReplayJS = document.createElement("script");
-    ReplayJS.id = "lmReplayJS";
-    ReplayJS.type = "text/javascript";
-    ReplayJS.src = "https://www.legendmod.ml/LMexpress/replay.js?v=" + (window.OgVer || ""); /* no redirect, no stale cached copy */
-    $("body").append(ReplayJS);
 }
 
 function isEquivalent(a, b) {
