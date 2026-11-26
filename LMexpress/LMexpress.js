@@ -192,7 +192,8 @@ var setmessagecom = "YES";
 var setyt = "YES";
 var searching;
 var timerId;
-TimerLM = {};
+/* kept when a saved Show Timer Calc. already made it: init() above runs the saved Tools buttons first */
+TimerLM = window.TimerLM || {};
 var playerState = 0;
 var MSGCOMMANDS = "";
 var MSGCOMMANDS2;
@@ -7656,6 +7657,9 @@ function initializeLM(modVersion) {
             localStorage.setItem("TIMEcalBtn", true);
             $("#timertools-hud").show();
             $(this).html('<i class="fa fa-calculator"></i>' + Premadeletter51);
+            /* a saved choice is applied while this file loads, before TimerLM is set further up: it threw
+             * there and stopped the rest of the load (HUD images and titles were not restored) */
+            if (!window.TimerLM) window.TimerLM = {};
             TimerLM.timerDiv = document.getElementById('timer');
             return TimerLM.timerDiv;
         } else {
