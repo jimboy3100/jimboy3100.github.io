@@ -127,15 +127,15 @@
 
     <!-- Stylesheets: order matters, later files override earlier ones -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu:700">
-    <link rel="stylesheet" href="https://www.legendmod.ml/LMexpress/master.css?v=3.693">
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/bootstrap-colorpicker.min.css?v=3.693">
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/toastr.min.css?v=3.693">
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/switchery.min.css?v=3.693">
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/rangeslider.css?v=3.693">
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/perfect-scrollbar.min.css?v=3.693">
+    <link rel="stylesheet" href="https://www.legendmod.ml/LMexpress/master.css?v=3.694">
+    <link rel="stylesheet" href="https://www.legendmod.ml/lib/bootstrap-colorpicker.min.css?v=3.694">
+    <link rel="stylesheet" href="https://www.legendmod.ml/lib/toastr.min.css?v=3.694">
+    <link rel="stylesheet" href="https://www.legendmod.ml/lib/switchery.min.css?v=3.694">
+    <link rel="stylesheet" href="https://www.legendmod.ml/lib/rangeslider.css?v=3.694">
+    <link rel="stylesheet" href="https://www.legendmod.ml/lib/perfect-scrollbar.min.css?v=3.694">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://www.legendmod.ml/css/ogario.v3.css?v=3.693">
-    <link rel="stylesheet" href="https://www.legendmod.ml/lib/context-menu.min.css?v=3.693">
+    <link rel="stylesheet" href="https://www.legendmod.ml/css/ogario.v3.css?v=3.694">
+    <link rel="stylesheet" href="https://www.legendmod.ml/lib/context-menu.min.css?v=3.694">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.2.1/css/flag-icon.min.css">
 
     <!-- defer: optional P2P helper; a slow delt.io must not block the page (the proxy checks P2PWebSocket at connect time) -->
@@ -170,7 +170,7 @@
             });
         })();
     </script>
-    <script src="https://www.legendmod.ml/LMexpress/standby-server.js?v=3.693"></script>
+    <script src="https://www.legendmod.ml/LMexpress/standby-server.js?v=3.694"></script>
     <script>
         try {
             delete localStorage['s/s'];
@@ -180,8 +180,8 @@
     </script>
 
     <!-- jQuery 3.7.1 (was 3.2.1: CVE-2019-11358, CVE-2020-11022/11023) -->
-    <script src="https://www.legendmod.ml/lib/jquery-3.7.1.min.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/lib/protobuf.min.js?v=3.693"></script>
+    <script src="https://www.legendmod.ml/lib/jquery-3.7.1.min.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/lib/protobuf.min.js?v=3.694"></script>
     <div id="captchaWindow"
         style="display:none; position:absolute; top:0px; left:0px; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index:500">
         <div id="verifyUser" style="position:absolute; top:50%; left:50%; margin-left:-152px; margin-top:-40px;"></div>
@@ -190,27 +190,27 @@
     <!-- Libraries and the mod's early scripts. These ran inside <body> before as well (the captcha
          divs above used to sit in <head>, which made the browser start <body> at that point). -->
     <!-- jQuery UI 1.13.3, Draggable only (was the full 520 KB jquery-ui.js 1.12.1; only .draggable() is used) -->
-    <script src="https://www.legendmod.ml/lib/jquery-ui-1.13.3-draggable.js?v=3.693"></script>
+    <script src="https://www.legendmod.ml/lib/jquery-ui-1.13.3-draggable.js?v=3.694"></script>
     <!-- Bootstrap 3.4.1 JS (was 3.3.7: CVE-2018-14040/14041/14042, CVE-2019-8331) -->
-    <script src="https://www.legendmod.ml/lib/bootstrap-3.4.1.min.js?v=3.693"></script>
+    <script src="https://www.legendmod.ml/lib/bootstrap-3.4.1.min.js?v=3.694"></script>
     <script>
         /* 3.4.1 sanitizes popover HTML: allow the <video> of the video-skin preview popover */
         if ($.fn.popover && $.fn.popover.Constructor && $.fn.popover.Constructor.DEFAULTS && $.fn.popover.Constructor.DEFAULTS.whiteList) {
             $.fn.popover.Constructor.DEFAULTS.whiteList.video = ['src', 'width', 'height', 'autoplay', 'loop', 'muted'];
         }
     </script>
-    <script src="https://www.legendmod.ml/lib/bootstrap-colorpicker.min.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/lib/toastr.min.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/lib/switchery.min.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/lib/rangeslider.min.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/lib/perfect-scrollbar.jquery.min.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/lib/Youtubeiframe_api.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/extras/key-event.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/extras/foggy.js?v=3.693"></script>
+    <script src="https://www.legendmod.ml/lib/bootstrap-colorpicker.min.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/lib/toastr.min.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/lib/switchery.min.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/lib/rangeslider.min.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/lib/perfect-scrollbar.jquery.min.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/lib/Youtubeiframe_api.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/extras/key-event.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/extras/foggy.js?v=3.694"></script>
     <!-- Texts in the language chosen in Legend Mod (built from developers/i18n/src): lm-i18n.js writes the
          chosen language's file right after itself; English (lm-en.js) is the fallback for missing texts. -->
-    <script src="https://www.legendmod.ml/languages/lm-i18n.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/languages/lm-en.js?v=3.693" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/languages/lm-i18n.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/languages/lm-en.js?v=3.694" charset="utf-8"></script>
     <script>
         /* On agar.io this page is written with document.write and Chrome may refuse such scripts: then the
          * texts come synchronously (the mod reads them while it starts). Nothing happens when they are there. */
@@ -236,18 +236,18 @@
             if (c !== 'en' && !L.loaded(c)) need('lm-' + c + '.js');
         })();
     </script>
-    <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff2.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/LMexpress/i18n.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/LMexpress/proto.decoder.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/ogario/ogario.v4.master.regionobj.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/ogario/ogario.v4.master.js?v=3.693"></script>
+    <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff2.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/LMexpress/i18n.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/LMexpress/proto.decoder.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/ogario/ogario.v4.master.regionobj.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/ogario/ogario.v4.master.js?v=3.694"></script>
     <!-- Pinned version with an integrity hash (was @latest, which could change under the mod at any time) -->
     <script src="https://cdn.jsdelivr.net/npm/@twemoji/api@17.0.3/dist/twemoji.min.js"
         integrity="sha384-Y5xukbGJwykbHHkTbLJykYLcBPFxrwipTbEh0puxhkz9CZ90raTPGe2Ks4vCxsYU"
         crossorigin="anonymous"></script>
-    <script src="https://www.legendmod.ml/nicks/emoji/DisMojiPicker[1].js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/lib/TweenMax.min.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/lib/context-menu.min.js?v=3.693"></script>
+    <script src="https://www.legendmod.ml/nicks/emoji/DisMojiPicker[1].js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/lib/TweenMax.min.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/lib/context-menu.min.js?v=3.694"></script>
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
@@ -479,23 +479,23 @@
     </div>
     <canvas id="canvas"></canvas>
     <!-- Game client and mod. Order matters: each file uses globals from the ones before it. -->
-    <script src="https://www.legendmod.ml/extras/buffer.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/ogario/quadtree.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/wasm_cells.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/wasm_quadtree.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/ogario.v4.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/hotkeysCommand.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/captcha.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/spect.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/lz4.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/autoplay.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/mergetimer.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/anti.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/ogario/ogario.v4.static.js?v=3.693" charset="utf-8"></script>
-    <script src="https://www.legendmod.ml/AjaxData/ProLicenceUsersTableJS.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/LMexpress/LMexpress.js?v=3.693"></script>
-    <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff3.js?v=3.693"></script>
+    <script src="https://www.legendmod.ml/extras/buffer.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/ogario/quadtree.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/wasm_cells.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/wasm_quadtree.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/ogario.v4.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/hotkeysCommand.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/captcha.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/spect.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/lz4.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/autoplay.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/mergetimer.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/anti.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/ogario/ogario.v4.static.js?v=3.694" charset="utf-8"></script>
+    <script src="https://www.legendmod.ml/AjaxData/ProLicenceUsersTableJS.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/LMexpress/LMexpress.js?v=3.694"></script>
+    <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff3.js?v=3.694"></script>
 
     <script>
         /* Bug #32 fix: single reCAPTCHA load with a combined callback.
@@ -524,7 +524,7 @@
         /* A touch-only device, not any device with a touchscreen (touch laptops have a mouse). */
         if (window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) {
             var _lmm = document.createElement('script');
-            _lmm.src = 'https://www.legendmod.ml/LMmobile/LMmobile.js?v=3.693';
+            _lmm.src = 'https://www.legendmod.ml/LMmobile/LMmobile.js?v=3.694';
             document.body.appendChild(_lmm);
         }
     </script>
