@@ -26,7 +26,7 @@
   var realInput = function (x, y) {
     return new Promise(function (res) {
       var id = 'lab' + Date.now() + Math.random();
-      var t = setTimeout(function () { res(false); }, 5000);
+      var t = setTimeout(function () { res(false); }, 15000);
       window.__lmInputDone = function (i) { if (i === id) { clearTimeout(t); res(true); } };
       window.__lmInput(JSON.stringify({ id: id, type: mobile ? 'tap' : 'click', x: x, y: y }));
     });

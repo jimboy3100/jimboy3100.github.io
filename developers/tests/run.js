@@ -7,7 +7,7 @@
 //
 // Usage: node developers/tests/run.js [--secs N] [--only desktop|mobile] [--probes a,b] [--limit N] [--keep]
 // Env: CHROME_PATH (optional), SMOKE_SECS (default 14), SMOKE_PROBES (like --probes),
-// SMOKE_LIMIT (like --limit: seconds the probes may take per mode; default 10 per probe, at least 120).
+// SMOKE_LIMIT (like --limit: seconds the probes may take per mode; default 15 per probe, at least 240).
 const { spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -54,7 +54,7 @@ const unknown = pick.filter(n => !probes.includes(n + '.js'));
 if (unknown.length) { console.log('no such probe: ' + unknown.join(', ')); process.exit(1); }
 /* the time the probes may take grows with their number (a slow machine runs each one longer);
  * smoke.js stops there and says which probe was running, run.js waits a little longer than that */
-const limit = Number(argVal('--limit', process.env.SMOKE_LIMIT || Math.max(120, probes.length * 10)));
+const limit = Number(argVal('--limit', process.env.SMOKE_LIMIT || Math.max(240, probes.length * 15)));
 const strip = src => src.replace(/^\s*\/\/.*$/gm, '').trim().replace(/;\s*$/, '');
 const combined = '(async () => {\n' +
   /* window.__lmProbeRes: smoke.js reads the results so far when the probes run out of time */

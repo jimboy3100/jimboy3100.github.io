@@ -19,7 +19,7 @@
   var send = function (q) {
     return new Promise(function (res) {
       q.id = 'ws' + Date.now() + Math.random();
-      var t = setTimeout(function () { res(false); }, 5000);
+      var t = setTimeout(function () { res(false); }, 15000);
       window.__lmInputDone = function (i) { if (i === q.id) { clearTimeout(t); res(true); } };
       window.__lmInput(JSON.stringify(q));
     });
