@@ -8,8 +8,9 @@ function spawnProcess(){
     botsProcess.stderr.on('data', data => {
         console.log(data.toString())
     })
-    botsProcess.on('exit', () => {
-        setTimeout(spawnProcess, 1000)
+    botsProcess.on('exit', (code) => {
+        if (code !== 0) setTimeout(spawnProcess, 1000)
+        else console.log('[PROCESS] Clean exit, not restarting')
     })
 }
 

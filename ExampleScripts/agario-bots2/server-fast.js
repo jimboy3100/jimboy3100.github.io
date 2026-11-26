@@ -190,13 +190,17 @@ class Bot {
                 break
             case 241:
                 this.decryptionKey = reader.readInt32()
-                this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.agar\.io)/)[1]}${reader.readString()}`, 255)
+                const urlMatch = game.url.match(/(live-arena-([\w\d]+(\.tech)?)\.agar\.io)/)
+                if (!urlMatch) { console.log('[SERVER] Unexpected URL format:', game.url); return }
+                this.encryptionKey = murmur2(`${urlMatch[1]}${reader.readString()}`, 255)
                 break
             case 242:
-                this.send(buffers.spawn(bots.name))
+                this.send(buffers.spawn2(bots.name))
                 break
             case 255:
-                this.handleCompressedBuffer(algorithm.uncompressBuffer(reader.buffer.slice(5), Buffer.allocUnsafe(reader.readUint32())))
+                const compressedSize = reader.readUint32()
+                if (compressedSize > 1048576) break // 1MB safety cap
+                this.handleCompressedBuffer(algorithm.uncompressBuffer(reader.buffer.slice(5), Buffer.allocUnsafe(compressedSize)))
                 break
         }
     }
@@ -246,7 +250,7 @@ class Bot {
                 this.followMouseTimeout = null
             }
             this.followMouse = false
-            this.send(buffers.spawn(bots.name))
+            this.send(buffers.spawn2(bots.name))
         }
     }
     updateOffset(reader){

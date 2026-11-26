@@ -7,7 +7,7 @@
 
 // By comparing Url and Websocket, imagine how your websocket should below
 // If repl.it not loading, wait or make a new repo. Sometimes repl.it bugs
-process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0'; // TODO: Remove when agar.io proxies use valid certs
 const WebSocket = require('ws'),
     { murmur2 } = require('murmurhash-js'),
     buffers = require('./buffers'),
@@ -29,11 +29,14 @@ let userWS = null,
     stoppingBots = false,
     connectedBots = 0,
     spawnedBots = 0,
-    serverPlayers = 0;
+    serverPlayers = 0,
+    startBotsInterval = null,
+    statusInterval = null;
 
-logger.warn('[SERVER]: If error occurs on port 1377 try 8083 on config.json and websocket');
+logger.warn(`[SERVER]: If error occurs on port ${config.server.port} try 8083 on config.json and websocket`);
 if (config.server.update) {
     requester(config.server.link, (err, req, data) => {
+        if (err) { logger.error('[SERVER]: Update check failed:', err.message); return; }
         const requesterData = Buffer.from(data).toString()
         requesterConfig = JSON.parse(requesterData)
 
@@ -82,7 +85,7 @@ const dataBot = {
         this.isConnected = false
         this.playersAmount = 0
         this.lastPlayersAmount = 0
-        this.ws = new WebSocket(game.url)
+        this.ws = new WebSocket(game.url, { origin: 'https://agar.io' })
 		//this.ws.binaryType = 'arraybuffer';
         this.ws.onopen = this.onopen.bind(this)
         this.ws.onmessage = this.onmessage.bind(this)
@@ -167,7 +170,7 @@ class Bot {
     }
     connect() {
         this.reset()
-        this.ws = new WebSocket(game.url)
+        this.ws = new WebSocket(game.url, { origin: 'https://agar.io' })
 		//this.ws.binaryType = 'arraybuffer';
         this.ws.onopen = this.onopen.bind(this)
         this.ws.onmessage = this.onmessage.bind(this)
@@ -203,6 +206,11 @@ class Bot {
         if (this.isConnected) {
             this.isConnected = false
             connectedBots--
+            if (this.followMouseTimeout) {
+                clearTimeout(this.followMouseTimeout)
+                this.followMouseTimeout = null
+            }
+            this.followMouse = false
             //userWS.send(Buffer.from([4, connectedBots, spawnedBots, serverPlayers]))
             //if(!this.gotCaptcha) setTimeout(this.connect.bind(this), 1000)
         }
@@ -226,8 +234,8 @@ class Bot {
 						userBots.splice(userBots.indexOf(this), 1)
 						//userBots.push(new Bot()) 						
 					}
-					connectedBots--
-					this.ws.onmessage = null
+					if (this.isConnected) connectedBots--
+					if (this.ws) { this.ws.onmessage = null; this.ws.onerror = null; this.ws.onclose = null; this.ws.close(); }
 					this.reset()
 					
 				}	
@@ -277,7 +285,9 @@ class Bot {
                 //break			
             case 241:
                 this.decryptionKey = reader.readInt32()
-				this.encryptionKey = murmur2(`${game.url.match(/(live-arena-([\w\d]+(\.tech)?)\.agar\.io)/)[1]}${reader.readString()}`, 255) 
+				const urlMatch = game.url.match(/(live-arena-([\w\d]+(\.tech)?)\.agar\.io)/)
+				if (!urlMatch) { logger.error('[SERVER]: Unexpected URL format:', game.url); return; }
+				this.encryptionKey = murmur2(`${urlMatch[1]}${reader.readString()}`, 255) 
                 //this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.agar\.io)/)[1]}${reader.readString()}`, 255) //original
 				//this.encryptionKey = murmur2(`${game.url.match(/(live-arena-\w+\.tech+\.agar\.io)/)[1]}${reader.readString()}`, 255)		
                 this.isConnected = true
@@ -288,7 +298,9 @@ class Bot {
                 //this.send(buffers.spawn(bots.name))
                 break
             case 255:
-                this.handleCompressedBuffer(algorithm.uncompressBuffer(reader.buffer.slice(5), Buffer.allocUnsafe(reader.readUint32())))
+                const compressedSize = reader.readUint32()
+                if (compressedSize > 1048576) break // 1MB safety cap
+                this.handleCompressedBuffer(algorithm.uncompressBuffer(reader.buffer.slice(5), Buffer.allocUnsafe(compressedSize)))
                 break
         }		
     }
@@ -361,7 +373,8 @@ class Bot {
             let isConditionMet = false
             switch (type) {
 				case 'virus':
-					entity.isVirus && entity.size > 115 && this.cellsIDs.length != 16
+					isConditionMet = entity.isVirus && entity.size > 115 && this.cellsIDs.length !== 16
+					break
                 case 'biggerPlayer':
 					isConditionMet = (!entity.isVirus && !entity.isPellet && entity.size > bot.size * 1.15 && entity.name !== bots.name)
                     break
@@ -451,15 +464,19 @@ class Bot {
 new WebSocket.Server({
     port: config.server.port
 }).on('connection', ws => {
-    setInterval(() => {
-        userWS.send(Buffer.from([4, connectedBots, spawnedBots]))
-        userWS.send(Buffer.from([5, serverPlayers]))
+    if (statusInterval) clearInterval(statusInterval)
+    statusInterval = setInterval(() => {
+        if (userWS && userWS.readyState === WebSocket.OPEN) {
+            userWS.send(Buffer.from([4, connectedBots, spawnedBots]))
+            userWS.send(Buffer.from([5, serverPlayers]))
+        }
     }, 1000);
     userWS = ws
     logger.good('[SERVER]: User connected!')
     ws.on('message', buffer => {
-		if (JSON.parse(buffer.includes("message"))){
-			var data = JSON.parse(buffer).msg;
+		var bufStr = buffer.toString()
+		if (bufStr.includes('"message"')){
+			var data = JSON.parse(bufStr).msg;
 			//console.log(JSON.parse(data))
 			//console.log(Object.values(JSON.parse(data)))
 			var temp = Object.values(JSON.parse(data))	
@@ -485,7 +502,7 @@ new WebSocket.Server({
 					bots.name = reader.readString()
                     bots.amount = reader.readUint8()
                     dataBot.connect()
-                    let index = 0
+                    if (startBotsInterval) clearInterval(startBotsInterval)
                     startBotsInterval = setInterval(() => {
                         if (dataBot.lastPlayersAmount < 195 && connectedBots < bots.amount && !stoppingBots) userBots.push(new Bot())
                     }, 150)
