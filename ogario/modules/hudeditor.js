@@ -422,6 +422,17 @@
         }
         if (changed) writeStyle(c);
     }
+    /* The long leaderboard fit (application._lmLbFit) leaves the leaderboard alone while a layout
+     * moves it or the minimap: when that changes it fits again at once. It ran only when a size
+     * changed, so a layout that moved the minimap away kept the leaderboard small. */
+    var lbOwned = '';
+    function lbRefit(c) {
+        var k = (c && c.leaderboard && c.leaderboard.h ? 'l' : '') + (c && c.minimap && c.minimap.h ? 'm' : '');
+        if (k === lbOwned) return;
+        lbOwned = k;
+        var app = W.application;
+        if (app && typeof app._lmLbFit === 'function') { try { app._lmLbFit(); } catch (e) { } }
+    }
     function render() {
         if (!D || typeof D.createElement !== 'function') return;
         var c = comps();
@@ -431,6 +442,7 @@
             if (timer) { clearInterval(timer); timer = 0; }
             eff = {};
             if (restoreAll(null)) phoneRefit();
+            lbRefit(null);
             return;
         }
         var back = restoreAll(c);
@@ -442,6 +454,7 @@
         check();
         if (!timer) timer = setInterval(function () { try { if (!D.hidden) check(); } catch (e) { } }, 1000);
         if (back) phoneRefit();
+        lbRefit(c);
     }
     /* true when a box got its own transform back */
     function restoreAll(c) {
