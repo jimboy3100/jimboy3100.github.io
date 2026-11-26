@@ -171,8 +171,10 @@ is reloaded. Examples: `extras/plugins/` (also listed in the catalogue).
 
 ## Lab
 
-Experimental features go to Settings > Lab (experimental), each with a switch that is off until the
-player turns it on (kept in its own storage, reset with "Reset Lab"). Modules and plugins can add one:
+Experimental features get a switch in the User Scripts window, off until the player turns it on
+(kept in its own storage `lmLab`, not exported; "Turn all experiments off" there resets them). An
+experiment a plugin registers at its top level is shown under that plugin; the others are in the
+window's "Experiments" group. Modules and plugins can add one:
 
 ```js
 LMLab.register({
@@ -182,6 +184,8 @@ LMLab.register({
 });
 ```
 
-`onEnable` also runs at start when the player left the switch on.
+`onEnable` also runs at start when the player left the switch on. `LMLab.set(id, on)`,
+`LMLab.isEnabled(id)`, `LMLab.list()` and `LMLab.reset()` switch and read them from a script;
+`LMLab.open()` opens the User Scripts window at the experiments.
 
 User scripts and plugins run inside Legend Mod with full access to the page. Only load scripts from people you trust.

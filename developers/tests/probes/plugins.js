@@ -1,24 +1,26 @@
 // Plugins in the User Scripts panel: the view switch, the Plugins and Catalogue views, a catalogue
 // example plugin (served from the checkout) installed into a free slot, run, registered, its settings
-// saved and the slot turned off again; the version gate; a 'settingsChange' event; the Lab.
+// saved and the slot turned off again; the version gate; a 'settingsChange' event; the Lab
+// experiments in this window (under the plugin that added one, the others in its Experiments group;
+// no Lab section in the Settings tab, no Lab hotkey or Command Centre entry of its own).
 (async () => {
   var fail = [], info = {};
   var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
-  for (var i = 0; i < 40 && !(window.LMPlugins && window.LMLab && document.getElementById('lm-us-bar') && document.querySelector('#og-options .lmLabGroup .lm-lab-acts')); i++) await wait(250);
+  for (var i = 0; i < 40 && !(window.LMPlugins && window.LMLab && document.getElementById('lm-us-bar')); i++) await wait(250);
   if (!window.LMPlugins) return { fail: ['LMPlugins missing (ogario/modules/plugins.js not loaded)'] };
   if (!window.LMLab) return { fail: ['LMLab missing (ogario/modules/lab.js not loaded)'] };
   if (!document.getElementById('lm-us-bar')) fail.push('no Editor / Plugins / Catalogue switch in the User Scripts panel');
   if (typeof window._lmUsGate !== 'function') fail.push('slot gate missing');
-  ['hk-lmPlugins', 'hk-lmLab'].forEach(function (h) {
+  ['hk-lmPlugins'].forEach(function (h) {
     if (!hotkeysCommand[h]) fail.push('hotkey ' + h + ' missing');
     else if (hotkeysCommand[h].defaultKey !== '') fail.push('hotkey ' + h + ' has a default key');
   });
+  // the Lab is part of the User Scripts window: no hotkey, Command Centre entry or Settings section of its own
+  if (hotkeysCommand['hk-lmLab']) fail.push('a separate Lab hotkey still exists');
+  if (window.LMCommandCentre && typeof LMCommandCentre.items === 'function' && LMCommandCentre.items().some(function (it) { return it.id === 'win:lab'; })) fail.push('a separate Lab entry in the Command Centre');
+  if (document.querySelector('#og-options .lmLabGroup')) fail.push('the Settings tab still has a Lab section');
   if (document.getElementById('lm-pl-overlay') || document.getElementById('lm-plugins-btn')) fail.push('a separate plugin manager window still exists');
-  if (!document.querySelector('#og-options .lmLabGroup h5')) fail.push('no Lab section');
-  // one button for User Scripts: the Tools tab (the Lab had a second one)
-  if (document.getElementById('lm-lab-plugins')) fail.push('second User Scripts button in the Lab');
   if (!$('#legend #OpenuserScripts').length) fail.push('User Scripts button missing in the Tools tab');
-  if (!document.getElementById('lm-lab-reset')) fail.push('Reset Lab button missing');
   var keys = ['lmLab', 'lmPluginSettings.mass-milestones', 'UserscriptEnabledInit'];
   for (var k = 1; k <= 5; k++) keys.push('Userscript' + k, 'Userscripttexture' + k, 'Userscripttext1' + k, 'UserscriptEnabled' + k);
   var saved = {};
@@ -89,6 +91,20 @@
       if (hud.classList.contains('lm-us-alt')) fail.push('editor view not back');
       var inf = document.getElementById('lm-us-info');
       if (!inf || !/Mass milestone toasts/.test(inf.textContent)) fail.push('header of the chosen slot not shown in the editor');
+      /* an experiment the slot's plugin registers at its top level is shown under that plugin */
+      var ran = window._lmUsRan, keepRan = ran ? ran[n] : null;
+      var expCode = "LMLab.register({ id: 'probeSlotExp', name: 'Probe slot experiment' });";
+      if (ran) {
+        ran[n] = expCode;
+        var es = document.createElement('script');
+        es.text = expCode;
+        try { document.body.appendChild(es); } finally { ran[n] = keepRan; es.remove(); }
+        LMPlugins.open('plugins');
+        await wait(50);
+        var se = document.getElementById('lmLab-probeSlotExp');
+        if (!se || !$(se).closest('#lm-us-ext [data-slot="' + n + '"] .lm-us-labs').length) fail.push('the experiment of the plugin in slot ' + n + ' is not shown under it');
+        if (se && $(se).closest('#lm-us-exps').length) fail.push('the experiment of the plugin is in the Experiments group too');
+      } else fail.push('no _lmUsRan (LMexpress.sniff2.js)');
     }
     /* the version gate: a plugin for a newer Legend Mod does not run, plain scripts do */
     var ow = toastr.warning; toastr.warning = function () { };
@@ -114,17 +130,26 @@
     else if (ft.checked || defaultmapsettings.showStatsFrameTime) fail.push('frame time switch on by default');
     var probeOn = 0;
     LMLab.register({ id: 'probeDemo', name: 'Probe demo', onEnable: function () { probeOn++; }, onDisable: function () { probeOn--; } });
+    LMPlugins.open('plugins');
+    await wait(50);
     var cb = document.getElementById('lmLab-probeDemo');
-    if (!cb) fail.push('Lab switch of a registered experiment missing');
+    if (!cb || !$(cb).closest('#lm-us-ext #lm-us-exps').length) fail.push('Lab switch of a registered experiment missing in the Experiments group of User Scripts');
     else {
       if (cb.checked || LMLab.isEnabled('probeDemo')) fail.push('Lab experiment on by default');
       cb.checked = true;
       cb.dispatchEvent(new Event('change', { bubbles: true }));
       if (probeOn !== 1) fail.push('Lab switch did not turn the experiment on');
       if (!(JSON.parse(localStorage.getItem('lmLab') || '{}').on || {}).probeDemo) fail.push('Lab state not stored in lmLab');
-      document.getElementById('lm-lab-reset').click();
-      if (probeOn !== 0 || cb.checked) fail.push('Reset Lab did not turn the experiment off');
+      var rb = document.getElementById('lm-lab-reset');
+      if (!rb || !$(rb).closest('#lm-us-exps').length) fail.push('"Turn all experiments off" missing in User Scripts');
+      else {
+        rb.click();
+        await wait(50);
+        cb = document.getElementById('lmLab-probeDemo');
+        if (probeOn !== 0 || !cb || cb.checked) fail.push('"Turn all experiments off" did not turn the experiment off');
+      }
     }
+    LMPlugins.close();
   } finally {
     window.confirm = origConfirm;
     if (n) {

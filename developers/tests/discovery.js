@@ -163,7 +163,9 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
 /* new cards and versioned "seen" */
 {
   const card = id => C.CARDS.find(c => c.id === id);
-  ['practice', 'macroEditor', 'themeWorkshop', 'accessibility', 'plugins', 'lab'].forEach(id => check('new card ' + id, !!card(id)));
+  ['practice', 'macroEditor', 'themeWorkshop', 'accessibility', 'plugins'].forEach(id => check('new card ' + id, !!card(id)));
+  /* the Lab experiments are in the User Scripts window: one card for both */
+  check('no Lab card of its own', !card('lab'));
   let arg = null;
   ctx.lmPractice = a => { arg = a; };
   card('practice').win.run();
@@ -180,10 +182,6 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
   ctx.LMPlugins = { open: a => { arg = a; } };
   card('plugins').win.run();
   check('User Scripts opened on the plugins view', arg === 'plugins');
-  let lab = 0;
-  ctx.LMLab = { open: () => { lab++; } };
-  card('lab').win.run();
-  check('Lab opened', lab === 1);
   check('Accessibility switches', card('accessibility').opts.join() === 'a11yIndicators,reducedMotion');
 
   /* seen keys: unchanged cards keep their id (old stores still count), a changed card is NEW again */

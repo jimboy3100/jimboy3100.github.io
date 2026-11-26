@@ -199,8 +199,8 @@
         { id: 'macroEditor', opts: [], win: opener('lmMacroEditor', 'open') },
         { id: 'themeWorkshop', opts: [], win: opener('LMThemeWorkshop.open') },
         { id: 'accessibility', opts: ['a11yIndicators', 'reducedMotion'] },
-        { id: 'plugins', opts: [], win: opener('LMPlugins.open', 'plugins') },
-        { id: 'lab', opts: [], win: opener('LMLab.open') }
+        /* the Lab experiments are in the User Scripts window (no card of their own) */
+        { id: 'plugins', opts: [], win: opener('LMPlugins.open', 'plugins') }
     ];
     var CARD_IDS = CARDS.map(function (c) { return c.id; });
 

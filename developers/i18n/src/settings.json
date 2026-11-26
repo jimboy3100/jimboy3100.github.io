@@ -11090,24 +11090,6 @@
     "ja": "ショップ",
     "it": "Negozio"
   },
-  "settings.lmLabGroup": {
-    "en": "Lab (experimental)",
-    "el": "Lab (πειραματικά)",
-    "es": "Laboratorio (experimental)",
-    "bg": "Лаборатория (експериментално)",
-    "fr": "Labo (expérimental)",
-    "ar": "المختبر (تجريبي)",
-    "zh": "實驗室（實驗性）",
-    "ru": "Лаборатория (экспериментально)",
-    "de": "Labor (experimentell)",
-    "tr": "Laboratuvar (deneysel)",
-    "pl": "Laboratorium (eksperymentalne)",
-    "nl": "Lab (experimenteel)",
-    "pt": "Laboratório (experimental)",
-    "id": "Lab (eksperimental)",
-    "ja": "ラボ（実験的）",
-    "it": "Laboratorio (sperimentale)"
-  },
   "settings.hk-lmPlugins": {
     "en": "Open User Scripts (plugins, catalogue)",
     "el": "Άνοιγμα User Scripts (plugins, κατάλογος)",
@@ -11125,24 +11107,6 @@
     "id": "Buka skrip pengguna (plugin, katalog)",
     "ja": "ユーザースクリプトを開く（プラグイン、カタログ）",
     "it": "Apri script utente (plugin, catalogo)"
-  },
-  "settings.hk-lmLab": {
-    "en": "Open the Lab (experimental features)",
-    "el": "Άνοιγμα του Lab (πειραματικές λειτουργίες)",
-    "es": "Abrir el Laboratorio (funciones experimentales)",
-    "bg": "Отвори Лабораторията (експериментални функции)",
-    "fr": "Ouvrir le Labo (fonctions expérimentales)",
-    "ar": "فتح المختبر (ميزات تجريبية)",
-    "zh": "開啟實驗室（實驗性功能）",
-    "ru": "Открыть лабораторию (экспериментальные функции)",
-    "de": "Labor öffnen (experimentelle Funktionen)",
-    "tr": "Laboratuvarı aç (deneysel özellikler)",
-    "pl": "Otwórz Laboratorium (funkcje eksperymentalne)",
-    "nl": "Lab openen (experimentele functies)",
-    "pt": "Abrir o Laboratório (recursos experimentais)",
-    "id": "Buka Lab (fitur eksperimental)",
-    "ja": "ラボを開く（実験的な機能）",
-    "it": "Apri il Laboratorio (funzioni sperimentali)"
   },
   "settings.scanTrickGroup": {
     "en": "Scan Trick",

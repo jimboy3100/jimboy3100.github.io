@@ -143,7 +143,7 @@
     {
       "id": "lab",
       "name": "Lab (experimental features)",
-      "description": "Toggle experimental features with on/off switches. Modules register experiments via LMLab.register(). Up to 100 experiments. Stored separately from settings. Built-in experiment: frameTime (shows frame time instead of FPS). Reset Lab button. Independent of profiles.",
+      "description": "Experimental features with on/off switches in the User Scripts window, next to the plugin that registered them (others in its Experiments group). Modules and plugins register experiments via LMLab.register(). Up to 100 experiments. Stored separately from settings (lmLab, not exported). A Turn all experiments off button while there is any. Independent of profiles.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

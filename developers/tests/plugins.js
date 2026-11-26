@@ -1,7 +1,9 @@
 /* Plugin manager and Lab checks (ogario/modules/plugins.js, ogario/modules/lab.js): plugin header
  * parsing and validation, Legend Mod version compatibility, stored data checks, the catalogue
- * file and its example plugins, the Lab storage, and that every new LMEvents emit point is
- * guarded so it costs nothing while nobody listens. node developers/tests/plugins.js */
+ * file and its example plugins, the Lab storage, the slot of a plugin's experiment and the Lab
+ * opening the User Scripts window, the old Lab hotkey moved to User Scripts, and that every new
+ * LMEvents emit point is guarded so it costs nothing while nobody listens.
+ * node developers/tests/plugins.js */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const root = path.join(__dirname, '..', '..');
 const P = require(path.join(root, 'ogario', 'modules', 'plugins.js'));
@@ -207,6 +209,40 @@ check('lab experiment needs an id and a name', !L.validateExperiment({ id: '1a',
     let late = 0;
     Lab.register({ id: 'later', name: 'Later', onEnable: () => late++ });
     check('lab: left on -> onEnable at registration', late === 1 && Lab.isEnabled('later'));
+    /* shown in the User Scripts window: under the plugin whose slot registered it at its top level */
+    const code = '/* slot 2 plugin */ LMLab.register(...)';
+    ctx._lmUsRan = { 2: code };
+    ctx.document.currentScript = { text: code };
+    let redraws = 0, opened = null;
+    ctx.LMPlugins = { _refresh: () => { redraws++; }, open: v => { opened = v; } };
+    Lab.register({ id: 'fromSlot', name: 'From slot 2' });
+    ctx.document.currentScript = { text: 'another script' };
+    Lab.register({ id: 'outside', name: 'Outside' });
+    ctx.document.currentScript = null;
+    const byId = {}; Lab.list().forEach(x => { byId[x.id] = x; });
+    check('lab: an experiment knows the slot of the plugin that added it', byId.fromSlot.slot === 2 && byId.outside.slot === 0 && byId.demo.slot === 0);
+    check('lab: a registration redraws the User Scripts window', redraws === 2);
+    Lab.set('outside', true);
+    check('lab: a switch redraws it', redraws === 3);
+    Lab.open();
+    check('lab: open() opens the User Scripts window at the experiments', opened === 'experiments');
+    check('lab: _mount kept for old scripts', Lab._mount() === true);
+    Lab.reset(true);
+})();
+
+/* ---- the old "Open the Lab" hotkey: its key opens User Scripts (ogario.v4.js loadHotkeys) ---- */
+(function () {
+    const v4src = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
+    const a = v4src.indexOf('/* "Open the Lab"'), b = v4src.indexOf('this.migrateBrowserSpecificHotkeys();', a);
+    check('loadHotkeys moves the Lab hotkey', a > 0 && b > a);
+    if (!(a > 0 && b > a)) return;
+    const run = hk => { vm.runInNewContext(v4src.slice(a, b), { hotkeys: hk }); return hk; };
+    const one = run({ L: 'hk-lmLab', '': 'hk-lmPlugins', W: 'hk-moveUp' });
+    check('Lab key -> User Scripts when no key opens it', one.L === 'hk-lmPlugins' && one.W === 'hk-moveUp' && one[''] === 'hk-lmPlugins');
+    const two = run({ L: 'hk-lmLab', U: 'hk-lmPlugins' });
+    check('Lab key freed when a key opens User Scripts already', !('L' in two) && two.U === 'hk-lmPlugins');
+    const three = run({ '': 'hk-lmLab' });
+    check('no key: nothing bound', !('' in three));
 })();
 
 /* ---- LMEvents: nothing is built or frozen while nobody listens ---- */

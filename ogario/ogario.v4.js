@@ -25891,9 +25891,6 @@ function thelegendmodproject() {
                 $("#options").remove();
                 $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper");
             }
-            /* Lab: experimental features (ogario/modules/lab.js fills the section) */
-            this.addOptions([], "lmLabGroup");
-            if (window.LMLab) window.LMLab._mount();
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
             /* Adaptive performance, network quality history and the diagnostics window
@@ -82040,6 +82037,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var _lmZl = 'hk-zoom' + _lmZm[1], _lmZHas = false;
                     for (var _lmZk in hotkeys) if (hotkeys.hasOwnProperty(_lmZk) && hotkeys[_lmZk] === _lmZl) { _lmZHas = true; break; }
                     if (_lmZHas) delete hotkeys[_lmZr]; else hotkeys[_lmZr] = _lmZl;
+                }
+                /* "Open the Lab": the Lab experiments are in the User Scripts window, so its key
+                 * opens that window (unless a key does that already) */
+                for (var _lmLabKey in hotkeys) {
+                    if (!hotkeys.hasOwnProperty(_lmLabKey) || hotkeys[_lmLabKey] !== 'hk-lmLab') continue;
+                    /* the '' entry holds a command without a key: no binding */
+                    var _lmUsHas = false;
+                    for (var _lmK in hotkeys) if (_lmK && hotkeys.hasOwnProperty(_lmK) && hotkeys[_lmK] === 'hk-lmPlugins') _lmUsHas = true;
+                    if (_lmUsHas || !_lmLabKey) delete hotkeys[_lmLabKey]; else hotkeys[_lmLabKey] = 'hk-lmPlugins';
                 }
                 this.migrateBrowserSpecificHotkeys();
                 this.addMissingDefaultHotkeys();

@@ -834,7 +834,8 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			/* User Scripts panel with its plugin views (ogario/modules/plugins.js) and the Lab (lab.js) */
+			/* User Scripts panel with its plugin views (ogario/modules/plugins.js) and the Lab
+			 * experiments (lab.js; its own "Open the Lab" hotkey became this one: loadHotkeys) */
 			'hk-lmPlugins': {
 				get label() {
 					return lmT('settings.hk-lmPlugins');
@@ -842,17 +843,6 @@
 				defaultKey: '',
 				keyDown() {
 					if (window.LMPlugins && typeof window.LMPlugins.toggle === 'function') window.LMPlugins.toggle('plugins');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-lmLab': {
-				get label() {
-					return lmT('settings.hk-lmLab');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMLab && typeof window.LMLab.open === 'function') window.LMLab.open();
 				},
 				keyUp: null,
 				type: 'normal'

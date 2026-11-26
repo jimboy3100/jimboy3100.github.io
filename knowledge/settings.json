@@ -182,12 +182,6 @@
       "name": "Config",
       "description": "Settings profiles management.",
       "settings": ["settingsProfiles", "autoSwitchProfile", "profileBackups"]
-    },
-    {
-      "id": "lab",
-      "name": "Lab",
-      "description": "Experimental features toggle.",
-      "settings": ["labExperiments"]
     }
   ]
 }

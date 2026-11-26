@@ -468,8 +468,8 @@
         { id: 'hudEditor', avail: function () { return !!(W.LMHudEditor && W.LMHudEditor.open); }, run: function () { W.LMHudEditor.open(); } },
         /* ogario/modules/practice.js (loaded on first use by lmPractice in ogario.v4.js) */
         { id: 'practice', avail: function () { return typeof W.lmPractice === 'function'; }, run: function () { W.lmPractice('open'); } },
-        { id: 'plugins', avail: function () { return !!(W.LMPlugins && typeof W.LMPlugins.open === 'function'); }, run: function () { W.LMPlugins.open('plugins'); } },
-        { id: 'lab', avail: function () { return !!(W.LMLab && typeof W.LMLab.open === 'function'); }, run: function () { W.LMLab.open(); } },
+        /* the Lab experiments are in this window too (no Lab entry of their own) */
+        { id: 'plugins', key: 'pkg.lb2.ccPlugins', avail: function () { return !!(W.LMPlugins && typeof W.LMPlugins.open === 'function'); }, run: function () { W.LMPlugins.open('plugins'); } },
         /* skinEditor removed — macroeditor.js still loads on first use */
         { id: 'macroEditor', avail: function () { return typeof W.lmMacroEditor === 'function'; }, run: function () { W.lmMacroEditor('open'); } },
         { id: 'discover', avail: function () { return !!(W.LMDiscovery && W.LMDiscovery.open); }, run: function () { W.LMDiscovery.open(); } },
