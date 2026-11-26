@@ -295,5 +295,99 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('server-fast.js accepts opcode 11', fastSrc.includes('case 11:'));
 }
 
+// ---- Opcode 7/11 length guard: servers must reject sendMode-sized packets ----
+{
+    const serverSrc = fs.readFileSync(path.join(botsDir, 'server.js'), 'utf8');
+    const fastSrc = fs.readFileSync(path.join(botsDir, 'server-fast.js'), 'utf8');
+    // The guard checks data.length === 9 before reading playerX/playerY
+    check('server.js guards opcode 7 by length', serverSrc.includes('data.length === 9'));
+    check('server-fast.js guards opcode 7 by length', fastSrc.includes('data.length === 9'));
+}
+
+// ---- ogario.v4.js: opcode 9 handled gracefully ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    check('ogario: handles opcode 9 from server', ogSrc.includes('case 9:'));
+}
+
+// ---- ogario.v4.js: Battle Royale bots button ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    check('ogario: BR bots section exists', ogSrc.includes('brBotsSection'));
+    check('ogario: BR fill lobby button', ogSrc.includes('brFillLobby'));
+    check('ogario: BR stop fill button', ogSrc.includes('brStopFill'));
+    check('ogario: BR lobby status display', ogSrc.includes('brLobbyStatus'));
+    check('ogario: BR fill auto-calculates needed bots', ogSrc.includes('15 - currentPlayers'));
+    check('ogario: BR fill auto-stops when game starts', ogSrc.includes('battleRoyale.state > 1'));
+    check('ogario: BR fill stops on mode change', /gameMode\s*!==\s*':battleroyale'.*brStopFilling/.test(ogSrc));
+    check('ogario: BR watcher interval cleaned on stop', ogSrc.includes('clearInterval(window._brLobbyWatcher)'));
+}
+
+// ---- Behavioral: playerPosition buffer encodes correctly ----
+{
+    // Simulate the Writer class and test playerPosition buffer structure
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    // Extract the playerPosition function and verify its protocol
+    const ppMatch = ogSrc.match(/playerPosition\(x,\s*y\)\s*\{([^}]+)\}/);
+    check('ogario: playerPosition function extractable', !!ppMatch);
+    if (ppMatch) {
+        const body = ppMatch[1];
+        check('ogario: playerPosition allocates 9 bytes', body.includes('Writer(9)'));
+        check('ogario: playerPosition writes opcode 11', body.includes('writeUint8(11)'));
+        check('ogario: playerPosition writes x as int32', body.includes('writeInt32(x)'));
+        check('ogario: playerPosition writes y as int32', body.includes('writeInt32(y)'));
+    }
+}
+
+// ---- Behavioral: sendMode uses opcode 7 (not 11) — protocol disambiguation ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    const smMatch = ogSrc.match(/sendMode\(nick\)\s*\{([^}]+)\}/);
+    check('ogario: sendMode function extractable', !!smMatch);
+    if (smMatch) {
+        const body = smMatch[1];
+        check('ogario: sendMode uses opcode 7 (not 11)', body.includes('writeUint8(7)'));
+        check('ogario: sendMode payload differs from playerPosition', body.includes('Writer(3 + nick.length)'));
+    }
+}
+
+// ---- Behavioral: connectionBots.send() has proper WebSocket guard ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    // The send method must check this.ws.readyState === WebSocket.OPEN
+    const sendMatch = ogSrc.match(/send\(buffer\)\s*\{([^}]+)\}/);
+    check('ogario: connectionBots.send has ws guard', !!sendMatch && sendMatch[1].includes('this.ws') && sendMatch[1].includes('WebSocket.OPEN'));
+}
+
+// ---- Behavioral: mouse position send no longer uses broken readyState check ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    // Find the cursor/mouse sending block
+    const mouseBlock = ogSrc.match(/userBots\.startedBots[\s\S]{0,500}mousePosition/);
+    check('ogario: mouse send block found', !!mouseBlock);
+    if (mouseBlock) {
+        check('ogario: mouse send uses connectionBots.send (not raw ws)', mouseBlock[0].includes('connectionBots.send'));
+        check('ogario: mouse send does not check wrapper readyState', !mouseBlock[0].includes('connectionBots.readyState'));
+    }
+}
+
+// ---- End-to-end protocol: opcode 11 round-trip with Writer and Reader ----
+{
+    // Test that an opcode 11 message created by Writer is correctly parsed by Reader
+    const Writer = require(path.join(botsDir, 'writer'));
+    const Reader = require(path.join(botsDir, 'reader'));
+    const w = new Writer(9);
+    w.writeUint8(11);
+    w.writeInt32(-5000);
+    w.writeInt32(3200);
+    const buf = Buffer.from(w.buffer);
+    check('opcode 11 round-trip: buffer is 9 bytes', buf.length === 9);
+    check('opcode 11 round-trip: opcode byte', buf[0] === 11);
+    const r = new Reader(buf);
+    r.readUint8(); // skip opcode
+    check('opcode 11 round-trip: x decoded', r.readInt32() === -5000);
+    check('opcode 11 round-trip: y decoded', r.readInt32() === 3200);
+}
+
 console.log('\n' + (fail ? 'FAIL: ' + fail + ' failure(s)' : 'ALL PASS'));
 process.exit(fail ? 1 : 0);

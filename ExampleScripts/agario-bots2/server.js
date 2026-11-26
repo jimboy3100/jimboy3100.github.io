@@ -657,8 +657,12 @@ new WebSocket.Server({
             case 7:
             case 11:
                 // Player's absolute world position (for AI bots to orbit near the player)
-                user.playerX = reader.readInt32()
-                user.playerY = reader.readInt32()
+                // Guard: sendMode and captchatoken also use opcode 7 with different payloads;
+                // playerPosition is exactly 9 bytes (opcode + int32 x + int32 y)
+                if (data.length === 9) {
+                    user.playerX = reader.readInt32()
+                    user.playerY = reader.readInt32()
+                }
                 break
         }
 		}

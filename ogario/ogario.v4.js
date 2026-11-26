@@ -7273,6 +7273,9 @@ window.connectionBots = {
             case 5:
                 $('#slots').html(dataView.getUint8(1) + "/200")
                 break
+            case 9:
+                // Bot positions from server (absolute world coords) — receive gracefully
+                break
             case 10:
                 toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game1.bots.closing'));
                 break
@@ -25786,7 +25789,14 @@ function thelegendmodproject() {
 					<br>
 					<button id="startBots" class="btn btn-primary btn" disabled data-i18n="game1.bots.start">${_lmG1e(lmT('game1.bots.start'))}</button>
 					
-					<button id="stopBots" class="btn btn-danger" data-i18n="game1.bots.stop">${_lmG1e(lmT('game1.bots.stop'))}</button>				
+					<button id="stopBots" class="btn btn-danger" data-i18n="game1.bots.stop">${_lmG1e(lmT('game1.bots.stop'))}</button>
+					<br>
+					<div id="brBotsSection" style="display:none;margin:8px 15px;padding:8px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.3)">
+					<b style="color:#ff9800">⚔ Battle Royale Lobby</b><br>
+					<span id="brLobbyStatus" style="font-size:12px">Waiting for lobby data…</span><br>
+					<button id="brFillLobby" class="btn btn-warning btn-sm" style="margin-top:4px">Fill Lobby</button>
+					<button id="brStopFill" class="btn btn-danger btn-sm" style="margin-top:4px;display:none">Stop</button>
+					</div>				
 					<br><u><a href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2" target="_blank">${_lmG1s('game1.bots.install')}</a></u>	
 					<u><a href="https://www.youtube.com/watch?v=rQMhxwIytro&feature=youtu.be" target="_blank">${_lmG1s('game1.bots.tutPc')}</a></u>	
 					<u><a href="https://repl.it/@legendmod/party-bots" target="_blank">Repl.it VPS</a></u>	
@@ -84030,6 +84040,95 @@ function setGUIEvents() {
     document.getElementById('stopBots').addEventListener('click', () => {
         if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
     })
+
+    /* ─── Battle Royale lobby fill ─── */
+    window._brFilling = false
+    window._brLobbyWatcher = null
+
+    function brUpdateSection() {
+        var sec = document.getElementById('brBotsSection')
+        if (!sec) return
+        var isBR = legendmod.gameMode === ':battleroyale'
+        sec.style.display = isBR ? '' : 'none'
+        if (!isBR) { brStopFilling(); return }
+        var status = document.getElementById('brLobbyStatus')
+        if (!status) return
+        var br = legendmod.battleRoyale
+        if (br.joined) {
+            status.textContent = 'Players: ' + br.players + ' | State: ' + (br.state === 0 ? 'Waiting' : br.state === 1 ? 'Starting' : 'In game')
+        } else {
+            status.textContent = 'Not in lobby yet'
+        }
+    }
+
+    function brStopFilling() {
+        window._brFilling = false
+        if (window._brLobbyWatcher) { clearInterval(window._brLobbyWatcher); window._brLobbyWatcher = null }
+        var fillBtn = document.getElementById('brFillLobby')
+        var stopBtn = document.getElementById('brStopFill')
+        if (fillBtn) fillBtn.style.display = ''
+        if (stopBtn) stopBtn.style.display = 'none'
+        // Stop any running bots
+        if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
+    }
+
+    document.getElementById('brFillLobby').addEventListener('click', () => {
+        if (legendmod.gameMode !== ':battleroyale') {
+            toastr.warning('<b>[' + Premadeletter123 + ']:</b> Battle Royale mode required')
+            return
+        }
+        if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) {
+            window.connectionBots.connect()
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> Connecting to bot server…')
+            return
+        }
+        if (!legendmod.ws || !window.EnvConfig.configVersion || !window.master.clientVersion) {
+            toastr.warning('<b>[' + Premadeletter123 + ']:</b> Not connected to game server')
+            return
+        }
+        if (window.userBots.startedBots) {
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> Bots already running')
+            return
+        }
+
+        var br = legendmod.battleRoyale
+        // Estimate bots needed: lobby requires ~15 players; fill the gap
+        var currentPlayers = br.players || 0
+        var needed = Math.max(1, Math.min(190, 15 - currentPlayers))
+        window.bots.amount = needed
+
+        window.connectionBots.send(window.buffers.startBots(
+            legendmod.ws,
+            window.gameBots.protocolVersion,
+            window.gameBots.clientVersion,
+            window.userBots.isAlive,
+            window.unescape(window.encodeURIComponent(window.bots.nameLM)),
+            needed
+        ))
+        window.connectionBots.send(window.buffers.sendMode(window.unescape(window.encodeURIComponent(ogarcopythelb.nick))))
+
+        window._brFilling = true
+        document.getElementById('brFillLobby').style.display = 'none'
+        document.getElementById('brStopFill').style.display = ''
+        toastr.info('<b>[' + Premadeletter123 + ']:</b> Filling BR lobby with ' + needed + ' bots…')
+
+        // Watch for lobby state changes: auto-stop when game starts or mode changes
+        if (window._brLobbyWatcher) clearInterval(window._brLobbyWatcher)
+        window._brLobbyWatcher = setInterval(function() {
+            brUpdateSection()
+            if (legendmod.gameMode !== ':battleroyale') { brStopFilling(); return }
+            if (legendmod.battleRoyale.state > 1) {
+                // Game has started, stop filling
+                toastr.success('<b>[' + Premadeletter123 + ']:</b> BR game started!')
+                brStopFilling()
+            }
+        }, 2000)
+    })
+
+    document.getElementById('brStopFill').addEventListener('click', brStopFilling)
+
+    // Update BR section visibility when mode changes (check every 3s)
+    setInterval(brUpdateSection, 3000)
 }
 
 
