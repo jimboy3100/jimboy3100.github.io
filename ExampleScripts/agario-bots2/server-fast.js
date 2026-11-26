@@ -103,6 +103,12 @@ class Bot {
         this.viewportEntities = {}
         this.offsetX = 0
         this.offsetY = 0
+        // Smooth direction state
+        this.wanderAngle = Math.random() * Math.PI * 2
+        this.wanderExpiry = 0
+        this.targetPelletId = 0
+        this.lastSentX = 0
+        this.lastSentY = 0
         this.connect()
     }
     reset(){
@@ -116,6 +122,11 @@ class Bot {
         this.viewportEntities = {}
         this.offsetX = 0
         this.offsetY = 0
+        this.wanderAngle = Math.random() * Math.PI * 2
+        this.wanderExpiry = 0
+        this.targetPelletId = 0
+        this.lastSentX = 0
+        this.lastSentY = 0
     }
     connect(){
         this.reset()
@@ -289,6 +300,18 @@ class Bot {
             entity: closestEntity
         }
     }
+    sendPosition(x, y){
+        // Smooth direction: lerp toward the new target so the visual rotation is stable
+        var lerpFactor = 0.35;
+        if (this.lastSentX === 0 && this.lastSentY === 0) {
+            this.lastSentX = x;
+            this.lastSentY = y;
+        } else {
+            this.lastSentX += (x - this.lastSentX) * lerpFactor;
+            this.lastSentY += (y - this.lastSentY) * lerpFactor;
+        }
+        this.send(buffers.move(~~this.lastSentX, ~~this.lastSentY, this.decryptionKey));
+    }
     move(){
         const bot = {
             x: 0,
@@ -306,34 +329,58 @@ class Bot {
         const closestBiggerPlayer = this.getClosestEntity('biggerPlayer', bot.x, bot.y, bot.size)
         const closestPellet = this.getClosestEntity('pellet', bot.x, bot.y, bot.size)
         if(user.isAlive){
-            if(this.followMouse && !stoppingBots && !bots.ai) this.send(buffers.move(user.mouseX + this.offsetX, user.mouseY + this.offsetY, this.decryptionKey))
+            if(this.followMouse && !stoppingBots && !bots.ai) this.sendPosition(user.mouseX + this.offsetX, user.mouseY + this.offsetY)
             else {
                 if(closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420){
                     const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
-                    this.send(buffers.move(14142 * Math.cos(angle), 14142 * Math.sin(angle), this.decryptionKey))
+                    this.sendPosition(bot.x + 14142 * Math.cos(angle), bot.y + 14142 * Math.sin(angle))
                 }
-                else if(closestPellet.entity) this.send(buffers.move(closestPellet.entity.x, closestPellet.entity.y, this.decryptionKey))
-                else if(!closestBiggerPlayer.entity && !closestPellet.entity){
-                    const random = Math.random()
-                    const randomX = ~~(1337 * Math.random())
-                    const randomY = ~~(1337 * Math.random())
-                    if(random > 0.5) this.send(buffers.move(bot.x + randomX, bot.y - randomY, this.decryptionKey))
-                    else if(random < 0.5) this.send(buffers.move(bot.x - randomX, bot.y + randomY, this.decryptionKey))
+                else if(closestPellet.entity) {
+                    // Persistent pellet targeting for stable direction
+                    var pellet = closestPellet.entity
+                    if(this.targetPelletId && this.viewportEntities[this.targetPelletId]) {
+                        var kept = this.viewportEntities[this.targetPelletId]
+                        var keptDist = calculateDistance(bot.x, bot.y, kept.x, kept.y)
+                        if(kept.isPellet && keptDist < closestPellet.distance * 1.5) pellet = kept
+                    }
+                    this.targetPelletId = pellet.id
+                    this.sendPosition(pellet.x, pellet.y)
+                }
+                else {
+                    // Smooth random wandering: maintain direction for 2-5 seconds
+                    var now = Date.now()
+                    if(now > this.wanderExpiry) {
+                        this.wanderAngle += (Math.random() - 0.5) * Math.PI * 0.8
+                        this.wanderExpiry = now + 2000 + ~~(Math.random() * 3000)
+                    }
+                    var wanderDist = 800 + ~~(Math.random() * 500)
+                    this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
                 }
             }
         }
         else {
             if(closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420){
                 const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
-                this.send(buffers.move(14142 * Math.cos(angle), 14142 * Math.sin(angle), this.decryptionKey))
+                this.sendPosition(bot.x + 14142 * Math.cos(angle), bot.y + 14142 * Math.sin(angle))
             }
-            else if(closestPellet.entity) this.send(buffers.move(closestPellet.entity.x, closestPellet.entity.y, this.decryptionKey))
-            else if(!closestBiggerPlayer.entity && !closestPellet.entity){
-                const random = Math.random()
-                const randomX = ~~(1337 * Math.random())
-                const randomY = ~~(1337 * Math.random())
-                if(random > 0.5) this.send(buffers.move(bot.x + randomX, bot.y - randomY, this.decryptionKey))
-                else if(random < 0.5) this.send(buffers.move(bot.x - randomX, bot.y + randomY, this.decryptionKey))
+            else if(closestPellet.entity) {
+                var pellet = closestPellet.entity
+                if(this.targetPelletId && this.viewportEntities[this.targetPelletId]) {
+                    var kept = this.viewportEntities[this.targetPelletId]
+                    var keptDist = calculateDistance(bot.x, bot.y, kept.x, kept.y)
+                    if(kept.isPellet && keptDist < closestPellet.distance * 1.5) pellet = kept
+                }
+                this.targetPelletId = pellet.id
+                this.sendPosition(pellet.x, pellet.y)
+            }
+            else {
+                var now = Date.now()
+                if(now > this.wanderExpiry) {
+                    this.wanderAngle += (Math.random() - 0.5) * Math.PI * 0.8
+                    this.wanderExpiry = now + 2000 + ~~(Math.random() * 3000)
+                }
+                var wanderDist = 800 + ~~(Math.random() * 500)
+                this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
             }
         }
     }

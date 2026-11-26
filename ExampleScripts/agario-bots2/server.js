@@ -154,6 +154,14 @@ class Bot {
         this.viewportEntities = {}
         this.offsetX = 0
         this.offsetY = 0
+        // Smooth direction: wander angle maintained for a period
+        this.wanderAngle = Math.random() * Math.PI * 2
+        this.wanderExpiry = 0
+        // Target pellet persistence: keep chasing the same pellet
+        this.targetPelletId = 0
+        // Smoothed target position for gradual direction changes
+        this.lastSentX = 0
+        this.lastSentY = 0
         this.connect()
     }
     reset() {
@@ -167,6 +175,11 @@ class Bot {
         this.viewportEntities = {}
         this.offsetX = 0
         this.offsetY = 0
+        this.wanderAngle = Math.random() * Math.PI * 2
+        this.wanderExpiry = 0
+        this.targetPelletId = 0
+        this.lastSentX = 0
+        this.lastSentY = 0
     }
     connect() {
         this.reset()
@@ -402,7 +415,22 @@ class Bot {
         }
     }
 	sendPosition(x, y){
-		this.send(buffers.move(x, y, this.decryptionKey));
+		// Smooth direction: lerp toward the new target so the visual rotation is stable
+		var lerpFactor = 0.35;
+		if (this.lastSentX === 0 && this.lastSentY === 0) {
+			this.lastSentX = x;
+			this.lastSentY = y;
+		} else {
+			this.lastSentX += (x - this.lastSentX) * lerpFactor;
+			this.lastSentY += (y - this.lastSentY) * lerpFactor;
+		}
+		this.send(buffers.move(~~this.lastSentX, ~~this.lastSentY, this.decryptionKey));
+	}
+	sendPositionDirect(x, y){
+		// No smoothing — for urgent actions like split-kill
+		this.lastSentX = x;
+		this.lastSentY = y;
+		this.send(buffers.move(~~x, ~~y, this.decryptionKey));
 	}
     move() {
         const bot = {
@@ -411,7 +439,6 @@ class Bot {
             size: 0,
 			biggestCellsize: 0,
 			smallestCellsize: 12000
-			
         }
         for (const id of this.cellsIDs) {
             const cell = this.viewportEntities[id]
@@ -419,10 +446,9 @@ class Bot {
                 bot.x += cell.x / this.cellsIDs.length
                 bot.y += cell.y / this.cellsIDs.length
                 bot.size += cell.size
-            
 			if (cell.size > bot.biggestCellsize) bot.biggestCellsize = cell.size
 			if (cell.size < bot.smallestCellsize) bot.smallestCellsize = cell.size
-			}	
+			}
         }
 		const closestVirus = this.getClosestEntity('virus', bot)
         const closestBiggerPlayer = this.getClosestEntity('biggerPlayer', bot)
@@ -431,31 +457,44 @@ class Bot {
         if (user.isAlive && this.followMouse && !stoppingBots && !bots.ai) {
             this.sendPosition(user.mouseX + this.offsetX, user.mouseY + this.offsetY)
         } else {
-            //if (closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420) {
-			//AI Handling
+			// AI Handling — smooth directional movement
 			if (closestVirus.entity && closestVirus.distance < 125){
                 const angle = (Math.atan2(closestVirus.entity.y - bot.y, closestVirus.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
-                this.sendPosition(14142 * Math.cos(angle), 14142 * Math.sin(angle))				
+                this.sendPosition(bot.x + 14142 * Math.cos(angle), bot.y + 14142 * Math.sin(angle))
 			}
-			else if (closestBiggerPlayer.entity && closestBiggerPlayer.distance < 760) {		
+			else if (closestBiggerPlayer.entity && closestBiggerPlayer.distance < 760) {
                 const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
-                this.sendPosition(14142 * Math.cos(angle), 14142 * Math.sin(angle))
-            } 
+                this.sendPosition(bot.x + 14142 * Math.cos(angle), bot.y + 14142 * Math.sin(angle))
+            }
 			else if (closestVictimPlayer.entity && closestVictimPlayer.distance < 320){
 				if (!this.isSplited){
 					this.isSplited = true
-					this.sendPosition(closestVictimPlayer.entity.x, closestVictimPlayer.entity.y)
+					this.sendPositionDirect(closestVictimPlayer.entity.x, closestVictimPlayer.entity.y)
 					this.send(Buffer.from([17]))
                 }
-				else if (this.isSplited){ this.isSplited = false}												
+				else if (this.isSplited){ this.isSplited = false}
 			}// End of AI Handling
-			else if (closestPellet.entity) this.sendPosition(closestPellet.entity.x, closestPellet.entity.y)
-            else if (!closestBiggerPlayer.entity && !closestPellet.entity) {
-                const random = Math.random()
-                const randomX = ~~(1337 * Math.random())
-                const randomY = ~~(1337 * Math.random())
-                if (random > 0.5) this.sendPosition(bot.x + randomX, bot.y - randomY)
-                else if (random < 0.5) this.sendPosition(bot.x - randomX, bot.y + randomY)
+			else if (closestPellet.entity) {
+				// Persistent pellet targeting: keep chasing the same pellet for stable direction
+				var pellet = closestPellet.entity
+				if (this.targetPelletId && this.viewportEntities[this.targetPelletId]) {
+					var kept = this.viewportEntities[this.targetPelletId]
+					var keptDist = calculateDistance(bot.x, bot.y, kept.x, kept.y)
+					// Keep the old pellet if it is within 1.5x the closest pellet distance
+					if (kept.isPellet && keptDist < closestPellet.distance * 1.5) pellet = kept
+				}
+				this.targetPelletId = pellet.id
+				this.sendPosition(pellet.x, pellet.y)
+			}
+            else {
+				// Smooth random wandering: pick a direction and maintain it for 2-5 seconds
+				var now = Date.now()
+				if (now > this.wanderExpiry) {
+					this.wanderAngle += (Math.random() - 0.5) * Math.PI * 0.8
+					this.wanderExpiry = now + 2000 + ~~(Math.random() * 3000)
+				}
+				var wanderDist = 800 + ~~(Math.random() * 500)
+				this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
             }
         }
     }
