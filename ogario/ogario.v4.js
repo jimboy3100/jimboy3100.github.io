@@ -20591,8 +20591,9 @@ var defaultmapsettings = {
     showDevConsole: false,
     //normalLb: true,
     centeredLb: true,
-    fpsAtTop: true,
-    statsAtCenter: false,         /* stats line at the bottom centre (wins over "at the top") */
+    fpsAtTop: true,               /* copy of statsPosition 'top' for scripts and older versions (lmFoldLegacySettings) */
+    statsAtCenter: false,         /* copy of statsPosition 'center' (it won over "at the top") */
+    statsPosition: 'top',         /* game stats line: 'top' left, 'bottom' left, 'center' bottom centre */
     tweenMaxEffect: false,
     top5skins: true,
     showStats: true,
@@ -20748,7 +20749,8 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     volNotifications: [0, 1, 0.01],
     a11yTextScale: [1, 1.6, 0.05],
     a11yHudTextScale: [1, 1.6, 0.05],
-    positionClass: { choices: ['toast-bottom-left', 'toast-bottom-right', 'toast-top-left', 'toast-top-right'] }
+    positionClass: { choices: ['toast-bottom-left', 'toast-bottom-right', 'toast-top-left', 'toast-top-right'] },
+    statsPosition: { choices: ['top', 'bottom', 'center'] }
 });
 /* the number of decimals of a step or bound (0.05 -> 2), to drop float noise after snapping */
 function lmSchemaDecimals(x) {
@@ -20812,14 +20814,15 @@ function lmFoldVideoVolume(s) {
     return true;
 }
 /* Settings that became one choice: "Short mass" and "Mass format" are massFormat (1 exact, 2 12.3k,
- * 3 auto; the 0 of older versions meant "as Short mass"). The old key stays as a copy that follows
- * the choice (scripts and older versions read it). A stored, imported or profile set from before
+ * 3 auto; the 0 of older versions meant "as Short mass"); "Game stats at the top" and "at the bottom
+ * centre" are statsPosition (top / bottom / center; the centre won over the top). The old keys
+ * stay as copies that follow the choice (scripts and older versions read them). A stored, imported or profile set from before
  * gets its choice from the old keys once, before the values are checked; then the copies are
  * written from the choice. Also folds the old video volume. Returns true when s changed. */
 function lmFoldLegacySettings(s) {
     if (!s || typeof s !== 'object') return false;
     var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
-    var was = JSON.stringify([s.massFormat, s.shortMass]);
+    var was = JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]);
     var changed = lmFoldVideoVolume(s);
     if (has('massFormat') || has('shortMass')) {
         var mf = has('massFormat') ? (typeof s.massFormat === 'number' ? s.massFormat : (typeof s.massFormat === 'string' && s.massFormat.trim() !== '' ? Number(s.massFormat) : NaN)) : NaN;
@@ -20831,7 +20834,21 @@ function lmFoldLegacySettings(s) {
         var mfOk = lmSettingValue('massFormat', s.massFormat);
         if (mfOk !== undefined) s.shortMass = mfOk === 2;
     }
-    return changed || JSON.stringify([s.massFormat, s.shortMass]) !== was;
+    var pos = has('statsPosition') ? lmSettingValue('statsPosition', s.statsPosition) : undefined;
+    if (pos === undefined && (has('fpsAtTop') || has('statsAtCenter'))) {
+        var top = has('fpsAtTop') ? lmSettingValue('fpsAtTop', s.fpsAtTop) : undefined;
+        var cen = has('statsAtCenter') ? lmSettingValue('statsAtCenter', s.statsAtCenter) : undefined;
+        if (top === undefined) top = LM_SETTINGS_DEFAULTS.fpsAtTop;
+        if (cen === undefined) cen = LM_SETTINGS_DEFAULTS.statsAtCenter;
+        pos = cen ? 'center' : top ? 'top' : 'bottom';
+    }
+    if (pos !== undefined) {
+        s.statsPosition = pos;
+        /* the centre says nothing about the top: that copy keeps its value */
+        if (pos !== 'center') s.fpsAtTop = pos === 'top';
+        s.statsAtCenter = pos === 'center';
+    }
+    return changed || JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]) !== was;
 }
 /* Who ate me: kept while anything shows it: the Game Over card's "Eaten by" (showKiller), the
  * match history, the death recap and the kill feed. One rule for the server's report (lmKiller)
@@ -23417,8 +23434,10 @@ function thelegendmodproject() {
         //},
         setFpsAtTop() {
             //defaultmapsettings.fpsAtTop ? $('#stats-hud').removeClass('hud-bottom').addClass('hud-top') : $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
-            var _lmCenter = !!defaultmapsettings.statsAtCenter;
-            if (defaultmapsettings.fpsAtTop && !_lmCenter) {
+            /* Game stats position (Settings > HUD); a HUD editor layout that places the stats wins
+             * over it (its !important rules, ogario/modules/hudeditor.js) */
+            var _lmPos = defaultmapsettings.statsPosition, _lmCenter = _lmPos === 'center';
+            if (_lmPos === 'top') {
                 $('#stats-hud').removeClass('hud-bottom').addClass('hud-top');
             } else {
                 $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
@@ -24622,8 +24641,16 @@ function thelegendmodproject() {
                     //case 'normalLb':
                     //this.setNormalLb();
                     //break;
+                    /* copies of Game stats position now: a script (or an older addon) setting one
+                     * moves the stats as it did (the centre wins over the top) */
                     case 'fpsAtTop':
                     case 'statsAtCenter':
+                        defaultmapsettings.statsPosition = defaultmapsettings.statsAtCenter ? 'center' : defaultmapsettings.fpsAtTop ? 'top' : 'bottom';
+                        this._lmChoiceSync('statsPosition');
+                        this.setFpsAtTop();
+                        break;
+                    case 'statsPosition':
+                        this._lmChoiceSync('statsPosition');
                         this.setFpsAtTop();
                         break;
                     /* "Short mass" is a copy of Mass format now: a script (or an older addon) setting
@@ -25340,7 +25367,7 @@ function thelegendmodproject() {
                 apply(this);
             });
         },
-        /* A setting with a few named values as one dropdown (Mass format). The select has the
+        /* A setting with a few named values as one dropdown (Mass format, Game stats position). The select has the
          * setting's id, so the Command Centre, the Settings search, the presets and the profiles
          * find it as they find a slider, and a change goes through setSettings like a switch.
          * choices: [[value, text key], ...]; label: the text key of its title. */
@@ -25859,7 +25886,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -25963,7 +25990,9 @@ function thelegendmodproject() {
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar"], "hudGroup");
+            /* one choice for where the game stats line is ("at the top" and "at the bottom centre" were two switches) */
+            this.addChoiceBox(".hudGroup", "statsPosition", "pkg.mg.statsPos", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
             /* Spectating and streaming: click to follow, the stream overlay and the spectator director */
             this.addOptions(["lbClickSpectate", "clickSpectate", "minimapClickSpectate", "companionLive", "companionChat"], "spectateGroup");
             $('<button type="button" id="lm-director-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
@@ -86652,7 +86681,7 @@ function lmReplayBarTick() {
     var total = Math.max(1, window.RecordedProtocol[srv].length - 2);
     var cur = Math.max(0, Math.min(total, window.legendmod.playingReplayRecord || 0));
     if (bar.style.display === 'none') bar.style.display = '';
-    var _lmBb = (window.legendmod5 && window.legendmod5.statsAtCenter) ? '40px' : '14px';
+    var _lmBb = (window.legendmod5 && window.legendmod5.statsPosition === 'center') ? '40px' : '14px';
     if (bar.style.bottom !== _lmBb) bar.style.bottom = _lmBb;
     bar.firstChild.style.width = (cur / total * 100).toFixed(1) + '%';
     bar.lastChild.textContent = (window._lmReplayPaused ? '\u275A\u275A ' : '') + cur + ' / ' + total;

@@ -279,7 +279,7 @@ Additional sound toggles: virusSound, x16Sound, non16Sound, virusPopSound, virus
 - **Mass format**: one choice: exact, short (12.3k, the former Short mass switch) or auto (exact below 10000, then 12.3k, 123k, 1.2M)
 - **Virus range circles**: Rings showing virus ejection range
 - **Mass in tab title**: Browser tab shows current mass
-- **FPS/stats positioning**: FPS at top or centre of screen, configurable stats elements
+- **Game stats position**: one choice: top left, bottom left or bottom centre (a HUD editor layout wins), configurable stats elements
 - **Precision zoom**: Hold-action for fine zoom control
 - **Saved zoom levels**: save the current zoom as zoom level 1-5 (the zoom level hotkeys, Alt+1-5, then go to it)
 - **Camera lock**: Lock camera at current position

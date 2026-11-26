@@ -189,10 +189,10 @@
         return k.length > 0 && k.every(function (x) { return RING_KEYS.indexOf(x) >= 0; });
     }
     /* A set saved while "Video skins volume" (volVideo) existed, or with settings that became one
-     * choice since ("Short mass" + "Mass format"): the core's own migration (lmFoldLegacySettings)
+     * choice since ("Short mass" + "Mass format", the two stats position switches): the core's own migration (lmFoldLegacySettings)
      * folds them (on a copy) before the check drops or refits the old values, so an old set with
      * the video skins muted stays muted and one with Short mass keeps its mass text. */
-    var LEGACY_KEYS = ['volVideo', 'massFormat', 'shortMass'];
+    var LEGACY_KEYS = ['volVideo', 'massFormat', 'shortMass', 'statsPosition', 'fpsAtTop', 'statsAtCenter'];
     function foldLegacySettings(s) {
         if (!isObj(s) || !LEGACY_KEYS.some(function (k) { return own.call(s, k); })) return s;
         var fold = typeof window.lmFoldLegacySettings === 'function' ? window.lmFoldLegacySettings : null;
