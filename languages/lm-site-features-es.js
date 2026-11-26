@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Anillos de unidad opcionales y congelación de la unidad inactiva",
 "site.features.itsOwnSkinProfile": "Perfil de skin propio para cada unidad",
 "site.features.gamepadControllerExclusive": "Gamepad y mando <span class=\"badge badge-exclusive\">Exclusivo</span>",
-"site.features.playWithAController": "Juega con mando (opcional: activa <i>Gamepad / controller support</i> en la ventana Atajos de teclado).",
+"site.features.playWithAController": "Juega con mando: solo conéctalo y funciona al instante; los botones, la sensibilidad y los perfiles están en la ventana Atajos de teclado.",
 "site.features.leftStickMovesRight": "El stick izquierdo mueve, el derecho hace zoom",
 "site.features.aSplitXDouble": "A split, X double split, RB 16 split",
 "site.features.bFeedHoldY": "B feed (mantener), Y reaparecer, Start menú",

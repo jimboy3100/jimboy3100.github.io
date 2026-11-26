@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "حلقات اختيارية حول الوحدات وتجميد الوحدة غير النشطة",
 "site.features.itsOwnSkinProfile": "ملف سكنات خاص لكل وحدة",
 "site.features.gamepadControllerExclusive": "وحدات التحكم <span class=\"badge badge-exclusive\">حصري</span>",
-"site.features.playWithAController": "العب بوحدة تحكم (اختياري: فعّل <i>دعم ذراع التحكم / وحدة التحكم</i> في نافذة اختصارات لوحة المفاتيح).",
+"site.features.playWithAController": "العب بوحدة تحكم: وصّلها فقط وستعمل فورًا؛ الأزرار والحساسية والملفات الشخصية في نافذة اختصارات لوحة المفاتيح.",
 "site.features.leftStickMovesRight": "العصا اليسرى للحركة، واليمنى للتكبير",
 "site.features.aSplitXDouble": "A للانقسام، وX للانقسام المزدوج، وRB للانقسام 16 مرة",
 "site.features.bFeedHoldY": "B للتغذية (مع الضغط المستمر)، وY لإعادة الظهور، وStart للقائمة",

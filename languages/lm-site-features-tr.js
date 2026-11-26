@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "İsteğe bağlı birim halkaları ve aktif olmayan birimi dondurma",
 "site.features.itsOwnSkinProfile": "Her birim için ayrı skin profili",
 "site.features.gamepadControllerExclusive": "Gamepad ve Kontrolcü <span class=\"badge badge-exclusive\">Özel</span>",
-"site.features.playWithAController": "Kontrolcüyle oynayın (isteğe bağlı: Kısayol tuşları penceresinde <i>Gamepad / kontrolcü desteği</i> seçeneğini açın).",
+"site.features.playWithAController": "Kontrolcüyle oynayın: bağlamanız yeterli, hemen çalışır; tuşlar, hassasiyet ve profiller Kısayol tuşları penceresindedir.",
 "site.features.leftStickMovesRight": "Sol çubuk hareket ettirir, sağ çubuk yakınlaştırır",
 "site.features.aSplitXDouble": "A bölünme, X çift bölünme, RB 16'lı bölünme",
 "site.features.bFeedHoldY": "B besleme (basılı tut), Y yeniden doğma, Start menü",

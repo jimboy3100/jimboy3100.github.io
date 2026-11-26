@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Lingkaran unit opsional dan bekukan unit yang tidak aktif",
 "site.features.itsOwnSkinProfile": "Profil skin sendiri untuk tiap unit",
 "site.features.gamepadControllerExclusive": "Gamepad & Controller <span class=\"badge badge-exclusive\">Eksklusif</span>",
-"site.features.playWithAController": "Main pakai controller (opsional: aktifkan <i>Dukungan gamepad / controller</i> di jendela Hotkey).",
+"site.features.playWithAController": "Main pakai controller: cukup sambungkan dan langsung berfungsi; tombol, sensitivitas, dan profil ada di jendela Hotkey.",
 "site.features.leftStickMovesRight": "Stik kiri untuk bergerak, stik kanan untuk zoom",
 "site.features.aSplitXDouble": "A untuk split, X untuk double split, RB untuk 16 split",
 "site.features.bFeedHoldY": "B untuk feed (tahan), Y untuk respawn, Start untuk menu",

@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "可選的單位圓環，以及凍結未使用的單位",
 "site.features.itsOwnSkinProfile": "每個單位都有自己的造型設定檔",
 "site.features.gamepadControllerExclusive": "遊戲手把與控制器 <span class=\"badge badge-exclusive\">獨家</span>",
-"site.features.playWithAController": "使用控制器遊玩（選用：在快捷鍵視窗中開啟 <i>遊戲手把 / 控制器支援</i>）。",
+"site.features.playWithAController": "使用控制器遊玩：連接後即可立即使用；按鍵、靈敏度和設定檔都在快捷鍵視窗中。",
 "site.features.leftStickMovesRight": "左搖桿移動，右搖桿縮放",
 "site.features.aSplitXDouble": "A 分裂、X 雙重分裂、RB 16 分裂",
 "site.features.bFeedHoldY": "B 吐球（按住）、Y 重生、Start 選單",

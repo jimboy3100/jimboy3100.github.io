@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "ユニットのリング表示と、操作していないユニットの固定（任意）",
 "site.features.itsOwnSkinProfile": "ユニットごとに専用のスキンプロファイル",
 "site.features.gamepadControllerExclusive": "ゲームパッドとコントローラー <span class=\"badge badge-exclusive\">独自機能</span>",
-"site.features.playWithAController": "コントローラーでプレイできます（任意：ショートカットウィンドウで<i>ゲームパッド/コントローラー対応</i>をオンにしてください）。",
+"site.features.playWithAController": "コントローラーでプレイできます。接続するだけですぐに使え、ボタン、感度、プロファイルはショートカットウィンドウにあります。",
 "site.features.leftStickMovesRight": "左スティックで移動、右スティックでズーム",
 "site.features.aSplitXDouble": "Aで分裂、Xでダブル分裂、RBで16分裂",
 "site.features.bFeedHoldY": "B（長押し）で質量放出、Yでリスポーン、Startでメニュー",

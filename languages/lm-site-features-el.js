@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Προαιρετικά δαχτυλίδια μονάδων και πάγωμα της ανενεργής μονάδας",
 "site.features.itsOwnSkinProfile": "Δικό του προφίλ skin για κάθε μονάδα",
 "site.features.gamepadControllerExclusive": "Gamepad & Χειριστήριο <span class=\"badge badge-exclusive\">Αποκλειστικό</span>",
-"site.features.playWithAController": "Παίξτε με χειριστήριο (προαιρετικό: ενεργοποιήστε το <i>Gamepad / controller support</i> στο παράθυρο Πλήκτρα συντόμευσης).",
+"site.features.playWithAController": "Παίξτε με χειριστήριο: απλώς συνδέστε το και λειτουργεί αμέσως· κουμπιά, ευαισθησία και προφίλ θα βρείτε στο παράθυρο Πλήκτρα συντόμευσης.",
 "site.features.leftStickMovesRight": "Ο αριστερός μοχλός κινεί, ο δεξιός κάνει zoom",
 "site.features.aSplitXDouble": "A split, X double split, RB 16 split",
 "site.features.bFeedHoldY": "B feed (κρατημένο), Y respawn, Start μενού",

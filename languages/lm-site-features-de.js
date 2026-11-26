@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Optionale Einheitenringe und Einfrieren der inaktiven Einheit",
 "site.features.itsOwnSkinProfile": "Ein eigenes Skin-Profil für jede Einheit",
 "site.features.gamepadControllerExclusive": "Gamepad & Controller <span class=\"badge badge-exclusive\">Exklusiv</span>",
-"site.features.playWithAController": "Spiel mit einem Controller (optional: Aktiviere <i>Gamepad / controller support</i> im Fenster Tastenbelegung).",
+"site.features.playWithAController": "Spiel mit einem Controller: einfach verbinden, er funktioniert sofort; Tasten, Empfindlichkeit und Profile findest du im Fenster Tastenbelegung.",
 "site.features.leftStickMovesRight": "Linker Stick bewegt, rechter Stick zoomt",
 "site.features.aSplitXDouble": "A Split, X Doublesplit, RB 16er-Split",
 "site.features.bFeedHoldY": "B Feed (halten), Y Respawn, Start Menü",

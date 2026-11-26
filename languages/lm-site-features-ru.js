@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Кольца вокруг юнитов и заморозка неактивного юнита по желанию",
 "site.features.itsOwnSkinProfile": "Свой профиль скинов для каждого юнита",
 "site.features.gamepadControllerExclusive": "Геймпад и контроллер <span class=\"badge badge-exclusive\">Эксклюзив</span>",
-"site.features.playWithAController": "Играйте с контроллером (по желанию: включите <i>Поддержка геймпада / контроллера</i> в окне «Горячие клавиши»).",
+"site.features.playWithAController": "Играйте с контроллером: просто подключите его, и он сразу заработает; кнопки, чувствительность и профили — в окне «Горячие клавиши».",
 "site.features.leftStickMovesRight": "Левый стик — движение, правый стик — масштаб",
 "site.features.aSplitXDouble": "A — сплит, X — двойной сплит, RB — сплит на 16",
 "site.features.bFeedHoldY": "B — кормление (удерживать), Y — возрождение, Start — меню",

@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Незадължителни пръстени около единиците и замразяване на неактивната единица",
 "site.features.itsOwnSkinProfile": "Собствен профил на скинове за всяка единица",
 "site.features.gamepadControllerExclusive": "Геймпад и контролер <span class=\"badge badge-exclusive\">Ексклузивно</span>",
-"site.features.playWithAController": "Играйте с контролер (по желание: включете <i>Поддръжка на геймпад / контролер</i> в прозореца Бързи клавиши).",
+"site.features.playWithAController": "Играйте с контролер: просто го свържете и работи веднага; бутоните, чувствителността и профилите са в прозореца Бързи клавиши.",
 "site.features.leftStickMovesRight": "Левият стик движи, десният стик мащабира",
 "site.features.aSplitXDouble": "A разделяне, X двойно разделяне, RB разделяне на 16",
 "site.features.bFeedHoldY": "B хранене (задържане), Y възраждане, Start меню",

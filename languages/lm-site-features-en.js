@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Optional unit rings and freeze for the inactive unit",
 "site.features.itsOwnSkinProfile": "Its own skin profile for each unit",
 "site.features.gamepadControllerExclusive": "Gamepad & Controller <span class=\"badge badge-exclusive\">Exclusive</span>",
-"site.features.playWithAController": "Play with a controller (optional: turn on <i>Gamepad / controller support</i> in the Hotkeys window).",
+"site.features.playWithAController": "Play with a controller: just connect it and it works at once; buttons, sensitivity and profiles are in the Hotkeys window.",
 "site.features.leftStickMovesRight": "Left stick moves, right stick zooms",
 "site.features.aSplitXDouble": "A split, X double split, RB 16 split",
 "site.features.bFeedHoldY": "B feed (hold), Y respawn, Start menu",

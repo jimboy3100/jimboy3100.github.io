@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Anéis nas unidades e congelamento da unidade inativa (opcionais)",
 "site.features.itsOwnSkinProfile": "Perfil de skin próprio para cada unidade",
 "site.features.gamepadControllerExclusive": "Gamepad e controle <span class=\"badge badge-exclusive\">Exclusivo</span>",
-"site.features.playWithAController": "Jogue com controle (opcional: ative <i>Suporte a gamepad / controle</i> na janela Atalhos).",
+"site.features.playWithAController": "Jogue com controle: é só conectar e ele funciona na hora; botões, sensibilidade e perfis ficam na janela Atalhos.",
 "site.features.leftStickMovesRight": "Analógico esquerdo move, analógico direito dá zoom",
 "site.features.aSplitXDouble": "A dá split, X dá double split, RB dá 16 splits",
 "site.features.bFeedHoldY": "B dá feed (segurando), Y faz respawn, Start abre o menu",

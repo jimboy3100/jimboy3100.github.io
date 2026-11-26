@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Opcjonalne pierścienie jednostek i zamrożenie nieaktywnej jednostki",
 "site.features.itsOwnSkinProfile": "Własny profil skinów dla każdej jednostki",
 "site.features.gamepadControllerExclusive": "Gamepad i kontroler <span class=\"badge badge-exclusive\">Ekskluzywne</span>",
-"site.features.playWithAController": "Graj kontrolerem (opcjonalnie: włącz <i>Obsługa gamepada / kontrolera</i> w oknie Skróty klawiszowe).",
+"site.features.playWithAController": "Graj kontrolerem: po prostu go podłącz, a zadziała od razu; przyciski, czułość i profile znajdziesz w oknie Skróty klawiszowe.",
 "site.features.leftStickMovesRight": "Lewy drążek porusza, prawy drążek przybliża",
 "site.features.aSplitXDouble": "A podział, X podwójny podział, RB podział na 16",
 "site.features.bFeedHoldY": "B karmienie (przytrzymaj), Y odrodzenie, Start menu",

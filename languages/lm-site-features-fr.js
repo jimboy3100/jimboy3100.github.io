@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Anneaux d'unité optionnels et gel de l'unité inactive",
 "site.features.itsOwnSkinProfile": "Un profil de skin propre à chaque unité",
 "site.features.gamepadControllerExclusive": "Manette et contrôleur <span class=\"badge badge-exclusive\">Exclusif</span>",
-"site.features.playWithAController": "Jouez à la manette (optionnel : activez <i>Gamepad / controller support</i> dans la fenêtre Raccourcis).",
+"site.features.playWithAController": "Jouez à la manette : branchez-la et elle fonctionne tout de suite ; les boutons, la sensibilité et les profils sont dans la fenêtre Raccourcis.",
 "site.features.leftStickMovesRight": "Le stick gauche déplace, le stick droit zoome",
 "site.features.aSplitXDouble": "A split, X double split, RB 16 split",
 "site.features.bFeedHoldY": "B feed (maintenir), Y respawn, Start menu",

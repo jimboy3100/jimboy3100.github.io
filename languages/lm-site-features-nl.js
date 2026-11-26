@@ -55,7 +55,7 @@
 "site.features.optionalUnitRingsAnd": "Optionele ringen om units en bevriezen van de inactieve unit",
 "site.features.itsOwnSkinProfile": "Een eigen skinprofiel voor elke unit",
 "site.features.gamepadControllerExclusive": "Gamepad & controller <span class=\"badge badge-exclusive\">Exclusief</span>",
-"site.features.playWithAController": "Speel met een controller (optioneel: zet <i>Gamepad- / controllerondersteuning</i> aan in het venster Sneltoetsen).",
+"site.features.playWithAController": "Speel met een controller: sluit hem aan en hij werkt meteen; knoppen, gevoeligheid en profielen staan in het venster Sneltoetsen.",
 "site.features.leftStickMovesRight": "Linkerstick beweegt, rechterstick zoomt",
 "site.features.aSplitXDouble": "A split, X double split, RB 16 split",
 "site.features.bFeedHoldY": "B feed (ingedrukt houden), Y respawn, Start menu",
