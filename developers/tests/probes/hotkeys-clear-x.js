@@ -36,6 +36,11 @@
     await sleep(150);
     /* every x on screen is the element under its own centre */
     var box = cfg.getBoundingClientRect(), n = 0, covered = [];
+    /* the list ends above the instructions and starts below the buttons (the instructions grew
+     * past the list's fixed bottom and covered its last rows) */
+    var inst = document.getElementById('hotkeys-inst'), menu = document.getElementById('hotkeys-menu');
+    if (inst && box.bottom > inst.getBoundingClientRect().top + 1) fail.push('the key list runs ' + Math.round(box.bottom - inst.getBoundingClientRect().top) + 'px under the instructions');
+    if (menu && box.top < menu.getBoundingClientRect().bottom - 1) fail.push('the key list starts ' + Math.round(menu.getBoundingClientRect().bottom - box.top) + 'px under the buttons');
     $('#hotkeys-cfg .lm-hk-clear').each(function () {
       var r = this.getBoundingClientRect();
       if (!r.width || r.top < box.top || r.bottom > box.bottom) return;

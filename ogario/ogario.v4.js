@@ -82635,7 +82635,25 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     resetonkeydown();
                 }),
                 $('#hotkeys-cfg').perfectScrollbar(),
+                setup.fitHotkeysList(),
                 Settings && Settings.setMenuBg();
+        },
+        /* the key list ends where the instructions start and starts below the buttons: with the
+         * mouse buttons line the instructions grew past the fixed 75px and covered the last rows and
+         * their x; follows language changes and window resizes */
+        fitHotkeysList() {
+            var cfg = document.getElementById('hotkeys-cfg'), inst = document.getElementById('hotkeys-inst'), menu = document.getElementById('hotkeys-menu');
+            if (!cfg || !inst || typeof ResizeObserver !== 'function') return;
+            var fit = function () {
+                var b = Math.max(75, Math.ceil(inst.offsetHeight)), t = Math.max(75, Math.ceil(menu ? menu.offsetHeight : 0));
+                if (cfg.style.bottom === b + 'px' && cfg.style.top === t + 'px') return;
+                cfg.style.bottom = b + 'px';
+                cfg.style.top = t + 'px';
+                try { $(cfg).perfectScrollbar('update'); } catch (e) { }
+            };
+            var ro = new ResizeObserver(fit);
+            ro.observe(inst);
+            if (menu) ro.observe(menu);
         },
         getPressedKey(key) {
             var specialKey = '';
