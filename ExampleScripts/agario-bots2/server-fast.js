@@ -9,6 +9,11 @@ const Entity = require('./entity')
 let userWS = null
 
 let stoppingBots = false
+let connectedBots = 0
+let spawnedBots = 0
+let statusInterval = null
+let startBotsInterval = null
+let moveInterval = null
 
 const userBots = []
 
@@ -41,6 +46,10 @@ const dataBot = {
     playersAmount: 0,
     lastPlayersAmount: 0,
     connect(){
+        this.buffersKey = 0
+        this.isConnected = false
+        this.playersAmount = 0
+        this.lastPlayersAmount = 0
         this.ws = new WebSocket(game.url, {
             origin: 'https://agar.io'
         })
@@ -63,7 +72,8 @@ const dataBot = {
     onclose(){
         if(this.isConnected){
             this.isConnected = false
-            console.log('[SERVER] DataBot disconnected')
+            this.connect()
+            console.log('[SERVER] DataBot disconnected, reconnecting')
         }
     },
     handleBuffer(buffer){
@@ -112,6 +122,7 @@ class Bot {
         this.targetPelletId = 0
         this.lastSentX = 0
         this.lastSentY = 0
+        this.isSplited = false
         this.connect()
     }
     reset(){
@@ -130,6 +141,7 @@ class Bot {
         this.targetPelletId = 0
         this.lastSentX = 0
         this.lastSentY = 0
+        this.isSplited = false
     }
     connect(){
         this.reset()
@@ -154,6 +166,7 @@ class Bot {
         this.send(buffers.protocolVersion(game.protocolVersion))
         this.send(buffers.clientVersion(game.clientVersion))
         this.isConnected = true
+        connectedBots++
     }
     onmessage(message){
         if(this.decryptionKey) message.data = algorithm.rotateBufferBytes(message.data, this.decryptionKey ^ game.clientVersion)
@@ -161,13 +174,26 @@ class Bot {
     }
     onerror(){
         setTimeout(() => {
-            if(this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN) this.ws.close()
+            if(this.ws && (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN)) this.ws.close()
         }, 1000)
     }
     onclose(){
         if(this.isConnected){
             this.isConnected = false
+            connectedBots--
+            if(this.followMouseTimeout){
+                clearTimeout(this.followMouseTimeout)
+                this.followMouseTimeout = null
+            }
+            this.followMouse = false
             if(!this.gotCaptcha) this.connect()
+        }
+        // Null the ws reference so GC can collect the socket
+        if(this.ws){
+            this.ws.onmessage = null
+            this.ws.onerror = null
+            this.ws.onclose = null
+            this.ws = null
         }
     }
     handleBuffer(buffer){
@@ -177,12 +203,15 @@ class Bot {
                 this.cellsIDs.push(reader.readUint32())
                 if(!this.isAlive){
                     this.isAlive = true
+                    spawnedBots++
                     if(!user.startedBots){
-                        setInterval(() => {
-                            for(const bot of userBots){
-                                if(bot.isAlive) bot.move()
-                            }
-                        }, 40)
+                        if(!moveInterval){
+                            moveInterval = setInterval(() => {
+                                for(const bot of userBots){
+                                    if(bot.isAlive) bot.move()
+                                }
+                            }, 40)
+                        }
                         userWS.send(Buffer.from([0]))
                         user.startedBots = true
                         console.log('[SERVER] Bots started')
@@ -195,16 +224,23 @@ class Bot {
                 }
                 break
             case 85:
-                if(!user.startedBots){
-                    userWS.send(Buffer.from([3]))
-                    setTimeout(process.exit, 1000)
-                }
                 this.gotCaptcha = true
-                this.ws.close()
+                if(this.ws){
+                    this.ws.onmessage = null
+                    this.ws.onerror = null
+                    this.ws.onclose = null
+                    this.ws.close()
+                    this.ws = null
+                }
+                if(this.isConnected){
+                    this.isConnected = false
+                    connectedBots--
+                }
+                this.reset()
                 break
             case 241:
                 this.decryptionKey = reader.readInt32()
-                const urlMatch = game.url.match(/(live-arena-([\w\d]+(\.tech)?)\.agar\.io)/)
+                const urlMatch = game.url.match(/(live-arena-([\w\d]+(\.tech)?).agar\.io)/)
                 if (!urlMatch) { console.log('[SERVER] Unexpected URL format:', game.url); return }
                 this.encryptionKey = murmur2(`${urlMatch[1]}${reader.readString()}`, 255)
                 break
@@ -259,6 +295,7 @@ class Bot {
         }
         if(this.isAlive && this.cellsIDs.length === 0){
             this.isAlive = false
+            spawnedBots--
             if(this.followMouseTimeout){
                 clearTimeout(this.followMouseTimeout)
                 this.followMouseTimeout = null
@@ -277,21 +314,29 @@ class Bot {
             this.offsetY = (top + bottom) / 2
         }
     }
-    getClosestEntity(type, botX, botY, botSize){
+    getClosestEntity(type, bot){
         let closestDistance = Infinity
         let closestEntity = null
         for(const entity of Object.values(this.viewportEntities)){
             let isConditionMet = false
             switch(type){
+                case 'virus':
+                    isConditionMet = entity.isVirus && entity.size > 115 && this.cellsIDs.length !== 16
+                    break
                 case 'biggerPlayer':
-                    isConditionMet = !entity.isVirus && !entity.isPellet && entity.size > botSize * 1.15 && entity.name !== bots.name
+                    isConditionMet = !entity.isVirus && !entity.isPellet && entity.size > bot.size * 1.15 && entity.name !== bots.name
                     break
                 case 'pellet':
                     isConditionMet = !entity.isVirus && entity.isPellet
                     break
+                case 'upperhand':
+                    isConditionMet = !entity.isVirus && !entity.isPellet && entity.size < bot.smallestCellsize * 1.4 && entity.size > bot.size / 10 && bot.size > 120 && this.cellsIDs.length == 1
+                    break
             }
             if(isConditionMet){
-                const distance = calculateDistance(botX, botY, entity.x, entity.y)
+                var distance = calculateDistance(bot.x, bot.y, entity.x, entity.y)
+                // Subtract sizes for clever distance estimation
+                distance = distance - bot.size - entity.size
                 if(distance < closestDistance){
                     closestDistance = distance
                     closestEntity = entity
@@ -315,11 +360,19 @@ class Bot {
         }
         this.send(buffers.move(~~this.lastSentX, ~~this.lastSentY, this.decryptionKey));
     }
+    sendPositionDirect(x, y){
+        // No smoothing — for urgent actions like split-kill
+        this.lastSentX = x;
+        this.lastSentY = y;
+        this.send(buffers.move(~~x, ~~y, this.decryptionKey));
+    }
     move(){
         const bot = {
             x: 0,
             y: 0,
-            size: 0
+            size: 0,
+            biggestCellsize: 0,
+            smallestCellsize: 12000
         }
         for(const id of this.cellsIDs){
             const cell = this.viewportEntities[id]
@@ -327,61 +380,36 @@ class Bot {
                 bot.x += cell.x / this.cellsIDs.length
                 bot.y += cell.y / this.cellsIDs.length
                 bot.size += cell.size
+                if(cell.size > bot.biggestCellsize) bot.biggestCellsize = cell.size
+                if(cell.size < bot.smallestCellsize) bot.smallestCellsize = cell.size
             }
         }
-        const closestBiggerPlayer = this.getClosestEntity('biggerPlayer', bot.x, bot.y, bot.size)
-        const closestPellet = this.getClosestEntity('pellet', bot.x, bot.y, bot.size)
-        if(user.isAlive){
-            if(this.followMouse && !stoppingBots && !bots.ai) this.sendPosition(user.mouseX + this.offsetX, user.mouseY + this.offsetY)
-            else {
-                if(closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420){
-                    const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
-                    this.sendPosition(bot.x + 14142 * Math.cos(angle), bot.y + 14142 * Math.sin(angle))
-                }
-                else if(closestPellet.entity) {
-                    // Persistent pellet targeting for stable direction
-                    var pellet = closestPellet.entity
-                    if(this.targetPelletId && this.viewportEntities[this.targetPelletId]) {
-                        var kept = this.viewportEntities[this.targetPelletId]
-                        var keptDist = calculateDistance(bot.x, bot.y, kept.x, kept.y)
-                        if(kept.isPellet && keptDist < closestPellet.distance * 1.5) pellet = kept
-                    }
-                    this.targetPelletId = pellet.id
-                    this.sendPosition(pellet.x, pellet.y)
-                }
-                else {
-                    // Smart wandering: orbit near the player if alive, otherwise random
-                    var now = Date.now()
-                    if(now > this.wanderExpiry) {
-                        this.wanderAngle += (Math.random() - 0.5) * Math.PI * 0.8
-                        this.wanderExpiry = now + 2000 + ~~(Math.random() * 3000)
-                    }
-                    if (user.isAlive && (user.playerX !== 0 || user.playerY !== 0)) {
-                        var playerLocalX = user.playerX + this.offsetX
-                        var playerLocalY = user.playerY + this.offsetY
-                        var distToPlayer = calculateDistance(bot.x, bot.y, playerLocalX, playerLocalY)
-                        if (distToPlayer > 2000) {
-                            this.sendPosition(playerLocalX, playerLocalY)
-                        } else if (distToPlayer > 400) {
-                            var orbitDist = 600 + ~~(Math.random() * 300)
-                            this.sendPosition(playerLocalX + orbitDist * Math.cos(this.wanderAngle), playerLocalY + orbitDist * Math.sin(this.wanderAngle))
-                        } else {
-                            var driftDist = 200 + ~~(Math.random() * 200)
-                            this.sendPosition(bot.x + driftDist * Math.cos(this.wanderAngle), bot.y + driftDist * Math.sin(this.wanderAngle))
-                        }
-                    } else {
-                        var wanderDist = 800 + ~~(Math.random() * 500)
-                        this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
-                    }
-                }
+        const closestVirus = this.getClosestEntity('virus', bot)
+        const closestBiggerPlayer = this.getClosestEntity('biggerPlayer', bot)
+        const closestPellet = this.getClosestEntity('pellet', bot)
+        const closestVictimPlayer = this.getClosestEntity('upperhand', bot)
+        if(user.isAlive && this.followMouse && !stoppingBots && !bots.ai){
+            this.sendPosition(user.mouseX + this.offsetX, user.mouseY + this.offsetY)
+        } else {
+            // AI Handling — smooth directional movement
+            if(closestVirus.entity && closestVirus.distance < 125){
+                const angle = (Math.atan2(closestVirus.entity.y - bot.y, closestVirus.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
+                this.sendPosition(bot.x + 14142 * Math.cos(angle), bot.y + 14142 * Math.sin(angle))
             }
-        }
-        else {
-            if(closestBiggerPlayer.entity && closestBiggerPlayer.distance < 420){
+            else if(closestBiggerPlayer.entity && closestBiggerPlayer.distance < 760){
                 const angle = (Math.atan2(closestBiggerPlayer.entity.y - bot.y, closestBiggerPlayer.entity.x - bot.x) + Math.PI) % (2 * Math.PI)
                 this.sendPosition(bot.x + 14142 * Math.cos(angle), bot.y + 14142 * Math.sin(angle))
             }
-            else if(closestPellet.entity) {
+            else if(closestVictimPlayer.entity && closestVictimPlayer.distance < 320){
+                if(!this.isSplited){
+                    this.isSplited = true
+                    this.sendPositionDirect(closestVictimPlayer.entity.x, closestVictimPlayer.entity.y)
+                    this.send(Buffer.from([17]))
+                }
+                else if(this.isSplited){ this.isSplited = false }
+            }// End of AI Handling
+            else if(closestPellet.entity){
+                // Persistent pellet targeting for stable direction
                 var pellet = closestPellet.entity
                 if(this.targetPelletId && this.viewportEntities[this.targetPelletId]) {
                     var kept = this.viewportEntities[this.targetPelletId]
@@ -392,24 +420,80 @@ class Bot {
                 this.sendPosition(pellet.x, pellet.y)
             }
             else {
-                // User dead: same smart wander with orbit if player position known
+                // Smart wandering: orbit near the player if alive, otherwise random
                 var now = Date.now()
                 if(now > this.wanderExpiry) {
                     this.wanderAngle += (Math.random() - 0.5) * Math.PI * 0.8
                     this.wanderExpiry = now + 2000 + ~~(Math.random() * 3000)
                 }
-                var wanderDist = 800 + ~~(Math.random() * 500)
-                this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
+                if (user.isAlive && (user.playerX !== 0 || user.playerY !== 0)) {
+                    // Convert player's absolute position to bot's local coordinates
+                    var playerLocalX = user.playerX + this.offsetX
+                    var playerLocalY = user.playerY + this.offsetY
+                    var distToPlayer = calculateDistance(bot.x, bot.y, playerLocalX, playerLocalY)
+                    if (distToPlayer > 2000) {
+                        // Too far from player: move directly toward them
+                        this.sendPosition(playerLocalX, playerLocalY)
+                    } else if (distToPlayer > 400) {
+                        // Near player: orbit around them using wander angle
+                        var orbitDist = 600 + ~~(Math.random() * 300)
+                        this.sendPosition(playerLocalX + orbitDist * Math.cos(this.wanderAngle), playerLocalY + orbitDist * Math.sin(this.wanderAngle))
+                    } else {
+                        // Very close: gentle random drift around player
+                        var driftDist = 200 + ~~(Math.random() * 200)
+                        this.sendPosition(bot.x + driftDist * Math.cos(this.wanderAngle), bot.y + driftDist * Math.sin(this.wanderAngle))
+                    }
+                } else {
+                    // No player position known: original random wander
+                    var wanderDist = 800 + ~~(Math.random() * 500)
+                    this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
+                }
             }
         }
     }
 }
+
+let shutdownInterval = null
 
 console.log('[SERVER] Server has started. Awaiting user connection...');
 
 new WebSocket.Server({
     port: 1337
 }).on('connection', ws => {
+    // Clear any previous status interval before creating a new one
+    if(statusInterval){ clearInterval(statusInterval); statusInterval = null }
+    statusInterval = setInterval(() => {
+        if(userWS && userWS.readyState === WebSocket.OPEN){
+            userWS.send(Buffer.from([4, connectedBots, spawnedBots]))
+            userWS.send(Buffer.from([5, dataBot.lastPlayersAmount]))
+            // Opcode 9: send alive bot positions (absolute world coords) so the
+            // client can display them as ghost cells on the minimap.
+            var aliveBots = []
+            for(var bi = 0; bi < userBots.length; bi++){
+                var b = userBots[bi]
+                if(!b.isAlive || b.cellsIDs.length === 0) continue
+                var bx = 0, by = 0
+                for(var ci = 0; ci < b.cellsIDs.length; ci++){
+                    var cell = b.viewportEntities[b.cellsIDs[ci]]
+                    if(cell){ bx += cell.x; by += cell.y }
+                }
+                if(b.cellsIDs.length > 0){
+                    bx = ~~(bx / b.cellsIDs.length)
+                    by = ~~(by / b.cellsIDs.length)
+                }
+                // Convert from bot-local to absolute world coords (subtract bot's offset)
+                aliveBots.push({ x: bx - b.offsetX, y: by - b.offsetY })
+            }
+            var posBuf = Buffer.alloc(2 + aliveBots.length * 8)
+            posBuf.writeUInt8(9, 0)
+            posBuf.writeUInt8(Math.min(aliveBots.length, 255), 1)
+            for(var pi = 0; pi < aliveBots.length && pi < 255; pi++){
+                posBuf.writeInt32LE(aliveBots[pi].x, 2 + pi * 8)
+                posBuf.writeInt32LE(aliveBots[pi].y, 2 + pi * 8 + 4)
+            }
+            userWS.send(posBuf)
+        }
+    }, 1000)
     userWS = ws
     console.log('[SERVER] User connected')
     ws.on('message', buffer => {
@@ -424,14 +508,18 @@ new WebSocket.Server({
                     bots.name = reader.readString()
                     bots.amount = reader.readUint8()
                     dataBot.connect()
+                    if(startBotsInterval) clearInterval(startBotsInterval)
                     let index = 0
-                    let startBotsInterval = setInterval(() => {
-                        if(dataBot.lastPlayersAmount < 199 && index < bots.amount){
+                    startBotsInterval = setInterval(() => {
+                        if(dataBot.lastPlayersAmount < 195 && index < bots.amount && !stoppingBots){
                             userBots.push(new Bot())
                             index++
                         }
-                        else clearInterval(startBotsInterval)
-                    }, 50)
+                        else {
+                            clearInterval(startBotsInterval)
+                            startBotsInterval = null
+                        }
+                    }, 150)
                     console.log('[SERVER] Starting bots...')
                 }
                 break
@@ -440,13 +528,16 @@ new WebSocket.Server({
                     stoppingBots = true
                     ws.send(Buffer.from([1]))
                     let seconds = 0
-                    setInterval(() => {
-                        if(seconds === 30){
+                    if(shutdownInterval) clearInterval(shutdownInterval)
+                    shutdownInterval = setInterval(() => {
+                        if(seconds === 1){
                             ws.send(Buffer.from([2]))
+                            clearInterval(shutdownInterval)
+                            shutdownInterval = null
                             setTimeout(process.exit, 1000)
                         }
                         else {
-                            console.log(`[SERVER] Stopping bots in ${30 - seconds} seconds`)
+                            console.log(`[SERVER] Stopping bots in ${1 - seconds} seconds`)
                             seconds++
                         }
                     }, 1000)
@@ -480,17 +571,25 @@ new WebSocket.Server({
         }
     })
     ws.on('close', () => {
+        // Clean up status interval on disconnect
+        if(statusInterval){ clearInterval(statusInterval); statusInterval = null }
         if(user.startedBots && !stoppingBots){
             stoppingBots = true
             let seconds = 0
-            setInterval(() => {
-                if(seconds === 30) process.exit()
+            if(shutdownInterval) clearInterval(shutdownInterval)
+            shutdownInterval = setInterval(() => {
+                if(seconds === 1){
+                    clearInterval(shutdownInterval)
+                    shutdownInterval = null
+                    process.exit()
+                }
                 else {
-                    console.log(`[SERVER] Stopping bots in ${30 - seconds} seconds`)
+                    console.log(`[SERVER] Stopping bots in ${1 - seconds} seconds`)
                     seconds++
                 }
             }, 1000)
         }
+        userWS = null
         console.log('[SERVER] User disconnected')
     })
 })

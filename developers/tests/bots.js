@@ -139,6 +139,8 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('shutdownInterval variable declared', serverSrc.includes('let shutdownInterval'));
     check('shutdown interval cleared before new one', serverSrc.includes('if (shutdownInterval) clearInterval(shutdownInterval)'));
     check('statusInterval cleared on disconnect', serverSrc.includes('statusInterval = null'));
+    check('moveInterval variable declared', serverSrc.includes('moveInterval'));
+    check('moveInterval guarded before creation', serverSrc.includes('if (!moveInterval)'));
 }
 
 // ---- server.js: socket cleanup in Bot.onclose ----
@@ -146,6 +148,20 @@ const Entity = require(path.join(botsDir, 'entity'));
     const serverSrc = fs.readFileSync(path.join(botsDir, 'server.js'), 'utf8');
     check('Bot.onclose nulls ws reference', serverSrc.includes('this.ws = null'));
     check('Bot.onclose clears onmessage handler', serverSrc.includes('this.ws.onmessage = null'));
+    check('Bot.onerror null-checks this.ws', serverSrc.includes('if (this.ws && (this.ws.readyState'));
+}
+
+// ---- server.js: isSplited field properly initialized ----
+{
+    const serverSrc = fs.readFileSync(path.join(botsDir, 'server.js'), 'utf8');
+    // isSplited should be in constructor and reset
+    const constructorIdx = serverSrc.indexOf('constructor() {');
+    const resetIdx = serverSrc.indexOf('reset() {');
+    const connectIdx = serverSrc.indexOf('connect() {', resetIdx);
+    const constructorBlock = serverSrc.substring(constructorIdx, resetIdx);
+    const resetBlock = serverSrc.substring(resetIdx, connectIdx);
+    check('isSplited initialized in constructor', constructorBlock.includes('this.isSplited'));
+    check('isSplited reset in reset()', resetBlock.includes('this.isSplited'));
 }
 
 // ---- server.js: userWS nulled on close ----
@@ -182,6 +198,27 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('server-fast.js has playerX on user object', fastSrc.includes('playerX: 0'));
     check('server-fast.js handles opcode 7', fastSrc.includes('case 7:'));
     check('server-fast.js has player orbit logic', fastSrc.includes('distToPlayer') || fastSrc.includes('playerLocalX'));
+}
+
+// ---- server-fast.js: parity with server.js reliability fixes ----
+{
+    const fastSrc = fs.readFileSync(path.join(botsDir, 'server-fast.js'), 'utf8');
+    check('server-fast.js tracks connectedBots', fastSrc.includes('connectedBots'));
+    check('server-fast.js tracks spawnedBots', fastSrc.includes('spawnedBots'));
+    check('server-fast.js Bot.onclose nulls ws', fastSrc.includes('this.ws = null'));
+    check('server-fast.js Bot.onclose clears onmessage', fastSrc.includes('this.ws.onmessage = null'));
+    check('server-fast.js has statusInterval', fastSrc.includes('statusInterval'));
+    check('server-fast.js sends opcode 9 (bot positions)', fastSrc.includes("posBuf.writeUInt8(9, 0)"));
+    check('server-fast.js has shutdownInterval tracked', fastSrc.includes('let shutdownInterval'));
+    check('server-fast.js clears shutdownInterval', fastSrc.includes('if(shutdownInterval) clearInterval(shutdownInterval)'));
+    check('server-fast.js nulls userWS on disconnect', fastSrc.includes('userWS = null'));
+    check('server-fast.js compressed size cap', fastSrc.includes('compressedSize > 1048576'));
+    check('server-fast.js has virus evasion', fastSrc.includes("'virus'"));
+    check('server-fast.js has upperhand AI', fastSrc.includes("'upperhand'"));
+    check('server-fast.js has sendPositionDirect', fastSrc.includes('sendPositionDirect'));
+    check('server-fast.js isSplited initialized', fastSrc.includes('this.isSplited = false'));
+    check('server-fast.js moveInterval guarded', fastSrc.includes('moveInterval'));
+    check('server-fast.js Bot.onerror null-checks ws', fastSrc.includes('this.ws &&'));
 }
 
 // ---- userscript: player position sending ----

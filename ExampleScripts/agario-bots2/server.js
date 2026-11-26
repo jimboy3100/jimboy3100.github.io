@@ -31,7 +31,8 @@ let userWS = null,
     spawnedBots = 0,
     serverPlayers = 0,
     startBotsInterval = null,
-    statusInterval = null;
+    statusInterval = null,
+    moveInterval = null;
 
 logger.warn(`[SERVER]: If error occurs on port ${config.server.port} try 8083 on config.json and websocket`);
 if (config.server.update) {
@@ -169,6 +170,7 @@ class Bot {
         // Smoothed target position for gradual direction changes
         this.lastSentX = 0
         this.lastSentY = 0
+        this.isSplited = false
         this.connect()
     }
     reset() {
@@ -187,6 +189,7 @@ class Bot {
         this.targetPelletId = 0
         this.lastSentX = 0
         this.lastSentY = 0
+        this.isSplited = false
     }
     connect() {
         this.reset()
@@ -219,7 +222,7 @@ class Bot {
     }
     onerror() {
         setTimeout(() => {
-            if (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN) this.ws.close()
+            if (this.ws && (this.ws.readyState === WebSocket.CONNECTING || this.ws.readyState === WebSocket.OPEN)) this.ws.close()
         }, 1000)
     }
     onclose() {
@@ -275,11 +278,13 @@ class Bot {
                     spawnedBots++
                     //userWS.send(Buffer.from([6, spawnedBots]))
                     if (!user.startedBots) {
-                        setInterval(() => {
-                            for (const bot of userBots) {
-                                if (bot.isAlive) bot.move()
-                            }
-                        }, 40)
+                        if (!moveInterval) {
+                            moveInterval = setInterval(() => {
+                                for (const bot of userBots) {
+                                    if (bot.isAlive) bot.move()
+                                }
+                            }, 40)
+                        }
                         userWS.send(Buffer.from([0]))
                         user.startedBots = true
                         logger.good('[SERVER]: Bots started!')
