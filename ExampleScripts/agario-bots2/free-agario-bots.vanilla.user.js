@@ -165,6 +165,13 @@ window.buffers = {
             writer.writeInt32(x)
             writer.writeInt32(y)
             return writer.dataView.buffer
+        },
+        playerPosition(x, y) {
+            const writer = new Writer(9)
+            writer.writeUint8(7)
+            writer.writeInt32(x)
+            writer.writeInt32(y)
+            return writer.dataView.buffer
         }
 }
 
@@ -186,6 +193,26 @@ window.connection = {
         document.getElementById('connect').disabled = true
         document.getElementById('startBots').disabled = false
         document.getElementById('stopBots').disabled = false
+        // Periodically send the player's absolute world position to the bot server
+        // so AI bots can orient/orbit near the player (ghost-cell-like awareness)
+        if (window.user.playerPosInterval) clearInterval(window.user.playerPosInterval)
+        window.user.playerPosInterval = setInterval(function () {
+            if (window.user.startedBots && window.user.isAlive) {
+                // Use legendmod/ogario player position if available, otherwise use raw position
+                var px = 0, py = 0
+                if (typeof legendmod !== 'undefined' && legendmod.playerX !== undefined) {
+                    px = ~~legendmod.playerX
+                    py = ~~legendmod.playerY
+                } else if (typeof ogario !== 'undefined' && ogario.playerX !== undefined) {
+                    px = ~~ogario.playerX
+                    py = ~~ogario.playerY
+                } else {
+                    px = window.user.rawX - window.user.offsetX
+                    py = window.user.rawY - window.user.offsetY
+                }
+                window.connection.send(window.buffers.playerPosition(px, py))
+            }
+        }, 500)
     },
     onmessage(message) {
         const dataView = new DataView(message.data)
@@ -226,11 +253,28 @@ window.connection = {
             case 5:
                 $('#slots').html(dataView.getUint8(1) + "/200")
                 break;
+            case 9:
+                // Bot positions (absolute world coords) — expose as ghost-cell-like data
+                // so Legend Mod / ogario can render them on the minimap.
+                // Format: [9, count, x1(i32le), y1(i32le), x2(i32le), y2(i32le), ...]
+                var botCount = dataView.getUint8(1)
+                var botPositions = []
+                for (var bp = 0; bp < botCount && (2 + bp * 8 + 8) <= dataView.byteLength; bp++) {
+                    botPositions.push({
+                        x: dataView.getInt32(2 + bp * 8, true),
+                        y: dataView.getInt32(2 + bp * 8 + 4, true)
+                    })
+                }
+                // Store globally for Legend Mod to access and render as bot ghost cells
+                window.botGhostCells = botPositions
+                break;
         }
     },
     onclose() {
         document.getElementById('userStatus').style.color = '#DA0A00'
         document.getElementById('userStatus').innerText = 'Disconnected'
+        // Clean up player position reporting
+        if (window.user.playerPosInterval) { clearInterval(window.user.playerPosInterval); window.user.playerPosInterval = null }
         document.getElementById('botsAI').style.color = '#DA0A00'
         document.getElementById('botsAI').innerText = 'Disabled'
         document.getElementById('connect').disabled = false
@@ -256,7 +300,12 @@ window.user = {
     mouseY: 0,
     offsetX: 0,
     offsetY: 0,
-    macroFeedInterval: null
+    macroFeedInterval: null,
+    // Player's raw (local) coordinates — used to compute absolute position
+    rawX: 0,
+    rawY: 0,
+    // Absolute world position sent to bot server for AI orientation
+    playerPosInterval: null
 }
 
 window.bots = {

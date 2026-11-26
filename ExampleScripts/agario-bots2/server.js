@@ -70,7 +70,10 @@ const user = {
     stoppingBots: false,
     isAlive: false,
     mouseX: 0,
-    mouseY: 0
+    mouseY: 0,
+    // Player's absolute world position (from client opcode 7)
+    playerX: 0,
+    playerY: 0
 }
 
 const bots = {
@@ -496,14 +499,34 @@ class Bot {
 				this.sendPosition(pellet.x, pellet.y)
 			}
             else {
-				// Smooth random wandering: pick a direction and maintain it for 2-5 seconds
+				// Smart wandering: orbit near the player if alive, otherwise random
 				var now = Date.now()
 				if (now > this.wanderExpiry) {
 					this.wanderAngle += (Math.random() - 0.5) * Math.PI * 0.8
 					this.wanderExpiry = now + 2000 + ~~(Math.random() * 3000)
 				}
-				var wanderDist = 800 + ~~(Math.random() * 500)
-				this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
+				if (user.isAlive && (user.playerX !== 0 || user.playerY !== 0)) {
+					// Convert player's absolute position to bot's local coordinates
+					var playerLocalX = user.playerX + this.offsetX
+					var playerLocalY = user.playerY + this.offsetY
+					var distToPlayer = calculateDistance(bot.x, bot.y, playerLocalX, playerLocalY)
+					if (distToPlayer > 2000) {
+						// Too far from player: move directly toward them
+						this.sendPosition(playerLocalX, playerLocalY)
+					} else if (distToPlayer > 400) {
+						// Near player: orbit around them using wander angle
+						var orbitDist = 600 + ~~(Math.random() * 300)
+						this.sendPosition(playerLocalX + orbitDist * Math.cos(this.wanderAngle), playerLocalY + orbitDist * Math.sin(this.wanderAngle))
+					} else {
+						// Very close: gentle random drift around player
+						var driftDist = 200 + ~~(Math.random() * 200)
+						this.sendPosition(bot.x + driftDist * Math.cos(this.wanderAngle), bot.y + driftDist * Math.sin(this.wanderAngle))
+					}
+				} else {
+					// No player position known: original random wander
+					var wanderDist = 800 + ~~(Math.random() * 500)
+					this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
+				}
             }
         }
     }
@@ -520,6 +543,33 @@ new WebSocket.Server({
         if (userWS && userWS.readyState === WebSocket.OPEN) {
             userWS.send(Buffer.from([4, connectedBots, spawnedBots]))
             userWS.send(Buffer.from([5, serverPlayers]))
+            // Opcode 9: send alive bot positions (absolute world coords) so the
+            // client can display them as ghost cells on the minimap.
+            // Format: [9, count, x1(i32), y1(i32), x2(i32), y2(i32), ...]
+            var aliveBots = []
+            for (var bi = 0; bi < userBots.length; bi++) {
+                var b = userBots[bi]
+                if (!b.isAlive || b.cellsIDs.length === 0) continue
+                var bx = 0, by = 0
+                for (var ci = 0; ci < b.cellsIDs.length; ci++) {
+                    var cell = b.viewportEntities[b.cellsIDs[ci]]
+                    if (cell) { bx += cell.x; by += cell.y }
+                }
+                if (b.cellsIDs.length > 0) {
+                    bx = ~~(bx / b.cellsIDs.length)
+                    by = ~~(by / b.cellsIDs.length)
+                }
+                // Convert from bot-local to absolute world coords (subtract bot's offset)
+                aliveBots.push({ x: bx - b.offsetX, y: by - b.offsetY })
+            }
+            var posBuf = Buffer.alloc(2 + aliveBots.length * 8)
+            posBuf.writeUInt8(9, 0)
+            posBuf.writeUInt8(Math.min(aliveBots.length, 255), 1)
+            for (var pi = 0; pi < aliveBots.length && pi < 255; pi++) {
+                posBuf.writeInt32LE(aliveBots[pi].x, 2 + pi * 8)
+                posBuf.writeInt32LE(aliveBots[pi].y, 2 + pi * 8 + 4)
+            }
+            userWS.send(posBuf)
         }
     }, 1000);
     userWS = ws
@@ -598,6 +648,11 @@ new WebSocket.Server({
             case 6:
                 user.mouseX = reader.readInt32()
                 user.mouseY = reader.readInt32()
+                break
+            case 7:
+                // Player's absolute world position (for AI bots to orbit near the player)
+                user.playerX = reader.readInt32()
+                user.playerY = reader.readInt32()
                 break
         }
 		}

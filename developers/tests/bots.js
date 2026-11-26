@@ -160,6 +160,42 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('Compressed size has 1MB safety cap', serverSrc.includes('compressedSize > 1048576'));
 }
 
+// ---- server.js: player position opcode (ghost-cell orientation) ----
+{
+    const serverSrc = fs.readFileSync(path.join(botsDir, 'server.js'), 'utf8');
+    check('server.js has playerX on user object', serverSrc.includes('playerX: 0'));
+    check('server.js has playerY on user object', serverSrc.includes('playerY: 0'));
+    check('server.js handles opcode 7 (player position)', serverSrc.includes('case 7:'));
+    check('server.js reads playerX from opcode 7', serverSrc.includes('user.playerX = reader.readInt32()'));
+    check('server.js reads playerY from opcode 7', serverSrc.includes('user.playerY = reader.readInt32()'));
+    // AI orbit logic: bot should orbit near player when in AI mode
+    check('server.js has player orbit logic (distToPlayer)', serverSrc.includes('distToPlayer'));
+    check('server.js converts player absolute to bot local', serverSrc.includes('user.playerX + this.offsetX'));
+    // Bot position reporting (opcode 9 to client)
+    check('server.js sends opcode 9 (bot positions)', serverSrc.includes("posBuf.writeUInt8(9, 0)"));
+    check('server.js converts bot local to absolute (subtracts offset)', serverSrc.includes('bx - b.offsetX'));
+}
+
+// ---- server-fast.js: player position opcode (ghost-cell orientation) ----
+{
+    const fastSrc = fs.readFileSync(path.join(botsDir, 'server-fast.js'), 'utf8');
+    check('server-fast.js has playerX on user object', fastSrc.includes('playerX: 0'));
+    check('server-fast.js handles opcode 7', fastSrc.includes('case 7:'));
+    check('server-fast.js has player orbit logic', fastSrc.includes('distToPlayer') || fastSrc.includes('playerLocalX'));
+}
+
+// ---- userscript: player position sending ----
+{
+    const usSrc = fs.readFileSync(path.join(botsDir, 'free-agario-bots.vanilla.user.js'), 'utf8');
+    check('userscript has playerPosition buffer', usSrc.includes('playerPosition(x, y)'));
+    check('userscript sends opcode 7', usSrc.includes("writer.writeUint8(7)"));
+    check('userscript has playerPosInterval', usSrc.includes('playerPosInterval'));
+    check('userscript cleans up playerPosInterval on close', usSrc.includes('clearInterval(window.user.playerPosInterval)'));
+    // Bot ghost cell positions received
+    check('userscript handles opcode 9 (bot positions)', usSrc.includes('case 9:'));
+    check('userscript stores botGhostCells', usSrc.includes('window.botGhostCells'));
+}
+
 // ---- process.js: only restarts on non-zero exit ----
 {
     const processSrc = fs.readFileSync(path.join(botsDir, 'process.js'), 'utf8');

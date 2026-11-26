@@ -22,7 +22,10 @@ const user = {
     startedBots: false,
     isAlive: false,
     mouseX: 0,
-    mouseY: 0
+    mouseY: 0,
+    // Player's absolute world position (from client opcode 7)
+    playerX: 0,
+    playerY: 0
 }
 
 const bots = {
@@ -347,14 +350,29 @@ class Bot {
                     this.sendPosition(pellet.x, pellet.y)
                 }
                 else {
-                    // Smooth random wandering: maintain direction for 2-5 seconds
+                    // Smart wandering: orbit near the player if alive, otherwise random
                     var now = Date.now()
                     if(now > this.wanderExpiry) {
                         this.wanderAngle += (Math.random() - 0.5) * Math.PI * 0.8
                         this.wanderExpiry = now + 2000 + ~~(Math.random() * 3000)
                     }
-                    var wanderDist = 800 + ~~(Math.random() * 500)
-                    this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
+                    if (user.isAlive && (user.playerX !== 0 || user.playerY !== 0)) {
+                        var playerLocalX = user.playerX + this.offsetX
+                        var playerLocalY = user.playerY + this.offsetY
+                        var distToPlayer = calculateDistance(bot.x, bot.y, playerLocalX, playerLocalY)
+                        if (distToPlayer > 2000) {
+                            this.sendPosition(playerLocalX, playerLocalY)
+                        } else if (distToPlayer > 400) {
+                            var orbitDist = 600 + ~~(Math.random() * 300)
+                            this.sendPosition(playerLocalX + orbitDist * Math.cos(this.wanderAngle), playerLocalY + orbitDist * Math.sin(this.wanderAngle))
+                        } else {
+                            var driftDist = 200 + ~~(Math.random() * 200)
+                            this.sendPosition(bot.x + driftDist * Math.cos(this.wanderAngle), bot.y + driftDist * Math.sin(this.wanderAngle))
+                        }
+                    } else {
+                        var wanderDist = 800 + ~~(Math.random() * 500)
+                        this.sendPosition(bot.x + wanderDist * Math.cos(this.wanderAngle), bot.y + wanderDist * Math.sin(this.wanderAngle))
+                    }
                 }
             }
         }
@@ -374,6 +392,7 @@ class Bot {
                 this.sendPosition(pellet.x, pellet.y)
             }
             else {
+                // User dead: same smart wander with orbit if player position known
                 var now = Date.now()
                 if(now > this.wanderExpiry) {
                     this.wanderAngle += (Math.random() - 0.5) * Math.PI * 0.8
@@ -452,6 +471,11 @@ new WebSocket.Server({
             case 6:
                 user.mouseX = reader.readInt32()
                 user.mouseY = reader.readInt32()
+                break
+            case 7:
+                // Player's absolute world position (for AI bots to orbit near the player)
+                user.playerX = reader.readInt32()
+                user.playerY = reader.readInt32()
                 break
         }
     })
