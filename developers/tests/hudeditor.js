@@ -218,6 +218,9 @@ const J = o => JSON.parse(JSON.stringify(o));
   b.els['#minimap-hud'].style.setProperty('transform', 'scale(0.65)', 'important');
   b.intervals[0]();
   check('inline !important transform set aside', !b.els['#minimap-hud']._inline.transform && b.els['#minimap-hud'].dataset.lmHeT === 'scale(0.65)');
+  /* the phone fit (leaderboard rows, buttons around the minimap) is redone when a box is given back */
+  const refits = [];
+  b.ctx._lmMobileHost = { reposition() { const t = b.els['#minimap-hud']._inline.transform; refits.push({ owns: b.api.owns('minimap'), t: t && t.v, css: b.css() }); } };
   b.api.boost('minimap', 2);
   check('boost doubles the layout scale', (b.css() || '').includes('scale(1)'));
   b.api.boost('minimap', 0);
@@ -225,6 +228,9 @@ const J = o => JSON.parse(JSON.stringify(o));
   b.api.applyLayout('', true);
   check('default HUD: stylesheet removed', b.css() === null);
   check('inline transform restored', b.els['#minimap-hud']._inline.transform && b.els['#minimap-hud']._inline.transform.v === 'scale(0.65)' && b.els['#minimap-hud']._inline.transform.pr === 'important');
+  check('phone fit redone once, after the box is given back and its rule is gone', refits.length === 1 && !refits[0].owns && refits[0].t === 'scale(0.65)' && refits[0].css === null);
+  b.api.applyLayout('', true);
+  check('no refit when nothing is given back', refits.length === 1);
   check('active cleared in storage', JSON.parse(b.storage.getItem('lmHudLayouts')).active === '');
 }
 
@@ -343,6 +349,38 @@ const J = o => JSON.parse(JSON.stringify(o));
   check('box names from the packs, every box has one', b.api.compLabel(lb) === i18n.t('modules.hudeditor.comp.leaderboard') && b.core.COMPONENTS.every(c => b.api.compLabel(c) !== 'modules.hudeditor.comp.' + c.id));
   b.ctx.LMi18n.setLang('el');
   check('box names in Greek after a language change', b.api.compLabel(lb) === i18n.t('modules.hudeditor.comp.leaderboard', null, 'el') && b.api.compLabel(lb) !== i18n.t('modules.hudeditor.comp.leaderboard'));
+}
+
+/* ── the minimap canvases have the minimap's size before the first game frame (the real
+ * setMiniMapWidth of ogario/ogario.v4.js): they kept the browser's 300 x 150 default until the game
+ * connected, reached past the right screen edge from a smaller minimap, and the editor counted that
+ * as part of the box (a moved minimap was clamped 69 px away from the edge, the frame went off screen) ── */
+{
+  const main = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+  const a = '        setMiniMapWidth() {', b = '        setMiniMapSectorsColor() {';
+  const i = main.indexOf(a), j = main.indexOf(b, i);
+  check('setMiniMapWidth found in ogario.v4.js', i >= 0 && j > i);
+  const canvas = () => ({ width: 300, height: 150 });
+  const run = (width, drawn) => {
+    const els = { minimap: canvas(), 'minimap-sectors': canvas() }, css = {};
+    const ctx = { window: {}, Math, defaultSettings: { miniMapWidth: width }, resets: 0 };
+    ctx.document = { getElementById: id => els[id] || null };
+    ctx.$ = sel => ({ css(o) { css[sel] = o; return this; } });
+    ctx.application = { miniMap: drawn ? els.minimap : null, resetMiniMapSectors() { ctx.resets++; } };
+    vm.createContext(ctx);
+    const S = vm.runInContext('({\n' + main.slice(i, j) + '})', ctx);
+    S.setMiniMapWidth();
+    return { els, css: css['#minimap-hud'], ctx };
+  };
+  let r = run(240, false);
+  check('minimap box 240 x 264', r.css && r.css.width === 240 && r.css.height === 264);
+  check('before the first frame: minimap canvas 240 x 264, sectors 222 x 264 (as drawMiniMap sizes them)',
+    r.els.minimap.width === 240 && r.els.minimap.height === 264 && r.els['minimap-sectors'].width === 222 && r.els['minimap-sectors'].height === 264);
+  r = run(400, false);
+  check('a bigger minimap: canvases 400 x 440 and 382 x 440', r.els.minimap.width === 400 && r.els.minimap.height === 440 && r.els['minimap-sectors'].width === 382);
+  r = run(240, true);
+  check('once the game draws the minimap, it sizes the canvases itself (nothing drawn is cleared here)',
+    r.els.minimap.width === 300 && r.els['minimap-sectors'].width === 300 && r.ctx.resets === 1);
 }
 
 console.log(fail ? fail + ' FAILED' : 'all ok');

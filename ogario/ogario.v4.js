@@ -21904,6 +21904,18 @@ function thelegendmodproject() {
                 'width': defaultSettings.miniMapWidth,
                 'height': defaultSettings.miniMapWidth + defaultSettings.miniMapTop
             });
+            /* Until the first minimap frame (no game connected yet) both canvases kept the browser's
+             * 300 x 150 default: wider than a smaller minimap, they reached past the screen edge (not
+             * seen, but the HUD editor counts them, so its frame went off screen and a moved minimap
+             * was kept 69 px from the edge). Sized as drawMiniMap sizes them; once it draws, it does. */
+            if (!application || !application.miniMap) {
+                var _lmMw = Number(defaultSettings.miniMapWidth), _lmMh = _lmMw + defaultSettings.miniMapTop;
+                var _lmMc = document.getElementById('minimap'), _lmMs = document.getElementById('minimap-sectors');
+                if (_lmMw > 18) {
+                    if (_lmMc && (_lmMc.width !== _lmMw || _lmMc.height !== _lmMh)) { _lmMc.width = _lmMw; _lmMc.height = _lmMh; }
+                    if (_lmMs && (_lmMs.width !== _lmMw - 18 || _lmMs.height !== _lmMh)) { _lmMs.width = _lmMw - 18; _lmMs.height = _lmMh; }
+                }
+            }
             /* a moved minimap (HUD layout) is kept on screen when it grows (enlarge hotkey, slider) */
             if (window.LMHudEditor) window.LMHudEditor.refresh();
 

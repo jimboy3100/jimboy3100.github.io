@@ -373,7 +373,15 @@
         } else if (el.dataset.lmHeT != null) {
             el.style.setProperty('transform', el.dataset.lmHeT, 'important');
             delete el.dataset.lmHeT;
+            return true;
         }
+    }
+    /* That transform was set aside when the box was taken: the phone leaderboard fit (rows that
+     * came or went meanwhile) and the buttons around the minimap are redone at once, not on their
+     * next 2.5 s round (a 20-row leaderboard came back at its old size over the buttons). */
+    function phoneRefit() {
+        var host = W._lmMobileHost;
+        if (host && typeof host.reposition === 'function') { try { host.reposition(); } catch (e) { } }
     }
     /* unscaled size of a box and the parts drawn outside it */
     function measureBox(el, c) {
@@ -422,10 +430,10 @@
             styleEl = null;
             if (timer) { clearInterval(timer); timer = 0; }
             eff = {};
-            restoreAll(null);
+            if (restoreAll(null)) phoneRefit();
             return;
         }
-        restoreAll(c);
+        var back = restoreAll(c);
         /* keep the clamped value only for unchanged entries (it is re-measured right after) */
         var next = {};
         for (var id in eff) if (own.call(eff, id) && c[id] && c[id].h) next[id] = eff[id];
@@ -433,14 +441,18 @@
         writeStyle(c);
         check();
         if (!timer) timer = setInterval(function () { try { if (!D.hidden) check(); } catch (e) { } }, 1000);
+        if (back) phoneRefit();
     }
+    /* true when a box got its own transform back */
     function restoreAll(c) {
+        var back = false;
         for (var i = 0; i < COMPONENTS.length; i++) {
             var id = COMPONENTS[i].id;
             if (c && c[id] && c[id].h) continue;
             var el = D.querySelector(COMPONENTS[i].sel);
-            if (el) stashInline(el, false);
+            if (el && stashInline(el, false)) back = true;
         }
+        return back;
     }
     function refresh() {
         if (!comps() && !styleEl) return;

@@ -40,9 +40,41 @@
   if (!document.getElementById('lm-he-open')) fail.push('Edit HUD button missing in Theme > HUD');
   var lb = document.getElementById('leaderboard-hud');
   if (!lb) return { fail: fail.concat(['#leaderboard-hud missing']) };
-  var before = rect(lb), moved = null;
+  /* The leaderboard is live: rows come and go (sent by the server, cleared by a reconnect) and a
+   * phone fits the box to its rows every 2.5 s (LMmobile fitLeaderboard), so a rect taken earlier
+   * only holds while the content and the page's own scale are the same. Otherwise the box is checked
+   * by its anchor: the normal place is the top right corner; a moved box keeps the edge or centre
+   * its layout entry is anchored to, and its width (the layout sets its scale). Either way no layout
+   * rule is left on the normal box and the page's own transform is given back. */
+  var lbSig = function () { var d = document.getElementById('leaderboard-data'); return [lb.offsetWidth, lb.offsetHeight, d ? d.offsetWidth : 0, d ? d.offsetHeight : 0, lb.style.transform].join(); };
+  var lbNow = function () { return { r: rect(lb), sig: lbSig() }; };
+  var changed = function (ref, what) { if (lbSig() === ref.sig) return false; (info.lbChanged = info.lbChanged || []).push(what + ' ' + ref.sig + ' > ' + lbSig()); return true; };
+  var atHome = function (what) {
+    var r = rect(lb), b = before.r, css = document.getElementById('lm-hud-layout');
+    if (lb.dataset.lmHeT != null || (css && css.textContent.indexOf('#leaderboard-hud{') >= 0)) return false;
+    if (!changed(before, what)) return near(r, b, 2);
+    return Math.abs(r.l + r.w - b.l - b.w) <= 2 && Math.abs(r.t - b.t) <= 2;
+  };
+  /* the point of a box a layout entry keeps: its left / right edge or centre, top / bottom or centre */
+  var ax = function (q, e) { return e.h === 'l' ? q.l : e.h === 'r' ? q.l + q.w : q.l + q.w / 2; };
+  var ay = function (q, e) { return e.v === 't' ? q.t : e.v === 'b' ? q.t + q.h : q.t + q.h / 2; };
+  var atMoved = function (what) {
+    var r = rect(lb), b = moved.r, l = HE.get('Probe layout'), e = l && l.c.leaderboard;
+    if (!changed(moved, what)) return near(r, b, 2);
+    if (!e || !e.h) return false;
+    return Math.abs(ax(r, e) - ax(b, e)) <= 2 && Math.abs(ay(r, e) - ay(b, e)) <= 2 && Math.abs(r.w - b.w) <= 2;
+  };
+  /* a phone: the phone code (LMmobile) is loaded and has fitted the leaderboard (it does every 2.5 s
+   * and on resize), so the normal place is the phone one */
+  if (matchMedia('(pointer: coarse)').matches) {
+    var tw = Date.now();
+    while (!(window._lmMobileHost && window._lmMobileHost.reposition) && Date.now() - tw < 20000) await sleep(100);
+    info.phoneWait = Date.now() - tw;
+    if (window._lmMobileHost && window._lmMobileHost.reposition) window._lmMobileHost.reposition();
+  }
+  var before = lbNow(), moved = null;
   info.viewport = [innerWidth, innerHeight];
-  info.lbBefore = before;
+  info.lbBefore = before.r;
 
   try {
     if (!(await openEditor())) { fail.push('editor did not open'); return { fail: fail, info: info }; }
@@ -103,10 +135,13 @@
       pe('pointermove', x0 + dx, y0 + dy);
       pe('pointerup', x0 + dx, y0 + dy);
       await sleep(60);
-      moved = rect(lb);
-      info.lbMoved = moved;
-      if (Math.abs(moved.l - r0.l - dx) > 12 || Math.abs(moved.t - r0.t - dy) > 12) fail.push('leaderboard did not follow the drag (' + (moved.l - r0.l) + ',' + (moved.t - r0.t) + ' for ' + dx + ',' + dy + ')');
-      if (!ui()._draft().leaderboard) fail.push('drag not in the draft');
+      moved = lbNow();
+      var mr = moved.r;
+      info.lbMoved = mr;
+      /* measured at the point the new entry keeps (the same as left / top while the rows stay the same) */
+      var de = ui()._draft().leaderboard;
+      if (!de || !de.h) fail.push('drag not in the draft');
+      else if (Math.abs(ax(mr, de) - ax(r0, de) - dx) > 12 || Math.abs(ay(mr, de) - ay(r0, de) - dy) > 12) fail.push('leaderboard did not follow the drag (' + Math.round(ax(mr, de) - ax(r0, de)) + ',' + Math.round(ay(mr, de) - ay(r0, de)) + ' for ' + dx + ',' + dy + ', ' + JSON.stringify(r0) + ' > ' + JSON.stringify(mr) + ')');
       var fb2 = frame.getBoundingClientRect();
       if (Math.abs(fb2.left - lb.getBoundingClientRect().left) > 80) fail.push('frame did not follow the box');
     }
@@ -118,15 +153,15 @@
     await sleep(80);
     if (isOpen()) fail.push('Done did not close the editor');
     if (document.getElementById('lm-he')) fail.push('editor overlay left behind');
-    if (moved && !near(rect(lb), moved, 2)) fail.push('saved layout not kept after closing');
+    if (moved && !atMoved('closed')) fail.push('saved layout not kept after closing (' + JSON.stringify(rect(lb)) + ')');
 
     HE.applyLayout('', true);
     await sleep(30);
     if (document.getElementById('lm-hud-layout')) fail.push('default HUD: stylesheet still there');
-    if (!near(rect(lb), before, 2)) fail.push('default HUD: leaderboard not back (' + JSON.stringify(rect(lb)) + ')');
+    if (!atHome('default HUD')) fail.push('default HUD: leaderboard not back (' + JSON.stringify(rect(lb)) + ')');
     HE.applyLayout('Probe layout', true);
     await sleep(30);
-    if (moved && !near(rect(lb), moved, 2)) fail.push('re-applied layout differs (' + JSON.stringify(rect(lb)) + ')');
+    if (moved && !atMoved('re-applied')) fail.push('re-applied layout differs (' + JSON.stringify(rect(lb)) + ')');
 
     /* saved far off screen (another screen size): clamped on apply */
     HE.saveLayout('Probe far', {
@@ -150,18 +185,18 @@
         rb.click();
         await sleep(30);
         if (ui()._draft().leaderboard) fail.push('reset did not drop the leaderboard');
-        if (!near(rect(lb), before, 2)) fail.push('reset: leaderboard not at its normal place');
+        if (!atHome('reset')) fail.push('reset: leaderboard not at its normal place (' + JSON.stringify(rect(lb)) + ')');
       }
       click('#lm-he-p .lm-he-x');
       await sleep(30);
-      if (HE.active() !== 'Probe layout' || (moved && !near(rect(lb), moved, 2))) fail.push('Cancel did not keep the saved layout');
+      if (HE.active() !== 'Probe layout' || (moved && !atMoved('cancel'))) fail.push('Cancel did not keep the saved layout');
     }
     if (!(await openEditor())) fail.push('editor did not open a third time');
     else {
       click('#lm-he-p .lm-he-resetall');
       await sleep(30);
       if (Object.keys(ui()._draft()).length) fail.push('Reset all left entries');
-      if (!near(rect(lb), before, 2)) fail.push('Reset all: leaderboard not back');
+      if (!atHome('reset all')) fail.push('Reset all: leaderboard not back (' + JSON.stringify(rect(lb)) + ')');
       click('#lm-he-p .lm-he-done');
       await sleep(30);
       if (document.getElementById('lm-hud-layout')) fail.push('empty layout still writes a stylesheet');
@@ -177,6 +212,6 @@
     HE.refreshNow();
   }
   if (document.getElementById('lm-hud-layout')) fail.push('stylesheet left after the probe');
-  if (!near(rect(lb), before, 2)) fail.push('leaderboard not back at the end');
+  if (!atHome('end')) fail.push('leaderboard not back at the end (' + JSON.stringify(rect(lb)) + ')');
   return { fail: fail, info: info };
 })()
