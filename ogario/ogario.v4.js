@@ -22606,6 +22606,29 @@ function thelegendmodproject() {
             this.syncHotkeyOption('vanillaSkins');
             this.syncHotkeyOption('customSkins');
         },
+        /* The skins hotkeys name the mode they just entered ("vanilla only" was read as "vanilla
+         * off"). Not called by toggleSkins itself: the timed skin toggle (LMexpress) runs that every
+         * second. A press replaces the previous message, so fast presses leave one toast; it goes
+         * through toastr, so the notification centre keeps it and a category muted there stays quiet.
+         * modeChanged: the custom/agar.io mode changed while "No skins" may still hide them all. */
+        skinsModeMsg(modeChanged) {
+            var ms = defaultmapsettings, hidden = !!(this.noSkins || ms.noSkins);
+            var off = 'pkg.q4.skinsOff';
+            var key = hidden && !modeChanged ? off : ms.customSkins && ms.vanillaSkins ? 'pkg.q4.skinsBoth' :
+                ms.customSkins ? 'pkg.q4.skinsCustom' : ms.vanillaSkins ? 'pkg.q4.skinsVanilla' : off;
+            /* no text when the language packs did not load (lmT then returns the key) */
+            var t = function (k) { var s = typeof lmT === 'function' ? lmT(k) : ''; return s && s !== k ? s : ''; };
+            var text = t(key), note = t('pkg.q4.skinsHidden');
+            if (!text || typeof toastr === 'undefined' || !toastr || typeof toastr.info !== 'function') return '';
+            if (hidden && modeChanged && note) text += ' (' + note + ')';
+            var prev = this._lmSkinsToast;
+            /* clear() without a toast would clear every toast on screen */
+            if (prev && prev.length && typeof toastr.clear === 'function') {
+                try { toastr.clear(prev); } catch (e) { }
+            }
+            this._lmSkinsToast = key === off ? toastr.error(text) : toastr.info(text);
+            return text;
+        },
         toggleCells() {
             this.selectBiggestCell = !this.selectBiggestCell;
             ogario.selectBiggestCell = this.selectBiggestCell;
@@ -22719,7 +22742,8 @@ function thelegendmodproject() {
             /* keep the "No skins" setting and its checkbox in step with the hotkey */
             defaultmapsettings.noSkins = !!this.noSkins;
             this.syncHotkeyOption('noSkins');
-            this.displayChatInfo(!this.noSkins, 'showSkinsMsg');
+            /* "Skins: off", or the mode now shown ("Skins are visible!" did not say which) */
+            if (!this.skinsModeMsg()) this.displayChatInfo(!this.noSkins, 'showSkinsMsg');
         },
         setTransparentSkins() {
             defaultmapsettings.transparentSkins = !defaultmapsettings.transparentSkins;

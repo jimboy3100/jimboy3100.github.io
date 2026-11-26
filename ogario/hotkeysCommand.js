@@ -1025,6 +1025,8 @@
                 defaultKey: 'A',
                 keyDown() {
                     application && application.toggleSkins();
+                    /* say which mode this press entered */
+                    application && application.skinsModeMsg && application.skinsModeMsg(true);
                 },
                 keyUp: null,
                 type: 'normal'

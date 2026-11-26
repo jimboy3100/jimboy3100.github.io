@@ -6,6 +6,8 @@
  * (customSkinKey, behind getCustomSkin and both WebGL skin paths), vanillaskins, the gate the
  * renderers use (lmSkinsShown), toggleSkins, setVanillaSkins, setShowSkins and syncHotkeyOption
  * are taken from ogario/ogario.v4.js; the virus colour on WebGL is checked by glbatch.js.
+ * The skins hotkeys (the real keyDown of hk-toggleSkins from ogario/hotkeysCommand.js) name the mode
+ * each press entered in one toast (skinsModeMsg, texts from the built language packs).
  * node developers/tests/skintoggles.js [ogario.v4.js] */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
@@ -29,12 +31,21 @@ function method(name, prop) {
     return name + ': function ' + src.slice(src.indexOf('(', i + 9), body(i));
 }
 const methods = ['_lmSkinKeys', 'teamSkinUrl', 'cacheCustomSkin', '_lmSkinSet', '_lmSkinAt', 'getCustomSkin', 'customSkinKey',
-    'toggleSkins', 'setVanillaSkins', 'setShowSkins', 'syncHotkeyOption', 'flushSkinsMap'].map((m) => method(m)).filter(Boolean);
+    'toggleSkins', 'setVanillaSkins', 'setShowSkins', 'syncHotkeyOption', 'flushSkinsMap', 'skinsModeMsg'].map((m) => method(m)).filter(Boolean);
 methods.push(method('checkSkinURL', true));
 
 const ctx = { console, JSON };
 ctx.window = ctx;
 vm.createContext(ctx);
+require('./lib/i18n-env')(ctx);
+/* toastr as the page has it: each toast is a jQuery set; clear(el) removes that one, clear() all */
+const toasts = [];
+let clearedAll = 0;
+ctx.toastr = {
+    info: (m) => { const el = { ty: 'info', m: m, length: 1 }; toasts.push(el); return el; },
+    error: (m) => { const el = { ty: 'error', m: m, length: 1 }; toasts.push(el); return el; },
+    clear: (el) => { if (!el) { clearedAll++; toasts.length = 0; return; } const i = toasts.indexOf(el); if (i >= 0) toasts.splice(i, 1); }
+};
 vm.runInContext([fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn('LowerCase'), fn('makeUpperCaseAfterUnderline'), fn('lmSkinsShown')].join('\n') +
     '\nvar _RE_CLAN_TAG = /^\\[.*?\\]\\s*|^\\u2104[^\\s]*\\s*/g;' +
     '\nvar drawRender = {};' +
@@ -175,6 +186,39 @@ verify('hotkey Show/hide skins: no skins at all', { customSkins: true, vanillaSk
 check('...the No skins checkbox follows and is saved', ctx.document.getElementById('noSkins').checked === true && JSON.parse(ctx.saved).noSkins === true);
 A.setShowSkins();
 verify('hotkey Show/hide skins again: custom skins back, agar.io skins still off', { customSkins: true, vanillaSkins: false, ownVanillaSkin: false, noSkins: false });
+
+/* ---- the message each press of a skins hotkey shows ---- */
+const hkSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'hotkeysCommand.js'), 'utf8').replace(/\r\n/g, '\n');
+const hkAt = hkSrc.indexOf("'hk-toggleSkins'"), kdAt = hkSrc.indexOf('keyDown()', hkAt);
+let kd = 0, kdEnd = -1;
+for (let k = hkSrc.indexOf('{', kdAt); k < hkSrc.length; k++) { if (hkSrc[k] === '{') kd++; else if (hkSrc[k] === '}' && !--kd) { kdEnd = k + 1; break; } }
+const pressToggle = vm.runInContext('(function () ' + hkSrc.slice(hkSrc.indexOf('{', kdAt), kdEnd) + ')', ctx);
+const T = (k) => ctx.lmT('pkg.q4.' + k);
+const onScreen = () => toasts.map((t) => t.ty + ': ' + t.m).join(' | ');
+check('the mode texts are in the language packs', ['skinsBoth', 'skinsCustom', 'skinsVanilla', 'skinsOff', 'skinsHidden'].every((k) => T(k) && T(k) !== 'pkg.q4.' + k));
+world();
+apply({ customSkins: true, vanillaSkins: true, ownVanillaSkin: false, noSkins: false });
+A.noSkins = false; toasts.length = 0; clearedAll = 0;
+[['skinsCustom', 'Skins: custom only'], ['skinsVanilla', 'Skins: agar.io only'], ['skinsBoth', 'Skins: custom + agar.io'], ['skinsCustom', 'Skins: custom only']].forEach((w, i) => {
+    pressToggle();
+    check('Toggle skins press ' + (i + 1) + ': one toast "' + w[1] + '" (' + onScreen() + ')', toasts.length === 1 && toasts[0].ty === 'info' && toasts[0].m === T(w[0]) && T(w[0]) === w[1]);
+});
+check('...a press replaces the previous toast, never clears the others', clearedAll === 0);
+const other = ctx.toastr.info('someone else');
+A.toggleSkins(); A.toggleSkins(); A.toggleSkins();
+check('the timed skin toggle (LMexpress, toggleSkins alone) shows no toast', toasts.length === 2 && toasts[1] === other);
+toasts.length = 0;
+apply({ customSkins: true, vanillaSkins: false, ownVanillaSkin: false, noSkins: false });
+A.setShowSkins();
+check('Show/hide skins off: "Skins: off" (' + onScreen() + ')', toasts.length === 1 && toasts[0].ty === 'error' && toasts[0].m === T('skinsOff') && T('skinsOff') === 'Skins: off');
+pressToggle();
+check('Toggle skins while hidden: the mode entered and that skins are hidden (' + onScreen() + ')', toasts.length === 1 && toasts[0].m === T('skinsVanilla') + ' (' + T('skinsHidden') + ')');
+A.setShowSkins();
+check('Show/hide skins on: the mode now shown (' + onScreen() + ')', toasts.length === 1 && toasts[0].ty === 'info' && toasts[0].m === T('skinsVanilla'));
+ctx.LMi18n.setLang('el');
+pressToggle();
+check('Greek: the mode text in Greek (' + onScreen() + ')', toasts.length === 1 && toasts[0].m === T('skinsBoth') && /\u03b4\u03b9\u03ba\u03ac/.test(toasts[0].m));
+ctx.LMi18n.setLang('en');
 
 /* ---- a custom skin stored later under a name that had an agar.io skin is custom ---- */
 world();

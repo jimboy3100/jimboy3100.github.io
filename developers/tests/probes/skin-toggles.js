@@ -2,7 +2,8 @@
 // hides the agar.io skins (flag names, skin ids) and keeps every custom skin, the own one included
 // (setVanillaSkins emptied the skins map, so the own custom skin was gone until the next spawn and
 // the agar.io skins came back with the next cell update); the "Toggle skins" hotkey's vanilla-only
-// mode shows the agar.io skins (it showed none); the choice is saved for the next load.
+// mode shows the agar.io skins (it showed none); the choice is saved for the next load. Each press of
+// the skins hotkeys names the mode it entered in one toast ("Skins: custom only", "Skins: off").
 (async () => {
   var fail = [], info = {};
   var A = window.application, L = window.legendmod, ms = window.defaultmapsettings;
@@ -51,18 +52,35 @@
     /* the hotkey: both -> custom only -> vanilla only -> both */
     var hk = typeof hotkeysCommand === 'object' && hotkeysCommand && hotkeysCommand['hk-toggleSkins'];
     if (!hk) throw new Error('hk-toggleSkins missing');
+    /* the toast of the last skins hotkey press: on screen, with the text of the mode entered */
+    var toastIs = function (label, k) {
+      var want = lmT('pkg.q4.' + k), t = A._lmSkinsToast, got = t && t.length ? (t.find('.toast-message').text() || t.text()) : '';
+      if (!want || want === 'pkg.q4.' + k || got !== want || !document.body.contains(t[0])) fail.push(label + ': toast "' + got + '", expected "' + want + '"');
+      (info.toasts = info.toasts || []).push(got);
+    };
     hk.keyDown();
     seed();
     if (!(ms.customSkins === true && ms.vanillaSkins === false && box('vanillaSkins').checked === false)) fail.push('hotkey 1: not custom only');
     if (draw('Albania', null, false) !== null || draw('LMProbeSpider', '%lmprobe', false) !== null) fail.push('hotkey 1 (custom only): agar.io skins still drawn');
     if (draw('LMProbeMe', '%lmprobe', true) !== C_OWN) fail.push('hotkey 1 (custom only): own custom skin lost');
     if (stored().vanillaSkins !== false || stored().customSkins !== true) fail.push('hotkey 1: not saved');
+    toastIs('hotkey 1', 'skinsCustom');
     hk.keyDown();
     if (!(ms.customSkins === false && ms.vanillaSkins === true)) fail.push('hotkey 2: not vanilla only');
+    toastIs('hotkey 2', 'skinsVanilla');
     if (draw('LMProbeSpider', '%lmprobe', false) !== V_ID || !draw('Albania', null, false)) fail.push('hotkey 2 (vanilla only): agar.io skins not drawn');
     if (draw('LMProbeMe', '%lmprobe', true) !== V_ID) fail.push('hotkey 2 (vanilla only): the own cell does not show its agar.io skin');
     hk.keyDown();
     if (!(ms.customSkins === true && ms.vanillaSkins === true)) fail.push('hotkey 3: not both');
+    toastIs('hotkey 3', 'skinsBoth');
+    /* Show/hide skins: off, then the mode shown again */
+    var hkShow = hotkeysCommand['hk-showSkins'];
+    if (!hkShow) throw new Error('hk-showSkins missing');
+    hkShow.keyDown();
+    toastIs('Show/hide skins off', 'skinsOff');
+    hkShow.keyDown();
+    toastIs('Show/hide skins on', 'skinsBoth');
+    if (ms.noSkins !== false) fail.push('Show/hide skins twice: No skins still on');
     if (draw('LMProbeMe', '%lmprobe', true) !== C_OWN) fail.push('hotkey 3 (both): own custom skin lost');
   } catch (e) {
     fail.push(String(e && e.stack || e).split('\n').slice(0, 3).join(' | '));
