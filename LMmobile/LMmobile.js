@@ -89,6 +89,9 @@
         /* Menu open: the buttons stay visible but take no taps (they sat above the menu and ate its
          * taps). Hiding them made players think they were gone. */
         '.lm-menu #lm-mc-r,.lm-menu #lm-mc-r *,.lm-menu #lm-mc-sm,.lm-menu #lm-mc-sm *{pointer-events:none!important}' +
+        /* the leaderboard's mass/sector column (a tap targets that player) lies over the menu's tab bar
+         * in portrait and over the skins panel in landscape and ate those taps: none while the menu is open */
+        '.lm-menu #leaderboard-hud .lb-data{pointer-events:none!important}' +
         '#lm-mc-sm{position:fixed;z-index:100000;' +
         'pointer-events:none;user-select:none;-webkit-user-select:none;' +
         'display:flex;flex-direction:row;align-items:center;gap:10px}' + /* was 6px, next to the minimap */
@@ -1286,18 +1289,7 @@
             var delta = nd - pDist;   // >0 = spread, <0 = pinch
             if (Math.abs(delta) > 4) {
                 if (isMenuVisible()) {
-                    /* ── HUD scale mode ── */
-                    var step = delta * 0.003;
-                    if (typeof defaultSettings !== 'undefined' && defaultSettings.hudScale !== undefined) {
-                        /* from the scale shown on this screen: a larger value saved on a bigger screen is shown
-                         * at this screen's limit, so the gesture starts there (not from the saved value) */
-                        var cur = typeof window.lmHudScale === 'function' ? window.lmHudScale() : defaultSettings.hudScale;
-                        var ns = Math.min(1, Math.max(0.3, cur + step));
-                        defaultSettings.hudScale = ns;
-                        if (typeof ogario !== 'undefined') ogario.hudScale = ns;
-                        if (window.lmMenuFit && window.lmMenuFit.queue) window.lmMenuFit.queue(); /* once per frame while pinching */
-                        zP.textContent = '🔍 ' + T('misc.mobile.hudZoom', [Math.round(ns * 100)]);
-                    }
+                    hudPinch(delta);
                 } else {
                     /* ── Map zoom mode ── */
                     var cx = (e.targetTouches[0].clientX + e.targetTouches[1].clientX) / 2;
@@ -1312,6 +1304,43 @@
                 zT = setTimeout(function () { zP.classList.remove('on'); }, 400);
             }
         }, { passive: false });
+
+        /* ── HUD scale mode (menu open) ── */
+        function hudPinch(delta) {
+            var step = delta * 0.003;
+            if (typeof defaultSettings !== 'undefined' && defaultSettings.hudScale !== undefined) {
+                /* from the scale shown on this screen: a larger value saved on a bigger screen is shown
+                 * at this screen's limit, so the gesture starts there (not from the saved value) */
+                var cur = typeof window.lmHudScale === 'function' ? window.lmHudScale() : defaultSettings.hudScale;
+                var ns = Math.min(1, Math.max(0.3, cur + step));
+                defaultSettings.hudScale = ns;
+                if (typeof ogario !== 'undefined') ogario.hudScale = ns;
+                if (window.lmMenuFit && window.lmMenuFit.queue) window.lmMenuFit.queue(); /* once per frame while pinching */
+                zP.textContent = '🔍 ' + T('misc.mobile.hudZoom', [Math.round(ns * 100)]);
+            }
+        }
+        /* The open menu (#overlays, the whole screen) lies over the canvas, so a pinch there never
+         * reached the canvas handlers and the HUD zoom did nothing: the menu layer takes it too. */
+        var menuLayer = document.getElementById('overlays'), mDist = 0;
+        if (menuLayer) {
+            menuLayer.addEventListener('touchstart', function (e) {
+                mDist = e.touches.length === 2 && isMenuVisible() ? dist(e.touches[0], e.touches[1]) : 0;
+            }, { passive: true });
+            menuLayer.addEventListener('touchmove', function (e) {
+                if (!mDist || e.touches.length !== 2 || !isMenuVisible()) return;
+                e.preventDefault();
+                var nd = dist(e.touches[0], e.touches[1]);
+                if (Math.abs(nd - mDist) > 4) {
+                    hudPinch(nd - mDist);
+                    mDist = nd;
+                    zP.classList.add('on');
+                    clearTimeout(zT);
+                    zT = setTimeout(function () { zP.classList.remove('on'); }, 400);
+                }
+            }, { passive: false });
+            menuLayer.addEventListener('touchend', function (e) { if (e.touches.length < 2) mDist = 0; }, { passive: true });
+            menuLayer.addEventListener('touchcancel', function () { mDist = 0; }, { passive: true });
+        }
 
         canvas.addEventListener('touchend', function (e) {
             if (e.targetTouches.length < 2) {
