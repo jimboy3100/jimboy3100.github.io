@@ -26502,7 +26502,10 @@ function thelegendmodproject() {
             /* typing: wait 300 ms before loading two preview images (it loaded them on every key) */
             var _lmSkinInputT = null;
             $(document).on(`input click`, `#skin`, function (ev) {
-                const value = this.value;
+                /* the address the skin is saved and played with (checkSkinURL): a link typed
+                 * without https:// (i.imgur.com/..., an imgur page) loaded as a path on this
+                 * site, so the previews stayed empty for a skin that works */
+                const value = app.checkSkinURL(this.value);
                 /* the profile typed into: switching profile within the 300 ms showed this skin
                  * on the newly selected profile */
                 const idx = app.selectedProfile;
