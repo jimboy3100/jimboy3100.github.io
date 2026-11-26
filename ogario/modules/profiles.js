@@ -1343,8 +1343,21 @@
             e.preventDefault();
             act($(this).attr('data-act'), $(this).attr('data-id'));
         }).on('change', 'select, input[type=checkbox]', function () { onField(this); });
+        /* Esc closes it, like the other windows (only the one in front, winstack.js); it went to the
+         * game and the menu behind instead */
+        ov[0]._lmEsc = true;
+        window.addEventListener('keydown', onEsc, true);
         $('body').append(ov);
         render();
+    }
+    function onEsc(e) {
+        if (!(e.key === 'Escape' || e.keyCode === 27)) return;
+        var el = document.getElementById('lm-sp-overlay');
+        if (!el) { window.removeEventListener('keydown', onEsc, true); return; }
+        if (window.LMWinStack && typeof window.LMWinStack.escFor === 'function' && !window.LMWinStack.escFor(el, e)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        close();
     }
     function dir() { return window.LMi18n && typeof window.LMi18n.dir === 'function' ? window.LMi18n.dir() : 'ltr'; }
     /* a language change while the window is open: its title, tabs and the open tab again */
@@ -1358,7 +1371,7 @@
         render();
     }
     if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(relabel);
-    function close() { var el = document.getElementById('lm-sp-overlay'); if (el) el.parentNode.removeChild(el); }
+    function close() { var el = document.getElementById('lm-sp-overlay'); if (el) el.parentNode.removeChild(el); window.removeEventListener('keydown', onEsc, true); }
     function toggle() { if (isOpen()) close(); else open(); }
     function partsBadge(d, only) {
         if (only === 'gp') return gt('pkg.pt.gpBadge') || tx('partGP');
