@@ -13,7 +13,8 @@
  *                      fading after a few seconds)
  *   hudCellPanel       small panel: own cell masses (sorted), count/16, largest, smallest, total
  *   massFormat         0 as before (Short mass), 1 exact, 2 12.3k, 3 auto
- * Hotkeys (no default keys): hold for precision zoom, 3 zoom bookmarks, camera lock while spectating.
+ * Hotkeys (no default keys): hold for precision zoom, save the current zoom as zoom level 1-5 (the
+ * zoom level hotkeys, Alt+1-5 by default, then go to it), camera lock while spectating.
  *
  * ogario.v4.js calls frame() once per rendered frame after the cell overlays; it returns at once
  * while every option is off. Drawing reuses objects and cached strings: no garbage per frame.
@@ -739,12 +740,16 @@
         }
     }
 
+    /* The zoom levels the player saved: [level 1, ..., level 5], 0 = not saved (the level hotkey
+     * keeps its fixed zoom). Stored under the name of the former "zoom bookmarks" (3 slots, which were
+     * the same thing as the zoom level hotkeys), so the zooms saved there are levels 1-3 now. */
     var BOOKMARK_KEY = 'lm-zoom-bookmarks';
+    var LEVELS = 5;
     function readBookmarks() {
-        var out = [0, 0, 0];
+        var out = [0, 0, 0, 0, 0];
         try {
             var v = JSON.parse(localStorage.getItem(BOOKMARK_KEY) || '[]');
-            if (Array.isArray(v)) for (var i = 0; i < 3; i++) if (typeof v[i] === 'number' && v[i] >= 0.01 && v[i] <= 40) out[i] = v[i];
+            if (Array.isArray(v)) for (var i = 0; i < LEVELS; i++) if (typeof v[i] === 'number' && v[i] >= 0.01 && v[i] <= 40) out[i] = v[i];
         } catch (e) { }
         return out;
     }
@@ -753,17 +758,18 @@
     }
     function zoomSave(n) {
         var LM = window.legendmod;
-        if (!LM || !(n >= 1 && n <= 3) || !(LM.zoomValue > 0)) return;
+        if (!LM || !(n >= 1 && n <= LEVELS) || !(LM.zoomValue > 0)) return;
         var b = readBookmarks();
         /* a held precision zoom is temporary: keep the zoom it returns to */
         b[n - 1] = _precisionSaved !== null ? precisionBase(LM) : clampZoom(LM.zoomValue);
         writeBookmarks(b);
         toast(tr('zoomSaved', n));
     }
-    function zoomRecall(n) {
+    /* zoom level n: the saved zoom, else the level's fixed zoom (fixed > 0) */
+    function zoomRecall(n, fixed) {
         var LM = window.legendmod;
-        if (!LM || !(n >= 1 && n <= 3)) return;
-        var z = readBookmarks()[n - 1];
+        if (!LM || !(n >= 1 && n <= LEVELS)) return;
+        var z = readBookmarks()[n - 1] || (fixed > 0 ? fixed : 0);
         if (!z) { toast(tr('zoomEmpty', n)); return; }
         if (_precisionSaved !== null) {
             /* held: show the bookmark zoomed in, and return to it on release */

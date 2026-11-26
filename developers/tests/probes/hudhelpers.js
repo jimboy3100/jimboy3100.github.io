@@ -15,7 +15,7 @@
   });
   if (LM_SETTINGS_DEFAULTS.massFormat !== 0) fail.push('massFormat default is not 0');
   if (!document.getElementById('massFormat-slider')) fail.push('massFormat has no slider');
-  ['hk-precisionZoom', 'hk-zoomSave1', 'hk-zoomSave2', 'hk-zoomSave3', 'hk-zoomRecall1', 'hk-zoomRecall2', 'hk-zoomRecall3', 'hk-cameraLock'].forEach(function (k) {
+  ['hk-precisionZoom', 'hk-zoomSave1', 'hk-zoomSave2', 'hk-zoomSave3', 'hk-zoomSave4', 'hk-zoomSave5', 'hk-cameraLock'].forEach(function (k) {
     if (!hotkeysCommand[k]) fail.push(k + ' missing');
     else if (hotkeysCommand[k].defaultKey !== '') fail.push(k + ' has a default key');
   });

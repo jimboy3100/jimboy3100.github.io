@@ -128,17 +128,35 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     check('massText: off, as before', H.massText(700, {}) === '700');
 }
 
-// zoom bookmarks, precision zoom, camera lock
+// saved zoom levels (the zoom level hotkeys), precision zoom, camera lock
 {
     ctx.legendmod = { zoomValue: 0.5, play: false, playerCellsMulti: [] };
     H.zoomSave(2);
     ctx.legendmod.zoomValue = 1;
     H.zoomRecall(2);
     check('zoom bookmark saved and recalled', ctx.legendmod.zoomValue === 0.5);
-    check('zoom saved toast from the language pack', toasts[toasts.length - 1] === i18n.t('modules.hudhelpers.zoomSaved', 2) && toasts[toasts.length - 1] === 'Zoom 2 saved');
+    check('zoom saved toast from the language pack', toasts[toasts.length - 1] === i18n.t('modules.hudhelpers.zoomSaved', 2) && toasts[toasts.length - 1] === 'Zoom level 2 saved');
+    /* a zoom level the player did not save keeps its fixed zoom; a saved one wins over it */
+    ctx.legendmod.zoomValue = 1;
+    H.zoomRecall(4, 0.075);
+    check('zoom level not saved: its fixed zoom', ctx.legendmod.zoomValue === 0.075);
+    H.zoomRecall(2, 0.25);
+    check('zoom level saved: the saved zoom, not the fixed one', ctx.legendmod.zoomValue === 0.5);
+    ctx.legendmod.zoomValue = 0.3;
+    H.zoomSave(5);
+    ctx.legendmod.zoomValue = 1;
+    H.zoomRecall(5, 0.05);
+    check('zoom levels 4 and 5 can be saved too', ctx.legendmod.zoomValue === 0.3 && JSON.parse(store['lm-zoom-bookmarks']).length === 5);
+    /* the former 3-slot zoom bookmarks are levels 1-3 */
+    store['lm-zoom-bookmarks'] = '[0.7, 0, 0]';
+    H.zoomRecall(1, 0.5);
+    check('a former zoom bookmark 1 is zoom level 1', ctx.legendmod.zoomValue === 0.7);
+    H.zoomRecall(4, 0.075);
+    check('a former 3-slot store: level 4 keeps its fixed zoom', ctx.legendmod.zoomValue === 0.075);
+    ctx.legendmod.zoomValue = 0.5;
     ctx.LMi18n.setLang('el', { save: false });
     H.zoomSave(2);
-    check('zoom saved toast follows the language (Greek)', toasts[toasts.length - 1] === i18n.t('modules.hudhelpers.zoomSaved', 2, 'el') && toasts[toasts.length - 1] !== 'Zoom 2 saved');
+    check('zoom saved toast follows the language (Greek)', toasts[toasts.length - 1] === i18n.t('modules.hudhelpers.zoomSaved', 2, 'el') && toasts[toasts.length - 1] !== 'Zoom level 2 saved');
     ctx.LMi18n.setLang('en', { save: false });
     store['lm-zoom-bookmarks'] = '[1e9, "x", 0.25]';
     H.zoomRecall(1);

@@ -81988,6 +81988,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 for (var _lmGone in hotkeys) {
                     if (hotkeys.hasOwnProperty(_lmGone) && hotkeys[_lmGone] === 'hk-hotkeyConflicts') delete hotkeys[_lmGone];
                 }
+                /* "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3 now (the saved zoom is that
+                 * level's zoom): its key goes to the zoom level when the level has no key of its own */
+                for (var _lmZr in hotkeys) {
+                    var _lmZm = hotkeys.hasOwnProperty(_lmZr) && /^hk-zoomRecall([1-3])$/.exec(String(hotkeys[_lmZr]));
+                    if (!_lmZm) continue;
+                    var _lmZl = 'hk-zoom' + _lmZm[1], _lmZHas = false;
+                    for (var _lmZk in hotkeys) if (hotkeys.hasOwnProperty(_lmZk) && hotkeys[_lmZk] === _lmZl) { _lmZHas = true; break; }
+                    if (_lmZHas) delete hotkeys[_lmZr]; else hotkeys[_lmZr] = _lmZl;
+                }
                 this.migrateBrowserSpecificHotkeys();
                 this.addMissingDefaultHotkeys();
                 this.syncMessageKey();

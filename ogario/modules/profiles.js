@@ -113,20 +113,20 @@
     function cleanTheme(o) { return cleanMap(o, themeValue); }
     function cleanHotkeys(o) { return cleanMap(o, hotkeyValue, 600); }
     function cleanMobile(o) { return cleanMap(o, mobileValue); }
-    /* the zoom bookmarks of hudhelpers.js: 3 zoom levels, 0 = not saved (its own range check);
-     * anything else and the part is dropped as a whole. [0, 0, 0] = explicitly none (the Undo and
-     * the backups of a state without bookmarks: restoring it removes them) */
+    /* the saved zoom levels of hudhelpers.js: 3 (the former zoom bookmarks) to 5 zoom levels, 0 = not
+     * saved (its own range check); anything else and the part is dropped as a whole. All 0 =
+     * explicitly none (the Undo and the backups of a state without them: restoring it removes them) */
     function cleanZoomMarks(a) {
-        if (!Array.isArray(a) || a.length !== 3) return null;
+        if (!Array.isArray(a) || a.length < 3 || a.length > 5) return null;
         var out = [], any = false;
-        for (var i = 0; i < 3; i++) {
+        for (var i = 0; i < a.length; i++) {
             var v = a[i];
             if (typeof v !== 'number' || !isFinite(v) || (v !== 0 && (v < 0.01 || v > 40))) return null;
             out.push(v);
         }
         return out;
     }
-    function noZoomMarks(v) { return Array.isArray(v) && v.length === 3 && !v[0] && !v[1] && !v[2]; }
+    function noZoomMarks(v) { return Array.isArray(v) && v.length >= 3 && v.length <= 5 && v.every(function (z) { return !z; }); }
     /* A part that did not exist (no gamepad buttons / phone control layout saved yet). Only the
      * Undo and the backups hold it: restoring them removes what was added since, where a missing
      * part would leave it (a profile without the part still leaves it as it is). */
