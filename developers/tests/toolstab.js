@@ -27,7 +27,8 @@ vm.createContext(valueCtx);
 vm.runInContext(cut('function lmThemeValue(', '\n/* The multibox ring colours'), valueCtx);
 check('theme schema: a boolean (stored, imported, profiles, Theme Workshop)', valueCtx.lmThemeValue('hudRoundedCorners', true) === true &&
     valueCtx.lmThemeValue('hudRoundedCorners', 'false') === false && valueCtx.lmThemeValue('hudRoundedCorners', 1) === undefined);
-check('Theme > HUD: a switch after the HUD scale', /addSliderBox\('#theme-hud', 'hudScale'[^\n]*\n\s*this\.addThemeCheckBox\('#theme-hud', 'hudRoundedCorners', 'setHudCorners'\);/.test(main));
+/* after the HUD scale and the HUD text size slider that sits next to it */
+check('Theme > HUD: a switch after the HUD scale', /addSliderBox\('#theme-hud', 'hudScale'[^\n]*\n(?:[^\n]*\n){0,4}?\s*this\.addThemeCheckBox\('#theme-hud', 'hudRoundedCorners', 'setHudCorners'\);/.test(main));
 check('setHud applies the corners (setTheme: start, profiles, theme packages, presets)', /setHud\(\) \{[^}]*this\.setHudCorners\(\);/.test(main));
 
 function loadTheme(storedTheme, oldKey, full) {

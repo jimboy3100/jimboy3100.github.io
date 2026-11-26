@@ -1,6 +1,7 @@
 /* Legend Mod accessibility options (Settings > Accessibility, all off by default):
  *   a11yTextScale     larger menu text (1 = unchanged), separate from the HUD scale
  *   a11yHudTextScale  larger HUD text (leaderboard, stats, clock, chat); follows the HUD scale
+ *                     (its slider is in Theme > HUD next to the HUD scale; still a gameplay setting)
  *   a11yIndicators    a symbol on opponent cells in addition to the colours: up triangles for
  *                     bigger ones (two: can split on you), down triangles for smaller ones (two:
  *                     you can split on them)

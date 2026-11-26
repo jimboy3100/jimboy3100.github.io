@@ -339,7 +339,7 @@ URL: https://www.legendmod.ml/companion-guide.html
 ### 20. Accessibility
 - **Reduced motion**: Disables death screen shake, death particles, entrance animations, and Expanding Land entrance spin
 - **Text scale**: Adjust menu text size (1.0-1.6x) independently from HUD scale
-- **HUD text scale**: Adjust in-game HUD text (leaderboard, stats, clock, chat) independently
+- **HUD text scale**: Adjust in-game HUD text (leaderboard, stats, clock, chat) on top of the HUD scale (Theme > HUD, next to HUD scale)
 - **Indicators**: Bigger/smaller symbols on opponent cells — up triangles for bigger cells (two: can split on you), down triangles for smaller (two: you can split on them)
 - **Colour-blind safe theme preset**: Okabe-Ito palette with opaque HUD, bigger minimap marks
 - **Clean HUD preset**: Strips non-essential HUD elements

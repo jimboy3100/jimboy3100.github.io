@@ -21621,6 +21621,9 @@ function thelegendmodproject() {
             this.addFontBox('#theme-hud', 'hudFont', 'setHudFont');
             var hudScaleLimit = _lmHudScaleLimit();
             this.addSliderBox('#theme-hud', 'hudScale', 0.5, hudScaleLimit, 0.01, 'setHudScale');
+            /* HUD text size next to the HUD scale it multiplies: a gameplay setting (its key and
+             * storage stay, ogario/modules/accessibility.js applies it), so the gameplay slider */
+            if (window.application && typeof window.application.addSliderBox === 'function') window.application.addSliderBox('#theme-hud', 'a11yHudTextScale', 1, 1.6, 0.05);
             this.addThemeCheckBox('#theme-hud', 'hudRoundedCorners', 'setHudCorners');
 
             this.addRgbaColorBox('#theme-chat', 'messageColor', 'setChatColors');
@@ -26042,7 +26045,7 @@ function thelegendmodproject() {
             /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
             this.addOptions(["reducedMotion", "a11yIndicators"], "accessibilityGroup");
             this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);
-            this.addSliderBox(".accessibilityGroup", "a11yHudTextScale", 1, 1.6, 0.05);
+            /* HUD text size is in Theme > HUD, next to the HUD scale (setThemeMenu) */
             this.addOptions([], "macroGroup");
             /* Configuration: keeps the 'profiles' class (Command Centre section id) */
             this.addOptions([], "profiles", "configGroup");

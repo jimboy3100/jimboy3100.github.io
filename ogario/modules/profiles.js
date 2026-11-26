@@ -871,7 +871,8 @@
         /* a dropdown of Settings (Mass format): setSettings applies it, saves and shows it */
         if (el && el.tagName === 'SELECT' && $(el).closest('#og-options').length && app && app.setSettings) { app.setSettings(k, v); return; }
         var sl = $('#' + k + '-slider');
-        if (sl.length && sl.closest('#og-options').length) { sl.val(v).trigger('input').trigger('change'); return; }
+        /* also a gameplay slider shown in the Theme tab (HUD text size, Theme > HUD) */
+        if (sl.length && sl.closest('#og-options, #theme').length) { sl.val(v).trigger('input').trigger('change'); return; }
         /* a text box (chat filter, sound URLs): its change handler applies and saves */
         if (el && el.tagName === 'INPUT' && typeof v === 'string' && el.parentNode && $(el.parentNode).hasClass('input-box')) {
             el.value = v;
