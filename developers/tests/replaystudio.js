@@ -2,6 +2,7 @@
  * Loads ogario/modules/replaystudio.js without a page (only its pure helpers run).
  * node developers/tests/replaystudio.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
+const i18n = require('./lib/i18n-env');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'replaystudio.js'), 'utf8');
 const ctx = { console, Date, Math, JSON, ArrayBuffer, Uint8Array, Uint32Array, DataView, Error, isFinite, Number, String, Array, Object };
 ctx.window = ctx;
@@ -158,6 +159,19 @@ const coreSrc = {
   death: cut4('        onPlayerDeath() {\n', '        findOwnedVanillaSkin() {')
 };
 check('game replay hooks found in ogario.v4.js', Object.keys(coreSrc).every(k => coreSrc[k]));
+/* the game's own handlers of what packets do besides the world (chat, sounds, spawn, death, respawn,
+ * menu) and its renderer's frame callback; lmReplayChatCut is new (missing in older cores) */
+const sideSrc = {
+  chat: cut4('        displayChatMessage(time, caseof, plId, msg, unnamed, srvName) {\n', '        displayUserList('),
+  sound: cut4('\n        playSound(audio) {\n', '        /* mixer channel of one'), /* (not the commented-out one before it) */
+  spawn: cut4('        onPlayerSpawn() {\n', '        onPlayerDeath() {\n'),
+  resp: cut4('        autoResp() {\n', '        setAutoResp() {'),
+  menu: cut4('        showMenu(value) {\n', '        escapeHTML: function'),
+  render: cut4('        render() {\n', '        init() {\n')
+};
+const cutSrc = cut4('function lmReplayChatCut(sess, from) {', 'window.lmReplayChatCut = lmReplayChatCut;');
+const drSrc = fs.readFileSync(process.argv[4] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'deathrecap.js'), 'utf8');
+check('game chat, sound, spawn, death, respawn, menu and render handlers found in ogario.v4.js', Object.keys(sideSrc).every(k => sideSrc[k]));
 const pk = (...b) => new DataView(new Uint8Array(b).buffer);
 /* the stand-in protocol: 1 add id x size, 2 remove id, 3 eat eater eaten, 4 move id x, 32 own id,
  * 20 clear own, 18 clear all (Expanding Land keeps the border), 64 border half-size/10, 17 camera x,
@@ -167,7 +181,9 @@ function applyPk(w, d, env) {
   const del = id => { const x = w.indexedCells[id]; if (!x) return; delete w.indexedCells[id]; w.cells = w.cells.filter(e => e !== x); const o = w.playerCellIDs.indexOf(id); if (o !== -1) { w.playerCellIDs.splice(o, 1); w.playerCells = w.playerCells.filter(e => e !== x); if (!w.playerCellIDs.length && w.play) { w.play = false; env && env.died(); } } };
   if (op === 1) { del(a); const x = { id: a, x: b, size: c }; w.indexedCells[a] = x; w.cells.push(x); w.cellcolors['n' + a] = w.cellcolors['n' + a] || '#' + a; }
   else if (op === 2) del(a);
-  else if (op === 3) { const e = w.indexedCells[a], v = w.indexedCells[b]; if (e && v) { e.size += v.size; del(b); } }
+  else if (op === 3) { const e = w.indexedCells[a], v = w.indexedCells[b]; if (e && v) { const own = w.playerCellIDs.indexOf(a) !== -1; e.size += v.size; del(b); if (own && env && env.ate) env.ate(e, v); } }
+  else if (op === 99) { if (env && env.chat) env.chat(a); }     // chat line a
+  else if (op === 250) { if (env && env.toast) env.toast(a); }  // a server notice (toast)
   else if (op === 4) { if (w.indexedCells[a]) w.indexedCells[a].x = b; }
   else if (op === 32) { if (w.playerCellIDs.indexOf(a) === -1) w.playerCellIDs.push(a); const x = w.indexedCells[a]; if (x && w.playerCells.indexOf(x) === -1) w.playerCells.push(x); if (!w.play) { w.play = true; env && env.spawned(); } }
   else if (op === 20) { w.playerCellIDs = []; w.playerCells = []; }
@@ -235,6 +251,78 @@ function driverEnv(packets, opts) {
   env.spawned = () => g.LMEvents.emit('spawn', { time: clock });
   env.died = () => g.LMEvents.emit('death', { time: clock, mass: 1, msAlive: 1 });
   env.frame = () => { if (l.play) g.LMEvents.emit('massUpdate', { mass: 10, cells: l.playerCells.length }); };
+  /* real: the game's own handlers (sideSrc) for chat lines, sounds, spawn, death, respawn and menu, the
+   * real kill feed (deathrecap.js) and a chat box; env.hooks lists what they did besides the world */
+  if (opts.real) {
+    const hooks = env.hooks = [];
+    g.Date = class extends Date { static now() { return clock; } };
+    const byId = {};
+    class El {
+      constructor(tag) { this.tagName = tag; this.children = []; this.style = {}; this.attrs = {}; this._text = ''; this.parentNode = null; this.id = ''; }
+      get textContent() { return this._text; }
+      set textContent(v) { this._text = String(v); if (this._made) hooks.push('feed'); } /* only the kill feed makes elements */
+      get childNodes() { return this.children; }
+      get firstChild() { return this.children[0] || null; }
+      get lastChild() { return this.children[this.children.length - 1] || null; }
+      get nextSibling() { const a = this.parentNode ? this.parentNode.children : []; return a[a.indexOf(this) + 1] || null; }
+      appendChild(c) { c.parentNode = this; this.children.push(c); if (c.id) byId[c.id] = c; return c; }
+      removeChild(c) { this.children = this.children.filter(x => x !== c); c.parentNode = null; return c; }
+      getAttribute(n) { return n in this.attrs ? this.attrs[n] : null; }
+      getBoundingClientRect() { return { top: 0, left: 0, width: 0, height: 0 }; }
+    }
+    const body = new El('body'), box = new El('div');
+    box.id = 'chat-box'; body.appendChild(box);
+    env.chatLines = () => box.children.map(e => +(/line (\d+)/.exec(e._text) || [0, -1])[1]);
+    g.document = { createElement: t => { const e = new El(t); e._made = true; return e; }, getElementById: id => (byId[id] && byId[id].parentNode ? byId[id] : null), body, hidden: false };
+    g.innerWidth = 915; g.innerHeight = 412;
+    const q = sel => {
+      const o = {
+        val(v) { if (v === undefined) return sel === '#server-token' ? token : ''; if (sel === '#server-token') token = v; return o; },
+        trigger() { if (sel === '#server-join') g.setTimeout(() => connect(token), 5); return o; },
+        append(html) {
+          if (sel !== '#chat-box') return o;
+          const e = new El('div'), s = /data-lm-rp="(\d+)"/.exec(html), i = /data-lm-rpi="(\d+)"/.exec(html);
+          if (s) e.attrs['data-lm-rp'] = s[1];
+          if (i) e.attrs['data-lm-rpi'] = i[1];
+          e._text = html.replace(/<[^>]*>/g, '');
+          box.appendChild(e);
+          return o;
+        },
+        slice(a, b) { const list = sel === '#chat-box .message' ? box.children.slice(a, b) : []; return { remove() { list.forEach(x => box.removeChild(x)); } }; },
+        click() { if (sel === '.btn-play' || sel === '.btn-play-guest') hooks.push('respawn'); return o; },
+        show() { if (sel === '#overlays') hooks.push('menu'); return o; }, fadeIn() { if (sel === '#overlays') hooks.push('menu'); return o; },
+        hide() { if (sel === '#overlays') hooks.push('menu-hide'); return o; }, fadeOut() { if (sel === '#overlays') hooks.push('menu-hide'); return o; },
+        remove() { return o; }, perfectScrollbar() { return o; }, stop() { return o; }, animate() { return o; }, prop() { return 0; }, is() { return false; }, text: () => ''
+      };
+      return o;
+    };
+    g.$ = g.jQuery = q;
+    const toast = () => { hooks.push('toast'); };
+    g.toastr = { success: toast, info: toast, warning: toast, error: toast, clear() { }, options: {} };
+    g.defaultmapsettings = Object.assign(g.defaultmapsettings, { showChatBox: true, chatSounds: true, autoResp: true, killFeed: true });
+    g.legendmod5 = g.defaultmapsettings;
+    g.chatLimit = 100;
+    g.ogario = l; /* the game's ogario is its protocol object (window.legendmod) */
+    const noop = () => { };
+    g.__env = new Proxy({}, { has: (t, k) => typeof k === 'string' && !(k in g) && !(k in globalThis), get: (t, k) => (k in t ? t[k] : noop) });
+    const app = vm.runInContext('with (__env) { ({' + [sideSrc.chat, sideSrc.sound, sideSrc.spawn, coreSrc.death, sideSrc.resp, sideSrc.menu].join('').replace(/,\s*$/, '') + '}) }', g);
+    Object.assign(g.application, app, {
+      chatHistory: [], commandHistory: [], teamPlayers: [], messageSound: { currentTime: 0, pause() { }, play() { hooks.push('sound'); } },
+      parseMessage: x => x, escapeHTML: x => String(x), _lmChatHidden: () => false, addChatUser: noop, isChatUserMuted: () => false,
+      sendPlayerSpawn: () => hooks.push('spawn'), sendPlayerDeath: () => hooks.push('death'), setAutoResp: noop,
+      updateDeathLocations: noop, unlockButtons: noop, clearOwnCustomSkin: noop, cacheCustomSkin: noop
+    });
+    if (cutSrc) vm.runInContext(cutSrc + '\nwindow.lmReplayChatCut = lmReplayChatCut;', g);
+    ['spawn', 'death', 'chat'].forEach(n => g.LMEvents.on(n, () => hooks.push('ev:' + n)));
+    i18n(g);
+    vm.runInContext(drSrc, g);
+    /* as the game's packet handlers call them (updateCells, opcode 32, 99, 250, the eat loop) */
+    env.spawned = () => { g.application.hideMenu(); l.playerColor = '#ff0000'; g.application.onPlayerSpawn(); };
+    env.died = () => { g.application.onPlayerDeath(); g.application.showMenu(300); };
+    env.chat = n => { g.application.displayChatMessage('00:00', 101, 7, 'bob: line ' + n); };
+    env.toast = n => { g.toastr.info('notice ' + n); };
+    env.ate = (e, v) => { if (g._lmDROn) g.LMDeathRecap.eat(e, Object.assign({ targetNick: 'p' + v.id }, v), true, false, 30); };
+  }
   /* recordings */
   g.RecordedProtocol = {}; g.RecordedArenasSpecifications = {}; g.RecordedProtocolArenas = [];
   env.add = (key, list, skins) => {
@@ -451,6 +539,105 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     calls.length = 0; g._lmEvReplayOn = false; app._lmLastDeathAt = 0; g.ogario.play = true; app._lmLifeStartAt = Date.now() - 5000;
     app.onPlayerDeath();
     check('death in a replay: no session stats, personal best or match history (' + inReplay.join(',') + '); a live death has them (' + calls.join(',') + ')', !inReplay.length && calls.join() === 'stats,best,history');
+  }
+  /* What packets do besides the world (chat lines, kill feed, sounds, toasts, spawn / death / respawn
+   * handling, menu, LMEvents) happens once, when they are played; seeks and steps backwards, which
+   * handle packets again to rebuild the world, do none of it. The chat box then shows the lines up to
+   * the position, each once. Real handlers of the game (sideSrc), real kill feed. */
+  if (Object.keys(sideSrc).every(k => sideSrc[k])) {
+    const story = [pk(64, 50), pk(1, 1, 10, 5), pk(32, 1), pk(1, 2, 20, 5), pk(99, 1)];
+    for (let i = 0; i < 6; i++) story.push(pk(4, 1, 11 + i));
+    story.push(pk(1, 3, 30, 2), pk(1, 6, 40, 2), pk(3, 1, 3), pk(99, 2), pk(250, 1));
+    for (let i = 0; i < 6; i++) story.push(pk(4, 2, 21 + i));
+    story.push(pk(2, 1));                                                  // own cell gone: death, auto-respawn
+    story.push(pk(1, 4, 50, 5), pk(32, 4), pk(99, 3));                      // spawned again
+    for (let i = 0; i < 8; i++) story.push(pk(4, 4, 51 + i));
+    story.push(pk(3, 4, 6), pk(99, 4), pk(18), pk(1, 7, 5, 5), pk(32, 7));  // eat, clear all (a checkpoint), spawn
+    for (let i = 0; i < 10; i++) story.push(pk(4, 7, 60 + i));
+    story.push(pk(99, 5));
+    for (let i = 0; i < 10; i++) story.push(pk(4, 7, 70 + i));
+    const chatAt = []; story.forEach((d, i) => { if (d.getUint8(0) === 99) chatAt.push([i, d.getUint8(1)]); });
+    /* the chat lines of the packets before pos, in order */
+    const linesTo = pos => chatAt.filter(c => c[0] < pos).map(c => c[1]);
+    const count = (h, x) => h.filter(y => y === x).length;
+    const e = driverEnv(null, { real: true });
+    const k = e.add('wss://h.example/1', story);
+    e.start(k, 0, true);
+    e.advance(8000);
+    const fwd = e.hooks.slice();
+    check('played forwards: chat lines, sounds, kill feed, toasts, spawn, death, respawn and events happen once each (' + fwd.join(' ') + ')',
+      e.st().pos === story.length && JSON.stringify(e.chatLines()) === JSON.stringify(linesTo(story.length)) &&
+      count(fwd, 'sound') === 5 && count(fwd, 'ev:chat') === 5 && count(fwd, 'feed') === 2 && count(fwd, 'toast') === 1 &&
+      count(fwd, 'spawn') === 2 && count(fwd, 'ev:spawn') === 2 && count(fwd, 'death') === 1 && count(fwd, 'ev:death') === 1 && count(fwd, 'respawn') === 1);
+    /* backwards to the start (every step rebuilt), slow packets so rebuilds take several slices */
+    e.hooks.length = 0;
+    e.costMs = 3;
+    let bad = [], steps = 0, holdBad = [], sliced = 0, lastPos = e.st().pos;
+    const watch = () => {
+      const s = e.st(), hold = e.g._lmReplayHoldUntil || 0;
+      if (s.seeking) { sliced++; if (!(hold > e.now())) holdBad.push('none at ' + s.pos); return; }
+      if (hold) holdBad.push('left at ' + s.pos);
+      if (s.pos === lastPos) return;
+      lastPos = s.pos; steps++;
+      if (JSON.stringify(e.chatLines()) !== JSON.stringify(linesTo(s.pos))) bad.push(s.pos + ':' + e.chatLines().join('.'));
+    };
+    e.RS.drive.play(-1);
+    e.advance(30000, watch);
+    /* seeks back and forwards, paused; a step back; a seek started while one is rebuilt */
+    const seeks = [40, 9, story.length, 22, 31, 3, 45];
+    seeks.forEach(p => { e.RS.drive.seek(p, false); e.advance(2000, watch); if (JSON.stringify(e.chatLines()) !== JSON.stringify(linesTo(p))) bad.push('seek ' + p + ':' + e.chatLines().join('.')); });
+    e.RS.drive.step(-1); e.advance(2000, watch);
+    if (JSON.stringify(e.chatLines()) !== JSON.stringify(linesTo(44))) bad.push('step 44:' + e.chatLines().join('.'));
+    e.RS.drive.seek(30, false); e.advance(30, watch); const midPos = e.st().pos, midSeeking = e.st().seeking; e.RS.drive.seek(35, false); e.advance(3000, watch);
+    if (!midSeeking || JSON.stringify(e.chatLines()) !== JSON.stringify(linesTo(35))) bad.push('seek during seek (' + midPos + ') 35:' + e.chatLines().join('.'));
+    const hist = e.g.application.chatHistory.map(h => +(/line (\d+)/.exec(h.message) || [0, -1])[1]);
+    check('backwards (' + steps + ' steps) and ' + (seeks.length + 2) + ' seeks: the chat box shows the lines up to the position, each once' + (bad.length ? ' (wrong: ' + bad.slice(0, 4).join(' ') + ')' : ''),
+      steps > 10 && !bad.length && JSON.stringify(hist) === JSON.stringify(linesTo(35)));
+    check('backwards and seeks: no chat sound, kill feed line, toast, spawn / death / respawn handling, menu or event (' + e.hooks.slice(0, 8).join(' ') + ')', !e.hooks.length);
+    check('rebuilds in slices hold the last frame (' + sliced + ' slices) and only while they run' + (holdBad.length ? ' (' + holdBad.slice(0, 4).join(', ') + ')' : ''), sliced > 5 && !holdBad.length);
+    /* played forwards again from before the first spawn: all of it happens again, once */
+    e.costMs = 0;
+    e.RS.drive.seek(2, false); e.advance(500);
+    e.hooks.length = 0;
+    e.RS.drive.play(1);
+    e.advance(8000);
+    const again = e.hooks.slice();
+    check('played forwards again after going back: chat lines, sounds, feed, toast, spawn, death, respawn happen again, once (' + again.join(' ') + ')',
+      e.st().pos === story.length && JSON.stringify(e.chatLines()) === JSON.stringify(linesTo(story.length)) &&
+      count(again, 'sound') === 5 && count(again, 'feed') === 2 && count(again, 'toast') === 1 && count(again, 'spawn') === 2 && count(again, 'death') === 1 && count(again, 'respawn') === 1);
+    /* a step forwards is played, not rebuilt */
+    const lastChat = chatAt[chatAt.length - 1][0];
+    e.RS.drive.seek(lastChat, false); e.advance(500);
+    e.hooks.length = 0;
+    e.RS.drive.step(1); e.advance(100);
+    check('a step forwards onto a chat packet plays it: its line once, with its sound (' + e.hooks.join(' ') + ')', JSON.stringify(e.chatLines()) === JSON.stringify(linesTo(lastChat + 1)) && count(e.hooks, 'sound') === 1);
+    /* the frame callback of the game's renderer: nothing drawn while a rebuild holds the frame, drawn
+     * again when it ends or its time is up */
+    {
+      let now = 5000, frames = 0, rafs = 0;
+      const g2 = { Math, Date, JSON, Object, Array, String, Number, console: { log() { }, warn() { }, error() { } } };
+      g2.window = g2;
+      g2.performance = { now: () => now };
+      g2.requestAnimationFrame = () => { rafs++; return rafs; };
+      g2.defaultmapsettings = {};
+      g2.application = {};
+      g2.document = { getElementById: () => null, hidden: false };
+      g2.__env = new Proxy({}, { has: (t, k) => typeof k === 'string' && !(k in g2) && !(k in globalThis), get: (t, k) => (k in t ? t[k] : () => { }) });
+      vm.createContext(g2);
+      const dr = g2.drawRender = vm.runInContext('with (__env) { ({' + sideSrc.render.replace(/,\s*$/, '') + '}) }', g2);
+      dr.renderFrame = () => { frames++; };
+      dr.countFps = () => { };
+      dr.render();
+      const f1 = frames;
+      g2._lmReplayHoldUntil = now + 1000;
+      dr.render(); now += 500; dr.render();
+      const f2 = frames;
+      now += 600; dr.render();
+      const f3 = frames;
+      g2._lmReplayHoldUntil = 0; dr.render();
+      check('renderer: no frame drawn while a rebuild holds it (' + [f1, f2, f3, frames].join(',') + '), drawn again when its time is up or it ends, the next frame always asked for',
+        f1 === 1 && f2 === 1 && f3 === 2 && frames === 3 && rafs === 5);
+    }
   }
 }
 

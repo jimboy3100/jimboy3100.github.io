@@ -151,7 +151,8 @@
     }
     function emit(name, data) {
         var a = L[name];
-        if (!a || !a.length) return;
+        /* none from the packets Replay Studio handles again to rebuild (see lmReplayChatCut) */
+        if (!a || !a.length || window._lmReplayQuiet) return;
         a = a.slice();
         if (data && typeof data === 'object' && !Object.isFrozen(data) && data.context === undefined) data.context = context();
         freeze(data);
@@ -19761,6 +19762,8 @@ function _startExpandingLandDeathVisual(
     reason
 ) {
     if (
+        /* none for a death Replay Studio handles again to rebuild (lmReplayChatCut) */
+        window._lmReplayQuiet ||
         !client ||
         !_isExpandingLandClient(
             client
@@ -23040,7 +23043,8 @@ function thelegendmodproject() {
             LM.sendQuitGame();
         },
         autoResp() {
-            if (!defaultmapsettings.autoResp) {
+            /* a death Replay Studio handles again to rebuild is no reason to respawn (lmReplayChatCut) */
+            if (!defaultmapsettings.autoResp || window._lmReplayQuiet) {
                 return;
             }
             this.setAutoResp();
@@ -23936,6 +23940,8 @@ function thelegendmodproject() {
         },
         /* ─── §4.5 Menu & Settings ─── */
         showMenu(value) {
+            /* not for a death Replay Studio handles again to rebuild (lmReplayChatCut) */
+            if (window._lmReplayQuiet) return;
             /* auto-respawn just pressed Play: the death handlers' showMenu(300) faded the menu
             * back in over the respawn (for the whole captcha / round trip). Skip it; if the
             * respawn did not happen within 3 s, show the menu after all. */
@@ -23996,6 +24002,8 @@ function thelegendmodproject() {
             $('#helloContainer').show();
         },
         hideMenu(value) {
+            /* not for a spawn Replay Studio handles again to rebuild (lmReplayChatCut) */
+            if (window._lmReplayQuiet) return;
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').hide();
                 $('#helloContainer').hide();
@@ -27112,6 +27120,9 @@ function thelegendmodproject() {
             this.create();
         },
         onPlayerSpawn() {
+            /* a spawn Replay Studio handles again to rebuild (lmReplayChatCut): the playing state
+             * only, no spawn handling, effects, events or retries */
+            if (window._lmReplayQuiet) { ogario.play = true; this._lmLastDeathAt = 0; return; }
             ogario.play =
                 true;
             /* a new life: its death must be handled even within 3 s of the previous one
@@ -27312,6 +27323,13 @@ function thelegendmodproject() {
             /* Cancels a pending onPlayerSpawn() retry from this life. */
             this._lmSpawnGen = (this._lmSpawnGen || 0) + 1;
             this._lmSpawnTries = 0;
+            /* a death Replay Studio handles again to rebuild (lmReplayChatCut): the playing state
+             * only, no death handling, events or respawn */
+            if (window._lmReplayQuiet) {
+                ogario.play = false; ogario.playerColor = null; ogario.playerMass = 0; ogario.playerScore = 0;
+                this._lmLifeStartAt = 0;
+                return;
+            }
             /* updateCells (last own cell removed) and the official game-over packet
              * (protobuf 62) both report the same death; handle it once. */
             var _lmNow = Date.now();
@@ -33183,6 +33201,11 @@ function thelegendmodproject() {
          * srvName: the sender name from the Expanding Land chat packet's own name field, else empty */
         displayChatMessage(time, caseof, plId, msg, unnamed, srvName) {
             var mcolor = ""
+            /* Replay Studio rebuilds: this packet's line is still in the chat box (lmReplayChatCut) */
+            if (window._lmReplayQuiet === 2) return;
+            /* a line of a replay packet: its session and packet, so seeking back can take it out again */
+            var _lmRpS = window._lmRpAt >= 0 ? +window._lmRpSess || 0 : -1, _lmRpI = _lmRpS >= 0 ? +window._lmRpAt : -1;
+            var _lmRpA = _lmRpS >= 0 ? ' data-lm-rp=\"' + _lmRpS + '\" data-lm-rpi=\"' + _lmRpI + '\"' : '';
 
             //mcolor = "blue";
             if (0 !== msg.length) {
@@ -33251,7 +33274,9 @@ function thelegendmodproject() {
                             'messageHtml': n,
                             'time': Date.now(),
                             /* no bubble: the sender's cells are not known */
-                            'noBubble': _lmUnn
+                            'noBubble': _lmUnn,
+                            'rp': _lmRpS,
+                            'rpi': _lmRpI
                         });
                         this.chatHistory.length > window.chatLimit && this.chatHistory.shift();
                         /* highlight a line that mentions my nick (only a fixed class is added; the
@@ -33259,7 +33284,7 @@ function thelegendmodproject() {
                         var _lmOwnNick = String($('#nick').val() || '').trim().toLowerCase();
                         var _lmMention = _lmOwnNick.length >= 3 && plId != this.playerID && String(rawText).toLowerCase().indexOf(_lmOwnNick) !== -1;
                         /* optional desktop notification while the tab is in the background */
-                        if (_lmMention && defaultmapsettings.mentionNotify && document.hidden && typeof Notification !== 'undefined' &&
+                        if (_lmMention && defaultmapsettings.mentionNotify && document.hidden && typeof Notification !== 'undefined' && !window._lmReplayQuiet &&
                             Notification.permission === 'granted' && Date.now() - (this._lmMentionNotifAt || 0) > 5000) {
                             this._lmMentionNotifAt = Date.now();
                             try { new Notification(String(rawNick).slice(0, 40), { body: String(rawText).slice(0, 120), tag: 'lm-mention' }); } catch (eN) { }
@@ -33273,7 +33298,7 @@ function thelegendmodproject() {
                         /* scroll only if the reader is already at the bottom (it pulled readers back down) */
                         var _lmBoxEl = document.getElementById('chat-box');
                         var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message' + (_lmMention ? ' lm-mention' : '') + '\"><span class=\"message-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span></div>'),
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message' + (_lmMention ? ' lm-mention' : '') + '\"' + _lmRpA + '><span class=\"message-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
@@ -33292,13 +33317,15 @@ function thelegendmodproject() {
                             'message': n.indexOf('<') !== -1 ? n : rawText,
                             'nickHtml': a,
                             'messageHtml': n,
-                            'time': Date.now()
+                            'time': Date.now(),
+                            'rp': _lmRpS,
+                            'rpi': _lmRpI
                         });
                         this.commandHistory.length > 15 && this.commandHistory.shift();
                         /* scroll only if the reader is already at the bottom (it pulled readers back down) */
                         var _lmBoxEl = document.getElementById('chat-box');
                         var _lmAtBottom = !_lmBoxEl || (_lmBoxEl.scrollHeight - _lmBoxEl.scrollTop - _lmBoxEl.clientHeight < 40);
-                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"><span class=\"command-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"command-text\">' + n + '</span></div>'),
+                        if (defaultmapsettings.showChatBox) return $('#chat-box').append('<div class=\"message command\"' + _lmRpA + '><span class=\"command-time\">[' + time + '] </span>' + r + _lmIdTag + '<span class=\"command-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"command-text\">' + n + '</span></div>'),
                             /* keep the last 200 lines: the box was never trimmed and grew for the whole session */
                             $('#chat-box .message').slice(0, -200).remove(),
                             $('#chat-box').perfectScrollbar('update'),
@@ -33444,7 +33471,8 @@ function thelegendmodproject() {
                     },
         */
         playSound(audio) {
-            if (audio && audio.play) {
+            /* none from the packets Replay Studio handles again to rebuild (see lmReplayChatCut) */
+            if (audio && audio.play && !window._lmReplayQuiet) {
                 audio.pause();
                 audio.currentTime = 0;
                 /* sound mixer (ogario/modules/notifications.js): channel x master volume, all 1 by
@@ -43905,7 +43933,7 @@ function thelegendmodproject() {
                         if (!application.isChatUserMuted(_lmTeamChatId)) application.displayChatMessage(time, 101, _lmTeamChatId, _lmElChatRelabel(message, _lmUnnamedT), _lmUnnamedT, _lmTeamNick === name && !_lmUnnamedT ? name : null);
                     }
                     /* ── Auto-reconnect on server restart chat ── */
-                    if (server && message.toLowerCase().includes('restarting') && !(window._lmIsRoomUrl && window._lmIsRoomUrl(this.ws))) {
+                    if (server && message.toLowerCase().includes('restarting') && !(window._lmIsRoomUrl && window._lmIsRoomUrl(this.ws)) && !window._lmReplayQuiet) {
                         var reconnWs = this.ws;
                         console.log(consoleMsgLM + ' Server restart detected, reconnecting in 5s to ' + reconnWs);
                         this._reconnAttempts = 0;
@@ -47461,7 +47489,8 @@ function thelegendmodproject() {
             }
         },
         showSessionStats(u) {
-            if (!u) return;
+            /* no Game Over card for a death Replay Studio handles again to rebuild (lmReplayChatCut) */
+            if (!u || window._lmReplayQuiet) return;
             if (window.LMEvents._has('gameStats')) {
                 window.LMEvents.emit('gameStats', {
                     time: Date.now(), playersEaten: ~~u.playersEaten, topPosition: ~~u.topPosition, highestMass: ~~u.highestMass,
@@ -52746,9 +52775,10 @@ function thelegendmodproject() {
 
 
                         /*
-                         * Screen shake begins NOW.
+                         * Screen shake begins NOW (not for a death Replay Studio handles
+                         * again to rebuild: lmReplayChatCut).
                          */
-                        _screenShakeStart =
+                        if (!window._lmReplayQuiet) _screenShakeStart =
                             Date.now();
 
 
@@ -53392,10 +53422,11 @@ function thelegendmodproject() {
 
                     /*
                      * ----------------------------------------------------
-                     * SCREEN SHAKE
+                     * SCREEN SHAKE (not for a death Replay Studio handles
+                     * again to rebuild: lmReplayChatCut)
                      * ----------------------------------------------------
                      */
-                    _screenShakeStart =
+                    if (!window._lmReplayQuiet) _screenShakeStart =
                         Date.now();
 
 
@@ -81673,6 +81704,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * of every frame callback, also of those the FPS limit skips below */
             var _lmPf = window._lmPerfFrame;
             if (_lmPf) { try { _lmPf.raf(performance.now()); } catch (_lmPfE) { } }
+            /* Replay Studio rebuilds a seek or a step backwards in slices: the last frame stays on
+             * screen until the world of the target is complete (0 except while a rebuild runs; an
+             * end time, so it can never hold the picture for good) */
+            var _lmHold = window._lmReplayHoldUntil;
+            if (_lmHold && performance.now() < _lmHold) {
+                window.requestAnimationFrame(drawRender.render);
+                return;
+            }
             /* Optional FPS limit (setting "FPS limit", 0 = off): skip this display refresh
              * when the previous frame was drawn too recently. Camera and zoom use the real
              * frame time, so movement speed does not change. */
@@ -86148,6 +86187,31 @@ function lmReplayResetWorld() {
     if (legendmod._lmCellIdentity) legendmod._lmCellIdentity.clear();
 }
 window.lmReplayResetWorld = lmReplayResetWorld;
+/* Replay Studio (ogario/modules/replaystudio.js seekTo) rebuilds a seek or a step backwards by
+ * handling the recording's packets again. While it does, window._lmReplayQuiet is set and the
+ * packets change only the world: no sounds (playSound), LMEvents, toasts (the Studio puts a silent
+ * toastr in place meanwhile), kill feed lines (deathrecap.js), spawn / death / respawn handling,
+ * menu, Game Over card, death effects or restart reconnect. 2: the chat lines of this packet are
+ * still in the chat box, so displayChatMessage adds none. Every chat line of a replay packet keeps
+ * its session (window._lmRpSess) and packet (window._lmRpAt); seeking back to packet from takes
+ * the lines of that packet and later ones out of the chat box and the chat histories, so the chat
+ * shows the lines up to the replayed moment, each once. */
+function lmReplayChatCut(sess, from) {
+    var mine = function (e) { return e && e.rp === sess && e.rpi >= from; };
+    var app = window.application, cut = 0;
+    [app && app.chatHistory, app && app.commandHistory].forEach(function (h) {
+        if (!h) return;
+        for (var i = h.length - 1; i >= 0; i--) if (mine(h[i])) h.splice(i, 1);
+    });
+    var box = document.getElementById('chat-box'), kids = box && box.children;
+    for (var k = kids ? kids.length - 1 : -1; k >= 0; k--) {
+        var el = kids[k];
+        if (el.getAttribute && el.getAttribute('data-lm-rp') === String(sess) && +el.getAttribute('data-lm-rpi') >= from) { box.removeChild(el); cut++; }
+    }
+    if (cut && window.jQuery) { try { $('#chat-box').perfectScrollbar('update'); } catch (e) { } }
+    return cut;
+}
+window.lmReplayChatCut = lmReplayChatCut;
 /* LMEvents 'replayStart' / 'replayStop': once per replay (seeking restarts the playback
  * without a new event); the data is built only while a script listens. start: the packet
  * the playback starts at (Replay Studio passes it). */

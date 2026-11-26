@@ -95,6 +95,8 @@
     revB.click();
     var p1 = mid, back = 0;
     for (w = 0; w < 12; w++) { await sleep(100); if (RS.state().seeking) continue; var pw = RS.state().pos; if (pw < p1) back++; if (pw > p1) back = -100; p1 = pw; }
+    /* not in the middle of a step being rebuilt (on a slow machine one can take seconds) */
+    for (w = 0; w < 100 && RS.state().seeking; w++) await sleep(50);
     st = RS.state();
     info.backwards = { from: mid, to: st.pos, dir: st.dir, steps: back };
     if (!(st.dir === -1 && st.playing && st.pos < mid && back > 0)) fail.push('backwards playback did not step back: ' + JSON.stringify(info.backwards));
@@ -114,6 +116,33 @@
     if (RS.state().pos !== q || sq !== sr) {
       var a1 = JSON.parse(sq).cells, b1 = JSON.parse(sr).cells;
       fail.push('world after playing backwards differs from the packets up to ' + q + ': ' + a1.filter(function (x) { return b1.indexOf(x) === -1; }).length + ' extra/changed, ' + b1.filter(function (x) { return a1.indexOf(x) === -1; }).length + ' missing');
+    }
+  }
+  /* a long step back (every packet made 1 ms slower, so it is rebuilt in many slices): no frame shows
+   * the world running up to the target; the frames go on once it is there */
+  var dr3 = window.drawRender, L3 = window.legendmod;
+  if (dr3 && typeof dr3.renderFrame === 'function' && L3) {
+    var rf3 = dr3.renderFrame, hmOwn = Object.prototype.hasOwnProperty.call(L3, 'handleMessage'), hm3 = L3.handleMessage;
+    var fr = { during: 0, all: 0 };
+    dr3.renderFrame = function () { fr.all++; if (RS.state().seeking) fr.during++; return rf3.apply(this, arguments); };
+    L3.handleMessage = function (d) { var t = performance.now(); while (performance.now() - t < 1) { } return hm3.call(this, d); };
+    try {
+      RS.command('seek', RS.state().n - RS.state().pos);
+      for (w = 0; w < 300 && (RS.state().seeking || RS.state().pos !== RS.state().n); w++) await sleep(50);
+      var tgt = Math.floor(RS.state().n * 0.6), tl = performance.now();
+      fr.during = 0; fr.all = 0;
+      RS.command('seek', tgt - RS.state().pos);
+      for (w = 0; w < 300 && (RS.state().seeking || RS.state().pos !== tgt); w++) await sleep(50);
+      var lsMs = Math.round(performance.now() - tl), lsFrames = fr.all;
+      await sleep(300);
+      info.longStep = { to: tgt, ms: lsMs, framesDuring: fr.during, framesBy: lsFrames, framesAfter: fr.all - lsFrames };
+      if (RS.state().pos !== tgt) fail.push('long step did not reach ' + tgt + ': ' + RS.state().pos);
+      if (fr.during) fail.push('long step: ' + fr.during + ' frames drawn while it was rebuilt (' + lsMs + ' ms)');
+      if (!(fr.all > lsFrames)) fail.push('no frame drawn after the long step');
+      if (window._lmReplayHoldUntil) fail.push('frame hold left on after the long step');
+    } finally {
+      dr3.renderFrame = rf3;
+      if (hmOwn) L3.handleMessage = hm3; else delete L3.handleMessage;
     }
   }
   /* the end: paused there, still a replay; stepping and seeking after it are replay too */

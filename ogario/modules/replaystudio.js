@@ -690,7 +690,7 @@
     /* dir: 1 forwards, -1 backwards; stopAt: pause there (the End packet of a ?replay= link) */
     /* driving: the playback session (the Studio plays the replay connection shown); playing / paused /
      * at the end is only the transport inside it. base, cpRec: the starting states (see CARRY) */
-    var P = { driving: false, playing: false, pos: 0, speed: 1, dir: 1, stopAt: 0, baseWall: 0, baseT: 0, timer: 0, ff: null, pending: null, warnCount: 0, inMs: null, outMs: null, base: null, cpRec: null, cpN: 0 };
+    var P = { driving: false, playing: false, pos: 0, speed: 1, dir: 1, stopAt: 0, baseWall: 0, baseT: 0, timer: 0, ff: null, pending: null, warnCount: 0, inMs: null, outMs: null, base: null, cpRec: null, cpN: 0, chatTo: 0 };
     var SPEEDS = [0.25, 0.5, 1, 2, 4];
     /* fx: colour filter of the replay's cells ('' none, grey, sepia, hue) */
     var FX = ['', 'grey', 'sepia', 'hue'];
@@ -738,6 +738,7 @@
         if (P.timer) { clearTimeout(P.timer); P.timer = 0; }
         if (P.ff && P.ff.timer) clearTimeout(P.ff.timer);
         P.ff = null;
+        window._lmReplayHoldUntil = 0;
     }
     /* The one end of a playback session: another recording chosen or imported, the recording gone,
      * the Studio closed, Back to game, the replay connection lost, or a live server joined ('left').
@@ -804,15 +805,45 @@
         P.pos = c; /* the replay bar follows the rebuild (setPos) */
         return c;
     }
-    function handle(i) {
+    /* quiet: a packet of a seek or a step backwards (seekTo). The game then changes only the world
+     * (window._lmReplayQuiet, see lmReplayChatCut in ogario.v4.js): what the packets did besides was
+     * shown already or is skipped over. 2: this packet's chat lines are still in the chat box
+     * (P.chatTo: the packets of this session whose chat lines are there). The packet number goes
+     * with its chat lines (window._lmRpAt), so seeking back can take them out again. */
+    function handle(i, quiet) {
         var d = REC.arr[i], l = LM();
         if (!d || !l) return;
         if (P.cpRec && REC.cpSet[i] && !P.cpRec[i] && P.cpN < CP_MAX) { P.cpRec[i] = grab(); P.cpN++; }
+        window._lmRpAt = i;
+        window._lmReplayQuiet = quiet ? (i < P.chatTo ? 2 : 1) : 0;
         try { l.handleMessage(d); } catch (e) {
             /* P1 fix #48: allow up to 5 warnings per replay instead of silencing after the first */
             if (P.warnCount < 5) { P.warnCount++; console.warn('[Replay Studio] packet ' + i + ' failed:', e); }
+        } finally {
+            window._lmReplayQuiet = 0;
+            window._lmRpAt = -1;
         }
+        if (i >= P.chatTo) P.chatTo = i + 1;
     }
+    /* Toasts have no one place in the game to check: while the packets of a seek are handled (one
+     * slice, synchronously) a toastr whose toasts do nothing stands in. Returns the real one. */
+    var hushed = null;
+    function hushToasts() {
+        var t = window.toastr;
+        if (!t || t._lmHushed) return null;
+        if (!hushed || Object.getPrototypeOf(hushed) !== t) {
+            var none = function () { return window.jQuery ? window.jQuery() : undefined; };
+            hushed = Object.create(t);
+            hushed._lmHushed = true;
+            hushed.success = hushed.info = hushed.warning = hushed.error = none;
+        }
+        window.toastr = hushed;
+        return t;
+    }
+    /* the frames drawn while a seek is rebuilt in slices would show the world running up to the
+     * target: the game keeps its last frame until then (drawRender.render). An end time, renewed
+     * by every slice, so a lost job can never keep the picture */
+    var HOLD_MS = 1000;
     function setPos(pos) {
         P.pos = pos;
         var l = LM();
@@ -916,24 +947,36 @@
         P.playing = false;
         /* back: the packets only add, change and remove, so the world is emptied and rebuilt from a
          * complete starting point (cells of the later position would stay as ghosts) */
-        if (target < P.pos) rebuildAt(target);
+        /* the chat lines of the packets from target on go too (they come again when played) */
+        if (target < P.pos) {
+            rebuildAt(target);
+            if (target < P.chatTo) { if (window.lmReplayChatCut) window.lmReplayChatCut(+window._lmRpSess || 0, target); P.chatTo = target; }
+        }
         var job = P.ff = { target: target, resume: wasPlaying, timer: 0, from: P.pos, rev: !!rev, t0: performance.now() };
         if (rev && LM()) LM().playingReplayRecord = target;
         var step = function () {
             job.timer = 0;
             if (P.ff !== job) return;
             if (!active()) { dispose('stopped'); return; }
-            var t0 = performance.now();
-            while (P.pos < job.target) {
-                handle(P.pos);
-                setPos(P.pos + 1);
-                /* P1 fix #41: check the 25ms budget every 4 packets instead of every 16.
-                 * Heavy world-update packets can take 15-20ms each, so 16 of them
-                 * could lock the UI for 240-320ms before yielding. */
-                if ((P.pos & 3) === 0 && performance.now() - t0 > 25) break;
+            var t0 = performance.now(), toasts = hushToasts();
+            try {
+                while (P.pos < job.target) {
+                    handle(P.pos, true);
+                    setPos(P.pos + 1);
+                    /* P1 fix #41: check the 25ms budget every 4 packets instead of every 16.
+                     * Heavy world-update packets can take 15-20ms each, so 16 of them
+                     * could lock the UI for 240-320ms before yielding. */
+                    if ((P.pos & 3) === 0 && performance.now() - t0 > 25) break;
+                }
+            } finally {
+                if (toasts) window.toastr = toasts;
             }
-            if (P.pos < job.target) { job.timer = setTimeout(step, 0); ui(); return; }
+            if (P.pos < job.target) {
+                window._lmReplayHoldUntil = performance.now() + HOLD_MS;
+                job.timer = setTimeout(step, 0); ui(); return;
+            }
             P.ff = null;
+            window._lmReplayHoldUntil = 0;
             setPos(P.pos);
             if (job.resume && job.rev && P.dir < 0) revStepDone(job);
             else if (job.resume) play(); else ui();
@@ -1001,6 +1044,9 @@
         P.playing = false;
         P.warnCount = 0;
         setPos(0);
+        /* a new session: its chat lines are told apart from earlier ones (lmReplayChatCut) */
+        window._lmRpSess = (+window._lmRpSess || 0) + 1;
+        P.chatTo = 0;
         /* playReplayLM has just emptied the world: the state before packet 0, no checkpoints yet */
         P.base = grab();
         P.cpRec = {};
@@ -1166,6 +1212,8 @@
     function drawOverlay() {
         ovRaf = 0;
         if (!P.driving || !active() || !(OPT.cur || OPT.spl)) { overlayClear(); return; }
+        /* a seek being rebuilt: the overlay of the last frame stays, like the game's (HOLD_MS) */
+        if (P.ff && window._lmReplayHoldUntil) { ovRaf = requestAnimationFrame(drawOverlay); return; }
         var game = document.getElementById('canvas'), dr = window.drawRender, l = LM();
         if (!game || !dr || !l) return;
         if (!ov) {

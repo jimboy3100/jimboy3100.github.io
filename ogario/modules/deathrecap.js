@@ -309,7 +309,9 @@
 
     /* From the eat loop (ogario.v4.js), only while an option is on: an eat with my cell as eater or victim. */
     function eat(eater, victim, eaterMine, victimMine, vSize) {
-        if (!eater || !victim) return;
+        /* Replay Studio handling packets again to rebuild a seek or a step backwards (ogario.v4.js
+         * lmReplayChatCut): those eats were shown already or are skipped over */
+        if (!eater || !victim || window._lmReplayQuiet) return;
         var now = Date.now(), vm = ~~(vSize * vSize / 100), e;
         if (eaterMine && victimMine) {
             e = evFind('merge', now - 1500);
