@@ -96,10 +96,8 @@ $("#tcm>#tcm-header>p").text(Languageletter35);
 
 
 $(".options-box.animationGroup>h5").text(Languageletter36);
-$(".options-box.animationGroup>DIV>DIV>SPAN:nth-child(1)").text(Languageletter37 + ": ");
 $(".options-box.zoomGroup>h5").text(Languageletter37b);
 $(".options-box.zoomGroup>LABEL").replace('Auto zoom', Languageletter37a);
-$(".options-box.zoomGroup>DIV>DIV>SPAN:nth-child(1)").text(Languageletter38 + ": ");
 
 $(".options-box.leaderboard>h5").text(Languageletter320);
 $(".options-box.leaderboard>LABEL").replace('Leaderboard Players', Languageletter320 + " " + Languageletter313);
@@ -255,74 +253,17 @@ $("#theme>ul>li>.ogicon-bubbles").attr('data-original-title', Languageletter132)
 $("#theme>ul>li>.ogicon-location2").attr('data-original-title', Languageletter133);
 $("#theme>ul>li>.ogicon-compass").attr('data-original-title', Languageletter134);
 
-$(".preset-box>span").text(Languageletter135);
 
+/* The Theme tab, hotkey and slider labels are not set here: ogario.v4.js names each row by its own
+ * setting (textLanguage / hotkeysCommand). Set here by row position, every row after an added one got
+ * the name of another setting in every language but English. */
 $('#themePreset>option:nth-child(3)').text(Languageletter136);
 $('#themePreset>option:nth-child(4)').text(Languageletter137 + " 1");
 $('#themePreset>option:nth-child(5)').text(Languageletter137 + " 2");
 
-$("#theme-main>div>span").eq(1).text(Languageletter139); //Background
-$("#theme-main>div>span").eq(2).text(Languageletter140); //Map borders
-$("#theme-main>div>span").eq(3).text(Languageletter75a); //Border Glow
-$("#theme-main>div>span").eq(4).text(Languageletter141); //Grid
-$("#theme-main>div>span").eq(5).text(Languageletter155); //Sectors font
-$("#theme-main>div>span").eq(6).text(Languageletter143); //Names
-$("#theme-main>div>span").eq(7).text(Languageletter145); //Names stroke
-$("#theme-main>div>span").eq(8).text(Languageletter145); //Mass
-$("#theme-main>div>span").eq(9).text(Languageletter146); //Mass stroke
-$("#theme-main>div>span").eq(10).text(Languageletter148); //Virus
-$("#theme-main>div>span").eq(11).text(Languageletter147); //Virus stroke
-$("#theme-main>div>span").eq(12).text(Languageletter148a); //Mothercell
-$("#theme-main>div>span").eq(13).text(Languageletter148b); //Mothercell stroke
-$("#theme-main>div>span").eq(14).text(Languageletter71a); //Virus Glow
-$("#theme-main>div>span").eq(15).text(Languageletter149); //Food
-$("#theme-main>div>span").eq(16).text(Languageletter150); //Teammate indicator
-$("#theme-main>div>span").eq(17).text(Languageletter151); //Cursor tracking
-$("#theme-main>div>span").eq(18).text(Languageletter152); //Split range
-$("#theme-main>div>span").eq(19).text("B2STE " + Languageletter102 + " " + Languageletter175); //B2STE Enemy Color /* i18n-ok: B2STE is a size class name, the same in every language */
-$("#theme-main>div>span").eq(20).text("BSTE " + Languageletter102 + " " + Languageletter175); //BSTE Enemy Color
-$("#theme-main>div>span").eq(21).text(Languageletter154a + " " + Languageletter102 + " " + Languageletter175); //Bigger Enemy Color
-$("#theme-main>div>span").eq(22).text(Languageletter154b + " " + Languageletter102 + " " + Languageletter175); //Smaller Enemy Color
-$("#theme-main>div>span").eq(23).text("SSTE " + Languageletter102 + " " + Languageletter175); //SSTE Enemy Color
-$("#theme-main>div>span").eq(24).text("S2STE " + Languageletter102 + " " + Languageletter175); //S2STE Enemy Color /* i18n-ok: S2STE is a size class name, the same in every language */
-$("#theme-main>div>span").eq(25).text(Languageletter154); //Safe area
-$("#theme-main>div>span").eq(26).text(Languageletter154); //Danger area
-$("#theme-main>div>span").eq(27).text(Languageletter90a); //Ghost cells
 
-$("#theme-main>div>span").eq(28).text(Languageletter153 + ": ");
-$("#theme-main>div>span").eq(29).text(Languageletter154 + ": ");
-$("#theme-main>div>span").eq(30).text(Languageletter155 + ": ");
 /*
-$("#theme-main>div>span").eq(18).text(Languageletter152a);
-$("#theme-main>div>span").eq(19).text(Languageletter152b);
-$("#theme-main>div>span").eq(20).text(Languageletter152c);
-$("#theme-main>div>span").eq(21).text(Languageletter152d);
-$("#theme-main>div>span").eq(22).text(Languageletter152e);
-$("#theme-main>div>span").eq(23).text(Languageletter152f);
-$("#theme-main>div>span").eq(24).text(Languageletter152g);
-$("#theme-main>div>span").eq(25).text(Languageletter152h);
-$("#theme-main>div>span").eq(26).text(Languageletter152i);
-$("#theme-main>div>span").eq(27).text(Languageletter152j);
-$("#theme-main>div>span").eq(28).text(Languageletter152k);
-$("#theme-main>div>span").eq(29).text(Languageletter152l);
-$("#theme-main>div>span").eq(30).text(Languageletter152m);
 */
-$("#theme-main>div>div>span:nth-child(1)").eq(0).text(Languageletter157 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(1).text(Languageletter158 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(2).text(Languageletter159 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(3).text(Languageletter160 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(4).text(Languageletter161 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(5).text(Languageletter162 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(6).text(Languageletter163 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(7).text(Languageletter164 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(8).text(Languageletter75a + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(9).text(Languageletter71a + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(10).text(Languageletter165 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(11).text(Languageletter166 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter167 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(13).text(Languageletter168 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(14).text(Languageletter169 + ": ");
-$("#theme-main>div>div>span:nth-child(1)").eq(15).text(Languageletter90a +" "+ Languageletter174 + ": ");
 //$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169a + ": ");
 //$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169b + ": ");
 //$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169c + ": ");
@@ -330,129 +271,19 @@ $("#theme-main>div>div>span:nth-child(1)").eq(15).text(Languageletter90a +" "+ L
 $(".restore-settings>a").eq(1).text(Languageletter170);
 $(".btn.btn-block.btn-success.btn-save").text(Languageletter171);
 
-$(".preset-box>span").eq(1).text(Languageletter172);
-$(".preset-box>div>span").eq(1).text(Languageletter173);
 
-$("#theme-menu>div>div>span:nth-child(1)").eq(0).text(Languageletter174 + ": ");
-$("#theme-menu>div>span").eq(1).text(Languageletter175);
-$("#theme-menu>div>span").eq(2).text(Languageletter176);
-$("#theme-menu>div>span").eq(3).text(Languageletter177);
-$("#theme-menu>div>span").eq(4).text(Languageletter177 + " (2)");
-$("#theme-menu>div>span").eq(5).text(Languageletter179);
-$("#theme-menu>div>span").eq(6).text(Languageletter179 + " (2)");
-$("#theme-menu>div>span").eq(7).text(Languageletter181 +" #1");
-$("#theme-menu>div>span").eq(8).text(Languageletter181 +" #1 (2)");
-$("#theme-menu>div>span").eq(9).text(Languageletter181 +" #2");
-$("#theme-menu>div>span").eq(10).text(Languageletter181 +" #2 (2)");
-$("#theme-menu>div>span").eq(11).text(Languageletter181 +" #3");
-$("#theme-menu>div>span").eq(12).text(Languageletter181 +" #3 (2)");
-$("#theme-menu>div>span").eq(13).text(Languageletter181 +" #4");
-$("#theme-menu>div>span").eq(14).text(Languageletter181 +" #4 (2)");
-$("#theme-menu>div>span").eq(15).text(Languageletter189);
 $("#menuBg").attr('placeholder', Languageletter190);
 
-$("#theme-hud>div>span").eq(0).text(Languageletter175);
-$("#theme-hud>div>span").eq(1).text(Languageletter192);
-$("#theme-hud>div>span").eq(2).text(Languageletter193);
-$("#theme-hud>div>span").eq(3).text(Languageletter194);
-$("#theme-hud>div>span").eq(4).text(Languageletter195);
-$("#theme-hud>div>span").eq(5).text(Languageletter196);
-$("#theme-hud>div>span").eq(6).text(Languageletter197);
-$("#theme-hud>div>span").eq(7).text(Languageletter198);
-$("#theme-hud>div>span").eq(8).text(Languageletter199);
-$("#theme-hud>div>div>span:nth-child(1)").eq(0).text(Languageletter200 + ": ");
 
-$("#theme-chat>div>span").eq(0).text(Languageletter201);
-$("#theme-chat>div>span").eq(1).text(Languageletter202);
-$("#theme-chat>div>span").eq(2).text(Languageletter203);
-$("#theme-chat>div>span").eq(3).text(Languageletter204);
-$("#theme-chat>div>span").eq(4).text(Languageletter205);
-$("#theme-chat>div>span").eq(5).text(Languageletter206);
-$("#theme-chat>div>span").eq(6).text(Languageletter207);
-$("#theme-chat>div>span").eq(7).text(Languageletter208);
-$("#theme-chat>div>span").eq(8).text(Languageletter209);
-$("#theme-chat>div>div>span:nth-child(1)").eq(0).text(Languageletter210 + ": ");
 
-$("#theme-minimap>div>span").eq(0).text(Languageletter211);
-$("#theme-minimap>div>span").eq(1).text(Languageletter212);
-$("#theme-minimap>div>span").eq(2).text(Languageletter213);
-$("#theme-minimap>div>span").eq(3).text(Languageletter214);
-$("#theme-minimap>div>span").eq(4).text(Languageletter215);
-$("#theme-minimap>div>span").eq(5).text(Languageletter216);
-$("#theme-minimap>div>span").eq(6).text(Languageletter217);
-$("#theme-minimap>div>span").eq(7).text(Languageletter218);
-$("#theme-minimap>div>span").eq(8).text(Languageletter219);
-$("#theme-minimap>div>span").eq(9).text(Languageletter220);
-$("#theme-minimap>div>span").eq(9).text(Languageletter221);
 
-$("#theme-minimap>div>div>span:nth-child(1)").eq(0).text(Languageletter222 + ": ");
-$("#theme-minimap>div>div>span:nth-child(1)").eq(1).text(Languageletter223 + ": ");
-$("#theme-minimap>div>div>span:nth-child(1)").eq(2).text(Languageletter224 + ": ");
-$("#theme-minimap>div>div>span:nth-child(1)").eq(3).text(Languageletter225 + ": ");
-$("#theme-minimap>div>div>span:nth-child(1)").eq(4).text(Languageletter226 + ": ");
-$("#theme-minimap>div>div>span:nth-child(1)").eq(5).text(Languageletter227 + ": ");
-$("#theme-minimap>div>div>span:nth-child(1)").eq(6).text(Languageletter228 + ": ");
 
-$("#theme-images>div>span").eq(0).text(Languageletter229);
-$("#theme-images>div>span").eq(1).text(Languageletter230);
 $("#customBackground").attr('placeholder',Languageletter231);
 $("#customCursor").attr('placeholder',Languageletter232);
 
 
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(0).text(Languageletter233);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(1).text(Languageletter234);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(2).text(Languageletter235);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(3).text(Languageletter236);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(4).text(Languageletter237);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(5).text(Languageletter238);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(6).text(Languageletter239);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(7).text(Languageletter240);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(8).text(Languageletter241);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(9).text(Languageletter242);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(10).text(Languageletter243);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(11).text(Languageletter244);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(12).text(Languageletter245);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(13).text(Languageletter246);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(14).text(Languageletter247);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(15).text(Languageletter248);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(16).text(Languageletter249);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(17).text(Languageletter250);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(18).text(Languageletter251);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(19).text(Languageletter252);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(20).text(Languageletter253);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(21).text(Languageletter254);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(22).text(Languageletter255);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(23).text(Languageletter256);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(24).text(Languageletter257);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(25).text(Languageletter258);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(26).text(Languageletter259);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(27).text(Languageletter260);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(28).text(Languageletter261);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(29).text(Languageletter262);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(30).text(Languageletter263);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(31).text(Languageletter264);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(32).text(Languageletter265);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(33).text(Languageletter266);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(34).text(Languageletter267);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(35).text(Languageletter268);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(36).text(Languageletter269);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(37).text(Languageletter270);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(38).text(Languageletter271 + " 1");
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(39).text(Languageletter271 + " 2");
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(40).text(Languageletter271 + " 3");
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(41).text(Languageletter271 + " 4");
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(42).text(Languageletter271 + " 5");
 
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(43).text(Languageletter271a);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(44).text(Languageletter271b);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(45).text(Languageletter271c);
 
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(46).text(Languageletter272);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(47).text(Languageletter273);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(48).text(Languageletter274);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(49).text(Languageletter275);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(50).text(Languageletter276);
-$("#hotkeys-cfg>div>div:nth-child(1)").eq(51).text(Languageletter277);
 
 $("#hotkeys-inst").replaceWith('<div id="hotkeys-inst"><ul><li>' + Languageletter278 + '</li><li>' + Languageletter279 + '</li><li>' + Languageletter280 + '</li></ul></div>');
 

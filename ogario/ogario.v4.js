@@ -20935,6 +20935,22 @@ if (window.LMi18n) window.LMi18n.onChange(function (code) {
     for (k in fresh) if (fresh.hasOwnProperty(k) && !/^comm\d+$/.test(k)) textLanguage[k] = fresh[k];
     lang = code;
 });
+/* Choose Language: the Theme tab rows take the new names at once, each by its own setting (its colour,
+ * font, list, field or slider id); languages/LanguagePackHandler.js named them by row position, which
+ * gave rows the names of other settings. A NEW badge next to a name stays. */
+if (window.LMi18n) window.LMi18n.onChange(function () {
+    if (typeof $ !== 'function') return;
+    var name = function (el, s) {
+        for (var n = el.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && /\S/.test(n.nodeValue)) { n.nodeValue = s; return; }
+        el.insertBefore(document.createTextNode(s), el.firstChild);
+    };
+    $('#theme .color-box, #theme .font-box, #theme .preset-box, #theme .input-box, #theme .slider-box').each(function () {
+        var t = this.querySelector('.title-box, .value-label'), f = this.querySelector('input[id], select[id]');
+        if (!t || !f || t.hasAttribute('data-i18n')) return;
+        var s = textLanguage[f.id.replace(/-slider$/, '')];
+        if (typeof s === 'string' && s) name(t, s);
+    });
+});
 
 defineChatCommand();
 function defineChatCommand() {
