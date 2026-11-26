@@ -53,6 +53,26 @@
   need('lmT Greek', lmT('leagues') !== english.leagues && /[\u0370-\u03ff]/.test(lmT('leagues')));
   need('textLanguage Greek (in place)', textLanguage.showMass !== english.showMass && /[\u0370-\u03ff]/.test(textLanguage.showMass) && window.textLanguage === textLanguage);
   need('old global Languageletter2 Greek', /[\u0370-\u03ff]/.test(String(window.Languageletter2)));
+  /* every Theme tab row and hotkey row has its own setting's name (the language pack handler named
+   * them by row position: from the first added row on they had the names of other settings) */
+  var norm = function (s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').replace(/:\s*$/, '').trim(); };
+  var wrong = [];
+  $('#theme .color-box, #theme .font-box, #theme .preset-box, #theme .input-box, #theme .slider-box').each(function () {
+    var f = $(this).find('input[id], select[id]')[0], t = $(this).find('.title-box, .value-label')[0];
+    if (!f || !t || t.hasAttribute('data-i18n')) return;
+    var want = textLanguage[f.id.replace(/-slider$/, '')];
+    if (typeof want !== 'string' || !want) return;
+    var got = norm(t.textContent);
+    if (got.indexOf(norm(want)) !== 0) wrong.push(f.id + ': ' + got.slice(0, 30));
+  });
+  $('#hotkeys-cfg .custom-key-in').each(function () {
+    var c = hotkeysCommand[this.id];
+    if (!c || c.type === 'command') return;
+    var got = norm($(this).closest('.row').find('.key-label').text());
+    if (got !== norm(c.label)) wrong.push(this.id + ': ' + got.slice(0, 30));
+  });
+  info.wrongNames = wrong.length;
+  need('Theme and hotkey rows named by their own setting in Greek' + (wrong.length ? ': ' + wrong.slice(0, 4).join(', ') : ''), !wrong.length);
   var cog = $('.ogicon-cog').first();
   need('settings tab tooltip Greek', !cog.length || cog.attr('data-original-title') === window.Languageletter2);
   var play = $('[data-itr="page_play"]').first();
