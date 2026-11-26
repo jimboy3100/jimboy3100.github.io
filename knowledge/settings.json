@@ -55,7 +55,7 @@
       "id": "sounds",
       "name": "Sounds",
       "description": "Sound mixer and audio settings.",
-      "settings": ["volMaster", "volChat", "volCommands", "volGameplay", "volVideo", "volNotifications", "virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "audioDucking"]
+      "settings": ["volMaster", "volChat", "volCommands", "volGameplay", "volNotifications", "virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "audioDucking"]
     },
     {
       "id": "leaderboard",

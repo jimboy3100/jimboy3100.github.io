@@ -20634,7 +20634,6 @@ var defaultmapsettings = {
     volChat: 1,                   /* chat message sound */
     volCommands: 1,               /* command sound */
     volGameplay: 1,               /* virus shot, 16 pieces, virus pop / eat */
-    volVideo: 1,                  /* video skins (on top of videoSkinSoundLevel) */
     volNotifications: 1,          /* any other sound (scripts: application.playSound, LMNotifications.play) */
     audioDucking: false,          /* chat / alert sound lowers the video skins for a moment */
     //
@@ -20702,7 +20701,6 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     volChat: [0, 1, 0.01],
     volCommands: [0, 1, 0.01],
     volGameplay: [0, 1, 0.01],
-    volVideo: [0, 1, 0.01],
     volNotifications: [0, 1, 0.01],
     a11yTextScale: [1, 1.6, 0.05],
     a11yHudTextScale: [1, 1.6, 0.05],
@@ -20753,6 +20751,21 @@ function lmSettingValue(key, value) {
         return value;
     }
     return typeof value === typeof def ? value : undefined;
+}
+/* "Video skins volume" (volVideo, Settings > Sounds) was a second slider for the video skin
+ * volume, multiplied with "Video skin sound level" (Settings > Skins). One slider stays: a stored
+ * or imported volVideo is folded into the level once, so the video skins keep their loudness.
+ * Returns true when the object had volVideo (it is removed). */
+function lmFoldVideoVolume(s) {
+    if (!s || typeof s !== 'object' || !Object.prototype.hasOwnProperty.call(s, 'volVideo')) return false;
+    var f = s.volVideo;
+    f = typeof f === 'number' ? f : (typeof f === 'string' && f.trim() !== '' ? Number(f) : NaN);
+    delete s.volVideo;
+    if (!Number.isFinite(f) || f >= 1) return true;
+    var lv = lmSettingValue('videoSkinSoundLevel', s.videoSkinSoundLevel);
+    if (lv === undefined) lv = LM_SETTINGS_DEFAULTS.videoSkinSoundLevel;
+    s.videoSkinSoundLevel = lmSchemaFit(LM_SETTINGS_SCHEMA.videoSkinSoundLevel, lv * Math.max(0, f));
+    return true;
 }
 /* S5: one place announces gameplay setting changes. Every path that changes one (switch,
  * slider, text box, select, hotkey toggle, profile, preset, gamepad, import of a part) saves
@@ -23983,6 +23996,10 @@ function thelegendmodproject() {
             ) {
                 settings = null;
             }
+            /* the old second video volume: folded into the level and the save rewritten, so it is folded once */
+            if (settings && lmFoldVideoVolume(settings)) {
+                try { window.localStorage.setItem('ogarioSettings', JSON.stringify(settings)); } catch (e) { }
+            }
             for (const option in defaultmapsettings) {
                 if (defaultmapsettings.hasOwnProperty(option)) {
                     if (settings && Object.prototype.hasOwnProperty.call(settings, option)) {
@@ -24105,6 +24122,7 @@ function thelegendmodproject() {
                  * stored. */
                 if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioSettings') && importValue.ogarioSettings && typeof importValue.ogarioSettings === 'object') {
                     var _impS = importValue.ogarioSettings;
+                    lmFoldVideoVolume(_impS);
                     for (var _impK in _impS) {
                         if (!Object.prototype.hasOwnProperty.call(_impS, _impK)) continue;
                         var _impV = lmSettingValue(_impK, _impS[_impK]);
@@ -25557,7 +25575,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsAtCenter', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -25646,7 +25664,6 @@ function thelegendmodproject() {
             this.addSliderBox(".soundsGroup", "volChat", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volCommands", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volGameplay", 0, 1, 0.01);
-            this.addSliderBox(".soundsGroup", "volVideo", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volNotifications", 0, 1, 0.01);
             this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2

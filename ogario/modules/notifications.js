@@ -7,8 +7,8 @@
  * are still recorded). The hotkey "Open the notification centre" has no default key.
  * While the option is off the toasts pass straight through and nothing is stored.
  *
- * Mixer: volume per channel (chat, commands, gameplay effects, video skins, notifications)
- * times the master volume, all 1 by default (unchanged), and "audioDucking" (off by default):
+ * Mixer: volume per channel (chat, commands, gameplay effects, notifications) times the master
+ * volume (video skins: their own "Video skin sound level" slider times the master volume), all 1 by default (unchanged), and "audioDucking" (off by default):
  * a chat or alert sound that is really heard lowers the video skins while it plays. ogario.v4.js
  * asks LMNotifications.soundVolume / videoVolume where it plays a sound and reports the started
  * playback with duckPlayback (LMNotifications.play does both).
@@ -30,7 +30,7 @@
     var DUCK_LEVEL = 0.3;        /* their volume meanwhile, as a fraction */
     /* channels whose sound lowers the video skins while "audioDucking" is on */
     var DUCK_CHANNELS = { chat: 1, commands: 1, notifications: 1 };
-    var CHANNEL_KEYS = { chat: 'volChat', commands: 'volCommands', gameplay: 'volGameplay', video: 'volVideo', notifications: 'volNotifications' };
+    var CHANNEL_KEYS = { chat: 'volChat', commands: 'volCommands', gameplay: 'volGameplay', notifications: 'volNotifications' };
     /* "[TAG]:" prefixes used by the toasts. SERVER (the generic prefix) and ERROR are not
      * listed: their text decides. */
     var TAGS = {
@@ -305,7 +305,8 @@
 
     function videoVolume(base) {
         var s = settings();
-        return mixVolume(base, s.volVideo, s.volMaster, duckFactor());
+        /* base is the video skin sound level already (one volume slider for them, Settings > Skins) */
+        return mixVolume(base, 1, s.volMaster, duckFactor());
     }
 
     /* Ducks of the sounds playing now, { a: audio element, until: ms }: the video skins stay low until

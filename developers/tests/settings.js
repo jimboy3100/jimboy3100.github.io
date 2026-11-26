@@ -66,6 +66,9 @@ const impLoop = cut("                    var _impS = importValue.ogarioSettings;
 const imported = { ogarioSettings: { macroFeeding: -100, fpsLimit: 'x', massFormat: 1.7, showMass: 'false', scanTrickDirections: 12, nope: 1, profileNumber: 30, animation: Infinity } };
 vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(imported);
 check('import: values fitted, unusable ones dropped (their defaults apply)', J(imported.ogarioSettings) === J({ macroFeeding: 1, massFormat: 2, showMass: false, profileNumber: 30 }));
+const importedV = { ogarioSettings: { videoSkinSoundLevel: 0.9, volVideo: 0.5 } };
+vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(importedV);
+check('import: an old export with the second video volume keeps its loudness', J(importedV.ogarioSettings) === J({ videoSkinSoundLevel: 0.45 }));
 
 // ── S1 loading (the real loadSettings): a damaged save is fitted, the rest kept
 const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);
@@ -75,6 +78,22 @@ ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();
 const S = ctx.defaultmapsettings;
 check('load: off-range/off-step values fitted, invalid choice keeps the default, valid values kept', S.fpsLimit === 150 && S.massFormat === 2 && S.hudBlur === 3 && S.showMass === !D.showMass && S.scanTrickDirections === D.scanTrickDirections && S.chatHideWords === 'spam');
+// ── one video skin volume: the removed second slider (volVideo) is folded into the level once
+check('volVideo is no setting any more (no second video volume)', !('volVideo' in D) && !('volVideo' in SCH) && V('volVideo', 0.5) === undefined);
+const fold = (o) => { ctx._f = o; vm.runInContext('lmFoldVideoVolume(_f)', ctx); return ctx._f; };
+check('fold: level x old video volume, stepped', J(fold({ videoSkinSoundLevel: 0.8, volVideo: 0.5 })) === J({ videoSkinSoundLevel: 0.4 }));
+check('fold: no level stored = the default level x old volume', J(fold({ volVideo: '0.25' })) === J({ videoSkinSoundLevel: 0.25 }));
+check('fold: 1, invalid or missing old volume leaves the level', J(fold({ videoSkinSoundLevel: 0.7, volVideo: 1 })) === J({ videoSkinSoundLevel: 0.7 }) && J(fold({ videoSkinSoundLevel: 0.7, volVideo: 'x' })) === J({ videoSkinSoundLevel: 0.7 }) && J(fold({ videoSkinSoundLevel: 0.7 })) === J({ videoSkinSoundLevel: 0.7 }));
+check('fold: 0 mutes, as before', J(fold({ videoSkinSoundLevel: 0.7, volVideo: 0 })) === J({ videoSkinSoundLevel: 0 }));
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { videoSkinSoundLevel: 0.6, volVideo: 0.5 })));
+app.loadSettings();
+const reSaved = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
+check('load: the old video volume folded into the level and the save rewritten without it', S.videoSkinSoundLevel === 0.3 && !('volVideo' in S) && reSaved.videoSkinSoundLevel === 0.3 && !('volVideo' in reSaved));
+app.loadSettings();
+check('load: folded only once (the next load keeps 0.3)', S.videoSkinSoundLevel === 0.3);
+/* the loaded values of the checks below */
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
+app.loadSettings();
 
 // ── S5 one change path: saveSettings announces each changed setting once
 events.length = 0;

@@ -11,9 +11,12 @@
     if (N.channelVolume(c) !== 1) fail.push('channel ' + c + ' not 1 by default');
   });
   if (N.videoVolume(0.42) !== 0.42) fail.push('video volume changed by default');
-  ['volMaster', 'volChat', 'volCommands', 'volGameplay', 'volVideo', 'volNotifications'].forEach(function (k) {
+  ['volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications'].forEach(function (k) {
     if (!document.getElementById(k + '-slider')) fail.push('slider ' + k + ' missing');
   });
+  /* one video skin volume: the level slider in Skins; the second one (volVideo) in Sounds is gone */
+  if (document.getElementById('volVideo-slider') || 'volVideo' in s) fail.push('the removed video volume (volVideo) is back');
+  if (!$('#videoSkinSoundLevel-slider').closest('.options-box.skinsGroup').length) fail.push('video skin sound level slider not in Skins');
   if (!document.getElementById('audioDucking')) fail.push('audioDucking switch missing');
   if (!document.getElementById('notificationCentre')) fail.push('notificationCentre switch missing');
   if (!hotkeysCommand['hk-notifCentre'] || hotkeysCommand['hk-notifCentre'].defaultKey !== '') fail.push('hk-notifCentre missing or has a default key');

@@ -3383,24 +3383,6 @@
     "ja": "ゲーム効果音の音量（ウイルス、16分割）",
     "it": "Volume effetti di gioco (virus, 16 pezzi)"
   },
-  "settings.volVideo": {
-    "en": "Video skins volume",
-    "el": "Ένταση video skins",
-    "es": "Volumen de skins de vídeo",
-    "bg": "Сила на звука на видео скиновете",
-    "fr": "Volume des skins vidéo",
-    "ar": "مستوى صوت سكنات الفيديو",
-    "zh": "影片造型音量",
-    "ru": "Громкость видеоскинов",
-    "de": "Lautstärke Video-Skins",
-    "tr": "Video skin ses seviyesi",
-    "pl": "Głośność video skinów",
-    "nl": "Volume videoskins",
-    "pt": "Volume das skins de vídeo",
-    "id": "Volume skin video",
-    "ja": "動画スキンの音量",
-    "it": "Volume skin video"
-  },
   "settings.volNotifications": {
     "en": "Notification sounds volume",
     "el": "Ένταση ήχων ειδοποιήσεων",

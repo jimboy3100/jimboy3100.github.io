@@ -224,7 +224,9 @@ function boot(opts) {
   check('channel: chat', Math.abs(b.api.channelVolume('chat') - 0.2) < 1e-12);
   check('channel: gameplay', b.api.channelVolume('gameplay') === 0.5);
   check('channel: unknown = master', b.api.channelVolume('whatever') === 0.5);
-  check('video: video x master', Math.abs(b.api.videoVolume(0.8) - 0.2) < 1e-12);
+  /* a leftover volVideo (the removed second video slider) is not used: the level x master */
+  check('video: level x master only', Math.abs(b.api.videoVolume(0.8) - 0.4) < 1e-12);
+  check('video: no video channel any more (master)', b.api.channelVolume('video') === 0.5);
   let T = Date.now();
   b.ctx.Date = { now: () => T };
   const v = { paused: false, volume: 0.6 };
@@ -237,8 +239,8 @@ function boot(opts) {
     a.play = () => { if (a.refuse) return Promise.reject(new Error('NotAllowedError')); a.paused = false; return Promise.resolve(); };
     return a;
   };
-  const low = () => Math.abs(b.api.videoVolume(0.8) - 0.2 * b.core.DUCK_LEVEL) < 1e-12;
-  const normal = () => Math.abs(b.api.videoVolume(0.8) - 0.2) < 1e-12;
+  const low = () => Math.abs(b.api.videoVolume(0.8) - 0.4 * b.core.DUCK_LEVEL) < 1e-12;
+  const normal = () => Math.abs(b.api.videoVolume(0.8) - 0.4) < 1e-12;
   b.api.play(sound(), 'chat'); await tick();
   check('ducking off: video untouched', v.volume === 0.6 && normal());
   b.ctx.legendmod5.audioDucking = true;
