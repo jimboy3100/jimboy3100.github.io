@@ -74,7 +74,8 @@
     var MOBILE_SCHEMA = {
         jsSensitivity: [100, 600], btnOpacity: [0.2, 1], btnScale: [0.5, 1.5], hudFade: [0, 1],
         targetMode: 0, swipeSplit: 0, muteVibration: 0, tapHaptic: 0, quickCmds: 0, mbButton: 0,
-        stopOnRelease: 0, pingBtn: 0, netGraph: 0
+        stopOnRelease: 0, pingBtn: 0, netGraph: 0, fixedJoystick: 0, joystickDeadZone: [0, 40],
+        lbCompact: 0
     };
     function mobileValue(k, v) {
         if (!has(MOBILE_SCHEMA, k)) return undefined;

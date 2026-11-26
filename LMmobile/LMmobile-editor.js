@@ -895,7 +895,11 @@
             pit.appendChild(btn('misc.editor.load', 'misc.editor.loadTitle', function () {
                 var p = PRESETS[pn];
                 if (!p) return;
-                work = { landscape: copy(p.landscape), portrait: copy(p.portrait) };
+                /* A5: only replace the current orientation, preserve the other */
+                var orient = window.innerWidth >= window.innerHeight ? 'landscape' : 'portrait';
+                var other = orient === 'landscape' ? 'portrait' : 'landscape';
+                work[orient] = copy(p[orient] || p.landscape);
+                if (work[other] === undefined) work[other] = null;
                 showLayouts();
                 render();
             }));

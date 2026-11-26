@@ -490,7 +490,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 12, lbCompact: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false };
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
          * settings profile or its Undo that removed the store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
@@ -689,7 +689,17 @@
             sp.querySelector('#lm-dz-v').textContent = this.value;
         });
         sp.querySelector('#lm-dz').addEventListener('change', function () { savePrefs(); });
-        sp.querySelector('#lm-lbc').addEventListener('change', function () { prefs.lbCompact = this.checked; savePrefs(); fitLeaderboard(); });
+        sp.querySelector('#lm-lbc').addEventListener('change', function () {
+            prefs.lbCompact = this.checked;
+            savePrefs();
+            /* A4: toggle pointer-events with the setting */
+            var lb = document.getElementById('leaderboard-hud');
+            if (lb) {
+                if (prefs.lbCompact) lb.style.setProperty('pointer-events', 'auto', 'important');
+                else lb.style.removeProperty('pointer-events');
+            }
+            fitLeaderboard();
+        });
 
         /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
@@ -735,9 +745,13 @@
         function sendPing(type) {
             if (typeof application !== 'undefined' && application && typeof application.sendTeamPing === 'function') application.sendTeamPing(type);
         }
+        /* A3 fix: single theme-change observer for radial colors, disconnected on rebuild */
+        var _pingThemeObs = null;
         function buildPingButton() {
             if (bPing && bPing.parentNode) bPing.parentNode.removeChild(bPing);
             if (pingRad && pingRad.parentNode) pingRad.parentNode.removeChild(pingRad);
+            /* A3: disconnect the previous observer before creating a new one */
+            if (_pingThemeObs) { _pingThemeObs.disconnect(); _pingThemeObs = null; }
             bPing = null; pingRad = null;
             if (!prefs.pingBtn) return;
             var b = bPing = mkd('\uD83D\uDCCD');
@@ -774,7 +788,8 @@
             refreshRadColors();
             /* refresh on theme change (a theme changes --lm-mc and --lm-pc) */
             if (typeof MutationObserver !== 'undefined') {
-                new MutationObserver(refreshRadColors).observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });
+                _pingThemeObs = new MutationObserver(refreshRadColors);
+                _pingThemeObs.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style'] });
             }
             function setPick(x, y) {
                 var dx = x - sx, dy = y - sy;
@@ -1077,6 +1092,7 @@
         /* One Enter listener at a time: closing chat with the 💬 button left the old one
          * attached, and chatClose's own synthetic Enter then ran chatClose again. */
         var chatEnterFn = null;
+        var _chatFocusTimer = null;
         function chatOpen() {
             chatOn = true;
             // Open chat box — dispatch Enter on document to open game's chat
@@ -1087,7 +1103,10 @@
                 inp.focus();
             }
             // Re-focus after game finishes setup + add Enter handler
-            setTimeout(function () {
+            if (_chatFocusTimer) clearTimeout(_chatFocusTimer);
+            _chatFocusTimer = setTimeout(function () {
+                _chatFocusTimer = null;
+                if (!chatOn) return; /* chat closed before this fired — do not refocus */
                 var inp2 = document.getElementById('message');
                 if (inp2) {
                     inp2.focus();
@@ -1109,6 +1128,8 @@
          * @param {boolean} send  true = send the text (Enter / 💬 button); false = dismiss, keep draft
          */
         function chatClose(send) {
+            /* clear the stale focus timer so it does not refocus after dismiss */
+            if (_chatFocusTimer) { clearTimeout(_chatFocusTimer); _chatFocusTimer = null; }
             var inp = document.getElementById('message');
             /* first, before the synthetic Enter below: it must not reach a leftover listener */
             if (chatEnterFn && inp) inp.removeEventListener('keydown', chatEnterFn);
@@ -1123,22 +1144,26 @@
             if (inp) inp.blur();
             chatOn = false;
 
-            /* LW: After 50ms, check if the game's chat UI is still visible.
-             * Mobile keyboard "OK" sends the message but the chat box stays open
-             * because the game expects a document-level Enter to close it. */
-            setTimeout(function () {
-                var msgBox = document.getElementById('message');
-                if (msgBox && (msgBox.offsetParent !== null || msgBox.offsetHeight > 0)) {
-                    emitKey(13);
-                }
-            }, 50);
+            /* Only send the cleanup Enter when we actually sent a message.
+             * Dismiss (send=false) should NOT dispatch Enter — it was closing the
+             * game's chat UI even when the user just tapped away to dismiss. */
+            if (send) {
+                setTimeout(function () {
+                    var msgBox = document.getElementById('message');
+                    if (msgBox && (msgBox.offsetParent !== null || msgBox.offsetHeight > 0)) {
+                        emitKey(13);
+                    }
+                }, 50);
+            }
         }
 
         /* Tap canvas while chatting → dismiss without sending (keeps draft).
-         * The touch is consumed so it does not trigger steering/flick/split. */
+         * The touch is consumed so it does not trigger steering/flick/split.
+         * e.stopImmediatePropagation prevents joystick/swipe handlers on the same target. */
         canvas.addEventListener('touchstart', function (e) {
             if (chatOn) {
                 e.preventDefault();
+                e.stopImmediatePropagation();
                 chatClose(false);
             }
         }, { passive: false });
@@ -1706,29 +1731,34 @@
          * leaderboard sizes it itself. Runs with repositionButtons (resize, rotation, 2.5 s). */
         function fitLeaderboard() {
             var lb = document.getElementById('leaderboard-hud');
+            if (!lb) return;
             var he = window.LMHudEditor;
-            if (!lb || (he && he.owns && he.owns('leaderboard'))) return;
-            var base = parseFloat(lb.dataset.lmBaseScale) || 0.75, s = base;
-            var r = lb.getBoundingClientRect();
-            if (!(r.width >= 1 && r.height >= 1)) return; /* leaderboard turned off */
-            var data = document.getElementById('leaderboard-data');
-            /* unscaled size; the mass column is drawn to the left of the box */
-            var left = r.right - (lb.offsetWidth + (data ? data.offsetWidth : 0)) * base;
-            var top = Infinity, c = window._lmMobileHost ? window._lmMobileHost.controls() : {};
-            var els = [document.getElementById('minimap-hud')];
-            for (var k in c) if (c[k]) els.push(c[k]);
-            els.forEach(function (el) {
-                var q = el.getBoundingClientRect();
-                if (q.width >= 1 && q.height >= 1 && q.right > left && q.left < r.right && q.top > r.top + 8 && q.top < top) top = q.top;
-            });
-            var height = function () { return Math.max(lb.offsetHeight, data ? data.offsetTop + data.offsetHeight : 0); };
-            lb.classList.remove('lm-lb-fit');
-            if (top < Infinity && height() * base > top - r.top - 6) {
-                lb.classList.add('lm-lb-fit');
-                s = Math.max(0.5, Math.min(base, (top - r.top - 6) / height()));
+            var hudOwns = he && he.owns && he.owns('leaderboard');
+            /* A4: compact leaderboard applies even when the HUD editor owns position —
+             * scaling is skipped but row visibility still applies */
+            if (!hudOwns) {
+                var base = parseFloat(lb.dataset.lmBaseScale) || 0.75, s = base;
+                var r = lb.getBoundingClientRect();
+                if (!(r.width >= 1 && r.height >= 1)) return; /* leaderboard turned off */
+                var data = document.getElementById('leaderboard-data');
+                /* unscaled size; the mass column is drawn to the left of the box */
+                var left = r.right - (lb.offsetWidth + (data ? data.offsetWidth : 0)) * base;
+                var top = Infinity, c = window._lmMobileHost ? window._lmMobileHost.controls() : {};
+                var els = [document.getElementById('minimap-hud')];
+                for (var k in c) if (c[k]) els.push(c[k]);
+                els.forEach(function (el) {
+                    var q = el.getBoundingClientRect();
+                    if (q.width >= 1 && q.height >= 1 && q.right > left && q.left < r.right && q.top > r.top + 8 && q.top < top) top = q.top;
+                });
+                var height = function () { return Math.max(lb.offsetHeight, data ? data.offsetTop + data.offsetHeight : 0); };
+                lb.classList.remove('lm-lb-fit');
+                if (top < Infinity && height() * base > top - r.top - 6) {
+                    lb.classList.add('lm-lb-fit');
+                    s = Math.max(0.5, Math.min(base, (top - r.top - 6) / height()));
+                }
+                var t = 'scale(' + Math.round(s * 1000) / 1000 + ')';
+                if (lb.style.getPropertyValue('transform') !== t) lb.style.setProperty('transform', t, 'important');
             }
-            var t = 'scale(' + Math.round(s * 1000) / 1000 + ')';
-            if (lb.style.getPropertyValue('transform') !== t) lb.style.setProperty('transform', t, 'important');
             /* M5: Compact leaderboard — show only 5 rows, tap to expand */
             var rows = lb.querySelectorAll('.leaderboard-row, tr');
             if (rows.length > 5) {
@@ -1743,7 +1773,8 @@
             var lb = document.getElementById('leaderboard-hud');
             if (!lb) return;
             lb._lmExpanded = false;
-            lb.style.setProperty('pointer-events', 'auto', 'important');
+            /* A4: only enable pointer-events when compact mode is on */
+            if (prefs.lbCompact) lb.style.setProperty('pointer-events', 'auto', 'important');
             lb.addEventListener('touchstart', function (e) {
                 if (!prefs.lbCompact) return;
                 e.stopPropagation();
@@ -1774,7 +1805,10 @@
             else if (id === 'x16') smallR.appendChild(el);
             else if (id === 'menu') rootL.insertBefore(el, rootL.firstChild);
             else if (id === 'gear') drawer.insertBefore(el, sp);
-            else drawer.insertBefore(el, bCfg);
+            /* guard: bCfg may have been moved to a slot by the editor — insertBefore fails
+             * when the reference node is not a child of the target parent */
+            else if (bCfg.parentNode === drawer) drawer.insertBefore(el, bCfg);
+            else drawer.appendChild(el);
         }
         var edLoading = false, edQueue = [];
         function loadEditor(cb) {
@@ -1894,10 +1928,14 @@
                      * needs a tap on Play, so with auto-respawn the phone stayed out of fullscreen
                      * (the browser's own back gesture still exits). A held Feed button stops here. */
                     if (typeof window._lmMobileFeedStop === 'function') window._lmMobileFeedStop();
-                    /* Cancel any pending radial / flick / pinch state */
+                    /* Cancel any pending radial / flick / pinch / quick-command state */
                     pOn = false; swStart = null;
+                    /* Cancel pending flick split timer and radial hold timer */
+                    if (typeof holdT !== 'undefined') clearTimeout(holdT);
                     /* Release joystick so the cell does not drift while in the menu */
                     if (jId !== null) { jId = null; jHide(); }
+                    /* Close chat if open */
+                    if (chatOn) chatClose(false);
                     // Release wake lock when not playing
                     if (window._lmWakeLock) {
                         try { window._lmWakeLock.release(); } catch (e) { }
