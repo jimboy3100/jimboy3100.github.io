@@ -2236,9 +2236,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
             });
             setTimeout(function () {
                 /* put back the player's own team-board image (it was wiped until reload) */
-                $("#top5-hud").css('background-image', 'url("' + (teambimg || ' ') + '")').css({
-                    opacity: teambimg ? 0.8 : 1
-                });
+                lmHudBgImage("#top5-hud", teambimg);
             }, 12000);
         } else if (commandMsg == "Hello") {
             if ($('#message-box').css('display') == 'none') {
@@ -4712,12 +4710,17 @@ function clearTimer() {
 }
 
 
+/* a HUD box's own background image (minimap, leaderboard, team list); an empty URL gives the box
+ * its normal look back instead of an empty image at 0.8 opacity for the rest of the session */
+function lmHudBgImage(sel, url) {
+    if (url) $(sel).css('background-image', 'url("' + url + '")').css({ opacity: 0.8 });
+    else $(sel).css({ 'background-image': '', opacity: '' });
+}
+
 function setminbgname() {
     minimapbckimg = $("#minimapPicture").val();
     localStorage.setItem("minimapbckimg", minimapbckimg);
-    $("#minimap-hud").css('background-image', 'url("' + minimapbckimg + '")').css({
-        opacity: 0.8
-    });
+    lmHudBgImage("#minimap-hud", minimapbckimg);
 }
 
 function setminbtext() {
@@ -4733,17 +4736,13 @@ function setminbtext() {
 function setleadbgname() {
     leadbimg = $("#leadbPicture").val();
     localStorage.setItem("leadbimg", leadbimg);
-    $("#leaderboard-hud").css('background-image', 'url("' + leadbimg + '")').css({
-        opacity: 0.8
-    });
+    lmHudBgImage("#leaderboard-hud", leadbimg);
 }
 
 function setteambgname() {
     teambimg = $("#teambPicture").val();
     localStorage.setItem("teambimg", teambimg);
-    $("#top5-hud").css('background-image', 'url("' + teambimg + '")').css({
-        opacity: 0.8
-    });
+    lmHudBgImage("#top5-hud", teambimg);
 }
 
 function setcanvasbgname() {
@@ -5526,14 +5525,10 @@ function settrolling() {
         $("#canvas").css('background-image', 'url("' + (canvasbimg || ' ') + '")').css({
             opacity: 1
         });
-        $("#leaderboard-hud").css('background-image', 'url("' + leadbimg + '")').css({
-            opacity: 0.8
-        });
+        lmHudBgImage("#leaderboard-hud", leadbimg);
     }, 8000);
     setTimeout(function () {
-        $("#minimap-hud").css('background-image', 'url("' + minimapbckimg + '")').css({
-            opacity: 0.8
-        });
+        lmHudBgImage("#minimap-hud", minimapbckimg);
     }, 27000);
 
 }

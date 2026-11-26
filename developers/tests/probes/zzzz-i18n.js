@@ -73,6 +73,20 @@
   });
   info.wrongNames = wrong.length;
   need('Theme and hotkey rows named by their own setting in Greek' + (wrong.length ? ': ' + wrong.slice(0, 4).join(', ') : ''), !wrong.length);
+  /* Settings tab links, Export / import window and Settings > Sounds rows: each by its own id (by
+   * position the Copy debug info link got the theme's restore text and the theme link stayed English) */
+  var own = [['#lm-restore-settings', 'Languageletter117'], ['#lm-restore-theme', 'Languageletter170'], ['#lm-exp-title', 'Languageletter118'],
+    ['#lm-imp-title', 'Languageletter119'], ['#lm-exp-info', 'Languageletter120'], ['#lm-imp-info', 'Languageletter121'],
+    ['#messageSound', 'Languageletter287'], ['#commandSound', 'Languageletter288'], ['#virusSoundurl', 'Languageletter41d']];
+  var badLinks = [];
+  own.forEach(function (o) {
+    var e = $(o[0]); if (e.is('input')) e = e.closest('.input-box').find('.title-box');
+    var want = norm(window[o[1]]);
+    if (!e.length || !/[\u0370-\u03ff]/.test(want) || norm(e.text()).indexOf(want) !== 0) badLinks.push(o[0] + ': ' + norm(e.text()).slice(0, 30));
+  });
+  var dbg = $('#lm-copy-debug');
+  if (!dbg.length || norm(dbg.text()) !== norm(lmT('game1.set.copyDebug')) || !/[\u0370-\u03ff]/.test(dbg.text())) badLinks.push('#lm-copy-debug: ' + norm(dbg.text()).slice(0, 30));
+  need('Settings links, Export / import titles and sound rows named by their own id in Greek' + (badLinks.length ? ': ' + badLinks.join(', ') : ''), !badLinks.length);
   var cog = $('.ogicon-cog').first();
   need('settings tab tooltip Greek', !cog.length || cog.attr('data-original-title') === window.Languageletter2);
   var play = $('[data-itr="page_play"]').first();
