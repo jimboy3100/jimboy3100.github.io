@@ -643,8 +643,9 @@
         if (b !== _panelTxtB) { _panelTxtB = b; panelList.textContent = b; changed = true; }
         if (!panelShown) {
             panel.style.display = 'block';
-            panel.style.fontSize = small ? '10px' : '12px';
-            panel.style.maxWidth = small ? '180px' : '240px';
+            /* HUD scale too: plain px here replaced the scaled size the panel was made with */
+            panel.style.fontSize = 'calc(' + (small ? 10 : 12) + 'px * var(--lm-hud-scale,1))';
+            panel.style.maxWidth = 'calc(' + (small ? 180 : 240) + 'px * var(--lm-hud-scale,1))';
             panelShown = true;
             changed = true;
         }

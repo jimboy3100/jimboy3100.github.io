@@ -19,6 +19,9 @@
     if (!hotkeysCommand[k]) fail.push(k + ' missing');
     else if (hotkeysCommand[k].defaultKey !== '') fail.push(k + ' has a default key');
   });
+  /* the cell panel text follows the HUD scale (Theme > HUD): a 1.5 scale here, put back at the end */
+  var rootSt = document.documentElement.style, oldScale = rootSt.getPropertyValue('--lm-hud-scale');
+  rootSt.setProperty('--lm-hud-scale', '1.5');
   var saved = {};
   keys.concat(['massFormat']).forEach(function (k) { saved[k] = S[k]; });
   var R = window.drawRender;
@@ -57,6 +60,9 @@
     var panel = document.getElementById('lm-hh-cells');
     if (!panel || panel.style.display !== 'block') fail.push('cell panel not shown');
     else {
+      var fsWant = (window.innerHeight < 500 ? 10 : 12) * 1.5, fs = parseFloat(getComputedStyle(panel).fontSize);
+      info.panelFont = fs;
+      if (Math.abs(fs - fsWant) > 0.5) fail.push('cell panel font ' + fs + 'px at HUD scale 1.5, want ' + fsWant + 'px');
       var r = panel.getBoundingClientRect();
       info.panel = [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)];
       if (r.left < 0 || r.top < 0 || r.right > window.innerWidth || r.bottom > window.innerHeight) fail.push('cell panel off screen ' + info.panel);
@@ -73,6 +79,7 @@
   } finally {
     Object.keys(saved).forEach(function (k) { S[k] = saved[k]; });
     H.frame = realFrame;
+    if (oldScale) rootSt.setProperty('--lm-hud-scale', oldScale); else rootSt.removeProperty('--lm-hud-scale');
   }
   H.frame(R || {}, null, window.legendmod);
   var p2 = document.getElementById('lm-hh-cells'), e2 = document.getElementById('lm-hh-edge');
