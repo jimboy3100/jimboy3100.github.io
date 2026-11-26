@@ -42574,6 +42574,8 @@ function thelegendmodproject() {
                      * Expanding Land connection, so preserve the current border.
                      */
                     this.flushCellsData(LM.isLegendWorld === true);
+                    /* the server forgets what it sent us too: every cell is added again */
+                    if (this._lmCellIdentity) this._lmCellIdentity.clear();
                     break;
                 case 20:
                     /* ClearOwned: forget which cells are ours; the world itself stays (ClearAll is 18). */
@@ -44282,11 +44284,15 @@ function thelegendmodproject() {
 
                 case 16: //2020 jimboy3100 specific private servers
                     // Skip main client's cell updates when dead and multibox spect is active
-                    if (window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed()) break;
+                    if ((window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed()) || this._spawnTransitGate) {
+                        /* the cells it adds must not come back nameless and grey later */
+                        if (this._lmCellIdentity) this._lmCellIdentityScan(new window.buffer.Buffer(data.buffer), s);
+                        break;
+                    }
                     /* Grey-cell fix: while the spawn transit gate is active,
                      * drop ALL cell updates so stale spectate-viewport cells
-                     * can't leak back in before the authoritative snapshot. */
-                    if (this._spawnTransitGate) break;
+                     * can't leak back in before the authoritative snapshot
+                     * (above; the identities they carry are kept). */
                     try {
                         // Garix: use dedicated parser for protocol 6-10 format
                         if (this.serverType === 'garix') {
@@ -50132,7 +50138,10 @@ function thelegendmodproject() {
                 case 16:
                     /* Same as uncompressed opcode 16: agar.io sends most cell updates
                      * here, so the dead main client's viewport must be dropped too. */
-                    if (window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed()) break;
+                    if (window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed()) {
+                        if (this._lmCellIdentity) this._lmCellIdentityScan(message, e);
+                        break;
+                    }
                     var _tPkt = performance.now();
                     this.updateCells(message, e);
                     this.countPps();
@@ -50551,6 +50560,9 @@ function thelegendmodproject() {
             if (_connectionLevelFlush) {
                 window.multiboxPlayerEnabled = null;
             }
+            /* cell identities (updateCells _lmIdMem) belong to this connection; the Expanding Land
+             * respawn wipe (true) keeps them: the server still counts those cells as ours */
+            if (_connectionLevelFlush && this._lmCellIdentity) this._lmCellIdentity.clear();
             /* Reset camera so the render view doesn't stay at the old server's position.
              * Without this, the camera drifts slowly (1/30 per frame) to the new view
              * which causes "ghost" old content when the tab is backgrounded. */
@@ -51713,6 +51725,54 @@ function thelegendmodproject() {
             console.log('[LM] Multibox unit has no cells: main client world updates resumed');
             return false;
         },
+        /* An Expanding Land world update (opcode 16) that is dropped (spawn transit gate, dead
+         * main client while a multibox unit plays): only keeps the cell identities of updateCells
+         * (_lmIdMem) current, so cells it added are not nameless and grey once updates flow again. */
+        _lmCellIdentityScan(view, offset) {
+            var mem = this._lmCellIdentity;
+            if (!mem || !_isExpandingLandClient(this)) return;
+            var str = function () {
+                for (var text = ''; ;) {
+                    var c = view.readUInt8(offset++);
+                    if (0 === c) break;
+                    text += String.fromCharCode(c);
+                }
+                try { return decodeURIComponent(escape(text)); } catch (e) { return text; }
+            };
+            try {
+                var n = view.readUInt16LE(offset), i;
+                offset += 2;
+                for (i = 0; i < n; i++, offset += 8) mem.delete(view.readUInt32LE(offset + 4));
+                for (; ;) {
+                    var id = view.readUInt32LE(offset);
+                    offset += 4;
+                    if (0 === id) break;
+                    offset += 10;
+                    var flags = view.readUInt8(offset++), ext = 128 & flags ? view.readUInt8(offset++) : 0;
+                    var color = null, skin = null, name = '', named = false;
+                    if (2 & flags) {
+                        color = this.rgb2Hex(~~(0.9 * view.readUInt8(offset)), ~~(0.9 * view.readUInt8(offset + 1)), ~~(0.9 * view.readUInt8(offset + 2)));
+                        offset += 3;
+                    }
+                    if (4 & flags) skin = str();
+                    if (8 & flags) {
+                        name = str() || '';
+                        named = true;
+                        if (!LM.integrity && name && name.includes('}')) name = name.split('}')[1];
+                    }
+                    if (ext & 4) offset += 4;
+                    if (ext & 1 || !(color || skin !== null || named)) continue;
+                    var e = mem.get(id);
+                    if (!e) mem.set(id, e = { color: null, skin: null, name: '', named: false });
+                    if (color) e.color = color;
+                    if (skin !== null) e.skin = skin;
+                    if (named) { e.name = name; e.named = true; }
+                }
+                n = view.readUInt16LE(offset);
+                offset += 2;
+                for (i = 0; i < n; i++, offset += 4) mem.delete(view.readUInt32LE(offset));
+            } catch (e) { }
+        },
         updateCells(view, offset) {
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
 
@@ -51821,6 +51881,13 @@ function thelegendmodproject() {
                     this
                 );
 
+            /* Expanding Land sends a cell's colour, skin and name only when it adds the cell;
+             * later records are plain updates. Our respawn wipe (onPlay / sendNick) clears cells
+             * the server still counts as ours, so they came back from those updates with no
+             * nick, skin or colour. Keep what each cell was added with until the server
+             * removes it (also from dropped updates: _lmCellIdentityScan). */
+            var _lmIdMem = _isExpandingLandEatFx ? (this._lmCellIdentity || (this._lmCellIdentity = new Map())) : null;
+
 
             for (
                 var length = 0;
@@ -51838,6 +51905,7 @@ function thelegendmodproject() {
                     );
 
                 offset += 8;
+                if (_lmIdMem) _lmIdMem.delete(victimRawID);
 
 
                 var eaterID =
@@ -52249,6 +52317,22 @@ function thelegendmodproject() {
                         name = name.split('}')[1];
                     }
                 }
+                /* (_lmIdMem) keep the colour, skin and name of each non-food cell; a cell we no
+                 * longer have gets them back when the server only sends an update for it */
+                if (_lmIdMem && !(extendedFlags & 1)) {
+                    var _lmId = _lmIdMem.get(id);
+                    if (color || skin !== null || namePresent) {
+                        if (!_lmId) _lmIdMem.set(id, _lmId = { color: null, skin: null, name: '', named: false });
+                        if (color) _lmId.color = color;
+                        if (skin !== null) _lmId.skin = skin;
+                        if (namePresent) { _lmId.name = name; _lmId.named = true; }
+                    }
+                    if (_lmId && !this.indexedCells[id]) {
+                        if (!color) color = _lmId.color;
+                        if (skin === null) skin = _lmId.skin;
+                        if (!namePresent && _lmId.named) { name = _lmId.name; namePresent = true; }
+                    }
+                }
                 if (skin || namePresent) {
                     if (legendmod && legendmod.gameMode && legendmod.gameMode != ":teams") {
                         this.vanillaskins(name, skin, color);
@@ -52508,6 +52592,7 @@ function thelegendmodproject() {
                     );
 
                 offset += 4;
+                if (_lmIdMem) _lmIdMem.delete(id);
 
 
                 cell =
