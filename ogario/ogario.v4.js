@@ -24129,6 +24129,12 @@ function thelegendmodproject() {
         buildChat99View(text) {
             var view;
             if (LM.isLegendWorld) {
+                /* every caller sends this view on LM's socket right away: Expanding Land echoes it
+                 * back as opcode 99 under the server's name with no sender id, so remember what this
+                 * socket sent to know that echo as our own line (_lmElOwnChatEcho) */
+                var _lmSent = application._lmElSentChat || (application._lmElSentChat = []);
+                _lmSent.push({ text: String(text), at: Date.now(), socket: LM.socket });
+                if (_lmSent.length > 8) _lmSent.shift();
                 var bytes = new TextEncoder().encode(text);
                 view = application.createView(3 + bytes.length);
                 view.setUint8(0, 99);
@@ -24145,6 +24151,18 @@ function thelegendmodproject() {
             }
             view.setUint16(2 + text.length * 2, 0, true);
             return view;
+        },
+        /* true once for the echo of a line this socket sent in the last 5 s (same text); the
+         * echo then counts as our own line: no sound, mute button, word filter or mention */
+        _lmElOwnChatEcho(text, socket) {
+            var q = this._lmElSentChat;
+            if (!q || !q.length || !socket) return false;
+            var now = Date.now();
+            for (var i = 0; i < q.length; i++) {
+                if (now - q[i].at > 5000 || q[i].socket !== socket) { q.splice(i--, 1); continue; }
+                if (q[i].text === text) { q.splice(i, 1); return true; }
+            }
+            return false;
         },
         lmLegendChatTooSoon() {
             return !!(LM.isLegendWorld && this._lmLegendChatLast && Date.now() - this._lmLegendChatLast < 2100);
@@ -44208,6 +44226,9 @@ function thelegendmodproject() {
                     if (mod) name = "[MOD] " + name;
                     //var wait = Math.max(3000, 1000 + message.length * 150);
                     var time = new Date().toTimeString().replace(/^(\d{2}:\d{2}).*/, '$1');
+                    /* Expanding Land: the echo of what this socket just sent is our own line (the packet has
+                     * no sender id; the name alone could be anyone's): shown under our relay id */
+                    var _lmOwnEcho = this.isLegendWorld && !(flag & 0xE0) && application._lmElOwnChatEcho(message, this.socket);
                     if (message.includes("E = split bots")) {
                         message = lmT('game2.botCommandsHint')
                     }
@@ -44223,7 +44244,7 @@ function thelegendmodproject() {
                     if (this.isLegendWorld && !(flag & 0xE0) && name !== 'Unnamed' && message.indexOf('Unnamed: ') === 0 &&
                         (_lmElTeamsActive(this) || $("#clantag").val() !== "")) message = name + ': ' + message.slice(9);
                     if (message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && ($("#clantag").val() === "" || server || admin || mod)) {
-                        var _lmSrvChatId = application.serverChatUserId(name);
+                        var _lmSrvChatId = _lmOwnEcho ? application.playerID : application.serverChatUserId(name);
                         /* Expanding Land Teams without a tag: a team mate's team chat (202) comes back as plain
                          * 99 whose text already starts with "nick: " (shown like tagged team chat) */
                         var _lmTeamNoTag = this.isLegendWorld && !(flag & 0xE0) && _lmElTeamsActive(this) && message.indexOf(name + ': ') === 0;

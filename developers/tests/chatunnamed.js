@@ -53,6 +53,8 @@ const lookup = between(src, '            var _ch = application.chatHistory;', ' 
 const fancy = fnFrom(master, 'function fancyCount2(');
 /* the relay (agar.io / Delta chat) packet reader */
 const rcm = between(src, '        readChatMessage(t) {', '        sendChatMessage(type, message) {').replace(/\},\s*$/, '}');
+/* knows the echo of a line this socket just sent (Expanding Land own lines) */
+const ownEcho = fnFrom(src, '        _lmElOwnChatEcho(text, socket) {').trim();
 
 function boot(lang) {
   const box = [], toasts = [];
@@ -92,11 +94,12 @@ function boot(lang) {
   };
   ctx.application = app;
   vm.runInContext('application.displayChatMessage = function ' + dcm + ';', ctx);
+  vm.runInContext('application._lmElOwnChatEcho = function ' + ownEcho.replace(/^_lmElOwnChatEcho/, '') + ';', ctx);
   vm.runInContext('application.readChatMessage = function ' + rcm.replace(/^readChatMessage/, '') + ';', ctx);
   /* the opcode 99 case run as the packet handler runs it */
   const onChat = vm.runInContext('(function (data) {\n var textDecoder = new TextDecoder();\n' + reader + ' var s = 1;\n switch (99) {\n' + case99 + ' }\n})', ctx);
   const bubbles = vm.runInContext('(function (now, myNick) {\n var _chatMap = new Map(), _now = now, _chOn = defaultmapsettings.showChat, _myNick = myNick, _lastSentNick = null, _showOwn = defaultmapsettings.showChatMyOwn;\n' + lookup + ' return _chatMap;\n})', ctx);
-  const client = { serverType: 'legendworld', isLegendWorld: true, ws: 'wss://x', rgb2Hex: (r, g, b) => '#' + [r, g, b].map(v => (v < 16 ? '0' : '') + v.toString(16)).join('') };
+  const client = { serverType: 'legendworld', isLegendWorld: true, ws: 'wss://x', socket: {}, rgb2Hex: (r, g, b) => '#' + [r, g, b].map(v => (v < 16 ? '0' : '') + v.toString(16)).join('') };
   return {
     ctx, app, box, toasts, client,
     send(name, text, flags, c) {
@@ -264,6 +267,25 @@ const msgText = (html) => { const m = /<span class="message-text">(.*?)<\/span>/
   b.send('Bob', 'Unnamed: hi', 0, Object.assign({}, b.client, { serverType: 'imsolo', isLegendWorld: false }));
   const last = b.box[b.box.length - 1] || '';
   check('other servers: text untouched', nickText(last) === 'Bob: ' && msgText(last) === 'Unnamed: hi', last);
+}
+
+{
+  /* Expanding Land echoes your public line under the server's name with no sender id: the line this
+   * socket just sent is your own (no mute button, own:true), the same text from anyone else is not */
+  const b = boot();
+  const seen = [];
+  b.ctx.window.LMEvents = { _has: () => true, emit: (n, d) => seen.push(d) };
+  b.app._lmElSentChat = [{ text: 'gg all', at: Date.now(), socket: b.client.socket }];
+  b.send('MyAccountName', 'gg all');
+  let last = b.box[b.box.length - 1] || '';
+  check('own echo: no mute button, reported own', last.indexOf('mute-user') === -1 && msgText(last) === 'gg all' && seen[0] && seen[0].own === true, last + ' ' + JSON.stringify(seen));
+  b.send('Stranger', 'gg all');
+  last = b.box[b.box.length - 1] || '';
+  check('same text again (not sent again): a stranger, with a mute button', last.indexOf('mute-user') !== -1 && seen[1] && seen[1].own === false, last);
+  b.app._lmElSentChat = [{ text: 'old', at: Date.now() - 6000, socket: b.client.socket }, { text: 'other', at: Date.now(), socket: {} }];
+  b.send('MyAccountName', 'old');
+  b.send('MyAccountName', 'other');
+  check('older than 5 s or sent on another socket: not own', b.box.slice(-2).every(h => h.indexOf('mute-user') !== -1) && b.app._lmElSentChat.length === 0, b.box.slice(-2).join(' | '));
 }
 
 console.log(failed ? failed + ' FAILED' : 'all ok');
