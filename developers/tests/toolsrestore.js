@@ -26,15 +26,14 @@ const probe = `(async () => {
   await wait(function () { return $('#legendlanguages').length > 0 && $('#HideAllBthn').length > 0 && $('#hudRoundedCorners').length > 0 && $('#showStopwatch').length > 0; }, 20000);
   info.SHOSHOBtn = $('#SHOSHOBtn').attr('aria-pressed');
   if (info.SHOSHOBtn !== 'true') fail.push('SHOSHOBtn not restored: ' + info.SHOSHOBtn);
-  /* the old buttons' saved choices, carried into the settings once */
+  /* the old buttons' saved choices, carried into the settings once (that the old keys go is in
+   * developers/tests/toolstab.js: SMOKE_STORAGE puts them back in any later document of the origin) */
   var st = null; try { st = JSON.parse(localStorage.getItem('ogarioThemeSettings') || 'null'); } catch (e) { }
   var gs = null; try { gs = JSON.parse(localStorage.getItem('ogarioSettings') || 'null'); } catch (e) { }
   info.rounded = [defaultSettings.hudRoundedCorners, $('#hudRoundedCorners').prop('checked'), st && st.hudRoundedCorners, localStorage.getItem('MAINBTBtn')];
   if (defaultSettings.hudRoundedCorners !== true || !$('#hudRoundedCorners').prop('checked') || !st || st.hudRoundedCorners !== true) fail.push('Rounded HUD not carried into Rounded corners: ' + JSON.stringify(info.rounded));
-  if (localStorage.getItem('MAINBTBtn') !== null) fail.push('old MAINBTBtn key left');
   info.stopwatch = [legendmod5.showStopwatch, $('#showStopwatch').prop('checked'), gs && gs.showStopwatch, localStorage.getItem('TIMEcalBtn')];
   if (legendmod5.showStopwatch !== true || !$('#showStopwatch').prop('checked') || !gs || gs.showStopwatch !== true) fail.push('Show Timer Calc. not carried into Show stopwatch: ' + JSON.stringify(info.stopwatch));
-  if (localStorage.getItem('TIMEcalBtn') !== null) fail.push('old TIMEcalBtn key left');
   if (gs && gs.showTime !== true) fail.push('the saved settings lost showTime');
   if ($('#MAINBTBtn, #TIMEcalBtn').length) fail.push('old Tools tab buttons still there');
   info.timer = $('#timertools-hud').css('display');
