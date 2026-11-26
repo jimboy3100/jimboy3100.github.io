@@ -230,12 +230,15 @@
     <meta name="twitter:title" content="Text Scramble Effect">
     <meta name="twitter:description" content="Text Scramble Effect — ℄ Legend Clan, the agar.io community.">
     <meta name="twitter:image" content="https://jimboy3100.github.io/banners/agario1200x630.png">
+    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-banners" charset="utf-8"></script>
 </head>
 
 <body translate="no">
 
   <div class="container">
-    <div class="text"><span class="dud">\</span><span class="dud">_</span>at t<span class="dud">=</span>ere's <span
+    <!-- i18n-ok: a scrambled first frame; the script replaces it at once with the translated phrases -->
+  <div class="text"><span class="dud">\</span><span class="dud">_</span>at t<span class="dud">=</span>ere's <span
         class="dud">_</span> di<span class="dud">—</span>ference</div>
   </div>
 
@@ -325,14 +328,16 @@
     // Example
     // ——————————————————————————————————————————————————
 
-    var phrases = ['Neo,', 'sooner or later', 'you\'re going to realize', 'just as I did', 'that there\'s a difference', 'between knowing the path', 'and walking the path', '℄ Legend Clan', 'Agar.io'];
+    /* the phrases in the visitor's language (developers/i18n/src/site-banners.json); names stay as they are */
+    var phrases = ['site.banners.matrixQuote1', 'site.banners.matrixQuote2', 'site.banners.matrixQuote3', 'site.banners.matrixQuote4', 'site.banners.matrixQuote5', 'site.banners.matrixQuote6', 'site.banners.matrixQuote7', '℄ Legend Clan', 'Agar.io'];
+    var lmPhrase = function (p) { return /^site\./.test(p) && window.lmT ? lmT(p) : p; };
 
     var el = document.querySelector('.text');
     var fx = new TextScramble(el);
 
     var counter = 0;
     var next = function next() {
-      fx.setText(phrases[counter]).then(function () {
+      fx.setText(lmPhrase(phrases[counter])).then(function () {
         setTimeout(next, 800);
       });
       counter = (counter + 1) % phrases.length;

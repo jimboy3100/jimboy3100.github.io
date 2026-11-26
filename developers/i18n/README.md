@@ -26,7 +26,11 @@ Generated files are committed (the site has no build step) and must never be edi
 Areas today: `core` (lmT's old table, bare keys, plus `core.*`), `packs` (the old
 LanguagePack variables, `pack.*`, the old name in `"global"`), `settings` (settings/theme/hotkey
 labels = `textLanguage`, `settings.*`), `agario` (agar.io's page texts = `i18n_dict`, `agario.*`),
-`boot`, `site` (texts shared by the web pages), `site-index`, `site-features`, `site-faq`.
+`boot`, `site` (texts shared by the web pages), `site-index`, `site-features`, `site-faq`,
+`site-banners` (the banner iframes in extras/: Mod Info, gift page, home page, clan pages, members,
+clan history slideshow), `site-extras` (the 2020 promo videos and the clan birthday pages in
+extras/), `site-gamble` (extras/website/gamble.html and its game). The scanner does not see texts a
+script sets (phrase arrays) or SVG text: open the page and look for English that is left.
 
 ## Keys
 

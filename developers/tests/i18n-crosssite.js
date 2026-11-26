@@ -15,6 +15,7 @@
 //  9. the game (play.html) in a frame, as on help.expanding.land/unblocked.html: a language passed from the shell
 //     also shows in its Choose Language list (languagemod), and one chosen there comes back to the shell.
 // 10. the Mod Info page, its FAQ and banner and the gift page of the mod show the language passed in #lm=.
+// 11. the other live extras pages (promos, members banner, clan history, gamble page) in Greek, Arabic and Japanese.
 // Usage: node developers/tests/i18n-crosssite.js
 'use strict';
 const { spawn } = require('child_process');
@@ -259,6 +260,30 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
         await waitFor(async () => ARABIC.test(JSON.parse((await evalIn(t10, q10)) || '{}').text || ''), 8000);
         const v10 = JSON.parse((await evalIn(t10, q10)) || '{}');
         ok(v10.lang === 'ar' && v10.dir === 'rtl' && ARABIC.test(v10.text) && !v10.miss.length && v10.links === links && v10.marked > 3, '10 ' + url.split('/').pop() + ' in Arabic: ' + JSON.stringify(v10).slice(0, 160));
+    }
+
+    /* 11 the other live extras pages (Mega FFA promo on the home page, 2020 promo and members banner on the clan
+     * page, clan history, the gamble page) in Greek, Arabic and Japanese: marked texts from the packs, the credits'
+     * shadow copies (data-text) follow them, texts set by the scripts (scrambled phrases) too, links kept */
+    const SCRIPT = { el: /[Ͱ-Ͽ]/, ar: /[؀-ۿ]/, ja: /[぀-ヿ一-鿿]/ };
+    for (const [code, num] of [['el', 2], ['ar', 6], ['ja', 15]]) {
+        const hash = '#lm=' + Buffer.from('{"lang":' + num + '}').toString('base64').replace(/=+$/, '');
+        for (const [url, sel, links] of [['https://www.legendmod.ml/extras/2020.html', '[data-i18n="site.extras.agarIoMegaFfa"]', 0],
+            ['https://www.legendmod.ml/extras/banneranimatedLegendmod2020.html', '[data-i18n="site.extras.upcomingUpdates"]', 0],
+            ['https://www.legendmod.ml/extras/bannermembers.html', '[data-i18n="site.banners.countryGreece"]', 0],
+            ['https://www.legendmod.ml/extras/LcHistory/LcSlideshow.html', '[data-i18n="site.banners.legendOurHeroes"]', 0],
+            ['https://www.legendmod.ml/extras/LcHistory/LcHistory.html', '[data-i18n-html="site.extras.forMoreInfoOur"]', 1],
+            ['https://www.legendmod.ml/extras/website/gamble.html', '[data-i18n-html="site.gamble.clickHere"]', 1],
+            ['https://www.legendmod.ml/extras/banneranimated9.html', '.text', 0]]) {
+            await go(url + hash);
+            const t11 = (await frameIds()).top;
+            const q11 = 'JSON.stringify({ lang: window.LMi18n && LMi18n.lang(), dir: document.documentElement.dir, miss: Object.keys(LMi18n.missing()), text: (document.querySelector(\'' + sel + '\') || {}).textContent || "", links: document.querySelectorAll(\'' + sel + ' a\').length, ' +
+                'shadow: [].filter.call(document.querySelectorAll("[data-text][data-i18n]"), function (e) { return e.getAttribute("data-text") !== e.textContent.replace(/\\s+/g, " ").trim(); }).length })';
+            await waitFor(async () => SCRIPT[code].test(JSON.parse((await evalIn(t11, q11)) || '{}').text || ''), 10000);
+            const v11 = JSON.parse((await evalIn(t11, q11)) || '{}');
+            ok(v11.lang === code && (v11.dir === 'rtl') === (code === 'ar') && SCRIPT[code].test(v11.text) && !v11.miss.length && v11.links === links && !v11.shadow,
+                '11 ' + url.split('/').pop() + ' in ' + code + ': ' + JSON.stringify(v11).slice(0, 160));
+        }
     }
 
     ws.close(); proc.kill();

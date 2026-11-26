@@ -71,7 +71,9 @@
   background-size: cover;
   background-repeat: no-repeat;
 }
-</style></head><body>
+</style>    <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
+    <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-gamble" charset="utf-8"></script>
+</head><body>
 
 <div id="zone">
   <div id="messages">
@@ -314,7 +316,7 @@
 						colors.pop();
 						messages.pop();
 					}
-					messages.unshift(NAMES[j] + " ate " + NAMES[i]);
+					messages.unshift(lmT('site.gamble.ate', [String(NAMES[j]), String(NAMES[i])]));
 					colors.unshift(circleSwallowing.color)
 					icons.unshift(circleSwallowing.icon);
 					updateMessages();
