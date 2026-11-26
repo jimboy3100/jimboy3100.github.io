@@ -75,12 +75,16 @@
         jsSensitivity: [100, 600], btnOpacity: [0.2, 1], btnScale: [0.5, 1.5], hudFade: [0, 1],
         targetMode: 0, swipeSplit: 0, muteVibration: 0, tapHaptic: 0, quickCmds: 0, mbButton: 0,
         stopOnRelease: 0, pingBtn: 0, netGraph: 0, fixedJoystick: 0, joystickDeadZone: [0, 40],
-        lbCompact: 0
+        lbCompact: 0, jsResponseCurve: ['linear', 'ease', 'aggressive'], zoomBtns: 0, freeSpecBtn: 0
     };
     function mobileValue(k, v) {
         if (!has(MOBILE_SCHEMA, k)) return undefined;
         var r = MOBILE_SCHEMA[k];
         if (Array.isArray(r)) {
+            /* string enum: an array of strings is a whitelist of accepted values */
+            if (r.length > 0 && typeof r[0] === 'string') {
+                return typeof v === 'string' && r.indexOf(v) >= 0 ? v : undefined;
+            }
             v = typeof v === 'string' && v.trim() !== '' ? Number(v) : v;
             return typeof v === 'number' && isFinite(v) ? Math.min(r[1], Math.max(r[0], v)) : undefined;
         }

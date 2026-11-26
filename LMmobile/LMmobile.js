@@ -491,7 +491,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, jsResponseCurve: 'linear', zoomBtns: false, freeSpecBtn: false };
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
          * settings profile or its Undo that removed the store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
@@ -523,6 +523,9 @@
                     if (saved.fixedJoystick !== undefined) prefs.fixedJoystick = !!saved.fixedJoystick;
                     if (saved.joystickDeadZone !== undefined) prefs.joystickDeadZone = num(saved.joystickDeadZone, 0, 40, prefs.joystickDeadZone);
                     if (saved.lbCompact !== undefined) prefs.lbCompact = !!saved.lbCompact;
+                    if (saved.jsResponseCurve !== undefined && /^(linear|ease|aggressive)$/.test(saved.jsResponseCurve)) prefs.jsResponseCurve = saved.jsResponseCurve;
+                    if (saved.zoomBtns !== undefined) prefs.zoomBtns = !!saved.zoomBtns;
+                    if (saved.freeSpecBtn !== undefined) prefs.freeSpecBtn = !!saved.freeSpecBtn;
                 }
             } catch (e) { }
         }
@@ -599,6 +602,13 @@
             '<label>' + tx('misc.mobile.deadZone', 'lm-t') + ' <span id="lm-dz-v">' + Math.max(8, prefs.joystickDeadZone) + '</span></label>' +
             '<input type="range" id="lm-dz" min="8" max="40" step="2" value="' + Math.max(8, prefs.joystickDeadZone) + '">' +
             '<label><input type="checkbox" id="lm-lbc"' + (prefs.lbCompact ? ' checked' : '') + '> ' + tx('misc.mobile.lbCompact', 'lm-t') + '</label>' +
+            '<label>' + tx('misc.mobile.responseCurve', 'lm-t') + ' <select id="lm-jrc">' +
+                '<option value="linear"' + (prefs.jsResponseCurve === 'linear' ? ' selected' : '') + '>' + T('misc.mobile.curveLinear') + '</option>' +
+                '<option value="ease"' + (prefs.jsResponseCurve === 'ease' ? ' selected' : '') + '>' + T('misc.mobile.curveEase') + '</option>' +
+                '<option value="aggressive"' + (prefs.jsResponseCurve === 'aggressive' ? ' selected' : '') + '>' + T('misc.mobile.curveAggressive') + '</option>' +
+            '</select></label>' +
+            '<label><input type="checkbox" id="lm-zoombtn"' + (prefs.zoomBtns ? ' checked' : '') + '> ' + tx('misc.mobile.zoomBtns', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-freespec"' + (prefs.freeSpecBtn ? ' checked' : '') + '> ' + tx('misc.mobile.freeSpec', 'lm-t') + '</label>' +
             /* move, resize, fade or hide each touch control (LMmobile-editor.js, loaded on the first tap) */
             '<button type="button" id="lm-ed-open">' + tx('misc.mobile.editControls') + '</button>';
         drawer.appendChild(sp);
@@ -716,6 +726,12 @@
             }
             fitLeaderboard();
         });
+        sp.querySelector('#lm-jrc').addEventListener('change', function () {
+            prefs.jsResponseCurve = this.value;
+            savePrefs();
+        });
+        sp.querySelector('#lm-zoombtn').addEventListener('change', function () { prefs.zoomBtns = this.checked; savePrefs(); buildZoomButtons(); layoutRefresh(); });
+        sp.querySelector('#lm-freespec').addEventListener('change', function () { prefs.freeSpecBtn = this.checked; savePrefs(); buildFreeSpecButton(); layoutRefresh(); });
 
         /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
@@ -741,14 +757,30 @@
             bMb = null;
             if (!prefs.mbButton) return;
             bMb = mkd('\u21C4');
+            /* Active player indicator: show P1/P2 and change border color */
+            function syncMbIndicator() {
+                if (!bMb) return;
+                var p = (typeof window !== 'undefined' && window.multiboxPlayerEnabled) ? 2 : 1;
+                var exists = typeof window.legendmod !== 'undefined' && window.legendmod && window.legendmod.multiBoxPlayerExists;
+                if (!exists) { bMb.textContent = '\u21C4'; bMb.style.borderColor = ''; return; }
+                bMb.textContent = 'P' + p;
+                bMb.style.borderColor = p === 1 ? 'rgba(1,217,204,.6)' : 'rgba(255,165,0,.6)';
+            }
+            /* listen for multibox swap events if LMEvents exists */
+            if (typeof window.LMEvents !== 'undefined' && window.LMEvents && typeof window.LMEvents.on === 'function') {
+                window.LMEvents.on('multiboxSwap', syncMbIndicator);
+            }
             bMb.addEventListener('touchstart', function (e) {
                 e.preventDefault(); e.stopPropagation();
                 debounced(function () {
                     if (typeof application !== 'undefined' && application && typeof application.multiboxswap === 'function') application.multiboxswap();
+                    /* update indicator after the swap */
+                    setTimeout(syncMbIndicator, 50);
                 }, 'mbswap', 250);
             }, { passive: false });
             /* in the left row (the 4x/16x row above the minimap could reach over SPLIT) */
             drawerInsert(bMb);
+            syncMbIndicator();
         }
         buildMbButton();
         /* optional team ping (the desktop ping hotkeys): tap = "Go here"; hold (or slide) opens a
@@ -862,6 +894,53 @@
             drawerInsert(b);
         }
         buildPingButton();
+        /* optional zoom in/out buttons: dispatch WheelEvent like the pinch-to-zoom handler */
+        var bZoomIn = null, bZoomOut = null;
+        function buildZoomButtons() {
+            if (bZoomIn && bZoomIn.parentNode) bZoomIn.parentNode.removeChild(bZoomIn);
+            if (bZoomOut && bZoomOut.parentNode) bZoomOut.parentNode.removeChild(bZoomOut);
+            bZoomIn = null; bZoomOut = null;
+            if (!prefs.zoomBtns) return;
+            bZoomIn = mkd('+'); bZoomOut = mkd('−');
+            function doZoom(dir) {
+                var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+                /* positive deltaY = zoom in (ogario convention, same as the pinch handler) */
+                wheel(canvas, dir * 60, cx, cy);
+            }
+            bZoomIn.addEventListener('touchstart', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                if (isMenuVisible()) return;
+                doZoom(1);
+            }, { passive: false });
+            bZoomOut.addEventListener('touchstart', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                if (isMenuVisible()) return;
+                doZoom(-1);
+            }, { passive: false });
+            drawerInsert(bZoomIn); drawerInsert(bZoomOut);
+        }
+        buildZoomButtons();
+        /* optional free spectate button: toggles free spectate mode */
+        var bFreeSpec = null;
+        function buildFreeSpecButton() {
+            if (bFreeSpec && bFreeSpec.parentNode) bFreeSpec.parentNode.removeChild(bFreeSpec);
+            bFreeSpec = null;
+            if (!prefs.freeSpecBtn) return;
+            bFreeSpec = mkd('\uD83D\uDD0D'); /* 🔍 */
+            bFreeSpec.addEventListener('touchstart', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                debounced(function () {
+                    if (typeof window.legendmod !== 'undefined' && window.legendmod && typeof window.legendmod.sendFreeSpectate === 'function') {
+                        window.legendmod.sendFreeSpectate();
+                    }
+                    /* toggle visual state */
+                    var isFree = typeof window.legendmod !== 'undefined' && window.legendmod && window.legendmod.isFreeSpectate;
+                    if (bFreeSpec) bFreeSpec.classList.toggle('lm-active', !!isFree);
+                }, 'fspec', 400);
+            }, { passive: false });
+            drawerInsert(bFreeSpec);
+        }
+        buildFreeSpecButton();
         /* net graph (the desktop hotkey), kept in step with the setting */
         function syncNetGraph() {
             if (typeof window.lmToggleNetGraph === 'function' && !!window._lmNetGraph !== prefs.netGraph) window.lmToggleNetGraph();
@@ -898,13 +977,17 @@
             setRange('lm-hf', Math.round(prefs.hudFade * 100), Math.round(prefs.hudFade * 100) + '%');
             [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'], ['lm-taphap', 'tapHaptic'],
                 ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-netgraph', 'netGraph'], ['lm-tdir', 'targetMode'],
-                ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact']
+                ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact'], ['lm-zoombtn', 'zoomBtns'], ['lm-freespec', 'freeSpecBtn']
             ].forEach(function (c) { var el = q(c[0]); if (el) el.checked = !!prefs[c[1]]; });
+            /* sync response curve dropdown */
+            var jrcEl = q('lm-jrc'); if (jrcEl) jrcEl.value = prefs.jsResponseCurve;
             bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
             if (prefs.targetMode) jHide();
             buildQuickCmds();
             buildMbButton();
             buildPingButton();
+            buildZoomButtons();
+            buildFreeSpecButton();
             syncNetGraph();
             /* sync leaderboard pointer-events with compact setting */
             var lb = document.getElementById('leaderboard-hud');
@@ -1375,6 +1458,15 @@
 
             var dx = rx0 * prefs.jsSensitivity;
             var dy = ry0 * prefs.jsSensitivity;
+            /* Response curve: modify distance scaling while preserving direction.
+             * 'linear' = no change; 'ease' = gentle start, faster mid; 'aggressive' = fast near edge */
+            if (prefs.jsResponseCurve !== 'linear' && rawD > 0) {
+                var maxR = JR > 0 ? JR : 55;
+                var t0 = Math.min(rawD / maxR, 1);
+                var curved = prefs.jsResponseCurve === 'ease' ? t0 * t0 * (3 - 2 * t0) : (t0 * t0);
+                var factor = curved / t0; /* preserves direction, scales magnitude */
+                dx *= factor; dy *= factor;
+            }
             /* no "/ asp": the game maps both cursor axes with the same scale
              * (screenDX / viewScale, screenDY / viewScale), so dividing x by the screen aspect
              * bent every diagonal toward vertical (45 deg became about 65 deg on a 20:9 phone) */
@@ -1964,7 +2056,8 @@
                 return { split: bSplit, feed: bFeed, x4: bDbl, x16: b16, multibox: bMb,
                     q1: quickBtns[0] || null, q2: quickBtns[1] || null, q3: quickBtns[2] || null, q4: quickBtns[3] || null,
                     chat: bChat, ping: bPing || null, wave: bWave, autoplay: bAI, pause: bPaus,
-                    rewind: bRwd, forward: bFwd, gear: bCfg, menu: bMenu };
+                    rewind: bRwd, forward: bFwd, gear: bCfg, menu: bMenu,
+                    zoomIn: bZoomIn || null, zoomOut: bZoomOut || null, freeSpec: bFreeSpec || null };
             },
             home: ctlHome,
             setJoyZone: function (z) { joyZone = z || null; },

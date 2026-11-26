@@ -45,6 +45,9 @@
         { id: 'rewind', lk: 'misc.editor.ctlRewind', icon: '⏪', hide: true },
         { id: 'forward', lk: 'misc.editor.ctlForward', icon: '⏩', hide: true },
         { id: 'gear', lk: 'misc.editor.ctlGear', icon: '⚙', hide: true },
+        { id: 'zoomIn', lk: 'misc.editor.ctlZoomIn', icon: '+', hide: true },
+        { id: 'zoomOut', lk: 'misc.editor.ctlZoomOut', icon: '−', hide: true },
+        { id: 'freeSpec', lk: 'misc.editor.ctlFreeSpec', icon: '🔍', hide: true },
         { id: 'menu', lk: 'misc.editor.ctlMenu', icon: '☰' }
     ];
     var CTL = {};
