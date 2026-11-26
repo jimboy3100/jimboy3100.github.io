@@ -310,6 +310,9 @@
         var m = cur();
         if (nameIn && D.activeElement !== nameIn) nameIn.value = m.name;
         if (!m.steps.length) listEl.appendChild(mk('div', 'lm-me-note', t('empty')));
+        /* the buttons and fields below change cur() when used, not m: save() replaces the stored
+         * macro objects, and a rename saves without drawing the rows again (the next step change
+         * after a rename was made on the old copy and lost) */
         m.steps.forEach(function (s, i) {
             var row = mk('div', 'lm-me-s');
             row.setAttribute('data-i', String(i));
@@ -324,7 +327,7 @@
                 sel.appendChild(o);
             });
             sel.addEventListener('change', function () {
-                m.steps[i] = cleanStep(sel.value === 'wait' ? { a: 'wait', ms: s.ms || 100 } : { a: sel.value, n: s.n || 1 });
+                cur().steps[i] = cleanStep(sel.value === 'wait' ? { a: 'wait', ms: s.ms || 100 } : { a: sel.value, n: s.n || 1 });
                 changed();
             });
             row.appendChild(sel);
@@ -340,17 +343,17 @@
                 num.setAttribute('aria-label', isWait ? 'ms' : t('times'));
                 num.addEventListener('keydown', function (e) { e.stopPropagation(); });
                 num.addEventListener('change', function () {
-                    m.steps[i] = cleanStep(isWait ? { a: 'wait', ms: num.value } : { a: s.a, n: num.value });
+                    cur().steps[i] = cleanStep(isWait ? { a: 'wait', ms: num.value } : { a: s.a, n: num.value });
                     changed();
                 });
                 row.appendChild(num);
                 row.appendChild(mk('span', 'lm-me-note', isWait ? 'ms' : t('times')));
             }
-            var up = btn('\u2191', t('up'), function () { if (i > 0) { var x = m.steps[i - 1]; m.steps[i - 1] = m.steps[i]; m.steps[i] = x; changed(); } });
-            var dn = btn('\u2193', t('down'), function () { if (i < m.steps.length - 1) { var x = m.steps[i + 1]; m.steps[i + 1] = m.steps[i]; m.steps[i] = x; changed(); } });
+            var up = btn('\u2191', t('up'), function () { var st = cur().steps; if (i > 0) { var x = st[i - 1]; st[i - 1] = st[i]; st[i] = x; changed(); } });
+            var dn = btn('\u2193', t('down'), function () { var st = cur().steps; if (i < st.length - 1) { var x = st[i + 1]; st[i + 1] = st[i]; st[i] = x; changed(); } });
             up.disabled = i === 0; dn.disabled = i === m.steps.length - 1;
             row.appendChild(up); row.appendChild(dn);
-            row.appendChild(btn('\u00d7', t('del'), function () { m.steps.splice(i, 1); changed(); }, 'warn'));
+            row.appendChild(btn('\u00d7', t('del'), function () { cur().steps.splice(i, 1); changed(); }, 'warn'));
             listEl.appendChild(row);
         });
         slotBtns.forEach(function (b, i) { b.classList.toggle('on', i === slot); });
