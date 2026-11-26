@@ -157,7 +157,7 @@
       "id": "mass",
       "name": "Mass",
       "description": "Mass number display settings.",
-      "settings": ["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virusMassShots", "massStroke", "relativeMass"]
+      "settings": ["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "massFormat", "virusSpikes", "virusMassShots", "massStroke", "relativeMass"]
     },
     {
       "id": "spectate",

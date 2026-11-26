@@ -188,13 +188,18 @@
         var k = Object.keys(t);
         return k.length > 0 && k.every(function (x) { return RING_KEYS.indexOf(x) >= 0; });
     }
-    /* A set saved while "Video skins volume" (volVideo) existed: the core's own migration folds
-     * it into "Video skin sound level" (on a copy) before the check drops the old key, so an old
-     * set with the video skins muted stays muted. */
+    /* A set saved while "Video skins volume" (volVideo) existed, or with settings that became one
+     * choice since ("Short mass" + "Mass format"): the core's own migration (lmFoldLegacySettings)
+     * folds them (on a copy) before the check drops or refits the old values, so an old set with
+     * the video skins muted stays muted and one with Short mass keeps its mass text. */
+    var LEGACY_KEYS = ['volVideo', 'massFormat', 'shortMass'];
     function foldLegacySettings(s) {
-        if (!isObj(s) || !own.call(s, 'volVideo') || typeof window.lmFoldVideoVolume !== 'function') return s;
+        if (!isObj(s) || !LEGACY_KEYS.some(function (k) { return own.call(s, k); })) return s;
+        var fold = typeof window.lmFoldLegacySettings === 'function' ? window.lmFoldLegacySettings : null;
+        if (!fold && own.call(s, 'volVideo') && typeof window.lmFoldVideoVolume === 'function') fold = window.lmFoldVideoVolume;
+        if (!fold) return s;
         var c = Object.assign({}, s);
-        try { window.lmFoldVideoVolume(c); } catch (e) { return s; }
+        try { fold(c); } catch (e) { return s; }
         return c;
     }
     function cleanBundle(b) {
@@ -863,6 +868,8 @@
             if (s[k] !== v && app && app.setSettings) app.setSettings(k, v);
             return;
         }
+        /* a dropdown of Settings (Mass format): setSettings applies it, saves and shows it */
+        if (el && el.tagName === 'SELECT' && $(el).closest('#og-options').length && app && app.setSettings) { app.setSettings(k, v); return; }
         var sl = $('#' + k + '-slider');
         if (sl.length && sl.closest('#og-options').length) { sl.val(v).trigger('input').trigger('change'); return; }
         /* a text box (chat filter, sound URLs): its change handler applies and saves */

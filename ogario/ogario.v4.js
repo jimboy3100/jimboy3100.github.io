@@ -20462,7 +20462,7 @@ var defaultmapsettings = {
     cameraSmoothLerp: true,
     centerWeightCamera: false,    /* camera target = mass-weighted centre of the own cells (like Delta) */
     optimizedMass: true,
-    shortMass: true,
+    shortMass: true,              /* copy of massFormat === 2 for scripts and older versions (lmFoldLegacySettings) */
     cellContours: false,
     virMassShots: true,
     hideMyMass: false,
@@ -20549,7 +20549,7 @@ var defaultmapsettings = {
     hudEdgeTeammates: false,      /* screen-edge arrows toward teammates */
     hudEdgeThreats: false,        /* screen-edge arrows toward big cells that just left the screen */
     hudCellPanel: false,          /* panel with the own cell masses */
-    massFormat: 0,                /* mass text: 0 as before (Short mass), 1 exact, 2 12.3k, 3 auto */
+    massFormat: 2,                /* mass text: 1 exact, 2 12.3k from 1000 (was Short mass), 3 auto; 0 of older versions = Short mass */
     virusesRange: false,
     textStroke: false,            /* legacy: no switch and no effect (namesStroke / massStroke are used); kept for saved settings and old scripts */
     namesStroke: true,
@@ -20722,7 +20722,8 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     gamepadMoveCurve: [0.5, 3, 0.1],
     gamepadZoomSens: [0.2, 4, 0.1],
     gamepadTrigger: [0.1, 0.95, 0.05],
-    massFormat: [0, 3, 1],
+    /* 0 ("as Short mass") of older versions is folded before the check (lmFoldLegacySettings) */
+    massFormat: [1, 3, 1],
     rainbowBorderSpeed: [1, 20, 1],
     hudBlur: [0, 8, 1],
     timeFormat: [0, 2, 1],
@@ -20809,6 +20810,28 @@ function lmFoldVideoVolume(s) {
     if (lv === undefined) lv = LM_SETTINGS_DEFAULTS.videoSkinSoundLevel;
     s.videoSkinSoundLevel = lmSchemaFit(LM_SETTINGS_SCHEMA.videoSkinSoundLevel, lv * Math.max(0, f));
     return true;
+}
+/* Settings that became one choice: "Short mass" and "Mass format" are massFormat (1 exact, 2 12.3k,
+ * 3 auto; the 0 of older versions meant "as Short mass"). The old key stays as a copy that follows
+ * the choice (scripts and older versions read it). A stored, imported or profile set from before
+ * gets its choice from the old keys once, before the values are checked; then the copies are
+ * written from the choice. Also folds the old video volume. Returns true when s changed. */
+function lmFoldLegacySettings(s) {
+    if (!s || typeof s !== 'object') return false;
+    var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
+    var was = JSON.stringify([s.massFormat, s.shortMass]);
+    var changed = lmFoldVideoVolume(s);
+    if (has('massFormat') || has('shortMass')) {
+        var mf = has('massFormat') ? (typeof s.massFormat === 'number' ? s.massFormat : (typeof s.massFormat === 'string' && s.massFormat.trim() !== '' ? Number(s.massFormat) : NaN)) : NaN;
+        /* no mode or 0 ("as Short mass", also what an unusable value fell back to): the switch decides */
+        if (!Number.isFinite(mf) || mf < 0.5) {
+            var sm = has('shortMass') ? lmSettingValue('shortMass', s.shortMass) : undefined;
+            s.massFormat = (sm === undefined ? LM_SETTINGS_DEFAULTS.shortMass : sm) ? 2 : 1;
+        }
+        var mfOk = lmSettingValue('massFormat', s.massFormat);
+        if (mfOk !== undefined) s.shortMass = mfOk === 2;
+    }
+    return changed || JSON.stringify([s.massFormat, s.shortMass]) !== was;
 }
 /* Who ate me: kept while anything shows it: the Game Over card's "Eaten by" (showKiller), the
  * match history, the death recap and the kill feed. One rule for the server's report (lmKiller)
@@ -24202,8 +24225,9 @@ function thelegendmodproject() {
             ) {
                 settings = null;
             }
-            /* the old second video volume: folded into the level and the save rewritten, so it is folded once */
-            if (settings && lmFoldVideoVolume(settings)) {
+            /* the old second video volume (folded into the level) and the settings that became one
+             * choice (lmFoldLegacySettings): the save is rewritten, so it is folded once */
+            if (settings && lmFoldLegacySettings(settings)) {
                 try { window.localStorage.setItem('ogarioSettings', JSON.stringify(settings)); } catch (e) { }
             }
             for (const option in defaultmapsettings) {
@@ -24340,7 +24364,7 @@ function thelegendmodproject() {
                  * stored. */
                 if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioSettings') && importValue.ogarioSettings && typeof importValue.ogarioSettings === 'object') {
                     var _impS = importValue.ogarioSettings;
-                    lmFoldVideoVolume(_impS);
+                    lmFoldLegacySettings(_impS);
                     for (var _impK in _impS) {
                         if (!Object.prototype.hasOwnProperty.call(_impS, _impK)) continue;
                         var _impV = lmSettingValue(_impK, _impS[_impK]);
@@ -24453,6 +24477,8 @@ function thelegendmodproject() {
                 defaultmapsettings[id] = true;
                 this._lmLoadOptSounds();
             }
+            /* Mass format 0 of older scripts: "as Short mass", i.e. the 12.3k or exact it shows now */
+            if (id === 'massFormat' && checked !== null && checked !== '' && Number(checked) === 0) checked = defaultmapsettings.massFormat === 1 ? 1 : 2;
             /* scripts call this too: a known setting takes only a value that fits it (LM_SETTINGS_SCHEMA) */
             if (null !== checked && Object.prototype.hasOwnProperty.call(LM_SETTINGS_DEFAULTS, id)) {
                 checked = lmSettingValue(id, checked);
@@ -24599,6 +24625,15 @@ function thelegendmodproject() {
                     case 'fpsAtTop':
                     case 'statsAtCenter':
                         this.setFpsAtTop();
+                        break;
+                    /* "Short mass" is a copy of Mass format now: a script (or an older addon) setting
+                     * it picks 12.3k or exact; it never had an effect in auto (3) */
+                    case 'shortMass':
+                        if (defaultmapsettings.massFormat !== 3) defaultmapsettings.massFormat = checked ? 2 : 1;
+                        this._lmChoiceSync('massFormat');
+                        break;
+                    case 'massFormat':
+                        this._lmChoiceSync('massFormat');
                         break;
                     case 'tweenMaxEffect':
                         this.setTweenMaxEffect();
@@ -25305,6 +25340,31 @@ function thelegendmodproject() {
                 apply(this);
             });
         },
+        /* A setting with a few named values as one dropdown (Mass format). The select has the
+         * setting's id, so the Command Centre, the Settings search, the presets and the profiles
+         * find it as they find a slider, and a change goes through setSettings like a switch.
+         * choices: [[value, text key], ...]; label: the text key of its title. */
+        addChoiceBox(id, name, label, choices) {
+            if (!defaultmapsettings.hasOwnProperty(name) || document.getElementById(name)) return;
+            var app = this, num = typeof LM_SETTINGS_DEFAULTS[name] === 'number';
+            var box = $('<div class="input-box lm-choice-box"></div>');
+            $('<span class="title-box"></span>').attr('data-i18n', label).text(lmT(label)).appendTo(box);
+            var sel = $('<select class="form-control"></select>').attr('id', name).appendTo(box);
+            choices.forEach(function (c) {
+                $('<option></option>').attr({ value: String(c[0]), 'data-i18n': c[1] }).text(lmT(c[1])).appendTo(sel);
+            });
+            sel.val(String(defaultmapsettings[name]));
+            sel.on('change', function () {
+                app.setSettings(name, num ? Number(this.value) : this.value);
+            });
+            $(id).append(box);
+        },
+        /* the old keys follow a choice (lmFoldLegacySettings), and its dropdown shows it */
+        _lmChoiceSync(name) {
+            lmFoldLegacySettings(defaultmapsettings);
+            var sel = document.getElementById(name);
+            if (sel && sel.tagName === 'SELECT' && sel.value !== String(defaultmapsettings[name])) sel.value = String(defaultmapsettings[name]);
+        },
         addSliderBox(id, name, min, max, step, callback) {
             /* the range and step come from the settings schema, not from the call */
             var _lmRule = Object.prototype.hasOwnProperty.call(LM_SETTINGS_SCHEMA, name) && Array.isArray(LM_SETTINGS_SCHEMA[name]) ? LM_SETTINGS_SCHEMA[name] : null;
@@ -25727,6 +25787,8 @@ function thelegendmodproject() {
                         if (defaultmapsettings[k] !== v) application.setSettings(k, v);
                         return;
                     }
+                    /* a dropdown (Mass format): setSettings applies it, saves and shows it */
+                    if (cb && cb.tagName === 'SELECT' && $(cb).closest('#og-options').length) { application.setSettings(k, v); return; }
                     var sl = $('#' + k + '-slider');
                     if (sl.length && sl.closest('#og-options').length) { sl.val(v).trigger('input').trigger('change'); return; }
                     defaultmapsettings[k] = v;
@@ -25866,7 +25928,7 @@ function thelegendmodproject() {
             this.addOptions([], "boardGroup");
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
-            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "shortMass", "virusSpikes", "virMassShots", "massStroke", "potionsDrinker", "hudRelativeMass"], "massGroup");
+            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "virusSpikes", "virMassShots", "massStroke", "potionsDrinker", "hudRelativeMass"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion", "skinCollections"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
@@ -25982,7 +26044,8 @@ function thelegendmodproject() {
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
             this.addSliderBox(".replayGroup", "instantReplaySecs", 15, 60, 15);
             this.addSliderBox(".statsGroup", "timeFormat", 0, 2, 1, "displayTime");
-            this.addSliderBox(".massGroup", "massFormat", 0, 3, 1);
+            /* one choice for the mass text ("Short mass" was a second switch for the same) */
+            this.addChoiceBox(".massGroup", "massFormat", "settings.massFormat", [[1, 'pkg.mg.massExact'], [2, 'pkg.mg.massShort'], [3, 'pkg.mg.massAuto']]);
             this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
             this.addSliderBox(".gridGroup", "rainbowBorderSpeed", 1, 20, 1);
             this.applyHudBlur();
@@ -36732,9 +36795,10 @@ function thelegendmodproject() {
             }
             this.massTxt = this.mass.toString();
 
-            /* HUD helpers: Mass format and relative enemy mass (ogario/modules/hudhelpers.js);
-             * the ratio changes with your own mass, so redraw whenever the text changes */
-            if (!this.isVirus && (defaultmapsettings.massFormat || defaultmapsettings.hudRelativeMass) && window.LMHudHelpers) {
+            /* HUD helpers: Mass format auto and relative enemy mass (ogario/modules/hudhelpers.js);
+             * the ratio changes with your own mass, so redraw whenever the text changes. Exact and
+             * 12.3k (Mass format 1 / 2) are the cell's own text below: shortMass follows Mass format. */
+            if (!this.isVirus && (defaultmapsettings.massFormat === 3 || defaultmapsettings.hudRelativeMass) && window.LMHudHelpers) {
                 var _lmHHTxt = window.LMHudHelpers.massText(this.mass, this);
                 if (this.optimizedMass) this.redrawMass = _lmHHTxt !== this._lmHHLastTxt || this.rescale;
                 this._lmHHLastTxt = _lmHHTxt;
@@ -60810,7 +60874,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (showMass) {
                     var mf = cell.isVirus ? 26 * Math.max(0, Number(ds.virMassScale) || 3) : f * 0.85 * Math.max(0, Number(ds.massScale) || 1) / 3;
                     var mEm = this._lmMassEm(), mw;
-                    if (mEm < 0 || (!cell.isVirus && (ms.massFormat || ms.hudRelativeMass))) {
+                    if (mEm < 0 || (!cell.isVirus && (ms.massFormat === 3 || ms.hudRelativeMass))) {
                         /* up to 10 characters */
                         mw = 5 * mf + mf;
                     } else {
@@ -71579,8 +71643,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         '' +
                         massVal;
                 }
-                /* HUD helpers: Mass format and relative enemy mass (same text as the Canvas path) */
-                if (!cell.isVirus && (defaultmapsettings.massFormat || defaultmapsettings.hudRelativeMass) && window.LMHudHelpers) {
+                /* HUD helpers: Mass format auto and relative enemy mass (same text as the Canvas path) */
+                if (!cell.isVirus && (defaultmapsettings.massFormat === 3 || defaultmapsettings.hudRelativeMass) && window.LMHudHelpers) {
                     massStr = window.LMHudHelpers.massText(massVal, cell);
                 }
 

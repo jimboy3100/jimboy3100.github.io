@@ -276,7 +276,7 @@ Additional sound toggles: virusSound, x16Sound, non16Sound, virusPopSound, virus
 - **Edge teammates arrows**: Screen-edge indicators for off-screen teammates
 - **Edge threats arrows**: Screen-edge indicators for large cells that left the screen
 - **Cell mass panel**: Detailed panel showing each own cell's mass sorted, count/16, largest, smallest, total
-- **Mass format**: 4 modes (0=short, 1=exact, 2=12.3k, 3=auto)
+- **Mass format**: one choice: exact, short (12.3k, the former Short mass switch) or auto (exact below 10000, then 12.3k, 123k, 1.2M)
 - **Virus range circles**: Rings showing virus ejection range
 - **Mass in tab title**: Browser tab shows current mass
 - **FPS/stats positioning**: FPS at top or centre of screen, configurable stats elements
@@ -435,7 +435,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Zoom**: Auto zoom, mass-weighted camera
 - **Respawn**: Quick respawn, auto respawn, spawn effects
 - **Names**: No names, optimized, auto-hide, hide mine, hide teammates, stroke
-- **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, short mass, virus spikes, virus mass shots, stroke, relative mass
+- **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, mass format (exact / 12.3k / auto), virus spikes, virus mass shots, stroke, relative mass
 - **Spectate**: Leaderboard click-spectate, minimap click-spectate, companion live/chat
 - **Replay**: Record replays, match history, personal bests, analytics
 - **Macro**: Feeding speed, split delay, pop-split delay

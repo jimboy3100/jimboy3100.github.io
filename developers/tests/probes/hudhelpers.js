@@ -13,8 +13,11 @@
     if (LM_SETTINGS_DEFAULTS[k] !== false) fail.push(k + ' default is not false');
     if (!document.getElementById(k)) fail.push(k + ' has no switch in the menu');
   });
-  if (LM_SETTINGS_DEFAULTS.massFormat !== 0) fail.push('massFormat default is not 0');
-  if (!document.getElementById('massFormat-slider')) fail.push('massFormat has no slider');
+  /* Mass format is one choice (exact / 12.3k / auto); "Short mass" is its 12.3k, no second switch */
+  if (LM_SETTINGS_DEFAULTS.massFormat !== 2 || LM_SETTINGS_DEFAULTS.shortMass !== true) fail.push('massFormat default is not 12.3k (2, Short mass)');
+  var mfSel = document.getElementById('massFormat');
+  if (!mfSel || mfSel.tagName !== 'SELECT' || [].map.call(mfSel.options, function (o) { return o.value; }).join() !== '1,2,3') fail.push('massFormat is not one dropdown 1/2/3');
+  if (document.getElementById('shortMass') || document.getElementById('massFormat-slider')) fail.push('Short mass switch or Mass format slider still in the menu');
   ['hk-precisionZoom', 'hk-zoomSave1', 'hk-zoomSave2', 'hk-zoomSave3', 'hk-zoomSave4', 'hk-zoomSave5', 'hk-cameraLock'].forEach(function (k) {
     if (!hotkeysCommand[k]) fail.push(k + ' missing');
     else if (hotkeysCommand[k].defaultKey !== '') fail.push(k + ' has a default key');

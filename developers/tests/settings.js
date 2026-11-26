@@ -65,7 +65,8 @@ check('the old multibox count 3-4 is still read (ensureMbSlots maps it to 2)', V
 const impLoop = cut("                    var _impS = importValue.ogarioSettings;", "                if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioThemeSettings')");
 const imported = { ogarioSettings: { macroFeeding: -100, fpsLimit: 'x', massFormat: 1.7, showMass: 'false', scanTrickDirections: 12, nope: 1, profileNumber: 30, animation: Infinity } };
 vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(imported);
-check('import: values fitted, unusable ones dropped (their defaults apply)', J(imported.ogarioSettings) === J({ macroFeeding: 1, massFormat: 2, showMass: false, profileNumber: 30 }));
+/* shortMass: the copy that follows Mass format (12.3k = 2) */
+check('import: values fitted, unusable ones dropped (their defaults apply)', J(imported.ogarioSettings) === J({ macroFeeding: 1, massFormat: 2, showMass: false, profileNumber: 30, shortMass: true }));
 const importedV = { ogarioSettings: { videoSkinSoundLevel: 0.9, volVideo: 0.5 } };
 vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(importedV);
 check('import: an old export with the second video volume keeps its loudness', J(importedV.ogarioSettings) === J({ videoSkinSoundLevel: 0.45 }));
@@ -154,7 +155,7 @@ check('text values in events are cut at 500 characters', events.length === 1 && 
 
 // ── S5 the real setSettings: validates script values, no event for the same value
 const ss = cut('        setSettings(id, checked) {', '        profiling() {');
-const app2 = vm.runInContext('({\n' + ss + '\n})', ctx);
+const app2 = vm.runInContext('({\n' + ss + cut('        _lmChoiceSync(name) {', '        addSliderBox(id, name') + '\n})', ctx);
 app2.saveSettings = app.saveSettings;
 app2._lmLoadOptSounds = function () { };
 ctx.hotkeys = {};
@@ -163,6 +164,7 @@ ctx.toastr = { info() { }, warning() { }, success() { } };
 ctx.legendmod = {};
 ctx.lmT = k => k;
 ctx._lmG1tag = () => '';
+if (!ctx.document) ctx.document = { getElementById: () => null };
 events.length = 0;
 let setThrew = null;
 try { app2.setSettings('massFormat', 1.7); app2.setSettings('macroFeeding', -100); app2.setSettings('scanTrickDirections', 12); } catch (e) { setThrew = e; }

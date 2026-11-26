@@ -32,9 +32,9 @@
     if (got.join() !== 'hudBlur=' + other) fail.push('slider events: ' + got.join());
     // a value between the steps set from a script: the slider and the game agree
     got.length = 0;
-    var mf = $('#massFormat-slider'), mfWas = S.massFormat;
+    var mf = $('#timeFormat-slider'), mfWas = S.timeFormat;
     mf.val(1.7).trigger('input').trigger('change');
-    if (Number(mf.val()) !== S.massFormat || S.massFormat % 1 !== 0) fail.push('massFormat slider ' + mf.val() + ' game ' + S.massFormat);
+    if (Number(mf.val()) !== S.timeFormat || S.timeFormat % 1 !== 0) fail.push('timeFormat slider ' + mf.val() + ' game ' + S.timeFormat);
     mf.val(mfWas).trigger('input').trigger('change');
     sl.val(was).trigger('input').trigger('change');
     got.length = 0;

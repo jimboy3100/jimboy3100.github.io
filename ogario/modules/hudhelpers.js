@@ -12,7 +12,8 @@
  *   hudEdgeThreats     arrows toward big cells that just left the screen (last position received,
  *                      fading after a few seconds)
  *   hudCellPanel       small panel: own cell masses (sorted), count/16, largest, smallest, total
- *   massFormat         0 as before (Short mass), 1 exact, 2 12.3k, 3 auto
+ *   massFormat         1 exact, 2 12.3k, 3 auto (Settings > Mass: "Mass format"; 0 of older
+ *                      versions was "as Short mass"); the core draws 1 and 2 itself
  * Hotkeys (no default keys): hold for precision zoom, save the current zoom as zoom level 1-5 (the
  * zoom level hotkeys, Alt+1-5 by default, then go to it), camera lock while spectating.
  *
