@@ -37,6 +37,13 @@
         { id: 'q2', lk: 'misc.editor.ctlQuick', lv: [2], icon: '2', hide: true },
         { id: 'q3', lk: 'misc.editor.ctlQuick', lv: [3], icon: '3', hide: true },
         { id: 'q4', lk: 'misc.editor.ctlQuick', lv: [4], icon: '4', hide: true },
+        { id: 'chat', lk: 'misc.editor.ctlChat', icon: '💬', hide: true },
+        { id: 'ping', lk: 'misc.editor.ctlPing', icon: '📍', hide: true },
+        { id: 'autoplay', lk: 'misc.editor.ctlAutoplay', icon: '►', hide: true },
+        { id: 'pause', lk: 'misc.editor.ctlPause', icon: '❚❚', hide: true },
+        { id: 'rewind', lk: 'misc.editor.ctlRewind', icon: '⏪', hide: true },
+        { id: 'forward', lk: 'misc.editor.ctlForward', icon: '⏩', hide: true },
+        { id: 'gear', lk: 'misc.editor.ctlGear', icon: '⚙', hide: true },
         { id: 'menu', lk: 'misc.editor.ctlMenu', icon: '☰' }
     ];
     var CTL = {};

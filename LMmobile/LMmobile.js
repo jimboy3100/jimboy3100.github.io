@@ -1044,7 +1044,7 @@
 
         bChat.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
-            chatOn ? chatClose() : chatOpen();
+            chatOn ? chatClose(true) : chatOpen();
         }, { passive: false });
 
         /* One Enter listener at a time: closing chat with the 💬 button left the old one
@@ -1069,7 +1069,7 @@
                         if (ev.keyCode === 13 || ev.key === 'Enter') {
                             inp2.removeEventListener('keydown', onEnter);
                             chatEnterFn = null;
-                            setTimeout(function () { chatClose(); }, 50);
+                            setTimeout(function () { chatClose(true); }, 50);
                         }
                     };
                     inp2.addEventListener('keydown', chatEnterFn);
@@ -1077,12 +1077,16 @@
             }, 120);
         }
 
-        function chatClose() {
+        /**
+         * Close the chat, optionally sending the message.
+         * @param {boolean} send  true = send the text (Enter / 💬 button); false = dismiss, keep draft
+         */
+        function chatClose(send) {
             var inp = document.getElementById('message');
             /* first, before the synthetic Enter below: it must not reach a leftover listener */
             if (chatEnterFn && inp) inp.removeEventListener('keydown', chatEnterFn);
             chatEnterFn = null;
-            if (inp && inp.value.length > 0) {
+            if (send && inp && inp.value.length > 0) {
                 // Send the message by dispatching Enter on the input
                 var ev = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter', keyCode: 13, which: 13 });
                 /* Firefox ignores keyCode/which in the constructor (0): the chat listeners check keyCode 13 */
@@ -1103,11 +1107,12 @@
             }, 50);
         }
 
-        // Tap canvas while chatting → send & close
+        /* Tap canvas while chatting → dismiss without sending (keeps draft).
+         * The touch is consumed so it does not trigger steering/flick/split. */
         canvas.addEventListener('touchstart', function (e) {
             if (chatOn) {
                 e.preventDefault();
-                chatClose();
+                chatClose(false);
             }
         }, { passive: false });
 
@@ -1710,6 +1715,7 @@
             else if (id === 'x4') smallR.insertBefore(el, smallR.firstChild);
             else if (id === 'x16') smallR.appendChild(el);
             else if (id === 'menu') rootL.insertBefore(el, rootL.firstChild);
+            else if (id === 'gear') drawer.insertBefore(el, sp);
             else drawer.insertBefore(el, bCfg);
         }
         var edLoading = false, edQueue = [];
@@ -1740,7 +1746,9 @@
             root: { left: rootL, right: rootR, small: smallR, drawer: drawer },
             controls: function () {
                 return { split: bSplit, feed: bFeed, x4: bDbl, x16: b16, multibox: bMb,
-                    q1: quickBtns[0] || null, q2: quickBtns[1] || null, q3: quickBtns[2] || null, q4: quickBtns[3] || null, menu: bMenu };
+                    q1: quickBtns[0] || null, q2: quickBtns[1] || null, q3: quickBtns[2] || null, q4: quickBtns[3] || null,
+                    chat: bChat, ping: bPing || null, autoplay: bAI, pause: bPaus,
+                    rewind: bRwd, forward: bFwd, gear: bCfg, menu: bMenu };
             },
             home: ctlHome,
             setJoyZone: function (z) { joyZone = z || null; },
@@ -1759,7 +1767,25 @@
         try { if (localStorage.getItem('lm-mobile-layouts')) loadEditor(); } catch (e) { }
 
         repositionButtons();
-        setInterval(function () { if (!document.hidden) repositionButtons(); }, 2500);
+        /* M6: Use ResizeObserver on the minimap and canvas for immediate layout updates,
+         * with a 5s fallback poll for edge cases (HUD editor, game state changes). */
+        (function () {
+            var rpTimer = null;
+            function debouncedReposition() {
+                if (rpTimer) return;
+                rpTimer = requestAnimationFrame(function () { rpTimer = null; repositionButtons(); });
+            }
+            if (typeof ResizeObserver !== 'undefined') {
+                var ro = new ResizeObserver(debouncedReposition);
+                ro.observe(canvas);
+                var mm = document.getElementById('minimap-hud');
+                if (mm) ro.observe(mm);
+                var lb = document.getElementById('leaderboard-hud');
+                if (lb) ro.observe(lb);
+            }
+            /* Reduced fallback: 5s instead of 2.5s since ResizeObserver catches most changes */
+            setInterval(function () { if (!document.hidden) repositionButtons(); }, 5000);
+        })();
         window.addEventListener('resize', repositionButtons);
         window.addEventListener('orientationchange', function () {
             /* Single rAF ensures layout is complete after rotation */
@@ -1778,14 +1804,17 @@
             navigator.standalone === true);
 
         /* ═══════════════════════════════════════════════════════
-         *  FULLSCREEN ↔ MENU SYNC
+         *  FULLSCREEN ↔ MENU SYNC  (M1: event-driven, replaces 500ms poll)
          *  helloContainer hidden → enter fullscreen (always)
          *  helloContainer visible → exit fullscreen (browser only)
+         *  A MutationObserver on #overlays fires immediately on menu show/hide,
+         *  with a lightweight 2s fallback for edge cases (jQuery .stop().hide()).
          * ═══════════════════════════════════════════════════════ */
         var _prevMenuVisible = isMenuVisible();
         /* Split/Feed/4x/16x sat above the menu (z-index) and ate its taps; hide them there */
         document.body.classList.toggle('lm-menu', !!_prevMenuVisible);
-        setInterval(function () {
+
+        function _syncMenuState() {
             var nowVisible = isMenuVisible();
             document.body.classList.toggle('lm-menu', !!nowVisible);
             if (nowVisible !== _prevMenuVisible) {
@@ -1802,11 +1831,15 @@
                             window._lmWakeLock = wl;
                         }).catch(function () { });
                     }
-                } else {
+                } else if (nowVisible) {
                     /* Menu appeared (died/opened). It no longer leaves fullscreen: getting back in
                      * needs a tap on Play, so with auto-respawn the phone stayed out of fullscreen
                      * (the browser's own back gesture still exits). A held Feed button stops here. */
                     if (typeof window._lmMobileFeedStop === 'function') window._lmMobileFeedStop();
+                    /* Cancel any pending radial / flick / pinch state */
+                    pOn = false; swStart = null;
+                    /* Release joystick so the cell does not drift while in the menu */
+                    if (jId !== null) { jId = null; jHide(); }
                     // Release wake lock when not playing
                     if (window._lmWakeLock) {
                         try { window._lmWakeLock.release(); } catch (e) { }
@@ -1815,7 +1848,27 @@
                 }
                 _prevMenuVisible = nowVisible;
             }
-        }, 500);
+        }
+
+        /* Primary: MutationObserver on the overlays element (immediate response) */
+        (function () {
+            var ov = document.getElementById('overlays');
+            if (ov) {
+                new MutationObserver(function () { _syncMenuState(); })
+                    .observe(ov, { attributes: true, attributeFilter: ['style', 'class'] });
+            }
+            /* jQuery .stop().hide() animates display/opacity on overlays' children too */
+            var hc = document.getElementById('helloContainer');
+            if (hc && hc !== ov) {
+                new MutationObserver(function () { _syncMenuState(); })
+                    .observe(hc, { attributes: true, attributeFilter: ['style', 'class'] });
+            }
+        })();
+        /* Fallback: 2s poll catches any transition the observer misses (e.g. jQuery animations
+         * that change computed visibility without a style attribute mutation) */
+        setInterval(function () {
+            if (!document.hidden) _syncMenuState();
+        }, 2000);
 
         // Re-acquire wake lock when tab becomes visible again (browser releases it on hidden)
         document.addEventListener('visibilitychange', function () {
