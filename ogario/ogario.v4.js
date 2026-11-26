@@ -21628,8 +21628,8 @@ function thelegendmodproject() {
             this.addFontBox('#theme-main', 'namesFont');
             this.addFontBox('#theme-main', 'massFont');
             this.addFontBox('#theme-main', 'sectorsFont');
-            this.addSliderBox('#theme-main', 'sectorsX', 2, 10, 1);
-            this.addSliderBox('#theme-main', 'sectorsY', 2, 10, 1);
+            this.addSliderBox('#theme-main', 'sectorsX', 2, 10, 1, 'setSectorsCount');
+            this.addSliderBox('#theme-main', 'sectorsY', 2, 10, 1, 'setSectorsCount');
             this.addSliderBox('#theme-main', 'sectorsFontSize', 200, 2000, 10);
             this.addSliderBox('#theme-main', 'namesScale', 0.5, 2, 0.1);
             this.addSliderBox('#theme-main', 'massScale', 1, 5, 1);
@@ -22132,6 +22132,11 @@ function thelegendmodproject() {
             if (application) {
                 application.resetMiniMapSectors();
             }
+        },
+        /* Sectors X / Y: the minimap keeps its sector grid drawn once, so it is drawn again with the
+         * new count (it kept the old grid while the sector name next to it used the new one) */
+        setSectorsCount() {
+            if (application) application.resetMiniMapSectors();
         },
         setMiniMapSectorsOpacity() {
             $('#minimap-sectors').css('opacity', defaultSettings.miniMapSectorsOpacity);
