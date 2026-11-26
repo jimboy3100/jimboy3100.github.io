@@ -1,5 +1,6 @@
-/* Legend Mod small tools: radial command menu, the conflict list of the Hotkeys window, screenshot mode and skin
- * collections. Everything is off until used: windows and hotkeys without default keys
+/* Legend Mod small tools: radial command menu, the conflict list of the Hotkeys window, the HUD hide of
+ * Show/hide HUD (Alt+H, the former screenshot mode) with its capture, and skin collections.
+ * Everything is off until used: windows and hotkeys without default keys
  * (all listed in the Command Centre), and the "Collections" button of the skins panel only with
  * the option skinCollections. Nothing runs per frame while no tool is open.
  * Stored data, each in its own localStorage key, checked when read:
@@ -27,7 +28,7 @@
      * language, else English. vars fill {0} {1}. A few labels are the same as settings / hotkey labels
      * and use those keys. */
     var TP = 'modules.smalltools.';
-    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-screenshotMode', skinsTitle: 'settings.hk-skinCollections', cMouseOff: 'pkg.mb.cMouseOff', cMoved: 'pkg.mb.cMoved', cMovedOk: 'pkg.mb.cMovedOk' };
+    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-showHUD', shotHelp: 'pkg.mg.shotHelp', shotTainted: 'pkg.mg.shotTainted', skinsTitle: 'settings.hk-skinCollections', cMouseOff: 'pkg.mb.cMouseOff', cMoved: 'pkg.mb.cMoved', cMovedOk: 'pkg.mb.cMovedOk' };
     function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(own(SHARED, k) ? SHARED[k] : TP + k, vars) : k; }
     function langDir() { return W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'; }
 
@@ -716,7 +717,7 @@
         if (confBox && confBox.isConnected && confBox.firstChild && confBox.style.display !== 'none') renderConflicts(confBox);
     }
 
-    /* ═══ 3. Screenshot mode + capture ═══ */
+    /* ═══ 3. HUD hide (Show/hide HUD, Alt+H: application.setShowHUD) + capture ═══ */
 
     var SHOT_KEY = 'lmSmallTools';
     function shotOpts() { var r = lsGet(SHOT_KEY); return cleanShotOpts(r && r.shot); }

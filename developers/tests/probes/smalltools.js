@@ -16,7 +16,7 @@
   var OPTS = ['skinCollections', 'a11yTextScale', 'a11yHudTextScale', 'a11yIndicators'], keep = {};
   OPTS.forEach(function (k) { keep[k] = s[k]; });
   var inBox = function (r) { return r.width > 0 && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; };
-  var HK = ['hk-radialMenu', 'hk-radialEditor', 'hk-screenshotMode', 'hk-screenshotCapture', 'hk-screenshotTool', 'hk-skinCollections'];
+  var HK = ['hk-radialMenu', 'hk-radialEditor', 'hk-screenshotCapture', 'hk-screenshotTool', 'hk-skinCollections'];
   try {
     need('options off by default', LM_SETTINGS_DEFAULTS.skinCollections === false && LM_SETTINGS_DEFAULTS.a11yIndicators === false &&
       LM_SETTINGS_DEFAULTS.a11yTextScale === 1 && LM_SETTINGS_DEFAULTS.a11yHudTextScale === 1);
@@ -133,10 +133,11 @@
 
     info.conflicts = list.map(function (c) { return c.kind + ':' + c.key + ':' + c.level; }).join(' ');
 
-    /* screenshot mode */
+    /* the HUD hide of Show/hide HUD (Alt+H; the former screenshot mode is not a hotkey of its own) */
+    need('Screenshot mode is part of Show/hide HUD', Object.keys(hotkeysCommand).indexOf('hk-screenshotMode') < 0 && hotkeysCommand['hk-screenshotMode'] === hotkeysCommand['hk-showHUD']);
     var hud = document.getElementById('overlays-hud') || document.getElementById('leaderboard-hud');
     var menuWas = $('#overlays').is(':visible');
-    hotkeysCommand['hk-screenshotMode'].keyDown();
+    hotkeysCommand['hk-showHUD'].keyDown();
     await sleep(50);
     var chip = document.getElementById('lm-shot-chip');
     need('screenshot mode on', T.shotActive() && !!chip && inBox(chip.getBoundingClientRect()));

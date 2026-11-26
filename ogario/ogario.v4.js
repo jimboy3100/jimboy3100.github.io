@@ -23054,7 +23054,13 @@ function thelegendmodproject() {
         setShowFood() {
             ogario.showFood = !ogario.showFood;
         },
+        /* Show/hide HUD (Alt+H) is the one HUD hide: with ogario/modules/smalltools.js (loaded at
+         * start) it hides the whole HUD, also Legend Mod's own boxes, windows and popups, and keeps
+         * only the game view and a small Capture / x chip (the former Screenshot mode); Alt+H again,
+         * Esc or the x show it. Without that module the HUD box alone, as before. */
         setShowHUD() {
+            var T = window.LMSmallTools;
+            if (T && typeof T.shotToggle === 'function') { T.shotToggle(); return; }
             $('#overlays-hud').toggle();
         },
         setShowGrid() {
@@ -82260,6 +82266,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var _lmZl = 'hk-zoom' + _lmZm[1], _lmZHas = false;
                     for (var _lmZk in hotkeys) if (hotkeys.hasOwnProperty(_lmZk) && hotkeys[_lmZk] === _lmZl) { _lmZHas = true; break; }
                     if (_lmZHas) delete hotkeys[_lmZr]; else hotkeys[_lmZr] = _lmZl;
+                }
+                /* "Screenshot mode" is Show/hide HUD now: its key goes to Show/hide HUD when that has
+                 * no key of its own (Alt+H by default), else it is free again */
+                for (var _lmSm in hotkeys) {
+                    if (!hotkeys.hasOwnProperty(_lmSm) || hotkeys[_lmSm] !== 'hk-screenshotMode') continue;
+                    var _lmSmHas = false;
+                    for (var _lmSk in hotkeys) if (hotkeys.hasOwnProperty(_lmSk) && hotkeys[_lmSk] === 'hk-showHUD') { _lmSmHas = true; break; }
+                    if (_lmSmHas) delete hotkeys[_lmSm]; else hotkeys[_lmSm] = 'hk-showHUD';
                 }
                 /* "Open the Lab": the Lab experiments are in the User Scripts window, so its key
                  * opens that window (unless a key does that already) */

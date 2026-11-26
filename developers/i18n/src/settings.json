@@ -5129,24 +5129,6 @@
     "ja": "ショートカットの重複",
     "it": "Conflitti tra tasti rapidi"
   },
-  "settings.hk-screenshotMode": {
-    "en": "Screenshot mode (hide the HUD)",
-    "el": "Λειτουργία στιγμιότυπου (κρύβει το HUD)",
-    "es": "Modo captura (ocultar el HUD)",
-    "bg": "Режим за скрийншот (скрий HUD)",
-    "fr": "Mode capture (masquer le HUD)",
-    "ar": "وضع لقطة الشاشة (إخفاء HUD)",
-    "zh": "截圖模式（隱藏 HUD）",
-    "ru": "Режим скриншота (скрыть HUD)",
-    "de": "Screenshot-Modus (HUD ausblenden)",
-    "tr": "Ekran görüntüsü modu (HUD'u gizle)",
-    "pl": "Tryb zrzutu ekranu (ukryj HUD)",
-    "nl": "Screenshotmodus (HUD verbergen)",
-    "pt": "Modo captura (ocultar o HUD)",
-    "id": "Mode tangkapan layar (sembunyikan HUD)",
-    "ja": "スクリーンショットモード（HUDを隠す）",
-    "it": "Modalità screenshot (nascondi l'HUD)"
-  },
   "settings.hk-screenshotCapture": {
     "en": "Capture screenshot (PNG)",
     "el": "Λήψη στιγμιότυπου (PNG)",

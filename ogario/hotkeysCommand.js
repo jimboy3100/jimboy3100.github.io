@@ -859,17 +859,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-screenshotMode': {
-				get label() {
-					return lmT('settings.hk-screenshotMode');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMSmallTools) window.LMSmallTools.shotToggle();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-screenshotCapture': {
 				get label() {
 					return lmT('settings.hk-screenshotCapture');
@@ -2041,4 +2030,8 @@
         [1, 2, 3].forEach(function (n) {
             Object.defineProperty(hotkeysCommand, 'hk-zoomRecall' + n, { value: hotkeysCommand['hk-zoom' + n], enumerable: false, configurable: true });
         });
+        /* "Screenshot mode" is part of Show/hide HUD (Alt+H) now: a mouse button, gamepad button, radial
+         * menu or Command Centre star still naming it hides the HUD the same way (not listed). Its
+         * keyboard key moves in loadHotkeys (ogario.v4.js). */
+        Object.defineProperty(hotkeysCommand, 'hk-screenshotMode', { value: hotkeysCommand['hk-showHUD'], enumerable: false, configurable: true });
 	

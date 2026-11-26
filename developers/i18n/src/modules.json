@@ -16811,24 +16811,6 @@
     "ja": "ミニマップを含める",
     "it": "Includi la minimappa"
   },
-  "modules.smalltools.shotHelp": {
-    "en": "Screenshot mode hides Legend Mod's HUD until you press its hotkey again, Esc or the x in the corner. Capture saves the game view as a PNG.",
-    "el": "Η λειτουργία στιγμιότυπου κρύβει το HUD του Legend Mod μέχρι να πατήσεις ξανά το πλήκτρο της, το Esc ή το x στη γωνία. Η λήψη αποθηκεύει την εικόνα του παιχνιδιού ως PNG.",
-    "es": "El modo captura oculta el HUD de Legend Mod hasta que vuelvas a pulsar su tecla, Esc o la x de la esquina. Capturar guarda la vista del juego como PNG.",
-    "bg": "Режимът за скрийншот скрива HUD на Legend Mod, докато не натиснеш отново клавиша му, Esc или x в ъгъла. Снимането запазва изгледа на играта като PNG.",
-    "fr": "Le mode capture masque le HUD de Legend Mod jusqu'à ce que tu appuies à nouveau sur son raccourci, Échap ou le x dans le coin. Capturer enregistre la vue du jeu en PNG.",
-    "ar": "يخفي وضع لقطة الشاشة واجهة HUD الخاصة بـ Legend Mod حتى تضغط اختصاره مجددًا أو Esc أو x في الزاوية. الالتقاط يحفظ عرض اللعبة كصورة PNG.",
-    "zh": "截圖模式會隱藏 Legend Mod 的 HUD，直到你再次按下其快捷鍵、Esc 或角落的 x。擷取會將遊戲畫面儲存為 PNG。",
-    "ru": "Режим скриншота скрывает HUD Legend Mod, пока вы снова не нажмёте его клавишу, Esc или x в углу. Снимок сохраняет вид игры в PNG.",
-    "de": "Der Screenshot-Modus blendet das HUD von Legend Mod aus, bis du seine Taste erneut drückst, Esc oder das x in der Ecke. Aufnehmen speichert die Spielansicht als PNG.",
-    "tr": "Ekran görüntüsü modu, kısayoluna tekrar, Esc'ye veya köşedeki x'e basana kadar Legend Mod HUD'unu gizler. Yakala, oyun görüntüsünü PNG olarak kaydeder.",
-    "pl": "Tryb zrzutu ukrywa HUD Legend Mod, dopóki nie naciśniesz ponownie jego skrótu, Esc lub x w rogu. Zapis zapisuje widok gry jako PNG.",
-    "nl": "Screenshotmodus verbergt de HUD van Legend Mod tot je de sneltoets opnieuw indrukt, Esc of de x in de hoek. Vastleggen slaat het spelbeeld op als PNG.",
-    "pt": "O modo captura de tela oculta o HUD do Legend Mod até você apertar o atalho dele de novo, Esc ou o x no canto. Capturar salva a visão do jogo como PNG.",
-    "id": "Mode tangkapan layar menyembunyikan HUD Legend Mod sampai kamu menekan hotkey-nya lagi, Esc, atau x di sudut. Ambil PNG menyimpan tampilan game sebagai PNG.",
-    "ja": "スクリーンショットモードでは、ショートカットキーをもう一度押すか、Esc か隅の x を押すまで Legend Mod のHUDを隠します。「撮影」でゲーム画面を PNG として保存します。",
-    "it": "La modalità screenshot nasconde l'HUD di Legend Mod finché non premi di nuovo il suo tasto rapido, Esc o la x nell'angolo. Cattura salva la vista di gioco come PNG."
-  },
   "modules.smalltools.shotHint": {
     "en": "HUD hidden: Esc or x shows it again",
     "el": "Το HUD κρύφτηκε: Esc ή x για να ξαναφανεί",
@@ -16864,24 +16846,6 @@
     "id": "Tangkapan layar disimpan",
     "ja": "スクリーンショットを保存しました",
     "it": "Screenshot salvato"
-  },
-  "modules.smalltools.shotTainted": {
-    "en": "This browser blocks the capture because some skins come from sites that do not allow it. Turn on \"No skins\" for the capture, or use your system screenshot while screenshot mode hides the HUD.",
-    "el": "Ο browser μπλοκάρει τη λήψη επειδή κάποια skins προέρχονται από sites που δεν το επιτρέπουν. Άνοιξε το \"Χωρίς skins\" για τη λήψη ή χρησιμοποίησε το στιγμιότυπο του συστήματος όσο η λειτουργία στιγμιότυπου κρύβει το HUD.",
-    "es": "Este navegador bloquea la captura porque algunos skins vienen de sitios que no lo permiten. Activa \"Sin skins\" para la captura o usa la captura del sistema mientras el modo captura oculta el HUD.",
-    "bg": "Браузърът блокира снимането, защото някои скинове идват от сайтове, които не го позволяват. Включи „Без скинове“ за снимката или ползвай системния скрийншот, докато режимът скрива HUD.",
-    "fr": "Ce navigateur bloque la capture car certains skins viennent de sites qui ne l'autorisent pas. Active « Pas de skins » pour la capture, ou utilise la capture du système pendant que le mode capture masque le HUD.",
-    "ar": "يحظر هذا المتصفح الالتقاط لأن بعض السكنات من مواقع لا تسمح بذلك. فعّل \"بدون سكنات\" أثناء الالتقاط، أو استخدم لقطة شاشة النظام بينما يخفي الوضع واجهة HUD.",
-    "zh": "此瀏覽器封鎖了擷取，因為部分造型來自不允許的網站。擷取時請開啟「不顯示造型」，或在截圖模式隱藏 HUD 時使用系統截圖。",
-    "ru": "Браузер блокирует снимок, потому что некоторые скины с сайтов, которые это запрещают. Включите «Без скинов» для снимка или используйте системный скриншот, пока режим скрывает HUD.",
-    "de": "Dieser Browser blockiert die Aufnahme, weil einige Skins von Seiten stammen, die das nicht erlauben. Schalte „Keine Skins“ für die Aufnahme ein oder nutze den System-Screenshot, während der Modus das HUD ausblendet.",
-    "tr": "Bazı skinler buna izin vermeyen sitelerden geldiği için tarayıcı yakalamayı engelliyor. Yakalama için \"Skin yok\"u aç veya mod HUD'u gizlerken sistem ekran görüntüsünü kullan.",
-    "pl": "Przeglądarka blokuje zapis, bo niektóre skiny pochodzą z witryn, które na to nie pozwalają. Włącz „Wyłącz skiny” na czas zapisu albo użyj zrzutu systemowego, gdy tryb ukrywa HUD.",
-    "nl": "Deze browser blokkeert het vastleggen omdat sommige skins van sites komen die dat niet toestaan. Zet \"Geen skins\" aan voor de opname, of gebruik de systeemscreenshot terwijl de modus de HUD verbergt.",
-    "pt": "Este navegador bloqueia a captura porque algumas skins vêm de sites que não permitem isso. Ative \"Sem skins\" para a captura ou use a captura de tela do sistema enquanto o modo captura oculta o HUD.",
-    "id": "Browser ini memblokir pengambilan gambar karena beberapa skin berasal dari situs yang tidak mengizinkannya. Aktifkan \"Tanpa skin\" saat mengambil gambar, atau gunakan screenshot sistem selama mode tangkapan layar menyembunyikan HUD.",
-    "ja": "一部のスキンが撮影を許可していないサイトのものなので、ブラウザが撮影をブロックしました。撮影時は「スキン非表示」をオンにするか、スクリーンショットモードでHUDを隠した状態でOSのスクリーンショット機能を使ってください。",
-    "it": "Questo browser blocca la cattura perché alcune skin provengono da siti che non lo consentono. Attiva \"Nessuna skin\" per la cattura, oppure usa lo screenshot di sistema mentre la modalità screenshot nasconde l'HUD."
   },
   "modules.smalltools.shotFailed": {
     "en": "The screenshot could not be made.",

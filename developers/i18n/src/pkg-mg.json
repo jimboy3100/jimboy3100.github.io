@@ -124,5 +124,41 @@
     "id": "Tengah bawah",
     "ja": "下中央",
     "it": "In basso al centro"
+  },
+  "pkg.mg.shotHelp": {
+    "en": "Show/hide HUD (Alt+H by default) hides the whole HUD and keeps only the game view with a small Capture / x button; the hotkey again, Esc or the x show it again. Capture saves the game view as a PNG.",
+    "el": "Το Εμφάνιση/απόκρυψη HUD (Alt+H από προεπιλογή) κρύβει όλο το HUD και αφήνει μόνο την εικόνα του παιχνιδιού με ένα μικρό κουμπί Λήψη / x· το πλήκτρο ξανά, το Esc ή το x το εμφανίζουν ξανά. Η Λήψη αποθηκεύει την εικόνα του παιχνιδιού ως PNG.",
+    "es": "Mostrar/ocultar HUD (Alt+H por defecto) oculta todo el HUD y deja solo la vista del juego con un pequeño botón Capturar / x; la tecla otra vez, Esc o la x lo muestran de nuevo. Capturar guarda la vista del juego como PNG.",
+    "bg": "Показване/скриване на HUD (Alt+H по подразбиране) скрива целия HUD и оставя само изгледа на играта с малък бутон Снимка / x; клавишът отново, Esc или x го показват пак. Снимка запазва изгледа на играта като PNG.",
+    "fr": "Afficher/masquer le HUD (Alt+H par défaut) masque tout le HUD et ne garde que la vue du jeu avec un petit bouton Capturer / x ; la touche à nouveau, Échap ou le x le réaffichent. Capturer enregistre la vue du jeu en PNG.",
+    "ar": "إظهار/إخفاء HUD (Alt+H افتراضيًا) يخفي HUD بالكامل ويبقي عرض اللعبة فقط مع زر صغير التقاط / x؛ الضغط على المفتاح مجددًا أو Esc أو x يعيد إظهاره. الالتقاط يحفظ عرض اللعبة كصورة PNG.",
+    "zh": "顯示/隱藏 HUD（預設 Alt+H）會隱藏整個 HUD，只保留遊戲畫面和一個小的「擷取 / x」按鈕；再按一次熱鍵、Esc 或 x 即可重新顯示。擷取會把遊戲畫面儲存為 PNG。",
+    "ru": "Показать/скрыть HUD (по умолчанию Alt+H) скрывает весь HUD и оставляет только вид игры с маленькой кнопкой Снимок / x; повторное нажатие клавиши, Esc или x возвращают его. Снимок сохраняет вид игры в PNG.",
+    "de": "HUD ein-/ausblenden (standardmäßig Alt+H) blendet das ganze HUD aus und lässt nur die Spielansicht mit einem kleinen Knopf Aufnehmen / x; die Taste erneut, Esc oder das x zeigen es wieder. Aufnehmen speichert die Spielansicht als PNG.",
+    "tr": "HUD göster/gizle (varsayılan Alt+H) tüm HUD'u gizler ve yalnızca oyun görüntüsünü küçük bir Yakala / x düğmesiyle bırakır; tuşa tekrar basmak, Esc veya x onu geri getirir. Yakala oyun görüntüsünü PNG olarak kaydeder.",
+    "pl": "Pokaż/ukryj HUD (domyślnie Alt+H) ukrywa cały HUD i zostawia tylko widok gry z małym przyciskiem Zrzut / x; ponowne naciśnięcie klawisza, Esc lub x pokazują go znowu. Zrzut zapisuje widok gry jako PNG.",
+    "nl": "HUD tonen/verbergen (standaard Alt+H) verbergt de hele HUD en laat alleen het spelbeeld met een kleine knop Vastleggen / x; de sneltoets opnieuw, Esc of de x tonen hem weer. Vastleggen slaat het spelbeeld op als PNG.",
+    "pt": "Mostrar/ocultar HUD (Alt+H por padrão) oculta todo o HUD e deixa só a visão do jogo com um pequeno botão Capturar / x; a tecla de novo, Esc ou o x mostram-no outra vez. Capturar guarda a visão do jogo como PNG.",
+    "id": "Tampilkan/sembunyikan HUD (Alt+H secara bawaan) menyembunyikan seluruh HUD dan hanya menyisakan tampilan game dengan tombol kecil Tangkap / x; tombol pintas lagi, Esc, atau x menampilkannya kembali. Tangkap menyimpan tampilan game sebagai PNG.",
+    "ja": "HUD の表示/非表示（既定は Alt+H）は HUD 全体を隠し、ゲーム画面と小さな「キャプチャ / x」ボタンだけを残します。もう一度ホットキー、Esc または x で再表示します。キャプチャはゲーム画面を PNG で保存します。",
+    "it": "Mostra/nascondi HUD (Alt+H di default) nasconde tutto l'HUD e lascia solo la vista di gioco con un piccolo pulsante Cattura / x; di nuovo il tasto, Esc o la x lo mostrano ancora. Cattura salva la vista di gioco come PNG."
+  },
+  "pkg.mg.shotTainted": {
+    "en": "This browser blocks the capture because some skins come from sites that do not allow it. Turn on \"No skins\" for the capture, or use your system screenshot while the HUD is hidden (Show/hide HUD).",
+    "el": "Αυτός ο browser μπλοκάρει τη λήψη επειδή κάποια skins προέρχονται από sites που δεν το επιτρέπουν. Ενεργοποίησε το \"Χωρίς skins\" για τη λήψη ή χρησιμοποίησε το στιγμιότυπο του συστήματος όσο το HUD είναι κρυμμένο (Εμφάνιση/απόκρυψη HUD).",
+    "es": "Este navegador bloquea la captura porque algunas skins vienen de sitios que no lo permiten. Activa \"Sin skins\" para la captura o usa la captura del sistema mientras el HUD está oculto (Mostrar/ocultar HUD).",
+    "bg": "Този браузър блокира снимката, защото някои скинове идват от сайтове, които не го позволяват. Включи \"Без скинове\" за снимката или ползвай системната снимка на екрана, докато HUD е скрит (Показване/скриване на HUD).",
+    "fr": "Ce navigateur bloque la capture car certains skins viennent de sites qui ne l'autorisent pas. Active \"Pas de skins\" pour la capture, ou utilise la capture d'écran du système pendant que le HUD est masqué (Afficher/masquer le HUD).",
+    "ar": "يمنع هذا المتصفح الالتقاط لأن بعض السكنات تأتي من مواقع لا تسمح بذلك. فعّل \"بدون سكنات\" للالتقاط، أو استخدم لقطة الشاشة من النظام بينما HUD مخفي (إظهار/إخفاء HUD).",
+    "zh": "此瀏覽器封鎖了擷取，因為部分造型來自不允許的網站。擷取時開啟「無造型」，或在 HUD 隱藏時（顯示/隱藏 HUD）使用系統截圖。",
+    "ru": "Браузер блокирует снимок, потому что некоторые скины загружены с сайтов, которые это запрещают. Включите \"Без скинов\" для снимка или используйте системный скриншот, пока HUD скрыт (Показать/скрыть HUD).",
+    "de": "Dieser Browser blockiert die Aufnahme, weil einige Skins von Seiten kommen, die das nicht erlauben. Schalte \"Keine Skins\" für die Aufnahme ein oder nutze den Screenshot des Systems, solange das HUD ausgeblendet ist (HUD ein-/ausblenden).",
+    "tr": "Bazı skinler buna izin vermeyen sitelerden geldiği için bu tarayıcı yakalamayı engelliyor. Yakalama için \"Skin yok\" seçeneğini aç veya HUD gizliyken (HUD göster/gizle) sistem ekran görüntüsünü kullan.",
+    "pl": "Ta przeglądarka blokuje zrzut, bo niektóre skiny pochodzą ze stron, które na to nie pozwalają. Włącz \"Bez skinów\" na czas zrzutu albo użyj zrzutu ekranu systemu, gdy HUD jest ukryty (Pokaż/ukryj HUD).",
+    "nl": "Deze browser blokkeert het vastleggen omdat sommige skins van sites komen die dat niet toestaan. Zet \"Geen skins\" aan voor de opname, of gebruik de systeemscreenshot terwijl de HUD verborgen is (HUD tonen/verbergen).",
+    "pt": "Este navegador bloqueia a captura porque algumas skins vêm de sites que não o permitem. Ativa \"Sem skins\" para a captura ou usa a captura do sistema enquanto o HUD está oculto (Mostrar/ocultar HUD).",
+    "id": "Browser ini memblokir pengambilan gambar karena beberapa skin berasal dari situs yang tidak mengizinkannya. Aktifkan \"Tanpa skin\" saat mengambil gambar, atau gunakan screenshot sistem selama HUD disembunyikan (Tampilkan/sembunyikan HUD).",
+    "ja": "一部のスキンが許可しないサイトから読み込まれているため、このブラウザはキャプチャをブロックしています。キャプチャ時は「スキンなし」をオンにするか、HUD を隠している間（HUD の表示/非表示）にシステムのスクリーンショットを使ってください。",
+    "it": "Questo browser blocca la cattura perché alcune skin provengono da siti che non lo consentono. Attiva \"Nessuna skin\" per la cattura, oppure usa lo screenshot di sistema mentre l'HUD è nascosto (Mostra/nascondi HUD)."
   }
 }
