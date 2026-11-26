@@ -239,7 +239,7 @@
     "extras/banneranimated5Lc.html": "no link anywhere",
     "extras/banneranimated6.html": "no link anywhere",
     "extras/banneranimated7a.html": "only banneranimated7bLc.html (archived)",
-    "extras/banneranimated7bLc.html": "only the old site copy in extras/website",
+    "extras/banneranimated7bLc.html": "no link anywhere (only the old site copy in extras/website had one)",
     "extras/banneranimated9Lc2030.html": "no link anywhere",
     "extras/banneranimatedEA.html": "no link anywhere",
     "extras/banneranimatedFayiz.html": "only in a commented-out block of LMexpress.sniff.js",
@@ -257,7 +257,7 @@
     "extras/rewardday.html": "no link anywhere (the gift button opens rewardday2.html)",
     "extras/skinrotator2.html": "no link anywhere (skinrotator.html is the live one)",
     "extras/skinrotator3.html": "no link anywhere (skinrotator.html is the live one)",
-    "extras/website/index.html": "the old copy of the home page (index.html is the live one); other pages use only its CSS files"
+    "extras/website/index.html": "forwards to the home page (it was an old copy of it); other pages use only the CSS files of this folder"
   },
   "skip": [
     "\\.min\\.js$",
