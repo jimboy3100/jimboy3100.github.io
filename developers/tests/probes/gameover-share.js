@@ -2,7 +2,8 @@
 // gone): it shares the match card image with the text and the link through the share sheet, the
 // text and link alone where files cannot be shared, else opens a tweet; the camera icon still saves
 // the image and the clipboard icon still copies the stats. The share API and window.open are
-// stand-ins here; everything is put back.
+// stand-ins here; everything is put back. Rapid taps on the camera icon save the image once (until
+// 3.693 each tap while the image was encoded saved it again).
 (async () => {
   var fail = [], info = {};
   function need(name, ok) { if (!ok) fail.push(name); }
@@ -12,6 +13,7 @@
   var nav = window.navigator, saved = {};
   ['share', 'canShare'].forEach(function (k) { saved[k] = Object.getOwnPropertyDescriptor(nav, k); });
   var origOpen = window.open, calls = [], opened = [], canFiles = true;
+  var origAClick = HTMLAnchorElement.prototype.click, saves = [];
   var put = function (k, v) { Object.defineProperty(nav, k, { configurable: true, writable: true, value: v }); };
   var u = { finalMass: 9000, highestMass: 24500, topPosition: 2, finalPosition: 5, timeTotal: 95, timeInLeaderboard: 60, massConsumed: 30000, foodEaten: 100, playersEaten: 3, normalCellsEaten: 5, virusesEaten: 1 };
   var card = function () { lm.showSessionStats(u); return sleep(400); };
@@ -100,10 +102,24 @@
     document.getElementById('lm-go-share').click();
     await waitCalls(1);
     need('without a share sheet: a tweet', calls.length === 0 && opened.length === 1 && opened[0].indexOf('https://twitter.com/intent/tweet?text=') === 0);
+    /* camera icon: rapid taps save the image once; a later tap saves it again (the download link's
+     * click is a stand-in, nothing is saved) */
+    HTMLAnchorElement.prototype.click = function () { if (this.download) saves.push(this.download); else return origAClick.apply(this, arguments); };
+    await card();
+    var dl = document.getElementById('lm-go-dlcard');
+    dl.click(); dl.click(); dl.click();
+    for (var si = 0; si < 100 && !saves.length; si++) await sleep(100);
+    await sleep(300);
+    info.saves = saves.length;
+    need('camera icon: rapid taps save the image once', saves.length === 1 && /\.png$/.test(saves[0]));
+    dl.click();
+    for (si = 0; si < 100 && saves.length < 2; si++) await sleep(100);
+    need('camera icon: a later tap saves it again', saves.length === 2);
   } catch (e) {
     fail.push('threw: ' + e);
   } finally {
     window.open = origOpen;
+    HTMLAnchorElement.prototype.click = origAClick;
     ['share', 'canShare'].forEach(function (k) { if (saved[k]) Object.defineProperty(nav, k, saved[k]); else delete nav[k]; });
     var mm = document.getElementById('lm-gameover-modal');
     if (mm && mm.parentNode) mm.parentNode.removeChild(mm);

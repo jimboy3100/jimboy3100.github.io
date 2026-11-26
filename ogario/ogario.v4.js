@@ -48341,8 +48341,14 @@ function thelegendmodproject() {
             var dlCardBtn = document.getElementById('lm-go-dlcard');
             if (dlCardBtn) dlCardBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
+                /* one save at a time, as Share: a quick second tap while the image is encoded saved it twice */
+                if (dlCardBtn._lmBusy) return;
                 if (goSelf && goSelf._gameOverDismissTimer) { clearTimeout(goSelf._gameOverDismissTimer); goSelf._gameOverDismissTimer = null; }
+                dlCardBtn._lmBusy = true;
+                dlCardBtn.style.opacity = '0.5';
                 _lmRenderMatchCard(function (blob) {
+                    dlCardBtn._lmBusy = false;
+                    dlCardBtn.style.opacity = '';
                     if (!blob) { if (window.toastr) toastr.warning(_lmTH('game2.cardFailed', '')); return; }
                     var url = URL.createObjectURL(blob);
                     var a = document.createElement('a');
