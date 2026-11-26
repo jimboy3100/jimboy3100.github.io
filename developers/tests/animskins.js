@@ -128,7 +128,8 @@ const frames = (n, delay, p) => ({ color: '#ff0000', frames: Array.from({ length
     b.advance(10000);
     check('off: no frame loads after switching off (' + (b.loads.length - n) + ')', b.loads.length === n);
     check('off: no pending timers (' + b.T.timers.size + ')', b.T.timers.size === 0);
-    check('off: the skin map is flushed (ordinary behaviour)', b.ctx.flushes === 1);
+    /* the lookup leaves the agar.io skins out instead: emptying the map dropped the custom skins too */
+    check('off: the skin map is kept (custom skins stay)', b.ctx.flushes === 0);
     b.T.clearWorks = false;
     b.ctx.defaultmapsettings.vanillaSkins = true;
     b.ctx.application.setVanillaSkins();

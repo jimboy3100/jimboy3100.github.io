@@ -188,8 +188,8 @@ const lateA = src.indexOf('if (this.overlayCanvas) {\n                var oCtx =
 const lateSrc = block(src, lateA);
 const textClassSrc = block(src, src.indexOf('function irenderfromagario()'));
 const autoHideSrc = block(src, src.indexOf('setAutoHideCellInfo(t) {'));
-/* the multibox ring rule cell.draw uses (absent in older versions) */
-const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing'].map((n) => {
+/* the multibox ring rule and the skin gate cell.draw uses (absent in older versions) */
+const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing', 'lmSkinsShown'].map((n) => {
     const i = src.indexOf('\nfunction ' + n + '(');
     return i < 0 ? '' : block(src, i + 1);
 }).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX'].map((n) => {
@@ -204,7 +204,7 @@ const ds = D.defaultSettings, ms = D.defaultmapsettings;
 function img(name, w, h) { return { _id: nextId++, name: name, width: w, height: h, naturalWidth: w, naturalHeight: h, complete: true, color: colorFor(nextId * 13) }; }
 const LM = { cells: [], playerCells: [], playerCellsMulti: [], play: false, showCustomSkins: true, gameMode: ':ffa', hideSmallBots: false, indexedCells: {}, selected: null, time: 100000, arrowFB: null, cursorX: 0, cursorY: 0 };
 const ogario = { viewScale: 1 };
-const window = { teammatenicks: [], _lmTeammateNickSet: new Set(), LM_DPR: 1, legendmod5: { optimizedMass: true }, innerWidth: 240, innerHeight: 160 };
+const window = { teammatenicks: [], _lmTeammateNickSet: new Set(), LM_DPR: 1, legendmod5: { optimizedMass: true }, innerWidth: 240, innerHeight: 160, legendmod: LM };
 /* an Array, as SpecialEffectPlayers in ogario.v4.js */
 const SEP = [];
 const document = { createElement: () => new SoftCanvas(0, 0, 'txt') };

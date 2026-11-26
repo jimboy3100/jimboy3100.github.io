@@ -77,8 +77,9 @@ function grabVar(src, name) {
 const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim',
     'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch',
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing',
-    'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages'];
-const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX'];
+    'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages',
+    'lmSkinsShown', 'lmColorInt'];
+const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', '_lmColorIntCache'];
 
 function rendererFactory(src) {
     src = src.replace(/\r\n/g, '\n');
@@ -460,9 +461,24 @@ function pageLib() {
         gl.getExtension('WEBGL_lose_context').loseContext();
         return res;
     }
+    /* one virus in the middle of the screen with the theme's virus colours of cfg.settings: the
+     * colour of its body */
+    function virusPixel(src, defaults, cfg) {
+        var pts = [], n = 64, r = 120;
+        for (var i = 0; i < n; i++) pts.push(Math.cos(i / n * 2 * Math.PI) * r, Math.sin(i / n * 2 * Math.PI) * r);
+        var o = setup(src, defaults, cfg, [{ id: 1, x: 0, y: 0, size: r, isVirus: true, maxPointRad: r, pts: pts }]);
+        frame(o);
+        var ok = frame(o), gl = o.R.gl, px = new Uint8Array(4);
+        /* inside the body, away from the mass label in the middle */
+        gl.readPixels(W / 2 + 60, H / 2 + 40, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        var err = gl.getError();
+        gl.getExtension('WEBGL_lose_context').loseContext();
+        return { ok: ok, px: Array.prototype.slice.call(px), glError: err };
+    }
     return {
         atlasUploads: atlasUploads,
         atlasCapacity: atlasCapacity,
+        virusPixel: virusPixel,
         compare: async function (oldSrc, newSrc, defaults, cfg, scene) {
             var a = setup(oldSrc, defaults, cfg, scene), b = setup(newSrc, defaults, cfg, scene);
             /* two frames: textures are made in the first, the second is the steady state */
@@ -627,6 +643,21 @@ async function main() {
             check('label atlas full: the label keeps its own texture, then goes into a freed slot with the same texels', au.adoptFallback && au.adopted && au.adoptDiffering === 0 && au.glError === 0);
         }
         check('label atlas: no texSubImage3D from a canvas (a GPU wait per label)', au.canvasReads === 0);
+        /* the virus colour of the Theme tab in every format it accepts (and Canvas2D draws): WebGL
+         * read only #rgb and #rrggbb and drew the others grey (a green virus turned grey whenever
+         * no skin made the frame fall back to Canvas2D) */
+        const VCOLS = [['green', [0, 128, 0]], ['#00ff00ff', [0, 255, 0]], ['rgb(0, 255, 0)', [0, 255, 0]], ['rgba(0,200,0,1)', [0, 200, 0]], ['#0f0', [0, 255, 0]], ['#33ff33', [51, 255, 51]]];
+        for (const jelly of [false, true]) {
+            for (const [col, want] of VCOLS) {
+                const cfg = { scale: 1, jelly: jelly, map: { virColors: false, virusGlow: false, transparentViruses: false }, settings: { virusColor: col, virusStrokeColor: col } };
+                const nw = await evaluate('__glb.virusPixel(__glbNew, __glbDefaults, ' + JSON.stringify(cfg) + ')');
+                let ref = null;
+                try { ref = await evaluate('__glb.virusPixel(__glbOld, __glbDefaults, ' + JSON.stringify(cfg) + ')'); } catch (e) { }
+                const near = nw.px.slice(0, 3).every((v, i) => Math.abs(v - want[i]) <= 3);
+                console.log('     virus colour ' + col + ', jelly ' + (jelly ? 'on' : 'off') + ': body ' + nw.px.join(',') + (ref ? ' (reference ' + ref.px.join(',') + ')' : ''));
+                check('jelly ' + (jelly ? 'on' : 'off') + ': a virus coloured ' + col + ' is drawn in that colour on WebGL', nw.ok && nw.glError === 0 && near);
+            }
+        }
         if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); failed++; }
         if (opt('--out', null)) fs.writeFileSync(path.join(opt('--out'), 'glbatch-diff.json'), JSON.stringify(stats, null, 2));
 

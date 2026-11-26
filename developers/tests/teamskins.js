@@ -32,7 +32,7 @@ vm.runInContext([fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn
     '\nvar legendflags = ["bait", "2ch"];' +
     '\nvar LM = { gameMode: ":ffa" };' +
     '\nvar core = { registerSkin: function () { } };' +
-    '\nvar application = {' + [method('_lmSkinKeys'), method('checkSkinURL', true), method('teamSkinUrl'), method('cacheCustomSkin'),
+    '\nvar application = {' + [method('_lmSkinKeys'), method('checkSkinURL', true), method('teamSkinUrl'), method('cacheCustomSkin'), method('_lmSkinSet'), method('_lmSkinAt'),
         method('getCustomSkin'), method('customSkinKey')].join(',\n') +
     ', customSkinsMap: {}, customSkinsCache: {}, loadSkin: function () { }, _lmTouchSkin: function () { },' +
     ' getCachedSkin: function (cache, url) { return url; } };' +
@@ -96,7 +96,7 @@ check('no team list: nothing changes', ctx.lmTeamSkinFor(null, 'bait', false, nu
 /* both WebGL skin lookups (cell batch and the per-cell helper) call the one shared lookup,
  * application.customSkinKey (behind getCustomSkin, i.e. Canvas2D and the teamboard), which asks
  * the team list exactly and loosely; no renderer keeps its own copy that can drift */
-const shared = src.split('application.customSkinKey(cell.targetNick, cell.color, cell.skin)').length - 1;
+const shared = src.split('application.customSkinKey(cell.targetNick, cell.color, cell.skin').length - 1;
 const keyFn = method('customSkinKey');
 check('both WebGL skin lookups use the shared lookup', shared === 2 && src.indexOf('teamSkinUrl(cell.targetNick') < 0);
 check('the shared lookup uses the team list skins (exact and loose)', /this\.teamSkinUrl\(nick\)/.test(keyFn) && /this\.teamSkinUrl\(nick, true\)/.test(keyFn));

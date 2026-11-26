@@ -4930,6 +4930,47 @@ function _isValidSkin(s) {
     if (typeof s.width === "number" && s.width > 0) return true;
     return false;
 }
+/* Cells draw skins at all: "No skins" is off and custom skins, vanilla (agar.io) skins or the
+ * own vanilla skin are on. Which skin a cell gets is decided by application.customSkinKey. */
+function lmSkinsShown() {
+    /* (top level: the game state is window.legendmod, LM only inside the main closure) */
+    var ms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null, lm = window.legendmod;
+    return !!(ms && (ms.customSkins || ms.vanillaSkins || ms.ownVanillaSkin) && lm && lm.showCustomSkins);
+}
+/* A CSS colour as 0xRRGGBB for the WebGL renderers, -1 when it is no colour. Canvas2D draws every
+ * colour the Theme tab accepts (#rgb, #rgba, #rrggbb, #rrggbbaa, rgb()/rgba(), names); WebGL read
+ * only #rgb and #rrggbb and drew the others grey (a green virus became grey whenever no skin made
+ * the frame fall back to Canvas2D). The alpha of the colour itself is not used. Cached per string. */
+var _lmColorIntCache = new Map(), _lmColorCtx = null;
+function lmColorInt(c) {
+    if (typeof c !== 'string') return -1;
+    var v = _lmColorIntCache.get(c);
+    if (v !== undefined) return v;
+    var s = c.trim(), h = s.charAt(0) === '#' ? s.slice(1) : '';
+    v = -1;
+    if (h && /^[0-9a-f]+$/i.test(h) && (h.length === 3 || h.length === 4 || h.length === 6 || h.length === 8)) {
+        if (h.length < 6) h = h.charAt(0) + h.charAt(0) + h.charAt(1) + h.charAt(1) + h.charAt(2) + h.charAt(2);
+        v = parseInt(h.slice(0, 6), 16);
+    } else if (s && !h) {
+        /* rgb(), hsl(), names: the browser parses it as Canvas2D does (an invalid value leaves
+         * fillStyle unchanged, so two different starting values tell it apart) */
+        try {
+            var x = _lmColorCtx || (_lmColorCtx = document.createElement('canvas').getContext('2d'));
+            x.fillStyle = '#000000';
+            x.fillStyle = s;
+            var a = String(x.fillStyle);
+            x.fillStyle = '#ffffff';
+            x.fillStyle = s;
+            if (a === String(x.fillStyle)) {
+                var m = /^#([0-9a-f]{6})$/i.exec(a) || /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(a);
+                if (m) v = m.length === 2 ? parseInt(m[1], 16) : ((+m[1] & 255) << 16) | ((+m[2] & 255) << 8) | (+m[3] & 255);
+            }
+        } catch (e) { }
+    }
+    if (_lmColorIntCache.size > 500) _lmColorIntCache.clear();
+    _lmColorIntCache.set(c, v);
+    return v;
+}
 /* A picture that is (almost) fully transparent or a solid black disc is no skin: placeholder
  * and broken skin links (a chat teammate without a skin) drew black cells and black avatars in
  * the team list. Checked once per URL on a 24x24 copy; a picture the browser will not let us
@@ -5367,7 +5408,8 @@ window.changeSkin = function (productID) {
                 ? profiles[application.selectedProfile].nick
                 : '';
             if (nick) {
-                application.customSkinsMap[nick] = skinUrl;
+                /* the agar.io skin just equipped: a vanilla skin */
+                application._lmSkinSet(nick, skinUrl, true);
             }
             application.loadSkin(application.customSkinsCache, skinUrl);
         }
@@ -22158,6 +22200,8 @@ function thelegendmodproject() {
         chatMutedUserIDs: [],
         customSkinsCache: {},
         customSkinsMap: {},
+        /* key -> URL for the customSkinsMap entries that are agar.io skins (see _lmSkinSet) */
+        vanillaSkinKeys: {},
         cacheQueue: [],
         cacheQueue2: [],
         cacheQueue3: [],
@@ -23030,7 +23074,10 @@ function thelegendmodproject() {
             if (defaultmapsettings.vanillaSkins) {
                 animateSkincheck();
             } else {
-                application.flushSkinsMap();
+                /* The skins map is kept: customSkinKey leaves out the agar.io skins while the
+                 * option is off. Emptying it also dropped the own custom skin (until the next
+                 * spawn) and the teammates' ones, and the agar.io skins came back with the next
+                 * cell update. */
                 window.preSetanimateSkincheck = 6000;
             }
         },
@@ -27108,10 +27155,10 @@ function thelegendmodproject() {
                         core.registerSkin(ogarcopythelb.nick, null, "https://jimboy3000.github.io/vanillaskins/" + window.FreeSkins[player].image, null);
                     }
                 }
-            } else if (!ogarcopythelb.skinURL && defaultmapsettings.vanillaSkins && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
+            } else if (!ogarcopythelb.skinURL && (defaultmapsettings.vanillaSkins || defaultmapsettings.ownVanillaSkin) && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
                 //console.log("1. skin_" + window.UserVanillaSkin);
                 if (window.UserVanillaSkin.includes("skin_custom")) {
-                    application.customSkinsMap[ogarcopythelb.nick] = window.UserVanillaSkin + (window.UserVanillaSkin.includes('?') ? '' : '?');
+                    application._lmSkinSet(ogarcopythelb.nick, window.UserVanillaSkin + (window.UserVanillaSkin.includes('?') ? '' : '?'), true);
                     application.loadSkin(application.customSkinsCache, window.UserVanillaSkin + (window.UserVanillaSkin.includes('?') ? '' : '?'));
                     //core.registerSkin(ogarcopythelb.nick, null, window.UserVanillaSkin, null);
                     //window.UserVanillaSkin=null;
@@ -27120,7 +27167,7 @@ function thelegendmodproject() {
                     var ownSkinUrl = window.VanillaSkinUrlMap && window.VanillaSkinUrlMap[ownSkinKey];
                     if (ownSkinUrl) {
                         window.lastusednameforskin = ogarcopythelb.nick;
-                        application.customSkinsMap[ogarcopythelb.nick] = ownSkinUrl;
+                        application._lmSkinSet(ogarcopythelb.nick, ownSkinUrl, true);
                         application.loadSkin(application.customSkinsCache, ownSkinUrl);
                     }
                 }
@@ -28669,26 +28716,44 @@ function thelegendmodproject() {
         teamSkinUrl(nick, loose) {
             return lmTeamSkinFor(window._lmTeamSkins, nick, loose, this._lmLooseNickMemo || (this._lmLooseNickMemo = new Map()));
         },
-        cacheCustomSkin(nick, color, skinUrl) {
+        /* vanilla: an agar.io skin (vanillaskins: skin ids, flag and free name skins), which the
+         * "Vanilla skins" option shows; else a custom one ("Custom skins"). */
+        cacheCustomSkin(nick, color, skinUrl, vanilla) {
             if (!skinUrl) return;
             skinUrl = this.checkSkinURL(skinUrl);
             if (!skinUrl) return;
             _RE_CLAN_TAG.lastIndex = 0;
             var cleanNick = nick ? nick.replace(_RE_CLAN_TAG, '').trim() : '';
             const s = ':party' === this.gameMode ? nick + color : nick;
-            if (s) this.customSkinsMap[s] = skinUrl;
+            if (s) this._lmSkinSet(s, skinUrl, vanilla);
             if (nick) {
-                this.customSkinsMap[nick] = skinUrl;
-                this.customSkinsMap[nick + "#000000"] = skinUrl;
+                this._lmSkinSet(nick, skinUrl, vanilla);
+                this._lmSkinSet(nick + "#000000", skinUrl, vanilla);
             }
             if (cleanNick && cleanNick !== nick) {
-                this.customSkinsMap[cleanNick] = skinUrl;
-                this.customSkinsMap[cleanNick + "#000000"] = skinUrl;
+                this._lmSkinSet(cleanNick, skinUrl, vanilla);
+                this._lmSkinSet(cleanNick + "#000000", skinUrl, vanilla);
             }
-            if (nick && color) this.customSkinsMap[nick + color] = skinUrl;
+            if (nick && color) this._lmSkinSet(nick + color, skinUrl, vanilla);
             if (!this.customSkinsCache.hasOwnProperty(skinUrl)) {
                 this.loadSkin(this.customSkinsCache, skinUrl);
             }
+        },
+        /* A skin for a key of customSkinsMap, remembering whether it is an agar.io skin. A custom
+         * skin stored later under the same key (teammate data) makes the entry custom again. */
+        _lmSkinSet(key, url, vanilla) {
+            this.customSkinsMap[key] = url;
+            var vk = this.vanillaSkinKeys || (this.vanillaSkinKeys = {});
+            if (vanilla) vk[key] = url;
+            else if (vk[key] !== undefined) delete vk[key];
+        },
+        /* the skin stored under key when its kind is shown (custom / vanilla), else null; an
+         * entry another writer replaced with a different URL is custom */
+        _lmSkinAt(key, custom, vanilla) {
+            var u = this.customSkinsMap[key];
+            if (!u) return null;
+            var vk = this.vanillaSkinKeys;
+            return ((vk && vk[key] === u) ? vanilla : custom) ? u : null;
         },
         checkSkinsMap(nick, color) {
             if (!nick) return false;
@@ -28718,8 +28783,8 @@ function thelegendmodproject() {
          * those by id). nameOnly: for places with only a name (ghost cells), also use
          * the last skin seen with that name.
          */
-        getCustomSkin(nick, color, skinKey, nameOnly) {
-            var key = this.customSkinKey(nick, color, skinKey, nameOnly);
+        getCustomSkin(nick, color, skinKey, nameOnly, own) {
+            var key = this.customSkinKey(nick, color, skinKey, nameOnly, own);
             return key ? this.getCachedSkin(this.customSkinsCache, key) : null;
         },
         /* The customSkinsCache key of a cell's skin (its URL, or the address loadSkin really
@@ -28729,12 +28794,21 @@ function thelegendmodproject() {
          * asked on www.legendmod.ml, mirror fallbacks) nor a cell's own skin URL, so such skins
          * (often the ones teammates send over the chat socket) were drawn only in the frames
          * that fell back to Canvas, e.g. while two cells overlap. */
-        customSkinKey(nick, color, skinKey, nameOnly) {
+        customSkinKey(nick, color, skinKey, nameOnly, own) {
             /* A player without a name shows no skin at all (custom, vanilla or server skin). */
             if (!nick || !String(nick).trim()) return null;
+            /* "Custom skins": Legend Mod skins (own, teammates', a skin URL sent with the cell).
+             * "Vanilla skins": agar.io skins (skin ids, flag and free name skins). "Own vanilla
+             * skin when no custom": own cells (own) keep their agar.io skin with Vanilla skins
+             * off. Each option shows only its kind: before, every skin needed Custom skins on
+             * and Vanilla skins changed nothing. */
+            var ms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null;
+            var useC = !ms || !!ms.customSkins;
+            var useV = !ms || !!(ms.vanillaSkins || (own && ms.ownVanillaSkin));
+            if (!useC && !useV) return null;
+            var isUrlKey = !!(skinKey && typeof skinKey === 'string' && (skinKey.startsWith('http://') || skinKey.startsWith('https://')));
             /* the cell's own URL wins, even while it loads (no flash of another skin) */
-            var ownUrl = (skinKey && typeof skinKey === 'string' && (skinKey.startsWith('http://') || skinKey.startsWith('https://')))
-                ? this.checkSkinURL(skinKey) : '';
+            var ownUrl = useC && isUrlKey ? this.checkSkinURL(skinKey) : '';
             /* Cache lowered color to avoid per-call string allocation */
             var hexColor;
             if (color && typeof color === 'string') {
@@ -28745,7 +28819,7 @@ function thelegendmodproject() {
             var _k = this._lmSkinKeys(nick, color, hexColor);
             var cleanNick = _k.cn;
 
-            var vanillaLookup = (skinKey && window.VanillaSkinUrlMap) ? (window.VanillaSkinUrlMap[skinKey] || window.VanillaSkinUrlMap['%' + skinKey] || window.VanillaSkinUrlMap[skinKey.toLowerCase()]) : null;
+            var vanillaLookup = (useV && skinKey && !isUrlKey && window.VanillaSkinUrlMap) ? (window.VanillaSkinUrlMap[skinKey] || window.VanillaSkinUrlMap['%' + skinKey] || window.VanillaSkinUrlMap[skinKey.toLowerCase()]) : null;
 
             /* Chat socket skins (nick-based) take priority over vanilla skins.
              * This lets legendmod skins override agar.io server skins. */
@@ -28753,23 +28827,24 @@ function thelegendmodproject() {
              * as in the WebGL renderer (the canvas renderer showed the last cached nick's skin
              * for both and could switch skin whenever a frame changed renderer). */
             var partyUrl = (nick && color && typeof LM !== 'undefined' && LM && LM.gameMode === ':party') ?
-                (this.customSkinsMap[_k.nc] || this.customSkinsMap[_k.nh]) : null;
-            var skinUrl = ownUrl || partyUrl || this.teamSkinUrl(nick) ||
+                (this._lmSkinAt(_k.nc, useC, useV) || this._lmSkinAt(_k.nh, useC, useV)) : null;
+            var skinUrl = ownUrl || partyUrl || (useC ? this.teamSkinUrl(nick) : null) ||
                 (nick ? (
-                    this.customSkinsMap[nick] ||
-                    this.customSkinsMap[_k.nh] ||
-                    this.customSkinsMap[_k.n0] ||
+                    this._lmSkinAt(nick, useC, useV) ||
+                    this._lmSkinAt(_k.nh, useC, useV) ||
+                    this._lmSkinAt(_k.n0, useC, useV) ||
                     (cleanNick ? (
-                        this.customSkinsMap[cleanNick] ||
-                        this.customSkinsMap[_k.c0] ||
-                        this.customSkinsMap[_k.ch]
+                        this._lmSkinAt(cleanNick, useC, useV) ||
+                        this._lmSkinAt(_k.c0, useC, useV) ||
+                        this._lmSkinAt(_k.ch, useC, useV)
                     ) : null)
                 ) : null) ||
-                this.teamSkinUrl(nick, true) ||
-                (skinKey ? (this.customSkinsMap[skinKey] || vanillaLookup) : null) ||
-                (nameOnly && this.nickSkinSeen ? (this.nickSkinSeen[nick] || this.nickSkinSeen[nick + hexColor]) : null);
+                (useC ? this.teamSkinUrl(nick, true) : null) ||
+                (skinKey ? (this._lmSkinAt(skinKey, useC, useV) || vanillaLookup) : null) ||
+                /* the last skin seen with the name (ghost cells): agar.io skins */
+                (useV && nameOnly && this.nickSkinSeen ? (this.nickSkinSeen[nick] || this.nickSkinSeen[nick + hexColor]) : null);
 
-            if (!skinUrl && skinKey && (skinKey.startsWith('http://') || skinKey.startsWith('https://'))) {
+            if (!skinUrl && useC && isUrlKey) {
                 skinUrl = skinKey;
             }
 
@@ -29344,6 +29419,7 @@ function thelegendmodproject() {
             //if (window.temporaryRecordedProtocol2 && RecordedArenasSpecifications[window.temporaryRecordedProtocol2]) window.RecordedArenasSpecifications[window.temporaryRecordedProtocol2].push(JSON.stringify(this.customSkinsMap))
             if (window.temporaryRecordedProtocol && RecordedArenasSpecifications[window.temporaryRecordedProtocol]) window.RecordedArenasSpecifications[window.temporaryRecordedProtocol].push(JSON.stringify(this.customSkinsMap))
             this.customSkinsMap = {};
+            this.vanillaSkinKeys = {};
         },
         flushChatData() {
             this.chatUsers = {};
@@ -37077,8 +37153,8 @@ function thelegendmodproject() {
                         //style.filter='grayscale(100%)';
                         //
                         var node = null
-                        if (defaultmapsettings.customSkins && LM.showCustomSkins && !this.isEjected) {
-                            node = application.getCustomSkin(this.targetNick, this.color, this.skin);
+                        if (lmSkinsShown() && !this.isEjected) {
+                            node = application.getCustomSkin(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti));
                         }
                         var node2, node2IsVideo = false;
                         /* no name, no video skin either (a skin mapped to '' would show on every unnamed cell) */
@@ -37742,8 +37818,7 @@ function thelegendmodproject() {
                         }
                         //lylko
                         if (
-                            defaultmapsettings.customSkins &&
-                            LM.showCustomSkins
+                            lmSkinsShown()
                         ) {
                             //node = application.getCustomSkin(this.targetNick, this.color);
                             if (
@@ -38151,8 +38226,8 @@ function thelegendmodproject() {
                     if (!_wasWebGL || _fgN) {
                         var _tc = _fgN || style;
                         if (_fgN) {
-                            node = defaultmapsettings.customSkins && LM.showCustomSkins && !this.isEjected
-                                ? application.getCustomSkin(this.targetNick, this.color, this.skin) : null;
+                            node = lmSkinsShown() && !this.isEjected
+                                ? application.getCustomSkin(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti)) : null;
                         }
                         var _txtReady = false, _nickDone = false;
                         if (defaultmapsettings.noNames && !defaultmapsettings.showMass || cellMoved || this._lmDrawNoText) {
@@ -38193,8 +38268,8 @@ function thelegendmodproject() {
                          * (this.margin from the nick layout) and with the same alpha (textAlpha). */
                         var _mergeOn = !!(window.ExternalScripts && !window.legendmod5.optimizedMass);
                         var _lab = _mergeOn && !cellMoved ? this.lmLabels(y,
-                            (defaultmapsettings.hideTeammatesNames && defaultmapsettings.customSkins && LM.showCustomSkins && !this.isEjected)
-                                ? application.getCustomSkin(this.targetNick, this.color, this.skin) : null) : 0;
+                            (defaultmapsettings.hideTeammatesNames && lmSkinsShown() && !this.isEjected)
+                                ? application.getCustomSkin(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti)) : null) : 0;
                         if (!(_lab & 1)) _mergeOn = false;
                         if (_chatCe || _mergeOn) {
                             this.setDrawing();
@@ -51121,18 +51196,18 @@ function thelegendmodproject() {
                         if (y) {
                             window.lastusednameforskin = y;
                             core.registerSkin(y, null, skinUrl, isAnimated);
-                            application.cacheCustomSkin(y, cellColor || '#000000', skinUrl);
+                            application.cacheCustomSkin(y, cellColor || '#000000', skinUrl, true);
                         }
                         if (playerKey && playerKey !== y) {
                             core.registerSkin(playerKey, null, skinUrl, isAnimated);
-                            application.cacheCustomSkin(playerKey, cellColor || '#000000', skinUrl);
+                            application.cacheCustomSkin(playerKey, cellColor || '#000000', skinUrl, true);
                         }
                     } else if (g) {
                         /* this cell's own skin: keyed by the skin id only */
                         if (isAnimated && !application.customSkinsCache.hasOwnProperty(skinUrl)) {
                             application.loadSkin(application.customSkinsCache, skinUrl, true);
                         }
-                        application.cacheCustomSkin(g, '#000000', skinUrl); /* loads it if not yet */
+                        application.cacheCustomSkin(g, '#000000', skinUrl, skinUrl !== g); /* loads it if not yet; a URL sent with the cell is custom */
                     }
                     if (y) seen[playerKey] = skinUrl;
                 }
@@ -59352,8 +59427,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _resolveWebGLSkin(cell, uploadReadyImage) {
             if (
                 !cell ||
-                !defaultmapsettings.customSkins ||
-                !LM.showCustomSkins ||
+                !lmSkinsShown() ||
                 cell.isEjected
             ) {
                 return {
@@ -59370,7 +59444,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 node = application.getCustomSkin(
                     cell.targetNick,
                     cell.color,
-                    cell.skin
+                    cell.skin,
+                    false,
+                    !!(cell.isPlayerCell || cell.isPlayerCellMulti)
                 );
             } catch (error) { }
 
@@ -63358,32 +63434,29 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var owner = st && layer >= 0 ? st.owner[layer] : null;
             if (owner && owner.keys.indexOf(key) < 0) owner.keys.push(key);
         },
+        /* [r, g, b, 1] of a colour: every colour Canvas2D draws (lmColorInt; parseInt read
+         * "#00ff0080" as another colour and "rgb()" or names as the fallback), a number
+         * 0xRRGGBB or bare hex digits */
         parseWebGLOverlayColor(colorHex, fallbackHex) {
-            var hexStr = colorHex;
-            if (typeof hexStr === "number") {
-                hexStr = hexStr.toString(16);
-            }
-            if (typeof hexStr !== "string" || !hexStr) {
-                hexStr = fallbackHex || "#ffffff";
-            }
-            hexStr = String(hexStr).replace(/^#/, "");
-            if (hexStr.length === 3) {
-                hexStr = hexStr[0] + hexStr[0] + hexStr[1] + hexStr[1] + hexStr[2] + hexStr[2];
-            }
-            var cInt = parseInt(hexStr, 16);
-            if (isNaN(cInt)) {
-                var fallbackStr = String(fallbackHex || "#ffffff").replace(/^#/, "");
-                cInt = parseInt(fallbackStr, 16);
-                if (isNaN(cInt)) {
-                    cInt = 0xffffff;
-                }
-            }
+            var cInt = this._lmGlColorInt(colorHex);
+            if (cInt < 0) cInt = this._lmGlColorInt(fallbackHex || "#ffffff");
+            if (cInt < 0) cInt = 0xffffff;
             return [
                 ((cInt >> 16) & 255) / 255,
                 ((cInt >> 8) & 255) / 255,
                 (cInt & 255) / 255,
                 1.0
             ];
+        },
+        _lmGlColorInt(c) {
+            if (typeof c === "number") return Number.isFinite(c) && c >= 0 ? (c & 0xffffff) : -1;
+            if (typeof c !== "string" || !c) return -1;
+            var v = _lmColorIntCache.get(c);
+            if (v !== undefined) return v;
+            if (!/^[0-9a-f]{3}$|^[0-9a-f]{6}$/i.test(c)) return lmColorInt(c);
+            v = lmColorInt("#" + c);
+            _lmColorIntCache.set(c, v);
+            return v;
         },
         drawWebGLGridShader() {
             /*
@@ -70520,8 +70593,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* Check if cell has a skin (for hideTeammatesNames, matching Canvas2D's `node`) */
             var hasSkin = false;
             /* only read together with hideTeammatesNames: skip the per-cell skin lookup otherwise */
-            if (defaultmapsettings.hideTeammatesNames && defaultmapsettings.customSkins && LM.showCustomSkins) {
-                hasSkin = !!application.getCustomSkin(cell.targetNick, cell.color, cell.skin);
+            if (defaultmapsettings.hideTeammatesNames && lmSkinsShown()) {
+                hasSkin = !!application.getCustomSkin(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti));
             }
 
             /* Preserve the Canvas2D sizing formula in world units. Only the
@@ -72535,9 +72608,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             if (
-                !defaultmapsettings
-                    .customSkins ||
-                !LM.showCustomSkins ||
+                !lmSkinsShown() ||
                 /* Teams cells show no skins (same as Cell.draw) */
                 LM.gameMode === ':teams' ||
                 !cell ||
@@ -72557,7 +72628,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * (application.customSkinKey: team list skins, chat socket skins, the cell's own
              * URL, vanilla skins, and the cache key loadSkin really used). */
             var skinUrl =
-                application.customSkinKey(cell.targetNick, cell.color, cell.skin);
+                application.customSkinKey(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti));
 
 
             if (
@@ -72910,9 +72981,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
                 var showSkins =
-                    defaultmapsettings
-                        .customSkins &&
-                    LM.showCustomSkins;
+                    lmSkinsShown();
 
 
                 var isParty =
@@ -74351,7 +74420,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /* Teams cells show no skins (same as Cell.draw) */
-            var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins && LM.gameMode !== ':teams';
+            var _showSkins = lmSkinsShown() && LM.gameMode !== ':teams';
             var _isParty = ':party' === application.gameMode;
 
             /*
@@ -74805,42 +74874,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     cell._colorStr !==
                         colorHex
                 ) {
-                    var _hex =
-                        colorHex.charAt(0) ===
-                        "#"
-                            ? colorHex.slice(
-                                1
-                            )
-                            : colorHex;
-
-                    if (
-                        /^[0-9a-f]{3}$/i.test(
-                            _hex
-                        )
-                    ) {
-                        _hex =
-                            _hex.charAt(0) +
-                            _hex.charAt(0) +
-                            _hex.charAt(1) +
-                            _hex.charAt(1) +
-                            _hex.charAt(2) +
-                            _hex.charAt(2);
-                    }
-
+                    /* every colour Canvas2D draws (lmColorInt), else grey */
                     var _parsedColor =
-                        /^[0-9a-f]{6}$/i.test(
-                            _hex
-                        )
-                            ? parseInt(
-                                _hex,
-                                16
-                            )
-                            : NaN;
+                        lmColorInt(
+                            colorHex
+                        );
 
                     cInt =
-                        Number.isFinite(
-                            _parsedColor
-                        )
+                        _parsedColor >= 0
                             ? _parsedColor
                             : 0x808080;
 
@@ -74861,41 +74902,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     cInt;
 
                 if (cell.isVirus) {
-                    var _strokeHex =
-                        typeof strokeHex ===
-                        'string'
-                            ? strokeHex
-                                .trim()
-                                .replace(
-                                    /^#/,
-                                    ''
-                                )
-                            : '';
+                    /* cached per colour string: no parsing per frame */
+                    var _strokeParsed =
+                        lmColorInt(
+                            strokeHex
+                        );
 
                     if (
-                        /^[0-9a-f]{3}$/i.test(
-                            _strokeHex
-                        )
-                    ) {
-                        _strokeHex =
-                            _strokeHex[0] +
-                            _strokeHex[0] +
-                            _strokeHex[1] +
-                            _strokeHex[1] +
-                            _strokeHex[2] +
-                            _strokeHex[2];
-                    }
-
-                    if (
-                        /^[0-9a-f]{6}$/i.test(
-                            _strokeHex
-                        )
+                        _strokeParsed >= 0
                     ) {
                         strokeInt =
-                            parseInt(
-                                _strokeHex,
-                                16
-                            );
+                            _strokeParsed;
                     }
                 }
 
@@ -74972,7 +74989,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * skins first, then the cell's own URL and vanilla skins, and the cache key
                      * loadSkin really used. This copy had its own lookup that missed those, so
                      * such skins showed only in frames drawn by Canvas2D. */
-                    var skinUrl = application.customSkinKey(cell.targetNick, cell.color, cell.skin);
+                    var skinUrl = application.customSkinKey(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti));
                     if (skinUrl) {
                         /* A video URL found through an alternate skin-map key must
                          * also force the complete batch to Canvas2D. */
@@ -80828,7 +80845,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * showGhostCellsInfo. There are only a few ghosts, so this is cheap.
                  */
                 var _showInfo = defaultmapsettings.showGhostCellsInfo;
-                var _showSkins = defaultmapsettings.customSkins && LM.showCustomSkins;
+                var _showSkins = lmSkinsShown();
 
                 var _cullingScale = this.scale || 1;
                 var _halfW = this.canvasWidth / _cullingScale / 2;
