@@ -1,7 +1,8 @@
 // Keyboard state: one Space is one split even when agar.io's own key handler (window.addKeyListeners,
 // left in the window when agar.io's page ran before the loader replaced it) is there and Play is
 // pressed; a key released inside a window that stops keyup (Command Centre after Ctrl+K, dialogs)
-// is released for the hotkeys too (Ctrl no longer stays down, macro feed stops).
+// is released for the hotkeys too (Ctrl no longer stays down, macro feed stops); Q free spectate
+// keeps working after the hotkeys window and after a death.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -104,6 +105,70 @@
   app.macroFeed = saved.macroFeed;
   core.split = saved.split;
   box.remove();
+  /* 4. Q free spectate (spectateBlind's window.onkeydown) still works after the hotkeys window
+   * was opened and closed and after a death, in protocol mode and outside it (resetonkeydown
+   * runs there); one Q is one toggle, and none while alive (Q is double split then) */
+  var fsCount = 0, sv4 = { fs: lm.sendFreeSpectate, ds: app.doubleSplit, pm: app.protocolMode, play: lm.play,
+    spd: app.sendPlayerDeath, ar: app.autoResp, udl: app.updateDeathLocations, lda: app._lmLastDeathAt,
+    lsa: app._lmLifeStartAt, has: window.LMEvents && LMEvents._has, ss: null, ssEl: !!document.getElementById('lm-session-stats'),
+    pb: window.legendmod5 && legendmod5.personalBests, mh: window.legendmod5 && legendmod5.matchHistory };
+  try { sv4.ss = sessionStorage.getItem('lmSessionStats'); } catch (e) { }
+  lm.sendFreeSpectate = function () { fsCount++; };
+  app.doubleSplit = function () { };
+  function qPress() {
+    var b = fsCount;
+    if (document.activeElement && document.activeElement !== document.body && document.activeElement.blur) document.activeElement.blur();
+    kev('keydown', document.body, 81, 'q');
+    kev('keyup', document.body, 81, 'q');
+    return fsCount - b;
+  }
+  function hotkeysWindow() {
+    var link = document.querySelector('.hotkeys-link'), tmp = null;
+    if (!link) { tmp = link = document.createElement('a'); link.className = 'hotkeys-link'; document.body.appendChild(link); }
+    jQuery(link).trigger('click');
+    jQuery('#close-hotkeys').trigger('click');
+    jQuery('#hotkeys').stop(true, true).hide();
+    if (tmp) tmp.remove();
+  }
+  function death() {
+    app.sendPlayerDeath = app.autoResp = app.updateDeathLocations = function () { };
+    if (window.LMEvents) LMEvents._has = function () { return false; };
+    if (window.legendmod5) { legendmod5.personalBests = false; legendmod5.matchHistory = false; }
+    app._lmLastDeathAt = 0;
+    app.onPlayerDeath();
+  }
+  try {
+    lm.play = false;
+    [true, false].forEach(function (pm) {
+      var tag = pm ? 'protocol mode' : 'outside protocol mode';
+      app.protocolMode = pm;
+      var n = qPress();
+      if (n !== 1) fail.push('Q while spectating (' + tag + ') toggled free spectate ' + n + ' times');
+      hotkeysWindow();
+      n = qPress();
+      info['qAfterHotkeys' + (pm ? '' : 'NoProto')] = n;
+      if (n !== 1) fail.push('Q after the hotkeys window (' + tag + ') toggled free spectate ' + n + ' times');
+      death();
+      lm.play = false;
+      n = qPress();
+      info['qAfterDeath' + (pm ? '' : 'NoProto')] = n;
+      if (n !== 1) fail.push('Q after a death (' + tag + ') toggled free spectate ' + n + ' times');
+      /* respawned: Q is double split, not free spectate; dead again: free spectate again */
+      lm.play = true;
+      n = qPress();
+      if (n !== 0) fail.push('Q while alive (' + tag + ') toggled free spectate ' + n + ' times');
+      lm.play = false;
+      n = qPress();
+      if (n !== 1) fail.push('Q after respawn and death (' + tag + ') toggled free spectate ' + n + ' times');
+    });
+  } catch (e) { fail.push('free spectate path: ' + e); }
+  lm.sendFreeSpectate = sv4.fs; app.doubleSplit = sv4.ds; app.protocolMode = sv4.pm; lm.play = sv4.play;
+  app.sendPlayerDeath = sv4.spd; app.autoResp = sv4.ar; app.updateDeathLocations = sv4.udl;
+  app._lmLastDeathAt = sv4.lda; app._lmLifeStartAt = sv4.lsa;
+  if (window.LMEvents) LMEvents._has = sv4.has;
+  if (window.legendmod5) { legendmod5.personalBests = sv4.pb; legendmod5.matchHistory = sv4.mh; }
+  try { if (sv4.ss == null) sessionStorage.removeItem('lmSessionStats'); else sessionStorage.setItem('lmSessionStats', sv4.ss); } catch (e) { }
+  if (!sv4.ssEl && document.getElementById('lm-session-stats')) document.getElementById('lm-session-stats').remove();
   /* nothing left held for the probes that follow */
   Object.keys(keyBlind).forEach(function (k) { keyBlind[k] = false; });
   return { fail: fail, info: info };

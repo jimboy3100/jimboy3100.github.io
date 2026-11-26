@@ -82048,11 +82048,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
     }
 
+    /* Run at death and when the hotkeys window opens. It came from OGARio, where it removed
+     * agar.io's own key handler (window.addKeyListeners, installed at Play/Spectate) so its
+     * Space/W/Q did not act next to the hotkeys. That handler is never installed now: outside
+     * protocol mode (always on in Legend Mod) it puts back the Q free-spectate handler instead
+     * of an empty one, which left Q free spectate dead until reload. */
     function resetonkeydown() {
         if (application.protocolMode) {
             return;
         }
-        window.onkeydown = event => { };
+        spectateBlind();
     }
     /* keyCode -> hotkey name resolved at keydown. The name is rebuilt from the
      * modifier state at each event, so keyup may produce a different name
