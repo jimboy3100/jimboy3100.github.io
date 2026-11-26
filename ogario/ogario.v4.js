@@ -33573,7 +33573,8 @@ function thelegendmodproject() {
                         if (_lmMention && !document.getElementById('lm-mention-css')) {
                             var _lmMcss = document.createElement('style');
                             _lmMcss.id = 'lm-mention-css';
-                            _lmMcss.textContent = '#chat-box .message.lm-mention{background:rgba(255,210,0,.14);border-left:3px solid #ffd200;padding-left:3px}';
+                            _lmMcss.textContent = '#chat-box .message.lm-mention{background:rgba(255,210,0,.14);border-left:3px solid #ffd200;padding-left:3px}' +
+                                '#toast-container>.toast.lm-mention{box-shadow:inset 3px 0 0 #ffd200}';
                             document.head.appendChild(_lmMcss);
                         }
                         /* scroll only if the reader is already at the bottom (it pulled readers back down) */
@@ -33588,7 +33589,8 @@ function thelegendmodproject() {
                                 'scrollTop': $('#chat-box').prop('scrollHeight')
                             }, 200) : 0),
                             void (defaultmapsettings.chatSounds && !defaultmapsettings.hideChat && plId != this.playerID && this.playSound(this.messageSound)); /* own messages: no sound */ /* hidden chat box: silent, like the popups */
-                        defaultmapsettings.hideChat || (toastr.success(_lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span>' + r),
+                        /* the chat popups (the default chat) mark a mention too: only the chat box did */
+                        defaultmapsettings.hideChat || ((function (to) { if (_lmMention && to && to.addClass) to.addClass('lm-mention'); })(toastr.success(_lmIdTag + '<span class=\"message-nick\" style = "color:' + mcolor + '">' + _lmNickOut(a) + ': </span><span class=\"message-text\">' + n + '</span>' + r)),
                             defaultmapsettings.chatSounds && plId != this.playerID && this.playSound(this.messageSound));
                         // this.chatHistory.length > 15 && this.chatHistory.shift();
                         window._lmTrimChatToasts && window._lmTrimChatToasts();
