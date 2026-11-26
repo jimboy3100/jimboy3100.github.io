@@ -491,7 +491,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.5, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false };
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
          * settings profile or its Undo that removed the store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
@@ -767,12 +767,13 @@
          * buildPingButton's lexical scope (the holdT timer lives inside it). */
         var _cancelPing = null;
         function buildPingButton() {
+            /* B3: cancel any active ping gesture before tearing down the button */
+            if (_cancelPing) { _cancelPing(); _cancelPing = null; }
             if (bPing && bPing.parentNode) bPing.parentNode.removeChild(bPing);
             if (pingRad && pingRad.parentNode) pingRad.parentNode.removeChild(pingRad);
             /* A3: disconnect the previous observer before creating a new one */
             if (_pingThemeObs) { _pingThemeObs.disconnect(); _pingThemeObs = null; }
             bPing = null; pingRad = null;
-            _cancelPing = null;
             if (!prefs.pingBtn) return;
             var b = bPing = mkd('\uD83D\uDCCD');
             var rad = pingRad = mk('div'); rad.id = 'lm-ping-rad';
@@ -925,6 +926,7 @@
         /* wave button handler */
         bWave.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
+            if (isMenuVisible()) return; /* B6 */
             debounced(function () {
                 if (typeof application !== 'undefined' && application && typeof application.sendTeamWave === 'function') application.sendTeamWave(1);
             }, 'wave', 600);
@@ -933,8 +935,21 @@
         /* ═══════════════════════════════════════════════════════
          *  MENU — toggles helloContainer (show/hide game menu)
          * ═══════════════════════════════════════════════════════ */
+        /* B5: triple-tap the ☰ menu button to open the Mobile Controls Editor directly,
+         * even when the ⚙ gear button is hidden.  Without this, hiding the gear in the
+         * editor would lock the player out of their own configuration. */
+        var _menuTapCount = 0, _menuTapTimer = null;
         bMenu.addEventListener('touchstart', function (e) {
             e.preventDefault();
+            _menuTapCount++;
+            if (_menuTapTimer) clearTimeout(_menuTapTimer);
+            _menuTapTimer = setTimeout(function () { _menuTapCount = 0; }, 500);
+            if (_menuTapCount >= 3) {
+                _menuTapCount = 0;
+                if (_menuTapTimer) { clearTimeout(_menuTapTimer); _menuTapTimer = null; }
+                openEditor();
+                return;
+            }
             // Restore opacity immediately so button responds on first tap
             rootL.style.opacity = prefs.btnOpacity;
             var hc = document.getElementById('helloContainer');
@@ -981,6 +996,7 @@
          * ═══════════════════════════════════════════════════════ */
         bSplit.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
+            if (isMenuVisible()) return; /* B6: no combat while menu is up */
             if (prefs.tapHaptic) vibrate(10);
             /* call the split command directly: Space follows the player's hotkey map, which
              * imported desktop settings may have changed */
@@ -995,6 +1011,7 @@
          * ═══════════════════════════════════════════════════════ */
         bDbl.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
+            if (isMenuVisible()) return; /* B6 */
             debounced(function () {
                 if (typeof application !== 'undefined' && application.doubleSplit)
                     application.doubleSplit();
@@ -1006,6 +1023,7 @@
          * ═══════════════════════════════════════════════════════ */
         b16.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
+            if (isMenuVisible()) return; /* B6 */
             debounced(function () {
                 if (typeof application !== 'undefined' && application.split16)
                     application.split16();
@@ -1102,6 +1120,7 @@
         window._lmMobileFeedStop = feedStop;
         bFeed.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
+            if (isMenuVisible()) return; /* B6 */
             if (prefs.tapHaptic) vibrate(10);
             feedStart();
         }, { passive: false });
@@ -1120,9 +1139,9 @@
          *  CHAT — Enter (keyCode 13)
          * ═══════════════════════════════════════════════════════ */
         var chatOn = false;
-        /* generation counter: every chatOpen increments it; delayed callbacks from an older
-         * generation (enter handler's 50ms chatClose, cleanup Enter) are discarded, preventing
-         * stale closures from interfering when the player reopens chat quickly. */
+        /* generation counter: every chatOpen and chatClose increments it; delayed
+         * callbacks from an older generation are discarded, preventing stale closures
+         * from interfering when the player reopens chat quickly. */
         var _chatGen = 0;
 
         bChat.addEventListener('touchstart', function (e) {
@@ -1154,6 +1173,10 @@
                     inp2.focus();
                     if (chatEnterFn) inp2.removeEventListener('keydown', chatEnterFn);
                     chatEnterFn = function onEnter(ev) {
+                        /* B4: ignore Enter while an IME composition is in progress
+                         * (CJK, Korean, etc. — the compositionend fires first on some
+                         * keyboards, on others the Enter itself ends the composition) */
+                        if (ev.isComposing || ev.keyCode === 229) return;
                         if (ev.keyCode === 13 || ev.key === 'Enter') {
                             inp2.removeEventListener('keydown', onEnter);
                             chatEnterFn = null;
@@ -1185,6 +1208,9 @@
             }
             if (inp) inp.blur();
             chatOn = false;
+            /* B4: increment generation on close too — a delayed chatClose(true) from the
+             * same open-generation that fires after dismissal is now stale */
+            ++_chatGen;
 
             /* Only send the cleanup Enter when we actually sent a message.
              * Dismiss (send=false) should NOT dispatch Enter — it was closing the
@@ -1460,8 +1486,16 @@
                 if (pOn && e.targetTouches.length === 1 && jId === null && !chatOn && inJoyZone(e.targetTouches[0].clientX, e.targetTouches[0].clientY)) {
                     var t = e.targetTouches[0];
                     jId = t.identifier;
-                    org.x = t.clientX; org.y = t.clientY;
-                    if (!prefs.targetMode) jShow(org.x, org.y, org.x, org.y);
+                    /* B2: use the same origin logic as the initial touchstart so a
+                     * fixed joystick stays fixed after a pinch gesture ends */
+                    if (prefs.fixedJoystick) {
+                        var jz = joyZone;
+                        org.x = jz ? (jz.l + jz.r) / 2 : window.innerWidth * 0.2;
+                        org.y = jz ? (jz.t + jz.b) / 2 : window.innerHeight * 0.7;
+                    } else {
+                        org.x = t.clientX; org.y = t.clientY;
+                    }
+                    if (!prefs.targetMode) jShow(org.x, org.y, prefs.fixedJoystick ? t.clientX : org.x, prefs.fixedJoystick ? t.clientY : org.y);
                 }
                 pOn = false; pDist = 0;
             }
@@ -1840,13 +1874,23 @@
                 if (lb.style.getPropertyValue('transform') !== t) lb.style.setProperty('transform', t, 'important');
             }
             /* M5: Compact leaderboard — show limited rows, tap to expand.
-             * _lmExpanded cycles: 0 = compact (5 rows), 1 = top 10, 2 = all */
-            var rows = lb.querySelectorAll('.leaderboard-row, tr');
-            if (rows.length > 5) {
+             * _lmExpanded cycles: 0 = compact (5 rows), 1 = top 10, 2 = all.
+             * B1: The leaderboard uses <span> inside #leaderboard-positions for
+             * player names and <span class="lb-data"> inside #leaderboard-data
+             * for mass/sector info.  Both columns must be hidden together and
+             * the player/bot totals (the <h5> header) must stay visible. */
+            var pos = lb.querySelector('#leaderboard-positions');
+            var dta = lb.querySelector('#leaderboard-data');
+            var posRows = pos ? pos.querySelectorAll(':scope > span') : [];
+            var dtaRows = dta ? dta.querySelectorAll(':scope > span') : [];
+            var rowCount = posRows.length;
+            if (rowCount > 5) {
                 var compactOn = prefs.lbCompact && lb._lmExpanded < 2;
-                var visibleCount = lb._lmExpanded === 0 ? 5 : (lb._lmExpanded === 1 ? 10 : rows.length);
-                for (var ri = 0; ri < rows.length; ri++) {
-                    rows[ri].style.display = (compactOn && ri >= visibleCount) ? 'none' : '';
+                var visibleCount = lb._lmExpanded === 0 ? 5 : (lb._lmExpanded === 1 ? 10 : rowCount);
+                for (var ri = 0; ri < rowCount; ri++) {
+                    var hide = compactOn && ri >= visibleCount;
+                    posRows[ri].style.display = hide ? 'none' : '';
+                    if (ri < dtaRows.length) dtaRows[ri].style.display = hide ? 'none' : '';
                 }
             }
         }
