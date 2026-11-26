@@ -1534,6 +1534,11 @@ function lmDebugReport() {
         lines.push('Page: ' + location.hostname + ', browser: ' + navigator.userAgent);
         lines.push('Screen: ' + window.innerWidth + 'x' + window.innerHeight + ' @' + (window.devicePixelRatio || 1) + ', GPU: ' + gpu);
         lines.push('Server: ' + (lm.ws || '-') + ' (' + (lm.serverType || '-') + '), region ' + val('#region') + ', mode ' + val('#gamemode'));
+        /* team waves (opcode 45), to tell a wave that never arrived from one dropped here */
+        var wv = window.application && window.application._lmWaveStats;
+        if (wv) lines.push('Team waves: received ' + wv.received + ', shown ' + wv.shown + ', drawn ' + wv.rendered + ', expired ' + wv.expired +
+            ', own echo ' + wv.ownEcho + ', duplicate ' + wv.duplicate + ', before the map ' + wv.noMap + ', malformed ' + wv.malformed +
+            '; sent ' + wv.sent + ', not sent ' + wv.notSent + ', route ' + (wv.route || '-'));
         var errs = window._lmRecentErrors || [];
         lines.push('Last errors (' + errs.length + '):');
         for (var i = 0; i < errs.length; i++) lines.push('  ' + errs[i]);
@@ -30852,31 +30857,115 @@ function thelegendmodproject() {
                 this.teamPlayers[idx].quadrant = sectorStr;
             }
         },
+        /* Team wave counters for Copy debug info (no IDs or positions in them) */
+        lmWaveStats() {
+            return this._lmWaveStats || (this._lmWaveStats = {
+                received: 0, shown: 0, rendered: 0, expired: 0, ownEcho: 0, duplicate: 0,
+                noMap: 0, malformed: 0, sent: 0, notSent: 0, route: ''
+            });
+        },
+        /* Offset from our world coordinates to the ones a wave carries: the map centre is 0, as
+         * Delta sends them (it centres every map on its border: the stage coordinates of
+         * Stage.mouseWorldX) and as opcode 30 does on agar.io and private servers (map offset).
+         * The Expanding Land border is centred on 0, but there the map offset is half the map
+         * size (a corner origin for the minimap): waves landed half a map away from Delta's, and
+         * moved when the map grew between sending and drawing. */
+        lmWaveOffsetX() {
+            if (LM.isLegendWorld) {
+                var mx = (LM.mapMinX + LM.mapMaxX) / 2;
+                return Number.isFinite(mx) ? -mx : 0;
+            }
+            return ogario.mapOffsetX || 0;
+        },
+        lmWaveOffsetY() {
+            if (LM.isLegendWorld) {
+                var my = (LM.mapMinY + LM.mapMaxY) / 2;
+                return Number.isFinite(my) ? -my : 0;
+            }
+            return ogario.mapOffsetY || 0;
+        },
+        /* Own echo or a second delivery of the same wave (8 recent ones of each, no allocation).
+         * Our echo is a wave we sent in the last 5 s, same type and point, with our ID in it
+         * (both fields, or the 32-bit ID of the old ogario layout). The ID alone is not enough:
+         * Delta's playerID is the ID of a tab and its userID the ID of its connection, and a
+         * remote playerID equal to ours dropped that player's waves. */
+        lmWaveSeen(userID, playerID, type, x, y, now) {
+            var st = this.lmWaveStats(), i, r;
+            var sent = this._lmWaveSent || [];
+            for (i = 0; i < sent.length; i++) {
+                r = sent[i];
+                if (now - r.t < 5000 && r.type === type && r.x === x && r.y === y && userID === r.lo && (playerID === r.lo || playerID === r.hi)) {
+                    st.ownEcho++;
+                    return true;
+                }
+            }
+            /* the same packet again within 1 s (more than one relay socket delivering it) */
+            var seen = this._lmWaveRecv || (this._lmWaveRecv = []);
+            for (i = 0; i < seen.length; i++) {
+                r = seen[i];
+                if (now - r.t < 1000 && r.u === userID && r.p === playerID && r.type === type && r.x === x && r.y === y) {
+                    st.duplicate++;
+                    return true;
+                }
+            }
+            if (seen.length < 8) seen.push({ u: 0, p: 0, type: 0, x: 0, y: 0, t: 0 });
+            r = seen[(this._lmWaveRecvN = ((this._lmWaveRecvN || 0) + 1) % seen.length)];
+            r.u = userID; r.p = playerID; r.type = type; r.x = x; r.y = y; r.t = now;
+            return false;
+        },
+        /* Colour of the sender: its teammate entry by playerID (Delta tab, or our 16-bit ID), the
+         * 32-bit ID of the old layout, or the one teammate with these low 16 bits. */
+        lmWaveSenderIndex(playerID, id32) {
+            var idx = this.checkPlayerID(playerID);
+            if (idx === null) idx = this.checkPlayerID(id32);
+            if (idx !== null || !playerID) return idx;
+            for (var i = 0, found = null; i < this.teamPlayers.length; i++) {
+                var id = this.teamPlayers[i] && this.teamPlayers[i].id;
+                if (typeof id === 'number' && (id & 0xFFFF) === playerID) {
+                    if (found !== null) return null;
+                    found = i;
+                }
+            }
+            return found;
+        },
         readWavePing(view) {
-            if (view.byteLength < 14) return;
-            var offset = 1;
-            var userID = view.getUint16(offset, true); offset += 2;
-            var playerID = view.getUint16(offset, true); offset += 2;
-            var type = view.getUint8(offset++);
-            var wx = view.getInt32(offset, true); offset += 4;
-            var wy = view.getInt32(offset, true); offset += 4;
-            /* Delta's wave (opcode 45). The coordinates are team coordinates (world +
-             * map offset, like opcode 30). window.LM is only a UI stub and had no
-             * addWave, so received waves were never drawn. Our own echo is skipped:
-             * sendTeamWave already drew it. */
+            /* Delta's wave (opcode 45). window.LM is only a UI stub and had no addWave, so
+             * received waves were never drawn. Our own echo is skipped: sendTeamWave already
+             * drew it. */
+            var st = this.lmWaveStats();
+            st.received++;
             window._lmWavesReceived = (window._lmWavesReceived || 0) + 1;
+            if (!view || view.byteLength < 14) {
+                st.malformed++;
+                return;
+            }
+            var userID = view.getUint16(1, true);
+            var playerID = view.getUint16(3, true);
+            var type = view.getUint8(5);
+            var wx = view.getInt32(6, true);
+            var wy = view.getInt32(10, true);
             var lm = window.legendmod;
             if (!lm || !lm.sendWaves || !Array.isArray(lm.Waves)) return;
-            if (this.playerID && playerID === (this.playerID & 0xFFFF)) return;
+            if (this.lmWaveSeen(userID, playerID, type, wx, wy, Date.now())) return;
+            /* no border yet on this server (connecting, or just switched): the offset is not
+             * known and the wave can still be one from the room we left */
+            if (!LM.mapOffsetFixed) {
+                st.noMap++;
+                return;
+            }
             var color = '#00e6ff';
-            var idx = this.checkPlayerID(playerID);
+            var idx = this.lmWaveSenderIndex(playerID, view.getUint32(1, true));
             if (idx !== null && this.teamPlayers[idx] && this.teamPlayers[idx].color) color = this.teamPlayers[idx].color;
             /* hex only: anything else threw in the wave gradient and dropped whole frames */
             if (typeof color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(color)) color = '#00e6ff';
+            var x = wx - this.lmWaveOffsetX(), y = wy - this.lmWaveOffsetY();
             if (lm.Waves.length > 30) lm.Waves.splice(0, lm.Waves.length - 30);
-            lm.sendWaves(wx - (ogario.mapOffsetX || 0), wy - (ogario.mapOffsetY || 0), color, 1000, 'wave:' + playerID, false);
+            lm.sendWaves(x, y, color, 1000, 'wave:' + playerID, false);
+            /* counted once when drawn and once when it expires (drawWaves) */
+            lm.Waves[lm.Waves.length - 1]._lmTeam = 1;
+            st.shown++;
             /* typed pings (5..8): also a short-lived label and minimap marker */
-            if (this.lmPingLabel(type)) this.addLmPing(wx - (ogario.mapOffsetX || 0), wy - (ogario.mapOffsetY || 0), type, color);
+            if (this.lmPingLabel(type)) this.addLmPing(x, y, type, color);
         },
         /* Typed team pings: fixed labels chosen by type (network text is never shown) */
         lmPingLabel(type) {
@@ -30912,7 +31001,7 @@ function thelegendmodproject() {
             lm.sendWaves(x, y, color, 1000, 'wave:self', false);
             this.addLmPing(x, y, type, color);
             try {
-                this.sendWavePing(x + (ogario.mapOffsetX || 0), y + (ogario.mapOffsetY || 0), type);
+                this.sendWavePing(x + this.lmWaveOffsetX(), y + this.lmWaveOffsetY(), type);
             } catch (e) { }
         },
         drawLmPingsMiniMap(ctx, offX, offY, scale) {
@@ -30947,22 +31036,64 @@ function thelegendmodproject() {
             if (!Number.isFinite(x) || !Number.isFinite(y)) return;
             lm.sendWaves(x, y, defaultSettings.splitRangeColor || '#00e6ff', 1000, 'wave:self', false);
             try {
-                this.sendWavePing(x + (ogario.mapOffsetX || 0), y + (ogario.mapOffsetY || 0), 4);
+                this.sendWavePing(x + this.lmWaveOffsetX(), y + this.lmWaveOffsetY(), 4);
             } catch (e) { }
         },
-        sendWavePing(wx, wy, type) {
-            var ws = window.ogarioWS || (this.isSocketOpen() ? this.socket : null);
-            if (ws && ws.readyState === 1 && this.playerID) {
-                var buffer = new ArrayBuffer(14);
-                var view = new DataView(buffer);
-                view.setUint8(0, 45);
-                view.setUint16(1, this.playerID & 0xFFFF, true);
-                view.setUint16(3, this.playerID & 0xFFFF, true);
-                view.setUint8(5, type || 0);
-                view.setInt32(6, Math.round(wx), true);
-                view.setInt32(10, Math.round(wy), true);
-                try { ws.send(buffer); } catch (e) { }
+        /* An open way to the team relay. The relay wrapper (standby-server) always says it is open
+         * and queues what it cannot send yet, so a wave sent while its socket reconnects arrived
+         * seconds later: it is open only when one of its sockets is. Otherwise our own socket, but
+         * not in private mode, where that socket is not the relay that gave us our ID. */
+        lmWaveRoute() {
+            var r = window.ogarioWS, st = this.lmWaveStats();
+            if (r) {
+                var open = r.readyState === 1;
+                if (open && r.isFake && Array.isArray(r.sockets)) {
+                    open = false;
+                    for (var i = 0; i < r.sockets.length; i++) {
+                        if (r.sockets[i] && typeof r.sockets[i] === 'object' && r.sockets[i].readyState === 1) open = true;
+                    }
+                }
+                if (open) {
+                    st.route = 'relay';
+                    return r;
+                }
             }
+            if (!this.privateMode && this.socket && this.socket !== r && this.isSocketOpen()) {
+                st.route = 'socket';
+                return this.socket;
+            }
+            st.route = 'none';
+            return null;
+        },
+        sendWavePing(wx, wy, type) {
+            var st = this.lmWaveStats();
+            /* a practice arena position is not on any server: teammates must not see it */
+            var ws = window.LMPractice && window.LMPractice.on ? null : this.lmWaveRoute();
+            if (!ws || !this.playerID) {
+                st.notSent++;
+                return false;
+            }
+            var lo = this.playerID & 0xFFFF;
+            var buffer = new ArrayBuffer(14);
+            var view = new DataView(buffer);
+            view.setUint8(0, 45);
+            view.setUint16(1, lo, true);
+            view.setUint16(3, lo, true);
+            view.setUint8(5, type || 0);
+            view.setInt32(6, Math.round(wx), true);
+            view.setInt32(10, Math.round(wy), true);
+            try { ws.send(buffer); } catch (e) {
+                st.notSent++;
+                return false;
+            }
+            st.sent++;
+            /* remembered to know its echo (lmWaveSeen), with the ID it was sent with */
+            var sent = this._lmWaveSent || (this._lmWaveSent = []);
+            if (sent.length < 8) sent.push({ lo: 0, hi: 0, type: 0, x: 0, y: 0, t: 0 });
+            var rec = sent[(this._lmWaveSentN = ((this._lmWaveSentN || 0) + 1) % sent.length)];
+            rec.lo = lo; rec.hi = (this.playerID >>> 16) & 0xFFFF; rec.type = view.getUint8(5);
+            rec.x = view.getInt32(6, true); rec.y = view.getInt32(10, true); rec.t = Date.now();
+            return true;
         },
         //Sonia4
         SLGHandler(message) {
@@ -79220,7 +79351,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var wave = waves[_wi];
                 if (!wave || !wave.time) continue; /* skip invalid — don't keep */
                 let r = Math.max(1, (_dnow - wave.time) / 2);
-                if (r > (wave.wavelength || 1000)) continue; /* expired — don't keep */
+                if (r > (wave.wavelength || 1000)) { /* expired — don't keep */
+                    if (wave._lmTeam && window.application && window.application._lmWaveStats) window.application._lmWaveStats.expired++;
+                    continue;
+                }
+                /* a received team wave: counted the first frame it is drawn */
+                if (wave._lmTeam === 1) {
+                    wave._lmTeam = 2;
+                    if (window.application && window.application._lmWaveStats) window.application._lmWaveStats.rendered++;
+                }
 
                 let innerR = Math.max(0.1, r - r / 4);
 
