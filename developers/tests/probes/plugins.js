@@ -15,6 +15,10 @@
   });
   if (document.getElementById('lm-pl-overlay') || document.getElementById('lm-plugins-btn')) fail.push('a separate plugin manager window still exists');
   if (!document.querySelector('#og-options .lmLabGroup h5')) fail.push('no Lab section');
+  // one button for User Scripts: the Tools tab (the Lab had a second one)
+  if (document.getElementById('lm-lab-plugins')) fail.push('second User Scripts button in the Lab');
+  if (!$('#legend #OpenuserScripts').length) fail.push('User Scripts button missing in the Tools tab');
+  if (!document.getElementById('lm-lab-reset')) fail.push('Reset Lab button missing');
   var keys = ['lmLab', 'lmPluginSettings.mass-milestones', 'UserscriptEnabledInit'];
   for (var k = 1; k <= 5; k++) keys.push('Userscript' + k, 'Userscripttexture' + k, 'Userscripttext1' + k, 'UserscriptEnabled' + k);
   var saved = {};

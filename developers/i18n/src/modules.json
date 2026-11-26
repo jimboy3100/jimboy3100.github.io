@@ -18377,24 +18377,6 @@
     "ja": "ラボをリセットしました：すべての実験機能がオフになりました。",
     "it": "Lab ripristinato: tutti gli esperimenti sono disattivati."
   },
-  "modules.lab.plugins": {
-    "en": "User Scripts (plugins)",
-    "el": "Scripts χρήστη (plugins)",
-    "es": "Scripts de usuario (plugins)",
-    "bg": "Потребителски скриптове (плъгини)",
-    "fr": "Scripts utilisateur (plugins)",
-    "ar": "سكربتات المستخدم (إضافات)",
-    "zh": "使用者腳本（擴充功能）",
-    "ru": "Пользовательские скрипты (плагины)",
-    "de": "Benutzerskripte (Plugins)",
-    "tr": "Kullanıcı scriptleri (eklentiler)",
-    "pl": "Skrypty użytkownika (wtyczki)",
-    "nl": "Gebruikersscripts (plug-ins)",
-    "pt": "Scripts (plugins)",
-    "id": "Script (plugin)",
-    "ja": "スクリプト（プラグイン）",
-    "it": "Script (plugin)"
-  },
   "modules.lab.fromPlugin": {
     "en": "added by a plugin",
     "el": "από plugin",

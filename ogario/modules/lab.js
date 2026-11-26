@@ -191,10 +191,8 @@
         rb.type = 'button';
         rb.id = 'lm-lab-reset';
         acts.appendChild(rb);
-        var pb = el('button', 'btn btn-xs btn-block btn-primary', tx('plugins'));
-        pb.type = 'button';
-        pb.id = 'lm-lab-plugins';
-        acts.appendChild(pb);
+        /* no User Scripts button here: it is in the Tools tab (one place; the hotkey and the
+         * Command Centre open it too) */
         box.appendChild(acts);
         if (!box._lmLab) {
             box._lmLab = true;
@@ -206,7 +204,6 @@
                 var t = e.target;
                 if (!t || !t.id) return;
                 if (t.id === 'lm-lab-reset') { e.preventDefault(); reset(); }
-                else if (t.id === 'lm-lab-plugins') { e.preventDefault(); if (window.LMPlugins) window.LMPlugins.open('plugins'); }
             });
         }
         return true;
