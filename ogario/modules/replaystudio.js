@@ -842,8 +842,10 @@
     }
     /* the frames drawn while a seek is rebuilt in slices would show the world running up to the
      * target: the game keeps its last frame until then (drawRender.render). An end time, renewed
-     * by every slice, so a lost job can never keep the picture */
-    var HOLD_MS = 1000;
+     * by every slice, so a lost job can never keep the picture for good. 5 s: a slow or busy
+     * device can stall 1 to 3 s between two slices, and with 1 s the frames then showed the
+     * world half rebuilt */
+    var HOLD_MS = 5000;
     function setPos(pos) {
         P.pos = pos;
         var l = LM();

@@ -342,6 +342,8 @@ function driverEnv(packets, opts) {
       if (!t || t.at > end) break;
       timers.shift();
       if (t.at > clock) clock = t.at;
+      /* stallMs: a busy page runs every timer that much later; stalled() sees the page then */
+      if (env.stallMs) { clock += env.stallMs; if (env.stalled) env.stalled(); }
       t.fn();
       env.frame();
       if (each) each();
@@ -595,6 +597,20 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
       steps > 10 && !bad.length && JSON.stringify(hist) === JSON.stringify(linesTo(35)));
     check('backwards and seeks: no chat sound, kill feed line, toast, spawn / death / respawn handling, menu or event (' + e.hooks.slice(0, 8).join(' ') + ')', !e.hooks.length);
     check('rebuilds in slices hold the last frame (' + sliced + ' slices) and only while they run' + (holdBad.length ? ' (' + holdBad.slice(0, 4).join(', ') + ')' : ''), sliced > 5 && !holdBad.length);
+    /* a busy page (2.5 s between two slices, as measured on a loaded machine): the frame stays held */
+    {
+      const stallBad = [];
+      let stallSeen = 0;
+      const cost0 = e.costMs;
+      e.costMs = 7;
+      e.stallMs = 2500;
+      e.stalled = () => { const s = e.st(); if (!s.seeking) return; stallSeen++; if (!((e.g._lmReplayHoldUntil || 0) > e.now())) stallBad.push(s.pos); };
+      e.RS.drive.seek(story.length, false); e.advance(200000);
+      e.RS.drive.seek(40, false); e.advance(200000);
+      e.stallMs = 0; e.stalled = null; e.costMs = cost0;
+      check('a rebuild on a busy page keeps the frame held between its slices (' + stallSeen + ' stalls' + (stallBad.length ? ', not held at ' + stallBad.slice(0, 4).join(' ') : '') + ')',
+        stallSeen > 2 && !stallBad.length && e.st().pos === 40 && !e.g._lmReplayHoldUntil);
+    }
     /* played forwards again from before the first spawn: all of it happens again, once */
     e.costMs = 0;
     e.RS.drive.seek(2, false); e.advance(500);
