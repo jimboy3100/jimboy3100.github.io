@@ -393,36 +393,34 @@ function _lmMatchHistoryButton() {
     b.textContent = '📜 ' + _lmMhT('matchHistory', 'Match history');
 }
 window._lmMatchHistoryButton = _lmMatchHistoryButton;
-/* the history window: newest first, built with textContent only; Esc or the cross closes it */
+/* The match history list is the History tab of the Analytics window (ogario/modules/analytics.js),
+ * next to the statistics made from the same games; it was a window of its own. */
 function _lmMatchHistoryOpen() {
-    var old = document.getElementById('lm-mh-modal');
-    if (old && old._lmClose) old._lmClose();
+    if (window.LMAnalytics && typeof window.LMAnalytics.open === 'function') window.LMAnalytics.open('history');
+}
+window._lmMatchHistoryOpen = _lmMatchHistoryOpen;
+/* fills host with the list: newest first, built with textContent only; "This device | Account
+ * (server)" on Expanding Land while logged in; Clear for this device's list */
+function _lmMatchHistoryPaint(host) {
+    if (!host) return;
     var ds = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings : {};
     /* var(--lm-*) so the open window follows a theme change; the saved value is the fallback */
     var V = function (n, v, d) { return 'var(--lm-' + n + ',' + (v || d) + ')'; };
     var mc = V('mc', ds.menuMainColor, '#01d9cc'), pc = V('pc', ds.menuPanelColor, '#00243e'), pc2 = V('pc2', ds.menuPanelColor2, '#002f52');
-    var tc = V('tc', ds.menuTextColor, '#ffffff'), tc2 = V('tc2', ds.menuTextColor2, '#8096a7');
+    var tc2 = V('tc2', ds.menuTextColor2, '#8096a7');
     var el = function (tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text !== undefined) e.textContent = text; return e; };
     var fmtTime = function (ms) { var s = Math.max(0, Math.round((+ms || 0) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); s = s % 60; return (h ? h + ':' + (m < 10 ? '0' : '') : '') + m + ':' + (s < 10 ? '0' : '') + s; };
-    var md = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:620px;max-width:calc(100vw - 32px);max-height:80vh;' +
-        'display:flex;flex-direction:column;z-index:999990;background:' + pc + ';border:1px solid ' + pc2 + ';border-top:3px solid ' + mc + ';' +
-        'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + tc + ';font-family:inherit;font-size:12px;overflow:hidden;');
-    md.id = 'lm-mh-modal';
-    md.className = 'lm-modal-container';
-    var head = el('div', 'padding:10px 44px 8px 80px;text-align:center;position:relative;border-bottom:1px solid ' + pc2 + ';background:linear-gradient(180deg,' + pc2 + ' 0%,' + pc + ' 100%);');
-    head.appendChild(el('div', 'font-size:16px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;', _lmMhT('matchHistory', 'Match history')));
-    var x = el('div', 'position:absolute;top:8px;right:12px;cursor:pointer;font-size:18px;color:' + tc2 + ';line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', '✕');
-    x.id = 'lm-mh-close';
-    x.title = _lmMhT('close', 'Close');
-    var clr = el('div', 'position:absolute;top:8px;left:12px;cursor:pointer;font-size:11px;color:' + tc2 + ';line-height:24px;height:24px;padding:0 8px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', _lmMhT('mhClear', 'Clear'));
+    while (host.firstChild) host.removeChild(host.firstChild);
+    var md = el('div');
+    md.id = 'lm-mh-view';
+    var bar = el('div', 'display:flex;gap:6px;align-items:center;flex-wrap:wrap;');
+    var clr = el('div', 'margin-inline-start:auto;cursor:pointer;font-size:11px;color:' + tc2 + ';line-height:24px;height:24px;padding:0 8px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);', _lmMhT('mhClear', 'Clear'));
     clr.id = 'lm-mh-clear';
-    head.appendChild(x);
-    head.appendChild(clr);
-    md.appendChild(head);
+    md.appendChild(bar);
     /* Expanding Land while logged in: "This device | Account (server)" */
     var view = 'local', tabs = null;
     if (_lmMhServerAvailable()) {
-        tabs = el('div', 'display:flex;gap:6px;justify-content:center;padding:6px 10px 0;');
+        tabs = el('div', 'display:flex;gap:6px;justify-content:center;');
         tabs.id = 'lm-mh-tabs';
         [['local', _lmMhT('mhThisDevice', 'This device')], ['server', _lmMhT('mhAccount', 'Account (server)')]].forEach(function (t) {
             var b = el('div', 'cursor:pointer;font-size:11px;padding:3px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + pc2 + ';', t[1]);
@@ -430,9 +428,9 @@ function _lmMatchHistoryOpen() {
             b.addEventListener('click', function (e) { e.stopPropagation(); if (view === t[0]) return; view = t[0]; paint(); });
             tabs.appendChild(b);
         });
-        md.appendChild(tabs);
+        bar.appendChild(tabs);
     }
-    var body = el('div', 'padding:6px 10px 10px;overflow:auto;-webkit-overflow-scrolling:touch;');
+    var body = el('div', 'padding:4px 0 0;');
     md.appendChild(body);
     var fillServer = function () {
         while (body.firstChild) body.removeChild(body.firstChild);
@@ -444,7 +442,7 @@ function _lmMatchHistoryOpen() {
         var tb = el('table', 'width:100%;border-collapse:collapse;white-space:nowrap;');
         var tr = el('tr');
         [_lmMhT('mhDate', 'Date'), _lmMhT('mhMass', 'Mass'), _lmMhT('timeAlive', 'Time Alive'), _lmMhT('eatenBy', 'Eaten by'), _lmMhT('mhTop', 'Best place'), _lmMhT('mhKills', 'Players / viruses')].forEach(function (h) {
-            tr.appendChild(el('th', 'text-align:left;padding:4px 6px;font-size:11px;font-weight:400;color:' + tc2 + ';border-bottom:1px solid ' + pc2 + ';position:sticky;top:0;background:' + pc + ';', h));
+            tr.appendChild(el('th', 'text-align:left;padding:4px 6px;font-size:11px;font-weight:400;color:' + tc2 + ';border-bottom:1px solid ' + pc2 + ';position:sticky;top:0;background:var(--lm-w-bg,' + pc + ');', h));
         });
         tb.appendChild(tr);
         list.forEach(function (g) {
@@ -480,7 +478,7 @@ function _lmMatchHistoryOpen() {
         var tb = el('table', 'width:100%;border-collapse:collapse;white-space:nowrap;');
         var tr = el('tr');
         [_lmMhT('mhDate', 'Date'), _lmMhT('mhMass', 'Mass'), _lmMhT('timeAlive', 'Time Alive'), _lmMhT('eatenBy', 'Eaten by'), _lmMhT('mhServer', 'Server'), _lmMhT('mhMode', 'Mode')].forEach(function (h) {
-            tr.appendChild(el('th', 'text-align:left;padding:4px 6px;font-size:11px;font-weight:400;color:' + tc2 + ';border-bottom:1px solid ' + pc2 + ';position:sticky;top:0;background:' + pc + ';', h));
+            tr.appendChild(el('th', 'text-align:left;padding:4px 6px;font-size:11px;font-weight:400;color:' + tc2 + ';border-bottom:1px solid ' + pc2 + ';position:sticky;top:0;background:var(--lm-w-bg,' + pc + ');', h));
         });
         tb.appendChild(tr);
         list.forEach(function (r) {
@@ -496,22 +494,18 @@ function _lmMatchHistoryOpen() {
         });
         body.appendChild(tb);
     };
+    bar.appendChild(clr);
     fill();
-    var onKey = function (e) { if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopPropagation(); close(); } };
-    var close = function () { window.removeEventListener('keydown', onKey, true); if (md.parentNode) md.parentNode.removeChild(md); };
-    md._lmClose = close;
     if (tabs) paint();
-    x.addEventListener('click', function (e) { e.stopPropagation(); close(); });
     clr.addEventListener('click', function (e) {
         e.stopPropagation();
         if (!window.confirm(_lmMhT('mhClearConfirm', 'Clear the match history?'))) return;
         try { localStorage.removeItem('lmMatchHistory'); } catch (er) { }
         fill();
     });
-    window.addEventListener('keydown', onKey, true);
-    document.body.appendChild(md);
+    host.appendChild(md);
 }
-window._lmMatchHistoryOpen = _lmMatchHistoryOpen;
+window._lmMatchHistoryPaint = _lmMatchHistoryPaint;
 /* Server match history: Expanding Land only, logged in, on an open connection
  * (the server answers only after our opcode 240 caps bit 3 and only with this account's games). */
 function _lmMhServerAvailable() {
@@ -535,7 +529,7 @@ function _lmMatchHistoryServerRequest() {
         var cur = window._lmServerMatchHistory;
         if (cur && cur.askedAt === asked && cur.state === 'loading') {
             cur.state = 'noreply';
-            var m = document.getElementById('lm-mh-modal');
+            var m = document.getElementById('lm-mh-view');
             if (m && m._lmServerRefresh) m._lmServerRefresh();
         }
     }, 6000);
@@ -553,7 +547,7 @@ function _lmMatchHistoryServerReply(msg) {
     });
     var prev = window._lmServerMatchHistory;
     window._lmServerMatchHistory = { state: 'done', askedAt: prev && prev.askedAt || 0, at: Date.now(), games: games };
-    var m = document.getElementById('lm-mh-modal');
+    var m = document.getElementById('lm-mh-view');
     if (m && m._lmServerRefresh) m._lmServerRefresh();
     /* Champion / Hunter badges read these games */
     _lmBadgesSchedule();

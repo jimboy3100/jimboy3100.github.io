@@ -1,6 +1,8 @@
 /* Legend Mod Analytics: statistics dashboard, heatmaps, Coach and personal objectives.
  * Opened from the Analytics button in the profile stats (click your profile picture), the
  * "Analytics" hotkey (no default key), the menu footer link while recording is on, or LMAnalytics.open().
+ * Its History tab is the match history list (option "matchHistory", ogario.v4.js _lmMatchHistoryPaint;
+ * the "Match history" footer link, its Command Centre entry and _lmMatchHistoryOpen open it there).
  * Recording is off by default (option "analytics", Settings > Stats). While it is off this file only
  * checks the option once a second and adds no LMEvents listeners; the window still shows the old
  * match history (lmMatchHistory) and personal bests when they exist.
@@ -714,7 +716,7 @@
     }
     function open(which) {
         if (!document.body) return;
-        if (which && ['dash', 'heat', 'coach', 'goals'].indexOf(which) !== -1) tab = which;
+        if (which && ['dash', 'history', 'heat', 'coach', 'goals'].indexOf(which) !== -1) tab = which;
         if (which === 'coach') coachIdx = -1;
         if (md) { paint(); return; }
         /* the shared window look (LMexpress.js) */
@@ -735,7 +737,7 @@
         var tabs = el('div', 'display:flex;gap:4px;flex:1 1 auto;overflow-x:auto;-webkit-overflow-scrolling:touch;');
         tabs.id = 'lm-analytics-tabs';
         TABS.forEach(function (x) {
-            var b = btn(T(x[1]), 'white-space:nowrap;', function () { tab = x[0]; if (x[0] === 'coach') coachIdx = -1; paint(); });
+            var b = btn(tabText(x), 'white-space:nowrap;', function () { tab = x[0]; if (x[0] === 'coach') coachIdx = -1; paint(); });
             b.id = 'lm-analytics-tab-' + x[0];
             b.setAttribute('data-tab', x[0]);
             tabs.appendChild(b);
@@ -758,7 +760,13 @@
         document.body.appendChild(md);
         paint();
     }
-    var TABS = [['dash', 'tabDash'], ['heat', 'tabHeat'], ['coach', 'tabCoach'], ['goals', 'tabGoals']];
+    /* History: the match history list (ogario.v4.js _lmMatchHistoryPaint, its own texts), once a window of its own */
+    var TABS = [['dash', 'tabDash'], ['history', 'matchHistory'], ['heat', 'tabHeat'], ['coach', 'tabCoach'], ['goals', 'tabGoals']];
+    function tabText(x) {
+        if (x[0] !== 'history') return T(x[1]);
+        var s = typeof window.lmT === 'function' ? window.lmT(x[1]) : '';
+        return s && s !== x[1] ? s : 'Match history';
+    }
     /* the header texts again after a language change (the body is drawn again by paint) */
     function relabel() {
         if (!md) return;
@@ -766,7 +774,7 @@
         md.dir = langDir();
         var ttl = md.querySelector('#lm-analytics-title');
         if (ttl) ttl.textContent = T('title');
-        TABS.forEach(function (x) { var b = md.querySelector('#lm-analytics-tab-' + x[0]); if (b) b.textContent = T(x[1]); });
+        TABS.forEach(function (x) { var b = md.querySelector('#lm-analytics-tab-' + x[0]); if (b) b.textContent = tabText(x); });
         var c = md.querySelector('#lm-analytics-close');
         if (c) { c.title = closeText(); c.setAttribute('aria-label', closeText()); }
     }
@@ -784,7 +792,8 @@
         var body = md.querySelector('#lm-analytics-body');
         while (body.firstChild) body.removeChild(body.firstChild);
         try {
-            if (tab === 'heat') paintHeat(body);
+            if (tab === 'history') { if (typeof window._lmMatchHistoryPaint === 'function') window._lmMatchHistoryPaint(body); }
+            else if (tab === 'heat') paintHeat(body);
             else if (tab === 'coach') paintCoach(body);
             else if (tab === 'goals') paintGoals(body);
             else paintDash(body);
@@ -1111,14 +1120,15 @@
         var badges = document.getElementById('lm-badges');
         if (badges && badges.parentNode === host) host.insertBefore(b, badges); else host.appendChild(b);
     }
-    /* while recording is on, also a link under the menu footer next to "Match history" (easy to reach on a phone) */
+    /* while recording is on, also a link under the menu footer (easy to reach on a phone); not while
+     * the "Match history" link is there: that one opens this window too (History tab) */
     function ensureFooterLink(on) {
         var b = document.getElementById('lm-analytics-link');
-        if (!on) { if (b && b.parentNode) b.parentNode.removeChild(b); return; }
+        if (!on || document.getElementById('lm-mh-btn')) { if (b && b.parentNode) b.parentNode.removeChild(b); return; }
         if (b) return;
         var foot = document.getElementById('menu-footer');
         if (!foot || !foot.parentNode) return;
-        var ref = document.getElementById('lm-mh-btn') || document.getElementById('lm-session-stats');
+        var ref = document.getElementById('lm-session-stats');
         if (!ref || ref.parentNode !== foot.parentNode) ref = foot;
         b = el('div', 'font-size:11px;text-align:center;margin-top:2px;cursor:pointer;text-decoration:underline;opacity:.85;', ICON + T('title'));
         b.id = 'lm-analytics-link';

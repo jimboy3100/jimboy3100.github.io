@@ -1,5 +1,6 @@
 // Analytics window (ogario/modules/analytics.js): loads, stays silent while off, every tab draws
-// with sample data, the window fits the screen and closes by tap. Restores localStorage after.
+// with sample data (History: the match history list, once a window of its own), one footer link,
+// the window fits the screen and closes by tap. Restores localStorage and the options after.
 (async () => {
   var fail = [], info = {};
   function need(name, ok) { if (!ok) fail.push(name); }
@@ -11,7 +12,8 @@
   need('no recording listeners while off', !window.LMEvents._has('split') && !window.LMEvents._has('massUpdate'));
   need('hotkey without a default key', typeof hotkeysCommand === 'object' && hotkeysCommand['hk-analytics'] && hotkeysCommand['hk-analytics'].defaultKey === '');
   need('Analytics button in the profile stats', !document.getElementById('user-stats') || !!document.getElementById('lm-analytics-btn'));
-  var keys = ['lmAnalyticsGames', 'lmAnalyticsTracks', 'lmAnalyticsGoals'], saved = {};
+  var keys = ['lmAnalyticsGames', 'lmAnalyticsTracks', 'lmAnalyticsGoals', 'lmMatchHistory'], saved = {};
+  var optMh = window.legendmod5 && window.legendmod5.matchHistory, optAn = window.legendmod5 && window.legendmod5.analytics, origConfirm = window.confirm;
   keys.forEach(function (k) { saved[k] = localStorage.getItem(k); });
   try {
     var now = Date.now(), games = [], tracks = [], C = A.core, p = '';
@@ -32,6 +34,36 @@
     need('window fits the screen', r.left >= 0 && r.top >= 0 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1);
     need('dashboard tiles', document.querySelectorAll('#lm-analytics-tiles > div').length === 7);
     need('weekly chart', !!document.querySelector('#lm-analytics-weeks path'));
+    /* History tab: the match history list (ogario.v4.js _lmMatchHistoryPaint) */
+    localStorage.setItem('lmMatchHistory', JSON.stringify([{ t: now - 60000, mass: 1234, ms: 65000, server: 'probe.example', mode: 'FFA', killer: { nick: 'Probe killer', mass: 2000 } },
+      { t: now - 30000, mass: 4321, ms: 125000, server: 'probe.example', mode: 'FFA', killer: { virus: true } }]));
+    var ht = document.getElementById('lm-analytics-tab-history');
+    need('History tab, labelled Match history', !!ht && ht.textContent === lmT('matchHistory'));
+    if (ht) ht.click();
+    var rows = document.querySelectorAll('#lm-analytics-body #lm-mh-view .lm-mh-row');
+    need('History tab lists the games, newest first', rows.length === 2 && rows[0].children[1].textContent === (4321).toLocaleString() && rows[1].children[3].textContent.indexOf('Probe killer') === 0);
+    A.close();
+    window._lmMatchHistoryOpen();
+    need('Match history opens the Analytics window at History', A.isOpen() && document.getElementById('lm-analytics-tab-history').getAttribute('aria-pressed') === 'true' &&
+      document.querySelectorAll('#lm-mh-view .lm-mh-row').length === 2 && !document.getElementById('lm-mh-modal'));
+    window.confirm = function () { return true; };
+    document.getElementById('lm-mh-clear').click();
+    window.confirm = origConfirm;
+    need('Clear empties the list', document.querySelectorAll('#lm-mh-view .lm-mh-row').length === 0 && !localStorage.getItem('lmMatchHistory'));
+    if (document.getElementById('menu-footer') && window.legendmod5) {
+      legendmod5.matchHistory = true;
+      legendmod5.analytics = true;
+      window._lmMatchHistoryButton();
+      await new Promise(function (r) { setTimeout(r, 1300); });
+      need('one footer link while both options are on', !!document.getElementById('lm-mh-btn') && !document.getElementById('lm-analytics-link'));
+      legendmod5.matchHistory = false;
+      window._lmMatchHistoryButton();
+      await new Promise(function (r) { setTimeout(r, 1300); });
+      need('Analytics footer link while only recording is on', !document.getElementById('lm-mh-btn') && !!document.getElementById('lm-analytics-link'));
+      legendmod5.matchHistory = optMh;
+      legendmod5.analytics = optAn;
+      window._lmMatchHistoryButton();
+    }
     document.getElementById('lm-analytics-tab-heat').click();
     var cv = document.getElementById('lm-analytics-heat');
     need('heatmap canvas', !!cv && cv.width > 0);
@@ -55,6 +87,8 @@
     fail.push('threw: ' + e);
   } finally {
     try { A.close(); } catch (e) { }
+    window.confirm = origConfirm;
+    if (window.legendmod5) { legendmod5.matchHistory = optMh; legendmod5.analytics = optAn; try { window._lmMatchHistoryButton(); } catch (e) { } }
     keys.forEach(function (k) { if (saved[k] === null) localStorage.removeItem(k); else localStorage.setItem(k, saved[k]); });
   }
   return { fail: fail, info: info };
