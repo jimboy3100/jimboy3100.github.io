@@ -135,16 +135,30 @@
         var st = document.createElement('style');
         st.id = 'lm-lab-style';
         st.textContent =
-            '.lmLabGroup .lm-lab-note{font-size:var(--lm-w-fs-s,11px);opacity:.75;line-height:1.4;margin:2px 0 6px}' +
-            '.lmLabGroup label.lm-lab-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;font-weight:normal;cursor:pointer;padding:3px 0}' +
-            '.lmLabGroup label.lm-lab-row input{width:18px;height:18px;margin:2px 0 0;flex:none}' +
-            '.lmLabGroup .lm-lab-desc{display:block;font-size:var(--lm-w-fs-s,11px);opacity:.7;line-height:1.35}' +
-            '.lmLabGroup .lm-lab-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}' +
-            '.lmLabGroup .lm-lab-acts .btn{min-height:var(--lm-w-ctl,28px)}';
+            /* the rows are the menu's own option rows (label padding, Switchery): only the
+             * notes and the descriptions are styled here */
+            '.lmLabGroup .lm-lab-note{font-size:var(--lm-w-fs-s,11px);opacity:.75;line-height:1.4;padding:0 12px 6px}' +
+            '.lmLabGroup .lm-lab-desc{display:block;font-size:var(--lm-w-fs-s,11px);opacity:.7;line-height:1.35;margin-top:2px}' +
+            '.lmLabGroup .lm-lab-acts .btn{margin:4px 0 2px}';
         document.head.appendChild(st);
     }
-    /* builds the section content (again after a registration); the switches are plain
-     * checkboxes with ids lmLab-<id>, so the Command Centre lists and toggles them */
+    /* A switch like the other options (Switchery). The menu makes the Switcheries of all
+     * .js-switch boxes once (setUI); a row built after that, or rebuilt, makes its own. */
+    function switchery(cb) {
+        if (typeof window.Switchery !== 'function' || !document.querySelector('#og-options .switchery')) return;
+        var mc = '';
+        try { mc = window.getComputedStyle(document.documentElement).getPropertyValue('--lm-mc').trim(); } catch (e) { }
+        try {
+            new window.Switchery(cb, { color: mc || '#01d9cc', size: 'small' });
+            var sw = cb.nextElementSibling;
+            if (sw && sw.classList.contains('switchery')) { sw.setAttribute('tabindex', '0'); sw.setAttribute('role', 'switch'); }
+        } catch (e) { }
+    }
+    /* builds the section content (again after a registration); the switches are option rows
+     * (label + checkbox.js-switch, as addOptions makes them) with ids lmLab-<id>, so the
+     * Command Centre lists and toggles them. They were plain checkboxes at the far right of
+     * rows without padding, under the list's scroll bar rail: a click hit the rail, which
+     * scrolled the list up, and never reached the box. */
     function mount() {
         var box = document.querySelector('#og-options .lmLabGroup');
         if (!box) return false;
@@ -155,27 +169,29 @@
         if (keep && keep !== box.firstChild) box.insertBefore(keep, box.firstChild);
         box.appendChild(el('div', 'lm-lab-note', tx('intro')));
         if (!list.length) box.appendChild(el('div', 'lm-lab-note', tx('none')));
+        var made = [];
         list.forEach(function (x) {
             var row = el('label', 'lm-lab-row');
-            var txt = el('span', '', nameOf(x));
-            var desc = descOf(x);
-            var d = desc + (x.builtIn ? '' : (desc ? ' \u00b7 ' : '') + tx('fromPlugin'));
-            if (d) txt.appendChild(el('span', 'lm-lab-desc', d));
-            row.appendChild(txt);
+            row.appendChild(document.createTextNode(nameOf(x) + ' '));
             var cb = document.createElement('input');
             cb.type = 'checkbox';
             cb.id = 'lmLab-' + x.id;
-            cb.className = 'lm-lab-cb';
+            cb.className = 'js-switch lm-lab-cb';
             cb.checked = !!active[x.id];
             row.appendChild(cb);
+            var desc = descOf(x);
+            var d = desc + (x.builtIn ? '' : (desc ? ' \u00b7 ' : '') + tx('fromPlugin'));
+            if (d) row.appendChild(el('span', 'lm-lab-desc', d));
             box.appendChild(row);
+            made.push(cb);
         });
+        made.forEach(switchery);
         var acts = el('div', 'lm-lab-acts');
-        var rb = el('button', 'btn btn-xs btn-danger', tx('reset'));
+        var rb = el('button', 'btn btn-xs btn-block btn-danger', tx('reset'));
         rb.type = 'button';
         rb.id = 'lm-lab-reset';
         acts.appendChild(rb);
-        var pb = el('button', 'btn btn-xs btn-primary', tx('plugins'));
+        var pb = el('button', 'btn btn-xs btn-block btn-primary', tx('plugins'));
         pb.type = 'button';
         pb.id = 'lm-lab-plugins';
         acts.appendChild(pb);
@@ -198,7 +214,10 @@
     function sync() {
         list.forEach(function (x) {
             var cb = document.getElementById('lmLab-' + x.id);
-            if (cb) cb.checked = !!active[x.id];
+            if (!cb || cb.checked === !!active[x.id]) return;
+            cb.checked = !!active[x.id];
+            /* moves its Switchery (it listens on the box); not bubbling, so set() does not run again */
+            try { cb.dispatchEvent(new Event('change')); } catch (e) { }
         });
     }
     /* opens the menu at the Lab section */

@@ -5,7 +5,8 @@
 // before the page runs), SMOKE_FIRSTRUN=1 (show the one-time language window; hidden otherwise).
 // Needs Node 22+ (global fetch and WebSocket) and Chrome/Chromium.
 // Chrome: env CHROME_PATH, otherwise the usual install locations are tried.
-// If <outDir>/probe.js exists it is evaluated in the page after [seconds].
+// If <outDir>/probe.js exists it is evaluated in the page after [seconds]. A probe can send real mouse
+// clicks / touch taps with window.__lmInput (see Runtime.bindingCalled below).
 // A machine-readable summary is written to <outDir>/result.json.
 const { spawn } = require('child_process');
 const fs = require('fs');
@@ -93,12 +94,29 @@ let served = 0, missing = [], probeValue;
       const txt = m.params.args.map(a => a.value !== undefined ? String(a.value) : (a.description || a.type)).join(' ');
       const fr = m.params.stackTrace && m.params.stackTrace.callFrames[0];
       errors.push('CONSOLE.ERROR ' + txt.slice(0, 300) + (fr ? ' @' + fr.url.replace(/^https:\/\/[^/]+\//, '') + ':' + fr.lineNumber : ''));
+    } else if (m.method === 'Runtime.bindingCalled' && m.params.name === '__lmInput') {
+      /* a probe asks for a real click or tap (trusted input, like a player's): window.__lmInput(JSON
+       * { id, type: 'click' | 'tap', x, y }) in viewport pixels; window.__lmInputDone(id) is called after */
+      let q = null;
+      try { q = JSON.parse(m.params.payload); } catch (e) { }
+      if (!q) return;
+      const x = Number(q.x) || 0, y = Number(q.y) || 0;
+      if (q.type === 'tap') {
+        await send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y }] });
+        await send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+      } else {
+        await send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y });
+        await send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', buttons: 1, clickCount: 1 });
+        await send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', buttons: 0, clickCount: 1 });
+      }
+      send('Runtime.evaluate', { expression: 'window.__lmInputDone && window.__lmInputDone(' + JSON.stringify(String(q.id)) + ')' });
     } else if (m.method === 'Log.entryAdded' && m.params.entry.level === 'error') {
       logs.push('LOG ' + m.params.entry.source + ' ' + (m.params.entry.text || '').slice(0, 200) + ' ' + (m.params.entry.url || ''));
     }
   };
   await new Promise(r => ws.onopen = r);
   await send('Runtime.enable'); await send('Log.enable'); await send('Page.enable');
+  await send('Runtime.addBinding', { name: '__lmInput' });
   await send('Emulation.setUserAgentOverride', { userAgent: ver['User-Agent'] || '', acceptLanguage: process.env.SMOKE_LANG || 'en-US' });
   await send('Emulation.setLocaleOverride', { locale: process.env.SMOKE_LANG || 'en-US' });
   /* SMOKE_STORAGE='{"key":"value"}': localStorage set before the page's scripts run (only where it is empty) */
