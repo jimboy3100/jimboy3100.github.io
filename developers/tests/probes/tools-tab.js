@@ -1,0 +1,82 @@
+// Tools tab in the real menu: row 1 is Hide Shortcuts | Hide Everything (red), the Rounded / Square
+// HUD and Show Timer Calc. buttons are gone; their settings: Theme > HUD "Rounded corners" (square
+// by default; the switch rounds the menu and HUD corners and is saved) and Settings > Stats "Show
+// stopwatch" next to "Show current time" (off by default; shows the stopwatch above the minimap).
+// Both are in the Command Centre. Stored settings and the values are put back.
+(async () => {
+  var fail = [], info = {};
+  function need(name, ok) { if (!ok) fail.push(name); }
+  var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  for (var i = 0; i < 40 && !document.getElementById('HideAllBthn'); i++) await sleep(250);
+  var T = defaultSettings, S = window.legendmod5;
+  var keepTheme = null, keepSet = null;
+  try { keepTheme = localStorage.getItem('ogarioThemeSettings'); keepSet = localStorage.getItem('ogarioSettings'); } catch (e) { }
+  var keepRound = T.hudRoundedCorners, keepWatch = S.showStopwatch;
+  var change = function (el, v) { el.checked = v; el.dispatchEvent(new Event('change', { bubbles: true })); };
+  try {
+    /* row 1 */
+    var hs = document.getElementById('SHOSHOBtn'), he = document.getElementById('HideAllBthn');
+    need('Tools tab: Hide Shortcuts and Hide Everything', !!hs && !!he && $(hs).closest('#legend').length === 1 && $(he).closest('#legend').length === 1);
+    need('Tools tab: no Rounded / Square HUD or Show Timer Calc. button', !document.getElementById('MAINBTBtn') && !document.getElementById('TIMEcalBtn'));
+    if (hs && he) {
+      need('Hide Everything keeps its red style', $(he).hasClass('btn-danger'));
+      need('Hide Everything comes right after Hide Shortcuts', hs.nextElementSibling === he);
+      var mm = document.getElementById('main-menu'), lg = document.getElementById('legend');
+      var was = { mm: mm.style.display, lg: lg.style.display };
+      mm.style.display = 'block'; lg.style.display = 'block';
+      var a = hs.getBoundingClientRect(), b = he.getBoundingClientRect();
+      mm.style.display = was.mm; lg.style.display = was.lg;
+      info.row = [Math.round(a.left), Math.round(a.top), Math.round(b.left), Math.round(b.top)];
+      need('row 1: Hide Shortcuts | Hide Everything on one row', a.width > 0 && b.width > 0 && Math.abs(a.top - b.top) < 2 && b.left >= a.right - 1);
+    }
+    /* Theme > HUD: Rounded corners */
+    var rc = document.getElementById('hudRoundedCorners');
+    need('theme default: square', LM_THEME_DEFAULTS.hudRoundedCorners === false);
+    need('Theme > HUD: Rounded corners switch', !!rc && rc.type === 'checkbox' && $(rc).closest('#theme-hud').length === 1 && !!(rc.nextElementSibling && /switchery/.test(rc.nextElementSibling.className)));
+    if (rc) {
+      var radius = function () { return getComputedStyle(document.documentElement).getPropertyValue('--lm-radius').trim(); };
+      var btnR = function () { return getComputedStyle(document.getElementById('HideAllBthn')).borderTopLeftRadius; };
+      need('the switch shows the setting', rc.checked === (T.hudRoundedCorners === true));
+      change(rc, false);
+      await sleep(50);
+      need('square: menu buttons and the corner variable 0', T.hudRoundedCorners === false && radius() === '0px' && btnR() === '0px');
+      change(rc, true);
+      await sleep(800);
+      info.rounded = [radius(), btnR()];
+      need('rounded: menu buttons 10px', T.hudRoundedCorners === true && radius() === '10px' && btnR() === '10px');
+      var st = null;
+      try { st = JSON.parse(localStorage.getItem('ogarioThemeSettings') || 'null'); } catch (e) { }
+      need('rounded: saved with the theme', !!st && st.hudRoundedCorners === true);
+      /* a theme set from elsewhere (profiles, Theme Workshop): setTheme moves the switch */
+      T.hudRoundedCorners = false;
+      Settings.setTheme();
+      need('setTheme: the switch and the corners follow the value', rc.checked === false && radius() === '0px');
+    }
+    /* Settings > Stats: Show stopwatch */
+    var sw = document.getElementById('showStopwatch'), stt = document.getElementById('showTime');
+    need('stats default: stopwatch off', LM_SETTINGS_DEFAULTS.showStopwatch === false);
+    need('Settings > Stats: Show stopwatch after Show current time', !!sw && !!stt && $(sw).closest('.statsGroup').length === 1 && $(stt).closest('label')[0].nextElementSibling === $(sw).closest('label')[0]);
+    if (sw) {
+      change(sw, true);
+      await sleep(50);
+      need('on: the stopwatch is shown', S.showStopwatch === true && $('#timertools-hud').css('display') !== 'none');
+      change(sw, false);
+      await sleep(50);
+      need('off: the stopwatch is hidden', S.showStopwatch === false && $('#timertools-hud').css('display') === 'none');
+    }
+    if (window.LMCommandCentre) {
+      var ids = window.LMCommandCentre.items(true).map(function (it) { return it.id; });
+      need('both in the Command Centre', ids.indexOf('set:hudRoundedCorners') >= 0 && ids.indexOf('opt:showStopwatch') >= 0);
+    }
+  } finally {
+    T.hudRoundedCorners = keepRound;
+    try { Settings.setHudCorners(); } catch (e) { }
+    if (document.getElementById('showStopwatch') && S.showStopwatch !== keepWatch) change(document.getElementById('showStopwatch'), keepWatch);
+    await sleep(800);
+    try {
+      if (keepTheme === null) localStorage.removeItem('ogarioThemeSettings'); else localStorage.setItem('ogarioThemeSettings', keepTheme);
+      if (keepSet === null) localStorage.removeItem('ogarioSettings'); else localStorage.setItem('ogarioSettings', keepSet);
+    } catch (e) { }
+  }
+  return { fail: fail, info: info };
+})()

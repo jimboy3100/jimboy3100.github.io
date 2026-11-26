@@ -1,6 +1,8 @@
 // Saved Tools tab choices on load (needs Chrome, like run.js; skipped without it): with Show Shortcuts,
 // Rounded HUD and Show Timer Calc. saved and a leaderboard / teamboard title set in Theme > HUD, the page
-// loads without an error, the three buttons show their saved state and the titles are on the HUD.
+// loads without an error, Show Shortcuts shows its saved state and the titles are on the HUD. The old
+// Rounded HUD and Show Timer Calc. buttons are settings now: the saved choices come along once into
+// Theme > HUD "Rounded corners" and Settings > Stats "Show stopwatch" and the old keys are gone.
 // LMexpress.js applies the saved buttons while it is still loading: the Rounded HUD theme notice and the
 // timer threw there (their variables are set further down the file) and the rest of the load stopped,
 // so the timer and the HUD images and titles were not restored.
@@ -21,13 +23,23 @@ const secs = Number((args.indexOf('--secs') >= 0 && args[args.indexOf('--secs') 
 const probe = `(async () => {
   var fail = [], info = {};
   var wait = async function (c, ms) { var t0 = Date.now(); while (!c() && Date.now() - t0 < ms) await new Promise(function (r) { setTimeout(r, 100); }); return c(); };
-  await wait(function () { return $('#legendlanguages').length > 0 && $('#TIMEcalBtn').length > 0; }, 20000);
-  ['SHOSHOBtn', 'MAINBTBtn', 'TIMEcalBtn'].forEach(function (id) {
-    info[id] = $('#' + id).attr('aria-pressed');
-    if ($('#' + id).attr('aria-pressed') !== 'true') fail.push(id + ' not restored: ' + $('#' + id).attr('aria-pressed'));
-  });
+  await wait(function () { return $('#legendlanguages').length > 0 && $('#HideAllBthn').length > 0 && $('#hudRoundedCorners').length > 0 && $('#showStopwatch').length > 0; }, 20000);
+  info.SHOSHOBtn = $('#SHOSHOBtn').attr('aria-pressed');
+  if (info.SHOSHOBtn !== 'true') fail.push('SHOSHOBtn not restored: ' + info.SHOSHOBtn);
+  /* the old buttons' saved choices, carried into the settings once */
+  var st = null; try { st = JSON.parse(localStorage.getItem('ogarioThemeSettings') || 'null'); } catch (e) { }
+  var gs = null; try { gs = JSON.parse(localStorage.getItem('ogarioSettings') || 'null'); } catch (e) { }
+  info.rounded = [defaultSettings.hudRoundedCorners, $('#hudRoundedCorners').prop('checked'), st && st.hudRoundedCorners, localStorage.getItem('MAINBTBtn')];
+  if (defaultSettings.hudRoundedCorners !== true || !$('#hudRoundedCorners').prop('checked') || !st || st.hudRoundedCorners !== true) fail.push('Rounded HUD not carried into Rounded corners: ' + JSON.stringify(info.rounded));
+  if (localStorage.getItem('MAINBTBtn') !== null) fail.push('old MAINBTBtn key left');
+  info.stopwatch = [legendmod5.showStopwatch, $('#showStopwatch').prop('checked'), gs && gs.showStopwatch, localStorage.getItem('TIMEcalBtn')];
+  if (legendmod5.showStopwatch !== true || !$('#showStopwatch').prop('checked') || !gs || gs.showStopwatch !== true) fail.push('Show Timer Calc. not carried into Show stopwatch: ' + JSON.stringify(info.stopwatch));
+  if (localStorage.getItem('TIMEcalBtn') !== null) fail.push('old TIMEcalBtn key left');
+  if (gs && gs.showTime !== true) fail.push('the saved settings lost showTime');
+  if ($('#MAINBTBtn, #TIMEcalBtn').length) fail.push('old Tools tab buttons still there');
   info.timer = $('#timertools-hud').css('display');
-  if (!window.TimerLM || !TimerLM.timerDiv || TimerLM.timerDiv.id !== 'timer') fail.push('timer calculator has no timer field');
+  if (info.timer === 'none') fail.push('stopwatch not shown');
+  if (!window.TimerLM || !TimerLM.timerDiv || TimerLM.timerDiv.id !== 'timer') fail.push('stopwatch has no timer field');
   info.radius = getComputedStyle(document.documentElement).getPropertyValue('--lm-radius').trim();
   if (info.radius !== '10px') fail.push('rounded corners not applied: ' + info.radius);
   info.lb = $('#leaderboard-hud > h5').text(); info.tb = $('#top5-hud > h5').text();

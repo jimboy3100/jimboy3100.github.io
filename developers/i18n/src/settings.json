@@ -12925,5 +12925,41 @@
     "id": "Waktu frame di penghitung FPS",
     "ja": "FPSカウンターにフレーム時間を表示",
     "it": "Tempo per frame nel contatore FPS"
+  },
+  "settings.hudRoundedCorners": {
+    "en": "Rounded corners (menu and HUD)",
+    "el": "Στρογγυλεμένες γωνίες (μενού και HUD)",
+    "es": "Esquinas redondeadas (menú y HUD)",
+    "bg": "Заоблени ъгли (меню и HUD)",
+    "fr": "Coins arrondis (menu et HUD)",
+    "ar": "زوايا دائرية (القائمة و HUD)",
+    "zh": "圓角（選單與 HUD）",
+    "ru": "Скруглённые углы (меню и HUD)",
+    "de": "Abgerundete Ecken (Menü und HUD)",
+    "tr": "Yuvarlak köşeler (menü ve HUD)",
+    "pl": "Zaokrąglone rogi (menu i HUD)",
+    "nl": "Afgeronde hoeken (menu en HUD)",
+    "pt": "Cantos arredondados (menu e HUD)",
+    "id": "Sudut membulat (menu dan HUD)",
+    "ja": "角を丸くする（メニューとHUD）",
+    "it": "Angoli arrotondati (menu e HUD)"
+  },
+  "settings.showStopwatch": {
+    "en": "Show stopwatch (above the minimap)",
+    "el": "Εμφάνιση χρονομέτρου (πάνω από το minimap)",
+    "es": "Mostrar cronómetro (encima del minimapa)",
+    "bg": "Покажи хронометъра (над миникартата)",
+    "fr": "Afficher le chrono (au-dessus de la mini-carte)",
+    "ar": "إظهار ساعة الإيقاف (فوق الخريطة المصغرة)",
+    "zh": "顯示碼錶（小地圖上方）",
+    "ru": "Показывать секундомер (над миникартой)",
+    "de": "Stoppuhr anzeigen (über der Minimap)",
+    "tr": "Kronometreyi göster (mini haritanın üstünde)",
+    "pl": "Pokaż stoper (nad minimapą)",
+    "nl": "Stopwatch tonen (boven de minimap)",
+    "pt": "Mostrar cronômetro (acima do minimapa)",
+    "id": "Tampilkan stopwatch (di atas minimap)",
+    "ja": "ストップウォッチを表示（ミニマップの上）",
+    "it": "Mostra cronometro (sopra la minimappa)"
   }
 }

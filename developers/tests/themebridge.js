@@ -288,9 +288,9 @@ check('live: the answers to one window are bounded', rep.got.length === 50);
 const pg = page();
 pg.send(f1.got[1].m, 'https://agar.io', pg.parent);
 check('live: the page applies what the sender sends', pg.props['--lm-mc'] === '#0000ff' && pg.props['--lm-hud-mc'] === '#00ff00');
-check('live: the theme setters notify (ogario addCustomCSS) and Rounded / Square HUD too',
+check('live: the theme setters notify (ogario addCustomCSS) and Theme > HUD Rounded corners too (setHudCorners, developers/tests/toolstab.js)',
     /window\.lmThemeChanged === 'function' && \/\^\(menu\\w\*CSS\|lmWinCSS\|hudCSS\|hudFontVarCSS\|hudScaleVarCSS\)\$\/\.test\(name\)\) window\.lmThemeChanged\(\)/.test(fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8')) &&
-    /setProperty\('--lm-radius-s'[^\n]*\n[^\n]*\n\s*if \(typeof lmThemeChanged === 'function'\) lmThemeChanged\(\);/.test(lm));
+    /setProperty\('--lm-radius-s'[\s\S]{0,600}?if \(typeof window\.lmThemeChanged === 'function'\) window\.lmThemeChanged\(\);/.test(fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8')));
 
 /* a saved Rounded HUD is applied while LMexpress.js loads, before the peer list is set (the function
  * is hoisted, the list not yet): the notice must not throw (it stopped the rest of the load) */

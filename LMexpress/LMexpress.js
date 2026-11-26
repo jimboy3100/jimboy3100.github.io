@@ -113,9 +113,6 @@ var imgHref = localStorage.getItem("imgHref");
 var showToken = localStorage.getItem("showTK");
 var showPlayer = localStorage.getItem("showPlayer");
 var SHOSHOBtn = localStorage.getItem("SHOSHOBtn");
-var MAINBTBtn = localStorage.getItem("MAINBTBtn");
-
-var TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
 
 
 /* The website is served on www.legendmod.ml (jimboy3100.github.io redirects there).
@@ -603,9 +600,6 @@ function enableshortcuts() {
     }
     if ($("#SHOSHOBtn").attr('aria-pressed') == "false") {
         $("#SHOSHOBtn").click();
-    }
-    if ($("#MAINBTBtn").attr('aria-pressed') == "false") {
-        $("#MAINBTBtn").click();
     }
 
 
@@ -1714,9 +1708,7 @@ function parseLegendJSONAPI(LegendJSON) {
     LegendJSON.legendSettings.showToken = localStorage.getItem("showTK");
     LegendJSON.legendSettings.showPlayer = localStorage.getItem("showPlayer");
     LegendJSON.legendSettings.SHOSHOBtn = localStorage.getItem("SHOSHOBtn");
-    LegendJSON.legendSettings.MAINBTBtn = localStorage.getItem("MAINBTBtn");
-
-    LegendJSON.legendSettings.TIMEcalBtn = localStorage.getItem("TIMEcalBtn");
+    /* Rounded / Square HUD and the stopwatch are settings now (theme hudRoundedCorners, showStopwatch) */
     LegendJSON.legendSettings.timesopened = localStorage.getItem("timesopened");
 
     LegendJSON.legendSettings.dyinglight1load = localStorage.getItem("dyinglight1load");
@@ -2006,8 +1998,9 @@ function saveLegendJSONAPI() {
         _lmImportSet("showTK", LegendJSON.legendSettings.showToken);
         _lmImportSet("showPlayer", LegendJSON.legendSettings.showPlayer);
         _lmImportSet("SHOSHOBtn", LegendJSON.legendSettings.SHOSHOBtn);
+        /* an older export's Rounded / Square HUD and stopwatch buttons: the next start carries them
+         * into the settings once (loadThemeSettings, loadSettings in ogario.v4.js) */
         _lmImportSet("MAINBTBtn", LegendJSON.legendSettings.MAINBTBtn);
-
         _lmImportSet("TIMEcalBtn", LegendJSON.legendSettings.TIMEcalBtn);
         _lmImportSet("timesopened", LegendJSON.legendSettings.timesopened);
 
@@ -4672,6 +4665,15 @@ function displayTimer() {
     }
 }
 
+/* Settings > Stats "Show stopwatch" (showStopwatch, ogario.v4.js; was the Tools tab button
+ * "Show Timer Calc."): the start / pause / stop stopwatch above the minimap */
+function lmShowStopwatch(show) {
+    /* TimerLM can be missing when the start runs (seen in the headless first-run pages) */
+    if (!window.TimerLM) window.TimerLM = {};
+    window.TimerLM.timerDiv = document.getElementById('timer');
+    $("#timertools-hud").toggle(!!show);
+}
+window.lmShowStopwatch = lmShowStopwatch;
 function startTimer() {
     $("#playtimer").hide();
     $("#stoptimer").show();
@@ -5082,13 +5084,8 @@ function triggerLMbtns() {
     if (SHOSHOBtn == "true") {
         $("#SHOSHOBtn").click();
     }
-    if (MAINBTBtn == "true") {
-        $("#MAINBTBtn").click();
-    }
-
-    if (TIMEcalBtn == "true") {
-        $("#TIMEcalBtn").click();
-    }
+    /* Settings > Stats "Show stopwatch" */
+    lmShowStopwatch(!!(window.legendmod5 && window.legendmod5.showStopwatch));
 
     document.getElementById("minimapPicture").value = localStorage.getItem("minimapbckimg");
     if ($('#minimapPicture').val() != "") {
@@ -6885,9 +6882,8 @@ function initializeLM(modVersion) {
         '<div id="TimesUsedPanel" class="user-name" style="display:inline-block;">Times Used: <div id="TimesUsed" style="display:inline-block"></div></div><br>' +
         '</div></div>' +*/
         '<button id="SHOSHOBtn" type="button" class="btn btn-sm btn-warning" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-puzzle-piece"></i>' + Premadeletter42 + '</button>' +
-        '<button id="MAINBTBtn" type="button" class="btn btn-sm btn-warning" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-minus"></i>' + Premadeletter45a + '</button>' +
-        '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('lmx.ex.hideAllTip') + '" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
-        '<button id="TIMEcalBtn" type="button" class="btn btn-sm btn-warning" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-calculator"></i>' + Premadeletter50 + '</button>' +
+        /* Rounded / Square HUD is Theme > HUD "Rounded corners", the stopwatch is Settings > Stats "Show stopwatch" */
+        '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('lmx.ex.hideAllTip') + '" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
 
         '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>' + _lmxE('pack.userScripts') + '</button>' +
         '<button id="SpecialDealsBtn" class="btn btn-primary btn btn-shop" type="submit" disabled="disabled" onclick="BeforeSpecialDeals(); return false;" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="' + _lmxE('lmx.ex.loginPlayFirst') + '" data-itr="page_shop"><i class="fa fa-paint-brush"></i><span data-i18n="lmx.ex.agarioSkins">' + _lmxE('lmx.ex.agarioSkins') + '</span><div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;" data-i18n="needLogin">' + _lmxE('needLogin') + '</div></button>' +
@@ -7610,62 +7606,6 @@ function initializeLM(modVersion) {
             $("#images-hud").hide();
             $(this).html('<i class="fa fa-puzzle-piece"></i>' + Premadeletter42);
             return seticon = "YES";
-        }
-    });
-    /* Rounded / Square HUD: the choice sets --lm-radius (10px rounded, 0 square) and one stylesheet gives the
-     * menu and HUD corners as multiples of it; Legend windows use var(--lm-radius, 6px), so they follow too.
-     * !important: ogario.v3.css comes later in the page with the same selectors (.btn, .form-control...) */
-    function _lmHudCorners(rounded) {
-        /* --lm-radius for windows and panels, --lm-radius-s for their buttons and fields */
-        document.documentElement.style.setProperty('--lm-radius', rounded ? '10px' : '0px');
-        document.documentElement.style.setProperty('--lm-radius-s', rounded ? '6px' : '0px');
-        /* open Legend pages follow the corners too */
-        if (typeof lmThemeChanged === 'function') lmThemeChanged();
-        if (document.getElementById('RNCN')) return;
-        var R = 'var(--lm-radius)', R15 = 'calc(var(--lm-radius) * 1.5)';
-        $('head').append($('<style type="text/css" id="RNCN">').text(
-            '.agario-panel,#main-menu,.center-container,.btn,.form-control,.input-group-addon,#chat-box,.input-group-sm>.input-group-addon,' +
-            '.agario-party,.agario-side-panel,#skins-panel,#quick-menu,#exp-bar,#exp-bar .progress,#hotkeys,#legendAdImg,#stats-hud,#time-hud,#timertools-hud{border-radius:' + R + '!important}' + // i18n-ok: CSS
-            '.menu-tabs,#main-panel,#profile,#legend,#og-settings,#theme,#music{border-radius:' + R + ' ' + R + ' 0 0!important}' + // i18n-ok: CSS
-            '.skin,.input-group-btn,.input-group.nick{border-radius:0 ' + R15 + ' ' + R15 + ' 0!important}' +
-            /* round colour dots and profile picture when rounded, square when square */
-            '.colorpicker-element .input-group-addon i,.colorpicker-element .add-on i{border-radius:calc(var(--lm-radius) * 5)!important}' +
-            '.agario-profile-picture{border-radius:calc(var(--lm-radius) * 3.2)!important}' +
-            '#menu-footer{border-radius:0 0 ' + R + ' ' + R + '!important}' + // i18n-ok: CSS
-            '#leaderboard-hud,#dropDown,#dropDown2,#top5-hud,#target-hud{border-radius:' + R15 + '!important}' + // i18n-ok: CSS
-            '#minimap-hud{border-radius:0 0 ' + R15 + ' ' + R15 + '!important}'));
-    }
-    $("#MAINBTBtn").click(function () {
-        /* Toggle state manually: do NOT rely on Bootstrap's button.js toggling
-         * aria-pressed, because agar.io may not load the button plugin. */
-        var wasPressed = $(this).attr('aria-pressed') === 'true';
-        var checked = !wasPressed;
-        $(this).attr('aria-pressed', String(checked));
-        $(this).toggleClass('active', checked);
-        localStorage.setItem("MAINBTBtn", checked);
-        _lmHudCorners(checked);
-        $(this).html('<i class="fa fa-minus"></i>' + (checked ? Premadeletter45b : Premadeletter45a));
-    });
-
-
-    $("#TIMEcalBtn").click(function () {
-        var wasPressed = $(this).attr('aria-pressed') === 'true';
-        var checked = !wasPressed;
-        $(this).attr('aria-pressed', String(checked));
-        $(this).toggleClass('active', checked);
-        if (checked) {
-            localStorage.setItem("TIMEcalBtn", true);
-            $("#timertools-hud").show();
-            $(this).html('<i class="fa fa-calculator"></i>' + Premadeletter51);
-            /* a saved choice is applied while this file loads, before TimerLM is set further up: it threw
-             * there and stopped the rest of the load (HUD images and titles were not restored) */
-            if (!window.TimerLM) window.TimerLM = {};
-            TimerLM.timerDiv = document.getElementById('timer');
-            return TimerLM.timerDiv;
-        } else {
-            localStorage.setItem("TIMEcalBtn", false);
-            $("#timertools-hud").hide();
-            $(this).html('<i class="fa fa-calculator"></i>' + Premadeletter50);
         }
     });
     $("#HideAllBthn").click(function () {

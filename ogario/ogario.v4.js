@@ -18699,7 +18699,8 @@ var escapeChar = {
  *   menu: --lm-mc accent, --lm-pc / --lm-pc2 panels, --lm-tc / --lm-tc2 text, --lm-op opacity,
  *         --lm-menu-bg image, --lm-btn-tc button text, --lm-btn1..4 buttons, --lm-btn1b..4b hover
  *   HUD:  --lm-hud-mc, --lm-hud-bg, --lm-hud-tc, --lm-hud-font, --lm-hud-fw, --lm-hud-scale, --lm-hud-fs
- *   --lm-radius comes from Rounded / Square HUD (LMexpress.js), unset when neither was chosen.
+ *   corners: --lm-radius (windows, panels), --lm-radius-s (their buttons, fields): Theme > HUD
+ *         "Rounded corners" (hudRoundedCorners; square, 0px, by default), setHudCorners
  * lib/lm-theme-bridge.js uses the same names on Legend web pages.
  * Values come from imported settings, so only colour characters pass. */
 function _lmCssVal(v, d) {
@@ -18870,7 +18871,9 @@ var defaultSettings = {
     miniMapTeammatesSize: 5.5,
     miniMapGhostCellsAlpha: 0.15,
     customBackground: '',
-    customCursor: 'https://www.legendmod.ml/cursors/cursor_02.cur'
+    customCursor: 'https://www.legendmod.ml/cursors/cursor_02.cur',
+    /* Theme > HUD: rounded menu and HUD corners (was the Tools tab button Rounded / Square HUD) */
+    hudRoundedCorners: false
 }
 /* The shipped theme defaults, frozen before the stored theme is loaded: the schema for
  * stored and imported theme values (see LM_SETTINGS_DEFAULTS for the gameplay ones). */
@@ -20584,6 +20587,7 @@ var defaultmapsettings = {
     minimapClickSpectate: false,  /* Expanding Land World Spectate: minimap click moves the camera */
     noFocusHud: false,            /* warn while playing when keys/mouse no longer reach the game (alt-tab, 2nd window) */           /* small toast "#3 (passed nick)" when you climb the leaderboard */            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
     showTime: false,
+    showStopwatch: false,         /* start / pause / stop stopwatch above the minimap (was the Tools tab button "Show Timer Calc.") */
     showDevConsole: false,
     //normalLb: true,
     centeredLb: true,
@@ -21068,6 +21072,20 @@ function thelegendmodproject() {
             if (lmMbRingThemeCarry(storage, readLocalStorageJSON('ogarioSettings', null), defaultSettings)) {
                 try { this.saveThemeSettings(); } catch (eRc) { }
             }
+            /* the Tools tab button Rounded / Square HUD (localStorage MAINBTBtn, "true" = rounded) became
+             * Theme > HUD "Rounded corners": a rounded choice comes along once, then the old key goes
+             * (saved first: a full storage keeps both as they were) */
+            var _lmOldCorners = null;
+            try { _lmOldCorners = window.localStorage.getItem('MAINBTBtn'); } catch (eOc) { }
+            if (_lmOldCorners !== null) {
+                try {
+                    if (_lmOldCorners === 'true' && !(storage && Object.prototype.hasOwnProperty.call(storage, 'hudRoundedCorners'))) {
+                        defaultSettings.hudRoundedCorners = true;
+                        this.saveThemeSettings();
+                    }
+                    window.localStorage.removeItem('MAINBTBtn');
+                } catch (eOc2) { }
+            }
         },
         saveThemeSettings() {
             if (typeof defaultmapsettings !== 'undefined') lmMbRingMirror(defaultSettings, defaultmapsettings);
@@ -21249,6 +21267,23 @@ function thelegendmodproject() {
                 }
                 if (callback) app[callback]();
             });
+        },
+        /* A theme switch (a boolean theme setting), like the Settings switches; the Theme tab saves it
+         * shortly after a change (its input / change handler) */
+        addThemeCheckBox(id, name, callback) {
+            $(id).append('<label class="lm-theme-switch" style="float:left;padding:6px 0;">' + this._lmThemeText(name) + ' <input type="checkbox" class="js-switch" id="' + name + '"></label>');
+            $('#' + name).prop('checked', defaultSettings[name] === true);
+            var app = this;
+            $('#' + name).on('change', function () {
+                if (defaultSettings[name] === this.checked) return;
+                defaultSettings[name] = this.checked;
+                if (ogario.hasOwnProperty(name)) ogario[name] = defaultSettings[name];
+                if (callback) app[callback]();
+            });
+        },
+        /* a theme label, or its English text when the language has none */
+        _lmThemeText(name) {
+            return textLanguage[name] || (typeof displayText !== 'undefined' && displayText.en && displayText.en[name]) || name;
         },
         /*
          * ═══════════════════════════════════════════════════════════════════
@@ -21546,6 +21581,7 @@ function thelegendmodproject() {
             this.addFontBox('#theme-hud', 'hudFont', 'setHudFont');
             var hudScaleLimit = _lmHudScaleLimit();
             this.addSliderBox('#theme-hud', 'hudScale', 0.5, hudScaleLimit, 0.01, 'setHudScale');
+            this.addThemeCheckBox('#theme-hud', 'hudRoundedCorners', 'setHudCorners');
 
             this.addRgbaColorBox('#theme-chat', 'messageColor', 'setChatColors');
             this.addColorBox('#theme-chat', 'messageTextColor', 'setChatColors');
@@ -21819,6 +21855,39 @@ function thelegendmodproject() {
             this.setHudColors();
             this.setHudFont();
             this.setHudScale();
+            this.setHudCorners();
+        },
+        /* Theme > HUD "Rounded corners" (hudRoundedCorners, square by default): --lm-radius (10px
+         * rounded, 0 square) and one stylesheet gives the menu and HUD corners as multiples of it;
+         * Legend windows use var(--lm-radius, 6px), so they follow too. --lm-radius-s is for their
+         * buttons and fields. !important: ogario.v3.css comes later in the page with the same
+         * selectors (.btn, .form-control...). */
+        setHudCorners() {
+            var rounded = defaultSettings.hudRoundedCorners === true;
+            document.documentElement.style.setProperty('--lm-radius', rounded ? '10px' : '0px');
+            document.documentElement.style.setProperty('--lm-radius-s', rounded ? '6px' : '0px');
+            /* the switch follows a value set by a profile, a theme package or an import; a change
+             * that does not bubble moves only its Switchery (no save, no other handler) */
+            var cb = document.getElementById('hudRoundedCorners');
+            if (cb && cb.checked !== rounded) {
+                cb.checked = rounded;
+                try { cb.dispatchEvent(new Event('change', { bubbles: false })); } catch (e) { }
+            }
+            /* open Legend pages follow the corners too (LMexpress.js) */
+            if (typeof window.lmThemeChanged === 'function') window.lmThemeChanged();
+            if (document.getElementById('RNCN')) return;
+            var R = 'var(--lm-radius)', R15 = 'calc(var(--lm-radius) * 1.5)';
+            $('head').append($('<style type="text/css" id="RNCN">').text(
+                '.agario-panel,#main-menu,.center-container,.btn,.form-control,.input-group-addon,#chat-box,.input-group-sm>.input-group-addon,' +
+                '.agario-party,.agario-side-panel,#skins-panel,#quick-menu,#exp-bar,#exp-bar .progress,#hotkeys,#legendAdImg,#stats-hud,#time-hud,#timertools-hud{border-radius:' + R + '!important}' + // i18n-ok: CSS
+                '.menu-tabs,#main-panel,#profile,#legend,#og-settings,#theme,#music{border-radius:' + R + ' ' + R + ' 0 0!important}' + // i18n-ok: CSS
+                '.skin,.input-group-btn,.input-group.nick{border-radius:0 ' + R15 + ' ' + R15 + ' 0!important}' +
+                /* round colour dots and profile picture when rounded, square when square */
+                '.colorpicker-element .input-group-addon i,.colorpicker-element .add-on i{border-radius:calc(var(--lm-radius) * 5)!important}' +
+                '.agario-profile-picture{border-radius:calc(var(--lm-radius) * 3.2)!important}' +
+                '#menu-footer{border-radius:0 0 ' + R + ' ' + R + '!important}' + // i18n-ok: CSS
+                '#leaderboard-hud,#dropDown,#dropDown2,#top5-hud,#target-hud{border-radius:' + R15 + '!important}' + // i18n-ok: CSS
+                '#minimap-hud{border-radius:0 0 ' + R15 + ' ' + R15 + '!important}'));
         },
         setHudColors() {
             /* ".hud,.hud-b,#.emoji-picker" was not a valid selector list, so the browser dropped the
@@ -24161,6 +24230,11 @@ function thelegendmodproject() {
                 if (!(_lmLabS && _lmLabS.on && typeof _lmLabS.on === 'object' && Object.prototype.hasOwnProperty.call(_lmLabS.on, 'frameTime'))) _lmLabS = null;
                 else if (_lmLabS.on.frameTime === true && !(settings && Object.prototype.hasOwnProperty.call(settings, 'showStatsFrameTime'))) defaultmapsettings.showStatsFrameTime = true;
             } catch (eLab) { _lmLabS = null; }
+            /* the Tools tab button "Show Timer Calc." (localStorage TIMEcalBtn) became the stats option
+             * showStopwatch: a stopwatch left shown comes along once */
+            var _lmOldTimer = null;
+            try { _lmOldTimer = window.localStorage.getItem('TIMEcalBtn'); } catch (eTc) { }
+            if (_lmOldTimer === 'true' && !(settings && Object.prototype.hasOwnProperty.call(settings, 'showStopwatch'))) defaultmapsettings.showStopwatch = true;
             /* the ring colours are theme settings (loaded first): their gameplay copy follows them */
             lmMbRingMirror(defaultSettings, defaultmapsettings);
             /* the loaded values are the ones later changes are compared with (settingsChange) */
@@ -24173,6 +24247,13 @@ function thelegendmodproject() {
                     delete _lmLabS.on.frameTime;
                     window.localStorage.setItem('lmLab', JSON.stringify(_lmLabS));
                 } catch (eLab2) { }
+            }
+            /* the same for the old stopwatch key */
+            if (_lmOldTimer !== null) {
+                try {
+                    if (_lmOldTimer === 'true' && defaultmapsettings.showStopwatch) this.saveSettings(defaultmapsettings, 'ogarioSettings');
+                    window.localStorage.removeItem('TIMEcalBtn');
+                } catch (eTc2) { }
             }
         },
         saveSettings(option, name) {
@@ -24532,6 +24613,10 @@ function thelegendmodproject() {
                         break;
                     case 'blockPopups':
                         this.setBlockPopups();
+                        break;
+                    case 'showStopwatch':
+                        /* the stopwatch panel is made by LMexpress.js */
+                        if (typeof window.lmShowStopwatch === 'function') window.lmShowStopwatch(defaultmapsettings.showStopwatch);
                         break;
                     case 'adaptivePerf':
                     case 'adaptivePerfRes':
@@ -25827,7 +25912,7 @@ function thelegendmodproject() {
                     if (window.LMDirector && typeof window.LMDirector.toggle === 'function') window.LMDirector.toggle();
                     else if (window.toastr) toastr.info(lmT('game1.set.directorLoading'));
                 });
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "massGraph", "showKiller", "hideEventBanner", "showTime", "deathRecap", "killFeed", "massLossAlert", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "massGraph", "showKiller", "hideEventBanner", "showTime", "showStopwatch", "deathRecap", "killFeed", "massLossAlert", "analytics"], "statsGroup");
             /* Replays and history: the instant replay length slider is added below */
             this.addOptions(["recordReplays", "matchHistory", "personalBests"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
