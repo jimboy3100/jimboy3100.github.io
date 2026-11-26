@@ -1181,6 +1181,11 @@ input.hide-url::selection,input.stream-mode::selection{
     font-size:17px;
     padding:0 10px 6px 
 }
+/* decorative names (stacked accents, tall scripts) drew into the rows above and below: each row
+   clips its text at its own top and bottom; long names still run out at the sides as before */
+#leaderboard-positions>span{
+    overflow-y:clip
+}
 #leaderboard-positions .me{
     color:#bf00aa 
 }

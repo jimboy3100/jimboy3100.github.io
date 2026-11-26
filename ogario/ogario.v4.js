@@ -50541,7 +50541,8 @@ function thelegendmodproject() {
                         _lmBotSuffix = ' <span class="top5-mass-color">\u00d7' + _lmBotCnt[_lmBk2] + '</span>';
                     }
                 }
-                teamText += html + (temp + 1) + '. ' + application.escapeHTML(this.leaderboard[temp].nick) + _lmBotSuffix + '</span>';
+                /* <bdi>: a name's right-to-left text or direction marks stay inside the name (rank and bot count keep their place) */
+                teamText += html + (temp + 1) + '. <bdi>' + application.escapeHTML(this.leaderboard[temp].nick) + '</bdi>' + _lmBotSuffix + '</span>';
             }
             //
             if (LM.multiBoxPlayerExists && profiles[application.selectedOldProfile] && profiles[application.selectedProfile]) {
@@ -50555,11 +50556,11 @@ function thelegendmodproject() {
             var tempPositionText2 = null
             /* playerPositionMulti is 0-based (shown as +1): rank limit+1 must also be listed */
             if (this.playerPositionMulti != null && this.playerPositionMulti >= defaultmapsettings.leaderboardlimit) {
-                tempPositionText = '<span class=\"me\">' + (this.playerPositionMulti + 1) + '. ' + application.escapeHTML(this.leaderboard[this.playerPositionMulti].nick) + '</span>';
+                tempPositionText = '<span class=\"me\">' + (this.playerPositionMulti + 1) + '. <bdi>' + application.escapeHTML(this.leaderboard[this.playerPositionMulti].nick) + '</bdi></span>';
             }
             //			
             if (this.playerPosition > defaultmapsettings.leaderboardlimit) {
-                tempPositionText2 = '<span class=\"me\">' + this.playerPosition + '. ' + application.escapeHTML(this.playerNick) + '</span>';
+                tempPositionText2 = '<span class=\"me\">' + this.playerPosition + '. <bdi>' + application.escapeHTML(this.playerNick) + '</bdi></span>';
                 //defaultmapsettings['showLbData'];
             }
             if (!tempPositionText) {
