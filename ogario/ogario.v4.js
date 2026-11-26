@@ -21410,14 +21410,7 @@ function thelegendmodproject() {
             this.addColorBox('#theme-hud', 'lbMeColor', 'setHudColors');
             this.addColorBox('#theme-hud', 'lbTeammateColor2', 'setHudColors');
             this.addFontBox('#theme-hud', 'hudFont', 'setHudFont');
-            var hudScaleLimit = 1.5
-            if (window.screen.height <= 800) {
-                hudScaleLimit = 0.9
-            } else if (window.screen.height <= 992) {
-                hudScaleLimit = 1
-            } else if (window.screen.height <= 1080) {
-                hudScaleLimit = 1.1
-            }
+            var hudScaleLimit = _lmHudScaleLimit();
             this.addSliderBox('#theme-hud', 'hudScale', 0.5, hudScaleLimit, 0.01, 'setHudScale');
 
             this.addRgbaColorBox('#theme-chat', 'messageColor', 'setChatColors');
@@ -21703,27 +21696,25 @@ function thelegendmodproject() {
                 '#lm-notif-bell,#lm-cc-bar,#lm-hh-cells,#lm-hh-edge,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
         },
         setHudScale() {
-            /* Issue #8: clamp hudScale to the slider max so saved values from bigger screens don't overflow */
-            var _hudLim = 1.5;
-            if (window.screen.height <= 800) _hudLim = 0.9;
-            else if (window.screen.height <= 992) _hudLim = 1;
-            else if (window.screen.height <= 1080) _hudLim = 1.1;
-            if (defaultSettings.hudScale > _hudLim) defaultSettings.hudScale = _hudLim;
-            var t = Math.round(20 * defaultSettings.hudScale);
-            var e = Math.round(200 * defaultSettings.hudScale);
-            var i = Math.floor(55 * defaultSettings.hudScale);
-            var o = Math.floor(6 * defaultSettings.hudScale);
-            var a = Math.floor(530 * defaultSettings.hudScale);
-            var n = Math.floor(85 * defaultSettings.hudScale);
-            var r = Math.floor(20 * defaultSettings.hudScale);
+            /* Issue #8: a value saved on a bigger screen is shown at most at this screen's slider
+             * top, so the HUD does not overflow. Only the shown scale is limited: hudScale keeps
+             * the player's value (it was overwritten, and the next theme save lost it on every screen). */
+            var hs = _lmHudScaleNow();
+            var t = Math.round(20 * hs);
+            var e = Math.round(200 * hs);
+            var i = Math.floor(55 * hs);
+            var o = Math.floor(6 * hs);
+            var a = Math.floor(530 * hs);
+            var n = Math.floor(85 * hs);
+            var r = Math.floor(20 * hs);
 
             $('#overlays-hud').css('font-size', t + 'px');
             /* HUD parts outside #overlays-hud scale with these: each sizes its text as calc(Npx * var(--lm-hud-scale))
              * (a 20 px font on their boxes did nothing: their texts have their own sizes) */
-            this.addCustomCSS('hudScaleVarCSS', ':root{--lm-hud-scale:' + _lmCssNum(defaultSettings.hudScale, 0.3, 2, 1) + ';--lm-hud-fs:' + t + 'px}');
+            this.addCustomCSS('hudScaleVarCSS', ':root{--lm-hud-scale:' + _lmCssNum(hs, 0.3, 2, 1) + ';--lm-hud-fs:' + t + 'px}');
             $('#time-hud').width(e);
-            $('#leaderboard-hud').css('transform', 'scale(' + defaultSettings.hudScale + ')');
-            $('#top5-hud').css('transform', 'scale(' + defaultSettings.hudScale + ')');
+            $('#leaderboard-hud').css('transform', 'scale(' + hs + ')');
+            $('#top5-hud').css('transform', 'scale(' + hs + ')');
             $('#time-hud').css('top', a + 'px');
             $('#pause-hud').css('top', n + 'px');
             $('#target-hud').css('padding-top', r + 'px');
@@ -81926,6 +81917,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
         var top = m + Math.max(0, (ah - s * h) / 2);
         return { scale: s, region: region, top: Math.round(top), height: h, left: Math.round(o.vw / 2) };
     }
+    /* The HUD scale slider's top for this screen height: 0.9 up to 800 px, 1 up to 992, 1.1 up to
+     * 1080, else 1.5 */
+    function _lmHudScaleLimit(screenH) {
+        var h = screenH === undefined ? window.screen.height : screenH;
+        return h <= 800 ? 0.9 : h <= 992 ? 1 : h <= 1080 ? 1.1 : 1.5;
+    }
+    /* The HUD scale shown on this screen: the player's hudScale, at most the screen's limit. Never
+     * saved (like the fitted menu scale): a value chosen on a bigger screen stays for that screen. */
+    function _lmHudScaleNow(value, screenH) {
+        var v = parseFloat(value === undefined ? defaultSettings.hudScale : value);
+        if (!isFinite(v) || v <= 0) v = 1;
+        return Math.min(v, _lmHudScaleLimit(screenH));
+    }
+    window.lmHudScale = function () { return _lmHudScaleNow(); };
     function _lmMenuFitQueue() {
         var st = _lmMenuFitState || (_lmMenuFitState = {});
         if (st.raf || typeof requestAnimationFrame !== 'function') return;
@@ -81973,8 +81978,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (k === col) colB = b; else othersB = Math.max(othersB, b);
         }
         var tail = Math.max(0, hc.offsetHeight - Math.max(colB, othersB));
+        /* the scale shown on this screen (hudScale at most the screen's slider top, as the HUD) */
         var o = { vw: vw, vh: vh, margin: 8, minRegion: 160, menuW: hc.offsetWidth || 920,
-            desired: parseFloat(defaultSettings.hudScale) || 1, hasRegion: !!(region && col), othersH: othersB ? othersB + tail : 0 };
+            desired: _lmHudScaleNow(), hasRegion: !!(region && col), othersH: othersB ? othersB + tail : 0 };
         if (o.hasRegion) {
             /* the stylesheet height is the largest the list gets (the menu's usual look) */
             var prev = region.style.maxHeight;
@@ -82020,12 +82026,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             var scale = Math.min(1, innerHeigth / helloContainerHeight);
             //
-            scale = scale * defaultSettings.hudScale / 1.2;
+            var hs = _lmHudScaleNow();
+            scale = scale * hs / 1.2;
             //
             var topValue = () => {
                 var distance = 150;
-                if (defaultSettings.hudScale > 1) {
-                    distance = distance / defaultSettings.hudScale
+                if (hs > 1) {
+                    distance = distance / hs
                 }
                 helloContainer.css("top", distance + "px");
             }

@@ -1289,7 +1289,10 @@
                     /* ── HUD scale mode ── */
                     var step = delta * 0.003;
                     if (typeof defaultSettings !== 'undefined' && defaultSettings.hudScale !== undefined) {
-                        var ns = Math.min(1, Math.max(0.3, defaultSettings.hudScale + step));
+                        /* from the scale shown on this screen: a larger value saved on a bigger screen is shown
+                         * at this screen's limit, so the gesture starts there (not from the saved value) */
+                        var cur = typeof window.lmHudScale === 'function' ? window.lmHudScale() : defaultSettings.hudScale;
+                        var ns = Math.min(1, Math.max(0.3, cur + step));
                         defaultSettings.hudScale = ns;
                         if (typeof ogario !== 'undefined') ogario.hudScale = ns;
                         if (window.lmMenuFit && window.lmMenuFit.queue) window.lmMenuFit.queue(); /* once per frame while pinching */

@@ -14,7 +14,7 @@
     /* a stepped range is the slider's exactly; one without a step (hudScale) holds the slider's */
     if (r[2] > 0 ? min !== r[0] || max !== r[1] || Number(el.step) !== r[2] : min < r[0] || max > r[1]) off.push(k + ' range ' + el.min + '-' + el.max + '/' + el.step);
     /* the shown value: not on a phone (LMmobile lowers some sizes in memory) and not hudScale
-     * (setHudScale caps it to the screen after the slider is built) */
+     * (a value above this screen's slider top is kept; the slider stops at its top) */
     if (isMobile || k === 'hudScale') return;
     if (Number(el.value) !== T[k]) off.push(k + ' shows ' + el.value + ', game ' + T[k]);
     var label = document.getElementById(k + '-value');

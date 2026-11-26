@@ -9143,7 +9143,8 @@ function lmThemeData() {
         ht: c(ds.hudTextColor, '#ffffff'),
         hf: String(ds.hudFontFamily || '').replace(/[^A-Za-z0-9 ,-]/g, '').trim().slice(0, 64),
         hw: String(parseInt(ds.hudFontWeight, 10) || ''),
-        hs: String(isFinite(parseFloat(ds.hudScale)) ? parseFloat(ds.hudScale) : '')
+        /* the HUD scale shown on this screen (a page opened here matches the game's HUD) */
+        hs: (function (v) { return String(isFinite(v) ? v : ''); })(typeof window.lmHudScale === 'function' ? window.lmHudScale() : parseFloat(ds.hudScale))
     };
     /* the corners of Rounded / Square HUD, when the player chose one: windows and buttons / fields */
     try {
