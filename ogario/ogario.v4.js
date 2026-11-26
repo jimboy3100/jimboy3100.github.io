@@ -30,13 +30,32 @@
     Object.keys(plugins).forEach(function (name) {
         if (typeof $.fn[name] === 'function') return;
         var calls = [];
-        var stand = function () { calls.push([this, Array.prototype.slice.call(arguments)]); return this; };
+        var ps = name === 'perfectScrollbar';
+        var stand = function () {
+            calls.push([this, Array.prototype.slice.call(arguments)]);
+            /* until the real scrollbar is there (or when it never comes) the box scrolls natively:
+             * without it the settings list had no overflow rule and ran thousands of px over the footer */
+            if (ps && this && this.toggleClass) {
+                var a0 = arguments[0];
+                this.toggleClass('lm-ps-native', a0 !== 'destroy');
+                if (a0 && typeof a0 === 'object' && a0.suppressScrollX) this.addClass('lm-ps-native-y');
+            }
+            return this;
+        };
         stand._lmStandIn = true;
         $.fn[name] = stand;
+        if (ps) {
+            var st = document.createElement('style');
+            st.id = 'lm-ps-native-css';
+            st.textContent = '.lm-ps-native{overflow:auto;-webkit-overflow-scrolling:touch}.lm-ps-native.lm-ps-native-y{overflow-x:hidden}';
+            (document.head || document.documentElement).appendChild(st);
+        }
         console.warn('[LM] ' + name + ' was not loaded by the page: loading it again');
         load(plugins[name], function (ok) {
             var real = $.fn[name];
             if (!ok || typeof real !== 'function' || real._lmStandIn) return;
+            /* the real plugin hides the native scrollbar itself (.ps-container): no second scrollbar */
+            if (ps) calls.forEach(function (c) { try { c[0].removeClass('lm-ps-native lm-ps-native-y'); } catch (er) { } });
             calls.forEach(function (c) { try { real.apply(c[0], c[1]); } catch (er) { } });
             calls.length = 0;
         });

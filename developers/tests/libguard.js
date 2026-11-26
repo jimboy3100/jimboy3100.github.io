@@ -49,7 +49,7 @@ function make(present) {
   check('missing plugins: calls do not throw', !threw);
   const files = t.appended.map(s => s.src);
   check('real files requested', files.some(f => /perfect-scrollbar\.jquery\.min\.js\?v=3\.6$/.test(f)) && files.some(f => /toastr\.min\.js/.test(f)) && files.some(f => /switchery\.min\.js/.test(f)));
-  check('loaded with a normal non-blocking tag, utf-8', t.appended.every(s => s.charset === 'utf-8' && s.async === false));
+  check('loaded with a normal non-blocking tag, utf-8', t.appended.filter(s => s.src).every(s => s.charset === 'utf-8' && s.async === false));
   /* the real perfect-scrollbar arrives */
   const seen = [];
   t.jq.fn.perfectScrollbar = function (a) { seen.push([this.id, a]); return this; };
@@ -65,6 +65,35 @@ function make(present) {
   let threw2 = false;
   try { new t.win.Switchery({ id: 'cb2' }); } catch (e) { threw2 = true; }
   check('failed reload: stand-in keeps working', !threw2);
+}
+
+/* perfect-scrollbar missing: the boxes scroll natively until it arrives (classes on the jQuery
+ * object, one style element), and lose the native scrollbar when the real plugin runs */
+{
+  const t = make({ toastr: true, Switchery: true });
+  const box = () => { const c = new Set(); return { c, toggleClass(n, on) { if (on) c.add(n); else c.delete(n); return this; }, addClass(n) { n.split(' ').forEach(x => c.add(x)); return this; }, removeClass(n) { n.split(' ').forEach(x => c.delete(x)); return this; } }; };
+  const css = t.appended.find(s => s.id === 'lm-ps-native-css');
+  check('missing perfect-scrollbar: native scroll rule added once', !!css && /.lm-ps-native{overflow:auto/.test(css.textContent) && /.lm-ps-native-y{overflow-x:hidden}/.test(css.textContent) && t.appended.filter(s => s.id === 'lm-ps-native-css').length === 1);
+  const a = box(), b = box();
+  t.jq.fn.perfectScrollbar.call(a, { suppressScrollX: true });
+  t.jq.fn.perfectScrollbar.call(b);
+  t.jq.fn.perfectScrollbar.call(b, 'update');
+  check('stand-in: boxes scroll natively (no horizontal scroll with suppressScrollX)', a.c.has('lm-ps-native') && a.c.has('lm-ps-native-y') && b.c.has('lm-ps-native') && !b.c.has('lm-ps-native-y'));
+  const d = box();
+  t.jq.fn.perfectScrollbar.call(d);
+  t.jq.fn.perfectScrollbar.call(d, 'destroy');
+  check('stand-in: destroy ends the native scrolling', !d.c.has('lm-ps-native'));
+  let order = [];
+  t.jq.fn.perfectScrollbar = function () { order.push(this.c.has('lm-ps-native')); return this; };
+  t.appended.find(s => /perfect-scrollbar/.test(s.src || '')).onload({ type: 'load' });
+  check('real plugin: the native scrollbar goes before the plugin runs (no second scrollbar)', !a.c.has('lm-ps-native') && !a.c.has('lm-ps-native-y') && !b.c.has('lm-ps-native') && order.length === 5 && order.every(x => x === false));
+}
+{
+  const t = make({ toastr: true, Switchery: true });
+  const c = new Set(), el = { toggleClass(n, on) { if (on) c.add(n); else c.delete(n); return this; }, addClass(n) { c.add(n); return this; }, removeClass(n) { n.split(' ').forEach(x => c.delete(x)); return this; } };
+  t.jq.fn.perfectScrollbar.call(el, { suppressScrollX: true });
+  t.appended.find(s => /perfect-scrollbar/.test(s.src || '')).onload({ type: 'error' });
+  check('perfect-scrollbar never loads: the box keeps scrolling natively', c.has('lm-ps-native') && c.has('lm-ps-native-y'));
 }
 
 console.log(fail ? fail + ' FAILED' : 'all library guard checks passed');
