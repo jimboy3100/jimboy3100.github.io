@@ -84057,13 +84057,6 @@ function repeatSendingSpecialSkins() {
     }
 }
 
-function preUserLeaguesInfoRequest() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/LMexpress/userLeaguesInfoRequest.js";
-    $("body").append(s);
-}
-
 function openhelper() {
     if ($('#legendhelper').length) {
         $('#legendhelper').show();
