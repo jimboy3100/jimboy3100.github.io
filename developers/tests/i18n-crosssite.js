@@ -14,6 +14,7 @@
 //     skins / themes pages of expanding.land and legendffa on help.expanding.land do) gets and sends the language.
 //  9. the game (play.html) in a frame, as on help.expanding.land/unblocked.html: a language passed from the shell
 //     also shows in its Choose Language list (languagemod), and one chosen there comes back to the shell.
+// 10. the Mod Info page, its FAQ and the gift page of the mod show the language passed in #lm=.
 // Usage: node developers/tests/i18n-crosssite.js
 'use strict';
 const { spawn } = require('child_process');
@@ -244,6 +245,20 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
     const game = await frame('legendmod.ml/play');
     if (game) await evalIn(game, '$("#legendlanguages").val("3"); changeModLanguage(true); 1');
     ok(await waitFor(async () => (await evalIn(top9, 'LMi18n.lang() + "|" + localStorage.getItem("languagemod")')) === 'es|3', 10000), '9 a language chosen in the game (Spanish) comes back to the shell: ' + (await evalIn(top9, 'LMi18n.lang()')));
+
+    /* 10 the Mod Info page (extras/helper.html), its FAQ frame and the gift page (rewardday2.html) in Arabic,
+     * as the mod opens them (language in #lm=): every marked text from the packs, the links in the credits kept */
+    const ar = '#lm=' + Buffer.from('{"lang":6}').toString('base64').replace(/=+$/, '');
+    const ARABIC = /[؀-ۿ]/;
+    for (const [url, sel, links] of [['https://www.legendmod.ml/extras/helper.html', '[data-i18n-html="site.helper.thanks"]', 4],
+        ['https://www.legendmod.ml/extras/banneranimated7.html', '[data-i18n="site.helper.faq.q6"]', 0], ['https://www.legendmod.ml/extras/rewardday2.html', '[data-i18n-html="site.rewardday.granted"]', 0]]) {
+        await go(url + ar);
+        const t10 = (await frameIds()).top;
+        const q10 = 'JSON.stringify({ lang: window.LMi18n && LMi18n.lang(), dir: document.documentElement.dir, miss: Object.keys(LMi18n.missing()), text: (document.querySelector(\'' + sel + '\') || {}).textContent || "", links: document.querySelectorAll(\'' + sel + ' a\').length, marked: document.querySelectorAll("[data-i18n],[data-i18n-html]").length })';
+        await waitFor(async () => ARABIC.test(JSON.parse((await evalIn(t10, q10)) || '{}').text || ''), 8000);
+        const v10 = JSON.parse((await evalIn(t10, q10)) || '{}');
+        ok(v10.lang === 'ar' && v10.dir === 'rtl' && ARABIC.test(v10.text) && !v10.miss.length && v10.links === links && v10.marked > 3, '10 ' + url.split('/').pop() + ' in Arabic: ' + JSON.stringify(v10).slice(0, 160));
+    }
 
     ws.close(); proc.kill();
     try { fs.rmSync(out, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); } catch (e) { }
