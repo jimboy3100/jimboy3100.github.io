@@ -592,5 +592,24 @@
     "id": "Kebijakan privasi",
     "ja": "プライバシーポリシー",
     "it": "Informativa sulla privacy"
+  },
+  "site.expandingland.terms.bindingNote": {
+    "note": "only shown when the page is not in English",
+    "en": "This is a translation for your convenience. The English version of these Terms is the binding one.",
+    "el": "Αυτή είναι μετάφραση για διευκόλυνσή σου. Δεσμευτική είναι η αγγλική έκδοση αυτών των Όρων.",
+    "es": "Esta es una traducción para tu comodidad. La versión en inglés de estos Términos es la vinculante.",
+    "bg": "Това е превод за твое удобство. Обвързваща е английската версия на тези Условия.",
+    "fr": "Ceci est une traduction fournie pour ta commodité. Seule la version anglaise de ces Conditions fait foi.",
+    "ar": "هذه ترجمة لتسهيل القراءة عليك. النسخة الإنجليزية من هذه الشروط هي النسخة الملزمة.",
+    "zh": "本譯文僅為方便閱讀而提供。本條款以英文版本為準。",
+    "ru": "Это перевод для твоего удобства. Юридически обязывающей является английская версия этих Условий.",
+    "de": "Dies ist eine Übersetzung zu deiner Information. Verbindlich ist die englische Fassung dieser Bedingungen.",
+    "tr": "Bu çeviri kolaylık olsun diye sunulmuştur. Bu Şartların bağlayıcı olan sürümü İngilizce sürümüdür.",
+    "pl": "To tłumaczenie ma ci jedynie ułatwić lekturę. Wiążąca jest angielska wersja niniejszych Warunków.",
+    "nl": "Dit is een vertaling voor je gemak. De Engelse versie van deze Voorwaarden is bindend.",
+    "pt": "Esta tradução é oferecida para a sua conveniência. A versão em inglês destes Termos é a que tem valor legal.",
+    "id": "Ini adalah terjemahan untuk memudahkan Anda. Versi bahasa Inggris dari Ketentuan ini adalah versi yang mengikat.",
+    "ja": "この翻訳は便宜上のものです。本規約は英語版が正式なものとなります。",
+    "it": "Questa traduzione è fornita per tua comodità. La versione inglese di questi Termini è quella vincolante."
   }
 }

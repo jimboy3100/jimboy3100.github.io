@@ -69,6 +69,40 @@ locs.forEach((loc) => {
     while ((m = callRe.exec(html))) if (/\./.test(m[2]) && !/\.$/.test(m[2])) used.add(m[2]);
     used.forEach((k) => { keys++; ok(has(areas, k), rel + ': key ' + k + ' is in none of its areas (' + areas.filter((a) => a.indexOf('site') === 0).join(', ') + (mod ? ', mod' : '') + ')'); });
 });
+/* The pages of expanding.land and help.expanding.land use the same runtime and areas from this repo: every key
+ * they use must be in the areas they load, or that text stays English in every language (the binding-policy
+ * note of their privacy and terms pages did). Their checkouts: CROSS_EL_DIR / CROSS_HELP_DIR, else next to
+ * this repo; skipped when not there. */
+const parent = path.resolve(repo, '..');
+const SIBLINGS = [['expanding.land', process.env.CROSS_EL_DIR || path.join(parent, 'expandingland')],
+    ['help.expanding.land', process.env.CROSS_HELP_DIR || path.join(parent, 'legendworld-help')]];
+let sibPages = 0;
+SIBLINGS.forEach(([host, dir]) => {
+    if (!fs.existsSync(path.join(dir, 'index.html'))) { console.log('skip ' + host + ': no checkout at ' + dir); return; }
+    const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).forEach((e) => {
+        if (e.name.charAt(0) === '.' || e.name === 'node_modules') return;
+        const f = path.join(d, e.name);
+        if (e.isDirectory()) walk(f);
+        else if (/\.html$/.test(e.name)) {
+            const html = fs.readFileSync(f, 'utf8');
+            const site = /<script[^>]+src="https:\/\/www\.legendmod\.ml\/lib\/lm-i18n\.js[^"]*"[^>]*>/.exec(html);
+            if (!site) return;
+            sibPages++;
+            const rel = host + '/' + path.relative(dir, f).split(path.sep).join('/');
+            const m = /data-areas="([^"]*)"/.exec(site[0]);
+            let areas = ['site'];
+            (m ? m[1].split(/[\s,]+/).filter(Boolean) : []).forEach((a) => { if (a === 'mod') areas = areas.concat(modAreas); else areas.push(a); });
+            (html.match(/data-i18n(?:-[a-z-]+)?="([^"]+)"/g) || []).forEach((x) => {
+                if (/^data-i18n-vars=/.test(x)) return;
+                const k = x.replace(/^[^"]*"/, '').replace(/"$/, '');
+                keys++;
+                ok(has(areas, k), rel + ': key ' + k + ' is in none of its areas (' + areas.filter((a) => a.indexOf('site') === 0).join(', ') + ')');
+            });
+        }
+    });
+    walk(dir);
+});
+if (sibPages) console.log(sibPages + ' pages of expanding.land / help.expanding.land checked');
 console.log(checked + ' sitemap pages, ' + keys + ' keys checked; exceptions: ' + Object.keys(EXCEPTIONS).map((k) => k + ' (' + EXCEPTIONS[k] + ')').join('; ') +
     '; archived: ' + locs.map((l) => { const r = new URL(l).pathname.replace(/^\//, '').replace(/(^|\/)$/, '$1index.html'); return (config.archived || {})[r] ? r : null; }).filter(Boolean).join(', '));
 console.log(fails ? 'RESULT: FAIL (' + fails + ')' : 'RESULT: PASS');

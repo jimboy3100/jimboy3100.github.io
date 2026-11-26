@@ -538,5 +538,24 @@
     "id": "← Kembali ke Expanding Land",
     "ja": "← Expanding Land に戻る",
     "it": "← Torna a Expanding Land"
+  },
+  "site.expandingland.privacy.bindingNote": {
+    "note": "only shown when the page is not in English",
+    "en": "This is a translation for your convenience. The English version of this policy is the binding one.",
+    "el": "Αυτή είναι μετάφραση για διευκόλυνσή σου. Δεσμευτική είναι η αγγλική έκδοση αυτής της πολιτικής.",
+    "es": "Esta es una traducción para tu comodidad. La versión en inglés de esta política es la vinculante.",
+    "bg": "Това е превод за твое удобство. Обвързваща е английската версия на тази политика.",
+    "fr": "Ceci est une traduction fournie pour ta commodité. Seule la version anglaise de cette politique fait foi.",
+    "ar": "هذه ترجمة لتسهيل القراءة عليك. النسخة الإنجليزية من هذه السياسة هي النسخة الملزمة.",
+    "zh": "本譯文僅為方便閱讀而提供。本政策以英文版本為準。",
+    "ru": "Это перевод для твоего удобства. Юридически обязывающей является английская версия этой политики.",
+    "de": "Dies ist eine Übersetzung zu deiner Information. Verbindlich ist die englische Fassung dieser Erklärung.",
+    "tr": "Bu çeviri kolaylık olsun diye sunulmuştur. Bu politikanın bağlayıcı olan sürümü İngilizce sürümüdür.",
+    "pl": "To tłumaczenie ma ci jedynie ułatwić lekturę. Wiążąca jest angielska wersja tej polityki.",
+    "nl": "Dit is een vertaling voor je gemak. De Engelse versie van dit beleid is bindend.",
+    "pt": "Esta tradução é oferecida para a sua conveniência. A versão em inglês desta política é a que tem valor legal.",
+    "id": "Ini adalah terjemahan untuk memudahkan Anda. Versi bahasa Inggris dari kebijakan ini adalah versi yang mengikat.",
+    "ja": "この翻訳は便宜上のものです。このポリシーは英語版が正式なものとなります。",
+    "it": "Questa traduzione è fornita per tua comodità. La versione inglese di questa informativa è quella vincolante."
   }
 }
