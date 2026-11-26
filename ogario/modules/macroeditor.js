@@ -389,6 +389,7 @@
         injectStyle();
         root = mk('div');
         root.id = 'lm-me';
+        root._lmEsc = true;
         root.addEventListener('pointerdown', function (e) { if (e.target === root) close(); });
         panel = mk('div');
         panel.id = 'lm-me-p';
@@ -462,7 +463,10 @@
     }
     function onKey(e) {
         if (!isOpen()) return;
-        if (e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); close(); }
+        if (e.key !== 'Escape') return;
+        /* with another window open that closes on Esc, only the one in front closes (winstack.js) */
+        if (W.LMWinStack && typeof W.LMWinStack.escFor === 'function' && !W.LMWinStack.escFor(root, e)) return;
+        e.preventDefault(); e.stopImmediatePropagation(); close();
     }
     function open(n) {
         if (n != null) slot = int(n, 1, LIMITS.slots, 1) - 1;

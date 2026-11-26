@@ -215,5 +215,23 @@
     }
     if (!init()) D.addEventListener('DOMContentLoaded', init);
 
-    W.LMWinStack = { front: front, _core: { order: order }, _stack: function () { return stack.slice(); } };
+    /* Windows that close on Esc (their root has _lmEsc) each listen on window, oldest first, so
+     * with two of them open one Esc closed both, or only the one underneath. A window asks here
+     * whether the Esc (e) is its own: yes when no newer open window that closes on Esc is in front
+     * of it (or it is not tracked here), and only one window takes the same key press. */
+    function escFor(el, e) {
+        if (e && e._lmEscTaken) return false;
+        var r = rootOf(el), mine = true;
+        if (r && r._lmWs) {
+            for (var i = stack.length - 1; i >= 0; i--) {
+                var o = stack[i];
+                if (o === r) break;
+                if (o._lmEsc && o.isConnected && visible(o)) { mine = false; break; }
+            }
+        }
+        if (mine && e) e._lmEscTaken = true;
+        return mine;
+    }
+
+    W.LMWinStack = { front: front, escFor: escFor, _core: { order: order }, _stack: function () { return stack.slice(); } };
 })();

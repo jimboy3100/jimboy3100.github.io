@@ -712,7 +712,10 @@
         md = null;
     }
     function onKey(e) {
-        if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopPropagation(); close(); }
+        if (!(e.key === 'Escape' || e.keyCode === 27)) return;
+        /* with another window open that closes on Esc, only the one in front closes (winstack.js) */
+        if (md && window.LMWinStack && typeof window.LMWinStack.escFor === 'function' && !window.LMWinStack.escFor(md, e)) return;
+        e.preventDefault(); e.stopPropagation(); close();
     }
     function open(which) {
         if (!document.body) return;
@@ -726,6 +729,7 @@
             'display:flex;flex-direction:column;z-index:999992;background:var(--lm-w-bg,' + t.pc + ');border:1px solid ' + t.pc2 + ';border-top:3px solid ' + t.mc + ';' +
             'border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + t.tc + ';font-family:inherit;font-size:var(--lm-w-fs,12px);overflow:hidden;box-sizing:border-box;');
         md.id = 'lm-analytics';
+        md._lmEsc = true;
         md.classList.add('lm-modal-container', 'lm-w');
         md.setAttribute('role', 'dialog');
         md.setAttribute('aria-label', T('title'));

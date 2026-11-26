@@ -373,7 +373,10 @@
         if (!win) return;
         /* Esc closes the window only (it does not open the menu as well); typing in the window's
          * fields runs no hotkeys anyway (the key handler skips text fields) */
-        if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopPropagation(); closeWin(); }
+        if (!(e.key === 'Escape' || e.keyCode === 27)) return;
+        /* with another window open that closes on Esc, only the one in front closes (winstack.js) */
+        if (W.LMWinStack && typeof W.LMWinStack.escFor === 'function' && !W.LMWinStack.escFor(win.root, e)) return;
+        e.preventDefault(); e.stopPropagation(); closeWin();
     }
     function openWin(id, title, width) {
         closeWin();
@@ -387,6 +390,7 @@
             'background:var(--lm-w-bg,' + c.pc + ');border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:var(--lm-radius,6px);' +
             'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:var(--lm-w-fs,12px);overflow:hidden;text-align:left;');
         root.id = id;
+        root._lmEsc = true;
         root.classList.add('lm-modal-container', 'lm-w', 'lm-st-win');
         root.dir = langDir();
         var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:var(--lm-w-hpad,4px 6px 4px 12px);border-bottom:1px solid ' + c.pc2 + ';background:var(--lm-w-head,linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%));');
