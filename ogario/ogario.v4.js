@@ -47572,6 +47572,29 @@ function thelegendmodproject() {
              * link alone where files cannot be shared, else a tweet in a new tab. Cancelling the sheet
              * is no error. Saving the image is the camera icon. */
             var shareBtn = document.getElementById('lm-go-share');
+            /* The share sheet needs the tap itself (a browser refuses it a moment later, Safari at
+             * once), so the card is drawn before: while the Game Over card is shown, just after it
+             * has appeared (a tap before that waits for it). One share at a time: the button waits
+             * until the sheet is closed. When the sheet refuses (other than the player cancelling),
+             * nothing else opens by itself (a second sheet or a tweet without a tap is blocked):
+             * the next tap tries the text and the link, then a tweet. The card then stays until it
+             * is closed (no auto-dismiss after a tap on Share). */
+            var shareCard = null, shareStep = 0, cardState = 0, cardWait = [];
+            var canShareFile = !!(navigator.share && navigator.canShare && typeof File === 'function');
+            var drawCard = function (cb) {
+                if (cardState === 2) { cb(); return; }
+                cardWait.push(cb);
+                if (cardState === 1) return;
+                cardState = 1;
+                _lmRenderMatchCard(function (blob) {
+                    try { shareCard = blob ? new File([blob], 'legend-mod-match.png', { type: 'image/png' }) : null; } catch (err) { shareCard = null; }
+                    cardState = 2;
+                    var w = cardWait;
+                    cardWait = [];
+                    w.forEach(function (f) { f(); });
+                });
+            };
+            if (shareBtn && canShareFile) setTimeout(function () { if (shareBtn.isConnected) drawCard(function () { }); }, 300);
             if (shareBtn) shareBtn.addEventListener('click', function (e) {
                 e.stopPropagation();
                 if (shareBtn._lmBusy) return;
@@ -47585,27 +47608,37 @@ function thelegendmodproject() {
                 var url = 'https://www.legendmod.ml/' + (_sNick ? '?ref=' + _sNick : '');
                 var tweet = function () { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener'); };
                 /* i18n-ok: Legend Mod is the name */ var data = { title: 'Legend Mod - ' + lmT('game2.matchCompleteTitle'), text: text, url: url };
-                var textOnly = function () {
-                    try {
-                        /* i18n-ok: AbortError is an error name */ if (navigator.share) navigator.share(data).catch(function (err) { if (!err || err.name !== 'AbortError') tweet(); });
-                        else tweet();
-                    } catch (err) { tweet(); }
+                /* tapped before the card is ready: it is finished first (the browser still counts
+                 * the tap for a moment; a refusal goes to the text and link on the next tap) */
+                if (shareStep === 0 && canShareFile && cardState !== 2) {
+                    shareBtn._lmBusy = true;
+                    shareBtn.style.opacity = '0.5';
+                    drawCard(function () { shareBtn._lmBusy = false; openSheet(); });
+                    return;
+                }
+                openSheet();
+                function openSheet() {
+                var withFile = null;
+                if (shareStep === 0 && shareCard) {
+                    try { if (navigator.canShare({ files: [shareCard] })) withFile = { title: data.title, text: data.text, url: data.url, files: [shareCard] }; } catch (err) { withFile = null; }
+                }
+                var sheet = withFile || (shareStep <= 1 && navigator.share ? data : null);
+                if (!sheet) { tweet(); return; }
+                var done = function () { shareBtn._lmBusy = false; shareBtn.style.opacity = ''; };
+                var refused = function (err) {
+                    done();
+                    /* i18n-ok: AbortError is an error name */ if (err && err.name === 'AbortError') return;
+                    shareStep = withFile ? 1 : 2;
+                    if (window.toastr) toastr.info(lmT('pkg.hf.shareAgain'));
                 };
-                if (!navigator.share || !navigator.canShare || typeof File !== 'function') { textOnly(); return; }
                 shareBtn._lmBusy = true;
                 shareBtn.style.opacity = '0.5';
-                _lmRenderMatchCard(function (blob) {
-                    shareBtn._lmBusy = false;
-                    shareBtn.style.opacity = '';
-                    var file = null;
-                    try { file = blob ? new File([blob], 'legend-mod-match.png', { type: 'image/png' }) : null; } catch (err) { file = null; }
-                    var withFile = null;
-                    try { if (file && navigator.canShare({ files: [file] })) withFile = { title: data.title, text: data.text, url: data.url, files: [file] }; } catch (err) { withFile = null; }
-                    if (!withFile) { textOnly(); return; }
-                    try {
-                        /* i18n-ok: AbortError is an error name */ navigator.share(withFile).catch(function (err) { if (!err || err.name !== 'AbortError') textOnly(); });
-                    } catch (err) { textOnly(); }
-                });
+                try {
+                    var pr = navigator.share(sheet);
+                    if (pr && typeof pr.then === 'function') pr.then(done, refused);
+                    else done();
+                } catch (err) { refused(err); }
+                }
             });
 
             /* ═══ MATCH CARD RENDERER ═══ */

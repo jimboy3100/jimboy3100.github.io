@@ -40,6 +40,53 @@
     document.getElementById('lm-go-share').click();
     await waitCalls(1);
     need('without file sharing: text and link', calls.length === 1 && !calls[0].files && /^https:\/\/www\.legendmod\.ml\//.test(String(calls[0].url)) && opened.length === 0);
+    /* rapid taps: one sheet at a time (the button waits until the sheet is closed) */
+    canFiles = true; calls = []; opened = [];
+    var settle = null;
+    put('share', function (d) { calls.push(d); return new Promise(function (res, rej) { settle = { res: res, rej: rej }; }); });
+    await card();
+    await sleep(1200); /* the card image is drawn while the card is shown */
+    var sb = document.getElementById('lm-go-share');
+    sb.click(); sb.click(); sb.click();
+    await sleep(50);
+    need('rapid taps: one share sheet', calls.length === 1 && !!calls[0].files);
+    need('the card image was ready: shared at the tap', calls.length === 1);
+    if (settle) settle.res();
+    await sleep(50);
+    sb.click();
+    await sleep(50);
+    need('after the sheet closed: Share works again', calls.length === 2);
+    if (settle) settle.res();
+    await sleep(50);
+    /* the sheet refuses the image (not a cancel): nothing opens by itself; the next tap shares
+     * the text and link, a refusal of that one leads to a tweet on the next tap */
+    calls = []; opened = [];
+    var refuse = function () { var e = new Error('refused'); e.name = 'NotAllowedError'; return e; };
+    put('share', function (d) { calls.push(d); return Promise.reject(refuse()); });
+    await card();
+    await sleep(1200);
+    sb = document.getElementById('lm-go-share');
+    sb.click();
+    await sleep(100);
+    need('refused image: no second sheet and no tweet without a tap', calls.length === 1 && !!calls[0].files && opened.length === 0);
+    sb.click();
+    await sleep(100);
+    need('next tap: the text and the link', calls.length === 2 && !calls[1].files && opened.length === 0);
+    sb.click();
+    await sleep(100);
+    need('next tap after that: a tweet', calls.length === 2 && opened.length === 1);
+    /* cancelled by the player: nothing else, the next tap offers the image again */
+    calls = []; opened = [];
+    put('share', function (d) { calls.push(d); var e = new Error('cancel'); e.name = 'AbortError'; return Promise.reject(e); });
+    await card();
+    await sleep(1200);
+    sb = document.getElementById('lm-go-share');
+    sb.click();
+    await sleep(100);
+    sb.click();
+    await sleep(100);
+    need('cancel: nothing else opens, the image again on the next tap', calls.length === 2 && !!calls[1].files && opened.length === 0);
+    put('share', function (d) { calls.push(d); return Promise.resolve(); });
     /* no share sheet at all: a tweet */
     calls = [];
     put('share', undefined);
