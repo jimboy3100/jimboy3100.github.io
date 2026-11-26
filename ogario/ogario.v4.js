@@ -24979,6 +24979,83 @@ function thelegendmodproject() {
             $(section).append('<label>' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
             $('#' + option).prop('checked', defaultmapsettings[option]);
         },
+        /* Mouse buttons and gamepad in the Hotkeys window, above the keys: every input binding is
+         * there and none is in Settings (owner's rule). Same setting keys, switches (setSettings),
+         * command lists (addPresetBox3) and ids as when they were in Settings. They take effect
+         * and are saved at once: the window's Save / Close / Restore are for the keys only. */
+        buildHotkeysControls() {
+            var cfg = $('#hotkeys-cfg');
+            if (!cfg.length || document.getElementById('lm-hk-controls')) return;
+            var app = this;
+            /* the first child is a heading, so the old row-index selectors of
+             * languages/LanguagePackHandler.js (#hotkeys-cfg>div>div:nth-child(1)) still meet the key rows only */
+            var box = $('<div id="lm-hk-controls"></div>');
+            var head = function (key, sec) {
+                return $('<h5 class="lm-hk-head menu-main-color"></h5>').attr({ 'data-i18n': key, 'data-lm-sec': sec }).text(lmT(key));
+            };
+            var row = function (opt) {
+                var r = $('<div class="row lm-hk-ctl"></div>').attr('data-lm-opt', opt);
+                r.append($('<div class="key-label"></div>').attr('data-i18n', 'settings.' + opt).text(app._lmMenuText(opt)));
+                r.append($('<div class="lm-hk-sw"></div>').append($('<input type="checkbox" class="lm-hk-switch">').attr('id', opt).prop('checked', !!defaultmapsettings[opt])));
+                r.append('<div class="lm-hk-act"></div>');
+                return r;
+            };
+            box.append(head('settings.mouseGroup', 'mouseGroup'));
+            var mouse = [['mouseSplit', 'leftClick', 'changeleftCmd'], ['mouseFeed', 'rightClick', 'changerightCmd'], ['mouseWheelClick', 'middleClick', 'changemiddleCmd'], ['mouseCommand4', 'mouse4Click', 'change4Cmd'], ['mouseCommand5', 'mouse5Click', 'change5Cmd']];
+            mouse.forEach(function (m) {
+                var r = row(m[0]);
+                r.find('.lm-hk-act').append($('<span></span>').attr('id', 'lm-hk-at-' + m[0]));
+                box.append(r);
+            });
+            box.append(row('stickyCell'));
+            box.append(head('modules.gamepadui.title', 'lmHkGamepad'));
+            box.append(row('gamepadEnabled'));
+            /* Gamepad window: button map, sensitivity, dead zone, profiles and a live test
+             * (ogario/gamepad.js loads ogario/modules/gamepad-ui.js the first time it opens) */
+            var gpRow = $('<div class="row lm-hk-ctl lm-hk-btnrow"></div>');
+            $('<button type="button" id="lm-gamepad-btn" class="btn btn-sm btn-block btn-primary"></button>')
+                .attr('data-i18n', 'settings.gamepadWindow').text(lmT('settings.gamepadWindow'))
+                .appendTo(gpRow)
+                .on('click', function (e) {
+                    e.preventDefault();
+                    if (window.LMGamepad && typeof window.LMGamepad.openWindow === 'function') window.LMGamepad.openWindow();
+                    else if (window.toastr) toastr.info(lmT('game1.set.gamepadLoading'));
+                });
+            box.append(gpRow);
+            box.append($('<p class="lm-hk-note"></p>').attr('data-i18n', 'pkg.hk.instantNote').text(lmT('pkg.hk.instantNote')));
+            cfg.prepend(box);
+            box.after(head('pkg.hk.keyboard', 'lmHkKeyboard'));
+            mouse.forEach(function (m) {
+                Settings.addPresetBox3('#lm-hk-at-' + m[0], m[0] + '2', hotkeysCommand, 'preset', m[2]);
+                $('#lm-hk-at-' + m[0]).remove();
+                $('#' + m[0] + '2').closest('.select-wrapper').removeAttr('style');
+                $('#' + m[0] + '2 option').filter(function () { return this.value === String(defaultmapsettings[m[1]]); }).prop('selected', 'selected').change();
+            });
+            if (typeof Switchery === 'function') {
+                box.find('input.lm-hk-switch').each(function () {
+                    try { new Switchery(this, { color: defaultSettings.menuMainColor, size: 'small' }); } catch (e) { }
+                });
+            }
+            box.find('.switchery').attr({ tabindex: '0', role: 'switch' });
+            $(document).on('change', '#lm-hk-controls input.lm-hk-switch', function () {
+                app.setSettings(this.id, this.checked);
+            });
+            if (!document.getElementById('lm-hk-controls-style')) {
+                var st = document.createElement('style');
+                st.id = 'lm-hk-controls-style';
+                st.textContent = '#hotkeys-cfg .lm-hk-head{display:block;margin:0;padding:14px 2% 6px;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid currentColor}' +
+                    '#hotkeys-cfg #lm-hk-controls{display:block;width:100%}' +
+                    '#hotkeys-cfg .lm-hk-ctl .key-label{width:46%}' +
+                    '#hotkeys-cfg .lm-hk-ctl .lm-hk-sw{width:16%;text-align:center;padding:0 2%}' +
+                    '#hotkeys-cfg .lm-hk-ctl .lm-hk-act{width:38%;padding:0 2%}' +
+                    '#hotkeys-cfg .lm-hk-ctl .lm-hk-act .select-wrapper{display:block;width:100%}' +
+                    '#hotkeys-cfg .lm-hk-ctl .lm-hk-act select{width:100%;color:inherit;background-color:var(--lm-pc2,#002f52);border-color:var(--lm-tc2,#8096a7)}' +
+                    '#hotkeys-cfg div.row.lm-hk-btnrow{padding:8px 2%}' +
+                    '#hotkeys-cfg .lm-hk-btnrow .btn{white-space:normal}' +
+                    '#hotkeys-cfg .lm-hk-note{margin:0;padding:6px 2% 4px;font-size:11px;font-weight:400;opacity:.8}';
+                document.head.appendChild(st);
+            }
+        },
         addInputBox(id, name, holder, callback) {
             $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" ' + _lmG1a('placeholder', holder) + ' /></div>');
             /* Set the value as a property: imported settings must not be parsed as HTML. */
@@ -25330,8 +25407,34 @@ function thelegendmodproject() {
                     try { s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) { }
                     return s.toLowerCase();
                 };
+                /* the mouse buttons and gamepad are in the Hotkeys window: a match there is listed
+                 * under the box, and a click opens that window at it (Command Centre reveal) */
+                var hkHint = $('<div id="lm-ss-hk" style="display:none;padding:4px 0 0;font-size:11px;line-height:1.9;"></div>');
+                box.append(hkHint);
+                var hkMatches = function (q) {
+                    hkHint.empty();
+                    var hits = [];
+                    if (q && !newOnly) $('#lm-hk-controls .lm-hk-ctl').each(function () {
+                        var r = $(this), ctl = r.find('input[id], button[id]').first();
+                        var txt = $.trim(r.children('.key-label').text() || r.find('.btn').text());
+                        if (ctl.length && txt && norm(txt).indexOf(q) >= 0) hits.push([ctl.attr('id'), txt]);
+                    });
+                    if (!hits.length) { hkHint.hide(); return; }
+                    hkHint.append($('<span style="margin-right:4px;"></span>').attr('data-i18n', 'pkg.hk.searchHint').text(lmT('pkg.hk.searchHint')));
+                    hits.forEach(function (h) {
+                        $('<button type="button" class="btn btn-xs btn-info lm-ss-hk-go" style="margin:0 4px 2px 0;white-space:normal;"></button>')
+                            .attr('data-hk-id', h[0]).text(h[1]).appendTo(hkHint);
+                    });
+                    hkHint.show();
+                };
+                hkHint.on('click', '.lm-ss-hk-go', function (e) {
+                    e.preventDefault();
+                    var CC = window.LMCommandCentre;
+                    if (!(CC && typeof CC.reveal === 'function' && CC.reveal(this.getAttribute('data-hk-id')))) $('.hotkeys-link').first().trigger('click');
+                });
                 var apply = function () {
                     var q = norm(inp.val()).trim();
+                    hkMatches(q);
                     $('#og-options > .options-box').each(function () {
                         var sec = $(this);
                         var items = sec.children().not('h5');
@@ -25552,33 +25655,8 @@ function thelegendmodproject() {
             /* Merging: countdown, sound and rings together, with what each needs from the server */
             this.addOptions(["hudMergeCountdown", "hudMergeSound", "mergeRings"], "mergeGroup");
             $('<div class="lm-group-note"></div>').text(this._lmMenuText('mergeNote')).appendTo('.mergeGroup');
-            //this.addOptions(["mouseSplit", "mouseFeed", "mouseInvert", "mouseWheelClick"], "mouseGroup");
-            this.addOptions(
-                [
-                    'stickyCell',
-                    'mouseSplit',
-                    'mouseFeed',
-                    'mouseWheelClick',
-                    'mouseCommand4',
-                    'mouseCommand5',
-                    'gamepadEnabled'
-                ],
-                'mouseGroup',
-                'controlsGroup'
-            );
-
-            //	
-            Settings.addPresetBox3('#mouseSplit', 'mouseSplit2', hotkeysCommand, 'preset', 'changeleftCmd');
-            $("#mouseSplit2 option").filter(function () { return this.value === String(defaultmapsettings.leftClick); }).prop('selected', 'selected').change();
-            Settings.addPresetBox3('#mouseFeed', 'mouseFeed2', hotkeysCommand, 'preset', 'changerightCmd');
-            $("#mouseFeed2 option").filter(function () { return this.value === String(defaultmapsettings.rightClick); }).prop('selected', 'selected').change();
-            Settings.addPresetBox3('#mouseWheelClick', 'mouseWheelClick2', hotkeysCommand, 'preset', 'changemiddleCmd');
-            $("#mouseWheelClick2 option").filter(function () { return this.value === String(defaultmapsettings.middleClick); }).prop('selected', 'selected').change();
-            Settings.addPresetBox3('#mouseCommand4', 'mouseCommand42', hotkeysCommand, 'preset', 'change4Cmd');
-            $("#mouseCommand42 option").filter(function () { return this.value === String(defaultmapsettings.mouse4Click); }).prop('selected', 'selected').change();
-            Settings.addPresetBox3('#mouseCommand5', 'mouseCommand52', hotkeysCommand, 'preset', 'change5Cmd');
-            $("#mouseCommand52 option").filter(function () { return this.value === String(defaultmapsettings.mouse5Click); }).prop('selected', 'selected').change();
-            //
+            /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
+             * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "fpsAtTop", "statsAtCenter", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre", "commandCentreBar"], "hudGroup");
             /* Spectating and streaming: click to follow, the stream overlay and the spectator director */
@@ -25686,19 +25764,8 @@ function thelegendmodproject() {
                 .attr('data-i18n', 'settings.macroEditor').text(lmT('settings.macroEditor'))
                 .appendTo('.macroGroup')
                 .on('click', function (e) { e.preventDefault(); if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('open'); });
-            this.addSliderBox(".mouseGroup", "gamepadDeadzone", 0.05, 0.5, 0.01);
-            /* Gamepad window: button map, sensitivity, profiles and a live test (ogario/gamepad.js
-             * loads ogario/modules/gamepad-ui.js the first time it opens) */
-            $('<button type="button" id="lm-gamepad-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
-                .attr('data-i18n', 'settings.gamepadWindow').text(lmT('settings.gamepadWindow'))
-                .appendTo('.mouseGroup')
-                .on('click', function (e) {
-                    e.preventDefault();
-                    if (window.LMGamepad && typeof window.LMGamepad.openWindow === 'function') window.LMGamepad.openWindow();
-                    else if (window.toastr) toastr.info(lmT('game1.set.gamepadLoading'));
-                });
-            /* no Hotkeys button here: keyboard hotkeys are only in the Hotkeys tab (the owner asked
-             * for them not to appear in Settings; the mouse button commands above stay) */
+            /* no Hotkeys, mouse or gamepad controls here: they are only in the Hotkeys window (the
+             * gamepad dead zone only in the Gamepad window) */
             this.addSliderBox(".statsGroup", "massLossPct", 10, 90, 5);
             /* Options that do something only while another option is on, or only on some servers.
              * They stay saved and can still be changed; while they have no effect they are dimmed
@@ -25709,7 +25776,6 @@ function thelegendmodproject() {
                     showStatsFPS: ['showStatsFrameTime'],
                     showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass', 'massFormat'],
-                    gamepadEnabled: ['gamepadDeadzone'],
                     adaptivePerf: ['adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes'],
                     companionLive: ['companionChat'],
                     /* parts of the Game Over card, which opens only with Game over stats on */
@@ -81806,7 +81872,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var c = hotkeysCommand[this.id];
                     if (c && c.type !== 'command') $(this).closest('.row').find('.key-label').text(c.label);
                 });
+                /* and the command lists of the mouse buttons */
+                $('#lm-hk-controls select option').each(function () {
+                    var c = hotkeysCommand[this.value];
+                    if (c) this.textContent = c.label;
+                });
             });
+            /* mouse buttons and gamepad, above the keys */
+            if (application && typeof application.buildHotkeysControls === 'function') application.buildHotkeysControls();
             $(document).on('click', '#reset-hotkeys', function (event) {
                 event.preventDefault();
                 //hotkeysSetup.resetHotkeys();

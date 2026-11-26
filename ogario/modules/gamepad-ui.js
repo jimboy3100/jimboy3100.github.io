@@ -176,7 +176,7 @@
             if (!s) return;
             s.gamepadEnabled = cb.checked;
             hint.style.display = cb.checked ? 'none' : '';
-            /* the menu switch shows it and saves the settings */
+            /* the switch in the Hotkeys window shows it and saves the settings */
             var a = window.application;
             try { if (a && a.syncHotkeyOption) a.syncHotkeyOption('gamepadEnabled'); else if (a && a.saveSettings) a.saveSettings(s, 'ogarioSettings'); } catch (e) { }
         });

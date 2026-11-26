@@ -11,6 +11,8 @@
   // (the Command Centre stays on Ctrl+K and its own hotkey; the settings search stays)
   if ($('#og-settings #lm-open-hotkeys-btn, #og-settings #lm-cc-open, #og-settings .lm-cc-open-btn').length) fail.push('hotkeys / Command Centre button in the Settings tab');
   if (!$('#lm-settings-search').closest('#og-settings').length) fail.push('settings search missing');
+  // no control bindings in Settings: mouse buttons, sticky cells and gamepad are in the Hotkeys window
+  if ($('#og-settings').find('#stickyCell, #mouseSplit, #mouseFeed, #mouseWheelClick, #mouseCommand4, #mouseCommand5, #gamepadEnabled, #gamepadDeadzone-slider, #lm-gamepad-btn, select[id$="2"][id^="mouse"], .mouseGroup, .controlsGroup').length) fail.push('control bindings in the Settings tab');
   // every checkbox option maps to a known setting
   var unknown = [];
   $('#og-options input[type=checkbox]').each(function () {
@@ -26,7 +28,7 @@
   var place = { recordReplays: 'replayGroup', 'instantReplaySecs-slider': 'replayGroup', netHistory: 'perfGroup', 'lm-perf-diag-btn': 'perfGroup',
     adaptivePerf: 'perfGroup', hudMergeCountdown: 'mergeGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
     reducedMotion: 'accessibilityGroup', a11yIndicators: 'accessibilityGroup', companionLive: 'spectateGroup', clickSpectate: 'spectateGroup',
-    gamepadEnabled: 'mouseGroup', 'lm-gamepad-btn': 'mouseGroup', 'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
+    'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
   Object.keys(place).forEach(function (id) {
     var el = document.getElementById(id);
     if (!el) fail.push('missing #' + id);

@@ -620,6 +620,9 @@
         closeWin();
         var cc = W.LMCommandCentre;
         if (cc && typeof cc.run === 'function' && cc.run('set:' + id)) return;
+        /* the mouse button commands are in the Hotkeys window */
+        var hkEl = D.getElementById(id);
+        if (hkEl && hkEl.closest && hkEl.closest('#hotkeys')) { jumpHotkey(id); return; }
         showMenu();
         var tab = D.querySelector('.menu-tabs a[href="#og-settings"]');
         if (tab) tab.click();

@@ -1,4 +1,4 @@
-// The Gamepad window opens from Mouse control, fits the screen, shows its tabs and closes again.
+// The Gamepad window opens from the Hotkeys window (Gamepad), fits the screen, shows its tabs and closes again.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -7,8 +7,8 @@
   var hk = hotkeysCommand['hk-gamepadWindow'];
   if (!hk) fail.push('hotkey hk-gamepadWindow missing');
   else if (hk.defaultKey !== '') fail.push('hk-gamepadWindow has a default key');
-  var b = $('.mouseGroup #lm-gamepad-btn');
-  if (!b.length) return { fail: fail.concat(['no Gamepad button in Mouse control']) };
+  var b = $('#hotkeys #lm-hk-controls #lm-gamepad-btn');
+  if (!b.length) return { fail: fail.concat(['no Gamepad button in the Hotkeys window']) };
   var stored = null;
   try { stored = localStorage.getItem('lmGamepad'); } catch (e) { }
   b.first().trigger('click');

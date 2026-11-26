@@ -1,5 +1,5 @@
 /* Legend Mod gamepad / controller support (standard browser Gamepad API).
- * Off by default: option "gamepadEnabled" (Settings > Mouse control).
+ * Off by default: option "gamepadEnabled" (Hotkeys window > Gamepad).
  * While the option is off this file only checks the option once a second.
  * Buttons, stick sensitivity, triggers, inverted axes, vibration and named profiles are set in the
  * Gamepad window (button in Mouse control, or its hotkey). The window lives in
@@ -222,15 +222,7 @@
             var a = window.application;
             if (a && a.saveSettings) a.saveSettings(s, 'ogarioSettings');
         } catch (e) { }
-        /* the dead zone also has a slider in the menu */
-        if (hasOwn(c, 'gamepadDeadzone')) {
-            try {
-                var sl = document.getElementById('gamepadDeadzone-slider');
-                if (sl) sl.value = c.gamepadDeadzone;
-                var vl = document.getElementById('gamepadDeadzone-value');
-                if (vl) vl.textContent = String(c.gamepadDeadzone);
-            } catch (e) { }
-        }
+        /* (the dead zone slider is only in the Gamepad window, not in the menu) */
         watchDeath();
     }
 

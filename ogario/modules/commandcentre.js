@@ -399,9 +399,33 @@
             var sec = inTheme ? t('theme') + ' \u00b7 ' + themePanelTitle(el) : sectionOf(el);
             add({ id: 'set:' + key, kind: 'set', label: plain(tl[key]) || boxLabel(el), en: plain(en[key]), key: key, section: sec, el: el, theme: inTheme });
         }
+        /* the mouse buttons and gamepad of the Hotkeys window (ogario.v4.js buildHotkeysControls):
+         * same ids as when they were in Settings; switches toggle, the rest open that window */
+        var hkHeads = D.querySelectorAll('#lm-hk-controls h5[data-lm-sec]');
+        for (i = 0; i < hkHeads.length; i++) {
+            var hh = hkHeads[i], hs = hh.getAttribute('data-lm-sec');
+            add({ id: 'sec:' + hs, kind: 'sec', label: plain(hh.textContent), en: enKey(hh.getAttribute('data-i18n')), key: hs, section: hkSection(hh), el: hh });
+        }
+        var hkCtl = D.querySelectorAll('#lm-hk-controls .lm-hk-ctl[data-lm-opt]');
+        for (i = 0; i < hkCtl.length; i++) {
+            var hr = hkCtl[i], ho = hr.getAttribute('data-lm-opt'), lab = hr.querySelector('.key-label');
+            var hl = plain(lab ? lab.textContent : ''), he = enKey(lab && lab.getAttribute('data-i18n')), hsec = hkSection(hr);
+            var hcb = D.getElementById(ho);
+            if (hcb && hcb.type === 'checkbox') add({ id: 'opt:' + ho, kind: 'opt', label: hl, en: he, key: ho, section: hsec, el: hcb });
+            var hsel = hr.querySelector('select[id]');
+            if (hsel) add({ id: 'set:' + hsel.id, kind: 'set', label: hl, en: he, key: hsel.id, section: hsec, el: hsel });
+        }
         cache = items;
         cacheAt = Date.now();
         return items;
+    }
+    function enKey(k) { return k ? plain(enOf(k)) : ''; }
+    /* "Hotkeys · <block heading>" for a row (or heading) of the Hotkeys window */
+    function hkSection(el) {
+        var win = plain(TL().hotkeys) || 'Hotkeys';
+        var h = el;
+        while (h && !(h.tagName === 'H5' && h.hasAttribute('data-lm-sec'))) h = h.previousElementSibling;
+        return h && h !== el ? win + ' · ' + plain(h.textContent) : win;
     }
     function themePanelTitle(el) {
         var p = closest(el, '.submenu-panel');
@@ -473,9 +497,30 @@
         /* the theme variable first, so a theme change shows at once */
         return 'var(--lm-mc,' + c + ')';
     }
+    /* the mouse buttons and gamepad are in the Hotkeys window: open it (as its menu tab does),
+     * scroll to the row and make it blink once the window has faded in */
+    function revealHotkeys(el) {
+        injectStyle();
+        var win = D.getElementById('hotkeys');
+        if (!win || !(win.offsetWidth || win.offsetHeight)) { showMenu(); clickEl('.hotkeys-link'); }
+        var box = closest(el, '.row, h5') || el;
+        var scroll = function () {
+            try { box.scrollIntoView({ block: 'center' }); } catch (e) { try { box.scrollIntoView(); } catch (e2) { } }
+            try { if (W.jQuery) W.jQuery('#hotkeys-cfg').perfectScrollbar('update'); } catch (e) { }
+        };
+        setTimeout(function () {
+            scroll();
+            box.style.setProperty('--lm-cc-mc', mainColor());
+            box.classList.remove('lm-cc-flash');
+            void box.offsetWidth;
+            box.classList.add('lm-cc-flash');
+            setTimeout(function () { box.classList.remove('lm-cc-flash'); }, 2400);
+        }, 550);
+    }
     /* open the menu at a setting, scroll to it and make it blink */
     function reveal(el) {
         if (!el) return;
+        if (closest(el, '#hotkeys')) { revealHotkeys(el); return; }
         var inTheme = closest(el, '#theme');
         openTab(inTheme ? 'theme' : 'og-settings');
         if (inTheme) {
@@ -1062,7 +1107,7 @@
     api.reveal = function (key) {
         if (typeof key !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(key)) return false;
         var el = D.getElementById(key + '-slider') || D.getElementById(key);
-        if (!el || !closest(el, '#og-options, #theme')) return false;
+        if (!el || !closest(el, '#og-options, #theme, #lm-hk-controls')) return false;
         reveal(el);
         return true;
     };

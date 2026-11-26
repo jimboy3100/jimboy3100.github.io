@@ -604,11 +604,12 @@
     var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl' };
     /* settings that take effect on the next load (their own options say so) */
     var RELOAD_KEYS = { glAntialias: 1, webgl2Acceleration: 1 };
-    /* One gameplay setting through its control, as the presets do. */
+    /* One gameplay setting through its control, as the presets do (the mouse button and
+     * gamepad switches are in the Hotkeys window). */
     function setOpt(k, v) {
         var $ = jq(), s = S(), app = window.application;
         var el = document.getElementById(k);
-        if (el && el.type === 'checkbox' && $(el).closest('#og-options').length) {
+        if (el && el.type === 'checkbox' && $(el).closest('#og-options, #lm-hk-controls').length) {
             v = !!v;
             if (el.checked !== v) {
                 el.checked = v;
