@@ -31,5 +31,41 @@ check('equal tiers: the newer one higher', eq(order([999990, 999990, 999990]), [
 check('never above the stacking tier (full-screen editors, toasts stay above)', Math.max.apply(null, order([999992, 999990, 100])) === 999992);
 check('empty list', order([]).length === 0);
 
+/* Esc keydown with a menu page in front of a window: an event whose target is not a Node (window,
+ * from window.dispatchEvent, or none) must not throw; Esc on the page still brings the windows back */
+{
+  const D2 = { nodeType: 9, children: [], addEventListener: () => {} };
+  const body = { nodeType: 1, children: [], parentElement: null };
+  D2.body = body; D2.documentElement = { nodeType: 1 };
+  const mk = (id, z, modal) => {
+    const st = {};
+    return { id, nodeType: 1, parentElement: body, isConnected: true, children: [], _z: z, previousElementSibling: null,
+      classList: { contains: c => modal && c === 'lm-modal-container' }, querySelector: () => null, getClientRects: () => [1],
+      style: { getPropertyValue: k => (st[k] || [''])[0], getPropertyPriority: k => (st[k] || ['', ''])[1], setProperty: (k, v, p) => { st[k] = [v, p || '']; }, removeProperty: k => { delete st[k]; } },
+      /* like the DOM: contains() takes a Node only */
+      contains(n) { if (!n || typeof n !== 'object' || !n.nodeType) throw new TypeError("Failed to execute 'contains' on 'Node': parameter 1 is not of type 'Node'."); return n === this; } };
+  };
+  const win = mk('macros', 999992, true), menu = mk('overlays', 100, false);
+  body.children.push(win, menu);
+  let keydown = null;
+  const c2 = { document: D2, MutationObserver: function () { this.observe = () => {}; },
+    getComputedStyle: el => ({ display: 'block', visibility: 'visible', position: 'fixed', pointerEvents: 'auto', zIndex: String(el._z) }),
+    addEventListener: (t, fn) => { if (t === 'keydown') keydown = fn; } };
+  c2.window = c2;
+  vm.createContext(c2);
+  vm.runInContext(src, c2);
+  const WS2 = c2.LMWinStack;
+  WS2.front(menu);
+  const esc = target => { const e = { key: 'Escape', keyCode: 27, target, prevented: false, preventDefault() { this.prevented = true; }, stopImmediatePropagation() { } };
+    let err = null; try { keydown(e); } catch (x) { err = x; } return { e, err }; };
+  check('menu page in front of a window', WS2._stack().length === 2 && WS2._stack()[1] === menu);
+  let r = esc(c2);
+  check('Esc dispatched on window: no error, left to the other handlers, the menu stays in front', !r.err && !r.e.prevented && WS2._stack()[1] === menu);
+  r = esc(null);
+  check('Esc without a target: no error, nothing changes', !r.err && !r.e.prevented && WS2._stack()[1] === menu);
+  r = esc(body);
+  check('Esc on the page: the window comes back in front', !r.err && r.e.prevented && WS2._stack().length === 1 && WS2._stack()[0] === win);
+}
+
 console.log(fail ? fail + ' FAILED' : 'all ok');
 process.exit(fail ? 1 : 0);
