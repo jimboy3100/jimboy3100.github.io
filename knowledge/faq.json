@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-25",
+  "updated": "2026-11-26",
   "faq": [
     {
       "question": "What is Legend Mod?",
@@ -128,6 +128,74 @@
     {
       "question": "What games does Legend Express support?",
       "answer": "Legend Express (the Chrome extension) works with Agar.io, Expanding Land, Agarix.com, and Cellcraft.io. The web client at legendmod.ml/play.html connects directly to Expanding Land servers."
+    },
+    {
+      "question": "How does mass decay work in Expanding Land?",
+      "answer": "Cells lose approximately 0.8% of mass every 4 seconds. Bigger cells decay proportionally faster, making extreme size difficult to maintain. The anti-teaming system can accelerate decay further via its exponential multiplier."
+    },
+    {
+      "question": "How does the merge timer work?",
+      "answer": "After splitting, cells cannot recombine immediately. The timer depends on each cell's mass — bigger cells take longer to merge. Legend Mod shows a countdown overlay and progress rings on your cells, plus an optional sound alert when cells are ready to merge."
+    },
+    {
+      "question": "What game modes does Expanding Land have?",
+      "answer": "Free-for-all (FFA) for competitive solo play, Teams for team-based play with assigned colours, and Experimental/Battle Royale modes on select arenas. Mode 5001 is a private server mode."
+    },
+    {
+      "question": "What server regions are available?",
+      "answer": "US-Atlanta and EU-London are the primary regions. Private servers (mode 5001) can also be hosted. The monitor page at legendmod.ml/monitor/ shows all active servers and their regions in real time."
+    },
+    {
+      "question": "What is the Player Monitor?",
+      "answer": "A live dashboard at legendmod.ml/monitor/ showing all online players, their servers, regions, game modes, levels, countries, and last seen times. It includes a History page for tracking player activity over time."
+    },
+    {
+      "question": "How do I log in to Expanding Land?",
+      "answer": "Discord OAuth and Google Sign-In are supported for account features (level, stats, name history). Guest play requires no login — you can play immediately with any nickname."
+    },
+    {
+      "question": "Can I play on mobile?",
+      "answer": "Yes. Expanding Land supports PWA with fullscreen landscape play and screen wake lock. An Android APK is also available. Legend Mod's mobile touch controls provide on-screen buttons for split, feed, and movement."
+    },
+    {
+      "question": "What is coordinate scrambling?",
+      "answer": "An anti-cheat system where each connected player receives unique random coordinate offsets from the server (scramble_x, scramble_y, scramble_id). This prevents external tools or bots from sharing exact player positions between accounts."
+    },
+    {
+      "question": "How does the anti-teaming system work?",
+      "answer": "It uses an exponential decay multiplier (Delta Server-style): decay = base × pow(1.086, multiplier). Actions like W-pressing (+0.1), splitting near allies (+0.5), virus popping (+0.5), and sitting in the Danger Zone (+0.01/cycle) increase the multiplier. Recovery is -0.005 per cycle. In Teams mode, eject loss is set to 0."
+    },
+    {
+      "question": "How do viruses work?",
+      "answer": "Viruses are spiky green circles. Big cells pop into ~16 pieces when touching one. Small and medium cells pass through safely. Feed 7 W-presses into a virus to shoot it toward another player (~100-110 mass cost). This is a key offensive tactic called a virus shot."
+    },
+    {
+      "question": "What is the Replay Studio?",
+      "answer": "A full playback tool for game replays with timeline, automatic bookmarks, variable speed (0.25x-4x), pause, packet-by-packet stepping, forward/backward seeking, and timeline scrubbing. Replays are saved as .lm files and stored in IndexedDB."
+    },
+    {
+      "question": "What is the HUD Editor?",
+      "answer": "A tool to drag and resize 15 HUD components (leaderboard, minimap, stats, chat, etc.) into named layouts. Up to 20 layouts with grid snapping (8/16/32px), lock/unlock, and edge-relative positioning for responsiveness."
+    },
+    {
+      "question": "What is the Analytics Dashboard?",
+      "answer": "A statistics window with heatmaps, play pattern analysis (coach), up to 8 custom objectives, 500 game summaries, and split analysis. It tracks position history (3,600 samples per game, 50 games) and provides tips based on your play patterns."
+    },
+    {
+      "question": "What is the Radial Menu?",
+      "answer": "A hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot for quick access without memorising keys. Hold the radial menu key, point to a slot, and release to activate."
+    },
+    {
+      "question": "How do presets work?",
+      "answer": "Legend Mod offers one-click presets: Competitive (enables rings, mass, split range), Battery Saver (caps FPS, disables effects), Streamer (hides personal info), Reduced Motion (no animations), and Clean HUD (minimal interface). Theme presets include 8 colour schemes."
+    },
+    {
+      "question": "What is ghost cells?",
+      "answer": "An Expanding Land-exclusive feature. When you die, a transparent cell appears at your death location, visible on the minimap. Ghost cells help you track where deaths occurred and avoid dangerous areas."
+    },
+    {
+      "question": "How do sound controls work?",
+      "answer": "Legend Mod has a 6-channel sound mixer: Master, Chat, Commands, Gameplay, Video, and Notifications. Each channel has independent volume (0-100%). Additional toggles for virus sounds, x16 split sounds, merge sounds, and audio ducking (chat lowers video skin volume)."
     }
   ]
 }

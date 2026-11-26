@@ -1,6 +1,6 @@
 {
   "entity": "https://www.legendmod.ml/#app",
-  "updated": "2026-11-25",
+  "updated": "2026-11-26",
   "features": [
     {
       "id": "controls",
@@ -168,6 +168,30 @@
       "id": "i18n",
       "name": "16-language support",
       "description": "Translated into Arabic, Bulgarian, German, Greek, English, Spanish, French, Indonesian (beta), Italian (beta), Japanese (beta), Dutch, Polish, Portuguese (beta), Russian, Turkish, and Traditional Chinese. Over 2,000 strings per language. Per-page translation packs for all site pages.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "monitor",
+      "name": "Player Monitor",
+      "description": "Live dashboard showing all online players across all servers. Displays nickname, tag, name, Agar ID, server, region, game mode, level, country and last seen time. Summary cards: total online, active servers, unique countries. History page tracks player activity over time. Supports 16-language UI.",
+      "url": "https://www.legendmod.ml/monitor/"
+    },
+    {
+      "id": "deathrecap",
+      "name": "Death recap",
+      "description": "Game Over card showing the last 20 seconds of your life as 3-6 summarised steps with a mass sparkline. Attributes the killer by name and mass from eat events. Expanding Land uses server-provided killer info for accuracy.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "killfeed",
+      "name": "Kill feed",
+      "description": "Fading list of kills and deaths displayed left of the leaderboard. Each entry stays 6 seconds, maximum 5 visible at once. Shows mass gained or lost per event.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "soundmixer",
+      "name": "Sound mixer",
+      "description": "6 independent audio channels (Master, Chat, Commands, Gameplay, Video, Notifications) each with 0-100% volume. Additional toggles: virus sound, x16 split sound, non-16 split sound, virus pop, virus eat, merge sound. Audio ducking: chat sounds temporarily lower video skin volume (1.5s, 0.3 volume).",
       "url": "https://www.legendmod.ml/features.html"
     }
   ]
