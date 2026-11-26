@@ -220,6 +220,49 @@
         for (var j = 0; j < idx.length; j++) out[idx[j]] = j + 1;
         return out;
     }
+    /* Where the name label of each frame goes. Boxes that share a corner (the stats line, phone
+     * stats, team list and chat box at the top left) all drew their label at the same spot, and
+     * a resize handle in a frame's top left corner covered the label there. A label keeps its
+     * usual spot (above the frame at its left edge, inside the frame's top when there is no room
+     * above) when that is free; otherwise it moves right along the frame's top, then one label
+     * line lower, until it overlaps no other label and no handle.
+     * items: [{ f: frame rect, w, h: label size }] or null; obstacles: rects (the handles).
+     * Returns [{ left, top }] (screen px) or null per item. */
+    function labelSpots(items, obstacles, view) {
+        var placed = [], out = [];
+        var hit = function (a, b) { return a.left < b.left + b.width && b.left < a.left + a.width && a.top < b.top + b.height && b.top < a.top + a.height; };
+        var blocker = function (r) {
+            var all = placed.concat(obstacles || []);
+            for (var i = 0; i < all.length; i++) if (hit(r, all[i])) return all[i];
+            return null;
+        };
+        for (var i = 0; i < items.length; i++) {
+            var it = items[i];
+            if (!it || !it.f) { out.push(null); continue; }
+            var f = it.f, w = it.w, h = it.h, ys = [];
+            if (f.top + 2 - h >= 0) ys.push(f.top + 2 - h);
+            for (var y = f.top + 2; y <= f.top + Math.max(2, f.height - h) && ys.length < 8; y += h) ys.push(y);
+            ys.push(f.top + f.height);
+            /* first over the frame's own width; a small frame: further right if needed */
+            var maxXs = [Math.min(view.w - w, Math.max(f.left, f.left + f.width - w)), view.w - w], spot = null;
+            for (var p = 0; p < 2 && !spot; p++) {
+                for (var k = 0; k < ys.length && !spot; k++) {
+                    var r = { left: Math.max(0, Math.min(f.left, view.w - w)), top: Math.max(0, Math.min(ys[k], view.h - h)), width: w, height: h };
+                    for (var n = 0; n < 24; n++) {
+                        var b = blocker(r);
+                        if (!b) { spot = r; break; }
+                        r = { left: b.left + b.width + 1, top: r.top, width: w, height: h };
+                        if (r.left > maxXs[p]) break;
+                    }
+                }
+            }
+            /* nowhere free: the usual spot */
+            if (!spot) spot = { left: Math.max(0, Math.min(f.left, view.w - w)), top: Math.max(0, Math.min(ys[0], view.h - h)), width: w, height: h };
+            placed.push(spot);
+            out.push({ left: spot.left, top: spot.top });
+        }
+        return out;
+    }
     /* the stylesheet rule of one box */
     function cssFor(sel, e, editing) {
         if (!e) return '';
@@ -247,7 +290,7 @@
         COMPONENTS: COMPONENTS, KEY: KEY, MAX_LAYOUTS: MAX_LAYOUTS, NAME_MAX: NAME_MAX, S_MIN: S_MIN, S_MAX: S_MAX, GRIDS: GRIDS,
         cleanName: cleanName, cleanEntry: cleanEntry, cleanComps: cleanComps, cleanStore: cleanStore, findIndex: findIndex,
         visualPos: visualPos, entryFromRect: entryFromRect, clampEntry: clampEntry, rectIn: rectIn, snapRect: snapRect, cssFor: cssFor,
-        frameLayers: frameLayers
+        frameLayers: frameLayers, labelSpots: labelSpots
     };
     var api = W.LMHudEditor = { core: core, components: COMPONENTS };
 

@@ -74,6 +74,21 @@
       if (hit && hit.closest && (hit.closest('#lm-he-p') || hit.closest('#toast-container'))) return;
       if (hf !== f && !(hf && fArea(hf) < fArea(f))) fail.push('frame ' + f.getAttribute('data-id') + ' covered by ' + (hf ? hf.getAttribute('data-id') : (hit && (hit.id || hit.className))));
     });
+    /* the frame names are readable: no label on another label or under a resize handle (boxes that
+     * share a corner drew their labels at the same spot) */
+    var labs = [], hds = [], rr = function (el) { var b = el.getBoundingClientRect(); return { id: el.parentNode.getAttribute('data-id'), l: b.left, t: b.top, r: b.right, b: b.bottom }; };
+    Array.prototype.forEach.call(document.querySelectorAll('#lm-he .lm-he-f'), function (f) {
+      if (f.style.display === 'none') return;
+      labs.push(rr(f.querySelector('.lm-he-l')));
+      var h = f.querySelector('.lm-he-rs');
+      if (getComputedStyle(h).display !== 'none') hds.push(rr(h));
+    });
+    var over = function (a, b) { return a.l < b.r - 0.5 && b.l < a.r - 0.5 && a.t < b.b - 0.5 && b.t < a.b - 0.5; };
+    labs.forEach(function (a, i) {
+      labs.forEach(function (b, j) { if (i < j && over(a, b)) fail.push('label ' + a.id + ' overlaps label ' + b.id); });
+      hds.forEach(function (h) { if (over(a, h)) fail.push('label ' + a.id + ' under the handle of ' + h.id); });
+      if (a.l < -1 || a.t < -1 || a.r > innerWidth + 1) fail.push('label ' + a.id + ' off screen');
+    });
     var frame = document.querySelector('#lm-he .lm-he-f[data-id="leaderboard"]');
     if (!frame || frame.style.display === 'none') fail.push('no frame for the leaderboard');
     else {

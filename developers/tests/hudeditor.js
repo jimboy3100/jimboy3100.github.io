@@ -305,6 +305,33 @@ const J = o => JSON.parse(JSON.stringify(o));
     const e = f([{ width: 10, height: 10 }, { width: 10, height: 10 }]);
     check('equal sizes: the later one on top (as before)', e[1] > e[0]);
   }
+  /* frame names: boxes that share the top left corner (phone) no longer draw their labels at one spot */
+  const ls = core.labelSpots;
+  check('labelSpots exists', typeof ls === 'function');
+  if (typeof ls === 'function') {
+    const view = { w: 915, h: 412 };
+    const R = (l, t, w, h) => ({ left: l, top: t, width: w, height: h });
+    const frames = [R(4, 17, 353, 22), R(4, 4, 16, 16), R(4, 30, 165, 56), R(4, 14, 280, 306), null, R(600, 200, 100, 50)];
+    const sizes = [[165, 15], [72, 15], [57, 15], [57, 15], [10, 15], [60, 15]];
+    const items = frames.map((f, i) => (f ? { f, w: sizes[i][0], h: sizes[i][1] } : null));
+    const handles = [R(4, 4, 28, 28), R(341, 23, 28, 28)];
+    const s = ls(items, handles, view);
+    const box = i => R(s[i].left, s[i].top, items[i].w, items[i].h);
+    const hit = (a, b) => a.left < b.left + b.width && b.left < a.left + a.width && a.top < b.top + b.height && b.top < a.top + a.height;
+    let clash = 0, off = 0;
+    s.forEach((p, i) => {
+      if (!p) return;
+      const a = box(i);
+      if (a.left < 0 || a.top < 0 || a.left + a.width > view.w || a.top + a.height > view.h) off++;
+      handles.forEach(h => { if (hit(a, h)) clash++; });
+      s.forEach((q, j) => { if (q && j > i && hit(a, box(j))) clash++; });
+    });
+    check('labels of boxes sharing a corner: none on another label or a handle', clash === 0);
+    check('labels stay on screen, no frame: no label', off === 0 && s[4] === null);
+    check('a lone box keeps the usual spot (above it at its left edge)', s[5].left === 600 && s[5].top === 200 + 2 - 15);
+    const top = ls([{ f: R(50, 0, 200, 40), w: 60, h: 15 }], [], view)[0];
+    check('a box at the top edge: label inside its top', top.left === 50 && top.top === 2);
+  }
   const st = core.COMPONENTS.filter(c => c.id === 'stats')[0];
   check('stats line can be placed while the phone keeps it folded', !!(st && st.shownOnTap) && core.COMPONENTS.filter(c => c.shownOnTap).length === 1);
 }

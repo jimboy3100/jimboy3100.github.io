@@ -260,6 +260,27 @@
         var ms = core.COMPONENTS.map(function (c) { var m = measure(c); placeFrame(c, m); return m ? m.union : null; });
         var z = core.frameLayers(ms);
         core.COMPONENTS.forEach(function (c, i) { if (frames[c.id]) frames[c.id].style.zIndex = z[i] ? String(z[i]) : ''; });
+        placeLabels();
+    }
+    /* the frame names apart from each other and from the resize handles (core.labelSpots) */
+    function placeLabels() {
+        var items = [], hs = [], els = [];
+        core.COMPONENTS.forEach(function (c) {
+            var f = frames[c.id], l = f && f.querySelector('.lm-he-l');
+            if (!l || f.style.display === 'none') { items.push(null); els.push(null); return; }
+            var rs = f.querySelector('.lm-he-rs'), r = rs && rs.getBoundingClientRect();
+            if (r && r.width > 0) hs.push({ left: r.left, top: r.top, width: r.width, height: r.height });
+            items.push({ f: { left: f.offsetLeft, top: f.offsetTop, width: f.offsetWidth, height: f.offsetHeight }, w: l.offsetWidth, h: l.offsetHeight });
+            els.push(l);
+        });
+        var spots = core.labelSpots(items, hs, view());
+        els.forEach(function (l, i) {
+            if (!l || !spots[i]) return;
+            /* the label is placed in its frame, inside the 2 px border */
+            l.style.left = Math.round(spots[i].left - items[i].f.left - 2) + 'px';
+            l.style.top = Math.round(spots[i].top - items[i].f.top - 2) + 'px';
+            l.style.bottom = 'auto';
+        });
     }
     function otherRects(id) {
         var out = [];
