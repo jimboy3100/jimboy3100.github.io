@@ -230,12 +230,13 @@ $('#quality>option:nth-child(5)').text(Languageletter114);
 $('#quality>option:nth-child(6)').text(Languageletter115);
 
 $(".btn.btn-block.btn-success.btn-export").text(Languageletter116);
-$(".restore-settings>a").eq(0).text(Languageletter117);
+/* by id: by position the Settings tab's Copy debug info link got the theme's restore text */
+$("#lm-restore-settings").text(Languageletter117);
 
-$("#exp-imp-settings>h1").eq(0).text(Languageletter118);
-$("#exp-imp-settings>h1").eq(1).text(Languageletter119);
-$("#exp-imp-settings>h2").eq(0).text(Languageletter120);
-$("#exp-imp-settings>h2").eq(1).text(Languageletter121);
+$("#lm-exp-title").text(Languageletter118);
+$("#lm-imp-title").text(Languageletter119);
+$("#lm-exp-info").text(Languageletter120);
+$("#lm-imp-info").text(Languageletter121);
 
 $("#exp-imp-settings>LABEL").replace('Commands', Languageletter122);
 $("#exp-imp-settings>LABEL").replace('Hotkeys', Languageletter123);
@@ -268,7 +269,8 @@ $('#themePreset>option:nth-child(5)').text(Languageletter137 + " 2");
 //$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169b + ": ");
 //$("#theme-main>div>div>span:nth-child(1)").eq(12).text(Languageletter169c + ": ");
 
-$(".restore-settings>a").eq(1).text(Languageletter170);
+$("#lm-restore-theme").text(Languageletter170);
+if (typeof lmT === "function" && lmT("game1.set.copyDebug") !== "game1.set.copyDebug") $("#lm-copy-debug").text(lmT("game1.set.copyDebug"));
 $(".btn.btn-block.btn-success.btn-save").text(Languageletter171);
 
 
@@ -294,10 +296,14 @@ $("#close-exp-imp").text(Languageletter283);
 
 $("#youtubeplayer>h5").text(Languageletter284);
 $("#musicUrl").attr('placeholder', Languageletter284a).attr('data-original-title',Languageletter285);
-$(".agario-panel.sounds-panel>h5").text(Languageletter286);
-$(".agario-panel.sounds-panel>div>span").eq(0).text(Languageletter287);
-$(".agario-panel.sounds-panel>div>span").eq(1).text(Languageletter288);
-$(".agario-panel.sounds-panel>div>span").eq(2).text(Languageletter41d);
+/* the sound URL rows of Settings > Sounds, each by its own field (the old Sounds panel these spans
+ * were counted in is gone); the first text only, so a NEW badge next to a name stays */
+[["messageSound", Languageletter287], ["commandSound", Languageletter288], ["virusSoundurl", Languageletter41d]].forEach(function (r) {
+    var t = $("#" + r[0]).closest(".input-box").find(".title-box")[0];
+    if (!t || typeof r[1] !== "string" || !r[1]) return;
+    for (var n = t.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && /\S/.test(n.nodeValue)) { n.nodeValue = r[1]; return; }
+    t.insertBefore(document.createTextNode(r[1]), t.firstChild);
+});
 
 $("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);
 $("#copySIPBtn").text(Languageletter291).attr('data-original-title',Languageletter289);

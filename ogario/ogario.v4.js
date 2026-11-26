@@ -21704,7 +21704,7 @@ function thelegendmodproject() {
                 _lmThemeSaveT = null;
                 Settings.saveThemeSettings();
             };
-            $('#theme').append('<div class=\"restore-settings\"><a href=\"#\">' + textLanguage.restoreThemeSettings + '</a></div>'),
+            $('#theme').append('<div class=\"restore-settings\"><a href=\"#\" id=\"lm-restore-theme\">' + textLanguage.restoreThemeSettings + '</a></div>'),
                 $(document).on('click', '#theme .restore-settings a', function (e) {
                     e.preventDefault();
                     /* one click wiped the whole theme and reloaded: ask first */
@@ -26203,7 +26203,7 @@ function thelegendmodproject() {
             // this.addSliderBox(".multiBox", "multiboxAmount", 2, 4, 1);
             //this.addSliderBox(".massGroup", "hideSizes", 0, 37, 1);
             $("#og-settings").append('<button class="btn btn-block btn-success btn-export">' + textLanguage.exportImport + "</button>");
-            $("#og-settings").append('<div class="restore-settings"><a href="#">' + textLanguage.restoreSettings + "</a></div>");
+            $("#og-settings").append('<div class="restore-settings"><a href="#" id="lm-restore-settings">' + textLanguage.restoreSettings + "</a></div>");
             /* Bug reports: copy versions, browser, GPU, server and the last errors to the
              * clipboard. Nothing is sent anywhere; the player pastes it into Discord. */
             $("#og-settings").append('<div class="restore-settings"><a href="#" id="lm-copy-debug">' + _lmG1s('game1.set.copyDebug') + '</a></div>');
@@ -26276,14 +26276,15 @@ function thelegendmodproject() {
                 }
             }*/
             $("body").append('<div id="exp-imp"><div id="exp-imp-menu"><button id="close-exp-imp" class="btn btn-danger">' + textLanguage.close + '</button></div><div id="exp-imp-settings"></div></div>');
-            $("#exp-imp-settings").append("<h1>" + textLanguage.exportSettings + "</h1><h2>" + textLanguage.exportInfo + "</h2>");
+            /* ids: the language pack handler names these by id, not by position */
+            $("#exp-imp-settings").append('<h1 id="lm-exp-title">' + textLanguage.exportSettings + '</h1><h2 id="lm-exp-info">' + textLanguage.exportInfo + "</h2>");
             this.addOption("#exp-imp-settings", "export-ogarioCommands", textLanguage.commands, true);
             this.addOption("#exp-imp-settings", "export-ogarioHotkeys", textLanguage.hotkeys, true);
             this.addOption("#exp-imp-settings", "export-ogarioPlayerProfiles",
                 textLanguage.profiles, true), this.addOption("#exp-imp-settings", "export-ogarioSettings", textLanguage.settings, true);
             this.addOption("#exp-imp-settings", "export-ogarioThemeSettings", textLanguage.theme, true);
             $("#exp-imp-settings").append('<textarea id="export-settings" class="form-control" rows="14" cols="100" spellcheck="false" readonly></textarea><button id="export-settings-btn" class="btn btn-block btn-success">' + textLanguage.exportSettings + "</button>");
-            $("#exp-imp-settings").append("<h1>" + textLanguage.importSettings + "</h1><h2>" +
+            $("#exp-imp-settings").append('<h1 id="lm-imp-title">' + textLanguage.importSettings + '</h1><h2 id="lm-imp-info">' +
                 textLanguage.importInfo + "</h2>"), this.addOption("#exp-imp-settings", "import-ogarioCommands", textLanguage.commands, true);
             this.addOption("#exp-imp-settings", "import-ogarioHotkeys", textLanguage.hotkeys, true);
             this.addOption("#exp-imp-settings", "import-ogarioPlayerProfiles", textLanguage.profiles, true);
