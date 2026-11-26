@@ -107,8 +107,9 @@
       ss.value = $.trim($('#lm-hk-controls [data-lm-opt="mouseCommand4"] .key-label').text()); /* the label in the current language */
       ss.dispatchEvent(new Event('input', { bubbles: true }));
       await sleep(250);
+      info.ssQuery = ss.value; info.ssHits = $('#lm-ss-hk .lm-ss-hk-go').length;
       var go = $('#lm-ss-hk .lm-ss-hk-go[data-hk-id="mouseCommand4"]');
-      if (!$('#lm-ss-hk').is(':visible') || !go.length) fail.push('settings search does not point to the Hotkeys window');
+      if ($('#lm-ss-hk').css('display') === 'none' || !go.length) /* the Settings tab itself may be hidden: the hint's own display */ fail.push('settings search does not point to the Hotkeys window');
       else {
         go.trigger('click');
         await sleep(700);
@@ -117,7 +118,7 @@
       ss.value = '';
       ss.dispatchEvent(new Event('input', { bubbles: true }));
       await sleep(250);
-      if ($('#lm-ss-hk').is(':visible')) fail.push('settings search hint stays after clearing');
+      if ($('#lm-ss-hk').css('display') !== 'none') fail.push('settings search hint stays after clearing');
     }
 
     // in the open window every row fits (phone 915x412 too) and Close is on screen
