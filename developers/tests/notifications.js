@@ -145,6 +145,37 @@ function boot(opts) {
   check('default: nothing muted', boot().api.categories.every(c => !boot().api.isMuted(c)));
 }
 
+/* 5b. the panel's mute boxes follow LMNotifications.setMuted while the panel is built (until
+ * 3.693 they kept the state they were built with), with a small stand-in for the page */
+{
+  const b = boot();
+  const mk = tag => {
+    const e = { tagName: tag, children: [], style: {}, classList: { add() { } }, ev: {}, parentNode: null,
+      setAttribute() { }, addEventListener(n, f) { (e.ev[n] = e.ev[n] || []).push(f); }, removeEventListener() { },
+      appendChild(c) { c.parentNode = e; e.children.push(c); return c; }, removeChild(c) { e.children.splice(e.children.indexOf(c), 1); c.parentNode = null; return c; },
+      get firstChild() { return e.children[0] || null; } };
+    return e;
+  };
+  const body = mk('body'), head = mk('head');
+  b.ctx.document = { body, head, createElement: mk, createDocumentFragment: () => mk('frag'), createTextNode: t => ({ textContent: t }), getElementById: () => null };
+  b.ctx.addEventListener = () => {}; b.ctx.removeEventListener = () => {};
+  b.api.open();
+  const all = [];
+  const walk = e => { all.push(e); (e.children || []).forEach(walk); };
+  walk(body);
+  const boxes = all.filter(e => e.type === 'checkbox');
+  const i = b.api.categories.indexOf('chat');
+  check('mute boxes: one per category in the panel', boxes.length === b.api.categories.length && i >= 0 && boxes[i].checked === false);
+  b.api.setMuted('chat', true);
+  check('mute boxes: setMuted while the panel is built ticks its box', boxes[i].checked === true);
+  b.api.close();
+  b.api.setMuted('chat', false);
+  check('mute boxes: also while the panel is closed (it is kept, hidden)', boxes[i].checked === false && !b.api.isMuted('chat'));
+  boxes[i].checked = true;
+  boxes[i].ev.change.forEach(f => f({}));
+  check('mute boxes: a tick in the panel still mutes', b.api.isMuted('chat'));
+}
+
 /* 6. caps, storage, validation */
 {
   const storage = makeStorage();

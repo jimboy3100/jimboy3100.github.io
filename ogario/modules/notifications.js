@@ -569,11 +569,13 @@
             var mutes = el('div', 'lmn-mutes');
             mutes.style.display = 'none';
             mutes.appendChild(el('div', 'lmn-meta', L('lmNotifMutesTitle')));
+            var boxes = this.muteBoxes = {};
             CATEGORIES.forEach(function (c) {
                 var lab = d.createElement('label');
                 var cb = d.createElement('input');
                 cb.type = 'checkbox';
                 cb.checked = !!prefs.muted[c];
+                boxes[c] = cb;
                 cb.addEventListener('change', function () {
                     if (cb.checked) prefs.muted[c] = true; else delete prefs.muted[c];
                     saveNow();
@@ -637,6 +639,11 @@
         },
         toggle: function () {
             if (this.panel && this.panel.style.display !== 'none') this.close(); else this.open();
+        },
+        /* the mute boxes follow a change made from outside the panel (LMNotifications.setMuted) */
+        syncMutes: function () {
+            var boxes = this.panel && this.muteBoxes;
+            if (boxes) CATEGORIES.forEach(function (c) { if (boxes[c]) boxes[c].checked = !!prefs.muted[c]; });
         },
         /* another language: the panel is built again (open again if it was open), the bell retitled */
         relabel: function () {
@@ -791,6 +798,7 @@
             if (CATEGORIES.indexOf(cat) < 0) return;
             if (on) prefs.muted[cat] = true; else delete prefs.muted[cat];
             saveNow();
+            ui.syncMutes();
         },
         soundVolume: soundVolume,
         duckPlayback: duckPlayback,
