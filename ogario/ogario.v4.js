@@ -29617,10 +29617,14 @@ function thelegendmodproject() {
             var _isCircle = !!(LM && LM.isLegendWorld);
             if (this._miniMapCircle !== _isCircle) {
                 this._miniMapCircle = _isCircle;
-                $('#minimap-hud').css({
-                    'border-radius': _isCircle ? '50%' : '0',
-                    'overflow': _isCircle ? 'hidden' : 'visible'
-                });
+                /* the circle as an important inline value: the HUD corners stylesheet (setHudCorners,
+                 * always there since Rounded corners is a theme option) gives #minimap-hud its corners
+                 * with !important, which made the circle square again */
+                var _lmMmHud = document.getElementById('minimap-hud');
+                if (_lmMmHud) {
+                    _lmMmHud.style.setProperty('border-radius', _isCircle ? '50%' : '0', _isCircle ? 'important' : '');
+                    _lmMmHud.style.overflow = _isCircle ? 'hidden' : 'visible';
+                }
             }
             if (ogario.mapOffsetFixed) {
                 const t = defaultSettings.miniMapWidth;
