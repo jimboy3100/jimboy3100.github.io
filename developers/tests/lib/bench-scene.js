@@ -50,10 +50,13 @@
     function scene(o) {
         var s = {
             bodies: o.bodies | 0, food: o.food | 0, sockets: o.sockets || 1, jelly: o.jelly !== false, labels: o.labels !== false,
-            layout: o.layout || 'spread', sizeMul: o.sizeMul || 1, seed: o.seed || 4242
+            layout: o.layout || 'spread', sizeMul: o.sizeMul || 1, seed: o.seed || 4242,
+            /* socketIds: every connection numbers the cells itself, as agar.io does (the unit's ids
+             * differ from the main socket's, so copies are matched by position, not by id) */
+            socketIds: !!o.socketIds
         };
         s.name = o.name || ('b' + s.bodies + '-f' + s.food + '-s' + s.sockets + (s.jelly ? '' : '-nojelly') + (s.labels ? '' : '-nolabels') +
-            (s.layout !== 'spread' ? '-' + s.layout : '') + (s.sizeMul !== 1 ? '-x' + s.sizeMul : ''));
+            (s.layout !== 'spread' ? '-' + s.layout : '') + (s.sizeMul !== 1 ? '-x' + s.sizeMul : '') + (s.socketIds ? '-ids' : ''));
         return s;
     }
     /* quick: a few scenes; default: the bodies x food table plus the variations at 1000 bodies /
@@ -184,6 +187,9 @@
     function encodeClear() { return new Uint8Array([18]).buffer; }
     function encodeBorder() { var b = new Writer(); b.u8(64); b.f64(-MAP_HALF); b.f64(-MAP_HALF); b.f64(MAP_HALF); b.f64(MAP_HALF); return b.done(); }
     function encodeAddOwn(id) { var b = new Writer(); b.u8(32); b.u32(id); return b.done(); }
+    /* the id of a cell on this socket (socketIds: units number cells on their own) */
+    var UNIT_ID_SHIFT = 1000000;
+    function socketId(spec, unit, id) { return unit > 0 && spec && spec.socketIds ? id + UNIT_ID_SHIFT * unit : id; }
 
     /* what a socket sees: unit 0 (main) everything, unit 1 the right part of the world */
     function sees(unit, x) { return unit === 0 || x > -300; }
@@ -197,7 +203,7 @@
         function cell(c, type) {
             var isNew = fresh || c._new;
             var flags = (main ? 0x80 : 0) | (type === 2 ? 1 : 0) | (isNew ? 2 : 0) | (isNew && c.name ? 8 : 0);
-            b.u32(c.id); b.i32(Math.round(c.x)); b.i32(Math.round(c.y)); b.u16(Math.round(c.r)); b.u8(flags);
+            b.u32(socketId(w.spec, unit, c.id)); b.i32(Math.round(c.x)); b.i32(Math.round(c.y)); b.u16(Math.round(c.r)); b.u8(flags);
             if (flags & 2) { b.u8(c.color[0]); b.u8(c.color[1]); b.u8(c.color[2]); }
             if (flags & 8) b.str(c.name);
             if (main) { b.u16(type); b.u8(0); }
@@ -209,7 +215,7 @@
         b.u32(0);
         var rem = fresh ? [] : w.removedFood;
         b.u16(rem.length);
-        for (i = 0; i < rem.length; i++) b.u32(rem[i]);
+        for (i = 0; i < rem.length; i++) b.u32(socketId(w.spec, unit, rem[i]));
         return b.done();
     }
 
@@ -291,7 +297,7 @@
 
     var pure = {
         VERSION: VERSION, VIEW: VIEW, TICK_MS: TICK_MS, makeRng: makeRng, scene: scene, matrix: matrix, createWorld: createWorld, step: step,
-        encodeUpdate: encodeUpdate, encodeClear: encodeClear, encodeBorder: encodeBorder, encodeAddOwn: encodeAddOwn, sees: sees,
+        encodeUpdate: encodeUpdate, encodeClear: encodeClear, encodeBorder: encodeBorder, encodeAddOwn: encodeAddOwn, sees: sees, socketId: socketId,
         percentile: percentile, dist: dist, createScopes: createScopes, STAGES: STAGES, WRAPS: WRAPS, calibrate: calibrate
     };
     if (typeof module === 'object' && module.exports && typeof window === 'undefined') { module.exports = pure; return; }
@@ -450,7 +456,7 @@
                 unit._lmBench = true;
                 s.units.push(unit);
                 try { unit.socket.onopen(); } catch (e) { console.warn('[bench] unit open', e); }
-                feedUnit(unit, encodeAddOwn(2));
+                feedUnit(unit, encodeAddOwn(socketId(spec, u, 2)));
                 feedUnit(unit, encodeUpdate(s.w, u, true));
             }
             if (prevCreate === undefined) try { delete window.createLegendWebSocket; } catch (e) { }
@@ -711,7 +717,7 @@
         s.w = createWorld(s.spec);
         for (var t = 0; t < ticks; t++) step(s.w);
         feedMain(encodeUpdate(s.w, 0, true));
-        s.units.forEach(function (u, i) { feedUnit(u, encodeAddOwn(2)); feedUnit(u, encodeUpdate(s.w, i + 1, true)); });
+        s.units.forEach(function (u, i) { feedUnit(u, encodeAddOwn(socketId(s.spec, i + 1, 2))); feedUnit(u, encodeUpdate(s.w, i + 1, true)); });
         await sleep(opts.settleMs || 1500);
         var dr = DR();
         var rnd = makeRng(777);

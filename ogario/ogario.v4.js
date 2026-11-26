@@ -1580,12 +1580,13 @@ function _lmMbIsPreferredTwin(cell, other, radius) {
     /* Every connection gets the same kind, colour and name for one cell, so a copy matches in
      * all of them. Without this an enemy or a virus of about the same size next to another
      * enemy was hidden as its "copy" (proximity and size alone).
-     * Own cell of another connection: no virus/ejected copy, same colour (as before). The
-     * name is compared for other cells only: own cells take the player's nick, not the
-     * server's name, and only one side may have a name yet. */
+     * Own cell of another connection: no virus/ejected copy. Colour and name are compared for
+     * other cells only: own cells take the player's profile colour and nick (myCustomColor,
+     * the unit's profile), not the server's, so the other connection's copy never had the
+     * same colour and each own cell was drawn twice; and only one side may have a name yet. */
     if (!!cell.isVirus !== !!other.isVirus || !!cell.isEjected !== !!other.isEjected) return false;
     if (otherOwn && (cell.isVirus || cell.isEjected)) return false;
-    if (other.color !== cell.color) return false;
+    if (!otherOwn && other.color !== cell.color) return false;
     if (!otherOwn && cell.targetNick && other.targetNick && cell.targetNick !== other.targetNick) return false;
     var r2 = _lmMbCellRadius(other);
     if (!(Math.abs(radius - r2) <= Math.max(4, 0.1 * Math.max(radius, r2)))) return false;

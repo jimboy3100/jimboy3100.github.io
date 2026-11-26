@@ -119,6 +119,20 @@ for (const order of ['main first', 'unit first']) {
     check('big cell copies 300 apart: drawn once', !a.invisible && b.invisible);
 }
 
+/* 9b. Own cells take the player's profile colour (myCustomColor on the main player, the unit's
+ * profile on a unit), the other connection's copy keeps the server's colour (agar.io numbers
+ * cells per connection, so only the position match can hide it). Each own cell is still drawn
+ * once, the own copy; both connections, both orders. */
+for (const order of ['own first', 'copy first']) {
+    const mainOwn = cell({ spectator: 0, isPlayerCell: true, size: 42, targetSize: 42, color: '#01d9cc', targetNick: 'Coco' });
+    const unitCopyOfMain = cell({ spectator: 1, x: 1020, size: 42, targetSize: 42, color: '#00b4e5', targetNick: 'Coco' });
+    const unitOwn = cell({ spectator: 1, isPlayerCell: true, isPlayerCellMulti: true, x: 3000, size: 21, targetSize: 21, color: '#01d9cc', targetNick: 'Coco' });
+    const mainCopyOfUnit = cell({ spectator: 0, x: 3015, y: 990, size: 21, targetSize: 21, color: '#e56c00', targetNick: 'Coco' });
+    const cells = order === 'own first' ? [mainOwn, unitOwn, unitCopyOfMain, mainCopyOfUnit] : [mainCopyOfUnit, unitCopyOfMain, unitOwn, mainOwn];
+    run(cells);
+    check('profile colour (' + order + '): main player cell drawn once, the own copy', unitCopyOfMain.invisible && !mainOwn.invisible);
+    check('profile colour (' + order + '): unit cell drawn once, the own copy', mainCopyOfUnit.invisible && !unitOwn.invisible);
+}
 /* 10. Same twins as a scan of every cell nearby (the search before the own-cell grid), frame by
  * frame, on seeded crowded scenes with 3 connections, own cells, viruses, ejected mass, hidden
  * and removed cells; and main-connection cells no longer test every crowded neighbour. */
