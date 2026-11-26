@@ -74,7 +74,10 @@ chrome.storage.local.get({ enabled: true }, (result) => {
 function stopAgario() {
     if (stopped) return;
     stopped = true;
-    try { window.stop(); } catch (e) { }
+    /* document.open() drops the rest of agar.io's page and its scripts. Not window.stop(): it marks the
+     * page's parser as aborted, and the browser then ignores the later document.open()/write() of the
+     * Legend page (the player got a white page) */
+    try { document.open(); document.write('<!DOCTYPE html><html><head></head><body></body></html>'); document.close(); } catch (e) { }
     try { document.documentElement.innerHTML = ''; } catch (e) { }
 }
 

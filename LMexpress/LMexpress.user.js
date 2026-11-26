@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Express Agar.io Extension
 // @namespace    Legend Express Agario Mod
-// @version      1.8.6
+// @version      1.8.7
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     https://jimboy3100.github.io
 // @author       Jimboy3100
@@ -139,8 +139,11 @@ if (mode.legend) {
 }
 
 /* Stop agar.io's own page at once (no more parsing, none of its scripts: while the page was
- * downloaded the vanilla game could start first); the mode's page or userscript replaces it */
-try { window.stop(); } catch (e) { }
+ * downloaded the vanilla game could start first); the mode's page or userscript replaces it.
+ * document.open() drops the rest of agar.io's page. Not window.stop(): it marks the page's parser
+ * as aborted, and the browser then ignores the later document.open()/write() of the mode's page
+ * (the player got a white page) */
+try { document.open(); document.write('<!DOCTYPE html><html><head></head><body></body></html>'); document.close(); } catch (e) { }
 document.documentElement.innerHTML = '';
 
 if (mode.notice) {

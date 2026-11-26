@@ -45,23 +45,25 @@ function run(pathname, stored, enabled) {
 
 check('manifest: texts.js runs before content.js', manifest.content_scripts[0].js.join() === 'texts.js,content.js');
 let r = run('/', {}, true);
-check('first visit, switch on: agar.io stopped at once, before the switch answers', r.sync.join() === 'stop,clear,loading');
+check('first visit, switch on: agar.io stopped at once, before the switch answers', r.sync.join() === 'open,write,clear,loading');
+/* window.stop() marks agar.io's parser as aborted and the browser then ignores the Legend page's document.write (white page) */
+check('agar.io is never stopped with window.stop()', r.log.indexOf('stop') < 0);
 check('then the page is fetched and written with the init call', r.log.indexOf('fetch') > 0 && /LEGEND/.test(r.written) && /init\("1\.8\.4"\)/.test(r.written) && r.ls.lmExpressEnabled === '1');
 check('the loading screen is shown once', r.log.filter(x => x === 'loading').length === 1);
 r = run('/legendmod', { lmExpressEnabled: '1' }, true);
-check('agar.io/legendmod: stopped at once too', r.sync[0] === 'stop' && /LEGEND/.test(r.written));
+check('agar.io/legendmod: stopped at once too', r.sync[0] === 'open' && /LEGEND/.test(r.written));
 r = run('/', { lmExpressEnabled: '0' }, false);
 check('switch off (mirror off): agar.io left alone, nothing fetched', r.log.length === 0 && r.ls.lmExpressEnabled === '0');
 r = run('/', { lmExpressEnabled: '1' }, false);
-check('switched off since the last visit: stopped, then one reload with the mirror corrected', r.sync[0] === 'stop' && r.log.indexOf('reload') > 0 && r.log.indexOf('fetch') < 0 && r.ls.lmExpressEnabled === '0');
+check('switched off since the last visit: stopped, then one reload with the mirror corrected', r.sync[0] === 'open' && r.log.indexOf('reload') > 0 && r.log.indexOf('fetch') < 0 && r.ls.lmExpressEnabled === '0');
 r = run('/', { lmExpressEnabled: '0' }, true);
-check('switched on since the last visit: stopped when the switch answers, then loaded', r.sync.length === 0 && r.log.slice(0, 3).join() === 'stop,clear,loading' && /LEGEND/.test(r.written) && r.ls.lmExpressEnabled === '1');
+check('switched on since the last visit: stopped when the switch answers, then loaded', r.sync.length === 0 && r.log.slice(0, 4).join() === 'open,write,clear,loading' && /LEGEND/.test(r.written) && r.ls.lmExpressEnabled === '1');
 r = run('/legendmod', { lmExpressEnabled: '0' }, false);
 check('agar.io/legendmod with the switch off: back to agar.io', r.ctx.location.href === 'https://agar.io/');
 r = run('/shop', {}, true);
 check('other agar.io pages: left alone', r.log.length === 0);
 r = run('/captcha', {}, true);
-check('captcha page: stopped at once, no Legend loading screen, the helper page fetched', r.sync.join() === 'stop,clear' && r.log.indexOf('fetch') > 0);
+check('captcha page: stopped at once, no Legend loading screen, the helper page fetched', r.sync.join() === 'open,write,clear' && r.log.indexOf('fetch') > 0);
 
 for (const [i, c] of ['pt', 'id', 'ja', 'it'].entries()) {
     const n = i + 13;
