@@ -240,6 +240,7 @@
             '#lm-me-p .lm-me-s .nm{flex:1;min-width:70px}' +
             '#lm-me-p .lm-me-s .lm-me-b{width:var(--lm-w-ctl,30px);padding:0;flex:none}' +
             '#lm-me-p .lm-me-note{font-size:var(--lm-w-fs-s,11px);color:var(--lm-tc2,#8096a7)}' +
+            '#lm-me-p .lm-me-note .lm-me-hk{margin-left:4px;color:var(--lm-mc,#01d9cc);border-color:var(--lm-mc,#01d9cc)}' +
             '#lm-me-p .lm-me-tl{position:relative;height:34px;border-radius:var(--lm-radius-s,4px);background:rgba(0,0,0,.25);border:1px solid var(--lm-pc2,#002f52);overflow:hidden}' +
             '#lm-me-p .lm-me-ev{position:absolute;top:4px;width:4px;height:24px;margin-left:-2px;border-radius:2px;opacity:.8}' +
             '#lm-me-p .lm-me-ev.split{background:#01d9cc}#lm-me-p .lm-me-ev.feed{background:#ffd200;top:10px;height:18px}#lm-me-p .lm-me-ev.mouse{background:#e0605c;top:14px;height:14px}' +
@@ -269,6 +270,33 @@
         if (!hk || typeof hk !== 'object') return '';
         for (var k in hk) if (Object.prototype.hasOwnProperty.call(hk, k) && hk[k] === id) return k;
         return '';
+    }
+    /* the slot's key (or "not set") and a button that opens the Hotkeys window at its
+     * "Custom macro N" row, the way the Command Centre and the settings search do; the editor
+     * would cover that window, so it closes and opens again (same slot) when the window closes */
+    function renderKey() {
+        if (!keyEl) return;
+        var n = slot + 1, k = boundKey(n);
+        keyEl.textContent = '';
+        keyEl.appendChild(D.createTextNode((k ? t('key', k) : t('noKey')) + ' '));
+        var b = btn(gt(k ? 'pkg.tx.changeKey' : 'pkg.tx.setKey'), gt('pkg.tx.keyTip', n), function () { openHotkeys(n); }, 'lm-me-hk');
+        b.setAttribute('data-slot', String(n));
+        keyEl.appendChild(b);
+    }
+    function gt(k) {
+        var v = Array.prototype.slice.call(arguments, 1);
+        return typeof W.lmT === 'function' ? W.lmT(k, v.length ? v : undefined) : k;
+    }
+    function openHotkeys(n) {
+        var $ = W.jQuery;
+        close();
+        var CC = W.LMCommandCentre, ok = false;
+        try { ok = !!(CC && typeof CC.reveal === 'function' && CC.reveal('hk-customMacro' + n)); } catch (e) { }
+        if (!$) return;
+        if (!ok) $('.hotkeys-link').first().trigger('click');
+        $(D).off('click.lmMeBack').one('click.lmMeBack', '#save-hotkeys, #close-hotkeys', function () {
+            setTimeout(function () { if (!isOpen()) open(n); }, 0);
+        });
     }
     function addStep(a) {
         var m = cur();
@@ -326,7 +354,7 @@
             listEl.appendChild(row);
         });
         slotBtns.forEach(function (b, i) { b.classList.toggle('on', i === slot); });
-        if (keyEl) { var k = boundKey(slot + 1); keyEl.textContent = k ? t('key', k) : t('noKey', slot + 1); }
+        renderKey();
     }
     function renderTimeline() {
         if (!tlEl) return;

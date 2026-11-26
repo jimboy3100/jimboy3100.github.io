@@ -146,7 +146,7 @@
                 type: 'normal'
             },
             /* custom macro slot 1 (ogario/modules/macroeditor.js, loaded on the first press;
-             * made in Settings > Macro > Custom macros); no default key */
+             * made in Settings > Macros > Custom macros); no default key */
             'hk-customMacro1': {
                 get label() {
                     return lmT('settings.hk-customMacro1');

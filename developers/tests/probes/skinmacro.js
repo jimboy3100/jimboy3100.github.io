@@ -23,7 +23,7 @@
     if (!hk || hk.defaultKey !== '') fail.push('hk-customMacro' + n + ' missing or has a default key');
   });
   if (typeof window.lmMacroEditor !== 'function') fail.push('lmMacroEditor loader missing');
-  if (!document.getElementById('lm-macro-editor-btn')) fail.push('custom macros button missing in Settings > Macro');
+  if (!document.getElementById('lm-macro-editor-btn')) fail.push('custom macros button missing in Settings > Macros');
   var CC = window.LMCommandCentre;
   if (window.LMSkinEditor || document.getElementById('lm-skin-editor-btn')) fail.push('the skin editor is back in the game');
   if (CC && typeof CC.items === 'function') {

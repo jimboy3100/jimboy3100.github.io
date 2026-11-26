@@ -1121,11 +1121,12 @@
     api.run = function (id) { var it = find(id); return it ? (run(it, true), true) : false; };
     api.favourites = function () { return state.fav.slice(); };
     api.syncBar = function () { syncBar(true); };
-    /* open the menu at a setting (an option key or element id) and make it blink; for other windows (Discover features) */
+    /* open the menu at a setting (an option key or element id) and make it blink; for other windows (Discover features);
+     * a hotkey command id (key row of the Hotkeys window) opens that window at its row (Custom macros) */
     api.reveal = function (key) {
         if (typeof key !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(key)) return false;
         var el = D.getElementById(key + '-slider') || D.getElementById(key);
-        if (!el || !closest(el, '#og-options, #theme, #lm-hk-controls')) return false;
+        if (!el || !closest(el, '#og-options, #theme, #lm-hk-controls, #hotkeys-cfg')) return false;
         reveal(el);
         return true;
     };
