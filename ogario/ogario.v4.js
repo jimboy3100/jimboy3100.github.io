@@ -23337,11 +23337,17 @@ function thelegendmodproject() {
         changeSpectatorMode() {
             this.spectatorFollow = !this.spectatorFollow;
             ogario.spectatorFollow = this.spectatorFollow;
-            if (this.spectatorFollow && spects.length > 0 && spects[0].staticX == null && spects[0].isSpectateEnabled === true /*&& spects[0].isFreeSpectateEnabled===false*/) {
-                spects[0].sendFreeSpectate();
-            } else if (!this.spectatorFollow && spects.length > 0 && spects[0].staticX == null && spects[0].isFreeSpectate === true) {
+            /* the in-game spectator when one is open (a multibox unit opened before it is spects[0]),
+             * else the first connection as before */
+            var sp0 = spects[0];
+            for (var _sm = 0; _sm < spects.length; _sm++) {
+                if (spects[_sm] && !spects[_sm].player && spects[_sm].staticX == null) { sp0 = spects[_sm]; break; }
+            }
+            if (this.spectatorFollow && sp0 && sp0.staticX == null && sp0.isSpectateEnabled === true /*&& sp0.isFreeSpectateEnabled===false*/) {
+                sp0.sendFreeSpectate();
+            } else if (!this.spectatorFollow && sp0 && sp0.staticX == null && sp0.isFreeSpectate === true) {
                 /* Turning it off must leave free spectate too (the unit kept following the cursor). */
-                spects[0].sendFreeSpectate();
+                sp0.sendFreeSpectate();
             }
         },
         setPause() {

@@ -159,5 +159,27 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
     check('multibox switch back: only the main player and the unit, never the spectator', back.join(',') === [unit.number, 0, unit.number, 0].join(','), back.join(','));
     check('the spectator was not told to spawn', !sp.respawned && !sp.closed && e.win.ingameSpectator === true);
 }
+/* 8. Follow / Free mode reaches the in-game spectator when a unit was opened first */
+{
+    const e = mbEnv();
+    e.ctx.addUnit();
+    e.LM.multiBoxPlayerExists = true;
+    const sp = addSpectatorOf(e, { isSpectateEnabled: true });
+    sp.sendFreeSpectate = () => { sp.isFreeSpectate = !sp.isFreeSpectate; sp.freeCalls = (sp.freeCalls || 0) + 1; };
+    e.win.spects[0].sendFreeSpectate = () => { e.win.spects[0].wrong = true; };
+    e.app.spectatorFollow = false;
+    e.app.changeSpectatorMode();
+    check('Follow / Free on: the in-game spectator switches to free spectate', sp.freeCalls === 1 && sp.isFreeSpectate === true, sp.freeCalls);
+    e.app.changeSpectatorMode();
+    check('Follow / Free off: the in-game spectator leaves free spectate', sp.freeCalls === 2 && sp.isFreeSpectate === false, sp.freeCalls);
+    check('the multibox unit is left alone', !e.win.spects[0].wrong);
+    /* no spectator open: the first connection (a spectating unit) switches, as before */
+    const e2 = mbEnv();
+    const u = Object.assign(e2.ctx.addUnit(), { staticX: null, isSpectateEnabled: true, isFreeSpectate: false });
+    u.sendFreeSpectate = () => { u.isFreeSpectate = !u.isFreeSpectate; };
+    e2.app.spectatorFollow = false;
+    e2.app.changeSpectatorMode();
+    check('only a spectating unit: it switches to free spectate as before', u.isFreeSpectate === true);
+}
 console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
 process.exit(failed ? 1 : 0);
