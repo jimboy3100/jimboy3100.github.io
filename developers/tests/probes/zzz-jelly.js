@@ -33,6 +33,24 @@
   if (touchFar !== 0) fail.push('a far cell touches something');
   if (Q.query({ x: -1000, y: -1000, w: 2000, h: 2000 }).length !== 80) fail.push('query() did not return all 80 points');
   if (lm) lm.quadtree = saved;
+  /* jelly cadence: 60 steps a second; every frame, also one between steps, draws the
+   * perimeters of the frame's jelly cells (none stale) */
+  if (!lm || typeof lm.jellyStepDue !== 'function' || typeof lm.holdJellyCells !== 'function') fail.push('jelly cadence functions missing');
+  else if (info.jelly) {
+    var dr = window.drawRender, orig = lm.jellyStepDue, steps = 0, frames = 0, stale = 0, seen = 0;
+    lm.jellyStepDue = function (now) { var s = orig.call(this, now); frames++; if (s) steps++; return s; };
+    try {
+      for (var f = 0; f < 30; f++) {
+        await new Promise(function (r) { requestAnimationFrame(function () { setTimeout(r, 0); }); });
+        var jc = dr && dr._jellyCellsScratch;
+        if (!jc) continue;
+        for (var j = 0; j < jc.length; j++) { seen++; if (jc[j]._jellyFrameId !== dr._jellyFrameId) stale++; }
+      }
+    } finally { lm.jellyStepDue = orig; }
+    info.cadence = { frames: frames, steps: steps, cellsChecked: seen };
+    if (stale) fail.push(stale + ' of ' + seen + ' jelly cells drawn with a stale perimeter');
+    if (frames > 10 && !(steps > 0)) fail.push('no jelly step in ' + frames + ' frames');
+  }
   await sleep(300);
   return { fail: fail, info: info };
 })()

@@ -36063,6 +36063,11 @@ function thelegendmodproject() {
         this.points = [];
         this.pointsVel = [];
         this.maxPointRad = 0;
+        /* centre the last movePoints() placed the points around (NaN: none yet) and
+         * whether frames between jelly steps moved them since (LM.holdJellyCells) */
+        this._lmJellyCX = NaN;
+        this._lmJellyCY = NaN;
+        this._lmJellyHeld = false;
 
 
         this.oldAlpha = 0;
@@ -36272,6 +36277,8 @@ function thelegendmodproject() {
             }
 
             this.maxPointRad = 0;
+            this._lmJellyCX = this._lmJellyCY = NaN;
+            this._lmJellyHeld = false;
 
             /* a reused object starts outside every indexed list */
             this._cellsIdx = this._virusIdx = this._foodIdx = this._foodMultiIdx = -1;
@@ -36603,16 +36610,7 @@ function thelegendmodproject() {
             /* cos/sin of 2*PI*i/len from a table per point count (same expression, so the
              * same values): 2 trig calls per point per frame for every jelly cell before.
              * Looked up once per cell, not once per point. */
-            var _lmTrig = window._lmJellyTrig && window._lmJellyTrig[len];
-            if (!_lmTrig) {
-                window._lmJellyTrig = window._lmJellyTrig || {};
-                _lmTrig = { c: new Float64Array(len), s: new Float64Array(len) };
-                for (var _lmTi = 0; _lmTi < len; _lmTi++) {
-                    _lmTrig.c[_lmTi] = Math.cos(2 * Math.PI * _lmTi / len);
-                    _lmTrig.s[_lmTi] = Math.sin(2 * Math.PI * _lmTi / len);
-                }
-                window._lmJellyTrig[len] = _lmTrig;
-            }
+            var _lmTrig = this.jellyTrig(len);
 
             for (
                 var pointIndex = 0;
@@ -36808,6 +36806,45 @@ function thelegendmodproject() {
 
             this._lmJellyTouching =
                 anyAffected;
+            this._lmJellyCX = this.x;
+            this._lmJellyCY = this.y;
+            this._lmJellyHeld = false;
+        };
+
+        /* cos/sin of 2*PI*i/len, one shared table per point count (built once per count). */
+        this.jellyTrig = function (len) {
+            var _lmTrig = window._lmJellyTrig && window._lmJellyTrig[len];
+            if (!_lmTrig) {
+                window._lmJellyTrig = window._lmJellyTrig || {};
+                _lmTrig = { c: new Float64Array(len), s: new Float64Array(len) };
+                for (var _lmTi = 0; _lmTi < len; _lmTi++) {
+                    _lmTrig.c[_lmTi] = Math.cos(2 * Math.PI * _lmTi / len);
+                    _lmTrig.s[_lmTi] = Math.sin(2 * Math.PI * _lmTi / len);
+                }
+                window._lmJellyTrig[len] = _lmTrig;
+            }
+            return _lmTrig;
+        };
+
+        /* Lay the points out around (cx, cy) at the radii movePoints() last gave them (rl,
+         * plus the virus spike on even points), with the same expressions as the end of
+         * movePoints(): around the step's own centre this gives back exactly the points
+         * that step left. Changes no radius, velocity or point count. */
+        this.placeJellyPoints = function (cx, cy) {
+            var points = this.points;
+            var len = points.length;
+            if (len === 0) return;
+            var _lmTrig = this.jellyTrig(len);
+            var isVirus = this.isVirus;
+            for (var i = 0; i < len; i++) {
+                var p = points[i];
+                var renderRadius = p.rl;
+                if (isVirus && (i & 1) === 0) {
+                    renderRadius += (defaultSettings.virusSpikesSize || 6);
+                }
+                p.x = cx + _lmTrig.c[i] * renderRadius;
+                p.y = cy + _lmTrig.s[i] * renderRadius;
+            }
         };
 
         this.update = function (x, y, mass, isVirus, isPlayer, nick) {
@@ -39307,10 +39344,17 @@ function thelegendmodproject() {
          * the shown one). Their points are dropped, so a cell shown again
          * starts from a round perimeter like a new cell instead of one left
          * from long ago.
+         *
+         * hold: a frame between two jelly steps (jellyStepDue): perimeters
+         * keep their point count until the next step; only a cell without
+         * one gets its round start perimeter. On a step, a perimeter moved
+         * by such frames is first put back where its last step left it, so
+         * the step starts from exactly the points it would have at 60 Hz.
          */
         prepareJellyCells: function (
             cells,
-            out
+            out,
+            hold
         ) {
             out.length = 0;
 
@@ -39353,6 +39397,8 @@ function thelegendmodproject() {
                             cell.pointsVel.length = 0;
                         }
                     }
+                    cell._lmJellyHeld = false;
+                    cell._lmJellyCX = cell._lmJellyCY = NaN;
 
                     continue;
                 }
@@ -39389,6 +39435,31 @@ function thelegendmodproject() {
                     continue;
                 }
 
+
+                var hasPerimeter =
+                    !!(
+                        cell.points &&
+                        cell.points.length >= 3 &&
+                        cell.pointsVel &&
+                        cell.pointsVel.length === cell.points.length
+                    );
+
+                if (hold && hasPerimeter) {
+                    out.push(cell);
+                    continue;
+                }
+
+                if (hold) {
+                    /* a start perimeter of this frame, not one a step left */
+                    cell._lmJellyHeld = false;
+                    cell._lmJellyCX = cell._lmJellyCY = NaN;
+                }
+                else if (cell._lmJellyHeld) {
+                    cell._lmJellyHeld = false;
+                    if (hasPerimeter && typeof cell.placeJellyPoints === "function") {
+                        cell.placeJellyPoints(cell._lmJellyCX, cell._lmJellyCY);
+                    }
+                }
 
                 try {
                     cell
@@ -39429,6 +39500,83 @@ function thelegendmodproject() {
             }
 
             return out;
+        },
+        /*
+         * Jelly cadence. One jelly step (random wave, collision dents, pull
+         * back to the cell size) moves the perimeter by a fixed amount, made
+         * for 60 steps a second. A step on every displayed frame made the
+         * jelly wobble and dent 2-2.4 times as fast on 120/144 Hz screens, at
+         * 2-2.4 times the cost. Steps are due 60 times a second, at most one
+         * per frame and with no catch-up, so a 60 Hz screen (also with frame
+         * time jitter) and every slow frame still step on each frame exactly
+         * as before. now: the frame's time (requestAnimationFrame time) in
+         * milliseconds.
+         */
+        jellyStepDue: function (now) {
+            var stepMs = 1000 / 60;
+            var last = this._lmJellyClock;
+            this._lmJellyClock = now;
+            /* first frame, or the clock went back or is not a number */
+            if (!(now - last >= 0)) {
+                this._lmJellyAcc = 0;
+                return true;
+            }
+            var acc = (this._lmJellyAcc || 0) + Math.min(now - last, 1000);
+            /* within a quarter step: frames of a 60 Hz screen that come a bit early still step */
+            if (acc < stepMs * 0.75) {
+                this._lmJellyAcc = acc;
+                return false;
+            }
+            acc -= stepMs;
+            this._lmJellyAcc = acc > stepMs ? stepMs : acc;
+            return true;
+        },
+        /*
+         * A frame between two jelly steps: each prepared perimeter keeps the
+         * shape of its last step and is laid out around the cell's current
+         * centre, so cells still move smoothly on every frame. The next step
+         * puts it back first (prepareJellyCells).
+         */
+        holdJellyCells: function (
+            cells
+        ) {
+            var frameId =
+                drawRender._jellyFrameId;
+
+            for (
+                var i = 0;
+                i < cells.length;
+                i++
+            ) {
+                var cell =
+                    cells[i];
+
+                if (
+                    !cell ||
+                    cell.removed ||
+                    typeof cell
+                        .placeJellyPoints !==
+                        "function"
+                ) {
+                    continue;
+                }
+
+                try {
+                    cell.placeJellyPoints(cell.x, cell.y);
+                    cell._jellyFrameId = frameId;
+                    /* only a step's own perimeter is put back on the next step */
+                    if (isFinite(cell._lmJellyCX) && isFinite(cell._lmJellyCY)) cell._lmJellyHeld = true;
+                }
+                catch (
+                    jellyHoldError
+                ) {
+                    console.error(
+                        "[JELLY PHYSICS] holdJellyCells failed:",
+                        cell.id,
+                        jellyHoldError
+                    );
+                }
+            }
         },
         updateQuadtree: function (
             cells
@@ -78313,88 +78461,105 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * PASS 1
                      * Build/resize every drawn jelly perimeter.
                      * ───────────────────────────────────────────────────
+                     *
+                     * 60 jelly steps a second (LM.jellyStepDue); a frame
+                     * between two steps only lays the last step's
+                     * perimeters out around the current cell centres.
                      */
+                    var _jellyStep =
+                        LM.jellyStepDue(
+                            this._lmRafTs > 0
+                                ? this._lmRafTs
+                                : performance.now()
+                        );
+
                     LM.prepareJellyCells(
                         LM.cells,
-                        _jellyCells
+                        _jellyCells,
+                        !_jellyStep
                     );
 
 
-                    /*
-                     * ───────────────────────────────────────────────────
-                     * PASS 2
-                     * Build CURRENT-FRAME collision geometry.
-                     * ───────────────────────────────────────────────────
-                     *
-                     * This MUST happen after updateNumPoints() and before
-                     * the first movePoints().
-                     */
-                    try {
-                        if (
-                            _jellyCells.length >
-                            0
-                        ) {
-                            LM.updateQuadtree(
-                                _jellyCells
-                            );
-                        }
-                        else {
-                            LM.clearJellyIndex();
-                        }
+                    if (!_jellyStep) {
+                        LM.holdJellyCells(_jellyCells);
                     }
-                    catch (
-                        jellyQuadtreeError
-                    ) {
-                        LM.clearJellyIndex();
-
-                        console.error(
-                            "[JELLY PHYSICS] quadtree rebuild failed:",
-                            jellyQuadtreeError
-                        );
-                    }
-
-
-                    /*
-                     * ───────────────────────────────────────────────────
-                     * PASS 3
-                     * Simulate each perimeter exactly once.
-                     * ───────────────────────────────────────────────────
-                     */
-
-                    for (
-                        var jellyMoveIndex = 0;
-                        jellyMoveIndex <
-                            _jellyCells.length;
-                        jellyMoveIndex++
-                    ) {
-                        var jellyMoveCell =
-                            _jellyCells[
-                                jellyMoveIndex
-                            ];
-
-                        if (
-                            !jellyMoveCell ||
-                            jellyMoveCell.removed ||
-                            typeof jellyMoveCell
-                                .movePoints !==
-                                "function"
-                        ) {
-                            continue;
-                        }
-
-
+                    else {
+                        /*
+                         * ───────────────────────────────────────────────────
+                         * PASS 2
+                         * Build CURRENT-FRAME collision geometry.
+                         * ───────────────────────────────────────────────────
+                         *
+                         * This MUST happen after updateNumPoints() and before
+                         * the first movePoints().
+                         */
                         try {
-                            jellyMoveCell
-                                .movePoints();
+                            if (
+                                _jellyCells.length >
+                                0
+                            ) {
+                                LM.updateQuadtree(
+                                    _jellyCells
+                                );
+                            }
+                            else {
+                                LM.clearJellyIndex();
+                            }
                         }
                         catch (
-                            jellyMoveError
+                            jellyQuadtreeError
                         ) {
+                            LM.clearJellyIndex();
+
                             console.error(
-                                "[JELLY PHYSICS] movePoints failed:",
-                                jellyMoveCell.id,
-                                jellyMoveError
+                                "[JELLY PHYSICS] quadtree rebuild failed:",
+                                jellyQuadtreeError
                             );
+                        }
+
+
+                        /*
+                         * ───────────────────────────────────────────────────
+                         * PASS 3
+                         * Simulate each perimeter exactly once.
+                         * ───────────────────────────────────────────────────
+                         */
+
+                        for (
+                            var jellyMoveIndex = 0;
+                            jellyMoveIndex <
+                                _jellyCells.length;
+                            jellyMoveIndex++
+                        ) {
+                            var jellyMoveCell =
+                                _jellyCells[
+                                    jellyMoveIndex
+                                ];
+
+                            if (
+                                !jellyMoveCell ||
+                                jellyMoveCell.removed ||
+                                typeof jellyMoveCell
+                                    .movePoints !==
+                                    "function"
+                            ) {
+                                continue;
+                            }
+
+
+                            try {
+                                jellyMoveCell
+                                    .movePoints();
+                            }
+                            catch (
+                                jellyMoveError
+                            ) {
+                                console.error(
+                                    "[JELLY PHYSICS] movePoints failed:",
+                                    jellyMoveCell.id,
+                                    jellyMoveError
+                                );
+                            }
                         }
                     }
 
@@ -82392,6 +82557,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * of every frame callback, also of those the FPS limit skips below */
             var _lmPf = window._lmPerfFrame;
             if (_lmPf) { try { _lmPf.raf(performance.now()); } catch (_lmPfE) { } }
+            /* the frame time requestAnimationFrame passes (jelly step cadence): it follows the
+             * display refresh, the time the callback starts drifts with main thread work */
+            drawRender._lmRafTs = +arguments[0] || 0;
             /* Replay Studio rebuilds a seek or a step backwards in slices: the last frame stays on
              * screen until the world of the target is complete (0 except while a rebuild runs; an
              * end time, so it can never hold the picture for good) */
