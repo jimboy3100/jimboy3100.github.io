@@ -722,13 +722,7 @@
         sp.querySelector('#lm-lbc').addEventListener('change', function () {
             prefs.lbCompact = this.checked;
             savePrefs();
-            /* A4: toggle pointer-events with the setting */
-            var lb = document.getElementById('leaderboard-hud');
-            if (lb) {
-                if (prefs.lbCompact) lb.style.setProperty('pointer-events', 'auto', 'important');
-                else lb.style.removeProperty('pointer-events');
-            }
-            fitLeaderboard();
+            applyLbCompact();
         });
         sp.querySelector('#lm-jrc').addEventListener('change', function () {
             prefs.jsResponseCurve = this.value;
@@ -998,12 +992,7 @@
             buildZoomButtons();
             buildFreeSpecButton();
             syncNetGraph();
-            /* sync leaderboard pointer-events with compact setting */
-            var lb = document.getElementById('leaderboard-hud');
-            if (lb) {
-                if (prefs.lbCompact) lb.style.setProperty('pointer-events', 'auto', 'important');
-                else lb.style.removeProperty('pointer-events');
-            }
+            applyLbCompact();
             applyPrefs();
             repositionButtons();
         }
@@ -1992,6 +1981,24 @@
             if (!lb) return;
             var he = window.LMHudEditor;
             var hudOwns = he && he.owns && he.owns('leaderboard');
+            /* Compact leaderboard (gear panel option): 5 rows, a tap shows 10, then all, then 5 again.
+             * The names (#leaderboard-positions) and the mass/sector column (#leaderboard-data) hide the
+             * same rows. Your own rows stay: your place when you are lower down and the player / bot
+             * count (class "me"; they were hidden from the 6th row on). Done before the fit below, which
+             * measured the full height and drew a compact leaderboard smaller than needed. */
+            var pos = lb.querySelector('#leaderboard-positions');
+            var dta = lb.querySelector('#leaderboard-data');
+            var posRows = pos ? pos.querySelectorAll(':scope > span') : [];
+            var dtaRows = dta ? dta.querySelectorAll(':scope > span') : [];
+            var rowCount = posRows.length;
+            var compactOn = prefs.lbCompact && lb._lmExpanded < 2;
+            var visibleCount = lb._lmExpanded === 1 ? 10 : 5;
+            for (var ri = 0; ri < rowCount; ri++) {
+                var hide = compactOn && ri >= visibleCount && !posRows[ri].classList.contains('me');
+                var dsp = hide ? 'none' : '';
+                if (posRows[ri].style.display !== dsp) posRows[ri].style.display = dsp;
+                if (ri < dtaRows.length && dtaRows[ri].style.display !== dsp) dtaRows[ri].style.display = dsp;
+            }
             /* A4: compact leaderboard applies even when the HUD editor owns position —
              * scaling is skipped but row visibility still applies */
             if (!hudOwns) {
@@ -2017,34 +2024,22 @@
                 var t = 'scale(' + Math.round(s * 1000) / 1000 + ')';
                 if (lb.style.getPropertyValue('transform') !== t) lb.style.setProperty('transform', t, 'important');
             }
-            /* M5: Compact leaderboard — show limited rows, tap to expand.
-             * _lmExpanded cycles: 0 = compact (5 rows), 1 = top 10, 2 = all.
-             * B1: The leaderboard uses <span> inside #leaderboard-positions for
-             * player names and <span class="lb-data"> inside #leaderboard-data
-             * for mass/sector info.  Both columns must be hidden together and
-             * the player/bot totals (the <h5> header) must stay visible. */
-            var pos = lb.querySelector('#leaderboard-positions');
-            var dta = lb.querySelector('#leaderboard-data');
-            var posRows = pos ? pos.querySelectorAll(':scope > span') : [];
-            var dtaRows = dta ? dta.querySelectorAll(':scope > span') : [];
-            var rowCount = posRows.length;
-            if (rowCount > 5) {
-                var compactOn = prefs.lbCompact && lb._lmExpanded < 2;
-                var visibleCount = lb._lmExpanded === 0 ? 5 : (lb._lmExpanded === 1 ? 10 : rowCount);
-                for (var ri = 0; ri < rowCount; ri++) {
-                    var hide = compactOn && ri >= visibleCount;
-                    posRows[ri].style.display = hide ? 'none' : '';
-                    if (ri < dtaRows.length) dtaRows[ri].style.display = hide ? 'none' : '';
-                }
-            }
+        }
+        /* the compact leaderboard preference, from one place (its switch, a settings profile, the start):
+         * with it on a tap on the leaderboard changes its rows, so the leaderboard takes taps then */
+        function applyLbCompact() {
+            var lb = document.getElementById('leaderboard-hud');
+            if (!lb) return;
+            if (prefs.lbCompact) lb.style.setProperty('pointer-events', 'auto', 'important');
+            else lb.style.removeProperty('pointer-events');
+            fitLeaderboard();
         }
         /* M5: Tap leaderboard to toggle compact/expanded */
         (function () {
             var lb = document.getElementById('leaderboard-hud');
             if (!lb) return;
             lb._lmExpanded = 0;
-            /* A4: only enable pointer-events when compact mode is on */
-            if (prefs.lbCompact) lb.style.setProperty('pointer-events', 'auto', 'important');
+            applyLbCompact();
             lb.addEventListener('touchstart', function (e) {
                 if (!prefs.lbCompact) return;
                 e.stopPropagation();
