@@ -208,11 +208,13 @@
         e.type = type; e.t = t; e.t2 = t; e.a = 0; e.peak = 0; e.low = 0; e.nick = null; e.near = null; e.v = false; e.alerted = false;
         return e;
     }
-    /* the newest event of this type still open at 'since' (t2 >= since); nick compared when given */
+    /* the newest event of this type still open at 'since' (t2 >= since); nick compared when given.
+     * Every kept event is looked at: an older one can still be open (its t2 moves on) behind a
+     * newer one that is over, e.g. eats of one player around a split */
     function evFind(type, since, nick, virus) {
         for (var k = 0; k < evLen; k++) {
             var e = EV[(evHead - 1 - k + EV_CAP * 2) % EV_CAP];
-            if (e.t2 < since) return null;
+            if (e.t2 < since) continue;
             if (e.type === type && (nick === undefined || (e.nick === nick && e.v === !!virus))) return e;
         }
         return null;

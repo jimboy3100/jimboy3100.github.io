@@ -217,6 +217,23 @@ check('far and small cells are not "near"', last.nick == null, last);
 ctx.legendmod5.gameOverStats = false; ctx.legendmod5.massLossAlert = false; D.sync();
 check('off again: listeners removed, flag off', !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false);
 
+/* kill feed: the eats of one player's cells add up while they go on, also when a split (or another
+ * event) came between them; the line went back to the last eat alone once that split was over 2 s old */
+{
+  ctx.legendmod5.killFeed = true; D.sync(); D._test.reset();
+  lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0]];
+  listeners.spawn[0]({ time: now });
+  now += 250; D._test.tick();
+  D.eat(lm.playerCells[0], { size: 300, targetNick: 'Chain' }, true, false, 300);
+  now += 1000; lm.playerCells = [own(0, 1060), own(300, 1060)]; D._test.tick();
+  now += 500; D.eat(lm.playerCells[0], { size: 300, targetNick: 'Chain' }, true, false, 300);
+  now += 1700; D.eat(lm.playerCells[1], { size: 300, targetNick: 'Chain' }, true, false, 300);
+  const fl = feedLines();
+  check('kill feed: three eats of one player across a split add up', fl[fl.length - 1] === T('feedAte', ['Chain', '2,700']), fl);
+  lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
+  ctx.legendmod5.killFeed = false; D.sync();
+}
+
 /* who ate me (ogario.v4.js lmKillerWanted): one rule for the server's report, the remove packets
  * and the guard against naming my own multibox unit; the Game Over card (which shows Eaten by and
  * the death recap: one switch, no switch per part), the match history and the kill feed each need it */
