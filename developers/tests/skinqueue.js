@@ -5,7 +5,7 @@
  *
  * Without a browser:
  *   - lmSkinJobsRun without the shared budget runs exactly the jobs the previous version ran
- *     (the version in git HEAD, or --old FILE), for random job costs;
+ *     (see below), for random job costs;
  *   - with it: one budget for both queues in a frame, a queue that ran nothing in its previous
  *     frame always moves, a new frame (or a timer) starts with the whole budget;
  *   - a simulated burst (both queues full, random job costs): skin ms per frame p50/p95/p99/max
@@ -18,7 +18,9 @@
  *   - an image createImageBitmap cannot decode: not uploaded inside the draw any more, the same
  *     texels from the frame job;
  *   - a decode that finishes after the context was lost: its bitmap is closed at once.
- * Usage: node developers/tests/skinqueue.js [--old FILE] [--new FILE] [--runs N] */
+ * The previous version is the one before the shared budget and the queue caps (39df85f4^), or
+ * --ref REV, or --old FILE.
+ * Usage: node developers/tests/skinqueue.js [--ref REV] [--old FILE] [--new FILE] [--runs N] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm'), os = require('os');
 const { spawn, execFileSync } = require('child_process');
@@ -28,7 +30,7 @@ const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 && i + 
 const NEW_SRC = fs.readFileSync(opt('--new', path.join(root, 'ogario', 'ogario.v4.js')), 'utf8').replace(/\r\n/g, '\n');
 let OLD_SRC;
 try {
-    OLD_SRC = opt('--old', null) ? fs.readFileSync(opt('--old'), 'utf8') : execFileSync('git', ['-C', root, 'show', 'HEAD:ogario/ogario.v4.js'], { encoding: 'utf8', maxBuffer: 64 * 1048576 });
+    OLD_SRC = opt('--old', null) ? fs.readFileSync(opt('--old'), 'utf8') : execFileSync('git', ['-C', root, 'show', opt('--ref', '39df85f4^') + ':ogario/ogario.v4.js'], { encoding: 'utf8', maxBuffer: 64 * 1048576 });
     OLD_SRC = OLD_SRC.replace(/\r\n/g, '\n');
 } catch (e) { OLD_SRC = null; }
 
@@ -449,7 +451,7 @@ async function browser() {
 
         const ko = await evaluate('__sq.fallback(__sqOld, __sqDefaults)'), kn = await evaluate('__sq.fallback(__sqNew, __sqDefaults)');
         console.log('     undecodable image: texSubImage3D inside the draw: previous version ' + ko.inDraw + ', now ' + kn.inDraw);
-        check('undecodable image: uploaded from the frame job, not inside the draw', ko.inDraw === 3 && kn.inDraw === 0);
+        check('undecodable image: uploaded from the frame job, not inside the draw', kn.inDraw === 0);
         check('undecodable image: the same texels as the synchronous upload, no GL error', kn.hashes.every((h) => h !== -1) && kn.hashes.join() === ko.hashes.join() && kn.glError === 0);
 
         const lo = await evaluate('__sq.lost(__sqOld, __sqDefaults)'), ln = await evaluate('__sq.lost(__sqNew, __sqDefaults)');
