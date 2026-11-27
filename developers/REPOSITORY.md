@@ -50,6 +50,6 @@ site and Delta may load any of them by that URL.
 5. The git history is the archive. Do not keep historical copies, snapshots of other clients or scratch code
    in the tree "for reference", and do not create new repositories for them.
 6. Never delete: `agario/live/`, the generated language packs and their sources, `languages/LanguagePack*.js`,
-   the redirect pages (`skins/skins.html`, `skins3.html`, `skinsworking.html`, `extras/website/index.html`),
+   the redirect pages (`skins/skins.html`, `skins/skins3.html`, `skins/skinsworking.html`, `extras/website/index.html`),
    the extension zips, `LMexpress/mobileApp/`, `knowledge/`, `llms*.txt`, `.well-known/`, `CNAME` and the
    verification files.

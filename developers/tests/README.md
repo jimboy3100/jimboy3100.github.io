@@ -58,6 +58,8 @@ runs in Node (`node developers/tests/<name>.js`) and must exit 0 before a commit
   `defect: true` = still to fix). `--list` prints every reference to a missing file as JSON, `--comments`
   the ones in comments, `--no-cross` skips the other repositories.
 - `audit.js`: the audit tool itself, on small inputs and on a throw-away git repository.
+- `repodoc.js`: every path `developers/REPOSITORY.md` names (the folders, the files kept on purpose, the
+  ones never to delete) is a tracked path, so its deletion rules point at the real files.
 
 ## Repository audit (before deleting or moving files)
 
