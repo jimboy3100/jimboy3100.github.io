@@ -4848,6 +4848,24 @@
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconLcclanpic1.png",
+      "canonicalPath": "banners/Lcclan6.png",
+      "reason": "Byte-identical copy of banners/Lcclan6.png. Its only user, the Legend Clan slideshow (extras/LcHistory/LcSlideshow.html, shown on Lc/Lc.html next to the gallery that shows Lcclan6.png), now loads Lcclan6.png, so the clan page downloads the picture once. The file stays published for links from outside until its public URL is no longer needed.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": true,
+      "approvedForDeletion": false
+    },
+    {
+      "oldPath": "banners/Lcclan11.jpg",
+      "canonicalPath": "banners/iconLcclanpic2.jpg",
+      "reason": "Byte-identical copy of banners/iconLcclanpic2.jpg (the Legend Clan slideshow picture). Its only user, the old clan page copy Lc/PROJETOX.HTML/original/lc.html, now loads iconLcclanpic2.jpg. The file stays published for links from outside until its public URL is no longer needed.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": true,
+      "approvedForDeletion": false
     }
   ]
 }

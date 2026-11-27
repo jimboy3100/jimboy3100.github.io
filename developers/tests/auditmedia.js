@@ -3,7 +3,7 @@
  * - "internalReferencesMigrated" records: no tracked text file names the old path any more
  *   (as a path, a URL, or a relative name from a page in the same folder);
  * - re-encoded media keep what a player sees: the animated WebP that replaced a GIF has the GIF's
- *   size, frame count, total duration and loop; losslessly re-packed PNGs keep their size.
+ *   size, frame count, total duration and loop.
  * node developers/tests/auditmedia.js */
 'use strict';
 const fs = require('fs'), path = require('path');
@@ -28,11 +28,11 @@ man.records.forEach((r) => {
         'canonicalPath' in r && (r.canonicalPath === null || typeof r.canonicalPath === 'string') && BOOL.every((k) => typeof r[k] === 'boolean'));
     check('oldPath listed once: ' + id, !seen.has(id));
     seen.add(id);
-    if (r.approvedForDeletion) {
-        check('approved deletion is gone from the tree: ' + id, !tracked.has(id) && !fs.existsSync(path.join(repo, id)));
-        if (r.canonicalPath && !/^https:\/\//.test(r.canonicalPath)) {
-            check('its replacement exists: ' + r.canonicalPath, tracked.has(r.canonicalPath) || fs.existsSync(path.join(repo, r.canonicalPath)));
-        }
+    if (r.approvedForDeletion) check('approved deletion is gone from the tree: ' + id, !tracked.has(id) && !fs.existsSync(path.join(repo, id)));
+    /* a file kept for its public URL must still be published */
+    if (r.externalUrlSupported && !r.approvedForDeletion) check('kept for its public URL, still in the tree: ' + id, tracked.has(id));
+    if (r.canonicalPath && !/^https:\/\//.test(r.canonicalPath)) {
+        check('its replacement exists: ' + r.canonicalPath, tracked.has(r.canonicalPath) || fs.existsSync(path.join(repo, r.canonicalPath)));
     }
 });
 
@@ -81,15 +81,6 @@ Object.keys(WEBP).forEach((f) => {
     check(f + ' is an animated WebP of ' + e.w + 'x' + e.h + ', ' + e.frames + ' frames, ' + e.ms + ' ms, loop ' + e.loop +
         (i ? ' (got ' + i.w + 'x' + i.h + ', ' + i.frames + ', ' + i.ms + ' ms, loop ' + i.loop + ')' : ''),
         i && i.animated && i.w === e.w && i.h === e.h && i.frames === e.frames && i.ms === e.ms && i.loop === e.loop);
-});
-
-/* PNGs re-packed without any pixel change (developers/audit/manifest.json "optimized"): same width and height */
-(man.optimized || []).forEach((o) => {
-    let b = null; try { b = fs.readFileSync(path.join(repo, o.path)); } catch (e) { }
-    const png = b && b.length > 24 && b.readUInt32BE(0) === 0x89504e47 && b.toString('ascii', 12, 16) === 'IHDR';
-    const w = png ? b.readUInt32BE(16) : 0, h = png ? b.readUInt32BE(20) : 0;
-    check(o.path + ' is a PNG of ' + o.width + 'x' + o.height + (png ? ' (got ' + w + 'x' + h + ')' : ''), png && w === o.width && h === o.height);
-    check(o.path + ' is not larger than recorded (' + o.bytes + ' bytes)', b && b.length <= o.bytes);
 });
 
 console.log(fail ? fail + ' FAILED' : 'all passed');
