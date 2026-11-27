@@ -751,23 +751,27 @@
         smallR.appendChild(bDbl);
         smallR.appendChild(b16);
         /* optional multibox swap (Tab on desktop): adds the second player, then swaps focus */
-        var bMb = null;
+        var bMb = null, _mbShown = null, _mbListen = false;
+        /* Active player indicator: P1 / P2 while a multibox unit exists, else the swap sign. The swap
+         * event comes for every change of the unit you control; the last unit closing while the main
+         * player has control sends none, so the 500 ms button timer (syncAiPause) checks it too. */
+        function syncMbIndicator() {
+            if (!bMb) return;
+            var lm = window.legendmod, p = window.multiboxPlayerEnabled ? 2 : 1;
+            var want = lm && lm.multiBoxPlayerExists ? 'P' + p : '\u21C4';
+            if (want === _mbShown && bMb.textContent === want) return;
+            _mbShown = want;
+            bMb.textContent = want;
+            bMb.style.borderColor = want === '\u21C4' ? '' : p === 1 ? 'rgba(1,217,204,.6)' : 'rgba(255,165,0,.6)';
+        }
         function buildMbButton() {
             if (bMb && bMb.parentNode) bMb.parentNode.removeChild(bMb);
-            bMb = null;
+            bMb = null; _mbShown = null;
             if (!prefs.mbButton) return;
             bMb = mkd('\u21C4');
-            /* Active player indicator: show P1/P2 and change border color */
-            function syncMbIndicator() {
-                if (!bMb) return;
-                var p = (typeof window !== 'undefined' && window.multiboxPlayerEnabled) ? 2 : 1;
-                var exists = typeof window.legendmod !== 'undefined' && window.legendmod && window.legendmod.multiBoxPlayerExists;
-                if (!exists) { bMb.textContent = '\u21C4'; bMb.style.borderColor = ''; return; }
-                bMb.textContent = 'P' + p;
-                bMb.style.borderColor = p === 1 ? 'rgba(1,217,204,.6)' : 'rgba(255,165,0,.6)';
-            }
-            /* listen for multibox swap events if LMEvents exists */
-            if (typeof window.LMEvents !== 'undefined' && window.LMEvents && typeof window.LMEvents.on === 'function') {
+            /* one listener for every rebuild (each settings change or profile added another one) */
+            if (!_mbListen && window.LMEvents && typeof window.LMEvents.on === 'function') {
+                _mbListen = true;
                 window.LMEvents.on('multiboxSwap', syncMbIndicator);
             }
             bMb.addEventListener('touchstart', function (e) {
@@ -1151,7 +1155,7 @@
             return !!(rb && rb.style.display !== 'none' && rb.getClientRects().length);
         }
         /* background timers skip work while the tab is hidden */
-        setInterval(function () { if (!document.hidden) syncAiPause(); }, 500);
+        setInterval(function () { if (!document.hidden) { syncAiPause(); syncMbIndicator(); } }, 500);
 
         /* ═══════════════════════════════════════════════════════
          *  PAUSE — calls application.setPause()
