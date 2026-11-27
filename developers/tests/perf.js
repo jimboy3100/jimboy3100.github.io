@@ -431,7 +431,12 @@ check('packet gap listed when world updates come back', lp.ctx.LMPerf.events().s
 lp.ctx.legendmod._lmLastWorldUpdate = Date.now() - 2000; lp.tick(16.7);
 lp.ctx.legendmod._lmLastWorldUpdate = Date.now() - 3500; lp.tick(16.7);
 check('latched again by a new stall', !!lp.dr._lmFreezeLogged && !!lp.dr._lmStallLogged && lp.dr._lmStallMax >= 3500);
+const gapsBefore = lp.ctx.LMPerf.events().filter(e => e.type === 'packet gap').length;
 lp.ctx.legendmod._lmResetFreezeDetector();
+const gapsAfter = lp.ctx.LMPerf.events().filter(e => e.type === 'packet gap');
+check('a packet gap still open at close / server change is listed, not lost', gapsAfter.length === gapsBefore + 1 && gapsAfter[gapsAfter.length - 1].dur >= 3500);
+lp.ctx.legendmod._lmResetFreezeDetector();
+check('a second reset lists nothing more', lp.ctx.LMPerf.events().filter(e => e.type === 'packet gap').length === gapsBefore + 1);
 check('reset on connect / close: latches and the last update time cleared', !lp.dr._lmFreezeLogged && !lp.dr._lmStallLogged && !lp.dr._lmStallMax && lp.ctx.legendmod._lmLastWorldUpdate === 0);
 check('ogario calls the reset on open and on close', (v4.match(/if \(this === window\.legendmod\) this\._lmResetFreezeDetector\(\);/g) || []).length === 2);
 

@@ -41525,6 +41525,14 @@ function thelegendmodproject() {
         /* Freeze detector (drawRender.render): a new connection or a closed one starts it again,
          * so the last world update and the latches of the previous server do not carry over */
         _lmResetFreezeDetector() {
+            /* a packet gap still open when the connection closes or changes was never listed
+             * (it is listed only when world updates come back): list it with its time up to now */
+            if (window.drawRender && drawRender._lmStallMax && this._lmLastWorldUpdate) {
+                var _lmGap = Math.max(drawRender._lmStallMax, Date.now() - this._lmLastWorldUpdate);
+                if (_lmGap >= 250 && window.LMPerf && window.LMPerf.event) {
+                    try { window.LMPerf.event('packet gap', _lmGap, 'no world update' + (this.play ? ', playing' : '')); } catch (_lmEvE) { }
+                }
+            }
             this._lmLastWorldUpdate = 0;
             if (window.drawRender) {
                 drawRender._lmStallLogged = 0;
