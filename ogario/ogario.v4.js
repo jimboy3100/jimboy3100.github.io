@@ -48870,24 +48870,24 @@ function thelegendmodproject() {
 
             /* Stat rows data */
             var stats = [
-                { icon: '💀', label: _lmTH('finalMass', ''),       value: fmtMass(u.finalMass),        accent: true },
-                { icon: '👑', label: _lmTH('highestMass', ''),     value: fmtMass(u.highestMass),       accent: true },
-                { icon: '🏆', label: _lmTH('topPosition', ''),     value: u.topPosition ? '#' + u.topPosition : '—' },
-                { icon: '📍', label: _lmTH('finalPosition', ''),   value: u.finalPosition ? '#' + u.finalPosition : '—' },
-                { icon: '⏱️', label: _lmTH('timeAlive', ''),       value: fmtTime(u.timeTotal || u.longestTimeAlive) },
-                { icon: '📊', label: _lmTH('timeOnLb', ''),       value: fmtTime(u.timeInLeaderboard) },
-                { icon: '🍽️', label: _lmTH('massConsumed', ''),    value: fmtMass(u.massConsumed) },
-                { icon: '🔵', label: _lmTH('foodEaten', ''),       value: (u.foodEaten || 0).toLocaleString() },
-                { icon: '⚔️', label: _lmTH('playersEaten', ''),    value: (u.playersEaten || 0).toLocaleString() },
-                { icon: '🟢', label: _lmTH('cellsEaten', ''),      value: (u.normalCellsEaten || 0).toLocaleString() },
-                { icon: '🦠', label: _lmTH('virusesEaten', ''),    value: (u.virusesEaten || 0).toLocaleString() }
+                { icon: '💀', k: 'finalMass', label: _lmTH('finalMass', ''),       value: fmtMass(u.finalMass),        accent: true },
+                { icon: '👑', k: 'highestMass', label: _lmTH('highestMass', ''),     value: fmtMass(u.highestMass),       accent: true },
+                { icon: '🏆', k: 'topPosition', label: _lmTH('topPosition', ''),     value: u.topPosition ? '#' + u.topPosition : '—' },
+                { icon: '📍', k: 'finalPosition', label: _lmTH('finalPosition', ''),   value: u.finalPosition ? '#' + u.finalPosition : '—' },
+                { icon: '⏱️', k: 'timeAlive', label: _lmTH('timeAlive', ''),       value: fmtTime(u.timeTotal || u.longestTimeAlive) },
+                { icon: '📊', k: 'timeOnLb', label: _lmTH('timeOnLb', ''),       value: fmtTime(u.timeInLeaderboard) },
+                { icon: '🍽️', k: 'massConsumed', label: _lmTH('massConsumed', ''),    value: fmtMass(u.massConsumed) },
+                { icon: '🔵', k: 'foodEaten', label: _lmTH('foodEaten', ''),       value: (u.foodEaten || 0).toLocaleString() },
+                { icon: '⚔️', k: 'playersEaten', label: _lmTH('playersEaten', ''),    value: (u.playersEaten || 0).toLocaleString() },
+                { icon: '🟢', k: 'cellsEaten', label: _lmTH('cellsEaten', ''),      value: (u.normalCellsEaten || 0).toLocaleString() },
+                { icon: '🦠', k: 'virusesEaten', label: _lmTH('virusesEaten', ''),    value: (u.virusesEaten || 0).toLocaleString() }
             ];
 
             /* who ate the last cell, when known (recorded in the eat loop, at most 15 s ago) */
             var _lmK = this._lmKiller;
             if (_lmK && Date.now() - _lmK.at < 15000) {
                 var _lmKName = _lmK.virus ? _lmTH('game2.virus', '') : (_lmK.nick ? application.escapeHTML(_lmK.nick) : _lmTH('game2.unnamedCell', ''));
-                stats.unshift({ icon: '\ud83d\udde1\ufe0f', label: _lmTH('eatenBy', ''), value: _lmKName + (_lmK.virus ? '' : ' (' + fmtMass(_lmK.mass) + ')'), accent: true });
+                stats.unshift({ icon: '\ud83d\udde1\ufe0f', k: 'eatenBy', label: _lmTH('eatenBy', ''), value: _lmKName + (_lmK.virus ? '' : ' (' + fmtMass(_lmK.mass) + ')'), accent: true });
             }
             /* "Watch killer": only when the server sent the eating cell's id (lmKiller field 5) */
             var _lmKWatch = _lmK && Date.now() - _lmK.at < 15000 && _lmK.cellId && !_lmK.virus;
@@ -48901,7 +48901,8 @@ function thelegendmodproject() {
                 var delay = (i * 0.06).toFixed(2);
                 rows += '<div class="lm-go-row" style="animation-delay:' + delay + 's">' +
                     '<span class="lm-go-icon">' + s.icon + '</span>' +
-                    '<span class="lm-go-label">' + s.label + '</span>' +
+                    /* data-i18n: the card follows a language change while it is open */
+                    '<span class="lm-go-label"' + (s.k ? ' data-i18n="' + s.k + '"' : '') + '>' + s.label + '</span>' +
                     '<span class="lm-go-value" style="color:' + valColor + '">' + s.value + '</span>' +
                     '</div>';
             }
@@ -48933,28 +48934,28 @@ function thelegendmodproject() {
                 ' onmouseover="this.style.color=\'' + mc + '\';this.style.background=\'rgba(255,255,255,0.1)\'"' +
                 ' onmouseout="this.style.color=\'' + tc2 + '\';this.style.background=\'rgba(255,255,255,0.05)\'"' +
                 '>✕</div>' +
-                '<div id="lm-go-copy" title="' + _lmTH('copyStats', '') + '" style="' +
+                '<div id="lm-go-copy" data-i18n-title="copyStats" title="' + _lmTH('copyStats', '') + '" style="' +
                 'position:absolute;top:8px;left:12px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
                 'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);">📋</div>' +
-                '<div id="lm-go-share" title="' + _lmTH('shareStats', '') + '" style="' +
+                '<div id="lm-go-share" data-i18n-title="shareStats" title="' + _lmTH('shareStats', '') + '" style="' +
                 'position:absolute;top:8px;left:40px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
                 'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);">\ud83d\udd17</div>' + // i18n-ok: an icon
-                '<div id="lm-go-dlcard" title="' + _lmTH('game2.downloadCard', '') + '" style="' +
+                '<div id="lm-go-dlcard" data-i18n-title="game2.downloadCard" title="' + _lmTH('game2.downloadCard', '') + '" style="' +
                 'position:absolute;top:8px;left:68px;cursor:pointer;' +
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
                 'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);">📸</div>' +
                 '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
-                '☠️ ' + _lmTH('gameOver', '') + '</div>' +
+                '☠️ ' + '<span data-i18n="gameOver">' + _lmTH('gameOver', '') + '</span></div>' +
                 '</div>' +
 
                 /* Stats */
                 '<div style="padding:8px 12px 12px;">' + rows + '</div>' +
-                (_lmKWatch ? '<div style="padding:0 12px 10px;text-align:center;"><button id="lm-go-watch" type="button" style="background:' + mc + ';color:var(--lm-btn-tc,#fff);border:0;border-radius:var(--lm-radius-s,4px);padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udc41\ufe0f ' + _lmTH('watchKiller', '') + '</button></div>' : '') + // i18n-ok: an icon before the translated label
+                (_lmKWatch ? '<div style="padding:0 12px 10px;text-align:center;"><button id="lm-go-watch" type="button" style="background:' + mc + ';color:var(--lm-btn-tc,#fff);border:0;border-radius:var(--lm-radius-s,4px);padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udc41\ufe0f <span data-i18n="watchKiller">' + _lmTH('watchKiller', '') + '</span></button></div>' : '') + // i18n-ok: an icon before the translated label
                 (_lmGraph ? '<div style="padding:0 12px 12px;"><canvas id="lm-go-graph" width="276" height="60" style="width:276px;height:60px;display:block;max-width:100%;border-radius:var(--lm-radius-s,4px);background:rgba(0,0,0,0.2);"></canvas></div>' : '') +
 
                 /* referral link (hidden on very small viewports to keep card compact); sharing the
@@ -48974,7 +48975,7 @@ function thelegendmodproject() {
                 'flex:1;background:transparent;border:0;color:' + tc2 + ';' +
                 'font-size:10px;font-family:monospace;cursor:pointer;outline:0;' +
                 'overflow:hidden;text-overflow:ellipsis;" value="">' +
-                '<span style="font-size:10px;color:' + mc + ';font-weight:700;white-space:nowrap;">' + _lmTH('game2.copy', '') + '</span>' +
+                '<span style="font-size:10px;color:' + mc + ';font-weight:700;white-space:nowrap;" data-i18n="game2.copy">' + _lmTH('game2.copy', '') + '</span>' +
                 '</div></div>' +
                 '</div>' + /* close .lm-go-extra */
 
