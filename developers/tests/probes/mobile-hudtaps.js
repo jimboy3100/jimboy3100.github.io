@@ -36,6 +36,28 @@
       if (t && (mm.contains(t) || lb.contains(t))) hits.push(s.id);
     });
     if (hits.length) fail.push('menu open: the minimap or leaderboard is over ' + hits.join(','));
+    /* a two-finger pinch on the open menu changes the HUD scale of the game HUD too (--lm-hud-scale)
+     * and saves it; up to 3.702 only the menu followed and nothing saved it */
+    var keepTheme = null; try { keepTheme = localStorage.getItem('ogarioThemeSettings'); } catch (e) { }
+    var hs0 = defaultSettings.hudScale;
+    try {
+      var tch = function (id, x) { return new Touch({ identifier: id, target: ov, clientX: x, clientY: 200 }); };
+      var fire = function (type, a, b) { var l = [tch(1, a), tch(2, b)]; ov.dispatchEvent(new TouchEvent(type, { touches: l, targetTouches: l, changedTouches: l, bubbles: true, cancelable: true })); };
+      fire('touchstart', 300, 400);
+      for (var px = 1; px <= 10; px++) fire('touchmove', 300 + px * 5, 400 - px * 5);
+      ov.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [tch(1, 350), tch(2, 350)], bubbles: true }));
+      var cssHs = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--lm-hud-scale'));
+      info.pinch = { from: hs0, to: defaultSettings.hudScale, shown: window.lmHudScale && window.lmHudScale(), css: cssHs };
+      if (!(defaultSettings.hudScale < hs0)) fail.push('menu pinch did not change hudScale');
+      else if (!(Math.abs(cssHs - window.lmHudScale()) < 0.005)) fail.push('menu pinch: the game HUD scale is ' + cssHs + ', the shown scale ' + window.lmHudScale());
+      await sleep(800);
+      var saved = null; try { saved = JSON.parse(localStorage.getItem('ogarioThemeSettings') || 'null'); } catch (e) { }
+      if (!saved || Math.abs(saved.hudScale - defaultSettings.hudScale) > 1e-9) fail.push('menu pinch: the HUD scale was not saved (' + (saved && saved.hudScale) + ')');
+    } finally {
+      defaultSettings.hudScale = hs0; if (window.ogario) ogario.hudScale = hs0;
+      if (window.Settings && Settings.setHudScale) Settings.setHudScale();
+      try { if (keepTheme === null) localStorage.removeItem('ogarioThemeSettings'); else localStorage.setItem('ogarioThemeSettings', keepTheme); } catch (e) { }
+    }
     app.hideMenu();
     for (var w2 = 0; w2 < 20 && document.body.classList.contains('lm-menu'); w2++) await sleep(100);
     await sleep(100);

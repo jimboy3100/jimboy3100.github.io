@@ -1645,6 +1645,7 @@
         }, { passive: false });
 
         /* ── HUD scale mode (menu open) ── */
+        var hudSaveT = 0;
         function hudPinch(delta) {
             var step = delta * 0.003;
             if (typeof defaultSettings !== 'undefined' && defaultSettings.hudScale !== undefined) {
@@ -1654,7 +1655,16 @@
                 var ns = Math.min(1, Math.max(0.3, cur + step));
                 defaultSettings.hudScale = ns;
                 if (typeof ogario !== 'undefined') ogario.hudScale = ns;
-                if (window.lmMenuFit && window.lmMenuFit.queue) window.lmMenuFit.queue(); /* once per frame while pinching */
+                /* the Theme > HUD scale path: the in-game HUD follows (only the menu did) and the value
+                 * is saved (it was lost on reload unless another theme change saved it) */
+                var S = window.Settings;
+                if (S && typeof S.setHudScale === 'function') S.setHudScale(); /* queues the menu fit */
+                else if (window.lmMenuFit && window.lmMenuFit.queue) window.lmMenuFit.queue(); /* once per frame while pinching */
+                var sl = document.getElementById('hudScale-slider'), sv = document.getElementById('hudScale-value');
+                if (sl) sl.value = ns;
+                if (sv) sv.textContent = String(Math.round(ns * 100) / 100);
+                clearTimeout(hudSaveT);
+                hudSaveT = setTimeout(function () { if (S && typeof S.saveThemeSettings === 'function') S.saveThemeSettings(); }, 600);
                 zP.textContent = '🔍 ' + T('misc.mobile.hudZoom', [Math.round(ns * 100)]);
             }
         }
