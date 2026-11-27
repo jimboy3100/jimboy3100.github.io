@@ -51,7 +51,8 @@ function boot() {
     vm.runInContext([overhead ? overhead[0] : '', fn('lmRecRoom'), fn('lmRecPacketBytes'), fn('lmRecByteBudget'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'), fn('lmRecFreeMemory'),
         (block('window._lmRecBudgetCheck = function') || '') + ';',
         (block('window._lmRecKeepOnClear = function') || '') + ';', (block('window._lmRecClearMemory = function') || '') + ';',
-        'function setRec(checked) {\n' + caseBody + '\n}',
+        /* like setSettings: the value it had, then the new one stored, then the case */
+        'function setRec(checked) {\nvar _lmSetWas = defaultmapsettings.recordReplays;\ndefaultmapsettings.recordReplays = checked;\n' + caseBody + '\n}',
         'function recordPacket(data) { var _recServerToken;\n' + pkt + '\n}'].join('\n'), ctx);
     /* 3 older recordings and the one of this connection */
     ctx.RecordedProtocol = [];
@@ -83,7 +84,6 @@ const pk = () => new DataView(new ArrayBuffer(8));
 {
     const { ctx, toasts } = boot();
     ctx.legendmod.playingReplayServer = 'old2';
-    ctx.defaultmapsettings.recordReplays = false;
     ctx.setRec(false);
     check('off: all recordings stay in memory', ctx.RecordedProtocolArenas.join() === 'old1,old2,old3,live' && ['old1', 'old2', 'old3', 'live'].every(k => ctx.RecordedProtocol[k] && ctx.RecordedProtocol[k].length === 20));
     check('off: their details stay', ['old1', 'old2', 'old3', 'live'].every(k => Array.isArray(ctx.RecordedArenasSpecifications[k])));
@@ -91,7 +91,6 @@ const pk = () => new DataView(new ArrayBuffer(8));
     ctx.recordPacket(pk());
     check('off: no new packets', (ctx.RecordedProtocol.live || []).length === 20);
     /* back on during the same connection: no resumed recording with a gap */
-    ctx.defaultmapsettings.recordReplays = true;
     ctx.setRec(true);
     ctx.recordPacket(pk());
     check('on again: this connection stays unrecorded (no gap)', (ctx.RecordedProtocol.live || []).length === 20);
@@ -110,7 +109,6 @@ const pk = () => new DataView(new ArrayBuffer(8));
     ctx.reconnect();
     ctx.recordPacket(pk());
     check('joined while off: nothing recorded', ctx.RecordedProtocol.next.length === 0 && !ctx.RecordedProtocol.next._lm);
-    ctx.defaultmapsettings.recordReplays = true;
     ctx.setRec(true);
     ctx.recordPacket(pk()); ctx.recordPacket(pk());
     check('joined while off, switched on: no packets from the middle of the connection (' + ctx.RecordedProtocol.next.length + ')', ctx.RecordedProtocol.next.length === 0);
@@ -123,19 +121,44 @@ const pk = () => new DataView(new ArrayBuffer(8));
 }
 
 /* a press of the Settings switch sends the old value first (Switchery in a label), then the new
- * one: switching on says only that the next server is recorded, not also "no longer recorded" */
+ * one: each press gives the notice of what it did, once */
+{
+    const { ctx, toasts } = boot();
+    const press = (v) => { const n = toasts.length; ctx.setRec(!v); ctx.setRec(v); return toasts.slice(n).map(t => t[1]); };
+    let t = press(false);
+    check('switch off: told once (' + t.join(' | ') + ')', t.length === 1 && /not recorded/i.test(t[0]));
+    t = press(true);
+    check('switch on: only the next-server notice (' + t.join(' | ') + ')', t.length === 1 && /next server/i.test(t[0]));
+    ctx.recordPacket(pk());
+    check('switch on: this connection stays unrecorded', ctx.RecordedProtocol.live.length === 20);
+    t = press(false);
+    check('switch off again in the same game: told it is not recorded, not "next server" (' + t.join(' | ') + ')', t.length === 1 && /not recorded/i.test(t[0]));
+    t = press(true);
+    check('switch on again: only the next-server notice (' + t.join(' | ') + ')', t.length === 1 && /next server/i.test(t[0]));
+    /* a script or settings profile giving the value it already has: no notice */
+    const n = toasts.length;
+    ctx.setRec(true);
+    check('the same value again: no notice', toasts.length === n);
+}
+/* joined with recording off, switched on, then off again: the off press says so */
 {
     const { ctx, toasts } = boot();
     ctx.defaultmapsettings.recordReplays = false;
+    ctx.reconnect();
+    const press = (v) => { const n = toasts.length; ctx.setRec(!v); ctx.setRec(v); return toasts.slice(n).map(t => t[1]); };
+    let t = press(true);
+    check('joined off, switch on: the next-server notice (' + t.join(' | ') + ')', t.length === 1 && /next server/i.test(t[0]));
+    t = press(false);
+    check('joined off, on, off: told it is not recorded, not "next server" (' + t.join(' | ') + ')', t.length === 1 && /not recorded/i.test(t[0]));
+}
+/* the memory budget stopped this recording, then the switch is turned off: it says so */
+{
+    const { ctx, toasts } = boot();
+    ctx._lmRecFull = true;
+    const n = toasts.length;
     ctx.setRec(true); ctx.setRec(false);
-    const offToasts = toasts.length;
-    check('switch off: told once', offToasts === 1 && /not recorded/i.test(toasts[0][1]));
-    ctx.defaultmapsettings.recordReplays = true;
-    ctx.setRec(false); ctx.setRec(true);
-    const onT = toasts.slice(offToasts).map(t => t[1]);
-    check('switch on: only the next-server notice (' + onT.join(' | ') + ')', onT.length === 1 && /next server/i.test(onT[0]));
-    ctx.recordPacket(pk());
-    check('switch on: this connection stays unrecorded', ctx.RecordedProtocol.live.length === 20);
+    const t = toasts.slice(n).map(x => x[1]);
+    check('memory full, switch off: told it is not recorded, not "next server" (' + t.join(' | ') + ')', t.length === 1 && /not recorded/i.test(t[0]));
 }
 
 /* the explicit clear */
@@ -152,7 +175,6 @@ const pk = () => new DataView(new ArrayBuffer(8));
         check('clear: frees the others (' + n + ')', n === 1 && !ctx.RecordedProtocol.old3 && !ctx.RecordedArenasSpecifications.old3);
         check('clear: keeps the playing, the saving and the live recording', ctx.RecordedProtocolArenas.join() === 'old1,old2,live');
         check('clear: says how many were freed', toasts.some(t => t[0] === 'success' && /1/.test(t[1])));
-        ctx.defaultmapsettings.recordReplays = false;
         ctx.setRec(false);
         ctx.RecordedProtocol.old2._lmSaving = false;
         ctx.legendmod.playingReplayServer = null;

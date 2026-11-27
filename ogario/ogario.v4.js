@@ -25360,6 +25360,9 @@ function thelegendmodproject() {
                 /* ... and over the copy Performance mode keeps (after the adaptive values are back) */
                 this._lmPerfModeOwn(id, checked);
                 //switch (defaultmapsettings[id] = checked, ogario.hasOwnProperty(id) && (ogario[id] = checked), id) {
+                /* the value before this call: a press of a Settings switch sends its old value first
+                 * (Switchery in a label), so a notice is given only for a real change */
+                var _lmSetWas = defaultmapsettings[id];
                 defaultmapsettings[id] = checked;
                 if (ogario.hasOwnProperty(id)) {
                     ogario[id] = checked;
@@ -25416,10 +25419,9 @@ function thelegendmodproject() {
                          * (_lmRecFull, reset by connect()), so switching back on does not resume it
                          * with a gap: a new recording starts with the next connection. */
                         if (!checked && window.RecordedProtocol && window.temporaryRecordedProtocol && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
-                            /* told only when it stops here: a press of the Settings switch sends the
-                             * old value first (Switchery in a label), so switching on came here too
-                             * and said "not recorded any more" next to "recorded again" */
-                            if (!window._lmRecFull && window.toastr) toastr.info(lmT('game1.rec.off'));
+                            /* told only when it was on (_lmSetWas): the old value a switch press sends
+                             * first must not say "not recorded any more" next to "recorded again" */
+                            if (_lmSetWas !== false && window.toastr) toastr.info(lmT('game1.rec.off'));
                             window._lmRecFull = true;
                             window._lmRecLive = false;
                         }
@@ -25428,7 +25430,7 @@ function thelegendmodproject() {
                          * (connect() opens a proper slot: array, list entry, details, counters).
                          * Resuming here cannot give a replay: it would lack the packets in between
                          * or the connection's first packets (map border, own cells). */
-                        if (checked && window.RecordedProtocol && window.temporaryRecordedProtocol &&
+                        if (checked && _lmSetWas === false && window.RecordedProtocol && window.temporaryRecordedProtocol &&
                             (!window.RecordedProtocol[window.temporaryRecordedProtocol] || window._lmRecFull) && window.toastr) {
                             toastr.info(lmT('game1.rec.again'));
                         }
