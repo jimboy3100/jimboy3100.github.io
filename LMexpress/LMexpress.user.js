@@ -334,6 +334,8 @@ if (mode.legend) {
     } catch (e) {
         console.error('[LMexpress] Could not save the launch link', e);
     }
+    /* per tab too: "url" is shared by every agar.io tab, so two tabs loading at once took each other's link */
+    try { sessionStorage.setItem('lm-launch-url', JSON.stringify({ o: timeOrigin, url: launchUrl() })); } catch (e) { }
 }
 
 /* the release cache (below) */

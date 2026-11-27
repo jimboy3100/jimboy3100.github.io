@@ -121,7 +121,21 @@ function _lmOnLegendWebsite() {
 }
 
 var timesopened = localStorage.getItem("timesopened");
-var url = localStorage.getItem("url");
+/* The launch link of this tab. localStorage "url" is shared by every agar.io tab, so two tabs loading
+ * at the same time (a restored session) took each other's server or party; the loaders since 1.9 also
+ * keep it per tab (sessionStorage "lm-launch-url" with this page load's timeOrigin). Older loaders
+ * write only "url". */
+function _lmLaunchLink() {
+    var link = null, origin = 0;
+    try { link = localStorage.getItem("url"); } catch (e) { }
+    try { origin = performance.timeOrigin || performance.timing.navigationStart; } catch (e) { }
+    try {
+        var own = JSON.parse(sessionStorage.getItem("lm-launch-url") || "null");
+        if (own && typeof own.url === "string" && origin && Number(own.o) === origin) link = own.url;
+    } catch (e) { }
+    return link;
+}
+var url = _lmLaunchLink();
 /* The loaders store the launch link (with ?sip=/?pass=/?replay=...) for this page load.
  * Consume it once: otherwise a later visit to agar.io/legendmod, where nothing is
  * stored, re-applies the old link's actions. */
