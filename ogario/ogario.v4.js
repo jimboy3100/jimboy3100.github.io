@@ -53185,28 +53185,42 @@ function thelegendmodproject() {
         },
         /* ===== Garix UpdateNodes — Protocol 6 format =====
          * Handshake sends protocol 1, server converts to 6 internally.
-         * Server writes updNodes then addNodes then ONE writeUInt32(0) terminator.
-         * Flag 0x40 distinguishes added nodes (has tabID/skin/name) from updates. */
+         * Layout: see the node records below (two sections, each ended by id 0).
+         * Malformed packets: every section and record is checked against the bytes left
+         * BEFORE it is read or applied. A record cut short (or a string without its 0 end)
+         * is not applied and nothing after it is read (it cannot be located); records
+         * before it stay applied (no rollback). Returns true when every count and
+         * terminator was there; otherwise the update is counted by _lmWuIncomplete. */
         garixUpdateCells(data, offset) {
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
             this.megaFFAscore();
             var self = this;
+            var len = data.byteLength, complete = true, cut = false;
+            /* zOk: false once a string ran off the end of the packet without its 0 */
+            var zOk = true;
             // UTF-8z string reader (null-terminated)
             var encode = function () {
                 var text = '';
-                while (offset < data.byteLength) {
+                while (offset < len) {
                     var ch = data.getUint8(offset++);
-                    if (ch === 0) break;
+                    if (ch === 0) return text;
                     text += String.fromCharCode(ch);
                 }
+                zOk = false;
                 return text;
             };
             this.time = Date.now();
             this.removePlayerCell = false;
 
-            // 1. Eat list
+            // 1. Eat list: [u16 count][u32 eater, u32 eaten] x count. A count the packet
+            // cannot hold leaves nothing locatable after it: the whole update is dropped
+            // before any record is applied.
+            if (offset + 2 > len || offset + 2 + 8 * data.getUint16(offset, true) > len) {
+                this._lmWuIncomplete('Garix');
+                return false;
+            }
             var eatCount = data.getUint16(offset, true); offset += 2;
-            for (var ei = 0; ei < eatCount && offset + 7 < data.byteLength; ei++) {
+            for (var ei = 0; ei < eatCount && offset + 7 < len; ei++) {
                 var eaterID = data.getUint32(offset, true);
                 var eatenID = data.getUint32(offset + 4, true);
                 offset += 8;
@@ -53255,9 +53269,12 @@ function thelegendmodproject() {
             //   [rgb if flags & 0x02][skin\0 if 0x04][name\0 if 0x08]
             // flags: 0x01 virus, 0x10 agitated, 0x20 ejected, 0x40 other food.
             // accountID is the owner's tab id from opcode 161 (own cells).
-            for (var sections = 2; sections && offset + 4 <= data.byteLength;) {
+            // Each check below comes before the bytes it guards are read; nothing of a
+            // record is applied before all of it (strings included) was found.
+            for (var sections = 2; sections && offset + 4 <= len;) {
                 var id = data.getUint32(offset, true); offset += 4;
                 if (id === 0) { sections--; continue; }
+                if (offset + 11 > len) { cut = true; break; } /* x, y, size, flags */
                 var x = data.getInt32(offset, true); offset += 4;
                 var y = data.getInt32(offset, true); offset += 4;
                 /* Map rotation, as updateCells (Delta receiveX/receiveY): sendPosition
@@ -53266,6 +53283,7 @@ function thelegendmodproject() {
                 if (window.legendmod.vector[window.legendmod.vnr][1]) y = this.translateY(y);
                 var size = data.getUint16(offset, true); offset += 2;
                 var flags = data.getUint8(offset++);
+                if ((flags & 0x80) && offset >= len) { cut = true; break; }
                 var extFlags = (flags & 0x80) ? data.getUint8(offset++) : 0;
 
                 var isVirus = !!(flags & 0x01);
@@ -53273,6 +53291,8 @@ function thelegendmodproject() {
                 var hasName = !!(flags & 0x08);
                 var hasAccountID = !!(extFlags & 0x04);
                 var hasNickColor = !!(extFlags & 0x08);
+                /* accountID, nick colour, rgb */
+                if (offset + (hasAccountID ? 4 : 0) + (hasNickColor ? 3 : 0) + ((flags & 0x02) ? 3 : 0) > len) { cut = true; break; }
                 /* Delta: food = (0x20 | 0x40) without name/nick colour/account.
                  * Ejected mass (0x20) stays a normal cell here, as LM draws it. */
                 var isFood = !isVirus && !isEjected && !!(flags & 0x40) && !hasName && !hasNickColor && !hasAccountID;
@@ -53292,6 +53312,10 @@ function thelegendmodproject() {
                 var name = '', namePresent = false;
                 if (hasName) {
                     name = encode(); namePresent = true;
+                }
+                /* skin or name without its 0 end: the record is cut short */
+                if (!zOk) { cut = true; break; }
+                if (hasName) {
                     try { name = window.decodeURIComponent(escape(name)); } catch (e) { }
                 }
                 if (skin || namePresent) {
@@ -53352,18 +53376,29 @@ function thelegendmodproject() {
                 cellObj.updateTime = this.time || Date.now();
             }
 
-            // 3. Remove list (UInt16 count)
-            if (offset + 2 <= data.byteLength) {
+            // both sections ended by their id 0
+            if (cut || sections) complete = false;
+
+            // 3. Remove list (UInt16 count, an id 0 ends it early). Not read after a cut
+            // record (its place is unknown). A count the packet cannot hold, without an id 0
+            // inside the bytes there, is a wrong count: none of its ids are applied.
+            if (!cut && offset + 2 <= len) {
                 var removeCount = data.getUint16(offset, true); offset += 2;
-                for (var ri = 0; ri < removeCount && offset + 4 <= data.byteLength; ri++) {
+                if (offset + 4 * removeCount > len) {
+                    for (var rk = offset; rk + 4 <= len && data.getUint32(rk, true) !== 0; rk += 4);
+                    if (rk + 4 > len) { removeCount = 0; complete = false; }
+                }
+                for (var ri = 0; ri < removeCount && offset + 4 <= len; ri++) {
                     var removeID = data.getUint32(offset, true); offset += 4;
                     if (removeID === 0) break;
                     var rcell = this.indexedCells[removeID];
                     if (rcell) rcell.removeCell();
                 }
-            }
+            } else complete = false;
+            /* bytes after the remove list (padding, extensions) are left as they are */
+            if (!complete) this._lmWuIncomplete('Garix');
 
-            // Death check
+            // Death check (eat / remove records already applied may have ended the life)
             if (this.removePlayerCell && !this.playerCells.length) {
                 if (defaultmapsettings.mbSwitchAfterDeath && LM.playerCellsMulti && LM.playerCellsMulti.length) {
                     /* application.switchToNextLivingUnit never existed, so this always
@@ -53386,8 +53421,18 @@ function thelegendmodproject() {
             }
             if (window.autoPlay && legendmod.play) calcTarget();
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
-
-
+            return complete;
+        },
+        /* A Garix / Sigmally cell update (opcode 16) that was cut short or did not end where
+         * its counts and terminators say: counted in _lmWuBadN (for diagnostics) and named in
+         * the console at most every 5 s. Only the server name and the count are logged, never
+         * packet bytes. Rare: nothing runs for a complete update. */
+        _lmWuIncomplete(server) {
+            this._lmWuBadN = (this._lmWuBadN || 0) + 1;
+            var now = Date.now();
+            if (this._lmWuBadAt > now - 5000) return;
+            this._lmWuBadAt = now;
+            console.warn('[Protocol] Incomplete ' + server + ' cell update: a count, record or end marker did not fit the packet and what follows it was not applied (' + this._lmWuBadN + ' so far)');
         },
         /* ═══════════════════════════════════════════════════════════════
          * Sigmally cell update parser (opcode 16 after decode)
