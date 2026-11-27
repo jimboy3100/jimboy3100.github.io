@@ -711,184 +711,8 @@ function _lmMatchHistoryServerReply(msg) {
     window._lmServerMatchHistory = { state: 'done', askedAt: prev && prev.askedAt || 0, at: Date.now(), games: games };
     var m = document.getElementById('lm-mh-view');
     if (m && m._lmServerRefresh) m._lmServerRefresh();
-    /* Champion / Hunter badges read these games */
-    _lmBadgesSchedule();
 }
 window._lmMatchHistoryServerReply = _lmMatchHistoryServerReply;
-/* Badges (client only): computed from the account numbers the server already sends: userStats of the
- * login and game over replies, the account level and, on Expanding Land, the server match history
- * (type 1081, the last 50 games). On Expanding Land longestTimeAlive is the total time alive
- * (proto102.c), on agar.io the longest single life, so each one has its own badge. A badge whose
- * number is missing is hidden. localStorage 'lmBadges' keeps per account (key: a hash of the account
- * id, nothing else of the account) the earned badge ids and which numbers were seen: the first stats
- * of an account and a number seen for the first time never toast; later, one toast per update. */
-var _lmBadgeDefs = (function () {
-    var fams = [
-        ['games', 'bdgGames', 'Player', 'bdgReqGames', 'Play {n} games', '🎮', [10, 100, 1000]],
-        ['mass', 'bdgMass', 'Heavyweight', 'bdgReqMass', 'Reach {n} mass', '👑', [1000, 10000, 50000]],
-        ['eat', 'bdgEat', 'Glutton', 'bdgReqEat', 'Consume {n} mass in total', '🍽️', [100000, 1000000, 10000000]],
-        ['life', 'bdgLife', 'Survivor', 'bdgReqLife', 'Stay alive {n} in one life', '⏱️', [600, 1800, 3600]],
-        ['alive', 'bdgAlive', 'Veteran', 'bdgReqAlive', 'Stay alive {n} in total', '⌛', [3600, 36000, 360000]],
-        ['level', 'bdgLevel', 'Experienced', 'bdgReqLevel', 'Reach level {n}', '🎖️', [10, 50, 100]],
-        ['top', 'bdgTop', 'Champion', 'bdgReqTop', 'Reach #1 on the leaderboard in one of your last 50 games', '🏆', [1]],
-        ['hunt', 'bdgHunt', 'Hunter', 'bdgReqHunt', 'Eat {n} players in one of your last 50 games', '⚔️', [5, 20]]
-    ];
-    var out = [];
-    fams.forEach(function (f) {
-        f[6].forEach(function (n, i) {
-            out.push({ id: f[0] + (i + 1), m: f[0], nameKey: f[1], name: f[2], reqKey: f[3], req: f[4], icon: f[5], n: n,
-                tier: f[6].length > 1 ? ['I', 'II', 'III'][i] : '', col: f[6].length > 1 ? ['#cd7f32', '#c0c8d0', '#ffd700'][i] : '#ffd700' });
-        });
-    });
-    return out;
-})();
-function _lmBdgT(key, en) { var s = window.lmT && window.lmT(key); return !s || s === key ? en : String(s); }
-function _lmBdgEsc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-function _lmBdgNum(v) {
-    if (v === undefined || v === null || v === '') return null;
-    if (typeof v === 'object' && typeof v.toNumber === 'function') v = v.toNumber();
-    v = Number(v);
-    return isFinite(v) && v >= 0 ? v : null;
-}
-function _lmBdgName(d) { return _lmBdgT(d.nameKey, d.name) + (d.tier ? ' ' + d.tier : ''); }
-function _lmBdgTip(d) {
-    var n = d.m === 'life' || d.m === 'alive' ? (d.n >= 3600 ? d.n / 3600 + ' h' : d.n / 60 + ' min') : d.n.toLocaleString();
-    return _lmBdgName(d) + ': ' + _lmBdgT(d.reqKey, d.req).replace('{n}', n);
-}
-/* FNV-1a of the account id: the store never holds the id itself */
-function _lmBdgAcct(user, el) {
-    var id = user && (user.userId || (user.info && user.info.userId));
-    if (!id) return '';
-    id = String(id);
-    var h = 0x811c9dc5;
-    for (var i = 0; i < id.length; i++) { h ^= id.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
-    return (el ? 'el' : 'ag') + h.toString(36);
-}
-function _lmBdgLoad() { try { var o = JSON.parse(localStorage.getItem('lmBadges') || '{}'); return o && typeof o === 'object' ? o : {}; } catch (e) { return {}; } }
-function _lmBdgSave(o) {
-    try {
-        var keys = Object.keys(o).sort(function (a, b) { return (o[b].t || 0) - (o[a].t || 0); });
-        keys.slice(10).forEach(function (k) { delete o[k]; });
-        localStorage.setItem('lmBadges', JSON.stringify(o));
-    } catch (e) { }
-}
-var _lmBadgeTimer = 0, _lmBadgeStats = null, _lmBadgeStatsUser = null;
-/* displayStats(stats, user) and the 1081 reply call this; one evaluation per burst */
-function _lmBadgesSchedule(stats, user) {
-    if (stats) { _lmBadgeStats = stats; _lmBadgeStatsUser = user || null; }
-    if (_lmBadgeTimer) return;
-    _lmBadgeTimer = setTimeout(function () {
-        _lmBadgeTimer = 0;
-        try { _lmBadgesUpdate(); } catch (e) { console.warn('[LM] badges:', e); }
-    }, 0);
-}
-window._lmBadgesSchedule = _lmBadgesSchedule;
-function _lmBadgesMetrics(user) {
-    var el = !!(window.legendmod && window.legendmod.isLegendWorld);
-    var s = (user && user.stats) || (_lmBadgeStatsUser === user ? _lmBadgeStats : null) || {};
-    var t = _lmBdgNum(s.longestTimeAlive), lv = user ? _lmBdgNum(user.level) : null;
-    var m = { games: _lmBdgNum(s.gamesPlayed), mass: _lmBdgNum(s.highestMass), eat: _lmBdgNum(s.massConsumed),
-        life: el ? null : t, alive: el ? t : null, level: lv > 0 ? lv : null, top: null, hunt: null };
-    var h = window._lmServerMatchHistory;
-    if (el && h && h.at && Array.isArray(h.games)) {
-        m.top = 0; m.hunt = 0;
-        h.games.forEach(function (g) {
-            if (+g.topPosition === 1) m.top++;
-            if (+g.playersEaten > m.hunt) m.hunt = +g.playersEaten;
-        });
-    }
-    return { el: el, m: m };
-}
-function _lmBadgesUpdate() {
-    /* the login / game over handler and displayStats(s) live on legendmod (this.user) */
-    var user = (window.legendmod && window.legendmod.user) || _lmBadgeStatsUser;
-    var r = _lmBadgesMetrics(user), m = r.m;
-    var acct = _lmBdgAcct(user, r.el), store = _lmBdgLoad(), rec = acct ? store[acct] : null, first = !rec;
-    if (!rec) rec = { e: [], f: [] };
-    var fresh = [];
-    _lmBadgeDefs.forEach(function (d) {
-        if (m[d.m] !== null && m[d.m] >= d.n && rec.e.indexOf(d.id) === -1) fresh.push(d);
-    });
-    /* toast only for numbers already seen in an earlier update of this account */
-    var toast = first ? [] : fresh.filter(function (d) { return rec.f.indexOf(d.m) !== -1; });
-    if (acct) {
-        fresh.forEach(function (d) { rec.e.push(d.id); });
-        Object.keys(m).forEach(function (k) { if (m[k] !== null && rec.f.indexOf(k) === -1) rec.f.push(k); });
-        rec.t = Date.now();
-        store[acct] = rec;
-        _lmBdgSave(store);
-    }
-    _lmBadgesRender(m, acct ? rec.e : fresh.map(function (d) { return d.id; }));
-    if (toast.length && window.toastr) {
-        var last = toast[toast.length - 1];
-        toastr.success('<b>' + last.icon + '</b> ' + _lmBdgEsc(_lmBdgT('badgeUnlocked', 'Badge unlocked: {name}').replace('{name}', _lmBdgName(last))) + (toast.length > 1 ? ' (+' + (toast.length - 1) + ')' : ''));
-    }
-    window._lmBadgesLast = { earned: acct ? rec.e.slice() : fresh.map(function (d) { return d.id; }), toasted: toast.map(function (d) { return d.id; }) };
-}
-/* Badges in the profile stats (#user-stats): one small "Badges 3/14" button (the grid took a lot of
- * room in the profile tab); it opens a window with every badge, its name and what it needs. */
-var _lmBadgesState = { m: null, earned: [] };
-function _lmBadgesShown(m, earned) {
-    return _lmBadgeDefs.filter(function (d) { return m[d.m] !== null || earned.indexOf(d.id) !== -1; });
-}
-function _lmBadgesRender(m, earned) {
-    _lmBadgesState = { m: m, earned: earned };
-    var host = document.getElementById('user-stats');
-    if (!host) return;
-    var box = document.getElementById('lm-badges');
-    if (!box) {
-        box = document.createElement('button');
-        box.type = 'button';
-        box.id = 'lm-badges';
-        box.style.cssText = 'display:inline-block;vertical-align:top;margin:6px 0 0 6px;cursor:pointer;font:inherit;font-size:11px;min-height:26px;padding:3px 10px;border-radius:var(--lm-radius-s,4px);' +
-            'border:1px solid var(--lm-pc2,rgba(255,255,255,0.15));background:rgba(255,255,255,0.06);color:inherit;touch-action:manipulation;';
-        box.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); _lmBadgesOpen(); });
-        host.appendChild(box);
-    }
-    var shown = _lmBadgesShown(m, earned);
-    box.style.display = shown.length ? 'inline-block' : 'none';
-    var got = shown.filter(function (d) { return earned.indexOf(d.id) !== -1; }).length;
-    box.textContent = '🏅 ' + _lmBdgT('badges', 'Badges') + ' ' + got + '/' + shown.length;
-    if (document.getElementById('lm-badges-modal')) _lmBadgesOpen();
-}
-/* the badges window (standard Legend window chrome: lmPromoChrome); earned ones coloured, others dimmed */
-function _lmBadgesOpen() {
-    var m = _lmBadgesState.m, earned = _lmBadgesState.earned;
-    if (!m) return;
-    var shown = _lmBadgesShown(m, earned);
-    var old = document.getElementById('lm-badges-modal');
-    var list = '';
-    shown.forEach(function (d) {
-        var on = earned.indexOf(d.id) !== -1;
-        list += '<div class="lm-badge' + (on ? ' lm-badge-on' : '') + '" data-badge="' + d.id + '" style="display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.18);' + (on ? '' : 'opacity:0.45;') + '">' +
-            '<span style="position:relative;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;font-size:16px;border-radius:var(--lm-radius,6px);box-sizing:border-box;' +
-            (on ? 'border:2px solid ' + d.col + ';background:rgba(255,255,255,0.08);' : 'border:2px solid rgba(255,255,255,0.15);filter:grayscale(100%);') + '">' + d.icon +
-            (d.tier ? '<span style="position:absolute;right:1px;bottom:0;font-size:8px;font-weight:700;color:' + (on ? d.col : '#fff') + ';text-shadow:0 0 2px #000;">' + d.tier + '</span>' : '') + '</span>' +
-            '<span style="min-width:0;font-size:11px;line-height:1.3;"><b>' + _lmBdgEsc(_lmBdgName(d)) + '</b><br><span style="opacity:0.75;">' + _lmBdgEsc(_lmBdgTip(d).slice(_lmBdgName(d).length + 2)) + '</span></span></div>';
-    });
-    var got = shown.filter(function (d) { return earned.indexOf(d.id) !== -1; }).length;
-    var html = '<div class="modal-backdrop fade in" data-lm-close="1"></div>' +
-        '<div class="modal-dialog" style="width:440px;"><div class="modal-content">' +
-        '<div class="modal-header"><button type="button" class="close" data-lm-close="1"><span aria-hidden="true">&#10005;</span></button>' +
-        '<h4 class="modal-title">🏅 ' + _lmBdgEsc(_lmBdgT('badges', 'Badges')) + ' ' + got + '/' + shown.length + '</h4></div>' +
-        '<div class="modal-body" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px;max-height:calc(100vh - 140px);overflow-y:auto;">' + list + '</div>' +
-        '</div></div>';
-    if (old) { old.innerHTML = html; return; }
-    var w = document.createElement('div');
-    w.className = 'modal fade in';
-    w.id = 'lm-badges-modal';
-    w.setAttribute('aria-hidden', 'false');
-    w.style.display = 'block';
-    w.innerHTML = html;
-    w.addEventListener('click', function (e) {
-        var c = e.target && e.target.closest ? e.target.closest('[data-lm-close]') : null;
-        if (c) { e.preventDefault(); if (w.parentNode) w.parentNode.removeChild(w); }
-    });
-    var hc = document.getElementById('helloContainer');
-    if (hc && hc.parentNode) hc.parentNode.insertBefore(w, hc.nextSibling); else document.body.appendChild(w);
-    if (typeof window.lmPromoChrome === 'function') window.lmPromoChrome('#lm-badges-modal');
-}
-window._lmBadgesOpen = _lmBadgesOpen;
 /* The profile's vanilla skin preview (.vanilla-skin-preview) showed the guest picture even when logged
  * in: nothing set it since the profile panel was rebuilt. It now shows the account's equipped skin: the
  * skin read at login (UserVanillaSkin), else the one the server confirmed (userSettings key 1), else the
@@ -52302,8 +52126,6 @@ function thelegendmodproject() {
 <span data-i18n="game2.stConsumed">${lmT('game2.stConsumed')}</span> : ${massConsumed}<br/>
 <span data-i18n="game2.stMostCells">${lmT('game2.stMostCells')}</span> : ${mostCellsEaten}
       `)
-            /* badges grid in the profile and at most one "Badge unlocked" toast (computed after this update) */
-            try { if (typeof window._lmBadgesSchedule === 'function') window._lmBadgesSchedule(s, this.user); } catch (e) { }
         },
         updateUserInfo(i) {
             if (!i) i = {}; /* guard: protobuf may not decode userInfo */
@@ -89060,6 +88882,9 @@ Object.defineProperty(Array.prototype, 'stDev', {
     try { localStorage.removeItem('lmCommandCentre'); } catch (e) { }
     /* The spectator director is removed: its camera settings, bookmarks and watchlist are deleted from this browser */
     try { ['lm-director', 'lm-director-bookmarks', 'lm-director-watch'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
+    /* The stream companion, Discover features, the Analytics objectives and the profile badges are removed:
+     * what they kept is deleted from this browser */
+    try { ['lmCompanionPrivacy', 'lmDiscover', 'lmAnalyticsGoals', 'lmBadges'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* AgarTool team: AgarTool players with my tag on the same agar.io server as teammates (no socket or timer while its option is off) */
     try {
         var agarToolScript = document.createElement('script');

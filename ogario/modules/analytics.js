@@ -768,8 +768,7 @@
         if (!host || document.getElementById('lm-analytics-btn')) return;
         var b = btn(ICON + T('title'), 'display:block;clear:both;margin:6px 0 0;font-size:11px;min-height:26px;', function () { open('dash'); });
         b.id = 'lm-analytics-btn';
-        var badges = document.getElementById('lm-badges');
-        if (badges && badges.parentNode === host) host.insertBefore(b, badges); else host.appendChild(b);
+        host.appendChild(b);
     }
     /* while recording is on, also a link under the menu footer (easy to reach on a phone); not while
      * the "Match history" link is there: that one opens this window too (History tab) */
