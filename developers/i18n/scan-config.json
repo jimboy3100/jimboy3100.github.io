@@ -151,7 +151,6 @@
     "extras/banneranimated5.html",
     "extras/banneranimated7.html",
     "extras/helper.html",
-    "extras/rewardday2.html",
     "extras/2020.html",
     "extras/banneranimatedLegendmod2020.html",
     "extras/bannermembers.html",
@@ -255,7 +254,7 @@
     "extras/bannericonpromo5.html": "no link anywhere",
     "extras/bannericonpromo6.html": "no link anywhere",
     "extras/nobots.html": "LMnoBotsPromo() in LMexpress.js is never called",
-    "extras/rewardday.html": "no link anywhere (the gift button opens rewardday2.html)",
+    "extras/rewardday.html": "no link anywhere",
     "extras/skinrotator2.html": "no link anywhere (skinrotator.html is the live one)",
     "extras/skinrotator3.html": "no link anywhere (skinrotator.html is the live one)",
     "extras/index2.html": "no link anywhere",
@@ -266,7 +265,8 @@
     "extras/loader/trollhslo/index2.html": "no link anywhere",
     "extras/website/backup.html": "no link anywhere (old site copy)",
     "extras/website/massboostX3.html": "no link anywhere (old site copy)",
-    "extras/banneranimated8.html": "only extras/banneranimated7bLc.html (deleted) showed it"
+    "extras/banneranimated8.html": "only extras/banneranimated7bLc.html (deleted) showed it",
+    "extras/rewardday2.html": "the gift button (Reward Day, removed) showed it: results of the April 2023 event"
   },
   "deletedAssets": {
     "banners/legendpromo2.jpg": "extras/banneranimated5Lc.html",

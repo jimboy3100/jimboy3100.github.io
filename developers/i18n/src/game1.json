@@ -2303,24 +2303,6 @@
     "ja": "Mod 情報とテンプレート",
     "it": "Info sulla mod e template"
   },
-  "game1.menu.rewardDay": {
-    "en": "Reward day",
-    "el": "Ημέρα ανταμοιβής",
-    "es": "Día de recompensa",
-    "bg": "Ден за награда",
-    "fr": "Jour de récompense",
-    "ar": "يوم المكافأة",
-    "zh": "獎勵日",
-    "ru": "День награды",
-    "de": "Belohnungstag",
-    "tr": "Ödül günü",
-    "pl": "Dzień nagrody",
-    "nl": "Beloningsdag",
-    "pt": "Dia de recompensa",
-    "id": "Hari hadiah",
-    "ja": "報酬日",
-    "it": "Giorno della ricompensa"
-  },
   "game1.menu.help": {
     "en": "Help",
     "el": "Βοήθεια",

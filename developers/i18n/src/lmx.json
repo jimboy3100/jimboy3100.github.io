@@ -11072,24 +11072,6 @@
     "ja": "Expanding Land FFAサーバー",
     "it": "Server FFA di Expanding Land"
   },
-  "lmx.ex.rewardDay": {
-    "en": "Reward Day",
-    "el": "Ημέρα ανταμοιβής",
-    "es": "Día de recompensa",
-    "bg": "Ден на наградите",
-    "fr": "Jour de récompense",
-    "ar": "يوم المكافأة",
-    "zh": "獎勵日",
-    "ru": "День наград",
-    "de": "Belohnungstag",
-    "tr": "Ödül Günü",
-    "pl": "Dzień nagród",
-    "nl": "Beloningsdag",
-    "pt": "Dia de recompensa",
-    "id": "Hari hadiah",
-    "ja": "報酬デー",
-    "it": "Giorno della ricompensa"
-  },
   "lmx.ex.videoSkinPromo": {
     "en": "Video Skins",
     "el": "Video skins",

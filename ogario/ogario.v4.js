@@ -26643,7 +26643,6 @@ function thelegendmodproject() {
                 '<a id="themesBtn" target="_blank" href="https://www.legendmod.ml/themes/" class="fa fa-tint" data-toggle="tab-tooltip" data-container="body" data-placement="left" title=""' + _lmG1a('data-original-title', 'game1.menu.themes') + '></a>' +
                 //'<a id= "LegGoogleForm" class="fa fa-check-square-o" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="New Ideas & Statistics Form" onclick="legendformIframe();return false;"></a>' +
                 '<a id="ModInfoQuick" class="fa fa-info" data-toggle="tab-tooltip" data-container="body" data-placement="left" title=""' + _lmG1a('data-original-title', 'game1.menu.modInfo') + ' onclick="openhelper();return false;"></a>' +
-                '<a id= "ModReward" class="fa fa-gift " data-toggle="tab-tooltip" data-container="body" data-placement="left" title=""' + _lmG1a('data-original-title', 'game1.menu.rewardDay') + ' onclick="LMrewardDay();return false;"></a>' +
                 (window.legendModFromWebsite ? '<a id="PrivacyLink" href="https://help.expanding.land/" target="_blank" class="fa fa-question-circle" data-toggle="tab-tooltip" data-container="body" data-placement="left" title=""' + _lmG1a('data-original-title', 'game1.menu.help') + '></a>' : ''));
             //'<a id= "LegendClanDiscord" href="https://discord.gg/CbMkY77" target="_blank" class="fa fa-globe" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Legend clan Discord"></a></div>');
 
