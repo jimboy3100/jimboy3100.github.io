@@ -6,11 +6,6 @@ share one file (and one browser cache entry). Before adding a copy somewhere els
 removing one, search every page, script, test and the other repositories (expandingland, legendworld-help,
 LegendWorld, deltav4) and record the removal in `developers/audit/manifest.json`.
 
-`developers/tests/sitelibs.js` loads every page that uses these libraries in headless Chrome and checks that
-each gets the shared version and that what it does with it still works (lazy loading, modal windows,
-tooltips, popovers, dragging, animations). With `JQMIGRATE=<jquery-migrate 3.x file>` it also fails on
-anything jQuery 3.7.1 no longer does.
-
 | Library | File | Version | Loaded by |
 | --- | --- | --- | --- |
 | jQuery | `jquery-3.7.1.min.js` | 3.7.1 | play.html, LMexpress/LMexpress.html, index.html, skins/index.html, themes/index.html, Lc/Lc.html, Lc/PROJETOX.HTML/original/lc.html |

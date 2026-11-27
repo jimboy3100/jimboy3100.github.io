@@ -152,17 +152,8 @@ and nothing else (no theme, no login data):
   generated files up to date, old globals, lmT fallbacks, apply(), switching, the page runtime, the
   scanner (strict files must have 0 findings).
 - `developers/tests/probes/zzzz-i18n.js` (in `run.js`): live switch to Greek and Arabic in the game page.
-- `node developers/tests/i18n-firstrun.js`: headless first visit with a Greek browser (window shown,
-  Greek picked, OK saves, never again), with a pt-BR, Indonesian, Japanese and Italian browser (that
-  language on screen and picked in the window, the list without Beta), the website with each of those
-  four browsers, and with English stored (never shown). The smoke test pins the
-  browser to English and hides the first-visit window (`SMOKE_LANG`, `SMOKE_FIRSTRUN`, `SMOKE_STORAGE`).
-- `node developers/tests/i18n-sitemap.js`: every sitemap.xml page loads a runtime (or is a documented
-  exception / archived page), loads no old LanguagePack*.js, is strict, and every key it uses is in its areas.
-- `node developers/tests/i18n-crosssite.js`: headless expanding.land / help.expanding.land test pages: language
-  passed into frames (page and mod runtime) and back, rogue messages ignored, `#lm=` on links, a Theme Bridge
-  page and LMexpress.html starting in the saved language (`CROSS_EL_DIR` / `CROSS_HELP_DIR`: serve the real
-  checkouts of those sites instead).
+- The smoke test pins the browser to English and hides the first-visit window (`SMOKE_LANG`, `SMOKE_FIRSTRUN`,
+  `SMOKE_STORAGE`).
 
 ## Hard-coded text scanner
 

@@ -6,7 +6,7 @@
  * handler from ogario/spect.js. Array.prototype.indexOf/includes are counted, so the checks
  * are on the work done, not only on the result: body, food, virus, own and multibox removals,
  * bulk disappearance, and lists after a sort, compaction, unit packets and pool reuse.
- * (Ids listed once, with no pass over the world for duplicates: developers/tests/worldloops.js.)
+ * (Ids listed once, with no pass over the world for duplicates.)
  * node developers/tests/cellindex.js
  * (LM_SRC=<ogario.v4.js> LM_SPECT=<spect.js> runs it on other copies and prints their counts) */
 const fs = require('fs'), vm = require('vm'), path = require('path');

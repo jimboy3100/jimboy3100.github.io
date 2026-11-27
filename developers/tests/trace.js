@@ -36,7 +36,7 @@ let P = null; /* ogario/modules/perf.js pure functions: script owners, function 
 try { P = require(path.join(__dirname, '..', '..', 'ogario', 'modules', 'perf.js')); } catch (e) { P = null; }
 
 /* ------------------------------------------------------------------------------------------
- * Summary of a trace (pure: developers/tests/trace-summary.js tests it with a small trace)
+ * Summary of a trace (pure)
  * ------------------------------------------------------------------------------------------ */
 
 const LONG_TASK_US = 100000;

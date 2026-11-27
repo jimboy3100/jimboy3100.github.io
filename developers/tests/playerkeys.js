@@ -6,7 +6,7 @@
  * (cacheCustomSkin, customSkinKey, getCustomSkin, checkSkinsMap, clearOwnCustomSkin),
  * legendmod.vanillaskins, the special effect relay (Socket3updateTeamPlayerSpfc) and
  * animateCustomSkin. The cell colours by nick go through the real packet handler in
- * practice.js; the cell drawing in the page is checked by probes/zzz-practice-nicks.js.
+ * practice.js.
  * node developers/tests/playerkeys.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');

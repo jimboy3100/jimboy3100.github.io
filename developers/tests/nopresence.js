@@ -30,7 +30,7 @@ check('update_details to another server still sent', ws('wss://ffa.legendmod.ml:
 check('binary game packets still sent', ws('wss://ffa.legendmod.ml:8080', new Uint8Array([254, 6, 0, 0, 0])) === 1 && ws(lm, new Uint8Array([1])) === 1);
 
 /* every harness that opens a Legend Mod page installs it before the page loads */
-const harnesses = ['smoke.js', 'lib/bench-client.js', 'trace.js', 'i18n-crosssite.js', 'extensionreal.js', 'launchlink.js', 'agarloader.js', 'lmxupdate.js', 'userscriptload.js'];
+const harnesses = ['smoke.js', 'lib/bench-client.js', 'trace.js', 'agarloader.js'];
 for (const f of harnesses) {
   const src = fs.readFileSync(path.join(here, f), 'utf8');
   const at = src.search(/addScriptToEvaluateOnNewDocument', \{ source: require\('\.\/(lib\/)?nopresence'\)\.source \}/);

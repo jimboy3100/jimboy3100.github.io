@@ -111,7 +111,7 @@ function newest(dir) {
 const TEMP_PROFILE = /^lm-(agarloader|bench|cellcolors|cellshadows|ext|extreal|glbatch|launch-ext|launch-prof|lmxupdate|skinbanks|skinqueue|trace|usload)-[A-Za-z0-9]{6}$/;
 
 /* a folder changed in the last hour is always kept: a running test also uses folders no Chrome
- * process names (the extension copy of extensionreal.js, a run folder before its Chrome starts or
+ * process names (a run folder before its Chrome starts or
  * while run.js reads its result.json), so a very small `days` (0) must not remove them */
 const MIN_AGE = 3600000;
 

@@ -5,7 +5,6 @@
  * tab, and an embedded page says "lm-theme-ready" once. The sender side (LMexpress.js) decorates only
  * exact HTTPS Legend links, keeps the anchor, strips query tokens and logins from the background image,
  * stays bounded and sends live updates only to the pages that said ready.
- * Rendered styles in a real browser: developers/tests/themepages.js.
  * node developers/tests/themebridge.js */
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const root = path.join(__dirname, '..', '..');

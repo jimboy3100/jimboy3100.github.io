@@ -9,7 +9,7 @@
 //   Land, its help site, LegendWorld, Delta), when they are there: deleting a file they load fails here;
 // - known old broken references are listed, with the reason, in developers/audit/exceptions.json
 //   "missingAllowed" (a listed path that is found again is reported, so the entry can go);
-// - developers/audit/manifest.json (deleted / moved files) is well formed (manifestrefs.js checks its approval rule).
+// - developers/audit/manifest.json (deleted / moved files) is well formed.
 // Usage: node developers/tests/repo-integrity.js [--no-cross] [--list] [--comments]
 //   --list      print every reference to a missing file as JSON (for exceptions.json)
 //   --comments  also print references to missing files found inside comments (not failures)
@@ -71,7 +71,6 @@ records.forEach((r, i) => {
         const res = R.resolvePath(r.canonicalPath, ctx.inv);
         if (res.status !== 'ok' && res.status !== 'dir') fail(id + ': canonicalPath ' + r.canonicalPath + ' is not in the repository');
     }
-    /* the approval rule (migrated consumers, legacy and external evidence) is checked by manifestrefs.js */
 });
 
 const crossInfo = ctx.cross.map((c) => c.name + (c.present ? '' : ' (not found)')).join(', ');

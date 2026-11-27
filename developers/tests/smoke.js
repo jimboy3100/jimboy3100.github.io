@@ -196,8 +196,7 @@ function probeMark(name) {
   await send('Emulation.setLocaleOverride', { locale: process.env.SMOKE_LANG || 'en-US' });
   /* SMOKE_STORAGE='{"key":"value"}': localStorage set before the page's scripts run (only where it is empty) */
   if (process.env.SMOKE_STORAGE) await send('Page.addScriptToEvaluateOnNewDocument', { source: 'try { var o = ' + process.env.SMOKE_STORAGE + '; for (var k in o) if (localStorage.getItem(k) == null) localStorage.setItem(k, o[k]); } catch (e) { }' });
-  /* like --no-first-run: the one-time language window stays away unless SMOKE_FIRSTRUN asks for it
-   * (developers/tests/i18n-firstrun.js); the probes test it on purpose */
+  /* like --no-first-run: the one-time language window stays away unless SMOKE_FIRSTRUN asks for it */
   if (!process.env.SMOKE_FIRSTRUN) await send('Page.addScriptToEvaluateOnNewDocument', { source: "try { if (!localStorage.getItem('lmLangAsked')) localStorage.setItem('lmLangAsked', '1'); } catch (e) { }" });
   /* no Player Monitor entry for this test browser (lib/nopresence.js) */
   await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./lib/nopresence').source });
@@ -232,6 +231,11 @@ function probeMark(name) {
       probeValue = pr && pr.result && typeof pr.result.value === 'string' && pr.result.value !== 'null' ? pr.result.value : null;
     } else {
       probeValue = r && r.result && r.result.value !== undefined ? r.result.value : r;
+      /* a probe that threw: its Error comes back by value as {}, which said nothing; give its message */
+      if (r && r.exceptionDetails) {
+        const x = r.exceptionDetails;
+        probeValue = { probeError: String((x.exception && x.exception.description) || x.text || 'exception').slice(0, 1000), line: x.lineNumber };
+      }
       console.log('PROBE:', JSON.stringify(probeValue).slice(0, 4000));
       await sleep(1500);
     }

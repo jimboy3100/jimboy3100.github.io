@@ -43,12 +43,12 @@ man.records.forEach((r) => {
 const TEXT = /\.(html?|js|mjs|css|json|md|txt|xml|ps1|py|svg|webmanifest|yml)$|^[^.]+$/i;
 const SKIP = /^(vanillaskins|lowresskins)\//;
 /* the registers of the deletions themselves (they name every deleted file on purpose) */
-const RECORDS = new Set(['developers/audit/manifest.json', 'developers/i18n/scan-config.json', 'developers/tests/i18n-archived.js',
+const RECORDS = new Set(['developers/audit/manifest.json', 'developers/i18n/scan-config.json',
     'developers/tests/auditmedia.js']);
 /* the skin resolver's register, its generator input and its test */
 const RESOLVER = /^(ogario\/skinregistry\.js$|developers\/skins\/|developers\/tests\/skinresolver\.js$)/;
 const texts = [...tracked].filter((f) => TEXT.test(path.basename(f)) && !SKIP.test(f) && !RECORDS.has(f));
-/* media files (pictures, videos, sounds); pages and scripts have their own checks (i18n-archived.js and others) */
+/* media files (pictures, videos, sounds); pages and scripts are checked by repo-integrity.js */
 const MEDIA = /\.(png|jpe?g|gif|webp|bmp|ico|svg|mp4|webm|mp3|ogg|wav)$/i;
 const migrated = man.records.filter((r) => r.internalReferencesMigrated && MEDIA.test(r.oldPath));
 /* a file name made of these characters is always cut out whole by NAME (the characters before it end a path) */

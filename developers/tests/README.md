@@ -1,13 +1,20 @@
 # Legend Mod tests
 
-Smoke tests that load the mod in headless Chrome and check that it starts cleanly.
+A small core set: loading, the renderers (WebGL and Canvas2D), packets and parsers, settings and
+profiles, translations, skins, bots, the phone controls and the userscript / extension loaders.
+Tests of removed features, duplicates, source-text comparisons, slow checks of minor things and
+one-off investigation harnesses were deleted (2026-11-27); the git history has them. Before adding a
+test, extend an existing one of the same area, and keep it fast (no new headless Chrome test for a
+detail a Node test can check).
 
 ## Run locally
 
 Needs Node 22 or newer (global `fetch` and `WebSocket`) and Google Chrome or Chromium.
 
 ```
-node developers/tests/run.js
+node developers/tests/run.js            # browser runs, fast set (default), desktop and mobile side by side
+node developers/tests/run.js --full     # every probe (before a version bump)
+node developers/tests/run.js --node     # the node tests, 4 at once
 ```
 
 Options: `--secs N` (wait before probing, default 14, or env `SMOKE_SECS`),
@@ -16,11 +23,12 @@ profile is removed after every run, also a failed or killed one),
 `--probes a,b` (only these probes from `probes/`, or env `SMOKE_PROBES`), `--limit N` (seconds the probes
 may take per run, or env `SMOKE_LIMIT`; default 15 per probe, at least 240). Each probe line shows its time;
 when the limit is hit the probes that finished are still reported and the one that was running is named.
-`--jobs N` (or env `SMOKE_JOBS`) runs up to N headless Chromes at once: 2 runs desktop and mobile side by
-side, 4 also splits each mode's probes into two pages (probes sharing a name prefix stay together and in
-order); the full run took 711 s sequentially and 193 s with `--jobs 4`. `--quick` (or `SMOKE_QUICK=1`) leaves
-out the slow probes (the `SLOW` list in run.js, about 60% of the probe time): `--quick --jobs 4` took 99 s.
-The default (no option) is still the full sequential run.
+`--jobs N` (or env `SMOKE_JOBS`) runs up to N headless Chromes at once (default 2: desktop and mobile side
+by side; 1 is the sequential run); 4 also splits each mode's probes into two pages (probes sharing a name
+prefix stay together and in order). The default leaves out the slow probes (the `SLOW` list in run.js);
+`--full` (or `SMOKE_FULL=1`) runs them too; `--quick` is still accepted and is the default.
+`--node` runs every node test (below) with `--jobs` at once (default 4), each at most 300 s, and prints
+each one's time.
 Chrome is found automatically; set `CHROME_PATH` to use a specific binary.
 Output goes to `developers/tests/out/` (ignored by git). `--prune DAYS` first removes the run folders there
 and the temporary Chrome profiles of the tests that start their own Chrome (`%TEMP%lm-glbatch-*` and the like)
@@ -34,17 +42,18 @@ left in an old folder by killed runs are ended first.
 2. A desktop and a mobile (touch emulation) run of `play.html`. Every request for
    `www.legendmod.ml` / `jimboy3100.github.io` is served from this checkout; everything
    else (agar.io, game servers) is loaded live.
-3. The probes in `probes/` run in the page: core globals exist, the settings menu is built,
-   every hotkey command is well formed, the Gamepad window opens, fits and closes, and a few UI
-   actions (menu tabs, hotkeys window, toggles) run without throwing.
+3. The probes in `probes/` run in the page: the boot screen, the settings menu and its schema,
+   hotkeys, profiles, skins, the renderer with jelly and the Practice arena, translations, the phone
+   controls, and that each feature window loads, fits and closes.
 
 The run fails on a syntax error, an uncaught page exception, a `console.error`, or a probe failure.
 Network/console log errors are printed as warnings only, because the live servers are not always reachable.
 
-## Node tests (the normal list)
+## Node tests
 
-Every `developers/tests/*.js` except `run.js`, `smoke.js`, `crlf.js`, `trace.js` and `trace-summary.js`
-runs in Node (`node developers/tests/<name>.js`) and must exit 0 before a commit. Among them:
+Every `developers/tests/*.js` except the tools `run.js`, `smoke.js`, `crlf.js` and `trace.js` runs in
+Node (`node developers/tests/<name>.js`, or all of them with `run.js --node`). Before a push run the ones
+that load the files you changed, plus `i18n.js` when you changed texts. Among them:
 
 - `repo-integrity.js`: no reference to a file that is not on the site. It reads every text file
   (HTML attributes, CSS `url()` / `@import`, extension and web app manifests, userscript metadata, and
@@ -53,14 +62,10 @@ runs in Node (`node developers/tests/<name>.js`) and must exit 0 before a commit
   `index.html`, extensionless `.html`). Dynamic paths (`'banners/' + name + '.png'`) and comments are not
   failures. It also checks the Legend Mod addresses used by the repositories next to this one
   (`expandingland`, `legendworld-help`, `LegendWorld`, `deltav4`, read only) when they are there, so deleting a
-  file another site loads fails here, and that `developers/audit/manifest.json` is well formed (its approval
-  rule and removed paths are checked by `manifestrefs.js`). Known old
+  file another site loads fails here, and that `developers/audit/manifest.json` is well formed. Known old
   broken references are listed with the reason in `developers/audit/exceptions.json` (`missingAllowed`;
   `defect: true` = still to fix). `--list` prints every reference to a missing file as JSON, `--comments`
   the ones in comments, `--no-cross` skips the other repositories.
-- `audit.js`: the audit tool itself, on small inputs and on a throw-away git repository.
-- `repodoc.js`: every path `developers/REPOSITORY.md` names (the folders, the files kept on purpose, the
-  ones never to delete) is a tracked path, so its deletion rules point at the real files.
 - `auditmedia.js`: deleted, replaced and re-encoded media: nothing names a removed or no longer used
   picture or video (also relatively from a page of its folder), the copies kept for outside links are still
   there, the animated WebP that replaced a GIF keeps its size, frames, timing and loop, and the pictures
@@ -130,7 +135,6 @@ Freezes without a long task are listed separately (GPU or browser).
 Options: `--url <address>` (another page, e.g. `--url https://agar.io` for a baseline without
 Legend Mod), `--secs N`, `--until-freezes N` (0: only the time limit), `--no-gpu` (smaller trace),
 `--out <dir>`, `--keep-profile`. Without any option it only prints its usage.
-`trace-summary.js` tests the summary with a small synthetic trace.
 
 The same freeze breakdown is in the game: Performance diagnostics (button in Animation, or its
 hotkey), then "Keep recording when closed" and Copy report. Each freeze line there looks like
@@ -200,24 +204,6 @@ machine. Store a new baseline with `--update-baseline` when a change is meant to
 numbers, and say why in the commit. Without Chrome it is skipped.
 The same scenes run from the browser console of the game page: see the top of `lib/bench-scene.js`.
 
-## Network worker prototype (not used by the client)
-
-```
-node developers/tests/netpipe.js              # checks in Node (worker_threads)
-node developers/tests/netpipe-bench.js --run  # A/B in the real client, headless Chrome
-```
-
-`lib/netpipe.js` decodes the LZ4 packets (opcode 255) of a connection in a worker with the
-client's own `decompressMessage` (its source text) and applies every packet on the main thread in
-arrival order: per-connection queue, generation number, bounded packets/bytes in the worker,
-flush before a close or a socket change, fallback to the main thread when the worker fails or
-stays silent. `netpipe.js` compares the worker's bytes and rejections with the main thread's (WASM
-and JS decoder, valid, malformed and oversized packets) and checks order, key changes queued
-behind a worker packet, backpressure, flush, failure, timeout and that the received bytes stay
-whole for the replay recorder. `netpipe-bench.js --run` measured no gain beyond the noise and
-later world updates (numbers at its top), so the client keeps decoding on the main thread.
-Without `--run` it is a quick self-check.
-
 ## WebGL batching check and benchmark
 
 ```
@@ -242,7 +228,6 @@ a recording stub WebGL context in Node, over many frames of a changing world.
 
 ```
 node developers/bench/pixi-mesh.js --pixi path/to/pixi.min.js    # PixiJS 7 (or PIXI_JS=...)
-node developers/tests/pixibench.js                                # the packer against LM's code, Node only
 ```
 
 Runs bench.js scenes in headless Chrome, freezes the world and draws the same snapshot every frame
@@ -251,8 +236,7 @@ indexed body mesh, one instanced food mesh) and with the same packer on raw WebG
 blocks: CPU, frame interval, GPU timer queries, a synchronous total, draw/GL calls, upload bytes,
 heap growth, draw order and the pixel difference of the pictures (`--scenes`, `--rounds`, `--frames`,
 `--no-images`). Writes `out/pixi-mesh-<label>.json`/`.md` and the pictures. play.html loads neither
-this nor PixiJS. `pixibench.js` checks that the packer's vertices, colours and triangles are exactly
-those of the real jelly writers and that its food order is drawCachedFood's.
+this nor PixiJS.
 
 `overlayfx.js` checks the marks drawn above WebGL cells on the overlay canvas (teammate indicator,
 chat bubble, FB badge and arrow, special effects): the real frame block of renderFrame, its late
@@ -260,13 +244,6 @@ overlay pass, canUseWebGLScene and the cell methods run on a small software 2D c
 frame (main + GL + overlay) must equal, pixel by pixel, the same scene in Canvas2D order. Covers
 overlapping cells, Canvas2D/WebGL switches, frames without marks, DPR 2, resize and context loss.
 Bodies and labels are models and no GPU runs. `node developers/tests/overlayfx.js [ogario.v4.js]`
-
-`cellshadows.js` checks cell shadows (showCellShadows) with the WebGL renderer: the real
-canUseWebGLScene in Node (a frame with a shadowed cell on screen goes to Canvas2D with the reason
-`cellShadows`; food, ejected mass and off-screen cells keep WebGL), then in headless Chrome the
-real WebGL batch and the real cell.draw composed like the page, jelly on/off, WebGL/Canvas2D,
-shadows off/default/blur 0, with overlapping cells, food and ejected mass. The Chrome part is
-skipped without Chrome. `node developers/tests/cellshadows.js [ogario.v4.js]`
 
 `cellcolors.js` checks cell colours from the packet to the screen. In Node the real
 handleMessage / updateCells / flushCellsData get agar.io world updates: a record without colour
@@ -279,12 +256,6 @@ the parser's colour diagnostics. In headless Chrome the real WebGL batch and the
 (jelly on/off) draw the same colour for valid colours, black, strings that are no colour and no
 colour, and the own custom colour without writing it into the cell. The Chrome part is skipped
 without Chrome. `node developers/tests/cellcolors.js [ogario.v4.js] [--no-chrome]`
-
-`framealloc.js` checks that per-frame renderer calls allocate nothing: _lmMarkCtx and _lmGlMarks
-(teammate indicator and chat bubble of the GL text pass, two calls per WebGL cell per frame) and
-drawLegendWorldDeformedCanvasCell (every Canvas2D-drawn cell), counted with V8's sampling heap
-profiler in optimized code and in the Maglev tier, against a reference version; the paths that do
-draw make the same calls as the reference. `node developers/tests/framealloc.js [--ref REV] [--old FILE]`
 
 `malformed.js` feeds the real handleMessage / updateCells / decompressMessage (agar.io, Expanding
 Land and private servers, opcode 16 plain and compressed in 255) the 979 world updates of

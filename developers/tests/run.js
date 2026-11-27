@@ -6,18 +6,20 @@
 // loads the real game servers, which are not always reachable.
 //
 // Usage: node developers/tests/run.js [--secs N] [--only desktop|mobile] [--probes a,b] [--limit N] [--keep]
-//                                     [--quick] [--jobs N] [--prune DAYS]
-// --quick: leave out the slow probes (the SLOW list in run.js, about 60% of the probe time); a quick pre-check,
-//   the full run stays the default.
-// --jobs N: up to N headless Chromes at once (default 1, the old sequential run). 2 runs desktop and
-//   mobile side by side; more splits each mode's probes into parts (probes sharing a name prefix,
+//                                     [--full] [--jobs N] [--prune DAYS] [--node]
+// Default: the fast set, without the slow probes (the SLOW list in run.js), desktop and mobile side by side.
+// --full: every probe (the coordinator's check before a version bump). --quick is the default and still accepted.
+// --node: run the node tests (every developers/tests/*.js but the tools run.js, smoke.js, crlf.js, trace.js)
+//   instead of the browser runs, --jobs at once (default 4), each at most 300 s.
+// --jobs N: up to N headless Chromes at once (default 2: desktop and mobile side by side; 1 is the old
+//   sequential run); more splits each mode's probes into parts (probes sharing a name prefix,
 //   e.g. plugins-*, stay together and in order), each part in its own page with its own page-error check.
 // --keep: keep each run's Chrome profile in its output folder (removed otherwise, also after a failed run).
 // --prune DAYS: first remove the run folders in out/ and the temporary profiles of the Chrome tests not
 //   changed for DAYS days (0.25 = 6 hours), never one changed in the last hour or a running test uses; also: node developers/tests/lib/testchrome.js prune DAYS.
 // Env: CHROME_PATH (optional), SMOKE_SECS (default 14), SMOKE_PROBES (like --probes),
 // SMOKE_LIMIT (like --limit: seconds the probes may take per page; default 15 per probe, at least 240),
-// SMOKE_QUICK=1 (like --quick), SMOKE_JOBS (like --jobs).
+// SMOKE_FULL=1 (like --full), SMOKE_JOBS (like --jobs).
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -36,19 +38,19 @@ const secs = Number(argVal('--secs', process.env.SMOKE_SECS || 14));
 const only = argVal('--only', '');
 /* only these probes (names without .js), e.g. --probes themeworkshop,zzz-practice */
 const pick = String(argVal('--probes', process.env.SMOKE_PROBES || '')).split(',').map(s => s.trim().replace(/\.js$/, '')).filter(Boolean);
-const quick = args.includes('--quick') || process.env.SMOKE_QUICK === '1';
-const jobs = Math.max(1, Math.floor(Number(argVal('--jobs', process.env.SMOKE_JOBS || 1))) || 1);
+/* the fast set is the default (owner: the updates waited on the tests); --full runs every probe */
+const quick = !(args.includes('--full') || process.env.SMOKE_FULL === '1');
+const nodeTests = args.includes('--node');
+const jobs = Math.max(1, Math.floor(Number(argVal('--jobs', process.env.SMOKE_JOBS || (nodeTests ? 4 : 2)))) || 1);
 const keep = args.includes('--keep');
 const pruneDays = argVal('--prune', '');
 
-/* probes of 5 s or more per mode (seconds: the slower of desktop / mobile, from the "probe x: ok (N s)"
- * lines of a full run). --quick leaves them out; --jobs uses the numbers to give the parts equal time
+/* probes of about 5 s or more per mode (seconds: the slower of desktop / mobile, from the "probe x: ok (N s)"
+ * lines of full runs). Only --full runs them; --jobs uses the numbers to give the parts equal time
  * (any other probe counts as 2 s). Update when a probe gets much slower or faster. */
 const SLOW = {
-  'zz-replaystudio-play': 32, 'server-token-typing': 31, 'gameover-share': 25, 'plugins-erase': 23, 'esc-stack': 18, 'menu-fit': 13,
-  'smalltools': 12, 'feed-pad-key': 11, 'window-font': 10, 'winstack-dom': 10, 'windows-esc': 8,
-  'hotkeys-controls': 7, 'perf-netrec': 7, 'perf': 7, 'themeworkshop-knobs': 7, 'server-list-join': 6,
-  'plugins-load-again': 6, 'command-centre': 6, 'macro-rename-edit': 5
+  'smalltools': 10, 'themebridge': 8, 'companion': 7, 'command-centre': 7, 'winstack': 6, 'replaystudio': 6,
+  'themeworkshop': 5, 'perf': 5, 'server-token-typing': 31, 'conn-drop-menu': 10
 };
 const weight = name => SLOW[name] || 2;
 
@@ -86,7 +88,27 @@ async function pool(items, n, fn) {
   return res;
 }
 
+/* the node tests, n at once: one line each with its time, the output of the failed ones */
+async function runNodeTests(n) {
+  const TOOLS = new Set(['run.js', 'smoke.js', 'crlf.js', 'trace.js']);
+  const list = fs.readdirSync(here).filter(f => f.endsWith('.js') && !TOOLS.has(f)).sort();
+  const t0 = Date.now();
+  let bad = 0;
+  await pool(list, n, async f => {
+    const t = Date.now();
+    const r = await runNode([path.join(here, f)], { timeout: 300000 });
+    const ok = r.status === 0;
+    if (!ok) bad++;
+    const tail = ((r.stdout || '') + (r.stderr || '')).trim().split('\n').slice(-15).join('\n') + (r.error ? '\n' + r.error.message : '');
+    console.log('node ' + f + ': ' + (ok ? 'ok' : 'FAIL') + ' (' + Math.round((Date.now() - t) / 100) / 10 + ' s)' + (ok ? '' : '\n' + tail));
+  });
+  console.log('\n== node tests: ' + (list.length - bad) + ' of ' + list.length + ' ok in ' + Math.round((Date.now() - t0) / 1000) + ' s ==');
+  console.log(bad ? 'RESULT: FAIL' : 'RESULT: PASS');
+  process.exit(bad ? 1 : 0);
+}
+
 (async () => {
+  if (nodeTests) return runNodeTests(jobs);
   if (pruneDays !== '') {
     if (!(Number(pruneDays) >= 0)) { console.log('--prune needs a number of days'); process.exit(1); }
     console.log(testChrome.pruneReport(outRoot, Number(pruneDays), true));
@@ -113,9 +135,9 @@ async function pool(items, n, fn) {
   const all = fs.readdirSync(probeDir).filter(f => f.endsWith('.js') && (!pick.length || pick.includes(f.replace(/\.js$/, '')))).sort();
   const unknown = pick.filter(n => !all.includes(n + '.js'));
   if (unknown.length) { console.log('no such probe: ' + unknown.join(', ')); process.exit(1); }
-  /* --quick leaves the slow probes out, unless they were named with --probes */
+  /* the fast set leaves the slow probes out, unless they were named with --probes */
   const probes = quick && !pick.length ? all.filter(f => !SLOW[f.replace(/\.js$/, '')]) : all;
-  if (quick && !pick.length) console.log('quick: ' + (all.length - probes.length) + ' slow probes left out (' + Object.keys(SLOW).filter(n => all.includes(n + '.js')).join(', ') + ')');
+  if (quick && !pick.length) console.log('fast set: ' + (all.length - probes.length) + ' slow probes left out (--full runs them: ' + Object.keys(SLOW).filter(n => all.includes(n + '.js')).join(', ') + ')');
   const strip = src => src.replace(/^\s*\/\/.*$/gm, '').trim().replace(/;\s*$/, '');
   const combine = list => '(async () => {\n' +
     /* window.__lmProbeRes: smoke.js reads the results so far when the probes run out of time */

@@ -43,10 +43,9 @@ site and Delta may load any of them by that URL.
 4. Every deleted or moved file gets a record in `developers/audit/manifest.json` (`oldPath`,
    `canonicalPath`, `reason`, `internalReferencesMigrated`, `legacyResolverSupported`,
    `externalUrlSupported`, `legacyResolverNeeded`, `externalUrlNeeded`, `verification`,
-   `approvedForDeletion`). A file leaves the tree only when its record is approved;
-   `developers/tests/manifestrefs.js` checks the records, that removed files are gone and that nothing still
-   points at them. Archived and deleted pages are also listed in `developers/i18n/scan-config.json` and
-   checked by `developers/tests/i18n-archived.js`.
+   `approvedForDeletion`). A file leaves the tree only when its record is approved and nothing still points
+   at it (`node developers/tests/repo-integrity.js`). Archived and deleted pages are also listed in
+   `developers/i18n/scan-config.json`.
 5. The git history is the archive. Do not keep historical copies, snapshots of other clients or scratch code
    in the tree "for reference", and do not create new repositories for them.
 6. Never delete: `agario/live/`, the generated language packs and their sources, `languages/LanguagePack*.js`,
