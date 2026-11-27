@@ -144,8 +144,7 @@ try {
 } catch (e) { }
 /* the same look as play.html's own loading screen (#lm-boot), which takes over from it */
 try {
-    document.open();
-    document.write('<!DOCTYPE html><html ' + OWNER_ATTR + '="' + OWNER + '"><head><meta charset="utf-8">' +
+    writeDocument('<!DOCTYPE html><html ' + OWNER_ATTR + '="' + OWNER + '"><head><meta charset="utf-8">' +
         '<meta name="viewport" content="width=device-width, initial-scale=1"><title>Legend Mod</title></head>' +
         '<body style="margin:0;background:' + themeBg + ';"><div id="lmx-loading" style="position:fixed;left:0;top:0;right:0;bottom:0;' +
         'z-index:2147483000;background:' + themeBg + ';color:#fff;font:15px/1.5 Ubuntu,Arial,sans-serif;display:flex;' + /* i18n-ok: style */
@@ -155,7 +154,6 @@ try {
         '<div style="height:6px;border-radius:3px;background:rgba(255,255,255,.15);overflow:hidden;">' +
         '<div style="height:100%;width:3%;border-radius:3px;background:' + themeBar + ';"></div></div>' +
         '<div id="lmx-loading-note" style="margin-top:8px;font-size:12px;opacity:.6;min-height:18px;"></div></div></div></body></html>');
-    document.close();
 } catch (e) { }
 claimOwner();
 var tookOverAt = 0;
@@ -460,14 +458,44 @@ function writeLegendPage(html, source) {
 /* Write a page over agar.io. onStart (Legend page only) hears the init call's signal: true when init ran,
  * false when it was missing. document.open() drops every listener of the document, so they are added after it. */
 function writePage(html, onStart) {
-    document.open();
-    if (onStart) {
+    writeDocument(html, function () {
+        if (!onStart) return;
         document.addEventListener('lmx-init-ok', function () { onStart(true); });
         document.addEventListener('lmx-init-missing', function () { onStart(false); });
-    }
-    document.write(html);
-    document.close();
+    });
     claimOwner();
+}
+
+/* document.open() + write() of a whole page. Firefox refuses document.open() from a manager's sandbox
+ * ("The operation is insecure": Greasemonkey 4, and other managers when they run a script in their content
+ * mode), so there agar.io's own world writes the page, from a script element. afterOpen runs once the new
+ * page has started: before its parser goes on, or, from the page's world, right after the write (the init
+ * call comes after the page's script files, so it has not run yet). */
+function writeDocument(html, afterOpen) {
+    var opened = false;
+    try {
+        document.open();
+        opened = true;
+    } catch (e) {
+        if (!writeFromPageWorld(html)) throw e;
+    }
+    if (afterOpen) afterOpen();
+    if (opened) {
+        document.write(html);
+        document.close();
+    }
+}
+/* true when the page's world wrote it (a new <html>); false when it could not (e.g. a policy against inline scripts) */
+function writeFromPageWorld(html) {
+    var root = document.documentElement;
+    try {
+        var code = document.createElement('script');
+        code.textContent = 'document.open(); document.write(' + JSON.stringify(html) + '); document.close();'; /* i18n-ok: code */
+        (document.head || root || document).appendChild(code);
+    } catch (e) {
+        return false;
+    }
+    return document.documentElement !== root;
 }
 
 /* Htmlscript: fetch an HTML page and write it over agar.io */
