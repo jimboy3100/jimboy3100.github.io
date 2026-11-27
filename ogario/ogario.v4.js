@@ -28264,7 +28264,8 @@ function thelegendmodproject() {
          * (showQuickMenu, showQuickBots) always equal what is shown. The Battle Royale HUD is not
          * saved: it opens by itself on agar.io Battle Royale, and the HUD open before it
          * (localStorage lmQuickBeforeBR, kept apart from the flags) comes back when the player
-         * leaves Battle Royale with it still open. Shown and hidden at once (no queued fades). */
+         * leaves Battle Royale with it still open or closed by hand; a HUD the player opened himself
+         * in Battle Royale stays. Shown and hidden at once (no queued fades). */
         _lmQuickIds: { menu: ['#quick-menu', '.quick.quick-menu'], bots: ['#quick-bots', '.quick.quick-bots'], br: ['#quick-br', '.quick.quick-br'] },
         /* the open HUD: 'menu', 'bots', 'br' or null */
         quickOpenPanel() {
@@ -28296,7 +28297,10 @@ function thelegendmodproject() {
             this.applyQuickPanels();
         },
         toggleQuickPanel(which) {
-            this.setQuickPanel(this.quickOpenPanel() === which ? null : which);
+            var next = this.quickOpenPanel() === which ? null : which;
+            /* the player opens another HUD in Battle Royale: his choice stays when he leaves it */
+            if (this._lmQuickInBR && (next === 'menu' || next === 'bots')) this._lmQuickBefore(null);
+            this.setQuickPanel(next);
         },
         setShowQuickMenu() {
             this.applyQuickPanels();
@@ -28353,9 +28357,10 @@ function thelegendmodproject() {
                 if (before === undefined) this._lmQuickBefore(this.quickOpenPanel() || 'none');
                 this.setQuickPanel('br');
             } else if (before !== undefined) {
-                /* leaving (or the first server after a reload in Battle Royale): the HUD from before comes back */
+                /* leaving (or the first server after a reload in Battle Royale): the HUD from before comes back,
+                   also when the player closed the Battle Royale HUD; one a profile opened meanwhile stays */
                 this._lmQuickBefore(null);
-                if (this._lmQuickBR || first) this.setQuickPanel(before === 'menu' || before === 'bots' ? before : null);
+                if (this._lmQuickBR || first || !this.quickOpenPanel()) this.setQuickPanel(before === 'menu' || before === 'bots' ? before : null);
             }
         },
         setShowSkinsPanel() {
