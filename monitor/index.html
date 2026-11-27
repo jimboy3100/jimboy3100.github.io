@@ -238,6 +238,24 @@
             font-size: 11px;
         }
         .footer a { color: #0984e3; text-decoration: none; }
+
+        /* --- Flag popover (IP and connection facts) --- */
+        .flag-btn { background: none; border: 0; padding: 2px 5px; margin: -2px -5px; border-radius: 4px; cursor: pointer; font: inherit; color: inherit; }
+        .flag-btn:hover, .flag-btn:focus-visible { background: #f0f4ff; outline: none; }
+        .ip-pop { position: absolute; z-index: 900; background: #fff; border: 1px solid #e8eaed; border-radius: 10px; box-shadow: 0 4px 24px rgba(0,0,0,0.12); padding: 12px 14px; width: 300px; max-width: calc(100vw - 16px); font-size: 12px; color: #2d3436; }
+        .ip-pop-head { display: flex; align-items: center; gap: 6px; font-size: 13px; margin-bottom: 8px; }
+        .ip-pop-x { margin-left: auto; background: none; border: 0; font-size: 18px; line-height: 1; color: #b2bec3; cursor: pointer; padding: 0 2px; }
+        .ip-pop-x:hover { color: #e94560; }
+        .ip-pop-row { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
+        .ip-pop-row .k { color: #999; white-space: nowrap; }
+        .ip-pop-row .v { font-weight: 600; text-align: right; word-break: break-all; }
+        .ip-pop .mono { font-family: monospace; font-weight: 600; }
+        .ip-pop .na { color: #b2bec3; font-weight: 400; }
+        .ip-pop-sub { margin-top: 10px; padding-top: 8px; border-top: 1px solid #f0f1f3; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: #999; font-weight: 600; }
+        .ip-pop-list { list-style: none; max-height: 120px; overflow: auto; margin-top: 4px; }
+        .ip-pop-list li { display: flex; justify-content: space-between; gap: 8px; padding: 2px 0; color: #636e72; }
+        .ip-pop-note { color: #e17055; font-size: 11px; margin: 4px 0; }
+        .ip-pop-foot { margin-top: 8px; color: #b2bec3; font-size: 10px; }
     </style>
     <script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8"></script>
     <!-- texts in the visitor's language (Legend Mod's language packs, developers/i18n) -->
@@ -553,7 +571,7 @@ function updateUI() {
                 <td class="server-text">${hasServer ? esc(srv.region) : ''}</td>
                 <td>${hasServer ? '<span style="display:inline-block; background:' + modeColor + '15; color:' + modeColor + '; font-weight:600; padding:2px 8px; border-radius:4px; font-size:11px;">' + esc(srv.mode.toUpperCase()) + '</span>' : ''}</td>
                 <td>${level > 0 ? '<span class="level-badge">⭐ ' + level + '</span>' : ''}</td>
-                <td><div class="country-cell">${flagSpan} <span class="country-code">${cc !== 'un' ? cc : ''}</span></div></td>
+                <td><button type="button" class="country-cell flag-btn" data-ip="${esc(p.ip || '')}" data-pid="${esc(p.playerId || '')}" data-cc="${cc}" data-hidden="${p.hidecountry ? '1' : ''}" title="${esc(_lmMonT('site.monitor.ipPop.show', 'Show IP and connection details'))}">${flagSpan} <span class="country-code">${cc !== 'un' ? cc : ''}</span></button></td>
                 <td class="time-ago">${ago}</td>
             </tr>`;
         }).join('');
@@ -623,6 +641,106 @@ function timeAgo(unixTs) {
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 /* country code goes into a class name and the page: only two letters */
 function ccOf(v) { v = String(v || 'un').toLowerCase(); return /^[a-z]{2}$/.test(v) ? v : 'un'; }
+
+// --- Flag popover: the player's IP and connection facts (monitor key only) ---
+const IP_INFO_URL = API_URL.replace(/\/stats$/, '') + '/history/ip-info';
+let ipPop = null, ipPopKey = '', ipPopToken = 0;
+function ipPopTime(ts) { return ts ? new Date(ts * 1000).toLocaleString() : '—'; }
+function ipPopDur(secs) { secs = secs || 0; const h = Math.floor(secs / 3600), m = Math.floor((secs % 3600) / 60); return h > 0 ? h + 'h ' + m + 'm' : m + 'm'; }
+function ipPopCountry(cc) {
+    if (cc === 'un') return _lmMonT('site.monitor.ipPop.unknownCountry', 'Unknown country');
+    try { return new Intl.DisplayNames([document.documentElement.lang || 'en', 'en'], { type: 'region' }).of(cc.toUpperCase()) || cc.toUpperCase(); }
+    catch (e) { return cc.toUpperCase(); }
+}
+function ipPopRow(k, v) { return '<div class="ip-pop-row"><span class="k">' + esc(k) + '</span><span class="v">' + v + '</span></div>'; }
+function ipPopFlag(cc) { return cc !== 'un' ? '<span class="flag-icon flag-icon-' + cc + '"></span>' : '🌐'; }
+/* d: what the row knows; info: the /history/ip-info answer (null while loading or on an older server) */
+function renderIpPop(d, info, state) {
+    const geo = info && info.geo;
+    const cc = ccOf(geo && geo.country ? geo.country : d.cc);
+    const ip = (info && info.ip) || d.ip;
+    const na = '<span class="na">' + esc(_lmMonT('site.monitor.ipPop.notAvailable', 'not available')) + '</span>';
+    let h = '<div class="ip-pop-head">' + ipPopFlag(cc) + ' <strong>' + esc(ipPopCountry(cc)) + '</strong>'
+        + (cc !== 'un' ? ' <span class="country-code">' + cc + '</span>' : '')
+        + '<button type="button" class="ip-pop-x" aria-label="' + esc(_lmMonT('site.monitor.ipPop.close', 'Close')) + '">×</button></div>';
+    h += ipPopRow(_lmMonT('site.monitor.ipPop.ip', 'IP'), ip ? '<span class="mono">' + esc(ip) + '</span>' : na);
+    if (d.hidden) h += '<div class="ip-pop-note">' + esc(_lmMonT('site.monitor.ipPop.hidden', 'Country hidden from other players (player setting)')) + '</div>';
+    if (geo) {
+        const loc = [geo.city, geo.region].filter(Boolean).join(', ');
+        if (loc) h += ipPopRow(_lmMonT('site.monitor.ipPop.location', 'Location'), esc(loc));
+        if (geo.timezone) h += ipPopRow(_lmMonT('site.monitor.ipPop.timezone', 'Time zone'), esc(geo.timezone));
+    }
+    const s = info && info.ip_summary;
+    if (s && s.sessions) {
+        h += '<div class="ip-pop-sub">' + esc(_lmMonT('site.monitor.ipPop.thisIp', 'This IP')) + '</div>';
+        h += ipPopRow(_lmMonT('site.monitor.ipPop.sessions', 'Sessions'), esc(s.sessions));
+        h += ipPopRow(_lmMonT('site.monitor.ipPop.players', 'Players'), esc(s.players));
+        h += ipPopRow(_lmMonT('site.monitor.ipPop.firstSeen', 'First seen'), esc(ipPopTime(s.first_seen)));
+        h += ipPopRow(_lmMonT('site.monitor.ipPop.lastSeen', 'Last seen'), esc(ipPopTime(s.last_seen)));
+    }
+    const p = info && info.player;
+    if (p) {
+        h += '<div class="ip-pop-sub">' + esc(_lmMonT('site.monitor.ipPop.thisPlayer', 'This player')) + '</div>';
+        h += ipPopRow(_lmMonT('site.monitor.ipPop.firstSeen', 'First seen'), esc(ipPopTime(p.first_seen)));
+        h += ipPopRow(_lmMonT('site.monitor.ipPop.lastSeen', 'Last seen'), esc(ipPopTime(p.last_seen)));
+        h += ipPopRow(_lmMonT('site.monitor.ipPop.sessions', 'Sessions'), esc(p.total_sessions || 0));
+        h += ipPopRow(_lmMonT('site.monitor.ipPop.playTime', 'Play time'), esc(ipPopDur(p.total_play_secs)));
+    }
+    const otherIps = ((info && info.player_ips) || []).filter(r => r.ip !== ip);
+    if (otherIps.length) {
+        h += '<div class="ip-pop-sub">' + esc(_lmMonT('site.monitor.ipPop.otherIps', 'Other IPs of this player')) + '</div><ul class="ip-pop-list">'
+            + otherIps.map(r => '<li><span>' + ipPopFlag(ccOf(r.country)) + ' <span class="mono">' + esc(r.ip) + '</span></span><span>' + esc(r.sessions) + ' × · ' + esc(ipPopTime(r.last_seen)) + '</span></li>').join('') + '</ul>';
+    }
+    const others = ((info && info.ip_players) || []).filter(r => r.player_id !== d.pid);
+    if (others.length) {
+        h += '<div class="ip-pop-sub">' + esc(_lmMonT('site.monitor.ipPop.otherPlayers', 'Other players on this IP')) + '</div><ul class="ip-pop-list">'
+            + others.map(r => '<li><span>' + esc(r.nickname || r.player_id) + '</span><span>' + esc(r.sessions) + ' ×</span></li>').join('') + '</ul>';
+    }
+    if (state === 'loading') h += '<div class="ip-pop-foot">' + esc(_lmMonT('site.monitor.ipPop.loading', 'Loading...')) + '</div>';
+    else if (!info) h += '<div class="ip-pop-foot">' + esc(_lmMonT('site.monitor.ipPop.noDetails', 'No more details from the server.')) + '</div>';
+    else if (geo) h += '<div class="ip-pop-foot">' + esc(_lmMonT('site.monitor.ipPop.geoNote', 'Location from the server\'s own GeoIP data, approximate.')) + '</div>';
+    return h;
+}
+function placeIpPop(a) {
+    if (!ipPop) return;
+    const w = ipPop.offsetWidth, ht = ipPop.offsetHeight, vw = document.documentElement.clientWidth;
+    const left = Math.max(8, Math.min(a.left, window.scrollX + vw - w - 8));
+    const below = a.bottom + 6, above = a.top - ht - 6;
+    ipPop.style.left = left + 'px';
+    ipPop.style.top = (below + ht > window.scrollY + window.innerHeight && above > window.scrollY ? above : below) + 'px';
+}
+function closeIpPop() { if (ipPop) { ipPop.remove(); ipPop = null; ipPopKey = ''; ipPopToken++; } }
+function openIpPop(btn) {
+    const d = { ip: btn.dataset.ip || '', pid: btn.dataset.pid || '', sid: btn.dataset.sid || '', cc: ccOf(btn.dataset.cc), hidden: btn.dataset.hidden === '1' };
+    const key = [d.ip, d.pid, d.sid, d.cc].join('|');
+    if (ipPop && ipPopKey === key) { closeIpPop(); return; }
+    closeIpPop();
+    const r = btn.getBoundingClientRect();
+    const anchor = { left: r.left + window.scrollX, top: r.top + window.scrollY, bottom: r.bottom + window.scrollY };
+    ipPop = document.createElement('div');
+    ipPop.className = 'ip-pop';
+    ipPop.setAttribute('role', 'dialog');
+    document.body.appendChild(ipPop);
+    ipPopKey = key;
+    const token = ++ipPopToken;
+    const show = (info, state) => { if (token !== ipPopToken || !ipPop) return; ipPop.innerHTML = renderIpPop(d, info, state); placeIpPop(anchor); };
+    if (!d.ip && !d.pid && !d.sid) { show(null, 'done'); return; }
+    show(null, 'loading');
+    const q = new URLSearchParams();
+    if (d.ip) q.set('ip', d.ip);
+    if (d.pid) q.set('player', d.pid);
+    if (d.sid) q.set('session', d.sid);
+    /* an older server answers this path with its endpoint list: then only the row's data is shown */
+    apiFetch(IP_INFO_URL + '?' + q).then(res => res.ok ? res.json() : null)
+        .then(j => show(j && typeof j === 'object' && 'geo' in j ? j : null, 'done'))
+        .catch(() => show(null, 'done'));
+}
+document.addEventListener('click', function (e) {
+    const btn = e.target.closest && e.target.closest('.flag-btn');
+    if (btn) { e.preventDefault(); e.stopPropagation(); openIpPop(btn); return; }
+    if (ipPop && (!ipPop.contains(e.target) || (e.target.closest && e.target.closest('.ip-pop-x')))) closeIpPop();
+}, true);
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeIpPop(); });
 
 // --- Init ---
 /* Logging in again after a 401 must not start a second timer and WebSocket. */
