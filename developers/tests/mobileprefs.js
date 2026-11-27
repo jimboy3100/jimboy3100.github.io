@@ -2,7 +2,7 @@
 // every preference the phone controls have is kept by a settings profile (MOBILE_SCHEMA), its default is
 // a valid value there, and the profile comparison has a name for it in every language. The objects are
 // taken from the real sources. Up to 3.698 six later preferences (fixed joystick, dead zone, compact
-// leaderboard, response curve, zoom and free spectate buttons) had no name: the comparison showed
+// leaderboard, a since removed response curve, zoom and free spectate buttons) had no name: the comparison showed
 // "modules.profiles.m_fixedJoystick" (now pkg.agm.m_<key>).
 'use strict';
 const fs = require('fs');

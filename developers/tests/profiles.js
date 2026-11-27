@@ -44,7 +44,7 @@ const b = C.cleanBundle({
   s: { showMass: 'false', fpsLimit: '60', animation: NaN, notASetting: true, chatHideWords: 5, oppColors: true },
   t: { miniMapWidth: '240', notTheme: 1, mainColor: 'red;background:url(x)' },
   h: { W: 'hk-feed', Q: 'hk-unknown', 'spec-messageKey': 'ENTER' },
-  m: { btnScale: 9, jsSensitivity: '250', targetMode: 'yes', other: 1 },
+  m: { btnScale: 9, jsOpacity: '0.5', jsSensitivity: 250, targetMode: 'yes', other: 1 },
   k: ['hk-feed', 7]
 });
 check('settings: "false" becomes false, "60" becomes 60', b.s.showMass === false && b.s.fpsLimit === 60);
@@ -53,7 +53,7 @@ check('theme: numeric string converted, unknown key dropped', b.t.miniMapWidth =
 check('theme: a colour that is not a plain colour is dropped', !('mainColor' in b.t) || typeof TD.mainColor !== 'string');
 check('hotkeys: unknown command dropped, chat key kept', b.h.W === 'hk-feed' && !('Q' in b.h) && b.h['spec-messageKey'] === 'ENTER');
 check('hotkeys: known command list keeps strings only', J(b.k) === J(['hk-feed']));
-check('phone controls: clamped to range, wrong types and unknown keys dropped', b.m.btnScale === 1.5 && b.m.jsSensitivity === 250 && !('targetMode' in b.m) && !('other' in b.m));
+check('phone controls: clamped to range, wrong types and unknown keys dropped', b.m.btnScale === 1.5 && b.m.jsOpacity === 0.5 && !('jsSensitivity' in b.m) && !('targetMode' in b.m) && !('other' in b.m));
 check('a set with nothing valid is null', C.cleanBundle({ s: { nope: 1 }, h: { X: 'hk-gone' } }) === null && C.cleanBundle('x') === null && C.cleanBundle([1]) === null);
 check('an empty hotkey part is not kept (it would unbind everything)', !('h' in C.cleanBundle({ s: { showMass: true }, h: {} })));
 const profs = C.cleanProfiles([

@@ -1529,24 +1529,6 @@
     "ja": "スクリプト",
     "it": "Script"
   },
-  "modules.profiles.m_jsSensitivity": {
-    "en": "Joystick sensitivity",
-    "el": "Ευαισθησία joystick",
-    "es": "Sensibilidad del joystick",
-    "bg": "Чувствителност на джойстика",
-    "fr": "Sensibilité du joystick",
-    "ar": "حساسية عصا التحكم",
-    "zh": "搖桿靈敏度",
-    "ru": "Чувствительность джойстика",
-    "de": "Joystick-Empfindlichkeit",
-    "tr": "Joystick hassasiyeti",
-    "pl": "Czułość joysticka",
-    "nl": "Joystickgevoeligheid",
-    "pt": "Sensibilidade do joystick",
-    "id": "Sensitivitas joystick",
-    "ja": "ジョイスティック感度",
-    "it": "Sensibilità del joystick"
-  },
   "modules.profiles.m_btnOpacity": {
     "en": "Button opacity",
     "el": "Διαφάνεια κουμπιών",

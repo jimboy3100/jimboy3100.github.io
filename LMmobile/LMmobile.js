@@ -505,7 +505,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, jsResponseCurve: 'linear', zoomBtns: false, freeSpecBtn: false, jsSize: 1, jsOpacity: 1, respawnBtn: false, macroBtns: false };
+        var prefs = { btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, zoomBtns: false, freeSpecBtn: false, jsSize: 1, jsOpacity: 1, respawnBtn: false, macroBtns: false };
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
          * settings profile or its Undo that removed the store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
@@ -521,7 +521,6 @@
                         v = typeof v === 'string' && v.trim() !== '' ? Number(v) : v;
                         return typeof v === 'number' && isFinite(v) ? Math.min(max, Math.max(min, v)) : def;
                     };
-                    if (saved.jsSensitivity !== undefined) prefs.jsSensitivity = num(saved.jsSensitivity, 100, 600, prefs.jsSensitivity);
                     if (saved.btnOpacity !== undefined) prefs.btnOpacity = num(saved.btnOpacity, 0.2, 1, prefs.btnOpacity);
                     if (saved.btnScale !== undefined) prefs.btnScale = num(saved.btnScale, 0.5, 1.5, prefs.btnScale);
                     if (saved.hudFade !== undefined) prefs.hudFade = num(saved.hudFade, 0, 1, prefs.hudFade);
@@ -537,7 +536,6 @@
                     if (saved.fixedJoystick !== undefined) prefs.fixedJoystick = !!saved.fixedJoystick;
                     if (saved.joystickDeadZone !== undefined) prefs.joystickDeadZone = num(saved.joystickDeadZone, 0, 40, prefs.joystickDeadZone);
                     if (saved.lbCompact !== undefined) prefs.lbCompact = !!saved.lbCompact;
-                    if (saved.jsResponseCurve !== undefined && /^(linear|ease|aggressive)$/.test(saved.jsResponseCurve)) prefs.jsResponseCurve = saved.jsResponseCurve;
                     if (saved.jsSize !== undefined) prefs.jsSize = num(saved.jsSize, 0.5, 2, prefs.jsSize);
                     if (saved.jsOpacity !== undefined) prefs.jsOpacity = num(saved.jsOpacity, 0.2, 1, prefs.jsOpacity);
                     if (saved.respawnBtn !== undefined) prefs.respawnBtn = !!saved.respawnBtn;
@@ -600,8 +598,6 @@
         /* ── Settings panel: inside drawer (no fixed position) ── */
         var sp = mk('div'); sp.id = 'lm-sp';
         sp.innerHTML =
-            '<label>' + tx('misc.mobile.joystick', 'lm-t') + ' <span id="lm-js-v">' + prefs.jsSensitivity + '</span></label>' +
-            '<input type="range" id="lm-js" min="100" max="600" step="25" value="' + prefs.jsSensitivity + '">' +
             '<label>' + tx('misc.mobile.opacity', 'lm-t') + ' <span id="lm-op-v">' + Math.round(prefs.btnOpacity * 100) + '%</span></label>' +
             '<input type="range" id="lm-op" min="20" max="100" step="5" value="' + Math.round(prefs.btnOpacity * 100) + '">' +
             '<label>' + tx('misc.mobile.btnSize', 'lm-t') + ' <span id="lm-bs-v">' + Math.round(prefs.btnScale * 100) + '%</span></label>' +
@@ -626,11 +622,6 @@
             '<label>' + tx('pkg.agm.jsOpacity', 'lm-t') + ' <span id="lm-jso-v">' + Math.round(prefs.jsOpacity * 100) + '%</span></label>' +
             '<input type="range" id="lm-jso" min="20" max="100" step="5" value="' + Math.round(prefs.jsOpacity * 100) + '">' +
             '<label><input type="checkbox" id="lm-lbc"' + (prefs.lbCompact ? ' checked' : '') + '> ' + tx('misc.mobile.lbCompact', 'lm-t') + '</label>' +
-            '<label>' + tx('misc.mobile.responseCurve', 'lm-t') + ' <select id="lm-jrc">' +
-                '<option value="linear"' + (prefs.jsResponseCurve === 'linear' ? ' selected' : '') + '>' + T('misc.mobile.curveLinear') + '</option>' +
-                '<option value="ease"' + (prefs.jsResponseCurve === 'ease' ? ' selected' : '') + '>' + T('misc.mobile.curveEase') + '</option>' +
-                '<option value="aggressive"' + (prefs.jsResponseCurve === 'aggressive' ? ' selected' : '') + '>' + T('misc.mobile.curveAggressive') + '</option>' +
-            '</select></label>' +
             '<label><input type="checkbox" id="lm-zoombtn"' + (prefs.zoomBtns ? ' checked' : '') + '> ' + tx('misc.mobile.zoomBtns', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-freespec"' + (prefs.freeSpecBtn ? ' checked' : '') + '> ' + tx('misc.mobile.freeSpec', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-respbtn"' + (prefs.respawnBtn ? ' checked' : '') + '> ' + tx('pkg.agm.respawnBtn', 'lm-t') + '</label>' +
@@ -688,11 +679,6 @@
         }
 
         /* slider handlers — M6: save on 'change' (slider release) not every 'input' tick */
-        sp.querySelector('#lm-js').addEventListener('input', function () {
-            prefs.jsSensitivity = parseInt(this.value, 10);
-            sp.querySelector('#lm-js-v').textContent = this.value;
-        });
-        sp.querySelector('#lm-js').addEventListener('change', function () { savePrefs(); });
         sp.querySelector('#lm-op').addEventListener('input', function () {
             prefs.btnOpacity = parseInt(this.value, 10) / 100;
             sp.querySelector('#lm-op-v').textContent = this.value + '%';
@@ -776,10 +762,6 @@
             prefs.lbCompact = this.checked;
             savePrefs();
             applyLbCompact();
-        });
-        sp.querySelector('#lm-jrc').addEventListener('change', function () {
-            prefs.jsResponseCurve = this.value;
-            savePrefs();
         });
         sp.querySelector('#lm-zoombtn').addEventListener('change', function () { prefs.zoomBtns = this.checked; savePrefs(); buildZoomButtons(); layoutRefresh(); });
         sp.querySelector('#lm-freespec').addEventListener('change', function () { prefs.freeSpecBtn = this.checked; savePrefs(); buildFreeSpecButton(); layoutRefresh(); });
@@ -1090,7 +1072,6 @@
             readPrefs();
             var q = function (id) { return sp.querySelector('#' + id); };
             var setRange = function (id, v, label) { var el = q(id); if (el) el.value = v; var l = q(id + '-v'); if (l) l.textContent = label; };
-            setRange('lm-js', prefs.jsSensitivity, String(prefs.jsSensitivity));
             setRange('lm-op', Math.round(prefs.btnOpacity * 100), Math.round(prefs.btnOpacity * 100) + '%');
             setRange('lm-bs', Math.round(prefs.btnScale * 100), Math.round(prefs.btnScale * 100) + '%');
             setRange('lm-dz', Math.max(8, prefs.joystickDeadZone), String(Math.max(8, prefs.joystickDeadZone)));
@@ -1102,8 +1083,6 @@
                 ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact'], ['lm-zoombtn', 'zoomBtns'], ['lm-freespec', 'freeSpecBtn'],
                 ['lm-respbtn', 'respawnBtn'], ['lm-macrobtn', 'macroBtns']
             ].forEach(function (c) { var el = q(c[0]); if (el) el.checked = !!prefs[c[1]]; });
-            /* sync response curve dropdown */
-            var jrcEl = q('lm-jrc'); if (jrcEl) jrcEl.value = prefs.jsResponseCurve;
             bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
             if (prefs.targetMode) jHide();
             buildQuickCmds();
@@ -1656,17 +1635,10 @@
             var dz = prefs.joystickDeadZone || 0;
             if (rawD < Math.max(8, dz)) return;
 
-            var dx = rx0 * prefs.jsSensitivity;
-            var dy = ry0 * prefs.jsSensitivity;
-            /* Response curve: modify distance scaling while preserving direction.
-             * 'linear' = no change; 'ease' = gentle start, faster mid; 'aggressive' = fast near edge */
-            if (prefs.jsResponseCurve !== 'linear' && rawD > 0) {
-                var maxR = JR > 0 ? JR : 55;
-                var t0 = Math.min(rawD / maxR, 1);
-                var curved = prefs.jsResponseCurve === 'ease' ? t0 * t0 * (3 - 2 * t0) : (t0 * t0);
-                var factor = curved / t0; /* preserves direction, scales magnitude */
-                dx *= factor; dy *= factor;
-            }
+            /* only the direction steers: the virtual cursor goes far off screen in the
+             * joystick's direction, so how far the thumb is pushed does not change the speed */
+            var dx = rx0 * 300;
+            var dy = ry0 * 300;
             /* no "/ asp": the game maps both cursor axes with the same scale
              * (screenDX / viewScale, screenDY / viewScale), so dividing x by the screen aspect
              * bent every diagonal toward vertical (45 deg became about 65 deg on a 20:9 phone) */

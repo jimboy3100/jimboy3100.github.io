@@ -125,24 +125,6 @@
     "ja": "コンパクトリーダーボード",
     "it": "Classifica compatta"
   },
-  "pkg.agm.m_jsResponseCurve": {
-    "en": "Response curve",
-    "el": "Καμπύλη απόκρισης",
-    "es": "Curva de respuesta",
-    "bg": "Крива на отзивчивост",
-    "fr": "Courbe de réponse",
-    "ar": "منحنى الاستجابة",
-    "zh": "響應曲線",
-    "ru": "Кривая отклика",
-    "de": "Reaktionskurve",
-    "tr": "Tepki eğrisi",
-    "pl": "Krzywa odpowiedzi",
-    "nl": "Responscurve",
-    "pt": "Curva de resposta",
-    "id": "Kurva respons",
-    "ja": "レスポンスカーブ",
-    "it": "Curva di risposta"
-  },
   "pkg.agm.m_zoomBtns": {
     "en": "Zoom +/− buttons",
     "el": "Κουμπιά ζουμ +/−",

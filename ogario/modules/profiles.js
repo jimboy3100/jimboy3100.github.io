@@ -72,10 +72,10 @@
     }
     /* LMmobile's phone controls and their slider ranges (LMmobile checks them again on load) */
     var MOBILE_SCHEMA = {
-        jsSensitivity: [100, 600], btnOpacity: [0.2, 1], btnScale: [0.5, 1.5], hudFade: [0, 1],
+        btnOpacity: [0.2, 1], btnScale: [0.5, 1.5], hudFade: [0, 1],
         targetMode: 0, swipeSplit: 0, muteVibration: 0, tapHaptic: 0, quickCmds: 0, mbButton: 0,
         stopOnRelease: 0, pingBtn: 0, netGraph: 0, fixedJoystick: 0, joystickDeadZone: [0, 40],
-        lbCompact: 0, jsResponseCurve: ['linear', 'ease', 'aggressive'], zoomBtns: 0, freeSpecBtn: 0,
+        lbCompact: 0, zoomBtns: 0, freeSpecBtn: 0,
         jsSize: [0.5, 2], jsOpacity: [0.2, 1], respawnBtn: 0, macroBtns: 0
     };
     function mobileValue(k, v) {

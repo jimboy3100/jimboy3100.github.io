@@ -26,8 +26,8 @@
     if (window.LM_IS_MOBILE) {
       if (!split) fail.push('phone SPLIT label not marked');
       else if (split.textContent !== el('misc.mobile.split')) fail.push('SPLIT not Greek: ' + split.textContent);
-      var lab = document.querySelector('#lm-sp [data-i18n="misc.mobile.joystick"]');
-      if (!lab || lab.textContent !== el('misc.mobile.joystick')) fail.push('phone settings label not Greek');
+      var lab = document.querySelector('#lm-sp [data-i18n="misc.mobile.opacity"]');
+      if (!lab || lab.textContent !== el('misc.mobile.opacity')) fail.push('phone settings label not Greek');
     }
   }
   done = false;
