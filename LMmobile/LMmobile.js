@@ -1292,6 +1292,7 @@
          * fixed 20/s), pauses in a hidden tab, and is the real feed command even if W was
          * rebound. The old 50 ms key loop stays as a fallback. */
         function feedStart() {
+            feedWatch(true);
             if (typeof application !== 'undefined' && application.macroFeed) {
                 feedMacroOn = true;
                 application.macroFeed(true);
@@ -1303,11 +1304,26 @@
             feedIv = setInterval(function () { emitKey(87); }, 50);
         }
         function feedStop() {
+            feedWatch(false);
             if (feedMacroOn && typeof application !== 'undefined' && application.macroFeed) application.macroFeed(false);
             feedMacroOn = false;
             clearInterval(feedIv); feedIv = null;
         }
         window._lmMobileFeedStop = feedStop;
+        /* a death (with auto respawn it fed the new life) or another server ends a held Feed; the
+         * game events are listened to only while it is held (nothing listens otherwise) */
+        var feedWatched = false;
+        function feedDeath() {
+            /* a multibox unit still playing keeps the held Feed (it feeds that unit) */
+            if (!(window.legendmod && window.legendmod.multiBoxPlayerExists)) feedStop();
+        }
+        function feedWatch(on) {
+            var E = window.LMEvents;
+            if (on === feedWatched || !E || typeof E.on !== 'function') return;
+            feedWatched = on;
+            E[on ? 'on' : 'off']('death', feedDeath);
+            E[on ? 'on' : 'off']('serverChange', feedStop);
+        }
         bFeed.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             if (isMenuVisible()) return; /* B6 */
@@ -1338,9 +1354,9 @@
         window.addEventListener('blur', releaseHeld);
         window.addEventListener('pagehide', releaseHeld);
         window.addEventListener('orientationchange', releaseHeld);
-        /* the held actions only (Feed, the ping choice), the steering thumb stays: a death with
-         * auto respawn or the chat box opening do not take the screen away, but a Feed held through
-         * them fed the new life / kept feeding under the keyboard */
+        /* the held actions only (Feed, the ping choice), the steering thumb stays: the chat box
+         * opening does not take the screen away, but a Feed held through it kept feeding under the
+         * keyboard */
         function releaseActions() {
             feedStop();
             if (_cancelPing) _cancelPing();
@@ -1348,12 +1364,6 @@
         if (window.LMEvents && typeof window.LMEvents.on === 'function') {
             window.LMEvents.on('replayStart', releaseHeld);
             window.LMEvents.on('replayStop', releaseHeld);
-            /* another server: nothing held belongs to it */
-            window.LMEvents.on('serverChange', releaseHeld);
-            /* a multibox unit still playing keeps the held Feed (it feeds that unit) */
-            window.LMEvents.on('death', function () {
-                if (!(window.legendmod && window.legendmod.multiBoxPlayerExists)) releaseActions();
-            });
         }
 
         /* (game menu is accessed via the drawer — ☰ now only toggles the drawer) */

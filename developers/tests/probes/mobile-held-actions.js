@@ -46,6 +46,10 @@
       ['server change', function () { E.emit('serverChange', { host: 'probe.invalid' }); }, false]
     ];
     info.feed = {};
+    /* the death / server change events are listened to only while the Feed is held */
+    var listens = function () { return E._has('death') || E._has('serverChange'); };
+    var before = listens();
+    if (before) fail.push('death / serverChange listened to before the Feed was held');
     for (var i = 0; i < cases.length; i++) {
       if (!hold(80 + i)) { fail.push(cases[i][0] + ': the Feed button did not start feeding'); continue; }
       cases[i][1]();
@@ -57,6 +61,7 @@
       /* the chat case: close the (stubbed) chat again with a tap on its button */
       if (i === 0) { touch(C.chat, 'touchstart', 95); touch(C.chat, 'touchend', 95); }
     }
+    if (!before && listens()) fail.push('death / serverChange still listened to after the Feed was let go');
     /* (2) */
     var ping = H.controls().ping;
     if (!ping) fail.push('the ping button was not built');
