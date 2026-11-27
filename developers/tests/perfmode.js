@@ -25,7 +25,7 @@ const ownSrc = main.indexOf('        _lmPerfModeKeys:') >= 0 ? cut('        _lmP
 const setStart = main.indexOf('        setSettings(id, checked) {');
 const headSrc = cut('            if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {', '                switch (id) {', setStart);
 const caseSrc = cut("                    case 'performanceMode':", "                this.saveSettings(defaultmapsettings, 'ogarioSettings');", setStart);
-const presetSrc = cut("                var _lmTx = function (k, en)", '                /* Recently added options');
+const presetSrc = cut("                var _lmTx = function (k, en)", '                /* the NEW badges and their');
 check('setSettings asks Adaptive performance first, then the copy', headSrc.indexOf('LMPerf.onSetting(id, checked)') >= 0 &&
     headSrc.indexOf('LMPerf.onSetting(id, checked)') < headSrc.indexOf('this._lmPerfModeOwn(id, checked)') &&
     headSrc.indexOf('this._lmPerfModeOwn(id, checked)') < headSrc.indexOf('defaultmapsettings[id] = checked'));

@@ -1568,24 +1568,6 @@
     "ja": "プリセット：競技、省電力、配信者、シンプルHUD、モーション軽減（元に戻す機能付き）",
     "it": "Preset: Competitivo, Risparmio batteria, Streamer, HUD pulito, Movimento ridotto (con Annulla)"
   },
-  "site.features.newBadgesAndA": {
-    "en": "<b>NEW</b> badges and a <i>Show new options</i> filter",
-    "el": "Σήματα <b>NEW</b> και φίλτρο <i>Show new options</i>",
-    "es": "Insignias <b>NEW</b> y filtro <i>Show new options</i>",
-    "bg": "Значки <b>НОВО</b> и филтър <i>Покажи новите опции</i>",
-    "fr": "Badges <b>NEW</b> et filtre <i>Show new options</i>",
-    "ar": "شارات <b>جديد</b> ومرشّح <i>عرض الخيارات الجديدة</i>",
-    "zh": "<b>新</b>徽章與<i>顯示新選項</i>篩選器",
-    "ru": "Значки <b>НОВОЕ</b> и фильтр <i>Показать новые опции</i>",
-    "de": "<b>NEU</b>-Badges und ein Filter <i>Show new options</i>",
-    "tr": "<b>YENİ</b> rozetleri ve <i>Yeni seçenekleri göster</i> filtresi",
-    "pl": "Odznaki <b>NOWOŚĆ</b> i filtr <i>Pokaż nowe opcje</i>",
-    "nl": "<b>NIEUW</b>-badges en een filter <i>Nieuwe opties tonen</i>",
-    "pt": "Selos <b>NOVO</b> e um filtro <i>Mostrar opções novas</i>",
-    "id": "Lencana <b>BARU</b> dan filter <i>Tampilkan opsi baru</i>",
-    "ja": "<b>NEW</b>バッジと<i>新しいオプションを表示</i>フィルター",
-    "it": "Badge <b>NUOVO</b> e filtro <i>Mostra nuove opzioni</i>"
-  },
   "site.features.settingsThemeAndHotkey": {
     "en": "Settings, theme and hotkey labels in 16 languages",
     "el": "Ετικέτες ρυθμίσεων, θέματος και πλήκτρων σε 16 γλώσσες",

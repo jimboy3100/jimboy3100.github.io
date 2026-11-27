@@ -3834,22 +3834,22 @@
     "it": "<b>Accessibilità</b>: un preset del tema \"Adatto ai daltonici (alto contrasto)\", un'opzione e un preset delle impostazioni \"Movimento ridotto\" (niente tremolio dello schermo, particelle di morte o rotazione all'ingresso), e nello spettatore libero puoi seguire un giocatore della classifica: clicca su una massa in classifica o assegna un tasto a \"segui il prossimo giocatore in classifica\"."
   },
   "site.index.settingsPresetsCompetitiveBattery": {
-    "en": "<b>Settings presets</b> (Competitive, Battery saver, Streamer, Clean HUD) next to the settings search, with Undo, plus <b>NEW</b> badges and a \"Show new options\" filter for recently added options.",
-    "el": "<b>Προρρυθμίσεις ρυθμίσεων</b> (Competitive, Battery saver, Streamer, Clean HUD) δίπλα στην αναζήτηση ρυθμίσεων, με Αναίρεση, καθώς και σήματα <b>NEW</b> και φίλτρο «Show new options» για τις επιλογές που προστέθηκαν πρόσφατα.",
-    "es": "<b>Presets de ajustes</b> (Competitive, Battery saver, Streamer, Clean HUD) junto a la búsqueda de ajustes, con Deshacer, además de insignias <b>NEW</b> y un filtro \"Show new options\" para las opciones añadidas recientemente.",
-    "bg": "<b>Готови настройки</b> (Състезателна, Пестене на батерия, Стриймър, Чист HUD) до търсенето в настройките, с Отмяна, плюс значки <b>НОВО</b> и филтър „Покажи новите опции“ за наскоро добавените опции.",
-    "fr": "<b>Préréglages des paramètres</b> (Competitive, Battery saver, Streamer, Clean HUD) à côté de la recherche des paramètres, avec Annuler, ainsi que des badges <b>NEW</b> et un filtre « Show new options » pour les options ajoutées récemment.",
-    "ar": "<b>إعدادات مسبقة</b> (تنافسي وتوفير البطارية وStreamer وواجهة نظيفة) بجوار بحث الإعدادات، مع إمكانية التراجع، إضافة إلى شارات <b>NEW</b> ومرشّح \"عرض الخيارات الجديدة\" للخيارات المضافة حديثًا.",
-    "zh": "設定搜尋框旁新增<b>設定預設組合</b>（競技、省電、Streamer、簡潔 HUD），可復原，另有 <b>NEW</b> 徽章與「顯示新選項」篩選器，方便找到最近新增的選項。",
-    "ru": "<b>Пресеты настроек</b> (Соревновательный, Экономия батареи, Стример, Чистый HUD) рядом с поиском по настройкам, с отменой, а также значки <b>НОВОЕ</b> и фильтр «Показать новые опции» для недавно добавленных опций.",
-    "de": "<b>Einstellungs-Presets</b> (Wettkampf, Akku sparen, Streamer, Aufgeräumtes HUD) neben der Einstellungssuche, mit Rückgängig, dazu <b>NEU</b>-Badges und ein Filter „Neue Optionen zeigen“ für kürzlich hinzugefügte Optionen.",
-    "tr": "Ayar aramasının yanında Geri Al özellikli <b>ayar ön ayarları</b> (Competitive, Battery saver, Streamer, Clean HUD), ayrıca yakın zamanda eklenen seçenekler için <b>YENİ</b> rozetleri ve \"Show new options\" filtresi.",
-    "pl": "<b>Presety ustawień</b> (Rywalizacja, Oszczędzanie baterii, Streamer, Czysty HUD) obok wyszukiwarki ustawień, z cofnięciem, a także odznaki <b>NOWOŚĆ</b> i filtr „Pokaż nowe opcje” dla niedawno dodanych opcji.",
-    "nl": "<b>Instellingenpresets</b> (Competitive, Battery saver, Streamer, Clean HUD) naast de zoekbalk van de instellingen, met Undo, plus <b>NEW</b>-badges en een filter \"Show new options\" voor recent toegevoegde opties.",
-    "pt": "<b>Predefinições de configurações</b> (Competitivo, Economia de bateria, Streamer, HUD limpo) ao lado da busca de configurações, com Desfazer, além de selos <b>NOVO</b> e um filtro \"Mostrar opções novas\" para as opções adicionadas recentemente.",
-    "id": "<b>Preset pengaturan</b> (Kompetitif, Hemat baterai, Streamer, HUD Bersih) di sebelah pencarian pengaturan, dengan Urungkan, plus lencana <b>BARU</b> dan filter \"Tampilkan opsi baru\" untuk opsi yang baru ditambahkan.",
-    "ja": "<b>設定プリセット</b> (競技、バッテリー節約、配信者、すっきり HUD) を設定検索の隣に追加。元に戻す機能付きです。さらに、最近追加されたオプションに <b>NEW</b> バッジと「新しいオプションを表示」フィルターを追加しました。",
-    "it": "<b>Preset delle impostazioni</b> (Competitivo, Risparmio batteria, Streamer, HUD pulito) accanto alla ricerca nelle impostazioni, con Annulla, più i badge <b>NUOVO</b> e un filtro \"Mostra le nuove opzioni\" per le opzioni aggiunte di recente."
+    "en": "<b>Settings presets</b> (Competitive, Battery saver, Streamer, Clean HUD) next to the settings search, with Undo.",
+    "el": "<b>Προρρυθμίσεις ρυθμίσεων</b> (Competitive, Battery saver, Streamer, Clean HUD) δίπλα στην αναζήτηση ρυθμίσεων, με Αναίρεση.",
+    "es": "<b>Presets de ajustes</b> (Competitive, Battery saver, Streamer, Clean HUD) junto a la búsqueda de ajustes, con Deshacer.",
+    "bg": "<b>Готови настройки</b> (Състезателна, Пестене на батерия, Стриймър, Чист HUD) до търсенето в настройките, с Отмяна.",
+    "fr": "<b>Préréglages des paramètres</b> (Competitive, Battery saver, Streamer, Clean HUD) à côté de la recherche des paramètres, avec Annuler.",
+    "ar": "<b>إعدادات مسبقة</b> (تنافسي وتوفير البطارية وStreamer وواجهة نظيفة) بجوار بحث الإعدادات، مع إمكانية التراجع.",
+    "zh": "設定搜尋框旁新增<b>設定預設組合</b>（競技、省電、Streamer、簡潔 HUD），可復原。",
+    "ru": "<b>Пресеты настроек</b> (Соревновательный, Экономия батареи, Стример, Чистый HUD) рядом с поиском по настройкам, с отменой.",
+    "de": "<b>Einstellungs-Presets</b> (Wettkampf, Akku sparen, Streamer, Aufgeräumtes HUD) neben der Einstellungssuche, mit Rückgängig.",
+    "tr": "Ayar aramasının yanında Geri Al özellikli <b>ayar ön ayarları</b> (Competitive, Battery saver, Streamer, Clean HUD).",
+    "pl": "<b>Presety ustawień</b> (Rywalizacja, Oszczędzanie baterii, Streamer, Czysty HUD) obok wyszukiwarki ustawień, z cofnięciem.",
+    "nl": "<b>Instellingenpresets</b> (Competitive, Battery saver, Streamer, Clean HUD) naast de zoekbalk van de instellingen, met Undo.",
+    "pt": "<b>Predefinições de configurações</b> (Competitivo, Economia de bateria, Streamer, HUD limpo) ao lado da busca de configurações, com Desfazer.",
+    "id": "<b>Preset pengaturan</b> (Kompetitif, Hemat baterai, Streamer, HUD Bersih) di sebelah pencarian pengaturan, dengan Urungkan.",
+    "ja": "<b>設定プリセット</b> (競技、バッテリー節約、配信者、すっきり HUD) を設定検索の隣に追加。元に戻す機能付きです。",
+    "it": "<b>Preset delle impostazioni</b> (Competitivo, Risparmio batteria, Streamer, HUD pulito) accanto alla ricerca nelle impostazioni, con Annulla."
   },
   "site.index.expandingLandEventsWhen": {
     "en": "<b>Expanding Land events</b>: when the server runs an event (Double XP, potion rain, golden food, virus storm), a small countdown appears at the top of the screen (\"Double XP: 05:10 left\")."

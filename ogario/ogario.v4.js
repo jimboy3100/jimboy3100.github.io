@@ -21632,7 +21632,7 @@ if (window.LMi18n) window.LMi18n.onChange(function (code) {
 });
 /* Choose Language: the Theme tab rows take the new names at once, each by its own setting (its colour,
  * font, list, field or slider id); languages/LanguagePackHandler.js named them by row position, which
- * gave rows the names of other settings. A NEW badge next to a name stays. */
+ * gave rows the names of other settings. */
 if (window.LMi18n) window.LMi18n.onChange(function () {
     if (typeof $ !== 'function') return;
     /* a name written with ": " before its value keeps it */
@@ -26226,7 +26226,6 @@ function thelegendmodproject() {
                 box.append(inp);
                 $('#og-options').before(box);
                 var timer = null;
-                var newOnly = false; /* "Show new options" toggle (below) */
                 var norm = function (s) {
                     s = String(s || '');
                     try { s = s.normalize('NFD').replace(/[\u0300-\u036f]/g, ''); } catch (e) { }
@@ -26239,14 +26238,14 @@ function thelegendmodproject() {
                 var hkMatches = function (q) {
                     hkHint.empty();
                     var hits = [];
-                    if (q && !newOnly) $('#lm-hk-controls .lm-hk-ctl').each(function () {
+                    if (q) $('#lm-hk-controls .lm-hk-ctl').each(function () {
                         var r = $(this), ctl = r.find('input[id], button[id]').first();
                         var txt = $.trim(r.children('.key-label').text() || r.find('.btn').text());
                         if (ctl.length && txt && norm(txt).indexOf(q) >= 0) hits.push([ctl.attr('id'), txt]);
                     });
                     /* mouse buttons are bound in the key fields: the window's line that says how */
                     var mLab = lmT('pkg.mb.mouseButtons'), mInst = $('#hotkeys-inst [data-i18n="pkg.mb.hkInstMouse"]');
-                    if (q && !newOnly && mInst.length && (norm(mLab).indexOf(q) >= 0 || (q.length >= 4 && norm(mInst.text()).indexOf(q) >= 0))) hits.push(['hotkeys-inst', mLab]);
+                    if (q && mInst.length && (norm(mLab).indexOf(q) >= 0 || (q.length >= 4 && norm(mInst.text()).indexOf(q) >= 0))) hits.push(['hotkeys-inst', mLab]);
                     if (!hits.length) { hkHint.hide(); return; }
                     hkHint.append($('<span style="margin-right:4px;"></span>').attr('data-i18n', 'pkg.hk.searchHint').text(lmT('pkg.hk.searchHint')));
                     hits.forEach(function (h) {
@@ -26267,22 +26266,17 @@ function thelegendmodproject() {
                     $('#og-options > .options-box').each(function () {
                         var sec = $(this);
                         var items = sec.children().not('h5');
-                        if (!q && !newOnly) { items.removeClass('lm-ss-hide'); sec.removeClass('lm-ss-hide'); return; }
+                        if (!q) { items.removeClass('lm-ss-hide'); sec.removeClass('lm-ss-hide'); return; }
                         var headHit = !!q && norm(sec.children('h5').text()).indexOf(q) >= 0;
                         var any = false;
                         items.each(function () {
                             /* the option's own text only: a dropdown's choices (e.g. every hotkey command) matched everything */
-                            var own = $(this).clone(); own.find('select, option, script, style, .lm-new-badge').remove();
+                            var own = $(this).clone(); own.find('select, option, script, style').remove();
                             var hit = headHit || norm(own.text()).indexOf(q) >= 0;
-                            if (newOnly && !$(this).hasClass('lm-new-opt')) hit = false;
                             $(this).toggleClass('lm-ss-hide', !hit);
                             if (hit) any = true;
                         });
-                        sec.toggleClass('lm-ss-hide', !any && (newOnly || !headHit));
-                    });
-                    /* the new theme options are in Theme > basic: "Show new options" lists only them there too */
-                    $('#theme-main').children().each(function () {
-                        $(this).toggleClass('lm-ss-hide', newOnly && !$(this).hasClass('lm-new-opt'));
+                        sec.toggleClass('lm-ss-hide', !any && !headHit);
                     });
                 };
                 inp.on('input', function () { clearTimeout(timer); timer = setTimeout(apply, 120); });
@@ -26350,7 +26344,6 @@ function thelegendmodproject() {
                     if (presets[id].tip) pBtn.attr({ title: _lmTx(presets[id].tip, ''), 'data-i18n-title': presets[id].tip });
                 });
                 var undoBtn = $('<button type="button" class="btn btn-xs lm-preset-undo" data-i18n="lmPresetUndo"></button>').text(_lmTx('lmPresetUndo', 'Undo preset')).appendTo(row);
-                var newBtn = $('<button type="button" class="btn btn-xs lm-new-toggle" data-i18n="lmShowNewOptions"></button>').text(_lmTx('lmShowNewOptions', 'Show new options')).appendTo(row);
                 undoBtn.toggle(!!undoSnap);
                 box.append(row);
                 row.on('click', '.lm-preset-btn', function () {
@@ -26398,50 +26391,8 @@ function thelegendmodproject() {
                     undoBtn.hide();
                     return false;
                 });
-                /* Recently added options: a NEW badge for one build (until the settings were
-                 * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf'];
-                newBtn.on('click', function () {
-                    newOnly = !newOnly;
-                    newBtn.toggleClass('active', newOnly);
-                    apply();
-                    return false;
-                });
-                /* called at the end of setMenu, when the options (and the theme menu) exist */
-                application._lmNewBadges = function () {
-                    var seenKey = 'lmNewBadgesSeen';
-                    var seen = null;
-                    try { seen = window.localStorage.getItem(seenKey); } catch (e) { }
-                    var show = seen !== String(window.OgVer);
-                    var count = 0;
-                    NEW_KEYS.forEach(function (k) {
-                        if (!defaultmapsettings.hasOwnProperty(k) && !(typeof defaultSettings !== 'undefined' && defaultSettings.hasOwnProperty(k))) return;
-                        var el = document.getElementById(k + '-slider') || document.getElementById(k);
-                        if (!el) return;
-                        var item = $(el).closest('.slider-box, .input-box, label');
-                        if (!item.length || item.hasClass('lm-new-opt')) return;
-                        item.addClass('lm-new-opt');
-                        count++;
-                        if (!show) return;
-                        /* data-i18n: the badge follows a language change */
-                        var b = $('<span class="lm-new-badge" data-i18n="lmNewBadge"></span>').text(_lmTx('lmNewBadge', 'NEW'));
-                        var title = item.find('.value-label, .title-box').first();
-                        if (title.length) title.append(' ', b); else $(el).before(b, ' ');
-                    });
-                    if (!show || !count) return;
-                    var mark = function () { try { window.localStorage.setItem(seenKey, String(window.OgVer)); } catch (e) { } };
-                    var target = document.getElementById('og-options');
-                    if (window.IntersectionObserver && target) {
-                        var io = new IntersectionObserver(function (en) {
-                            for (var i = 0; i < en.length; i++) {
-                                if (en[i].isIntersecting) { mark(); io.disconnect(); return; }
-                            }
-                        });
-                        io.observe(target);
-                    } else {
-                        $(document).one('click', 'a[href="#og-settings"]', mark);
-                    }
-                };
+                /* the NEW badges and their "Show new options" toggle are gone: drop their stored flag */
+                try { window.localStorage.removeItem('lmNewBadgesSeen'); } catch (e) { }
                 if (!document.getElementById('lm-presets-style')) {
                     var st2 = document.createElement('style');
                     st2.id = 'lm-presets-style';
@@ -26449,9 +26400,7 @@ function thelegendmodproject() {
                         '.lm-presets-row .lm-presets-title{font-size:11px;opacity:.8;margin-right:2px}' +
                         '.lm-presets-row .btn{padding:1px 6px;font-size:11px;line-height:1.5;background:rgba(127,127,127,.15);color:inherit;border:1px solid rgba(127,127,127,.35);border-radius:var(--lm-radius-s,4px)}' +
                         '.lm-presets-row .btn:hover{background:rgba(127,127,127,.3)}' +
-                        '.lm-presets-row .lm-preset-undo{border-color:#e6a23c}' +
-                        '.lm-presets-row .lm-new-toggle.active{background:#e74c3c;border-color:#e74c3c;color:#fff}' +
-                        '.lm-new-badge{display:inline-block;background:#e74c3c;color:#fff;font-size:9px;font-weight:700;line-height:1;padding:2px 4px;border-radius:var(--lm-radius-s,4px);vertical-align:middle;letter-spacing:.3px}';
+                        '.lm-presets-row .lm-preset-undo{border-color:#e6a23c}';
                     document.head.appendChild(st2);
                 }
             })();
@@ -26766,7 +26715,6 @@ function thelegendmodproject() {
             $("#exp-imp-settings").append('<textarea id="import-settings" class="form-control" rows="14" cols="100" spellcheck="false"></textarea><button id="import-settings-btn" class="btn btn-block btn-success">' +
                 textLanguage.importSettings + "</button>");
             if (Settings) Settings.setThemeMenu();
-            if (typeof this._lmNewBadges === 'function') this._lmNewBadges();
             /** @type {number} */
             var e = 0;
             for (; e < profiles.length; e++) {
