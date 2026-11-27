@@ -1,0 +1,274 @@
+/* Full Map / multibox food and per-connection cells, with the real code in a vm: the cell class
+ * (removeCell), the per-connection index and the reconciled food list of ogario/ogario.v4.js
+ * (lmObsTrack, lmFoodAdd ... lmFoodDrawList), drawFood, and the unit / spectator packet handler,
+ * flushCellsData and connect's generation cleanup of ogario/spect.js, fed agar.io packets.
+ * Cases: one pellet seen by the main socket and 5 spectators is drawn once; two pellets close
+ * together stay two; the same raw id on two connections is two pellets; the drawn copy goes and
+ * another connection's copy is drawn at once; a pellet eaten by a cell the spectator does not
+ * see is removed; a spectator disconnect removes only its own cells (from its index, not a scan
+ * of the world); cells of an earlier socket are dropped; a spectator whose residual is corrected
+ * has its pellets placed again; Canvas2D and Expanding Land WebGL get the same list. Prints the food
+ * observations against the pellets drawn and the cost of the list.
+ * node developers/tests/fullmapfood.js */
+'use strict';
+const fs = require('fs'), vm = require('vm'), path = require('path');
+const root = path.join(__dirname, '..', '..');
+const read = (p) => fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
+const src = read(path.join(root, 'ogario', 'ogario.v4.js'));
+const spectSrc = read(path.join(root, 'ogario', 'spect.js'));
+let fail = 0;
+const check = (n, c, info) => { console.log((c ? 'ok   ' : 'FAIL ') + n + (c || info === undefined ? '' : '  [' + info + ']')); if (!c) fail++; };
+function slice(from, to) {
+    const a = src.indexOf(from), b = src.indexOf(to, a + 1);
+    if (a < 0 || b < 0) throw new Error('not found in ogario.v4.js: ' + (a < 0 ? from : to));
+    return src.slice(a, b);
+}
+
+const g = { console: { log() { }, warn() { }, error: console.error }, Date, Math, JSON, Buffer, Map, Set, Array, Float64Array, Int32Array };
+g.window = g;
+vm.createContext(g);
+vm.runInContext([
+    slice('var LM_UNIT_ID_STEP = ', 'var _lmMbGridTime = -1;'),
+    slice('var _lmSrcObs = new Map();', 'var LM_MB_RING_MIN_SCREEN_PX'),
+    'var _DEATH_SLOWMO_ANIM = 600;',
+    'var defaultmapsettings = { virusesRange: true, animation: 120, shortMass: false, virMassShots: false, rainbowFood: true };',
+    'var defaultSettings = { foodColor: "#5000ff", foodSize: 0 };',
+    'var application = { mbSlots: [], selectedOldProfile: 0, teamPlayers: [] }, profiles = [];',
+    'function lmMultiboxPositionTwin() { return null; }',
+    slice('    function quickSwapDelete(', '    }).call(ogarbasicassembly.prototype);\n') + '    }).call(ogarbasicassembly.prototype);',
+    'window.legendmod1 = ogarbasicassembly;',
+    'window.lmCellIdx = { push: indexedPush, of: lmIdxOf, remove: lmIdxRemove, filter: lmIdxFilter };',
+    'this.indexedPush = indexedPush;',
+    'var LM = { cells: [], food: [], viruses: [], foodMulti: [], playerCells: [], playerCellIDs: [], playerCellsMulti: [], removedCells: [], indexedCells: {}, fbOnline: [], cellcolors: {}, time: 0, showFood: true,',
+    '  rgb2Hex: function (r, g, b) { return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1); }, vanillaskins: function () { } };',
+    'window.legendmod = LM; var legendmod = LM;',
+    /* drawFood with the two food passes recorded */
+    'this.renderer = { scale: 1, ctx: {}, _el: false, got: [], isLegendWorldMapDeformationVisible: function () { return this._el; },',
+    '  drawLegendWorldMapFoodWebGL: function (list) { this.got.push(["webgl", list]); return true; },',
+    '  drawCachedFood: function (ctx, list) { this.got.push(["canvas", list]); },',
+    '  ' + (function () { const a = src.indexOf('        drawFood() {'), b = src.indexOf('        drawCachedFood(ctx, food, scale, reset) {', a); return src.slice(a, b).trim().replace(/,$/, ''); })(),
+    '};',
+    'this.LM = LM;'
+].join('\n'), g);
+vm.runInContext(spectSrc + '\nthis.Spect = Spect;', g);
+const LM = g.LM;
+
+function reset() {
+    vm.runInContext('lmObsResetAll(); LM.cells = []; LM.food = []; LM.viruses = []; LM.foodMulti = []; LM.playerCells = []; LM.playerCellsMulti = []; LM.removedCells = []; LM.indexedCells = {}; window.spects = [];', g);
+}
+function spect(number) {
+    const sp = Object.create(g.Spect.prototype);
+    Object.assign(sp, { number, player: false, integrity: true, active: false, foodCalibrated: true, nick: '', playerCellIDs: [], time: 0, connectionGeneration: 1 });
+    g.spects.push(sp);
+    return sp;
+}
+/* agar.io update body: eats, cells (id, x, y, size, flags[, ext], colour), 0, removes */
+function packet(eats, cells, removes) {
+    const b = Buffer.alloc(8 + eats.length * 8 + cells.length * 20 + 4 + removes.length * 4);
+    let o = 0;
+    b.writeUInt16LE(eats.length, o); o += 2;
+    for (const [a, v] of eats) { b.writeUInt32LE(a, o); b.writeUInt32LE(v, o + 4); o += 8; }
+    for (const c of cells) {
+        b.writeUInt32LE(c.id, o); b.writeInt32LE(c.x, o + 4); b.writeInt32LE(c.y, o + 8); b.writeUInt16LE(c.size || 11, o + 12); o += 14;
+        const col = c.color === undefined ? 0x40a0f0 : c.color;
+        b.writeUInt8(128 | 2 | (c.virus ? 1 : 0), o++); b.writeUInt8(c.food === false ? 0 : 1, o++);
+        b.writeUInt8((col >> 16) & 255, o++); b.writeUInt8((col >> 8) & 255, o++); b.writeUInt8(col & 255, o++);
+    }
+    b.writeUInt32LE(0, o); o += 4;
+    b.writeUInt16LE(removes.length, o); o += 2;
+    for (const id of removes) { b.writeUInt32LE(id, o); o += 4; }
+    return b.slice(0, o);
+}
+/* a main-socket pellet, as the main updateCells stores it */
+function mainFood(id, x, y, color, size) {
+    const c = new g.legendmod1(id, x, y, size || 11, color || '#3a90d8', true, false, false, false, false);
+    c.spectator = false;
+    g.indexedPush(LM.food, c, '_foodIdx');
+    LM.indexedCells[id] = c;
+    c.targetX = x; c.targetY = y;
+    return c;
+}
+const drawList = () => vm.runInContext('lmFoodDrawList()', g);
+const stats = () => vm.runInContext('lmFoodStats()', g);
+/* main copy colour of a server colour 0x40a0f0 (x0.9, as both decoders do) */
+const hex = (v) => LM.rgb2Hex(~~(((v >> 16) & 255) * 0.9), ~~(((v >> 8) & 255) * 0.9), ~~((v & 255) * 0.9));
+
+/* 1. one pellet: the main socket and 5 Full Map spectators (each its own raw id) */
+reset();
+{
+    const m = mainFood(10, 500, 500, hex(0x40a0f0));
+    const sps = [1, 2, 3, 4, 5].map(spect);
+    sps.forEach((sp, k) => sp.updateCells(packet([], [{ id: 1000 + k * 7, x: 500, y: 500 }], []), 0));
+    const list = drawList();
+    check('same pellet seen by the main socket and 5 spectators: drawn once, the main copy', list.length === 1 && list[0] === m, list.length);
+    check('spectator pellets are not in LM.cells (no second drawing as cells)', LM.cells.length === 0 && LM.foodMulti.length === 5);
+    /* the main copy is eaten: another copy is drawn in its slot at once */
+    m.removeCell();
+    const l2 = drawList();
+    check('drawn copy gone: the pellet is still drawn once, by a spectator copy', l2.length === 1 && l2[0].spectator === 1, l2.length);
+    /* every spectator leaves its view of it but one */
+    for (let k = 0; k < 4; k++) sps[k].updateCells(packet([], [], [1000 + k * 7]), 0);
+    check('the last copy left keeps it drawn', drawList().length === 1 && drawList()[0].spectator === 5);
+    sps[4].updateCells(packet([], [], [1000 + 4 * 7]), 0);
+    check('no copy left: the list is off, LM.food drawn as before', !stats().on && drawList() === LM.food);
+}
+/* 2. two pellets close together stay two; pellets of one connection never merge; another
+ * size is another pellet; the colour is not compared (not the same on every connection) */
+reset();
+{
+    mainFood(20, 1000, 1000, hex(0x40a0f0)); mainFood(21, 1006, 1000, hex(0x40a0f0)); mainFood(22, 1900, 1900, hex(0x40a0f0));
+    const sp = spect(1);
+    sp.updateCells(packet([], [{ id: 5, x: 1000, y: 1000 }, { id: 6, x: 1006, y: 1000 }, { id: 7, x: 1300, y: 1300 }, { id: 8, x: 1301, y: 1300 },
+        { id: 9, x: 1600, y: 1600 }, { id: 10, x: 1600, y: 1600, size: 14 }, { id: 11, x: 1902, y: 1899, color: 0xff3300 }, { id: 12, x: 1000, y: 1000, size: 16 }], []), 0);
+    check('two adjacent pellets seen by two connections: two pellets', drawList().filter(c => c.x < 1100 && c.size === 11).length === 2, drawList().length);
+    check('pellets of one connection at one place stay two; another size is another pellet', drawList().filter(c => c.x >= 1300 && c.x < 1700).length === 4 && drawList().filter(c => c.size === 16).length === 1);
+    check('the same pellet in another colour on the other connection: one pellet', drawList().filter(c => c.x >= 1890).length === 1, drawList().length);
+}
+/* 2b. live capture: a main socket and 3 Full Map spectators (own offsets, mirrors and scales),
+ * each spectator placed in the main frame from its border (what AGFM-C's transform does):
+ * every pellet matched across two connections in the capture is one pellet here */
+reset();
+{
+    const L = JSON.parse(read(path.join(__dirname, 'lib', 'fullmap-food-live.json')));
+    const M = L.main, byConn = new Map();
+    for (const c of L.conns) {
+        const w = c.maxX - c.minX, h = c.maxY - c.minY;
+        const fx = (x) => M.minX + (c.o[0] > 0 ? (x - c.minX) / w : (c.maxX - x) / w) * M.w;
+        const fy = (y) => M.minY + (c.o[1] > 0 ? (y - c.minY) / h : (c.maxY - y) / h) * M.h;
+        if (c.n === 0) c.food.forEach((p, i) => mainFood(i + 1, p[0], p[1], null, p[2]));
+        else {
+            const sp = spect(c.n);
+            sp.getX = fx; sp.getY = fy;
+            sp.updateCells(packet([], c.food.map((p, i) => ({ id: 10 + i, x: p[0], y: p[1], size: p[2] })), []), 0);
+        }
+        byConn.set(c.n, c);
+    }
+    const find = (n, x, y) => {
+        if (n === 0) return LM.food.find(c => c.x === x && c.y === y);
+        const set = vm.runInContext('lmObsOfSource(' + n + ')', g);
+        for (const c of set) if (c._lmRawX === x && c._lmRawY === y) return c;
+        return null;
+    };
+    let same = 0, missing = 0;
+    for (const [a, xa, ya, b, xb, yb] of L.pairs) {
+        const ca = find(a, xa, ya), cb = find(b, xb, yb);
+        if (!ca || !cb) { missing++; continue; }
+        if (ca._lmFoodEnt && ca._lmFoodEnt === cb._lmFoodEnt) same++;
+    }
+    const st = stats();
+    check('live capture: every matched pellet pair is one pellet (' + same + ' of ' + (L.pairs.length - missing) + ' pairs; ' + st.observations + ' observations, ' + st.pellets + ' pellets drawn)', same === L.pairs.length - missing && same > 100, same);
+}
+/* 3. raw ids: the same raw id on two connections is two pellets; different ids, one place, one */
+reset();
+{
+    const a = spect(1), b = spect(2);
+    a.updateCells(packet([], [{ id: 100, x: 0, y: 0 }, { id: 101, x: 2000, y: 2000 }], []), 0);
+    b.updateCells(packet([], [{ id: 100, x: 700, y: 700 }, { id: 555, x: 2000, y: 2000 }], []), 0);
+    check('same raw id, different places: two pellets', drawList().filter(c => c.x < 1000).length === 2);
+    check('different raw ids, same pellet: one', drawList().filter(c => c.x === 2000).length === 1);
+}
+/* 4. eaten by a cell the spectator does not see: removed (no removal record follows) */
+reset();
+{
+    const sp = spect(1);
+    sp.updateCells(packet([], [{ id: 300, x: 50, y: 50 }, { id: 301, x: 80, y: 50 }], []), 0);
+    const victim = LM.indexedCells[g.lmUnitCellId(300, 1)];
+    sp.updateCells(packet([[999999, 300]], [], []), 0);
+    check('eaten victim without a local eater: removed', victim.removed && !LM.indexedCells[g.lmUnitCellId(300, 1)] && drawList().length === 1);
+    /* a player cell eaten the same way */
+    sp.updateCells(packet([], [{ id: 400, x: 90, y: 90, size: 60, food: false }], []), 0);
+    const body = LM.indexedCells[g.lmUnitCellId(400, 1)];
+    sp.updateCells(packet([[999998, 400]], [], []), 0);
+    check('eaten player cell without a local eater: removed from LM.cells', body.removed && !LM.cells.includes(body));
+}
+/* 5. a spectator disconnect removes only its own cells, from its own index */
+reset();
+{
+    const m = mainFood(1, 0, 0, hex(0x40a0f0));
+    const a = spect(1), b = spect(2);
+    const cells = [];
+    for (let i = 0; i < 300; i++) cells.push({ id: 10 + i, x: i * 40, y: 0 });
+    a.updateCells(packet([], cells.concat([{ id: 5000, x: 9000, y: 9000, size: 80, food: false }]), []), 0);
+    b.updateCells(packet([], cells.slice(0, 150).concat([{ id: 6000, x: -9000, y: -9000, size: 80, food: false }]), []), 0);
+    const before = drawList().length;
+    /* the world's cells must not be scanned: indexedCells keys are counted */
+    let keyScans = 0;
+    const ic = LM.indexedCells;
+    LM.indexedCells = new Proxy(ic, { ownKeys(t) { keyScans++; return Reflect.ownKeys(t); } });
+    b.flushCellsData();
+    LM.indexedCells = ic;
+    const bLeft = Object.keys(ic).filter(k => ic[k].spectator === 2).length;
+    check('spectator disconnect: its cells removed, others kept', bLeft === 0 && !!ic[g.lmUnitCellId(5000, 1)] && !!ic[1] && !m.removed);
+    check('spectator disconnect: the pellets it shared stay drawn once', before === 300 && drawList().length === 300, before + '/' + drawList().length);
+    check('spectator disconnect: no scan of the world cells', keyScans === 0, keyScans);
+    /* a new socket of spectator 1: the cells of the old socket go */
+    a.connectionGeneration = 2;
+    a._lmDropOtherGenerations(2);
+    check('new socket generation: the old socket cells dropped (main pellet kept)', !Object.keys(ic).some(k => ic[k].spectator === 1) && drawList().length === 1 && drawList()[0] === m);
+    /* a stale cell under the same id is replaced, not reused */
+    a.connectionGeneration = 3;
+    a.updateCells(packet([], [{ id: 77, x: 5, y: 5 }], []), 0);
+    const stale = ic[g.lmUnitCellId(77, 1)];
+    a.connectionGeneration = 4;
+    a.updateCells(packet([], [{ id: 77, x: 3000, y: 3000 }], []), 0);
+    const fresh = ic[g.lmUnitCellId(77, 1)];
+    check('packet of a new socket under an old id: a new cell, the old one removed', stale.removed && fresh !== stale && fresh._lmGen === 4 && fresh.x === 3000);
+}
+/* 6. a spectator's residual d is corrected (spect.js _lmApplyTransform reprojects its cells
+ *    from raw): its pellets are placed again */
+reset();
+{
+    const m = mainFood(1, 100, 100, hex(0x40a0f0));
+    const sp = spect(1);
+    /* main frame = world (centre 0, scale 1); the spectator: centre 0, no mirror, d = 0 */
+    Object.assign(LM, { _lmBorderCX: 0, _lmBorderCY: 0, _lmBorderKX: 1, _lmBorderKY: 1, mapOffsetX: 0, mapOffsetY: 0 });
+    Object.assign(sp, { mapOffsetFixed: true, mapOffsetX: 0, mapOffsetY: 0, fixX: 1, fixY: 1, fix3x: 0, fix3y: 0, _lmKX: 1, _lmKY: 1, _lmSameFrame: false });
+    sp.updateCells(packet([], [{ id: 9, x: 70, y: 100 }, { id: 10, x: 470, y: 100 }], []), 0);
+    check('pellet seen with a residual 30 off: two pellets until it is corrected', drawList().length === 3, drawList().length);
+    sp._lmApplyTransform(1, 1, 30, 0);
+    const list = drawList();
+    check('offset fixed: placed again, the pellet drawn once', list.length === 2 && list.includes(m), list.length);
+}
+/* 7. Canvas2D and Expanding Land WebGL draw the same list */
+reset();
+{
+    mainFood(1, 0, 0, hex(0x40a0f0));
+    const sp = spect(1);
+    sp.updateCells(packet([], [{ id: 2, x: 0, y: 0 }, { id: 3, x: 50, y: 0 }], []), 0);
+    const R = g.renderer;
+    R.got = []; R._el = false; R.drawFood();
+    R._el = true; R.drawFood();
+    const want = drawList();
+    check('Canvas2D and WebGL food passes get the same list (one per pellet)', R.got.length === 2 && R.got[0][0] === 'canvas' && R.got[1][0] === 'webgl' && R.got[0][1] === want && R.got[1][1] === want && want.length === 2);
+}
+/* 8. cost: 5 spectators over 4000 pellets with overlapping views (Full Map) */
+reset();
+{
+    let s = 99;
+    const rnd = () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648;
+    const pel = [];
+    for (let i = 0; i < 4000; i++) pel.push({ x: Math.floor(rnd() * 7000), y: Math.floor(rnd() * 7000), color: (rnd() * 0xffffff) | 0 });
+    for (let i = 0; i < 1500; i++) mainFood(i + 1, pel[i].x, pel[i].y, hex(pel[i].color));
+    const sps = [1, 2, 3, 4, 5].map(spect);
+    const t0 = process.hrtime.bigint();
+    sps.forEach((sp, k) => {
+        const view = pel.map((p, i) => Object.assign({ id: 100000 * (k + 1) + i }, p)).filter((p) => p.x >= k * 1200 && p.x <= k * 1200 + 2400);
+        sp.updateCells(packet([], view, []), 0);
+    });
+    const addMs = Number(process.hrtime.bigint() - t0) / 1e6;
+    const st = stats();
+    let t1 = process.hrtime.bigint();
+    for (let f = 0; f < 200; f++) drawList();
+    const frameUs = Number(process.hrtime.bigint() - t1) / 1e3 / 200;
+    /* unique pellets: every pellet in some view */
+    const unique = pel.filter((p, i) => i < 1500 || sps.some((sp, k) => p.x >= k * 1200 && p.x <= k * 1200 + 2400)).length;
+    check('Full Map scale: one entry per pellet (' + st.observations + ' observations, ' + st.pellets + ' pellets drawn, ' + unique + ' pellets)', st.pellets === unique, st.pellets + '/' + unique);
+    t1 = process.hrtime.bigint();
+    sps.forEach((sp) => sp.flushCellsData());
+    const flushMs = Number(process.hrtime.bigint() - t1) / 1e6;
+    console.log('info food: ' + (st.observations - 1500) + ' spectator + 1500 main observations -> ' + st.pellets + ' pellets drawn (before: ' + st.observations + ' drawn, ' + (st.observations - 1500) + ' of them as cells); packets ' + addMs.toFixed(1) + ' ms, list per frame ' + frameUs.toFixed(2) + ' us, 5 disconnects ' + flushMs.toFixed(1) + ' ms');
+    check('all spectators gone: back to LM.food', drawList() === LM.food && LM.food.length === 1500);
+}
+
+console.log(fail ? fail + ' check(s) failed' : 'all fullmapfood checks passed');
+process.exit(fail ? 1 : 0);

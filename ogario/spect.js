@@ -466,6 +466,9 @@ class Spect {
             try { oldSocket.close(); } catch (e) { }
         }
         const generation = ++this.connectionGeneration;
+        /* cells of an earlier socket of this unit (a second connect() while connecting) are
+         * not this socket's: its ids may name other cells */
+        this._lmDropOtherGenerations(generation);
         const createSocket = window.createLegendWebSocket || function (url) { return new WebSocket(url); };
         const socket = createSocket(legendmod.ws);
         this.socket = socket;
@@ -617,13 +620,24 @@ class Spect {
         //this.food = [];
         //this.viruses = [];
         //this.deleteFromArray("viruses")
-        const ownedCells = new Set(Object.values(legendmod.indexedCells).concat(legendmod.cells));
-        for (let cell of ownedCells) {
-            if (cell.spectator === this.number) {
-                cell.removeCell();
+        /* only this connection's cells, from its own index (no scan of the world's cells) */
+        const ownedCells = typeof lmObsOfSource === 'function' ? lmObsOfSource(this.number) : null;
+        if (ownedCells) {
+            for (let cell of Array.from(ownedCells)) {
+                if (cell.spectator === this.number) cell.removeCell();
+                else lmObsUntrack(cell);
             }
         }
 
+    }
+
+    /* Removes this connection's cells that came from another socket generation. */
+    _lmDropOtherGenerations(generation) {
+        const ownedCells = typeof lmObsOfSource === 'function' ? lmObsOfSource(this.number) : null;
+        if (!ownedCells || !ownedCells.size) return;
+        for (let cell of Array.from(ownedCells)) {
+            if (cell._lmGen !== generation) cell.removeCell();
+        }
     }
 
     isSocketOpen() {
@@ -2229,14 +2243,16 @@ class Spect {
             //delete legendmod.indexedCells[victimID] //don't even wait for Legend mod, delete eaten cells here
             //console.log('victim isFood',victimID.isFood)
             offset += 8;
-            if (eaterCell && victimCell) {
+            /* The victim is gone even when this connection does not know the eater (out of
+             * its view): the server sends no removal for it afterwards, so it stayed drawn. */
+            if (victimCell) {
                 /* Same eat animation as the main connection: moveCell() runs from
                  * start to target over the animation time, counted from updateTime. */
                 victimCell.startX = victimCell.x;
                 victimCell.startY = victimCell.y;
                 victimCell.startSize = victimCell.size;
-                victimCell.targetX = eaterCell.x;
-                victimCell.targetY = eaterCell.y;
+                victimCell.targetX = eaterCell ? eaterCell.x : victimCell.x;
+                victimCell.targetY = eaterCell ? eaterCell.y : victimCell.y;
                 victimCell.targetSize = victimCell.size;
                 victimCell.time = victimCell.updateTime = this.time;
                 victimCell.removeCell();
@@ -2254,6 +2270,8 @@ class Spect {
             offset += 4;
             const size = view.readUInt16LE(offset);
             offset += 2;
+            /* this connection's own coordinates and id, as the server sent them */
+            const rawX = x, rawY = y, rawId = id;
             //snez
             let invisible;
 
@@ -2262,8 +2280,6 @@ class Spect {
                 invisible = this.staticX != null ? this.isInView(x, y) : false;
             }
 
-            /* authoritative raw values, kept on the cell (_lmRawX/_lmRawY) */
-            const rawID = id, rawX = x, rawY = y;
             x = this.getX(x);
             y = this.getY(y);
 
@@ -2299,6 +2315,9 @@ class Spect {
                 //snez
                 color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
             }
+            /* the server's colour, before the name, team, profile and food colours below:
+             * copies of one cell on two connections are matched by it */
+            const rawColor = color;
             if (flags & 4) {
                 skin = encode();
             }
@@ -2316,6 +2335,7 @@ class Spect {
             if (flags & 10) {
             }
             const isVirus = flags & 1;
+            const isEjected = !!(flags & 32);
             let isFood = extendedFlags & 1;
             const isFriend = extendedFlags & 2;
 
@@ -2367,19 +2387,24 @@ class Spect {
             var _idx = lmSpectIdx();
             if (legendmod.indexedCells.hasOwnProperty(id)) {
                 cell = legendmod.indexedCells[id];
-                cell.spectator = this.number;
-                if (cell._renderSuppressed) {
-                    var preferredCopy = lmMultiboxIdMaster(cell);
-                    if (!preferredCopy) {
-                        cell._renderSuppressed = false;
-                        if (_idx.of(legendmod.cells, cell, '_cellsIdx') === -1) _idx.push(legendmod.cells, cell, '_cellsIdx');
-                    }
+                /* a cell of an earlier socket of this unit under the same id is another cell */
+                if (cell._lmGen !== undefined && cell._lmGen !== this.connectionGeneration) {
+                    cell.removeCell();
+                    cell = null;
+                } else {
+                    cell.spectator = this.number;
                 }
-
-            } else {
+            }
+            if (!cell) {
                 cell = new window.legendmod1(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
                 cell.time = this.time;
                 cell.spectator = this.number;
+                /* one observation of this connection: source, socket generation, raw id */
+                cell._lmSrc = this.number;
+                cell._lmGen = this.connectionGeneration;
+                cell._lmRawId = rawId;
+                cell._lmRawColor = rawColor || null;
+                lmObsTrack(cell, this.number);
                 //if (!isFood) {
                 if (!isFood && !remove) {
                     if (isVirus && defaultmapsettings.virusesRange) {
@@ -2416,16 +2441,12 @@ class Spect {
                         }
                     }
                 } else if (isFood) {
-                    _idx.push(legendmod.foodMulti, cell, '_foodMultiIdx'); //this causes problems					
+                    /* the unit's food box (calMinMaxMulti); drawn by the food pass from the
+                     * reconciled list (lmFoodAdd below), not as cells: added to LM.cells too,
+                     * every pellet was drawn once more per connection that saw it */
+                    _idx.push(legendmod.foodMulti, cell, '_foodMultiIdx');
                 }
-                if (defaultmapsettings.oneColoredSpectator && !this.player) {
-                    if (!isFood && !remove) _idx.push(legendmod.cells, cell, '_cellsIdx');
-                } else {
-                    //if (!remove && (!invisible && isVirus)){
-                    if (!remove) {
-                        _idx.push(legendmod.cells, cell, '_cellsIdx');
-                    }
-                }
+                if (!isFood && !remove) _idx.push(legendmod.cells, cell, '_cellsIdx');
                 legendmod.indexedCells[id] = cell;
             }
 
@@ -2444,6 +2465,10 @@ class Spect {
              * 80-120 ms they jumped to each packet (choppy at the server's tick rate,
              * and so was the camera while following the unit).
              */
+            if (rawColor) cell._lmRawColor = rawColor;
+            cell._lmRawX = rawX;
+            cell._lmRawY = rawY;
+            if (!isFood) lmObsVelocity(cell, x, y, this.time);
             cell.startX = cell.x;
             cell.startY = cell.y;
             cell.startSize = cell.size;
@@ -2453,17 +2478,27 @@ class Spect {
             cell.updateTime = this.time;
             cell.isFood = isFood;
             cell.isVirus = isVirus;
+            cell.isEjected = isEjected;
             cell.invisible = invisible;
-            /* the observation as this connection sent it: source (0 = main), socket
-             * generation, raw id and raw position. Reprojection and the food checks use
-             * these, never the drawn (interpolated, mirrored or snapped) position. */
-            const firstSeen = cell._lmSrc !== this.number || cell._lmGen !== this.connectionGeneration || cell._lmRawId !== rawID;
-            cell._lmSrc = this.number;
-            cell._lmGen = this.connectionGeneration;
-            cell._lmRawId = rawID;
-            cell._lmRawX = rawX;
-            cell._lmRawY = rawY;
-            if (isFood && firstSeen) this._lmAnchorPush(rawX, rawY, size, this.time);
+            /* the observation as this connection sent it (source, socket generation, raw id, raw
+             * position) is set where the cell is made / updated above; reprojection and the food
+             * checks use those, never the drawn (interpolated, mirrored or snapped) position.
+             * Each pellet feeds the calibration anchors once. */
+            if (isFood && !cell._lmAnchored) {
+                cell._lmAnchored = true;
+                this._lmAnchorPush(rawX, rawY, size, this.time);
+            }
+            if (isFood) {
+                /* pellets do not move: drawn at the packet position by the food pass */
+                cell.x = x;
+                cell.y = y;
+                cell.size = size;
+            }
+            /* one entry per pellet of all connections (ogario.v4.js lmFoodAdd) */
+            if (isFood && !cell.removed) {
+                if (cell._lmFoodEnt) lmFoodTouch(cell);
+                else lmFoodAdd(cell);
+            }
 
             // In multibox mode or for player cells, cells must NEVER be hidden
             if (this.player || cell.isPlayerCell || cell.isPlayerCellMulti) {

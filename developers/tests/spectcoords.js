@@ -50,7 +50,9 @@ function load(LM) {
         window: win, legendmod: LM, console: { log() { }, warn() { }, error: console.error }, Math, Number, Date, Object, Map, Buffer,
         setInterval: () => 0, clearInterval() { }, setTimeout: () => 0, clearTimeout() { },
         defaultmapsettings: {}, defaultSettings: { foodColor: '#5000ff' }, application: { teamPlayers: [] }, profiles: [],
-        lmUnitCellId: (id, n) => id + n * STEP, lmMultiboxIdMaster: () => null, toastr: {}, $: () => ({ val: () => '' })
+        lmUnitCellId: (id, n) => id + n * STEP,
+        /* the per-connection index and the food list of ogario.v4.js (fullmapfood.js tests them) */
+        lmObsTrack() { }, lmObsUntrack() { }, lmObsOfSource: () => null, lmObsVelocity() { }, lmFoodAdd() { }, lmFoodTouch() { }, toastr: {}, $: () => ({ val: () => '' })
     };
     vm.createContext(ctx);
     vm.runInContext(src + '\n;window.Spect = Spect; window.h = { lmRawToWorld, lmWorldToRaw };', ctx);

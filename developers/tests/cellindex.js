@@ -48,13 +48,14 @@ const g = { console: { log() { }, warn() { }, error: console.error }, Date, Math
 g.window = g;
 vm.createContext(g);
 vm.runInContext([
-    slice('var LM_UNIT_ID_STEP = ', '/* Copy of a unit'),
-    block('function lmMultiboxIdMaster(cell, includeOwn) {'),
+    slice('var LM_UNIT_ID_STEP = ', 'var _lmMbGridTime = -1;'),
+    /* the per-connection index and the reconciled food list */
+    slice('var _lmSrcObs = new Map();', 'var LM_MB_RING_MIN_SCREEN_PX'),
     'var _DEATH_SLOWMO_ANIM = 600;',
     'var defaultmapsettings = { virusesRange: true, animation: 120, shortMass: false, virMassShots: false };',
     'var defaultSettings = { foodColor: "#5000ff" };',
     'var application = { mbSlots: [], selectedOldProfile: 0 }, profiles = [];',
-    'function lmMultiboxPositionTwin() { return null; } var _lmMbOwnOffsetsBuf = [];',
+    'function lmMultiboxPositionTwin() { return null; }',
     /* the cell class with the list helpers before it */
     slice('    function quickSwapDelete(', '    }).call(ogarbasicassembly.prototype);\n', true),
     'window.legendmod1 = ogarbasicassembly;',
@@ -202,10 +203,11 @@ r = scans('4 own cell removals', () => { for (let i = 0; i < 4; i++) own[i].remo
 check('own cell removals: no list scan, playerCells and playerCellIDs follow', r.lists === 0 && LM.removePlayerCell === true && LM.playerCells.length === 4 && LM.playerCellIDs.length === 4 && consistent() === '');
 check('removed cells are out of every list', ![...bodies.slice(0, 500), ...foods.slice(0, 5000), ...viruses, ...own.slice(0, 4)].some(c => LISTS.some(([k]) => LM[k].includes(c) && k !== 'removedCells')));
 
-/* ---- frame compaction: cells flagged removed and suppressed unit copies are dropped ---- */
+/* ---- frame compaction: cells flagged removed are dropped ---- */
 const rest = bodies.slice(500);
 for (let i = 0; i < 100; i++) rest[i].removed = true;
-/* a unit copy (spectator 1) of a main cell that is still there: suppressed by the frame */
+/* a unit cell (spectator 1) under a raw id the main connection also uses: another cell
+ * (ids are per connection), kept and drawn (it was dropped from LM.cells by id) */
 const masters = rest.slice(100, 120), copies = [];
 for (const m of masters) {
     const cp = body({ id: g.lmUnitCellId(m.id, 1) });
@@ -213,7 +215,7 @@ for (const m of masters) {
     copies.push(cp);
 }
 r = scans('compaction', () => g.compact());
-check('compaction drops flagged and suppressed cells, slots right, no scan', r.lists === 0 && consistent() === '' && copies.every(c => c._renderSuppressed && c._cellsIdx === -1 && !LM.cells.includes(c)) && !rest.slice(0, 100).some(c => LM.cells.includes(c)));
+check('compaction drops flagged cells, keeps unit cells with a main raw id, slots right, no scan', r.lists === 0 && consistent() === '' && copies.every(c => c._cellsIdx >= 0 && LM.cells.includes(c) && !c.invisible) && !rest.slice(0, 100).some(c => LM.cells.includes(c)));
 r = scans('300 removals after compaction', () => { for (let i = 100; i < 400; i++) rest[i].removeCell(); });
 check('removals after compaction: no list scan', r.lists === 0 && consistent() === '');
 
@@ -272,15 +274,16 @@ for (const c of add) unitIds.push(c.id);
 r = scans('unit packet: 736 new cells', () => sp.updateCells(packet([], add, []), 0));
 const ucell = (id) => LM.indexedCells[g.lmUnitCellId(id, 1)];
 check('unit packet: cells, food, viruses and own unit cells all stored with their slots', consistent() === '' && LM.playerCellsMulti.length === 16 && LM.foodMulti.length === 400 && LM.viruses.length === 20 && ucell(500000)._cellsIdx >= 0);
+check('unit packet: its pellets go to the food list, not LM.cells', ucell(600000)._cellsIdx === -1 && !!ucell(600000)._lmFoodEnt && !LM.cells.some(c => c.isFood));
 check('unit packet: own-cell checks on new cells do not scan playerCellsMulti', r.lists === 0);
 LM.sortCells();
-/* a unit copy suppressed by the frame comes back with the next packet */
+/* a main cell with the same raw id does not touch the unit's cell */
 const back = ucell(500001), mainCopy = body({ id: 500001 });
 g.compact();
-check('the frame hides a unit copy the main connection also has (dropped from LM.cells)', back._renderSuppressed === true && back._cellsIdx === -1 && !LM.cells.includes(back) && consistent() === '');
+check('the frame keeps a unit cell whose raw id the main connection also uses', !back._renderSuppressed && back._cellsIdx >= 0 && LM.cells.includes(back) && consistent() === '');
 mainCopy.removeCell();
-r = scans('unit packet: suppressed copy shown again', () => sp.updateCells(packet([], [{ id: 500001, x: 210, y: 210, size: 41 }], []), 0));
-check('a suppressed unit copy is put back in LM.cells once, without a scan', r.lists === 0 && LM.cells.filter(c => c === back).length === 1 && consistent() === '');
+r = scans('unit packet: update of a kept cell', () => sp.updateCells(packet([], [{ id: 500001, x: 210, y: 210, size: 41 }], []), 0));
+check('an updated unit cell stays in LM.cells once, without a scan', r.lists === 0 && LM.cells.filter(c => c === back).length === 1 && consistent() === '');
 /* the unit eats 8 of its foods, 4 own cells are eaten, the rest goes out of view */
 const eats = [];
 for (let i = 0; i < 8; i++) eats.push([OWN_IDS[15], 600000 + i]);
