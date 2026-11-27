@@ -54999,7 +54999,11 @@ function thelegendmodproject() {
                  * (merges, viruses, kills, who ate my pieces); one flag check while its options are off */
                 if (window._lmDROn && eaterID) {
                     var _lmDrMine = !!(eaterID.isPlayerCell || (this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)));
-                    if (_lmDrMine || _victimWasPlayer) {
+                    /* my multibox unit eating my cell is no killer (the recap's killer is also the Game Over
+                     * card's "Eaten by" and the match history's): its copy, not this cell, may carry
+                     * isPlayerCellMulti, as in the "Eaten by" check above */
+                    if (_lmDrMine || (_victimWasPlayer && !eaterID.isPlayerCellMulti &&
+                        !(window.spects || []).some(function (s) { var c = s && s.player && legendmod.indexedCells[lmUnitCellId(eaterRawID, s.number)]; return !!(c && c.isPlayerCellMulti); }))) {
                         try { window.LMDeathRecap.eat(eaterID, victimID, _lmDrMine, _victimWasPlayer, _victimStartSize); } catch (e) { }
                     }
                 }

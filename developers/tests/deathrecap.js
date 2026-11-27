@@ -327,6 +327,24 @@ check('off again: listeners removed, flag off', !(listeners.spawn || []).length 
     check('one killer: an old killer (over 15 s) is not shown', S() === null);
     lm._lmKiller = null;
   }
+  /* the core's eat loop feeds the recap: my multibox unit eating my cell is no killer (else the card
+   * and the match history said "Eaten by" my own unit, which _lmKiller never names) */
+  const b0 = core.indexOf('if (window._lmDROn && eaterID) {');
+  check('recap feed block in the core', b0 >= 0);
+  if (b0 >= 0) {
+    const b1 = core.indexOf('\n                }\n', b0) + 18;
+    const fed = [];
+    const g = { window: null, legendmod: { indexedCells: { 50001: { isPlayerCellMulti: true } } }, lmUnitCellId: (id, n) => id + n * 50000 };
+    g.window = { _lmDROn: true, spects: [{ player: true, number: 1 }], LMDeathRecap: { eat: (e) => fed.push(e.targetNick) } };
+    vm.createContext(g);
+    const run = vm.runInContext('(function (eaterID, eaterRawID, victimID, _victimWasPlayer, _victimStartSize) {' + core.slice(b0, b1) + '})', g);
+    const self = { _playerCellIDSet: new Set([9]) };
+    run.call(self, { targetNick: 'Twin', size: 500 }, 1, { size: 200 }, true, 200);
+    run.call(self, { targetNick: 'TwinCopy', size: 500, isPlayerCellMulti: true }, 2, { size: 200 }, true, 200);
+    run.call(self, { targetNick: 'Enemy', size: 500 }, 3, { size: 200 }, true, 200);
+    run.call(self, { targetNick: 'Me', size: 500 }, 9, { targetNick: 'Prey', size: 200 }, false, 200);
+    check('recap feed: my multibox unit eating me is skipped, an enemy and my own eats are fed', JSON.stringify(fed) === '["Enemy","Me"]', fed);
+  }
 }
 
 console.log(fail ? fail + ' failed' : 'all death recap checks passed');
