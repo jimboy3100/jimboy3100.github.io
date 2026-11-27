@@ -1061,6 +1061,22 @@ for (const file of ['server.js', 'server-fast.js']) {
         t.fill();
         check('A bot server that never answers the Stop (no message 2 in 5 s): Fill lobby is not held back', starts(t.socks[0]) === 2 && t.w._brFilling === true);
     }
+    // Battle Royale leaderboard footer: shrinkTime is ms (server time), not seconds
+    {
+        const fsrc = extract('else if (legendmod.gameMode === ":battleroyale") {');
+        check('BR footer: extractable', !!fsrc);
+        const footer = (shrinkTime, diff) => run('var teamText = ""; if (false) {} ' + fsrc + '; teamText',
+            { legendmod: { gameMode: ':battleroyale', serverTimeDiff: diff || 0, battleRoyale: { shrinkTime, timeLeft: 0, players: 7 } }, lmT: k => k, Languageletter313: 'Players', Date });
+        const now = Date.now();
+        check('BR footer: a shrink that ended 2 minutes ago: no "Shrink time"', !footer(1000 * Math.floor(now / 1000 - 120)).includes('game2.shrinkTime'));
+        check('BR footer: no zone (0): no "Shrink time"', !footer(0).includes('game2.shrinkTime'));
+        check('BR footer: 90 s left: "Shrink time: 89/90", counted from shrinkTime', /game2\.shrinkTime: (89|90)</.test(footer(now + 90500)));
+        check('BR footer: server clock 30 s ahead (serverTimeDiff): 60 s left', /game2\.shrinkTime: (59|60)</.test(footer(now + 90500, -30000)));
+        const reset = (ogSrc.match(/if \(this\.battleRoyale\) \{ this\.battleRoyale\.joined = false;[^\n]*\}/) || [''])[0];
+        const self = { battleRoyale: { joined: true, started: true, countdown: false, players: 9, shrinkTime: now + 5000, timeLeft: 5 } };
+        run(reset, {}, self);
+        check('BR: a new game server clears the zone timer of the previous lobby', !!reset && self.battleRoyale.shrinkTime === 0 && self.battleRoyale.timeLeft === 0 && self.battleRoyale.players === 0);
+    }
 
     // "On this server": players (and bot groups) from the whole agar.io leaderboard, no fake capacity
     {

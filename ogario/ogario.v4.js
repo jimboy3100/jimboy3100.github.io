@@ -41688,7 +41688,7 @@ function thelegendmodproject() {
             this.chatableServer = false;
             this.fbOnline = [];
             /* A new server is a new Battle Royale lobby. */
-            if (this.battleRoyale) { this.battleRoyale.joined = false; this.battleRoyale.started = false; this.battleRoyale.countdown = false; this.battleRoyale.players = 0; }
+            if (this.battleRoyale) { this.battleRoyale.joined = false; this.battleRoyale.started = false; this.battleRoyale.countdown = false; this.battleRoyale.players = 0; this.battleRoyale.shrinkTime = 0; this.battleRoyale.timeLeft = 0; }
             this.imsoloPartyFriend = null;
             if (this.arrowFB && this.arrowFB[0]) this.arrowFB[0].visible = false;
             window._lmBotsStop()
@@ -52804,8 +52804,10 @@ function thelegendmodproject() {
                 }
             } else if (legendmod.gameMode === ":battleroyale") {
                 teamText = '<span>';
-                if (legendmod.battleRoyale.shrinkTime - Date.now() / 1000 > 0) {
-                    teamText += '<span>' + lmT('game2.shrinkTime') + ': ' + legendmod.battleRoyale.timeLeft + '</span>';
+                /* shrinkTime is in ms (server time): shown only while the zone still shrinks */
+                var _lmBrLeft = legendmod.battleRoyale.shrinkTime ? ~~((legendmod.battleRoyale.shrinkTime - Date.now() + (legendmod.serverTimeDiff || 0)) / 1000) : 0;
+                if (_lmBrLeft > 0) {
+                    teamText += '<span>' + lmT('game2.shrinkTime') + ': ' + _lmBrLeft + '</span>';
                 }
                 teamText += '<span class="me">' + Languageletter313 + ': ' + legendmod.battleRoyale.players + '</span>';
                 teamText += '</span>';
