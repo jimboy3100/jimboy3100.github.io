@@ -836,6 +836,9 @@
         var PING_DIRS = [[5, 0, -1, '\u271A', 'misc.mobile.pingHelp'], [6, -1, 0, '\u26A0', 'misc.mobile.pingDanger'],
             [7, 1, 0, '\u279C', 'misc.mobile.pingGo'], [8, 0, 1, '\u2739', 'misc.mobile.pingVirus']];
         function sendPing(type) {
+            /* the ping goes where the joystick aims: with the menu open there is no aim (a ping button
+             * moved out of the left row, or the open drawer, could still take the tap) */
+            if (isMenuVisible()) return;
             if (typeof application !== 'undefined' && application && typeof application.sendTeamPing === 'function') application.sendTeamPing(type);
         }
         /* A3 fix: single theme-change observer for radial colors, disconnected on rebuild */
@@ -978,12 +981,18 @@
                     if (typeof window.legendmod !== 'undefined' && window.legendmod && typeof window.legendmod.sendFreeSpectate === 'function') {
                         window.legendmod.sendFreeSpectate();
                     }
-                    /* toggle visual state */
-                    var isFree = typeof window.legendmod !== 'undefined' && window.legendmod && window.legendmod.isFreeSpectate;
-                    if (bFreeSpec) bFreeSpec.classList.toggle('lm-active', !!isFree);
+                    syncFreeSpec();
                 }, 'fspec', 400);
             }, { passive: false });
             drawerInsert(bFreeSpec);
+            syncFreeSpec();
+        }
+        /* lit while free spectate is on; the game also ends it without this button (a spawn, the
+         * spectator director, a server change), so the buttons' 500 ms update checks it too */
+        function syncFreeSpec() {
+            if (!bFreeSpec) return;
+            var on = !!(window.legendmod && window.legendmod.isFreeSpectate);
+            if (bFreeSpec.classList.contains('lm-active') !== on) bFreeSpec.classList.toggle('lm-active', on);
         }
         buildFreeSpecButton();
         /* optional Quick respawn button (the Y hotkey's command, application.quickResp: it works with
@@ -1234,7 +1243,7 @@
             return !!(rb && rb.style.display !== 'none' && rb.getClientRects().length);
         }
         /* background timers skip work while the tab is hidden */
-        setInterval(function () { if (!document.hidden) { syncAiPause(); syncMbIndicator(); } }, 500);
+        setInterval(function () { if (!document.hidden) { syncAiPause(); syncMbIndicator(); syncFreeSpec(); } }, 500);
 
         /* ═══════════════════════════════════════════════════════
          *  PAUSE — calls application.setPause()
@@ -1314,9 +1323,22 @@
         window.addEventListener('blur', releaseHeld);
         window.addEventListener('pagehide', releaseHeld);
         window.addEventListener('orientationchange', releaseHeld);
+        /* the held actions only (Feed, the ping choice), the steering thumb stays: a death with
+         * auto respawn or the chat box opening do not take the screen away, but a Feed held through
+         * them fed the new life / kept feeding under the keyboard */
+        function releaseActions() {
+            feedStop();
+            if (_cancelPing) _cancelPing();
+        }
         if (window.LMEvents && typeof window.LMEvents.on === 'function') {
             window.LMEvents.on('replayStart', releaseHeld);
             window.LMEvents.on('replayStop', releaseHeld);
+            /* another server: nothing held belongs to it */
+            window.LMEvents.on('serverChange', releaseHeld);
+            /* a multibox unit still playing keeps the held Feed (it feeds that unit) */
+            window.LMEvents.on('death', function () {
+                if (!(window.legendmod && window.legendmod.multiBoxPlayerExists)) releaseActions();
+            });
         }
 
         /* (game menu is accessed via the drawer — ☰ now only toggles the drawer) */
@@ -1352,6 +1374,7 @@
             return typeof application !== 'undefined' && !!application && typeof application.enterChatMessage === 'function';
         }
         function chatOpen() {
+            releaseActions();
             chatOn = true;
             var gen = ++_chatGen;
             /* a dismissed message is still in the open box: only the focus comes back */
