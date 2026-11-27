@@ -181,6 +181,22 @@ own texture would get, and no `texSubImage3D` may read a canvas (that read waits
 Skipped (exit 0) without Chrome. `renderbatch.js` checks the index lists and the jelly batch against
 a recording stub WebGL context in Node, over many frames of a changing world.
 
+## PixiJS custom-mesh comparison (benchmark prototype, not part of the game)
+
+```
+node developers/bench/pixi-mesh.js --pixi path/to/pixi.min.js    # PixiJS 7 (or PIXI_JS=...)
+node developers/tests/pixibench.js                                # the packer against LM's code, Node only
+```
+
+Runs bench.js scenes in headless Chrome, freezes the world and draws the same snapshot every frame
+with the game's own path (drawWebGLCellBatch + Canvas2D drawFood), with a PixiJS custom mesh (one
+indexed body mesh, one instanced food mesh) and with the same packer on raw WebGL2, in alternating
+blocks: CPU, frame interval, GPU timer queries, a synchronous total, draw/GL calls, upload bytes,
+heap growth, draw order and the pixel difference of the pictures (`--scenes`, `--rounds`, `--frames`,
+`--no-images`). Writes `out/pixi-mesh-<label>.json`/`.md` and the pictures. play.html loads neither
+this nor PixiJS. `pixibench.js` checks that the packer's vertices, colours and triangles are exactly
+those of the real jelly writers and that its food order is drawCachedFood's.
+
 `overlayfx.js` checks the marks drawn above WebGL cells on the overlay canvas (teammate indicator,
 chat bubble, FB badge and arrow, special effects): the real frame block of renderFrame, its late
 overlay pass, canUseWebGLScene and the cell methods run on a small software 2D canvas, and each
