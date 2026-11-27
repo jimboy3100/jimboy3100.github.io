@@ -371,6 +371,9 @@ for (const [file, M] of Object.entries(servers)) {
             b.handleBuffer(Buffer.concat([Buffer.from([241]), i32(77), Buffer.from('3.11.21'), Buffer.from([0])]));
             check(tag + '241: key from hostname + path + server version, seed 255', murmurCalls.length === 1 && murmurCalls[0][0] === 'live-arena-ab-12x.agar.io3.11.21' && murmurCalls[0][1] === 255 && b.decryptionKey === 77);
             check(tag + 'gameHost keeps a path without trailing slash', M.gameHost('wss://live-arena-x.agar.io/a/b/') === 'live-arena-x.agar.io/a/b');
+            // the matchmaker's current endpoints: region and arena address in the path
+            check(tag + 'gameHost accepts miniclippt arenas with path', M.gameHost('wss://web-arenas-live-v25-0.agario.miniclippt.com/eu-west-2/10.1.2.3') === 'web-arenas-live-v25-0.agario.miniclippt.com/eu-west-2/10.1.2.3');
+            check(tag + 'gameHost refuses other hosts', M.gameHost('wss://ffa.legendmod.ml:8080') === null && M.gameHost('wss://agario.miniclippt.com.evil.example/x') === null);
             check(tag + 'gameHost rejects other hosts and schemes', M.gameHost('wss://example.com') === null && M.gameHost('https://live-arena-x.agar.io') === null && M.gameHost('wss://live-arena-x.agar.io.evil.com') === null && M.gameHost('nope') === null);
             M.resetServer();
             M.handleUserMessage(cc, Buffer.concat([Buffer.from([0]), Buffer.from('wss://imsolo.pro:2102'), Buffer.from([0]), u32(22), u32(31000), Buffer.from([1]), Buffer.from('b'), Buffer.from([0, 3])]));

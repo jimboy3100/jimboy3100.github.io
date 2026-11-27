@@ -18,7 +18,7 @@
 // single use. Captcha mode ends when a bot spawns with '0' or after 5 minutes
 // without 85/87 (85 later turns it on again, with a new 12). Stop/reset leaves
 // captcha mode and drops queued tokens. A game URL that is not an agar.io game
-// server (live-arena-*.agar.io) is refused with 13, then 2.
+// server (live-arena-*.agar.io or *.agario.miniclippt.com) is refused with 13, then 2.
 const WebSocket = require('ws'),
     { murmur2 } = require('murmurhash-js'),
     buffers = require('./buffers'),
@@ -166,11 +166,13 @@ function clamp8(value) {
 
 // Host part of the cipher key, like the client's generateClientKey:
 // hostname + pathname without a trailing slash. null when the URL is not an
-// agar.io game server (live-arena-*.agar.io).
+// agar.io game server: live-arena-*.agar.io (old) or *.agario.miniclippt.com, where the
+// matchmaker now sends players, e.g. web-arenas-live-v25-0.agario.miniclippt.com/eu-west-2/<ip>.
+const AGAR_GAME_HOST = /^(live-arena-[a-z0-9.-]+\.agar\.io|[a-z0-9.-]+\.agario\.miniclippt\.com)$/i
 function gameHost(url) {
     try {
         const u = new URL(url)
-        if (!/^wss?:$/.test(u.protocol) || !/^live-arena-[a-z0-9.-]+\.agar\.io$/i.test(u.hostname)) return null
+        if (!/^wss?:$/.test(u.protocol) || !AGAR_GAME_HOST.test(u.hostname)) return null
         return u.hostname + u.pathname.replace(/\/$/, '')
     } catch (e) {
         return null
