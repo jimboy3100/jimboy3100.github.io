@@ -585,6 +585,69 @@
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ogario/spectbackup.js",
+      "canonicalPath": null,
+      "reason": "Old backup copy of the spectator code (header \"SPECS v4.5a WORKS UNTIL HERE\", 2026-03); ogario/spect.js is the live one. No page, script, test, userscript, extension or tool loads it, also not by a built path; no reference in expandingland, legendworld-help, LegendWorld or deltav4.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ogario/ogar.v4.master.olddecoded.js",
+      "canonicalPath": null,
+      "reason": "Hand-decoded copy of the old OGARio v4 master (2019); ogario/ogario.v4.master.js is the live one. No page, script, test, userscript, extension or tool loads it, also not by a built path; no reference in expandingland, legendworld-help, LegendWorld or deltav4.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agario/mc/agario2.js",
+      "canonicalPath": null,
+      "reason": "agar.io client snapshot from 2018 (header \"LM 5/1/2018\"), superseded by the current copy agario/mc/agario.js (updated 2026-11-18). No page, script, test, userscript, extension or tool loads it, also not by a built path; no reference in expandingland, legendworld-help, LegendWorld or deltav4.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agario/mc/agarioold.js",
+      "canonicalPath": null,
+      "reason": "agar.io client snapshot from 2017, superseded by agario/mc/agario.js. No page, script, test, userscript, extension or tool loads it, also not by a built path; no reference in expandingland, legendworld-help, LegendWorld or deltav4.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agario/agariogenerated.core.js",
+      "canonicalPath": null,
+      "reason": "2018 agario.core.js with OGARio changes, superseded by agario/agario.core.js + agario.core.wasm (2026-11-18). No page, script, test, userscript, extension or tool loads it, also not by a built path; no reference in expandingland, legendworld-help, LegendWorld or deltav4.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agario/agariogeneratedcomments.core.js",
+      "canonicalPath": null,
+      "reason": "Same 2018 modified agario.core.js with \"ogarchanged\" comments. No page, script, test, userscript, extension or tool loads it, also not by a built path; no reference in expandingland, legendworld-help, LegendWorld or deltav4.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "skins/skins2.css",
+      "canonicalPath": null,
+      "reason": "2017 stylesheet left from an old gallery copy; the galleries use skins/skins.css. No page, script, test, userscript, extension or tool loads it, also not by a built path; no reference in expandingland, legendworld-help, LegendWorld or deltav4.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
     }
   ]
 }
