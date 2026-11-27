@@ -352,6 +352,25 @@ function bootApply() {
   check('profile Undo: the skins panel and the hidden chat box come back as they were', e.S.showSkinsPanel === true && e.S.hideChat === true && shown['#skins-panel'] === true && shown['#chat-box'] === false);
 }
 {
+  /* Undo preset after a profile: the values from before the preset of the settings the profile
+   * set are gone (stored and in the Settings row), the others stay; Undo and a backup drop all */
+  const e = bootApply();
+  let row = 'unset';
+  e.c.application._lmPresetUndoSet = r => { row = r; };
+  e.S.fpsLimit = 60;
+  e.ls.setItem('lmPresetUndo', J({ fpsLimit: 0, jellyPhisycs: true }));
+  e.P.applySet({ s: { fpsLimit: 120 } }, 'P');
+  check('profile after a preset: Undo preset no longer holds the replaced value, keeps the others', e.S.fpsLimit === 120 && e.ls.getItem('lmPresetUndo') === J({ jellyPhisycs: true }) && J(row) === J({ jellyPhisycs: true }));
+  e.P.applySet({ s: { fpsLimit: 90, jellyPhisycs: false } }, 'P2');
+  check('profile replacing every preset setting: Undo preset gone', e.ls.getItem('lmPresetUndo') === null && row === null);
+  e.ls.setItem('lmPresetUndo', J({ fpsLimit: 0 })); row = 'unset';
+  e.P.undo();
+  check('profile Undo after a preset: Undo preset gone (all settings replaced)', e.S.fpsLimit === 120 && e.ls.getItem('lmPresetUndo') === null && row === null);
+  e.ls.setItem('lmPresetUndo', J({ fpsLimit: 0 })); row = 'unset';
+  e.P.applySet({ t: { miniMapWidth: e.c.LM_THEME_DEFAULTS.miniMapWidth + 7 } }, 'theme only');
+  check('a set without settings keeps Undo preset', e.ls.getItem('lmPresetUndo') === J({ fpsLimit: 0 }) && row === 'unset');
+}
+{
   const e = bootApply();
   e.ls.setItem('lmGamepad', J({ v: 1, map: ['split'] }));
   const r = e.P.applySet({ gp: { v: 1, map: ['feed'] } }, 'pad');

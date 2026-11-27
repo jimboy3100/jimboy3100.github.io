@@ -27311,6 +27311,13 @@ function thelegendmodproject() {
                     return false;
                 });
                 undoBtn.toggle(!!undoSnap);
+                /* a settings profile, its Undo or a backup replaces settings: profiles.js stores what is
+                 * left of the values from before the preset (null: none) and the row follows it, else
+                 * Undo preset would put the replaced values back over the profile's */
+                application._lmPresetUndoSet = function (rest) {
+                    undoSnap = rest && typeof rest === 'object' && Object.keys(rest).length ? rest : null;
+                    undoBtn.toggle(!!undoSnap);
+                };
                 box.append(row);
                 row.on('click', '.lm-preset-btn', function () {
                     var p = presets[$(this).attr('data-preset')];

@@ -971,6 +971,19 @@
         var pbEntry = data.s && has(data.s, 'performanceMode') && data.s.performanceMode === true ?
             { key: 'lmPerfBackup', text: data.pb ? JSON.stringify(data.pb) : null } : null;
         if (pbEntry) entries.push(pbEntry);
+        /* the same for the values from before a Settings preset (Undo preset): those of the
+         * settings this set replaces go, so Undo preset never puts them back over the set's */
+        var presetUndo = null;
+        if (c.s) {
+            var pu = readJSON('lmPresetUndo');
+            if (isObj(pu)) {
+                presetUndo = {};
+                /* a backup or Undo replaces all settings */
+                if (!isRestore) Object.keys(pu).forEach(function (k) { if (!has(data.s, k)) presetUndo[k] = pu[k]; });
+                if (!Object.keys(presetUndo).length) presetUndo = null;
+                entries.push({ key: 'lmPresetUndo', text: presetUndo ? JSON.stringify(presetUndo) : null });
+            }
+        }
         /* 2. a backup of the current state, and the Undo.
          * P1 fix: backup is written as part of the transaction so a failed write
          * does not leave an orphaned backup in storage. */
@@ -992,6 +1005,7 @@
         if (undoEntry) undoMem = undoEntry;
         /* the copy Performance mode keeps in memory when the storage is full is the replaced one */
         if (pbEntry) window._lmPerfBackupMem = null;
+        if (c.s && app && typeof app._lmPresetUndoSet === 'function') { try { app._lmPresetUndoSet(presetUndo); } catch (e) { } }
         /* 3. live, through the controls (they save again, to the same values) */
         applying = true;
         var reload = false;
