@@ -208,9 +208,7 @@ check('diff: a set differing only in the phone control layout is not the same', 
       lmThemeWorkshop: { v: 1, themes: [] },
       lmPracticeCfg: { bots: 4 },
       lmSettingsProfiles: [{ id: 'p1', name: 'P', data: { s: { showMass: true } } }], lmSettingsProfilesRules: { enabled: false },
-      lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPerfBackup: { jellyPhisycs: true }, lmPresetUndo: { s: {} },
-      /* the radial menu's commands and the screenshot options */
-      lmRadialMenu: { v: 1, items: ['hk-feed'] }, lmSmallTools: { shot: { lb: true, map: false } }
+      lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPerfBackup: { jellyPhisycs: true }, lmPresetUndo: { s: {} }
     };
     const priv = { lmAnalyticsGames: [{ m: 1 }], lmAnalyticsGoals: { v: 1, custom: [] }, lmAnalyticsTracks: [{ t: 1 }], lmPracticeStore: { best: 1 }, 'lm-director-watch': ['nick'], lmSettingsBackups: [{ t: 1 }], ogarioPlayerProfiles: [1] };
     Object.keys(conf).concat(Object.keys(priv)).forEach(k => src.setItem(k, J(conf[k] || priv[k])));
@@ -221,6 +219,9 @@ check('diff: a set differing only in the phone control layout is not the same', 
     check('export: the removed zoom bookmarks are not carried', !('lm-zoom-bookmarks' in exp(src)));
     src.setItem('lm-director', J({ speed: 3 })); src.setItem('lm-director-bookmarks', J([{ x: 1, y: 2 }]));
     check('export: the removed spectator director is not carried', !('lm-director' in exp(src)) && !('lm-director-bookmarks' in exp(src)));
+    /* the removed radial menu and screenshot window */
+    src.setItem('lmRadialMenu', J({ v: 1, items: ['hk-feed'] })); src.setItem('lmSmallTools', J({ shot: { lb: true } }));
+    { const o2 = exp(src); check('export: the radial menu and screenshot options are not carried', !('lmRadialMenu' in o2) && !('lmSmallTools' in o2)); }
     /* the old skin collections are player profiles now: never exported, but an older export
      * still brings them in (they become profiles on the reload after the import) */
     const srcC = makeStorage(0);
@@ -238,6 +239,8 @@ check('diff: a set differing only in the phone control layout is not the same', 
     imp({ lmHudLayouts: [1, 2], 'lm-zoom-bookmarks': [1, 0, 3], lmSettingsProfiles: { a: 1 } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
     check('import: a value of the wrong type is not written', dst2.getItem('lmHudLayouts') === '{"keep":1}' && dst2.getItem('lmSettingsProfiles') === null);
     check('import: the zoom bookmarks of an older export are not written', dst2.getItem('lm-zoom-bookmarks') === null);
+    imp({ lmRadialMenu: { v: 1, items: ['hk-feed'] }, lmSmallTools: { shot: { lb: true } } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
+    check('import: the radial menu and screenshot options of an older export are not written', dst2.getItem('lmRadialMenu') === null && dst2.getItem('lmSmallTools') === null);
     check('import: Performance mode backup of the replaced settings goes when the export has none', dst2.getItem('lmPerfBackup') === null);
     /* the removed Command Centre: stars left in this browser are not exported, and an older
      * export that has them writes nothing (and no error) */

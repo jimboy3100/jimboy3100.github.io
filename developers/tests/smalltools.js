@@ -1,5 +1,6 @@
-/* Small tools and accessibility: conflict detection, debug info redaction, radial sector choice
- * and the accessibility helpers (pure parts of ogario/modules/smalltools.js
+/* Small tools and accessibility: debug info redaction, the removed radial menu and screenshot
+ * window (gone, their stored data removed at start, a key on their hotkeys freed) and the
+ * accessibility helpers (pure parts of ogario/modules/smalltools.js
  * and ogario/modules/accessibility.js, loaded in a vm without a document).
  * node developers/tests/smalltools.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
@@ -18,34 +19,30 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 if (!C || !A) { console.log('FAIL core helpers not exported'); process.exit(1); }
 const J = x => JSON.stringify(x);
 
-/* ── radial: sector choice ── */
-check('radial: up is sector 0 of 8', C.pickSector(0, -100, 8, 20) === 0);
-check('radial: right is sector 2 of 8', C.pickSector(100, 0, 8, 20) === 2);
-check('radial: down is sector 4 of 8', C.pickSector(0, 100, 8, 20) === 4);
-check('radial: left is sector 6 of 8', C.pickSector(-100, 0, 8, 20) === 6);
-check('radial: up-right diagonal is sector 1 of 8', C.pickSector(70, -70, 8, 20) === 1);
-check('radial: just left of up still sector 0 (wraps)', C.pickSector(-10, -100, 8, 20) === 0);
-check('radial: boundary between 0 and 1 (22.5 deg) goes to 1', C.pickSector(Math.sin(Math.PI / 8 + 0.001) * 100, -Math.cos(Math.PI / 8 + 0.001) * 100, 8, 0) === 1);
-check('radial: inside the dead zone = none', C.pickSector(5, -5, 8, 20) === -1);
-check('radial: no sectors = none', C.pickSector(0, -100, 0, 0) === -1);
-check('radial: one sector takes every direction', C.pickSector(-100, 30, 1, 10) === 0);
-check('radial: 3 sectors: up 0, lower right 1, lower left 2', C.pickSector(0, -50, 3, 0) === 0 && C.pickSector(50, 40, 3, 0) === 1 && C.pickSector(-50, 40, 3, 0) === 2);
-check('radial: bad numbers = centre', C.pickSector('x', null, 8, 10) === -1);
-check('radial: sector angle of slot 2/8 is 90 deg', Math.abs(C.sectorAngle(2, 8) - Math.PI / 2) < 1e-9);
-for (let n = 1; n <= 8; n++) {
-    let ok = true;
-    for (let i = 0; i < n; i++) { const a = C.sectorAngle(i, n); if (C.pickSector(Math.sin(a) * 80, -Math.cos(a) * 80, n, 10) !== i) ok = false; }
-    check('radial: each centre angle picks its own sector (' + n + ' items)', ok);
+/* ── the radial menu and the screenshot window are removed ── */
+check('removed: no radial or screenshot options helpers', !('pickSector' in C) && !('cleanRadial' in C) && !('cleanShotOpts' in C));
+{
+    const store = new Map([['lmRadialMenu', '{"v":1,"items":["hk-split"]}'], ['lmSmallTools', '{"shot":{"lb":true}}'], ['other', 'x']]);
+    const node = () => ({ style: {}, classList: { add() { }, remove() { } }, appendChild() { }, addEventListener() { } });
+    const c2 = { console, localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
+        document: { createElement: node, getElementById: () => null, head: node(), body: node() }, addEventListener() { }, removeEventListener() { } };
+    c2.window = c2;
+    vm.createContext(c2);
+    i18n(c2);
+    vm.runInContext(fs.readFileSync(path.join(dir, 'smalltools.js'), 'utf8'), c2);
+    const T = c2.LMSmallTools;
+    check('removed: their stored data goes at start, other keys stay', !store.has('lmRadialMenu') && !store.has('lmSmallTools') && store.get('other') === 'x');
+    check('removed: no window or ring API left, Show/hide HUD and Capture stay', !T.open && !T.toggle && !T.radialDown && !T.radialClose && typeof T.shotToggle === 'function' && typeof T.capture === 'function');
 }
-
-/* ── radial: stored list ── */
-const exists = id => id !== 'hk-gone';
-check('radial store: object form, order kept', J(C.cleanRadial({ v: 1, items: ['hk-split', 'hk-feed'] }, exists)) === J(['hk-split', 'hk-feed']));
-check('radial store: plain array accepted', J(C.cleanRadial(['hk-split'], exists)) === J(['hk-split']));
-check('radial store: duplicates, junk, the ring itself and removed commands dropped',
-    J(C.cleanRadial({ items: ['hk-split', 'hk-split', 5, null, '<b>', 'hk-radialMenu', 'hk-gone', 'split', 'hk-' + 'x'.repeat(60), 'hk-feed'] }, exists)) === J(['hk-split', 'hk-feed']));
-check('radial store: at most 8', C.cleanRadial({ items: Array.from({ length: 12 }, (_, i) => 'hk-c' + i) }).length === 8);
-check('radial store: garbage gives an empty ring', J(C.cleanRadial('x')) === '[]' && J(C.cleanRadial(null)) === '[]' && J(C.cleanRadial({ items: 'hk-split' })) === '[]');
+{
+    const v4 = fs.readFileSync(path.join(dir, '..', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+    const a = v4.indexOf('function lmRenameOldHotkeys(map) {'), b = v4.indexOf('\n}', a);
+    const hk = { R: 'hk-radialMenu', T: 'hk-radialEditor', P: 'hk-screenshotCapture', O: 'hk-screenshotTool', 'ALT+H': 'hk-showHUD', W: 'hk-feed' };
+    vm.runInNewContext(v4.slice(a, b + 2) + '\nlmRenameOldHotkeys(hk);', { hk });
+    check('removed: a key on their hotkeys is free again, Alt+H stays', J(hk) === J({ 'ALT+H': 'hk-showHUD', W: 'hk-feed' }));
+    const hc = fs.readFileSync(path.join(dir, '..', 'hotkeysCommand.js'), 'utf8');
+    check('removed: their hotkeys are gone', !/'hk-(radialMenu|radialEditor|screenshotCapture|screenshotTool)'/.test(hc) && /'hk-showHUD'/.test(hc));
+}
 
 /* ── the hotkey conflict list is gone (the key check of the Hotkeys window stays) ── */
 check('no conflict list', !('findConflicts' in C) && !!C.BROWSER_KEYS['CTRL+W']);
@@ -85,7 +82,6 @@ check('debug info: room path and token gone', dbg.indexOf('SECRETROOM42') < 0 &&
 check('debug info: browser version not taken for an IP', dbg.indexOf('Chrome/120.0.0.0') >= 0);
 check('debug info: skin file and nick gone', dbg.indexOf('AbCdEf1') < 0 && dbg.indexOf('MyNickName') < 0);
 
-check('screenshot options: only true counts', J(C.cleanShotOpts({ lb: true, map: 'yes' })) === J({ lb: true, map: false }) && J(C.cleanShotOpts(null)) === J({ lb: false, map: false }));
 
 /* ── accessibility ── */
 check('a11y: text scale clamped', A.cleanScale(2) === 1.6 && A.cleanScale(0.5) === 1 && A.cleanScale('x') === 1 && A.cleanScale(1.234) === 1.23);

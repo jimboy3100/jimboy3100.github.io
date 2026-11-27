@@ -170,10 +170,6 @@
       "answer": "A statistics window with a dashboard (games, highest mass, survival, top-10 rate, weekly chart, best servers and modes), heatmaps and the match history, from up to 500 game summaries. It tracks position history (3,600 samples per game, 50 games)."
     },
     {
-      "question": "What is the Radial Menu?",
-      "answer": "A hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot for quick access without memorising keys. Hold the radial menu key, point to a slot, and release to activate."
-    },
-    {
       "question": "How do presets work?",
       "answer": "Legend Mod offers one-click presets: Competitive (enables rings, mass, split range), Battery Saver (caps FPS, disables effects), Streamer (hides personal info), Reduced Motion (no animations), and Clean HUD (minimal interface). Theme presets include 8 colour schemes."
     },

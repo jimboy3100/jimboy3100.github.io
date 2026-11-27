@@ -111,12 +111,6 @@
       "url": "https://www.legendmod.ml/features.html"
     },
     {
-      "id": "radialmenu",
-      "name": "Radial menu",
-      "description": "Hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot. Radial editor for customization. Quick access to frequent commands without memorising keys.",
-      "url": "https://www.legendmod.ml/features.html"
-    },
-    {
       "id": "plugins",
       "name": "User scripts and plugins",
       "description": "5 script slots for custom JavaScript. Plugin header format: ==LMPlugin== with name, version, author, permissions (8 types). Settings API: up to 20 settings per plugin. Catalogue of example plugins. Version compatibility checking. Third-party URL confirmation prompt.",

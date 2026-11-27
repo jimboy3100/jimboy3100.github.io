@@ -101,8 +101,8 @@
     {
       "id": "smalltools",
       "file": "ogario/modules/smalltools.js",
-      "lines": 1219,
-      "description": "Collection of small utility tools: sound mixer, minimap features, leaderboard features, various UI helpers.",
+      "lines": 444,
+      "description": "Show/hide HUD (Alt+H) hide with its Capture chip, the key check of the Hotkeys window, private data taken out of Copy debug info.",
       "feature": "Various"
     },
     {
