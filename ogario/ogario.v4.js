@@ -1945,7 +1945,9 @@ function _lmMbOutranks(a, ca, b, cb) {
  * tolerance, so a copy does not flicker in and out at the edge of it). */
 var _lmMbPosB = { x: 0, y: 0 };
 function _lmMbTwinDist2(cell, other, radius, anyOrder, keep) {
-    if (!other || other === cell || other.removed || other.isFood) return -1;
+    /* _cellsIdx -1: dropped from LM.cells without removeCell() (spawn gate, a dead main player
+     * with a unit), so it is not drawn: the copies behind it stayed hidden for good */
+    if (!other || other === cell || other.removed || other.isFood || other._cellsIdx === -1) return -1;
     /* a hidden copy is not drawn, so this one must stay (else the cell is drawn by no connection) */
     if (!anyOrder && other.invisible === true) return -1;
     var mine = cell.spectator > 0 ? cell.spectator : 0;
@@ -2095,6 +2097,12 @@ function lmMultiboxPositionTwin(cell) {
     }
     var mine = cell.spectator > 0 ? cell.spectator : 0;
     var best = null;
+    /* the copy it hid behind was eaten (removeCell(true)) and its eat animation still runs:
+     * this copy shows a cell that is gone until its own connection's eat comes (a few ms
+     * later), so it stays hidden; shown again after the animation if no eat comes */
+    var _mbEatenTw = cell._lmMbTwin;
+    if (_mbEatenTw && _mbEatenTw.removed && _mbEatenTw._lmEaten && _mbEatenTw._removedIdx >= 0 &&
+        LM.removedCells && LM.removedCells[_mbEatenTw._removedIdx] === _mbEatenTw) return _mbEatenTw;
     /* the copy it hid behind last frame, while it is still a match (no search; 1.5 times the
      * tolerance) */
     var kept = false;
@@ -37915,16 +37923,24 @@ function thelegendmodproject() {
             this.setMass(mass);
             this.setNick(nick);
         };
-        this.removeCell = function () {
+        /* eaten: an eat record (the cell itself is gone), not a removal record (it left this
+         * connection's view) */
+        this.removeCell = function (eaten) {
             this.removed = true;
+            this._lmEaten = !!eaten;
             /* Multibox: a copy hidden because it sat on this cell (lmMultiboxPositionTwin) is
              * shown right now; the next frame's search hides it again behind another copy
-             * of its cell, if one is still there (no frame without the cell). */
+             * of its cell, if one is still there (no frame without the cell). Not after an
+             * eat: the other copies show a cell that is gone until their own eat comes, so
+             * they stay hidden behind this one while its eat animation runs. */
             var _mbPosHidden = this._lmMbHides;
-            if (_mbPosHidden && _mbPosHidden._lmMbPosDup && _mbPosHidden._lmMbTwin === this) {
+            /* that live copy goes on drawing the cell: this one plays no removal fade */
+            var _mbTakes = false;
+            if (!eaten && _mbPosHidden && _mbPosHidden._lmMbPosDup && _mbPosHidden._lmMbTwin === this) {
                 _mbPosHidden._lmMbPosDup = false;
                 _mbPosHidden._lmMbTwin = null;
                 _mbPosHidden.invisible = false;
+                _mbTakes = !_mbPosHidden.removed;
             }
             this._lmMbHides = null;
 
@@ -37966,9 +37982,13 @@ function thelegendmodproject() {
              * Cinematic player deaths MUST survive regardless of redrawed,
              * because their entire 600 ms animation happens AFTER the
              * authoritative cell has been removed.
+             *
+             * A copy whose live twin from another connection is shown in its
+             * place this frame plays no fade (it faded on top of the live cell):
+             * only the last copy of a cell does.
              */
             if (
-                this.redrawed ||
+                (this.redrawed && !_mbTakes) ||
                 this._deathSlowMo
             ) {
                 if (
@@ -42645,7 +42665,7 @@ function thelegendmodproject() {
                                 victim.startY = victim.y;
                                 victim.startSize = victim.size;
                                 victim.time = victim.updateTime = self.time;
-                                victim.removeCell();
+                                victim.removeCell(true);
                             }
                         }
                         // Added cells
@@ -53875,7 +53895,7 @@ function thelegendmodproject() {
                     eaten.startY = eaten.y;
                     eaten.startSize = eaten.size;
 
-                    eaten.removeCell();
+                    eaten.removeCell(true);
                 }
             }
 
@@ -54146,7 +54166,7 @@ function thelegendmodproject() {
                     victim.startY = victim.y;
                     victim.startSize = victim.size;
                     victim.time = victim.updateTime = this.time;
-                    victim.removeCell();
+                    victim.removeCell(true);
                 }
             }
 
@@ -54950,7 +54970,7 @@ function thelegendmodproject() {
                  * collections, but _deathSlowMo victims are retained in
                  * removedCells by the patch below.
                  */
-                victimID.removeCell();
+                victimID.removeCell(true);
             }
 
             for (var cellIdx = 0; ;) {
@@ -83942,6 +83962,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * sat under the translucent glow of the fill. One list kept between frames. */
                 var _ghostInfo = this._lmGhostInfo || (this._lmGhostInfo = []);
                 _ghostInfo.length = 0;
+                /* Where the server sends every player cell to a connection whose positions are
+                 * right (the main server view, the server views of verified open spectators and
+                 * units), filled once per frame on the first ghost that needs it. A ghost there
+                 * without its player's cell is stale (he died or moved since the list): with the
+                 * list's age the player may have moved LM_GHOST_TOL0 + LM_GHOST_SPEED per ms
+                 * (spect.js), so the area is shrunk by that much. */
+                var _ghostCov = this._lmGhostCov || (this._lmGhostCov = []);
+                var _ghostCovF = false;
+                var _ghostLag = LM.ghostCellsTime > 0 ? (typeof LM_GHOST_TOL0 === 'number' ? LM_GHOST_TOL0 : 60) +
+                    (typeof LM_GHOST_SPEED === 'number' ? LM_GHOST_SPEED : 0.5) * Math.max(0, Date.now() - LM.ghostCellsTime) : NaN;
                 for (var length = 0; length < ghostsCells.length; length++) {
                     var ghost = ghostsCells[length];
                     if (!ghost) continue;
@@ -83955,16 +83985,47 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
 
                     /* Skip the ghost when the real player is on screen: a visible non-food cell
-                     * lies inside the ghost's radius (LM.cellsId never existed, so this never ran). */
+                     * lies inside the ghost's radius (LM.cellsId never existed, so this never ran).
+                     * Only his cells count: a cell of another player there, or one of a Full Map
+                     * spectator whose orientation is not verified (not drawn, maybe mirrored: the
+                     * frame's hide step test), hid the ghost while the player was not shown. The
+                     * name of an opcode-69 ghost is the leaderboard's (its label); names are
+                     * compared only when both are known, own and unit cells always count. */
+                    var _ghostName = ghost.rawX !== undefined && LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : '';
                     var _ghostHasReal = false;
                     for (var _gc = 0; _gc < LM.cells.length; _gc++) {
                         var _rc = LM.cells[_gc];
                         if (!_rc || _rc.isFood || _rc.isVirus || _rc.size < 40) continue;
+                        if (_rc.spectator > 0 && !_rc.isPlayerCellMulti && !_lmMbFeeds(_rc)) continue;
+                        if (_ghostName && _rc._lmSrvName && _rc._lmSrvName !== _ghostName && !_rc.isPlayerCell && !_rc.isPlayerCellMulti) continue;
                         var _gdx = _rc.x - x, _gdy = _rc.y - y;
                         if (_gdx * _gdx + _gdy * _gdy < sz * sz) { _ghostHasReal = true; break; }
                     }
                     if (_ghostHasReal) {
                         continue;
+                    }
+                    /* no cell of his: a ghost inside the verified coverage is stale */
+                    if (_ghostLag === _ghostLag) {
+                        if (!_ghostCovF) {
+                            _ghostCovF = true;
+                            _ghostCov.length = 0;
+                            if (Number.isFinite(LM.srvViewMinX) && Number.isFinite(LM.srvViewMinY) && Number.isFinite(LM.srvViewMaxX) && Number.isFinite(LM.srvViewMaxY)) {
+                                _ghostCov.push(LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY);
+                            }
+                            var _gSps = window.spects;
+                            if (_gSps) for (var _gs = 0; _gs < _gSps.length; _gs++) {
+                                var _gSp = _gSps[_gs];
+                                if (!_gSp || typeof _gSp._lmServerViewDisplay !== 'function' || !_gSp._lmFeedOk() || !_gSp.isSocketOpen()) continue;
+                                var _gR = _gSp._lmServerViewDisplay();
+                                if (_gR) _ghostCov.push(_gR[0], _gR[1], _gR[2], _gR[3]);
+                            }
+                        }
+                        var _ghostStale = false;
+                        for (var _gk = 0; _gk < _ghostCov.length; _gk += 4) {
+                            if (x > _ghostCov[_gk] + _ghostLag && y > _ghostCov[_gk + 1] + _ghostLag &&
+                                x < _ghostCov[_gk + 2] - _ghostLag && y < _ghostCov[_gk + 3] - _ghostLag) { _ghostStale = true; break; }
+                        }
+                        if (_ghostStale) continue;
                     }
 
                     /* EXPANDING LAND: deform ghost cell position (jelly ON = no-op) */

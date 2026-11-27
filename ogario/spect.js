@@ -2463,7 +2463,7 @@ class Spect {
                 victimCell.targetY = eaterCell ? eaterCell.y : victimCell.y;
                 victimCell.targetSize = victimCell.size;
                 victimCell.time = victimCell.updateTime = this.time;
-                victimCell.removeCell();
+                victimCell.removeCell(true);
             }
         }
         for (length = 0; ;) {
