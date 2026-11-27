@@ -1,4 +1,4 @@
-/* Legend Mod notification centre and sound mixer.
+/* Legend Mod notification centre.
  *
  * Notification centre (option "notificationCentre", off by default): every toastr toast
  * (success / info / warning / error) is also kept, as plain text, in localStorage
@@ -6,12 +6,7 @@
  * filtered, marked read, cleared, and can stop the toasts of a category from showing (they
  * are still recorded). The hotkey "Open the notification centre" has no default key.
  * While the option is off the toasts pass straight through and nothing is stored.
- *
- * Mixer: volume per channel (chat, commands, gameplay effects, notifications) times the master
- * volume (video skins: their own "Video skin sound level" slider times the master volume), all 1 by default (unchanged), and "audioDucking" (off by default):
- * a chat or alert sound that is really heard lowers the video skins while it plays. ogario.v4.js
- * asks LMNotifications.soundVolume / videoVolume where it plays a sound and reports the started
- * playback with duckPlayback (LMNotifications.play does both).
+ * (The sound volumes are Settings > Sounds, applied in ogario.v4.js: lmSoundVolume.)
  */
 (function (root) {
     'use strict';
@@ -25,12 +20,6 @@
     var MAX_ITEMS = 200;
     var MAX_TEXT = 300;          /* characters kept per notification */
     var MAX_BYTES = 120000;      /* stored JSON is cut (oldest first) to stay under this */
-    var DUCK_MS = 1500;          /* how long the video skins stay lowered when the sound's length is unknown */
-    var DUCK_MAX_MS = 10000;     /* at most, for a long sound */
-    var DUCK_LEVEL = 0.3;        /* their volume meanwhile, as a fraction */
-    /* channels whose sound lowers the video skins while "audioDucking" is on */
-    var DUCK_CHANNELS = { chat: 1, commands: 1, notifications: 1 };
-    var CHANNEL_KEYS = { chat: 'volChat', commands: 'volCommands', gameplay: 'volGameplay', notifications: 'volNotifications' };
     /* "[TAG]:" prefixes used by the toasts. SERVER (the generic prefix) and ERROR are not
      * listed: their text decides. */
     var TAGS = {
@@ -197,21 +186,6 @@
         return out; /* newest first */
     }
 
-    /* a volume setting: a number 0..1, anything else counts as 1 (unchanged) */
-    function vol(v) {
-        var n = typeof v === 'number' ? v : (typeof v === 'string' && v !== '' ? Number(v) : NaN);
-        if (!Number.isFinite(n)) return 1;
-        return n < 0 ? 0 : n > 1 ? 1 : n;
-    }
-
-    /* base volume x channel x master x ducking, kept inside 0..1 (media elements throw outside) */
-    function mixVolume(base, channel, master, duck) {
-        var b = Number(base);
-        if (!Number.isFinite(b)) b = 0;
-        var v = b * vol(channel) * vol(master) * (duck == null ? 1 : vol(duck));
-        return v < 0 ? 0 : v > 1 ? 1 : v;
-    }
-
     /* ── state ── */
 
     function settings() { return root.legendmod5 || root.defaultmapsettings || {}; }
@@ -299,98 +273,6 @@
         var fn = t[type]._lmOriginal || t[type];
         if (fn !== t[type] && enabled()) { try { record(type, message, title); } catch (e) { } }
         return fn.apply(t, Array.prototype.slice.call(arguments, 1));
-    }
-
-    /* ── mixer ── */
-
-    var duckUntil = 0;
-
-    function channelVolume(channel) {
-        var s = settings();
-        var key = CHANNEL_KEYS[channel];
-        return mixVolume(1, key ? s[key] : 1, s.volMaster, 1);
-    }
-
-    function duckFactor() {
-        return settings().audioDucking && now() < duckUntil ? DUCK_LEVEL : 1;
-    }
-
-    function videoVolume(base) {
-        var s = settings();
-        /* base is the video skin sound level already (one volume slider for them, Settings > Skins) */
-        return mixVolume(base, 1, s.volMaster, duckFactor());
-    }
-
-    /* Ducks of the sounds playing now, { a: audio element, until: ms }: the video skins stay low until
-     * the latest deadline. Their 500 ms volume tick (lmVideoSkinRegistry in ogario.v4.js) keeps them
-     * low until then and brings them back afterwards. */
-    var ducks = [];
-    function duckRecompute() {
-        var t = now(), max = 0;
-        ducks = ducks.filter(function (d) { return d.until > t; });
-        ducks.forEach(function (d) { if (d.until > max) max = d.until; });
-        duckUntil = max;
-    }
-    function duck(until, audio) {
-        var wasDucked = now() < duckUntil;
-        /* the same element played again: its new playback replaces the old one */
-        ducks = ducks.filter(function (d) { return !audio || d.a !== audio; });
-        ducks.push({ a: audio || null, until: until });
-        duckRecompute();
-        if (wasDucked || !(now() < duckUntil)) return;
-        var players = root.videoSkinPlayer;
-        if (!players) return;
-        for (var k in players) {
-            var v = players[k];
-            if (!v || v.paused || !(v.volume > 0)) continue;
-            try { v.volume = mixVolume(v.volume, 1, 1, DUCK_LEVEL); } catch (e) { }
-        }
-    }
-    /* a sound ended or failed: its duck ends (others keep theirs) */
-    function release(audio) {
-        ducks = ducks.filter(function (d) { return d.a !== audio; });
-        duckRecompute();
-    }
-    function listenEnd(audio) {
-        if (audio._lmDuckL || typeof audio.addEventListener !== 'function') return;
-        try { audio._lmDuckL = true; } catch (e) { return; }
-        ['ended', 'error'].forEach(function (n) { audio.addEventListener(n, function () { release(audio); }); });
-    }
-    /* A chat / alert sound was started with audio.play() (p: its promise). Ducks only when it is
-     * heard: volume above 0, not muted, and play() succeeded (a muted channel or a refused play,
-     * e.g. no user gesture yet, must not lower the video). Lasts as long as the sound still plays
-     * (DUCK_MS when its length is unknown, at most DUCK_MAX_MS), less when it ends or fails. */
-    function duckPlayback(audio, channel, p) {
-        if (!audio || !settings().audioDucking || !DUCK_CHANNELS[channel]) return;
-        if (audio.muted || !(+audio.volume > 0)) return;
-        var go = function () {
-            if (!settings().audioDucking || audio.muted || !(+audio.volume > 0) || audio.paused === true || audio.ended === true) return;
-            var d = +audio.duration, left = isFinite(d) && d > 0 ? (d - (+audio.currentTime || 0)) * 1000 : DUCK_MS;
-            if (!(left > 0)) return;
-            duck(now() + Math.min(left, DUCK_MAX_MS), audio);
-            listenEnd(audio);
-        };
-        if (p && typeof p.then === 'function') p.then(go, function () { });
-        /* old browsers: play() gives no promise, the element says whether it plays */
-        else if (audio.paused === false) go();
-    }
-
-    /* volume for a sound of this channel (ducking: duckPlayback once it plays) */
-    function soundVolume(channel) {
-        return channelVolume(channel);
-    }
-
-    /* for scripts: play an Audio element on a mixer channel */
-    function play(audio, channel) {
-        if (!audio || typeof audio.play !== 'function') return;
-        try {
-            var ch = channel || 'notifications', v = soundVolume(ch);
-            if (audio.volume !== v) audio.volume = v;
-            audio.currentTime = 0;
-            var p = audio.play();
-            if (p && p.catch) p.catch(function () { });
-            duckPlayback(audio, ch, p);
-        } catch (e) { }
     }
 
     /* ── UI: bell + panel ── */
@@ -822,11 +704,6 @@
             saveNow();
             ui.syncMutes();
         },
-        soundVolume: soundVolume,
-        duckPlayback: duckPlayback,
-        channelVolume: channelVolume,
-        videoVolume: videoVolume,
-        play: play,
         categories: CATEGORIES.slice(),
         _avoidRects: avoidRects,
         _bellPlace: function () { return ui.placedAt; },
@@ -834,9 +711,8 @@
         _core: {
             stripHtml: stripHtml, decodeEntities: decodeEntities, detectCategory: detectCategory, makeItem: makeItem,
             sanitizeItems: sanitizeItems, parseStore: parseStore, serializeStore: serializeStore, parsePrefs: parsePrefs,
-            unreadCount: unreadCount, filterItems: filterItems, mixVolume: mixVolume, vol: vol, candidateSpots: candidateSpots,
-            wrapToastr: wrapToastr, saveNow: saveNow, catLabel: catLabel, typeLabel: typeLabel, MAX_ITEMS: MAX_ITEMS, MAX_TEXT: MAX_TEXT, MAX_BYTES: MAX_BYTES,
-            DUCK_LEVEL: DUCK_LEVEL, DUCK_MS: DUCK_MS, DUCK_MAX_MS: DUCK_MAX_MS
+            unreadCount: unreadCount, filterItems: filterItems, candidateSpots: candidateSpots,
+            wrapToastr: wrapToastr, saveNow: saveNow, catLabel: catLabel, typeLabel: typeLabel, MAX_ITEMS: MAX_ITEMS, MAX_TEXT: MAX_TEXT, MAX_BYTES: MAX_BYTES
         }
     };
     root.LMNotifications = api;

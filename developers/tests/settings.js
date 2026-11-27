@@ -97,6 +97,20 @@ check('load: folded only once (the next load keeps 0.3)', S.videoSkinSoundLevel 
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { reverseTrick: true })));
 app.loadSettings();
 check('reverseTrick is no setting: refused, and a saved "on" is skipped on load', !('reverseTrick' in D) && V('reverseTrick', true) === undefined && !('reverseTrick' in S));
+// ── the virus pop / eat sounds are the virus sound; the notification volume, ducking and the pass toast are gone
+check('removed sound / toast settings are no settings any more', ['virusPopSound', 'virusEatSound', 'volNotifications', 'audioDucking', 'lbPassToast'].every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined));
+const lfold = (o) => { ctx._f = o; vm.runInContext('lmFoldLegacySettings(_f)', ctx); return ctx._f; };
+check('fold: pop or eat sound on turns the virus sound on', lfold({ virusSound: false, virusPopSound: true }).virusSound === true && lfold({ virusEatSound: true }).virusSound === true);
+check('fold: both off keep the virus sound as it was, the old keys go', J(lfold({ virusSound: false, virusPopSound: false, virusEatSound: false })) === J({ virusSound: false }) && J(lfold({ virusSound: true, virusPopSound: false })) === J({ virusSound: true }));
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { virusSound: false, virusPopSound: true, audioDucking: true, volNotifications: 0.2, lbPassToast: true })));
+app.loadSettings();
+const reSaved2 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
+check('load: an old save with the pop sound on has the virus sound on, the old keys are not loaded', S.virusSound === true && !('virusPopSound' in reSaved2) && !('virusPopSound' in S) && !('audioDucking' in S) && !('volNotifications' in S) && !('lbPassToast' in S));
+vm.runInContext(cut('/* Settings > Sounds: a volume setting is a number', 'function checkIfPlayerIsInView'), ctx);
+S.volMaster = 0.5; S.volChat = 0.4; S.volGameplay = 1;
+check('sound volume: own volume x master; other sounds the master only; video level x master', Math.abs(ctx.lmSoundVolume('volChat') - 0.2) < 1e-12 && ctx.lmSoundVolume('volGameplay') === 0.5 && ctx.lmSoundVolume('') === 0.5 && Math.abs(ctx._lmVideoVol(0.8) - 0.4) < 1e-12);
+S.volMaster = 'x'; S.volChat = 7;
+check('sound volume: a bad value counts as 1, kept inside 0..1', ctx.lmSoundVolume('volChat') === 1 && ctx._lmVideoVol(3) === 1 && ctx._lmVideoVol(NaN) === 0);
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();

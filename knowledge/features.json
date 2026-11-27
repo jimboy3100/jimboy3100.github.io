@@ -11,7 +11,7 @@
     {
       "id": "skins",
       "name": "Custom skins, video skins and skin tools",
-      "description": "Apply custom image URLs (PNG, JPG, GIF, SVG) as cell skins. Video skins play MP4/WebM/OGV files with configurable audio level and ducking. Skin checker tests URL validity. Skin rotator cycles through skins automatically. IndexedDB cache stores up to 1,000 skins and 600 audio entries with LRU eviction.",
+      "description": "Apply custom image URLs (PNG, JPG, GIF, SVG) as cell skins. Video skins play MP4/WebM/OGV files with a configurable audio level. Skin checker tests URL validity. Skin rotator cycles through skins automatically. IndexedDB cache stores up to 1,000 skins and 600 audio entries with LRU eviction.",
       "url": "https://www.legendmod.ml/skins/"
     },
     {
@@ -71,7 +71,7 @@
     {
       "id": "chat",
       "name": "Chat system",
-      "description": "In-game text chat with image/video sharing, emoticons, auto-translation, universal cross-server chat, mention notifications, coloured nicks, word filter, player ID display. 50 customizable chat command slots. Voice chat (push-to-talk). Team pings (Help, Danger, Go here, Virus). Sound mixer with 6 independent channels and audio ducking.",
+      "description": "In-game text chat with image/video sharing, emoticons, auto-translation, universal cross-server chat, mention notifications, coloured nicks, word filter, player ID display. 50 customizable chat command slots. Voice chat (push-to-talk). Team pings (Help, Danger, Go here, Virus). Chat message and command sounds with their own volumes (Settings > Sounds).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -172,8 +172,8 @@
     },
     {
       "id": "soundmixer",
-      "name": "Sound mixer",
-      "description": "6 independent audio channels (Master, Chat, Commands, Gameplay, Video, Notifications) each with 0-100% volume. Additional toggles: virus sound, x16 split sound, non-16 split sound, virus pop, virus eat, merge sound. Audio ducking: chat sounds temporarily lower video skin volume (1.5s, 0.3 volume).",
+      "name": "Sound volumes",
+      "description": "Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), the 16 pieces sounds, a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins).",
       "url": "https://www.legendmod.ml/features.html"
     }
   ]

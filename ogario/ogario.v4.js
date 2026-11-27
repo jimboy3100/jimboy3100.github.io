@@ -8578,12 +8578,24 @@ function checkVideos(a, b) {
     return true;
 }
 
-/* video skin volume through the sound mixer (ogario/modules/notifications.js): video channel x
- * master volume, lowered for a moment by a chat sound when "audioDucking" is on; unchanged
- * while the mixer is at its defaults or not loaded */
+/* Settings > Sounds: a volume setting is a number 0..1; anything else counts as 1 (unchanged) */
+function _lmVol01(v) {
+    var n = typeof v === 'number' ? v : (typeof v === 'string' && v !== '' ? Number(v) : NaN);
+    if (!Number.isFinite(n)) return 1;
+    return n < 0 ? 0 : n > 1 ? 1 : n;
+}
+/* the volume of one of the mod's sounds: its own volume (volChat, volCommands, volGameplay; none for
+ * other sounds, e.g. scripts' application.playSound) times the master volume; all 1 = unchanged */
+function lmSoundVolume(key) {
+    var s = window.defaultmapsettings || {};
+    return _lmVol01(key ? s[key] : 1) * _lmVol01(s.volMaster);
+}
+/* video skin volume: their own "Video skin sound level" (Settings > Skins) times the master volume */
 function _lmVideoVol(v) {
-    var m = window.LMNotifications;
-    return m && m.videoVolume ? m.videoVolume(v) : v;
+    var b = Number(v);
+    if (!Number.isFinite(b)) b = 0;
+    var r = b * _lmVol01((window.defaultmapsettings || {}).volMaster);
+    return r < 0 ? 0 : r > 1 ? 1 : r;
 }
 
 function checkIfPlayerIsInView(b, a) {
@@ -21666,17 +21678,13 @@ var defaultmapsettings = {
     virusSoundurl: 'https://www.legendmod.ml/sounds/sound-gunshot.mp3',
     x16Sound: false,              /* sound when the own cells reach 16 pieces */
     non16Sound: false,            /* sound when they merge back below 16 */
-    virusPopSound: false,         /* sound when an own cell pops a virus */
-    virusEatSound: false,         /* sound when an own cell eats a virus at 16 pieces */
     notificationCentre: false,    /* bell + list of the last toasts (ogario/modules/notifications.js) */
     agarToolTeam: false,          /* AgarTool players with my tag as teammates: team list, minimap, chat (ogario/modules/agartool.js) */
-    /* sound mixer, 0..1: channel x master; 1 = unchanged */
+    /* Settings > Sounds volumes, 0..1: the sound's own volume x master; 1 = unchanged */
     volMaster: 1,
     volChat: 1,                   /* chat message sound */
     volCommands: 1,               /* command sound */
     volGameplay: 1,               /* virus shot, 16 pieces, virus pop / eat */
-    volNotifications: 1,          /* any other sound (scripts: application.playSound, LMNotifications.play) */
-    audioDucking: false,          /* chat / alert sound lowers the video skins for a moment */
     //
     leftClick: 'hk-macroFeed',
     rightClick: 'hk-split',
@@ -21742,7 +21750,6 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     volChat: [0, 1, 0.01],
     volCommands: [0, 1, 0.01],
     volGameplay: [0, 1, 0.01],
-    volNotifications: [0, 1, 0.01],
     a11yTextScale: [1, 1.6, 0.05],
     a11yHudTextScale: [1, 1.6, 0.05],
     positionClass: { choices: ['toast-bottom-left', 'toast-bottom-right', 'toast-top-left', 'toast-top-right'] },
@@ -21820,7 +21827,7 @@ function lmGlAAPending() {
  * centre" are statsPosition (top / bottom / center; the centre won over the top). The old keys
  * stay as copies that follow the choice (scripts and older versions read them). A stored, imported or profile set from before
  * gets its choice from the old keys once, before the values are checked; then the copies are
- * written from the choice. Also folds the old video volume. Returns true when s changed. */
+ * written from the choice. Also folds the old video volume and the virus pop / eat sounds. Returns true when s changed. */
 function lmFoldLegacySettings(s) {
     if (!s || typeof s !== 'object') return false;
     var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
@@ -21834,6 +21841,13 @@ function lmFoldLegacySettings(s) {
         changed = true;
     }
     if (lmFoldClickFollow(s)) changed = true;
+    /* the virus pop / eat sounds are part of the virus sound: either one on turns it on, once */
+    if (has('virusPopSound') || has('virusEatSound')) {
+        if (s.virusPopSound === true || s.virusEatSound === true) s.virusSound = true;
+        delete s.virusPopSound;
+        delete s.virusEatSound;
+        changed = true;
+    }
     if (has('massFormat') || has('shortMass')) {
         var mf = has('massFormat') ? (typeof s.massFormat === 'number' ? s.massFormat : (typeof s.massFormat === 'string' && s.massFormat.trim() !== '' ? Number(s.massFormat) : NaN)) : NaN;
         /* no mode or 0 ("as Short mass", also what an unusable value fell back to): the switch decides */
@@ -25836,7 +25850,7 @@ function thelegendmodproject() {
                 if (!_lmStBound) toastr.info(_lmG1tag('game1.tag.scanTrick', 'game1.scan.setKey'));
                 else toastr.info(_lmG1tag('game1.tag.scanTrick', 'game1.scan.hold', [$('<div>').text(_lmStBound).html()]));
             }
-            if (checked === true && (id === 'x16Sound' || id === 'non16Sound' || id === 'virusPopSound' || id === 'virusEatSound' || id === 'hudMergeSound')) {
+            if (checked === true && (id === 'x16Sound' || id === 'non16Sound' || id === 'hudMergeSound')) {
                 defaultmapsettings[id] = true;
                 this._lmLoadOptSounds();
             }
@@ -27316,7 +27330,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27397,15 +27411,15 @@ function thelegendmodproject() {
             this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow", "rainbowMapBorders"], "gridGroup");
             this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "agarToolTeam", "mentionNotify", "chatShowId"], "chatGroup");
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup"); // OLD: without universalChat
-            /* Sound mixer: volume per channel times the master volume, applied where each sound
-             * plays (playSound, the video skin volume timer); all 1 = unchanged. The gameplay
-             * sound switches (virus, 16 pieces) are here too, next to their volume. */
-            this.addOptions(["virusSound", "x16Sound", "non16Sound", "virusPopSound", "virusEatSound", "audioDucking"], "soundsGroup");
+            /* Sounds: each sound's switch, file and volume, and the master volume, applied where each
+             * sound plays (playSound, lmSoundVolume; the video skin volume timer); all 1 = unchanged.
+             * The virus sound is one switch: a virus shot, and an own cell popping or eating one
+             * (the separate virusPopSound / virusEatSound switches became it, lmFoldLegacySettings). */
+            this.addOptions(["virusSound", "x16Sound", "non16Sound"], "soundsGroup");
             this.addSliderBox(".soundsGroup", "volMaster", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volChat", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volCommands", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volGameplay", 0, 1, 0.01);
-            this.addSliderBox(".soundsGroup", "volNotifications", 0, 1, 0.01);
             /* no "Rotate Map" switch: it only started the old map orientation server (SLGconnect), long
              * gone; teammates' map orientation is matched without it */
             this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
@@ -34956,12 +34970,10 @@ function thelegendmodproject() {
             this.setvirusSound();
             this._lmLoadOptSounds();
         },
-        /* optional sounds (16 pieces, viruses): loaded only when their option is on */
+        /* optional sounds (16 pieces, merge ready): loaded only when their option is on */
         _lmOptSoundUrls: {
             x16: 'https://www.legendmod.ml/sounds/notification_02.mp3',
             non16: 'https://www.legendmod.ml/sounds/notification-close.mp3',
-            virusPop: 'https://www.legendmod.ml/sounds/notification-open.mp3',
-            virusEat: 'https://www.legendmod.ml/sounds/notification_01.mp3',
             mergeReady: 'https://www.legendmod.ml/sounds/notification_01.mp3'
         },
         _lmOptSound(k) {
@@ -34972,8 +34984,6 @@ function thelegendmodproject() {
         _lmLoadOptSounds() {
             if (defaultmapsettings.x16Sound) this._lmOptSound('x16');
             if (defaultmapsettings.non16Sound) this._lmOptSound('non16');
-            if (defaultmapsettings.virusPopSound) this._lmOptSound('virusPop');
-            if (defaultmapsettings.virusEatSound) this._lmOptSound('virusEat');
             if (defaultmapsettings.hudMergeSound) this._lmOptSound('mergeReady');
         },
         setChatSoundsBtn() {
@@ -35063,35 +35073,26 @@ function thelegendmodproject() {
             if (audio && audio.play && !window._lmReplayQuiet) {
                 audio.pause();
                 audio.currentTime = 0;
-                /* sound mixer (ogario/modules/notifications.js): channel x master volume, all 1 by
-                 * default; a chat sound that plays may also lower the video skins (option audioDucking) */
-                var _lmMix = window.LMNotifications;
-                if (_lmMix && _lmMix.soundVolume) {
-                    try {
-                        var _lmVol = _lmMix.soundVolume(this._lmSoundChannel(audio));
-                        if (audio.volume !== _lmVol) audio.volume = _lmVol;
-                    } catch (eVol) { }
-                }
+                /* Settings > Sounds: the sound's own volume x the master volume, all 1 by default */
+                try {
+                    var _lmVol = lmSoundVolume(this._lmSoundChannel(audio));
+                    if (audio.volume !== _lmVol) audio.volume = _lmVol;
+                } catch (eVol) { }
                 //audio.play();
                 var nopromise = {
                     catch: new Function()
                 };
-                var _lmPr = audio.play();
-                (_lmPr || nopromise).catch(function () { });
-                /* ducking of the video skins: only once the sound really plays and can be heard */
-                if (_lmMix && _lmMix.duckPlayback) {
-                    try { _lmMix.duckPlayback(audio, this._lmSoundChannel(audio), _lmPr); } catch (eDk) { }
-                }
+                (audio.play() || nopromise).catch(function () { });
             }
         },
-        /* mixer channel of one of the mod's sounds; any other sound (scripts) counts as a notification */
+        /* the volume setting of one of the mod's sounds; any other sound (scripts) has the master volume only */
         _lmSoundChannel(audio) {
-            if (audio === this.messageSound) return 'chat';
-            if (audio === this.commandSound) return 'commands';
-            if (audio === this.virusSoundurl) return 'gameplay';
+            if (audio === this.messageSound) return 'volChat';
+            if (audio === this.commandSound) return 'volCommands';
+            if (audio === this.virusSoundurl) return 'volGameplay';
             var c = this._lmOptSoundCache;
-            if (c) for (var k in c) if (c.hasOwnProperty(k) && c[k] === audio) return 'gameplay';
-            return 'notifications';
+            if (c) for (var k in c) if (c.hasOwnProperty(k) && c[k] === audio) return 'volGameplay';
+            return '';
         },
         /* ─── §4.20 Targeting & Spectator ─── */
         setFBIDs() {
@@ -54674,14 +54675,12 @@ function thelegendmodproject() {
                     this.playerCells.indexOf(eaterID) !== -1 || (this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)))) {
                     this._lmEvMergeN = (this._lmEvMergeN || 0) + 1;
                 }
-                /* optional virus sounds (like Delta): own cell popped a virus, or ate one at 16 pieces (all servers) */
+                /* Virus sound (Settings > Sounds): also when an own cell pops a virus or eats one at 16 pieces
+                 * (all servers), with the same sound as a virus shot */
                 if (eaterID && victimID.isVirus && (eaterID.isPlayerCell || eaterID.isPlayerCellMulti) && window.application &&
-                    (defaultmapsettings.virusPopSound || defaultmapsettings.virusEatSound)) {
-                    var _lmVirFull = this.playerCells.length >= 16;
-                    if ((_lmVirFull ? defaultmapsettings.virusEatSound : defaultmapsettings.virusPopSound) && Date.now() - (this._lmVirSndAt || 0) > 300) {
-                        this._lmVirSndAt = Date.now();
-                        application.playSound(application._lmOptSound(_lmVirFull ? 'virusEat' : 'virusPop'));
-                    }
+                    defaultmapsettings.virusSound && Date.now() - (this._lmVirSndAt || 0) > 300) {
+                    this._lmVirSndAt = Date.now();
+                    application.playSound(application.virusSoundurl);
                 }
                 /* Death recap / kill feed (ogario/modules/deathrecap.js): exact eats by and of my cells
                  * (merges, viruses, kills, who ate my pieces); one flag check while its options are off */
@@ -89056,7 +89055,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading settings profiles script:', e);
     }
-    /* Notification centre + sound mixer (the bell and recording only while its option is on) */
+    /* Notification centre (the bell and recording only while its option is on) */
     try {
         var notifScript = document.createElement('script');
         notifScript.type = 'text/javascript';

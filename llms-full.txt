@@ -106,7 +106,7 @@ Dedicated mobile touch controls with on-screen buttons for split, feed, and othe
 Apply custom images to cells. Supports PNG, JPG, GIF and SVG image URLs. Skins are stored in an IndexedDB cache (up to 1,000 entries with LRU eviction, plus 600 audio entries). Features include:
 - **Vanilla skins**: Original game skins (from VanillaSkinUrlMap)
 - **Custom skins**: User-provided image URLs
-- **Video skins**: Play MP4, WebM or OGV video files as cell skins with configurable audio level and ducking
+- **Video skins**: Play MP4, WebM or OGV video files as cell skins with a configurable audio level
 - **Skin Checker**: Tool to test whether a skin URL loads correctly before using it in-game
 - **Transparent skins**: Make your own cell skin semi-transparent
 - **No Skins mode**: Disable all skins for a cleaner view
@@ -211,7 +211,6 @@ In-game text chat with rich features:
 - **AgarTool team**: players of the AgarTool extension with your clan tag on the same agar.io server join your team list, minimap and team chat (off by default)
 - **Mention notifications**: Desktop notifications when mentioned while tab is hidden
 - **Chat sounds**: Configurable notification sounds for messages and commands
-- **Audio ducking**: Incoming chat sounds lower video skin volume temporarily (1.5s, 0.3 volume)
 - **Chat history**: Up/Down arrow recalls last 20 sent messages
 - **Chat popups limited**: Maximum 6 chat popups on screen (prevents spam)
 - **Hide words filter**: Block chat lines containing specific words
@@ -226,18 +225,17 @@ In-game text chat with rich features:
 - **Chat commands**: 50 customizable chat command slots with one-keypress sending
 - **Team pings**: Help, Danger, Go here, Virus pings at cursor position (configurable hotkeys)
 
-### 10. Sound Mixer
-Independent volume controls per channel, all multiplied by master volume:
+### 10. Sounds
+Settings > Sounds: each sound's switch, file and volume, all multiplied by the master volume:
 | Channel | Key | Description |
 |---------|-----|-------------|
 | Master | volMaster | Overall volume multiplier (0-100%) |
 | Chat | volChat | Chat message sounds |
 | Commands | volCommands | Chat command sounds |
-| Gameplay | volGameplay | Gameplay sounds (merge, virus pop, etc.) |
-| Video | volVideo | Video skin audio |
-| Notifications | volNotifications | Notification sounds |
+| Gameplay | volGameplay | Virus sound, 16 pieces sounds |
+| Video skins | videoSkinSoundLevel (Settings > Skins) | Video skin audio |
 
-Additional sound toggles: virusSound, x16Sound, non16Sound, virusPopSound, virusEatSound, audioDucking (chat sounds lower video volume).
+Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one), x16Sound, non16Sound.
 
 ### 11. Minimap Features
 - **Rotating minimap**: Rotates to match camera orientation
@@ -379,13 +377,13 @@ Beyond Streamer, Legend Mod offers one-click presets:
 Legend Mod organises its 300+ settings into the following categories accessible via the settings panel:
 - **Presets**: Quick setup options (Competitive, Battery Saver, Streamer, Reduced Motion, Clean HUD)
 - **Animation**: Speed, jelly physics, death particles, eat pulse, camera smoothing, spawn effects, zoom speed/smooth
-- **Skins**: Custom skins, video skins, collections, transparency, vanilla skins, skin checker, skin rotator, video ducking
+- **Skins**: Custom skins, video skins, collections, transparency, vanilla skins, skin checker, skin rotator
 - **Food**: Rainbow food, auto-hide food, food opacity
 - **Performance and Network**: WebGL, High DPI, FPS cap, adaptive performance (target, toasts, resolution), performance mode, anti-aliasing, network history, net graph
 - **Minimap**: Show/rotate, grid, guides, ghost cells, trail, click-spectate, one-coloured teammates
 - **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, edge arrows, cell panel, stats display, indicators, online status, sticky cell
 - **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter, coloured nicks, hide country, AgarTool team, player ID
-- **Sounds**: Sound mixer (6 channels), individual sound toggles, audio ducking
+- **Sounds**: Volume per sound and master volume, sound switches and files
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots, click-spectate
 - **Multibox**: Amount (2-4), rings (P1/P2 colour, size, active-only), freeze, auto-respawn, switch after death, camera view, shadow
 - **Scan Trick**: Enable, directions, distance, rounded, left-mouse-only, status display
@@ -595,7 +593,7 @@ Legend Mod offers one-click presets: Competitive (enables rings, mass, split ran
 An Expanding Land-exclusive feature. When you die, a transparent cell appears at your death location, visible on the minimap. Ghost cells help you track where deaths occurred and avoid dangerous areas.
 
 **How do sound controls work?**
-Legend Mod has a 6-channel sound mixer: Master, Chat, Commands, Gameplay, Video, and Notifications. Each channel has independent volume (0-100%). Additional toggles for virus sounds, x16 split sounds, merge sounds, and audio ducking (chat lowers video skin volume).
+Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), the 16 pieces sounds, a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins).
 
 ## Glossary of Key Terms
 

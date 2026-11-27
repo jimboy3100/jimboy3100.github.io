@@ -187,7 +187,7 @@
     },
     {
       "question": "How do sound controls work?",
-      "answer": "Legend Mod has a 6-channel sound mixer: Master, Chat, Commands, Gameplay, Video, and Notifications. Each channel has independent volume (0-100%). Additional toggles for virus sounds, x16 split sounds, merge sounds, and audio ducking (chat lowers video skin volume)."
+      "answer": "Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), the 16 pieces sounds, a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins)."
     }
   ]
 }

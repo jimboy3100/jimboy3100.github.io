@@ -43,7 +43,6 @@
         "noSkins",
         "skinChecker",
         "skinRotator",
-        "videoDucking",
         "videoSkinVolume"
       ]
     },
@@ -138,19 +137,15 @@
     {
       "id": "sounds",
       "name": "Sounds",
-      "description": "Sound mixer and audio settings.",
+      "description": "Each sound's switch, file and volume, and the master volume.",
       "settings": [
         "volMaster",
         "volChat",
         "volCommands",
         "volGameplay",
-        "volNotifications",
         "virusSound",
         "x16Sound",
-        "non16Sound",
-        "virusPopSound",
-        "virusEatSound",
-        "audioDucking"
+        "non16Sound"
       ]
     },
     {
