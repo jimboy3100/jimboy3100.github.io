@@ -31,13 +31,17 @@ function block(start, from, text) {
     return null;
 }
 const methods = ['        drawViewPorts(ctx) {', '        _lmConnFoodBoxes(list) {', '        calMinMax() {', '        calMinMaxMulti() {'].map((m) => [m, block(m)]);
-const spectMethods = ['    getX(x) {', '    getY(y) {', '    convertX(x) {', '    convertY(y) {', '    _lmTileDisplay() {', '    _lmTileRaw() {', '    _lmTileTick(now) {']
+const spectMethods = ['    getX(x) {', '    getY(y) {', '    convertX(x) {', '    convertY(y) {', '    _lmTileDisplay() {', '    _lmTileRaw() {', '    _lmTileTick(now) {',
+    '    _lmXf() {', '    worldToRawX(x) {', '    worldToRawY(y) {']
     .map((m) => [m, block(m, 0, spectSrc)]);
+/* the coordinate contract (lmRawToWorld ... lmXfInv), top of spect.js, which those methods use */
+const xf0 = spectSrc.indexOf('var LM_WORLD_SIZE'), xf1 = spectSrc.indexOf('/* orientation candidates');
 /* the server view estimate and the planner: top of spect.js, up to addFullSpectator */
 const head0 = spectSrc.indexOf('var LM_VIEW_BASE_W'), head1 = spectSrc.indexOf('function addFullSpectator() {');
 const dv = block('        drawViewport: function (ctx, text');
 const missing = methods.concat(spectMethods).filter((m) => !m[1]).map((m) => m[0].trim()).concat(dv ? [] : ['drawViewport'])
-    .concat(head0 >= 0 && head1 > head0 ? [] : ['spect.js lmServerViewSize / lmFullMapPlan']);
+    .concat(head0 >= 0 && head1 > head0 ? [] : ['spect.js lmServerViewSize / lmFullMapPlan'])
+    .concat(xf0 >= 0 && xf1 > xf0 ? [] : ['spect.js coordinate contract']);
 if (missing.length) { console.log('FAIL code not found: ' + missing.join(', ')); process.exit(1); }
 
 function env(o) {
@@ -59,7 +63,7 @@ function env(o) {
     const c = { window: win, LM, legendmod: LM, spects: win.spects, defaultSettings: { foodSize: 5, bordersColor: '#ff0000' },
         defaultmapsettings: { multiboxAmount: 3 }, Math, Number, String, console, document: { hidden: false } };
     vm.createContext(c);
-    vm.runInContext(spectSrc.slice(head0, head1) +
+    vm.runInContext(spectSrc.slice(xf0, xf1) + spectSrc.slice(head0, head1) +
         'var drawRender = {' + methods.map((m) => m[1]).concat([dv]).join(',\n') + '};' +
         /* a spectator connection with spect.js's own coordinate and tile code */
         'var SpectXY = class { constructor(p) { this.sent = []; Object.assign(this, p); }\n' +

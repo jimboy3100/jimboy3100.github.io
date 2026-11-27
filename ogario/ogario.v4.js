@@ -40496,6 +40496,7 @@ function thelegendmodproject() {
             this.mapOffsetFixed = false;
             /* a new connection has no border yet: never re-apply the previous server's one */
             this._lmServerBorder = null;
+            this._lmBorderCX = this._lmBorderCY = this._lmBorderKX = this._lmBorderKY = null;
             this._lmBorderTraceAdd('connect', 0);
             this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
@@ -52199,9 +52200,22 @@ function thelegendmodproject() {
                     this.mapMinY = top;
                     this.mapMaxX = right;
                     this.mapMaxY = bottom;
+                    /* spect.js: Expanding Land units share this frame (no centre or scale needed) */
+                    this._lmBorderCX = this._lmBorderCY = this._lmBorderKX = this._lmBorderKY = null;
                 } else if ((this.connectionIntegrity && this.serverType !== 'deltio') || temp2) {
                     this.mapOffsetX = this.mapOffset - right;
                     this.mapOffsetY = this.mapOffset - bottom;
+                    /* Exact centre and scale of the full-map border: C and k of this connection in
+                     * spect.js's transform (world = k * (raw - C)). agar.io gives every connection
+                     * its own offset and its own scale per axis (full borders 14073..14211 wide),
+                     * so world = the full map 14142.1356 wide edge to edge. Only a full border sets
+                     * them; a partial one (the ~4250 x 2560 view rect) or a ClearAll keeps them. */
+                    if (isFullPacket) {
+                        this._lmBorderCX = (left + right) / 2;
+                        this._lmBorderCY = (top + bottom) / 2;
+                        this._lmBorderKX = 14142.135623730952 / pWidth;
+                        this._lmBorderKY = 14142.135623730952 / pHeight;
+                    }
 
                     this.mapMinX = -this.mapOffset - this.mapOffsetX;
                     this.mapMinY = -this.mapOffset - this.mapOffsetY;
@@ -52232,6 +52246,9 @@ function thelegendmodproject() {
                             -(left + right) / 2;
                         this.mapOffsetY =
                             -(top + bottom) / 2;
+                        this._lmBorderCX = (left + right) / 2;
+                        this._lmBorderCY = (top + bottom) / 2;
+                        this._lmBorderKX = this._lmBorderKY = 1;
 
                         this.mapMinX = left;
                         this.mapMinY = top;
@@ -53614,9 +53631,11 @@ function thelegendmodproject() {
                 var id = view.readUInt32LE(offset);
                 if (offset += 4, 0 === id) break;
                 var x = view.readInt32LE(offset);
+                var _lmRawX = x; /* before Rotate Map (see cellUpdateCells._lmRawX) */
                 if (window.legendmod.vector[window.legendmod.vnr][0]) x = this.translateX(x); //Sonia3
                 offset += 4;
                 var y = view.readInt32LE(offset);
+                var _lmRawY = y;
                 if (window.legendmod.vector[window.legendmod.vnr][1]) y = this.translateY(y); //Sonia3
                 offset += 4;
                 var size = view.readUInt16LE(offset);
@@ -53851,6 +53870,14 @@ function thelegendmodproject() {
                 cellUpdateCells.targetX = x;
                 cellUpdateCells.targetY = y;
                 cellUpdateCells.targetSize = size;
+                /* the observation as the main connection sent it (spect.js does the same for
+                 * its connections): source 0, socket generation, raw id and raw position,
+                 * never Rotate Map'd; world = raw - LM._lmBorderCX/CY */
+                cellUpdateCells._lmSrc = 0;
+                cellUpdateCells._lmGen = this._connectSeq || 0;
+                cellUpdateCells._lmRawId = id;
+                cellUpdateCells._lmRawX = _lmRawX;
+                cellUpdateCells._lmRawY = _lmRawY;
                 cellUpdateCells.updateTime = this.time || Date.now();
                 cellUpdateCells.isFood = isFood;
                 cellUpdateCells.isVirus = isVirus;

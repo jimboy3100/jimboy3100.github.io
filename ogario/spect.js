@@ -37,6 +37,199 @@ var _lmIdxPlain = {
 };
 function lmSpectIdx() { return window.lmCellIdx || _lmIdxPlain; }
 
+/*
+ * ═══ Coordinates: one transform per connection ═══
+ *
+ * Every agar.io connection has its own raw frame: its own offset, per axis possibly a
+ * mirror of the main connection's, and per axis its own scale (live captures: full
+ * borders 14073..14211 wide and 14072..14199 high; the same pellet sits at the same
+ * fraction of each connection's border to ~1 unit; sizes are not scaled). All of them
+ * share one world frame (map centre = 0, the main connection's orientation, the full map
+ * LM_WORLD_SIZE wide and high, edge to edge):
+ *
+ *     world = s * k * (raw - C) + d          raw = C + s * (world - d) / k
+ *
+ * C = exact centre of the connection's full-map border (opcode 64; spect.mapOffsetX = -C),
+ * k = LM_WORLD_SIZE / that border's width (height for y; spect._lmKX/_lmKY; 1 on private
+ * servers and Expanding Land), s = +1 / -1 per axis (spect.fixX/fixY), d = residual
+ * verified on shared food (spect.fix3x/fix3y; with C and k exact it stays 0 and the food
+ * check only verifies it). Only the full border counts: agar.io sends it twice at the
+ * handshake, then view-rect borders (~4250 x 2560) to playing connections, which never
+ * set C or k. The main client keeps its cells in its own raw frame (main frame =
+ * C_main + world / k_main, LM._lmBorderCX/CY/KX/KY) and Rotate Map is a separate display
+ * flip on top (LM.translateX/Y),
+ * so raw and world values are never flipped, rounded or snapped. Every incoming
+ * coordinate (cells, food, top players, view) goes through rawToWorld and every outgoing
+ * one (mouse, multibox movement, spectator targets) through worldToRaw, rounded to the
+ * integer the server reads only when it is sent.
+ */
+var LM_WORLD_SIZE = 14142.135623730952;
+function lmRawToWorld(raw, c, s, d, k) { return s * k * (raw - c) + d; }
+function lmWorldToRaw(world, c, s, d, k) { return c + s * (world - d) / k; }
+/* the main connection's border centre (its raw frame); an older core: its mapOffsetX */
+function lmMainCentre(axis) {
+    var lm = window.legendmod;
+    var c = axis ? lm._lmBorderCY : lm._lmBorderCX;
+    return Number.isFinite(c) ? c : -(axis ? lm.mapOffsetY : lm.mapOffsetX);
+}
+/* the main connection's scale k (world units per raw unit); 1 when unknown (older core, private) */
+function lmMainScale(axis) {
+    var lm = window.legendmod;
+    var k = axis ? lm._lmBorderKY : lm._lmBorderKX;
+    return Number.isFinite(k) && k > 0 ? k : 1;
+}
+/* Rotate Map display flip (self-inverse), as the main client does for its own cells */
+function lmDisplayFlip(v, axis) {
+    var lm = window.legendmod;
+    var vec = lm && lm.vector && lm.vector[lm.vnr];
+    if (!vec || !vec[axis]) return v;
+    return axis ? lm.mapMaxY - (v - lm.mapMinY) : lm.mapMaxX - (v - lm.mapMinX);
+}
+/* raw -> drawn (main frame + Rotate Map) with a transform snapshot T (Spect._lmXf) */
+function lmXfFwd(v, axis, T) {
+    if (!T.ok) return v;
+    var res = T.same ? v : lmRawToWorld(v, axis ? T.cy : T.cx, axis ? T.sy : T.sx, axis ? T.dy : T.dx, axis ? T.ky : T.kx) / (axis ? T.mky : T.mkx) + (axis ? T.my : T.mx);
+    return lmDisplayFlip(res, axis);
+}
+/* drawn -> raw (exact, not rounded) with the same snapshot */
+function lmXfInv(v, axis, T) {
+    if (!T.ok) return v;
+    var res = lmDisplayFlip(v, axis);
+    return T.same ? res : lmWorldToRaw((res - (axis ? T.my : T.mx)) * (axis ? T.mky : T.mkx), axis ? T.cy : T.cx, axis ? T.sy : T.sx, axis ? T.dy : T.dx, axis ? T.ky : T.kx);
+}
+
+/* orientation candidates [sx, sy] against the main connection */
+var LM_ORI = [[1, 1], [-1, 1], [1, -1], [-1, -1]];
+/*
+ * Top players (opcode 69) of the main connection (ref, world) and of this one (obs,
+ * raw - C): per candidate, how many pair up one-to-one with the same mass (massTol) and
+ * the same place (tol). A player near a centre line fits both signs of that axis, so it
+ * adds to both candidates and decides nothing.
+ */
+function lmGhostOrientationCounts(ref, obs, tol, massTol) {
+    var counts = [0, 0, 0, 0], tol2 = tol * tol;
+    var order = ref.slice().sort(function (a, b) { return b.mass - a.mass; });
+    for (var c = 0; c < 4; c++) {
+        var sx = LM_ORI[c][0], sy = LM_ORI[c][1], used = [];
+        for (var i = 0; i < order.length; i++) {
+            var m = order[i], best = -1, bestD = tol2;
+            for (var j = 0; j < obs.length; j++) {
+                var g = obs[j];
+                if (used[j] || Math.abs(g.mass - m.mass) > massTol * Math.max(g.mass, m.mass)) continue;
+                var dx = sx * g.x - m.x, dy = sy * g.y - m.y, dd = dx * dx + dy * dy;
+                if (dd <= bestD) { bestD = dd; best = j; }
+            }
+            if (best >= 0) { used[best] = true; counts[c]++; }
+        }
+    }
+    return counts;
+}
+/* the candidate that clearly wins (at least minBest, minMargin more than any other and the
+ * runner-up at most ratio of it), else -1 (ambiguous: wait for more) */
+function lmDecideOrientation(counts, minBest, minMargin, ratio) {
+    var best = 0, second = 0, c;
+    for (c = 1; c < 4; c++) if (counts[c] > counts[best]) best = c;
+    for (c = 0; c < 4; c++) if (c !== best && counts[c] > second) second = counts[c];
+    var n = counts[best];
+    return n >= minBest && n - second >= minMargin && second <= n * ratio ? best : -1;
+}
+
+/* Food anchors: a spatial index (32-unit buckets: a 24-unit search reads 3 x 3) of
+ * stationary food in world coordinates. A bucket is only an index: two pellets in one
+ * bucket stay two pellets. */
+var LM_ANCHOR_CELL = 32;
+function lmAnchorKey(gx, gy) { return gx * 1048576 + gy; }
+function lmAnchorGrid() { return { map: new Map(), n: 0 }; }
+function lmAnchorPut(grid, x, y, size, src) {
+    var k = lmAnchorKey(Math.floor(x / LM_ANCHOR_CELL), Math.floor(y / LM_ANCHOR_CELL));
+    var b = grid.map.get(k);
+    if (!b) grid.map.set(k, b = []);
+    b.push({ x: x, y: y, size: size, src: src, used: 0 });
+    grid.n++;
+}
+/*
+ * Residuals (reference - observation) of observed food (world, {x, y, size}) against the
+ * reference: each observation takes the nearest unused reference pellet of the same size
+ * (+-1) within R from another connection, one-to-one; an observation with a second,
+ * different pellet of that size within R is ambiguous and skipped. stamp marks the
+ * pellets used by this call.
+ */
+function lmAnchorResiduals(grid, obs, R, skipSrc, stamp) {
+    var out = [], R2 = R * R, reach = Math.ceil(R / LM_ANCHOR_CELL);
+    for (var i = 0; i < obs.length; i++) {
+        var o = obs[i], gx = Math.floor(o.x / LM_ANCHOR_CELL), gy = Math.floor(o.y / LM_ANCHOR_CELL);
+        var best = null, bestD = R2, other = false;
+        for (var ix = gx - reach; ix <= gx + reach; ix++) {
+            for (var iy = gy - reach; iy <= gy + reach; iy++) {
+                var b = grid.map.get(lmAnchorKey(ix, iy));
+                if (!b) continue;
+                for (var j = 0; j < b.length; j++) {
+                    var p = b[j];
+                    if (p.src === skipSrc || p.used === stamp || Math.abs(p.size - o.size) > 1) continue;
+                    var dx = p.x - o.x, dy = p.y - o.y, dd = dx * dx + dy * dy;
+                    if (dd > R2) continue;
+                    /* another connection's copy of the same pellet is not a second pellet */
+                    if (best && Math.abs(p.x - best.x) + Math.abs(p.y - best.y) > 3) other = true;
+                    if (!best || dd < bestD) { best = p; bestD = dd; }
+                }
+            }
+        }
+        if (!best || other) continue;
+        best.used = stamp;
+        out.push([best.x - o.x, best.y - o.y]);
+    }
+    return out;
+}
+function lmMedian(a) {
+    if (!a.length) return 0;
+    var s = a.slice().sort(function (p, q) { return p - q; }), h = s.length >> 1;
+    return s.length % 2 ? s[h] : (s[h - 1] + s[h]) / 2;
+}
+/* median residual, the matches within 2 units of it (inliers) and their p95 distance */
+function lmRobustOffset(res) {
+    var mx = lmMedian(res.map(function (r) { return r[0]; })), my = lmMedian(res.map(function (r) { return r[1]; }));
+    var dev = [];
+    for (var i = 0; i < res.length; i++) {
+        var e = Math.max(Math.abs(res[i][0] - mx), Math.abs(res[i][1] - my));
+        if (e <= 2) dev.push(e);
+    }
+    dev.sort(function (p, q) { return p - q; });
+    return { n: res.length, inl: dev.length, mx: mx, my: my, p95: dev.length ? dev[Math.min(dev.length - 1, Math.floor(dev.length * 0.95))] : Infinity };
+}
+/*
+ * Reference food for every connection's check, rebuilt at most once a second: the main
+ * connection's food (its frame -> world) and the food seen by the connections whose
+ * orientation is verified (their raw -> world).
+ */
+var _lmFoodRef = { t: -Infinity, grid: null, stamp: 0 };
+function lmFoodReference(now) {
+    if (_lmFoodRef.grid && now - _lmFoodRef.t < 1000) return _lmFoodRef;
+    var grid = lmAnchorGrid(), lm = window.legendmod, food = lm.food || [];
+    var cmx = lmMainCentre(0), cmy = lmMainCentre(1), mkx = lmMainScale(0), mky = lmMainScale(1);
+    for (var i = 0; i < food.length; i++) {
+        var f = food[i];
+        if (!f || f.spectator || f.removed) continue;
+        /* its raw position (an older core: the drawn target, Rotate Map undone) */
+        var x = Number.isFinite(f._lmRawX) ? f._lmRawX : lmDisplayFlip(Number.isFinite(f.targetX) ? f.targetX : f.x, 0);
+        var y = Number.isFinite(f._lmRawY) ? f._lmRawY : lmDisplayFlip(Number.isFinite(f.targetY) ? f.targetY : f.y, 1);
+        var size = Number.isFinite(f.targetSize) ? f.targetSize : f.size;
+        if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+        lmAnchorPut(grid, (x - cmx) * mkx, (y - cmy) * mky, size, 0);
+    }
+    var sp = window.spects || [];
+    for (var s = 0; s < sp.length; s++) {
+        var u = sp[s];
+        if (!u || !u._lmAnchors || u._lmOri !== 'VERIFIED' || !u.mapOffsetFixed || u._lmSameFrame) continue;
+        for (var a = 0; a < u._lmAnchors.length; a++) {
+            var o = u._lmAnchors[a];
+            if (o && now - o.t < 20000) lmAnchorPut(grid, u.rawToWorldX(o.x), u.rawToWorldY(o.y), o.size, u.number);
+        }
+    }
+    _lmFoodRef.t = now;
+    _lmFoodRef.grid = grid;
+    return _lmFoodRef;
+}
+
 function addBox() {
     let spect = new Spect({ player: true });
     legendmod.multiBoxPlayerExists = true;
@@ -226,10 +419,23 @@ class Spect {
         this.fixX = 1
         this.fixY = 1
         this._lmOffsetFixedAt = 0
-        this._lmFoodRejects = 0
+        /* the transform contract (see lmRawToWorld): orientation WAITING_BORDER ->
+         * PROVISIONAL -> VERIFIED (<-> CONFLICTED), decided by top players and shared food */
+        this._lmSameFrame = false
+        this._lmKX = 1
+        this._lmKY = 1
+        this._lmOri = 'WAITING_BORDER'
+        this._lmOriStreakC = -1
+        this._lmOriStreakN = 0
+        this._lmOriVerifiedC = -1
+        this._lmGhostTime = 0
+        this._lmGhostPair = null
+        this._lmAnchors = []
+        this._lmAnchorNext = 0
+        this._lmCalibAt = 0
+        this._lmCalibSnaps = []
+        /* d (fix3x/fix3y) verified on shared food */
         this.foodCalibrated = false
-        this.foodSamples = []
-        this.foodSampleIDs = {}
         this.openFirst = false
         this.openSecond = false
         this.openThird = false
@@ -674,10 +880,10 @@ class Spect {
     /* The tile centre in this connection's raw frame (what opcode 16 carries); null until this
      * connection's border is fixed too. */
     _lmTileRaw() {
-        if (!this.mapOffsetFixed) return null;
-        var d = this._lmTileDisplay();
-        if (!d) return null;
-        var x = Math.round(this.convertX(d[0])), y = Math.round(this.convertY(d[1]));
+        if (!this.mapOffsetFixed || this.staticX == null || this.staticY == null || !legendmod || !legendmod.mapOffsetFixed) return null;
+        /* canonical world -> this connection's raw (scale, mirror and offset; Rotate Map is
+         * display only, so it does not move the tile) */
+        var x = Math.round(this.worldToRawX(this.staticX)), y = Math.round(this.worldToRawY(this.staticY));
         return (Number.isFinite(x) && Number.isFinite(y)) ? [x, y] : null;
     }
 
@@ -1211,6 +1417,7 @@ class Spect {
                         'inView': this.isInView(x, y, size)
                     });
                 }
+                this._lmGhostTime = Date.now();
                 this.GhostFix()
                 break;
 
@@ -1426,156 +1633,196 @@ class Spect {
         this.detectOrientation();
     }
 
-    /* Offset and orientation known: positions (and the camera) can be trusted. */
+    /*
+     * Offset and orientation known: positions (and the camera) can be trusted.
+     * A multibox unit is played as soon as its border is known (PROVISIONAL or
+     * CONFLICTED: it keeps the controls and the camera while the orientation is
+     * checked); a spectator connection only once its orientation is VERIFIED. No
+     * timeout ever accepts an unverified orientation: it was taken for good after
+     * 10 s without top-player data, and a wrong guess was never corrected.
+     */
     transformReady() {
         if (!this.mapOffsetFixed) return false;
-        if (this.ghostFixed || !this.integrity) return true;
-        /* No usable top-player list for 10 s: go on as not mirrored rather than
-         * keep the camera off this unit for good. */
-        if (Date.now() - (this._lmOffsetFixedAt || 0) > 10000) {
-            console.warn('[SPECT] Unit ' + this.number + ': orientation not found from the top players in 10 s; assuming the same as the main connection');
-            this.ghostFixed = true;
-            return true;
+        if (!this.integrity || this._lmOri === 'VERIFIED') return true;
+        return this.player === true;
+    }
+
+    _lmOriSet(state) {
+        this._lmOri = state;
+        this.ghostFixed = state === 'VERIFIED';
+    }
+
+    _lmOriIndex() {
+        return (this.fixX < 0 ? 1 : 0) + (this.fixY < 0 ? 2 : 0);
+    }
+
+    /*
+     * One decisive observation (top players or shared food) for candidate c of LM_ORI.
+     * PROVISIONAL / CONFLICTED: 2 in a row verify it (3 for a candidate other than the
+     * last verified one when CONFLICTED); VERIFIED: one against it makes it CONFLICTED
+     * (the cells stay where they are until a candidate is verified again).
+     */
+    _lmOriVote(c, why) {
+        if (this._lmOriStreakC === c) this._lmOriStreakN++;
+        else { this._lmOriStreakC = c; this._lmOriStreakN = 1; }
+        if (this._lmOri === 'VERIFIED') {
+            if (c !== this._lmOriIndex()) {
+                this._lmOriSet('CONFLICTED');
+                console.warn('[SPECT] Unit ' + this.number + ': ' + why + ' disagree with the verified orientation; checking again');
+            }
+            return;
         }
-        return false;
+        var need = this._lmOri === 'CONFLICTED' && c !== this._lmOriVerifiedC ? 3 : 2;
+        if (this._lmOriStreakN < need) return;
+        this._lmApplyTransform(LM_ORI[c][0], LM_ORI[c][1], this.fix3x, this.fix3y);
+        this._lmOriVerifiedC = c;
+        this._lmOriSet('VERIFIED');
+        console.log('[SPECT] Unit ' + this.number + ' orientation vs main (x, y):', LM_ORI[c][0], LM_ORI[c][1], '(verified by ' + why + ')');
     }
 
     /*
      * Is this connection's map mirrored compared with the main one?
      *
-     * agar.io can give each connection a mirrored map (per axis). The top
-     * players (opcode 69 "ghost cells") are the same players on both
-     * connections, so their distance from the map centre must match on each
-     * axis, either as is (same orientation) or with the sign flipped
-     * (mirrored). Both lists are compared in RAW server coordinates; the main
-     * client's ghost cells are stored rotated (Rotate Map), so its rawX/rawY
-     * are used. The old test compared one player's sign against the rotated
-     * main position (or the main player's own position), which picked the
-     * wrong side whenever Rotate Map had flipped that axis.
+     * agar.io can give each connection a mirrored map (per axis). The top players
+     * (opcode 69 "ghost cells") are the same players on both connections. Both lists go
+     * to world coordinates (k * (raw - C) on each connection, main: rawX/rawY)
+     * and each of the 4 candidates is scored by the players that pair up one-to-one by
+     * mass AND place (lmGhostOrientationCounts); pairing by mass alone could take the
+     * wrong one. Only lists received within 3 s of each other are compared (players
+     * move: the place tolerance, 150 units + 1 per ms of that gap, grows with it), each
+     * pair of lists once, and a candidate must clearly win (players near a centre line
+     * fit both signs). Evaluated again on every new pair, also once verified.
      *
      * Private servers don't mirror: nothing to detect there.
      */
     detectOrientation() {
-        if (this.ghostFixed || !this.mapOffsetFixed) return;
+        if (!this.mapOffsetFixed || this._lmSameFrame) return;
         if (!this.integrity) {
-            this.ghostFixed = true;
+            if (this._lmOri !== 'VERIFIED') this._lmOriSet('VERIFIED');
             return;
         }
-        var mainList = legendmod.ghostCells;
-        if (!mainList || !mainList.length || !this.ghostCells || !this.ghostCells.length) return;
-        /* the two lists must be from about the same moment */
-        if (!(Date.now() - (legendmod.ghostCellsTime || 0) < 3000)) return;
-        var used = {};
-        var pairs = 0;
-        var sameX = 0, flipX = 0, sameY = 0, flipY = 0;
-        for (var i = 0; i < mainList.length && pairs < 10; i++) {
+        var mainList = legendmod.ghostCells, mine = this.ghostCells;
+        var tm = legendmod.ghostCellsTime || 0, ts = this._lmGhostTime || 0;
+        if (!mainList || !mainList.length || !mine || !mine.length || !tm || !ts) return;
+        var dt = Math.abs(tm - ts);
+        if (dt > 3000) return;
+        var last = this._lmGhostPair;
+        if (last && (last[0] === tm || last[1] === ts)) return;
+        this._lmGhostPair = [tm, ts];
+        var cmx = lmMainCentre(0), cmy = lmMainCentre(1), mkx = lmMainScale(0), mky = lmMainScale(1);
+        var cx = -this.mapOffsetX, cy = -this.mapOffsetY, kx = this._lmKX || 1, ky = this._lmKY || 1;
+        var ref = [], obs = [], i;
+        for (i = 0; i < mainList.length; i++) {
             var m = mainList[i];
-            if (!m || !Number.isFinite(m.rawX) || !Number.isFinite(m.rawY) || !(m.mass > 0)) continue;
-            /* same player on this connection: the closest mass, within 10% */
-            var best = -1, bestDiff = Infinity;
-            for (var j = 0; j < this.ghostCells.length; j++) {
-                var g = this.ghostCells[j];
-                if (used[j] || !g || !(g.mass > 0)) continue;
-                var diff = Math.abs(g.mass - m.mass) / Math.max(g.mass, m.mass);
-                if (diff < bestDiff) {
-                    bestDiff = diff;
-                    best = j;
-                }
-            }
-            if (best < 0 || bestDiff > 0.1) continue;
-            used[best] = true;
-            var s = this.ghostCells[best];
-            /* distance from the map centre on each connection */
-            var mx = m.rawX + legendmod.mapOffsetX, my = m.rawY + legendmod.mapOffsetY;
-            var sx = s.x + this.mapOffsetX, sy = s.y + this.mapOffsetY;
-            sameX += Math.abs(mx - sx);
-            flipX += Math.abs(mx + sx);
-            sameY += Math.abs(my - sy);
-            flipY += Math.abs(my + sy);
-            pairs++;
+            if (m && Number.isFinite(m.rawX) && Number.isFinite(m.rawY) && m.mass > 0) ref.push({ x: (m.rawX - cmx) * mkx, y: (m.rawY - cmy) * mky, mass: m.mass });
         }
-        if (!pairs) return;
-        /* Decide an axis only when one answer fits (players move between the two
-         * packets) and clearly beats the other (a player near the centre line
-         * fits both). Otherwise wait for the next opcode 69. */
-        var decide = function (same, flip) {
-            same /= pairs;
-            flip /= pairs;
-            if (same < 600 && flip - same > 400) return 1;
-            if (flip < 600 && same - flip > 400) return -1;
-            return 0;
-        };
-        var fx = decide(sameX, flipX);
-        var fy = decide(sameY, flipY);
-        if (!fx || !fy) return;
-        this.setOrientation(fx, fy);
-        console.log('[SPECT] Unit ' + this.number + ' orientation vs main (x, y):', fx, fy, '(' + pairs + ' top players compared)');
+        for (i = 0; i < mine.length; i++) {
+            var g = mine[i];
+            if (g && Number.isFinite(g.x) && Number.isFinite(g.y) && g.mass > 0) obs.push({ x: kx * (g.x - cx), y: ky * (g.y - cy), mass: g.mass });
+        }
+        if (!ref.length || !obs.length) return;
+        var counts = lmGhostOrientationCounts(ref, obs, 150 + dt, 0.15);
+        this._lmGhostCounts = counts;
+        var c = lmDecideOrientation(counts, 2, 2, 0.5);
+        if (c >= 0) this._lmOriVote(c, counts[c] + ' top players');
     }
 
-    /* Set fixX/fixY and move the cells already placed with the old values. */
+    /* Legacy setter: set the orientation and move the cells already placed. */
     setOrientation(fixX, fixY) {
-        var changed = fixX !== this.fixX || fixY !== this.fixY;
-        var self = this;
-        var saved = [];
-        if (changed) {
-            /* back to this connection's raw coordinates with the old transform */
-            this._lmForEachUnitCell(function (cell) {
-                saved.push([cell, self._lmRawOf(cell)]);
-            });
-        }
-        this.fixX = fixX;
-        this.fixY = fixY;
-        this.ghostFixed = true;
-        for (var i = 0; i < saved.length; i++) {
-            this._lmPlaceFromRaw(saved[i][0], saved[i][1]);
-        }
+        this._lmApplyTransform(fixX, fixY, this.fix3x, this.fix3y);
+        this._lmOriVerifiedC = this._lmOriIndex();
+        this._lmOriSet('VERIFIED');
+    }
+
+    /* the current transform as a snapshot (see lmXfFwd / lmXfInv) */
+    _lmXf() {
+        return {
+            ok: !!this.mapOffsetFixed, same: !!this._lmSameFrame,
+            cx: -this.mapOffsetX, cy: -this.mapOffsetY, sx: this.fixX, sy: this.fixY, dx: this.fix3x, dy: this.fix3y,
+            kx: this._lmKX || 1, ky: this._lmKY || 1, mx: lmMainCentre(0), my: lmMainCentre(1), mkx: lmMainScale(0), mky: lmMainScale(1)
+        };
+    }
+
+    /* new s and d: every cell already placed is reprojected */
+    _lmApplyTransform(sx, sy, dx, dy) {
+        if (sx === this.fixX && sy === this.fixY && dx === this.fix3x && dy === this.fix3y) return;
+        var old = this._lmXf();
+        this.fixX = sx;
+        this.fixY = sy;
+        this.fix3x = dx;
+        this.fix3y = dy;
+        this._lmReproject(old);
+    }
+
+    /*
+     * Put this connection's cells where the current transform says. The target (the
+     * last packet's position) comes from the raw value stored at decode time
+     * (_lmRawX/_lmRawY); the drawn and start positions of the running interpolation, and
+     * every position of a cell animating its removal (it moves to its eater), are mapped
+     * from the old transform to the new one. Both are affine, so this is exact for
+     * points between start and target too. Rotate Map is applied the same way by both.
+     * This replaces moveExistedCells / _lmRawOf, which rebuilt raw values from drawn ones.
+     */
+    _lmReproject(oldT) {
+        var newT = this._lmXf(), gen = this.connectionGeneration;
+        var mapX = function (v) { return lmXfFwd(lmXfInv(v, 0, oldT), 0, newT); };
+        var mapY = function (v) { return lmXfFwd(lmXfInv(v, 1, oldT), 1, newT); };
+        this._lmForEachUnitCell(function (cell) {
+            var live = !cell.removed && cell._lmGen === gen;
+            if (Number.isFinite(cell.x)) cell.x = mapX(cell.x);
+            if (Number.isFinite(cell.y)) cell.y = mapY(cell.y);
+            if (Number.isFinite(cell.startX)) cell.startX = mapX(cell.startX);
+            if (Number.isFinite(cell.startY)) cell.startY = mapY(cell.startY);
+            if (Number.isFinite(cell.oldX)) cell.oldX = mapX(cell.oldX);
+            if (Number.isFinite(cell.oldY)) cell.oldY = mapY(cell.oldY);
+            if (live && Number.isFinite(cell._lmRawX)) cell.targetX = lmXfFwd(cell._lmRawX, 0, newT);
+            else if (Number.isFinite(cell.targetX)) cell.targetX = mapX(cell.targetX);
+            if (live && Number.isFinite(cell._lmRawY)) cell.targetY = lmXfFwd(cell._lmRawY, 1, newT);
+            else if (Number.isFinite(cell.targetY)) cell.targetY = mapY(cell.targetY);
+        });
     }
 
     /* Every cell of this unit, including those still animating their removal. */
     _lmForEachUnitCell(fn) {
+        var n = this.number;
+        var mine = function (c) { return c && (c._lmSrc === n || c.spectator === n); };
         var cells = legendmod.indexedCells;
         if (cells) {
             for (var id in cells) {
                 if (!Object.prototype.hasOwnProperty.call(cells, id)) continue;
-                if (cells[id] && cells[id].spectator === this.number) fn(cells[id]);
+                if (mine(cells[id])) fn(cells[id]);
             }
         }
         var removed = legendmod.removedCells;
         if (removed) {
             for (var r = 0; r < removed.length; r++) {
-                if (removed[r] && removed[r].spectator === this.number) fn(removed[r]);
+                if (mine(removed[r])) fn(removed[r]);
             }
         }
     }
 
-    _lmRawOf(cell) {
-        var raw = {};
-        var keysX = ['x', 'targetX', 'startX', 'oldX'];
-        var keysY = ['y', 'targetY', 'startY', 'oldY'];
-        for (var k = 0; k < 4; k++) {
-            if (Number.isFinite(cell[keysX[k]])) raw[keysX[k]] = this.convertX(cell[keysX[k]]);
-            if (Number.isFinite(cell[keysY[k]])) raw[keysY[k]] = this.convertY(cell[keysY[k]]);
-        }
-        return raw;
-    }
-
-    _lmPlaceFromRaw(cell, raw) {
-        for (var key in raw) {
-            if (!Object.prototype.hasOwnProperty.call(raw, key)) continue;
-            cell[key] = key.charAt(key.length - 1) === 'X' || key === 'x' ? this.getX(raw[key]) : this.getY(raw[key]);
-        }
-    }
+    /* the contract itself (no Rotate Map): this connection's raw <-> world */
+    rawToWorldX(x) { return this._lmSameFrame ? (x - lmMainCentre(0)) * lmMainScale(0) : lmRawToWorld(x, -this.mapOffsetX, this.fixX, this.fix3x, this._lmKX || 1); }
+    rawToWorldY(y) { return this._lmSameFrame ? (y - lmMainCentre(1)) * lmMainScale(1) : lmRawToWorld(y, -this.mapOffsetY, this.fixY, this.fix3y, this._lmKY || 1); }
+    worldToRawX(x) { return this._lmSameFrame ? x / lmMainScale(0) + lmMainCentre(0) : lmWorldToRaw(x, -this.mapOffsetX, this.fixX, this.fix3x, this._lmKX || 1); }
+    worldToRawY(y) { return this._lmSameFrame ? y / lmMainScale(1) + lmMainCentre(1) : lmWorldToRaw(y, -this.mapOffsetY, this.fixY, this.fix3y, this._lmKY || 1); }
+    /* a point in the main client's raw frame WITHOUT Rotate Map -> the integer raw position
+     * this connection sends */
+    mainToRawX(x) { return this.mapOffsetFixed ? Math.round(this.worldToRawX((x - lmMainCentre(0)) * lmMainScale(0))) : x; }
+    mainToRawY(y) { return this.mapOffsetFixed ? Math.round(this.worldToRawY((y - lmMainCentre(1)) * lmMainScale(1))) : y; }
 
     /*
-     * This connection's raw coordinates -> the main client's local (drawn)
-     * coordinates: this connection's offset, its orientation against the main
-     * one, the main offset, the small food-calibrated rest (fix3), then the
-     * main client's Rotate Map flip. Until the orientation is known the unit is
-     * placed as not mirrored; setOrientation() moves it if that was wrong.
+     * This connection's raw coordinates -> the main client's drawn coordinates:
+     * world = s * k * (raw - C) + d, to the main frame (/ main k + main centre), then the main client's
+     * Rotate Map flip. Same arithmetic as lmXfFwd(x, axis, this._lmXf()), written out
+     * on its own fields (developers/tests/debugviewports.js runs it alone). Until the
+     * orientation is verified the provisional one is used; a later decision reprojects.
      */
     getX(x) {
         if (this.mapOffsetFixed) {
-            var res = ((x + this.mapOffsetX) * this.fixX - legendmod.mapOffsetX + this.fix3x);
+            var res = this._lmSameFrame ? x : (this.fixX * (this._lmKX || 1) * (x + this.mapOffsetX) + this.fix3x) /
+                (Number.isFinite(legendmod._lmBorderKX) && legendmod._lmBorderKX > 0 ? legendmod._lmBorderKX : 1) +
+                (Number.isFinite(legendmod._lmBorderCX) ? legendmod._lmBorderCX : -legendmod.mapOffsetX);
             if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][0]) {
                 res = legendmod.mapMaxX - (res - legendmod.mapMinX);
             }
@@ -1586,7 +1833,9 @@ class Spect {
 
     getY(y) {
         if (this.mapOffsetFixed) {
-            var res = ((y + this.mapOffsetY) * this.fixY - legendmod.mapOffsetY + this.fix3y);
+            var res = this._lmSameFrame ? y : (this.fixY * (this._lmKY || 1) * (y + this.mapOffsetY) + this.fix3y) /
+                (Number.isFinite(legendmod._lmBorderKY) && legendmod._lmBorderKY > 0 ? legendmod._lmBorderKY : 1) +
+                (Number.isFinite(legendmod._lmBorderCY) ? legendmod._lmBorderCY : -legendmod.mapOffsetY);
             if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][1]) {
                 res = legendmod.mapMaxY - (res - legendmod.mapMinY);
             }
@@ -1595,102 +1844,97 @@ class Spect {
         return y;
     }
 
-    convertX(x) { //is used only for SendPosition
+    /* Drawn coordinates (cursor, unit centre) -> the integer raw position sent to this
+     * connection: the exact inverse of getX, rounded once (setInt32 truncated it, up to
+     * 1 unit toward 0). */
+    convertX(x) {
         if (!this.mapOffsetFixed) return x; /* getX is the identity until then too */
-        var res = x;
-        if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][0]) {
-            res = legendmod.mapMaxX - (res - legendmod.mapMinX);
-        }
-        return ((res + legendmod.mapOffsetX - this.fix3x) * this.fixX - this.mapOffsetX); /* exact inverse of getX */
+        return Math.round(lmXfInv(x, 0, this._lmXf()));
     }
 
     convertY(y) {
         if (!this.mapOffsetFixed) return y;
-        var res = y;
-        if (window.legendmod && window.legendmod.vector && window.legendmod.vector[window.legendmod.vnr] && window.legendmod.vector[window.legendmod.vnr][1]) {
-            res = legendmod.mapMaxY - (res - legendmod.mapMinY);
+        return Math.round(lmXfInv(y, 1, this._lmXf()));
+    }
+
+    /* a new food pellet seen by this connection: its authoritative raw place, for the checks */
+    _lmAnchorPush(rawX, rawY, size, now) {
+        if (!this._lmAnchors) return;
+        var a = { x: rawX, y: rawY, size: size, t: now };
+        if (this._lmAnchors.length < 384) this._lmAnchors.push(a);
+        else {
+            this._lmAnchors[this._lmAnchorNext] = a;
+            this._lmAnchorNext = (this._lmAnchorNext + 1) % 384;
         }
-        return ((res + legendmod.mapOffsetY - this.fix3y) * this.fixY - this.mapOffsetY); /* exact inverse of getY */
     }
 
     /*
-     * Fine-tune the placement with food both connections see (same cell id):
-     * the rest left after the border offsets is a few units at most. A sample
-     * that is far off is a different cell (or a server that numbers cells per
-     * connection), so it's skipped instead of shifting the unit across the map.
-     * Worked out in the main client's RAW space, where fix3 is applied; it was
-     * taken from the rotated positions, which had the wrong sign when Rotate
-     * Map flipped an axis.
+     * Orientation and d from stationary food this connection shares with the main one or
+     * with any connection whose orientation is verified (lmFoodReference). This replaces
+     * calibrateWithFood, which matched food by id (ids need not be shared between
+     * connections), used drawn positions, took the mean of 4 pellets, accepted up to 64
+     * units and compared only with the main connection. Food is matched here by its
+     * authoritative position (raw -> world) and size, one-to-one. For each of the 4
+     * candidates: the inliers around the median residual; a clear winner with >= 8 is one
+     * orientation vote. With the orientation verified, the median residual of >= 8
+     * inliers (p95 <= 2) seen in 2 checks >= 1 s apart that agree within 1 unit either
+     * verifies d (|median| <= 1: agar.io's case, d stays 0) or corrects it and reprojects
+     * the cells from raw. Every second until the orientation is verified, every 3 s until d
+     * is, then every 15 s as a watch, on the newest 128 pellets; one odd pellet moves nothing.
      */
-    calibrateWithFood(spectCell, isFood) {
-        if (this.foodCalibrated || !legendmod || !this.transformReady()) return;
-        var rawID = lmRawCellId(spectCell.id);
-        var mainCell = (legendmod.indexedCells && legendmod.indexedCells[rawID]) ? legendmod.indexedCells[rawID] : null;
-        if (!mainCell && legendmod.food) {
-            for (var f = 0; f < legendmod.food.length; f++) {
-                if (legendmod.food[f] && legendmod.food[f].id === rawID) {
-                    mainCell = legendmod.food[f];
-                    break;
-                }
-            }
+    _lmCalibrate(now) {
+        if (!this.mapOffsetFixed || this._lmSameFrame || !this._lmAnchors || this._lmAnchors.length < 8) return;
+        var every = this._lmOri !== 'VERIFIED' ? 1000 : this.foodCalibrated ? 15000 : 3000;
+        if (now - (this._lmCalibAt || 0) < every) return;
+        this._lmCalibAt = now;
+        var raw = [];
+        for (var i = 0; i < this._lmAnchors.length; i++) {
+            var a = this._lmAnchors[i];
+            if (a && now - a.t < 20000) raw.push(a);
         }
-        if (!mainCell || mainCell.spectator || !(mainCell.isFood || mainCell.size < 21 || isFood || spectCell.size < 21)) return;
-        var vec = legendmod.vector && legendmod.vector[legendmod.vnr];
-        var flipX = !!(vec && vec[0]), flipY = !!(vec && vec[1]);
-        /* both positions in the main client's raw space; translateX/Y undo Rotate Map */
-        var mainX = flipX ? legendmod.translateX(mainCell.x) : mainCell.x;
-        var mainY = flipY ? legendmod.translateY(mainCell.y) : mainCell.y;
-        var unitX = (flipX ? legendmod.translateX(spectCell.x) : spectCell.x) - this.fix3x;
-        var unitY = (flipY ? legendmod.translateY(spectCell.y) : spectCell.y) - this.fix3y;
-        var dX = mainX - unitX;
-        var dY = mainY - unitY;
-
-        if (!this.foodSampleIDs) this.foodSampleIDs = {};
-        if (this.foodSampleIDs[rawID]) return;
-        this.foodSampleIDs[rawID] = true;
-        if (!(Math.abs(dX) <= 64 && Math.abs(dY) <= 64)) {
-            this._lmFoodRejects = (this._lmFoodRejects || 0) + 1;
-            if (this._lmFoodRejects === 1 || this._lmFoodRejects % 50 === 0) {
-                console.warn('[SPECT] Unit ' + this.number + ': food ' + rawID + ' is ' + Math.round(dX) + ', ' + Math.round(dY) +
-                    ' away from the main client\'s copy; not used for calibration (' + this._lmFoodRejects + ' skipped)');
+        if (raw.length > 128) raw = raw.sort(function (p, q) { return q.t - p.t; }).slice(0, 128);
+        if (raw.length < 8) return;
+        var ref = lmFoodReference(now);
+        if (!ref.grid.n) return;
+        var cx = -this.mapOffsetX, cy = -this.mapOffsetY, stats = [], inl = [0, 0, 0, 0];
+        var cands = this.integrity ? [0, 1, 2, 3] : [this._lmOriIndex()];
+        for (var k = 0; k < cands.length; k++) {
+            var c = cands[k], sx = LM_ORI[c][0], sy = LM_ORI[c][1], obs = [];
+            for (var j = 0; j < raw.length; j++) {
+                obs.push({ x: lmRawToWorld(raw[j].x, cx, sx, this.fix3x, this._lmKX || 1), y: lmRawToWorld(raw[j].y, cy, sy, this.fix3y, this._lmKY || 1), size: raw[j].size });
             }
+            var st = lmRobustOffset(lmAnchorResiduals(ref.grid, obs, 24, this.number, ++ref.stamp));
+            stats[c] = st;
+            inl[c] = st.inl;
+        }
+        this._lmFoodCounts = inl;
+        if (this.integrity) {
+            var win = lmDecideOrientation(inl, 8, 4, 0.25);
+            if (win >= 0) this._lmOriVote(win, inl[win] + ' shared food pellets');
+        }
+        if (this._lmOri !== 'VERIFIED') return;
+        var cur = stats[this._lmOriIndex()];
+        if (!cur || cur.inl < 8 || cur.p95 > 2 || cur.inl < cur.n * 0.5) return;
+        var snaps = this._lmCalibSnaps;
+        snaps.push({ x: cur.mx, y: cur.my, n: cur.inl });
+        if (snaps.length > 2) snaps.shift();
+        if (snaps.length < 2) return;
+        if (Math.abs(snaps[0].x - snaps[1].x) > 1 || Math.abs(snaps[0].y - snaps[1].y) > 1) {
+            snaps.shift();
             return;
         }
-        this.foodSamples.push({ x: dX, y: dY });
-        if (this.foodSamples.length < 4) return;
-        var sumX = 0, sumY = 0, minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-        for (var i = 0; i < this.foodSamples.length; i++) {
-            var p = this.foodSamples[i];
-            sumX += p.x;
-            sumY += p.y;
-            minX = Math.min(minX, p.x); maxX = Math.max(maxX, p.x);
-            minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y);
-        }
-        /* food doesn't move: samples that disagree mean mismatched cells */
-        if (maxX - minX > 16 || maxY - minY > 16) {
-            this.foodSamples.shift();
+        var mx = (snaps[0].x + snaps[1].x) / 2, my = (snaps[0].y + snaps[1].y) / 2;
+        this._lmCalibSnaps = [];
+        if (Math.abs(mx) <= 1 && Math.abs(my) <= 1) {
+            if (!this.foodCalibrated) {
+                console.log('[SPECT] Unit ' + this.number + ' placement verified on shared food: residual', mx.toFixed(2), my.toFixed(2), '(' + snaps[0].n + ', ' + snaps[1].n + ' pellets)');
+            }
+            this.foodCalibrated = true;
             return;
         }
-        var adjX = sumX / this.foodSamples.length;
-        var adjY = sumY / this.foodSamples.length;
-        this.fix3x += adjX;
-        this.fix3y += adjY;
+        this._lmApplyTransform(this.fixX, this.fixY, this.fix3x + mx, this.fix3y + my);
         this.foodCalibrated = true;
-        /* raw-space shift -> drawn-space shift (Rotate Map flips the sign) */
-        this.moveExistedCells(flipX ? -adjX : adjX, flipY ? -adjY : adjY);
         console.log('[SPECT] Unit ' + this.number + ' food calibration (fix3x, fix3y):', this.fix3x.toFixed(2), this.fix3y.toFixed(2));
-    }
-
-    moveExistedCells(deltaX, deltaY) {
-        if (!deltaX && !deltaY) return;
-        this._lmForEachUnitCell(function (found) {
-            if (Number.isFinite(found.x)) found.x += deltaX;
-            if (Number.isFinite(found.y)) found.y += deltaY;
-            if (Number.isFinite(found.targetX)) found.targetX += deltaX;
-            if (Number.isFinite(found.targetY)) found.targetY += deltaY;
-            if (Number.isFinite(found.startX)) found.startX += deltaX;
-            if (Number.isFinite(found.startY)) found.startY += deltaY;
-        });
     }
 
     /* true when the raw point is OUTSIDE this spectator's estimated server view (old name) */
@@ -1769,9 +2013,11 @@ class Spect {
         if (official && !fullMap) return;
 
         if (legendmod.isLegendWorld) {
-            /* Expanding Land: no per-connection offset and its own map convention;
-             * unchanged from before. */
+            /* Expanding Land: no per-connection offset and its own map convention:
+             * the unit's raw frame is the main one (_lmSameFrame: getX is the
+             * identity, also after the main map changes size). */
             if (legendmod.mapOffsetFixed && legendmod.mapOffsetX != null) {
+                this._lmSameFrame = true;
                 this.mapSize = legendmod.mapSize || 14142;
                 this.mapOffset = legendmod.mapOffset || (this.mapSize / 2);
                 this.mapOffsetX = legendmod.mapOffsetX;
@@ -1793,15 +2039,16 @@ class Spect {
         } else {
             this.mapSize = (official || fullMap) ? 14142 : pWidth;
             this.mapOffset = this.mapSize / 2;
-            if (official) {
-                /* Same formula as the main client uses on agar.io, so the two match exactly. */
-                this.mapOffsetX = this.mapOffset - right;
-                this.mapOffsetY = this.mapOffset - bottom;
-            } else {
-                /* Same as the main client on private servers: centre of the border. */
-                this.mapOffsetX = -(left + right) / 2;
-                this.mapOffsetY = -(top + bottom) / 2;
-            }
+            /* C = the exact centre of the full border on every server (mapOffsetX = -C).
+             * On agar.io this was mapOffset - right like the main client's mapOffsetX:
+             * 0.068 off the centre (the border is 14142.1356 wide), the same on both
+             * connections until this one is mirrored, then 0.14 off on that axis. getX
+             * adds the main client's exact centre (LM._lmBorderCX/CY). */
+            this.mapOffsetX = -(left + right) / 2;
+            this.mapOffsetY = -(top + bottom) / 2;
+            /* k: agar.io scales every connection per axis; the full border spans the whole map */
+            this._lmKX = official ? LM_WORLD_SIZE / pWidth : 1;
+            this._lmKY = official ? LM_WORLD_SIZE / pHeight : 1;
             this.mapMinX = left;
             this.mapMinY = top;
             this.mapMaxX = right;
@@ -1810,10 +2057,16 @@ class Spect {
 
         this.viewX = (right + left) / 2;
         this.viewY = (bottom + top) / 2;
+        var placedBefore = this._lmXf(); /* identity: cells that came before the border */
         this.mapOffsetFixed = true;
         this._lmOffsetFixedAt = Date.now();
-        console.log('[SPECT] Unit ' + this.number + ' map offset (x, y):', this.mapOffsetX, this.mapOffsetY,
-            '| main:', legendmod.mapOffsetX, legendmod.mapOffsetY);
+        /* no mirroring to find on private servers and Expanding Land; on agar.io the
+         * orientation starts as not mirrored (PROVISIONAL) until it is verified */
+        this._lmOriSet(!this.integrity || this._lmSameFrame ? 'VERIFIED' : 'PROVISIONAL');
+        if (this._lmOri === 'VERIFIED') this._lmOriVerifiedC = this._lmOriIndex();
+        this._lmReproject(placedBefore);
+        console.log('[SPECT] Unit ' + this.number + ' map centre (x, y):', -this.mapOffsetX, -this.mapOffsetY,
+            '| main:', lmMainCentre(0), lmMainCentre(1));
         /* Ghost cells may already be here. */
         this.detectOrientation();
 
@@ -2008,16 +2261,10 @@ class Spect {
                 invisible = this.staticX != null ? this.isInView(x, y) : false;
             }
 
-            //test
-            //this.constantrecalculation()
-            if (this.getX) {
-                x = this.getX(x)
-                //x = this.getX(x)+this.fix3x
-            }
-            if (this.getY) {
-                y = this.getY(y)
-                //y = this.getY(y)+this.fix3y
-            }
+            /* authoritative raw values, kept on the cell (_lmRawX/_lmRawY) */
+            const rawID = id, rawX = x, rawY = y;
+            x = this.getX(x);
+            y = this.getY(y);
 
             /*else {
                 console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
@@ -2206,11 +2453,16 @@ class Spect {
             cell.isFood = isFood;
             cell.isVirus = isVirus;
             cell.invisible = invisible;
-
-            // Intelligent 4-Food Map Offset Calibration
-            if ((isFood || size < 21) && !this.foodCalibrated) {
-                this.calibrateWithFood(cell, isFood);
-            }
+            /* the observation as this connection sent it: source (0 = main), socket
+             * generation, raw id and raw position. Reprojection and the food checks use
+             * these, never the drawn (interpolated, mirrored or snapped) position. */
+            const firstSeen = cell._lmSrc !== this.number || cell._lmGen !== this.connectionGeneration || cell._lmRawId !== rawID;
+            cell._lmSrc = this.number;
+            cell._lmGen = this.connectionGeneration;
+            cell._lmRawId = rawID;
+            cell._lmRawX = rawX;
+            cell._lmRawY = rawY;
+            if (isFood && firstSeen) this._lmAnchorPush(rawX, rawY, size, this.time);
 
             // In multibox mode or for player cells, cells must NEVER be hidden
             if (this.player || cell.isPlayerCell || cell.isPlayerCellMulti) {
@@ -2245,6 +2497,11 @@ class Spect {
             if (cell) {
                 cell.removeCell();
             }
+        }
+        /* orientation and residual checks (each throttled; see the functions) */
+        if (this.mapOffsetFixed && this._lmAnchors) {
+            if (legendmod.ghostCellsTime && (!this._lmGhostPair || this._lmGhostPair[0] !== legendmod.ghostCellsTime)) this.detectOrientation();
+            this._lmCalibrate(this.time);
         }
 
     }
