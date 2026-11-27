@@ -65375,7 +65375,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.glDashedRingData = new Float32Array(5000 * 7);
                 }
 
-                // ===== WebGL2 Gradient Bubble Shader (for drawBubbleCircles / drawBCursorTracking) =====
+                // ===== WebGL2 Gradient Bubble Shader (for drawBCursorTracking; opponent bubbles are Canvas2D) =====
                 var bubbleVs = `#version 300 es
                 in vec2 a_unitPos;
                 in vec2 a_bubbleCenter;
@@ -72586,74 +72586,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 gl.ARRAY_BUFFER,
                 null
             );
-
-            return true;
-        },
-        /* WebGL2 gradient bubble batch — used by drawBubbleCircles / drawBCursorTracking */
-        drawWebGLBubbleBatch(players, colorHex, alphaVal) {
-            if (!this.gl || !this.glBubbleProgram || !players || !players.length) return false;
-            var gl = this.gl;
-            var data = this.glBubbleData;
-            var count = 0;
-            var max = 2000;
-
-            var viewScale = this.scale || 1;
-            var halfW = (this.canvasWidth / viewScale / 2) + 500;
-            var halfH = (this.canvasHeight / viewScale / 2) + 500;
-            var minX = this.camX - halfW, maxX = this.camX + halfW;
-            var minY = this.camY - halfH, maxY = this.camY + halfH;
-
-            /* a black setting stays black (parseInt || white drew it white), also rgb() and names */
-            var cInt = this._lmGlColorInt(colorHex || '#ffffff');
-            if (cInt < 0) cInt = 0xffffff;
-            var rR = ((cInt >> 16) & 255) / 255;
-            var rG = ((cInt >> 8) & 255) / 255;
-            var rB = (cInt & 255) / 255;
-            var rA = alphaVal || 0.75;
-
-            for (var i = 0; i < players.length && count < max; i++) {
-                var t = players[i];
-                if (!t) continue;
-                var bubbleR = t.size / 3;
-                var offset = t.size - bubbleR; // 2/3 of size
-                // Rotation angle: direction from cell to target
-                var rad = Math.atan2(t.targetX - t.x, t.y - t.targetY);
-                var sinR = Math.sin(rad), cosR = Math.cos(rad);
-                // Bubble center in world space (rotated offset)
-                var bx = t.x + sinR * offset;
-                var by = t.y - cosR * offset;
-                if (bx + bubbleR < minX || bx - bubbleR > maxX || by + bubbleR < minY || by - bubbleR > maxY) continue;
-                /* EXPANDING LAND — deform bubble center (jelly ON = no-op) */
-                var bubblePtA = this.getLegendWorldAttachedRenderPoint(bx, by, this._elMapPointA);
-                bx = bubblePtA.x;
-                by = bubblePtA.y;
-                // Gradient direction in unit-pos space: from solid (toward cell) to transparent (away)
-                // In rotated space, gradient goes along -Y to +Y, so gradDir = (sinR, -cosR) normalized
-                var idx = count * 9;
-                data[idx] = bx;
-                data[idx + 1] = by;
-                data[idx + 2] = bubbleR;
-                data[idx + 3] = sinR;    // gradDir.x
-                data[idx + 4] = -cosR;   // gradDir.y
-                data[idx + 5] = rR;
-                data[idx + 6] = rG;
-                data[idx + 7] = rB;
-                data[idx + 8] = rA;
-                count++;
-            }
-
-            if (count === 0) return true;
-
-            gl.useProgram(this.glBubbleProgram);
-            gl.uniform2f(this.u_bubble_viewCenter, this.camX, this.camY);
-            gl.uniform2f(this.u_bubble_viewScale, 2.0 * viewScale / this.canvasWidth, 2.0 * viewScale / this.canvasHeight);
-
-            gl.bindBuffer(gl.ARRAY_BUFFER, this.glBubbleInstanceVBO);
-            gl.bufferSubData(gl.ARRAY_BUFFER, 0, data.subarray(0, count * 9));
-
-            gl.bindVertexArray(this.glBubbleVAO);
-            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, count);
-            gl.bindVertexArray(null);
 
             return true;
         },
@@ -83552,8 +83484,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 1 / scale;
 
             /*
-             * Canvas2D (forceCanvas2D = true), as drawHelpers and
-             * drawBubbleCircles describe: on the GL cell layer the bubbles
+             * Canvas2D, as drawHelpers and drawBubbleCircles describe: on
+             * the GL cell layer the bubbles
              * were wiped whenever the cell batch aborted (gl.clear) and were
              * drawn above the cells whenever Canvas2D owned the cells.
              */
@@ -83563,8 +83495,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                defaultSettings.enemyBSTEDColor,
-                true
+                defaultSettings.enemyBSTEDColor
             );
 
             this.drawBubbleCircles(
@@ -83573,8 +83504,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                defaultSettings.enemyBSTEColor,
-                true
+                defaultSettings.enemyBSTEColor
             );
 
             this.drawBubbleCircles(
@@ -83583,8 +83513,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                defaultSettings.enemyBColor,
-                true
+                defaultSettings.enemyBColor
             );
 
             this.drawBubbleCircles(
@@ -83593,8 +83522,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                defaultSettings.splitRangeColor,
-                true
+                defaultSettings.splitRangeColor
             );
 
             this.drawBubbleCircles(
@@ -83603,8 +83531,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                defaultSettings.enemySColor,
-                true
+                defaultSettings.enemySColor
             );
 
             this.drawBubbleCircles(
@@ -83613,8 +83540,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                defaultSettings.enemySSTEColor,
-                true
+                defaultSettings.enemySSTEColor
             );
 
             this.drawBubbleCircles(
@@ -83623,8 +83549,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 width,
                 alpha,
                 0.75,
-                defaultSettings.enemySSTEDColor,
-                true
+                defaultSettings.enemySSTEDColor
             );
 
             if (reset) {
@@ -83808,29 +83733,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
             scale,
             width,
             alpha,
-            stroke,
-            forceCanvas2D
+            stroke
         ) { //Yahnych
             /*
-             * WebGL remains available for overlays that are allowed above the
-             * Canvas2D layer. Opponent bubbles pass forceCanvas2D=true because
-             * every cell and virus must cover them.
+             * Canvas2D only: every cell and virus must cover the opponent
+             * bubbles, and the GL layer is above this canvas.
              */
-            if (
-                !forceCanvas2D &&
-                (
-                    typeof defaultmapsettings.webgl2Acceleration ===
-                        "undefined" ||
-                    defaultmapsettings.webgl2Acceleration
-                ) &&
-                this.drawWebGLBubbleBatch(
-                    players,
-                    stroke,
-                    alpha
-                )
-            ) {
-                return;
-            }
             var _pi2 = 6.283185307179586;
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];

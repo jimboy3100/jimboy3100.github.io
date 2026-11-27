@@ -230,12 +230,11 @@ check('the next server: the nick has its server colour, not the previous server\
         R0.glBubbleData.fill(-1);
         const cell = [{ x: 0, y: 0, size: 50, targetX: 10, targetY: 0 }];
         if (fn === 'drawWebGLFilledBatch') R0.drawWebGLFilledBatch(cell, col, 1);
-        else if (fn === 'drawWebGLBubbleBatch') R0.drawWebGLBubbleBatch(cell, col, 1);
         else R0.drawWebGLBubbleBatchCursor(cell, 100, 0, col, 1);
         const at = fn === 'drawWebGLFilledBatch' ? [R0.glInstanceData, 3] : [R0.glBubbleData, 5];
         return Array.from(at[0].slice(at[1], at[1] + 3)).map((v) => Math.round(v * 255));
     };
-    for (const fn of ['drawWebGLFilledBatch', 'drawWebGLBubbleBatch', 'drawWebGLBubbleBatchCursor']) {
+    for (const fn of ['drawWebGLFilledBatch', 'drawWebGLBubbleBatchCursor']) {
         if (typeof R0[fn] !== 'function') continue;
         check(fn + ': a black colour setting is drawn black', JSON.stringify(rgbOf(fn, '#000000')) === '[0,0,0]', rgbOf(fn, '#000000'));
         check(fn + ': #3366ff is drawn #3366ff', JSON.stringify(rgbOf(fn, '#3366ff')) === '[51,102,255]', rgbOf(fn, '#3366ff'));
