@@ -413,10 +413,11 @@
         '#lm-notif-panel button,#lm-notif-panel select{background:var(--lm-w-btn,rgba(255,255,255,.05));color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,rgba(255,255,255,.2));' +
         'border-radius:var(--lm-radius-s,4px);padding:3px 8px;min-height:var(--lm-w-ctl,30px);font:inherit;cursor:pointer;touch-action:manipulation}' +
         '#lm-notif-panel select{background:var(--lm-w-field,rgba(0,0,0,.25))}' +
-        '#lm-notif-panel select option{background:var(--lm-pc,#22252c);color:var(--lm-tc,#eee)}' +
         '#lm-notif-panel button:hover{background:var(--lm-w-btn-h,rgba(255,255,255,.12))}' +
         '#lm-notif-panel .lmn-close{min-width:var(--lm-w-x,32px);min-height:var(--lm-w-x,30px);font-size:18px;line-height:1;padding:2px 6px;color:var(--lm-tc2,#eee);border-color:transparent}' +
-        '#lm-notif-panel .lmn-mutes{padding:4px 10px 8px;border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.1))}' +
+        /* on a short screen (a 915x412 phone) the switches scroll inside their box: the box kept its full
+         * height, so the list below it was pushed out of the panel and the last switch was cut off */
+        '#lm-notif-panel .lmn-mutes{padding:4px 10px 8px;border-bottom:1px solid var(--lm-pc2,rgba(255,255,255,.1));flex:0 1 auto;min-height:48px;overflow-y:auto;-webkit-overflow-scrolling:touch}' +
         '#lm-notif-panel .lmn-mutes label{display:inline-flex;align-items:center;gap:4px;margin:3px 12px 3px 0;font-weight:400;cursor:pointer}' +
         '#lm-notif-panel .lmn-note{padding:6px 10px;color:#f8c56a}' +
         '#lm-notif-panel .lmn-list{list-style:none;margin:0;padding:0;overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;min-height:60px}' +
