@@ -31,7 +31,10 @@ const CLAIMS = [
     /\bvs ~?\d+ ?ms on Node\.?js\b/i,
     /* server-controlled bots play in the arenas too */
     /\bno bots\b/i,
-    /\b\d[\d,]*\s+(?:concurrent |simultaneous )?real players\b/i
+    /\b\d[\d,]*\s+(?:concurrent |simultaneous )?real players\b/i,
+    /* "video skins (Legend Mod exclusive)": the Compare page lists video skins for Delta too */
+    /\(Legend Mod exclusive( feature)?\)/i,
+    /\bno other mod\b/i
 ];
 /* "up to 720 players", "1024 concurrent players", "1024 player capacity", "3840 Real Players" */
 const CAPACITY = /\b(\d{1,3}(?:,\d{3})+|\d{3,6})\s+(?:real |concurrent |simultaneous )?players?\b/gi;
@@ -117,6 +120,11 @@ fs.readdirSync(src).filter((n) => /^site-.*\.json$/.test(n) && !/changelog/.test
         });
     });
 });
+
+/* no "Exclusive" badge on the Features page (skins, several servers, gamepads: other mods have them too) */
+const featSrc = fs.readFileSync(path.join(src, 'site-features.json'), 'utf8');
+ok(!/badge-exclusive/.test(fs.readFileSync(path.join(repo, 'features.html'), 'utf8')), 'features.html has no Exclusive badge');
+ok(!/badge-exclusive/.test(featSrc), 'site-features.json has no Exclusive badge in any language');
 
 /* the comparison says who made it (it is published by one of the compared mods) */
 const cmp = fs.readFileSync(path.join(repo, 'compare.html'), 'utf8');

@@ -21,7 +21,7 @@
 "site.faq.yesLegendModIs3": "はい！Legend Modは<strong>ゲームパッドに対応</strong>しています。ブラウザが標準レイアウトとして認識するXbox、PlayStationなどのコントローラーを接続するだけで、すぐに使えます。ボタン、感度、プロファイルはショートカットウィンドウの「ゲームパッド」セクションにあります。左スティックで移動、右スティックでズーム、Aで分裂、Xでダブル分裂、RBで16分裂、B（長押し）で質量放出、Yでリスポーン、LBでマルチボックスのユニット切り替え、Startでメニューを開きます。",
 "site.faq.skinsVisuals": "🎨 スキンと見た目",
 "site.faq.howDoIAdd": "カスタムスキンはどうやって追加しますか？",
-"site.faq.openTheLegendMod": "Legend Modメニューの「ホーム」タブにあるスキン欄（ニックネームの下）と、「設定」の「スキン」セクションを使います。できること：1）好きな画像のURLを貼り付けてスキンにする。2）自分の画像ファイルをアップロードする。3）<strong>スキンローテーター</strong>で複数のスキンを順番に切り替える。4）GIFアニメーションや動画のスキンを追加する（Legend Mod独自の機能）。5）<a href=\"/skins/\">legendmod.ml/skins</a>でコミュニティのスキンを探す。",
+"site.faq.openTheLegendMod": "Legend Modメニューの「ホーム」タブにあるスキン欄（ニックネームの下）と、「設定」の「スキン」セクションを使います。できること：1）好きな画像のURLを貼り付けてスキンにする。2）自分の画像ファイルをアップロードする。3）<strong>スキンローテーター</strong>で複数のスキンを順番に切り替える。4）GIFアニメーションや動画のスキンを追加する。5）<a href=\"/skins/\">legendmod.ml/skins</a>でコミュニティのスキンを探す。",
 "site.faq.troubleshooting": "🔧 トラブルシューティング",
 "site.faq.whyIsLegendMod": "agar.ioのアップデート後にLegend Modが動かないのはなぜですか？",
 "site.faq.whenAgarIoUpdates": "agar.ioがクライアントを更新すると、Legend Modも互換性のためのアップデートが必要になることがあります。次の方法を試してください：1）<code>chrome://extensions</code>で拡張機能の更新を確認する。2）ブラウザのキャッシュを消去する（Ctrl+Shift+Delete）。3）拡張機能を一度無効にしてから再度有効にする。4）Chromeウェブストアから再インストールする。アップデートは通常24時間以内に公開されます。",
