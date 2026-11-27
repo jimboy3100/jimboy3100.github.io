@@ -195,5 +195,99 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
     check('the first press afterwards starts the spectator again', e.win.ingameSpectator === true && spectators(e.win).length === 1);
 }
 
+/* 10. Full Map with the real ogario/spect.js (Spect, addFullSpectator, addBox) under the same core
+ * toggles: sockets and timers are counted. Toggled on and off repeatedly: never more than one
+ * grid of sockets, none and no timer left after off (also with a reconnect pending), the main
+ * border packets calling LM.addSpect again add nothing, nothing opens before the border is fixed,
+ * and a multibox unit keeps its socket through every Full Map toggle. */
+{
+    const spectSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'spect.js'), 'utf8');
+    const sockets = [], timers = new Map();
+    let timerId = 0;
+    const ctx = {
+        console: { log() { }, warn() { }, error: console.error }, Date, Math, Number, Object, JSON, Set, DataView, ArrayBuffer, Uint8Array, String, parseInt,
+        setInterval: (fn, ms) => { timers.set(++timerId, { fn, ms, repeat: true }); return timerId; },
+        setTimeout: (fn, ms) => { timers.set(++timerId, { fn, ms }); return timerId; },
+        clearInterval: (id) => { timers.delete(id); }, clearTimeout: (id) => { timers.delete(id); },
+        toastr: { error() { ctx.toasts = (ctx.toasts || 0) + 1; } }, lmT: (k) => k,
+        $: (sel) => ({ val: () => (sel === '#nick' ? 'player' : ''), show() { return this; }, hide() { return this; } }),
+        lmSetMbUnit: (u) => { ctx.multiboxPlayerEnabled = +u || null; },
+        WebSocket: { CONNECTING: 0, OPEN: 1 },
+        defaultmapsettings: {}, profiles: [], master: { clientVersion: 1, protocolVersion: 1 },
+        application: { mbSlots: [0, 1, 2], writeUint32() { } },
+        proLicenceUID: 'test', clanTagLc: 'ZZX'
+    };
+    ctx.window = ctx;
+    ctx.createLegendWebSocket = (url) => {
+        const s = { url, readyState: 0, OPEN: 1, CONNECTING: 0, sent: 0, send() { this.sent++; }, close() { this.readyState = 3; this.closed = true; } };
+        sockets.push(s);
+        return s;
+    };
+    vm.createContext(ctx);
+    vm.runInContext('var legendmod = window.legendmod = { ws: "wss://test", integrity: true, mapOffsetFixed: true, mapMinX: -7071, mapMinY: -7071, mapMaxX: 7071, mapMaxY: 7071,' +
+        ' mapOffsetX: 0, mapOffsetY: 0, vector: null, vnr: 0, playerCellsMulti: [], indexedCells: {}, cells: [], foodMulti: [],' +
+        lmMethods.map((m) => m[1]).join(',\n') + '}; var LM = legendmod;' +
+        'var application = Object.assign(window.application, {' + appMethods.map((m) => m[1]).join(',\n') + '});', ctx);
+    vm.runInContext(spectSrc, ctx);
+    const app = ctx.application, LM = ctx.legendmod;
+    const open = () => sockets.filter((s) => !s.closed).length;
+    const fullOf = () => ctx.spects.filter((s) => !s.player);
+    /* the socket handshake as far as the tile sender: open, keys, opcode 242 (spectate, tile sender, free spectate), border */
+    const handshake = (s, i) => {
+        s.socket.readyState = 1; s.socket.onopen();
+        s.protocolKey = 5; s.clientKey = 7;
+        s.pingInterval = ctx.setInterval(() => s.sendPing(), 3000);
+        s.sendSpectate(); s.startStaticPositionController(); s.sendFreeSpectate();
+        s.mapOffsetFixed = true; s.mapOffsetX = 300 * i; s.mapOffsetY = -200 * i;
+    };
+    let grid = 0;
+    for (let round = 0; round < 4; round++) {
+        app.setShowFullSpectator();
+        const sp = fullOf();
+        if (!round) grid = sp.length;
+        sp.forEach(handshake);
+        LM.addSpect(); LM.addSpect(); /* the next main border packets */
+        if (round === 1) { const ds = sp[3].socket; ds.readyState = 3; ds.closed = true; ds.onclose(); } /* a server-dropped spectator: reconnect pending */
+        const tick = [...timers.values()].filter((t) => t.ms === 50);
+        tick.forEach((t) => t.fn());
+        if (round === 0) {
+            check('Full Map on: 15 spectators, one socket each', grid === 15 && open() === 15 && sockets.length === 15, grid + ' / ' + open());
+            check('the border packets afterwards add no second grid', fullOf().length === 15 && open() === 15);
+            check('each tile sender sent its target once its border was known', sp.every((s) => s.socket.sent >= 4) && tick.length === 15, tick.length);
+        }
+        if (round === 1) check('a dropped spectator has its reconnect timer', [...timers.values()].some((t) => t.ms === 1000 && !t.repeat));
+        app.setShowFullSpectator();
+        check('Full Map off (round ' + (round + 1) + '): no socket and no timer left', ctx.fullSpectator === false && open() === 0 && timers.size === 0 && ctx.spects.length === 0,
+            open() + ' sockets, ' + timers.size + ' timers, ' + ctx.spects.length + ' spects');
+    }
+    check('4 rounds opened 4 grids, no more', sockets.length === 4 * 15, sockets.length); /* the reconnect of round 2 never ran */
+    /* not before the main border is fixed: the grid waits for it */
+    LM.mapOffsetFixed = false;
+    app.setShowFullSpectator();
+    check('provisional border: nothing opens yet, the switch stays on', ctx.fullSpectator === true && ctx.spects.length === 0 && !ctx.toasts);
+    LM.mapOffsetFixed = true; LM.addSpect();
+    check('border fixed: the next border packet opens the grid', fullOf().length === 15);
+    app.setShowFullSpectator();
+    /* Full Map and a multibox unit together */
+    const before = sockets.length;
+    ctx.addBox();
+    const unit = ctx.spects[0];
+    unit.socket.readyState = 1;
+    const unitTimer = ctx.setInterval(() => { }, 40); unit.positionController = unitTimer;
+    for (let i = 0; i < 2; i++) {
+        app.setShowFullSpectator();
+        check('multibox unit open: Full Map still opens its 15 spectators (' + (i + 1) + ')', fullOf().length === 15 && ctx.spects.includes(unit));
+        app.setShowFullSpectator();
+        check('Full Map off: the unit keeps its socket and timer (' + (i + 1) + ')', ctx.spects.length === 1 && ctx.spects[0] === unit && !unit.socket.closed && timers.has(unitTimer) &&
+            open() === 1, open());
+    }
+    check('unit + 2 grids opened, no more', sockets.length === before + 1 + 30, sockets.length - before);
+    /* not agar.io: refused with the message, the switch goes off */
+    LM.integrity = false;
+    ctx.spects.length = 0;
+    app.setShowFullSpectator();
+    check('private server: no spectator, message shown, switch off', ctx.spects.length === 0 && ctx.toasts === 1 && ctx.fullSpectator === false);
+}
+
 console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
 process.exit(failed ? 1 : 0);

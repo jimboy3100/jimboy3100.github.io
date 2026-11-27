@@ -80151,64 +80151,101 @@ function pickPlayerCellBySize(players, selectBiggest) {
             ctx.globalAlpha =
                 previousAlpha;
         },
-        /* Box of the food one multibox unit's connection received (its server view), started at the
-         * unit like calMinMax starts at the main view. Debug boxes only; null without food. */
-        _lmUnitFoodBox(sp) {
-            var food = LM.foodMulti;
-            if (!sp || !food || !food.length || !Number.isFinite(sp.playerX) || !Number.isFinite(sp.playerY)) return null;
-            var box = this._lmUnitBoxScratch || (this._lmUnitBoxScratch = { minX: 0, minY: 0, maxX: 0, maxY: 0 });
-            var foodOffset = 10 + defaultSettings.foodSize;
-            var minX = sp.playerX, maxX = sp.playerX, minY = sp.playerY, maxY = sp.playerY, n = 0;
-            for (var i = 0; i < food.length; i++) {
-                var f = food[i];
-                if (!f || f.removed || f.spectator !== sp.number) continue;
-                var x = f.x - foodOffset, y = f.y - foodOffset;
-                if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-                if (x < minX) minX = x; if (x > maxX) maxX = x;
-                if (y < minY) minY = y; if (y > maxY) maxY = y;
-                n++;
+        /* Food box of each connection in `list` (units and spectators) from LM.foodMulti, one pass:
+         * the area its server sends, i.e. its observed coverage. Debug boxes only (drawViewPorts
+         * runs only with Show viewports on). Packet positions (targetX/Y), not the drawn ones;
+         * padded by the food radius on BOTH sides (the max side was shifted down by it). A unit's
+         * box starts at its own centre like calMinMax starts at the main view; n = 0: no food. */
+        _lmConnFoodBoxes(list) {
+            var boxes = this._lmConnBoxes || (this._lmConnBoxes = {});
+            for (var k in boxes) boxes[k].n = 0;
+            for (var i = 0; i < list.length; i++) {
+                var sp = list[i];
+                if (!sp || sp.number == null) continue;
+                var b = boxes[sp.number] || (boxes[sp.number] = { minX: 0, minY: 0, maxX: 0, maxY: 0, n: 0 });
+                var seed = sp.player && Number.isFinite(sp.playerX) && Number.isFinite(sp.playerY);
+                b.minX = seed ? sp.playerX : Infinity; b.maxX = seed ? sp.playerX : -Infinity;
+                b.minY = seed ? sp.playerY : Infinity; b.maxY = seed ? sp.playerY : -Infinity;
             }
-            if (!n) return null;
-            box.minX = minX; box.minY = minY; box.maxX = maxX; box.maxY = maxY;
-            return box;
+            var food = LM.foodMulti;
+            if (!food || !food.length) return boxes;
+            var pad = 10 + (defaultSettings.foodSize || 0);
+            for (var j = 0; j < food.length; j++) {
+                var f = food[j];
+                if (!f || f.removed) continue;
+                var fb = boxes[f.spectator];
+                if (!fb) continue;
+                var x = Number.isFinite(f.targetX) ? f.targetX : f.x, y = Number.isFinite(f.targetY) ? f.targetY : f.y;
+                if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+                if (x - pad < fb.minX) fb.minX = x - pad; if (x + pad > fb.maxX) fb.maxX = x + pad;
+                if (y - pad < fb.minY) fb.minY = y - pad; if (y + pad > fb.maxY) fb.maxY = y + pad;
+                fb.n++;
+            }
+            return boxes;
         },
+        /*
+         * "Show viewports" (debug). Kept apart, never blended or smoothed:
+         *   map               the map border (opcode 64)
+         *   1                 the main connection's observed coverage (its food box, calMinMax)
+         *   2, 3 ...          a multibox unit's observed coverage (label = unit number + 1)
+         *   n est.            a unit without food yet: its estimated server view (from its size)
+         *   Viewport# n       a spectator connection's observed coverage
+         *   Viewport# n est.  a spectator without food yet: estimated server view around its camera
+         *   Tile n            a Full Map spectator's planned tile
+         * None depends on the main camera, zoom or window size, so they do not grow with zoom or
+         * a resize, and switching the controlled unit changes none. Units and spectators are told
+         * apart by their role (player) and found by their number, not by their slot in spects
+         * (a spectator before a unit gave the unit's box the wrong number or none). The screen
+         * viewport is the screen itself and is not drawn.
+         */
         drawViewPorts(ctx) {
-            /* the server's view of the player (food box, calMinMax). It drew LM.camMin/Max, which since
-             * the per-frame culling bounds (3.477) is the screen itself, so the box was never visible. */
-            if (Number.isFinite(LM.srvViewMinX)) this.drawViewport(this.ctx, '1', LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY, defaultSettings.bordersColor || '#ffffff', 15);
-            if (legendmod.multiBoxPlayerExists && typeof spects !== "undefined" && spects) {
-                var neededSpects = (defaultmapsettings.multiboxAmount || 2) - 1;
-                var viewScale = this.scale || 1;
-                var halfW = (this.canvasWidth / viewScale / 2);
-                var halfH = (this.canvasHeight / viewScale / 2);
-
-                for (var sI = 0; sI < neededSpects; sI++) {
-                    var sp = spects[sI];
-                    if (sp && sp.playerCellIDs && sp.playerCellIDs.length && sp.playerX != null && sp.playerX !== 0) {
-                        var labelName = String(sI + 2);
-                        /* the unit's server view, by the same food-box rule as box 1. A box of the main
-                         * screen's size around the unit grew with the main camera's zoom, so World
-                         * Spectate (zoomed out over the whole map) blew it up far past the map. */
-                        var unitBox = this._lmUnitFoodBox(sp);
-                        if (unitBox) {
-                            this.drawViewport(this.ctx, labelName, unitBox.minX, unitBox.minY, unitBox.maxX, unitBox.maxY, defaultSettings.bordersColor || '#ffffff', 15);
-                            continue;
-                        }
-                        var spX = sp.playerX;
-                        var spY = sp.playerY;
-                        var spMinX = spX - halfW;
-                        var spMinY = spY - halfH;
-                        var spMaxX = spX + halfW;
-                        var spMaxY = spY + halfH;
-                        this.drawViewport(this.ctx, labelName, spMinX, spMinY, spMaxX, spMaxY, defaultSettings.bordersColor || '#ffffff', 15);
+            ctx = this.ctx;
+            var seenColor = defaultSettings.bordersColor || '#ffffff', estColor = '#ffb000', tileColor = '#3cc8ff';
+            if (Number.isFinite(LM.mapMinX) && Number.isFinite(LM.mapMaxX) && Number.isFinite(LM.mapMinY) && Number.isFinite(LM.mapMaxY)) {
+                this.drawViewport(ctx, 'map', LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, '#808080', 15);
+            }
+            if (Number.isFinite(LM.srvViewMinX)) this.drawViewport(ctx, '1', LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY, seenColor, 15);
+            var list = window.spects || (typeof spects !== "undefined" ? spects : null);
+            if (!list || !list.length) return;
+            var sizeOf = typeof window.lmServerViewSize === 'function' ? window.lmServerViewSize : null;
+            var boxes = this._lmConnFoodBoxes(list);
+            for (var i = 0; i < list.length; i++) {
+                var sp = list[i];
+                if (!sp || sp.number == null) continue;
+                var seen = boxes[sp.number];
+                if (seen && !seen.n) seen = null;
+                var v, cx, cy;
+                if (sp.player) {
+                    /* 0 is a valid coordinate (the map centre): only a missing centre skips the unit */
+                    if (!legendmod.multiBoxPlayerExists || !sp.playerCellIDs || !sp.playerCellIDs.length ||
+                        !Number.isFinite(sp.playerX) || !Number.isFinite(sp.playerY)) continue;
+                    var label = String(sp.number + 1);
+                    if (seen) {
+                        this.drawViewport(ctx, label, seen.minX, seen.minY, seen.maxX, seen.maxY, seenColor, 15);
+                    } else if (sizeOf) {
+                        v = sizeOf(typeof window.lmPlayerViewScale === 'function' ? window.lmPlayerViewScale(sp.playerSize) : 1);
+                        this.drawViewport(ctx, label + ' est.', sp.playerX - v[0] / 2, sp.playerY - v[1] / 2, sp.playerX + v[0] / 2, sp.playerY + v[1] / 2, estColor, 15);
+                    }
+                    continue;
+                }
+                var name = 'Viewport# ' + sp.number;
+                if (sizeOf && typeof sp._lmTileDisplay === 'function') {
+                    var t = sp._lmTileDisplay();
+                    if (t) {
+                        v = sizeOf();
+                        this.drawViewport(ctx, 'Tile ' + sp.number, t[0] - v[0] / 2, t[1] - v[1] / 2, t[0] + v[0] / 2, t[1] + v[1] / 2, tileColor, 15);
                     }
                 }
-            }
-            if (window.fullSpectator) {
-                for (let i = 0; i < spects.length; i++) {
-                    /* a multibox unit has its numbered box above (a full spectator's box around it was wrong) */
-                    if (!spects[i] || spects[i].player) continue;
-                    this.newViewport(this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [], spects[i]);
+                if (seen) {
+                    this.drawViewport(ctx, name, seen.minX, seen.minY, seen.maxX, seen.maxY, seenColor, 15);
+                } else if (sizeOf && sp.mapOffsetFixed && sp._lmCamAt && Number.isFinite(sp.viewX) && Number.isFinite(sp.viewY) &&
+                    typeof sp.getX === 'function') {
+                    /* its camera as the server sent it (opcode 17), no smoothing; the size is estimated */
+                    cx = sp.getX(sp.viewX); cy = sp.getY(sp.viewY);
+                    v = sizeOf(sp.scale);
+                    if (Number.isFinite(cx) && Number.isFinite(cy)) {
+                        this.drawViewport(ctx, name + ' est.', cx - v[0] / 2, cy - v[1] / 2, cx + v[0] / 2, cy + v[1] / 2, estColor, 15);
+                    }
                 }
             }
         },
@@ -80357,94 +80394,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ctx.globalAlpha = 1;
                 // Restore canvas state as saved from above
                 ctx.restore();
-            }
-        },
-        newViewport(ctx, name, viewX, viewY, isSpectateEnabled = false, isFreeSpectate = false, leaderboard = [], cells = [], spectObj = null) {
-            var size = 0;
-            var mtp = 1.985;
-            var s = 1;
-
-            if (window.fullSpectator) {
-                mtp = 4.95;
-                s = 1;
-            } else if (cells.length > 0) {
-                for (var im = 0; cells.length > im; im++)
-                    size += cells[im].size;
-                s = Math.pow(Math.min(64 / (size || 1), 1), 0.4000);
-            } else if (isFreeSpectate === false && isSpectateEnabled === true) {
-                for (var i = 0; leaderboard.length > i; i++) {
-                    for (var im = 0; cells.length > im; im++)
-                        if (cells[im].nick === leaderboard[i].nick)
-                            size += cells[im].size;
-                    break;
-                }
-                s = Math.pow(Math.min(64 / (size || 1), 1), 0.4000);
-            } else {
-                if (isFreeSpectate && isSpectateEnabled) mtp = 4.95;
-                s = 1;
-            }
-
-            var w = 1024 / s / 2 * mtp; //WSVGA
-            var h = 600 / s / 2 * mtp;
-
-            var rawMinX = viewX - w;
-            var rawTopY = viewY - h;
-            var rawMaxX = viewX + w;
-            var rawBottomY = viewY + h;
-
-            var mapMinX = (LM.mapMinX != null) ? LM.mapMinX : -7071;
-            var mapMinY = (LM.mapMinY != null) ? LM.mapMinY : -7071;
-            var mapMaxX = (LM.mapMaxX != null) ? LM.mapMaxX : 7071;
-            var mapMaxY = (LM.mapMaxY != null) ? LM.mapMaxY : 7071;
-
-            var clampedMinX = Math.max(rawMinX, mapMinX);
-            var clampedTopY = Math.max(rawTopY, mapMinY);
-            var clampedMaxX = Math.min(rawMaxX, mapMaxX);
-            var clampedBottomY = Math.min(rawBottomY, mapMaxY);
-
-            var blend = 0;
-            if (spectObj && spectObj.staticX != null && spectObj.staticY != null) {
-                /* the grid point is already in the main map's space (spect.js sends convertX of it):
-                 * getX on it moved it by the connection's own offset or mirrored it with Rotate Map */
-                var destX = spectObj.staticX;
-                var destY = spectObj.staticY;
-                var dx = viewX - destX;
-                var dy = viewY - destY;
-                var dist = Math.sqrt(dx * dx + dy * dy);
-                blend = Math.max(0, Math.min(1, 1 - (dist / 2500)));
-            } else if (window.fullSpectator) {
-                blend = 1;
-            }
-
-            var tMinX = rawMinX + (clampedMinX - rawMinX) * blend;
-            var tTopY = rawTopY + (clampedTopY - rawTopY) * blend;
-            var tMaxX = rawMaxX + (clampedMaxX - rawMaxX) * blend;
-            var tBottomY = rawBottomY + (clampedBottomY - rawBottomY) * blend;
-            /* a spectator still connecting has no view yet: no box, and none kept, so its first view
-             * starts the box (kept from that frame as NaN, it never showed once the view came) */
-            if (!Number.isFinite(tMinX) || !Number.isFinite(tTopY) || !Number.isFinite(tMaxX) || !Number.isFinite(tBottomY)) {
-                if (spectObj) spectObj._drawMinX = null;
-                return;
-            }
-
-            if (spectObj) {
-                // If tab was hidden or position jumped (e.g. tab switch or desync > 800px), snap immediately!
-                if (spectObj._drawMinX == null || (typeof document !== "undefined" && document.hidden) ||
-                    Math.abs(tMinX - spectObj._drawMinX) > 800 || Math.abs(tTopY - spectObj._drawTopY) > 800) {
-                    spectObj._drawMinX = tMinX;
-                    spectObj._drawTopY = tTopY;
-                    spectObj._drawMaxX = tMaxX;
-                    spectObj._drawBottomY = tBottomY;
-                } else {
-                    spectObj._drawMinX += (tMinX - spectObj._drawMinX) * 0.15;
-                    spectObj._drawTopY += (tTopY - spectObj._drawTopY) * 0.15;
-                    spectObj._drawMaxX += (tMaxX - spectObj._drawMaxX) * 0.15;
-                    spectObj._drawBottomY += (tBottomY - spectObj._drawBottomY) * 0.15;
-                }
-
-                this.drawViewport(ctx, `Viewport# ${name}`, spectObj._drawMinX, spectObj._drawTopY, spectObj._drawMaxX, spectObj._drawBottomY, defaultSettings.bordersColor, 15);
-            } else {
-                this.drawViewport(ctx, `Viewport# ${name}`, tMinX, tTopY, tMaxX, tBottomY, defaultSettings.bordersColor, 15);
             }
         },
         drawViewport: function (ctx, text, minX, maxY, maxX, minY, stroke, width) {
@@ -81021,33 +80970,25 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var maxX = _camMultiFresh && Number.isFinite(LM.camMaxMultiX) ? LM.camMaxMultiX : -Infinity;
                 var minY = _camMultiFresh && Number.isFinite(LM.camMinMultiY) ? LM.camMinMultiY : Infinity;
                 var maxY = _camMultiFresh && Number.isFinite(LM.camMaxMultiY) ? LM.camMaxMultiY : -Infinity;
-
-                var i = 0, len4 = len & ~3;
-                for (; i < len4; i += 4) {
-                    var f0 = food[i], f1 = food[i + 1], f2 = food[i + 2], f3 = food[i + 3];
-                    if (!f0 || !f1 || !f2 || !f3) continue;
-                    var x0 = f0.x - foodOffset, y0 = f0.y - foodOffset;
-                    if (x0 < minX) minX = x0; if (x0 > maxX) maxX = x0;
-                    if (y0 < minY) minY = y0; if (y0 > maxY) maxY = y0;
-
-                    var x1 = f1.x - foodOffset, y1 = f1.y - foodOffset;
-                    if (x1 < minX) minX = x1; if (x1 > maxX) maxX = x1;
-                    if (y1 < minY) minY = y1; if (y1 > maxY) maxY = y1;
-
-                    var x2 = f2.x - foodOffset, y2 = f2.y - foodOffset;
-                    if (x2 < minX) minX = x2; if (x2 > maxX) maxX = x2;
-                    if (y2 < minY) minY = y2; if (y2 > maxY) maxY = y2;
-
-                    var x3 = f3.x - foodOffset, y3 = f3.y - foodOffset;
-                    if (x3 < minX) minX = x3; if (x3 > maxX) maxX = x3;
-                    if (y3 < minY) minY = y3; if (y3 > maxY) maxY = y3;
-                }
-                for (; i < len; i++) {
+                /* only the multibox units' food: a Full Map or in-game spectator's food is in
+                 * foodMulti too and stretched the units' view over the whole map */
+                var units = this._lmMbUnitSet || (this._lmMbUnitSet = {});
+                for (var k in units) units[k] = false;
+                var sp = window.spects || [], anyUnit = false;
+                for (var u = 0; u < sp.length; u++) if (sp[u] && sp[u].player && sp[u].number != null) { units[sp[u].number] = true; anyUnit = true; }
+                if (!anyUnit) return;
+                var fx = Infinity, fy = Infinity, gx = -Infinity, gy = -Infinity;
+                for (var i = 0; i < len; i++) {
                     var f = food[i];
-                    if (!f) continue;
-                    var x = f.x - foodOffset, y = f.y - foodOffset;
-                    if (x < minX) minX = x; if (x > maxX) maxX = x;
-                    if (y < minY) minY = y; if (y > maxY) maxY = y;
+                    if (!f || !units[f.spectator]) continue;
+                    var x = f.x, y = f.y;
+                    if (x < fx) fx = x; if (x > gx) gx = x;
+                    if (y < fy) fy = y; if (y > gy) gy = y;
+                }
+                if (Number.isFinite(fx) && Number.isFinite(gx)) {
+                    /* padded on both sides (the max side was shifted down by the radius) */
+                    minX = Math.min(minX, fx - foodOffset); maxX = Math.max(maxX, gx + foodOffset);
+                    minY = Math.min(minY, fy - foodOffset); maxY = Math.max(maxY, gy + foodOffset);
                 }
                 if (Number.isFinite(minX) && Number.isFinite(maxX) &&
                     Number.isFinite(minY) && Number.isFinite(maxY)) {
@@ -81084,22 +81025,22 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var f0 = food[i], f1 = food[i + 1], f2 = food[i + 2], f3 = food[i + 3];
                 if (!f0 || !f1 || !f2 || !f3) continue;
                 if (!f0.spectator) {
-                    var x0 = f0.x - foodOffset, y0 = f0.y - foodOffset;
+                    var x0 = f0.x, y0 = f0.y;
                     if (x0 < minX) minX = x0; if (x0 > maxX) maxX = x0;
                     if (y0 < minY) minY = y0; if (y0 > maxY) maxY = y0;
                 }
                 if (!f1.spectator) {
-                    var x1 = f1.x - foodOffset, y1 = f1.y - foodOffset;
+                    var x1 = f1.x, y1 = f1.y;
                     if (x1 < minX) minX = x1; if (x1 > maxX) maxX = x1;
                     if (y1 < minY) minY = y1; if (y1 > maxY) maxY = y1;
                 }
                 if (!f2.spectator) {
-                    var x2 = f2.x - foodOffset, y2 = f2.y - foodOffset;
+                    var x2 = f2.x, y2 = f2.y;
                     if (x2 < minX) minX = x2; if (x2 > maxX) maxX = x2;
                     if (y2 < minY) minY = y2; if (y2 > maxY) maxY = y2;
                 }
                 if (!f3.spectator) {
-                    var x3 = f3.x - foodOffset, y3 = f3.y - foodOffset;
+                    var x3 = f3.x, y3 = f3.y;
                     if (x3 < minX) minX = x3; if (x3 > maxX) maxX = x3;
                     if (y3 < minY) minY = y3; if (y3 > maxY) maxY = y3;
                 }
@@ -81108,13 +81049,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var f = food[i];
                 if (!f) continue;
                 if (!f.spectator) {
-                    var x = f.x - foodOffset, y = f.y - foodOffset;
+                    var x = f.x, y = f.y;
                     if (x < minX) minX = x; if (x > maxX) maxX = x;
                     if (y < minY) minY = y; if (y > maxY) maxY = y;
                 }
             }
             /* own names: LM.viewMin/Max hold the server's map border (opcode 64), which the visibility
              * restore and the beacon re-apply; writing the food box there shrank the map (3.614-3.627) */
+            /* padded by the food radius on both sides (only the min side was, so the box sat
+             * a radius too far up and left) */
+            minX -= foodOffset; minY -= foodOffset; maxX += foodOffset; maxY += foodOffset;
             LM.srvViewMinX = minX; LM.srvViewMaxX = maxX;
             LM.srvViewMinY = minY; LM.srvViewMaxY = maxY;
             if (Number.isFinite(LM.camMinX)) { minX = Math.min(minX, LM.camMinX); maxX = Math.max(maxX, LM.camMaxX); minY = Math.min(minY, LM.camMinY); maxY = Math.max(maxY, LM.camMaxY); }

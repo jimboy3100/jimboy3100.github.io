@@ -131,7 +131,7 @@ const foodBox = (h, half) => { h.food = []; for (let x = -half; x <= half; x += 
     check('EL join: map 40000 centred, mapOffset 0', h.isLegendWorld && h.mapSize === 40000 && h.mapOffset === 0 && box(h) === want(40000), box(h) + ' size ' + h.mapSize);
     foodBox(h, 8000);
     h.calMinMax();
-    check('food box goes to srvViewMin/Max, not the border fields', Math.round(h.srvViewMaxX) === 7985 && h.viewMaxX === 20000, h.srvViewMaxX + ' ' + h.viewMaxX);
+    check('food box goes to srvViewMin/Max, not the border fields', Math.round(h.srvViewMaxX) === 8015 && h.viewMaxX === 20000, h.srvViewMaxX + ' ' + h.viewMaxX);
     /* even a writer that puts the food box into viewMin/Max (the 3.614 bug) cannot reach the map */
     h.viewMinX = h.srvViewMinX; h.viewMinY = h.srvViewMinY; h.viewMaxX = h.srvViewMaxX; h.viewMaxY = h.srvViewMaxY;
     t.resume();
@@ -299,7 +299,7 @@ const foodBox = (h, half) => { h.food = []; for (let x = -half; x <= half; x += 
     const lines = h.borderTrace();
     const last = lines.join('\n');
     check('trace lists connect, border, beacon, tab return and the rejected border', /connect epoch 1/.test(last) && / packet epoch 1 raw -20000,-20000,20000,20000/.test(last) &&
-        /visible 1234ms epoch 1 EL .* map -20000,-20000,20000,20000 size 40000 offset 0 tier \d+ food -8015,-8015,7985,7985 cam 0,0,0.5 dpr 2 canvas 915,412/.test(last) && /reject-packet .*raw NaN,0,1,1/.test(last), last);
+        /visible 1234ms epoch 1 EL .* map -20000,-20000,20000,20000 size 40000 offset 0 tier \d+ food -8015,-8015,8015,8015 cam 0,0,0.5 dpr 2 canvas 915,412/.test(last) && /reject-packet .*raw NaN,0,1,1/.test(last), last);
     check('trace has no server address', !/wss?:|token/i.test(last));
     for (let i = 0; i < 200; i++) h.handleMessage(circle(40000 + i));
     check('trace keeps the last 64', h.borderTrace().length === 64);

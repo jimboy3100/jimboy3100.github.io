@@ -53,47 +53,87 @@ window.addSpectator = addSpectator;
 /* "View on middle of both (when close)" is decided by drawRender.getMultiboxFrame()
  * (ogario.v4.js), which replaced lmMultiUnitIsClose(). */
 
-function addFullSpectator() {
-    let mtp = 4.95,
-        w = ~~(1024 * mtp),
-        h = ~~(600 * mtp);
-    let stop = 0,
-        x = 0,
-        y = 0;
+/*
+ * Server view of one connection, in world units. The server sends a connection the cells in a box
+ * of BASE / scale around its camera: BASE is 1024 x 600 x 1.985 (2033 x 1191, the player box this
+ * client always drew, close to MultiOgar's (1920 + 100) x (1080 + 100)), scale is
+ * pow(min(64 / total size, 1), 0.4) for a player and about 0.401 for a free spectator, which gives
+ * the 5069 x 2970 (1024 x 600 x 4.95) found for Full Map on agar.io. These are estimates: the
+ * debug boxes drawn from them say "est.", and the food a connection receives is its observed
+ * coverage.
+ */
+var LM_VIEW_BASE_W = 1024 * 1.985, LM_VIEW_BASE_H = 600 * 1.985, LM_SPECT_FREE_SCALE = 1.985 / 4.95;
+function lmServerViewSize(scale) {
+    if (!(scale > 0.01 && scale <= 4)) scale = LM_SPECT_FREE_SCALE;
+    return [LM_VIEW_BASE_W / scale, LM_VIEW_BASE_H / scale];
+}
+function lmPlayerViewScale(totalSize) {
+    return Math.pow(Math.min(64 / (totalSize > 0 ? totalSize : 1), 1), 0.4);
+}
+window.lmServerViewSize = lmServerViewSize;
+window.lmPlayerViewScale = lmPlayerViewScale;
 
-    const times = parseInt(legendmod.mapSize / 471.4, 10);
-    //for (;stop<30;stop++){
-
-    if (legendmod.integrity && times < 80) {
-        for (; stop < times; stop++) {
-
-            if (stop === 0) {
-                x = legendmod.mapMinX + 2400;
-                y = legendmod.mapMinY + 1000;
-                let spect = new Spect({ staticX: x, staticY: y });
-                spects.push(spect)
-                stop++
-            } else {
-                if (x > legendmod.mapMaxX - 2400) {
-                    x = legendmod.mapMinX + 2400;
-                    y = y + h;
-                } else {
-                    x = x + w;
-                }
-                if (y > legendmod.mapMaxY - 1000) {
-                    //stop = 100;
-                    stop = 10000;
-                    break
-                }
-                let spect = new Spect({ staticX: x, staticY: y });
-                spects.push(spect)
-                stop++
-            }
+/*
+ * Full Map tiles. The map is cut into cols x rows equal cells and each spectator's view is
+ * centred on one, so every tile reaches the same margin past its cell on each side: past the
+ * map edge for an outer tile, and twice that as the overlap at a seam. This spreads the spare
+ * view evenly; the view size is an estimate and a free spectator's camera wobbles a few dozen
+ * units around its target, and an even spread tolerates the largest error of either.
+ * cols = ceil(mapW / (viewW - 2 * LM_FULLMAP_MARGIN)), rows likewise; over the budget, the plain
+ * cover ceil(map / view) is tried, then null. Centred on the map, so a mirrored connection (or
+ * Rotate Map) lands on another tile of the same grid, never in a gap. Tile centres are canonical
+ * world coordinates: 0, 0 = the map centre. On agar.io (14142 map, 5069 x 2970 view): 3 x 5 = 15
+ * connections, the same 15 the old grid opened, never more (LM_FULLMAP_MAX); margins 177 / 71,
+ * seams 354 / 142 (the old grid only touched: no overlap at all, and off centre), so the real
+ * view may be 7% / 4.8% smaller than the estimate before a gap opens.
+ */
+var LM_FULLMAP_MARGIN = 60, LM_FULLMAP_MAX = 15;
+/* a tile camera within 64 of its target is there; it then gets its target once a second */
+var LM_TILE_SETTLED = 64, LM_TILE_REFRESH_MS = 1000;
+function lmFullMapPlan(mapW, mapH, viewW, viewH, budget) {
+    var m = LM_FULLMAP_MARGIN;
+    budget = budget || LM_FULLMAP_MAX;
+    if (!(mapW >= 1 && mapH >= 1 && viewW > 2 * m && viewH > 2 * m)) return null;
+    var cols = Math.ceil(mapW / (viewW - 2 * m)), rows = Math.ceil(mapH / (viewH - 2 * m));
+    if (cols * rows > budget) { cols = Math.ceil(mapW / viewW); rows = Math.ceil(mapH / viewH); }
+    if (cols * rows > budget) return null;
+    var cellW = mapW / cols, cellH = mapH / rows;
+    var tiles = [];
+    for (var r = 0; r < rows; r++) {
+        for (var c = 0; c < cols; c++) {
+            tiles.push({ index: tiles.length, col: c, row: r, x: -mapW / 2 + (c + 0.5) * cellW, y: -mapH / 2 + (r + 0.5) * cellH });
         }
-    } else {
+    }
+    return { cols: cols, rows: rows, viewW: viewW, viewH: viewH, stepX: cellW, stepY: cellH,
+        marginX: (viewW - cellW) / 2, marginY: (viewH - cellH) / 2, tiles: tiles };
+}
+window.lmFullMapPlan = lmFullMapPlan;
+
+/*
+ * Planned from the validated map border only (the main connection's mapOffsetFixed): with a
+ * provisional one nothing opens yet, and LM.addSpect, which runs on every border packet, tries
+ * again. It used a fixed 2400 / 1000 start, 1024 x 600 x 4.95 steps that only touched (no overlap)
+ * and left the grid off centre, from the main connection's raw border.
+ */
+function addFullSpectator() {
+    var LM = legendmod;
+    if (!LM.integrity) {
         toastr.error(lmT('game2.spPrivateNoFull'))
-        //toastr.error("Too many spects needed: " + times/2 + "<br> Attempt canceled")
         window.fullSpectator = false
+        return
+    }
+    var mapW = LM.mapMaxX - LM.mapMinX, mapH = LM.mapMaxY - LM.mapMinY;
+    if (!LM.mapOffsetFixed || !(mapW >= 1) || !(mapH >= 1)) return;
+    var view = lmServerViewSize(LM_SPECT_FREE_SCALE);
+    var plan = lmFullMapPlan(mapW, mapH, view[0], view[1], LM_FULLMAP_MAX);
+    if (!plan) {
+        toastr.error(lmT('game2.spPrivateNoFull'))
+        window.fullSpectator = false
+        return
+    }
+    window.lmFullMapLastPlan = plan;
+    for (var i = 0; i < plan.tiles.length; i++) {
+        spects.push(new Spect({ staticX: plan.tiles[i].x, staticY: plan.tiles[i].y, tile: plan.tiles[i].index }));
     }
 }
 
@@ -109,6 +149,10 @@ class Spect {
         this.player = options.player === true;
         this.staticX = options.staticX != null ? options.staticX : null;
         this.staticY = options.staticY != null ? options.staticY : null;
+        /* Full Map: staticX / staticY are the tile centre in canonical world coordinates (map
+         * centre = 0, the main connection's orientation, no Rotate Map); _lmTileRaw converts it
+         * to this connection's raw frame just before each send. */
+        this.tile = options.tile != null ? options.tile : null;
         this.socket = null;
         this.connectionGeneration = 0;
         this.positionController = null;
@@ -173,6 +217,7 @@ class Spect {
         this.active = null
         this.targetX = null
         this.targetY = null
+        this._lmCamAt = 0
         this.playerCellIDs = []
         this.playerScore = 0
         this.fix3x = 0
@@ -596,12 +641,59 @@ class Spect {
         this.sendAction(18);
     }
 
+    /*
+     * Full Map: hold this spectator's free camera on its tile. The target goes out at once and
+     * every 50 ms while the camera (opcode 17) is on its way or has drifted off; once the camera
+     * sits on the target it is only refreshed every LM_TILE_REFRESH_MS (the server keeps the last
+     * target, so the old 50 ms resend of an unchanged target was 20 packets a second per
+     * spectator for nothing). A changed raw target (orientation or offset found, Rotate Map,
+     * recalibration) is sent at once. Nothing is sent before both borders are known: the target
+     * was sent unconverted, i.e. to the wrong place, until then.
+     */
     startStaticPositionController() {
         if (this.staticPositionController) clearInterval(this.staticPositionController);
+        this.staticPositionController = null;
         if (this.staticX == null || this.staticY == null) return;
-        this.staticPositionController = setInterval(() => {
-            this.sendPosition(this.convertX(this.staticX), this.convertY(this.staticY));
-        }, 50);
+        this._lmTileSentAt = 0;
+        this._lmTileSentX = this._lmTileSentY = NaN;
+        this.staticPositionController = setInterval(() => this._lmTileTick(), 50);
+    }
+
+    /* The tile centre in the main connection's display space (Rotate Map applied), like the
+     * cursor convertX/convertY take; null until the main border is fixed. */
+    _lmTileDisplay() {
+        var LM = legendmod;
+        if (this.staticX == null || this.staticY == null || !LM || !LM.mapOffsetFixed) return null;
+        var x = this.staticX + (LM.mapMinX + LM.mapMaxX) / 2, y = this.staticY + (LM.mapMinY + LM.mapMaxY) / 2;
+        var v = LM.vector && LM.vector[LM.vnr];
+        if (v && v[0]) x = LM.mapMaxX - (x - LM.mapMinX);
+        if (v && v[1]) y = LM.mapMaxY - (y - LM.mapMinY);
+        return (Number.isFinite(x) && Number.isFinite(y)) ? [x, y] : null;
+    }
+
+    /* The tile centre in this connection's raw frame (what opcode 16 carries); null until this
+     * connection's border is fixed too. */
+    _lmTileRaw() {
+        if (!this.mapOffsetFixed) return null;
+        var d = this._lmTileDisplay();
+        if (!d) return null;
+        var x = Math.round(this.convertX(d[0])), y = Math.round(this.convertY(d[1]));
+        return (Number.isFinite(x) && Number.isFinite(y)) ? [x, y] : null;
+    }
+
+    _lmTileTick(now) {
+        now = now || Date.now();
+        var raw = this._lmTileRaw();
+        if (!raw) return;
+        var changed = raw[0] !== this._lmTileSentX || raw[1] !== this._lmTileSentY;
+        var settled = !changed && this._lmCamAt > this._lmTileSentAt &&
+            Math.abs(this.viewX - raw[0]) <= LM_TILE_SETTLED && Math.abs(this.viewY - raw[1]) <= LM_TILE_SETTLED;
+        if (!changed && now - this._lmTileSentAt < (settled ? LM_TILE_REFRESH_MS : 50)) return;
+        if (this.sendPosition(raw[0], raw[1])) {
+            this._lmTileSentAt = now;
+            this._lmTileSentX = raw[0];
+            this._lmTileSentY = raw[1];
+        }
     }
 
     sendBotEject() { //specific private servers
@@ -709,6 +801,7 @@ class Spect {
         this.targetY = sendY;
         view.setUint32(9, this.protocolKey, true);
         this.sendMessage(view);
+        return true;
     }
 
     generateClientKey(ip, options) {
@@ -989,6 +1082,7 @@ class Spect {
                 this.viewX = view.getFloat32(offset, true);
                 this.viewY = view.getFloat32(offset + 4, true);
                 this.scale = view.getFloat32(offset + 8, true);
+                this._lmCamAt = Date.now();
                 break;
             case 18:
                 /* No key rotation on 18 (same as the main client since PROTO-3 and Delta). */
@@ -1599,10 +1693,10 @@ class Spect {
         });
     }
 
+    /* true when the raw point is OUTSIDE this spectator's estimated server view (old name) */
     isInView(x, y) {
-        let mtp = 4.95,
-            w = 1024 / 2 * mtp,
-            h = 600 / 2 * mtp;
+        const w = LM_VIEW_BASE_W / LM_SPECT_FREE_SCALE / 2,
+            h = LM_VIEW_BASE_H / LM_SPECT_FREE_SCALE / 2;
         return x < this.viewX - w || y < this.viewY - h || x > this.viewX + w || y > this.viewY + h;
 
     }
