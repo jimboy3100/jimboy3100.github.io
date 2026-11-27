@@ -6,6 +6,7 @@
  * node developers/tests/ccpoll.js [commandcentre.js] [--old <older commandcentre.js>] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const i18n = require('./lib/i18n-env');
+const { makeEl, makeDoc } = require('./lib/fakedom');
 const args = process.argv.slice(2);
 const oi = args.indexOf('--old');
 const oldPath = oi >= 0 ? args.splice(oi, 2)[1] : null;
@@ -15,54 +16,6 @@ const lmxPath = path.join(__dirname, '..', '..', 'LMexpress', 'LMexpress.js');
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 
-function makeEl(doc, tag) {
-  const el = {
-    tagName: String(tag || 'div').toUpperCase(), id: '', className: '', textContent: '', title: '', type: '',
-    children: [], parentNode: null, style: { cssText: '', setProperty() {}, removeProperty() {} }, dataset: {}, attrs: {},
-    _ls: {},
-    get firstChild() { return this.children[0] || null; },
-    get nextSibling() { const p = this.parentNode; if (!p) return null; const i = p.children.indexOf(this); return p.children[i + 1] || null; },
-    classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } },
-    appendChild(c) { return this.insertBefore(c, null); },
-    insertBefore(c, ref) {
-      if (c.parentNode) c.parentNode.removeChild(c);
-      const i = ref ? this.children.indexOf(ref) : -1;
-      if (i >= 0) this.children.splice(i, 0, c); else this.children.push(c);
-      c.parentNode = this; return c;
-    },
-    removeChild(c) { this.children = this.children.filter(x => x !== c); c.parentNode = null; return c; },
-    setAttribute(k, v) { this.attrs[k] = String(v); if (k === 'id') this.id = String(v); },
-    getAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k) ? this.attrs[k] : null; },
-    removeAttribute(k) { delete this.attrs[k]; },
-    hasAttribute(k) { return Object.prototype.hasOwnProperty.call(this.attrs, k); },
-    addEventListener(t, f) { (this._ls[t] = this._ls[t] || []).push(f); },
-    removeEventListener() {},
-    querySelector() { return null; }, querySelectorAll() { return []; },
-    contains(x) { for (; x; x = x.parentNode) if (x === this) return true; return false; },
-    closest() { return null; },
-    getBoundingClientRect() { return { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 }; },
-    focus() {}, blur() {}
-  };
-  return el;
-}
-function makeDoc() {
-  const doc = { _ls: {}, hidden: false, readyState: 'complete' };
-  doc.createElement = t => makeEl(doc, t);
-  doc.createTextNode = t => ({ textContent: String(t), parentNode: null });
-  doc.documentElement = makeEl(doc, 'html');
-  doc.body = makeEl(doc, 'body');
-  doc.head = makeEl(doc, 'head');
-  doc.documentElement.appendChild(doc.head);
-  doc.documentElement.appendChild(doc.body);
-  const find = (el, id) => { if (el.id === id) return el; for (const c of el.children || []) { const r = find(c, id); if (r) return r; } return null; };
-  doc.getElementById = id => find(doc.documentElement, id);
-  doc.querySelector = () => null;
-  doc.querySelectorAll = () => [];
-  doc.addEventListener = (t, f) => { (doc._ls[t] = doc._ls[t] || []).push(f); };
-  doc.removeEventListener = () => {};
-  doc.activeElement = doc.body;
-  return doc;
-}
 /* the Tools tab as LMexpress.js builds it: #legend with the User Scripts button */
 function buildTools(doc) {
   const legend = makeEl(doc, 'div'); legend.id = 'legend';

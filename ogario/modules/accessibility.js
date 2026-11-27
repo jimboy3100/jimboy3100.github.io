@@ -222,10 +222,15 @@
 
     /* ═══ Applying the options ═══ */
 
+    /* HUD parts made later (kill feed, notification bell, quick bar...) are measured once they
+     * exist: looked for every 2 s, only while a HUD text size other than 1 is set */
+    var hudTimer = null;
     function sync(force) {
-        var s = settings();
-        applyText(cleanScale(s.a11yTextScale), cleanScale(s.a11yHudTextScale), force === true);
+        var s = settings(), hudK = cleanScale(s.a11yHudTextScale);
+        applyText(cleanScale(s.a11yTextScale), hudK, force === true);
         setIndicators(s.a11yIndicators === true);
+        if (hudK !== 1 && !hudTimer) hudTimer = setInterval(function () { try { sync(); } catch (e) { } }, 2000);
+        else if (hudK === 1 && hudTimer) { clearInterval(hudTimer); hudTimer = null; }
     }
     api.sync = sync;
     api.remeasure = function () { sync(true); };
@@ -243,5 +248,13 @@
         if (textSig && textSig !== '1|1' && e.target && e.target.closest && e.target.closest('.menu-tabs a, .hotkeys-link')) setTimeout(function () { sync(true); }, 300);
     }, true);
     if (D.body) sync(); else D.addEventListener('DOMContentLoaded', function () { sync(); });
-    setInterval(function () { try { sync(); } catch (e) { } }, 2000);
+    /* a profile, preset or import that changes them (ogario.v4.js lmSettingsCommit); the switch
+     * itself calls sync from setSettings, the sliders are followed above */
+    var KEYS = { a11yTextScale: 1, a11yHudTextScale: 1, a11yIndicators: 1 };
+    if (W.LMEvents && typeof W.LMEvents.on === 'function') {
+        W.LMEvents.on('settingsChange', function (d) {
+            if (d && KEYS[d.key] === 1) setTimeout(function () { try { sync(); } catch (e) { } }, 0);
+        });
+    }
+    api._hudTimerOn = function () { return !!hudTimer; };
 })();
