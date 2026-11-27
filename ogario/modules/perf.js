@@ -967,6 +967,7 @@
             try {
                 if (!o || typeof o[p[1]] !== 'function' || o[p[1]]._lmScopeOf) continue;
                 var orig = o[p[1]], own = hasOwn(o, p[1]), w = p[3] ? p[3](orig, p[2], p[1]) : sc.wrap(orig, p[2]);
+                if (!w) continue;
                 o[p[1]] = w;
                 if (o[p[1]] === w) patched.push([o, p[1], orig, w, own]);
             } catch (e) { }
@@ -1153,7 +1154,13 @@
         st.ms += ms; st.n++;
         if (ms > st.max) st.max = ms;
     }
+    /* Only where the browser has no long animation frames: they name the timer callback that ran
+     * (its function and place), and a wrapper would be named instead. */
+    function loafSupported() {
+        try { var PO = window.PerformanceObserver; return !!(PO && PO.supportedEntryTypes && PO.supportedEntryTypes.indexOf('long-animation-frame') >= 0); } catch (e) { return false; }
+    }
     function timerWrap(orig) {
+        if (loafSupported()) return null;
         var w = function (fn) {
             if (!sc.on || typeof fn !== 'function') return orig.apply(window, arguments);
             var args = Array.prototype.slice.call(arguments), lab = null;
@@ -1893,6 +1900,15 @@
         lines.push('GPU time per frame (timer query): ' + (gq.n ? gq.total + ' frames, p50/p95/max ' + gpuStats().join(' / ') + ' ms' + (gq.disjoint ? ', ' + gq.disjoint + ' dropped (disjoint)' : '') :
             gq.gl && !gq.ext ? 'not supported by this browser / GPU' : gq.gl ? 'no result yet' : 'no WebGL context'));
         var labs = Object.keys(timerStat).sort(function (a, b) { return timerStat[b].ms - timerStat[a].ms; }).slice(0, 8);
+        if (!labs.length && loafObs) {
+            /* this browser names them in its long animation frames */
+            var tm = {};
+            loafs.list().forEach(function (l) {
+                l.scripts.forEach(function (s) { if (/^TimerHandler/.test(s.inv)) { var k = (s.fn || 'anonymous') + ' (' + (s.file || '?') + (s.pos >= 0 ? ':' + s.pos : '') + ')'; tm[k] = (tm[k] || 0) + s.dur; } });
+            });
+            var tk = Object.keys(tm).sort(function (a, b) { return tm[b] - tm[a]; }).slice(0, 8);
+            if (tk.length) lines.push('Timer callbacks in long animation frames (most time first): ' + tk.map(function (k) { return k + ' ' + tm[k] + ' ms'; }).join('; '));
+        }
         if (labs.length) lines.push('Timer callbacks set since recording (most time first): ' + labs.map(function (k) {
             var s = timerStat[k];
             return k + ' ' + Math.round(s.ms) + ' ms / ' + s.n + 'x, max ' + f1(s.max) + ' ms';

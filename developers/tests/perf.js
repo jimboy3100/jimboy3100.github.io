@@ -602,6 +602,7 @@ check('stall with nothing timed: unattributed, the LoAF is listed with it', fzs.
 rep = pr.ctx.LMPerf.report();
 check('LoAFs under 100 ms are not kept; report lists LoAFs without the token', pr.ctx.LMPerf.loafs().length === 1 && /Long animation frames \(≥100 ms, 1 kept/.test(rep) && rep.indexOf('SECRET') < 0 && rep.indexOf('token') < 0);
 check('report has the time origin for trace correlation and freeze times', /time origin /.test(rep) && /@\d+/.test(rep));
+check('report: timer callbacks named by the long animation frames (not wrapped there)', /Timer callbacks in long animation frames \(most time first\): anonymous \(ogario\.v4\.js:4242\) 30 ms/.test(rep) && !pr.ctx.setInterval._lmScopeOf);
 /* the window list shows the attribution lines too */
 check('every counted freeze attributed once', pr.ctx.LMPerf.freezes().every(f => /^\d+ ms freeze /.test(f.line)));
 pr.ctx.LMPerf.keepRecording(false);
@@ -786,19 +787,27 @@ for (let i = 0; i < 5; i++) lp.tick(16.7);
 check('no timer query extension: said so in the report, frames drawn as before', /GPU time per frame \(timer query\): not supported/.test(lp.ctx.LMPerf.report()) && lp.dr.gl.calls.length === 0);
 
 /* ---- timers set while recording and the text atlas growth ---- */
-const tmPage = () => {
+/* a browser with long tasks but without long animation frames (they name timer callbacks themselves) */
+function FakePO3(cb) { FakePO2.call(this, cb); }
+FakePO3.prototype = FakePO2.prototype;
+FakePO3.supportedEntryTypes = ['longtask'];
+const tmPage = (po) => {
     const pend = [];
-    const pg = rec({ setTimeout: function (f, ms) { pend.push([f, [].slice.call(arguments, 2)]); return pend.length; }, PerformanceObserver: FakePO2,
+    const pg = rec({ setTimeout: function (f, ms) { pend.push([f, [].slice.call(arguments, 2)]); return pend.length; }, PerformanceObserver: po || FakePO3,
         drawRender: { dpr: 1, resizeCanvas() { }, _lmTextAtlasBank(a, layers) { a.layers = layers; return true; } } });
     pg.pend = pend;
     pg.runTimers = () => { const p = pend.splice(0); p.forEach(([f, a]) => { if (typeof f === "function") f.apply(null, a); }); };
     return pg;
 };
-let tp2 = tmPage();
+let tp2 = tmPage(FakePO2);
+tp2.ctx.LMPerf.keepRecording(true);
+check('long animation frames there: timers not wrapped (they name the timer callbacks)', typeof tp2.ctx.setTimeout === 'function' && !tp2.ctx.setTimeout._lmScopeOf && !tp2.ctx.setInterval._lmScopeOf);
+tp2.ctx.LMPerf.keepRecording(false);
+tp2 = tmPage();
 const nativeTO = tp2.ctx.setTimeout;
 tp2.ctx._now = 1000;
 tp2.ctx.LMPerf.keepRecording(true);
-check('recording: setTimeout wrapped', tp2.ctx.setTimeout !== nativeTO);
+check('recording without long animation frames: setTimeout wrapped', tp2.ctx.setTimeout !== nativeTO && tp2.ctx.setTimeout._lmScopeOf === nativeTO);
 let got = null;
 const id1 = tp2.ctx.setTimeout(function saveSkins(a, b) { got = a + b; tp2.ctx._now += 30; }, 10, 2, 3);
 tp2.ctx.setTimeout(function () { tp2.ctx._now += 5; }, 10);
@@ -814,7 +823,6 @@ rep = tp2.ctx.LMPerf.report();
 check('text atlas: a new bank counted with its new pages only (a bank already there: nothing)', atl.layers === 4 && /Text atlas resized 1x since recording, 16\.0 MB of new texture/.test(rep) && /Timer callbacks set since recording \(most time first\): saveSkins 30 ms \/ 1x/.test(rep));
 tp2.ctx.LMPerf.keepRecording(false);
 check('recording off: setTimeout put back', tp2.ctx.setTimeout === nativeTO);
-
 
 /* ---- ogario.v4.js: the inline markers and wrapped methods exist ---- */
 const marks = v4.match(/window\._lmScope\.b\('([^']+)'\)|S\.b\('([^']+)'\)/g) || [];

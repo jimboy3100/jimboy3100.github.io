@@ -1,6 +1,7 @@
 // Performance diagnostics, connections and GPU time: while recording, every message of the main
 // connection is in the timeline with its handling time (window._lmNetRec is set for the units of
-// spect.js, legendmod.onMessage and the timers are wrapped); a page blocked for 400 ms while
+// spect.js, legendmod.onMessage is wrapped, the timers only where the browser has no long animation
+// frames: those name the timer callbacks); a page blocked for 400 ms while
 // connected gives a connection gap of the client with the messages that came at once after it;
 // the report lists the connections (host only, no token) and the GPU time; when recording stops
 // everything is put back and nothing is recorded.
@@ -15,7 +16,9 @@
   P.keepRecording(true);
   if (!window._lmNetRec || typeof window._lmNetRec.b !== 'function') fail.push('recording: no connection recorder');
   if (!(lm && lm.onMessage && lm.onMessage._lmScopeOf === onMsg)) fail.push('recording: main connection messages not wrapped');
-  if (!(window.setTimeout && window.setTimeout._lmScopeOf === nativeTO)) fail.push('recording: setTimeout not timed');
+  var PO = window.PerformanceObserver, loaf = !!(PO && PO.supportedEntryTypes && PO.supportedEntryTypes.indexOf('long-animation-frame') >= 0);
+  info.timers = loaf ? 'named by the long animation frames' : 'wrapped';
+  if (loaf ? window.setTimeout !== nativeTO : !(window.setTimeout && window.setTimeout._lmScopeOf === nativeTO)) fail.push('recording: setTimeout ' + (loaf ? 'wrapped although the long animation frames name the timers' : 'not timed'));
   await sleep(2500);
   var open = !!(lm && lm.isSocketOpen && lm.isSocketOpen());
   info.connected = open;
