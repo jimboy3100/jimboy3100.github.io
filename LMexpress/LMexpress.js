@@ -6777,7 +6777,7 @@ function initializeLM(modVersion) {
         '<input id="leadbPicture" class="form-control" placeholder="' + _lmxE('pack.leaderboardImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setleadbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
         '<input id="leadbtext" class="form-control" placeholder="' + _lmxE('lmx.ex.leaderboardLogoText') + '" value="" style="margin-top: 2px; display: none; " onblur="setleadbtext();">' +
         '<input id="teambPicture" class="form-control" placeholder="' + _lmxE('pack.teamboardImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setteambgname();" data-toggle="tooltip" data-placement="right"  data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
-        '<input id="teambtext" class="form-control" placeholder="' + _lmxE('pack.teamboardLogoText') + '" value="" style="margin-top: 2px; display: none; " onblur="setteambtext();">' +
+        '<input id="teambtext" class="form-control" data-i18n-placeholder="pack.teamboardLogoText" placeholder="' + _lmxE('pack.teamboardLogoText') + '" value="" style="margin-top: 2px; display: none; " onblur="setteambtext();">' +
         '<input id="canvasPicture" class="form-control" placeholder="' + _lmxE('pack.mainCanvasImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setcanvasbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
         '</div>' +
 

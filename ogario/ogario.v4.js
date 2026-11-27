@@ -21682,8 +21682,9 @@ if (window.LMi18n) window.LMi18n.onChange(function (code) {
  * gave rows the names of other settings. A NEW badge next to a name stays. */
 if (window.LMi18n) window.LMi18n.onChange(function () {
     if (typeof $ !== 'function') return;
+    /* a name written with ": " before its value keeps it (Theme > HUD text size lost it) */
     var name = function (el, s) {
-        for (var n = el.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && /\S/.test(n.nodeValue)) { n.nodeValue = s; return; }
+        for (var n = el.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && /\S/.test(n.nodeValue)) { n.nodeValue = /:\s*$/.test(n.nodeValue) && !/:\s*$/.test(s) ? s + ': ' : s; return; }
         el.insertBefore(document.createTextNode(s), el.firstChild);
     };
     $('#theme .color-box, #theme .font-box, #theme .preset-box, #theme .input-box, #theme .slider-box, #theme .lm-theme-switch').each(function () {

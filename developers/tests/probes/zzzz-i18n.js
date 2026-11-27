@@ -111,6 +111,10 @@
   $('#og-options .lm-dep-off[data-lm-why]').each(function () { if (!greek(this.getAttribute('data-lm-why'))) stale.push('note ' + this.getAttribute('data-lm-why').slice(0, 24)); });
   info.settingsStale = stale.length;
   need('Settings rows in Greek at once' + (stale.length ? ': ' + stale.slice(0, 5).join(', ') : ''), !stale.length);
+  /* Theme > HUD text size keeps the ": " before its value; the Teamboard logo text field follows too */
+  var hts = $('#a11yHudTextScale-slider').closest('.slider-box').find('.value-label');
+  need('Theme > HUD text size keeps the ": " before its value', !hts.length || /:\s*$/.test(hts.text()));
+  need('Theme > Teamboard logo text field Greek', !$('#teambtext').length || greek($('#teambtext').attr('placeholder')));
   var cog = $('.ogicon-cog').first();
   need('settings tab tooltip Greek', !cog.length || cog.attr('data-original-title') === window.Languageletter2);
   var play = $('[data-itr="page_play"]').first();
