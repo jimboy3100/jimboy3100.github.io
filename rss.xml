@@ -5,13 +5,21 @@
     <link>https://www.legendmod.ml/changelog.html</link>
     <description>Release notes of Legend Mod, the browser client and extension for agar.io-style cell games: new features and fixes of every build.</description>
     <language>en</language>
-    <lastBuildDate>Fri, 27 Nov 2026 10:56:56 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 27 Nov 2026 12:51:48 +0000</lastBuildDate>
     <atom:link href="https://www.legendmod.ml/rss.xml" rel="self" type="application/rss+xml"/>
     <image>
       <url>https://jimboy3100.github.io/banners/icon128.png</url>
       <title>Legend Mod</title>
       <link>https://www.legendmod.ml/</link>
     </image>
+
+    <item>
+      <title>v3.702 — Phones, Legend Clan announcements &amp; Library copies nothing loads are removed</title>
+      <link>https://www.legendmod.ml/changelog.html#v3702</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3702</guid>
+      <pubDate>Fri, 27 Nov 2026 12:51:48 +0000</pubDate>
+      <description>Site pages use the same jQuery and Bootstrap as the game — the home page, the skins gallery, the clan pages (Lc/Lc.html and the Project X copy) loaded jQuery 1.11.1 from 2014, the themes page jQuery 3.2.1 with Bootstrap 3.3.7, and the old game page LMexpress/LMexpress.html jQuery 3.2.1… · Choose Language renames the Settings tab at once — its switches, sliders and section headings show the new language (they kept the language they were built in until a reload, and after a switch back to English some rows stayed in the language before) · Phones — Joystick size (50-200 %) and Joystick opacity…</description>
+    </item>
 
     <item>
       <title>v3.701 — Opponent colours and split range rings, Multibox &amp; Bots</title>
@@ -163,14 +171,6 @@
       <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3683</guid>
       <pubDate>Thu, 26 Nov 2026 15:47:17 +0000</pubDate>
       <description>Game stats position — the &quot;Game stats at the top&quot; and &quot;Game stats at the bottom centre&quot; switches are one &quot;Game stats position&quot; choice in Settings &gt; HUD: Top left (the default as before), Bottom left or Bottom centre</description>
-    </item>
-
-    <item>
-      <title>v3.682 — Window stacking, Ingame Spectator &amp; Show viewports</title>
-      <link>https://www.legendmod.ml/changelog.html#v3682</link>
-      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3682</guid>
-      <pubDate>Thu, 26 Nov 2026 15:36:29 +0000</pubDate>
-      <description>Window stacking — Esc with a menu page in front of windows no longer throws when the key event's target is not a page element (window.dispatchEvent on window, or no target) · Ingame Spectator — pressing Play closed only the spectator's switch, not its connection, so it kept running unseen and the next press of the hotkey or the top bar button did nothing · Show viewports — with Expanding Land World Spectate (Full Map) open, the boxes 2, 3 of the multibox units were sized from the main camera's zoom, so zoomed out over the whole map they grew far past the map</description>
     </item>
 
   </channel>

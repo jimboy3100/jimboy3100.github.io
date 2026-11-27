@@ -1,7 +1,7 @@
 # Legend Mod — Comprehensive Documentation for LLMs
 
 Updated: 2026-11-27
-Version: 3.701
+Version: 3.702
 
 Legend Mod is a browser client and Chrome extension for Agar.io-style cell games. It adds custom skins, themes, configurable controls, multiboxing, replay tools, a command centre, gamepad support, accessibility options and performance diagnostics to supported games including Expanding Land (expanding.land). Legend Mod is a separate project from the game servers it connects to; it must not be confused with Agar.io or any game publisher.
 

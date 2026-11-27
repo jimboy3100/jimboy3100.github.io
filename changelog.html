@@ -181,6 +181,43 @@
         <a href="/rss.xml" class="rss-link">📡 RSS Feed</a>
     </p>
 
+    <div class="version" id="v3702" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.702</span>
+            <span class="version-title">Phones, Legend Clan announcements &amp; Library copies nothing loads are removed</span>
+            <time class="version-date" datetime="2026-11-27">2026-11-27</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Site pages use the same jQuery and Bootstrap as the game</strong> — the home page, the skins gallery, the clan pages (Lc/Lc.html and the Project X copy) loaded jQuery 1.11.1 from 2014, the themes page jQuery 3.2.1 with Bootstrap 3.3.7, and the old game page LMexpress/LMexpress.html jQuery 3.2.1…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Choose Language renames the Settings tab at once</strong> — its switches, sliders and section headings show the new language (they kept the language they were built in until a reload, and after a switch back to English some rows stayed in the language before)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phones</strong> — Joystick size (50-200 %) and Joystick opacity (20-100 %) in the gear panel change the drawn joystick and how far its knob travels</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phones</strong> — the left button row wraps upward before it reaches Split / Feed and the minimap</li>
+            <li><span class="tag tag-change">Change</span> <strong>Legend Clan announcements</strong> — the ten articles dated in their title give that day as their publication date (search engines only had the day the file changed)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Label atlas full while every label is on screen</strong> — the search for a slot to free looks at no more than 128 nick and 128 mass texts a frame and goes on in the next frame where it stopped</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phones</strong> — optional Quick respawn and custom macro (M1-M3) buttons in the gear panel (off by default), placeable in the control editor and kept by settings profiles</li>
+            <li><span class="tag tag-change">Change</span> <strong>Library copies nothing loads are removed</strong> — the jQuery 1.11.1 copy of the site pages and Bootstrap 3.3.7 (their pages now use the shared jQuery 3.7.1 and Bootstrap 3.4.1), the full jQuery UI 1.12.1 copy in lib/…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Hotkeys window</strong> — pressing Alt + J or Ctrl + U in a key field binds ALT+J / CTRL+U and the command that has the bare Alt or Ctrl keeps it</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Hotkeys window</strong> — Caps Lock, Pause, Num Lock, Scroll Lock and F13-F24 are bound under their names (CAPSLOCK, PAUSE, NUMLOCK, SCROLLLOCK, F13...F24)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Hotkeys window</strong> — after Restore (and for a new player) Quick chat 50 has no key</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Hotkeys window</strong> — the conflict list, when shown, follows Restore, Close, a settings profile and a button change in the Gamepad window</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Hotkeys window</strong> — Save with the browser storage full says it could not save and the window stays open (the keys keep working until the page is reloaded)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Development exports</strong> — the stale 2 MB source export AllFilesNew.txt is removed from the site (nothing loads it)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Old copies removed from the site</strong> — ogario/spectbackup.js (old spectator backup), ogario/ogar.v4.master.olddecoded.js (2019 decoded master), agario/mc/agario2.js and agarioold.js (2017-2018 agar.io client snapshots), agario/agariogenerated.core.js and…</li>
+            <li><span class="tag tag-change">Change</span> <strong>LMexpress/LMImplements.js and LMImplementsStart.js removed</strong> — the 2018 scripts of the agar.io/LMImplements login page, which only userscripts older than November 2018 opened (that page also needed the offline cdn.ogario.ovh and files moved years ago, so it has not worked since)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Service worker retired</strong> — lib/sw.js is removed and play.html, a few seconds after it has loaded, unregisters this site's old service workers (sw.js at the root or in lib/) and deletes their two caches</li>
+            <li><span class="tag tag-change">Change</span> <strong>llms-full.txt</strong> — the site has no service worker any more (play.html unregisters the old one)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Game Over card</strong> — one switch (Settings &gt; Stats, now called Game Over card) shows everything known about the life that ended: your stats, who ate you (with Watch killer), the mass graph and the death recap of the last 20 s</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Skins panel</strong> — the Collections button (folders, tags and favourites of skins) is always there, under the skins</li>
+            <li><span class="tag tag-change">Change</span> <strong>Scan Trick and Line split</strong> — their status line on the screen (Scan Trick while its key is held, Line split x8 while the aim is locked) always shows while the technique is in use</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Phones</strong> — the death recap beside the Game Over card can be seen</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Dying Light theme without the removed YouTube player</strong> — with the theme on, the Legend default settings link works again (it stopped at &quot;defaultMusicUrl is not defined&quot;, so the theme stayed on with its pictures), and its Play button no longer calls the removed player…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Home page opened from the game with its theme</strong> — the active tab keeps the theme's first button colour under the mouse (and after a tap on a phone, where the tapped tab stays hovered)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Hotkeys window</strong> — the conflict list, when shown, also follows a settings profile that changes only the gamepad buttons</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Features and FAQ pages</strong> — no more exclusivity claims we cannot back up, in every language</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Choose Language, back to English</strong> — Auto hide food - mass, Auto hide food - zoom and Ghost cells info (confusing) in Settings keep the names they have when the game loads</li>
+        </ul>
+    </div>
+
     <div class="version" id="v3701" lang="en" data-i18n-off="release notes from the git history">
         <div class="version-header">
             <span class="version-number">v3.701</span>

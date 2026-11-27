@@ -7,7 +7,7 @@
   schema:description "Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools." ;
   schema:applicationCategory "GameApplication" ;
   schema:operatingSystem "Web browser" ;
-  schema:softwareVersion "3.701" ;
+  schema:softwareVersion "3.702" ;
   schema:inLanguage "en", "ar", "bg", "de", "el", "es", "fr", "id", "it", "ja", "nl", "pl", "pt", "ru", "tr", "zh" ;
   schema:featureList "Custom skins", "Video skins", "Themes", "Configurable controls", "Command Centre", "Multiboxing", "Replay tools", "Gamepad support", "Mobile touch controls", "Settings profiles", "Performance diagnostics", "Adaptive performance", "Second-screen companion", "Chat system", "HUD helpers", "Accessibility features", "Streamer mode" ;
   schema:offers [ a schema:Offer ; schema:price "0" ; schema:priceCurrency "USD" ] ;
