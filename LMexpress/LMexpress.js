@@ -2149,23 +2149,6 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         _lmToast.find("#acceptURL").click(function () {
             window.open(MSGCOMMANDS, '_blank');
         });
-    } else if (MSGCOMMANDS.includes("[skype]")) {
-        MSGCOMMANDS = MSGCOMMANDS.split("[skype]").pop();
-        MSGCOMMANDS = MSGCOMMANDS.split('[/skype]')[0];
-        if (!/^https?:\/\//i.test(MSGCOMMANDS)) { /* http:// or https:// in any case */
-            MSGCOMMANDS = "https://" + MSGCOMMANDS;
-        }
-        if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
-        if (_lmHostIs(MSGCOMMANDS, /^join\.skype\.com$/)) {
-            if ($("#nick").val().includes("skype") == false) _lmRemoveCmdMsg();
-            var _lmToast = toastr.warning('<img src="https://www.legendmod.ml/banners/iconskype.png" style="float:left;width:100px;height:100px;">' + Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter65 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 10000,
-                extendedTimeOut: 10000
-            }).css("width", "300px");
-            _lmToast.find("#acceptURL").click(function () {
-                window.open(MSGCOMMANDS, '_blank');
-            });
-        }
     } else if (MSGCOMMANDS.includes("[discord]")) {
         MSGCOMMANDS = MSGCOMMANDS.split("[discord]").pop();
         MSGCOMMANDS = MSGCOMMANDS.split('[/discord]')[0];
@@ -6269,7 +6252,7 @@ function initializeLM(modVersion) {
     languagemodfun();
     $('[data-toggle="tooltip"]').tooltip();
 
-    /* Chat embed shortcodes: [yut], [url], [tag], [skype], [discord], etc.
+    /* Chat embed shortcodes: [yut], [url], [tag], [discord], etc.
      * OLD: DOMNodeInserted / DOMSubtreeModified (deprecated, removed from modern browsers).
      * NEW: MutationObserver — standard API, works in all browsers. */
     /*
