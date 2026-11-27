@@ -850,8 +850,9 @@
     }
 
     /* these switches call their own updater */
-    /* (the quick HUD flags too: what is shown follows them) */
-    var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl', showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots' };
+    /* (the quick HUD flags too: what is shown follows them; the skins panel (its quick button) and
+     * the chat box hidden by its hotkey: no switch in Settings, so set alone they stayed as they were) */
+    var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl', showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots', showSkinsPanel: 'setShowSkinsPanel', hideChat: 'setHideChat' };
     /* Anti-aliasing (also switched by Performance mode) takes effect on the next load, while it
      * differs from what the running WebGL context was made with; WebGL on/off switches at once */
     function aaReloadNeeded() {

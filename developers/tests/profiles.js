@@ -337,6 +337,21 @@ function bootApply() {
   check('removed zoom bookmarks: an older set with only them applies nothing', !err && !(r && r.length) && e.ls.getItem('lm-zoom-bookmarks') === null);
 }
 {
+  /* the skins panel and the chat box (no switch in Settings): a profile, its Undo and a backup
+   * show or hide them at once through the real updaters of ogario.v4.js */
+  const e = bootApply();
+  const shown = {};
+  const q = sel => { const o = {}; ['show', 'fadeIn'].forEach(m => { o[m] = () => { shown[sel] = true; return o; }; }); ['hide', 'fadeOut'].forEach(m => { o[m] = () => { shown[sel] = false; return o; }; }); return o; };
+  const real = vm.runInContext('(function ($) { return {' + cut('        setHideChat() {', 'buildChat99View(text) {') + cut('        setShowSkinsPanel() {', 'unlockButtons() {') + '}; })', e.c)(q);
+  Object.assign(e.c.application, real);
+  e.S.showSkinsPanel = true; e.S.showChatBox = true; e.S.hideChat = true;
+  shown['#skins-panel'] = true; shown['#chat-box'] = false;
+  e.P.applySet({ s: { showSkinsPanel: false, hideChat: false } }, 'P');
+  check('profile: the skins panel hides and the chat box shows with the profile', e.S.showSkinsPanel === false && e.S.hideChat === false && shown['#skins-panel'] === false && shown['#chat-box'] === true);
+  e.P.undo();
+  check('profile Undo: the skins panel and the hidden chat box come back as they were', e.S.showSkinsPanel === true && e.S.hideChat === true && shown['#skins-panel'] === true && shown['#chat-box'] === false);
+}
+{
   const e = bootApply();
   e.ls.setItem('lmGamepad', J({ v: 1, map: ['split'] }));
   const r = e.P.applySet({ gp: { v: 1, map: ['feed'] } }, 'pad');
