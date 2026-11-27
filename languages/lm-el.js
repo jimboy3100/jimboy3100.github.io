@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "Χρειάζεται",
 "settings.lmDepServer": "Δεν είναι διαθέσιμο σε αυτόν τον server",
 "settings.showCellShadows": "Σκιές κυττάρων (σκιά κάτω από τα κύτταρα, πιο αργό)",
-"settings.skinCollections": "Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)",
 "settings.hk-radialMenu": "Κυκλικό μενού εντολών (κράτημα)",
 "settings.hk-radialEditor": "Κυκλικό μενού: επιλογή εντολών",
 "settings.hk-hotkeyConflicts": "Συγκρούσεις πλήκτρων",

@@ -5003,24 +5003,6 @@
     "ja": "セルの影（セルの下に影、重くなる）",
     "it": "Ombre delle cellule (ombra sotto le cellule, più lento)"
   },
-  "settings.skinCollections": {
-    "en": "Skin collections button in the skins panel (folders, tags, favourites)",
-    "el": "Κουμπί συλλογών skins στο πάνελ skins (φάκελοι, ετικέτες, αγαπημένα)",
-    "es": "Botón de colecciones de skins en el panel de skins (carpetas, etiquetas, favoritos)",
-    "bg": "Бутон за колекции скинове в панела със скинове (папки, тагове, любими)",
-    "fr": "Bouton Collections de skins dans le panneau des skins (dossiers, tags, favoris)",
-    "ar": "زر مجموعات السكنات في لوحة السكنات (مجلدات، وسوم، مفضلة)",
-    "zh": "造型面板中的造型收藏按鈕（資料夾、標籤、最愛）",
-    "ru": "Кнопка коллекций скинов в панели скинов (папки, теги, избранное)",
-    "de": "Button für Skin-Sammlungen im Skin-Panel (Ordner, Tags, Favoriten)",
-    "tr": "Skin panelinde skin koleksiyonları düğmesi (klasörler, etiketler, favoriler)",
-    "pl": "Przycisk kolekcji skinów w panelu skinów (foldery, tagi, ulubione)",
-    "nl": "Knop voor skincollecties in het skinpaneel (mappen, tags, favorieten)",
-    "pt": "Botão de coleções de skins no painel de skins (pastas, tags, favoritos)",
-    "id": "Tombol koleksi skin di panel skin (folder, tag, favorit)",
-    "ja": "スキンパネルにスキンコレクションのボタン（フォルダ、タグ、お気に入り）",
-    "it": "Pulsante collezioni di skin nel pannello skin (cartelle, tag, preferiti)"
-  },
   "settings.hk-radialMenu": {
     "en": "Radial command menu (hold)",
     "el": "Κυκλικό μενού εντολών (κράτημα)",

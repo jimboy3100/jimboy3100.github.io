@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "Richiede",
 "settings.lmDepServer": "Non disponibile su questo server",
 "settings.showCellShadows": "Ombre delle cellule (ombra sotto le cellule, più lento)",
-"settings.skinCollections": "Pulsante collezioni di skin nel pannello skin (cartelle, tag, preferiti)",
 "settings.hk-radialMenu": "Menu radiale dei comandi (tieni premuto)",
 "settings.hk-radialEditor": "Menu radiale: scegli i comandi",
 "settings.hk-hotkeyConflicts": "Conflitti tra tasti rapidi",

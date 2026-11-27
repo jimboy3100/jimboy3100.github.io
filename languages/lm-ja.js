@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "必要",
 "settings.lmDepServer": "このサーバーでは使えません",
 "settings.showCellShadows": "セルの影（セルの下に影、重くなる）",
-"settings.skinCollections": "スキンパネルにスキンコレクションのボタン（フォルダ、タグ、お気に入り）",
 "settings.hk-radialMenu": "ラジアルコマンドメニュー（長押し）",
 "settings.hk-radialEditor": "ラジアルメニュー：コマンドを選ぶ",
 "settings.hk-hotkeyConflicts": "ショートカットの重複",

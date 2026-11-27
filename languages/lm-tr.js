@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "Gerekli",
 "settings.lmDepServer": "Bu sunucuda kullanılamaz",
 "settings.showCellShadows": "Hücre gölgeleri (hücrelerin altında gölge, daha yavaş)",
-"settings.skinCollections": "Skin panelinde skin koleksiyonları düğmesi (klasörler, etiketler, favoriler)",
 "settings.hk-radialMenu": "Dairesel komut menüsü (basılı tut)",
 "settings.hk-radialEditor": "Dairesel menü: komutları seç",
 "settings.hk-hotkeyConflicts": "Kısayol çakışmaları",

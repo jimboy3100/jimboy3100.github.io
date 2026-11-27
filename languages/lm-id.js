@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "Perlu",
 "settings.lmDepServer": "Tidak tersedia di server ini",
 "settings.showCellShadows": "Bayangan sel (bayangan di bawah sel, lebih lambat)",
-"settings.skinCollections": "Tombol koleksi skin di panel skin (folder, tag, favorit)",
 "settings.hk-radialMenu": "Menu perintah radial (tahan)",
 "settings.hk-radialEditor": "Menu radial: pilih perintah",
 "settings.hk-hotkeyConflicts": "Konflik hotkey",

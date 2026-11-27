@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "يتطلب",
 "settings.lmDepServer": "غير متاح على هذا السيرفر",
 "settings.showCellShadows": "ظلال الخلايا (ظل أسفل الخلايا، أبطأ)",
-"settings.skinCollections": "زر مجموعات السكنات في لوحة السكنات (مجلدات، وسوم، مفضلة)",
 "settings.hk-radialMenu": "قائمة الأوامر الدائرية (اضغط مطولًا)",
 "settings.hk-radialEditor": "القائمة الدائرية: اختيار الأوامر",
 "settings.hk-hotkeyConflicts": "تعارضات الاختصارات",

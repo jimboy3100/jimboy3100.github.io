@@ -1,8 +1,8 @@
 /* Legend Mod small tools: radial command menu, the conflict list of the Hotkeys window, the HUD hide of
  * Show/hide HUD (Alt+H, the former screenshot mode) with its capture, and skin collections.
  * Everything is off until used: windows and hotkeys without default keys
- * (all listed in the Command Centre), and the "Collections" button of the skins panel only with
- * the option skinCollections. Nothing runs per frame while no tool is open.
+ * (all listed in the Command Centre), and the "Collections" button of the skins panel, whose window
+ * loads its data only when opened. Nothing runs per frame while no tool is open.
  * Stored data, each in its own localStorage key, checked when read:
  *   lmRadialMenu      the commands of the radial menu (hotkey ids, up to 8)
  *   lmSkinCollections folders, tags and favourites of skins (the profiles keep their own format)
@@ -1172,11 +1172,11 @@
         draw();
         w.foot.appendChild(button(t('close'), false, closeWin));
     }
-    /* the "Collections" button of the skins panel, only with the option on */
+    /* the "Collections" button of the skins panel: always there (it was behind a setting of its
+     * own, skinCollections); the window and its data load on the first click */
     var SKINS_ICON = '\u2605 ';
     function syncSkinsButton() {
-        var on = !!settings().skinCollections, b = D.getElementById('lm-skin-collections'), panel = D.getElementById('skins-panel');
-        if (!on) { if (b && b.parentNode) b.parentNode.removeChild(b); return; }
+        var b = D.getElementById('lm-skin-collections'), panel = D.getElementById('skins-panel');
         if (b || !panel) return;
         b = el('a', 'margin-bottom:6px;', SKINS_ICON + t('skinsBtn'));
         b.id = 'lm-skin-collections';
@@ -1246,8 +1246,6 @@
         syncSkinsButton();
         if (!D.getElementById('skins-panel') && ++tries < 60) setTimeout(waitUi, 1000);
     })();
-    /* the option can also change through profiles or an import */
-    setInterval(syncSkinsButton, 2000);
 
     /* Language change: an open window is built again in the new language (the skins window keeps
      * its search and folder), the screenshot chip and the skins panel button follow. */

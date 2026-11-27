@@ -21361,7 +21361,6 @@ var defaultmapsettings = {
     middleClick: 'hk-multiboxswap',
     mouse4Click: 'hk-doubleSplit',
     mouse5Click: 'hk-split16',
-    skinCollections: false,       /* "Collections" button in the skins panel (ogario/modules/smalltools.js) */
     /* accessibility (ogario/modules/accessibility.js); 1 / false = unchanged */
     a11yTextScale: 1,             /* menu text size */
     a11yHudTextScale: 1,          /* HUD text size, on top of hudScale */
@@ -25416,9 +25415,6 @@ function thelegendmodproject() {
                     case 'a11yIndicators':
                         if (window.LMAccessibility) LMAccessibility.sync();
                         break;
-                    case 'skinCollections':
-                        if (window.LMSmallTools) LMSmallTools.sync();
-                        break;
                     case 'hideEventBanner':
                         _lmEventBanner();
                         break;
@@ -26848,7 +26844,7 @@ function thelegendmodproject() {
             this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "virusSpikes", "virMassShots", "massStroke", "potionsDrinker", "hudRelativeMass"], "massGroup");
-            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion", "skinCollections"], "skinsGroup");
+            this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "showCellShadows", "animatedRainbowColor"], "transparencyGroup");

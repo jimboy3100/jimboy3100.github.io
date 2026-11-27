@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "Vereist",
 "settings.lmDepServer": "Niet beschikbaar op deze server",
 "settings.showCellShadows": "Celschaduwen (slagschaduw onder cellen, trager)",
-"settings.skinCollections": "Knop voor skincollecties in het skinpaneel (mappen, tags, favorieten)",
 "settings.hk-radialMenu": "Radiaal commandomenu (ingedrukt houden)",
 "settings.hk-radialEditor": "Radiaal menu: commando's kiezen",
 "settings.hk-hotkeyConflicts": "Sneltoetsconflicten",

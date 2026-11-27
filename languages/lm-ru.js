@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "Требуется",
 "settings.lmDepServer": "Недоступно на этом сервере",
 "settings.showCellShadows": "Тени клеток (тень под клетками, медленнее)",
-"settings.skinCollections": "Кнопка коллекций скинов в панели скинов (папки, теги, избранное)",
 "settings.hk-radialMenu": "Радиальное меню команд (удерживать)",
 "settings.hk-radialEditor": "Радиальное меню: выбор команд",
 "settings.hk-hotkeyConflicts": "Конфликты горячих клавиш",

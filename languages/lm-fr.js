@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "Nécessite",
 "settings.lmDepServer": "Indisponible sur ce serveur",
 "settings.showCellShadows": "Ombres des cellules (ombre portée, plus lent)",
-"settings.skinCollections": "Bouton Collections de skins dans le panneau des skins (dossiers, tags, favoris)",
 "settings.hk-radialMenu": "Menu radial de commandes (maintenir)",
 "settings.hk-radialEditor": "Menu radial : choisir les commandes",
 "settings.hk-hotkeyConflicts": "Conflits de raccourcis",

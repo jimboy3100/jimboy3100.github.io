@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "Wymaga",
 "settings.lmDepServer": "Niedostępne na tym serwerze",
 "settings.showCellShadows": "Cienie komórek (cień pod komórkami, wolniej)",
-"settings.skinCollections": "Przycisk kolekcji skinów w panelu skinów (foldery, tagi, ulubione)",
 "settings.hk-radialMenu": "Menu kołowe komend (przytrzymaj)",
 "settings.hk-radialEditor": "Menu kołowe: wybierz komendy",
 "settings.hk-hotkeyConflicts": "Konflikty skrótów",

@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "Изисква",
 "settings.lmDepServer": "Не е налично на този сървър",
 "settings.showCellShadows": "Сенки на клетките (сянка под клетките, по-бавно)",
-"settings.skinCollections": "Бутон за колекции скинове в панела със скинове (папки, тагове, любими)",
 "settings.hk-radialMenu": "Радиално меню с команди (задръж)",
 "settings.hk-radialEditor": "Радиално меню: избор на команди",
 "settings.hk-hotkeyConflicts": "Конфликти на бързи клавиши",

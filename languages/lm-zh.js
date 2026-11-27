@@ -3789,7 +3789,6 @@
 "settings.lmDepNeeds": "需要",
 "settings.lmDepServer": "此伺服器無法使用",
 "settings.showCellShadows": "細胞陰影（細胞下方投影，較慢）",
-"settings.skinCollections": "造型面板中的造型收藏按鈕（資料夾、標籤、最愛）",
 "settings.hk-radialMenu": "環形指令選單（按住）",
 "settings.hk-radialEditor": "環形選單：選擇指令",
 "settings.hk-hotkeyConflicts": "快捷鍵衝突",

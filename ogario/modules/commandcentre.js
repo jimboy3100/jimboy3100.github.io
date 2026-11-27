@@ -165,7 +165,7 @@
      * took its place (Short mass -> Mass format, FPS at top / Stats at center -> Stats position,
      * Screenshot mode -> Show/hide HUD, zoom bookmarks -> zoom levels, the Lab -> User Scripts,
      * the old Mouse control and gamepad switches -> their blocks of the Hotkeys window, the Game Over
-     * card parts -> the card's one switch);
+     * card parts -> the card's one switch, the Collections button switch -> the Skin collections command);
      * without this the star was dropped silently */
     var RENAMED = {
         'opt:shortMass': 'set:massFormat', 'opt:fpsAtTop': 'set:statsPosition', 'opt:statsAtCenter': 'set:statsPosition',
@@ -175,7 +175,8 @@
         'opt:mouseCommand4': 'sec:lmHkMouse', 'opt:mouseCommand5': 'sec:lmHkMouse', 'set:leftClick': 'sec:lmHkMouse', 'set:rightClick': 'sec:lmHkMouse',
         'set:middleClick': 'sec:lmHkMouse', 'set:mouse4Click': 'sec:lmHkMouse', 'set:mouse5Click': 'sec:lmHkMouse',
         'opt:gamepadEnabled': 'sec:lmHkGamepad', 'set:gamepadDeadzone': 'sec:lmHkGamepad',
-        'opt:massGraph': 'opt:gameOverStats', 'opt:showKiller': 'opt:gameOverStats', 'opt:deathRecap': 'opt:gameOverStats'
+        'opt:massGraph': 'opt:gameOverStats', 'opt:showKiller': 'opt:gameOverStats', 'opt:deathRecap': 'opt:gameOverStats',
+        'opt:skinCollections': 'hk:hk-skinCollections'
     };
     function renamed(a) {
         if (!Array.isArray(a)) return a;
