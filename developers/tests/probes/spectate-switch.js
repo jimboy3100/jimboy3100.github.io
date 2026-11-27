@@ -41,8 +41,14 @@
   function closePromos() { jQuery('.lm-promo, [id^="LMPromo"]').remove(); }
   /* a real click on a menu button, once nothing (a tooltip) lies over it */
   async function click(sel) {
+    /* the menu panel can still be fading in or coming back after a reconnect (the previous probe) */
+    for (var v = 0; v < 50 && !jQuery(sel).filter(':visible')[0]; v++) { closePromos(); await sleep(100); }
     var b = jQuery(sel).filter(':visible')[0];
-    if (!b) return sel + ' not shown';
+    if (!b) {
+      /* the outermost hidden part that holds it, to say why */
+      var hid = jQuery(sel).first().parents().addBack().filter(function () { return jQuery(this).css('display') === 'none' || jQuery(this).css('visibility') === 'hidden'; }).first()[0];
+      return sel + ' not shown' + (hid ? ' (hidden: ' + hid.tagName + '#' + hid.id + '.' + String(hid.className).slice(0, 40) + ')' : '');
+    }
     await inp({ type: 'move', x: 5, y: 5 });
     for (var t = 0; t < 20; t++) {
       closePromos();

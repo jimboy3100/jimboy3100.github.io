@@ -26,11 +26,19 @@
   try {
     if (!info0) $('#server-info').show();
     var tk = document.getElementById('server-token');
-    tk.focus(); tk.select();
     var addr = 'api.legendmod.ml/el-teams';
-    for (var i = 0; i < addr.length; i++) await send({ type: 'key', key: addr[i], code: '', keyCode: 0, text: addr[i] });
+    /* a reconnect of the live server while typing writes its address into the box (getWS); the
+     * address is typed again then, as a player would */
+    for (var a = 0; a < 3; a++) {
+      tk.focus(); tk.select();
+      for (var i = 0; i < addr.length; i++) await send({ type: 'key', key: addr[i], code: '', keyCode: 0, text: addr[i] });
+      if (tk.value === addr) break;
+      info.retyped = (info.retyped || []).concat(tk.value);
+      for (w = 0; w < 120 && !on(FFA); w++) await sleep(250);
+    }
     await send({ type: 'key', key: 'Enter', code: 'Enter', keyCode: 13 });
-    for (w = 0; w < 60 && !on(TEAMS); w++) await sleep(250);
+    /* a live server under load can take over 15 s to open */
+    for (w = 0; w < 180 && !on(TEAMS); w++) await sleep(250);
     info.joined = { ws: LM.ws, list: $('#gamemode').val() };
     if (!on(TEAMS)) fail.push('the Join box did not connect ' + TEAMS + ' (' + LM.ws + ')');
     else {
@@ -44,7 +52,7 @@
     gm.focus();
     await send({ type: 'key', key: 'ArrowUp', code: 'ArrowUp', keyCode: 38 });
     gm.blur();
-    for (w = 0; w < 60 && !on(FFA); w++) await sleep(250);
+    for (w = 0; w < 180 && !on(FFA); w++) await sleep(250);
     info.back = { ws: LM.ws, list: $('#gamemode').val() };
     if (!on(FFA) || $('#gamemode').val() !== '5001') fail.push('Arrow Up on the list did not return to Expanding Land FFA ' + JSON.stringify(info.back));
   } catch (e) {
@@ -54,6 +62,8 @@
     keys.forEach(function (k) { try { if (saved[k] == null) localStorage.removeItem(k); else localStorage.setItem(k, saved[k]); } catch (e) { } });
     /* never leave the page on Teams for the next probes */
     if (LM && LM.ws !== FFA && window.core) { $('#gamemode').val('5001'); window.core.connect(FFA); }
+    /* and connected again: the next probe (spectate-switch) found the menu without its buttons */
+    for (w = 0; w < 180 && !on(FFA); w++) await sleep(250);
   }
   return { fail: fail, info: info };
 })()
