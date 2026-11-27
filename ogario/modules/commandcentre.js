@@ -954,7 +954,8 @@
     /* ═══ Button in the Tools tab, under User Scripts ═══
      * The one direct way in without a keyboard (phones, tablets): Ctrl+K and the hotkey need
      * keys, the quick bar is off by default. Not in the Settings tab (its presets row stays
-     * free of it). The menu builds the Tools tab late, so the 1 s timer below tries again. */
+     * free of it). Added once: at start when the Tools tab is there, else by LMexpress.js when it
+     * builds the Tools tab (api.addMenuButton). */
 
     function addMenuButton() {
         if (D.getElementById('lm-cc-open')) return true;
@@ -1108,17 +1109,34 @@
 
     /* ═══ Start ═══ */
 
-    var ticks = 0;
-    setInterval(function () {
-        ticks++;
-        if (!D.getElementById('lm-cc-open')) addMenuButton();
-        /* option off: only this check, once a second */
+    addMenuButton();
+    /* The quick bar follows the HUD boxes it must not cover (moved, shown, hidden by many paths):
+     * checked once a second, but only while its option is on. Off: no timer at all. */
+    var barTimer = null;
+    function barOptionOn() {
+        var s = W.legendmod5 || W.defaultmapsettings;
+        return !!(s && s.commandCentreBar);
+    }
+    function barTick() {
         if (barWanted() || bar && bar.parentNode) {
             try { syncBar(false); } catch (e) { }
         }
-    }, 1000);
+    }
+    function syncBarTimer() {
+        var on = barOptionOn() || !!(bar && bar.parentNode);
+        if (on && !barTimer) barTimer = setInterval(barTick, 1000);
+        else if (!on && barTimer) { clearInterval(barTimer); barTimer = null; }
+    }
+    syncBarTimer();
+    /* a profile, preset or import that turns the bar on or off (ogario.v4.js lmSettingsCommit);
+     * not rebuilt when it is already there (a bar button being clicked stays) */
+    if (W.LMEvents && typeof W.LMEvents.on === 'function') {
+        W.LMEvents.on('settingsChange', function (d) {
+            if (d && d.key === 'commandCentreBar') setTimeout(function () { try { syncBar(false); } catch (e) { } syncBarTimer(); }, 0);
+        });
+    }
     D.addEventListener('change', function (e) {
-        if (e.target && e.target.id === 'commandCentreBar') setTimeout(function () { syncBar(true); }, 0);
+        if (e.target && e.target.id === 'commandCentreBar') setTimeout(function () { syncBar(true); syncBarTimer(); }, 0);
         else if (bar && bar.parentNode && e.target && e.target.type === 'checkbox') setTimeout(function () { syncBar(false); }, 0);
     }, false);
     W.addEventListener('resize', function () { if (bar && bar.parentNode) { barPos = null; setTimeout(placeNow, 50); } });
@@ -1137,13 +1155,15 @@
     }
 
     api.open = open;
+    api.addMenuButton = addMenuButton;
+    api._barTimerOn = function () { return !!barTimer; };
     api.close = close;
     api.toggle = toggle;
     api.isOpen = isOpen;
     api.items = function () { return items(true).slice(); };
     api.run = function (id) { var it = find(id); return it ? (run(it, true), true) : false; };
     api.favourites = function () { return state.fav.slice(); };
-    api.syncBar = function () { syncBar(true); };
+    api.syncBar = function () { syncBar(true); syncBarTimer(); };
     /* open the menu at a setting (an option key or element id) and make it blink; for other windows (Discover features);
      * a hotkey command id (key row of the Hotkeys window) opens that window at its row (Custom macros) */
     api.reveal = function (key) {

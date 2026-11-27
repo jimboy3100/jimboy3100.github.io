@@ -32,6 +32,8 @@
     if (document.querySelector('#og-settings #lm-cc-open, #og-settings .lm-cc-open-btn, #og-settings [id^="lm-cc"]')) fail.push('Command Centre button is in the Settings tab');
     var ccBtns = document.querySelectorAll('#lm-cc-open, .lm-cc-open-btn');
     var ccBtn = document.getElementById('lm-cc-open');
+    /* the button is added once, no timer re-adds it; with the quick bar off no timer runs */
+    if (!barBefore && CC._barTimerOn && CC._barTimerOn()) fail.push('quick bar off but its timer runs');
     if (ccBtns.length !== 1 || !ccBtn || !ccBtn.closest('#legend')) fail.push('Command Centre button: not once in the Tools tab (' + ccBtns.length + ')');
     else {
       /* by touch, no keyboard, quick bar off, no hotkey: the Tools tab, a tap on the button, a tap on X */
@@ -159,6 +161,7 @@
     CC.syncBar();
     await sleep(50);
     var bar = document.getElementById('lm-cc-bar');
+    if (CC._barTimerOn && !CC._barTimerOn()) fail.push('quick bar on but it does not follow the HUD (no timer)');
     if (!bar) fail.push('quick bar not shown');
     else {
       var br = bar.getBoundingClientRect();
@@ -187,6 +190,7 @@
     defaultmapsettings.commandCentreBar = false;
     CC.syncBar();
     if (document.getElementById('lm-cc-bar')) fail.push('quick bar stays after the option is off');
+    if (CC._barTimerOn && CC._barTimerOn()) fail.push('quick bar timer still runs after the option is off');
   } finally {
     try { CC.close(); } catch (e) { }
     if (defaultmapsettings.showGrid !== gridBefore) application.setSettings('showGrid', gridBefore);
