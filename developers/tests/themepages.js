@@ -90,7 +90,12 @@ check('faq direct: the website design', f1.themed === false && !f1.bridgeCss && 
 /* ---- index.html from the game, with a hash tab ---- */
 const idxUrl = senderUrl(L + 'index.html#Changelog');
 check('sender: index link keeps #Changelog first', /index\.html#Changelog&lm=[A-Za-z0-9_-]+$/.test(idxUrl), idxUrl);
-const t1 = run('index-themed', idxUrl, 'await sleep(600); var r = lmRead(document); r.tab = (document.querySelector("#nav a.active, #nav .active a, #nav li.active a") || {}).name || ""; ' + BTNS + ' return r;');
+/* the mouse over the active tab (a tap leaves it there on a phone): it stays in the button colour */
+const HOVER = ' var at = document.querySelector("#nav a.active"); if (at && typeof window.__lmInput === "function") { at.scrollIntoView({ block: "center" }); await sleep(100); var ar = at.getBoundingClientRect();' +
+    ' await new Promise(function (res) { var id = "hv" + Date.now(); var tm = setTimeout(res, 5000); window.__lmInputDone = function (i) { if (i === id) { clearTimeout(tm); res(); } };' +
+    ' window.__lmInput(JSON.stringify({ id: id, type: "move", x: Math.round(ar.left + ar.width / 2), y: Math.round(ar.top + ar.height / 2) })); });' +
+    ' await sleep(400); var hc = getComputedStyle(at); r.tabHover = { hover: at.matches(":hover"), bg: hc.backgroundImage + " | " + hc.backgroundColor + " | " + hc.color }; }';
+const t1 = run('index-themed', idxUrl, 'await sleep(600); var r = lmRead(document); r.tab = (document.querySelector("#nav a.active, #nav .active a, #nav li.active a") || {}).name || ""; ' + BTNS + HOVER + ' return r;');
 check('index themed: html.lm-themed-root and the bridge stylesheet', t1.themed === true && t1.bridgeCss === true && /lm-radius-set/.test(t1.classes) && /lm-bg-set/.test(t1.classes), t1);
 check('index themed: page background = panel colour, accent = main colour', t1.bodyBg === rgb(DS.menuPanelColor) && t1.bodyAccent === DS.menuMainColor, t1);
 check('index themed: the menu background image, without the query token', /img\/Legend\.png\?w=64/.test(t1.bodyImg) && !/SECRET|token|frag/.test(t1.bodyImg + t1.href + (t1.session || '')), t1.bodyImg);
@@ -99,6 +104,7 @@ check('index themed: buttons and fields use the small corner (3px)', t1.radS ===
 const P = 'rgb(124, 58, 237)', B1 = rgb(DS.btn1Color), BT = rgb(DS.menuBtnTextColor), db = d1.btns || {}, tb = t1.btns || {};
 check('index direct: the purple buttons stay purple', ['play', 'ext'].every(k => (db[k] || '').indexOf(P) >= 0), db);
 check('index themed: Play and extension buttons and the active tab in the first button colour, no purple left', ['play', 'ext', 'tab'].every(k => (tb[k] || '').indexOf(B1) >= 0 && (tb[k] || '').indexOf(P) < 0 && (tb[k] || '').split(' | ')[2] === BT), tb);
+check('index themed: the active tab keeps the first button colour under the mouse', !!t1.tabHover && t1.tabHover.hover === true && t1.tabHover.bg.indexOf(B1) >= 0 && t1.tabHover.bg.split(' | ')[2] === BT, t1.tabHover);
 check('index themed: the phone browser bar (meta theme-color) in the panel colour', t1.barColor === DS.menuPanelColor && d1.barColor === '#7c3aed', [d1.barColor, t1.barColor]);
 check('index themed: HUD palette and font reach the page', t1.hudMc === DS.hudMainColor && t1.hudFont === 'Ubuntu' && t1.hudFs === '22px', t1);
 check('index themed: the Restore website theme button, small, bottom left, on screen', !!t1.reset && t1.reset.pos === 'fixed' && t1.reset.x < 40 && t1.reset.y + t1.reset.h <= t1.reset.vh &&
