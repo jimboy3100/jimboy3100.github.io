@@ -86,7 +86,7 @@
 
 | # | Check | Status |
 |---|-------|--------|
-| 7.1 | A background image with user:pass@, a non-https address or a fragment is refused (`image()` in lm-theme-bridge.js) | ☐ |
+| 7.1 | A background image with user:pass@ or a non-https address is refused; its fragment and any query part other than size / version ones are dropped and the image kept (`image()` in lm-theme-bridge.js) | ☐ |
 | 7.2 | Bridge only accepts the exact https origins www.legendmod.ml, legendmod.ml and jimboy3100.github.io (agar.io too as the game page) | ☐ |
 | 7.3 | Invalid CSS property names are rejected | ☐ |
 

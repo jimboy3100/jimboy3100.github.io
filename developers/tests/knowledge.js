@@ -58,5 +58,22 @@ list.replace(/\b((?:www\.)?legendmod\.[a-z]+|jimboy3100\.github\.io)\b/g, (a, h)
 const wrong = hosts.filter(h => accepted.indexOf('https://' + h + "'") < 0 && accepted.indexOf('https://www.' + h + "'") < 0);
 check('the checklist names only origins the theme bridge accepts', wrong.length === 0, wrong.join(', ') || hosts.length + ' names');
 
+/* what the checklist says the bridge's image() does is what it does: run the real function */
+let image = null;
+try {
+  const q = /var PUBLIC_Q = [^\n]*;/.exec(bridge)[0], f = bridge.indexOf('function image(v) {');
+  const src = bridge.slice(f, bridge.indexOf('\n    }\n', f) + 6);
+  image = require('vm').runInNewContext(q + src + '; image', { URL });
+} catch (e) { }
+check('the bridge image() check is found', typeof image === 'function');
+const row = (list.split('\n').find(l => /^\| 7\.1 \|/.test(l)) || '').toLowerCase();
+if (image) {
+  check('a user:pass@ image is refused as the checklist says', image('https://u:p@i.imgur.com/a.png') === '' && /user:pass@/.test(row) && /refused/.test(row));
+  check('a non-https image is refused as the checklist says', image('http://i.imgur.com/a.png') === '' && /non-https/.test(row));
+  const frag = image('https://i.imgur.com/a.png#x');
+  /* the fragment is dropped, the image itself kept */
+  check('the checklist describes what happens to a fragment', frag === 'https://i.imgur.com/a.png' ? !/fragment is refused|or a fragment is refused/.test(row) && /fragment/.test(row) : /fragment is refused|or a fragment is refused/.test(row), frag);
+}
+
 console.log(fail ? fail + ' check(s) failed' : 'knowledge: all checks passed');
 process.exit(fail ? 1 : 0);
