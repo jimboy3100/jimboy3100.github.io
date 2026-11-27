@@ -53,7 +53,7 @@
     {
       "id": "performance",
       "name": "WebGL rendering and performance diagnostics",
-      "description": "WebGL2 acceleration with Canvas2D fallback. High DPI rendering, FPS cap (0-240), menu FPS cap (25 FPS), performance mode (one-switch for weak devices). Adaptive performance monitors real frame times with 3 degradation levels: L1 decorative off, L2 jelly/video off, L3 lower resolution. Self-healing. Diagnostics window with frame time graph, percentiles, Chrome LoAF integration. Net graph overlay. Network history.",
+      "description": "WebGL2 acceleration with Canvas2D fallback. High DPI rendering, FPS cap (0-240), menu FPS cap (25 FPS), performance mode (one-switch for weak devices). Adaptive performance monitors real frame times with 3 degradation levels: L1 decorative off, L2 jelly/video off, L3 lower resolution. Self-healing. Diagnostics window with frame time graph, percentiles, Chrome LoAF integration. Net graph overlay.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

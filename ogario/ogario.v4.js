@@ -27287,7 +27287,7 @@ function thelegendmodproject() {
              * spectate and the stream overlay to Spectating, jelly physics and the eat animation from
              * Skins to Animation, the developer console from Stats to Performance). */
             this.addOptions(["highDPI", "glAntialias", "menuFpsCap", "jellyPhisycs", "suckAnimation"], "animationGroup");
-            /* Performance and network: Adaptive performance, the network history and the
+            /* Performance and network: Adaptive performance and the
              * diagnostics button are added below with the sliders. The developer console
              * (showDevConsole) is switched in the diagnostics window (ogario/modules/perf.js),
              * a developer facility rather than a player setting. */

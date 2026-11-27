@@ -188,7 +188,6 @@ Record and replay game sessions. Features:
 - **Performance diagnostics window**: Frame time graph, percentiles, long frames, render time, renderer info, freeze breakdown with contributor attribution, Chrome Long Animation Frames API integration
 - **Net graph**: Toggle network quality overlay
 - **Unlocked FPS**: Remove frame rate limits
-- **Network history**: Ping/jitter/packet rate/disconnect summary across sessions
 
 ### 8. Animation and Visual Effects
 - **Animation speed**: Configurable animation delay slider (0-120)
@@ -289,7 +288,6 @@ Drag and resize HUD elements with named layouts. Features:
 - **Mass loss alerts**: Notification when you lose a configurable percentage (10-90%) of mass within 2 seconds
 - **Analytics window**: Statistics dashboard with heatmaps and the match history, up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis.
 - **Notification centre**: Bell icon with unread count, filterable list by category (achievements, bests, party, replay, connection, settings, chat, other), mark read, clear, suppress toasts by category. Up to 200 notifications, max 120KB in localStorage.
-- **Network history**: Ping, jitter, packet rate and disconnect statistics across sessions
 - **Session stats**: Games played, best mass, time played per tab session (sessionStorage)
 
 ### 16. Scan Trick and Line Split
@@ -351,7 +349,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Animation**: Speed, jelly physics, death particles, eat pulse, camera smoothing, spawn effects, zoom speed/smooth
 - **Skins**: Custom skins, video skins, collections, transparency, vanilla skins, skin checker, skin rotator
 - **Food**: Rainbow food, auto-hide food, food opacity
-- **Performance and Network**: WebGL, High DPI, FPS cap, adaptive performance (target, toasts, resolution), performance mode, anti-aliasing, network history, net graph
+- **Performance and Network**: WebGL, High DPI, FPS cap, adaptive performance (target, toasts, resolution), performance mode, anti-aliasing, net graph
 - **Minimap**: Show/rotate, grid, guides, ghost cells, trail, one-coloured teammates
 - **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, edge arrows, cell panel, stats display, indicators, online status, sticky cell
 - **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter, coloured nicks, hide country, AgarTool team, player ID
