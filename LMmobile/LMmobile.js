@@ -656,8 +656,13 @@
             rootL.style.opacity = prefs.btnOpacity;
             rootR.style.opacity = prefs.btnOpacity;
             smallR.style.opacity = prefs.btnOpacity;
-            rootL.style.transform = 'scale(' + prefs.btnScale + ')';
+            /* important: the stylesheet locks #lm-mc-l with transform:none!important, which beat a
+             * plain inline scale, so Button size never reached the left group */
+            rootL.style.setProperty('transform', 'scale(' + prefs.btnScale + ')', 'important');
             rootL.style.transformOrigin = 'bottom left';
+            /* the gear panel sits in that group: it keeps its own size, so its texts and sliders
+             * stay readable at every button size */
+            sp.style.zoom = prefs.btnScale === 1 ? '' : String(1 / prefs.btnScale);
             rootR.style.transform = 'scale(' + prefs.btnScale + ')';
             rootR.style.transformOrigin = 'bottom right';
             smallR.style.transform = 'scale(' + prefs.btnScale + ')';
