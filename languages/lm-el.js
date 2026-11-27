@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Εμφάνιση εικόνων στο chat",
 "settings.showChatVideos": "Εμφάνιση βίντεο στο chat",
 "settings.showChatBox": "Chatbox αντί για αναδυόμενα",
-"settings.showChatTranslation": "Μετάφραση chatbox (σφάλμα κύλισης)",
+"settings.showChatTranslation": "Μετάφραση συνομιλίας (στη συσκευή, Chrome 138+)",
 "settings.hidecountry": "Απόκρυψη της χώρας μου",
 "settings.messageSound": "Ήχος ειδοποίησης μηνύματος",
 "settings.commandSound": "Ήχος ειδοποίησης εντολής",

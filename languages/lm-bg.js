@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Показвай изображения в чата",
 "settings.showChatVideos": "Показвай видеа в чата",
 "settings.showChatBox": "Прозорец за чат вместо изскачащи съобщения",
-"settings.showChatTranslation": "Превеждай чата (бъг при превъртане)",
+"settings.showChatTranslation": "Превод на чата (на това устройство, Chrome 138+)",
 "settings.hidecountry": "Скрий страната ми",
 "settings.messageSound": "Звук при съобщение",
 "settings.commandSound": "Звук при команда",

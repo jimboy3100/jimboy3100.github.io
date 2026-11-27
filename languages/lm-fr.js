@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Afficher les images dans le chat",
 "settings.showChatVideos": "Afficher les vidéos dans le chat",
 "settings.showChatBox": "Boîte de chat au lieu des popups",
-"settings.showChatTranslation": "Traduire la boîte de chat (bug de défilement)",
+"settings.showChatTranslation": "Traduire le chat (sur cet appareil, Chrome 138+)",
 "settings.hidecountry": "Masquer mon pays",
 "settings.messageSound": "Son de notification de message",
 "settings.commandSound": "Son de notification de commande",

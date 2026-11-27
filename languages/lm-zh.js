@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "在聊天中顯示圖片",
 "settings.showChatVideos": "在聊天中顯示影片",
 "settings.showChatBox": "使用聊天框而非彈出訊息",
-"settings.showChatTranslation": "翻譯聊天框（捲動錯誤）",
+"settings.showChatTranslation": "翻譯聊天（在此裝置上，Chrome 138+）",
 "settings.hidecountry": "隱藏我的國家",
 "settings.messageSound": "訊息通知音效",
 "settings.commandSound": "指令通知音效",

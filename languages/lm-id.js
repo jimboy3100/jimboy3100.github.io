@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Tampilkan gambar di chat",
 "settings.showChatVideos": "Tampilkan video di chat",
 "settings.showChatBox": "Kotak chat sebagai ganti pop-up",
-"settings.showChatTranslation": "Terjemahkan kotak chat (bug gulir)",
+"settings.showChatTranslation": "Terjemahkan obrolan (di perangkat ini, Chrome 138+)",
 "settings.hidecountry": "Sembunyikan negara saya",
 "settings.messageSound": "Suara notifikasi pesan",
 "settings.commandSound": "Suara notifikasi perintah",

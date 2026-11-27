@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Show images on chat",
 "settings.showChatVideos": "Show videos on chat",
 "settings.showChatBox": "Chatbox instead of popups",
-"settings.showChatTranslation": "Translate chatbox (Scroll bug)",
+"settings.showChatTranslation": "Translate chat (on this device, Chrome 138+)",
 "settings.hidecountry": "Hide my country",
 "settings.messageSound": "Message notification sound",
 "settings.commandSound": "Command notification sound",

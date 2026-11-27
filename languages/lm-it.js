@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Mostra immagini nella chat",
 "settings.showChatVideos": "Mostra video nella chat",
 "settings.showChatBox": "Riquadro chat invece dei popup",
-"settings.showChatTranslation": "Traduci il riquadro chat (bug di scorrimento)",
+"settings.showChatTranslation": "Traduci la chat (su questo dispositivo, Chrome 138+)",
 "settings.hidecountry": "Nascondi il mio paese",
 "settings.messageSound": "Suono di notifica dei messaggi",
 "settings.commandSound": "Suono di notifica dei comandi",

@@ -8792,11 +8792,19 @@ function doMainTranslation(targetNode, bb, msgNode) {
         if (!text || text === bb) return;
         var trHost = msgNode ? msgNode.lastChild : (targetNode.lastChild && targetNode.lastChild.lastChild);
         if (!trHost) return;
+        /* the translation comes after the box scrolled to the new message: a reader at the bottom
+         * (or the scroll to it still going) stays at the bottom, else the added line was cut off */
+        var box = targetNode && targetNode.nodeType === 1 ? targetNode : null;
+        var $box = box && window.jQuery ? window.jQuery(box) : null;
+        var follow = !!box && (box.scrollHeight - box.scrollTop - box.clientHeight < 40 || !!($box && $box.is(':animated')));
         var trText = document.createElement('span');
         trText.style.color = 'deepskyblue';
         trText.style.textShadow = '1px 1px 1px white';
         trText.textContent = ' [' + text + ']';
         trHost.appendChild(trText);
+        if (!box) return;
+        if (follow) { if ($box) $box.stop(true); box.scrollTop = box.scrollHeight; }
+        if ($box && $box.perfectScrollbar) { try { $box.perfectScrollbar('update'); } catch (e) { } }
     }).catch(function () { });
 }
 function changeFrameWork() {

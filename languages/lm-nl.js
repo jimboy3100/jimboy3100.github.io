@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Afbeeldingen in chat tonen",
 "settings.showChatVideos": "Video's in chat tonen",
 "settings.showChatBox": "Chatbox in plaats van pop-ups",
-"settings.showChatTranslation": "Chatbox vertalen (scrollfout)",
+"settings.showChatTranslation": "Chat vertalen (op dit apparaat, Chrome 138+)",
 "settings.hidecountry": "Mijn land verbergen",
 "settings.messageSound": "Meldingsgeluid voor berichten",
 "settings.commandSound": "Meldingsgeluid voor commando's",

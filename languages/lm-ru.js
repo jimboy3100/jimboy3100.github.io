@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Показывать картинки в чате",
 "settings.showChatVideos": "Показывать видео в чате",
 "settings.showChatBox": "Окно чата вместо всплывающих сообщений",
-"settings.showChatTranslation": "Переводить окно чата (баг прокрутки)",
+"settings.showChatTranslation": "Перевод чата (на этом устройстве, Chrome 138+)",
 "settings.hidecountry": "Скрыть мою страну",
 "settings.messageSound": "Звук уведомления о сообщении",
 "settings.commandSound": "Звук уведомления о команде",

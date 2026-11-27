@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Pokaż obrazki na czacie",
 "settings.showChatVideos": "Pokaż filmiki na czacie",
 "settings.showChatBox": "Czatbox zamiast wyskakujących okienek",
-"settings.showChatTranslation": "Tłumacz czat (błąd przewijania)",
+"settings.showChatTranslation": "Tłumacz czat (na tym urządzeniu, Chrome 138+)",
 "settings.hidecountry": "Ukryj mój kraj",
 "settings.messageSound": "Dźwięk powiadomienia o wiadomości",
 "settings.commandSound": "Dźwięk powiadomienia o komendzie",

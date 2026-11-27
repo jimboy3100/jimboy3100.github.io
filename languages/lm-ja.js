@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "チャットに画像を表示",
 "settings.showChatVideos": "チャットに動画を表示",
 "settings.showChatBox": "ポップアップではなくチャット欄に表示",
-"settings.showChatTranslation": "チャット欄を翻訳（スクロールの不具合あり）",
+"settings.showChatTranslation": "チャットを翻訳（この端末で、Chrome 138+）",
 "settings.hidecountry": "自分の国を隠す",
 "settings.messageSound": "メッセージ通知音",
 "settings.commandSound": "コマンド通知音",

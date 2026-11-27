@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "Sohbette resimleri göster",
 "settings.showChatVideos": "Sohbette videoları göster",
 "settings.showChatBox": "Açılır pencereler yerine sohbet kutusu",
-"settings.showChatTranslation": "Sohbet kutusunu çevir (kaydırma hatası)",
+"settings.showChatTranslation": "Sohbeti çevir (bu cihazda, Chrome 138+)",
 "settings.hidecountry": "Ülkemi gizle",
 "settings.messageSound": "Mesaj bildirim sesi",
 "settings.commandSound": "Komut bildirim sesi",

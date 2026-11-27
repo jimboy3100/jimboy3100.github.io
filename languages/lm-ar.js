@@ -3685,7 +3685,7 @@
 "settings.showChatImages": "إظهار الصور في الدردشة",
 "settings.showChatVideos": "إظهار الفيديوهات في الدردشة",
 "settings.showChatBox": "صندوق دردشة بدلًا من النوافذ المنبثقة",
-"settings.showChatTranslation": "ترجمة صندوق الدردشة (خلل في التمرير)",
+"settings.showChatTranslation": "ترجمة الدردشة (على هذا الجهاز، Chrome 138+)",
 "settings.hidecountry": "إخفاء بلدي",
 "settings.messageSound": "صوت إشعار الرسائل",
 "settings.commandSound": "صوت إشعار الأوامر",
