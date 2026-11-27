@@ -234,6 +234,24 @@ check('off again: listeners removed, flag off', !(listeners.spawn || []).length 
   ctx.legendmod5.killFeed = false; D.sync();
 }
 
+/* who ate me: the eats of one player go on in one event across my split; the death line still names
+ * that player (the killer search stopped at the newer split that was over and found no eater) */
+{
+  ctx.legendmod5.killFeed = true; D.sync(); D._test.reset();
+  const hunter = { x: 2500, y: 0, size: 2500, targetNick: 'Hunter' };
+  lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0]];
+  listeners.spawn[0]({ time: now });
+  now += 250; D._test.tick();
+  D.eat(hunter, own(0, 600), false, true, 600);
+  now += 500; lm.playerCells = [own(0, 1000), own(300, 1000)]; D._test.tick();
+  now += 1000; D.eat(hunter, own(0, 600), false, true, 600);
+  now += 1100; D.eat(hunter, lm.playerCells[0], false, true, 1000); D.eat(hunter, lm.playerCells[1], false, true, 1000);
+  lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
+  const fl = feedLines();
+  check('kill feed: the death line names the player whose eats went on across my split', fl[fl.length - 1] === T('feedDied', ['Hunter']), fl);
+  ctx.legendmod5.killFeed = false; D.sync();
+}
+
 /* who ate me (ogario.v4.js lmKillerWanted): one rule for the server's report, the remove packets
  * and the guard against naming my own multibox unit; the Game Over card (which shows Eaten by and
  * the death recap: one switch, no switch per part), the match history and the kill feed each need it */
