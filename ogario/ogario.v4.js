@@ -8152,6 +8152,7 @@ window.connectionBots = {
             case 0:
                 this.buttons(true)
                 window.userBots.startedBots = true
+                if (typeof window._lmBotsAiShow === 'function') window._lmBotsAiShow()
                 /* The player may have spawned or died since Start; the server only knew the state at Start. */
                 this.send(new Uint8Array([5, window.userBots.isAlive ? 1 : 0]).buffer)
                 break
@@ -8171,6 +8172,7 @@ window.connectionBots = {
                 window.userBots.startSent = false
                 window.userBots.spawned = 0
                 window.bots.ai = false
+                if (typeof window._lmBotsAiShow === 'function') window._lmBotsAiShow()
                 if (typeof window._brResetFill === 'function') window._brResetFill()
                 if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
                 if (next) this.runAction(next)
@@ -8226,6 +8228,7 @@ window.connectionBots = {
         window.userBots.startSent = false
         window.userBots.spawned = 0
         window.bots.ai = false
+        if (typeof window._lmBotsAiShow === 'function') window._lmBotsAiShow()
         // Clean up Battle Royale fill state on bot server disconnect
         if (typeof window._brStopFilling === 'function') window._brStopFilling()
         if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
@@ -8276,6 +8279,41 @@ window._lmBotsStop = function (serverChange) {
 }
 /* Bots waiting to follow the player to the new game server ({ timer }), else null */
 window._lmBotsResume = null
+/* Bots AI (the "Bots AI" line of the bots panel, a click or Enter / Space on it, and its hotkey):
+   on, the bots play by themselves (eat food, flee bigger cells and viruses, split on smaller ones)
+   instead of following the mouse; the bot core takes message 4 [4, on]. Only while bots run: a new
+   session starts with it off. */
+window._lmBotsAiShow = function () {
+    var on = !!(window.bots && window.bots.ai), running = !!(window.userBots && window.userBots.startedBots)
+    var el = document.getElementById('botsAI'), line = document.getElementById('aiTextBots')
+    if (el) {
+        el.style.color = on ? '#00C02E' : '#DA0A00'
+        el.innerText = on ? _lmTH('pkg.bots.aiOn', 'Enabled') : lmT('game1.bots.disabled')
+    }
+    if (line) {
+        line.style.opacity = running ? '' : '0.6'
+        line.setAttribute('aria-pressed', on ? 'true' : 'false')
+        line.setAttribute('aria-disabled', running ? 'false' : 'true')
+        line.title = running ? _lmTH('pkg.bots.aiTip', 'Click to switch: on, the bots play by themselves; off, they follow your mouse')
+            : _lmTH('pkg.bots.aiStartFirst', 'Start the bots to switch their AI')
+    }
+}
+window._lmBotsAiToggle = function () {
+    if (!window.userBots || !window.userBots.startedBots || !window.bots) return false
+    window.bots.ai = !window.bots.ai
+    window.connectionBots.send(new Uint8Array([4, window.bots.ai ? 1 : 0]).buffer)
+    window._lmBotsAiShow()
+    return true
+}
+/* Bots started with Start: 1 to 20; players + bots + 1 (the player himself) stay at most 180
+   (200 - 20, so the game server is not overloaded: owner, 2026-11-28). Fill lobby has its own
+   count, under the same server total. */
+window._lmBotsMax = 20
+window._lmBotsServerMax = 180
+window._lmBotsClampAmount = function (n) {
+    n = Math.floor(Number(n))
+    return Number.isFinite(n) ? Math.max(0, Math.min(window._lmBotsMax, n)) : window._lmBotsMax
+}
 window._lmBotsForget = function () {
     var p = window._lmBotsResume
     window._lmBotsResume = null
@@ -26737,10 +26775,10 @@ function thelegendmodproject() {
 					<div><b>${_lmG1s('game1.bots.onServer')}</b>: <span id="botsServerPlayers" class="label label-info pull-right">${_lmG1e(lmT('game1.bots.waiting'))}</span></div>
 					</div>
 					<span id="statusTextBots">${_lmG1s('game1.bots.status')} <b id="userStatus" data-i18n="game1.bots.disconnected">${_lmG1e(lmT('game1.bots.disconnected'))}</b></span>
-					<span id="aiTextBots">${_lmG1s('game1.bots.ai')} <b id="botsAI">${_lmG1e(lmT('game1.bots.disabled'))}</b></span>
+					<span id="aiTextBots" role="button" tabindex="0" aria-pressed="false" aria-disabled="true" style="opacity:0.6">${_lmG1s('game1.bots.ai')} <b id="botsAI">${_lmG1e(lmT('game1.bots.disabled'))}</b></span>
 					<br>
 					<input type="text" id="botsNameLM" ${_lmG1a('placeholder', 'game1.bots.namePh')} maxlength="15" spellcheck="false" style="display:inline-block;">
-					<input type="number" id="botsAmount" ${_lmG1a('placeholder', 'game1.bots.amountPh')} min="1" max="190" spellcheck="false">
+					<input type="number" id="botsAmount" ${_lmG1a('placeholder', 'game1.bots.amountPh')} min="0" max="20" spellcheck="false">
 					<input type="text" id="botsRemoteIP" placeholder="browser" list="botsRemoteIPList" maxlength="100" spellcheck="false">
 					<datalist id="botsRemoteIPList"><option value="browser" data-i18n="game1.bots.hostBrowser">${_lmG1e(lmT('game1.bots.hostBrowser'))}</option><option value="ws://localhost:1337" data-i18n="game1.bots.hostServer">${_lmG1e(lmT('game1.bots.hostServer'))}</option></datalist>
 					<br>
@@ -85701,11 +85739,12 @@ function setGUIEvents() {
     $('#botsNameLM').val(storedbotsname)
     var storedbotsamount = localStorage.getItem("localStoredBotsAmount");
     if (storedbotsamount == null || storedbotsamount === "") {
-        storedbotsamount = 50;
+        storedbotsamount = window._lmBotsMax;
 
     }
-    /* localStorage returns a string; "50" + 20 would concatenate to "5020". */
-    window.bots.amount = Number(storedbotsamount) || 50;
+    /* localStorage returns a string; "50" + 20 would concatenate to "5020". A value saved before
+       the 20 limit (50, 190) is brought down to 20. */
+    window.bots.amount = window._lmBotsClampAmount(storedbotsamount);
     $('#botsAmount').val(window.bots.amount)
     document.getElementById('botsRemoteIP').addEventListener('change', function () {
         window.bots.remoteIP = this.value
@@ -85719,7 +85758,8 @@ function setGUIEvents() {
     })
     document.getElementById('botsAmount').addEventListener('change', function () {
         /* Update first, then save the new value (it used to save the previous one). */
-        window.bots.amount = Number(this.value)
+        window.bots.amount = window._lmBotsClampAmount(this.value)
+        if (String(this.value) !== String(window.bots.amount)) this.value = window.bots.amount
         localStorage.setItem('localStoredBotsAmount', window.bots.amount)
     })
     /* Start: one click. Checks first, then connects to the bots when needed (browser worker or
@@ -85741,13 +85781,17 @@ function setGUIEvents() {
         /* The bots join agar.io game servers only (they need its connection key); every agar.io mode. */
         if (!legendmod.integrity) return refuse(_lmTH('game1.bots.agarOnly', 'The bots work on agar.io servers only.'))
         if (!window.bots.amount) return refuse(lmT('game2.botsAmount'))
+        /* players + bots + 1 (the player) stay at most 180 (the whole agar.io leaderboard is every player) */
+        var _lmBotsTotal = (legendmod.leaderboard && legendmod.leaderboard.length) || 0
+        var _lmBotsRoom = window._lmBotsServerMax - _lmBotsTotal - 1
+        if (_lmBotsRoom < 1) return refuse(_lmTH('pkg.bots.serverFull', 'This server has {0} players: bots are added only while players, bots and you stay at most {1}.').replace('{0}', _lmBotsTotal).replace('{1}', window._lmBotsServerMax))
         if (typeof window._brResetFill === 'function') window._brResetFill()
         cb.buttons(true)
         /* the previous bots are still stopping: start when they have (message 2) */
         if (cb.stopping()) { cb.pending = 'start'; return }
         if (!cb.ensure('start')) return
         /* Clamp this session only: the saved amount stays what the user typed. */
-        var _lmBotsN = Math.max(1, Math.min(window.bots.amount, 197 - legendmod.leaderboard.length));
+        var _lmBotsN = Math.max(1, Math.min(window._lmBotsClampAmount(window.bots.amount), _lmBotsRoom));
         window.userBots.startSent = true
         /* this session replaces bots still waiting to follow from the previous server */
         if (typeof window._lmBotsForget === 'function') window._lmBotsForget()
@@ -85760,6 +85804,13 @@ function setGUIEvents() {
     document.getElementById('stopBots').addEventListener('click', () => {
         window._lmBotsStop()
     })
+    /* the Bots AI line switches the AI (Enter / Space too) */
+    var aiLine = document.getElementById('aiTextBots')
+    aiLine.addEventListener('click', () => { window._lmBotsAiToggle() })
+    aiLine.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); window._lmBotsAiToggle() }
+    })
+    window._lmBotsAiShow()
 
     /* "On this server": the players of the game server. agar.io sends the whole leaderboard (every
        player in the arena, opcode 53), so it is counted like the leaderboard footer: a name that
@@ -85891,7 +85942,12 @@ function setGUIEvents() {
             toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brLobbyFull', 'Lobby already has {0} players').replace('{0}', currentPlayers))
             return
         }
-        needed = Math.min(needed, 190)
+        /* players + bots + 1 (the player) stay at most 180 */
+        needed = Math.min(needed, window._lmBotsServerMax - currentPlayers - 1)
+        if (needed < 1) {
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brLobbyFull', 'Lobby already has {0} players').replace('{0}', currentPlayers))
+            return
+        }
         /* the previous bots are still stopping (Stop fill, the battle began, a server switch):
            the bot core would drop this start, so it fills when they have stopped (message 2) */
         if (cb.stopping()) {

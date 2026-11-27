@@ -4175,6 +4175,24 @@
     "ja": "ボットの分裂",
     "it": "Split dei bot"
   },
+  "settings.hk-bots-ai": {
+    "en": "Bots AI on/off",
+    "el": "AI των bots ενεργό/ανενεργό",
+    "es": "Activar/desactivar IA de los bots",
+    "bg": "ИИ на ботовете вкл./изкл.",
+    "fr": "Activer/désactiver l'IA des bots",
+    "ar": "تشغيل/إيقاف ذكاء البوتات",
+    "zh": "機器人 AI 開/關",
+    "ru": "ИИ ботов вкл./выкл.",
+    "de": "Bot-KI an/aus",
+    "tr": "Bot yapay zekâsı aç/kapat",
+    "pl": "SI botów wł./wył.",
+    "nl": "Bot-AI aan/uit",
+    "pt": "Ligar/desligar IA dos bots",
+    "id": "AI bot aktif/nonaktif",
+    "ja": "ボット AI オン/オフ",
+    "it": "Attiva/disattiva IA dei bot"
+  },
   "settings.hk-bots-feed": {
     "en": "Bots feed",
     "el": "Feed των bots",

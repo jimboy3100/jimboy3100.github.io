@@ -1069,28 +1069,16 @@
                 },
                 keyUp: null,
                 type: 'normal'
-            },	/*
+            },
             'hk-bots-ai': {
                 get label() { return lmT('settings.hk-bots-ai'); },
-                defaultKey: 'P',
+                defaultKey: '', // 'P' was its old key; no default now (other commands use it)
                 keyDown() {
-                    if (window.userBots.startedBots && window.userBots.isAlive) {
-                        if (!window.bots.ai) {
-                            document.getElementById('botsAI').style.color = '#00C02E'
-                            document.getElementById('botsAI').innerText = 'Enabled'
-                            window.bots.ai = true
-                            window.connectionBots.send(new Uint8Array([4, Number(window.bots.ai)]).buffer)
-                        } else {
-                            document.getElementById('botsAI').style.color = '#DA0A00'
-                            document.getElementById('botsAI').innerText = 'Disabled'
-                            window.bots.ai = false
-                            window.connectionBots.send(new Uint8Array([4, Number(window.bots.ai)]).buffer)
-                        }
-                    }
+                    if (typeof window._lmBotsAiToggle === 'function') window._lmBotsAiToggle()
                 },
                 keyUp: null,
                 type: 'normal'
-            },*/
+            },
             /* (second, identical 'hk-macroFeed' entry removed: duplicate key, the first one stays) */
             'hk-bots-macrofeed': {
                 get label() { return lmT('settings.hk-bots-macrofeed'); },

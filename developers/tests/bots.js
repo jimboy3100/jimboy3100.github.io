@@ -828,7 +828,7 @@ for (const file of ['server.js', 'server-fast.js']) {
         return vm.runInContext(self ? '(function () { ' + code + ' }).call(__self)' : code, Object.assign(sandbox, { __self: self }));
     };
     const ab = buf => Buffer.from(buf);
-    const el = () => ({ style: {}, disabled: false, innerText: '', click() { this.clicked = (this.clicked || 0) + 1; } });
+    const el = () => ({ style: {}, disabled: false, innerText: '', attrs: {}, setAttribute(k, v) { this.attrs[k] = String(v); }, click() { this.clicked = (this.clicked || 0) + 1; } });
 
     // window.buffers with the real Writer: bytes accepted by the bot server
     const writerSrc = extract('class Writer {');
@@ -871,8 +871,29 @@ for (const file of ['server.js', 'server-fast.js']) {
 
     // window._lmBotsStop
     const stopSrc = extract('window._lmBotsStop = function');
-    const followSrc = ['window._lmBotsForget = function', 'window._lmBotsCannotFollow = function', 'window._lmBotsTryResume = function'].map(m => extract(m));
+    const followSrc = ['window._lmBotsForget = function', 'window._lmBotsCannotFollow = function', 'window._lmBotsTryResume = function',
+        'window._lmBotsAiShow = function', 'window._lmBotsAiToggle = function', 'window._lmBotsClampAmount = function'].map(m => extract(m))
+        .concat([(ogSrc.match(/window\._lmBotsMax = \d+/) || [''])[0], (ogSrc.match(/window\._lmBotsServerMax = \d+/) || [''])[0]]);
     check('ogario: _lmBotsStop and the follow helpers extractable', !!stopSrc && followSrc.every(Boolean));
+    /* Bots AI toggle, amount 0..20, players + bots + the player at most 180 (owner, 2026-11-28) */
+    {
+        const sent = [], els = {};
+        const w = { userBots: { startedBots: false }, bots: { ai: false }, connectionBots: { send: b => sent.push(Array.from(new Uint8Array(b))) } };
+        const sb = { window: w, document: { getElementById: id => els[id] || (els[id] = el()) }, lmT: k => k, _lmTH: (k, en) => en, Math, Number, Uint8Array, String };
+        vm.createContext(sb);
+        vm.runInContext(followSrc.join('\n'), sb);
+        check('Bots AI: no toggle while no bots run', w._lmBotsAiToggle() === false && sent.length === 0 && w.bots.ai === false);
+        w._lmBotsAiShow();
+        check('Bots AI: the line looks off and says to start the bots first', els.aiTextBots.style.opacity === '0.6' && els.aiTextBots.attrs['aria-disabled'] === 'true' && /Start the bots/.test(els.aiTextBots.title));
+        w.userBots.startedBots = true;
+        check('Bots AI: on while bots run: message [4, 1], shown Enabled in green', w._lmBotsAiToggle() === true && JSON.stringify(sent[0]) === '[4,1]' && w.bots.ai === true && els.botsAI.innerText === 'Enabled' && els.botsAI.style.color === '#00C02E' && els.aiTextBots.attrs['aria-pressed'] === 'true');
+        check('Bots AI: off again: message [4, 0], shown Disabled', w._lmBotsAiToggle() === true && JSON.stringify(sent[1]) === '[4,0]' && w.bots.ai === false && els.botsAI.innerText === 'game1.bots.disabled');
+        check('amount: 0..20, older saved values (50, 190) become 20, junk becomes 20', w._lmBotsMax === 20 && w._lmBotsClampAmount(0) === 0 && w._lmBotsClampAmount('7') === 7 && w._lmBotsClampAmount('50') === 20 && w._lmBotsClampAmount(190) === 20 && w._lmBotsClampAmount(-3) === 0 && w._lmBotsClampAmount('x') === 20);
+        check('server total: 180 (200 - 20)', w._lmBotsServerMax === 180);
+    }
+    check('ogario: Start refuses when players + 1 (the player) leave no room under 180, before connecting', /var _lmBotsRoom = window\._lmBotsServerMax - _lmBotsTotal - 1\s+if \(_lmBotsRoom < 1\) return refuse\(_lmTH\('pkg\.bots\.serverFull'[\s\S]{0,600}cb\.ensure\('start'\)/.test(ogSrc));
+    check('ogario: the amount field is 0..20 and saved values are clamped', ogSrc.includes('id="botsAmount" ${_lmG1a(\'placeholder\', \'game1.bots.amountPh\')} min="0" max="20"') && ogSrc.includes('window.bots.amount = window._lmBotsClampAmount(storedbotsamount)') && ogSrc.includes('window.bots.amount = window._lmBotsClampAmount(this.value)'));
+    check('ogario: the Bots AI line is a button (click, Enter / Space) and the hotkey uses the same toggle', ogSrc.includes('<span id="aiTextBots" role="button" tabindex="0"') && /aiLine\.addEventListener\('click', \(\) => \{ window\._lmBotsAiToggle\(\) \}\)/.test(ogSrc) && /'hk-bots-ai': \{[\s\S]{0,300}window\._lmBotsAiToggle\(\)/.test(fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'hotkeysCommand.js'), 'utf8')));
     /* window with the real _lmBotsStop / follow helpers, fake timers and toasts */
     const followWin = (o) => {
         const sent = [], toasts = [], timers = [];
@@ -980,7 +1001,7 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: brStopFilling stops the fill bots once', r.stops === 1);
     check('ogario: no Battle Royale watcher timer (the lobby packets and the bot connection drive the fill)', !ogSrc.includes('_brLobbyWatcher') && !/setInterval\(\s*brUpdateSection/.test(ogSrc));
     check('ogario: brResetFill/brStopFilling exposed on window', ogSrc.includes('window._brStopFilling = brStopFilling') && ogSrc.includes('window._brResetFill = brResetFill'));
-    check('ogario: BR fill no longer writes window.bots.amount', /needed = Math\.min\(needed, 190\)[\s\S]{0,900}sessionAmount = needed/.test(ogSrc) && !/window\.bots\.amount = needed/.test(ogSrc));
+    check('ogario: BR fill no longer writes window.bots.amount', /needed = Math\.min\(needed, window\._lmBotsServerMax - currentPlayers - 1\)[\s\S]{0,1200}sessionAmount = needed/.test(ogSrc) && !/window\.bots\.amount = needed/.test(ogSrc));
 
     // connectionBots messages: 0, 1, 2, 4, 5 (gone), 12, 13
     const cbSrc = extract('window.connectionBots = {');
@@ -1106,8 +1127,8 @@ for (const file of ['server.js', 'server-fast.js']) {
         check('Start (' + path + '): connected: status Connected', f.els.userStatus.i18n === 'game1.bots.connected' && f.cb.pending === null);
         f.flush();
         const startPk = s.sent.find(p => typeof p !== 'string' && p[0] === 0);
-        check('Start (' + path + '): starts once connected: startBots (game url, amount) and the player nick (7)', JSON.stringify(f.ops(s)) === '[0,7]' && !!startPk &&
-            startPk.includes(Buffer.from('wss://live-arena-q1w2.agar.io:443')) && startPk[startPk.length - 1] === 50 && f.w.userBots.startSent === true && f.w.userBots.sessionAmount === 50);
+        check('Start (' + path + '): starts once connected: startBots (game url, amount: 50 typed, 20 sent) and the player nick (7)', JSON.stringify(f.ops(s)) === '[0,7]' && !!startPk &&
+            startPk.includes(Buffer.from('wss://live-arena-q1w2.agar.io:443')) && startPk[startPk.length - 1] === 20 && f.w.userBots.startSent === true && f.w.userBots.sessionAmount === 20);
         f.start();
         check('Start (' + path + '): a further click: "Bots already running", nothing sent', f.ops(s).length === 2 && f.toasts.length === 1 && f.toasts[0].includes('game2.brBotsRunning'));
         s.push([0]);
@@ -1227,7 +1248,7 @@ for (const file of ['server.js', 'server-fast.js']) {
         g.start();
         check('Start pressed while a Fill waits for the connection: the Start wins, one connection', g.socks.length === 1 && g.cb.pending === 'start');
         g.socks[0].open(); g.flush();
-        check('... and it starts the user\'s amount once', JSON.stringify(g.ops(g.socks[0])) === '[0,7]' && g.socks[0].sent[0][g.socks[0].sent[0].length - 1] === 50 && !g.w._brFilling);
+        check('... and it starts the user\'s amount once', JSON.stringify(g.ops(g.socks[0])) === '[0,7]' && g.socks[0].sent[0][g.socks[0].sent[0].length - 1] === 20 && !g.w._brFilling);
         const h = flow({ lm: { gameMode: ':battleroyale', battleRoyale: { players: 5, started: false, countdown: false } } });
         h.fill();
         h.stop();
@@ -1531,7 +1552,7 @@ for (const file of ['server.js', 'server-fast.js']) {
     // Start / Fill: agar.io only, session amount local, one connection code
     check('ogario: Start requires legendmod.integrity', /function botsStart\(\) \{[\s\S]{0,1500}if \(!legendmod\.integrity\) return refuse\(_lmTH\('game1\.bots\.agarOnly'/.test(ogSrc));
     check('ogario: Fill requires legendmod.integrity', /function brFill\(\) \{[\s\S]{0,600}if \(!legendmod\.integrity\) \{[\s\S]{0,200}game1\.bots\.agarOnly/.test(ogSrc));
-    check('ogario: Start clamps a local amount and records the session amount', ogSrc.includes('var _lmBotsN = Math.max(1, Math.min(window.bots.amount,') && ogSrc.includes('window.userBots.sessionAmount = _lmBotsN'));
+    check('ogario: Start clamps a local amount and records the session amount', ogSrc.includes('var _lmBotsN = Math.max(1, Math.min(window._lmBotsClampAmount(window.bots.amount), _lmBotsRoom));') && ogSrc.includes('window.userBots.sessionAmount = _lmBotsN'));
     check('ogario: Start and Fill lobby connect through the same code (connectionBots.ensure)', ogSrc.includes("cb.ensure('start')") && ogSrc.includes("cb.ensure('fill')") && !ogSrc.includes('_brFillPending'));
 }
 

@@ -1693,6 +1693,8 @@ input.hide-url::selection,input.stream-mode::selection{
     display: inline;
 }
 #aiTextBots{
+    cursor: pointer;
+    user-select: none;
     font-weight: bold;
     position: relative;
     right: -30px;
