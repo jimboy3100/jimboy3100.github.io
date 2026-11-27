@@ -29168,7 +29168,7 @@ function thelegendmodproject() {
             this.unlockButtons();
             resetonkeydown();
             if (typeof celltimerstop === 'function') celltimerstop();
-            if (typeof stopMergeTimer === 'function') stopMergeTimer();
+            if (window.MergeTimerController && typeof window.MergeTimerController.reset === 'function') window.MergeTimerController.reset();
 
             // Auto-switch to surviving multibox spect if any (only when "Auto-switch focus after death" is on)
             if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
@@ -43033,7 +43033,7 @@ function thelegendmodproject() {
             this.flushMegaFFAscore();
             this.flushCellsData();
             if (typeof celltimerstop === 'function') celltimerstop();
-            if (typeof stopMergeTimer === 'function') stopMergeTimer();
+            if (window.MergeTimerController && typeof window.MergeTimerController.reset === 'function') window.MergeTimerController.reset();
             /* the closed socket's border must not outlive it (beacon / tab-return restore) */
             this._lmServerBorder = null;
             this._lmBorderTraceAdd('close', 0);

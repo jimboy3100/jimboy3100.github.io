@@ -62,6 +62,34 @@ window.ExternalScripts = true;
         cellData.mergeTime = null;
     }
 
+    /* Drop the entries of cells that are gone (eaten, merged, dead, another
+     * server): one was added for every own cell id ever seen and none was
+     * removed, so the table grew with every split for the whole session. */
+    function pruneTable(playerCellsId) {
+        var live = window.legendmod && window.legendmod.indexedCells;
+        if (!playerCellsId || !live) {
+            return;
+        }
+
+        for (var id in playerCellsId) {
+            if (!Object.prototype.hasOwnProperty.call(playerCellsId, id)) {
+                continue;
+            }
+
+            var cell = live[id];
+            if (!cell || !(cell.isPlayerCell || cell.isPlayerCellMulti)) {
+                delete playerCellsId[id];
+            }
+        }
+    }
+
+    /* death or a closed connection: the next life starts with no merge state */
+    function reset() {
+        prevMass = {};
+        prevCount = 0;
+        pruneTable(window.playerCellsId);
+    }
+
     function CellTimer() {
         if (!window.ExternalScripts ||
             !window.legendmod ||
@@ -131,6 +159,7 @@ window.ExternalScripts = true;
 
         prevMass = nextMass;
         prevCount = count;
+        pruneTable(playerCellsId);
     }
 
     function start() {
@@ -165,6 +194,7 @@ window.ExternalScripts = true;
     window.MergeTimerController = {
         start: start,
         stop: stop,
+        reset: reset,
         isActive: isActive,
         clearCellState: clearCellMergeState,
         updateCell: updateCellMergeTimer
