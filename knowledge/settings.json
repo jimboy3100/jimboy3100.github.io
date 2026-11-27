@@ -332,8 +332,7 @@
       "settings": [
         "autoZoom",
         "massWeightedCamera",
-        "precisionZoom",
-        "zoomBookmarks"
+        "precisionZoom"
       ]
     },
     {

@@ -128,44 +128,10 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     check('massText: off, as before', H.massText(700, {}) === '700');
 }
 
-// saved zoom levels (the zoom level hotkeys), precision zoom, camera lock
+// precision zoom, camera lock (the zoom bookmarks / saved zoom levels were removed)
 {
-    ctx.legendmod = { zoomValue: 0.5, play: false, playerCellsMulti: [] };
-    H.zoomSave(2);
-    ctx.legendmod.zoomValue = 1;
-    H.zoomRecall(2);
-    check('zoom bookmark saved and recalled', ctx.legendmod.zoomValue === 0.5);
-    check('zoom saved toast from the language pack', toasts[toasts.length - 1] === i18n.t('modules.hudhelpers.zoomSaved', 2) && toasts[toasts.length - 1] === 'Zoom level 2 saved');
-    /* a zoom level the player did not save keeps its fixed zoom; a saved one wins over it */
-    ctx.legendmod.zoomValue = 1;
-    H.zoomRecall(4, 0.075);
-    check('zoom level not saved: its fixed zoom', ctx.legendmod.zoomValue === 0.075);
-    H.zoomRecall(2, 0.25);
-    check('zoom level saved: the saved zoom, not the fixed one', ctx.legendmod.zoomValue === 0.5);
-    ctx.legendmod.zoomValue = 0.3;
-    H.zoomSave(5);
-    ctx.legendmod.zoomValue = 1;
-    H.zoomRecall(5, 0.05);
-    check('zoom levels 4 and 5 can be saved too', ctx.legendmod.zoomValue === 0.3 && JSON.parse(store['lm-zoom-bookmarks']).length === 5);
-    /* the former 3-slot zoom bookmarks are levels 1-3 */
-    store['lm-zoom-bookmarks'] = '[0.7, 0, 0]';
-    H.zoomRecall(1, 0.5);
-    check('a former zoom bookmark 1 is zoom level 1', ctx.legendmod.zoomValue === 0.7);
-    H.zoomRecall(4, 0.075);
-    check('a former 3-slot store: level 4 keeps its fixed zoom', ctx.legendmod.zoomValue === 0.075);
-    ctx.legendmod.zoomValue = 0.5;
-    ctx.LMi18n.setLang('el', { save: false });
-    H.zoomSave(2);
-    check('zoom saved toast follows the language (Greek)', toasts[toasts.length - 1] === i18n.t('modules.hudhelpers.zoomSaved', 2, 'el') && toasts[toasts.length - 1] !== 'Zoom level 2 saved');
-    ctx.LMi18n.setLang('en', { save: false });
-    store['lm-zoom-bookmarks'] = '[1e9, "x", 0.25]';
-    H.zoomRecall(1);
-    check('zoom bookmark: bad stored value ignored', ctx.legendmod.zoomValue === 0.5);
-    H.zoomRecall(3);
-    check('zoom bookmark: valid stored value used', ctx.legendmod.zoomValue === 0.25);
-    store['lm-zoom-bookmarks'] = '{not json';
-    H.zoomRecall(3);
-    check('zoom bookmark: broken storage ignored', ctx.legendmod.zoomValue === 0.25);
+    ctx.legendmod = { zoomValue: 0.25, play: false, playerCellsMulti: [] };
+    check('the saved zoom levels are gone', !('zoomSave' in H) && !('zoomRecall' in H));
     H.precisionZoom(true); H.precisionZoom(true); /* key repeat must not stack */
     check('precision zoom zooms in once', near(ctx.legendmod.zoomValue, 0.625));
     H.precisionZoom(false);
@@ -191,31 +157,25 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     delete ctx.legendmod.socket;
 }
 
-// precision zoom with zoom bookmarks while it is held (audit A6)
+// precision zoom while it is held (audit A6)
 {
-    store['lm-zoom-bookmarks'] = '[3, 0, 0]';
     ctx.legendmod = { zoomValue: 1, play: true, socket: { id: 1 }, playerCellsMulti: [] };
     H.precisionZoom(true);
     check('precision: held zoom 2.5x', near(ctx.legendmod.zoomValue, 2.5));
-    H.zoomRecall(1);
     H.precisionZoom(false);
-    check('precision: a bookmark recalled while held is the zoom after release (3)', near(ctx.legendmod.zoomValue, 3));
+    check('precision: release goes back (1)', near(ctx.legendmod.zoomValue, 1));
     ctx.legendmod.zoomValue = 1;
     H.precisionZoom(true);
     ctx.legendmod.zoomValue = 5; /* wheel while held: returns to 2 */
-    H.zoomSave(2);
-    check('precision: save while held stores the zoom it returns to after the wheel (2)', near(JSON.parse(store['lm-zoom-bookmarks'])[1], 2));
     H.precisionZoom(false);
     check('precision: wheel change kept on release', near(ctx.legendmod.zoomValue, 2));
     ctx.legendmod.zoomValue = 30;
     H.precisionZoom(true);
     ctx.legendmod.zoomValue = 1e6; /* a broken value while held */
     H.precisionZoom(false);
-    check('precision: release clamped to the bookmark range', ctx.legendmod.zoomValue <= 40 && ctx.legendmod.zoomValue >= 0.01);
+    check('precision: release clamped to the zoom range', ctx.legendmod.zoomValue <= 40 && ctx.legendmod.zoomValue >= 0.01);
     ctx.legendmod.zoomValue = 1;
     H.precisionZoom(true);
-    H.zoomSave(3);
-    check('precision: save while held stays in range', JSON.parse(store['lm-zoom-bookmarks'])[2] === 1);
     /* the connection changes while the key is held: the zoom goes back at once */
     ctx.legendmod.socket = { id: 2 };
     H.frame({}, null, ctx.legendmod);

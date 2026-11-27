@@ -118,20 +118,6 @@
     function cleanTheme(o) { return cleanMap(o, themeValue); }
     function cleanHotkeys(o) { return cleanMap(o, hotkeyValue, 600); }
     function cleanMobile(o) { return cleanMap(o, mobileValue); }
-    /* the saved zoom levels of hudhelpers.js: 3 (the former zoom bookmarks) to 5 zoom levels, 0 = not
-     * saved (its own range check); anything else and the part is dropped as a whole. All 0 =
-     * explicitly none (the Undo and the backups of a state without them: restoring it removes them) */
-    function cleanZoomMarks(a) {
-        if (!Array.isArray(a) || a.length < 3 || a.length > 5) return null;
-        var out = [], any = false;
-        for (var i = 0; i < a.length; i++) {
-            var v = a[i];
-            if (typeof v !== 'number' || !isFinite(v) || (v !== 0 && (v < 0.01 || v > 40))) return null;
-            out.push(v);
-        }
-        return out;
-    }
-    function noZoomMarks(v) { return Array.isArray(v) && v.length >= 3 && v.length <= 5 && v.every(function (z) { return !z; }); }
     /* A part that did not exist (no gamepad buttons / phone control layout saved yet). Only the
      * Undo and the backups hold it: restoring them removes what was added since, where a missing
      * part would leave it (a profile without the part still leaves it as it is). */
@@ -145,7 +131,6 @@
             if (!isObj(data.ml)) data.ml = absentPart();
         }
         if (withG && !isObj(data.gp)) data.gp = absentPart();
-        if (!cleanZoomMarks(data.zb)) data.zb = [0, 0, 0];
         return data;
     }
     /* sorted keys: the same map written in another order is the same */
@@ -233,8 +218,6 @@
          * cleanBundle used to silently strip them because PART_FNS only knew s/t/h/m. */
         if (isObj(b.ml)) { out.ml = b.ml; any = true; }
         if (isObj(b.gp)) { out.gp = b.gp; any = true; }
-        var zb = cleanZoomMarks(b.zb);
-        if (zb) { out.zb = zb; any = true; }
         /* hl: the active HUD layout; pb: Performance mode's copy of the effect settings it
          * turned off (only with gameplay settings that have the mode on) */
         var hl = cleanLayoutName(b.hl);
@@ -393,7 +376,7 @@
         }
         return rows;
     }
-    var EXTRA_PARTS = ['hl', 'zb', 'ml', 'gp'];
+    var EXTRA_PARTS = ['hl', 'ml', 'gp'];
     /* a set as it is applied: hotkey commands newer than the set get their default key */
     function effective(b, commands) {
         if (!b || !isObj(b.h)) return b;
@@ -402,7 +385,7 @@
         return out;
     }
     function countParts(rows) {
-        var c = { s: 0, t: 0, h: 0, m: 0, hl: 0, zb: 0, ml: 0, gp: 0, pb: 0 };
+        var c = { s: 0, t: 0, h: 0, m: 0, hl: 0, ml: 0, gp: 0, pb: 0 };
         rows.forEach(function (r) { c[r.part] = (c[r.part] || 0) + 1; });
         return c;
     }
@@ -769,8 +752,6 @@
         if (parts.m !== false) data.m = readJSON('lm-mobile-prefs');
         if (parts.m !== false) data.ml = readJSON('lm-mobile-layouts');
         if (parts.g !== false) data.gp = readGamepad();
-        /* P2 fix #97: include zoom bookmarks in the profile snapshot */
-        data.zb = readJSON('lm-zoom-bookmarks');
         /* the active HUD layout (backups and Undo; a profile brings one only through its link) */
         if (parts.hl !== false) {
             var HE = window.LMHudEditor;
@@ -778,7 +759,6 @@
         }
         if (sData && sData.performanceMode === true) data.pb = readJSON('lmPerfBackup');
         if (parts.explicit) markMissing(data, parts.m !== false, parts.g !== false);
-        else if (noZoomMarks(cleanZoomMarks(data.zb))) delete data.zb;
         return cleanBundle(data);
     }
     /* Update: the current settings in the parts the set has. The theme part of an old
@@ -814,8 +794,6 @@
             m: readJSON('lm-mobile-prefs'),
             ml: readJSON('lm-mobile-layouts'),
             gp: readGamepad(),
-            /* P2 fix #97: include zoom bookmarks in storage snapshot */
-            zb: readJSON('lm-zoom-bookmarks'),
             hl: window.LMHudEditor ? (isObj(hud) && typeof hud.active === 'string' ? hud.active : '') : undefined,
             pb: s && s.performanceMode === true ? readJSON('lmPerfBackup') : null
         }, true));
@@ -846,7 +824,7 @@
         if (v === false) return tx('off');
         if (part === 'h' && v === '') return tx('none');
         if (part === 'hl') return v ? String(v) : tx('defaultHud');
-        if (v == null || isAbsent(v) || noZoomMarks(v)) return tx('none');
+        if (v == null || isAbsent(v)) return tx('none');
         var s = Array.isArray(v) ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : String(v);
         return s.length > 60 ? s.slice(0, 57) + '...' : s;
     }
@@ -867,7 +845,6 @@
         if (c.m) parts.push(tx('cntM', c.m));
         var hl = (rows || []).filter(function (r) { return r.part === 'hl'; })[0];
         if (hl) parts.push(tx('cntHL', fmt(hl.b, 'hl')));
-        if (c.zb) parts.push(tx('cntZB'));
         if (c.ml) parts.push(tx('cntML'));
         if (c.gp) parts.push(tx('cntGP'));
         if (c.pb) parts.push(tx('cntPB'));
@@ -983,8 +960,6 @@
         /* P0 fix: write mobile layouts and gamepad config when present in the profile */
         if (c.ml) entries.push({ key: 'lm-mobile-layouts', text: isAbsent(data.ml) ? null : JSON.stringify(data.ml) });
         if (c.gp) entries.push({ key: 'lmGamepad', text: gamepadText(data.gp) });
-        /* P2 fix #97: restore zoom bookmarks when present in the profile */
-        if (c.zb) entries.push({ key: 'lm-zoom-bookmarks', text: noZoomMarks(data.zb) ? null : JSON.stringify(data.zb) });
         /* the HUD layout is part of the same transaction (and so of the backup and the Undo) */
         if (c.hl) entries.push({ key: 'lmHudLayouts', text: HE.storeText(data.hl) });
         /* Performance mode keeps a copy of the effect settings it turned off: a set with the mode
@@ -1410,13 +1385,11 @@
         if (d.s || rp) p.push(tx('partS'));
         if (d.t && !rp) p.push(tx('partT'));
         if (d.h) p.push(tx('partH'));
-        /* every part the set brings: a set with only a phone control layout, gamepad buttons or
-         * saved zoom levels said nothing about them (the "none" of an Undo or backup is no part) */
+        /* every part the set brings: a set with only a phone control layout or gamepad buttons
+         * said nothing about them (the "none" of an Undo or backup is no part) */
         var got = function (v) { return isObj(v) && !isAbsent(v); };
         if (got(d.m) || got(d.ml)) p.push(tx('partM'));
         if (got(d.gp)) p.push(tx('partGP'));
-        var zb = cleanZoomMarks(d.zb);
-        if (zb && !noZoomMarks(zb)) p.push(tx('partZB'));
         return p.join(' + ');
     }
     function when(t) {
@@ -1520,7 +1493,7 @@
         var b = loadBackups().filter(function (x) { return String(x.t) === m[2]; })[0];
         return b ? { name: tx('backupOf', when(b.t)), data: b.data } : null;
     }
-    var PART_NAMES = { s: 'partS', t: 'partT', h: 'partH', m: 'partM', hl: 'partHL', zb: 'partZB', ml: 'partML', gp: 'partGP', pb: 'partPB' };
+    var PART_NAMES = { s: 'partS', t: 'partT', h: 'partH', m: 'partM', hl: 'partHL', ml: 'partML', gp: 'partGP', pb: 'partPB' };
     function renderCompare(body) {
         var $ = jq();
         var r = $('<div class="lm-sp-row"></div>').appendTo(body);

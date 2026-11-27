@@ -83,7 +83,7 @@
     {
       "id": "hud",
       "name": "HUD helpers",
-      "description": "Split range circles (single/double/triple/quad), merge countdown with sound and progress rings, relative mass display, edge arrows for teammates and threats, cell mass panel, move direction arrow. Mass format modes (short/exact/12.3k/auto). Precision zoom, saving the current zoom as zoom level 1-5, camera lock.",
+      "description": "Split range circles (single/double/triple/quad), merge countdown with sound and progress rings, relative mass display, edge arrows for teammates and threats, cell mass panel, move direction arrow. Mass format modes (short/exact/12.3k/auto). Precision zoom, camera lock.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

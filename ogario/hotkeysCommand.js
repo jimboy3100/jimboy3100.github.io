@@ -1252,9 +1252,7 @@
                 get label() { return lmT('settings.hk-zoomLevel') + ' 1'; },
                 defaultKey: 'ALT+1',
                 keyDown() {
-                    /* the zoom the player saved as level 1 (Save the current zoom as zoom level 1), else the fixed one */
-                    if (window.LMHudHelpers && window.LMHudHelpers.zoomRecall) window.LMHudHelpers.zoomRecall(1, 0.5);
-                    else application && application.setZoom(0.5);
+                    application && application.setZoom(0.5);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -1263,9 +1261,7 @@
                 get label() { return lmT('settings.hk-zoomLevel') + ' 2'; },
                 defaultKey: 'ALT+2',
                 keyDown() {
-                    /* the zoom the player saved as level 2 (Save the current zoom as zoom level 2), else the fixed one */
-                    if (window.LMHudHelpers && window.LMHudHelpers.zoomRecall) window.LMHudHelpers.zoomRecall(2, 0.25);
-                    else application && application.setZoom(0.25);
+                    application && application.setZoom(0.25);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -1274,9 +1270,7 @@
                 get label() { return lmT('settings.hk-zoomLevel') + ' 3'; },
                 defaultKey: 'ALT+3',
                 keyDown() {
-                    /* the zoom the player saved as level 3 (Save the current zoom as zoom level 3), else the fixed one */
-                    if (window.LMHudHelpers && window.LMHudHelpers.zoomRecall) window.LMHudHelpers.zoomRecall(3, 0.125);
-                    else application && application.setZoom(0.125);
+                    application && application.setZoom(0.125);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -1285,9 +1279,7 @@
                 get label() { return lmT('settings.hk-zoomLevel') + ' 4'; },
                 defaultKey: 'ALT+4',
                 keyDown() {
-                    /* the zoom the player saved as level 4 (Save the current zoom as zoom level 4), else the fixed one */
-                    if (window.LMHudHelpers && window.LMHudHelpers.zoomRecall) window.LMHudHelpers.zoomRecall(4, 0.075);
-                    else application && application.setZoom(0.075);
+                    application && application.setZoom(0.075);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -1296,9 +1288,7 @@
                 get label() { return lmT('settings.hk-zoomLevel') + ' 5'; },
                 defaultKey: 'ALT+5',
                 keyDown() {
-                    /* the zoom the player saved as level 5 (Save the current zoom as zoom level 5), else the fixed one */
-                    if (window.LMHudHelpers && window.LMHudHelpers.zoomRecall) window.LMHudHelpers.zoomRecall(5, 0.05);
-                    else application && application.setZoom(0.05);
+                    application && application.setZoom(0.05);
                 },
                 keyUp: null,
                 type: 'normal'
@@ -1313,51 +1303,6 @@
                 keyUp() {
                     window.LMHudHelpers && window.LMHudHelpers.precisionZoom(false);
                 },
-                type: 'normal'
-            },
-            'hk-zoomSave1': {
-                get label() { return lmT('settings.hk-zoomSave1'); },
-                defaultKey: '',
-                keyDown() {
-                    window.LMHudHelpers && window.LMHudHelpers.zoomSave(1);
-                },
-                keyUp: null,
-                type: 'normal'
-            },
-            'hk-zoomSave2': {
-                get label() { return lmT('settings.hk-zoomSave2'); },
-                defaultKey: '',
-                keyDown() {
-                    window.LMHudHelpers && window.LMHudHelpers.zoomSave(2);
-                },
-                keyUp: null,
-                type: 'normal'
-            },
-            'hk-zoomSave3': {
-                get label() { return lmT('settings.hk-zoomSave3'); },
-                defaultKey: '',
-                keyDown() {
-                    window.LMHudHelpers && window.LMHudHelpers.zoomSave(3);
-                },
-                keyUp: null,
-                type: 'normal'
-            },
-            'hk-zoomSave4': {
-                get label() { return lmT('settings.hk-zoomSave4'); },
-                defaultKey: '',
-                keyDown() {
-                    window.LMHudHelpers && window.LMHudHelpers.zoomSave(4);
-                },
-                keyUp: null,
-                type: 'normal'
-            },
-            'hk-zoomSave5': {
-                get label() { return lmT('settings.hk-zoomSave5'); },
-                defaultKey: '',
-                keyDown() {
-                    window.LMHudHelpers && window.LMHudHelpers.zoomSave(5);
-                },
-                keyUp: null,
                 type: 'normal'
             },
             'hk-cameraLock': {
@@ -2024,7 +1969,7 @@
                 type: 'command'
             }			
         };
-        /* "Go to zoom bookmark 1-3" were the zoom level hotkeys 1-3 again: a mouse button, gamepad button,
+        /* "Go to zoom bookmark 1-3" (removed) were the zoom level hotkeys 1-3: a mouse button, gamepad button,
          * radial menu or Command Centre star still naming them runs the zoom level (not listed: not
          * enumerable). Keyboard keys bound to them are moved in loadHotkeys (ogario.v4.js). */
         [1, 2, 3].forEach(function (n) {

@@ -21850,11 +21850,12 @@ function lmFoldLegacySettings(s) {
     }
     return changed || JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]) !== was;
 }
-/* Hotkey commands merged into others: "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3 (the
- * saved zoom is that level's zoom), "Screenshot mode" is Show/hide HUD, "Open the Lab" opens User
+/* Hotkey commands merged into others: "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3,
+ * "Screenshot mode" is Show/hide HUD, "Open the Lab" opens User
  * Scripts (the Lab experiments are there). An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts, a list in
- * the Hotkeys window now) is free. For the stored hotkeys (loadHotkeys) and a settings profile's
+ * the Hotkeys window now; Save the current zoom as zoom level 1-5, removed) is free. For the stored
+ * hotkeys (loadHotkeys) and a settings profile's
  * (profiles.js), so an older set keeps those keys. Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
@@ -21868,7 +21869,7 @@ function lmRenameOldHotkeys(map) {
     for (var k in map) {
         if (!own(k)) continue;
         var v = String(map[k]), to = '', keyed = false, z;
-        if (v === 'hk-hotkeyConflicts') { delete map[k]; changed = true; continue; }
+        if (v === 'hk-hotkeyConflicts' || /^hk-zoomSave[1-5]$/.test(v)) { delete map[k]; changed = true; continue; }
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
         else if (v === 'hk-screenshotMode') to = 'hk-showHUD';
         else if (v === 'hk-lmLab') { to = 'hk-lmPlugins'; keyed = true; }
@@ -21936,7 +21937,6 @@ var LM_EXPORT_KEYS = [
     { key: 'lmSettingsProfilesRules', type: 'o' },
     { key: 'lmHudLayouts', type: 'o' },
     { key: 'lmCustomMacros', type: 'o' },
-    { key: 'lm-zoom-bookmarks', type: 'a' },
     { key: 'lmThemeWorkshop', type: 'o' },
     { key: 'lm-director', type: 'o' },
     { key: 'lm-director-bookmarks', type: 'a' },

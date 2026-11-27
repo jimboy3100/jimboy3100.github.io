@@ -244,7 +244,7 @@
         return s.replace(/[\u0000-\u001f\u007f-\u009f\u2066-\u2069\u202a-\u202e\u2028\u2029]/g, '').slice(0, max);
     }
     /* { name, x, y, zoom } with numbers only (no strings), coordinates within COORD_MAX, zoom 0 (keep
-     * the zoom) or 0.01..40 like the zoom bookmarks; null when invalid */
+     * the zoom) or 0.01..40 like the game zoom; null when invalid */
     function validBookmark(b) {
         if (!b || typeof b !== 'object' || Array.isArray(b)) return null;
         if (!fin(b.x) || !fin(b.y) || Math.abs(b.x) > COORD_MAX || Math.abs(b.y) > COORD_MAX) return null;

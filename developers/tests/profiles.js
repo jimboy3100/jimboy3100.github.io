@@ -184,12 +184,10 @@ check('rules: then game mode', C.pickRule(rules, { serverType: 'deltio', gameMod
 check('rules: then a connected gamepad, then touch', C.pickRule(rules, { serverType: 'deltio', gameMode: ':ffa', touch: true, gamepad: true }).id === 'p4' && C.pickRule(rules, { serverType: '', gameMode: '', touch: true }).id === 'p3');
 check('rules: no match -> null; disabled -> null', C.pickRule(rules, { serverType: 'deltio', gameMode: ':ffa', touch: false }) === null && C.pickRule(Object.assign({}, rules, { enabled: false }), { serverType: 'agario' }) === null);
 
-// ── zoom bookmarks (hudhelpers.js keeps them as an array of 3 zoom levels, 0 = not saved)
+// ── zoom bookmarks were removed: an older set or backup holding them loads without them
 const zbSet = C.cleanBundle({ s: { showMass: true }, zb: [1, 2, 3] });
-check('zoom bookmarks: kept by the validation', !!zbSet && J(zbSet.zb) === J([1, 2, 3]) && zbSet.s.showMass === true);
-check('zoom bookmarks: an unsaved slot (0) is kept', J((C.cleanBundle({ zb: [0, 2.5, 0] }) || {}).zb) === J([0, 2.5, 0]));
-check('zoom bookmarks: wrong length, type or range dropped as a whole', [[1, 2], [1, '2', 3], [1, 99, 1], [1, NaN, 1], { 0: 1 }, 'x'].every(z => !('zb' in (C.cleanBundle({ s: { showMass: true }, zb: z }) || {}))));
-check('zoom bookmarks: a difference is listed', C.diffBundles(C.cleanBundle({ s: { showMass: true }, zb: [1, 2, 3] }), C.cleanBundle({ s: { showMass: true }, zb: [1, 2, 4] })).some(r => r.part === 'zb'));
+check('removed zoom bookmarks: the rest of an older set is kept, the bookmarks are ignored', !!zbSet && zbSet.s.showMass === true && !('zb' in zbSet));
+check('removed zoom bookmarks: a set with only them is no set', C.cleanBundle({ zb: [1, 2, 3] }) === null && C.cleanBundle({ zb: [0, 0, 0] }) === null);
 
 // ── gamepad buttons and phone control layouts are compared too
 const gpOnly = C.diffBundles(C.cleanBundle({ s: { showMass: true }, gp: { v: 1, map: ['split'] } }), C.cleanBundle({ s: { showMass: true }, gp: { v: 1, map: ['feed'] } }));
@@ -206,7 +204,7 @@ check('diff: a set differing only in the phone control layout is not the same', 
     const src = makeStorage(0);
     const conf = {
       lmHudLayouts: { v: 1, active: 'A', list: [{ name: 'A', c: {} }] }, lmCustomMacros: { slots: [{ name: 'm', steps: [] }] },
-      'lm-zoom-bookmarks': [1, 0, 3], lmThemeWorkshop: { v: 1, themes: [] }, 'lm-director': { speed: 3 },
+      lmThemeWorkshop: { v: 1, themes: [] }, 'lm-director': { speed: 3 },
       'lm-director-bookmarks': [{ x: 1, y: 2 }], lmPracticeCfg: { bots: 4 }, lmAnalyticsGoals: { v: 1, custom: [] },
       lmSettingsProfiles: [{ id: 'p1', name: 'P', data: { s: { showMass: true } } }], lmSettingsProfilesRules: { enabled: false },
       lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPerfBackup: { jellyPhisycs: true }, lmPresetUndo: { s: {} },
@@ -218,14 +216,17 @@ check('diff: a set differing only in the phone control layout is not the same', 
     const out = JSON.parse(J(exp(src)));
     check('export: every configuration key is carried', Object.keys(conf).every(k => J(out[k]) === J(conf[k])) || (console.log('   missing: ' + Object.keys(conf).filter(k => J(out[k]) !== J(conf[k])).join(', ')), false));
     check('export: no history, statistics, watch list or backups', Object.keys(priv).every(k => !(k in out)));
+    src.setItem('lm-zoom-bookmarks', '[1,0,3]');
+    check('export: the removed zoom bookmarks are not carried', !('lm-zoom-bookmarks' in exp(src)));
     const dst = makeStorage(0);
     dst.setItem('lmPerfBackup', '{"old":1}'); dst.setItem('lmHudLayouts', '{"keep":1}');
     imp(out, (k, t) => dst.setItem(k, t), k => dst.removeItem(k));
     check('import: round trip restores every configuration key', Object.keys(conf).every(k => dst.getItem(k) === J(conf[k])));
     const dst2 = makeStorage(0);
     dst2.setItem('lmPerfBackup', '{"old":1}'); dst2.setItem('lmHudLayouts', '{"keep":1}');
-    imp({ lmHudLayouts: [1, 2], 'lm-zoom-bookmarks': { a: 1 }, lmSettingsProfiles: { a: 1 } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
-    check('import: a value of the wrong type is not written', dst2.getItem('lmHudLayouts') === '{"keep":1}' && dst2.getItem('lm-zoom-bookmarks') === null && dst2.getItem('lmSettingsProfiles') === null);
+    imp({ lmHudLayouts: [1, 2], 'lm-zoom-bookmarks': [1, 0, 3], lmSettingsProfiles: { a: 1 } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
+    check('import: a value of the wrong type is not written', dst2.getItem('lmHudLayouts') === '{"keep":1}' && dst2.getItem('lmSettingsProfiles') === null);
+    check('import: the zoom bookmarks of an older export are not written', dst2.getItem('lm-zoom-bookmarks') === null);
     check('import: Performance mode backup of the replaced settings goes when the export has none', dst2.getItem('lmPerfBackup') === null);
     /* Command Centre: the starred commands (also its quick bar) are configuration, the recently
      * used ones history: only the stars go, the importing device keeps its own recent list */
@@ -318,12 +319,12 @@ function bootApply() {
 }
 
 {
+  /* an older set with only zoom bookmarks: nothing to apply, nothing written, no error */
   const e = bootApply();
-  e.ls.setItem('lm-zoom-bookmarks', J([2, 2, 2]));
-  const r = e.P.applySet({ zb: [1.5, 0, 3] }, 'zoom');
-  check('zoom bookmarks: a set with only them is applied and saved', !!r && r.length === 1 && e.ls.getItem('lm-zoom-bookmarks') === J([1.5, 0, 3]));
-  e.P.undo();
-  check('zoom bookmarks: Undo puts them back', e.ls.getItem('lm-zoom-bookmarks') === J([2, 2, 2]));
+  e.ls.removeItem('lm-zoom-bookmarks');
+  let r = 'x', err = null;
+  try { r = e.P.applySet({ zb: [1.5, 0, 3] }, 'zoom'); } catch (x) { err = x; }
+  check('removed zoom bookmarks: an older set with only them applies nothing', !err && !(r && r.length) && e.ls.getItem('lm-zoom-bookmarks') === null);
 }
 {
   const e = bootApply();
@@ -359,16 +360,6 @@ function bootApply() {
   e.P.applyById('p3');
   check('a profile without a link keeps the current layout', e.HE.active() === 'B');
 }
-check('zoom bookmarks: [0, 0, 0] is kept (explicitly none: the Undo / backup of a state without bookmarks)', J((C.cleanBundle({ zb: [0, 0, 0] }) || {}).zb) === J([0, 0, 0]));
-{
-  // ChatGPT 3.599 re-verification (1): Undo of a profile with bookmarks when there were none
-  const e = bootApply();
-  e.ls.removeItem('lm-zoom-bookmarks');
-  e.P.applySet({ zb: [1, 2, 3] }, 'first');
-  check('zoom bookmarks: applied where there were none', e.ls.getItem('lm-zoom-bookmarks') === J([1, 2, 3]));
-  e.P.undo();
-  check('zoom bookmarks: Undo removes them again (none before)', e.ls.getItem('lm-zoom-bookmarks') === null);
-}
 {
   // the same for gamepad buttons and phone control layouts that did not exist before
   const e = bootApply();
@@ -380,7 +371,7 @@ check('zoom bookmarks: [0, 0, 0] is kept (explicitly none: the Undo / backup of 
   check('gamepad + phone layout: Undo removes them again and reloads both', e.ls.getItem('lmGamepad') === null && e.ls.getItem('lm-mobile-layouts') === null && e.calls.indexOf('gp-reload') >= 0 && e.calls.indexOf('ml-reload') >= 0);
   e.P.applySet({ s: { showMass: !e.S.showMass } }, 'plain');
   const bk = JSON.parse(e.ls.getItem('lmSettingsBackups') || '[]');
-  check('backup of a state without them: says none (restoring it removes them)', bk.length > 0 && J(bk[0].data.zb) === J([0, 0, 0]) && bk[0].data.gp && bk[0].data.gp._lmAbsent === 1);
+  check('backup of a state without them: says none (restoring it removes them)', bk.length > 0 && !('zb' in bk[0].data) && bk[0].data.gp && bk[0].data.gp._lmAbsent === 1);
   const cap = e.P.core.captureCurrent();
   check('a plain snapshot (profiles) still leaves missing parts out', !!cap && !('zb' in cap) && !('gp' in cap) && !('ml' in cap));
 }
@@ -762,11 +753,11 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
 }
 {
   /* the parts line under a profile names every part it brings (a set with only a phone control
-   * layout, gamepad buttons or saved zoom levels showed none of them until 3.697) */
+   * layout or gamepad buttons showed none of them until 3.697) */
   const t = k => i18n.t('modules.profiles.' + k);
   const badge = d => C.partsBadge(C.cleanBundle(d));
   check('parts line: a phone control layout alone is Phone controls', badge({ s: { showMass: true }, ml: { landscape: { split: { x: 0.5, y: 0.5 } } } }) === [t('partS'), t('partM')].join(' + '));
-  check('parts line: gamepad buttons and saved zoom levels are named', badge({ s: { showMass: true }, gp: { buttons: { 0: 'hk-split' } }, zb: [1, 2, 3] }) === [t('partS'), t('partGP'), t('partZB')].join(' + '));
+  check('parts line: gamepad buttons are named, the zoom bookmarks of an older set are not', badge({ s: { showMass: true }, gp: { buttons: { 0: 'hk-split' } }, zb: [1, 2, 3] }) === [t('partS'), t('partGP')].join(' + '));
   check('parts line: the "none" of an Undo or backup is not a part', C.partsBadge({ s: { showMass: true }, m: { _lmAbsent: 1 }, ml: { _lmAbsent: 1 }, gp: { _lmAbsent: 1 }, zb: [0, 0, 0] }) === t('partS'));
 }
 {
@@ -776,12 +767,12 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
   const add = { 'hk-lmPlugins': { defaultKey: '' }, 'hk-zoom1': { defaultKey: '' }, 'hk-zoom2': { defaultKey: '' }, 'hk-showHUD': { defaultKey: '' } };
   Object.assign(ctx.hotkeysCommand, add);
   try {
-    const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', W: 'hk-feed', X: 'hk-hotkeyConflicts' } });
+    const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', W: 'hk-feed', X: 'hk-hotkeyConflicts', K: 'hk-zoomSave3' } });
     check('renamed commands: Open the Lab key opens User Scripts', h && h.h.F9 === 'hk-lmPlugins');
     check('renamed commands: a zoom bookmark key goes to its zoom level', h && h.h['ALT+1'] === 'hk-zoom1');
     check('renamed commands: a zoom level with its own key keeps it, the old key is free', h && h.h.Z === 'hk-zoom2' && !('ALT+2' in h.h));
     check('renamed commands: Screenshot mode key is Show/hide HUD', h && h.h.F2 === 'hk-showHUD');
-    check('renamed commands: other keys stay, a removed command is dropped', h && h.h.W === 'hk-feed' && !('X' in h.h));
+    check('renamed commands: other keys stay, a removed command is dropped', h && h.h.W === 'hk-feed' && !('X' in h.h) && !('K' in h.h));
     const h2 = C.cleanBundle({ h: { F9: 'hk-lmLab', F10: 'hk-lmPlugins' } });
     check('renamed commands: User Scripts with a key of its own: the Lab key is free', h2 && h2.h.F10 === 'hk-lmPlugins' && !('F9' in h2.h));
     const raw = { h: { F9: 'hk-lmLab' } };

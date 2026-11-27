@@ -1,7 +1,6 @@
-/* Zoom level hotkeys with saved zooms (the former "zoom bookmarks" are the zoom levels now):
- * the real ogario/hotkeysCommand.js and the real loadHotkeys of ogario.v4.js in a vm.
- *   - Zoom level 1-5 (Alt+1-5) go to the zoom saved for that level, else to their fixed zoom
- *   - Save the current zoom as zoom level 1-5 exist, without default keys
+/* Zoom level hotkeys: the real ogario/hotkeysCommand.js and the real loadHotkeys of ogario.v4.js in a vm.
+ *   - Zoom level 1-5 (Alt+1-5) go to their fixed zoom (the saved zooms were removed)
+ *   - "Save the current zoom as zoom level 1-5" are gone; a key bound to them is free again
  *   - "Go to zoom bookmark 1-3" are not listed any more, but a stored reference still runs the level
  *   - a keyboard key bound to them moves to the zoom level when that level has no key
  * node developers/tests/zoomlevels.js */
@@ -13,7 +12,7 @@ let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 
 /* hotkeysCommand.js runs as a classic script with globals */
-function loadCommands(helpers) {
+function loadCommands() {
     const calls = [];
     const ctx = {
         console, Object, String, Array, JSON, Math,
@@ -22,32 +21,23 @@ function loadCommands(helpers) {
         toastr: { info() { } }, $: () => ({ trigger() { }, val() { return ''; } })
     };
     ctx.window = ctx;
-    if (helpers) ctx.LMHudHelpers = { zoomRecall: (n, z) => calls.push(['recall', n, z]), zoomSave: n => calls.push(['save', n]) };
     vm.createContext(ctx);
     vm.runInContext(hkSrc, ctx);
     return { hc: ctx.hotkeysCommand, calls };
 }
 
 {
-    const { hc, calls } = loadCommands(true);
+    const { hc, calls } = loadCommands();
     const ids = Object.keys(hc);
     check('the former "Go to zoom bookmark" hotkeys are not listed', !ids.some(id => /^hk-zoomRecall/.test(id)));
-    check('Save the current zoom as zoom level 1-5, no default keys', [1, 2, 3, 4, 5].every(n => hc['hk-zoomSave' + n] && hc['hk-zoomSave' + n].defaultKey === ''));
+    check('"Save the current zoom as zoom level" hotkeys are gone', !ids.some(id => /^hk-zoomSave/.test(id)) && !('hk-zoomSave1' in hc));
     check('zoom levels keep Alt+1-5', [1, 2, 3, 4, 5].every(n => hc['hk-zoom' + n].defaultKey === 'ALT+' + n));
     const fixed = [0.5, 0.25, 0.125, 0.075, 0.05];
     [1, 2, 3, 4, 5].forEach(n => hc['hk-zoom' + n].keyDown());
-    check('zoom level n goes to its saved zoom, else its fixed one', JSON.stringify(calls) === JSON.stringify(fixed.map((z, i) => ['recall', i + 1, z])));
-    calls.length = 0;
-    hc['hk-zoomSave5'].keyDown();
-    check('save zoom level 5', JSON.stringify(calls) === JSON.stringify([['save', 5]]));
+    check('zoom level n goes to its fixed zoom', JSON.stringify(calls) === JSON.stringify(fixed.map(z => ['setZoom', z])));
     calls.length = 0;
     hc['hk-zoomRecall2'].keyDown();
-    check('a stored "Go to zoom bookmark 2" (mouse / gamepad / radial) runs zoom level 2', JSON.stringify(calls) === JSON.stringify([['recall', 2, 0.25]]) && hc.hasOwnProperty('hk-zoomRecall2'));
-}
-{
-    const { hc, calls } = loadCommands(false);
-    hc['hk-zoom3'].keyDown();
-    check('without the HUD helpers module: the fixed zoom as before', JSON.stringify(calls) === JSON.stringify([['setZoom', 0.125]]));
+    check('a stored "Go to zoom bookmark 2" (mouse / gamepad / radial) runs zoom level 2', JSON.stringify(calls) === JSON.stringify([['setZoom', 0.25]]) && hc.hasOwnProperty('hk-zoomRecall2'));
 }
 
 /* loadHotkeys, extracted from ogario.v4.js */
@@ -71,6 +61,8 @@ function loadCommands(helpers) {
     check('a key on "Go to zoom bookmark 1" goes to zoom level 1 (no key of its own)', h.X === 'hk-zoom1');
     check('zoom level 2 keeps its key; the bookmark key is free again', h['ALT+2'] === 'hk-zoom2' && !('Y' in h));
     check('other keys stay', h.Q === 'hk-feed');
+    h = run({ 'K': 'hk-zoomSave1', 'ALT+5': 'hk-zoom5', 'L': 'hk-zoomSave5', 'Q': 'hk-feed' });
+    check('a key on a removed "Save the current zoom as zoom level" is free again', !('K' in h) && !('L' in h) && h['ALT+5'] === 'hk-zoom5' && h.Q === 'hk-feed');
     h = run({ 'ALT+1': 'hk-zoom1', 'W': 'hk-split' });
     check('nothing changes without the former hotkeys', JSON.stringify(h) === JSON.stringify({ 'ALT+1': 'hk-zoom1', 'W': 'hk-split' }));
 }

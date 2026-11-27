@@ -281,7 +281,6 @@ Additional sound toggles: virusSound, x16Sound, non16Sound, virusPopSound, virus
 - **Mass in tab title**: Browser tab shows current mass
 - **Game stats position**: one choice: top left, bottom left or bottom centre (a HUD editor layout wins), configurable stats elements
 - **Precision zoom**: Hold-action for fine zoom control
-- **Saved zoom levels**: save the current zoom as zoom level 1-5 (the zoom level hotkeys, Alt+1-5, then go to it)
 - **Camera lock**: Lock camera at current position
 
 ### 14. HUD Editor
