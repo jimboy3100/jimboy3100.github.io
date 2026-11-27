@@ -34564,6 +34564,13 @@ function thelegendmodproject() {
             }
             return '';
         },
+        /* the answer to the player's own click (user lists, mute / unmute): shown also when the
+         * Notification centre mutes its category (LMNotifications.showAlways) */
+        _lmAskedToast(type, message, title, options) {
+            var N = window.LMNotifications;
+            if (N && typeof N.showAlways === 'function') return N.showAlways.apply(N, arguments);
+            return toastr[type].apply(toastr, Array.prototype.slice.call(arguments, 1));
+        },
         muteChatUser(id) {
             if (id && !this.isChatUserMuted(id)) {
                 var User = this.getChatUserNick(id);
@@ -34571,7 +34578,7 @@ function thelegendmodproject() {
                 this.chatMutedUserIDs.push(id);
                 /* relay players get a new id when they reconnect: remember the nick too */
                 if (User) (this._lmMutedNicks || (this._lmMutedNicks = new Set())).add(User);
-                toastr.error(textLanguage.userMuted.replace('%user%', '<strong>' + this.escapeHTML(User) + '</strong>') + ' <button data-user-id=\"' + id + '\" class=\"btn btn-xs btn-green btn-unmute-user\">' + textLanguage.unmute + '</button>');
+                this._lmAskedToast('error', textLanguage.userMuted.replace('%user%', '<strong>' + this.escapeHTML(User) + '</strong>') + ' <button data-user-id=\"' + id + '\" class=\"btn btn-xs btn-green btn-unmute-user\">' + textLanguage.unmute + '</button>');
             }
         },
         unmuteChatUser(id) {
@@ -34580,7 +34587,7 @@ function thelegendmodproject() {
                 if (-1 != User) {
                     this.chatMutedUserIDs.splice(User, 1);
                     if (this._lmMutedNicks) this._lmMutedNicks.delete(this.chatMutedUsers[id]);
-                    toastr.info(textLanguage.userUnmuted.replace("%user%", "<strong>" + this.escapeHTML(this.chatMutedUsers[id]) + "</strong>"));
+                    this._lmAskedToast('info', textLanguage.userUnmuted.replace("%user%", "<strong>" + this.escapeHTML(this.chatMutedUsers[id]) + "</strong>"));
                     delete this.chatMutedUsers[id];
                 }
             }
@@ -34784,7 +34791,7 @@ function thelegendmodproject() {
                 for (var user in text += '<ol class=\"user-list\">', users) users.hasOwnProperty(user) && (text += '<li><strong>' + this.escapeHTML(users[user]) + '</strong> <button data-user-id=\"' + user + '\" class=\"btn btn-xs ' + html + '\">' + isMute + '</button></li>');
                 text += '</ol>';
             } else text += textLanguage.none;
-            toastr[o](text, activeUser, {
+            this._lmAskedToast(o, text, activeUser, {
                 'closeButton': true,
                 'tapToDismiss': false
             });

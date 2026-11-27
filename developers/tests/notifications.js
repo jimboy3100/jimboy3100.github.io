@@ -147,6 +147,23 @@ function boot(opts) {
   check('default: nothing muted', boot().api.categories.every(c => !boot().api.isMuted(c)));
 }
 
+/* 5a. showAlways (the chat box's user lists, the mute / unmute answers): shown although its
+ * category is muted, recorded once; with the option off shown and not recorded */
+{
+  const b = boot();
+  b.api.setMuted('other', true);
+  b.toastr.info('Muted users: none');
+  check('showAlways: a plain toast of the muted category is held back', b.shown.length === 0);
+  const r = b.api.showAlways('error', 'Muted users: <strong>Bob</strong>', 'T', { closeButton: true });
+  check('showAlways: shown with its title and options', b.shown.length === 1 && b.shown[0].t === 'error' && b.shown[0].title === 'T' && b.shown[0].o && b.shown[0].o.closeButton === true);
+  check('showAlways: returns the toast', r === b.toastToken);
+  check('showAlways: recorded once', b.api.items().length === 2 && b.api.items()[1].text.indexOf('Bob') >= 0);
+  check('showAlways: unknown type does nothing', b.api.showAlways('nope', 'x') === undefined && b.shown.length === 1);
+  const off = boot({ settings: { notificationCentre: false } });
+  off.api.showAlways('info', 'x');
+  check('showAlways: option off: shown, not recorded', off.shown.length === 1 && off.api.items().length === 0);
+}
+
 /* 5b. the panel's mute boxes follow LMNotifications.setMuted while the panel is built (until
  * 3.693 they kept the state they were built with), with a small stand-in for the page */
 {

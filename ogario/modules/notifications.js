@@ -289,6 +289,18 @@
         return true;
     }
 
+    /* A toast that answers the player's own click (the chat box's Active / Muted users lists, the
+     * mute he just set with its Unmute button): kept in the list like any other, but shown also
+     * when its category is muted. With Other muted the Muted users list never showed, so nobody
+     * could be unmuted. */
+    function showAlways(type, message, title, options) {
+        var t = root.toastr;
+        if (!t || TYPES.indexOf(type) < 0 || typeof t[type] !== 'function') return undefined;
+        var fn = t[type]._lmOriginal || t[type];
+        if (fn !== t[type] && enabled()) { try { record(type, message, title); } catch (e) { } }
+        return fn.apply(t, Array.prototype.slice.call(arguments, 1));
+    }
+
     /* ── mixer ── */
 
     var duckUntil = 0;
@@ -793,6 +805,7 @@
     wrapToastr(root.toastr);
     var api = {
         record: function (type, message, title) { return record(type, message, title); },
+        showAlways: showAlways,
         items: function () { load(); return state.items.map(function (it) { return { id: it.id, t: it.t, type: it.ty, category: it.c, text: it.m }; }); },
         unread: function () { load(); return unreadCount(state.items, prefs.readId); },
         markAllRead: markAllRead,
