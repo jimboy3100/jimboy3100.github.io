@@ -249,8 +249,11 @@
         'text-shadow:0 1px 3px rgba(0,0,0,.6);pointer-events:auto;' +
         'user-select:none;-webkit-user-select:none;cursor:pointer;' +
         'transition:top .25s ease}' +
-        '#time-hud{position:fixed!important;right:4px!important;' +
-        'transform:scale(0.75)!important;transform-origin:bottom right!important}' +
+        /* the clock at the top centre: it had only a right edge here and the desktop top (below the
+         * leaderboard), which on a phone is below the bottom of the screen. A HUD layout that places
+         * the clock wins (its rule is more specific). */
+        '#time-hud{position:fixed!important;top:4px!important;bottom:auto!important;left:50%!important;right:auto!important;' +
+        'transform:translateX(-50%) scale(0.75)!important;transform-origin:top center!important}' +
         '#chat-box,#messages{position:fixed!important;left:4px!important}' +
         '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
         '#toast-container{position:fixed!important}' +
@@ -2233,7 +2236,8 @@
                 huds.forEach(function (sel) {
                     var el = document.querySelector(sel);
                     // the base scale comes from an !important stylesheet rule, not the inline style
-                    if (el) el.style.setProperty('transform', 'scale(0.9)', 'important');
+                    /* the clock is centred on its left edge */
+                    if (el) el.style.setProperty('transform', (sel === '#time-hud' ? 'translateX(-50%) ' : '') + 'scale(0.9)', 'important');
                 });
                 /* fitLeaderboard shrinks from this size */
                 var lbh = document.querySelector('#leaderboard-hud');
