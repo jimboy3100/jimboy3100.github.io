@@ -231,12 +231,15 @@ const proto = new Function('env', 'var window = env.window, LM = env.LM, legendm
 window.iconSpecialSkinEffectsHat3 = img('hat', 64, 64);
 
 /* renderer state */
+/* the real selected-cell / reverse-trick rings (the frame block calls them; stubbed by default) */
+const realDrawRings = R.drawRings;
+function stubRings() { }
 const main = new SoftCanvas(0, 0, 'main'), glc = new SoftCanvas(0, 0, 'gl'), overlay = new SoftCanvas(0, 0, 'overlay');
 Object.assign(R, {
     canvas: main, ctx: main.getContext(), overlayCanvas: overlay, overlayCtx: overlay.getContext(), glCanvas: glc,
     gl: {}, glTextProgram: {}, glCellProgram: {}, glJellyProgram: {}, glJellyStrokeProgram: {}, glJellyVAO: {}, glJellyVBO: {}, glJellyStrokeVAO: {}, glJellyStrokeVBO: {}, glMbRingProgram: {},
     indicator: img('teamInd', 90, 50), heartIndicator: img('heartInd', 50, 50), smileIndicator: img('smileInd', 150, 150),
-    isLegendWorldMapDeformationVisible: () => false, drawRings() { }, drawRMB() { }, drawViewPorts() { },
+    isLegendWorldMapDeformationVisible: () => false, drawRings: stubRings, drawRMB() { }, drawViewPorts() { },
     drawFBTracking(ctx, players, x, y) { ctx.drawImage(fbArrow, x - 10, y - 10, 20, 20); }
 });
 const fbArrow = img('fbArrow', 20, 20);
@@ -411,6 +414,8 @@ function frame(s) {
     const ref = new SoftCanvas(pw, ph, 'ref'), rctx = ref.getContext();
     worldTransform(rctx, s);
     for (const c of LM.cells) if (drawable(c)) paintCellCanvas(c, rctx, gl && R._lmLabelsOnFg && R._lmLabelsOnFg(c));
+    /* drawRings: after the whole cell pass, over every cell */
+    if (R.drawRings !== stubRings) R.drawRings(rctx);
     if ((LM.play || LM.playerCellsMulti.length) && ms.FBTracking && LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) R.drawFBTracking(rctx, LM.playerCells, LM.arrowFB[0].x, LM.arrowFB[0].y);
     const ops = oplog.slice();
     return { gl: gl, shown: shown, out: out, ref: composite([ref], pw, ph), d: diff(out, composite([ref], pw, ph)), ops: ops };
@@ -714,6 +719,43 @@ scene([talker, makeCell({ x: 15, y: 40, size: 90, targetNick: 'cover' })]);
 frame(S1);
 r = frame(S1);
 check('later bigger cell over a chat bubble: Canvas2D, equal', !r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+
+/* ---- selected-cell ring (sticky cells) ----
+ * drawRings strokes it after the whole cell pass, over every cell and label: in a WebGL frame
+ * on the overlay at that point (the main canvas is under the GL cells). */
+reset(); strokes.on = true; R.drawRings = realDrawRings;
+{
+    const sel = makeCell({ x: -10, y: 0, size: 60, targetNick: 'sel' });
+    const over = makeCell({ x: 40, y: 10, size: 70, targetNick: 'over' });
+    scene([sel, over]);
+    LM.indexedCells = {}; LM.indexedCells[sel.id] = sel; LM.selected = sel.id;
+    LM.selected = null;
+    const none = frame(S1);
+    LM.selected = sel.id;
+    r = frame(S1);
+    /* pixels the ring changes (it is under the later cell when it is on the main canvas) */
+    const ringPx = diff(r.out, none.out).n;
+    check('selected-cell ring: WebGL frame, the ring on the overlay over the later cell too, equal', r.gl && r.shown && ringPx > 0 && r.d.n === 0,
+        'gl ' + r.gl + ' (' + why() + ') shown ' + r.shown + ' ring px ' + ringPx + ' ' + r.d.n + ' px');
+    r = frame({ W: 200, H: 140, dpr: 2, zoom: 0.8, camX: 0, camY: 0 });
+    check('  DPR 2, zoom 0.8: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
+    team(['over']);
+    r = frame(S1);
+    check('  with a teammate indicator: WebGL, ring over the indicator, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') ' + r.d.n + ' px');
+    team([]);
+    LM._elWorldEntrance = { active: true };
+    r = frame(S1);
+    check('  join entrance (keeps the overlay): Canvas2D, reason selRing, equal', !r.gl && why() === 'selRing' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    LM._elWorldEntrance = null;
+    LM.selected = null;
+    r = frame(S1);
+    check('  no cell selected: WebGL, overlay hidden, equal', r.gl && !r.shown && r.d.n === 0, 'gl ' + r.gl + ' shown ' + r.shown + ' ' + r.d.n + ' px');
+    LM.selected = 999999;
+    r = frame(S1);
+    check('  selected id of a cell that is gone: WebGL, no ring, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+    LM.selected = null; LM.indexedCells = {};
+}
+R.drawRings = stubRings; strokes.on = false;
 
 /* ---- no marks: no clear, overlay hidden ---- */
 reset(); team(['mate']);

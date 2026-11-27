@@ -61447,18 +61447,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * drawRings() strokes the selected-cell and reverse-trick rings
-             * on the main Canvas2D, which sits BELOW the GL cell layer, and
-             * the ring lies inside the cell disc: with GPU cells it was
-             * fully hidden. Keep those frames on Canvas2D.
-             *
-             * HYBRID RENDERER NOTE: These could be drawn on overlayCtx, but
-             * the visual result differs (ring appears above skin/text instead
-             * of between body and skin). Moving them requires GL-side ring
-             * support. Kept as Canvas2D fallback — only triggers when a cell
-             * is actively selected or reverse-trick is targeting a visible cell.
+             * The selected-cell and reverse-trick rings: renderFrame strokes them
+             * (drawRings) after the whole cell pass, over every cell and its labels.
+             * In a WebGL frame they go on the overlay canvas at that same point of
+             * the frame (renderFrame prepares it for _lmRingFg); on the main canvas,
+             * below the GL cells, they were hidden. Frames that cannot have the
+             * overlay stay on Canvas2D (reason selRing, checked below).
              */
-            if (
+            this._lmRingFg = false;
+            var _glRing = !!(
                 (
                     LM.selected != null &&
                     LM.indexedCells &&
@@ -61473,9 +61470,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         LM.indexedCells[reverseTrick.smallerEnemy]
                     )
                 )
-            ) {
-                return this._lmNoGL(this.GLW.SEL_RING);
-            }
+            );
 
 
             /*
@@ -61881,6 +61876,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return this._lmNoGL(this.GLW.NO_BODIES);
             }
 
+            /* the rings need the overlay too (the join entrance and the death cinematic
+             * keep it for themselves, renderFrame needs the main transform for it) */
+            if (_glRing && ((LM._elWorldEntrance && LM._elWorldEntrance.active) ||
+                (typeof _elDeathVisual !== 'undefined' && _elDeathVisual && _elDeathVisual.active) ||
+                !this.overlayCanvas || !this.ctx || typeof this.ctx.getTransform !== 'function')) {
+                return this._lmNoGL(this.GLW.SEL_RING);
+            }
             /* the join entrance and the death cinematic keep the overlay for themselves
              * (renderFrame does not prepare it then): marks need Canvas2D */
             if (_glFxN && ((LM._elWorldEntrance && LM._elWorldEntrance.active) ||
@@ -61893,6 +61895,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             /* renderFrame prepares the overlay before the cell pass when this is > 0 */
             this._lmFgFxN = _glFxN;
+            /* and for the rings (drawRings draws them on it) */
+            this._lmRingFg = _glRing;
 
 
             /*
@@ -79791,7 +79795,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _lmFgOn = !!(unifiedWebGLWorldOK && this.overlayCanvas && this.overlayCtx &&
                     typeof this.ctx.getTransform === 'function' &&
                     !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active) &&
-                    (this._lmFgFxN > 0 || this._glFbArrowActive ||
+                    (this._lmFgFxN > 0 || this._lmRingFg || this._glFbArrowActive ||
                         ((LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) && defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) ||
                         (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length) ||
                         (window.LMHudHelpers && window.LMHudHelpers.worldActive(LM))));
@@ -79977,7 +79981,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
 
 
-                this.drawRings();
+                /* over every cell: on the overlay in a WebGL frame */
+                this.drawRings(_lmFxCtx);
 
                 this.drawRMB();
 
@@ -80606,14 +80611,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             LM.sendPosition();
         },
-        drawRings() {
+        /* ctx: where renderFrame draws over the cells (the overlay in a WebGL frame) */
+        drawRings(ctx) {
+            ctx = ctx || this.ctx;
             if (defaultmapsettings.reverseTrick) {
-                LM.indexedCells[reverseTrick.biggerEnemy] && this.drawRing(this.ctx,
+                LM.indexedCells[reverseTrick.biggerEnemy] && this.drawRing(ctx,
                     LM.indexedCells[reverseTrick.biggerEnemy].x,
                     LM.indexedCells[reverseTrick.biggerEnemy].y,
                     LM.indexedCells[reverseTrick.biggerEnemy].size,
                     0.75, 'red');
-                LM.indexedCells[reverseTrick.smallerEnemy] && this.drawRing(this.ctx,
+                LM.indexedCells[reverseTrick.smallerEnemy] && this.drawRing(ctx,
                     LM.indexedCells[reverseTrick.smallerEnemy].x,
                     LM.indexedCells[reverseTrick.smallerEnemy].y,
                     LM.indexedCells[reverseTrick.smallerEnemy].size,
@@ -80621,7 +80628,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             if (LM.indexedCells[LM.selected]) {
                 //console.log("LM.indexedCells[LM.selected]")
-                this.drawRing(this.ctx,
+                this.drawRing(ctx,
                     LM.indexedCells[LM.selected].x,
                     LM.indexedCells[LM.selected].y,
                     LM.indexedCells[LM.selected].size,
