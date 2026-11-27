@@ -45795,7 +45795,10 @@ function thelegendmodproject() {
                      * prefix is replaced, so no text can pass for another sender. */
                     if (this.isLegendWorld && !(flag & 0xE0) && name !== 'Unnamed' && message.indexOf('Unnamed: ') === 0 &&
                         (_lmElTeamsActive(this) || $("#clantag").val() !== "")) message = name + ': ' + message.slice(9);
-                    if (!_lmOwnTeamEcho && message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && ($("#clantag").val() === "" || server || admin || mod)) {
+                    /* Settings > Disable chat: no line in the chat, on the cells or in a notification, as for
+                     * the relay and Delta chat (readChatMessage); the restart check below still runs */
+                    var _lmChatOn = !defaultmapsettings.disableChat;
+                    if (_lmChatOn && !_lmOwnTeamEcho && message != "WWW.IMSOLO.PRO " && message != "WWW.IMSOLO.PRO" && ($("#clantag").val() === "" || server || admin || mod)) {
                         var _lmSrvChatId = _lmOwnEcho ? application.playerID : application.serverChatUserId(name);
                         /* Expanding Land Teams without a tag: a team mate's team chat (202) comes back as plain
                          * 99 whose text already starts with "nick: " (shown like tagged team chat) */
@@ -45807,7 +45810,7 @@ function thelegendmodproject() {
                     }
                     /* Expanding Land team chat (sent as opcode 202) comes back as a plain opcode 99 with
                      * no server/admin/mod flag, only to same-tag players; the text already has "nick: ". */
-                    else if (!_lmOwnTeamEcho && this.isLegendWorld && $("#clantag").val() !== "" && !(flag & 0xE0)) {
+                    else if (_lmChatOn && !_lmOwnTeamEcho && this.isLegendWorld && $("#clantag").val() !== "" && !(flag & 0xE0)) {
                         /* the server's name when the text starts with it (it can hold ": " or be over 15 characters) */
                         var _lmTeamNick = message.indexOf(name + ': ') === 0 ? name : message.split(': ', 1)[0];
                         var _lmTeamChatId = application.serverChatUserId(_lmTeamNick);

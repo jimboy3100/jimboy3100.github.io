@@ -8,6 +8,7 @@
  * placeholder), named lines and agar.io / other servers behave as before. Also: a logged-in
  * player without a nick (sent under the account name, which can be longer than 15 characters) is
  * shown with the full name kept, while relay / team / other-server lines keep the nick limit.
+ * And: with Settings > Disable chat on, opcode 99 lines are dropped like relay lines.
  * node developers/tests/chatunnamed.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs');
@@ -286,6 +287,26 @@ const msgText = (html) => { const m = /<span class="message-text">(.*?)<\/span>/
   b.send('MyAccountName', 'old');
   b.send('MyAccountName', 'other');
   check('older than 5 s or sent on another socket: not own', b.box.slice(-2).every(h => h.indexOf('mute-user') !== -1) && b.app._lmElSentChat.length === 0, b.box.slice(-2).join(' | '));
+}
+
+{
+  /* Settings > Disable chat: Expanding Land / private server chat (99) is dropped like relay chat,
+   * no hidden chat box lines, no history (bubbles), no events (notifications, companion page) */
+  const b = boot();
+  const seen = [];
+  b.ctx.window.LMEvents = { _has: () => true, emit: (n, d) => seen.push(d) };
+  b.ctx.defaultmapsettings.disableChat = true;
+  b.send('Bob', 'hi all');
+  b.send('Admin', 'notice', 64);
+  b.ctx._tag = 'LM';
+  b.send('Bob', 'Bob: team line');
+  b.relay('Tom: hello there');
+  check('Disable chat: no line from opcode 99 or the relay', b.box.length === 0 && b.toasts.length === 0 && b.app.chatHistory.length === 0 && b.bubbles().size === 0 && seen.length === 0,
+    b.box.length + ' ' + b.app.chatHistory.length + ' ' + seen.length);
+  b.ctx.defaultmapsettings.disableChat = false;
+  b.ctx._tag = '';
+  b.send('Bob', 'back on');
+  check('Disable chat off again: lines shown', b.box.length === 1 && b.bubbles().has('Bob'));
 }
 
 console.log(failed ? failed + ' FAILED' : 'all ok');
