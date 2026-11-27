@@ -133,6 +133,22 @@ check('timeFormat is no setting: refused, and a saved value is skipped on load',
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { personalBests: false })));
 app.loadSettings();
 check('personalBests is no setting: refused, and a saved value is skipped on load', !('personalBests' in D) && V('personalBests', true) === undefined && !('personalBests' in S));
+/* "Zoom glide speed" is gone: a saved value is skipped and the zoom glides as originally
+ * ((9*scale + target)/10 per frame at 60 fps, the same speed at other refresh rates) */
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { zoomSmooth: 40 })));
+app.loadSettings();
+check('zoomSmooth is no setting: refused, and a saved value is skipped on load', !('zoomSmooth' in D) && !('zoomSmooth' in SCH) && V('zoomSmooth', 40) === undefined && !('zoomSmooth' in S));
+{
+  const src = cut('setScale(size, fit, unitPlaying) {', 'LM.viewScale = this.scale;') + 'LM.viewScale = this.scale; }';
+  const zctx = { defaultmapsettings: { zoomSmooth: 40 }, LM: {} };
+  vm.createContext(zctx);
+  const cam = vm.runInContext('({' + src + '})', zctx);
+  cam.getTargetScale = () => 2; cam.scale = 1; cam._lmFrameF = 1;
+  cam.setScale(0, 1);
+  const at60 = cam.scale;
+  cam.scale = 1; cam._lmFrameF = 0.5; cam.setScale(0, 1); cam.setScale(0, 1);
+  check('zoom glide: (9*scale + target)/10 per 60 fps frame whatever an old save had, the same over two 120 fps frames', Math.abs(at60 - 1.1) < 1e-12 && Math.abs(cam.scale - 1.1) < 1e-12 && zctx.LM.viewScale === cam.scale);
+}
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();

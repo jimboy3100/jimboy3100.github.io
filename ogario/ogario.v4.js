@@ -21614,7 +21614,7 @@ var defaultmapsettings = {
     ////
     //'zoomSpeedValue: .87,
     zoomSpeedValue2: -0.13,
-    zoomSmooth: 10,               /* how fast the zoom glides to its target; 10 = unchanged */
+    /* zoomSmooth ("Zoom glide speed") is gone: the zoom always glides as originally, a saved value is skipped on load */
     videoSkinSoundLevel: 1,
     leaderboardlimit: 20,
     teamboardlimit: 20,
@@ -21681,7 +21681,6 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     dominatedRate: [0.25, 1, 0],
     profileNumber: [10, 54, 1],
     zoomSpeedValue2: [-0.9, 0.9, 0.01],
-    zoomSmooth: [2, 40, 1],
     videoSkinSoundLevel: [0, 1, 0.01],
     leaderboardlimit: [10, 30, 5],
     teamboardlimit: [5, 40, 5],
@@ -27053,7 +27052,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'statsPosition', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27229,7 +27228,6 @@ function thelegendmodproject() {
             this.applyHudBlur();
 
             this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
-            this.addSliderBox(".zoomGroup", "zoomSmooth", 2, 40, 1);
             this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);
             this.addSliderBox(".boardGroup", "leaderboardlimit", 10, 30, 5);
             this.addSliderBox(".boardGroup", "teamboardlimit", 5, 40, 5);
@@ -78310,10 +78308,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setScale(size, fit, unitPlaying) {
             if (!(fit > 0 && fit < 1)) fit = 1;
             var target = this.getTargetScale(size, unitPlaying) * fit;
-            /* "Zoom glide speed" (zoomSmooth): 10 = (9*scale + target)/10 per frame at 60 fps */
-            var _lmZs = +defaultmapsettings.zoomSmooth;
-            if (!(_lmZs >= 1 && _lmZs <= 50)) _lmZs = 10;
-            var k = 1 - Math.pow(1 - _lmZs / 100, this._lmFrameF || 1);
+            /* the original glide: (9*scale + target)/10 per frame at 60 fps */
+            var k = 1 - Math.pow(0.9, this._lmFrameF || 1);
             this.scale += (target - this.scale) * k;
             LM.viewScale = this.scale;
         },

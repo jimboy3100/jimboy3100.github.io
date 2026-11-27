@@ -1259,24 +1259,6 @@
     "ja": "ズーム速度",
     "it": "Velocità zoom"
   },
-  "settings.zoomSmooth": {
-    "en": "Zoom glide speed",
-    "el": "Ταχύτητα ολίσθησης ζουμ",
-    "es": "Velocidad de transición del zoom",
-    "bg": "Плавност на мащабирането",
-    "fr": "Fluidité du zoom",
-    "ar": "سلاسة التكبير",
-    "zh": "縮放滑順速度",
-    "ru": "Плавность масштабирования",
-    "de": "Zoom-Gleitgeschwindigkeit",
-    "tr": "Yakınlaştırma kayma hızı",
-    "pl": "Szybkość płynnego zoomu",
-    "nl": "Snelheid zoomovergang",
-    "pt": "Suavidade do zoom",
-    "id": "Kehalusan zoom",
-    "ja": "ズームの滑らかさ",
-    "it": "Fluidità dello zoom"
-  },
   "settings.videoSkinSoundLevel": {
     "en": "Video skin sound level",
     "el": "Ένταση ήχου video skin",
