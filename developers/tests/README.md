@@ -15,6 +15,11 @@ Options: `--secs N` (wait before probing, default 14, or env `SMOKE_SECS`),
 `--probes a,b` (only these probes from `probes/`, or env `SMOKE_PROBES`), `--limit N` (seconds the probes
 may take per run, or env `SMOKE_LIMIT`; default 15 per probe, at least 240). Each probe line shows its time;
 when the limit is hit the probes that finished are still reported and the one that was running is named.
+`--jobs N` (or env `SMOKE_JOBS`) runs up to N headless Chromes at once: 2 runs desktop and mobile side by
+side, 4 also splits each mode's probes into two pages (probes sharing a name prefix stay together and in
+order); the full run took 711 s sequentially and 193 s with `--jobs 4`. `--quick` (or `SMOKE_QUICK=1`) leaves
+out the slow probes (the `SLOW` list in run.js, about 60% of the probe time): `--quick --jobs 4` took 99 s.
+The default (no option) is still the full sequential run.
 Chrome is found automatically; set `CHROME_PATH` to use a specific binary.
 Output goes to `developers/tests/out/` (ignored by git).
 
