@@ -1090,7 +1090,12 @@
         au.placeholder = t('addUrl');
         addRow.appendChild(au);
         addRow.appendChild(button(t('add'), false, function () {
-            var u = cleanSkinKey(au.value);
+            /* kept as the address the skin field plays it with (checkSkinURL): a link typed
+             * without https:// (i.imgur.com/..., an imgur page) had no picture here, and once
+             * used it was listed twice (the profile keeps the https:// one) */
+            var raw = au.value, app = W.application;
+            if (app && typeof app.checkSkinURL === 'function') { try { raw = app.checkSkinURL(raw); } catch (e) { } }
+            var u = cleanSkinKey(raw);
             if (!u) return;
             var it = col.items[u] || (col.items[u] = { f: '', t: [], s: false });
             it.a = Date.now();
