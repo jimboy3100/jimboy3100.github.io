@@ -35360,7 +35360,7 @@ function thelegendmodproject() {
         activateQuest(productId) {
             console.log("[LM] Activate Quest: " + productId);
             if (window._lmRoomShopOff && window._lmRoomShopOff()) return false;
-            toastr.info('<b>[' + _lmG1e(lmT('game1.tag.server')) + ']:</b> ' + _lmTH('activatingQuest', 'Activating quest...'));
+            /* silent: it runs on its own from the wallet, also on every server change */
             return this.sendProto(114, { activateQuestRequestField: { productId: productId } });
         },
         activateBoost(productId) {
@@ -46848,7 +46848,11 @@ function thelegendmodproject() {
                         _lmBuildVanillaSkinUrlMap();
                     }
 
+                    /* Every server change re-sends the login, which lists a held quest item again:
+                     * activate it there only when no quest runs (official QuestsController INIT). */
+                    this._lmLoginQuestActive = Array.isArray(u.userActiveQuests) && u.userActiveQuests.length > 0;
                     try { this.updateWalletInfo(u.userWallet); } catch (e) { console.error('[LW 102] updateWalletInfo error:', e); }
+                    this._lmLoginQuestActive = false;
 
                     try { this.displayActiveBoosts(u.userBoosts); } catch (e) { console.error('[LW 102] displayActiveBoosts error:', e); }
 
@@ -47877,14 +47881,13 @@ function thelegendmodproject() {
                              * (after 204 / a potion) triggered the same refused request again. */
                             var _qaRefused = qa.userQuest && !(Number(qa.userQuest.goal) > 0);
                             if (!_qaRefused) this._questActivationSent = {};
+                            /* No toasts: the activation runs on its own (also after a server change);
+                             * the quest shows in the quests panel. */
                             if (_qaRefused) {
                                 /* Expanding Land answers a refused activation (no activation item) with goal 0. */
-                                toastr.error(_lmG2Tag('server') + lmT('game2.questFailed'));
+                                console.warn('[LM] Quest activation refused');
                             } else if (qa.userQuest) {
                                 this.displayActiveQuests([qa.userQuest]);
-                                toastr.success(_lmG2Tag('server') + _lmTH('questActivated', '') + ' &#x1F3AF; ' + _lmTH('questType', '').replace('{0}', String(qa.userQuest.type || lmT('game2.unknown')).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; })));
-                            } else {
-                                toastr.success(_lmG2Tag('server') + _lmTH('questActivated', '') + ' &#x1F3AF;');
                             }
                             if (window.refreshDealsTab) setTimeout(window.refreshDealsTab, 500);
                         }
@@ -48926,7 +48929,7 @@ function thelegendmodproject() {
                         if (!this._questActivationSent) this._questActivationSent = {};
                         var _questKey = items[i].productId || 'quest';
                         if (items[i].amount > 0) {
-                            if (!this._questActivationSent[_questKey]) {
+                            if (!this._questActivationSent[_questKey] && !this._lmLoginQuestActive) {
                                 /* Only remember it if the request was actually sent. */
                                 if (window.activateQuest() !== false) {
                                     this._questActivationSent[_questKey] = true;

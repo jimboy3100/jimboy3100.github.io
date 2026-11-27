@@ -557,24 +557,6 @@
     "ja": "ブーストを有効にできませんでした。",
     "it": "Impossibile attivare il boost."
   },
-  "game2.questFailed": {
-    "en": "Quest could not be activated.",
-    "el": "Η αποστολή δεν ενεργοποιήθηκε.",
-    "es": "No se pudo activar la misión.",
-    "bg": "Мисията не можа да се активира.",
-    "fr": "La quête n’a pas pu être activée.",
-    "ar": "تعذّر تفعيل المهمة.",
-    "zh": "無法啟用任務。",
-    "ru": "Не удалось активировать задание.",
-    "de": "Quest konnte nicht aktiviert werden.",
-    "tr": "Görev etkinleştirilemedi.",
-    "pl": "Nie udało się aktywować zadania.",
-    "nl": "Missie kon niet worden geactiveerd.",
-    "pt": "Não foi possível ativar a missão.",
-    "id": "Misi tidak bisa diaktifkan.",
-    "ja": "クエストを開始できませんでした。",
-    "it": "Impossibile attivare la missione."
-  },
   "game2.potionNoFunds": {
     "en": "Potion not opened — not enough currency.",
     "el": "Το φίλτρο δεν άνοιξε — δεν υπάρχει αρκετό νόμισμα.",
