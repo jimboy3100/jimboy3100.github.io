@@ -105,7 +105,9 @@ function probeMark(name) {
     if (!port) await sleep(200);
   }
   if (!port) { console.log('chrome did not start' + (procExit !== null ? ' (it exited, code ' + procExit + ')' : ': no DevToolsActivePort in ' + profile)); finish(2); }
-  for (let i = 0; i < 50 && procExit === null; i++) { try { ver = await (await fetch('http://127.0.0.1:' + port + '/json/version')).json(); break; } catch (e) { await sleep(200); } }
+  /* a deadline, not a count of tries: on a loaded machine Chrome can write its port file well before
+   * it answers on it (10 s of tries were not always enough) */
+  for (const until = Date.now() + 30000; Date.now() < until && procExit === null;) { try { ver = await (await fetch('http://127.0.0.1:' + port + '/json/version')).json(); break; } catch (e) { await sleep(200); } }
   if (!ver) { console.log('chrome did not start: no answer on DevTools port ' + port); finish(2); }
   /* the browser on that port must be the one this run started, not another run's */
   if (!String(ver.webSocketDebuggerUrl || '').endsWith(browserPath)) { console.log('chrome did not start: DevTools port ' + port + ' belongs to another Chrome (' + ver.webSocketDebuggerUrl + ', expected ' + browserPath + ')'); finish(2); }
