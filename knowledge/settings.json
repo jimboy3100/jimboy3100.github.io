@@ -1,6 +1,6 @@
 {
   "entity": "https://www.legendmod.ml/#app",
-  "updated": "2026-11-25",
+  "updated": "2026-11-27",
   "totalSettings": "300+",
   "categories": [
     {
@@ -23,10 +23,7 @@
       "settings": [
         "animationSpeed",
         "jellyPhysics",
-        "deathParticles",
-        "eatPulse",
         "cameraSmoothing",
-        "spawnEffects",
         "zoomSpeed",
         "zoomSmooth",
         "suckAnimation",
@@ -91,7 +88,6 @@
         "minimapExtraGuides",
         "minimapGhostCells",
         "minimapTrail",
-        "minimapClickSpectate",
         "enlargeMinimap",
         "privateMinimap",
         "oneColouredTeammates"
@@ -103,11 +99,9 @@
       "description": "Head-up display element settings.",
       "settings": [
         "showNames",
-        "showMass",
         "cellContours",
         "splitRanges",
         "mergeRings",
-        "relativeMass",
         "edgeArrows",
         "cellPanel",
         "statsDisplay",
@@ -184,7 +178,6 @@
         "multiboxRingSize",
         "activeOnlyRings",
         "multiboxFreeze",
-        "autoRespawn",
         "switchAfterDeath",
         "middleCameraView",
         "multiboxShadow"
@@ -248,8 +241,6 @@
         "streamerMode",
         "streamMode",
         "hideSkinURL",
-        "hideMyName",
-        "hideCountry",
         "blockPopups"
       ]
     },
@@ -262,8 +253,6 @@
         "killFeed",
         "massLossAlerts",
         "analytics",
-        "personalBests",
-        "matchHistory",
         "notificationCentre"
       ]
     },
@@ -353,8 +342,7 @@
       "description": "Respawn behaviour settings.",
       "settings": [
         "quickRespawn",
-        "autoRespawn",
-        "spawnEffects"
+        "autoRespawn"
       ]
     },
     {
@@ -406,8 +394,7 @@
         "recordReplays",
         "matchHistory",
         "personalBests",
-        "instantReplaySecs",
-        "analytics"
+        "instantReplaySecs"
       ]
     },
     {
