@@ -96,8 +96,14 @@ const TAGS = { new: 'New', fix: 'Fix', perf: 'Perf', change: 'Change' };
 function titleOf(notes) {
     const areas = [];
     notes.forEach((n) => { if (n.area && n.area.length <= 40 && areas.indexOf(n.area) < 0) areas.push(n.area); });
-    /* no short area: the first note's area or text up to its first comma or bracket, at most 6 words */
-    if (!areas.length) return notes.length ? (notes[0].area || notes[0].text).split(/,| \(/)[0].split(/\s+/).slice(0, 6).join(' ').replace(/[,;:…]+$/, '') : 'Build update';
+    /* no short area: the first note's area or text up to the end of its first clause (comma, bracket,
+     * colon, semicolon, dash), whole: a cut after six words gave titles such as "The Lab is part of the" */
+    if (!areas.length) {
+        if (!notes.length) return 'Build update';
+        let t = (notes[0].area || notes[0].text).split(/,| \(|: |; | \u2014 | - /)[0].trim().replace(/[,;:\u2026]+$/, '');
+        if (t.length > 100) t = t.slice(0, 100).replace(/\s+\S*$/, '') + '\u2026';
+        return t;
+    }
     const a = areas.slice(0, 3);
     return a.length === 1 ? a[0] : a.slice(0, -1).join(', ') + ' & ' + a[a.length - 1];
 }
@@ -214,7 +220,7 @@ function updateBuildFacts(repo, v, day) {
     return out;
 }
 
-module.exports = { releases, devOnly, noteOf, notesOf, anchors, versionOf, anchorOf, changelogEntries, updateChangelog, updateRss, rfc822, BUILD_FACTS, buildFacts, updateBuildFacts };
+module.exports = { releases, devOnly, noteOf, notesOf, titleOf,anchors, versionOf, anchorOf, changelogEntries, updateChangelog, updateRss, rfc822, BUILD_FACTS, buildFacts, updateBuildFacts };
 
 if (require.main === module) {
     const check = process.argv.indexOf('--check') >= 0;

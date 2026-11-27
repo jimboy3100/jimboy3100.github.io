@@ -138,6 +138,41 @@ if (rels.length) {
     ok(tool.devOnly('Version 3.701', ['play.html']) && !tool.devOnly('Version 3.618 - Theme fixes', ['play.html']) &&
         tool.devOnly('Probe x: passes', ['developers/tests/probes/x.js', 'developers/README.md']) && !tool.devOnly('Menu: y', ['developers/tests/a.js', 'ogario/ogario.v4.js']),
     'commits players do not see are left out (build number alone, developer files only)');
+
+    /* a release title taken from its first note ends where a phrase ends ("The Lab is part of the"
+     * was a cut after six words), or says it is cut (an ellipsis) */
+    const ENDS = [',', ' (', ': ', '; ', ' — ', ' - '];
+    entries.forEach((e) => {
+        const first = (e.items[0] || '').split(' — ')[0];
+        if (first === e.title || first.indexOf(e.title) !== 0 || e.title.slice(-1) === '…') return;
+        const rest = first.slice(e.title.length);
+        ok(ENDS.some((s) => rest.indexOf(s) === 0), 'changelog.html #' + e.id + ': title "' + e.title + '" stops in the middle of its first note "' + first.slice(0, 100) + '"');
+    });
+}
+
+/* titles of new releases (changelog-releases.js) without a short area: the first clause of the first note, whole */
+const t1 = tool.titleOf([{ area: 'The Lab is part of the User Scripts window', text: 'the "Lab (experimental)" section is gone from the Settings tab', tag: 'change' }]);
+ok(t1 === 'The Lab is part of the User Scripts window', 'a long area is the whole title (' + t1 + ')');
+const t2 = tool.titleOf([{ area: '', text: 'Resolve 6 P1 bugs - edge canvas VRAM, ensureEntry crash', tag: 'fix' }, { area: '', text: 'Other', tag: 'fix' }]);
+const t3 = tool.titleOf([{ area: '', text: 'Players named like members of Object or Array ("constructor", "toString") keep their stats', tag: 'fix' }]);
+ok(t2 === 'Resolve 6 P1 bugs' && t3 === 'Players named like members of Object or Array', 'a note without area gives its first clause (' + t2 + ' / ' + t3 + ')');
+const long = 'Cells ' + new Array(40).join('and more words ') + 'end';
+const t4 = tool.titleOf([{ area: '', text: long, tag: 'change' }]);
+ok(t4.length <= 101 && t4.slice(-1) === '…' && long.indexOf(t4.slice(0, -1) + ' ') === 0, 'a very long first clause is cut at a word and ends with an ellipsis (' + t4 + ')');
+ok(tool.titleOf([]) === 'Build update' && tool.titleOf([{ area: 'Phones', text: 'x', tag: 'change' }, { area: 'Bots', text: 'y', tag: 'fix' }]) === 'Phones & Bots', 'short areas still make the title');
+
+/* developers/i18n/html-extract.js leaves elements marked data-i18n-off alone, as scan.js does (it
+ * gave the release notes of changelog.html 605 pack keys) */
+{
+    const outDir = path.join(repo, 'developers', 'tests', 'out', 'releasefacts');
+    fs.mkdirSync(outDir, { recursive: true });
+    const page = path.join(outDir, 'extract.html');
+    fs.writeFileSync(page, '<!doctype html><html><head><title>t</title></head><body>\n' +
+        '<div class="version" lang="en" data-i18n-off="release notes from the git history"><ul><li><strong>Hotkeys window</strong> — Close is the last button on the right again</li></ul>' +
+        '<p title="A tooltip that stays English">A release note that stays English</p></div>\n<p>Some other words of this page</p>\n</body></html>\n');
+    let out = '';
+    try { out = require('child_process').execFileSync(process.execPath, [path.join(repo, 'developers', 'i18n', 'html-extract.js'), page, '--area', 'site-changelog', '--dry'], { encoding: 'utf8' }); } catch (e) { out = String(e.stdout || e.message); }
+    ok(/\{"text":1,"html":0,"wrap":0,"attr":0\}/.test(out), 'html-extract.js marks only the text outside data-i18n-off (' + out.trim() + ')');
 }
 
 /* ---- versions in the project facts ---- */

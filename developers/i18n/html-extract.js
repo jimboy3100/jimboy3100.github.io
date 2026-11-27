@@ -111,7 +111,8 @@ function wanted(text) {
 
 /* ---------- decide ---------- */
 const edits = []; /* { at, insert } */
-const marked = (el) => Object.keys(el.attrs).some((a) => a === 'data-i18n' || a === 'data-i18n-html');
+/* data-i18n-off="why": kept in one language on purpose (release notes from the git history), as scan.js reads it */
+const marked = (el) => Object.keys(el.attrs).some((a) => a === 'data-i18n' || a === 'data-i18n-html' || a === 'data-i18n-off');
 function inlineOnly(el) {
     return el.children.every((c) => c.text != null || (INLINE.has(c.tag) && !marked(c) && inlineOnly(c)));
 }
@@ -125,7 +126,7 @@ let counts = { text: 0, html: 0, wrap: 0, attr: 0 };
 function attrs(el) {
     ['title', 'placeholder', 'alt', 'aria-label', 'value', 'data-original-title'].forEach((a) => {
         const v = el.attrs[a];
-        if (v == null || el.attrs['data-i18n-' + a] != null) return;
+        if (v == null || el.attrs['data-i18n-' + a] != null || el.attrs['data-i18n-off'] != null) return;
         if (a === 'value' && !/^(button|submit|reset)$/i.test(el.attrs.type || '')) return;
         const t = squash(decode(v));
         if (!wanted(t)) return;
