@@ -120,8 +120,33 @@
             setTimeout(hide, 90000);
         })();
     </script>
-    <!-- No service worker: /lib/sw.js could only control /lib/ (GitHub Pages cannot widen its scope),
-         so it never cached play.html's requests and only pre-fetched assets on every version. -->
+    <!-- No service worker any more. Browsers keep a registration after its file is gone: the one at
+         the site root (2026-03 and 2026-07, whole site) still served this page's scripts from its own
+         cache, the later one in the lib folder only pre-fetched assets. Once the page has loaded,
+         unregister only those two (this site's sw.js at the root or in lib) and delete their caches. -->
+    <script id="lm-sw-retire">
+    (function (w) {
+        var OLD_CACHES = ['legendmod-v1', 'lm-static-v1'];
+        function retire(nav, store, origin) {
+            if (!nav || !nav.serviceWorker || !nav.serviceWorker.getRegistrations) return Promise.resolve(0);
+            return nav.serviceWorker.getRegistrations().then(function (regs) {
+                var old = regs.filter(function (r) {
+                    var sw = r.active || r.waiting || r.installing;
+                    var url = (sw && sw.scriptURL) || '';
+                    return url.indexOf(origin + '/') === 0 && /^\/(lib\/)?sw\.js(\?|#|$)/.test(url.slice(origin.length));
+                });
+                var jobs = old.map(function (r) { return r.unregister(); });
+                if (store && store.delete) OLD_CACHES.forEach(function (n) { jobs.push(store.delete(n)); });
+                return Promise.all(jobs).then(function () { return old.length; });
+            });
+        }
+        w.addEventListener('load', function () {
+            setTimeout(function () {
+                try { retire(w.navigator, w.caches, w.location.origin).catch(function () { }); } catch (e) { }
+            }, 3000);
+        });
+    })(window);
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 

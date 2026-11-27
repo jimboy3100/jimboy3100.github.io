@@ -666,6 +666,15 @@
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "lib/sw.js",
+      "canonicalPath": null,
+      "reason": "Retired service worker. play.html registered it until 2026-11-19 (scope /lib/, so it only pre-fetched assets); before that, in 2026-03 and 2026-07, play.html registered the same worker as /sw.js with the whole site as scope, and it served the page scripts from its cache. Browsers keep a registration after its file is gone, so play.html now unregisters this site's sw.js at the root or in lib/ once the page has loaded and deletes their caches (legendmod-v1, lm-static-v1); other workers and caches are left alone. No page registers a worker; expanding.land registers its own on its own origin. Test developers/tests/swretire.js.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": true,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
     }
   ]
 }
