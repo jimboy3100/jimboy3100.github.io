@@ -41257,6 +41257,12 @@ function thelegendmodproject() {
 
                     window.logout();
 
+                    /* the player's choice wins over a pending auto-reconnect of the old server
+                     * (it fired in the 500 ms wait and reopened the old server) */
+                    if (this._reconnTimer) { clearTimeout(this._reconnTimer); this._reconnTimer = null; }
+                    this._lmReconnWs = null;
+                    this._lmReconnGaveUpWs = null;
+
                     var self = this;
                     this._accountDomainSwitchTimer =
                         setTimeout(function () {
@@ -41428,6 +41434,9 @@ function thelegendmodproject() {
                 this._reconnTimer =
                     null;
             }
+
+            /* a new connection: the 'online' listener no longer reopens a given-up server */
+            this._lmReconnGaveUpWs = null;
 
             /* Keep the backoff state for our own auto-reconnects; reset it for user connects. */
             if (this._lmAutoReconnect) {
@@ -43067,13 +43076,16 @@ function thelegendmodproject() {
                 var _reconnElapsed = Date.now() - this._reconnStartTime;
                 var _isDeltioReconn = this.serverType === 'deltio';
                 var _RECONN_MAX_DURATION = _isDeltioReconn ? 300000 : 120000; /* delt.io: 5 min, others: 2 min */
-                var maxAttempts = _isDeltioReconn ? 10 : 5;
+                /* 8 retries (1+2+4+8+16+30+30+30 s) reach the 2-minute cap; 5 gave up after about 31 s */
+                var maxAttempts = _isDeltioReconn ? 10 : 8;
 
                 if (_reconnElapsed > _RECONN_MAX_DURATION) {
                     console.log(consoleMsgLM + ' Auto-reconnect timed out after ' + Math.round(_reconnElapsed / 1000) + 's — server appears offline');
                     this._reconnAttempts = 0;
                     this._reconnStartTime = 0;
                     this._lmReconnWs = null;
+                    /* the network coming back ('online') still reopens this server */
+                    this._lmReconnGaveUpWs = lastWs;
                     if (window.toastr) toastr.warning(lmT('game1.conn.lost'));
                     return;
                 }
@@ -43103,6 +43115,7 @@ function thelegendmodproject() {
                     this._reconnAttempts = 0;
                     this._reconnStartTime = 0;
                     this._lmReconnWs = null;
+                    this._lmReconnGaveUpWs = lastWs;
                     if (window.toastr) toastr.warning(lmT('game1.conn.lost'));
                 }
             }
@@ -57179,16 +57192,20 @@ function thelegendmodproject() {
     /* the FFA PowerUp mass total is stored every 5 s (megaFFAscore): also when the page goes away */
     window.addEventListener('pagehide', function () { try { LM.flushMegaFFAscore(); } catch (e) { } });
     /* Network back while an auto-reconnect is waiting: connect now instead of
-     * sitting out the backoff. Never when no retry is pending or a socket is
-     * already connecting/open (no second socket). */
+     * sitting out the backoff; after the retries gave up, reopen that server
+     * (still the current one). Never when a socket is already connecting/open
+     * (no second socket). */
     window.addEventListener('online', function () {
-        if (!LM._reconnTimer || !LM._lmReconnWs) return;
+        var ws = LM._reconnTimer ? LM._lmReconnWs : LM._lmReconnGaveUpWs;
+        if (!ws) return;
         if (LM.socket && LM.socket.readyState <= 1) return;
-        clearTimeout(LM._reconnTimer);
+        if (!LM._reconnTimer && LM.ws !== ws) return;
+        if (LM._reconnTimer) clearTimeout(LM._reconnTimer);
         LM._reconnTimer = null;
+        LM._lmReconnGaveUpWs = null;
         if (window.core && window.core.connect) {
             LM._lmAutoReconnect = true;
-            window.core.connect(LM._lmReconnWs);
+            window.core.connect(ws);
             LM._lmAutoReconnect = false;
         }
     });
