@@ -28160,12 +28160,9 @@ function thelegendmodproject() {
             var lm = window.legendmod, agar = !!(lm && lm.integrity), known = !!(lm && lm.ws);
             var inBR = agar && known && lm.gameMode === ':battleroyale';
             var bots = !!this._lmQuickBotsButton && agar;
-            var buttons = bots + ',' + inBR;
-            if (buttons !== this._lmQuickButtons) {
-                this._lmQuickButtons = buttons;
-                $('.quick.quick-bots.ogicon-trophy').toggle(bots);
-                $('.quick.quick-br').toggle(inBR);
-            }
+            /* no cache: it runs on events only, and a button made after an earlier sync gets its state too */
+            $('.quick.quick-bots.ogicon-trophy').toggle(bots);
+            $('.quick.quick-br').toggle(inBR);
             if (known && inBR !== this._lmQuickInBR) this._lmQuickSwitchBR(inBR);
             if (known && !inBR && this._lmQuickBR) this.setQuickPanel(null);
             /* a hidden button: its panel is closed too (also after a settings import or a profile) */
