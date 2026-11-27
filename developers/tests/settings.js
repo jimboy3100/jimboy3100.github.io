@@ -485,6 +485,13 @@ depRun({ showMass: false });
 check('Show mass off: the cell mass options are dimmed, Mass format is not (it still sets the HUD mass texts)',
   depWhy('autoHideMass') === 'Needs: showMass' && depWhy('massFormat') === '');
 check('Multibox rings category removed: no ring setting left (the ring on the player you control has none)', !Object.keys(D).some(k => /^mbRing/.test(k)));
+/* a key saved on the removed hotkey Show/hide multibox rings is free again, the other keys stay */
+{
+  const fn = main.replace(/\r/g, ''), a = fn.indexOf('function lmRenameOldHotkeys(map) {'), b = fn.indexOf('\n}', a);
+  const hk = { R: 'hk-mbRings', '': 'hk-mbRings', W: 'hk-feed' };
+  vm.runInNewContext(fn.slice(a, b + 2) + '\nlmRenameOldHotkeys(hotkeys);', { hotkeys: hk });
+  check('stored key on the removed multibox rings hotkey dropped', !('R' in hk) && !('' in hk) && hk.W === 'hk-feed');
+}
 depRun({});
 check('defaults: none of these dimmed, and every switch of the list is a real setting',
   ['rainbowMapBorders'].every(k => depWhy(k) === '') &&
