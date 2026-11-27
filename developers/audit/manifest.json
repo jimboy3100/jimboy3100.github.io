@@ -4794,6 +4794,60 @@
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/FAYiz/fayizbackground.jpg",
+      "canonicalPath": "banners/iconGreybackground.jpg",
+      "reason": "Byte-identical copy (2.8 MB) of banners/iconGreybackground.jpg. Its only user ever was the archived page extras/banneranimatedFayiz3.html, which has loaded the picture from game.fzogar.xyz for years; no file of this or another repository (expandingland, legendworld-help, LegendWorld, deltav4) names it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/VideoLegendModPromo.mp4",
+      "canonicalPath": "https://dkyriak.github.io/VideoLegendModPromo.mp4",
+      "reason": "Byte-identical copy (9.5 MB, same SHA-1) of the video the skins gallery (skins/index.html, video skins) shows and players use as a video skin: https://dkyriak.github.io/VideoLegendModPromo.mp4. This copy got its name in March 2026 and nothing in any repository ever loaded it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconmod2.png",
+      "canonicalPath": "banners/iconmod3.png",
+      "reason": "Byte-identical copy of banners/iconmod3.png (the one the pages use); no version of any file in the history of this repository, and no other repository, ever named iconmod2.png.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconvanillaliking2.png",
+      "canonicalPath": "banners/iconvanillaliking3.png",
+      "reason": "Byte-identical copy of banners/iconvanillaliking3.png (the one banners/bannervanillaliking shows); never named by any file in the history of this repository or by another repository.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/grid2.png",
+      "canonicalPath": null,
+      "reason": "Unused 14142x14142 grid picture (5.3 MB). The custom grid (drawCustomNewGrid in ogario/ogario.v4.js) loads only banners/grid3.png; the history of every script, page, style and data file never names grid2.png, the grid URL is not built from a number anywhere, and no other repository names it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/grid5.png",
+      "canonicalPath": null,
+      "reason": "Unused 12000x12000 grid picture (5.1 MB). It was only ever in commented-out lines next to the banners/grid3.png that drawCustomNewGrid loads; no other repository names it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
     }
   ]
 }
