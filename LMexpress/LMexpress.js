@@ -7473,20 +7473,7 @@ function initializeLM(modVersion) {
         }
         $('body').append($('<div id="loaderIframeInfo1"></div>').append($('<iframe id="loaderIframeInfo" name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe>').attr('src', detailed1)));
         $('#loaderIframeInfo1').hide();
-        setTimeout(function () {
-            if (window.FreskinsMap && window.FreskinsMap.includes($("#nick").val())) {
-                for (var player = 0; player < window.FreeSkins.length; player++) {
-                    if ($("#nick").val() == window.FreeSkins[player].id) {
-                        core.registerSkin($("#nick").val(), null, window.LM_CONFIG_CDN + "/" + window.agarversion + window.FreeSkins[player].image, null);
-                    }
-                }
-            }
-            else if (legendflags.includes(LowerCase($("#nick").val()))) {
-                //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " " + LowerCase($("#nick").val()) + " skin found. Skin registered");
-                /* the skin resolver's flag URL (ogario/skinresolver.js): names with spaces stay real file names */
-                core.registerSkin($("#nick").val(), null, typeof _lmSkinRes === 'function' ? _lmSkinRes().flag(LowerCase($("#nick").val())) : "https://www.legendmod.ml/agario/live/flags/" + LowerCase($("#nick").val()) + ".png", null);
-            }
-        }, 1000);
+        /* the own free skin / flag is registered by the core at play() (findOwnedVanillaSkin) */
         $('#loaderIframeInfo').on('load', function () {
             $('#loaderIframeInfo').remove();
         });

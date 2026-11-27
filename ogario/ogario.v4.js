@@ -29251,15 +29251,17 @@ function thelegendmodproject() {
             this.autoResp();
         },
         findOwnedVanillaSkin() {
-            let player;
-            if (legendflags.includes(LowerCase(ogarcopythelb.nick))) {
+            let player, freeImage = '';
+            const isFlag = legendflags.includes(LowerCase(ogarcopythelb.nick));
+            /* free-skin ids keep their case in the configuration (Pika, Sonic): compared ignoring
+             * case, as other cells' names are (vanillaskins). The only own free-skin registration */
+            for (player = 0; !isFlag && !freeImage && window.FreeSkins && player < window.FreeSkins.length; player++) {
+                if (window.FreeSkins[player] && LowerCase(String(window.FreeSkins[player].id)) === LowerCase(ogarcopythelb.nick)) freeImage = window.FreeSkins[player].image;
+            }
+            if (isFlag) {
                 core.registerSkin(ogarcopythelb.nick, null, _lmSkinRes().flag(LowerCase(ogarcopythelb.nick)), null);
-            } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
-                for (player = 0; player < window.FreeSkins.length; player++) {
-                    if (LowerCase(ogarcopythelb.nick) === window.FreeSkins[player].id) {
-                        core.registerSkin(ogarcopythelb.nick, null, _lmSkinRes().vanilla(window.FreeSkins[player].image), null);
-                    }
-                }
+            } else if (freeImage) {
+                core.registerSkin(ogarcopythelb.nick, null, _lmSkinRes().vanilla(freeImage), null);
             } else if (!ogarcopythelb.skinURL && (defaultmapsettings.vanillaSkins || defaultmapsettings.ownVanillaSkin) && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
                 //console.log("1. skin_" + window.UserVanillaSkin);
                 if (window.UserVanillaSkin.includes("skin_custom")) {

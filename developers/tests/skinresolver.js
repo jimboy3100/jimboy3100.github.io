@@ -373,6 +373,48 @@ const report = {};
         const key = R.key(gallery);
         check('target HUD: a skin cached under its canonical key is shown (src ' + attrs[attrs.length - 1] + ')', key !== gallery && !!h.A.customSkinsCache[key] && attrs[attrs.length - 1] === key && h.A.targetSkinURL === gallery);
     }
+    /* 9. the player's own free skin / flag at Play: the real findOwnedVanillaSkin (run by play())
+     * plus the real LMexpress Play click handler. The handler registered the same free skin again
+     * 1 s later on configs-web (a second download, decode and cache entry, and its URL won); the
+     * core missed free-skin ids with capitals (Pika, Sonic). One registration, on the mirror. */
+    {
+        const lmxSrc = fs.readFileSync(process.argv[3] || path.join(ROOT, 'LMexpress', 'LMexpress.js'), 'utf8').replace(/\r\n/g, '\n');
+        const ci = lmxSrc.indexOf('$(\'*[data-itr="page_play"]\').click(function () {');
+        let ce = -1;
+        for (let k = lmxSrc.indexOf('{', ci), d = 0; ci >= 0 && k < lmxSrc.length; k++) {
+            if (lmxSrc[k] === '{') d++;
+            else if (lmxSrc[k] === '}' && !--d) { ce = k + 1; break; }
+        }
+        const handler = lmxSrc.slice(lmxSrc.indexOf('function', ci), ce);
+        const free = JSON.parse(fs.readFileSync(path.join(ROOT, 'agario', 'live', 'GameConfiguration.json'), 'utf8')).gameConfig['Gameplay - Free Skins'];
+        const flagsSrc = src.match(/\nvar legendflags = (\[[^\]]*\]);/)[1];
+        const play = async (nick) => {
+            const h = harness();
+            const reg = [];
+            const later = [];
+            h.ctx.setTimeout = (f) => { later.push(f); return 0; };
+            const jq = { val: () => '', click() { return jq; }, append() { return jq; }, attr() { return jq; }, hide() { return jq; }, on() { return jq; }, remove() { return jq; } };
+            h.ctx.$ = (s) => s === '#nick' ? { val: () => nick } : jq;
+            Object.assign(h.ctx, { localStorage: { setItem() { } }, searchSip: null, removeEmojis: (s) => s, LM_CONFIG_CDN: 'https://configs-web.agario.miniclippt.com/live', agarversion: 'v15/10935/',
+                ogarcopythelb: { nick: nick }, defaultmapsettings: {}, FreeSkins: free, FreskinsMap: free.map((s) => s.id),
+                core: { registerSkin: (n, b, u) => { reg.push(u); h.load(u); } } });
+            vm.runInContext(fn('LowerCase') + '\nvar legendflags = ' + flagsSrc + ';\nObject.assign(application, {' + method('findOwnedVanillaSkin') + ', customSkinsMap: {} });\nvar lastIP;\nwindow.__pagePlay = ' + handler + ';', h.ctx);
+            h.A.findOwnedVanillaSkin();
+            if (ce > 0) h.ctx.__pagePlay();
+            later.splice(0).forEach((f) => f());
+            await h.settle();
+            return { reg: reg, keys: reg.map((u) => R.key(u)), requests: h.requests.length, jobs: h.jobs.length, cache: Object.keys(h.A.customSkinsCache).length };
+        };
+        const pikaKey = R.key(J + 'vanillaskins/' + free.find((s) => s.id === 'Pika').image);
+        const usa = await play('usa'), pika = await play('Pika'), pikaLow = await play('pika'), poland = await play('poland');
+        report.ownFreeSkinUsa = usa.requests + ' requests / ' + usa.jobs + ' jobs / ' + usa.cache + ' cache entries';
+        check('own free skin "usa" at Play: 1 download, 1 decode job, 1 cache entry, on the mirror (' + report.ownFreeSkinUsa + ')',
+            usa.requests === 1 && usa.jobs === 1 && usa.cache === 1 && usa.keys.every((k) => k === J + 'vanillaskins/usa.png'), JSON.stringify(usa.reg));
+        check('  free-skin id with capitals "Pika" is registered on the mirror (the core missed it)', pika.reg.length === 1 && pika.keys[0] === pikaKey, JSON.stringify(pika.reg));
+        check('  "pika" typed in lower case finds it too, as other cells named pika do', pikaLow.reg.length === 1 && pikaLow.keys[0] === pikaKey, JSON.stringify(pikaLow.reg));
+        check('  "poland" (a Legend Mod flag and a free skin): the flag, once, as for other cells named poland', poland.reg.length === 1 && poland.keys[0] === R.key(L + 'agario/live/flags/poland.png') && poland.requests === 1, JSON.stringify(poland.reg));
+        check('  no configs-web free-skin URL is registered by the Play click', ![usa, pika, pikaLow, poland].some((r) => r.reg.some((u) => /configs-web/.test(u))));
+    }
 
     /* ---- players' old saved data: URLs resolved where they are used, nothing rewritten ---- */
     {
