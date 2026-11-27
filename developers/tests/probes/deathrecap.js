@@ -46,6 +46,9 @@
       info.cardRect = [Math.round(mr.left), Math.round(mr.top), Math.round(mr.right), Math.round(mr.bottom)];
       need('recap on screen', inBox(pr));
       need('card on screen', inBox(mr));
+      /* seen, not cut off by a scrolling box around it */
+      var hit = document.elementFromPoint((pr.left + pr.right) / 2, pr.top + Math.min(20, pr.height / 2));
+      need('recap visible (not clipped)', !!hit && panel.contains(hit));
       var card = modal.querySelector('.lm-go-card');
       if (card && panel.parentNode === modal) need('recap beside the card, not over it', !overlap(card.getBoundingClientRect(), panel.getBoundingClientRect()));
       info.wide = panel.parentNode === modal;
