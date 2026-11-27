@@ -244,7 +244,7 @@
 "site.index.themeTemplatesLegendHelper": "Themasjablonen (Legend Helper) behouden je profielen, sneltoetsen en chatcommando's; exports bevatten ook verborgen profielen.",
 "site.index.expandingLandEscCloses": "Expanding Land: Esc sluit alleen het bovenste venster, potionknoppen kunnen niet twee keer worden ingedrukt, uitloggen sluit alle shopvensters.",
 "site.index.newSettingsSearchBox": "<b>Nieuw:</b> zoekvak voor instellingen, een lijst <b>Bound keys</b> in Hotkeys, een sessieoverzicht onder het menu, een optionele <b>FPS-limiet</b> (spaart batterij), en een sneltoets om Performance mode aan/uit te zetten.",
-"site.index.newOptionsOffBy": "<b>Nieuwe opties</b> (standaard uit): overlevingstijd in de stats, massa in de tabbladtitel, bureaubladmelding als iemand je noemt, regenboogranden van de map, HUD-vervaging, merge-ringen aan/uit. De server- en partyvakken stellen nu je laatste 5 joins voor.",
+"site.index.newOptionsOffBy": "<b>Nieuwe opties</b> (standaard uit): overlevingstijd in de stats, massa in de tabbladtitel, regenboogranden van de map, HUD-vervaging, merge-ringen aan/uit. De server- en partyvakken stellen nu je laatste 5 joins voor.",
 "site.index.expandingLandHotkeysFor": "<b>Expanding Land:</b> sneltoetsen voor Leagues, Shop, Challenges, Potions en Claim All; Claim All verschijnt als er iets klaarstaat. <b>Mobiel:</b> optionele snelchatknoppen, multiboxknop en trilinstellingen.",
 "site.index.new": "Nieuw:",
 "site.index.replayPauseSpeedAnd": "sneltoetsen voor pauze, snelheid en spoelen in replays; sneltoetsen voor multibox-weergave en -ringen; optionele geluiden voor 16 stukken en virussen; optioneel spoor van je pad op de minimap; een kopieerknop op de Game Over-kaart. Replays springen bij Start niet meer naar het einde.",

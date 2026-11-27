@@ -244,7 +244,7 @@
 "site.index.themeTemplatesLegendHelper": "Theme-Vorlagen (Legend Helper) behalten deine Profile, Hotkeys und Chatbefehle; Exporte enthalten auch versteckte Profile.",
 "site.index.expandingLandEscCloses": "Expanding Land: Esc schließt nur das oberste Fenster, Trank-Buttons können nicht doppelt gedrückt werden, Abmelden schließt alle Shop-Fenster.",
 "site.index.newSettingsSearchBox": "<b>Neu:</b> Suchfeld für Einstellungen, eine Liste <b>Bound keys</b> unter Hotkeys, eine Sitzungsübersicht unter dem Menü, ein optionales <b>FPS-Limit</b> (spart Akku) und ein Hotkey zum Umschalten des Leistungsmodus.",
-"site.index.newOptionsOffBy": "<b>Neue Optionen</b> (standardmäßig aus): Überlebenszeit in den Stats, Masse im Tab-Titel, Desktop-Benachrichtigung bei Erwähnung, Regenbogen-Mapränder, HUD-Unschärfe, Merge-Ringe an/aus. Server- und Party-Felder schlagen jetzt deine letzten 5 Beitritte vor.",
+"site.index.newOptionsOffBy": "<b>Neue Optionen</b> (standardmäßig aus): Überlebenszeit in den Stats, Masse im Tab-Titel, Regenbogen-Mapränder, HUD-Unschärfe, Merge-Ringe an/aus. Server- und Party-Felder schlagen jetzt deine letzten 5 Beitritte vor.",
 "site.index.expandingLandHotkeysFor": "<b>Expanding Land:</b> Hotkeys für Ligen, Shop, Challenges, Tränke und Claim All; Claim All erscheint, wenn etwas bereitliegt. <b>Mobil:</b> optionale Schnellchat-Buttons, Multibox-Button und Vibrationseinstellungen.",
 "site.index.new": "Neu:",
 "site.index.replayPauseSpeedAnd": "Hotkeys für Replay-Pause, -Tempo und Spulen; Hotkeys für Multibox-Ansicht und -Ringe; optionale Sounds für 16 Teile und Viren; optionale Spur deines Wegs auf der Minimap; ein Kopieren-Button auf der Game-Over-Karte. Replays springen beim Start nicht mehr ans Ende.",

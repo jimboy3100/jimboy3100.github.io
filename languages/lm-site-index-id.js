@@ -244,7 +244,7 @@
 "site.index.themeTemplatesLegendHelper": "Template tema (Legend Helper) mempertahankan profil, hotkey, dan perintah chat kamu; ekspor juga menyertakan profil tersembunyi.",
 "site.index.expandingLandEscCloses": "Expanding Land: Esc hanya menutup jendela paling atas, tombol ramuan tidak bisa ditekan dua kali, logout menutup semua jendela toko.",
 "site.index.newSettingsSearchBox": "<b>Baru:</b> kotak pencarian pengaturan, daftar <b>Tombol terpasang</b> di Hotkey, ringkasan sesi di bawah menu, <b>batas FPS</b> opsional (hemat baterai), dan hotkey untuk menyalakan/mematikan Mode performa.",
-"site.index.newOptionsOffBy": "<b>Opsi baru</b> (nonaktif secara default): waktu hidup di statistik, massa di judul tab, notifikasi desktop saat ada yang menyebutmu, batas peta pelangi, blur HUD, cincin merge on/off. Kotak server dan party sekarang menyarankan 5 tempat terakhir yang kamu masuki.",
+"site.index.newOptionsOffBy": "<b>Opsi baru</b> (nonaktif secara default): waktu hidup di statistik, massa di judul tab, batas peta pelangi, blur HUD, cincin merge on/off. Kotak server dan party sekarang menyarankan 5 tempat terakhir yang kamu masuki.",
 "site.index.expandingLandHotkeysFor": "<b>Expanding Land:</b> hotkey untuk Liga, Toko, Tantangan, Ramuan, dan Claim All; Claim All muncul saat ada yang siap diklaim. <b>Mobile:</b> tombol quick chat opsional, tombol multibox, dan pengaturan getar.",
 "site.index.new": "Baru:",
 "site.index.replayPauseSpeedAnd": "hotkey jeda, kecepatan, dan lompat replay; hotkey tampilan dan cincin multibox; suara opsional untuk 16 bagian dan virus; jejak opsional jalur kamu di minimap; tombol salin di kartu Game Over. Replay tidak lagi langsung lompat ke akhir saat Start.",
