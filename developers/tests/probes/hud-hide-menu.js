@@ -29,7 +29,9 @@
     var hit = inView ? document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2) : null;
     info[name] = getComputedStyle(ov).visibility + '/' + getComputedStyle(ov).display + ' hit ' + (hit ? (hit.id || String(hit.className || '') || hit.tagName) : null);
     if (getComputedStyle(ov).visibility === 'hidden') fail.push(name + ': the menu opened under the HUD hide: invisible');
-    if (inView && !(hit && (hit === nick || nick.contains(hit)))) fail.push(name + ': the menu\'s nick field cannot be tapped: ' + info[name]);
+    /* a dialog the page opened over the menu (a server promo) may cover the field: that is not the HUD hide */
+    var overByDialog = !!(hit && hit.closest && hit.closest('.modal'));
+    if (inView && !overByDialog && !(hit && (hit === nick || nick.contains(hit)))) fail.push(name + ': the menu\'s nick field cannot be tapped: ' + info[name]);
     if (chipOn()) { fail.push(name + ': the HUD hide chip stayed over the menu'); T.shotOff(); }
   };
   try {
