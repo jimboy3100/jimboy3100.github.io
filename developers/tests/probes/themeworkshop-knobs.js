@@ -35,9 +35,10 @@
   var stored = null;
   try { stored = localStorage.getItem('ogarioThemeSettings'); } catch (e) { }
   var activeTab = $('.menu-tabs li.active a').first();
-  /* windows shown over the menu (promotions, also ones that open late) are put aside */
+  /* windows shown over the menu (promotions, also ones that open late) are put aside, and the
+   * toasts: on a phone the toasts of a probe before (User Scripts) lie over the workshop's tabs */
   var aside = [];
-  var putAside = function () { $('.modal.in, .modal[style*="block"], .modal-backdrop').each(function () { if (this.style.display === 'none') return; aside.push([this, this.style.display]); this.style.display = 'none'; }); };
+  var putAside = function () { $('.modal.in, .modal[style*="block"], .modal-backdrop, #toast-container').each(function () { if (this.style.display === 'none') return; aside.push([this, this.style.display]); this.style.display = 'none'; }); };
   putAside();
   var hc = document.getElementById('helloContainer'), hcHide = hc && !$(hc).is(':visible');
   try {
