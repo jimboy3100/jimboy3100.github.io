@@ -26939,7 +26939,9 @@ function thelegendmodproject() {
                  * (ogario/modules/profiles.js, application.lmPresets) create a profile from one.
                  * lbl: text keys of settings that have no menu label. */
                 var presets = {
-                    competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStatsFPS: true, showStatsPPS: true, splitPrediction: true } },
+                    /* with the switches its options need: Stats for FPS / PPS, Cursor tracking for
+                     * split prediction (its line or bubble look stays the player's) */
+                    competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStats: true, showStatsFPS: true, showStatsPPS: true, cursorTracking: true, splitPrediction: true } },
                     battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0, highDPI: false, showBgSectors: false } },
                     /* tip: what it changes and what it leaves (not a privacy guarantee: nothing drawn
                      * in the game is hidden, and the stream overlay has its own switches) */
@@ -26951,6 +26953,14 @@ function thelegendmodproject() {
                     multibox: { key: 'pkg.pt.presetMultibox', en: 'Multibox', set: { mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true } }
                 };
                 application.lmPresets = presets;
+                /* A preset value is the player's choice, over the value Adaptive performance lowered for
+                 * now and over Performance mode's copy: setSettings tells both (also for a slider);
+                 * where it is not run (the value is there already, a setting without a control)
+                 * this does, so each key tells them once. */
+                var ownOpt = function (k, v) {
+                    if (window.LMPerf && typeof window.LMPerf.onSetting === 'function') { try { window.LMPerf.onSetting(k, v); } catch (e) { } }
+                    application._lmPerfModeOwn(k, v);
+                };
                 var setOpt = function (k, v) {
                     var cb = document.getElementById(k);
                     if (cb && cb.type === 'checkbox' && $(cb).closest('#og-options').length) {
@@ -26961,17 +26971,23 @@ function thelegendmodproject() {
                             try { cb.dispatchEvent(new Event('change', { bubbles: true })); return; } catch (e) { }
                         }
                         if (defaultmapsettings[k] !== v) application.setSettings(k, v);
+                        else ownOpt(k, v);
                         return;
                     }
                     /* a dropdown (Mass format): setSettings applies it, saves and shows it */
                     if (cb && cb.tagName === 'SELECT' && $(cb).closest('#og-options').length) { application.setSettings(k, v); return; }
                     var sl = $('#' + k + '-slider');
                     if (sl.length && sl.closest('#og-options').length) { sl.val(v).trigger('input').trigger('change'); return; }
+                    ownOpt(k, v);
                     defaultmapsettings[k] = v;
                     /* the eye buttons next to the nick and the skin (no switch in Settings) */
                     var after = k === 'streamMode' ? 'setStreamMode' : k === 'hideSkinUrl' ? 'setHideSkinUrl' : '';
                     if (after && typeof application[after] === 'function') application[after]();
                 };
+                /* The values from before the first of consecutive presets, for Undo (a reset and an
+                 * import reload the page; a settings profile updates it, _lmPresetUndoSet). Undo puts
+                 * back the keys the presets set, also over a change by hand made since (the
+                 * confirmation says so: "Undo puts them back"). */
                 var undoKey = 'lmPresetUndo';
                 var undoSnap = null;
                 try { undoSnap = JSON.parse(window.localStorage.getItem(undoKey) || 'null'); } catch (e) { }
@@ -27016,25 +27032,32 @@ function thelegendmodproject() {
                     keys.forEach(function (k) { if (!snap.hasOwnProperty(k)) snap[k] = window.LMPerf && typeof window.LMPerf.userValue === 'function' ? window.LMPerf.userValue(k) : defaultmapsettings[k]; });
                     undoSnap = snap;
                     try { window.localStorage.setItem(undoKey, JSON.stringify(snap)); } catch (e) { }
-                    /* a preset value is the player's choice over Performance mode's copy, also one
-                     * the mode had set already (no change event then) */
-                    keys.forEach(function (k) { setOpt(k, p.set[k]); application._lmPerfModeOwn(k); });
+                    keys.forEach(function (k) { setOpt(k, p.set[k]); });
                     application.saveSettings(defaultmapsettings, 'ogarioSettings');
                     undoBtn.show();
                     return false;
                 });
                 undoBtn.on('click', function () {
                     var snap = undoSnap;
-                    undoSnap = null;
-                    try { window.localStorage.removeItem(undoKey); } catch (e) { }
+                    /* the copy goes only once every value is back and saved: what failed stays for
+                     * another Undo (the button stays) */
+                    var failed = {}, nFailed = 0;
                     if (snap) {
                         /* the snapshot can come from an import: only values that fit their setting */
                         Object.keys(snap).forEach(function (k) {
                             var v = lmSettingValue(k, snap[k]);
-                            if (v !== undefined && defaultmapsettings.hasOwnProperty(k)) { setOpt(k, v); application._lmPerfModeOwn(k); }
+                            if (v === undefined || !defaultmapsettings.hasOwnProperty(k)) return;
+                            try { setOpt(k, v); } catch (e) { failed[k] = snap[k]; nFailed++; }
                         });
-                        application.saveSettings(defaultmapsettings, 'ogarioSettings');
+                        try { application.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (e) { failed = snap; nFailed = 1; }
                     }
+                    if (nFailed) {
+                        undoSnap = failed;
+                        try { window.localStorage.setItem(undoKey, JSON.stringify(failed)); } catch (e) { }
+                        return false;
+                    }
+                    undoSnap = null;
+                    try { window.localStorage.removeItem(undoKey); } catch (e) { }
                     undoBtn.hide();
                     return false;
                 });

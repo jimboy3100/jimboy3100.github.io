@@ -153,10 +153,10 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     check('adaptive level 2 lowered effects for now', p.S.jellyPhisycs === false && p.S.suckAnimation === false && p.S.hudBlur === 0);
     p.user('performanceMode', true);
     check('mode on during level 2: the copy has the player\'s values, not the lowered ones', JSON.stringify(p.backup()) === JSON.stringify(ON));
-    /* while on: the player turns jelly on, adaptive lowers it again for now */
+    /* while on: the player turns jelly on while level 2 is on: the player's choice, kept */
     p.user('jellyPhisycs', true);
     p.ctx.LMPerf._setLevel(2);
-    check('adaptive lowered the hand-set jelly again (runtime only)', p.S.jellyPhisycs === false && p.ctx.LMPerf.userValue('jellyPhisycs') === true);
+    check('adaptive leaves the jelly turned on by hand during its level', p.S.jellyPhisycs === true && p.ctx.LMPerf.userValue('jellyPhisycs') === true);
     p.user('performanceMode', false);
     check('mode off: the restore writes the copy and the player\'s jelly, adaptive keeps its own values apart', p.ctx.LMPerf.userValue('jellyPhisycs') === true &&
         KEYS.every((k) => p.ctx.LMPerf.userValue(k) === ON[k]));
@@ -280,6 +280,102 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     q.preset('multibox');
     check('Multibox preset: switching after death on, no ring settings (the ring is fixed)', q.S.mbSwitchAfterDeath === true && !('mbRingsP1' in q.S));
     q.undo();
+}
+
+/* 11c. Adaptive performance and changes by hand, profiles and the same Performance mode value */
+{
+    const AD = { adaptivePerf: true, adaptivePerfToasts: false };
+    const p = page({ settings: Object.assign({}, ON, AD) });
+    p.ctx.LMPerf._setLevel(2);
+    /* a settings profile with the mode as it is (profiles.js, same value), and a switch sending the same value */
+    p.ctx.LMPerf.onSetting('performanceMode', false);
+    p.ctx.LMPerf.onSetting('performanceMode');
+    p.user('performanceMode', false);
+    check('the same Performance mode value again: the effects Adaptive performance lowered stay lowered', p.S.jellyPhisycs === false && p.S.suckAnimation === false && p.S.hudBlur === 0 &&
+        p.ctx.LMPerf.userValue('jellyPhisycs') === true);
+    /* a key that was off when its level came, turned on by hand (hotkey) while that level is on: kept, as a lowered key the player changes */
+    const q = page({ settings: Object.assign({}, ON, AD, { showBgSectors: false, videoSkins: false }) });
+    q.ctx.LMPerf._setLevel(2);
+    q.user('showBgSectors', true);
+    /* a settings profile's value is not such a choice (the mode's own changes neither) */
+    q.A._lmPerfApplying = true;
+    try { q.user('videoSkins', true); } finally { q.A._lmPerfApplying = false; }
+    q.ctx.LMPerf._setLevel(2);
+    check('a key turned on by hand while its level is on stays on; a profile value is lowered for now', q.S.showBgSectors === true && q.S.videoSkins === false && q.ctx.LMPerf.userValue('videoSkins') === true);
+    /* Adaptive performance off and on again starts afresh: the choice no longer blocks it */
+    q.S.adaptivePerf = false; q.ctx.LMPerf.configChanged();
+    q.S.adaptivePerf = true; q.ctx.LMPerf.configChanged();
+    q.ctx.LMPerf._setLevel(2);
+    check('Adaptive performance off and on: the kept choices end, the key is lowered for now', q.S.showBgSectors === false && q.ctx.LMPerf.userValue('showBgSectors') === true);
+    /* a change before any level is the player's setting, lowered later when the game is slow */
+    const r = page({ settings: Object.assign({}, ON, AD, { eatPulse: false }) });
+    r.user('eatPulse', true);
+    r.ctx.LMPerf._setLevel(1);
+    check('a key turned on before its level: lowered for now when the level comes', r.S.eatPulse === false && r.ctx.LMPerf.userValue('eatPulse') === true);
+    /* the mode on again while it is on (a script): nothing switches, the lowered values stay lowered */
+    const m = page({ settings: Object.assign({}, ON, AD, { performanceMode: true }), boxes: KEYS.filter((k) => k !== 'hudBlur') });
+    m.ctx.LMPerf._setLevel(2);
+    m.user('performanceMode', true);
+    check('Performance mode on again during level 2: no copy of lowered values, they stay lowered', m.backup() === null && m.S.jellyPhisycs === false && m.ctx.LMPerf.userValue('jellyPhisycs') === true);
+}
+
+/* 11d. presets: one path for every key (Adaptive performance and the mode's copy asked once per key) */
+{
+    const p = page({ settings: Object.assign({}, ON, { performanceMode: true, adaptivePerf: true, adaptivePerfToasts: false }), boxes: ['jellyPhisycs', 'videoSkins', 'highDPI'] });
+    p.store.lmPerfBackup = JSON.stringify(ON);
+    p.S.highDPI = false; p.ctx.document.getElementById('highDPI').checked = false;   /* already the preset's value: no change event */
+    const own = {}, asked = {};
+    const realOwn = p.A._lmPerfModeOwn;
+    p.A._lmPerfModeOwn = function (k, v) { own[k] = (own[k] || 0) + 1; return realOwn.call(this, k, v); };
+    const realOn = p.ctx.LMPerf.onSetting;
+    p.ctx.LMPerf.onSetting = function (k, v) { asked[k] = (asked[k] || 0) + 1; return realOn.call(this, k, v); };
+    p.preset('battery');
+    const keys = Object.keys(p.A.lmPresets.battery.set).filter((k) => k in p.S);
+    check('preset: every key asks the mode\'s copy and Adaptive performance once (switch, same value, slider, other)', keys.every((k) => own[k] === 1 && asked[k] === 1) ||
+        (console.log('   own ' + JSON.stringify(own) + ' asked ' + JSON.stringify(asked)), false));
+    check('preset: its keys left the mode\'s copy, also the one already at its value', p.backup() && !('highDPI' in p.backup()) && !('jellyPhisycs' in p.backup()) && p.backup().eatPulse === true);
+}
+
+/* 11e. presets turn on what their options need (Settings > Helpers, Stats), and leave the looks */
+{
+    const DEPS = vm.runInNewContext('(' + cut('                var DEPS = {', '\n                };').replace('                var DEPS = ', '') + '\n})');
+    const parentOf = {};
+    Object.keys(DEPS).forEach((par) => DEPS[par].forEach((c) => { parentOf[c] = par; }));
+    const allOff = {};
+    Object.keys(DEPS).forEach((par) => { allOff[par] = false; });
+    const q = page({ settings: Object.assign({}, allOff, { bubbleCursorTracker: true }) });
+    const missing = [];
+    Object.keys(q.A.lmPresets).forEach((id) => {
+        const p = page({ settings: allOff });
+        p.A.setStreamMode = p.A.setHideSkinUrl = () => { };
+        p.preset(id);
+        Object.keys(p.A.lmPresets[id].set).forEach((k) => {
+            if (!(k in p.S) || !p.S[k]) return;
+            for (let par = parentOf[k], n = 0; par && n < 5; par = parentOf[par], n++) if (par in p.S && !p.S[par]) missing.push(id + ': ' + k + ' needs ' + par);
+        });
+    });
+    check('presets: every option a preset turns on has the switches it needs on', missing.length === 0 || (console.log('   ' + missing.join('; ')), false));
+    q.preset('competitive');
+    check('Competitive: Cursor tracking and Stats on for split prediction and FPS / PPS, the bubble look kept', q.S.cursorTracking === true && q.S.showStats === true && q.S.bubbleCursorTracker === true);
+    q.undo();
+    check('Competitive Undo: Cursor tracking and Stats back off', q.S.cursorTracking === false && q.S.showStats === false);
+}
+
+/* 11f. the preset Undo: its copy goes only when everything is back (after a profile: profiles.js) */
+{
+    const q = page({ settings: ON });
+    let fails = false;
+    q.A.setStreamMode = () => { if (fails) throw new Error('eye button'); };
+    q.A.setHideSkinUrl = () => { };
+    q.preset('streamer');
+    fails = true;
+    let err = null;
+    try { q.undo(); } catch (e) { err = e; }
+    const left = q.store.lmPresetUndo ? JSON.parse(q.store.lmPresetUndo) : null;
+    check('Undo with a value that fails: the others are back, the copy keeps what failed', !err && q.S.hidecountry === false && q.S.showChat === true && !!left && 'streamMode' in left && !('showChat' in left));
+    fails = false;
+    q.undo();
+    check('Undo again: the rest back, the copy gone', q.S.streamMode === false && q.store.lmPresetUndo === undefined);
 }
 
 /* 12. without perf.js (it failed to load): the copy rules still hold */

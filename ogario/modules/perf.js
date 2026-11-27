@@ -205,9 +205,12 @@
      * is kept here and put back exactly; userView() gives the settings as the player set them
      * (used when they are saved or exported). A key whose value is no longer the lowered one was
      * changed by the player meanwhile (hotkey, preset): that is kept and the key is left alone
-     * for the rest of the session. */
+     * for the rest of the session. So is a key of the level in force that the player sets by
+     * hand although it was not lowered (it was off when the level came); a change made before
+     * its level came stays the player's setting, lowered for now like the others. The kept keys
+     * are free again when Adaptive performance is turned off (reset). */
     function createOverrides(settings, mirror) {
-        var saved = {}, locked = {}, size = 0;
+        var saved = {}, locked = {}, size = 0, active = [];
         var set = function (k, v, changed) {
             settings[k] = v;
             if (mirror && hasOwn(mirror, k)) mirror[k] = v;
@@ -247,13 +250,19 @@
                 }
                 return found;
             },
-            /* the player sets k (called before the new value is stored) */
-            userChanged: function (k) {
-                if (!hasOwn(saved, k)) return false;
+            /* the player sets k (called before the new value is stored); byHand: not a value of a
+             * settings profile or of Performance mode itself */
+            userChanged: function (k, byHand) {
+                if (!hasOwn(saved, k)) {
+                    if (!byHand || active.indexOf(k) < 0) return false;
+                    locked[k] = true;
+                    return true;
+                }
                 drop(k);
                 locked[k] = true;
                 return true;
             },
+            reset: function () { locked = {}; },
             userView: function (obj) {
                 obj = obj || settings;
                 var out = {}, k;
@@ -265,7 +274,9 @@
             sync: function (level, menuOpen, changed) {
                 changed = changed || [];
                 o.check();
-                var want = menuOpen ? [] : keysForLevel(level), k;
+                /* the level stays in force while the menu is open (its keys come back on closing) */
+                active = keysForLevel(level);
+                var want = menuOpen ? [] : active, k;
                 for (k in saved) if (hasOwn(saved, k) && want.indexOf(k) < 0) o.restore(k, changed);
                 for (var i = 0; i < want.length; i++) o.lower(want[i], changed);
                 return changed;
@@ -1808,6 +1819,7 @@
         if (!on) {
             ctl = newController();
             applyLevel(false);
+            if (overrides) overrides.reset();
         } else {
             ctl = newController();
             fr.menu = menuOpen();
@@ -2452,17 +2464,25 @@
         setNet(diagOpen);
     }
 
-    /* setSettings(id, value) calls this first, before the value is stored */
-    function onSetting(id) {
+    /* setSettings(id, value) calls this first, before the value is stored; so do the presets and
+     * settings profiles for a value the setting has already */
+    function onSetting(id, value) {
         if (!overrides) return;
         if (id === 'performanceMode') {
-            /* Performance mode backs up the current values: they must be the player's own */
+            /* Performance mode switched backs up the current values: they must be the player's own.
+             * The same value again (a profile with the mode as it is) switches nothing, and the
+             * lowered values put back would stay up until the next level change. */
+            var s = dms();
+            if (value === undefined || (s && s.performanceMode === value)) return;
             var ch = [];
             overrides.restoreAll(ch);
             sideEffects(ch);
             return;
         }
-        overrides.userChanged(id);
+        /* a settings profile and Performance mode set their values with _lmPerfApplying (a
+         * profile's value the setting has already comes without a value) */
+        var a = app();
+        overrides.userChanged(id, value !== undefined && !(a && a._lmPerfApplying));
     }
 
     window.LMPerf = {

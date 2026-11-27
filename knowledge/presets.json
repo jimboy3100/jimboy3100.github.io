@@ -103,7 +103,7 @@
       {
         "id": "competitive",
         "name": "Competitive",
-        "description": "Enables opponent colours, rings, virus colours, split range, merge rings, mass, FPS/PPS stats for competitive play.",
+        "description": "Enables opponent colours, rings, virus colours, split range, merge rings, mass, the stats with FPS/PPS, and cursor tracking with split prediction for competitive play.",
         "type": "quick"
       },
       {
