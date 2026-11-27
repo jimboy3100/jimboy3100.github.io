@@ -21409,7 +21409,7 @@ var defaultmapsettings = {
     recordReplays: true,          /* off = no packets kept for replays (saves memory) */
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
     performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
-    fpsLimit: 0,                  /* frames per second cap (0 = off), and 25 while the menu is shown and you are not playing: less heat/battery on laptops and phones */
+    fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
     adaptivePerf: false,          /* Performance mode, automatic: below 60 FPS (or the FPS limit) for a while, effects off for now, back when fast again (runtime only, never saved) */
     reducedMotion: false,         /* no death screen shake, death particles or Expanding Land entrance spin */
     autoHideNames: true,

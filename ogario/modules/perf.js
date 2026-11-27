@@ -1585,7 +1585,7 @@
         if (!fr.secStart) resetSecond(t0);
         var rt = t1 - t0;
         /* the longest wait for the browser in this frame; without callback times (an older
-         * caller) the frame gap itself, with the menu left out as before (its FPS cap) */
+         * caller) the frame gap itself, with the menu left out as before */
         var sg = dt;
         if (fr.rafSeen) sg = fr.rafMax;
         else if (!menu) noteGap(t0, dt);
