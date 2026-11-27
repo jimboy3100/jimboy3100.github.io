@@ -27027,8 +27027,9 @@ function thelegendmodproject() {
                     for (var i = 0; i < c.CAPS.length; i++) {
                         if (!c.CAPS[i] || c.CAPS[i].id !== capId) continue;
                         if (c.capValue(c.CAPS[i], type) !== 'n') return '';
+                        /* the server's name from the support table (it has no 'en' field: the note said "(undefined)") */
                         var name = type;
-                        (c.SERVER_TYPES || []).forEach(function (s) { if (s && s.id === type) name = s.en; });
+                        (c.SERVER_TYPES || []).forEach(function (s) { if (s && s.id === type) name = s.name || (typeof c.t === 'function' ? c.t('type.' + type) : type); });
                         return app._lmMenuText('lmDepServer') + ' (' + name + ')';
                     }
                     return '';

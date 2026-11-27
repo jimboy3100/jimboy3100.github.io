@@ -92,6 +92,22 @@
       if (needs !== !defaultmapsettings[p]) fail.push(deps[p] + ' mark does not match ' + p);
     });
     info.dimmed = $('#og-options .lm-dep-off').length;
+    /* a server without a feature: its note names the server (it said "(undefined)") */
+    var Dc = window.LMDiscovery && LMDiscovery.core;
+    if (!Dc || typeof Dc.capValue !== 'function') fail.push('no Discover support table');
+    else {
+      var cv0 = Dc.capValue, st0 = Dc.serverTypeOf, spWhy = function () { return String($('#splitPrediction').closest('label').attr('data-lm-why') || ''); };
+      try {
+        Dc.capValue = function () { return 'n'; };
+        Dc.serverTypeOf = function () { return 'senpa'; };
+        application._lmDepRefresh();
+        info.serverNote = spWhy();
+        if (info.serverNote !== application._lmMenuText('lmDepServer') + ' (Senpa)') fail.push('server note: ' + info.serverNote);
+        Dc.serverTypeOf = function () { return 'private'; };
+        application._lmDepRefresh();
+        if (spWhy() !== application._lmMenuText('lmDepServer') + ' (' + lmT('modules.discovery.type.private') + ')') fail.push('private server note: ' + spWhy());
+      } finally { Dc.capValue = cv0; Dc.serverTypeOf = st0; application._lmDepRefresh(); }
+    }
     // the Game Over card is one switch: no switch per part of it
     ['massGraph', 'showKiller', 'deathRecap'].forEach(function (k) {
       if ($('#' + k).length) fail.push('Game Over card part #' + k + ' has its own switch');
