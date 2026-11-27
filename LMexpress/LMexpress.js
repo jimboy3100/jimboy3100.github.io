@@ -1419,19 +1419,16 @@ function OthersSkinChanger() {
 
 
 
+/* the menu panels that were shown come back on close (ogario.v4.js lmMenuPanelsHide) */
 function exitSkinChanger() {
-    $("#main-menu").show();
-    $("#skins-panel").show();
-    $("#quick-menu").show();
-    $("#exp-bar").show();
+    if (typeof lmMenuPanelsRestore === 'function') lmMenuPanelsRestore();
+    else $("#main-menu, #skins-panel, #quick-menu, #exp-bar").show();
     $("#SkinChanger").remove();
 }
 
 function OpenSkinChanger() {
-    $("#main-menu").hide();
-    $("#skins-panel").hide();
-    $("#quick-menu").hide();
-    $("#exp-bar").hide();
+    if (typeof lmMenuPanelsHide === 'function') lmMenuPanelsHide();
+    else $("#main-menu, #skins-panel, #quick-menu, #exp-bar").hide();
     $("#SkinChanger").show().addClass('in').attr('aria-hidden', 'false');
     if (typeof lmPromoCentre === 'function') lmPromoCentre('#SkinChanger');
 }

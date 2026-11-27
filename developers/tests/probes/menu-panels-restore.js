@@ -1,4 +1,4 @@
-// Mod Info (openhelper) and Nick characters (opennamechars) hide the menu panels while open;
+// Mod Info (openhelper), Nick characters (opennamechars) and the skin changer hide the menu panels while open;
 // closing them shows again only the panels that were shown. Until 3.697 a close showed all of
 // them: the skins panel turned off in the settings came back.
 (async () => {
@@ -11,6 +11,10 @@
     { name: 'Mod Info', open: function () { openhelper(); }, win: '#legendhelper', close: function () { closeLegendHelper(); } },
     { name: 'Nick characters', open: function () { opennamechars(); }, win: '#legendchars', close: function () { closecustomskinsIframe(); } }
   ];
+  /* the skin changer is in LMexpress.js, which may load after the core */
+  for (var w0 = 0; w0 < 60 && typeof window.BeforeReportFakesSkin !== 'function'; w0++) await sleep(250);
+  if (typeof window.BeforeReportFakesSkin !== 'function') fail.push('the skin changer (BeforeReportFakesSkin) is missing');
+  else cases.push({ name: 'Skin changer', open: function () { BeforeReportFakesSkin(); }, win: '#SkinChanger', close: function () { exitSkinChanger(); } });
   try {
     window.application.showMenu();
     await sleep(200);
@@ -41,7 +45,7 @@
   } catch (e) {
     fail.push('threw ' + e);
   } finally {
-    try { $('#legendhelper, #legendchars').remove(); } catch (e) { }
+    try { $('#legendhelper, #legendchars, #SkinChanger').remove(); } catch (e) { }
     window._lmMenuPanelsShown = null;
     saved.forEach(function (p) { p[0].style.display = p[1]; });
   }
