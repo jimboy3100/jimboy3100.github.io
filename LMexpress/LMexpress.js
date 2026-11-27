@@ -9435,7 +9435,7 @@ function VideoSkinsPromo() {
  * value as fallback: header, title, text, padding and control sizes are the same everywhere,
  * and the window surface follows the menu opacity (--lm-op) and background image (--lm-menu-bg).
  * The opacity is on the surface colour only: the text and the controls stay fully opaque.
- * .lm-modal-container gives the window chrome only (border, accent, corners, shadow, font);
+ * .lm-modal-container gives the window chrome only (border, accent, corners, shadow);
  * the size of the lm_extended_ui dialogs is set for those dialogs alone (.lm-modal-overlay). */
 function lmUiKit() {
     if (document.getElementById('lm-ui-kit')) return;
@@ -9461,8 +9461,11 @@ function lmUiKit() {
         /* touch screens: larger controls and close crosses */
         '@media (pointer:coarse){:root{--lm-w-ctl:36px;--lm-w-x:40px}}' +
         '.lm-modal-container{border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);' +
-        'border:1px solid var(--lm-pc2,rgba(255,255,255,.12));border-top:3px solid var(--lm-mc,#01d9cc);' +
-        'font-family:var(--lm-hud-font,\'Ubuntu\',\'Inter\',sans-serif);box-sizing:border-box}' +
+        'border:1px solid var(--lm-pc2,rgba(255,255,255,.12));border-top:3px solid var(--lm-mc,#01d9cc);box-sizing:border-box}' +
+        /* windows keep the menu's text font (most set font-family:inherit; on the others this rule
+         * gave Profiles, Theme Workshop, Command Centre, Custom Macros and Discover the HUD font);
+         * the dialogs in a .lm-modal-overlay (lm_extended_ui, skin packs) keep the HUD font */
+        '.lm-modal-overlay .lm-modal-container{font-family:var(--lm-hud-font,\'Ubuntu\',\'Inter\',sans-serif)}' +
         /* low priority (:where): a window's own rules stay in charge */
         ':where(.lm-w) :focus-visible{outline:2px solid var(--lm-mc,#01d9cc);outline-offset:1px}' +
         ':where(.lm-w) ::-webkit-scrollbar{width:8px;height:8px}' +
