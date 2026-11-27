@@ -23,6 +23,8 @@
   var needs = application._lmMenuText('lmDepNeeds');
   var plain = function (k) { return $('<div>').html(application._lmMenuText(k)).text().trim(); };
   var menuShown = $('#og-options').is(':visible');
+  /* the menu tab shown before, given back at the end (later probes click the start tab's buttons) */
+  var activeTab = $('.menu-tabs li.active a').first();
   try {
     if (!menuShown) {
       $('#overlays').show(); $('#helloContainer').show();
@@ -78,6 +80,7 @@
     });
     try { application.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (e) { }
     if (application._lmDepRefresh) application._lmDepRefresh();
+    if (!menuShown && activeTab.length) activeTab.trigger('click');
   }
   return { fail: fail, info: info };
 })()

@@ -25,6 +25,8 @@
   var was = defaultmapsettings.massLossPct, tf0 = hc.style.transform, hidden = [];
   var min = +sl.min, max = +sl.max, step = +sl.step || 1;
   var cx = function (r) { return r.left + r.width / 2; };
+  /* the menu tab shown before, given back at the end (later probes click the start tab's buttons) */
+  var activeTab = $('.menu-tabs li.active a').first();
   try {
     $('#overlays').show(); $('#helloContainer').show();
     $('.settings-tab a').trigger('click'); await sleep(400);
@@ -76,6 +78,7 @@
     defaultmapsettings.massLossPct = was;
     try { application.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (e) { }
     hidden.forEach(function (h) { h[0].style.display = h[1]; });
+    if (activeTab.length) activeTab.trigger('click');
   }
   return { fail: fail, info: info };
 })()

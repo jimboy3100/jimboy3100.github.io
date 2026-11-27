@@ -34,6 +34,8 @@
     for (var t = 0; t < 20 && !menuOn(); t++) await sleep(100);
     if (!menuOn()) app.showMenu();
     await sleep(400); /* the menu's fade-in */
+    /* another menu tab left open (Settings): back to the start tab, where the spectate buttons are */
+    if (!jQuery('#main-panel').is(':visible') && jQuery('.start-tab a:visible').length) { jQuery('.start-tab a').first().trigger('click'); await sleep(300); }
     /* a promo window (Legend FFA, daily reward) a player closes first */
     closePromos();
     return menuOn();
