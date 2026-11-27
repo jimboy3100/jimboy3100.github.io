@@ -604,6 +604,66 @@ for (const file of ['server.js', 'server-fast.js']) {
     check(file + ' starts only when run directly', src.includes('if (require.main === module) start()'));
 }
 
+// ---- agario-bots.zip (the README's download of the Node.js server): the current files, byte for byte ----
+{
+    const zlib = require('zlib'), os = require('os'), { execFileSync } = require('child_process');
+    const { FILES, fileBytes } = require(path.join(__dirname, '..', 'bots-zip.js'));
+    const zip = fs.readFileSync(path.join(botsDir, 'agario-bots.zip'));
+    /* entries from the central directory, data inflated from each local header */
+    const entries = {};
+    let end = zip.length - 22;
+    while (end >= 0 && zip.readUInt32LE(end) !== 0x06054b50) end--;
+    for (let i = 0, p = end >= 0 ? zip.readUInt32LE(end + 16) : 0, n = end >= 0 ? zip.readUInt16LE(end + 10) : 0; i < n; i++) {
+        const method = zip.readUInt16LE(p + 10), csize = zip.readUInt32LE(p + 20), nlen = zip.readUInt16LE(p + 28);
+        const xlen = zip.readUInt16LE(p + 30), clen = zip.readUInt16LE(p + 32), off = zip.readUInt32LE(p + 42);
+        const name = zip.toString('utf8', p + 46, p + 46 + nlen);
+        const start = off + 30 + zip.readUInt16LE(off + 26) + zip.readUInt16LE(off + 28), raw = zip.subarray(start, start + csize);
+        entries[name] = method === 8 ? zlib.inflateRawSync(raw) : raw;
+        p += 46 + nlen + xlen + clen;
+    }
+    const names = Object.keys(entries);
+    const hint = ' (rebuild: node developers/bots-zip.js)';
+    check('agario-bots.zip holds exactly the server files, no node_modules' + hint,
+        names.length === FILES.length && FILES.every((f) => entries[f]) && !names.some((n) => /node_modules|\//.test(n)));
+    const stale = FILES.filter((f) => !entries[f] || !entries[f].equals(fileBytes(f)));
+    check('agario-bots.zip: every entry equals the repo file byte for byte' + (stale.length ? ' (differs: ' + stale.join(', ') + ')' : '') + hint, !stale.length);
+    /* and the bytes git holds, for the files without uncommitted changes */
+    let gitStale = [];
+    try {
+        const repo = path.join(__dirname, '..', '..'), rel = (f) => 'ExampleScripts/agario-bots2/' + f;
+        const dirty = execFileSync('git', ['-C', repo, 'diff', '--name-only', 'HEAD', '--', 'ExampleScripts/agario-bots2']).toString().split('\n');
+        gitStale = FILES.filter((f) => entries[f] && !dirty.includes(rel(f))
+            && !entries[f].equals(execFileSync('git', ['-C', repo, 'cat-file', 'blob', 'HEAD:' + rel(f)], { maxBuffer: 1 << 26 })));
+    } catch (e) { /* not a git checkout */ }
+    check('agario-bots.zip: entries equal the committed files' + (gitStale.length ? ' (differs: ' + gitStale.join(', ') + ')' : '') + hint, !gitStale.length);
+    /* the extracted server parses, and everything it requires is in the ZIP or its package.json */
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'lm-botszip-'));
+    try {
+        for (const n of names) if (!/[\\/]/.test(n)) fs.writeFileSync(path.join(tmp, n), entries[n]);
+        let parsed = true;
+        for (const f of ['server.js', 'server-fast.js', 'botcore.js']) {
+            try { execFileSync(process.execPath, ['--check', path.join(tmp, f)], { stdio: 'pipe' }); } catch (e) { parsed = false; }
+        }
+        check('agario-bots.zip: node --check passes on the extracted server.js, server-fast.js and botcore.js', parsed);
+        const missing = [], external = new Set();
+        for (const n of names.filter((x) => /\.js$/.test(x))) {
+            for (const m of entries[n].toString('utf8').matchAll(/require\(\s*['"]([^'"]+)['"]\s*\)/g)) {
+                if (!m[1].startsWith('./')) { external.add(m[1]); continue; }
+                const want = m[1].slice(2);
+                if (![want, want + '.js', want + '.json'].some((c) => entries[c])) missing.push(n + ' -> ' + want);
+            }
+        }
+        check('agario-bots.zip: every local file the server requires is in the ZIP' + (missing.length ? ' (' + missing.join(', ') + ')' : ''), !missing.length);
+        const deps = Object.keys(JSON.parse(entries['package.json'].toString('utf8')).dependencies || {});
+        const undeclared = [...external].filter((d) => !deps.includes(d) && !require('module').builtinModules.includes(d));
+        check('agario-bots.zip: every package the server requires is in its package.json' + (undeclared.length ? ' (' + undeclared.join(', ') + ')' : ''), !undeclared.length);
+    } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+    const readme = fileBytes('README.md').toString('utf8');
+    check('bots README: no http:// link', !/http:\/\//.test(readme));
+    check('bots README: links the ZIP on www.legendmod.ml', readme.includes('(https://www.legendmod.ml/ExampleScripts/agario-bots2/agario-bots.zip)'));
+    check('bots README: says to allow Chrome\'s local network access for ws://localhost:1337', /local network access/i.test(readme) && readme.includes('ws://localhost:1337'));
+}
+
 // ---- ogario.v4.js bot client: real code run in a vm sandbox ----
 {
     const vm = require('vm');

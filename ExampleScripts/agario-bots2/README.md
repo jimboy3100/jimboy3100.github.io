@@ -19,9 +19,11 @@ Legend Mod runs these bots in your browser: leave the bots address empty or set 
 
 Node.js run server from PC
 -------
+Chrome asks whether agar.io may "look for and connect to any device on your local network" the first time Legend mod connects to your bot server (`ws://localhost:1337`): click "Allow". If you blocked it, click the icon left of the address bar on agar.io and turn "Local network access" on, otherwise Chrome blocks the connection and the bots stay disconnected.
+
 1. Install [Node.js](https://nodejs.org)
 2. Install [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) extension on your browser
-3. Download the bots files from this repository in a ZIP and extract it on a folder (click [here](http://jimboy3100.github.io/ExampleScripts/agario-bots2/agario-bots.zip))
+3. Download the bots files from this repository in a ZIP and extract it on a folder (click [here](https://www.legendmod.ml/ExampleScripts/agario-bots2/agario-bots.zip))
 4. Run `install.bat` and wait for it to close
 5. Run `start.bat` and leave it open. Otherwise open Node.js command prompt, use DOS commands:
 - (For e.g Hard disk X:) `X:` 
@@ -49,7 +51,7 @@ VPS
 12. Create party and make sure that you are logged in on your account agar.io account then click "Start Bots" button
 13. To stop bots click the "Stop Bots" button and wait 30 seconds for CMD to close you will see a countdown there
 14. To run the bots again just run `node start`, make sure you "Allowed unsafe scripts", click "Connect" button and then click "Start Bots" button
-15. On Vanilla userscript you can modify keys/settings at the start of [it](http://jimboy3100.github.io/ExampleScripts/agario-bots2/free-agario-bots.vanilla.user.js#L11) you will have to refresh to save them
+15. On Vanilla userscript you can modify keys/settings at the start of [it](https://www.legendmod.ml/ExampleScripts/agario-bots2/free-agario-bots.vanilla.user.js#L11) you will have to refresh to save them
 16. On Legend mod userscript you can modify keys when you are in agar.io on the top of the hotkeys TAB
 17. Always make sure you wait the 30 seconds for process to close or you are gonna get captcha on the VPS ip
 18. If you wanna run it 24/7 on the VPS run `sudo npm i -g pm2` command and then run `sudo pm2 start process.js` command

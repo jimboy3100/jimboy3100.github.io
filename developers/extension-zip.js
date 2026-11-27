@@ -88,5 +88,5 @@ function build() {
     console.log('Legend Express ' + manifest.version + ': ' + files.length + ' files -> LMexpress/LegendExpressExtension.zip, LMexpress/LegendExpressExtension-firefox.zip');
 }
 
-module.exports = { firefoxManifest, packageFiles };
+module.exports = { firefoxManifest, packageFiles, writeZip };
 if (require.main === module) build();
