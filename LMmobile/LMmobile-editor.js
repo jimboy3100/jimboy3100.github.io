@@ -286,6 +286,8 @@
         '#lm-ed button.pri{background:rgba(1,217,204,.4);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 40%,transparent)}' +
         '#lm-ed button:disabled{opacity:.35}' +
         '#lm-ed input[type=range]{width:90px;accent-color:var(--lm-mc,#01d9cc)}' +
+        /* a phone held upright (412 px): the control row fits on one line, "Default" wrapped to a third row */
+        '@media (max-width:440px){#lm-ed select{max-width:104px}#lm-ed input[type=range]{width:64px}}' +
         '#lm-ed-warn{color:#ff8080;max-width:420px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
         '#lm-ed-o{color:var(--lm-mc,#01d9cc);opacity:.8}' +
         '#lm-ed-lay{position:absolute;z-index:6;left:50%;top:50%;transform:translate(-50%,-50%);width:300px;max-width:calc(100% - 16px);' +
