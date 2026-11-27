@@ -568,17 +568,6 @@
                 keyUp: null,
                 type: 'normal'
             },
-            /*
-            'hk-multiboxback': {
-                get label() { return lmT('settings.hk-multiboxback'); },
-                defaultKey: '',
-                keyDown() {
-                    application && application.multiboxback();
-                },
-                keyUp: null,
-                type: 'normal'
-            },
-            */	
             'hk-multiboxFollowMouse': {
                 get label() { return lmT('settings.hk-multiboxFollowMouse'); },
                 defaultKey: 'TILDE',

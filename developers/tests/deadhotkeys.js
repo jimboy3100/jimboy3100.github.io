@@ -2,7 +2,8 @@
  * private relay never had an address) and "Show/hide quest" (its HUD box was never filled). A key
  * saved on them is dropped quietly (lmRenameOldHotkeys, for the stored hotkeys and the settings
  * profiles), so the default '-' of the server switch is free again. The functions are taken
- * from ogario/ogario.v4.js and run in a vm.
+ * from ogario/ogario.v4.js and run in a vm. The texts of these and of two commands that no longer
+ * exist (Multibox toggle back, Show developer console) are not shipped.
  * node developers/tests/deadhotkeys.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -12,8 +13,14 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 
 const hkSrc = read('ogario/hotkeysCommand.js').replace(/\r\n/g, '\n');
 const v4 = read('ogario/ogario.v4.js').replace(/\r\n/g, '\n');
-const gone = ['hk-switchServerMode', 'hk-showQuest'];
+const gone = ['hk-switchServerMode', 'hk-showQuest', 'hk-multiboxback'];
 gone.forEach(c => check(c + ': no hotkey command', hkSrc.indexOf("'" + c + "'") < 0));
+/* texts of commands that do not exist are not shipped */
+{
+  const en = read('languages/lm-en.js');
+  ['settings.hk-switchServerMode', 'settings.hk-showQuest', 'settings.hk-multiboxback', 'settings.hk-showDevConsole', 'game1.ps.toPrivate']
+    .forEach(k => check(k + ': no text', en.indexOf('"' + k + '"') < 0));
+}
 
 /* a key saved on a removed hotkey is free again, the other keys stay */
 {

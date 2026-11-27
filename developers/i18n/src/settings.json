@@ -4337,24 +4337,6 @@
     "ja": "マルチボックス：次へ切り替え",
     "it": "Multibox: passa al successivo"
   },
-  "settings.hk-multiboxback": {
-    "en": "Multibox Toggle Back",
-    "el": "Multibox: προηγούμενο",
-    "es": "Multibox: anterior",
-    "bg": "Мултибокс: предишен",
-    "fr": "Multibox : précédent",
-    "ar": "Multibox: السابق",
-    "zh": "Multibox 切換上一個",
-    "ru": "Мультибокс: предыдущий",
-    "de": "Multibox: vorherige Einheit",
-    "tr": "Multibox: önceki",
-    "pl": "Multibox: poprzedni",
-    "nl": "Multibox: vorige",
-    "pt": "Multibox: voltar para o anterior",
-    "id": "Multibox: kembali ke sebelumnya",
-    "ja": "マルチボックス：前へ切り替え",
-    "it": "Multibox: torna al precedente"
-  },
   "settings.hk-multiboxFollowMouse": {
     "en": "Multibox toggle follow mouse",
     "el": "Multibox: ακολούθηση ποντικιού",
@@ -4444,24 +4426,6 @@
     "id": "Tampilkan/sembunyikan waktu saat ini",
     "ja": "現在時刻の表示/非表示",
     "it": "Mostra/nascondi ora attuale"
-  },
-  "settings.hk-showDevConsole": {
-    "en": "Show developer console",
-    "el": "Εμφάνιση κονσόλας προγραμματιστή",
-    "es": "Mostrar consola de desarrollador",
-    "bg": "Покажи конзолата за разработчици",
-    "fr": "Afficher la console développeur",
-    "ar": "إظهار وحدة تحكم المطور",
-    "zh": "顯示開發者主控台",
-    "ru": "Показать консоль разработчика",
-    "de": "Entwicklerkonsole anzeigen",
-    "tr": "Geliştirici konsolunu göster",
-    "pl": "Pokaż konsolę deweloperską",
-    "nl": "Ontwikkelaarsconsole tonen",
-    "pt": "Mostrar console do desenvolvedor",
-    "id": "Tampilkan konsol pengembang",
-    "ja": "開発者コンソールを表示",
-    "it": "Mostra console sviluppatore"
   },
   "settings.hk-showSplitRange": {
     "en": "Show/hide split range",
