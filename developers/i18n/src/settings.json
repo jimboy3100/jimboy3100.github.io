@@ -89,24 +89,6 @@
     "ja": "グラフィック",
     "it": "Grafica"
   },
-  "settings.reverseTrick": {
-    "en": "Reverse trick (On development)",
-    "el": "Reverse trick (υπό ανάπτυξη)",
-    "es": "Truco inverso (en desarrollo)",
-    "bg": "Обратен трик (в разработка)",
-    "fr": "Reverse trick (en développement)",
-    "ar": "التريك العكسي (قيد التطوير)",
-    "zh": "反向技巧（開發中）",
-    "ru": "Обратный трик (в разработке)",
-    "de": "Reverse-Trick (in Entwicklung)",
-    "tr": "Reverse trick (geliştiriliyor)",
-    "pl": "Reverse trick (w budowie)",
-    "nl": "Omgekeerde truc (in ontwikkeling)",
-    "pt": "Reverse trick (em desenvolvimento)",
-    "id": "Reverse trick (dalam pengembangan)",
-    "ja": "リバーストリック（開発中）",
-    "it": "Reverse trick (in sviluppo)"
-  },
   "settings.onlineStatus": {
     "en": "Show me online (Facebook)",
     "el": "Δείξε με συνδεδεμένο (Facebook)",

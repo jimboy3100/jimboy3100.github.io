@@ -92,6 +92,11 @@ const reSaved = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 check('load: the old video volume folded into the level and the save rewritten without it', S.videoSkinSoundLevel === 0.3 && !('volVideo' in S) && reSaved.videoSkinSoundLevel === 0.3 && !('volVideo' in reSaved));
 app.loadSettings();
 check('load: folded only once (the next load keeps 0.3)', S.videoSkinSoundLevel === 0.3);
+/* the old reverse trick (no switch since 2020): a saved or imported "on" took the left and right
+ * button on the game with nothing to turn it off; it is no setting any more, so it is skipped */
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { reverseTrick: true })));
+app.loadSettings();
+check('reverseTrick is no setting: refused, and a saved "on" is skipped on load', !('reverseTrick' in D) && V('reverseTrick', true) === undefined && !('reverseTrick' in S));
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();

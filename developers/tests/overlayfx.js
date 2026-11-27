@@ -236,7 +236,7 @@ const proto = new Function('env', 'var window = env.window, LM = env.LM, legendm
 window.iconSpecialSkinEffectsHat3 = img('hat', 64, 64);
 
 /* renderer state */
-/* the real selected-cell / reverse-trick rings (the frame block calls them; stubbed by default) */
+/* the real selected-cell ring (the frame block calls it; stubbed by default) */
 const realDrawRings = R.drawRings;
 function stubRings() { }
 const main = new SoftCanvas(0, 0, 'main'), glc = new SoftCanvas(0, 0, 'gl'), overlay = new SoftCanvas(0, 0, 'overlay');

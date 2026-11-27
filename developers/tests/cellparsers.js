@@ -73,13 +73,13 @@ function makeCtx() {
         console: { log() { }, warn(m) { W && W.warns.push(String(m)); }, error() { } },
         Date: { now: () => clock },
         TextDecoder, Uint8Array, DataView, Set, Math, String, Number, escape, decodeURIComponent, RangeError,
-        defaultmapsettings: { virusesRange: true, shortMass: false, virMassShots: false, mbSwitchAfterDeath: false, reverseTrick: false },
+        defaultmapsettings: { virusesRange: true, shortMass: false, virMassShots: false, mbSwitchAfterDeath: false },
         LM: { playerCellsMulti: [], multiBoxPlayerExists: false },
         application: {
             hideMenu() { W.calls.push('hideMenu'); }, onPlayerSpawn() { W.calls.push('spawn'); }, onPlayerDeath() { W.calls.push('death'); },
             showMenu(t) { W.calls.push('showMenu ' + t); }, multiboxswap() { W.calls.push('mbswap'); }
         },
-        calcTarget() { W.calls.push('calcTarget'); }, reverseTrick: { check() { } },
+        calcTarget() { W.calls.push('calcTarget'); },
         indexedPush(arr, cell, k) { cell[k] = arr.length; arr.push(cell); },
         lmIdxOf(arr, cell, k) { return arr.indexOf(cell); },
         ogarbasicassembly: function (id, x, y, size, color, isFood, isVirus) {

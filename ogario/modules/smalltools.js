@@ -523,8 +523,8 @@
         if (isObj(hk)) for (var k in hk) if (own(hk, k) && typeof hk[k] === 'string') keys.push([k, hk[k]]);
         var g = W.LMGamepad, hs = W.legendmod6, moved = [];
         try { if (hs && typeof hs.mouseNotes === 'function') moved = hs.mouseNotes(); } catch (e) { }
-        /* sticky cells and the reverse trick take the left and right button on the game */
-        var off = {}, offBy = s.stickyCell ? 'stickyCell' : s.reverseTrick ? 'reverseTrick' : '';
+        /* sticky cells take the left and right button on the game */
+        var off = {}, offBy = s.stickyCell ? 'stickyCell' : '';
         if (offBy) off['MOUSE LEFT'] = off['MOUSE RIGHT'] = { what: plain(tl[offBy]) || offBy, opt: offBy };
         return findConflicts({
             keys: keys,

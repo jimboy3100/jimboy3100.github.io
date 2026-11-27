@@ -21645,7 +21645,8 @@ var defaultmapsettings = {
     macroFeeding: 80,
     macroSplitDelay: 40,          /* ms between the splits of double/triple/16 split macros */
     macroPopSplitDelay: 200,      /* ms between the two splits of pop split */
-    reverseTrick: false,
+    /* reverseTrick (an unfinished reverse-split aid, no switch since 2020) is gone: a saved "on" took the
+     * left and right button on the game with nothing to turn it off, so saved values are skipped on load */
     //hideSizes: 0,
     dominationRate: 4 / 3,
     dominatedRate: 3 / 4,
@@ -54039,7 +54040,6 @@ function thelegendmodproject() {
             /* diagnostics: applied when every count and terminator was there, else incomplete */
             if (this._lmND) this._lmWuEnd(complete);
             if (window.autoPlay && legendmod.play) calcTarget();
-            if (defaultmapsettings.reverseTrick) reverseTrick.check();
             return complete;
         },
         /* A Garix / Sigmally cell update (opcode 16) that was cut short or did not end where
@@ -54326,7 +54326,6 @@ function thelegendmodproject() {
             /* diagnostics: applied when every count and terminator was there, else incomplete */
             if (this._lmND) this._lmWuEnd(complete);
             if (window.autoPlay && legendmod.play) calcTarget();
-            if (defaultmapsettings.reverseTrick) reverseTrick.check();
             this.countPps();
             return complete;
         },
@@ -55999,11 +55998,6 @@ function thelegendmodproject() {
                 calcTarget();
             }
 
-            if (
-                defaultmapsettings.reverseTrick
-            ) {
-                reverseTrick.check();
-            }
 
             //if(defaultmapsettings.clickTargeting) clickTargeting.check();
             //if (window.historystate && legendmod.play) {historystate();}
@@ -62271,7 +62265,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * The selected-cell and reverse-trick rings: renderFrame strokes them
+             * The selected-cell ring: renderFrame strokes it
              * (drawRings) after the whole cell pass, over every cell and its labels.
              * In a WebGL frame they go on the overlay canvas at that same point of
              * the frame (renderFrame prepares it for _lmRingFg); on the main canvas,
@@ -62284,15 +62278,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     LM.selected != null &&
                     LM.indexedCells &&
                     LM.indexedCells[LM.selected]
-                ) ||
-                (
-                    defaultmapsettings.reverseTrick &&
-                    typeof reverseTrick !== 'undefined' &&
-                    LM.indexedCells &&
-                    (
-                        LM.indexedCells[reverseTrick.biggerEnemy] ||
-                        LM.indexedCells[reverseTrick.smallerEnemy]
-                    )
                 )
             );
 
@@ -81571,18 +81556,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* ctx: where renderFrame draws over the cells (the overlay in a WebGL frame) */
         drawRings(ctx) {
             ctx = ctx || this.ctx;
-            if (defaultmapsettings.reverseTrick) {
-                LM.indexedCells[reverseTrick.biggerEnemy] && this.drawRing(ctx,
-                    LM.indexedCells[reverseTrick.biggerEnemy].x,
-                    LM.indexedCells[reverseTrick.biggerEnemy].y,
-                    LM.indexedCells[reverseTrick.biggerEnemy].size,
-                    0.75, 'red');
-                LM.indexedCells[reverseTrick.smallerEnemy] && this.drawRing(ctx,
-                    LM.indexedCells[reverseTrick.smallerEnemy].x,
-                    LM.indexedCells[reverseTrick.smallerEnemy].y,
-                    LM.indexedCells[reverseTrick.smallerEnemy].size,
-                    0.75, 'blue');
-            }
             if (LM.indexedCells[LM.selected]) {
                 //console.log("LM.indexedCells[LM.selected]")
                 this.drawRing(ctx,
@@ -85560,7 +85533,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     LM.selected = null
                 }
             }
-            /* sticky cells and the reverse trick use the left and right button themselves */
+            /* sticky cells use the left and right button themselves */
             else if (defaultmapsettings.stickyCell && (1 === event.which || 3 === event.which)) {
                 if (1 === event.which) {
                     drawRender.LMB = true
@@ -85568,9 +85541,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 else {
                     drawRender.RMB = true
                 }
-            }
-            else if (defaultmapsettings.reverseTrick && (1 === event.which || 3 === event.which)) {
-                reverseTrick.pointInCircle(legendmod.cursorX, legendmod.cursorY, event.which);
             }
             else if (_lmCmd) {
                 event.preventDefault();
@@ -85587,7 +85557,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         if (event.preventDefault && (event.which === 4 || event.which === 5) && (_lmMouseCmd(event.which) || _lmIsHkField(event.target))) {
             event.preventDefault();
         }
-        /* Always release the reverse-trick / sticky-cell button flags */
+        /* Always release the sticky-cell button flags */
         if (event.which === 1) {
             drawRender.LMB = false;
         } else if (event.which === 3) {
@@ -88804,142 +88774,6 @@ function appendLMhiFbPs() {
     sbStart();
 })();
 
-/* ═══════════════════════════════════════════════════════════════════════════════
- * §12  REVERSE TRICK
- *      Automated reverse-split detection and targeting.
- * ═══════════════════════════════════════════════════════════════════════════════ */
-var reverseTrick = {
-    biggerEnemy: null,
-    biggerEnemyAcc: null,
-    smallerEnemy: null,
-    smallerEnemyAcc: null,
-    smallerSize: null,
-    biggerSize: null,
-    smallerSumm: 0,
-    biggerSumm: 0,
-    biggerCells: 0,
-    smallerCells: 0,
-    getAngle(x1, y1, x2, y2, dis) {
-        var angl = Math.round((Math.acos((y2 - y1) / dis) / Math.PI) * 180);
-        //if target on left side
-
-        if ((x2 - x1 > 0 && y2 - y1 < 0) || (x2 - x1 > 0 && y2 - y1 > 0)) {
-            angl = 180 + (180 - angl);
-        }
-        return angl
-    },
-    getDistance(x1, y1, x2, y2) {
-        return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
-    },
-    pointInCircle: function (x, y, type) {
-        for (var ci = 0; ci < legendmod.cells.length; ci++) {
-            var distancesquared = (x - legendmod.cells[ci].x) * (x - legendmod.cells[ci].x) + (y - legendmod.cells[ci].y) * (y - legendmod.cells[ci].y);
-
-            if (type === 1 && distancesquared <= legendmod.cells[ci].size * legendmod.cells[ci].size) {
-                reverseTrick.biggerEnemy = legendmod.cells[ci].id;
-                reverseTrick.biggerEnemyAcc = legendmod.cells[ci].accID;
-                reverseTrick.biggerSize = ~~(legendmod.cells[ci].size * legendmod.cells[ci].size / 100);
-            } else if (type === 3 && distancesquared <= legendmod.cells[ci].size * legendmod.cells[ci].size) {
-                reverseTrick.smallerEnemy = legendmod.cells[ci].id;
-                reverseTrick.smallerEnemyAcc = legendmod.cells[ci].accID;
-                reverseTrick.smallerSize = ~~(legendmod.cells[ci].size * legendmod.cells[ci].size / 100);
-            }
-        }
-    },
-    check() {
-        if (this.biggerEnemy && this.smallerEnemy && legendmod.playerCellIDs.length) {
-            if (!legendmod.indexedCells.hasOwnProperty(this.biggerEnemy)) {
-                this.biggerEnemy = null;
-                this.biggerEnemyAcc = null;
-                this.biggerSize = null;
-                return
-            }
-            if (!legendmod.indexedCells.hasOwnProperty(this.smallerEnemy)) {
-                this.smallerEnemy = null;
-                this.smallerEnemyAcc = null;
-                this.smallerSize = null;
-                return
-            }
-
-            /*
-             * Logic fix only.
-             *
-             * Do not assume playerCells[] remains sorted.
-             */
-            var p =
-                pickPlayerCellBySize(
-                    legendmod.playerCells,
-                    !!legendmod.selectBiggestCell
-                );
-
-            if (!p) {
-                return;
-            }
-
-            var small = legendmod.indexedCells[this.smallerEnemy],
-                distToP = this.getDistance(p.targetX, p.targetY, small.targetX, small.targetY);
-            //ctx.arc(players[current].x, players[current].y, players[current].size + 760, 0, this.pi2, false);
-            this.smallerSize = ~~(legendmod.indexedCells[this.smallerEnemy].size * legendmod.indexedCells[this.smallerEnemy].size / 100);
-
-            if (small.size + 760 + p.size < distToP) return
-
-            var xc =
-                p.targetX;
-
-            var yc =
-                p.targetY;
-
-            var selectedToUse = reverseTrick.smallerEnemy;
-
-            var x =
-                legendmod.indexedCells[
-                    selectedToUse
-                ].targetX;
-
-            var y =
-                legendmod.indexedCells[
-                    selectedToUse
-                ].targetY;
-
-            var a = xc - x;
-            var b = yc - y;
-
-            var distance =
-                Math.sqrt(
-                    a * a +
-                    b * b
-                ) -
-                (
-                    legendmod
-                        .indexedCells[
-                            selectedToUse
-                        ]
-                        .size +
-                    p.size
-                );
-
-            var ang = Math.atan2(y - yc, x - xc);
-            legendmod.cursorX = xc + (Math.cos(ang) * distance)
-            legendmod.cursorY = yc + (Math.sin(ang) * distance)
-            legendmod.sendPosition()
-            //
-            //legendmod.sendSplit()
-            //legendmod.selected = null
-            //
-
-            $('#pause-hud').text(lmT('game2.avoidReverseSplit'));
-            $('#pause-hud').show()
-            /* Called per update packet: keep a single pending hide timer
-             * instead of one per packet (and no per-packet console dump). */
-            if (reverseTrick._hudTimer) clearTimeout(reverseTrick._hudTimer);
-            reverseTrick._hudTimer = setTimeout(function () {
-                reverseTrick._hudTimer = null;
-                $('#pause-hud').text(textLanguage.pause);
-                $('#pause-hud').hide()
-            }, 500)
-        }
-    }
-}
 
 function LMadvertisement2020() {
     $('#helloContainer').after('<div class="modal fade in" id="LMPromo" aria-hidden="false" style="display: block;">' +
