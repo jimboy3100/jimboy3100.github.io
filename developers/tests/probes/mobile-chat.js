@@ -5,8 +5,10 @@
 // Enter, and Enter on a box that is still open sends it.) The game's send is counted, not done.
 (async () => {
   var fail = [], info = {};
-  if (!window.LM_IS_MOBILE) return { fail: fail, info: { skipped: 'not the phone run' } };
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  /* a touch-only screen: LMmobile.js may still be loading when the probes start */
+  if (!(matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches)) return { fail: fail, info: { skipped: 'not the phone run' } };
+  for (var w0 = 0; w0 < 60 && !window._lmMobileHost; w0++) await sleep(250);
   var H = window._lmMobileHost, app = window.application, canvas = document.getElementById('canvas');
   if (!H || !app || !canvas) return { fail: ['phone controls, application or canvas missing'] };
   var bChat = H.controls().chat;

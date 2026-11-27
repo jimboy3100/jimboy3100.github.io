@@ -3,8 +3,10 @@
 // phone kept the desktop top below the leaderboard, which is below the bottom of a phone screen.
 (async () => {
   var fail = [], info = {};
-  if (!window.LM_IS_MOBILE) return { fail: fail, info: { skipped: 'not the phone run' } };
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  /* a touch-only screen: LMmobile.js may still be loading when the probes start */
+  if (!(matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches)) return { fail: fail, info: { skipped: 'not the phone run' } };
+  for (var w0 = 0; w0 < 60 && !window._lmMobileHost; w0++) await sleep(250);
   var app = window.application, s = window.legendmod5, t = document.getElementById('time-hud');
   if (!app || !s || !t) return { fail: ['application, settings or #time-hud missing'] };
   var keep = s.showTime, ov = document.getElementById('overlays'), menuWas = !!(ov && ov.getClientRects().length);

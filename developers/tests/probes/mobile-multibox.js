@@ -5,8 +5,10 @@
 // The player's phone preferences and multibox state are put back.
 (async () => {
   var fail = [], info = {};
-  if (!window.LM_IS_MOBILE) return { fail: fail, info: { skipped: 'not the phone run' } };
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  /* a touch-only screen: LMmobile.js may still be loading when the probes start */
+  if (!(matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches)) return { fail: fail, info: { skipped: 'not the phone run' } };
+  for (var w0 = 0; w0 < 60 && !window._lmMobileHost; w0++) await sleep(250);
   var H = window._lmMobileHost, lm = window.legendmod, cb = document.getElementById('lm-mbbtn');
   if (!H || !lm || !cb || typeof window.lmSetMbUnit !== 'function') return { fail: ['phone controls, multibox switch or lmSetMbUnit missing'] };
   var keepPrefs = null; try { keepPrefs = localStorage.getItem('lm-mobile-prefs'); } catch (e) { }
