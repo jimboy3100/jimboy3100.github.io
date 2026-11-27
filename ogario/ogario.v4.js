@@ -23912,21 +23912,12 @@ function thelegendmodproject() {
         },
         /* ─── §4.3 UI Toggle Methods ─── */
         toggleSkins() {
-            /* Issue #5: modify defaultmapsettings (the renderer reads these), not just ogario */
-            if (defaultmapsettings.vanillaSkins && defaultmapsettings.customSkins) {
-                defaultmapsettings.vanillaSkins = false;
-                defaultmapsettings.customSkins = true;
-            } else if (!defaultmapsettings.vanillaSkins && defaultmapsettings.customSkins) {
-                defaultmapsettings.vanillaSkins = true;
-                defaultmapsettings.customSkins = false;
-            } else {
-                defaultmapsettings.vanillaSkins = true;
-                defaultmapsettings.customSkins = true;
-            }
-            ogario.vanillaSkins = defaultmapsettings.vanillaSkins;
-            ogario.customSkins = defaultmapsettings.customSkins;
-            this.syncHotkeyOption('vanillaSkins');
-            this.syncHotkeyOption('customSkins');
+            /* both through setSettings (the renderer reads defaultmapsettings): both -> custom only
+             * -> agar.io only -> both; custom first, so the agar.io skins update
+             * (setVanillaSkins) sees the new pair */
+            var v = defaultmapsettings.vanillaSkins, c = defaultmapsettings.customSkins;
+            this.setSettings('customSkins', v && c ? true : !(!v && c));
+            this.setSettings('vanillaSkins', !(v && c));
         },
         /* The skins hotkeys name the mode they just entered ("vanilla only" was read as "vanilla
          * off"). Not called by toggleSkins itself: the timed skin toggle (LMexpress) runs that every
@@ -23955,24 +23946,26 @@ function thelegendmodproject() {
             this.selectBiggestCell = !this.selectBiggestCell;
             ogario.selectBiggestCell = this.selectBiggestCell;
         },
-        /* Hotkey toggles flip defaultmapsettings directly: update the settings checkbox
-         * (and its Switchery) to match. The bubbling change also runs setSettings, which
-         * saves; without a checkbox, save here. */
+        /* For older callers and scripts that store a new value themselves and then call this
+         * (the hotkeys of the core call setSettings). The value goes through setSettings once
+         * (its effects, the save, settingsChange) with the old value put back first, so the
+         * handler sees the change: the switch still shows the old value, and without a switch
+         * a toggled on/off value had the opposite one. A bubbling change event at the switch
+         * ran setSettings after the caller had applied the value already: effects twice, and
+         * the handler never saw the old value. */
         syncHotkeyOption(key) {
-            var el = document.getElementById(key);
-            if (el && el.type === 'checkbox') {
-                el.checked = !!defaultmapsettings[key];
-                try {
-                    el.dispatchEvent(new Event('change', { bubbles: true }));
-                    return;
-                } catch (e) { }
+            if (!defaultmapsettings.hasOwnProperty(key)) return;
+            var v = defaultmapsettings[key], el = document.getElementById(key);
+            if (typeof v === 'boolean') {
+                defaultmapsettings[key] = el && el.type === 'checkbox' ? !!el.checked : !v;
+                if (ogario.hasOwnProperty(key)) ogario[key] = defaultmapsettings[key];
             }
-            this.saveSettings(defaultmapsettings, 'ogarioSettings');
+            this.setSettings(key, v);
         },
+        /* the hotkey toggles below go through setSettings: the setting's effect runs once,
+         * then the save and settingsChange, and its switch follows silently */
         setShowTop5() {
-            defaultmapsettings.showTop5 = !defaultmapsettings.showTop5;
-            this.setTop5();
-            this.syncHotkeyOption('showTop5');
+            this.setSettings('showTop5', !defaultmapsettings.showTop5);
         },
         setTop5() {
             if (defaultmapsettings.showTop5) {
@@ -23982,9 +23975,7 @@ function thelegendmodproject() {
             }
         },
         setShowTargeting() {
-            defaultmapsettings.showTargeting = !defaultmapsettings.showTargeting;
-            this.setTargetingHUD();
-            this.syncHotkeyOption('showTargeting');
+            this.setSettings('showTargeting', !defaultmapsettings.showTargeting);
         },
         setTargetingHUD() {
             if (defaultmapsettings.showTargeting) {
@@ -23994,25 +23985,15 @@ function thelegendmodproject() {
             }
         },
         setShowTime() {
-            defaultmapsettings.showTime = !defaultmapsettings.showTime;
-            if (defaultmapsettings.showTime) {
-                $('#time-hud').show();
-                this.displayTime()
-            } else {
-                $('#time-hud').hide();
-            }
-            this.syncHotkeyOption('showTime');
+            /* setSettings shows the clock (displayTime hides it when off) */
+            this.setSettings('showTime', !defaultmapsettings.showTime);
         },
         setShowSplitRange() {
-            defaultmapsettings.splitRange = !defaultmapsettings.splitRange;
-            ogario.splitRange = defaultmapsettings.splitRange;
-            this.syncHotkeyOption('splitRange');
+            this.setSettings('splitRange', !defaultmapsettings.splitRange);
         },
         /* the ghost cells hotkey (K): ghost cells on / off (they always show their nick and skin) */
         setShowGhostCellsInfo() {
-            defaultmapsettings.showGhostCells = !defaultmapsettings.showGhostCells;
-            /* Issue #6: sync checkboxes and persist */
-            this.syncHotkeyOption('showGhostCells');
+            this.setSettings('showGhostCells', !defaultmapsettings.showGhostCells);
         },
         setAutoPlay() {
             if (legendmod.pause) {
@@ -24032,47 +24013,28 @@ function thelegendmodproject() {
             /* from the settings themselves (the menu can change them): both on -> both off,
              * otherwise both on. A flag of its own got out of step and the first press did nothing. */
             this.showSplitInd = !(defaultmapsettings.splitRange && defaultmapsettings.oppRings);
-            defaultmapsettings.splitRange = this.showSplitInd;
-            defaultmapsettings.oppRings = this.showSplitInd;
-            ogario.splitRange = defaultmapsettings.splitRange;
-            ogario.oppRings = defaultmapsettings.oppRings;
-            /* Issue #7: sync checkboxes and persist */
-            this.syncHotkeyOption('splitRange');
-            this.syncHotkeyOption('oppRings');
+            this.setSettings('splitRange', this.showSplitInd);
+            this.setSettings('oppRings', this.showSplitInd);
         },
         setShowTeammatesInd() {
-            defaultmapsettings.teammatesInd = !defaultmapsettings.teammatesInd;
-            this.syncHotkeyOption('teammatesInd');
+            this.setSettings('teammatesInd', !defaultmapsettings.teammatesInd);
         },
         setShowOppColors() {
-            defaultmapsettings.oppColors = !defaultmapsettings.oppColors;
-            ogario.oppColors = defaultmapsettings.oppColors;
-            this.syncHotkeyOption('oppColors');
+            this.setSettings('oppColors', !defaultmapsettings.oppColors);
         },
         setShowSkins() {
-            this.noSkins = !this.noSkins;
-            if (window.core && window.core.setSkins) {
-                window.core.setSkins(!this.noSkins)
-            }
-            LM.showCustomSkins = !this.noSkins;
-            /* keep the "No skins" setting and its checkbox in step with the hotkey */
-            defaultmapsettings.noSkins = !!this.noSkins;
-            this.syncHotkeyOption('noSkins');
+            /* the "No skins" setting: setSettings sets this.noSkins, the core's skins and LM */
+            this.setSettings('noSkins', !this.noSkins);
             /* "Skins: off", or the mode now shown ("Skins are visible!" did not say which) */
             if (!this.skinsModeMsg()) this.displayChatInfo(!this.noSkins, 'showSkinsMsg');
         },
         setTransparentSkins() {
-            defaultmapsettings.transparentSkins = !defaultmapsettings.transparentSkins;
-            ogario.transparentSkins = defaultmapsettings.transparentSkins;
-            this.syncHotkeyOption('transparentSkins');
+            this.setSettings('transparentSkins', !defaultmapsettings.transparentSkins);
         },
         setShowStats() {
-            /* toggling only the element showed a frozen HUD when "Show game stats" was off
-             * (its 250 ms update stops then) and left the checkbox out of sync */
-            defaultmapsettings.showStats = !defaultmapsettings.showStats;
-            this.displayStats();
-            if (defaultmapsettings.showStats) $('#stats-hud').show();
-            this.syncHotkeyOption('showStats');
+            /* the setting, not only the element: that showed a frozen HUD when "Show game stats"
+             * was off (its 250 ms update stops then) */
+            this.setSettings('showStats', !defaultmapsettings.showStats);
         },
         setShowFood() {
             ogario.showFood = !ogario.showFood;
@@ -24089,12 +24051,10 @@ function thelegendmodproject() {
             $('#overlays-hud').toggle();
         },
         setShowGrid() {
-            defaultmapsettings.showGrid = !defaultmapsettings.showGrid;
-            this.syncHotkeyOption('showGrid');
+            this.setSettings('showGrid', !defaultmapsettings.showGrid);
         },
         setShowMiniMapGuides() {
-            defaultmapsettings.showMiniMapGuides = !defaultmapsettings.showMiniMapGuides;
-            this.syncHotkeyOption('showMiniMapGuides');
+            this.setSettings('showMiniMapGuides', !defaultmapsettings.showMiniMapGuides);
         },
         setShowLb() {
             if (this.gameMode === ':teams') {
@@ -24103,29 +24063,23 @@ function thelegendmodproject() {
             $('#leaderboard-hud').toggle();
         },
         setShowBgSectors() {
-            defaultmapsettings.showBgSectors = !defaultmapsettings.showBgSectors;
-            this.syncHotkeyOption('showBgSectors');
+            this.setSettings('showBgSectors', !defaultmapsettings.showBgSectors);
         },
         setHideSmallBots() {
             ogario.hideSmallBots = !ogario.hideSmallBots;
             this.displayChatInfo(!ogario.hideSmallBots, 'hideSmallBotsMsg');
         },
         setShowNames() {
-            defaultmapsettings.noNames = !defaultmapsettings.noNames;
-            this.syncHotkeyOption('noNames');
+            this.setSettings('noNames', !defaultmapsettings.noNames);
         },
         setHideTeammatesNames() {
-            defaultmapsettings.hideTeammatesNames = !defaultmapsettings.hideTeammatesNames;
-            this.syncHotkeyOption('hideTeammatesNames');
+            this.setSettings('hideTeammatesNames', !defaultmapsettings.hideTeammatesNames);
         },
         setShowMass() {
-            defaultmapsettings.showMass = !defaultmapsettings.showMass;
-            this.syncHotkeyOption('showMass');
+            this.setSettings('showMass', !defaultmapsettings.showMass);
         },
         setShowMiniMap() {
-            defaultmapsettings.showMiniMap = !defaultmapsettings.showMiniMap;
-            this.setMiniMap();
-            this.syncHotkeyOption('showMiniMap');
+            this.setSettings('showMiniMap', !defaultmapsettings.showMiniMap);
         },
         setMiniMap() {
             if (defaultmapsettings.showMiniMap) {
@@ -24166,11 +24120,8 @@ function thelegendmodproject() {
             }
         },
         toggleAutoZoom() {
-            /* Issue #11: also update defaultmapsettings, sync checkbox, and persist */
-            defaultmapsettings.autoZoom = !defaultmapsettings.autoZoom;
-            ogario.autoZoom = defaultmapsettings.autoZoom;
-            this.syncHotkeyOption('autoZoom');
-            this.displayChatInfo(ogario.autoZoom, 'autoZoomMsg');
+            this.setSettings('autoZoom', !defaultmapsettings.autoZoom);
+            this.displayChatInfo(defaultmapsettings.autoZoom, 'autoZoomMsg');
         },
         resetZoom(on) {
             if (on) {
@@ -24256,10 +24207,9 @@ function thelegendmodproject() {
             }
         },
         toggleAutoResp() {
-            defaultmapsettings.autoResp = !defaultmapsettings.autoResp;
-            this.setAutoResp();
+            /* setSettings runs setAutoResp */
+            this.setSettings('autoResp', !defaultmapsettings.autoResp);
             this.displayChatInfo(defaultmapsettings.autoResp, 'autoRespMsg');
-            this.syncHotkeyOption('autoResp');
         },
         /* a board (leaderboard-positions, top5-pos) as text, one row per line: .text() ran the
          * rows together ("1. Alice2. Bob3. ..."). A row made only of other rows (the battle
@@ -25592,12 +25542,10 @@ function thelegendmodproject() {
             }
         },
         setSettings(id, checked) {
-            if (checked === true && (id === 'x16Sound' || id === 'non16Sound' || id === 'hudMergeSound')) {
-                defaultmapsettings[id] = true;
-                this._lmLoadOptSounds();
-            }
-            /* Mass format 0 of older scripts: "as Short mass", i.e. the 12.3k or exact it shows now */
-            if (id === 'massFormat' && checked !== null && checked !== '' && Number(checked) === 0) checked = defaultmapsettings.massFormat === 1 ? 1 : 2;
+            /* Mass format 0 of older scripts: "as Short mass", i.e. the 12.3k or exact it shows now.
+             * Only the number 0 or the text "0": false, " " or [] also made 0 and switched an
+             * auto mass format to 12.3k; they are refused below like any other wrong value. */
+            if (id === 'massFormat' && (checked === 0 || (typeof checked === 'string' && checked.trim() !== '' && Number(checked) === 0))) checked = defaultmapsettings.massFormat === 1 ? 1 : 2;
             /* scripts call this too: a known setting takes only a value that fits it (LM_SETTINGS_SCHEMA) */
             if (null !== checked && Object.prototype.hasOwnProperty.call(LM_SETTINGS_DEFAULTS, id)) {
                 checked = lmSettingValue(id, checked);
@@ -25616,7 +25564,19 @@ function thelegendmodproject() {
                 if (ogario.hasOwnProperty(id)) {
                     ogario[id] = checked;
                 }
+                /* the same value again (a script, a profile, an older caller): the effects that
+                 * belong to a change (canvas resize, HUD shown, notices) are not run again; the
+                 * save below still stores it */
+                var _lmSame = _lmSetWas === checked;
+                /* its switch or dropdown shows the value without running anything (a slider: below) */
+                this._lmOptionUi(id);
                 switch (id) {
+                    /* the optional sounds are loaded once they are on (also "true" from a script) */
+                    case 'x16Sound':
+                    case 'non16Sound':
+                    case 'hudMergeSound':
+                        if (checked) this._lmLoadOptSounds();
+                        break;
                     case 'myCustomColor':
                         if (!checked && _lmSetWas && window.legendmod && legendmod._lmOwnColorsRestore) legendmod._lmOwnColorsRestore();
                         break;
@@ -25648,6 +25608,7 @@ function thelegendmodproject() {
                         }
                         break;
                     case 'highDPI':
+                        if (_lmSame) break;
                         if (typeof drawRender !== 'undefined' && drawRender && drawRender.resizeCanvas) {
                             drawRender.resizeCanvas();
                         }
@@ -25680,7 +25641,7 @@ function thelegendmodproject() {
                         this.setMiniMap();
                         break;
                     case 'showMiniMapGrid':
-                        this.resetMiniMapSectors();
+                        if (!_lmSame) this.resetMiniMapSectors();
                         break;
                     /* Issue #19: clear trail data when the minimap trail is turned off */
                     case 'showMiniMapTrail':
@@ -25706,7 +25667,7 @@ function thelegendmodproject() {
                         this.setChatSoundsBtn();
                         break;
                     case 'showChatBox':
-                        this.setShowChatBox();
+                        if (!_lmSame) this.setShowChatBox();
                         break;
                     case 'showTop5':
                         this.setTop5();
@@ -25759,13 +25720,13 @@ function thelegendmodproject() {
                     case 'cursorTracking':
                         if (!checked && defaultmapsettings.bubbleCursorTracker) {
                             defaultmapsettings.bubbleCursorTracker = false;
-                            this.syncHotkeyOption('bubbleCursorTracker');
+                            this._lmOptionUi('bubbleCursorTracker');
                         }
                         break;
                     case 'bubbleCursorTracker':
                         if (checked && !defaultmapsettings.cursorTracking) {
                             defaultmapsettings.cursorTracking = true;
-                            this.syncHotkeyOption('cursorTracking');
+                            this._lmOptionUi('cursorTracking');
                         }
                         break;
                     case 'tweenMaxEffect':
@@ -25775,6 +25736,8 @@ function thelegendmodproject() {
                         this.displayPartyBots();
                         break;*/
                     case 'showStats':
+                        /* the same value again would show the stats HUD that Hide all (Alt+H) hid */
+                        if (_lmSame) break;
                         this.displayStats();
                         /* displayStats() hides the HUD when the option is off; only show it when on. */
                         if (defaultmapsettings.showStats) $('#stats-hud').show();
@@ -25792,7 +25755,7 @@ function thelegendmodproject() {
                     case 'glAntialias':
                         /* Performance mode shows one message for all of its changes; switched back to
                          * what the running GPU context has, no reload is needed */
-                        if (window.toastr && !this._lmPerfApplying && lmGlAAPending()) toastr.info(lmT('game1.perf.aaReload'));
+                        if (!_lmSame && window.toastr && !this._lmPerfApplying && lmGlAAPending()) toastr.info(lmT('game1.perf.aaReload'));
                         break;
                     case 'performanceMode':
                         /* Only a real change turns the mode on or off: a second "on" (a script)
@@ -25802,31 +25765,15 @@ function thelegendmodproject() {
                         if (checked === _lmSetWas) break;
                         /* On: remember the current values and turn the costly effects off.
                          * Off: put the remembered values back.
-                         * Each value goes through its own control, as the presets do: a checkbox
-                         * gets a bubbling change (setSettings: side effects such as the High DPI
-                         * canvas resize and the rainbow colour timer, Switchery), a slider gets
-                         * input + change (value label, its callback, save). Setting the checkbox
-                         * with a change that does not bubble skipped setSettings, and the HUD blur
-                         * slider kept showing the old value while the blur was 0. */
+                         * Each value goes through setSettings, with or without the menu: side
+                         * effects such as the High DPI canvas resize and the rainbow colour timer,
+                         * the slider's callback, the copy in ogario, the switch or slider shown
+                         * silently. Without the switches the value was only stored (no resize), and
+                         * a change event sent to a switch gave no error back when its handler failed. */
                         var _lmPerfKeys = this._lmPerfModeKeys.filter(function (k) { return Object.prototype.hasOwnProperty.call(defaultmapsettings, k); });
                         var _lmPerfApp = this;
                         var _lmPerfSet = function (k, v) {
-                            var cb = document.getElementById(k);
-                            if (cb && cb.type === 'checkbox' && $(cb).closest('#og-options').length) {
-                                v = !!v;
-                                if (cb.checked !== v) {
-                                    cb.checked = v;
-                                    try { cb.dispatchEvent(new Event('change', { bubbles: true })); return; } catch (e) { }
-                                }
-                                if (defaultmapsettings[k] !== v) _lmPerfApp.setSettings(k, v);
-                                return;
-                            }
-                            var sl = $('#' + k + '-slider');
-                            if (sl.length && sl.closest('#og-options').length) {
-                                sl.val(v).trigger('input').trigger('change');
-                                return;
-                            }
-                            defaultmapsettings[k] = v;
+                            if (defaultmapsettings[k] !== v) _lmPerfApp.setSettings(k, v);
                         };
                         this._lmPerfApplying = true;
                         try {
@@ -25917,6 +25864,23 @@ function thelegendmodproject() {
                 drop.forEach(function (k) { if (Object.prototype.hasOwnProperty.call(b, k)) { delete b[k]; n++; } });
                 if (n) window.localStorage.setItem('lmPerfBackup', JSON.stringify(b));
             } catch (e) { }
+        },
+        /* A setting's switch (and its Switchery, which follows a change event that does not
+         * bubble, so the settings handler is not run) or dropdown shows its value without
+         * running anything; setSettings moves a slider itself. */
+        _lmOptionUi(key) {
+            if (typeof document === 'undefined' || !document.getElementById) return;
+            var v = defaultmapsettings[key], el = document.getElementById(key);
+            if (el && el.type === 'checkbox') {
+                if (el.checked === !!v) return;
+                el.checked = !!v;
+                try { el.dispatchEvent(new Event('change', { bubbles: false })); } catch (e) { }
+                /* the "Needs: ..." dimming of the Settings tab, once for a batch of changes */
+                var app = this;
+                if (typeof app._lmDepRefresh === 'function' && !app._lmDepT) app._lmDepT = setTimeout(function () { app._lmDepT = null; try { app._lmDepRefresh(); } catch (e) { } }, 0);
+            } else if (el && el.tagName === 'SELECT' && el.value !== String(v)) {
+                el.value = String(v);
+            }
         },
         profiling() {
             if (defaultmapsettings.profileNumber < 15) {
@@ -26962,24 +26926,12 @@ function thelegendmodproject() {
                     application._lmPerfModeOwn(k, v);
                 };
                 var setOpt = function (k, v) {
-                    var cb = document.getElementById(k);
-                    if (cb && cb.type === 'checkbox' && $(cb).closest('#og-options').length) {
-                        v = !!v;
-                        if (cb.checked !== v) {
-                            cb.checked = v;
-                            /* the bubbling change runs setSettings (side effects, save) and moves the Switchery */
-                            try { cb.dispatchEvent(new Event('change', { bubbles: true })); return; } catch (e) { }
-                        }
-                        if (defaultmapsettings[k] !== v) application.setSettings(k, v);
-                        else ownOpt(k, v);
-                        return;
-                    }
-                    /* a dropdown (Mass format): setSettings applies it, saves and shows it */
-                    if (cb && cb.tagName === 'SELECT' && $(cb).closest('#og-options').length) { application.setSettings(k, v); return; }
-                    var sl = $('#' + k + '-slider');
-                    if (sl.length && sl.closest('#og-options').length) { sl.val(v).trigger('input').trigger('change'); return; }
-                    ownOpt(k, v);
-                    defaultmapsettings[k] = v;
+                    /* setSettings applies it with or without the menu: its effects, a slider's
+                     * callback, the copy in ogario, the save; the switch, list or slider follows
+                     * silently. Through a change event sent to the switch a failing handler gave
+                     * no error back, and without the menu the value was only stored. */
+                    if (defaultmapsettings[k] !== v) application.setSettings(k, v);
+                    else ownOpt(k, v);
                     /* the eye buttons next to the nick and the skin (no switch in Settings) */
                     var after = k === 'streamMode' ? 'setStreamMode' : k === 'hideSkinUrl' ? 'setHideSkinUrl' : '';
                     if (after && typeof application[after] === 'function') application[after]();
@@ -27854,10 +27806,8 @@ function thelegendmodproject() {
             $(document).on("click", ".chat-sound-notifications", function (result) {
                 result.preventDefault();
                 /** @type {boolean} */
-                defaultmapsettings.chatSounds = !defaultmapsettings.chatSounds;
-                app.setChatSoundsBtn();
-                /* the settings switch kept the old state: sync it (this also saves) */
-                app.syncHotkeyOption('chatSounds');
+                /* setSettings sets the button and the settings switch, and saves */
+                app.setSettings('chatSounds', !defaultmapsettings.chatSounds);
             });
             $(document).on("click", ".chat-active-users", function (event) {
                 event.preventDefault();

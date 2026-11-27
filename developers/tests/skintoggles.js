@@ -31,7 +31,7 @@ function method(name, prop) {
     return name + ': function ' + src.slice(src.indexOf('(', i + 9), body(i));
 }
 const methods = ['_lmSkinKeys', 'teamSkinUrl', 'cacheCustomSkin', '_lmSkinSet', '_lmSkinAt', 'getCustomSkin', '_lmSkinCacheKey', 'customSkinKey',
-    'toggleSkins', 'setVanillaSkins', 'setShowSkins', 'syncHotkeyOption', 'flushSkinsMap', 'skinsModeMsg'].map((m) => method(m)).filter(Boolean);
+    'toggleSkins', 'setVanillaSkins', 'setShowSkins', 'syncHotkeyOption', '_lmOptionUi', 'flushSkinsMap', 'skinsModeMsg'].map((m) => method(m)).filter(Boolean);
 methods.push(method('checkSkinURL', true));
 
 const ctx = { console, JSON };
@@ -59,18 +59,19 @@ vm.runInContext(skinRes.accessor + [fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('
     '\nvar saved = null;' +
     '\nfunction animateSkinsStop() { } function animateSkincheck() { }' +
     '\nvar RecordedArenasSpecifications = {};' +
-    /* the settings checkbox: syncHotkeyOption dispatches its change event; the menu's change
-     * handler runs setSettings, whose vanillaSkins / noSkins cases are these */
+    /* the settings checkbox: a bubbling change (a click) runs the menu's change handler,
+     * setSettings, whose vanillaSkins / noSkins cases are these; setSettings shows the value on
+     * the checkbox silently (the real _lmOptionUi: a change that does not bubble) */
     '\nvar boxes = {};' +
-    '\nvar document = { getElementById: function (id) { return boxes[id] || (boxes[id] = { type: "checkbox", id: id, checked: false, dispatchEvent: function () { application.setSettings(id, this.checked); } }); } };' +
-    '\nfunction Event(t) { this.type = t; }' +
+    '\nvar document = { getElementById: function (id) { return boxes[id] || (boxes[id] = { type: "checkbox", id: id, checked: false, dispatchEvent: function (ev) { if (ev.bubbles) application.setSettings(id, this.checked); } }); } };' +
+    '\nfunction Event(t, o) { this.type = t; this.bubbles = !!(o && o.bubbles); }' +
     '\nvar application = {' + methods.join(',\n') +
     ', customSkinsMap: {}, vanillaSkinKeys: {}, customSkinsCache: {}, loadSkin: function () { }, _lmTouchSkin: function () { },' +
     ' displayChatInfo: function () { }, saveSettings: function () { saved = JSON.stringify(defaultmapsettings); },' +
     ' getCachedSkin: function (cache, url) { return url; },' +
     ' setSettings: function (id, checked) { defaultmapsettings[id] = checked; ogario[id] = checked; saved = JSON.stringify(defaultmapsettings);' +
     '   if (id === "vanillaSkins") this.setVanillaSkins();' +
-    '   if (id === "noSkins") { this.noSkins = !!checked; LM.showCustomSkins = !checked; } } };' +
+    '   if (id === "noSkins") { this.noSkins = !!checked; LM.showCustomSkins = !checked; } this._lmOptionUi(id); } };' +
     /* the game state, window.legendmod in the page */
     '\nvar legendmod = Object.assign(LM, {' + method('vanillaskins') + '});', ctx);
 
@@ -151,7 +152,7 @@ for (let m = 0; m < 16; m++) {
 world();
 apply({ customSkins: true, vanillaSkins: true, ownVanillaSkin: false, noSkins: false });
 ctx.document.getElementById('vanillaSkins').checked = false;
-ctx.document.getElementById('vanillaSkins').dispatchEvent(new ctx.Event('change'));
+ctx.document.getElementById('vanillaSkins').dispatchEvent(new ctx.Event('change', { bubbles: true }));
 V.vanillaskins('Albania', null, '#ff0000');                 /* the next cell updates */
 V.vanillaskins('Spider', '%spider', '#ff0000');
 verify('Settings: Vanilla skins off -> agar.io skins gone (also after the next cell update), custom skins incl. the own one stay',

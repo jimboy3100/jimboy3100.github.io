@@ -329,6 +329,66 @@ check('setSettings on and off: two events, the new value each time', J(events) =
   }
 }
 
+// ── S5c one path for a value (real setSettings, hotkey toggles, Performance mode, the presets' setOpt):
+// effects run once and only for a real change, the switch follows without running anything
+{
+  const H = vm.runInContext('({\n' + ss + cut('        toggleSkins() {', '        /* a board (leaderboard-positions') + '\n})', ctx);
+  H.saveSettings = app.saveSettings;
+  H._lmChoiceSync = app2._lmChoiceSync;
+  const fx = [];
+  ['setTop5', 'displayStats', 'setAutoResp', 'displayChatInfo', 'skinsModeMsg', 'applyHudBlur', '_lmLoadOptSounds'].forEach(n => { H[n] = function () { fx.push(n); return ''; }; });
+  const els = {}, moved = [], getWas = ctx.document.getElementById, evWas = ctx.Event;
+  ctx.Event = function (t, o) { this.type = t; this.bubbles = !!(o && o.bubbles); };
+  ctx.document.getElementById = id => els[id] || null;
+  /* a switch of the menu: a bubbling change (a click) runs setSettings, as the menu's handler does */
+  const box = id => (els[id] = { type: 'checkbox', checked: !!S[id], dispatchEvent(ev) { moved.push(id); if (ev.bubbles) H.setSettings(id, this.checked); } });
+  try {
+    ['showTop5', 'showStats', 'autoResp', 'performanceMode'].forEach(box);
+    S.performanceMode = false;
+    ctx.localStorage.removeItem('lmPerfBackup');
+    H.setShowTop5(); H.setShowStats(); H.toggleAutoResp();
+    check('hotkeys: each effect once (was twice), the switches follow silently', J(fx) === J(['setTop5', 'displayStats', 'setAutoResp', 'displayChatInfo']) &&
+      ['showTop5', 'showStats', 'autoResp'].every(k => els[k].checked === S[k]) && J(moved) === J(['showTop5', 'showStats', 'autoResp']) || (console.log('   ' + J(fx) + ' ' + J(moved)), false));
+    /* an older caller (hotkeysCommand.js, a script) stores the value itself and then syncs */
+    ctx.localStorage.setItem('lmPerfBackup', J({ jellyPhisycs: false }));
+    S.performanceMode = true; els.performanceMode.checked = true; S.jellyPhisycs = true;
+    S.performanceMode = false; H.syncHotkeyOption('performanceMode');
+    check('older caller turning Performance mode off itself: the handler sees the change, a value changed meanwhile stays', S.jellyPhisycs === true && ctx.localStorage.getItem('lmPerfBackup') === null && els.performanceMode.checked === false);
+    /* Performance mode without the menu: every value through setSettings */
+    delete els.performanceMode;
+    let rs = 0;
+    ctx.drawRender = { resizeCanvas() { rs++; } };
+    ctx.ogario.highDPI = true; S.highDPI = true;
+    H.setSettings('performanceMode', true);
+    check('Performance mode on without its switches: High DPI canvas resized and the copy in ogario follows', rs === 1 && S.highDPI === false && ctx.ogario.highDPI === false);
+    H.setSettings('performanceMode', false);
+    H.setSettings('highDPI', true);
+    check('the same High DPI value again: no second canvas resize', S.highDPI === true && rs === 2);
+    /* the presets' setOpt, without the menu */
+    const ownOpt = () => { };
+    const presetSet = vm.runInContext('(function (application, ownOpt) {' + cut('                var setOpt = function (k, v) {', '                /* The values from before the first of consecutive presets') + 'return setOpt; })', ctx)(H, ownOpt);
+    presetSet('highDPI', false);
+    check('a preset without the menu: High DPI through setSettings (canvas resized, copy in ogario)', S.highDPI === false && ctx.ogario.highDPI === false && rs === 3);
+    /* values checked before their effects */
+    fx.length = 0; S.x16Sound = false;
+    H.setSettings('x16Sound', 'true');
+    check('an optional sound switched on with "true" (a script): stored as true and loaded', S.x16Sound === true && fx.indexOf('_lmLoadOptSounds') >= 0);
+    S.massFormat = 3;
+    [false, ' ', [], [0]].forEach(v => H.setSettings('massFormat', v));
+    check('mass format: false, " ", [] and [0] are refused (auto stays), not read as the old 0', S.massFormat === 3);
+    H.setSettings('massFormat', 0);
+    const mf0 = S.massFormat;
+    S.massFormat = 1; H.setSettings('massFormat', '0');
+    check('mass format 0 and "0" of older scripts still mean 12.3k or exact', mf0 === 2 && S.massFormat === 1);
+  } finally {
+    ctx.document.getElementById = getWas; ctx.Event = evWas;
+    S.highDPI = D.highDPI; S.massFormat = D.massFormat; S.x16Sound = D.x16Sound; S.performanceMode = false; S.jellyPhisycs = D.jellyPhisycs;
+    ['showTop5', 'showStats', 'autoResp'].forEach(k => { S[k] = D[k]; });
+    ctx.localStorage.removeItem('lmPerfBackup');
+    delete ctx.drawRender;
+  }
+}
+
 // ── S6 what a setting really does now (real setSettings, onPlay, onSpectate, setShowFood, key handler)
 const sToasts = [];
 ctx.toastr = { info: t => sToasts.push(['info', t]), warning: t => sToasts.push(['warning', t]), success() { } };

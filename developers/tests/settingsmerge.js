@@ -133,17 +133,18 @@ ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, D, {
 app.loadSettings();
 check('cursor: load of an old save with the bubble alone -> Cursor tracking on, save rewritten', S.cursorTracking === true && S.bubbleCursorTracker === true && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).cursorTracking === true);
 const synced = [];
-app2.syncHotkeyOption = (k) => synced.push(k);
+app2._lmOptionUi = (k) => synced.push(k);
 app2.setSettings('cursorTracking', false);
-check('cursor: Cursor tracking off takes the bubble look off too (no save holds the bubble alone)', S.cursorTracking === false && S.bubbleCursorTracker === false && synced.join() === 'bubbleCursorTracker');
+check('cursor: Cursor tracking off takes the bubble look off too (no save holds the bubble alone)', S.cursorTracking === false && S.bubbleCursorTracker === false && synced.join() === 'cursorTracking,bubbleCursorTracker');
 synced.length = 0;
 app2.setSettings('bubbleCursorTracker', true);
-check('cursor: choosing the bubble look turns Cursor tracking on', S.cursorTracking === true && S.bubbleCursorTracker === true && synced.join() === 'cursorTracking');
+check('cursor: choosing the bubble look turns Cursor tracking on', S.cursorTracking === true && S.bubbleCursorTracker === true && synced.join() === 'bubbleCursorTracker,cursorTracking');
 synced.length = 0;
 app2.setSettings('bubbleCursorTracker', false);
-check('cursor: back to the line look: Cursor tracking stays on', S.cursorTracking === true && S.bubbleCursorTracker === false && synced.length === 0);
+check('cursor: back to the line look: Cursor tracking stays on', S.cursorTracking === true && S.bubbleCursorTracker === false && synced.join() === 'bubbleCursorTracker');
+synced.length = 0;
 app2.setSettings('cursorTracking', false);
-check('cursor: Cursor tracking off with the line look changes nothing else', S.bubbleCursorTracker === false && synced.length === 0);
+check('cursor: Cursor tracking off with the line look changes nothing else', S.bubbleCursorTracker === false && synced.join() === 'cursorTracking');
 
 if (fail) { console.log(fail + ' check(s) FAILED'); process.exit(1); }
 console.log('all settings merge checks passed');
