@@ -114,9 +114,22 @@ var modes = {
 var modeName = location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
 var mode = Object.prototype.hasOwnProperty.call(modes, modeName) ? modes[modeName] : modes.legendmod;
 if (mode.bypass) return;
-/* early: agar.io's page has only just started (none of its scripts ran); partial: its <head> was parsed
- * (its head scripts ran, its game did not); late: its whole page and game ran (the manager was slow) */
-var timing = document.readyState === 'loading' ? (document.body ? 'partial' : 'early') : 'late';
+/* early: none of agar.io's scripts ran yet; partial: its page is still being read, but its first scripts
+ * ran (agar.io's game code is in its <head>, so it is running); late: its whole page and game ran (the
+ * manager was slow). A partial or late start gets the same recovery. */
+function agarScriptRan() {
+    /* a script of agar.io's page (in it from the start: not async, not added by a manager or another
+     * extension, which are async) that the page goes on after has run: the parser waits for it */
+    var list = document.getElementsByTagName('script');
+    for (var i = 0; i < list.length; i++) {
+        var s = list[i];
+        if (s === document.currentScript || !s.src || s.async || s.defer) continue;
+        for (var n = s; n && n !== document; n = n.parentNode) if (n.nextSibling) return true;
+    }
+    return false;
+}
+var timing = document.readyState !== 'loading' ? 'late' : agarScriptRan() ? 'partial' : 'early';
+var startedLate = timing !== 'early';
 
 /* ---- takeover: agar.io's page is replaced by a loading screen in the player's menu colours.
  * document.open() stops its parser and drops the rest of it with its scripts. Not window.stop(): it
@@ -275,7 +288,7 @@ function guardedReload(kind, url) {
 /* the link agar.io was opened with: a late start comes after agar.io's own code, which may have
  * changed the address (its path or query) */
 function launchUrl() {
-    if (timing === 'late') {
+    if (startedLate) {
         try {
             var nav = performance.getEntriesByType('navigation')[0];
             var navUrl = nav && String(nav.name || '');
@@ -287,7 +300,7 @@ function launchUrl() {
     return location.href;
 }
 var cancelLeftovers = false;
-if (timing === 'late') {
+if (startedLate) {
     var noReload = false;
     try { noReload = Date.now() - (+localStorage.getItem(NO_RELOAD_KEY) || 0) < NO_RELOAD_MS; } catch (e) { }
     if (recentRecovery('late')) {
