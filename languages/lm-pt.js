@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Contorno de nomes e massa",
 "settings.namesStroke": "Contorno dos nomes",
 "settings.massStroke": "Contorno da massa",
-"settings.bubbleCursorTracker": "Rastreador de bolha (desativa o rastreio do cursor)",
+"settings.bubbleCursorTracker": "Rastreio do cursor como bolha (em vez da linha)",
 "settings.bubbleInd": "Indicadores de bolha (desativa os anéis dos oponentes)",
 "settings.cursorTracking": "Rastreio do cursor",
 "settings.teammatesInd": "Indicadores dos aliados",

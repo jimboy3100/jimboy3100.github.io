@@ -2,8 +2,9 @@
 // while Opponents rings and Cursor tracking are on, and Settings > Stats: the ping
 // jitter only while FPS is on (it is written after the ping, after the FPS); while those are off they
 // are dimmed and say what they need, as the other dependent options. With Stats off the jitter says
-// it needs Stats (the outermost switch that is off). While the bubble tracker is on, Cursor tracking
-// and Split prediction say it stops them (it replaces the cursor lines). The parent switch is turned off
+// it needs Stats (the outermost switch that is off). The bubble tracker is the bubble look of Cursor
+// tracking: it needs Cursor tracking, choosing it turns Cursor tracking on, and while it is on only
+// Split prediction (it dims the line) says it has no effect. The parent switch is turned off
 // and on again with a real click (a tap on phones); every setting is put back.
 (async () => {
   var fail = [], info = {};
@@ -18,7 +19,7 @@
       window.__lmInput(JSON.stringify({ id: id, type: window.LM_IS_MOBILE ? 'tap' : 'click', x: x, y: y }));
     });
   };
-  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['showStatsFPS', 'showStatsJitter']];
+  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['cursorTracking', 'bubbleCursorTracker'], ['showStatsFPS', 'showStatsJitter']];
   var keep = { showStats: defaultmapsettings.showStats, bubbleCursorTracker: defaultmapsettings.bubbleCursorTracker };
   pairs.forEach(function (p) { keep[p[0]] = defaultmapsettings[p[0]]; keep[p[1]] = defaultmapsettings[p[1]]; });
   var needs = application._lmMenuText('lmDepNeeds');
@@ -71,8 +72,8 @@
     ['showStatsJitter', 'showStatsFrameTime'].forEach(function (k) {
       if (info.statsOff[k] !== needs + ': ' + plain('showStats')) fail.push(k + ' with Stats off says ' + (info.statsOff[k] || 'nothing'));
     });
-    /* the bubble tracker replaces the cursor lines: while it is on, Cursor tracking and Split
-     * prediction (on) draw nothing and say so; turned off again they are not dimmed for it */
+    /* the bubble look of Cursor tracking: while it is on, Split prediction (it dims the line) says
+     * it has no effect and Cursor tracking is not dimmed; turned off again nothing is dimmed for it */
     var offWhile = lmT('pkg.s3xvw.depOffWhile') + ': ' + plain('bubbleCursorTracker');
     if (!defaultmapsettings.cursorTracking) await flip('cursorTracking');
     if (defaultmapsettings.bubbleCursorTracker) await flip('bubbleCursorTracker');
@@ -82,10 +83,18 @@
     await flip('bubbleCursorTracker');
     var bt2 = { cursorTracking: why('cursorTracking'), splitPrediction: why('splitPrediction') };
     info.bubbleTracker = { off: bt0, on: bt1 };
-    ['cursorTracking', 'splitPrediction'].forEach(function (k) {
-      if (bt1[k] !== offWhile) fail.push(k + ' with the bubble tracker on says ' + (bt1[k] || 'nothing'));
-      if (bt0[k] === offWhile || bt2[k] === offWhile) fail.push(k + ' says the bubble tracker stops it while that is off');
-    });
+    if (bt1.splitPrediction !== offWhile) fail.push('splitPrediction with the bubble look on says ' + (bt1.splitPrediction || 'nothing'));
+    if (bt0.splitPrediction === offWhile || bt2.splitPrediction === offWhile) fail.push('splitPrediction says the bubble look stops it while that is off');
+    if (bt0.cursorTracking || bt1.cursorTracking || bt2.cursorTracking) fail.push('Cursor tracking is dimmed (' + [bt0.cursorTracking, bt1.cursorTracking, bt2.cursorTracking].join(' / ') + ')');
+    /* Cursor tracking off takes the bubble look off; choosing the look turns Cursor tracking on */
+    await flip('bubbleCursorTracker');
+    await flip('cursorTracking');
+    var offBoth = { cursorTracking: defaultmapsettings.cursorTracking, bubbleCursorTracker: defaultmapsettings.bubbleCursorTracker, box: document.getElementById('bubbleCursorTracker').checked };
+    await flip('bubbleCursorTracker');
+    var onBoth = { cursorTracking: defaultmapsettings.cursorTracking, bubbleCursorTracker: defaultmapsettings.bubbleCursorTracker, box: document.getElementById('cursorTracking').checked };
+    info.bubbleLook = { ctOff: offBoth, lookOn: onBoth };
+    if (offBoth.cursorTracking || offBoth.bubbleCursorTracker || offBoth.box) fail.push('Cursor tracking off left the bubble look on ' + JSON.stringify(offBoth));
+    if (!onBoth.cursorTracking || !onBoth.bubbleCursorTracker || !onBoth.box) fail.push('choosing the bubble look did not turn Cursor tracking on ' + JSON.stringify(onBoth));
   } catch (e) {
     fail.push('threw ' + e);
   } finally {

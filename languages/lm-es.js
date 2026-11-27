@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Contorno de nombres y masa",
 "settings.namesStroke": "Contorno de nombres",
 "settings.massStroke": "Contorno de masa",
-"settings.bubbleCursorTracker": "Rastreador de burbuja (desactiva el seguimiento del cursor)",
+"settings.bubbleCursorTracker": "Seguimiento del cursor como burbuja (en lugar de la línea)",
 "settings.bubbleInd": "Indicadores de burbuja (desactiva anillos de oponentes)",
 "settings.cursorTracking": "Seguimiento del cursor",
 "settings.teammatesInd": "Indicadores de compañeros",

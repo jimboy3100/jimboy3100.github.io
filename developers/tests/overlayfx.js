@@ -19,7 +19,8 @@
  * text passes skip it), so its reference uses the same rasters. So a difference is always a
  * mark: lost, misplaced, wrong alpha, or above something it is under in Canvas2D.
  * It does not run a GPU: drawWebGLCellBatch and the text pass are not executed here.
- * Also the Canvas2D gradient bubbles (opponents, cursor) on a recording context.
+ * Also the Canvas2D gradient bubbles (opponents, cursor) on a recording context, and which look
+ * of Cursor tracking draws (line, bubble, none) for its two switches.
  * Cases: teammate only, chat only, FB badge (with its nick and mass, multibox ring, text and
  * skin alpha, Teams, no skin), FB arrow, special effects (custom skins off, an effect of a
  * cell outside the frame), the chat bubble of a cell outside the GL view, overlapping cells (later cell over a mark or the moved labels,
@@ -1133,6 +1134,28 @@ const noReset = (log) => log.filter((x, i) => !(x === 'globalAlpha=1' && log[i +
     const r2 = recorder();
     R.drawBCursorTracking(r2.ctx, cells, 500, -200);
     check('cursor bubble: light theme alpha 0.35', r2.log.indexOf('globalAlpha=0.35') >= 0);
+}
+/* Cursor tracking and its looks: which one draws */
+{
+    const calls = [];
+    R.drawSplitVectorGuide = () => calls.push('line');
+    R.drawMergeProgressRings = () => { };
+    R.drawBCursorTracking = () => calls.push('bubble');
+    R.drawFBTracking = () => { };
+    R.ctx = recorder().ctx;
+    LM.playerCells = [{ x: 1, y: 1, size: 50, isInView: () => true }];
+    LM.cursorX = 300; LM.cursorY = 300;
+    const S = D.defaultmapsettings;
+    S.splitPrediction = false; S.FBTracking = false;
+    const run = (ct, bubble) => {
+        calls.length = 0; S.cursorTracking = ct; S.bubbleCursorTracker = bubble;
+        R.drawPostCellOverlays(R.ctx); R.drawMiscRings();
+        return calls.join(',') || 'nothing';
+    };
+    check('Cursor tracking off, line look: nothing', run(false, false) === 'nothing', run(false, false));
+    check('Cursor tracking on, line look: the line only', run(true, false) === 'line', run(true, false));
+    check('Cursor tracking on, bubble look: the bubble only', run(true, true) === 'bubble', run(true, true));
+    check('Cursor tracking off, bubble look chosen: nothing (the bubble is a look of Cursor tracking)', run(false, true) === 'nothing', run(false, true));
 }
 }
 

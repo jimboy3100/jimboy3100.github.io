@@ -3580,7 +3580,7 @@
 "settings.textStroke": "İsim ve kütle dış çizgisi",
 "settings.namesStroke": "İsim dış çizgisi",
 "settings.massStroke": "Kütle dış çizgisi",
-"settings.bubbleCursorTracker": "Baloncuk takipçisi (imleç takibini kapatır)",
+"settings.bubbleCursorTracker": "İmleç takibi baloncuk olarak (çizgi yerine)",
 "settings.bubbleInd": "Baloncuk göstergeleri (rakip halkalarını kapatır)",
 "settings.cursorTracking": "İmleç takibi",
 "settings.teammatesInd": "Takım arkadaşı göstergeleri",

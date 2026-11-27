@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Garis tepi nama dan massa",
 "settings.namesStroke": "Garis tepi nama",
 "settings.massStroke": "Garis tepi massa",
-"settings.bubbleCursorTracker": "Pelacak gelembung (menonaktifkan pelacakan kursor)",
+"settings.bubbleCursorTracker": "Pelacakan kursor sebagai gelembung (bukan garis)",
 "settings.bubbleInd": "Indikator gelembung (menonaktifkan cincin lawan)",
 "settings.cursorTracking": "Pelacakan kursor",
 "settings.teammatesInd": "Indikator rekan tim",

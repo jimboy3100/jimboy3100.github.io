@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Контур на имената и масата",
 "settings.namesStroke": "Контур на имената",
 "settings.massStroke": "Контур на масата",
-"settings.bubbleCursorTracker": "Проследяване с балон (изключва проследяването на курсора)",
+"settings.bubbleCursorTracker": "Проследяване на курсора като балон (вместо линията)",
 "settings.bubbleInd": "Индикатори с балон (изключва кръговете на противниците)",
 "settings.cursorTracking": "Проследяване на курсора",
 "settings.teammatesInd": "Индикатори на съотборниците",

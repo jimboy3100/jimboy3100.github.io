@@ -3580,7 +3580,7 @@
 "settings.textStroke": "إطار الأسماء والكتلة",
 "settings.namesStroke": "إطار الأسماء",
 "settings.massStroke": "إطار الكتلة",
-"settings.bubbleCursorTracker": "متتبع الفقاعة (يعطّل تتبع المؤشر)",
+"settings.bubbleCursorTracker": "تتبع المؤشر كفقاعة (بدلاً من الخط)",
 "settings.bubbleInd": "مؤشرات الفقاعة (تعطّل حلقات الخصوم)",
 "settings.cursorTracking": "تتبع المؤشر",
 "settings.teammatesInd": "مؤشرات زملاء الفريق",

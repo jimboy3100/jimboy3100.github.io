@@ -21828,6 +21828,13 @@ function lmFoldLegacySettings(s) {
     var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
     var was = JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]);
     var changed = lmFoldVideoVolume(s);
+    /* the bubble tracker is the bubble look of Cursor tracking now; older versions drew it on its
+     * own: such a set gets Cursor tracking on, so the same bubble is drawn (and nothing else) */
+    if (has('bubbleCursorTracker') && lmSettingValue('bubbleCursorTracker', s.bubbleCursorTracker) === true
+        && (!has('cursorTracking') || lmSettingValue('cursorTracking', s.cursorTracking) !== true)) {
+        s.cursorTracking = true;
+        changed = true;
+    }
     if (has('massFormat') || has('shortMass')) {
         var mf = has('massFormat') ? (typeof s.massFormat === 'number' ? s.massFormat : (typeof s.massFormat === 'string' && s.massFormat.trim() !== '' ? Number(s.massFormat) : NaN)) : NaN;
         /* no mode or 0 ("as Short mass", also what an unusable value fell back to): the switch decides */
@@ -26034,6 +26041,21 @@ function thelegendmodproject() {
                     case 'massFormat':
                         this._lmChoiceSync('massFormat');
                         break;
+                    /* the bubble is a look of Cursor tracking: choosing it turns Cursor tracking on, and
+                     * Cursor tracking off takes it off too, so a save never holds the bubble alone
+                     * (older versions drew it alone: lmFoldLegacySettings turns Cursor tracking on then) */
+                    case 'cursorTracking':
+                        if (!checked && defaultmapsettings.bubbleCursorTracker) {
+                            defaultmapsettings.bubbleCursorTracker = false;
+                            this.syncHotkeyOption('bubbleCursorTracker');
+                        }
+                        break;
+                    case 'bubbleCursorTracker':
+                        if (checked && !defaultmapsettings.cursorTracking) {
+                            defaultmapsettings.cursorTracking = true;
+                            this.syncHotkeyOption('cursorTracking');
+                        }
+                        break;
                     case 'tweenMaxEffect':
                         this.setTweenMaxEffect();
                         break;
@@ -27458,7 +27480,7 @@ function thelegendmodproject() {
             this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "hudMoveDir", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "bubbleCursorTracker", "FBTracking", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells", "hudMoveDir", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
             /* Sticky cells: what the left and right button do on cells (a behaviour, not a binding,
              * so here and not in the Hotkeys window) */
             this.addOptionTo('.helpersGroup', 'stickyCell');
@@ -27592,10 +27614,10 @@ function thelegendmodproject() {
                     recordReplays: ['instantReplaySecs'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
                     massLossAlert: ['massLossPct'],
-                    /* Settings > Helpers: the bubble style of the opponent rings and the dimming of the
-                     * cursor lines are drawn only with these on */
+                    /* Settings > Helpers: the bubble style of the opponent rings, the bubble look of
+                     * Cursor tracking and the dimming of its line are drawn only with these on */
                     oppRings: ['bubbleInd'],
-                    cursorTracking: ['splitPrediction'],
+                    cursorTracking: ['splitPrediction', 'bubbleCursorTracker'],
                     /* read only while the Scan trick key works (scanTrick); the LMB-only rule and the
                      * rounded distance only while its directions are rounded */
                     scanTrick: ['scanTrickRounded', 'scanTrickDistance'],
@@ -27613,9 +27635,9 @@ function thelegendmodproject() {
                     DEPS[p].forEach(function (c) { parentOf[c] = p; if (keys.indexOf(c) < 0) keys.push(c); });
                 });
                 Object.keys(SRV).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
-                /* option -> switch that stops it while on: the bubble tracker replaces the cursor lines,
-                 * so Cursor tracking and Split prediction (it dims those lines) draw nothing then */
-                var OFF_WHILE = { cursorTracking: 'bubbleCursorTracker' };
+                /* option -> switch that stops it while on: Split prediction dims the line of Cursor
+                 * tracking, which its bubble look does not draw */
+                var OFF_WHILE = { splitPrediction: 'bubbleCursorTracker' };
                 Object.keys(OFF_WHILE).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
                 var plain = function (s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, '').trim(); };
                 var itemOf = function (k) {
@@ -81447,7 +81469,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * Opponent bubbles are rendered below cells by drawHelpers().
                  * Do not draw them again in this post-cell overlay pass.
                  */
-                if (defaultmapsettings.bubbleCursorTracker) {
+                /* the bubble look of Cursor tracking (drawPostCellOverlays draws its line look) */
+                if (defaultmapsettings.cursorTracking && defaultmapsettings.bubbleCursorTracker) {
                     this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
                 }
                 if (defaultmapsettings.FBTracking && LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) {

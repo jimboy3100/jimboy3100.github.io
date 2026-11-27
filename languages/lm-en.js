@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Names and mass stroke",
 "settings.namesStroke": "Names stroke",
 "settings.massStroke": "Mass stroke",
-"settings.bubbleCursorTracker": "Bubble tracker (disables cursor tracking)",
+"settings.bubbleCursorTracker": "Cursor tracking as a bubble (instead of the line)",
 "settings.bubbleInd": "Bubble indicators (disables opponent rings)",
 "settings.cursorTracking": "Cursor tracking",
 "settings.teammatesInd": "Teammates indicators",

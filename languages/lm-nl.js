@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Omlijning van namen en massa",
 "settings.namesStroke": "Omlijning van namen",
 "settings.massStroke": "Omlijning van massa",
-"settings.bubbleCursorTracker": "Bubbeltracker (schakelt cursorvolging uit)",
+"settings.bubbleCursorTracker": "Cursorvolging als bubbel (in plaats van de lijn)",
 "settings.bubbleInd": "Bubbelindicatoren (schakelt ringen van tegenstanders uit)",
 "settings.cursorTracking": "Cursorvolging",
 "settings.teammatesInd": "Indicatoren voor teamgenoten",

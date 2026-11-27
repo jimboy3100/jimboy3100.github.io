@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Kontur für Namen und Masse",
 "settings.namesStroke": "Namenskontur",
 "settings.massStroke": "Massenkontur",
-"settings.bubbleCursorTracker": "Blasen-Tracker (deaktiviert Cursor-Tracking)",
+"settings.bubbleCursorTracker": "Cursor-Tracking als Blase (statt der Linie)",
 "settings.bubbleInd": "Blasen-Indikatoren (deaktiviert Gegnerringe)",
 "settings.cursorTracking": "Cursor-Tracking",
 "settings.teammatesInd": "Team-Indikatoren",

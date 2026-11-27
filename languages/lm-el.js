@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Περίγραμμα ονομάτων και μάζας",
 "settings.namesStroke": "Περίγραμμα ονομάτων",
 "settings.massStroke": "Περίγραμμα μάζας",
-"settings.bubbleCursorTracker": "Ιχνηλάτης φούσκας (απενεργοποιεί την παρακολούθηση κέρσορα)",
+"settings.bubbleCursorTracker": "Παρακολούθηση κέρσορα ως φούσκα (αντί για τη γραμμή)",
 "settings.bubbleInd": "Δείκτες φούσκας (απενεργοποιεί τους κύκλους αντιπάλων)",
 "settings.cursorTracking": "Παρακολούθηση κέρσορα",
 "settings.teammatesInd": "Δείκτες συμπαικτών",

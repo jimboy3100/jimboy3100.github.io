@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Obwódki nicków i masy",
 "settings.namesStroke": "Obwódki nicków",
 "settings.massStroke": "Obwódki masy",
-"settings.bubbleCursorTracker": "Śledzenie bąbelkiem (wyłącza śledzenie kursora)",
+"settings.bubbleCursorTracker": "Śledzenie kursora jako bąbelek (zamiast linii)",
 "settings.bubbleInd": "Wskaźniki bąbelkowe (wyłącza pierścienie przeciwników)",
 "settings.cursorTracking": "Śledzenie kursora",
 "settings.teammatesInd": "Wskaźniki członków drużyny",

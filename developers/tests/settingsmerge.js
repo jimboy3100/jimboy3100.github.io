@@ -3,6 +3,8 @@
  *   key stays a copy (lmFoldLegacySettings on load, import, profiles; setSettings for scripts).
  *   Game stats position: "at the top" + "at the bottom centre" are statsPosition top / bottom /
  *   center, the switches copies of it; setFpsAtTop places the stats line from it.
+ *   Cursor tracking: the bubble tracker is its bubble look; an old set with the bubble alone gets
+ *   Cursor tracking on, and setSettings keeps the pair so (Cursor tracking off takes the look off).
  * node developers/tests/settingsmerge.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -119,6 +121,29 @@ if (hasPlace) {
   app2.setSettings('statsAtCenter', false);
   check('stats: and off again: back to the top it had', S.statsPosition === 'top' && placed() === 'top');
 }
+
+// ── 3. Cursor tracking looks: the bubble tracker is the bubble look of Cursor tracking
+const CT = ['cursorTracking', 'bubbleCursorTracker'];
+check('cursor: an old set with the bubble alone gets Cursor tracking on (the same bubble is drawn)', J(pick(fold({ cursorTracking: false, bubbleCursorTracker: true })[0], CT)) === J({ cursorTracking: true, bubbleCursorTracker: true }) && fold({ cursorTracking: false, bubbleCursorTracker: true })[1] === true);
+check('cursor: ... also without a cursorTracking key, and with a stored "true"', fold({ bubbleCursorTracker: true })[0].cursorTracking === true && fold({ bubbleCursorTracker: 'true', cursorTracking: 'false' })[0].cursorTracking === true);
+check('cursor: the line look, both on, both off and no keys are left as they are', [{ cursorTracking: true, bubbleCursorTracker: false }, { cursorTracking: true, bubbleCursorTracker: true }, { cursorTracking: false, bubbleCursorTracker: false }, { cursorTracking: false }]
+  .every(o => { const c = Object.assign({}, o); const r = fold(c); return r[1] === false && J(r[0]) === J(o); }));
+check('cursor: an old export with the bubble alone (import path)', runImport({ cursorTracking: false, bubbleCursorTracker: true }).cursorTracking === true);
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, D, { cursorTracking: false, bubbleCursorTracker: true })));
+app.loadSettings();
+check('cursor: load of an old save with the bubble alone -> Cursor tracking on, save rewritten', S.cursorTracking === true && S.bubbleCursorTracker === true && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).cursorTracking === true);
+const synced = [];
+app2.syncHotkeyOption = (k) => synced.push(k);
+app2.setSettings('cursorTracking', false);
+check('cursor: Cursor tracking off takes the bubble look off too (no save holds the bubble alone)', S.cursorTracking === false && S.bubbleCursorTracker === false && synced.join() === 'bubbleCursorTracker');
+synced.length = 0;
+app2.setSettings('bubbleCursorTracker', true);
+check('cursor: choosing the bubble look turns Cursor tracking on', S.cursorTracking === true && S.bubbleCursorTracker === true && synced.join() === 'cursorTracking');
+synced.length = 0;
+app2.setSettings('bubbleCursorTracker', false);
+check('cursor: back to the line look: Cursor tracking stays on', S.cursorTracking === true && S.bubbleCursorTracker === false && synced.length === 0);
+app2.setSettings('cursorTracking', false);
+check('cursor: Cursor tracking off with the line look changes nothing else', S.bubbleCursorTracker === false && synced.length === 0);
 
 if (fail) { console.log(fail + ' check(s) FAILED'); process.exit(1); }
 console.log('all settings merge checks passed');

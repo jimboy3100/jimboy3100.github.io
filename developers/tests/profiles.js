@@ -811,6 +811,10 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
   const old = C.cleanBundle({ s: { shortMass: false } });
   const ko = C.diffBundles(a, old).map(r => r.key).sort().join();
   check('copies of a choice: an older set with only Short mass lists Mass format (' + ko + ')', ko === 'massFormat');
+  /* the bubble tracker is the bubble look of Cursor tracking: an older set with the bubble alone
+   * gets Cursor tracking on, so applying it still draws the bubble */
+  const ob = C.cleanBundle({ s: { cursorTracking: false, bubbleCursorTracker: true } });
+  check('bubble look: an older set with the bubble alone gets Cursor tracking on', !!ob && !!ob.s && ob.s.cursorTracking === true && ob.s.bubbleCursorTracker === true);
 }
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 

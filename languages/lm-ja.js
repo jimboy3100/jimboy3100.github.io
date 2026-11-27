@@ -3580,7 +3580,7 @@
 "settings.textStroke": "名前と質量の縁取り",
 "settings.namesStroke": "名前の縁取り",
 "settings.massStroke": "質量の縁取り",
-"settings.bubbleCursorTracker": "バブルトラッカー（カーソル追跡を無効化）",
+"settings.bubbleCursorTracker": "カーソル追跡をバブルで表示（線の代わり）",
 "settings.bubbleInd": "バブル表示（敵のリングを無効化）",
 "settings.cursorTracking": "カーソル追跡",
 "settings.teammatesInd": "味方の表示",

@@ -3580,7 +3580,7 @@
 "settings.textStroke": "名稱和質量描邊",
 "settings.namesStroke": "名稱描邊",
 "settings.massStroke": "質量描邊",
-"settings.bubbleCursorTracker": "泡泡追蹤（停用游標追蹤）",
+"settings.bubbleCursorTracker": "游標追蹤以泡泡顯示（取代線條）",
 "settings.bubbleInd": "泡泡指示器（停用對手外圈）",
 "settings.cursorTracking": "游標追蹤",
 "settings.teammatesInd": "隊友指示器",

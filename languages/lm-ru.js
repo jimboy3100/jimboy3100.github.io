@@ -3580,7 +3580,7 @@
 "settings.textStroke": "Обводка имён и массы",
 "settings.namesStroke": "Обводка имён",
 "settings.massStroke": "Обводка массы",
-"settings.bubbleCursorTracker": "Пузырьковый трекер (отключает отслеживание курсора)",
+"settings.bubbleCursorTracker": "Отслеживание курсора пузырём (вместо линии)",
 "settings.bubbleInd": "Пузырьковые индикаторы (отключают кольца противников)",
 "settings.cursorTracking": "Отслеживание курсора",
 "settings.teammatesInd": "Индикаторы союзников",
