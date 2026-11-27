@@ -266,3 +266,9 @@ the parser's colour diagnostics. In headless Chrome the real WebGL batch and the
 (jelly on/off) draw the same colour for valid colours, black, strings that are no colour and no
 colour, and the own custom colour without writing it into the cell. The Chrome part is skipped
 without Chrome. `node developers/tests/cellcolors.js [ogario.v4.js] [--no-chrome]`
+
+`framealloc.js` checks that per-frame renderer calls allocate nothing: _lmMarkCtx and _lmGlMarks
+(teammate indicator and chat bubble of the GL text pass, two calls per WebGL cell per frame) and
+drawLegendWorldDeformedCanvasCell (every Canvas2D-drawn cell), counted with V8's sampling heap
+profiler in optimized code and in the Maglev tier, against a reference version; the paths that do
+draw make the same calls as the reference. `node developers/tests/framealloc.js [--ref REV] [--old FILE]`

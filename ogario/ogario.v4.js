@@ -59862,14 +59862,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * Supports cell.draw(ctx), cell.draw(ctx, true), etc.
          * Jelly remains untouched.
          */
-        drawLegendWorldDeformedCanvasCell(cell, ctx) {
+        drawLegendWorldDeformedCanvasCell(cell, ctx, cellMoved) {
             if (!cell || !ctx) return;
+            /* cellMoved is cell.draw's second argument, the only one after ctx (its callers pass
+             * no more): any use of arguments here made every call allocate the arguments object
+             * (about 180 bytes per cell per frame), also on the fast paths */
             // Fast path: no deformation to apply, so skip the argument
             // array, closure and apply() that the wrapper needs per cell.
             if (
                 !this.isLegendWorldMapDeformationVisible()
             ) {
-                return cell.draw(ctx, arguments[2]);
+                return cell.draw(ctx, cellMoved);
             }
             if (
                 typeof defaultmapsettings !== 'undefined' &&
@@ -59885,23 +59888,26 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _jDy = _jPt.y - cell.y;
                 if (!Number.isFinite(_jDx) || !Number.isFinite(_jDy) ||
                     (_jDx === 0 && _jDy === 0)) {
-                    return cell.draw(ctx, arguments[2]);
+                    return cell.draw(ctx, cellMoved);
                 }
                 ctx.save();
                 try {
                     ctx.translate(_jDx, _jDy);
-                    return cell.draw(ctx, arguments[2]);
+                    return cell.draw(ctx, cellMoved);
                 } finally {
                     ctx.restore();
                 }
             }
-            var extraArgs = Array.prototype.slice.call(arguments, 2);
+            return this._elDeformedCellDraw(cell, ctx, cellMoved);
+        },
+        /* the moved-centre draw of drawLegendWorldDeformedCanvasCell: its closure lives here, so
+         * the paths above allocate nothing per cell per frame (a closure there made the slower
+         * tiers allocate its variables' context on every call) */
+        _elDeformedCellDraw(cell, ctx, cellMoved) {
             return this.withLegendWorldDeformedCellRenderState(
                 cell,
                 function () {
-                    return cell.draw.apply(
-                        cell, [ctx].concat(extraArgs)
-                    );
+                    return cell.draw(ctx, cellMoved);
                 }
             );
         },
@@ -73566,14 +73572,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * in the GL text pass (_lmGlMarks): what drawTeammatesInd and lmChatBubble draw on it
          * becomes a quad at the cell's depth (_lmGlMarkQuad), offset by dx/dy, with its alpha. */
         _lmMarkCtx() {
-            var r = this, c = this._lmMkCtx;
-            if (!c) {
-                c = this._lmMkCtx = {
-                    globalAlpha: 1, dx: 0, dy: 0, z: 0.5,
-                    drawImage: function (img, x, y, w, h) { r._lmGlMarkQuad(img, x + this.dx, y + this.dy, w, h, this.z, this.globalAlpha); }
-                };
-            }
-            return c;
+            /* made once in its own method: with the closure in this one, the browser's quicker
+             * compiled code allocated a context on every call (two calls per WebGL cell per frame) */
+            return this._lmMkCtx || this._lmMarkCtxMake();
+        },
+        _lmMarkCtxMake() {
+            var r = this;
+            return this._lmMkCtx = {
+                globalAlpha: 1, dx: 0, dy: 0, z: 0.5,
+                drawImage: function (img, x, y, w, h) { r._lmGlMarkQuad(img, x + this.dx, y + this.dy, w, h, this.z, this.globalAlpha); }
+            };
         },
         /* An image or canvas drawn at world x, y (w x h, or its own size) as a quad at depth z,
          * from the text cache: one entry per image, a new one when a canvas was drawn again
@@ -73651,13 +73659,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     /* drawn with the moved cell centre there (it is rounded to whole units) */
                     c.dx = 0;
                     c.dy = 0;
-                    this.withLegendWorldDeformedCellRenderState(cell, function () { cell.lmChatBubble(c, ce, true, false); });
+                    this._lmGlChatMoved(cell, c, ce);
                 } else {
                     cell.lmChatBubble(c, ce, true, false);
                 }
             } catch (e) {
                 /* a mark failing must not stop the labels of the other cells */
             }
+        },
+        /* the chat bubble of _lmGlMarks with the Expanding Land map deformation (no jelly): its
+         * closure lives here, so _lmGlMarks allocates no closure context per call */
+        _lmGlChatMoved(cell, c, ce) {
+            this.withLegendWorldDeformedCellRenderState(cell, function () { cell.lmChatBubble(c, ce, true, false); });
         },
         /* true when the GL text pass drew this cell's teammate indicator and chat bubble */
         _lmGlMarked(cell) {
