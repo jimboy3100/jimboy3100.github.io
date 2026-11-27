@@ -118,13 +118,16 @@ var mode = Object.prototype.hasOwnProperty.call(modes, modeName) ? modes[modeNam
  * ran (agar.io's game code is in its <head>, so it is running); late: its whole page and game ran (the
  * manager was slow). A partial or late start gets the same recovery. */
 function agarScriptRan() {
-    /* a script of agar.io's page (in it from the start: not async, not added by a manager or another
-     * extension, which are async or come from an extension, blob: or data: address) that the page
-     * goes on after has run: the parser waits for it */
+    /* a script of agar.io's page (in it from the start) that the page goes on after has run: the parser
+     * waits for it. Its inline head scripts count too: they start its ad SDK and pixel, which are async
+     * and still run after document.open(). Not counted: scripts added by a manager or another extension
+     * (made with createElement, so async; or with an extension, blob: or data: address; or put in
+     * <html> itself at document start, before agar.io's <head> existed) and non-JS ones (JSON data, modules). */
     var list = document.getElementsByTagName('script');
     for (var i = 0; i < list.length; i++) {
         var s = list[i];
-        if (s === document.currentScript || !/^https?:/i.test(s.src) || s.async || s.defer) continue;
+        if (s === document.currentScript || s.async || s.defer) continue;
+        if ((s.type && !/javascript/i.test(s.type)) || (s.src ? !/^https?:/i.test(s.src) : s.parentNode === document.documentElement)) continue;
         for (var n = s; n && n !== document; n = n.parentNode) if (n.nextSibling) return true;
     }
     return false;

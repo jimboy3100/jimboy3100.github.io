@@ -216,5 +216,18 @@ for (const p of ['/normal', '/Normal/']) {
     check('userscript ' + p + ': agar.io\'s game page is downloaded and written (not its 404 page left)', n.gets.join() === 'https://agar.io/' && page.indexOf('window.aiptag') > 0 && n.boot.states.map((x) => x[0]).pop() === 'READY');
     check('userscript ' + p + ': its relative links resolve against agar.io/', page.indexOf('<head><base href="https://agar.io/"><script>window.aiptag') > 0);
 }
+/* a start after agar.io's inline head scripts ran (they start its ad SDK and pixel) is not on time */
+const el = (props, parent) => (html) => {
+    const head = { parentNode: html, nextSibling: null };
+    return Object.assign({ src: '', type: '', async: false, defer: false, parentNode: parent === 'html' ? html : head, nextSibling: {} }, props);
+};
+const timingOf = (scripts) => runUs('/', scripts).boot.timing;
+check('userscript: agar.io\'s inline head script ran: partial', timingOf([el({})]) === 'partial');
+check('userscript: agar.io\'s blocking https script ran: partial', timingOf([el({ src: 'https://agar.io/bundle_start.js', type: 'text/javascript' })]) === 'partial');
+check('userscript: nothing of agar.io yet: early', timingOf([]) === 'early');
+check('userscript: an extension\'s inline script (createElement, so async): early', timingOf([el({ async: true })]) === 'early');
+check('userscript: an inline script put in <html> at document start: early', timingOf([el({}, 'html')]) === 'early');
+check('userscript: an ordered data: script, JSON data, a module: early', timingOf([el({ src: 'data:text/javascript,1' }), el({ type: 'application/ld+json' }), el({ type: 'module' })]) === 'early');
+
 console.log(fail ? fail + ' FAILED' : 'all extension checks passed');
 process.exit(fail ? 1 : 0);
