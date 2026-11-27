@@ -30,6 +30,10 @@
     if (!secs) return { fail: ['no instant replay length in Replay Studio'] };
     var left0 = hd.getBoundingClientRect().left;
     info.from = [secs.value, Math.round(left0)];
+    info.recording = !!(window.LMReplayStudio.state && window.LMReplayStudio.state().n);
+    /* with no recording yet the list showed 15 s whatever the setting was (then a key press to
+     * 30 s changed nothing: this probe failed when it ran before the page recorded) */
+    if (secs.value !== String(was)) fail.push('the Studio shows ' + secs.value + ' s for an instant replay length of ' + was + ' s');
     secs.focus();
     /* 60 is the last choice: go up from it, else down */
     var up = secs.value === '60';

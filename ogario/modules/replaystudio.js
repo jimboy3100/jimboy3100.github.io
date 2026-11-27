@@ -1971,6 +1971,9 @@
             });
         }
         if (REC) W.sel.value = REC.key;
+        /* the instant replay length is a setting, also shown with no recording: the list showed
+         * its first choice (15 s) then, whatever the setting was */
+        if (String(instantSecs()) !== W.secs.value) W.secs.value = String(instantSecs());
         var lb = document.getElementById('lm-replay-bar');
         W.style.bottom = lb && lb.style.display !== 'none' && W.offsetHeight < innerHeight - 80 ? (parseInt(lb.style.bottom, 10) || 14) + 16 + 'px' : '';
         if (!REC) {
@@ -2018,7 +2021,6 @@
         if (W.fx.value !== OPT.fx) W.fx.value = OPT.fx;
         protoUi();
         if (String(P.speed) !== W.spd.value) W.spd.value = String(P.speed);
-        if (String(instantSecs()) !== W.secs.value) W.secs.value = String(instantSecs());
         W.backB.style.display = inReplay() ? '' : 'none';
         /* P2 fix #90: also disable save when the recording has no _lmLib yet but
          * a save is already in progress (prevents duplicate saves from rapid clicks) */
