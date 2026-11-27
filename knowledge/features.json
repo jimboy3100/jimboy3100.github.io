@@ -149,7 +149,7 @@
     {
       "id": "discovery",
       "name": "Discovery / Feature Guide",
-      "description": "19 feature guide cards with one-tap option switches. Auto-opens after updates for returning players. Server compatibility table: 9 server types × 14 capabilities (replays, multibox, merge countdown, spectate, chat, etc.). Shows 'What works on this server' per connection.",
+      "description": "19 feature guide cards with one-tap option switches. Opened from the Command Centre or the link in the \"What's new\" toast after an update (never by itself). Server compatibility table: 9 server types × 14 capabilities (replays, multibox, merge countdown, spectate, chat, etc.). Shows 'What works on this server' per connection.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

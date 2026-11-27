@@ -827,24 +827,6 @@
     "ja": "先に一度設定を開いてください。",
     "it": "Prima apri almeno una volta le impostazioni."
   },
-  "modules.discovery.autoShow": {
-    "en": "Show after updates",
-    "el": "Εμφάνιση μετά από ενημερώσεις",
-    "es": "Mostrar tras las actualizaciones",
-    "bg": "Показвай след обновления",
-    "fr": "Afficher après les mises à jour",
-    "ar": "إظهار بعد التحديثات",
-    "zh": "更新後顯示",
-    "ru": "Показывать после обновлений",
-    "de": "Nach Updates anzeigen",
-    "tr": "Güncellemelerden sonra göster",
-    "pl": "Pokazuj po aktualizacjach",
-    "nl": "Tonen na updates",
-    "pt": "Mostrar após atualizações",
-    "id": "Tampilkan setelah pembaruan",
-    "ja": "アップデート後に表示",
-    "it": "Mostra dopo gli aggiornamenti"
-  },
   "modules.discovery.close": {
     "en": "Close",
     "el": "Κλείσιμο",

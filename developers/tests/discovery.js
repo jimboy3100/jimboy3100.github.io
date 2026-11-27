@@ -76,33 +76,24 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
 /* 4. stored state */
 {
   const e = C.parseStore(null);
-  check('empty store', e.v === '' && e.seen.length === 0 && e.off === false && e.had === false);
+  check('empty store', e.v === '' && e.seen.length === 0 && e.had === false);
   check('broken JSON', C.parseStore('{x').had === false && C.parseStore('[1]').had === false && C.parseStore('null').had === false);
   check('too long', C.parseStore('x'.repeat(30000)).had === false);
   const p = C.parseStore(JSON.stringify({ v: 'x'.repeat(100), seen: ['a', 'a', 'b c', '<b>', 5, 'ok_1'], off: 'yes' }));
-  check('validated', p.had && p.v.length === 40 && JSON.stringify(p.seen) === '["a","ok_1"]' && p.off === false);
+  check('validated', p.had && p.v.length === 40 && JSON.stringify(p.seen) === '["a","ok_1"]');
   const big = C.parseStore(JSON.stringify({ v: '1', seen: Array.from({ length: 300 }, (_, i) => 'c' + i), off: true }));
-  check('seen capped', big.seen.length === C.MAX_SEEN && big.off === true);
+  check('seen capped', big.seen.length === C.MAX_SEEN);
   const round = C.parseStore(C.serializeStore({ v: '3.574', seen: ['analytics'], off: true }));
-  check('round trip', round.v === '3.574' && round.seen[0] === 'analytics' && round.off === true && round.had);
+  check('round trip', round.v === '3.574' && round.seen[0] === 'analytics' && round.had);
+  /* the old "Show after updates" switch is dropped from the store: the window never opens by itself */
+  check('old auto-open switch dropped', !('off' in round) && JSON.parse(C.serializeStore({ v: '1', seen: [], off: true })).off === undefined);
 }
 
-/* 5. auto open once after an update */
+/* 5. NEW cards (the window no longer opens by itself after an update) */
 {
   const ids = C.CARDS.map(c => c.id);
-  const st = (o) => Object.assign({ v: '3.570', seen: [], off: false, had: true }, o);
-  check('first visit: never', !C.shouldAutoOpen(C.parseStore(null), '3.574', ids));
-  check('same version: no', !C.shouldAutoOpen(st({ v: '3.574' }), '3.574', ids));
-  check('update with unseen cards: yes', C.shouldAutoOpen(st(), '3.574', ids));
-  check('turned off: no', !C.shouldAutoOpen(st({ off: true }), '3.574', ids));
-  check('all seen: no', !C.shouldAutoOpen(st({ seen: ids.slice() }), '3.574', ids));
-  check('no version: no', !C.shouldAutoOpen(st(), '', ids));
-  const none = C.parseStore(null);
-  check('returning player (older NEW badges seen) after an update', C.shouldAutoOpen(C.firstState(none, '3.560', '3.574'), '3.574', ids));
-  check('NEW badges of this version: first visit', !C.firstState(none, '3.574', '3.574').had);
-  check('no NEW badges: first visit', !C.firstState(none, null, '3.574').had && !C.firstState(none, '', '3.574').had);
-  check('stored guide state wins', C.firstState(st({ v: '3.574' }), '3.1', '3.574').v === '3.574');
-  check('unseen ids', JSON.stringify(C.unseenIds(st({ seen: ids.slice(1) }), ids)) === JSON.stringify([ids[0]]));
+  check('unseen ids', JSON.stringify(C.unseenIds({ v: '3.570', seen: ids.slice(1), had: true }, ids)) === JSON.stringify([ids[0]]));
+  check('no auto-open logic left', C.shouldAutoOpen === undefined && C.firstState === undefined);
 }
 
 /* 6. cards */
@@ -191,7 +182,6 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
   const cards = [{ id: 'commandCentre' }, { id: 'analytics', cv: 2 }, { id: 'companion' }, { id: 'practice' }];
   const unseen = C.unseenIds(old, cards.map(C.seenKey));
   check('changed and new cards only are NEW', unseen.join() === 'analytics-v2,practice');
-  check('auto open for them after an update', C.shouldAutoOpen(old, '3.590', cards.map(C.seenKey)));
   C.markSeen(old, cards);
   check('markSeen: old version replaced, nothing else lost', old.seen.indexOf('analytics') < 0 && ['commandCentre', 'analytics-v2', 'companion', 'practice'].every(k => old.seen.includes(k)) && old.seen.length === 4);
   check('after marking: nothing NEW', C.unseenIds(old, cards.map(C.seenKey)).length === 0);

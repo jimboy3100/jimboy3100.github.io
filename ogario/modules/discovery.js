@@ -6,12 +6,11 @@
  * settings", which opens the menu at the option and makes it blink (the Command Centre reveal). A
  * switch with a HUD part (quick bar, bell, cell panel) highlights where it appeared.
  *
- * After an update it opens once by itself, only for a returning player (one who had the guide or saw
- * the settings NEW badges of an older version; never on the first visit) and only while it has cards
- * that player has not seen (a card changed since gets cv: 2, 3... and is NEW again); it waits until the menu is shown
- * and nobody is playing. "Show after updates" turns that off. The card ids seen, the last version and
- * that switch are in localStorage 'lmDiscover' (validated on read). Reachable from the Command Centre
- * and the link in the "What's new" toast.
+ * It never opens by itself: after an update the one notice is the "What's new" toast (LMexpress),
+ * whose link opens it (it used to open once by itself as well, with a "Show after updates" switch).
+ * Cards the player has not seen are marked NEW (a card changed since gets cv: 2, 3... and is NEW
+ * again); the card ids seen and the last version are in localStorage 'lmDiscover' (validated on read).
+ * Reachable from the Command Centre and that link.
  *
  * What works on this server: a static table, checked against the code, of which features work on
  * each server type (window.legendmod.serverType). It is only a guide: nothing is gated by it.
@@ -120,7 +119,7 @@
     function parseStore(raw) {
         var o = null;
         if (typeof raw === 'string' && raw.length < 20000) { try { o = JSON.parse(raw); } catch (e) { o = null; } }
-        if (!o || typeof o !== 'object' || Array.isArray(o)) return { v: '', seen: [], off: false, had: false };
+        if (!o || typeof o !== 'object' || Array.isArray(o)) return { v: '', seen: [], had: false };
         var seen = [];
         if (Array.isArray(o.seen)) {
             for (var i = 0; i < o.seen.length && seen.length < MAX_SEEN; i++) {
@@ -128,10 +127,11 @@
                 if (typeof s === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(s) && seen.indexOf(s) < 0) seen.push(s);
             }
         }
-        return { v: typeof o.v === 'string' ? o.v.slice(0, 40) : '', seen: seen, off: o.off === true, had: true };
+        /* 'off' of older versions (the "Show after updates" switch) is dropped: nothing opens by itself */
+        return { v: typeof o.v === 'string' ? o.v.slice(0, 40) : '', seen: seen, had: true };
     }
     function serializeStore(st) {
-        return JSON.stringify({ v: st.v || '', seen: (st.seen || []).slice(0, MAX_SEEN), off: !!st.off });
+        return JSON.stringify({ v: st.v || '', seen: (st.seen || []).slice(0, MAX_SEEN) });
     }
     function unseenIds(st, ids) {
         return ids.filter(function (id) { return st.seen.indexOf(id) < 0; });
@@ -150,19 +150,6 @@
             if (st.seen.indexOf(k) < 0) st.seen.push(k);
         });
         if (st.seen.length > MAX_SEEN) st.seen = st.seen.slice(st.seen.length - MAX_SEEN);
-        return st;
-    }
-    /* open by itself: a player who had the guide before, a new version, cards not seen yet */
-    function shouldAutoOpen(st, ver, ids) {
-        return !!(st.had && !st.off && ver && st.v !== String(ver) && unseenIds(st, ids).length);
-    }
-
-    /* no guide state yet: a player who saw the settings NEW badges of an older version (localStorage
-     * lmNewBadgesSeen) is back after an update; anyone else is here for the first time */
-    function firstState(st, badgesSeen, ver) {
-        if (st.had) return st;
-        var b = typeof badgesSeen === 'string' ? badgesSeen.slice(0, 40) : '';
-        if (b && ver && b !== String(ver)) return { v: b, seen: [], off: false, had: true };
         return st;
     }
 
@@ -223,7 +210,7 @@
         toggleBox: toggleBox,
         SERVER_TYPES: SERVER_TYPES, CAPS: CAPS, CARDS: CARDS, KEY: KEY, MAX_SEEN: MAX_SEEN,
         serverTypeOf: serverTypeOf, capValue: capValue, capNote: capNote, capsFor: capsFor,
-        parseStore: parseStore, serializeStore: serializeStore, unseenIds: unseenIds, shouldAutoOpen: shouldAutoOpen, firstState: firstState,
+        parseStore: parseStore, serializeStore: serializeStore, unseenIds: unseenIds,
         seenKey: seenKey, markSeen: markSeen, t: t
     };
     var api = W.LMDiscovery = { core: core };
@@ -301,8 +288,6 @@
             '#lm-dc .lm-dc-btn.pri{border-color:var(--dc-mc);color:var(--lm-w-acc,var(--dc-mc))}' +
             '#lm-dc .lm-dc-msg{font-size:11px;color:var(--dc-mc);min-height:0}' +
             '#lm-dc .lm-new-badge{display:inline-block;background:#e74c3c;color:#fff;font-size:9px;font-weight:700;line-height:1;padding:2px 4px;border-radius:var(--lm-radius-s,3px);vertical-align:middle;margin-left:5px}' +
-            '#lm-dc .lm-dc-foot{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:4px 12px;border-top:1px solid var(--lm-pc2,#333);font-size:11px;color:var(--lm-tc2,#aaa)}' +
-            '#lm-dc .lm-dc-foot label{display:flex;align-items:center;gap:5px;margin:0;cursor:pointer;min-height:30px;font-weight:400}' +
             '#lm-dc .lm-dc-srv{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:6px;font-size:12px}' +
             '#lm-dc .lm-dc-srv select{height:var(--lm-w-ctl,32px);background:var(--lm-w-field,var(--lm-pc2,#2a2d33));color:var(--lm-tc,#eee);border:1px solid var(--lm-pc2,#555);border-radius:var(--lm-radius-s,4px);font-size:var(--lm-w-fs,12px)}' +
             '#lm-dc .lm-dc-caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:2px 10px;list-style:none;margin:0;padding:0}' +
@@ -354,19 +339,8 @@
         x.addEventListener('click', function () { close(); });
         head.appendChild(x);
         body = mk('div', 'lm-dc-body');
-        var foot = mk('div', 'lm-dc-foot');
-        var lab = mk('label');
-        var cb = mk('input');
-        cb.type = 'checkbox';
-        cb.id = 'lm-dc-auto';
-        cb.checked = !load().off;
-        cb.addEventListener('change', function () { var st = load(); st.off = !cb.checked; st.v = ver(); save(st); });
-        lab.appendChild(cb);
-        lab.appendChild(mk('span', 'lm-dc-auto-l'));
-        foot.appendChild(lab);
         panel.appendChild(head);
         panel.appendChild(body);
-        panel.appendChild(foot);
         root.appendChild(panel);
     }
     /* the window's fixed texts (again after a language change); Arabic reads right to left */
@@ -380,7 +354,6 @@
         var x = root.querySelector('.lm-dc-x');
         x.title = t('close');
         x.setAttribute('aria-label', t('close'));
-        root.querySelector('.lm-dc-auto-l').textContent = t('autoShow');
     }
 
     function checkbox(key) {
@@ -577,35 +550,6 @@
         try { if (lastFocus && lastFocus.focus && D.body.contains(lastFocus)) lastFocus.focus(); } catch (e) { }
         lastFocus = null;
     }
-
-    /* ═══ Once after an update ═══ */
-
-    function menuShown() {
-        var ov = D.getElementById('overlays');
-        return !!(ov && ov.style.display !== 'none' && (ov.offsetParent !== null || ov.offsetHeight > 0));
-    }
-    function playing() { return !!(W.legendmod && W.legendmod.play); }
-    (function autoOpen() {
-        var v = ver();
-        var badges = null;
-        try { badges = W.localStorage.getItem('lmNewBadgesSeen'); } catch (e) { }
-        var st = firstState(load(), badges, v);
-        if (!st.had) {
-            /* first visit: remember the version, show nothing */
-            if (v) { st.v = v; save(st); }
-            return;
-        }
-        if (!shouldAutoOpen(st, v, visibleCards().map(seenKey))) return;
-        var tries = 0, calm = 0;
-        var timer = setInterval(function () {
-            tries++;
-            if (isOpen()) { clearInterval(timer); return; }
-            /* the menu stays up for a few seconds with nothing else open over it */
-            calm = menuShown() && !playing() && !D.getElementById('lm-cc') ? calm + 1 : 0;
-            if (calm >= 3) { clearInterval(timer); open('features'); }
-            else if (tries > 300) clearInterval(timer);
-        }, 2000);
-    })();
 
     /* the link in the "What's new" toast (LMexpress) */
     D.addEventListener('click', function (e) {
