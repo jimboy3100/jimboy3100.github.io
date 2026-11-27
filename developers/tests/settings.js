@@ -292,5 +292,37 @@ ctx.localStorage.setItem('lmSkinCollections', '{broken');
 P.loadProfiles();
 check('skin collections on load: a broken value is just removed', ctx.localStorage.getItem('lmSkinCollections') === null && allP().length === 55);
 
+/* ── Settings dimmed while they have no effect (the real refresh of the menu's dependency list):
+ * every row is a fake element; a dimmed one gets lm-dep-off and names the switch it needs */
+const depSrc = cut('var DEPS = {', 'app._lmDepRefresh = refresh;');
+const rows = {};
+const row = k => rows[k] || (rows[k] = { cls: new Set(), at: {} });
+const wrap = it => ({ length: 1, hasClass: c => it.cls.has(c), addClass(c) { it.cls.add(c); return this; }, removeClass(c) { it.cls.delete(c); return this; },
+  attr(k, v) { if (v === undefined) return it.at[k]; it.at[k] = v; return this; }, removeAttr(k) { delete it.at[k]; return this; } });
+const fake$ = x => (x && x._row ? { closest: s => (s === '#og-options' ? { length: 1 } : wrap(x._row)) } : { on() { }, length: 0 });
+const fakeDoc = { getElementById: id => (id === 'lm-dep-style' ? {} : { _row: row(id.replace(/-slider$/, '')) }), createElement: () => ({}), head: { appendChild() { } } };
+const depRefresh = vm.runInContext('(function (app, $, document, lmT) {' + depSrc + 'return refresh; })', ctx)(
+  { _lmMenuText: k => (k === 'lmDepNeeds' ? 'Needs' : '<b>' + k + '</b>') }, fake$, fakeDoc, k => k);
+const dmsDep = vm.runInContext('defaultmapsettings', ctx);
+const depWhy = k => (rows[k] && rows[k].cls.has('lm-dep-off') ? rows[k].at['data-lm-why'] : '');
+const depRun = set => { Object.assign(dmsDep, D, set); depRefresh(); };
+depRun({ scanTrick: false });
+check('Scan trick off: its rounding, LMB-only and both distances are dimmed and need Scan trick',
+  ['scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDistance', 'scanTrickRoundedDistance'].every(k => depWhy(k) === 'Needs: scanTrick') || (console.log('   ' + J(['scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDistance', 'scanTrickRoundedDistance'].map(depWhy))), false));
+depRun({ scanTrickRounded: false });
+check('Scan trick on, rounding off: LMB-only and the rounded distance need the rounding, the other distance works',
+  depWhy('scanTrickOnlyWhileLMB') === 'Needs: scanTrickRounded' && depWhy('scanTrickRoundedDistance') === 'Needs: scanTrickRounded' && depWhy('scanTrickDistance') === '' && depWhy('scanTrickRounded') === '');
+depRun({ showMapBorders: false, rainbowMapBorders: true });
+check('Map borders off: rainbow borders and their speed are dimmed (only the border uses them)',
+  depWhy('rainbowMapBorders') === 'Needs: showMapBorders' && depWhy('rainbowBorderSpeed') === 'Needs: showMapBorders');
+depRun({ rainbowMapBorders: false });
+check('rainbow borders off: only their speed is dimmed', depWhy('rainbowMapBorders') === '' && depWhy('rainbowBorderSpeed') === 'Needs: rainbowMapBorders');
+depRun({ mbRingsP1: false, mbRingsP2: true });
+check('multibox ring of player 1 off: its size dimmed, player 2 size not', depWhy('mbRingSizeP1') === 'Needs: mbRingsP1' && depWhy('mbRingSizeP2') === '');
+depRun({});
+check('defaults: none of these dimmed, and every switch of the list is a real setting',
+  ['scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDistance', 'scanTrickRoundedDistance', 'rainbowMapBorders', 'mbRingSizeP2'].every(k => depWhy(k) === '') &&
+  Object.keys(rows).every(k => k in D) || (console.log('   not settings: ' + Object.keys(rows).filter(k => !(k in D)).join(', ')), false));
+
 console.log(fail ? fail + ' settings check(s) FAILED' : 'all settings checks passed');
 process.exit(fail ? 1 : 0);

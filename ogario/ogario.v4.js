@@ -27587,7 +27587,16 @@ function thelegendmodproject() {
                     /* Settings > Helpers: the bubble style of the opponent rings and the dimming of the
                      * cursor lines are drawn only with these on */
                     oppRings: ['bubbleInd'],
-                    cursorTracking: ['splitPrediction']
+                    cursorTracking: ['splitPrediction'],
+                    /* read only while the Scan trick key works (scanTrick); the LMB-only rule and the
+                     * rounded distance only while its directions are rounded */
+                    scanTrick: ['scanTrickRounded', 'scanTrickDistance'],
+                    scanTrickRounded: ['scanTrickOnlyWhileLMB', 'scanTrickRoundedDistance'],
+                    /* the rainbow colour is used only where the map border is drawn */
+                    showMapBorders: ['rainbowMapBorders'],
+                    rainbowMapBorders: ['rainbowBorderSpeed'],
+                    mbRingsP1: ['mbRingSizeP1'],
+                    mbRingsP2: ['mbRingSizeP2']
                 };
                 /* option -> row of the Discovery support table (ogario/modules/discovery.js) */
                 var SRV = { hudMergeCountdown: 'mergeCountdown', hudMergeSound: 'mergeCountdown', splitPrediction: 'splitPrediction', recordReplays: 'replays', instantReplaySecs: 'replays' };
