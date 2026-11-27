@@ -1736,6 +1736,8 @@ function parseLegendJSONAPI(LegendJSON) {
     if (LegendJSON.legendSettings.teambtext == "null" || LegendJSON.legendSettings.teambtext == null) {
         LegendJSON.legendSettings.teambtext = ""
     };
+    /* imgUrl / imgHref: the old "Main Banner" fields (no longer in the menu, nothing shows them);
+     * a stored value still goes out and comes back with the settings, for older versions */
     LegendJSON.legendSettings.imgUrl = localStorage.getItem("imgUrl");
     if (LegendJSON.legendSettings.imgUrl == "null" || LegendJSON.legendSettings.imgUrl == null) {
         LegendJSON.legendSettings.imgUrl = ""
@@ -4680,16 +4682,6 @@ function setteambtext() {
     $("#top5-hud > h5").text(teambtext);
 }
 
-function setimgUrl() {
-    imgUrl = $("#imgUrl").val();
-    localStorage.setItem("imgUrl", imgUrl);
-}
-
-function setimgHref() {
-    imgHref = $("#imgHref").val();
-    localStorage.setItem("imgHref", imgHref);
-}
-
 
 function setpic1url() {
     pic1urlimg = String($("#pic1url").val() || "").trim() || _lmChatDefaults.pic1urlimg;
@@ -5023,14 +5015,6 @@ function triggerLMbtns() {
     document.getElementById("teambtext").value = localStorage.getItem("teambtext");
     if ($('#teambtext').val() != "") {
         setteambtext();
-    }
-    document.getElementById("imgUrl").value = localStorage.getItem("imgUrl");
-    if ($('#imgUrl').val() != "") {
-        setimgUrl();
-    }
-    document.getElementById("imgHref").value = localStorage.getItem("imgHref");
-    if ($('#imgHref').val() != "") {
-        setimgHref();
     }
     document.getElementById("minbtext").value = localStorage.getItem("minbtext");
     if ($('#minbtext').val() != "" && $('#minbtext').val() != null) {
@@ -6768,7 +6752,7 @@ function initializeLM(modVersion) {
         '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>' + _lmxE('pack.userScripts') + '</button>' +
         '<button id="SpecialDealsBtn" class="btn btn-primary btn btn-shop" type="submit" disabled="disabled" onclick="BeforeSpecialDeals(); return false;" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px; position: relative; overflow: hidden; opacity: 0.5; filter: grayscale(35%); cursor: not-allowed; pointer-events: none;" title="' + _lmxE('lmx.ex.loginPlayFirst') + '" data-itr="page_shop"><i class="fa fa-paint-brush"></i><span data-i18n="lmx.ex.agarioSkins">' + _lmxE('lmx.ex.agarioSkins') + '</span><div class="lm-ribbon-badge" style="position: absolute; top: 0; right: 0; background: linear-gradient(135deg, #ff0044 0%, #ff6600 100%); color: #ffffff; font-size: 7px; font-weight: 800; padding: 2px 4px; border-bottom-left-radius: 4px; letter-spacing: 0.3px; text-transform: uppercase; line-height: 1; box-shadow: 0 1px 3px rgba(0,0,0,0.5); text-shadow: 0 1px 1px rgba(0,0,0,0.8); pointer-events: none; z-index: 10; opacity: 1 !important; filter: none !important;" data-i18n="needLogin">' + _lmxE('needLogin') + '</div></button>' +
         '<button id="LegendmodShop" class="btn btn-primary btn" type="submit" onclick="BeforeLegendmodShop(); return false;" class="btn btn-primary btn-shop" style=" width: 100%; padding: 4px 0px 6px; margin-top: 2px;" data-itr="page_shop"><i class="fa fa-briefcase"></i>' + _lmxE('agario.page_shop') + '</button>' +
-        '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;"><span id="legendmanualback" class="title" style="">' + _lmxE('pack.mainBanner') + ':  </span>' +
+        '<div id="lm-tools-imgs" class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;">' +
 
         '<input id="minimapPicture" class="form-control" placeholder="' + _lmxE('pack.minimapImageUrl') + '" value="" style="margin-top: 2px; display: block;" onblur="setminbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
         '<input id="minbtext" class="form-control" placeholder="' + _lmxE('pack.minimapText') + '" value="" style="margin-top: 2px; display: block;" onblur="setminbtext();">' +
@@ -6777,8 +6761,6 @@ function initializeLM(modVersion) {
         '<input id="teambPicture" class="form-control" placeholder="' + _lmxE('pack.teamboardImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setteambgname();" data-toggle="tooltip" data-placement="right"  data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
         '<input id="teambtext" class="form-control" placeholder="' + _lmxE('pack.teamboardLogoText') + '" value="" style="margin-top: 2px; display: none; " onblur="setteambtext();">' +
         '<input id="canvasPicture" class="form-control" placeholder="' + _lmxE('pack.mainCanvasImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setcanvasbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
-        '<input id="imgUrl" class="form-control" placeholder="' + _lmxE('pack.mainBannerIconUrl') + '" value="" style="margin-top: 2px; display: block; " onblur="setimgUrl();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
-        '<input id="imgHref" class="form-control" placeholder="' + _lmxE('pack.mainBannerLinkUrl') + '" value="" style="margin-top: 2px; display: block; " onblur="setimgHref();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfLinkTo') + '" >' +
         '</div>' +
 
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 0px; padding: 4px 0 0px 0;"><span id="legendmanualmess" class="title" style="">' + _lmxE('pack.manualMessageIconsYoutube') + ':  </span>' +
@@ -6855,6 +6837,9 @@ function initializeLM(modVersion) {
             var after = r[1] === 'canvasPicture' ? $('#backgroundAlpha-slider').closest('.slider-box') : $();
             if (after.length && after.parent().is(host)) row.insertAfter(after); else row.appendTo(host);
         });
+        /* nothing left in the Tools tab box once they moved: no empty gap there */
+        var src = $('#lm-tools-imgs');
+        if (src.length && !src.children().length) src.remove();
     })();
     //fix userprofile
     $("#UserProfile").css("font-size", "12px");
