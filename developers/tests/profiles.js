@@ -209,7 +209,9 @@ check('diff: a set differing only in the phone control layout is not the same', 
       'lm-zoom-bookmarks': [1, 0, 3], lmThemeWorkshop: { v: 1, themes: [] }, 'lm-director': { speed: 3 },
       'lm-director-bookmarks': [{ x: 1, y: 2 }], lmPracticeCfg: { bots: 4 }, lmAnalyticsGoals: { v: 1, custom: [] },
       lmSettingsProfiles: [{ id: 'p1', name: 'P', data: { s: { showMass: true } } }], lmSettingsProfilesRules: { enabled: false },
-      lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPerfBackup: { jellyPhisycs: true }, lmPresetUndo: { s: {} }
+      lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPerfBackup: { jellyPhisycs: true }, lmPresetUndo: { s: {} },
+      /* the radial menu's commands, the skin collections (folders, tags, favourites) and the screenshot options */
+      lmRadialMenu: { v: 1, items: ['hk-feed'] }, lmSkinCollections: { v: 1, folders: ['F'], items: {} }, lmSmallTools: { shot: { lb: true, map: false } }
     };
     const priv = { lmAnalyticsGames: [{ m: 1 }], lmAnalyticsTracks: [{ t: 1 }], lmPracticeStore: { best: 1 }, 'lm-director-watch': ['nick'], lmSettingsBackups: [{ t: 1 }], ogarioPlayerProfiles: [1] };
     Object.keys(conf).concat(Object.keys(priv)).forEach(k => src.setItem(k, J(conf[k] || priv[k])));

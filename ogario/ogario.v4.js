@@ -21100,7 +21100,12 @@ var LM_EXPORT_KEYS = [
     { key: 'lm-director-bookmarks', type: 'a' },
     { key: 'lmPracticeCfg', type: 'o' },
     { key: 'lmAnalyticsGoals', type: 'o' },
-    { key: 'lmCompanionPrivacy', type: 'o' }
+    { key: 'lmCompanionPrivacy', type: 'o' },
+    /* the small tools (ogario/modules/smalltools.js): the radial menu's commands, the skin
+     * collections (folders, tags, favourites) and the screenshot options */
+    { key: 'lmRadialMenu', type: 'o' },
+    { key: 'lmSkinCollections', type: 'o' },
+    { key: 'lmSmallTools', type: 'o' }
 ];
 function lmExportFits(e, v) {
     return e.type === 'a' ? Array.isArray(v) : !!v && typeof v === 'object' && !Array.isArray(v);
