@@ -52482,6 +52482,10 @@ function thelegendmodproject() {
             /* cell identities (updateCells _lmIdMem) belong to this connection; the Expanding Land
              * respawn wipe (true) keeps them: the server still counts those cells as ours */
             if (_connectionLevelFlush && this._lmCellIdentity) this._lmCellIdentity.clear();
+            /* the colour remembered per nick (updateCells, spect.js) belongs to this server: on the
+             * next one the same nick is mostly someone else, and a colour once wrong (black) stayed
+             * for the whole page session. A respawn on this server keeps it. */
+            if (_connectionLevelFlush) this.cellcolors = Object.create(null);
             /* Reset camera so the render view doesn't stay at the old server's position.
              * Without this, the camera drifts slowly (1/30 per frame) to the new view
              * which causes "ghost" old content when the tab is backgrounded. */

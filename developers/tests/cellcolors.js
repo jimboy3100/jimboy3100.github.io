@@ -169,6 +169,18 @@ feed([{ id: 37, color: [40, 200, 40], size: 40 }]);
 check('a nameless piece of the teammate (no other nick with that colour) has the team colour', C(37) === '#3366ff', C(37));
 g.application.teamPlayers = [];
 
+/* section: the colour remembered per nick belongs to one server */
+reset();
+feed([{ id: 41, color: [1, 1, 1], name: 'Bob', skin: '' }]);
+feed([{ id: 42, color: [0, 200, 0], name: 'Bob', skin: '' }]);
+check('one server: a nick keeps the colour first seen (all its cells one colour)', C(41) === '#000000' && C(42) === '#000000', [C(41), C(42)]);
+L.flushCellsData(true);
+feed([{ id: 43, color: [0, 200, 0], name: 'Bob', skin: '' }]);
+check('respawn on that server: still the same colour', C(43) === '#000000', C(43));
+L.flushCellsData();
+feed([{ id: 44, color: [0, 200, 0], name: 'Bob', skin: '' }]);
+check('the next server: the nick has its server colour, not the previous server\'s', C(44) === hex(0, 200, 0), C(44));
+
 /* ---------------- headless Chrome: real WebGL + real Canvas2D ---------------- */
 const cellStart = src.indexOf('function ogarbasicassembly(');
 const cellEnd = src.indexOf('}).call(ogarbasicassembly.prototype)');
