@@ -38,7 +38,9 @@ Object.keys(all).forEach((area) => {
         I.CODES.forEach((c) => {
             if (c === 'en' || e.allowEmpty) return;
             ok(e[c] == null || typeof e[c] === 'string', k + ': ' + c + ' is not a string');
-            if (typeof e[c] !== 'string' || e[c].trim() === '') untranslated[c] = (untranslated[c] || 0) + 1;
+            /* only spaces is not "not translated": the build keeps it and the player sees a blank text */
+            ok(typeof e[c] !== 'string' || e[c] === '' || e[c].trim() !== '', k + ': ' + c + ' is only spaces (leave it out or empty, then English is shown)');
+            if (typeof e[c] !== 'string' || e[c] === '') untranslated[c] = (untranslated[c] || 0) + 1;
         });
         const p = I.placeholders(e.en).join('|');
         I.CODES.forEach((c) => {
