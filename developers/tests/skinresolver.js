@@ -334,6 +334,9 @@ const report = {};
         check('resolver missing: loadSkin still loads (stand-in, no aliases)', h.jobs.length === 1);
         const st = vm.runInContext('_lmSkinRes()', h.ctx);
         check('  stand-in VanillaSkinUrlMap builder gives the mirror URLs of before', st.buildVanillaMap([{ productId: 'skin_doge', image: 'Doge.png' }], {})['%doge'] === J + 'vanillaskins/Doge.png' && st.version === 0);
+        const ids = ['%custom_ab', 'custom_ab', 'skin_custom_ab_cd', '12345', '%alien_kid_level_2'];
+        const diff = ids.filter((id) => st.idUrl(id) !== R.idUrl(id));
+        check('  stand-in gives uploaded and level skins the same URLs as the resolver', diff.length === 0, diff.map((id) => id + ': ' + st.idUrl(id) + ' / ' + R.idUrl(id)).join('; '));
     }
 
     /* ---- players' old saved data: URLs resolved where they are used, nothing rewritten ---- */

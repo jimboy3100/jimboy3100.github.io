@@ -5967,7 +5967,16 @@ function _lmSkinRes() {
         vanilla: vanilla,
         level: level,
         flag: function (n) { return n ? 'https://www.legendmod.ml/agario/live/flags/' + encodeURIComponent(String(n).toLowerCase()) + '.png' : ''; },
-        custom: function (id) { return window.LM_CUSTOM_SKINS_CDN + '/' + String(id).replace(/^%/, 'skin_') + '.png'; },
+        /* uploaded skins keep the official form ('%x' -> 'skin_x', a number -> skin_custom_<n>) */
+        custom: function (id) {
+            var c = String(id || '').replace(/\.png(?:\?.*)?$/i, '');
+            if (/^\d+$/.test(c)) c = 'skin_custom_' + c;
+            else {
+                if (c.charAt(0) === '%') c = 'skin_' + c.substring(1);
+                if (c.indexOf('skin_custom') !== 0) c = 'skin_custom_' + c.replace(/^skin_/, '').replace(/^custom/, '').replace(/^_+/, '');
+            }
+            return window.LM_CUSTOM_SKINS_CDN + '/' + c + '.png';
+        },
         classify: function (id) {
             if (!id || id === '%empty') return 'empty';
             if (/^https?:\/\//i.test(id)) return 'url';
@@ -5977,7 +5986,7 @@ function _lmSkinRes() {
         idUrl: function (id, map) {
             var t = this.classify(id);
             if (t === 'url') return id;
-            if (t === 'custom') return this.custom(/^\d+$/.test(id) ? 'skin_custom_' + id : id);
+            if (t === 'custom') return this.custom(id);
             if (t === 'level') return level(id);
             map = map || window.VanillaSkinUrlMap;
             var b = String(id).replace(/^%/, '').replace(/^skin_/, '');
