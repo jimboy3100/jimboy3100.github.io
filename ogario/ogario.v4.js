@@ -54385,13 +54385,10 @@ function thelegendmodproject() {
             if (this.removePlayerCell && !this.playerCells.length) {
                 this.play = false;
                 application.onPlayerDeath();
-                /* same gate as updateCells: "Auto-switch focus after death" off keeps the menu */
-                if (!LM.multiBoxPlayerExists || (!defaultmapsettings.mbSwitchAfterDeath && !window.multiboxPlayerEnabled)) {
+                /* same gate as updateCells: no unit has the focus after onPlayerDeath (it gives it
+                 * to a living unit only), so this is a solo death: the menu */
+                if (!LM.multiBoxPlayerExists || !window.multiboxPlayerEnabled) {
                     application.showMenu(300);
-                } else {
-                    if (!window.multiboxPlayerEnabled) {
-                        application.multiboxswap();
-                    }
                 }
                 window.userBots.isAlive = false;
                 if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
@@ -56038,26 +56035,19 @@ function thelegendmodproject() {
                         .onPlayerDeath();
 
 
-                    /* "Auto-switch focus after death" off: keep the solo death
-                     * handling (menu) unless a unit already has focus. */
+                    /* Solo death handling (menu) unless a unit has the focus: onPlayerDeath gives it
+                     * to a living unit ("Auto-switch focus after death"). With no living unit this
+                     * used to call multiboxswap, which hid the menu and spawned the dead unit, also
+                     * with "Background auto-respawn" off. */
                     if (
                         !LM
                             .multiBoxPlayerExists ||
-                        (
-                            !defaultmapsettings.mbSwitchAfterDeath &&
-                            !window.multiboxPlayerEnabled
-                        )
+                        !window
+                            .multiboxPlayerEnabled
                     ) {
                         application.showMenu(
                             300
                         );
-                    }
-                    else if (
-                        !window
-                            .multiboxPlayerEnabled
-                    ) {
-                        application
-                            .multiboxswap();
                     }
                 }
             }
