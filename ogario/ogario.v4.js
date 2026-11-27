@@ -71106,7 +71106,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             gl.depthFunc(gl.LEQUAL);
             gl.depthMask(false);
             gl.enable(gl.BLEND);
-            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            /* the main canvas is premultiplied: alpha blends (ONE, ONE_MINUS_SRC_ALPHA) as in the frame
+             * blend, else this state leaks into the label pass and the background shows through */
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             gl.useProgram(this.glMbRingProgram);
             gl.uniform2f(this.u_mbRing_viewCenter, this.camX, this.camY);
             gl.uniform2f(this.u_mbRing_viewScale, 2.0 * scale / this.canvasWidth, 2.0 * scale / this.canvasHeight);

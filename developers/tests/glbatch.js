@@ -293,7 +293,12 @@ function pageLib() {
         var ok = R.drawWebGLCellBatch(env.LM.cells);
         if (!ok) return false;
         var t1 = performance.now();
-        R.drawWebGLMultiboxRings();
+        /* older references set blendFunc(SRC_ALPHA, ONE_MINUS_SRC_ALPHA) for the rings, a wrong
+         * alpha on this premultiplied canvas that also leaked into the labels: they are compared
+         * with that fixed (the working copy no longer calls blendFunc there; gltextstate.js) */
+        var bf = gl.blendFunc;
+        gl.blendFunc = function (s, d) { gl.blendFuncSeparate(s, d, gl.ONE, gl.ONE_MINUS_SRC_ALPHA); };
+        try { R.drawWebGLMultiboxRings(); } finally { gl.blendFunc = bf; }
         if (typeof R.drawWebGLTextPass === 'function') R.drawWebGLTextPass(gl, env.LM.cells);
         else textPassInline(R, env);
         gl.disable(gl.DEPTH_TEST);
