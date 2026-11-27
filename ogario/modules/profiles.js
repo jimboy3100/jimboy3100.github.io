@@ -1386,7 +1386,13 @@
         if (d.s || rp) p.push(tx('partS'));
         if (d.t && !rp) p.push(tx('partT'));
         if (d.h) p.push(tx('partH'));
-        if (d.m) p.push(tx('partM'));
+        /* every part the set brings: a set with only a phone control layout, gamepad buttons or
+         * saved zoom levels said nothing about them (the "none" of an Undo or backup is no part) */
+        var got = function (v) { return isObj(v) && !isAbsent(v); };
+        if (got(d.m) || got(d.ml)) p.push(tx('partM'));
+        if (got(d.gp)) p.push(tx('partGP'));
+        var zb = cleanZoomMarks(d.zb);
+        if (zb && !noZoomMarks(zb)) p.push(tx('partZB'));
         return p.join(' + ');
     }
     function when(t) {

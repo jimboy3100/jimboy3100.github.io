@@ -745,6 +745,15 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
   check('delete: its HUD layout link is dropped (also in storage)', e.HE.profileLayout('a1') === '' && !('a1' in st.links));
   check('delete: the layout and the link of another profile stay', st.list.some(l => l.name === 'L') && st.links.b1 === 'L');
 }
+{
+  /* the parts line under a profile names every part it brings (a set with only a phone control
+   * layout, gamepad buttons or saved zoom levels showed none of them until 3.697) */
+  const t = k => i18n.t('modules.profiles.' + k);
+  const badge = d => C.partsBadge(C.cleanBundle(d));
+  check('parts line: a phone control layout alone is Phone controls', badge({ s: { showMass: true }, ml: { landscape: { split: { x: 0.5, y: 0.5 } } } }) === [t('partS'), t('partM')].join(' + '));
+  check('parts line: gamepad buttons and saved zoom levels are named', badge({ s: { showMass: true }, gp: { buttons: { 0: 'hk-split' } }, zb: [1, 2, 3] }) === [t('partS'), t('partGP'), t('partZB')].join(' + '));
+  check('parts line: the "none" of an Undo or backup is not a part', C.partsBadge({ s: { showMass: true }, m: { _lmAbsent: 1 }, ml: { _lmAbsent: 1 }, gp: { _lmAbsent: 1 }, zb: [0, 0, 0] }) === t('partS'));
+}
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');
