@@ -54256,12 +54256,25 @@ function thelegendmodproject() {
                 if (j + 1 !== i) { a[j + 1] = tmp; tmp._cellsIdx = j + 1; }
                 budget -= i - 1 - j;
                 if (budget < 0) {
-                    /* empty slots stop the insertion sort's scan; the native sort cannot copy
-                     * that, so a list with holes keeps the insertion sort */
+                    /* Preserve the legacy ordering on either side of empty slots, but
+                     * never remove the shift budget. Stable-sort each contiguous run
+                     * when holes exist; the render compaction will remove the holes. */
                     var holes = false;
                     for (var k = 0; k < len; k++) if (!a[k]) { holes = true; break; }
                     if (!holes) { a.sort(this._lmCellOrder); this._lmRebuildCellsIdx(a); return; }
-                    budget = Infinity;
+                    var start = 0;
+                    while (start < len) {
+                        while (start < len && !a[start]) start++;
+                        var end = start;
+                        while (end < len && a[end]) end++;
+                        if (end - start > 1) {
+                            var run = a.slice(start, end).sort(this._lmCellOrder);
+                            for (var ri = 0; ri < run.length; ri++) a[start + ri] = run[ri];
+                        }
+                        start = end + 1;
+                    }
+                    this._lmRebuildCellsIdx(a);
+                    return;
                 }
             }
         },
@@ -76687,6 +76700,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (LM.time && (_now - LM.time) > 1000) {
                 for (i = 0; i < LM.cells.length; i++) {
                     var _c = LM.cells[i];
+                    if (!_c) continue; // a sparse list must not abort recovery after a stall
                     _c.x = _c.targetX;
                     _c.y = _c.targetY;
                     _c.size = _c.targetSize;

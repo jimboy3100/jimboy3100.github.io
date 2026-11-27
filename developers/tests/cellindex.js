@@ -69,6 +69,7 @@ vm.runInContext([
     'this.compact = function () { var i, cell;', compaction(), '};',
     'this.virusRangeOn = function () {', block('if (!this._virusesRangeWasOn && LM.cells && LM.viruses) {'), '};',
     'this.removedLoop = function () {', block('for (var i = LM.removedCells.length - 1; i >= 0; i--) {'), '};',
+    'this.stallSnap = function (_now) { var i;', block('if (LM.time && (_now - LM.time) > 1000) {'), '};',
     'this.LM = LM;'
 ].join('\n'), g);
 vm.runInContext(spectSrc + '\nthis.Spect = Spect;', g);
@@ -120,6 +121,61 @@ function body(opts) {
 function reset() {
     for (const [k] of LISTS) LM[k] = vm.runInContext('[]', g);
     LM.indexedCells = {}; LM.playerCellIDs = vm.runInContext('[]', g); LM.removePlayerCell = false;
+}
+
+/* A sparse, reverse-ordered world must not disable the sorting budget.
+ * Match the old stable insertion-sort order within each contiguous run,
+ * keep holes intact until frame compaction, and verify native fallback runs. */
+reset();
+{
+    const originalOrder = LM._lmCellOrder;
+    let comparisons = 0;
+    LM._lmCellOrder = function (a, b) { comparisons++; return originalOrder(a, b); };
+    const a = LM.cells;
+    a.length++;
+    for (let run = 0; run < 3; run++) {
+        for (let i = 2500; i > 0; i--) {
+            const c = { size: Math.floor(i / 2), id: i % 2, _cellsIdx: a.length };
+            a.push(c);
+        }
+        if (run === 0) a.push(null);
+        else a.length++;
+    }
+    const expected = a.slice();
+    for (let start = 0; start < expected.length;) {
+        if (!expected[start]) { start++; continue; }
+        let end = start + 1;
+        while (end < expected.length && expected[end]) end++;
+        const sorted = expected.slice(start, end).sort(originalOrder);
+        for (let i = 0; i < sorted.length; i++) expected[start + i] = sorted[i];
+        start = end;
+    }
+    LM.sortCells();
+    LM._lmCellOrder = originalOrder;
+    check('sparse reverse sort: bounded native fallback, stable runs and unchanged holes',
+        comparisons > 0 && comparisons < 250000 &&
+        a.length === expected.length &&
+        Array.from({ length: a.length }, (_, i) => i).every(i =>
+            (i in a) === (i in expected) && a[i] === expected[i] &&
+            (!a[i] || a[i]._cellsIdx === i)));
+}
+
+/* The first frame after a stall (hidden tab) snaps every cell to its target; an empty slot
+ * in LM.cells must not stop it (it threw there and the frame was lost, the cells after the
+ * slot and the camera kept their old positions). */
+reset();
+{
+    const a = LM.cells, c1 = body(), c2 = body();
+    a.length++;
+    const c3 = body();
+    for (const c of [c1, c2, c3]) { c.targetX = c.x + 50; c.targetY = c.y - 50; c.targetSize = c.size + 5; }
+    LM.time = 1000; LM.viewX = 123; LM.viewY = 456;
+    let err = null;
+    try { g.stallSnap(5000); } catch (e) { err = e; }
+    check('stall snap with an empty slot in LM.cells: no error, every cell and the camera snapped',
+        !err && [c1, c2, c3].every(c => c.x === c.targetX && c.y === c.targetY && c.size === c.targetSize && c.time === 5000) &&
+        g.camX === 123 && g.camY === 456);
+    LM.time = 0;
 }
 
 /* ---- a dense world: bodies, food, viruses, own cells, sorted by the real sortCells ---- */
