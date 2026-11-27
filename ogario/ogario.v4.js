@@ -1395,12 +1395,6 @@ function _lmRoomOpen(tab, code) {
 window._lmRoomOpen = _lmRoomOpen;
 /* Map border colour: the theme colour, or a slowly cycling rainbow with "Rainbow map borders"
  * (returned as #rrggbb so every border path can parse it). */
-/* Background sector label: the custom symbol (max 4 characters) or the usual A1..E5. */
-function _lmSectorLabel(row, col) {
-    var s = typeof defaultSettings !== 'undefined' && defaultSettings.sectorsSymbol;
-    if (s && typeof s === 'string' && s.trim()) return Array.from(s.trim()).slice(0, 4).join('');
-    return String.fromCharCode(65 + row) + (col + 1);
-}
 function _lmBorderColorNow() {
     var base = (typeof defaultSettings !== 'undefined' && defaultSettings.bordersColor) || '#ff0000';
     if (typeof defaultmapsettings === 'undefined' || !defaultmapsettings.rainbowMapBorders) return base;
@@ -19786,7 +19780,6 @@ var defaultSettings = {
     virusSpikesSize: 6,
     gameBrightness: 100,          /* 100 = unchanged (CSS filter on the game canvases) */
     gameSaturation: 100,
-    sectorsSymbol: '',            /* text drawn instead of A1..E5 on the background sectors (like Delta) */
     namesScale: 1,
     massScale: 3,
     virMassScale: 3,
@@ -22590,7 +22583,6 @@ function thelegendmodproject() {
             this.addSliderBox('#theme-main', 'virusSpikesSize', 1, 60, 1);
             this.addSliderBox('#theme-main', 'gameBrightness', 50, 150, 5, 'setGameFilter');
             this.addSliderBox('#theme-main', 'gameSaturation', 0, 200, 5, 'setGameFilter');
-            this.addInputBox('#theme-main', 'sectorsSymbol', 'game1.ph.egStar', 'setSectorsSymbol');
             this.addSliderBox('#theme-main', 'virusStrokeSize', 2, 40, 1);
             this.addSliderBox('#theme-main', 'bordersWidth', 2, 200, 2);
             this.addSliderBox('#theme-main', 'borderGlowSize', 0, 40, 1);
@@ -22997,7 +22989,6 @@ function thelegendmodproject() {
         },
         /* Brightness / saturation of the game view: one CSS rule for the full-screen game
          * canvases (body > canvas; the minimap is inside #minimap-hud). Both at 100: no filter. */
-        setSectorsSymbol() { /* drawn every frame: nothing to rebuild */ },
         setGameFilter() {
             var b = +defaultSettings.gameBrightness || 100, s = defaultSettings.gameSaturation;
             s = (s !== '' && s != null && isFinite(+s)) ? +s : 100;
@@ -26961,7 +26952,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -69140,7 +69131,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     );
 
                     var label =
-                        _lmSectorLabel(row, column);
+                        String.fromCharCode(65 + row) + (column + 1);
 
 
                     /*
@@ -81675,7 +81666,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 for (; length < y; length++) {
                     var ogarcopythelb = 0;
                     for (; ogarcopythelb < x; ogarcopythelb++) {
-                        var application = type ? _lmSectorLabel(length, ogarcopythelb) : String.fromCharCode(65 + length) + (ogarcopythelb + 1);
+                        var application = String.fromCharCode(65 + length) + (ogarcopythelb + 1);
                         rePosX = ~~(minX + posX / 2 + ogarcopythelb * posX);
                         rePosY = ~~(minY + posY / 2 + length * posY);
                         ctx.fillText(application, rePosX, rePosY);

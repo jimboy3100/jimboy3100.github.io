@@ -7145,24 +7145,6 @@
     "ja": "ゲームの彩度（%）",
     "it": "Saturazione dei colori del gioco (%)"
   },
-  "settings.sectorsSymbol": {
-    "en": "Background sector symbol (empty = A1..E5)",
-    "el": "Σύμβολο τομέων φόντου (κενό = A1..E5)",
-    "es": "Símbolo de sectores de fondo (vacío = A1..E5)",
-    "bg": "Символ на секторите на фона (празно = A1..E5)",
-    "fr": "Symbole des secteurs du fond (vide = A1..E5)",
-    "ar": "رمز قطاعات الخلفية (فارغ = A1..E5)",
-    "zh": "背景區域符號（空白 = A1..E5）",
-    "ru": "Символ секторов фона (пусто = A1..E5)",
-    "de": "Symbol für Hintergrundsektoren (leer = A1..E5)",
-    "tr": "Arka plan sektör simgesi (boş = A1..E5)",
-    "pl": "Symbol sektora tła (puste = A1..E5)",
-    "nl": "Symbool achtergrondsectoren (leeg = A1..E5)",
-    "pt": "Símbolo dos setores no fundo (vazio = A1..E5)",
-    "id": "Simbol sektor latar belakang (kosong = A1..E5)",
-    "ja": "背景セクターの記号（空欄 = A1..E5）",
-    "it": "Simbolo dei settori sullo sfondo (vuoto = A1..E5)"
-  },
   "settings.cellsAlpha": {
     "en": "Cells transparency",
     "el": "Διαφάνεια κυττάρων",

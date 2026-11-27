@@ -94,8 +94,6 @@
         if (rule && rule.choices) return t;
         if (rule && rule.color) return t.length <= 60 ? t : undefined;
         if (own.call(URL_KEYS, k)) return cleanUrl(t);
-        /* drawn on the canvas, at most 4 characters (_lmSectorLabel) */
-        if (k === 'sectorsSymbol') return t === '' ? '' : (cleanText(t, 4) || undefined);
         /* any other text setting is left out: only values of a known kind are accepted */
         return undefined;
     }

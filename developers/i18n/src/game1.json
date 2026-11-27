@@ -1367,24 +1367,6 @@
     "ja": "色覚サポート (高コントラスト)",
     "it": "Adatto ai daltonici (alto contrasto)"
   },
-  "game1.ph.egStar": {
-    "en": "e.g. ☆",
-    "el": "π.χ. ☆",
-    "es": "p. ej. ☆",
-    "bg": "напр. ☆",
-    "fr": "ex. ☆",
-    "ar": "مثال: ☆",
-    "zh": "例如 ☆",
-    "ru": "напр. ☆",
-    "de": "z. B. ☆",
-    "tr": "örn. ☆",
-    "pl": "np. ☆",
-    "nl": "bijv. ☆",
-    "pt": "ex.: ☆",
-    "id": "mis. ☆",
-    "ja": "例：☆",
-    "it": "es. ☆"
-  },
   "game1.ph.imageUrl": {
     "en": "Image URL",
     "el": "URL εικόνας",

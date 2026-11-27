@@ -96,7 +96,7 @@ check('fonts take the font list, families the family list', V('namesFont', 'oswa
 check('colours: hex, rgb(a) and colour names kept', V('bgColor', '#abc') === '#abc' && V('mainColor', '#01d9ccff') === '#01d9ccff' && V('hudColor', 'rgba(0,0,0,0.4)') === 'rgba(0,0,0,0.4)' && V('namesColor', 'red') === 'red' && V('cellShadowColor', 'rgb(1, 2, 3)') === 'rgb(1, 2, 3)');
 check('colours: CSS / HTML injection and non-colours refused', ['red;}body{display:none', '#fff" onload="x', 'url(https://x.com/a.png)', 'expression(alert(1))', '', '#ggg', 5].every(x => V('bgColor', x) === undefined && V('messageColor', x) === undefined));
 check('lbTeammateColor (a marker, not drawn) is left as stored', V('lbTeammateColor', 'anything') === 'anything');
-check('free text kept (URLs, sector symbol), booleans as before, unknown keys refused', V('menuBg', 'https://x.com/a.png') === 'https://x.com/a.png' && V('sectorsSymbol', '*') === '*' && V('darkTheme', 'false') === false && V('darkTheme', 1) === undefined && V('noSuchKey', 1) === undefined && V('__proto__', {}) === undefined);
+check('free text kept (URLs), booleans as before, unknown and removed keys (sector symbol) refused', V('menuBg', 'https://x.com/a.png') === 'https://x.com/a.png' && V('sectorsSymbol', '*') === undefined && V('darkTheme', 'false') === false && V('darkTheme', 1) === undefined && V('noSuchKey', 1) === undefined && V('__proto__', {}) === undefined);
 
 // ── shipped data is kept exactly: the theme presets, the menu themes
 const presetOff = [];
