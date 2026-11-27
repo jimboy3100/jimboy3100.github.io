@@ -2571,6 +2571,52 @@ function lmSessionType() {
     return 'menu';
 }
 window.lmSessionType = lmSessionType;
+/* Why Play needs to wait now, '' when the server works (Play, Play as guest, Login and play and
+ * Spectate are off until then): 'connecting' / 'closed' when the main socket is not open, 'stalled'
+ * when an agar.io server sent no world update for 3 s (the freeze detector's major freeze), counted
+ * from the opening; agar.io streams the world to the menu too. Not judged: no socket (nothing
+ * chosen), Practice, replays, the 3 s after the tab comes back, the silence of other servers or of
+ * Battle Royale (some send nothing before a spawn), and master's "no server found" (Play retries).
+ * now: performance.now() (_lmND's clock) */
+function lmPlayBlockReason(LM, now, master) {
+    if (!LM || (master && master._lmFindGaveUp) || (window.LMPractice && window.LMPractice.on) || window._lmEvReplayOn || window._lmReplayQuiet) return '';
+    var s = LM.socket;
+    if (!s || s._lmPractice || String(LM.ws || '').indexOf('replay') !== -1) return '';
+    if (s.readyState === 0) return 'connecting';
+    if (s.readyState !== 1) return 'closed';
+    var d = LM._lmND;
+    if (!d || !d.live || LM.serverType !== 'agario' || LM.gameMode === ':battleroyale') return '';
+    if (d.hidden || now - d.visAt < 3000) return '';
+    return now - (d.wMsgAt || d.t0) > 3000 ? 'stalled' : '';
+}
+/* Applies lmPlayBlockReason to the menu's play buttons when it changes (each drawn frame asks;
+ * nothing is done or allocated while it stays the same); force: apply again (buttons rebuilt or
+ * unlocked). The buttons stay visible, disabled with the reason as their title. Toast buttons
+ * that reuse these classes are left alone. Returns the reason. */
+var _lmPlayOff = null;
+function lmPlayGate(force) {
+    var r = '';
+    try { r = lmPlayBlockReason(window.legendmod, performance.now(), window.master); } catch (e) { }
+    if (r === _lmPlayOff && !force) return r;
+    _lmPlayOff = r;
+    if (typeof $ !== 'function') return r;
+    var key = r ? 'pkg.playdis.' + r : '';
+    $('.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate').each(function () {
+        if ($(this).closest('#toast-container, .toast').length) return;
+        this.disabled = !!r;
+        if (r) {
+            this.setAttribute('data-lm-play-off', '1');
+            this.setAttribute('data-i18n-title', key);
+            this.title = lmT(key);
+        } else if (this.hasAttribute('data-lm-play-off')) {
+            this.removeAttribute('data-lm-play-off');
+            this.removeAttribute('data-i18n-title');
+            this.removeAttribute('title');
+        }
+    });
+    return r;
+}
+window.lmPlayGate = lmPlayGate;
 /* Settings can be imported or typed: only a #rgb/#rrggbb color is used. */
 function lmMultiboxRingColor(value, fallback) {
     return typeof value === 'string' && /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value) ? value : fallback;
@@ -28372,6 +28418,8 @@ function thelegendmodproject() {
         },
         unlockButtons() {
             $('.btn-play, .btn-play-guest, .btn-login-play, .btn-spectate').prop('disabled', false);
+            /* not while the server does not work */
+            if (typeof lmPlayGate === 'function') lmPlayGate(true);
         },
         setMainButtons() {
             var app = this;
@@ -28550,7 +28598,8 @@ function thelegendmodproject() {
             })
             $(document).on("click", "#statsContinue2", function () {
                 var _lmConn = window.legendmod || {}; var isLegend = _lmConn.serverType === "expandingland" || !!_lmConn.isLegendWorld || (app.ws && (app.ws.includes("legendmod.ml") || app.ws.includes("expanding.land")));
-                if (isLegend) {
+                /* a server that does not work: back to the menu, where Play says why it waits */
+                if (isLegend && !(typeof lmPlayGate === 'function' && lmPlayGate(false))) {
                     // On private LW server: spawn and hide menu, same as spectate hides it
                     app.onPlay();
                 } else {
@@ -84466,6 +84515,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         }
                     }
                 } catch (_freezeCheckError) { }
+                /* the play buttons follow whether the server works (changes only) */
+                if (typeof lmPlayGate === 'function') lmPlayGate(false);
                 if (typeof application !== 'undefined' && application) application._lmTouchNow = 0;
                 window.requestAnimationFrame(drawRender.render);
             }
