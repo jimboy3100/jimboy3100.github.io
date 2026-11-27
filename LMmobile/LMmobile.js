@@ -874,9 +874,21 @@
                 open = true;
                 clearTimeout(holdT);
                 /* kept on screen: near the bottom edge it is drawn a little above the thumb */
-                rad.style.left = Math.max(115, Math.min(window.innerWidth - 115, sx)) + 'px';
-                rad.style.top = Math.max(70, Math.min(window.innerHeight - 70, sy)) + 'px';
+                var x = Math.max(115, Math.min(window.innerWidth - 115, sx)), y = Math.max(70, Math.min(window.innerHeight - 70, sy));
+                rad.style.left = x + 'px';
+                rad.style.top = y + 'px';
                 rad.style.display = 'block';
+                /* a longer translation (Polish "Niebezpieczeństwo") reached past the screen edge:
+                 * move the choice in by what its labels need (measured once, on opening) */
+                var l = Infinity, r = -Infinity, t = Infinity, bt = -Infinity, m = 4;
+                items.forEach(function (it) {
+                    var q = it.getBoundingClientRect();
+                    l = Math.min(l, q.left); r = Math.max(r, q.right); t = Math.min(t, q.top); bt = Math.max(bt, q.bottom);
+                });
+                var dx = l < m ? m - l : r > window.innerWidth - m ? window.innerWidth - m - r : 0;
+                var dy = t < m ? m - t : bt > window.innerHeight - m ? window.innerHeight - m - bt : 0;
+                if (dx) rad.style.left = (x + dx) + 'px';
+                if (dy) rad.style.top = (y + dy) + 'px';
             }
             /* M6: Cache radial colors — only refresh on theme change, not every touch move */
             var _cachedSelBg = '', _cachedDefBg = '';
@@ -1316,7 +1328,7 @@
         function releaseHeld() {
             feedStop();
             if (jId !== null) { jId = null; jHide(); }
-            pOn = false; pDist = 0; swStart = null;
+            pOn = false; pDist = 0; swStart = null; chatDismissId = null;
             if (_cancelPing) _cancelPing();
         }
         document.addEventListener('visibilitychange', function () { if (document.hidden) releaseHeld(); });
@@ -1463,13 +1475,22 @@
         /* Tap canvas while chatting → dismiss without sending (keeps draft).
          * The touch is consumed so it does not trigger steering/flick/split.
          * e.stopImmediatePropagation prevents joystick/swipe handlers on the same target. */
+        /* the dismissing finger until it is lifted: a second finger put down meanwhile made a pinch
+         * with it (the map zoomed) */
+        var chatDismissId = null;
         canvas.addEventListener('touchstart', function (e) {
             if (chatOn) {
                 e.preventDefault();
                 e.stopImmediatePropagation();
+                chatDismissId = e.changedTouches.length ? e.changedTouches[0].identifier : null;
                 chatClose(false);
             }
         }, { passive: false });
+        function chatDismissEnd(e) {
+            if (chatDismissId !== null && tById(e.changedTouches, chatDismissId)) chatDismissId = null;
+        }
+        canvas.addEventListener('touchend', chatDismissEnd, { passive: true });
+        canvas.addEventListener('touchcancel', chatDismissEnd, { passive: true });
 
         /* (fullscreen toggle handled by bFull listener above) */
 
@@ -1655,6 +1676,8 @@
                 /* A second finger that only missed the Split button stopped the steering.
                  * Pinch only when both fingers came down together (within 200 ms). */
                 if (jId !== null && Date.now() - jStartTime > 200) return;
+                /* one of them is the finger that closed the chat box */
+                if (chatDismissId !== null && tById(e.targetTouches, chatDismissId)) return;
                 pOn = true;
                 pDist = dist(e.targetTouches[0], e.targetTouches[1]);
                 jHide(); jId = null;
