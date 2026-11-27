@@ -519,6 +519,21 @@
         refresh();
         return on;
     }
+    /* Erase script on a slot whose script runs in this page: it stops as when it is turned off
+     * (a plugin that supports that at once, otherwise at the next start); it kept running */
+    function erased() {
+        for (var n = 1; n <= SLOTS; n++) {
+            var r = rt[n];
+            if (!r || ranCode(n) === null || !slot(n).empty) continue;
+            var was = r.status === 'running';
+            if (r.opts && r.status === 'running') callOpt(n, 'onDisable');
+            r.opts = null;
+            r.schema = [];
+            r.id = '';
+            r.status = '';
+            if (was) toast('info', tx('offToast', n));
+        }
+    }
     /* catalogue plugin -> the first empty slot, through the slot's own URL field */
     function install(id, skipConfirm) {
         var m = (catalogue || []).filter(function (x) { return x.id === id; })[0];
@@ -945,7 +960,7 @@
             render();
         });
         var eb = document.getElementById('EraseScripter');
-        if (eb) eb.addEventListener('click', function () { setTimeout(refresh, 50); });
+        if (eb) eb.addEventListener('click', function () { setTimeout(function () { erased(); refresh(); }, 50); });
         render();
         return true;
     }
