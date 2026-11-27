@@ -2514,6 +2514,9 @@
         var h = readHistory();
         diag.hist.textContent = h.length ? h.slice(-5).reverse().map(function (x) { return sessionLine(x, tr); }).join('\n') :
             (s.netHistory ? T('netNoSessions') : T('netHistOff'));
+        /* a preset, profile or import can switch the developer console while the window is open */
+        var dt = devText();
+        if (diag.bDev.textContent !== dt) diag.bDev.textContent = dt;
     }
 
     /* ---------- wiring ---------- */

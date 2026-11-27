@@ -1107,6 +1107,16 @@ check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')'
     check('window: Copy is Copy debug info (one report)', copied === 1);
     check('report: LMPerf.report is the performance part of it', typeof wp.ctx.LMPerf.report === 'function' && /performance report/.test(wp.ctx.LMPerf.report()));
     check('window: graph labels from the packs', canv[0].fills.some(t => t === i18n.t(PFX + 'graphFrames', [50, 60])) && canv[1].fills.some(t => t === i18n.t(PFX + 'graphWaiting')));
+    /* the developer console switch of the window: saved with the settings, and its text follows a
+     * change made elsewhere (a preset, a profile, an import) while the window is open */
+    const bDev = byId('lm-perf-dev');
+    check('window: developer console switch off', bDev && bDev.textContent === i18n.t('pkg.caw.devOff') && !wp.ctx.legendmod5.showDevConsole);
+    bDev.on.click({ preventDefault() { }, stopPropagation() { } });
+    check('window: developer console switched on and saved', wp.ctx.legendmod5.showDevConsole === true && bDev.textContent === i18n.t('pkg.caw.devOn') &&
+        JSON.parse(wp.store.ogarioSettings).showDevConsole === true);
+    wp.ctx.legendmod5.showDevConsole = false;
+    wp.timers.filter(Boolean).forEach(f => f());
+    check('window: developer console turned off elsewhere: the switch says off', bDev.textContent === i18n.t('pkg.caw.devOff'));
     wp.ctx.LMi18n.setLang('el');
     check('window: a language change redraws it in Greek', title.textContent === i18n.t('settings.lmPerfDiag', null, 'el') && title.textContent !== i18n.t('settings.lmPerfDiag') &&
         byId('lm-perf-clear').textContent === i18n.t('settings.lmNetClear', null, 'el') && stats.textContent.indexOf(i18n.t(PFX + 'statAdaptiveOff', null, 'el')) >= 0 &&
