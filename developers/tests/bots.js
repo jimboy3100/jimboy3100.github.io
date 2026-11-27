@@ -761,25 +761,26 @@ for (const file of ['server.js', 'server-fast.js']) {
     const resetSrc = extract('function brResetFill()');
     const stopFillSrc = extract('function brStopFilling()');
     check('ogario: brResetFill and brStopFilling extractable', !!resetSrc && !!stopFillSrc);
-    const brCase = (filling, watcher, call, pending) => {
+    const brCase = (filling, call, pending) => {
         const els = { brFillLobby: el(), brStopFill: el() };
         els.brFillLobby.style.display = 'none'; els.brStopFill.style.display = '';
-        let cleared = null, stops = 0;
-        const w = { _brFilling: filling, _brLobbyWatcher: watcher, connectionBots: { pending: pending === undefined ? 'fill' : pending }, _lmBotsStop() { stops++; } };
-        const result = run(resetSrc + '\n' + stopFillSrc + '\n' + call, { window: w, document: { getElementById: id => els[id] || null }, clearInterval: id => { cleared = id; } });
-        return { result, w, els, cleared, stops };
+        let stops = 0;
+        const w = { _brFilling: filling, connectionBots: { pending: pending === undefined ? 'fill' : pending }, _lmBotsStop() { stops++; } };
+        const result = run(resetSrc + '\n' + stopFillSrc + '\n' + call, { window: w, document: { getElementById: id => els[id] || null } });
+        return { result, w, els, stops };
     };
-    r = brCase(false, null, 'brResetFill()');
+    r = brCase(false, 'brResetFill()');
     check('ogario: brResetFill returns false when nothing runs, forgets a Fill waiting for the connection', r.result === false && r.w.connectionBots.pending === null && r.stops === 0);
-    r = brCase(false, null, 'brResetFill()', 'start');
+    r = brCase(false, 'brResetFill()', 'start');
     check('ogario: brResetFill keeps a Start waiting for the connection', r.w.connectionBots.pending === 'start');
-    r = brCase(true, 42, 'brResetFill()');
-    check('ogario: brResetFill clears fill and watcher, restores buttons, sends nothing', r.result === true && r.w._brFilling === false && r.w._brLobbyWatcher === null && r.cleared === 42 &&
+    r = brCase(true, 'brResetFill()');
+    check('ogario: brResetFill clears the fill, restores buttons, sends nothing', r.result === true && r.w._brFilling === false &&
         r.els.brFillLobby.style.display === '' && r.els.brStopFill.style.display === 'none' && r.stops === 0);
-    r = brCase(false, null, 'brStopFilling()');
+    r = brCase(false, 'brStopFilling()');
     check('ogario: brStopFilling is a no-op when no fill runs', r.stops === 0);
-    r = brCase(true, 7, 'brStopFilling(); brStopFilling()');
-    check('ogario: brStopFilling stops the fill bots once', r.stops === 1 && r.cleared === 7);
+    r = brCase(true, 'brStopFilling(); brStopFilling()');
+    check('ogario: brStopFilling stops the fill bots once', r.stops === 1);
+    check('ogario: no Battle Royale watcher timer (the lobby packets and the bot connection drive the fill)', !ogSrc.includes('_brLobbyWatcher') && !/setInterval\(\s*brUpdateSection/.test(ogSrc));
     check('ogario: brResetFill/brStopFilling exposed on window', ogSrc.includes('window._brStopFilling = brStopFilling') && ogSrc.includes('window._brResetFill = brResetFill'));
     check('ogario: BR fill no longer writes window.bots.amount', /needed = Math\.min\(needed, 190\)[\s\S]{0,400}sessionAmount = needed/.test(ogSrc) && !/window\.bots\.amount = needed/.test(ogSrc));
 
@@ -991,9 +992,21 @@ for (const file of ['server.js', 'server-fast.js']) {
         check('players: one player, nick "__proto__"', players({ ws: 'wss://a', integrity: true, leaderboard: board(['__proto__']) }) === 'game2.sbPlayer:1');
         check('players: Battle Royale: the lobby count', players({ ws: 'wss://a', integrity: true, gameMode: ':battleroyale', battleRoyale: { players: 12 }, leaderboard: [] }) === 'game2.sbPlayers:12');
         check('players: empty board: Waiting', players({ ws: 'wss://a', integrity: true, leaderboard: [] }) === 'game1.bots.waiting');
-        check('players: panel row "On this server", refreshed every second while the panel is open; no "/200", no server slots value',
-            ogSrc.includes("${_lmG1s('game1.bots.onServer')}</b>: <span id=\"botsServerPlayers\"") && /getElementById\('botsServerPlayers'\)[\s\S]{0,200}botsServerPlayersText\(\)[\s\S]{0,120}\}, 1000\)/.test(ogSrc) &&
+        check('players: panel row "On this server"; no "/200", no server slots value',
+            ogSrc.includes("${_lmG1s('game1.bots.onServer')}</b>: <span id=\"botsServerPlayers\"") &&
             !ogSrc.includes('"/200"') && !ogSrc.includes("id=\"slots\"") && !ogSrc.includes("$('#slots')"));
+        // no timer: the row is written by the leaderboard of the main connection and when the panel opens, only while it is open
+        const refSrc = extract('window._lmBotsServerPlayersRefresh = function ()');
+        check('players: refresh function extractable, no timer around it', !!refSrc && !/botsServerPlayersText\(\)[\s\S]{0,160}\}, 1000\)/.test(ogSrc));
+        const refresh = (open, lm) => {
+            const row = { textContent: 'old' };
+            run(playersSrc + '\n' + refSrc + '\nwindow._lmBotsServerPlayersRefresh()', { window: { legendmod: lm }, defaultmapsettings: { showQuickBots: open }, document: { getElementById: id => id === 'botsServerPlayers' ? row : null }, lmT: (key, a) => key + (a ? ':' + a[0] : '') });
+            return row.textContent;
+        };
+        const lm3 = { ws: 'wss://a', integrity: true, gameMode: ':ffa', leaderboard: board(['a', 'b', 'c']) };
+        check('players: refresh writes the count while the panel is open, nothing while it is closed', refresh(true, lm3) === 'game2.sbPlayers:3' && refresh(false, lm3) === 'old');
+        const hl = ogSrc.indexOf('        handleLeaderboard() {');
+        check('players: every leaderboard of the main connection refreshes the row', hl > 0 && ogSrc.slice(hl, hl + 400).includes('if (this === window.legendmod && window._lmBotsServerPlayersRefresh) window._lmBotsServerPlayersRefresh();'));
         const core = fs.readFileSync(path.join(botsDir, 'botcore.js'), 'utf8');
         check('botcore: no fake server player total (message 5) any more', !core.includes('new Uint8Array([5, 0])'));
     }
@@ -1016,18 +1029,37 @@ for (const file of ['server.js', 'server-fast.js']) {
     {
         const updSrc = extract('function brUpdateSection()');
         check('ogario: brUpdateSection extractable', !!updSrc);
-        const brStatus = (players, spawned, running, state) => {
+        const brLog = { stops: 0, toasts: [] };
+        const brStatus = (players, spawned, running, state, extra) => {
             const els = { brBotsSection: el(), brLobbyStatus: el() };
-            const w = { userBots: { spawned, startedBots: running, startSent: false } };
-            const lm = { gameMode: ':battleroyale', battleRoyale: Object.assign({ players, started: false, countdown: false }, state || {}) };
-            run(updSrc + '\nfunction brStopFilling() {}\nbrUpdateSection()', { window: w, legendmod: lm, document: { getElementById: id => els[id] || null }, _lmTH: (k, d) => d, Math });
+            const w = Object.assign({ userBots: { spawned, startedBots: running, startSent: false } }, (extra && extra.w) || {});
+            const lm = { gameMode: (extra && extra.mode) || ':battleroyale', battleRoyale: Object.assign({ players, started: false, countdown: false }, state || {}) };
+            brLog.stops = 0; brLog.toasts = [];
+            run(updSrc + '\nfunction brStopFilling() { brLog.stops++; window._brFilling = false }\nbrUpdateSection()', { window: w, legendmod: lm, document: { getElementById: id => els[id] || null }, _lmTH: (k, d) => d, Math, Premadeletter123: 'LM',
+                toastr: { success: m => brLog.toasts.push(m) }, brLog });
             return els.brLobbyStatus.textContent;
         };
         check('BR status: 8 in the lobby, 3 of them our bots: "Players: 8 (5 real + 3 bots)"', brStatus(8, 3, true) === 'Players: 8 (5 real + 3 bots) | State: Waiting');
         check('BR status: no bots of ours: the plain count', brStatus(8, 0, true) === 'Players: 8 | State: Waiting' && brStatus(8, 3, false) === 'Players: 8 | State: Waiting');
         check('BR status: never more bots than lobby players', brStatus(2, 5, true) === 'Players: 2 (0 real + 2 bots) | State: Waiting');
         check('BR status: countdown state kept', brStatus(15, 10, true, { countdown: true }) === 'Players: 15 (5 real + 10 bots) | State: Starting');
-        check('BR status: refreshed every second', ogSrc.includes('setInterval(brUpdateSection, 1000)'));
+        brStatus(15, 10, true, { countdown: true }, { w: { _brFilling: true } });
+        check('BR fill: the countdown (176) keeps the fill bots', brLog.stops === 0 && !brLog.toasts.length);
+        brStatus(15, 10, true, { started: true }, { w: { _brFilling: true } });
+        check('BR fill: the battle begun (177) ends the fill once, with the "started" notice', brLog.stops === 1 && brLog.toasts.length === 1 && brLog.toasts[0].includes('BR game started!'));
+        brStatus(15, 10, true, { started: true }, { w: { _brFilling: false } });
+        check('BR fill: bots started by hand stay when the battle begins', brLog.stops === 0 && !brLog.toasts.length);
+        brStatus(15, 10, true, {}, { mode: ':ffa', w: { _brFilling: true } });
+        check('BR fill: another mode ends the fill', brLog.stops === 1);
+        // no timer: the Battle Royale lobby packets of the main connection, our bots' count and the server/mode switch update it
+        const brHook = 'if (this === window.legendmod && window._brUpdateSection) window._brUpdateSection();';
+        const c176 = ogSrc.indexOf('this.battleRoyale.countdown = true;');
+        for (const op of ['176', '177', '178', '180']) {
+            const at = ogSrc.indexOf('case ' + op + ':', c176 - 4000);
+            const body = at < 0 ? '' : ogSrc.slice(at, ogSrc.indexOf('                case ', at + 12));
+            check('BR status: lobby packet ' + op + ' updates the Battle Royale HUD', body.includes(brHook));
+        }
+        check('BR status: our bots\' count (messages 2 and 4), Stop and the bot connection closing update it', (ogSrc.match(/if \(typeof window\._brUpdateSection === 'function'\) window\._brUpdateSection\(\)\r?\n/g) || []).length >= 4);
         k = makeCB();
         k.msg([4, 6, 5]);
         const spawned4 = k.w.userBots.spawned;
@@ -1243,7 +1275,7 @@ for (const file of ['server.js', 'server-fast.js']) {
                     Object.keys(BTNS).every(k => !!node(BTNS[k]).cls['lm-quick-on'] === node(PANELS[k]).shown);
             };
             const server = (integrity, mode) => { lm.ws = integrity == null ? '' : 'wss://x'; lm.integrity = !!integrity; lm.gameMode = mode || ':ffa'; app.displayPartyBots(); };
-            return { app, s, lm, open, consistent, server, store, node, saves: () => saves, btn: k => node(BTNS[k]).shown };
+            return { app, s, lm, w: sb.window, open, consistent, server, store, node, saves: () => saves, btn: k => node(BTNS[k]).shown };
         };
         // tabs: A = quick menu, B = Battle Royale HUD (the bots panel's button is hidden)
         let q = make();
@@ -1290,7 +1322,7 @@ for (const file of ['server.js', 'server-fast.js']) {
         q.server(true, ':battleroyale');
         check('Battle Royale: entering on agar.io: its button shows, its HUD opens alone, the menu before is remembered', q.btn('br') && q.open().join() === 'br' && q.consistent() && q.store.lmQuickBeforeBR === 'menu' && !q.s.showQuickMenu);
         q.app.syncQuickPanels(); q.app.syncQuickPanels();
-        check('Battle Royale: the half-second check changes nothing while in it', q.open().join() === 'br' && q.store.lmQuickBeforeBR === 'menu');
+        check('Battle Royale: syncing again (mode select, setParty) changes nothing while in it', q.open().join() === 'br' && q.store.lmQuickBeforeBR === 'menu');
         q.server(true, ':ffa');
         check('Battle Royale: leaving: its button hides, its HUD closes, the quick menu comes back', !q.btn('br') && q.open().join() === 'menu' && q.consistent() && !('lmQuickBeforeBR' in q.store));
         q.app.setQuickPanel(null);
@@ -1335,7 +1367,26 @@ for (const file of ['server.js', 'server-fast.js']) {
         const next = k < 0 ? '' : ogSrc.slice(k, ogSrc.indexOf('this.serverType = _earlyType;', k));
         check('quick HUDs: LM.connect updates the buttons right after integrity is set (main connection only)', next.includes('if (this === window.legendmod) application.displayPartyBots();'));
         check('quick HUDs: displayPartyBots is called from that one place only', (ogSrc.match(/application\.displayPartyBots\(\)/g) || []).length === 1);
-        check('quick HUDs: checked every half second too, and at load', /this\.setShowQuickMenu\(\);[\s\S]{0,200}this\.syncQuickPanels\(\);[\s\S]{0,120}_lmQuickApp\.syncQuickPanels\(\); \}, 500\)/.test(ogSrc));
+        check('quick HUDs: synced at load, no timer', /this\.setShowQuickMenu\(\);[\s\S]{0,200}this\.syncQuickPanels\(\);/.test(ogSrc) && !/syncQuickPanels\(\); \}, \d+\)/.test(ogSrc));
+        const gmc = ogSrc.indexOf('app.gameMode = ogario.gameMode = modeVal;'), spy = ogSrc.indexOf('        setParty() {');
+        check('quick HUDs: the agar.io mode select and setParty sync the Battle Royale button and HUD', gmc > 0 && ogSrc.slice(gmc, gmc + 200).includes('app.syncQuickPanels();') && spy > 0 && ogSrc.slice(spy, spy + 900).includes('this.syncQuickPanels();'));
+        // every sync updates the Battle Royale HUD's lobby line and fill (when that code is loaded)
+        q = make();
+        let brUpd = 0;
+        q.app.syncQuickPanels();
+        q.w._brUpdateSection = () => brUpd++;
+        q.server(true, ':battleroyale');
+        q.app.syncQuickPanels();
+        check('quick HUDs: each sync updates the Battle Royale HUD (none needed before its code loads)', brUpd === 2);
+        // the bots panel's players line is fresh when the panel opens
+        q = make({ botsButton: true });
+        let plRef = 0;
+        q.w._lmBotsServerPlayersRefresh = () => plRef++;
+        q.server(true, ':ffa');
+        q.app.toggleQuickPanel('menu');
+        const plBefore = plRef;
+        q.app.toggleQuickPanel('bots');
+        check('quick HUDs: opening the bots panel writes its players line', plBefore === 0 && plRef === 1);
         check('quick HUDs: one click handler for the three buttons, blurred after a click', /on\("click", "\.quick-menu, \.quick-bots, \.quick-br", function \(event\) \{[\s\S]{0,120}this\.blur\(\)[\s\S]{0,200}app\.toggleQuickPanel\(/.test(ogSrc));
         check('quick HUDs: settings profiles re-apply the flags', fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'modules', 'profiles.js'), 'utf8').includes("showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots'"));
         check('quick HUDs: the open button\'s ring in the theme colour', ogSrc.includes(".quick.lm-quick-on{box-shadow:0 0 0 2px ' + defaultSettings.menuMainColor + '}"));
@@ -1366,14 +1417,13 @@ for (const file of ['server.js', 'server-fast.js']) {
     // agar.io never sends the lobby size: learned from the player count when a countdown (176) starts, 15 until then
     check('ogario: BR lobby size learned at countdown start', ogSrc.includes("localStorage.setItem('lmBrStartPlayers'") && ogSrc.includes('brRequired - currentPlayers') && ogSrc.includes('var brRequired = 15'));
     // bots stay during the countdown (176) and leave when the battle begins (177), not on ring state 1
-    check('ogario: BR bots leave only when the battle begins', ogSrc.includes('if (legendmod.battleRoyale.started)') && !ogSrc.includes('battleRoyale.state > 1') && ogSrc.includes('this.battleRoyale.started = true'));
-    check('ogario: BR fill stops on mode change', /gameMode\s*!==\s*':battleroyale'.*brStopFilling/.test(ogSrc));
-    check('ogario: BR watcher interval cleaned on stop', ogSrc.includes('clearInterval(window._brLobbyWatcher)'));
+    check('ogario: BR bots leave only when the battle begins', ogSrc.includes('if (window._brFilling && br.started)') && !ogSrc.includes('battleRoyale.state > 1') && ogSrc.includes('this.battleRoyale.started = true'));
+    check('ogario: BR fill stops on mode change', /if \(!isBR\) \{ brStopFilling\(\); return \}/.test(ogSrc));
     // Lifecycle edge-case fixes
     check('ogario: brStopFilling exposed on window for onclose', ogSrc.includes('window._brStopFilling = brStopFilling'));
     check('ogario: onclose calls _brStopFilling', ogSrc.includes("typeof window._brStopFilling === 'function'"));
     check('ogario: BR fill rejects when lobby full', ogSrc.includes("needed <= 0"));
-    check('ogario: BR watcher detects bot server disconnect', /brLobbyWatcher[\s\S]{0,800}readyState\s*!==\s*WebSocket\.OPEN[\s\S]{0,200}brStopFilling/.test(ogSrc));
+    check('ogario: the bot connection closing ends the fill and updates the Battle Royale HUD', /_brStopFilling\(\)\r?\n\s*if \(typeof window\._brUpdateSection === 'function'\) window\._brUpdateSection\(\)/.test(ogSrc));
 }
 
 // ---- Behavioral: sendMode uses opcode 7 for mode identification ----
@@ -1429,7 +1479,6 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: BR bots running message uses i18n', ogSrc.includes("_lmTH('game2.brBotsRunning'"));
     check('ogario: BR lobby full message uses i18n', ogSrc.includes("_lmTH('game2.brLobbyFull'"));
     check('ogario: BR filling message uses i18n', ogSrc.includes("_lmTH('game2.brFilling'"));
-    check('ogario: BR disconnected message uses i18n', ogSrc.includes("_lmTH('game2.brDisconnected'"));
     check('ogario: BR game started message uses i18n', ogSrc.includes("_lmTH('game2.brGameStarted'"));
     // Status text uses translated state strings
     check('ogario: BR status uses i18n state strings', ogSrc.includes("_lmTH('game2.brStateWaiting'"));
@@ -1445,7 +1494,8 @@ for (const file of ['server.js', 'server-fast.js']) {
     const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
     // BR section uses CSS custom properties instead of hardcoded colors
     check('ogario: BR section background uses CSS var', ogSrc.includes('var(--lm-pc2,rgba(0,0,0,0.3))'));
-    check('ogario: BR title color uses CSS var', ogSrc.includes('var(--lm-tc-h,#ff9800)'));
+    check('ogario: BR title color is the theme\'s main colour', ogSrc.includes('<b style="color:var(--lm-mc,#01d9cc)"><span data-i18n="game2.brLobbyTitle">') && !ogSrc.includes('--lm-tc-h'));
+    check('ogario: BR ranks notice in the theme colour, no fixed yellow', !ogSrc.includes('<font color="yellow"><b>\' + lmT(\'game2.brRanks\')') && !ogSrc.includes('<font color="yellow"><b>\' + legendmod.battleRoyale.playerRank') && ogSrc.includes("<b class=\"main-color\">' + lmT('game2.brRanks') + '</b>"));
     check('ogario: BR section no hardcoded background rgba(0,0,0,0.3) in brBotsSection', !ogSrc.includes('brBotsSection" style="display:none;margin:8px 15px;padding:8px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.3)'));
 }
 
@@ -1464,7 +1514,7 @@ for (const file of ['server.js', 'server-fast.js']) {
     const brKeys = ['brLobbyTitle', 'brWaitingData', 'brFillLobby', 'brStop', 'brPlayers',
                     'brStateWaiting', 'brStateStarting', 'brStateInGame', 'brNotInLobby',
                     'brModeRequired', 'brConnecting', 'brNoGameServer', 'brBotsRunning',
-                    'brLobbyFull', 'brNotWaiting', 'brFilling', 'brDisconnected', 'brGameStarted'];
+                    'brLobbyFull', 'brNotWaiting', 'brFilling', 'brGameStarted'];
     for (const key of brKeys) {
         const fullKey = 'game2.' + key;
         check('i18n: ' + fullKey + ' has en', !!(game2[fullKey] && game2[fullKey].en));

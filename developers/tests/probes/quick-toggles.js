@@ -20,7 +20,7 @@
   var inBR = !!(window.legendmod && window.legendmod.integrity && window.legendmod.ws && window.legendmod.gameMode === ':battleroyale');
   need('Battle Royale button only on agar.io Battle Royale', !!brBtn && (getComputedStyle(brBtn).display !== 'none') === inBR);
   var saved = { menu: defaultmapsettings.showQuickMenu, bots: defaultmapsettings.showQuickBots, br: app._lmQuickBR };
-  /* the half-second server check would close the Battle Royale HUD off Battle Royale: paused for the click test */
+  /* a server or mode switch during the clicks would close the Battle Royale HUD off Battle Royale: paused for the click test */
   var realSync = app.syncQuickPanels;
   app.syncQuickPanels = function () { };
   app.setQuickPanel(null);

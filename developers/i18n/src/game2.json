@@ -4679,24 +4679,6 @@
     "ja": "BR ロビーを {0} ボットで埋めています…",
     "it": "Riempimento lobby BR con {0} bot…"
   },
-  "game2.brDisconnected": {
-    "en": "Bot server disconnected",
-    "el": "Ο server bot αποσυνδέθηκε",
-    "es": "El servidor de bots se desconectó",
-    "bg": "Сървърът за ботове се изключи",
-    "fr": "Le serveur de bots s'est déconnecté",
-    "ar": "انقطع الاتصال بخادم البوتات",
-    "zh": "機器人伺服器已斷開連接",
-    "ru": "Сервер ботов отключился",
-    "de": "Bot-Server getrennt",
-    "tr": "Bot sunucusu bağlantısı kesildi",
-    "pl": "Serwer botów rozłączony",
-    "nl": "Botserver verbroken",
-    "pt": "Servidor de bots desconectado",
-    "id": "Server bot terputus",
-    "ja": "ボットサーバーが切断されました",
-    "it": "Server bot disconnesso"
-  },
   "game2.brGameStarted": {
     "en": "BR game started!",
     "el": "Το BR ξεκίνησε!",

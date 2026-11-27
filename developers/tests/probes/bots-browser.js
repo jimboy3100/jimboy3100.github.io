@@ -6,18 +6,19 @@
   need('LMBotsWorkerSocket', typeof window.LMBotsWorkerSocket === 'function');
   need('connectionBots.isBrowserHost', window.connectionBots && window.connectionBots.isBrowserHost('browser') && window.connectionBots.isBrowserHost('') && !window.connectionBots.isBrowserHost('ws://localhost:1337'));
   if (fail.length) return { fail: fail, info: info };
-  // the panel: Start and Stop only (no Connect, no captcha tokens), title Bots, players row; the trophy button follows the server (agar.io only)
+  // the panel: Start and Stop only (no Connect, no captcha tokens, no address tip), title Bots, players row; the trophy button is hidden on every server
   need('no Connect button', !document.getElementById('connectBots'));
   need('no captcha tokens row', !document.getElementById('captchatokens'));
   need('Start button', !!document.getElementById('startBots') && !document.getElementById('startBots').disabled);
   need('players row', !!document.getElementById('botsServerPlayers'));
+  need('no help tip on the address field', !document.getElementById('botsRemoteIP').getAttribute('title'));
   var title = document.getElementById('botsAuthor');
   info.title = title && title.textContent;
   need('title is the language pack text, no party', !!title && title.textContent.trim() === lmT('game1.bots.title') && !/party/i.test(title.textContent));
   var trophy = document.querySelector('.quick.quick-bots.ogicon-trophy');
   info.agar = !!(window.legendmod && window.legendmod.integrity);
   info.trophy = !!trophy && trophy.style.display !== 'none';
-  if (window.legendmod && window.legendmod.ws) need('trophy button shown only on agar.io', info.trophy === info.agar);
+  need('trophy button hidden on every server', !!trophy && !info.trophy && getComputedStyle(trophy).display === 'none');
   var got = [], t0 = Date.now();
   var s = new window.LMBotsWorkerSocket('https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=probe');
   s.onmessage = function (e) { got.push(Array.prototype.join.call(new Uint8Array(e.data), ',')); };

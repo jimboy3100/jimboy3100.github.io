@@ -8058,6 +8058,7 @@ window.connectionBots = {
                 window.userBots.spawned = 0
                 window.bots.ai = false
                 if (typeof window._brResetFill === 'function') window._brResetFill()
+                if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
                 break
             case 3:
                 toastr.info(lmT('game1.bots.captchaIp'))
@@ -8065,6 +8066,8 @@ window.connectionBots = {
             case 4:
                 window.userBots.spawned = dataView.getUint8(2)
                 $('#botCount').html(`${dataView.getUint8(1)}/${dataView.getUint8(2)}/${window.userBots.sessionAmount || window.bots.amount}`)
+                /* our bots in the Battle Royale lobby count */
+                if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
                 break
             case 9:
                 // Bot positions from server (absolute world coords) — receive gracefully
@@ -8096,6 +8099,7 @@ window.connectionBots = {
         window.bots.ai = false
         // Clean up Battle Royale fill state on bot server disconnect
         if (typeof window._brStopFilling === 'function') window._brStopFilling()
+        if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
         /* never opened: the browser bots' code did not load, or no bot server at that address */
         if (failed) toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.connectFailed', 'The bots cannot connect. Check the address: browser, or your bot server (ws://localhost:1337).'))
         else toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game1.bots.wsClosed'))
@@ -8111,6 +8115,7 @@ window._lmBotsStop = function () {
     window.userBots.startSent = false
     /* the bots leave: they are not counted in this server's lobby any more */
     window.userBots.spawned = 0
+    if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
 }
 window.gameBots = {
     url: '',
@@ -26757,7 +26762,7 @@ function thelegendmodproject() {
 					<br>
 					<input type="text" id="botsNameLM" ${_lmG1a('placeholder', 'game1.bots.namePh')} maxlength="15" spellcheck="false" style="display:inline-block;">
 					<input type="number" id="botsAmount" ${_lmG1a('placeholder', 'game1.bots.amountPh')} min="1" max="190" spellcheck="false">
-					<input type="text" id="botsRemoteIP" placeholder="browser" list="botsRemoteIPList" maxlength="100" spellcheck="false"${_lmG1a('title', 'game1.bots.hostTip')}>
+					<input type="text" id="botsRemoteIP" placeholder="browser" list="botsRemoteIPList" maxlength="100" spellcheck="false">
 					<datalist id="botsRemoteIPList"><option value="browser" data-i18n="game1.bots.hostBrowser">${_lmG1e(lmT('game1.bots.hostBrowser'))}</option><option value="ws://localhost:1337" data-i18n="game1.bots.hostServer">${_lmG1e(lmT('game1.bots.hostServer'))}</option></datalist>
 					<br>
 					<button id="startBots" class="btn btn-primary btn" data-i18n="game1.bots.start">${_lmG1e(lmT('game1.bots.start'))}</button>
@@ -26767,7 +26772,7 @@ function thelegendmodproject() {
             $(".left-container").append(`<div id="quick-br" class="agario-panel agario-side-panel" style="display:none"><h2 id="brInfo"></h2>
 					<h5 id="brHudTitle" class="main-color">${_lmG1s('game2.brHudTitle')}</h5>
 					<div id="brBotsSection" style="display:none;margin:8px 15px;padding:8px;border-radius:var(--lm-radius,6px);background:var(--lm-pc2,rgba(0,0,0,0.3))">
-					<b style="color:var(--lm-tc-h,#ff9800)"><span data-i18n="game2.brLobbyTitle">${_lmG1e(lmT('game2.brLobbyTitle'))}</span></b><br>
+					<b style="color:var(--lm-mc,#01d9cc)"><span data-i18n="game2.brLobbyTitle">${_lmG1e(lmT('game2.brLobbyTitle'))}</span></b><br>
 					<span id="brLobbyStatus" style="font-size:12px" data-i18n="game2.brWaitingData">${_lmG1e(lmT('game2.brWaitingData'))}</span><br>
 					<button id="brFillLobby" class="btn btn-warning btn-sm" style="margin-top:4px" data-i18n="game2.brFillLobby">${_lmG1e(lmT('game2.brFillLobby'))}</button>
 					<button id="brStopFill" class="btn btn-danger btn-sm" style="margin-top:4px;display:none" data-i18n="game2.brStop">${_lmG1e(lmT('game2.brStop'))}</button>
@@ -27511,6 +27516,8 @@ function thelegendmodproject() {
                 };
                 var modeVal = agar2ModeMap[dummy] || dummy;
                 app.gameMode = ogario.gameMode = modeVal;
+                /* the Battle Royale button and HUD follow the mode */
+                app.syncQuickPanels();
                 app.setQuest();
                 if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
                 if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
@@ -28112,6 +28119,8 @@ function thelegendmodproject() {
                 $(ids[k][0]).stop(true, true).toggle(open === k);
                 $(ids[k][1]).toggleClass('lm-quick-on', open === k);
             }
+            /* the bots panel's players line is written while it is open only: fresh when it opens */
+            if (open === 'bots' && typeof window._lmBotsServerPlayersRefresh === 'function') window._lmBotsServerPlayersRefresh();
         },
         /* open one HUD ('menu', 'bots', 'br') or none (null); the flags are saved when they change */
         setQuickPanel(which) {
@@ -28143,8 +28152,9 @@ function thelegendmodproject() {
          * is hidden on every server (the owner's choice; the bots work on agar.io arenas only:
          * legendmod.integrity), so the bots panel stays closed and its flag off; the bot connection
          * still serves Fill lobby. The Battle Royale button shows on agar.io Battle Royale only.
-         * Runs on every connect (displayPartyBots) and every half second (the mode changes on many
-         * paths: mode select, Join, URL, reconnect). */
+         * No timer: runs on every connect (displayPartyBots, right where integrity is set) and when
+         * the agar.io mode changes (the mode select, setParty); a Battle Royale lobby packet updates
+         * the Battle Royale HUD itself (brUpdateSection). */
         _lmQuickBotsButton: false,
         syncQuickPanels() {
             var lm = window.legendmod, agar = !!(lm && lm.integrity), known = !!(lm && lm.ws);
@@ -28164,6 +28174,8 @@ function thelegendmodproject() {
                 this.saveSettings(defaultmapsettings, 'ogarioSettings');
                 this.applyQuickPanels();
             }
+            /* the Battle Royale HUD's lobby line and Fill state follow the server and the mode */
+            if (typeof window._brUpdateSection === 'function') window._brUpdateSection();
         },
         /* entering or leaving agar.io Battle Royale */
         _lmQuickSwitchBR(inBR) {
@@ -31028,6 +31040,8 @@ function thelegendmodproject() {
                 this.gameMode = ogario.gameMode = gmVal;
                 if (_lmElTeamsActive(ogario)) this.gameMode = ogario.gameMode = ':teams';
             }
+            /* the Battle Royale button and HUD follow the mode */
+            this.syncQuickPanels();
             this.setQuest();
             if (this.gameMode !== ':party' || !value) {
                 return;
@@ -36640,8 +36654,6 @@ function thelegendmodproject() {
             this.setShowQuickMenu();
             /* the bots and Battle Royale buttons follow the game server (hidden until an agar.io connection) */
             this.syncQuickPanels();
-            var _lmQuickApp = this;
-            setInterval(function () { _lmQuickApp.syncQuickPanels(); }, 500);
             this.setShowSkinsPanel();
             this.setProfile();
             this.setMainButtons();
@@ -46494,12 +46506,15 @@ function thelegendmodproject() {
                         } catch (e) { }
                     }
                     this.battleRoyale.countdown = true;
+                    /* the Battle Royale HUD follows the lobby (no timer) */
+                    if (this === window.legendmod && window._brUpdateSection) window._brUpdateSection();
                     break;
                 case 177:
                     /* The battle has begun (the payload is a timestamp, not "joined"). */
                     window.testobjectsOpcode177 = data;
                     this.battleRoyale.joined = true;
                     this.battleRoyale.started = true;
+                    if (this === window.legendmod && window._brUpdateSection) window._brUpdateSection();
                     break;
                 case 178:
                     window.testobjectsOpcode178 = data;
@@ -46527,6 +46542,7 @@ function thelegendmodproject() {
                             this.battleRoyale.targetY = data.getInt32(s, true),
                             s += 4,
                             this.battleRoyale.targetRadius = data.getUint32(s, true));
+                    if (this === window.legendmod && window._brUpdateSection) window._brUpdateSection();
                     this.handleLeaderboard();
                     break;
                 case 179:
@@ -46555,12 +46571,13 @@ function thelegendmodproject() {
                             'name': ogarcopythelb
                         });
                     }
-                    var temp = '<b>[' + Premadeletter123 + ']:</b> <font color="yellow"><b>' + lmT('game2.brRanks') + '</b></font>';
+                    var temp = '<b>[' + Premadeletter123 + ']:</b> <b class="main-color">' + lmT('game2.brRanks') + '</b>';
                     for (var i = 0; i < legendmod.battleRoyale.rank.length; i++) {
                         temp += '<br>' + legendmod.battleRoyale.rank[i].place + ". " + application.escapeHTML(String(legendmod.battleRoyale.rank[i].name || ''));
                     }
-                    temp += '<br>' + lmT('game2.brYourRank') + ' <font color="yellow"><b>' + legendmod.battleRoyale.playerRank + '</b></font>';
+                    temp += '<br>' + lmT('game2.brYourRank') + ' <b class="main-color">' + legendmod.battleRoyale.playerRank + '</b>';
                     toastr.info(temp);
+                    if (this === window.legendmod && window._brUpdateSection) window._brUpdateSection();
                     break;
                 case 226: //227
                     if (data.byteLength < 3) {
@@ -52546,6 +52563,8 @@ function thelegendmodproject() {
         },
         handleLeaderboard() {
             var _tLb = performance.now();
+            /* the bots panel's "On this server" count, only while that panel is open (no timer) */
+            if (this === window.legendmod && window._lmBotsServerPlayersRefresh) window._lmBotsServerPlayersRefresh();
             if (window.LMEvents._has('leaderboard')) {
                 var _lmEvLb = [];
                 for (var _lmEvI = 0; _lmEvI < this.leaderboard.length && _lmEvI < 100; _lmEvI++) _lmEvLb.push({ nick: String(this.leaderboard[_lmEvI].nick || '').slice(0, 60), pos: _lmEvI + 1 });
@@ -86159,26 +86178,37 @@ function setGUIEvents() {
         return count(lb.length - bots, 'game2.sbPlayer', 'game2.sbPlayers') + (bots > 0 ? ' · ' + count(bots, 'game2.sbBot', 'game2.sbBots') : '')
     }
     window._lmBotsServerPlayersText = botsServerPlayersText
-    setInterval(function () {
+    /* No timer: written when the panel opens (applyQuickPanels), on every leaderboard and Battle
+       Royale lobby update of the main connection (handleLeaderboard) and on a server switch.
+       While the panel is closed nothing is done (its flag equals what is shown). */
+    window._lmBotsServerPlayersRefresh = function () {
+        if (!defaultmapsettings.showQuickBots) return
         var el = document.getElementById('botsServerPlayers')
-        if (!el || !$('#quick-bots').is(':visible')) return
+        if (!el) return
         var text = botsServerPlayersText()
         if (el.textContent !== text) el.textContent = text
-    }, 1000)
+    }
 
     /* ─── Battle Royale lobby fill ─── */
     window._brFilling = false
-    window._brLobbyWatcher = null
 
+    /* No timer: runs on every Battle Royale lobby packet of the main connection (176 countdown,
+       177 battle begun, 178 lobby players, 180 end), when our bots' count changes (bot messages
+       2 and 4, Stop, the bot connection closing) and on a server or mode switch (syncQuickPanels). */
     function brUpdateSection() {
         var sec = document.getElementById('brBotsSection')
         if (!sec) return
         var isBR = legendmod.gameMode === ':battleroyale'
         sec.style.display = isBR ? '' : 'none'
         if (!isBR) { brStopFilling(); return }
+        var br = legendmod.battleRoyale
+        if (window._brFilling && br.started) {
+            /* the battle has begun (177): the bots of the fill leave; during the countdown (176) they stay so it is not cancelled */
+            toastr.success('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brGameStarted', 'BR game started!'))
+            brStopFilling()
+        }
         var status = document.getElementById('brLobbyStatus')
         if (!status) return
-        var br = legendmod.battleRoyale
         /* 178 sends the players of the lobby before the battle too; 176 = countdown, 177 = battle begun. */
         if (br.players || br.started || br.countdown) {
             var stateStr = br.started ? _lmTH('game2.brStateInGame', 'In game') : br.countdown ? _lmTH('game2.brStateStarting', 'Starting') : _lmTH('game2.brStateWaiting', 'Waiting')
@@ -86192,13 +86222,12 @@ function setGUIEvents() {
         }
     }
 
-    /* Forget a fill (buttons, watcher) without touching the bots: after Stop bots, a manual
-       Start or the end of the session, so the watcher can never stop bots started by hand. */
+    /* Forget a fill (its buttons) without touching the bots: after Stop bots, a manual
+       Start or the end of the session, so the end of a fill can never stop bots started by hand. */
     function brResetFill() {
         if (window.connectionBots.pending === 'fill') window.connectionBots.pending = null
-        if (!window._brFilling && !window._brLobbyWatcher) return false
+        if (!window._brFilling) return false
         window._brFilling = false
-        if (window._brLobbyWatcher) { clearInterval(window._brLobbyWatcher); window._brLobbyWatcher = null }
         var fillBtn = document.getElementById('brFillLobby')
         var stopBtn = document.getElementById('brStopFill')
         if (fillBtn) fillBtn.style.display = ''
@@ -86277,30 +86306,16 @@ function setGUIEvents() {
         document.getElementById('brStopFill').style.display = ''
         toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brFilling', 'Filling BR lobby with {0} bots…').replace('{0}', needed))
 
-        // Watch for lobby state changes: auto-stop when game starts, mode changes, or bots disconnect
-        if (window._brLobbyWatcher) clearInterval(window._brLobbyWatcher)
-        window._brLobbyWatcher = setInterval(function() {
-            brUpdateSection()
-            if (legendmod.gameMode !== ':battleroyale') { brStopFilling(); return }
-            if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) {
-                toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brDisconnected', 'Bot server disconnected'))
-                brStopFilling()
-                return
-            }
-            if (legendmod.battleRoyale.started) {
-                // The battle has begun (177): the bots leave; during the countdown (176) they stay so it is not cancelled
-                toastr.success('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brGameStarted', 'BR game started!'))
-                brStopFilling()
-            }
-        }, 2000)
+        /* No watcher timer: the fill stops when the battle begins or the mode changes (brUpdateSection,
+           run by the lobby packets and the server switch) and when the bot connection closes (onclose). */
+        brUpdateSection()
     }
     window._lmBrFill = brFill
+    window._brUpdateSection = brUpdateSection
     document.getElementById('brFillLobby').addEventListener('click', () => brFill())
 
     document.getElementById('brStopFill').addEventListener('click', brStopFilling)
-
-    // Update the BR section (visibility, players and our bots) every second
-    setInterval(brUpdateSection, 1000)
+    brUpdateSection()
 }
 
 

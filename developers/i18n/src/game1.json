@@ -3887,24 +3887,6 @@
     "ja": "XP",
     "it": "XP"
   },
-  "game1.bots.hostTip": {
-    "en": "browser = bots in this browser, no bot server needed. Or the address of your bot server, e.g. ws://localhost:1337",
-    "el": "browser = bots σε αυτόν τον browser, χωρίς διακομιστή bots. Ή η διεύθυνση του διακομιστή bots σας, π.χ. ws://localhost:1337",
-    "es": "browser = bots en este navegador, sin servidor de bots. O la dirección de tu servidor de bots, p. ej. ws://localhost:1337",
-    "bg": "browser = ботове в този браузър, без сървър за ботове. Или адресът на вашия сървър за ботове, напр. ws://localhost:1337",
-    "fr": "browser = bots dans ce navigateur, sans serveur de bots. Ou l'adresse de votre serveur de bots, p. ex. ws://localhost:1337",
-    "ar": "browser = بوتات في هذا المتصفح بدون خادم بوتات. أو عنوان خادم البوتات الخاص بك، مثل ws://localhost:1337",
-    "zh": "browser = 在此瀏覽器中執行機器人，不需要機器人伺服器。或填入你的機器人伺服器位址，例如 ws://localhost:1337",
-    "ru": "browser = боты в этом браузере, без сервера ботов. Или адрес вашего сервера ботов, например ws://localhost:1337",
-    "de": "browser = Bots in diesem Browser, ohne Bot-Server. Oder die Adresse deines Bot-Servers, z. B. ws://localhost:1337",
-    "tr": "browser = botlar bu tarayıcıda çalışır, bot sunucusu gerekmez. Ya da bot sunucunuzun adresi, ör. ws://localhost:1337",
-    "pl": "browser = boty w tej przeglądarce, bez serwera botów. Albo adres twojego serwera botów, np. ws://localhost:1337",
-    "nl": "browser = bots in deze browser, zonder botserver. Of het adres van je botserver, bijv. ws://localhost:1337",
-    "pt": "browser = bots neste navegador, sem servidor de bots. Ou o endereço do seu servidor de bots, ex. ws://localhost:1337",
-    "id": "browser = bot di browser ini, tanpa server bot. Atau alamat server bot Anda, mis. ws://localhost:1337",
-    "ja": "browser = このブラウザーでボットを動かします（ボットサーバー不要）。またはボットサーバーのアドレス（例: ws://localhost:1337）",
-    "it": "browser = bot in questo browser, senza server dei bot. Oppure l'indirizzo del tuo server dei bot, es. ws://localhost:1337"
-  },
   "game1.bots.hostBrowser": {
     "en": "Bots in this browser",
     "el": "Bots σε αυτόν τον browser",
