@@ -346,7 +346,6 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Respawn**: Quick respawn, auto respawn, spawn effects
 - **Names**: No names, optimized, auto-hide, hide mine, hide teammates, stroke
 - **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, mass format (exact / 12.3k / auto), virus spikes, virus mass shots, stroke, relative mass
-- **Spectate**: Click to follow (a player cell, a leaderboard mass, or the minimap in Expanding Land World Spectate)
 - **Replay**: Record replays, match history, analytics
 - **Macro**: Feeding speed, split delay, pop-split delay
 - **Config**: Settings profiles

@@ -411,7 +411,7 @@ const J = o => JSON.parse(JSON.stringify(o));
   {
       const els = { 'minimap-hud': { style: style() }, minimap: { style: style() }, 'minimap-sectors': { style: style() } };
       const ctx = { document: { getElementById: id => els[id] || null }, LM: { isLegendWorld: true }, ogario: { mapOffsetFixed: false },
-          defaultmapsettings: { clickSpectate: false }, defaultSettings: {} };
+          defaultmapsettings: {}, defaultSettings: {} };
       ctx.window = ctx;
       vm.createContext(ctx);
       const app = vm.runInContext('({' + method('_lmMmSpecPE') + ',' + method('drawMiniMap') + '})', ctx);

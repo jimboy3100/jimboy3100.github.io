@@ -204,21 +204,15 @@
 				},
 				defaultKey: '',
 				keyDown() {
-					/* works in free spectate whether or not Click to follow is on (binding the key is the opt-in):
-					 * steps the followed player through the leaderboard ghost cells, wrapping around */
+					/* while spectating: steps the followed player through the leaderboard ghost cells,
+					 * wrapping around; from the follow camera or World Spectate it switches to free
+					 * spectate first (_lmSpecFree), as a leaderboard click does */
 					var lm = window.legendmod;
-					if (!lm || lm.play) return;
-					if (!lm.isFreeSpectate) {
-						if (window.toastr) toastr.info(lmT('game2.hkFreeSpecFirst'));
-						return;
-					}
+					if (!lm || lm.play || typeof lm._lmSpecFree !== 'function') return;
 					var n = lm.ghostCells ? lm.ghostCells.length : 0;
-					if (!n) return;
+					if (!n || !lm._lmSpecFree()) return;
 					lm._lmSpecLb = lm._lmSpecLb == null ? 0 : (lm._lmSpecLb + 1) % n;
 					lm._lmSpecCell = null; /* one follow at a time */
-					lm._lmSpecLbHud && lm._lmSpecLbHud();
-					var label = lmT('settings.lmSpecFollowing');
-					if (window.toastr) toastr.info(label + ' #' + (lm._lmSpecLb + 1));
 				},
 				keyUp: null,
 				type: 'normal'

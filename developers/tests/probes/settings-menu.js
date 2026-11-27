@@ -77,16 +77,17 @@
   var place = { recordReplays: 'replayGroup', 'lm-perf-diag-btn': 'perfGroup',
     adaptivePerf: 'perfGroup', hudMergeCountdown: 'mergeGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
     reducedMotion: 'expandingLandGroup', showStatsWorldSize: 'expandingLandGroup', showStatsDecayInfo: 'expandingLandGroup',
-    showStatsServerHz: 'expandingLandGroup', hideEventBanner: 'expandingLandGroup', clickSpectate: 'spectateGroup',
+    showStatsServerHz: 'expandingLandGroup', hideEventBanner: 'expandingLandGroup',
     'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
   Object.keys(place).forEach(function (id) {
     var el = document.getElementById(id);
     if (!el) fail.push('missing #' + id);
     else if (!$(el).closest('.options-box.' + place[id]).length) fail.push('#' + id + ' not in .' + place[id]);
   });
-  /* one Click to follow option; the spectator director is gone */
+  /* no spectate options (the follows are always on), no Spectating and streaming section; the spectator director is gone */
   /* the instant replay is removed: no length slider */
-  ['lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
+  if ($('#og-options .spectateGroup').length) fail.push('Spectating and streaming section still in the menu');
+  ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
   if (window.LMDirector || document.querySelector('script[src*="modules/director.js"]')) fail.push('spectator director still loaded');
   $('#og-options > .options-box > h5').each(function () {
     var t = $(this).text().trim();

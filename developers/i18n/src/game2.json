@@ -2123,24 +2123,6 @@
     "ja": "ボットのポップ分裂 (プライベートサーバー)",
     "it": "Popsplit dei bot (server privati)"
   },
-  "game2.hkFreeSpecFirst": {
-    "en": "Free spectate first",
-    "el": "Πρώτα ελεύθερο spectate",
-    "es": "Primero activa espectar libre",
-    "bg": "Първо влезте в свободно наблюдение",
-    "fr": "Passez d’abord en spectateur libre",
-    "ar": "ادخل وضع المشاهدة الحرة أولًا",
-    "zh": "請先進入自由觀戰",
-    "ru": "Сначала включите свободное наблюдение",
-    "de": "Zuerst frei zuschauen",
-    "tr": "Önce serbest izlemeye geç",
-    "pl": "Najpierw włącz wolne obserwowanie",
-    "nl": "Eerst vrij toekijken",
-    "pt": "Ative o espectar livre primeiro",
-    "id": "Aktifkan spectate bebas dulu",
-    "ja": "先に自由観戦にしてください",
-    "it": "Attiva prima lo spettatore libero"
-  },
   "game2.ghostCell": {
     "en": "Ghost cell",
     "el": "Κύτταρο-φάντασμα",

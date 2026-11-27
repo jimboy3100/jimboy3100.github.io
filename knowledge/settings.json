@@ -144,8 +144,7 @@
         "leaderboardLimit",
         "top5Skins",
         "centredLeaderboard",
-        "hideBots",
-        "clickSpectate"
+        "hideBots"
       ]
     },
     {
@@ -341,14 +340,6 @@
         "virusMassShots",
         "massStroke",
         "relativeMass"
-      ]
-    },
-    {
-      "id": "spectate",
-      "name": "Spectate",
-      "description": "Spectator mode settings.",
-      "settings": [
-        "clickSpectate"
       ]
     },
     {
