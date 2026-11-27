@@ -3,6 +3,9 @@
 // Usage: node smoke.js <repoDir> <outDir> [seconds] [url] [mobile]
 // Env: SMOKE_LANG (browser language, default en-US), SMOKE_STORAGE (JSON of localStorage values set
 // before the page runs), SMOKE_FIRSTRUN=1 (show the one-time language window; hidden otherwise).
+// SMOKE_VIEWPORT=WxH (mobile only): another phone screen than the default 915x412, e.g. 640x360 or 412x915.
+// SMOKE_SWAP='rel/path.js=C:/other/file.js;...': serve those repo files from other files (e.g. the previous
+// version, to see a new probe fail there) without touching the checkout.
 // SMOKE_PROBE_LIMIT=N: the probe may take N seconds; then result.json keeps the results so far
 // (window.__lmProbeRes), timedOut names the probe that was running (console.debug('[lm-probe]', name)) and the exit code is 4.
 // Needs Node 22+ (global fetch and WebSocket) and Chrome/Chromium.
@@ -19,6 +22,8 @@ const out = process.argv[3];
 const secs = Number(process.argv[4] || 25);
 const startUrl = process.argv[5] || 'https://www.legendmod.ml/play.html';
 const mobile = process.argv[6] === 'mobile';
+const swaps = {};
+String(process.env.SMOKE_SWAP || '').split(';').forEach(p => { const i = p.indexOf('='); if (i > 0) swaps[p.slice(0, i).trim().replace(/^\//, '')] = p.slice(i + 1).trim(); });
 if (!repo || !out) { console.log('usage: node smoke.js <repoDir> <outDir> [seconds] [url] [mobile]'); process.exit(1); }
 if (typeof fetch !== 'function' || typeof WebSocket !== 'function') { console.log('Node 22+ is required (global fetch and WebSocket)'); process.exit(1); }
 function findChrome() {
@@ -98,7 +103,8 @@ function probeMark(name) {
       const u = new URL(m.params.request.url);
       let rel = decodeURIComponent(u.pathname.replace(/^\//, ''));
       if (rel === '' ) rel = 'index.html';
-      const file = path.join(repo, rel);
+      const swap = swaps[rel];
+      const file = swap || path.join(repo, rel);
       if ((u.hostname === 'jimboy3100.github.io' || u.hostname === 'www.legendmod.ml' || u.hostname === 'legendmod.ml') && fs.existsSync(file) && fs.statSync(file).isFile()) {
         served++;
         let buf = fs.readFileSync(file);
@@ -173,7 +179,8 @@ function probeMark(name) {
   if (!process.env.SMOKE_FIRSTRUN) await send('Page.addScriptToEvaluateOnNewDocument', { source: "try { if (!localStorage.getItem('lmLangAsked')) localStorage.setItem('lmLangAsked', '1'); } catch (e) { }" });
   await send('Fetch.enable', { patterns: [{ urlPattern: '*://jimboy3100.github.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }, { urlPattern: '*://legendmod.ml/*' }] });
   if (mobile) {
-    await send('Emulation.setDeviceMetricsOverride', { width: 915, height: 412, deviceScaleFactor: 2.6, mobile: true });
+    const vp = /^(\d{3,4})x(\d{3,4})$/.exec(process.env.SMOKE_VIEWPORT || '');
+    await send('Emulation.setDeviceMetricsOverride', { width: vp ? +vp[1] : 915, height: vp ? +vp[2] : 412, deviceScaleFactor: 2.6, mobile: true });
     await send('Emulation.setTouchEmulationEnabled', { enabled: true, maxTouchPoints: 5 });
     await send('Emulation.setEmulatedMedia', { features: [{ name: 'pointer', value: 'coarse' }, { name: 'any-pointer', value: 'coarse' }] });
   }
