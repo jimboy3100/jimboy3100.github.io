@@ -53,7 +53,7 @@ const READ = `function lmRead(doc) {
         reset: rb ? { text: rb.textContent, x: Math.round(r.left), y: Math.round(r.top), w: Math.round(r.width), h: Math.round(r.height), vw: w.innerWidth, vh: w.innerHeight,
             pos: w.getComputedStyle(rb).position, radius: w.getComputedStyle(rb).borderTopLeftRadius } : null,
         hash: w.location.hash, href: w.location.href, session: w.sessionStorage.getItem('lmThemeBridge'), off: w.sessionStorage.getItem('lmThemeBridgeOff'),
-        lang: de.getAttribute('lang'), scrollY: Math.round(w.scrollY) };
+        lang: de.getAttribute('lang'), scrollY: Math.round(w.scrollY), barColor: (doc.querySelector('meta[name="theme-color"]') || {}).content || null };
 }`;
 const wrap = body => '(async () => {\n' + READ + '\nvar sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };\n' +
     'for (var i = 0; i < 80 && document.readyState !== "complete"; i++) await sleep(100);\n' + body + '\n})()';
@@ -99,6 +99,7 @@ check('index themed: buttons and fields use the small corner (3px)', t1.radS ===
 const P = 'rgb(124, 58, 237)', B1 = rgb(DS.btn1Color), BT = rgb(DS.menuBtnTextColor), db = d1.btns || {}, tb = t1.btns || {};
 check('index direct: the purple buttons stay purple', ['play', 'ext'].every(k => (db[k] || '').indexOf(P) >= 0), db);
 check('index themed: Play and extension buttons and the active tab in the first button colour, no purple left', ['play', 'ext', 'tab'].every(k => (tb[k] || '').indexOf(B1) >= 0 && (tb[k] || '').indexOf(P) < 0 && (tb[k] || '').split(' | ')[2] === BT), tb);
+check('index themed: the phone browser bar (meta theme-color) in the panel colour', t1.barColor === DS.menuPanelColor && d1.barColor === '#7c3aed', [d1.barColor, t1.barColor]);
 check('index themed: HUD palette and font reach the page', t1.hudMc === DS.hudMainColor && t1.hudFont === 'Ubuntu' && t1.hudFs === '22px', t1);
 check('index themed: the Restore website theme button, small, bottom left, on screen', !!t1.reset && t1.reset.pos === 'fixed' && t1.reset.x < 40 && t1.reset.y + t1.reset.h <= t1.reset.vh &&
     t1.reset.y > t1.reset.vh - 60 && t1.reset.h < 40 && t1.reset.w < 260 && t1.reset.radius === '3px' && t1.reset.text === 'Restore website theme', t1.reset);
@@ -107,6 +108,7 @@ check('index themed: the Restore website theme button, small, bottom left, on sc
 const r1 = run('index-reset', senderUrl(L + 'index.html'), 'document.getElementById("lm-bridge-reset").click(); await sleep(900); return lmRead(document);');
 check('reset: the theme class, stylesheet and button are gone', r1.themed === false && !r1.bridgeCss && !r1.reset && !/lm-radius-set|lm-bg-set/.test(r1.classes), r1);
 check('reset: the computed styles are the direct visit\'s', r1.bodyBg === d1.bodyBg && r1.bodyAccent === d1.bodyAccent && r1.bodyImg === d1.bodyImg && r1.btnRadius === d1.btnRadius && r1.color === d1.color, { reset: r1, direct: d1 });
+check('reset: the own browser bar colour of the page is back', r1.barColor === d1.barColor, [r1.barColor, d1.barColor]);
 check('reset: the tab forgets the theme', r1.session === null && r1.off === '1', r1);
 
 /* ---- faq.html in site mode, Greek ---- */
