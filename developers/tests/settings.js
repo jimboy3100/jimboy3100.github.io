@@ -46,7 +46,10 @@ check('every value a slider can show is kept exactly (no float drift: 0.35, -0.1
 check('macroFeeding -100 -> 1 (range)', V('macroFeeding', -100) === 1);
 check('profileNumber 1000000 -> 54', V('profileNumber', 1000000) === 54);
 check('fpsLimit -1 -> 0 (off), 0 stays 0', V('fpsLimit', -1) === 0 && V('fpsLimit', 0) === 0);
-check('adaptivePerfTarget 47 -> 60 (nearest of 30/60/90/120)', V('adaptivePerfTarget', 47) === 60 && V('adaptivePerfTarget', 44) === 30);
+/* removed or merged settings (mass-loss alert, HUD helper arrows and cell panel, the menu FPS cap in the FPS limit, the
+ * automatic Performance mode's own target / message / resolution options, the size symbols in Relative mass) */
+const GONE = ['menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'a11yIndicators'];
+check('removed settings are no settings any more (a saved value is ignored)', GONE.every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined && V(k, 30) === undefined));
 check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);
 check('massFormat 1.7 -> 2 (a mode, not a fraction)', V('massFormat', 1.7) === 2);
 check('fractional step values snap to the slider step', V('zoomSpeedValue2', -0.134) === -0.13 && V('a11yTextScale', 1.12) === 1.1 && V('gamepadTrigger', 0.93) === 0.95);
@@ -149,6 +152,11 @@ check('zoomSmooth is no setting: refused, and a saved value is skipped on load',
   cam.scale = 1; cam._lmFrameF = 0.5; cam.setScale(0, 1); cam.setScale(0, 1);
   check('zoom glide: (9*scale + target)/10 per 60 fps frame whatever an old save had, the same over two 120 fps frames', Math.abs(at60 - 1.1) < 1e-12 && Math.abs(cam.scale - 1.1) < 1e-12 && zctx.LM.viewScale === cam.scale);
 }
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { a11yIndicators: true, hudRelativeMass: false, menuFpsCap: true, massLossAlert: true, massLossPct: 40, adaptivePerfTarget: 120, hudCellPanel: true })));
+app.loadSettings();
+const reSaved3 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
+check('load: an old save with the size symbols on turns Relative mass on (save rewritten without it), removed settings ignored', S.hudRelativeMass === true && !('a11yIndicators' in reSaved3) && reSaved3.hudRelativeMass === true && GONE.every(k => !(k in S)));
+S.hudRelativeMass = D.hudRelativeMass;
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();

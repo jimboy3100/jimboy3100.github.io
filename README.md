@@ -63,7 +63,7 @@
 ### Performance & Anti-Lag
 - ⚡ Smooth WebGL rendering engine
 - 🚀 Unlimited FPS unlock
-- 📊 Adaptive performance — auto-optimizes for your hardware
+- 📊 Performance mode, also automatic — fewer effects only while the game runs slow
 - 🔧 Performance diagnostics with frame time graphs
 - 💡 One-click Performance Mode for low-end PCs
 

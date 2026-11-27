@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "Botão de ping da equipe opcional: toque para <i>Vem aqui</i>, segure e deslize para Ajuda, Perigo ou Vírus aqui",
 "site.features.optionalStopOnRelease": "<i>Parar ao soltar</i> opcional",
 "site.features.optionalQuickChatButtons": "Botões de chat rápido, botão de multibox e configurações de vibração opcionais",
-"site.features.replayPauseAndSeek": "Botões de pausar e avançar o replay e gráfico de rede nas configurações de toque",
+"site.features.replayPauseAndSeek": "Botões de pausar e avançar o replay",
 "site.features.extraFeaturesOnOur": "Recursos extras no nosso próprio servidor.",
 "site.features.dailyChallengesTwoNew": "Desafios diários, dois novos por dia, com Resgatar e Resgatar tudo",
 "site.features.serverEventCountdownDouble": "Contagem regressiva dos eventos do servidor (XP em dobro, chuva de poções, comida dourada, tempestade de vírus)",

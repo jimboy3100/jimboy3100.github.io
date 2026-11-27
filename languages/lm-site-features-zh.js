@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "可選的隊伍標記按鈕：點一下標記<i>到這裡</i>，按住並滑動可標記求救、危險或這裡有病毒",
 "site.features.optionalStopOnRelease": "可選的 <i>放開即停止</i>",
 "site.features.optionalQuickChatButtons": "可選的快速聊天按鈕、多開按鈕與震動設定",
-"site.features.replayPauseAndSeek": "重播暫停與跳轉按鈕，觸控設定中的網路圖表",
+"site.features.replayPauseAndSeek": "重播暫停與跳轉按鈕",
 "site.features.extraFeaturesOnOur": "我們自有伺服器上的額外功能。",
 "site.features.dailyChallengesTwoNew": "每日挑戰，每天兩個新挑戰，可使用領取與全部領取",
 "site.features.serverEventCountdownDouble": "伺服器活動倒數（雙倍 XP、藥水雨、黃金食物、病毒風暴）",

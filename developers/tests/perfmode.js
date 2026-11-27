@@ -148,7 +148,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
 
 /* 4. Adaptive performance: the copy and the restore never use its lowered values */
 {
-    const p = page({ settings: Object.assign({}, ON, { adaptivePerf: true, adaptivePerfToasts: false }) });
+    const p = page({ settings: Object.assign({}, ON, { adaptivePerf: true }) });
     p.ctx.LMPerf._setLevel(2);
     check('adaptive level 2 lowered effects for now', p.S.jellyPhisycs === false && p.S.suckAnimation === false && p.S.hudBlur === 0);
     p.user('performanceMode', true);
@@ -184,7 +184,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
 
 /* 6. a preset while Adaptive performance has lowered a value: Undo gets the player's value */
 {
-    const p = page({ settings: Object.assign({}, ON, { adaptivePerf: true, adaptivePerfToasts: false }) });
+    const p = page({ settings: Object.assign({}, ON, { adaptivePerf: true }) });
     p.ctx.LMPerf._setLevel(2);
     p.preset('battery');
     const snap = JSON.parse(p.store.lmPresetUndo);

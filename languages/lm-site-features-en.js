@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "Optional team ping button: tap for <i>Go here</i>, hold and slide for Help, Danger or Virus here",
 "site.features.optionalStopOnRelease": "Optional <i>Stop on release</i>",
 "site.features.optionalQuickChatButtons": "Optional quick chat buttons, multibox button and vibration settings",
-"site.features.replayPauseAndSeek": "Replay pause and seek buttons, net graph in the touch settings",
+"site.features.replayPauseAndSeek": "Replay pause and seek buttons",
 "site.features.extraFeaturesOnOur": "Extra features on our own server.",
 "site.features.dailyChallengesTwoNew": "Daily challenges, two new ones each day, with Claim and Claim All",
 "site.features.serverEventCountdownDouble": "Server event countdown (Double XP, potion rain, golden food, virus storm)",

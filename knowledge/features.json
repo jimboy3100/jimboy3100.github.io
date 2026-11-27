@@ -53,7 +53,7 @@
     {
       "id": "performance",
       "name": "WebGL rendering and performance diagnostics",
-      "description": "WebGL2 acceleration with Canvas2D fallback. High DPI rendering, FPS cap (0-240), menu FPS cap (25 FPS), performance mode (one-switch for weak devices). Adaptive performance monitors real frame times with 3 degradation levels: L1 decorative off, L2 jelly/video off, L3 lower resolution. Self-healing. Diagnostics window with frame time graph, percentiles, Chrome LoAF integration. Net graph overlay.",
+      "description": "WebGL2 acceleration with Canvas2D fallback. High DPI rendering, FPS cap (0-240, 25 FPS in the menu while a cap is set), performance mode (one switch for weak devices) with an automatic choice that monitors real frame times against 60 FPS with 2 levels: L1 decorative off, L2 jelly/video off. Self-healing. Diagnostics window with frame time graph, FPS, ping and packet graph, percentiles, Chrome LoAF integration.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -71,19 +71,19 @@
     {
       "id": "hud",
       "name": "HUD helpers",
-      "description": "Split range circles (single/double/triple/quad), merge countdown with sound and progress rings, relative mass display, edge arrows for teammates and threats, cell mass panel, move direction arrow. Mass format modes (short/exact/12.3k/auto).",
+      "description": "Split range circles (single/double/triple/quad), merge countdown with sound and progress rings, relative mass display. Mass format modes (short/exact/12.3k/auto).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "id": "hudeditor",
       "name": "HUD Editor",
-      "description": "Drag and resize 14 HUD components (leaderboard, minimap, stats, team, time, target, chatBox, chatInput, popups, netGraph, cellPanel, bell, etc.). Up to 20 named layouts. Scale 0.3x-3x per box. Grid snapping (0/8/16/32px). Lock and hide per box. Edge-relative positioning for responsiveness.",
+      "description": "Drag and resize 12 HUD components (leaderboard, minimap, stats, team, time, target, chatBox, chatInput, popups, bell, etc.). Up to 20 named layouts. Scale 0.3x-3x per box. Grid snapping (0/8/16/32px). Lock and hide per box. Edge-relative positioning for responsiveness.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "id": "stats",
       "name": "Stats and analytics",
-      "description": "Live stats HUD (mass, FPS, ping, PPS, jitter, server Hz, alive time, 16-cell count). Kill feed (6s, 5 lines). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. Mass loss alerts (10-90% threshold). Analytics dashboard with heatmaps, 500 game summaries and the match history.",
+      "description": "Live stats HUD (mass, FPS, ping, PPS, jitter, server Hz, alive time, 16-cell count). Kill feed (6s, 5 lines). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. Analytics dashboard with heatmaps, 500 game summaries and the match history.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

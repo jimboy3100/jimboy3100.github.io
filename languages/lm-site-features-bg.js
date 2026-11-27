@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "Незадължителен бутон за отборен сигнал: докоснете за <i>Ела тук</i>, задръжте и плъзнете за Помощ, Опасност или Вирус тук",
 "site.features.optionalStopOnRelease": "Незадължително <i>Спиране при пускане</i>",
 "site.features.optionalQuickChatButtons": "Незадължителни бутони за бърз чат, бутон за multibox и настройки за вибрация",
-"site.features.replayPauseAndSeek": "Бутони за пауза и превъртане на повторения, мрежова графика в сензорните настройки",
+"site.features.replayPauseAndSeek": "Бутони за пауза и превъртане на повторения",
 "site.features.extraFeaturesOnOur": "Допълнителни функции на нашия собствен сървър.",
 "site.features.dailyChallengesTwoNew": "Дневни предизвикателства, по две нови всеки ден, с Вземи и Вземи всички",
 "site.features.serverEventCountdownDouble": "Обратно броене за събития на сървъра (двоен XP, дъжд от отвари, златна храна, вирусна буря)",

@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "Tombol ping tim opsional: ketuk untuk <i>Ke sini</i>, tahan lalu geser untuk Bantuan, Bahaya, atau Ada virus",
 "site.features.optionalStopOnRelease": "Opsi <i>Berhenti saat dilepas</i>",
 "site.features.optionalQuickChatButtons": "Tombol chat cepat opsional, tombol multibox, dan pengaturan getaran",
-"site.features.replayPauseAndSeek": "Tombol jeda dan lompat replay, grafik jaringan di pengaturan sentuh",
+"site.features.replayPauseAndSeek": "Tombol jeda dan lompat replay",
 "site.features.extraFeaturesOnOur": "Fitur tambahan di server kami sendiri.",
 "site.features.dailyChallengesTwoNew": "Tantangan harian, dua tantangan baru setiap hari, dengan Klaim dan Klaim semua",
 "site.features.serverEventCountdownDouble": "Hitung mundur event server (Double XP, hujan ramuan, makanan emas, badai virus)",

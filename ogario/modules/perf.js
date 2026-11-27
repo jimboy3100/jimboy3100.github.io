@@ -1,15 +1,18 @@
-/* Legend Mod: adaptive performance and performance diagnostics.
+/* Legend Mod: Performance mode automatic and performance diagnostics.
  *
- * Adaptive performance (option, off by default): measures the real frame times and, when the
- * game stays below the chosen FPS target, turns costly effects off one level at a time
- * (1: decorative effects, 2: jelly physics and video skins, 3: lower internal resolution).
+ * Performance mode automatic (option adaptivePerf, Settings > Performance, off by default; it was
+ * "Adaptive performance" with its own target, message and resolution options): measures the real
+ * frame times and, when the game stays below 60 FPS (or the FPS limit or the screen's refresh rate
+ * when lower), turns costly effects off one level at a time (1: decorative effects, 2: jelly
+ * physics and video skins; the resolution is never lowered), with a short message per change.
  * When the game has been comfortably fast for longer, the levels come back one at a time.
  * The changes are runtime only: what is saved, exported and shown in the menu are the
  * player's own values, and while the menu is open the own values are in place, so a reload,
  * a preset or Performance mode never sees (or keeps) a lowered value.
  *
- * Diagnostics window (hotkey without a default key, or the button in Animation): frame time
- * graph, percentiles, long frames, render time, renderer and the adaptive level, and a list of
+ * Diagnostics window (hotkey without a default key, or the button in Performance; the old net
+ * graph hotkey opens it too): frame time graph, FPS, percentiles, long frames, render time,
+ * renderer and the automatic level, ping / packet rate / disconnects graph, and a list of
  * the last 200 timestamped events (freezes of 250 ms - 10 s in the foreground, long tasks,
  * frames that failed, packet gaps, renderer changes, tab hidden / shown, disconnects).
  * Freezes are measured between frame callbacks, before the FPS limit, so its own gaps and a
@@ -33,13 +36,13 @@
      * Pure logic (no DOM): also loaded by developers/tests/perf.js
      * ------------------------------------------------------------------------------------ */
 
-    var TARGETS = [30, 60, 90, 120];
+    var TARGET = 60;
     var LEVEL_KEYS = [
         [],
         ['suckAnimation', 'eatPulse', 'borderGlow', 'animatedRainbowColor', 'showBgSectors', 'hudBlur'],
         ['jellyPhisycs', 'videoSkins']
     ];
-    var MAX_LEVEL = 3;
+    var MAX_LEVEL = 2;
     var CTL = {
         lowRatio: 0.9,      /* below 90% of the target counts as too slow */
         okRatio: 0.97,      /* at least 97% of the target (with render time to spare) counts as fast */
@@ -64,14 +67,6 @@
 
     function hasOwn(o, k) { return Object.prototype.hasOwnProperty.call(o, k); }
 
-    function snapTarget(v) {
-        v = +v;
-        if (!isFinite(v)) return 60;
-        var best = TARGETS[0];
-        for (var i = 1; i < TARGETS.length; i++) if (Math.abs(TARGETS[i] - v) < Math.abs(best - v)) best = TARGETS[i];
-        return best;
-    }
-
     /* p-th percentile (0..100) of an ascending array, linear between the two nearest ranks */
     function percentile(sorted, p) {
         var n = sorted ? sorted.length : 0;
@@ -91,11 +86,11 @@
         return Math.round(hz);
     }
 
-    /* The target that can be reached: not above the FPS limit or the screen's refresh rate.
+    /* The target that can be reached: 60 FPS, not above the FPS limit or the screen's refresh rate.
      * The refresh rate is the fastest the frames have come; a value under 50 is not trusted
      * (a slow phone that never drew faster than 30 FPS would otherwise never be helped). */
-    function effectiveTarget(target, fpsLimit, refreshHz) {
-        var t = snapTarget(target);
+    function effectiveTarget(fpsLimit, refreshHz) {
+        var t = TARGET;
         fpsLimit = +fpsLimit;
         if (fpsLimit > 0 && fpsLimit < t) t = fpsLimit;
         if (refreshHz >= 50 && refreshHz < t) t = refreshHz;
@@ -927,8 +922,8 @@
         hostOf: hostOf, classifyGap: classifyGap, createEventRing: createEventRing, eventLine: eventLine,
         createColorLog: createColorLog, colorRowText: colorRowText, colorSource: colorSource,
         STALL_MS: STALL_MS, FREEZE_MS: FREEZE_MS, PAUSE_MS: PAUSE_MS,
-        TARGETS: TARGETS, LEVEL_KEYS: LEVEL_KEYS, MAX_LEVEL: MAX_LEVEL, CTL: CTL,
-        snapTarget: snapTarget, percentile: percentile, sortedCopy: sortedCopy, snapRefresh: snapRefresh,
+        TARGET: TARGET, LEVEL_KEYS: LEVEL_KEYS, MAX_LEVEL: MAX_LEVEL, CTL: CTL,
+        percentile: percentile, sortedCopy: sortedCopy, snapRefresh: snapRefresh,
         effectiveTarget: effectiveTarget, displayBound: displayBound, newController: newController, controllerStep: controllerStep,
         keysForLevel: keysForLevel, createOverrides: createOverrides, jitter: jitter,
         summarizeSession: summarizeSession
@@ -1479,7 +1474,6 @@
     }
     var ctl = newController();
     var overrides = null;
-    var scaleApplied = 0;
 
     function menuOpen() {
         var ov = fr.overlays && fr.overlays.isConnected ? fr.overlays : (fr.overlays = document.getElementById('overlays'));
@@ -1641,11 +1635,11 @@
         fr.lastFps = fps;
         if (!adaptiveOn) return;
         var s = dms();
-        var target = effectiveTarget(s ? s.adaptivePerfTarget : 60, s ? s.fpsLimit : 0, fr.refreshHz);
+        var target = effectiveTarget(s ? s.fpsLimit : 0, fr.refreshHz);
         var p90 = fr.secRender.length ? percentile(sortedCopy(fr.secRender), 90) : null;
         /* held back by the screen: as good as it gets, counts as reaching the target */
         if (fps < target && displayBound(sortedCopy(fr.secGame), p90)) fps = target;
-        var change = controllerStep(ctl, fps, target, p90, fr.secTime / 1000, topLevel());
+        var change = controllerStep(ctl, fps, target, p90, fr.secTime / 1000, MAX_LEVEL);
         /* a lowered value changed meanwhile (hotkey): the player's choice, left alone */
         if (overrides) overrides.check();
         if (change) applyLevel(true);
@@ -1769,27 +1763,6 @@
         return overrides;
     }
 
-    function baseDpr() {
-        var s = dms() || {};
-        var d = (s.highDPI || window.LM_IS_MOBILE) ? Math.min(window.devicePixelRatio || 1, 2) : 1;
-        var a = app(), q = a && a.canvasScale;
-        if (typeof q === 'number' && q > 0 && q < 1) d *= q;
-        return d;
-    }
-
-    /* level 3: a lower backing-store resolution (drawRender.resizeCanvas reads _lmAdaptiveScale) */
-    function applyScale(on) {
-        var want = 0;
-        if (on) {
-            var b = baseDpr();
-            want = b > 1.05 ? Math.max(0.5, 1 / b) : 0.75;
-        }
-        if (want === scaleApplied) return;
-        scaleApplied = want;
-        window._lmAdaptiveScale = want;
-        try { if (window.drawRender && drawRender.resizeCanvas) drawRender.resizeCanvas(); } catch (e) { }
-    }
-
     function sideEffects(changed) {
         var a = app();
         if (!a || !changed.length) return;
@@ -1801,12 +1774,9 @@
         var ov = ensureOverrides();
         var level = adaptiveOn ? ctl.level : 0;
         if (ov) sideEffects(ov.sync(level, fr.menu));
-        /* level 3 (lower resolution, blurrier) only when the player allowed it */
-        applyScale(level >= 3 && topLevel() >= 3);
         if (levelChanged) {
-            var s = dms();
-            if (s && s.adaptivePerfToasts !== false && window.toastr) {
-                /* settings.lmAdaptiveLevel0 .. 3 */
+            if (window.toastr) {
+                /* settings.lmAdaptiveLevel0 .. 2 */
                 try { toastr.info(TS('lmAdaptiveLevel' + level)); } catch (e) { }
             }
             updateDiag();
@@ -1979,7 +1949,7 @@
 
     function reportLines() {
         var s = dms() || {}, st = frameStats(), lm = window.legendmod, dr = window.drawRender;
-        var target = effectiveTarget(s.adaptivePerfTarget, s.fpsLimit, fr.refreshHz);
+        var target = effectiveTarget(s.fpsLimit, fr.refreshHz);
         var cells = lm && lm.cells ? lm.cells.length : 0;
         var lines = [];
         lines.push('Legend Mod ' + (window.OgVer || '') + ' performance report, ' + new Date().toISOString());
@@ -2010,8 +1980,7 @@
         }
         lines.push('devicePixelRatio: ' + (window.devicePixelRatio || 1) + ', render scale: ' + (dr && dr.dpr ? f1(dr.dpr) : '-') +
             ', screen ' + window.innerWidth + 'x' + window.innerHeight + (fr.refreshHz ? ', refresh ~' + fr.refreshHz + ' Hz' : ''));
-        lines.push('Adaptive performance: ' + (adaptiveOn ? 'on, level ' + ctl.level + '/' + MAX_LEVEL + ', target ' + snapTarget(s.adaptivePerfTarget) +
-            (target !== snapTarget(s.adaptivePerfTarget) ? ' (reachable ' + Math.round(target) + ')' : '') : 'off') +
+        lines.push('Performance mode automatic: ' + (adaptiveOn ? 'on, level ' + ctl.level + '/' + MAX_LEVEL + ', target ' + Math.round(target) : 'off') +
             ', FPS limit ' + (+s.fpsLimit || 'off') + ', performance mode ' + (s.performanceMode ? 'on' : 'off'));
         var sum = sessionSummary(), pn = pingNow();
         lines.push('Network: ping ' + (pn.v || '-') + ' ms, avg ' + sum.pingAvg + ', p95 ' + sum.pingP95 + ', jitter ' + sum.jitter +
@@ -2355,7 +2324,7 @@
         x.clearRect(0, 0, w, h);
         var maxMs = 50, list = st.list.slice(-w / 2);
         var y = function (ms) { return h - 1 - Math.min(1, ms / maxMs) * (h - 12); };
-        var target = effectiveTarget(s.adaptivePerfTarget, s.fpsLimit, fr.refreshHz);
+        var target = effectiveTarget(s.fpsLimit, fr.refreshHz);
         for (var i = 0; i < list.length; i++) {
             var ms = list[i];
             x.fillStyle = ms > LONG_FRAME ? '#ff4d4d' : ms > 1000 / target * 1.1 ? '#ffb84d' : '#5fe35f';
@@ -2412,7 +2381,7 @@
         if (!diag) return;
         var st = frameStats(), s = dms() || {}, lm = window.legendmod, dr = window.drawRender;
         drawFrameGraph(st);
-        var target = effectiveTarget(s.adaptivePerfTarget, s.fpsLimit, fr.refreshHz);
+        var target = effectiveTarget(s.fpsLimit, fr.refreshHz);
         diag.stats.textContent =
             'FPS ' + f1(st.fps) + (fr.refreshHz ? T('statRefresh', [fr.refreshHz]) : '') + '\n' +
             'p50 ' + f1(st.p50) + '  p95 ' + f1(st.p95) + '  p99 ' + f1(st.p99) + ' ms\n' +
@@ -2448,18 +2417,9 @@
 
     /* ---------- wiring ---------- */
 
-    /* Level 3 lowers the internal resolution (the picture gets blurry): only with the
-     * "may lower the resolution" option; otherwise Adaptive performance stops at level 2. */
-    function topLevel() {
-        var s = dms();
-        return s && s.adaptivePerfRes === true ? 3 : 2;
-    }
-
     function configChanged() {
         var s = dms();
         if (!s) return;
-        /* resolution no longer allowed while at level 3: back to level 2 and full resolution now */
-        if (ctl.level > topLevel()) { ctl.level = topLevel(); applyLevel(true); }
         setAdaptive(!!s.adaptivePerf);
         setNet(diagOpen);
     }

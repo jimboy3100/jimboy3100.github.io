@@ -683,24 +683,6 @@
     "ja": "チームピンボタン（タップ = ここへ行こう、長押ししてスライド = 助けて、危険、ここにウイルス）",
     "it": "Pulsante ping squadra (tocca = Vai qui; tieni premuto e scorri = Aiuto, Pericolo, Virus qui)"
   },
-  "misc.mobile.netGraph": {
-    "en": "Net graph (FPS and ping of the last 30 seconds)",
-    "el": "Γράφημα δικτύου (FPS και ping των τελευταίων 30 δευτερολέπτων)",
-    "es": "Gráfico de red (FPS y ping de los últimos 30 segundos)",
-    "bg": "Мрежова графика (FPS и пинг за последните 30 секунди)",
-    "fr": "Graphique réseau (FPS et ping des 30 dernières secondes)",
-    "ar": "مخطط الشبكة (الإطارات والبينغ لآخر 30 ثانية)",
-    "zh": "網路圖表（最近 30 秒的 FPS 與延遲）",
-    "ru": "График сети (FPS и пинг за последние 30 секунд)",
-    "de": "Netzgrafik (FPS und Ping der letzten 30 Sekunden)",
-    "tr": "Ağ grafiği (son 30 saniyenin FPS ve ping değeri)",
-    "pl": "Wykres sieci (FPS i ping z ostatnich 30 sekund)",
-    "nl": "Netwerkgrafiek (FPS en ping van de laatste 30 seconden)",
-    "pt": "Gráfico de rede (FPS e ping dos últimos 30 segundos)",
-    "id": "Grafik jaringan (FPS dan ping 30 detik terakhir)",
-    "ja": "ネットグラフ（直近30秒のFPSとPing）",
-    "it": "Grafico di rete (FPS e ping degli ultimi 30 secondi)"
-  },
   "misc.mobile.touchDir": {
     "en": "Direction on touch (no joystick): the cell moves toward where your finger touches",
     "el": "Κατεύθυνση με άγγιγμα (χωρίς χειριστήριο): το κύτταρο κινείται προς το σημείο που αγγίζει το δάχτυλό σας",

@@ -1,7 +1,7 @@
-/* Legend Mod death recap, kill feed and mass-loss alerts.
- * Options (Settings > Stats, all off by default): gameOverStats (the Game Over card, which shows the
- * recap of the last 20 s), killFeed, massLossAlert (+ massLossPct).
- * While all three are off this file registers no listeners and runs no timers. While one is on it
+/* Legend Mod death recap and kill feed.
+ * Options (Settings > Stats, both off by default): gameOverStats (the Game Over card, which shows the
+ * recap of the last 20 s) and killFeed.
+ * While both are off this file registers no listeners and runs no timers. While one is on it
  * samples your own mass and cell count
  * 4 times a second while you are alive (fixed ring buffers, nothing allocated per sample), and the
  * eat loop of ogario.v4.js reports exact eats of and by your cells. Only data the client already
@@ -185,7 +185,7 @@
 
     var R = makeRing(CAP);
     var EV = new Array(EV_CAP), evHead = 0, evLen = 0;
-    for (var _i = 0; _i < EV_CAP; _i++) EV[_i] = { type: '', t: 0, t2: 0, a: 0, peak: 0, low: 0, nick: null, near: null, v: false, alerted: false };
+    for (var _i = 0; _i < EV_CAP; _i++) EV[_i] = { type: '', t: 0, t2: 0, a: 0, peak: 0, low: 0, nick: null, near: null, v: false };
     var timer = null, listening = false, prevCells = 0, recSlot = null, lastAlive = 0;
     var recap = null;       /* last recap: { steps, spark, deathAt, slot } */
     var recapEl = null;     /* recap panel on the open Game Over card */
@@ -193,19 +193,14 @@
 
     function opts() {
         var s = window.legendmod5;
-        return s ? { recap: !!s.gameOverStats, feed: !!s.killFeed, alert: !!s.massLossAlert } : { recap: false, feed: false, alert: false };
-    }
-    /* mass-loss alert threshold in %, 0 while the alert is off */
-    function alertPct() {
-        var s = window.legendmod5;
-        return s && s.massLossAlert ? Math.min(90, Math.max(10, +s.massLossPct || 30)) : 0;
+        return s ? { recap: !!s.gameOverStats, feed: !!s.killFeed } : { recap: false, feed: false };
     }
 
     function evAdd(type, t) {
         var e = EV[evHead];
         evHead = (evHead + 1) % EV_CAP;
         if (evLen < EV_CAP) evLen++;
-        e.type = type; e.t = t; e.t2 = t; e.a = 0; e.peak = 0; e.low = 0; e.nick = null; e.near = null; e.v = false; e.alerted = false;
+        e.type = type; e.t = t; e.t2 = t; e.a = 0; e.peak = 0; e.low = 0; e.nick = null; e.near = null; e.v = false;
         return e;
     }
     /* the newest event of this type still open at 'since' (t2 >= since); nick compared when given.
@@ -281,13 +276,12 @@
          * (eject mass is tracked as small eats on the other side) or no 'eaten' events
          * exist in the loss window, attribute() will return null and we fall back to
          * the nearest visible enemy (which is an inexact attribution, not a confident one). */
-        var apct = alertPct();
         var L = evFind('loss', now - 2500);
         if (L) {
             if (mass < L.low) { L.low = mass; L.a = L.peak - mass; L.t2 = now; }
         } else {
             var peak = peakSince(R, now - LOSS_WIN);
-            var drop = lossCheck(peak, mass, apct ? Math.min(LOSS_PCT, apct) : LOSS_PCT, LOSS_MIN);
+            var drop = lossCheck(peak, mass, LOSS_PCT, LOSS_MIN);
             if (drop) {
                 L = evAdd('loss', now);
                 L.peak = peak; L.low = mass; L.a = drop;
@@ -300,13 +294,6 @@
                     if (L.near == null) { var ni = sampleAt(R, now - LOSS_WIN); if (ni >= 0) L.near = R.nn[ni]; }
                 }
             }
-        }
-        if (L && apct && !L.alerted && L.a * 100 >= apct * L.peak) {
-            L.alerted = true;
-            var w = attribute(evList(), L.t - LOSS_WIN - 500, now + 500), pct = Math.round(L.a * 100 / L.peak);
-            if (w) feedAdd('alert', tr('alertTo', [pct, fmtNum(L.a), who(w.nick, w.virus)]));
-            else if (L.near != null) feedAdd('alert', tr('alertNear', [pct, fmtNum(L.a), who(L.near, false)]));
-            else feedAdd('alert', tr('alert', [pct, fmtNum(L.a)]));
         }
     }
 
@@ -432,7 +419,7 @@
             row = document.createElement('div');
             row._lmKind = kind; row._lmKey = key;
             row.dir = dir();
-            var col = kind === 'ate' ? '#7dff8a' : (kind === 'alert' ? '#ffb347' : '#ff6b6b');
+            var col = kind === 'ate' ? '#7dff8a' : '#ff6b6b';
             row.style.cssText = 'margin-top:2px;padding:1px 8px;border-radius:var(--lm-radius-s,4px);background:var(--lm-hud-bg,rgba(0,0,0,.55));color:' + col +
                 ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-shadow:0 1px 2px #000;transition:opacity .6s;';
             row.textContent = text;
@@ -608,7 +595,7 @@
 
     /* Start or stop everything from the options; ogario.v4.js calls it when one of them changes. */
     function sync() {
-        var o = opts(), on = o.recap || o.feed || o.alert, E = window.LMEvents;
+        var o = opts(), on = o.recap || o.feed, E = window.LMEvents;
         window._lmDROn = on;
         if (on && !listening && E) {
             E.on('spawn', onSpawn); E.on('death', onDeath);
@@ -622,7 +609,7 @@
             listening = false;
             stopTimer(); ringClear(R); evClear(); recapEl = null; recap = null;
         }
-        if (!o.feed && !o.alert) feedRemove();
+        if (!o.feed) feedRemove();
     }
     function onServerChange() {
         stopTimer(); ringClear(R); evClear();

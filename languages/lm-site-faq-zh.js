@@ -26,7 +26,7 @@
 "site.faq.whyIsLegendMod": "為什麼 agar.io 更新後 Legend Mod 無法運作？",
 "site.faq.whenAgarIoUpdates": "agar.io 更新用戶端時，Legend Mod 可能需要相容性更新。請嘗試：1) 在 <code>chrome://extensions</code> 檢查擴充功能更新。2) 清除瀏覽器快取（Ctrl+Shift+Delete）。3) 停用後再重新啟用擴充功能。4) 從 Chrome 線上應用程式商店重新安裝。更新通常會在 24 小時內推出。",
 "site.faq.howDoIFix": "如何解決 agar.io 的延遲問題？",
-"site.faq.legendModHasBuilt": "Legend Mod 內建防延遲功能：1) 在設定中開啟「效能模式（低階電腦/手機）」，或在設定搜尋框旁選擇 <strong>省電</strong> 預設。2) 停用動畫與影片造型。3) 設定 FPS 上限，並開啟「選單開啟時 25 FPS」，以減少發熱並節省電量。4) 使用顯示/隱藏食物快速鍵或自動隱藏食物選項隱藏食物。5) WASM 加速與 WebGL 繪製預設為開啟。6) 關閉其他瀏覽器分頁。7) 使用有線網路而非 Wi-Fi。",
+"site.faq.legendModHasBuilt": "Legend Mod 內建防延遲功能：1) 在設定中開啟「效能模式（低階電腦/手機）」，或在設定搜尋框旁選擇 <strong>省電</strong> 預設。2) 停用動畫與影片造型。3) 設定 FPS 上限（選單此時會以 25 FPS 繪製），以減少發熱並節省電量。4) 使用顯示/隱藏食物快速鍵或自動隱藏食物選項隱藏食物。5) WASM 加速與 WebGL 繪製預設為開啟。6) 關閉其他瀏覽器分頁。7) 使用有線網路而非 Wi-Fi。",
 "site.faq.servers": "🌐 伺服器",
 "site.faq.doesLegendModWork": "Legend Mod 能在 Sigmally 和 Senpa.io 上使用嗎？",
 "site.faq.yesLegendModIs4": "可以！Legend Mod <strong>支援多個遊戲伺服器</strong>：官方 agar.io、Sigmally 和 Senpa.io。所有巨集、造型與功能在所有支援的伺服器上都能使用。你也可以在 <strong>Expanding Land</strong> 上遊玩，這是 Legend Mod 自己的私人伺服器，每個競技場最多可容納 3840 名玩家，網址為 <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>。",

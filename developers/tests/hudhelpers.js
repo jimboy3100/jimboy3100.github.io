@@ -1,5 +1,5 @@
-/* HUD helpers checks: the pure parts of ogario/modules/hudhelpers.js (direction smoothing, ratio and
- * mass formatting, merge countdown, edge arrows) and the mass text / camera lock it gives the game.
+/* HUD helpers checks: the pure parts of ogario/modules/hudhelpers.js (ratio and
+ * mass formatting, merge countdown) and the mass text / camera lock it gives the game.
  * node developers/tests/hudhelpers.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const i18n = require('./lib/i18n-env');
@@ -24,27 +24,8 @@ let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 const near = (a, b, e) => Math.abs(a - b) <= (e || 1e-6);
 
-// direction smoothing
-{
-    const st = { has: false };
-    P.updateDirection(st, 0, 0, 1, 0, 150);
-    check('direction: first sample has no speed', st.has && st.vx === 0 && st.vy === 0);
-    for (let t = 16; t <= 1600; t += 16) P.updateDirection(st, t * 0.5, 0, 1, t, 150); /* 500 units/s to the right */
-    check('direction: steady movement converges to its speed', near(st.vx, 500, 5) && near(st.vy, 0, 1e-9));
-    const before = st.vx;
-    P.updateDirection(st, st.x + 3000, 0, 2, 1616, 150); /* split: centre jumps, count changes */
-    check('direction: count change re-anchors without a speed spike', st.vx === before && st.x > 3000);
-    P.updateDirection(st, st.x + 10, 0, 2, 2400, 150); /* 784 ms gap */
-    check('direction: long gap starts over', st.vx === 0 && st.vy === 0);
-    P.updateDirection(st, st.x, st.y + 5000, 2, 2416, 150);
-    check('direction: teleport starts over', st.vx === 0 && st.vy === 0);
-    const st2 = { has: false };
-    P.updateDirection(st2, 0, 0, 1, 0, 150);
-    P.updateDirection(st2, 0, -8, 1, 16, 150);
-    check('direction: one step moves only part of the way (smoothed)', st2.vy < 0 && st2.vy > -500);
-    P.updateDirection(st2, NaN, 0, 1, 32, 150);
-    check('direction: NaN position ignored', Number.isFinite(st2.vx) && Number.isFinite(st2.vy));
-}
+// the movement arrow, edge arrows and cell panel are removed
+check('removed helpers are gone (movement arrow, edge arrows)', !('updateDirection' in P) && !('edgePoint' in P));
 
 // ratio text
 check('ratio 1.75x', P.ratioText(1.75) === '1.75x');
@@ -97,17 +78,6 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     P.trackMerge(o2, [a, b, a2], 3, 20000);
     check('merge: re-split re-arms the split piece and the new one, not the others', a._lmHHEnd > 20000 && a2._lmHHEnd > 20000 && b._lmHHEnd === -1);
     void c3;
-}
-
-// edge arrows
-{
-    const out = {};
-    P.edgePoint(500, 400, 3000, 400, 1000, 800, 20, out);
-    check('edge: right', near(out.x, 980) && near(out.y, 400) && near(out.a, 0));
-    P.edgePoint(500, 400, 500, -5000, 1000, 800, 20, out);
-    check('edge: top', near(out.x, 500) && near(out.y, 20));
-    P.edgePoint(500, 400, -1000, 1900, 1000, 800, 20, out);
-    check('edge: corner direction stays inside', out.x >= 20 - 1e-9 && out.y <= 780 + 1e-9 && near(out.y - 400, -(out.x - 500)));
 }
 
 // mass text as the game asks for it
@@ -167,10 +137,12 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     const s = ctx.legendmod5;
     Object.keys(s).forEach(k => { if (typeof s[k] === 'boolean') s[k] = false; });
     s.massFormat = 0;
+    /* saved values of the removed helpers (an older script may still set them) do nothing */
+    s.hudMoveDir = true; s.hudEdgeTeammates = true; s.hudEdgeThreats = true; s.hudCellPanel = true;
     let touched = false;
     const LM = new Proxy({}, { get() { touched = true; return undefined; } });
     H.frame({}, null, LM);
-    check('all options off: frame reads no game state', !touched);
+    check('all options off (removed ones set): frame reads no game state', !touched);
 }
 
 console.log(fail ? fail + ' failed' : 'all HUD helper checks passed');

@@ -10,11 +10,12 @@
   var D = window.LMDeathRecap, s = window.legendmod5, lm = window.legendmod;
   need('module loaded', !!D);
   if (!D || !s || !lm) return { fail: fail, info: info };
-  need('options off by default', s.gameOverStats === false && s.killFeed === false && s.massLossAlert === false);
-  need('no switch per card part', ['massGraph', 'showKiller', 'deathRecap'].every(function (k) { return !document.getElementById(k) && !(k in LM_SETTINGS_DEFAULTS); }));
+  need('options off by default', s.gameOverStats === false && s.killFeed === false);
+  /* also no mass-loss alert (removed) */
+  need('no switch per card part', ['massGraph', 'showKiller', 'deathRecap', 'massLossAlert', 'massLossPct'].every(function (k) { return !document.getElementById(k) && !(k in LM_SETTINGS_DEFAULTS); }));
   need('nothing runs while off', window._lmDROn === false && !window.LMEvents._has('death') && !window.LMEvents._has('spawn'));
-  need('menu switches', ['gameOverStats', 'killFeed', 'massLossAlert'].every(function (k) { return !!document.getElementById(k); }) && !!document.getElementById('massLossPct-slider'));
-  var keep = { gameOverStats: s.gameOverStats, killFeed: s.killFeed, massLossAlert: s.massLossAlert }, keepK = lm._lmKiller, keepH = window.application && application._lmMassHist;
+  need('menu switches', ['gameOverStats', 'killFeed'].every(function (k) { return !!document.getElementById(k); }) && !document.getElementById('massLossPct-slider'));
+  var keep = { gameOverStats: s.gameOverStats, killFeed: s.killFeed }, keepK = lm._lmKiller, keepH = window.application && application._lmMassHist;
   var inBox = function (r) { return r.width > 0 && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; };
   var overlap = function (a, b) { return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom; };
   var u = { finalMass: 9000, highestMass: 24500, topPosition: 2, finalPosition: 5, timeTotal: 95, timeInLeaderboard: 60, massConsumed: 30000, foodEaten: 100, playersEaten: 3, normalCellsEaten: 5, virusesEaten: 1 };
@@ -69,7 +70,7 @@
     var m = document.getElementById('lm-gameover-modal');
     if (m && m.parentNode) m.parentNode.removeChild(m);
     if (lm._gameOverDismissTimer) { clearTimeout(lm._gameOverDismissTimer); lm._gameOverDismissTimer = null; }
-    s.gameOverStats = keep.gameOverStats; s.killFeed = keep.killFeed; s.massLossAlert = keep.massLossAlert;
+    s.gameOverStats = keep.gameOverStats; s.killFeed = keep.killFeed;
     lm._lmKiller = keepK; if (window.application) application._lmMassHist = keepH;
     D._test.reset(); D.sync();
   }

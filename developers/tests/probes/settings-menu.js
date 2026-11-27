@@ -91,7 +91,7 @@
     if (!t || t === 'undefined') fail.push('empty heading in .' + $(this).parent().attr('class'));
   });
   // dependency marks match the parent switches (nothing is changed here)
-  var deps = { showStats: 'showStatsMass', showMiniMap: 'showMiniMapGuides', showMass: 'hudRelativeMass', recordReplays: 'instantReplaySecs-slider', adaptivePerf: 'adaptivePerfToasts' };
+  var deps = { showStats: 'showStatsMass', showMiniMap: 'showMiniMapGuides', showMass: 'hudRelativeMass', recordReplays: 'instantReplaySecs-slider' };
   if (typeof application._lmDepRefresh !== 'function') fail.push('no dependency refresh');
   else {
     application._lmDepRefresh();

@@ -43,8 +43,6 @@
         { id: 'chatBox', sel: '#chat-box' },
         { id: 'chatInput', sel: '#message-box' },
         { id: 'popups', sel: '#toast-container' },
-        { id: 'netGraph', sel: '#lm-net-graph' },
-        { id: 'cellPanel', sel: '#lm-hh-cells' },
         { id: 'bell', sel: '#lm-notif-bell' }
     ];
     var BY_ID = {};

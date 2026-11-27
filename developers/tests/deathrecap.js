@@ -37,7 +37,7 @@ const ctx = {
   LMEvents: { on(n, f) { (listeners[n] = listeners[n] || []).push(f); }, off(n, f) { listeners[n] = (listeners[n] || []).filter(x => x !== f); } }
 };
 ctx.window = ctx;
-ctx.legendmod5 = { gameOverStats: false, killFeed: false, massLossAlert: false, massLossPct: 30, recordReplays: true };
+ctx.legendmod5 = { gameOverStats: false, killFeed: false, recordReplays: true };
 ctx.legendmod = { play: false, playerCells: [], cells: [], playerMass: 0, ws: 'wss://x' };
 vm.createContext(ctx);
 i18n(ctx);
@@ -141,7 +141,6 @@ check('long nicks are cut', P.stepText({ kind: 'death', nick: 'x'.repeat(80), ex
 
 // --- live: options on, sampling, eat hooks, loss detection, recap
 ctx.legendmod5.gameOverStats = true;
-ctx.legendmod5.massLossAlert = true;
 D.sync();
 check('on: spawn/death listeners and flag', (listeners.spawn || []).length === 1 && (listeners.death || []).length === 1 && ctx._lmDROn === true);
 const lm = ctx.legendmod;
@@ -185,7 +184,8 @@ check('live: loss attributed exactly to Eater', texts.some(t => t.endsWith(': ' 
 check('live: killer from the eat events', texts[texts.length - 1].endsWith(': ' + T('eatenBy', ['Eater'])), texts);
 check('live: sparkline samples', rc && rc.spark.length > 20);
 check('live: no replay links when not recording', rc && rc.slot === null);
-check('mass-loss alert line (30 %), exact eater', feedLines().some(t => tplRe('alertTo', ['\\d+', '[\\d,]+', 'Eater'], true).test(t)), feedLines());
+/* the mass-loss alert is gone: a big loss with the kill feed off adds no line */
+check('big mass loss: no feed line (no mass-loss alert)', feedLines().length === 0, feedLines());
 check('kill feed off: no eat or death lines', !feedLines().some(t => tplRe('feedAte', ['.*', '.*']).test(t) || tplRe('feedDied', ['.*']).test(t) || t === T('feedDiedNone')), feedLines());
 
 // --- "near" nick comes only from a close, bigger, visible enemy
@@ -214,7 +214,7 @@ check('far and small cells are not "near"', last.nick == null, last);
 }
 
 // --- off again: everything stops
-ctx.legendmod5.gameOverStats = false; ctx.legendmod5.massLossAlert = false; D.sync();
+ctx.legendmod5.gameOverStats = false; D.sync();
 check('off again: listeners removed, flag off', !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false);
 
 /* kill feed: the eats of one player's cells add up while they go on, also when a split (or another

@@ -46,7 +46,7 @@
       "id": "hudhelpers",
       "file": "ogario/modules/hudhelpers.js",
       "lines": 826,
-      "description": "Split range circles, merge countdown, relative mass, edge arrows, cell panel, mass format modes, virus range circles.",
+      "description": "Split range circles, merge countdown, relative mass, mass format modes, virus range circles.",
       "feature": "HUD Helpers"
     },
     {
@@ -109,7 +109,7 @@
       "id": "perf",
       "file": "ogario/modules/perf.js",
       "lines": 1848,
-      "description": "Performance diagnostics, adaptive performance (3 levels), frame time tracking, Chrome Long Animation Frames API, net graph.",
+      "description": "Performance diagnostics, Performance mode automatic (2 levels), frame time tracking, Chrome Long Animation Frames API.",
       "feature": "Performance"
     },
     {

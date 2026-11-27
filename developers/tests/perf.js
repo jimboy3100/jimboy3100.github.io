@@ -22,11 +22,12 @@ check('sortedCopy of a Float32Array', P.sortedCopy(new Float32Array([3, 1, 2])).
 check('p50 of 4 values interpolates', near(P.percentile([10, 20, 30, 40], 50), 25));
 
 /* ---- targets ---- */
-check('target snaps to 30/60/90/120', P.snapTarget(61) === 60 && P.snapTarget(100) === 90 && P.snapTarget(500) === 120 && P.snapTarget('x') === 60 && P.snapTarget(10) === 30);
-check('FPS limit lowers the target', P.effectiveTarget(120, 60, 0) === 60);
-check('limit 0 is no limit', P.effectiveTarget(90, 0, 0) === 90);
-check('60 Hz screen caps a 120 target', P.effectiveTarget(120, 0, 60) === 60);
-check('a measured 30 Hz is not trusted as the screen rate', P.effectiveTarget(60, 0, 30) === 60);
+/* Performance mode automatic aims at 60 FPS (its own target option is gone) */
+check('the target is 60 FPS, no target choices', P.TARGET === 60 && !('snapTarget' in P) && !('TARGETS' in P));
+check('FPS limit lowers the target', P.effectiveTarget(30, 0) === 30);
+check('limit 0 is no limit, a limit above 60 keeps 60', P.effectiveTarget(0, 0) === 60 && P.effectiveTarget(120, 0) === 60);
+check('a 50 Hz screen caps the target', P.effectiveTarget(0, 50) === 50);
+check('a measured 30 Hz is not trusted as the screen rate', P.effectiveTarget(0, 30) === 60);
 check('refresh rate snaps (59.6 -> 60, 143 -> 144)', P.snapRefresh(59.6) === 60 && P.snapRefresh(143) === 144);
 const even33 = new Array(30).fill(33.3), uneven = []; for (let i = 0; i < 30; i++) uneven.push(i % 2 ? 16.7 : 40);
 check('even frames with little drawing: held by the screen', P.displayBound(P.sortedCopy(even33), 4) === true);
@@ -78,7 +79,7 @@ ch = run(st, 43, 6, 60, 14);
 check('FPS 5% up counts as helped: kept', st.level >= 1 && !ch.some(c => c[1] === -1));
 st = P.newController();
 for (let l = 0; l < 6; l++) { run(st, 40, 3, 60, 14 - l * 3 > 9 ? 14 - l * 3 : 9); run(st, 40, 6, 60, Math.max(9, 11 - l * 3)); }
-check('never past level 3', st.level <= 3);
+check('never past level 2 (the resolution is never lowered)', P.MAX_LEVEL === 2 && st.level <= 2);
 st = P.newController(); run(st, 40, 3);
 check('close to the target (55 of 60): no change either way', run(st, 55, 30).length === 0 && st.level === 1);
 ch = run(st, 60, 9);
@@ -115,8 +116,6 @@ const view = ov.userView();
 check('userView has the player\'s own values', view.hudBlur === 3 && view.suckAnimation === true && view.borderGlow === false && s.hudBlur === 0);
 ov.sync(2, false);
 check('level 2 adds jelly physics and video skins', s.jellyPhisycs === false && s.videoSkins === false && s.hudBlur === 0);
-ov.sync(3, false);
-check('level 3 keeps the settings of level 2 (resolution is separate)', s.jellyPhisycs === false && ov.size() === 7);
 ov.sync(1, false);
 check('back to level 1 restores level 2 keys exactly', s.jellyPhisycs === true && s.videoSkins === true && s.hudBlur === 0);
 ov.sync(0, false);
@@ -176,7 +175,7 @@ function page(settings, stored, extra, lang) {
 /* frames: n frames of dt ms with r ms of drawing */
 const frames = (pg, n, dt, r) => { for (let i = 0; i < n; i++) { pg.t = (pg.t || 1) + dt; pg.ctx._lmPerfFrame(pg.t, pg.t + r); } };
 
-const user = () => Object.assign(base(), { adaptivePerf: false, adaptivePerfTarget: 60, adaptivePerfToasts: true, fpsLimit: 0, performanceMode: false });
+const user = () => Object.assign(base(), { adaptivePerf: false, fpsLimit: 0, performanceMode: false });
 let pg = page(user());
 check('all off: no frame hook, no timer', pg.ctx._lmPerfFrame == null && pg.timers.length === 0 && typeof pg.ctx.LMPerf === 'object');
 pg.ctx.legendmod5.adaptivePerf = true; pg.ctx.LMPerf.configChanged();
@@ -196,15 +195,13 @@ check('export (nested) holds them too', JSON.parse(JSON.stringify({ ogarioSettin
 frames(pg, 205, 31, 20);
 check('still slow: level 2', pg.ctx.LMPerf.level() === 2 && S.jellyPhisycs === false);
 frames(pg, 220, 29, 20);
-check('resolution option off (default): stays at level 2, full resolution', pg.ctx.LMPerf.level() === 2 && !(pg.ctx._lmAdaptiveScale > 0) && pg.calls.indexOf('resize:0.75') < 0);
-S.adaptivePerfRes = true; pg.ctx.LMPerf.configChanged();
 frames(pg, 236, 27, 20);
-check('still slow: level 3, lower resolution', pg.ctx.LMPerf.level() === 3 && pg.ctx._lmAdaptiveScale === 0.75 && pg.calls.indexOf('resize:0.75') >= 0);
-check('one message per level', pg.toasts.length === 3 && pg.toasts[2] === i18n.t('settings.lmAdaptiveLevel3'));
+check('still slow: stays at level 2, the resolution is never lowered', pg.ctx.LMPerf.level() === 2 && !(pg.ctx._lmAdaptiveScale > 0) && !pg.calls.some(c => /^resize/.test(c)));
+check('one message per level', pg.toasts.length === 2 && pg.toasts[1] === i18n.t('settings.lmAdaptiveLevel2'));
 /* menu opened: own values back (presets and Performance mode see them), frames ignored */
 pg.overlays.style.display = '';
 frames(pg, 60, 33.3, 20);
-check('menu open: own values in place, level kept', S.jellyPhisycs === true && S.hudBlur === 3 && pg.ctx.LMPerf.level() === 3);
+check('menu open: own values in place, level kept', S.jellyPhisycs === true && S.hudBlur === 3 && pg.ctx.LMPerf.level() === 2);
 pg.overlays.style.display = 'none';
 frames(pg, 2, 33.3, 20);
 check('menu closed: lowered again', S.jellyPhisycs === false && S.hudBlur === 0);
@@ -218,9 +215,9 @@ check('Performance mode: own values in place before its backup', S.jellyPhisycs 
 frames(pg, 2, 33.3, 20);
 /* fast again: back one level per 10 s */
 frames(pg, 60 * 9, 16.7, 2);
-check('9 s fast: still level 3', pg.ctx.LMPerf.level() === 3);
+check('9 s fast: still level 2', pg.ctx.LMPerf.level() === 2);
 frames(pg, 60 * 2, 16.7, 2);
-check('10 s fast: level 2, full resolution', pg.ctx.LMPerf.level() === 2 && pg.ctx._lmAdaptiveScale === 0 && pg.calls[pg.calls.length - 1] === 'resize:0');
+check('10 s fast: level 1', pg.ctx.LMPerf.level() === 1);
 frames(pg, 60 * 25, 16.7, 2);
 check('fast long enough: level 0, all values exactly the player\'s', pg.ctx.LMPerf.level() === 0 && JSON.stringify(P.keysForLevel(2).map(k => S[k])) === JSON.stringify(P.keysForLevel(2).map(k => user()[k])));
 /* the player toggles a lowered effect with a hotkey in game */
@@ -234,17 +231,17 @@ check('checkbox change of a lowered key is kept', S.suckAnimation === false && S
 /* turning it off restores everything and removes the hook */
 pg.ctx.LMPerf._setLevel(2);
 S.adaptivePerf = false; pg.ctx.LMPerf.configChanged();
-check('adaptive off: own values, no hook, full resolution', S.jellyPhisycs === true && S.hudBlur === 3 && pg.ctx._lmPerfFrame == null && pg.ctx._lmAdaptiveScale === 0);
-/* messages can be silenced */
+check('automatic off: own values, no hook, full resolution', S.jellyPhisycs === true && S.hudBlur === 3 && pg.ctx._lmPerfFrame == null && !(pg.ctx._lmAdaptiveScale > 0));
+/* the old message switch is gone: a saved "off" of it keeps nothing quiet */
 const quiet = page(Object.assign(user(), { adaptivePerf: true, adaptivePerfToasts: false }));
 frames(quiet, 31 * 5, 33.3, 20);
-check('messages off: level changes without a message', quiet.ctx.LMPerf.level() === 1 && quiet.toasts.length === 0);
-/* 60 Hz screen and a 120 target: not "too slow" */
+check('a saved adaptivePerfToasts off is ignored: the level message shows', quiet.ctx.LMPerf.level() === 1 && quiet.toasts.length === 1);
+/* a 60 Hz screen at 60 FPS: not "too slow" (a saved 120 target is ignored) */
 const hz = page(Object.assign(user(), { adaptivePerf: true, adaptivePerfTarget: 120 }));
 frames(hz, 60 * 20, 16.7, 4);
-check('120 target on a 60 Hz screen: no level change', hz.ctx.LMPerf.level() === 0);
+check('60 FPS on a 60 Hz screen: no level change', hz.ctx.LMPerf.level() === 0);
 /* FPS limit below the target */
-const lim = page(Object.assign(user(), { adaptivePerf: true, adaptivePerfTarget: 120, fpsLimit: 30 }));
+const lim = page(Object.assign(user(), { adaptivePerf: true, fpsLimit: 30 }));
 frames(lim, 30 * 20, 33.3, 5);
 check('FPS limit 30: 30 FPS is the target reached', lim.ctx.LMPerf.level() === 0);
 
@@ -1006,16 +1003,6 @@ const altOf = { _lmTextAtlasResize: '_lmTextAtlasBank', _lmTextAtlasBank: '_lmTe
 const missing = patches.filter(p => p[1] !== 'Storage.prototype' && !(p[1] === 'window' && /^set(Timeout|Interval)$/.test(p[2])) && !methodIn(p[2]) && !(altOf[p[2]] && methodIn(altOf[p[2]]))).map(p => p[2]);
 check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')', patches.length >= 20 && missing.length === 0 && patches.every(p => P.SCOPES.indexOf(p[3]) >= 0) || (console.log('  missing:', missing), false));
 
-/* the resolution option switched off while at level 3: back to level 2 and full resolution at once */
-{
-    const rp = page(Object.assign(user(), { adaptivePerf: true, adaptivePerfRes: true }));
-    frames(rp, 120, 16.7, 3);
-    /* slow and drawing-bound, each level a little faster (a level that does not help is undone) */
-    frames(rp, 31 * 4, 33.3, 20); frames(rp, 205, 31, 20); frames(rp, 220, 29, 20); frames(rp, 236, 27, 20);
-    const was3 = rp.ctx.LMPerf.level() === 3 && rp.ctx._lmAdaptiveScale === 0.75;
-    rp.ctx.legendmod5.adaptivePerfRes = false; rp.ctx.LMPerf.configChanged();
-    check('resolution option off at level 3: level 2, full resolution now', was3 && rp.ctx.LMPerf.level() === 2 && !(rp.ctx._lmAdaptiveScale > 0));
-}
 /* ---- texts: language packs (developers/i18n/src/modules-c.json, keys modules.perf.*) ---- */
 {
     const PFX = 'modules.perf.';
@@ -1033,7 +1020,7 @@ check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')'
     /* not keys: the level number is added in the code, 'x' is the comment's example */
     used.delete('settings.lmAdaptiveLevel'); used.delete(PFX + 'x'); used.delete('settings.x');
     ['keepOn', 'keepOff'].forEach(k => used.add(PFX + k));
-    for (let l = 0; l <= 3; l++) used.add('settings.lmAdaptiveLevel' + l);
+    for (let l = 0; l <= P.MAX_LEVEL; l++) used.add('settings.lmAdaptiveLevel' + l);
     const elRt = {}; i18n(elRt, 'el');
     const absent = [...used].filter(k => i18n.t(k) === k || !elRt.LMi18n.has(k, 'el'));
     check('every text key used exists and has its Greek (' + used.size + ')', used.size >= 60 && absent.length === 0 || (console.log('  ' + absent.join(', ')), false));

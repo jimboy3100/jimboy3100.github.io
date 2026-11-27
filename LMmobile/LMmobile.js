@@ -240,8 +240,6 @@
          * the death recap shown beside it */
         '.lm-modal-overlay .lm-modal-container{max-height:96vh!important;overflow-y:auto!important}#lm-room-modal{max-height:94vh!important}' +
         '#lm-room-close,.lm-modal-close,#lm-challenges-modal .lm-modal-header>button{min-width:44px!important;min-height:44px!important}' +
-        /* net graph: top middle (at the left it sat under the chat box) */
-        '#lm-net-graph{left:50%!important;top:54px!important;transform:translateX(-50%)}' +
 
         /* ── Compact mobile stats overlay ── */
         '#lm-stats{position:fixed;top:4px;left:4px;z-index:100001;' +
@@ -461,7 +459,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, zoomBtns: false, freeSpecBtn: false, jsSize: 1, jsOpacity: 1, respawnBtn: false, macroBtns: false };
+        var prefs = { btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, zoomBtns: false, freeSpecBtn: false, jsSize: 1, jsOpacity: 1, respawnBtn: false, macroBtns: false };
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
          * settings profile or its Undo that removed the store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
@@ -488,7 +486,6 @@
                     if (saved.mbButton !== undefined) prefs.mbButton = !!saved.mbButton;
                     if (saved.stopOnRelease !== undefined) prefs.stopOnRelease = !!saved.stopOnRelease;
                     if (saved.pingBtn !== undefined) prefs.pingBtn = !!saved.pingBtn;
-                    if (saved.netGraph !== undefined) prefs.netGraph = !!saved.netGraph;
                     if (saved.fixedJoystick !== undefined) prefs.fixedJoystick = !!saved.fixedJoystick;
                     if (saved.joystickDeadZone !== undefined) prefs.joystickDeadZone = num(saved.joystickDeadZone, 0, 40, prefs.joystickDeadZone);
                     if (saved.lbCompact !== undefined) prefs.lbCompact = !!saved.lbCompact;
@@ -556,7 +553,6 @@
             '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> ' + tx('misc.mobile.quickChat', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> ' + tx('misc.mobile.mbButton', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-pingbtn"' + (prefs.pingBtn ? ' checked' : '') + '> ' + tx('misc.mobile.pingButton', 'lm-t') + '</label>' +
-            '<label><input type="checkbox" id="lm-netgraph"' + (prefs.netGraph ? ' checked' : '') + '> ' + tx('misc.mobile.netGraph', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-tdir"' + (prefs.targetMode ? ' checked' : '') + '> ' + tx('misc.mobile.touchDir', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-fixjs"' + (prefs.fixedJoystick ? ' checked' : '') + '> ' + tx('misc.mobile.fixedJoystick', 'lm-t') + '</label>' +
             '<label>' + tx('misc.mobile.deadZone', 'lm-t') + ' <span id="lm-dz-v">' + Math.max(8, prefs.joystickDeadZone) + '</span></label>' +
@@ -683,7 +679,6 @@
         sp.querySelector('#lm-qcmd').addEventListener('change', function () { prefs.quickCmds = this.checked; savePrefs(); buildQuickCmds(); layoutRefresh(); });
         sp.querySelector('#lm-mbbtn').addEventListener('change', function () { prefs.mbButton = this.checked; savePrefs(); buildMbButton(); if (typeof repositionButtons === 'function') repositionButtons(); layoutRefresh(); });
         sp.querySelector('#lm-pingbtn').addEventListener('change', function () { prefs.pingBtn = this.checked; savePrefs(); buildPingButton(); layoutRefresh(); });
-        sp.querySelector('#lm-netgraph').addEventListener('change', function () { prefs.netGraph = this.checked; savePrefs(); syncNetGraph(); });
         sp.querySelector('#lm-fixjs').addEventListener('change', function () { prefs.fixedJoystick = this.checked; savePrefs(); });
         sp.querySelector('#lm-dz').addEventListener('input', function () {
             prefs.joystickDeadZone = parseInt(this.value, 10);
@@ -986,16 +981,6 @@
             }
         }
         buildActionButtons();
-        /* net graph (the desktop hotkey), kept in step with the setting */
-        function syncNetGraph() {
-            if (typeof window.lmToggleNetGraph === 'function' && !!window._lmNetGraph !== prefs.netGraph) window.lmToggleNetGraph();
-        }
-        if (prefs.netGraph) {
-            (function waitNetGraph(n) {
-                if (typeof window.lmToggleNetGraph === 'function') syncNetGraph();
-                else if (n > 0) setTimeout(function () { waitNetGraph(n - 1); }, 500);
-            })(60);
-        }
 
         var jO = mk('div'); jO.className = 'lm-jo'; document.body.appendChild(jO);
         var jI = mk('div'); jI.className = 'lm-ji'; document.body.appendChild(jI);
@@ -1019,7 +1004,7 @@
             setRange('lm-jso', Math.round(prefs.jsOpacity * 100), Math.round(prefs.jsOpacity * 100) + '%');
             setRange('lm-hf', Math.round(prefs.hudFade * 100), Math.round(prefs.hudFade * 100) + '%');
             [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'], ['lm-taphap', 'tapHaptic'],
-                ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-netgraph', 'netGraph'], ['lm-tdir', 'targetMode'],
+                ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-tdir', 'targetMode'],
                 ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact'], ['lm-zoombtn', 'zoomBtns'], ['lm-freespec', 'freeSpecBtn'],
                 ['lm-respbtn', 'respawnBtn'], ['lm-macrobtn', 'macroBtns']
             ].forEach(function (c) { var el = q(c[0]); if (el) el.checked = !!prefs[c[1]]; });
@@ -1030,7 +1015,6 @@
             buildZoomButtons();
             buildFreeSpecButton();
             buildActionButtons();
-            syncNetGraph();
             applyLbCompact();
             applyPrefs();
             repositionButtons();

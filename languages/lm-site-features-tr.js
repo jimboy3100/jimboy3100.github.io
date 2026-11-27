@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "İsteğe bağlı takım ping düğmesi: <i>Buraya git</i> için dokunun, Yardım, Tehlike veya Burada virüs için basılı tutup kaydırın",
 "site.features.optionalStopOnRelease": "İsteğe bağlı <i>Bırakınca dur</i>",
 "site.features.optionalQuickChatButtons": "İsteğe bağlı hızlı sohbet düğmeleri, multibox düğmesi ve titreşim ayarları",
-"site.features.replayPauseAndSeek": "Dokunmatik ayarlarda tekrar duraklatma ve sarma düğmeleri, ağ grafiği",
+"site.features.replayPauseAndSeek": "Tekrar duraklatma ve sarma düğmeleri",
 "site.features.extraFeaturesOnOur": "Kendi sunucumuzda ekstra özellikler.",
 "site.features.dailyChallengesTwoNew": "Her gün iki yeni günlük görev, Al ve Hepsini al ile",
 "site.features.serverEventCountdownDouble": "Sunucu etkinliği geri sayımı (Double XP, iksir yağmuru, altın yem, virüs fırtınası)",

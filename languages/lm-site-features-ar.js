@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "زر إشارة فريق اختياري: انقر لـ <i>اذهب إلى هنا</i>، واضغط مطولًا واسحب لـ مساعدة أو خطر أو فيروس هنا",
 "site.features.optionalStopOnRelease": "خيار <i>التوقف عند الإفلات</i> الاختياري",
 "site.features.optionalQuickChatButtons": "أزرار دردشة سريعة اختيارية، وزر multibox، وإعدادات الاهتزاز",
-"site.features.replayPauseAndSeek": "أزرار الإيقاف المؤقت والتنقل في الإعادة، والرسم البياني للشبكة في إعدادات اللمس",
+"site.features.replayPauseAndSeek": "أزرار الإيقاف المؤقت والتنقل في الإعادة",
 "site.features.extraFeaturesOnOur": "ميزات إضافية على خادمنا الخاص.",
 "site.features.dailyChallengesTwoNew": "تحديات يومية، اثنان جديدان كل يوم، مع استلام واستلام الكل",
 "site.features.serverEventCountdownDouble": "عدّ تنازلي لأحداث الخادم (Double XP، مطر الجرعات، الطعام الذهبي، عاصفة الفيروسات)",

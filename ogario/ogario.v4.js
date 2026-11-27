@@ -21398,12 +21398,8 @@ var defaultmapsettings = {
     instantReplaySecs: 30,        /* Replay Studio: the instant replay hotkey plays the last 15-60 s */
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
     performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
-    fpsLimit: 0,                  /* frames per second cap (0 = off): less heat/battery on laptops and phones */
-    menuFpsCap: false,            /* like agar.io: 25 fps while the menu is shown and you are not playing */
-    adaptivePerf: false,          /* below the FPS target for a while: effects off for now, back when fast again (runtime only, never saved) */
-    adaptivePerfTarget: 60,       /* Adaptive performance target: 30, 60, 90 or 120 FPS */
-    adaptivePerfToasts: true,     /* a short message when Adaptive performance changes level */
-    adaptivePerfRes: false,       /* Adaptive performance may also lower the internal resolution (level 3, blurrier picture) */
+    fpsLimit: 0,                  /* frames per second cap (0 = off), and 25 while the menu is shown and you are not playing: less heat/battery on laptops and phones */
+    adaptivePerf: false,          /* Performance mode, automatic: below 60 FPS (or the FPS limit) for a while, effects off for now, back when fast again (runtime only, never saved) */
     reducedMotion: false,         /* no death screen shake, death particles or Expanding Land entrance spin */
     autoHideNames: true,
     autoHideMass: true,
@@ -21501,13 +21497,9 @@ var defaultmapsettings = {
     sdsplitRange: false, //Sonia2
     splitPrediction: false,       /* agar.io: dim cursor lines of own cells that will not split */
     tripleSplitRange: false,      /* rings at 3*size+760 around enemies that can triple-split onto you */
-    hudMoveDir: false,            /* HUD helpers (ogario/modules/hudhelpers.js): arrow toward the real movement */
-    hudMergeCountdown: false,     /* seconds until each own cell can merge (agar.io estimate) */
+    hudMergeCountdown: false,     /* HUD helpers (ogario/modules/hudhelpers.js): seconds until each own cell can merge (agar.io estimate) */
     hudMergeSound: false,         /* short sound when two own cells can merge (agar.io) */
     hudRelativeMass: false,       /* other players' mass as a ratio to your biggest cell */
-    hudEdgeTeammates: false,      /* screen-edge arrows toward teammates */
-    hudEdgeThreats: false,        /* screen-edge arrows toward big cells that just left the screen */
-    hudCellPanel: false,          /* panel with the own cell masses */
     massFormat: 2,                /* mass text: 1 exact, 2 12.3k from 1000 (was Short mass), 3 auto; 0 of older versions = Short mass */
     virusesRange: false,
     textStroke: false,            /* legacy: no switch and no effect (namesStroke / massStroke are used); kept for saved settings and old scripts */
@@ -21588,8 +21580,6 @@ var defaultmapsettings = {
     matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
     analytics: false,             /* record games for the Analytics window (ogario/modules/analytics.js; localStorage, capped) */
     killFeed: false,              /* small fading list of your eats of player cells and your deaths, left of the leaderboard */
-    massLossAlert: false,         /* a kill feed line when you lose massLossPct % of your mass within 2 s */
-    massLossPct: 30,              /* mass-loss alert threshold in % (10-90) */
     hideEventBanner: false,       /* hide the Expanding Land event countdown banner (shown only when the server sends events) */
     streamMode: false,
     hideSkinUrl: false,
@@ -21656,7 +21646,6 @@ var LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));
 var LM_SETTINGS_SCHEMA = Object.freeze({
     instantReplaySecs: [15, 60, 15],
     fpsLimit: [0, 240, 10],
-    adaptivePerfTarget: [30, 120, 30],
     /* its slider is gone; 3-4 from older versions are read as 2 (ensureMbSlots) */
     multiboxAmount: [2, 4, 1],
     lineSplitCount: [1, 4, 1],
@@ -21671,7 +21660,6 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     massFormat: [1, 3, 1],
     rainbowBorderSpeed: [1, 20, 1],
     hudBlur: [0, 8, 1],
-    massLossPct: [10, 90, 5],
     animation: [5, 200, 1],
     macroFeeding: [1, 160, 1],
     macroSplitDelay: [20, 120, 1],
@@ -21765,7 +21753,7 @@ function lmGlAAPending() {
  * centre" are statsPosition (top / bottom / center; the centre won over the top). The old keys
  * stay as copies that follow the choice (scripts and older versions read them). A stored, imported or profile set from before
  * gets its choice from the old keys once, before the values are checked; then the copies are
- * written from the choice. Also folds the old video volume and the virus pop / eat sounds. Returns true when s changed. */
+ * written from the choice. Also folds the old video volume, the virus pop / eat sounds and the size symbols. Returns true when s changed. */
 function lmFoldLegacySettings(s) {
     if (!s || typeof s !== 'object') return false;
     var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
@@ -21784,6 +21772,13 @@ function lmFoldLegacySettings(s) {
         if (s.virusPopSound === true || s.virusEatSound === true) s.virusSound = true;
         delete s.virusPopSound;
         delete s.virusEatSound;
+        changed = true;
+    }
+    /* "Size symbols on opponents" (a11yIndicators, removed) showed bigger / smaller opponents:
+     * a set with them on gets Relative mass (hudRelativeMass), which shows it as a ratio, once */
+    if (has('a11yIndicators')) {
+        if (lmSettingValue('hudRelativeMass', s.a11yIndicators) === true) s.hudRelativeMass = true;
+        delete s.a11yIndicators;
         changed = true;
     }
     if (has('massFormat') || has('shortMass')) {
@@ -21827,7 +21822,8 @@ function lmFoldClickFollow(s) {
     return true;
 }
 /* Hotkey commands merged into others: "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3,
- * "Screenshot mode" is Show/hide HUD, "Open the Lab" (removed) opens User Scripts. An old command's key goes to the new one when that has no
+ * "Screenshot mode" is Show/hide HUD, "Show / hide net graph" is Show / hide performance diagnostics
+ * (its FPS, ping and renderer are there), "Open the Lab" (removed) opens User Scripts. An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts; Save the
  * current zoom as zoom level 1-5; Skin collections, part of the player profiles now; the Command
  * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile) is free. For the stored hotkeys (loadHotkeys) and a settings
@@ -21853,6 +21849,7 @@ function lmRenameOldHotkeys(map) {
         if (v === 'hk-lmThemeWorkshop') { delete map[k]; changed = true; continue; }
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
         else if (v === 'hk-screenshotMode') to = 'hk-showHUD';
+        else if (v === 'hk-netGraph') to = 'hk-perfDiag';
         else if (v === 'hk-lmLab') { to = 'hk-lmPlugins'; keyed = true; }
         if (!to) continue;
         if (bound(to, keyed) || (keyed && !k)) delete map[k]; else map[k] = to;
@@ -22928,9 +22925,9 @@ function thelegendmodproject() {
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
             this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
                 /* the newer in-game parts are added to body, not #overlays-hud: same HUD font and weight
-                 * (bell, cell panel, kill feed, broadcast, practice HUD, screenshot chip);
+                 * (bell, kill feed, broadcast, practice HUD, screenshot chip);
                  * the notification list is a window (menu theme, lmUiKit in LMexpress.js) */
-                '#lm-notif-bell,#lm-hh-cells,#lm-hh-edge,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
+                '#lm-notif-bell,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
         },
         setHudScale() {
             /* Issue #8: a value saved on a bigger screen is shown at most at this screen's slider
@@ -25628,7 +25625,6 @@ function thelegendmodproject() {
                         break;
                     case 'gameOverStats':
                     case 'killFeed':
-                    case 'massLossAlert':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
                         break;
                     case 'hideEventBanner':
@@ -25786,7 +25782,6 @@ function thelegendmodproject() {
                         if (typeof window.lmShowStopwatch === 'function') window.lmShowStopwatch(defaultmapsettings.showStopwatch);
                         break;
                     case 'adaptivePerf':
-                    case 'adaptivePerfRes':
                         if (window.LMPerf) window.LMPerf.configChanged();
                         break;
                     case 'glAntialias':
@@ -26942,7 +26937,7 @@ function thelegendmodproject() {
                     /* with the switches its options need: Stats for FPS / PPS, Cursor tracking for
                      * split prediction (its line or bubble look stays the player's) */
                     competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStats: true, showStatsFPS: true, showStatsPPS: true, cursorTracking: true, splitPrediction: true } },
-                    battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0, highDPI: false, showBgSectors: false } },
+                    battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0, highDPI: false, showBgSectors: false } },
                     /* tip: what it changes and what it leaves (not a privacy guarantee: nothing drawn
                      * in the game is hidden, and the stream overlay has its own switches) */
                     streamer: { key: 'lmPresetStreamer', en: 'Streamer', tip: 'pkg.pt.streamerTip', set: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false, streamMode: true, hideSkinUrl: true }, lbl: { streamMode: 'pkg.pt.streamMode', hideSkinUrl: 'pkg.pt.hideSkinUrl' } },
@@ -27063,7 +27058,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'statsPosition', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'statsPosition', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27124,8 +27119,8 @@ function thelegendmodproject() {
              * to Expanding Land, the gameplay sounds to Sounds, merge options to Merging, click
              * spectate and the stream overlay to Spectating, jelly physics and the eat animation from
              * Skins to Animation, the developer console from Stats to Performance). */
-            this.addOptions(["highDPI", "glAntialias", "menuFpsCap", "jellyPhisycs", "suckAnimation"], "animationGroup");
-            /* Performance and network: Adaptive performance and the
+            this.addOptions(["highDPI", "glAntialias", "jellyPhisycs", "suckAnimation"], "animationGroup");
+            /* Performance and network: Performance mode with its automatic choice (adaptivePerf) and the
              * diagnostics button are added below with the sliders. The developer console
              * (showDevConsole) is switched in the diagnostics window (ogario/modules/perf.js),
              * a developer facility rather than a player setting. */
@@ -27158,7 +27153,7 @@ function thelegendmodproject() {
             this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "bubbleCursorTracker", "FBTracking", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells", "hudMoveDir", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "bubbleCursorTracker", "FBTracking", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells"], "helpersGroup"); //Sonia2
             /* Sticky cells: what the left and right button do on cells (a behaviour, not a binding,
              * so here and not in the Hotkeys window) */
             this.addOptionTo('.helpersGroup', 'stickyCell');
@@ -27168,12 +27163,12 @@ function thelegendmodproject() {
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre"], "hudGroup");
             /* one choice for where the game stats line is ("at the top" and "at the bottom centre" were two switches) */
             this.addChoiceBox(".hudGroup", "statsPosition", "settings.statsPosition", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
             /* Spectating: click to follow */
             this.addOptions(["clickSpectate"], "spectateGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "hideEventBanner", "showTime", "showStopwatch", "killFeed", "massLossAlert", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "hideEventBanner", "showTime", "showStopwatch", "killFeed", "analytics"], "statsGroup");
             /* Replays and history: the instant replay length slider is added below */
             this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
@@ -27222,12 +27217,9 @@ function thelegendmodproject() {
             }
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
-            /* Adaptive performance and the diagnostics window
-             * (ogario/modules/perf.js) */
+            /* Performance mode automatic (adaptivePerf: effects off only while the game is slow) and the
+             * diagnostics window (ogario/modules/perf.js) */
             this.addOptionTo(".perfGroup", "adaptivePerf");
-            this.addSliderBox(".perfGroup", "adaptivePerfTarget", 30, 120, 30);
-            this.addOptionTo(".perfGroup", "adaptivePerfToasts");
-            this.addOptionTo(".perfGroup", "adaptivePerfRes");
             $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block btn-primary" style="margin:4px 0 2px;"></button>')
                 .attr('data-i18n', 'settings.lmPerfDiag').text(lmT('settings.lmPerfDiag')).appendTo('.perfGroup')
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
@@ -27256,7 +27248,6 @@ function thelegendmodproject() {
                 .on('click', function (e) { e.preventDefault(); if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('open'); });
             /* no Hotkeys, mouse or gamepad controls here: they are only in the Hotkeys window (the
              * gamepad dead zone only in the Gamepad window) */
-            this.addSliderBox(".statsGroup", "massLossPct", 10, 90, 5);
             /* Options that do something only while another option is on, or only on some servers.
              * They stay saved and can still be changed; while they have no effect they are dimmed
              * and say why. Nothing here changes a setting. */
@@ -27269,10 +27260,8 @@ function thelegendmodproject() {
                     /* not Mass format: it also sets the team list, leaderboard, target and tab title
                      * mass texts (shortMassFormat), which show with the cell mass off too */
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass'],
-                    adaptivePerf: ['adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes'],
                     recordReplays: ['instantReplaySecs'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
-                    massLossAlert: ['massLossPct'],
                     /* Settings > Helpers: the bubble style of the opponent rings, the bubble look of
                      * Cursor tracking and the dimming of its line are drawn only with these on */
                     oppRings: ['bubbleInd'],
@@ -52721,14 +52710,9 @@ function thelegendmodproject() {
             this._lmSpecCellHud();
             return t;
         },
-        /* the follow label sits below the Expanding Land event banner (top 28px); on phones the
-         * net graph is at the top middle too, so it goes below that when it is open */
+        /* the follow label sits below the Expanding Land event banner (top 28px) */
         _lmSpecFollowTop(el) {
-            var top = 56, ng = document.getElementById('lm-net-graph');
-            if (ng) {
-                var r = ng.getBoundingClientRect(), mid = (window.innerWidth || 0) / 2;
-                if (r.height && r.top < 200 && r.left < mid && r.right > mid) top = Math.max(top, Math.ceil(r.bottom) + 6);
-            }
+            var top = 56;
             if (el.style.top !== top + 'px') el.style.top = top + 'px';
         },
         _lmSpecCellStop() {
@@ -62806,19 +62790,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 qualityScale < 1
             ) {
                 dpr *= qualityScale;
-            }
-
-            /* Adaptive performance level 3 (ogario/modules/perf.js): a lower internal
-             * resolution for now; never saved, 0 while not in use. */
-            var adaptiveScale =
-                window._lmAdaptiveScale;
-
-            if (
-                typeof adaptiveScale === 'number' &&
-                adaptiveScale > 0 &&
-                adaptiveScale < 1
-            ) {
-                dpr *= adaptiveScale;
             }
 
             var prevDpr =
@@ -80346,7 +80317,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this._lmGlCount(unifiedWebGLWorldOK ? this.GLW.WEBGL : unifiedWebGLAllowed ? this.GLW.BATCH : this._lmGlWhy);
 
 
-                /* read by the net graph (renderer label) */
+                /* read by Performance diagnostics (renderer label) */
                 this._lmFrameGL = unifiedWebGLWorldOK;
                 this._gpuSceneActive = unifiedWebGLWorldOK;
                 /*
@@ -80485,8 +80456,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* The main canvas is below the WebGL canvas: in WebGL frames the above-cell
                  * effects go on the overlay prepared before the cell pass (_lmFxCtx). */
                 this.drawPostCellOverlays(_lmFxCtx);
-                /* HUD helpers (ogario/modules/hudhelpers.js): world marks on the same context, edge
-                 * arrows and the cell panel on their own layers; returns at once while all are off */
+                /* HUD helpers (ogario/modules/hudhelpers.js): the merge countdown on the same
+                 * context and the merge sound; returns at once while all are off */
                 if (window.LMHudHelpers) window.LMHudHelpers.frame(this, _lmFxCtx, LM);
                 /* Expanding Land: spawn burst effect (drawn above cells) */
                 if (this._spawnEffect && this._spawnEffect.active) {
@@ -83860,8 +83831,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             canvas = null;
         },
         countFps(fake) {
-            /* also while the net graph is open (its FPS line froze with the FPS stat off) */
-            if (defaultmapsettings.showStatsFPS || window._lmNetGraph) {
+            if (defaultmapsettings.showStatsFPS) {
                 var Time = Date.now();
                 if (!this.fpsLastRequest) {
                     this.fpsLastRequest = Time;
@@ -83898,9 +83868,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             /* Optional FPS limit (setting "FPS limit", 0 = off): skip this display refresh
              * when the previous frame was drawn too recently. Camera and zoom use the real
-             * frame time, so movement speed does not change. */
+             * frame time, so movement speed does not change. With a limit, the menu shown
+             * while not playing draws at most 25 FPS, like agar.io's own menu (this was the
+             * separate "25 FPS while the menu is open" switch). */
             var _lmLim = +defaultmapsettings.fpsLimit;
-            if (defaultmapsettings.menuFpsCap && !LM.play && !(_lmLim > 0 && _lmLim <= 25)) {
+            if (_lmLim > 25 && !LM.play) {
                 var _lmOv = drawRender._lmOvEl || (drawRender._lmOvEl = document.getElementById('overlays'));
                 if (_lmOv && _lmOv.style.display !== 'none') _lmLim = 25;
             }
@@ -86591,57 +86563,6 @@ $(document).on('keydown', '#message', function (e) {
     this.value = h[idx];
     try { this.setSelectionRange(this.value.length, this.value.length); } catch (e2) { }
 });
-/* Net graph (hotkey, no default key; not saved): FPS and ping of the last ~30 s,
- * sampled 4x per second. Nothing runs until it is opened. */
-window.lmToggleNetGraph = function () {
-    var g = window._lmNetGraph;
-    if (g) {
-        clearInterval(g.timer);
-        if (g.cv.parentNode) g.cv.parentNode.removeChild(g.cv);
-        window._lmNetGraph = null;
-        return;
-    }
-    var cv = document.createElement('canvas');
-    cv.id = 'lm-net-graph';
-    cv.width = 180; cv.height = 64;
-    cv.style.cssText = 'position:fixed;left:10px;top:45%;z-index:150;pointer-events:none;background:rgba(0,0,0,0.45);border-radius:var(--lm-radius-s,4px);';
-    document.body.appendChild(cv);
-    g = window._lmNetGraph = { cv: cv, fps: [], ping: [], timer: 0 };
-    /* FPS counting was paused with the FPS stat off: start a fresh second */
-    try { if (window.drawRender && !defaultmapsettings.showStatsFPS) { drawRender.fpsLastRequest = 0; drawRender.renderedFrames = 0; } } catch (e) { }
-    g.timer = setInterval(function () {
-        try {
-            var dr = window.drawRender || (typeof drawRender !== 'undefined' ? drawRender : null);
-            var f = dr ? +dr.fps || 0 : 0, p = dr ? +dr.ping || 0 : 0;
-            g.fps.push(f); g.ping.push(p);
-            if (g.fps.length > 120) { g.fps.shift(); g.ping.shift(); }
-            var x = cv.getContext('2d'), w = cv.width, h = cv.height;
-            x.clearRect(0, 0, w, h);
-            var line = function (arr, max, col) {
-                x.beginPath();
-                for (var i = 0; i < arr.length; i++) {
-                    var px = w - (arr.length - 1 - i) * (w / 120), py = h - 2 - Math.min(1, arr[i] / max) * (h - 16);
-                    if (i) x.lineTo(px, py); else x.moveTo(px, py);
-                }
-                x.strokeStyle = col; x.lineWidth = 1.2; x.stroke();
-            };
-            var pMax = 100;
-            for (var i = 0; i < g.ping.length; i++) if (g.ping[i] > pMax) pMax = g.ping[i];
-            line(g.fps, 144, '#5fe35f');
-            line(g.ping, pMax, '#ffb84d');
-            x.font = '10px sans-serif'; x.textBaseline = 'top';
-            x.fillStyle = '#5fe35f'; x.fillText('FPS ' + f, 4, 2); // i18n-ok: FPS and PING are the usual names
-            x.fillStyle = '#ffb84d'; x.fillText('PING ' + (p || '-'), 70, 2);
-            /* renderer of the last frame: WebGL, or Canvas (WebGL off in settings, GPU reset
-             * cooldown, or a frame WebGL cannot draw such as a selected cell or a video skin) */
-            if (dr) {
-                var rl = dr._lmFrameGL ? 'WebGL' : defaultmapsettings.webgl2Acceleration === false ? lmT('game2.ngCanvasOff') : // i18n-ok: WebGL and Canvas are renderer names
-                    (dr._webglDisabledUntil && Date.now() < dr._webglDisabledUntil) ? lmT('game2.ngCanvasReset') : 'Canvas'; // i18n-ok: Canvas is the renderer name
-                x.fillStyle = 'rgba(255,255,255,0.75)'; x.textAlign = 'right'; x.fillText(rl, w - 4, 2); x.textAlign = 'left';
-            }
-        } catch (e) { }
-    }, 250);
-};
 /* Chat box: click a nick to put it into the message box (to answer someone). A click that
  * selects text is left alone. */
 $(document).on('click', '#chat-box .message-nick, #chat-box .command-nick', function () {

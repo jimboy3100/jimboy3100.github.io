@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "Optionele teampingknop: tik voor <i>Ga hierheen</i>, houd vast en schuif voor Help, Gevaar of Virus hier",
 "site.features.optionalStopOnRelease": "Optioneel <i>Stoppen bij loslaten</i>",
 "site.features.optionalQuickChatButtons": "Optionele snelchatknoppen, multiboxknop en trilinstellingen",
-"site.features.replayPauseAndSeek": "Knoppen voor pauze en spoelen in replays, netgrafiek in de touchinstellingen",
+"site.features.replayPauseAndSeek": "Knoppen voor pauze en spoelen in replays",
 "site.features.extraFeaturesOnOur": "Extra functies op onze eigen server.",
 "site.features.dailyChallengesTwoNew": "Dagelijkse uitdagingen, elke dag twee nieuwe, met Ophalen en Alles ophalen",
 "site.features.serverEventCountdownDouble": "Aftellen naar serverevents (Double XP, drankjesregen, gouden voedsel, virusstorm)",

@@ -71,8 +71,8 @@ check('profiles: at most 50 (30 own + the 20 moved from the Gamepad window)', C.
 check('profiles: not an array -> empty', C.cleanProfiles({ a: 1 }).length === 0);
 
 // ── comparison
-const cur = C.cleanBundle({ s: Object.assign({}, D), t: Object.assign({}, TD), h: { W: 'hk-feed', SPACE: 'hk-split', 'spec-messageKey': 'ENTER' }, m: { btnScale: 1, netGraph: false } });
-const other = C.cleanBundle({ s: { showMass: !D.showMass, fpsLimit: D.fpsLimit + 30, oppColors: D.oppColors }, t: { miniMapWidth: TD.miniMapWidth + 10 }, h: { E: 'hk-feed', SPACE: 'hk-split', 'spec-messageKey': 'ENTER' }, m: { btnScale: 1.2, netGraph: false } });
+const cur = C.cleanBundle({ s: Object.assign({}, D), t: Object.assign({}, TD), h: { W: 'hk-feed', SPACE: 'hk-split', 'spec-messageKey': 'ENTER' }, m: { btnScale: 1 } });
+const other = C.cleanBundle({ s: { showMass: !D.showMass, fpsLimit: D.fpsLimit + 30, oppColors: D.oppColors }, t: { miniMapWidth: TD.miniMapWidth + 10 }, h: { E: 'hk-feed', SPACE: 'hk-split', 'spec-messageKey': 'ENTER' }, m: { btnScale: 1.2 } });
 const rows = C.diffBundles(cur, other, (p, k) => p + ':' + k);
 const keys = rows.map(r => r.part + '.' + r.key).sort();
 check('diff lists every differing setting, theme option, hotkey and phone control', J(keys) === J(['h.hk-feed', 'm.btnScale', 's.fpsLimit', 's.showMass', 't.miniMapWidth']));
@@ -103,7 +103,8 @@ const OLD_TPL = {
   /* its two ring switches are gone: the ring on the player you control has no settings */
   multibox: { mbSwitchAfterDeath: true, mbAutoRespawn: true, multiKeepMoving: true, middleMultiViewWhenClose: true, cameraSmoothLerp: true },
   streaming: { streamMode: true, hideSkinUrl: true, hidecountry: true, showChatImages: false, showChatVideos: false, showDevConsole: false },
-  mobile: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, highDPI: false, showGhostCells: false, borderGlow: false, virusGlow: false, suckAnimation: false, showBgSectors: false, hudBlur: 0 },
+  /* menuFpsCap (25 FPS in the menu) is part of the FPS limit now */
+  mobile: { fpsLimit: 60, jellyPhisycs: false, videoSkins: false, highDPI: false, showGhostCells: false, borderGlow: false, virusGlow: false, suckAnimation: false, showBgSectors: false, hudBlur: 0 },
   competitive: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, splitPrediction: true, showStatsFPS: true, showStatsPPS: true }
 };
 Object.keys(OLD_TPL).forEach(id => {
@@ -113,7 +114,7 @@ Object.keys(OLD_TPL).forEach(id => {
 });
 /* what the presets did before (3.656) still happens */
 const OLD_PRESET = {
-  battery: { fpsLimit: 60, menuFpsCap: true, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0 },
+  battery: { fpsLimit: 60, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0 },
   streamer: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false }
 };
 Object.keys(OLD_PRESET).forEach(id => {
@@ -840,14 +841,15 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
   /* a set saved before commands were merged into others: their keys go where the stored hotkeys
    * take them on load (Open the Lab -> User Scripts, zoom bookmark -> zoom level, Screenshot mode
    * -> Show/hide HUD); the profile check dropped them as unknown commands, so the key did nothing */
-  const add = { 'hk-lmPlugins': { defaultKey: '' }, 'hk-zoom1': { defaultKey: '' }, 'hk-zoom2': { defaultKey: '' }, 'hk-showHUD': { defaultKey: '' } };
+  const add = { 'hk-lmPlugins': { defaultKey: '' }, 'hk-zoom1': { defaultKey: '' }, 'hk-zoom2': { defaultKey: '' }, 'hk-showHUD': { defaultKey: '' }, 'hk-perfDiag': { defaultKey: '' } };
   Object.assign(ctx.hotkeysCommand, add);
   try {
-    const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', W: 'hk-feed', X: 'hk-hotkeyConflicts', K: 'hk-zoomSave3', Y: 'hk-skinCollections', C: 'hk-commandCentre' } });
+    const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', N: 'hk-netGraph', W: 'hk-feed', X: 'hk-hotkeyConflicts', K: 'hk-zoomSave3', Y: 'hk-skinCollections', C: 'hk-commandCentre' } });
     check('renamed commands: Open the Lab key opens User Scripts', h && h.h.F9 === 'hk-lmPlugins');
     check('renamed commands: a zoom bookmark key goes to its zoom level', h && h.h['ALT+1'] === 'hk-zoom1');
     check('renamed commands: a zoom level with its own key keeps it, the old key is free', h && h.h.Z === 'hk-zoom2' && !('ALT+2' in h.h));
     check('renamed commands: Screenshot mode key is Show/hide HUD', h && h.h.F2 === 'hk-showHUD');
+    check('renamed commands: the net graph key opens Performance diagnostics', h && h.h.N === 'hk-perfDiag');
     check('renamed commands: other keys stay, a removed command (Hotkey conflicts, zoom save, Skin collections, Command Centre) is dropped', h && h.h.W === 'hk-feed' && !('X' in h.h) && !('K' in h.h) && !('Y' in h.h) && !('C' in h.h));
     const h2 = C.cleanBundle({ h: { F9: 'hk-lmLab', F10: 'hk-lmPlugins' } });
     check('renamed commands: User Scripts with a key of its own: the Lab key is free', h2 && h2.h.F10 === 'hk-lmPlugins' && !('F9' in h2.h));
@@ -872,6 +874,9 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
    * gets Cursor tracking on, so applying it still draws the bubble */
   const ob = C.cleanBundle({ s: { cursorTracking: false, bubbleCursorTracker: true } });
   check('bubble look: an older set with the bubble alone gets Cursor tracking on', !!ob && !!ob.s && ob.s.cursorTracking === true && ob.s.bubbleCursorTracker === true);
+  /* the size symbols (a11yIndicators) are part of Relative mass: an older set with them on turns it on */
+  const sym = C.cleanBundle({ s: { a11yIndicators: true } }), symOff = C.cleanBundle({ s: { a11yIndicators: false, hudRelativeMass: true } });
+  check('older set with the size symbols on: Relative mass on, the old key gone', sym && sym.s.hudRelativeMass === true && !('a11yIndicators' in sym.s) && symOff && symOff.s.hudRelativeMass === true && !('a11yIndicators' in symOff.s));
 }
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 

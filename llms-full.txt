@@ -171,19 +171,16 @@ Record and replay game sessions. Features:
 ### 7. Performance and Rendering
 - **WebGL2 acceleration**: Enabled by default with automatic Canvas2D fallback when unsupported or visually ambiguous
 - **High DPI rendering**: Optional crisp rendering on high-density screens
-- **FPS cap**: Limit frames per second (0-240 in steps of 10) to reduce heat/battery
-- **Menu FPS cap**: 25 FPS while the menu is open and you are not playing
+- **FPS cap**: Limit frames per second (0-240 in steps of 10) to reduce heat/battery; while a cap is set, the menu (not playing) draws at 25 FPS
 - **Performance mode**: Single switch that disables costly effects for weak PCs and phones
-- **Adaptive performance**: Monitors real frame times. When FPS drops below target (30/60/90/120 FPS), automatically disables effects in 3 levels:
+- **Performance mode automatic** (`adaptivePerf`): Monitors real frame times. When FPS stays below 60 (or the FPS cap / screen refresh rate when lower), automatically disables effects in 2 levels:
   - Level 1: Decorative effects off (suckAnimation, eatPulse, borderGlow, animatedRainbowColor, showBgSectors, hudBlur)
   - Level 2: Jelly physics and video skins off
-  - Level 3: Lower internal resolution (optional, `adaptivePerfRes`)
   - Self-healing: Effects re-enable when performance improves
   - Smart detection: Only counts slow when drawing takes ≥40% of frame time
   - Toasts: Notifications on level changes
 - **Antialiasing**: WebGL MSAA toggle
-- **Performance diagnostics window**: Frame time graph, percentiles, long frames, render time, renderer info, freeze breakdown with contributor attribution, Chrome Long Animation Frames API integration
-- **Net graph**: Toggle network quality overlay
+- **Performance diagnostics window**: Frame time graph, FPS, ping / packet rate / disconnect graph, percentiles, long frames, render time, renderer info, freeze breakdown with contributor attribution, Chrome Long Animation Frames API integration
 - **Unlocked FPS**: Remove frame rate limits
 
 ### 8. Animation and Visual Effects
@@ -246,14 +243,10 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one),
 ### 12. HUD Helpers
 - **Split range circles**: Rings showing split distance around enemies (single, double, triple, and quad split)
 - **Split prediction**: Dim cursor lines on own cells that cannot split
-- **Move direction arrow**: Arrow showing real movement direction
 - **Merge countdown**: Seconds until each own cell can recombine
 - **Merge sound**: Audio cue when cells can merge
 - **Merge progress rings**: Visual progress rings on own cells
 - **Relative mass display**: Other players' mass shown as ratio to your biggest cell (e.g. 1.75x, 0.40x)
-- **Edge teammates arrows**: Screen-edge indicators for off-screen teammates
-- **Edge threats arrows**: Screen-edge indicators for large cells that left the screen
-- **Cell mass panel**: Detailed panel showing each own cell's mass sorted, count/16, largest, smallest, total
 - **Mass format**: one choice: exact, short (12.3k, the former Short mass switch) or auto (exact below 10000, then 12.3k, 123k, 1.2M)
 - **Virus range circles**: Rings showing virus ejection range
 - **Mass in tab title**: Browser tab shows current mass
@@ -261,7 +254,7 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one),
 
 ### 13. HUD Editor
 Drag and resize HUD elements with named layouts. Features:
-- **Movable elements**: Leaderboard, minimap, stats, team panel, time, target, chat, cell panel
+- **Movable elements**: Leaderboard, minimap, stats, team panel, time, target, chat
 - **Named layouts**: Up to 20 saved in localStorage
 - **Snapping**: Snap to grid (8/16/32px options)
 - **Lock/unlock**: Lock layout to prevent accidental moves
@@ -282,7 +275,6 @@ Drag and resize HUD elements with named layouts. Features:
 - **Kill feed**: Fading list of your kills and deaths, left of leaderboard (stays 6 seconds, max 5 visible)
 - **Death recap**: Last 20 seconds as 3-6 summarised steps with mass sparkline, showing splits, virus pops, being eaten. Attributes killer from eat events. Expanding Land uses server-provided killer info.
 - **Killer display**: "Eaten by: nick (mass)" on the Game Over card
-- **Mass loss alerts**: Notification when you lose a configurable percentage (10-90%) of mass within 2 seconds
 - **Analytics window**: Statistics dashboard with heatmaps and the match history, up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis.
 - **Notification centre**: Bell icon with unread count, filterable list by category (achievements, bests, party, replay, connection, settings, chat, other), mark read, clear, suppress toasts by category. Up to 200 notifications, max 120KB in localStorage.
 - **Session stats**: Games played, best mass, time played per tab session (sessionStorage)
@@ -346,9 +338,9 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Animation**: Speed, jelly physics, death particles, eat pulse, camera smoothing, spawn effects, zoom speed/smooth
 - **Skins**: Custom skins, video skins, collections, transparency, vanilla skins, skin checker, skin rotator
 - **Food**: Rainbow food, auto-hide food, food opacity
-- **Performance and Network**: WebGL, High DPI, FPS cap, adaptive performance (target, toasts, resolution), performance mode, anti-aliasing, net graph
+- **Performance and Network**: WebGL, High DPI, FPS cap, performance mode (with its automatic choice), anti-aliasing
 - **Minimap**: Show/rotate, grid, guides, ghost cells, trail, one-coloured teammates
-- **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, edge arrows, cell panel, stats display, indicators, online status, sticky cell
+- **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, stats display, indicators, online status, sticky cell
 - **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter, coloured nicks, hide country, AgarTool team, player ID
 - **Sounds**: Volume per sound and master volume, sound switches and files
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots
@@ -357,7 +349,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
 - **Gamepad**: Enable, dead zone, move range, curve, zoom sensitivity, trigger, axis inversion, vibrate
 - **Privacy/Extras**: Streamer mode, hide skin URL, hide name, hide country, block popups
-- **Stats**: Game Over card stats, mass graph, kill feed, death recap, mass loss alerts, analytics, match history
+- **Stats**: Game Over card stats, mass graph, kill feed, death recap, analytics, match history
 - **Merge**: Countdown, sound, progress rings
 - **Indicators**: Opponent colours, rings, virus colours, split range (single/double/triple/quad), virus range, cursor tracking, split prediction, bubble indicators, teammates indicators
 - **Expanding Land**: Reduced motion (no Expanding Land death shake, death particles or entrance spin)

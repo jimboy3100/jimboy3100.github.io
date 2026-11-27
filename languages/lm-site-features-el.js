@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "Προαιρετικό κουμπί ping ομάδας: πατήστε για <i>Πήγαινε εδώ</i>, κρατήστε και σύρετε για Βοήθεια, Κίνδυνο ή Ιό εδώ",
 "site.features.optionalStopOnRelease": "Προαιρετικό <i>Στάση όταν αφήνεις</i>",
 "site.features.optionalQuickChatButtons": "Προαιρετικά κουμπιά γρήγορου chat, κουμπί multibox και ρυθμίσεις δόνησης",
-"site.features.replayPauseAndSeek": "Κουμπιά παύσης και μετάβασης replay, net graph στις ρυθμίσεις αφής",
+"site.features.replayPauseAndSeek": "Κουμπιά παύσης και μετάβασης replay",
 "site.features.extraFeaturesOnOur": "Επιπλέον λειτουργίες στον δικό μας server.",
 "site.features.dailyChallengesTwoNew": "Ημερήσιες προκλήσεις, δύο νέες κάθε μέρα, με Claim και Claim All",
 "site.features.serverEventCountdownDouble": "Αντίστροφη μέτρηση events του server (Double XP, βροχή φίλτρων, χρυσή τροφή, καταιγίδα ιών)",

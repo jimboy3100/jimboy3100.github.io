@@ -74,7 +74,7 @@
     var MOBILE_SCHEMA = {
         btnOpacity: [0.2, 1], btnScale: [0.5, 1.5], hudFade: [0, 1],
         targetMode: 0, swipeSplit: 0, muteVibration: 0, tapHaptic: 0, quickCmds: 0, mbButton: 0,
-        stopOnRelease: 0, pingBtn: 0, netGraph: 0, fixedJoystick: 0, joystickDeadZone: [0, 40],
+        stopOnRelease: 0, pingBtn: 0, fixedJoystick: 0, joystickDeadZone: [0, 40],
         lbCompact: 0, zoomBtns: 0, freeSpecBtn: 0,
         jsSize: [0.5, 2], jsOpacity: [0.2, 1], respawnBtn: 0, macroBtns: 0
     };
@@ -152,11 +152,12 @@
     var PART_FNS = { s: cleanSettings, t: cleanTheme, h: cleanHotkeys, m: cleanMobile };
     /* A set saved while "Video skins volume" (volVideo) existed, or with settings that became one
      * choice since ("Short mass" + "Mass format", the two stats position switches), or with the bubble
-     * tracker on its own (a look of Cursor tracking now): the core's own migration (lmFoldLegacySettings)
+     * tracker on its own (a look of Cursor tracking now), or with the size symbols on (removed; they
+     * turn Relative mass on): the core's own migration (lmFoldLegacySettings)
      * folds them (on a copy) before the check drops or refits the old values, so an old set with
      * the video skins muted stays muted, one with Short mass keeps its mass text and one with the
      * bubble alone still draws the bubble. */
-    var LEGACY_KEYS = ['volVideo', 'massFormat', 'shortMass', 'statsPosition', 'fpsAtTop', 'statsAtCenter', 'bubbleCursorTracker'];
+    var LEGACY_KEYS = ['volVideo', 'massFormat', 'shortMass', 'statsPosition', 'fpsAtTop', 'statsAtCenter', 'bubbleCursorTracker', 'a11yIndicators'];
     function foldLegacySettings(s) {
         if (!isObj(s) || !LEGACY_KEYS.some(function (k) { return own.call(s, k); })) return s;
         var fold = typeof window.lmFoldLegacySettings === 'function' ? window.lmFoldLegacySettings : null;

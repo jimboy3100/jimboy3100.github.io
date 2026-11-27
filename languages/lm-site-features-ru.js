@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "Кнопка командных меток по желанию: нажмите для <i>Иди сюда</i>, удерживайте и проведите для Помощь, Опасность или Здесь вирус",
 "site.features.optionalStopOnRelease": "<i>Остановка при отпускании</i> по желанию",
 "site.features.optionalQuickChatButtons": "Кнопки быстрого чата, кнопка multibox и настройки вибрации по желанию",
-"site.features.replayPauseAndSeek": "Кнопки паузы и перемотки повторов, сетевой график в сенсорных настройках",
+"site.features.replayPauseAndSeek": "Кнопки паузы и перемотки повторов",
 "site.features.extraFeaturesOnOur": "Дополнительные функции на нашем собственном сервере.",
 "site.features.dailyChallengesTwoNew": "Ежедневные задания, по два новых каждый день, с кнопками Забрать и Забрать всё",
 "site.features.serverEventCountdownDouble": "Обратный отсчёт до событий сервера (двойной XP, дождь зелий, золотая еда, вирусный шторм)",

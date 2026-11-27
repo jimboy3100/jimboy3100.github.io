@@ -1,6 +1,6 @@
-// Adaptive performance options are in the menu; the diagnostics window opens, fits a phone and
-// closes; level 3 lowers the canvas resolution without a reload and puts it back; while off
-// nothing hooks the render loop.
+// Performance mode automatic (adaptivePerf) is in the menu without options of its own; the
+// diagnostics window opens, fits a phone and closes; the highest level never lowers the canvas
+// resolution and the values come back; while off nothing hooks the render loop.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -8,10 +8,13 @@
   var P = window.LMPerf;
   if (!P) return { fail: ['LMPerf missing (ogario/modules/perf.js not loaded)'] };
   var S = window.legendmod5;
-  ['adaptivePerf', 'adaptivePerfToasts'].forEach(function (k) {
+  ['adaptivePerf', 'performanceMode'].forEach(function (k) {
     if (!document.getElementById(k)) fail.push('option ' + k + ' missing');
   });
-  if (!document.getElementById('adaptivePerfTarget-slider')) fail.push('target slider missing');
+  /* merged: no target, message or resolution option, no menu FPS cap switch (part of FPS limit) */
+  ['adaptivePerfToasts', 'adaptivePerfRes', 'adaptivePerfTarget-slider', 'menuFpsCap'].forEach(function (k) {
+    if (document.getElementById(k)) fail.push('merged option ' + k + ' still in the menu');
+  });
   if (!document.getElementById('lm-perf-diag-btn')) fail.push('diagnostics button missing');
   if (S.adaptivePerf !== false) fail.push('options not off by default');
   /* Network quality history is removed: no switch, no saved setting */
@@ -75,29 +78,23 @@
     P.keepRecording(false);
     if (window._lmPerfFrame) fail.push('keep recording off: frame hook left');
   }
-  /* level 3 lowers the resolution, level 0 restores it (runtime only) */
+  /* the highest level keeps the resolution, level 0 restores the values (runtime only) */
   var cv = document.getElementById('canvas');
   /* the page may not have resized since LMmobile set its pixel ratio: start from a fresh size */
   try { window.drawRender.resizeCanvas(); } catch (e) { }
   var w0 = cv ? cv.width : 0, own = JSON.stringify([S.jellyPhisycs, S.videoSkins, S.hudBlur, S.eatPulse]);
   S.adaptivePerf = true; P.configChanged();
-  /* without "may lower the resolution" (the default) level 3 keeps the full resolution */
   P._setLevel(3);
   await sleep(100);
-  if (cv && cv.width !== w0) fail.push('level 3 lowered the resolution while the option is off (' + w0 + ' -> ' + cv.width + ')');
-  P._setLevel(0);
-  S.adaptivePerfRes = true; P.configChanged();
-  P._setLevel(3);
-  await sleep(100);
-  var w3 = cv ? cv.width : 0;
-  info.canvas = w0 + ' -> ' + w3;
-  if (cv && !(w3 < w0)) fail.push('level 3 did not lower the canvas resolution (' + info.canvas + ')');
+  info.level = P.level();
+  info.canvas = w0 + ' -> ' + (cv ? cv.width : 0);
+  if (P.level() !== 2) fail.push('level past 2: ' + P.level());
+  if (cv && cv.width !== w0) fail.push('the highest level lowered the resolution (' + info.canvas + ')');
   var saved = JSON.parse(localStorage.getItem('ogarioSettings') || '{}');
   window.application.saveSettings(S, 'ogarioSettings');
   var saved2 = JSON.parse(localStorage.getItem('ogarioSettings') || '{}');
   if (saved.eatPulse !== undefined && saved2.eatPulse !== saved.eatPulse) fail.push('a lowered value was saved');
   P._setLevel(0);
-  S.adaptivePerfRes = false;
   S.adaptivePerf = false; P.configChanged();
   window.application.saveSettings(S, 'ogarioSettings');
   await sleep(100);

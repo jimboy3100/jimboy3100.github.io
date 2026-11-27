@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "Optionaler Team-Ping-Button: Tippen für <i>Hierhin</i>, halten und wischen für Hilfe, Gefahr oder Virus hier",
 "site.features.optionalStopOnRelease": "Optional <i>Stopp beim Loslassen</i>",
 "site.features.optionalQuickChatButtons": "Optionale Schnellchat-Buttons, Multibox-Button und Vibrationseinstellungen",
-"site.features.replayPauseAndSeek": "Replay-Pause- und Spul-Buttons, Netzgraph in den Touch-Einstellungen",
+"site.features.replayPauseAndSeek": "Replay-Pause- und Spul-Buttons",
 "site.features.extraFeaturesOnOur": "Extra-Funktionen auf unserem eigenen Server.",
 "site.features.dailyChallengesTwoNew": "Tägliche Challenges, jeden Tag zwei neue, mit Claim und Claim All",
 "site.features.serverEventCountdownDouble": "Countdown für Server-Events (Double XP, Trankregen, goldenes Futter, Virussturm)",

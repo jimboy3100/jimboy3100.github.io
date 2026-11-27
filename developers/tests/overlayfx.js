@@ -183,7 +183,7 @@ function cellMethod(name) {
 const CELL_METHODS = ['draw', 'drawChat', 'lmChatLine', 'lmChatBubble', 'drawMass', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick', 'lmLabels', 'lmFbBadge',
     'setNick', 'setMass', 'setDrawing', 'setDrawingScale', 'setScale', 'setFontSize', 'setStrokeSize'];
 const haveMethods = CELL_METHODS.filter((n) => cellMethod(n));
-const frameA = src.indexOf('/* read by the net graph (renderer label) */');
+const frameA = src.indexOf('/* read by Performance diagnostics (renderer label) */');
 const frameEndM = src.indexOf('this.drawLmPings(_lmFxCtx);', frameA);
 const frameSrc = src.slice(frameA, src.indexOf('\n', frameEndM));
 const lateA = src.indexOf('if (this.overlayCanvas) {\n                var oCtx = this.overlayCanvas.getContext(\'2d\');');
@@ -367,7 +367,7 @@ function frameLines(from, to) {
     return j < 0 ? null : src.slice(i, j);
 }
 const whySrc = frameLines('/* the reason when canUseWebGLScene is not reached', 'var unifiedWebGLAllowed =');
-const countSrc = frameLines('/* frames by renderer and Canvas2D reason', '/* read by the net graph');
+const countSrc = frameLines('/* frames by renderer and Canvas2D reason', '/* read by Performance diagnostics');
 const runWhy = whySrc ? new Function('defaultmapsettings', whySrc) : null;
 const runCount = countSrc ? new Function('unifiedWebGLWorldOK', 'unifiedWebGLAllowed', countSrc) : null;
 const runLatePass = new Function('LM', 'window', '_lmPieOnOverlay', '_elDeathVisual', '_getParticleBlob', '_drawExpandingLandDeathSnapshotCell', '_lmPieX', lateSrc);

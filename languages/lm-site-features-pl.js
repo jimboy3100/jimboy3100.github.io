@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "Opcjonalny przycisk pingu drużynowego: stuknij dla <i>Idź tutaj</i>, przytrzymaj i przesuń dla Pomocy, Niebezpieczeństwa lub Tu wirus",
 "site.features.optionalStopOnRelease": "Opcjonalne <i>Zatrzymanie po puszczeniu</i>",
 "site.features.optionalQuickChatButtons": "Opcjonalne przyciski szybkiego czatu, przycisk multiboxa i ustawienia wibracji",
-"site.features.replayPauseAndSeek": "Przyciski pauzy i przewijania powtórek, wykres sieci w ustawieniach dotyku",
+"site.features.replayPauseAndSeek": "Przyciski pauzy i przewijania powtórek",
 "site.features.extraFeaturesOnOur": "Dodatkowe funkcje na naszym własnym serwerze.",
 "site.features.dailyChallengesTwoNew": "Codzienne wyzwania, dwa nowe każdego dnia, z przyciskami Odbierz i Odbierz wszystko",
 "site.features.serverEventCountdownDouble": "Odliczanie do wydarzeń serwera (podwójne XP, deszcz mikstur, złote jedzenie, burza wirusów)",

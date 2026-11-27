@@ -63,14 +63,9 @@
         "webGL",
         "highDPI",
         "fpsCap",
-        "menuFPSCap",
         "performanceMode",
         "adaptivePerf",
-        "adaptivePerfTarget",
-        "adaptivePerfRes",
-        "adaptivePerfToasts",
         "antiAliasing",
-        "netGraph",
         "networkHistory"
       ]
     },
@@ -99,14 +94,11 @@
         "cellContours",
         "splitRanges",
         "mergeRings",
-        "edgeArrows",
-        "cellPanel",
         "statsDisplay",
         "indicators",
         "onlineStatus",
         "stickyCell",
-        "massInTab",
-        "hudMoveDir"
+        "massInTab"
       ]
     },
     {
@@ -225,7 +217,6 @@
       "settings": [
         "gameOverCard",
         "killFeed",
-        "massLossAlerts",
         "analytics",
         "notificationCentre"
       ]

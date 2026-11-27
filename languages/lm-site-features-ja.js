@@ -106,7 +106,7 @@
 "site.features.optionalTeamPingButton": "チームPingボタン（任意）：タップで<i>ここへ行け</i>、長押ししてスライドで「助けて」「危険」「ここにウイルス」",
 "site.features.optionalStopOnRelease": "<i>指を離すと停止</i>（任意）",
 "site.features.optionalQuickChatButtons": "クイックチャットボタン、マルチボックスボタン、振動の設定（任意）",
-"site.features.replayPauseAndSeek": "タッチ設定にリプレイの一時停止・シークボタンとネットグラフ",
+"site.features.replayPauseAndSeek": "リプレイの一時停止・シークボタン",
 "site.features.extraFeaturesOnOur": "独自サーバーならではの追加機能。",
 "site.features.dailyChallengesTwoNew": "毎日2つずつ追加されるデイリーチャレンジ。「受け取る」と「すべて受け取る」に対応",
 "site.features.serverEventCountdownDouble": "サーバーイベントのカウントダウン（XP 2倍、ポーションの雨、黄金のエサ、ウイルスストーム）",

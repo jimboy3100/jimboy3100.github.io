@@ -437,17 +437,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-netGraph': {
-				get label() {
-					return lmT('settings.hk-netGraph');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (typeof window.lmToggleNetGraph === 'function') window.lmToggleNetGraph();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-perfDiag': {
 				get label() {
 					return lmT('settings.hk-perfDiag');
@@ -1682,4 +1671,8 @@
          * still naming it hides the HUD the same way (not listed). Its
          * keyboard key moves in loadHotkeys (ogario.v4.js). */
         Object.defineProperty(hotkeysCommand, 'hk-screenshotMode', { value: hotkeysCommand['hk-showHUD'], enumerable: false, configurable: true });
+        /* The net graph is part of Performance diagnostics (its FPS, ping and renderer are there): a
+         * mouse or gamepad button still naming it opens the diagnostics (not listed); its keyboard
+         * key moves in loadHotkeys (lmRenameOldHotkeys). */
+        Object.defineProperty(hotkeysCommand, 'hk-netGraph', { value: hotkeysCommand['hk-perfDiag'], enumerable: false, configurable: true });
 	
