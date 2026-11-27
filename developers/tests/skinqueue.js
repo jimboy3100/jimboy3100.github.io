@@ -18,7 +18,7 @@
  *   - an image createImageBitmap cannot decode: not uploaded inside the draw any more, the same
  *     texels from the frame job;
  *   - a decode that finishes after the context was lost: its bitmap is closed at once.
- * The previous version is the one before the shared budget and the queue caps (39df85f4^), or
+ * The previous version is the one before the shared budget and the queue caps (2c592ae7^), or
  * --ref REV, or --old FILE.
  * Usage: node developers/tests/skinqueue.js [--ref REV] [--old FILE] [--new FILE] [--runs N] */
 'use strict';
@@ -28,11 +28,20 @@ const root = path.join(__dirname, '..', '..');
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 && i + 1 < args.length ? args[i + 1] : def; };
 const NEW_SRC = fs.readFileSync(opt('--new', path.join(root, 'ogario', 'ogario.v4.js')), 'utf8').replace(/\r\n/g, '\n');
-let OLD_SRC;
-try {
-    OLD_SRC = opt('--old', null) ? fs.readFileSync(opt('--old'), 'utf8') : execFileSync('git', ['-C', root, 'show', opt('--ref', '39df85f4^') + ':ogario/ogario.v4.js'], { encoding: 'utf8', maxBuffer: 64 * 1048576 });
-    OLD_SRC = OLD_SRC.replace(/\r\n/g, '\n');
-} catch (e) { OLD_SRC = null; }
+/* the parent of the shared-budget commit: 2c592ae7 on origin/master, 39df85f4 in a checkout that
+ * made it before it was rebased; without either every comparison with the previous version was
+ * skipped and the test still passed */
+const OLD_REFS = opt('--ref', null) ? [opt('--ref')] : ['2c592ae7^', '39df85f4^'];
+let OLD_SRC = null, OLD_FROM = opt('--old', null);
+if (OLD_FROM) OLD_SRC = fs.readFileSync(OLD_FROM, 'utf8');
+else for (const ref of OLD_REFS) {
+    try {
+        OLD_SRC = execFileSync('git', ['-C', root, 'show', ref + ':ogario/ogario.v4.js'], { encoding: 'utf8', maxBuffer: 64 * 1048576, stdio: ['ignore', 'pipe', 'ignore'] });
+        OLD_FROM = ref;
+        break;
+    } catch (e) { }
+}
+if (OLD_SRC) OLD_SRC = OLD_SRC.replace(/\r\n/g, '\n');
 
 function grab(src, name) {
     const i = src.indexOf('    function ' + name + '(');
@@ -53,6 +62,9 @@ function load(src) {
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) failed++; };
 const N = load(NEW_SRC), O = OLD_SRC && grab(OLD_SRC, 'lmSkinJobsRun') ? load(OLD_SRC) : null;
+check('previous version found (' + (OLD_FROM || OLD_REFS.join(' / ')) + '; else --ref REV or --old FILE)', !!OLD_SRC);
+/* the version with the shared budget as "previous version" would compare the change with itself */
+if (OLD_SRC) check('previous version is the one before the shared budget (no lmSkinSlack)', !grab(OLD_SRC, 'lmSkinSlack'));
 function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
 
 /* ---- 1. without the shared budget: the same jobs as before ---- */

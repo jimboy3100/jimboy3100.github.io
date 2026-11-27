@@ -5,15 +5,15 @@
  * Without a browser: lmSkinLayersGrow and the layer pick over both arrays.
  * In headless Chrome (skipped without Chrome), the real drawRender:
  *   - 160 different skins drawn in every frame: every one gets its own layer (the version in git
- *     HEAD, or --old FILE, gives 128 and leaves 32 body-only), with the same texels as the
- *     previous version uploads for that skin;
+ *     before the second array, 49b0ccf1^ or --ref REV or --old FILE, gives 128 and leaves 32
+ *     body-only), with the same texels as the previous version uploads for that skin;
  *   - the cell shader and the jelly shader: cells whose skins are in the second array give the
  *     same frame, to the bit, as the same cells with the same skins in the first array;
  *   - 100 skins (fewer than 128): no second array is made (no extra GPU memory);
  *   - a context lost while it had a second array: the next context never makes one.
  * The frames of 128 skins or fewer are compared with the previous version by glbatch.js
  * (node developers/tests/glbatch.js --ref HEAD).
- * Usage: node developers/tests/skinbanks.js [--old FILE] [--new FILE] */
+ * Usage: node developers/tests/skinbanks.js [--ref REV] [--old FILE] [--new FILE] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm'), os = require('os');
 const { spawn, execFileSync } = require('child_process');
@@ -21,10 +21,20 @@ const root = path.join(__dirname, '..', '..');
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 && i + 1 < args.length ? args[i + 1] : def; };
 const NEW_SRC = fs.readFileSync(opt('--new', path.join(root, 'ogario', 'ogario.v4.js')), 'utf8').replace(/\r\n/g, '\n');
-let OLD_SRC = null;
-try {
-    OLD_SRC = (opt('--old', null) ? fs.readFileSync(opt('--old'), 'utf8') : execFileSync('git', ['-C', root, 'show', 'HEAD:ogario/ogario.v4.js'], { encoding: 'utf8', maxBuffer: 64 * 1048576 })).replace(/\r\n/g, '\n');
-} catch (e) { }
+/* the parent of the second-array commit: 49b0ccf1 on origin/master, 5d1381a5 in a checkout that
+ * made it before it was rebased. HEAD has held the second array since that commit, so the
+ * "previous version" was the new one and gave 160 layers too */
+const OLD_REFS = opt('--ref', null) ? [opt('--ref')] : ['49b0ccf1^', '5d1381a5^'];
+let OLD_SRC = null, OLD_FROM = opt('--old', null);
+if (OLD_FROM) OLD_SRC = fs.readFileSync(OLD_FROM, 'utf8');
+else for (const ref of OLD_REFS) {
+    try {
+        OLD_SRC = execFileSync('git', ['-C', root, 'show', ref + ':ogario/ogario.v4.js'], { encoding: 'utf8', maxBuffer: 64 * 1048576, stdio: ['ignore', 'pipe', 'ignore'] });
+        OLD_FROM = ref;
+        break;
+    } catch (e) { }
+}
+if (OLD_SRC) OLD_SRC = OLD_SRC.replace(/\r\n/g, '\n');
 
 function grab(src, name) {
     const i = src.indexOf('    function ' + name + '(');
@@ -232,9 +242,12 @@ async function browser() {
         const n = await evaluate('__sb.many(__sbNew, __sbDefaults, 160)');
         console.log('     160 skins drawn in every frame: ' + n.mapped + ' with a layer (' + n.distinct + ' layers, ' + n.high + ' in the second array) after ' + n.frames + ' frames');
         check('160 skins on screen: every one has its own layer, 32 of them in the second array, no GL error', n.mapped === 160 && n.distinct === 160 && n.high === 32 && n.second && n.glError === 0);
+        check('previous version found (' + (OLD_FROM || OLD_REFS.join(' / ')) + '; else --ref REV or --old FILE)', !!OLD);
         if (OLD) {
             const o = await evaluate('__sb.many(__sbOld, __sbDefaults, 160)');
-            console.log('     previous version, 160 skins drawn in every frame: ' + o.mapped + ' with a layer, the rest body-only');
+            console.log('     previous version (' + OLD_FROM + '), 160 skins drawn in every frame: ' + o.mapped + ' with a layer, the rest body-only');
+            /* a reference that already has the second array would compare the change with itself */
+            check('previous version: 128 of 160 skins get a layer, 32 stay body-only', o.mapped === 128 && !o.second);
             const a = await evaluate('__sb.many(__sbOld, __sbDefaults, 100)'), b = await evaluate('__sb.many(__sbOld, __sbDefaults, 60, 100)');
             const ref = a.hashes.concat(b.hashes);
             check('160 skins: every layer holds the texels the previous version uploads for that skin', n.hashes.every((h, i) => h === ref[i]) && ref.every((h) => h !== -1));
