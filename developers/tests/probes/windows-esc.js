@@ -25,6 +25,8 @@
     { name: 'Practice', open: function () { lmPractice('open'); }, isOpen: function () { return !!(window.LMPractice && LMPractice.isOpen && LMPractice.isOpen()); }, close: function () { if (window.LMPractice && LMPractice.close) LMPractice.close(); } },
     { name: 'Director', open: function () { LMDirector.open(); }, isOpen: function () { return !!(window.LMDirector && LMDirector.isOpen()); }, close: function () { LMDirector.close(); } }
   ];
+  /* opening the director turns it on (a leaderboard listener): it is turned off again after */
+  var dirOn = !!(window.LMDirector && LMDirector.enabled);
   var menu0 = menuShown();
   if (menu0 && window.application && application.hideMenu) { application.hideMenu(); await sleep(200); }
   for (var i = 0; i < wins.length; i++) {
@@ -73,6 +75,7 @@
   } catch (e) { fail.push('cc over analytics: ' + e); }
   try { if (window.LMCommandCentre && LMCommandCentre.isOpen()) LMCommandCentre.close(); } catch (e) { }
   try { var a2 = document.getElementById('lm-analytics-close'); if (a2) a2.click(); } catch (e) { }
+  try { if (!dirOn && window.LMDirector && LMDirector.enabled && LMDirector.disable) LMDirector.disable(); } catch (e) { }
   if (menu0 && window.application && application.showMenu && !menuShown()) application.showMenu();
   return { fail: fail, info: info };
 })()

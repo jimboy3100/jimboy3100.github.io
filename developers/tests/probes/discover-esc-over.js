@@ -23,6 +23,11 @@
     { name: 'Analytics', open: function () { LMAnalytics.open(); }, isOpen: function () { return LMAnalytics.isOpen(); }, close: function () { LMAnalytics.close(); } },
     { name: 'Director', open: function () { LMDirector.open(); }, isOpen: function () { return LMDirector.isOpen(); }, close: function () { LMDirector.close(); } }
   ];
+  /* opening the director turns it on (a leaderboard listener): it is turned off again after */
+  var dirOn = !!LMDirector.enabled;
+  /* closing Discover marks its cards as seen: the stored state is put back after */
+  var dcStored = null;
+  try { dcStored = localStorage.getItem('lmDiscover'); } catch (e) { }
   var menu0 = (function () { var o = document.getElementById('overlays'); return !!(o && getComputedStyle(o).display !== 'none'); })();
   for (var i = 0; i < wins.length; i++) {
     var wn = wins[i];
@@ -35,7 +40,9 @@
         await sleep(300);
         if (!wn.isOpen() || !DC.isOpen()) { info[tag] = 'did not open'; fail.push(tag + ': did not open'); continue; }
         if (f) { var a = document.activeElement; if (a && a.blur) a.blur(); }
-        await esc();
+        r.sent = await esc();
+        /* a busy phone run can deliver the key late: nothing changed yet, look again */
+        for (var lw = 0; lw < 10 && DC.isOpen() && wn.isOpen(); lw++) await sleep(150);
         r.afterEsc1 = { discover: DC.isOpen(), win: wn.isOpen() };
         if (DC.isOpen() || !wn.isOpen()) fail.push(tag + ': the first Esc: ' + JSON.stringify(r.afterEsc1));
         if (DC.isOpen()) DC.close();
@@ -68,5 +75,7 @@
     if (menu0 && !shown && window.application && application.showMenu) application.showMenu();
     if (!menu0 && shown && window.application && application.hideMenu) application.hideMenu();
   } catch (e) { }
+  try { if (!dirOn && LMDirector.enabled && LMDirector.disable) LMDirector.disable(); } catch (e) { }
+  try { if (dcStored == null) localStorage.removeItem('lmDiscover'); else localStorage.setItem('lmDiscover', dcStored); } catch (e) { }
   return { fail: fail, info: info };
 })()

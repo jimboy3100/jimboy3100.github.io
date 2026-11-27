@@ -39,6 +39,9 @@
     info[label] = out;
     return out;
   };
+  /* closing Discover marks its cards as seen: the stored state is put back after */
+  var dcStored = null;
+  try { dcStored = localStorage.getItem('lmDiscover'); } catch (e) { }
   try {
     await set(['#5bc0de', '#ffffff', '#cccccc', '#333333']);
     var light = await measure('agario');
@@ -54,5 +57,6 @@
   } catch (e) { fail.push(String(e)); }
   keys.forEach(function (k) { if (keep[k]) rs.setProperty(k, keep[k]); else rs.removeProperty(k); });
   try { if (LMThemeWorkshop.isOpen()) LMThemeWorkshop.close(); if (LMDiscovery.isOpen()) LMDiscovery.close(); } catch (e) { }
+  try { if (dcStored == null) localStorage.removeItem('lmDiscover'); else localStorage.setItem('lmDiscover', dcStored); } catch (e) { }
   return { fail: fail, info: info };
 })()
