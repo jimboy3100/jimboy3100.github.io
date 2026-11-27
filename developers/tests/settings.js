@@ -155,7 +155,8 @@ check('zoomSmooth is no setting: refused, and a saved value is skipped on load',
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { a11yIndicators: true, hudRelativeMass: false, menuFpsCap: true, massLossAlert: true, massLossPct: 40, adaptivePerfTarget: 120, hudCellPanel: true })));
 app.loadSettings();
 const reSaved3 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
-check('load: an old save with the size symbols on turns Relative mass on (save rewritten without it), removed settings ignored', S.hudRelativeMass === true && !('a11yIndicators' in reSaved3) && reSaved3.hudRelativeMass === true && GONE.every(k => !(k in S)));
+/* the size symbols were removed, not merged: an old saved value changes nothing (Relative mass stays off) */
+check('load: an old save with the size symbols on keeps Relative mass off, removed settings ignored', S.hudRelativeMass === false && !('a11yIndicators' in S) && reSaved3.hudRelativeMass !== true && GONE.every(k => !(k in S)));
 S.hudRelativeMass = D.hudRelativeMass;
 /* "Optimized mass OR Merge timer" is gone (the 2% mass redraw is fixed, Merge countdown is the merge
  * timer): a saved off turns Merge countdown on once, then the old key is dropped */

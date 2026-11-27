@@ -879,9 +879,9 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
    * gets Cursor tracking on, so applying it still draws the bubble */
   const ob = C.cleanBundle({ s: { cursorTracking: false, bubbleCursorTracker: true } });
   check('bubble look: an older set with the bubble alone gets Cursor tracking on', !!ob && !!ob.s && ob.s.cursorTracking === true && ob.s.bubbleCursorTracker === true);
-  /* the size symbols (a11yIndicators) are part of Relative mass: an older set with them on turns it on */
-  const sym = C.cleanBundle({ s: { a11yIndicators: true } }), symOff = C.cleanBundle({ s: { a11yIndicators: false, hudRelativeMass: true } });
-  check('older set with the size symbols on: Relative mass on, the old key gone', sym && sym.s.hudRelativeMass === true && !('a11yIndicators' in sym.s) && symOff && symOff.s.hudRelativeMass === true && !('a11yIndicators' in symOff.s));
+  /* the size symbols (a11yIndicators) were removed, not merged: an older set with them on changes nothing */
+  const sym = C.cleanBundle({ s: { a11yIndicators: true, hudRelativeMass: false } }), symOff = C.cleanBundle({ s: { a11yIndicators: false, hudRelativeMass: true } });
+  check('older set with the size symbols on: Relative mass as saved, the old key gone', sym && sym.s.hudRelativeMass === false && !('a11yIndicators' in sym.s) && symOff && symOff.s.hudRelativeMass === true && !('a11yIndicators' in symOff.s));
 }
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 

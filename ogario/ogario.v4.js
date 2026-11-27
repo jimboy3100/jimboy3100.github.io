@@ -21747,7 +21747,7 @@ function lmGlAAPending() {
  * centre" are statsPosition (top / bottom / center; the centre won over the top). The old keys
  * stay as copies that follow the choice (scripts and older versions read them). A stored, imported or profile set from before
  * gets its choice from the old keys once, before the values are checked; then the copies are
- * written from the choice. Also folds the old video volume, the virus pop / eat sounds and the size symbols. Returns true when s changed. */
+ * written from the choice. Also folds the old video volume and the virus pop / eat sounds. Returns true when s changed. */
 function lmFoldLegacySettings(s) {
     if (!s || typeof s !== 'object') return false;
     var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
@@ -21767,13 +21767,6 @@ function lmFoldLegacySettings(s) {
         if (s.virusPopSound === true || s.virusEatSound === true) s.virusSound = true;
         delete s.virusPopSound;
         delete s.virusEatSound;
-        changed = true;
-    }
-    /* "Size symbols on opponents" (a11yIndicators, removed) showed bigger / smaller opponents:
-     * a set with them on gets Relative mass (hudRelativeMass), which shows it as a ratio, once */
-    if (has('a11yIndicators')) {
-        if (lmSettingValue('hudRelativeMass', s.a11yIndicators) === true) s.hudRelativeMass = true;
-        delete s.a11yIndicators;
         changed = true;
     }
     if (has('massFormat') || has('shortMass')) {
@@ -88716,7 +88709,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error auto-loading extended UI script:', e);
     }
-    /* HUD helpers: movement arrow, merge countdown, relative mass, edge arrows, cell panel,
+    /* HUD helpers: merge countdown and its sound, relative mass,
      * mass format, zoom hotkeys (each its own option or hotkey; nothing runs while they are off) */
     try {
         var hudHelpersScript = document.createElement('script');
@@ -88786,7 +88779,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading AgarTool script:', e);
     }
-    /* Death recap, kill feed and mass-loss alerts (no listeners or timers while its options are off) */
+    /* Death recap and kill feed (no listeners or timers while its options are off) */
     try {
         var deathRecapScript = document.createElement('script');
         deathRecapScript.type = 'text/javascript';
