@@ -1,11 +1,12 @@
 /* Cell list membership: every list a cell can be in (LM.cells, food, viruses, foodMulti,
  * playerCells, playerCellsMulti, removedCells) stores the cell's slot, and -1 means "not in
  * it", so removing a cell never scans a list. The real code runs in a vm: the cell class
- * (removeCell, moveCell, reset), sortCells, the frame's dedup and compaction, the virus range
+ * (removeCell, moveCell, reset), sortCells, the frame's compaction, the virus range
  * switch and the removed-cell loop from ogario/ogario.v4.js, and the multibox unit packet
  * handler from ogario/spect.js. Array.prototype.indexOf/includes are counted, so the checks
  * are on the work done, not only on the result: body, food, virus, own and multibox removals,
- * bulk disappearance, and lists after a sort, compaction, dedup, unit packets and pool reuse.
+ * bulk disappearance, and lists after a sort, compaction, unit packets and pool reuse.
+ * (Ids listed once, with no pass over the world for duplicates: developers/tests/worldloops.js.)
  * node developers/tests/cellindex.js
  * (LM_SRC=<ogario.v4.js> LM_SPECT=<spect.js> runs it on other copies and prints their counts) */
 const fs = require('fs'), vm = require('vm'), path = require('path');
@@ -66,7 +67,6 @@ vm.runInContext([
     '};',
     'window.legendmod = LM; var legendmod = LM;',
     /* frame pieces of renderFrame, each run as in the frame */
-    'this.dedup = function (_now) {', block('if (LM._cellsDirty && LM.cells.length > 2500) {'), '};',
     'this.compact = function () { var i, cell;', compaction(), '};',
     'this.virusRangeOn = function () {', block('if (!this._virusesRangeWasOn && LM.cells && LM.viruses) {'), '};',
     'this.removedLoop = function () {', block('for (var i = LM.removedCells.length - 1; i >= 0; i--) {'), '};',
@@ -218,18 +218,6 @@ r = scans('compaction', () => g.compact());
 check('compaction drops flagged cells, keeps unit cells with a main raw id, slots right, no scan', r.lists === 0 && consistent() === '' && copies.every(c => c._cellsIdx >= 0 && LM.cells.includes(c) && !c.invisible) && !rest.slice(0, 100).some(c => LM.cells.includes(c)));
 r = scans('300 removals after compaction', () => { for (let i = 100; i < 400; i++) rest[i].removeCell(); });
 check('removals after compaction: no list scan', r.lists === 0 && consistent() === '');
-
-/* ---- dedup (more than 2500 cells and two objects with one id) ---- */
-reset();
-const dd = [];
-for (let i = 0; i < 2600; i++) dd.push(body());
-const twins = [];
-for (let i = 0; i < 30; i++) { const t = new C(dd[i].id, 0, 0, 40, '#fff', false, false, false, false, false); g.indexedPush(LM.cells, t, '_cellsIdx'); twins.push(t); }
-LM._cellsDirty = true;
-r = scans('dedup', () => g.dedup.call({}, Date.now()));
-check('dedup: copies dropped and marked absent, slots right', r.lists === 0 && LM.cells.length === 2600 && twins.every(t => t._cellsIdx === -1) && consistent() === '');
-r = scans('2600 removals after dedup', () => { for (const c of dd) c.removeCell(); twins[0].removeCell(); });
-check('removals after dedup (and of a dropped copy): no list scan', r.lists === 0 && LM.cells.length === 0);
 
 /* ---- virus range switched on with viruses already known ---- */
 reset();

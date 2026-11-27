@@ -78080,35 +78080,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.camX = LM.viewX;
                 this.camY = LM.viewY;
             }
-            /* Deduplication: only run when packet handler flagged dirty (avoids
-             * creating a new Map + Array every frame — major GC pressure source). */
-            if (LM._cellsDirty && LM.cells.length > 2500) {
-                LM._cellsDirty = false;
-                var _cellsBefore = LM.cells.length;
-                var _dedupMap = this._dedupMap || (this._dedupMap = new Map());
-                _dedupMap.clear();
-                for (var ci = 0; ci < _cellsBefore; ci++) {
-                    var cellItem = LM.cells[ci];
-                    if (cellItem && cellItem.id && !_dedupMap.has(cellItem.id)) {
-                        _dedupMap.set(cellItem.id, cellItem);
-                    }
-                }
-                if (_dedupMap.size < _cellsBefore) {
-                    /* the dropped copies are no longer in LM.cells */
-                    for (ci = 0; ci < _cellsBefore; ci++) {
-                        cellItem = LM.cells[ci];
-                        if (cellItem && (!cellItem.id || _dedupMap.get(cellItem.id) !== cellItem)) cellItem._cellsIdx = -1;
-                    }
-                    var _w = 0;
-                    _dedupMap.forEach(function(v) { LM.cells[_w++] = v; });
-                    LM.cells.length = _w;
-                    LM._lmRebuildCellsIdx(LM.cells);
-                    if (!this._lastDedupLog || _now - this._lastDedupLog > 5000) {
-                        console.warn('[DIAGNOSTIC] Pruned', _cellsBefore - _w, 'duplicate cells. Active:', _w);
-                        this._lastDedupLog = _now;
-                    }
-                }
-            }
+            /* No duplicate-id pass over LM.cells here: each id is listed once by
+             * construction. A cell is listed only when it is created for an id that
+             * indexedCells does not have (main and unit packet handlers), and every removal
+             * or reset takes a cell out of both. The pass went over the whole world (a Map entry per
+             * cell) after every packet once it held 2500 cells, and found nothing.
+             * Test developers/tests/worldloops.js. */
 
             LM.time = _now;
             for (i = 0; i < LM.cells.length; i++) {
