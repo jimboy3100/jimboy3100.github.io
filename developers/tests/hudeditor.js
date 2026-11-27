@@ -1,7 +1,7 @@
 /* HUD editor checks: runs ogario/modules/hudeditor.js in a vm with a stub localStorage and a tiny
  * fake document (a few boxes with fixed sizes), so layout validation, clamping, snapping, the
  * stylesheet and the layouts API can be tested without a browser.
- * node developers/tests/hudeditor.js */
+ * node developers/tests/hudeditor.js [hudeditor.js] [ogario.v4.js] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const i18n = require('./lib/i18n-env');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'hudeditor.js'), 'utf8');
@@ -381,6 +381,88 @@ const J = o => JSON.parse(JSON.stringify(o));
   r = run(240, true);
   check('once the game draws the minimap, it sizes the canvases itself (nothing drawn is cleared here)',
     r.els.minimap.width === 300 && r.els['minimap-sectors'].width === 300 && r.ctx.resets === 1);
+}
+
+
+/* ── the button rows above the minimap (stopwatch, shortcuts, images...: LMexpress puts them inside
+ * #minimap-hud above its top edge), with the real drawMiniMap and _lmLbFitWatch of ogario/ogario.v4.js:
+ * the round Expanding Land minimap clipped the whole box (overflow hidden) and so cut the rows away;
+ * a row added later and shown or hidden never refitted the leaderboard ── */
+{
+  const main = fs.readFileSync(process.argv[3] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+  const chk = (n, c, info) => check(n + (c || info === undefined ? '' : '  [' + info + ']'), c);
+  function method(name) {
+      const i = main.indexOf('\n        ' + name + '(');
+      if (i < 0) throw Error(name + ' not found');
+      let d = 0, k = main.indexOf('{', i);
+      for (; k < main.length; k++) { if (main[k] === '{') d++; else if (main[k] === '}' && !--d) break; }
+      return name + ': function ' + main.slice(main.indexOf('(', i + 9), k + 1);
+  }
+  const style = () => {
+      const st = {}, s = {};
+      s.setProperty = (k, v, p) => { st[k] = [String(v), p || '']; };
+      s.getPropertyValue = k => (st[k] || [''])[0];
+      s.getPropertyPriority = k => (st[k] || ['', ''])[1];
+      s.removeProperty = k => { delete st[k]; };
+      return s;
+  };
+
+  /* 1. round minimap: what is clipped */
+  {
+      const els = { 'minimap-hud': { style: style() }, minimap: { style: style() }, 'minimap-sectors': { style: style() } };
+      const ctx = { document: { getElementById: id => els[id] || null }, LM: { isLegendWorld: true }, ogario: { mapOffsetFixed: false },
+          defaultmapsettings: { clickSpectate: false }, defaultSettings: {} };
+      ctx.window = ctx;
+      vm.createContext(ctx);
+      const app = vm.runInContext('({' + method('_lmMmSpecPE') + ',' + method('drawMiniMap') + '})', ctx);
+      app.drawMiniMap();
+      const hud = els['minimap-hud'].style, mc = els.minimap.style, ms = els['minimap-sectors'].style;
+      chk('Expanding Land: the minimap box is round (important over the HUD corners)', hud.getPropertyValue('border-radius') === '50%' && hud.getPropertyPriority('border-radius') === 'important');
+      chk('Expanding Land: the box does not clip its children, so the rows above it stay visible', hud.overflow !== 'hidden' && hud.overflow !== 'clip', 'overflow ' + hud.overflow);
+      chk('Expanding Land: the minimap canvas is drawn round (the box\'s own ellipse)', mc.borderRadius === '50%', mc.borderRadius);
+      chk('Expanding Land: the sectors canvas (9 px in on each side) is clipped to the same ellipse', /^ellipse\(calc\(50% \+ 9px\) 50%/.test(ms.clipPath || ''), ms.clipPath);
+      ctx.LM.isLegendWorld = false;
+      app.drawMiniMap();
+      chk('another server: square again, nothing clipped', hud.getPropertyValue('border-radius') === '0' && hud.overflow === 'visible' && !mc.borderRadius && !ms.clipPath,
+          [hud.getPropertyValue('border-radius'), hud.overflow, mc.borderRadius, ms.clipPath].join(' / '));
+  }
+
+  /* 2. leaderboard fit: rows added to the minimap later are watched */
+  {
+      const observed = new Set(), roCbs = [], moCbs = [], frames = [];
+      let fits = 0;
+      const mkChild = id => ({ id, nodeType: 1, nextElementSibling: null });
+      const canvas = mkChild('minimap');
+      const mm = { id: 'minimap-hud', firstElementChild: canvas };
+      const ctx = {
+          ResizeObserver: function (cb) { roCbs.push(cb); this.observe = el => observed.add(el); },
+          MutationObserver: function (cb) { moCbs.push(cb); this.observe = (t, o) => { if (t !== mm || !o || !o.childList) moCbs.pop(); }; },
+          requestAnimationFrame: f => { frames.push(f); return frames.length; },
+          addEventListener() { }
+      };
+      ctx.window = ctx;
+      vm.createContext(ctx);
+      const app = vm.runInContext('({' + method('_lmLbFitWatch') + '})', ctx);
+      app._lmLbFit = () => { fits++; };
+      const lb = { id: 'leaderboard-hud' };
+      app._lmLbFitWatch(lb, mm);
+      app._lmLbFitWatch(lb, mm);
+      chk('watched once: the leaderboard, the minimap and its children of now', roCbs.length === 1 && observed.has(lb) && observed.has(mm) && observed.has(canvas));
+      /* LMexpress prepends the stopwatch row later (the MutationObserver sees it) */
+      const row = mkChild('timertools-hud');
+      mm.firstElementChild = row; row.nextElementSibling = canvas;
+      moCbs.forEach(cb => cb([{ type: 'childList', addedNodes: [row, { nodeType: 3 }], removedNodes: [] }]));
+      chk('a row added to the minimap later is watched too', observed.has(row) && observed.size === 4, 'observed ' + Array.from(observed).map(e => e.id).join(','));
+      /* showing or hiding it changes its size: the ResizeObserver asks for one refit in the next frame */
+      frames.splice(0).forEach(f => f());
+      fits = 0;
+      /* (a ResizeObserver reports only the elements it observes) */
+      const resized = el => { if (observed.has(el)) roCbs.forEach(cb => cb([{ target: el }])); };
+      resized(row);
+      resized(row);
+      frames.splice(0).forEach(f => f());
+      chk('showing or hiding that row refits the leaderboard once', fits === 1, 'fits ' + fits);
+  }
 }
 
 console.log(fail ? fail + ' FAILED' : 'all ok');

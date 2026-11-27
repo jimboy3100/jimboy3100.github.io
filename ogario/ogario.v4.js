@@ -25139,6 +25139,17 @@ function thelegendmodproject() {
             if (mm) {
                 this._lmLbFitRo.observe(mm);
                 for (var c = mm.firstElementChild; c; c = c.nextElementSibling) this._lmLbFitRo.observe(c);
+                /* the button rows (stopwatch, shortcuts, images...) are added to the minimap later
+                 * (LMexpress): watched once added, so showing or hiding one refits the leaderboard */
+                if (typeof MutationObserver === 'function') {
+                    var ro = this._lmLbFitRo;
+                    new MutationObserver(function (list) {
+                        for (var i = 0; i < list.length; i++) {
+                            for (var n = list[i].addedNodes, k = 0; k < n.length; k++) if (n[k].nodeType === 1) ro.observe(n[k]);
+                        }
+                        queue();
+                    }).observe(mm, { childList: true });
+                }
             }
             window.addEventListener('resize', queue);
         },
@@ -31015,7 +31026,14 @@ function thelegendmodproject() {
                 var _lmMmHud = document.getElementById('minimap-hud');
                 if (_lmMmHud) {
                     _lmMmHud.style.setProperty('border-radius', _isCircle ? '50%' : '0', _isCircle ? 'important' : '');
-                    _lmMmHud.style.overflow = _isCircle ? 'hidden' : 'visible';
+                    /* the circle clips the two minimap canvases, not the box: the button rows above the
+                     * minimap (shortcuts, stopwatch, images...) are its children placed above its top
+                     * edge, and overflow:hidden on the box cut them all away. The sectors canvas sits
+                     * 9 px in on each side, so its ellipse is 9 px wider than itself (the box's ellipse). */
+                    _lmMmHud.style.overflow = 'visible';
+                    var _lmMmC = document.getElementById('minimap'), _lmMmS = document.getElementById('minimap-sectors');
+                    if (_lmMmC) _lmMmC.style.borderRadius = _isCircle ? '50%' : '';
+                    if (_lmMmS) _lmMmS.style.clipPath = _isCircle ? 'ellipse(calc(50% + 9px) 50% at 50% 50%)' : '';
                 }
             }
             if (ogario.mapOffsetFixed) {
