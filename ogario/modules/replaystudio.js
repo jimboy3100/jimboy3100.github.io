@@ -1803,7 +1803,9 @@
             var d = dms();
             d.instantReplaySecs = +W.secs.value;
             try { if (window.application && application.saveSettings) application.saveSettings(d, 'ogarioSettings'); } catch (e) { }
-            $('#instantReplaySecs-slider').val(d.instantReplaySecs); $('#instantReplaySecs-value').text(d.instantReplaySecs);
+            /* change: the slider's knob (rangeslider) moves to the value too; with val() alone it
+             * stayed where it was while the number next to it changed */
+            $('#instantReplaySecs-slider').val(d.instantReplaySecs).trigger('change'); $('#instantReplaySecs-value').text(d.instantReplaySecs);
         });
         r2.appendChild(W.secs);
         /* leave the replay: end the session (skins back), then join the previous server */
