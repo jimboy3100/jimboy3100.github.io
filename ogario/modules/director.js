@@ -967,7 +967,6 @@
         'border:1px solid var(--lm-pc2,rgba(255,255,255,.2));border-radius:var(--lm-radius-s,4px);padding:3px 8px;min-height:var(--lm-w-ctl,28px);font:inherit;cursor:pointer;' +
         'touch-action:manipulation;box-sizing:border-box}' +
         '#lm-dir-panel input[type=text],#lm-dir-panel select{background:var(--lm-w-field,rgba(0,0,0,.25))}#lm-dir-panel input[type=text]{cursor:text;flex:1;min-width:80px}' +
-        '#lm-dir-panel select option{background:var(--lm-pc,#22252c);color:var(--lm-tc,#eee)}' +
         '#lm-dir-panel button:hover{background:var(--lm-w-btn-h,rgba(255,255,255,.12))}' +
         '#lm-dir-panel button.lmd-act{border-color:var(--lmd-mc);color:var(--lmd-mc)}' +
         '#lm-dir-panel button.lmd-act.lmd-on{background:var(--lmd-mc);color:var(--lm-pc,#111)}' +
@@ -1016,6 +1015,7 @@
             var self = this, root = mk('div');
             root.id = 'lm-dir-panel';
             root.classList.add('lm-modal-container', 'lm-w');
+            root._lmEsc = true;
             root.dir = textDir();
             root.setAttribute('role', 'dialog');
             root.setAttribute('aria-label', t('title'));
@@ -1594,5 +1594,17 @@
     W.addEventListener('resize', function () { if (ui.open) ui.place(); bc.placedSig = ''; });
     D.addEventListener('keydown', function (e) {
         if (st.picking && e.key === 'Escape') { setPicking(false); e.stopPropagation(); }
+    }, true);
+    /* Esc closes the panel wherever the focus is, as Analytics and Custom macros do: it closed only with
+     * the focus inside, so after a click on the game Esc opened the game menu instead. While a player is
+     * picked on the map, Esc ends the picking first (above); a window in front that closes on Esc takes
+     * it first (winstack.js). */
+    W.addEventListener('keydown', function (e) {
+        if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey) return;
+        if (!ui.open || !ui.root || st.picking) return;
+        if (W.LMWinStack && typeof W.LMWinStack.escFor === 'function' && !W.LMWinStack.escFor(ui.root, e)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        ui.close();
     }, true);
 })();

@@ -811,15 +811,30 @@
             else if (fld === 'cmpB') cmpB = this.value;
             if (fld === 'cmpA' || fld === 'cmpB') render();
         });
-        win.on('keydown', function (e) { if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); close(); } });
+        /* Esc closes it wherever the focus is (onEsc) */
+        f[0]._lmEsc = true;
+        W.addEventListener('keydown', onEsc, true);
         shield(f[0]);
         $('body').append(f);
         place();
         W.addEventListener('resize', onResize);
         render();
     }
+    /* Esc closes the window wherever the focus is, as Analytics and Custom macros do: it closed only with
+     * the focus inside, so after a click on the game Esc opened the game menu instead. A window in front
+     * that closes on Esc takes it first (winstack.js); hidden during a preview it stays. */
+    function onEsc(e) {
+        if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey) return;
+        var f = frame();
+        if (!f || f.style.display === 'none') return;
+        if (W.LMWinStack && typeof W.LMWinStack.escFor === 'function' && !W.LMWinStack.escFor(f, e)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+    }
     function close() {
         var f = frame();
+        W.removeEventListener('keydown', onEsc, true);
         if (f) f.parentNode.removeChild(f);
         pending = null;
         if (!preview) W.removeEventListener('resize', onResize);

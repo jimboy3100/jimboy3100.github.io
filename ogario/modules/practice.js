@@ -671,8 +671,19 @@
             var d = el('div'); d.appendChild(el('span', '', fmtDate(h.t))); d.appendChild(el('b', '', h.s + (h.ok ? ' \u2713' : ''))); Wn.hist.appendChild(d);
         });
     }
+    /* Esc closes the window wherever the focus is, as Analytics and Custom macros do (it opened the
+     * game menu over it); a window in front that closes on Esc takes it first (winstack.js) */
+    function onEsc(e) {
+        if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey || !isOpen()) return;
+        if (window.LMWinStack && typeof window.LMWinStack.escFor === 'function' && !window.LMWinStack.escFor(Wn, e)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+    }
     function open() {
         build();
+        Wn._lmEsc = true;
+        window.addEventListener('keydown', onEsc, true);
         /* the arena waits while its settings are open (phones: the window covers the game) */
         if (ses) ses.paused = true;
         Wn.style.display = 'flex';
@@ -680,6 +691,7 @@
         hudTick();
     }
     function close() {
+        window.removeEventListener('keydown', onEsc, true);
         if (Wn) Wn.style.display = 'none';
         if (ses) { ses.paused = false; ses.last = performance.now(); ses.acc = 0; }
         hudTick();
