@@ -7296,6 +7296,8 @@ window.connectionBots = {
         window.userBots.startedBots = false
         window.bots.ai = false
         if (window.userBots.playerPosInterval) { clearInterval(window.userBots.playerPosInterval); window.userBots.playerPosInterval = null }
+        // Clean up Battle Royale fill state on bot server disconnect
+        if (typeof window._brStopFilling === 'function') window._brStopFilling()
         for (i = 0; i < window.captchaOpenedWindow; i++) {
             if (window.capthaWindow[i]) {
                 window.capthaWindow[i].close()
@@ -84075,15 +84077,19 @@ function setGUIEvents() {
     }
 
     function brStopFilling() {
+        if (!window._brFilling && !window._brLobbyWatcher) return
         window._brFilling = false
         if (window._brLobbyWatcher) { clearInterval(window._brLobbyWatcher); window._brLobbyWatcher = null }
         var fillBtn = document.getElementById('brFillLobby')
         var stopBtn = document.getElementById('brStopFill')
         if (fillBtn) fillBtn.style.display = ''
         if (stopBtn) stopBtn.style.display = 'none'
-        // Stop any running bots
-        if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([1]).buffer)
+        // Stop any running bots (only if the bot server connection is still open)
+        if (window.userBots.startedBots && window.connectionBots.ws && window.connectionBots.ws.readyState === WebSocket.OPEN) {
+            window.connectionBots.send(new Uint8Array([1]).buffer)
+        }
     }
+    window._brStopFilling = brStopFilling
 
     document.getElementById('brFillLobby').addEventListener('click', () => {
         if (legendmod.gameMode !== ':battleroyale') {
@@ -84107,7 +84113,12 @@ function setGUIEvents() {
         var br = legendmod.battleRoyale
         // Estimate bots needed: lobby requires ~15 players; fill the gap
         var currentPlayers = br.players || 0
-        var needed = Math.max(1, Math.min(190, 15 - currentPlayers))
+        var needed = 15 - currentPlayers
+        if (needed <= 0) {
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> Lobby already has ' + currentPlayers + ' players')
+            return
+        }
+        needed = Math.min(needed, 190)
         window.bots.amount = needed
 
         window.connectionBots.send(window.buffers.startBots(
@@ -84125,11 +84136,16 @@ function setGUIEvents() {
         document.getElementById('brStopFill').style.display = ''
         toastr.info('<b>[' + Premadeletter123 + ']:</b> Filling BR lobby with ' + needed + ' bots…')
 
-        // Watch for lobby state changes: auto-stop when game starts or mode changes
+        // Watch for lobby state changes: auto-stop when game starts, mode changes, or bots disconnect
         if (window._brLobbyWatcher) clearInterval(window._brLobbyWatcher)
         window._brLobbyWatcher = setInterval(function() {
             brUpdateSection()
             if (legendmod.gameMode !== ':battleroyale') { brStopFilling(); return }
+            if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) {
+                toastr.warning('<b>[' + Premadeletter123 + ']:</b> Bot server disconnected')
+                brStopFilling()
+                return
+            }
             if (legendmod.battleRoyale.state > 1) {
                 // Game has started, stop filling
                 toastr.success('<b>[' + Premadeletter123 + ']:</b> BR game started!')

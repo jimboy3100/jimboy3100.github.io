@@ -321,6 +321,13 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('ogario: BR fill auto-stops when game starts', ogSrc.includes('battleRoyale.state > 1'));
     check('ogario: BR fill stops on mode change', /gameMode\s*!==\s*':battleroyale'.*brStopFilling/.test(ogSrc));
     check('ogario: BR watcher interval cleaned on stop', ogSrc.includes('clearInterval(window._brLobbyWatcher)'));
+    // Lifecycle edge-case fixes
+    check('ogario: brStopFilling exposed on window for onclose', ogSrc.includes('window._brStopFilling = brStopFilling'));
+    check('ogario: onclose calls _brStopFilling', ogSrc.includes("typeof window._brStopFilling === 'function'"));
+    check('ogario: brStopFilling guards send with readyState', /function brStopFilling[\s\S]{0,700}readyState\s*===\s*WebSocket\.OPEN/.test(ogSrc));
+    check('ogario: brStopFilling is idempotent (early return)', /brStopFilling[\s\S]{0,100}!window\._brFilling\s*&&\s*!window\._brLobbyWatcher.*return/.test(ogSrc));
+    check('ogario: BR fill rejects when lobby full', ogSrc.includes("needed <= 0"));
+    check('ogario: BR watcher detects bot server disconnect', /brLobbyWatcher[\s\S]{0,800}readyState\s*!==\s*WebSocket\.OPEN[\s\S]{0,200}brStopFilling/.test(ogSrc));
 }
 
 // ---- Behavioral: playerPosition buffer encodes correctly ----
