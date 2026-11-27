@@ -98,7 +98,7 @@ function makeCtx() {
     return ctx;
 }
 function load(text) {
-    const parts = ['        garixUpdateCells(data, offset) {', '        _handleSigmallyCellUpdate(data) {', '        _lmWuIncomplete(server) {'].map((m) => block(text, m));
+    const parts = ['        garixUpdateCells(data, offset) {', '        _handleSigmallyCellUpdate(data) {', '        _lmWuIncomplete(server) {', '        _lmSpawnEndsSpectate() {'].map((m) => block(text, m));
     if (!parts[0] || !parts[1]) throw new Error('parser not found');
     /* compiled in this realm with the fake globals as parameters (a vm context puts an
      * interceptor on every global read, which would hide the parsers' own cost) */

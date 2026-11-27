@@ -221,6 +221,7 @@ check('determinism: every exercise runs and repeats exactly', allEx);
     const cut = (from, to) => { const a = src.indexOf(from.replace(/\n/g, NL)), b = src.indexOf(to, a); return a < 0 || b < 0 ? null : src.slice(a, b).replace(/,\s*$/, ''); };
     const hm = cut('        handleMessage(data) {\n', '        countPps() {');
     const uc = cut('        updateCells(view, offset) {\n', '        sortCells() {');
+    const se = cut('        _lmSpawnEndsSpectate() {\n', '        sendFreeSpectate() {'); /* the spawn ends spectating */
     if (!hm || !uc) check('game handler found in ogario.v4.js', false);
     else {
         const noop = function () { };
@@ -255,7 +256,7 @@ check('determinism: every exercise runs and repeats exactly', allEx);
         /* every other name the handler touches (EL effects, HUD hooks) resolves to a no-op */
         g.__h = null;
         g.__env = new Proxy({}, { has: (t, k) => typeof k === 'string' && !(k in g), get: (t, k) => k in t ? t[k] : noop }); /* implicit globals of the handler (cell, cellUpdateCells) keep their values */
-        const code = 'with (__env) { __h = ({' + hm + ',\n' + uc + '}); }';
+        const code = 'with (__env) { __h = ({' + hm + ',\n' + uc + (se ? ',\n' + se : '') + '}); }';
         try {
             vm.runInContext(code, g);
             const L = g.__h;
