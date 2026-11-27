@@ -15,7 +15,7 @@ Node.js library: https://github.com/jimboy3100/jimboy3100.github.io/tree/master/
 
 Browser bots (no Node.js)
 -------
-Legend Mod runs these bots in your browser: leave the bots address empty or set it to `browser` (the default) and click "Connect". Legend Mod loads `botcore.js` (the same bot code `server.js` uses) into a Web Worker, so no `install.bat`, `start.bat` or local network permission is needed. Type the address of a bot server (e.g. `ws://localhost:1337`) to use the Node.js server below instead.
+Legend Mod runs these bots in your browser: leave the bots address empty or set it to `browser` (the default). There is no Connect button: "Fill Lobby" in the Battle Royale HUD (and "Start Bots") connects by itself. Legend Mod loads `botcore.js` (the same bot code `server.js` uses) into a Web Worker, so no `install.bat`, `start.bat` or local network permission is needed. Type the address of a bot server (e.g. `ws://localhost:1337`) to use the Node.js server below instead.
 
 Node.js run server from PC
 -------
