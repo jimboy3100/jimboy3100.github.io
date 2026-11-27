@@ -173,6 +173,8 @@ const coreSrc = {
   types: cut4('var LM_REPLAY_PROTOCOLS = ', '/* The replay connection (token replay^<key>)'),
   play: cut4('function playReplayLM(temp, startAt) {', '/* Replay controls (hotkeys'),
   rf: cut4('        replayfunctions() {\n', '        closeConnection() {'),
+  /* the Join box value replayfunctions names the recording after (missing in older cores) */
+  tbv: cut4('function _lmTokenBoxValue(id) {', '/* The Private list entries') || '',
   death: cut4('        onPlayerDeath() {\n', '        findOwnedVanillaSkin() {')
 };
 check('game replay hooks found in ogario.v4.js', Object.keys(coreSrc).every(k => coreSrc[k]));
@@ -263,7 +265,7 @@ function driverEnv(packets, opts) {
   env.l = l;
   /* LMEvents: the game emits spawn / death from the packets and massUpdate every frame while playing */
   vm.createContext(g);
-  vm.runInContext(coreSrc.events + '\n' + coreSrc.reset + '\nwindow.lmReplayResetWorld = lmReplayResetWorld;\n' + coreSrc.ev + '\nwindow._lmEvReplay = _lmEvReplay;\n' + coreSrc.types + '\n' + coreSrc.play +'\nwindow.playReplayLM = playReplayLM;', g);
+  vm.runInContext(coreSrc.tbv + '\n' + coreSrc.events + '\n' + coreSrc.reset + '\nwindow.lmReplayResetWorld = lmReplayResetWorld;\n' + coreSrc.ev + '\nwindow._lmEvReplay = _lmEvReplay;\n' + coreSrc.types + '\n' + coreSrc.play +'\nwindow.playReplayLM = playReplayLM;', g);
   ['spawn', 'death', 'massUpdate'].forEach(n => g.LMEvents.on(n, d => env.ctxLog.push(n + ':' + d.context)));
   ['replayStart', 'replayStop'].forEach(n => g.LMEvents.on(n, d => env.log.push(n + (d.reason ? ':' + d.reason : ''))));
   env.spawned = () => g.LMEvents.emit('spawn', { time: clock });

@@ -5240,9 +5240,8 @@ function _lmSetTokenBox(sel, value) {
 /* The box's value, or the current server's while the box keeps the player's typing. */
 function _lmTokenBoxValue(id) {
     var el = document.getElementById(id);
-    if (!el) return '';
-    if (el._lmHeld != null && el._lmTyped && el === document.activeElement) return String(el._lmHeld);
-    return String(el.value || '');
+    if (el && el._lmHeld != null && el._lmTyped && el === document.activeElement) return String(el._lmHeld);
+    return String($('#' + id).val() || '');
 }
 /* The Private list entries with a fixed address (the load-balanced ones get theirs on each pick).
  * delt.io list from Delta's client (servers/feeds.ts). */
