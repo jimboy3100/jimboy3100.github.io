@@ -1674,50 +1674,93 @@ function lmMultiboxIdMaster(cell, includeOwn) {
  * merging; both are in view of both connections then, so hiding one
  * connection's copy still leaves each piece drawn once.
  */
-var _lmMbGrid = null;
 var _lmMbGridTime = -1;
+var _lmMbGridBuilt = false;
 function _lmMbCellRadius(cell) {
     var r = Number(cell.targetSize);
     if (!Number.isFinite(r) || r <= 0) r = Number(cell.size);
     return Number.isFinite(r) && r > 0 ? r : 0;
 }
-/* One Map and its bucket arrays are reused every frame (no per-frame garbage) */
-var _lmMbGridMap = new Map();
-var _lmMbGridPool = [];
-function _lmMbGridRecycle(bucket) {
-    bucket.length = 0;
-    _lmMbGridPool.push(bucket);
+/* The cells in reach of a match, as 256-unit buckets (key: x bucket * 65536 + y bucket), held
+ * as one list sorted by key and, within a bucket, in LM.cells order. A search reads each column
+ * of buckets in reach as one key range, in the order the bucket-by-bucket scan visited them,
+ * so it finds the same first match without probing every empty bucket in a big (or zoomed-out)
+ * cell's reach. conns holds each cell's connection (its spectator number, 0 for the main one,
+ * fixed for a cell's life), so the copies on the searching cell's own connection, which never
+ * match, are passed over without the full test. Arrays are reused (no per-frame garbage). */
+function _lmMbIndexNew() {
+    return { cells: [], conns: [], keys: new Float64Array(64), n: 0, minKey: 0, maxKey: 0 };
 }
+var _lmMbAll = _lmMbIndexNew();
 /* A main-connection cell can only be hidden behind a unit's own cell (_lmMbIsPreferredTwin:
  * another connection, so a unit, and not drawn instead unless own). Those few cells also go
- * into this grid, in the same order, so main cells scan it instead of every cell nearby
+ * into this index, in the same order, so main cells search it instead of every cell nearby
  * (same first match; crowded buckets made the full scan quadratic). */
-var _lmMbOwnGridMap = new Map();
-function _lmMbGridAdd(grid, key, c) {
-    var bucket = grid.get(key);
-    if (bucket) bucket.push(c);
-    else {
-        bucket = _lmMbGridPool.length ? _lmMbGridPool.pop() : [];
-        bucket.push(c);
-        grid.set(key, bucket);
+var _lmMbOwn = _lmMbIndexNew();
+/* the units' cell id offsets of the per-frame hide step in drawRender, reused every frame */
+var _lmMbOwnOffsetsBuf = [];
+var _lmMbTmpCells = [], _lmMbTmpKeys = new Float64Array(64), _lmMbTmpSort = new Float64Array(64), _lmMbTmpOrder = new Int32Array(64);
+function _lmMbGrow(a, n) {
+    if (a.length >= n) return a;
+    var b = new a.constructor(Math.max(n, a.length * 2));
+    b.set(a);
+    return b;
+}
+function _lmMbOrderCmp(a, b) {
+    return _lmMbTmpKeys[a] - _lmMbTmpKeys[b] || a - b;
+}
+/* Sorts the collected cells (only units' own cells with ownOnly) into idx by key, keeping the
+ * LM.cells order within a key. */
+function _lmMbSortInto(idx, count, ownOnly) {
+    var n = 0, i, k, maxAbs = 0;
+    _lmMbTmpOrder = _lmMbGrow(_lmMbTmpOrder, count);
+    for (i = 0; i < count; i++) {
+        if (ownOnly && !(_lmMbTmpCells[i].spectator > 0 && _lmMbTmpCells[i].isPlayerCellMulti)) continue;
+        _lmMbTmpOrder[n++] = i;
+        k = Math.abs(_lmMbTmpKeys[i]);
+        if (!(k <= maxAbs)) maxAbs = k;
     }
+    var cells = idx.cells, conns = idx.conns, keys = idx.keys = _lmMbGrow(idx.keys, n), order = _lmMbTmpOrder, slot, c;
+    if (n && (maxAbs + 1) * n < 9007199254740992) {
+        /* exact key * n + rank: one numeric sort, equal keys stay in LM.cells order */
+        var comp = _lmMbTmpSort = _lmMbGrow(_lmMbTmpSort, n);
+        for (i = 0; i < n; i++) comp[i] = _lmMbTmpKeys[order[i]] * n + i;
+        var view = comp.subarray(0, n);
+        view.sort();
+        for (i = 0; i < n; i++) {
+            slot = order[((view[i] % n) + n) % n];
+            keys[i] = _lmMbTmpKeys[slot];
+            cells[i] = c = _lmMbTmpCells[slot];
+            conns[i] = c.spectator > 0 ? c.spectator : 0;
+        }
+    } else if (n) {
+        /* keys too far out for that (no real map has them): compare keys, then the order */
+        var list = Array.prototype.slice.call(order.subarray(0, n)).sort(_lmMbOrderCmp);
+        for (i = 0; i < n; i++) {
+            keys[i] = _lmMbTmpKeys[list[i]];
+            cells[i] = c = _lmMbTmpCells[list[i]];
+            conns[i] = c.spectator > 0 ? c.spectator : 0;
+        }
+    }
+    /* no references kept to cells of an earlier build */
+    for (i = n; i < idx.n; i++) cells[i] = null;
+    idx.n = n;
+    idx.minKey = n ? keys[0] : 0;
+    idx.maxKey = n ? keys[n - 1] : 0;
 }
 function _lmMbBuildGrid() {
     var LM = window.legendmod;
-    var grid = _lmMbGridMap, own = _lmMbOwnGridMap;
-    grid.forEach(_lmMbGridRecycle);
-    grid.clear();
-    own.forEach(_lmMbGridRecycle);
-    own.clear();
-    var cells = LM && LM.cells;
-    for (var i = 0; cells && i < cells.length; i++) {
+    var cells = LM && LM.cells, count = 0, i;
+    for (i = 0; cells && i < cells.length; i++) {
         var c = cells[i];
         if (!c || c.removed || c.isFood || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
-        var key = Math.floor(c.x / 256) * 65536 + Math.floor(c.y / 256);
-        _lmMbGridAdd(grid, key, c);
-        if (c.spectator > 0 && c.isPlayerCellMulti) _lmMbGridAdd(own, key, c);
+        if (count >= _lmMbTmpKeys.length) _lmMbTmpKeys = _lmMbGrow(_lmMbTmpKeys, count + 1);
+        _lmMbTmpKeys[count] = Math.floor(c.x / 256) * 65536 + Math.floor(c.y / 256);
+        _lmMbTmpCells[count++] = c;
     }
-    return grid;
+    _lmMbSortInto(_lmMbAll, count, false);
+    _lmMbSortInto(_lmMbOwn, count, true);
+    for (i = 0; i < count; i++) _lmMbTmpCells[i] = null;
 }
 function _lmMbIsPreferredTwin(cell, other, radius) {
     if (!other || other === cell || other.removed || other.isFood) return false;
@@ -1755,27 +1798,37 @@ function lmMultiboxPositionTwin(cell) {
     if (!radius) return null;
     if (cell._lmMbTwin && _lmMbIsPreferredTwin(cell, cell._lmMbTwin, radius)) return cell._lmMbTwin;
     cell._lmMbTwin = null;
-    if (_lmMbGridTime !== LM.time || !_lmMbGrid) {
-        _lmMbGrid = _lmMbBuildGrid();
+    if (_lmMbGridTime !== LM.time || !_lmMbGridBuilt) {
+        _lmMbBuildGrid();
+        _lmMbGridBuilt = true;
         _lmMbGridTime = LM.time;
     }
-    /* main-connection cell: only units' own cells can match (see _lmMbOwnGridMap) */
-    var grid = cell.spectator > 0 ? _lmMbGrid : _lmMbOwnGridMap;
-    if (!grid.size) return null;
+    /* main-connection cell: only units' own cells can match (see _lmMbOwn) */
+    var idx = cell.spectator > 0 ? _lmMbAll : _lmMbOwn, n = idx.n;
+    if (!n) return null;
     var gx = Math.floor(cell.x / 256), gy = Math.floor(cell.y / 256);
     /* as many 256-unit buckets as the match distance in _lmMbIsPreferredTwin reaches: one
      * bucket each way missed copies of big cells (radius 300: up to 360 apart) */
     var reach = Math.max(1, Math.ceil(Math.max(1.2 * radius, 60) / 256));
+    var keys = idx.keys, list = idx.cells, conns = idx.conns, mine = cell.spectator > 0 ? cell.spectator : 0, lo = 0;
     for (var ox = -reach; ox <= reach; ox++) {
-        for (var oy = -reach; oy <= reach; oy++) {
-            var bucket = grid.get((gx + ox) * 65536 + gy + oy);
-            for (var i = 0; bucket && i < bucket.length; i++) {
-                if (_lmMbIsPreferredTwin(cell, bucket[i], radius)) {
-                    cell._lmMbTwin = bucket[i];
-                    return bucket[i];
-                }
+        /* buckets (gx + ox, gy - reach .. gy + reach): consecutive keys */
+        var base = (gx + ox) * 65536 + gy, k0 = base - reach, k1 = base + reach;
+        if (k1 < idx.minKey) continue;
+        if (k0 > idx.maxKey) break;
+        var a = lo, b = n;
+        while (a < b) {
+            var m = (a + b) >> 1;
+            if (keys[m] < k0) a = m + 1;
+            else b = m;
+        }
+        for (; a < n && keys[a] <= k1; a++) {
+            if (conns[a] !== mine && _lmMbIsPreferredTwin(cell, list[a], radius)) {
+                cell._lmMbTwin = list[a];
+                return list[a];
             }
         }
+        lo = a;
     }
     return null;
 }
@@ -78000,12 +78053,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * main copy is hidden (not removed: it stays in LM.cells and keeps moving, the
                  * unit copy snaps to it in moveCell) instead of being drawn a second time as
                  * an enemy. */
-                var _mbOwnOffsets = null;
+                /* the units' id offsets, in one array kept between frames (no per-frame garbage) */
+                var _mbOwnOffsets = _lmMbOwnOffsetsBuf, _mbOwnN = 0;
                 if (LM.multiBoxPlayerExists && LM.playerCellsMulti && LM.playerCellsMulti.length && window.spects && window.spects.length) {
-                    _mbOwnOffsets = [];
                     for (var _mbI = 0; _mbI < window.spects.length; _mbI++) {
                         var _mbSp = window.spects[_mbI];
-                        if (_mbSp && _mbSp.player && _mbSp.number > 0) _mbOwnOffsets.push(_mbSp.number * LM_UNIT_ID_STEP);
+                        if (_mbSp && _mbSp.player && _mbSp.number > 0) _mbOwnOffsets[_mbOwnN++] = _mbSp.number * LM_UNIT_ID_STEP;
                     }
                 }
                 /* Any multibox connection open: also match copies by position (ids differ
@@ -78058,8 +78111,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         cell._lmMbPosDup = false;
                         cell.invisible = false;
                     }
-                    if (_mbOwnOffsets && !(cell.spectator > 0) && !cell.isPlayerCell && !cell.isFood) {
-                        for (var _mbK = 0; _mbK < _mbOwnOffsets.length; _mbK++) {
+                    if (_mbOwnN && !(cell.spectator > 0) && !cell.isPlayerCell && !cell.isFood) {
+                        for (var _mbK = 0; _mbK < _mbOwnN; _mbK++) {
                             var _mbOwn = LM.indexedCells[cell.id + _mbOwnOffsets[_mbK]];
                             if (_mbOwn && _mbOwn !== cell && _mbOwn.isPlayerCellMulti && !_mbOwn.removed) {
                                 cell._lmMbOwnDup = true;

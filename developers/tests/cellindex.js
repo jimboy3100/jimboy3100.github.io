@@ -54,7 +54,7 @@ vm.runInContext([
     'var defaultmapsettings = { virusesRange: true, animation: 120, shortMass: false, virMassShots: false };',
     'var defaultSettings = { foodColor: "#5000ff" };',
     'var application = { mbSlots: [], selectedOldProfile: 0 }, profiles = [];',
-    'function lmMultiboxPositionTwin() { return null; }',
+    'function lmMultiboxPositionTwin() { return null; } var _lmMbOwnOffsetsBuf = [];',
     /* the cell class with the list helpers before it */
     slice('    function quickSwapDelete(', '    }).call(ogarbasicassembly.prototype);\n', true),
     'window.legendmod1 = ogarbasicassembly;',

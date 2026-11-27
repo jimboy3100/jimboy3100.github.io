@@ -1,12 +1,12 @@
 // Unit check of the multibox position twin rule (lmMultiboxPositionTwin in ogario.v4.js):
 // a cell seen by two connections is drawn once, and a different cell over a unit's own
 // cell (enemy of the same size, virus) is never hidden on both connections.
-// Usage: node developers/tests/mbtwin.js
+// Usage: node developers/tests/mbtwin.js [ogario.v4.js]
 const fs = require('fs');
 const path = require('path');
 const vm = require('vm');
 
-const src = fs.readFileSync(path.join(__dirname, '../../ogario/ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '../../ogario/ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
 const start = src.indexOf('var LM_UNIT_ID_STEP');
 const endMark = src.indexOf('function lmMultiboxPositionTwin(');
 const end = src.indexOf('\n}\n', endMark);
@@ -221,6 +221,183 @@ for (const order of ['own first', 'copy first']) {
     frame(ctx, cells);
     const tests = vm.runInContext('_lmTests', ctx);
     check('crowded bucket, no own cells: main copies test no candidates (' + tests + ' tests for ' + cells.length + ' cells)', tests <= cells.length);
+}
+/* 11. The frame's real hide step and compaction (cut from drawRender) with this search, frame by
+ * frame, against the same frames with the search it replaced (a Map of 256-unit buckets built
+ * once per world update and scanned bucket by bucket): every cell's drawn / hidden state, its
+ * twin, the copy it hides and the order of LM.cells must be identical. Seeded scenes with 2-4
+ * connections, own cells, big cells, crowds, cells moving between updates, cells dying (the
+ * removeCell() unhide), copies appearing as views cross, removed cells compacted mid-loop and
+ * different ids on each connection (agar.io) or shared ids (Expanding Land). */
+{
+    const a = src.indexOf('var _cW = 0;'), b = src.indexOf('* JELLY PHYSICS\n                 * CURRENT-FRAME PREPARATION', a);
+    if (a < 0 || b < 0) throw new Error('frame compaction not found in ogario.v4.js');
+    const compact = src.slice(a, b).slice(0, src.slice(a, b).lastIndexOf('/*'));
+    /* the search before, kept here as the reference */
+    const before = [
+        'var _refGrid = null, _refGridTime = -1, _refGridMap = new Map(), _refOwnMap = new Map(), _refPool = [];',
+        'function _refRecycle(bucket) { bucket.length = 0; _refPool.push(bucket); }',
+        'function _refAdd(grid, key, c) {',
+        '    var bucket = grid.get(key);',
+        '    if (bucket) bucket.push(c);',
+        '    else { bucket = _refPool.length ? _refPool.pop() : []; bucket.push(c); grid.set(key, bucket); }',
+        '}',
+        'function _refBuild() {',
+        '    var LM = window.legendmod, grid = _refGridMap, own = _refOwnMap;',
+        '    grid.forEach(_refRecycle); grid.clear(); own.forEach(_refRecycle); own.clear();',
+        '    var cells = LM && LM.cells;',
+        '    for (var i = 0; cells && i < cells.length; i++) {',
+        '        var c = cells[i];',
+        '        if (!c || c.removed || c.isFood || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;',
+        '        var key = Math.floor(c.x / 256) * 65536 + Math.floor(c.y / 256);',
+        '        _refAdd(grid, key, c);',
+        '        if (c.spectator > 0 && c.isPlayerCellMulti) _refAdd(own, key, c);',
+        '    }',
+        '    return grid;',
+        '}',
+        'lmMultiboxPositionTwin = function (cell) {',
+        '    var LM = window.legendmod;',
+        '    if (!cell || cell.removed || cell.isFood || !LM || !window.spects || !window.spects.length) return null;',
+        '    if (cell.spectator > 0 ? cell.isPlayerCellMulti : cell.isPlayerCell) return null;',
+        '    if (!Number.isFinite(cell.x) || !Number.isFinite(cell.y)) return null;',
+        '    var radius = _lmMbCellRadius(cell);',
+        '    if (!radius) return null;',
+        '    if (cell._lmMbTwin && _lmMbIsPreferredTwin(cell, cell._lmMbTwin, radius)) return cell._lmMbTwin;',
+        '    cell._lmMbTwin = null;',
+        '    if (_refGridTime !== LM.time || !_refGrid) { _refGrid = _refBuild(); _refGridTime = LM.time; }',
+        '    var grid = cell.spectator > 0 ? _refGrid : _refOwnMap;',
+        '    if (!grid.size) return null;',
+        '    var gx = Math.floor(cell.x / 256), gy = Math.floor(cell.y / 256);',
+        '    var reach = Math.max(1, Math.ceil(Math.max(1.2 * radius, 60) / 256));',
+        '    for (var ox = -reach; ox <= reach; ox++) for (var oy = -reach; oy <= reach; oy++) {',
+        '        var bucket = grid.get((gx + ox) * 65536 + gy + oy);',
+        '        for (var i = 0; bucket && i < bucket.length; i++) if (_lmMbIsPreferredTwin(cell, bucket[i], radius)) { cell._lmMbTwin = bucket[i]; return bucket[i]; }',
+        '    }',
+        '    return null;',
+        '};'
+    ].join('\n');
+    const loop = 'function _frame() { var LM = window.legendmod, i, cell;\n' + compact + '\n}';
+    function env(ref) {
+        const ctx = vm.createContext({ window: { legendmod: { cells: [], indexedCells: {}, time: 0 }, spects: [] }, Number, Math, Map, Float64Array, Int32Array, Array });
+        vm.runInContext(code + '\n' + (ref ? before : '') + '\n' + loop, ctx);
+        return ctx;
+    }
+    /* one seeded world, replayed the same way on both clients */
+    function world(seed, conns, shared, nBodies, bigFrac, own, crowd) {
+        let s = seed;
+        const rnd = () => { s = (Math.imul(s, 48271) % 2147483647 + 2147483647) % 2147483647; return (s - 1) / 2147483646; };
+        const cols = ['#ff0000', '#00ff00', '#0000ff', '#ffff00'];
+        const bodies = [];
+        for (let i = 0; i < nBodies; i++) {
+            const big = rnd() < bigFrac, z = big ? 350 + rnd() * 1200 : 18 + rnd() * 220, kind = rnd();
+            bodies.push({ raw: i + 1, x: (rnd() - 0.5) * 9000, y: (rnd() - 0.5) * 6000, vx: (rnd() - 0.5) * 30, vy: (rnd() - 0.5) * 30,
+                size: kind < 0.08 ? 140 : kind > 0.92 ? 38 : z, color: cols[(rnd() * 4) | 0], nick: rnd() < 0.5 ? 'n' + ((rnd() * 6) | 0) : '',
+                isVirus: kind < 0.08, isEjected: kind > 0.92, owner: -1, copies: [] });
+        }
+        for (let i = 0; i < crowd; i++) bodies.push({ raw: bodies.length + 1, x: 100 + rnd() * 200, y: 100 + rnd() * 200, vx: 0, vy: 0, size: 38, color: '#00ff00', nick: '', isVirus: false, isEjected: true, owner: -1, copies: [] });
+        /* own cells of the main player (owner 0) and of the units (owner >= 1) */
+        for (let i = 0; i < own; i++) bodies.push({ raw: bodies.length + 1, x: (rnd() - 0.5) * 900, y: (rnd() - 0.5) * 900, vx: (rnd() - 0.5) * 20, vy: (rnd() - 0.5) * 20,
+            size: 40 + rnd() * 400, color: '#abcdef', nick: 'me', isVirus: false, isEjected: false, owner: (rnd() * conns) | 0, copies: [] });
+        return { rnd, bodies, conns, shared };
+    }
+    /* each connection sees a band of the world that drifts, so copies appear and go (views cross) */
+    const sees = (w, k, b, f) => { const c = (k + 0.5) / w.conns - 0.5 + 0.15 * Math.sin(f / 9 + k); return Math.abs(b.x / 9000 - c) < 0.75 / w.conns + 0.1; };
+    function step(w, f, lms) {
+        const r = w.rnd, ev = [];
+        for (const b of w.bodies) { b.x += b.vx; b.y += b.vy; if (Math.abs(b.x) > 4500) b.vx = -b.vx; if (Math.abs(b.y) > 3000) b.vy = -b.vy; }
+        if (f % 5 === 0 || f % 5 === 2) ev.push(['tick']);
+        if (r() < 0.3) { const b = w.bodies[(r() * w.bodies.length) | 0]; if (b.owner < 0) b.dead = true; }
+        if (r() < 0.3) { const b = w.bodies[(r() * w.bodies.length) | 0]; if (b.owner < 0) b.dead = false; }
+        for (const b of w.bodies) for (let k = 0; k < w.conns; k++) {
+            const want = !b.dead && sees(w, k, b, f) && r() > 0.02;
+            const has = b.copies[k] !== undefined;
+            if (want && !has) ev.push(['add', b, k, (r() - 0.5) * 40, (r() - 0.5) * 40, r() < 0.02]);
+            else if (!want && has) ev.push(['remove', b, k]);
+        }
+        const jit = [];
+        for (let i = 0; i < 401; i++) jit.push((r() - 0.5) * 12);
+        /* the same events on both clients */
+        for (const L of lms) apply(w, L, ev, jit);
+        for (const e of ev) { if (e[0] === 'add') e[1].copies[e[2]] = true; else if (e[0] === 'remove') delete e[1].copies[e[2]]; }
+    }
+    function apply(w, L, ev, jit) {
+        const LM = L.window.legendmod;
+        L.copies = L.copies || new Map();
+        for (const e of ev) {
+            if (e[0] === 'tick') { LM.time++; continue; }
+            const b = e[1], k = e[2], key = b.raw + ':' + k;
+            if (e[0] === 'add') {
+                const raw = w.shared ? b.raw : b.raw + 1000000 * k;
+                const own = b.owner === k;
+                const c = { _k: key, id: k ? raw + k * 4294967296 : raw, x: b.x + e[3], y: b.y + e[4], size: b.size, targetSize: b.size,
+                    color: own && k ? '#00ffaa' : b.color, targetNick: b.nick, spectator: k, isVirus: b.isVirus, isEjected: b.isEjected, isFood: false,
+                    isPlayerCell: own, isPlayerCellMulti: own && k > 0, removed: false, invisible: e[5] };
+                L.copies.set(key, c);
+                LM.cells.push(c);
+                LM.indexedCells[c.id] = c;
+                if (c.isPlayerCellMulti) LM.playerCellsMulti.push(c);
+            } else {
+                const c = L.copies.get(key);
+                L.copies.delete(key);
+                /* removeCell(): its multibox part */
+                c.removed = true;
+                if (c.isPlayerCellMulti && c.id >= 4294967296) {
+                    const m = LM.indexedCells[c.id % 4294967296];
+                    if (m && m._lmMbOwnDup) { m._lmMbOwnDup = false; m.invisible = false; }
+                }
+                const h = c._lmMbHides;
+                if (h && h._lmMbPosDup && h._lmMbTwin === c) { h._lmMbPosDup = false; h._lmMbTwin = null; h.invisible = false; }
+                c._lmMbHides = null;
+                delete LM.indexedCells[c.id];
+                const pi = LM.playerCellsMulti.indexOf(c);
+                if (pi >= 0) LM.playerCellsMulti.splice(pi, 1);
+            }
+        }
+        /* moving between world updates (the search keeps the buckets of the last update) */
+        let j = 0;
+        for (const c of LM.cells) if (!c.removed && !c.isPlayerCellMulti) { c.x += jit[j++ % jit.length]; c.y += jit[j++ % jit.length]; }
+    }
+    const tag = (c) => c ? c._k : null;
+    function state(L) {
+        const out = [];
+        for (const c of L.window.legendmod.cells) out.push([c._k, !!c.invisible, !!c._lmMbPosDup, !!c._lmMbOwnDup, !!c._renderSuppressed, tag(c._lmMbTwin), tag(c._lmMbHides)].join('|'));
+        return out.join(';');
+    }
+    let frames = 0, diffs = 0, hidden = 0, firstDiff = null;
+    const cases = [[11, 2, false, 300, 0.03, 10, 0], [12, 2, true, 300, 0.03, 10, 0], [13, 3, false, 400, 0.1, 16, 40], [14, 4, false, 250, 0.2, 20, 0], [15, 3, true, 200, 0.05, 12, 120]];
+    for (const [seed, conns, shared, n, big, own, crowd] of cases) {
+        const w = world(seed, conns, shared, n, big, own, crowd);
+        const lms = [env(false), env(true)];
+        for (const L of lms) {
+            for (let k = 1; k < conns; k++) L.window.spects.push({ player: true, number: k });
+            L.window.legendmod.multiBoxPlayerExists = true;
+            L.window.legendmod.playerCellsMulti = [];
+        }
+        for (let f = 0; f < 40; f++) {
+            step(w, f, lms);
+            for (const L of lms) L._frame();
+            const sa = state(lms[0]), sb = state(lms[1]);
+            if (sa !== sb) { diffs++; if (!firstDiff) firstDiff = 'seed ' + seed + ' frame ' + f; }
+            hidden += (sa.match(/\|true\|true\|/g) || []).length;
+            frames++;
+        }
+    }
+    check('real frame step: same drawn cells, twins and order as the bucket-by-bucket search (' + frames + ' frames, ' + hidden + ' copies hidden)' + (firstDiff ? ', first difference: ' + firstDiff : ''), diffs === 0 && hidden > 1000);
+
+    /* big cells (reach 8 buckets each way) over a sparse world: the search reads the cells in
+     * reach column by column instead of probing each of the 17 x 17 buckets in a Map */
+    const L = env(false);
+    L.window.spects.push({ player: true, number: 1 });
+    const LM = L.window.legendmod;
+    for (let i = 0; i < 40; i++) LM.cells.push(cell({ spectator: i % 2, x: -4000 + i * 200, y: (i % 5) * 900, size: 1500, targetSize: 1500, color: '#0' + (10000 + i) }));
+    vm.runInContext('var _lmGets = 0; Map.prototype.get = (function (g) { return function (k) { _lmGets++; return g.call(this, k); }; })(Map.prototype.get);', L);
+    const twin = vm.runInContext('lmMultiboxPositionTwin', L);
+    LM.time++;
+    for (const c of LM.cells) twin(c);
+    vm.runInContext('_lmGets = 0', L);
+    for (const c of LM.cells) { c._lmMbTwin = null; twin(c); }
+    const gets = vm.runInContext('_lmGets', L);
+    check('big cells over a sparse world: no bucket-by-bucket probing (' + gets + ' bucket lookups for 40 searches)', gets <= 40 * 17);
 }
 
 if (failed) {
