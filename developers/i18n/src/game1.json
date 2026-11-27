@@ -2735,24 +2735,6 @@
     "ja": "(利用不可)",
     "it": "(non disponibile)"
   },
-  "game1.set.universalChatOff": {
-    "en": "Agar Tool universal chat is not available in this version",
-    "el": "Η καθολική συνομιλία του Agar Tool δεν είναι διαθέσιμη σε αυτή την έκδοση",
-    "es": "El chat universal de Agar Tool no está disponible en esta versión",
-    "bg": "Универсалният чат на Agar Tool не е наличен в тази версия",
-    "fr": "Le chat universel d'Agar Tool n'est pas disponible dans cette version",
-    "ar": "دردشة Agar Tool العامة غير متاحة في هذا الإصدار",
-    "zh": "此版本無法使用 Agar Tool 通用聊天",
-    "ru": "Универсальный чат Agar Tool недоступен в этой версии",
-    "de": "Der universelle Agar-Tool-Chat ist in dieser Version nicht verfügbar",
-    "tr": "Agar Tool evrensel sohbeti bu sürümde yok",
-    "pl": "Uniwersalny czat Agar Tool jest niedostępny w tej wersji",
-    "nl": "De universele Agar Tool-chat is niet beschikbaar in deze versie",
-    "pt": "O chat universal do Agar Tool não está disponível nesta versão",
-    "id": "Chat universal Agar Tool tidak tersedia di versi ini",
-    "ja": "このバージョンでは Agar Tool のユニバーサルチャットは使えません",
-    "it": "La chat universale di Agar Tool non è disponibile in questa versione"
-  },
   "game1.set.directorLoading": {
     "en": "The spectator director is still loading. Try again in a moment.",
     "el": "Ο σκηνοθέτης θεατή φορτώνει ακόμα. Δοκιμάστε ξανά σε λίγο.",

@@ -21468,7 +21468,6 @@ var defaultmapsettings = {
     hideEnemiesMass: false,
     vanillaSkins: true,
     ownVanillaSkin: false,
-    universalChat: true,
     customSkins: true,
     noSkins: false,
     noColors: false,              /* Issue #9: added so the checkbox persists via setSettings/loadSettings */
@@ -21672,6 +21671,7 @@ var defaultmapsettings = {
     virusPopSound: false,         /* sound when an own cell pops a virus */
     virusEatSound: false,         /* sound when an own cell eats a virus at 16 pieces */
     notificationCentre: false,    /* bell + list of the last toasts (ogario/modules/notifications.js) */
+    agarToolTeam: false,          /* AgarTool players with my tag as teammates: team list, minimap, chat (ogario/modules/agartool.js) */
     /* sound mixer, 0..1: channel x master; 1 = unchanged */
     volMaster: 1,
     volChat: 1,                   /* chat message sound */
@@ -24673,13 +24673,6 @@ function thelegendmodproject() {
                 window.preSetanimateSkincheck = 6000;
             }
         },
-        setUniversalChat() {
-            if (defaultmapsettings.universalChat && $("#ao2t-hud").length && legendmod && legendmod.ws) {
-                $("#ao2t-hud").show();
-            } else {
-                $("#ao2t-hud").hide();
-            }
-        },
         setAnimatedRainbowColor() {
             /* Called on every connect: act only when the setting changed, or restore()
              * also removed fillText hooks installed later (Edit game names). */
@@ -25433,7 +25426,11 @@ function thelegendmodproject() {
                     }
                     //
 
-                    if (!this.sendChatMessage(101, value) && !sent99) {
+                    /* AgarTool team (ogario/modules/agartool.js): the line goes to AgarTool's server too.
+                     * Sent after the relay, which shows our own line; else AgarTool's echo shows it. */
+                    var sentRelay = this.sendChatMessage(101, value);
+                    var sentAT = !!(window.LMAgarTool && window.LMAgarTool.sendChat(value, sentRelay || sent99));
+                    if (!sentRelay && !sent99 && !sentAT) {
                         toastr.warning(_lmG1tag('game1.tag.chat', 'game1.chat.notConnected'));
                         return;
                     }
@@ -25992,9 +25989,6 @@ function thelegendmodproject() {
                         break;
                     case 'vanillaSkins':
                         this.setVanillaSkins();
-                        break;
-                    case 'universalChat':
-                        this.setUniversalChat();
                         break;
                     case 'animatedRainbowColor':
                         this.setAnimatedRainbowColor();
@@ -27430,12 +27424,7 @@ function thelegendmodproject() {
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["noColors", "myCustomColor", "myTransparentSkin", "transparentSkins", "transparentCells", "transparentViruses", "virusGlow", 'cellContours', "showCellShadows", "animatedRainbowColor"], "transparencyGroup");
             this.addOptions(["showGrid", "showBgSectors", "showMapBorders", "borderGlow", "rainbowMapBorders"], "gridGroup");
-            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "universalChat", "mentionNotify", "chatShowId"], "chatGroup");
-            /* The Agar Tool universal chat is not started in this version (universalchat() is not called), so the switch would do nothing.
-               Keep the stored value, but show the option as unavailable instead of a dead switch. */
-            if (!window.ao2t) {
-                $('#universalChat').prop('disabled', true).before('<small>' + _lmG1s('game1.set.unavailable') + ' </small>').closest('label').attr('data-i18n-title', 'game1.set.universalChatOff').attr('title', lmT('game1.set.universalChatOff')).css('opacity', 0.6);
-            }
+            this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "agarToolTeam", "mentionNotify", "chatShowId"], "chatGroup");
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup"); // OLD: without universalChat
             /* Sound mixer: volume per channel times the master volume, applied where each sound
              * plays (playSound, the video skin volume timer); all 1 = unchanged. The gameplay
@@ -41738,7 +41727,6 @@ function thelegendmodproject() {
                     application.sendServerJoin();
                     application.sendServerData();
                     application.displayLeaderboard('');
-                    application.setUniversalChat();
                     application.setAnimatedRainbowColor();
                     if (window.master && window.master.onConnect) window.master.onConnect();
                     self.play = false;
@@ -41762,7 +41750,6 @@ function thelegendmodproject() {
                 application.sendServerJoin();
                 application.sendServerData();
                 application.displayLeaderboard('');
-                application.setUniversalChat();
                 application.setAnimatedRainbowColor();
                 if (window.master && window.master.onConnect) window.master.onConnect();
                 self.play = false;
@@ -41902,7 +41889,6 @@ function thelegendmodproject() {
                 application.sendServerJoin();
                 application.sendServerData();
                 application.displayLeaderboard('');
-                application.setUniversalChat();
                 application.setAnimatedRainbowColor();
                 if (window.master && window.master.onConnect) window.master.onConnect();
                 self.play = false;
@@ -42056,7 +42042,6 @@ function thelegendmodproject() {
             application.sendServerJoin();
             application.sendServerData();
             application.displayLeaderboard('');
-            application.setUniversalChat();
             application.setAnimatedRainbowColor();
 
             this.play = false //fix
@@ -52687,9 +52672,6 @@ function thelegendmodproject() {
                 }
             }
             window.teammatenicks = window.teammatelegendmodnicks;
-            if (window.agartoolteammatenicks != undefined) {
-                window.teammatenicks = window.teammatenicks.concat(window.agartoolteammatenicks);
-            }
             /* Set copy for the per-cell, per-frame teammate check; the array stays for its other readers */
             window._lmTeammateNickSet = new Set(window.teammatenicks);
             /* teammates' cells draw the skin their team list row shows (application.teamSkinUrl) */
@@ -89140,6 +89122,16 @@ Object.defineProperty(Array.prototype, 'stDev', {
     }
     /* The Command Centre is removed: what it kept (stars, recently used) is deleted from this browser */
     try { localStorage.removeItem('lmCommandCentre'); } catch (e) { }
+    /* AgarTool team: AgarTool players with my tag on the same agar.io server as teammates (no socket or timer while its option is off) */
+    try {
+        var agarToolScript = document.createElement('script');
+        agarToolScript.type = 'text/javascript';
+        agarToolScript.src = 'https://www.legendmod.ml/ogario/modules/agartool.js?v=' + (window.OgVer || '');
+        agarToolScript.charset = 'utf-8';
+        document.body.appendChild(agarToolScript);
+    } catch (e) {
+        console.warn('[LM] Error loading AgarTool script:', e);
+    }
     /* Death recap, kill feed and mass-loss alerts (no listeners or timers while its options are off) */
     try {
         var deathRecapScript = document.createElement('script');

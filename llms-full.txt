@@ -209,7 +209,7 @@ In-game text chat with rich features:
 - **Video sharing**: Embed videos in chat messages
 - **Emoticons**: Built-in emoticon support
 - **Chat translation**: Auto-translate incoming messages
-- **Universal chat**: Cross-server chat
+- **AgarTool team**: players of the AgarTool extension with your clan tag on the same agar.io server join your team list, minimap and team chat (off by default)
 - **Mention notifications**: Desktop notifications when mentioned while tab is hidden
 - **Chat sounds**: Configurable notification sounds for messages and commands
 - **Audio ducking**: Incoming chat sounds lower video skin volume temporarily (1.5s, 0.3 volume)
@@ -396,7 +396,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Performance and Network**: WebGL, High DPI, FPS cap, adaptive performance (target, toasts, resolution), performance mode, anti-aliasing, network history, net graph
 - **Minimap**: Show/rotate, grid, guides, ghost cells, trail, click-spectate, one-coloured teammates
 - **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, edge arrows, cell panel, stats display, indicators, online status, sticky cell
-- **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter, coloured nicks, hide country, universal chat, player ID
+- **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter, coloured nicks, hide country, AgarTool team, player ID
 - **Sounds**: Sound mixer (6 channels), individual sound toggles, audio ducking
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots, click-spectate
 - **Multibox**: Amount (2-4), rings (P1/P2 colour, size, active-only), freeze, auto-respawn, switch after death, camera view, shadow

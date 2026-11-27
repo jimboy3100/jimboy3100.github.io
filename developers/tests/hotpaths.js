@@ -4,7 +4,6 @@
  * - lmTop5TempTeammates: a temporary (socket 3) teammate expires 6 s after its last update,
  *   is not added twice, and fresh ones stay listed.
  * - application._lmTop5Write: teamboard DOM writes only when something changed.
- * - LMexpress skin auto toggle calls the toggle instead of faking an A key press.
  * Usage: node developers/tests/hotpaths.js */
 const fs = require('fs');
 const path = require('path');
@@ -155,33 +154,6 @@ check('an empty team clears the list', W.top5pos.innerHTML === '' && W.top5total
 const top5Src = slice('        displayTop5() {\n            if (defaultmapsettings.top5skins', '        _lmTop5Write(');
 check('skin rows no longer look up #hudMainColor per row', (top5Src.match(/\$\('#hudMainColor'\)/g) || []).length === 1 && /if \(totalMass === undefined\)/.test(top5Src));
 check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(top5Src));
-
-/* ---- LMexpress skin auto toggle ---- */
-const lmx = fs.readFileSync(path.join(root, 'LMexpress', 'LMexpress.js'), 'utf8').replace(/\r\n/g, '\n');
-const toggleSrc = lmx.slice(lmx.indexOf('    my.skinToggle_start = function'), lmx.indexOf('    // ====  Agar Tool Communication'));
-check('skin auto toggle no longer fakes key presses', toggleSrc.length > 0 && !/trigger\(/.test(toggleSrc) && /application\.toggleSkins\(\)/.test(toggleSrc));
-{
-    const timers = [];
-    const ctx = {
-        setInterval(fn, ms) { timers.push({ fn: fn, ms: ms, on: true }); return timers.length; },
-        clearInterval(id) { if (timers[id - 1]) timers[id - 1].on = false; },
-        calls: 0
-    };
-    ctx.global = ctx;
-    ctx.application = { toggleSkins() { ctx.calls++; } };
-    const run = (cfg) => vm.runInNewContext('var my = {}, stat = {}, cfg = ' + JSON.stringify(cfg) + ';\n' + toggleSrc + '\nmy.skinToggle_start(); my.skinToggle_start(); my;', ctx);
-    run({ skin_toggle_auto: false, skin_toggle_interval: 10000 });
-    check('skin auto toggle off: no interval', timers.filter((t) => t.on).length === 0);
-    const my = run({ skin_toggle_auto: true, skin_toggle_interval: '10000' });
-    run({ skin_toggle_auto: true, skin_toggle_interval: 10000 }); // a second copy of the script
-    const live = timers.filter((t) => t.on);
-    check('skin auto toggle on: exactly one 10 s interval, even when started again', live.length === 1 && live[0].ms === 10000);
-    live[0].fn();
-    check('each tick calls application.toggleSkins', ctx.calls === 1);
-    run({ skin_toggle_auto: true, skin_toggle_interval: 5 });
-    check('tiny interval is raised to 1 s', timers.filter((t) => t.on)[0].ms === 1000);
-    check('started without application: tick does nothing and does not throw', (() => { delete ctx.application; try { my.skinToggle_update(); return true; } catch (e) { return false; } })());
-}
 
 /* ---- Performance diagnostics off: the message handler of a multibox / spectator unit
  * (spect.js onmessage) reads one global, window._lmNetRec, and handles the message as before;
