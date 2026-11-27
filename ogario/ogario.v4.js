@@ -84034,6 +84034,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this.lastKeyId = '';
             var setup = this;
             $('#hotkeys-cfg .custom-key-in').each(function () { if (hotkeysCommand[this.id]) setup.showKeys(this.id); });
+            this.refreshConflicts();
+        },
+        /* the conflict list of this window, when it is shown: after each change of the keys
+         * (Restore, Close, a settings profile) and of the gamepad buttons (ogario/gamepad.js) */
+        refreshConflicts() {
+            if (window.LMSmallTools && typeof window.LMSmallTools.refreshConflicts === 'function') { try { window.LMSmallTools.refreshConflicts(); } catch (eRc) { } }
         },
         setHotkeysMenu() {
             //var t = this;
@@ -84094,7 +84100,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                     $('#hotkeys').fadeIn(500);
                     /* a conflict list left open shows the keys as they are now */
-                    if (window.LMSmallTools && typeof window.LMSmallTools.refreshConflicts === 'function') { try { window.LMSmallTools.refreshConflicts(); } catch (eRc) { } }
+                    setup.refreshConflicts();
                     $('#hotkeys-cfg').perfectScrollbar('update');
                     resetonkeydown();
                 }),
@@ -84371,7 +84377,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* also when the chat key was taken by another command or deleted */
                 this.syncMessageKey();
                 /* the conflict list of this window, when it is shown */
-                if (window.LMSmallTools && typeof window.LMSmallTools.refreshConflicts === 'function') { try { window.LMSmallTools.refreshConflicts(); } catch (eRc) { } }
+                this.refreshConflicts();
             }
         },
         /*
@@ -84402,6 +84408,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     $(this).val(chatCommand[id] == null ? '' : String(chatCommand[id]));
                 }
             });
+            hotkeysSetup.refreshConflicts();
         },
         /* "Close" without "Save": undo the changes made since the dialog was opened
          * (they stayed active until a reload, then were lost) */

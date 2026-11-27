@@ -611,6 +611,12 @@
 
     /* the Gamepad window: ogario/modules/gamepad-ui.js, loaded the first time it opens */
     var uiLoading = false;
+    /* the Hotkeys window's conflict list (open behind the Gamepad window) lists gamepad buttons
+     * that run a command a key runs too: it follows a button change */
+    function conflictsChanged() {
+        try { if (window.legendmod6 && typeof window.legendmod6.refreshConflicts === 'function') window.legendmod6.refreshConflicts(); } catch (e) { }
+    }
+
     function openWindow(toggle) {
         var ui = window.LMGamepadUI;
         if (ui && typeof ui.open === 'function') {
@@ -658,6 +664,7 @@
             if (map[i] === 'feed') setFeed(false);
             map[i] = a;
             save();
+            conflictsChanged();
             return true;
         },
         resetMap: function () {
@@ -665,6 +672,7 @@
             setFeed(false);
             map = cleanMap(null);
             save();
+            conflictsChanged();
         },
         getOpts: currentOpts,
         setOpts: applyOpts,
