@@ -236,16 +236,16 @@ check('diff: a set differing only in the phone control layout is not the same', 
     check('import: a value of the wrong type is not written', dst2.getItem('lmHudLayouts') === '{"keep":1}' && dst2.getItem('lmSettingsProfiles') === null);
     check('import: the zoom bookmarks of an older export are not written', dst2.getItem('lm-zoom-bookmarks') === null);
     check('import: Performance mode backup of the replaced settings goes when the export has none', dst2.getItem('lmPerfBackup') === null);
-    /* Command Centre: the starred commands (also its quick bar) are configuration, the recently
-     * used ones history: only the stars go, the importing device keeps its own recent list */
+    /* the removed Command Centre: stars left in this browser are not exported, and an older
+     * export that has them writes nothing (and no error) */
     const src3 = makeStorage(0);
     src3.setItem('lmCommandCentre', J({ fav: ['hk:hk-feed', 'opt:showMass'], recent: ['hk:hk-split'] }));
     const out3 = JSON.parse(J(exp(src3)));
-    check('export: the Command Centre stars, not its recently used list', J(out3.lmCommandCentre) === J({ fav: ['hk:hk-feed', 'opt:showMass'] }));
+    check('export: no Command Centre stars', !('lmCommandCentre' in out3));
     const dst3 = makeStorage(0);
-    dst3.setItem('lmCommandCentre', J({ fav: ['opt:x'], recent: ['hk:hk-menu'] }));
-    imp(out3, (k, t) => dst3.setItem(k, t), k => dst3.removeItem(k), null, k => dst3.getItem(k));
-    check('import: the stars come in, this device keeps its recently used list', dst3.getItem('lmCommandCentre') === J({ fav: ['hk:hk-feed', 'opt:showMass'], recent: ['hk:hk-menu'] }));
+    let impErr = null;
+    try { imp({ lmCommandCentre: { fav: ['hk:hk-feed'] } }, (k, t) => dst3.setItem(k, t), k => dst3.removeItem(k), null, k => dst3.getItem(k)); } catch (e) { impErr = e; }
+    check('import: old Command Centre stars are ignored', !impErr && dst3.getItem('lmCommandCentre') === null);
     /* Notifications: the muted categories go, the read mark and the list filter stay per device */
     const src4 = makeStorage(0);
     src4.setItem('lmNotificationPrefs', J({ readId: 40, muted: { chat: true }, cat: 'chat', type: 'all' }));
@@ -775,12 +775,12 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
   const add = { 'hk-lmPlugins': { defaultKey: '' }, 'hk-zoom1': { defaultKey: '' }, 'hk-zoom2': { defaultKey: '' }, 'hk-showHUD': { defaultKey: '' } };
   Object.assign(ctx.hotkeysCommand, add);
   try {
-    const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', W: 'hk-feed', X: 'hk-hotkeyConflicts', K: 'hk-zoomSave3', Y: 'hk-skinCollections' } });
+    const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', W: 'hk-feed', X: 'hk-hotkeyConflicts', K: 'hk-zoomSave3', Y: 'hk-skinCollections', C: 'hk-commandCentre' } });
     check('renamed commands: Open the Lab key opens User Scripts', h && h.h.F9 === 'hk-lmPlugins');
     check('renamed commands: a zoom bookmark key goes to its zoom level', h && h.h['ALT+1'] === 'hk-zoom1');
     check('renamed commands: a zoom level with its own key keeps it, the old key is free', h && h.h.Z === 'hk-zoom2' && !('ALT+2' in h.h));
     check('renamed commands: Screenshot mode key is Show/hide HUD', h && h.h.F2 === 'hk-showHUD');
-    check('renamed commands: other keys stay, a removed command (Hotkey conflicts, zoom save, Skin collections) is dropped', h && h.h.W === 'hk-feed' && !('X' in h.h) && !('K' in h.h) && !('Y' in h.h));
+    check('renamed commands: other keys stay, a removed command (Hotkey conflicts, zoom save, Skin collections, Command Centre) is dropped', h && h.h.W === 'hk-feed' && !('X' in h.h) && !('K' in h.h) && !('Y' in h.h) && !('C' in h.h));
     const h2 = C.cleanBundle({ h: { F9: 'hk-lmLab', F10: 'hk-lmPlugins' } });
     check('renamed commands: User Scripts with a key of its own: the Lab key is free', h2 && h2.h.F10 === 'hk-lmPlugins' && !('F9' in h2.h));
     const raw = { h: { F9: 'hk-lmLab' } };

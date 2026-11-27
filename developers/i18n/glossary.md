@@ -99,7 +99,6 @@ lower case inside a sentence.
 | editor | editor | EN. packs: Επεξεργασία (means "editing"). Επεξεργαστής also fine. verify |
 | workshop | εργαστήριο | |
 | gallery | συλλογή | |
-| command centre | κέντρο εντολών | |
 | notification | ειδοποίηση | |
 | adaptive performance | προσαρμοστική απόδοση | |
 | performance mode | λειτουργία απόδοσης | |
@@ -204,7 +203,6 @@ are short nouns. Sentence case, not Title Case.
 | editor | editor | |
 | workshop | taller | |
 | gallery | galería | |
-| command centre | centro de comandos | |
 | notification | notificación | |
 | adaptive performance | rendimiento adaptativo | |
 | performance mode | modo rendimiento | |
@@ -309,7 +307,6 @@ in Cyrillic (скин, сплит, сървър, пинг, бот); keep FPS and
 | editor | редактор | |
 | workshop | работилница | |
 | gallery | галерия | |
-| command centre | команден център | |
 | notification | известие | |
 | adaptive performance | адаптивна производителност | |
 | performance mode | режим производителност | |
@@ -414,7 +411,6 @@ French players keep split, feed, skin, ping, lag, bot, multibox and replay in En
 | editor | éditeur | |
 | workshop | atelier | |
 | gallery | galerie | |
-| command centre | centre de commandes | |
 | notification | notification | |
 | adaptive performance | performances adaptatives | |
 | performance mode | mode performance | |
@@ -522,7 +518,6 @@ for headings (الإعدادات). Pick one form per window. Arab agar.io player
 | editor | المحرر | |
 | workshop | الورشة | |
 | gallery | المعرض | |
-| command centre | مركز الأوامر | |
 | notification | إشعار | |
 | adaptive performance | الأداء التكيّفي | |
 | performance mode | وضع الأداء | |
@@ -629,7 +624,6 @@ No second-person pronoun needed; where one is used, 你.
 | editor | 編輯器 | |
 | workshop | 工作坊 | |
 | gallery | 圖庫 | |
-| command centre | 指令中心 | |
 | notification | 通知 | |
 | adaptive performance | 自適應效能 | |
 | performance mode | 效能模式 | |
@@ -735,7 +729,6 @@ the packs already do.
 | editor | редактор | |
 | workshop | мастерская | |
 | gallery | галерея | |
-| command centre | командный центр | |
 | notification | уведомление | |
 | adaptive performance | адаптивная производительность | |
 | performance mode | режим производительности | |
@@ -841,7 +834,6 @@ English is involved (Clan-Tag, Party-Code, Streamer-Modus).
 | editor | Editor | |
 | workshop | Werkstatt | |
 | gallery | Galerie | |
-| command centre | Kommandozentrale | |
 | notification | Benachrichtigung | |
 | adaptive performance | Adaptive Leistung | |
 | performance mode | Leistungsmodus | |
@@ -947,7 +939,6 @@ skin'ler) and take an apostrophe only after an abbreviation or a name (FPS'i, Di
 | editor | düzenleyici | |
 | workshop | atölye | |
 | gallery | galeri | |
-| command centre | komuta merkezi | |
 | notification | bildirim | |
 | adaptive performance | uyarlanabilir performans | |
 | performance mode | performans modu | |
@@ -1053,7 +1044,6 @@ skin, ping, lag, bot and multibox and inflect them (skiny, splitem).
 | editor | edytor | |
 | workshop | warsztat | |
 | gallery | galeria | |
-| command centre | centrum dowodzenia | |
 | notification | powiadomienie | |
 | adaptive performance | adaptacyjna wydajność | |
 | performance mode | tryb wydajności | |
@@ -1159,7 +1149,6 @@ it reads better (clantag, partycode, streamermodus).
 | editor | editor | |
 | workshop | werkplaats | |
 | gallery | galerij | |
-| command centre | commandocentrum | |
 | notification | melding | |
 | adaptive performance | adaptieve prestaties | |
 | performance mode | prestatiemodus | |
@@ -1265,7 +1254,6 @@ them ("dar split", "dar feed", "respawnar"), so keep the loan word and build the
 | editor | editor | |
 | workshop | oficina | |
 | gallery | galeria | |
-| command centre | central de comandos | |
 | notification | notificação | |
 | adaptive performance | desempenho adaptativo | |
 | performance mode | modo desempenho | |
@@ -1372,7 +1360,6 @@ English verbs work in sentences as they are: "untuk split", "jangan feed".
 | editor | editor | |
 | workshop | workshop | EN |
 | gallery | galeri | |
-| command centre | pusat komando | |
 | notification | notifikasi | |
 | adaptive performance | performa adaptif | |
 | performance mode | mode performa | |
@@ -1480,7 +1467,6 @@ FPS, Ping, XP, DNA and key names.
 | editor | エディター | |
 | workshop | ワークショップ | |
 | gallery | ギャラリー | |
-| command centre | コマンドセンター | |
 | notification | 通知 | |
 | adaptive performance | 自動パフォーマンス調整 | verify |
 | performance mode | パフォーマンスモード | |
@@ -1586,7 +1572,6 @@ noun, in sentences the Italian verb form is fine.
 | editor | editor | |
 | workshop | workshop | EN |
 | gallery | galleria | |
-| command centre | centro comandi | |
 | notification | notifica | |
 | adaptive performance | prestazioni adattive | |
 | performance mode | modalità prestazioni | |

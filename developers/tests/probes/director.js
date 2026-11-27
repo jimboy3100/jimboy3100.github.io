@@ -1,4 +1,4 @@
-// Spectator director: off until used, hotkeys without keys, reachable from the Command Centre; the panel
+// Spectator director: off until used, hotkeys without keys, opened from its hotkey; the panel
 // opens, fits the screen, every tab renders, a bookmark is added, the auto camera and the broadcast HUD
 // toggle on and off without errors, and the close button closes it.
 (async () => {
@@ -17,24 +17,6 @@
   var savedMarks = null;
   try { savedMarks = localStorage.getItem('lm-director-bookmarks'); } catch (e) { }
   try {
-    /* Command Centre lists the window */
-    var CC = window.LMCommandCentre;
-    if (CC && typeof CC.open === 'function') {
-      CC.open();
-      await sleep(150);
-      var q = document.getElementById('lm-cc-q');
-      if (q) {
-        q.value = 'spectator director';
-        q.dispatchEvent(new Event('input', { bubbles: true }));
-        await sleep(150);
-        var txt = (document.getElementById('lm-cc-list') || {}).textContent || '';
-        if (txt.indexOf(lmT('modules.commandcentre.director')) < 0) fail.push('Command Centre does not list the director');
-      }
-      if (typeof CC.close === 'function') CC.close();
-      else document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-      await sleep(100);
-    }
-
     D.open();
     await sleep(200);
     var panel = document.getElementById('lm-dir-panel');
@@ -44,7 +26,7 @@
       info.panel = [Math.round(pr.left), Math.round(pr.top), Math.round(pr.width), Math.round(pr.height)];
       info.viewport = [innerWidth, innerHeight];
       if (pr.left < 0 || pr.top < 0 || pr.right > innerWidth + 1 || pr.bottom > innerHeight + 1) fail.push('panel does not fit the screen');
-      ['#lm-notif-bell', '#lm-cc-bar'].forEach(function (sel) {
+      ['#lm-notif-bell'].forEach(function (sel) {
         var el = document.querySelector(sel);
         if (!el || !el.getBoundingClientRect().width) return;
         var r = el.getBoundingClientRect();

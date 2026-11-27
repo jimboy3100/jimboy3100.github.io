@@ -1,4 +1,4 @@
-// Discover features: does not open by itself on a first visit, is listed in the Command Centre, opens,
+// Discover features: does not open by itself on a first visit, opens,
 // fits the screen, shows the feature cards with NEW badges, a switch flips the real option and back,
 // the server tab lists the capabilities, and the close button (touch size) closes it and marks the cards seen.
 (async () => {
@@ -13,28 +13,6 @@
   var dms = window.legendmod5 || window.defaultmapsettings || {};
   var before = dms.hudMoveDir;
   try {
-    var CC = window.LMCommandCentre;
-    if (CC && typeof CC.open === 'function') {
-      if (typeof CC.reveal !== 'function') fail.push('Command Centre has no reveal');
-      CC.open();
-      await sleep(150);
-      var q = document.getElementById('lm-cc-q');
-      if (q) {
-        q.value = 'discover features';
-        q.dispatchEvent(new Event('input', { bubbles: true }));
-        await sleep(150);
-        var txt = (document.getElementById('lm-cc-list') || {}).textContent || '';
-        if (txt.indexOf(lmT('modules.commandcentre.discover')) < 0 && txt.indexOf(lmT('modules.discovery.title')) < 0) fail.push('Command Centre does not list Discover features');
-        q.value = 'what works on this server';
-        q.dispatchEvent(new Event('input', { bubbles: true }));
-        await sleep(150);
-        txt = (document.getElementById('lm-cc-list') || {}).textContent || '';
-        if (txt.indexOf(lmT('modules.commandcentre.serverCaps')) < 0 && txt.indexOf(lmT('modules.discovery.serverTitle')) < 0) fail.push('Command Centre does not list the server capabilities');
-      }
-      if (typeof CC.close === 'function') CC.close();
-      await sleep(100);
-    }
-
     L.open();
     await sleep(150);
     var root = document.getElementById('lm-dc');

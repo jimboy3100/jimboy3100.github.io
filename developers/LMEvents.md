@@ -45,7 +45,7 @@ All three return `LMEvents`, so calls can be chained.
 | `multiboxSwap` | `{ unit, previous }` | the multibox unit you control changes, whatever changed it: the swap / back hotkeys, adding a unit, a unit taking the focus when it spawns, the unit you control dying (the focus goes back to the main player or to the next living unit), the switch after your main player died, a unit's connection closing, a reconnect or a server change. One event per change, none when the unit stays the same; `0` is the main player, other numbers are the unit numbers |
 | `replayStart` | `{ packets, start }` | a recorded replay starts playing: its packet count and the start packet. Seeking, stepping, pausing, playing backwards and reaching the end send no new event |
 | `replayStop` | `{ reason }` | the replay is left: `'left'` (you joined a live server, also with Back to game) or `'stopped'` (another recording is played, or the replay connection ended some other way). Closing Replay Studio keeps the stopped replay on screen, so it ends only when you join a server. Between `replayStart` and `replayStop` every event has `context` `'replay'` |
-| `settingsChange` | `{ key, value }` | a gameplay setting changed and was saved, whatever changed it: a switch, a slider, a text box or list in the settings menu, `application.setSettings`, a hotkey that toggles an option, a preset, a settings profile, the Command Centre or the gamepad window; `key` is the setting name (e.g. `'showGrid'`), `value` the new boolean, number or text. One event per changed setting, none when the value stays the same; a slider is reported once it rests or is released, not for every step. Theme settings are not reported |
+| `settingsChange` | `{ key, value }` | a gameplay setting changed and was saved, whatever changed it: a switch, a slider, a text box or list in the settings menu, `application.setSettings`, a hotkey that toggles an option, a preset, a settings profile or the gamepad window; `key` is the setting name (e.g. `'showGrid'`), `value` the new boolean, number or text. One event per changed setting, none when the value stays the same; a slider is reported once it rests or is released, not for every step. Theme settings are not reported |
 
 `time` values are `Date.now()` milliseconds.
 
@@ -123,8 +123,7 @@ LMEvents.on('death', function () { LMEvents.api.toast(splits + ' splits'); split
 
 ## Plugins
 
-Plugins live in the User Scripts panel (its "User Scripts" button, the "Open User Scripts" hotkey or the
-Command Centre). Its "Plugins" view lists the 5 slots with their header, whether each runs at start,
+Plugins live in the User Scripts panel (its "User Scripts" button, or the "Open User Scripts" hotkey). Its "Plugins" view lists the 5 slots with their header, whether each runs at start,
 compatibility and settings; its "Catalogue" view installs example plugins into a free slot.
 A plugin is an ordinary user script that starts with a header:
 

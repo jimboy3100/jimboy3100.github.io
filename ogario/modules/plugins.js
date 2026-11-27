@@ -1,5 +1,5 @@
 /* Legend Mod plugins, inside the User Scripts panel (its 5 slots: a URL or pasted code each).
- * The "User Scripts (plugins)" hotkey without a default key and the Command Centre open it.
+ * The "User Scripts (plugins)" hotkey without a default key opens it.
  *
  * A user script can start with a header that makes it a plugin:
  *
@@ -965,7 +965,7 @@
         return true;
     }
 
-    /* opens the User Scripts panel (from the hotkey, the Command Centre, LMLab.open: 'experiments'
+    /* opens the User Scripts panel (from the hotkey, LMLab.open: 'experiments'
      * shows the plugins view scrolled to the experiments) */
     function open(v) {
         var $ = jq();

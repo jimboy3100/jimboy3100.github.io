@@ -272,7 +272,7 @@
         return '';
     }
     /* the slot's key (or "not set") and a button that opens the Hotkeys window at its
-     * "Custom macro N" row, the way the Command Centre and the settings search do; the editor
+     * "Custom macro N" row, the way the settings search does; the editor
      * would cover that window, so it closes and opens again (same slot) when the window closes */
     function renderKey() {
         if (!keyEl) return;
@@ -290,8 +290,8 @@
     function openHotkeys(n) {
         var $ = W.jQuery;
         close();
-        var CC = W.LMCommandCentre, ok = false;
-        try { ok = !!(CC && typeof CC.reveal === 'function' && CC.reveal('hk-customMacro' + n)); } catch (e) { }
+        var ST = W.LMSmallTools, ok = false;
+        try { ok = !!(ST && typeof ST.jump === 'function' && ST.jump('hk-customMacro' + n)); } catch (e) { }
         if (!$) return;
         if (!ok) $('.hotkeys-link').first().trigger('click');
         $(D).off('click.lmMeBack').one('click.lmMeBack', '#save-hotkeys, #close-hotkeys', function () {

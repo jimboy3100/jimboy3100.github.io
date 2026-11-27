@@ -2,7 +2,7 @@
 // HUD and Show Timer Calc. buttons are gone; their settings: Theme > HUD "Rounded corners" (square
 // by default; the switch rounds the menu and HUD corners and is saved) and Settings > Stats "Show
 // stopwatch" next to "Show current time" (off by default; shows the stopwatch above the minimap).
-// Both are in the Command Centre. Stored settings and the values are put back.
+// Stored settings and the values are put back.
 (async () => {
   var fail = [], info = {};
   function need(name, ok) { if (!ok) fail.push(name); }
@@ -63,10 +63,6 @@
       change(sw, false);
       await sleep(50);
       need('off: the stopwatch is hidden', S.showStopwatch === false && $('#timertools-hud').css('display') === 'none');
-    }
-    if (window.LMCommandCentre) {
-      var ids = window.LMCommandCentre.items(true).map(function (it) { return it.id; });
-      need('both in the Command Centre', ids.indexOf('set:hudRoundedCorners') >= 0 && ids.indexOf('opt:showStopwatch') >= 0);
     }
   } finally {
     T.hudRoundedCorners = keepRound;

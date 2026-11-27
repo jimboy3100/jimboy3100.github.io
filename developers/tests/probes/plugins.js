@@ -2,7 +2,7 @@
 // example plugin (served from the checkout) installed into a free slot, run, registered, its settings
 // saved and the slot turned off again; the version gate; a 'settingsChange' event; the Lab
 // experiments in this window (under the plugin that added one, the others in its Experiments group;
-// no Lab section in the Settings tab, no Lab hotkey or Command Centre entry of its own).
+// no Lab section in the Settings tab, no Lab hotkey of its own).
 (async () => {
   var fail = [], info = {};
   var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -15,9 +15,8 @@
     if (!hotkeysCommand[h]) fail.push('hotkey ' + h + ' missing');
     else if (hotkeysCommand[h].defaultKey !== '') fail.push('hotkey ' + h + ' has a default key');
   });
-  // the Lab is part of the User Scripts window: no hotkey, Command Centre entry or Settings section of its own
+  // the Lab is part of the User Scripts window: no hotkey or Settings section of its own
   if (hotkeysCommand['hk-lmLab']) fail.push('a separate Lab hotkey still exists');
-  if (window.LMCommandCentre && typeof LMCommandCentre.items === 'function' && LMCommandCentre.items().some(function (it) { return it.id === 'win:lab'; })) fail.push('a separate Lab entry in the Command Centre');
   if (document.querySelector('#og-options .lmLabGroup')) fail.push('the Settings tab still has a Lab section');
   if (document.getElementById('lm-pl-overlay') || document.getElementById('lm-plugins-btn')) fail.push('a separate plugin manager window still exists');
   if (!$('#legend #OpenuserScripts').length) fail.push('User Scripts button missing in the Tools tab');

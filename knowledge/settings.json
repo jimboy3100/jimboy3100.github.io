@@ -109,8 +109,7 @@
         "onlineStatus",
         "stickyCell",
         "massInTab",
-        "hudMoveDir",
-        "commandCentreBar"
+        "hudMoveDir"
       ]
     },
     {

@@ -3,8 +3,8 @@
  * live preview (Keep / Revert, back by itself after 15 s), comparison of any two themes and a gallery
  * of themes shipped in the repo (ogario/themes/catalogue.json). No import / export tab of its own
  * (it confused players next to Settings > Export / Import, which also carries the theme);
- * importText stays for the tests. Opened from the Theme tab, a hotkey (no default key) or the
- * Command Centre. Nothing runs until the window is opened.
+ * importText stays for the tests. Opened from the Theme tab or a hotkey (no default key).
+ * Nothing runs until the window is opened.
  *
  * A theme package is data only:
  *   { format: "lm-theme", version: 1, name, author, description, created,
@@ -745,10 +745,10 @@
             '@media (max-width:600px){#lm-tw .lm-tw-hist{padding-left:0}}';
         D.head.appendChild(st);
     }
-    /* what the window and the preview bar must not cover: the notification bell, the Command Centre quick bar */
+    /* what the window and the preview bar must not cover: the notification bell */
     function avoidRects() {
         var out = [];
-        ['lm-notif-bell', 'lm-cc-bar'].forEach(function (id) {
+        ['lm-notif-bell'].forEach(function (id) {
             var el = D.getElementById(id);
             if (!el) return;
             var cs = W.getComputedStyle ? W.getComputedStyle(el) : null;

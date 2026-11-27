@@ -1,8 +1,7 @@
 /* Legend Mod HUD layouts: moved, resized, locked or hidden HUD boxes, saved as named layouts
  * (localStorage lmHudLayouts, validated on read). This file is the small part that applies the
  * active layout; the editor itself (frames, snapping, the layouts panel) is in hudeditor-ui.js,
- * loaded the first time the editor opens (Theme > HUD > Edit HUD, a hotkey with no default key,
- * or the Command Centre).
+ * loaded the first time the editor opens (Theme > HUD > Edit HUD, or a hotkey with no default key).
  *
  * With no active layout nothing is applied: no style element, no timer, every box where the game
  * puts it. A layout only lists the boxes the player changed; the others keep their normal place.
@@ -46,8 +45,7 @@
         { id: 'popups', sel: '#toast-container' },
         { id: 'netGraph', sel: '#lm-net-graph' },
         { id: 'cellPanel', sel: '#lm-hh-cells' },
-        { id: 'bell', sel: '#lm-notif-bell' },
-        { id: 'quickBar', sel: '#lm-cc-bar' }
+        { id: 'bell', sel: '#lm-notif-bell' }
     ];
     var BY_ID = {};
     COMPONENTS.forEach(function (c) { BY_ID[c.id] = c; });

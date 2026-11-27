@@ -1,16 +1,16 @@
 /* Legend Mod "Discover features" guide and "What works on this server".
  *
- * Discover features: one short card per optional feature (Command Centre, HUD helpers, Replay Studio,
+ * Discover features: one short card per optional feature (HUD helpers, Replay Studio,
  * Analytics, ...) with what it does, one-tap switches for its options (the real menu checkboxes, so
  * setSettings, saving and the NEW badges stay as they are), "Open" for its window and "Show in
- * settings", which opens the menu at the option and makes it blink (the Command Centre reveal). A
- * switch with a HUD part (quick bar, bell, cell panel) highlights where it appeared.
+ * settings", which opens the menu at the option and makes it blink (LMSmallTools.jump). A
+ * switch with a HUD part (bell, cell panel) highlights where it appeared.
  *
  * It never opens by itself: after an update the one notice is the "What's new" toast (LMexpress),
  * whose link opens it (it used to open once by itself as well, with a "Show after updates" switch).
  * Cards the player has not seen are marked NEW (a card changed since gets cv: 2, 3... and is NEW
  * again); the card ids seen and the last version are in localStorage 'lmDiscover' (validated on read).
- * Reachable from the Command Centre and that link.
+ * Reachable from that link.
  *
  * What works on this server: a static table, checked against the code, of which features work on
  * each server type (window.legendmod.serverType). It is only a guide: nothing is gated by it.
@@ -169,7 +169,6 @@
         return { avail: function () { return !!get(); }, run: function () { var o = get(); if (o) o[name](arg); } };
     }
     var CARDS = [
-        { id: 'commandCentre', opts: ['commandCentreBar'], show: { commandCentreBar: '#lm-cc-bar' }, win: opener('LMCommandCentre.open') },
         { id: 'hudHelpers', opts: ['hudMoveDir', 'hudMergeCountdown', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel'], show: { hudCellPanel: '#lm-hh-cells' } },
         { id: 'replayStudio', opts: ['recordReplays'], win: opener('lmReplayStudio', 'open') },
         { id: 'analytics', opts: ['analytics'], win: opener('LMAnalytics.open') },
@@ -191,7 +190,7 @@
     ];
     var CARD_IDS = CARDS.map(function (c) { return c.id; });
 
-    /* a switch goes through the real checkbox, as the Command Centre and the presets do: the
+    /* a switch goes through the real checkbox, as the presets do: the
      * bubbling change runs setSettings (side effects, save) and moves the Switchery. A switch the
      * menu shows as unavailable (disabled, read-only) is refused: null */
     function toggleBox(cb) {
@@ -404,9 +403,10 @@
         chip.appendChild(D.createTextNode(optLabel(key)));
     }
     function revealOpt(key) {
-        var CC = W.LMCommandCentre;
-        if (CC && typeof CC.reveal === 'function' && CC.reveal(key)) { close(); return true; }
-        return false;
+        var ST = W.LMSmallTools;
+        if (!ST || typeof ST.jump !== 'function') return false;
+        close();
+        return ST.jump(key);
     }
     function renderFeatures() {
         body.innerHTML = '';
@@ -454,7 +454,7 @@
                 });
                 acts.appendChild(ob);
             }
-            if (c.opts.length && checkbox(c.opts[0]) && W.LMCommandCentre && typeof W.LMCommandCentre.reveal === 'function') {
+            if (c.opts.length && checkbox(c.opts[0]) && W.LMSmallTools && typeof W.LMSmallTools.jump === 'function') {
                 var sb = mk('button', 'lm-dc-btn', t('showMe'));
                 sb.type = 'button';
                 sb.setAttribute('data-act', 'reveal');
@@ -519,8 +519,8 @@
     function isOpen() { return !!(root && root.parentNode); }
     W.addEventListener('keydown', function (e) {
         if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey || !isOpen()) return;
-        /* the Command Centre opened over it closes first (its own Esc) */
-        if (e._lmEscTaken || (W.LMCommandCentre && typeof W.LMCommandCentre.isOpen === 'function' && W.LMCommandCentre.isOpen())) return;
+        /* a window opened over it that took this Esc closes first */
+        if (e._lmEscTaken) return;
         e._lmEscTaken = true;
         e.preventDefault();
         e.stopPropagation();

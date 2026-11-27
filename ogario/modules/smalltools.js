@@ -2,7 +2,7 @@
  * Show/hide HUD (Alt+H, the former screenshot mode) with its capture. (The skin collections window
  * is gone: its favourites and search are part of the player profiles in the skins panel.)
  * Everything is off until used: windows and hotkeys without default keys
- * (all listed in the Command Centre). Nothing runs per frame while no tool is open.
+ * (all listed in the Hotkeys window). Nothing runs per frame while no tool is open.
  * Stored data, each in its own localStorage key, checked when read:
  *   lmRadialMenu      the commands of the radial menu (hotkey ids, up to 8)
  *   lmSmallTools      screenshot options
@@ -79,7 +79,7 @@
         'CTRL+L': ['info', 'addressBar'], 'CTRL+D': ['info', 'bookmark'], 'CTRL+F': ['info', 'find'],
         'CTRL+P': ['info', 'print'], 'CTRL+S': ['info', 'save'], 'CTRL+O': ['info', 'openFile'],
         'CTRL+H': ['info', 'history'], 'CTRL+J': ['info', 'downloads'], 'CTRL+U': ['info', 'source'],
-        'CTRL+E': ['info', 'search'], 'CTRL+K': ['warn', 'commandCentre'],
+        'CTRL+E': ['info', 'search'], 'CTRL+K': ['info', 'search'],
         'CTRL+=': ['info', 'zoom'], 'CTRL+-': ['info', 'zoom'], 'CTRL+0': ['info', 'zoomReset'],
         'CTRL+PGUP': ['info', 'switchTabs'], 'CTRL+PGDN': ['info', 'switchTabs'],
         'ALT+LEFT': ['info', 'back'], 'ALT+RIGHT': ['info', 'forward'], 'ALT+HOME': ['info', 'home']
@@ -246,15 +246,17 @@
         for (var k in hk) if (own(hk, k) && k !== 'spec-messageKey' && hk[k] === cmd) return k;
         return '';
     }
-    /* press a hotkey command briefly (hold commands get their release, like the Command Centre) */
+    /* a key, mouse button or gamepad button holding the command (ogario.v4.js, gamepad.js) */
+    function heldElsewhere(id) { try { return typeof W._lmHotkeyHeld === 'function' && !!W._lmHotkeyHeld(id); } catch (e) { return false; } }
+    /* press a hotkey command briefly (hold commands get their release after 250 ms). The input that
+     * holds a hold command owns its release: then this neither presses it again nor releases it */
     function runHotkey(id) {
-        /* the Command Centre's press: never releases a command a key or gamepad button holds */
-        var CC = W.LMCommandCentre;
-        if (CC && typeof CC.tapHotkey === 'function') { CC.tapHotkey(id); return; }
         var hc = W.hotkeysCommand, c = hc && hc[id];
         if (!c || typeof c.keyDown !== 'function') return;
+        var hold = typeof c.keyUp === 'function';
+        if (hold && heldElsewhere(id)) return;
         try { c.keyDown(); } catch (e) { console.warn('[LM tools] ' + id, e); }
-        if (typeof c.keyUp === 'function') setTimeout(function () { try { c.keyUp(); } catch (e) { } }, 250);
+        if (hold) setTimeout(function () { if (!heldElsewhere(id)) { try { c.keyUp(); } catch (e) { } } }, 250);
     }
 
     var styleDone = false;
@@ -563,9 +565,6 @@
     }
     function jumpSetting(id) {
         closeWin();
-        var cc = W.LMCommandCentre;
-        if (cc && typeof cc.reveal === 'function' && cc.reveal(id)) return;
-        if (cc && typeof cc.run === 'function' && cc.run('set:' + id)) return;
         /* a control of the Hotkeys window */
         var hkEl = D.getElementById(id);
         if (hkEl && hkEl.closest && hkEl.closest('#hotkeys')) { jumpHotkey(id); return; }
@@ -1009,6 +1008,15 @@
         }
         return null;
     };
+    /* the menu at a setting or the Hotkeys window at a command's row, highlighted (the Settings
+     * search's Hotkeys hints, Custom macros, Discover's "Show in settings") */
+    api.jump = function (id) {
+        if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(id)) return false;
+        addStyle();
+        jumpSetting(id);
+        return true;
+    };
+
     /* Language change: an open window is built again in the new language, the screenshot chip
      * follows. */
     if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {

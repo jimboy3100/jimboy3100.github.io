@@ -214,8 +214,8 @@ const sizeOf = m => Math.sqrt(m * 100);
   check('watch: nick capped at 60', P.validNick('x'.repeat(80)).length === 60);
   const c0 = P.parseConfig(null);
   check('config: defaults', c0.transitionMs === 1200 && c0.easing === 'smooth' && c0.dwellSec === 6 && c0.overrideSec === 8 && c0.bcTicker === true && c0.hide.bell === false);
-  const c1 = P.parseConfig(JSON.stringify({ transitionMs: 99999, dwellSec: -5, easing: 'evil', bcName: 'yes', hide: { bell: true, quickBar: 1, other: true } }));
-  check('config: clamped and type checked', c1.transitionMs === 5000 && c1.dwellSec === 2 && c1.easing === 'smooth' && c1.bcName === true && c1.hide.bell === true && c1.hide.quickBar === false && !('other' in c1.hide));
+  const c1 = P.parseConfig(JSON.stringify({ transitionMs: 99999, dwellSec: -5, easing: 'evil', bcName: 'yes', hide: { bell: true, quickBar: true, other: true } }));
+  check('config: clamped and type checked', c1.transitionMs === 5000 && c1.dwellSec === 2 && c1.easing === 'smooth' && c1.bcName === true && c1.hide.bell === true && !('quickBar' in c1.hide) && !('other' in c1.hide));
 }
 
 /* 8. leaderboard diff and history */

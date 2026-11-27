@@ -2,7 +2,7 @@
  * Opened from the Analytics button in the profile stats (click your profile picture), the
  * "Analytics" hotkey (no default key), the menu footer link while recording is on, or LMAnalytics.open().
  * Its History tab is the match history list (option "matchHistory", ogario.v4.js _lmMatchHistoryPaint;
- * the "Match history" footer link, its Command Centre entry and _lmMatchHistoryOpen open it there).
+ * the "Match history" footer link and _lmMatchHistoryOpen open it there).
  * Recording is off by default (option "analytics", Settings > Stats). While it is off this file only
  * checks the option once a second and adds no LMEvents listeners; the window still shows the old
  * match history (lmMatchHistory) and personal bests when they exist.

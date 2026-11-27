@@ -11,7 +11,6 @@
   var h = hotkeysCommand['hk-lmThemeWorkshop'];
   if (!h) fail.push('hotkey hk-lmThemeWorkshop missing');
   else if (h.defaultKey !== '') fail.push('hotkey has a default key');
-  if (window.LMCommandCentre && LMCommandCentre.items && !LMCommandCentre.items().some(function (it) { return it.id === 'win:themeWorkshop'; })) fail.push('not in the Command Centre windows');
   var keys = ['lmThemeWorkshop', 'ogarioThemeSettings', 'ogarioSettings'];
   var saved = {};
   keys.forEach(function (k) { saved[k] = localStorage.getItem(k); });
