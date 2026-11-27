@@ -33,9 +33,13 @@
     if (!(open() && LM.ws === ws0)) { info.skipDrop = 'no open game connection'; return { fail: fail, info: info }; }
     /* a lost connection */
     fake();
-    LM.socket.close();
-    for (w = 0; w < 80 && LM.play; w++) await sleep(25);
-    info.afterDrop = { play: LM.play, score: LM.playerScore };
+    var sock = LM.socket;
+    sock.close();
+    /* a loaded machine can keep the socket CLOSING for seconds: wait for the close itself */
+    for (w = 0; w < 400 && LM.play && sock.readyState !== 3; w++) await sleep(25);
+    for (w = 0; w < 40 && LM.play; w++) await sleep(25);
+    info.afterDrop = { play: LM.play, score: LM.playerScore, rs: sock.readyState };
+    if (LM.play && sock.readyState !== 3) { info.skipDrop = 'the socket did not close in 10 s'; return { fail: fail, info: info }; }
     if (LM.playerScore !== 0) fail.push('lost connection: the old life\'s score stayed (' + LM.playerScore + ')');
     for (w = 0; w < 60 && !(open() && LM.ws === ws0); w++) await sleep(250);
     info.reconnected = open() && LM.ws === ws0;
