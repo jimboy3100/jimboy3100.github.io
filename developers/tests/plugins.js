@@ -230,13 +230,14 @@ check('lab experiment needs an id and a name', !L.validateExperiment({ id: '1a',
     Lab.reset(true);
 })();
 
-/* ---- the old "Open the Lab" hotkey: its key opens User Scripts (ogario.v4.js loadHotkeys) ---- */
+/* ---- the old "Open the Lab" hotkey: its key opens User Scripts (ogario.v4.js lmRenameOldHotkeys,
+ * which loadHotkeys and the settings profiles use) ---- */
 (function () {
     const v4src = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
-    const a = v4src.indexOf('/* "Open the Lab"'), b = v4src.indexOf('this.migrateBrowserSpecificHotkeys();', a);
-    check('loadHotkeys moves the Lab hotkey', a > 0 && b > a);
+    const a = v4src.indexOf('function lmRenameOldHotkeys(map) {'), b = v4src.indexOf('\n}', a);
+    check('loadHotkeys moves the Lab hotkey', a > 0 && b > a && v4src.indexOf('lmRenameOldHotkeys(hotkeys);') > 0);
     if (!(a > 0 && b > a)) return;
-    const run = hk => { vm.runInNewContext(v4src.slice(a, b), { hotkeys: hk }); return hk; };
+    const run = hk => { vm.runInNewContext(v4src.slice(a, b + 2) + '\nlmRenameOldHotkeys(hotkeys);', { hotkeys: hk }); return hk; };
     const one = run({ L: 'hk-lmLab', '': 'hk-lmPlugins', W: 'hk-moveUp' });
     check('Lab key -> User Scripts when no key opens it', one.L === 'hk-lmPlugins' && one.W === 'hk-moveUp' && one[''] === 'hk-lmPlugins');
     const two = run({ L: 'hk-lmLab', U: 'hk-lmPlugins' });

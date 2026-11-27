@@ -52,9 +52,13 @@ function load(withTools) {
     let i = ogSrc.indexOf('{', start), d = 0;
     for (; i < ogSrc.length; i++) { const c = ogSrc[i]; if (c === '{') d++; else if (c === '}') { d--; if (!d) break; } }
     const body = ogSrc.slice(start, i + 1);
+    /* the rule for commands merged into others (lmRenameOldHotkeys), which loadHotkeys calls */
+    const rs = ogSrc.indexOf('function lmRenameOldHotkeys(map) {'), re = ogSrc.indexOf('\n}', rs);
+    const renameSrc = ogSrc.slice(rs, re + 2);
     function run(stored) {
         const ctx = { JSON, Object, String, hotkeys: null, chatCommand: {}, readLocalStorageJSON: k => (k === 'ogarioHotkeys' ? JSON.parse(JSON.stringify(stored)) : null) };
         vm.createContext(ctx);
+        vm.runInContext(renameSrc, ctx);
         vm.runInContext('var setup = {' + body + ', migrateBrowserSpecificHotkeys() {}, migrateMouseControls() {}, addMissingDefaultHotkeys() {}, syncMessageKey() {}, loadDefaultHotkeys() {} }; setup.loadHotkeys(); var out = hotkeys;', ctx);
         return ctx.out;
     }

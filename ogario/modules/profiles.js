@@ -207,12 +207,21 @@
         try { fold(c); } catch (e) { return s; }
         return c;
     }
+    /* A set saved before hotkey commands were merged into others (zoom bookmarks, Screenshot mode,
+     * Open the Lab): the core's rule for the stored hotkeys (lmRenameOldHotkeys) moves their keys
+     * (on a copy) before the check, which dropped them as unknown commands. */
+    function renameOldHotkeys(h) {
+        if (!isObj(h) || typeof window.lmRenameOldHotkeys !== 'function') return h;
+        var c = Object.assign({}, h);
+        try { window.lmRenameOldHotkeys(c); } catch (e) { return h; }
+        return c;
+    }
     function cleanBundle(b) {
         if (!isObj(b)) return null;
         var out = {}, any = false;
         for (var p in PART_FNS) {
             if (!own.call(PART_FNS, p)) continue;
-            var c = PART_FNS[p](p === 's' ? foldLegacySettings(b[p]) : b[p]);
+            var c = PART_FNS[p](p === 's' ? foldLegacySettings(b[p]) : p === 'h' ? renameOldHotkeys(b[p]) : b[p]);
             if (c) { out[p] = c; any = true; }
         }
         if (moveRingColors(out) || out.t) any = !!(out.s || out.t || out.h || out.m);

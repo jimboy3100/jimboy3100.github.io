@@ -754,6 +754,26 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
   check('parts line: gamepad buttons and saved zoom levels are named', badge({ s: { showMass: true }, gp: { buttons: { 0: 'hk-split' } }, zb: [1, 2, 3] }) === [t('partS'), t('partGP'), t('partZB')].join(' + '));
   check('parts line: the "none" of an Undo or backup is not a part', C.partsBadge({ s: { showMass: true }, m: { _lmAbsent: 1 }, ml: { _lmAbsent: 1 }, gp: { _lmAbsent: 1 }, zb: [0, 0, 0] }) === t('partS'));
 }
+{
+  /* a set saved before commands were merged into others: their keys go where the stored hotkeys
+   * take them on load (Open the Lab -> User Scripts, zoom bookmark -> zoom level, Screenshot mode
+   * -> Show/hide HUD); the profile check dropped them as unknown commands, so the key did nothing */
+  const add = { 'hk-lmPlugins': { defaultKey: '' }, 'hk-zoom1': { defaultKey: '' }, 'hk-zoom2': { defaultKey: '' }, 'hk-showHUD': { defaultKey: '' } };
+  Object.assign(ctx.hotkeysCommand, add);
+  try {
+    const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', W: 'hk-feed', X: 'hk-hotkeyConflicts' } });
+    check('renamed commands: Open the Lab key opens User Scripts', h && h.h.F9 === 'hk-lmPlugins');
+    check('renamed commands: a zoom bookmark key goes to its zoom level', h && h.h['ALT+1'] === 'hk-zoom1');
+    check('renamed commands: a zoom level with its own key keeps it, the old key is free', h && h.h.Z === 'hk-zoom2' && !('ALT+2' in h.h));
+    check('renamed commands: Screenshot mode key is Show/hide HUD', h && h.h.F2 === 'hk-showHUD');
+    check('renamed commands: other keys stay, a removed command is dropped', h && h.h.W === 'hk-feed' && !('X' in h.h));
+    const h2 = C.cleanBundle({ h: { F9: 'hk-lmLab', F10: 'hk-lmPlugins' } });
+    check('renamed commands: User Scripts with a key of its own: the Lab key is free', h2 && h2.h.F10 === 'hk-lmPlugins' && !('F9' in h2.h));
+    const raw = { h: { F9: 'hk-lmLab' } };
+    C.cleanBundle(raw);
+    check('renamed commands: the stored set itself is not changed', raw.h.F9 === 'hk-lmLab');
+  } finally { Object.keys(add).forEach(k => { delete ctx.hotkeysCommand[k]; }); }
+}
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');

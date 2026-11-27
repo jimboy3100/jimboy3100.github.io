@@ -21546,6 +21546,34 @@ function lmFoldLegacySettings(s) {
     }
     return changed || JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]) !== was;
 }
+/* Hotkey commands merged into others: "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3 (the
+ * saved zoom is that level's zoom), "Screenshot mode" is Show/hide HUD, "Open the Lab" opens User
+ * Scripts (the Lab experiments are there). An old command's key goes to the new one when that has no
+ * key of its own, else it is free again; the key of a removed command (Hotkey conflicts, a list in
+ * the Hotkeys window now) is free. For the stored hotkeys (loadHotkeys) and a settings profile's
+ * (profiles.js), so an older set keeps those keys. Returns true when map changed. */
+function lmRenameOldHotkeys(map) {
+    if (!map || typeof map !== 'object') return false;
+    var own = function (k) { return Object.prototype.hasOwnProperty.call(map, k); };
+    /* the '' entry holds a command without a key (no binding): User Scripts' check skips it */
+    var bound = function (cmd, keyed) {
+        for (var x in map) if (own(x) && (!keyed || x) && map[x] === cmd) return true;
+        return false;
+    };
+    var changed = false;
+    for (var k in map) {
+        if (!own(k)) continue;
+        var v = String(map[k]), to = '', keyed = false, z;
+        if (v === 'hk-hotkeyConflicts') { delete map[k]; changed = true; continue; }
+        if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
+        else if (v === 'hk-screenshotMode') to = 'hk-showHUD';
+        else if (v === 'hk-lmLab') { to = 'hk-lmPlugins'; keyed = true; }
+        if (!to) continue;
+        if (bound(to, keyed) || (keyed && !k)) delete map[k]; else map[k] = to;
+        changed = true;
+    }
+    return changed;
+}
 /* Who ate me: kept while anything shows it: the Game Over card ("Eaten by" and its death recap),
  * the match history and the kill feed. One rule for the server's report (lmKiller)
  * and the one seen in the remove packets, and for the guard against my own multibox unit being
@@ -84144,37 +84172,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 !Array.isArray(storedHotkeys)
             ) {
                 hotkeys = storedHotkeys;
-                /* removed commands: their key is free again (Hotkey conflicts is a list in this
-                 * window now, no window of its own) */
-                for (var _lmGone in hotkeys) {
-                    if (hotkeys.hasOwnProperty(_lmGone) && hotkeys[_lmGone] === 'hk-hotkeyConflicts') delete hotkeys[_lmGone];
-                }
-                /* "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3 now (the saved zoom is that
-                 * level's zoom): its key goes to the zoom level when the level has no key of its own */
-                for (var _lmZr in hotkeys) {
-                    var _lmZm = hotkeys.hasOwnProperty(_lmZr) && /^hk-zoomRecall([1-3])$/.exec(String(hotkeys[_lmZr]));
-                    if (!_lmZm) continue;
-                    var _lmZl = 'hk-zoom' + _lmZm[1], _lmZHas = false;
-                    for (var _lmZk in hotkeys) if (hotkeys.hasOwnProperty(_lmZk) && hotkeys[_lmZk] === _lmZl) { _lmZHas = true; break; }
-                    if (_lmZHas) delete hotkeys[_lmZr]; else hotkeys[_lmZr] = _lmZl;
-                }
-                /* "Screenshot mode" is Show/hide HUD now: its key goes to Show/hide HUD when that has
-                 * no key of its own (Alt+H by default), else it is free again */
-                for (var _lmSm in hotkeys) {
-                    if (!hotkeys.hasOwnProperty(_lmSm) || hotkeys[_lmSm] !== 'hk-screenshotMode') continue;
-                    var _lmSmHas = false;
-                    for (var _lmSk in hotkeys) if (hotkeys.hasOwnProperty(_lmSk) && hotkeys[_lmSk] === 'hk-showHUD') { _lmSmHas = true; break; }
-                    if (_lmSmHas) delete hotkeys[_lmSm]; else hotkeys[_lmSm] = 'hk-showHUD';
-                }
-                /* "Open the Lab": the Lab experiments are in the User Scripts window, so its key
-                 * opens that window (unless a key does that already) */
-                for (var _lmLabKey in hotkeys) {
-                    if (!hotkeys.hasOwnProperty(_lmLabKey) || hotkeys[_lmLabKey] !== 'hk-lmLab') continue;
-                    /* the '' entry holds a command without a key: no binding */
-                    var _lmUsHas = false;
-                    for (var _lmK in hotkeys) if (_lmK && hotkeys.hasOwnProperty(_lmK) && hotkeys[_lmK] === 'hk-lmPlugins') _lmUsHas = true;
-                    if (_lmUsHas || !_lmLabKey) delete hotkeys[_lmLabKey]; else hotkeys[_lmLabKey] = 'hk-lmPlugins';
-                }
+                /* commands merged into others or removed: their keys go to the new command or are
+                 * free again (lmRenameOldHotkeys, also for settings profiles) */
+                lmRenameOldHotkeys(hotkeys);
                 this.migrateBrowserSpecificHotkeys();
                 this.addMissingDefaultHotkeys();
                 this.syncMessageKey();
