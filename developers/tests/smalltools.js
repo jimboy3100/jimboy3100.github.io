@@ -131,40 +131,7 @@ check('screenshot options: only true counts', J(C.cleanShotOpts({ lb: true, map:
 
 /* ── accessibility ── */
 check('a11y: text scale clamped', A.cleanScale(2) === 1.6 && A.cleanScale(0.5) === 1 && A.cleanScale('x') === 1 && A.cleanScale(1.234) === 1.23);
-check('a11y: classes like the opponent colours', A.classify(300, 100, 4 / 3, 3 / 4) === 'B2' && A.classify(140, 100, 4 / 3, 3 / 4) === 'B' && A.classify(100, 100, 4 / 3, 3 / 4) === '' &&
-    A.classify(50, 100, 4 / 3, 3 / 4) === 'S' && A.classify(20, 100, 4 / 3, 3 / 4) === 'S2');
-check('a11y: no own mass = no symbol', A.classify(500, 0) === '' && A.classify(0, 100) === '');
-check('a11y: symbol size limited', A.symbolSize(1) === 9 && A.symbolSize(1000) === 24);
 check('a11y: scale rule keeps the ratio to the parent', A.scaleRule('#x', 0.8, 1.25) === '#x{font-size:100% !important;}' && A.scaleRule('#x', 0, 2) === '');
-
-/* the symbols compare with the unit you control, like the opponent colours (audit A7 / A15) */
-{
-  const my = A.refMass;
-  check('a11y: reference mass helper exported', typeof my === 'function');
-  if (typeof my === 'function') {
-    const unit = { number: 2, playerMaxMass: 100, playerMinMass: 40 };
-    const w = { multiboxPlayerEnabled: 2, getActiveSpect: n => (n === 2 ? unit : null) };
-    const lm = { play: true, selectBiggestCell: true, playerMaxMass: 1000, playerMinMass: 500, playerCells: [], playerCellsMulti: [] };
-    check('a11y: focused multibox unit, not the main player', my(lm, w) === 100);
-    lm.selectBiggestCell = false;
-    check('a11y: the smallest cell when the game compares with it', my(lm, w) === 40);
-    lm.play = false;
-    check('a11y: main dead, the unit still has symbols', my(lm, w) === 40);
-    w.multiboxPlayerEnabled = null;
-    check('a11y: no unit and main dead: nothing', my(lm, w) === 0);
-    lm.play = true;
-    check('a11y: main player without multibox', my(lm, w) === 500);
-    w._lmEvReplayOn = true;
-    check('a11y: no symbols during a replay', my(lm, w) === 0);
-    w._lmEvReplayOn = false;
-    /* masses not kept by the game (no opponent colour option on): from the unit's own cells */
-    unit.playerMaxMass = unit.playerMinMass = 0;
-    w.multiboxPlayerEnabled = 2;
-    lm.playerCellsMulti = [{ spectator: 2, size: 100 }, { spectator: 2, size: 50 }, { spectator: 3, size: 300 }];
-    lm.selectBiggestCell = true;
-    check('a11y: unit mass from its cells when the game keeps none', my(lm, w) === 100);
-  }
-}
 
 console.log(fail ? fail + ' FAILED' : 'all passed');
 process.exit(fail ? 1 : 0);

@@ -184,7 +184,7 @@
         { id: 'practice', opts: [], win: opener('lmPractice', 'open') },
         { id: 'macroEditor', opts: [], win: opener('lmMacroEditor', 'open') },
         { id: 'themeWorkshop', opts: [], win: opener('LMThemeWorkshop.open') },
-        { id: 'accessibility', opts: ['a11yIndicators', 'reducedMotion'] },
+        { id: 'accessibility', opts: ['reducedMotion'] },
         /* the Lab experiments are in the User Scripts window (no card of their own) */
         { id: 'plugins', opts: [], win: opener('LMPlugins.open', 'plugins') }
     ];

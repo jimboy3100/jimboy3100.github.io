@@ -21694,7 +21694,6 @@ var defaultmapsettings = {
     /* accessibility (ogario/modules/accessibility.js); 1 / false = unchanged */
     a11yTextScale: 1,             /* menu text size */
     a11yHudTextScale: 1,          /* HUD text size, on top of hudScale */
-    a11yIndicators: false,        /* bigger / smaller symbols on opponent cells */
     //
     FacebookIDs: ''
 };
@@ -25904,9 +25903,6 @@ function thelegendmodproject() {
                     case 'massLossAlert':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
                         break;
-                    case 'a11yIndicators':
-                        if (window.LMAccessibility) LMAccessibility.sync();
-                        break;
                     case 'hideEventBanner':
                         _lmEventBanner();
                         break;
@@ -27471,7 +27467,7 @@ function thelegendmodproject() {
                 '</div>'
             );
             /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
-            this.addOptions(["reducedMotion", "a11yIndicators"], "accessibilityGroup");
+            this.addOptions(["reducedMotion"], "accessibilityGroup");
             this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);
             /* HUD text size is in Theme > HUD, next to the HUD scale (setThemeMenu) */
             this.addOptions([], "macroGroup");
@@ -80759,9 +80755,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* HUD helpers (ogario/modules/hudhelpers.js): world marks on the same context, edge
                  * arrows and the cell panel on their own layers; returns at once while all are off */
                 if (window.LMHudHelpers) window.LMHudHelpers.frame(this, _lmFxCtx, LM);
-                /* accessibility size symbols (ogario/modules/accessibility.js): drawn with this frame
-                 * instead of their own animation loop; returns at once while they are off */
-                if (window.LMAccessibility && window.LMAccessibility.frame) window.LMAccessibility.frame();
                 /* Expanding Land: spawn burst effect (drawn above cells) */
                 if (this._spawnEffect && this._spawnEffect.active) {
                     this.drawSpawnEffect(_lmFxCtx);

@@ -137,7 +137,7 @@
     {
       "id": "accessibility",
       "name": "Accessibility features",
-      "description": "Reduced motion (no death shake, particles, entrance spin). Menu text scale (1.0-1.6x). HUD text scale (independent). Indicators: up triangles for bigger cells (two: can split on you), down for smaller. Colour-blind safe theme preset (Okabe-Ito). Clean HUD preset. Focus warning toast.",
+      "description": "Reduced motion (no death shake, particles, entrance spin). Menu text scale (1.0-1.6x). HUD text scale (independent). Colour-blind safe theme preset (Okabe-Ito). Clean HUD preset. Focus warning toast.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

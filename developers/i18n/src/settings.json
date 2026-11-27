@@ -4229,24 +4229,6 @@
     "ja": "HUDの文字サイズ（1 = 標準、HUD倍率に上乗せ）",
     "it": "Dimensione testo dell'HUD (1 = normale, oltre alla scala dell'HUD)"
   },
-  "settings.a11yIndicators": {
-    "en": "Size symbols on opponents (▲ bigger, ▼ smaller; two: split range)",
-    "el": "Σύμβολα μεγέθους στους αντιπάλους (▲ μεγαλύτερος, ▼ μικρότερος· δύο: εμβέλεια split)",
-    "es": "Símbolos de tamaño en oponentes (▲ más grande, ▼ más pequeño; dos: alcance del split)",
-    "bg": "Символи за размер на противниците (▲ по-голям, ▼ по-малък; два: в обхват за сплит)",
-    "fr": "Symboles de taille sur les adversaires (▲ plus gros, ▼ plus petit ; deux : portée du split)",
-    "ar": "رموز الحجم على الخصوم (▲ أكبر، ▼ أصغر؛ اثنان: مدى الانقسام)",
-    "zh": "對手身上的大小符號（▲ 較大，▼ 較小；兩個：分裂範圍）",
-    "ru": "Символы размера на соперниках (▲ больше, ▼ меньше; два: дальность сплита)",
-    "de": "Größensymbole bei Gegnern (▲ größer, ▼ kleiner; zwei: Split-Reichweite)",
-    "tr": "Rakiplerde boyut simgeleri (▲ daha büyük, ▼ daha küçük; iki: split menzili)",
-    "pl": "Symbole rozmiaru na przeciwnikach (▲ większy, ▼ mniejszy; dwa: zasięg splitu)",
-    "nl": "Groottesymbolen bij tegenstanders (▲ groter, ▼ kleiner; twee: split-bereik)",
-    "pt": "Símbolos de tamanho nos oponentes (▲ maior, ▼ menor; dois: alcance do split)",
-    "id": "Simbol ukuran pada lawan (▲ lebih besar, ▼ lebih kecil; dua: jangkauan split)",
-    "ja": "敵にサイズ記号（▲ 大きい、▼ 小さい、2つ：分裂の射程内）",
-    "it": "Simboli di dimensione sugli avversari (▲ più grande, ▼ più piccolo; due: raggio dello split)"
-  },
   "settings.perfGroup": {
     "en": "Performance and network",
     "el": "Απόδοση και δίκτυο",

@@ -18,7 +18,7 @@
       "id": "accessibility",
       "file": "ogario/modules/accessibility.js",
       "lines": 246,
-      "description": "Accessibility features: reduced motion, text scale, HUD text scale, opponent indicators, focus warnings.",
+      "description": "Accessibility features: menu text scale and HUD text scale (reduced motion is a core option).",
       "feature": "Accessibility"
     },
     {

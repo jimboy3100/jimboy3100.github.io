@@ -170,7 +170,7 @@ check('unknown type', C.serverTypeOf({ serverType: '<b>x' }) === '' && C.serverT
   ctx.LMPlugins = { open: a => { arg = a; } };
   card('plugins').win.run();
   check('User Scripts opened on the plugins view', arg === 'plugins');
-  check('Accessibility switches', card('accessibility').opts.join() === 'a11yIndicators,reducedMotion');
+  check('Accessibility switches', card('accessibility').opts.join() === 'reducedMotion');
 
   /* seen keys: unchanged cards keep their id (old stores still count), a changed card is NEW again */
   check('seenKey: plain id without cv', C.seenKey({ id: 'analytics' }) === 'analytics' && C.seenKey({ id: 'analytics', cv: 1 }) === 'analytics');

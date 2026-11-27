@@ -1,6 +1,6 @@
 /* Accessibility module without its 2 s settings poll: ogario/modules/accessibility.js runs in a vm
  * with a small fake document. With the default text sizes no setInterval runs; a profile / preset /
- * import (settingsChange) applies the new text sizes and indicator symbols at once; only a HUD text
+ * import (settingsChange) applies the new text sizes at once; only a HUD text
  * size other than 1 keeps a 2 s timer (it measures HUD parts made later), and it stops at 1 again.
  * node developers/tests/a11ypoll.js [accessibility.js] [--old <older accessibility.js>] */
 const fs = require('fs'), path = require('path');
@@ -16,7 +16,7 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 
 function suite(label, src) {
   const res = {};
-  const DEF = { a11yTextScale: 1, a11yHudTextScale: 1, a11yIndicators: false };
+  const DEF = { a11yTextScale: 1, a11yHudTextScale: 1 };
   let e = makeEnv(DEF);
   i18n(e.ctx);
   e.run(src);
@@ -43,15 +43,12 @@ function suite(label, src) {
   e.flush();
   res.hudBack = root['--lm-hud-text-scale'] === '1';
   res.hudTimerStopped = e.intervals.size === 0;
-  /* indicator symbols switched on by an import: their canvas at once */
+  /* the removed size symbols: an old saved a11yIndicators value adds no canvas, timer or frame hook */
   e.ctx.defaultmapsettings.a11yIndicators = true;
   e.ctx.LMEvents.emit('settingsChange', { key: 'a11yIndicators', value: true });
   e.flush();
-  res.indOn = !!e.doc.getElementById('lm-a11y-ind');
-  e.ctx.defaultmapsettings.a11yIndicators = false;
-  e.ctx.LMEvents.emit('settingsChange', { key: 'a11yIndicators', value: false });
-  e.flush();
-  res.indOff = !e.doc.getElementById('lm-a11y-ind') && e.intervals.size === 0;
+  res.noSymbols = !e.doc.getElementById('lm-a11y-ind') && e.intervals.size === 0;
+  res.noSymbolApi = !('frame' in e.ctx.LMAccessibility) && !('drawSymbol' in e.ctx.LMAccessibility) && !('classify' in e.ctx.LMAccessibility._core);
   /* another key: nothing */
   e.ctx.defaultmapsettings.a11yTextScale = 1.5;
   e.ctx.LMEvents.emit('settingsChange', { key: 'showGrid', value: true });
@@ -69,11 +66,11 @@ function suite(label, src) {
 }
 
 const r = suite('current', fs.readFileSync(srcPath, 'utf8'));
-check('default text sizes, symbols off: no setInterval', r.noTimerDefault);
+check('default text sizes: no setInterval', r.noTimerDefault);
 check('settingsChange a11yTextScale: applied at once, still no timer', r.menuApplied && r.noTimerMenu);
 check('settingsChange a11yHudTextScale 1.2: applied, one timer for HUD parts made later', r.hudApplied && r.hudTimer && r.hudTimerOne);
 check('HUD text size back to 1: applied, timer stopped', r.hudBack && r.hudTimerStopped);
-check('settingsChange a11yIndicators: symbol canvas added and removed at once', r.indOn && r.indOff);
+check('size symbols removed: an old saved a11yIndicators adds nothing', r.noSymbols && r.noSymbolApi);
 check('another key changes nothing', r.otherKeyIgnored);
 check('HUD text size set at start: its timer runs from the start', r.hudAtStart);
 if (oldPath) {
