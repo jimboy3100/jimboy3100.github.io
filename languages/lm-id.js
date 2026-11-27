@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "Tidak ada bot",
 "lmx.ex.serverNotAvailable": "Server tidak tersedia!",
 "lmx.ex.copyTools": "Alat salin",
-"lmx.ex.copyCellNamesHint": "Salin nama sel (tekan X untuk tampilkan/sembunyikan)",
+"lmx.ex.copyCellNamesHint": "Salin nama sel",
 "lmx.ex.leaderboardNames": "nama di leaderboard",
 "lmx.ex.cellNames": "nama sel",
 "lmx.ex.cellName": "nama sel",

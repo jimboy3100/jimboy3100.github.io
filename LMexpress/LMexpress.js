@@ -3275,7 +3275,6 @@ function StartEditGameNames() {
                     score: 0,
                     names: [],
                     leaderboard: {},
-                    toggled: !0,
                     prototypes: {
                         canvas: CanvasRenderingContext2D.prototype,
                         old: {}
@@ -3290,7 +3289,7 @@ function StartEditGameNames() {
                     filltext_override: function () {
                         t.f.prototype_override("canvas", "fillText", "before", function (e, o) {
                             var s = o[0];
-                            /* panel hidden (x / StopEditGameNames): skip the per-fillText work */
+                            /* panel hidden (StopEditGameNames): skip the per-fillText work */
                             var tcmPanel = document.getElementById("tcm");
                             if (!tcmPanel || tcmPanel.style.display == "none") return;
                             if (o, s.match(/^(1|2|3|4|5|6|7|8|9|10)\.(.+?)$/)) {
@@ -3310,9 +3309,6 @@ function StartEditGameNames() {
                         if (!list) return;
                         list.insertAdjacentHTML("beforeend", t.u.span(_lmxT('lmx.ex.cellName'), s));
                         while (list.children.length > 200) list.removeChild(list.firstElementChild);
-                    },
-                    hotkeys: function (e) {
-                        88 == e.keyCode && (document.getElementById("tcm").style.display = t.l.toggled ? "none" : "block", t.l.toggled = t.l.toggled ? !1 : !0)
                     }
                 },
                 u: {
@@ -3387,7 +3383,9 @@ function StartEditGameNames() {
                     }
                 );
 
-            o.addEventListener("keydown", t.f.hotkeys), t.f.filltext_override()
+            /* no key of its own: a raw X listener toggled the panel while typing in chat and with
+             * the X hotkey (Toggle death); the scissors button (#Cutnames) shows and hides it */
+            t.f.filltext_override()
         } else o.setTimeout(function () {
             e(o)
         }, 100)

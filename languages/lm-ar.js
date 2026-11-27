@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "لم يتم العثور على بوتات",
 "lmx.ex.serverNotAvailable": "الخادم غير متاح!",
 "lmx.ex.copyTools": "أدوات النسخ",
-"lmx.ex.copyCellNamesHint": "نسخ أسماء الخلايا (اضغط X للإظهار/الإخفاء)",
+"lmx.ex.copyCellNamesHint": "نسخ أسماء الخلايا",
 "lmx.ex.leaderboardNames": "أسماء لوحة الصدارة",
 "lmx.ex.cellNames": "أسماء الخلايا",
 "lmx.ex.cellName": "اسم الخلية",

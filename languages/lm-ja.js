@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "ボットが見つかりません",
 "lmx.ex.serverNotAvailable": "サーバーを利用できません！",
 "lmx.ex.copyTools": "コピーツール",
-"lmx.ex.copyCellNamesHint": "セル名をコピー（Xで表示/非表示）",
+"lmx.ex.copyCellNamesHint": "セル名をコピー",
 "lmx.ex.leaderboardNames": "ランキングの名前",
 "lmx.ex.cellNames": "セル名",
 "lmx.ex.cellName": "セル名",

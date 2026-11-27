@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "Δεν βρέθηκαν bots",
 "lmx.ex.serverNotAvailable": "Ο server δεν είναι διαθέσιμος!",
 "lmx.ex.copyTools": "Εργαλεία αντιγραφής",
-"lmx.ex.copyCellNamesHint": "Αντιγραφή ονομάτων κυττάρων (πάτα X για εμφάνιση/απόκρυψη)",
+"lmx.ex.copyCellNamesHint": "Αντιγραφή ονομάτων κυττάρων",
 "lmx.ex.leaderboardNames": "ονόματα κατάταξης",
 "lmx.ex.cellNames": "ονόματα κυττάρων",
 "lmx.ex.cellName": "όνομα κυττάρου",

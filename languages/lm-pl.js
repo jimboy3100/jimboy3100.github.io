@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "Nie znaleziono botów",
 "lmx.ex.serverNotAvailable": "Serwer niedostępny!",
 "lmx.ex.copyTools": "Narzędzia kopiowania",
-"lmx.ex.copyCellNamesHint": "Kopiuj nazwy komórek (X — pokaż/ukryj)",
+"lmx.ex.copyCellNamesHint": "Kopiuj nazwy komórek",
 "lmx.ex.leaderboardNames": "nazwy z rankingu",
 "lmx.ex.cellNames": "nazwy komórek",
 "lmx.ex.cellName": "nazwa komórki",

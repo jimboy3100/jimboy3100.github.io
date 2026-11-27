@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "Боты не найдены",
 "lmx.ex.serverNotAvailable": "Сервер недоступен!",
 "lmx.ex.copyTools": "Инструменты копирования",
-"lmx.ex.copyCellNamesHint": "Копировать имена клеток (X — показать/скрыть)",
+"lmx.ex.copyCellNamesHint": "Копировать имена клеток",
 "lmx.ex.leaderboardNames": "имена из таблицы лидеров",
 "lmx.ex.cellNames": "имена клеток",
 "lmx.ex.cellName": "имя клетки",

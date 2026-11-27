@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "No bots found",
 "lmx.ex.serverNotAvailable": "Server not available!",
 "lmx.ex.copyTools": "Copy Tools",
-"lmx.ex.copyCellNamesHint": "Copy cell names (press X to show/hide)",
+"lmx.ex.copyCellNamesHint": "Copy cell names",
 "lmx.ex.leaderboardNames": "leaderboard names",
 "lmx.ex.cellNames": "cell names",
 "lmx.ex.cellName": "cell name",

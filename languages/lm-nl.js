@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "Geen bots gevonden",
 "lmx.ex.serverNotAvailable": "Server niet beschikbaar!",
 "lmx.ex.copyTools": "Kopieerhulpmiddelen",
-"lmx.ex.copyCellNamesHint": "Celnamen kopiëren (druk X om te tonen/verbergen)",
+"lmx.ex.copyCellNamesHint": "Celnamen kopiëren",
 "lmx.ex.leaderboardNames": "namen op de ranglijst",
 "lmx.ex.cellNames": "celnamen",
 "lmx.ex.cellName": "celnaam",

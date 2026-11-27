@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "未找到機器人",
 "lmx.ex.serverNotAvailable": "伺服器無法使用！",
 "lmx.ex.copyTools": "複製工具",
-"lmx.ex.copyCellNamesHint": "複製細胞名稱（按 X 顯示/隱藏）",
+"lmx.ex.copyCellNamesHint": "複製細胞名稱",
 "lmx.ex.leaderboardNames": "排行榜名稱",
 "lmx.ex.cellNames": "細胞名稱",
 "lmx.ex.cellName": "細胞名稱",

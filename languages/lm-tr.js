@@ -1360,7 +1360,7 @@
 "lmx.ex.noBotsFound": "Bot bulunamadı",
 "lmx.ex.serverNotAvailable": "Sunucu kullanılamıyor!",
 "lmx.ex.copyTools": "Kopyalama araçları",
-"lmx.ex.copyCellNamesHint": "Hücre adlarını kopyala (göstermek/gizlemek için X)",
+"lmx.ex.copyCellNamesHint": "Hücre adlarını kopyala",
 "lmx.ex.leaderboardNames": "sıralama adları",
 "lmx.ex.cellNames": "hücre adları",
 "lmx.ex.cellName": "hücre adı",
