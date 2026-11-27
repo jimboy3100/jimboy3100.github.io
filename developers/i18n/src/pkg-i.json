@@ -1,20 +1,20 @@
 {
   "pkg.i.streamModeTip": {
-    "en": "Stream mode: blurs your nick, clan tag and skin URL in this menu, and the stream overlay leaves out your nick, skin, server, player names and chat text. Nothing drawn in the game is hidden.",
-    "el": "Λειτουργία stream: θολώνει το nick, το tag και το URL του skin σε αυτό το μενού, και η επικάλυψη stream παραλείπει το nick, το skin, τον διακομιστή, τα ονόματα παικτών και το κείμενο της συνομιλίας. Τίποτα από όσα σχεδιάζονται στο παιχνίδι δεν κρύβεται.",
-    "es": "Modo stream: difumina tu nick, tag del clan y URL del skin en este menú, y el overlay de stream omite tu nick, skin, servidor, los nombres de jugadores y el texto del chat. No oculta nada de lo que se dibuja en el juego.",
-    "bg": "Режим за стрийм: замъглява ника, клан тага и URL на скина в това меню, а оверлеят за стрийм пропуска ника, скина, сървъра, имената на играчите и текста от чата. Нищо от нарисуваното в играта не се скрива.",
-    "fr": "Mode stream : floute votre pseudo, tag de clan et URL du skin dans ce menu, et l'overlay de stream omet votre pseudo, skin, serveur, les noms des joueurs et le texte du chat. Rien de ce qui est dessiné dans le jeu n'est masqué.",
-    "ar": "وضع البث: يطمس اسمك وتاغ الكلان ورابط السكن في هذه القائمة، وطبقة البث لا تعرض اسمك ولا السكن ولا الخادم ولا أسماء اللاعبين ولا نص الدردشة. لا يُخفى شيء مما يُرسم في اللعبة.",
-    "zh": "直播模式：在此選單中模糊你的暱稱、戰隊標籤與造型網址，直播疊加層也會省略你的暱稱、造型、伺服器、玩家名稱與聊天文字。遊戲畫面中繪製的內容都不會被隱藏。",
-    "ru": "Режим стрима: размывает ник, клан-тег и URL скина в этом меню, а оверлей для стрима не показывает ваш ник, скин, сервер, имена игроков и текст чата. Ничего из того, что рисуется в игре, не скрывается.",
-    "de": "Stream-Modus: verwischt deinen Nick, Clan-Tag und die Skin-URL in diesem Menü, und das Stream-Overlay lässt deinen Nick, Skin, Server, Spielernamen und Chattext weg. Nichts, was im Spiel gezeichnet wird, wird ausgeblendet.",
-    "tr": "Yayın modu: bu menüde takma adını, klan etiketini ve skin URL'sini bulanıklaştırır; yayın katmanı da takma adını, skinini, sunucunu, oyuncu adlarını ve sohbet metnini göstermez. Oyunda çizilen hiçbir şey gizlenmez.",
-    "pl": "Tryb streamu: rozmywa twój nick, tag klanu i URL skina w tym menu, a nakładka streamu pomija twój nick, skin, serwer, nazwy graczy i tekst czatu. Nic z tego, co rysuje gra, nie jest ukrywane.",
-    "nl": "Streammodus: vervaagt je nick, clantag en skin-URL in dit menu, en de stream-overlay laat je nick, skin, server, spelersnamen en chattekst weg. Niets wat in het spel wordt getekend, wordt verborgen.",
-    "pt": "Modo stream: desfoca seu nick, tag do clã e URL da skin neste menu, e o overlay de stream deixa de fora seu nick, skin, servidor, nomes de jogadores e o texto do chat. Nada do que é desenhado no jogo fica escondido.",
-    "id": "Mode stream: memburamkan nick, tag klan, dan URL skin di menu ini, dan overlay stream tidak menyertakan nick, skin, server, nama pemain, dan teks obrolanmu. Tidak ada yang digambar di dalam game yang disembunyikan.",
-    "ja": "配信モード：このメニューのニック、クランタグ、スキンURLをぼかし、配信オーバーレイにはニック、スキン、サーバー、プレイヤー名、チャット本文を送りません。ゲーム画面に描かれるものは何も隠れません。",
-    "it": "Modalità stream: sfoca nick, tag del clan e URL della skin in questo menu, e l'overlay stream omette nick, skin, server, nomi dei giocatori e testo della chat. Nulla di ciò che viene disegnato nel gioco viene nascosto."
+    "en": "Stream mode: blurs your nick, clan tag and skin URL in this menu. Nothing drawn in the game is hidden.",
+    "el": "Λειτουργία stream: θολώνει το nick, το tag και το URL του skin σε αυτό το μενού. Τίποτα από όσα σχεδιάζονται στο παιχνίδι δεν κρύβεται.",
+    "es": "Modo stream: difumina tu nick, tag del clan y URL del skin en este menú. No oculta nada de lo que se dibuja en el juego.",
+    "bg": "Режим за стрийм: замъглява ника, клан тага и URL на скина в това меню. Нищо от нарисуваното в играта не се скрива.",
+    "fr": "Mode stream : floute votre pseudo, tag de clan et URL du skin dans ce menu. Rien de ce qui est dessiné dans le jeu n'est masqué.",
+    "ar": "وضع البث: يطمس اسمك وتاغ الكلان ورابط السكن في هذه القائمة. لا يُخفى شيء مما يُرسم في اللعبة.",
+    "zh": "直播模式：在此選單中模糊你的暱稱、戰隊標籤與造型網址。遊戲畫面中繪製的內容都不會被隱藏。",
+    "ru": "Режим стрима: размывает ник, клан-тег и URL скина в этом меню. Ничего из того, что рисуется в игре, не скрывается.",
+    "de": "Stream-Modus: verwischt deinen Nick, Clan-Tag und die Skin-URL in diesem Menü. Nichts, was im Spiel gezeichnet wird, wird ausgeblendet.",
+    "tr": "Yayın modu: bu menüde takma adını, klan etiketini ve skin URL'sini bulanıklaştırır. Oyunda çizilen hiçbir şey gizlenmez.",
+    "pl": "Tryb streamu: rozmywa twój nick, tag klanu i URL skina w tym menu. Nic z tego, co rysuje gra, nie jest ukrywane.",
+    "nl": "Streammodus: vervaagt je nick, clantag en skin-URL in dit menu. Niets wat in het spel wordt getekend, wordt verborgen.",
+    "pt": "Modo stream: desfoca seu nick, tag do clã e URL da skin neste menu. Nada do que é desenhado no jogo fica escondido.",
+    "id": "Mode stream: memburamkan nick, tag klan, dan URL skin di menu ini. Tidak ada yang digambar di dalam game yang disembunyikan.",
+    "ja": "配信モード：このメニューのニック、クランタグ、スキンURLをぼかします。ゲーム画面に描かれるものは何も隠れません。",
+    "it": "Modalità stream: sfoca nick, tag del clan e URL della skin in questo menu. Nulla di ciò che viene disegnato nel gioco viene nascosto."
   }
 }

@@ -35,7 +35,7 @@ const I = require('./lib');
 
 const CONFIG_FILE = path.join(__dirname, 'scan-config.json');
 const config = fs.existsSync(CONFIG_FILE) ? JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8')) : {};
-const KEY_FNS = config.keyFunctions || ['lmT', '_lmTH', '_lmUR', '_lmMT', '_lmMhT', '_lmBdgT', '_lmTx', 'LMi18n.t'];
+const KEY_FNS = config.keyFunctions || ['lmT', '_lmTH', '_lmUR', '_lmMT', '_lmMhT', '_lmTx', 'LMi18n.t'];
 
 let knownKeys = null;
 function keys() {

@@ -77,8 +77,6 @@
 - 🔄 Replays with pause, speed & seek
 - ☠️ Death recap — what happened in your last 20 seconds
 - 📈 Analytics dashboard — mass/min, top-10 rate, heatmaps
-- 🏅 18 achievement badges from your stats
-- 🎯 Daily objectives & coaching tips
 - 🔔 Notification centre for achievements & personal bests
 
 ### More
