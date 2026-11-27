@@ -3417,7 +3417,7 @@
 "pack.editNames2": "Edit nama",
 "pack.closeNames": "Tutup nama",
 "pkg.d1.screenBg": "Gambar latar layar (diam di layar, di atas peta)",
-"pkg.ha8x.mhClearConfirm": "Hapus daftar riwayat pertandingan di perangkat ini? Permainan yang dicatat {0} (dasbor, statistik) dan riwayat akunmu di server tetap disimpan.",
+"pkg.ha8x.mhClearAsk": "Hapus daftar riwayat pertandingan di perangkat ini? Permainannya juga hilang dari dasbor dan statistik {0}, kecuali yang dicatat {0} sendiri. Riwayat akunmu di server tetap disimpan.",
 "pkg.hf.analyticsLoadFailed": "Jendela Analitik (beserta riwayat permainan) gagal dimuat. Periksa koneksimu lalu coba lagi.",
 "pkg.hf.shareAgain": "Berbagi tidak berhasil di sini. Ketuk Bagikan lagi untuk mencoba cara lain.",
 "pkg.hk.keyboard": "Keyboard",

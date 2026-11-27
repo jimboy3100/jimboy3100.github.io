@@ -3417,7 +3417,7 @@
 "pack.editNames2": "İsimleri düzenle",
 "pack.closeNames": "İsimleri kapat",
 "pkg.d1.screenBg": "Ekran arka plan resmi (ekranda sabit kalır, haritanın üstünde)",
-"pkg.ha8x.mhClearConfirm": "Bu cihazın maç geçmişi listesi temizlensin mi? {0} penceresinin kaydettiği oyunlar (Panel, istatistikler) ve hesabının sunucudaki geçmişi korunur.",
+"pkg.ha8x.mhClearAsk": "Bu cihazın maç geçmişi listesi temizlensin mi? Oyunları {0} panelinden ve istatistiklerinden de çıkar; {0} penceresinin kendi kaydettikleri hariç. Hesabının sunucudaki geçmişi korunur.",
 "pkg.hf.analyticsLoadFailed": "Analiz penceresi (maç geçmişiyle birlikte) yüklenemedi. Bağlantını kontrol et ve tekrar dene.",
 "pkg.hf.shareAgain": "Paylaşım burada olmadı. Başka bir yol denemek için Paylaş'a tekrar dokun.",
 "pkg.hk.keyboard": "Klavye",

@@ -1,20 +1,20 @@
 {
-  "pkg.ha8x.mhClearConfirm": {
-    "en": "Clear the match history list of this device? The games {0} recorded (Dashboard, statistics) and your account's history on the server are kept.",
-    "el": "Να διαγραφεί η λίστα ιστορικού αγώνων αυτής της συσκευής; Τα παιχνίδια που κατέγραψε το {0} (Πίνακας, στατιστικά) και το ιστορικό του λογαριασμού σου στον server παραμένουν.",
-    "es": "¿Borrar la lista del historial de partidas de este dispositivo? Las partidas que registró {0} (panel, estadísticas) y el historial de tu cuenta en el servidor se conservan.",
-    "bg": "Да се изчисти ли списъкът с историята на игрите на това устройство? Игрите, записани от {0} (табло, статистики), и историята на акаунта ти на сървъра остават.",
-    "fr": "Effacer la liste de l’historique des parties de cet appareil ? Les parties enregistrées par {0} (tableau de bord, statistiques) et l’historique de votre compte sur le serveur sont conservés.",
-    "ar": "هل تريد مسح قائمة سجل المباريات على هذا الجهاز؟ تبقى المباريات التي سجّلها {0} (اللوحة، الإحصاءات) وسجل حسابك على الخادم.",
-    "zh": "清除此裝置的對局記錄列表？{0} 記錄的遊戲（儀表板、統計）和你帳號在伺服器上的記錄會保留。",
-    "ru": "Очистить список истории матчей на этом устройстве? Игры, записанные в окне {0} (панель, статистика), и история твоего аккаунта на сервере сохранятся.",
-    "de": "Die Spielverlauf-Liste dieses Geräts leeren? Die von {0} erfassten Spiele (Dashboard, Statistiken) und der Verlauf deines Kontos auf dem Server bleiben erhalten.",
-    "tr": "Bu cihazın maç geçmişi listesi temizlensin mi? {0} penceresinin kaydettiği oyunlar (Panel, istatistikler) ve hesabının sunucudaki geçmişi korunur.",
-    "pl": "Wyczyścić listę historii meczów na tym urządzeniu? Gry zapisane przez {0} (Pulpit, statystyki) i historia twojego konta na serwerze zostaną zachowane.",
-    "nl": "De lijst met spelgeschiedenis van dit apparaat wissen? De spellen die {0} heeft vastgelegd (dashboard, statistieken) en de geschiedenis van je account op de server blijven bewaard.",
-    "pt": "Limpar a lista do histórico de partidas deste dispositivo? As partidas registradas pela janela {0} (painel, estatísticas) e o histórico da sua conta no servidor são mantidos.",
-    "id": "Hapus daftar riwayat pertandingan di perangkat ini? Permainan yang dicatat {0} (dasbor, statistik) dan riwayat akunmu di server tetap disimpan.",
-    "ja": "この端末の試合履歴リストを消去しますか？{0} が記録した試合（ダッシュボード、統計）とサーバー上のアカウント履歴は残ります。",
-    "it": "Cancellare l’elenco della cronologia partite di questo dispositivo? Le partite registrate da {0} (Panoramica, statistiche) e la cronologia del tuo account sul server restano."
+  "pkg.ha8x.mhClearAsk": {
+    "en": "Clear the match history list of this device? Its games also leave the {0} Dashboard and statistics, except the ones {0} recorded itself. Your account's history on the server is kept.",
+    "el": "Να διαγραφεί η λίστα ιστορικού αγώνων αυτής της συσκευής; Τα παιχνίδια της φεύγουν και από τον Πίνακα και τα στατιστικά του {0}, εκτός από όσα κατέγραψε το ίδιο το {0}. Το ιστορικό του λογαριασμού σου στον server παραμένει.",
+    "es": "¿Borrar la lista del historial de partidas de este dispositivo? Sus partidas también salen del panel y las estadísticas de {0}, salvo las que registró el propio {0}. El historial de tu cuenta en el servidor se conserva.",
+    "bg": "Да се изчисти ли списъкът с историята на игрите на това устройство? Игрите му излизат и от таблото и статистиките на {0}, освен тези, които {0} е записал сам. Историята на акаунта ти на сървъра остава.",
+    "fr": "Effacer la liste de l’historique des parties de cet appareil ? Ses parties quittent aussi le tableau de bord et les statistiques de {0}, sauf celles que {0} a enregistrées lui-même. L’historique de votre compte sur le serveur est conservé.",
+    "ar": "هل تريد مسح قائمة سجل المباريات على هذا الجهاز؟ تُزال مبارياتها أيضًا من لوحة {0} وإحصاءاته، إلا التي سجّلها {0} بنفسه. يبقى سجل حسابك على الخادم.",
+    "zh": "清除此裝置的對局記錄列表？其中的遊戲也會從 {0} 的儀表板和統計中移除，{0} 自己記錄的遊戲除外。你帳號在伺服器上的記錄會保留。",
+    "ru": "Очистить список истории матчей на этом устройстве? Его игры пропадут и из панели и статистики окна {0}, кроме тех, что {0} записал сам. История твоего аккаунта на сервере сохранится.",
+    "de": "Die Spielverlauf-Liste dieses Geräts leeren? Ihre Spiele verschwinden auch aus Dashboard und Statistiken von {0}, außer denen, die {0} selbst erfasst hat. Der Verlauf deines Kontos auf dem Server bleibt erhalten.",
+    "tr": "Bu cihazın maç geçmişi listesi temizlensin mi? Oyunları {0} panelinden ve istatistiklerinden de çıkar; {0} penceresinin kendi kaydettikleri hariç. Hesabının sunucudaki geçmişi korunur.",
+    "pl": "Wyczyścić listę historii meczów na tym urządzeniu? Jej gry znikną też z Pulpitu i statystyk {0}, poza tymi, które {0} zapisał sam. Historia twojego konta na serwerze zostanie zachowana.",
+    "nl": "De lijst met spelgeschiedenis van dit apparaat wissen? De spellen ervan verdwijnen ook uit het dashboard en de statistieken van {0}, behalve die {0} zelf heeft vastgelegd. De geschiedenis van je account op de server blijft bewaard.",
+    "pt": "Limpar a lista do histórico de partidas deste dispositivo? As partidas dela também saem do painel e das estatísticas da janela {0}, exceto as que a própria {0} registrou. O histórico da sua conta no servidor é mantido.",
+    "id": "Hapus daftar riwayat pertandingan di perangkat ini? Permainannya juga hilang dari dasbor dan statistik {0}, kecuali yang dicatat {0} sendiri. Riwayat akunmu di server tetap disimpan.",
+    "ja": "この端末の試合履歴リストを消去しますか？その試合は {0} のダッシュボードと統計からも消えます（{0} 自身が記録した試合は除く）。サーバー上のアカウント履歴は残ります。",
+    "it": "Cancellare l’elenco della cronologia partite di questo dispositivo? Le sue partite escono anche dalla Panoramica e dalle statistiche di {0}, tranne quelle registrate da {0} stesso. La cronologia del tuo account sul server resta."
   }
 }

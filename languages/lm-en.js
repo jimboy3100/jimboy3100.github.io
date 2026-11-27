@@ -3417,7 +3417,7 @@
 "pack.editNames2": "Edit Names",
 "pack.closeNames": "Close Names",
 "pkg.d1.screenBg": "Screen background image (stays still on the screen, over the map)",
-"pkg.ha8x.mhClearConfirm": "Clear the match history list of this device? The games {0} recorded (Dashboard, statistics) and your account's history on the server are kept.",
+"pkg.ha8x.mhClearAsk": "Clear the match history list of this device? Its games also leave the {0} Dashboard and statistics, except the ones {0} recorded itself. Your account's history on the server is kept.",
 "pkg.hf.analyticsLoadFailed": "The Analytics window (with the match history) could not be loaded. Check your connection and try again.",
 "pkg.hf.shareAgain": "Sharing did not work here. Tap Share again to try another way.",
 "pkg.hk.keyboard": "Keyboard",

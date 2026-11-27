@@ -3417,7 +3417,7 @@
 "pack.editNames2": "Edytuj nicki",
 "pack.closeNames": "Zamknij nicki",
 "pkg.d1.screenBg": "Obraz tła ekranu (nieruchomy na ekranie, nad mapą)",
-"pkg.ha8x.mhClearConfirm": "Wyczyścić listę historii meczów na tym urządzeniu? Gry zapisane przez {0} (Pulpit, statystyki) i historia twojego konta na serwerze zostaną zachowane.",
+"pkg.ha8x.mhClearAsk": "Wyczyścić listę historii meczów na tym urządzeniu? Jej gry znikną też z Pulpitu i statystyk {0}, poza tymi, które {0} zapisał sam. Historia twojego konta na serwerze zostanie zachowana.",
 "pkg.hf.analyticsLoadFailed": "Nie udało się wczytać okna Analityka (z historią gier). Sprawdź połączenie i spróbuj ponownie.",
 "pkg.hf.shareAgain": "Udostępnianie tu nie zadziałało. Stuknij Udostępnij jeszcze raz, aby spróbować inaczej.",
 "pkg.hk.keyboard": "Klawiatura",

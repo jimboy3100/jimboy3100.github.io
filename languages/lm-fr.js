@@ -3417,7 +3417,7 @@
 "pack.editNames2": "Modifier les noms",
 "pack.closeNames": "Fermer les noms",
 "pkg.d1.screenBg": "Image de fond de l'écran (fixe à l'écran, par-dessus la carte)",
-"pkg.ha8x.mhClearConfirm": "Effacer la liste de l’historique des parties de cet appareil ? Les parties enregistrées par {0} (tableau de bord, statistiques) et l’historique de votre compte sur le serveur sont conservés.",
+"pkg.ha8x.mhClearAsk": "Effacer la liste de l’historique des parties de cet appareil ? Ses parties quittent aussi le tableau de bord et les statistiques de {0}, sauf celles que {0} a enregistrées lui-même. L’historique de votre compte sur le serveur est conservé.",
 "pkg.hf.analyticsLoadFailed": "Impossible de charger la fenêtre Statistiques (avec l'historique des parties). Vérifie ta connexion et réessaie.",
 "pkg.hf.shareAgain": "Le partage n'a pas fonctionné ici. Touche Partager à nouveau pour essayer autrement.",
 "pkg.hk.keyboard": "Clavier",

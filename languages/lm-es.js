@@ -3417,7 +3417,7 @@
 "pack.editNames2": "Editar nicks",
 "pack.closeNames": "Cerrar nicks",
 "pkg.d1.screenBg": "Imagen de fondo de pantalla (fija en la pantalla, sobre el mapa)",
-"pkg.ha8x.mhClearConfirm": "¿Borrar la lista del historial de partidas de este dispositivo? Las partidas que registró {0} (panel, estadísticas) y el historial de tu cuenta en el servidor se conservan.",
+"pkg.ha8x.mhClearAsk": "¿Borrar la lista del historial de partidas de este dispositivo? Sus partidas también salen del panel y las estadísticas de {0}, salvo las que registró el propio {0}. El historial de tu cuenta en el servidor se conserva.",
 "pkg.hf.analyticsLoadFailed": "No se pudo cargar la ventana de Analíticas (con el historial de partidas). Revisa tu conexión e inténtalo de nuevo.",
 "pkg.hf.shareAgain": "No se pudo compartir aquí. Toca Compartir otra vez para probar de otra forma.",
 "pkg.hk.keyboard": "Teclado",

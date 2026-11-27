@@ -3417,7 +3417,7 @@
 "pack.editNames2": "Editar nomes",
 "pack.closeNames": "Fechar nomes",
 "pkg.d1.screenBg": "Imagem de fundo da tela (fica parada na tela, sobre o mapa)",
-"pkg.ha8x.mhClearConfirm": "Limpar a lista do histórico de partidas deste dispositivo? As partidas registradas pela janela {0} (painel, estatísticas) e o histórico da sua conta no servidor são mantidos.",
+"pkg.ha8x.mhClearAsk": "Limpar a lista do histórico de partidas deste dispositivo? As partidas dela também saem do painel e das estatísticas da janela {0}, exceto as que a própria {0} registrou. O histórico da sua conta no servidor é mantido.",
 "pkg.hf.analyticsLoadFailed": "Não foi possível carregar a janela de Análises (com o histórico de partidas). Verifique sua conexão e tente de novo.",
 "pkg.hf.shareAgain": "Não deu para compartilhar aqui. Toque em Compartilhar de novo para tentar de outro jeito.",
 "pkg.hk.keyboard": "Teclado",

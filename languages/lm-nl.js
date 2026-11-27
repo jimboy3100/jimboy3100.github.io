@@ -3417,7 +3417,7 @@
 "pack.editNames2": "Namen bewerken",
 "pack.closeNames": "Namen sluiten",
 "pkg.d1.screenBg": "Schermachtergrond (blijft stil op het scherm, over de kaart)",
-"pkg.ha8x.mhClearConfirm": "De lijst met spelgeschiedenis van dit apparaat wissen? De spellen die {0} heeft vastgelegd (dashboard, statistieken) en de geschiedenis van je account op de server blijven bewaard.",
+"pkg.ha8x.mhClearAsk": "De lijst met spelgeschiedenis van dit apparaat wissen? De spellen ervan verdwijnen ook uit het dashboard en de statistieken van {0}, behalve die {0} zelf heeft vastgelegd. De geschiedenis van je account op de server blijft bewaard.",
 "pkg.hf.analyticsLoadFailed": "Het Analyse-venster (met de spelgeschiedenis) kon niet worden geladen. Controleer je verbinding en probeer het opnieuw.",
 "pkg.hf.shareAgain": "Delen lukte hier niet. Tik nog eens op Delen om het op een andere manier te proberen.",
 "pkg.hk.keyboard": "Toetsenbord",

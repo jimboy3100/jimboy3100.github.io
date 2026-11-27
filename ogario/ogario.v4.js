@@ -570,11 +570,12 @@ function _lmMatchHistoryPaint(host) {
     else fill();
     clr.addEventListener('click', function (e) {
         e.stopPropagation();
-        /* says what goes and what stays: only this device's list; the games Analytics recorded
-         * (lmAnalyticsGames) and the account's server history are not touched */
+        /* says what goes and what stays: only this device's list, whose games also leave the
+         * Analytics Dashboard and statistics (they merge this list in) unless Analytics recorded
+         * them itself (lmAnalyticsGames, not touched); the account's server history stays */
         var _lmMhAn = _lmMhT('modules.analytics.title', 'Analytics');
-        var _lmMhAsk = window.lmT ? window.lmT('pkg.ha8x.mhClearConfirm', [_lmMhAn]) : '';
-        if (!_lmMhAsk || _lmMhAsk === 'pkg.ha8x.mhClearConfirm') _lmMhAsk = _lmMhT('mhClearConfirm', 'Clear the match history?');
+        var _lmMhAsk = window.lmT ? window.lmT('pkg.ha8x.mhClearAsk', [_lmMhAn]) : '';
+        if (!_lmMhAsk || _lmMhAsk === 'pkg.ha8x.mhClearAsk') _lmMhAsk = _lmMhT('mhClearConfirm', 'Clear the match history?');
         if (!window.confirm(_lmMhAsk)) return;
         try { localStorage.removeItem('lmMatchHistory'); } catch (er) { }
         fill();

@@ -3417,7 +3417,7 @@
 "pack.editNames2": "Namen bearbeiten",
 "pack.closeNames": "Namen schließen",
 "pkg.d1.screenBg": "Bildschirm-Hintergrundbild (bleibt fest auf dem Bildschirm, über der Karte)",
-"pkg.ha8x.mhClearConfirm": "Die Spielverlauf-Liste dieses Geräts leeren? Die von {0} erfassten Spiele (Dashboard, Statistiken) und der Verlauf deines Kontos auf dem Server bleiben erhalten.",
+"pkg.ha8x.mhClearAsk": "Die Spielverlauf-Liste dieses Geräts leeren? Ihre Spiele verschwinden auch aus Dashboard und Statistiken von {0}, außer denen, die {0} selbst erfasst hat. Der Verlauf deines Kontos auf dem Server bleibt erhalten.",
 "pkg.hf.analyticsLoadFailed": "Das Analyse-Fenster (mit dem Spielverlauf) konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
 "pkg.hf.shareAgain": "Teilen hat hier nicht geklappt. Tippe noch einmal auf Teilen, um es anders zu versuchen.",
 "pkg.hk.keyboard": "Tastatur",

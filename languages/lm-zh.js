@@ -3417,7 +3417,7 @@
 "pack.editNames2": "編輯名稱",
 "pack.closeNames": "關閉名稱",
 "pkg.d1.screenBg": "螢幕背景圖片（固定在螢幕上，覆蓋在地圖之上）",
-"pkg.ha8x.mhClearConfirm": "清除此裝置的對局記錄列表？{0} 記錄的遊戲（儀表板、統計）和你帳號在伺服器上的記錄會保留。",
+"pkg.ha8x.mhClearAsk": "清除此裝置的對局記錄列表？其中的遊戲也會從 {0} 的儀表板和統計中移除，{0} 自己記錄的遊戲除外。你帳號在伺服器上的記錄會保留。",
 "pkg.hf.analyticsLoadFailed": "無法載入分析視窗（含對戰紀錄）。請檢查網路連線後再試一次。",
 "pkg.hf.shareAgain": "這裡無法分享。再點一次「分享」以改用其他方式。",
 "pkg.hk.keyboard": "鍵盤",

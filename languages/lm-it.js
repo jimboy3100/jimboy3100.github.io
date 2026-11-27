@@ -3417,7 +3417,7 @@
 "pack.editNames2": "Modifica nomi",
 "pack.closeNames": "Chiudi nomi",
 "pkg.d1.screenBg": "Immagine di sfondo dello schermo (ferma sullo schermo, sopra la mappa)",
-"pkg.ha8x.mhClearConfirm": "Cancellare l’elenco della cronologia partite di questo dispositivo? Le partite registrate da {0} (Panoramica, statistiche) e la cronologia del tuo account sul server restano.",
+"pkg.ha8x.mhClearAsk": "Cancellare l’elenco della cronologia partite di questo dispositivo? Le sue partite escono anche dalla Panoramica e dalle statistiche di {0}, tranne quelle registrate da {0} stesso. La cronologia del tuo account sul server resta.",
 "pkg.hf.analyticsLoadFailed": "Impossibile caricare la finestra Statistiche (con la cronologia delle partite). Controlla la connessione e riprova.",
 "pkg.hf.shareAgain": "Qui la condivisione non ha funzionato. Tocca di nuovo Condividi per provare in un altro modo.",
 "pkg.hk.keyboard": "Tastiera",
