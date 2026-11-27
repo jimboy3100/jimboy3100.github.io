@@ -724,7 +724,119 @@ function pageLib() {
         gl.getExtension('WEBGL_lose_context').loseContext();
         return res;
     }
+    /* The teammate indicator and chat bubble of a WebGL cell drawn by the GL text pass
+     * (_lmGlMarks): an earlier small cell under the indicator, a later big cell over part of it,
+     * the bubble (alpha 0.5 of textAlpha) over the cell's own body. Compared pixel by pixel with
+     * Canvas2D drawing the same images (drawImage, same world transform) over the frame without
+     * marks, where no later cell covers them; where the later cell covers them the frame must be
+     * the frame without marks. Pixels 3 px around the cover's edge are left out (antialiasing).
+     * cfg: scale, dpr, jelly, textAlpha, restore (after a WebGL context loss), noAtlas. */
+    async function marksGpu(src, defaults, cfg) {
+        function disc(id, x, y, r, nick) {
+            var pts = [], n = 96;
+            for (var i = 0; i < n; i++) pts.push(x + Math.cos(i / n * 2 * Math.PI) * r, y + Math.sin(i / n * 2 * Math.PI) * r);
+            return { id: id, x: x, y: y, size: r, isVirus: false, maxPointRad: r, pts: pts, color: ['#3388ff', '#33ff66', '#cc33ff'][id % 3], nick: nick };
+        }
+        var scene = [disc(1, 30, -60, 45, 'under'), disc(2, 60, 80, 80, 'mate'), disc(3, 205, -55, 140, 'big')];
+        var o = setup(src, defaults, { scale: cfg.scale, jelly: cfg.jelly, map: { noNames: true, showMass: false, teammatesInd: true, showChat: true } }, scene);
+        var R = o.R, env = o.env, dpr = cfg.dpr || 1;
+        R.canvasWidth = W / dpr; R.canvasHeight = H / dpr;
+        /* without the label atlas: the marks get textures of their own */
+        if (cfg.noAtlas) R._lmTextAtlasOff = true;
+        /* the indicator: opaque stripes, an alpha ramp and a hole (filtering and alpha of its edges) */
+        var ind = document.createElement('canvas');
+        ind.width = 90; ind.height = 50;
+        var ix = ind.getContext('2d');
+        for (var k = 0; k < 9; k++) { ix.fillStyle = k & 1 ? '#ffffff' : '#e03030'; ix.fillRect(k * 5, 0, 5, 50); }
+        var g = ix.createLinearGradient(45, 0, 90, 0);
+        g.addColorStop(0, 'rgba(20,40,220,1)'); g.addColorStop(1, 'rgba(20,40,220,0.1)');
+        ix.fillStyle = g; ix.fillRect(45, 0, 45, 50);
+        ix.clearRect(60, 15, 12, 12);
+        R.indicator = ind;
+        env.defaultSettings.indicators = 'normal';
+        env.window.teammatenicks = ['mate'];
+        env.window._lmTeammateNickSet = new Set(['mate']);
+        /* the bubble raster and the cell side of drawChat (lmChatBubble draws it at 0.5 alpha) */
+        var bub = document.createElement('canvas');
+        bub.width = 120; bub.height = 36;
+        var bx = bub.getContext('2d');
+        bx.fillStyle = 'rgba(255,255,255,0.9)'; bx.fillRect(0, 0, 120, 36);
+        bx.fillStyle = '#202020'; bx.fillRect(10, 10, 100, 6); bx.fillRect(10, 22, 70, 6);
+        var mate = env.LM.cells[1], BR = [0, 110, 120, 36];
+        var ce = { message: 'hi', time: 1 };
+        mate.lmChatLine = function () { return ce; };
+        mate.setDrawing = mate.setDrawingScale = function () { };
+        mate.lmChatBubble = function (ctx) { var a = ctx.globalAlpha; ctx.globalAlpha = a * 0.5; ctx.drawImage(bub, BR[0], BR[1], BR[2], BR[3]); ctx.globalAlpha = a; };
+        if (cfg.textAlpha != null) env.defaultSettings.textAlpha = cfg.textAlpha;
+        function shot(marks) {
+            R._glSkinFrame = (R._glSkinFrame || 0) + 1;
+            mate._lmMkOk = marks ? R._glSkinFrame : 0;
+            frame(o);
+            var ok = frame(o);
+            return { ok: ok, px: pixels(R), marked: R._lmGlMarked(mate) };
+        }
+        var before = shot(false);
+        if (cfg.restore) { await loseAndRestore(o); env.window.teammatenicks = ['mate']; before = shot(false); }
+        var after = shot(true);
+        /* Canvas2D: the marks drawn over the frame without them (rows flipped from readPixels) */
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var x = c.getContext('2d'), im = x.createImageData(W, H), a0 = before.px;
+        for (var y = 0; y < H; y++) for (var i = 0; i < W; i++) {
+            var s = ((H - 1 - y) * W + i) * 4, d = (y * W + i) * 4, al = a0[s + 3];
+            im.data[d] = al ? Math.min(255, Math.round(a0[s] * 255 / al)) : 0;
+            im.data[d + 1] = al ? Math.min(255, Math.round(a0[s + 1] * 255 / al)) : 0;
+            im.data[d + 2] = al ? Math.min(255, Math.round(a0[s + 2] * 255 / al)) : 0;
+            im.data[d + 3] = al;
+        }
+        x.putImageData(im, 0, 0);
+        var sc = cfg.scale * dpr;
+        x.setTransform(sc, 0, 0, sc, W / 2 - R.camX * sc, H / 2 - R.camY * sc);
+        var ta = env.defaultSettings.textAlpha != null ? env.defaultSettings.textAlpha : 1;
+        x.drawImage(ind, mate.x - 45, mate.y - mate.size - 90);
+        x.globalAlpha = ta * 0.5;
+        x.drawImage(bub, BR[0], BR[1], BR[2], BR[3]);
+        x.setTransform(1, 0, 0, 1, 0, 0);
+        var ref = x.getImageData(0, 0, W, H).data;
+        /* screen boxes of the marks and the cover */
+        var big = env.LM.cells[2];
+        var bcx = W / 2 + (big.x - R.camX) * sc, bcy = H / 2 + (big.y - R.camY) * sc, br = big.size * sc;
+        function box(wx, wy, ww, wh) { return [W / 2 + (wx - R.camX) * sc, H / 2 + (wy - R.camY) * sc, W / 2 + (wx + ww - R.camX) * sc, H / 2 + (wy + wh - R.camY) * sc]; }
+        var boxes = [box(mate.x - 45, mate.y - mate.size - 90, 90, 50), box(BR[0], BR[1], BR[2], BR[3])];
+        var res = { ok: before.ok && after.ok, marked: after.marked, shown: 0, covered: 0, coveredDiff: 0, shownMax: 0, shownSum: 0, over4: 0, outside: 0, glError: 0 };
+        var p1 = after.px;
+        for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+            var inBox = false;
+            for (var b = 0; b < boxes.length; b++) { var q = boxes[b]; if (xx + 0.5 > q[0] && xx + 0.5 < q[2] && yy + 0.5 > q[1] && yy + 0.5 < q[3]) inBox = true; }
+            var gs = ((H - 1 - yy) * W + xx) * 4, rs = (yy * W + xx) * 4;
+            if (!inBox) {
+                /* nothing else changes */
+                if (p1[gs] !== a0[gs] || p1[gs + 1] !== a0[gs + 1] || p1[gs + 2] !== a0[gs + 2] || p1[gs + 3] !== a0[gs + 3]) res.outside++;
+                continue;
+            }
+            var dd = Math.sqrt((xx + 0.5 - bcx) * (xx + 0.5 - bcx) + (yy + 0.5 - bcy) * (yy + 0.5 - bcy));
+            if (Math.abs(dd - br) < 3) continue;
+            if (dd < br) {
+                res.covered++;
+                if (p1[gs] !== a0[gs] || p1[gs + 1] !== a0[gs + 1] || p1[gs + 2] !== a0[gs + 2] || p1[gs + 3] !== a0[gs + 3]) res.coveredDiff++;
+                continue;
+            }
+            res.shown++;
+            /* premultiplied, as the GL frame */
+            var ra = ref[rs + 3], m = 0;
+            for (var ch = 0; ch < 3; ch++) m = Math.max(m, Math.abs(p1[gs + ch] - Math.round(ref[rs + ch] * ra / 255)));
+            m = Math.max(m, Math.abs(p1[gs + 3] - ra));
+            res.shownSum += m;
+            if (m > res.shownMax) res.shownMax = m;
+            if (m > 4) res.over4++;
+        }
+        res.shownMean = res.shown ? res.shownSum / res.shown : 0;
+        res.glError = R.gl.getError();
+        R.gl.getExtension('WEBGL_lose_context').loseContext();
+        return res;
+    }
     return {
+        marksGpu: marksGpu,
         atlasUploads: atlasUploads,
         atlasCapacity: atlasCapacity,
         atlasOracle: atlasOracle,
@@ -879,6 +991,18 @@ async function main() {
             /* identical geometry and textures: only rounding of the sub-texel weights may differ */
             check(c.name + ': same picture as the reference (max channel diff <= 8, < 0.05% channels over 8)', r.max <= 8 || r.over8 < 1920 * 1080 * 4 * 0.0005);
             check(c.name + ': the scene is not empty', r.litPixels > 1920 * 1080 * 0.05);
+        }
+        /* teammate indicator and chat bubble in the GL text pass (working copy only) */
+        if (NEW.factory.indexOf('_lmGlMarks(cell, which)') >= 0) {
+            for (const mc of [{ scale: 1, jelly: true }, { scale: 0.6, jelly: false }, { scale: 1.3, jelly: true, dpr: 2 }, { scale: 1, jelly: true, textAlpha: 0.6 }, { scale: 1, jelly: true, restore: true }, { scale: 0.6, jelly: true, noAtlas: true, textAlpha: 0.8 }]) {
+                const mr = await evaluate('__glb.marksGpu(__glbNew, __glbDefaults, ' + JSON.stringify(mc) + ')');
+                const nm = 'GL marks ' + JSON.stringify(mc);
+                console.log('     ' + nm + ': shown px ' + mr.shown + ' (max diff to Canvas2D ' + mr.shownMax + ', mean ' + mr.shownMean.toFixed(3) + ', >4: ' + mr.over4 + '), covered px ' + mr.covered +
+                    ' (changed ' + mr.coveredDiff + '), changed outside the marks ' + mr.outside);
+                check(nm + ': drawn on the GL layer, no GL error', mr.ok && mr.marked && mr.glError === 0 && mr.shown > 1000);
+                check(nm + ': the later cell covers them (no pixel changed there), nothing else changed', mr.covered > 100 && mr.coveredDiff === 0 && mr.outside === 0);
+                check(nm + ': the same pixels as Canvas2D drawing them (max channel diff <= 4)', mr.over4 === 0);
+            }
         }
         /* the labels are really drawn: labels on and off give different pictures */
         check('labels are drawn (labels on and off differ)', stats[0].hashNew !== stats[2].hashNew && stats[1].hashNew !== stats[3].hashNew);

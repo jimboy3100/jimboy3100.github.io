@@ -217,6 +217,7 @@ const application = {
 const env = { window: window, LM: LM, application: application, defaultSettings: ds, defaultmapsettings: ms, ogarcopythelb: {}, ogario: ogario };
 globalThis.SpecialEffectPlayers = SEP;
 globalThis._EAT_PULSE_MAGNITUDE = 0.08;
+globalThis._EAT_PULSE_DURATION = 150;
 globalThis._elDeathVisual = null;
 globalThis.dyinglight1load = 'no';
 globalThis._lmElTeamsActive = () => false;
@@ -243,6 +244,14 @@ Object.assign(R, {
     drawFBTracking(ctx, players, x, y) { ctx.drawImage(fbArrow, x - 10, y - 10, 20, 20); }
 });
 const fbArrow = img('fbArrow', 20, 20);
+/* a quad of the GL text pass: the image painted on the GL layer at that place and alpha (the
+ * texture cache and the GPU draw are not run here) */
+R._lmGlMarkQuad = function (src, x, y, w, h, z, a) {
+    const g = glc.getContext(), p = g.globalAlpha;
+    g.globalAlpha = a;
+    if (w === undefined) g.drawImage(src, x, y); else g.drawImage(src, x, y, w, h);
+    g.globalAlpha = p;
+};
 const realDeformed = R.drawLegendWorldDeformedCanvasCell;
 /* Canvas2D cells: the test model painter; WebGL cells: the real cell.draw (its WebGL branch) */
 R.drawLegendWorldDeformedCanvasCell = function (cell, ctx) { return cell._webglRendered ? realDeformed.call(this, cell, ctx) : paintCellCanvas(cell, ctx); };
@@ -397,10 +406,16 @@ function frame(s) {
             const fg = R._lmLabelsOnFg && R._lmLabelsOnFg(c);
             const ring = fg ? null : lmRing(c, c.size, R.scale);
             if (ring) R.strokeMultiboxRing(gctx, c.x, c.y, c.size, ring);
+            /* the teammate indicator and chat bubble of the GL text pass: the real _lmGlMarks
+             * (and the Canvas2D code it runs), its quads painted here (_lmGlMarkQuad), before
+             * and after the cell's labels */
+            const mk = !fg && R._lmGlMarks && c._lmMkOk === R._glSkinFrame;
+            if (mk) R._lmGlMarks(c, 1);
             gctx.globalAlpha = pre * (ds.textAlpha != null ? ds.textAlpha : 1);
             const fl = labelFlags(c);
             if (fl.on && !fg) paintLabels(gctx, c, fl);
             gctx.globalAlpha = pre;
+            if (mk) R._lmGlMarks(c, 2);
         }
         gctx.restore();
     }
@@ -441,8 +456,8 @@ reset(); team(['mate']);
 scene([makeCell({ x: -20, y: 30, size: 40, targetNick: 'mate' }), makeCell({ x: 90, y: -50, size: 25, targetNick: 'zz' })]);
 let r = frame(S1);
 check('teammate only: WebGL frame', r.gl);
-check('teammate only: the indicator survives the frame on the overlay', marks(r, R.indicator) > 0, 'ind px ' + marks(r, R.indicator) + ' order ' + r.ops.filter((o) => /^overlay/.test(o)).join(' > '));
-check('teammate only: overlay cleared before the marks and not after (resize/clear/transform before the cell pass)', orderOk(r.ops), r.ops.filter((o) => /^overlay/.test(o)).join(' > '));
+check('teammate only: the indicator survives the frame', marks(r, R.indicator) > 0, 'ind px ' + marks(r, R.indicator) + ' order ' + r.ops.filter((o) => /^overlay/.test(o)).join(' > '));
+check('teammate only: drawn by the GL text pass at the cell\'s depth, no overlay', !r.shown && r.ops.includes('gl:draw:teamInd') && !r.ops.includes('overlay:draw:teamInd'), r.ops.filter((o) => /teamInd|^overlay/.test(o)).join(' > '));
 check('teammate only: pixels equal the Canvas2D order', r.d.n === 0, r.d.n + ' px, max ' + r.d.max.toFixed(3));
 r = frame(S1);
 check('teammate only, next frame: still equal (no stale marks, no double draw)', r.gl && r.d.n === 0, r.d.n + ' px');
@@ -452,10 +467,10 @@ reset(); chat('talk');
 const talker = makeCell({ x: 10, y: -10, size: 60, targetNick: 'talk' });
 scene([talker, makeCell({ x: -90, y: 40, size: 30, targetNick: 'b' })]);
 r = frame(S1);
-check('chat only, first frame of a line: Canvas2D (bubble size not known yet), equal', !r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+check('chat only, first frame of a line: WebGL (the GL text pass lays the bubble out itself), equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
 r = frame(S1);
 const chatCol = talker.chatCanvas && talker.chatCanvas.txtCanvas ? talker.chatCanvas.txtCanvas.color : [9, 9, 9];
-check('chat only, next frame: WebGL, the bubble survives on the overlay', r.gl && marked(r.out, chatCol) > 0, 'gl ' + r.gl + ' chat px ' + marked(r.out, chatCol));
+check('chat only, next frame: WebGL, the bubble survives on the GL layer', r.gl && marked(r.out, chatCol) > 0 && !r.shown, 'gl ' + r.gl + ' chat px ' + marked(r.out, chatCol) + ' shown ' + r.shown);
 check('chat only: pixels equal the Canvas2D order', r.d.n === 0, r.d.n + ' px, max ' + r.d.max.toFixed(3));
 setSettings({ set: { textAlpha: 0.6 } });
 r = frame(S1);
@@ -664,7 +679,8 @@ reset();
  * (two document.fonts reads per cell); a web font load or a font change in a later frame still
  * measures again */
 {
-    reset(); team(['mate']);
+    /* (the hat puts mate's marks and labels on the overlay: boxes for the later cells) */
+    reset(); team(['mate']); SEP.mate = 'Hat';
     const saved = globalThis.document;
     let reads = 0, st = 'loading';
     globalThis.document = { fonts: { get status() { reads++; return st; } } };
@@ -700,7 +716,7 @@ reset(); team(['mate']);
 const mate = makeCell({ x: 0, y: 40, size: 40, targetNick: 'mate' });
 scene([mate, makeCell({ x: 10, y: -70, size: 60, targetNick: 'big' })]);
 r = frame(S1);
-check('later bigger cell over the indicator: Canvas2D frame (it covers the indicator there), equal', !r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+check('later bigger cell over the indicator: WebGL, it covers the GL indicator as in Canvas2D, equal', r.gl && r.d.n === 0 && marks(r, R.indicator) > 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 scene([mate, makeCell({ x: 15, y: -40, size: 20, targetNick: 'small' })]);
 r = frame(S1);
 check('earlier smaller cell under the indicator: WebGL, indicator above it as in Canvas2D, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
@@ -709,16 +725,28 @@ r = frame(S1);
 check('later bigger cell away from the indicator: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
 scene([mate, makeCell({ x: 200, y: -60, size: 45, targetNick: 'a very long nickname here' })]);
 r = frame(S1);
-check('later cell whose long nick may reach the indicator: Canvas2D, equal', !r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+check('later cell whose long nick may reach the indicator: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 setSettings({ set: { namesScale: 3 } });
 scene([makeCell({ x: 0, y: 40, size: 41, targetNick: 'mate' })]);
 r = frame(S1);
-check('indicator that may meet its own big nick (drawn after it in Canvas2D): Canvas2D, equal', !r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+check('indicator that may meet its own big nick (drawn after it in Canvas2D): WebGL, nick over it, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 reset(); chat('talk'); talker._lmChatAt = undefined;
 scene([talker, makeCell({ x: 15, y: 40, size: 90, targetNick: 'cover' })]);
 frame(S1);
 r = frame(S1);
-check('later bigger cell over a chat bubble: Canvas2D, equal', !r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+check('later bigger cell over a chat bubble: WebGL, it covers the GL bubble as in Canvas2D, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+/* an overlay mark of an earlier cell (its labels with an effect) under a later GL indicator */
+reset(); team(['mate2']); SEP.hatty = 'Hat';
+{
+    const hatty = makeCell({ x: 0, y: 30, size: 30, targetNick: 'hatty' });
+    const m2 = makeCell({ x: 20, y: 60, size: 35, targetNick: 'mate2' });
+    scene([hatty, m2]);
+    r = frame(S1);
+    check('later teammate whose GL indicator reaches an earlier overlay effect: Canvas2D (the overlay is above the GL layer), equal', !r.gl && /^covered/.test(why()) && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    m2.x = 200;
+    r = frame(S1);
+    check('  away from it: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+}
 
 /* ---- selected-cell ring (sticky cells) ----
  * drawRings strokes it after the whole cell pass, over every cell and label: in a WebGL frame
@@ -758,10 +786,10 @@ reset(); strokes.on = true; R.drawRings = realDrawRings;
 R.drawRings = stubRings; strokes.on = false;
 
 /* ---- no marks: no clear, overlay hidden ---- */
-reset(); team(['mate']);
+reset(); SEP.mate = 'Hat';
 scene([makeCell({ x: 0, y: 40, size: 40, targetNick: 'mate' })]);
 frame(S1);
-team([]);
+delete SEP.mate;
 r = frame(S1);
 check('marks gone: WebGL frame without the overlay (hidden)', r.gl && !r.shown && r.d.n === 0, 'gl ' + r.gl + ' shown ' + r.shown);
 check('  it was cleared once (it held marks)', r.ops.filter((o) => o === 'overlay:clear').length === 1, r.ops.join(' '));
@@ -786,6 +814,8 @@ check('DPR 2, zoom 0.8: WebGL, indicator and bubble survive, equal', r.gl && mar
 
 /* ---- resize between frames ---- */
 const S3 = Object.assign({}, S2, { W: 260, H: 150 });
+/* (a mark the overlay holds: the indicator and bubble are on the GL layer) */
+SEP.talk = 'Hat';
 r = frame(S3);
 check('resized frame: overlay resized before its marks, marks kept, equal', r.gl && overlay.width === 520 && orderOk(r.ops) && r.d.n === 0, 'gl ' + r.gl + ' ' + overlay.width + 'x' + overlay.height + ' ' + r.d.n + ' px ' + r.ops.filter((o) => /^overlay/.test(o)).join(' > '));
 r = frame(S3);
@@ -896,14 +926,14 @@ reset(); chat('talk'); setSettings({ map: { noNames: true, showMass: false } });
     for (const zoom of [1, 0.7, 1.3]) {
         const fr = frame(Object.assign({}, S1, { zoom: zoom }));
         const fr2 = frame(Object.assign({}, S1, { zoom: zoom }));
-        const n = fr2.ops.filter((o) => /^(main|overlay):draw:chatTxt$/.test(o)).length;
+        const n = fr2.ops.filter((o) => /^(main|overlay|gl):draw:chatTxt$/.test(o)).length;
         if (!(fr.d.n === 0 && fr2.d.n === 0 && fr2.gl && n === 1)) { ok = false; info += ' [zoom ' + zoom + ': gl ' + fr2.gl + ' ' + fr.d.n + '/' + fr2.d.n + ' px, ' + n + ' bubbles]'; }
     }
     check('names and mass off, zoom 1/0.7/1.3: WebGL, exactly one bubble per frame, equal to Canvas2D', ok, info);
     scene([t2, makeCell({ x: 15, y: 40, size: 90, targetNick: 'cover' })]);
     frame(S1);
     r = frame(S1);
-    check('names and mass off, later bigger cell over the bubble: Canvas2D, equal', !r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+    check('names and mass off, later bigger cell over the bubble: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
 }
 
 /* ---- the per-frame chat lookup (renderFrame): built only for showChat, stops at expiry ---- */
@@ -947,8 +977,11 @@ scene([mate2]);
 R._lmGlWhyN = null;
 for (let i = 0; i < 3; i++) frame(S1);
 const counts = R._lmGlWhyN;
+/* (a later cell over mate's hat, an overlay mark) */
+SEP.mate = 'Hat';
 scene([mate2, makeCell({ x: 10, y: -70, size: 60, targetNick: 'big' })]);
 frame(S1); frame(S1);
+delete SEP.mate;
 scene([mate2]);
 frame(Object.assign({}, S1, { batchFail: true }));
 const glKeep = R.gl;
@@ -968,7 +1001,7 @@ const C = R._lmGlWhyN, G = R.GLW || {};
 check('renderer counters exist (real renderFrame lines)', !!(runWhy && runCount && C && C.length === 32), 'why ' + !!runWhy + ' count ' + !!runCount);
 if (C) {
     const named = (k) => C[G[k]];
-    check('  4 WebGL frames, 2 coveredTeammate, 1 batch, 1 contextLost, 1 off, 1 reset', named('WEBGL') === 4 && named('COVER_TEAM') === 2 && named('BATCH') === 1 &&
+    check('  4 WebGL frames, 2 coveredEffect, 1 batch, 1 contextLost, 1 off, 1 reset', named('WEBGL') === 4 && named('COVER_FX') === 2 && named('BATCH') === 1 &&
         named('LOST') === 1 && named('OFF') === 1 && named('RESET') === 1, Array.from(C).map((v, i) => v ? R.GLW_IDS[i] + ' ' + v : '').filter(Boolean).join(', '));
     check('  context back: no longer counted as lost', R._lmGlLost === false);
     check('  one counter array for all frames (no per-frame allocation)', C === counts);

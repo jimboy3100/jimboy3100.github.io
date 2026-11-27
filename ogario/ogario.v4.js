@@ -36522,6 +36522,8 @@ function thelegendmodproject() {
                 var _dpr = window.LM_DPR || 1;
                 return this.createCanvas(),
                     this.redraw && (this.redraw = false,
+                        /* a new picture: the WebGL copy of a chat bubble is made again (_lmGlMarkQuad) */
+                        this.txtCanvas._lmDrawn = (this.txtCanvas._lmDrawn || 0) + 1,
 
 
                         this.txtCanvas.width = (customTxt ? this.measureWidthCustom(customTxt) : this.measureWidth()) * _dpr,
@@ -39752,7 +39754,9 @@ function thelegendmodproject() {
                             drawRender.strokeMultiboxRing(style, this.x, this.y, y, _mbRing);
                         }
                     } /* end of else-block for non-WebGL body rendering */
-                    if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 &&
+                    /* (a WebGL cell's indicator may be drawn by the GL text pass already) */
+                    var _glMk = _wasWebGL && drawRender._lmGlMarked(this);
+                    if (defaultmapsettings.teammatesInd && !this.isPlayerCell && y <= 800 && !_glMk &&
                         window.teammatenicks && this.targetNick != "" &&
                         (window._lmTeammateNickSet ? window._lmTeammateNickSet.has(this.targetNick) : window.teammatenicks.includes(this.targetNick))) {
                         /* WebGL cell: on the overlay canvas above the GL layer (this.ctx is
@@ -39818,6 +39822,8 @@ function thelegendmodproject() {
                          * draws after them go on the overlay canvas, at the same place
                          * (this.margin from the nick layout) and with the same alpha (textAlpha). */
                         var _mergeOn = !!(window.ExternalScripts && !window.legendmod5.optimizedMass);
+                        /* the GL text pass drew the bubble (_lmGlMarks) */
+                        if (_glMk) _chatCe = null;
                         var _lab = _mergeOn && !cellMoved ? this.lmLabels(y,
                             (defaultmapsettings.hideTeammatesNames && lmSkinsShown() && !this.isEjected)
                                 ? application.getCustomSkin(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti)) : null) : 0;
@@ -61665,9 +61671,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
-            /* Teammate indicators and the Facebook friend marker go on the overlay
-             * canvas: checked per visible cell below, not per frame just because the
-             * option is on. */
+            /* Teammate indicators (GL text pass or overlay) and the Facebook friend
+             * marker (overlay): checked per visible cell below, not per frame just
+             * because the option is on. */
             var _glTeamNicks =
                 (defaultmapsettings.teammatesInd && window.teammatenicks)
                     ? (window._lmTeammateNickSet || null) : null;
@@ -61712,8 +61718,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
-            /* Chat bubbles are drawn by cell.draw(): fall back only when a visible cell
-             * shows one (checked per cell below), not for 15 s after any chat line. */
+            /* Chat bubbles (GL text pass or overlay): checked only for the visible cells
+             * that show one (below), not for 15 s after any chat line. */
             var _glChatMap =
                 (defaultmapsettings.showChat && this._chatLookup && this._chatLookup.size)
                     ? this._chatLookup : null;
@@ -61752,10 +61758,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 0;
 
             /*
-             * Per-cell marks above a WebGL cell (teammate indicator, chat bubble) are
-             * drawn on the overlay canvas, above every GL body and label. In Canvas2D a
-             * later (bigger) cell and its labels cover them: keep WebGL only while no
-             * later cell comes near a mark (boxes in this._lmFxBoxes, conservative).
+             * The teammate indicator and chat bubble of an on-screen WebGL cell are drawn
+             * by the GL text pass at the cell's depth, in the Canvas2D order (_lmGlMarks):
+             * a later cell and its labels cover them there as in Canvas2D. Marks on the
+             * overlay canvas (above every GL body and label) are those of the cells below,
+             * and the indicator and bubble of a cell outside the GL view: in Canvas2D a
+             * later (bigger) cell and its labels cover them, so keep WebGL only while no
+             * later cell comes near such a mark (boxes in this._lmFxBoxes, conservative).
              * Marks that sit under the cell's own labels in Canvas2D (FB friend badge,
              * special effects) take that cell's labels (and multibox ring) onto the
              * overlay with them, in the Canvas2D order (_lmLabelsOnFg).
@@ -61840,7 +61849,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
 
                 if (_glFxCheck && !_glOut) {
-                    _glFxN = this._lmCellFx(cell, _glFxN, _glTeamNicks, _glTeamList, _glChatMap, _glSpFx);
+                    _glFxN = this._lmCellFx(cell, _glFxN, _glTeamNicks, _glTeamList, _glChatMap, _glSpFx, true);
                     if (_glFxN < 0) {
                         /* _lmCellFx set the reason */
                         return false;
@@ -61939,13 +61948,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
         /* canUseWebGLScene: the overlay marks of one on-screen cell. Returns the new box
          * count (4 numbers per box in this._lmFxBoxes), or -1 (reason in _lmGlWhy) when the
-         * frame needs Canvas2D. */
-        _lmCellFx(cell, n, teamSet, teamList, chatMap, spFx) {
+         * frame needs Canvas2D. glMk (a cell on screen): its marks go to the GL text pass
+         * (_lmMkOk, _lmGlMarks) unless its labels are on the overlay; they get no box then,
+         * they only must not reach an overlay mark of an earlier cell (above them there). */
+        _lmCellFx(cell, n, teamSet, teamList, chatMap, spFx, glMk) {
             var nick = cell.targetNick, x = cell.x, y = cell.y;
             /* the eat pulse may draw the cell up to that much bigger */
             var r = cell.size * (1 + _EAT_PULSE_MAGNITUDE);
             /* its labels follow on the overlay (_lmCellFg ran first) */
             var onFg = cell._lmFgLab === this._glSkinFrame;
+            var gl = !!glMk && !onFg, hit;
+            if (gl) cell._lmMkOk = this._glSkinFrame;
             /* teammate indicator (same rule and image as cell.draw / drawTeammatesInd) */
             if ((teamSet || teamList) && nick && !cell.isPlayerCell && cell.size <= 800 && this.indicator &&
                 (teamSet ? teamSet.has(nick) : teamList.includes(nick))) {
@@ -61957,27 +61970,33 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var tx = x + dx;
                     var ty0 = y - r + dy;
                     var ty1 = y - cell.size + dy + img.height;
+                    if (gl) {
+                        if (n && (hit = this._lmFxHit(n, tx, ty0, tx + img.width, ty1))) return this._lmFxFail(hit);
+                        img = null;
+                    }
                     /* drawn before the cell's own labels in Canvas2D: they must not meet,
                      * unless those labels are on the overlay too (after it) */
-                    if (!onFg) {
+                    else if (!onFg) {
                         this._lmLabelExt(cell);
                         if (this._lmExtW > 0 && tx < x + this._lmExtW && tx + img.width > x - this._lmExtW &&
                             ty0 < y + this._lmExtH && ty1 > y - this._lmExtH) return this._lmFxFail(this.GLW.OWN_LABEL);
                     }
-                    n = this._lmFxPush(n, tx, ty0, tx + img.width, ty1, this.GLW.COVER_TEAM);
+                    if (img) n = this._lmFxPush(n, tx, ty0, tx + img.width, ty1, this.GLW.COVER_TEAM);
                 }
             }
             /* chat bubble: drawn after the cell's own labels, so only later cells matter */
             if (chatMap && nick && cell.lmChatLine && chatMap.has(nick)) {
                 /* the same line cell.draw shows (lmChatLine) */
                 var ce = cell.lmChatLine();
-                if (ce) {
+                /* (a GL bubble with no overlay mark before it needs no box) */
+                if (ce && !(gl && !n)) {
                     /* its size is known once Canvas2D has drawn this line */
                     if (cell._lmChatAt !== ce.time) return this._lmFxFail(this.GLW.CHAT_NEW);
                     /* (1 unit or less: drawChat draws nothing) */
                     if (cell._lmChatW > 1 && cell._lmChatH > 1) {
                         var cw = cell._lmChatW * 0.55 + 4, cy0 = y + cell._lmChatDy;
-                        n = this._lmFxPush(n, x - cw, cy0 - 0.1 * cell._lmChatH, x + cw, cy0 + 1.1 * cell._lmChatH, this.GLW.COVER_CHAT);
+                        if (!gl) n = this._lmFxPush(n, x - cw, cy0 - 0.1 * cell._lmChatH, x + cw, cy0 + 1.1 * cell._lmChatH, this.GLW.COVER_CHAT);
+                        else if ((hit = this._lmFxHit(n, x - cw, cy0 - 0.1 * cell._lmChatH, x + cw, cy0 + 1.1 * cell._lmChatH))) return this._lmFxFail(hit);
                     }
                 }
             }
@@ -61986,6 +62005,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmFxFail(why) {
             this._lmGlWhy = why;
             return -1;
+        },
+        /* The GLW reason of the first of the n mark boxes this world box reaches, else 0 */
+        _lmFxHit(n, x0, y0, x1, y1) {
+            var b = this._lmFxBoxes;
+            /* outside the union of the boxes (_lmFxPush): none */
+            if (!n || x1 < this._lmFxMinX || x0 > this._lmFxMaxX || y1 < this._lmFxMinY || y0 > this._lmFxMaxY) return 0;
+            for (var k = 0; k < n; k += 4) {
+                if (x0 < b[k + 2] && x1 > b[k] && y0 < b[k + 3] && y1 > b[k + 1]) return this._lmFxKinds[k >> 2] || this.GLW.COVERED;
+            }
+            return 0;
         },
         /* canUseWebGLScene: the teammate indicator and chat bubble of a cell outside the view
          * the GL batch draws. A mark of it that reaches the screen lies above the GL cells
@@ -63908,11 +63937,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 uniform vec2 u_quadSize;    // half-width, half-height in world units
                 uniform float u_z;          // depth value
                 uniform vec2 u_offset;      // vertical offset from cell center (world units)
+                uniform float u_premul;     // 1: a mark (_lmGlMarkQuad)
+                uniform vec2 u_res;         // canvas size in pixels
                 out vec2 v_uv;
                 void main() {
                     v_uv = a_pos * 0.5 + 0.5;
                     vec2 worldPos = u_worldPos + u_offset + a_pos * u_quadSize;
                     vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    if (u_premul > 0.5) {
+                        /* a mark: edges on pixel borders, as Canvas2D draws an image */
+                        vec2 snapped = floor((clipPos * 0.5 + 0.5) * u_res + 0.5) / u_res * 2.0 - 1.0;
+                        v_uv += (snapped - clipPos) / (u_viewScale * u_quadSize * 2.0);
+                        clipPos = snapped;
+                    }
                     gl_Position = vec4(clipPos.x, -clipPos.y, u_z, 1.0);
                 }`;
 
@@ -63921,10 +63958,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 in vec2 v_uv;
                 uniform sampler2D u_textTex;
                 uniform float u_alpha;
+                uniform float u_premul;     // 1: premultiplied texels (marks, _lmGlMarkQuad)
                 out vec4 fragColor;
                 void main() {
                     fragColor = texture(u_textTex, v_uv);
                     if (fragColor.a < 0.01) discard;
+                    if (u_premul > 0.5) fragColor.rgb /= fragColor.a;
                     fragColor.a *= u_alpha;
                 }`;
 
@@ -63939,6 +63978,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.u_text_offset = gl.getUniformLocation(textProgram, 'u_offset');
                     this.u_text_tex = gl.getUniformLocation(textProgram, 'u_textTex');
                     this.u_text_alpha = gl.getUniformLocation(textProgram, 'u_alpha');
+                    this.u_text_premul = gl.getUniformLocation(textProgram, 'u_premul');
+                    this.u_text_res = gl.getUniformLocation(textProgram, 'u_res');
 
                     // Text VAO — reuse the unit quad VBO
                     this.glTextVAO = gl.createVertexArray();
@@ -71959,6 +72000,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
         getOrCreateTextTexture(text, font, fillStyle, strokeStyle, strokeWidth) {
             if (!this.gl || !this.glTextProgram) return null;
             var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
+            return this._lmTextCached(cacheKey, null, text, font, fillStyle, strokeStyle, strokeWidth);
+        },
+        /* The text cache entry of cacheKey; on a miss made from src (an image or canvas of a
+         * mark, _lmRasterImage) or else from the text (_lmRasterText). */
+        _lmTextCached(cacheKey, src, text, font, fillStyle, strokeStyle, strokeWidth) {
             var cached = this.glTextCache.get(cacheKey);
             var now = Date.now();
             var frame = this._lmTextFrame || 0;
@@ -71975,14 +72021,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return cached;
             }
 
-            var size = this._lmRasterText(text, font, fillStyle, strokeStyle, strokeWidth);
+            var size = src ? this._lmRasterImage(src) : this._lmRasterText(text, font, fillStyle, strokeStyle, strokeWidth);
             if (!size) return null;
             var w = size[0], h = size[1];
 
             var gl = this.gl;
-            /* in the label atlas, or its own texture (_lmTextStore) */
-            var entry = { tex: null, slot: null, w: 0, h: 0, lastUsed: now, bytes: w * h * 4, frame: frame };
-            this._lmTextStore(entry, w, h);
+            /* in the label atlas, or its own texture (_lmTextStore); an image of a mark with
+             * premultiplied texels (filtered as Canvas2D draws it scaled) */
+            var entry = { tex: null, slot: null, w: 0, h: 0, lastUsed: now, bytes: w * h * 4, frame: frame, premul: !!src };
+            this._lmUpPremul = !!src;
+            try {
+                this._lmTextStore(entry, w, h);
+            } finally {
+                this._lmUpPremul = false;
+            }
             entry.w = w;
             entry.h = h;
             this._lmTextTouched = (this._lmTextTouched || 0) + 1;
@@ -72017,19 +72069,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 in vec4 a_quad;     // world x, y (deformed), half width, half height
                 in vec2 a_offZ;     // vertical offset from the cell centre, depth
                 in vec4 a_rect;     // texel rectangle in the atlas page: x, y, w, h
-                in float a_layer;   // atlas page
+                in float a_layer;   // bank * 4096 + page (-1 - that: premultiplied texels, a mark)
                 uniform vec2 u_viewCenter;
                 uniform vec2 u_viewScale;
+                uniform vec2 u_res;         // canvas size in pixels
                 out vec2 v_uv;
                 flat out vec4 v_rect;
                 flat out float v_layer;
+                flat out float v_premul;
                 void main() {
                     v_uv = a_pos * 0.5 + 0.5;
                     vec2 worldPos = a_quad.xy + vec2(0.0, a_offZ.x) + a_pos * a_quad.zw;
                     vec2 clipPos = (worldPos - u_viewCenter) * u_viewScale;
+                    v_premul = a_layer < -0.5 ? 1.0 : 0.0;
+                    if (v_premul > 0.5) {
+                        /* a mark: the pixels whose centre it covers, as Canvas2D draws an
+                         * image (edges on pixel borders, so no antialiasing of the edges),
+                         * sampled where the unrounded quad maps them */
+                        vec2 snapped = floor((clipPos * 0.5 + 0.5) * u_res + 0.5) / u_res * 2.0 - 1.0;
+                        v_uv += (snapped - clipPos) / (u_viewScale * a_quad.zw * 2.0);
+                        clipPos = snapped;
+                    }
                     gl_Position = vec4(clipPos.x, -clipPos.y, a_offZ.y, 1.0);
                     v_rect = a_rect;
-                    v_layer = a_layer;
+                    v_layer = a_layer < -0.5 ? -1.0 - a_layer : a_layer;
                 }`;
                 /* Sampling clamped to the label's own texel centres: the same result as its own
                  * texture with CLAMP_TO_EDGE and LINEAR, and the neighbours are never read. */
@@ -72047,6 +72110,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 in vec2 v_uv;
                 flat in vec4 v_rect;
                 flat in float v_layer;
+                flat in float v_premul;
                 uniform sampler2DArray ` + Array.from({ length: banks }, function (x, k) { return 'u_atlas' + k; }).join(', ') + `;
                 uniform vec2 u_atlasInv;
                 uniform float u_alpha;
@@ -72059,6 +72123,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     fragColor = vec4(0.0);
                     ` + pick + `
                     if (fragColor.a < 0.01) discard;
+                    /* a mark: filtered as Canvas2D filters (premultiplied texels), drawn with the
+                     * label blending */
+                    if (v_premul > 0.5) fragColor.rgb /= fragColor.a;
                     fragColor.a *= u_alpha;
                 }`;
                 var prog = createAndLinkProgram(gl, vs, fs);
@@ -72067,6 +72134,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.u_textAtlas_viewScale = gl.getUniformLocation(prog, 'u_viewScale');
                 this.u_textAtlas_atlasInv = gl.getUniformLocation(prog, 'u_atlasInv');
                 this.u_textAtlas_alpha = gl.getUniformLocation(prog, 'u_alpha');
+                this.u_textAtlas_res = gl.getUniformLocation(prog, 'u_res');
                 gl.useProgram(prog);
                 /* bank 0 is kept on texture unit 1, the others on 4 and up: nothing else uses them */
                 for (var u = 0; u < banks; u++) gl.uniform1i(gl.getUniformLocation(prog, 'u_atlas' + u), lmTextAtlasUnit(u));
@@ -72187,12 +72255,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var fresh = !entry.tex;
             if (fresh) entry.tex = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, entry.tex);
+            if (this._lmUpPremul) gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
             if (!fresh && entry.w === w && entry.h === h) {
                 /* same size (digits are usually equally wide): rewrite the pixels only */
                 gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
             } else {
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
             }
+            if (this._lmUpPremul) gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
             if (fresh) {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -72320,7 +72390,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_2D, a.upTex);
+            if (this._lmUpPremul) gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, this._textCanvas);
+            if (this._lmUpPremul) gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
             gl.bindTexture(gl.TEXTURE_2D, null);
             var prev = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
             gl.bindFramebuffer(gl.READ_FRAMEBUFFER, a.upFb);
@@ -72344,7 +72416,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
         /* draws the labels queued by drawWebGLTextQuad (one instanced draw, in their order) */
-        _lmTextFlush() {
+        _lmTextFlush(alpha) {
             var n = this._lmTextBatchN || 0;
             this._lmTextBatchN = 0;
             var gl = this.gl, a = this._lmTextAtlas;
@@ -72354,7 +72426,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             gl.uniform2f(this.u_textAtlas_viewCenter, this.camX, this.camY);
             gl.uniform2f(this.u_textAtlas_viewScale, 2.0 * s / this.canvasWidth, 2.0 * s / this.canvasHeight);
             gl.uniform2f(this.u_textAtlas_atlasInv, 1 / a.w, 1 / a.h);
-            gl.uniform1f(this.u_textAtlas_alpha, defaultSettings.textAlpha != null ? defaultSettings.textAlpha : 1.0);
+            gl.uniform1f(this.u_textAtlas_alpha, alpha >= 0 ? alpha : defaultSettings.textAlpha != null ? defaultSettings.textAlpha : 1.0);
+            gl.uniform2f(this.u_textAtlas_res, this.glCanvas ? this.glCanvas.width : this.canvasWidth, this.glCanvas ? this.glCanvas.height : this.canvasHeight);
             /* every bank on its unit; units of banks not made get bank 0 (a sampler without a
              * texture array of its kind would be an incomplete texture) */
             for (var b = 0, nb = this.glTextAtlasBanks || 1; b < nb; b++) {
@@ -72396,11 +72469,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!cell || !cell._webglRendered) continue;
                     /* its labels are on the overlay this frame (FB badge / special effect) */
                     if (this._lmLabelsOnFg(cell)) continue;
+                    /* its teammate indicator and chat bubble are drawn here, in the Canvas2D order */
+                    var mk = cell._lmMkOk === this._glSkinFrame;
+                    if (mk) this._lmGlMarks(cell, 1);
                     try {
                         this.drawWebGLCellText(cell);
                     } catch (e) {
                         /* one cached text item failing must not invalidate already-correct body geometry */
                     }
+                    if (mk) this._lmGlMarks(cell, 2);
                 }
                 this._lmTextFlush();
             } finally {
@@ -72456,6 +72533,26 @@ function pickPlayerCellBySize(players, selectBiggest) {
             tctx.fillStyle = fillStyle;
             tctx.fillText(text, fullW / 2, fullH / 2);
             tctx.setTransform(1, 0, 0, 1, 0, 0);
+            return [w, h];
+        },
+        /* Draws an image or canvas (a mark of _lmGlMarkQuad) on this._textCanvas at its own size
+         * (scaled down only past the texture size limit); returns [w, h] or null */
+        _lmRasterImage(src) {
+            var sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
+            if (!(sw > 0 && sh > 0)) return null;
+            var gl = this.gl;
+            if (this._lmMaxTexOf !== gl) {
+                this._lmMaxTexOf = gl;
+                this._lmMaxTex = Math.max(2048, Math.min(8192, (gl && gl.getParameter(gl.MAX_TEXTURE_SIZE)) || 2048));
+            }
+            var k = Math.min(1, this._lmMaxTex / sw, this._lmMaxTex / sh);
+            var w = Math.max(1, Math.round(sw * k)), h = Math.max(1, Math.round(sh * k));
+            var tc = this._textCanvas, tctx = this._textCtx;
+            tc.width = w;
+            tc.height = h;
+            tctx.setTransform(1, 0, 0, 1, 0, 0);
+            tctx.clearRect(0, 0, w, h);
+            tctx.drawImage(src, 0, 0, w, h);
             return [w, h];
         },
         /*
@@ -72641,7 +72738,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         drawWebGLTextQuad(texEntry, worldX, worldY, offsetY, targetWorldH, z) {
             if (!texEntry || !this.gl || !this.glTextProgram) return;
-            var gl = this.gl;
             var viewScale = this.scale || 1;
 
             /* Texture resolution follows screen zoom for sharpness, but the
@@ -72661,8 +72757,117 @@ function pickPlayerCellBySize(players, selectBiggest) {
             );
             worldX = _txtPt.x;
             worldY = _txtPt.y;
-
+            this._lmTextQuadAt(texEntry, worldX, worldY, halfW, halfH, offsetY, z, -1);
+        },
+        /* A stand-in 2D context for the teammate indicator and the chat bubble of a WebGL cell
+         * in the GL text pass (_lmGlMarks): what drawTeammatesInd and lmChatBubble draw on it
+         * becomes a quad at the cell's depth (_lmGlMarkQuad), offset by dx/dy, with its alpha. */
+        _lmMarkCtx() {
+            var r = this, c = this._lmMkCtx;
+            if (!c) {
+                c = this._lmMkCtx = {
+                    globalAlpha: 1, dx: 0, dy: 0, z: 0.5,
+                    drawImage: function (img, x, y, w, h) { r._lmGlMarkQuad(img, x + this.dx, y + this.dy, w, h, this.z, this.globalAlpha); }
+                };
+            }
+            return c;
+        },
+        /* An image or canvas drawn at world x, y (w x h, or its own size) as a quad at depth z,
+         * from the text cache: one entry per image, a new one when a canvas was drawn again
+         * (irenderfromagario counts that in _lmDrawn) or an image got another address. */
+        _lmGlMarkQuad(src, x, y, w, h, z, alpha) {
+            if (!src || !(alpha > 0)) return;
+            var sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
+            if (!(sw > 0 && sh > 0)) return;
+            if (w === undefined) {
+                w = sw;
+                h = sh;
+            }
+            if (!(w > 0 && h > 0)) return;
+            var v = src._lmDrawn || 0, u = src.src || '';
+            if (!src._lmMkKey || src._lmMkV !== v || src._lmMkU !== u || src._lmMkW !== sw || src._lmMkH !== sh) {
+                if (!src._lmMkId) src._lmMkId = this._lmMkIds = (this._lmMkIds || 0) + 1;
+                /* (never a label key: the second part of those is a font) */
+                src._lmMkKey = '\u0001mark|' + src._lmMkId + '|' + v + '|' + sw + 'x' + sh + '|' + u;
+                src._lmMkV = v;
+                src._lmMkU = u;
+                src._lmMkW = sw;
+                src._lmMkH = sh;
+            }
+            var e = this._lmTextCached(src._lmMkKey, src);
+            if (!e) return;
+            var ta = defaultSettings.textAlpha != null ? defaultSettings.textAlpha : 1.0;
+            this._lmTextQuadAt(e, x + w * 0.5, y + h * 0.5, w * 0.5, h * 0.5, 0, z, alpha === ta ? -1 : alpha);
+        },
+        /* The teammate indicator (which 1: before the cell's nick and mass, as in Canvas2D) or
+         * the chat bubble (2: after them) of a WebGL cell canUseWebGLScene gave to the GL
+         * layer (_lmMkOk), drawn by the Canvas2D code itself onto _lmMarkCtx: at the cell's
+         * depth in the text pass order, a later cell and its labels cover them as in
+         * Canvas2D. cell.draw leaves them out then (_lmGlMarked). */
+        _lmGlMarks(cell, which) {
+            cell._lmMkAt = this._glSkinFrame;
+            var ms = defaultmapsettings, c = this._lmMarkCtx();
+            c.z = cell._webglZ || 0.5;
+            c.globalAlpha = this.ctx ? this.ctx.globalAlpha : 1;
+            c.dx = 0;
+            c.dy = 0;
+            /* Expanding Land map deformation: cell.draw is moved (jelly) or drawn at the moved
+             * centre (drawLegendWorldDeformedCanvasCell) */
+            var deform = typeof this.isLegendWorldMapDeformationVisible === 'function' && this.isLegendWorldMapDeformationVisible();
+            if (deform) {
+                var p = this.getLegendWorldMapRenderPoint(cell.x, cell.y, this._lmMkPt || (this._lmMkPt = { x: 0, y: 0 }));
+                if (Number.isFinite(p.x - cell.x) && Number.isFinite(p.y - cell.y)) {
+                    c.dx = p.x - cell.x;
+                    c.dy = p.y - cell.y;
+                }
+            }
+            try {
+                if (which === 1) {
+                    /* the rule and size of cell.draw (eat pulse included) */
+                    var y = cell.size;
+                    if (cell._eatPulseTime) {
+                        var el = Date.now() - cell._eatPulseTime;
+                        if (el < _EAT_PULSE_DURATION) {
+                            var t = 1 - el / _EAT_PULSE_DURATION;
+                            y *= 1 + _EAT_PULSE_MAGNITUDE * t * t;
+                        }
+                    }
+                    if (ms.teammatesInd && !cell.isPlayerCell && y <= 800 && window.teammatenicks && cell.targetNick != "" &&
+                        (window._lmTeammateNickSet ? window._lmTeammateNickSet.has(cell.targetNick) : window.teammatenicks.includes(cell.targetNick))) {
+                        this.drawTeammatesInd(c, cell.x, cell.y, y);
+                    }
+                    return;
+                }
+                var ce = cell.lmChatLine();
+                if (!ce) return;
+                /* as the WebGL branch of cell.draw drew it on the overlay */
+                cell.setDrawing();
+                cell.setDrawingScale();
+                if (defaultSettings.textAlpha != 1) c.globalAlpha *= defaultSettings.textAlpha;
+                if (deform && !ms.jellyPhisycs) {
+                    /* drawn with the moved cell centre there (it is rounded to whole units) */
+                    c.dx = 0;
+                    c.dy = 0;
+                    this.withLegendWorldDeformedCellRenderState(cell, function () { cell.lmChatBubble(c, ce, true, false); });
+                } else {
+                    cell.lmChatBubble(c, ce, true, false);
+                }
+            } catch (e) {
+                /* a mark failing must not stop the labels of the other cells */
+            }
+        },
+        /* true when the GL text pass drew this cell's teammate indicator and chat bubble */
+        _lmGlMarked(cell) {
+            return this._glSkinFrame > 0 && cell._lmMkAt === this._glSkinFrame;
+        },
+        /* One quad of a text cache entry (a label or a mark), centred at worldX, worldY +
+         * offsetY with half sizes halfW x halfH, at depth z, in the order of the calls. alpha
+         * below 0: the label alpha (textAlpha); otherwise the quad is drawn with that alpha. */
+        _lmTextQuadAt(texEntry, worldX, worldY, halfW, halfH, offsetY, z, alpha) {
+            var gl = this.gl;
             if (texEntry.slot) {
+                /* another alpha than the queued labels: they are drawn first */
+                if (alpha >= 0 && this._lmTextBatchN) this._lmTextFlush();
                 /* in the atlas: queued, drawn by _lmTextFlush with the others */
                 var n = this._lmTextBatchN || 0;
                 if (n >= this.glTextAtlasMax) {
@@ -72685,10 +72890,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 d[o + 7] = sl.y;
                 d[o + 8] = texEntry.w;
                 d[o + 9] = texEntry.h;
-                d[o + 10] = texEntry.atlas.code[sl.page];
+                d[o + 10] = texEntry.premul ? -1 - texEntry.atlas.code[sl.page] : texEntry.atlas.code[sl.page];
                 this._lmTextBatchN = n + 1;
                 /* outside the text pass nothing would draw the queue */
-                if (!this._lmTextBatchOn) this._lmTextFlush();
+                if (alpha >= 0 || !this._lmTextBatchOn) this._lmTextFlush(alpha);
                 return;
             }
             if (!texEntry.tex) return;
@@ -72713,11 +72918,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 z
             );
             gl.uniform2f(this.u_text_offset, 0, offsetY);
+            if (alpha >= 0) gl.uniform1f(this.u_text_alpha, alpha);
+            if (texEntry.premul) {
+                gl.uniform1f(this.u_text_premul, 1);
+                gl.uniform2f(this.u_text_res, this.glCanvas ? this.glCanvas.width : this.canvasWidth, this.glCanvas ? this.glCanvas.height : this.canvasHeight);
+            }
 
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, texEntry.tex);
 
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            if (texEntry.premul) gl.uniform1f(this.u_text_premul, 0);
+            /* back to the label alpha drawWebGLTextPass set */
+            if (alpha >= 0) gl.uniform1f(this.u_text_alpha, defaultSettings.textAlpha != null ? defaultSettings.textAlpha : 1.0);
         },
         drawWebGLCellText(cell) {
             if (

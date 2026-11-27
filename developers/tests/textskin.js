@@ -264,7 +264,7 @@ function textMethods() {
         setTimeout: (f) => { const t = () => { if (!t.dead) f(); }; timers.push(t); return t; }, clearTimeout: (t) => { if (t) t.dead = true; } };
     vm.createContext(sb);
     vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages'].map(grab).join('\n'), sb);
-    vm.runInContext('r = {' + ['getOrCreateTextTexture', '_lmRasterText', '_lmMassTexture', '_lmTextFrameBegin', '_lmTextIdle', '_lmTextStore', '_lmTextRelease', '_lmTextAtlasGet', '_lmTextAtlasSlot', '_lmTextAtlasReclaim', '_lmTextAdopt'].map(method).join(',\n') + '};', sb);
+    vm.runInContext('r = {' + ['getOrCreateTextTexture', '_lmTextCached', '_lmRasterImage', '_lmRasterText', '_lmMassTexture', '_lmTextFrameBegin', '_lmTextIdle', '_lmTextStore', '_lmTextRelease', '_lmTextAtlasGet', '_lmTextAtlasSlot', '_lmTextAtlasReclaim', '_lmTextAdopt'].map(method).join(',\n') + '};', sb);
     const r = sb.r;
     const reset = () => Object.assign(r, { gl, glTextProgram: {}, glTextCache: new Map(), glTextCacheMaxSize: 500, _lmTextBytes: 0, _lmMassTex: null, _lmMassBytes: 0,
         _textCanvas: canvas, _textCtx: tctx, _lmTextBudget: 0, _lmTextFrame: 0, _lmTextIdleTimer: 0 });
