@@ -98,7 +98,8 @@ const apis = {
 };
 /* per visit, from the cookie __h = "<timing>.<api>.<owner>". timing: early (as soon as agar.io's <html>
  * exists: document start), late (300 ms after its load event), lateOnce (late on the first visit of the
- * tab only), body / bodyOnce (when <body> starts, after the head scripts ran), off (no userscript). owner: ext (the extension already owns this page load), stale (an
+ * tab only), body / bodyOnce (when <body> starts, after the head scripts ran), extHead (when <head> starts, after
+ * another extension put an ordered script of its own first in the page), off (no userscript). owner: ext (the extension already owns this page load), stale (an
  * extension value from an earlier page load), none */
 const injected = 'if (location.hostname === "agar.io") { (function () {' +
   ' var h = (/(?:^|; )__h=([^;]*)/.exec(document.cookie) || [])[1] || "off"; var p = h.split("."), timing = p[0], api = p[1] || "tm", owner = p[2] || "none";' +
@@ -111,6 +112,11 @@ const injected = 'if (location.hostname === "agar.io") { (function () {' +
   ' if (timing === "late" || (timing === "lateOnce" && !seen)) { addEventListener("load", function () { setTimeout(run, 300); }); return; }' +
   /* body: when agar.io's <body> starts, after its head scripts ran (a manager that injected while the page was parsed) */
   ' if (timing === "body" || (timing === "bodyOnce" && !seen)) { var b = new MutationObserver(function () { if (!document.body) return; b.disconnect(); run(); }); b.observe(document, { childList: true, subtree: true }); return; }' +
+  /* extHead: at document start another extension puts an ordered (not async) script of its own (data: address)
+   * first in <html>; the userscript runs once <head> is there, before any script of agar.io ran */
+  ' if (timing === "extHead") { var x = function () { var s = document.createElement("script"); s.async = false; s.src = "data:text/javascript,void 0"; document.documentElement.insertBefore(s, document.documentElement.firstChild);' +
+  '  if (document.head) { run(); return; } var hb = new MutationObserver(function () { if (!document.head) return; hb.disconnect(); run(); }); hb.observe(document, { childList: true, subtree: true }); };' +
+  '  if (document.documentElement) x(); else { var xo = new MutationObserver(function () { if (!document.documentElement) return; xo.disconnect(); x(); }); xo.observe(document, { childList: true }); } return; }' +
   ' if (document.documentElement) { run(); return; }' +
   ' var o = new MutationObserver(function () { if (!document.documentElement) return; o.disconnect(); run(); });' +
   ' o.observe(document, { childList: true }); })(); }';
@@ -382,6 +388,11 @@ const rpt = (name, v, l) => { if (report) console.log('  ' + name + ': ' + fmt(v
     const b2 = await visit('https://agar.io/', 'body.tm', { settle: 800 }), lb2 = await leftovers(b2.t0);
     rpt('after agar.io head scripts, always', v, null); rpt('after agar.io head scripts, always, next visit', b2, lb2);
     check('after the head scripts of agar.io every time: one reload, none on the next visit, its timers and frames cancelled', v.shown > 0 && b2.shown > 0 && v.counts.agarDoc === 2 && b2.counts.agarDoc === 1 && lb2.ticks === 0 && lb2.raf === 0, v.counts.agarDoc + ' then ' + b2.counts.agarDoc + ' | ' + fmtL(lb2));
+    /* 14c. another extension's ordered script in the page before agar.io's: still an on-time start, no reload */
+    await reset();
+    v = await visit(LAUNCH, 'extHead.tm', { settle: 800 }); l = await leftovers(v.t0);
+    rpt('another extension script first, on time', v, l);
+    check('another extension\'s script before agar.io\'s: on time, no reload, nothing of agar.io runs', v.shown > 0 && v.counts.agarDoc === 1 && boot(v).timing === 'early' && !boot(v).conflict && quiet(l), fmt(v) + ' | ' + fmtL(l) + ' | ' + JSON.stringify(v.boot));
 
     /* 15. a fast cached agar.io (served by its own service worker): still no competing agar.io */
     await reset();

@@ -119,11 +119,12 @@ if (mode.bypass) return;
  * manager was slow). A partial or late start gets the same recovery. */
 function agarScriptRan() {
     /* a script of agar.io's page (in it from the start: not async, not added by a manager or another
-     * extension, which are async) that the page goes on after has run: the parser waits for it */
+     * extension, which are async or come from an extension, blob: or data: address) that the page
+     * goes on after has run: the parser waits for it */
     var list = document.getElementsByTagName('script');
     for (var i = 0; i < list.length; i++) {
         var s = list[i];
-        if (s === document.currentScript || !s.src || s.async || s.defer) continue;
+        if (s === document.currentScript || !/^https?:/i.test(s.src) || s.async || s.defer) continue;
         for (var n = s; n && n !== document; n = n.parentNode) if (n.nextSibling) return true;
     }
     return false;
