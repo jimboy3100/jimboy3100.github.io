@@ -132,6 +132,13 @@ const pv = run('privacy-moved', senderUrl(L + 'LMexpress/privacy.html', 2), 'awa
 check('LMexpress/privacy.html: forwarded to privacy.html#extension with the language and theme', /\/privacy\.html#extension$/.test(pv.href || '') && pv.lang === 'el' && pv.themed &&
     pv.bodyBg === rgb(DS.menuPanelColor) && pv.scrollY > 0 && Math.abs(pv.extTop) <= 2, { href: pv.href, lang: pv.lang, themed: pv.themed, scrollY: pv.scrollY, extTop: pv.extTop });
 
+/* ---- companion.html (OBS overlay of the HUD) opened from the game: an accent in the link
+ * and the transparent background stay (until 3.697 an accent in the link was lost: the menu accent won) ---- */
+const comp = 'await sleep(600); var r = lmRead(document); var w = document.querySelector(".w"), h = document.querySelector(".w .lbl");' +
+    ' if (w) { var c = getComputedStyle(w); r.box = { bg: c.backgroundColor, color: c.color, font: c.fontFamily, top: c.borderTopColor }; } r.lbl = h ? getComputedStyle(h).color : ""; return r;';
+const c2 = run('companion-obs', senderUrl(L + 'companion.html?w=mass&accent=%23ff0000&bg=transparent'), comp);
+check('companion with accent and transparent background in the link: both kept', (c2.box || {}).top === 'rgb(255, 0, 0)' && c2.bodyBg === 'rgba(0, 0, 0, 0)', { box: c2.box, bodyBg: c2.bodyBg });
+
 /* ---- embedded pages: ready handshake and live update (the sender block runs in the host page) ---- */
 const host = 'window.defaultSettings = ' + JSON.stringify(DS) + '; window.$ = function () { return { val: function () { return ""; } }; };\n' +
     '(0, eval)(' + JSON.stringify(block) + ');\n' +

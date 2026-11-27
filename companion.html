@@ -156,6 +156,8 @@ html.lm-themed-root #setup button, html.lm-themed-root #setup a.btn { background
     var lmTheme = window.lmThemeBridge && window.lmThemeBridge.getTheme();
     if (lmTheme && !/[?&]accent=/.test(location.search)) cfg.accent = lmTheme.mc;
     document.documentElement.style.setProperty('--accent', cfg.accent);
+    /* also on body: the theme bridge's site colours set --accent there (the menu accent) */
+    document.body.style.setProperty('--accent', cfg.accent);
     if (cfg.bg === 'transparent') document.body.classList.add('bg-transparent');
     else if (cfg.bg !== 'dark') document.body.style.background = cfg.bg;
     else if (lmTheme) document.body.style.background = lmTheme.pc; /* the theme's text colours need its panel colour */
