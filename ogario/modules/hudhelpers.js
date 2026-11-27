@@ -19,7 +19,7 @@
 
     /* ───────────────────────── pure parts (developers/tests/hudhelpers.js) ───────────────────────── */
 
-    /* Merge time estimate, the formula of ogario/mergetimer.js (agar.io): 29 s + 8/300 s per mass */
+    /* Merge time estimate (agar.io): 29 s + 8/300 s per mass */
     function mergeDuration(mass) {
         return 29 + (8 / 300) * (mass > 0 ? mass : 0);
     }
@@ -166,16 +166,8 @@
 
     /* ───────────────────────── 1. merge countdown ───────────────────────── */
 
-    /* seconds left for a cell: mergetimer.js's deadline while it counts the main player's cell
-     * (the merge ring uses the same one), else this module's estimate; -1 unknown, 0 ready */
-    function mergeLeft(c, isMain, now) {
-        if (isMain && window.MergeTimerController && window.playerCellsId &&
-            typeof window.MergeTimerController.isActive === 'function' && window.MergeTimerController.isActive()) {
-            var md = window.playerCellsId[c.id];
-            if (md && md._mergeState === 'counting' && Number.isFinite(md._mergeDeadline)) {
-                return Math.max(0, (md._mergeDeadline - now) / 1000);
-            }
-        }
+    /* seconds left for a cell, this module's estimate (the merge ring uses the same one); -1 unknown, 0 ready */
+    function mergeLeft(c, now) {
         if (c._lmHHEnd > 0) return Math.max(0, (c._lmHHEnd - now) / 1000);
         return c._lmHHEnd === 0 ? 0 : -1;
     }
@@ -202,7 +194,7 @@
                 for (var j = 0; j < o.n; j++) {
                     var c = o.cells[j];
                     if (c.isInView && !c.isInView()) continue;
-                    var left = mergeLeft(c, i === 0, now);
+                    var left = mergeLeft(c, now);
                     var txt = countdownText(left);
                     if (!txt) continue;
                     var px = Math.max(c.size * 0.34, 13 / scale);

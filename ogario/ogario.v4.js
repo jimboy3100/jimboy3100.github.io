@@ -8691,11 +8691,8 @@ function LegendModDeath() {
 //window.generatedProtocolKey
 
 //window.disableIntegrity=false;
-window.lastejected = false;
 
 function calcTarget() { }
-
-/* CellTimerTrigger is defined in anti.js — removed empty stub */
 
 //function historystate(){};
 
@@ -19008,8 +19005,6 @@ function userLeaguesInfoResponse() {
     }
 }
 window.predictedGhostCells = [];
-//set values outside ogario
-window.playerCellsId = [];
 
 window.customskinsarray = [];
 //window.counterCell=0;
@@ -21422,7 +21417,8 @@ var defaultmapsettings = {
     mbAutoRespawn: true,
     cameraSmoothLerp: true,
     centerWeightCamera: false,    /* camera target = mass-weighted centre of the own cells (like Delta) */
-    optimizedMass: true,
+    /* optimizedMass is gone: the mass text is always redrawn on a 2% change (exact numbers: Mass format),
+     * and its merge-seconds number duplicated Merge countdown; a saved value is folded once (lmFoldOptimizedMass) */
     shortMass: true,              /* copy of massFormat === 2 for scripts and older versions (lmFoldLegacySettings) */
     cellContours: false,
     virMassShots: true,
@@ -21765,6 +21761,7 @@ function lmFoldLegacySettings(s) {
         changed = true;
     }
     if (lmFoldClickFollow(s)) changed = true;
+    if (lmFoldOptimizedMass(s)) changed = true;
     /* the virus pop / eat sounds are part of the virus sound: either one on turns it on, once */
     if (has('virusPopSound') || has('virusEatSound')) {
         if (s.virusPopSound === true || s.virusEatSound === true) s.virusSound = true;
@@ -21804,6 +21801,16 @@ function lmFoldLegacySettings(s) {
         s.statsAtCenter = pos === 'center';
     }
     return changed || JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]) !== was;
+}
+/* "Optimized mass OR Merge timer" (optimizedMass) is gone: its off state drew a merge-seconds number
+ * under the own cells, which Merge countdown (hudMergeCountdown) shows. A stored, imported or profile
+ * value of off turns Merge countdown on once, so such a player keeps a merge timer.
+ * Returns true when the object had the key (it is removed). */
+function lmFoldOptimizedMass(s) {
+    if (!s || typeof s !== 'object' || !Object.prototype.hasOwnProperty.call(s, 'optimizedMass')) return false;
+    if (s.optimizedMass === false || s.optimizedMass === 'false') s.hudMergeCountdown = true;
+    delete s.optimizedMass;
+    return true;
 }
 /* "Click to follow" (clickSpectate) is one option: the leaderboard click (lbClickSpectate) and the
  * Expanding Land minimap click (minimapClickSpectate) were two more switches for the same purpose.
@@ -27088,7 +27095,7 @@ function thelegendmodproject() {
             /* "Spawn special effects" is gone: its effect was taken out, and the switch only made every frame use the Canvas renderer */
             this.addOptions(["quickResp", "autoResp"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
-            this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "virusSpikes", "virMassShots", "massStroke", "potionsDrinker", "hudRelativeMass"], "massGroup");
+            this.addOptions(["showMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "virusSpikes", "virMassShots", "massStroke", "potionsDrinker", "hudRelativeMass"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
             //this.addOptions(["optimizedFood", "autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
             this.addOptions(["autoHideFood", "autoHideFoodOnZoom", "rainbowFood"], "foodGroup");
@@ -28842,8 +28849,6 @@ function thelegendmodproject() {
             this.updateDeathLocations(ogario.playerX, ogario.playerY);
             this.unlockButtons();
             resetonkeydown();
-            if (typeof celltimerstop === 'function') celltimerstop();
-            if (window.MergeTimerController && typeof window.MergeTimerController.reset === 'function') window.MergeTimerController.reset();
 
             // Auto-switch to surviving multibox spect if any (only when "Auto-switch focus after death" is on)
             if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
@@ -36831,7 +36836,6 @@ function thelegendmodproject() {
         //			this.historyY = [];
         this.kMass = 0;
         this.massCanvas = null;
-        this.mergeCanvas = null;
         this.chatCanvas = null;
         this.massTxt = '';
         this.margin = 0;
@@ -36858,11 +36862,9 @@ function thelegendmodproject() {
 
         this.redrawNick = true;
         this.redrawMass = true;
-        this.redrawMerge = true;
         this.redrawChat = true;
 
         this.optimizedNames = false;
-        this.optimizedMass = false;
 
         this.strokeNick = false;
         this.strokeMass = false;
@@ -37870,9 +37872,6 @@ function thelegendmodproject() {
             if (!this.massCanvas) {
                 this.massCanvas = new irenderfromagario();
             }
-            if (!window.legendmod5.optimizedMass && window.ExternalScripts && !this.mergeCanvas) {
-                this.mergeCanvas = new irenderfromagario();
-            }
             if (!this.chatCanvas) {
                 this.chatCanvas = new irenderfromagario();
             }
@@ -37911,7 +37910,7 @@ function thelegendmodproject() {
              * 12.3k (Mass format 1 / 2) are the cell's own text below: shortMass follows Mass format. */
             if (!this.isVirus && (defaultmapsettings.massFormat === 3 || defaultmapsettings.hudRelativeMass) && window.LMHudHelpers) {
                 var _lmHHTxt = window.LMHudHelpers.massText(this.mass, this);
-                if (this.optimizedMass) this.redrawMass = _lmHHTxt !== this._lmHHLastTxt || this.rescale;
+                this.redrawMass = _lmHHTxt !== this._lmHHLastTxt || this.rescale;
                 this._lmHHLastTxt = _lmHHTxt;
                 this.massTxt = _lmHHTxt;
                 return true;
@@ -37932,9 +37931,8 @@ function thelegendmodproject() {
                 this._lmMassK = false;
                 this.lastMass = 0;
             }
-            if (this.optimizedMass) {
-                this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale;
-            }
+            /* drawn again only after a 2% change (or a new scale) */
+            this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale;
             return true;
         };
 
@@ -38083,14 +38081,12 @@ function thelegendmodproject() {
             var _ds = drawRender._drawSettings;
             if (_ds) {
                 this.optimizedNames = _ds.optimizedNames;
-                this.optimizedMass = _ds.optimizedMass;
                 this.shortMass = _ds.shortMass;
                 this.virMassShots = _ds.virMassShots;
                 this.strokeNick = _ds.namesStroke;
                 this.strokeMass = _ds.massStroke;
             } else {
                 this.optimizedNames = defaultmapsettings.optimizedNames;
-                this.optimizedMass = defaultmapsettings.optimizedMass;
                 this.shortMass = defaultmapsettings.shortMass;
                 this.virMassShots = defaultmapsettings.virMassShots;
                 this.strokeNick = defaultmapsettings.namesStroke;
@@ -38130,20 +38126,6 @@ function thelegendmodproject() {
             try {
                 ctx.drawImage(nickImg, ~~this.x - ~~(w / 2), ~~this.y - this.margin, w, h);
             } catch (e) { }
-        };
-        /* The labels the Canvas2D text block of draw() shows on this cell: bit 2 the nick, bit 1
-         * the mass (the merge timer only comes with it); 0 = no text block.
-         * node = its custom skin (hideTeammatesNames). Shared with the WebGL cells so the
-         * merge timer shows on exactly the same cells in both renderers. */
-        this.lmLabels = function (y, node) {
-            var ms = defaultmapsettings;
-            if (ms.noNames && !ms.showMass || this._lmDrawNoText) return 0;
-            var hide = false;
-            if (!this.isPlayerCell && (hide = application.setAutoHideCellInfo(y)) && ms.autoHideNames && ms.autoHideMass) return 0;
-            var f = 0;
-            if (!(ms.noNames || hide && ms.autoHideNames || this.isPlayerCell && ms.hideMyName || node && ms.hideTeammatesNames)) f = 2;
-            if (!(!ms.showMass || hide && ms.autoHideMass || this.isPlayerCell && ms.hideMyMass || ms.hideEnemiesMass && !this.isPlayerCell && !this.isVirus)) f |= 1;
-            return f;
         };
         /* The Facebook friend badge the Canvas2D branch of draw() puts on this cell, or null:
          * only over a custom skin, not in Teams, once the image has loaded. */
@@ -38227,49 +38209,6 @@ function thelegendmodproject() {
                     } catch (e) { }
                 }
                 context.globalAlpha = chatBaseAlpha;
-            }
-        };
-        this.drawMerge = function (context) {
-            if (this.mergeCanvas && !(this.size <= 40)) {
-                var mergeCanvas = this.mergeCanvas;
-                mergeCanvas.setDrawing(defaultSettings.massColor, defaultSettings.massFontFamily, defaultSettings.massFontWeight, this.strokeMass, this.massStrokeSize, defaultSettings.massStrokeColor);
-                mergeCanvas.setFontSize(this.massSize);
-                mergeCanvas.setScale(this.scale);
-
-                if (window.ExternalScripts && !defaultmapsettings.optimizedMass && window.playerCellsId && this.isPlayerCell && !this.isVirus) {
-                    CellTimerTrigger();
-                    if (window.playerCellsId[this.id] === undefined) {
-                        window.playerCellsId[this.id] = { historyMass: [this.mass] };
-                    } else {
-                        var hMass = window.playerCellsId[this.id].historyMass;
-                        if (!hMass) hMass = window.playerCellsId[this.id].historyMass = [];
-                        hMass.unshift(this.mass);
-                        if (hMass.length > 10) hMass.pop();
-                    }
-                    //if (this.mergeTime && this.mergeTime > 0) {
-                    if (!defaultmapsettings.hudMergeCountdown && window.legendmod.playerCells.length > 1 && window.playerCellsId[this.id].mergeTime && window.playerCellsId[this.id].mergeTime > 1) { /* the HUD countdown shows it instead */
-                        var customTxt = Math.round(window.playerCellsId[this.id].mergeTime);
-
-                        if (this.redrawMerge) {
-                            mergeCanvas.setTxt(customTxt);
-                            //this.lastMass = this.mass;
-                        }
-                        var data = mergeCanvas.drawTxt(customTxt);
-                        var _dpr3 = window.LM_DPR || 1;
-                        var width = ~~(data.width / (this.scale * _dpr3));
-                        //console.log(data.width, this.scale, width, this.x - width / 2);
-                        var height = ~~(data.height / (this.scale * _dpr3));
-                        var textureY = this.margin === 0 ? ~~(this.y + height * 2) : ~~this.y - 4 * this.margin;
-                        if (width > 1 && height > 1) {
-                            try {
-                                context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
-                            } catch (e) { }
-                        }
-                    }
-
-                }
-                ///
-                //window.counterCell++;
             }
         };
         this.drawMass = function (
@@ -39986,7 +39925,7 @@ function thelegendmodproject() {
 
                     /* Skip Canvas2D nick/mass text for WebGL-rendered cells — text is now drawn
                      * as WebGL textured quads with depth testing for correct z-order.
-                     * Chat bubbles and merge timers still render on Canvas2D (overlay effects).
+                     * Chat bubbles still render on Canvas2D (overlay effects).
                      * A WebGL cell of _lmLabelsOnFg (FB badge, special effect) gets this Canvas2D
                      * text on the overlay instead, over its badge / effect as in Canvas2D. */
                     /* the chat bubble has its own setting: drawn whether or not the nick and
@@ -40022,9 +39961,6 @@ function thelegendmodproject() {
                                     if (this.setMass(this.size)) {
 
                                         this.drawMass(_tc);
-                                        if (window.ExternalScripts && !window.legendmod5.optimizedMass) {
-                                            this.drawMerge(_tc);
-                                        }
                                     }
                                 }
                             }
@@ -40032,29 +39968,18 @@ function thelegendmodproject() {
                         }
                         if (_chatCe) this.lmChatBubble(_tc, _chatCe, _txtReady, _nickDone);
                     } else {
-                        /* WebGL cell: its nick and mass are GPU labels. The merge timer (on the
-                         * cells lmLabels gives a mass) and the chat bubble the Canvas2D branch
-                         * draws after them go on the overlay canvas, at the same place
-                         * (this.margin from the nick layout) and with the same alpha (textAlpha). */
-                        var _mergeOn = !!(window.ExternalScripts && !window.legendmod5.optimizedMass);
+                        /* WebGL cell: its nick and mass are GPU labels. The chat bubble the Canvas2D
+                         * branch draws after them goes on the overlay canvas, with the same alpha (textAlpha). */
                         /* the GL text pass drew the bubble (_lmGlMarks) */
                         if (_glMk) _chatCe = null;
-                        var _lab = _mergeOn && !cellMoved ? this.lmLabels(y,
-                            (defaultmapsettings.hideTeammatesNames && lmSkinsShown() && !this.isEjected)
-                                ? application.getCustomSkin(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti)) : null) : 0;
-                        if (!(_lab & 1)) _mergeOn = false;
-                        if (_chatCe || _mergeOn) {
+                        if (_chatCe) {
                             this.setDrawing();
                             this.setDrawingScale();
-                            var _glNick = !!(_lab & 2) && this.setNick(this.targetNick);
-                            if (_glNick) this.layoutNick();
-                            if (_mergeOn) _mergeOn = this.setMass(this.size);
                             var _fg2 = drawRender._lmFgFor(style), _c2 = _fg2 || style;
                             var _a2 = _c2.globalAlpha;
                             try {
                                 if (defaultSettings.textAlpha != 1) _c2.globalAlpha = _a2 * defaultSettings.textAlpha;
-                                if (_mergeOn) this.drawMerge(_c2);
-                                if (_chatCe) this.lmChatBubble(_c2, _chatCe, true, _glNick);
+                                this.lmChatBubble(_c2, _chatCe, true, false);
                             } finally {
                                 if (_fg2) _fg2.restore();
                                 else _c2.globalAlpha = _a2;
@@ -42774,8 +42699,6 @@ function thelegendmodproject() {
             }
             this.flushMegaFFAscore();
             this.flushCellsData();
-            if (typeof celltimerstop === 'function') celltimerstop();
-            if (window.MergeTimerController && typeof window.MergeTimerController.reset === 'function') window.MergeTimerController.reset();
             /* the closed socket's border must not outlive it (beacon / tab-return restore) */
             this._lmServerBorder = null;
             this._lmBorderTraceAdd('close', 0);
@@ -62156,19 +62079,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     ? this._chatLookup : null;
 
 
-            if (
-                window
-                    .ExternalScripts &&
-                window
-                    .legendmod5 &&
-                !window
-                    .legendmod5
-                    .optimizedMass
-            ) {
-                return this._lmNoGL(this.GLW.MERGE);
-            }
-
-
             /*
              * ================================================================
              * CHECK ONLY BODY-ATTACHED CANVAS EFFECTS
@@ -62359,12 +62269,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * or effect). GLW_IDS[n] names reason n. */
         GLW: {
             WEBGL: 0, OFF: 1, RESET: 2, NOT_READY: 3, SEL_RING: 4, NO_CELLS: 5, CONTOURS: 6, TEAMS: 7,
-            ALPHA: 8, REPLAY: 9, BODY_FX: 10, MB_SHADOW: 11, MB_RING_PROG: 12, MERGE: 13, COVERED: 14,
-            CHAT_NEW: 15, OWN_LABEL: 16, NO_BODIES: 17, CINEMATIC: 18, BATCH: 19, NO_GL: 20, LOST: 21,
-            COVER_TEAM: 22, COVER_CHAT: 23, COVER_FB: 24, COVER_FX: 25, COVER_LABELS: 26, SHADOWS: 27
+            ALPHA: 8, REPLAY: 9, BODY_FX: 10, MB_SHADOW: 11, MB_RING_PROG: 12, COVERED: 13,
+            CHAT_NEW: 14, OWN_LABEL: 15, NO_BODIES: 16, CINEMATIC: 17, BATCH: 18, NO_GL: 19, LOST: 20,
+            COVER_TEAM: 21, COVER_CHAT: 22, COVER_FB: 23, COVER_FX: 24, COVER_LABELS: 25, SHADOWS: 26
         },
         GLW_IDS: ['webgl', 'off', 'reset', 'notReady', 'selRing', 'noCells', 'contours', 'teams',
-            'alpha', 'replay', 'bodyFx', 'mbShadow', 'mbRingProg', 'merge', 'covered',
+            'alpha', 'replay', 'bodyFx', 'mbShadow', 'mbRingProg', 'covered',
             'chatNew', 'ownLabel', 'noBodies', 'cinematic', 'batch', 'noContext', 'contextLost',
             'coveredTeammate', 'coveredChat', 'coveredFbBadge', 'coveredEffect', 'coveredLabels', 'cellShadows'],
         _lmNoGL(why) {
@@ -62794,7 +62704,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!rc) continue;
                     if (rc.nickCanvas) rc.nickCanvas.redraw = true;
                     if (rc.massCanvas) rc.massCanvas.redraw = true;
-                    if (rc.mergeCanvas) rc.mergeCanvas.redraw = true;
                     if (rc.chatCanvas) rc.chatCanvas.redraw = true;
                 }
             }
@@ -78480,7 +78389,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* Reuse the same object instead of allocating a new one every frame */
             var _ds = this._drawSettings || (this._drawSettings = {});
             _ds.optimizedNames = defaultmapsettings.optimizedNames;
-            _ds.optimizedMass = defaultmapsettings.optimizedMass;
             _ds.shortMass = defaultmapsettings.shortMass;
             _ds.virMassShots = defaultmapsettings.virMassShots;
             _ds.namesStroke = defaultmapsettings.namesStroke;
@@ -80974,17 +80882,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                     var mass = cell.mass || ~~(cell.size * cell.size / 100);
                     var duration, elapsed, remaining, progress;
-                    /* While the merge timer (mergetimer.js) counts this cell, use its deadline so the
-                     * ring and the number agree. Its deadline is in performance.now() time, not Date.now(). */
-                    var _lmMd = (playerCells === LM.playerCells && window.MergeTimerController &&
-                        typeof window.MergeTimerController.isActive === 'function' && window.MergeTimerController.isActive() &&
-                        window.playerCellsId && cell.id !== undefined) ? window.playerCellsId[cell.id] : null;
-                    if (_lmMd && _lmMd._mergeState === 'counting' && Number.isFinite(_lmMd._mergeDeadline) && _lmMd._mergeDurationSec > 0) {
-                        duration = _lmMd._mergeDurationSec;
-                        remaining = Math.max(0, (_lmMd._mergeDeadline - performance.now()) / 1000);
-                        elapsed = duration - remaining;
-                        progress = Math.min(1, elapsed / duration);
-                    } else if (defaultmapsettings.hudMergeCountdown && cell._lmHHEnd > 0 && cell._lmHHDur > 0) {
+                    if (defaultmapsettings.hudMergeCountdown && cell._lmHHEnd > 0 && cell._lmHHDur > 0) {
                         /* Merge countdown on: the ring follows its estimate (re-armed on every split) */
                         duration = cell._lmHHDur;
                         remaining = Math.max(0, (cell._lmHHEnd - performance.now()) / 1000);
@@ -81010,18 +80908,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         ctx.arc(renderPoint.x, renderPoint.y, radius, startAngle, endAngle, false);
                         ctx.strokeStyle = remaining < 5 ? '#00ff66' : (remaining < 15 ? '#ffcc00' : '#ff3333');
                         ctx.stroke();
-
-                        /* mergetimer.js owns mergeTime while it runs (it
-                         * re-arms on a re-split; this splitTime does not):
-                         * write it here only as the fallback. It tracks
-                         * the main player's cells only, not multibox. */
-                        var mergeTimerOwns = playerCells === LM.playerCells &&
-                            window.MergeTimerController &&
-                            typeof window.MergeTimerController.isActive === 'function' &&
-                            window.MergeTimerController.isActive();
-                        if (!mergeTimerOwns && window.playerCellsId && window.playerCellsId[cell.id]) {
-                            window.playerCellsId[cell.id].mergeTime = remaining;
-                        }
                     }
                 }
             } finally {
@@ -85461,7 +85347,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             } else {
                 LM.sendEject();
             }
-            window.lastejected = true;
         },
         split() {
             if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {

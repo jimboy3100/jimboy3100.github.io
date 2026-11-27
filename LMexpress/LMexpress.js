@@ -5589,10 +5589,6 @@ function initializeLM(modVersion) {
         placement: "bottom"
     });*/
 
-    $("#optimizedMass").parent().tooltip({
-        title: function () { return _lmxT('lmx.ex.optimizedMassTip'); },
-        placement: "bottom"
-    });
     //$('#animation-value').parent().before("1. Type on browser: <b>chrome://settings/system</b> , ensure <i>Use hardware acceleration when available</i> checkbox, is <b>ENABLED</b>. 2. Prefer <b>Opera GX</b><br><br>");
 
 

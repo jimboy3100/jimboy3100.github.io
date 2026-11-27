@@ -317,7 +317,7 @@
 "site.index.names": "Nama (",
 "site.index.disableNamesOrUse": "matikan nama atau pakai opsi “Auto hide name”",
 "site.index.someTipsToGet": "Beberapa tips agar FPS lebih stabil:",
-"site.index.useOptimizedNamesAnd": "Pakai opsi “Optimized names” dan “Optimized mass”",
+"site.index.useOptimizedNamesAnd": "Pakai opsi “Optimized names”",
 "site.index.useAutoHideMass": "Pakai opsi “Auto hide mass”",
 "site.index.useShortMassOption": "Atur “Format massa” ke “Singkat (12.3k)”",
 "site.index.disableAutoZoom": "Matikan auto zoom",

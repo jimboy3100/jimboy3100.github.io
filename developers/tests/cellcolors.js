@@ -277,7 +277,7 @@ function pageLib() {
         var application = { gameMode: ':ffa', customSkinsMap: {}, customSkinsCache: {}, loadSkin: function () { }, _lmTouchSkin: function () { },
             setAutoHideCellInfo: function () { return false; }, getCustomSkin: function () { return null; }, customSkinKey: function () { return null; },
             setVirusColor: function () { return ds.virusColor; }, setVirusStrokeColor: function () { return ds.virusStrokeColor; }, playSound: function () { } };
-        var win = { navigator: { deviceMemory: 8 }, devicePixelRatio: 1, legendmod5: { optimizedMass: true } };
+        var win = { navigator: { deviceMemory: 8 }, devicePixelRatio: 1, legendmod5: {} };
         win.legendmod = LM;
         win.multiboxPlayerEnabled = 0;
         win.fullSpectator = false;

@@ -317,7 +317,7 @@
 "site.index.names": "الأسماء (",
 "site.index.disableNamesOrUse": "عطّل الأسماء أو استخدم خيار «Auto hide name»",
 "site.index.someTipsToGet": "بعض النصائح للحصول على FPS أكثر ثباتًا:",
-"site.index.useOptimizedNamesAnd": "استخدم خياري «أسماء محسّنة» و«كتلة محسّنة»",
+"site.index.useOptimizedNamesAnd": "استخدم خيار «أسماء محسّنة»",
 "site.index.useAutoHideMass": "استخدم خيار «إخفاء الكتلة تلقائيًا»",
 "site.index.useShortMassOption": "اضبط «تنسيق الكتلة» على «مختصرة (12.3k)»",
 "site.index.disableAutoZoom": "عطّل التكبير التلقائي",

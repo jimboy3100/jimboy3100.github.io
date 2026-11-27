@@ -157,6 +157,19 @@ app.loadSettings();
 const reSaved3 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 check('load: an old save with the size symbols on turns Relative mass on (save rewritten without it), removed settings ignored', S.hudRelativeMass === true && !('a11yIndicators' in reSaved3) && reSaved3.hudRelativeMass === true && GONE.every(k => !(k in S)));
 S.hudRelativeMass = D.hudRelativeMass;
+/* "Optimized mass OR Merge timer" is gone (the 2% mass redraw is fixed, Merge countdown is the merge
+ * timer): a saved off turns Merge countdown on once, then the old key is dropped */
+check('optimizedMass is no setting: refused', !('optimizedMass' in D) && !('optimizedMass' in SCH) && V('optimizedMass', false) === undefined);
+check('fold: optimizedMass off turns Merge countdown on, on leaves it, the key goes', J(lfold({ optimizedMass: false })) === J({ hudMergeCountdown: true }) &&
+    J(lfold({ optimizedMass: 'false', hudMergeCountdown: false })) === J({ hudMergeCountdown: true }) && J(lfold({ optimizedMass: true, hudMergeCountdown: false })) === J({ hudMergeCountdown: false }));
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { optimizedMass: false, hudMergeCountdown: false })));
+app.loadSettings();
+const reSavedOm = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
+check('load: a saved optimizedMass off has Merge countdown on, the save is rewritten without the key', S.hudMergeCountdown === true && !('optimizedMass' in S) && !('optimizedMass' in reSavedOm) && reSavedOm.hudMergeCountdown === true);
+S.hudMergeCountdown = false;
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, reSavedOm, { hudMergeCountdown: false })));
+app.loadSettings();
+check('load: only once (Merge countdown turned off later stays off)', S.hudMergeCountdown === false);
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();

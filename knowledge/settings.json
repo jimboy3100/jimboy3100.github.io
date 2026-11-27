@@ -334,7 +334,6 @@
       "description": "Mass number display settings.",
       "settings": [
         "showMass",
-        "optimizedMass",
         "autoHideMass",
         "hideMyMass",
         "hideEnemiesMass",

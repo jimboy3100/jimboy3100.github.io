@@ -461,7 +461,7 @@
         Object.keys(set).forEach(function (k) { s.prevSettings[k] = d[k]; d[k] = set[k]; });
         s.settings = {};
         ['jellyPhisycs', 'noNames', 'showMass', 'rainbowFood', 'showGrid', 'showMapBorders', 'showBgSectors', 'oppRings', 'oppColors', 'splitRange',
-            'virusesRange', 'cursorTracking', 'transparentCells', 'transparentSkins', 'optimizedNames', 'optimizedMass', 'fpsLimit', 'showMiniMap']
+            'virusesRange', 'cursorTracking', 'transparentCells', 'transparentSkins', 'optimizedNames', 'fpsLimit', 'showMiniMap']
             .forEach(function (k) { s.settings[k] = d[k]; });
         if (window.defaultSettings) s.settings.foodSize = window.defaultSettings.foodSize;
     }

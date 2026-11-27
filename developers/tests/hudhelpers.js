@@ -49,7 +49,7 @@ check('mass auto: 1.2M', P.formatMass(1234567, 3) === '1.2M');
 check('mass bad values', P.formatMass(-5, 1) === '0' && P.formatMass(NaN, 3) === '0' && P.formatMass(12.9, 1) === '12');
 
 // merge countdown
-check('merge duration (mergetimer.js formula)', near(P.mergeDuration(300), 37) && near(P.mergeDuration(0), 29));
+check('merge duration (agar.io formula)', near(P.mergeDuration(300), 37) && near(P.mergeDuration(0), 29));
 check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) === '1' && P.countdownText(0) === '' && P.countdownText(-1) === '' && P.countdownText(5000) === '999');
 {
     const owner = { prevCount: 0, beep: false };

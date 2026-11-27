@@ -317,7 +317,7 @@
 "site.index.names": "Nombres (",
 "site.index.disableNamesOrUse": "desactiva los nombres o usa la opción “Auto hide name”",
 "site.index.someTipsToGet": "Algunos consejos para conseguir FPS más estables:",
-"site.index.useOptimizedNamesAnd": "Usa las opciones “Optimized names” y “Optimized mass”",
+"site.index.useOptimizedNamesAnd": "Usa la opción “Optimized names”",
 "site.index.useAutoHideMass": "Usa la opción “Auto hide mass”",
 "site.index.useShortMassOption": "Pon “Formato de masa” en “Abreviada (12.3k)”",
 "site.index.disableAutoZoom": "Desactiva el zoom automático",
