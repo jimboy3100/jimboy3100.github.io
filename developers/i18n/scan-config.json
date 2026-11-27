@@ -239,7 +239,11 @@
       "developers/videoskins.html"
     ]
   },
-  "archived": {
+  "archived": {},
+  "redirects": {
+    "extras/website/index.html": "forwards to the home page (it was an old copy of it); other pages use the CSS files of this folder"
+  },
+  "deleted": {
     "extras/5agario.html": "no link anywhere",
     "extras/banneranimated1.html": "only in a commented-out block of LMexpress.sniff.js",
     "extras/banneranimated1oldskins.html": "only the old v3.1 userscript agarscripts/goodoldlegendmod.user.js",
@@ -252,7 +256,7 @@
     "extras/banneranimated4c.html": "no link anywhere",
     "extras/banneranimated5Lc.html": "no link anywhere",
     "extras/banneranimated6.html": "no link anywhere",
-    "extras/banneranimated7a.html": "only banneranimated7bLc.html (archived)",
+    "extras/banneranimated7a.html": "only banneranimated7bLc.html (deleted)",
     "extras/banneranimated7bLc.html": "no link anywhere (only the old site copy in extras/website had one)",
     "extras/banneranimated9Lc2030.html": "no link anywhere",
     "extras/banneranimatedEA.html": "no link anywhere",
@@ -271,7 +275,6 @@
     "extras/rewardday.html": "no link anywhere (the gift button opens rewardday2.html)",
     "extras/skinrotator2.html": "no link anywhere (skinrotator.html is the live one)",
     "extras/skinrotator3.html": "no link anywhere (skinrotator.html is the live one)",
-    "extras/website/index.html": "forwards to the home page (it was an old copy of it); other pages use only the CSS files of this folder",
     "extras/index2.html": "no link anywhere",
     "extras/loader/LoaderNew.html": "only in a commented-out block of LMexpress/LMexpress.html",
     "extras/loader/loader.html": "only in a commented-out block of LMexpress.sniff.js",
@@ -279,7 +282,25 @@
     "extras/loader/trollhslo/index.html": "no link anywhere",
     "extras/loader/trollhslo/index2.html": "no link anywhere",
     "extras/website/backup.html": "no link anywhere (old site copy)",
-    "extras/website/massboostX3.html": "no link anywhere (old site copy)"
+    "extras/website/massboostX3.html": "no link anywhere (old site copy)",
+    "extras/banneranimated8.html": "only extras/banneranimated7bLc.html (deleted) showed it"
+  },
+  "deletedAssets": {
+    "banners/legendpromo2.jpg": "extras/banneranimated5Lc.html",
+    "banners/skypejoin.png": "extras/banneranimated7bLc.html",
+    "banners/LcBackground.png": "extras/banneranimated8.html",
+    "banners/LcCandidates.png": "extras/banneranimated8.html",
+    "banners/Lcin2030.mp3": "extras/banneranimated9Lc2030.html",
+    "banners/FAYiz/FayizInstantMerge.png": "extras/banneranimatedFayiz2.html",
+    "banners/FAYiz/Fayiz32.png": "extras/banneranimatedFayiz3.html",
+    "banners/noBots.jpeg": "extras/nobots.html",
+    "banners/noCrashers.jpeg": "extras/nobots.html",
+    "banners/iconmassboostX3agario.png": "extras/website/massboostX3.html",
+    "extras/loader/BundleNew.css": "extras/loader/LoaderNew.html",
+    "extras/loader/Bundle.css": "extras/loader/loader.html",
+    "banners/icongifLM.gif": "extras/loader/Bundle.css",
+    "extras/loader/trollhslo/Bundle.css": "extras/loader/trollhslo/index.html",
+    "extras/loader/trollhslo/Hlsoisfraud.png": "extras/loader/trollhslo/Bundle.css"
   },
   "skip": [
     "\\.min\\.js$",

@@ -11429,24 +11429,6 @@
     "ja": "<b>[サーバー]:</b> この操作を行う権限がありません",
     "it": "<b>[SERVER]:</b> Non hai i permessi per farlo"
   },
-  "lmx.ex.noBotsTitle": {
-    "en": "No Bots • No Crashers",
-    "el": "Χωρίς bots • Χωρίς crashers",
-    "es": "Sin bots • Sin crashers",
-    "bg": "Без ботове • Без крашъри",
-    "fr": "Sans bots • Sans crashers",
-    "ar": "بلا بوتات • بلا مخرّبين",
-    "zh": "沒有機器人 • 沒有崩潰攻擊",
-    "ru": "Без ботов • Без крашеров",
-    "de": "Keine Bots • Keine Crasher",
-    "tr": "Bot yok • Crasher yok",
-    "pl": "Bez botów • Bez crasherów",
-    "nl": "Geen bots • Geen crashers",
-    "pt": "Sem bots • Sem crashers",
-    "id": "Tanpa bot • Tanpa crasher",
-    "ja": "ボットなし • クラッシャーなし",
-    "it": "Niente bot • Niente crasher"
-  },
   "lmx.ex.ffaServerTitle": {
     "en": "Expanding Land FFA Server",
     "el": "Server FFA του Expanding Land",

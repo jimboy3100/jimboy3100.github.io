@@ -1,0 +1,500 @@
+{
+  "description": "Deletion manifest: one record per deleted or moved file. canonicalPath is the file that replaces it (null: nothing does). approvedForDeletion stays false until every consumer is migrated and old URLs, saved settings and external users keep working (legacyResolverSupported / externalUrlSupported).",
+  "records": [
+    {
+      "oldPath": "extras/5agario.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated1.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): only in a commented-out block of LMexpress.sniff.js; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated1oldskins.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): only the old v3.1 userscript agarscripts/goodoldlegendmod.user.js; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated11.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated2EXPRESS.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): only in a commented-out block of LMexpress.sniff.js; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated2aEXPRESS.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated2applyingskins.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): BeforeChangingSkins() in LMexpress.js is never called; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated2b.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated3b.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated4c.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated5Lc.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated6.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated7a.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): only banneranimated7bLc.html (deleted); removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated7bLc.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere (only the old site copy in extras/website had one); removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated9Lc2030.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimatedEA.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimatedFayiz.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): only in a commented-out block of LMexpress.sniff.js; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimatedFayiz2.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimatedFayiz3.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimatedImplementsLM.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): only LMexpress/LMImplementsStart.js, which nothing loads; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimatedTrollhate.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/bannericonpromo1.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/bannericonpromo1bbcolorblack.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/bannericonpromo2.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/bannericonpromo3.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/bannericonpromo5.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/bannericonpromo6.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/nobots.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): LMnoBotsPromo() in LMexpress.js is never called; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/rewardday.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere (the gift button opens rewardday2.html); removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/skinrotator2.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere (skinrotator.html is the live one); removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/skinrotator3.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere (skinrotator.html is the live one); removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/index2.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/LoaderNew.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): only in a commented-out block of LMexpress/LMexpress.html; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/loader.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): only in a commented-out block of LMexpress.sniff.js; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/loaderAgario.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/trollhslo/index.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/trollhslo/index2.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/website/backup.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere (old site copy); removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/website/massboostX3.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): no link anywhere (old site copy); removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/banneranimated8.html",
+      "canonicalPath": null,
+      "reason": "archived page (developers/i18n/scan-config.json): only extras/banneranimated7bLc.html (deleted) showed it; removed with its own assets",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/legendpromo2.jpg",
+      "canonicalPath": null,
+      "reason": "used only by extras/banneranimated5Lc.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/skypejoin.png",
+      "canonicalPath": null,
+      "reason": "used only by extras/banneranimated7bLc.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/LcBackground.png",
+      "canonicalPath": null,
+      "reason": "used only by extras/banneranimated8.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/LcCandidates.png",
+      "canonicalPath": null,
+      "reason": "used only by extras/banneranimated8.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/Lcin2030.mp3",
+      "canonicalPath": null,
+      "reason": "used only by extras/banneranimated9Lc2030.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/FAYiz/FayizInstantMerge.png",
+      "canonicalPath": null,
+      "reason": "used only by extras/banneranimatedFayiz2.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/FAYiz/Fayiz32.png",
+      "canonicalPath": null,
+      "reason": "used only by extras/banneranimatedFayiz3.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/noBots.jpeg",
+      "canonicalPath": null,
+      "reason": "used only by extras/nobots.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/noCrashers.jpeg",
+      "canonicalPath": null,
+      "reason": "used only by extras/nobots.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/iconmassboostX3agario.png",
+      "canonicalPath": null,
+      "reason": "used only by extras/website/massboostX3.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/BundleNew.css",
+      "canonicalPath": null,
+      "reason": "used only by extras/loader/LoaderNew.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/Bundle.css",
+      "canonicalPath": null,
+      "reason": "used only by extras/loader/loader.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/icongifLM.gif",
+      "canonicalPath": null,
+      "reason": "used only by extras/loader/Bundle.css (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/trollhslo/Bundle.css",
+      "canonicalPath": null,
+      "reason": "used only by extras/loader/trollhslo/index.html (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/trollhslo/Hlsoisfraud.png",
+      "canonicalPath": null,
+      "reason": "used only by extras/loader/trollhslo/Bundle.css (deleted)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    }
+  ]
+}

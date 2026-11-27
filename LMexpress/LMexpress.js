@@ -65,7 +65,6 @@ var previousMode = localStorage.getItem("gamemode");
 var checkonlyonce = localStorage.getItem("checkonlyonce");
 var checkonlyfourtenth = localStorage.getItem("checkonlyfourtenth");
 var checkonlytfourtheenth = localStorage.getItem("checkonlytfourtheenth");
-var checkonlyrewardday3a = localStorage.getItem("checkonlyrewardday3a");
 
 var stateObj = {
     foo: "bar"
@@ -407,12 +406,6 @@ function loadersettings() {
    // }					
     }
 */
-    if (checkonlyrewardday3a != "true") {
-        //LMrewardDay();
-        //LMnoBotsPromo();
-        checkonlyrewardday3a = "true";
-        localStorage.setItem("checkonlyrewardday3a", checkonlyrewardday3a);
-    }
     if (checkonlytfourtheenth != "true") {
         LMLegendFFAPromo();
         checkonlytfourtheenth = "true";
@@ -1407,54 +1400,6 @@ function OpenSkinChanger() {
 }
 
 //function LeaderboardController(){core.registerSkin(otherMsg, null, 'https://www.legendmod.ml/banners/iconfake1.png', 1, null);}
-/*
-function ProceedToChangeSkins() {
-    console.log("ProceedToChangeSkins function loaded");
-    $("#loaderIframeIcon1").show();
-    loadericon();
-    $("#SkinBacktomenu").click();
-    setTimeout(function() {
-        $('#server-join').click();
-    }, 1500);
-
-    setTimeout(function() {
-        $("#nick").val(previousnickname);
-    }, 4500);
-    $("#overlays").show();
-    $(".center-container.ogario-menu").show();
-    $(".side-container.right-container").show();
-    $(".side-container.left-container").show();
-}
-
-function BeforeChangingSkins() {
-    $(".btn.btn-play.btn-primary").click();
-    $("body").append('<div id="imagebig"><iframe id="loaderIframeIcon1" src="https://www.legendmod.ml/extras/banneranimated2applyingskins.html" name="CodePen" allowfullscreen="true" sandbox="allow-scripts allow-pointer-lock allow-same-origin allow-popups allow-modals allow-forms" allowtransparency="true" scrolling="no" frameBorder="0" class="result-iframe" style="display: none; position:fixed; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%; border:none; margin:0; padding:0; overflow:hidden; z-index:999999;"></iframe></div>');
-    setTimeout(function() {
-        if ($("#captchaWindow").is(":visible") == false) {
-            console.log("No recapatcha");
-            ProceedToChangeSkins();
-        } else {
-            toastr.warning(Premadeletter97 + '!' + '<button class="btn btn-sm btn-warning btn-spectate btn-noplay-finishedRecapatcha" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter98 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter99 + '</button>', "", {
-                timeOut: 40000,
-                extendedTimeOut: 40000
-            }).css("width", "300px");
-            $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click(function() {
-                ProceedToChangeSkins();
-            });
-            console.log("Recapatcha needed");
-            ogarioplayfalse();
-            for (var i=1;i<26;i++){
-                setTimeout(function() {
-                    if ($("#captchaWindow").is(":visible") == false) {
-                        $(".btn.btn-sm.btn-warning.btn-spectate.btn-noplay-finishedRecapatcha").click();
-                        return false;
-                    }
-                }, i*500);
-            }
-        }
-    }, 2500);
-}
-*/
 function fakeSkinReport(nick) {
     if (nick) {
         ogarcopythelb.skinURLBefore = ogarcopythelb.skinURL
@@ -1498,7 +1443,6 @@ function Leader11() {
     //prevnamereturner();
     fakeSkinReport($('#LeaderboardInput1').val())
     //$("#nick").val($('#LeaderboardInput1').val());
-    //BeforeChangingSkins();
 }
 
 function Leader12() {
@@ -9034,52 +8978,6 @@ function lmPromoChrome(sel) {
     /* Send theme to any iframes inside this modal */
     lmThemeSendToModalIframes(sel);
 }
-function LMnoBotsPromo() {
-    if (window.LM_IS_MOBILE) return; // skip promo on mobile
-    $('#helloContainer').after(
-        '<div class="modal fade in" id="LMPromoNoBots" aria-hidden="false" style="display: block;">' +
-        '<div class="modal-backdrop fade in"></div>' +
-        '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 922px;">' +
-        '<div class="modal-content">' +
-
-        '<div id="CloseLMPromoNoBots2" class="modal-header">' +
-
-        '<button id="CloseLMPromoNoBots" type="button" class="close">' +
-        '<span aria-hidden="true">&#10005;</span>' +
-        '</button>' +
-
-        '<button id="FAQNoBotsPromo" type="button" class="close">' +
-        '<span aria-hidden="true">?</span>' +
-        '</button>' +
-
-        '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' +
-        '' + _lmxE('lmx.ex.noBotsTitle') + '' +
-        '</h4>' +
-
-        '</div>' +
-
-        '<div id="LMadvertisementNoBots">' +
-        '<iframe id="noBotsIframe" ' +
-        'src="https://www.legendmod.ml/extras/nobots.html" ' +
-        'width="920" height="550" style="border:none;"></iframe>' +
-        '</div>' +
-
-        '</div>' +
-        '</div>' +
-        '</div>'
-    );
-
-    lmPromoChrome("#LMPromoNoBots");
-
-    $("#CloseLMPromoNoBots").on("click", function () {
-        $("#LMPromoNoBots").remove();
-    });
-
-    $("#FAQNoBotsPromo").on("click", function () {
-        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
-    });
-}
-
 function LMLegendFFAPromo() {
     if (window.LM_IS_MOBILE) return; // skip promo on mobile
     $('#helloContainer').after(

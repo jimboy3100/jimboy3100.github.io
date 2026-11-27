@@ -22,8 +22,10 @@
  * developers/i18n/scan-config.json ("allow": { "<file>" or "*": ["exact text", "/regex/"] }).
  * Heuristic by design: a finding may be a false positive (allowlist it); a text built from pieces
  * may be missed.
- * Archived pages (scan-config.json "archived": { "<file>": "why" }, files nothing live links to) are
- * left out of the group counts; --report lists them with their count and reason.
+ * Archived pages (scan-config.json "archived": { "<file>": "why" }, files nothing live links to) and
+ * compatibility redirects ("redirects") are left out of the group counts; --report lists them with
+ * their count and reason. Pages removed together with their own assets are recorded in "deleted"
+ * and "deletedAssets" (developers/tests/i18n-archived.js checks that nothing refers to them).
  */
 'use strict';
 const fs = require('fs');
@@ -338,7 +340,8 @@ function groups() {
         });
         const skip = (config.skip || []).map((s) => new RegExp(s));
         const archived = config.archived || {};
-        res[name] = [...new Set(files)].filter((f) => !skip.some((r) => r.test(f)) && !archived[f]);
+        const redirects = config.redirects || {};
+        res[name] = [...new Set(files)].filter((f) => !skip.some((r) => r.test(f)) && !archived[f] && !redirects[f]);
     });
     return res;
 }
@@ -365,6 +368,10 @@ if (require.main === module) {
             console.log('\narchived (not linked from the mod or a live page, not counted): ' + arch.length + ' files');
             arch.forEach((f) => { if (fs.existsSync(path.join(I.ROOT, f))) console.log('  ' + String(scanFile(f).length).padStart(5) + '  ' + f + '  (' + config.archived[f] + ')'); });
         }
+        const redir = Object.keys(config.redirects || {});
+        if (redir.length) console.log('\ncompatibility redirects (not counted): ' + redir.map((f) => f + ' (' + config.redirects[f] + ')').join(', '));
+        const del = Object.keys(config.deleted || {});
+        if (del.length) console.log('deleted with their own assets: ' + del.length + ' pages, ' + Object.keys(config.deletedAssets || {}).length + ' assets');
         console.log('\ntotal: ' + total + '  (strict, must stay 0: ' + (config.strict || []).join(', ') + ')');
         process.exit(0);
     }

@@ -6,7 +6,8 @@
 // - a game page loads the mod runtime (languages/lm-i18n.js) and its keys are in the mod's areas;
 // - no page loads an old languages/LanguagePack*.js (it switched the chosen language back to English);
 // - the page is in scan-config.json "strict" (no hard-coded texts left);
-// - otherwise it is listed in EXCEPTIONS below or in scan-config.json "archived", with the reason.
+// - otherwise it is listed in EXCEPTIONS below or in scan-config.json "archived", with the reason;
+// - it is not a compatibility redirect (scan-config.json "redirects").
 // Usage: node developers/tests/i18n-sitemap.js
 'use strict';
 const fs = require('fs');
@@ -42,7 +43,9 @@ locs.forEach((loc) => {
     const file = path.join(repo, rel);
     if (!fs.existsSync(file)) { ok(false, loc + ': ' + rel + ' is missing'); return; }
     checked++;
-    if (EXCEPTIONS[rel] || (config.archived || {})[rel]) return;
+    /* a compatibility redirect only forwards old links (noindex): the sitemap lists its target */
+    ok(!(config.redirects || {})[rel], loc + ': ' + rel + ' is a compatibility redirect, list its target instead');
+    if (EXCEPTIONS[rel] || (config.archived || {})[rel] || (config.redirects || {})[rel]) return;
     const html = fs.readFileSync(file, 'utf8');
     const site = /<script[^>]+src="https:\/\/www\.legendmod\.ml\/lib\/lm-i18n\.js[^"]*"[^>]*>/.exec(html);
     const mod = /<script[^>]+src="https:\/\/www\.legendmod\.ml\/languages\/lm-i18n\.js[^"]*"[^>]*>/.test(html);
