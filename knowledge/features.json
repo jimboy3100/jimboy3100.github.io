@@ -41,7 +41,7 @@
     {
       "id": "multibox",
       "name": "Multibox controls",
-      "description": "Control up to 4 game connections simultaneously. Colour-coded rings per player (independent colour, size, active-only settings for P1/P2). Middle camera view, auto-respawn, switch-after-death, freeze mode, camera smoothing, multibox shadow. Bot controls: bot feed, split, macro, double/pop/16-split.",
+      "description": "Control up to 4 game connections simultaneously. A ring on the cells of the player you control. Middle camera view, auto-respawn, switch-after-death, freeze mode, camera smoothing, multibox shadow. Bot controls: bot feed, split, macro, double/pop/16-split.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
