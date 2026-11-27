@@ -345,6 +345,17 @@ function bootApply() {
   e.calls.length = 0;
   e.P.applySet({ s: { showMass: !e.S.showMass } }, 'other');
   check('a set without gamepad / phone layout does not reload them', e.calls.length === 0);
+  /* a reload only for Anti-aliasing that differs from the running WebGL context; WebGL on/off switches at once */
+  const reloadAsked = () => e.toasts.some(t => String(t[1]).includes(i18n.t('modules.profiles.reloadSome')));
+  e.c.drawRender = { gl: {}, _lmGlAA: e.S.glAntialias !== false };
+  e.toasts.length = 0;
+  e.P.applySet({ s: { webgl2Acceleration: !e.S.webgl2Acceleration } }, 'webgl');
+  const noWebglReload = !reloadAsked();
+  e.P.applySet({ s: { glAntialias: !e.S.glAntialias } }, 'aa');
+  const aaReload = reloadAsked();
+  e.toasts.length = 0;
+  e.P.applySet({ s: { glAntialias: !e.S.glAntialias } }, 'aa-back');
+  check('profile: WebGL on/off and anti-aliasing back to what the context has ask no reload, other anti-aliasing does', noWebglReload && aaReload && !reloadAsked());
 }
 {
   const e = bootApply();

@@ -854,8 +854,11 @@
     /* these switches call their own updater */
     /* (the quick HUD flags too: what is shown follows them) */
     var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl', showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots' };
-    /* settings that take effect on the next load (their own options say so) */
-    var RELOAD_KEYS = { glAntialias: 1, webgl2Acceleration: 1 };
+    /* Anti-aliasing (also switched by Performance mode) takes effect on the next load, while it
+     * differs from what the running WebGL context was made with; WebGL on/off switches at once */
+    function aaReloadNeeded() {
+        try { return typeof window.lmGlAAPending === 'function' ? !!window.lmGlAAPending() : true; } catch (e) { return true; }
+    }
     /* One gameplay setting through its control, as the presets do. */
     function setOpt(k, v) {
         var $ = jq(), s = S(), app = window.application;
@@ -997,7 +1000,7 @@
             if (app) { clearTimeout(app._lmSettingsSaveT); app._lmSettingsSaveT = null; }
             if (c.s) {
                 var s = S();
-                var keys = Object.keys(data.s);
+                var keys = Object.keys(data.s), aaTouched = false;
                 /* Performance mode first: it switches other settings, which the profile then sets */
                 var pi = keys.indexOf('performanceMode');
                 if (pi > 0) { keys.splice(pi, 1); keys.unshift('performanceMode'); }
@@ -1012,7 +1015,6 @@
                         if (window.LMPerf && typeof window.LMPerf.onSetting === 'function') window.LMPerf.onSetting(k);
                         return;
                     }
-                    if (RELOAD_KEYS[k]) reload = true;
                     try {
                         /* one message for the whole profile, not one per option */
                         if (app && k !== 'performanceMode') app._lmPerfApplying = true;
@@ -1022,7 +1024,9 @@
                     } finally {
                         if (app && k !== 'performanceMode') app._lmPerfApplying = false;
                     }
+                    if (k === 'glAntialias' || k === 'performanceMode') aaTouched = true;
                 });
+                if (aaTouched && aaReloadNeeded()) reload = true;
                 try { app.saveSettings(s, 'ogarioSettings'); } catch (e) { }
             }
             if (c.t) {

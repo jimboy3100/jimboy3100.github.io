@@ -21811,6 +21811,12 @@ function lmFoldVideoVolume(s) {
     s.videoSkinSoundLevel = lmSchemaFit(LM_SETTINGS_SCHEMA.videoSkinSoundLevel, lv * Math.max(0, f));
     return true;
 }
+/* Anti-aliasing (glAntialias) is fixed when the WebGL context is made (drawRender._lmGlAA):
+ * true while the setting differs from it, so only a reload applies it (also before a context) */
+function lmGlAAPending() {
+    var dr = window.drawRender;
+    return !(dr && dr.gl && typeof dr._lmGlAA === 'boolean' && dr._lmGlAA === (defaultmapsettings.glAntialias !== false));
+}
 /* Settings that became one choice: "Short mass" and "Mass format" are massFormat (1 exact, 2 12.3k,
  * 3 auto; the 0 of older versions meant "as Short mass"); "Game stats at the top" and "at the bottom
  * centre" are statsPosition (top / bottom / center; the centre won over the top). The old keys
@@ -25952,7 +25958,18 @@ function thelegendmodproject() {
                         break;
                     case 'mentionNotify':
                         if (checked && typeof Notification !== 'undefined' && Notification.permission === 'default') {
-                            try { Notification.requestPermission(); } catch (eP) { }
+                            /* asked only right after a click or key of the player: a profile applied by
+                             * its auto rule (or a script) asks nothing, the next switch-on asks. Blocked
+                             * in the browser's prompt: told so. */
+                            var _lmUa = window.navigator && navigator.userActivation;
+                            if (!_lmUa || _lmUa.isActive) {
+                                try {
+                                    var _lmPerm = Notification.requestPermission();
+                                    if (_lmPerm && typeof _lmPerm.then === 'function') _lmPerm.then(function (r) {
+                                        if (r === 'denied' && window.toastr) toastr.warning(lmT('game1.notif.blocked'));
+                                    }, function () { });
+                                } catch (eP) { }
+                            }
                         } else if (checked && (typeof Notification === 'undefined' || Notification.permission === 'denied') && window.toastr) {
                             toastr.warning(lmT('game1.notif.blocked'));
                         }
@@ -26041,8 +26058,9 @@ function thelegendmodproject() {
                         if (window.LMPerf) window.LMPerf.configChanged();
                         break;
                     case 'glAntialias':
-                        /* Performance mode shows one message for all of its changes */
-                        if (window.toastr && !this._lmPerfApplying) toastr.info(lmT('game1.perf.aaReload'));
+                        /* Performance mode shows one message for all of its changes; switched back to
+                         * what the running GPU context has, no reload is needed */
+                        if (window.toastr && !this._lmPerfApplying && lmGlAAPending()) toastr.info(lmT('game1.perf.aaReload'));
                         break;
                     case 'performanceMode':
                         /* On: remember the current values and turn the costly effects off.
@@ -27345,7 +27363,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -28735,8 +28753,10 @@ function thelegendmodproject() {
                 /* agar.io's own key handler is not installed (window.addKeyListeners below spectateBlind) */
 
                 if (
-                    defaultmapsettings.autoHideFood
+                    defaultmapsettings.autoHideFood &&
+                    ogario.showFood
                 ) {
+                    /* only food that is shown: food the player hid stays his (setShowFood) */
                     ogario.showFood =
                         false;
                     ogario._lmFoodAutoHid = true;
@@ -28862,7 +28882,8 @@ function thelegendmodproject() {
             this.play();
             this.hideMenu();
             /* agar.io's own key handler is not installed (window.addKeyListeners below spectateBlind) */
-            if (defaultmapsettings.autoHideFood) {
+            /* the food Auto hide food hid comes back; food the player hid himself stays hidden */
+            if (defaultmapsettings.autoHideFood && ogario._lmFoodAutoHid) {
                 ogario.showFood = true
                 ogario._lmFoodAutoHid = false;
             };
@@ -28875,7 +28896,7 @@ function thelegendmodproject() {
             this.sendPlayerJoin();
             this.hideMenu();
             /* agar.io's own key handler is not installed (window.addKeyListeners below spectateBlind) */
-            if (defaultmapsettings.autoHideFood) {
+            if (defaultmapsettings.autoHideFood && ogario.showFood) {
                 ogario.showFood = false;
                 ogario._lmFoodAutoHid = true;
             }
@@ -63388,6 +63409,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var gl = this.glCanvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: defaultmapsettings.glAntialias !== false, depth: true });
                 if (!gl) return;
                 this.gl = gl;
+                /* what the context was made with: a context restored after a loss keeps it, so a
+                 * change of Anti-aliasing needs a reload only while it differs (lmGlAAPending) */
+                if (this._lmGlAA === undefined) this._lmGlAA = defaultmapsettings.glAntialias !== false;
 
                 var vsSource = `#version 300 es
                 in vec2 a_unitPos;
@@ -85301,6 +85325,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
      * modifier state at each event, so keyup may produce a different name
      * (modifier released first); release what was really pressed. */
     var _lmHeldByCode = {};
+    /* hotkey name -> command its keydown ran: the keyup releases that one, also when the key
+     * was unbound or bound to another command while held (a hold such as Scan Trick or macro
+     * feed stayed on until the window lost focus) */
+    var _lmHeldCmd = {};
+    function _lmHeldCmdOf(key) {
+        var c = Object.prototype.hasOwnProperty.call(_lmHeldCmd, key) ? _lmHeldCmd[key] : hotkeys[key];
+        delete _lmHeldCmd[key];
+        return c;
+    }
     document.onkeydown = function (event) {
         var pressedKey = hotkeysSetup.getPressedKey(event);
         if (pressedKey === 'TAB' || event.keyCode === 9) {
@@ -85344,6 +85377,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (hotkeys[pressedKey]) {
                 event.preventDefault();
                 var i = hotkeys[pressedKey];
+                _lmHeldCmd[pressedKey] = i;
                 '' !== i && hotkeysCommand[i] && hotkeysCommand[i].keyDown && hotkeysCommand[i].keyDown();
             }
         } else if (!_isTypingTarget && '' !== pressedKey && keyBlind[pressedKey] && hotkeys[pressedKey]) {
@@ -85363,7 +85397,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         var heldKey = _lmHeldByCode[event.keyCode];
         delete _lmHeldByCode[event.keyCode];
         if (heldKey && heldKey !== pressedKey) {
-            var heldCommand = hotkeys[heldKey];
+            var heldCommand = _lmHeldCmdOf(heldKey);
             /* released before keyUp runs: keyUp may check which keys are still held */
             keyBlind[heldKey] = false;
             if (heldCommand && hotkeysCommand[heldCommand] && hotkeysCommand[heldCommand].keyUp) {
@@ -85375,8 +85409,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * must not run keyUp actions either */
             var _lmKeyWasTaken = keyBlind[pressedKey];
             keyBlind[pressedKey] = false;
-            if (_lmKeyWasTaken && hotkeys[pressedKey]) {
-                var key = hotkeys[pressedKey];
+            var key = _lmKeyWasTaken ? _lmHeldCmdOf(pressedKey) : '';
+            if (key) {
                 if ('' !== key && hotkeysCommand[key] && hotkeysCommand[key].keyUp) {
                     hotkeysCommand[key].keyUp();
                 }
@@ -85406,7 +85440,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         }
         for (var heldKey in keyBlind) {
             if (!keyBlind[heldKey]) continue;
-            var heldCommand = hotkeys[heldKey];
+            var heldCommand = _lmHeldCmdOf(heldKey);
             keyBlind[heldKey] = false;
             if (heldCommand && hotkeysCommand[heldCommand] && hotkeysCommand[heldCommand].keyUp) {
                 try { hotkeysCommand[heldCommand].keyUp(); } catch (e) { }

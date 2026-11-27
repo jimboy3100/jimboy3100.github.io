@@ -211,6 +211,53 @@ app2.setSettings('showGrid', !before);
 app2.setSettings('showGrid', before);
 check('setSettings on and off: two events, the new value each time', J(events) === J([['settingsChange', 'showGrid', !before], ['settingsChange', 'showGrid', before]]));
 
+// ── S6 what a setting really does now (real setSettings, onPlay, onSpectate, setShowFood, key handler)
+const toasts = [];
+ctx.toastr = { info: t => toasts.push(['info', t]), warning: t => toasts.push(['warning', t]), success() { } };
+/* Anti-aliasing: a reload only while it differs from what the WebGL context was made with */
+ctx.drawRender = { gl: {}, _lmGlAA: true };
+S.glAntialias = true;
+app2.setSettings('glAntialias', false); app2.setSettings('glAntialias', true);
+check('anti-aliasing off then on again: "reload" once (the context has it on), not twice', J(toasts) === J([['info', 'game1.perf.aaReload']]));
+check('anti-aliasing: a reload is pending while it differs from the context, or before any context', typeof ctx.lmGlAAPending === 'function' && ctx.lmGlAAPending() === false && (S.glAntialias = false, ctx.lmGlAAPending()) && (ctx.drawRender = { gl: null }, ctx.lmGlAAPending()));
+S.glAntialias = true;
+/* Mention notifications: the browser is asked only right after the player's click or key */
+let asked = 0, rejectHandled = false;
+ctx.Notification = { permission: 'default', requestPermission() { asked++; return { then(ok, bad) { rejectHandled = typeof bad === 'function'; ok('denied'); } }; } };
+ctx.navigator = { userActivation: { isActive: false } };
+S.mentionNotify = false; toasts.length = 0;
+app2.setSettings('mentionNotify', true);
+check('mention notifications switched on without a click (profile auto rule, script): the browser is not asked', asked === 0 && toasts.length === 0);
+S.mentionNotify = false; ctx.navigator.userActivation.isActive = true;
+app2.setSettings('mentionNotify', true);
+check('switched on by the player: asked once, a refusal is told, a failed request is handled', asked === 1 && rejectHandled && J(toasts) === J([['warning', 'game1.notif.blocked']]));
+/* Auto hide food: only the food it hid comes back; food the player hid stays hidden */
+ctx.legendmod = ctx.ogario = { showFood: true, _lmFoodAutoHid: false, play: true };
+const F = vm.runInContext('({\n' + cut('        setShowFood() {', '        /* Show/hide HUD (Alt+H)') + cut('        onPlay() {', '        join() {') + '\n})', ctx);
+F.play = F.hideMenu = F.onJoin = F.sendPlayerJoin = function () { };
+S.autoHideFood = true;
+F.setShowFood(); F.onPlay();
+check('auto hide food on, food hidden by the player, Play: it stays hidden', ctx.ogario.showFood === false);
+F.onSpectate(); app2.setSettings('autoHideFood', false);
+check('then spectating and auto hide food off: still hidden', ctx.ogario.showFood === false);
+S.autoHideFood = true; F.setShowFood(); F.onSpectate();
+check('shown by the player, spectating hides it, Play shows it again', ctx.ogario.showFood === false && (F.onPlay(), ctx.ogario.showFood === true));
+S.autoHideFood = false;
+/* Held hotkeys (Scan Trick): the keyup releases what the keydown started, also when the key
+ * was unbound or bound to something else while held */
+ctx.keyBlind = {}; ctx.hotkeys = { Q: 'hk-scanTrick' };
+const holds = [];
+ctx.hotkeysCommand = { 'hk-scanTrick': { keyDown() { holds.push('down'); }, keyUp() { holds.push('up'); } }, 'hk-other': { keyDown() { }, keyUp() { holds.push('other up'); } } };
+ctx.hotkeysSetup = { inputClassName: 'custom-key-in', getPressedKey: e => e.k };
+ctx.application = { showMenu() { } };
+ctx.addEventListener = function () { };
+ctx.document.addEventListener = function () { };
+vm.runInContext(cut('    var _lmHeldByCode = {};', '    var _lmMouseHeld = {};'), ctx);
+const kev = k => ({ k, keyCode: k.charCodeAt(0), target: { tagName: 'CANVAS', className: '' }, preventDefault() { } });
+ctx.document.onkeydown(kev('Q')); ctx.hotkeys.Q = ''; ctx.document.onkeyup(kev('Q'));
+ctx.hotkeys.Q = 'hk-scanTrick'; ctx.document.onkeydown(kev('Q')); ctx.hotkeys.Q = 'hk-other'; ctx.document.onkeyup(kev('Q'));
+check('scan trick key unbound or rebound while held: its keyup still ends the scan trick (not the new command)', J(holds) === J(['down', 'up', 'down', 'up']));
+
 // ── S4 the profile count, live
 const dom = { nick: true, skins: [] };
 const box = sel => {
