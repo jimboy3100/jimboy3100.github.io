@@ -496,6 +496,51 @@ check('opening a connection does not count the time since the last server', gaps
 check('ogario calls the reset on open, on close and when leaving the server', (v4.match(/if \(this === window\.legendmod\) this\._lmResetFreezeDetector\(\);/g) || []).length === 1 &&
     (v4.match(/if \(this === window\.legendmod\) this\._lmResetFreezeDetector\(true\);/g) || []).length === 2);
 
+/* network diagnostics (ogario.v4.js _lmND, developers/tests/netdiag.js): the real render loop
+ * marks the last frame drawn and counts failed ones; a packet gap carries what happened in it */
+{
+    const gapSrc = /\n        (_lmGapEvent\(dur, sinceEnd\) \{[\s\S]*?\n        \}),\n/.exec(v4);
+    check('_lmGapEvent found in ogario.v4.js', !!gapSrc);
+    const lq = loop({ fpsLimit: 0 });
+    lq.ctx.LMPerf.keepRecording(true);
+    const nd = { gen: 2, live: true, t0: 0, rx: 40, wRx: 30, wTry: 20, wOk: 18, wPart: 1, wBad: 1, wMb: 10, wGate: 0, msgAt: 0, tryAt: 0, okAt: 0, renderAt: 0, renderErr: 0,
+        mbAt: 0, gateAt: 0, badAt: 0, visAt: 0, hidden: false, oAt: 0, wMsgAt: 0, msgGap: 900, msgGapVis: 300,
+        prev: { gen: 1, live: false, reason: 'closeConnection', t0: 0, endAt: 60000, rx: 5, wOk: 4 } };
+    vm.runInContext('legendmod._lmResetFreezeDetector = ({' + resetSrc[1] + '})._lmResetFreezeDetector; legendmod._lmGapEvent = ({' + gapSrc[1] + '})._lmGapEvent;',
+        Object.assign(lq.ctx, { legendmod: Object.assign(lq.ctx.legendmod, { ws: 'wss://srv.example.com/', serverType: 'x', pps: 0, play: true, isSocketOpen: () => true, _lmLastWorldUpdate: Date.now(), _lmND: nd }) }));
+    lq.tick(16.7);
+    const at1 = nd.renderAt;
+    let bad = true; lq.dr.renderFrame = () => { if (bad) throw new Error('bad'); };
+    lq.tick(16.7);
+    check('render loop: the last frame drawn is marked, a failed one counted and not marked', at1 > 0 && nd.renderAt === at1 && nd.renderErr === 1);
+    bad = false;
+    /* world updates held back for the dead main player during a 3.5 s gap, then they come back */
+    lq.ctx.legendmod._lmLastWorldUpdate = Date.now() - 3500; nd.mbAt = lq.ctx._now; lq.tick(16.7);
+    lq.ctx.legendmod._lmLastWorldUpdate = Date.now(); lq.tick(16.7);
+    const gap = lq.ctx.LMPerf.events().filter(e => e.type === 'packet gap').pop();
+    check('packet gap while updates were held back: listed with why (multibox), not as nothing received', !!gap && gap.dur >= 3500 && gap.held === 'multibox' &&
+        gap.info === 'no world update, playing, held back on purpose (main player dead, multibox unit plays)', gap && gap.info);
+    const fzH = { t: gap.t, w: Date.now(), dur: 300 };
+    check('freeze in a held-back gap: not the network', /world updates held back on purpose \(main player dead, multibox unit plays\), not the network/.test(P.classifyFreeze(fzH, [], [gap], { loaf: false }).line));
+    check('freeze in a gap with rejected updates', /world updates rejected \(malformed packets\)/.test(P.classifyFreeze(fzH, [], [Object.assign({}, gap, { held: '', bad: true })], { loaf: false }).line));
+    check('freeze in an ordinary gap: as before', /packet gap \d+ ms, began before the freeze/.test(P.classifyFreeze(fzH, [], [Object.assign({}, gap, { held: '' })], { loaf: false }).line));
+    lq.ctx.LMPerf.packetGap(600, false, '', false, true, false);
+    check('packet gap parts: tab hidden, nothing received', lq.ctx.LMPerf.events().pop().info === 'no world update, tab hidden or device asleep, nothing received');
+    lq.ctx.LMPerf.packetGap(600, true, 'spawn', true, false, true);
+    const g2 = lq.ctx.LMPerf.events().pop();
+    check('packet gap parts: spawn gate, rejected', g2.info === 'no world update, playing, held back on purpose (spawn), malformed updates rejected' && g2.held === 'spawn' && g2.bad === true);
+    const rep2 = lq.ctx.LMPerf.report();
+    check('report: world updates of this and the previous connection', /\nWorld updates, connection #2, open \d+ s: callbacks 40, world updates received 30, attempted 20, applied 18, incomplete 1, rejected 1, held back: multibox 10, spawn gate 0; last callback -, attempt -, applied -, frame drawn \d+ ms ago \(1 failed\); longest callback gap 300 ms visible, 900 ms in all\n  previous connection #1, closeConnection after 60 s: callbacks 5,/.test(rep2),
+        rep2.split('\n').filter(l => /World updates|previous/.test(l)).join(' | '));
+    const wu = lq.ctx.LMPerf.worldUpdates();
+    check('worldUpdates(): copies of this and the previous connection', wu && wu.cur.wOk === 18 && wu.cur !== nd && !('prev' in wu.cur) && wu.prev.gen === 1 && wu.prev !== nd.prev);
+    const gapsN = lq.ctx.LMPerf.events().filter(e => e.type === 'packet gap').length;
+    lq.ctx.legendmod._lmND = null;
+    lq.ctx.legendmod._lmLastWorldUpdate = Date.now() - 900; lq.tick(16.7); lq.ctx.legendmod._lmLastWorldUpdate = Date.now(); lq.tick(16.7);
+    check('without diagnostics (another object): the packet gap as before', lq.ctx.LMPerf.events().filter(e => e.type === 'packet gap').length === gapsN + 1 &&
+        lq.ctx.LMPerf.events().filter(e => e.type === 'packet gap').pop().info === 'no world update, playing' && lq.ctx.LMPerf.worldUpdates() === null && !/World updates,/.test(lq.ctx.LMPerf.report()));
+}
+
 /* long tasks: only observed while recording, where supported */
 const observers = [];
 function FakePO(cb) { this.cb = cb; this.on = false; observers.push(this); }

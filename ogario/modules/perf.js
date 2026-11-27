@@ -788,7 +788,10 @@
         for (i = 0; evs && i < evs.length; i++) {
             var ev = evs[i];
             if (ev.type === 'packet gap' && overlapMs(start, end, ev.t - ev.dur, ev.t) > 0) {
-                net = ev.t - ev.dur < start - 250 ? say(tr, 'cfNetGap', 'packet gap {0} ms, began before the freeze (network or server)', [ev.dur]) : say(tr, 'cfNetWait', 'world updates only waited for the freeze');
+                /* world updates came but were held back on purpose or rejected: not the network */
+                net = ev.held ? say(tr, 'cfNetHeld', 'world updates held back on purpose ({0}), not the network', [heldText(ev.held, tr)]) :
+                    ev.bad ? say(tr, 'cfNetBad', 'world updates rejected (malformed packets)') :
+                        ev.t - ev.dur < start - 250 ? say(tr, 'cfNetGap', 'packet gap {0} ms, began before the freeze (network or server)', [ev.dur]) : say(tr, 'cfNetWait', 'world updates only waited for the freeze');
             } else if (ev.type === 'disconnect' && ev.t >= start - 1000 && ev.t <= end + 1000) net = say(tr, 'cfNetDisc', 'disconnect');
         }
         parts.push(net);
@@ -904,7 +907,43 @@
         return s;
     }
 
+    /* why world updates were held back on purpose (ogario.v4.js _lmWuRx) -> its text */
+    function heldText(h, tr) {
+        return h === 'multibox' ? say(tr, 'heldMultibox', 'main player dead, multibox unit plays') : h === 'spawn' ? say(tr, 'heldSpawn', 'spawn') : String(h || '');
+    }
+    /* the details of a packet gap (ogario.v4.js _lmGapEvent): parts for the event list */
+    function gapParts(playing, held, bad, hid, rx) {
+        var p = [playing ? tp('infoNoUpdatePlaying', 'no world update, playing') : tp('infoNoUpdate', 'no world update')];
+        if (held === 'multibox') p.push(tp('infoHeldMultibox', 'held back on purpose (main player dead, multibox unit plays)'));
+        else if (held === 'spawn') p.push(tp('infoHeldSpawn', 'held back on purpose (spawn)'));
+        if (bad) p.push(tp('infoRejected', 'malformed updates rejected'));
+        if (hid) p.push(tp('infoTabAway', 'tab hidden or device asleep'));
+        if (!held) p.push(rx ? tp('infoOtherRx', 'other packets handled') : tp('infoNoRx', 'nothing received'));
+        return { s: ', ', p: p };
+    }
+    function msAgo(t, n) { return t > 0 ? Math.max(0, Math.round(n - t)) + ' ms ago' : '-'; }
+    /* The world update counters of one connection (ogario.v4.js _lmND) as a report line (English).
+     * n: performance.now() of the report (for a previous connection: its end). */
+    function wuLine(d, n) {
+        if (!d) return '';
+        var c = function (v) { return Math.max(0, Math.round(num(v))); };
+        var unf = c(d.open);
+        /* the current one: open, or none open since the last ended (a replay, Practice); a previous one: why it ended */
+        var secs = Math.round(Math.max(0, num(n) - num(d.t0)) / 1000) + ' s';
+        return (d.reason ? 'connection #' + c(d.gen) + ', ' + d.reason + ' after ' + secs : d.live ? 'connection #' + c(d.gen) + ', open ' + secs : 'no connection open (' + secs + ')') +
+            ': callbacks ' + c(d.rx) + (d.stale ? ' (' + c(d.stale) + ' stale dropped)' : '') +
+            ', world updates received ' + c(d.wRx) + ', attempted ' + c(d.wTry) + ', applied ' + c(d.wOk) +
+            ', incomplete ' + c(d.wPart) + ', rejected ' + c(d.wBad) + (d.wLost ? ' (' + c(d.wLost) + ' uncaught)' : '') + (unf ? ', unfinished ' + unf : '') +
+            ', held back: multibox ' + c(d.wMb) + ', spawn gate ' + c(d.wGate) +
+            (d.wRp ? ', replay ' + c(d.wRp) + ' (seek ' + c(d.wSeek) + ')' : '') + (d.wHid ? ', received while hidden ' + c(d.wHid) : '') +
+            (d.pBad ? ', other packets rejected ' + c(d.pBad) : '') + (d.zBad ? ', compressed frames rejected ' + c(d.zBad) : '') +
+            '; last callback ' + msAgo(d.msgAt, n) + ', attempt ' + msAgo(d.tryAt, n) + ', applied ' + msAgo(d.okAt, n) +
+            ', frame drawn ' + msAgo(d.renderAt, n) + (d.renderErr ? ' (' + c(d.renderErr) + ' failed)' : '') +
+            '; longest callback gap ' + c(d.msgGapVis) + ' ms visible, ' + c(d.msgGap) + ' ms in all';
+    }
+
     var pure = {
+        heldText: heldText, gapParts: gapParts, wuLine: wuLine,
         fmt: fmt, tp: tp, partsText: partsText, EV_KEYS: EV_KEYS, INFO_KEYS: INFO_KEYS, RN_KEYS: RN_KEYS, KIND_KEYS: KIND_KEYS,
         timeText: timeText, SCOPES: SCOPES, createScopes: createScopes, createScopeRing: createScopeRing, topScopes: topScopes,
         scriptFile: scriptFile, cleanInvoker: cleanInvoker, parseLoaf: parseLoaf, scriptText: scriptText, loafLine: loafLine,
@@ -1951,6 +1990,13 @@
         net.closes.slice(-5).forEach(function (c) {
             lines.push('  closed ' + new Date(c.t).toLocaleTimeString() + ': code ' + c.code + (c.reason ? ' "' + c.reason + '"' : '') + (c.clean ? '' : ' (not clean)') + (c.openMs ? ', open ' + Math.round(c.openMs / 1000) + ' s' : ''));
         });
+        /* world updates of this and the previous connection (callback times are when the page
+         * handled a message, not when it arrived; packets/s above counts opcode 16 as before) */
+        var nd = lm && lm._lmND;
+        if (nd) {
+            lines.push('World updates, ' + wuLine(nd, now()));
+            if (nd.prev) lines.push('  previous ' + wuLine(nd.prev, nd.prev.endAt));
+        }
         /* map border events (opcode 64, beacon, tab return, connect/close): raw bounds, map, food box, camera, DPR */
         var bt = lm && typeof lm.borderTrace === 'function' ? lm.borderTrace() : [];
         if (bt.length) {
@@ -2425,6 +2471,21 @@
         /* an event for the diagnostics list (packet gaps from the freeze detector); nothing
          * is kept while measuring is off */
         event: function (type, dur, info) { pushEvent(cleanText(type, 30), +dur || 0, info); },
+        /* a packet gap from the freeze detector with what happened during it (ogario.v4.js
+         * _lmGapEvent): held 'multibox' / 'spawn' / '', bad: rejected updates, hid: tab hidden,
+         * rx: other packets handled. Kept on the event for the freeze attribution. */
+        packetGap: function (dur, playing, held, bad, hid, rx) {
+            var ev = pushEvent('packet gap', +dur || 0, gapParts(!!playing, held, !!bad, !!hid, !!rx));
+            if (ev) { ev.held = held === 'multibox' || held === 'spawn' ? held : ''; ev.bad = !!bad; ev.hid = !!hid; ev.rx = !!rx; }
+        },
+        /* the world update counters of this and the previous connection (copies, for scripts and tests) */
+        worldUpdates: function () {
+            var lm = window.legendmod, d = lm && lm._lmND;
+            if (!d) return null;
+            var cur = {}, k;
+            for (k in d) if (k !== 'prev' && hasOwn(d, k)) cur[k] = d[k];
+            return { cur: cur, prev: d.prev ? Object.assign({}, d.prev) : null, now: now() };
+        },
         events: function () { return events.list(); },
         /* freezes with their breakdown and attribution line; long animation frames (cleaned) */
         freezes: attributed,

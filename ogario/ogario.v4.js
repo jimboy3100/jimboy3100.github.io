@@ -41493,7 +41493,7 @@ function thelegendmodproject() {
             /* a message still queued from a replaced socket (map border, cells) is not this server's */
             var _lmSock = this.socket;
             this.socket.onmessage = function (t) {
-                if (app.socket !== _lmSock) return;
+                if (app.socket !== _lmSock) { if (app._lmND) app._lmND.stale++; return; }
                 app.onMessage(t);
             };
             this.socket.onerror = function (t) {
@@ -41577,6 +41577,8 @@ function thelegendmodproject() {
              * (open → immediate close → open → immediate close loops). */
             this._connOpenTime = Date.now();
             if (this === window.legendmod) this._lmResetFreezeDetector();
+            /* a new connection: its own network diagnostics (the previous one is kept once) */
+            if (this === window.legendmod) this._lmNetDiagStart();
             /* Network quality history (ogario/modules/perf.js; nothing kept while it is off) */
             if (window.LMPerf && this === window.legendmod) { try { window.LMPerf.netEvent('open', { ws: this.ws }); } catch (e) { } }
             var self = this;
@@ -41751,6 +41753,20 @@ function thelegendmodproject() {
             if (window._lwUpdateWorldSpecBtn) window._lwUpdateWorldSpecBtn();
         },
         onMessage(message) {
+            /* network diagnostics: callback count, time, longest gap between two callbacks (also
+             * the visible-only one), and whether the previous callback was not a world update */
+            var _lmNd = this._lmND;
+            if (_lmNd) {
+                var _lmNdT = performance.now();
+                if (_lmNd.msgAt) {
+                    var _lmNdG = _lmNdT - _lmNd.msgAt;
+                    if (_lmNdG > _lmNd.msgGap) _lmNd.msgGap = _lmNdG;
+                    if (_lmNdG > _lmNd.msgGapVis && !_lmNd.hidden && _lmNd.visAt < _lmNd.msgAt) _lmNd.msgGapVis = _lmNdG;
+                    if (_lmNd.msgAt !== _lmNd.wMsgAt) _lmNd.oAt = _lmNd.msgAt;
+                }
+                _lmNd.rx++;
+                _lmNd.msgAt = _lmNdT;
+            }
 
             //console.log(message.data)
 
@@ -41799,6 +41815,7 @@ function thelegendmodproject() {
                 switch (opcode) {
                     case 16:
                         // Sigmally cell update (different format from agar.io)
+                        if (this._lmND) this._lmWuRx(0);
                         this._handleSigmallyCellUpdate(data);
                         break;
                     case 17: {
@@ -42107,6 +42124,9 @@ function thelegendmodproject() {
                         /* Cells are built like garixUpdateCells/updateCells: indexedCells +
                          * ogarbasicassembly, removed through removeCell(). Positions get the
                          * map rotation (Delta receiveX/receiveY). */
+                        /* diagnostics: its reader throws on a short packet, so getting to the
+                         * end is a complete update */
+                        if (self._lmND) { self._lmWuRx(0); self._lmWuBegin(); }
                         self.megaFFAscore();
                         self.time = Date.now();
                         self.removePlayerCell = false;
@@ -42294,6 +42314,7 @@ function thelegendmodproject() {
                             window.userBots.isAlive = false;
                             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
                         }
+                        if (self._lmND) self._lmWuEnd(true);
                         self.countPps();
                         break;
                     }
@@ -42412,8 +42433,11 @@ function thelegendmodproject() {
              * last update then also holds the time between the two connections */
             if (window.drawRender && drawRender._lmStallMax && this._lmLastWorldUpdate) {
                 var _lmGap = closing ? Math.max(drawRender._lmStallMax, Date.now() - this._lmLastWorldUpdate) : drawRender._lmStallMax;
-                if (_lmGap >= 250 && window.LMPerf && window.LMPerf.event) {
-                    try { window.LMPerf.event('packet gap', _lmGap, 'no world update' + (this.play ? ', playing' : '')); } catch (_lmEvE) { }
+                if (_lmGap >= 250 && window.LMPerf) {
+                    try {
+                        if (this._lmGapEvent) this._lmGapEvent(_lmGap, Math.max(0, Date.now() - this._lmLastWorldUpdate - _lmGap));
+                        else if (window.LMPerf.event) window.LMPerf.event('packet gap', _lmGap, 'no world update' + (this.play ? ', playing' : ''));
+                    } catch (_lmEvE) { }
                 }
             }
             this._lmLastWorldUpdate = 0;
@@ -42423,6 +42447,101 @@ function thelegendmodproject() {
                 drawRender._lmStallMax = 0;
             }
         },
+        /* A packet gap for Performance diagnostics (ogario/modules/perf.js packetGap), with what
+         * happened during it: world updates held back on purpose (dead main player while a
+         * multibox unit plays, the spawn gate), rejected ones, the tab hidden, other packets
+         * handled. dur: the gap; sinceEnd: ms since it ended (0: still open). Rare: no per-packet work. */
+        _lmGapEvent(dur, sinceEnd) {
+            var P = window.LMPerf, d = this._lmND;
+            if (!P || !(dur >= 250)) return;
+            if (d && P.packetGap) {
+                /* a time of 0 is "never" (the clock starts at 0 with the page, so the gap can begin before it) */
+                var from = performance.now() - (sinceEnd > 0 ? sinceEnd : 0) - dur;
+                var inGap = function (t) { return t > 0 && t >= from; };
+                P.packetGap(dur, !!this.play, inGap(d.mbAt) ? 'multibox' : inGap(d.gateAt) ? 'spawn' : '', inGap(d.badAt),
+                    d.hidden || inGap(d.visAt), inGap(d.oAt) || (inGap(d.msgAt) && d.msgAt !== d.wMsgAt));
+            } else if (P.event) P.event('packet gap', dur, 'no world update' + (this.play ? ', playing' : ''));
+        },
+        /* Network diagnostics of the main connection (_lmND; perf.js reads it for its report).
+         * Counters and performance.now() times of one connection (a generation): message
+         * callbacks, world updates received / attempted / applied / incomplete / rejected / held
+         * back on purpose, replay ones, times of the last callback, attempt, applied update and
+         * drawn frame. One object for the page, zeroed for each connection: nothing is allocated
+         * per packet. A callback time is when the page handled a message, not when it arrived
+         * (a busy main thread delays it). Started in onOpen, ended in onClose / closeConnection
+         * (which detaches onclose) or by the next start, once per connection. */
+        _lmNetDiagStart() {
+            var d = this._lmND;
+            if (!d) {
+                d = this._lmND = { gen: 0, live: false, t0: 0, prev: null, reason: '', hidden: false, visAt: 0, renderAt: 0, renderErr: 0 };
+                try {
+                    d.hidden = !!document.hidden;
+                    document.addEventListener('visibilitychange', function () { d.hidden = !!document.hidden; d.visAt = performance.now(); });
+                } catch (e) { }
+            } else this._lmNetDiagEnd('replaced');
+            this._lmNetDiagZero(d);
+            d.gen++;
+            d.live = true;
+            d.t0 = performance.now();
+        },
+        _lmNetDiagZero(d) {
+            d.rx = 0; d.stale = 0; d.msgAt = 0; d.oAt = 0; d.wMsgAt = 0; d.msgGap = 0; d.msgGapVis = 0;
+            d.wRx = 0; d.wTry = 0; d.wOk = 0; d.wPart = 0; d.wBad = 0; d.wLost = 0; d.wMb = 0; d.wGate = 0; d.wHid = 0; d.wRp = 0; d.wSeek = 0;
+            d.pBad = 0; d.zBad = 0; d.open = 0;
+            d.tryAt = 0; d.okAt = 0; d.badAt = 0; d.mbAt = 0; d.gateAt = 0;
+        },
+        /* the connection ended (reason: close, closeConnection, replaced): its numbers are kept as
+         * the previous connection, once (a second end before the next start does nothing) */
+        _lmNetDiagEnd(reason) {
+            var d = this._lmND;
+            if (!d || !d.live) return;
+            var p = {};
+            for (var k in d) if (k !== 'prev' && Object.prototype.hasOwnProperty.call(d, k)) p[k] = d[k];
+            p.reason = reason;
+            p.endAt = performance.now();
+            d.prev = p;
+            d.live = false;
+            this._lmNetDiagZero(d);
+            d.t0 = p.endAt; /* no connection open since then (a replay or Practice may still count) */
+        },
+        /* a world update packet (opcode 16, Senpa 20) was received; held: 1 dropped on purpose for
+         * the dead main player while a multibox unit plays, 2 by the spawn transit gate */
+        _lmWuRx(held) {
+            var d = this._lmND;
+            d.wRx++;
+            d.wMsgAt = d.msgAt;
+            if (d.hidden) d.wHid++;
+            if (held === 1) { d.wMb++; d.mbAt = performance.now(); }
+            else if (held === 2) { d.wGate++; d.gateAt = performance.now(); }
+        },
+        /* a parser starts on a world update; an attempt still open was never finished (it threw
+         * past every handler that counts it) */
+        _lmWuBegin() {
+            var d = this._lmND;
+            if (d.open) { d.wBad++; d.wLost++; }
+            d.open = 1;
+            d.wTry++;
+            d.tryAt = performance.now();
+            if (window._lmReplayQuiet) { d.wRp++; d.wSeek++; } else if (window._lmEvReplayOn) d.wRp++;
+        },
+        /* the parser got to its end: complete when every section, count and terminator was read
+         * (a tolerant parser that stopped early is incomplete, not applied) */
+        _lmWuEnd(complete) {
+            var d = this._lmND;
+            d.open = 0;
+            if (complete) { d.wOk++; d.okAt = performance.now(); }
+            else { d.wPart++; d.badAt = performance.now(); }
+        },
+        /* a caught exception: the open world update attempt (if any) is rejected; false when no
+         * world update was being parsed */
+        _lmWuFail() {
+            var d = this._lmND;
+            if (!d.open) return false;
+            d.open = 0;
+            d.wBad++;
+            d.badAt = performance.now();
+            return true;
+        },
         onClose(t) {
             console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Game server socket close',
                 /* why: close code/reason, how long it was open, handshake/login state */
@@ -42430,6 +42549,7 @@ function thelegendmodproject() {
                 this._connOpenTime ? ('after ' + (Date.now() - this._connOpenTime) + ' ms open') : 'before open',
                 this.clientKey ? '(241 key ok)' : '(no 241 key)', LM.loginConfirmed ? '(logged in)' : '(not logged in)');
             if (this === window.legendmod) this._lmResetFreezeDetector(true);
+            if (this === window.legendmod && this._lmND) this._lmNetDiagEnd('close');
             if (window.LMPerf && this === window.legendmod) {
                 try { window.LMPerf.netEvent('close', { code: t && t.code, reason: t && t.reason, wasClean: t && t.wasClean, openMs: this._connOpenTime ? Date.now() - this._connOpenTime : 0 }); } catch (e) { }
             }
@@ -42649,6 +42769,9 @@ function thelegendmodproject() {
             if (this.socket) {
                 /* no close event comes (handlers dropped below): a packet gap going on is timed up to now */
                 if (this === window.legendmod) this._lmResetFreezeDetector(true);
+                /* and its network diagnostics end here (after the gap above, which reads them;
+                 * nothing the second time, e.g. after onClose) */
+                if (this === window.legendmod && this._lmND) this._lmNetDiagEnd('closeConnection');
                 this.socket.onopen = null;
                 this.socket.onmessage = null;
                 this.socket.onerror = null;
@@ -44311,6 +44434,9 @@ function thelegendmodproject() {
             try {
                 this._lmHandlePacket(data);
             } catch (e) {
+                /* diagnostics: a world update that threw (also a compressed one) is rejected; any
+                 * other packet that threw is counted apart */
+                if (this._lmND && !this._lmWuFail()) this._lmND.pBad++;
                 if (!(e instanceof RangeError)) throw e;
                 var _lmNow = Date.now();
                 if (!(this._lmBadPacketAt > _lmNow - 5000)) {
@@ -46184,7 +46310,10 @@ function thelegendmodproject() {
 
                 case 16: //2020 jimboy3100 specific private servers
                     // Skip main client's cell updates when dead and multibox spect is active
-                    if ((window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed()) || this._spawnTransitGate) {
+                    /* (the same checks in the same order, the result kept for the diagnostics) */
+                    var _lmMbHeld = !!(window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed());
+                    if (this._lmND) this._lmWuRx(_lmMbHeld ? 1 : this._spawnTransitGate ? 2 : 0);
+                    if (_lmMbHeld || this._spawnTransitGate) {
                         /* the cells it adds must not come back nameless and grey later */
                         if (this._lmCellIdentity) this._lmCellIdentityScan(new window.buffer.Buffer(data.buffer), s);
                         break;
@@ -46202,6 +46331,8 @@ function thelegendmodproject() {
                             this.updateCells(new window.buffer.Buffer(data.buffer), s);
                         }
                     } catch (e) {
+                        /* diagnostics: rejected, not applied (packets/s below still counts it) */
+                        if (this._lmND) this._lmWuFail();
                         if (e instanceof RangeError) {
                             // Buffer overread — malformed or unexpected cell data format; skip this packet
                         } else {
@@ -52039,6 +52170,8 @@ function thelegendmodproject() {
                 message =
                     this.decompressMessage(message);
             } catch (error) {
+                /* diagnostics: a compressed frame rejected (most world updates come compressed) */
+                if (this._lmND) { this._lmND.zBad++; this._lmND.badAt = performance.now(); }
                 console.warn(
                     "[LM] Rejected invalid compressed packet:",
                     error
@@ -52047,6 +52180,7 @@ function thelegendmodproject() {
             }
 
             if (!message || message.length < 1) {
+                if (this._lmND) { this._lmND.zBad++; this._lmND.badAt = performance.now(); }
                 console.warn(
                     "[LM] Rejected empty decompressed packet"
                 );
@@ -52057,7 +52191,9 @@ function thelegendmodproject() {
                 case 16:
                     /* Same as uncompressed opcode 16: agar.io sends most cell updates
                      * here, so the dead main client's viewport must be dropped too. */
-                    if (window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed()) {
+                    var _lmMbHeldZ = !!(window.mainPlayerDeadMbActive && this._lmKeepMainSuppressed());
+                    if (this._lmND) this._lmWuRx(_lmMbHeldZ ? 1 : 0);
+                    if (_lmMbHeldZ) {
                         if (this._lmCellIdentity) this._lmCellIdentityScan(message, e);
                         break;
                     }
@@ -53233,6 +53369,7 @@ function thelegendmodproject() {
          * terminator was there; otherwise the update is counted by _lmWuIncomplete. */
         garixUpdateCells(data, offset) {
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
+            if (this._lmND) this._lmWuBegin(); /* network diagnostics: an attempt; applied only when complete */
             this.megaFFAscore();
             var self = this;
             var len = data.byteLength, complete = true, cut = false;
@@ -53257,6 +53394,8 @@ function thelegendmodproject() {
             // before any record is applied.
             if (offset + 2 > len || offset + 2 + 8 * data.getUint16(offset, true) > len) {
                 this._lmWuIncomplete('Garix');
+                /* diagnostics: dropped before anything was applied: rejected */
+                if (this._lmND) this._lmWuFail();
                 return false;
             }
             var eatCount = data.getUint16(offset, true); offset += 2;
@@ -53459,6 +53598,8 @@ function thelegendmodproject() {
                         );
                 }
             }
+            /* diagnostics: applied when every count and terminator was there, else incomplete */
+            if (this._lmND) this._lmWuEnd(complete);
             if (window.autoPlay && legendmod.play) calcTarget();
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
             return complete;
@@ -53495,6 +53636,7 @@ function thelegendmodproject() {
          * ═══════════════════════════════════════════════════════════════ */
         _handleSigmallyCellUpdate(data) {
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
+            if (this._lmND) this._lmWuBegin(); /* network diagnostics: an attempt; applied only when complete */
             this.megaFFAscore();
             var offset = 1; // skip opcode byte
             var len = data.byteLength, complete = true, ended = false;
@@ -53541,6 +53683,8 @@ function thelegendmodproject() {
             }
             if (eatCount < 0) {
                 this._lmWuIncomplete('Sigmally');
+                /* diagnostics: dropped before anything was applied: rejected */
+                if (this._lmND) this._lmWuFail();
                 return false;
             }
             offset += 2;
@@ -53741,6 +53885,8 @@ function thelegendmodproject() {
                 window.userBots.isAlive = false;
                 if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
             }
+            /* diagnostics: applied when every count and terminator was there, else incomplete */
+            if (this._lmND) this._lmWuEnd(complete);
             if (window.autoPlay && legendmod.play) calcTarget();
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
             this.countPps();
@@ -53865,6 +54011,9 @@ function thelegendmodproject() {
         },
         updateCells(view, offset) {
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
+            /* network diagnostics: an attempt. Its reads throw on a short packet (counted as
+             * rejected where it is caught), so getting to the end is a complete update */
+            if (this._lmND) this._lmWuBegin();
 
             //window.updateCellsClock=true;
             this.megaFFAscore();
@@ -55350,6 +55499,7 @@ function thelegendmodproject() {
                 }
             }
 
+            if (this._lmND) this._lmWuEnd(true);
             //window.counterCell=0;
             if (
                 window.autoPlay &&
@@ -83733,7 +83883,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         try { _lmPf(_lmPt0, performance.now(), _lmPerr); } catch (_lmPfE2) { }
                     }
                 } else drawRender.renderFrame();
+                /* network diagnostics: the last frame drawn without an error */
+                var _lmNdR = window.legendmod && window.legendmod._lmND;
+                if (_lmNdR) _lmNdR.renderAt = performance.now();
             } catch (renderError) {
+                var _lmNdE = window.legendmod && window.legendmod._lmND;
+                if (_lmNdE) _lmNdE.renderErr++;
                 if (!drawRender._lastRenderErrorLog || Date.now() - drawRender._lastRenderErrorLog > 5000) {
                     drawRender._lastRenderErrorLog = Date.now();
                     console.error('[LM RENDER] Frame failed:', renderError);
@@ -83780,8 +83935,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (_gap < 100 && drawRender._lmStallMax) {
                             /* Performance diagnostics: world updates stopped this long (kept only
                              * while it measures); next to the freezes it shows network vs. game */
-                            if (drawRender._lmStallMax >= 250 && window.LMPerf && window.LMPerf.event) {
-                                try { window.LMPerf.event('packet gap', drawRender._lmStallMax, 'no world update' + (_fl.play ? ', playing' : '')); } catch (_lmEvE) { }
+                            if (drawRender._lmStallMax >= 250 && window.LMPerf) {
+                                /* with what happened during it (held back on purpose, rejected, tab hidden...) */
+                                try {
+                                    if (_fl._lmGapEvent) _fl._lmGapEvent(drawRender._lmStallMax, _gap);
+                                    else if (window.LMPerf.event) window.LMPerf.event('packet gap', drawRender._lmStallMax, 'no world update' + (_fl.play ? ', playing' : ''));
+                                } catch (_lmEvE) { }
                             }
                             drawRender._lmStallMax = 0;
                         }
