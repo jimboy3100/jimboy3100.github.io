@@ -21,6 +21,9 @@
  *                                 the hot spots, not for comparing runs)
  *   --eval FILE                   an expression evaluated in the page after each scene's measurement
  *                                 (it may return a promise); its value is stored as the scene's extra
+ *   --setup FILE                  an expression evaluated in the page once before the first scene
+ *                                 (for example LMPerf.keepRecording(true): a run with the diagnostics
+ *                                 recording); its value is printed and stored in meta.setup
  *   --boot MS                     wait after the game started, before the first scene (default 5000)
  * Needs Node 22+ and Chrome (CHROME_PATH, or the usual install locations). */
 'use strict';
@@ -116,6 +119,8 @@ async function main(argv) {
     const capture = !has('--no-capture'), vsync = has('--vsync');
     const benchSrc = fs.readFileSync(path.join(__dirname, 'bench-scene.js'), 'utf8');
     const extraJs = opt('--eval', '') ? fs.readFileSync(opt('--eval', ''), 'utf8') : '';
+    const setupJs = opt('--setup', '') ? fs.readFileSync(opt('--setup', ''), 'utf8') : '';
+    let setup = null;
     const B = require('./bench-scene.js');
     let list = B.matrix(opt('--preset', 'default'));
     const only = opt('--scenes', '');
@@ -200,6 +205,10 @@ async function main(argv) {
         /* fonts, skins list, first frames */
         await sleep(+opt('--boot', 5000));
         await evalJs(benchSrc + '\n;true');
+        if (setupJs) {
+            try { setup = await evalJs(setupJs); } catch (e) { setup = 'setup failed: ' + e.message; }
+            console.log('bench: setup: ' + JSON.stringify(setup).slice(0, 500));
+        }
         const speed = "[LMBenchDense.calibrate(function () { return performance.now(); }), LMBenchDense.calibrateGpu()]";
         const calib = [await evalJs(speed)];
         const browser = String(ver.Browser || '').replace(/^HeadlessChrome\//, '');
@@ -250,7 +259,7 @@ async function main(argv) {
          * only (before, the page is still uploading skins and fonts: 15-30x slower) */
         const calibrationMs = Math.max(calib[0][0], calib[1][0]), calibrationGpuMs = calib[1][1];
         console.log('bench: machine speed check CPU ' + calib[0][0] + ' / ' + calib[1][0] + ' ms, GPU ' + calib[0][1] + ' / ' + calib[1][1] + ' ms (fixed workloads before / after; lower is faster)');
-        const meta = { label, repo, head, browser, gpu, canvas, dpr, scale: B.VIEW.scale, warm, measure, repeat, vsync, compare: cmp || null, errors: [...new Set(errors)], date: new Date().toISOString(), calibrationMs, calibrationGpuMs };
+        const meta = { label, repo, head, browser, gpu, canvas, dpr, scale: B.VIEW.scale, warm, measure, repeat, vsync, compare: cmp || null, setup, errors: [...new Set(errors)], date: new Date().toISOString(), calibrationMs, calibrationGpuMs };
         fs.writeFileSync(path.join(outRoot, 'bench-' + label + '.json'), JSON.stringify({ meta, results }, null, 1));
         fs.writeFileSync(path.join(outRoot, 'bench-' + label + '.md'), summaryMd(meta, results, prev ? prevByName : null));
         console.log('bench: wrote ' + path.join(outRoot, 'bench-' + label + '.json') + ' and .md');
