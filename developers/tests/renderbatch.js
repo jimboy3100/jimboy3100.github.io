@@ -479,5 +479,68 @@ const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').repl
     } finally { Date.now = realNow; }
 }
 
+/* ---- full atlas, every label on screen: the reclaim search looks at a bounded number of entries
+ * per frame (it walked the whole mass pool in every frame), and goes on in the next frame where it
+ * stopped, so a label not drawn lately far into the pool still gives its slot ---- */
+{
+    const tg = stubGL();
+    Object.assign(tg, {
+        TEXTURE_2D: 0xde1, TEXTURE1: 0x84c1, RGBA: 0x1908, RGBA8: 0x8058, UNSIGNED_BYTE: 0x1401, NO_ERROR: 0, MAX_ARRAY_TEXTURE_LAYERS: 0x88ff,
+        READ_FRAMEBUFFER: 0x8ca8, READ_FRAMEBUFFER_BINDING: 0x8caa, COLOR_ATTACHMENT0: 0x8ce0, TRIANGLE_STRIP: 5, LESS: 0x201,
+        TEXTURE_MIN_FILTER: 1, TEXTURE_MAG_FILTER: 2, TEXTURE_WRAP_S: 3, TEXTURE_WRAP_T: 4, LINEAR: 5, CLAMP_TO_EDGE: 6,
+        getError() { return 0; }, getParameter(p) { return p === this.MAX_ARRAY_TEXTURE_LAYERS ? 2048 : null; }, isContextLost() { return false; },
+        createTexture() { return {}; }, deleteTexture() { }, texStorage3D() { }, texParameteri() { }, texSubImage3D() { }, texImage2D() { }, texSubImage2D() { },
+        createFramebuffer() { return {}; }, bindFramebuffer() { }, deleteFramebuffer() { }, framebufferTextureLayer() { }, framebufferTexture2D() { }, copyTexSubImage3D() { },
+        vertexAttribDivisor() { }, uniform1f() { }, uniform1i() { }, drawArraysInstanced() { }, drawArrays() { }
+    });
+    const env4 = Object.assign({}, env, { defaultSettings: Object.assign({}, env.defaultSettings), defaultmapsettings: Object.assign({}, env.defaultmapsettings) });
+    const T = new Function('return (' + F.factory + ')')()(env4);
+    Object.assign(T, { gl: tg, glTextProgram: {}, glTextVAO: {} });
+    T.initWebGLTextAtlas(tg, () => ({}), {});
+    Object.assign(T, { glTextCache: new Map(), glTextCacheMaxSize: 1e9, _lmTextBytes: 0, _lmMassTex: null, _lmMassBytes: 0, _lmTextFrame: 0, _lmTextIdleTimer: 1,
+        _lmTextBudget: 1 << 30, _textCanvas: { width: 0, height: 0 },
+        _textCtx: { font: '', measureText: (t) => ({ width: t.length * 9 }), setTransform() { }, clearRect() { }, scale() { }, strokeText() { }, fillText() { } } });
+    const Fm = '700 20px Ubuntu';
+    T._lmTextFrameBegin();
+    const cells = [];
+    for (let i = 0; i < 3000; i++) { const c = { id: i }; cells.push(c); T._lmMassTexture(c, String(1000 + i), Fm, '#fff', '#000', 2); }
+    const a = T._lmTextAtlas;
+    a.alloc.maxPages = a.alloc.pages.length;
+    let k = 0, own = null;
+    /* every label 4 characters wide: one slot width, so no label fits in what a shelf has left */
+    const name4 = (c, i) => c + i.toString(36).padStart(3, '0');
+    for (; k < 40000 && !own; k++) { const e = T.getOrCreateTextTexture(name4('n', k), Fm, '#fff', '#000', 2); if (e && e.tex) own = e; }
+    let scanned = 0;
+    const counting = (m) => { const en = m.entries; m.entries = function () { const it = en.call(m); return { next() { scanned++; return it.next(); } }; }; };
+    counting(T.glTextCache);
+    counting(T._lmMassTex);
+    const drawnAll = () => { T._lmMassTex.forEach((e) => (e.frame = T._lmTextFrame)); T.glTextCache.forEach((e) => (e.frame = T._lmTextFrame)); };
+    let maxScan = 0, ownAll = true;
+    for (let f = 0; f < 30; f++) {
+        T._lmTextFrameBegin();
+        drawnAll();
+        scanned = 0;
+        for (let j = 0; j < 3; j++) { const e = T.getOrCreateTextTexture(name4('q', f * 3 + j), Fm, '#fff', '#000', 2); if (!e || !e.tex) ownAll = false; }
+        maxScan = Math.max(maxScan, scanned);
+    }
+    check('full atlas of labels on screen (3000 mass texts): new labels keep their own textures, the search looks at ' + maxScan + ' entries a frame at most (was the whole pool)',
+        !!own && ownAll && maxScan > 0 && maxScan <= 256 && T._lmMassTex.size === 3000);
+    /* one mass text far into the pool is not drawn any more: its slot goes to a new label within a few frames */
+    const stale = cells[2500];
+    let got = null, frames = 0;
+    for (; frames < 40 && !got; frames++) {
+        T._lmTextFrameBegin();
+        drawnAll();
+        T._lmMassTex.get(stale).frame = 0;
+        const e = T.getOrCreateTextTexture(name4('r', frames), Fm, '#fff', '#000', 2);
+        if (e && e.slot) got = e;
+    }
+    let mb = 0, tb = 0;
+    T._lmMassTex.forEach((e) => (mb += e.bytes));
+    T.glTextCache.forEach((e) => (tb += e.bytes));
+    check('full atlas: a label not drawn lately anywhere in the pool still gives its slot (after ' + frames + ' frames), the pool and byte counts stay right',
+        !!got && frames <= 30 && !T._lmMassTex.has(stale) && T._lmMassTex.size === 2999 && mb === T._lmMassBytes && tb === T._lmTextBytes);
+}
+
 if (failed) { console.log(failed + ' check(s) failed'); process.exit(1); }
 console.log('renderbatch ok');

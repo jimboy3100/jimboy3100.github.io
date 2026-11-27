@@ -72310,25 +72310,39 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /*
          * Every page is in use and full: frees the slots of labels not drawn in this or the last
          * frame (least recently drawn nicks first, then the mass texts of cells gone from view)
-         * whose shelf can take a w x h label, until it fits; 16 at most. Each map is walked once
-         * per frame (a walk goes on where the last call stopped) and a search that found nothing
-         * is not repeated in the same frame, so a full atlas of labels on screen costs one walk
-         * a frame. The slot, or null (the label then keeps its own texture).
+         * whose shelf can take a w x h label, until it fits; 16 at most. Each map shows at most
+         * 128 entries a frame (the whole mass pool was walked in every frame while every label
+         * was on screen); its walk goes on where it stopped, also in the next frames, and starts
+         * again once it has seen every entry, so every label not drawn lately is reached. A
+         * search that found nothing is not repeated in the same frame. The slot, or null (the
+         * label then keeps its own texture).
          */
         _lmTextAtlasReclaim(a, w, h) {
             var frame = this._lmTextFrame || 0;
             if (a.reclaimFrame === frame || w > a.w || h > a.h) return null;
             if (a.walkFrame !== frame) {
                 a.walkFrame = frame;
-                a.walkCache = this.glTextCache && this.glTextCache.size ? this.glTextCache.entries() : null;
-                a.walkMass = this._lmMassTex && this._lmMassTex.size ? this._lmMassTex.entries() : null;
+                a.walkLeftC = a.walkLeftM = 128;
             }
             var keep = frame - 1, maxH = h + (h >> 3) + 2, slot = null, n = 0;
             for (var m = 0; m < 2 && !slot && n < 16; m++) {
-                var it = m ? a.walkMass : a.walkCache;
-                if (!it) continue;
                 var map = m ? this._lmMassTex : this.glTextCache;
-                for (var r = it.next(); ; r = it.next()) {
+                if (!map || !map.size) continue;
+                var it = m ? a.walkMass : a.walkCache;
+                /* a walk of this map, made when the last one ended (or the map was made again) */
+                if (!it || (m ? a.walkMassMap : a.walkCacheMap) !== map) {
+                    it = map.entries();
+                    if (m) {
+                        a.walkMass = it;
+                        a.walkMassMap = map;
+                    } else {
+                        a.walkCache = it;
+                        a.walkCacheMap = map;
+                    }
+                }
+                for (;;) {
+                    if (m ? a.walkLeftM-- <= 0 : a.walkLeftC-- <= 0) break;
+                    var r = it.next();
                     if (r.done) {
                         if (m) a.walkMass = null;
                         else a.walkCache = null;
