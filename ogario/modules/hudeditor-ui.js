@@ -671,6 +671,9 @@
         if (menuWasOpen && W.application && typeof W.application.hideMenu === 'function') { try { W.application.hideMenu(); } catch (e) { } }
         root = mk('div');
         root.id = 'lm-he';
+        /* the windows under the editor leave Esc to it (winstack.js escFor): a window opened before
+         * it closed on that Esc, unseen under the editor, or both closed */
+        root._lmEscTop = true;
         guideX = mk('div', 'lm-he-gd');
         guideX.style.cssText = 'top:0;bottom:0;width:1px;display:none';
         guideY = mk('div', 'lm-he-gd');
