@@ -774,6 +774,19 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
     check('renamed commands: the stored set itself is not changed', raw.h.F9 === 'hk-lmLab');
   } finally { Object.keys(add).forEach(k => { delete ctx.hotkeysCommand[k]; }); }
 }
+{
+  /* the old switches that only follow a choice now (Short mass -> Mass format, the two stats
+   * switches -> Stats position) are no change of their own: no menu row has them, and the
+   * profile's changes list showed "Short mass (k)" and "Stats at center" next to the choice */
+  const base = Object.assign({}, ctx.defaultmapsettings);
+  const a = C.cleanBundle({ s: base });
+  const b = C.cleanBundle({ s: Object.assign({}, base, { massFormat: 1, statsPosition: 'center' }) });
+  const keys = C.diffBundles(a, b).map(r => r.key).sort().join();
+  check('copies of a choice: only the choices are listed as changes (' + keys + ')', keys === 'massFormat,statsPosition');
+  const old = C.cleanBundle({ s: { shortMass: false } });
+  const ko = C.diffBundles(a, old).map(r => r.key).sort().join();
+  check('copies of a choice: an older set with only Short mass lists Mass format (' + ko + ')', ko === 'massFormat');
+}
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');

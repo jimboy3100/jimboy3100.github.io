@@ -338,6 +338,9 @@
     /* Every setting that differs between two sets, as { part, key, label, a, b }. A part is compared
      * only when both sets have it, a key only when both have it (a missing key is not applied, so it
      * changes nothing). Hotkeys are compared per command (its keys, '' when unbound). */
+    /* old switches that are copies of a choice now (lmFoldLegacySettings writes them from it):
+     * not a change of their own, and no menu row has them */
+    var COPY_OF = { shortMass: 'massFormat', fpsAtTop: 'statsPosition', statsAtCenter: 'statsPosition' };
     function diffBundles(a, b, labelFn) {
         var rows = [];
         if (!a || !b) return rows;
@@ -354,6 +357,7 @@
             var part = [];
             for (var k in b[p]) {
                 if (!own.call(b[p], k)) continue;
+                if (p === 's' && own.call(COPY_OF, k) && own.call(b.s, COPY_OF[k])) continue;
                 /* P1 fix: include keys that exist in the profile but not in current settings —
                  * new profile options should be applied, not silently skipped */
                 var av = own.call(ap, k) ? ap[k] : undefined;
