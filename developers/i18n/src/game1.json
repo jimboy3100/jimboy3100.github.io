@@ -3023,24 +3023,6 @@
     "ja": "ゲーム設定をすべて初期設定に戻しますか？元に戻すことはできません。",
     "it": "Ripristinare tutte le impostazioni di gioco ai valori predefiniti? Non si può annullare."
   },
-  "game1.menu.radio": {
-    "en": "Radio",
-    "el": "Ραδιόφωνο",
-    "es": "Radio",
-    "bg": "Радио",
-    "fr": "Radio",
-    "ar": "الراديو",
-    "zh": "電台",
-    "ru": "Радио",
-    "de": "Radio",
-    "tr": "Radyo",
-    "pl": "Radio",
-    "nl": "Radio",
-    "pt": "Rádio",
-    "id": "Radio",
-    "ja": "ラジオ",
-    "it": "Radio"
-  },
   "game1.menu.team": {
     "en": "Team",
     "el": "Ομάδα",

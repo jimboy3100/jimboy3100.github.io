@@ -22625,7 +22625,7 @@ function thelegendmodproject() {
             $('head').append($('<style type="text/css" id="RNCN">').text(
                 '.agario-panel,#main-menu,.center-container,.btn,.form-control,.input-group-addon,#chat-box,.input-group-sm>.input-group-addon,' +
                 '.agario-party,.agario-side-panel,#skins-panel,#quick-menu,#exp-bar,#exp-bar .progress,#hotkeys,#legendAdImg,#stats-hud,#time-hud,#timertools-hud{border-radius:' + R + '!important}' + // i18n-ok: CSS
-                '.menu-tabs,#main-panel,#profile,#legend,#og-settings,#theme,#music{border-radius:' + R + ' ' + R + ' 0 0!important}' + // i18n-ok: CSS
+                '.menu-tabs,#main-panel,#profile,#legend,#og-settings,#theme{border-radius:' + R + ' ' + R + ' 0 0!important}' + // i18n-ok: CSS
                 '.skin,.input-group-btn,.input-group.nick{border-radius:0 ' + R15 + ' ' + R15 + ' 0!important}' +
                 /* round colour dots and profile picture when rounded, square when square */
                 '.colorpicker-element .input-group-addon i,.colorpicker-element .add-on i{border-radius:calc(var(--lm-radius) * 5)!important}' +
@@ -26272,7 +26272,7 @@ function thelegendmodproject() {
                 '<div id="exp-bar" class="agario-panel"><div class="agario-exp-bar progress" style="transform: scale(0.9); transform-origin: center;"><span class="progress-bar-text">★★★ <strong class="progress-bar-star2">0</strong></span><div class="progress-bar progress-bar-striped2" style="width: 0%;"></div></div></div>' +
                 '<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
-                textLanguage.hotkeys + '"></a></li><li class="music-tab"><a href="#music" class="ogicon-music" data-toggle="tab-tooltip" title="' + textLanguage.sounds + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div><div id="music" class="menu-panel"></div></div>');
+                textLanguage.hotkeys + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div></div>');
             $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy"></a><a href="#" class="quick quick-custom-skin ogicon-trophy" style="display: none;"></a>' +
                 '<a href="#" class="quick quick-replay ogicon-file-play"></a>' +
                 '<a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>');
@@ -27025,12 +27025,9 @@ function thelegendmodproject() {
             /* Bug reports: copy versions, browser, GPU, server and the last errors to the
              * clipboard. Nothing is sent anywhere; the player pastes it into Discord. */
             $("#og-settings").append('<div class="restore-settings"><a href="#" id="lm-copy-debug">' + _lmG1s('game1.set.copyDebug') + '</a></div>');
-            $("#music").append('<div class="agario-panel radio-panel"><h5 class="menu-main-color">' + _lmG1s('game1.menu.radio') + ' (' + textLanguage.thanks + ')</h5><audio controls></audio><span class="playlist"><span class="ogicon-file-music"></span> <a href="" target="_blank">' + textLanguage.playlist + "</a></span></div>");
-            $("#music").append('<div class="agario-panel ogario-yt-panel"><h5 class="menu-main-color">Legend Clan (tag: \u24c2)</h5><div class="g-ytsubscribe" data-channelid="UCoj-ZStcJ0jLMOSK7FOBTbA" data-layout="full" data-theme="dark" data-count="default"></div></div>'); /* i18n-ok: Legend Clan is a clan name, the tag a symbol */
-            /*$('#music').append('<div class="agario-panel facebook-panel"><h5 class="menu-main-color">' + 'Facebook' + '</h5></div>'),*/
             this.addInputBox(".chatGroup", "chatHideWords", "game1.ph.chatWords", "setChatHideWords");
             /* The sound files are in Settings > Sounds next to their switch or volume (one place for the
-             * sounds; they were a separate Sounds panel in the Youtube & Sounds tab). Same ids and keys. */
+             * sounds; they were a separate Sounds panel in the old Youtube & Sounds tab). Same ids and keys. */
             this.addInputBox(".soundsGroup", "messageSound", "game1.ph.soundUrl", "setMessageSound");
             this.addInputBox(".soundsGroup", "commandSound", "game1.ph.soundUrl", "setCommandSound");
             this.addInputBox(".soundsGroup", "virusSoundurl", "game1.ph.soundUrl", "setvirusSound");

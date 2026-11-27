@@ -5,7 +5,7 @@
   info.inputs = $('#og-options input').length;
   if (info.groups < 10) fail.push('#og-options has only ' + info.groups + ' groups');
   if (info.inputs < 50) fail.push('#og-options has only ' + info.inputs + ' inputs');
-  ['.settings-tab a', '.theme-tab a', '.hotkeys-link', '.music-tab a', '.profile-tab a', '#main-panel', '#og-settings', '#theme', '#music', '#profile']
+  ['.settings-tab a', '.theme-tab a', '.hotkeys-link', '.profile-tab a', '#main-panel', '#og-settings', '#theme', '#profile']
     .forEach(function (s) { if (!$(s).length) fail.push('missing ' + s); });
   // keyboard hotkeys live in the Hotkeys tab only: no Hotkeys or Command Centre button in Settings
   // (the Command Centre stays on Ctrl+K and its own hotkey; the settings search stays)

@@ -285,12 +285,9 @@ label:hover{
 .leaderboard-panel span{
     display:block 
 }
-.ogario-yt-panel,.radio-panel,.sounds-panel{
+.sounds-panel{
     padding:0 0 6px;
     text-align:center 
-}
-.ogario-yt-panel{
-    marginBottom:-10px 
 }
 .dark .yt-username{
     color:#fff 
@@ -810,7 +807,7 @@ input.hide-url::selection,input.stream-mode::selection{
     width:500px;
     height:500px 
 }
-#music .playlist,.cursor-box a,.title-box{
+.cursor-box a,.title-box{
     display:block 
 }
 #skin-preview .popover-content{
@@ -936,7 +933,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #theme .color-box i{
     border:1px solid #8096a7 
 }
-#music .input-box,#theme .font-box,#theme .input-box,#theme .preset-box{
+#theme .font-box,#theme .input-box,#theme .preset-box{
     width:100%;
     padding:6px 0;
     float:left 

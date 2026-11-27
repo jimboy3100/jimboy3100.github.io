@@ -66,8 +66,6 @@ var checkonlyonce = localStorage.getItem("checkonlyonce");
 var checkonlyfourtenth = localStorage.getItem("checkonlyfourtenth");
 var checkonlytfourtheenth = localStorage.getItem("checkonlytfourtheenth");
 var checkonlyrewardday3a = localStorage.getItem("checkonlyrewardday3a");
-var defaultMusicUrl = "https://www.youtube.com/watch?v=nj33MArNjC8";
-var musicPlayer;
 
 var stateObj = {
     foo: "bar"
@@ -155,8 +153,6 @@ if (_lmOnLegendWebsite()) {
     $("#ogario-party").hide() /* party section stays hidden on private servers */
     //$("#openskinchanger").hide() // LW: show skin changer
     $(".quick.quick-bots.ogicon-trophy").hide()
-    $(".agario-panel.radio-panel").hide()
-    $(".agario-panel.ogario-yt-panel").hide()
     //$(".profile-tab").hide() // LW: show profile tab
     //$(".menu-tabs").children().css("width", "16.6%") // LW: let tabs auto-size
     if (!window.legendModFromWebsite) {
@@ -191,7 +187,6 @@ var searching;
 var timerId;
 /* kept when a saved Show Timer Calc. already made it: init() above runs the saved Tools buttons first */
 TimerLM = window.TimerLM || {};
-var playerState = 0;
 var MSGCOMMANDS = "";
 var MSGCOMMANDS2;
 var MSGNICK;
@@ -360,27 +355,6 @@ function startLM(modVersion) {
 }
 
 
-function getEmbedUrl(url) {
-    url = url.trim();
-    /* origin= is required by YouTube when enablejsapi=1 is used */
-    var musicParams = "showinfo=0&controls=0&rel=0&vq=tiny&enablejsapi=1&origin=" + encodeURIComponent(location.origin);
-    //var musicParams = "showinfo=0&controls=2&vq=tiny&enablejsapi=1&autoplay=1";
-    var videoId = getParameterByName("v", url);
-    var listId = getParameterByName("list", url);
-    if (videoId != null && listId == null) {
-        return "https://www.youtube.com/embed/" + videoId + "?" + musicParams;
-    } else if (listId != null && videoId != null) {
-        return "https://www.youtube.com/embed/" + videoId + "?list=" + listId + "&" + musicParams;
-    } else if (url.startsWith("https://youtu.be/")) {
-        if (listId != null) {
-            return url.replace("https://youtu.be/", "https://www.youtube.com/embed/") + "&" + musicParams;
-        } else {
-            return url.replace("https://youtu.be/", "https://www.youtube.com/embed/") + "?" + musicParams;
-        }
-    } else {
-        return false;
-    }
-}
 
 function loadersettings() {
     if (timesopened >= 3) {
@@ -1204,17 +1178,6 @@ function foundName(leaderboard, name) {
     return leaderboard.includes(name);
 }
 
-function playYoutube() {
-    /* the YT.Player methods only exist after the iframe API is ready */
-    if (musicPlayer != undefined && typeof musicPlayer.getPlayerState === "function") {
-        var playerState = musicPlayer.getPlayerState();
-        if (playerState != 1) {
-            musicPlayer.playVideo();
-        } else {
-            musicPlayer.pauseVideo();
-        }
-    }
-}
 
 function foundNames(leaderboard, names, minNamesFound) {
     var numNames = names.length;
@@ -1717,11 +1680,6 @@ function parseLegendJSONAPI(LegendJSON) {
     LegendJSON.legendSettings.dyinglight1load = localStorage.getItem("dyinglight1load");
     LegendJSON.legendSettings.languagemod = localStorage.getItem("languagemod");
 
-    LegendJSON.legendSettings.initialMusicUrl = localStorage.getItem("musicUrl");
-
-    if (LegendJSON.legendSettings.initialMusicUrl == "null" || LegendJSON.legendSettings.initialMusicUrl == null) {
-        LegendJSON.legendSettings.initialMusicUrl = defaultMusicUrl;
-    };
     LegendJSON.legendSettings.lastIP = localStorage.getItem("lastIP");
     if (LegendJSON.legendSettings.lastIP == "null" || LegendJSON.legendSettings.lastIP == null) {
         LegendJSON.legendSettings.lastIP = "0.0.0.0:0"
@@ -2010,7 +1968,7 @@ function saveLegendJSONAPI() {
         _lmImportSet("dyinglight1load", LegendJSON.legendSettings.dyinglight1load);
         _lmImportSet("languagemod", LegendJSON.legendSettings.languagemod);
 
-        _lmImportSet("musicUrl", LegendJSON.legendSettings.initialMusicUrl);
+        /* initialMusicUrl of an older export (the removed YouTube player) is ignored */
         _lmImportSet("lastIP", LegendJSON.legendSettings.lastIP);
         _lmImportSet("note1", LegendJSON.legendSettings.note1);
         _lmImportSet("note2", LegendJSON.legendSettings.note2);
@@ -2059,20 +2017,6 @@ function saveLegendJSONAPI() {
     }
 }
 
-function YoutubeEmbPlayer(pastedDataorNot) {
-    var finalUrl = getEmbedUrl(pastedDataorNot.trim());
-    if (finalUrl == false) {
-        toastr.error(Premadeletter1).css("width", "210px");
-        if (localStorage.getItem("musicUrl") == null) {
-            $("#musicUrl").val(defaultMusicUrl);
-        } else {
-            $("#musicUrl").val(localStorage.getItem("musicUrl"));
-        }
-    } else {
-        $("#musicFrame").attr("src", finalUrl);
-        localStorage.setItem("musicUrl", pastedDataorNot.trim());
-    }
-}
 
 /* Chat shortcodes come from other players: escape every value put into HTML
  * and accept only plain http(s) links (no quotes, spaces or brackets). */
@@ -2162,33 +2106,18 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
         if (!_lmSafeChatUrl(MSGCOMMANDS)) return;
         var _lmYutId = _lmYoutubeId(MSGCOMMANDS);
         if (!_lmYutId) return;
-        /* one standard form for the player (youtu.be / Shorts links included) */
+        /* one standard form (youtu.be / Shorts links included) */
         var _lmYutList = getParameterByName("list", MSGCOMMANDS);
         MSGCOMMANDS = "https://www.youtube.com/watch?v=" + _lmYutId +
             (/^[A-Za-z0-9_-]{6,64}$/.test(String(_lmYutList || '')) ? "&list=" + _lmYutList : "");
         if ($("#nick").val().includes("yut") == false) _lmRemoveCmdMsg();
-        var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter64 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <iframe type="text/html" width="100%" height="auto" src="https://www.youtube.com/embed/' + _lmYutId + '?autoplay=0&amp;vq=tiny" frameborder="0"></iframe></br> <button id="acceptYoutubeEmb" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="margin-top: -10px; width: 100%">' + Premadeletter25 + '</button>', "", {
+        /* the YouTube player is gone: the invite opens the video on YouTube, like a [url] invite */
+        var _lmToast = toastr.warning(Premadeletter22 + ' ' + MSGNICK + ' ' + Premadeletter63 + ': <a id="visiturl" href="' + _lmEscHtml(MSGCOMMANDS) + '" target="_blank"><font color="blue">' + _lmEscHtml(MSGCOMMANDS) + '</font></a></br> <button id="acceptURL" class="btn btn-block btn-info" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-nodo-hideall" style="width: 100%;margin-top: -10px;">' + Premadeletter25 + '</button>', "", {
             timeOut: 20000,
             extendedTimeOut: 20000
-        }).css("width", "300px");
-        var _lmYutHasList = /&list=/.test(MSGCOMMANDS);
-        _lmToast.find("#acceptYoutubeEmb").click(function () {
-            if (!_lmYutHasList && musicPlayer != undefined && typeof musicPlayer.loadVideoById === "function") {
-                /* player ready: load and play in place */
-                localStorage.setItem("musicUrl", MSGCOMMANDS);
-                musicPlayer.loadVideoById(_lmYutId);
-            } else {
-                /* the iframe reloads, so a play command now was lost: let the new page autoplay */
-                var _lmYutEmb = getEmbedUrl(MSGCOMMANDS);
-                if (_lmYutEmb) {
-                    $("#musicFrame").attr("allow", "autoplay; encrypted-media").attr("src", _lmYutEmb + "&autoplay=1");
-                    localStorage.setItem("musicUrl", MSGCOMMANDS);
-                } else {
-                    YoutubeEmbPlayer(MSGCOMMANDS);
-                }
-            }
-            $("#musicUrl").val(MSGCOMMANDS);
-            //$("#playerI").click();
+        }).css("width", "250px");
+        _lmToast.find("#acceptURL").click(function () {
+            window.open(MSGCOMMANDS, '_blank');
         });
     } else if (MSGCOMMANDS.includes("[skype]")) {
         MSGCOMMANDS = MSGCOMMANDS.split("[skype]").pop();
@@ -2287,18 +2216,6 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
             _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-do-troll").click(function () {
                 settrolling();
             });
-        } else if (commandMsg == "Youtube") {
-            var _lmToast = toastr.warning(Premadeletter22 + ' ' + _lmEscHtml(playerMsg) + ' ' + Premadeletter28 + '<button class="btn btn-sm btn-primary btn-play btn-play-youtube" style="margin-top: 10px;border-color: darkblue;">' + Premadeletter24 + '</button><br><button class="btn btn-sm btn-warning btn-spectate btn-noplay-youtube" style="width: 100%;margin-top: 10px;">' + Premadeletter25 + '</button>', "", {
-                timeOut: 20000,
-                extendedTimeOut: 20000
-            }).css("width", "210px");
-            _lmToast.find(".btn.btn-sm.btn-primary.btn-play.btn-play-youtube").click(function () {
-                $("#playerBtn").click();
-                setTimeout(function () {
-                    $("#playerBtn").focusout();
-                }, 100);
-            });
-            //	$("#playerBtn").click();			
         }
 
     } else if (MSGCOMMANDS.includes("https://agar.io/sip=151.80.91.73:1511")) {
@@ -4429,12 +4346,6 @@ function msgcommand4f() {
 
 }
 
-function msgcommand5f() {
-    commandMsg = "Youtube";
-    otherMsg = "";
-    dosendmsgcommand();
-
-}
 
 function msgcommand6f() {
     commandMsg = "HideAll";
@@ -5339,12 +5250,6 @@ function bluebtns() {
         .mouseleave(function () {
             $('#yout').css('background-color', "transparent");
         });
-    $('#playerBtn').mouseenter(function () {
-        $('#playerBtn').css('background-color', Top5MassColor);
-    })
-        .mouseleave(function () {
-            $('#playerBtn').css('background-color', "transparent");
-        });
     $('#fullscreenBtn').mouseenter(function () {
         $('#fullscreenBtn').css('background-color', Top5MassColor);
     })
@@ -5389,12 +5294,6 @@ function bluebtns() {
     })
         .mouseleave(function () {
             $('#msgcommand4').css('background-color', "transparent");
-        });
-    $('#msgcommand5').mouseenter(function () {
-        $('#msgcommand5').css('background-color', Top5MassColor);
-    })
-        .mouseleave(function () {
-            $('#msgcommand5').css('background-color', "transparent");
         });
     $('#msgcommand6').mouseenter(function () {
         $('#msgcommand6').css('background-color', Top5MassColor);
@@ -5485,23 +5384,6 @@ function bluebtns() {
         });
 }
 
-function YoutubebackgroundEnable() {
-    inject('stylesheet',
-        '*{-webkit-box-sizing: border-box;box-sizing: border-box}' +
-        '.video-background{background: #000;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: -99}' +
-        '.video-foreground,.video-background iframe{position: absolute;top: 0;left: 0;width: 100%;height: 100%;pointer-events: none}' +
-        '#vidtop-content{top: 0;color: #fff}.vid-info{position: absolute;top: 0;right: 0;width: 33%;background: rgba(0,0,0,0.3);color: #fff;padding: 1rem;font-family: Avenir, Helvetica, sans-serif}' +
-        '.vid-info h1{font-size: 2rem;font-weight: 700;margin-top: 0;line-height: 1.2}' +
-        '.vid-info a{display: block;color: #fff;text-decoration: none;background: rgba(0,0,0,0.5);-webkit-transition: .6s background;transition: .6s background;border-bottom: none;margin: 1rem auto;text-align: center}' +
-        //'@media (min-aspect-ratio: 16/9){.video-foreground{height: 300%;top: -100%}}@media (max-aspect-ratio: 16/9){.video-foreground{width: 300%;left: -100%}}'+
-        //'@media all and (max-width: 5px){.vid-info{width: 50%;padding: .5rem}.vid-info h1{margin-bottom: .2rem}}@media all and (max-width: 500px){'+
-        '.vid-info .acronym{display: none}}');
-    $("body").append('<div class="video-background"><div class="video-foreground"><iframe id="video-background" frameborder="0" height="100%" width="100%" src="https://www.youtube.com/embed/' + encodeURIComponent(getParameterByName("v", $("#musicUrl").val())) + '?controls=0&showinfo=0&rel=0&autoplay=1&loop=1&start_radio=1&playlist=' + encodeURIComponent(getParameterByName("list", $("#musicUrl").val())) + '"></iframe></div></div></div>');
-}
-
-function YoutubebackgroundDisable() {
-    $('.video-background').remove();
-}
 
 
 
@@ -6867,7 +6749,7 @@ function initializeLM(modVersion) {
         '<button id="cleartimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%; display: none;" onclick="clearTimer();" data-toggle="tooltip" data-i18n-title="lmx.ex.stopTimer" data-original-title="' + _lmxE('lmx.ex.stopTimer') + '"><i id="cleartime" class="fa fa-stop-circle" style="padding-left: 0px;"></i></button>' +
         '<a id="timer" style="padding: 0px; color: #d6d3d3; width: 12%; height: 100% position: absolute; right: 0px;">00:00</a>');
     $(".menu-tabs>:nth-child(2)").after('<li class="legend-tab" style="width: 16.66%; padding:12px;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.tools') + '" data-placement="top"><a style="margin-top: 2px; height: 100%; padding:12px;" onclick="$(\'#main-menu\').children(\'div\').hide(); $(\'.menu-tabs\').children(\'li\').removeClass(\'active\'); $(\'.menu-tabs\').children(\'li\').children(\'a\').removeClass(\'active\'); $(\'#legend\').fadeIn(); $(this).addClass(\'active\'); $(this).parent().addClass(\'active\'); " href="javascript:void(0);" class="fa fa-puzzle-piece fa-lg"></a></li>');
-    $(".menu-tabs").children().attr("style", "width: 14.28%");
+    $(".menu-tabs").children().attr("style", "width: 16.66%");
     //$(".profile-tab").hide();
     $("#main-menu>#profile").after('<div id="legend" class="menu-panel"><div class="agario-panel legend-panel">' + //<h5 class="menu-main-color">Main Tools</h5>
         //											'<button id="IPBtn" type="button" class="btn btn-sm btn-info" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-trademark"></i>Show Connector</button>' +
@@ -7022,41 +6904,10 @@ function initializeLM(modVersion) {
     $(".note").on("input change keyup", function (event) {
         localStorage.setItem(event.target.id, $(event.target).val());
     });
-    var initialMusicUrl = (localStorage.getItem("musicUrl") == null ? defaultMusicUrl : localStorage.getItem("musicUrl"));
-    //	var savemusic=$(".agario-panel.sounds-panel").html();
-    $('.agario-panel.radio-panel').after('<div id="youtubeplayer" style="margin-left: 0px;"><h5 class="main-color" style="margin-right: 15px;">' + _lmxE('pack.youtubePlayer') + '</h5>' +
-        '<iframe id="musicFrame" width="350" height="180" src="' + _lmEscHtml(getEmbedUrl(initialMusicUrl) || getEmbedUrl(defaultMusicUrl)) + '" frameborder="0" allowfullscreen=""></iframe></div>' +
-        '<div id="afteryoutubeplayer"><input id="musicUrl" onclick="$(this).select();" type="text" placeholder="' + _lmxE('pack.youtubeUrl') + '" value="' + _lmEscHtml(initialMusicUrl) + '" class="form-control" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.pasteYourVideoPlaylist') + '">');
-    //			'<button id="YoutubeBackgroundBtn" type="button" class="btn btn-block btn-info" aria-pressed="false" autocomplete="off" style="margin-top: 2px;"><i class="fa fa-youtube-play"></i>' + Premadeletter61 + '</button></div>' +
-
-    $('.agario-panel.radio-panel').hide();
-    $('.agario-panel.ogario-yt-panel').hide();
-
-    ytFrame();
-
-    /*		 $("#YoutubeBackgroundBtn").click(function() {
-                var checked = !($(this).attr('aria-pressed') == "true");
-                if (checked) {               
-                    YoutubebackgroundEnable();
-                    $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter62);
-                } else {
-                    YoutubebackgroundDisable();
-                    $(this).html('<i class="fa fa-youtube-play"></i>' + Premadeletter61);
-                }
-            });*/
 
     //roller and other icons
     $('#exp-bar > .icon-user').addClass('fa fa-cog fa-spin fa-3x fa-fw').removeClass('icon-user');
 
-    // prevent edit
-    $("#musicUrl").on("input", function () {
-        $(this).attr("maxlength", "1000");
-    });
-    $("#musicUrl").bind("paste", function (e) {
-        $(this).attr("maxlength", "1000");
-        var pastedDataorNot = e.originalEvent.clipboardData.getData('text');
-        YoutubeEmbPlayer(pastedDataorNot);
-    });
 
     // save notes
 
@@ -7071,7 +6922,6 @@ function initializeLM(modVersion) {
         '<button id="SendCommands" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setmessagecomfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageScriptCommands') + '"><i id="SendCommands1" class="fa fa-sitemap" style="padding-left: 0px;"></i></button>' +
         '<button id="Images" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="seticonfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageImgurIcons') + '"><i id="Images1" class="fa fa-picture-o" style="padding-left: 0px;"></i></button>' +
         '<button id="yout" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="setytfunction();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.messageYoutubeVideos') + '"><i id="yout1" class="fa fa-youtube" style="padding-left: 0px;"></i></button>' +
-        '<button id="playerBtn" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.playPause') + '"><i id="playerI" class="fa fa-play-circle" style="padding-center: 0px;"></i></button>' +
         '</div>');
 
 
@@ -7096,7 +6946,6 @@ function initializeLM(modVersion) {
         '<button id="msgcommand2" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand2f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.laughToTeam') + '"><i id="msgcommand21" class="fa fa-smile-o" style="padding-left: 0px;"></i></button>' +
         '<button id="msgcommand3" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand3f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.teamChangeNameTo') + '"><i id="msgcommand31" class="fa fa-magic" style="padding-center: 0px;"></i></button>' +
         '<button id="msgcommand4" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand4f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.trollOnDeath') + '"><i id="msgcommand41" class="fa fa-bath" style="padding-center: 0px;"></i></button>' +
-        '<button id="msgcommand5" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand5f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.openYoutubeMusic') + '"><i id="msgcommand51" class="fa fa-youtube-play" style="padding-left: 0px;"></i></button>' +
         '<button id="msgcommand6" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%;" onclick="msgcommand6f();" data-toggle="tooltip" data-original-title="' + _lmxE('pack.insaneModeHideEverything') + '"><i id="msgcommand" class="fa fa-exclamation-triangle" style="padding-left: 0px;"></i></button></div>');
 
     $("#minimap-hud").prepend('<div id="scripting-hud" class="hud" style="width: 12.5%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -60px; display: none;">' +
@@ -7136,20 +6985,6 @@ function initializeLM(modVersion) {
         $("#gamemode").css("width", "100%");
     }
 
-    $("#playerBtn").click(function () {
-        if (playerState != 1) {
-            $('#musicFrame')[0].contentWindow.postMessage('{"event":"command","func":"' + 'playVideo' + '","args":""}', '*');
-            $("#playerI").removeClass("fa-play-circle").addClass("fa-pause-circle");
-            $(this).attr('data-original-title', Premadeletter60).tooltip('fixTitle').tooltip('show');
-            return playerState = 1;
-        } else {
-            $('#musicFrame')[0].contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
-            $("#playerI").removeClass("fa-pause-circle").addClass("fa-play-circle");
-            $(this).attr('data-original-title', Premadeletter13).tooltip('fixTitle').tooltip('show');
-            return playerState = 0;
-        }
-
-    });
     $("#copySIPBtn").mouseenter(function () {
         $("#dropDown3")[0].style.setProperty("display", "none", "important");
         $("#copySIPBtn").text(_lmxT('pack.token'));
@@ -7555,7 +7390,7 @@ function initializeLM(modVersion) {
         } else {
             detailed1 = "https://www.legendmod.ml/extras/AN.html?" + "Nick=" + nicknametosend + "&Date=" + datetime + "&sip=" + servertosend + "&mode=" + modetosend + "&region=" + regiontosend;
         }
-        $('#musicUrl').append($('<div id="loaderIframeInfo1"></div>').append($('<iframe id="loaderIframeInfo" name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe>').attr('src', detailed1)));
+        $('body').append($('<div id="loaderIframeInfo1"></div>').append($('<iframe id="loaderIframeInfo" name="detailedinfo" allowtransparency="true" scrolling="no" frameBorder="0" style="width:0%; height:0%; border:none;"></iframe>').attr('src', detailed1)));
         $('#loaderIframeInfo1').hide();
         setTimeout(function () {
             if (window.FreskinsMap && window.FreskinsMap.includes($("#nick").val())) {
@@ -7665,7 +7500,6 @@ function initializeLM(modVersion) {
             });		
     */
 
-    $(".agario-panel.ogario-yt-panel").html('<div class="agario-panel ogario-yt-panel"><h6 class="menu-main-color"><i></i></h6></div>');
 
     $("#menu-footer").text("");
     //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
@@ -8269,66 +8103,6 @@ function ModeRegionregion() {
     return realmode, region;
 }
 
-function ytFrame() {
-    function _initYT() {
-        if (typeof YT !== 'undefined' && YT.Player) {
-            musicPlayer = new YT.Player('musicFrame', {
-                events: {
-                    'onStateChange': function (state) {
-                        /* keep the #playerBtn toggle in step with the real state (video ended,
-                         * paused in the frame, started from a chat [yut] invite) */
-                        playerState = state.data == 1 ? 1 : 0;
-                        if (state.data == 1) {
-                            $("#playerI").removeClass("fa-play-circle").addClass("fa-pause-circle");
-                            $("#playerBtn").attr('data-original-title', Premadeletter60).tooltip('fixTitle');
-                        } else {
-                            $("#playerI").removeClass("fa-pause-circle").addClass("fa-play-circle");
-                            $("#playerBtn").attr('data-original-title', Premadeletter13).tooltip('fixTitle');
-                        }
-                    }
-                }
-            });
-            return true;
-        }
-        return false;
-    }
-    function _attach() {
-        if (!_initYT()) {
-            /* YT API not ready yet — hook into its callback */
-            var _origCb = window.onYouTubeIframeAPIReady;
-            window.onYouTubeIframeAPIReady = function () {
-                if (_origCb) _origCb();
-                _initYT();
-            };
-        }
-    }
-
-    var frame = document.getElementById('musicFrame');
-    if (!frame) return;
-
-    /*
-     * Attach the YouTube API only after the iframe has navigated to
-     * youtube.com. While it is still about:blank it has this page's origin,
-     * and www-widgetapi.js then fails with "Failed to execute 'postMessage'
-     * ... target origin ('https://www.youtube.com') does not match".
-     */
-    var stillBlank = false;
-    try {
-        /* Readable only while same-origin, i.e. before YouTube has loaded. */
-        stillBlank = frame.contentWindow.location.href === 'about:blank';
-    } catch (crossOrigin) {
-        stillBlank = false; /* already showing youtube.com */
-    }
-
-    if (stillBlank) {
-        frame.addEventListener('load', function onMusicFrameLoad() {
-            frame.removeEventListener('load', onMusicFrameLoad);
-            _attach();
-        });
-    } else {
-        _attach();
-    }
-}
 
 
 function BeforeSpecialDeals(tab) {

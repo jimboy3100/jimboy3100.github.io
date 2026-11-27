@@ -78,7 +78,7 @@
     /* ═══ Text scale ═══ */
 
     var MENU_TEXT = ['#og-options label', '#og-options h5', '#og-options .box-label', '#og-options .title-box', '#theme label', '#theme h5', '#theme .title-box', '#theme .box-label',
-        '.menu-tabs a', '.submenu-tabs a', '#hotkeys .key-label', '#hotkeys .default-key', '#hotkeys-inst', '#main-panel label', '#main-panel .btn', '#profile label', '#music label',
+        '.menu-tabs a', '.submenu-tabs a', '#hotkeys .key-label', '#hotkeys .default-key', '#hotkeys-inst', '#main-panel label', '#main-panel .btn', '#profile label',
         '#toast-container .toast-message', '#exp-imp label'];
     var HUD_TEXT = ['#leaderboard-hud', '#top5-hud', '#stats-hud', '#time-hud', '#target-hud', '#pause-hud', '#chat-box',
         /* the newer HUD parts on body: they are made when first used, so they are measured once they exist */

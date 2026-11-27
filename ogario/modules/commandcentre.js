@@ -340,7 +340,7 @@
         return plain(l ? l.textContent : box.textContent).replace(/:\s*$/, '');
     }
     var THEME_TAB_KEYS = { 'theme-main': 'basicTheming', 'theme-menu': 'menuTheming', 'theme-hud': 'hudTheming', 'theme-chat': 'chatTheming', 'theme-minimap': 'miniMapTheming', 'theme-images': 'imagesTheming' };
-    var MENU_TAB_KEYS = { 'main-panel': 'start', 'og-settings': 'settings', 'theme': 'theme', 'music': 'sounds', 'profile': 'profile' };
+    var MENU_TAB_KEYS = { 'main-panel': 'start', 'og-settings': 'settings', 'theme': 'theme', 'profile': 'profile' };
     function hotkeyKeys() {
         var hk = W.hotkeys, keyOf = {};
         if (!hk || typeof hk !== 'object') return keyOf;

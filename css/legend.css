@@ -263,8 +263,6 @@ label:hover {
     display: block
 }
 
-.ogario-yt-panel,
-.radio-panel,
 .sounds-panel {
     padding: 0 0 6px;
     text-align: center
@@ -867,7 +865,6 @@ input.stream-mode::selection {
     height: 500px
 }
 
-#music .playlist,
 .cursor-box a,
 .title-box {
     display: block
@@ -1039,7 +1036,6 @@ input.stream-mode::selection {
     border: 1px solid #8096a7
 }
 
-#music .input-box,
 #theme .font-box,
 #theme .input-box,
 #theme .preset-box {

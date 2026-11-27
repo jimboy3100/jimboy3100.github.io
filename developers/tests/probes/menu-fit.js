@@ -62,7 +62,7 @@
     while (href && href.charAt(0) === '#' && !shown($(href)[0]) && Date.now() - t0 < 2000) await sleep(50);
     await frames();
   };
-  var tabs = ['.start-tab a', '.settings-tab a', '.legend-tab a', '.theme-tab a', '.music-tab a', '.profile-tab a'];
+  var tabs = ['.start-tab a', '.settings-tab a', '.legend-tab a', '.theme-tab a', '.profile-tab a'];
   /* quick: the settings and theme lists and the tallest tabs without a list (the full pass, with
    * every Theme sub-tab, is for this window) */
   var quickTabs = ['.start-tab a', '.settings-tab a', '.theme-tab a', '.profile-tab a'];

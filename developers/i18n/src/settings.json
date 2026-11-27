@@ -10514,24 +10514,6 @@
     "ja": "スキンを追加",
     "it": "Aggiungi skin"
   },
-  "settings.thanks": {
-    "en": "Thanks to Awesome!",
-    "el": "Ευχαριστούμε τον Awesome!",
-    "es": "¡Gracias a Awesome!",
-    "bg": "Благодарности на Awesome!",
-    "fr": "Merci à Awesome !",
-    "ar": "شكرًا لـ Awesome!",
-    "zh": "感謝 Awesome！",
-    "ru": "Спасибо Awesome!",
-    "de": "Danke an Awesome!",
-    "tr": "Awesome'a teşekkürler!",
-    "pl": "Dzięki dla Awesome!",
-    "nl": "Met dank aan Awesome!",
-    "pt": "Obrigado ao Awesome!",
-    "id": "Terima kasih untuk Awesome!",
-    "ja": "Awesome さんに感謝！",
-    "it": "Grazie ad Awesome!"
-  },
   "settings.saveSett": {
     "en": "Save settings",
     "el": "Αποθήκευση ρυθμίσεων",
@@ -10657,24 +10639,6 @@
     "id": "Tidak ada party aktif ;(",
     "ja": "アクティブなパーティーはありません ;(",
     "it": "Nessun party attivo ;("
-  },
-  "settings.playlist": {
-    "en": "Playlist",
-    "el": "Λίστα αναπαραγωγής",
-    "es": "Lista de reproducción",
-    "bg": "Плейлист",
-    "fr": "Playlist",
-    "ar": "قائمة التشغيل",
-    "zh": "播放清單",
-    "ru": "Плейлист",
-    "de": "Playlist",
-    "tr": "Çalma listesi",
-    "pl": "Playlista",
-    "nl": "Afspeellijst",
-    "pt": "Playlist",
-    "id": "Daftar putar",
-    "ja": "プレイリスト",
-    "it": "Playlist"
   },
   "settings.pause": {
     "en": "PAUSE!",
@@ -10981,24 +10945,6 @@
     "id": "Tidak ada",
     "ja": "なし",
     "it": "Nessuno"
-  },
-  "settings.sounds": {
-    "en": "Youtube & Sounds",
-    "el": "Youtube & ήχοι",
-    "es": "Youtube y sonidos",
-    "bg": "Youtube и звуци",
-    "fr": "Youtube et sons",
-    "ar": "Youtube والأصوات",
-    "zh": "Youtube 與音效",
-    "ru": "Youtube и звуки",
-    "de": "Youtube & Töne",
-    "tr": "Youtube ve sesler",
-    "pl": "YouTube i dźwięki",
-    "nl": "Youtube & geluiden",
-    "pt": "Youtube e sons",
-    "id": "Youtube & suara",
-    "ja": "Youtube とサウンド",
-    "it": "Youtube e suoni"
   },
   "settings.page_menu_main_free_coins": {
     "en": "Free Coins",
