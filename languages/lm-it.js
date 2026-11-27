@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "Impossibile scaricare il file replay",
 "pkg.rp.urlNotLm": "Il file richiesto non è un replay .lm",
 "pkg.s3xvw.depOffWhile": "Nessun effetto se attivo",
-"pkg.skcol.moved": "Le collezioni di skin ora fanno parte dei profili: {0} delle tue skin salvate sono diventate profili (la stella indica i preferiti).",
+"pkg.skcol.moved": "Le collezioni di skin ora fanno parte dei profili: {0} delle tue skin salvate sono diventate profili.",
 "pkg.skcol.movedHidden": "Le collezioni di skin ora fanno parte dei profili: {0} delle tue skin salvate sono diventate profili, {1} oltre il numero di profili (aumenta il Numero di profili nelle Impostazioni per vederle).",
 "pkg.tx.setKey": "Imposta in Tasti rapidi",
 "pkg.tx.changeKey": "Cambia in Tasti rapidi",

@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "Die Replay-Datei konnte nicht heruntergeladen werden",
 "pkg.rp.urlNotLm": "Die angeforderte Datei ist kein .lm-Replay",
 "pkg.s3xvw.depOffWhile": "Keine Wirkung, solange an",
-"pkg.skcol.moved": "Skin-Sammlungen sind jetzt Teil der Spielerprofile: {0} deiner gespeicherten Skins sind jetzt Profile (der Stern zeigt die Favoriten).",
+"pkg.skcol.moved": "Skin-Sammlungen sind jetzt Teil der Spielerprofile: {0} deiner gespeicherten Skins sind jetzt Profile.",
 "pkg.skcol.movedHidden": "Skin-Sammlungen sind jetzt Teil der Spielerprofile: {0} deiner gespeicherten Skins sind jetzt Profile, {1} davon über der Profilanzahl (erhöhe die Anzahl der Profile in den Einstellungen, um sie zu sehen).",
 "pkg.tx.setKey": "In der Tastenbelegung festlegen",
 "pkg.tx.changeKey": "In der Tastenbelegung ändern",

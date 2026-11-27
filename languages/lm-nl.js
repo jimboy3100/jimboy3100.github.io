@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "Het replaybestand kon niet worden gedownload",
 "pkg.rp.urlNotLm": "Het gevraagde bestand is geen .lm-replay",
 "pkg.s3xvw.depOffWhile": "Geen effect zolang aan",
-"pkg.skcol.moved": "Skincollecties zijn nu deel van de spelersprofielen: {0} van je bewaarde skins zijn nu profielen (de ster toont de favorieten).",
+"pkg.skcol.moved": "Skincollecties zijn nu deel van de spelersprofielen: {0} van je bewaarde skins zijn nu profielen.",
 "pkg.skcol.movedHidden": "Skincollecties zijn nu deel van de spelersprofielen: {0} van je bewaarde skins zijn nu profielen, {1} boven het aantal profielen (verhoog het Aantal profielen in Instellingen om ze te zien).",
 "pkg.tx.setKey": "Instellen in Sneltoetsen",
 "pkg.tx.changeKey": "Wijzigen in Sneltoetsen",

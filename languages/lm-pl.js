@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "Nie udało się pobrać pliku powtórki",
 "pkg.rp.urlNotLm": "Żądany plik nie jest powtórką .lm",
 "pkg.s3xvw.depOffWhile": "Nie działa, gdy włączone",
-"pkg.skcol.moved": "Kolekcje skinów są teraz częścią profili gracza: {0} zapisanych skinów stało się profilami (gwiazdka oznacza ulubione).",
+"pkg.skcol.moved": "Kolekcje skinów są teraz częścią profili gracza: {0} zapisanych skinów stało się profilami.",
 "pkg.skcol.movedHidden": "Kolekcje skinów są teraz częścią profili gracza: {0} zapisanych skinów stało się profilami, {1} ponad liczbę profili (zwiększ Liczbę profili w Ustawieniach, aby je zobaczyć).",
 "pkg.tx.setKey": "Ustaw w Skrótach klawiszowych",
 "pkg.tx.changeKey": "Zmień w Skrótach klawiszowych",

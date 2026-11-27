@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "Tekrar dosyası indirilemedi",
 "pkg.rp.urlNotLm": "İstenen dosya bir .lm tekrarı değil",
 "pkg.s3xvw.depOffWhile": "Açıkken etkisi yok",
-"pkg.skcol.moved": "Skin koleksiyonları artık oyuncu profillerinin parçası: kayıtlı {0} skin profil oldu (yıldız favorileri gösterir).",
+"pkg.skcol.moved": "Skin koleksiyonları artık oyuncu profillerinin parçası: kayıtlı {0} skin profil oldu.",
 "pkg.skcol.movedHidden": "Skin koleksiyonları artık oyuncu profillerinin parçası: kayıtlı {0} skin profil oldu, {1} tanesi profil sayısının üstünde (görmek için Ayarlar’da profil sayısını artır).",
 "pkg.tx.setKey": "Kısayol tuşlarında ata",
 "pkg.tx.changeKey": "Kısayol tuşlarında değiştir",

@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "No se pudo descargar el archivo de repetición",
 "pkg.rp.urlNotLm": "El archivo solicitado no es una repetición .lm",
 "pkg.s3xvw.depOffWhile": "Sin efecto mientras esté activo",
-"pkg.skcol.moved": "Las colecciones de skins ahora son parte de los perfiles: {0} de tus skins guardadas son ahora perfiles (la estrella marca los favoritos).",
+"pkg.skcol.moved": "Las colecciones de skins ahora son parte de los perfiles: {0} de tus skins guardadas son ahora perfiles.",
 "pkg.skcol.movedHidden": "Las colecciones de skins ahora son parte de los perfiles: {0} de tus skins guardadas son ahora perfiles, {1} más allá del número de perfiles (sube el Número de perfiles en Ajustes para verlas).",
 "pkg.tx.setKey": "Asignar en Atajos de teclado",
 "pkg.tx.changeKey": "Cambiar en Atajos de teclado",

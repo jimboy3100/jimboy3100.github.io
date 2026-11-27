@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "Could not download the replay file",
 "pkg.rp.urlNotLm": "The requested file is not a .lm replay",
 "pkg.s3xvw.depOffWhile": "No effect while on",
-"pkg.skcol.moved": "Skin collections are part of the player profiles now: {0} of your kept skins became profiles (the star marks the favourites).",
+"pkg.skcol.moved": "Skin collections are part of the player profiles now: {0} of your kept skins became profiles.",
 "pkg.skcol.movedHidden": "Skin collections are part of the player profiles now: {0} of your kept skins became profiles, {1} of them beyond the profile count (raise Number of profiles in Settings to see them).",
 "pkg.tx.setKey": "Set a key in Hotkeys",
 "pkg.tx.changeKey": "Change in Hotkeys",

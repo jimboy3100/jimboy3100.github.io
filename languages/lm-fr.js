@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "Impossible de télécharger le fichier de replay",
 "pkg.rp.urlNotLm": "Le fichier demandé n'est pas un replay .lm",
 "pkg.s3xvw.depOffWhile": "Sans effet si activé",
-"pkg.skcol.moved": "Les collections de skins font maintenant partie des profils : {0} de tes skins gardés sont devenus des profils (l’étoile marque les favoris).",
+"pkg.skcol.moved": "Les collections de skins font maintenant partie des profils : {0} de tes skins gardés sont devenus des profils.",
 "pkg.skcol.movedHidden": "Les collections de skins font maintenant partie des profils : {0} de tes skins gardés sont devenus des profils, dont {1} au-delà du nombre de profils (augmente le Nombre de profils dans les Paramètres pour les voir).",
 "pkg.tx.setKey": "Définir dans Raccourcis",
 "pkg.tx.changeKey": "Modifier dans Raccourcis",

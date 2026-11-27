@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "File replay tidak bisa diunduh",
 "pkg.rp.urlNotLm": "File yang diminta bukan replay .lm",
 "pkg.s3xvw.depOffWhile": "Tidak berpengaruh saat aktif",
-"pkg.skcol.moved": "Koleksi skin sekarang jadi bagian profil pemain: {0} skin simpananmu kini jadi profil (bintang menandai favorit).",
+"pkg.skcol.moved": "Koleksi skin sekarang jadi bagian profil pemain: {0} skin simpananmu kini jadi profil.",
 "pkg.skcol.movedHidden": "Koleksi skin sekarang jadi bagian profil pemain: {0} skin simpananmu kini jadi profil, {1} di atas jumlah profil (naikkan Jumlah profil di Pengaturan untuk melihatnya).",
 "pkg.tx.setKey": "Atur di Hotkey",
 "pkg.tx.changeKey": "Ubah di Hotkey",

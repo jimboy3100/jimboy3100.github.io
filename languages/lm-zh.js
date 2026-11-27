@@ -3338,7 +3338,7 @@
 "pkg.rp.urlFailed": "無法下載重播檔案",
 "pkg.rp.urlNotLm": "要求的檔案不是 .lm 重播",
 "pkg.s3xvw.depOffWhile": "開啟時無效",
-"pkg.skcol.moved": "造型收藏已併入玩家設定檔：你保存的 {0} 個造型已成為設定檔（星號標示收藏）。",
+"pkg.skcol.moved": "造型收藏已併入玩家設定檔：你保存的 {0} 個造型已成為設定檔。",
 "pkg.skcol.movedHidden": "造型收藏已併入玩家設定檔：你保存的 {0} 個造型已成為設定檔，其中 {1} 個超出設定檔數量（在設定中提高設定檔數量即可看到）。",
 "pkg.tx.setKey": "在快捷鍵中設定",
 "pkg.tx.changeKey": "在快捷鍵中變更",

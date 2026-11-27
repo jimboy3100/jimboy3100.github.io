@@ -857,6 +857,7 @@ check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gp
     check('skin collections move: an old fav field does not keep a profile', M({ items: { 'https://s.example/z.png': {} } }, l3, e3, [0], '#fff').added === 1 && l3[1].skinURL === 'https://s.example/z.png' && e3.length === 0);
     check('profile texts: in the packs, Greek differs; star and search texts gone', ['pkg.skcol.moved', 'pkg.skcol.movedHidden'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)) &&
       ['pkg.skcol.search', 'pkg.skcol.star', 'pkg.skcol.unstar', 'pkg.skcol.none'].every(k => i18n.t(k) === k));
+    check('profile texts: the move notice no longer points to a star', !/star/i.test(i18n.t('pkg.skcol.moved')) && !/αστέρι/.test(i18n.t('pkg.skcol.moved', null, 'el')));
   }
 }
 
