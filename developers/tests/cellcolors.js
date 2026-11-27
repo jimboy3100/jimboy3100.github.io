@@ -181,6 +181,20 @@ L.flushCellsData();
 feed([{ id: 44, color: [0, 200, 0], name: 'Bob', skin: '' }]);
 check('the next server: the nick has its server colour, not the previous server\'s', C(44) === hex(0, 200, 0), C(44));
 
+/* section: the colour diagnostics of the parser (Performance diagnostics, ogario/modules/perf.js) */
+{
+    const seen = [];
+    reset();
+    feed([{ id: 51, color: [0, 0, 0], name: 'Dark', skin: '' }]);
+    check('diagnostics off: the parser calls nothing', seen.length === 0);
+    g._lmColorDiag = (kind, cell, info) => seen.push([kind, cell && cell.id, info && info.raw]);
+    feed([{ id: 52, color: [1, 1, 1], name: 'Bob', skin: '' }, { id: 53, color: [0, 200, 0], name: 'Bob', skin: '' }, { id: 54, size: 80 }, { id: 55, color: [9, 99, 199], name: 'Ok', skin: '' }]);
+    g._lmColorDiag = null;
+    const k = (id) => (seen.find((s) => s[1] === id) || [])[0];
+    check('diagnostics: server black, black from the nick colour, a cell without colour are named', k(52) === 'server black' && k(53) === 'drawn black' && k(54) === 'without colour' && seen.find((s) => s[1] === 53)[2] === hex(0, 200, 0), seen);
+    check('diagnostics: a cell in its own colour is not listed', k(55) === undefined);
+}
+
 /* section: WebGL colour settings (ghost cells, bubbles): the real drawRender with a GL stub */
 {
     const F0 = rendererFactory(src);
@@ -250,6 +264,8 @@ function pageLib() {
         win.multiboxPlayerEnabled = 0;
         win.fullSpectator = false;
         win.clientProfiler = null;
+        win.__diag = [];
+        if (cfg.diag) win._lmColorDiag = function (kind, cell, info) { win.__diag.push(kind + ':' + (info && info.renderer)); };
         return { window: win, LM: LM, application: application, defaultSettings: ds, defaultmapsettings: dm, ogarcopythelb: cfg.own || {}, ogario: { viewScale: 1 } };
     }
     function lobes(x, y, size, n) {
@@ -308,7 +324,7 @@ function pageLib() {
         var lose = gl.getExtension('WEBGL_lose_context');
         if (lose) lose.loseContext();
         return { gl: !!(useGl && drew), why: R._lmGlFallback || '', px: [px[0], px[1], px[2]], keys: Object.keys(R.cellsColored || {}),
-            colors: cells.map(function (c) { return c.color; }) };
+            colors: cells.map(function (c) { return c.color; }), diag: env.window.__diag };
     }
     return { render: render };
 }
@@ -354,6 +370,14 @@ async function chromePart() {
             check(tag + ': WebGL ' + JSON.stringify(want), near(a.px, want), [a.px, a.gl, a.why]);
             check(tag + ': Canvas2D the same', near(b.px, want), b.px);
             check(tag + ': no disc cached for a string that is no colour', b.keys.every((k) => /^#[0-9a-f]{6}$/i.test(k)), b.keys);
+        }
+        /* the colour diagnostics name a string that is no colour, with the renderer that met it */
+        {
+            const cells = [{ id: 3, x: 0, y: 0, size: 60, color: '#f80ff' }];
+            const a = await draw({ gl: true, diag: true, cells }), b = await draw({ gl: false, diag: true, cells }), c = await draw({ gl: false, cells });
+            check('diagnostics: WebGL names a string that is no colour', a.diag.indexOf('no colour string:WebGL') >= 0, a.diag);
+            check('diagnostics: Canvas2D too', b.diag.indexOf('no colour string:Canvas2D') >= 0, b.diag);
+            check('diagnostics off: nothing is called', c.diag.length === 0, c.diag);
         }
         /* own cell, "My custom colour": drawn in the custom colour by both, the cell keeps its own */
         for (const jelly of [false, true]) for (const on of [true, false]) {

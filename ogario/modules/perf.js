@@ -424,6 +424,65 @@
         };
     }
 
+    /* ---------- cell colour anomalies (ogario.v4.js window._lmColorDiag, set while recording) ----------
+     * Cells drawn black or without their colour, to tell the causes apart: the server's black, a
+     * colour Legend Mod put over it (team colour, the colour remembered for a nick, a profile
+     * colour), no colour received, or a string that is no colour. One row per kind and cell
+     * identity (connection, nick, server colour, colour, source); a repeat only counts, and the
+     * oldest row goes when there are more than max. */
+    var COLOR_FIELDS = ['id', 'conn', 'session', 'nick', 'raw', 'prev', 'color', 'eff', 'renderer', 'skin', 'src', 'op', 'flags'];
+    function createColorLog(max) {
+        var rows = new Map();
+        return {
+            max: max,
+            size: function () { return rows.size; },
+            clear: function () { rows.clear(); },
+            list: function () { return Array.from(rows.values()); },
+            add: function (kind, d, t) {
+                d = d || {};
+                var key = kind + '|' + d.conn + '|' + d.nick + '|' + d.raw + '|' + d.color + '|' + d.src;
+                var r = rows.get(key);
+                if (r) { r.n++; r.tl = t; return r; }
+                r = { kind: cleanText(kind, 30), n: 1, t: t, tl: t };
+                for (var i = 0; i < COLOR_FIELDS.length; i++) {
+                    var v = d[COLOR_FIELDS[i]];
+                    if (v != null && v !== '') r[COLOR_FIELDS[i]] = typeof v === 'number' ? v : cleanText(v, 40);
+                }
+                rows.set(key, r);
+                if (rows.size > max) rows.delete(rows.keys().next().value);
+                return r;
+            }
+        };
+    }
+    function colorRowText(r) {
+        var s = r.kind + (r.n > 1 ? ' x' + r.n : '') + ': ' + (r.conn || 'main') + (r.id != null ? ' cell ' + r.id : '') + (r.session != null ? ', connection ' + r.session : '');
+        if (r.nick) s += ', nick "' + r.nick + '"';
+        s += ', server colour ' + (r.raw || 'none') + ', colour ' + (r.color || 'none');
+        if (r.prev) s += ' (was ' + r.prev + ')';
+        if (r.eff) s += ', drawn ' + r.eff;
+        if (r.src) s += ', from ' + r.src;
+        if (r.renderer) s += ', ' + r.renderer;
+        if (r.skin) s += ', skin ' + r.skin;
+        if (r.op != null) s += ', opcode ' + r.op;
+        if (r.flags != null) s += ', flags ' + r.flags;
+        return s + ' @' + timeText(r.t) + (r.n > 1 ? '..' + timeText(r.tl) : '');
+    }
+    /* what gave a cell its colour (cell fields of ogario.v4.js; lm = window.legendmod; isColor
+     * says whether a string is a colour) */
+    function colorSource(c, lm, isColor) {
+        var col = c.color, raw = c._lmRawColor || c.rawServerColor || null, nick = c.targetNick || '';
+        if (col == null || col === '') return raw ? 'colour lost (server sent ' + raw + ')' : 'no colour received';
+        if (typeof col !== 'string' || (isColor && !isColor(col))) return 'no colour string';
+        if (c.isPlayerCell || c.isPlayerCellMulti) return col === raw ? 'own, server colour' : 'own, profile / remembered colour';
+        if (raw && col === raw) return col === '#000000' ? 'server black' : 'server colour';
+        var tm = lm && lm._teamColorMap && nick ? lm._teamColorMap.get(nick) : undefined;
+        if (tm && tm === col) return 'team colour (chat relay)';
+        if (lm && lm.cellcolors && nick && lm.cellcolors[nick] === col) return 'colour remembered for the nick';
+        if (lm && lm._colorByRawMap && raw && lm._colorByRawMap.get(raw) === col) return 'colour of a nick with that server colour';
+        if (!raw) return 'no server colour kept';
+        return 'other override';
+    }
+
     function pad(n, l) { n = String(n); while (n.length < (l || 2)) n = '0' + n; return n; }
     /* "21:23:05.120" (local time of a Date.now() value) */
     function timeText(w) {
@@ -853,6 +912,7 @@
         classifyStall: classifyStall, longestBlock: longestBlock, createTimeline: createTimeline, rowText: rowText, TL: TL,
         STALL_CAUSES: STALL_CAUSES, CAUSE_KEYS: CAUSE_KEYS, causeText: causeText,
         hostOf: hostOf, classifyGap: classifyGap, createEventRing: createEventRing, eventLine: eventLine,
+        createColorLog: createColorLog, colorRowText: colorRowText, colorSource: colorSource,
         STALL_MS: STALL_MS, FREEZE_MS: FREEZE_MS, PAUSE_MS: PAUSE_MS,
         TARGETS: TARGETS, LEVEL_KEYS: LEVEL_KEYS, MAX_LEVEL: MAX_LEVEL, CTL: CTL,
         snapTarget: snapTarget, percentile: percentile, sortedCopy: sortedCopy, snapRefresh: snapRefresh,
@@ -1552,6 +1612,57 @@
         measuring(adaptiveOn || diagOpen || keepRec);
         /* attribution is for diagnostics only, not for Adaptive performance alone */
         attribution(diagOpen || keepRec);
+        /* cell colour anomalies: only while recording (the game checks the global, null while off) */
+        window._lmColorDiag = diagOpen || keepRec ? colorDiag : null;
+    }
+
+    /* ---------- cell colour anomalies ---------- */
+    var COLOR_LOG_MAX = 256;
+    var colorLog = createColorLog(COLOR_LOG_MAX);
+    function isColorString(s) { return typeof window.lmColorInt !== 'function' || window.lmColorInt(s) >= 0; }
+    function colorConn(c) {
+        if (!c) return '';
+        if (c.isPlayerCellMulti) return 'multibox unit';
+        if (c.spectator) return 'spectator ' + c.spectator;
+        return 'main';
+    }
+    function colorSkin(c) {
+        var a = app(), nick = c && c.targetNick;
+        var custom = !!(a && nick && a.customSkinsMap && a.customSkinsMap[nick]);
+        return (c && c.skin ? 'agar.io' : '') + (custom ? (c && c.skin ? ' + ' : '') + 'custom' : '');
+    }
+    /* called by ogario.v4.js at the moment an anomaly happens (never per frame for a cell:
+     * the renderers call it when they resolve a new colour, the parser per record) */
+    function colorDiag(kind, cell, info) {
+        try {
+            info = info || {};
+            var lm = window.legendmod, c = cell || {};
+            colorLog.add(kind, {
+                id: c.id, conn: info.conn || colorConn(cell), session: lm ? lm._connectSeq || 0 : 0, nick: c.targetNick || info.nick,
+                raw: info.raw || c._lmRawColor, prev: info.prev, color: cell ? String(c.color) : info.color, eff: cell ? info.color : null,
+                renderer: info.renderer || rendererName(), skin: cell ? colorSkin(c) : '', src: info.src || (cell ? colorSource(c, lm, isColorString) : ''),
+                op: info.op, flags: info.flags
+            }, Date.now());
+        } catch (e) { }
+    }
+    /* the report: the anomalies recorded and the cells drawn black or without colour now */
+    function colorLines(lines) {
+        var rows = colorLog.list(), lm = window.legendmod, cells = lm && lm.cells || [];
+        lines.push('Cell colour anomalies (' + rows.length + ', last ' + COLOR_LOG_MAX + ' kept' + (diagOpen || keepRec ? '' : '; recorded while this window is open or recording is kept') + '):');
+        rows.forEach(function (r) { lines.push('  ' + colorRowText(r)); });
+        var black = 0, srvBlack = 0, none = 0, bad = 0, shown = [];
+        for (var i = 0; i < cells.length; i++) {
+            var c = cells[i];
+            if (!c || c.isFood || c.isVirus || c.removed) continue;
+            var k = c.color == null || c.color === '' ? 'without colour' : typeof c.color !== 'string' || !isColorString(c.color) ? 'no colour string' : c.color === '#000000' ? 'black' : '';
+            if (!k) continue;
+            if (k === 'black') { black++; if ((c._lmRawColor || c.rawServerColor) === '#000000') srvBlack++; } else if (k === 'without colour') none++; else bad++;
+            if (shown.length < 12) shown.push('  ' + k + ': ' + colorConn(c) + ' cell ' + c.id + (c.targetNick ? ', nick "' + cleanText(c.targetNick, 40) + '"' : '') +
+                ', server colour ' + (c._lmRawColor || c.rawServerColor || 'none') + ', colour ' + cleanText(c.color, 40) + ', from ' + colorSource(c, lm, isColorString) +
+                (colorSkin(c) ? ', skin ' + colorSkin(c) : '') + (c.invisible ? ', hidden copy' : ''));
+        }
+        lines.push('Cells now: ' + black + ' black (' + srvBlack + ' sent black by the server), ' + none + ' without colour (drawn grey), ' + bad + ' with no colour string');
+        shown.forEach(function (l) { lines.push(l); });
     }
 
     /* ---------- applying a level ---------- */
@@ -1847,6 +1958,7 @@
             bt.slice(-20).forEach(function (l) { lines.push('  ' + l); });
         }
         recLines(lines);
+        colorLines(lines);
         var ev = events.list(), ll = loafs.list(), lopt = loafOpts();
         lines.push('Events (' + ev.length + ', last ' + EVENTS_MAX + ' kept' + (keepRec ? ', recording also with the window closed' : '') + '):');
         ev.forEach(function (e) {
@@ -2316,6 +2428,8 @@
         events: function () { return events.list(); },
         /* freezes with their breakdown and attribution line; long animation frames (cleaned) */
         freezes: attributed,
+        /* cell colour anomalies recorded (copies of the rows, see createColorLog) */
+        colorAnomalies: function () { return colorLog.list().map(function (r) { return Object.assign({}, r); }); },
         loafs: function () { return loafs.list(); },
         /* the raw timeline since recording started (rows [t, kind, connection, d, a, b], see
          * createTimeline), with the time origin and each connection's host: no message bytes */

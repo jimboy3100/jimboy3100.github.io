@@ -38845,6 +38845,7 @@ function thelegendmodproject() {
                              * and fills with its default black (the cached disc stayed black), WebGL
                              * drew it grey. Both now give the fallback; real '#000000' stays black. */
                             else if (lmColorInt(color2) < 0) {
+                                if (window._lmColorDiag) window._lmColorDiag('no colour string', this, { color: '#808080', renderer: 'Canvas2D' });
                                 color2 = "#808080";
                                 _useFallbackGradient = true;
                             }
@@ -53923,6 +53924,8 @@ function thelegendmodproject() {
             }
             var _tcm = this._teamColorMap;
             _tcm.clear();
+            /* cell colour diagnostics (Performance diagnostics recording; null while off) */
+            var _lmCD = window._lmColorDiag || null;
             var _myNick = (typeof profiles !== 'undefined' && profiles[application.selectedProfile]) ? profiles[application.selectedProfile].nick : '';
             for (var _ti = 0; _ti < application.teamPlayers.length; _ti++) {
                 var _tp = application.teamPlayers[_ti];
@@ -54609,6 +54612,11 @@ function thelegendmodproject() {
                 /* the server's colour (multibox copies are compared by it, lmMultiboxPositionTwin)
                  * and the speed from the last packet (copies are compared at one time) */
                 if (rawServerColor) cellUpdateCells._lmRawColor = rawServerColor;
+                if (_lmCD && !isFood && !isVirus) {
+                    var _lmCc = cellUpdateCells.color;
+                    if (_lmCc === '#000000') _lmCD(rawServerColor === '#000000' ? 'server black' : 'drawn black', cellUpdateCells, { raw: rawServerColor, op: 16, flags: flags });
+                    else if (_lmCc == null || _lmCc === '') _lmCD('without colour', cellUpdateCells, { raw: rawServerColor, op: 16, flags: flags });
+                }
                 if (!isFood && typeof lmObsVelocity === 'function') lmObsVelocity(cellUpdateCells, x, y, this.time || Date.now());
                 cellUpdateCells.startX = cellUpdateCells.x;
                 cellUpdateCells.startY = cellUpdateCells.y;
@@ -77462,6 +77470,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _parsedColor >= 0
                             ? _parsedColor
                             : 0x808080;
+                    if (_parsedColor < 0 && window._lmColorDiag) window._lmColorDiag('no colour string', cell, { color: '#808080', renderer: 'WebGL' });
 
                     cell._colorInt =
                         cInt;
@@ -85802,6 +85811,7 @@ function minimapCell(envId, cb, i, s) {
         /* the white of a teammate that sent no colour is for the minimap and team list only:
          * _lmColorSent says the colour is the teammate's own, so only then it colours cells */
         if (isHexColor(i)) this._lmColorSent = true;
+        if (i === '#000000' && this.color !== i && window._lmColorDiag) window._lmColorDiag('teammate sent black', null, { conn: 'chat relay', nick: this.nick, color: i, src: 'team colour (chat relay)' });
         this.color = isHexColor(i) ? i : (this.color || '#ffffff');
         if (isHexColor(inRevIdx) && 7 === inRevIdx.length) {
             this.customColor = inRevIdx;

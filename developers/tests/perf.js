@@ -286,6 +286,45 @@ check('report text is built', /FPS:/.test(nt.ctx.LMPerf.report()) && /disconnect
         delete dr._lmGlWhyN; delete dr.GLW_IDS;
     }
 }
+/* cell colour anomalies (window._lmColorDiag): set only while recording, deduplicated, bounded */
+{
+    check('colour diagnostics: nothing is set while not recording', nt.ctx._lmColorDiag == null);
+    nt.ctx.LMPerf.keepRecording(true);
+    const cd = nt.ctx._lmColorDiag;
+    check('colour diagnostics: set while recording', typeof cd === 'function');
+    const lmc = nt.ctx.legendmod;
+    lmc._teamColorMap = new Map([['Mate', '#000000']]);
+    lmc.cellcolors = { Bob: '#000000' };
+    lmc._connectSeq = 3;
+    const mate = { id: 7, targetNick: 'Mate', color: '#000000', _lmRawColor: '#c80e0e' };
+    for (let i = 0; i < 5; i++) cd('drawn black', mate, { raw: '#c80e0e', op: 16, flags: 10 });
+    cd('drawn black', { id: 8, targetNick: 'Bob', color: '#000000', _lmRawColor: '#00e600' }, { op: 16 });
+    cd('server black', { id: 9, targetNick: 'Coal', color: '#000000', _lmRawColor: '#000000' }, { op: 16 });
+    cd('without colour', { id: 10, color: null, spectator: 2 }, { op: 16 });
+    let rows = nt.ctx.LMPerf.colorAnomalies();
+    check('colour diagnostics: one row per kind and cell identity, repeats counted', rows.length === 4 && rows[0].n === 5 && rows[0].id === 7 && rows[0].session === 3);
+    check('colour diagnostics: the source is named', rows[0].src === 'team colour (chat relay)' && rows[1].src === 'colour remembered for the nick' &&
+        rows[2].src === 'server black' && rows[3].src === 'no colour received' && rows[3].conn === 'spectator 2');
+    lmc.cells = [Object.assign({ isFood: false, isVirus: false }, mate), { id: 11, color: '#f80ff', targetNick: 'Odd', isFood: false }, { id: 12, color: '#33ff33', isFood: false }];
+    nt.ctx.lmColorInt = (s) => /^#[0-9a-f]{6}$/i.test(s) ? parseInt(s.slice(1), 16) : -1;
+    const rep = nt.ctx.LMPerf.report();
+    check('report: the anomalies, then the cells drawn black or without colour now', /Cell colour anomalies \(4, last 256 kept\):/.test(rep) &&
+        /drawn black x5: main cell 7, connection 3, nick "Mate", server colour #c80e0e, colour #000000, from team colour \(chat relay\)/.test(rep) &&
+        /Cells now: 1 black \(0 sent black by the server\), 0 without colour \(drawn grey\), 1 with no colour string/.test(rep) &&
+        /no colour string: main cell 11, nick "Odd"/.test(rep));
+    for (let i = 0; i < 300; i++) cd('without colour', { id: 100 + i, targetNick: 'n' + i, color: null }, {});
+    rows = nt.ctx.LMPerf.colorAnomalies();
+    check('colour diagnostics: at most 256 rows, the oldest go', rows.length === 256 && rows[rows.length - 1].nick === 'n299' && !rows.some((r) => r.id === 7));
+    nt.ctx.LMPerf.keepRecording(false);
+    check('colour diagnostics: unset when recording stops', nt.ctx._lmColorDiag == null);
+    delete lmc._teamColorMap; lmc.cellcolors = {}; lmc.cells = []; delete nt.ctx.lmColorInt;
+}
+check('colour log alone: a repeat counts, rows are bounded', (() => {
+    const log = P.createColorLog(2);
+    log.add('a', { nick: 'x' }, 1); log.add('a', { nick: 'x' }, 2); log.add('b', {}, 3); log.add('c', {}, 4);
+    const l = log.list();
+    return l.length === 2 && l[0].kind === 'b' && l[1].kind === 'c' && P.colorRowText({ kind: 'a', n: 2, t: 0, tl: 0, nick: 'x' }).indexOf('a x2: main') === 0;
+})());
 nt.ctx.legendmod5.netHistory = false; nt.ctx.LMPerf.configChanged();
 check('network history off: timer stopped', nt.timers.filter(Boolean).length === 0);
 
