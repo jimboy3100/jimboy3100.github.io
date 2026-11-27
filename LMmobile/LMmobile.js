@@ -260,6 +260,9 @@
         /* a chat popup's mute button: on desktop it shows on hover, which a touch never gives
          * (shown here, with a thumb-sized tap area around the icon) */
         '.toast .mute-user{display:block!important;padding:8px;margin:-8px}' +
+        /* User Scripts window switches ("Runs at start", experiments): the menu is drawn at about 0.6
+         * on a phone, which made them 11 px; larger here, so they stay a thumb's size on the screen */
+        'label.lm-us-tg{min-height:52px!important}label.lm-us-tg input{width:32px!important;height:32px!important}' +
 
         /* fullscreen prompt toast */
         '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +

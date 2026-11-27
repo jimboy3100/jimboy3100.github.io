@@ -58,7 +58,14 @@
     var slotTg = document.querySelector('#lm-us-ext [data-slot-toggle]');
     var a = getComputedStyle(cb), b = slotTg ? getComputedStyle(slotTg) : null;
     info.size = [a.width, a.height, b ? b.width : '-'];
-    if (b ? (a.width !== b.width || a.height !== b.height) : a.width !== '18px') fail.push('experiment switch size ' + a.width + ' x ' + a.height + ' differs from the window\'s switches');
+    if (b ? (a.width !== b.width || a.height !== b.height) : a.width !== (mobile ? '32px' : '18px')) fail.push('experiment switch size ' + a.width + ' x ' + a.height + ' differs from the window\'s switches');
+    /* on a phone the menu is drawn smaller (0.6 or so): the switch must stay big enough for a thumb
+     * on the screen (up to 3.698 it was 11 px there) */
+    if (mobile && row) {
+      var sr = cb.getBoundingClientRect(), rr = row.getBoundingClientRect();
+      info.onScreen = [Math.round(sr.width), Math.round(sr.height), Math.round(rr.height)];
+      if (sr.height < 18 || rr.height < 28) fail.push('switch too small to tap on the phone screen: box ' + info.onScreen[1] + ' px, row ' + info.onScreen[2] + ' px');
+    }
     /* the list made to scroll, the row in its middle: a click must not move it */
     ext.style.maxHeight = '140px';
     await frames();
