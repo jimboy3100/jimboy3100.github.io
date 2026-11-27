@@ -52,6 +52,20 @@ const FRAME_BLEND = [GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA, GL.ONE, GL.ONE_MINUS_
     check(blend === FRAME_BLEND, 'multibox rings: the blend after them is the frame blend (alpha ONE, ONE_MINUS_SRC_ALPHA) for the labels drawn next (' + blend + ')');
 }
 
+// -- 2. nick textures at the canvas pixel ratio
+{
+    const fonts = {};
+    for (const dpr of [1, 2]) {
+        const { R } = make({ LM_DPR: dpr });
+        R.gl = {}; R.glTextProgram = {}; R.scale = 1; R.dpr = dpr; R.canvasWidth = 800; R.canvasHeight = 600;
+        R.getOrCreateTextTexture = (text, font) => { fonts[dpr] = font; return null; };
+        R._lmMassTexture = () => null;
+        R.drawWebGLCellText({ id: 1, x: 0, y: 0, size: 100, targetNick: 'Legend', _webglRendered: true, isVirus: false, color: '#ff0000' });
+    }
+    const px = (f) => Number((/(\d+)px/.exec(f || '') || [])[1]);
+    check(px(fonts[2]) >= 1.8 * px(fonts[1]), 'nick texture: drawn at about twice the pixels with pixel ratio 2 (' + fonts[1] + ' / ' + fonts[2] + ')');
+}
+
 /* (allocDone: the heap sampling of part 3) */
 Promise.resolve(typeof allocDone === 'undefined' ? null : allocDone).then(() => {
     if (failed) { console.log(failed + ' check(s) failed'); process.exit(1); }

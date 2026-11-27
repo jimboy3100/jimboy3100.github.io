@@ -73263,7 +73263,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* Raster size in ~12.5% steps (power-of-1.125 buckets): the on-screen size comes from
              * nickWorldH, so this only affects sharpness, and a zoom no longer makes a new texture
              * for every whole pixel (20->40 px: 7 textures per name instead of 21). */
-            var _lmNickRaw = nickWorldFontSize * viewScale;
+            /* times the canvas pixel ratio (as drawTxt does): the GL canvas has dpr pixels per CSS pixel */
+            var _lmNickRaw = nickWorldFontSize * viewScale * (this.dpr || 1);
             var nickFontSize = Math.max(6, Math.round(Math.pow(1.125, Math.round(Math.log(_lmNickRaw) / Math.log(1.125)))));
 
             /* Read colors and font from settings (matching Canvas2D path) */
