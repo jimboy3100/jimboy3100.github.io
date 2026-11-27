@@ -354,7 +354,8 @@
         var since = lastAlive - 2000, bestEat = null, bestA = 0;
         for (var ki = 0; ki < evLen; ki++) {
             var ev = EV[(evHead - 1 - ki + EV_CAP * 2) % EV_CAP];
-            if (ev.t2 < since) break;
+            /* not break: an eat count still open sits behind newer events already over (evFind) */
+            if (ev.t2 < since) continue;
             if (ev.type === 'eaten' && ev.a > bestA) { bestA = ev.a; bestEat = ev; }
         }
         if (bestEat) return { nick: bestEat.nick, virus: bestEat.v, exact: true };
