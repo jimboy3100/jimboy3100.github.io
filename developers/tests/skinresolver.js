@@ -376,6 +376,12 @@ const report = {};
             }
             check(p + ': all ' + n + ' linked images of this site exist', miss.size === 0, [...miss].slice(0, 8).join(', '));
         }
+        const old = (fs.readFileSync(path.join(ROOT, 'skins', 'index.html'), 'utf8').match(/https:\/\/jimboy3100\.github\.io\/(?:vanilla|lowres)skins\//g) || []).length;
+        check('skins/index.html asks www.legendmod.ml directly (no 301 hop per picture)', old === 0, old + ' links still on jimboy3100.github.io');
+        /* the knowledge files name the skin tools by pages that exist */
+        const kn = fs.readFileSync(path.join(ROOT, 'knowledge', 'resources.json'), 'utf8');
+        const tools = (kn.match(/https:\/\/www\.legendmod\.ml\/[^"]*skin[^"]*\.html/gi) || []).map((u) => u.slice(L.length));
+        check('knowledge/resources.json: the skin tool links (' + tools.join(', ') + ') open pages that exist', tools.length >= 2 && tools.every(exists));
     }
 
     /* ---- nothing per call ---- */
