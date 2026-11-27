@@ -25,13 +25,17 @@ check('removed: no radial or screenshot options helpers', !('pickSector' in C) &
     const store = new Map([['lmRadialMenu', '{"v":1,"items":["hk-split"]}'], ['lmSmallTools', '{"shot":{"lb":true}}'], ['other', 'x']]);
     const node = () => ({ style: {}, classList: { add() { }, remove() { } }, appendChild() { }, addEventListener() { } });
     const c2 = { console, localStorage: { getItem: k => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: k => store.delete(k) },
-        document: { createElement: node, getElementById: () => null, head: node(), body: node() }, addEventListener() { }, removeEventListener() { } };
+        document: { createElement: node, getElementById: () => null, querySelector: sel => (sel.indexOf('og-settings') >= 0 ? { click() { c2._tab = (c2._tab || 0) + 1; } } : null), head: node(), body: node() },
+        addEventListener() { }, removeEventListener() { }, setTimeout: () => 0, application: { showMenu() { c2._menu = (c2._menu || 0) + 1; } } };
     c2.window = c2;
     vm.createContext(c2);
     i18n(c2);
     vm.runInContext(fs.readFileSync(path.join(dir, 'smalltools.js'), 'utf8'), c2);
     const T = c2.LMSmallTools;
     check('removed: their stored data goes at start, other keys stay', !store.has('lmRadialMenu') && !store.has('lmSmallTools') && store.get('other') === 'x');
+    let jumped = false;
+    try { jumped = T.jump('showMass'); } catch (e) { jumped = 'threw ' + e.message; }
+    check('jump (Settings search hints): opens the menu at the Settings tab, no error', jumped === true && c2._menu === 1 && c2._tab === 1);
     check('removed: no window or ring API left, Show/hide HUD and Capture stay', !T.open && !T.toggle && !T.radialDown && !T.radialClose && typeof T.shotToggle === 'function' && typeof T.capture === 'function');
 }
 {

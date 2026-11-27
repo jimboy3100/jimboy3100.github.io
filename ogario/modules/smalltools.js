@@ -132,7 +132,10 @@
             /* HUD font, weight and scale (Theme > HUD); the tap targets stay at least 30 px */
             '#lm-shot-chip{position:fixed;right:8px;bottom:8px;z-index:999996;display:flex;gap:6px;transition:opacity .4s;font-size:calc(12px * var(--lm-hud-scale,1));}' +
             '#lm-shot-chip div{cursor:pointer;min-width:max(30px,calc(34px * var(--lm-hud-scale,1)));height:max(30px,calc(34px * var(--lm-hud-scale,1)));line-height:max(30px,calc(34px * var(--lm-hud-scale,1)));padding:0 10px;border-radius:17px;text-align:center;background:rgba(0,0,0,0.55);color:#fff;border:1px solid rgba(255,255,255,0.35);box-sizing:border-box;}' +
-            '#lm-shot-chip.idle{opacity:.18;}';
+            '#lm-shot-chip.idle{opacity:.18;}' +
+            /* a setting or hotkey row found by LMSmallTools.jump */
+            // i18n-ok: CSS
+            '.lm-st-flash{outline:3px solid ' + c.mc + ' !important;outline-offset:1px;}';
         D.head.appendChild(s);
     }
 
@@ -387,6 +390,45 @@
         ['mousedown', 'pointerdown', 'touchstart'].forEach(function (ev) { p.addEventListener(ev, function (e) { e.stopPropagation(); }, { passive: true }); });
         D.body.appendChild(p);
     }
+    /* ═══ The menu at a setting, the Hotkeys window at a command (LMSmallTools.jump) ═══ */
+
+    function showMenu() {
+        try {
+            var ov = D.getElementById('overlays');
+            if ((!ov || ov.style.display === 'none' || !ov.offsetHeight) && W.application && typeof W.application.showMenu === 'function') W.application.showMenu();
+        } catch (e) { }
+    }
+    function flash(node) {
+        if (!node) return;
+        try { node.scrollIntoView({ block: 'center' }); } catch (e) { try { node.scrollIntoView(); } catch (e2) { } }
+        node.classList.add('lm-st-flash');
+        setTimeout(function () { node.classList.remove('lm-st-flash'); }, noMotion() ? 3000 : 2400);
+    }
+    /* the hotkeys window at a command's row (the field is not focused: a key press would rebind it) */
+    function jumpHotkey(cmd) {
+        var hkWin = D.getElementById('hotkeys');
+        if (hkWin && !(hkWin.offsetWidth || hkWin.offsetHeight)) {
+            showMenu();
+            var link = D.querySelector('.hotkeys-link');
+            if (link) link.click();
+        }
+        setTimeout(function () {
+            var input = D.getElementById(cmd);
+            var row = input && input.closest ? input.closest('.row') : null;
+            flash(row || input);
+            try { if (W.jQuery) W.jQuery('#hotkeys-cfg').perfectScrollbar('update'); } catch (e) { }
+        }, 550);
+    }
+    function jumpSetting(id) {
+        /* a control of the Hotkeys window */
+        var hkEl = D.getElementById(id);
+        if (hkEl && hkEl.closest && hkEl.closest('#hotkeys')) { jumpHotkey(id); return; }
+        showMenu();
+        var tab = D.querySelector('.menu-tabs a[href="#og-settings"]');
+        if (tab) tab.click();
+        setTimeout(function () { var n = D.getElementById(id); flash(n && n.closest ? n.closest('.preset-box, label, div') || n : n); }, 300);
+    }
+
     /* ═══ Private data out of Settings > "Copy debug info" ═══ */
 
     function secretsNow() {
@@ -425,7 +467,7 @@
         return null;
     };
     /* the menu at a setting or the Hotkeys window at a command's row, highlighted (the Settings
-     * search's Hotkeys hints, Custom macros, Discover's "Show in settings") */
+     * search's Hotkeys hints) */
     api.jump = function (id) {
         if (typeof id !== 'string' || !/^[A-Za-z0-9_-]{1,80}$/.test(id)) return false;
         addStyle();
