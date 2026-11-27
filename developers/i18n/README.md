@@ -3,8 +3,11 @@
 Every text a player sees comes from the language packs, in the language chosen in Legend Mod's
 **Choose Language** list (localStorage `languagemod`: 1 English, 2 Greek, 3 Spanish, 4 Bulgarian,
 5 French, 6 Arabic, 7 Traditional Chinese, 8 Russian, 9 German, 10 Turkish, 11 Polish, 12 Dutch, 13 Brazilian Portuguese, 14 Indonesian, 15 Japanese, 16 Italian).
-All 16 are released: every text must exist in every language (`node developers/tests/i18n.js` fails
-on an empty one), and a browser in any of them gets its language on the first visit.
+All 16 are released, and a browser in any of them gets its language on the first visit.
+**New and changed texts are written in English only.** A text another language does not have yet shows
+in English there (the runtime, the extension and the userscript loader all fall back to English), and
+`node developers/tests/i18n.js` passes; it only prints how many texts each language still lacks.
+A translation pass fills them later, all at once (`todo.js` / `merge.js` below).
 The numbers are append-only: a new language gets the next number, existing ones never move.
 The web pages on www.legendmod.ml use the same packs.
 
@@ -83,25 +86,33 @@ Attributes: `data-i18n` (text), `data-i18n-html` (pack HTML, trusted texts only)
 (also updates Bootstrap's `data-original-title`), `data-i18n-placeholder`, `data-i18n-aria-label`,
 `data-i18n-alt`, `data-i18n-value`, `data-i18n-data-original-title`, and `data-i18n-vars='{"0":"5"}'`.
 
-## Adding or changing texts (stage 2 steps)
+## Adding or changing texts
 
 ```sh
-# 1. English texts into your area (creates src/<area>.json); or edit the JSON directly
+# 1. English texts into your area (creates src/<area>.json); or edit the JSON directly ("en" only)
 node developers/i18n/add.js modules modules.notif.title "Notifications"
 node developers/i18n/add.js modules --file new.json        # { "key": "English", ... } or full rows
-# 2. what still needs translating (per language), translate, merge back (checks placeholders/tags)
-node developers/i18n/todo.js                               # counts
-node developers/i18n/todo.js --lang el --area modules --out el.json
-node developers/i18n/merge.js el el.json
-# 3. build the language files, run the tests
+# 2. build the language files (also the extension's), run the tests
 node developers/i18n/build.js
+node developers/i18n/extension.js
 node developers/tests/i18n.js
-# 4. replace the hard-coded text in the code with lmT('key') / data-i18n, then check the file
+# 3. replace the hard-coded text in the code with lmT('key') / data-i18n, then check the file
 node developers/i18n/scan.js ogario/modules/notifications.js
 ```
 
-When the English of a key changes, `add.js` empties its translations (they need a new look); a
-changed meaning is better a new key.
+Do not translate the other 15 languages in a feature change. When the English of a key changes,
+`add.js` empties its translations, so those languages show the new English until the translation pass
+(editing the JSON by hand: empty them too when the meaning changed); a changed meaning is better a new
+key. Removing a key: delete its row (all languages are in that one row).
+
+The translation pass (once in a while, all languages at once):
+
+```sh
+node developers/i18n/todo.js                               # per area: how many texts each language lacks
+node developers/i18n/todo.js --lang el --area modules --out el.json   # the English texts el lacks, to translate
+node developers/i18n/merge.js el el.json                   # back into src (checks placeholders/tags)
+node developers/i18n/build.js && node developers/i18n/extension.js && node developers/tests/i18n.js
+```
 
 ## Web pages
 
@@ -148,8 +159,9 @@ and nothing else (no theme, no login data):
 
 ## Tests
 
-- `node developers/tests/i18n.js`: all 16 packs complete (same placeholders/tags), key names,
-  generated files up to date, old globals, lmT fallbacks, apply(), switching, the page runtime, the
+- `node developers/tests/i18n.js`: English present for every key, a translation that exists has the
+  same placeholders/tags as the English, texts not translated yet left out of the generated files (so
+  English shows; their count per language is printed, not a failure), key names, generated files up to date, old globals, lmT fallbacks, apply(), switching, the page runtime, the
   scanner (strict files must have 0 findings).
 - `developers/tests/probes/zzzz-i18n.js` (in `run.js`): live switch to Greek and Arabic in the game page.
 - The smoke test pins the browser to English and hides the first-visit window (`SMOKE_LANG`, `SMOKE_FIRSTRUN`,

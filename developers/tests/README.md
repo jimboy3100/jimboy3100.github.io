@@ -53,7 +53,8 @@ Network/console log errors are printed as warnings only, because the live server
 
 Every `developers/tests/*.js` except the tools `run.js`, `smoke.js`, `crlf.js` and `trace.js` runs in
 Node (`node developers/tests/<name>.js`, or all of them with `run.js --node`). Before a push run the ones
-that load the files you changed, plus `i18n.js` when you changed texts. Among them:
+that load the files you changed, plus `i18n.js` when you changed texts (new or changed texts are written in
+English only: `i18n.js` passes and counts the languages that lack them; see developers/i18n/README.md). Among them:
 
 - `repo-integrity.js`: no reference to a file that is not on the site. It reads every text file
   (HTML attributes, CSS `url()` / `@import`, extension and web app manifests, userscript metadata, and

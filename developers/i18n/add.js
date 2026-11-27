@@ -8,7 +8,8 @@
  * Keys must start with the area name, dashes as dots: core -> "core.", site-index -> "site.index." (core.json
  * also holds the old un-prefixed lmT keys). An existing key
  * keeps its translations unless its English changed (then they are emptied: they need a new look).
- * Then: node developers/i18n/todo.js --lang el --area <area> > el.json, translate, merge.js, build.js.
+ * Then: node developers/i18n/build.js (the other languages show the English until a translation pass:
+ * todo.js --lang el --area <area> --out el.json, translate, merge.js).
  */
 'use strict';
 const fs = require('fs');

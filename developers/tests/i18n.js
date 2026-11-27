@@ -1,7 +1,8 @@
 // Translations: the language packs (developers/i18n/src), the generated files, the runtime
 // (languages/lm-i18n.js, lib/lm-i18n.js), the old globals and the hard-coded text scanner.
-// Usage: node developers/tests/i18n.js   (--require-complete is accepted for old scripts: completeness
-// of all 16 languages is always required now)
+// Usage: node developers/tests/i18n.js   (--require-complete is accepted for old scripts and ignored)
+// New and changed texts are written in English only: a text another language does not have yet passes
+// (the player sees the English one) and is only counted; node developers/i18n/todo.js lists them.
 'use strict';
 const fs = require('fs');
 const path = require('path');
@@ -20,6 +21,9 @@ const ok = (cond, msg) => { if (!cond) { failed++; console.log('FAIL ' + msg); }
 const all = I.readAll();
 const seen = {};
 let keys = 0;
+const untranslated = {};
+/* the text a player in language c sees: its own, else English (the runtime's fallback) */
+const tx = (e, c) => (e[c] || e.en);
 Object.keys(all).forEach((area) => {
     Object.keys(all[area]).forEach((k) => {
         keys++;
@@ -28,10 +32,13 @@ Object.keys(all).forEach((area) => {
         seen[k] = area;
         /* key names: "<area>." (dashes as dots); core.json also has lmT's old bare keys */
         ok(k.indexOf(I.areaPrefix(area)) === 0 || (area === 'core' && /^[A-Za-z][A-Za-z0-9_]*$/.test(k)), k + ': key must start with ' + I.areaPrefix(area));
+        /* English is required; another language may be missing or empty (English is shown) */
+        ok(typeof e.en === 'string', k + ': en missing');
+        if (!e.allowEmpty) ok(typeof e.en === 'string' && e.en.trim() !== '', k + ': en empty');
         I.CODES.forEach((c) => {
-            ok(typeof e[c] === 'string', k + ': ' + c + ' missing');
-            /* all 16 languages are released: an empty text fails in every one of them */
-            if (!e.allowEmpty) ok(typeof e[c] === 'string' && e[c].trim() !== '', k + ': ' + c + ' empty');
+            if (c === 'en' || e.allowEmpty) return;
+            ok(e[c] == null || typeof e[c] === 'string', k + ': ' + c + ' is not a string');
+            if (typeof e[c] !== 'string' || e[c].trim() === '') untranslated[c] = (untranslated[c] || 0) + 1;
         });
         const p = I.placeholders(e.en).join('|');
         I.CODES.forEach((c) => {
@@ -41,11 +48,31 @@ Object.keys(all).forEach((area) => {
     });
 });
 console.log('packs: ' + Object.keys(all).length + ' areas, ' + keys + ' keys x ' + I.CODES.length + ' languages');
+const nUntr = Object.keys(untranslated).reduce((n, c) => n + untranslated[c], 0);
+console.log('not translated yet (English shown, informational): ' + (nUntr ? I.CODES.filter((c) => untranslated[c]).map((c) => c + ' ' + untranslated[c]).join(', ') + ' (list: node developers/i18n/todo.js --lang <code>)' : 'none'));
 
 /* ---------- 2. generated files up to date ---------- */
 const { files, stale } = build.run(true);
 ok(stale.length === 0, 'generated files are stale (run node developers/i18n/build.js): ' + stale.join(', '));
 console.log('generated: ' + Object.keys(files).length + ' files' + (stale.length ? ', ' + stale.length + ' stale' : ', up to date'));
+/* a text not translated yet is left out of that language's file, so the runtime falls back to English
+ * (an empty string there would show nothing) */
+Object.keys(files).forEach((rel) => {
+    const m = /^languages\/lm-(?:site(?:-[a-z0-9-]+)?-)?([a-z]{2})\.js$/.exec(rel);
+    if (!m || m[1] === 'en' || I.CODES.indexOf(m[1]) < 0) return;
+    ok(!/^"[^"]+": ""(,|\r?$)/m.test(files[rel]), rel + ': has an empty text (it must be left out for the English fallback)');
+});
+/* the extension and the userscript loader: an untranslated text is the English one */
+{
+    const ext = require(path.join(repo, 'developers', 'i18n', 'extension')).build();
+    const c = { navigator: { language: 'el-GR' } };
+    vm.createContext(c);
+    vm.runInContext(ext['LMexpress/extension/texts.js'], c);
+    ok(Object.keys(c.LMX_EXT_TEXTS).every((x) => c.LMX_EXT_TEXTS[x].every((v) => v !== '')), 'extension: no empty text (the generator fills English)');
+    const k = Object.keys(c.LMX_EXT_TEXTS)[0];
+    c.LMX_EXT_TEXTS[k][1] = '';
+    ok(c.lmxExtText(k, 2) === c.LMX_EXT_TEXTS[k][0] && c.LMX_EXT_TEXTS[k][0] !== '', 'extension: an untranslated text falls back to English');
+}
 
 /* ---------- a page in a vm: just enough DOM for the runtime ---------- */
 function makeEl(tag, attrs, text) {
@@ -141,12 +168,12 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         w.run('languages/lm-en.js');
         const L = w.LMi18n;
         ok(L.lang() === 'el' && L.num() === '2' && L.dir() === 'ltr', 'mod: language el');
-        ok(w.lmT('leagues') === all.core.leagues.el, 'lmT: Greek text');
-        ok(w.lmT('core.langChanged') === all.core['core.langChanged'].el, 'lmT: core.* key');
-        ok(w.Languageletter0 === all.packs['pack.home'].el, 'old global Languageletter0 in Greek: ' + w.Languageletter0);
-        ok(w.translator === all.packs['pack.translator'].el, 'old global translator');
-        ok(L.prefixed('settings.').showMass === all.settings['settings.showMass'].el, 'prefixed: settings labels (textLanguage)');
-        ok(L.prefixed('settings.', 'en').showMass === all.settings['settings.showMass'].en, 'prefixed: English labels');
+        ok(w.lmT('leagues') === tx(all.core.leagues, 'el'), 'lmT: Greek text');
+        ok(w.lmT('core.langChanged') === tx(all.core['core.langChanged'], 'el'), 'lmT: core.* key');
+        ok(w.Languageletter0 === tx(all.packs['pack.home'], 'el'), 'old global Languageletter0 in Greek: ' + w.Languageletter0);
+        ok(w.translator === tx(all.packs['pack.translator'], 'el'), 'old global translator');
+        ok(L.prefixed('settings.').showMass === tx(all.settings['settings.showMass'], 'el'), 'prefixed: settings labels (textLanguage)');
+        ok(L.prefixed('settings.', 'en').showMass === tx(all.settings['settings.showMass'], 'en'), 'prefixed: English labels');
         /* fallbacks */
         L.add('en', { 'test.onlyEnglish': 'Only English {0} and {name}' });
         ok(w.lmT('test.onlyEnglish', [5]) === 'Only English 5 and {name}', 'lmT: English fallback with {0}');
@@ -182,9 +209,9 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         for (let i = 0; i < 50 && !done; i++) await tick();
         ok(done && L.lang() === 'fr' && changed === 'el>fr', 'setLang: French loaded and onChange ran (' + changed + ')');
         ok(w.store.languagemod === '5', 'setLang: saved languagemod 5');
-        ok(w.Languageletter0 === all.packs['pack.home'].fr, 'old globals follow the switch');
-        ok(label.textContent === all.core.leagues.fr, 'apply: data-i18n');
-        ok(input.attrs.placeholder === all.packs['pack.home'].fr && input.attrs.title === all.core.leagues.fr && input.attrs['data-original-title'] === all.core.leagues.fr, 'apply: attributes + Bootstrap copy');
+        ok(w.Languageletter0 === tx(all.packs['pack.home'], 'fr'), 'old globals follow the switch');
+        ok(label.textContent === tx(all.core.leagues, 'fr'), 'apply: data-i18n');
+        ok(input.attrs.placeholder === tx(all.packs['pack.home'], 'fr') && input.attrs.title === tx(all.core.leagues, 'fr') && input.attrs['data-original-title'] === tx(all.core.leagues, 'fr'), 'apply: attributes + Bootstrap copy');
         ok(html.innerHTML === '<b>Bold</b> text', 'apply: data-i18n-html');
         ok(vars.textContent === 'Only English 9 and Al', 'apply: data-i18n-vars');
         ok(keep.textContent === 'English stays', 'apply: an unknown key leaves the element');
@@ -202,10 +229,10 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         const before = w.store.languagemod;
         w.run('languages/LanguagePackGreek.js');
         for (let i = 0; i < 20 && L.lang() !== 'el'; i++) await tick();
-        ok(w.Languageletter0 === all.packs['pack.home'].el && w.store.languagemod === before, 'LanguagePackGreek.js: Greek globals, languagemod not changed');
+        ok(w.Languageletter0 === tx(all.packs['pack.home'], 'el') && w.store.languagemod === before, 'LanguagePackGreek.js: Greek globals, languagemod not changed');
         /* agar.io's page texts (LMexpress/i18n.js) follow the language */
         w.run('LMexpress/i18n.js');
-        ok(w.i18n('page_play') === all.agario['agario.page_play'].el, 'i18n.js: agar.io texts in Greek');
+        ok(w.i18n('page_play') === tx(all.agario['agario.page_play'], 'el'), 'i18n.js: agar.io texts in Greek');
         ok(w.parseString('page_fb_matchresults_subtitle', '%@', [1, 2, 3]).indexOf('%@') < 0, 'i18n.js: parseString');
     }
     /* A failed or non-registering script must not poison the loaded cache. */
@@ -218,17 +245,17 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         const label = makeEl('span', { 'data-i18n': 'discord.post' });
         w.document.body.appendChild(label);
         await new Promise(resolve => L.setLang('el', resolve));
-        ok(!L.loaded('el') && label.textContent === all.discord['discord.post'].en, 'failed pack is not cached as loaded');
+        ok(!L.loaded('el') && label.textContent === tx(all.discord['discord.post'], 'en'), 'failed pack is not cached as loaded');
         offline = false;
         let changes = 0;
         L.onChange(() => changes++);
         await new Promise(resolve => L.setLang('el', resolve));
-        ok(L.loaded('el') && label.textContent === all.discord['discord.post'].el && changes === 1, 'same-language retry refreshes labels and listeners');
+        ok(L.loaded('el') && label.textContent === tx(all.discord['discord.post'], 'el') && changes === 1, 'same-language retry refreshes labels and listeners');
         const w2 = page({ emptyUrl: src => /www\.legendmod\.ml.*lm-fr\.js/.test(src) });
         w2.run('languages/lm-i18n.js');
         w2.run('languages/lm-en.js');
         await new Promise(resolve => w2.LMi18n.setLang('fr', resolve));
-        ok(w2.LMi18n.loaded('fr') && w2.lmT('leagues') === all.core.leagues.fr, 'non-registering primary script retries alternate host');
+        ok(w2.LMi18n.loaded('fr') && w2.lmT('leagues') === tx(all.core.leagues, 'fr'), 'non-registering primary script retries alternate host');
     }
     /* all mod packs must actually register */
     {
@@ -238,7 +265,7 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         for (const code of I.CODES) {
             await new Promise(resolve => w.LMi18n.setLang(code, resolve));
             ok(w.LMi18n.loaded(code) && w.LMi18n.lang() === code, code + ': mod pack registered');
-            ok(w.lmT('discord.post') === (all.discord['discord.post'][code] || all.discord['discord.post'].en), code + ': Discord button');
+            ok(w.lmT('discord.post') === tx(all.discord['discord.post'], code), code + ': Discord button');
         }
     }
     /* Locale IDs are append-only. The four added last (13-16) are released like the first twelve:
@@ -251,22 +278,22 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
             w.run('languages/lm-i18n.js');
             w.run('languages/lm-en.js');
             ok(w.LMi18n.lang() === code && w.LMi18n.num() === String(I.CODES.indexOf(code) + 1) && !('languagemod' in w.store), code + ': the browser language is used (not saved)');
-            ok(w.Languageletter0 === all.packs['pack.home'][code], code + ': old globals follow the browser language');
+            ok(w.Languageletter0 === tx(all.packs['pack.home'], code), code + ': old globals follow the browser language');
             await new Promise(resolve => w.LMi18n.setLang(code, resolve));
             ok(w.LMi18n.lang() === code && w.store.languagemod === String(I.CODES.indexOf(code) + 1), code + ': selection persists');
-            ok(w.lmT('boot.loading') === all.boot['boot.loading'][code], code + ': translated loading text');
+            ok(w.lmT('boot.loading') === tx(all.boot['boot.loading'], code), code + ': translated loading text');
             ok(w.LMi18n.names[I.CODES.indexOf(code)] === I.NAMES[code], code + ': listed under its own name, no Beta label');
             const reload = page({ storage: w.store });
             reload.run('languages/lm-i18n.js');
             reload.run('languages/lm-en.js');
-            ok(reload.LMi18n.lang() === code && reload.lmT('boot.loading') === all.boot['boot.loading'][code], code + ': persisted selection works on reload');
+            ok(reload.LMi18n.lang() === code && reload.lmT('boot.loading') === tx(all.boot['boot.loading'], code), code + ': persisted selection works on reload');
             const theme = Buffer.from(JSON.stringify({ lang: I.CODES.indexOf(code) + 1 })).toString('base64');
             const label = makeEl('span', { 'data-i18n': 'site.home' }, 'Home');
             const site = page({ hash: '#lm=' + theme, body: [label] });
             site.run('lib/lm-i18n.js');
             site.ready();
             for (let i = 0; i < 20 && label.textContent === 'Home'; i++) await tick();
-            ok(site.LMi18n.lang() === code && label.textContent === all.site['site.home'][code] && site.document.documentElement.attrs.lang === (code === 'pt' ? 'pt-BR' : code), code + ': website receives language from game link');
+            ok(site.LMi18n.lang() === code && label.textContent === tx(all.site['site.home'], code) && site.document.documentElement.attrs.lang === (code === 'pt' ? 'pt-BR' : code), code + ': website receives language from game link');
         }
         /* the website without a chosen language: a browser in one of the four gets it */
         for (const code of I.CODES.slice(12)) {
@@ -275,7 +302,7 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
             site.run('lib/lm-i18n.js');
             site.ready();
             for (let i = 0; i < 20 && label.textContent === 'Home'; i++) await tick();
-            ok(site.LMi18n.lang() === code && label.textContent === all.site['site.home'][code] && !('languagemod' in site.store), code + ': website follows the browser language');
+            ok(site.LMi18n.lang() === code && label.textContent === tx(all.site['site.home'], code) && !('languagemod' in site.store), code + ': website follows the browser language');
         }
         /* old Android WebViews report Indonesian as "in"; pt-PT still gets the Portuguese pack */
         const wi = page({ navLang: 'in-ID' });
@@ -302,7 +329,7 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         const wg = page({ navLang: 'el-GR' });
         wg.run('languages/lm-i18n.js');
         wg.run('languages/lm-en.js');
-        ok(wg.LMi18n.lang() === 'el' && wg.LMi18n.num() === '2' && wg.LMi18n.prefixed('settings.').showMass === all.settings['settings.showMass'].el && wg.Languageletter0 === all.packs['pack.home'].el,
+        ok(wg.LMi18n.lang() === 'el' && wg.LMi18n.num() === '2' && wg.LMi18n.prefixed('settings.').showMass === tx(all.settings['settings.showMass'], 'el') && wg.Languageletter0 === tx(all.packs['pack.home'], 'el'),
             'mod: nothing chosen + Greek browser -> Greek labels, list value 2');
         ok(!('languagemod' in wg.store), 'mod: the browser language is not saved');
         const we = page({ navLang: 'el-GR', storage: { languagemod: '1' } });
@@ -329,7 +356,7 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         ok(w.store.languagemod === '6', 'page: the language from the Theme Bridge hash is saved');
         w.ready();
         for (let i = 0; i < 20 && h1.textContent === 'Features'; i++) await tick();
-        ok(h1.textContent === all.site['site.features'].ar, 'page: data-i18n in Arabic');
+        ok(h1.textContent === tx(all.site['site.features'], 'ar'), 'page: data-i18n in Arabic');
         ok(w.document.documentElement.attrs.dir === 'rtl' && w.document.documentElement.attrs.lang === 'ar', 'page: <html dir=rtl lang=ar>');
         const sel = picker.children[0];
         ok(sel && sel.tagName === 'SELECT' && sel.children.length === I.CODES.length && sel.value === '6', 'page: language picker with all supported languages');
@@ -337,7 +364,7 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         /* postMessage from the mod (iframe) */
         w._onMessage({ data: { type: 'lm-theme', theme: { lang: '2' } } });
         for (let i = 0; i < 20 && w.LMi18n.lang() !== 'el'; i++) await tick();
-        ok(w.LMi18n.lang() === 'el' && h1.textContent === all.site['site.features'].el && w.document.documentElement.attrs.dir === 'ltr', 'page: postMessage lang switches to Greek');
+        ok(w.LMi18n.lang() === 'el' && h1.textContent === tx(all.site['site.features'], 'el') && w.document.documentElement.attrs.dir === 'ltr', 'page: postMessage lang switches to Greek');
         /* no bridge, no storage: the browser language */
         const w2 = page({ navLang: 'de-DE' });
         w2.run('lib/lm-i18n.js');
@@ -371,7 +398,7 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         finally { w.setTimeout = realTimer; }
         ok(menu.children.length === 1 && button.attrs.id === 'lm-discord-post-server', 'real Discord button inserted once');
         w.displayDiscordNotification();
-        ok(toast === all.discord['discord.sent'].el, 'real Discord confirmation Greek');
+        ok(toast === tx(all.discord['discord.sent'], 'el'), 'real Discord confirmation Greek');
 
         const tab = makeEl('a', {'data-i18n':'shop.animatedFree'}, 'Animated-Free');
         const close = makeEl('button', {'data-i18n-title':'shop.close'}, '');
@@ -381,18 +408,18 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         w.LMi18n.apply(button);
         w.LMi18n.apply(tab);
         w.LMi18n.apply(close);
-        ok(button.textContent === all.discord['discord.post'].el, 'late Discord button Greek');
-        ok(tab.textContent === all.shop['shop.animatedFree'].el, 'late shop tab Greek');
-        ok(close.getAttribute('title') === all.shop['shop.close'].el, 'late shop tooltip Greek');
+        ok(button.textContent === tx(all.discord['discord.post'], 'el'), 'late Discord button Greek');
+        ok(tab.textContent === tx(all.shop['shop.animatedFree'], 'el'), 'late shop tab Greek');
+        ok(close.getAttribute('title') === tx(all.shop['shop.close'], 'el'), 'late shop tooltip Greek');
         await new Promise(resolve => w.LMi18n.setLang(6, resolve));
-        ok(button.textContent === all.discord['discord.post'].ar, 'existing Discord button Arabic');
+        ok(button.textContent === tx(all.discord['discord.post'], 'ar'), 'existing Discord button Arabic');
         w.displayDiscordNotification();
-        ok(toast === all.discord['discord.sent'].ar, 'real Discord confirmation Arabic');
-        ok(tab.textContent === all.shop['shop.animatedFree'].ar, 'existing shop tab Arabic');
-        ok(close.getAttribute('title') === all.shop['shop.close'].ar, 'existing shop tooltip Arabic');
+        ok(toast === tx(all.discord['discord.sent'], 'ar'), 'real Discord confirmation Arabic');
+        ok(tab.textContent === tx(all.shop['shop.animatedFree'], 'ar'), 'existing shop tab Arabic');
+        ok(close.getAttribute('title') === tx(all.shop['shop.close'], 'ar'), 'existing shop tooltip Arabic');
         await new Promise(resolve => w.LMi18n.setLang(1, resolve));
-        ok(button.textContent === all.discord['discord.post'].en, 'existing Discord button English');
-        ok(w.lmT('shop.activated', ['Example']) === all.shop['shop.activated'].en.replace('{0}', 'Example'), 'shop notification substitution');
+        ok(button.textContent === tx(all.discord['discord.post'], 'en'), 'existing Discord button English');
+        ok(w.lmT('shop.activated', ['Example']) === tx(all.shop['shop.activated'], 'en').replace('{0}', 'Example'), 'shop notification substitution');
     }
     /* ---------- 6. the scanner ---------- */
     {
