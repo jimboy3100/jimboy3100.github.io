@@ -950,7 +950,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #theme .slider-box{
     float:left 
 }
-#theme .btn-save,#theme .restore-settings{
+#theme .restore-settings{
     width:100%;
     margin:0;
     float:left 

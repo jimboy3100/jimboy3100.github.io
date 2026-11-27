@@ -22681,23 +22681,11 @@ function thelegendmodproject() {
                 $('#customCursor').val(i).trigger('change');
                 $('#theme-images .cursor-box a').removeClass('active');
                 $(this).addClass('active');
-            }),
-                $('#theme').append('<button class=\"btn btn-block btn-success btn-save\"\">' + textLanguage.saveSett + '</button>'),
-                $(document).on('click', '#theme .btn-save', function (e) {
-                    e.preventDefault();
-                    var i = $(this);
-                    i.text(textLanguage.saved);
-                    Settings.saveThemeSettings();
-                    setTimeout(function () {
-                        i.text(textLanguage.saveSett);
-                    }, 500);
-                    ogarhusettings();
-                    //ogarhusettingsImportExportMobile();
-                });
-            /* Theme changes are shown at once but were lost on reload unless Save was pressed
-             * (the Settings tab saves on every change). Save shortly after the player changes a
-             * colour, slider or option in this tab. Only user input here triggers it, so values
-             * that other code changes for itself are never written. */
+            });
+            /* Theme changes are saved shortly after the player changes a colour, slider or
+             * option in this tab (as the Settings tab saves on every change), so the tab has no
+             * Save button. Only user input here triggers it, so values that other code changes
+             * for itself are never written. */
             var _lmThemeSaveT = null;
             $(document).on('changeColor.colorpicker input change', '#theme input, #theme select, #theme .input-group', function () {
                 /* My themes setting the controls of a theme it applies is not input (it saves the theme itself) */

@@ -9146,24 +9146,6 @@
     "ja": "設定を保存",
     "it": "Salva impostazioni"
   },
-  "settings.saved": {
-    "en": "Saved!",
-    "el": "Αποθηκεύτηκε!",
-    "es": "¡Guardado!",
-    "bg": "Запазено!",
-    "fr": "Enregistré !",
-    "ar": "تم الحفظ!",
-    "zh": "已儲存！",
-    "ru": "Сохранено!",
-    "de": "Gespeichert!",
-    "tr": "Kaydedildi!",
-    "pl": "Zapisano!",
-    "nl": "Opgeslagen!",
-    "pt": "Salvo!",
-    "id": "Tersimpan!",
-    "ja": "保存しました！",
-    "it": "Salvato!"
-  },
   "settings.resetSett": {
     "en": "Reset to default",
     "el": "Επαναφορά προεπιλογών",
