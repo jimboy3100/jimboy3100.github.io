@@ -78,7 +78,10 @@ const rgb = hex => 'rgb(' + [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)
 const L = 'https://www.legendmod.ml/';
 
 /* ---- direct visits ---- */
-const d1 = run('index-direct', L + 'index.html', 'return lmRead(document);');
+/* the home page's purple buttons (the inline Play and extension buttons, the active tab) */
+const BTNS = 'var bg = function (sel) { var e = document.querySelector(sel); return e ? getComputedStyle(e).backgroundImage + " | " + getComputedStyle(e).backgroundColor + " | " + getComputedStyle(e).color : ""; };' +
+    ' r.btns = { play: bg("a[href=\\"https://expanding.land/\\"][style*=\\"gradient\\"]"), ext: bg(".cta-primary[style]"), tab: bg("#nav a.active, #nav .active") };';
+const d1 = run('index-direct', L + 'index.html', 'var r = lmRead(document); ' + BTNS + ' return r;');
 check('index direct: the website design (no theme class, no bridge stylesheet, no button)', d1.themed === false && !d1.bridgeCss && !d1.reset && d1.session === null, d1);
 check('index direct: its own colours', d1.bodyBg && d1.bodyBg !== rgb(DS.menuPanelColor) && d1.bodyAccent && d1.bodyAccent !== DS.menuMainColor, d1);
 const f1 = run('faq-direct', L + 'faq.html', 'return lmRead(document);');
@@ -87,12 +90,15 @@ check('faq direct: the website design', f1.themed === false && !f1.bridgeCss && 
 /* ---- index.html from the game, with a hash tab ---- */
 const idxUrl = senderUrl(L + 'index.html#Changelog');
 check('sender: index link keeps #Changelog first', /index\.html#Changelog&lm=[A-Za-z0-9_-]+$/.test(idxUrl), idxUrl);
-const t1 = run('index-themed', idxUrl, 'await sleep(600); var r = lmRead(document); r.tab = (document.querySelector("#nav a.active, #nav .active a, #nav li.active a") || {}).name || ""; return r;');
+const t1 = run('index-themed', idxUrl, 'await sleep(600); var r = lmRead(document); r.tab = (document.querySelector("#nav a.active, #nav .active a, #nav li.active a") || {}).name || ""; ' + BTNS + ' return r;');
 check('index themed: html.lm-themed-root and the bridge stylesheet', t1.themed === true && t1.bridgeCss === true && /lm-radius-set/.test(t1.classes) && /lm-bg-set/.test(t1.classes), t1);
 check('index themed: page background = panel colour, accent = main colour', t1.bodyBg === rgb(DS.menuPanelColor) && t1.bodyAccent === DS.menuMainColor, t1);
 check('index themed: the menu background image, without the query token', /img\/Legend\.png\?w=64/.test(t1.bodyImg) && !/SECRET|token|frag/.test(t1.bodyImg + t1.href + (t1.session || '')), t1.bodyImg);
 check('index themed: the theme is taken out of the address, #Changelog stays', t1.hash === '#Changelog' && !/lm=/.test(t1.href), t1.href);
 check('index themed: buttons and fields use the small corner (3px)', t1.radS === '3px' && t1.btnRadius === '3px' && t1.inRadius === '3px', t1);
+const P = 'rgb(124, 58, 237)', B1 = rgb(DS.btn1Color), BT = rgb(DS.menuBtnTextColor), db = d1.btns || {}, tb = t1.btns || {};
+check('index direct: the purple buttons stay purple', ['play', 'ext'].every(k => (db[k] || '').indexOf(P) >= 0), db);
+check('index themed: Play and extension buttons and the active tab in the first button colour, no purple left', ['play', 'ext', 'tab'].every(k => (tb[k] || '').indexOf(B1) >= 0 && (tb[k] || '').indexOf(P) < 0 && (tb[k] || '').split(' | ')[2] === BT), tb);
 check('index themed: HUD palette and font reach the page', t1.hudMc === DS.hudMainColor && t1.hudFont === 'Ubuntu' && t1.hudFs === '22px', t1);
 check('index themed: the Restore website theme button, small, bottom left, on screen', !!t1.reset && t1.reset.pos === 'fixed' && t1.reset.x < 40 && t1.reset.y + t1.reset.h <= t1.reset.vh &&
     t1.reset.y > t1.reset.vh - 60 && t1.reset.h < 40 && t1.reset.w < 260 && t1.reset.radius === '3px' && t1.reset.text === 'Restore website theme', t1.reset);

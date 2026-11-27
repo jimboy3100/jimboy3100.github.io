@@ -725,7 +725,15 @@
     <script src="https://www.legendmod.ml/lib/lm-i18n.js" data-areas="site-index" charset="utf-8"></script>
 <!-- opened from Legend Mod: the page follows the player's menu theme (#lm=...); direct visitors keep this design -->
 <script src="https://www.legendmod.ml/lib/lm-theme-bridge.js" charset="utf-8" data-lm-css="site"></script>
-<style>/* opened from Legend Mod: the purple glow in the theme accent, and the older inline black text readable (like the dark mode) */ html.lm-themed-root body { background-image: radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--lm-mc) 8%, transparent) 0%, transparent 50%) !important; } html.lm-themed-root [style*="color: black"], html.lm-themed-root [style*="color:black"] { color: var(--lm-tc) !important; }</style>
+<style>/* opened from Legend Mod: the purple glow in the theme accent, and the older inline black text readable (like the dark mode) */ html.lm-themed-root body { background-image: radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--lm-mc) 8%, transparent) 0%, transparent 50%) !important; } html.lm-themed-root [style*="color: black"], html.lm-themed-root [style*="color:black"] { color: var(--lm-tc) !important; }
+/* the purple buttons (download / play buttons, the active tab, step numbers) in the theme's first button colour and its hover colour */
+html.lm-themed-root { --lm-cta1: var(--lm-btn1); --lm-cta2: var(--lm-btn1b); --lm-cta3: var(--lm-btn1); --lm-cta-tc: var(--lm-btn-tc); }
+html.lm-themed-root a.cta-primary, html.lm-themed-root .cta-primary { background: linear-gradient(135deg, var(--lm-cta1), var(--lm-cta2), var(--lm-cta1)) !important; background-image: linear-gradient(135deg, var(--lm-cta1), var(--lm-cta2), var(--lm-cta1)) !important; color: var(--lm-cta-tc) !important; box-shadow: 0 4px 15px color-mix(in srgb, var(--lm-cta1) 40%, transparent); }
+html.lm-themed-root a.cta-primary:hover, html.lm-themed-root .cta-primary:hover { background: var(--lm-cta2) !important; background-image: none !important; color: var(--lm-cta-tc) !important; }
+html.lm-themed-root #nav .active, html.lm-themed-root #nav a.active { background: var(--lm-btn1) !important; color: var(--lm-btn-tc) !important; box-shadow: none; }
+html.lm-themed-root #nav .active:hover { color: var(--lm-btn-tc) !important; }
+html.lm-themed-root #nav a:hover, html.lm-themed-root .theme-toggle:hover, html.lm-themed-root .fallback-toggle:hover { background: color-mix(in srgb, var(--lm-mc) 8%, transparent) !important; }
+html.lm-themed-root .step-badge { background: var(--lm-btn1); color: var(--lm-btn-tc) !important; box-shadow: none; }</style>
 <link rel="alternate" type="application/ld+json" href="https://www.legendmod.ml/knowledge/graph.jsonld">
 </head>
 
@@ -915,8 +923,8 @@
                     <a href="https://expanding.land/" target="_blank" style="
                         display:inline-flex;align-items:center;gap:10px;
                         padding:12px 28px;
-                        background:linear-gradient(135deg,#7c3aed,#9333ea,#a855f7) !important;
-                        color:#fff !important;font-weight:700;font-size:0.9rem;
+                        background:linear-gradient(135deg,var(--lm-cta1,#7c3aed),var(--lm-cta2,#9333ea),var(--lm-cta3,#a855f7)) !important;
+                        color:var(--lm-cta-tc,#fff) !important;font-weight:700;font-size:0.9rem;
                         border-radius:12px;border:none !important;
                         box-shadow:0 4px 15px rgba(124,58,237,0.3);
                         transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
@@ -1078,9 +1086,9 @@
             <div id="fallbackSteps" class="fallback-content">
                 <h3 data-i18n="site.index.installChromeExtension" class="project-tagline">Install Chrome Extension</h3>
                 <div style="margin: 16px 0;">
-                    <a class="cta-primary" style="background: linear-gradient(135deg, #7c3aed, #9333ea, #7c3aed) !important; color: #fff !important; background-image: linear-gradient(135deg, #7c3aed, #9333ea, #7c3aed) !important; background-size: 100% 100% !important;" href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja" target="_blank" rel="noopener">
+                    <a class="cta-primary" style="background: linear-gradient(135deg, var(--lm-cta1, #7c3aed), var(--lm-cta2, #9333ea), var(--lm-cta1, #7c3aed)) !important; color: var(--lm-cta-tc, #fff) !important; background-image: linear-gradient(135deg, var(--lm-cta1, #7c3aed), var(--lm-cta2, #9333ea), var(--lm-cta1, #7c3aed)) !important; background-size: 100% 100% !important;" href="https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja" target="_blank" rel="noopener">
                         <img data-i18n-title="site.index.legendExpress" title="Legend Express" src="/banners/icon32croped.ico.gif" alt="LM">
-                        <span data-i18n="site.index.addLegendExpressTo" style="color: #fff !important;">Add Legend Express to Chrome</span>
+                        <span data-i18n="site.index.addLegendExpressTo" style="color: var(--lm-cta-tc, #fff) !important;">Add Legend Express to Chrome</span>
                     </a>
                     <span data-i18n="site.index.worksOnChromeEdge" class="cta-subtitle">Works on Chrome, Edge, Vivaldi, Brave & other Chromium browsers</span>
                     <div data-i18n-html="site.index.verifiedOnChromeWeb" class="cta-badge"><i class="fas fa-shield-alt"></i> Verified on Chrome Web Store</div>
