@@ -975,6 +975,7 @@
         /* lm-mobile-prefs changed from outside (settings profile, its Undo, an import): read it
          * again and apply all of it at once, including the switches of this panel */
         function reloadPrefs() {
+            releaseHeld();
             readPrefs();
             var q = function (id) { return sp.querySelector('#' + id); };
             var setRange = function (id, v, label) { var el = q(id); if (el) el.value = v; var l = q(id + '-v'); if (l) l.textContent = label; };
@@ -1222,7 +1223,27 @@
         }, { passive: true });
         bFeed.addEventListener('touchcancel', function () { feedStop(); }, { passive: true });
         /* also stop when the tab is hidden (touchend may never arrive) */
-        document.addEventListener('visibilitychange', function () { if (document.hidden) feedStop(); });
+        /* Every input the phone controls hold (a held Feed, the joystick, a pinch, a flick, the ping
+         * choice) is let go from this one place whenever something takes the screen or the game away:
+         * the menu, a hidden tab, the window losing focus or being left (a call, the app switcher,
+         * the page shade), a rotation, a settings profile changing the controls, the control editor,
+         * a replay starting or ending. Only the menu and the hidden tab did that before (the menu only
+         * through a 2 s check when its change was missed), so a Feed held there kept feeding. Keys and
+         * gamepad buttons are not touched (feedStop only ends the feed the Feed button started). */
+        function releaseHeld() {
+            feedStop();
+            if (jId !== null) { jId = null; jHide(); }
+            pOn = false; pDist = 0; swStart = null;
+            if (_cancelPing) _cancelPing();
+        }
+        document.addEventListener('visibilitychange', function () { if (document.hidden) releaseHeld(); });
+        window.addEventListener('blur', releaseHeld);
+        window.addEventListener('pagehide', releaseHeld);
+        window.addEventListener('orientationchange', releaseHeld);
+        if (window.LMEvents && typeof window.LMEvents.on === 'function') {
+            window.LMEvents.on('replayStart', releaseHeld);
+            window.LMEvents.on('replayStop', releaseHeld);
+        }
 
         /* (game menu is accessed via the drawer — ☰ now only toggles the drawer) */
 
@@ -2098,8 +2119,7 @@
             reloadPrefs: function () { reloadPrefs(); },
             /* the editor covers the screen: no held feed, no joystick, the cell stops */
             pauseInput: function () {
-                feedStop();
-                jId = null; jHide(); pOn = false; swStart = null;
+                releaseHeld();
                 mouseAt(window.innerWidth / 2, window.innerHeight / 2);
             },
             openEditor: openEditor
@@ -2175,13 +2195,8 @@
                     /* Menu appeared (died/opened). It no longer leaves fullscreen: getting back in
                      * needs a tap on Play, so with auto-respawn the phone stayed out of fullscreen
                      * (the browser's own back gesture still exits). A held Feed button stops here. */
-                    if (typeof window._lmMobileFeedStop === 'function') window._lmMobileFeedStop();
-                    /* Cancel any pending radial / flick / pinch / quick-command state */
-                    pOn = false; swStart = null;
-                    /* Cancel pending radial hold timer via the exposed callback */
-                    if (_cancelPing) _cancelPing();
-                    /* Release joystick so the cell does not drift while in the menu */
-                    if (jId !== null) { jId = null; jHide(); }
+                    /* held Feed, joystick (the cell does not drift in the menu), pinch, flick, ping */
+                    releaseHeld();
                     /* Close chat if open */
                     if (chatOn) chatClose(false);
                     // Release wake lock when not playing
