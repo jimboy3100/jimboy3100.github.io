@@ -647,24 +647,6 @@
     "ja": "自動パフォーマンス調整：解像度を下げることがある（ぼやける）",
     "it": "Prestazioni adattive: può ridurre la risoluzione (più sfocato)"
   },
-  "settings.netHistory": {
-    "en": "Network quality history (ping, jitter, disconnects)",
-    "el": "Ιστορικό ποιότητας δικτύου (ping, jitter, αποσυνδέσεις)",
-    "es": "Historial de calidad de red (ping, jitter, desconexiones)",
-    "bg": "История на качеството на мрежата (пинг, джитър, прекъсвания)",
-    "fr": "Historique de la qualité réseau (ping, jitter, déconnexions)",
-    "ar": "سجل جودة الشبكة (ping، التذبذب، الانقطاعات)",
-    "zh": "網路品質紀錄（ping、抖動、斷線）",
-    "ru": "История качества сети (пинг, джиттер, разрывы)",
-    "de": "Verlauf der Netzwerkqualität (Ping, Jitter, Abbrüche)",
-    "tr": "Ağ kalitesi geçmişi (ping, jitter, kopmalar)",
-    "pl": "Historia jakości sieci (ping, jitter, rozłączenia)",
-    "nl": "Geschiedenis netwerkkwaliteit (ping, jitter, verbroken verbindingen)",
-    "pt": "Histórico da qualidade da conexão (ping, jitter, quedas)",
-    "id": "Riwayat kualitas jaringan (ping, jitter, putus)",
-    "ja": "通信品質の履歴（Ping、ジッター、切断）",
-    "it": "Cronologia qualità di rete (ping, jitter, disconnessioni)"
-  },
   "settings.lmPerfDiag": {
     "en": "Performance diagnostics",
     "el": "Διαγνωστικά απόδοσης",
@@ -10838,24 +10820,6 @@
     "ja": "自動パフォーマンス調整：レベル3（解像度を一時的に低下）",
     "it": "Prestazioni adattive: livello 3 (risoluzione ridotta per ora)"
   },
-  "settings.lmNetClear": {
-    "en": "Clear history",
-    "el": "Διαγραφή ιστορικού",
-    "es": "Borrar historial",
-    "bg": "Изчисти историята",
-    "fr": "Effacer l'historique",
-    "ar": "مسح السجل",
-    "zh": "清除紀錄",
-    "ru": "Очистить историю",
-    "de": "Verlauf löschen",
-    "tr": "Geçmişi temizle",
-    "pl": "Wyczyść historię",
-    "nl": "Geschiedenis wissen",
-    "pt": "Limpar histórico",
-    "id": "Hapus riwayat",
-    "ja": "履歴を消去",
-    "it": "Cancella cronologia"
-  },
   "settings.lmNetQuality": {
     "en": "Network quality (this session)",
     "el": "Ποιότητα δικτύου (αυτή η συνεδρία)",
@@ -10873,24 +10837,6 @@
     "id": "Kualitas jaringan (sesi ini)",
     "ja": "通信品質（このセッション）",
     "it": "Qualità di rete (questa sessione)"
-  },
-  "settings.lmNetSessions": {
-    "en": "Last sessions",
-    "el": "Τελευταίες συνεδρίες",
-    "es": "Últimas sesiones",
-    "bg": "Последни сесии",
-    "fr": "Dernières sessions",
-    "ar": "آخر الجلسات",
-    "zh": "最近工作階段",
-    "ru": "Последние сеансы",
-    "de": "Letzte Sitzungen",
-    "tr": "Son oturumlar",
-    "pl": "Ostatnie sesje",
-    "nl": "Laatste sessies",
-    "pt": "Últimas sessões",
-    "id": "Sesi terakhir",
-    "ja": "最近のセッション",
-    "it": "Ultime sessioni"
   },
   "settings.lmPerfEvents": {
     "en": "Events (newest first)",

@@ -203,7 +203,7 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
         performance: { now: () => t }, setInterval: () => 0, clearInterval() { }, setTimeout: () => 0, addEventListener() { }, devicePixelRatio: 1, innerWidth: 900, innerHeight: 500, navigator: {},
         document: { hidden: false, addEventListener() { }, removeEventListener() { }, getElementById: () => null, createElement: () => ({ style: {} }), body: { appendChild() { } } },
         localStorage: { getItem: () => null, setItem() { }, removeItem() { } },
-        legendmod5: { adaptivePerf: true, adaptivePerfTarget: 60, netHistory: false, fpsLimit: 0 },
+        legendmod5: { adaptivePerf: true, adaptivePerfTarget: 60, fpsLimit: 0 },
         legendmod: { cells: [], isSocketOpen: () => false, quadtree: { occupancy() { reads++; return { points: 10, cells: 1, step: 10, used: 1, fullest: 10, perQuery: 10, mostRead: 10 }; } } },
         application: { saveSettings() { }, setAnimatedRainbowColor() { }, applyHudBlur() { }, _lmSkinJobAdd: jobAdd, _lmSkinJobRun: jobRun },
         drawRender: { dpr: 1, resizeCanvas() { }, _lmQueueSkinUpload: upQ, _lmUploadSkinJob: upRun }

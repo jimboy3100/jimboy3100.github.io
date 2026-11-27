@@ -142,16 +142,9 @@ check('restoreAll puts back every value', JSON.stringify(s) === JSON.stringify(b
 /* ---- network summaries ---- */
 check('jitter = mean change between pings', near(P.jitter([50, 60, 50, 50]), 20 / 3));
 check('jitter of one ping is 0', P.jitter([40]) === 0);
-const sum = P.summarizeSession(1000, 61000, [40, 50, 60, 50], [25, 25, 30], [{ code: 1006, reason: '' }, { code: 1006, reason: '' }, { code: 4408, reason: 'timeout' }], 2, ['a.example']);
-check('summary numbers', sum.dur === 60000 && sum.pingAvg === 50 && sum.ppsAvg === 27 && sum.disc === 3 && sum.reconn === 2 && sum.reasons[0].code === 1006 && sum.reasons[0].n === 2);
-let hist = [];
-for (let i = 1; i <= 14; i++) hist = P.mergeHistory(hist, Object.assign({}, sum, { start: i * 1000 }));
-check('history keeps the last 10 sessions', hist.length === 10 && hist[0].start === 5000 && hist[9].start === 14000);
-hist = P.mergeHistory(hist, Object.assign({}, sum, { start: 14000, disc: 9 }));
-check('the same session is replaced, not added', hist.length === 10 && hist[9].disc === 9);
-const bad = P.validateHistory([null, 5, { start: 'x' }, { start: 10, pingAvg: 'NaN', reasons: [{ code: 1, reason: 'a\u0000<b>' + 'x'.repeat(200) }], hosts: [{}] }]);
-check('broken history entries are dropped or cleaned', bad.length === 1 && bad[0].pingAvg === 0 && bad[0].reasons[0].reason.length <= 60 && bad[0].reasons[0].reason.indexOf('\u0000') < 0);
-check('history that is not a list is empty', P.validateHistory({ a: 1 }).length === 0);
+const sum = P.summarizeSession(1000, 61000, [40, 50, 60, 50], [25, 25, 30], [{ code: 1006, reason: '' }, { code: 1006, reason: '' }, { code: 4408, reason: 'timeout' }], 2);
+check('summary numbers', sum.dur === 60000 && sum.pingAvg === 50 && sum.ppsAvg === 27 && sum.disc === 3 && sum.reconn === 2);
+check('no session history functions (Network quality history is removed)', P.mergeHistory === undefined && P.validateHistory === undefined);
 
 /* ---- in a page (vm): off costs nothing, levels apply runtime only, survive a reload ---- */
 const src = fs.readFileSync(file, 'utf8');
@@ -183,7 +176,7 @@ function page(settings, stored, extra, lang) {
 /* frames: n frames of dt ms with r ms of drawing */
 const frames = (pg, n, dt, r) => { for (let i = 0; i < n; i++) { pg.t = (pg.t || 1) + dt; pg.ctx._lmPerfFrame(pg.t, pg.t + r); } };
 
-const user = () => Object.assign(base(), { adaptivePerf: false, adaptivePerfTarget: 60, adaptivePerfToasts: true, netHistory: false, fpsLimit: 0, performanceMode: false });
+const user = () => Object.assign(base(), { adaptivePerf: false, adaptivePerfTarget: 60, adaptivePerfToasts: true, fpsLimit: 0, performanceMode: false });
 let pg = page(user());
 check('all off: no frame hook, no timer', pg.ctx._lmPerfFrame == null && pg.timers.length === 0 && typeof pg.ctx.LMPerf === 'object');
 pg.ctx.legendmod5.adaptivePerf = true; pg.ctx.LMPerf.configChanged();
@@ -255,20 +248,12 @@ const lim = page(Object.assign(user(), { adaptivePerf: true, adaptivePerfTarget:
 frames(lim, 30 * 20, 33.3, 5);
 check('FPS limit 30: 30 FPS is the target reached', lim.ctx.LMPerf.level() === 0);
 
-/* network history: sampling only while on, saved summary, capped */
-const nt = page(Object.assign(user(), { netHistory: true }));
-check('network history on: one 1 s timer', nt.timers.filter(Boolean).length === 1);
-const lm = nt.ctx.legendmod; let pings = [40, 40, 55, 41, 60];
-lm.isSocketOpen = () => true; lm.pps = 25; lm.ws = 'wss://srv.example:443/path?token=secret';
-nt.ctx.LMPerf.netEvent('open', { ws: lm.ws });
-for (let i = 0; i < 40; i++) { lm.ping = pings[i % pings.length] + (i % 3); lm.pingTime = Date.now() - 2000; nt.timers[0](); }
+/* the removed Network quality history: its saved sessions go once on load; nothing measures the
+ * network with the diagnostics window closed (the live measuring is checked with the window below) */
+const nt = page(user(), { lmNetHistory: '[{"start":1}]' });
+check('old network history removed on load, no timer', !('lmNetHistory' in nt.store) && nt.timers.filter(Boolean).length === 0);
 nt.ctx.LMPerf.netEvent('close', { code: 1006, reason: '', wasClean: false, openMs: 5000 });
-nt.ctx.LMPerf.netEvent('open', { ws: lm.ws });
-for (let i = 0; i < 20; i++) nt.timers[0]();
-const h = JSON.parse(nt.store.lmNetHistory);
-check('session summary saved with ping, jitter, disconnects', h.length === 1 && h[0].pingAvg > 0 && h[0].jitter > 0 && h[0].disc === 1 && h[0].reconn === 1 && h[0].ppsAvg === 25);
-check('host only (no token) is kept', h[0].hosts.length === 1 && h[0].hosts[0] === 'srv.example');
-check('report text is built', /FPS:/.test(nt.ctx.LMPerf.report()) && /disconnects 1/.test(nt.ctx.LMPerf.report()));
+check('report text is built; a disconnect with the window closed is not counted', /FPS:/.test(nt.ctx.LMPerf.report()) && /disconnects 0/.test(nt.ctx.LMPerf.report()));
 /* frames by renderer and Canvas2D reason: drawRender counts them (GLW_IDS of ogario.v4.js) */
 {
     const idsM = /\n        GLW_IDS: (\[[^\]]*\]),/.exec(fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n'));
@@ -325,8 +310,6 @@ check('colour log alone: a repeat counts, rows are bounded', (() => {
     const l = log.list();
     return l.length === 2 && l[0].kind === 'b' && l[1].kind === 'c' && P.colorRowText({ kind: 'a', n: 2, t: 0, tl: 0, nick: 'x' }).indexOf('a x2: main') === 0;
 })());
-nt.ctx.legendmod5.netHistory = false; nt.ctx.LMPerf.configChanged();
-check('network history off: timer stopped', nt.timers.filter(Boolean).length === 0);
 
 /* ---- stalls, freezes and the event list (diagnostics only) ---- */
 check('gap kinds', P.classifyGap(16.7, false, -1) === '' && P.classifyGap(150, false, -1) === 'stall' && P.classifyGap(1500, false, -1) === 'freeze' &&
@@ -1119,13 +1102,28 @@ check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')'
     check('window: developer console turned off elsewhere: the switch says off', bDev.textContent === i18n.t('pkg.caw.devOff'));
     wp.ctx.LMi18n.setLang('el');
     check('window: a language change redraws it in Greek', title.textContent === i18n.t('settings.lmPerfDiag', null, 'el') && title.textContent !== i18n.t('settings.lmPerfDiag') &&
-        byId('lm-perf-clear').textContent === i18n.t('settings.lmNetClear', null, 'el') && stats.textContent.indexOf(i18n.t(PFX + 'statAdaptiveOff', null, 'el')) >= 0 &&
+        byId('lm-perf-keep').textContent === i18n.t(PFX + 'keepOff', null, 'el') && stats.textContent.indexOf(i18n.t(PFX + 'statAdaptiveOff', null, 'el')) >= 0 &&
         canv[0].fills.some(t => t === i18n.t(PFX + 'graphFrames', [50, 60], 'el')));
     wp.ctx.LMi18n.setLang('ar');
     check('window: right-to-left in Arabic, graphs stay left-to-right', md.dir === 'rtl' && canv.every(c => c.dir === 'ltr') && title.textContent === i18n.t('settings.lmPerfDiag', null, 'ar'));
     check('report stays English in another language', /^Legend Mod .* performance report/.test(wp.ctx.LMPerf.report()) && /Freezes \(\u2265250 ms, foreground\): 0/.test(wp.ctx.LMPerf.report()));
+    /* network quality: measured live while the window is open, nothing is stored */
+    {
+        const lm = wp.ctx.legendmod, pings = [40, 40, 55, 41, 60];
+        lm.isSocketOpen = () => true; lm.pps = 25; lm.ws = 'wss://srv.example:443/path?token=secret';
+        const tick = () => wp.timers.forEach((f) => { if (f) f(); });
+        wp.ctx.LMPerf.netEvent('open', { ws: lm.ws });
+        for (let i = 0; i < 40; i++) { lm.ping = pings[i % pings.length] + (i % 3); lm.pingTime = Date.now() - 2000; tick(); }
+        wp.ctx.LMPerf.netEvent('close', { code: 1006, reason: '', wasClean: false, openMs: 5000 });
+        wp.ctx.LMPerf.netEvent('open', { ws: lm.ws });
+        for (let i = 0; i < 20; i++) tick();
+        const rep = wp.ctx.LMPerf.report();
+        check('window open: live ping, jitter, packet rate and the disconnect in the report', /Network: ping \d+ ms, avg [1-9]\d*, p95 \d+, jitter [1-9]/.test(rep) && /\(avg 25\), disconnects 1, reconnects 1/.test(rep));
+        check('window open: no sessions stored, no history section or Clear button', !Object.keys(wp.store).some((k) => /net/i.test(k)) && !byId('lm-perf-clear') && !/Last sessions/.test(rep));
+    }
     wp.ctx.LMPerf.closeDiag();
     check('window closed: removed', body.children.length === 0);
+    check('window closed: network measuring stopped (no timer left)', wp.timers.filter(Boolean).length === 0);
 }
 console.log(fail ? fail + ' failed' : 'all perf checks passed');
 process.exit(fail ? 1 : 0);

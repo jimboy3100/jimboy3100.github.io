@@ -74,7 +74,7 @@
   $('#og-options input[type=checkbox][id], #og-options input[type=range][id]').each(function () { if (seen[this.id]) dup.push(this.id); seen[this.id] = 1; });
   if (dup.length) fail.push('options built twice: ' + dup.slice(0, 5).join(', '));
   // options in their section, and every heading has a text
-  var place = { recordReplays: 'replayGroup', 'instantReplaySecs-slider': 'replayGroup', netHistory: 'perfGroup', 'lm-perf-diag-btn': 'perfGroup',
+  var place = { recordReplays: 'replayGroup', 'instantReplaySecs-slider': 'replayGroup', 'lm-perf-diag-btn': 'perfGroup',
     adaptivePerf: 'perfGroup', hudMergeCountdown: 'mergeGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
     reducedMotion: 'expandingLandGroup', clickSpectate: 'spectateGroup',
     'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };

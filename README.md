@@ -86,7 +86,6 @@
 - 📱 Mobile touch controls
 - 👤 Settings profiles — auto-switch per server/game mode
 - 🌐 16 language packs (English, Greek, Spanish, Bulgarian, French, Arabic, Traditional Chinese, Russian, German, Turkish, Polish, Dutch, Brazilian Portuguese, Indonesian, Japanese, Italian)
-- 📊 Network quality history
 
 ---
 

@@ -1,4 +1,4 @@
-/* Legend Mod: adaptive performance, performance diagnostics and network quality history.
+/* Legend Mod: adaptive performance and performance diagnostics.
  *
  * Adaptive performance (option, off by default): measures the real frame times and, when the
  * game stays below the chosen FPS target, turns costly effects off one level at a time
@@ -20,8 +20,8 @@
  * callbacks, and the long animation frames of the browser (Chrome 123+) say which script
  * callback ran; each freeze gets a line with its biggest parts and a probable contributor
  * when one part took over half of it. Wrapped methods are put back when recording stops.
- * Network quality history (option, off by default): ping, jitter, packet rate and
- * disconnects of this session, with a short summary of the last sessions.
+ * Network quality (in the window, measured only while it is open): ping, jitter, packet rate
+ * and disconnects of this session; nothing of it is stored.
  *
  * Cost while everything is off: the render loop checks one global (window._lmPerfFrame) per
  * frame and the connection checks one when it opens or closes; no timers run.
@@ -316,59 +316,20 @@
     function rnPart(name) { return hasOwn(RN_KEYS, name) ? tp(RN_KEYS[name], name) : String(name); }
     function rnText(name, tr) { var p = rnPart(name); return typeof p === 'string' ? p : say(tr, p.k, p.en); }
 
-    var HISTORY_MAX = 10;
-    /* stored history -> a clean array (it may be old, edited or broken) */
-    function validateHistory(raw) {
-        if (!Array.isArray(raw)) return [];
-        var out = [];
-        for (var i = 0; i < raw.length && out.length < HISTORY_MAX * 2; i++) {
-            var s = raw[i];
-            if (!s || typeof s !== 'object' || !(num(s.start) > 0)) continue;
-            var reasons = Array.isArray(s.reasons) ? s.reasons.slice(0, 3).filter(function (r) { return r && typeof r === 'object'; }).map(function (r) {
-                return { code: Math.round(num(r.code)), reason: cleanText(r.reason, 60), n: Math.max(1, Math.round(num(r.n, 1))) };
-            }) : [];
-            out.push({
-                start: num(s.start), dur: Math.max(0, num(s.dur)), n: Math.max(0, Math.round(num(s.n))),
-                pingAvg: Math.max(0, num(s.pingAvg)), pingP95: Math.max(0, num(s.pingP95)), jitter: Math.max(0, num(s.jitter)),
-                ppsAvg: Math.max(0, num(s.ppsAvg)), disc: Math.max(0, Math.round(num(s.disc))), reconn: Math.max(0, Math.round(num(s.reconn))),
-                reasons: reasons,
-                hosts: Array.isArray(s.hosts) ? s.hosts.slice(0, 3).map(function (h) { return cleanText(h, 80); }) : []
-            });
-        }
-        return out.slice(-HISTORY_MAX);
-    }
-
     /* this session's summary: pings (pong samples), pps samples (while connected), close events */
-    function summarizeSession(start, end, pings, ppsSamples, closes, reconnects, hosts) {
+    function summarizeSession(start, end, pings, ppsSamples, closes, reconnects) {
         var sp = sortedCopy(pings), sum = 0, i;
         for (i = 0; i < pings.length; i++) sum += pings[i];
         var ps = 0;
         for (i = 0; i < ppsSamples.length; i++) ps += ppsSamples[i];
-        var byCode = {}, order = [];
-        for (i = 0; i < closes.length; i++) {
-            var key = closes[i].code + '|' + closes[i].reason;
-            if (!byCode[key]) { byCode[key] = { code: closes[i].code, reason: closes[i].reason, n: 0 }; order.push(key); }
-            byCode[key].n++;
-        }
-        order.sort(function (a, b) { return byCode[b].n - byCode[a].n; });
         return {
             start: start, dur: Math.max(0, end - start), n: pings.length,
             pingAvg: pings.length ? Math.round(sum / pings.length) : 0,
             pingP95: Math.round(percentile(sp, 95)),
             jitter: Math.round(jitter(pings) * 10) / 10,
             ppsAvg: ppsSamples.length ? Math.round(ps / ppsSamples.length) : 0,
-            disc: closes.length, reconn: reconnects,
-            reasons: order.slice(0, 3).map(function (k) { return byCode[k]; }),
-            hosts: (hosts || []).slice(0, 3)
+            disc: closes.length, reconn: reconnects
         };
-    }
-
-    /* the session list with this session put in (replaced when already there), capped */
-    function mergeHistory(list, summary) {
-        var out = validateHistory(list).filter(function (s) { return s.start !== summary.start; });
-        out.push(summary);
-        out.sort(function (a, b) { return a.start - b.start; });
-        return out.slice(-HISTORY_MAX);
     }
 
     /* host of a server address: the path and query may hold a token, user:password@ too */
@@ -959,7 +920,7 @@
         snapTarget: snapTarget, percentile: percentile, sortedCopy: sortedCopy, snapRefresh: snapRefresh,
         effectiveTarget: effectiveTarget, displayBound: displayBound, newController: newController, controllerStep: controllerStep,
         keysForLevel: keysForLevel, createOverrides: createOverrides, jitter: jitter,
-        validateHistory: validateHistory, summarizeSession: summarizeSession, mergeHistory: mergeHistory
+        summarizeSession: summarizeSession
     };
 
     if (typeof window === 'undefined') {
@@ -977,7 +938,6 @@
     var RING = 600; /* frames kept for the diagnostics window */
     var LONG_FRAME = 50; /* ms */
     var EVENTS_MAX = 200;
-    var HISTORY_KEY = 'lmNetHistory';
 
     var dms = function () { return window.legendmod5 || null; };
     var app = function () { return window.application || null; };
@@ -1861,7 +1821,7 @@
     var net = {
         active: false, timer: 0, start: Date.now(), ticks: 0,
         t: [], ping: [], pps: [], open: [],
-        pongs: [], ppsLive: [], closes: [], reconnects: 0, hadClose: false, hosts: [],
+        pongs: [], ppsLive: [], closes: [], reconnects: 0, hadClose: false,
         lastVal: 0, lastStamp: 0, sampledStamp: 0, lastPeriodicSample: 0
     };
 
@@ -1897,8 +1857,7 @@
             net.ppsLive.push(pps);
             if (net.ppsLive.length > NET_SAMPLES) net.ppsLive.shift();
         }
-        if (++net.ticks % 30 === 0) saveSession();
-        if (diagOpen && net.ticks % 2 === 0) drawNetGraph();
+        if (diagOpen && ++net.ticks % 2 === 0) drawNetGraph();
     }
 
     function netEvent(type, info) {
@@ -1914,31 +1873,18 @@
             if (net.closes.length > 200) net.closes.shift();
             /* P1 fix #36: a clean close with code 1000 is a voluntary server hop, not a
              * network disconnect. Only mark hadClose for unexpected disconnects so the
-             * reconnect counter and history reflect actual network problems. */
+             * reconnect counter reflects actual network problems. */
             if (!clean || (code !== 1000 && code !== 0)) net.hadClose = true;
         } else if (type === 'open') {
             if (net.hadClose) { net.reconnects++; net.hadClose = false; }
-            var h = hostOf(info && info.ws);
-            if (h && net.hosts.indexOf(h) < 0) { net.hosts.push(h); if (net.hosts.length > 3) net.hosts.shift(); }
         }
     }
 
-    function readHistory() {
-        try { return validateHistory(JSON.parse(window.localStorage.getItem(HISTORY_KEY) || '[]')); } catch (e) { return []; }
-    }
-
     function sessionSummary() {
-        return summarizeSession(net.start, Date.now(), net.pongs, net.ppsLive, net.closes, net.reconnects, net.hosts);
+        return summarizeSession(net.start, Date.now(), net.pongs, net.ppsLive, net.closes, net.reconnects);
     }
 
-    /* only with the option on: the diagnostics window alone keeps nothing */
-    function saveSession() {
-        var s = dms();
-        if (!s || !s.netHistory) return;
-        if (net.pongs.length < 5 && !net.closes.length) return;
-        try { window.localStorage.setItem(HISTORY_KEY, JSON.stringify(mergeHistory(readHistory(), sessionSummary()))); } catch (e) { }
-    }
-
+    /* measured only while the diagnostics window is open */
     function setNet(on) {
         if (on === net.active) return;
         net.active = on;
@@ -1956,7 +1902,8 @@
         }
     }
 
-    window.addEventListener('pagehide', function () { if (net.active) saveSession(); });
+    /* the removed Network quality history kept its sessions here: gone once, quietly */
+    try { window.localStorage.removeItem('lmNetHistory'); } catch (e) { }
     /* When the tab is hidden or shown: a frame gap around it is the browser pausing frames,
      * not a stall (document.hidden is already false by the time the first frame fires). */
     document.addEventListener('visibilitychange', function () {
@@ -2092,11 +2039,6 @@
             ll.slice(-20).forEach(function (l) { lines.push('  ' + timeText(l.w) + ' ' + loafLine(l) + ' @' + Math.round(l.t)); });
         }
         timelineLines(lines);
-        var hist = readHistory();
-        if (hist.length) {
-            lines.push('Last sessions:');
-            hist.slice(-5).forEach(function (h) { lines.push('  ' + sessionLine(h)); });
-        }
         return lines;
     }
 
@@ -2190,19 +2132,6 @@
             (fr.frzN ? ', worst ' + Math.round(fr.frzMax) + ' ms, total ' + Math.round(fr.frzTotal) + ' ms' + (t ? ', last ' + at : '') : '') +
             (fr.bgGaps ? ' (' + fr.bgGaps + ' background gaps not counted)' : '') +
             (fr.ufN ? ' (' + fr.ufN + ' while the window was not in front, ' + Math.round(fr.ufTotal) + ' ms, not counted)' : '');
-    }
-
-    function fmtDur(ms) {
-        var m = Math.round(ms / 60000);
-        return m >= 60 ? Math.floor(m / 60) + 'h' + (m % 60 < 10 ? '0' : '') + (m % 60) : m + 'm';
-    }
-    /* one saved session; tr: in the chosen language (the window), else English (the report).
-     * The close reasons are the server's own text. */
-    function sessionLine(h, tr) {
-        var d = new Date(h.start);
-        return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) +
-            ' ' + fmtDur(h.dur) + say(tr, 'session', ', ping {0} (p95 {1}) \u00b1{2}, {3} pkt/s, {4} disc.', [h.pingAvg, h.pingP95, h.jitter, h.ppsAvg, h.disc]) +
-            (h.reasons.length ? ' [' + h.reasons.map(function (r) { return r.code + (r.reason ? ' ' + r.reason : '') + (r.n > 1 ? ' x' + r.n : ''); }).join('; ') + ']' : '');
     }
 
     function el(tag, css, text) {
@@ -2318,10 +2247,6 @@
         body.appendChild(nv);
         var nstats = el('pre', 'margin:4px 0 6px;white-space:pre-wrap;font:11px/1.35 monospace;color:' + tc + ';' + box);
         body.appendChild(nstats);
-        var hSessions = el('div', 'font-weight:700;color:' + mc + ';');
-        body.appendChild(hSessions);
-        var hist = el('pre', 'margin:2px 0 6px;white-space:pre-wrap;font:10px/1.35 monospace;color:' + tc2 + ';' + box);
-        body.appendChild(hist);
         var row = el('div', 'display:flex;gap:6px;flex-wrap:wrap;');
         var btn = function (id, text, fn) {
             var b = el('button', 'cursor:pointer;font-family:inherit;font-size:var(--lm-w-fs,11px);min-height:var(--lm-w-ctl,26px);padding:3px 10px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + pc2 + ';background:var(--lm-w-btn,rgba(255,255,255,0.05));color:' + tc + ';', text);
@@ -2334,10 +2259,6 @@
         /* the one report (ogario.v4.js lmCopyDebugInfo, also Settings > Copy debug info): the general
          * part and this window's performance report (LMPerf.report) */
         var bCopy = btn('lm-perf-copy', '', function () { if (typeof window.lmCopyDebugInfo === 'function') window.lmCopyDebugInfo(); });
-        var bClear = btn('lm-perf-clear', '', function () {
-            try { window.localStorage.removeItem(HISTORY_KEY); } catch (e) { }
-            updateDiag();
-        });
         /* this session only: frame times and events go on with the window closed (it covers
          * part of a phone screen), so a freeze while playing is in the report afterwards */
         var bKeep = btn('lm-perf-keep', '', function () {
@@ -2364,8 +2285,8 @@
             md.addEventListener(t, function (e) { e.stopPropagation(); }, { passive: true });
         });
         document.body.appendChild(md);
-        diag = { md: md, cv: cv, stats: stats, evs: evs, nv: nv, nstats: nstats, hist: hist, timer: 0,
-            title: title, x: x, hEvents: hEvents, hNet: hNet, hSessions: hSessions, bCopy: bCopy, bClear: bClear, bKeep: bKeep, bDev: bDev };
+        diag = { md: md, cv: cv, stats: stats, evs: evs, nv: nv, nstats: nstats, timer: 0,
+            title: title, x: x, hEvents: hEvents, hNet: hNet, bCopy: bCopy, bKeep: bKeep, bDev: bDev };
         diagTexts();
         diagOpen = true;
         wantMeasuring();
@@ -2394,9 +2315,7 @@
         diag.x.setAttribute('aria-label', TS('close'));
         diag.hEvents.textContent = TS('lmPerfEvents');
         diag.hNet.textContent = TS('lmNetQuality');
-        diag.hSessions.textContent = TS('lmNetSessions');
         diag.bCopy.textContent = typeof window.lmT === 'function' ? window.lmT('game1.set.copyDebug') : 'game1.set.copyDebug';
-        diag.bClear.textContent = TS('lmNetClear');
         diag.bKeep.textContent = keepText();
         diag.bDev.textContent = devText();
     }
@@ -2414,8 +2333,7 @@
         diag = null;
         diagOpen = false;
         wantMeasuring();
-        var s = dms();
-        setNet(!!(s && s.netHistory));
+        setNet(false);
     }
 
     function drawFrameGraph(st) {
@@ -2511,9 +2429,6 @@
                 /* the reason is the server's own text */
                 return '\n  ' + new Date(c.t).toLocaleTimeString() + ' ' + T('infoCode', [c.code]) + (c.reason ? ' ' + c.reason : '') + (c.clean ? '' : ' ' + T('notClean'));
             }).join('');
-        var h = readHistory();
-        diag.hist.textContent = h.length ? h.slice(-5).reverse().map(function (x) { return sessionLine(x, tr); }).join('\n') :
-            (s.netHistory ? T('netNoSessions') : T('netHistOff'));
         /* a preset, profile or import can switch the developer console while the window is open */
         var dt = devText();
         if (diag.bDev.textContent !== dt) diag.bDev.textContent = dt;
@@ -2534,7 +2449,7 @@
         /* resolution no longer allowed while at level 3: back to level 2 and full resolution now */
         if (ctl.level > topLevel()) { ctl.level = topLevel(); applyLevel(true); }
         setAdaptive(!!s.adaptivePerf);
-        setNet(!!s.netHistory || diagOpen);
+        setNet(diagOpen);
     }
 
     /* setSettings(id, value) calls this first, before the value is stored */
@@ -2608,7 +2523,6 @@
         _scopes: sc,
         hostOf: hostOf,
         keepRecording: function (on) { keepRec = !!on; wantMeasuring(); },
-        history: readHistory,
         /* for tests: force a level as if measured */
         _setLevel: function (l) {
             ctl.level = Math.max(0, Math.min(MAX_LEVEL, l | 0));

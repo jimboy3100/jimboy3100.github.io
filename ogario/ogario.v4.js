@@ -21557,7 +21557,6 @@ var defaultmapsettings = {
     adaptivePerfTarget: 60,       /* Adaptive performance target: 30, 60, 90 or 120 FPS */
     adaptivePerfToasts: true,     /* a short message when Adaptive performance changes level */
     adaptivePerfRes: false,       /* Adaptive performance may also lower the internal resolution (level 3, blurrier picture) */
-    netHistory: false,            /* keep a ping / jitter / packet rate / disconnect summary of the last sessions */
     reducedMotion: false,         /* no death screen shake, death particles or Expanding Land entrance spin */
     autoHideNames: true,
     autoHideMass: true,
@@ -26108,7 +26107,6 @@ function thelegendmodproject() {
                         break;
                     case 'adaptivePerf':
                     case 'adaptivePerfRes':
-                    case 'netHistory':
                         if (window.LMPerf) window.LMPerf.configChanged();
                         break;
                     case 'glAntialias':
@@ -27338,7 +27336,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27500,13 +27498,12 @@ function thelegendmodproject() {
             }
             this.addSliderBox(".animationGroup", "animation", 5, 200, 1);
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
-            /* Adaptive performance, network quality history and the diagnostics window
+            /* Adaptive performance and the diagnostics window
              * (ogario/modules/perf.js) */
             this.addOptionTo(".perfGroup", "adaptivePerf");
             this.addSliderBox(".perfGroup", "adaptivePerfTarget", 30, 120, 30);
             this.addOptionTo(".perfGroup", "adaptivePerfToasts");
             this.addOptionTo(".perfGroup", "adaptivePerfRes");
-            this.addOptionTo(".perfGroup", "netHistory");
             $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block btn-primary" style="margin:4px 0 2px;"></button>')
                 .attr('data-i18n', 'settings.lmPerfDiag').text(lmT('settings.lmPerfDiag')).appendTo('.perfGroup')
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
@@ -42063,7 +42060,7 @@ function thelegendmodproject() {
             if (this === window.legendmod) this._lmResetFreezeDetector();
             /* a new connection: its own network diagnostics (the previous one is kept once) */
             if (this === window.legendmod) this._lmNetDiagStart();
-            /* Network quality history (ogario/modules/perf.js; nothing kept while it is off) */
+            /* connect event for the Performance diagnostics window (ogario/modules/perf.js) */
             if (window.LMPerf && this === window.legendmod) { try { window.LMPerf.netEvent('open', { ws: this.ws }); } catch (e) { } }
             var self = this;
             if (this._reconnStabilityTimer) clearTimeout(this._reconnStabilityTimer);
@@ -89117,8 +89114,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading HUD helpers script:', e);
     }
-    /* Adaptive performance, performance diagnostics, network quality history
-     * (nothing runs while its options are off and its window is closed) */
+    /* Adaptive performance and performance diagnostics
+     * (nothing runs while its option is off and its window is closed) */
     try {
         var perfScript = document.createElement('script');
         perfScript.type = 'text/javascript';

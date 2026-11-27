@@ -8,12 +8,14 @@
   var P = window.LMPerf;
   if (!P) return { fail: ['LMPerf missing (ogario/modules/perf.js not loaded)'] };
   var S = window.legendmod5;
-  ['adaptivePerf', 'netHistory', 'adaptivePerfToasts'].forEach(function (k) {
+  ['adaptivePerf', 'adaptivePerfToasts'].forEach(function (k) {
     if (!document.getElementById(k)) fail.push('option ' + k + ' missing');
   });
   if (!document.getElementById('adaptivePerfTarget-slider')) fail.push('target slider missing');
   if (!document.getElementById('lm-perf-diag-btn')) fail.push('diagnostics button missing');
-  if (S.adaptivePerf !== false || S.netHistory !== false) fail.push('options not off by default');
+  if (S.adaptivePerf !== false) fail.push('options not off by default');
+  /* Network quality history is removed: no switch, no saved setting */
+  if (document.getElementById('netHistory') || 'netHistory' in S) fail.push('removed Network quality history still there');
   if (window._lmPerfFrame) fail.push('frame hook set while everything is off');
   /* diagnostics window */
   P.openDiag();
