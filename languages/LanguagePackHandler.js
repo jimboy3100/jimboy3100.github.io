@@ -107,8 +107,6 @@ $(".options-box.respGroup>h5").text(Languageletter39);
 $(".options-box.respGroup>LABEL").replace('Quick respawn', Languageletter41);
 $(".options-box.respGroup>LABEL").replace('Auto respawn', Languageletter40);
 $(".options-box.respGroup>LABEL").replace('Spawn special effects', Languageletter41a);
-$(".options-box.massGroup>LABEL").replace('Merge timer BETA off', Languageletter41b);
-$(".options-box.massGroup>LABEL").replace('Suggested to be enabled for Lag reduce', Languageletter41c);
 $(".options-box.massGroup>LABEL").replace('Virus shot sound', Languageletter41d);
 
 $(".options-box.namesGroup>h5").text(Languageletter42);
@@ -120,7 +118,6 @@ $(".options-box.namesGroup>LABEL").replace('Hide teammates names', Languagelette
 $(".options-box.namesGroup>LABEL").replace('Names stroke', Languageletter48);
 $(".options-box.massGroup>h5").text(Languageletter49);
 $(".options-box.massGroup>LABEL").replace('Show mass', Languageletter50);
-$(".options-box.massGroup>LABEL").replace('Optimized mass',  Languageletter51);
 $(".options-box.massGroup>LABEL").replace('Auto hide mass', Languageletter52);
 $(".options-box.massGroup>LABEL").replace('Hide my mass', Languageletter53);
 $(".options-box.massGroup>LABEL").replace('Hide enemies mass', Languageletter54);
