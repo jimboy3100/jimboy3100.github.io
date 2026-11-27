@@ -127,7 +127,7 @@
 "site.lc.articles.skypeOffersUsA": "Το Skype μάς προσφέρει ένα σταθερό και αξιόπιστο σύστημα επικοινωνίας χωρίς άχρηστες λειτουργίες, με συμβατότητα και χωρίς απενεργοποιημένους λογαριασμούς. <em>Το Legend Clan συνεχίζει με τον παλιό τρόπο</em>",
 "site.lc.articles.lcSenpai": "Lc-Senpai",
 "site.lc.articles.announcementOfTheRoom": "18/12/2017 Ανακοίνωση του room Senpai (η elite της elite)",
-"site.lc.articles.senpaiIsANew": "Το ℄ Senpai είναι ένα νέο room με τους πιο ενεργούς και πιο pro παίκτες του Lc, που θέλουν επίσης να σκοτώνουν όλους και αποφεύγουν τους servers του Lc και του EA.",
+"site.lc.articles.senpaiIsANew": "Το ℄ Senpai είναι ένα νέο room με τους πιο ενεργούς και πιο pro παίκτες του Lc, που επίσης δεν θέλουν να σκοτώνουν όλους και αποφεύγουν τους servers του Lc-EA.",
 "site.lc.articles.administratorOfSenpaiMachouil": "Διαχειριστής του Senpai: Machouil (℄Polska)",
 "site.lc.articles.theReasonWeMake": "Φτιάχνουμε αυτό το room γιατί πολλοί pro παίκτες δεν θέλουν να παίζουν με μέτριους. Όσοι παίζουν με randoms ή δεν είναι έμπειροι δεν μπορούν να παίξουν με αυτούς τους κανόνες.",
 "site.lc.articles.ofcourseBecauseOfThe": "Φυσικά, επειδή είμαστε λιγότεροι, όταν το room είναι ανενεργό οι παίκτες μπορούν να παίζουν όπως θέλουν. Εδώ θα κανονίζουμε επίσημα τις μάχες.",
