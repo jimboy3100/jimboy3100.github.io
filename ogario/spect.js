@@ -104,26 +104,41 @@ var LM_ORI = [[1, 1], [-1, 1], [1, -1], [-1, -1]];
  * Top players (opcode 69) of the main connection (ref, world) and of this one (obs,
  * raw - C): per candidate, how many pair up one-to-one with the same mass (massTol) and
  * the same place (tol). A player near a centre line fits both signs of that axis, so it
- * adds to both candidates and decides nothing.
+ * adds to both candidates and decides nothing. distinct: a player with two candidates of
+ * its mass within tol is ambiguous and not counted.
  */
-function lmGhostOrientationCounts(ref, obs, tol, massTol) {
+function lmGhostOrientationCounts(ref, obs, tol, massTol, distinct) {
     var counts = [0, 0, 0, 0], tol2 = tol * tol;
     var order = ref.slice().sort(function (a, b) { return b.mass - a.mass; });
     for (var c = 0; c < 4; c++) {
         var sx = LM_ORI[c][0], sy = LM_ORI[c][1], used = [];
         for (var i = 0; i < order.length; i++) {
-            var m = order[i], best = -1, bestD = tol2;
+            var m = order[i], best = -1, bestD = tol2, n = 0;
             for (var j = 0; j < obs.length; j++) {
                 var g = obs[j];
-                if (used[j] || Math.abs(g.mass - m.mass) > massTol * Math.max(g.mass, m.mass)) continue;
+                if (Math.abs(g.mass - m.mass) > massTol * Math.max(g.mass, m.mass)) continue;
                 var dx = sx * g.x - m.x, dy = sy * g.y - m.y, dd = dx * dx + dy * dy;
-                if (dd <= bestD) { bestD = dd; best = j; }
+                if (dd > tol2) continue;
+                n++;
+                if (!used[j] && dd <= bestD) { bestD = dd; best = j; }
             }
-            if (best >= 0) { used[best] = true; counts[c]++; }
+            if (best < 0 || (distinct && n !== 1)) continue;
+            used[best] = true;
+            counts[c]++;
         }
     }
     return counts;
 }
+/*
+ * Top-player lists compared for the orientation: at most LM_GHOST_MAX_DT apart; a player
+ * may have moved LM_GHOST_TOL0 + LM_GHOST_SPEED * dt between them (live agar.io FFA,
+ * consecutive lists of one connection: p50 132-140, p95 252-297, p99 434 units/s; the
+ * tolerance was 150 + 1 per ms, up to 3150 units for lists 3 s apart) and has the same
+ * mass within LM_GHOST_MASS (p99 of the change in ~1 s: 2.5%; it was 15%). Two votes are
+ * independent evidence only LM_GHOST_VOTE_GAP apart (the next list of the same players a
+ * second later is not a second confirmation).
+ */
+var LM_GHOST_MAX_DT = 1000, LM_GHOST_TOL0 = 60, LM_GHOST_SPEED = 0.5, LM_GHOST_MASS = 0.03, LM_GHOST_VOTE_GAP = 1500;
 /* the candidate that clearly wins (at least minBest, minMargin more than any other and the
  * runner-up at most ratio of it), else -1 (ambiguous: wait for more) */
 function lmDecideOrientation(counts, minBest, minMargin, ratio) {
@@ -138,6 +153,8 @@ function lmDecideOrientation(counts, minBest, minMargin, ratio) {
  * stationary food in world coordinates. A bucket is only an index: two pellets in one
  * bucket stay two pellets. */
 var LM_ANCHOR_CELL = 32;
+/* anchors kept per connection (the newest; see Spect._lmAnchorPush) */
+var LM_ANCHOR_MAX = 384;
 function lmAnchorKey(gx, gy) { return gx * 1048576 + gy; }
 function lmAnchorGrid() { return { map: new Map(), n: 0 }; }
 function lmAnchorPut(grid, x, y, size, src) {
@@ -176,7 +193,7 @@ function lmAnchorResiduals(grid, obs, R, skipSrc, stamp) {
         }
         if (!best || other) continue;
         best.used = stamp;
-        out.push([best.x - o.x, best.y - o.y]);
+        out.push([best.x - o.x, best.y - o.y, i]);
     }
     return out;
 }
@@ -197,13 +214,47 @@ function lmRobustOffset(res) {
     return { n: res.length, inl: dev.length, mx: mx, my: my, p95: dev.length ? dev[Math.min(dev.length - 1, Math.floor(dev.length * 0.95))] : Infinity };
 }
 /*
- * Reference food for every connection's check, rebuilt at most once a second: the main
- * connection's food (its frame -> world) and the food seen by the connections whose
- * orientation is verified (their raw -> world).
+ * A food anchor: one pellet as one connection saw it, for the orientation and residual
+ * checks: { sourceId, generation, rawId, rawX, rawY, size, observedAt, alive, cell }.
+ * Alive until the pellet is eaten or leaves that connection's view (its cell is removed)
+ * or the connection closes or opens a new socket; a dead anchor is never evidence.
  */
-var _lmFoodRef = { t: -Infinity, grid: null, stamp: 0 };
+function lmAnchorLive(a, gen) {
+    if (!a || !a.alive) return false;
+    if (a.generation !== gen || (a.cell && (a.cell.removed || a.cell._lmGen !== a.generation))) {
+        a.alive = false;
+        a.cell = null;
+        return false;
+    }
+    return true;
+}
+/*
+ * Reference food for every connection's check, rebuilt at most once a second: the main
+ * connection's food (its frame -> world) and the live anchors of the connections whose
+ * orientation is verified (their raw -> world). Rebuilt at once when a transform it was
+ * built with changes (the main border; a verified connection's socket, orientation, d or
+ * k) and after a connection closes (lmFoodRefInvalidate).
+ */
+var _lmFoodRef = { t: -Infinity, grid: null, stamp: 0, sig: '' };
+function lmFoodRefInvalidate() {
+    /* rebuilt on its next use; a check holding it keeps a valid grid */
+    _lmFoodRef.t = -Infinity;
+    _lmFoodRef.sig = '';
+}
+function lmFoodRefSig() {
+    var sig = lmMainCentre(0) + ',' + lmMainCentre(1) + ',' + lmMainScale(0) + ',' + lmMainScale(1);
+    var sp = window.spects || [];
+    for (var s = 0; s < sp.length; s++) {
+        var u = sp[s];
+        if (!u || u._lmOri !== 'VERIFIED' || !u.mapOffsetFixed || u._lmSameFrame) continue;
+        sig += '|' + u.number + ':' + u.connectionGeneration + ':' + u.mapOffsetX + ':' + u.mapOffsetY + ':' +
+            u.fixX + ':' + u.fixY + ':' + u.fix3x + ':' + u.fix3y + ':' + u._lmKX + ':' + u._lmKY;
+    }
+    return sig;
+}
 function lmFoodReference(now) {
-    if (_lmFoodRef.grid && now - _lmFoodRef.t < 1000) return _lmFoodRef;
+    var sig = lmFoodRefSig();
+    if (_lmFoodRef.grid && now - _lmFoodRef.t < 1000 && sig === _lmFoodRef.sig) return _lmFoodRef;
     var grid = lmAnchorGrid(), lm = window.legendmod, food = lm.food || [];
     var cmx = lmMainCentre(0), cmy = lmMainCentre(1), mkx = lmMainScale(0), mky = lmMainScale(1);
     for (var i = 0; i < food.length; i++) {
@@ -222,11 +273,12 @@ function lmFoodReference(now) {
         if (!u || !u._lmAnchors || u._lmOri !== 'VERIFIED' || !u.mapOffsetFixed || u._lmSameFrame) continue;
         for (var a = 0; a < u._lmAnchors.length; a++) {
             var o = u._lmAnchors[a];
-            if (o && now - o.t < 20000) lmAnchorPut(grid, u.rawToWorldX(o.x), u.rawToWorldY(o.y), o.size, u.number);
+            if (lmAnchorLive(o, u.connectionGeneration)) lmAnchorPut(grid, u.rawToWorldX(o.rawX), u.rawToWorldY(o.rawY), o.size, u.number);
         }
     }
     _lmFoodRef.t = now;
     _lmFoodRef.grid = grid;
+    _lmFoodRef.sig = sig;
     return _lmFoodRef;
 }
 
@@ -247,15 +299,16 @@ window.addSpectator = addSpectator;
  * (ogario.v4.js), which replaced lmMultiUnitIsClose(). */
 
 /*
- * Server view of one connection, in world units. The server sends a connection the cells in a box
- * of BASE / scale around its camera: BASE is 1024 x 600 x 1.985 (2033 x 1191, the player box this
- * client always drew, close to MultiOgar's (1920 + 100) x (1080 + 100)), scale is
- * pow(min(64 / total size, 1), 0.4) for a player and about 0.401 for a free spectator, which gives
- * the 5069 x 2970 (1024 x 600 x 4.95) found for Full Map on agar.io. These are estimates: the
- * debug boxes drawn from them say "est.", and the food a connection receives is its observed
- * coverage.
+ * Server view of one connection, in world units (lmRawToWorld): agar.io sends a connection the
+ * cells whose centre is in a box of BASE / scale around its camera (opcode 17: camera and scale).
+ * Measured live (agar.io FFA, 15 free spectators at scale 0.4 settled for 2 minutes, every
+ * pellet centre relative to the camera): at most 2535.8 x 1485.9 from it on every connection,
+ * the same in world units on connections whose own scale k differs by up to 0.5% (so the
+ * view is applied in world units, not raw ones): 5071.7 x 2971.9, BASE = 2028.7 x 1188.8.
+ * scale is pow(min(64 / total size, 1), 0.4) for a player (an estimate: its boxes say "est.")
+ * and 0.4 for a free spectator.
  */
-var LM_VIEW_BASE_W = 1024 * 1.985, LM_VIEW_BASE_H = 600 * 1.985, LM_SPECT_FREE_SCALE = 1.985 / 4.95;
+var LM_VIEW_BASE_W = 2028.7, LM_VIEW_BASE_H = 1188.8, LM_SPECT_FREE_SCALE = 0.4;
 function lmServerViewSize(scale) {
     if (!(scale > 0.01 && scale <= 4)) scale = LM_SPECT_FREE_SCALE;
     return [LM_VIEW_BASE_W / scale, LM_VIEW_BASE_H / scale];
@@ -267,38 +320,49 @@ window.lmServerViewSize = lmServerViewSize;
 window.lmPlayerViewScale = lmPlayerViewScale;
 
 /*
- * Full Map tiles. The map is cut into cols x rows equal cells and each spectator's view is
- * centred on one, so every tile reaches the same margin past its cell on each side: past the
- * map edge for an outer tile, and twice that as the overlap at a seam. This spreads the spare
- * view evenly; the view size is an estimate and a free spectator's camera wobbles a few dozen
- * units around its target, and an even spread tolerates the largest error of either.
- * cols = ceil(mapW / (viewW - 2 * LM_FULLMAP_MARGIN)), rows likewise; over the budget, the plain
- * cover ceil(map / view) is tried, then null. Centred on the map, so a mirrored connection (or
- * Rotate Map) lands on another tile of the same grid, never in a gap. Tile centres are canonical
- * world coordinates: 0, 0 = the map centre. On agar.io (14142 map, 5069 x 2970 view): 3 x 5 = 15
- * connections, the same 15 the old grid opened, never more (LM_FULLMAP_MAX); margins 177 / 71,
- * seams 354 / 142 (the old grid only touched: no overlap at all, and off centre), so the real
- * view may be 7% / 4.8% smaller than the estimate before a gap opens.
+ * Full Map tiles. Per axis, the fewest views that cover the map with LM_FULLMAP_EDGE past both
+ * edges and overlap their neighbours by at least LM_FULLMAP_MIN_SEAM; the outer views reach just
+ * past the map edge (no view is spent outside the map) and the spare length goes into equal
+ * seams. Over the budget, the cover with seams >= 0 is tried, then null. Tile centres are
+ * canonical world coordinates (0, 0 = the map centre), converted to each spectator's own raw
+ * frame (scale, mirror, offset) when sent. On agar.io (14142 map, measured 5071.7 x 2971.9 view):
+ * 3 x 5 = 15 connections, never more (LM_FULLMAP_MAX), seams 528 / 175 units. Live, every
+ * spectator camera settled within 0.5 units of its target, so a seam loses at most 1 unit
+ * (the earlier centred 3 x 5 cut gave seams 357 / 143 and spent 178 / 72 past each map edge).
  */
-var LM_FULLMAP_MARGIN = 60, LM_FULLMAP_MAX = 15;
-/* a tile camera within 64 of its target is there; it then gets its target once a second */
-var LM_TILE_SETTLED = 64, LM_TILE_REFRESH_MS = 1000;
+var LM_FULLMAP_EDGE = 8, LM_FULLMAP_MIN_SEAM = 64, LM_FULLMAP_MAX = 15;
+/* a tile camera within 16 of its target has arrived (live: they settle within 0.5); a target is
+ * sent at once when it changes, then every 500 ms while the camera glides there (it keeps
+ * moving to the last target sent) and once a second once it has arrived: 2 packets a second
+ * per spectator at most (it was 20 while gliding, 300 a second for 15 spectators) */
+var LM_TILE_SETTLED = 16, LM_TILE_MOVING_MS = 500, LM_TILE_REFRESH_MS = 1000;
+/* tiles on one axis: the fewest views of length view covering map + 2 * edge with seams >= seam */
+function lmFullMapAxis(map, view, seam) {
+    var span = map + 2 * LM_FULLMAP_EDGE;
+    if (view >= span) return 1;
+    if (!(view > seam)) return Infinity;
+    return Math.ceil((span - seam) / (view - seam) - 1e-9);
+}
 function lmFullMapPlan(mapW, mapH, viewW, viewH, budget) {
-    var m = LM_FULLMAP_MARGIN;
     budget = budget || LM_FULLMAP_MAX;
-    if (!(mapW >= 1 && mapH >= 1 && viewW > 2 * m && viewH > 2 * m)) return null;
-    var cols = Math.ceil(mapW / (viewW - 2 * m)), rows = Math.ceil(mapH / (viewH - 2 * m));
-    if (cols * rows > budget) { cols = Math.ceil(mapW / viewW); rows = Math.ceil(mapH / viewH); }
-    if (cols * rows > budget) return null;
-    var cellW = mapW / cols, cellH = mapH / rows;
+    if (!(mapW >= 1 && mapH >= 1 && viewW > 1 && viewH > 1)) return null;
+    var cols = lmFullMapAxis(mapW, viewW, LM_FULLMAP_MIN_SEAM), rows = lmFullMapAxis(mapH, viewH, LM_FULLMAP_MIN_SEAM);
+    if (!(cols * rows <= budget)) { cols = lmFullMapAxis(mapW, viewW, 0); rows = lmFullMapAxis(mapH, viewH, 0); }
+    if (!(cols * rows <= budget)) return null;
+    var e = LM_FULLMAP_EDGE;
+    var stepX = cols > 1 ? (mapW + 2 * e - viewW) / (cols - 1) : 0, stepY = rows > 1 ? (mapH + 2 * e - viewH) / (rows - 1) : 0;
+    var x0 = cols > 1 ? -mapW / 2 - e + viewW / 2 : 0, y0 = rows > 1 ? -mapH / 2 - e + viewH / 2 : 0;
     var tiles = [];
     for (var r = 0; r < rows; r++) {
         for (var c = 0; c < cols; c++) {
-            tiles.push({ index: tiles.length, col: c, row: r, x: -mapW / 2 + (c + 0.5) * cellW, y: -mapH / 2 + (r + 0.5) * cellH });
+            tiles.push({ index: tiles.length, col: c, row: r, x: x0 + c * stepX, y: y0 + r * stepY });
         }
     }
-    return { cols: cols, rows: rows, viewW: viewW, viewH: viewH, stepX: cellW, stepY: cellH,
-        marginX: (viewW - cellW) / 2, marginY: (viewH - cellH) / 2, tiles: tiles };
+    return { cols: cols, rows: rows, viewW: viewW, viewH: viewH, stepX: stepX, stepY: stepY,
+        seamX: cols > 1 ? viewW - stepX : 0, seamY: rows > 1 ? viewH - stepY : 0,
+        /* how far the outer views reach past the map edge */
+        marginX: cols > 1 ? e : (viewW - mapW) / 2, marginY: rows > 1 ? e : (viewH - mapH) / 2,
+        tiles: tiles };
 }
 window.lmFullMapPlan = lmFullMapPlan;
 
@@ -432,6 +496,12 @@ class Spect {
         this._lmOriVerifiedC = -1
         this._lmGhostTime = 0
         this._lmGhostPair = null
+        this._lmGhostVoteT = 0
+        /* the old socket's anchors are no evidence any more (also in the reference grid) */
+        if (this._lmAnchors) for (var _a = 0; _a < this._lmAnchors.length; _a++) {
+            if (this._lmAnchors[_a]) { this._lmAnchors[_a].alive = false; this._lmAnchors[_a].cell = null; }
+        }
+        if (typeof lmFoodRefInvalidate === 'function') lmFoodRefInvalidate();
         this._lmAnchors = []
         this._lmAnchorNext = 0
         this._lmCalibAt = 0
@@ -885,7 +955,32 @@ class Spect {
         if (this.staticX == null || this.staticY == null) return;
         this._lmTileSentAt = 0;
         this._lmTileSentX = this._lmTileSentY = NaN;
-        this.staticPositionController = setInterval(() => this._lmTileTick(), 50);
+        this.staticPositionController = setInterval(() => this._lmTileTick(), 100);
+    }
+
+    /* A world rectangle [minX, minY, maxX, maxY] in the main connection's display space (its
+     * frame, then Rotate Map), where getX draws this connection's cells; sorted again after the
+     * flip. null until the main border is fixed. */
+    _lmWorldRectDisplay(r) {
+        var LM = legendmod;
+        if (!r || !LM || !LM.mapOffsetFixed) return null;
+        var x0 = lmDisplayFlip(lmMainCentre(0) + r[0] / lmMainScale(0), 0), x1 = lmDisplayFlip(lmMainCentre(0) + r[2] / lmMainScale(0), 0);
+        var y0 = lmDisplayFlip(lmMainCentre(1) + r[1] / lmMainScale(1), 1), y1 = lmDisplayFlip(lmMainCentre(1) + r[3] / lmMainScale(1), 1);
+        if (!Number.isFinite(x0) || !Number.isFinite(x1) || !Number.isFinite(y0) || !Number.isFinite(y1)) return null;
+        return [Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1)];
+    }
+
+    /* Show viewports: this connection's server view around its server camera, drawn where its
+     * cells are drawn */
+    _lmServerViewDisplay() {
+        return this._lmWorldRectDisplay(this._lmServerViewWorld());
+    }
+
+    /* Show viewports: the server view a Full Map spectator will have on its tile */
+    _lmTileViewDisplay() {
+        if (this.staticX == null || this.staticY == null) return null;
+        var v = lmServerViewSize(LM_SPECT_FREE_SCALE);
+        return this._lmWorldRectDisplay([this.staticX - v[0] / 2, this.staticY - v[1] / 2, this.staticX + v[0] / 2, this.staticY + v[1] / 2]);
     }
 
     /* The tile centre in the main connection's display space (world -> main frame with its
@@ -909,14 +1004,20 @@ class Spect {
         return (Number.isFinite(x) && Number.isFinite(y)) ? [x, y] : null;
     }
 
+    /* is the server camera (opcode 17) on the tile (raw target, default the current one)? */
+    _lmTileArrived(raw) {
+        raw = raw || this._lmTileRaw();
+        return !!(raw && this._lmCamAt && Number.isFinite(this.viewX) && Number.isFinite(this.viewY) &&
+            Math.abs(this.viewX - raw[0]) <= LM_TILE_SETTLED && Math.abs(this.viewY - raw[1]) <= LM_TILE_SETTLED);
+    }
+
     _lmTileTick(now) {
         now = now || Date.now();
         var raw = this._lmTileRaw();
         if (!raw) return;
         var changed = raw[0] !== this._lmTileSentX || raw[1] !== this._lmTileSentY;
-        var settled = !changed && this._lmCamAt > this._lmTileSentAt &&
-            Math.abs(this.viewX - raw[0]) <= LM_TILE_SETTLED && Math.abs(this.viewY - raw[1]) <= LM_TILE_SETTLED;
-        if (!changed && now - this._lmTileSentAt < (settled ? LM_TILE_REFRESH_MS : 50)) return;
+        var settled = !changed && this._lmCamAt > this._lmTileSentAt && this._lmTileArrived(raw);
+        if (!changed && now - this._lmTileSentAt < (settled ? LM_TILE_REFRESH_MS : LM_TILE_MOVING_MS)) return;
         if (this.sendPosition(raw[0], raw[1])) {
             this._lmTileSentAt = now;
             this._lmTileSentX = raw[0];
@@ -1435,8 +1536,7 @@ class Spect {
                         'x': x,
                         'y': y,
                         'size': size,
-                        'mass': mass,
-                        'inView': this.isInView(x, y, size)
+                        'mass': mass
                     });
                 }
                 this._lmGhostTime = Date.now();
@@ -1669,7 +1769,21 @@ class Spect {
         return this.player === true;
     }
 
+    /*
+     * May this connection's cells and pellets take part in the cross-connection
+     * reconciliation (twins, the shared food list, the food reference)? Only with its
+     * transform verified: border known and orientation VERIFIED (or nothing to verify:
+     * private servers, Expanding Land). PROVISIONAL and CONFLICTED sources must not
+     * hide, replace or be matched with another connection's copies; a multibox unit in
+     * those states keeps its controls and camera (transformReady) and draws its own cells.
+     */
+    _lmFeedOk() {
+        if (!this.mapOffsetFixed) return false;
+        return !this.integrity || this._lmSameFrame || this._lmOri === 'VERIFIED';
+    }
+
     _lmOriSet(state) {
+        if (state !== this._lmOri && typeof lmFoodRefInvalidate === 'function') lmFoodRefInvalidate();
         this._lmOri = state;
         this.ghostFixed = state === 'VERIFIED';
     }
@@ -1710,10 +1824,12 @@ class Spect {
      * to world coordinates (k * (raw - C) on each connection, main: rawX/rawY)
      * and each of the 4 candidates is scored by the players that pair up one-to-one by
      * mass AND place (lmGhostOrientationCounts); pairing by mass alone could take the
-     * wrong one. Only lists received within 3 s of each other are compared (players
-     * move: the place tolerance, 150 units + 1 per ms of that gap, grows with it), each
-     * pair of lists once, and a candidate must clearly win (players near a centre line
-     * fit both signs). Evaluated again on every new pair, also once verified.
+     * wrong one. Only lists received within LM_GHOST_MAX_DT of each other are compared
+     * (players move: the place tolerance grows with the gap by the measured speed bound),
+     * each pair of lists once, only players with one candidate of their mass in reach
+     * count, a candidate must clearly win (players near a centre line fit both signs), and
+     * votes are LM_GHOST_VOTE_GAP apart. Evaluated again on every new pair, also once
+     * verified.
      *
      * Private servers don't mirror: nothing to detect there.
      */
@@ -1727,7 +1843,7 @@ class Spect {
         var tm = legendmod.ghostCellsTime || 0, ts = this._lmGhostTime || 0;
         if (!mainList || !mainList.length || !mine || !mine.length || !tm || !ts) return;
         var dt = Math.abs(tm - ts);
-        if (dt > 3000) return;
+        if (dt > LM_GHOST_MAX_DT) return;
         var last = this._lmGhostPair;
         if (last && (last[0] === tm || last[1] === ts)) return;
         this._lmGhostPair = [tm, ts];
@@ -1743,10 +1859,14 @@ class Spect {
             if (g && Number.isFinite(g.x) && Number.isFinite(g.y) && g.mass > 0) obs.push({ x: kx * (g.x - cx), y: ky * (g.y - cy), mass: g.mass });
         }
         if (!ref.length || !obs.length) return;
-        var counts = lmGhostOrientationCounts(ref, obs, 150 + dt, 0.15);
+        var counts = lmGhostOrientationCounts(ref, obs, LM_GHOST_TOL0 + LM_GHOST_SPEED * dt, LM_GHOST_MASS, true);
         this._lmGhostCounts = counts;
         var c = lmDecideOrientation(counts, 2, 2, 0.5);
-        if (c >= 0) this._lmOriVote(c, counts[c] + ' top players');
+        if (c < 0) return;
+        /* the same players a second later are not a second confirmation */
+        if (this._lmGhostVoteT && Math.abs(tm - this._lmGhostVoteT) < LM_GHOST_VOTE_GAP) return;
+        this._lmGhostVoteT = tm;
+        this._lmOriVote(c, counts[c] + ' top players');
     }
 
     /* Legacy setter: set the orientation and move the cells already placed. */
@@ -1773,6 +1893,7 @@ class Spect {
         this.fixY = sy;
         this.fix3x = dx;
         this.fix3y = dy;
+        if (typeof lmFoodRefInvalidate === 'function') lmFoodRefInvalidate();
         this._lmReproject(old);
     }
 
@@ -1804,15 +1925,22 @@ class Spect {
         });
     }
 
-    /* Every cell of this unit, including those still animating their removal. */
+    /* Every cell of this unit, including those still animating their removal: its own
+     * index (lmObsOfSource, ogario.v4.js) and the short list of removed cells, not a scan
+     * of every cell of the world (an older core without the index: the scan). */
     _lmForEachUnitCell(fn) {
         var n = this.number;
         var mine = function (c) { return c && (c._lmSrc === n || c.spectator === n); };
-        var cells = legendmod.indexedCells;
-        if (cells) {
-            for (var id in cells) {
-                if (!Object.prototype.hasOwnProperty.call(cells, id)) continue;
-                if (mine(cells[id])) fn(cells[id]);
+        var own = typeof lmObsOfSource === 'function' ? lmObsOfSource(n) : undefined;
+        if (own !== undefined) {
+            if (own) own.forEach(function (c) { if (mine(c)) fn(c); });
+        } else {
+            var cells = legendmod.indexedCells;
+            if (cells) {
+                for (var id in cells) {
+                    if (!Object.prototype.hasOwnProperty.call(cells, id)) continue;
+                    if (mine(cells[id])) fn(cells[id]);
+                }
             }
         }
         var removed = legendmod.removedCells;
@@ -1879,14 +2007,18 @@ class Spect {
         return Math.round(lmXfInv(y, 1, this._lmXf()));
     }
 
-    /* a new food pellet seen by this connection: its authoritative raw place, for the checks */
-    _lmAnchorPush(rawX, rawY, size, now) {
+    /* a new food pellet seen by this connection: its authoritative raw place, for the checks
+     * (see lmAnchorLive); the newest LM_ANCHOR_MAX, oldest replaced first */
+    _lmAnchorPush(rawX, rawY, size, now, cell) {
         if (!this._lmAnchors) return;
-        var a = { x: rawX, y: rawY, size: size, t: now };
-        if (this._lmAnchors.length < 384) this._lmAnchors.push(a);
+        var a = { sourceId: this.number, generation: this.connectionGeneration, rawId: cell ? cell._lmRawId : null,
+            rawX: rawX, rawY: rawY, size: size, observedAt: now, alive: true, cell: cell || null, voted: false };
+        if (this._lmAnchors.length < LM_ANCHOR_MAX) this._lmAnchors.push(a);
         else {
+            var old = this._lmAnchors[this._lmAnchorNext];
+            if (old) { old.alive = false; old.cell = null; }
             this._lmAnchors[this._lmAnchorNext] = a;
-            this._lmAnchorNext = (this._lmAnchorNext + 1) % 384;
+            this._lmAnchorNext = (this._lmAnchorNext + 1) % LM_ANCHOR_MAX;
         }
     }
 
@@ -1909,33 +2041,43 @@ class Spect {
         var every = this._lmOri !== 'VERIFIED' ? 1000 : this.foodCalibrated ? 15000 : 3000;
         if (now - (this._lmCalibAt || 0) < every) return;
         this._lmCalibAt = now;
-        var raw = [];
-        for (var i = 0; i < this._lmAnchors.length; i++) {
-            var a = this._lmAnchors[i];
-            if (a && now - a.t < 20000) raw.push(a);
+        /* the newest 128 live anchors, newest first (the ring is in arrival order: no sort);
+         * those no orientation vote used yet are the evidence for the next vote */
+        var A = this._lmAnchors, len = A.length, gen = this.connectionGeneration;
+        var raw = this._lmCalRaw || (this._lmCalRaw = []), fresh = this._lmCalFresh || (this._lmCalFresh = []);
+        raw.length = 0;
+        fresh.length = 0;
+        var start = len < LM_ANCHOR_MAX ? len - 1 : (this._lmAnchorNext - 1 + len) % len;
+        for (var i = 0; i < len && raw.length < 128; i++) {
+            var a = A[(start - i + len) % len];
+            if (!lmAnchorLive(a, gen)) continue;
+            raw.push(a);
+            if (!a.voted) fresh.push(a);
         }
-        if (raw.length > 128) raw = raw.sort(function (p, q) { return q.t - p.t; }).slice(0, 128);
         if (raw.length < 8) return;
         var ref = lmFoodReference(now);
         if (!ref.grid.n) return;
-        var cx = -this.mapOffsetX, cy = -this.mapOffsetY, stats = [], inl = [0, 0, 0, 0];
-        var cands = this.integrity ? [0, 1, 2, 3] : [this._lmOriIndex()];
-        for (var k = 0; k < cands.length; k++) {
-            var c = cands[k], sx = LM_ORI[c][0], sy = LM_ORI[c][1], obs = [];
-            for (var j = 0; j < raw.length; j++) {
-                obs.push({ x: lmRawToWorld(raw[j].x, cx, sx, this.fix3x, this._lmKX || 1), y: lmRawToWorld(raw[j].y, cy, sy, this.fix3y, this._lmKY || 1), size: raw[j].size });
+        if (this.integrity && fresh.length >= 8) {
+            var stats = [], inl = [0, 0, 0, 0];
+            for (var c = 0; c < 4; c++) {
+                stats[c] = this._lmCalStats(ref, fresh, c);
+                inl[c] = stats[c].inl;
             }
-            var st = lmRobustOffset(lmAnchorResiduals(ref.grid, obs, 24, this.number, ++ref.stamp));
-            stats[c] = st;
-            inl[c] = st.inl;
-        }
-        this._lmFoodCounts = inl;
-        if (this.integrity) {
+            this._lmFoodCounts = inl;
             var win = lmDecideOrientation(inl, 8, 4, 0.25);
-            if (win >= 0) this._lmOriVote(win, inl[win] + ' shared food pellets');
+            if (win >= 0) {
+                /* these pellets were this vote's evidence: the next vote needs other ones */
+                var w = stats[win];
+                for (var r = 0; r < w.res.length; r++) {
+                    var e = w.res[r];
+                    if (Math.max(Math.abs(e[0] - w.mx), Math.abs(e[1] - w.my)) <= 2) fresh[e[2]].voted = true;
+                }
+                this._lmOriVote(win, inl[win] + ' shared food pellets');
+                ref = lmFoodReference(now);
+            }
         }
         if (this._lmOri !== 'VERIFIED') return;
-        var cur = stats[this._lmOriIndex()];
+        var cur = this._lmCalStats(ref, raw, this._lmOriIndex());
         if (!cur || cur.inl < 8 || cur.p95 > 2 || cur.inl < cur.n * 0.5) return;
         var snaps = this._lmCalibSnaps;
         snaps.push({ x: cur.mx, y: cur.my, n: cur.inl });
@@ -1959,12 +2101,47 @@ class Spect {
         console.log('[SPECT] Unit ' + this.number + ' food calibration (fix3x, fix3y):', this.fix3x.toFixed(2), this.fix3y.toFixed(2));
     }
 
-    /* true when the raw point is OUTSIDE this spectator's estimated server view (old name) */
-    isInView(x, y) {
-        const w = LM_VIEW_BASE_W / LM_SPECT_FREE_SCALE / 2,
-            h = LM_VIEW_BASE_H / LM_SPECT_FREE_SCALE / 2;
-        return x < this.viewX - w || y < this.viewY - h || x > this.viewX + w || y > this.viewY + h;
+    /* Residuals of anchors (world under orientation candidate c) against the reference;
+     * the observation objects are reused between calls. */
+    _lmCalStats(ref, anchors, c) {
+        var cx = -this.mapOffsetX, cy = -this.mapOffsetY, sx = LM_ORI[c][0], sy = LM_ORI[c][1];
+        var kx = this._lmKX || 1, ky = this._lmKY || 1;
+        var pool = this._lmCalPool || (this._lmCalPool = []), obs = this._lmCalObs || (this._lmCalObs = []);
+        obs.length = 0;
+        for (var j = 0; j < anchors.length; j++) {
+            var o = pool[j] || (pool[j] = { x: 0, y: 0, size: 0 });
+            o.x = lmRawToWorld(anchors[j].rawX, cx, sx, this.fix3x, kx);
+            o.y = lmRawToWorld(anchors[j].rawY, cy, sy, this.fix3y, ky);
+            o.size = anchors[j].size;
+            obs.push(o);
+        }
+        var res = lmAnchorResiduals(ref.grid, obs, 24, this.number, ++ref.stamp);
+        var st = lmRobustOffset(res);
+        st.res = res;
+        return st;
+    }
 
+    /*
+     * This connection's server view in world coordinates: its camera (opcode 17, raw) and
+     * the measured view for its scale (lmServerViewSize). agar.io sends a connection the
+     * cells whose centre is inside it. null until the border and a camera are known.
+     */
+    _lmServerViewWorld() {
+        if (!this.mapOffsetFixed || !this._lmCamAt || !Number.isFinite(this.viewX) || !Number.isFinite(this.viewY)) return null;
+        var v = lmServerViewSize(this.scale);
+        var x = this.rawToWorldX(this.viewX), y = this.rawToWorldY(this.viewY);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+        return [x - v[0] / 2, y - v[1] / 2, x + v[0] / 2, y + v[1] / 2];
+    }
+
+    /* true when this connection's raw point is OUTSIDE its server view, compared in world
+     * units (it was isInView: it compared raw x / viewX with world sizes, and the cell
+     * parser, its only user, threw its result away) */
+    isOutsideServerView(rawX, rawY) {
+        var v = this._lmServerViewWorld();
+        if (!v) return false;
+        var x = this.rawToWorldX(rawX), y = this.rawToWorldY(rawY);
+        return x < v[0] || y < v[1] || x > v[2] || y > v[3];
     }
 
     isInViewCustom(x, y, size) {
@@ -2081,6 +2258,7 @@ class Spect {
         this.viewY = (bottom + top) / 2;
         var placedBefore = this._lmXf(); /* identity: cells that came before the border */
         this.mapOffsetFixed = true;
+        if (typeof lmFoodRefInvalidate === 'function') lmFoodRefInvalidate();
         this._lmOffsetFixedAt = Date.now();
         /* no mirroring to find on private servers and Expanding Land; on agar.io the
          * orientation starts as not mirrored (PROVISIONAL) until it is verified */
@@ -2279,30 +2457,13 @@ class Spect {
             offset += 2;
             /* this connection's own coordinates and id, as the server sent them */
             const rawX = x, rawY = y, rawId = id;
-            //snez
-            let invisible;
-
-
-            if (!this.player && (this.ghostFixed || !this.integrity)) {
-                invisible = this.staticX != null ? this.isInView(x, y) : false;
-            }
+            /* a connection only receives the cells in its server view: none is hidden or
+             * dropped here (a view test and the distance to the main player were computed
+             * here and then overridden further down) */
+            const invisible = false, remove = false;
 
             x = this.getX(x);
             y = this.getY(y);
-
-            /*else {
-                console.log("Error","Spect",this.number,"ghostFixed",this.ghostFixed,"mapOffsetFixed",this.mapOffsetFixed,"x",x,"mapOffsetX",this.mapOffsetX,"LM mapOffsetX",legendmod.mapOffsetX,"fixX",this.fixX)
-            }*/
-            let remove = false;
-            if (!this.player && (this.ghostFixed || !this.integrity)) {
-                const a = x - legendmod.playerX;
-                const b = y - legendmod.playerY;
-                const distanceX = Math.round(Math.sqrt(a * a));
-                const distanceY = Math.round(Math.sqrt(b * b));
-                if (distanceX > this.maxX || distanceY > this.maxY) {
-                    remove = true;
-                }
-            }
 
             //
 
@@ -2378,10 +2539,6 @@ class Spect {
                 if (!legendmod.cellcolors[name]) legendmod.cellcolors[name] = color
             }
             //
-
-            // Sockets only receive cells within their active viewport — never mark cells invisible
-            invisible = false;
-            remove = false;
 
             if (isFood && !defaultmapsettings.rainbowFood) {
                 color = defaultSettings.foodColor
@@ -2493,7 +2650,7 @@ class Spect {
              * Each pellet feeds the calibration anchors once. */
             if (isFood && !cell._lmAnchored) {
                 cell._lmAnchored = true;
-                this._lmAnchorPush(rawX, rawY, size, this.time);
+                this._lmAnchorPush(rawX, rawY, size, this.time, cell);
             }
             if (isFood) {
                 /* pellets do not move: drawn at the packet position by the food pass */

@@ -80953,18 +80953,28 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         /*
          * "Show viewports" (debug). Kept apart, never blended or smoothed:
-         *   map               the map border (opcode 64)
-         *   1                 the main connection's observed coverage (its food box, calMinMax)
-         *   2, 3 ...          a multibox unit's observed coverage (label = unit number + 1)
-         *   n est.            a unit without food yet: its estimated server view (from its size)
-         *   Viewport# n       a spectator connection's observed coverage
-         *   Viewport# n est.  a spectator without food yet: estimated server view around its camera
-         *   Tile n            a Full Map spectator's planned tile
-         * None depends on the main camera, zoom or window size, so they do not grow with zoom or
-         * a resize, and switching the controlled unit changes none. Units and spectators are told
-         * apart by their role (player) and found by their number, not by their slot in spects
-         * (a spectator before a unit gave the unit's box the wrong number or none). The screen
-         * viewport is the screen itself and is not drawn.
+         *   map                 the map border (opcode 64)
+         *   1                   the main connection's observed coverage (its food box, calMinMax)
+         *   2, 3 ...            a multibox unit's observed coverage (label = unit number + 1)
+         *   n est.              a unit without food yet: its estimated server view (from its size)
+         *   Viewport# n         a spectator connection's server view: its server camera (opcode 17)
+         *                       and the measured view for its scale (spect.js lmServerViewSize; live,
+         *                       every pellet it gets is inside it, up to 1-2 units from its edge)
+         *   Viewport# n moving  the same while a Full Map spectator glides to its tile (10-35 s
+         *                       after it connects, from the map centre where agar.io puts it)
+         *   Tile n              the server view a Full Map spectator will have on its tile, only
+         *                       until it is there (then it is Viewport# n, to within a unit)
+         *   Viewport# n food    a spectator without a camera yet: the box of the food it got
+         * All in the main display frame (the frame its cells are drawn in, with Rotate Map) and
+         * converted through the same transform as its cells (world -> main frame), so the boxes
+         * of neighbouring Full Map tiles overlap exactly where their views overlap (live: seams
+         * 310-356 / 107-141 units). It drew each spectator's food box (always smaller than the
+         * view: the outermost pellets are not at its edge) next to a 5069 x 2970 tile box, two
+         * near-parallel lines per edge, and both boxes around the map centre for every spectator
+         * still on its way. None depends on the main camera, zoom or window size, and switching
+         * the controlled unit changes none. Units and spectators are told apart by their role
+         * (player) and found by their number, not by their slot in spects. The screen viewport is
+         * the screen itself and is not drawn.
          */
         drawViewPorts(ctx) {
             ctx = this.ctx;
@@ -80976,13 +80986,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var list = window.spects || (typeof spects !== "undefined" ? spects : null);
             if (!list || !list.length) return;
             var sizeOf = typeof window.lmServerViewSize === 'function' ? window.lmServerViewSize : null;
+            /* world units -> the main frame (its own scale k) */
+            var mkx = LM._lmBorderKX > 0 ? LM._lmBorderKX : 1, mky = LM._lmBorderKY > 0 ? LM._lmBorderKY : 1;
             var boxes = this._lmConnFoodBoxes(list);
             for (var i = 0; i < list.length; i++) {
                 var sp = list[i];
                 if (!sp || sp.number == null) continue;
                 var seen = boxes[sp.number];
                 if (seen && !seen.n) seen = null;
-                var v, cx, cy;
+                var v;
                 if (sp.player) {
                     /* 0 is a valid coordinate (the map centre): only a missing centre skips the unit */
                     if (!legendmod.multiBoxPlayerExists || !sp.playerCellIDs || !sp.playerCellIDs.length ||
@@ -80992,28 +81004,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         this.drawViewport(ctx, label, seen.minX, seen.minY, seen.maxX, seen.maxY, seenColor, 15);
                     } else if (sizeOf) {
                         v = sizeOf(typeof window.lmPlayerViewScale === 'function' ? window.lmPlayerViewScale(sp.playerSize) : 1);
-                        this.drawViewport(ctx, label + ' est.', sp.playerX - v[0] / 2, sp.playerY - v[1] / 2, sp.playerX + v[0] / 2, sp.playerY + v[1] / 2, estColor, 15);
+                        var hw = v[0] / mkx / 2, hh = v[1] / mky / 2;
+                        this.drawViewport(ctx, label + ' est.', sp.playerX - hw, sp.playerY - hh, sp.playerX + hw, sp.playerY + hh, estColor, 15);
                     }
                     continue;
                 }
                 var name = 'Viewport# ' + sp.number;
-                if (sizeOf && typeof sp._lmTileDisplay === 'function') {
-                    var t = sp._lmTileDisplay();
-                    if (t) {
-                        v = sizeOf();
-                        this.drawViewport(ctx, 'Tile ' + sp.number, t[0] - v[0] / 2, t[1] - v[1] / 2, t[0] + v[0] / 2, t[1] + v[1] / 2, tileColor, 15);
-                    }
+                var tiled = sp.staticX != null && sp.staticY != null;
+                var arrived = !tiled || (typeof sp._lmTileArrived === 'function' && sp._lmTileArrived());
+                if (tiled && !arrived && typeof sp._lmTileViewDisplay === 'function') {
+                    var t = sp._lmTileViewDisplay();
+                    if (t) this.drawViewport(ctx, 'Tile ' + sp.number, t[0], t[1], t[2], t[3], tileColor, 15);
                 }
-                if (seen) {
-                    this.drawViewport(ctx, name, seen.minX, seen.minY, seen.maxX, seen.maxY, seenColor, 15);
-                } else if (sizeOf && sp.mapOffsetFixed && sp._lmCamAt && Number.isFinite(sp.viewX) && Number.isFinite(sp.viewY) &&
-                    typeof sp.getX === 'function') {
-                    /* its camera as the server sent it (opcode 17), no smoothing; the size is estimated */
-                    cx = sp.getX(sp.viewX); cy = sp.getY(sp.viewY);
-                    v = sizeOf(sp.scale);
-                    if (Number.isFinite(cx) && Number.isFinite(cy)) {
-                        this.drawViewport(ctx, name + ' est.', cx - v[0] / 2, cy - v[1] / 2, cx + v[0] / 2, cy + v[1] / 2, estColor, 15);
-                    }
+                var r = typeof sp._lmServerViewDisplay === 'function' ? sp._lmServerViewDisplay() : null;
+                if (r) {
+                    this.drawViewport(ctx, arrived ? name : name + ' moving', r[0], r[1], r[2], r[3], arrived ? seenColor : estColor, 15);
+                } else if (seen) {
+                    this.drawViewport(ctx, name + ' food', seen.minX, seen.minY, seen.maxX, seen.maxY, estColor, 15);
                 }
             }
         },

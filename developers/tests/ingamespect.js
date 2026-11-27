@@ -248,7 +248,7 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
         sp.forEach(handshake);
         LM.addSpect(); LM.addSpect(); /* the next main border packets */
         if (round === 1) { const ds = sp[3].socket; ds.readyState = 3; ds.closed = true; ds.onclose(); } /* a server-dropped spectator: reconnect pending */
-        const tick = [...timers.values()].filter((t) => t.ms === 50);
+        const tick = [...timers.values()].filter((t) => t.ms === 100); /* the tile sender (_lmTileTick) */
         tick.forEach((t) => t.fn());
         if (round === 0) {
             check('Full Map on: 15 spectators, one socket each', grid === 15 && open() === 15 && sockets.length === 15, grid + ' / ' + open());

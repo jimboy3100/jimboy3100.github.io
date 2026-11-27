@@ -10,7 +10,9 @@
  * players (live lists too; 2 snapshots, ambiguous ones ignored, no 10 s timeout) and the cells
  * placed provisionally are reprojected from their raw values, decode stores
  * _lmSrc/_lmGen/_lmRawId/_lmRawX/_lmRawY, and the food check finds the orientation and
- * verifies (d = 0, also on live food) or corrects d with reprojection.
+ * verifies (d = 0, also on live food) or corrects d with reprojection; votes need independent
+ * evidence (top-player lists 1.5 s apart, other pellets); a CONFLICTED source is not fed to the
+ * reconciliation (_lmFeedOk); anchors die with their pellet or socket.
  * node developers/tests/spectcoords.js [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -44,7 +46,9 @@ function load(LM) {
     function Cell(id, x, y, size, color, isFood, isVirus) {
         Object.assign(this, { id, x, y, size, color, isFood, isVirus, targetX: x, targetY: y, startX: x, startY: y, removed: false });
     }
-    Cell.prototype.removeCell = function () { this.removed = true; delete LM.indexedCells[this.id]; LM.removedCells.push(this); };
+    /* the per-connection index of ogario.v4.js (lmObsTrack / lmObsOfSource) */
+    const obs = new Map();
+    Cell.prototype.removeCell = function () { this.removed = true; delete LM.indexedCells[this.id]; LM.removedCells.push(this); if (this._lmObsSet) this._lmObsSet.delete(this); };
     const win = { legendmod: LM, legendmod1: Cell, spects: [] };
     const ctx = {
         window: win, legendmod: LM, console: { log() { }, warn() { }, error: console.error }, Math, Number, Date, Object, Map, Buffer,
@@ -52,7 +56,8 @@ function load(LM) {
         defaultmapsettings: {}, defaultSettings: { foodColor: '#5000ff' }, application: { teamPlayers: [] }, profiles: [],
         lmUnitCellId: (id, n) => id + n * STEP,
         /* the per-connection index and the food list of ogario.v4.js (fullmapfood.js tests them) */
-        lmObsTrack() { }, lmObsUntrack() { }, lmObsOfSource: () => null, lmObsVelocity() { }, lmFoodAdd() { }, lmFoodTouch() { }, toastr: {}, $: () => ({ val: () => '' })
+        lmObsTrack(c, src) { if (!obs.has(src)) obs.set(src, new Set()); obs.get(src).add(c); c._lmObsSet = obs.get(src); },
+        lmObsUntrack(c) { if (c._lmObsSet) c._lmObsSet.delete(c); c._lmObsSet = null; }, lmObsOfSource: (src) => obs.get(src) || null, lmObsVelocity() { }, lmFoodAdd() { }, lmFoodTouch() { }, toastr: {}, $: () => ({ val: () => '' })
     };
     vm.createContext(ctx);
     vm.runInContext(src + '\n;window.Spect = Spect; window.h = { lmRawToWorld, lmWorldToRaw };', ctx);
@@ -209,14 +214,22 @@ function packet(cells) {
     sp.detectOrientation();
     check('the same pair of lists is not counted twice', sp._lmOri === 'PROVISIONAL');
     snap(4000, players, -60);
-    check('second clear snapshot: verified as mirrored on x', sp._lmOri === 'VERIFIED' && sp.fixX === -1 && sp.fixY === 1 && sp.ghostFixed === true);
+    check('the next lists 1 s later: not independent, not verified yet', sp._lmOri === 'PROVISIONAL');
+    snap(4600, players, 200);
+    check('players farther than 60 + 0.5 per ms of the gap: no vote', sp._lmOri === 'PROVISIONAL');
+    snap(5000, players, -60);
+    check('second clear snapshot 2 s later: verified as mirrored on x', sp._lmOri === 'VERIFIED' && sp.fixX === -1 && sp.fixY === 1 && sp.ghostFixed === true);
     check('the provisional cell reprojected from raw: now where the main client has it',
         near(cell.targetX, LM.worldX(-5000), 1) && near(cell.x, LM.worldX(-5000), 1) && near(cell.targetY, LM.worldY(2000), 1), [cell.x, cell.targetX, LM.worldX(-5000)].join());
-    snap(5000, players, 0, true);
-    check('verified, then contrary evidence: CONFLICTED, cells kept', sp._lmOri === 'CONFLICTED' && sp.fixX === -1);
-    snap(6000, players);
-    snap(7000, players);
-    check('evidence back for the verified orientation: VERIFIED again', sp._lmOri === 'VERIFIED' && sp.fixX === -1);
+    snap(7000, players, 0, true);
+    check('verified, then contrary evidence: CONFLICTED, cells kept, not fed to the reconciliation', sp._lmOri === 'CONFLICTED' && sp.fixX === -1 && !sp._lmFeedOk());
+    snap(9000, players);
+    snap(11000, players);
+    check('evidence back for the verified orientation: VERIFIED again', sp._lmOri === 'VERIFIED' && sp.fixX === -1 && sp._lmFeedOk());
+    /* two players of one mass in reach of one: that one is ambiguous and not counted */
+    const amb = vm.runInContext('lmGhostOrientationCounts', ctx)([{ x: 1000, y: 1000, mass: 5000 }, { x: -3000, y: 2000, mass: 8000 }],
+        [{ x: 1000, y: 1000, mass: 5000 }, { x: 1100, y: 1000, mass: 5010 }, { x: -3000, y: 2000, mass: 8000 }], 200, 0.03, true);
+    check('distinct matches: a player with two candidates of its mass in reach is not counted', amb[0] === 1, amb.join());
     const mb = unit(ctx, 10, 20, { number: 3, player: true });
     check('multibox unit: usable (controls, camera) while provisional', mb._lmOri === 'PROVISIONAL' && mb.transformReady());
 }
@@ -230,17 +243,22 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     const S = [1, -1], cx = -2500.5, cy = 9000;
     const sp = unit(ctx, cx, cy, { number: 4, player: true });
     const pellets = [];
-    for (let i = 0; i < 40; i++) pellets.push([-3000 + (i * 7919 % 2000), 1500 + (i * 104729 % 1500), 10 + i % 6]);
+    for (let i = 0; i < 80; i++) pellets.push([-3000 + (i * 7919 % 2000) + (i >= 40 ? 2500 : 0), 1500 + (i * 104729 % 1500), 10 + i % 6]);
     /* main food (its frame) and the unit's food packet; the unit's raw positions carry d */
     LM.food = pellets.map((p) => ({ x: draw(LM.worldX(p[0]), 0), y: draw(LM.worldY(p[1]), 1), targetX: draw(LM.worldX(p[0]), 0), targetY: draw(LM.worldY(p[1]), 1),
         _lmRawX: LM.worldX(p[0]), _lmRawY: LM.worldY(p[1]), size: p[2], targetSize: p[2] }));
     const raws = pellets.map((p, i) => ({ id: 5000 + i, x: Math.round(cx + S[0] * (p[0] - d)), y: Math.round(cy + S[1] * (p[1] - d)), size: p[2], food: true }));
     sp.time = 10000;
-    sp.updateCells(packet(raws.concat([{ id: 9, x: Math.round(cx + S[0] * (-2000 - d)), y: Math.round(cy + S[1] * (2000 - d)), size: 90 }])), 0);
+    /* the first 40 pellets: one vote; the same pellets checked again are no second confirmation */
+    sp.updateCells(packet(raws.slice(0, 40).concat([{ id: 9, x: Math.round(cx + S[0] * (-2000 - d)), y: Math.round(cy + S[1] * (2000 - d)), size: 90 }])), 0);
     const body = LM.indexedCells[9 + 4 * STEP];
     const t0 = sp.time; /* updateCells stamps its packets with Date.now() */
-    for (let k = 1; k <= 8; k++) sp._lmCalibrate(t0 + k * 3100);
-    check('food (d=' + d + '): orientation verified from 40 shared pellets', sp._lmOri === 'VERIFIED' && sp.fixX === 1 && sp.fixY === -1, [sp._lmOri, sp.fixX, sp.fixY, sp._lmFoodCounts].join());
+    for (let k = 1; k <= 4; k++) sp._lmCalibrate(t0 + k * 3100);
+    check('food (d=' + d + '): 40 shared pellets checked 4 times are one vote, not a verification', sp._lmOri === 'PROVISIONAL' && sp._lmOriStreakN === 1, [sp._lmOri, sp._lmOriStreakN].join());
+    /* 40 other shared pellets: the second, independent vote */
+    sp.updateCells(packet(raws.slice(40)), 0);
+    for (let k = 5; k <= 12; k++) sp._lmCalibrate(t0 + k * 3100);
+    check('food (d=' + d + '): orientation verified from 2 x 40 different shared pellets', sp._lmOri === 'VERIFIED' && sp.fixX === 1 && sp.fixY === -1, [sp._lmOri, sp.fixX, sp.fixY, sp._lmFoodCounts].join());
     check('food (d=' + d + '): residual ' + (d ? 'corrected' : 'verified as 0') + ' (fix3 ' + sp.fix3x + ', ' + sp.fix3y + ')',
         sp.foodCalibrated && near(sp.fix3x, d, 0.51) && near(sp.fix3y, d, 0.51));
     check('food (d=' + d + '): the unit\'s cells reprojected from raw onto the main frame',
@@ -287,8 +305,43 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     const t0 = sp.time;
     for (let k = 1; k <= 8; k++) sp._lmCalibrate(t0 + k * 3100);
     const want = [LIVE.o[1][0] * LIVE.o[2][0], LIVE.o[1][1] * LIVE.o[2][1]];
-    check('live shared food (' + pairs.length + ' pellets): orientation ' + want + ' verified, residual verified (fix3 ' + sp.fix3x + ', ' + sp.fix3y + ')',
+    const wantC = (want[0] < 0 ? 1 : 0) + (want[1] < 0 ? 2 : 0);
+    check('live shared food (' + pairs.length + ' pellets): one vote for ' + want + ', the same pellets again are no second one',
+        sp._lmOri === 'PROVISIONAL' && sp._lmOriStreakC === wantC && sp._lmOriStreakN === 1, [sp._lmOri, sp._lmOriStreakC, sp._lmOriStreakN, sp._lmFoodCounts].join());
+    /* a second, independent vote (top players): verified; the residual on the live food is 0 */
+    sp._lmOriVote(wantC, 'top players');
+    for (let k = 9; k <= 16; k++) sp._lmCalibrate(t0 + k * 3100);
+    check('live shared food: orientation ' + want + ' verified, residual verified (fix3 ' + sp.fix3x + ', ' + sp.fix3y + ')',
         sp._lmOri === 'VERIFIED' && sp.fixX === want[0] && sp.fixY === want[1] && sp.foodCalibrated && sp.fix3x === 0 && sp.fix3y === 0, [sp._lmOri, sp.fixX, sp.fixY, sp._lmFoodCounts].join());
+}
+
+/* 8. food anchors: {sourceId, generation, rawId, rawX, rawY, size, observedAt, alive}; a pellet that is
+ *    eaten or leaves the view is no evidence; a closed socket's anchors are gone from the reference;
+ *    a unit's own cells come from its own index, not a scan of every cell */
+{
+    const LM = mainClient(-7071.067811865476, -7071.067811865476), ctx = load(LM);
+    const sp = unit(ctx, 0, 0, { number: 6 });
+    sp.setOrientation(1, 1);
+    const raws = [];
+    for (let i = 0; i < 20; i++) raws.push({ id: 700 + i, x: -3000 + i * 97, y: 1200 + i * 31, size: 10 + i % 4, food: true });
+    sp.updateCells(packet(raws), 0);
+    const A = sp._lmAnchors, a0 = A[0];
+    check('anchor record: source, generation, raw id, raw place, size, time, alive',
+        A.length === 20 && a0.sourceId === 6 && a0.generation === 1 && a0.rawId === 700 && a0.rawX === -3000 && a0.rawY === 1200 && a0.size === 10 && a0.observedAt > 0 && a0.alive === true,
+        JSON.stringify(Object.assign({}, a0, { cell: !!a0.cell })));
+    const live = () => A.filter((a) => vm.runInContext('lmAnchorLive', ctx)(a, sp.connectionGeneration)).length;
+    for (let i = 0; i < 5; i++) LM.indexedCells[700 + i + 6 * STEP].removeCell();
+    check('5 pellets eaten / out of view: their anchors are dead (15 live)', live() === 15, live());
+    const ref = vm.runInContext('lmFoodReference', ctx)(Date.now() + 5000);
+    check('the reference grid holds the 15 live anchors of the verified unit only', ref.grid.n === 15, ref.grid.n);
+    /* 1000 cells of other connections: the unit's own cells come from its index */
+    for (let i = 0; i < 1000; i++) LM.indexedCells[90000 + i] = { _lmSrc: 2, spectator: 2, x: 0, y: 0 };
+    const seen = []; sp._lmForEachUnitCell((c) => seen.push(c));
+    check('own cells only, from the index (15 live), plus those animating their removal (5)', seen.length === 20 && seen.every((c) => c._lmSrc === 6), seen.length);
+    sp.connectionGeneration++;
+    sp.resetConnectionState();
+    check('a closed / new socket: every old anchor dead, the reference rebuilt without them',
+        A.every((a) => !a.alive) && vm.runInContext('lmFoodReference', ctx)(Date.now() + 5100).grid.n === 0 && sp._lmAnchors.length === 0);
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all spectcoords checks passed');
