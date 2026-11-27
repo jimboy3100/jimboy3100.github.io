@@ -27282,8 +27282,9 @@ function thelegendmodproject() {
              * and say why. Nothing here changes a setting. */
             (function (app) {
                 var DEPS = {
-                    showStats: ['showStatsMass', 'showStatsWorldSize', 'showStatsDecayInfo', 'showStatsServerHz', 'showStatsESTE', 'showStatsEMTE', 'showStatsMTE', 'showStatsSTE', 'showStatsTTE', 'showStatsPTE', 'showStatsN16', 'showStatsFPS', 'showStatsPPS', 'showStatsJitter', 'showStatsAlive'],
-                    showStatsFPS: ['showStatsFrameTime'],
+                    showStats: ['showStatsMass', 'showStatsWorldSize', 'showStatsDecayInfo', 'showStatsServerHz', 'showStatsESTE', 'showStatsEMTE', 'showStatsMTE', 'showStatsSTE', 'showStatsTTE', 'showStatsPTE', 'showStatsN16', 'showStatsFPS', 'showStatsPPS', 'showStatsAlive'],
+                    /* the ping and its jitter are written after the FPS */
+                    showStatsFPS: ['showStatsFrameTime', 'showStatsJitter'],
                     showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass', 'massFormat'],
                     adaptivePerf: ['adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes'],
@@ -27346,8 +27347,12 @@ function thelegendmodproject() {
                     keys.forEach(function (k) {
                         var it = itemOf(k);
                         if (!it) return;
-                        var p = parentOf[k], why = '';
-                        if (p && defaultmapsettings.hasOwnProperty(p) && !defaultmapsettings[p]) why = app._lmMenuText('lmDepNeeds') + ': ' + plain(app._lmMenuText(p));
+                        /* the outermost switch that is off (FPS needs Stats too) */
+                        var off = '', why = '';
+                        for (var p = parentOf[k], n = 0; p && n < 5; p = parentOf[p], n++) {
+                            if (defaultmapsettings.hasOwnProperty(p) && !defaultmapsettings[p]) off = p;
+                        }
+                        if (off) why = app._lmMenuText('lmDepNeeds') + ': ' + plain(app._lmMenuText(off));
                         else if (SRV[k]) why = srvNote(SRV[k]);
                         mark(it, why);
                     });

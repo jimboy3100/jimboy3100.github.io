@@ -1,6 +1,8 @@
 // Settings > Helpers: Bubble indicators, Split prediction and Ghost cells info do something only
-// while Opponents rings, Cursor tracking and Ghost cells are on; while those are off they are
-// dimmed and say what they need, as the other dependent options. The parent switch is turned off
+// while Opponents rings, Cursor tracking and Ghost cells are on, and Settings > Stats: the ping
+// jitter only while FPS is on (it is written after the ping, after the FPS); while those are off they
+// are dimmed and say what they need, as the other dependent options. With Stats off the jitter says
+// it needs Stats (the outermost switch that is off). The parent switch is turned off
 // and on again with a real click (a tap on phones); every setting is put back.
 (async () => {
   var fail = [], info = {};
@@ -15,8 +17,8 @@
       window.__lmInput(JSON.stringify({ id: id, type: window.LM_IS_MOBILE ? 'tap' : 'click', x: x, y: y }));
     });
   };
-  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['showGhostCells', 'showGhostCellsInfo']];
-  var keep = {};
+  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['showGhostCells', 'showGhostCellsInfo'], ['showStatsFPS', 'showStatsJitter']];
+  var keep = { showStats: defaultmapsettings.showStats };
   pairs.forEach(function (p) { keep[p[0]] = defaultmapsettings[p[0]]; keep[p[1]] = defaultmapsettings[p[1]]; });
   var needs = application._lmMenuText('lmDepNeeds');
   var plain = function (k) { return $('<div>').html(application._lmMenuText(k)).text().trim(); };
@@ -44,6 +46,7 @@
       if (cb.checked === was) fail.push('the click did not change ' + k);
     };
     var why = function (k) { var it = $('#' + k).closest('label'); return it.hasClass('lm-dep-off') ? String(it.attr('data-lm-why') || '') : ''; };
+    if (!defaultmapsettings.showStats) { defaultmapsettings.showStats = true; application._lmDepRefresh(); }
     for (var i = 0; i < pairs.length; i++) {
       var parent = pairs[i][0], child = pairs[i][1];
       if (!document.getElementById(parent) || !document.getElementById(child)) { fail.push('missing #' + parent + ' or #' + child); continue; }
@@ -58,6 +61,13 @@
       if (off.indexOf(needs) !== 0 || off.indexOf(plain(parent)) < 0) fail.push(child + ' does not say it needs ' + parent + ' while it is off (' + (off || 'not dimmed') + ')');
       if (on.indexOf(needs) === 0 || back.indexOf(needs) === 0) fail.push(child + ' says it needs ' + parent + ' while it is on');
     }
+    /* Stats off, FPS on: the jitter and the frame time need Stats */
+    defaultmapsettings.showStats = false;
+    application._lmDepRefresh();
+    info.statsOff = { showStatsJitter: why('showStatsJitter'), showStatsFrameTime: why('showStatsFrameTime') };
+    ['showStatsJitter', 'showStatsFrameTime'].forEach(function (k) {
+      if (info.statsOff[k] !== needs + ': ' + plain('showStats')) fail.push(k + ' with Stats off says ' + (info.statsOff[k] || 'nothing'));
+    });
   } catch (e) {
     fail.push('threw ' + e);
   } finally {

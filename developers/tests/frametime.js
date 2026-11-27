@@ -13,7 +13,7 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 const defs = vm.runInNewContext('(function(){' + cut('var defaultmapsettings = {', '\nvar ') + '; return defaultmapsettings; })()', { window: {}, navigator: { userAgent: '' } });
 check('default: off', defs.showStatsFrameTime === false);
 check('Settings > Stats: a switch next to FPS', /"showStatsFPS", "showStatsFrameTime"[^\]]*\], "statsGroup"\)/.test(main));
-check('dimmed while FPS is off', /showStatsFPS: \['showStatsFrameTime'\]/.test(main));
+check('dimmed while FPS is off', /showStatsFPS: \['showStatsFrameTime'[,\]]/.test(main));
 
 function makeStorage() {
     const m = new Map();
