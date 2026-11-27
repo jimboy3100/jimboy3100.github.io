@@ -35,7 +35,7 @@ function start(screenH, storage) {
   ctx.ogario = { hudScale: 1 };
   ctx._lmMenuFitQueue = () => { ctx.fitQueued = (ctx.fitQueued || 0) + 1; };
   const Settings = vm.runInContext('({\n' +
-    cut('        loadThemeSettings() {', '        /* Hotkey (no default key): enlarge the minimap') +
+    cut('        loadThemeSettings() {', '        restoreThemeSettings() {') +
     cut('        setHudScale() {', '        setChat() {') +
     '        addCustomCSS(name, text) { this._css[name] = text; }, _css: {}\n})', ctx);
   Settings.loadThemeSettings();

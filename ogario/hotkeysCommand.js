@@ -410,17 +410,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-bigMinimap': {
-				get label() {
-					return lmT('settings.hk-bigMinimap');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (typeof Settings !== 'undefined' && Settings && typeof Settings.lmToggleBigMinimap === 'function') Settings.lmToggleBigMinimap();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-gamepadWindow': {
 				get label() {
 					return lmT('settings.hk-gamepadWindow');
@@ -433,7 +422,7 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			/* Settings profiles (ogario/modules/profiles.js): no default keys */
+			/* Settings profiles window (ogario/modules/profiles.js): no default key */
 			'hk-lmProfilesWindow': {
 				get label() {
 					return lmT('settings.hk-lmProfilesWindow');
@@ -441,39 +430,6 @@
 				defaultKey: '',
 				keyDown() {
 					if (window.LMProfiles) window.LMProfiles.toggle();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-lmProfileNext': {
-				get label() {
-					return lmT('settings.hk-lmProfileNext');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMProfiles) window.LMProfiles.applyNext(1);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-lmProfilePrev': {
-				get label() {
-					return lmT('settings.hk-lmProfilePrev');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMProfiles) window.LMProfiles.applyNext(-1);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-lmProfileUndo': {
-				get label() {
-					return lmT('settings.hk-lmProfileUndo');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMProfiles) window.LMProfiles.undo();
 				},
 				keyUp: null,
 				type: 'normal'
@@ -1135,18 +1091,6 @@
                     application && application.setZoom(0.05);
                 },
                 keyUp: null,
-                type: 'normal'
-            },
-            /* HUD helpers (ogario/modules/hudhelpers.js); no default keys */
-            'hk-precisionZoom': {
-                get label() { return lmT('settings.hk-precisionZoom'); },
-                defaultKey: '',
-                keyDown() {
-                    window.LMHudHelpers && window.LMHudHelpers.precisionZoom(true);
-                },
-                keyUp() {
-                    window.LMHudHelpers && window.LMHudHelpers.precisionZoom(false);
-                },
                 type: 'normal'
             },
             'hk-voiceChat': {

@@ -63,6 +63,8 @@ function loadCommands() {
     check('other keys stay', h.Q === 'hk-feed');
     h = run({ 'K': 'hk-zoomSave1', 'ALT+5': 'hk-zoom5', 'L': 'hk-zoomSave5', 'Q': 'hk-feed' });
     check('a key on a removed "Save the current zoom as zoom level" is free again', !('K' in h) && !('L' in h) && h['ALT+5'] === 'hk-zoom5' && h.Q === 'hk-feed');
+    h = run({ 'Z': 'hk-precisionZoom', 'MOUSE 4': 'hk-bigMinimap', 'F7': 'hk-lmProfileNext', 'F8': 'hk-lmProfilePrev', 'F9': 'hk-lmProfileUndo', 'F10': 'hk-lmProfilesWindow', 'Q': 'hk-feed' });
+    check('keys on the removed precision zoom, enlarge minimap and profile next / previous / Undo are free again', JSON.stringify(h) === JSON.stringify({ 'F10': 'hk-lmProfilesWindow', 'Q': 'hk-feed' }));
     h = run({ 'ALT+1': 'hk-zoom1', 'W': 'hk-split' });
     check('nothing changes without the former hotkeys', JSON.stringify(h) === JSON.stringify({ 'ALT+1': 'hk-zoom1', 'W': 'hk-split' }));
 }

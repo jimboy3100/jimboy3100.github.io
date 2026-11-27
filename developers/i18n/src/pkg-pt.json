@@ -304,41 +304,5 @@
     "id": "Buka profil gamepad",
     "ja": "ゲームパッドのプロファイルを開く",
     "it": "Apri i profili del gamepad"
-  },
-  "pkg.pt.hkCheck": {
-    "en": "Show all conflicts (keys, mouse buttons, gamepad)",
-    "el": "Εμφάνιση όλων των συγκρούσεων (πλήκτρα, κουμπιά ποντικιού, χειριστήριο)",
-    "es": "Mostrar todos los conflictos (teclas, botones del ratón, mando)",
-    "bg": "Покажи всички конфликти (клавиши, бутони на мишката, геймпад)",
-    "fr": "Afficher tous les conflits (touches, boutons de la souris, manette)",
-    "ar": "عرض كل التعارضات (المفاتيح، أزرار الفأرة، يد التحكم)",
-    "zh": "顯示所有衝突（按鍵、滑鼠按鈕、手把）",
-    "ru": "Показать все конфликты (клавиши, кнопки мыши, геймпад)",
-    "de": "Alle Konflikte zeigen (Tasten, Maustasten, Gamepad)",
-    "tr": "Tüm çakışmaları göster (tuşlar, fare düğmeleri, oyun kolu)",
-    "pl": "Pokaż wszystkie konflikty (klawisze, przyciski myszy, pad)",
-    "nl": "Alle conflicten tonen (toetsen, muisknoppen, gamepad)",
-    "pt": "Mostrar todos os conflitos (teclas, botões do mouse, controle)",
-    "id": "Tampilkan semua bentrok (tombol keyboard, tombol mouse, gamepad)",
-    "ja": "すべての重複を表示（キー、マウスボタン、ゲームパッド）",
-    "it": "Mostra tutti i conflitti (tasti, pulsanti del mouse, gamepad)"
-  },
-  "pkg.pt.hkLoading": {
-    "en": "The conflict check is still loading. Try again in a moment.",
-    "el": "Ο έλεγχος συγκρούσεων φορτώνει ακόμα. Δοκίμασε ξανά σε λίγο.",
-    "es": "La comprobación de conflictos aún se está cargando. Inténtalo de nuevo en un momento.",
-    "bg": "Проверката за конфликти още се зарежда. Опитай пак след малко.",
-    "fr": "La vérification des conflits est encore en cours de chargement. Réessayez dans un instant.",
-    "ar": "فحص التعارضات ما زال قيد التحميل. حاول مجددًا بعد لحظة.",
-    "zh": "衝突檢查仍在載入中，請稍後再試。",
-    "ru": "Проверка конфликтов ещё загружается. Попробуйте через мгновение.",
-    "de": "Die Konfliktprüfung lädt noch. Versuche es gleich noch einmal.",
-    "tr": "Çakışma denetimi hâlâ yükleniyor. Birazdan tekrar dene.",
-    "pl": "Sprawdzanie konfliktów jeszcze się ładuje. Spróbuj za chwilę.",
-    "nl": "De conflictcontrole laadt nog. Probeer het zo opnieuw.",
-    "pt": "A verificação de conflitos ainda está carregando. Tente de novo em instantes.",
-    "id": "Pemeriksaan bentrok masih dimuat. Coba lagi sebentar lagi.",
-    "ja": "重複チェックはまだ読み込み中です。少し待ってからもう一度お試しください。",
-    "it": "Il controllo dei conflitti si sta ancora caricando. Riprova tra un momento."
   }
 }

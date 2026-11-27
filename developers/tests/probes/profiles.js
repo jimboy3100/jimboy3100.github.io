@@ -5,7 +5,8 @@
   var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
   for (var i = 0; i < 40 && !(window.LMProfiles && document.getElementById('og-options')); i++) await wait(250);
   if (!window.LMProfiles) return { fail: ['LMProfiles not loaded'] };
-  ['hk-lmProfilesWindow', 'hk-lmProfileNext', 'hk-lmProfilePrev', 'hk-lmProfileUndo'].forEach(function (h) {
+  ['hk-lmProfileNext', 'hk-lmProfilePrev', 'hk-lmProfileUndo'].forEach(function (h) { if (hotkeysCommand[h]) fail.push('hotkey ' + h + ' still there (removed)'); });
+  ['hk-lmProfilesWindow'].forEach(function (h) {
     if (!hotkeysCommand[h]) fail.push('hotkey ' + h + ' missing');
     else if (hotkeysCommand[h].defaultKey !== '') fail.push('hotkey ' + h + ' has a default key');
   });

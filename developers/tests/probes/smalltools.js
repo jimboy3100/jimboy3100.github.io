@@ -31,43 +31,8 @@
       !('skinCollections' in LM_SETTINGS_DEFAULTS) && !('hk-skinCollections' in hotkeysCommand));
     /* no favourite stars, gold ring or profile search in the skins panel (removed) */
     need('no profile stars or search', !document.querySelector('#skins .lm-prof-star, #skins .lm-prof-fav') && !document.getElementById('lm-prof-search') && !document.getElementById('lm-prof-css'));
-    /* the conflict list is in the Hotkeys window only (its own section, not a header button and
-     * not a small tools window / hotkey of its own) */
-    need('no conflicts button in the hotkeys window header', !document.getElementById('lm-hk-conflicts') && !$('#hotkeys-menu #lm-hk-conf-btn').length);
-    need('Hotkey conflicts: no window or hotkey of its own', !('hk-hotkeyConflicts' in hotkeysCommand) && !T.open('conflicts') && !document.getElementById('lm-st-conflicts'));
-    var cfBtn = document.getElementById('lm-hk-conf-btn'), cfList = document.getElementById('lm-hk-conf-list');
-    need('Hotkey conflicts: a section of the Hotkeys window', !!cfBtn && !!cfList && $(cfBtn).closest('#hotkeys #lm-hk-controls').length === 1 && cfList.style.display === 'none');
-    if (cfBtn && cfList) {
-      var hkWas = $('#hotkeys').is(':visible');
-      if (!hkWas) { $('.hotkeys-link').first().trigger('click'); await sleep(600); }
-      /* a key bound twice (an imported lower case letter is the same key) */
-      var cmdA = 'hk-zzConfA', cmdB = 'hk-zzConfB';
-      hotkeysCommand[cmdA] = { label: 'Probe A', defaultKey: '', keyDown: function () { } };
-      hotkeysCommand[cmdB] = { label: 'Probe B', defaultKey: '', keyDown: function () { } };
-      var hkF9 = window.hotkeys['J'], hkf9 = window.hotkeys['j'];
-      window.hotkeys['J'] = cmdA;
-      window.hotkeys['j'] = cmdB;
-      cfBtn.click();
-      await sleep(50);
-      var rowsC = cfList.querySelectorAll('.lm-st-conf');
-      var dupRow = Array.prototype.filter.call(rowsC, function (r) { return /Probe A/.test(r.textContent) && /Probe B/.test(r.textContent); })[0];
-      need('Hotkey conflicts: the list opens in the window and shows a key bound twice, with a jump per command', cfList.style.display !== 'none' && !!dupRow && dupRow.querySelectorAll('a.lm-st-link').length === 2);
-      var lr = cfList.getBoundingClientRect(), hr0 = document.getElementById('hotkeys').getBoundingClientRect();
-      need('Hotkey conflicts: the list fits the window width', lr.width > 0 && lr.left >= hr0.left - 1 && lr.right <= hr0.right + 1);
-      info.confRows = rowsC.length;
-      /* a key change while it is shown: the list follows */
-      delete window.hotkeys['j'];
-      if (T.refreshConflicts) T.refreshConflicts();
-      await sleep(30);
-      need('Hotkey conflicts: built again after a change', !Array.prototype.some.call(cfList.querySelectorAll('.lm-st-conf'), function (r) { return /Probe B/.test(r.textContent); }));
-      cfBtn.click();
-      need('Hotkey conflicts: the button closes the list', cfList.style.display === 'none' && !cfList.firstChild);
-      delete window.hotkeys['J']; delete window.hotkeys['j'];
-      if (hkF9 !== undefined) window.hotkeys['J'] = hkF9;
-      if (hkf9 !== undefined) window.hotkeys['j'] = hkf9;
-      delete hotkeysCommand[cmdA]; delete hotkeysCommand[cmdB];
-      if (!hkWas) { $('#close-hotkeys').trigger('click'); await sleep(600); }
-    }
+    /* the hotkey conflict list is gone (the Hotkeys window still refuses a key the browser keeps) */
+    need('no hotkey conflict list', !document.getElementById('lm-hk-conf-btn') && !document.getElementById('lm-hk-conf-list') && !T.conflicts && !T.renderConflicts && !('hk-hotkeyConflicts' in hotkeysCommand) && typeof T.keyCheck === 'function' && T.keyCheck('CTRL+W').level === 'block');
     need('keyCheck refuses browser keys', T.keyCheck && T.keyCheck('CTRL+T') && T.keyCheck('CTRL+T').level === 'block' && !T.keyCheck('Q'));
 
     /* every window opens on screen and closes with its x */
@@ -121,12 +86,6 @@
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', keyCode: 27, bubbles: true, cancelable: true }));
     need('Esc closes the ring without running', !document.getElementById('lm-radial') && ran === 2);
     delete hotkeysCommand['hk-zzProbe'];
-
-    /* conflicts list */
-    var list = T.conflicts();
-    need('conflict check runs', Array.isArray(list));
-
-    info.conflicts = list.map(function (c) { return c.kind + ':' + c.key + ':' + c.level; }).join(' ');
 
     /* the HUD hide of Show/hide HUD (Alt+H; the former screenshot mode is not a hotkey of its own) */
     need('Screenshot mode is part of Show/hide HUD', Object.keys(hotkeysCommand).indexOf('hk-screenshotMode') < 0 && hotkeysCommand['hk-screenshotMode'] === hotkeysCommand['hk-showHUD']);

@@ -18,9 +18,8 @@
   var mfSel = document.getElementById('massFormat');
   if (!mfSel || mfSel.tagName !== 'SELECT' || [].map.call(mfSel.options, function (o) { return o.value; }).join() !== '1,2,3') fail.push('massFormat is not one dropdown 1/2/3');
   if (document.getElementById('shortMass') || document.getElementById('massFormat-slider')) fail.push('Short mass switch or Mass format slider still in the menu');
-  ['hk-precisionZoom'].forEach(function (k) {
-    if (!hotkeysCommand[k]) fail.push(k + ' missing');
-    else if (hotkeysCommand[k].defaultKey !== '') fail.push(k + ' has a default key');
+  ['hk-precisionZoom', 'hk-cameraLock'].forEach(function (k) {
+    if (hotkeysCommand[k]) fail.push(k + ' is still a hotkey (removed)');
   });
   /* the cell panel text follows the HUD scale (Theme > HUD): a 1.5 scale here, put back at the end */
   var rootSt = document.documentElement.style, oldScale = rootSt.getPropertyValue('--lm-hud-scale');

@@ -1421,24 +1421,6 @@
     "ja": "Expanding Landのワールド観戦：ミニマップをクリックするとカメラがその場所へ移動（任意）",
     "it": "Expanding Land World Spectate: con un clic opzionale sulla minimappa sposti lì la visuale"
   },
-  "site.features.hotkeyToEnlargeThe": {
-    "en": "Hotkey to enlarge the minimap",
-    "el": "Πλήκτρο για μεγέθυνση του minimap",
-    "es": "Atajo para ampliar el minimapa",
-    "bg": "Клавиш за уголемяване на миникартата",
-    "fr": "Raccourci pour agrandir la mini-carte",
-    "ar": "مفتاح اختصار لتكبير الخريطة المصغرة",
-    "zh": "放大小地圖的快速鍵",
-    "ru": "Горячая клавиша для увеличения миникарты",
-    "de": "Hotkey zum Vergrößern der Minimap",
-    "tr": "Mini haritayı büyütmek için kısayol tuşu",
-    "pl": "Skrót do powiększenia minimapy",
-    "nl": "Sneltoets om de minimap te vergroten",
-    "pt": "Atalho para aumentar o minimapa",
-    "id": "Hotkey untuk memperbesar minimap",
-    "ja": "ミニマップを拡大するショートカットキー",
-    "it": "Tasto rapido per ingrandire la minimappa"
-  },
   "site.features.chatToolsNew": {
     "en": "Chat Tools <span class=\"badge badge-new\">New</span>",
     "el": "Εργαλεία chat <span class=\"badge badge-new\">Νέο</span>",
@@ -1654,24 +1636,6 @@
     "id": "Lencana <b>BARU</b> dan filter <i>Tampilkan opsi baru</i>",
     "ja": "<b>NEW</b>バッジと<i>新しいオプションを表示</i>フィルター",
     "it": "Badge <b>NUOVO</b> e filtro <i>Mostra nuove opzioni</i>"
-  },
-  "site.features.boundKeysListIn": {
-    "en": "Hotkey conflicts list in the Hotkeys window",
-    "el": "Λίστα συγκρούσεων πλήκτρων στο παράθυρο Πλήκτρα συντόμευσης",
-    "es": "Lista de conflictos de atajos en la ventana Atajos de teclado",
-    "bg": "Списък с конфликти на бързи клавиши в прозореца Бързи клавиши",
-    "fr": "Liste des conflits de raccourcis dans la fenêtre Raccourcis",
-    "ar": "قائمة تعارضات الاختصارات في نافذة اختصارات لوحة المفاتيح",
-    "zh": "快捷鍵視窗中的快捷鍵衝突清單",
-    "ru": "Список конфликтов горячих клавиш в окне «Горячие клавиши»",
-    "de": "Liste der Hotkey-Konflikte im Fenster Tastenbelegung",
-    "tr": "Kısayol tuşları penceresinde kısayol çakışmaları listesi",
-    "pl": "Lista konfliktów skrótów w oknie Skróty klawiszowe",
-    "nl": "Lijst met sneltoetsconflicten in het venster Sneltoetsen",
-    "pt": "Lista de conflitos de atalhos na janela Atalhos",
-    "id": "Daftar konflik hotkey di jendela Hotkey",
-    "ja": "ショートカットウィンドウのショートカットの重複一覧",
-    "it": "Elenco dei conflitti tra tasti rapidi nella finestra Tasti rapidi"
   },
   "site.features.settingsThemeAndHotkey": {
     "en": "Settings, theme and hotkey labels in 16 languages",

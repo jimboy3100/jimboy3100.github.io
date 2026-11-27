@@ -44,7 +44,7 @@ function loadTheme(storedTheme, oldKey, full) {
         lmMbRingThemeCarry: () => false, lmMbRingMirror: () => { }
     };
     vm.createContext(ctx);
-    const St = vm.runInContext('({\n' + cut('        loadThemeSettings() {', '        /* Hotkey (no default key): enlarge the minimap') + '\n})', ctx);
+    const St = vm.runInContext('({\n' + cut('        loadThemeSettings() {', '        restoreThemeSettings() {') + '\n})', ctx);
     St.loadThemeSettings();
     return { d, ls, saved: JSON.parse(ls.getItem('ogarioThemeSettings') || 'null') };
 }

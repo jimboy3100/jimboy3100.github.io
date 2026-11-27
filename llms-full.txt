@@ -81,7 +81,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
 
 ### Hotkeys Without Default Keys (All Configurable)
-Triple split, crazy double split, line split, custom macro 1-3, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, instant replay, replay pause/speed/seek, radial menu, radial editor, gamepad window, profiles window, theme workshop, copy server link, net graph, performance diagnostics, chat sounds toggle, notification centre, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), screenshot capture/window (Show/hide HUD, Alt+H, hides the whole HUD with a capture button), limit position (hold), multibox swap, middle multi-view, multibox rings, enlarge minimap, auto zoom toggle, hotkey conflicts window, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, camera lock, precision zoom (hold), zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
+Triple split, crazy double split, line split, custom macro 1-3, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, instant replay, replay pause/speed/seek, radial menu, radial editor, gamepad window, profiles window, theme workshop, copy server link, net graph, performance diagnostics, chat sounds toggle, notification centre, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), screenshot capture/window (Show/hide HUD, Alt+H, hides the whole HUD with a capture button), limit position (hold), multibox swap, middle multi-view, multibox rings, auto zoom toggle, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, camera lock, zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
 
 ### Mouse
 | Button | Default Action |
@@ -146,7 +146,7 @@ Save and load up to 30 named settings profiles. Each profile stores gameplay set
 - **Auto-switching**: Automatically change profile per server type, game mode, or input device (keyboard/gamepad/touch) — off by default
 - **Comparison**: Side-by-side comparison of any two profiles
 - **5 automatic backups**: Last 5 settings snapshots, recoverable
-- **Hotkeys**: Open window, next/prev profile, undo
+- **Hotkey**: open the window
 - Import/export as JSON blob
 
 ### 5. Multiboxing
@@ -245,7 +245,6 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one),
 - **Ghost cells**: Show death locations on the minimap
 - **Trail**: Last ~60 seconds of your movement path traced on the minimap
 - **Click-to-spectate**: Click on the minimap to move the spectator camera (Expanding Land World Spectate)
-- **Enlarge minimap**: Hotkey to temporarily enlarge to ~1.8x
 - **Private minimap**: Hotkey to hide minimap from view
 - **One-coloured teammates**: All teammates shown in same colour on minimap
 - **Customizable theming**: Sections colour, sector colour, guides colour, nick colour/stroke, cell colours, death location colour, font, sizes
@@ -265,7 +264,6 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one),
 - **Virus range circles**: Rings showing virus ejection range
 - **Mass in tab title**: Browser tab shows current mass
 - **Game stats position**: one choice: top left, bottom left or bottom centre (a HUD editor layout wins), configurable stats elements
-- **Precision zoom**: Hold-action for fine zoom control
 
 ### 13. HUD Editor
 Drag and resize HUD elements with named layouts. Features:

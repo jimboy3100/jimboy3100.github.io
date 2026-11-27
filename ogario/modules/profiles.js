@@ -741,11 +741,7 @@
         }
         var data = { s: sData };
         if (parts.t !== false && T()) {
-            var t = Object.assign({}, T());
-            /* the enlarged minimap (hotkey) is temporary: its normal width, as the export does */
-            var orig = window.Settings && window.Settings._lmMiniBigOrig;
-            if (orig) { t.miniMapWidth = orig; t.miniMapTop = Math.round(20 * orig / 200); }
-            data.t = t;
+            data.t = Object.assign({}, T());
         }
         if (parts.h !== false && isObj(window.hotkeys)) {
             data.h = window.hotkeys;
@@ -1033,8 +1029,6 @@
             }
             if (c.t) {
                 var St = window.Settings;
-                /* the enlarged minimap ends: its normal width comes from the profile */
-                if (St && St._lmMiniBigOrig) St._lmMiniBigOrig = 0;
                 var d = T();
                 for (var tk in data.t) {
                     if (own.call(data.t, tk) && has(d, tk) && !same(d[tk], data.t[tk])) {
@@ -1135,19 +1129,6 @@
         if (isOpen()) render();
         return !!r;
     }
-    /* hotkeys: apply the next / previous profile in the list (no confirmation; Undo in the message) */
-    function applyNext(dir) {
-        var list = loadProfiles();
-        if (!list.length) { toast('info', esc(tx('noProfiles'))); return; }
-        var last = null;
-        try { last = window.localStorage.getItem(KEY_LAST); } catch (e) { }
-        var i = -1;
-        for (var j = 0; j < list.length; j++) if (list[j].id === last) i = j;
-        var n = list.length;
-        i = i < 0 ? (dir < 0 ? n - 1 : 0) : (i + (dir < 0 ? -1 : 1) + n) % n;
-        applyProfile(list[i]);
-    }
-
     /* ── Automatic backups ── */
     var lastChangeBackup = 0;
     function noteChange() {
@@ -1717,7 +1698,6 @@
         open: open,
         close: close,
         toggle: toggle,
-        applyNext: applyNext,
         undo: undo,
         list: function () { return loadProfiles().map(function (p) { return { id: p.id, name: p.name }; }); },
         applyById: function (id) { var p = findProfile(id); return p ? applyProfile(p) : null; },

@@ -51,7 +51,7 @@ const TD = ctx.LM_THEME_DEFAULTS, SD = ctx.LM_SETTINGS_DEFAULTS, DS = ctx.defaul
 const KEYS = ['mbRingColorP1', 'mbRingColorP2'];
 /* the real Settings methods (theme) and application methods (gameplay, export, import) */
 const Settings = vm.runInContext('({\n' +
-  cut('        loadThemeSettings() {', '        /* Hotkey (no default key): enlarge the minimap') +
+  cut('        loadThemeSettings() {', '        restoreThemeSettings() {') +
   cut('        restoreThemeSettings() {', '        addCustomCSS(name, css) {') + '\n})', ctx);
 ctx.Settings = Settings;
 const application = vm.runInContext('({\n' +
@@ -170,7 +170,7 @@ vm.runInContext('var ogario = {};', pc);
 pc.$ = pc.jQuery = $;
 pc.application = { saveSettings(o, n) { pc.localStorage.setItem(n, JSON.stringify(o)); }, setSettings() { } };
 let themeSaved = 0;
-pc.Settings = vm.runInContext('({ setTheme() { },\n' + cut('        saveThemeSettings() {', '        /* Hotkey (no default key): enlarge the minimap') + '\n})', pc);
+pc.Settings = vm.runInContext('({ setTheme() { },\n' + cut('        saveThemeSettings() {', '        restoreThemeSettings() {') + '\n})', pc);
 const realSave = pc.Settings.saveThemeSettings;
 pc.Settings.saveThemeSettings = function () { themeSaved++; return realSave.call(this); };
 vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'profiles.js'), 'utf8'), pc);
