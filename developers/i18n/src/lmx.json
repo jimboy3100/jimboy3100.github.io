@@ -12076,5 +12076,24 @@
     "id": "MP4, skin video",
     "ja": "MP4、動画スキン",
     "it": "MP4, skin video"
+  },
+  "lmx.us.restartOnce": {
+    "en": "Agar.io started first: restarting once so that only Legend Mod runs",
+    "el": "Το Agar.io ξεκίνησε πρώτο: γίνεται μία επανεκκίνηση ώστε να τρέχει μόνο το Legend Mod",
+    "es": "Agar.io arrancó primero: reiniciando una vez para que solo funcione Legend Mod",
+    "bg": "Agar.io стартира първи: рестартиране веднъж, за да работи само Legend Mod",
+    "fr": "Agar.io a démarré en premier : redémarrage unique pour que seul Legend Mod tourne",
+    "ar": "بدأ Agar.io أولاً: إعادة تشغيل مرة واحدة ليعمل Legend Mod وحده",
+    "zh": "Agar.io 先啟動了：重新啟動一次，讓只有 Legend Mod 執行",
+    "ru": "Agar.io запустился первым: один перезапуск, чтобы работал только Legend Mod",
+    "de": "Agar.io ist zuerst gestartet: einmaliger Neustart, damit nur Legend Mod läuft",
+    "tr": "Agar.io önce başladı: yalnızca Legend Mod çalışsın diye bir kez yeniden başlatılıyor",
+    "pl": "Agar.io uruchomił się pierwszy: jednorazowy restart, aby działał tylko Legend Mod",
+    "nl": "Agar.io startte eerst: één keer herstarten zodat alleen Legend Mod draait",
+    "pt": "O Agar.io iniciou primeiro: reiniciando uma vez para que só o Legend Mod rode",
+    "id": "Agar.io berjalan lebih dulu: memulai ulang sekali agar hanya Legend Mod yang berjalan",
+    "ja": "Agar.ioが先に起動しました：Legend Modだけが動くよう一度だけ再起動します",
+    "it": "Agar.io è partito per primo: riavvio una volta perché giri solo Legend Mod",
+    "note": "Line on the Legend Express userscript's loading screen, shown for a moment before the page reloads once: the userscript started after agar.io's own game had already started, and the one reload makes only Legend Mod run."
   }
 }

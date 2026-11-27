@@ -74,9 +74,9 @@ function build() {
     return files;
 }
 
-/* LMexpress.user.js (the userscript loader) runs alone in Tampermonkey: its texts are written into it
+/* LMexpress.user.js (the userscript loader) runs alone in Tampermonkey: its texts (and its loading screen's boot.loading) are written into it
  * between the i18n:texts markers (ASCII, the file is ASCII) */
-const US_KEYS = (k) => k.indexOf('lmx.us.') === 0 || ['lmx.ext.website', 'lmx.ext.library', 'lmx.ext.tryAgain'].indexOf(k) >= 0;
+const US_KEYS = (k) => k.indexOf('lmx.us.') === 0 || ['lmx.ext.website', 'lmx.ext.library', 'lmx.ext.tryAgain', 'boot.loading'].indexOf(k) >= 0;
 function userscriptRegion(all) {
     const file = path.join(I.ROOT, 'LMexpress', 'LMexpress.user.js');
     if (!fs.existsSync(file)) return null;

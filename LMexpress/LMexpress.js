@@ -337,13 +337,23 @@ urlIpWhenOpened();
 
 //emphasischat();
 //specialeffecttargeting();
+/* true when version a is older than b: "1.8.7" < "1.9" < "1.10" < "2.0" */
+function lmxVersionBelow(a, b) {
+    var x = String(a || '').split('.'), y = String(b || '').split('.');
+    for (var i = 0; i < Math.max(x.length, y.length); i++) {
+        var p = parseInt(x[i], 10) || 0, q = parseInt(y[i], 10) || 0;
+        if (p !== q) return p < q;
+    }
+    return false;
+}
 function startLM(modVersion) {
     if (!window.LMstarted) {
         window.LMstarted = true
         // ANNOUNCEMENTS
         //toastr.info('<b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">'+'Legend mod </span></font> is back!<br><font color="red"></b>Enable Vanilla skins on Settings</font>').css("width", "350px");
         window.LMVersion = modVersion;
-        if (!modVersion.startsWith("1.8")) {
+        /* versions compared number by number: Legend Express 1.9 (and later) is newer than 1.8, not an old one */
+        if (lmxVersionBelow(modVersion, "1.8")) {
             toastr.info(_lmxT('lmx.ex.canBeUpdated', ['<font color="yellow"><b>v' + _lmEscHtml(modVersion) + '</b></font>', '<font color="yellow"><b>v1.8</b></font>', '<a target="_blank" href="https://jimboy3100.github.io"><font color="yellow"><b><u>jimboy3100.github.io</u></b></font></a>']));
         }
 
