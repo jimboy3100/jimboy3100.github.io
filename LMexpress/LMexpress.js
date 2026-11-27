@@ -7935,7 +7935,6 @@ function autoplayplaying() {
     window.legendmod5.virusesRange = false;
     window.legendmod5.teammatesInd = false;
     window.legendmod5.showGhostCells = false;
-    window.legendmod5.showGhostCellsInfo = false;
     defaultmapsettings.top5skins = false;
     window.legendmod5.showChatImages = false;
     window.legendmod5.showChatVideos = false;

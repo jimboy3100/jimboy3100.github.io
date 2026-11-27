@@ -89,6 +89,7 @@ check('store: merged items keep their star on the successor', st.fav.join() === 
 check('store: moved controls keep their recent entry on their block', st.recent.join() === 'sec:lmHkMouse,sec:lmHkGamepad,hk:hk-lmPlugins');
 check('store: a star on a Game Over card part stays on the card switch', C.parseStore({ fav: ['opt:massGraph', 'opt:showKiller', 'opt:deathRecap'] }).fav.join() === 'opt:gameOverStats');
 check('store: a star on the old Collections button switch stays on the Skin collections command', C.parseStore({ fav: ['opt:skinCollections'] }).fav.join() === 'hk:hk-skinCollections');
+check('store: a star on the old Ghost cells info switch stays on Ghost cells', C.parseStore({ fav: ['opt:showGhostCellsInfo'] }).fav.join() === 'opt:showGhostCells');
 check('store: a star on the successor and its old item is one star', C.parseStore({ fav: ['set:massFormat', 'opt:shortMass'] }).fav.join() === 'set:massFormat');
 st = { fav: [], recent: [] };
 for (let i = 0; i < 20; i++) st = C.withRecent(st, 'opt:k' + (i % 15));

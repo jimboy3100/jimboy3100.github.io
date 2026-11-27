@@ -1,5 +1,5 @@
-// Settings > Helpers: Bubble indicators, Split prediction and Ghost cells info do something only
-// while Opponents rings, Cursor tracking and Ghost cells are on, and Settings > Stats: the ping
+// Settings > Helpers: Bubble indicators and Split prediction do something only
+// while Opponents rings and Cursor tracking are on, and Settings > Stats: the ping
 // jitter only while FPS is on (it is written after the ping, after the FPS); while those are off they
 // are dimmed and say what they need, as the other dependent options. With Stats off the jitter says
 // it needs Stats (the outermost switch that is off). The parent switch is turned off
@@ -17,7 +17,7 @@
       window.__lmInput(JSON.stringify({ id: id, type: window.LM_IS_MOBILE ? 'tap' : 'click', x: x, y: y }));
     });
   };
-  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['showGhostCells', 'showGhostCellsInfo'], ['showStatsFPS', 'showStatsJitter']];
+  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['showStatsFPS', 'showStatsJitter']];
   var keep = { showStats: defaultmapsettings.showStats };
   pairs.forEach(function (p) { keep[p[0]] = defaultmapsettings[p[0]]; keep[p[1]] = defaultmapsettings[p[1]]; });
   var needs = application._lmMenuText('lmDepNeeds');

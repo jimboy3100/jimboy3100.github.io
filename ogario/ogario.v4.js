@@ -21395,7 +21395,8 @@ var defaultmapsettings = {
     showBgSectors: false,
     showMapBorders: true,
     showGhostCells: false,
-    showGhostCellsInfo: false,
+    /* showGhostCellsInfo (their nick and skin, a switch of its own) is gone: ghost cells always
+     * show who they are (saved values of it are skipped on load) */
     showCellShadows: false,
     /* deathParticles and eatPulse live in defaultmapsettings (the gameplay
      * settings object); removed here to avoid confusion – the theme copy
@@ -24036,16 +24037,10 @@ function thelegendmodproject() {
             ogario.splitRange = defaultmapsettings.splitRange;
             this.syncHotkeyOption('splitRange');
         },
+        /* the ghost cells hotkey (K): ghost cells on / off (they always show their nick and skin) */
         setShowGhostCellsInfo() {
-            if (defaultmapsettings.showGhostCells === false || defaultmapsettings.showGhostCellsInfo === false) {
-                defaultmapsettings.showGhostCellsInfo = true;
-                defaultmapsettings.showGhostCells = true;
-            } else {
-                defaultmapsettings.showGhostCellsInfo = false;
-                defaultmapsettings.showGhostCells = false;
-            }
+            defaultmapsettings.showGhostCells = !defaultmapsettings.showGhostCells;
             /* Issue #6: sync checkboxes and persist */
-            this.syncHotkeyOption('showGhostCellsInfo');
             this.syncHotkeyOption('showGhostCells');
         },
         setAutoPlay() {
@@ -27171,7 +27166,7 @@ function thelegendmodproject() {
             this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "hudMoveDir", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "hudMoveDir", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
             /* Sticky cells: what the left and right button do on cells (a behaviour, not a binding,
              * so here and not in the Hotkeys window) */
             this.addOptionTo('.helpersGroup', 'stickyCell');
@@ -27305,11 +27300,10 @@ function thelegendmodproject() {
                     recordReplays: ['instantReplaySecs'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
                     massLossAlert: ['massLossPct'],
-                    /* Settings > Helpers: the bubble style of the opponent rings, the dimming of the
-                     * cursor lines and the ghost cells' skins and nicks are drawn only with these on */
+                    /* Settings > Helpers: the bubble style of the opponent rings and the dimming of the
+                     * cursor lines are drawn only with these on */
                     oppRings: ['bubbleInd'],
-                    cursorTracking: ['splitPrediction'],
-                    showGhostCells: ['showGhostCellsInfo']
+                    cursorTracking: ['splitPrediction']
                 };
                 /* option -> row of the Discovery support table (ogario/modules/discovery.js) */
                 var SRV = { hudMergeCountdown: 'mergeCountdown', hudMergeSound: 'mergeCountdown', splitPrediction: 'splitPrediction', recordReplays: 'replays', instantReplaySecs: 'replays' };
@@ -84021,9 +84015,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * Always Canvas2D. The WebGL layer sits ABOVE the 2D canvas, so GL
                  * ghosts covered real cells whenever the frame rendered cells on
                  * Canvas2D, vanished when a WebGL frame fell back, and skipped
-                 * showGhostCellsInfo. There are only a few ghosts, so this is cheap.
+                 * their nick and skin. There are only a few ghosts, so this is cheap.
                  */
-                var _showInfo = defaultmapsettings.showGhostCellsInfo;
                 var _showSkins = lmSkinsShown();
 
                 var _cullingScale = this.scale || 1;
@@ -84037,8 +84030,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 this.ctx.beginPath();
                 /* Info (skin, nick) is drawn after the ghost fill: drawn inside this loop it
-                 * sat under the translucent glow of the fill. */
-                var _ghostInfo = _showInfo ? [] : null;
+                 * sat under the translucent glow of the fill. One list kept between frames. */
+                var _ghostInfo = this._lmGhostInfo || (this._lmGhostInfo = []);
+                _ghostInfo.length = 0;
                 for (var length = 0; length < ghostsCells.length; length++) {
                     var ghost = ghostsCells[length];
                     if (!ghost) continue;
