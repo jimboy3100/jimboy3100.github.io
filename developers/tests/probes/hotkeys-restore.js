@@ -1,8 +1,8 @@
 // Hotkeys window Restore: the default keys come back and a command without a default key has none
 // (the last of them, Quick chat 50, was put on the key '', so a mouse button pressed on its field
 // showed " / MOUSE RIGHT"; a save from before has that '' entry too). The conflict list, when shown,
-// follows Restore and a button change in the Gamepad window (it kept the old rows until it was opened
-// again). Close puts everything back.
+// follows Restore, a button change in the Gamepad window and a settings profile with other gamepad
+// buttons (it kept the old rows until it was opened again). Close puts everything back.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -88,6 +88,24 @@
           await sleep(100);
           info.afterPad = [shown(), real()];
           if (shown() !== real()) fail.push('after a gamepad button change the conflict list shows ' + shown() + ' of ' + real() + ' conflicts');
+        }
+        /* a settings profile that has other gamepad buttons only (no keys) */
+        var P = window.LMProfiles, keepP = {};
+        if (P && typeof P.applySet === 'function' && P.core && typeof P.core.captureGamepad === 'function') {
+          ['lmSettingsBackups', 'lmSettingsProfilesUndo'].forEach(function (k) { keepP[k] = localStorage.getItem(k); });
+          try {
+            $('#lm-hk-conf-btn').trigger('click').trigger('click');
+            await sleep(100);
+            var set = P.core.captureGamepad(), before = real();
+            set.gp.map[14] = set.gp.map[14] === 'hk-Autoplay' ? 'hk-GhostCellsInfo' : 'hk-Autoplay';
+            P.applySet({ gp: set.gp }, 'probe');
+            await sleep(150);
+            info.afterProfile = [shown(), real(), before];
+            if (real() === before) info.profileStep = 'no new conflict (not checked)';
+            else if (shown() !== real()) fail.push('after a settings profile with other gamepad buttons the conflict list shows ' + shown() + ' of ' + real() + ' conflicts');
+          } finally {
+            Object.keys(keepP).forEach(function (k) { if (keepP[k] === null) localStorage.removeItem(k); else localStorage.setItem(k, keepP[k]); });
+          }
         }
       } finally {
         try { if (window.LMGamepadUI && window.LMGamepadUI.isOpen && window.LMGamepadUI.isOpen()) window.LMGamepadUI.close(); } catch (e) { }

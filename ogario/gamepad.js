@@ -702,7 +702,8 @@
         _cleanOpt: cleanOpt,
         _stickOffset: stickOffset,
         _buttonDown: buttonDown,
-        _reload: load,
+        /* a settings profile with other buttons: the conflict list follows them too */
+        _reload: function () { load(); conflictsChanged(); },
         /* profiles.js has the old list now: it leaves this file's copy, the buttons in use are saved */
         _dropLegacy: function () { if (!map) load(); legacyProfiles = []; return save(); }
     };
