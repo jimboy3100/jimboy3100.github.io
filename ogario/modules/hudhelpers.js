@@ -814,6 +814,8 @@
         frame: frame,
         worldActive: worldActive,
         massText: massText,
+        /* mass as text in a Mass format mode (the HUD texts of ogario.v4.js shortMassFormat) */
+        formatMass: formatMass,
         /* the unit the relative mass, threat arrows and cell panel compare with (0 = main player) */
         refUnit: function () { return refOwner; },
         mergeLeft: mergeLeft,

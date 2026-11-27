@@ -30677,6 +30677,10 @@ function thelegendmodproject() {
             return String.fromCharCode(n + 65) + (r + 1);
         },
         shortMassFormat(value) {
+            /* the team list, leaderboard mass, target and the other HUD mass texts follow Settings >
+             * Mass > Mass format like the cells: Exact and Auto were shown as 12.3k there */
+            var mf = defaultmapsettings.massFormat;
+            if ((mf === 1 || mf === 3) && window.LMHudHelpers && LMHudHelpers.formatMass) return LMHudHelpers.formatMass(value, mf, false);
             return value < 1000 ? value : Math.round(value / 100) / 10 + 'k';
         },
         updateDeathLocations(t, e) {
@@ -49438,6 +49442,8 @@ function thelegendmodproject() {
             function fmtMass(m) {
                 if (!m && m !== 0) return '0';
                 m = parseInt(m, 10);
+                /* Settings > Mass > Mass format Exact: the whole number on the card and its image too */
+                if (defaultmapsettings.massFormat === 1) return m.toLocaleString();
                 if (m >= 1000000) return (m / 1000000).toFixed(1) + 'M';
                 if (m >= 10000) return (m / 1000).toFixed(1) + 'K';
                 return m.toLocaleString();
@@ -86099,7 +86105,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (on) {
                     if (baseTitle === null) baseTitle = document.title;
                     var m = window.legendmod.playerMass;
-                    var txt = (m >= 1000 ? (Math.round(m / 100) / 10) + 'k' : String(m)) + ' \u00B7 ' + baseTitle;
+                    /* in the Mass format chosen (Short as before) */
+                    var txt = String(window.application.shortMassFormat(m)) + ' \u00B7 ' + baseTitle;
                     if (txt !== last) { document.title = txt; last = txt; }
                 } else if (baseTitle !== null) {
                     document.title = baseTitle;
