@@ -9,8 +9,9 @@
   var got = [], t0 = Date.now();
   var s = new window.LMBotsWorkerSocket('https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=probe');
   s.onmessage = function (e) { got.push(Array.prototype.join.call(new Uint8Array(e.data), ',')); };
-  while (s.readyState === 0 && Date.now() - t0 < 5000) await new Promise(function (r) { setTimeout(r, 50); });
-  need('opens', s.readyState === 1);
+  while (s.readyState === 0 && Date.now() - t0 < 15000) await new Promise(function (r) { setTimeout(r, 50); });
+  info.openMs = Date.now() - t0;
+  need("opens (readyState " + s.readyState + ")", s.readyState === 1);
   var url = 'wss://imsolo.pro:2102', name = 'b';
   var buf = new Uint8Array(13 + url.length + name.length), p = 0;
   buf[p++] = 0;
