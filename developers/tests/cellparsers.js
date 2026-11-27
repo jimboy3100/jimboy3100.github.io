@@ -112,7 +112,8 @@ check('the new version has the incomplete-update counter', !!NEW.proto._lmWuInco
 function world(impl, mirror) {
     const w = Object.create(impl.proto);
     Object.assign(w, {
-        indexedCells: {}, cells: [], food: [], viruses: [], playerCells: [], playerCellIDs: [], _playerCellIDSet: new Set(),
+        /* 56: an own cell id (opcode 32) for Sigmally; Garix finds its own cells by accountID */
+        indexedCells: {}, cells: [], food: [], viruses: [], playerCells: [], playerCellIDs: [56], _playerCellIDSet: new Set(),
         play: false, playerNick: 'Me', playerColor: null, garixTabID1: 777, garixTabID2: 778, gameMode: ':ffa',
         mapMinX: -7000, mapMaxX: 7000, mapMinY: -7000, mapMaxY: 7000, removePlayerCell: false,
         warns: [], calls: [], removed: [], skins: [], pps: 0, closes: 0,
@@ -279,9 +280,9 @@ function truncations(proto, specs, build, cutSpec, seq, label) {
 }
 
 /* one packet on the play world: the world before and after, return, count */
-function onPlay(proto, specs, bytes, seqPre) {
+function onPlay(proto, build, specs, bytes, seqPre) {
     const w = world(NEW, false);
-    for (const k of seqPre) run(w, proto, specs[k].bytes || garix(specs[k]).bytes);
+    for (const k of seqPre) run(w, proto, build(specs[k]).bytes);
     w.calls.length = 0; w.removed.length = 0; w.skins.length = 0;
     const before = snap(w, true), n0 = w._lmWuBadN || 0;
     const r = run(w, proto, bytes);
@@ -294,15 +295,15 @@ truncations('garix', G, garix, garixCut, garixSeq, 'Garix');
 {
     /* an eat count the packet cannot hold: nothing applied at all */
     const pk = garix(Object.assign({}, G.play, { eatCount: 500 })).bytes;
-    const t = onPlay('garix', G, pk, ['setup']), ref = onPlay('garix', G, garix(G.empty).bytes, ['setup']);
+    const t = onPlay('garix', garix, G, pk, ['setup']), ref = onPlay('garix', garix, G, garix(G.empty).bytes, ['setup']);
     check('Garix eat count bigger than the packet: nothing applied, incomplete', !t.r.err && t.r.ret === false && t.after === ref.after && t.bad === 1);
     /* a remove count bigger than the packet: no remove applied, the rest is */
     const q = garix(Object.assign({}, G.play, { rmCount: 40 })).bytes;
-    const a = onPlay('garix', G, q, ['setup']), b = onPlay('garix', G, garix(Object.assign({}, G.play, { rm: [] })).bytes, ['setup']);
+    const a = onPlay('garix', garix, G, q, ['setup']), b = onPlay('garix', garix, G, garix(Object.assign({}, G.play, { rm: [] })).bytes, ['setup']);
     check('Garix remove count bigger than the packet: no remove applied, the rest is, incomplete', !a.r.err && a.r.ret === false && a.after === b.after && a.bad === 1);
     /* ... unless an id 0 ends the list inside the packet (as Delta reads it): applied up to it */
     const z = garix(Object.assign({}, G.play, { rm: [13, 17, 0], rmCount: 40 })).bytes;
-    const c = onPlay('garix', G, z, ['setup']), d = onPlay('garix', G, garix(Object.assign({}, G.play, { rm: [13, 17] })).bytes, ['setup']);
+    const c = onPlay('garix', garix, G, z, ['setup']), d = onPlay('garix', garix, G, garix(Object.assign({}, G.play, { rm: [13, 17] })).bytes, ['setup']);
     check('Garix remove list ended early by id 0: applied up to it, complete', !c.r.err && c.r.ret === true && c.after === d.after && c.bad === 0);
     /* a flag that promises bytes the packet does not have (last record): that record not applied */
     for (const [what, rec] of [['ext flags byte', { flags: 0x80 }], ['accountID', { flags: 0x80, ext: 4 }], ['nick colour', { flags: 0x80, ext: 8 }], ['rgb', { flags: 0x02 }], ['skin', { flags: 0x04 }], ['name', { flags: 0x08 }]]) {
@@ -314,21 +315,130 @@ truncations('garix', G, garix, garixCut, garixSeq, 'Garix');
         w.u32(31).i32(5).i32(5).u16(20).u8(rec.flags);
         if (what !== 'ext flags byte' && (rec.flags & 0x80)) w.u8(rec.ext);
         if (what === 'skin' || what === 'name') w.u8(65).u8(66); /* the string, no 0 */
-        const t2 = onPlay('garix', G, Uint8Array.from(w.b), ['setup']);
-        const r2 = onPlay('garix', G, garix({ eats: [], upd: [{ id: 11, x: 1, y: 1, size: 20, flags: 0 }], add: [], rm: [] }).bytes, ['setup']);
+        const t2 = onPlay('garix', garix, G, Uint8Array.from(w.b), ['setup']);
+        const r2 = onPlay('garix', garix, G, garix({ eats: [], upd: [{ id: 11, x: 1, y: 1, size: 20, flags: 0 }], add: [], rm: [] }).bytes, ['setup']);
         check('Garix record whose ' + what + ' is missing: not applied (no cell 31, no skin call), the record before it is', !t2.r.err && t2.r.ret === false && !t2.w.indexedCells[31] && t2.after === r2.after);
     }
     /* a string without its 0 end in the middle cannot be found: it runs to the end, the record is cut */
     const s = garix({ eats: [], upd: [], add: [{ id: 41, x: 1, y: 1, size: 40, flags: 0x08, name: 'x' }], rm: [] }).bytes;
-    let t3 = onPlay('garix', G, s.slice(0, s.length - 10), ['setup']);
+    let t3 = onPlay('garix', garix, G, s.slice(0, s.length - 7), ['setup']); /* without the name's 0, both ends and the remove count */
     check('Garix name without its 0 end: no cell, no name call, incomplete', !t3.r.err && t3.r.ret === false && !t3.w.indexedCells[41] && !t3.w.skins.length && t3.bad === 1);
     /* one id 0 only (a protocol-6 style end) and the remove count: as before, counted incomplete */
     const one = new Buf(); one.u8(16).u16(0).u32(0).u16(0);
-    t3 = onPlay('garix', G, Uint8Array.from(one.b), ['setup']);
+    t3 = onPlay('garix', garix, G, Uint8Array.from(one.b), ['setup']);
     check('Garix packet with one section end only: nothing applied, no exception, incomplete', !t3.r.err && t3.r.ret === false && t3.before === t3.after);
     /* packets of 1 and 2 bytes (no eat count): nothing happens, no exception */
-    const t4 = onPlay('garix', G, Uint8Array.from([16]), ['setup']), t5 = onPlay('garix', G, Uint8Array.from([16, 0]), ['setup']);
+    const t4 = onPlay('garix', garix, G, Uint8Array.from([16]), ['setup']), t5 = onPlay('garix', garix, G, Uint8Array.from([16, 0]), ['setup']);
     check('Garix packet without its eat count: no exception, nothing applied', !t4.r.err && !t5.r.err && t4.r.ret === false && t4.before === t4.after && t5.before === t5.after);
+}
+
+/* ---- Sigmally ---- */
+/* {eats:[[eater,victim]], eatEnd (an eater 0 ends the list; the count is one more), eatCount,
+ *  upd:[node], rm:[ids], rmCount, tail}; node {id,x,y,size,flags,m:[3],v,ext,rgb:[3],skin,name,acc} */
+function sig(p) {
+    const w = new Buf(), ends = { eat: [], upd: [], rm: [] };
+    w.u8(16).u16(p.eatCount != null ? p.eatCount : p.eats.length + (p.eatEnd ? 1 : 0));
+    for (const e of p.eats) { w.u32(e[0]).u32(e[1]); ends.eat.push(w.n); }
+    if (p.eatEnd) w.u32(0);
+    ends.eatSec = w.n;
+    for (const r of p.upd) {
+        let fl = r.flags || 0;
+        if (r.ext != null) fl |= 0x80;
+        const m = r.m || [0, 0, 0];
+        w.u32(r.id).i16(r.x).i16(r.y).u16(r.size).u8(fl).u8(m[0]).u8(m[1]).u8(m[2]).z(r.v || '');
+        if (fl & 0x80) w.u8(r.ext);
+        if (fl & 2) w.u8(r.rgb[0]).u8(r.rgb[1]).u8(r.rgb[2]);
+        if (fl & 4) w.z(r.skin);
+        if (fl & 8) w.z(r.name);
+        if ((fl & 0x80) && (r.ext & 4)) w.u32(r.acc);
+        ends.upd.push(w.n);
+    }
+    w.u32(0); ends.term = w.n;
+    w.u16(p.rmCount != null ? p.rmCount : p.rm.length);
+    for (const id of p.rm) { w.u32(id); ends.rm.push(w.n); }
+    ends.rmSec = w.n;
+    for (const t of p.tail || []) w.u8(t);
+    return { bytes: Uint8Array.from(w.b), ends };
+}
+/* the valid packet holding only what a cut at c leaves whole (a cut eat list drops it all) */
+function sigCut(p, e, c) {
+    if (c < e.eatSec) return { eats: [], upd: [], rm: [] };
+    return { eats: p.eats, eatEnd: p.eatEnd, upd: p.upd.filter((r, i) => e.upd[i] <= c), rm: c >= e.rmSec ? p.rm : [] };
+}
+/* ---- golden Sigmally packets (56 is the own cell id) ---- */
+const S = {
+    setup: {
+        eats: [], rm: [],
+        upd: [
+            { id: 11, x: 100, y: 200, size: 50, flags: 0x0a, rgb: [200, 10, 10], name: 'Alpha' },
+            { id: 12, x: -300, y: 400, size: 80, flags: 0x0e, rgb: [10, 200, 10], skin: '1%cat', name: 'Béta Ω' },
+            { id: 13, x: 0, y: 0, size: 100, flags: 0x03, rgb: [20, 255, 20] },
+            { id: 14, x: 50, y: 60, size: 10, flags: 0x02, rgb: [1, 2, 3] },
+            { id: 15, x: 70, y: 80, size: 12, flags: 0x00, ext: 0x01 },
+            { id: 56, x: 500, y: 500, size: 60, flags: 0x0a, ext: 0x04, acc: 777, rgb: [50, 60, 70], name: 'mine' },
+            { id: 17, x: 900, y: -900, size: 30, flags: 0x22, rgb: [8, 8, 8] },
+            { id: 18, x: -32000, y: 32000, size: 40, flags: 0x08, m: [3, 1, 0], v: 'zz', name: 'far' }
+        ]
+    },
+    play: {
+        eats: [[11, 14], [12, 15]],
+        upd: [
+            { id: 11, x: 110, y: 210, size: 52, flags: 0x02, rgb: [210, 20, 20] },
+            { id: 12, x: -290, y: 410, size: 82, flags: 0x08, name: 'Béta Ω 2' },
+            { id: 56, x: 510, y: 505, size: 61, flags: 0x00 },
+            { id: 21, x: 1, y: 2, size: 11, flags: 0x02, rgb: [7, 7, 7] },
+            { id: 22, x: 3, y: 4, size: 40, flags: 0x0e, ext: 0x04, acc: 778, rgb: [90, 91, 92], skin: 'https://x/y.png', name: '' },
+            { id: 23, x: 5, y: 6, size: 33, flags: 0x0c, v: 'q', skin: '', name: '日本' },
+            { id: 24, x: 7, y: 8, size: 120, flags: 0x11 }
+        ],
+        rm: [13, 17, 999]
+    },
+    death: { eats: [[11, 56], [11, 22]], eatEnd: true, upd: [{ id: 11, x: 115, y: 215, size: 60, flags: 0 }], rm: [12] },
+    empty: { eats: [], upd: [], rm: [] }
+};
+const sigSeq = ['setup', 'play', 'death'];
+goldenCompare('sigmally', S, sig, sigSeq, 'Sigmally');
+truncations('sigmally', S, sig, sigCut, sigSeq, 'Sigmally');
+{
+    /* the death packet really ends the own life (so the golden run covers the death path) */
+    const d = onPlay('sigmally', sig, S, sig(S.death).bytes, ['setup', 'play']);
+    check('Sigmally golden death packet: the own last cell eaten ends the game (death, menu)', d.r.ret === true && d.w.calls.indexOf('death') >= 0 && d.w.calls.indexOf('showMenu 300') >= 0, d.w.calls.join());
+    /* an eat count the packet cannot hold, no eater 0: nothing applied at all (an eater 0
+     * found further on, even in cell bytes, is read as the list end, as the protocol allows) */
+    const pk = sig(Object.assign({}, S.play, { eatCount: 500 })).bytes.slice(0, sig(S.play).ends.eatSec);
+    const t = onPlay('sigmally', sig, S, pk, ['setup']), ref = onPlay('sigmally', sig, S, sig(S.empty).bytes, ['setup']);
+    check('Sigmally eat count bigger than the packet: nothing applied, incomplete', !t.r.err && t.r.ret === false && t.after === ref.after && t.bad === 1);
+    /* ... unless an eater 0 ends the list inside the packet: read up to it, complete */
+    const e0 = onPlay('sigmally', sig, S, sig(Object.assign({}, S.play, { eatEnd: true, eatCount: 500 })).bytes, ['setup']);
+    const e1 = onPlay('sigmally', sig, S, sig(Object.assign({}, S.play, { eatEnd: true })).bytes, ['setup']);
+    check('Sigmally eat list ended early by eater 0: applied up to it, complete', !e0.r.err && e0.r.ret === true && e0.after === e1.after && e0.bad === 0 && e1.w.removed.join() === '14,15,13,17', e1.w.removed.join());
+    /* a remove count bigger than the packet: no remove applied, the rest is */
+    const a = onPlay('sigmally', sig, S, sig(Object.assign({}, S.play, { rmCount: 40 })).bytes, ['setup']);
+    const b = onPlay('sigmally', sig, S, sig(Object.assign({}, S.play, { rm: [] })).bytes, ['setup']);
+    check('Sigmally remove count bigger than the packet: no remove applied, the rest is, incomplete', !a.r.err && a.r.ret === false && a.after === b.after && a.bad === 1);
+    /* the cell end but no remove count: the cells applied, incomplete */
+    const full = sig(S.play);
+    const c = onPlay('sigmally', sig, S, full.bytes.slice(0, full.ends.term), ['setup']);
+    check('Sigmally packet without its remove count: cells applied, no remove, incomplete', !c.r.err && c.r.ret === false && c.after === b.after && c.bad === 1);
+    /* a flag that promises bytes the packet does not have (last record): that record not applied */
+    for (const [what, fl, ext] of [['string v 0 end', 0, null], ['ext flags byte', 0x80, null], ['rgb', 0x02, null], ['skin', 0x04, null], ['name', 0x08, null], ['accountID', 0x80, 4]]) {
+        const w = new Buf();
+        w.u8(16).u16(0);
+        w.u32(11).i16(1).i16(1).u16(20).u8(0).u8(0).u8(0).u8(0).u8(0);
+        w.u32(31).i16(5).i16(5).u16(20).u8(fl).u8(0).u8(0).u8(0);
+        if (what === 'string v 0 end') w.u8(65).u8(66); /* string v, no 0 */
+        else w.u8(0);
+        if (ext != null) w.u8(ext);
+        if (what === 'rgb') w.u8(1).u8(2);
+        if (what === 'skin' || what === 'name') w.u8(65).u8(66); /* the string, no 0 */
+        if (what === 'accountID') w.u8(1).u8(2).u8(3);
+        const t2 = onPlay('sigmally', sig, S, Uint8Array.from(w.b), ['setup']);
+        const r2 = onPlay('sigmally', sig, S, sig({ eats: [], upd: [{ id: 11, x: 1, y: 1, size: 20, flags: 0 }], rm: [] }).bytes, ['setup']);
+        check('Sigmally record whose ' + what + ' is missing: not applied (no cell 31, no skin call), the record before it is', !t2.r.err && t2.r.ret === false && !t2.w.indexedCells[31] && t2.after === r2.after && t2.bad === 1);
+    }
+    /* packets of 1 and 2 bytes (no eat count): nothing happens, no exception */
+    const t4 = onPlay('sigmally', sig, S, Uint8Array.from([16]), ['setup']), t5 = onPlay('sigmally', sig, S, Uint8Array.from([16, 0]), ['setup']);
+    check('Sigmally packet without its eat count: no exception, nothing applied, incomplete', !t4.r.err && !t5.r.err && t4.r.ret === false && t5.r.ret === false && t4.before === t4.after && t5.before === t5.after && t4.bad === 1);
 }
 
 /* ---- bounded fuzz ---- */
@@ -340,6 +450,7 @@ function fuzz(proto, specs, build, seq, label) {
         const w = world(NEW, !!rnd(2));
         w._mirror = w._impl.ctx.window.legendmod.vnr === 1;
         run(w, proto, build(specs[seq[0]]).bytes);
+        const base = Object.keys(w.indexedCells).length;
         const src0 = build(specs[seq[1 + rnd(seq.length - 1)]]).bytes;
         let b = Array.from(src0);
         const m = 1 + rnd(4);
@@ -360,7 +471,7 @@ function fuzz(proto, specs, build, seq, label) {
         let n = 0;
         for (const id in w.indexedCells) { n++; const c = w.indexedCells[id]; if (w.cells.indexOf(c) < 0 && w.food.indexOf(c) < 0) broken++; }
         for (const c of w.cells.concat(w.food)) if (w.indexedCells[c.id] !== c) broken++;
-        if (n > 7 + Math.ceil(b.length / 15)) broken++;
+        if (n > base + Math.ceil(b.length / 15)) broken++;
         maxCells = Math.max(maxCells, n);
         if (w.closes) closes++;
     }
@@ -369,6 +480,7 @@ function fuzz(proto, specs, build, seq, label) {
     check(label + ' fuzz: the socket is never closed', !closes);
 }
 fuzz('garix', G, garix, garixSeq, 'Garix');
+fuzz('sigmally', S, sig, sigSeq, 'Sigmally');
 
 /* ---- diagnostics: count, warning at most every 5 s, no packet bytes ---- */
 {
@@ -383,6 +495,11 @@ fuzz('garix', G, garix, garixSeq, 'Garix');
     run(w, 'garix', garix(G.empty).bytes);
     check('incomplete updates counted (4) and named once per 5 s (2 warnings), a complete one not counted', w._lmWuBadN === 4 && w1 === 1 && w.warns.length === 2, w._lmWuBadN + ' / ' + w.warns.length);
     check('the warning names the server and the count only (no packet bytes, names or skins)', w.warns.every((m) => /^\[Protocol\] Incomplete Garix cell update: .*\(\d+ so far\)$/.test(m) && !/Alpha|cat|B/.test(m.slice(30))));
+    const v = world(NEW, false);
+    run(v, 'sigmally', sig(S.setup).bytes);
+    run(v, 'sigmally', sig(S.play).bytes.slice(0, 40));
+    run(v, 'sigmally', sig(S.empty).bytes);
+    check('a Sigmally incomplete update is counted and named Sigmally (no packet bytes)', v._lmWuBadN === 1 && v.warns.length === 1 && /^\[Protocol\] Incomplete Sigmally cell update: .*\(1 so far\)$/.test(v.warns[0]) && !/Alpha|cat/.test(v.warns[0]), v.warns.join());
 }
 
 /* ---- cost on valid dense packets ---- */
@@ -413,6 +530,12 @@ bench('garix', () => {
     for (let i = 0; i < 300; i++) upd.push({ id: 100 + i, x: i * 7 + 1, y: i * 3 + 1, size: 21 + (i % 50), flags: 0 });
     return { setup: garix({ eats: [], upd: [], add, rm: [] }).bytes, dense: garix({ eats: [], upd, add: [], rm: [] }).bytes, n: 300 };
 }, 'Garix');
+bench('sigmally', () => {
+    const add = [], upd = [];
+    for (let i = 0; i < 300; i++) add.push({ id: 100 + i, x: i * 7, y: i * 3, size: 20 + (i % 50), flags: i % 5 ? 0x02 : 0x0a, rgb: [i & 255, 9, 9], name: i % 5 ? undefined : 'player' + i });
+    for (let i = 0; i < 300; i++) upd.push({ id: 100 + i, x: i * 7 + 1, y: i * 3 + 1, size: 21 + (i % 50), flags: 0 });
+    return { setup: sig({ eats: [], upd: add, rm: [] }).bytes, dense: sig({ eats: [], upd, rm: [] }).bytes, n: 300 };
+}, 'Sigmally');
 
 console.log('RESULT: ' + (fail ? 'FAIL (' + fail + ')' : 'PASS'));
 process.exit(fail ? 1 : 0);

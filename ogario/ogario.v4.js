@@ -53440,20 +53440,34 @@ function thelegendmodproject() {
          *   Eat list:   u16 count → [u32 eater (break if 0), u32 victim]
          *   Cell loop:  u32 id (0=end) → i16 x, i16 y, u16 size,
          *               u8 flags, u8, u8, u8, utf8z,
-         *               ext_flags if flags&128, color/skin/name per flags
+         *               ext_flags if flags&128, color/skin/name per flags,
+         *               u32 accountID if ext_flags&4
          *   Remove list: u16 count → u32 id
+         * Malformed packets: every record is checked against the bytes left BEFORE it is
+         * read or applied. A record cut short (or a string without its 0 end) is not
+         * applied and nothing after it is read; records before it stay applied (no
+         * rollback). An eat count the packet cannot hold (without an eater 0 end) drops
+         * the update before anything is applied; a remove count it cannot hold applies
+         * none of its ids. Bytes after the remove list are ignored. Returns true when
+         * every count and terminator was there; otherwise the update is counted by
+         * _lmWuIncomplete. Nothing here throws on a short packet (onMessage calls it
+         * with no RangeError catch around it).
          * ═══════════════════════════════════════════════════════════════ */
         _handleSigmallyCellUpdate(data) {
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
             this.megaFFAscore();
             var offset = 1; // skip opcode byte
+            var len = data.byteLength, complete = true, ended = false;
+            /* zOk: false once a string ran off the end of the packet without its 0 */
+            var zOk = true;
 
             var textDecoder = window._textDecoderSIMD || (window._textDecoderSIMD = new TextDecoder('utf-8'));
             var encode = function () {
                 var start = offset;
-                while (offset < data.byteLength && data.getUint8(offset) !== 0) offset++;
+                while (offset < len && data.getUint8(offset) !== 0) offset++;
                 var slice = new Uint8Array(data.buffer, data.byteOffset + start, offset - start);
-                if (offset < data.byteLength) offset++; // skip null terminator
+                if (offset < len) offset++; // skip null terminator
+                else zOk = false;
                 try {
                     return decodeURIComponent(escape(textDecoder.decode(slice)));
                 } catch (e) {
@@ -53476,9 +53490,21 @@ function thelegendmodproject() {
                 }
             }
 
-            // 1. Eat events: u16 count, then [u32 eater, u32 victim]
-            var eatCount = data.getUint16(offset, true); offset += 2;
-            for (var ei = 0; ei < eatCount && offset + 7 < data.byteLength; ei++) {
+            // 1. Eat events: u16 count, then [u32 eater, u32 victim]; eater 0 ends the list.
+            // A count the packet cannot hold, without an eater 0 inside the bytes there,
+            // leaves nothing locatable after it: the whole update is dropped before any
+            // record is applied (so every record the loop reads below is whole).
+            var eatCount = offset + 2 <= len ? data.getUint16(offset, true) : -1;
+            if (eatCount >= 0 && offset + 2 + 8 * eatCount > len) {
+                for (var ek = offset + 2; ek + 4 <= len && data.getUint32(ek, true) !== 0; ek += 8);
+                if (ek + 4 > len) eatCount = -1;
+            }
+            if (eatCount < 0) {
+                this._lmWuIncomplete('Sigmally');
+                return false;
+            }
+            offset += 2;
+            for (var ei = 0; ei < eatCount; ei++) {
                 var eaterID = data.getUint32(offset, true);
                 if (eaterID === 0) { offset += 4; break; }
                 var victimID = data.getUint32(offset + 4, true);
@@ -53502,11 +53528,14 @@ function thelegendmodproject() {
                 }
             }
 
-            // 2. Cell update/add loop: u32 id (0 = terminator)
-            while (offset + 3 < data.byteLength) {
+            // 2. Cell update/add loop: u32 id (0 = terminator). Each check comes before the
+            // bytes it guards are read; nothing of a record is applied before all of it
+            // (strings included) was found.
+            while (offset + 4 <= len) {
                 var id = data.getUint32(offset, true); offset += 4;
-                if (id === 0) break;
-                if (offset + 7 >= data.byteLength) break;
+                if (id === 0) { ended = true; break; }
+                /* x, y, size, flags and the 3 bytes after them */
+                if (offset + 10 > len) break;
 
                 // Sigmally uses Int16 for x,y (not Int32 like agar.io)
                 var x = data.getInt16(offset, true); offset += 2;
@@ -53519,13 +53548,12 @@ function thelegendmodproject() {
                 var flags = data.getUint8(offset++);
 
                 // 3 mystery bytes + 1 zero-terminated string (Sigmally-specific)
-                if (offset + 2 < data.byteLength) {
-                    offset++; // u8 unknown
-                    offset++; // u8 boolean g
-                    offset++; // u8 boolean p
-                }
+                offset++; // u8 unknown
+                offset++; // u8 boolean g
+                offset++; // u8 boolean p
                 encode(); // string v (unknown purpose, skip)
 
+                if ((flags & 128) && offset >= len) break;
                 var ext_flags = (flags & 128) ? data.getUint8(offset++) : 0;
 
                 var isVirus = !!(flags & 1) || !!(flags & 16);
@@ -53539,12 +53567,11 @@ function thelegendmodproject() {
 
                 if (flags & 2) {
                     // Has color
-                    if (offset + 2 < data.byteLength) {
-                        var r = data.getUint8(offset++);
-                        var g = data.getUint8(offset++);
-                        var b = data.getUint8(offset++);
-                        color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
-                    }
+                    if (offset + 3 > len) break;
+                    var r = data.getUint8(offset++);
+                    var g = data.getUint8(offset++);
+                    var b = data.getUint8(offset++);
+                    color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
                 }
 
                 if (flags & 4) {
@@ -53569,10 +53596,11 @@ function thelegendmodproject() {
                 // ext_flags & 4 → accountID
                 var accountID = null;
                 if (ext_flags & 4) {
-                    if (offset + 4 <= data.byteLength) {
-                        accountID = data.getUint32(offset, true); offset += 4;
-                    }
+                    if (offset + 4 > len) break;
+                    accountID = data.getUint32(offset, true); offset += 4;
                 }
+                /* string v, skin or name without its 0 end: the record is cut short */
+                if (!zOk) break;
 
                 if (skin || namePresent) {
                     if (this.gameMode !== ':teams') {
@@ -53644,17 +53672,21 @@ function thelegendmodproject() {
                 }
             }
 
-            // 3. Remove events: u16 count, then u32 per cell
-            if (offset + 2 <= data.byteLength) {
+            // 3. Remove events: u16 count, then u32 per cell. Read only after the cell
+            // terminator (otherwise its place is unknown). A count the packet cannot hold is
+            // a wrong count: none of its ids are applied.
+            if (ended && offset + 2 <= len) {
                 var removeCount = data.getUint16(offset, true); offset += 2;
-                for (var ri = 0; ri < removeCount && offset + 4 <= data.byteLength; ri++) {
+                if (offset + 4 * removeCount > len) { removeCount = 0; complete = false; }
+                for (var ri = 0; ri < removeCount; ri++) {
                     var removeID = data.getUint32(offset, true); offset += 4;
                     var rcell = this.indexedCells[removeID];
                     if (rcell) rcell.removeCell();
                 }
-            }
+            } else complete = false;
+            if (!complete) this._lmWuIncomplete('Sigmally');
 
-            // Death check
+            // Death check (eat / remove records already applied may have ended the life)
             if (this.removePlayerCell && !this.playerCells.length) {
                 this.play = false;
                 application.onPlayerDeath();
@@ -53672,6 +53704,7 @@ function thelegendmodproject() {
             if (window.autoPlay && legendmod.play) calcTarget();
             if (defaultmapsettings.reverseTrick) reverseTrick.check();
             this.countPps();
+            return complete;
         },
         /* ═══════════════════════════════════════════════════════════════
          * Sigmally leaderboard (opcode 49 after decode)
