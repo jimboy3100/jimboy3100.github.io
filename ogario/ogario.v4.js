@@ -85069,6 +85069,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var _lmT = event.target;
             if (_lmT && (_lmT.tagName === 'INPUT' || _lmT.tagName === 'TEXTAREA' || _lmT.isContentEditable)) return;
             if (window.legendmod && window.legendmod.play) return;
+            /* the main player dead while a multibox unit plays on: Q double splits that unit, and
+             * toggled free spectate on the main connection at the same time */
+            if (lmMultiboxControlledPlayer() === 2) return;
             /* a held Q toggled it on every auto-repeat (random end state); ALT+Q / CTRL+Q
              * are other hotkeys */
             if (event.repeat || event.ctrlKey || event.altKey || event.metaKey) return;

@@ -108,6 +108,28 @@ function env(o) {
     e.unit(2).terminate();
     check('event data: { unit, previous, context }', data && Object.keys(data).sort().join() === 'context,previous,unit' && data.context === 'live', data && JSON.stringify(data));
 }
+/* Q free spectate (spectateBlind) while the main player is dead and a unit has the focus: Q
+ * double splits the unit and must not also toggle free spectate on the main connection */
+{
+    const fns = ['function getActiveSpect(', 'function lmMultiboxControlledPlayer(', '    function spectateBlind() {'].map((m) => block(v4, m));
+    if (fns.some((f) => !f)) check('Q free spectate code found', false);
+    else {
+        const sent = [];
+        const ctx = { console };
+        ctx.window = ctx;
+        vm.createContext(ctx);
+        vm.runInContext('var spects = window.spects = [{ number: 1 }];\n' + fns.join('\n') + '\nspectateBlind();', ctx);
+        ctx.legendmod = { play: false };
+        ctx.core = { specialOn() { sent.push('spectate'); } };
+        const q = { keyCode: 81, target: { tagName: 'CANVAS' } };
+        ctx.multiboxPlayerEnabled = 1;
+        ctx.onkeydown(q);
+        check('main dead, unit 1 has the focus: Q sends no free spectate', sent.length === 0, sent.join());
+        ctx.multiboxPlayerEnabled = null;
+        ctx.onkeydown(q);
+        check('main spectating, no unit: Q still toggles free spectate', sent.length === 1, sent.join());
+    }
+}
 
 console.log(failed ? failed + ' failed' : 'all multiboxSwap checks passed');
 process.exit(failed ? 1 : 0);
