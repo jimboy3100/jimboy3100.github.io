@@ -1543,7 +1543,14 @@ function _lmRoomOpen(tab, code) {
     });
     /* typing here never reaches the game hotkeys */
     ['keydown', 'keyup', 'keypress'].forEach(function (t) { md.addEventListener(t, function (e) { if (e.key !== 'Escape' && e.keyCode !== 27) e.stopPropagation(); }); });
-    var onKey = function (e) { if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); e.stopPropagation(); close(); } };
+    /* with another window open that closes on Esc, only the one in front closes (winstack.js): the
+     * room window closed itself under a newer window, or the older window closed under this one */
+    md._lmEsc = true;
+    var onKey = function (e) {
+        if (e.key !== 'Escape' && e.keyCode !== 27) return;
+        if (window.LMWinStack && typeof window.LMWinStack.escFor === 'function' && !window.LMWinStack.escFor(md, e)) return;
+        e.preventDefault(); e.stopPropagation(); close();
+    };
     /* closed without joining: the server list shows the server the player is still on */
     var close = function (replaced) {
         window.removeEventListener('keydown', onKey, true);

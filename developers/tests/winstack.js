@@ -1,5 +1,5 @@
 /* Window stacking order (ogario/modules/winstack.js), run in a vm with a tiny document stub.
- * node developers/tests/winstack.js */
+ * node developers/tests/winstack.js [winstack.js] [ogario.v4.js] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'winstack.js'), 'utf8');
 
@@ -65,6 +65,118 @@ check('empty list', order([]).length === 0);
   check('Esc without a target: no error, nothing changes', !r.err && !r.e.prevented && WS2._stack()[1] === menu);
   r = esc(body);
   check('Esc on the page: the window comes back in front', !r.err && r.e.prevented && WS2._stack().length === 1 && WS2._stack()[0] === win);
+}
+
+
+/* ── Esc with the Private room window (the real room code of ogario/ogario.v4.js, argv[3]) and another
+ * window that closes on Esc as the module windows do (root._lmEsc + escFor): only the one in front
+ * closes. The room window had no _lmEsc and closed on every Esc: under a newer window it closed
+ * unseen (and that window too), over an older one the older one closed instead ── */
+{
+  const main = fs.readFileSync(process.argv[3] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+  const chk = (n, c, info) => check(n + (c || info === undefined ? '' : '  [' + info + ']'), c);
+
+  const a = main.indexOf('\nvar _lmRoomApi = '), b = main.indexOf('\nwindow._lmRoomOpen = _lmRoomOpen;');
+  if (a < 0 || b < 0) { console.log('FAIL room code not found'); process.exit(1); }
+  const roomSrc = main.slice(a, b + 35);
+
+  function run(order) {
+      let observer = null;
+      const listeners = [];
+      const W = {};
+      const mkStyle = () => {
+          const st = {}, s = { cssText: '' };
+          s.setProperty = (k, v, p) => { st[k] = [String(v), p || '']; };
+          s.getPropertyValue = k => (st[k] || [''])[0];
+          s.getPropertyPriority = k => (st[k] || ['', ''])[1];
+          s.removeProperty = k => { delete st[k]; };
+          return s;
+      };
+      const D = { nodeType: 9 };
+      const mkEl = tag => {
+          const el = {
+              nodeType: 1, tagName: String(tag).toUpperCase(), id: '', className: '', textContent: '', children: [], parentElement: null, style: mkStyle(), _ls: [],
+              get parentNode() { return this.parentElement; },
+              get isConnected() { let e = this; while (e.parentElement) e = e.parentElement; return e === D.body; },
+              get previousElementSibling() { const p = this.parentElement; if (!p) return null; return p.children[p.children.indexOf(this) - 1] || null; },
+              get firstElementChild() { return this.children[0] || null; },
+              classList: { add() { }, remove() { }, toggle() { }, contains: c => (' ' + el.className + ' ').indexOf(' ' + c + ' ') >= 0 },
+              appendChild(c) { if (c.parentElement) c.parentElement.removeChild(c); this.children.push(c); c.parentElement = this; if (this === D.body && observer) observer([{ type: 'childList', addedNodes: [c], removedNodes: [] }]); return c; },
+              insertBefore(c) { return this.appendChild(c); },
+              removeChild(c) { this.children = this.children.filter(x => x !== c); c.parentElement = null; if (this === D.body && observer) observer([{ type: 'childList', addedNodes: [], removedNodes: [c] }]); return c; },
+              addEventListener(t, f) { this._ls.push([t, f]); }, removeEventListener() { },
+              setAttribute(k, v) { this[k] = v; }, getAttribute() { return null; },
+              querySelector() { return null; }, querySelectorAll() { return []; },
+              contains(n) { for (; n; n = n.parentElement) if (n === this) return true; return false; },
+              getClientRects() { return this.style.display === 'none' ? [] : [1]; },
+              getBoundingClientRect() { return { left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 }; },
+              focus() { }, select() { }
+          };
+          return el;
+      };
+      D.createElement = mkEl;
+      D.body = mkEl('body');
+      D.documentElement = mkEl('html');
+      D.addEventListener = () => { };
+      D.getElementById = id => { const f = e => { if (e.id === id) return e; for (const c of e.children) { const r = f(c); if (r) return r; } return null; }; return f(D.body); };
+      const css = (el, k) => { const m = new RegExp('(?:^|;)\\s*' + k + '\\s*:\\s*([^;]+)').exec(el.style.cssText || ''); return m ? m[1].trim() : ''; };
+      Object.assign(W, {
+          document: D, console, JSON, Math, Date, Array, Object, String, Number, RegExp, encodeURIComponent,
+          navigator: {}, location: { href: 'https://www.legendmod.ml/play.html', search: '' },
+          localStorage: { getItem: () => null, setItem() { }, removeItem() { } },
+          setTimeout: () => 0, clearTimeout() { }, fetch: () => new Promise(() => { }),
+          innerWidth: 1600, innerHeight: 900,
+          MutationObserver: function (cb) { this.observe = t => { if (t === D.body) observer = cb; }; this.disconnect = () => { }; },
+          getComputedStyle: el => ({ display: el.style.display || 'block', visibility: 'visible', pointerEvents: 'auto',
+              position: css(el, 'position') || 'static', zIndex: el.style.getPropertyValue('z-index') || css(el, 'z-index') || 'auto' }),
+          addEventListener: (t, f, c) => listeners.push({ t, f, c: !!c }),
+          removeEventListener: (t, f, c) => { const i = listeners.findIndex(l => l.t === t && l.f === f && l.c === !!c); if (i >= 0) listeners.splice(i, 1); }
+      });
+      W.window = W;
+      vm.createContext(W);
+      vm.runInContext(src, W);
+      vm.runInContext('function _lmMhT(k, en) { return en; }\n' + roomSrc, W);
+
+      /* a window that closes on Esc as the module windows do (macroeditor.js onKey) */
+      const macros = mkEl('div');
+      macros.id = 'macros';
+      macros.className = 'lm-modal-container';
+      macros.style.cssText = 'position:fixed;z-index:999992;';
+      macros._lmEsc = true;
+      const openMacros = () => {
+          D.body.appendChild(macros);
+          W.addEventListener('keydown', function (e) {
+              if (!macros.isConnected || e.key !== 'Escape') return;
+              if (W.LMWinStack && !W.LMWinStack.escFor(macros, e)) return;
+              e.preventDefault(); e.stopImmediatePropagation(); D.body.removeChild(macros);
+          }, true);
+      };
+      for (const w of order) w === 'room' ? W._lmRoomOpen('rejoin') : openMacros();
+      const esc = () => {
+          const e = { type: 'keydown', key: 'Escape', keyCode: 27, target: D.body, _stop: false,
+              preventDefault() { }, stopPropagation() { }, stopImmediatePropagation() { this._stop = true; } };
+          for (const l of listeners.slice()) { if (l.t !== 'keydown' || !l.c || !listeners.includes(l)) continue; l.f(e); if (e._stop) break; }
+      };
+      const state = () => ({ macros: macros.isConnected, room: !!D.getElementById('lm-room-modal') });
+      const before = state();
+      esc();
+      const one = state();
+      esc();
+      return { before, one, two: state(), keyListeners: listeners.filter(l => l.t === 'keydown').length };
+  }
+
+  let r = run(['macros', 'room']);
+  chk('Custom Macros, then the room window over it (a dropped room connection opens it): both open', r.before.macros && r.before.room);
+  chk('one Esc closes the room window in front, Custom Macros under it stays', !r.one.room && r.one.macros, JSON.stringify(r.one));
+  chk('a second Esc closes Custom Macros', !r.two.room && !r.two.macros, JSON.stringify(r.two));
+
+  r = run(['room', 'macros']);
+  chk('the room window, then Custom Macros over it: both open', r.before.macros && r.before.room);
+  chk('one Esc closes Custom Macros in front, the room window under it stays', r.one.room && !r.one.macros, JSON.stringify(r.one));
+  chk('a second Esc closes the room window, and its Esc listener is gone', !r.two.room && !r.two.macros && r.keyListeners === 2, JSON.stringify(r.two) + ' listeners ' + r.keyListeners);
+
+  r = run(['room']);
+  chk('the room window alone still closes on Esc', r.before.room && !r.one.room);
 }
 
 console.log(fail ? fail + ' FAILED' : 'all ok');
