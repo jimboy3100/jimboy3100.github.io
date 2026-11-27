@@ -299,12 +299,17 @@ window.addSpectator = addSpectator;
  * (ogario.v4.js), which replaced lmMultiUnitIsClose(). */
 
 /*
- * Server view of one connection, in world units (lmRawToWorld): agar.io sends a connection the
- * cells whose centre is in a box of BASE / scale around its camera (opcode 17: camera and scale).
- * Measured live (agar.io FFA, 15 free spectators at scale 0.4 settled for 2 minutes, every
- * pellet centre relative to the camera): at most 2535.8 x 1485.9 from it on every connection,
- * the same in world units on connections whose own scale k differs by up to 0.5% (so the
- * view is applied in world units, not raw ones): 5071.7 x 2971.9, BASE = 2028.7 x 1188.8.
+ * Server view of one connection, in world units (lmRawToWorld), around its camera (opcode 17:
+ * camera and scale). Measured live (agar.io FFA, 15 free spectators at scale 0.4 settled for 2
+ * minutes, every pellet centre relative to the camera): at most 2535.8 x 1485.9 from it on
+ * every connection, the same in world units on connections whose own scale k differs by up to
+ * 0.5% (so the view is applied in world units, not raw ones): 5071.7 x 2971.9, BASE = 2028.7 x
+ * 1188.8. That box is where the centre of a pellet (radius 10) is seen: agar.io sends a cell
+ * while its circle reaches into the view, not only its centre (recorded captures: the farthest
+ * centre grows with the radius, centre distance minus radius stays within 2525.8 x 1475.1), so a
+ * cell of radius r is sent while its centre is within half + (r - 10) of the camera
+ * (isOutsideServerView). The Full Map plan and the drawn box use the pellet box (larger cells
+ * are seen farther out, so coverage is never less).
  * scale is pow(min(64 / total size, 1), 0.4) for a player (an estimate: its boxes say "est.")
  * and 0.4 for a free spectator.
  */
@@ -962,7 +967,8 @@ class Spect {
 
     /*
      * Full Map: hold this spectator's free camera on its tile. The target goes out at once and
-     * every 50 ms while the camera (opcode 17) is on its way or has drifted off; once the camera
+     * every LM_TILE_MOVING_MS (500 ms) while the camera (opcode 17) is on its way or has drifted
+     * off (checked every 100 ms); once the camera
      * sits on the target it is only refreshed every LM_TILE_REFRESH_MS (the server keeps the last
      * target, so the old 50 ms resend of an unchanged target was 20 packets a second per
      * spectator for nothing). A changed raw target (orientation or offset found, Rotate Map,
@@ -994,13 +1000,6 @@ class Spect {
      * cells are drawn */
     _lmServerViewDisplay() {
         return this._lmWorldRectDisplay(this._lmServerViewWorld());
-    }
-
-    /* Show viewports: the server view a Full Map spectator will have on its tile */
-    _lmTileViewDisplay() {
-        if (this.staticX == null || this.staticY == null) return null;
-        var v = lmServerViewSize(LM_SPECT_FREE_SCALE);
-        return this._lmWorldRectDisplay([this.staticX - v[0] / 2, this.staticY - v[1] / 2, this.staticX + v[0] / 2, this.staticY + v[1] / 2]);
     }
 
     /* The tile centre in the main connection's display space (world -> main frame with its
@@ -2143,8 +2142,9 @@ class Spect {
 
     /*
      * This connection's server view in world coordinates: its camera (opcode 17, raw) and
-     * the measured view for its scale (lmServerViewSize). agar.io sends a connection the
-     * cells whose centre is inside it. null until the border and a camera are known.
+     * the measured view for its scale (lmServerViewSize): where a pellet's centre is seen (a
+     * bigger cell is sent while its circle reaches into it, isOutsideServerView). null until
+     * the border and a camera are known.
      */
     _lmServerViewWorld() {
         if (!this.mapOffsetFixed || !this._lmCamAt || !Number.isFinite(this.viewX) || !Number.isFinite(this.viewY)) return null;
@@ -2154,14 +2154,17 @@ class Spect {
         return [x - v[0] / 2, y - v[1] / 2, x + v[0] / 2, y + v[1] / 2];
     }
 
-    /* true when this connection's raw point is OUTSIDE its server view, compared in world
-     * units (it was isInView: it compared raw x / viewX with world sizes, and the cell
-     * parser, its only user, threw its result away) */
-    isOutsideServerView(rawX, rawY) {
+    /* true when a cell of this connection (raw centre, size = radius) is OUTSIDE its server
+     * view, compared in world units (it was isInView: it compared raw x / viewX with world
+     * sizes, and the cell parser, its only user, threw its result away). The view box is the
+     * pellet (radius 10) one and the server sends a cell while its circle reaches into the
+     * view, so a bigger cell is still in view up to (size - 10) past the box: without that a
+     * big cell would count as out of view while it is still sent. No size: a pellet. */
+    isOutsideServerView(rawX, rawY, size) {
         var v = this._lmServerViewWorld();
         if (!v) return false;
-        var x = this.rawToWorldX(rawX), y = this.rawToWorldY(rawY);
-        return x < v[0] || y < v[1] || x > v[2] || y > v[3];
+        var x = this.rawToWorldX(rawX), y = this.rawToWorldY(rawY), pad = size > 10 ? size - 10 : 0;
+        return x < v[0] - pad || y < v[1] - pad || x > v[2] + pad || y > v[3] + pad;
     }
 
     isInViewCustom(x, y, size) {

@@ -81807,15 +81807,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
          *   n est.              a unit without food yet: its estimated server view (from its size)
          *   Viewport# n         a spectator connection's server view: its server camera (opcode 17)
          *                       and the measured view for its scale (spect.js lmServerViewSize; live,
-         *                       every pellet it gets is inside it, up to 1-2 units from its edge)
+         *                       every pellet it gets is inside it, up to 1-2 units from its edge);
+         *                       where two of them overlap (the Full Map seams) each is drawn up to
+         *                       the middle of the overlap (_lmViewTrim), so their borders meet
          *   Viewport# n moving  the same while a Full Map spectator glides to its tile (10-35 s
          *                       after it connects, from the map centre where agar.io puts it)
-         *   Tile n              the server view a Full Map spectator will have on its tile, only
-         *                       until it is there (then it is Viewport# n, to within a unit)
+         *   ... unverified      its orientation is not verified (or in conflict): placed with the
+         *                       guess, so maybe mirrored, and its cells are not drawn
          *   Viewport# n food    a spectator without a camera yet: the box of the food it got
+         * Only real, current views: a spectator still connecting, reconnecting or given up draws
+         * no box (its tile is a hole on the overlay, as on the map); the planned tile ("Tile n")
+         * is not drawn, it is no view. Moving and unverified boxes are drawn whole, over the rest.
          * All in the main display frame (the frame its cells are drawn in, with Rotate Map) and
-         * converted through the same transform as its cells (world -> main frame), so the boxes
-         * of neighbouring Full Map tiles overlap exactly where their views overlap (live: seams
+         * converted through the same transform as its cells (world -> main frame), so the views
+         * of neighbouring Full Map tiles overlap exactly where they really do (live: seams
          * 310-356 / 107-141 units). It drew each spectator's food box (always smaller than the
          * view: the outermost pellets are not at its edge) next to a 5069 x 2970 tile box, two
          * near-parallel lines per edge, and both boxes around the map centre for every spectator
@@ -81826,7 +81831,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
          */
         drawViewPorts(ctx) {
             ctx = this.ctx;
-            var seenColor = defaultSettings.bordersColor || '#ffffff', estColor = '#ffb000', tileColor = '#3cc8ff';
+            var seenColor = defaultSettings.bordersColor || '#ffffff', estColor = '#ffb000';
             if (Number.isFinite(LM.mapMinX) && Number.isFinite(LM.mapMaxX) && Number.isFinite(LM.mapMinY) && Number.isFinite(LM.mapMaxY)) {
                 this.drawViewport(ctx, 'map', LM.mapMinX, LM.mapMinY, LM.mapMaxX, LM.mapMaxY, '#808080', 15);
             }
@@ -81837,6 +81842,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* world units -> the main frame (its own scale k) */
             var mkx = LM._lmBorderKX > 0 ? LM._lmBorderKX : 1, mky = LM._lmBorderKY > 0 ? LM._lmBorderKY : 1;
             var boxes = this._lmConnFoodBoxes(list);
+            /* settled, verified spectator views: drawn after the loop, trimmed where they overlap
+             * (_lmViewTrim; reused entries, nothing allocated per frame) */
+            var grid = this._lmViewGrid || (this._lmViewGrid = []), gn = 0;
             for (var i = 0; i < list.length; i++) {
                 var sp = list[i];
                 if (!sp || sp.number == null) continue;
@@ -81860,15 +81868,48 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var name = 'Viewport# ' + sp.number;
                 var tiled = sp.staticX != null && sp.staticY != null;
                 var arrived = !tiled || (typeof sp._lmTileArrived === 'function' && sp._lmTileArrived());
-                if (tiled && !arrived && typeof sp._lmTileViewDisplay === 'function') {
-                    var t = sp._lmTileViewDisplay();
-                    if (t) this.drawViewport(ctx, 'Tile ' + sp.number, t[0], t[1], t[2], t[3], tileColor, 15);
-                }
+                /* orientation not verified yet (or in conflict): its box is placed with the guess,
+                 * so it may be the mirror of where its camera really is, and its cells are not drawn */
+                var unv = typeof sp._lmFeedOk === 'function' && !sp._lmFeedOk() ? ' unverified' : '';
                 var r = typeof sp._lmServerViewDisplay === 'function' ? sp._lmServerViewDisplay() : null;
-                if (r) {
-                    this.drawViewport(ctx, arrived ? name : name + ' moving', r[0], r[1], r[2], r[3], arrived ? seenColor : estColor, 15);
+                if (r && arrived && !unv) {
+                    var gb = grid[gn] || (grid[gn] = { name: '', r: [0, 0, 0, 0], d: [0, 0, 0, 0] });
+                    gb.name = name;
+                    for (var q = 0; q < 4; q++) gb.r[q] = gb.d[q] = r[q];
+                    gn++;
+                } else if (r) {
+                    this.drawViewport(ctx, name + (arrived ? '' : ' moving') + unv, r[0], r[1], r[2], r[3], estColor, 15);
                 } else if (seen) {
-                    this.drawViewport(ctx, name + ' food', seen.minX, seen.minY, seen.maxX, seen.maxY, estColor, 15);
+                    this.drawViewport(ctx, name + ' food' + unv, seen.minX, seen.minY, seen.maxX, seen.maxY, estColor, 15);
+                }
+            }
+            this._lmViewTrim(grid, gn);
+            for (var j = 0; j < gn; j++) {
+                var d = grid[j].d;
+                /* (never empty for real views; if it were, the whole view rather than nothing) */
+                if (!(d[2] > d[0] && d[3] > d[1])) d = grid[j].r;
+                this.drawViewport(ctx, grid[j].name, d[0], d[1], d[2], d[3], seenColor, 15);
+            }
+        },
+        /* Show viewports: settled views that overlap (the Full Map seams, 528 / 175 units, drawn
+         * as two parallel lines that read as a band) are each drawn up to the middle of the
+         * overlap, so neighbouring borders meet in one line and the grid has no crossing borders.
+         * Drawing only: g[i].r is the real view and stays, g[i].d the box drawn. Each pair is cut
+         * across the shorter side of its overlap, between their centres, so no two drawn boxes
+         * overlap whatever the order. */
+        _lmViewTrim(g, n) {
+            for (var i = 0; i < n; i++) {
+                var a = g[i].r;
+                for (var j = i + 1; j < n; j++) {
+                    var b = g[j].r;
+                    var ox = Math.min(a[2], b[2]) - Math.max(a[0], b[0]), oy = Math.min(a[3], b[3]) - Math.max(a[1], b[1]);
+                    if (!(ox > 0 && oy > 0)) continue;
+                    var k = ox <= oy ? 0 : 1;
+                    var m = (Math.max(a[k], b[k]) + Math.min(a[k + 2], b[k + 2])) / 2;
+                    var aLow = a[k] + a[k + 2] <= b[k] + b[k + 2];
+                    var lo = aLow ? g[i].d : g[j].d, hi = aLow ? g[j].d : g[i].d;
+                    if (lo[k + 2] > m) lo[k + 2] = m;
+                    if (hi[k] < m) hi[k] = m;
                 }
             }
         },

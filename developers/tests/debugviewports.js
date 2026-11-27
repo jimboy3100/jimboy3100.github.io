@@ -4,9 +4,10 @@
  * getX/getY/convertX/convertY and the tile target code of a spectator connection).
  * Boxes: 1 = the main connection's food box, 2, 3 ... = a multibox unit's (unit number + 1),
  * "n est." = a unit without food (estimated from its size), "Viewport# n" = a spectator's server
- * view around its server camera (measured size), "Viewport# n moving" = the same on its way to
- * its tile, "Tile n" = the view it will have on its tile (until it is there), "Viewport# n food" =
- * no camera yet, its food box, "map".
+ * view around its server camera (measured size; settled views that overlap drawn up to the middle
+ * of the overlap), "Viewport# n moving" = the same on its way to its tile, "... unverified" = its
+ * orientation not verified, "Viewport# n food" = no camera yet, its food box, "map". No box
+ * without a real view (no planned tile, nothing for a connecting or closed spectator).
  * Cases: no box changes with zoom, window size or the controlled unit; units are found by role
  * and number (a spectator before a unit in spects), 0 is a valid unit centre; the food box is
  * padded on both sides; a Full Map spectator's food stays out of box 2 and calMinMaxMulti; the
@@ -15,8 +16,10 @@
  * with and without Rotate Map; targets go out at most twice a second; a spectator box contains
  * exactly the cells its view contains (4 orientations x per-axis scales x Rotate Map); on a live
  * capture of 15 settled Full Map spectators every pellet is inside its box, the boxes are tight
- * and neighbouring boxes overlap; on FFA, Experimental and Party captures every pellet is inside
- * its box and the farthest one per axis is within LM_FULLMAP_EDGE of the planned view.
+ * and neighbouring views overlap, while the drawn boxes do not overlap, each inside its view, and
+ * neighbours meet; on FFA, Experimental and Party captures every pellet is inside its view and the
+ * farthest one per axis is within LM_FULLMAP_EDGE of the planned view, and no pellet of the
+ * captures is out of view by the radius-aware test (isOutsideServerView).
  * node developers/tests/debugviewports.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -36,10 +39,10 @@ function block(start, from, text) {
     }
     return null;
 }
-const methods = ['        drawViewPorts(ctx) {', '        _lmConnFoodBoxes(list) {', '        calMinMax() {', '        calMinMaxMulti() {'].map((m) => [m, block(m)]);
+const methods = ['        drawViewPorts(ctx) {', '        _lmViewTrim(g, n) {', '        _lmConnFoodBoxes(list) {', '        calMinMax() {', '        calMinMaxMulti() {'].map((m) => [m, block(m)]);
 const spectMethods = ['    getX(x) {', '    getY(y) {', '    convertX(x) {', '    convertY(y) {', '    _lmTileDisplay() {', '    _lmTileRaw() {', '    _lmTileTick(now) {',
     '    _lmXf() {', '    worldToRawX(x) {', '    worldToRawY(y) {', '    rawToWorldX(x) {', '    rawToWorldY(y) {', '    _lmTileArrived(raw) {',
-    '    _lmWorldRectDisplay(r) {', '    _lmServerViewDisplay() {', '    _lmTileViewDisplay() {', '    _lmServerViewWorld() {']
+    '    _lmWorldRectDisplay(r) {', '    _lmServerViewDisplay() {', '    _lmServerViewWorld() {', '    _lmFeedOk() {', '    isOutsideServerView(rawX, rawY, size) {']
     .map((m) => [m, block(m, 0, spectSrc)]);
 /* the coordinate contract (lmRawToWorld ... lmXfInv), top of spect.js, which those methods use */
 const xf0 = spectSrc.indexOf('var LM_WORLD_SIZE'), xf1 = spectSrc.indexOf('/* orientation candidates');
@@ -252,19 +255,16 @@ const covers = (plan, vw, vh, half) => {
     const e = env({ full: true, mb: false });
     const s = e.spect(spectAt(1, -4543.2, -5593.1));
     const first = e.frame();
-    check('connecting spectator: no viewport box', !first.some((b) => /^Viewport#/.test(b.label)), JSON.stringify(first.map((b) => b.label)));
-    const tile = byLabel(first, 'Tile 1');
-    check('its planned tile: the server view it will have there', tile && Math.abs((tile.minX + tile.maxX) / 2 + 4543.2) < 1e-6 && Math.abs(tile.maxX - tile.minX - 5071.75) < 1e-6 &&
-        Math.abs(tile.maxY - tile.minY - 2972) < 1e-6, tile && [tile.minX, tile.maxX]);
+    check('connecting spectator: no box at all (its planned tile is no view; it drew "Tile 1")', first.length === 1 && first[0].label === 'map', JSON.stringify(first.map((b) => b.label)));
     s.mapOffsetFixed = true; s.viewX = 0; s.viewY = 0;
     check('a camera from the border centre only (no opcode 17): no box yet', !e.frame().some((b) => /^Viewport#/.test(b.label)));
     s._lmCamAt = 1; s.scale = 0.4;
     const mv = e.frame(), moving = byLabel(mv, 'Viewport# 1 moving');
-    check('gliding from the map centre: "moving" box around the server camera, the tile still shown', moving && Math.abs((moving.minX + moving.maxX) / 2) < 1e-6 &&
-        Math.abs(moving.maxX - moving.minX - 5071.75) < 1e-6 && !!byLabel(mv, 'Tile 1'), moving && [moving.minX, moving.maxX]);
+    check('gliding from the map centre: "moving" box around the server camera, no tile box', moving && Math.abs((moving.minX + moving.maxX) / 2) < 1e-6 &&
+        Math.abs(moving.maxX - moving.minX - 5071.75) < 1e-6 && mv.length === 2, moving && [moving.minX, moving.maxX, mv.length]);
     s.viewX = -4543.2 + 0.4; s.viewY = -5593.1 - 0.3; /* settled (live: within 0.5) */
     const at = e.frame(), box = byLabel(at, 'Viewport# 1');
-    check('on its tile: one box (Viewport# 1), no tile box beside it', box && !byLabel(at, 'Tile 1') && !byLabel(at, 'Viewport# 1 moving') &&
+    check('on its tile: one box (Viewport# 1)', box && at.length === 2 && !byLabel(at, 'Viewport# 1 moving') &&
         Math.abs(box.minX - (-4543.2 + 0.4 - 5071.75 / 2)) < 1e-6, JSON.stringify(at.map((b) => b.label)));
     e.dr.scale = 0.03; e.dr.canvasWidth = 5000;
     check('box unchanged by zoom and window size', same(byLabel(e.frame(), 'Viewport# 1'), box));
@@ -272,8 +272,24 @@ const covers = (plan, vw, vh, half) => {
     const rt = byLabel(e.frame(), 'Viewport# 1');
     check('Rotate Map: the box mirrored with the map', rt && Math.abs((rt.minX + rt.maxX) / 2 - (4543.2 - 0.4)) < 1e-6 && Math.abs((rt.minY + rt.maxY) / 2 - (5593.1 + 0.3)) < 1e-6);
     e.LM.vector = null;
+    /* orientation PROVISIONAL / CONFLICTED: placed with the guess (maybe the mirror tile), its
+     * cells not drawn: never the settled white box (it was 'Viewport# 1', 9086 units off) */
+    s.integrity = true;
+    for (const st of ['PROVISIONAL', 'CONFLICTED']) {
+        s._lmOri = st;
+        const u = e.frame();
+        check('orientation ' + st + ': "Viewport# 1 unverified" in the estimate colour', !!byLabel(u, 'Viewport# 1 unverified') && !byLabel(u, 'Viewport# 1') && u.length === 2, JSON.stringify(u.map((b) => b.label)));
+    }
+    s._lmOri = 'VERIFIED';
+    check('orientation VERIFIED: "Viewport# 1"', !!byLabel(e.frame(), 'Viewport# 1'));
+    s._lmOri = 'PROVISIONAL'; s.viewX = 0; s.viewY = 0;
+    check('gliding and unverified: "Viewport# 1 moving unverified"', !!byLabel(e.frame(), 'Viewport# 1 moving unverified'));
+    s._lmOri = 'VERIFIED';
     s._lmCamAt = 0; food(e.LM.foodMulti, 100, 200, 300, 1);
     check('no camera but food: its food box, labelled food', !!byLabel(e.frame(), 'Viewport# 1 food'));
+    /* socket closed (onclose: resetConnectionState, flushCellsData) or given up: no view, no box */
+    e.LM.foodMulti = []; s.mapOffsetFixed = false;
+    check('closed or given-up spectator: no box (it drew "Tile 1" like one still connecting)', e.frame().length === 1);
 }
 /* 10. boxes in the frame the cells are drawn in: 4 orientations x per-axis scale x Rotate Map */
 {
@@ -315,8 +331,10 @@ const covers = (plan, vw, vh, half) => {
             L.sp.every((q) => byLabel(bs, 'Viewport# ' + q.n)) && !bs.some((b) => /^Tile|moving/.test(b.label)), JSON.stringify(bs.map((b) => b.label)));
         let outside = [], gaps = [];
         const mapB = byLabel(bs, 'map');
+        /* the real views (what the server sends); the drawn boxes are trimmed where they overlap */
+        const real = (sp) => { const r = sp._lmServerViewDisplay(); return { minX: r[0], minY: r[1], maxX: r[2], maxY: r[3] }; };
         L.sp.forEach((q, i) => {
-            const b = byLabel(bs, 'Viewport# ' + q.n), sp = sps[i];
+            const sp = sps[i], b = real(sp);
             const pts = q.food.map((f) => [sp.getX(f[0]), sp.getY(f[1])]);
             for (const p of pts) if (p[0] < b.minX - 1 || p[0] > b.maxX + 1 || p[1] < b.minY - 1 || p[1] > b.maxY + 1) outside.push(q.n + ':' + p.map((v) => v.toFixed(1)));
             /* tight: on every side away from the map edge a pellet came within 40 of the box edge (pellets are sparse) */
@@ -324,17 +342,32 @@ const covers = (plan, vw, vh, half) => {
             const atEdge = [b.minX < mapB.minX + 30, b.maxX > mapB.maxX - 30, b.minY < mapB.minY + 30, b.maxY > mapB.maxY - 30];
             g.forEach((v, k) => { if (!atEdge[k] && v > 40) gaps.push(q.n + ':' + 'LRTB'[k] + v.toFixed(1)); });
         });
-        check('live: every pellet a spectator got while settled is inside its box' + tag, !outside.length, outside.slice(0, 5).join(' '));
-        check('live: the boxes are tight (a pellet within 40 of every inner edge)' + tag, !gaps.length, gaps.join(' '));
-        /* neighbours on the drawn grid (tile index: row * 3 + col of 6024750d's centred 3 x 5 cut) */
-        const box = (t) => byLabel(bs, 'Viewport# ' + L.sp.find((q) => q.tile === t).n);
-        let minX = Infinity, minY = Infinity;
+        check('live: every pellet a spectator got while settled is inside its view' + tag, !outside.length, outside.slice(0, 5).join(' '));
+        check('live: the views are tight (a pellet within 40 of every inner edge)' + tag, !gaps.length, gaps.join(' '));
+        /* neighbours on the grid (tile index: row * 3 + col of 6024750d's centred 3 x 5 cut) */
+        const spOf = (t) => sps[L.sp.findIndex((q) => q.tile === t)];
+        const ov = (a, b, k) => Math.min(a[k ? 'maxY' : 'maxX'], b[k ? 'maxY' : 'maxX']) - Math.max(a[k ? 'minY' : 'minX'], b[k ? 'minY' : 'minX']);
+        let minX = Infinity, minY = Infinity, meetX = 0, meetY = 0;
         for (let t = 0; t < 15; t++) {
-            const a = box(t);
-            if (t % 3 < 2) { const r = box(t + 1); minX = Math.min(minX, Math.min(a.maxX, r.maxX) - Math.max(a.minX, r.minX)); }
-            if (t < 12) { const d = box(t + 3); minY = Math.min(minY, Math.min(a.maxY, d.maxY) - Math.max(a.minY, d.minY)); }
+            const a = real(spOf(t)), da = byLabel(bs, 'Viewport# ' + spOf(t).number);
+            if (t % 3 < 2) { const r = spOf(t + 1); minX = Math.min(minX, ov(a, real(r), 0)); meetX = Math.max(meetX, Math.abs(ov(da, byLabel(bs, 'Viewport# ' + r.number), 0))); }
+            if (t < 12) { const d = spOf(t + 3); minY = Math.min(minY, ov(a, real(d), 1)); meetY = Math.max(meetY, Math.abs(ov(da, byLabel(bs, 'Viewport# ' + d.number), 1))); }
         }
-        check('live: neighbouring boxes overlap like the views (at least 350 / 140 on the centred cut)' + tag, minX >= 350 && minY >= 140, [minX.toFixed(1), minY.toFixed(1)]);
+        check('live: neighbouring views overlap (at least 350 / 140 on the centred cut)' + tag, minX >= 350 && minY >= 140, [minX.toFixed(1), minY.toFixed(1)]);
+        /* drawn: no two boxes overlap (borders meet in one line, not two parallel ones), each
+         * drawn box inside its own real view, neighbours meet (within a unit: cameras settle
+         * within 0.5) */
+        const drawn = bs.filter((b) => b.label !== 'map');
+        let crossing = [], notInView = [];
+        for (let i = 0; i < drawn.length; i++) {
+            const a = drawn[i];
+            for (let j = i + 1; j < drawn.length; j++) if (ov(a, drawn[j], 0) > 1e-9 && ov(a, drawn[j], 1) > 1e-9) crossing.push(a.label + '/' + drawn[j].label);
+            const sp = sps.find((p) => 'Viewport# ' + p.number === a.label), r = sp && real(sp);
+            if (!r || a.minX < r.minX - 1e-9 || a.maxX > r.maxX + 1e-9 || a.minY < r.minY - 1e-9 || a.maxY > r.maxY + 1e-9) notInView.push(a.label);
+        }
+        check('live: no two drawn boxes overlap (the seams were drawn as two parallel lines)' + tag, drawn.length === 15 && !crossing.length, drawn.length + ' ' + crossing.length + ' ' + crossing.slice(0, 4).join(' '));
+        check('live: every drawn box is a real view and inside it' + tag, !notInView.length, notInView.join(' '));
+        check('live: neighbouring drawn boxes meet (gap or overlap at most 1 unit)' + tag, meetX <= 1 && meetY <= 1, [meetX.toFixed(2), meetY.toFixed(2)]);
     }
 }
 
@@ -359,10 +392,14 @@ const covers = (plan, vw, vh, half) => {
         const bs = e.frame();
         const tag = ' (' + m.label + (rot ? ', Rotate Map ' + JSON.stringify(rot[0]) : '') + ')';
         const outside = [], far = [0, 0, 0, 0];
+        let sent = 0;
         m.views.forEach((q, i) => {
-            const b = byLabel(bs, 'Viewport# ' + q.n), sp = sps[i];
-            if (!b) { outside.push(q.n + ': no box'); return; }
+            const sp = sps[i], r = sp._lmServerViewDisplay();
+            if (!byLabel(bs, 'Viewport# ' + q.n) || !r) { outside.push(q.n + ': no box'); return; }
+            const b = { minX: r[0], minY: r[1], maxX: r[2], maxY: r[3] };
             const pts = q.ext.map((f) => [sp.getX(f[0]), sp.getY(f[1])]);
+            /* every pellet the server sent is in view by the radius-aware test */
+            for (const f of q.ext) if (sp.isOutsideServerView(f[0], f[1], f[2])) sent++;
             for (const p of pts) if (p[0] < b.minX - 2 || p[0] > b.maxX + 2 || p[1] < b.minY - 2 || p[1] > b.maxY + 2) outside.push(q.n + ':' + p.map((v) => v.toFixed(1)));
             /* world distance from the camera per side (-x, +x, -y, +y) */
             const cx = sp.rawToWorldX(q.cam[0]), cy = sp.rawToWorldY(q.cam[1]);
@@ -371,7 +408,8 @@ const covers = (plan, vw, vh, half) => {
                 far[0] = Math.max(far[0], -dx); far[1] = Math.max(far[1], dx); far[2] = Math.max(far[2], -dy); far[3] = Math.max(far[3], dy);
             }
         });
-        check('live: every pellet nearest a side of a settled view is inside its box' + tag, !outside.length, outside.slice(0, 5).join(' '));
+        check('live: every pellet nearest a side of a settled view is inside its view' + tag, !outside.length, outside.slice(0, 5).join(' '));
+        check('live: no pellet the server sent is out of view by isOutsideServerView with its size' + tag, sent === 0, sent);
         if (rot) continue;
         const plan = e.c.lmFullMapPlan(W, W, ...e.c.lmServerViewSize(e.c.LM_SPECT_FREE_SCALE));
         const edge = vm.runInContext('LM_FULLMAP_EDGE', e.c);
