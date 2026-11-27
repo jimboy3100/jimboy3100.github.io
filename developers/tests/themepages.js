@@ -63,7 +63,11 @@ function run(name, url, probe, secs) {
     fs.rmSync(out, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
     fs.mkdirSync(out, { recursive: true });
     fs.writeFileSync(path.join(out, 'probe.js'), wrap(probe));
-    const r = spawnSync(process.execPath, [path.join(here, 'smoke.js'), repo, out, String(secs || 3), url], { encoding: 'utf8', timeout: 120000 });
+    /* the pages' third-party stylesheets (Google Fonts, Font Awesome) fail at once: they block the page
+     * until they load, and from a busy machine they took over 10 s, so the probe read a page that had no
+     * body yet. The styles checked here are the pages' own. */
+    const r = spawnSync(process.execPath, [path.join(here, 'smoke.js'), repo, out, String(secs || 3), url], { encoding: 'utf8', timeout: 120000,
+        env: Object.assign({}, process.env, { SMOKE_BLOCK: 'fonts.googleapis.com,fonts.gstatic.com,cdnjs.cloudflare.com' }) });
     const text = (r.stdout || '') + (r.stderr || '');
     if (/chrome not found/.test(text)) { console.log('SKIP: ' + text.trim()); process.exit(0); }
     let res = null;

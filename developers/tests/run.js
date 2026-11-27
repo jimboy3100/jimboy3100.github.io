@@ -120,7 +120,10 @@ async function pool(items, n, fn) {
   const combine = list => '(async () => {\n' +
     /* window.__lmProbeRes: smoke.js reads the results so far when the probes run out of time */
     '  var res = window.__lmProbeRes = {}, t0 = Date.now();\n' +
-    '  while (!(window.legendmod && window.application && window.jQuery && jQuery("#og-options").children().length) && Date.now() - t0 < 20000) await new Promise(function (r) { setTimeout(r, 250); });\n' +
+    /* 20 s, and on (up to 60 s) while the page is still parsed: a third-party stylesheet in its head
+     * (Google Fonts, cdnjs) that answers slowly holds the parser and every script after it, and the
+     * probes ran on a page whose scripts had not run yet */
+    '  while (!(window.legendmod && window.application && window.jQuery && jQuery("#og-options").children().length) && (Date.now() - t0 < 20000 || (document.readyState === "loading" && Date.now() - t0 < 60000))) await new Promise(function (r) { setTimeout(r, 250); });\n' +
     list.map(f => '  console.debug("[lm-probe]", ' + JSON.stringify(f.replace(/\.js$/, '')) + ');\n' +
       '  try { res[' + JSON.stringify(f.replace(/\.js$/, '')) + '] = await (\n' + strip(fs.readFileSync(path.join(probeDir, f), 'utf8')) +
       '\n  ); } catch (e) { res[' + JSON.stringify(f.replace(/\.js$/, '')) + '] = { err: String(e && e.stack || e) }; }\n').join('') +

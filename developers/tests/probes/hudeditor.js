@@ -4,6 +4,8 @@
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  /* the module is a script tag of its own, loaded after the game started (bounded wait) */
+  for (var hw = 0; hw < 100 && !window.LMHudEditor; hw++) await sleep(100);
   var HE = window.LMHudEditor;
   if (!HE) return { fail: ['LMHudEditor missing (ogario/modules/hudeditor.js not loaded)'] };
   var KEY = 'lmHudLayouts', savedRaw = null;

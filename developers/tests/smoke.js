@@ -6,6 +6,8 @@
 // SMOKE_VIEWPORT=WxH (mobile only): another phone screen than the default 915x412, e.g. 640x360 or 412x915.
 // SMOKE_SWAP='rel/path.js=C:/other/file.js;...': serve those repo files from other files (e.g. the previous
 // version, to see a new probe fail there) without touching the checkout.
+// SMOKE_BLOCK='fonts.googleapis.com,...': requests to those hosts fail at once, as if the host could not be
+// reached (a test of the page's own styles does not then wait on a slow third-party stylesheet).
 // SMOKE_PROBE_LIMIT=N: the probe may take N seconds; then result.json keeps the results so far
 // (window.__lmProbeRes), timedOut names the probe that was running (console.debug('[lm-probe]', name)) and the exit code is 4.
 // Needs Node 22+ (global fetch and WebSocket) and Chrome/Chromium.
@@ -27,6 +29,7 @@ const startUrl = process.argv[5] || 'https://www.legendmod.ml/play.html';
 const mobile = process.argv[6] === 'mobile';
 const swaps = {};
 String(process.env.SMOKE_SWAP || '').split(';').forEach(p => { const i = p.indexOf('='); if (i > 0) swaps[p.slice(0, i).trim().replace(/^\//, '')] = p.slice(i + 1).trim(); });
+const blocked = String(process.env.SMOKE_BLOCK || '').split(',').map(h => h.trim().toLowerCase()).filter(h => /^[a-z0-9.-]+$/.test(h));
 if (!repo || !out) { console.log('usage: node smoke.js <repoDir> <outDir> [seconds] [url] [mobile]'); process.exit(1); }
 if (typeof fetch !== 'function' || typeof WebSocket !== 'function') { console.log('Node 22+ is required (global fetch and WebSocket)'); process.exit(1); }
 function findChrome() {
@@ -116,6 +119,7 @@ function probeMark(name) {
     if (m.id && pending.has(m.id)) { pending.get(m.id)(m.result || m.error); pending.delete(m.id); return; }
     if (m.method === 'Fetch.requestPaused') {
       const u = new URL(m.params.request.url);
+      if (blocked.includes(u.hostname.toLowerCase())) { send('Fetch.failRequest', { requestId: m.params.requestId, errorReason: 'ConnectionRefused' }); return; }
       let rel = decodeURIComponent(u.pathname.replace(/^\//, ''));
       if (rel === '' ) rel = 'index.html';
       const swap = swaps[rel];
@@ -193,7 +197,8 @@ function probeMark(name) {
   /* like --no-first-run: the one-time language window stays away unless SMOKE_FIRSTRUN asks for it
    * (developers/tests/i18n-firstrun.js); the probes test it on purpose */
   if (!process.env.SMOKE_FIRSTRUN) await send('Page.addScriptToEvaluateOnNewDocument', { source: "try { if (!localStorage.getItem('lmLangAsked')) localStorage.setItem('lmLangAsked', '1'); } catch (e) { }" });
-  await send('Fetch.enable', { patterns: [{ urlPattern: '*://jimboy3100.github.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }, { urlPattern: '*://legendmod.ml/*' }] });
+  await send('Fetch.enable', { patterns: [{ urlPattern: '*://jimboy3100.github.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }, { urlPattern: '*://legendmod.ml/*' }]
+    .concat(blocked.map(h => ({ urlPattern: '*://' + h + '/*' }))) });
   if (mobile) {
     const vp = /^(\d{3,4})x(\d{3,4})$/.exec(process.env.SMOKE_VIEWPORT || '');
     await send('Emulation.setDeviceMetricsOverride', { width: vp ? +vp[1] : 915, height: vp ? +vp[2] : 412, deviceScaleFactor: 2.6, mobile: true });
