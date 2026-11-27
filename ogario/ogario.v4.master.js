@@ -1697,6 +1697,8 @@ function legendmaster(self) {
             }
         },
         onConnect() {
+            /* a server is joined (also by token or a private server): Play no longer reconnects */
+            this._lmFindGaveUp = false;
             this.connectionActive = true;
             this.intentionalDisconnect = false;
             this.pendingConnection = null;
@@ -1814,6 +1816,9 @@ function legendmaster(self) {
             if (this._unexpectedFails > 8) {
                 this._unexpectedFails = 0;
                 window._lwReconnecting = false;
+                /* the same gave-up state as findServer's: Play stays enabled (lmPlayBlockReason)
+                 * and reconnects (setNick), as the toast says */
+                this._lmFindGaveUp = true;
                 console.warn("[Master] Giving up after 8 failed reconnects");
                 if (typeof toastr !== "undefined") {
                     toastr.error(_lmMTag('server') + _lmMT("connDrops", "The connection keeps dropping. Press Play or change the server to try again."));
