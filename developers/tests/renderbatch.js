@@ -386,5 +386,98 @@ const A = new Function('env', F.factory.replace(/^function \(env\) \{/, '').repl
         massSlots === 40 && fresh2 === 6 && T2._lmMassTex.size < massBefore && T2._lmMassTex.size >= massBefore - 6 && T2._lmMassBytes === massBytes && T2._lmTextBytes === sumBytes());
 }
 
+/* ---- label atlas banks: growing adds a texture array and never copies the pages in use; a bank
+ * above the labels is given back after 10 s without one; units and per-page layer codes ---- */
+{
+    const tg = stubGL();
+    let texN = 0, unit = 0;
+    const log = [], bound = {};
+    Object.assign(tg, {
+        TEXTURE_2D: 0xde1, TEXTURE1: 0x84c1, RGBA: 0x1908, RGBA8: 0x8058, UNSIGNED_BYTE: 0x1401, NO_ERROR: 0, MAX_ARRAY_TEXTURE_LAYERS: 0x88ff,
+        READ_FRAMEBUFFER: 0x8ca8, READ_FRAMEBUFFER_BINDING: 0x8caa, COLOR_ATTACHMENT0: 0x8ce0, TRIANGLE_STRIP: 5, LESS: 0x201,
+        TEXTURE_MIN_FILTER: 1, TEXTURE_MAG_FILTER: 2, TEXTURE_WRAP_S: 3, TEXTURE_WRAP_T: 4, LINEAR: 5, CLAMP_TO_EDGE: 6,
+        getError() { return 0; }, getParameter(p) { return p === this.MAX_ARRAY_TEXTURE_LAYERS ? 2048 : null; }, isContextLost() { return false; },
+        createTexture() { return { id: 't' + (++texN) }; }, deleteTexture(t) { log.push('del ' + (t && t.id)); },
+        activeTexture(u) { unit = u - this.TEXTURE0; }, bindTexture(t, x) { if (t === this.TEXTURE_2D_ARRAY) bound[unit] = x; },
+        texStorage3D(t, l, f, w, h, d) { log.push('storage ' + d); }, texParameteri() { }, texSubImage3D(t, l, x, y, z) { log.push('sub3d ' + z); },
+        texImage2D() { }, texSubImage2D() { },
+        createFramebuffer() { return {}; }, bindFramebuffer() { }, deleteFramebuffer() { }, framebufferTextureLayer(t, at, tex, lv, l) { log.push('fblayer ' + l); }, framebufferTexture2D() { },
+        copyTexSubImage3D(t, l, x, y, z) { log.push('copy ' + bound[1].id + ':' + z); },
+        vertexAttribDivisor() { }, uniform1f() { }, uniform1i() { },
+        drawArraysInstanced(m, f, c, n) { log.push('inst ' + n); }, drawArrays() { }
+    });
+    const env3 = Object.assign({}, env, { defaultSettings: Object.assign({}, env.defaultSettings), defaultmapsettings: Object.assign({}, env.defaultmapsettings) });
+    const T = new Function('return (' + F.factory + ')')()(env3);
+    Object.assign(T, { gl: tg, glTextProgram: {}, glTextVAO: {} });
+    T.initWebGLTextAtlas(tg, () => ({}), {});
+    let clock = 1e6;
+    const realNow = Date.now;
+    Date.now = () => clock;
+    try {
+        Object.assign(T, { glTextCache: new Map(), glTextCacheMaxSize: 100000, _lmTextBytes: 0, _lmMassTex: null, _lmMassBytes: 0, _lmTextFrame: 0, _lmTextIdleTimer: 1,
+            _lmTextBudget: 1 << 30, _textCanvas: { width: 0, height: 0 }, scale: 1, camX: 0, camY: 0, canvasWidth: 1920, canvasHeight: 1080,
+            _textCtx: { font: '', measureText: (t) => ({ width: t.length * 50 }), setTransform() { }, clearRect() { }, scale() { }, strokeText() { }, fillText() { } },
+            getLegendWorldAttachedRenderPoint: (x, y) => ({ x, y }) });
+        /* 360 px labels 40 characters wide: two to a page (two 504-texel shelves of a full-width label) */
+        const F3 = 'bold 360px Ubuntu', txt = (i) => 'x'.repeat(39) + String.fromCharCode(65 + i), key = (i) => txt(i) + '|' + F3 + '|#fff|#000|10';
+        const big = (i) => T.getOrCreateTextTexture(txt(i), F3, '#fff', '#000', 10);
+        T._lmTextFrameBegin();
+        const a = T._lmTextAtlasGet();
+        check('atlas banks: no more pages than 8 banks hold (28 with the step sizes), when the budget allows more', a.alloc.maxPages === 28 && T.glTextAtlasBanks === 8);
+        const es = [];
+        for (let i = 0; i < 18; i++) es.push(big(i));
+        const pages = es.map((e) => e.slot && e.slot.page);
+        check('atlas banks: 18 labels on pages 0..8, two to a page (' + pages.join(',') + ')', pages.join() === '0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8');
+        check('atlas banks: growing makes banks of the step sizes (1, 1, 2, 4, 8 pages: 16), the pages in use are never copied (one copy per label, no page read)',
+            log.filter((l) => /^storage/.test(l)).join() === 'storage 1,storage 1,storage 2,storage 4,storage 8' && a.layers === 16 && a.banks.length === 5 &&
+            log.filter((l) => /^copy/.test(l)).length === 18 && !log.some((l) => /^fblayer|^del/.test(l)));
+        const e10 = es[10]; /* page 5: bank 3 (pages 4..7), its second layer */
+        check('atlas banks: a label goes into the layer of its bank (page 5 = bank 3 layer 1), a_layer = bank * 4096 + layer',
+            a.code[5] === 3 * 4096 + 1 && a.banks[3].start === 4 && log.indexOf('copy ' + a.banks[3].tex.id + ':1') >= 0 && T._lmTextAtlasBankOf(a, 5) === a.banks[3]);
+        T._lmTextBatchOn = true; T._lmTextBatchN = 0; T._lmTextProg = 1;
+        T.drawWebGLTextQuad(e10, 0, 0, 0, 30, 0.5);
+        T.drawWebGLTextQuad(es[0], 0, 0, 0, 30, 0.5);
+        for (const k in bound) delete bound[k];
+        T._lmTextFlush();
+        T._lmTextBatchOn = false;
+        const units = [1, 4, 5, 6, 7, 8, 9, 10];
+        check('atlas banks: instance layer codes, and every unit of the program holds its bank (bank 0 where there is no bank)',
+            T.glTextAtlasData[10] === 3 * 4096 + 1 && T.glTextAtlasData[21] === 0 && units.every((u, b) => bound[u] === (a.banks[b] || a.banks[0]).tex));
+        /* the labels on pages 2..8 go (banks 2, 3 and 4 empty), the others stay */
+        const release = (i) => { const e = T.glTextCache.get(key(i)); T._lmTextRelease(e); T._lmTextBytes -= e.bytes; T.glTextCache.delete(key(i)); };
+        for (let i = 4; i < 18; i++) release(i);
+        const lastTex = a.banks[4].tex.id;
+        log.length = 0;
+        const toCheck = () => { do T._lmTextFrameBegin(); while (T._lmTextFrame % 60); };
+        toCheck();
+        clock += 5000;
+        toCheck();
+        check('atlas banks: banks without labels are kept for 10 s (no make-and-delete while the scene keeps changing)', a.banks.length === 5 && !log.some((l) => /^del/.test(l)));
+        clock += 5000;
+        toCheck();
+        check('atlas banks: after 10 s the last empty bank is given back, nothing copied', a.banks.length === 4 && a.layers === 8 && log.join() === 'del ' + lastTex && a.code.length === 8 && a.alloc.pages.length <= 8);
+        toCheck();
+        check('atlas banks: one bank per check; the next empty one follows', a.banks.length === 3 && a.layers === 4 && a.alloc.pages.length <= 4);
+        /* a label on the last bank (pages 2..3) again: it is kept */
+        const back = big(20);
+        clock += 20000;
+        toCheck(); toCheck();
+        check('atlas banks: a bank holding a label again stays (page ' + (back.slot && back.slot.page) + ')', a.banks.length === 3 && !!back.slot && back.slot.page === 2);
+        /* growing again: new banks, no copy */
+        log.length = 0;
+        for (let i = 21; i < 34; i++) big(i);
+        check('atlas banks: growing again only adds banks (no page copied)', a.banks.length === 5 && log.filter((l) => /^storage/.test(l)).join() === 'storage 4,storage 8' && !log.some((l) => /^fblayer|^del/.test(l)));
+        for (let i = 0; i < 4; i++) release(i);
+        for (let i = 20; i < 34; i++) release(i);
+        for (let k = 0; k < 8; k++) { clock += 11000; toCheck(); }
+        check('atlas banks: with no label left, every bank but bank 0 (one page) is given back', a.banks.length === 1 && a.layers === 1);
+        T.getOrCreateTextTexture('last', F3, '#fff', '#000', 10);
+        log.length = 0;
+        T._lmTextPassAt = 0;
+        for (let k = 0; k < 20 && T.glTextCache.size; k++) T._lmTextIdle();
+        check('atlas banks: the text pass stops: the atlas and its banks are deleted', T._lmTextAtlas === null && log.indexOf('del ' + a.banks[0].tex.id) >= 0);
+    } finally { Date.now = realNow; }
+}
+
 if (failed) { console.log(failed + ' check(s) failed'); process.exit(1); }
 console.log('renderbatch ok');

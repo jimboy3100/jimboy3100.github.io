@@ -77,7 +77,7 @@ function grabVar(src, name) {
 const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim',
     'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch', 'lmSkinUnpremulLut', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinSlack',
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing',
-    'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages',
+    'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages', 'lmTextAtlasBankCap', 'lmTextAtlasUnit',
     'lmSkinsShown', 'lmColorInt'];
 const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', '_lmColorIntCache'];
 
@@ -352,6 +352,13 @@ function pageLib() {
      * hold, in its atlas slot, exactly the texels its own texture gets from the same raster
      * (texImage2D, the per-label path before the atlas), and no texSubImage3D may read a canvas
      * (that read waits for the GPU: tens of ms per label on integrated GPUs). */
+    /* texture array and layer of atlas page p: in its bank (a.banks), or the one texture array of
+     * versions before the banks */
+    function atlasLayer(a, p) {
+        if (!a.banks) return [a.tex, p];
+        var b = a.banks[a.code[p] >> 12];
+        return [b.tex, p - b.start];
+    }
     function atlasUploads(src, defaults) {
         var o = setup(src, defaults, { scale: 0.35, jelly: true }, []), R = o.R, gl = R.gl;
         var labels = [['Legend', '700 34px Ubuntu', '#ffffff', '#000000', 3], ['1.5k', '700 26px Ubuntu', '#ffffff', '#000000', 3], ['7', '700 12px Ubuntu', '#ffffff', '#000000', 2],
@@ -375,7 +382,7 @@ function pageLib() {
                 if (!e || !e.slot) continue;
                 res.inAtlas++;
                 var a = R._lmTextAtlas, sl = e.slot;
-                var got = read(function () { gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, a.tex, 0, sl.page); }, 2048, 1024);
+                var got = read(function () { var at = atlasLayer(a, sl.page); gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, at[0], 0, at[1]); }, 2048, 1024);
                 R._lmRasterText(l[0], l[1], l[2], l[3], l[4]);
                 gl.bindTexture(gl.TEXTURE_2D, own);
                 gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, R._textCanvas);
@@ -409,7 +416,7 @@ function pageLib() {
                     res.adopted = e2 === late.e && !!e2.slot && !e2.tex;
                     if (res.adopted) {
                         var sl2 = e2.slot;
-                        var got2 = read(function () { gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, at.tex, 0, sl2.page); }, 2048, 1024);
+                        var got2 = read(function () { var al = atlasLayer(at, sl2.page); gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, al[0], 0, al[1]); }, 2048, 1024);
                         R._lmRasterText(late.text, lf[1], lf[2], lf[3], lf[4]);
                         gl.bindTexture(gl.TEXTURE_2D, own);
                         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, R._textCanvas);
@@ -427,6 +434,60 @@ function pageLib() {
         res.glError = gl.getError();
         gl.deleteFramebuffer(fb); gl.deleteTexture(own);
         gl.getExtension('WEBGL_lose_context').loseContext();
+        return res;
+    }
+    /* The labels of a scene spread over several atlas banks, drawn by the working copy and by the
+     * version before the banks (one texture array, copied into a bigger one to grow): the same
+     * pages hold the same labels (same allocator), and the frames must be the same to the bit.
+     * Before the scene, pages 0..10 are opened one by one (the atlas grows step by step) and
+     * blocked; then pages 1, 3, 6 and 9 get 48 free rows at their bottom, so the labels go to
+     * pages in banks 1 to 4 (and page 11 on), in both versions. */
+    function atlasOracle(oldSrc, newSrc, defaults, cfg, scene) {
+        function prefill(R) {
+            R._lmTextFrame = 1;
+            var a = R._lmTextAtlasGet(), pages = [];
+            for (var p = 0; p < 11; p++) {
+                var sl = R._lmTextAtlasSlot(a, 8, 8, false);
+                if (!sl) return false;
+                sl.shelf.free = [];
+                a.alloc.pages[sl.page].top = a.h;
+                pages.push(sl.page);
+            }
+            [1, 3, 6, 9].forEach(function (q) { a.alloc.pages[q].top = a.h - 48; });
+            return pages.join() === '0,1,2,3,4,5,6,7,8,9,10';
+        }
+        var A = setup(oldSrc, defaults, cfg, scene), B = setup(newSrc, defaults, cfg, scene);
+        var res = { prefilled: prefill(A.R) && prefill(B.R) };
+        frame(A); frame(B);
+        var okA = frame(A), okB = frame(B);
+        var r = diff(pixels(A.R), pixels(B.R));
+        res.okOld = okA; res.okNew = okB; res.max = r.max; res.differing = r.differing; res.lit = r.litPixels;
+        /* where the labels are: the same page in both versions, and which banks they use */
+        var banks = {}, pagesSame = 0, labels = 0, pageList = {};
+        B.R.glTextCache.forEach(function (e, k) {
+            if (!e.slot) return;
+            labels++;
+            var o = A.R.glTextCache.get(k);
+            if (o && o.slot && o.slot.page === e.slot.page && o.slot.x === e.slot.x && o.slot.y === e.slot.y) pagesSame++;
+            banks[e.atlas.code[e.slot.page] >> 12] = 1;
+            pageList[e.slot.page] = 1;
+        });
+        var massSame = 0, mass = 0;
+        B.R._lmMassTex && B.R._lmMassTex.forEach(function (e, cell) {
+            if (!e.slot) return;
+            mass++;
+            banks[e.atlas.code[e.slot.page] >> 12] = 1;
+            pageList[e.slot.page] = 1;
+            var id = cell.id, o = null;
+            A.R._lmMassTex.forEach(function (x, c) { if (c.id === id) o = x; });
+            if (o && o.slot && o.slot.page === e.slot.page && o.slot.x === e.slot.x && o.slot.y === e.slot.y) massSame++;
+        });
+        res.labels = labels; res.pagesSame = pagesSame; res.mass = mass; res.massSame = massSame;
+        res.banks = Object.keys(banks).length; res.pages = Object.keys(pageList).join(',');
+        res.bankCount = B.R._lmTextAtlas.banks.length; res.layers = B.R._lmTextAtlas.layers;
+        res.glError = B.R.gl.getError();
+        A.R.gl.getExtension('WEBGL_lose_context').loseContext();
+        B.R.gl.getExtension('WEBGL_lose_context').loseContext();
         return res;
     }
     /* A dense world's labels (the bench's 1500 big cells: about a thousand mass texts at the
@@ -666,6 +727,7 @@ function pageLib() {
     return {
         atlasUploads: atlasUploads,
         atlasCapacity: atlasCapacity,
+        atlasOracle: atlasOracle,
         virusPixel: virusPixel,
         skinUploads: skinUploads,
         compare: async function (oldSrc, newSrc, defaults, cfg, scene) {
@@ -832,6 +894,18 @@ async function main() {
             check('label atlas full: the label keeps its own texture, then goes into a freed slot with the same texels', au.adoptFallback && au.adopted && au.adoptDiffering === 0 && au.glError === 0);
         }
         check('label atlas: no texSubImage3D from a canvas (a GPU wait per label)', au.canvasReads === 0);
+        /* the label atlas in banks against the version before them (one texture array): the
+         * same frame to the bit, labels in the same place, spread over several banks */
+        let bankRef = null;
+        try { bankRef = rendererFactory(execFileSync('git', ['-C', root, 'show', opt('--atlas-ref', '2c6f70ad') + ':ogario/ogario.v4.js'], { encoding: 'utf8', maxBuffer: 64 * 1048576 })); } catch (e) { }
+        if (bankRef) {
+            await evaluate('window.__glbBankRef = ' + JSON.stringify(bankRef.factory) + '; true');
+            const ao = await evaluate('__glb.atlasOracle(__glbBankRef, __glbNew, __glbDefaults, ' + JSON.stringify({ scale: 0.35, jelly: true }) + ', ' + JSON.stringify(await scene(500, 777)) + ')');
+            console.log('     atlas banks: ' + ao.labels + ' nicks + ' + ao.mass + ' mass texts on pages ' + ao.pages + ' in ' + ao.banks + ' banks (' + ao.bankCount + ' banks, ' + ao.layers + ' pages made); same place as before ' +
+                ao.pagesSame + '/' + ao.labels + ' + ' + ao.massSame + '/' + ao.mass + '; frame differs in ' + ao.differing + ' channels (max ' + ao.max + ')');
+            check('label atlas in banks: the same frame to the bit as one texture array, labels in the same places, over 4+ banks, no GL error',
+                ao.prefilled && ao.okOld && ao.okNew && ao.differing === 0 && ao.lit > 1920 * 1080 * 0.05 && ao.banks >= 4 && ao.pagesSame === ao.labels && ao.massSame === ao.mass && ao.labels > 20 && ao.glError === 0);
+        } else console.log('     atlas banks: reference ' + opt('--atlas-ref', '2c6f70ad') + ' not available, comparison skipped');
         /* the virus colour of the Theme tab in every format it accepts (and Canvas2D draws): WebGL
          * read only #rgb and #rrggbb and drew the others grey (a green virus turned grey whenever
          * no skin made the frame fall back to Canvas2D) */

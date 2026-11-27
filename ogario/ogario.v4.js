@@ -23030,6 +23030,18 @@ function thelegendmodproject() {
         while (l < n) l += Math.max(4, Math.pow(2, Math.floor(Math.log(l) / Math.LN2)) / 4);
         return Math.min(l, max);
     }
+    /* pages that a given number of banks (texture arrays, one per sampler of the atlas program)
+     * hold when the atlas grows by lmTextAtlasStep, one bank per step; at most max */
+    function lmTextAtlasBankCap(max, banks) {
+        var c = 0;
+        for (var b = 0; b < banks && c < max; b++) c = lmTextAtlasStep(c + 1, max);
+        return c;
+    }
+    /* texture unit of bank b: bank 0 on unit 1 (where the single texture array was), the others
+     * on 4 and up (units 2 and 3 hold the skin arrays) */
+    function lmTextAtlasUnit(b) {
+        return b ? 3 + b : 1;
+    }
     /* pages the atlas may have: twice the text + mass byte budgets in w x h RGBA pages, within the
      * GPU's layer limit (it was also held to 16 pages: dense scenes filled them and every label
      * after that was drawn with its own texture and draw call) */
@@ -71946,19 +71958,31 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }`;
                 /* Sampling clamped to the label's own texel centres: the same result as its own
                  * texture with CLAMP_TO_EDGE and LINEAR, and the neighbours are never read. */
+                /* The pages are in banks (one texture array each, see _lmTextAtlasBank); a_layer is
+                 * bank * 4096 + page in the bank. One level, LINEAR both ways: textureLod at 0 samples
+                 * exactly as texture() did. */
+                var banks = this.glTextAtlasBanks = 8, pick = '';
+                for (var b = 0; b < banks; b++) {
+                    pick += (b ? ' else if (b == ' + b + ') ' : 'if (b == 0) ') + 'fragColor = textureLod(u_atlas' + b + ', p, 0.0);';
+                }
                 var fs = `#version 300 es
                 precision highp float;
+                precision highp int;
                 precision highp sampler2DArray;
                 in vec2 v_uv;
                 flat in vec4 v_rect;
                 flat in float v_layer;
-                uniform sampler2DArray u_atlas;
+                uniform sampler2DArray ` + Array.from({ length: banks }, function (x, k) { return 'u_atlas' + k; }).join(', ') + `;
                 uniform vec2 u_atlasInv;
                 uniform float u_alpha;
                 out vec4 fragColor;
                 void main() {
                     vec2 t = v_rect.xy + clamp(v_uv * v_rect.zw, vec2(0.5), v_rect.zw - vec2(0.5));
-                    fragColor = texture(u_atlas, vec3(t * u_atlasInv, v_layer));
+                    int code = int(v_layer + 0.5);
+                    int b = code >> 12;
+                    vec3 p = vec3(t * u_atlasInv, float(code & 4095));
+                    fragColor = vec4(0.0);
+                    ` + pick + `
                     if (fragColor.a < 0.01) discard;
                     fragColor.a *= u_alpha;
                 }`;
@@ -71969,8 +71993,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.u_textAtlas_atlasInv = gl.getUniformLocation(prog, 'u_atlasInv');
                 this.u_textAtlas_alpha = gl.getUniformLocation(prog, 'u_alpha');
                 gl.useProgram(prog);
-                /* the atlas is kept on texture unit 1, which nothing else uses */
-                gl.uniform1i(gl.getUniformLocation(prog, 'u_atlas'), 1);
+                /* bank 0 is kept on texture unit 1, the others on 4 and up: nothing else uses them */
+                for (var u = 0; u < banks; u++) gl.uniform1i(gl.getUniformLocation(prog, 'u_atlas' + u), lmTextAtlasUnit(u));
                 gl.useProgram(null);
                 this.glTextAtlasMax = 1024;
                 this.glTextAtlasData = new Float32Array(this.glTextAtlasMax * 11);
@@ -72008,22 +72032,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var budget = this._lmTextBudget || (this._lmTextBudget = lmTextTexBudget(window.navigator && Number(window.navigator.deviceMemory)));
             var W = 2048, H = 1024;
             var maxLayers = Number(gl.getParameter(gl.MAX_ARRAY_TEXTURE_LAYERS)) || 256;
-            var pages = lmTextAtlasMaxPages(budget, W, H, maxLayers);
-            a = this._lmTextAtlas = { gl: gl, tex: null, layers: 0, w: W, h: H, alloc: lmTextAtlasNew(W, H, pages), reclaimFrame: -1, adoptFreed: -1, adoptFrame: -1, adoptN: 0 };
+            /* no more pages than the program's banks hold (8 banks: 28 pages, above the 24 of the
+             * biggest budget) */
+            var pages = lmTextAtlasBankCap(lmTextAtlasMaxPages(budget, W, H, maxLayers), this.glTextAtlasBanks || 1);
+            /* banks: { tex, start, n, idle }; code: per page, bank * 4096 + page in the bank (a_layer) */
+            a = this._lmTextAtlas = { gl: gl, banks: [], code: [], layers: 0, w: W, h: H, alloc: lmTextAtlasNew(W, H, pages), reclaimFrame: -1, adoptFreed: -1, adoptFrame: -1, adoptN: 0 };
             return a;
         },
-        /* the atlas texture with room for layers pages; the pages in use are copied over on the
-         * GPU. False when the GPU could not make it (the old texture then stays). */
-        _lmTextAtlasResize(a, layers) {
-            var gl = this.gl;
+        /*
+         * Room for layers pages: a new bank (texture array) for the pages from a.layers up. The
+         * banks made before stay as they are: growing never copies pages (copying every page in
+         * use into a bigger texture array took 0.2 to 4.4 s of the main thread on an Intel UHD in
+         * developers/tests/bench.js scenes). False when the GPU could not make it.
+         */
+        _lmTextAtlasBank(a, layers) {
+            var gl = this.gl, n = layers - a.layers;
+            if (n <= 0) return true;
+            if (a.banks.length >= (this.glTextAtlasBanks || 1)) return false;
             gl.getError();
             var tex = gl.createTexture();
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_2D_ARRAY, tex);
-            gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, a.w, a.h, layers);
+            gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, a.w, a.h, n);
             if (gl.getError() !== gl.NO_ERROR) {
                 gl.deleteTexture(tex);
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
                 gl.activeTexture(gl.TEXTURE0);
                 return false;
             }
@@ -72031,23 +72063,26 @@ function pickPlayerCellBySize(players, selectBiggest) {
             gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            var keep = Math.min(a.layers, layers, lmTextAtlasLayers(a.alloc));
-            if (a.tex && keep > 0) {
-                var prev = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
-                var fb = gl.createFramebuffer();
-                gl.bindFramebuffer(gl.READ_FRAMEBUFFER, fb);
-                for (var l = 0; l < keep; l++) {
-                    gl.framebufferTextureLayer(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, a.tex, 0, l);
-                    gl.copyTexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, l, 0, 0, a.w, a.h);
-                }
-                gl.bindFramebuffer(gl.READ_FRAMEBUFFER, prev);
-                gl.deleteFramebuffer(fb);
-            }
-            if (a.tex) gl.deleteTexture(a.tex);
-            a.tex = tex;
-            a.layers = layers;
             gl.activeTexture(gl.TEXTURE0);
+            var b = a.banks.length;
+            a.banks.push({ tex: tex, start: a.layers, n: n, idle: 0 });
+            for (var l = 0; l < n; l++) a.code[a.layers + l] = b * 4096 + l;
+            a.layers = layers;
             return true;
+        },
+        /* gives the last bank back (it holds no label): its pages leave the allocator */
+        _lmTextAtlasDrop(a) {
+            var bank = a.banks.pop();
+            if (!bank) return;
+            var gl = this.gl;
+            if (gl && a.gl === gl && !(gl.isContextLost && gl.isContextLost())) gl.deleteTexture(bank.tex);
+            a.layers = bank.start;
+            a.code.length = bank.start;
+            if (a.alloc.pages.length > bank.start) a.alloc.pages.length = bank.start;
+        },
+        /* the bank that holds page p */
+        _lmTextAtlasBankOf(a, p) {
+            return a.banks[a.code[p] >> 12];
         },
         /*
          * Puts the text just drawn on _textCanvas (w x h) into entry: in its atlas slot when it still
@@ -72091,14 +72126,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             gl.bindTexture(gl.TEXTURE_2D, null);
         },
-        /* a slot for a w x h label (the texture array made bigger when it opens a new page), or
+        /* a slot for a w x h label (a new bank when it opens a page past the banks), or
          * null; with reclaim, a full atlas first gives up the slots of labels not drawn lately */
         _lmTextAtlasSlot(a, w, h, reclaim) {
             var slot = lmTextAtlasAlloc(a.alloc, w, h);
             if (!slot && reclaim) slot = this._lmTextAtlasReclaim(a, w, h);
             if (slot && a.alloc.pages.length > a.layers) {
                 var want = lmTextAtlasStep(a.alloc.pages.length, a.alloc.maxPages);
-                if (!this._lmTextAtlasResize(a, want)) {
+                if (!this._lmTextAtlasBank(a, want)) {
                     /* no GPU memory for more pages: keep the ones there are */
                     lmTextAtlasFree(a.alloc, slot);
                     slot = null;
@@ -72163,7 +72198,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * texture deleted. Up to 8 a frame; none is tried again until another slot is freed. */
         _lmTextAdopt(e) {
             var a = this._lmTextAtlas, gl = this.gl, frame = this._lmTextFrame || 0;
-            if (!a || a.gl !== gl || !a.tex || !e.tex || e.slot || a.adoptFreed === a.alloc.freed || this._lmTextAtlasOff) return;
+            if (!a || a.gl !== gl || !a.layers || !e.tex || e.slot || a.adoptFreed === a.alloc.freed || this._lmTextAtlasOff) return;
             if (a.adoptFrame !== frame) {
                 a.adoptFrame = frame;
                 a.adoptN = 0;
@@ -72180,8 +72215,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             gl.bindFramebuffer(gl.READ_FRAMEBUFFER, a.upFb);
             gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, e.tex, 0);
             gl.activeTexture(gl.TEXTURE1);
-            gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
-            gl.copyTexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, slot.x, slot.y, slot.page, 0, 0, e.w, e.h);
+            var bank = this._lmTextAtlasBankOf(a, slot.page);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, bank.tex);
+            gl.copyTexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, slot.x, slot.y, slot.page - bank.start, 0, 0, e.w, e.h);
             gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, null, 0);
             gl.bindFramebuffer(gl.READ_FRAMEBUFFER, prev);
             gl.activeTexture(gl.TEXTURE0);
@@ -72214,8 +72250,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var prev = gl.getParameter(gl.READ_FRAMEBUFFER_BINDING);
             gl.bindFramebuffer(gl.READ_FRAMEBUFFER, a.upFb);
             gl.framebufferTexture2D(gl.READ_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, a.upTex, 0);
-            gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
-            gl.copyTexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, slot.x, slot.y, slot.page, 0, 0, w, h);
+            var bank = this._lmTextAtlasBankOf(a, slot.page);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, bank.tex);
+            gl.copyTexSubImage3D(gl.TEXTURE_2D_ARRAY, 0, slot.x, slot.y, slot.page - bank.start, 0, 0, w, h);
             gl.bindFramebuffer(gl.READ_FRAMEBUFFER, prev);
             gl.activeTexture(gl.TEXTURE0);
         },
@@ -72236,15 +72273,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var n = this._lmTextBatchN || 0;
             this._lmTextBatchN = 0;
             var gl = this.gl, a = this._lmTextAtlas;
-            if (!n || !gl || !a || !a.tex || a.gl !== gl) return;
+            if (!n || !gl || !a || !a.layers || a.gl !== gl) return;
             var s = this.scale || 1;
             gl.useProgram(this.glTextAtlasProgram);
             gl.uniform2f(this.u_textAtlas_viewCenter, this.camX, this.camY);
             gl.uniform2f(this.u_textAtlas_viewScale, 2.0 * s / this.canvasWidth, 2.0 * s / this.canvasHeight);
             gl.uniform2f(this.u_textAtlas_atlasInv, 1 / a.w, 1 / a.h);
             gl.uniform1f(this.u_textAtlas_alpha, defaultSettings.textAlpha != null ? defaultSettings.textAlpha : 1.0);
-            gl.activeTexture(gl.TEXTURE1);
-            gl.bindTexture(gl.TEXTURE_2D_ARRAY, a.tex);
+            /* every bank on its unit; units of banks not made get bank 0 (a sampler without a
+             * texture array of its kind would be an incomplete texture) */
+            for (var b = 0, nb = this.glTextAtlasBanks || 1; b < nb; b++) {
+                gl.activeTexture(gl.TEXTURE0 + lmTextAtlasUnit(b));
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, (a.banks[b] || a.banks[0]).tex);
+            }
             gl.activeTexture(gl.TEXTURE0);
             gl.bindVertexArray(this.glTextAtlasVAO);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.glTextAtlasVBO);
@@ -72452,15 +72493,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     pool.delete(gone[i]);
                 }
             }
-            /* every 60 frames: atlas pages above the last one in use are given back */
+            /* every 60 frames: a bank above the last page in use is given back once it has held no
+             * label for 10 s (one bank per check), so a scene that keeps changing does not make
+             * and delete the same bank again and again */
             var atl = this._lmTextAtlas;
-            if (atl && atl.gl === gl && atl.tex && frame % 60 === 0) {
-                var used = lmTextAtlasLayers(atl.alloc), want = lmTextAtlasStep(used, atl.alloc.maxPages);
-                /* only when it frees a quarter or more: no copy every 60 frames at a step's edge */
-                if (want * 4 <= atl.layers * 3) {
-                    atl.alloc.pages.length = used;
-                    this._lmTextAtlasResize(atl, want);
+            if (atl && atl.gl === gl && atl.banks.length && frame % 60 === 0) {
+                var used = lmTextAtlasLayers(atl.alloc), at = this._lmTextPassAt;
+                for (i = 0; i < atl.banks.length; i++) {
+                    var bk = atl.banks[i];
+                    if (bk.start < used) bk.idle = 0;
+                    else if (!bk.idle) bk.idle = at;
                 }
+                var last = atl.banks[atl.banks.length - 1];
+                /* bank 0 (one page) stays, as the one page the old shrink kept */
+                if (last.start && last.idle && at - last.idle >= 10000) this._lmTextAtlasDrop(atl);
             }
             if (this._lmTextIdleDraining) {
                 /* the pass is back: stop freeing */
@@ -72508,7 +72554,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (!this._lmTextIdleDraining && atl) {
                 /* nothing left in it: the atlas texture goes too */
                 if (live && atl.gl === gl) {
-                    if (atl.tex) gl.deleteTexture(atl.tex);
+                    for (var b = 0; b < atl.banks.length; b++) gl.deleteTexture(atl.banks[b].tex);
                     if (atl.upTex) gl.deleteTexture(atl.upTex);
                     if (atl.upFb) gl.deleteFramebuffer(atl.upFb);
                 }
@@ -72564,7 +72610,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 d[o + 7] = sl.y;
                 d[o + 8] = texEntry.w;
                 d[o + 9] = texEntry.h;
-                d[o + 10] = sl.page;
+                d[o + 10] = texEntry.atlas.code[sl.page];
                 this._lmTextBatchN = n + 1;
                 /* outside the text pass nothing would draw the queue */
                 if (!this._lmTextBatchOn) this._lmTextFlush();
