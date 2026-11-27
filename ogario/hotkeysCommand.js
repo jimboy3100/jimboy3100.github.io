@@ -822,8 +822,8 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			/* User Scripts panel with its plugin views (ogario/modules/plugins.js) and the Lab
-			 * experiments (lab.js; its own "Open the Lab" hotkey became this one: loadHotkeys) */
+			/* User Scripts panel with its plugin views (ogario/modules/plugins.js; the removed Lab's
+			 * "Open the Lab" hotkey became this one: loadHotkeys) */
 			'hk-lmPlugins': {
 				get label() {
 					return lmT('settings.hk-lmPlugins');

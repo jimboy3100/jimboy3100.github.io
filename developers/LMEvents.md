@@ -168,23 +168,4 @@ At its top level a plugin can call `LMPlugins.ready(options)`:
 outside a slot). Without `onDisable` a plugin that is turned off keeps running until the page
 is reloaded. Examples: `extras/plugins/` (also listed in the catalogue).
 
-## Lab
-
-Experimental features get a switch in the User Scripts window, off until the player turns it on
-(kept in its own storage `lmLab`, not exported; "Turn all experiments off" there resets them). An
-experiment a plugin registers at its top level is shown under that plugin; the others are in the
-window's "Experiments" group. Modules and plugins can add one:
-
-```js
-LMLab.register({
-    id: 'myExperiment', name: 'My experiment', description: 'What it changes',
-    onEnable: function () { /* turn it on */ },
-    onDisable: function () { /* undo it */ }
-});
-```
-
-`onEnable` also runs at start when the player left the switch on. `LMLab.set(id, on)`,
-`LMLab.isEnabled(id)`, `LMLab.list()` and `LMLab.reset()` switch and read them from a script;
-`LMLab.open()` opens the User Scripts window at the experiments.
-
 User scripts and plugins run inside Legend Mod with full access to the page. Only load scripts from people you trust.

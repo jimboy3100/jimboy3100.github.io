@@ -21848,8 +21848,7 @@ function lmFoldLegacySettings(s) {
     return changed || JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]) !== was;
 }
 /* Hotkey commands merged into others: "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3,
- * "Screenshot mode" is Show/hide HUD, "Open the Lab" opens User
- * Scripts (the Lab experiments are there). An old command's key goes to the new one when that has no
+ * "Screenshot mode" is Show/hide HUD, "Open the Lab" (removed) opens User Scripts. An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts, a list in
  * the Hotkeys window now; Save the current zoom as zoom level 1-5, removed; Skin collections, part
  * of the player profiles now; the Command Centre, deleted) is free. For the stored hotkeys (loadHotkeys) and a settings
@@ -25592,14 +25591,17 @@ function thelegendmodproject() {
             if (settings && settings.mbRings === false && !Object.prototype.hasOwnProperty.call(settings, 'mbRingsP2')) {
                 defaultmapsettings.mbRingsP2 = false;
             }
-            /* the Lab experiment "Frame time in the FPS counter" became the stats option
-             * showStatsFrameTime: a switch left on in Lab comes along once */
-            var _lmLabS = null;
-            try {
-                _lmLabS = JSON.parse(window.localStorage.getItem('lmLab') || 'null');
-                if (!(_lmLabS && _lmLabS.on && typeof _lmLabS.on === 'object' && Object.prototype.hasOwnProperty.call(_lmLabS.on, 'frameTime'))) _lmLabS = null;
-                else if (_lmLabS.on.frameTime === true && !(settings && Object.prototype.hasOwnProperty.call(settings, 'showStatsFrameTime'))) defaultmapsettings.showStatsFrameTime = true;
-            } catch (eLab) { _lmLabS = null; }
+            /* the removed Lab's experiment "Frame time in the FPS counter" became the stats option
+             * showStatsFrameTime: a switch left on there comes along once, then the Lab's key
+             * (lmLab) goes; a broken one goes too */
+            var _lmLabRaw = null;
+            try { _lmLabRaw = window.localStorage.getItem('lmLab'); } catch (eLab) { }
+            if (_lmLabRaw !== null) {
+                try {
+                    var _lmLabS = JSON.parse(_lmLabRaw);
+                    if (_lmLabS && _lmLabS.on && typeof _lmLabS.on === 'object' && _lmLabS.on.frameTime === true && !(settings && Object.prototype.hasOwnProperty.call(settings, 'showStatsFrameTime'))) defaultmapsettings.showStatsFrameTime = true;
+                } catch (eLab1) { }
+            }
             /* the Tools tab button "Show Timer Calc." (localStorage TIMEcalBtn) became the stats option
              * showStopwatch: a stopwatch left shown comes along once */
             var _lmOldTimer = null;
@@ -25610,12 +25612,11 @@ function thelegendmodproject() {
             /* the loaded values are the ones later changes are compared with (settingsChange) */
             _lmSettingsSeen = null;
             lmSettingsCommit(lmSettingsUserView());
-            /* saved first, then taken out of the Lab switches (a full storage keeps both as they were) */
-            if (_lmLabS) {
+            /* saved first, then the Lab's key removed */
+            if (_lmLabRaw !== null) {
                 try {
                     if (defaultmapsettings.showStatsFrameTime) this.saveSettings(defaultmapsettings, 'ogarioSettings');
-                    delete _lmLabS.on.frameTime;
-                    window.localStorage.setItem('lmLab', JSON.stringify(_lmLabS));
+                    window.localStorage.removeItem('lmLab');
                 } catch (eLab2) { }
             }
             /* the same for the old stopwatch key */
@@ -89451,21 +89452,15 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading accessibility script:', e);
     }
-    /* Plugin manager (runs only the plugins the player turned on) and the Lab (every
-     * experiment off until turned on) */
+    /* Plugin manager (runs only the plugins the player turned on) */
     try {
         var pluginsScript = document.createElement('script');
         pluginsScript.type = 'text/javascript';
         pluginsScript.src = 'https://www.legendmod.ml/ogario/modules/plugins.js?v=' + (window.OgVer || '');
         pluginsScript.charset = 'utf-8';
         document.body.appendChild(pluginsScript);
-        var labScript = document.createElement('script');
-        labScript.type = 'text/javascript';
-        labScript.src = 'https://www.legendmod.ml/ogario/modules/lab.js?v=' + (window.OgVer || '');
-        labScript.charset = 'utf-8';
-        document.body.appendChild(labScript);
     } catch (e) {
-        console.warn('[LM] Error loading plugins / lab script:', e);
+        console.warn('[LM] Error loading plugins script:', e);
     }
     /* Custom macros: each module loads the first time it is used.
      * lmMacroEditor('open'[, slot]) and ('run', slot) for the
