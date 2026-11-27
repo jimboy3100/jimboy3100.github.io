@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "WebGLによるGPUでのセル描画（初期設定でオン）",
 "site.features.wasmAccelerationNew": "WASMによる高速化 <span class=\"badge badge-new\">新機能</span>",
 "site.features.performanceModeSwitchFor": "低スペックPCやスマホ向けのパフォーマンスモード切り替え",
-"site.features.optionalFpsLimitAnd": "FPS上限の設定と、メニュー表示中の25 FPS制限（任意、バッテリー節約）",
+"site.features.optionalFpsLimitAnd": "FPS上限の設定（任意、バッテリー節約）",
 "site.features.autoHideFoodOption": "エサの自動非表示オプション",
 "site.features.multiServerSupportExclusive": "複数サーバー対応",
 "site.features.theOnlyModThat": "複数のゲームサーバーで使えます。",

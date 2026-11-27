@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "WebGL GPU hücre işleme, varsayılan olarak açık",
 "site.features.wasmAccelerationNew": "WASM hızlandırma <span class=\"badge badge-new\">Yeni</span>",
 "site.features.performanceModeSwitchFor": "Zayıf PC'ler ve telefonlar için performans modu anahtarı",
-"site.features.optionalFpsLimitAnd": "İsteğe bağlı FPS sınırı ve menü açıkken 25 FPS (pil tasarrufu)",
+"site.features.optionalFpsLimitAnd": "İsteğe bağlı FPS sınırı (pil tasarrufu)",
 "site.features.autoHideFoodOption": "Yemi otomatik gizleme seçeneği",
 "site.features.multiServerSupportExclusive": "Çoklu Sunucu Desteği",
 "site.features.theOnlyModThat": "Birden çok oyun sunucusunda çalışır.",

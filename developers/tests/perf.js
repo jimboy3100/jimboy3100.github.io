@@ -436,6 +436,15 @@ lp = loop({ fpsLimit: 0 });
 let offDrawn = 0; lp.dr.renderFrame = () => { offDrawn++; };
 for (let i = 0; i < 5; i++) lp.tick(16.7);
 check('render loop with everything off: draws, no hook, nothing kept', offDrawn === 5 && lp.ctx._lmPerfFrame == null && lp.ctx.LMPerf.events().length === 0);
+/* the removed 25 FPS menu cap: an old saved menuFpsCap does not slow the menu (no limit set: every
+ * refresh drawn; limit 60: about 60 FPS, not 25) */
+for (const lim of [0, 60]) {
+    lp = loop({ fpsLimit: lim, menuFpsCap: true });
+    lp.ctx.LM.play = false; lp.overlays.style.display = '';
+    let menuDrawn = 0; lp.dr.renderFrame = () => { menuDrawn++; };
+    for (let i = 0; i < 120; i++) lp.tick(1000 / 120);
+    check('menu open, not playing, old menuFpsCap saved, FPS limit ' + lim + ': no 25 FPS cap', lim ? (menuDrawn >= 55 && menuDrawn <= 62) : menuDrawn === 120);
+}
 /* freeze detector: host only, a packet gap event, latches reset on a new connection */
 lp = loop({ fpsLimit: 0 });
 lp.ctx.LMPerf.keepRecording(true);

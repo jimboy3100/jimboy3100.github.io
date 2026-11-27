@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "عرض الخلايا عبر WebGL على معالج الرسوميات، مفعّل افتراضيًا",
 "site.features.wasmAccelerationNew": "تسريع WASM <span class=\"badge badge-new\">جديد</span>",
 "site.features.performanceModeSwitchFor": "مفتاح وضع الأداء للحواسيب والهواتف الضعيفة",
-"site.features.optionalFpsLimitAnd": "سقف اختياري للـ FPS و25 FPS أثناء فتح القائمة (يوفّر البطارية)",
+"site.features.optionalFpsLimitAnd": "سقف اختياري للـ FPS (يوفّر البطارية)",
 "site.features.autoHideFoodOption": "خيار الإخفاء التلقائي للطعام",
 "site.features.multiServerSupportExclusive": "دعم عدة خوادم",
 "site.features.theOnlyModThat": "يعمل على عدة خوادم لعب.",

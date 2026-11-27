@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "Rekam replay (memakai memori)",
 "settings.glAntialias": "Anti-aliasing (tepi lebih halus, setelah muat ulang)",
 "settings.performanceMode": "Mode performa (PC/HP lemah)",
-"settings.fpsLimit": "Batas FPS (0 = tanpa batas; 25 FPS di menu; hemat baterai)",
+"settings.fpsLimit": "Batas FPS (0 = tanpa batas; hemat baterai)",
 "settings.adaptivePerf": "Mode performa: otomatis (efek dikurangi hanya saat FPS rendah)",
 "settings.lmPerfDiag": "Diagnostik performa",
 "settings.hk-perfDiag": "Tampilkan / sembunyikan diagnostik performa",

@@ -83879,14 +83879,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             /* Optional FPS limit (setting "FPS limit", 0 = off): skip this display refresh
              * when the previous frame was drawn too recently. Camera and zoom use the real
-             * frame time, so movement speed does not change. With a limit, the menu shown
-             * while not playing draws at most 25 FPS, like agar.io's own menu (this was the
-             * separate "25 FPS while the menu is open" switch). */
+             * frame time, so movement speed does not change. */
             var _lmLim = +defaultmapsettings.fpsLimit;
-            if (_lmLim > 25 && !LM.play) {
-                var _lmOv = drawRender._lmOvEl || (drawRender._lmOvEl = document.getElementById('overlays'));
-                if (_lmOv && _lmOv.style.display !== 'none') _lmLim = 25;
-            }
             if (_lmLim > 0) {
                 var _lmNowF = performance.now();
                 var _lmIv = 1000 / _lmLim, _lmLast = drawRender._lmLastDrawAt;

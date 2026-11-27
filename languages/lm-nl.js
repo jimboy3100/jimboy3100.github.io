@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "Replays opnemen (gebruikt geheugen)",
 "settings.glAntialias": "Anti-aliasing (gladdere randen, na herladen)",
 "settings.performanceMode": "Prestatiemodus (zwakke pc's/telefoons)",
-"settings.fpsLimit": "FPS-limiet (0 = geen limiet; 25 FPS in het menu; spaart batterij)",
+"settings.fpsLimit": "FPS-limiet (0 = geen limiet; spaart batterij)",
 "settings.adaptivePerf": "Prestatiemodus: automatisch (alleen minder effecten bij lage FPS)",
 "settings.lmPerfDiag": "Prestatiediagnose",
 "settings.hk-perfDiag": "Prestatiediagnose tonen / verbergen",

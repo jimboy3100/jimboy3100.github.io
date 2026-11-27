@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "تسجيل الإعادات (يستهلك الذاكرة)",
 "settings.glAntialias": "تنعيم الحواف (حواف أنعم، بعد إعادة التحميل)",
 "settings.performanceMode": "وضع الأداء (الأجهزة والهواتف الضعيفة)",
-"settings.fpsLimit": "حد FPS (0 = بلا حد؛ 25 FPS في القائمة؛ يوفر البطارية)",
+"settings.fpsLimit": "حد FPS (0 = بلا حد؛ يوفر البطارية)",
 "settings.adaptivePerf": "وضع الأداء: تلقائي (تأثيرات أقل فقط عند انخفاض FPS)",
 "settings.lmPerfDiag": "تشخيص الأداء",
 "settings.hk-perfDiag": "إظهار / إخفاء تشخيص الأداء",

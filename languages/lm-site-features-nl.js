@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "WebGL GPU-rendering van cellen, standaard aan",
 "site.features.wasmAccelerationNew": "WASM-versnelling <span class=\"badge badge-new\">Nieuw</span>",
 "site.features.performanceModeSwitchFor": "Schakelaar voor prestatiemodus voor zwakke pc's en telefoons",
-"site.features.optionalFpsLimitAnd": "Optionele FPS-limiet en 25 FPS zolang het menu open is (spaart batterij)",
+"site.features.optionalFpsLimitAnd": "Optionele FPS-limiet (spaart batterij)",
 "site.features.autoHideFoodOption": "Optie om voedsel automatisch te verbergen",
 "site.features.multiServerSupportExclusive": "Ondersteuning voor meerdere servers",
 "site.features.theOnlyModThat": "Werkt op meerdere gameservers.",

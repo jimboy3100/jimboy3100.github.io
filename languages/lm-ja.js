@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "リプレイを録画（メモリを使用）",
 "settings.glAntialias": "アンチエイリアス（縁が滑らか、再読み込み後）",
 "settings.performanceMode": "パフォーマンスモード（低スペックPC/スマホ向け）",
-"settings.fpsLimit": "FPS上限（0 = 無制限、メニューでは25 FPS、バッテリー節約）",
+"settings.fpsLimit": "FPS上限（0 = 無制限、バッテリー節約）",
 "settings.adaptivePerf": "パフォーマンスモード：自動（FPSが低いときだけエフェクトを減らす）",
 "settings.lmPerfDiag": "パフォーマンス診断",
 "settings.hk-perfDiag": "パフォーマンス診断の表示 / 非表示",

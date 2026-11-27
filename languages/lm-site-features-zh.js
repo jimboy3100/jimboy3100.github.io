@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "WebGL GPU 細胞繪製，預設開啟",
 "site.features.wasmAccelerationNew": "WASM 加速 <span class=\"badge badge-new\">新功能</span>",
 "site.features.performanceModeSwitchFor": "適用於低效能電腦與手機的效能模式開關",
-"site.features.optionalFpsLimitAnd": "可選的 FPS 上限，以及開啟選單時降為 25 FPS（節省電量）",
+"site.features.optionalFpsLimitAnd": "可選的 FPS 上限（節省電量）",
 "site.features.autoHideFoodOption": "自動隱藏食物選項",
 "site.features.multiServerSupportExclusive": "多伺服器支援",
 "site.features.theOnlyModThat": "可在多個遊戲伺服器上使用。",

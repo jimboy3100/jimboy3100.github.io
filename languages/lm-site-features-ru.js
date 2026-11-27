@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "WebGL-рендеринг клеток на GPU, включён по умолчанию",
 "site.features.wasmAccelerationNew": "WASM-ускорение <span class=\"badge badge-new\">Новое</span>",
 "site.features.performanceModeSwitchFor": "Переключатель режима производительности для слабых ПК и телефонов",
-"site.features.optionalFpsLimitAnd": "Ограничение FPS по желанию и 25 FPS, пока открыто меню (экономит батарею)",
+"site.features.optionalFpsLimitAnd": "Ограничение FPS по желанию (экономит батарею)",
 "site.features.autoHideFoodOption": "Опция автоскрытия еды",
 "site.features.multiServerSupportExclusive": "Поддержка нескольких серверов",
 "site.features.theOnlyModThat": "Работает на нескольких игровых серверах.",

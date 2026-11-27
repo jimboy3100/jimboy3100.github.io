@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "Καταγραφή replays (χρησιμοποιεί μνήμη)",
 "settings.glAntialias": "Anti-aliasing (πιο ομαλές άκρες, μετά την επαναφόρτωση)",
 "settings.performanceMode": "Λειτουργία απόδοσης (αδύναμα PC/κινητά)",
-"settings.fpsLimit": "Όριο FPS (0 = χωρίς όριο· 25 FPS στο μενού· εξοικονομεί μπαταρία)",
+"settings.fpsLimit": "Όριο FPS (0 = χωρίς όριο· εξοικονομεί μπαταρία)",
 "settings.adaptivePerf": "Λειτουργία απόδοσης: αυτόματη (λιγότερα εφέ μόνο όσο τα FPS είναι χαμηλά)",
 "settings.lmPerfDiag": "Διαγνωστικά απόδοσης",
 "settings.hk-perfDiag": "Εμφάνιση / απόκρυψη διαγνωστικών απόδοσης",

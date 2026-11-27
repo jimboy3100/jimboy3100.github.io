@@ -1477,7 +1477,7 @@
 
     function menuOpen() {
         var ov = fr.overlays && fr.overlays.isConnected ? fr.overlays : (fr.overlays = document.getElementById('overlays'));
-        /* the inline style only, as the menu FPS cap reads it: no layout work per frame */
+        /* the inline style only: no layout work per frame */
         return !!(ov && ov.style.display !== 'none');
     }
 

@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "Replays aufnehmen (braucht Speicher)",
 "settings.glAntialias": "Kantenglättung (weichere Kanten, nach Neuladen)",
 "settings.performanceMode": "Leistungsmodus (schwache PCs/Handys)",
-"settings.fpsLimit": "FPS-Limit (0 = kein Limit; 25 FPS im Menü; spart Akku)",
+"settings.fpsLimit": "FPS-Limit (0 = kein Limit; spart Akku)",
 "settings.adaptivePerf": "Leistungsmodus: automatisch (weniger Effekte nur, solange die FPS niedrig sind)",
 "settings.lmPerfDiag": "Leistungsdiagnose",
 "settings.hk-perfDiag": "Leistungsdiagnose ein-/ausblenden",

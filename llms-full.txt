@@ -170,7 +170,7 @@ Record and replay game sessions. Features:
 ### 7. Performance and Rendering
 - **WebGL2 acceleration**: Enabled by default with automatic Canvas2D fallback when unsupported or visually ambiguous
 - **High DPI rendering**: Optional crisp rendering on high-density screens
-- **FPS cap**: Limit frames per second (0-240 in steps of 10) to reduce heat/battery; while a cap is set, the menu (not playing) draws at 25 FPS
+- **FPS cap**: Limit frames per second (0-240 in steps of 10) to reduce heat/battery
 - **Performance mode**: Single switch that disables costly effects for weak PCs and phones
 - **Performance mode automatic** (`adaptivePerf`): Monitors real frame times. When FPS stays below 60 (or the FPS cap / screen refresh rate when lower), automatically disables effects in 2 levels:
   - Level 1: Decorative effects off (suckAnimation, eatPulse, borderGlow, animatedRainbowColor, showBgSectors, hudBlur)

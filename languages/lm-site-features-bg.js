@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "WebGL рендериране на клетките с GPU, включено по подразбиране",
 "site.features.wasmAccelerationNew": "WASM ускорение <span class=\"badge badge-new\">Ново</span>",
 "site.features.performanceModeSwitchFor": "Превключвател за режим на производителност за слаби компютри и телефони",
-"site.features.optionalFpsLimitAnd": "Незадължително ограничение на FPS и 25 FPS, докато менюто е отворено (пести батерия)",
+"site.features.optionalFpsLimitAnd": "Незадължително ограничение на FPS (пести батерия)",
 "site.features.autoHideFoodOption": "Опция за автоматично скриване на храната",
 "site.features.multiServerSupportExclusive": "Поддръжка на няколко сървъра",
 "site.features.theOnlyModThat": "Работи на няколко игрови сървъра.",

@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "Renderização das células na GPU com WebGL, ativada por padrão",
 "site.features.wasmAccelerationNew": "Aceleração WASM <span class=\"badge badge-new\">Novo</span>",
 "site.features.performanceModeSwitchFor": "Modo desempenho para PCs fracos e celulares",
-"site.features.optionalFpsLimitAnd": "Limite de FPS opcional e 25 FPS com o menu aberto (economiza bateria)",
+"site.features.optionalFpsLimitAnd": "Limite de FPS opcional (economiza bateria)",
 "site.features.autoHideFoodOption": "Opção de ocultar comida automaticamente",
 "site.features.multiServerSupportExclusive": "Suporte a vários servidores",
 "site.features.theOnlyModThat": "Funciona em vários servidores de jogo.",

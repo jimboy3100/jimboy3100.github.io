@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "Enregistrer les replays (utilise de la mémoire)",
 "settings.glAntialias": "Anticrénelage (bords plus lisses, après rechargement)",
 "settings.performanceMode": "Mode performance (PC/téléphones faibles)",
-"settings.fpsLimit": "Limite de FPS (0 = sans limite ; 25 FPS dans le menu ; économise la batterie)",
+"settings.fpsLimit": "Limite de FPS (0 = sans limite ; économise la batterie)",
 "settings.adaptivePerf": "Mode performance : automatique (moins d'effets seulement quand les FPS sont bas)",
 "settings.lmPerfDiag": "Diagnostic des performances",
 "settings.hk-perfDiag": "Afficher / masquer le diagnostic des performances",

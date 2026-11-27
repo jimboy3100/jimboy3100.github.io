@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "Απόδοση κυττάρων με WebGL στην GPU, ενεργή από προεπιλογή",
 "site.features.wasmAccelerationNew": "Επιτάχυνση WASM <span class=\"badge badge-new\">Νέο</span>",
 "site.features.performanceModeSwitchFor": "Διακόπτης Performance mode για αδύναμους υπολογιστές και κινητά",
-"site.features.optionalFpsLimitAnd": "Προαιρετικό όριο FPS και 25 FPS όσο είναι ανοιχτό το μενού (εξοικονομεί μπαταρία)",
+"site.features.optionalFpsLimitAnd": "Προαιρετικό όριο FPS (εξοικονομεί μπαταρία)",
 "site.features.autoHideFoodOption": "Επιλογή αυτόματης απόκρυψης τροφής",
 "site.features.multiServerSupportExclusive": "Υποστήριξη πολλών servers",
 "site.features.theOnlyModThat": "Λειτουργεί σε πολλούς game servers.",

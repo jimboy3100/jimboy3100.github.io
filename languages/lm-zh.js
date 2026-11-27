@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "錄製重播（佔用記憶體）",
 "settings.glAntialias": "抗鋸齒（邊緣更平滑，重新載入後生效）",
 "settings.performanceMode": "效能模式（低階電腦/手機）",
-"settings.fpsLimit": "FPS 上限（0 = 不限制；選單中 25 FPS；省電）",
+"settings.fpsLimit": "FPS 上限（0 = 不限制；省電）",
 "settings.adaptivePerf": "效能模式：自動（僅在 FPS 低時減少特效）",
 "settings.lmPerfDiag": "效能診斷",
 "settings.hk-perfDiag": "顯示 / 隱藏效能診斷",

@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "Tekrarları kaydet (bellek kullanır)",
 "settings.glAntialias": "Kenar yumuşatma (daha düzgün kenarlar, yeniden yüklemeden sonra)",
 "settings.performanceMode": "Performans modu (zayıf PC/telefonlar)",
-"settings.fpsLimit": "FPS sınırı (0 = sınırsız; menüde 25 FPS; pil tasarrufu)",
+"settings.fpsLimit": "FPS sınırı (0 = sınırsız; pil tasarrufu)",
 "settings.adaptivePerf": "Performans modu: otomatik (yalnızca FPS düşükken daha az efekt)",
 "settings.lmPerfDiag": "Performans tanılama",
 "settings.hk-perfDiag": "Performans tanılamayı göster / gizle",

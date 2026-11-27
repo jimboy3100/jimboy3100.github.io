@@ -25,7 +25,7 @@
 "site.features.webglGpuCellRendering": "Rendering sel dengan GPU lewat WebGL, aktif secara default",
 "site.features.wasmAccelerationNew": "Akselerasi WASM <span class=\"badge badge-new\">Baru</span>",
 "site.features.performanceModeSwitchFor": "Switch mode performa untuk PC dan HP lemah",
-"site.features.optionalFpsLimitAnd": "Batas FPS opsional dan 25 FPS saat menu terbuka (hemat baterai)",
+"site.features.optionalFpsLimitAnd": "Batas FPS opsional (hemat baterai)",
 "site.features.autoHideFoodOption": "Opsi sembunyikan makanan otomatis",
 "site.features.multiServerSupportExclusive": "Dukungan Banyak Server",
 "site.features.theOnlyModThat": "Bisa dipakai di banyak server game.",

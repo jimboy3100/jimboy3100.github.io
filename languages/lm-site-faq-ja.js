@@ -26,7 +26,7 @@
 "site.faq.whyIsLegendMod": "agar.ioのアップデート後にLegend Modが動かないのはなぜですか？",
 "site.faq.whenAgarIoUpdates": "agar.ioがクライアントを更新すると、Legend Modも互換性のためのアップデートが必要になることがあります。次の方法を試してください：1）<code>chrome://extensions</code>で拡張機能の更新を確認する。2）ブラウザのキャッシュを消去する（Ctrl+Shift+Delete）。3）拡張機能を一度無効にしてから再度有効にする。4）Chromeウェブストアから再インストールする。アップデートは通常24時間以内に公開されます。",
 "site.faq.howDoIFix": "agar.ioのラグはどうすれば直りますか？",
-"site.faq.legendModHasBuilt": "Legend Modにはラグ対策機能が組み込まれています：1）設定で「パフォーマンスモード（低スペックPC/スマホ向け）」をオンにするか、設定の検索欄の横にある<strong>省電力</strong>プリセットを選ぶ。2）アニメーションスキンと動画スキンを無効にする。3）FPS上限を設定して発熱とバッテリー消費を抑える（メニューは25 FPSになります）。4）エサの表示/非表示のショートカットキーや、エサの自動非表示オプションでエサを隠す。5）WASMによる高速化とWebGL描画は初期設定でオンになっています。6）ほかのブラウザタブを閉じる。7）Wi-Fiではなく有線のインターネット接続を使う。",
+"site.faq.legendModHasBuilt": "Legend Modにはラグ対策機能が組み込まれています：1）設定で「パフォーマンスモード（低スペックPC/スマホ向け）」をオンにするか、設定の検索欄の横にある<strong>省電力</strong>プリセットを選ぶ。2）アニメーションスキンと動画スキンを無効にする。3）FPS上限を設定して発熱とバッテリー消費を抑える。4）エサの表示/非表示のショートカットキーや、エサの自動非表示オプションでエサを隠す。5）WASMによる高速化とWebGL描画は初期設定でオンになっています。6）ほかのブラウザタブを閉じる。7）Wi-Fiではなく有線のインターネット接続を使う。",
 "site.faq.servers": "🌐 サーバー",
 "site.faq.doesLegendModWork": "Legend ModはSigmallyやSenpa.ioでも使えますか？",
 "site.faq.yesLegendModIs4": "はい！Legend Modは、公式agar.io、Sigmally、Senpa.ioという<strong>複数のゲームサーバー</strong>に対応しています。すべてのマクロ、スキン、機能が対応サーバーのどこでも使えます。<a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>では、1アリーナ最大3840人が遊べるLegend Mod独自のプライベートサーバー<strong>Expanding Land</strong>でもプレイできます。",

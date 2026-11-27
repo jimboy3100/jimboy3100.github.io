@@ -2925,7 +2925,7 @@
 "settings.recordReplays": "Nagrywaj powtórki (zużywa pamięć)",
 "settings.glAntialias": "Antyaliasing (gładsze krawędzie, po przeładowaniu)",
 "settings.performanceMode": "Tryb wydajności (słabe PC/telefony)",
-"settings.fpsLimit": "Limit FPS (0 = bez limitu; 25 FPS w menu; oszczędza baterię)",
+"settings.fpsLimit": "Limit FPS (0 = bez limitu; oszczędza baterię)",
 "settings.adaptivePerf": "Tryb wydajności: automatyczny (mniej efektów tylko, gdy FPS jest niskie)",
 "settings.lmPerfDiag": "Diagnostyka wydajności",
 "settings.hk-perfDiag": "Pokaż / ukryj diagnostykę wydajności",

@@ -11,7 +11,7 @@
   ['adaptivePerf', 'performanceMode'].forEach(function (k) {
     if (!document.getElementById(k)) fail.push('option ' + k + ' missing');
   });
-  /* merged: no target, message or resolution option, no menu FPS cap switch (part of FPS limit) */
+  /* merged: no target, message or resolution option; the 25 FPS menu cap switch is removed */
   ['adaptivePerfToasts', 'adaptivePerfRes', 'adaptivePerfTarget-slider', 'menuFpsCap'].forEach(function (k) {
     if (document.getElementById(k)) fail.push('merged option ' + k + ' still in the menu');
   });

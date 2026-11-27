@@ -46,7 +46,7 @@ check('every value a slider can show is kept exactly (no float drift: 0.35, -0.1
 check('macroFeeding -100 -> 1 (range)', V('macroFeeding', -100) === 1);
 check('profileNumber 1000000 -> 54', V('profileNumber', 1000000) === 54);
 check('fpsLimit -1 -> 0 (off), 0 stays 0', V('fpsLimit', -1) === 0 && V('fpsLimit', 0) === 0);
-/* removed or merged settings (mass-loss alert, HUD helper arrows and cell panel, the menu FPS cap in the FPS limit, the
+/* removed or merged settings (mass-loss alert, HUD helper arrows and cell panel, the removed 25 FPS menu cap, the
  * automatic Performance mode's own target / message / resolution options, the size symbols in Relative mass) */
 const GONE = ['menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'a11yIndicators'];
 check('removed settings are no settings any more (a saved value is ignored)', GONE.every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined && V(k, 30) === undefined));
