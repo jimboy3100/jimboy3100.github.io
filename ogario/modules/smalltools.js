@@ -792,13 +792,31 @@
             });
             mo.observe(D.body, { childList: true });
         } catch (e) { }
+        /* the menu opening (a death on any server, a lost connection) shows the HUD again, as Esc
+         * does: under the hide it opened invisible and clicks and taps went to the game. Started
+         * with the menu open (a capture of the game behind it), the menu stays hidden. */
+        var ov = D.getElementById('overlays'), ovMo = null;
+        if (ov) {
+            var ovOpen = function () { return W.getComputedStyle(ov).display !== 'none'; };
+            var ovWas = ovOpen(), ovDisp = ov.style.display;
+            try {
+                ovMo = new MutationObserver(function () {
+                    if (!shot || ov.style.display === ovDisp) return;
+                    ovDisp = ov.style.display;
+                    var now = ovOpen();
+                    if (now && !ovWas) { shotOff(); return; }
+                    ovWas = now;
+                });
+                ovMo.observe(ov, { attributes: true, attributeFilter: ['style'] });
+            } catch (e) { }
+        }
         if (noMotion()) chip.style.transition = 'none';
         var idleT = 0;
         var wake = function () { chip.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(function () { chip.classList.add('idle'); }, 2500); };
         W.addEventListener('mousemove', wake, true);
         W.addEventListener('touchstart', wake, { capture: true, passive: true });
         W.addEventListener('keydown', shotKey, true);
-        shot = { h: h, chip: chip, mo: mo, wake: wake, idleT: function () { clearTimeout(idleT); } };
+        shot = { h: h, chip: chip, mo: mo, ovMo: ovMo, wake: wake, idleT: function () { clearTimeout(idleT); } };
         wake();
     }
     function shotOff() {
@@ -807,6 +825,7 @@
         shot = null;
         s.h.hidden.forEach(function (n) { n.classList.remove('lm-shot-hide'); });
         if (s.mo) s.mo.disconnect();
+        if (s.ovMo) s.ovMo.disconnect();
         s.idleT();
         W.removeEventListener('mousemove', s.wake, true);
         W.removeEventListener('touchstart', s.wake, { capture: true, passive: true });
