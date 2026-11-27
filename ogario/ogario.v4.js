@@ -83865,7 +83865,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 'p': 'F1', 'q': 'F2', 'r': 'F3', 's': 'F4', 't': 'F5', 'u': 'F6', 'v': 'F7', 'w': 'F8',
                 'x': 'F9', 'y': 'F10', 'z': 'F11', '{': 'F12',
                 '\u00BC': ',', '\u00BE': '.', '\u00BF': '/', '\u00DB': '[', '\u00DC': '\\', '\u00DD': ']', '\u00DE': "'",
-                '!': 'PGUP', '"': 'PGDN', '#': 'END', '$': 'HOME'
+                '!': 'PGUP', '"': 'PGDN', '#': 'END', '$': 'HOME',
+                '\u0013': 'PAUSE', '\u0014': 'CAPSLOCK', '\u0090': 'NUMLOCK', '\u0091': 'SCROLLLOCK',
+                '|': 'F13', '}': 'F14', '~': 'F15', '\u007F': 'F16', '\u0080': 'F17', '\u0081': 'F18',
+                '\u0082': 'F19', '\u0083': 'F20', '\u0084': 'F21', '\u0085': 'F22', '\u0086': 'F23', '\u0087': 'F24'
             };
             var rename = function (name) {
                 var last = name.charAt(name.length - 1);
@@ -84180,6 +84183,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 case 93:
                     normalKey = 'MENU';
                     break;
+                /* these came through String.fromCharCode as invisible control characters: the
+                 * field looked empty while the key was bound */
+                case 19:
+                    normalKey = 'PAUSE';
+                    break;
+                case 20:
+                    normalKey = 'CAPSLOCK';
+                    break;
+                case 144:
+                    normalKey = 'NUMLOCK';
+                    break;
+                case 145:
+                    normalKey = 'SCROLLLOCK';
+                    break;
                 case 61:
                 case 187:
                     /* Shift+= types '+' (US layout): name it '+', the default quit game key,
@@ -84242,7 +84259,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 default:
                     if (key.keyCode >= 96 && key.keyCode <= 105) {
                         normalKey = 'NUM' + (key.keyCode - 96);
-                    } else if (key.keyCode >= 112 && key.keyCode <= 123) {
+                    } else if (key.keyCode >= 112 && key.keyCode <= 135) {
+                        /* F13-F24 (extra keys of gaming keyboards) were '|', '}', '~'... */
                         normalKey = 'F' + (key.keyCode - 111);
                     } else {
                         normalKey = String.fromCharCode(key.keyCode);
