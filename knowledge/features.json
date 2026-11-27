@@ -65,7 +65,7 @@
     {
       "id": "chat",
       "name": "Chat system",
-      "description": "In-game text chat with image/video sharing, emoticons, auto-translation, universal cross-server chat, mention notifications, coloured nicks, word filter, player ID display. 50 customizable chat command slots. Voice chat (push-to-talk). Team pings (Help, Danger, Go here, Virus). Chat message and command sounds with their own volumes (Settings > Sounds).",
+      "description": "In-game text chat with image/video sharing, emoticons, auto-translation, universal cross-server chat, coloured nicks, word filter, player ID display. 50 customizable chat command slots. Voice chat (push-to-talk). Team pings (Help, Danger, Go here, Virus). Chat message and command sounds with their own volumes (Settings > Sounds).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

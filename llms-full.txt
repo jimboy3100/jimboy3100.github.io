@@ -208,7 +208,6 @@ In-game text chat with rich features:
 - **Emoticons**: Built-in emoticon support
 - **Chat translation**: Auto-translate incoming messages
 - **AgarTool team**: players of the AgarTool extension with your clan tag on the same agar.io server join your team list, minimap and team chat (off by default)
-- **Mention notifications**: Desktop notifications when mentioned while tab is hidden
 - **Chat sounds**: Configurable notification sounds for messages and commands
 - **Chat history**: Up/Down arrow recalls last 20 sent messages
 - **Chat popups limited**: Maximum 6 chat popups on screen (prevents spam)

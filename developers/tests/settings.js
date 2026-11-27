@@ -315,16 +315,6 @@ app2.setSettings('glAntialias', false); app2.setSettings('glAntialias', true);
 check('anti-aliasing off then on again: "reload" once (the context has it on), not twice', J(sToasts) === J([['info', 'game1.perf.aaReload']]));
 check('anti-aliasing: a reload is pending while it differs from the context, or before any context', typeof ctx.lmGlAAPending === 'function' && ctx.lmGlAAPending() === false && (S.glAntialias = false, ctx.lmGlAAPending()) && (ctx.drawRender = { gl: null }, ctx.lmGlAAPending()));
 S.glAntialias = true;
-/* Mention notifications: the browser is asked only right after the player's click or key */
-let asked = 0, rejectHandled = false;
-ctx.Notification = { permission: 'default', requestPermission() { asked++; return { then(ok, bad) { rejectHandled = typeof bad === 'function'; ok('denied'); } }; } };
-ctx.navigator = { userActivation: { isActive: false } };
-S.mentionNotify = false; sToasts.length = 0;
-app2.setSettings('mentionNotify', true);
-check('mention notifications switched on without a click (profile auto rule, script): the browser is not asked', asked === 0 && sToasts.length === 0);
-S.mentionNotify = false; ctx.navigator.userActivation.isActive = true;
-app2.setSettings('mentionNotify', true);
-check('switched on by the player: asked once, a refusal is told, a failed request is handled', asked === 1 && rejectHandled && J(sToasts) === J([['warning', 'game1.notif.blocked']]));
 /* Auto hide food: only the food it hid comes back; food the player hid stays hidden */
 ctx.legendmod = ctx.ogario = { showFood: true, _lmFoodAutoHid: false, play: true };
 const F = vm.runInContext('({\n' + cut('        setShowFood() {', '        /* Show/hide HUD (Alt+H)') + cut('        onPlay() {', '        join() {') + '\n})', ctx);
