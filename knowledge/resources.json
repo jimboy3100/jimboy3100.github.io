@@ -124,17 +124,17 @@
     {
       "name": "Skin Checker",
       "description": "Tool to test whether a skin URL loads correctly before using it in-game.",
-      "url": "https://www.legendmod.ml/skins/checker.html"
+      "url": "https://www.legendmod.ml/skins/skinchecker.html"
     },
     {
       "name": "Skin Rotator",
       "description": "Automatically cycle through a set of skins during gameplay.",
-      "url": "https://www.legendmod.ml/skins/rotator.html"
+      "url": "https://www.legendmod.ml/skinrotator.html"
     },
     {
       "name": "Nicknames",
       "description": "Browse and copy popular nicknames and clan tags for agar.io-style games.",
-      "url": "https://www.legendmod.ml/nicknames/"
+      "url": "https://www.legendmod.ml/nicks/"
     },
     {
       "name": "Compare page",
