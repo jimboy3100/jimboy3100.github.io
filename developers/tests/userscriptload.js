@@ -256,8 +256,7 @@ const rpt = (name, v, l) => { if (report) console.log('  ' + name + ': ' + fmt(v
   }
   /* the mod's "can be updated" notice (LMexpress.js startLM) compares the loader's version number by number:
    * this userscript's 1.9 is not an old version */
-  const cmp = /function _lmxCompareVersions\(a, b\) \{[\s\S]*??
-\}/.exec(fs.readFileSync(path.join(repo, 'LMexpress', 'LMexpress.js'), 'utf8'));
+  const cmp = /function _lmxCompareVersions\(a, b\) \{[\s\S]*?\r?\n\}/.exec(fs.readFileSync(path.join(repo, 'LMexpress', 'LMexpress.js'), 'utf8'));
   check('LMexpress.js: _lmxCompareVersions found', !!cmp);
   if (cmp) {
     const c = new Function(cmp[0] + '; return _lmxCompareVersions;')(), f = (a, b) => c(a, b) < 0;

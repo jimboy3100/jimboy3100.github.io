@@ -1,7 +1,8 @@
 /**************
  * Legend express v1.96 by Jimboy3100   email:jimboy3100@hotmail.com
  *************/
-var semimodVersion = "30"; // the version 1.1-> 1.11
+/* the footer shows the loader version as it is (1.9), no old "30" suffix */
+var semimodVersion = "";
 
 /* Texts shown to the player come from the language packs (developers/i18n/src/lmx.json, keys "lmx.ex.*"):
  * _lmxT gives the text in the chosen language, _lmxE the same escaped for HTML and attributes. */
@@ -7506,14 +7507,14 @@ function initializeLM(modVersion) {
     $("#menu-footer").text("");
     //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
     //$("#LEGENDAds4").load("https://www.legendmod.ml/banners/bannerLMdevs"); //
-    $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.website') + '" data-placement="left">v' + modVersion + semimodVersion +
+    $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" onclick="ga(\'send\', \'event\', \'Link\', \'click\', \'legendWebsite\');" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.website') + '" data-placement="left">v' + modVersion +
         '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.improvePerformance') + '" data-placement="top" style ="font-size: 13px"; target="_blank">' + _lmxE('pack.moreFps') + '</a></span>' +
         '<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">☕︎</a>');
     /* Build number next to the release label (bug reports can name it), plus a one-time
      * "What's new" toast when the build changes for someone who played before. */
     if (window.OgVer && !$('#menu-footer .lm-ogver').length) {
         $('#menu-footer a[href="https://jimboy3100.github.io"]').first()
-            .append('<small class="lm-ogver"> · ' + String(window.OgVer) + '</small>');
+            .append('<small class="lm-ogver"> · ' + (typeof window.OgVer === 'number' ? window.OgVer.toFixed(3) : String(window.OgVer)) + '</small>');
         try {
             var _lmSeenVer = localStorage.getItem('lmLastSeenOgVer');
             if (_lmSeenVer && _lmSeenVer !== String(window.OgVer) && window.toastr) {
