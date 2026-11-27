@@ -21299,13 +21299,13 @@ var defaultmapsettings = {
     showStatsServerHz: true,
 
     blockPopups: false,
+    /* the Game Over card with everything known about the life that ended: the stats, who ate you,
+     * the mass graph and the last 20 s (ogario/modules/deathrecap.js). massGraph, showKiller and
+     * deathRecap were a switch per part; they are gone (saved values of them are skipped on load). */
     gameOverStats: false,
-    massGraph: false,             /* graph of your mass over the life on the Game Over card */
     personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */
     matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
     analytics: false,             /* record games for the Analytics window (ogario/modules/analytics.js; localStorage, capped) */
-    showKiller: false,            /* "Eaten by: nick (mass)" row on the Game Over card */
-    deathRecap: false,            /* Game Over card: the last 20 s as a few steps + mass sparkline (ogario/modules/deathrecap.js) */
     killFeed: false,              /* small fading list of your eats of player cells and your deaths, left of the leaderboard */
     massLossAlert: false,         /* a kill feed line when you lose massLossPct % of your mass within 2 s */
     massLossPct: 30,              /* mass-loss alert threshold in % (10-90) */
@@ -21525,13 +21525,13 @@ function lmFoldLegacySettings(s) {
     }
     return changed || JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]) !== was;
 }
-/* Who ate me: kept while anything shows it: the Game Over card's "Eaten by" (showKiller), the
- * match history, the death recap and the kill feed. One rule for the server's report (lmKiller)
+/* Who ate me: kept while anything shows it: the Game Over card ("Eaten by" and its death recap),
+ * the match history and the kill feed. One rule for the server's report (lmKiller)
  * and the one seen in the remove packets, and for the guard against my own multibox unit being
  * named, so no switch combination gets the killer from one and not the other. */
 function lmKillerWanted(s) {
     s = s || defaultmapsettings;
-    return !!(s && (s.showKiller || s.matchHistory || s.deathRecap || s.killFeed));
+    return !!(s && (s.gameOverStats || s.matchHistory || s.killFeed));
 }
 /* S5: one place announces gameplay setting changes. Every path that changes one (switch,
  * slider, text box, select, hotkey toggle, profile, preset, gamepad, import of a part) saves
@@ -25408,7 +25408,7 @@ function thelegendmodproject() {
                     case 'matchHistory':
                         _lmMatchHistoryButton();
                         break;
-                    case 'deathRecap':
+                    case 'gameOverStats':
                     case 'killFeed':
                     case 'massLossAlert':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
@@ -26778,7 +26778,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'massGraph', 'personalBests', 'showKiller', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'deathRecap', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'commandCentreBar', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26895,7 +26895,7 @@ function thelegendmodproject() {
                     if (window.LMDirector && typeof window.LMDirector.toggle === 'function') window.LMDirector.toggle();
                     else if (window.toastr) toastr.info(lmT('game1.set.directorLoading'));
                 });
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "massGraph", "showKiller", "hideEventBanner", "showTime", "showStopwatch", "deathRecap", "killFeed", "massLossAlert", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "hideEventBanner", "showTime", "showStopwatch", "killFeed", "massLossAlert", "analytics"], "statsGroup");
             /* Replays and history: the instant replay length slider is added below */
             this.addOptions(["recordReplays", "matchHistory", "personalBests"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
@@ -27002,8 +27002,6 @@ function thelegendmodproject() {
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass', 'massFormat'],
                     adaptivePerf: ['adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes'],
                     companionLive: ['companionChat'],
-                    /* parts of the Game Over card, which opens only with Game over stats on */
-                    gameOverStats: ['massGraph', 'showKiller', 'deathRecap'],
                     recordReplays: ['instantReplaySecs'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
                     massLossAlert: ['massLossPct']
@@ -48869,16 +48867,16 @@ function thelegendmodproject() {
                 { icon: '🦠', label: _lmTH('virusesEaten', ''),    value: (u.virusesEaten || 0).toLocaleString() }
             ];
 
-            /* optional: who ate the last cell (recorded in the eat loop, at most 15 s ago) */
+            /* who ate the last cell, when known (recorded in the eat loop, at most 15 s ago) */
             var _lmK = this._lmKiller;
-            if (defaultmapsettings.showKiller && _lmK && Date.now() - _lmK.at < 15000) {
+            if (_lmK && Date.now() - _lmK.at < 15000) {
                 var _lmKName = _lmK.virus ? _lmTH('game2.virus', '') : (_lmK.nick ? application.escapeHTML(_lmK.nick) : _lmTH('game2.unnamedCell', ''));
                 stats.unshift({ icon: '\ud83d\udde1\ufe0f', label: _lmTH('eatenBy', ''), value: _lmKName + (_lmK.virus ? '' : ' (' + fmtMass(_lmK.mass) + ')'), accent: true });
             }
             /* "Watch killer": only when the server sent the eating cell's id (lmKiller field 5) */
-            var _lmKWatch = defaultmapsettings.showKiller && _lmK && Date.now() - _lmK.at < 15000 && _lmK.cellId && !_lmK.virus;
-            /* optional mass graph of the life that just ended */
-            var _lmGraph = defaultmapsettings.massGraph && window.application && application._lmMassHist && application._lmMassHist.length >= 3 ? application._lmMassHist.slice() : null;
+            var _lmKWatch = _lmK && Date.now() - _lmK.at < 15000 && _lmK.cellId && !_lmK.virus;
+            /* the mass graph of the life that just ended, when it has enough points */
+            var _lmGraph = window.application && application._lmMassHist && application._lmMassHist.length >= 3 ? application._lmMassHist.slice() : null;
             /* Build HTML */
             var rows = '';
             for (var i = 0; i < stats.length; i++) {
@@ -48902,7 +48900,8 @@ function thelegendmodproject() {
                 '<div class="lm-go-card" style="' +
                 'background:' + pc + ';border:1px solid ' + pc2 + ';' +
                 'border-top:3px solid ' + mc + ';border-radius:var(--lm-radius,6px);' +
-                'box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow:hidden;">' +
+                /* never taller than the screen (a 915x412 phone): the card scrolls instead */
+                'box-shadow:0 8px 32px rgba(0,0,0,0.5);overflow-x:hidden;overflow-y:auto;max-height:calc(100vh - 8px);box-sizing:border-box;">' +
 
                 /* Header with close button */
                 '<div style="' +
@@ -48987,7 +48986,7 @@ function thelegendmodproject() {
                     '.lm-go-icon{font-size:14px;width:24px;text-align:center;flex-shrink:0}' +
                     /* i18n-ok: CSS */ '.lm-go-label{flex:1;font-size:11px;color:' + tc2 + ';padding-left:6px}' +
                     '.lm-go-value{font-size:13px;font-weight:700;text-align:right;min-width:60px}' +
-                    '@media(max-height:500px){.lm-go-extra{display:none}}';
+                    '@media(max-height:500px){.lm-go-extra{display:none}.lm-go-row{padding:2px 4px}}';
                 document.head.appendChild(style);
             }
 
@@ -48996,7 +48995,7 @@ function thelegendmodproject() {
             container.innerHTML = html;
             var modal = container.firstChild;
             document.body.appendChild(modal);
-            /* Death recap (option, ogario/modules/deathrecap.js): the last 20 s beside the card, or a one-time hint */
+            /* Death recap (ogario/modules/deathrecap.js): the last 20 s beside the card */
             try { if (window.LMDeathRecap) LMDeathRecap.card(modal, { mc: mc, pc: pc, pc2: pc2, tc: tc, tc2: tc2 }); } catch (e) { }
 
             if (_lmGraph) {
@@ -85319,7 +85318,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * reset the life start: time alive and the session time grew across lives */
             try { if (window.application && window.legendmod && !window.legendmod.play && !(+window._elDeathUiLockedUntil > Date.now())) window.application._lmLifeStartAt = 0; } catch (e0) { }
             try {
-                if (window.legendmod5 && window.legendmod5.massGraph && window.application && window.legendmod && window.legendmod.play && window.legendmod.playerMass) {
+                if (window.legendmod5 && window.legendmod5.gameOverStats && window.application && window.legendmod && window.legendmod.play && window.legendmod.playerMass) {
                     var _lmH = window.application._lmMassHist || (window.application._lmMassHist = []);
                     var _lmApp = window.application, _lmStr = _lmApp._lmMassStride || 1;
                     _lmApp._lmMassAcc = Math.max(_lmApp._lmMassAcc || 0, window.legendmod.playerMass);

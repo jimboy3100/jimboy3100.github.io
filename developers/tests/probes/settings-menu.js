@@ -81,7 +81,7 @@
     if (!t || t === 'undefined') fail.push('empty heading in .' + $(this).parent().attr('class'));
   });
   // dependency marks match the parent switches (nothing is changed here)
-  var deps = { showStats: 'showStatsMass', showMiniMap: 'showMiniMapGuides', showMass: 'hudRelativeMass', recordReplays: 'instantReplaySecs-slider', companionLive: 'companionChat', adaptivePerf: 'adaptivePerfToasts', gameOverStats: 'deathRecap' };
+  var deps = { showStats: 'showStatsMass', showMiniMap: 'showMiniMapGuides', showMass: 'hudRelativeMass', recordReplays: 'instantReplaySecs-slider', companionLive: 'companionChat', adaptivePerf: 'adaptivePerfToasts' };
   if (typeof application._lmDepRefresh !== 'function') fail.push('no dependency refresh');
   else {
     application._lmDepRefresh();
@@ -92,12 +92,9 @@
       if (needs !== !defaultmapsettings[p]) fail.push(deps[p] + ' mark does not match ' + p);
     });
     info.dimmed = $('#og-options .lm-dep-off').length;
-    // the Game Over card parts say they need Game over stats while it is off
+    // the Game Over card is one switch: no switch per part of it
     ['massGraph', 'showKiller', 'deathRecap'].forEach(function (k) {
-      var it = $('#' + k).closest('label');
-      if (!it.length) { fail.push('missing #' + k); return; }
-      var why = String(it.attr('data-lm-why') || '');
-      if (!defaultmapsettings.gameOverStats && why.indexOf($('<div>').html(application._lmMenuText('gameOverStats')).text().trim()) < 0) fail.push(k + ' does not say it needs Game over stats');
+      if ($('#' + k).length) fail.push('Game Over card part #' + k + ' has its own switch');
     });
   }
   // the Streamer preset and the Stream mode button say what they do (language packs)

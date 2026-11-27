@@ -37,7 +37,7 @@ const ctx = {
   LMEvents: { on(n, f) { (listeners[n] = listeners[n] || []).push(f); }, off(n, f) { listeners[n] = (listeners[n] || []).filter(x => x !== f); } }
 };
 ctx.window = ctx;
-ctx.legendmod5 = { deathRecap: false, killFeed: false, massLossAlert: false, massLossPct: 30, recordReplays: true };
+ctx.legendmod5 = { gameOverStats: false, killFeed: false, massLossAlert: false, massLossPct: 30, recordReplays: true };
 ctx.legendmod = { play: false, playerCells: [], cells: [], playerMass: 0, ws: 'wss://x' };
 vm.createContext(ctx);
 i18n(ctx);
@@ -140,7 +140,7 @@ check('unnamed and virus wording', P.stepText({ kind: 'death', nick: '', exact: 
 check('long nicks are cut', P.stepText({ kind: 'death', nick: 'x'.repeat(80), exact: true }) === T('eatenBy', ['x'.repeat(40)]));
 
 // --- live: options on, sampling, eat hooks, loss detection, recap
-ctx.legendmod5.deathRecap = true;
+ctx.legendmod5.gameOverStats = true;
 ctx.legendmod5.massLossAlert = true;
 D.sync();
 check('on: spawn/death listeners and flag', (listeners.spawn || []).length === 1 && (listeners.death || []).length === 1 && ctx._lmDROn === true);
@@ -214,26 +214,27 @@ check('far and small cells are not "near"', last.nick == null, last);
 }
 
 // --- off again: everything stops
-ctx.legendmod5.deathRecap = false; ctx.legendmod5.massLossAlert = false; D.sync();
+ctx.legendmod5.gameOverStats = false; ctx.legendmod5.massLossAlert = false; D.sync();
 check('off again: listeners removed, flag off', !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false);
 
 /* who ate me (ogario.v4.js lmKillerWanted): one rule for the server's report, the remove packets
- * and the guard against naming my own multibox unit; the death recap and the kill feed alone need
- * it too (before, the remove-packet killer and that guard ran only with Eaten by / Match history,
- * so with only the death recap on, my multibox unit could be named as my killer on Expanding Land) */
+ * and the guard against naming my own multibox unit; the Game Over card (which shows Eaten by and
+ * the death recap: one switch, no switch per part), the match history and the kill feed each need it */
 {
   const core = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
   const a = core.indexOf('\nfunction lmKillerWanted(');
   check('lmKillerWanted in the core', a >= 0);
   if (a >= 0) {
     const b = core.indexOf('\n}\n', a);
-    const kc = { defaultmapsettings: { showKiller: false, matchHistory: false, deathRecap: false, killFeed: false } };
+    const kc = { defaultmapsettings: { gameOverStats: false, matchHistory: false, killFeed: false } };
     vm.createContext(kc);
     vm.runInContext(core.slice(a, b + 3), kc);
-    const W = (o) => kc.lmKillerWanted(Object.assign({ showKiller: false, matchHistory: false, deathRecap: false, killFeed: false }, o));
-    check('killer: not kept with all four off', W({}) === false && kc.lmKillerWanted() === false);
-    check('killer: kept for each of Eaten by, Match history, Death recap, Kill feed alone', W({ showKiller: true }) && W({ matchHistory: true }) && W({ deathRecap: true }) && W({ killFeed: true }));
-    kc.defaultmapsettings.deathRecap = true;
+    const W = (o) => kc.lmKillerWanted(Object.assign({ gameOverStats: false, matchHistory: false, killFeed: false }, o));
+    check('killer: not kept with all three off', W({}) === false && kc.lmKillerWanted() === false);
+    check('killer: kept for each of the Game Over card, Match history, Kill feed alone', W({ gameOverStats: true }) && W({ matchHistory: true }) && W({ killFeed: true }));
+    /* the retired part switches of old saved settings no longer keep it */
+    check('killer: old showKiller / deathRecap values alone do not keep it', W({ showKiller: true }) === false && W({ deathRecap: true }) === false);
+    kc.defaultmapsettings.gameOverStats = true;
     check('killer: reads the live settings by default', kc.lmKillerWanted() === true);
     /* every place that keeps the killer or the multibox guard uses the one rule */
     const sites = (core.match(/lmKillerWanted\(\)/g) || []).length;

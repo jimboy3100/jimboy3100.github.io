@@ -87,6 +87,7 @@ check('store: favourites capped', C.parseStore({ fav: longFav }).fav.length === 
 st = C.parseStore({ fav: ['opt:shortMass', 'opt:fpsAtTop', 'opt:statsAtCenter', 'hk:hk-screenshotMode', 'hk:hk-zoomRecall2', 'win:lab', 'opt:showGrid'], recent: ['opt:mouseCommand4', 'set:mouse4Click', 'opt:gamepadEnabled', 'hk:hk-lmLab'] });
 check('store: merged items keep their star on the successor', st.fav.join() === 'set:massFormat,set:statsPosition,hk:hk-showHUD,hk:hk-zoom2,win:plugins,opt:showGrid');
 check('store: moved controls keep their recent entry on their block', st.recent.join() === 'sec:lmHkMouse,sec:lmHkGamepad,hk:hk-lmPlugins');
+check('store: a star on a Game Over card part stays on the card switch', C.parseStore({ fav: ['opt:massGraph', 'opt:showKiller', 'opt:deathRecap'] }).fav.join() === 'opt:gameOverStats');
 check('store: a star on the successor and its old item is one star', C.parseStore({ fav: ['set:massFormat', 'opt:shortMass'] }).fav.join() === 'set:massFormat');
 st = { fav: [], recent: [] };
 for (let i = 0; i < 20; i++) st = C.withRecent(st, 'opt:k' + (i % 15));

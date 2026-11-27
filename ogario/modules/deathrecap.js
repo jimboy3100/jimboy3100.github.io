@@ -1,7 +1,8 @@
 /* Legend Mod death recap, kill feed and mass-loss alerts.
- * Options (Settings > Stats, all off by default): deathRecap, killFeed, massLossAlert (+ massLossPct).
- * While all three are off this file registers no listeners and runs no timers; the Game Over card
- * only asks it once for a one-time hint. While one is on it samples your own mass and cell count
+ * Options (Settings > Stats, all off by default): gameOverStats (the Game Over card, which shows the
+ * recap of the last 20 s), killFeed, massLossAlert (+ massLossPct).
+ * While all three are off this file registers no listeners and runs no timers. While one is on it
+ * samples your own mass and cell count
  * 4 times a second while you are alive (fixed ring buffers, nothing allocated per sample), and the
  * eat loop of ogario.v4.js reports exact eats of and by your cells. Only data the client already
  * receives is used: the biggest visible enemy near you, the eat events and, on Expanding Land, the
@@ -192,7 +193,7 @@
 
     function opts() {
         var s = window.legendmod5;
-        return s ? { recap: !!s.deathRecap, feed: !!s.killFeed, alert: !!s.massLossAlert } : { recap: false, feed: false, alert: false };
+        return s ? { recap: !!s.gameOverStats, feed: !!s.killFeed, alert: !!s.massLossAlert } : { recap: false, feed: false, alert: false };
     }
     /* mass-loss alert threshold in %, 0 while the alert is off */
     function alertPct() {
@@ -550,7 +551,7 @@
         if (!modal) return;
         var o = opts();
         cardTheme = themeOf(theme);
-        if (!o.recap) { hint(modal); return; }
+        if (!o.recap) return;
         if (!R.len) return;
         var th = cardTheme, el = document.createElement('div'), wide = (window.innerWidth || 0) >= 830;
         el.id = 'lm-go-recap';
@@ -573,54 +574,6 @@
         recapEl = el;
         renderPanel();
     }
-    function hint(modal) {
-        try { if (window.localStorage.getItem('lmDeathRecapHint')) return; window.localStorage.setItem('lmDeathRecapHint', '1'); } catch (e) { return; }
-        var c = modal.querySelector('.lm-go-card');
-        if (!c) return;
-        var th = cardTheme, row = document.createElement('div');
-        row.id = 'lm-go-recap-hint';
-        row.style.cssText = 'padding:0 12px 10px;font-size:11px;text-align:center;color:' + th.v.tc2 + ';';
-        /* data-i18n: LMi18n.apply() puts the new language in while the card stays open */
-        row.dir = dir();
-        var t = document.createElement('span');
-        t.textContent = tr('hint');
-        t.setAttribute('data-i18n', TK + 'hint');
-        var b = document.createElement('button');
-        b.type = 'button';
-        b.textContent = tr('turnOn');
-        b.setAttribute('data-i18n', TK + 'turnOn');
-        b.style.cssText = 'background:' + th.v.mc + ';color:' + th.v.pc + ';border:0;font-family:inherit;border-radius:var(--lm-radius-s,4px);padding:3px 10px;margin-top:4px;font-size:var(--lm-w-fs,11px);font-weight:700;cursor:pointer;min-height:var(--lm-w-ctl,26px);';
-        b.addEventListener('click', function (ev) {
-            ev.stopPropagation();
-            setOption('deathRecap', true);
-            if (row.parentNode) row.parentNode.removeChild(row);
-        });
-        row.appendChild(t); row.appendChild(document.createTextNode(' ')); row.appendChild(b);
-        c.appendChild(row);
-        /* shown once only: on a card taller than the screen (a phone in landscape, where the card
-         * scrolls) the end of the card is out of view, so the hint goes right under the header */
-        try {
-            var hd = c.firstElementChild;
-            if (modal.scrollHeight > modal.clientHeight + 1 && hd && hd !== row && hd.nextSibling !== row) {
-                c.insertBefore(row, hd.nextSibling);
-                row.style.paddingTop = '8px';
-            }
-        } catch (e) { }
-    }
-    function setOption(k, v) {
-        var cb = document.getElementById(k);
-        if (cb && cb.type === 'checkbox') {
-            if (cb.checked !== v) {
-                cb.checked = v;
-                /* the bubbling change runs setSettings (side effects, save) and moves the switch */
-                try { cb.dispatchEvent(new Event('change', { bubbles: true })); return; } catch (e) { }
-            }
-        }
-        if (window.application && typeof application.setSettings === 'function') application.setSettings(k, v);
-        else if (window.legendmod5) window.legendmod5[k] = v;
-        sync();
-    }
-
     /* ---------- life cycle ---------- */
 
     /* practice arena and replay lives get no recap (LMEvents context; older cores: the flags) */
@@ -690,7 +643,7 @@
             reset: function () { ringClear(R); evClear(); prevCells = 0; recSlot = null; lastAlive = 0; recapEl = null; recap = null; }
         }
     };
-    /* a language change redraws the open recap panel (the hint follows by its data-i18n marks) */
+    /* a language change redraws the open recap panel */
     if (window.LMi18n && window.LMi18n.onChange) window.LMi18n.onChange(function () { if (recapEl) renderPanel(true); });
     sync();
 })();

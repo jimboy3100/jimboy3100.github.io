@@ -186,7 +186,7 @@
         { id: 'hudHelpers', opts: ['hudMoveDir', 'hudMergeCountdown', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel'], show: { hudCellPanel: '#lm-hh-cells' } },
         { id: 'replayStudio', opts: ['recordReplays'], win: opener('lmReplayStudio', 'open') },
         { id: 'analytics', opts: ['analytics'], win: opener('LMAnalytics.open') },
-        { id: 'deathRecap', opts: ['deathRecap', 'killFeed', 'massLossAlert'] },
+        { id: 'deathRecap', opts: ['gameOverStats', 'killFeed', 'massLossAlert'] },
         { id: 'adaptivePerf', opts: ['adaptivePerf', 'netHistory'], win: opener('LMPerf.openDiag') },
         { id: 'gamepad', opts: [], win: opener('LMGamepad.openWindow') },
         { id: 'profiles', opts: [], win: opener('LMProfiles.open') },
