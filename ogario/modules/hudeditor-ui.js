@@ -19,8 +19,6 @@
     function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(P + k, vars) : k; }
     function heT(k) { return typeof W.lmT === 'function' ? W.lmT('modules.hudeditor.' + k) : k; }
     function dir() { return W.LMi18n && typeof W.LMi18n.dir === 'function' ? W.LMi18n.dir() : 'ltr'; }
-    /* layout names offered in the name box (the player may type anything) */
-    var SUGGEST = ['competitive', 'streaming', 'mobile', 'spectating', 'multibox'];
     var HINT_OPTS = { timeOut: 0, extendedTimeOut: 0, tapToDismiss: false, closeButton: false };
 
     function mk(tag, cls, text) {
@@ -539,12 +537,7 @@
         nameIn.type = 'text';
         nameIn.maxLength = core.NAME_MAX;
         nameIn.placeholder = t('namePh');
-        nameIn.setAttribute('list', 'lm-he-names');
-        var dl = mk('datalist');
-        dl.id = 'lm-he-names';
-        SUGGEST.forEach(function (n) { var o = mk('option'); o.value = t('suggest.' + n); dl.appendChild(o); });
         r2.appendChild(nameIn);
-        r2.appendChild(dl);
         r2.appendChild(btn(t('save'), t('save'), saveDraft, 'go lm-he-save'));
         body.appendChild(r2);
 
