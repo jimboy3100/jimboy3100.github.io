@@ -818,11 +818,11 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
 }
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
 
-// ── player profiles: favourite star, search and the move of the old Skin collections into them
+// ── player profiles: the move of the old Skin collections into them (no favourite stars or search)
 {
-  const M = ctx.lmMergeSkinCollections, Q = ctx.lmProfileMatches;
-  check('skin collections move: helpers exist', typeof M === 'function' && typeof Q === 'function');
-  if (typeof M === 'function' && typeof Q === 'function') {
+  const M = ctx.lmMergeSkinCollections;
+  check('skin collections move: helper exists, profile search gone', typeof M === 'function' && typeof ctx.lmProfileMatches === 'undefined');
+  if (typeof M === 'function') {
     const prof = (n, s, extra) => Object.assign({ nick: n, clanTag: '', skinURL: s, color: '#fff' }, extra || {});
     const mk = () => [prof('Me', 'https://s.example/me.png'), prof('Profile #2', ''), prof('Profile #3', ''), prof('Profile #4', '')];
     const col = { v: 1, folders: ['Fun'], items: {
@@ -837,26 +837,24 @@ check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gp
     let res = M(JSON.parse(J(col)), list, extra, [1, 0], '#123');
     check('skin collections move: every kept link is in a profile once (' + J(res) + ')', res.added === 4 && J(list.concat(extra).map(p => p.skinURL).filter(Boolean).sort()) === J(['https://s.example/a.png', 'https://s.example/b.png', 'https://s.example/c.png', 'https://s.example/d.png', 'https://s.example/me.png']));
     check('skin collections move: the selected profile 2 is not used, the free ones are', list[1].skinURL === '' && list[2].skinURL !== '' && list[3].skinURL !== '');
-    check('skin collections move: favourites get the visible profiles first and keep the star', list[2].skinURL === 'https://s.example/b.png' && list[2].fav === true);
-    check('skin collections move: a favourite already in a profile stars that profile', list[0].fav === true && res.favs === 1);
+    check('skin collections move: favourites get the visible profiles first, no fav field', list[2].skinURL === 'https://s.example/b.png' && list.concat(extra).every(p => !('fav' in p)));
+    check('skin collections move: a favourite already in a profile changes nothing there', J(list[0]) === J(mk()[0]));
     check('skin collections move: folder or first tag becomes the nick, else the default one', list[2].nick === 'clan war' && list.concat(extra).some(p => p.skinURL === 'https://s.example/a.png' && p.nick === 'Fun') && list.concat(extra).some(p => p.skinURL === 'https://s.example/d.png' && /^Profile #\d+$/.test(p.nick)));
     check('skin collections move: no room left -> hidden profiles with the given colour', res.hidden === 2 && extra.length === 2 && extra.every(p => p.color === '#123' && p.clanTag === '' && !('f' in p)));
     const before = J([list, extra]);
     res = M(JSON.parse(J(col)), list, extra, [1, 0], '#123');
-    check('skin collections move: running it again adds nothing', res.added === 0 && res.favs === 0 && J([list, extra]) === before);
+    check('skin collections move: running it again adds nothing', res.added === 0 && J([list, extra]) === before);
     const bad = [null, 'x', 5, [], { items: [] }, { items: 'x' }, { v: 1 }];
     check('skin collections move: an empty or broken value changes nothing', bad.every(v => { const l = mk(), e = []; const r = M(v, l, e, [0], '#fff'); return r.added === 0 && J(l) === J(mk()) && e.length === 0; }));
     const many = { items: {} };
     for (let i = 0; i < 700; i++) many.items['https://s.example/m' + i + '.png'] = {};
     const l2 = mk(), e2 = [];
     check('skin collections move: at most the 500 the old window kept', M(many, l2, e2, [0], '#fff').added === 500 && l2.length + e2.length === 501);
-    // search: every word in the nick, clan tag or skin link; * keeps the favourites
-    const p1 = prof('Jimbo', 'https://i.imgur.com/AbC.png', { clanTag: 'LM', fav: true }), p2 = prof('Other', 'https://s.example/x.png');
-    check('profile search: empty finds all', Q(p1, '') && Q(p2, '  '));
-    check('profile search: words over nick, clan tag and link, any case', Q(p1, 'jim lm') && Q(p1, 'IMGUR') && !Q(p2, 'jim') && !Q(p1, 'jim other'));
-    check('profile search: * = favourites', Q(p1, '*') && !Q(p2, '*') && Q(p1, '* jim') && !Q(p1, '* other'));
-    check('profile search: a broken profile never matches', !Q(null, '') && !Q('x', ''));
-    check('profile texts: in the packs, Greek differs', ['pkg.skcol.search', 'pkg.skcol.star', 'pkg.skcol.unstar', 'pkg.skcol.none', 'pkg.skcol.moved', 'pkg.skcol.movedHidden'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
+    // an old starred but otherwise unused profile is free for a link
+    const l3 = [prof('Me', 'x'), prof('Profile #2', '', { fav: true })], e3 = [];
+    check('skin collections move: an old fav field does not keep a profile', M({ items: { 'https://s.example/z.png': {} } }, l3, e3, [0], '#fff').added === 1 && l3[1].skinURL === 'https://s.example/z.png' && e3.length === 0);
+    check('profile texts: in the packs, Greek differs; star and search texts gone', ['pkg.skcol.moved', 'pkg.skcol.movedHidden'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)) &&
+      ['pkg.skcol.search', 'pkg.skcol.star', 'pkg.skcol.unstar', 'pkg.skcol.none'].every(k => i18n.t(k) === k));
   }
 }
 

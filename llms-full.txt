@@ -107,7 +107,6 @@ Apply custom images to cells. Supports PNG, JPG, GIF and SVG image URLs. Skins a
 - **Vanilla skins**: Original game skins (from VanillaSkinUrlMap)
 - **Custom skins**: User-provided image URLs
 - **Video skins**: Play MP4, WebM or OGV video files as cell skins with configurable audio level and ducking
-- **Player profile favourites and search**: A star on each player profile in the skins panel marks the favourites; with more than 15 profiles a search box finds them by nick, clan tag or skin link (* = favourites)
 - **Skin Checker**: Tool to test whether a skin URL loads correctly before using it in-game
 - **Transparent skins**: Make your own cell skin semi-transparent
 - **No Skins mode**: Disable all skins for a cleaner view

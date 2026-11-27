@@ -257,7 +257,7 @@
         "lm:Feature"
       ],
       "name": "Custom skins, video skins and skin tools",
-      "description": "Custom image URLs, video skins, profile favourites and search, skin checker, IndexedDB cache."
+      "description": "Custom image URLs, video skins, skin checker, IndexedDB cache."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-themes",
