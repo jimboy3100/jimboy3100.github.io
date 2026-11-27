@@ -53,6 +53,17 @@ function checkSite(dir, host) {
 }
 
 checkSite(repo, 'www.legendmod.ml');
+
+/* a Legend Clan article dated in its title (day.month.year) gives that day as its publication date,
+ * not the day the file was last changed */
+fs.readdirSync(path.join(repo, 'Lc', 'articles')).filter((n) => /\.html$/.test(n)).forEach((n) => {
+    const html = fs.readFileSync(path.join(repo, 'Lc', 'articles', n), 'utf8');
+    const d = ((html.match(/<title[^>]*>([^<]*)<\/title>/i) || [])[1] || '').match(/\b(\d{1,2})\.(\d{1,2})\.(20\d\d)\b/);
+    if (!d) return;
+    const want = d[3] + '-' + ('0' + d[2]).slice(-2) + '-' + ('0' + d[1]).slice(-2);
+    const got = (html.match(/itemprop="datePublished"\s+content="([^"]*)"/) || [])[1];
+    ok(got === want, 'Lc/articles/' + n + ': datePublished ' + got + ', its title says ' + want);
+});
 const el = process.env.CROSS_EL_DIR || path.join(parent, 'expandingland');
 if (fs.existsSync(path.join(el, 'sitemap.xml'))) checkSite(el, 'expanding.land');
 else console.log('skip: no Expanding Land checkout at ' + el);
