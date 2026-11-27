@@ -224,6 +224,12 @@
     function escFor(el, e) {
         if (e && e._lmEscTaken) return false;
         var r = rootOf(el), mine = true;
+        /* a full-screen window above all of these (Discover: root._lmEscTop) that is open takes the Esc
+         * first: a window opened under it is hidden there, and that Esc closed the hidden one */
+        var kids = D.body ? D.body.children : [];
+        for (var k = 0; k < kids.length; k++) {
+            if (kids[k]._lmEscTop && kids[k] !== r && visible(kids[k])) return false;
+        }
         if (r && r._lmWs) {
             for (var i = stack.length - 1; i >= 0; i--) {
                 var o = stack[i];

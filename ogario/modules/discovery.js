@@ -334,6 +334,10 @@
             e.stopPropagation();
             if (e.key === 'Escape' || e.keyCode === 27) { e.preventDefault(); close(); }
         }, false);
+        /* it covers the screen: Esc closes it first wherever the focus is, also over a window opened
+         * under it (winstack.js escFor), which that Esc closed while Discover stayed open */
+        root._lmEsc = true;
+        root._lmEscTop = true;
         root.addEventListener('click', function (e) { if (e.target === root) close(); }, false);
         var panel = mk('div', 'lm-dc-panel lm-modal-container lm-w');
         var head = mk('div', 'lm-dc-head');
@@ -540,6 +544,15 @@
         body.scrollTop = 0;
     }
     function isOpen() { return !!(root && root.parentNode); }
+    W.addEventListener('keydown', function (e) {
+        if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey || !isOpen()) return;
+        /* the Command Centre opened over it closes first (its own Esc) */
+        if (e._lmEscTaken || (W.LMCommandCentre && typeof W.LMCommandCentre.isOpen === 'function' && W.LMCommandCentre.isOpen())) return;
+        e._lmEscTaken = true;
+        e.preventDefault();
+        e.stopPropagation();
+        close();
+    }, true);
     function open(which) {
         if (!D.body) return;
         if (!root) build();
