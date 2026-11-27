@@ -2575,11 +2575,14 @@ function universalchat() {
     ATPacket.prototype.writeUInt32 = function (v) { var a = new Uint8Array(4); var d = new DataView(a.buffer); d.setUint32(0, v, true); this._parts.push(a); this._len += 4; };
     ATPacket.prototype.writeInt32 = function (v) { var a = new Uint8Array(4); var d = new DataView(a.buffer); d.setInt32(0, v, true); this._parts.push(a); this._len += 4; };
     ATPacket.prototype.writeBoolean = function (v) { this._pushU8(v ? 1 : 0); };
+    /* AgarTool strings are UTF-8 ending in a 0 byte (no length before them): the
+     * server's hello answer is 9b "4-1991" 00. A 16-bit length before the text made
+     * every packet unreadable for the server and every packet from it for us. */
     ATPacket.prototype.writeUTF8String = function (s) {
         var enc = new TextEncoder();
-        var bytes = enc.encode(s || '');
-        this.writeUInt16(bytes.length);
+        var bytes = enc.encode(String(s == null ? '' : s).replace(/\0/g, ''));
         if (bytes.length) { this._parts.push(bytes); this._len += bytes.length; }
+        this._pushU8(0);
     };
     ATPacket.prototype.get = function () {
         var out = new Uint8Array(this._len), off = 0;
@@ -2593,11 +2596,11 @@ function universalchat() {
     ATPacket.prototype.readInt32 = function () { var v = this._buf.getInt32(this._off, true); this._off += 4; return v; };
     ATPacket.prototype.readBoolean = function () { return this.readUInt8() !== 0; };
     ATPacket.prototype.readUTF8String = function () {
-        var len = this.readUInt16();
-        if (len === 0) return '';
-        var dec = new TextDecoder();
-        var s = dec.decode(this._bytes.subarray(this._off, this._off + len));
-        this._off += len;
+        var start = this._off, end = this._len;
+        while (this._off < end && this._bytes[this._off] !== 0) this._off++;
+        if (this._off >= end) throw new RangeError('AgarTool string without its 0 byte');
+        var s = new TextDecoder().decode(this._bytes.subarray(start, this._off));
+        this._off++;
         return s;
     };
 
@@ -2793,8 +2796,6 @@ function universalchat() {
         stat.tag = $('#clantag').val();
         stat.nick = $('#nick').val();
         stat.token = $('#server-token').val();
-        // Use actual game WS URL so agartool works on agar2, private servers, etc.
-        stat.ws = (typeof LM !== 'undefined' && LM.ws) ? LM.ws : ('wss://live-arena-' + stat.token + '.agar.io:80');
         my.atConnect();
         if (stat.update_timerid) clearInterval(stat.update_timerid);
         stat.update_timerid = setInterval(my.update, cfg.update_interval);
@@ -2863,6 +2864,7 @@ function universalchat() {
         }
     };
     my.update = function () {
+        my.atSyncRoom();
         var ogarAlive = my.ogarIsAlive();
         if (ogarAlive != stat.alive) {
             my.tgarAlive(ogarAlive);
@@ -3017,13 +3019,15 @@ function universalchat() {
             my.atSendBuffer(p);
         };
         stat.atSocket.onmessage = function (evt) {
-            my.atReadMessage(evt);
+            /* a cut or unknown packet must not stop the next ones */
+            try { my.atReadMessage(evt); } catch (e) { if (!(e instanceof RangeError)) console.warn('[LM AgarTool] message failed', e); }
         };
         stat.atSocket.onclose = function (evt) {
             console.log("%c[LM AgarTool]%c Disconnected", "color:orange", "color:inherit", evt.code, evt.reason);
             stat.atSocket = null;
             stat.connected = false;
             stat.playerID = null;
+            stat.atJoined = '';
             if (stat.capture) {
                 my.atScheduleReconnect();
             }
@@ -3039,6 +3043,7 @@ function universalchat() {
         stat.connected = false;
         stat.alive = false;
         stat.playerID = null;
+        stat.atJoined = '';
         if (stat.atSocket) {
             try {
                 stat.atSocket.onopen = null;
@@ -3181,6 +3186,39 @@ function universalchat() {
             }
         }
     };
+    /* AgarTool's room name for the game server: the token of a live-arena-<token>.agar.io
+     * address, else the whole address the game connected to (LM.ws, the URL given to
+     * connect, as AgarTool takes it from core.connect). The old code always sent the
+     * whole address, so it never met AgarTool players on live-arena servers. */
+    my.atArena = function () {
+        var ws = (typeof LM !== 'undefined' && LM && LM.ws) ? String(LM.ws) : '';
+        if (!ws) return '';
+        var m = /live-arena-(.*)\.agar\.io/i.exec(ws);
+        return m ? m[1] : ws;
+    };
+    /* Join (157: tag, arena) the room of the current server and tag; leave (163) the old
+     * room first when the server changed. Runs on connect and on every update, so a
+     * server switch or a new tag moves us to the right room (the old code joined once). */
+    my.atSyncRoom = function () {
+        if (!my.atIsOpen() || !stat.connected) return;
+        var arena = my.atArena();
+        var tag = String($('#clantag').val() || '').trim().substring(0, 30);
+        var want = arena ? tag + '\n' + arena : '';
+        if (want === (stat.atJoined || '')) return;
+        var oldArena = stat.atJoined ? stat.atJoined.split('\n')[1] : '';
+        if (stat.atJoined && oldArena !== arena) {
+            my.atSendDisconnected();
+            my.resetMinimap();
+        }
+        if (arena) {
+            var pj = new ATPacket();
+            pj.setCommandID(157);
+            pj.writeUTF8String(tag);
+            pj.writeUTF8String(arena);
+            my.atSendBuffer(pj);
+        }
+        stat.atJoined = want;
+    };
     // --- Called after receiving playerID (opcode 155) ---
     my.atOnConnect = function () {
         if (!my.atIsOpen()) return;
@@ -3188,15 +3226,9 @@ function universalchat() {
         if ($("#ao2t-hud").hasClass("OnceUsed") == false) {
             $("#ao2t-hud").addClass("OnceUsed");
         }
+        stat.atJoined = '';
         my.resetMinimap();
-        // Send room join: opcode 157 with clanTag + serverToken
-        var tag = stat.tag || $('#clantag').val() || '';
-        var serverToken = stat.ws || '';
-        var pj = new ATPacket();
-        pj.setCommandID(157);
-        pj.writeUTF8String(tag);
-        pj.writeUTF8String(serverToken);
-        my.atSendBuffer(pj);
+        my.atSyncRoom();
         // Send initial position if alive
         if (global.ogario && global.ogario.play) {
             my.atSendPosition(true);
@@ -3218,8 +3250,11 @@ function universalchat() {
         p.writeUTF8String(stat.nick || $('#nick').val() || '');
         p.writeUTF8String($('#skin').val() || '');
         p.writeBoolean(global.ogario ? global.ogario.play : false);
-        p.writeInt32(global.ogario ? Math.round(global.ogario.playerX + (global.ogario.mapOffsetX || 0)) : 0);
-        p.writeInt32(global.ogario ? Math.round(global.ogario.playerY + (global.ogario.mapOffsetY || 0)) : 0);
+        /* centred on the map, in world units like LM's own team positions (lmTeamWorldOut) */
+        var app = global.application, kx = 1, ky = 1;
+        if (app && typeof app.lmTeamScale === 'function') { kx = app.lmTeamScale(0); ky = app.lmTeamScale(1); }
+        p.writeInt32(global.ogario ? Math.round((global.ogario.playerX + (global.ogario.mapOffsetX || 0)) * kx) : 0);
+        p.writeInt32(global.ogario ? Math.round((global.ogario.playerY + (global.ogario.mapOffsetY || 0)) * ky) : 0);
         p.writeUInt32(global.ogario ? (global.ogario.playerMass || 0) : 0);
         my.atSendBuffer(p);
     };
