@@ -7,6 +7,11 @@
  * grey text. Each case: a page (full or site stylesheet) with a dark, a light (the Agar.io preset)
  * or a grey theme; every select on it, the language list included, plus a .form-control select and
  * a plain one with a group and a disabled choice. Contrast >= 4.5 (WCAG AA) for every choice.
+ * The closed list too: its shown choice on its own background (over the page behind it) >= 4.5, in
+ * every case and on a direct visit of the home page in its dark theme, where normalize.css gave the
+ * language list the page's white text on the browser's white field (the chosen language was invisible).
+ * Fields and hints in the theme too: a field's text (>= 4.5) and its placeholder (>= 3, as hint text) on
+ * the field, laid over the page behind, with every theme.
  * node developers/tests/dropdowns.js   (needs Chrome, like smoke.js; prints SKIP without it) */
 const fs = require('fs'), path = require('path');
 const { spawnSync } = require('child_process');
@@ -34,7 +39,7 @@ var parse = function (s) { var m = /rgba?\\(([^)]+)\\)/.exec(s || ''); if (!m) r
 var over = function (top, under) { var a = top[3]; return [0, 1, 2].map(function (k) { return top[k] * a + under[k] * (1 - a); }).concat([1]); };
 var lum = function (c) { return [0, 1, 2].map(function (k) { var v = c[k] / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }).reduce(function (s, v, k) { return s + v * [0.2126, 0.7152, 0.0722][k]; }, 0); };
 var ratio = function (a, b) { var x = lum(a), y = lum(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); };
-var add = function (cls) { var s = document.createElement('select'); if (cls) s.className = cls; s.innerHTML = '<optgroup label="Group"><option>One</option><option disabled>Two</option></optgroup><option selected>Three</option>'; document.body.appendChild(s); return s; };
+var add = function (cls) { var s = document.createElement('select'); if (cls) s.className = cls; s.setAttribute('data-probe', '1'); s.innerHTML = '<optgroup label="Group"><option>One</option><option disabled>Two</option></optgroup><option selected>Three</option>'; document.body.appendChild(s); return s; };
 add('form-control'); add('');
 var rows = [];
 [].forEach.call(document.querySelectorAll('select'), function (sel, n) {
@@ -46,27 +51,39 @@ var rows = [];
             bg: cs.backgroundColor, color: cs.color, ratio: Math.round(ratio(bg, fg) * 100) / 100 });
     });
 });
-/* the closed language box where it has a solid background of its own (a see-through one shows the page) */
-var closed = function () {
-    var s = document.querySelector('select.lm-lang-select'), cs = s && getComputedStyle(s), bg = cs && parse(cs.backgroundColor);
-    if (!s || bg[3] < 1) return null;
-    return { bg: cs.backgroundColor, color: cs.color, ratio: Math.round(ratio(bg, over(parse(cs.color), bg)) * 100) / 100 };
-};
-var c1 = closed();
-/* the page's own dark mode (index.html: body.dark-theme) */
-var had = document.body.classList.contains('dark-theme');
-document.body.classList.add('dark-theme');
-var c2 = closed();
-if (!had) document.body.classList.remove('dark-theme');
-return { themed: document.documentElement.classList.contains('lm-themed-root'), lang: !!document.querySelector('select.lm-lang-select'), rows: rows, closed: c1, closedDark: c2 };
+/* closed lists, fields and hints: the colours through a canvas (oklch, color-mix ...), backgrounds laid over the page behind */
+var cv = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+var rgb = function (s) { cv.clearRect(0, 0, 1, 1); cv.fillStyle = 'rgba(0,0,0,0)'; cv.fillStyle = s; cv.fillRect(0, 0, 1, 1); var d = cv.getImageData(0, 0, 1, 1).data; return [d[0], d[1], d[2], d[3] / 255]; };
+var under = function (el) { var layers = []; for (var e = el; e; e = e.parentElement) { var c = rgb(getComputedStyle(e).backgroundColor); if (c[3] > 0) layers.push(c); if (c[3] >= 1) break; }
+    var bg = [255, 255, 255, 1]; for (var i = layers.length - 1; i >= 0; i--) bg = over(layers[i], bg); return bg; };
+/* a site page (index, faq ...: data-lm-css="site") styles its own fields, the bridge only its colours: there
+ * the page's own lists and fields are measured, not the ones added here */
+var site = !!document.querySelector('script[data-lm-css="site"]');
+var closed = [];
+[].forEach.call(document.querySelectorAll('select'), function (sel, n) {
+    var r = sel.getBoundingClientRect(); if (r.width < 2 || r.height < 2 || (site && sel.hasAttribute('data-probe'))) return;
+    var bg = under(sel), fg = over(rgb(getComputedStyle(sel).color), bg);
+    closed.push({ sel: (sel.id || sel.className || 'select') + '#' + n, color: getComputedStyle(sel).color, bg: getComputedStyle(sel).backgroundColor, ratio: Math.round(ratio(bg, fg) * 100) / 100 });
+});
+/* a text field with a hint, on the page and on a white card (the monitor's login is one) */
+var hints = [];
+if (!site) {
+var card = document.createElement('div'); card.style.cssText = 'background:#fff;padding:8px'; card.innerHTML = '<input type="text" placeholder="Hint">';
+document.body.appendChild(card);
+var tf = document.createElement('input'); tf.type = 'password'; tf.placeholder = 'Hint'; document.body.appendChild(tf);
+hints = [card.firstChild, tf].map(function (f, n) { var bg = under(f);
+    return { el: n ? 'page field' : 'white card field', bg: getComputedStyle(f).backgroundColor, text: Math.round(ratio(bg, over(rgb(getComputedStyle(f).color), bg)) * 100) / 100,
+        hint: Math.round(ratio(bg, over(rgb(getComputedStyle(f, '::placeholder').color), bg)) * 100) / 100 }; });
+}
+return { themed: document.documentElement.classList.contains('lm-themed-root'), dark: document.body.classList.contains('dark-theme'), lang: !!document.querySelector('select.lm-lang-select'), site: site, rows: rows, closed: closed, hints: hints };
 })()`;
 
-function run(name, url) {
+function run(name, url, env) {
     const out = path.join(outRoot, 'dropdowns-' + name);
     fs.rmSync(out, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
     fs.mkdirSync(out, { recursive: true });
     fs.writeFileSync(path.join(out, 'probe.js'), PROBE);
-    const r = spawnSync(process.execPath, [path.join(here, 'smoke.js'), repo, out, '3', url], { encoding: 'utf8', timeout: 120000 });
+    const r = spawnSync(process.execPath, [path.join(here, 'smoke.js'), repo, out, '3', url], { encoding: 'utf8', timeout: 120000, env: Object.assign({}, process.env, env || {}) });
     const text = (r.stdout || '') + (r.stderr || '');
     if (/chrome not found/.test(text)) { console.log('SKIP: ' + text.trim()); process.exit(0); }
     let res = null;
@@ -91,13 +108,20 @@ for (const [page, rel, t] of CASES) {
     check(name + ': every open dropdown choice is readable (' + p.rows.length + ' choices, contrast >= 4.5)', p.rows.length >= 6 && !bad.length, bad.slice(0, 6));
     const dis = p.rows.filter(r => /:disabled/.test(r.el)), en = p.rows.filter(r => r.el === 'option');
     check(name + ': a disabled choice still looks different from the others', dis.length > 0 && en.length > 0 && dis.every(d => d.color !== en[0].color), { dis: dis[0], en: en[0] });
-    /* the closed language box on the home page: the browser's white box took the theme's light text
-     * (normalize.css color: inherit), white on white under a dark or grey theme */
-    if (page === 'index') check(name + ': the closed language box is readable (contrast >= 4.5)', !!p.closed && p.closed.ratio >= 4.5, p.closed);
+    const cbad = p.closed.filter(r => r.ratio < 4.5);
+    check(name + ': every closed dropdown shows its choice readably (' + p.closed.length + ' lists, contrast >= 4.5)', p.closed.length >= (p.site ? 1 : 2) && !cbad.length, cbad.slice(0, 4));
+    const hbad = p.hints.filter(r => r.text < 4.5 || r.hint < 3);
+    if (!p.site) check(name + ': a field (contrast >= 4.5) and its hint (>= 3) are readable, also on a white card', p.hints.length === 2 && !hbad.length, hbad);
 }
-/* the home page's own dark mode, no Legend Mod theme */
-const ix = run('index-pagedark', L + 'index.html');
-if (ix) check('index own dark mode: the closed language box is readable (contrast >= 4.5)', !!ix.closedDark && ix.closedDark.ratio >= 4.5, ix.closedDark);
+
+/* the owner's report: the home page in its dark theme (no Legend Mod theme), the chosen language was
+ * white text in a white box */
+const hd = run('index-direct-dark', L + 'index.html', { SMOKE_STORAGE: JSON.stringify({ theme: 'dark' }) });
+if (hd) {
+    const lang = hd.closed.filter(r => /^lm-lang-select/.test(r.sel));
+    check('index direct dark: the dark theme is on', hd.dark === true && !hd.themed, { dark: hd.dark, themed: hd.themed });
+    check('index direct dark: the closed language list is readable (contrast >= 4.5)', lang.length === 1 && lang[0].ratio >= 4.5, lang);
+}
 
 /* a direct visit (no theme): the page's own grey text reached the language list (themes page), shown on
  * the browser's white list; the language list's own style (developers/i18n/runtime.js) keeps it readable */
