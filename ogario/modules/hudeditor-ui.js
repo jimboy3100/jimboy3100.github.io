@@ -608,15 +608,25 @@
     /* ═══ Open / close ═══ */
 
     function stopGame(e) { e.stopPropagation(); }
+    /* el is in a page layer drawn over the editor: a higher z-index, or the same one added later */
+    function inFront(el) {
+        if (!el || el.nodeType !== 1 || root.contains(el)) return false;
+        var top = el;
+        while (top.parentElement && top.parentElement !== D.body) top = top.parentElement;
+        if (top.parentElement !== D.body) return false;
+        var zt = parseInt(W.getComputedStyle(top).zIndex, 10) || 0, ze = parseInt(W.getComputedStyle(root).zIndex, 10) || 0;
+        return zt > ze || (zt === ze && !!(root.compareDocumentPosition(top) & 4));
+    }
     function onKey(e) {
         if (!isOpen()) return;
         var tag = e.target && e.target.tagName, typing = (tag === 'INPUT' && e.target.type === 'text') || tag === 'SELECT' || tag === 'TEXTAREA';
         /* key releases go through: a key held when the editor opened is released in the game too */
         if (e.type !== 'keydown') return;
         /* keys typed in another window over the editor (the Command Centre opened with Ctrl+K)
-         * are that window's: Enter there closed the editor, Esc and the arrows never reached it */
-        var tg = e.target;
-        if (tg && tg !== D.body && tg !== D.documentElement && tg.nodeType === 1 && !root.contains(tg)) return;
+         * are that window's: Enter there closed the editor, Esc and the arrows never reached it.
+         * Only a window in front of the editor: with the focus left on a page element under it (a
+         * clicked minimap icon) the arrows did nothing and Esc opened the menu over the editor. */
+        if (inFront(e.target)) return;
         e.stopPropagation();
         if (e.key === 'Escape' || e.key === 'Esc') {
             e.preventDefault();
