@@ -42800,7 +42800,9 @@ function thelegendmodproject() {
                 /* a time of 0 is "never" (the clock starts at 0 with the page, so the gap can begin before it) */
                 var from = performance.now() - (sinceEnd > 0 ? sinceEnd : 0) - dur;
                 var inGap = function (t) { return t > 0 && t >= from; };
-                P.packetGap(dur, !!this.play, inGap(d.mbAt) ? 'multibox' : inGap(d.gateAt) ? 'spawn' : '', inGap(d.badAt),
+                /* rejected: compressed frames only (zAt). A parsed update, even a rejected one, restarts
+                 * the gap (_lmLastWorldUpdate), so one in it only ended it and did not cause it */
+                P.packetGap(dur, !!this.play, inGap(d.mbAt) ? 'multibox' : inGap(d.gateAt) ? 'spawn' : '', inGap(d.zAt),
                     d.hidden || inGap(d.visAt), inGap(d.oAt) || (inGap(d.msgAt) && d.msgAt !== d.wMsgAt));
             } else if (P.event) P.event('packet gap', dur, 'no world update' + (this.play ? ', playing' : ''));
         },
@@ -42830,7 +42832,7 @@ function thelegendmodproject() {
             d.rx = 0; d.stale = 0; d.msgAt = 0; d.oAt = 0; d.wMsgAt = 0; d.msgGap = 0; d.msgGapVis = 0;
             d.wRx = 0; d.wTry = 0; d.wOk = 0; d.wPart = 0; d.wBad = 0; d.wLost = 0; d.wMb = 0; d.wGate = 0; d.wHid = 0; d.wRp = 0; d.wSeek = 0;
             d.pBad = 0; d.zBad = 0; d.open = 0;
-            d.tryAt = 0; d.okAt = 0; d.badAt = 0; d.mbAt = 0; d.gateAt = 0;
+            d.tryAt = 0; d.okAt = 0; d.badAt = 0; d.zAt = 0; d.mbAt = 0; d.gateAt = 0;
         },
         /* the connection ended (reason: close, closeConnection, replaced): its numbers are kept as
          * the previous connection, once (a second end before the next start does nothing) */
@@ -52550,7 +52552,7 @@ function thelegendmodproject() {
                     this.decompressMessage(message);
             } catch (error) {
                 /* diagnostics: a compressed frame rejected (most world updates come compressed) */
-                if (this._lmND) { this._lmND.zBad++; this._lmND.badAt = performance.now(); }
+                if (this._lmND) { this._lmND.zBad++; this._lmND.badAt = this._lmND.zAt = performance.now(); }
                 console.warn(
                     "[LM] Rejected invalid compressed packet:",
                     error
@@ -52559,7 +52561,7 @@ function thelegendmodproject() {
             }
 
             if (!message || message.length < 1) {
-                if (this._lmND) { this._lmND.zBad++; this._lmND.badAt = performance.now(); }
+                if (this._lmND) { this._lmND.zBad++; this._lmND.badAt = this._lmND.zAt = performance.now(); }
                 console.warn(
                     "[LM] Rejected empty decompressed packet"
                 );

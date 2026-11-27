@@ -388,14 +388,21 @@ twin('open, closeConnection, onClose, reconnect', [
     clock.t = 32600; t.L._lmGapEvent(500, 0);
     check('gap while the dead main player\'s updates are held back: multibox', gaps[2][2] === 'multibox');
     t.g.mainPlayerDeadMbActive = false; t.L.playerCellsMulti = [];
+    /* a parsed update, rejected or not, restarts the freeze detector's gap (updateCells sets
+     * _lmLastWorldUpdate first): a rejected one can only end a gap, as the render loop sees it
+     * 20 ms later; the silence before it is not explained by it */
     clock.t = 33000; t.L.onMessage(msg(truncated()));
-    clock.t = 33400; t.L._lmGapEvent(450, 0);
-    check('gap with a rejected update in it', gaps[3][3] === true && gaps[3][2] === '');
+    clock.t = 33020; t.L._lmGapEvent(450, 20);
+    check('gap ended by a rejected world update: not a gap of rejected updates', gaps[3][3] === false && gaps[3][2] === '', JSON.stringify(gaps[3]));
+    /* compressed frames rejected before any parser: they do not restart the gap */
+    clock.t = 33100; t.L.handleMessage(new DataView(new Uint8Array([255, 1, 2]).buffer));
+    clock.t = 33400; t.L._lmGapEvent(350, 0);
+    check('gap with a rejected compressed frame in it', gaps[4][3] === true && gaps[4][2] === '', JSON.stringify(gaps[4]));
     t.g.document.hidden = true; (t.g.document.listeners.visibilitychange || []).forEach(f => f());
     clock.t = 34000; t.L._lmGapEvent(500, 0);
-    check('gap while the tab is hidden', gaps[4][4] === true);
+    check('gap while the tab is hidden', gaps[5][4] === true);
     t.L._lmGapEvent(100, 0);
-    check('under 250 ms: not listed', gaps.length === 5);
+    check('under 250 ms: not listed', gaps.length === 6);
     /* right after the page loaded (the clock starts at 0): nothing that never happened is in the gap */
     const early = mk(false);
     early.L._lmNetDiagStart();
