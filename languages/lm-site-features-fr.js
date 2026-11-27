@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "Mode spectateur <span class=\"badge badge-new\">Nouveau</span>",
 "site.features.followTheActionIn": "Suivez l'action en mode spectateur libre.",
 "site.features.followALeaderboardPlayer": "Suivez un joueur du classement : cliquez sur une masse du classement (optionnel) ou utilisez le raccourci <i>suivre le joueur suivant du classement</i>",
-"site.features.optionalClickAPlayer": "Optionnel : cliquez sur la cellule d'un joueur pour la suivre, cliquez dans le vide pour arrêter",
+"site.features.optionalClickAPlayer": "Option Cliquer pour suivre : clique sur la cellule d'un joueur ou une masse du classement pour le suivre, clic dans le vide pour arrêter",
 "site.features.expandingLandWorldSpectate": "World Spectate d'Expanding Land : en option, un clic sur la mini-carte y déplace la caméra",
 "site.features.hotkeyToEnlargeThe": "Raccourci pour agrandir la mini-carte",
 "site.features.chatToolsNew": "Outils de chat <span class=\"badge badge-new\">Nouveau</span>",

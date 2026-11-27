@@ -128,7 +128,7 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     check('massText: off, as before', H.massText(700, {}) === '700');
 }
 
-// precision zoom, camera lock (the zoom bookmarks / saved zoom levels were removed)
+// precision zoom (the zoom bookmarks / saved zoom levels and camera lock were removed)
 {
     ctx.legendmod = { zoomValue: 0.25, play: false, playerCellsMulti: [] };
     check('the saved zoom levels are gone', !('zoomSave' in H) && !('zoomRecall' in H));
@@ -136,25 +136,7 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     check('precision zoom zooms in once', near(ctx.legendmod.zoomValue, 0.625));
     H.precisionZoom(false);
     check('precision zoom release restores', ctx.legendmod.zoomValue === 0.25);
-    ctx.drawRender = { camX: 100, camY: 200 };
-    H.toggleCamLock();
-    const pt = {};
-    check('camera lock while spectating', H.camLocked && H.camLockTarget(ctx.legendmod, pt) && pt.x === 100 && pt.y === 200);
-    ctx.legendmod.play = true;
-    check('camera lock ends when you play', !H.camLockTarget(ctx.legendmod, pt) && !H.camLocked);
-    H.toggleCamLock();
-    check('camera lock refused while playing', !H.camLocked);
-    /* another server or a reconnect: the locked point belongs to the old world */
-    ctx.legendmod.play = false;
-    ctx.legendmod.socket = { id: 1 };
-    H.toggleCamLock();
-    check('camera lock kept while the connection stays', H.camLocked && H.camLockTarget(ctx.legendmod, pt) && pt.x === 100);
-    ctx.legendmod.socket = { id: 2 };
-    check('camera lock ends with a new connection', !H.camLockTarget(ctx.legendmod, pt) && !H.camLocked);
-    H.toggleCamLock();
-    check('camera lock on the new connection works', H.camLocked && H.camLockTarget(ctx.legendmod, pt));
-    H.toggleCamLock();
-    delete ctx.legendmod.socket;
+    check('camera lock is gone', !('toggleCamLock' in H) && !('camLockTarget' in H) && !('camLocked' in H));
 }
 
 // precision zoom while it is held (audit A6)

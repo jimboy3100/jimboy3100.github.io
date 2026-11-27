@@ -81,7 +81,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
 
 ### Hotkeys Without Default Keys (All Configurable)
-Triple split, crazy double split, line split, custom macro 1-3, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, instant replay, replay pause/speed/seek, radial menu, radial editor, gamepad window, profiles window, theme workshop, copy server link, net graph, performance diagnostics, chat sounds toggle, notification centre, team pings (Help/Danger/Go here/Virus), spectate next top player, spectator director controls (8 hotkeys), scan trick (hold), screenshot capture/window (Show/hide HUD, Alt+H, hides the whole HUD with a capture button), limit position (hold), multibox swap, middle multi-view, multibox rings, enlarge minimap, auto zoom toggle, hotkey conflicts window, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, camera lock, precision zoom (hold), zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
+Triple split, crazy double split, line split, custom macro 1-3, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, instant replay, replay pause/speed/seek, radial menu, radial editor, gamepad window, profiles window, theme workshop, copy server link, net graph, performance diagnostics, chat sounds toggle, notification centre, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), screenshot capture/window (Show/hide HUD, Alt+H, hides the whole HUD with a capture button), limit position (hold), multibox swap, middle multi-view, multibox rings, enlarge minimap, auto zoom toggle, hotkey conflicts window, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, camera lock, precision zoom (hold), zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
 
 ### Mouse
 | Button | Default Action |
@@ -268,7 +268,6 @@ Additional sound toggles: virusSound, x16Sound, non16Sound, virusPopSound, virus
 - **Mass in tab title**: Browser tab shows current mass
 - **Game stats position**: one choice: top left, bottom left or bottom centre (a HUD editor layout wins), configurable stats elements
 - **Precision zoom**: Hold-action for fine zoom control
-- **Camera lock**: Lock camera at current position
 
 ### 13. HUD Editor
 Drag and resize HUD elements with named layouts. Features:
@@ -338,16 +337,6 @@ Offline practice mode against bots (no server needed). Features:
 - Useful for practising split tricks, virus shots, and movement techniques
 - Opens via hotkey (no default key)
 
-### 21. Spectator Director
-Automatic camera system for spectating. Features:
-- **Auto-camera**: Follows most interesting action (scoring: big cells near each other, mass changes, splits, #1 player)
-- **Watchlist**: Track players by nick, cycle with hotkeys
-- **Map bookmarks**: Save/recall up to 20 positions with zoom level
-- **Cinematic camera**: Transition time, easing, follow smoothing
-- **Broadcast HUD**: Clean overlay for viewers with player info and leaderboard ticker
-- **Leaderboard history**: Positions over time while spectating
-- 8 dedicated spectator director hotkeys (all configurable, no default keys)
-
 ### 22. Custom Macros
 Create automated action sequences. Features:
 - **3 macro slots**, each a sequence of actions: split, feed, wait N ms, move to mouse
@@ -414,7 +403,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Respawn**: Quick respawn, auto respawn, spawn effects
 - **Names**: No names, optimized, auto-hide, hide mine, hide teammates, stroke
 - **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, mass format (exact / 12.3k / auto), virus spikes, virus mass shots, stroke, relative mass
-- **Spectate**: Leaderboard click-spectate, minimap click-spectate, companion live/chat
+- **Spectate**: Click to follow (a player cell, a leaderboard mass, or the minimap in Expanding Land World Spectate), companion live/chat
 - **Replay**: Record replays, match history, personal bests, analytics
 - **Macro**: Feeding speed, split delay, pop-split delay
 - **Config**: Settings profiles
@@ -430,7 +419,7 @@ Each language has: core language pack (lm-XX.js), plus separate translation pack
 
 - **Rendering**: WebGL2 with per-frame preflight and atomic Canvas2D fallback
 - **Storage**: localStorage for settings/hotkeys/profiles/history; IndexedDB for skin caching (1,000 skins, 600 audio, LRU eviction)
-- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, accessibility.js (246), analytics.js (1159), companion.js (685), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), notifications.js (812), replaystudio.js (1615), profiles.js (1386), practice.js (707), director.js (1598), macroeditor.js (511), plugins.js (940), discovery.js (613), smalltools.js (1219), perf.js (1848), themeworkshop.js (1254), hotkeysCommand.js (2056)
+- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, accessibility.js (246), analytics.js (1159), companion.js (685), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), notifications.js (812), replaystudio.js (1615), profiles.js (1386), practice.js (707), macroeditor.js (511), plugins.js (940), discovery.js (613), smalltools.js (1219), perf.js (1848), themeworkshop.js (1254), hotkeysCommand.js (2056)
 - **PWA**: Progressive Web App with fullscreen game mode, manifest.json ("Legend Mod - Expanding Land"), landscape orientation, theme_color #00243e; no service worker on this site (the old one is unregistered by play.html; the Expanding Land app at expanding.land has its own)
 - **Extension**: Chrome extension "Legend Express" (manifest v3, version 1.8.5, author Jimboy3100). Permissions: storage, declarativeNetRequest. Host permissions: agar.io, jimboy3100.github.io, legendmod.ml, sigmally.com, senpa.io, mi.com. Content scripts run on agar.io at document_start. Background: service worker. Does NOT collect, store or transmit personal data externally.
 - **Userscript**: Legend Express userscript for Tampermonkey / Greasemonkey (https://www.legendmod.ml/LMexpress/LMexpress.user.js), version 1.9.
@@ -553,9 +542,6 @@ A tool to create, save, rename, copy and delete custom themes. Supports up to 30
 
 **What are Settings Profiles?**
 Named sets of all gameplay and visual settings that can be switched instantly. Supports up to 30 profiles, auto-switching per server/mode/input device, and 5 automatic backups.
-
-**What is the Spectator Director?**
-An automatic camera system that follows the most interesting action while spectating. Includes watchlist, map bookmarks (up to 20), cinematic camera, broadcast HUD, and leaderboard history.
 
 **What are User Scripts / Plugins?**
 Legend Mod supports 5 user script slots for custom JavaScript extensions. Plugins use a standard header format and can register settings via the LMPlugins API. A catalogue of example plugins is available.

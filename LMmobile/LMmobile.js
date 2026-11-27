@@ -1002,8 +1002,8 @@
             drawerInsert(bFreeSpec);
             syncFreeSpec();
         }
-        /* lit while free spectate is on; the game also ends it without this button (a spawn, the
-         * spectator director, a server change), so the buttons' 500 ms update checks it too */
+        /* lit while free spectate is on; the game also ends it without this button (a spawn,
+         * a server change), so the buttons' 500 ms update checks it too */
         function syncFreeSpec() {
             if (!bFreeSpec) return;
             var on = !!(window.legendmod && window.legendmod.isFreeSpectate);

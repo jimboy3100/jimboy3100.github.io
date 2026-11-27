@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "Obserwowanie <span class=\"badge badge-new\">Nowość</span>",
 "site.features.followTheActionIn": "Śledź akcję w trybie swobodnej obserwacji.",
 "site.features.followALeaderboardPlayer": "Śledź gracza z rankingu: kliknij masę w rankingu (opcjonalnie) albo użyj skrótu <i>śledź następnego gracza z rankingu</i>",
-"site.features.optionalClickAPlayer": "Opcjonalnie: kliknij komórkę gracza, aby ją śledzić, kliknij puste miejsce, aby przestać",
+"site.features.optionalClickAPlayer": "Opcja Kliknij, by śledzić: kliknij komórkę gracza lub masę w rankingu, by go śledzić, klik w puste miejsce kończy",
 "site.features.expandingLandWorldSpectate": "Expanding Land World Spectate: opcjonalnie kliknięcie minimapy przenosi tam kamerę",
 "site.features.hotkeyToEnlargeThe": "Skrót do powiększenia minimapy",
 "site.features.chatToolsNew": "Narzędzia czatu <span class=\"badge badge-new\">Nowość</span>",

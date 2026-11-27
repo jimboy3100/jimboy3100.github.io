@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "Modo espectador <span class=\"badge badge-new\">Novo</span>",
 "site.features.followTheActionIn": "Acompanhe a ação no espectar livre.",
 "site.features.followALeaderboardPlayer": "Siga um jogador do ranking: clique numa massa do ranking (opcional) ou use o atalho <i>seguir o próximo jogador do ranking</i>",
-"site.features.optionalClickAPlayer": "Opcional: clique na célula de um jogador para segui-la e clique num espaço vazio para parar",
+"site.features.optionalClickAPlayer": "Opção Clique para seguir: clique na célula de um jogador ou numa massa do ranking para segui-lo, clique no vazio para parar",
 "site.features.expandingLandWorldSpectate": "World Spectate do Expanding Land: clicar no minimapa leva a câmera até lá (opcional)",
 "site.features.hotkeyToEnlargeThe": "Atalho para aumentar o minimapa",
 "site.features.chatToolsNew": "Ferramentas de chat <span class=\"badge badge-new\">Novo</span>",

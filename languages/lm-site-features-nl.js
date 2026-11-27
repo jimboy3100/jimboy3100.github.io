@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "Toeschouwen <span class=\"badge badge-new\">Nieuw</span>",
 "site.features.followTheActionIn": "Volg de actie in vrije toeschouwersmodus.",
 "site.features.followALeaderboardPlayer": "Volg een speler uit het leaderboard: klik op een massa in het leaderboard (optioneel) of gebruik de sneltoets <i>volgende speler uit het klassement volgen</i>",
-"site.features.optionalClickAPlayer": "Optioneel: klik op een spelercel om die te volgen, klik op lege ruimte om te stoppen",
+"site.features.optionalClickAPlayer": "Optioneel Klik om te volgen: klik op een spelercel of een massa in de ranglijst om die speler te volgen, klik op lege ruimte om te stoppen",
 "site.features.expandingLandWorldSpectate": "Wereld bekijken in Expanding Land: een optionele klik op de minimap verplaatst de camera daarheen",
 "site.features.hotkeyToEnlargeThe": "Sneltoets om de minimap te vergroten",
 "site.features.chatToolsNew": "Chattools <span class=\"badge badge-new\">Nieuw</span>",

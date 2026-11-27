@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "觀戰 <span class=\"badge badge-new\">新功能</span>",
 "site.features.followTheActionIn": "在自由觀戰中緊盯戰況。",
 "site.features.followALeaderboardPlayer": "跟隨排行榜玩家：點擊排行榜上的質量（選用），或使用 <i>跟隨排行榜上的下一位玩家</i> 快速鍵",
-"site.features.optionalClickAPlayer": "選用：點擊玩家細胞即可跟隨，點擊空白處即停止",
+"site.features.optionalClickAPlayer": "可選的點擊跟隨：點擊玩家細胞或排行榜上的質量即可跟隨該玩家，點擊空白處停止",
 "site.features.expandingLandWorldSpectate": "Expanding Land 世界觀戰：可選擇點擊小地圖將鏡頭移到該處",
 "site.features.hotkeyToEnlargeThe": "放大小地圖的快速鍵",
 "site.features.chatToolsNew": "聊天工具 <span class=\"badge badge-new\">新功能</span>",

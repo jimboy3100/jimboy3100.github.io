@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "Zuschauen <span class=\"badge badge-new\">Neu</span>",
 "site.features.followTheActionIn": "Verfolge das Geschehen im freien Zuschauermodus.",
 "site.features.followALeaderboardPlayer": "Folge einem Spieler aus der Bestenliste: Klick auf eine Masse in der Bestenliste (optional) oder nutze den Hotkey <i>nächstem Spieler der Bestenliste folgen</i>",
-"site.features.optionalClickAPlayer": "Optional: Klick auf eine Spielerzelle, um ihr zu folgen, Klick ins Leere zum Beenden",
+"site.features.optionalClickAPlayer": "Optional Klicken zum Folgen: Klick auf eine Spielerzelle oder eine Masse in der Bestenliste folgt dem Spieler, Klick ins Leere beendet es",
 "site.features.expandingLandWorldSpectate": "Expanding Land World Spectate: Optional bewegt ein Klick auf die Minimap die Kamera dorthin",
 "site.features.hotkeyToEnlargeThe": "Hotkey zum Vergrößern der Minimap",
 "site.features.chatToolsNew": "Chat-Tools <span class=\"badge badge-new\">Neu</span>",

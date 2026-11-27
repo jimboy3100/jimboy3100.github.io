@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "Modalità spettatore <span class=\"badge badge-new\">Nuovo</span>",
 "site.features.followTheActionIn": "Segui l'azione in modalità spettatore libero.",
 "site.features.followALeaderboardPlayer": "Segui un giocatore della classifica: clicca su una massa in classifica (opzionale) oppure usa il tasto rapido <i>segui il prossimo giocatore in classifica</i>",
-"site.features.optionalClickAPlayer": "Opzionale: clicca sulla cellula di un giocatore per seguirlo, clicca su uno spazio vuoto per smettere",
+"site.features.optionalClickAPlayer": "Opzione Clicca per seguire: clicca la cellula di un giocatore o una massa in classifica per seguirlo, clicca uno spazio vuoto per fermarti",
 "site.features.expandingLandWorldSpectate": "Expanding Land World Spectate: con un clic opzionale sulla minimappa sposti lì la visuale",
 "site.features.hotkeyToEnlargeThe": "Tasto rapido per ingrandire la minimappa",
 "site.features.chatToolsNew": "Strumenti chat <span class=\"badge badge-new\">Nuovo</span>",

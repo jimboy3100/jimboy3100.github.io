@@ -378,8 +378,7 @@
       "name": "Spectate",
       "description": "Spectator mode settings.",
       "settings": [
-        "leaderboardClickSpectate",
-        "minimapClickSpectate",
+        "clickSpectate",
         "companionLive",
         "companionChat"
       ]

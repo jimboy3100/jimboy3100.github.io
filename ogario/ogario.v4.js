@@ -21580,9 +21580,7 @@ var defaultmapsettings = {
     showTargeting: true,
     showLbData: true,
     lbHideBots: false,
-    lbClickSpectate: false,       /* free spectate: leaderboard mass click follows that player */
-    clickSpectate: false,         /* free spectate: left click on a player cell follows that player */
-    minimapClickSpectate: false,  /* Expanding Land World Spectate: minimap click moves the camera */
+    clickSpectate: false,         /* click to follow: in free spectate a player cell or leaderboard mass click follows that player; in Expanding Land World Spectate a minimap click moves the camera (was three switches, lmFoldClickFollow) */
     noFocusHud: false,            /* warn while playing when keys/mouse no longer reach the game (alt-tab, 2nd window) */           /* small toast "#3 (passed nick)" when you climb the leaderboard */            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
     showTime: false,
     showStopwatch: false,         /* start / pause / stop stopwatch above the minimap (was the Tools tab button "Show Timer Calc.") */
@@ -21835,6 +21833,7 @@ function lmFoldLegacySettings(s) {
         s.cursorTracking = true;
         changed = true;
     }
+    if (lmFoldClickFollow(s)) changed = true;
     if (has('massFormat') || has('shortMass')) {
         var mf = has('massFormat') ? (typeof s.massFormat === 'number' ? s.massFormat : (typeof s.massFormat === 'string' && s.massFormat.trim() !== '' ? Number(s.massFormat) : NaN)) : NaN;
         /* no mode or 0 ("as Short mass", also what an unusable value fell back to): the switch decides */
@@ -21861,6 +21860,20 @@ function lmFoldLegacySettings(s) {
     }
     return changed || JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]) !== was;
 }
+/* "Click to follow" (clickSpectate) is one option: the leaderboard click (lbClickSpectate) and the
+ * Expanding Land minimap click (minimapClickSpectate) were two more switches for the same purpose.
+ * A stored, imported or profile value of either is folded in once: on when any of the three was on.
+ * Returns true when the object had one of them (they are removed). */
+function lmFoldClickFollow(s) {
+    if (!s || typeof s !== 'object') return false;
+    var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
+    if (!has('lbClickSpectate') && !has('minimapClickSpectate')) return false;
+    var on = function (v) { return v === true || v === 'true'; };
+    if (on(s.lbClickSpectate) || on(s.minimapClickSpectate)) s.clickSpectate = true;
+    delete s.lbClickSpectate;
+    delete s.minimapClickSpectate;
+    return true;
+}
 /* Hotkey commands merged into others: "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3,
  * "Screenshot mode" is Show/hide HUD, "Open the Lab" (removed) opens User Scripts. An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts, a list in
@@ -21880,6 +21893,8 @@ function lmRenameOldHotkeys(map) {
         if (!own(k)) continue;
         var v = String(map[k]), to = '', keyed = false, z;
         if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || /^hk-zoomSave[1-5]$/.test(v)) { delete map[k]; changed = true; continue; }
+        /* the spectator director's commands and camera lock (removed) */
+        if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
         else if (v === 'hk-screenshotMode') to = 'hk-showHUD';
         else if (v === 'hk-lmLab') { to = 'hk-lmPlugins'; keyed = true; }
@@ -21973,8 +21988,6 @@ var LM_EXPORT_KEYS = [
     { key: 'lmHudLayouts', type: 'o' },
     { key: 'lmCustomMacros', type: 'o' },
     { key: 'lmThemeWorkshop', type: 'o' },
-    { key: 'lm-director', type: 'o' },
-    { key: 'lm-director-bookmarks', type: 'a' },
     { key: 'lmPracticeCfg', type: 'o' },
     { key: 'lmAnalyticsGoals', type: 'o' },
     { key: 'lmCompanionPrivacy', type: 'o' },
@@ -22143,7 +22156,7 @@ if (window.LMi18n) window.LMi18n.onChange(function () {
     });
     /* the rest of the Settings tab that is not a switch, slider or heading (renamed below by
      * data-lm-key): the text fields and lists with a name (Hide chat messages containing, Snapped
-     * directions), the notes, the director button, the search box; they kept the language the menu
+     * directions), the notes, the search box; they kept the language the menu
      * was built in until a reload */
     var own = function (k) { var s = k && textLanguage[k]; return typeof s === 'string' && s ? s : ''; };
     $('#og-options .options-box .input-box').each(function () {
@@ -22153,7 +22166,6 @@ if (window.LMi18n) window.LMi18n.onChange(function () {
     var s2;
     if ((s2 = own('mergeNote'))) $('#og-options .mergeGroup > .lm-group-note').text(s2);
     if ((s2 = own('configNote'))) $('#og-options .profiles > .lm-group-note').text(s2);
-    if ((s2 = own('lmDirectorBtn'))) $('#lm-director-btn').text(s2);
     if (window.lmT) $('#lm-settings-search').attr('placeholder', '\uD83D\uDD0D ' + window.lmT('searchSettings'));
     /* the "Needs: ..." / "Not available on this server" notes under the rows */
     if (window.application && typeof application._lmDepRefresh === 'function') application._lmDepRefresh();
@@ -25867,11 +25879,7 @@ function thelegendmodproject() {
                         break;
                     case 'clickSpectate':
                         if (!checked && window.legendmod && legendmod._lmSpecCell) legendmod._lmSpecCellStop();
-                        break;
-                    case 'lbClickSpectate':
                         if (!checked && window.legendmod && legendmod._lmSpecLb != null) { legendmod._lmSpecLb = null; legendmod._lmSpecLbHud(); }
-                        break;
-                    case 'minimapClickSpectate':
                         this._lmMmSpecPE();
                         break;
                     case 'matchHistory':
@@ -27308,7 +27316,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27416,16 +27424,8 @@ function thelegendmodproject() {
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "noFocusHud", "centeredLb", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre"], "hudGroup");
             /* one choice for where the game stats line is ("at the top" and "at the bottom centre" were two switches) */
             this.addChoiceBox(".hudGroup", "statsPosition", "settings.statsPosition", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
-            /* Spectating and streaming: click to follow, the stream overlay and the spectator director */
-            this.addOptions(["lbClickSpectate", "clickSpectate", "minimapClickSpectate", "companionLive", "companionChat"], "spectateGroup");
-            $('<button type="button" id="lm-director-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
-                .text(this._lmMenuText('lmDirectorBtn'))
-                .appendTo('.spectateGroup')
-                .on('click', function (e) {
-                    e.preventDefault();
-                    if (window.LMDirector && typeof window.LMDirector.toggle === 'function') window.LMDirector.toggle();
-                    else if (window.toastr) toastr.info(lmT('game1.set.directorLoading'));
-                });
+            /* Spectating and streaming: click to follow and the stream overlay */
+            this.addOptions(["clickSpectate", "companionLive", "companionChat"], "spectateGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "hideEventBanner", "showTime", "showStopwatch", "killFeed", "massLossAlert", "analytics"], "statsGroup");
             /* Replays and history: the instant replay length slider is added below */
             this.addOptions(["recordReplays", "matchHistory", "personalBests"], "replayGroup");
@@ -30939,11 +30939,11 @@ function thelegendmodproject() {
                 this.lastDeath = this.deathLocations.length - 1;
             }
         },
-        /* optional (minimapClickSpectate): in Expanding Land World Spectate a minimap click moves
+        /* optional (clickSpectate, "click to follow"): in Expanding Land World Spectate a minimap click moves
          * the camera there. The minimap takes the mouse only while that applies; on phones the touch
          * stylesheet owns its pointer-events (tap to expand) and it is left alone. */
         _lmMmSpecPE() {
-            var on = !!(defaultmapsettings.minimapClickSpectate && LM && LM._isWorldSpectating && LM.isLegendWorld && !LM.play);
+            var on = !!(defaultmapsettings.clickSpectate && LM && LM._isWorldSpectating && LM.isLegendWorld && !LM.play);
             if (!!this._lmMmSpecOn === on) return;
             var mm = document.getElementById('minimap-hud');
             if (!mm || mm.style.getPropertyPriority('pointer-events') === 'important') return;
@@ -30960,7 +30960,7 @@ function thelegendmodproject() {
             }
         },
         _lmMmSpecClick(e) {
-            if (!this._lmMmSpecOn || !defaultmapsettings.minimapClickSpectate || !(LM._isWorldSpectating && LM.isLegendWorld && !LM.play)) return;
+            if (!this._lmMmSpecOn || !defaultmapsettings.clickSpectate || !(LM._isWorldSpectating && LM.isLegendWorld && !LM.play)) return;
             if (!this.miniMap || !ogario.mapOffsetFixed || !(LM.mapSize > 0)) return;
             var rect = this.miniMap.getBoundingClientRect();
             if (!rect.width || !rect.height) return;
@@ -44134,15 +44134,7 @@ function thelegendmodproject() {
                         cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                         /* a free spectate follow (leaderboard / clicked player) wins over teammate targeting */
                         var _lmSpFol = !this.play && this.isFreeSpectate && (this._lmSpecLb != null || !!this._lmSpecCell);
-                        /* Spectator director (ogario/modules/director.js): the point its camera looks at, local
-                         * coordinates like the follows below; null while it leaves the camera alone (always while
-                         * playing, and while one of the follows below runs) */
-                        var _lmDirP = !this.play && this.isFreeSpectate && this === window.legendmod && window.LMDirector && window.LMDirector.enabled ? window.LMDirector.camPoint(this) : null;
-                        if (_lmDirP) {
-                            cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(_lmDirP.x) : _lmDirP.x;
-                            cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(_lmDirP.y) : _lmDirP.y;
-                        }
-                        else if (!this.play && this.targeting && !_lmSpFol || this.pause) {
+                        if (!this.play && this.targeting && !_lmSpFol || this.pause) {
                             /* targetX/Y are local (rotated) coordinates: translate like the cursor. */
                             cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.targetX) : this.targetX;
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.targetY) : this.targetY;
@@ -52848,7 +52840,7 @@ function thelegendmodproject() {
             window.targetingLeadY = _lmG.y;
             legendmod.drawCommander2 = true;
             /* optional: in free spectate the camera follows that player (a second click stops) */
-            if (defaultmapsettings.lbClickSpectate && !legendmod.play && legendmod.isFreeSpectate) {
+            if (defaultmapsettings.clickSpectate && !legendmod.play && legendmod.isFreeSpectate) {
                 legendmod._lmSpecLb = legendmod._lmSpecLb === o ? null : o;
                 if (legendmod._lmSpecLb != null) legendmod._lmSpecCell = null; /* one follow at a time */
                 legendmod._lmSpecLbHud();
@@ -78495,7 +78487,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     _wsPanDY = (_wsNY > 0 ? _wsNY - _wsDZ : _wsNY + _wsDZ) / (1 - _wsDZ);
                 }
 
-                /* minimapClickSpectate: no mouse pan while the pointer is on the minimap */
+                /* click to follow (minimap click): no mouse pan while the pointer is on the minimap */
                 if (LM._lmMmHover) { _wsPanDX = 0; _wsPanDY = 0; }
 
                 // Pan speed: ~50 game units per 60 fps frame at full displacement (frame-rate independent)
@@ -78522,19 +78514,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 targetCamX += LM._worldSpecPanX;
                 targetCamY += LM._worldSpecPanY;
-            }
-            /* Spectator director (ogario/modules/director.js) in World Spectate: its camera replaces the
-             * mouse pan; the pan follows it, so handing the camera back does not jump */
-            var _lmDirWS = null;
-            if (LM._isWorldSpectating && LM.isLegendWorld && !LM.play && window.LMDirector && window.LMDirector.enabled &&
-                Number.isFinite(LM.viewX) && Number.isFinite(LM.viewY)) {
-                _lmDirWS = window.LMDirector.camPoint(LM);
-                if (_lmDirWS) {
-                    LM._worldSpecPanX = _lmDirWS.x - LM.viewX;
-                    LM._worldSpecPanY = _lmDirWS.y - LM.viewY;
-                    targetCamX = _lmDirWS.x;
-                    targetCamY = _lmDirWS.y;
-                }
             }
 
 
@@ -78568,14 +78547,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var _lmCamUnit = window.multiboxPlayerEnabled || 0;
             var _lmCamSwitched = this._lmCamUnit !== undefined && this._lmCamUnit !== _lmCamUnit;
             this._lmCamUnit = _lmCamUnit;
-            /* Camera lock hotkey (spectate only): the camera stays where it was locked */
-            if (window.LMHudHelpers && window.LMHudHelpers.camLocked && !activeHasCells) {
-                var _lmLockPt = this._lmCamLockPt || (this._lmCamLockPt = { x: 0, y: 0 });
-                if (window.LMHudHelpers.camLockTarget(LM, _lmLockPt)) {
-                    targetCamX = _lmLockPt.x;
-                    targetCamY = _lmLockPt.y;
-                }
-            }
             if (activeHasCells) {
                 if ((this.camX == null && this.camY == null) || Math.hypot(targetCamX - this.camX, targetCamY - this.camY) > 1500 || (_lmCamSwitched && !defaultmapsettings.cameraSmoothLerp)) {
                     this.camX = targetCamX;
@@ -78586,10 +78557,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.camX += (targetCamX - this.camX) * _lmKCam;
                     this.camY += (targetCamY - this.camY) * _lmKCam;
                 }
-            } else if (_lmDirWS) {
-                /* the director eases its own moves (transition time / easing in its panel) */
-                this.camX = targetCamX;
-                this.camY = targetCamY;
             } else {
                 /* was (29*camX + target)/30 per frame: same at 60 fps */
                 var _lmKSpec = 1 - Math.pow(29 / 30, this._lmFrameF || 1);
@@ -89179,17 +89146,6 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(companionScript);
     } catch (e) {
         console.warn('[LM] Error loading companion script:', e);
-    }
-    /* Spectator director (auto camera, watchlist, camera bookmarks, broadcast HUD, leaderboard history):
-     * does nothing until its panel is opened or one of its hotkeys (no default keys) is used */
-    try {
-        var directorScript = document.createElement('script');
-        directorScript.type = 'text/javascript';
-        directorScript.src = 'https://www.legendmod.ml/ogario/modules/director.js?v=' + (window.OgVer || '');
-        directorScript.charset = 'utf-8';
-        document.body.appendChild(directorScript);
-    } catch (e) {
-        console.warn('[LM] Error loading spectator director script:', e);
     }
     /* HUD editor: saved HUD layouts (applied only when one is active); the editor itself loads
      * when it is first opened (Theme > HUD, a hotkey with no default key) */

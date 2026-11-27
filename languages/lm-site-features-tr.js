@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "İzleme <span class=\"badge badge-new\">Yeni</span>",
 "site.features.followTheActionIn": "Serbest izleme modunda aksiyonu takip edin.",
 "site.features.followALeaderboardPlayer": "Liderlik tablosundaki bir oyuncuyu takip edin: liderlik tablosundaki bir kütleye tıklayın (isteğe bağlı) veya <i>sonraki liderlik tablosu oyuncusunu takip et</i> kısayolunu kullanın",
-"site.features.optionalClickAPlayer": "İsteğe bağlı: takip etmek için bir oyuncu hücresine tıklayın, durdurmak için boş alana tıklayın",
+"site.features.optionalClickAPlayer": "İsteğe bağlı Takip için tıkla: oyuncuyu takip etmek için hücresine ya da sıralamadaki kütlesine tıkla, durdurmak için boş yere tıkla",
 "site.features.expandingLandWorldSpectate": "Expanding Land World Spectate: isteğe bağlı olarak mini haritaya tıklamak kamerayı oraya taşır",
 "site.features.hotkeyToEnlargeThe": "Mini haritayı büyütmek için kısayol tuşu",
 "site.features.chatToolsNew": "Sohbet Araçları <span class=\"badge badge-new\">Yeni</span>",

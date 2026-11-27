@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "観戦 <span class=\"badge badge-new\">新機能</span>",
 "site.features.followTheActionIn": "自由観戦で戦いを追いかけられます。",
 "site.features.followALeaderboardPlayer": "ランキングのプレイヤーを追従：ランキングの質量をクリック（任意）するか、<i>次のランキングプレイヤーを追従</i>ショートカットキーを使います",
-"site.features.optionalClickAPlayer": "任意：プレイヤーのセルをクリックすると追従、何もない場所をクリックすると停止",
+"site.features.optionalClickAPlayer": "オプションのクリックで追跡：プレイヤーのセルかランキングの質量をクリックで追跡、何もない所をクリックで停止",
 "site.features.expandingLandWorldSpectate": "Expanding Landのワールド観戦：ミニマップをクリックするとカメラがその場所へ移動（任意）",
 "site.features.hotkeyToEnlargeThe": "ミニマップを拡大するショートカットキー",
 "site.features.chatToolsNew": "チャットツール <span class=\"badge badge-new\">新機能</span>",

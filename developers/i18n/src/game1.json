@@ -2735,24 +2735,6 @@
     "ja": "(利用不可)",
     "it": "(non disponibile)"
   },
-  "game1.set.directorLoading": {
-    "en": "The spectator director is still loading. Try again in a moment.",
-    "el": "Ο σκηνοθέτης θεατή φορτώνει ακόμα. Δοκιμάστε ξανά σε λίγο.",
-    "es": "El director de espectador aún se está cargando. Inténtalo en un momento.",
-    "bg": "Режисьорът за наблюдение още се зарежда. Опитайте след малко.",
-    "fr": "Le réalisateur spectateur se charge encore. Réessayez dans un instant.",
-    "ar": "مخرج المشاهدة ما زال قيد التحميل. حاول بعد لحظة.",
-    "zh": "觀戰導播仍在載入，請稍後再試。",
-    "ru": "Режиссёр наблюдения ещё загружается. Попробуйте чуть позже.",
-    "de": "Die Zuschauer-Regie lädt noch. Versuche es gleich noch einmal.",
-    "tr": "İzleyici yönetmeni hâlâ yükleniyor. Biraz sonra tekrar deneyin.",
-    "pl": "Reżyser obserwacji wciąż się wczytuje. Spróbuj za chwilę.",
-    "nl": "De kijkregie wordt nog geladen. Probeer het zo opnieuw.",
-    "pt": "O diretor de espectador ainda está carregando. Tente de novo daqui a pouco.",
-    "id": "Sutradara spectator masih dimuat. Coba lagi sebentar lagi.",
-    "ja": "観戦ディレクターを読み込み中です。少ししてからもう一度お試しください。",
-    "it": "La regia della modalità spettatore si sta ancora caricando. Riprova tra poco."
-  },
   "game1.set.lineSplitHelp": {
     "en": "<strong>Usage:</strong> assign \"Line split\" to a key or a mouse button in the Hotkeys window. Point the cursor where the line should go and press it once: the aim locks on that line, the splits fire, and the aim stays locked for the time above. Press it again to cancel.",
     "el": "<strong>Χρήση:</strong> ορίστε το «Line split» σε πλήκτρο ή κουμπί ποντικιού στο παράθυρο Πλήκτρα συντόμευσης. Στρέψτε τον κέρσορα εκεί που πρέπει να πάει η γραμμή και πατήστε το μία φορά: ο στόχος κλειδώνει σε αυτή τη γραμμή, γίνονται τα split και ο στόχος μένει κλειδωμένος για τον χρόνο παραπάνω. Πατήστε το ξανά για ακύρωση.",

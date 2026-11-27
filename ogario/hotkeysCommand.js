@@ -614,7 +614,7 @@
 				},
 				defaultKey: '',
 				keyDown() {
-					/* works in free spectate whether or not lbClickSpectate is on (binding the key is the opt-in):
+					/* works in free spectate whether or not Click to follow is on (binding the key is the opt-in):
 					 * steps the followed player through the leaderboard ghost cells, wrapping around */
 					var lm = window.legendmod;
 					if (!lm || lm.play) return;
@@ -629,139 +629,6 @@
 					lm._lmSpecLbHud && lm._lmSpecLbHud();
 					var label = lmT('settings.lmSpecFollowing');
 					if (window.toastr) toastr.info(label + ' #' + (lm._lmSpecLb + 1));
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			/* Spectator director (ogario/modules/director.js): only while spectating, never while playing */
-			'hk-director': {
-				get label() {
-					return lmT('settings.hk-director');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.toggle) d.toggle();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirAuto': {
-				get label() {
-					return lmT('settings.hk-dirAuto');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.toggleAuto) d.toggleAuto();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirBroadcast': {
-				get label() {
-					return lmT('settings.hk-dirBroadcast');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.toggleBroadcast) d.toggleBroadcast();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirWatchNext': {
-				get label() {
-					return lmT('settings.hk-dirWatchNext');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.watchNext) d.watchNext();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirWatchPrev': {
-				get label() {
-					return lmT('settings.hk-dirWatchPrev');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.watchPrev) d.watchPrev();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirWatchAdd': {
-				get label() {
-					return lmT('settings.hk-dirWatchAdd');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.watchAddUnderCursor) d.watchAddUnderCursor();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirMarkSave': {
-				get label() {
-					return lmT('settings.hk-dirMarkSave');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.saveView) d.saveView('');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirMark1': {
-				get label() {
-					return lmT('settings.hk-dirMark1');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(0);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirMark2': {
-				get label() {
-					return lmT('settings.hk-dirMark2');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(1);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirMark3': {
-				get label() {
-					return lmT('settings.hk-dirMark3');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(2);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirMark4': {
-				get label() {
-					return lmT('settings.hk-dirMark4');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(3);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-dirMark5': {
-				get label() {
-					return lmT('settings.hk-dirMark5');
-				},
-				defaultKey: '',
-				keyDown() {
-					var d = window.LMDirector; if (d && d.recallBookmark) d.recallBookmark(4);
 				},
 				keyUp: null,
 				type: 'normal'
@@ -1280,15 +1147,6 @@
                 keyUp() {
                     window.LMHudHelpers && window.LMHudHelpers.precisionZoom(false);
                 },
-                type: 'normal'
-            },
-            'hk-cameraLock': {
-                get label() { return lmT('settings.hk-cameraLock'); },
-                defaultKey: '',
-                keyDown() {
-                    window.LMHudHelpers && window.LMHudHelpers.toggleCamLock();
-                },
-                keyUp: null,
                 type: 'normal'
             },
             'hk-voiceChat': {

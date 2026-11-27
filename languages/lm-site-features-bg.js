@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "Наблюдение <span class=\"badge badge-new\">Ново</span>",
 "site.features.followTheActionIn": "Следете действието в свободно наблюдение.",
 "site.features.followALeaderboardPlayer": "Следвайте играч от класацията: щракнете върху маса в класацията (по желание) или използвайте клавиша <i>следвай следващия играч от класацията</i>",
-"site.features.optionalClickAPlayer": "По желание: щракнете върху клетка на играч, за да я следвате, щракнете в празно място, за да спрете",
+"site.features.optionalClickAPlayer": "Опция Щракни, за да следваш: щракни върху клетка на играч или маса в класацията, за да го следваш, щракни на празно място, за да спреш",
 "site.features.expandingLandWorldSpectate": "Expanding Land World Spectate: по желание щракване върху миникартата премества камерата там",
 "site.features.hotkeyToEnlargeThe": "Клавиш за уголемяване на миникартата",
 "site.features.chatToolsNew": "Инструменти за чата <span class=\"badge badge-new\">Ново</span>",

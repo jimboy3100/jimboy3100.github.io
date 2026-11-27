@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "المشاهدة <span class=\"badge badge-new\">جديد</span>",
 "site.features.followTheActionIn": "تابع الأحداث في وضع المشاهدة الحرة.",
 "site.features.followALeaderboardPlayer": "تابع لاعبًا من لوحة الصدارة: انقر على كتلة في لوحة الصدارة (اختياري) أو استخدم مفتاح <i>متابعة اللاعب التالي في لوحة الصدارة</i>",
-"site.features.optionalClickAPlayer": "اختياري: انقر على خلية لاعب لمتابعتها، وانقر على مساحة فارغة للتوقف",
+"site.features.optionalClickAPlayer": "خيار انقر للمتابعة: انقر على خلية لاعب أو كتلة في لوحة الصدارة لمتابعته، وانقر على مكان فارغ للإيقاف",
 "site.features.expandingLandWorldSpectate": "المشاهدة العالمية في Expanding Land: النقر على الخريطة المصغرة (اختياري) ينقل الكاميرا إلى هناك",
 "site.features.hotkeyToEnlargeThe": "مفتاح اختصار لتكبير الخريطة المصغرة",
 "site.features.chatToolsNew": "أدوات الدردشة <span class=\"badge badge-new\">جديد</span>",

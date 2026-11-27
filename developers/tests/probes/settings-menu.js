@@ -83,6 +83,9 @@
     if (!el) fail.push('missing #' + id);
     else if (!$(el).closest('.options-box.' + place[id]).length) fail.push('#' + id + ' not in .' + place[id]);
   });
+  /* one Click to follow option; the spectator director is gone */
+  ['lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
+  if (window.LMDirector || document.querySelector('script[src*="modules/director.js"]')) fail.push('spectator director still loaded');
   $('#og-options > .options-box > h5').each(function () {
     var t = $(this).text().trim();
     if (!t || t === 'undefined') fail.push('empty heading in .' + $(this).parent().attr('class'));

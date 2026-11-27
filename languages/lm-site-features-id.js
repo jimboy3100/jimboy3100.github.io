@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "Spectate <span class=\"badge badge-new\">Baru</span>",
 "site.features.followTheActionIn": "Ikuti keseruannya lewat spectate bebas.",
 "site.features.followALeaderboardPlayer": "Ikuti pemain di leaderboard: klik massa di leaderboard (opsional) atau pakai hotkey <i>ikuti pemain leaderboard berikutnya</i>",
-"site.features.optionalClickAPlayer": "Opsional: klik sel pemain untuk mengikutinya, klik area kosong untuk berhenti",
+"site.features.optionalClickAPlayer": "Opsi Klik untuk mengikuti: klik sel pemain atau massa di leaderboard untuk mengikuti pemain itu, klik area kosong untuk berhenti",
 "site.features.expandingLandWorldSpectate": "Spectate Dunia Expanding Land: klik minimap (opsional) untuk memindahkan kamera ke sana",
 "site.features.hotkeyToEnlargeThe": "Hotkey untuk memperbesar minimap",
 "site.features.chatToolsNew": "Alat Chat <span class=\"badge badge-new\">Baru</span>",

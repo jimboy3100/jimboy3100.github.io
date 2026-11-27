@@ -14,7 +14,7 @@
  *   hudCellPanel       small panel: own cell masses (sorted), count/16, largest, smallest, total
  *   massFormat         1 exact, 2 12.3k, 3 auto (Settings > Mass: "Mass format"; 0 of older
  *                      versions was "as Short mass"); the core draws 1 and 2 itself
- * Hotkeys (no default keys): hold for precision zoom, camera lock while spectating.
+ * Hotkey (no default key): hold for precision zoom.
  *
  * ogario.v4.js calls frame() once per rendered frame after the cell overlays; it returns at once
  * while every option is off. Drawing reuses objects and cached strings: no garbage per frame.
@@ -696,11 +696,7 @@
         else hidePanel();
     }
 
-    /* ───────────────────────── 6. zoom hotkeys and camera lock ───────────────────────── */
-
-    function toast(msg) {
-        try { if (window.toastr) window.toastr.info(msg, '', { timeOut: 1500 }); } catch (e) { }
-    }
+    /* ───────────────────────── 6. zoom hotkeys ───────────────────────── */
 
     /* Precision zoom: while the key is held the zoom is the zoom to return to times
      * _precisionMultiplier. The zoom to return to is always the current zoom divided by it, so a
@@ -740,36 +736,6 @@
         }
     }
 
-    function spectating(LM) {
-        return !!(LM && !LM.play && !(LM.playerCellsMulti && LM.playerCellsMulti.length));
-    }
-    function toggleCamLock() {
-        var LM = window.legendmod, R = window.drawRender;
-        if (api.camLocked) {
-            api.camLocked = false;
-            toast(tr('camUnlocked'));
-            return;
-        }
-        if (!spectating(LM)) { toast(tr('camSpectate')); return; }
-        if (!R || !Number.isFinite(R.camX) || !Number.isFinite(R.camY)) return;
-        api.camLockX = R.camX;
-        api.camLockY = R.camY;
-        _camLockSock = LM.socket || null;
-        api.camLocked = true;
-        toast(tr('camLocked'));
-    }
-    /* setView(): the locked point, or false (and unlocked) once you play again or the connection
-     * changes (another server or a reconnect: the point belongs to the old world, whose coordinates
-     * the new connection does not share, so the camera stayed on empty space) */
-    var _camLockSock = null;
-    function camLockTarget(LM, out) {
-        if (!api.camLocked) return false;
-        if (!spectating(LM) || (LM.socket || null) !== _camLockSock) { api.camLocked = false; _camLockSock = null; return false; }
-        out.x = api.camLockX;
-        out.y = api.camLockY;
-        return true;
-    }
-
     api = window.LMHudHelpers = {
         frame: frame,
         worldActive: worldActive,
@@ -780,11 +746,6 @@
         refUnit: function () { return refOwner; },
         mergeLeft: mergeLeft,
         precisionZoom: precisionZoom,
-        toggleCamLock: toggleCamLock,
-        camLockTarget: camLockTarget,
-        camLocked: false,
-        camLockX: 0,
-        camLockY: 0,
         /* pure parts, for the tests */
         _pure: {
             updateDirection: updateDirection,

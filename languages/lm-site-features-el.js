@@ -79,7 +79,7 @@
 "site.features.spectatingNew": "Παρακολούθηση <span class=\"badge badge-new\">Νέο</span>",
 "site.features.followTheActionIn": "Ακολουθήστε τη δράση στο ελεύθερο spectate.",
 "site.features.followALeaderboardPlayer": "Ακολουθήστε έναν παίκτη της κατάταξης: κάντε κλικ σε μια μάζα της κατάταξης (προαιρετικό) ή χρησιμοποιήστε το πλήκτρο <i>ακολούθησε τον επόμενο παίκτη της κατάταξης</i>",
-"site.features.optionalClickAPlayer": "Προαιρετικό: κάντε κλικ στο κύτταρο ενός παίκτη για να το ακολουθήσετε, κλικ σε κενό σημείο για διακοπή",
+"site.features.optionalClickAPlayer": "Προαιρετικό Κλικ για ακολούθηση: κλικ σε κελί παίκτη ή μάζα στην κατάταξη για να τον ακολουθήσεις, κλικ σε κενό για διακοπή",
 "site.features.expandingLandWorldSpectate": "Expanding Land World Spectate: προαιρετικά, κλικ στο minimap μεταφέρει την κάμερα εκεί",
 "site.features.hotkeyToEnlargeThe": "Πλήκτρο για μεγέθυνση του minimap",
 "site.features.chatToolsNew": "Εργαλεία chat <span class=\"badge badge-new\">Νέο</span>",

@@ -204,8 +204,8 @@ check('diff: a set differing only in the phone control layout is not the same', 
     const src = makeStorage(0);
     const conf = {
       lmHudLayouts: { v: 1, active: 'A', list: [{ name: 'A', c: {} }] }, lmCustomMacros: { slots: [{ name: 'm', steps: [] }] },
-      lmThemeWorkshop: { v: 1, themes: [] }, 'lm-director': { speed: 3 },
-      'lm-director-bookmarks': [{ x: 1, y: 2 }], lmPracticeCfg: { bots: 4 }, lmAnalyticsGoals: { v: 1, custom: [] },
+      lmThemeWorkshop: { v: 1, themes: [] },
+      lmPracticeCfg: { bots: 4 }, lmAnalyticsGoals: { v: 1, custom: [] },
       lmSettingsProfiles: [{ id: 'p1', name: 'P', data: { s: { showMass: true } } }], lmSettingsProfilesRules: { enabled: false },
       lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPerfBackup: { jellyPhisycs: true }, lmPresetUndo: { s: {} },
       /* the radial menu's commands and the screenshot options */
@@ -218,6 +218,8 @@ check('diff: a set differing only in the phone control layout is not the same', 
     check('export: no history, statistics, watch list or backups', Object.keys(priv).every(k => !(k in out)));
     src.setItem('lm-zoom-bookmarks', '[1,0,3]');
     check('export: the removed zoom bookmarks are not carried', !('lm-zoom-bookmarks' in exp(src)));
+    src.setItem('lm-director', J({ speed: 3 })); src.setItem('lm-director-bookmarks', J([{ x: 1, y: 2 }]));
+    check('export: the removed spectator director is not carried', !('lm-director' in exp(src)) && !('lm-director-bookmarks' in exp(src)));
     /* the old skin collections are player profiles now: never exported, but an older export
      * still brings them in (they become profiles on the reload after the import) */
     const srcC = makeStorage(0);
