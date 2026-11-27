@@ -918,16 +918,19 @@
         var preHd = el('div', 'hd');
         preHd.appendChild(el('span', '', T('misc.editor.presets')));
         layDlg.appendChild(preHd);
-        Object.keys(PRESETS).forEach(function (pn) {
+        PRESETS.forEach(function (p) {
             var pit = el('div', 'it');
-            pit.appendChild(el('span', '', pn));
+            /* the name in the chosen language (data-i18n: a language change while it is open) */
+            var nm = el('span', '', T(p.lk));
+            nm.setAttribute('data-i18n', p.lk);
+            pit.setAttribute('data-preset', p.id);
+            pit.appendChild(nm);
             pit.appendChild(btn('misc.editor.load', 'misc.editor.loadTitle', function () {
-                var p = PRESETS[pn];
-                if (!p) return;
-                /* A5: only replace the current orientation, preserve the other */
+                /* A5: only replace the current orientation, preserve the other; each orientation has
+                 * its own positions (a portrait screen got the landscape ones) */
                 var orient = window.innerWidth >= window.innerHeight ? 'landscape' : 'portrait';
                 var other = orient === 'landscape' ? 'portrait' : 'landscape';
-                work[orient] = copy(p[orient] || p.landscape);
+                work[orient] = copy(p[orient]);
                 if (work[other] === undefined) work[other] = null;
                 showLayouts();
                 render();
@@ -958,41 +961,50 @@
     }
 
     api.open = open;
-    /* M3: Built-in layout presets — available in the named layouts dialog.
-     * These never overwrite saved layouts; the player must explicitly load one. */
-    var PRESETS = {
-        'Classic': { landscape: { controls: {
-            split: { cx: 0.88, cy: 0.75, s: 1.2 },
-            feed: { cx: 0.88, cy: 0.55, s: 1.2 },
-            x4: { cx: 0.78, cy: 0.42, s: 0.8 },
-            x16: { cx: 0.88, cy: 0.42, s: 0.8 },
-            joystick: { cx: 0.2, cy: 0.5, w: 0.4, h: 1 }
-        }}, portrait: null },
-        'Left-handed': { landscape: { controls: {
-            split: { cx: 0.12, cy: 0.75, s: 1.2 },
-            feed: { cx: 0.12, cy: 0.55, s: 1.2 },
-            x4: { cx: 0.22, cy: 0.42, s: 0.8 },
-            x16: { cx: 0.12, cy: 0.42, s: 0.8 },
-            menu: { cx: 0.95, cy: 0.5, s: 1.0 },
-            joystick: { cx: 0.8, cy: 0.5, w: 0.4, h: 1 }
-        }}, portrait: null },
-        'Competitive': { landscape: { controls: {
-            split: { cx: 0.9, cy: 0.8, s: 1.4 },
-            feed: { cx: 0.9, cy: 0.55, s: 1.0 },
-            x4: { cx: 0.78, cy: 0.8, s: 1.1 },
-            x16: { cx: 0.78, cy: 0.55, s: 0.9 },
-            multibox: { cx: 0.78, cy: 0.35, s: 0.8 },
-            joystick: { cx: 0.2, cy: 0.5, w: 0.4, h: 1 }
-        }}, portrait: null },
-        'Multibox': { landscape: { controls: {
-            split: { cx: 0.88, cy: 0.8, s: 1.3 },
-            feed: { cx: 0.88, cy: 0.6, s: 1.0 },
-            x4: { cx: 0.78, cy: 0.5, s: 0.9 },
-            x16: { cx: 0.88, cy: 0.5, s: 0.9 },
-            multibox: { cx: 0.78, cy: 0.8, s: 1.1 },
-            joystick: { cx: 0.2, cy: 0.5, w: 0.4, h: 1 }
-        }}, portrait: null }
-    };
+    /* M3: Built-in layout presets, in the named layouts dialog. They never overwrite saved layouts:
+     * the player loads one, sees it and saves or cancels. The positions are fractions of the screen,
+     * chosen so that on the usual phone screens (640x360 to 915x412 in landscape, 412x915 and
+     * 768x1024 in portrait) no control overlaps another one, the minimap, the leaderboard or the
+     * left button row (the first versions overlapped them all on a 915x412 phone; probe
+     * mobile-presets). Right-handed ones keep the combat buttons left of the minimap and below the
+     * leaderboard; in portrait the combat buttons are in the lower half, above the minimap. */
+    var JOY_L = { cx: 0.25, cy: 0.5, w: 0.5, h: 1 }, JOY_P = { cx: 0.3, cy: 0.7, w: 0.6, h: 0.6 };
+    var PRESETS = [
+        { id: 'classic', lk: 'pkg.agm.presetClassic',
+            landscape: { controls: {
+                split: { cx: 0.66, cy: 0.82, s: 1.15 }, feed: { cx: 0.52, cy: 0.84, s: 1 },
+                x4: { cx: 0.66, cy: 0.58, s: 0.9 }, x16: { cx: 0.74, cy: 0.62, s: 0.9 }, joystick: JOY_L } },
+            portrait: { controls: {
+                split: { cx: 0.8, cy: 0.74, s: 1.1 }, feed: { cx: 0.55, cy: 0.82, s: 1 },
+                x4: { cx: 0.56, cy: 0.7, s: 0.9 }, x16: { cx: 0.68, cy: 0.64, s: 0.9 }, joystick: JOY_P } } },
+        { id: 'left', lk: 'pkg.agm.presetLeft',
+            landscape: { controls: {
+                split: { cx: 0.14, cy: 0.64, s: 1.15 }, feed: { cx: 0.3, cy: 0.66, s: 1 },
+                x4: { cx: 0.12, cy: 0.36, s: 0.9 }, x16: { cx: 0.25, cy: 0.38, s: 0.9 },
+                joystick: { cx: 0.75, cy: 0.5, w: 0.5, h: 1 } } },
+            portrait: { controls: {
+                split: { cx: 0.2, cy: 0.74, s: 1.1 }, feed: { cx: 0.45, cy: 0.82, s: 1 },
+                x4: { cx: 0.44, cy: 0.7, s: 0.9 }, x16: { cx: 0.32, cy: 0.64, s: 0.9 },
+                joystick: { cx: 0.7, cy: 0.7, w: 0.6, h: 0.6 } } } },
+        { id: 'competitive', lk: 'pkg.agm.presetCompetitive',
+            landscape: { controls: {
+                split: { cx: 0.68, cy: 0.8, s: 1.35 }, feed: { cx: 0.52, cy: 0.86, s: 1 },
+                x4: { cx: 0.55, cy: 0.6, s: 1 }, x16: { cx: 0.63, cy: 0.56, s: 0.9 },
+                multibox: { cx: 0.76, cy: 0.64, s: 1 }, joystick: JOY_L } },
+            portrait: { controls: {
+                split: { cx: 0.8, cy: 0.74, s: 1.25 }, feed: { cx: 0.55, cy: 0.84, s: 1 },
+                x4: { cx: 0.55, cy: 0.71, s: 1 }, x16: { cx: 0.66, cy: 0.63, s: 0.9 },
+                multibox: { cx: 0.86, cy: 0.6, s: 1 }, joystick: JOY_P } } },
+        { id: 'multibox', lk: 'pkg.agm.presetMultibox',
+            landscape: { controls: {
+                split: { cx: 0.68, cy: 0.82, s: 1.25 }, multibox: { cx: 0.52, cy: 0.86, s: 1.3 },
+                feed: { cx: 0.55, cy: 0.58, s: 1 }, x4: { cx: 0.66, cy: 0.56, s: 0.9 },
+                x16: { cx: 0.76, cy: 0.62, s: 0.9 }, joystick: JOY_L } },
+            portrait: { controls: {
+                split: { cx: 0.8, cy: 0.74, s: 1.15 }, multibox: { cx: 0.55, cy: 0.84, s: 1.3 },
+                feed: { cx: 0.55, cy: 0.7, s: 1 }, x4: { cx: 0.68, cy: 0.62, s: 0.9 },
+                x16: { cx: 0.84, cy: 0.58, s: 0.9 }, joystick: JOY_P } } }
+    ];
     api.PRESETS = PRESETS;
     /* a language change while the editor is open: the bar's marked texts follow (LMi18n.apply), the
      * texts render() writes (names, warnings, Snap, Show/Hide, the control list) are written again */
