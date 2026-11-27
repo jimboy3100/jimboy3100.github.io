@@ -41902,11 +41902,15 @@ function thelegendmodproject() {
             };
             /* a message still queued from a replaced socket (map border, cells) is not this server's */
             var _lmSock = this.socket;
+            /* the replay URL reaches no server: its late error/close must not wipe a replay
+             * that is already playing (connection-level flush of border, own cells, cells) */
+            var _lmReplaySock = url.indexOf('imsolo.pro.replay') !== -1;
             this.socket.onmessage = function (t) {
                 if (app.socket !== _lmSock) { if (app._lmND) app._lmND.stale++; return; }
                 app.onMessage(t);
             };
             this.socket.onerror = function (t) {
+                if (_lmReplaySock) return;
                 /* Enhanced delt.io error logging */
                 if (app.serverType === 'deltio') {
                     console.error('%c[delt.io]%c WebSocket error on ' + (app.ws || url), 'color:#e44', 'color:inherit', t);
@@ -41914,6 +41918,7 @@ function thelegendmodproject() {
                 app.onError(t);
             };
             this.socket.onclose = function (t) {
+                if (_lmReplaySock) return;
                 /* Enhanced delt.io close logging */
                 if (app.serverType === 'deltio') {
                     var _dtCode = t ? t.code : '?';
