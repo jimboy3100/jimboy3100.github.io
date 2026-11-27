@@ -51,14 +51,23 @@ const trackedSet = new Set(tracked);
 records.forEach((r) => approvalProblems(r, trackedSet.has(r.oldPath)).forEach((m) => ok(false, r.oldPath + ': ' + m)));
 /* files that may name removed paths: the manifest, the tests that check they stay removed and the
  * changelog, whose release notes say which files a release removed */
-const SKIP = new Set(['developers/audit/manifest.json', 'developers/tests/i18n-archived.js', 'developers/tests/manifestrefs.js', 'developers/tests/concatexport.js', 'developers/tests/swretire.js', 'changelog.html']);
+const SKIP = new Set(['developers/audit/manifest.json', 'developers/tests/i18n-archived.js', 'developers/tests/manifestrefs.js', 'developers/tests/concatexport.js', 'developers/tests/swretire.js', 'changelog.html',
+    /* the skin resolver and its tools: old skin URLs on purpose (they must keep resolving) */
+    'developers/tests/skinresolver.js', 'developers/tests/skindownload.js', 'developers/skins/mirror-jimboy3000.txt', 'ogario/skinregistry.js']);
 /* the scanner's config: its lists of deleted pages and assets are records too, the rest (files to scan) is not */
 const SCAN_CONFIG = 'developers/i18n/scan-config.json';
 const RECORD_KEYS = ['deleted', 'deletedAssets'];
 const TEXT = /\.(js|cjs|mjs|html?|css|json|jsonld|md|txt|xml|ps1|py|yml|yaml|ttl|rdf|webmanifest)$/i;
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-const gone = records.filter((r) => r.approvedForDeletion);
+/* "deleted": false: approved, still in the tree, to be deleted later from this list (the skin
+ * duplicate records); its new place must exist already */
+const pending = records.filter((r) => r.deleted === false);
+pending.forEach((r) => {
+    ok(trackedSet.has(r.oldPath), r.oldPath + ' is marked as still in the tree ("deleted": false) but is not tracked');
+    if (r.canonicalPath) ok(trackedSet.has(r.canonicalPath), r.oldPath + ': its canonical file ' + r.canonicalPath + ' is missing');
+});
+const gone = records.filter((r) => r.approvedForDeletion && r.deleted !== false);
 gone.forEach((r) => {
     ok(!trackedSet.has(r.oldPath), r.oldPath + ' is approved for deletion but still tracked');
     if (r.canonicalPath) ok(trackedSet.has(r.canonicalPath), r.oldPath + ': its new place ' + r.canonicalPath + ' is missing');
@@ -82,6 +91,6 @@ tracked.forEach((f) => {
     });
 });
 
-console.log(records.length + ' manifest records, ' + gone.length + ' removed paths checked in ' + tracked.length + ' files');
+console.log(records.length + ' manifest records, ' + gone.length + ' removed paths checked in ' + tracked.length + ' files, ' + pending.length + ' still in the tree');
 console.log(fails ? 'RESULT: FAIL (' + fails + ')' : 'RESULT: PASS');
 process.exit(fails ? 1 : 0);

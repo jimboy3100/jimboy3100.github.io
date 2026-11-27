@@ -30,7 +30,7 @@ function method(name, prop) {
     if (i < 0) { missing.push(name); return null; }
     return name + ': function ' + src.slice(src.indexOf('(', i + 9), body(i));
 }
-const methods = ['_lmSkinKeys', 'teamSkinUrl', 'cacheCustomSkin', '_lmSkinSet', '_lmSkinAt', 'getCustomSkin', 'customSkinKey',
+const methods = ['_lmSkinKeys', 'teamSkinUrl', 'cacheCustomSkin', '_lmSkinSet', '_lmSkinAt', 'getCustomSkin', '_lmSkinCacheKey', 'customSkinKey',
     'toggleSkins', 'setVanillaSkins', 'setShowSkins', 'syncHotkeyOption', 'flushSkinsMap', 'skinsModeMsg'].map((m) => method(m)).filter(Boolean);
 methods.push(method('checkSkinURL', true));
 
@@ -38,6 +38,8 @@ const ctx = { console, JSON };
 ctx.window = ctx;
 vm.createContext(ctx);
 require('./lib/i18n-env')(ctx);
+/* the real skin resolver (vanillaskins asks it for flag, free, custom and level URLs) */
+const skinRes = require('./lib/skinres-env')(ctx, src);
 /* toastr as the page has it: each toast is a jQuery set; clear(el) removes that one, clear() all */
 const toasts = [];
 let clearedAll = 0;
@@ -46,7 +48,7 @@ ctx.toastr = {
     error: (m) => { const el = { ty: 'error', m: m, length: 1 }; toasts.push(el); return el; },
     clear: (el) => { if (!el) { clearedAll++; toasts.length = 0; return; } const i = toasts.indexOf(el); if (i >= 0) toasts.splice(i, 1); }
 };
-vm.runInContext([fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn('LowerCase'), fn('makeUpperCaseAfterUnderline'), fn('lmSkinsShown')].join('\n') +
+vm.runInContext(skinRes.accessor + [fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn('LowerCase'), fn('makeUpperCaseAfterUnderline'), fn('lmSkinsShown')].join('\n') +
     '\nvar _RE_CLAN_TAG = /^\\[.*?\\]\\s*|^\\u2104[^\\s]*\\s*/g;' +
     '\nvar drawRender = {};' +
     '\nvar legendflags = ["albania"];' +

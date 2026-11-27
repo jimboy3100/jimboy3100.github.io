@@ -5936,6 +5936,87 @@ function makeUpperCaseAfterUnderline(str) {
     });
 }
 
+/* Skin asset resolver (ogario/skinresolver.js, loaded by play.html before this file): skin URLs,
+ * their cache identity and the places to try. A page without it gets it fetched once; until then
+ * (or if it cannot load) this stand-in keeps the URLs of before: the vanilla mirror, no aliases,
+ * no second place to try. */
+var _lmSkinResStub = null;
+function _lmSkinRes() {
+    if (window.LMSkinResolver) return window.LMSkinResolver;
+    if (_lmSkinResStub) return _lmSkinResStub;
+    try {
+        if (window._lmSkinResAsked) throw 0;
+        window._lmSkinResAsked = 1;
+        var s = document.createElement('script');
+        s.src = 'https://www.legendmod.ml/ogario/skinresolver.js?v=' + (window.OgVer || '');
+        s.charset = 'utf-8';
+        s.async = true;
+        (document.head || document.documentElement).appendChild(s);
+    } catch (e) { }
+    var V = 'https://jimboy3000.github.io/vanillaskins/';
+    var vanilla = function (img) { return img ? V + encodeURIComponent(img) : ''; };
+    var level = function (id) {
+        var n = String(id || '').replace(/^%/, '').replace(/^skin_/, '').replace(/_level_\d+$/, '');
+        return n ? vanilla(makeUpperCaseAfterUnderline(n.charAt(0).toUpperCase() + n.slice(1)) + '.png') : '';
+    };
+    _lmSkinResStub = {
+        version: 0,
+        resolve: function (u) { return u ? { key: u, cands: [u], path: '', kind: 'other' } : null; },
+        key: function (u) { return u; },
+        next: function () { return ''; },
+        vanilla: vanilla,
+        level: level,
+        flag: function (n) { return n ? 'https://www.legendmod.ml/agario/live/flags/' + encodeURIComponent(String(n).toLowerCase()) + '.png' : ''; },
+        custom: function (id) { return window.LM_CUSTOM_SKINS_CDN + '/' + String(id).replace(/^%/, 'skin_') + '.png'; },
+        classify: function (id) {
+            if (!id || id === '%empty') return 'empty';
+            if (/^https?:\/\//i.test(id)) return 'url';
+            if (/^\d+$/.test(id) || /custom/.test(id)) return 'custom';
+            return /_level_\d+$/.test(id) ? 'level' : 'premium';
+        },
+        idUrl: function (id, map) {
+            var t = this.classify(id);
+            if (t === 'url') return id;
+            if (t === 'custom') return this.custom(/^\d+$/.test(id) ? 'skin_custom_' + id : id);
+            if (t === 'level') return level(id);
+            map = map || window.VanillaSkinUrlMap;
+            var b = String(id).replace(/^%/, '').replace(/^skin_/, '');
+            return map ? (map[id] || map['%' + b] || map[b] || map[b.toLowerCase()] || '') : '';
+        },
+        buildVanillaMap: function (list, spine) {
+            var map = Object.create(null);
+            for (var i = 0; list && i < list.length; i++) {
+                var sk = list[i], u = '';
+                if (!sk || !sk.productId) continue;
+                if (sk.image && sk.image !== 'uses_spine') u = vanilla(sk.image);
+                else if (spine && spine[sk.productId]) u = vanilla(spine[sk.productId] + '.png');
+                if (!u) continue;
+                var raw = sk.productId.replace('skin_', '');
+                map['%' + raw] = map[('%' + raw).toLowerCase()] = map[sk.productId] = map[sk.productId.toLowerCase()] = map[raw] = map[raw.toLowerCase()] = u;
+            }
+            return map;
+        }
+    };
+    return _lmSkinResStub;
+}
+/* The one VanillaSkinUrlMap builder: the agar.io configuration was loaded or replaced, the player
+ * logged in, or the resolver / its registry arrived. It used to be built in two places (config and
+ * login) with the mirror address written in each. */
+function _lmBuildVanillaSkinUrlMap() {
+    if (!window.EquippableSkins) return;
+    /* no prototype: cells look up their skin name here ("constructor" found Object) */
+    window.VanillaSkinUrlMap = _lmSkinRes().buildVanillaMap(window.EquippableSkins, window.SpineSkinMap);
+    /* the profile's skin preview may have waited for these pictures */
+    try { if (window._lmVanillaPreviewSync) window._lmVanillaPreviewSync(); } catch (e) { }
+}
+window._lmBuildVanillaSkinUrlMap = _lmBuildVanillaSkinUrlMap;
+/* called by ogario/skinresolver.js when it arrives after this file */
+window._lmOnSkinResolver = function () {
+    window.LMSkinResolver.onChange(_lmBuildVanillaSkinUrlMap);
+    _lmBuildVanillaSkinUrlMap();
+};
+if (window.LMSkinResolver) window.LMSkinResolver.onChange(_lmBuildVanillaSkinUrlMap);
+
 Object.defineProperty(HTMLMediaElement.prototype, 'playing', {
     get: function () {
         return !!(this.currentTime > 0 && !this.paused && !this.ended && this.readyState > 2);
@@ -18504,60 +18585,8 @@ function _initGameConfigSectionsBody(gc) {
     } catch (e) {}
 
 
-    /* ── Vanilla Skin URL Map ── */
-    /* no prototype: cells look up their skin name here ("constructor" found Object) */
-    window.VanillaSkinUrlMap = Object.create(null);
-    var mirrorBase =
-        "https://jimboy3000.github.io/vanillaskins/";
-    for (
-        var i = 0;
-        i < window.EquippableSkins.length;
-        i++
-    ) {
-        var skin = window.EquippableSkins[i];
-        var url = null;
-        if (
-            skin.image &&
-            skin.image !== "uses_spine"
-        ) {
-            url = mirrorBase + skin.image;
-        } else if (
-            skin.image === "uses_spine" &&
-            window.SpineSkinMap &&
-            window.SpineSkinMap[skin.productId]
-        ) {
-            url =
-                mirrorBase +
-                window.SpineSkinMap[
-                    skin.productId
-                ] +
-                ".png";
-        }
-        if (url) {
-            var pId = skin.productId;
-            var rawName = pId.replace(
-                'skin_',
-                ''
-            );
-            window.VanillaSkinUrlMap[
-                '%' + rawName
-            ] = url;
-            window.VanillaSkinUrlMap[
-                ('%' + rawName).toLowerCase()
-            ] = url;
-            window.VanillaSkinUrlMap[pId] = url;
-            window.VanillaSkinUrlMap[
-                pId.toLowerCase()
-            ] = url;
-            window.VanillaSkinUrlMap[rawName] =
-                url;
-            window.VanillaSkinUrlMap[
-                rawName.toLowerCase()
-            ] = url;
-        }
-    }
-    /* the profile's skin preview may have waited for these pictures */
-    try { if (window._lmVanillaPreviewSync) window._lmVanillaPreviewSync(); } catch (e) { }
+    /* ── Vanilla Skin URL Map (one builder, see _lmBuildVanillaSkinUrlMap) ── */
+    _lmBuildVanillaSkinUrlMap();
 
     /* ── Free Skins ── */
     window.FreskinsMap = [];
@@ -24973,13 +25002,15 @@ function thelegendmodproject() {
                             var skinUrl = p.skinURL || p.skin || application.customSkinsMap[p.nick] || application.customSkinsMap[p.nick + "#000000"] || (p.color ? application.customSkinsMap[p.nick + p.color] : null);
                             /* a blank (transparent or black) skin shows the Legend icon instead */
                             var isValidSkinUrl = skinUrl && typeof skinUrl === 'string' && (/^(https?:\/\/|data:image\/)/i.test(skinUrl)) && !window._lmBlankSkins[skinUrl];
+                            /* the image is kept under the resolved key (another spelling of the same file) */
+                            var tbKey = isValidSkinUrl ? application._lmSkinCacheKey(skinUrl) : null;
                             if (isValidSkinUrl) {
                                 if (!p.skinURL) p.skinURL = skinUrl;
-                                if (!this.customSkinsCache[skinUrl]) {
+                                if (!this.customSkinsCache[tbKey]) {
                                     application.loadSkin(this.customSkinsCache, skinUrl);
                                 }
                             }
-                            var teamboardskin = isValidSkinUrl ? (this.customSkinsCache[skinUrl + "_cached2"] || this.customSkinsCache[skinUrl + "_cached"] || this.customSkinsCache[skinUrl]) : null;
+                            var teamboardskin = isValidSkinUrl ? (this.customSkinsCache[tbKey + "_cached2"] || this.customSkinsCache[tbKey + "_cached"] || this.customSkinsCache[tbKey]) : null;
                             var teamboardImgSrc;
                             if (teamboardskin && teamboardskin.complete && teamboardskin.width) {
                                 teamboardImgSrc = teamboardskin.src;
@@ -28848,11 +28879,11 @@ function thelegendmodproject() {
         findOwnedVanillaSkin() {
             let player;
             if (legendflags.includes(LowerCase(ogarcopythelb.nick))) {
-                core.registerSkin(ogarcopythelb.nick, null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase(ogarcopythelb.nick) + ".png", null);
+                core.registerSkin(ogarcopythelb.nick, null, _lmSkinRes().flag(LowerCase(ogarcopythelb.nick)), null);
             } else if (window.FreskinsMap && window.FreskinsMap.includes(LowerCase(ogarcopythelb.nick))) {
                 for (player = 0; player < window.FreeSkins.length; player++) {
                     if (LowerCase(ogarcopythelb.nick) === window.FreeSkins[player].id) {
-                        core.registerSkin(ogarcopythelb.nick, null, "https://jimboy3000.github.io/vanillaskins/" + window.FreeSkins[player].image, null);
+                        core.registerSkin(ogarcopythelb.nick, null, _lmSkinRes().vanilla(window.FreeSkins[player].image), null);
                     }
                 }
             } else if (!ogarcopythelb.skinURL && (defaultmapsettings.vanillaSkins || defaultmapsettings.ownVanillaSkin) && window.UserVanillaSkin && window.EquippableSkins && !application.customSkinsMap[ogarcopythelb.nick]) {
@@ -28952,10 +28983,6 @@ function thelegendmodproject() {
         /* ─── §4.9 High-Performance Skin Loading ─── */
         loadSkin(img, url, animated, isPriority) {
             var app = this;
-            /* Set by the onerror mirror chain right before it calls loadSkin: the URL that
-             * failed, so the mirror's result can be found under the looked-up key. */
-            var aliasFrom = app._lmSkinMirrorFrom;
-            app._lmSkinMirrorFrom = null;
 
             if (!url || typeof url !== 'string') {
                 return;
@@ -28968,11 +28995,8 @@ function thelegendmodproject() {
                 return;
             }
 
-            if (url.includes(' ')) {
-                url = url.replace(/ /g, '_');
-            }
             /* found blank (transparent or black) before: not fetched again */
-            if (window._lmBlankSkins[url] || window._lmBlankSkins[origUrl]) return;
+            if (window._lmBlankSkins[url]) return;
             // Validate basic URL structure (must contain a valid domain dot e.g. http(s)://domain.com/...)
             if (!/^https?:\/\/[^/]+\.[^/]+/i.test(url)) return;
 
@@ -28993,12 +29017,19 @@ function thelegendmodproject() {
             if (url.includes('skin custom')) {
                 url = url.replace(/skin custom/g, 'skin_custom');
             }
-
-            /* The image is published under the rewritten/mirror URL, but getCustomSkin
-             * looks up the original one: remember original -> loaded key. */
+            /* One identity per resource (ogario/skinresolver.js): the spellings of our site and the
+             * identical files under other names load once, under one key, which every cache below
+             * uses. netCands are the genuinely different places to try, in order (at most 3). Spaces
+             * are no longer turned into underscores: "8 ball.png" is a real file name. */
+            var skinRes = _lmSkinRes().resolve(url);
+            if (skinRes && skinRes.key) url = skinRes.key;
+            var netCands = skinRes && skinRes.cands && skinRes.cands.length ? skinRes.cands : [url];
+            var netIdx = 0;
+            if (window._lmBlankSkins[url]) return;
+            /* The image is published under the resolved URL, but getCustomSkin looks up the
+             * original one: remember original -> loaded key. */
             if (!app._skinUrlAlias) app._skinUrlAlias = {};
             if (url !== origUrl) app._skinUrlAlias[origUrl] = url;
-            if (aliasFrom && aliasFrom !== url) app._skinUrlAlias[aliasFrom] = url;
 
             if (!app._failedSkinURLs) app._failedSkinURLs = {};
             if (!app._pendingSkinLoads) app._pendingSkinLoads = new Set();
@@ -29477,6 +29508,24 @@ function thelegendmodproject() {
                 );
             }
 
+            /*
+             * This place failed for good (HTTP error, timeout, no picture): try the next different
+             * place for the same resource, under the same key; only when none is left is the
+             * resource marked failed (negative cache with growing cooldown). Equivalent URLs are
+             * never asked twice in one load: the resolver lists each place once.
+             */
+            var candidateFailed = function () {
+                if (!isResolved && netIdx + 1 < netCands.length) {
+                    netIdx++;
+                    networkQueueReleased = false;
+                    window._skinLoadQueue.push(fetchFromNetwork, isPriority, cancelQueued);
+                    return;
+                }
+                if (app._pendingSkinLoads) app._pendingSkinLoads.delete(url);
+                if (app._failedSkinURLs) app._failedSkinURLs[url] = Date.now();
+                if (!(app._failedSkinRetries && app._failedSkinRetries[url])) console.warn("[LM] Skin URL failed to load: " + url);
+            };
+
             /* 4. Network Task: Single Fetch for Display & Storage */
             var fetchFromNetwork = function (doneCb) {
                 var onDone = function () {
@@ -29517,11 +29566,11 @@ function thelegendmodproject() {
                  * fallback still use the original url. agar.io's CDN stays as before (could
                  * not be verified).
                  */
-                var isCorsBlocked = url.includes('agario.miniclippt.com');
-                var lmNoReferrer = url.includes('imgur.com');
-                var netUrl = url.indexOf('https://jimboy3100.github.io/') === 0
-                    ? 'https://www.legendmod.ml/' + url.slice('https://jimboy3100.github.io/'.length)
-                    : url;
+                /* this attempt's place (netCands[netIdx]); the cache key stays url */
+                var netUrl = netCands[netIdx] || url;
+                if (netUrl.indexOf('https://jimboy3100.github.io/') === 0) netUrl = 'https://www.legendmod.ml/' + netUrl.slice('https://jimboy3100.github.io/'.length);
+                var isCorsBlocked = netUrl.includes('agario.miniclippt.com');
+                var lmNoReferrer = netUrl.includes('imgur.com');
 
                 var fallbackToImageTag = function () {
                     if (isResolved || (img && img[url])) { onDone(); return; }
@@ -29686,12 +29735,6 @@ function thelegendmodproject() {
 
                         onDone();
 
-                        if (app._pendingSkinLoads) {
-                            app._pendingSkinLoads.delete(
-                                url
-                            );
-                        }
-
                         failedImage._failed = true;
 
                         if (
@@ -29701,60 +29744,7 @@ function thelegendmodproject() {
                             delete img[url];
                         }
 
-                        if (app._failedSkinURLs) {
-                            app._failedSkinURLs[url] =
-                                Date.now();
-                        }
-                        if (!url || typeof url !== 'string' || url.length < 10 || !url.includes('.')) return;
-                        if (!(app._failedSkinRetries && app._failedSkinRetries[url])) console.warn("[LM] Skin URL failed to load: " + url);
-                        var filename = url.split('/').pop().replace('?', '');
-                        if (!filename) return;
-                        var isCustomSkin = filename.startsWith('skin_custom_');
-                        var isMirror = url.includes('legendmod.ml') ||
-                            url.includes('jimboy3100.github.io') ||
-                            url.includes('jimboy3000.github.io');
-                        app._lmSkinMirrorFrom = url; /* consumed by the loadSkin call below */
-
-                        if (isCustomSkin) {
-                            /*
-                             * Uploaded custom skins are hosted on configs.agario,
-                             * not configs-web.agario.
-                             */
-                            if (
-                                url.includes('configs-web.agario.miniclippt.com')
-                            ) {
-                                app.loadSkin(img, window.LM_CUSTOM_SKINS_CDN + '/' + filename, animated, isPriority);
-                            }
-                            app._lmSkinMirrorFrom = null;
-                            return;
-                        }
-
-                        if (url.includes('jimboy3000.github.io/vanillaskins/')) {
-                            app.loadSkin(img, 'https://legendmod.ml/vanillaskins/' + filename, animated, isPriority);
-                        }
-                        else if (url.includes('legendmod.ml/vanillaskins/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
-                        }
-                        else if (isMirror && url.includes('/vanillaskins2/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
-                        }
-                        else if (isMirror && url.includes('/vanillaskins/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
-                        }
-                        else if (isMirror && url.includes('/lowresskins/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
-                        }
-                        else if (url.includes('/lowresskins/')) {
-                            var fallbackUrl = url.replace('/lowresskins/', '/vanillaskins/');
-                            app.loadSkin(img, fallbackUrl, animated, isPriority);
-                        }
-                        else if (url.includes('configs-web.agario.miniclippt.com/live/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/vanillaskins/' + filename, animated, isPriority);
-                        }
-                        else if (url.includes('configs.agario.miniclippt.com/live/')) {
-                            app.loadSkin(img, 'https://jimboy3000.github.io/lowresskins/' + filename, animated, isPriority);
-                        }
-                        app._lmSkinMirrorFrom = null;
+                        candidateFailed();
                     };
                     directImage.src = netUrl;
                 };
@@ -29797,9 +29787,11 @@ function thelegendmodproject() {
                          * not completion of the skin request.
                          */
                         if (!res.ok) {
-                            throw new Error(
+                            var httpError = new Error(
                                 "HTTP " + res.status
                             );
+                            httpError.lmStatus = res.status;
+                            throw httpError;
                         }
 
                         return res.blob();
@@ -29945,7 +29937,18 @@ function thelegendmodproject() {
                         }
 
                         /*
-                         * A network timeout, HTTP rejection, CORS failure or
+                         * The server answered that the file is not there: an Image
+                         * tag would ask the same URL again for the same answer.
+                         * Go to the next place instead.
+                         */
+                        if (fetchError && (fetchError.lmStatus === 404 || fetchError.lmStatus === 410)) {
+                            onDone();
+                            candidateFailed();
+                            return;
+                        }
+
+                        /*
+                         * A network timeout, other HTTP rejection, CORS failure or
                          * non-cache abort falls through to the existing direct
                          * Image path.
                          */
@@ -30552,16 +30555,20 @@ function thelegendmodproject() {
             }
 
             if (!skinUrl) return null;
-            /* Follow original -> rewritten/mirror aliases recorded by loadSkin (bounded:
-             * the mirror chain can alias back and forth). */
+            var skinKeyUrl = this._lmSkinCacheKey(skinUrl);
+            if (!this.customSkinsCache.hasOwnProperty(skinKeyUrl)) {
+                this.loadSkin(this.customSkinsCache, skinUrl, undefined, true);
+            }
+            return skinKeyUrl;
+        },
+        /* The key loadSkin keeps a skin URL's image under: it follows the original -> resolved
+         * aliases loadSkin records (ogario/skinresolver.js identity, typo-domain fixes; bounded). */
+        _lmSkinCacheKey(skinUrl) {
             var skinKeyUrl = skinUrl;
             if (this._skinUrlAlias) {
                 for (var hop = 0; hop < 5 && !this.customSkinsCache.hasOwnProperty(skinKeyUrl) && this._skinUrlAlias[skinKeyUrl]; hop++) {
                     skinKeyUrl = this._skinUrlAlias[skinKeyUrl];
                 }
-            }
-            if (!this.customSkinsCache.hasOwnProperty(skinKeyUrl)) {
-                this.loadSkin(this.customSkinsCache, skinUrl, undefined, true);
             }
             return skinKeyUrl;
         },
@@ -47091,30 +47098,8 @@ function thelegendmodproject() {
                         window.localStorage.setItem("getLatestID", u.latestConfiguration);
                     window.localStorage.setItem("EnvConfig.configVersion", window.getLatestconfigVersion || "15");
                         if (typeof window._lmAddAgarVersion === 'function') window._lmAddAgarVersion(freshVersion);
-                        /* Rebuild VanillaSkinUrlMap with correct CDN version */
-                        if (window.EquippableSkins) {
-                            window.VanillaSkinUrlMap = Object.create(null);
-                            var cdnBase = "https://jimboy3000.github.io/vanillaskins/";
-                            for (var sk = 0; sk < window.EquippableSkins.length; sk++) {
-                                var skn = window.EquippableSkins[sk];
-                                var skUrl = null;
-                                if (skn.image && skn.image !== "uses_spine") {
-                                    skUrl = cdnBase + skn.image;
-                                } else if (skn.image === "uses_spine" && window.SpineSkinMap && window.SpineSkinMap[skn.productId]) {
-                                    skUrl = cdnBase + window.SpineSkinMap[skn.productId] + ".png";
-                                }
-                                if (skUrl) {
-                                    var skPid = skn.productId;
-                                    var skRaw = skPid.replace('skin_', '');
-                                    window.VanillaSkinUrlMap['%' + skRaw] = skUrl;
-                                    window.VanillaSkinUrlMap[('%' + skRaw).toLowerCase()] = skUrl;
-                                    window.VanillaSkinUrlMap[skPid] = skUrl;
-                                    window.VanillaSkinUrlMap[skPid.toLowerCase()] = skUrl;
-                                    window.VanillaSkinUrlMap[skRaw] = skUrl;
-                                    window.VanillaSkinUrlMap[skRaw.toLowerCase()] = skUrl;
-                                }
-                            }
-                        }
+                        /* the login brings the current configuration id: build the skin map again */
+                        _lmBuildVanillaSkinUrlMap();
                     }
 
                     try { this.updateWalletInfo(u.userWallet); } catch (e) { console.error('[LW 102] updateWalletInfo error:', e); }
@@ -51419,17 +51404,23 @@ function thelegendmodproject() {
             }
         },
         urlReplaces: {},
-        getImg(url, name, callback) {
+        getImg(url, name, callback, tryIndex) {
             const app = this;
+            /* the places to try come from ogario/skinresolver.js, the same list loadSkin uses (it
+             * used to turn any failed legendmod.ml URL into a vanilla skin URL by file name only) */
+            var res = _lmSkinRes().resolve(url);
+            var cands = res && res.cands && res.cands.length ? res.cands : [url];
+            var at = tryIndex || 0;
+            var src = cands[at] || url;
             var img = new Image();
             /* same rules as loadSkin's network path (see there): imgur and www.legendmod.ml
              * support CORS; jimboy3100.github.io is requested on www.legendmod.ml directly */
-            var isCorsBlocked = url.includes('agario.miniclippt.com');
+            var isCorsBlocked = src.includes('agario.miniclippt.com');
             if (isCorsBlocked) {
                 img.referrerPolicy = 'no-referrer';
             } else {
                 img.crossOrigin = 'anonymous';
-                if (url.includes('imgur.com')) img.referrerPolicy = 'no-referrer';
+                if (src.includes('imgur.com')) img.referrerPolicy = 'no-referrer';
             }
             img.setAttribute("alt", name);
             img.onload = function () {
@@ -51438,73 +51429,23 @@ function thelegendmodproject() {
                 }
             };
             img.onerror = function () {
-                //console.log("error loading image: "+ url);
-                var rawFileName = url.split('/').pop().replace(/\?.*$/, '');
-                if (url.includes('configs-web.agario.miniclippt') || url.includes('configs.agario.miniclippt')) {
-                    var newURL = null;
-
-                    if (url.includes('/custom_skins/')) {
-                        /*
-                         * configs-web returns 403 for uploaded custom skins.
-                         * Retry once through the actual custom-skin host.
-                         */
-                        if (
-                            url.includes('configs-web.agario.miniclippt.com')
-                        ) {
-                            newURL =
-                                window.LM_CUSTOM_SKINS_CDN +
-                                '/' +
-                                rawFileName;
-                        } else {
-                            /*
-                             * The real custom-skin host also failed.
-                             * Do not recurse or create another request.
-                             */
-                            return null;
-                        }
-                    } else {
-                        newURL = 'https://jimboy3000.github.io/vanillaskins/' + rawFileName;
-                    }
-
-                    if (newURL.replace(/\?.*$/, '') === url.replace(/\?.*$/, '')) {
-                        return null;
-                    }
-
-                    app.urlReplaces[url] = newURL;
-                    if (app.user && app.user.skins && app.user.skins[url]) {
-                        app.user.skins[url].url = newURL;
-                    }
-                    app.getImg(newURL, name, callback);
-                    return newURL;
-
-                } else if (url.includes('legendmod.ml')) {
-                    var newURL = "https://jimboy3000.github.io/vanillaskins/" + rawFileName;
-                    app.urlReplaces[url] = newURL;
-                    if (app.user && app.user.skins && app.user.skins[url]) {
-                        app.user.skins[url].url = newURL;
-                    }
-                    app.getImg(newURL, name, callback);
-                    return newURL;
-
-                } else if (url.includes('jimboy3100.github.io/vanillaskins') || url.includes('jimboy3000.github.io/vanillaskins')) {
-                    var newURL = "https://jimboy3000.github.io/lowresskins/" + rawFileName;
-                    app.urlReplaces[url] = newURL;
-                    if (app.user && app.user.skins && app.user.skins[url]) {
-                        app.user.skins[url].url = newURL;
-                    }
-                    app.getImg(newURL, name, callback);
-                    return newURL;
-
-                } else if (url.includes('jimboy3100.github.io/lowresskins') || url.includes('jimboy3000.github.io/lowresskins')) {
+                var newURL = cands[at + 1];
+                if (!newURL) {
                     if (application.brokenSkins && !application.brokenSkins.hasOwnProperty(url)) {
                         application.brokenSkins[url] = 1;
                     }
-                    return url;
+                    return null;
                 }
+                app.urlReplaces[url] = newURL;
+                if (app.user && app.user.skins && app.user.skins[url]) {
+                    app.user.skins[url].url = newURL;
+                }
+                app.getImg(url, name, callback, at + 1);
+                return newURL;
             };
-            img.src = url.indexOf('https://jimboy3100.github.io/') === 0
-                ? 'https://www.legendmod.ml/' + url.slice('https://jimboy3100.github.io/'.length)
-                : url;
+            img.src = src.indexOf('https://jimboy3100.github.io/') === 0
+                ? 'https://www.legendmod.ml/' + src.slice('https://jimboy3100.github.io/'.length)
+                : src;
         },
         getLink(link) {
             var type = "premium";
@@ -51515,11 +51456,8 @@ function thelegendmodproject() {
                     return [window.LM_CUSTOM_SKINS_CDN + "/" + link + ".png", type];
                 } else if (link.includes && link.includes("_level_")) {
                     type = "potion";
-                    var link1 = link.replace('skin_', '')
-                    link1 = link1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
-                    link1 = link1.charAt(0).toUpperCase() + link1.slice(1);
-                    link1 = makeUpperCaseAfterUnderline(link1);
-                    return ["https://jimboy3000.github.io/vanillaskins/" + link1 + ".png", type];
+                    /* the base skin's picture (ogario/skinresolver.js level) */
+                    return [_lmSkinRes().level(link), type];
                 } else if (window.VanillaSkinUrlMap) {
                     var mapKey = link.replace('skin_', '%');
                     var mapUrl = window.VanillaSkinUrlMap[mapKey]
@@ -53496,6 +53434,7 @@ function thelegendmodproject() {
                 var isAnimated = false;
                 var fromName = false;
                 var lowerName = y && typeof y === 'string' ? LowerCase(y) : '';
+                var skinRes = _lmSkinRes();
 
                 /* Build O(1) flag/free-skin indexes only when their source arrays change. */
                 var resolverCache = window._lmVanillaSkinResolverCache;
@@ -53536,48 +53475,30 @@ function thelegendmodproject() {
                 }
                 /* 2. Flag skins */
                 else if (lowerName && resolverCache.flags[lowerName]) {
-                    skinUrl = "https://www.legendmod.ml/agario/live/flags/" + lowerName + ".png";
+                    skinUrl = skinRes.flag(lowerName);
                     fromName = true;
                 }
                 /* 3. Free skins map */
                 else if (lowerName && resolverCache.free[lowerName]) {
-                    skinUrl = "https://jimboy3000.github.io/vanillaskins/" + resolverCache.free[lowerName];
+                    skinUrl = skinRes.vanilla(resolverCache.free[lowerName]);
                     fromName = true;
                 }
-                /* 4. Custom skins (%custom_xxx, custom_xxx, %customxxx, or numeric skin ID) */
-                else if (g && typeof g === 'string' && (/^\d+$/.test(g) || g.includes("custom") || g.includes("skin_"))) {
-                    /* Uploaded skin ids are skin_custom_<uuid>_<uuid> (hex letters and
-                     * dashes). Keep the id as is, like the official addCustomSkin
-                     * ('%x' -> 'skin_x', url = custom_skins_url + id + '.png'). */
-                    var g1 = g.replace(/\.png(?:\?.*)?$/i, '');
-                    if (/^\d+$/.test(g1)) {
-                        g1 = 'skin_custom_' + g1;
-                    } else {
-                        if (g1.charAt(0) === '%') g1 = 'skin_' + g1.substring(1);
-                        if (!g1.startsWith('skin_custom')) {
-                            g1 = 'skin_custom_' + g1.replace(/^skin_/, '').replace(/^custom/, '').replace(/^_+/, '');
-                        }
+                /*
+                 * 4-6. The skin id, by its kind (ogario/skinresolver.js classify): uploaded custom
+                 * (skin_custom_*, %custom*, a number), level, premium/spine (the configuration's
+                 * VanillaSkinUrlMap). Any id holding "skin_" used to be taken for an uploaded skin
+                 * before the level and vanilla checks, so "skin_shark" or "skin_alien_kid_level_2"
+                 * asked the custom-skin host for a file that is not there. The id itself is never
+                 * changed; uploaded ones keep the official '%x' -> 'skin_x' form.
+                 */
+                else if (g && typeof g === 'string') {
+                    var gKind = skinRes.classify(g);
+                    if (gKind === 'custom') skinUrl = skinRes.custom(g) + '?';
+                    else if (gKind === 'level') {
+                        isAnimated = true;
+                        skinUrl = skinRes.level(g);
                     }
-                    skinUrl = window.LM_CUSTOM_SKINS_CDN + "/" + g1 + ".png?";
-                }
-                /* 5. Level skins (_level_1, _level_2, etc.) */
-                else if (g && typeof g === 'string' && g.includes("_level_")) {
-                    var g1 = g.replace('%', '');
-                    g1 = g1.replace('_level_1', '').replace('_level_2', '').replace('_level_3', '');
-                    g1 = g1.charAt(0).toUpperCase() + g1.slice(1);
-                    g1 = makeUpperCaseAfterUnderline(g1);
-                    isAnimated = true;
-                    skinUrl = "https://jimboy3000.github.io/vanillaskins/" + g1 + ".png";
-                }
-                /* 6. Vanilla named skins (%earth, %doge, fly, lion, etc.) */
-                else if (g && typeof g === 'string' && g !== '%empty') {
-                    if (window.VanillaSkinUrlMap) {
-                        skinUrl = window.VanillaSkinUrlMap[g] ||
-                            window.VanillaSkinUrlMap[g.toLowerCase()] ||
-                            window.VanillaSkinUrlMap['%' + g.replace('%', '')] ||
-                            window.VanillaSkinUrlMap[g.replace('%', '')] ||
-                            window.VanillaSkinUrlMap[g.replace('%', '').toLowerCase()];
-                    }
+                    else if (gKind === 'premium' || gKind === 'spine') skinUrl = skinRes.idUrl(g);
                 }
                 /* 7. Fallback lookup by player nick (y) if g did not produce skinUrl */
                 if (!skinUrl && y && typeof y === 'string' && window.VanillaSkinUrlMap) {
@@ -89282,11 +89203,12 @@ Object.defineProperty(Array.prototype, 'stDev', {
 });
 // Replace legendmod.ml URLs with jimboy3100.github.io / expanding.land equivalents.
 // Uses MutationObserver so it catches dynamically created elements too.
+/* jimboy3000.github.io is not rewritten: it is an independent skin mirror holding pictures this
+ * site has not (ogario/skinresolver.js), not another name of www.legendmod.ml. */
 (function () {
     var _elRewriteMap = [
         { match: /(?:www\.)?legendmod\.ml\/vanillaskins/g, replace: 'www.legendmod.ml/vanillaskins' },
         { match: /(?:www\.)?legendmod\.ml\/lowresskins/g, replace: 'www.legendmod.ml/lowresskins' },
-        { match: /jimboy3000\.github\.io/g, replace: 'www.legendmod.ml' },
         { match: /jimboy3100\.github\.io/g, replace: 'www.legendmod.ml' },
         { match: /(?:www\.)?legendmod\.ml\/agario\/live\/flags/g, replace: 'www.legendmod.ml/agario/live/flags' }
     ];

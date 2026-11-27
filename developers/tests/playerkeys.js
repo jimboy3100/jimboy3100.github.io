@@ -47,9 +47,7 @@ const INIT = {
     flushSkinsMap: init(/\n {8}flushSkinsMap\(\) \{[^]*?this\.customSkinsMap = ([^;\n]+);/),
     cellcolors: init(/\n {8}cellcolors: ([^\n]+),\n/),
     cellcolorsReplay: init(/\n {4}legendmod\.cellcolors = ([^\n;]+)\n/),
-    SpecialEffectPlayers: init(/\nSpecialEffectPlayers = ([^;\n]+);/),
-    VanillaSkinUrlMap: init(/\n {4}window\.VanillaSkinUrlMap = ([^;\n]+);/),
-    VanillaSkinUrlMapCdn: init(/\n {28}window\.VanillaSkinUrlMap = ([^;\n]+);/)
+    SpecialEffectPlayers: init(/\nSpecialEffectPlayers = ([^;\n]+);/)
 };
 if (src.indexOf('\n        vanillaSkinKeys: ') >= 0) {
     INIT.vanillaSkinKeys = init(/\n {8}vanillaSkinKeys: ([^\n]+),\n/);
@@ -59,12 +57,29 @@ const make = (k) => new Function('return ' + INIT[k])();
 /* a nick key of the map finds nothing before anything was stored under it */
 const clean = (m) => NICKS.every((n) => m[n] === undefined || (n === '__proto__' && m[n] === null));
 for (const k of Object.keys(INIT)) check(k + ': a nick key finds nothing in a new map (' + INIT[k] + ')', clean(make(k)));
+/* VanillaSkinUrlMap has one builder (ogario/skinresolver.js buildVanillaMap, and the engine's
+ * stand-in without it): built from the real configuration, a nick key finds nothing */
+{
+    const rctx = { console };
+    rctx.window = rctx;
+    vm.createContext(rctx);
+    const rs = require('./lib/skinres-env')(rctx, src);
+    const conf = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'agario', 'live', 'GameConfiguration.json'), 'utf8')).gameConfig;
+    const eq = conf['Gameplay - Equippable Skins'];
+    check('VanillaSkinUrlMap (resolver builder, real configuration): a nick key finds nothing', clean(rs.resolver.buildVanillaMap(eq, {})) && clean(rs.resolver.buildVanillaMap([], {})));
+    const sctx = { console };
+    sctx.window = sctx;
+    vm.createContext(sctx);
+    vm.runInContext(require('./lib/skinres-env')(sctx, src, { resolver: false }).accessor + fn('makeUpperCaseAfterUnderline') + '\nvar document = { createElement: function () { return {}; }, head: { appendChild: function () { } } };', sctx);
+    check('VanillaSkinUrlMap (engine stand-in builder): a nick key finds nothing', clean(vm.runInContext('_lmSkinRes()', sctx).buildVanillaMap(eq, {})));
+}
 
 /* ---- the application's skin lookups ---- */
 const ctx = { console, escape, unescape, decodeURIComponent };
 ctx.window = ctx;
 vm.createContext(ctx);
-vm.runInContext([fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn('LowerCase'), fn('makeUpperCaseAfterUnderline'),
+const skinRes = require('./lib/skinres-env')(ctx, src);
+vm.runInContext(skinRes.accessor + [fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn('LowerCase'), fn('makeUpperCaseAfterUnderline'),
     fn('Socket3updateTeamPlayerSpfc'), fn('animateCustomSkin'), fn('lmSkinsShown', true)].join('\n') +
     '\nvar _RE_CLAN_TAG = /^\\[.*?\\]\\s*|^\\u2104[^\\s]*\\s*/g;' +
     '\nvar drawRender = {};' +
@@ -75,10 +90,10 @@ vm.runInContext([fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn
     '\nvar core = { registerSkin: function () { } };' +
     '\nvar SpecialEffectPlayers = ' + INIT.SpecialEffectPlayers + ';' +
     '\nvar animatedskins = { legend_clan: { id: "legend_clan", frames: [{ id: "abc", delay: 0.1 }] } };' +
-    '\nwindow.VanillaSkinUrlMap = ' + INIT.VanillaSkinUrlMap + ';' +
+    '\nwindow.VanillaSkinUrlMap = Object.create(null);' +
     '\nwindow.VanillaSkinUrlMap["%doge"] = "https://jimboy3000.github.io/vanillaskins/doge.png";' +
     '\nvar application = {' + [method('_lmSkinKeys'), method('checkSkinURL', true), method('teamSkinUrl'), method('cacheCustomSkin'),
-        method('getCustomSkin'), method('customSkinKey'), method('checkSkinsMap'), method('clearOwnCustomSkin'), method('flushSkinsMap'),
+        method('getCustomSkin'), method('_lmSkinCacheKey', false, true), method('customSkinKey'), method('checkSkinsMap'), method('clearOwnCustomSkin'), method('flushSkinsMap'),
         method('_lmSkinSet', false, true), method('_lmSkinAt', false, true)].filter(Boolean).join(',\n') +
     ', customSkinsMap: ' + INIT.customSkinsMap + ', vanillaSkinKeys: ' + (INIT.vanillaSkinKeys || '{}') + ', customSkinsCache: {}, loads: [], loadSkin: function (c, u) { this.loads.push(u); }, _lmTouchSkin: function () { },' +
     ' getCachedSkin: function (cache, url) { return url; } };' +

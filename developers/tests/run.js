@@ -52,7 +52,7 @@ const SLOW = {
 };
 const weight = name => SLOW[name] || 2;
 
-const FILES = [...new Set(['ogario/ogario.v4.js', 'ogario/hotkeysCommand.js', 'ogario/spect.js', 'ogario/gamepad.js', 'ogario/modules/deathrecap.js',
+const FILES = [...new Set(['ogario/skinresolver.js', 'ogario/skinregistry.js', 'ogario/ogario.v4.js', 'ogario/hotkeysCommand.js', 'ogario/spect.js', 'ogario/gamepad.js', 'ogario/modules/deathrecap.js',
   'LMexpress/LMexpress.js', 'LMexpress/lm_extended_ui.js', 'LMexpress/skinsAndDeals.js',
   'LMmobile/LMmobile.js', 'LMmobile/LMmobile-editor.js'])];
 const OPTIONAL = new Set(['ogario/gamepad.js']);

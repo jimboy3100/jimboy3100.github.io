@@ -26,14 +26,17 @@ function method(name, prop) {
 const ctx = { console };
 ctx.window = ctx;
 vm.createContext(ctx);
-vm.runInContext([fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn('LowerCase'), fn('makeUpperCaseAfterUnderline')].join('\n') +
+/* the real skin resolver (vanillaskins asks it for flag URLs) */
+const skinRes = require('./lib/skinres-env')(ctx, src);
+const cacheKey = src.indexOf('\n        _lmSkinCacheKey(') >= 0 ? [method('_lmSkinCacheKey')] : [];
+vm.runInContext(skinRes.accessor + [fn('lmLooseNick'), fn('lmTeamSkinMap'), fn('lmTeamSkinFor'), fn('LowerCase'), fn('makeUpperCaseAfterUnderline')].join('\n') +
     '\nvar _RE_CLAN_TAG = /^\\[.*?\\]\\s*|^\\u2104[^\\s]*\\s*/g;' +
     '\nvar drawRender = {};' +
     '\nvar legendflags = ["bait", "2ch"];' +
     '\nvar LM = { gameMode: ":ffa" };' +
     '\nvar core = { registerSkin: function () { } };' +
     '\nvar application = {' + [method('_lmSkinKeys'), method('checkSkinURL', true), method('teamSkinUrl'), method('cacheCustomSkin'), method('_lmSkinSet'), method('_lmSkinAt'),
-        method('getCustomSkin'), method('customSkinKey')].join(',\n') +
+        method('getCustomSkin'), method('customSkinKey')].concat(cacheKey).join(',\n') +
     ', customSkinsMap: {}, customSkinsCache: {}, loadSkin: function () { }, _lmTouchSkin: function () { },' +
     ' getCachedSkin: function (cache, url) { return url; } };' +
     '\nvar legendmod = {' + method('vanillaskins') + '};', ctx);

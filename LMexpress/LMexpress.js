@@ -7440,7 +7440,8 @@ function initializeLM(modVersion) {
             }
             else if (legendflags.includes(LowerCase($("#nick").val()))) {
                 //console.log("\x1b[32m%s\x1b[34m%s\x1b[0m", consoleMsgLM, " " + LowerCase($("#nick").val()) + " skin found. Skin registered");
-                core.registerSkin($("#nick").val(), null, "https://www.legendmod.ml/agario/live/flags/" + LowerCase($("#nick").val()) + ".png", null);
+                /* the skin resolver's flag URL (ogario/skinresolver.js): names with spaces stay real file names */
+                core.registerSkin($("#nick").val(), null, typeof _lmSkinRes === 'function' ? _lmSkinRes().flag(LowerCase($("#nick").val())) : "https://www.legendmod.ml/agario/live/flags/" + LowerCase($("#nick").val()) + ".png", null);
             }
         }, 1000);
         $('#loaderIframeInfo').on('load', function () {
