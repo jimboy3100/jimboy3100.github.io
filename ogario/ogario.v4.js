@@ -87233,7 +87233,6 @@ function appendLMhiFbPs() {
         offlineAfterFails: 3,     /* failed counts in a row before a server leaves the list */
         staleAfterScans: 2,       /* scans without a hidden or failing server before it is forgotten */
         joinTimeoutMs: 15000,
-        noticeMs: 15000,
         tickMs: 1000
     });
 
@@ -87522,7 +87521,6 @@ function appendLMhiFbPs() {
     var sbActiveKey = '';
     var sbScan = { token: 0, running: false, key: '', attempt: 0, error: '', timer: null };
     var sbJoin = null;         /* { host, key, alias, startedAt } */
-    var sbNotice = null;       /* { text, at } */
     var sbCurrent = { host: '', key: '', since: 0, raw: null, rawAt: 0, bots: 0, fromLb: false };
     var sbProbe = { frame: null, queue: [], active: 0, cancels: new Set(), lastCycle: 0 };
     var sbLastSignature = '';
@@ -87619,8 +87617,9 @@ function appendLMhiFbPs() {
         return entry;
     }
 
-    function sbSetNotice(text) {
-        sbNotice = text ? { text: text, at: Date.now() } : null;
+    /* A failed switch or join is said in a toast: the finder row has no status line */
+    function sbWarn(text) {
+        if (window.toastr) toastr.warning(_lmG2Tag('servers') + sbEscHtml(text));
     }
 
     /* ---------- current server ---------- */
@@ -87689,12 +87688,11 @@ function appendLMhiFbPs() {
 
     /* ---------- finding servers ---------- */
 
-    function sbCancelScan(text) {
+    function sbCancelScan() {
         sbScan.token++;
         clearTimeout(sbScan.timer);
         sbScan.timer = null;
         sbScan.running = false;
-        if (text) sbSetNotice(text);
     }
 
     function sbStartScan(manual) {
@@ -87720,7 +87718,6 @@ function appendLMhiFbPs() {
         sbScan.key = list.key;
         sbScan.attempt = 0;
         sbScan.error = '';
-        sbSetNotice('');
 
         function finish(error) {
             if (token !== sbScan.token) return;
@@ -88078,7 +88075,6 @@ function appendLMhiFbPs() {
 
         sbCancelScan();
         sbStopProbes();
-        sbSetNotice('');
         sbJoin = { host: host, key: ctx.key, alias: entry.alias, startedAt: Date.now() };
         try {
             var generation = ++m.connectionGeneration;
@@ -88091,7 +88087,7 @@ function appendLMhiFbPs() {
             m.connect(entry.endpoint, generation);
         } catch (e) {
             sbJoin = null;
-            sbSetNotice(lmT('game2.sbSwitchFailed', [(e && e.message ? e.message : e)]));
+            sbWarn(lmT('game2.sbSwitchFailed', [(e && e.message ? e.message : e)]));
             console.error('[Servers] Join failed:', e);
             return false;
         }
@@ -88107,7 +88103,7 @@ function appendLMhiFbPs() {
         } else if (ctx.currentHost === sbJoin.host && ctx.connected) {
             sbJoin = null;
         } else if (Date.now() - sbJoin.startedAt > SB.joinTimeoutMs) {
-            sbSetNotice(lmT('game2.sbJoinFailed', [sbJoin.alias]));
+            sbWarn(lmT('game2.sbJoinFailed', [sbJoin.alias]));
             sbJoin = null;
         }
     }
@@ -88122,8 +88118,7 @@ function appendLMhiFbPs() {
             '#lm-server-list-row{clear:both;padding-top:6px}' +
             '#lm-server-list{float:left;width:65%;height:34px;padding:4px 8px}' +
             '#lm-server-list option.lm-server-current{font-weight:bold}' +
-            '#lm-server-scan{float:right;width:33%;height:34px;padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
-            '#lm-server-status{clear:both;padding-top:3px;font-size:11px;line-height:14px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}';
+            '#lm-server-scan{float:right;width:33%;height:34px;padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}';
         (document.head || document.documentElement).appendChild(style);
     }
 
@@ -88140,8 +88135,7 @@ function appendLMhiFbPs() {
         row.style.display = 'none';
         row.innerHTML =
             '<select id="lm-server-list" class="form-control" aria-label="' + _lmTH('game2.sbSwitch', '') + '" data-i18n-aria-label="game2.sbSwitch"></select>' +
-            '<button type="button" id="lm-server-scan" class="btn btn-primary"><i class="fa fa-search"></i> <span>' + _lmTH('game2.sbScan', '') + '</span></button>' +
-            '<div id="lm-server-status"></div>';
+            '<button type="button" id="lm-server-scan" class="btn btn-primary"><i class="fa fa-search"></i> <span>' + _lmTH('game2.sbScan', '') + '</span></button>';
         var party = document.getElementById('ogario-party');
         if (party && party.parentNode === info) info.insertBefore(row, party);
         else info.appendChild(row);
@@ -88163,7 +88157,7 @@ function appendLMhiFbPs() {
             sbRender();
         });
         row.querySelector('#lm-server-scan').addEventListener('click', function () {
-            if (sbScan.running) sbCancelScan(lmT('game2.sbStopped'));
+            if (sbScan.running) sbCancelScan();
             else sbStartScan(true);
             sbRender();
         });
@@ -88251,27 +88245,6 @@ function appendLMhiFbPs() {
         option.disabled = !!item.disabled;
     }
 
-    function sbStatusText(ctx) {
-        var list = ctx.key ? sbLists.get(ctx.key) : null;
-        var where = sbRegionLabel(ctx.region) + ' ' + (SB_MODE_LABELS[ctx.mode] || '');
-        if (sbJoin) return lmT('game2.sbJoining', [sbJoin.alias]);
-        if (sbNotice && sbNotice.text && Date.now() - sbNotice.at < SB.noticeMs) return sbNotice.text;
-        if (ctx.mode === ':party') return lmT('game2.sbPartyOnlyYours');
-        if (sbScan.running && sbScan.key === ctx.key) {
-            return lmT('game2.sbLookingFor', [where, sbScan.attempt + '/' + SB.scanMaxRequests]);
-        }
-        if (sbScan.error && sbScan.key === ctx.key) return sbScan.error;
-        var known = 0;
-        if (list) {
-            list.servers.forEach(function (entry) {
-                if (!entry.offline) known++;
-            });
-        }
-        if (!known) return ctx.connected ? lmT('game2.sbPressScan', [where]) : lmT('game2.sbWaiting');
-        return (known === 1 ? lmT('game2.sbKnownOne', [known, where]) : lmT('game2.sbKnown', [known, where])) +
-            ' · ' + (ctx.alive ? lmT('game2.sbPaused') : lmT('game2.sbRefresh', [Math.round(SB.probeRefreshMs / 1000)]));
-    }
-
     function sbRender(ctx) {
         ctx = ctx || sbContext();
         var row = sbEnsureUI();
@@ -88324,18 +88297,13 @@ function appendLMhiFbPs() {
         button.disabled = !ctx.scannable || !!sbJoin;
         button.className = 'btn ' + (scanning ? 'btn-danger' : 'btn-primary');
         button.title = ctx.scannable ? (scanning ? lmT('game2.sbStopTip') : lmT('game2.sbMoreTip', [sbRegionLabel(ctx.region) + ' ' + SB_MODE_LABELS[ctx.mode]])) : lmT('game2.sbPartyNoScan');
+        /* why the last scan failed, in the tooltip (the row has no status line) */
+        if (!scanning && sbScan.error && sbScan.key === ctx.key) button.title += '\n' + sbScan.error;
         var label = button.querySelector('span');
         var icon = button.querySelector('i');
         var _lmSbLbl = scanning ? lmT('game2.sbStop') : lmT('game2.sbScan');
         if (label.textContent !== _lmSbLbl) label.textContent = _lmSbLbl;
         icon.className = scanning ? 'fa fa-stop' : 'fa fa-search';
-
-        var status = row.querySelector('#lm-server-status');
-        var text = sbStatusText(ctx);
-        if (status.textContent !== text) {
-            status.textContent = text;
-            status.title = text;
-        }
     }
 
     /* ---------- loop ---------- */

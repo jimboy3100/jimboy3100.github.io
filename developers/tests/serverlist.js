@@ -48,5 +48,47 @@ check('same players a minute apart: same arena', ctx.sbSameArena(setA, 1000, set
 check('same players 5 minutes apart: not judged', !ctx.sbSameArena(setA, 1000, setB, 301000));
 check('different players: different arenas', !ctx.sbSameArena(setA, 1000, ctx.sbNameSet(names.slice(40, 74)), 1000));
 check('fewer than 5 names: not judged', !ctx.sbSameArena(['a', 'b', 'c'], 1, ['a', 'b', 'c'], 1));
+/* The finder row is the list and the Scan button only (no status line under it): sbEnsureUI,
+ * sbRender and sbCheckJoin run on small fakes. Scanning shows on the button (Stop, red, stop
+ * icon); a failed scan is in the button's tooltip and a failed join is a toast. */
+{
+    const made = [], toasts = [];
+    const el = (id) => ({ id, style: {}, className: '', title: '', textContent: '', disabled: false, options: [], children: [], _ls: {},
+        addEventListener(t, f) { this._ls[t] = f; }, appendChild(c) { this.children.push(c); c.parentNode = this; return c; },
+        insertBefore(c) { return this.appendChild(c); }, removeChild(c) { this.children = this.children.filter(x => x !== c); return c; } });
+    const info = el('server-info');
+    const parts = { '#lm-server-list': el('lm-server-list'), '#lm-server-scan': el('lm-server-scan') };
+    const span = el(''), icon = el('');
+    parts['#lm-server-scan'].querySelector = (q) => (q === 'span' ? span : q === 'i' ? icon : null);
+    const doc = {
+        head: el('head'), documentElement: el('html'), activeElement: null,
+        getElementById: (id) => (id === 'server-info' ? info : id === 'lm-server-list-row' ? made.find(r => r.parentNode === info) || null : null),
+        createElement: (t) => { const r = el(''); r.tagName = t; if (t === 'div') made.push(r); r.querySelector = (q) => parts[q] || null; return r; }
+    };
+    const rctx = { document: doc, window: { toastr: { warning: (m) => toasts.push(m) } }, toastr: null, lmT, JSON, Date, Array, String,
+        _lmTH: (k) => lmEn[k] || k, _lmG2Tag: () => '[Servers] ',
+        SB: { joinTimeoutMs: 15000 }, SB_MODE_LABELS: { ':ffa': 'FFA' },
+        sbScan: { running: false, key: 'eu|ffa', error: '' }, sbJoin: null, sbLastSignature: '',
+        sbBuildItems: () => [{ value: 'h1', text: '★ London 3 · 19 players · You are here', title: '', current: true }],
+        sbRegionLabel: () => 'London', sbStartScan() {}, sbCancelScan() {}, sbRequestJoin() {}, sbRefreshCounts() {} };
+    rctx.toastr = rctx.window.toastr;
+    vm.createContext(rctx);
+    vm.runInContext(['sbEscHtml', 'sbWarn', 'sbInstallStyles', 'sbEnsureUI', 'sbFillOption', 'sbRender', 'sbCheckJoin'].map(grab).join('\n'), rctx);
+    const live = { key: 'eu|ffa', region: 'eu', mode: ':ffa', visible: true, scannable: true, connected: true, alive: false };
+    rctx.sbRender(live);
+    const row = made[0];
+    const btn = parts['#lm-server-scan'];
+    check('row: list and Scan button, no status line', row && /id="lm-server-list"/.test(row.innerHTML) && /id="lm-server-scan"/.test(row.innerHTML) && !/lm-server-status/.test(row.innerHTML + doc.head.children.map(c => c.textContent).join('')));
+    check('idle: Scan, search icon, no counts-refresh text anywhere', span.textContent === lmEn['game2.sbScan'] && icon.className === 'fa fa-search' && btn.className === 'btn btn-primary' && !/refresh/i.test(row.innerHTML + btn.title));
+    rctx.sbScan.running = true;
+    rctx.sbRender(live);
+    check('scanning: the button is Stop, red, stop icon', span.textContent === lmEn['game2.sbStop'] && btn.className === 'btn btn-danger' && icon.className === 'fa fa-stop' && btn.title === lmEn['game2.sbStopTip']);
+    rctx.sbScan.running = false; rctx.sbScan.error = lmEn['game2.sbNoAnswer'];
+    rctx.sbRender(live);
+    check('a failed scan: the reason in the button tooltip', btn.title.split('\n').pop() === lmEn['game2.sbNoAnswer'] && span.textContent === lmEn['game2.sbScan']);
+    rctx.sbJoin = { host: 'h2', key: 'eu|ffa', alias: 'London 5', startedAt: Date.now() - 20000 };
+    vm.runInContext('sbCheckJoin({ key: "eu|ffa", currentHost: "h1", connected: true })', rctx);
+    check('a join that timed out: a toast names the server', toasts.length === 1 && toasts[0].indexOf('London 5') > 0 && rctx.sbJoin === null);
+}
 console.log(failed ? failed + ' check(s) failed' : 'all server list checks passed');
 process.exit(failed ? 1 : 0);
