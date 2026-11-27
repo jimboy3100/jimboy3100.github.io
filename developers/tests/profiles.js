@@ -216,7 +216,7 @@ check('diff: a set differing only in the phone control layout is not the same', 
     const priv = { lmAnalyticsGames: [{ m: 1 }], lmAnalyticsTracks: [{ t: 1 }], lmPracticeStore: { best: 1 }, 'lm-director-watch': ['nick'], lmSettingsBackups: [{ t: 1 }], ogarioPlayerProfiles: [1] };
     Object.keys(conf).concat(Object.keys(priv)).forEach(k => src.setItem(k, J(conf[k] || priv[k])));
     const out = JSON.parse(J(exp(src)));
-    check('export: every configuration key is carried', Object.keys(conf).every(k => J(out[k]) === J(conf[k])) || !console.log('   missing: ' + Object.keys(conf).filter(k => J(out[k]) !== J(conf[k])).join(', ')));
+    check('export: every configuration key is carried', Object.keys(conf).every(k => J(out[k]) === J(conf[k])) || (console.log('   missing: ' + Object.keys(conf).filter(k => J(out[k]) !== J(conf[k])).join(', ')), false));
     check('export: no history, statistics, watch list or backups', Object.keys(priv).every(k => !(k in out)));
     const dst = makeStorage(0);
     dst.setItem('lmPerfBackup', '{"old":1}'); dst.setItem('lmHudLayouts', '{"keep":1}');
