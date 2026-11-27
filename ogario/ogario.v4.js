@@ -84687,8 +84687,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             if (event.target.className === hotkeysSetup.inputClassName) {
                 event.preventDefault();
-                /* a bare Shift is bound when it is released: Shift + left click binds the left button */
-                if (pressedKey === 'SHIFT') { hotkeysSetup._lmShiftPending = event.target.id; return; }
+                /* a bare Shift, Ctrl or Alt is bound when it is released alone: Shift + left click
+                 * binds the left button, and the first half of Alt + J / Ctrl + U no longer takes
+                 * ALT / CTRL from the command that has it */
+                if (pressedKey === 'SHIFT' || pressedKey === 'CTRL' || pressedKey === 'ALT') { hotkeysSetup._lmShiftPending = event.target.id; hotkeysSetup._lmModPending = pressedKey; return; }
                 hotkeysSetup._lmShiftPending = '';
                 hotkeysSetup.setHotkey(8 === event.keyCode ? 'DEL' : pressedKey, event.target.id); /* Backspace clears, like DEL */
                 return;
@@ -84706,10 +84708,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
     }
     document.onkeyup = function (event) {
         try { event._lmKeyupDone = true; } catch (e) { }
-        if (event.keyCode === 16 && hotkeysSetup._lmShiftPending) {
+        if ((event.keyCode === 16 || event.keyCode === 17 || event.keyCode === 18) && hotkeysSetup._lmShiftPending) {
             var _lmShiftId = hotkeysSetup._lmShiftPending;
             hotkeysSetup._lmShiftPending = '';
-            if (event.target && event.target.className === hotkeysSetup.inputClassName && event.target.id === _lmShiftId) hotkeysSetup.setHotkey('SHIFT', _lmShiftId);
+            if (event.target && event.target.className === hotkeysSetup.inputClassName && event.target.id === _lmShiftId) hotkeysSetup.setHotkey(hotkeysSetup._lmModPending || 'SHIFT', _lmShiftId);
         }
         var pressedKey = hotkeysSetup.getPressedKey(event);
         var heldKey = _lmHeldByCode[event.keyCode];
