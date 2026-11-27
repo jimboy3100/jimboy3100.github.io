@@ -83,7 +83,10 @@ function run(name, url, env) {
     fs.rmSync(out, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
     fs.mkdirSync(out, { recursive: true });
     fs.writeFileSync(path.join(out, 'probe.js'), PROBE);
-    const r = spawnSync(process.execPath, [path.join(here, 'smoke.js'), repo, out, '3', url], { encoding: 'utf8', timeout: 120000, env: Object.assign({}, process.env, env || {}) });
+    /* third-party stylesheets (Google Fonts, Font Awesome) fail at once, as in themepages.js: they hold
+     * the page until they load, from a busy machine over 10 s, and the probe read a page not built yet */
+    const r = spawnSync(process.execPath, [path.join(here, 'smoke.js'), repo, out, '3', url], { encoding: 'utf8', timeout: 120000,
+        env: Object.assign({}, process.env, { SMOKE_BLOCK: 'fonts.googleapis.com,fonts.gstatic.com,cdnjs.cloudflare.com' }, env || {}) });
     const text = (r.stdout || '') + (r.stderr || '');
     if (/chrome not found/.test(text)) { console.log('SKIP: ' + text.trim()); process.exit(0); }
     let res = null;
