@@ -84010,12 +84010,25 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             return bound;
         },
+        /* false when the storage is full or blocked: Save said nothing, threw and the keys were
+         * lost on the next load; now it says so and the window stays open (the keys work until then) */
         saveHotkeys() {
-            window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
+            try {
+                window.localStorage.setItem('ogarioHotkeys', JSON.stringify(hotkeys));
+            } catch (eSave) {
+                if (window.toastr) toastr.error(lmT('modules.smalltools.storageFull'));
+                return false;
+            }
             try {
                 window.localStorage.setItem('ogarioHotkeysKnown', JSON.stringify(Object.keys(hotkeysCommand)));
             } catch (eKnown) { }
-            this.saveCommands();
+            try {
+                this.saveCommands();
+            } catch (eCmd) {
+                if (window.toastr) toastr.error(lmT('modules.smalltools.storageFull'));
+                return false;
+            }
+            return true;
         },
         saveCommands() {
             defineChatCommand();
@@ -84085,7 +84098,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 $(document).on('click', '#save-hotkeys', function (event) {
                     event.preventDefault();
                     //hotkeysSetup.saveHotkeys();
-                    setup.saveHotkeys();
+                    if (!setup.saveHotkeys()) return;
                     setup.openSnapshot = null;
                     $('#hotkeys').fadeOut(500);
                 }),
