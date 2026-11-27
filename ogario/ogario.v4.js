@@ -52781,6 +52781,14 @@ function thelegendmodproject() {
             }
             if (_connectionLevelFlush) {
                 lmSetMbUnit(0);
+                /* the Expanding Land spawn gate (onPlay) waits for opcode 32 of this connection:
+                 * left on, it dropped the next connection's world updates for up to 3 s and its
+                 * opcode 32 wiped that world */
+                this._spawnTransitGate = false;
+                if (this._spawnGateTimer) {
+                    clearTimeout(this._spawnGateTimer);
+                    this._spawnGateTimer = null;
+                }
             }
             /* the life ends with its connection (server change, lost connection, practice arena):
              * the score (best mass of the life) was only reset by a death, so the next life showed

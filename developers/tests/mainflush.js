@@ -5,6 +5,7 @@
  * - the main death beside a living unit and the spawn under the Expanding Land spawn gate drop
  *   the main socket's world and keep the units' cells, pellets and viruses (their viruses left
  *   LM.viruses: spect.js lists a virus once, so its range ring was gone)
+ * - a connection flush ends the Expanding Land spawn gate (it dropped the new connection's updates)
  * node developers/tests/mainflush.js [ogario.v4.js] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -141,6 +142,21 @@ const mainGone = (L) => !L.indexedCells[11] && !L.indexedCells[13] && !L.indexed
     M.handleMessage(dv([32, 11, 0, 0, 0]));
     check('spawn under the gate: the main socket\'s cells, pellet and virus go, the gate opens', mainGone(M) && M._spawnTransitGate === false);
     check('spawn under the gate: the unit\'s cell, pellet and virus stay (its virus left LM.viruses)', unitKept(M, u), { viruses: M.viruses.map(c => c.id) });
+}
+
+/* ---- 2. the Expanding Land spawn gate and a new connection ---- */
+{
+    const L = client();
+    L._spawnTransitGate = true; /* onPlay while dead on Expanding Land, with its 3 s timer */
+    L._spawnGateTimer = 4242;
+    L.flushCellsData(); /* connect() / onClose */
+    check('connection flush ends the spawn gate and its timer', L._spawnTransitGate === false && L._spawnGateTimer === null && L.g.cleared.includes(4242));
+    feed(L, [], [{ id: 11, x: 100, y: 200, size: 120, color: [200, 50, 50], name: 'Alpha' }], []);
+    check('the new connection\'s first world update is applied (was dropped for up to 3 s)', !!L.indexedCells[11]);
+    const M = client();
+    M._spawnTransitGate = true;
+    M.flushCellsData(true); /* the respawn flush of the same connection keeps the gate */
+    check('the Expanding Land respawn flush keeps the gate (it waits for this connection\'s spawn)', M._spawnTransitGate === true);
 }
 
 console.log(fail ? fail + ' FAILED' : 'all main flush checks passed');
