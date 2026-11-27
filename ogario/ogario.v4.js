@@ -21582,7 +21582,6 @@ var defaultmapsettings = {
     showTargeting: true,
     showLbData: true,
     lbHideBots: false,
-    lbPassToast: false,
     lbClickSpectate: false,       /* free spectate: leaderboard mass click follows that player */
     clickSpectate: false,         /* free spectate: left click on a player cell follows that player */
     minimapClickSpectate: false,  /* Expanding Land World Spectate: minimap click moves the camera */
@@ -27351,7 +27350,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'lbPassToast', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'virusPopSound', 'virusEatSound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadEnabled', 'gamepadDeadzone', 'lbClickSpectate', 'clickSpectate', 'minimapClickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications', 'audioDucking', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27461,7 +27460,7 @@ function thelegendmodproject() {
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "noFocusHud", "centeredLb", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "noFocusHud", "centeredLb", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre"], "hudGroup");
             /* one choice for where the game stats line is ("at the top" and "at the bottom centre" were two switches) */
             this.addChoiceBox(".hudGroup", "statsPosition", "settings.statsPosition", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
             /* Spectating and streaming: click to follow, the stream overlay and the spectator director */
@@ -53115,17 +53114,6 @@ function thelegendmodproject() {
                     text += '<span class=\"hud-main-color\">[' + application.calculateMapSector(w + legendmod.mapOffsetX, u + legendmod.mapOffsetY) + ']</span>', text += '</span>';
                 }
             }
-            /* optional: toast when you move up 1-3 places while playing (bigger jumps are
-             * respawns, multibox swaps or server changes, not passes) */
-            if (defaultmapsettings.lbPassToast) {
-                var _lmLbPos = this.play ? (this.playerPosition | 0) : 0;
-                var _lmLbPrev = this._lmPrevLbPos | 0;
-                if (_lmLbPos > 0 && _lmLbPrev > 0 && _lmLbPos < _lmLbPrev && _lmLbPrev - _lmLbPos <= 3 && window.toastr) {
-                    var _lmLbBelow = this.leaderboard[_lmLbPos];
-                    toastr.info('\u25B2 #' + _lmLbPos + (_lmLbBelow && _lmLbBelow.nick ? ' (' + application.escapeHTML(_lmLbBelow.nick) + ')' : ''));
-                }
-                this._lmPrevLbPos = _lmLbPos;
-            } else this._lmPrevLbPos = 0;
             application.displayLeaderboard(teamText, text);
             if (this._lmSpecLb != null) this._lmSpecLbHud();
             //application['displayPartyBots']();

@@ -4157,24 +4157,6 @@
     "ja": "受け取れる毎時ボーナス、デイリークエスト、ギフトを受け取る",
     "it": "Riscatta il bonus orario, la missione giornaliera e i regali pronti"
   },
-  "lmx.ui.remindTitle": {
-    "en": "Remind me when a reward is ready",
-    "el": "Υπενθύμισέ μου όταν μια ανταμοιβή είναι έτοιμη",
-    "es": "Avísame cuando haya una recompensa lista",
-    "bg": "Напомни ми, когато има готова награда",
-    "fr": "Me prévenir quand une récompense est prête",
-    "ar": "ذكّرني عندما تكون المكافأة جاهزة",
-    "zh": "獎勵就緒時提醒我",
-    "ru": "Напомнить, когда награда будет готова",
-    "de": "Erinnere mich, wenn eine Belohnung bereit ist",
-    "tr": "Ödül hazır olduğunda bana hatırlat",
-    "pl": "Przypomnij, gdy nagroda będzie gotowa",
-    "nl": "Herinner me als er een beloning klaarstaat",
-    "pt": "Me avise quando uma recompensa estiver pronta",
-    "id": "Ingatkan aku saat hadiah sudah siap",
-    "ja": "報酬を受け取れるようになったら知らせる",
-    "it": "Avvisami quando una ricompensa è pronta"
-  },
   "lmx.ui.tagLoginRequired": {
     "en": "LOGIN REQUIRED",
     "el": "ΑΠΑΙΤΕΙΤΑΙ ΣΥΝΔΕΣΗ",

@@ -285,7 +285,6 @@ Drag and resize HUD elements with named layouts. Features:
 - **Top 5 skins**: Display skins of leaderboard leaders
 - **Centred leaderboard**: Position leaderboard at centre-right
 - **Hide bots**: Filter server-controlled bots from the leaderboard
-- **Pass toast**: Notification when climbing the leaderboard
 - **Click-to-spectate**: Click a leaderboard entry to follow that player in spectate
 
 ### 15. Stats and Analytics
@@ -406,7 +405,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, edge arrows, cell panel, stats display, indicators, online status, sticky cell
 - **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter, coloured nicks, hide country, universal chat, player ID
 - **Sounds**: Sound mixer (6 channels), individual sound toggles, audio ducking
-- **Leaderboard**: Limit, top 5 skins, centred, hide bots, click-spectate, pass toast
+- **Leaderboard**: Limit, top 5 skins, centred, hide bots, click-spectate
 - **Multibox**: Amount (2-4), rings (P1/P2 colour, size, active-only), freeze, auto-respawn, switch after death, camera view, shadow
 - **Scan Trick**: Enable, directions, distance, rounded, left-mouse-only, status display
 - **Line Split**: Count, delay, hold time, guide lines
