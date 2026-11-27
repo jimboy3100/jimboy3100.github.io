@@ -145,41 +145,6 @@
                 keyUp: null,
                 type: 'normal'
             },
-            /* custom macro slot 1 (ogario/modules/macroeditor.js, loaded on the first press;
-             * made in Settings > Macros > Custom macros); no default key */
-            'hk-customMacro1': {
-                get label() {
-                    return lmT('settings.hk-customMacro1');
-                },
-                defaultKey: '',
-                keyDown() {
-                    if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('run', 1);
-                },
-                keyUp: null,
-                type: 'normal'
-            },
-            'hk-customMacro2': {
-                get label() {
-                    return lmT('settings.hk-customMacro2');
-                },
-                defaultKey: '',
-                keyDown() {
-                    if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('run', 2);
-                },
-                keyUp: null,
-                type: 'normal'
-            },
-            'hk-customMacro3': {
-                get label() {
-                    return lmT('settings.hk-customMacro3');
-                },
-                defaultKey: '',
-                keyDown() {
-                    if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('run', 3);
-                },
-                keyUp: null,
-                type: 'normal'
-            },		
             'hk-pause': {
                 get label() { return lmT('settings.hk-pause'); },
                 defaultKey: 'R',

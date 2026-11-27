@@ -50,9 +50,6 @@
         { id: 'zoomOut', lk: 'misc.editor.ctlZoomOut', icon: '−', hide: true, act: true },
         { id: 'freeSpec', lk: 'misc.editor.ctlFreeSpec', icon: '🔍', hide: true, act: true },
         { id: 'respawn', lk: 'pkg.agm.ctlRespawn', icon: '↻', hide: true, act: true },
-        { id: 'm1', lk: 'pkg.agm.ctlMacro', lv: [1], icon: 'M1', hide: true, act: true },
-        { id: 'm2', lk: 'pkg.agm.ctlMacro', lv: [2], icon: 'M2', hide: true, act: true },
-        { id: 'm3', lk: 'pkg.agm.ctlMacro', lv: [3], icon: 'M3', hide: true, act: true },
         { id: 'menu', lk: 'misc.editor.ctlMenu', icon: '☰' }
     ];
     var CTL = {};

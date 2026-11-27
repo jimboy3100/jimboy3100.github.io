@@ -927,7 +927,7 @@
         } finally { opening = false; }
         mount();
         render();
-        /* in front of a window already open (it opened behind Custom Macros) */
+        /* in front of a window already open (it opened behind them) */
         if (window.LMWinStack) window.LMWinStack.front(document.getElementById('overlays'));
     }
     function isOpen() {

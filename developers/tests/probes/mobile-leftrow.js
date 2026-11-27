@@ -1,5 +1,5 @@
 // Phone run: with every optional left-row button on (quick chat 1-4, multibox, ping, zoom +/-, free
-// spectate, quick respawn, macros M1-M3) every phone control is on the screen and the left row stays off Split / Feed, 4x / 16x and
+// spectate, quick respawn) every phone control is on the screen and the left row stays off Split / Feed, 4x / 16x and
 // the minimap (it wraps upward). Up to 3.698 the row ran under Feed on a 915x412 phone and past the right
 // edge of a 640x360 one (SMOKE_VIEWPORT=640x360). The usual row (options off) keeps one row.
 // The phone preferences are put back.
@@ -10,7 +10,7 @@
   for (var w0 = 0; w0 < 60 && !window._lmMobileHost; w0++) await sleep(250);
   var H = window._lmMobileHost, app = window.application, drawer = document.getElementById('lm-drawer');
   if (!H || !app || !drawer) return { fail: ['phone controls missing'] };
-  var IDS = ['lm-qcmd', 'lm-mbbtn', 'lm-pingbtn', 'lm-zoombtn', 'lm-freespec', 'lm-respbtn', 'lm-macrobtn'];
+  var IDS = ['lm-qcmd', 'lm-mbbtn', 'lm-pingbtn', 'lm-zoombtn', 'lm-freespec', 'lm-respbtn'];
   var keepPrefs = null; try { keepPrefs = localStorage.getItem('lm-mobile-prefs'); } catch (e) { }
   var ov = document.getElementById('overlays'), menuWas = !!(ov && ov.getClientRects().length);
   var set = function (on) { IDS.forEach(function (id) { var cb = document.getElementById(id); if (cb && cb.checked !== on) { cb.checked = on; cb.dispatchEvent(new Event('change', { bubbles: true })); } }); };

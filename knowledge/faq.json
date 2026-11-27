@@ -74,10 +74,6 @@
       "answer": "Named sets of all gameplay and visual settings (up to 30 profiles) that can be switched instantly. Auto-switching per server type, game mode or input device. 5 automatic backups."
     },
     {
-      "question": "What are Custom Macros?",
-      "answer": "3 macro slots for automated action sequences (split, feed, wait, move) with up to 24 steps each. Dry run mode available. Safety timing limits enforced."
-    },
-    {
       "question": "What are User Scripts / Plugins?",
       "answer": "5 script slots for custom JavaScript extensions with plugin header format, settings API (up to 20 settings), version compatibility checking, and a catalogue of example plugins."
     },

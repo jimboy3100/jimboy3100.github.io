@@ -1,5 +1,5 @@
 // Phone run: the minimap, the compact leaderboard and the left-row buttons that do nothing in the menu
-// (wave, ping, zoom, macros) take no taps while the main menu is open, and take them again once it is
+// (wave, ping, zoom) take no taps while the main menu is open, and take them again once it is
 // hidden. Up to 3.702 they kept inline pointer-events:auto!important and lay over skin slots and
 // World Spectate on a 640x360 phone (SMOKE_VIEWPORT=640x360). The phone preferences are put back.
 (async () => {
@@ -15,10 +15,10 @@
   var set = function (id, on) { var cb = document.getElementById(id); if (cb && cb.checked !== on) { cb.checked = on; cb.dispatchEvent(new Event('change', { bubbles: true })); } };
   var pe = function (el) { return el ? getComputedStyle(el).pointerEvents : 'missing'; };
   try {
-    ['lm-lbc', 'lm-pingbtn', 'lm-zoombtn', 'lm-macrobtn'].forEach(function (id) { set(id, true); });
+    ['lm-lbc', 'lm-pingbtn', 'lm-zoombtn'].forEach(function (id) { set(id, true); });
     await sleep(100);
     var c = H.controls();
-    var act = ['wave', 'ping', 'zoomIn', 'zoomOut', 'm1'];
+    var act = ['wave', 'ping', 'zoomIn', 'zoomOut'];
     app.showMenu();
     for (var w1 = 0; w1 < 20 && !document.body.classList.contains('lm-menu'); w1++) await sleep(100);
     await sleep(100);

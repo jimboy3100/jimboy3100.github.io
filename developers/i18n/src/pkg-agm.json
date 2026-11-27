@@ -269,24 +269,6 @@
     "ja": "クイックリスポーンボタン",
     "it": "Pulsante respawn rapido"
   },
-  "pkg.agm.macroBtns": {
-    "en": "Custom macro buttons (M1-M3)",
-    "el": "Κουμπιά προσαρμοσμένων μακροεντολών (M1-M3)",
-    "es": "Botones de macros personalizadas (M1-M3)",
-    "bg": "Бутони за потребителски макроси (M1-M3)",
-    "fr": "Boutons des macros personnalisées (M1-M3)",
-    "ar": "أزرار الماكرو المخصصة (M1-M3)",
-    "zh": "自訂巨集按鈕（M1-M3）",
-    "ru": "Кнопки своих макросов (M1-M3)",
-    "de": "Tasten für eigene Makros (M1-M3)",
-    "tr": "Özel makro düğmeleri (M1-M3)",
-    "pl": "Przyciski własnych makr (M1-M3)",
-    "nl": "Knoppen voor eigen macro's (M1-M3)",
-    "pt": "Botões de macros personalizadas (M1-M3)",
-    "id": "Tombol makro kustom (M1-M3)",
-    "ja": "カスタムマクロボタン（M1-M3）",
-    "it": "Pulsanti macro personalizzate (M1-M3)"
-  },
   "pkg.agm.m_macroBtns": {
     "en": "Custom macro buttons (M1-M3)",
     "el": "Κουμπιά προσαρμοσμένων μακροεντολών (M1-M3)",
@@ -340,23 +322,5 @@
     "id": "Respawn cepat",
     "ja": "クイックリスポーン",
     "it": "Respawn rapido"
-  },
-  "pkg.agm.ctlMacro": {
-    "en": "Custom macro {0}",
-    "el": "Δικό σου macro {0}",
-    "es": "Macro personalizada {0}",
-    "bg": "Собствен макрос {0}",
-    "fr": "Macro perso {0}",
-    "ar": "ماكرو مخصص {0}",
-    "zh": "自訂巨集 {0}",
-    "ru": "Свой макрос {0}",
-    "de": "Eigenes Makro {0}",
-    "tr": "Özel makro {0}",
-    "pl": "Własne makro {0}",
-    "nl": "Eigen macro {0}",
-    "pt": "Macro personalizada {0}",
-    "id": "Macro kustom {0}",
-    "ja": "カスタムマクロ{0}",
-    "it": "Macro personalizzata {0}"
   }
 }

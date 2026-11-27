@@ -41,11 +41,11 @@ check('removed: no radial or screenshot options helpers', !('pickSector' in C) &
 {
     const v4 = fs.readFileSync(path.join(dir, '..', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
     const a = v4.indexOf('function lmRenameOldHotkeys(map) {'), b = v4.indexOf('\n}', a);
-    const hk = { R: 'hk-radialMenu', T: 'hk-radialEditor', P: 'hk-screenshotCapture', O: 'hk-screenshotTool', 'ALT+H': 'hk-showHUD', W: 'hk-feed' };
+    const hk = { R: 'hk-radialMenu', T: 'hk-radialEditor', P: 'hk-screenshotCapture', O: 'hk-screenshotTool', M: 'hk-customMacro1', N: 'hk-customMacro3', 'ALT+H': 'hk-showHUD', W: 'hk-feed' };
     vm.runInNewContext(v4.slice(a, b + 2) + '\nlmRenameOldHotkeys(hk);', { hk });
-    check('removed: a key on their hotkeys is free again, Alt+H stays', J(hk) === J({ 'ALT+H': 'hk-showHUD', W: 'hk-feed' }));
+    check('removed: a key on their hotkeys (and on the custom macros) is free again, Alt+H stays', J(hk) === J({ 'ALT+H': 'hk-showHUD', W: 'hk-feed' }));
     const hc = fs.readFileSync(path.join(dir, '..', 'hotkeysCommand.js'), 'utf8');
-    check('removed: their hotkeys are gone', !/'hk-(radialMenu|radialEditor|screenshotCapture|screenshotTool)'/.test(hc) && /'hk-showHUD'/.test(hc));
+    check('removed: their hotkeys and the custom macro ones are gone', !/'hk-(radialMenu|radialEditor|screenshotCapture|screenshotTool|customMacro[1-3])'/.test(hc) && /'hk-showHUD'/.test(hc));
 }
 
 /* ── the hotkey conflict list is gone (the key check of the Hotkeys window stays) ── */

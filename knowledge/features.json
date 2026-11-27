@@ -105,12 +105,6 @@
       "url": "https://www.legendmod.ml/features.html"
     },
     {
-      "id": "macros",
-      "name": "Custom macros",
-      "description": "3 macro slots with customizable names. Up to 24 steps per macro, 48 max events, 5 seconds max total. 4 action types: split (1-8x), feed (1-8x), wait (10-2000ms), move to mouse. Dry run mode. Safety limits: 20ms between splits, 10ms between feeds.",
-      "url": "https://www.legendmod.ml/features.html"
-    },
-    {
       "id": "plugins",
       "name": "User scripts and plugins",
       "description": "5 script slots for custom JavaScript. Plugin header format: ==LMPlugin== with name, version, author, permissions (8 types). Settings API: up to 20 settings per plugin. Catalogue of example plugins. Version compatibility checking. Third-party URL confirmation prompt.",

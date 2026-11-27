@@ -85,13 +85,6 @@
       "feature": "Practice Arena"
     },
     {
-      "id": "macroeditor",
-      "file": "ogario/modules/macroeditor.js",
-      "lines": 511,
-      "description": "Custom macro editor. 3 slots, up to 24 steps, dry run mode, safety limits (20ms split gap, 10ms feed gap).",
-      "feature": "Custom Macros"
-    },
-    {
       "id": "plugins",
       "file": "ogario/modules/plugins.js",
       "lines": 940,
@@ -134,6 +127,6 @@
       "feature": "Extension"
     }
   ],
-  "totalModules": 22,
+  "totalModules": 21,
   "totalHotkeyBindings": "146+"
 }

@@ -21841,8 +21841,9 @@ function lmRenameOldHotkeys(map) {
         if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo)|instantReplay)$/.test(v)) { delete map[k]; changed = true; continue; }
         /* the spectator director's commands and camera lock (removed) */
         if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
-        /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey */
-        if (/^hk-(?:radialMenu|radialEditor|screenshotTool|screenshotCapture)$/.test(v)) { delete map[k]; changed = true; continue; }
+        /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey,
+         * the custom macros */
+        if (/^hk-(?:radialMenu|radialEditor|screenshotTool|screenshotCapture|customMacro[1-3])$/.test(v)) { delete map[k]; changed = true; continue; }
         /* the Theme workshop window (removed: My themes is in the Theme tab, under the Theme preset) */
         if (v === 'hk-lmThemeWorkshop') { delete map[k]; changed = true; continue; }
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
@@ -21937,7 +21938,6 @@ var LM_EXPORT_KEYS = [
     { key: 'lmSettingsProfiles', type: 'a' },
     { key: 'lmSettingsProfilesRules', type: 'o' },
     { key: 'lmHudLayouts', type: 'o' },
-    { key: 'lmCustomMacros', type: 'o' },
     { key: 'lmThemeWorkshop', type: 'o' },     /* My themes (ogario/modules/mythemes.js) */
     { key: 'lmPracticeCfg', type: 'o' },
     /* importOnly: the old skin collections are player profiles now (lmMergeSkinCollections after
@@ -23807,8 +23807,7 @@ function thelegendmodproject() {
         },*/
 
         /* Who a split macro acts for, as window.core.split picks it (the selected multibox unit
-         * when it exists, else the main player), the same as the custom macros
-         * (ogario/modules/macroeditor.js identity): unit number and object, its socket and
+         * when it exists, else the main player): unit number and object, its socket and
          * connection number, the main socket, its life and the session type. */
         _lmMacroId() {
             var lm = window.legendmod || null, n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null;
@@ -27245,12 +27244,6 @@ function thelegendmodproject() {
             this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
             this.addSliderBox(".macroGroup", "macroSplitDelay", 20, 120, 1);
             this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
-            /* Custom macros window (ogario/modules/macroeditor.js, loaded on the first click or
-             * "Custom macro" hotkey): sequences of split / feed / wait / move to mouse */
-            $('<button type="button" id="lm-macro-editor-btn" class="btn btn-block btn-primary" style="margin-top:6px;white-space:normal;"></button>')
-                .attr('data-i18n', 'settings.macroEditor').text(lmT('settings.macroEditor'))
-                .appendTo('.macroGroup')
-                .on('click', function (e) { e.preventDefault(); if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('open'); });
             /* no Hotkeys, mouse or gamepad controls here: they are only in the Hotkeys window (the
              * gamepad dead zone only in the Gamepad window) */
             /* Options that do something only while another option is on, or only on some servers.
@@ -88984,43 +88977,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading plugins script:', e);
     }
-    /* Custom macros: each module loads the first time it is used.
-     * lmMacroEditor('open'[, slot]) and ('run', slot) for the
-     * "Custom macro 1-3" hotkeys (no default keys). Saved macros load it at start, so the first
-     * key press is not delayed; a press made while it loads runs only if it is still recent. */
-    var _lmLazyModule = function (file, globalName, what) {
-        var queue = null;
-        return function (action, arg) {
-            var M = window[globalName];
-            if (M && typeof M.run === 'function') return M.run(action, arg);
-            if (queue) { queue.push([action, arg, Date.now()]); return; }
-            queue = [[action, arg, Date.now()]];
-            try {
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.src = 'https://www.legendmod.ml/ogario/modules/' + file + '?v=' + (window.OgVer || '');
-                script.charset = 'utf-8';
-                script.onload = function () {
-                    var q = queue || [], X = window[globalName];
-                    queue = null;
-                    if (!X || typeof X.run !== 'function') return;
-                    q.forEach(function (a) { if (a[0] !== 'run' || Date.now() - a[2] < 1500) X.run(a[0], a[1]); });
-                };
-                script.onerror = function () {
-                    queue = null;
-                    script.remove();
-                    if (window.toastr) toastr.error(lmT('game2.moduleFailed', [lmT(what)]));
-                };
-                document.body.appendChild(script);
-            } catch (e) {
-                queue = null;
-                console.warn('[LM] Error loading ' + what + ':', e);
-            }
-        };
-    };
-    /* Skin editor removed — use the standalone Skin Checker & Editor at legendmod.ml/skins/skinchecker.html */
-    window.lmMacroEditor = _lmLazyModule('macroeditor.js', 'LMMacroEditor', 'game2.macroEditor'); /* the name is a key: the load error toast translates it */
-    try { if (localStorage.getItem('lmCustomMacros')) window.lmMacroEditor('load'); } catch (e) { }
+    /* The custom macros are removed: the macros kept in this browser are deleted */
+    try { localStorage.removeItem('lmCustomMacros'); } catch (e) { }
     /* My themes (the Theme tab, under the Theme preset list): saved themes and their versions */
     try {
         var myThemesScript = document.createElement('script');

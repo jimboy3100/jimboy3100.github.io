@@ -671,7 +671,7 @@
             var d = el('div'); d.appendChild(el('span', '', fmtDate(h.t))); d.appendChild(el('b', '', h.s + (h.ok ? ' \u2713' : ''))); Wn.hist.appendChild(d);
         });
     }
-    /* Esc closes the window wherever the focus is, as Analytics and Custom macros do (it opened the
+    /* Esc closes the window wherever the focus is, as Analytics does (it opened the
      * game menu over it); a window in front that closes on Esc takes it first (winstack.js) */
     function onEsc(e) {
         if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey || !isOpen()) return;

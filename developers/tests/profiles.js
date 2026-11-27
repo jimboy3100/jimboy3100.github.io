@@ -205,7 +205,7 @@ check('diff: a set differing only in the phone control layout is not the same', 
   if (exp && imp) {
     const src = makeStorage(0);
     const conf = {
-      lmHudLayouts: { v: 1, active: 'A', list: [{ name: 'A', c: {} }] }, lmCustomMacros: { slots: [{ name: 'm', steps: [] }] },
+      lmHudLayouts: { v: 1, active: 'A', list: [{ name: 'A', c: {} }] },
       lmThemeWorkshop: { v: 1, themes: [] },
       lmPracticeCfg: { bots: 4 },
       lmSettingsProfiles: [{ id: 'p1', name: 'P', data: { s: { showMass: true } } }], lmSettingsProfilesRules: { enabled: false },
@@ -223,6 +223,9 @@ check('diff: a set differing only in the phone control layout is not the same', 
     /* the removed radial menu and screenshot window */
     src.setItem('lmRadialMenu', J({ v: 1, items: ['hk-feed'] })); src.setItem('lmSmallTools', J({ shot: { lb: true } }));
     { const o2 = exp(src); check('export: the radial menu and screenshot options are not carried', !('lmRadialMenu' in o2) && !('lmSmallTools' in o2)); }
+    /* the removed custom macros */
+    src.setItem('lmCustomMacros', J({ v: 1, slots: [{ name: 'm', steps: [{ a: 'split' }] }] }));
+    check('export: the custom macros are not carried', !('lmCustomMacros' in exp(src)));
     /* the old skin collections are player profiles now: never exported, but an older export
      * still brings them in (they become profiles on the reload after the import) */
     const srcC = makeStorage(0);
@@ -242,6 +245,8 @@ check('diff: a set differing only in the phone control layout is not the same', 
     check('import: the zoom bookmarks of an older export are not written', dst2.getItem('lm-zoom-bookmarks') === null);
     imp({ lmRadialMenu: { v: 1, items: ['hk-feed'] }, lmSmallTools: { shot: { lb: true } } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
     check('import: the radial menu and screenshot options of an older export are not written', dst2.getItem('lmRadialMenu') === null && dst2.getItem('lmSmallTools') === null);
+    imp({ lmCustomMacros: { v: 1, slots: [{ name: 'm', steps: [] }] } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
+    check('import: the custom macros of an older export are not written', dst2.getItem('lmCustomMacros') === null);
     check('import: Performance mode backup of the replaced settings goes when the export has none', dst2.getItem('lmPerfBackup') === null);
     /* the removed Command Centre: stars left in this browser are not exported, and an older
      * export that has them writes nothing (and no error) */

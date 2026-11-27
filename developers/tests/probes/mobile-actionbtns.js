@@ -1,7 +1,7 @@
 // Phone run, gear panel options (off by default): a Quick respawn button runs the Quick respawn
 // hotkey's command (application.quickResp) when Settings > Quick respawn is on and says how to turn it
-// on otherwise; custom macro buttons M1-M3 run the Custom macro hotkeys' command (lmMacroEditor 'run')
-// and take no taps while the menu is open. They are phone controls the control editor can move.
+// on otherwise. It is a phone control the control editor can move. The custom macro buttons M1-M3
+// are removed (no option, no buttons, no editor entries).
 // The commands are counted, not run; the phone preferences and the setting are put back.
 (async () => {
   var fail = [], info = {};
@@ -9,12 +9,13 @@
   if (!(matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches)) return { fail: fail, info: { skipped: 'not the phone run' } };
   for (var w0 = 0; w0 < 60 && !window._lmMobileHost; w0++) await sleep(250);
   var H = window._lmMobileHost, app = window.application, s = window.legendmod5;
-  var cbR = document.getElementById('lm-respbtn'), cbM = document.getElementById('lm-macrobtn');
+  var cbR = document.getElementById('lm-respbtn');
   if (!H || !app || !s) return { fail: ['phone controls, application or settings missing'] };
-  if (!cbR || !cbM) return { fail: ['no Quick respawn / custom macro button options in the gear panel'] };
-  if (H.controls().respawn || H.controls().m1) fail.push('the new buttons are shown with the options off');
+  if (!cbR) return { fail: ['no Quick respawn button option in the gear panel'] };
+  if (document.getElementById('lm-macrobtn') || 'm1' in H.controls()) fail.push('the removed custom macro buttons are still there');
+  if (H.controls().respawn) fail.push('the Quick respawn button is shown with its option off');
   var keepPrefs = null; try { keepPrefs = localStorage.getItem('lm-mobile-prefs'); } catch (e) { }
-  var keep = { quickResp: app.quickResp, macro: window.lmMacroEditor, info: toastr.info, setting: s.quickResp };
+  var keep = { quickResp: app.quickResp, info: toastr.info, setting: s.quickResp };
   var ov = document.getElementById('overlays'), menuWas = !!(ov && ov.getClientRects().length);
   var calls = [];
   var set = function (cb, on) { cb.checked = on; cb.dispatchEvent(new Event('change', { bubbles: true })); };
@@ -25,11 +26,10 @@
   };
   try {
     app.quickResp = function () { calls.push('respawn'); };
-    window.lmMacroEditor = function (a, n) { calls.push(a + n); };
     toastr.info = function (m) { calls.push('hint'); return keep.info.apply(this, arguments); };
-    set(cbR, true); set(cbM, true);
+    set(cbR, true);
     var c = H.controls();
-    if (!c.respawn || !c.m1 || !c.m2 || !c.m3) return { fail: fail.concat(['buttons missing with the options on']), info: info };
+    if (!c.respawn) return { fail: fail.concat(['Quick respawn button missing with its option on']), info: info };
     app.hideMenu();
     await sleep(300);
     s.quickResp = false;
@@ -42,18 +42,13 @@
     tap(c.respawn);
     info.on = calls.join(',');
     if (calls.join(',') !== 'respawn') fail.push('Quick respawn on: the button gave ' + info.on);
-    calls = [];
-    tap(c.m2);
-    if (calls.join(',') !== 'run2') fail.push('M2 gave ' + calls.join(',') + ' (want run2)');
-    calls = [];
-    app.showMenu();
-    await sleep(400);
-    tap(c.m1);
-    if (calls.length) fail.push('M1 ran with the menu open: ' + calls.join(','));
     var E = window.LMMobileEditor;
-    if (E && E.CONTROLS) ['respawn', 'm1', 'm2', 'm3'].forEach(function (id) { if (!E.CONTROLS.some(function (x) { return x.id === id; })) fail.push('control editor cannot move ' + id); });
+    if (E && E.CONTROLS) {
+      if (!E.CONTROLS.some(function (x) { return x.id === 'respawn'; })) fail.push('control editor cannot move respawn');
+      if (E.CONTROLS.some(function (x) { return /^m[1-3]$/.test(x.id); })) fail.push('control editor still lists the removed macro buttons');
+    }
   } finally {
-    app.quickResp = keep.quickResp; window.lmMacroEditor = keep.macro; toastr.info = keep.info; s.quickResp = keep.setting;
+    app.quickResp = keep.quickResp; toastr.info = keep.info; s.quickResp = keep.setting;
     try { if (keepPrefs === null) localStorage.removeItem('lm-mobile-prefs'); else localStorage.setItem('lm-mobile-prefs', keepPrefs); } catch (e) { }
     if (H.reloadPrefs) H.reloadPrefs();
     if (menuWas) app.showMenu(); else app.hideMenu();
