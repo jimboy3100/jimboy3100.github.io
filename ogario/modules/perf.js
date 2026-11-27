@@ -2271,6 +2271,19 @@
             bKeep.textContent = keepText();
             wantMeasuring();
         });
+        /* the developer console (render time next to the FPS, the profiler box, the packet log):
+         * a developer facility, so it is switched here and not among the player settings; saved
+         * with the settings like before */
+        var bDev = btn('lm-perf-dev', '', function () {
+            var s = dms(), a = window.application;
+            if (!s) return;
+            var on = !s.showDevConsole;
+            if (a && typeof a.setSettings === 'function') a.setSettings('showDevConsole', on);
+            s.showDevConsole = on;
+            if (a && typeof a.saveSettings === 'function') { try { a.saveSettings(s, 'ogarioSettings'); } catch (e) { } }
+            if (window.clientProfiler && typeof window.clientProfiler.sync === 'function') { try { window.clientProfiler.sync(); } catch (e) { } }
+            bDev.textContent = devText();
+        });
         body.appendChild(row);
         /* keys and wheel stay in the window (Space would split), clicks do not reach the game */
         ['mousedown', 'mouseup', 'wheel', 'touchstart', 'touchmove', 'keydown', 'keyup'].forEach(function (t) {
@@ -2278,7 +2291,7 @@
         });
         document.body.appendChild(md);
         diag = { md: md, cv: cv, stats: stats, evs: evs, nv: nv, nstats: nstats, hist: hist, timer: 0,
-            title: title, x: x, hEvents: hEvents, hNet: hNet, hSessions: hSessions, bCopy: bCopy, bClear: bClear, bKeep: bKeep };
+            title: title, x: x, hEvents: hEvents, hNet: hNet, hSessions: hSessions, bCopy: bCopy, bClear: bClear, bKeep: bKeep, bDev: bDev };
         diagTexts();
         diagOpen = true;
         wantMeasuring();
@@ -2290,6 +2303,11 @@
 
     function keepText() {
         return T(keepRec ? 'keepOn' : 'keepOff');
+    }
+    function devText() {
+        var s = dms();
+        var k = 'pkg.caw.' + (s && s.showDevConsole ? 'devOn' : 'devOff');
+        return typeof window.lmT === 'function' ? window.lmT(k) : k;
     }
 
     /* the fixed texts of the window (again after a language change); the rest is redrawn
@@ -2306,6 +2324,7 @@
         diag.bCopy.textContent = typeof window.lmT === 'function' ? window.lmT('game1.set.copyDebug') : 'game1.set.copyDebug';
         diag.bClear.textContent = TS('lmNetClear');
         diag.bKeep.textContent = keepText();
+        diag.bDev.textContent = devText();
     }
     if (window.LMi18n && window.LMi18n.onChange) {
         window.LMi18n.onChange(function () {

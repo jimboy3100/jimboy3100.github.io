@@ -166,7 +166,8 @@
      * Screenshot mode -> Show/hide HUD, zoom bookmarks -> zoom levels, the Lab -> User Scripts,
      * the old Mouse control and gamepad switches -> their blocks of the Hotkeys window, the Game Over
      * card parts -> the card's one switch, the Collections button switch -> the Skin collections command,
-     * the Scan Trick / line split status switches -> their sections, Ghost cells info -> Ghost cells);
+     * the Scan Trick / line split status switches -> their sections, Ghost cells info -> Ghost cells,
+     * the developer console switch -> the Performance section with the diagnostics window);
      * without this the star was dropped silently */
     var RENAMED = {
         'opt:shortMass': 'set:massFormat', 'opt:fpsAtTop': 'set:statsPosition', 'opt:statsAtCenter': 'set:statsPosition',
@@ -179,7 +180,7 @@
         'opt:massGraph': 'opt:gameOverStats', 'opt:showKiller': 'opt:gameOverStats', 'opt:deathRecap': 'opt:gameOverStats',
         'opt:skinCollections': 'hk:hk-skinCollections',
         'opt:scanTrickStatus': 'sec:scanTrickGroup', 'opt:lineSplitStatus': 'sec:lineSplitGroup',
-        'opt:showGhostCellsInfo': 'opt:showGhostCells'
+        'opt:showGhostCellsInfo': 'opt:showGhostCells', 'opt:showDevConsole': 'sec:perfGroup'
     };
     function renamed(a) {
         if (!Array.isArray(a)) return a;

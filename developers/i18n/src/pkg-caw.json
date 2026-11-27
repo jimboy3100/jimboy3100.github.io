@@ -1,0 +1,38 @@
+{
+  "pkg.caw.devOn": {
+    "en": "Developer console: on",
+    "el": "Κονσόλα προγραμματιστή: ενεργή",
+    "es": "Consola de desarrollador: activada",
+    "bg": "Конзола за разработчици: вкл.",
+    "fr": "Console développeur : activée",
+    "ar": "وحدة تحكم المطور: مفعّلة",
+    "zh": "開發者主控台：開",
+    "ru": "Консоль разработчика: вкл.",
+    "de": "Entwicklerkonsole: an",
+    "tr": "Geliştirici konsolu: açık",
+    "pl": "Konsola deweloperska: wł.",
+    "nl": "Ontwikkelaarsconsole: aan",
+    "pt": "Console do desenvolvedor: ligado",
+    "id": "Konsol pengembang: aktif",
+    "ja": "開発者コンソール：オン",
+    "it": "Console sviluppatore: attiva"
+  },
+  "pkg.caw.devOff": {
+    "en": "Developer console: off",
+    "el": "Κονσόλα προγραμματιστή: ανενεργή",
+    "es": "Consola de desarrollador: desactivada",
+    "bg": "Конзола за разработчици: изкл.",
+    "fr": "Console développeur : désactivée",
+    "ar": "وحدة تحكم المطور: معطّلة",
+    "zh": "開發者主控台：關",
+    "ru": "Консоль разработчика: выкл.",
+    "de": "Entwicklerkonsole: aus",
+    "tr": "Geliştirici konsolu: kapalı",
+    "pl": "Konsola deweloperska: wył.",
+    "nl": "Ontwikkelaarsconsole: uit",
+    "pt": "Console do desenvolvedor: desligado",
+    "id": "Konsol pengembang: nonaktif",
+    "ja": "開発者コンソール：オフ",
+    "it": "Console sviluppatore: disattivata"
+  }
+}

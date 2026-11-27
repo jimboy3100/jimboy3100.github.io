@@ -4,6 +4,7 @@
 // 2D context with one ghost in the middle of the view; everything is put back afterwards.
 (async () => {
   var fail = [], info = {};
+  for (var w = 0; w < 50 && !(window.drawRender && window.drawRender.drawGhostCells && window.legendmod && window.application); w++) await new Promise(function (r) { setTimeout(r, 200); });
   var R = window.drawRender, LM = window.legendmod, S = window.legendmod5 || window.defaultmapsettings, A = window.application;
   if (!R || !LM || !S || typeof R.drawGhostCells !== 'function') return { fail: ['drawRender.drawGhostCells not found'] };
   var keys = ['ctx', 'camX', 'camY', 'scale', 'canvasWidth', 'canvasHeight'];

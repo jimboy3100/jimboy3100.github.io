@@ -54,8 +54,8 @@
     $('#canvasPicture').val(cbOld || '');
     $('#canvas').css('background-image', cbBg);
   } catch (e) { fail.push('screen image check: ' + e); }
-  // cell animations in Animation, the developer console (profiler) in Performance, once each
-  [['jellyPhisycs', 'animationGroup'], ['suckAnimation', 'animationGroup'], ['showDevConsole', 'perfGroup']].forEach(function (p) {
+  // cell animations in Animation, once each (the developer console is switched in the diagnostics window: probe perf-devconsole)
+  [['jellyPhisycs', 'animationGroup'], ['suckAnimation', 'animationGroup']].forEach(function (p) {
     if ($('#og-options [id="' + p[0] + '"]').length !== 1 || !$('#' + p[0]).closest('.options-box.' + p[1]).length) fail.push('#' + p[0] + ' not once in .' + p[1]);
     else if ($('#' + p[0]).prop('checked') !== !!defaultmapsettings[p[0]]) fail.push('#' + p[0] + ' does not show its setting');
   });

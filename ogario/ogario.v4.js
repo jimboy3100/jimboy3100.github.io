@@ -21498,7 +21498,7 @@ var defaultmapsettings = {
     noFocusHud: false,            /* warn while playing when keys/mouse no longer reach the game (alt-tab, 2nd window) */           /* small toast "#3 (passed nick)" when you climb the leaderboard */            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
     showTime: false,
     showStopwatch: false,         /* start / pause / stop stopwatch above the minimap (was the Tools tab button "Show Timer Calc.") */
-    showDevConsole: false,
+    showDevConsole: false,        /* developer console: render time by the FPS, profiler box, packet log; its switch is in the Performance diagnostics window */
     //normalLb: true,
     centeredLb: true,
     fpsAtTop: true,               /* copy of statsPosition 'top' for scripts and older versions (lmFoldLegacySettings) */
@@ -27131,8 +27131,10 @@ function thelegendmodproject() {
              * Skins to Animation, the developer console from Stats to Performance). */
             this.addOptions(["highDPI", "glAntialias", "menuFpsCap", "jellyPhisycs", "suckAnimation"], "animationGroup");
             /* Performance and network: Adaptive performance, the network history and the
-             * diagnostics button are added below with the sliders. */
-            this.addOptions(["performanceMode", "showDevConsole"], "perfGroup");
+             * diagnostics button are added below with the sliders. The developer console
+             * (showDevConsole) is switched in the diagnostics window (ogario/modules/perf.js),
+             * a developer facility rather than a player setting. */
+            this.addOptions(["performanceMode"], "perfGroup");
 
             this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
             this.addOptions([], "boardGroup");
