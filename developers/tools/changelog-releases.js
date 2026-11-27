@@ -3,7 +3,9 @@
  * build that has none yet, newest first, and rss.xml lists the newest releases of the page.
  * A build is released by its "Version 3.xxx" commit; its date is that commit's date and its notes
  * are the subjects of the commits since the build before it (commits that change only developer
- * files, such as tests, tools and notes, are left out). Run it after a "Version 3.xxx" commit:
+ * files, such as tests, tools and notes, are left out). The project facts (knowledge graph in its
+ * three formats, llms-full.txt, the home page's structured data) then give the newest build of the
+ * page as Legend Mod's softwareVersion. Run it after a "Version 3.xxx" commit:
  *   node developers/tools/changelog-releases.js          (writes changelog.html and rss.xml)
  *   node developers/tools/changelog-releases.js --check  (exit 1 when they are not up to date)
  * The functions are exported for developers/tests/releasefacts.js. */
@@ -179,7 +181,40 @@ function updateRss(repo, rss, html) {
     return rss.replace(/<lastBuildDate>[^<]*<\/lastBuildDate>/, '<lastBuildDate>' + rfc822(byV[entries[0].v].iso) + '</lastBuildDate>');
 }
 
-module.exports = { releases, devOnly, noteOf, notesOf, anchors, versionOf, anchorOf, changelogEntries, updateChangelog, updateRss, rfc822 };
+/* Where the project facts give Legend Mod's build (the #app entity's softwareVersion): file -> the
+ * pattern of that number (its first group is the text before it). They all give the newest build of
+ * the changelog. */
+const BUILD_FACTS = {
+    'knowledge/graph.jsonld': /("@id": "https:\/\/www\.legendmod\.ml\/#app",[\s\S]*?"softwareVersion": ")([^"]*)"/,
+    'knowledge/graph.ttl': /(<https:\/\/www\.legendmod\.ml\/#app> a [\s\S]*?schema:softwareVersion ")([^"]*)"/,
+    'knowledge/graph.rdf': /(<rdf:Description rdf:about="https:\/\/www\.legendmod\.ml\/#app">[\s\S]*?<schema:softwareVersion>)([^<]*)</,
+    'llms-full.txt': /(\nVersion: )(\S*)\r?\n/,
+    'index.html': /("@id": "https:\/\/www\.legendmod\.ml\/#app",[\s\S]*?"softwareVersion": ")([^"]*)"/
+};
+/* the build each fact file states: {file: version or null} */
+function buildFacts(repo) {
+    const out = {};
+    Object.keys(BUILD_FACTS).forEach((f) => {
+        const m = BUILD_FACTS[f].exec(fs.readFileSync(path.join(repo, f), 'utf8'));
+        out[f] = m ? m[2] : null;
+    });
+    return out;
+}
+/* the fact files with the build v (llms-full.txt also gets its Updated day): {file: new text} for those that change */
+function updateBuildFacts(repo, v, day) {
+    const out = {};
+    Object.keys(BUILD_FACTS).forEach((f) => {
+        const s = fs.readFileSync(path.join(repo, f), 'utf8');
+        const m = BUILD_FACTS[f].exec(s);
+        if (!m || m[2] === v) return;
+        let t = s.slice(0, m.index) + m[1] + v + s.slice(m.index + m[1].length + m[2].length);
+        if (f === 'llms-full.txt' && day) t = t.replace(/\nUpdated: [\d-]+/, '\nUpdated: ' + day);
+        out[f] = t;
+    });
+    return out;
+}
+
+module.exports = { releases, devOnly, noteOf, notesOf, anchors, versionOf, anchorOf, changelogEntries, updateChangelog, updateRss, rfc822, BUILD_FACTS, buildFacts, updateBuildFacts };
 
 if (require.main === module) {
     const check = process.argv.indexOf('--check') >= 0;
@@ -187,11 +222,14 @@ if (require.main === module) {
     const cl = path.join(REPO, 'changelog.html'), rs = path.join(REPO, 'rss.xml');
     const html = lf(fs.readFileSync(cl, 'utf8')), rss = lf(fs.readFileSync(rs, 'utf8'));
     const html2 = updateChangelog(REPO, html), rss2 = updateRss(REPO, rss, html2);
-    const stale = [html2 !== html && 'changelog.html', rss2 !== rss && 'rss.xml'].filter(Boolean);
+    const newest = changelogEntries(html2)[0] || {};
+    const facts = newest.v ? updateBuildFacts(REPO, newest.v, newest.date) : {};
+    const stale = [html2 !== html && 'changelog.html', rss2 !== rss && 'rss.xml'].concat(Object.keys(facts)).filter(Boolean);
     if (check) {
-        console.log(stale.length ? 'not up to date: ' + stale.join(', ') : 'changelog.html and rss.xml are up to date');
+        console.log(stale.length ? 'not up to date: ' + stale.join(', ') : 'changelog.html, rss.xml and the build in the project facts are up to date');
         process.exit(stale.length ? 1 : 0);
     }
+    Object.keys(facts).forEach((f) => fs.writeFileSync(path.join(REPO, f), facts[f]));
     if (html2 !== html) {
         fs.writeFileSync(cl, html2);
         /* the sitemap gives the day of the newest release as the page's last change */

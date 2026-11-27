@@ -140,5 +140,60 @@ if (rels.length) {
     'commits players do not see are left out (build number alone, developer files only)');
 }
 
+/* ---- versions in the project facts ---- */
+/* softwareVersion of every entity in the three graph files: the same in each */
+const jsonld = JSON.parse(read('knowledge/graph.jsonld'));
+const vJson = {}, vTtl = {}, vRdf = {};
+(jsonld['@graph'] || []).forEach((n) => { if (n['@id'] && n.softwareVersion) vJson[n['@id']] = String(n.softwareVersion); });
+read('knowledge/graph.ttl').split(/\r?\n(?=<[^>]+> a )/).forEach((b) => {
+    const s = /^<([^>]+)> a /.exec(b), v = /schema:softwareVersion "([^"]*)"/.exec(b);
+    if (s && v) vTtl[s[1]] = v[1];
+});
+(read('knowledge/graph.rdf').match(/<rdf:Description rdf:about="[^"]+">[\s\S]*?<\/rdf:Description>/g) || []).forEach((b) => {
+    const v = /<schema:softwareVersion>([^<]*)</.exec(b);
+    if (v) vRdf[/rdf:about="([^"]+)"/.exec(b)[1]] = v[1];
+});
+const sorted = (o) => JSON.stringify(Object.keys(o).sort().map((k) => [k, o[k]]));
+ok(Object.keys(vJson).length >= 2, 'graph.jsonld gives softwareVersions (' + sorted(vJson) + ')');
+ok(sorted(vJson) === sorted(vTtl) && sorted(vJson) === sorted(vRdf), 'graph.jsonld, graph.ttl and graph.rdf give the same softwareVersions: ' + sorted(vJson) + ' / ' + sorted(vTtl) + ' / ' + sorted(vRdf));
+
+/* Legend Mod's build: one number in every fact file, the newest release of the changelog, released and not newer than the code */
+const facts = tool.buildFacts(repo);
+const builds = Array.from(new Set(Object.keys(facts).map((f) => facts[f])));
+ok(builds.length === 1 && /^\d\.\d{3}$/.test(builds[0]), 'every fact file gives one build of Legend Mod: ' + JSON.stringify(facts));
+const ogVer = (read('ogario/ogario.v4.js').match(/window\.OgVer = ([\d.]+);/) || [])[1];
+ok(!!ogVer && parseFloat(builds[0]) <= parseFloat(ogVer), 'the stated build ' + builds[0] + ' is not newer than window.OgVer ' + ogVer);
+if (rels.length) {
+    const newestAnchor = tool.versionOf(tool.anchors(read('changelog.html'))[0] || 'v0');
+    ok(builds[0] === newestAnchor, 'the stated build ' + builds[0] + ' is the changelog\'s newest release ' + newestAnchor + ' (node developers/tools/changelog-releases.js sets both)');
+    ok(rels.some((r) => r.v === builds[0]), 'the stated build ' + builds[0] + ' has its "Version" commit');
+}
+
+/* Legend Express extension: one version in the facts, one the extension manifest really had */
+const ext = JSON.parse(read('knowledge/extension.json'));
+const llms = read('llms-full.txt');
+const llmsExt = (llms.match(/Chrome extension "Legend Express" \(manifest v3, version ([\d.]+)/) || [])[1];
+ok(!!ext.version && vJson['https://www.legendmod.ml/#extension'] === ext.version && llmsExt === ext.version,
+    'the extension version is the same in graph.jsonld (' + vJson['https://www.legendmod.ml/#extension'] + '), knowledge/extension.json (' + ext.version + ') and llms-full.txt (' + llmsExt + ')');
+const manifestNow = JSON.parse(read('LMexpress/extension/manifest.json')).version;
+const cmp = (a, b) => { const x = a.split('.').map(Number), y = b.split('.').map(Number); for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };
+ok(cmp(ext.version, manifestNow) <= 0, 'the stated extension version ' + ext.version + ' is not newer than the manifest (' + manifestNow + ')');
+if (rels.length) {
+    let had = '';
+    try { had = require('child_process').execFileSync('git', ['-C', repo, 'log', '--format=%h', '-S"version": "' + ext.version + '"', '--', 'LMexpress/extension/manifest.json'], { encoding: 'utf8' }).trim(); } catch (e) { }
+    ok(!!had, 'the extension manifest had the version ' + ext.version + ' (git history)');
+}
+
+/* Legend Express userscript: its @version everywhere it is named */
+const us = (read('LMexpress/LMexpress.user.js').match(/\/\/ @version\s+(\S+)/) || [])[1];
+const latest = (read('LMexpress/LMexpress.js').match(/var LMX_LATEST = \{ userscript: '([^']+)'/) || [])[1];
+const llmsUs = (llms.match(/\*\*Userscript\*\*:[^\n]*version (\d+(?:\.\d+)*)/) || [])[1];
+const home = read('index.html');
+const homeUs = (home.match(/data-i18n-html="site\.index\.legendExpressV18"[\s\S]*?Legend Express v([\d.]+)/) || [])[1];
+ok(!!us && latest === us && llmsUs === us && homeUs === us, 'the userscript version ' + us + ' is the update notice\'s newest (' + latest + '), llms-full.txt\'s (' + llmsUs + ') and the home page install button\'s (' + homeUs + ')');
+const packs = JSON.parse(read('developers/i18n/src/site-index.json'))['site.index.legendExpressV18'] || {};
+const wrongLang = Object.keys(packs).filter((l) => (packs[l].match(/Legend Express v([\d.]+)/) || [])[1] !== us);
+ok(Object.keys(packs).length >= 12 && !wrongLang.length, 'the install button names Legend Express v' + us + ' in every language (' + (wrongLang.map((l) => l + ': ' + packs[l].replace(/<[^>]+>/g, '').trim()).join(', ') || Object.keys(packs).length + ' languages') + ')');
+
 console.log(fails ? 'releasefacts: ' + fails + ' FAILED of ' + checked : 'releasefacts: all ' + checked + ' checks passed');
 process.exit(fails ? 1 : 0);

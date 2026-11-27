@@ -18,7 +18,7 @@
       "description": "Legend Mod is a browser client and extension project for Agar.io-style cell games, with custom skins, themes, configurable controls, multiboxing and replay tools.",
       "applicationCategory": "GameApplication",
       "operatingSystem": "Web browser",
-      "softwareVersion": "3.629",
+      "softwareVersion": "3.701",
       "inLanguage": [
         "en",
         "ar",
@@ -104,7 +104,7 @@
       "description": "Chrome extension for Legend Mod. Adds custom skins, themes, controls and more to Agar.io-style games. Does NOT collect, store or transmit personal data externally.",
       "applicationCategory": "BrowserExtension",
       "operatingSystem": "Chrome",
-      "softwareVersion": "1.8.4",
+      "softwareVersion": "1.8.5",
       "installUrl": "https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja",
       "browserRequirements": "Google Chrome",
       "permissions": [

@@ -1,7 +1,7 @@
 # Legend Mod — Comprehensive Documentation for LLMs
 
-Updated: 2026-11-26
-Version: 3.629
+Updated: 2026-11-27
+Version: 3.701
 
 Legend Mod is a browser client and Chrome extension for Agar.io-style cell games. It adds custom skins, themes, configurable controls, multiboxing, replay tools, a command centre, gamepad support, accessibility options and performance diagnostics to supported games including Expanding Land (expanding.land). Legend Mod is a separate project from the game servers it connects to; it must not be confused with Agar.io or any game publisher.
 
@@ -455,7 +455,8 @@ Each language has: core language pack (lm-XX.js), plus separate translation pack
 - **Storage**: localStorage for settings/hotkeys/profiles/history; IndexedDB for skin caching (1,000 skins, 600 audio, LRU eviction)
 - **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: commandcentre.js (1069 lines), themebridge.js, accessibility.js (246), analytics.js (1159), companion.js (685), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), notifications.js (812), replaystudio.js (1615), profiles.js (1386), practice.js (707), director.js (1598), macroeditor.js (511), plugins.js (940), lab.js (245), discovery.js (613), smalltools.js (1219), perf.js (1848), themeworkshop.js (1254), hotkeysCommand.js (2056)
 - **PWA**: Progressive Web App with fullscreen game mode, manifest.json ("Legend Mod - Expanding Land"), landscape orientation, theme_color #00243e; no service worker on this site (the old one is unregistered by play.html; the Expanding Land app at expanding.land has its own)
-- **Extension**: Chrome extension "Legend Express" (manifest v3, version 1.8.4, author Jimboy3100). Permissions: storage, declarativeNetRequest. Host permissions: agar.io, jimboy3100.github.io, legendmod.ml, sigmally.com, senpa.io, mi.com. Content scripts run on agar.io at document_start. Background: service worker. Does NOT collect, store or transmit personal data externally.
+- **Extension**: Chrome extension "Legend Express" (manifest v3, version 1.8.5, author Jimboy3100). Permissions: storage, declarativeNetRequest. Host permissions: agar.io, jimboy3100.github.io, legendmod.ml, sigmally.com, senpa.io, mi.com. Content scripts run on agar.io at document_start. Background: service worker. Does NOT collect, store or transmit personal data externally.
+- **Userscript**: Legend Express userscript for Tampermonkey / Greasemonkey (https://www.legendmod.ml/LMexpress/LMexpress.user.js), version 1.9.
 - **LMEvents API**: Hook system for user scripts (developers/LMEvents.md). Frozen plain data for listeners, failing listeners logged but don't stop the game.
 
 ## Expanding Land (Game)

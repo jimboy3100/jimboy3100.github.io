@@ -1,9 +1,9 @@
 {
   "entity": "https://www.legendmod.ml/#extension",
-  "updated": "2026-11-25",
+  "updated": "2026-11-27",
   "name": "Legend Express Agar.io Extension",
   "manifestVersion": 3,
-  "version": "1.8.4",
+  "version": "1.8.5",
   "author": "Jimboy3100",
   "description": "Legend Express is the Chrome extension component of Legend Mod. It injects Legend Mod features into supported game websites.",
   "installUrl": "https://chromewebstore.google.com/detail/legend-express-agario-ext/nmkhchnpjlcnicfchpkhckidmmmondja",
