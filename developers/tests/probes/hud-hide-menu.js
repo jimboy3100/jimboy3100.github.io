@@ -36,7 +36,9 @@
   };
   try {
     await check('death', function () { app.showMenu(300); });
-    await check('el death screen', function () { $('#overlays').stop(true, true).show(); });
+    /* as the Expanding Land death screen (ogario.v4.js): #helloContainer too, so the nick field is
+     * in view and its tap is checked (hideMenu hid it, and the check was skipped) */
+    await check('el death screen', function () { $('#overlays').stop(true, true).show(); $('#helloContainer').stop(true, true).show(); });
     /* started with the menu open: the menu stays hidden for the capture */
     app.showMenu();
     await sleep(100);
