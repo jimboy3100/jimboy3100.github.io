@@ -11,7 +11,11 @@
   var n = 0;
   try { n = +localStorage.getItem('lmBootScripts') || 0; } catch (e) { }
   info.scripts = n;
-  if (!(n > 5)) fail.push('script count not remembered (' + n + ')');
+  /* a load where a script failed is not remembered (play.html), e.g. a third-party script while the
+   * network drops (connect.facebook.net: ERR_NAME_NOT_RESOLVED); smoke.js lists each script's load or error */
+  var bad = Object.keys(window.__lmScriptsDone || {}).filter(function (k) { return window.__lmScriptsDone[k] === 'error'; });
+  if (!(n > 5) && bad.length) info.notStored = bad.slice(0, 3);
+  else if (!(n > 5)) fail.push('script count not remembered (' + n + ')');
   if (!document.getElementById('main-menu')) fail.push('no #main-menu (the screen waits for it)');
   /* its text is in the language chosen in Legend Mod (languagemod), when one was chosen */
   var lm = 0;
