@@ -22945,10 +22945,18 @@ function thelegendmodproject() {
              * (a 20 px font on their boxes did nothing: their texts have their own sizes) */
             this.addCustomCSS('hudScaleVarCSS', ':root{--lm-hud-scale:' + _lmCssNum(hs, 0.3, 2, 1) + ';--lm-hud-fs:' + t + 'px}');
             $('#time-hud').width(e);
-            $('#leaderboard-hud').css('transform', 'scale(' + hs + ')');
+            /* phones size the leaderboard and the teamboard themselves with an inline !important
+             * transform (LMmobile.js: the leaderboard fit, the tablet scale); a plain write here
+             * replaced it and the phone stylesheet's size showed instead (tablet teamboard 0.9 -> 0.75,
+             * a fitted leaderboard back over the buttons) */
+            var phoneSized = function (id) {
+                var el = typeof document !== 'undefined' && document.getElementById(id);
+                return !!(el && el.style && el.style.getPropertyPriority('transform') === 'important');
+            };
+            if (!phoneSized('leaderboard-hud')) $('#leaderboard-hud').css('transform', 'scale(' + hs + ')');
             /* smaller when that leaderboard would reach over the minimap */
             if (window.application && typeof window.application._lmLbFit === 'function') window.application._lmLbFit();
-            $('#top5-hud').css('transform', 'scale(' + hs + ')');
+            if (!phoneSized('top5-hud')) $('#top5-hud').css('transform', 'scale(' + hs + ')');
             $('#time-hud').css('top', a + 'px');
             /* the clock's own top: it moves up from there only when the minimap would cover it (_lmClockClear) */
             window._lmClockTop = a;

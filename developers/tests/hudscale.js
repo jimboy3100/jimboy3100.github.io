@@ -76,6 +76,20 @@ p = start(1440, st);
 check('big screen again: 1.21 is back (HUD and settings)', p.DS.hudScale === 1.21 && scaleVar(p) === '1.21');
 /* a broken value counts as 1 */
 check('a broken hudScale counts as 1', p.ctx._lmHudScaleNow('x', 1440) === 1 && p.ctx._lmHudScaleNow(NaN, 768) === 0.9);
+/* 4. a phone sizes the leaderboard (its fit) and a tablet the teamboard with an inline !important
+ * transform: the theme HUD scale (slider, the phone's menu pinch) leaves those, and still scales a
+ * box without one. Up to 3.702 it replaced them, and the phone stylesheet's 0.75 showed instead. */
+const inline = (v, pr) => ({ style: { getPropertyPriority: k => (k === 'transform' ? pr : ''), v } });
+p.ctx.document = { getElementById: id => ({ 'leaderboard-hud': inline('scale(0.5)', 'important'), 'top5-hud': inline('scale(0.9)', 'important') })[id] || null };
+delete p.styles['#leaderboard-hud']; delete p.styles['#top5-hud'];
+p.DS.hudScale = 0.6; p.Settings.setHudScale();
+check('phone: the fitted leaderboard and the tablet teamboard keep their own size',
+  !(p.styles['#leaderboard-hud'] || {}).transform && !(p.styles['#top5-hud'] || {}).transform && scaleVar(p) === '0.6');
+p.ctx.document = { getElementById: id => ({ 'leaderboard-hud': inline('scale(0.5)', ''), 'top5-hud': inline('', '') })[id] || null };
+p.Settings.setHudScale();
+check('without an !important transform both follow the HUD scale',
+  p.styles['#leaderboard-hud'].transform === 'scale(0.6)' && p.styles['#top5-hud'].transform === 'scale(0.6)');
+delete p.ctx.document;
 
 console.log(fail ? fail + ' FAILED' : 'all passed');
 process.exit(fail ? 1 : 0);
