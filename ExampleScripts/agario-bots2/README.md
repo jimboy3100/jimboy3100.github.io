@@ -30,7 +30,7 @@ Chrome asks whether agar.io may "look for and connect to any device on your loca
 - (For folder agario-bots2) `cd agario-bots2`
 - `install.bat`
 - `start.bat`
-6. Install and use Legend mod Express https://jimboy3100.github.io , visit agar.io and click the trophy button of the main menu: the Bots panel opens.
+6. Install and use Legend mod Express https://jimboy3100.github.io and visit agar.io. The Bots panel has no button in the main menu for now; on agar.io Battle Royale the Battle Royale HUD opens by itself, and its "Fill Lobby" button starts the bots with the Bots panel's settings.
 7. Write your bot server's address (ws://localhost:1337) in the address field (the default "browser" runs the bots in the browser, with no bot server) and click "Start Bots": it connects and starts, the status says "Connected"
 8. To stop bots click the "Stop Bots" button
 9. To run the bots again just run `start.bat` and click "Start Bots"
