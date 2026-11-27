@@ -58,6 +58,8 @@ function parts(src) {
         helpers: cut('    function quickSwapDelete(arr, index, idxProp) {\n', '    var ogarCellPool'),
     };
     for (const k in p) if (!p[k]) { console.log('FAIL ' + k + ' not found in ' + srcFile); process.exit(1); }
+    /* the spawn (opcode 32) ends every spectate mode through this method (versions before it: none) */
+    p.sp = block('        _lmSpawnEndsSpectate() {');
     return p;
 }
 
@@ -96,7 +98,7 @@ function client(src) {
     vm.runInContext(p.helpers + '\n' + [...p.helpers.matchAll(/^ {4}function (\w+)\(/gm)].map(m => 'this.' + m[1] + ' = ' + m[1] + ';').join(' ') + '\n' + p.isEl + '\nthis._isExpandingLandClient = _isExpandingLandClient;', g);
     g.__h = null;
     g.__env = new Proxy({}, { has: (t, k) => typeof k === 'string' && !(k in g), get: (t, k) => k in t ? t[k] : noop });
-    vm.runInContext('with (__env) { __h = ({' + [p.dm, p.hm, p.sub, p.uc, p.fl].join(',\n') + '}); }', g);
+    vm.runInContext('with (__env) { __h = ({' + [p.dm, p.hm, p.sub, p.uc, p.fl].concat(p.sp ? [p.sp] : []).join(',\n') + '}); }', g);
     const L = g.__h;
     L.pps = 0;
     Object.assign(L, {
