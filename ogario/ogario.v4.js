@@ -5175,6 +5175,8 @@ function _lmTokenBoxDone(sel) {
 }
 function _lmSetTokenBox(sel, value) {
     $(sel).each(function () {
+        /* the current server's value, for _lmTokenBoxValue while the box holds the player's typing */
+        this._lmWrote = value == null ? '' : String(value);
         /* kept: the value it would have shown, for code that reads the box as the current server */
         if (this._lmTyped && this === document.activeElement) { this._lmHeld = value == null ? '' : String(value); return; }
         this._lmTyped = false;
@@ -5186,6 +5188,9 @@ function _lmSetTokenBox(sel, value) {
 function _lmTokenBoxValue(id) {
     var el = document.getElementById(id);
     if (el && el._lmHeld != null && el._lmTyped && el === document.activeElement) return String(el._lmHeld);
+    /* typed since the last write and not joined (also after the box lost focus): the box
+     * does not say the current server, the value last written there does */
+    if (el && el._lmTyped && el._lmWrote != null) return String(el._lmWrote);
     return String($('#' + id).val() || '');
 }
 /* The Private list entries with a fixed address (the load-balanced ones get theirs on each pick).

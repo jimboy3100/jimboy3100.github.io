@@ -143,21 +143,37 @@ const EL = 'wss://ffa.legendmod.ml:8080', AG = 'wss://live-arena-abcde.agar.io:4
     const a = src.indexOf('            var _recServerToken;'), b = src.indexOf('            var textDecoder = window._textDecoderSIMD', a);
     if (a < 0 || b < 0) throw new Error('code not found: recording step');
     const step = src.slice(a, b);
-    const tb = cut(src, 'function _lmTokenBoxValue(id) {', '/* The Private list entries');
+    /* the real writer (updateServerInfo's) and reader of the box */
+    const tb = cut(src, 'function _lmSetTokenBox(sel, value) {', '/* The Private list entries');
     const rf = src.slice(src.indexOf('function lmRecRoom('), src.indexOf('\n}\n', src.indexOf('function lmRecRoom(')) + 3);
-    const box = { value: 'ffa.legendmod.ml:8080', _lmHeld: null, _lmTyped: false };
+    const box = { value: '', _lmHeld: null, _lmTyped: false };
     const document = { getElementById: () => box, activeElement: null };
-    const $ = () => ({ val: () => box.value });
+    const $ = () => ({ val: (v) => { if (v === undefined) return box.value; box.value = v; }, each: (fn) => fn.call(box) });
     const window = { RecordedProtocol: { 'ffa.legendmod.ml:8080': [] }, temporaryRecordedProtocol: 'ffa.legendmod.ml:8080', catholicCalculator: 0, _lmRecSlotBytes: 0, _lmRecFull: false, _lmRecChkAt: 1e9, _lmRecBudgetCheck() { } };
-    const f = new Function('window', '$', 'document', 'defaultmapsettings', 'lmRecPacketBytes', 'data', rf + '\n' + tb + '\n' + step);
+    const f = new Function('window', '$', 'document', 'defaultmapsettings', 'lmRecPacketBytes', 'data', 'write',
+        rf + '\n' + tb + '\nif (write !== undefined) { _lmSetTokenBox("#server-token", write); return; }\n' + step);
     const rec = () => f(window, $, document, { recordReplays: true }, () => 10, { byteLength: 10 });
+    const write = (v) => f(window, $, document, {}, null, null, v); /* updateServerInfo */
+    const n = () => window.RecordedProtocol['ffa.legendmod.ml:8080'].length;
+    write('ffa.legendmod.ml:8080');
     for (let i = 0; i < 5; i++) rec();
-    box.value = 'replay^ffa.legendmod.ml:8080(1)'; box._lmHeld = 'ffa.legendmod.ml:8080'; box._lmTyped = true; document.activeElement = box;
+    /* playing (no connect meanwhile), the player pastes a replay token into the box, then leaves the box */
+    box.value = 'replay^ffa.legendmod.ml:8080(1)'; box._lmTyped = true; document.activeElement = box;
     for (let i = 0; i < 5; i++) rec();
-    check('typing a replay token into the Join box: the live server is still recorded', window.RecordedProtocol['ffa.legendmod.ml:8080'].length === 10, window.RecordedProtocol['ffa.legendmod.ml:8080'].length);
-    box._lmTyped = false; document.activeElement = null;
-    const n = window.RecordedProtocol['ffa.legendmod.ml:8080'].length; rec();
-    check('a replay token that is the box value (joined) is not recorded', window.RecordedProtocol['ffa.legendmod.ml:8080'].length === n);
+    check('typing a replay token into the Join box: the live server is still recorded', n() === 10, n());
+    document.activeElement = null;
+    for (let i = 0; i < 5; i++) rec();
+    check('... also after the player left the box', n() === 15, n());
+    /* a reconnect while the box keeps the typing (held value) */
+    document.activeElement = box; write('ffa.legendmod.ml:8080');
+    rec();
+    check('a connect while the player types: still recorded, the typing kept', n() === 16 && box.value === 'replay^ffa.legendmod.ml:8080(1)', n() + ' ' + box.value);
+    /* joined: the box is written with the replay server */
+    box._lmTyped = false; document.activeElement = null; write('imsolo.pro.replay:2000');
+    rec();
+    check('a replay joined is not recorded', n() === 16, n());
+    box.value = 'replay^ffa.legendmod.ml:8080(1)'; rec();
+    check('a replay token that is the box value (joined) is not recorded', n() === 16, n());
 })();
 
 console.log(fail ? 'FAILED ' + fail : 'all ok');
