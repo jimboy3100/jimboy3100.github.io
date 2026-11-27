@@ -1,7 +1,7 @@
 /* Accessibility module without its 2 s settings poll: ogario/modules/accessibility.js runs in a vm
  * with a small fake document. With the default text sizes no setInterval runs; a profile / preset /
- * import (settingsChange) applies the new text sizes at once; only a HUD text
- * size other than 1 keeps a 2 s timer (it measures HUD parts made later), and it stops at 1 again.
+ * import (settingsChange) applies the new menu text size at once. The HUD text size is removed
+ * (HUD scale and the HUD editor size the HUD): an old saved value adds no timer, style or property.
  * node developers/tests/a11ypoll.js [accessibility.js] [--old <older accessibility.js>] */
 const fs = require('fs'), path = require('path');
 const i18n = require('./lib/i18n-env');
@@ -16,7 +16,7 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 
 function suite(label, src) {
   const res = {};
-  const DEF = { a11yTextScale: 1, a11yHudTextScale: 1 };
+  const DEF = { a11yTextScale: 1 };
   let e = makeEnv(DEF);
   i18n(e.ctx);
   e.run(src);
@@ -29,20 +29,12 @@ function suite(label, src) {
   e.flush();
   res.menuApplied = root['--lm-font-scale'] === '1.3';
   res.noTimerMenu = e.intervals.size === 0;
-  /* HUD text size 1.2: applied, and the one timer for HUD parts made later */
+  /* the removed HUD text size: an old value changes nothing */
   e.ctx.defaultmapsettings.a11yHudTextScale = 1.2;
   e.ctx.LMEvents.emit('settingsChange', { key: 'a11yHudTextScale', value: 1.2 });
-  e.flush();
-  res.hudApplied = root['--lm-hud-text-scale'] === '1.2';
-  res.hudTimer = e.intervals.size === 1;
   e.ctx.LMAccessibility.remeasure();
-  res.hudTimerOne = e.intervals.size === 1;
-  /* back to 1: timer stopped */
-  e.ctx.defaultmapsettings.a11yHudTextScale = 1;
-  e.ctx.LMEvents.emit('settingsChange', { key: 'a11yHudTextScale', value: 1 });
   e.flush();
-  res.hudBack = root['--lm-hud-text-scale'] === '1';
-  res.hudTimerStopped = e.intervals.size === 0;
+  res.hudIgnored = !('--lm-hud-text-scale' in root) && e.intervals.size === 0;
   /* the removed size symbols: an old saved a11yIndicators value adds no canvas, timer or frame hook */
   e.ctx.defaultmapsettings.a11yIndicators = true;
   e.ctx.LMEvents.emit('settingsChange', { key: 'a11yIndicators', value: true });
@@ -55,12 +47,12 @@ function suite(label, src) {
   e.flush();
   res.otherKeyIgnored = root['--lm-font-scale'] === '1.3';
 
-  /* HUD text size already set at start: the timer runs from the start */
+  /* an old HUD text size saved at start: no timer, no HUD rule */
   e = makeEnv(Object.assign({}, DEF, { a11yHudTextScale: 1.4 }));
   i18n(e.ctx);
   e.run(src);
   e.flush();
-  res.hudAtStart = e.intervals.size === 1 && e.doc.documentElement.style['--lm-hud-text-scale'] === '1.4';
+  res.hudAtStart = e.intervals.size === 0 && !('--lm-hud-text-scale' in e.doc.documentElement.style) && !e.doc.getElementById('lm-a11y-text');
   console.log('  ' + label + ': ' + JSON.stringify(res));
   return res;
 }
@@ -68,11 +60,10 @@ function suite(label, src) {
 const r = suite('current', fs.readFileSync(srcPath, 'utf8'));
 check('default text sizes: no setInterval', r.noTimerDefault);
 check('settingsChange a11yTextScale: applied at once, still no timer', r.menuApplied && r.noTimerMenu);
-check('settingsChange a11yHudTextScale 1.2: applied, one timer for HUD parts made later', r.hudApplied && r.hudTimer && r.hudTimerOne);
-check('HUD text size back to 1: applied, timer stopped', r.hudBack && r.hudTimerStopped);
+check('HUD text size removed: an old a11yHudTextScale change adds no timer or property', r.hudIgnored);
 check('size symbols removed: an old saved a11yIndicators adds nothing', r.noSymbols && r.noSymbolApi);
 check('another key changes nothing', r.otherKeyIgnored);
-check('HUD text size set at start: its timer runs from the start', r.hudAtStart);
+check('HUD text size removed: an old saved value at start adds no timer or style', r.hudAtStart);
 if (oldPath) {
   const o = suite('older', fs.readFileSync(oldPath, 'utf8'));
   check('older version polled with default settings (comparison is real)', !o.noTimerDefault);

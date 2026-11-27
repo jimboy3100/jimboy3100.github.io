@@ -19777,8 +19777,6 @@ var defaultSettings = {
     sectorsY: 5,
     virusSpikesRatio: 0.46,
     virusSpikesSize: 6,
-    gameBrightness: 100,          /* 100 = unchanged (CSS filter on the game canvases) */
-    gameSaturation: 100,
     namesScale: 1,
     massScale: 3,
     virMassScale: 3,
@@ -19912,8 +19910,6 @@ var LM_THEME_SCHEMA = (function () {
         foodSize: [1, 50, 1],
         virusSpikesRatio: [0.03, 0.8, 0.01],
         virusSpikesSize: [1, 60, 1],
-        gameBrightness: [50, 150, 5],
-        gameSaturation: [0, 200, 5],
         virusStrokeSize: [2, 40, 1],
         bordersWidth: [2, 200, 2],
         borderGlowSize: [0, 40, 1],
@@ -21606,7 +21602,6 @@ var defaultmapsettings = {
     mouse5Click: 'hk-split16',
     /* accessibility (ogario/modules/accessibility.js); 1 / false = unchanged */
     a11yTextScale: 1,             /* menu text size */
-    a11yHudTextScale: 1,          /* HUD text size, on top of hudScale */
     //
     FacebookIDs: ''
 };
@@ -21651,8 +21646,7 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     volChat: [0, 1, 0.01],
     volCommands: [0, 1, 0.01],
     volGameplay: [0, 1, 0.01],
-    a11yTextScale: [1, 1.6, 0.05],
-    a11yHudTextScale: [1, 1.6, 0.05]
+    a11yTextScale: [1, 1.6, 0.05]
 });
 /* the number of decimals of a step or bound (0.05 -> 2), to drop float noise after snapping */
 function lmSchemaDecimals(x) {
@@ -22097,7 +22091,7 @@ if (window.LMi18n) window.LMi18n.onChange(function (code) {
  * gave rows the names of other settings. A NEW badge next to a name stays. */
 if (window.LMi18n) window.LMi18n.onChange(function () {
     if (typeof $ !== 'function') return;
-    /* a name written with ": " before its value keeps it (Theme > HUD text size lost it) */
+    /* a name written with ": " before its value keeps it */
     var name = function (el, s) {
         for (var n = el.firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && /\S/.test(n.nodeValue)) { n.nodeValue = /:\s*$/.test(n.nodeValue) && !/:\s*$/.test(s) ? s + ': ' : s; return; }
         el.insertBefore(document.createTextNode(s), el.firstChild);
@@ -22563,8 +22557,6 @@ function thelegendmodproject() {
             this.addSliderBox('#theme-main', 'foodSize', 1, 50, 1, 'setFoodColor');
             this.addSliderBox('#theme-main', 'virusSpikesRatio', 0.03, 0.8, 0.01);
             this.addSliderBox('#theme-main', 'virusSpikesSize', 1, 60, 1);
-            this.addSliderBox('#theme-main', 'gameBrightness', 50, 150, 5, 'setGameFilter');
-            this.addSliderBox('#theme-main', 'gameSaturation', 0, 200, 5, 'setGameFilter');
             this.addSliderBox('#theme-main', 'virusStrokeSize', 2, 40, 1);
             this.addSliderBox('#theme-main', 'bordersWidth', 2, 200, 2);
             this.addSliderBox('#theme-main', 'borderGlowSize', 0, 40, 1);
@@ -22604,9 +22596,6 @@ function thelegendmodproject() {
             this.addFontBox('#theme-hud', 'hudFont', 'setHudFont');
             var hudScaleLimit = _lmHudScaleLimit();
             this.addSliderBox('#theme-hud', 'hudScale', 0.5, hudScaleLimit, 0.01, 'setHudScale');
-            /* HUD text size next to the HUD scale it multiplies: a gameplay setting (its key and
-             * storage stay, ogario/modules/accessibility.js applies it), so the gameplay slider */
-            if (window.application && typeof window.application.addSliderBox === 'function') window.application.addSliderBox('#theme-hud', 'a11yHudTextScale', 1, 1.6, 0.05);
             this.addThemeCheckBox('#theme-hud', 'hudRoundedCorners', 'setHudCorners');
 
             this.addRgbaColorBox('#theme-chat', 'messageColor', 'setChatColors');
@@ -22969,17 +22958,6 @@ function thelegendmodproject() {
             var css = '#message,#messages li,.toast-success{background-color:' + defaultSettings.messageColor + '}#message,.message-text,.toast-success .message-text{color:' + defaultSettings.messageTextColor + '}.message-nick,.mute-user,.mute-user:hover,.toast-success .message-nick,.toast .mute-user,.toast .mute-user:hover{color:' + defaultSettings.messageNickColor + '}.message-time{color:' + defaultSettings.messageTimeColor + '}.toast-warning{background-color:' + defaultSettings.commandsColor + '}.command-text,.toast-warning .command-text{color:' + defaultSettings.commandsTextColor + '}.command-nick,.toast-warning .command-nick,.toast-warning .mute-user,.toast-warning .mute-user:hover{color:' + defaultSettings.commandsNickColor + '}.command-time{color:' + defaultSettings.commandsTimeColor + '}#chat-box{background-color:' + defaultSettings.chatBoxColor + '}';
             this.addCustomCSS('chatCSS', css);
         },
-        /* Brightness / saturation of the game view: one CSS rule for the full-screen game
-         * canvases (body > canvas; the minimap is inside #minimap-hud). Both at 100: no filter. */
-        setGameFilter() {
-            var b = +defaultSettings.gameBrightness || 100, s = defaultSettings.gameSaturation;
-            s = (s !== '' && s != null && isFinite(+s)) ? +s : 100;
-            var css = (b === 100 && s === 100) ? '' : 'body > canvas{filter:brightness(' + b + '%) saturate(' + s + '%);}';
-            var el = document.getElementById('lm-game-filter');
-            if (!css) { if (el) el.parentNode.removeChild(el); return; }
-            if (!el) { el = document.createElement('style'); el.id = 'lm-game-filter'; document.head.appendChild(el); }
-            if (el.textContent !== css) el.textContent = css;
-        },
         setChatScale() {
             var message = Math.round(14 * defaultSettings.chatScale);
             var toastContainer = Math.round(280 * defaultSettings.chatScale);
@@ -22998,7 +22976,6 @@ function thelegendmodproject() {
         setMiniMap() {
             this.setMiniMapFont();
             this.setMiniMapWidth();
-            this.setGameFilter();
             this.setMiniMapSectorsOpacity();
         },
         switchOnlineStatus() {
@@ -26753,30 +26730,18 @@ function thelegendmodproject() {
                     /* mouse buttons are bound in the key fields: the window's line that says how */
                     var mLab = lmT('pkg.mb.mouseButtons'), mInst = $('#hotkeys-inst [data-i18n="pkg.mb.hkInstMouse"]');
                     if (q && !newOnly && mInst.length && (norm(mLab).indexOf(q) >= 0 || (q.length >= 4 && norm(mInst.text()).indexOf(q) >= 0))) hits.push(['hotkeys-inst', mLab]);
-                    /* gameplay settings whose slider is in the Theme tab (HUD text size, Theme > HUD):
-                     * found here as before they moved, a click opens the Theme tab at them */
-                    var thHits = [];
-                    if (q && !newOnly) $('#theme .slider-box input[type="range"][id$="-slider"]').each(function () {
-                        var k = this.id.slice(0, -7), txt = $.trim($(this).closest('.slider-box').find('.value-label').first().text()).replace(/:$/, '');
-                        if (Object.prototype.hasOwnProperty.call(defaultmapsettings, k) && txt && norm(txt).indexOf(q) >= 0) thHits.push([k, txt]);
-                    });
-                    if (!hits.length && !thHits.length) { hkHint.hide(); return; }
-                    [[hits, 'pkg.hk.searchHint'], [thHits, 'pkg.r26bw.themeHint']].forEach(function (g) {
-                        if (!g[0].length) return;
-                        hkHint.append($('<span style="margin-right:4px;"></span>').attr('data-i18n', g[1]).text(lmT(g[1])));
-                        g[0].forEach(function (h) {
-                            $('<button type="button" class="btn btn-xs btn-info lm-ss-hk-go" style="margin:0 4px 2px 0;white-space:normal;"></button>')
-                                .attr('data-hk-id', h[0]).text(h[1]).appendTo(hkHint);
-                        });
+                    if (!hits.length) { hkHint.hide(); return; }
+                    hkHint.append($('<span style="margin-right:4px;"></span>').attr('data-i18n', 'pkg.hk.searchHint').text(lmT('pkg.hk.searchHint')));
+                    hits.forEach(function (h) {
+                        $('<button type="button" class="btn btn-xs btn-info lm-ss-hk-go" style="margin:0 4px 2px 0;white-space:normal;"></button>')
+                            .attr('data-hk-id', h[0]).text(h[1]).appendTo(hkHint);
                     });
                     hkHint.show();
                 };
                 hkHint.on('click', '.lm-ss-hk-go', function (e) {
                     e.preventDefault();
                     var id = this.getAttribute('data-hk-id');
-                    var sl = document.getElementById(id + '-slider');
-                    if (sl && $(sl).closest('#theme').length) $('.menu-tabs a[href="#theme"]').first().trigger('click');
-                    else if (window.LMSmallTools && typeof window.LMSmallTools.jump === 'function') window.LMSmallTools.jump(id);
+                    if (window.LMSmallTools && typeof window.LMSmallTools.jump === 'function') window.LMSmallTools.jump(id);
                     else $('.hotkeys-link').first().trigger('click');
                 });
                 var apply = function () {
@@ -26932,7 +26897,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27065,7 +27030,6 @@ function thelegendmodproject() {
             /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
             this.addOptions([], "accessibilityGroup");
             this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);
-            /* HUD text size is in Theme > HUD, next to the HUD scale (setThemeMenu) */
             this.addOptions([], "macroGroup");
             /* Configuration: keeps the 'profiles' class (the probes find the section by it) */
             this.addOptions([], "profiles", "configGroup");

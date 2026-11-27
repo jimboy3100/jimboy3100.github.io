@@ -1,8 +1,7 @@
-/* Legend Mod accessibility options (Settings > Accessibility, all off by default):
+/* Legend Mod accessibility option (Settings > Accessibility, off by default):
  *   a11yTextScale     larger menu text (1 = unchanged), separate from the HUD scale
- *   a11yHudTextScale  larger HUD text (leaderboard, stats, clock, chat); follows the HUD scale
- *                     (its slider is in Theme > HUD next to the HUD scale; still a gameplay setting)
- * While they are off this file adds no style or loop.
+ * (HUD text follows the HUD scale in Theme > HUD and the HUD editor's resize.)
+ * While it is off this file adds no style or loop.
  * (Colour-blind colours and a high-contrast HUD: the theme preset "Colour-blind safe"; the
  * Expanding Land effects (death shake, particles, entrance spin): Reduced motion in
  * Settings > Expanding Land.)
@@ -38,11 +37,7 @@
     var MENU_TEXT = ['#og-options label', '#og-options h5', '#og-options .box-label', '#og-options .title-box', '#theme label', '#theme h5', '#theme .title-box', '#theme .box-label',
         '.menu-tabs a', '.submenu-tabs a', '#hotkeys .key-label', '#hotkeys .default-key', '#hotkeys-inst', '#main-panel label', '#main-panel .btn', '#profile label',
         '#toast-container .toast-message', '#exp-imp label'];
-    var HUD_TEXT = ['#leaderboard-hud', '#top5-hud', '#stats-hud', '#time-hud', '#target-hud', '#pause-hud', '#chat-box',
-        /* the newer HUD parts on body: they are made when first used, so they are measured once they exist */
-        '#lm-dir-bc', '#lm-pr-hud', '#lm-shot-chip'];
-    var textStyle = null, textSig = '', textSeen = '';
-    function present(list) { return list.filter(function (sel) { return !!D.querySelector(sel); }).join(); }
+    var textStyle = null, textSig = '';
     function measure(list, k, out) {
         list.forEach(function (sel) {
             var n = D.querySelector(sel);
@@ -51,17 +46,13 @@
             if (fs > 0 && pfs > 0) out.push(scaleRule(sel, fs / pfs, k));
         });
     }
-    function applyText(menuK, hudK, force) {
-        var sig = menuK + '|' + hudK;
-        /* one set of properties for windows and HUD parts that size their text from it */
-        var rs = D.documentElement.style;
-        rs.setProperty('--lm-font-scale', String(menuK));
-        rs.setProperty('--lm-hud-text-scale', String(hudK));
-        var seen = hudK !== 1 ? present(HUD_TEXT) : '';
-        if (sig === textSig && seen === textSeen && !force) return;
+    function applyText(menuK, force) {
+        var sig = String(menuK);
+        /* one property for windows that size their text from it */
+        D.documentElement.style.setProperty('--lm-font-scale', sig);
+        if (sig === textSig && !force) return;
         textSig = sig;
-        textSeen = seen;
-        if (menuK === 1 && hudK === 1) {
+        if (menuK === 1) {
             if (textStyle && textStyle.parentNode) textStyle.parentNode.removeChild(textStyle);
             textStyle = null;
             return;
@@ -70,42 +61,33 @@
         /* measure the unscaled sizes */
         textStyle.textContent = '';
         var rules = [];
-        if (menuK !== 1) measure(MENU_TEXT, menuK, rules);
-        if (hudK !== 1) measure(HUD_TEXT, hudK, rules);
+        measure(MENU_TEXT, menuK, rules);
         textStyle.textContent = rules.join('');
     }
 
     /* ═══ Applying the options ═══ */
 
-    /* HUD parts made later (practice HUD, screenshot chip...) are measured once they
-     * exist: looked for every 2 s, only while a HUD text size other than 1 is set */
-    var hudTimer = null;
     function sync(force) {
-        var s = settings(), hudK = cleanScale(s.a11yHudTextScale);
-        applyText(cleanScale(s.a11yTextScale), hudK, force === true);
-        if (hudK !== 1 && !hudTimer) hudTimer = setInterval(function () { try { sync(); } catch (e) { } }, 2000);
-        else if (hudK === 1 && hudTimer) { clearInterval(hudTimer); hudTimer = null; }
+        applyText(cleanScale(settings().a11yTextScale), force === true);
     }
     api.sync = sync;
     api.remeasure = function () { sync(true); };
 
-    /* the sliders have no callback in the menu: follow their input here */
+    /* the slider has no callback in the menu: follow its input here */
     D.addEventListener('input', function (e) {
         var id = e.target && e.target.id;
-        if (id === 'a11yTextScale-slider' || id === 'a11yHudTextScale-slider') setTimeout(sync, 0);
+        if (id === 'a11yTextScale-slider') setTimeout(sync, 0);
     }, true);
     /* menus built later (theme, hotkeys): measure again when the menu opens with a text scale on */
     D.addEventListener('click', function (e) {
-        if (textSig && textSig !== '1|1' && e.target && e.target.closest && e.target.closest('.menu-tabs a, .hotkeys-link')) setTimeout(function () { sync(true); }, 300);
+        if (textSig && textSig !== '1' && e.target && e.target.closest && e.target.closest('.menu-tabs a, .hotkeys-link')) setTimeout(function () { sync(true); }, 300);
     }, true);
     if (D.body) sync(); else D.addEventListener('DOMContentLoaded', function () { sync(); });
-    /* a profile, preset or import that changes them (ogario.v4.js lmSettingsCommit); the sliders
-     * are followed above */
-    var KEYS = { a11yTextScale: 1, a11yHudTextScale: 1 };
+    /* a preset or import that changes it (ogario.v4.js lmSettingsCommit); the slider is
+     * followed above */
     if (W.LMEvents && typeof W.LMEvents.on === 'function') {
         W.LMEvents.on('settingsChange', function (d) {
-            if (d && KEYS[d.key] === 1) setTimeout(function () { try { sync(); } catch (e) { } }, 0);
+            if (d && d.key === 'a11yTextScale') setTimeout(function () { try { sync(); } catch (e) { } }, 0);
         });
     }
-    api._hudTimerOn = function () { return !!hudTimer; };
 })();

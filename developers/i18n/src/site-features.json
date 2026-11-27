@@ -1709,24 +1709,6 @@
     "ja": "モーション軽減（任意）：画面の揺れ、死亡時のパーティクル、Expanding Land参加時の回転演出をなくします",
     "it": "Movimento ridotto opzionale: niente tremolio dello schermo, particelle alla morte o rotazione d'ingresso in Expanding Land"
   },
-  "site.features.gameBrightnessAndSaturation": {
-    "en": "Game brightness and saturation sliders",
-    "el": "Ρυθμιστικά φωτεινότητας και κορεσμού του παιχνιδιού",
-    "es": "Controles de brillo y saturación del juego",
-    "bg": "Плъзгачи за яркост и наситеност на играта",
-    "fr": "Curseurs de luminosité et de saturation du jeu",
-    "ar": "شريطا تمرير لسطوع اللعبة وتشبّع الألوان",
-    "zh": "遊戲亮度與飽和度滑桿",
-    "ru": "Ползунки яркости и насыщенности игры",
-    "de": "Regler für Helligkeit und Sättigung im Spiel",
-    "tr": "Oyun parlaklığı ve doygunluğu kaydırıcıları",
-    "pl": "Suwaki jasności i nasycenia gry",
-    "nl": "Schuifregelaars voor helderheid en verzadiging van de game",
-    "pt": "Controles de brilho e saturação do jogo",
-    "id": "Slider kecerahan dan saturasi game",
-    "ja": "ゲームの明るさと彩度のスライダー",
-    "it": "Cursori per luminosità e saturazione del gioco"
-  },
   "site.features.labelsInYourLanguage": {
     "en": "Labels in your language from the language menu",
     "el": "Ετικέτες στη γλώσσα σας από το μενού γλώσσας",

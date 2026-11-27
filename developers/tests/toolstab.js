@@ -27,7 +27,7 @@ vm.createContext(valueCtx);
 vm.runInContext(cut('function lmThemeValue(', '\ncimg2 = new Image;'), valueCtx);
 check('theme schema: a boolean (stored, imported, profiles, Theme Workshop)', valueCtx.lmThemeValue('hudRoundedCorners', true) === true &&
     valueCtx.lmThemeValue('hudRoundedCorners', 'false') === false && valueCtx.lmThemeValue('hudRoundedCorners', 1) === undefined);
-/* after the HUD scale and the HUD text size slider that sits next to it */
+/* right after the HUD scale */
 check('Theme > HUD: a switch after the HUD scale', /addSliderBox\('#theme-hud', 'hudScale'[^\n]*\n(?:[^\n]*\n){0,4}?\s*this\.addThemeCheckBox\('#theme-hud', 'hudRoundedCorners', 'setHudCorners'\);/.test(main));
 check('setHud applies the corners (setTheme: start, profiles, theme packages, presets)', /setHud\(\) \{[^}]*this\.setHudCorners\(\);/.test(main));
 

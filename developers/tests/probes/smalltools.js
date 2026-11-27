@@ -11,17 +11,19 @@
   var T = window.LMSmallTools, A = window.LMAccessibility, s = window.legendmod5;
   need('modules loaded', !!(T && T.shotToggle && A && A.sync));
   if (!T || !A || !s) return { fail: fail, info: info };
-  var OPTS = ['a11yTextScale', 'a11yHudTextScale'], keep = {};
+  var OPTS = ['a11yTextScale'], keep = {};
   OPTS.forEach(function (k) { keep[k] = s[k]; });
   var inBox = function (r) { return r.width > 0 && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; };
   try {
-    need('options off by default', LM_SETTINGS_DEFAULTS.a11yTextScale === 1 && LM_SETTINGS_DEFAULTS.a11yHudTextScale === 1);
+    need('options off by default', LM_SETTINGS_DEFAULTS.a11yTextScale === 1);
+    /* HUD text size, game brightness / saturation and the sector symbol are removed */
+    need('removed Theme options are gone', !('a11yHudTextScale' in LM_SETTINGS_DEFAULTS) && !document.getElementById('a11yHudTextScale-slider') && !('gameBrightness' in LM_THEME_DEFAULTS) && !('gameSaturation' in LM_THEME_DEFAULTS) && !('sectorsSymbol' in LM_THEME_DEFAULTS) && !document.getElementById('gameBrightness-slider') && !document.getElementById('lm-game-filter'));
     need('removed duplicates are gone', !('hk-bugReport' in hotkeysCommand) && !('a11yPalette' in LM_SETTINGS_DEFAULTS) && !('a11yHighContrast' in LM_SETTINGS_DEFAULTS) && !('a11yNoFlash' in LM_SETTINGS_DEFAULTS) && !('a11yIndicators' in LM_SETTINGS_DEFAULTS) && !document.getElementById('a11yIndicators') && !('_lmA11yPal' in window));
-    need('menu controls', ['a11yTextScale-slider', 'a11yHudTextScale-slider'].every(function (id) { return !!document.getElementById(id); }));
+    need('menu controls', !!document.getElementById('a11yTextScale-slider'));
     /* the radial menu (and its editor) and the screenshot window (and its Capture hotkey) are removed */
     need('radial menu and screenshot window: no hotkeys', ['hk-radialMenu', 'hk-radialEditor', 'hk-screenshotCapture', 'hk-screenshotTool'].every(function (id) { return !(id in hotkeysCommand); }));
     need('radial menu and screenshot window: no window API, stored data removed', !T.open && !T.toggle && !T.radialDown && localStorage.getItem('lmRadialMenu') === null && localStorage.getItem('lmSmallTools') === null);
-    var allOff = s.a11yTextScale === 1 && s.a11yHudTextScale === 1;
+    var allOff = s.a11yTextScale === 1;
     if (allOff) need('accessibility off: nothing added', !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind'));
     /* Skin collections are part of the player profiles: no window, button, setting or
      * hotkey of their own */
@@ -68,10 +70,10 @@
     if (pv) { need('preview fits', inBox(pv.getBoundingClientRect())); pv.querySelector('button').click(); }
 
     /* accessibility options one by one */
-    s.a11yTextScale = 1.3; s.a11yHudTextScale = 1.2; A.sync();
+    s.a11yTextScale = 1.3; A.sync();
     var ts = document.getElementById('lm-a11y-text');
     need('text scale rules', !!ts && ts.textContent.indexOf('font-size') >= 0);
-    s.a11yTextScale = 1; s.a11yHudTextScale = 1; A.sync();
+    s.a11yTextScale = 1; A.sync();
     need('all accessibility off again: nothing left', !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind'));
   } finally {
     try { T.shotOff(); } catch (e) { }

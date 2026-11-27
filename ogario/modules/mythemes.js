@@ -322,7 +322,7 @@
         try {
             changed.forEach(function (k) { try { setThemeOpt(k, target[k]); } catch (e) { d[k] = target[k]; } });
             try { if (St.setTheme) St.setTheme(); } catch (e) { }
-            ['setGameFilter', 'setFoodColor', 'setIndicatorColor'].forEach(function (f) { try { if (typeof St[f] === 'function') St[f](); } catch (e) { } });
+            ['setFoodColor', 'setIndicatorColor'].forEach(function (f) { try { if (typeof St[f] === 'function') St[f](); } catch (e) { } });
             Object.keys(target).forEach(function (k) {
                 if (!has(d, k) || same(d[k], target[k])) return;
                 d[k] = target[k];

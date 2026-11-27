@@ -61,7 +61,7 @@ check('the schema is frozen', Object.isFrozen(SCH) && Object.keys(SCH).every(k =
 /* the Theme tab sliders as setThemeMenu builds them: their range and step are the schema's */
 const menu = cut('        setThemeMenu() {', "            this.addInputBox('#theme-images', 'customCursor'");
 const calls = [...menu.matchAll(/this\.addSliderBox\('[^']+', '(\w+)', ([-\d.]+), ([-\w.]+), ([\d.]+)/g)].map(m => [m[1], +m[2], m[3], +m[4]]);
-check('the Theme tab has its sliders (' + calls.length + ')', calls.length >= 34);
+check('the Theme tab has its sliders (' + calls.length + ')', calls.length >= 32);
 check('every stepped range of the schema is a Theme tab slider', Object.keys(SCH).every(k => !Array.isArray(SCH[k]) || !(SCH[k][2] > 0) || /FontWeight$/.test(k) || calls.some(c => c[0] === k)));
 /* the slider's own range: hudScale's top is the screen limit (at most 1.5) */
 const sliderRange = c => [c[1], c[2] === 'hudScaleLimit' ? 1.5 : +c[2], c[3]];
@@ -83,7 +83,7 @@ check('the screen limits of the hudScale slider (0.9, 1, 1.1) are kept', [0.9, 1
 check('every value a theme slider can show is kept exactly (no float drift: 0.46, 7.5, 0.15)', offStep.length === 0 || (console.log('   ' + offStep.slice(0, 8).join(', ')), false));
 /* values the old type-only check stored as they were */
 check('out of range: put on the range', V('bordersWidth', 5000) === 200 && V('namesScale', 99) === 2 && V('cellsAlpha', 0) === 0.01 && V('miniMapWidth', -5) === 120 && V('sectorsX', 1e9) === 10);
-check('between steps: the nearest step from min (as the slider shows it)', V('bordersWidth', 13) === 14 && V('sectorsFontSize', 1234) === 1230 && V('namesScale', 1.04) === 1 && V('miniMapMyCellSize', 7.3) === 7.5 && V('gameBrightness', 98) === 100);
+check('between steps: the nearest step from min (as the slider shows it)', V('bordersWidth', 13) === 14 && V('sectorsFontSize', 1234) === 1230 && V('namesScale', 1.04) === 1 && V('miniMapMyCellSize', 7.3) === 7.5 && V('gameBrightness', 98) === undefined);
 check('hudScale above a small screen\'s slider top (0.9) is kept: it is valid on another device', V('hudScale', 1.2) === 1.2 && V('hudScale', 1.5) === 1.5 && V('hudScale', 3) === 1.5);
 check('hudScale from the phone\'s HUD zoom (any value from 0.3) is kept exactly', V('hudScale', 0.3) === 0.3 && V('hudScale', 0.4123) === 0.4123 && V('hudScale', 0.7345) === 0.7345 && V('hudScale', 0.1) === 0.3);
 check('settings without a slider have a range (cell shadow, minimap top), any value inside it', V('cellShadowBlur', 0) === 0 && V('cellShadowBlur', 33.3) === 33.3 && V('cellShadowBlur', 1e6) === 100 && V('cellShadowOffsetX', -80) === -50 && V('miniMapTop', 24) === 24);
