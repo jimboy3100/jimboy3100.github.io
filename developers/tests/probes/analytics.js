@@ -31,7 +31,7 @@
     var r = md.getBoundingClientRect();
     info.rect = Math.round(r.width) + 'x' + Math.round(r.height) + ' in ' + innerWidth + 'x' + innerHeight;
     need('window fits the screen', r.left >= 0 && r.top >= 0 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1);
-    need('dashboard tiles', document.querySelectorAll('#lm-analytics-tiles > div').length === 7);
+    need('dashboard tiles (with the longest time alive)', document.querySelectorAll('#lm-analytics-tiles > div').length === 8);
     need('weekly chart', !!document.querySelector('#lm-analytics-weeks path'));
     /* History tab: the match history list (ogario.v4.js _lmMatchHistoryPaint) */
     localStorage.setItem('lmMatchHistory', JSON.stringify([{ t: now - 60000, mass: 1234, ms: 65000, server: 'probe.example', mode: 'FFA', killer: { nick: 'Probe killer', mass: 2000 } },

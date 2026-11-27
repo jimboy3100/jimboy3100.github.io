@@ -5,7 +5,7 @@
  * the "Match history" footer link and _lmMatchHistoryOpen open it there).
  * Recording is off by default (option "analytics", Settings > Stats). While it is off this file only
  * checks the option once a second and adds no LMEvents listeners; the window still shows the old
- * match history (lmMatchHistory) and personal bests when they exist.
+ * match history (lmMatchHistory) and the all-time personal bests (highest mass, longest time alive).
  * Everything stays in this browser (localStorage, capped and validated on every read). No network.
  * The window is built only when it is opened.
  */
@@ -218,9 +218,11 @@
     }
     /* Mass per minute = sum of peak masses / sum of minutes alive, over lives of 10 s or more
      * (a ratio of sums, so a few very short lives cannot inflate it). */
-    function aggregate(games, now, extraBest) {
+    function aggregate(games, now, extraBest, extraMs) {
         var res = summary(games);
         res.highest = Math.max(maxOf(games.map(function (g) { return g.peak; })), +extraBest || 0);
+        /* the longest life: of the stored games or the all-time personal best */
+        res.longest = Math.max(maxOf(games.map(function (g) { return g.ms; })), +extraMs || 0);
         var sumPeak = 0, sumMin = 0, first = 0;
         games.forEach(function (g) {
             if (g.ms >= 10000) { sumPeak += g.peak; sumMin += g.ms / 60000; }
@@ -282,8 +284,14 @@
     function loadGames() { return parseStore(lsGet(KEY_GAMES), 'games', sanitizeGame, MAX_GAMES); }
     function loadTracks() { return parseStore(lsGet(KEY_TRACKS), 'tracks', sanitizeTrack, MAX_TRACKS); }
     function allGames() { return mergeGames(loadGames(), fromMatchHistory(lsGet('lmMatchHistory'))); }
-    function personalBestMass() {
-        try { var o = JSON.parse(lsGet('lmPersonalBests')); return o && typeof o === 'object' ? num(o.m, 0, 1e9, 0) : 0; } catch (e) { return 0; }
+    /* the all-time personal bests (lmPersonalBests, kept by ogario.v4.js _lmPersonalBests at every live
+     * death, also of games older than the stored ones): best mass and longest life */
+    function personalBests() {
+        try {
+            var o = JSON.parse(lsGet('lmPersonalBests'));
+            if (o && typeof o === 'object') return { m: num(o.m, 0, 1e9, 0), t: num(o.t, 0, 6 * 3600000, 0) };
+        } catch (e) { }
+        return { m: 0, t: 0 };
     }
 
     /* ------------------------------------------------------------------ recorder */
@@ -582,13 +590,14 @@
         row.appendChild(b);
     }
     function paintDash(body) {
-        var t = theme(), games = allGames(), a = aggregate(games, Date.now(), personalBestMass());
+        var t = theme(), games = allGames(), pb = personalBests(), a = aggregate(games, Date.now(), pb.m, pb.t);
         if (!enabled()) note(body, T('recOff'));
         if (!games.length) { note(body, T('noGames')); return; }
         var row = el('div', 'display:flex;flex-wrap:wrap;gap:6px;');
         row.id = 'lm-analytics-tiles';
         tile(row, T('games'), fmtNum(a.games));
         tile(row, T('highest'), fmtNum(a.highest));
+        tile(row, typeof window.lmT === 'function' ? window.lmT('game2.stLongest') : 'game2.stLongest', fmtTime(a.longest));
         tile(row, T('avgSurv'), fmtTime(a.avgMs));
         tile(row, T('avgPeak'), fmtNum(a.avgPeak));
         tile(row, T('top10'), a.top10 === null ? '—' : pct(a.top10) + '%');

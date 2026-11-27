@@ -111,6 +111,7 @@ check('track validation', C.sanitizeTrack({ t: 1, p: 'AAB' }) === null && C.sani
     ];
     const a = C.aggregate(games, clock, 9000);
     check('games, highest (personal best counts)', a.games === 5 && a.highest === 9000);
+    check('longest life: of the stored games without a personal best, else the personal best', a.longest === 10 * MIN && C.aggregate(games, clock, 0, 25 * MIN).longest === 25 * MIN);
     check('average peak and survival', a.avgPeak === 2000 && a.avgMs === Math.round((30 * MIN + 5000) / 5));
     check('top-10 finish share over recorded games only', near(a.top10, 0.5));
     check('mass per minute = sum of peaks / sum of minutes (lives of 10 s+)', a.perMin === Math.round(9000 / 30));
@@ -121,7 +122,7 @@ check('track validation', C.sanitizeTrack({ t: 1, p: 'AAB' }) === null && C.sani
     check('week buckets are consecutive Mondays', a.weeks.every((w, i) => i === 0 || (w.start > a.weeks[i - 1].start && new RealDate(w.start).getDay() === 1)));
     check('this week vs last week', a.thisWeek.games === 2 && a.lastWeek.games === 2 && a.thisWeek.avgPeak === 3000 && a.lastWeek.avgPeak === 1500 && near(a.thisWeek.top10, 0.5) && near(a.lastWeek.top10, 0.5));
     const e = C.aggregate([], clock, 0);
-    check('no games: zeros, no top-10 value', e.games === 0 && e.highest === 0 && e.top10 === null && e.weeks.length === 8);
+    check('no games: zeros, no top-10 value', e.games === 0 && e.highest === 0 && e.longest === 0 && e.top10 === null && e.weeks.length === 8);
 }
 
 /* ---------- practice / replay lives and a life cut by a server change or disconnect (audit A16) */

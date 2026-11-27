@@ -169,7 +169,7 @@ Record and replay game sessions. Features:
 - **Clip export**: Save replays as `.lm` files (JSON format)
 - **Backward seeking**: Re-reads from last world reset to target, in responsive slices
 - **Match history**: Last 50 lives stored in localStorage with mass, time alive, killer, server and mode
-- **Personal bests**: Best mass, longest life and game count tracked per browser
+- **Personal bests**: Best mass, longest life and game count tracked per browser (Game Over card; best mass and longest life also on the Analytics dashboard)
 
 ### 7. Performance and Rendering
 - **WebGL2 acceleration**: Enabled by default with automatic Canvas2D fallback when unsupported or visually ambiguous
