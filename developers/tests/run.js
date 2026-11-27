@@ -45,7 +45,7 @@ const pruneDays = argVal('--prune', '');
  * lines of a full run). --quick leaves them out; --jobs uses the numbers to give the parts equal time
  * (any other probe counts as 2 s). Update when a probe gets much slower or faster. */
 const SLOW = {
-  'zz-replaystudio-play': 32, 'gameover-share': 25, 'plugins-erase': 23, 'esc-stack': 18, 'menu-fit': 13,
+  'zz-replaystudio-play': 32, 'server-token-typing': 31, 'gameover-share': 25, 'plugins-erase': 23, 'esc-stack': 18, 'menu-fit': 13,
   'smalltools': 12, 'feed-pad-key': 11, 'window-font': 10, 'winstack-dom': 10, 'windows-esc': 8,
   'hotkeys-controls': 7, 'perf-netrec': 7, 'perf': 7, 'themeworkshop-knobs': 7, 'server-list-join': 6,
   'plugins-load-again': 6, 'command-centre': 6, 'life-conn-reset': 6, 'macro-rename-edit': 5

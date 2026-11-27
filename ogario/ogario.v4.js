@@ -5219,6 +5219,22 @@ function changeregion() {
     }
 }
 
+/* Server / party token boxes: updateServerInfo leaves a box alone while the player types in it
+ * (focused, changed since it was last written); a join from it lets it be written again. */
+document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t && t.matches && t.matches('#server-ws, #server-token, #party-token, .party-token')) t._lmTyped = true;
+}, true);
+function _lmTokenBoxDone(sel) {
+    $(sel).each(function () { this._lmTyped = false; });
+}
+function _lmSetTokenBox(sel, value) {
+    $(sel).each(function () {
+        if (this._lmTyped && this === document.activeElement) return;
+        this._lmTyped = false;
+        $(this).val(value);
+    });
+}
 /* The Private list entries with a fixed address (the load-balanced ones get theirs on each pick).
  * delt.io list from Delta's client (servers/feeds.ts). */
 var _lmPrivateListUrls = {
@@ -28477,6 +28493,7 @@ function thelegendmodproject() {
                 app.onCreate();
             });
             $(document).on("click", "#join-party-btn-2", function () {
+                _lmTokenBoxDone('#party-token, .party-token');
                 app.skipServerData = true;
                 app.joinParty();
                 app.onJoin();
@@ -31391,9 +31408,12 @@ function thelegendmodproject() {
             }
         },
         updateServerInfo() {
-            $('#server-ws').val(this.ws),
-                $('#server-token').val(this.serverToken),
-                $('#party-token, .party-token').val(this.partyToken);
+            /* A box the player is typing in keeps the typing: a reconnect (or any other connect)
+             * meanwhile wrote the current server there, and the rest of the typed address went
+             * after it (wss://ffa.legendmod.ml:8080gendmod.ml/el-teams). */
+            _lmSetTokenBox('#server-ws', this.ws);
+            _lmSetTokenBox('#server-token', this.serverToken);
+            _lmSetTokenBox('#party-token, .party-token', this.partyToken);
             /* Notify LMexpress callers that server-token is now populated */
             $(document).trigger('lm:serverTokenReady', [this.serverToken]);
         },
@@ -31411,6 +31431,8 @@ function thelegendmodproject() {
                 }
             }
             this.skipServerData = true
+            /* the typed address is joined: the box shows this server's token again */
+            _lmTokenBoxDone('#server-ws, #server-token');
             /* A server the user picked (token, ?sip= link, IP, quick respawn) wins over a
              * findServer / party getToken reply or delayed auto-reconnect still pending in
              * master: those would otherwise move the player to another arena. */
