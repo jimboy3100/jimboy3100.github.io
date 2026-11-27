@@ -219,8 +219,10 @@ var textspeach="";
                 cfg.lang = $("#voice-lang").val();
 				localStorage.setItem("lang", cfg.lang);	
                 //GM_setValue("lang", cfg.lang);
-                if (cfg.lang !== "default" && recognition) {
-                    recognition.lang = cfg.lang;
+                /* "All": no language of its own, as at start ('' = the page's language); the
+                 * language chosen before stayed in use until the next load */
+                if (recognition) {
+                    recognition.lang = cfg.lang !== "default" ? cfg.lang : "";
                 }
                 /*cfg.unpause = $("#voice-unpause").prop('checked');
 				localStorage.setItem("unpause", cfg.unpause);*/
