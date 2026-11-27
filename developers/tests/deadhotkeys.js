@@ -12,17 +12,17 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 
 const hkSrc = read('ogario/hotkeysCommand.js').replace(/\r\n/g, '\n');
 const v4 = read('ogario/ogario.v4.js').replace(/\r\n/g, '\n');
-const gone = ['hk-switchServerMode'];
+const gone = ['hk-switchServerMode', 'hk-showQuest'];
 gone.forEach(c => check(c + ': no hotkey command', hkSrc.indexOf("'" + c + "'") < 0));
 
 /* a key saved on a removed hotkey is free again, the other keys stay */
 {
   const a = v4.indexOf('function lmRenameOldHotkeys(map) {'), b = v4.indexOf('\n}', a);
-  const hk = { '-': 'hk-switchServerMode', W: 'hk-feed' };
+  const hk = { '-': 'hk-switchServerMode', 'ALT+Q': 'hk-showQuest', W: 'hk-feed' };
   const ctx = { hotkeys: hk };
   let err = null;
   try { vm.runInNewContext(v4.slice(a, b + 2) + '\nchanged = lmRenameOldHotkeys(hotkeys);', ctx); } catch (e) { err = e; }
-  check('stored keys on the removed hotkeys dropped', !err && ctx.changed === true && !('-' in hk) && hk.W === 'hk-feed');
+  check('stored keys on the removed hotkeys dropped', !err && ctx.changed === true && !('-' in hk) && !('ALT+Q' in hk) && hk.W === 'hk-feed');
 }
 
 /* the public relay is the only one: connect() opens it, whatever an old page state says */
@@ -37,6 +37,13 @@ gone.forEach(c => check(c + ': no hotkey command', hkSrc.indexOf("'" + c + "'") 
   try { app.connect(); } catch (e) { err = e; }
   check('connect opens the public relay', !err && opened.length === 1 && opened[0] === 'wss://relay' && typeof app.socket.onopen === 'function');
   check('no server switch method left', !/\n        switchServerMode\(\) \{/.test(v4));
+}
+
+/* the quest box (never filled) is gone from the page and the styles, the Battle Royale HUD next to it stays */
+{
+  check('no quest HUD element', v4.indexOf('quest-hud') < 0 && v4.indexOf('<div id="btl-hud" class="hud"></div>') > 0);
+  check('no quest HUD styles', ['css/legend.css', 'css/ogario.v3.css'].every(f => read(f).indexOf('quest-hud') < 0));
+  check('no quest show/hide methods', !/\n        set(Show)?Quest\(\) \{/.test(v4));
 }
 
 if (fail) { console.log(fail + ' check(s) failed'); process.exit(1); }

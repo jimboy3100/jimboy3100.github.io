@@ -21862,7 +21862,7 @@ function lmFoldClickFollow(s) {
  * (its FPS, ping and renderer are there), "Open the Lab" (removed) opens User Scripts. An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts; Save the
  * current zoom as zoom level 1-5; Skin collections, part of the player profiles now; the Command
- * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address) is free. For the stored hotkeys (loadHotkeys) and a settings
+ * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled) is free. For the stored hotkeys (loadHotkeys) and a settings
  * profile's (profiles.js), so an older set keeps those keys. Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
@@ -21876,7 +21876,7 @@ function lmRenameOldHotkeys(map) {
     for (var k in map) {
         if (!own(k)) continue;
         var v = String(map[k]), to = '', keyed = false, z;
-        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode)$/.test(v)) { delete map[k]; changed = true; continue; }
+        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode|showQuest)$/.test(v)) { delete map[k]; changed = true; continue; }
         /* the spectator director's commands and camera lock (removed) */
         if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
         /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey,
@@ -23597,14 +23597,12 @@ function thelegendmodproject() {
         top5totalPlayers: null,
         top5limit: 5,
         timeHUD: null,
-        questHUD: null,
         retryResp: 0,
         minimapText: '',
         canvasScale: 1,
         selectBiggestCell: true,
         noColors: false,
         skipStats: false,
-        showQuest: false,
         showSplitInd: false,
         pause: false,
         spectatorFollow: false,
@@ -24111,12 +24109,6 @@ function thelegendmodproject() {
                 $('#minimap-hud').hide();
             }
         },
-        setShowQuest() {
-            if (':ffa' === this.gameMode) {
-                this.showQuest = !this.showQuest;
-                this.setQuest();
-            }
-        },
         setShowFullSpectator() {
             if (window.fullSpectator) {
                 window.fullSpectator = false;
@@ -24133,13 +24125,6 @@ function thelegendmodproject() {
             } else if (!window.fullSpectator) {
                 window.ingameSpectator = true;
                 LM.addSpect();
-            }
-        },
-        setQuest() {
-            if (this.showQuest && ':ffa' === this.gameMode) {
-                $('#quest-hud').show();
-            } else {
-                $('#quest-hud').hide();
             }
         },
         toggleAutoZoom() {
@@ -27330,7 +27315,7 @@ function thelegendmodproject() {
                 '<a href="#" id="set-private-minimap" class="ogicon-location2"></a>' +
                 '<a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a>' +
                 '<a href="#" id="change-target" class="ogicon-arrow-right"></a></div>' +
-                '<div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>');
+                '<div id="btl-hud" class="hud"></div></div>');
             /* the saved Theme > HUD images at once, not only at the end of LMexpress.js's start */
             try { window.lmHudBg.restore(); } catch (e) { }
             $('body').append('<ul id="messages"></ul>');
@@ -27501,7 +27486,6 @@ function thelegendmodproject() {
                 app.gameMode = ogario.gameMode = modeVal;
                 /* the Battle Royale button and HUD follow the mode */
                 app.syncQuickPanels();
-                app.setQuest();
                 if (typeof LM !== 'undefined' && LM) LM.isLegendWorld = false;
                 if (typeof ogario !== 'undefined' && ogario) ogario.isLegendWorld = false;
                 // Don't call master.setGameMode for private/agar2 servers (numeric IDs) —
@@ -27644,9 +27628,6 @@ function thelegendmodproject() {
                     if ("noSkins" === p) {
                         LM.showCustomSkins = !app.noSkins;
                     }
-                    //if ("showQuest" === p) {
-                    //app.setQuest();
-                    //}
                 }
             });
             $(document).on("click", "#lm-copy-debug", function (ev) {
@@ -27834,7 +27815,6 @@ function thelegendmodproject() {
             this.leaderboardPositionsHUD = document.getElementById("leaderboard-positions");
             this.leaderboardDataHUD = document.getElementById("leaderboard-data");
             this.timeHUD = document.getElementById("time-hud");
-            this.questHUD = document.getElementById("quest-hud");
             $("#canvas").bind("contextmenu", function () {
                 return false;
             });
@@ -27943,7 +27923,6 @@ function thelegendmodproject() {
             //this.noSkins = $("#noSkins").prop("checked");
             //this.noColors = $("#noColors").prop("checked");
             this.skipStats = $("#skipStats").prop("checked");
-            this.showQuest = $("#showQuest").prop("checked");
             this.noSkins = !!defaultmapsettings.noSkins;
             LM.showCustomSkins = !defaultmapsettings.noSkins;
             LM.showCustomSkin = !defaultmapsettings.noSkins;
@@ -27991,7 +27970,6 @@ function thelegendmodproject() {
             $("#showMass").prop("checked", defaultmapsettings.showMass);
             this.unlockButtons();
             this.setAutoResp();
-            this.setQuest();
         },
         getQuality(value) {
             const ration = 'devicePixelRatio' in window;
@@ -31063,7 +31041,6 @@ function thelegendmodproject() {
             }
             /* the Battle Royale button and HUD follow the mode */
             this.syncQuickPanels();
-            this.setQuest();
             if (this.gameMode !== ':party' || !value) {
                 return;
             }
@@ -36371,7 +36348,6 @@ function thelegendmodproject() {
             this.setShowChatBox();
             this.setTop5();
             this.setTargetingHUD();
-            this.setQuest();
             /* a clock switched on before is shown again (nothing showed it on load) */
             if (defaultmapsettings.showTime) $('#time-hud').show();
             this.displayTime();

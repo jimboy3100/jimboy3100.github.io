@@ -1022,15 +1022,6 @@
                 keyUp: null,
                 type: 'normal'
             },
-            'hk-showQuest': {
-                get label() { return lmT('settings.hk-showQuest'); },
-                defaultKey: '',
-                keyDown() {
-                    application && application.setShowQuest();
-                },
-                keyUp: null,
-                type: 'normal'
-            },
             'hk-showSpectator': {
                 get label() { return lmT('settings.hk-showSpectator'); },
                 defaultKey: 'V',

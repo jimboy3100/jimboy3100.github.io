@@ -16,7 +16,6 @@ html {
 }
 
 #minimap-hud,
-#quest-hud,
 .hud-bottom {
     bottom: 10px
 }
@@ -1098,7 +1097,6 @@ input.stream-mode::selection {
 #chat-emoticons,
 #message-box,
 #pause-hud,
-#quest-hud,
 #target-hud,
 #target-nick,
 #target-skin,
@@ -1372,12 +1370,6 @@ input.stream-mode::selection {
 #target-panel-hud a.active,
 #target-panel-hud a:hover {
     color: #01d9cc
-}
-
-#quest-hud {
-    font-size: 80%;
-    left: 50%;
-    transform: translate(-50%, 0)
 }
 
 #message-box {

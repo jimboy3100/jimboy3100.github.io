@@ -5381,24 +5381,6 @@
     "ja": "ミニマップにターゲットを表示",
     "it": "Mostra bersaglio sulla minimappa"
   },
-  "settings.hk-showQuest": {
-    "en": "Show/hide quest",
-    "el": "Εμφάνιση/απόκρυψη αποστολής",
-    "es": "Mostrar/ocultar misión",
-    "bg": "Покажи/скрий мисията",
-    "fr": "Afficher/masquer la quête",
-    "ar": "إظهار/إخفاء المهمة",
-    "zh": "顯示/隱藏任務",
-    "ru": "Показать/скрыть задание",
-    "de": "Quest ein-/ausblenden",
-    "tr": "Görevi göster/gizle",
-    "pl": "Pokaż/ukryj zadanie",
-    "nl": "Opdracht tonen/verbergen",
-    "pt": "Mostrar/ocultar missão",
-    "id": "Tampilkan/sembunyikan misi",
-    "ja": "クエストの表示/非表示",
-    "it": "Mostra/nascondi missione"
-  },
   "settings.hk-analytics": {
     "en": "Open Analytics (stats, heatmaps)",
     "el": "Άνοιγμα Αναλυτικών (στατιστικά, θερμικοί χάρτες)",

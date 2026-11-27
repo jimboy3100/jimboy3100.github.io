@@ -1247,7 +1247,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #target-panel-hud a.active,#target-panel-hud a:hover{
     color:#01d9cc 
 }
-#btl-hud,#quest-hud{
+#btl-hud{
     font-size:80%;
     bottom:10px;
     left:50%;
