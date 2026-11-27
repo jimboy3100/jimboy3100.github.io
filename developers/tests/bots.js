@@ -225,16 +225,34 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('server-fast.js Bot.onerror null-checks ws', fastSrc.includes('this.ws &&'));
 }
 
-// ---- userscript: player position sending ----
+// ---- userscript: obsolete position/ghost-cell code removed ----
 {
     const usSrc = fs.readFileSync(path.join(botsDir, 'free-agario-bots.vanilla.user.js'), 'utf8');
-    check('userscript has playerPosition buffer', usSrc.includes('playerPosition(x, y)'));
-    check('userscript sends opcode 7', usSrc.includes("writer.writeUint8(7)"));
-    check('userscript has playerPosInterval', usSrc.includes('playerPosInterval'));
-    check('userscript cleans up playerPosInterval on close', usSrc.includes('clearInterval(window.user.playerPosInterval)'));
-    // Bot ghost cell positions received
-    check('userscript handles opcode 9 (bot positions)', usSrc.includes('case 9:'));
-    check('userscript stores botGhostCells', usSrc.includes('window.botGhostCells'));
+    check('userscript: no playerPosition buffer', !usSrc.includes('playerPosition(x, y)'));
+    check('userscript: no playerPosInterval', !usSrc.includes('playerPosInterval'));
+    check('userscript: no opcode 9 handler', !usSrc.includes('case 9:'));
+    check('userscript: no botGhostCells', !usSrc.includes('window.botGhostCells'));
+}
+
+// ---- server.js: reusable lifecycle (no process.exit on stop) ----
+{
+    const serverSrc = fs.readFileSync(path.join(botsDir, 'server.js'), 'utf8');
+    check('server.js has resetServer function', serverSrc.includes('function resetServer()'));
+    // No uncommented process.exit calls (commented-out blocks don't count)
+    const uncommentedSrc = serverSrc.replace(/\/\*[\s\S]*?\*\//g, '');
+    check('server.js does NOT call process.exit on stop', !uncommentedSrc.includes('process.exit'));
+    check('server.js resetServer clears bots', serverSrc.includes('userBots.length = 0'));
+    check('server.js resetServer resets stoppingBots', serverSrc.includes('stoppingBots = false'));
+    check('server.js resetServer clears moveInterval', serverSrc.includes('clearInterval(moveInterval)'));
+}
+
+// ---- server-fast.js: reusable lifecycle (no process.exit on stop) ----
+{
+    const fastSrc = fs.readFileSync(path.join(botsDir, 'server-fast.js'), 'utf8');
+    check('server-fast.js has resetServer function', fastSrc.includes('function resetServer()'));
+    check('server-fast.js does NOT call process.exit on stop', !fastSrc.includes('setTimeout(process.exit'));
+    check('server-fast.js resetServer clears bots', fastSrc.includes('userBots.length = 0'));
+    check('server-fast.js resetServer resets stoppingBots', fastSrc.includes('stoppingBots = false'));
 }
 
 // ---- process.js: only restarts on non-zero exit ----

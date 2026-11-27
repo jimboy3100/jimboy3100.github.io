@@ -519,6 +519,37 @@ class Bot {
 
 let shutdownInterval = null
 
+function resetServer() {
+    // Disconnect all bots gracefully
+    for (const bot of userBots) {
+        if (bot.ws) {
+            bot.ws.onmessage = null
+            bot.ws.onerror = null
+            bot.ws.onclose = null
+            try { bot.ws.close() } catch(e) {}
+            bot.ws = null
+        }
+    }
+    userBots.length = 0
+    // Reset state so the server is ready for a new session
+    stoppingBots = false
+    connectedBots = 0
+    spawnedBots = 0
+    serverPlayers = 0
+    user.startedBots = false
+    user.stoppingBots = false
+    user.isAlive = false
+    user.mouseX = 0
+    user.mouseY = 0
+    user.playerX = 0
+    user.playerY = 0
+    bots.ai = false
+    if (moveInterval) { clearInterval(moveInterval); moveInterval = null }
+    if (startBotsInterval) { clearInterval(startBotsInterval); startBotsInterval = null }
+    if (statusInterval) { clearInterval(statusInterval); statusInterval = null }
+    logger.good('[SERVER]: Session ended. Ready for new connection.')
+}
+
 new WebSocket.Server({
     port: config.server.port
 }).on('connection', ws => {
@@ -579,7 +610,7 @@ new WebSocket.Server({
                             ws.send(Buffer.from([2]))
                             clearInterval(shutdownInterval)
                             shutdownInterval = null
-                            setTimeout(process.exit, 1000)
+                            resetServer()
                         } else {
                             logger.warn(`[SERVER]: Stopping bots in ${1 - seconds} seconds`)
                             seconds++
@@ -629,7 +660,7 @@ new WebSocket.Server({
                 if (seconds === 1) {
                     clearInterval(shutdownInterval)
                     shutdownInterval = null
-                    process.exit()
+                    resetServer()
                 }
                 else {
                     logger.warn(`[SERVER]: Stopping bots in ${1 - seconds} seconds`)
