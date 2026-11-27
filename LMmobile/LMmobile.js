@@ -97,6 +97,9 @@
         /* the leaderboard's mass/sector column (a tap targets that player) lies over the menu's tab bar
          * in portrait and over the skins panel in landscape and ate those taps: none while the menu is open */
         '.lm-menu #leaderboard-hud .lb-data{pointer-events:none!important}' +
+        /* left-row buttons that do nothing while the menu is open (wave, ping, zoom, macros): on a
+         * 640x360 phone the menu reaches under the row and they took its taps */
+        '.lm-menu .lm-nomenu,.lm-menu .lm-nomenu *{pointer-events:none!important}' +
         '#lm-mc-sm{position:fixed;z-index:100000;' +
         'pointer-events:none;user-select:none;-webkit-user-select:none;' +
         'display:flex;flex-direction:row;align-items:center;gap:10px}' + /* was 6px, next to the minimap */
@@ -566,6 +569,7 @@
         var bPaus = mkd('❚❚');
         /* wave button: sends an ordinary team wave (the hand-wave, type 4) */
         var bWave = mkd('👋');
+        bWave.classList.add('lm-nomenu');
         
         drawer.appendChild(bAI);
         drawer.appendChild(bPaus);
@@ -864,6 +868,7 @@
             bPing = null; pingRad = null;
             if (!prefs.pingBtn) return;
             var b = bPing = mkd('\uD83D\uDCCD');
+            b.classList.add('lm-nomenu');
             var rad = pingRad = mk('div'); rad.id = 'lm-ping-rad';
             rad.style.cssText = 'position:fixed;display:none;z-index:100002;pointer-events:none;width:0;height:0';
             var items = PING_DIRS.map(function (d) {
@@ -970,6 +975,7 @@
             bZoomIn = null; bZoomOut = null;
             if (!prefs.zoomBtns) return;
             bZoomIn = mkd('+'); bZoomOut = mkd('−');
+            bZoomIn.classList.add('lm-nomenu'); bZoomOut.classList.add('lm-nomenu');
             function doZoom(dir) {
                 var cx = window.innerWidth / 2, cy = window.innerHeight / 2;
                 /* positive deltaY = zoom in (ogario convention, same as the pinch handler) */
@@ -1041,6 +1047,7 @@
                 for (var mi = 1; mi <= 3; mi++) {
                     (function (n) {
                         var b = mkd('M' + n);
+                        b.classList.add('lm-nomenu');
                         b.addEventListener('touchstart', function (e) {
                             e.preventDefault(); e.stopPropagation();
                             if (isMenuVisible()) return;
@@ -1833,7 +1840,7 @@
             if (!mm) return;
             var expanded = false;
             // The mobile stylesheet uses !important, so inline writes must be !important too
-            mm.style.setProperty('pointer-events', 'auto', 'important');
+            hudTaps();
             mm.addEventListener('touchstart', function (e) {
                 e.stopPropagation();
                 expanded = !expanded;
@@ -2194,11 +2201,22 @@
         /* the compact leaderboard preference, from one place (its switch, a settings profile, the start):
          * with it on a tap on the leaderboard changes its rows, so the leaderboard takes taps then */
         function applyLbCompact() {
-            var lb = document.getElementById('leaderboard-hud');
-            if (!lb) return;
-            if (prefs.lbCompact) lb.style.setProperty('pointer-events', 'auto', 'important');
-            else lb.style.removeProperty('pointer-events');
+            if (!document.getElementById('leaderboard-hud')) return;
+            hudTaps();
             fitLeaderboard();
+        }
+        /* The minimap (a tap enlarges it) and the compact leaderboard (a tap changes its rows) take
+         * taps through inline !important styles, which a stylesheet rule cannot turn off: none while
+         * the main menu is open, where on a 640x360 phone they lay over skin slots and buttons */
+        function hudTaps() {
+            var menu = document.body.classList.contains('lm-menu');
+            var pe = function (el, v) {
+                if (!el) return;
+                if (v === null) { if (el.style.getPropertyValue('pointer-events')) el.style.removeProperty('pointer-events'); }
+                else if (el.style.getPropertyValue('pointer-events') !== v) el.style.setProperty('pointer-events', v, 'important');
+            };
+            pe(document.getElementById('minimap-hud'), menu ? 'none' : 'auto');
+            pe(document.getElementById('leaderboard-hud'), prefs.lbCompact ? (menu ? 'none' : 'auto') : null);
         }
         /* M5: Tap leaderboard to toggle compact/expanded */
         (function () {
@@ -2335,10 +2353,12 @@
         var _prevMenuVisible = isMenuVisible();
         /* Split/Feed/4x/16x sat above the menu (z-index) and ate its taps; hide them there */
         document.body.classList.toggle('lm-menu', !!_prevMenuVisible);
+        hudTaps();
 
         function _syncMenuState() {
             var nowVisible = isMenuVisible();
             document.body.classList.toggle('lm-menu', !!nowVisible);
+            hudTaps();
             if (nowVisible !== _prevMenuVisible) {
                 /* show/hide the portrait overlay on play/death too, not only on rotation */
                 checkOrientation();
