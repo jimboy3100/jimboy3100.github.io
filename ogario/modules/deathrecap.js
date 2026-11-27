@@ -597,6 +597,15 @@
         });
         row.appendChild(t); row.appendChild(document.createTextNode(' ')); row.appendChild(b);
         c.appendChild(row);
+        /* shown once only: on a card taller than the screen (a phone in landscape, where the card
+         * scrolls) the end of the card is out of view, so the hint goes right under the header */
+        try {
+            var hd = c.firstElementChild;
+            if (modal.scrollHeight > modal.clientHeight + 1 && hd && hd !== row && hd.nextSibling !== row) {
+                c.insertBefore(row, hd.nextSibling);
+                row.style.paddingTop = '8px';
+            }
+        } catch (e) { }
     }
     function setOption(k, v) {
         var cb = document.getElementById(k);
