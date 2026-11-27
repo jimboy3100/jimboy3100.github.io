@@ -17,7 +17,7 @@
     {
       "id": "themes",
       "name": "Themes and HUD customization",
-      "description": "Visual customization via CSS variables and 8 theme presets (Legend v2, v1, Original, Crazy Style 2/1, Agar.io Light/Dark, Colour-blind Safe). ~160 theme properties: colours, fonts, sizing, menu, HUD, chat, minimap, custom background/cursor. Theme Bridge syncs with game CSS variables. HUD blur, rainbow borders, virus effects, cell contours, cell shadows, streamer preset.",
+      "description": "Visual customization via CSS variables and 8 theme presets (Legend v2, v1, Original, Crazy Style 2/1, Agar.io Light/Dark, Colour-blind Safe). ~160 theme properties: colours, fonts, sizing, menu, HUD, chat, minimap, custom background/cursor. Theme Bridge syncs with game CSS variables. Rainbow borders, virus effects, cell contours, cell shadows, streamer preset.",
       "url": "https://www.legendmod.ml/themes/"
     },
     {

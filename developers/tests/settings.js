@@ -342,7 +342,7 @@ check('setSettings on and off: two events, the new value each time', J(events) =
   H.saveSettings = app.saveSettings;
   H._lmChoiceSync = app2._lmChoiceSync;
   const fx = [];
-  ['setTop5', 'displayStats', 'setAutoResp', 'displayChatInfo', 'skinsModeMsg', 'applyHudBlur', '_lmLoadOptSounds'].forEach(n => { H[n] = function () { fx.push(n); return ''; }; });
+  ['setTop5', 'displayStats', 'setAutoResp', 'displayChatInfo', 'skinsModeMsg', '_lmLoadOptSounds'].forEach(n => { H[n] = function () { fx.push(n); return ''; }; });
   const els = {}, moved = [], getWas = ctx.document.getElementById, evWas = ctx.Event;
   ctx.Event = function (t, o) { this.type = t; this.bubbles = !!(o && o.bubbles); };
   ctx.document.getElementById = id => els[id] || null;
