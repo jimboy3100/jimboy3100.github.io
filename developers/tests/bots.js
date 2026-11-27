@@ -1600,7 +1600,7 @@ for (const file of ['server.js', 'server-fast.js']) {
                 localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: k => { delete store[k]; } }
             };
             vm.createContext(sb);
-            vm.runInContext('var app = { ' + parts.join(',\n') + ', saveSettings() { __saves(); } }' + (opts.botsButton ? '; app._lmQuickBotsButton = true' : ''), Object.assign(sb, { __saves: () => saves++ }));
+            vm.runInContext('var app = { ' + parts.join(',\n') + ', saveSettings() { __saves(); } }' + '; app._lmQuickBotsButton = ' + !!opts.botsButton, Object.assign(sb, { __saves: () => saves++ }));
             const app = sb.app, s = sb.defaultmapsettings;
             const open = () => Object.keys(PANELS).filter(k => node(PANELS[k]).shown);
             const consistent = () => {
@@ -1611,7 +1611,8 @@ for (const file of ['server.js', 'server-fast.js']) {
             const server = (integrity, mode) => { lm.ws = integrity == null ? '' : 'wss://x'; lm.integrity = !!integrity; lm.gameMode = mode || ':ffa'; app.displayPartyBots(); };
             return { app, s, lm, w: sb.window, open, consistent, server, store, node, saves: () => saves, btn: k => node(BTNS[k]).shown };
         };
-        // tabs: A = quick menu, B = Battle Royale HUD (the bots panel's button is hidden)
+        check('quick HUDs: the bots button is on (shown on agar.io arenas only)', /_lmQuickBotsButton: true,/.test(ogSrc) && /return !!this\._lmQuickBotsButton && !!\(lm && lm\.integrity\);/.test(ogSrc));
+        // tabs: A = quick menu, B = Battle Royale HUD (a build with the bots panel's button off)
         let q = make();
         q.app.setShowQuickMenu();
         check('quick HUDs: at load the saved flag shows the quick menu with its ring', q.open().join() === 'menu' && q.consistent());
