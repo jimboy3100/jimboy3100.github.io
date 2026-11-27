@@ -1521,27 +1521,6 @@ input.hide-url::selection,input.stream-mode::selection{
     color:#fff;
     border-color:#8096a7 
 }
-#hotkeys-cfg .custom-key{
-    position:relative
-}
-/* left of the key field: at its right the list's scroll bar rail (15 px, invisible until hovered)
- * lay over it and took the click */
-#hotkeys-cfg .lm-hk-clear{
-    position:absolute;
-    left:2px;
-    top:50%;
-    transform:translateY(-50%);
-    color:#e74c3c;
-    font-weight:700;
-    text-decoration:none;
-    line-height:1;
-    opacity:.6
-}
-#hotkeys-cfg .lm-hk-clear:hover{
-    opacity:1;
-    color:#ff6b5b;
-    text-decoration:none
-}
 #exp-imp textarea{
     width:100%;
     box-sizing:border-box

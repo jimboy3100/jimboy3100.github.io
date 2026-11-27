@@ -84868,8 +84868,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         var replaceHk = command.replace('hk-', '');
                         /* chat command texts are user/imported text: escape them for the value attribute (a quote cut the text off) */
                         var commandText = String(chatCommand[replaceHk] == null ? '' : chatCommand[replaceHk]).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
-                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"' + _lmTH('game2.hkClear', '') + '\" data-i18n-title=\"game2.hkClear\">×</a></div></div>');
-                    } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /><a href=\"#\" class=\"lm-hk-clear\" data-hk=\"' + command + '\" title=\"' + _lmTH('game2.hkClear', '') + '\" data-i18n-title=\"game2.hkClear\">×</a></div></div>');
+                        $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\"><input id=\"' + replaceHk + '\" class=\"command-in form-control input-sm\" value=\"' + commandText + '\" maxlength=\"80\" /></div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /></div></div>');
+                    } else $('#hotkeys-cfg').append('<div class=\"row\"><div class=\"key-label\">' + currentCommand.label + '</div><div class=\"default-key\">' + currentCommand.defaultKey + '</div><div class=\"custom-key\"><input id=\"' + command + '\" class=\"custom-key-in form-control input-sm\" placeholder=\" \" value=\"' + text + '\" /></div></div>');
                 }
             /* the command names follow a language change too (their labels are getters reading the packs) */
             if (window.LMi18n && !setup._lmHkI18n) setup._lmHkI18n = LMi18n.onChange(function () {
@@ -84887,13 +84887,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 //hotkeysSetup.resetHotkeys();
                 setup.resetHotkeys();
             }),
-                /* the x next to a key clears that binding (same as pressing DEL in the field);
-                 * Save keeps it, Close reverts it like any other change */
-                $(document).on('click', '#hotkeys-cfg .lm-hk-clear', function (event) {
-                    event.preventDefault();
-                    var _lmHkId = $(this).attr('data-hk');
-                    if (_lmHkId) setup.setHotkey('DEL', _lmHkId);
-                }),
                 $(document).on('click', '#save-hotkeys', function (event) {
                     event.preventDefault();
                     //hotkeysSetup.saveHotkeys();

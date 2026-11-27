@@ -2555,24 +2555,6 @@
     "ja": "ゴーストセル",
     "it": "Cellula fantasma"
   },
-  "game2.hkClear": {
-    "en": "Clear",
-    "el": "Καθαρισμός",
-    "es": "Borrar",
-    "bg": "Изчисти",
-    "fr": "Effacer",
-    "ar": "مسح",
-    "zh": "清除",
-    "ru": "Очистить",
-    "de": "Löschen",
-    "tr": "Temizle",
-    "pl": "Wyczyść",
-    "nl": "Wissen",
-    "pt": "Limpar",
-    "id": "Bersihkan",
-    "ja": "クリア",
-    "it": "Cancella"
-  },
   "game2.hkKeptByBrowser": {
     "en": "is kept by the browser",
     "el": "το κρατά ο περιηγητής",
