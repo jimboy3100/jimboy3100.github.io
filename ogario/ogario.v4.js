@@ -22553,10 +22553,11 @@ function thelegendmodproject() {
         setMenuPanelColor() {
             var css = '#main-menu,.agario-side-panel,#hotkeys,#exp-imp{background-color: ' + defaultSettings.menuPanelColor + '}label:hover,.emoji-selectables,.agario-panel input,#UserProfileID2a, .agario-panel select,.agario-side-panel input,.agario-side-panel select,.input-group-addon,.nick .input-group-btn,.skin .input-group-btn,#stream-mode,#hide-url,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs,#exp-bar .progress,#quick-menu a:hover,.quick,.select-wrapper,#hotkeys-cfg div.row:hover,#hotkeys-cfg .command-in,#exp-imp-settings textarea,.restore-settings{background-color: ' + defaultSettings.menuPanelColor2 + '}.agario-panel h5,.agario-side-panel h5,#stats h2,.menu-tabs,.submenu-tabs,#skins a.default,#stats hr,#hotkeys-cfg div.row, #exp-imp h1{border-color: ' + defaultSettings.menuPanelColor2 + '}.quick:hover,#skins a,#profiles{color:' + defaultSettings.menuPanelColor2 + '}input.stream-mode,input.hide-url{color:' + defaultSettings.menuPanelColor2 + '!important}';
             css += ':root{--lm-pc:' + _lmCssVal(defaultSettings.menuPanelColor, '#00243e') + ';--lm-pc2:' + _lmCssVal(defaultSettings.menuPanelColor2, '#002f52') + '}';
-            /* A dark select's open list kept the browser's white background with the light theme
-             * text, so its choices could not be read (e.g. Discover > This server): every LM
-             * window's dropdown list now uses the panel and text colours */
-            css += '[id^="lm-"] select option,[id^="lm-"] select optgroup,.agario-panel select option,.agario-side-panel select option{background-color:var(--lm-pc,#00243e);color:var(--lm-tc,#ffffff)}';
+            /* The open list of every dropdown never takes the theme: Chrome draws it from the option's
+             * colours (or the select's, over white), and theme text on the theme or the browser's white
+             * could not be read (grey panels, light themes). Dark text on white, as in the browser, for
+             * every window (the one rule for this: windows add none of their own) */
+            css += 'select option,select optgroup{background-color:#fff!important;color:#1a1a1a!important}select option:checked{background-color:#d3e3fd!important}select option:disabled{color:#6b6b6b!important}';
             this.addCustomCSS('menuPanelColorCSS', css);
             /* Keep inline --lm-pc/pc2 in sync */
             try { var _r = document.documentElement.style; _r.setProperty('--lm-pc', _lmCssVal(defaultSettings.menuPanelColor, '#00243e')); _r.setProperty('--lm-pc2', _lmCssVal(defaultSettings.menuPanelColor2, '#002f52')); } catch(e){}

@@ -277,7 +277,7 @@
         '#lm-ed-bar .row{display:flex;flex-wrap:wrap;align-items:center;gap:4px}' +
         '#lm-ed button,#lm-ed select{min-height:36px;min-width:36px;padding:0 9px;border-radius:7px;box-sizing:border-box;' +
         'border:1px solid rgba(1,217,204,.45);border:1px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 45%,transparent);background:rgba(1,217,204,.12);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 12%,transparent);color:var(--lm-tc,#fff);font:700 12px/1 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif)}' +
-        '#lm-ed select{max-width:130px}#lm-ed select option{color:#000}' +
+        '#lm-ed select{max-width:130px}' +
         '#lm-ed button.pri{background:rgba(1,217,204,.4);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 40%,transparent)}' +
         '#lm-ed button:disabled{opacity:.35}' +
         '#lm-ed input[type=range]{width:90px;accent-color:var(--lm-mc,#01d9cc)}' +
