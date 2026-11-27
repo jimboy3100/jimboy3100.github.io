@@ -55025,6 +55025,10 @@ function thelegendmodproject() {
                                 } else {
                                     this._colorByRawMap.set(rawServerColor, null);
                                 }
+                            } else if (_rawWas === color && this._colorByRawNick.get(rawServerColor) !== name) {
+                                /* a second nick with that colour too: no single nick owns it any more ('' is
+                                 * no nick), so a later other colour of either one makes it null above */
+                                this._colorByRawNick.set(rawServerColor, '');
                             }
                         }
                     } else if (name === "" && rawServerColor && this._colorByRawMap && this._colorByRawMap.get(rawServerColor)) {

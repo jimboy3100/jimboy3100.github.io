@@ -177,6 +177,15 @@ g.application.teamPlayers = [mate('Blue', '#3366ff')];
 feed([{ id: 36, color: [40, 200, 40], name: 'Blue', skin: '' }]);
 feed([{ id: 37, color: [40, 200, 40], size: 40 }]);
 check('a nameless piece of the teammate (no other nick with that colour) has the team colour', C(37) === '#3366ff', C(37));
+/* the teammate and a stranger with one server colour both seen before the teammate's colour came
+ * over the relay: the stranger's nameless piece cannot be told from the teammate's */
+reset();
+feed([{ id: 38, color: [40, 200, 40], name: 'Blue', skin: '' }, { id: 39, color: [40, 200, 40], name: 'Stranger', skin: '' }]);
+g.application.teamPlayers = [mate('Blue', '#3366ff')];
+feed([{ id: 38, color: [40, 200, 40], name: 'Blue' }]);
+feed([{ id: 40, color: [40, 200, 40], size: 40 }]);
+check('team colour came later: the teammate is drawn in it', C(38) === '#3366ff', C(38));
+check('team colour came later: a nameless piece of a server colour two nicks have keeps it', C(40) === hex(40, 200, 40), C(40));
 g.application.teamPlayers = [];
 
 /* section: the colour remembered per nick belongs to one server */
