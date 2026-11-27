@@ -27995,31 +27995,9 @@ function thelegendmodproject() {
             $(document).on("click", "#server-reconnect", function () {
                 app.gameServerReconnect();
             });
-            /* Recent servers / party tokens: the last 5 values joined are offered as suggestions
-             * in the token boxes (a datalist: no layout change, the join path is unchanged). */
-            var _lmRecent = function (storeKey, listId, inputSel) {
-                var read = function () { try { var a = JSON.parse(localStorage.getItem(storeKey) || '[]'); return Array.isArray(a) ? a.filter(function (v) { return typeof v === 'string' && v; }) : []; } catch (e) { return []; } };
-                var render = function () {
-                    var dl = document.getElementById(listId);
-                    if (!dl) { dl = document.createElement('datalist'); dl.id = listId; document.body.appendChild(dl); }
-                    while (dl.firstChild) dl.removeChild(dl.firstChild);
-                    read().forEach(function (v) { var o = document.createElement('option'); o.value = v; dl.appendChild(o); });
-                    /* the browser's own suggestions stay too (autocomplete is not turned off) */
-                    $(inputSel).attr('list', listId);
-                };
-                render();
-                return function (value) {
-                    value = String(value || '').trim();
-                    if (!value || value.length > 300) return;
-                    var a = read().filter(function (v) { return v !== value; });
-                    a.unshift(value);
-                    try { localStorage.setItem(storeKey, JSON.stringify(a.slice(0, 5))); } catch (e) { }
-                    render();
-                };
-            };
-            var _lmRememberServer = _lmRecent('lmRecentServers', 'lm-recent-servers', '#server-token');
-            var _lmRememberParty = _lmRecent('lmRecentParties', 'lm-recent-parties', '#party-token');
-            $(document).on("click", "#join-party-btn-2", function () { _lmRememberParty($("#party-token").val()); });
+            /* the token boxes no longer suggest recent values (their dropdown arrow is gone);
+             * the lists an older version stored are dropped */
+            try { localStorage.removeItem('lmRecentServers'); localStorage.removeItem('lmRecentParties'); } catch (e) { }
             /* Enter in a token box presses its Join button (it did nothing) */
             $(document).on("keydown", "#server-token, #party-token", function (e) {
                 if (e.key !== "Enter" && e.keyCode !== 13) return;
@@ -28027,8 +28005,6 @@ function thelegendmodproject() {
                 $(this.id === "server-token" ? "#server-join" : "#join-party-btn-2").first().trigger("click");
             });
             $(document).on("click", "#server-join", function () {
-                /* a private room token is opened through the room window (new ticket), not remembered */
-                if (String($("#server-token").val() || '').indexOf('/el-room/') === -1) _lmRememberServer($("#server-token").val());
                 app.gameServerJoin($("#server-token").val());
             });
             /* Profile edits were written to the profile only by setPlayerSettings (Play),

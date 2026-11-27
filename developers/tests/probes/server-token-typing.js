@@ -29,7 +29,7 @@
     for (var k = 0; k < 80 && !(LM.socket !== old && on(FFA)); k++) await sleep(250);
     return LM.socket !== old && on(FFA);
   };
-  var keys = ['lmServerHistory', 'lmRecentServers', 'lmLastPrivateServer'], saved = {};
+  var keys = ['lmServerHistory', 'lmLastPrivateServer'], saved = {};
   keys.forEach(function (k) { try { saved[k] = localStorage.getItem(k); } catch (e) { } });
   var info0 = $('#server-info').is(':visible');
   var tk = document.getElementById('server-token');
