@@ -23,8 +23,9 @@
     var KEY = 'lm-mobile-layouts';
     var ORIENTS = ['landscape', 'portrait'];
     /* hide: the player may hide it in the editor (the menu button stays: without it the game menu
-     * cannot be reached; the joystick zone is not a button). act: game action, no taps while the
-     * main menu is open (as in LMmobile.js). */
+     * cannot be reached; the joystick zone is not a button). act: no taps while the main menu is
+     * open once the control is moved out of its group (a moved one can lie over the menu and took
+     * its taps); only the menu button and the gear (the phone settings) stay usable there. */
     /* lk: the name's key in the language packs (developers/i18n/src/misc.json), lv: its {0} */
     var CONTROLS = [
         { id: 'joystick', lk: 'misc.editor.ctlJoystick', zone: true },
@@ -32,22 +33,22 @@
         { id: 'feed', lk: 'misc.editor.ctlFeed', icon: '⬤', hide: true, act: true },
         { id: 'x4', lk: 'misc.editor.ctlX4', icon: '4×', hide: true, act: true },
         { id: 'x16', lk: 'misc.editor.ctlX16', icon: '16×', hide: true, act: true },
-        { id: 'multibox', lk: 'misc.editor.ctlMultibox', icon: '⇄', hide: true },
-        { id: 'q1', lk: 'misc.editor.ctlQuick', lv: [1], icon: '1', hide: true },
-        { id: 'q2', lk: 'misc.editor.ctlQuick', lv: [2], icon: '2', hide: true },
-        { id: 'q3', lk: 'misc.editor.ctlQuick', lv: [3], icon: '3', hide: true },
-        { id: 'q4', lk: 'misc.editor.ctlQuick', lv: [4], icon: '4', hide: true },
-        { id: 'chat', lk: 'misc.editor.ctlChat', icon: '💬', hide: true },
-        { id: 'ping', lk: 'misc.editor.ctlPing', icon: '📍', hide: true },
+        { id: 'multibox', lk: 'misc.editor.ctlMultibox', icon: '⇄', hide: true, act: true },
+        { id: 'q1', lk: 'misc.editor.ctlQuick', lv: [1], icon: '1', hide: true, act: true },
+        { id: 'q2', lk: 'misc.editor.ctlQuick', lv: [2], icon: '2', hide: true, act: true },
+        { id: 'q3', lk: 'misc.editor.ctlQuick', lv: [3], icon: '3', hide: true, act: true },
+        { id: 'q4', lk: 'misc.editor.ctlQuick', lv: [4], icon: '4', hide: true, act: true },
+        { id: 'chat', lk: 'misc.editor.ctlChat', icon: '💬', hide: true, act: true },
+        { id: 'ping', lk: 'misc.editor.ctlPing', icon: '📍', hide: true, act: true },
         { id: 'wave', lk: 'misc.editor.ctlWave', icon: '👋', hide: true, act: true },
-        { id: 'autoplay', lk: 'misc.editor.ctlAutoplay', icon: '►', hide: true },
-        { id: 'pause', lk: 'misc.editor.ctlPause', icon: '❚❚', hide: true },
-        { id: 'rewind', lk: 'misc.editor.ctlRewind', icon: '⏪', hide: true },
-        { id: 'forward', lk: 'misc.editor.ctlForward', icon: '⏩', hide: true },
+        { id: 'autoplay', lk: 'misc.editor.ctlAutoplay', icon: '►', hide: true, act: true },
+        { id: 'pause', lk: 'misc.editor.ctlPause', icon: '❚❚', hide: true, act: true },
+        { id: 'rewind', lk: 'misc.editor.ctlRewind', icon: '⏪', hide: true, act: true },
+        { id: 'forward', lk: 'misc.editor.ctlForward', icon: '⏩', hide: true, act: true },
         { id: 'gear', lk: 'misc.editor.ctlGear', icon: '⚙', hide: true },
-        { id: 'zoomIn', lk: 'misc.editor.ctlZoomIn', icon: '+', hide: true },
-        { id: 'zoomOut', lk: 'misc.editor.ctlZoomOut', icon: '−', hide: true },
-        { id: 'freeSpec', lk: 'misc.editor.ctlFreeSpec', icon: '🔍', hide: true },
+        { id: 'zoomIn', lk: 'misc.editor.ctlZoomIn', icon: '+', hide: true, act: true },
+        { id: 'zoomOut', lk: 'misc.editor.ctlZoomOut', icon: '−', hide: true, act: true },
+        { id: 'freeSpec', lk: 'misc.editor.ctlFreeSpec', icon: '🔍', hide: true, act: true },
         { id: 'menu', lk: 'misc.editor.ctlMenu', icon: '☰' }
     ];
     var CTL = {};
@@ -416,6 +417,20 @@
         if (mm) {
             var mr = rectOf(mm);
             if (mr.w >= 10 && mr.h >= 10 && mr.x < v.w && mr.y < v.h) fixedRects.push({ id: 'minimap', lk: 'misc.editor.ctlMinimap', x: mr.x, y: mr.y, w: mr.w, h: mr.h, fixed: true });
+        }
+        /* the leaderboard with its mass / sector column (drawn to the left of the box): a control
+         * moved over it was not reported */
+        var lbe = D.getElementById('leaderboard-hud');
+        if (lbe) {
+            var lr = rectOf(lbe), ld = D.getElementById('leaderboard-data');
+            if (ld && ld.getClientRects().length) {
+                var dr = rectOf(ld);
+                if (dr.w > 0 && dr.h > 0) {
+                    var x0 = Math.min(lr.x, dr.x), y1 = Math.max(lr.y + lr.h, dr.y + dr.h);
+                    lr = { x: x0, y: lr.y, w: Math.max(lr.x + lr.w, dr.x + dr.w) - x0, h: y1 - lr.y };
+                }
+            }
+            if (lr.w >= 10 && lr.h >= 10 && lr.x < v.w && lr.y < v.h) fixedRects.push({ id: 'leaderboard', lk: 'modules.hudeditor.comp.leaderboard', x: lr.x, y: lr.y, w: lr.w, h: lr.h, fixed: true });
         }
         var mine = [];
         for (var k in els) if (els[k]) mine.push(els[k]);
