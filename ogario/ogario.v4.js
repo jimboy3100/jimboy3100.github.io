@@ -21108,7 +21108,9 @@ var LM_EXPORT_KEYS = [
     { key: 'lmSmallTools', type: 'o' },
     /* only: just these fields of the object (the Command Centre's starred commands, also its quick
      * bar, are configuration; its recently used list is history and stays on the device) */
-    { key: 'lmCommandCentre', type: 'o', only: ['fav'] }
+    { key: 'lmCommandCentre', type: 'o', only: ['fav'] },
+    /* the muted notification categories (the read mark and the list filter stay on the device) */
+    { key: 'lmNotificationPrefs', type: 'o', only: ['muted'] }
 ];
 function lmExportFits(e, v) {
     return e.type === 'a' ? Array.isArray(v) : !!v && typeof v === 'object' && !Array.isArray(v);
