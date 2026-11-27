@@ -11,7 +11,7 @@
   var lb = document.getElementById('leaderboard-hud'), pos = document.getElementById('leaderboard-positions'), data = document.getElementById('leaderboard-data');
   if (!H || !app || !cb || !lb || !pos || !data) return { fail: ['phone controls, compact switch or leaderboard missing'] };
   var keepPrefs = null; try { keepPrefs = localStorage.getItem('lm-mobile-prefs'); } catch (e) { }
-  var oldP = pos.innerHTML, oldD = data.innerHTML, keepChecked = cb.checked;
+  var keepLb = app.displayLeaderboard, oldP = pos.innerHTML, oldD = data.innerHTML, keepChecked = cb.checked;
   var lbShown = lb.style.getPropertyValue('display'), lbPrio = lb.style.getPropertyPriority('display');
   var P = '', Dt = '';
   for (var i = 1; i <= 20; i++) {
@@ -29,6 +29,8 @@
   try {
     lb.style.setProperty('display', 'block', 'important');
     app.displayLeaderboard(P, Dt);
+    /* a leaderboard from the server meanwhile would replace these rows (counted 0 shown) */
+    app.displayLeaderboard = function () { };
     set(true);
     H.reposition();
     await sleep(50);
@@ -54,6 +56,8 @@
     if (shown(ps).length !== 21 || shown(ds).length !== 20) fail.push('option off: not every row shown again');
     if (getComputedStyle(lb).pointerEvents !== 'none') fail.push('option off: the leaderboard still takes taps');
   } finally {
+    delete app.displayLeaderboard;
+    if (app.displayLeaderboard !== keepLb) app.displayLeaderboard = keepLb;
     set(keepChecked);
     try { if (keepPrefs === null) localStorage.removeItem('lm-mobile-prefs'); else localStorage.setItem('lm-mobile-prefs', keepPrefs); } catch (e) { }
     if (H.reloadPrefs) H.reloadPrefs();
