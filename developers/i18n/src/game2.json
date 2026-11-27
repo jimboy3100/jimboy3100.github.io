@@ -2699,24 +2699,6 @@
     "ja": "ボットの数を入力してください (最大 190)",
     "it": "Indica il numero di bot (massimo 190)"
   },
-  "game2.botsPartyOnly": {
-    "en": "Party bots only available for Party mode",
-    "el": "Τα bots του party είναι διαθέσιμα μόνο στη λειτουργία Party",
-    "es": "Los bots de party solo están disponibles en el modo Party",
-    "bg": "Ботовете за парти са само за режим Party",
-    "fr": "Les bots de party ne sont disponibles qu’en mode Party",
-    "ar": "بوتات البارتي متاحة في وضع البارتي فقط",
-    "zh": "組隊機器人僅適用於組隊模式",
-    "ru": "Боты для пати доступны только в режиме пати",
-    "de": "Party-Bots gibt es nur im Party-Modus",
-    "tr": "Parti botları yalnızca Party modunda kullanılabilir",
-    "pl": "Boty party są dostępne tylko w trybie Party",
-    "nl": "Partybots zijn alleen beschikbaar in Party-modus",
-    "pt": "Bots de party só estão disponíveis no modo Party",
-    "id": "Bot party hanya tersedia di mode Party",
-    "ja": "パーティーボットはパーティーモードでのみ使えます",
-    "it": "I bot del party sono disponibili solo in modalità Party"
-  },
   "game2.ctxAttack": {
     "en": "Attack",
     "el": "Επίθεση",
@@ -4391,6 +4373,24 @@
     "ja": "⚔ バトルロイヤル ロビー",
     "it": "⚔ Lobby Battle Royale"
   },
+  "game2.brHudTitle": {
+    "en": "Battle Royale",
+    "el": "Battle Royale",
+    "es": "Battle Royale",
+    "bg": "Батъл роял",
+    "fr": "Battle Royale",
+    "ar": "باتل رويال",
+    "zh": "大逃殺",
+    "ru": "Королевская битва",
+    "de": "Battle Royale",
+    "tr": "Battle Royale",
+    "pl": "Battle Royale",
+    "nl": "Battle Royale",
+    "pt": "Battle Royale",
+    "id": "Battle Royale",
+    "ja": "バトルロイヤル",
+    "it": "Battle Royale"
+  },
   "game2.brWaitingData": {
     "en": "Waiting for lobby data…",
     "el": "Αναμονή δεδομένων lobby…",
@@ -4462,6 +4462,24 @@
     "id": "Pemain: {0} | Status: {1}",
     "ja": "プレイヤー: {0} | 状態: {1}",
     "it": "Giocatori: {0} | Stato: {1}"
+  },
+  "game2.brPlayersBots": {
+    "en": "Players: {0} ({1} real + {2} bots) | State: {3}",
+    "el": "Παίκτες: {0} ({1} πραγματικοί + {2} bots) | Κατάσταση: {3}",
+    "es": "Jugadores: {0} ({1} reales + {2} bots) | Estado: {3}",
+    "bg": "Играчи: {0} ({1} истински + {2} бота) | Състояние: {3}",
+    "fr": "Joueurs : {0} ({1} réels + {2} bots) | État : {3}",
+    "ar": "اللاعبون: {0} ({1} حقيقيون + {2} بوتات) | الحالة: {3}",
+    "zh": "玩家：{0}（{1} 真人 + {2} 機器人）| 狀態：{3}",
+    "ru": "Игроки: {0} ({1} живых + {2} ботов) | Статус: {3}",
+    "de": "Spieler: {0} ({1} echte + {2} Bots) | Status: {3}",
+    "tr": "Oyuncular: {0} ({1} gerçek + {2} bot) | Durum: {3}",
+    "pl": "Gracze: {0} ({1} prawdziwych + {2} botów) | Stan: {3}",
+    "nl": "Spelers: {0} ({1} echt + {2} bots) | Status: {3}",
+    "pt": "Jogadores: {0} ({1} reais + {2} bots) | Estado: {3}",
+    "id": "Pemain: {0} ({1} asli + {2} bot) | Status: {3}",
+    "ja": "プレイヤー: {0}（実プレイヤー {1} + ボット {2}）| 状態: {3}",
+    "it": "Giocatori: {0} ({1} reali + {2} bot) | Stato: {3}"
   },
   "game2.brStateWaiting": {
     "en": "Waiting",

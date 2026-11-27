@@ -4987,7 +4987,6 @@ var consoleMsgLM = "[Client] ";
 window.clanTagLc = "ZZX";
 appendLMhiFbPs()
 window.externalScriptMassBar = []
-window.capthaWindow = []
 
 window.RecordedProtocol = []
 window.RecordedProtocolArenas = []
@@ -7782,8 +7781,6 @@ const standardDeviation = (arr, usePopulation = false) => {
 
 */
 //bots
-window.botsSpawncode = [];
-window.botsSpawncodeNum = 0;
 
 window.SERVER_HOST = 'browser' // 'browser' (or empty): browser bots in a Web Worker; else the address of a bot server, e.g. ws://localhost:1337 (start.bat)
 //window.SERVER_PORT = 1337 // Port number used on the server where the bots are running [Default = 1337]
@@ -7863,34 +7860,12 @@ window.buffers = {
         return writer.dataView.buffer
     }
 }
-window.addEventListener('beforeunload', function (e) {
-    for (i = 0; i < window.captchaOpenedWindow; i++) {
-        if (window.capthaWindow[i]) {
-            window.capthaWindow[i].close()
-            window.capthaWindow[i] = null
-        }
-    }
-    //e.preventDefault();
-    //e.returnValue = ''; 
-});
-
-function createCaptchaWindow(i) {
-    /*window.capthaWindow[i] = document.createElement("iframe");
-    window.capthaWindow[i].setAttribute("src", "https://agar.io/captcha");
-    window.capthaWindow[i].style.width = "0px";
-    window.capthaWindow[i].style.height = "0px";
-    document.body.appendChild(window.capthaWindow[i]);	*/
-    if (window.LMVersion === "1.7") {
-        toastr.info('Mod <font color="yellow"><b>v' + modVersion + '</b></font>  ' + lmT('game1.bots.outdated', '<font color="yellow"><b>v1.8</b></font>') + '<br>' + lmT('game1.bots.visit') + ' <a target="_blank" href="https://jimboy3100.github.io"><font color="yellow"><b><u>jimboy3100.github.io</u></b></font></a>'); /* i18n-ok: "Mod" + version number, a product name */
-    }
-    window.capthaWindow[i] = window.open("https://agar.io/captcha");
-}
 /* Browser bots: the bot server's own code (ExampleScripts/agario-bots2/botcore.js, the file server.js
    runs) in a Web Worker of this page, so no bot server is needed and the game's thread only posts the
    control messages. It looks like the bot server's WebSocket to connectionBots: readyState, send,
-   close, onopen/onmessage/onclose, the same binary messages both ways. "Connect" loads the code;
-   a worker runs only from Start (or Fill lobby) until the session ends (message 2), a new connect or
-   the page closing. Its bots join the game server with this page's origin, spawn with token '0'
+   close, onopen/onmessage/onclose, the same binary messages both ways. Start (or Fill lobby) loads
+   the code; a worker runs from that Start until the session ends (message 2), Stop while connecting,
+   or the page closing. Its bots join the game server with this page's origin, spawn with token '0'
    like the player, and only wait when the game server asks for a captcha (no tokens). */
 class LMBotsWorkerSocket {
     constructor(src) {
@@ -7966,27 +7941,42 @@ class LMBotsWorkerSocket {
     }
 }
 window.LMBotsWorkerSocket = LMBotsWorkerSocket
+/* The connection to the bots: the browser worker or a bot server. There is no Connect button:
+   Start and Fill lobby call ensure(), which connects when needed and runs their action again
+   once the connection is open (pending). Stop while connecting cancels it (cancel()). */
 window.connectionBots = {
     ws: null,
     /* browser bots (Web Worker) for an empty Bots address or "browser", else a bot server */
     inBrowser: false,
+    /* the action waiting for the connection: 'start' (Start bots), 'fill' (Fill lobby) or null */
+    pending: null,
+    /* the current socket has opened (a close before that is a failed connection) */
+    opened: false,
     isBrowserHost(host) {
         host = host == null ? '' : String(host).trim().toLowerCase()
         return host === '' || host === 'browser'
     },
     connect() {
         /* A second click while the socket is still connecting opened a second socket,
-           so onopen/onclose ran twice (orphan captcha popups, false "Disconnected"). */
+           so onopen/onclose ran twice (false "Disconnected"). */
         var old = this.ws
         if (old && (old.readyState === WebSocket.CONNECTING || old.readyState === WebSocket.OPEN)) return
         if (old) {
             old.onopen = old.onmessage = old.onclose = null
             try { old.close() } catch (e) { }
         }
-        //this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
         this.inBrowser = this.isBrowserHost(window.SERVER_HOST)
-        var ws = this.ws = this.inBrowser ? new window.LMBotsWorkerSocket('https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=' + (window.OgVer || '')) : new WebSocket(`${window.SERVER_HOST}`)
-        //this.ws = new WebSocket(`ws://agario-bots--jimboy3100.repl.co`)
+        this.opened = false
+        var ws
+        try {
+            ws = this.inBrowser ? new window.LMBotsWorkerSocket('https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=' + (window.OgVer || '')) : new WebSocket(`${window.SERVER_HOST}`)
+        } catch (e) {
+            /* not a WebSocket address (e.g. no ws://): a failed connection */
+            this.ws = null
+            this.onclose({})
+            return
+        }
+        this.ws = ws
         var self = this
         var current = function (fn) {
             return function (e) { if (self.ws === ws) return fn.call(self, e) }
@@ -7995,90 +7985,62 @@ window.connectionBots = {
         ws.onopen = current(this.onopen)
         ws.onmessage = current(this.onmessage)
         ws.onclose = current(this.onclose)
+        this.setStatus('game1.bots.connecting', '#FF9800')
+    },
+    /* true: the connection is open, do the action now. false: it is connecting (started here when
+       needed) and onopen runs the action ('start' or 'fill') again; the last action asked wins. */
+    ensure(action) {
+        if (this.ws && this.ws.readyState === WebSocket.OPEN) return true
+        this.pending = action
+        this.connect()
+        return false
+    },
+    /* Stop while connecting: forget the waiting action and close the socket that is still
+       connecting (quietly: no "closed" notice). An open connection stays open. */
+    cancel() {
+        this.pending = null
+        var ws = this.ws
+        if (!ws || ws.readyState !== WebSocket.CONNECTING) return false
+        this.ws = null
+        ws.onopen = ws.onmessage = ws.onclose = null
+        try { ws.close() } catch (e) { }
+        this.setStatus('game1.bots.disconnected', '#DA0A00')
+        this.buttons(false)
+        return true
     },
     send(buffer) {
         if (this.ws && this.ws.readyState === WebSocket.OPEN) this.ws.send(buffer)
     },
+    setStatus(key, color) {
+        var el = document.getElementById('userStatus')
+        if (!el) return
+        el.style.color = color
+        _lmG1set(el, key)
+    },
+    /* Start or Stop: busy = Stop (connecting for a Start, bots starting or running), else Start */
+    buttons(busy) {
+        var start = document.getElementById('startBots'), stop = document.getElementById('stopBots')
+        if (!start || !stop) return
+        start.disabled = !!busy
+        start.style.display = busy ? 'none' : 'inline'
+        stop.disabled = !busy
+        stop.style.display = busy ? 'inline' : 'none'
+        _lmG1set(stop, 'game1.bots.stop')
+    },
     onopen() {
-        document.getElementById('userStatus').style.color = '#00C02E'
-        _lmG1set(document.getElementById('userStatus'), 'game1.bots.connected')
-        //document.getElementById('connect').disabled = true
-        document.getElementById('startBots').disabled = false
-        document.getElementById('stopBots').disabled = false
-        _lmG1set(document.getElementById('connectBots'), 'game1.bots.connect')
-        document.getElementById('connectBots').style.color = 'white'
-        /* Bots spawn like the player (token '0') while agar.io asks for no captcha.
-           The captcha popups and the token loop start only when the bot server
-           reports that the game server wants a captcha (message 12). */
-        this.captchaActive = false
-        /* Fill lobby pressed while the bot server was not connected: continue it now (one click). */
-        if (window._brFillPending) {
-            window._brFillPending = false
-            setTimeout(function () { var b = document.getElementById('brFillLobby'); if (b) b.click() }, 0)
-        }
-    },
-    startCaptcha() {
-        if (this.captchaActive || this.inBrowser) return
-        if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return
-        this.captchaActive = true
-        window.RequestedTokens = 100000;
-        for (var i = 0; i < window.captchaOpenedWindow; i++) {
-            createCaptchaWindow(i);
-        }
-
-        if (!window.capthaWindowOpened) {
-            window.capthaWindowOpened = true;
-            window.addEventListener("message", function (event) {
-                /* Only reCAPTCHA tokens from the captcha popups: ignore YouTube, ads, extensions, OAuth relays. */
-                if (typeof event.data !== 'string' || !/^[A-Za-z0-9_\-]{20,}$/.test(event.data)) return;
-                /* P4: verify origin — only accept messages from the captcha popup's origin */
-                if (event.origin !== 'https://agar.io') return;
-                /* P4: verify source — must be one of the registered captcha popup WindowProxy objects */
-                var knownSource = false;
-                for (var ci = 0; ci < window.captchaOpenedWindow; ci++) {
-                    if (window.capthaWindow[ci] && event.source === window.capthaWindow[ci]) { knownSource = true; break; }
-                }
-                if (!knownSource) return;
-                /* P4: require the bot connection to be active */
-                if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) return;
-                if (legendmod.integrity) {
-                    legendmod.sendSpawn2(event.data);
-                } else {
-                    legendmod.sendSpawn2('0');
-                }
-            });
-        }
-
-        toastr.info("<b>[" + Premadeletter123 + "]:</b> " + lmT('game1.bots.captchaTip'));
-        setTimeout(function () { //
-            legendmod.sendTokenForBots();
-        }, 4000); //
-
-        if (!window.sendFirstTimeTokenBots) {
-            window.sendFirstTimeTokenBots = true
-            window.sendTimeOutTokenBots = false;
-            legendmod.sendTimeOutTokenForBots();
-        }
-    },
-    closeCaptcha() {
-        this.captchaActive = false
-        window.RequestedTokens = 0
-        for (var i = 0; i < window.captchaOpenedWindow; i++) {
-            if (window.capthaWindow[i]) {
-                try { window.capthaWindow[i].close() } catch (e) { }
-                window.capthaWindow[i] = null
-            }
-        }
+        this.opened = true
+        this.setStatus('game1.bots.connected', '#00C02E')
+        /* Start / Fill lobby pressed while not connected: continue it now (one click). */
+        var action = this.pending
+        this.pending = null
+        var run = action === 'start' ? window._lmBotsStart : action === 'fill' ? window._lmBrFill : null
+        if (typeof run === 'function') setTimeout(function () { run() }, 0)
     },
     onmessage(message) {
         const dataView = new DataView(message.data)
         switch (dataView.getUint8(0)) {
             case 0:
-                document.getElementById('startBots').disabled = true
-                document.getElementById('stopBots').disabled = false
-                document.getElementById('startBots').style.display = 'none'
-                document.getElementById('stopBots').style.display = 'inline'
-                _lmG1set(document.getElementById('stopBots'), 'game1.bots.stop')
+                this.buttons(true)
                 window.userBots.startedBots = true
                 /* The player may have spawned or died since Start; the server only knew the state at Start. */
                 this.send(new Uint8Array([5, window.userBots.isAlive ? 1 : 0]).buffer)
@@ -8090,25 +8052,19 @@ window.connectionBots = {
             case 2:
                 document.getElementById('botsAI').style.color = '#DA0A00'
                 document.getElementById('botsAI').innerText = lmT('game1.bots.disabled')
-                document.getElementById('startBots').disabled = false
-                document.getElementById('stopBots').disabled = true
-                document.getElementById('startBots').style.display = 'inline'
-                document.getElementById('stopBots').style.display = 'none'
-                _lmG1set(document.getElementById('stopBots'), 'game1.bots.stop')
+                this.buttons(false)
                 window.userBots.startedBots = false
                 window.userBots.startSent = false
+                window.userBots.spawned = 0
                 window.bots.ai = false
-                this.closeCaptcha()
                 if (typeof window._brResetFill === 'function') window._brResetFill()
                 break
             case 3:
                 toastr.info(lmT('game1.bots.captchaIp'))
                 break
             case 4:
+                window.userBots.spawned = dataView.getUint8(2)
                 $('#botCount').html(`${dataView.getUint8(1)}/${dataView.getUint8(2)}/${window.userBots.sessionAmount || window.bots.amount}`)
-                break
-            case 5:
-                $('#slots').html(dataView.getUint8(1) + "/200")
                 break
             case 9:
                 // Bot positions from server (absolute world coords) — receive gracefully
@@ -8117,15 +8073,9 @@ window.connectionBots = {
                 toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game1.bots.closing'));
                 break
             case 12:
-                /* The game server asks the bots for a captcha. Browsers open popups only from a
-                   click, so the captcha windows open from the button in this notice.
-                   Browser bots take no tokens: they wait and try again with '0' (after 5 minutes). */
-                if (this.inBrowser) {
-                    toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.captchaNeeded', 'The game server asks the bots for a captcha.') + ' ' + _lmTH('game1.bots.captchaWait', 'The bots wait and try again in a few minutes.'))
-                } else if (!this.captchaActive) {
-                    toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.captchaNeeded', 'The game server asks the bots for a captcha.') +
-                        ' <button type="button" class="btn btn-warning btn-xs lm-bots-captcha-open">' + _lmTH('game1.bots.captchaOpen', 'Solve captcha') + '</button>', '', { timeOut: 0, extendedTimeOut: 0 })
-                }
+                /* The game server asks the bots for a captcha: they take no tokens, they wait and
+                   try again with '0' (after 5 minutes without a new captcha request). */
+                toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.captchaNeeded', 'The game server asks the bots for a captcha.') + ' ' + _lmTH('game1.bots.captchaWait', 'The bots wait and try again in a few minutes.'))
                 break
             case 13:
                 /* The bot server cannot join this game server (not an agar.io arena). */
@@ -8134,32 +8084,33 @@ window.connectionBots = {
         }
     },
     onclose(event) {
-        document.getElementById('userStatus').style.color = '#DA0A00'
-        _lmG1set(document.getElementById('userStatus'), 'game1.bots.disconnected')
+        var failed = !this.opened
+        this.pending = null
+        this.setStatus('game1.bots.disconnected', '#DA0A00')
         document.getElementById('botsAI').style.color = '#DA0A00'
         document.getElementById('botsAI').innerText = lmT('game1.bots.disabled')
-        //document.getElementById('connect').disabled = false
-        document.getElementById('startBots').disabled = true
-        document.getElementById('stopBots').disabled = true
-        document.getElementById('startBots').style.display = 'inline'
-        document.getElementById('stopBots').style.display = 'none'
-        _lmG1set(document.getElementById('connectBots'), 'game1.bots.connect')
-        document.getElementById('connectBots').style.color = 'white'
+        this.buttons(false)
         window.userBots.startedBots = false
         window.userBots.startSent = false
+        window.userBots.spawned = 0
         window.bots.ai = false
         // Clean up Battle Royale fill state on bot server disconnect
         if (typeof window._brStopFilling === 'function') window._brStopFilling()
-        this.closeCaptcha()
-        toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game1.bots.wsClosed'))
+        /* never opened: the browser bots' code did not load, or no bot server at that address */
+        if (failed) toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.connectFailed', 'The bots cannot connect. Check the address: browser, or your bot server (ws://localhost:1337).'))
+        else toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game1.bots.wsClosed'))
     }
 }
-/* Stop the bot session, also while it is still starting (Start sent, no bot spawned yet). */
+/* Stop the bot session, also while it is still starting (Start sent, no bot spawned yet)
+   or still connecting for a Start / Fill lobby (cancelled). */
 window._lmBotsStop = function () {
+    window.connectionBots.cancel()
     if ((window.userBots.startedBots || window.userBots.startSent) && window.connectionBots.ws && window.connectionBots.ws.readyState === WebSocket.OPEN) {
         window.connectionBots.send(new Uint8Array([1]).buffer)
     }
     window.userBots.startSent = false
+    /* the bots leave: they are not counted in this server's lobby any more */
+    window.userBots.spawned = 0
 }
 window.gameBots = {
     url: '',
@@ -22847,7 +22798,7 @@ function thelegendmodproject() {
                 ':root{--lm-op:' + _lmCssNum(defaultSettings.menuOpacity, 0.1, 1, 0.96) + '}');
         },
         setMenuMainColor() {
-            var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,.main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
+            var css = '::-moz-selection{background-color:' + defaultSettings.menuMainColor + '!important}::selection{background-color:' + defaultSettings.menuMainColor + '!important}.menu-main-color,.main-color,#quick-menu a:hover,.quick,.quick:focus,.menu-tabs a:hover,.menu-tabs .active,.submenu-tabs a:hover,.submenu-tabs .active,#stats center,#exp-imp h1{color:' + defaultSettings.menuMainColor + '}#exp-bar .progress-bar-striped,.quick:hover,.rangeslider__fill{background-color:' + defaultSettings.menuMainColor + '}.quick.lm-quick-on{box-shadow:0 0 0 2px ' + defaultSettings.menuMainColor + '}#main-menu,.agario-side-panel,#hotkeys,#exp-imp{border-color:' + defaultSettings.menuMainColor + '}.picker-emoji-content::-webkit-scrollbar-thumb,.ps-scrollbar-y{background-color:' + defaultSettings.menuMainColor + '!important}';
             css += ':root{--lm-mc:' + _lmCssVal(defaultSettings.menuMainColor, '#01d9cc') + '}';
             /* Switchery paints a switch's colour inline when it is created, so a later theme change
              * never reached the switches: the switched-on colour now follows the theme */
@@ -24548,12 +24499,10 @@ function thelegendmodproject() {
             //defaultmapsettings.tweenMaxEffect ? initTilt() : console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Restart needed...');
         },
         /* ─── §4.4 Display Methods ─── */
+        /* On every server switch (LM.connect, right where integrity is set): the bots button (hidden,
+           its panel closed and its flag saved off), the Battle Royale button and HUD (syncQuickPanels). */
         displayPartyBots() {
-            /* The bots button stays on every server: the bots panel itself tells when a server
-               cannot take bots (Start / Fill lobby: "The bots work on agar.io servers only"). */
-            setTimeout(function () {
-                $(".quick.quick-bots.ogicon-trophy").show();
-            }, 50);
+            this.syncQuickPanels();
         },
         setBlockPopups() {
             if (this.protocolMode) {
@@ -26626,7 +26575,7 @@ function thelegendmodproject() {
                 '<div id="main-menu" class="agario-panel"><ul class="menu-tabs"><li class="start-tab active"><a href="#main-panel" class="active ogicon-home" data-toggle="tab-tooltip" title="' +
                 textLanguage.start + '"></a></li><li class="settings-tab"><a href="#og-settings" class="ogicon-cog" data-toggle="tab-tooltip" title="' + textLanguage.settings + '"></a></li><li class="theme-tab"><a href="#theme" class="ogicon-droplet" data-toggle="tab-tooltip" title="' + textLanguage.theme + '"></a></li><li class="hotkeys-tab"><a href="#" class="hotkeys-link ogicon-keyboard" data-toggle="tab-tooltip" title="' +
                 textLanguage.hotkeys + '"></a></li><li class="profile-tab"><a href="#profile" class="ogicon-user" data-toggle="tab-tooltip" title="' + textLanguage.profile + '"></a></li></ul><div id="main-panel" class="menu-panel"></div><div id="profile" class="menu-panel"></div><div id="og-settings" class="menu-panel"><div class="submenu-panel"></div></div><div id="theme" class="menu-panel"></div></div>');
-            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy"></a><a href="#" class="quick quick-custom-skin ogicon-trophy" style="display: none;"></a>' +
+            $("#main-panel").append('<a href="#" class="quick quick-menu ogicon-menu"></a><a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-br ogicon-target" style="display: none;"></a><a href="#" class="quick quick-custom-skin ogicon-trophy" style="display: none;"></a>' +
                 '<a href="#" class="quick quick-replay ogicon-file-play"></a>' +
                 '<a href="#" class="quick quick-skins ogicon-images"></a><div id="profiles"><div id="prev-profile"></div><div id="skin-preview"></div><div id="next-profile"></div></div>');
             $("#mainPanel div[role=form]").appendTo($("#main-panel"));
@@ -26796,46 +26745,33 @@ function thelegendmodproject() {
                 (window.legendModFromWebsite ? '<a id="PrivacyLink" href="https://help.expanding.land/" target="_blank" class="fa fa-question-circle" data-toggle="tab-tooltip" data-container="body" data-placement="left" title=""' + _lmG1a('data-original-title', 'game1.menu.help') + '></a>' : ''));
             //'<a id= "LegendClanDiscord" href="https://discord.gg/CbMkY77" target="_blank" class="fa fa-globe" data-toggle="tab-tooltip" data-container="body" data-placement="left" title="" data-original-title="Legend clan Discord"></a></div>');
 
-            //<input type="number" id="captchaSpeed" value="1" step="1" placeholder="CPU cores" min=1 max=${CPUamount} spellcheck="false" style="display:inline-block;">
-            //<span id="captchaErrors" style="display:inline-block;">Errors: <span id="captchaErrors1">0</span></span>
-            //<div2><button id="instant" class="btn btn-success">Instant (only for testers)</button></div2>
-            //var CPUamount=window.navigator.hardwareConcurrency-1;
-            // i18n-ok: the bots panel below: "Repl.it VPS" is a product name, "browser" and ws://localhost:1337 are values to type, every other text comes from the packs
-            $(".left-container").append(`<div id="quick-bots" class="agario-panel agario-side-panel"><h2 id="botsInfo"></h2>									
+            // i18n-ok: the bots panel below: "browser" and ws://localhost:1337 are values to type, every other text comes from the packs
+            $(".left-container").append(`<div id="quick-bots" class="agario-panel agario-side-panel"><h2 id="botsInfo"></h2>
 					<h5 id="botsAuthor" class="main-color">${_lmG1s('game1.bots.title')}</h5>
 					<div id="botClient" style="margin-left:15px; margin-right:15px; font-family: Tahoma; color: rgb(255, 255, 255); z-index: 9999; border-radius: var(--lm-radius,6px); min-height: 16px; min-width: 200px; background-color: rgba(2, 0, 0, 0.4);">
 					<div><b>${_lmG1s('game1.bots.count')}</b>: <span id="botCount" class="label label-info pull-right">${_lmG1e(lmT('game1.bots.waiting'))}</span></div>
-					<b><div><b>${_lmG1s('game1.bots.slots')}</b>: <span id="slots" class="label label-info pull-right">${_lmG1e(lmT('game1.bots.waiting'))}</span></div>
-					<b><div><b>${_lmG1s('game1.bots.tokens')}</b>: <span id="captchatokens" class="label label-info pull-right">0</span></div>
-					</b></div>	
+					<div><b>${_lmG1s('game1.bots.onServer')}</b>: <span id="botsServerPlayers" class="label label-info pull-right">${_lmG1e(lmT('game1.bots.waiting'))}</span></div>
+					</div>
 					<span id="statusTextBots">${_lmG1s('game1.bots.status')} <b id="userStatus" data-i18n="game1.bots.disconnected">${_lmG1e(lmT('game1.bots.disconnected'))}</b></span>
 					<span id="aiTextBots">${_lmG1s('game1.bots.ai')} <b id="botsAI">${_lmG1e(lmT('game1.bots.disabled'))}</b></span>
 					<br>
 					<input type="text" id="botsNameLM" ${_lmG1a('placeholder', 'game1.bots.namePh')} maxlength="15" spellcheck="false" style="display:inline-block;">
 					<input type="number" id="botsAmount" ${_lmG1a('placeholder', 'game1.bots.amountPh')} min="1" max="190" spellcheck="false">
-
-					
 					<input type="text" id="botsRemoteIP" placeholder="browser" list="botsRemoteIPList" maxlength="100" spellcheck="false"${_lmG1a('title', 'game1.bots.hostTip')}>
 					<datalist id="botsRemoteIPList"><option value="browser" data-i18n="game1.bots.hostBrowser">${_lmG1e(lmT('game1.bots.hostBrowser'))}</option><option value="ws://localhost:1337" data-i18n="game1.bots.hostServer">${_lmG1e(lmT('game1.bots.hostServer'))}</option></datalist>
 					<br>
-					<button id="connectBots" class="btn btn-success" data-i18n="game1.bots.connect">${_lmG1e(lmT('game1.bots.connect'))}</button>
-					<br>
-					<button id="startBots" class="btn btn-primary btn" disabled data-i18n="game1.bots.start">${_lmG1e(lmT('game1.bots.start'))}</button>
-					
-					<button id="stopBots" class="btn btn-danger" data-i18n="game1.bots.stop">${_lmG1e(lmT('game1.bots.stop'))}</button>
-					<br>
+					<button id="startBots" class="btn btn-primary btn" data-i18n="game1.bots.start">${_lmG1e(lmT('game1.bots.start'))}</button>
+					<button id="stopBots" class="btn btn-danger" disabled data-i18n="game1.bots.stop">${_lmG1e(lmT('game1.bots.stop'))}</button>
+					</div>`);
+            /* Battle Royale HUD: its own panel (opens by itself on agar.io Battle Royale, see syncQuickPanels); Fill lobby uses the bots settings above */
+            $(".left-container").append(`<div id="quick-br" class="agario-panel agario-side-panel" style="display:none"><h2 id="brInfo"></h2>
+					<h5 id="brHudTitle" class="main-color">${_lmG1s('game2.brHudTitle')}</h5>
 					<div id="brBotsSection" style="display:none;margin:8px 15px;padding:8px;border-radius:var(--lm-radius,6px);background:var(--lm-pc2,rgba(0,0,0,0.3))">
-					<b style="color:var(--lm-tc-h,#ff9800)">⚔ <span data-i18n="game2.brLobbyTitle">${_lmG1e(lmT('game2.brLobbyTitle'))}</span></b><br>
+					<b style="color:var(--lm-tc-h,#ff9800)"><span data-i18n="game2.brLobbyTitle">${_lmG1e(lmT('game2.brLobbyTitle'))}</span></b><br>
 					<span id="brLobbyStatus" style="font-size:12px" data-i18n="game2.brWaitingData">${_lmG1e(lmT('game2.brWaitingData'))}</span><br>
 					<button id="brFillLobby" class="btn btn-warning btn-sm" style="margin-top:4px" data-i18n="game2.brFillLobby">${_lmG1e(lmT('game2.brFillLobby'))}</button>
 					<button id="brStopFill" class="btn btn-danger btn-sm" style="margin-top:4px;display:none" data-i18n="game2.brStop">${_lmG1e(lmT('game2.brStop'))}</button>
-					</div>				
-					<br><u><a href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2" target="_blank">${_lmG1s('game1.bots.install')}</a></u>	
-					<u><a href="https://www.youtube.com/watch?v=rQMhxwIytro&feature=youtu.be" target="_blank">${_lmG1s('game1.bots.tutPc')}</a></u>	
-					<u><a href="https://repl.it/@legendmod/party-bots" target="_blank">Repl.it VPS</a></u>	
-					<u><a href="https://www.youtube.com/watch?v=xIupgFR7ZTY" target="_blank">${_lmG1s('game1.bots.tutRepl')}</a></u>	
-					<br>
-					<div2><i>${_lmG1s('game1.bots.tip')}</i></div2>					
+					</div>
 					</div>`);
             if (!this.protocolMode) $("#quick-menu").prepend('<a href="#" class="quick-shop ogicon-cart" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_shop + '"></a><a href="#" class="quick-free-coins ogicon-coin-dollar" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_menu_main_free_coins + '"></a><a href="#" class="quick-free-gifts ogicon-gift" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_menu_main_gifts + '"></a><a href="#" class="quick-quests ogicon-trophy" data-toggle="tab-tooltip" data-placement="left" title="' + textLanguage.page_menu_main_dailyquests + '"></a>');
             $(".party-dialog, .partymode-info").remove();
@@ -27478,24 +27414,6 @@ function thelegendmodproject() {
 
         },
         setUI() {
-            /*$("#instant").click(function() {			
-                if (!window.iframereplitCreated){
-                    window.iframereplitCreated=true						
-                $("#instant").html('<iframe frameborder="0px" width="120px" height="40" src="https://repl.it/@legendmod/party-bots-CleverBots?lite=true"></iframe>')
-                toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + 'If <font color="green"><b>GREEN</b></font> button appears, click it!');
-                if (legendmod.gameMode!="party"){
-                    $("#create-party-btn-2").click()
-                }
-                setTimeout(function() {					
-                    $("#botsRemoteIP").val("wss://party-bots-CleverBots--legendmod.repl.co")
-                    window.SERVER_HOST="wss://party-bots-CleverBots--legendmod.repl.co"
-                    $("#connectBots").click()
-                }, 8000);	
-                setTimeout(function() {
-                    $("#startBots").click()
-                }, 10000);				
-                }
-            });	*/
             var app = this;
             $(document).on("click", ".menu-tabs a", function (event) {
                 event.preventDefault();
@@ -27505,19 +27423,12 @@ function thelegendmodproject() {
                 event.preventDefault();
                 app.switchMenuTabs($(this), "submenu-panel");
             });
-            $(document).on("click", ".quick-menu", function (event) {
+            /* the three quick HUD buttons work as tabs (toggleQuickPanel); blur: no focus ring stays on a closed one */
+            $(document).on("click", ".quick-menu, .quick-bots, .quick-br", function (event) {
                 event.preventDefault();
-                defaultmapsettings.showQuickMenu = !defaultmapsettings.showQuickMenu;
-                //defaultmapsettings.showQuickBots=false;
-                app.saveSettings(defaultmapsettings, "ogarioSettings");
-                app.setShowQuickMenu();
-            });
-            $(document).on("click", ".quick-bots", function (event) {
-                event.preventDefault();
-                defaultmapsettings.showQuickBots = !defaultmapsettings.showQuickBots;
-                //defaultmapsettings.showQuickMenu=false;
-                app.saveSettings(defaultmapsettings, "ogarioSettings");
-                app.setShowQuickBots();
+                if (this.blur) this.blur();
+                var $b = $(this);
+                app.toggleQuickPanel($b.hasClass("quick-br") ? "br" : $b.hasClass("quick-bots") ? "bots" : "menu");
             });
             $(document).on("click", ".quick-replay", function (event) {
                 event.preventDefault();
@@ -28178,24 +28089,95 @@ function thelegendmodproject() {
                 $("#skin").removeClass("hide-url");
             }
         },
-        setShowQuickMenu() {
-            if (defaultmapsettings.showQuickMenu) {
-                $("#quick-menu").fadeIn(500);
-            } else {
-                $("#quick-menu").fadeOut(500);
-            }
-            if (defaultmapsettings.showQuickBots) {
-                $("#quick-bots").hide();
+        /* ─── Quick HUDs: the quick menu, the bots panel and the Battle Royale panel ───
+         * They share one place, so they work like tabs: at most one is open. A click on a closed
+         * one's button opens it and closes the others; a click on the open one's button closes it.
+         * Its button has the active ring (lm-quick-on) only while it is open. The saved flags
+         * (showQuickMenu, showQuickBots) always equal what is shown. The Battle Royale HUD is not
+         * saved: it opens by itself on agar.io Battle Royale, and the HUD open before it
+         * (localStorage lmQuickBeforeBR, kept apart from the flags) comes back when the player
+         * leaves Battle Royale with it still open. Shown and hidden at once (no queued fades). */
+        _lmQuickIds: { menu: ['#quick-menu', '.quick.quick-menu'], bots: ['#quick-bots', '.quick.quick-bots'], br: ['#quick-br', '.quick.quick-br'] },
+        /* the open HUD: 'menu', 'bots', 'br' or null */
+        quickOpenPanel() {
+            var s = defaultmapsettings;
+            return this._lmQuickBR ? 'br' : s.showQuickBots ? 'bots' : s.showQuickMenu ? 'menu' : null;
+        },
+        applyQuickPanels() {
+            var s = defaultmapsettings, ids = this._lmQuickIds;
+            if (this._lmQuickBR) { s.showQuickMenu = false; s.showQuickBots = false; }
+            else if (s.showQuickMenu && s.showQuickBots) s.showQuickBots = false;
+            var open = this.quickOpenPanel();
+            for (var k in ids) {
+                $(ids[k][0]).stop(true, true).toggle(open === k);
+                $(ids[k][1]).toggleClass('lm-quick-on', open === k);
             }
         },
+        /* open one HUD ('menu', 'bots', 'br') or none (null); the flags are saved when they change */
+        setQuickPanel(which) {
+            var s = defaultmapsettings, before = !!s.showQuickMenu + ',' + !!s.showQuickBots;
+            s.showQuickMenu = which === 'menu';
+            s.showQuickBots = which === 'bots';
+            this._lmQuickBR = which === 'br';
+            if (before !== s.showQuickMenu + ',' + s.showQuickBots) this.saveSettings(s, 'ogarioSettings');
+            this.applyQuickPanels();
+        },
+        toggleQuickPanel(which) {
+            this.setQuickPanel(this.quickOpenPanel() === which ? null : which);
+        },
+        setShowQuickMenu() {
+            this.applyQuickPanels();
+        },
         setShowQuickBots() {
-            if (defaultmapsettings.showQuickBots) {
-                $("#quick-bots").fadeIn(500);
-            } else {
-                $("#quick-bots").fadeOut(500);
+            this.applyQuickPanels();
+        },
+        /* the HUD open before Battle Royale: no argument reads it (undefined: none kept), null forgets it */
+        _lmQuickBefore(value) {
+            try {
+                if (value === undefined) { var v = localStorage.getItem('lmQuickBeforeBR'); return v === null ? undefined : v; }
+                if (value === null) localStorage.removeItem('lmQuickBeforeBR');
+                else localStorage.setItem('lmQuickBeforeBR', value);
+            } catch (e) { }
+        },
+        /* The buttons and the automatic Battle Royale HUD follow the game server. The bots button
+         * is hidden on every server (the owner's choice; the bots work on agar.io arenas only:
+         * legendmod.integrity), so the bots panel stays closed and its flag off; the bot connection
+         * still serves Fill lobby. The Battle Royale button shows on agar.io Battle Royale only.
+         * Runs on every connect (displayPartyBots) and every half second (the mode changes on many
+         * paths: mode select, Join, URL, reconnect). */
+        _lmQuickBotsButton: false,
+        syncQuickPanels() {
+            var lm = window.legendmod, agar = !!(lm && lm.integrity), known = !!(lm && lm.ws);
+            var inBR = agar && known && lm.gameMode === ':battleroyale';
+            var bots = !!this._lmQuickBotsButton && agar;
+            var buttons = bots + ',' + inBR;
+            if (buttons !== this._lmQuickButtons) {
+                this._lmQuickButtons = buttons;
+                $('.quick.quick-bots.ogicon-trophy').toggle(bots);
+                $('.quick.quick-br').toggle(inBR);
             }
-            if (defaultmapsettings.showQuickBots) {
-                $("#quick-menu").hide();
+            if (known && inBR !== this._lmQuickInBR) this._lmQuickSwitchBR(inBR);
+            if (known && !inBR && this._lmQuickBR) this.setQuickPanel(null);
+            /* a hidden button: its panel is closed too (also after a settings import or a profile) */
+            if (!bots && defaultmapsettings.showQuickBots) {
+                defaultmapsettings.showQuickBots = false;
+                this.saveSettings(defaultmapsettings, 'ogarioSettings');
+                this.applyQuickPanels();
+            }
+        },
+        /* entering or leaving agar.io Battle Royale */
+        _lmQuickSwitchBR(inBR) {
+            var first = this._lmQuickInBR === undefined;
+            this._lmQuickInBR = inBR;
+            var before = this._lmQuickBefore();
+            if (inBR) {
+                /* entering: remember the HUD open now (after a reload in Battle Royale the first one stays) */
+                if (before === undefined) this._lmQuickBefore(this.quickOpenPanel() || 'none');
+                this.setQuickPanel('br');
+            } else if (before !== undefined) {
+                /* leaving (or the first server after a reload in Battle Royale): the HUD from before comes back */
+                this._lmQuickBefore(null);
+                if (this._lmQuickBR || first) this.setQuickPanel(before === 'menu' || before === 'bots' ? before : null);
             }
         },
         setShowSkinsPanel() {
@@ -36656,6 +36638,10 @@ function thelegendmodproject() {
                 Settings.setChatPosition();
             }
             this.setShowQuickMenu();
+            /* the bots and Battle Royale buttons follow the game server (hidden until an agar.io connection) */
+            this.syncQuickPanels();
+            var _lmQuickApp = this;
+            setInterval(function () { _lmQuickApp.syncQuickPanels(); }, 500);
             this.setShowSkinsPanel();
             this.setProfile();
             this.setMainButtons();
@@ -41509,6 +41495,8 @@ function thelegendmodproject() {
             }
             this.ws = t;
             this.integrity = (this.ws.indexOf('agario.miniclippt') > -1 || this.ws.indexOf('agar.io') > -1 || (this.ws.indexOf('live-arena') > -1 && this.ws.indexOf('agar2.com') === -1)); // 2026 JIMBOY3100
+            /* bots button and panel: shown on agar.io only (every server switch passes here) */
+            if (this === window.legendmod) application.displayPartyBots();
             this.serverType = _earlyType;
 
             this._worldSpectatePending =
@@ -41585,7 +41573,6 @@ function thelegendmodproject() {
                     application.sendServerJoin();
                     application.sendServerData();
                     application.displayLeaderboard('');
-                    application.displayPartyBots();
                     application.setUniversalChat();
                     application.setAnimatedRainbowColor();
                     if (window.master && window.master.onConnect) window.master.onConnect();
@@ -41610,7 +41597,6 @@ function thelegendmodproject() {
                 application.sendServerJoin();
                 application.sendServerData();
                 application.displayLeaderboard('');
-                application.displayPartyBots();
                 application.setUniversalChat();
                 application.setAnimatedRainbowColor();
                 if (window.master && window.master.onConnect) window.master.onConnect();
@@ -41751,7 +41737,6 @@ function thelegendmodproject() {
                 application.sendServerJoin();
                 application.sendServerData();
                 application.displayLeaderboard('');
-                application.displayPartyBots();
                 application.setUniversalChat();
                 application.setAnimatedRainbowColor();
                 if (window.master && window.master.onConnect) window.master.onConnect();
@@ -41906,7 +41891,6 @@ function thelegendmodproject() {
             application.sendServerJoin();
             application.sendServerData();
             application.displayLeaderboard('');
-            application.displayPartyBots();
             application.setUniversalChat();
             application.setAnimatedRainbowColor();
 
@@ -43886,89 +43870,6 @@ function thelegendmodproject() {
                 }
             }, 1800);
 
-        },
-        sendTimeOutTokenForBots() {
-            //window.sendTimeOutTokenBots=false;
-            /* Runs only while the bot server is in captcha mode (message 12); stops on stop/disconnect. */
-            if (window.connectionBots.captchaActive && document.getElementById('userStatus').getAttribute('data-i18n') === 'game1.bots.connected' && window.RequestedTokens > 1) {
-                setTimeout(function () {
-                    legendmod.sendTimeOutTokenForBots();
-                    //console.log('sendTimeOutTokenForBots triggered')
-                    if (!window.sendTimeOutTokenBots) {
-                        //window.RequestedTokens=1000;
-                        //this code is to inform me when a new loop process starts again
-                        console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' bots started again')
-                        legendmod.sendTokenForBots();
-                        /*
-                        $('#captchaErrors1').text(parseInt($('#captchaErrors1').text())+1)
-                        legendmod.sendTokenForBots();
-                        if ($('#captchaSpeed').val()) {
-                            window.tempol = $('#captchaSpeed').val();
-                        } else {
-                            window.tempol = 0.5;
-                            $('#captchaSpeed').val(window.tempol)
-                        }
-                        */
-                    }
-                    //}, 10000 + window.tempol * 1000);
-                }, 10000);
-            } else {
-                //setTimeout(function() {	
-                window.sendFirstTimeTokenBots = false
-                //}, 100);
-            }
-        },
-        sendSpawn2(temp) {
-            var token = temp
-            window.botsSpawncodeNum++;
-            window.botsSpawncode[window.botsSpawncodeNum] = token;
-
-            if (document.getElementById('userStatus').getAttribute('data-i18n') === 'game1.bots.connected' && window.RequestedTokens > 1) {
-                window.RequestedTokens--;
-                $('#captchatokens').html(parseInt($('#captchatokens').html()) + 1);
-                //setTimeout(function() {
-                legendmod.sendTokenForBots();
-                //}, 100);
-                //window.sendTimeOutTokenBots	= true;			
-            }
-            window.connectionBots.send(JSON.stringify({
-                "message": "botscode",
-                "msg": JSON.stringify(token)
-                //"msg": JSON.stringify(window.botsSpawncode[window.botsSpawncodeNum])
-            }));
-            //self.sendMessage(view);			
-        },
-        sendTokenForBots() {
-
-            /*legendmod.botscaptcha = true;
-            window.sendTimeOutTokenBots = false;
-            if ($('#captchaSpeed').val()) {
-                window.tempol = $('#captchaSpeed').val();
-            }
-            setTimeout(function() {*/
-            for (var i = 0; i < window.captchaOpenedWindow; i++) {
-                if (legendmod.integrity && window.capthaWindow[i] && !window.capthaWindow[i].closed) {
-                    /* The helper may not be loaded (yet, or at all): do not throw. */
-                    try {
-                        if (typeof window.capthaWindow[i].ProcessParentMessage === 'function') {
-                            window.capthaWindow[i].ProcessParentMessage('doCaptcha');
-                        }
-                    } catch (e) { }
-                } else if (legendmod.integrity && window.capthaWindow[i] && window.capthaWindow[i].closed) {
-                    createCaptchaWindow(i)
-                }
-
-            }
-            //}, 500);			
-
-            /*this.integrity && window.agarCaptcha.requestCaptchaV3("play", function(token) {
-
-                if(window.capthaWindow) window.capthaWindow.ProcessParentMessage('doCaptcha');
-                setTimeout(function() {
-                    legendmod.sendSpawn2(token);
-                }, window.tempol * 1000);
-                //window.core.sendNick(nick, token)
-            })*/
         },
         sendNick2(nick) {
             if (ogario.play) {
@@ -86170,15 +86071,6 @@ function setGUIEvents() {
     if (storedbotsRemoteIP == null || storedbotsRemoteIP === "") {
         storedbotsRemoteIP = "browser";
     }
-    window.captchaOpenedWindow = 1;
-    /*var captchaSpeed = localStorage.getItem("captchaSpeed2");
-    if (captchaSpeed ==null || captchaSpeed === "null" || captchaSpeed === ""){
-        window.captchaOpenedWindow = 1
-    }
-    else{	
-        window.captchaOpenedWindow = parseInt(captchaSpeed, 10);
-        $('#captchaSpeed').val(window.captchaOpenedWindow)
-    }*/
     window.bots.remoteIP = storedbotsRemoteIP
     window.SERVER_HOST = storedbotsRemoteIP;
     $('#botsRemoteIP').val(storedbotsRemoteIP)
@@ -86196,10 +86088,6 @@ function setGUIEvents() {
     /* localStorage returns a string; "50" + 20 would concatenate to "5020". */
     window.bots.amount = Number(storedbotsamount) || 50;
     $('#botsAmount').val(window.bots.amount)
-    /*document.getElementById('captchaSpeed').addEventListener('change', function() {
-        window.captchaOpenedWindow = $('#captchaSpeed').val()
-        localStorage.setItem('captchaSpeed2', $('#captchaSpeed').val())
-    })*/
     document.getElementById('botsRemoteIP').addEventListener('change', function () {
         window.bots.remoteIP = this.value
         localStorage.setItem('localstoredBotsRemoteIP', window.bots.remoteIP)
@@ -86215,42 +86103,68 @@ function setGUIEvents() {
         window.bots.amount = Number(this.value)
         localStorage.setItem('localStoredBotsAmount', window.bots.amount)
     })
-    document.getElementById('connectBots').addEventListener('click', () => {
-        if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) window.connectionBots.connect()
-    })
-    document.getElementById('startBots').addEventListener('click', () => {
-        if (legendmod.ws && window.EnvConfig.configVersion && window.master.clientVersion && !window.userBots.startedBots) {
-            /* The bots join agar.io game servers only (they need its connection key). */
-            if (!legendmod.integrity) {
-                toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.agarOnly', 'The bots work on agar.io servers only.'))
-                return
-            }
-            if (window.userBots.startSent) {
-                toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brBotsRunning', 'Bots already running'))
-                return
-            }
-            if (legendmod.gameMode === ":party" || legendmod.gameMode === ":ffa" || legendmod.gameMode === ":experimental" || legendmod.gameMode === ":battleroyale" || $("#nick").val().includes('?') && $("#clantag").val() === window.clanTagLc || window.AdminRights === 1 || window.IamNeo === true) {
-                if (window.bots.amount) {
-                    /* Clamp this session only: the saved amount stays what the user typed. */
-                    var _lmBotsN = Math.max(1, Math.min(window.bots.amount, 197 - legendmod.leaderboard.length));
-                    if (typeof window._brResetFill === 'function') window._brResetFill()
-                    window.userBots.startSent = true
-                    window.userBots.sessionAmount = _lmBotsN
-                    //if (window.bots.nameLM && window.bots.amount && window.getComputedStyle(document.getElementsByClassName('btn-login-play')[0]).getPropertyValue('display') === 'none') {
-                    //window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), window.bots.amount))
-                    window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), _lmBotsN))
-
-                    if (legendmod.gameMode != ":party") window.connectionBots.send(window.buffers.sendMode(window.unescape(window.encodeURIComponent(ogarcopythelb.nick))))
-                    //window.connectionBots.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.botsSpawncode[window.botsSpawncodeNum], window.bots.amount))                     					
-                } else toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.botsAmount'))
-            } else {
-                toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game2.botsPartyOnly'))
-            }
+    /* Start: one click. Checks first, then connects to the bots when needed (browser worker or
+       the bot server of the address field: connectionBots.ensure) and starts once connected
+       (onopen runs botsStart again). Double clicks: the Start button is hidden from the first
+       click (Stop instead) and a Start already waiting for the connection is not repeated. */
+    function botsStart() {
+        var cb = window.connectionBots
+        var refuse = function (html) {
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + html)
+            cb.buttons(false)
         }
-    })
+        if (window.userBots.startedBots || window.userBots.startSent) {
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brBotsRunning', 'Bots already running'))
+            return
+        }
+        if (cb.pending === 'start') return
+        if (!legendmod.ws || !window.EnvConfig.configVersion || !window.master.clientVersion) return refuse(_lmTH('game2.brNoGameServer', 'Not connected to game server'))
+        /* The bots join agar.io game servers only (they need its connection key); every agar.io mode. */
+        if (!legendmod.integrity) return refuse(_lmTH('game1.bots.agarOnly', 'The bots work on agar.io servers only.'))
+        if (!window.bots.amount) return refuse(lmT('game2.botsAmount'))
+        if (typeof window._brResetFill === 'function') window._brResetFill()
+        cb.buttons(true)
+        if (!cb.ensure('start')) return
+        /* Clamp this session only: the saved amount stays what the user typed. */
+        var _lmBotsN = Math.max(1, Math.min(window.bots.amount, 197 - legendmod.leaderboard.length));
+        window.userBots.startSent = true
+        window.userBots.sessionAmount = _lmBotsN
+        cb.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), _lmBotsN))
+        if (legendmod.gameMode != ":party") cb.send(window.buffers.sendMode(window.unescape(window.encodeURIComponent(ogarcopythelb.nick))))
+    }
+    window._lmBotsStart = botsStart
+    document.getElementById('startBots').addEventListener('click', () => botsStart())
     document.getElementById('stopBots').addEventListener('click', () => {
         window._lmBotsStop()
     })
+
+    /* "On this server": the players of the game server. agar.io sends the whole leaderboard (every
+       player in the arena, opcode 53), so it is counted like the leaderboard footer: a name that
+       appears more than twice is a group of bots. Battle Royale: the lobby's player count (178).
+       No capacity: agar.io sends none, so none is made up. Other servers: their board is a top 10 only. */
+    function botsServerPlayersText() {
+        var lm = window.legendmod
+        if (!lm || !lm.ws) return lmT('game1.bots.waiting')
+        if (!lm.integrity) return '-'
+        var count = function (n, one, many) { return lmT(n === 1 ? one : many, [n]) }
+        if (lm.gameMode === ':battleroyale') {
+            var brN = lm.battleRoyale && lm.battleRoyale.players
+            return brN ? count(brN, 'game2.sbPlayer', 'game2.sbPlayers') : lmT('game1.bots.waiting')
+        }
+        var lb = lm.leaderboard || []
+        if (!lb.length) return lmT('game1.bots.waiting')
+        var seen = Object.create(null), bots = 0, i
+        for (i = 0; i < lb.length; i++) { var k = '#' + (lb[i] && lb[i].nick); seen[k] = (seen[k] || 0) + 1 }
+        for (var name in seen) if (seen[name] > 2) bots += seen[name]
+        return count(lb.length - bots, 'game2.sbPlayer', 'game2.sbPlayers') + (bots > 0 ? ' · ' + count(bots, 'game2.sbBot', 'game2.sbBots') : '')
+    }
+    window._lmBotsServerPlayersText = botsServerPlayersText
+    setInterval(function () {
+        var el = document.getElementById('botsServerPlayers')
+        if (!el || !$('#quick-bots').is(':visible')) return
+        var text = botsServerPlayersText()
+        if (el.textContent !== text) el.textContent = text
+    }, 1000)
 
     /* ─── Battle Royale lobby fill ─── */
     window._brFilling = false
@@ -86268,7 +86182,11 @@ function setGUIEvents() {
         /* 178 sends the players of the lobby before the battle too; 176 = countdown, 177 = battle begun. */
         if (br.players || br.started || br.countdown) {
             var stateStr = br.started ? _lmTH('game2.brStateInGame', 'In game') : br.countdown ? _lmTH('game2.brStateStarting', 'Starting') : _lmTH('game2.brStateWaiting', 'Waiting')
-            status.textContent = _lmTH('game2.brPlayers', 'Players: {0} | State: {1}').replace('{0}', br.players).replace('{1}', stateStr)
+            /* our bots in the lobby: the spawned bots of this session (message 4), never more than the lobby */
+            var ours = window.userBots.startedBots || window.userBots.startSent ? Math.min(window.userBots.spawned || 0, br.players || 0) : 0
+            status.textContent = ours > 0
+                ? _lmTH('game2.brPlayersBots', 'Players: {0} ({1} real + {2} bots) | State: {3}').replace('{0}', br.players).replace('{1}', br.players - ours).replace('{2}', ours).replace('{3}', stateStr)
+                : _lmTH('game2.brPlayers', 'Players: {0} | State: {1}').replace('{0}', br.players).replace('{1}', stateStr)
         } else {
             status.textContent = _lmTH('game2.brNotInLobby', 'Not in lobby yet')
         }
@@ -86277,7 +86195,7 @@ function setGUIEvents() {
     /* Forget a fill (buttons, watcher) without touching the bots: after Stop bots, a manual
        Start or the end of the session, so the watcher can never stop bots started by hand. */
     function brResetFill() {
-        window._brFillPending = false
+        if (window.connectionBots.pending === 'fill') window.connectionBots.pending = null
         if (!window._brFilling && !window._brLobbyWatcher) return false
         window._brFilling = false
         if (window._brLobbyWatcher) { clearInterval(window._brLobbyWatcher); window._brLobbyWatcher = null }
@@ -86293,10 +86211,12 @@ function setGUIEvents() {
     }
     window._brStopFilling = brStopFilling
     window._brResetFill = brResetFill
-    /* The "Solve captcha" button of the captcha notice (message 12): the popups open from this click. */
-    $(document).on('click', '.lm-bots-captcha-open', function () { window.connectionBots.startCaptcha() })
 
-    document.getElementById('brFillLobby').addEventListener('click', () => {
+    /* Fill lobby: one click. Like Start, it connects through connectionBots.ensure('fill') and
+       runs again once connected (onopen); every check is made again then. */
+    function brFill() {
+        var cb = window.connectionBots
+        if (cb.pending === 'fill') return
         if (legendmod.gameMode !== ':battleroyale') {
             toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brModeRequired', 'Battle Royale mode required'))
             return
@@ -86305,17 +86225,11 @@ function setGUIEvents() {
             toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.agarOnly', 'The bots work on agar.io servers only.'))
             return
         }
-        if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) {
-            window._brFillPending = true
-            window.connectionBots.connect()
-            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brConnecting', 'Connecting to bot server…'))
-            return
-        }
         if (!legendmod.ws || !window.EnvConfig.configVersion || !window.master.clientVersion) {
             toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brNoGameServer', 'Not connected to game server'))
             return
         }
-        if (window.userBots.startedBots || window.userBots.startSent) {
+        if (window.userBots.startedBots || window.userBots.startSent || cb.pending === 'start') {
             toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brBotsRunning', 'Bots already running'))
             return
         }
@@ -86340,11 +86254,15 @@ function setGUIEvents() {
             return
         }
         needed = Math.min(needed, 190)
+        if (!cb.ensure('fill')) {
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brConnecting', 'Connecting to bot server…'))
+            return
+        }
         /* This session only: the user's own bot amount setting is not changed. */
         window.userBots.startSent = true
         window.userBots.sessionAmount = needed
-
-        window.connectionBots.send(window.buffers.startBots(
+        cb.buttons(true)
+        cb.send(window.buffers.startBots(
             legendmod.ws,
             window.gameBots.protocolVersion,
             window.gameBots.clientVersion,
@@ -86352,7 +86270,7 @@ function setGUIEvents() {
             window.unescape(window.encodeURIComponent(window.bots.nameLM)),
             needed
         ))
-        window.connectionBots.send(window.buffers.sendMode(window.unescape(window.encodeURIComponent(ogarcopythelb.nick))))
+        cb.send(window.buffers.sendMode(window.unescape(window.encodeURIComponent(ogarcopythelb.nick))))
 
         window._brFilling = true
         document.getElementById('brFillLobby').style.display = 'none'
@@ -86375,12 +86293,14 @@ function setGUIEvents() {
                 brStopFilling()
             }
         }, 2000)
-    })
+    }
+    window._lmBrFill = brFill
+    document.getElementById('brFillLobby').addEventListener('click', () => brFill())
 
     document.getElementById('brStopFill').addEventListener('click', brStopFilling)
 
-    // Update BR section visibility when mode changes (check every 3s)
-    setInterval(brUpdateSection, 3000)
+    // Update the BR section (visibility, players and our bots) every second
+    setInterval(brUpdateSection, 1000)
 }
 
 

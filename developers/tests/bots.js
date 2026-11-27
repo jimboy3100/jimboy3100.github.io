@@ -739,9 +739,10 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: _lmBotsStop extractable', !!stopSrc);
     const stopCase = (startedBots, startSent, readyState) => {
         const sent = [];
-        const w = { userBots: { startedBots, startSent }, connectionBots: { ws: readyState == null ? null : { readyState }, send: b => sent.push(ab(b)) } };
+        let cancels = 0;
+        const w = { userBots: { startedBots, startSent }, connectionBots: { ws: readyState == null ? null : { readyState }, send: b => sent.push(ab(b)), cancel() { cancels++; } } };
         run(stopSrc + '; window._lmBotsStop()', { window: w, WebSocket: { OPEN: 1 }, Uint8Array });
-        return { sent, startSent: w.userBots.startSent };
+        return { sent, startSent: w.userBots.startSent, cancels };
     };
     let r = stopCase(true, false, 1);
     check('ogario: _lmBotsStop sends [1] when bots run', r.sent.length === 1 && r.sent[0].equals(Buffer.from([1])));
@@ -749,6 +750,7 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: _lmBotsStop sends [1] while bots are starting', r.sent.length === 1 && r.startSent === false);
     r = stopCase(false, false, 1);
     check('ogario: _lmBotsStop sends nothing when nothing runs', r.sent.length === 0);
+    check('ogario: _lmBotsStop always cancels a Start / Fill still connecting', r.cancels === 1);
     r = stopCase(true, true, 3);
     check('ogario: _lmBotsStop does not send on a closed socket, clears startSent', r.sent.length === 0 && r.startSent === false);
     r = stopCase(true, true, null);
@@ -759,16 +761,18 @@ for (const file of ['server.js', 'server-fast.js']) {
     const resetSrc = extract('function brResetFill()');
     const stopFillSrc = extract('function brStopFilling()');
     check('ogario: brResetFill and brStopFilling extractable', !!resetSrc && !!stopFillSrc);
-    const brCase = (filling, watcher, call) => {
+    const brCase = (filling, watcher, call, pending) => {
         const els = { brFillLobby: el(), brStopFill: el() };
         els.brFillLobby.style.display = 'none'; els.brStopFill.style.display = '';
         let cleared = null, stops = 0;
-        const w = { _brFilling: filling, _brLobbyWatcher: watcher, _brFillPending: true, _lmBotsStop() { stops++; } };
+        const w = { _brFilling: filling, _brLobbyWatcher: watcher, connectionBots: { pending: pending === undefined ? 'fill' : pending }, _lmBotsStop() { stops++; } };
         const result = run(resetSrc + '\n' + stopFillSrc + '\n' + call, { window: w, document: { getElementById: id => els[id] || null }, clearInterval: id => { cleared = id; } });
         return { result, w, els, cleared, stops };
     };
     r = brCase(false, null, 'brResetFill()');
-    check('ogario: brResetFill returns false when nothing runs, clears pending', r.result === false && r.w._brFillPending === false && r.stops === 0);
+    check('ogario: brResetFill returns false when nothing runs, forgets a Fill waiting for the connection', r.result === false && r.w.connectionBots.pending === null && r.stops === 0);
+    r = brCase(false, null, 'brResetFill()', 'start');
+    check('ogario: brResetFill keeps a Start waiting for the connection', r.w.connectionBots.pending === 'start');
     r = brCase(true, 42, 'brResetFill()');
     check('ogario: brResetFill clears fill and watcher, restores buttons, sends nothing', r.result === true && r.w._brFilling === false && r.w._brLobbyWatcher === null && r.cleared === 42 &&
         r.els.brFillLobby.style.display === '' && r.els.brStopFill.style.display === 'none' && r.stops === 0);
@@ -777,24 +781,23 @@ for (const file of ['server.js', 'server-fast.js']) {
     r = brCase(true, 7, 'brStopFilling(); brStopFilling()');
     check('ogario: brStopFilling stops the fill bots once', r.stops === 1 && r.cleared === 7);
     check('ogario: brResetFill/brStopFilling exposed on window', ogSrc.includes('window._brStopFilling = brStopFilling') && ogSrc.includes('window._brResetFill = brResetFill'));
-    check('ogario: BR fill no longer writes window.bots.amount', /needed = Math\.min\(needed, 190\)[\s\S]{0,300}sessionAmount = needed/.test(ogSrc) && !/window\.bots\.amount = needed/.test(ogSrc));
+    check('ogario: BR fill no longer writes window.bots.amount', /needed = Math\.min\(needed, 190\)[\s\S]{0,400}sessionAmount = needed/.test(ogSrc) && !/window\.bots\.amount = needed/.test(ogSrc));
 
-    // connectionBots: messages 0, 2, 4, 12, 13; captcha popups only from startCaptcha
+    // connectionBots messages: 0, 1, 2, 4, 5 (gone), 12, 13
     const cbSrc = extract('window.connectionBots = {');
     check('ogario: connectionBots extractable', !!cbSrc);
     const makeCB = () => {
-        const els = {}, toasts = [], html = {}, timers = [], popups = [];
+        const els = {}, toasts = [], html = {}, timers = [];
         const getEl = id => els[id] || (els[id] = el());
-        const w = { userBots: { startedBots: false, startSent: true, isAlive: true, sessionAmount: 9 }, bots: { amount: 50, ai: true }, captchaOpenedWindow: 3, capthaWindow: [],
+        const w = { userBots: { startedBots: false, startSent: true, isAlive: true, sessionAmount: 9 }, bots: { amount: 50, ai: true },
             addEventListener() {}, _brResetFill() { w.resets = (w.resets || 0) + 1; } };
         const sb = {
             window: w, DataView, Uint8Array, WebSocket: { OPEN: 1, CONNECTING: 0 },
             document: { getElementById: getEl },
             toastr: { info: m => toasts.push(['info', m]), warning: (m, t, o) => toasts.push(['warning', m, o]) },
             $: sel => ({ html: v => { html[sel] = v; } }),
-            _lmG1set() {}, lmT: k => k, _lmTH: (k, d) => k,
-            Premadeletter123: 'LM', legendmod: { sendTokenForBots() {}, sendTimeOutTokenForBots() { w.tokenLoop = (w.tokenLoop || 0) + 1; } },
-            createCaptchaWindow: i => popups.push(i), setTimeout: f => timers.push(f)
+            _lmG1set(e, k) { if (e) { e.i18n = k; } }, lmT: k => k, _lmTH: (k, d) => k,
+            Premadeletter123: 'LM', setTimeout: f => timers.push(f)
         };
         run(cbSrc, sb);
         const cb = w.connectionBots;
@@ -802,40 +805,251 @@ for (const file of ['server.js', 'server-fast.js']) {
         cb.ws = { readyState: 1 };
         cb.send = b => cb.sent.push(ab(b));
         const msg = bytes => cb.onmessage({ data: new Uint8Array(bytes).buffer });
-        return { cb, w, els, toasts, html, timers, popups, msg };
+        return { cb, w, els, toasts, html, timers, msg };
     };
     let k = makeCB();
-    k.w._brFillPending = false;
     k.cb.onopen();
-    check('ogario: onopen opens no captcha popups', k.popups.length === 0 && k.cb.captchaActive === false);
+    check('ogario: onopen: status Connected, nothing else to run', k.els.userStatus.i18n === 'game1.bots.connected' && k.timers.length === 0);
     k.msg([0]);
-    check('ogario: message 0 marks started and sends [5, isAlive]', k.w.userBots.startedBots === true && k.cb.sent.length === 1 && k.cb.sent[0].equals(Buffer.from([5, 1])));
+    check('ogario: message 0 marks started, shows Stop and sends [5, isAlive]', k.w.userBots.startedBots === true && k.cb.sent.length === 1 && k.cb.sent[0].equals(Buffer.from([5, 1])) &&
+        k.els.startBots.style.display === 'none' && k.els.stopBots.style.display === 'inline' && !k.els.stopBots.disabled);
     k.msg([4, 3, 2]);
     check('ogario: message 4 shows connected/spawned/sessionAmount', k.html['#botCount'] === '3/2/9');
+    k.msg([5, 0]);
+    check('ogario: message 5 (old bot servers) changes nothing: no fake "/200"', Object.keys(k.html).length === 1);
     k.msg([12]);
-    const captchaToast = k.toasts.find(t => t[0] === 'warning' && t[1].includes('lm-bots-captcha-open'));
-    check('ogario: message 12 shows a sticky toast with the captcha button, no popups', !!captchaToast && captchaToast[2] && captchaToast[2].timeOut === 0 && k.popups.length === 0 && !k.cb.captchaActive);
-    k.cb.startCaptcha();
-    check('ogario: startCaptcha opens the popups and the token loop', k.cb.captchaActive === true && k.popups.length === 3 && k.w.tokenLoop === 1);
-    k.cb.startCaptcha();
-    check('ogario: startCaptcha twice opens nothing more', k.popups.length === 3);
-    const toastsBefore = k.toasts.length;
-    k.msg([12]);
-    check('ogario: message 12 while solving shows no second toast', k.toasts.length === toastsBefore);
+    const captchaToast = k.toasts.find(t => t[0] === 'warning' && t[1].includes('game1.bots.captchaNeeded'));
+    check('ogario: message 12 is a plain notice: the bots wait (no captcha button, no popups)', !!captchaToast && captchaToast[1].includes('game1.bots.captchaWait') && !captchaToast[1].includes('<button') && !captchaToast[2]);
     k.msg([13]);
     check('ogario: message 13 toasts agarOnly', k.toasts.some(t => t[1].includes('game1.bots.agarOnly')));
+    k.msg([1]);
+    check('ogario: message 1 shows Stopping', k.els.stopBots.disabled === true && k.els.stopBots.i18n === 'game1.bots.stopping');
     k.msg([2]);
-    check('ogario: message 2 resets the session, closes captcha, resets a BR fill', k.w.userBots.startedBots === false && k.w.userBots.startSent === false && k.cb.captchaActive === false && k.w.resets === 1);
-    k = makeCB();
-    k.cb.ws = { readyState: 3 };
-    k.cb.startCaptcha();
-    check('ogario: startCaptcha needs an open bot socket', k.popups.length === 0 && !k.cb.captchaActive);
-    k = makeCB();
-    k.w._brFillPending = true;
-    k.cb.onopen();
-    check('ogario: onopen continues a pending Fill lobby once', k.w._brFillPending === false && k.timers.length === 1 && (k.timers[0](), k.els.brFillLobby.clicked === 1));
-    check('ogario: captcha button click calls startCaptcha', ogSrc.includes("$(document).on('click', '.lm-bots-captcha-open', function () { window.connectionBots.startCaptcha() })"));
-    check('ogario: token loop runs only in captcha mode', /sendTimeOutTokenForBots\(\) \{[\s\S]{0,300}if \(window\.connectionBots\.captchaActive &&/.test(ogSrc));
+    check('ogario: message 2 resets the session, shows Start, resets a BR fill', k.w.userBots.startedBots === false && k.w.userBots.startSent === false && k.w.resets === 1 &&
+        k.els.startBots.style.display === 'inline' && !k.els.startBots.disabled && k.els.stopBots.style.display === 'none');
+    check('ogario: connectionBots has no captcha popups or token loop', !('startCaptcha' in k.cb) && !('closeCaptcha' in k.cb) && !('captchaActive' in k.cb));
+
+    // Start / Stop / Fill lobby: the real connectionBots, _lmBotsStop, botsStart and brFill with fake sockets
+    const startSrc = extract('function botsStart()');
+    const fillSrc = extract('function brFill()');
+    const playersSrc = extract('function botsServerPlayersText()');
+    check('ogario: botsStart, brFill and botsServerPlayersText extractable', !!startSrc && !!fillSrc && !!playersSrc);
+    const flow = (opts) => {
+        opts = opts || {};
+        const els = {}, toasts = [], timers = [], socks = [];
+        const getEl = id => els[id] || (els[id] = el());
+        class FakeSock {
+            constructor(url, kind) {
+                if (!kind && !/^wss?:\/\//.test(url)) throw new SyntaxError('bad url');
+                this.url = url; this.kind = kind || 'ws'; this.readyState = 0; this.sent = []; socks.push(this);
+            }
+            send(d) { this.sent.push(typeof d === 'string' ? d : ab(d)); }
+            close() { if (this.readyState === 3) return; this.readyState = 3; if (this.onclose) this.onclose({}); }
+            open() { this.readyState = 1; if (this.onopen) this.onopen({}); }
+            fail() { this.readyState = 3; if (this.onclose) this.onclose({}); }
+            push(bytes) { if (this.onmessage) this.onmessage({ data: new Uint8Array(bytes).buffer }); }
+        }
+        FakeSock.CONNECTING = 0; FakeSock.OPEN = 1;
+        const w = {
+            SERVER_HOST: opts.host == null ? 'browser' : opts.host, OgVer: '9.9',
+            userBots: { startedBots: false, startSent: false, isAlive: true }, bots: { amount: opts.amount == null ? 50 : opts.amount, nameLM: 'Bot', ai: false },
+            gameBots: { protocolVersion: 22, clientVersion: 31000 }, EnvConfig: { configVersion: 1 }, master: { clientVersion: 31000 },
+            buffers: B, unescape, encodeURIComponent, _brFilling: false, _brLobbyWatcher: null,
+            LMBotsWorkerSocket: function (src) { return new FakeSock(src, 'worker'); }
+        };
+        const lm = Object.assign({ ws: 'wss://live-arena-q1w2.agar.io:443', integrity: true, gameMode: ':ffa', leaderboard: [], battleRoyale: { players: 0, started: false, countdown: false } }, opts.lm || {});
+        const sb = {
+            window: w, legendmod: lm, ogarcopythelb: { nick: 'Me' }, WebSocket: FakeSock, DataView, Uint8Array, Math, Number, parseInt,
+            document: { getElementById: getEl },
+            toastr: { info: m => toasts.push(m), warning: m => toasts.push(m), success: m => toasts.push(m) },
+            $: () => ({ html() {}, is: () => true }),
+            _lmG1set(e, key) { if (e) e.i18n = key; }, lmT: key => key, _lmTH: key => key, Premadeletter123: 'LM',
+            setTimeout: f => { timers.push(f); return timers.length; }, setInterval: () => 99, clearInterval() {},
+            localStorage: { getItem: () => null }
+        };
+        run(cbSrc + '\n' + stopSrc + '\n' + resetSrc + '\n' + stopFillSrc + '\n' + startSrc + '\n' + fillSrc +
+            '\nfunction brUpdateSection() {}\nwindow._lmBotsStart = botsStart; window._lmBrFill = brFill; window._brResetFill = brResetFill; window._brStopFilling = brStopFilling', sb);
+        const cb = w.connectionBots;
+        const flush = () => { while (timers.length) timers.shift()(); };
+        const ops = s => s.sent.filter(p => typeof p !== 'string').map(p => p[0]);
+        return { w, lm, cb, els, toasts, socks, flush, ops, start: () => w._lmBotsStart(), fill: () => w._lmBrFill(), stop: () => w._lmBotsStop() };
+    };
+    for (const [path, host] of [['worker', 'browser'], ['ws', 'ws://localhost:1337']]) {
+        const f = flow({ host });
+        f.start();
+        const s = f.socks[0];
+        check('Start (' + path + '): one click connects: ' + (path === 'worker' ? 'the browser worker with the bot core' : 'the bot server of the address field'), f.socks.length === 1 && s.kind === path &&
+            s.url === (path === 'worker' ? 'https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=9.9' : 'ws://localhost:1337'));
+        check('Start (' + path + '): while connecting: status Connecting, Stop shown, Start hidden, nothing sent yet', f.els.userStatus.i18n === 'game1.bots.connecting' && f.cb.pending === 'start' &&
+            f.els.startBots.style.display === 'none' && f.els.startBots.disabled && f.els.stopBots.style.display === 'inline' && !f.els.stopBots.disabled && s.sent.length === 0 && !f.w.userBots.startSent);
+        f.start(); f.start();
+        check('Start (' + path + '): double click while connecting: one connection, no second start, no notice', f.socks.length === 1 && f.toasts.length === 0 && f.cb.pending === 'start');
+        s.open();
+        check('Start (' + path + '): connected: status Connected', f.els.userStatus.i18n === 'game1.bots.connected' && f.cb.pending === null);
+        f.flush();
+        const startPk = s.sent.find(p => typeof p !== 'string' && p[0] === 0);
+        check('Start (' + path + '): starts once connected: startBots (game url, amount) and the player nick (7)', JSON.stringify(f.ops(s)) === '[0,7]' && !!startPk &&
+            startPk.includes(Buffer.from('wss://live-arena-q1w2.agar.io:443')) && startPk[startPk.length - 1] === 50 && f.w.userBots.startSent === true && f.w.userBots.sessionAmount === 50);
+        f.start();
+        check('Start (' + path + '): a further click: "Bots already running", nothing sent', f.ops(s).length === 2 && f.toasts.length === 1 && f.toasts[0].includes('game2.brBotsRunning'));
+        s.push([0]);
+        check('Start (' + path + '): message 0: running, Stop shown', f.w.userBots.startedBots === true && f.els.stopBots.style.display === 'inline');
+        f.stop();
+        check('Stop (' + path + '): sends [1], the connection stays open', f.ops(s)[f.ops(s).length - 1] === 1 && s.readyState === 1);
+        s.push([1]); s.push([2]);
+        check('Stop (' + path + '): 1 then 2: Start shown again, Status still Connected', f.els.startBots.style.display === 'inline' && !f.els.startBots.disabled && f.els.stopBots.style.display === 'none' &&
+            f.els.userStatus.i18n === 'game1.bots.connected' && !f.w.userBots.startedBots);
+        f.start();
+        check('Start (' + path + ') again while connected: starts at once on the same connection', f.socks.length === 1 && f.ops(s).filter(o => o === 0).length === 2);
+        s.close();
+        check('Start (' + path + '): connection closed: Disconnected, Start shown, "closed" notice', f.els.userStatus.i18n === 'game1.bots.disconnected' && f.els.startBots.style.display === 'inline' &&
+            f.toasts.some(t => t.includes('game1.bots.wsClosed')) && !f.w.userBots.startSent);
+    }
+    {
+        const f = flow({ host: 'ws://localhost:1337' });
+        f.start();
+        const s = f.socks[0];
+        f.stop();
+        check('Stop while connecting: cancelled: socket closed quietly, Disconnected, Start shown, no notice', s.readyState === 3 && s.onopen === null && f.cb.pending === null && f.cb.ws === null &&
+            f.els.userStatus.i18n === 'game1.bots.disconnected' && f.els.startBots.style.display === 'inline' && !f.els.startBots.disabled && f.els.stopBots.style.display === 'none' && f.toasts.length === 0);
+        f.flush();
+        check('Stop while connecting: nothing is started later', s.sent.length === 0 && !f.w.userBots.startSent);
+        f.start();
+        check('Start after a cancel: a new connection', f.socks.length === 2 && f.cb.pending === 'start');
+    }
+    {
+        const f = flow({ host: 'browser' });
+        f.start();
+        f.socks[0].fail();
+        check('Start: connection failed: Disconnected, Start shown, notice to check the address', f.els.userStatus.i18n === 'game1.bots.disconnected' && f.cb.pending === null &&
+            f.els.startBots.style.display === 'inline' && f.toasts.length === 1 && f.toasts[0].includes('game1.bots.connectFailed'));
+        const g = flow({ host: 'localhost:1337' });
+        g.start();
+        check('Start: an address that is not ws:// fails without throwing', g.socks.length === 0 && g.cb.ws === null && g.toasts.some(t => t.includes('game1.bots.connectFailed')) && g.els.startBots.style.display === 'inline');
+    }
+    {
+        const f = flow({ lm: { integrity: false, ws: 'wss://eu.expanding.land' } });
+        f.start();
+        check('Start on a server that is not agar.io: refused before connecting', f.socks.length === 0 && f.toasts[0].includes('game1.bots.agarOnly') && f.els.startBots.style.display === 'inline');
+        const g = flow({ lm: { ws: '' } });
+        g.start();
+        check('Start without a game server: refused with a notice, no connection', g.socks.length === 0 && g.toasts[0].includes('game2.brNoGameServer'));
+        const h = flow({ amount: 0 });
+        h.start();
+        check('Start without an amount: refused, no connection', h.socks.length === 0 && h.toasts[0].includes('game2.botsAmount'));
+        const t = flow({ lm: { gameMode: ':teams' } });
+        t.start(); t.socks[0].open(); t.flush();
+        check('Start works in every agar.io mode (Teams too): no "Party bots only" gate', t.ops(t.socks[0])[0] === 0 && !t.toasts.length);
+        const p = flow({ lm: { gameMode: ':party' } });
+        p.start(); p.socks[0].open(); p.flush();
+        check('Start on Party: no player nick message (7), like before', JSON.stringify(p.ops(p.socks[0])) === '[0]');
+    }
+    {
+        // server switch while connecting for a Start: cancelled, nothing starts on the new server
+        const f = flow();
+        f.start();
+        f.stop(); // LM.connect -> window._lmBotsStop()
+        f.socks[0].open && f.socks[0].open();
+        f.flush();
+        check('Server switch while connecting: the waiting Start is dropped', f.socks[0].sent.length === 0 && f.cb.pending === null);
+    }
+    {
+        // Battle Royale Fill lobby: one click, the same connection code
+        const f = flow({ lm: { gameMode: ':battleroyale', battleRoyale: { players: 5, started: false, countdown: false } } });
+        f.fill();
+        const s = f.socks[0];
+        check('Fill lobby: one click connects (status Connecting, "connecting" notice)', f.socks.length === 1 && f.cb.pending === 'fill' && f.els.userStatus.i18n === 'game1.bots.connecting' && f.toasts.some(t => t.includes('game2.brConnecting')));
+        f.fill();
+        check('Fill lobby: double click while connecting: one connection', f.socks.length === 1);
+        s.open(); f.flush();
+        const pk = s.sent.find(p => typeof p !== 'string' && p[0] === 0);
+        check('Fill lobby: once connected it fills: 15 - 5 = 10 bots, Stop fill shown', !!pk && pk[pk.length - 1] === 10 && f.w._brFilling === true && f.els.brFillLobby.style.display === 'none' &&
+            f.els.brStopFill.style.display === '' && f.w.userBots.sessionAmount === 10 && f.els.stopBots.style.display === 'inline');
+        f.start();
+        check('Fill lobby running: Start does not start twice', s.sent.filter(p => typeof p !== 'string' && p[0] === 0).length === 1);
+        const g = flow({ lm: { gameMode: ':battleroyale', battleRoyale: { players: 5, started: false, countdown: false } } });
+        g.fill();
+        g.start();
+        check('Start pressed while a Fill waits for the connection: the Start wins, one connection', g.socks.length === 1 && g.cb.pending === 'start');
+        g.socks[0].open(); g.flush();
+        check('... and it starts the user\'s amount once', JSON.stringify(g.ops(g.socks[0])) === '[0,7]' && g.socks[0].sent[0][g.socks[0].sent[0].length - 1] === 50 && !g.w._brFilling);
+        const h = flow({ lm: { gameMode: ':battleroyale', battleRoyale: { players: 5, started: false, countdown: false } } });
+        h.fill();
+        h.stop();
+        check('Stop while a Fill connects: cancelled', h.socks[0].readyState === 3 && h.cb.pending === null);
+    }
+
+    // "On this server": players (and bot groups) from the whole agar.io leaderboard, no fake capacity
+    {
+        const players = lm => run(playersSrc + '\nbotsServerPlayersText()', { window: { legendmod: lm }, lmT: (key, a) => key + (a ? ':' + a[0] : '') });
+        const board = (names) => names.map(nick => ({ nick }));
+        const real = Array.from({ length: 71 }, (_, i) => 'p' + i);
+        check('players: not connected: Waiting', players(null) === 'game1.bots.waiting' && players({ ws: '' }) === 'game1.bots.waiting');
+        check('players: not an agar.io server (top 10 only): no number', players({ ws: 'wss://x', integrity: false, leaderboard: board(real) }) === '-');
+        check('players: 71 players and 52 bots, as the leaderboard footer counts them', players({ ws: 'wss://a', integrity: true, gameMode: ':ffa', leaderboard: board(real.concat(Array(52).fill('Legendmod|ml'))) }) === 'game2.sbPlayers:71 · game2.sbBots:52');
+        check('players: two players with the same name are players, not bots', players({ ws: 'wss://a', integrity: true, leaderboard: board(['a', 'a', 'b']) }) === 'game2.sbPlayers:3');
+        check('players: one player, nick "__proto__"', players({ ws: 'wss://a', integrity: true, leaderboard: board(['__proto__']) }) === 'game2.sbPlayer:1');
+        check('players: Battle Royale: the lobby count', players({ ws: 'wss://a', integrity: true, gameMode: ':battleroyale', battleRoyale: { players: 12 }, leaderboard: [] }) === 'game2.sbPlayers:12');
+        check('players: empty board: Waiting', players({ ws: 'wss://a', integrity: true, leaderboard: [] }) === 'game1.bots.waiting');
+        check('players: panel row "On this server", refreshed every second while the panel is open; no "/200", no server slots value',
+            ogSrc.includes("${_lmG1s('game1.bots.onServer')}</b>: <span id=\"botsServerPlayers\"") && /getElementById\('botsServerPlayers'\)[\s\S]{0,200}botsServerPlayersText\(\)[\s\S]{0,120}\}, 1000\)/.test(ogSrc) &&
+            !ogSrc.includes('"/200"') && !ogSrc.includes("id=\"slots\"") && !ogSrc.includes("$('#slots')"));
+        const core = fs.readFileSync(path.join(botsDir, 'botcore.js'), 'utf8');
+        check('botcore: no fake server player total (message 5) any more', !core.includes('new Uint8Array([5, 0])'));
+    }
+
+    // the panel: Start and Stop only, no Connect, no captcha tokens, no install links
+    {
+        const i = ogSrc.indexOf('<div id="quick-bots"');
+        const panel = i < 0 ? '' : ogSrc.slice(i, ogSrc.indexOf('</div>`);', i));
+        check('panel: found', panel.length > 500);
+        check('panel: no Connect button', !panel.includes('connectBots') && !ogSrc.includes("getElementById('connectBots')") && !ogSrc.includes('#connectBots'));
+        check('panel: Start enabled, Stop hidden until a Start', /<button id="startBots" class="btn btn-primary btn" data-i18n/.test(panel) && /<button id="stopBots" class="btn btn-danger" disabled/.test(panel));
+        check('panel: no captcha tokens row or counter', !panel.includes('captchatokens') && !ogSrc.includes('captchatokens') && !panel.includes('game1.bots.tokens'));
+        check('panel: no Installation / tutorial links / tokens tip', !/game1\.bots\.(install|tutPc|tutRepl|tip)\b/.test(ogSrc) && !panel.includes('repl.it') && !panel.includes('youtube'));
+        check('panel: Status, Bots AI, name, amount and address (browser / ws://) stay', ['id="userStatus"', 'id="botsAI"', 'id="botsNameLM"', 'id="botsAmount"', 'id="botsRemoteIP"', 'list="botsRemoteIPList"'].every(x => panel.includes(x)));
+        check('panel: Start and Fill buttons call botsStart / brFill', ogSrc.includes("getElementById('startBots').addEventListener('click', () => botsStart())") && ogSrc.includes("getElementById('brFillLobby').addEventListener('click', () => brFill())") &&
+            ogSrc.includes('window._lmBotsStart = botsStart') && ogSrc.includes('window._lmBrFill = brFill'));
+    }
+
+    // Battle Royale HUD status: lobby players split into real players and our bots (spawned, message 4)
+    {
+        const updSrc = extract('function brUpdateSection()');
+        check('ogario: brUpdateSection extractable', !!updSrc);
+        const brStatus = (players, spawned, running, state) => {
+            const els = { brBotsSection: el(), brLobbyStatus: el() };
+            const w = { userBots: { spawned, startedBots: running, startSent: false } };
+            const lm = { gameMode: ':battleroyale', battleRoyale: Object.assign({ players, started: false, countdown: false }, state || {}) };
+            run(updSrc + '\nfunction brStopFilling() {}\nbrUpdateSection()', { window: w, legendmod: lm, document: { getElementById: id => els[id] || null }, _lmTH: (k, d) => d, Math });
+            return els.brLobbyStatus.textContent;
+        };
+        check('BR status: 8 in the lobby, 3 of them our bots: "Players: 8 (5 real + 3 bots)"', brStatus(8, 3, true) === 'Players: 8 (5 real + 3 bots) | State: Waiting');
+        check('BR status: no bots of ours: the plain count', brStatus(8, 0, true) === 'Players: 8 | State: Waiting' && brStatus(8, 3, false) === 'Players: 8 | State: Waiting');
+        check('BR status: never more bots than lobby players', brStatus(2, 5, true) === 'Players: 2 (0 real + 2 bots) | State: Waiting');
+        check('BR status: countdown state kept', brStatus(15, 10, true, { countdown: true }) === 'Players: 15 (5 real + 10 bots) | State: Starting');
+        check('BR status: refreshed every second', ogSrc.includes('setInterval(brUpdateSection, 1000)'));
+        k = makeCB();
+        k.msg([4, 6, 5]);
+        const spawned4 = k.w.userBots.spawned;
+        k.msg([2]);
+        check('ogario: message 4 records the spawned bots of the session, message 2 clears them', spawned4 === 5 && k.w.userBots.spawned === 0);
+        const st = { userBots: { startedBots: true, startSent: false, spawned: 7 }, connectionBots: { ws: { readyState: 1 }, send() {}, cancel() {} } };
+        run(stopSrc + '; window._lmBotsStop()', { window: st, WebSocket: { OPEN: 1 }, Uint8Array });
+        check('ogario: Stop / server switch: our bots no longer counted on this server', st.userBots.spawned === 0);
+    }
+    // the Battle Royale HUD: its own panel (title from the packs), the lobby section and Fill lobby moved there
+    {
+        const i = ogSrc.indexOf('<div id="quick-br"');
+        const hud = i < 0 ? '' : ogSrc.slice(i, ogSrc.indexOf('</div>`);', i));
+        check('BR HUD: own panel, same classes as the bots panel, hidden at first', /<div id="quick-br" class="agario-panel agario-side-panel" style="display:none">/.test(hud));
+        check('BR HUD: title "Battle Royale" from the packs', hud.includes("${_lmG1s('game2.brHudTitle')}"));
+        check('BR HUD: holds the lobby status and Fill / Stop fill', ['id="brBotsSection"', 'id="brLobbyStatus"', 'id="brFillLobby"', 'id="brStopFill"'].every(x => hud.includes(x)));
+        const b = ogSrc.indexOf('<div id="quick-bots"');
+        const bots = b < 0 ? '' : ogSrc.slice(b, ogSrc.indexOf('</div>`);', b));
+        check('BR HUD: no Battle Royale section left in the bots panel', !bots.includes('brBotsSection') && !bots.includes('brFillLobby'));
+        const css = fs.readFileSync(path.join(__dirname, '..', '..', 'css', 'ogario.v3.css'), 'utf8');
+        check('BR HUD: same size as the bots panel, its button in the row of round buttons', /#quick-bots,#quick-br\{\s*width:300px;/.test(css) && /\.quick-br\{\s*left:60px\s*\}/.test(css));
+    }
 
     // mouse to bots: centred on the player's map, Rotate map undone
     const mouseMarker = 'if (window.userBots.startedBots && window.userBots.isAlive) {';
@@ -948,11 +1162,11 @@ for (const file of ['server.js', 'server-fast.js']) {
         check('ogario->server: different map sizes, all 4 mirrors: the bot finds its orientation and targets the player\'s mouse within 2 units', out.every(Boolean));
     }
 
-    // Start / Fill: agar.io only, session amount local
-    check('ogario: Start requires legendmod.integrity', /getElementById\('startBots'\)\.addEventListener[\s\S]{0,400}if \(!legendmod\.integrity\) \{[\s\S]{0,200}game1\.bots\.agarOnly/.test(ogSrc));
-    check('ogario: Fill requires legendmod.integrity', /getElementById\('brFillLobby'\)\.addEventListener[\s\S]{0,500}if \(!legendmod\.integrity\) \{[\s\S]{0,200}game1\.bots\.agarOnly/.test(ogSrc));
+    // Start / Fill: agar.io only, session amount local, one connection code
+    check('ogario: Start requires legendmod.integrity', /function botsStart\(\) \{[\s\S]{0,1500}if \(!legendmod\.integrity\) return refuse\(_lmTH\('game1\.bots\.agarOnly'/.test(ogSrc));
+    check('ogario: Fill requires legendmod.integrity', /function brFill\(\) \{[\s\S]{0,600}if \(!legendmod\.integrity\) \{[\s\S]{0,200}game1\.bots\.agarOnly/.test(ogSrc));
     check('ogario: Start clamps a local amount and records the session amount', ogSrc.includes('var _lmBotsN = Math.max(1, Math.min(window.bots.amount,') && ogSrc.includes('window.userBots.sessionAmount = _lmBotsN'));
-    check('ogario: Fill while disconnected sets _brFillPending and connects', /_brFillPending = true\s*\n\s*window\.connectionBots\.connect\(\)/.test(ogSrc));
+    check('ogario: Start and Fill lobby connect through the same code (connectionBots.ensure)', ogSrc.includes("cb.ensure('start')") && ogSrc.includes("cb.ensure('fill')") && !ogSrc.includes('_brFillPending'));
 }
 
 // ---- userscript: obsolete position/ghost-cell code removed ----
@@ -985,16 +1199,151 @@ for (const file of ['server.js', 'server-fast.js']) {
     // Player position no longer sent alongside mouse
     check('ogario: no player position sent with mouse', !ogSrc.includes('window.connectionBots.send(window.buffers.playerPosition('));
 
-    // the bots button is shown on every server (the panel refuses non-agar.io servers itself)
-    check('ogario: bots button never created hidden', !ogSrc.includes('class="quick quick-bots ogicon-trophy" style="display: none;"'));
+    // the quick HUD buttons (menu, bots, Battle Royale): created hidden except the menu, tabs, follow the server
+    check('ogario: bots button created hidden', ogSrc.includes('<a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a>'));
+    check('ogario: Battle Royale button created hidden, next to the menu and bots buttons', ogSrc.includes('<a href="#" class="quick quick-bots ogicon-trophy" style="display: none;"></a><a href="#" class="quick quick-br ogicon-target" style="display: none;"></a>'));
     {
-        const i = ogSrc.indexOf('displayPartyBots() {');
-        const body = i < 0 ? '' : ogSrc.slice(i, ogSrc.indexOf('setBlockPopups()', i));
-        check('ogario: displayPartyBots always shows the bots button', body.includes('$(".quick.quick-bots.ogicon-trophy").show()') && !body.includes('.hide()'));
+        const vm = require('vm');
+        const method = name => {
+            const i = ogSrc.indexOf('\n        ' + name + '(');
+            const j = i < 0 ? -1 : ogSrc.indexOf('\n        },', i + 1);
+            return i < 0 || j < 0 ? '' : ogSrc.slice(i + 1, j + 10).trim().replace(/,$/, '');
+        };
+        const line = name => { const m = ogSrc.match(new RegExp('\\n        (' + name + ': [^\\n]*),\\r?\\n')); return m ? m[1] : ''; };
+        const names = ['quickOpenPanel', 'applyQuickPanels', 'setQuickPanel', 'toggleQuickPanel', 'setShowQuickMenu', 'setShowQuickBots', '_lmQuickBefore', 'syncQuickPanels', '_lmQuickSwitchBR', 'displayPartyBots'];
+        const parts = names.map(method).concat([line('_lmQuickIds'), line('_lmQuickBotsButton')]);
+        check('quick HUDs: controller methods extractable', parts.every(Boolean));
+        const PANELS = { menu: '#quick-menu', bots: '#quick-bots', br: '#quick-br' };
+        const BTNS = { menu: '.quick.quick-menu', bots: '.quick.quick-bots', br: '.quick.quick-br' };
+        const make = (opts) => {
+            opts = opts || {};
+            const dom = {}, store = Object.assign({}, opts.store || {});
+            let saves = 0;
+            const node = sel => dom[sel] || (dom[sel] = { shown: sel === BTNS.menu, cls: {}, stops: 0 });
+            const $ = sel => {
+                const n = node(sel === '.quick.quick-bots.ogicon-trophy' ? BTNS.bots : sel);
+                const o = {
+                    stop() { n.stops++; return o; }, toggle(v) { n.shown = !!v; return o; }, show() { n.shown = true; return o; }, hide() { n.shown = false; return o; },
+                    toggleClass(c, v) { n.cls[c] = !!v; return o; }
+                };
+                return o;
+            };
+            const lm = { ws: '', integrity: false, gameMode: ':ffa' };
+            const sb = {
+                window: { legendmod: lm }, $, defaultmapsettings: Object.assign({ showQuickMenu: true, showQuickBots: false }, opts.flags || {}),
+                localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); }, removeItem: k => { delete store[k]; } }
+            };
+            vm.createContext(sb);
+            vm.runInContext('var app = { ' + parts.join(',\n') + ', saveSettings() { __saves(); } }' + (opts.botsButton ? '; app._lmQuickBotsButton = true' : ''), Object.assign(sb, { __saves: () => saves++ }));
+            const app = sb.app, s = sb.defaultmapsettings;
+            const open = () => Object.keys(PANELS).filter(k => node(PANELS[k]).shown);
+            const consistent = () => {
+                const o = open();
+                return o.length <= 1 && node(PANELS.menu).shown === !!s.showQuickMenu && node(PANELS.bots).shown === !!s.showQuickBots && node(PANELS.br).shown === !!app._lmQuickBR &&
+                    Object.keys(BTNS).every(k => !!node(BTNS[k]).cls['lm-quick-on'] === node(PANELS[k]).shown);
+            };
+            const server = (integrity, mode) => { lm.ws = integrity == null ? '' : 'wss://x'; lm.integrity = !!integrity; lm.gameMode = mode || ':ffa'; app.displayPartyBots(); };
+            return { app, s, lm, open, consistent, server, store, node, saves: () => saves, btn: k => node(BTNS[k]).shown };
+        };
+        // tabs: A = quick menu, B = Battle Royale HUD (the bots panel's button is hidden)
+        let q = make();
+        q.app.setShowQuickMenu();
+        check('quick HUDs: at load the saved flag shows the quick menu with its ring', q.open().join() === 'menu' && q.consistent());
+        q.app.setQuickPanel(null);
+        const seq = [['menu', 'menu'], ['menu', ''], ['br', 'br'], ['menu', 'menu'], ['br', 'br'], ['br', '']];
+        let ok = true, trail = [];
+        for (const [click, want] of seq) {
+            q.app.toggleQuickPanel(click);
+            trail.push(click + ':' + (q.open().join() || '-'));
+            ok = ok && q.open().join() === want && q.consistent();
+        }
+        check('quick HUDs: clicks A, A, B, A, B, B: one HUD at most, flags = visibility, ring on the open one (' + trail.join(' ') + ')', ok);
+        check('quick HUDs: shown and hidden at once (animations stopped, no fades)', q.node(PANELS.menu).stops > 0 && !/fadeIn|fadeOut/.test(parts.join('\n')));
+        // three tabs when the bots button is on (the code still supports it)
+        q = make({ botsButton: true });
+        q.server(true);
+        ok = true; trail = [];
+        for (const [click, want] of [['bots', 'bots'], ['menu', 'menu'], ['br', 'br'], ['bots', 'bots'], ['bots', ''], ['menu', 'menu'], ['menu', '']]) {
+            q.app.toggleQuickPanel(click);
+            trail.push(click + ':' + (q.open().join() || '-'));
+            ok = ok && q.open().join() === want && q.consistent();
+        }
+        check('quick HUDs: three tabs (menu, bots, Battle Royale): ' + trail.join(' '), ok);
+        // the bots button: hidden at load, before any connection and on every server (agar.io too); its panel closed, its flag off
+        q = make({ flags: { showQuickMenu: false, showQuickBots: true } });
+        q.app.setShowQuickMenu();
+        q.app.syncQuickPanels();
+        check('bots button: hidden at load, the saved open bots panel closed and its flag saved off', !q.btn('bots') && q.open().length === 0 && q.s.showQuickBots === false && q.saves() === 1 && q.consistent());
+        q.server(true, ':ffa');
+        check('bots button: hidden on agar.io too', !q.btn('bots') && !q.btn('br'));
+        q.server(false, ':ffa');
+        check('bots button: hidden on other servers', !q.btn('bots'));
+        q.app.setQuickPanel('menu');
+        q.s.showQuickBots = true; q.app.setShowQuickBots(); // a settings import / profile with the bots panel open
+        q.app.syncQuickPanels();
+        check('bots button: an imported open bots panel is closed again, the quick menu stays', !q.s.showQuickBots && q.open().join() === 'menu' && q.consistent());
+        // Battle Royale: its button on agar.io Battle Royale only; the HUD opens by itself and the one before comes back
+        q = make();
+        q.app.setShowQuickMenu();
+        q.server(false, ':battleroyale');
+        check('Battle Royale button: not on other servers (even in a mode called battleroyale)', !q.btn('br') && q.open().join() === 'menu');
+        q.server(true, ':battleroyale');
+        check('Battle Royale: entering on agar.io: its button shows, its HUD opens alone, the menu before is remembered', q.btn('br') && q.open().join() === 'br' && q.consistent() && q.store.lmQuickBeforeBR === 'menu' && !q.s.showQuickMenu);
+        q.app.syncQuickPanels(); q.app.syncQuickPanels();
+        check('Battle Royale: the half-second check changes nothing while in it', q.open().join() === 'br' && q.store.lmQuickBeforeBR === 'menu');
+        q.server(true, ':ffa');
+        check('Battle Royale: leaving: its button hides, its HUD closes, the quick menu comes back', !q.btn('br') && q.open().join() === 'menu' && q.consistent() && !('lmQuickBeforeBR' in q.store));
+        q.app.setQuickPanel(null);
+        q.server(true, ':battleroyale');
+        q.server(true, ':party');
+        check('Battle Royale: entered with no HUD open: none after leaving', q.open().length === 0 && q.consistent() && !('lmQuickBeforeBR' in q.store));
+        q = make({ botsButton: true });
+        q.server(true, ':ffa');
+        q.app.toggleQuickPanel('bots');
+        q.server(true, ':battleroyale');
+        check('Battle Royale: entered with the bots panel open: Battle Royale HUD only', q.open().join() === 'br' && q.store.lmQuickBeforeBR === 'bots' && !q.s.showQuickBots && q.consistent());
+        q.server(true, ':ffa');
+        check('Battle Royale: left: the bots panel is back', q.open().join() === 'bots' && q.s.showQuickBots === true && q.consistent());
+        q = make();
+        q.app.setShowQuickMenu();
+        q.server(true, ':battleroyale');
+        q.app.toggleQuickPanel('br');
+        q.server(false, ':ffa');
+        check('Battle Royale: HUD closed by the player before leaving: nothing reopens', q.open().length === 0 && !('lmQuickBeforeBR' in q.store) && q.consistent());
+        q = make();
+        q.app.setShowQuickMenu();
+        q.server(true, ':battleroyale');
+        q.app.toggleQuickPanel('menu');
+        check('Battle Royale: the menu button in it opens the menu and closes the Battle Royale HUD', q.open().join() === 'menu' && q.consistent());
+        q.server(true, ':ffa');
+        check('... leaving then keeps the menu (no double restore)', q.open().join() === 'menu' && q.consistent());
+        // a reload in Battle Royale: the saved flags are off, the HUD from before is in lmQuickBeforeBR
+        q = make({ flags: { showQuickMenu: false }, store: { lmQuickBeforeBR: 'menu' } });
+        q.app.setShowQuickMenu();
+        q.app.syncQuickPanels(); // no connection yet: nothing decided
+        check('reload in Battle Royale: before the connection nothing opens, the remembered HUD is kept', q.open().length === 0 && q.store.lmQuickBeforeBR === 'menu');
+        q.server(true, ':battleroyale');
+        check('reload in Battle Royale: back in it: its HUD, the menu still remembered', q.open().join() === 'br' && q.store.lmQuickBeforeBR === 'menu');
+        q.server(true, ':ffa');
+        check('reload in Battle Royale: leaving brings the menu back', q.open().join() === 'menu' && q.consistent());
+        q = make({ flags: { showQuickMenu: false }, store: { lmQuickBeforeBR: 'menu' } });
+        q.app.setShowQuickMenu();
+        q.server(true, ':ffa');
+        check('reload in Battle Royale, then another mode first: the menu comes back', q.open().join() === 'menu' && !('lmQuickBeforeBR' in q.store));
+        // one call, in LM.connect right where integrity is set: every join (Discover, server list, party token, URL, reconnect, Expanding Land, private rooms) passes there
+        const k = ogSrc.indexOf("this.integrity = (this.ws.indexOf('agario.miniclippt') > -1");
+        const next = k < 0 ? '' : ogSrc.slice(k, ogSrc.indexOf('this.serverType = _earlyType;', k));
+        check('quick HUDs: LM.connect updates the buttons right after integrity is set (main connection only)', next.includes('if (this === window.legendmod) application.displayPartyBots();'));
+        check('quick HUDs: displayPartyBots is called from that one place only', (ogSrc.match(/application\.displayPartyBots\(\)/g) || []).length === 1);
+        check('quick HUDs: checked every half second too, and at load', /this\.setShowQuickMenu\(\);[\s\S]{0,200}this\.syncQuickPanels\(\);[\s\S]{0,120}_lmQuickApp\.syncQuickPanels\(\); \}, 500\)/.test(ogSrc));
+        check('quick HUDs: one click handler for the three buttons, blurred after a click', /on\("click", "\.quick-menu, \.quick-bots, \.quick-br", function \(event\) \{[\s\S]{0,120}this\.blur\(\)[\s\S]{0,200}app\.toggleQuickPanel\(/.test(ogSrc));
+        check('quick HUDs: settings profiles re-apply the flags', fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'modules', 'profiles.js'), 'utf8').includes("showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots'"));
+        check('quick HUDs: the open button\'s ring in the theme colour', ogSrc.includes(".quick.lm-quick-on{box-shadow:0 0 0 2px ' + defaultSettings.menuMainColor + '}"));
+        check('bots button: LM.connect still stops running bots on a server switch', /window\._lmBotsStop\(\)\s*\r?\n\s*window\.userBots\.isAlive = false/.test(ogSrc));
     }
 
-    // Start bots gate allows FFA/EXP/BR
-    check('ogario: start bots gate includes FFA', ogSrc.includes('":ffa"') && ogSrc.includes('":experimental"') && ogSrc.includes('":battleroyale"'));
+    // every agar.io mode takes bots: no "Party bots only" gate or message
+    check('ogario: no Party-only gate for Start', !ogSrc.includes('game2.botsPartyOnly') && !/legendmod\.gameMode === ":party" \|\| legendmod\.gameMode === ":ffa"/.test(ogSrc));
 
     // Menu background uses fixed attachment for shared background
     check('ogario: menu bg uses background-attachment:fixed', ogSrc.includes('background-attachment:fixed'));
@@ -1123,24 +1472,36 @@ for (const file of ['server.js', 'server-fast.js']) {
     }
 }
 
-// ---- ogario.v4.js: P4 CAPTCHA popup security ----
+// ---- ogario.v4.js: no captcha tokens in the bots panel flow ----
 {
     const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
-    // The message listener must check event.origin
-    check('captcha: message listener checks event.origin', ogSrc.includes("event.origin !== 'https://agar.io'"));
-    // The message listener must verify event.source against registered popup windows
-    check('captcha: message listener checks event.source against capthaWindow', ogSrc.includes('event.source === window.capthaWindow[ci]'));
-    // The message listener must require an active bot connection
-    check('captcha: message listener requires active bot connection', ogSrc.includes('connectionBots.ws.readyState !== WebSocket.OPEN') && ogSrc.includes('!window.connectionBots.ws'));
-    // Verify guards appear BEFORE sendSpawn2 within the message listener
-    // Find the listener body between addEventListener("message" and the matching closing
-    const listenerStart = ogSrc.indexOf('addEventListener("message", function (event)');
-    const spawnCall = listenerStart > -1 ? ogSrc.indexOf('sendSpawn2', listenerStart) : -1;
-    const originCheck = listenerStart > -1 ? ogSrc.indexOf("event.origin", listenerStart) : -1;
-    const sourceCheck = listenerStart > -1 ? ogSrc.indexOf("event.source", listenerStart) : -1;
-    check('captcha: message listener found', listenerStart > -1 && spawnCall > -1);
-    check('captcha: origin check appears before sendSpawn2', originCheck > -1 && originCheck < spawnCall);
-    check('captcha: source check appears before sendSpawn2', sourceCheck > -1 && sourceCheck < spawnCall);
+    // agar.io asks for no captcha now and the browser bots take no tokens: no popups, no token loops
+    for (const gone of ['createCaptchaWindow', 'startCaptcha', 'closeCaptcha', 'captchaActive', 'sendTokenForBots', 'sendTimeOutTokenForBots', 'sendSpawn2', 'lm-bots-captcha-open',
+        'capthaWindow', 'captchaOpenedWindow', 'RequestedTokens', 'botsSpawncode', 'captchaSpeed', 'game1.bots.captchaOpen', 'game1.bots.captchaTip']) {
+        check('captcha: no ' + gone + ' in ogario.v4.js', !ogSrc.includes(gone));
+    }
+    check('captcha: message 12 keeps a plain notice (the bots wait)', /case 12:[\s\S]{0,400}game1\.bots\.captchaNeeded[\s\S]{0,200}game1\.bots\.captchaWait/.test(ogSrc));
+}
+
+// ---- i18n: the bots panel texts ----
+{
+    const I = require(path.join(__dirname, '..', 'i18n', 'lib'));
+    const all = I.readAll();
+    const g1 = all.game1, g2 = all.game2;
+    check('i18n: bots panel title is "Bots" (en, el)', g1['game1.bots.title'] && g1['game1.bots.title'].en === 'Bots' && g1['game1.bots.title'].el === 'Bots');
+    check('i18n: bots panel title is the same word as the Bots of rooms in all 16 languages', I.CODES.every(c => g1['game1.bots.title'][c] === all.core.roomBots[c]));
+    let partyBots = [];
+    for (const area of Object.keys(all)) for (const key of Object.keys(all[area])) if (/party[ -]?bots/i.test(all[area][key].en || '')) partyBots.push(key);
+    check('i18n: no English text says "Party bots" (' + partyBots.join(', ') + ')', partyBots.length === 0);
+    check('i18n: the obsolete "Party bots only available for Party mode" is gone', !g2['game2.botsPartyOnly']);
+    for (const gone of ['tokens', 'install', 'tutPc', 'tutRepl', 'tip', 'connect', 'slots', 'captchaOpen', 'captchaTip', 'outdated', 'visit'])
+        check('i18n: game1.bots.' + gone + ' removed', !g1['game1.bots.' + gone]);
+    for (const key of ['onServer', 'connecting', 'connectFailed', 'captchaNeeded', 'captchaWait'])
+        check('i18n: game1.bots.' + key + ' in all 16 languages', !!g1['game1.bots.' + key] && I.CODES.every(c => typeof g1['game1.bots.' + key][c] === 'string' && g1['game1.bots.' + key][c].trim() !== ''));
+    for (const c of ['en', 'el']) {
+        const pack = fs.readFileSync(path.join(__dirname, '..', '..', 'languages', 'lm-' + c + '.js'), 'utf8');
+        check('i18n: built pack lm-' + c + '.js has the title "Bots"', pack.includes('"game1.bots.title": "Bots"'));
+    }
 }
 
 // ---- browser bots: botcore.js in a Web Worker (emulated: vm context without require/Buffer) ----
@@ -1258,7 +1619,7 @@ async function browserBots() {
     const cbw = { SERVER_HOST: '', OgVer: '9.9', LMBotsWorkerSocket: function (src) { made.push(['worker', src]); this.readyState = 0; } };
     const WS = function (url) { made.push(['ws', url]); this.readyState = 0; };
     WS.OPEN = 1; WS.CONNECTING = 0;
-    const cbCtx = { window: cbw, WebSocket: WS };
+    const cbCtx = { window: cbw, WebSocket: WS, document: { getElementById: () => null }, _lmG1set() {} };
     vm.createContext(cbCtx);
     vm.runInContext(cbSrc, cbCtx);
     const CB = cbw.connectionBots;
@@ -1268,19 +1629,18 @@ async function browserBots() {
     check('browser: connect uses the WebSocket for a bot server address', ['ws://localhost:1337', 'wss://party-bots--x.repl.co'].every(h => pick(h) === 'ws' && made[0][1] === h && CB.inBrowser === false));
     check('browser: Bots address default is "browser" when none was saved', /if \(storedbotsRemoteIP == null \|\| storedbotsRemoteIP === ""\) \{\s*storedbotsRemoteIP = "browser";/.test(ogSrc) &&
         ogSrc.includes('list="botsRemoteIPList"') && ogSrc.includes('<option value="browser" data-i18n="game1.bots.hostBrowser">'));
-    // browser mode: message 12 is a notice without the captcha popups button, startCaptcha does nothing
+    // browser mode: message 12 is the wait notice (no captcha button)
     {
-        const toasts = [], popups = [];
-        const w = { userBots: {}, bots: {}, captchaOpenedWindow: 1, capthaWindow: [] };
+        const toasts = [];
+        const w = { userBots: {}, bots: {} };
         const ctx = { window: w, WebSocket: WS, DataView, Uint8Array, toastr: { warning: m => toasts.push(m), info: m => toasts.push(m) }, _lmTH: k => k, lmT: k => k,
-            Premadeletter123: 'LM', createCaptchaWindow: i => popups.push(i), legendmod: { sendTokenForBots() {}, sendTimeOutTokenForBots() {} }, setTimeout() {} };
+            Premadeletter123: 'LM', setTimeout() {} };
         vm.createContext(ctx);
         vm.runInContext(cbSrc, ctx);
         const cb = w.connectionBots;
         cb.inBrowser = true; cb.ws = { readyState: 1 };
         cb.onmessage({ data: new Uint8Array([12]).buffer });
-        cb.startCaptcha();
-        check('browser: message 12 shows the wait notice, no captcha button, no popups', toasts.length === 1 && toasts[0].includes('game1.bots.captchaWait') && !toasts[0].includes('lm-bots-captcha-open') && popups.length === 0 && !cb.captchaActive);
+        check('browser: message 12 shows the wait notice, no captcha button', toasts.length === 1 && toasts[0].includes('game1.bots.captchaWait') && !toasts[0].includes('<button'));
     }
 
     // the worker socket end to end

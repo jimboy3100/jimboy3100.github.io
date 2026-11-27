@@ -875,7 +875,8 @@
     }
 
     /* these switches call their own updater */
-    var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl' };
+    /* (the quick HUD flags too: what is shown follows them) */
+    var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl', showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots' };
     /* settings that take effect on the next load (their own options say so) */
     var RELOAD_KEYS = { glAntialias: 1, webgl2Acceleration: 1 };
     /* One gameplay setting through its control, as the presets do. */

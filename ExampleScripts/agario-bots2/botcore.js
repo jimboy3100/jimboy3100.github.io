@@ -1141,9 +1141,9 @@
             // Clear any previous status interval before creating a new one
             if (statusInterval) { clearInterval(statusInterval); statusInterval = null }
             statusInterval = setInterval(() => {
+                // no server player total here (54 is the top-10 leaderboard): Legend Mod counts the
+                // players itself from the whole leaderboard (opcode 53) it gets as the player
                 sendToUser(new Uint8Array([4, clamp8(connectedBots), clamp8(spawnedBots)]))
-                // the protocol gives no server player total (54 is the top-10 leaderboard): 0 = unknown
-                sendToUser(new Uint8Array([5, 0]))
             }, 1000)
             userWS = ws
             logger.good('User connected!')

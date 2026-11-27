@@ -639,9 +639,10 @@ input.hide-url::selection,input.stream-mode::selection{
     display:none;
     float:right 
 }
-#quick-bots{
+#quick-bots,#quick-br{
     width:300px;
-    height:500px;
+    height:auto;
+    padding-bottom:10px;
     display:none;
     float:right;
 }
@@ -693,6 +694,14 @@ input.hide-url::selection,input.stream-mode::selection{
 }
 .quick-bots{
     left:60px
+}
+/* the Battle Royale button takes the place of the (hidden) bots button */
+.quick-br{
+    left:60px
+}
+/* no focus ring left on a quick HUD button after a click (the open one has lm-quick-on) */
+.quick:focus:not(:focus-visible){
+    outline:none
 }
 .quick-custom-skin{
     left:60px
@@ -1752,7 +1761,7 @@ input.hide-url::selection,input.stream-mode::selection{
 #botsNameLM:focus, #botsAmount:focus, #botsRemoteIP:focus, #captchaSpeed:focus {
     border-color: #7D7D7D;
 }
-#connectBots, #startBots, #stopBots, #captchaBots {
+#startBots, #stopBots, #captchaBots {
     color: white;
     border: none;
     padding: 7px;
@@ -1763,10 +1772,6 @@ input.hide-url::selection,input.stream-mode::selection{
     margin-top: 6px;
     margin-left: 10px;
 }
-#connectBots {
-    display: inline;
-    background-color: #0074C0;
-}
 #startBots, #captchaBots{
     display: inline;
     background-color: #00C02E;
@@ -1774,9 +1779,6 @@ input.hide-url::selection,input.stream-mode::selection{
 #stopBots {
     display: none;
     background-color: #DA0A00;
-}
-#connectBots:active {
-    background-color: #004E82;
 }
 #startBots:active {
     background-color: #009A25;

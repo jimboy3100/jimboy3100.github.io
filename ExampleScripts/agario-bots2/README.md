@@ -30,10 +30,10 @@ Chrome asks whether agar.io may "look for and connect to any device on your loca
 - (For folder agario-bots2) `cd agario-bots2`
 - `install.bat`
 - `start.bat`
-6. Install and use Legend mod Express https://jimboy3100.github.io , visit agar.io and enable party bots on settings->helpers->party bots and click the "triumph" of main HUD area.
-7. CLick "Connect" button, the status should say "Connected"
-8. To stop bots click the "Stop Bots" button and wait 30 seconds for the CMD to close you will see a countdown there
-9. To run the bots again just run `start.bat`, click "Connect" button and then click "Start Bots" button
+6. Install and use Legend mod Express https://jimboy3100.github.io , visit agar.io and click the trophy button of the main menu: the Bots panel opens.
+7. Write your bot server's address (ws://localhost:1337) in the address field (the default "browser" runs the bots in the browser, with no bot server) and click "Start Bots": it connects and starts, the status says "Connected"
+8. To stop bots click the "Stop Bots" button
+9. To run the bots again just run `start.bat` and click "Start Bots"
 
 VPS
 -------
@@ -78,7 +78,7 @@ These bots are considered fully working, free, legit and finished project. They 
 
 #### Do you use proxies, facebook tokens for bots?
 
-These bots don't need proxies, they use the captcha solver that Legend mod provides. Furthermore, bots do NOT use any facebook UID that could result on real player disconnection or facebook / google tokens, at all.
+These bots don't need proxies or captcha tokens: they spawn like the player, and when agar.io asks them for a captcha they wait and try again a few minutes later. Furthermore, bots do NOT use any facebook UID that could result on real player disconnection or facebook / google tokens, at all.
 
 #### My websocket is not correct. What is the correct?
 
