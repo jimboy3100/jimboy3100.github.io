@@ -7133,13 +7133,6 @@ window.buffers = {
         writer.writeUint8(8)
         writer.writeInt32(x)
         return writer.dataView.buffer
-    },
-    playerPosition(x, y) {
-        const writer = new Writer(9)
-        writer.writeUint8(11)
-        writer.writeInt32(x)
-        writer.writeInt32(y)
-        return writer.dataView.buffer
     }
 }
 window.addEventListener('beforeunload', function (e) {
@@ -7295,7 +7288,6 @@ window.connectionBots = {
         document.getElementById('connectBots').style.color = 'white'
         window.userBots.startedBots = false
         window.bots.ai = false
-        if (window.userBots.playerPosInterval) { clearInterval(window.userBots.playerPosInterval); window.userBots.playerPosInterval = null }
         // Clean up Battle Royale fill state on bot server disconnect
         if (typeof window._brStopFilling === 'function') window._brStopFilling()
         for (i = 0; i < window.captchaOpenedWindow; i++) {
@@ -7319,8 +7311,7 @@ window.userBots = {
     mouseY: 0,
     offsetX: 0,
     offsetY: 0,
-    macroFeedInterval: null,
-    playerPosInterval: null
+    macroFeedInterval: null
 }
 window.bots = {
     nameLM: 'Legendmod|ml',
@@ -42801,9 +42792,6 @@ function thelegendmodproject() {
                 window.userBots.mouseX = this.cursorX - window.userBots.offsetX;
                 window.userBots.mouseY = this.cursorY - window.userBots.offsetY;
                 window.connectionBots.send(window.buffers.mousePosition(window.userBots.mouseX, window.userBots.mouseY))
-                if (typeof legendmod !== 'undefined' && legendmod.playerX != null) {
-                    window.connectionBots.send(window.buffers.playerPosition(~~legendmod.playerX, ~~legendmod.playerY))
-                }
             }
         },
         /*            sendAccessToken(t, e, i) {

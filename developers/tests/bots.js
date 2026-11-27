@@ -176,7 +176,7 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('Compressed size has 1MB safety cap', serverSrc.includes('compressedSize > 1048576'));
 }
 
-// ---- server.js: player position opcode (ghost-cell orientation) ----
+// ---- server.js: player position opcode ----
 {
     const serverSrc = fs.readFileSync(path.join(botsDir, 'server.js'), 'utf8');
     check('server.js has playerX on user object', serverSrc.includes('playerX: 0'));
@@ -184,20 +184,25 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('server.js handles opcode 7 (player position)', serverSrc.includes('case 7:'));
     check('server.js reads playerX from opcode 7', serverSrc.includes('user.playerX = reader.readInt32()'));
     check('server.js reads playerY from opcode 7', serverSrc.includes('user.playerY = reader.readInt32()'));
-    // AI orbit logic: bot should orbit near player when in AI mode
-    check('server.js has player orbit logic (distToPlayer)', serverSrc.includes('distToPlayer'));
-    check('server.js converts player absolute to bot local', serverSrc.includes('user.playerX + this.offsetX'));
-    // Bot position reporting (opcode 9 to client)
-    check('server.js sends opcode 9 (bot positions)', serverSrc.includes("posBuf.writeUInt8(9, 0)"));
-    check('server.js converts bot local to absolute (subtracts offset)', serverSrc.includes('bx - b.offsetX'));
+    // Orbit and position-reporting removed per owner request
+    check('server.js does NOT have orbit logic', !serverSrc.includes('distToPlayer'));
+    check('server.js does NOT send opcode 9', !serverSrc.includes("posBuf.writeUInt8(9, 0)"));
+    // Crash fix: uses buffer.length (not data.length) for opcode 7/11 guard
+    check('server.js uses buffer.length for opcode guard', serverSrc.includes('buffer.length === 9'));
+    check('server.js does NOT use data.length for opcode guard', !serverSrc.includes('data.length === 9'));
 }
 
-// ---- server-fast.js: player position opcode (ghost-cell orientation) ----
+// ---- server-fast.js: player position opcode ----
 {
     const fastSrc = fs.readFileSync(path.join(botsDir, 'server-fast.js'), 'utf8');
     check('server-fast.js has playerX on user object', fastSrc.includes('playerX: 0'));
     check('server-fast.js handles opcode 7', fastSrc.includes('case 7:'));
-    check('server-fast.js has player orbit logic', fastSrc.includes('distToPlayer') || fastSrc.includes('playerLocalX'));
+    // Orbit and position-reporting removed per owner request
+    check('server-fast.js does NOT have orbit logic', !fastSrc.includes('distToPlayer'));
+    check('server-fast.js does NOT send opcode 9', !fastSrc.includes("posBuf.writeUInt8(9, 0)"));
+    // Crash fix: uses buffer.length (not data.length) for opcode 7/11 guard
+    check('server-fast.js uses buffer.length for opcode guard', fastSrc.includes('buffer.length === 9'));
+    check('server-fast.js does NOT use data.length for opcode guard', !fastSrc.includes('data.length === 9'));
 }
 
 // ---- server-fast.js: parity with server.js reliability fixes ----
@@ -208,7 +213,6 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('server-fast.js Bot.onclose nulls ws', fastSrc.includes('this.ws = null'));
     check('server-fast.js Bot.onclose clears onmessage', fastSrc.includes('this.ws.onmessage = null'));
     check('server-fast.js has statusInterval', fastSrc.includes('statusInterval'));
-    check('server-fast.js sends opcode 9 (bot positions)', fastSrc.includes("posBuf.writeUInt8(9, 0)"));
     check('server-fast.js has shutdownInterval tracked', fastSrc.includes('let shutdownInterval'));
     check('server-fast.js clears shutdownInterval', fastSrc.includes('if(shutdownInterval) clearInterval(shutdownInterval)'));
     check('server-fast.js nulls userWS on disconnect', fastSrc.includes('userWS = null'));
@@ -256,16 +260,16 @@ const Entity = require(path.join(botsDir, 'entity'));
 {
     const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
 
-    // playerPosition buffer uses opcode 11 (not 7, which conflicts with sendMode)
-    check('ogario: playerPosition buffer exists', ogSrc.includes('playerPosition(x, y)'));
-    check('ogario: playerPosition uses opcode 11', /playerPosition\(x,\s*y\)\s*\{[^}]*writeUint8\(11\)/.test(ogSrc));
+    // playerPosition buffer removed (orbit/position-reporting not needed)
+    check('ogario: no playerPosition buffer', !ogSrc.includes('playerPosition(x, y)'));
+    check('ogario: no playerPosInterval in userBots', !ogSrc.includes('playerPosInterval'));
 
     // Mouse position sending uses connectionBots.send() (not broken readyState check)
     check('ogario: mouse position uses connectionBots.send', ogSrc.includes('window.connectionBots.send(window.buffers.mousePosition('));
     check('ogario: no broken readyState===1 check on connectionBots', !ogSrc.includes('window.connectionBots.readyState === 1'));
 
-    // Player position sent alongside mouse position
-    check('ogario: player position sent with mouse', ogSrc.includes('window.connectionBots.send(window.buffers.playerPosition('));
+    // Player position no longer sent alongside mouse
+    check('ogario: no player position sent with mouse', !ogSrc.includes('window.connectionBots.send(window.buffers.playerPosition('));
 
     // displayPartyBots shows button in FFA/EXP/BR
     check('ogario: displayPartyBots shows in FFA', ogSrc.includes('legendmod.gameMode === ":ffa"') && ogSrc.includes('.show()'));
@@ -273,14 +277,7 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('ogario: displayPartyBots shows in BR', ogSrc.includes('legendmod.gameMode === ":battleroyale"'));
 
     // Start bots gate allows FFA/EXP/BR
-    const startGate = ogSrc.match(/getElementById\('startBots'\).*?addEventListener.*?(\{[\s\S]*?\n\s*\})\)/);
     check('ogario: start bots gate includes FFA', ogSrc.includes('":ffa"') && ogSrc.includes('":experimental"') && ogSrc.includes('":battleroyale"'));
-
-    // playerPosInterval on userBots
-    check('ogario: userBots has playerPosInterval', ogSrc.includes('playerPosInterval'));
-
-    // onclose cleans up playerPosInterval
-    check('ogario: onclose clears playerPosInterval', ogSrc.includes('clearInterval(window.userBots.playerPosInterval)'));
 
     // Menu background uses fixed attachment for shared background
     check('ogario: menu bg uses background-attachment:fixed', ogSrc.includes('background-attachment:fixed'));
@@ -299,9 +296,9 @@ const Entity = require(path.join(botsDir, 'entity'));
 {
     const serverSrc = fs.readFileSync(path.join(botsDir, 'server.js'), 'utf8');
     const fastSrc = fs.readFileSync(path.join(botsDir, 'server-fast.js'), 'utf8');
-    // The guard checks data.length === 9 before reading playerX/playerY
-    check('server.js guards opcode 7 by length', serverSrc.includes('data.length === 9'));
-    check('server-fast.js guards opcode 7 by length', fastSrc.includes('data.length === 9'));
+    // The guard checks buffer.length === 9 before reading playerX/playerY (crash fix)
+    check('server.js guards opcode 7 by buffer.length', serverSrc.includes('buffer.length === 9'));
+    check('server-fast.js guards opcode 7 by buffer.length', fastSrc.includes('buffer.length === 9'));
 }
 
 // ---- ogario.v4.js: opcode 9 handled gracefully ----
@@ -330,31 +327,15 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('ogario: BR watcher detects bot server disconnect', /brLobbyWatcher[\s\S]{0,800}readyState\s*!==\s*WebSocket\.OPEN[\s\S]{0,200}brStopFilling/.test(ogSrc));
 }
 
-// ---- Behavioral: playerPosition buffer encodes correctly ----
-{
-    // Simulate the Writer class and test playerPosition buffer structure
-    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
-    // Extract the playerPosition function and verify its protocol
-    const ppMatch = ogSrc.match(/playerPosition\(x,\s*y\)\s*\{([^}]+)\}/);
-    check('ogario: playerPosition function extractable', !!ppMatch);
-    if (ppMatch) {
-        const body = ppMatch[1];
-        check('ogario: playerPosition allocates 9 bytes', body.includes('Writer(9)'));
-        check('ogario: playerPosition writes opcode 11', body.includes('writeUint8(11)'));
-        check('ogario: playerPosition writes x as int32', body.includes('writeInt32(x)'));
-        check('ogario: playerPosition writes y as int32', body.includes('writeInt32(y)'));
-    }
-}
-
-// ---- Behavioral: sendMode uses opcode 7 (not 11) — protocol disambiguation ----
+// ---- Behavioral: sendMode uses opcode 7 for mode identification ----
 {
     const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
     const smMatch = ogSrc.match(/sendMode\(nick\)\s*\{([^}]+)\}/);
     check('ogario: sendMode function extractable', !!smMatch);
     if (smMatch) {
         const body = smMatch[1];
-        check('ogario: sendMode uses opcode 7 (not 11)', body.includes('writeUint8(7)'));
-        check('ogario: sendMode payload differs from playerPosition', body.includes('Writer(3 + nick.length)'));
+        check('ogario: sendMode uses opcode 7', body.includes('writeUint8(7)'));
+        check('ogario: sendMode encodes nick with correct Writer size', body.includes('Writer(3 + nick.length)'));
     }
 }
 
@@ -378,22 +359,22 @@ const Entity = require(path.join(botsDir, 'entity'));
     }
 }
 
-// ---- End-to-end protocol: opcode 11 round-trip with Writer and Reader ----
+// ---- Behavioral: opcode 7 round-trip with Writer and Reader ----
 {
-    // Test that an opcode 11 message created by Writer is correctly parsed by Reader
+    // Test that an opcode 7 position message is correctly parsed by Reader
     const Writer = require(path.join(botsDir, 'writer'));
     const Reader = require(path.join(botsDir, 'reader'));
     const w = new Writer(9);
-    w.writeUint8(11);
+    w.writeUint8(7);
     w.writeInt32(-5000);
     w.writeInt32(3200);
     const buf = Buffer.from(w.buffer);
-    check('opcode 11 round-trip: buffer is 9 bytes', buf.length === 9);
-    check('opcode 11 round-trip: opcode byte', buf[0] === 11);
+    check('opcode 7 round-trip: buffer is 9 bytes', buf.length === 9);
+    check('opcode 7 round-trip: opcode byte', buf[0] === 7);
     const r = new Reader(buf);
     r.readUint8(); // skip opcode
-    check('opcode 11 round-trip: x decoded', r.readInt32() === -5000);
-    check('opcode 11 round-trip: y decoded', r.readInt32() === 3200);
+    check('opcode 7 round-trip: x decoded', r.readInt32() === -5000);
+    check('opcode 7 round-trip: y decoded', r.readInt32() === 3200);
 }
 
 console.log('\n' + (fail ? 'FAIL: ' + fail + ' failure(s)' : 'ALL PASS'));
