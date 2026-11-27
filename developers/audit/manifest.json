@@ -567,6 +567,24 @@
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "AllFilesNew.txt",
+      "canonicalPath": null,
+      "reason": "Stale 2 MB concatenated source export (starts with ogario/ogario.v4.master.js, ends with play.html), made by the export tool for reading the code in one place. No page, script, test, tool, userscript or extension loads it; no reference in expandingland, legendworld-help, LegendWorld or deltav4. The export tool now writes its exports outside the repository (developers/tools/concat_mod.js --out).",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "concat_mod.js",
+      "canonicalPath": "developers/tools/concat_mod.js",
+      "reason": "Development export tool at the repository root with hard-coded C:/Github_repos paths that created and wrote C:/Github_repos/garbadge (4-6 identical copies per component). Moved to developers/tools/, paths are options (--repo, --legendworld, --discord, --out, --only), one export per component, it writes only into --out and creates no folder unless --out is given. It was listed in .gitignore while tracked; that line is gone. Nothing loads it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
     }
   ]
 }
