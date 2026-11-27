@@ -407,7 +407,7 @@ const sizeOf = m => Math.sqrt(m * 100);
       classList: { add(...cs) { cs.forEach(c => e.classList.toggle(c, true)); }, toggle(c, on) { const l = e.className.split(' ').filter(Boolean).filter(x => x !== c); if (on) l.push(c); e.className = l.join(' '); }, contains(c) { return e.className.split(' ').indexOf(c) >= 0; } },
       appendChild(c) { if (c.parentNode) c.parentNode.removeChild(c); c.parentNode = e; e.children.push(c); return c; },
       removeChild(c) { e.children = e.children.filter(x => x !== c); c.parentNode = null; return c; },
-      addEventListener() { }, setAttribute(k, v) { e.attrs[k] = String(v); }, getAttribute(k) { return k in e.attrs ? e.attrs[k] : null; },
+      addEventListener(t, f) { (e._h = e._h || {})[t] = f; }, setAttribute(k, v) { e.attrs[k] = String(v); }, getAttribute(k) { return k in e.attrs ? e.attrs[k] : null; },
       contains(x) { for (; x; x = x.parentNode) if (x === e) return true; return false; },
       getBoundingClientRect: () => ({ left: 0, top: 0, right: 0, bottom: 0, width: 0, height: 0 }),
       querySelectorAll(sel) {
@@ -461,6 +461,17 @@ const sizeOf = m => Math.sqrt(m * 100);
   check('closed panel: a language change keeps it closed', !D.isOpen() && !panel());
   D.open();
   check('opened again: English', titleOf(panel()).indexOf(T('title')) >= 0 && panel().dir === 'ltr');
+  /* Free spectate button in Expanding Land World Spectate entered from the follow camera: Q there
+   * goes to the follow camera (the server's on_spectate_toggle), so Spectate leaves it first */
+  const sent = [];
+  ctx.legendmod = {
+    play: false, isLegendWorld: true, isSpectateEnabled: true, isFreeSpectate: false, _isWorldSpectating: true,
+    sendSpectate() { sent.push(1); this.isSpectateEnabled = true; this.isFreeSpectate = false; this._isWorldSpectating = false; },
+    sendFreeSpectate() { sent.push(18); this.isFreeSpectate = this._isWorldSpectating ? false : !this.isFreeSpectate; this._isWorldSpectating = false; }
+  };
+  const fb = find(panel(), n => n.attrs['data-act'] === 'freespec');
+  if (fb) panel()._h.click({ target: { closest: () => fb }, preventDefault() { } });
+  check('free spectate button from World Spectate: Spectate, then free spectate', fb && sent.join(',') === '1,18' && ctx.legendmod.isFreeSpectate && !ctx.legendmod._isWorldSpectating);
 }
 
 console.log(fail ? fail + ' FAILED' : 'all passed');

@@ -28243,6 +28243,9 @@ function thelegendmodproject() {
                         55
                     );
                     legendmod._isWorldSpectating = true;
+                    /* World Spectate is its own mode: a free spectate before it is over (the next Q
+                     * goes to the follow camera, sendFreeSpectate), and its follows stop */
+                    legendmod.isFreeSpectate = false;
                     legendmod._worldSpecPanX = 0;
                     legendmod._worldSpecPanY = 0;
                 } else {
@@ -41955,6 +41958,7 @@ function thelegendmodproject() {
                     55
                 );
                 this._isWorldSpectating = true;
+                this.isFreeSpectate = false; /* as the World Spectate button does */
                 this._worldSpecPanX = 0;
                 this._worldSpecPanY = 0;
             }
@@ -43110,6 +43114,9 @@ function thelegendmodproject() {
                 if (this.sigOpcodeMap && !this.isFreeSpectate) this.sendFreeSpectate();
                 return;
             }
+            /* opcode 1 is the follow camera: the server ends free roam with it (Expanding Land
+             * on_spectate, Ogar servers), so the next Q starts free spectate again */
+            this.isFreeSpectate = false;
             this.sendAction(1);
         },
         /* Spawning ends every spectate mode (follow, free spectate, World Spectate) on every
@@ -43127,7 +43134,11 @@ function thelegendmodproject() {
             if (this._lmSpecLb != null) { this._lmSpecLb = null; this._lmSpecLbHud(); }
             if (this._lmSpecCell) this._lmSpecCellStop();
             this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1; /* cancels a pending spawn retry, like sendSpectate */
-            this.isFreeSpectate = !this.isFreeSpectate;
+            /* Expanding Land: Q in World Spectate goes to the follow camera (client.c
+             * on_spectate_toggle: full map -> grouped); elsewhere it toggles free roam */
+            var _lmFromWorld = !!(this._isWorldSpectating && this.isLegendWorld);
+            this.isFreeSpectate = _lmFromWorld ? false : !this.isFreeSpectate;
+            if (_lmFromWorld) this.isSpectateEnabled = true;
             this._isWorldSpectating = false;
             this._worldSpecPanX = 0;
             this._worldSpecPanY = 0;
@@ -52786,7 +52797,8 @@ function thelegendmodproject() {
                 for (var i = 0; i < cs.length; i++) if (live(cs[i]) && cs[i].nick === k.nick && (!best || cs[i].size > best.size)) best = cs[i];
             }
             if (window.application && typeof application.onSpectate === 'function' && $('#overlays').is(':visible')) application.onSpectate();
-            if (!this.isSpectateEnabled && !this.isFreeSpectate) this.sendSpectate();
+            /* from World Spectate Q goes to the follow camera: Spectate first leaves it */
+            if ((!this.isSpectateEnabled || this._isWorldSpectating) && !this.isFreeSpectate) this.sendSpectate();
             if (!this.isFreeSpectate) this.sendFreeSpectate(); /* both stop a previous follow */
             this._lmSpecLb = null; /* one follow at a time */
             var vx = Number.isFinite(this.viewXTrue) ? this.viewXTrue : (this.playerX || 0), vy = Number.isFinite(this.viewYTrue) ? this.viewYTrue : (this.playerY || 0);

@@ -892,7 +892,8 @@
         try {
             var ov = D.getElementById('overlays');
             if (ov && ov.offsetParent !== null && W.application && typeof W.application.onSpectate === 'function') W.application.onSpectate();
-            if (!LM.isSpectateEnabled && typeof LM.sendSpectate === 'function') LM.sendSpectate();
+            /* World Spectate: Q from it goes to the follow camera, so leave it with Spectate first */
+            if ((!LM.isSpectateEnabled || LM._isWorldSpectating) && typeof LM.sendSpectate === 'function') LM.sendSpectate();
             if (!LM.isFreeSpectate) LM.sendFreeSpectate();
         } catch (e) { }
     }
