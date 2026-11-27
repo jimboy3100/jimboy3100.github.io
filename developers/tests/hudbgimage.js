@@ -5,7 +5,8 @@
 // 1. window.lmHudBg from ogario/ogario.v4.js in Node: restore() applies the saved images, a failed fetch
 //    is tried again and the box is shown with the image once it loads (not over a chat command's
 //    image), an empty URL gives the box its normal look, the same URL again does not restart the load,
-//    and being back online tries again after the last retry.
+//    and being back online tries again after the last retry. LMexpress.js puts the saved image back after
+//    a chat command's image (troll, Team5), also when the start threw before it filled its variables.
 // 2. play.html loaded several times (desktop and phone; needs Chrome, skipped without it) with the three
 //    images saved: each box has its image the moment the HUD is added to the page, still has it after
 //    the load, a theme change, a resize and the fields losing focus; and once more with an error thrown
@@ -119,6 +120,34 @@ let lmxSrc = src('LMexpress/LMexpress.js');
   const nF2 = e.images.length;
   e.api.apply('#minimap-hud', U); e.flush();
   check('after the last retry the field losing focus tries again', e.images.length === nF2 + 1);
+})();
+
+/* ---------- 1b. LMexpress.js puts the saved image back after a chat command's image ---------- */
+(function putBack() {
+  /* the start threw before it filled leadbimg / teambimg / minimapbckimg: they are still "" while
+   * ogario.v4.js shows the saved images, so putting back "" removed them for the session */
+  const fnSrc = (name) => { const a = lmxSrc.indexOf('function ' + name + '('); if (a < 0) return null; const b = lmxSrc.indexOf('\n}', a); return b > a ? lmxSrc.slice(a, b + 2) : null; };
+  const t5a = lmxSrc.indexOf('if (commandMsg == "Team5") {'), t5b = t5a >= 0 ? lmxSrc.indexOf(' else if (commandMsg == "Hello")', t5a) : -1;
+  const troll = fnSrc('settrolling');
+  check('LMexpress.js has settrolling and the Team5 command', !!troll && t5a >= 0 && t5b > t5a);
+  if (!troll || !(t5b > t5a)) return;
+  const U = 'https://i.example/lb.gif', U2 = 'https://i.example/tb.png', U3 = 'https://i.example/mm.png';
+  const store = { leadbimg: U, teambimg: U2, minimapbckimg: U3 };
+  const calls = [], timers = [];
+  const jq = () => { const o = { css: () => o }; return o; };
+  const ctx = {
+    $: jq, playSound: () => { }, leadbimg: '', teambimg: '', minimapbckimg: '', canvasbimg: '', commandMsg: 'Team5',
+    localStorage: { getItem: k => (k in store ? store[k] : null) },
+    setTimeout: (fn) => { timers.push(fn); return timers.length; },
+    lmHudBgImage: (sel, url) => calls.push([sel, url])
+  };
+  vm.createContext(ctx);
+  const saved = fnSrc('lmHudBgSaved');
+  vm.runInContext((saved || '') + '\n' + troll + '\nsettrolling();\n(function () { ' + lmxSrc.slice(t5a, t5b) + ' })();', ctx);
+  timers.forEach(fn => fn());
+  const got = {}; calls.forEach(c => { got[c[0]] = c[1]; });
+  check('the troll command puts the saved leaderboard and minimap images back', got['#leaderboard-hud'] === U && got['#minimap-hud'] === U3, JSON.stringify(calls));
+  check('the Team5 command puts the saved team list image back', got['#top5-hud'] === U2, JSON.stringify(calls));
 })();
 
 /* ---------- 2. play.html in headless Chrome ---------- */

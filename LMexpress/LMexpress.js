@@ -2201,7 +2201,7 @@ function MsgCommands1(MSGCOMMANDS, MSGNICK, MSGEL) {
             });
             setTimeout(function () {
                 /* put back the player's own team-board image (it was wiped until reload) */
-                lmHudBgImage("#top5-hud", teambimg);
+                lmHudBgImage("#top5-hud", lmHudBgSaved("teambimg"));
             }, 12000);
         } else if (commandMsg == "Hello") {
             if ($('#message-box').css('display') == 'none') {
@@ -4666,6 +4666,15 @@ function lmHudBgImage(sel, url) {
     else $(sel).css({ 'background-image': '', opacity: '' });
 }
 
+/* the saved image of a HUD box, for putting it back after a chat command's image: the variables
+ * leadbimg, teambimg and minimapbckimg stay "" for the session when the start threw before filling them
+ * (ogario.v4.js shows the saved images all the same) */
+function lmHudBgSaved(key) {
+    var v = null;
+    try { v = localStorage.getItem(key); } catch (e) { }
+    return v && v !== "null" ? v : "";
+}
+
 function setminbgname() {
     minimapbckimg = $("#minimapPicture").val();
     localStorage.setItem("minimapbckimg", minimapbckimg);
@@ -5427,10 +5436,10 @@ function settrolling() {
         $("#canvas").css('background-image', 'url("' + (canvasbimg || ' ') + '")').css({
             opacity: 1
         });
-        lmHudBgImage("#leaderboard-hud", leadbimg);
+        lmHudBgImage("#leaderboard-hud", lmHudBgSaved("leadbimg"));
     }, 8000);
     setTimeout(function () {
-        lmHudBgImage("#minimap-hud", minimapbckimg);
+        lmHudBgImage("#minimap-hud", lmHudBgSaved("minimapbckimg"));
     }, 27000);
 
 }
