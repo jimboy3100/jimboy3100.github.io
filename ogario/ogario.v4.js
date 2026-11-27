@@ -28152,6 +28152,8 @@ function thelegendmodproject() {
             });
             $(document).on("click", "#top5-pos .set-target", function (event) {
                 event.preventDefault();
+                /* the team list with skins makes every row a target link: with Show targeting off it targets nothing (the plain list has no link then) */
+                if (!defaultmapsettings.showTargeting) return;
                 app.setTarget(parseInt($(this).attr("data-user-id")));
             });
             $(document).on("click", ".mute-user", function (event) {
@@ -35237,7 +35239,8 @@ function thelegendmodproject() {
                     if (!this.targeting) {
                         this.targeting = true;
                         ogario.targeting = true;
-                        $("#target-hud").show();
+                        /* the target HUD only with Show targeting on (Settings): a later target change showed it again */
+                        if (defaultmapsettings.showTargeting) $("#target-hud").show();
                         this.setTargetingInfo();
                     }
                     $('#target-skin, #target-nick, #target-status, #target-summary').show();
@@ -35246,7 +35249,7 @@ function thelegendmodproject() {
                     //this.targetStatus = 2, $('#target-summary').hide(), $("#target-hud").show(), $('#target-status').show().text('[' + textLanguage.targetDead + ']'), i.resetTargetPosition();
                     this.targetStatus = 2;
                     $('#target-summary').hide();
-                    $("#target-hud").show();
+                    if (defaultmapsettings.showTargeting) $("#target-hud").show();
                     $('#target-status').show().text('[' + Languageletter369 + ']');
                     ogario.resetTargetPosition();
             }
@@ -35485,7 +35488,7 @@ function thelegendmodproject() {
                 $('#target-skin img')
                     .attr(
                         'src',
-                        'https://cdn.ogario.ovh/static/img/blank.png'
+                        'https://www.legendmod.ml/banners/static/img/blank.png'
                     );
 
                 this.targetSkinURL =
@@ -35494,7 +35497,7 @@ function thelegendmodproject() {
                 $('#target-skin img')
                     .attr(
                         'src',
-                        'https://cdn.ogario.ovh/static/img/blank.png'
+                        'https://www.legendmod.ml/banners/static/img/blank.png'
                     );
 
                 this.targetSkinURL =

@@ -105,5 +105,75 @@ check('both WebGL skin lookups use the shared lookup', shared === 2 && src.index
 check('the shared lookup uses the team list skins (exact and loose)', /this\.teamSkinUrl\(nick\)/.test(keyFn) && /this\.teamSkinUrl\(nick, true\)/.test(keyFn));
 check('the team skins are rebuilt with the teammate nick set', /_lmTeammateNickSet = new Set\(window\.teammatenicks\);\n\s*\/\*[^\n]*\*\/\n\s*window\._lmTeamSkins = lmTeamSkinMap\(application\.top5/.test(src));
 
+
+/* ── the teammate target HUD (setTargetStatus, updateTarget and the team list click, real code): with
+ * Show targeting off a target change showed the HUD again and the team list with skins (every row a
+ * target link) still targeted; a target without a ready skin asked the offline cdn.ogario.ovh for its
+ * blank picture on every update ── */
+{
+  const chk = (n, c, info) => check(n + (c || info === undefined ? '' : '  [' + info + ']'), c);
+  const close = i => { let d = 0, k = src.indexOf('{', i); for (; k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}' && !--d) return k + 1; } throw Error('unbalanced'); };
+  function tmethod(name) {
+      const i = src.indexOf('\n        ' + name + '(');
+      if (i < 0) throw Error(name + ' not found');
+      return name + ': function ' + src.slice(src.indexOf('(', i + 9), close(i));
+  }
+
+  /* jQuery stand-in: remembers the last show/hide and attr per selector */
+  const shown = {}, attrs = {};
+  const $ = sel => {
+      const j = { show() { shown[sel] = true; return j; }, hide() { shown[sel] = false; return j; }, text() { return j; }, html() { return j; }, css() { return j; },
+          addClass() { return j; }, removeClass() { return j; }, attr(k, v) { if (v === undefined) return j._attr; attrs[sel + ' ' + k] = v; return j; } };
+      return j;
+  };
+  const ctx = { $, console, Number, String, defaultmapsettings: { showTargeting: false }, ogario: { resetTargetPosition() { }, setTargetPosition() { } },
+      textLanguage: { targetNotSet: 'not set' }, Languageletter369: 'dead' };
+  ctx.window = ctx;
+  vm.createContext(ctx);
+  const app = vm.runInContext('({' + ['setTargetStatus', 'setTargetingInfo', 'updateTarget', '_lmSkinCacheKey'].map(tmethod).join(',') +
+      ', escapeHTML: function (s) { return s; }, shortMassFormat: function (m) { return String(m); }, calculateMapSector: function () { return "A1"; },' +
+      ' customSkinsCache: {}, loadSkin: function () { }, targeting: false })', ctx);
+
+  /* 1. Show targeting off */
+  app.setTargetStatus(1);
+  chk('targeting off: a live target does not show the target HUD', shown['#target-hud'] !== true, String(shown['#target-hud']));
+  app.setTargetStatus(2);
+  chk('targeting off: a dead target does not show the target HUD', shown['#target-hud'] !== true, String(shown['#target-hud']));
+  app.setTargetStatus(0);
+  ctx.defaultmapsettings.showTargeting = true;
+  app.setTargetStatus(1);
+  chk('targeting on: a live target shows the target HUD', shown['#target-hud'] === true);
+  app.setTargetStatus(0);
+  app.setTargetStatus(2);
+  chk('targeting on: a dead target shows the target HUD', shown['#target-hud'] === true);
+
+  /* 2. the team list row click (the real handler) */
+  {
+      const key = '$(document).on("click", "#top5-pos .set-target", ';
+      const i = src.indexOf(key);
+      chk('team list target click handler found', i >= 0);
+      const fsrc = src.slice(i + key.length, close(i + key.length));
+      const targets = [];
+      const c2 = { app: { setTarget: id => targets.push(id) }, defaultmapsettings: { showTargeting: false }, parseInt,
+          $: () => ({ attr: () => '777001' }) };
+      vm.createContext(c2);
+      const handler = vm.runInContext('(' + fsrc + ')', c2);
+      handler({ preventDefault() { } });
+      chk('targeting off: a click on a team list row with skins targets nothing', targets.length === 0, 'targets ' + targets.join(','));
+      c2.defaultmapsettings.showTargeting = true;
+      handler({ preventDefault() { } });
+      chk('targeting on: the click targets that teammate', targets.length === 1 && targets[0] === 777001);
+  }
+
+  /* 3. no skin, or a skin not loaded yet: the blank picture of our site */
+  const blank = 'https://www.legendmod.ml/banners/static/img/blank.png';
+  app.updateTarget('Mate', '', 100, 100, 500, '#ff0000');
+  chk('a target without a skin shows the blank picture from www.legendmod.ml', attrs['#target-skin img src'] === blank, attrs['#target-skin img src']);
+  delete attrs['#target-skin img src'];
+  app.updateTarget('Mate', 'https://www.legendmod.ml/skins/notloaded.png', 100, 100, 500, '#ff0000');
+  chk('a target whose skin is still loading shows the same blank picture', attrs['#target-skin img src'] === blank, attrs['#target-skin img src']);
+  chk('the HUD markup uses that same picture', src.indexOf('<span id="target-skin"><img src="' + blank + '"') >= 0);
+}
+
 console.log(failed ? 'FAILED ' + failed : 'all ok');
 process.exit(failed ? 1 : 0);
