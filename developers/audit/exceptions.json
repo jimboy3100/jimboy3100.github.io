@@ -27,8 +27,6 @@
     ],
     "historicalRoots": [],
     "missingAllowed": [
-        { "from": "ExampleScripts/LMmozzila.user.js", "paths": ["extension/extension.js"], "why": "old example userscript; the file it loaded was removed years ago" },
-        { "from": "ExampleScripts/MassBarAddon.user.js", "paths": ["ExampleScripts/legendmodAddonDAVI.js"], "why": "old example userscript" },
         { "from": "agarscripts/goodoldlegendmod.user.js", "paths": ["legendmod.js", "legend.sniff.js", "legend.sniff2.js", "legend.sniff3.js"], "why": "the v3.1 userscript, kept for history; those files moved long ago" },
         { "from": "agarscripts/legendmod.user.js", "paths": ["old/oldskins.js"], "why": "old userscript, kept for history" },
         { "from": "extras/legendhelper.js", "paths": ["legend.github.io/banners/grey-08.jpg", "extras/bleedmod.js"], "why": "old helper script" },
@@ -43,9 +41,6 @@
     "integrityIgnoreSources": [
         { "glob": "developers/tests/**", "why": "test fixtures use made-up addresses on purpose" },
         { "glob": "agario/mc/**", "why": "old agar.io client snapshot" },
-        { "glob": "agario/css/**", "why": "copy of agar.io style sheets; their font and image paths are agar.io paths" },
-        { "glob": "ExampleScripts/Dead-mod/**", "why": "third-party mod snapshot kept as an example" },
-        { "glob": "ExampleScripts/hslo/**", "why": "third-party mod snapshot kept as an example" },
-        { "glob": "ExampleScripts/agarvaii/**", "why": "third-party mod snapshot kept as an example" }
+        { "glob": "agario/css/**", "why": "copy of agar.io style sheets; their font and image paths are agar.io paths" }
     ]
 }

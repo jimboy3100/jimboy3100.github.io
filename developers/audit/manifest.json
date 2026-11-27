@@ -1200,6 +1200,1766 @@
         "external": "browsers that still hold the registration get the 404 on their update check and play.html unregisters them; expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips (9 revisions) or of the Expanding Land APKs (6) loads it"
       },
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/ogario.touch.user.js",
+      "canonicalPath": "ExampleScripts/gamepad.user.js",
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): byte-identical copy of ExampleScripts/ogariotouch.user.js: the 2019 v0.8 of the Neo touch/gamepad add-on; the /mobile mode of LMexpress.user.js loads its successor ExampleScripts/gamepad.user.js; no @updateURL/@downloadURL, so no installed copy updates from this address",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/ogariotouch.user.js",
+      "canonicalPath": "ExampleScripts/gamepad.user.js",
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): 2019 v0.8 of the Neo touch/gamepad add-on, superseded by ExampleScripts/gamepad.user.js (loaded by the /mobile mode of LMexpress.user.js); no @updateURL/@downloadURL",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/vanilladecoded.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): decoded snapshot (2024) of the official agar.io client, kept for reading only; nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/decodedagartool.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): decoded snapshot of the third-party AgarTool bundle (cdn.agartool.io); the /agartool mode installs AgarTool from agartool.io itself",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agartoolf0eca81317406a7c0067d08afa9226ff.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): obfuscated snapshot (2019) of the third-party AgarTool bundle; the /agartool mode installs AgarTool from agartool.io itself",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agartoolNEWCODETOBEADDED.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): code fragment copied from the third-party AgarTool client (not runnable on its own: class ApiTool extends ClientApi)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/imsolo-pro.bundle.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy (2020) of a third-party client bundle; nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/PionMing.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy (2018) of the third-party Pion PLUS client rewrite; nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/pixirenderer.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): renderer fragment (2020) copied from another client (uses that client's globals settings/controller); nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/allGameProtocols.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of a third-party Node.js bot (a Slasher bot index.js, needs require/fs/socks proxy); cannot run in a browser and nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/OgarioRegex.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): developer notes (2018) asking for regex help to keep Legend Mod v3.1 working on agar.core.js; v3.1 is long gone and nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/OgarioRegexOld.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): older copy of the same v3.1 regex notes as OgarioRegex.js (removed too)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/newthings.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): scratch code (2018) for special deals; the shop/deals code lives in LMexpress/skinsAndDeals.js and LMexpress/shop/",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/newthings3.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): scratch code (2018) querying a server-list API; nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/reversetrick.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): 366-byte method fragment (not a script on its own)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/libLM.js",
+      "canonicalPath": "ExampleScripts/libLM.user.js",
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): older copy (2018) of ExampleScripts/libLM.user.js; only the dev test scripts lib2LM.user.js and injectlibLM.js loaded it. The live chain LMAgartool.user.js -> LMAgartool.js -> libLM.user.js + socket-io.min.js is kept",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/lib2LM.user.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): developer test userscript: @match http://www.atmarkit.co.jp/d9KcsYjB (a test page), loads libLM.js; no install link anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/injectlibLM.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): developer console snippet (\"Inject this script on F12 -> Console\") testing old library commands; linked only from itself",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/LMmozzila.user.js",
+      "canonicalPath": "LMexpress/LMexpress.user.js",
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): Legend Mod v3.1 Firefox userscript; it only injects //jimboy3100.github.io/extension/extension.js, which was removed on 2026-03-10 (164e01c8), so it already did nothing; Firefox users install LMexpress.user.js",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/MassBarAddon.user.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): userscript whose only payload ExampleScripts/legendmodAddonDAVI.js was deleted on 2020-08-13 (e5ce7eeb), so it already did nothing; no @updateURL",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/DiscordSIP2.user.js",
+      "canonicalPath": "agarscripts/DiscordSIP.user.js",
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party ANWH v0.2 webhook script; Legend Mod's own Discord SIP script is agarscripts/DiscordSIP.user.js (v1.94, loaded by LMexpress.js)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Kaiv1.user.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy (2018) of the third-party \"OGARio Kai\" rebranding snippet (no userscript header); nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/SecretAgarioScript.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy (2017) of the third-party \"Secret Agario Script\" (dimotsai, http://agar.io only); nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/coreMutations.user.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy (2018) of the third-party \"Agar.io Core Mutation by zagar\" userscript (no update URL); nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/2bdfb3f8-05ef-4035-a06e-2043962a3a13favicon.ico",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/DEAD_MOD.user.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/README.md",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/_config.yml",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/bootstrap-colorpicker/2.3.3/css/bootstrap-colorpicker.min.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/bootstrap-colorpicker/2.3.3/img/bootstrap-colorpicker/alpha.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/bootstrap-colorpicker/2.3.3/img/bootstrap-colorpicker/hue.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/bootstrap-colorpicker/2.3.3/img/bootstrap-colorpicker/saturation.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/bootstrap-colorpicker/2.3.3/js/bootstrap-colorpicker.min.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/jquery.perfect-scrollbar/0.6.12/css/perfect-scrollbar.min.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/jquery.perfect-scrollbar/0.6.12/js/perfect-scrollbar.jquery.min.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/jquery/3.2.1/jquery.min.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/rangeslider.js/2.2.1/rangeslider.min.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/rangeslider.js/2.2.1/rangeslider.min.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/switchery/0.8.2/switchery.min.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/switchery/0.8.2/switchery.min.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/toastr.js/2.1.4/toastr.min.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/toastr.js/2.1.4/toastr.min.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/DM.html",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/buffer_5.2.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/captcha.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/i18n.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/index.html",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/lz4.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/ogario.v4.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/ogario.v4.master.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/proto.decoder.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/static/css/main.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/core/static/css/master.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/css-1.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/css-2.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/css-3.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/css.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/fonts/glyphicons-halflings-regular-1.bin",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/fonts/glyphicons-halflings-regular-2.bin",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/fonts/glyphicons-halflings-regular.bin",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/fonts/glyphicons-halflings-regular.svg",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/fonts/glyphicons-social-regular-1.bin",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/fonts/glyphicons-social-regular-2.bin",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/fonts/glyphicons-social-regular-3.bin",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/fonts/glyphicons-social-regular.bin",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/fonts/glyphicons-social-regular.svg",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/img/potion_common.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/img/potion_empty.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/img/potion_exotic.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/img/potion_mystical.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/img/potion_rare.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/img/profilepic_guest.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/img/star.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/index.html",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/js/clientplatform.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/static/img/blank.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Dead-mod/static/img/pattern.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): mirror of the third-party Dead Mod GitHub Pages site (Yahnych/web): its userscript DEAD_MOD.user.js loads dead-mod.github.io/core/DM.html, never this copy; no link to ExampleScripts/Dead-mod anywhere",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/README.md",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/css/animate.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/css/bootstrap.min.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/css/style.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/css/sweetalert.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/img/a",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/img/error.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/index.html",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/js/badTryCore.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/js/cookies.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/js/core.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/js/hats.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/js/jquery.toast.min.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/js/lbcolors.json",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/js/main.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agarvaii/js/sweetalert.min.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): copy of the third-party Agarvaii client (for MULTIOGAR 1.6.1 private servers); no link to it anywhere (its own canonical tag only)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/hslo/README.md",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): snapshot of the third-party HSLO v6 client (its userscript loads netclouds.ga, which is gone); the /hslo mode of LMexpress.user.js installs HSLO from hslo.io",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/hslo/bundle.css",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): snapshot of the third-party HSLO v6 client (its userscript loads netclouds.ga, which is gone); the /hslo mode of LMexpress.user.js installs HSLO from hslo.io",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/hslo/bundle.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): snapshot of the third-party HSLO v6 client (its userscript loads netclouds.ga, which is gone); the /hslo mode of LMexpress.user.js installs HSLO from hslo.io",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/hslo/hslo.user.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): snapshot of the third-party HSLO v6 client (its userscript loads netclouds.ga, which is gone); the /hslo mode of LMexpress.user.js installs HSLO from hslo.io",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/hslo/hslospecial/agar.io_3.zip",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): snapshot of the third-party HSLO v6 client (its userscript loads netclouds.ga, which is gone); the /hslo mode of LMexpress.user.js installs HSLO from hslo.io",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/hslo/index.html",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): snapshot of the third-party HSLO v6 client (its userscript loads netclouds.ga, which is gone); the /hslo mode of LMexpress.user.js installs HSLO from hslo.io",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/hslo/lib.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): snapshot of the third-party HSLO v6 client (its userscript loads netclouds.ga, which is gone); the /hslo mode of LMexpress.user.js installs HSLO from hslo.io",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/imageSender/a",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): test data for an image sender experiment (teat.txt is a JSON dump of image bytes, a is a 2-byte placeholder); nothing reads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/imageSender/teat.txt",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): test data for an image sender experiment (teat.txt is a JSON dump of image bytes, a is a 2-byte placeholder); nothing reads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/deltaOLmOhsloOidk/Desktop.rar",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): RAR archive (2020) of loose client sources (fullzoom.js, renderer.js, communication.js, connection.js) of an unidentified mod; nothing links to it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agarscripts/MultiplayerScript.user.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): 2017 userscript (Simple Multiplayer IP Agario Script) moved here from the site root on 2026-07-30; no page, script, extension or test has ever linked it at either address (git history searched); no @updateURL/@downloadURL, so no installed copy asks for this address",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agarscripts/VoiceDeOChat.user.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): 2017 OGARio voice chat userscript moved here from the site root on 2026-07-30; no page, script, extension or test has ever linked it at either address (only console log texts with the same word in LMexpress.sniff3.js and the kept legendmod userscripts); no @updateURL/@downloadURL",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agarscripts/potato.user.js",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): 2017 userscript (Potato Script for Agario) moved here from the site root on 2026-07-30; no page, script, extension or test has ever linked it at either address (git history searched); no @updateURL/@downloadURL",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agarscripts/agarscripts.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): 2017 picture uploaded with the agarscripts folder; no page, stylesheet, script or extension manifest has ever named it (git history searched)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "agarscripts/icon19.png",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): 2017 19 px extension icon; no extension manifest (current files, the two extension zips) or page has ever named it (git history searched); the extension uses its own icon16/48/128.png and agarscripts/icon16.png stays",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "extras/loader/agarioRain.html",
+      "canonicalPath": null,
+      "reason": "historical or third-party copy (directory classification, see developers/REPOSITORY.md): 2020 loading-screen page; its last user, an iframe in LMexpress/LMexpress.html, was removed in 2020 (40b1b0c3); nothing in the current tree or in the i18n scanner list names it; the last file left in extras/loader/",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an ExampleScripts/, agarscripts/ or extras/loader/ file; the game, LMexpress, LMmobile and the extension never load it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, an extension file, LMexpress.js, ogario/ or a site page loads it (searched by path and by file name); not in sitemap.xml"
+      },
+      "approvedForDeletion": true
     }
   ]
 }
