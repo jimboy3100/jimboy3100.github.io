@@ -33,7 +33,7 @@ const ok = (c, m) => { if (!c) { fails++; console.log('FAIL ' + m); } };
 const DEAD_FN = {};
 /* the records of the deletion itself, and the concatenated source export that nothing loads */
 const RECORDS = new Set(['developers/i18n/scan-config.json', 'developers/audit/manifest.json',
-    'developers/tests/i18n-archived.js', 'AllFilesNew.txt']);
+    'developers/tests/i18n-archived.js']);
 
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const exists = (rel) => { try { return fs.statSync(path.join(repo, rel)).isFile(); } catch (e) { return false; } };

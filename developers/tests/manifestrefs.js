@@ -18,8 +18,11 @@ records.forEach((r, i) => KEYS.forEach((k) => ok(k in r, 'record ' + i + ' (' + 
 
 const tracked = execSync('git -c core.quotepath=off ls-files', { cwd: repo, encoding: 'utf8', maxBuffer: 64 << 20 }).split('\n').filter(Boolean);
 const trackedSet = new Set(tracked);
-/* files that may name removed paths: the manifest itself and the tests that check they stay removed */
-const SKIP = new Set(['developers/audit/manifest.json', 'developers/tests/manifestrefs.js', 'developers/tests/concatexport.js', 'developers/tests/swretire.js']);
+/* files that may name removed paths: the manifest and the tests that check they stay removed */
+const SKIP = new Set(['developers/audit/manifest.json', 'developers/tests/i18n-archived.js', 'developers/tests/manifestrefs.js', 'developers/tests/concatexport.js', 'developers/tests/swretire.js']);
+/* the scanner's config: its lists of deleted pages and assets are records too, the rest (files to scan) is not */
+const SCAN_CONFIG = 'developers/i18n/scan-config.json';
+const RECORD_KEYS = ['deleted', 'deletedAssets'];
 const TEXT = /\.(js|cjs|mjs|html?|css|json|jsonld|md|txt|xml|ps1|py|yml|yaml|ttl|rdf|webmanifest)$/i;
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -38,6 +41,9 @@ tracked.forEach((f) => {
     if (SKIP.has(f) || !TEXT.test(f)) return;
     let src;
     try { src = fs.readFileSync(path.join(repo, f), 'utf8'); } catch (e) { return; }
+    if (f === SCAN_CONFIG) {
+        try { const c = JSON.parse(src); RECORD_KEYS.forEach((k) => delete c[k]); src = JSON.stringify(c, null, 1); } catch (e) { }
+    }
     patterns.forEach((p) => {
         const s = p.r.canonicalPath ? src.split(p.r.canonicalPath).join(' ') : src;
         if (p.re.test(s)) ok(false, f + ' still points at the removed ' + p.r.oldPath);
