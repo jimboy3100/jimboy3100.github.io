@@ -26142,6 +26142,11 @@ function thelegendmodproject() {
                         if (window.toastr && !this._lmPerfApplying && lmGlAAPending()) toastr.info(lmT('game1.perf.aaReload'));
                         break;
                     case 'performanceMode':
+                        /* Only a real change turns the mode on or off: a second "on" (a script)
+                         * saved the already lowered values as the ones to give back, so "off"
+                         * left jelly physics and the rest off. A loaded setting is not applied
+                         * here (the values it lowered are saved with it). */
+                        if (checked === _lmSetWas) break;
                         /* On: remember the current values and turn the costly effects off.
                          * Off: put the remembered values back.
                          * Each value goes through its own control, as the presets do: a checkbox
@@ -26177,15 +26182,17 @@ function thelegendmodproject() {
                                 _lmPerfKeys.forEach(function (k) { _lmPerfBak[k] = defaultmapsettings[k]; });
                                 window._lmPerfBackupMem = null;
                                 try { window.localStorage.setItem('lmPerfBackup', JSON.stringify(_lmPerfBak)); } catch (e) {
-                                    /* storage full: the values are kept until the page is reloaded, and the player is told */
+                                    /* storage full: the values are kept until the page is reloaded, and the player is told;
+                                     * an older stored copy goes (it is not of these values) */
                                     window._lmPerfBackupMem = _lmPerfBak;
+                                    try { window.localStorage.removeItem('lmPerfBackup'); } catch (e2) { }
                                     if (window.toastr) toastr.warning(_lmG1tag('game1.tag.performance', 'game1.perf.storageFull'));
                                 }
                                 _lmPerfKeys.forEach(function (k) { _lmPerfSet(k, k === 'hudBlur' ? 0 : false); });
                             } else {
-                                var _lmPerfOld = null;
-                                try { _lmPerfOld = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null'); } catch (e) { }
-                                if (!_lmPerfOld && window._lmPerfBackupMem) _lmPerfOld = window._lmPerfBackupMem;
+                                /* the copy in memory is the one of this "on" (its storage write failed) */
+                                var _lmPerfOld = window._lmPerfBackupMem && typeof window._lmPerfBackupMem === 'object' ? window._lmPerfBackupMem : null;
+                                if (!_lmPerfOld) { try { _lmPerfOld = JSON.parse(window.localStorage.getItem('lmPerfBackup') || 'null'); } catch (e) { } }
                                 window._lmPerfBackupMem = null;
                                 if (_lmPerfOld && typeof _lmPerfOld === 'object') {
                                     _lmPerfKeys.forEach(function (k) {
@@ -26210,8 +26217,17 @@ function thelegendmodproject() {
                         if (window.toastr) toastr.info(lmT(checked ? 'game1.perf.modeOn' : 'game1.perf.modeOff'));
                         break;
                 }
-                /* the save sends LMEvents 'settingsChange' when the value changed (lmSettingsCommit) */
-                this.saveSettings(defaultmapsettings, 'ogarioSettings');
+                /* a setting with a slider (addSliderBox): the slider and its value show the value
+                 * (no event), and the slider's callback runs, also for a script or a preset */
+                var _lmSlCb = this._lmSliderCb;
+                if (_lmSlCb && Object.prototype.hasOwnProperty.call(_lmSlCb, id)) {
+                    $('#' + id + '-slider').val(checked);
+                    $('#' + id + '-value').text(checked);
+                    if (_lmSlCb[id] && typeof this[_lmSlCb[id]] === 'function') this[_lmSlCb[id]]();
+                }
+                /* the save sends LMEvents 'settingsChange' when the value changed (lmSettingsCommit);
+                 * a slider being dragged saves once it rests */
+                if (!this._lmSliderInput) this.saveSettings(defaultmapsettings, 'ogarioSettings');
             }
         },
         /* The settings Performance mode turns off; it keeps their earlier values ('lmPerfBackup')
@@ -26890,16 +26906,27 @@ function thelegendmodproject() {
                 app._lmSettingsSaveT = null;
                 app.saveSettings(defaultmapsettings, 'ogarioSettings');
             });
+            /* setSettings shows a value set any other way on this slider and runs its callback */
+            if (defaultmapsettings.hasOwnProperty(name)) (app._lmSliderCb || (app._lmSliderCb = {}))[name] = callback || null;
             $('#' + name + '-slider').on('input', function () {
                 /* the schema again: a value set from a script (val() + input) may be off the steps */
                 var t = parseFloat($(this).val());
                 var fit = Object.prototype.hasOwnProperty.call(LM_SETTINGS_DEFAULTS, name) ? lmSettingValue(name, t) : (Number.isFinite(t) ? t : undefined);
                 if (fit === undefined) return;
                 t = fit;
-                $('#' + name + '-value').text(t);
-                defaultmapsettings[name] = t;
-                if (ogario.hasOwnProperty(name)) ogario[name] = t;
-                if (callback) app[callback]();
+                if (app._lmSliderCb && Object.prototype.hasOwnProperty.call(app._lmSliderCb, name)) {
+                    /* as a switch: Adaptive performance and Performance mode see the player's value
+                     * (a blur set to 0 by hand stayed 5 after the mode went off), the callback
+                     * runs once there; the save waits until the slider rests */
+                    var was = app._lmSliderInput;
+                    app._lmSliderInput = true;
+                    try { app.setSettings(name, t); } finally { app._lmSliderInput = was; }
+                } else {
+                    $('#' + name + '-value').text(t);
+                    defaultmapsettings[name] = t;
+                    if (ogario.hasOwnProperty(name)) ogario[name] = t;
+                    if (callback) app[callback]();
+                }
                 saveSoon();
             });
         },

@@ -64,9 +64,9 @@
     var mfa = S.macroFeeding;
     application.setSettings('macroFeeding', -100);
     if (S.macroFeeding !== 1) fail.push('setSettings macroFeeding -100 -> ' + S.macroFeeding);
+    if ($('#macroFeeding-slider').val() !== '1' || $('#macroFeeding-value').text() !== '1') fail.push('setSettings macroFeeding: slider ' + $('#macroFeeding-slider').val() + ', label ' + $('#macroFeeding-value').text());
     application.setSettings('macroFeeding', mfa);
-    $('#macroFeeding-slider').val(mfa);
-    $('#macroFeeding-value').text(mfa);
+    if ($('#macroFeeding-slider').val() !== String(mfa) || $('#macroFeeding-value').text() !== String(mfa)) fail.push('setSettings macroFeeding back: slider ' + $('#macroFeeding-slider').val());
     got.length = 0;
     // profile count: 15 -> 30 -> 10 -> 30, live, the profiles kept
     var pn = $('#profileNumber-slider'), pn0 = S.profileNumber;

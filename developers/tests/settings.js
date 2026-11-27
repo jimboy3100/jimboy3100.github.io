@@ -244,6 +244,64 @@ app2.setSettings('showGrid', !before);
 app2.setSettings('showGrid', before);
 check('setSettings on and off: two events, the new value each time', J(events) === J([['settingsChange', 'showGrid', !before], ['settingsChange', 'showGrid', before]]));
 
+// ── S5b sliders (the real addSliderBox): one way with setSettings, the callback once, the save when the slider rests
+{
+  const els = {};
+  const fakeQ = (x) => {
+    const el = typeof x === 'string' && x.charAt(0) === '#' ? els[x.slice(1)] : (x && typeof x === 'object' ? x : null);
+    const w = {
+      length: el ? 1 : 0,
+      append(html) { String(html).replace(/id=\"([^\"]+)\"/g, (m, id) => { els[id] = { id, value: '', text: '', h: {} }; }); return w; },
+      val(v) { if (v === undefined) return el ? el.value : undefined; if (el) el.value = String(v); return w; },
+      text(v) { if (el && v !== undefined) el.text = String(v); return w; },
+      on(ev, fn) { if (el) el.h[ev] = fn; return w; },
+      trigger(ev) { if (el && el.h[ev]) el.h[ev].call(el); return w; },
+      closest() { return { length: el ? 1 : 0 }; }
+    };
+    return w;
+  };
+  const slSrc = main.slice(main.lastIndexOf('        addSliderBox(', main.indexOf('/* the range and step come from the settings schema, not from the call */')), main.indexOf('        setLang() {'));
+  const A3 = vm.runInContext('({\n' + ss + slSrc + '\n})', ctx);
+  let saves = 0, blurs = 0, counts = 0, timer = null;
+  A3.saveSettings = function (o, n) { saves++; return app.saveSettings(o, n); };
+  A3.applyHudBlur = () => { blurs++; };
+  A3.setProfileCount = () => { counts++; };
+  A3._lmLoadOptSounds = function () { };
+  if (!ctx.textLanguage) ctx.textLanguage = {};
+  const q0 = ctx.$, st0 = ctx.setTimeout;
+  ctx.$ = fakeQ; ctx.setTimeout = (f) => { timer = f; return 1; };
+  try {
+    S.hudBlur = 5; S.performanceMode = false; S.profileNumber = 15;
+    ctx.localStorage.removeItem('lmPerfBackup');
+    A3.addSliderBox('.hudGroup', 'hudBlur', 0, 8, 1, 'applyHudBlur');
+    A3.addSliderBox('.profiles', 'profileNumber', 10, 54, 1, 'setProfileCount');
+    const sl = fakeQ('#hudBlur-slider');
+    saves = 0;
+    sl.val(4).trigger('input');
+    check('slider moved: value and label 4, its callback once, no save while it moves', S.hudBlur === 4 && els['hudBlur-value'].text === '4' && blurs === 1 && saves === 0 && typeof timer === 'function');
+    sl.trigger('change');
+    check('slider let go: saved once', saves === 1 && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).hudBlur === 4);
+    /* a script, a preset or a profile without the slider: the slider and its callback follow */
+    blurs = 0;
+    A3.setSettings('hudBlur', 6);
+    A3.setSettings('profileNumber', 30);
+    check('setSettings of a slider setting: the slider and its value show it, its callback runs once', els['hudBlur-slider'].value === '6' && els['hudBlur-value'].text === '6' && blurs === 1 &&
+      els['profileNumber-slider'].value === '30' && els['profileNumber-value'].text === '30' && counts === 1);
+    A3.setSettings('profileNumber', 15);
+    /* Performance mode on with the blur 5, the slider to 3 and then 0 by hand, the mode off: 0 stays */
+    A3.setSettings('hudBlur', 5);
+    A3.setSettings('performanceMode', true);
+    check('Performance mode on: the slider shows the blur it turned off', S.hudBlur === 0 && els['hudBlur-slider'].value === '0');
+    sl.val(3).trigger('input'); sl.val(0).trigger('input').trigger('change');
+    A3.setSettings('performanceMode', false);
+    check('blur set to 0 by hand while Performance mode is on: still 0 after the mode goes off', S.hudBlur === 0 && els['hudBlur-slider'].value === '0' && S.jellyPhisycs === D.jellyPhisycs);
+  } finally {
+    ctx.$ = q0; ctx.setTimeout = st0;
+    S.hudBlur = D.hudBlur; S.performanceMode = false; S.profileNumber = D.profileNumber;
+    ctx.localStorage.removeItem('lmPerfBackup');
+  }
+}
+
 // ── S6 what a setting really does now (real setSettings, onPlay, onSpectate, setShowFood, key handler)
 const sToasts = [];
 ctx.toastr = { info: t => sToasts.push(['info', t]), warning: t => sToasts.push(['warning', t]), success() { } };

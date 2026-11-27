@@ -200,21 +200,23 @@
 				},
 				type: 'normal'
 			},	
-			/* Performance mode on/off without opening the settings (no default key). Goes through the
-			 * settings switch so its backup/restore of the effect settings runs exactly once. */
+			/* Performance mode on/off without opening the settings (no default key). setSettings
+			 * runs its backup/restore of the effect settings once, with the old value still in
+			 * place (it acts only on a real change); the switch then follows with a change that
+			 * does not bubble, which moves only its Switchery. */
 			'hk-performanceMode': {
 				get label() {
 					return lmT('settings.hk-performanceMode');
 				},
 				defaultKey: '',
 				keyDown() {
-					if (!application || typeof defaultmapsettings === 'undefined') return;
-					var next = !defaultmapsettings.performanceMode;
-					if (document.getElementById('performanceMode') && typeof application.syncHotkeyOption === 'function') {
-						defaultmapsettings.performanceMode = next;
-						application.syncHotkeyOption('performanceMode');
-					} else if (typeof application.setSettings === 'function') {
-						application.setSettings('performanceMode', next);
+					if (!application || typeof defaultmapsettings === 'undefined' || typeof application.setSettings !== 'function') return;
+					application.setSettings('performanceMode', !defaultmapsettings.performanceMode);
+					var on = defaultmapsettings.performanceMode === true;
+					var cb = document.getElementById('performanceMode');
+					if (cb && cb.type === 'checkbox' && cb.checked !== on) {
+						cb.checked = on;
+						try { cb.dispatchEvent(new Event('change', { bubbles: false })); } catch (e) { }
 					}
 				},
 				keyUp: null,

@@ -65,7 +65,7 @@ function page(opts) {
         legendmod: { cells: [], pps: 0, ping: 0, isSocketOpen: () => false },
         addEventListener() { }, devicePixelRatio: 1, innerWidth: 915, innerHeight: 412, navigator: {},
         confirm: (t) => { confirms.push(t); return opts.confirm !== false; },
-        textLanguage: {}, ogario: {}, Event: function (t) { this.type = t; }
+        textLanguage: {}, ogario: {}, Event: function (t, o) { this.type = t; this.bubbles = !!(o && o.bubbles); }
     };
     ctx.window = ctx;
     const overlays = { style: { display: 'none' }, isConnected: true };
@@ -89,7 +89,8 @@ function page(opts) {
         'setSettings(id, checked) {\n' + headSrc + 'switch (id) {\n' + caseSrc + "this.saveSettings(defaultmapsettings, 'ogarioSettings');\n}\n}," +
         'saveSettings(o, n) { localStorage.setItem(n, JSON.stringify(o)); }, setAnimatedRainbowColor() { }, applyHudBlur() { } });\nthis.application = application;', ctx);
     if (opts.boxes) opts.boxes.forEach((k) => {
-        boxes[k] = { type: 'checkbox', inMenu: true, checked: !!ctx.defaultmapsettings[k], dispatchEvent() { ctx.application.setSettings(k, this.checked); } };
+        /* only a bubbling change reaches the settings handler; one that does not bubble moves the Switchery */
+        boxes[k] = { type: 'checkbox', inMenu: true, checked: !!ctx.defaultmapsettings[k], moves: 0, dispatchEvent(e) { if (e && e.bubbles) ctx.application.setSettings(k, this.checked); else this.moves++; } };
     });
     if (opts.perf !== false) vm.runInContext(perfSrc, ctx);
     /* the presets row (box: the settings search area it is added to) */
@@ -101,7 +102,7 @@ function page(opts) {
     const preset = (id) => ctx._lmPresetRow.h['click .lm-preset-btn'].call({ dataset: { 'data-preset': id } });
     const undo = () => ctx._lmUndoBtn.h.click();
     const frames = (n, dt, r) => { for (let i = 0; i < n; i++) { ctx._t = (ctx._t || 1) + dt; ctx._lmPerfFrame(ctx._t, ctx._t + r); } };
-    return { ctx, S, A, store, toasts, confirms, backup, user, slider, preset, undo, frames, overlays };
+    return { ctx, S, A, store, toasts, confirms, backup, user, slider, preset, undo, frames, overlays, boxes };
 }
 const ON = { jellyPhisycs: true, videoSkins: true, highDPI: true, showBgSectors: true, animatedRainbowColor: true, borderGlow: true, suckAnimation: true, eatPulse: true, glAntialias: true, hudBlur: 3 };
 const KEYS = Object.keys(ON);
@@ -288,6 +289,45 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     p.user('jellyPhisycs', true);
     p.user('performanceMode', false);
     check('no perf.js: hand change kept, the rest back', p.S.jellyPhisycs === true && p.S.videoSkins === true && p.S.hudBlur === 3);
+}
+
+/* 13. the mode acts on a real change only: a second "on" (a script) kept the copy of the
+ * player's values; the hotkey (with and without the switch in the menu) and a storage failure */
+{
+    const p = page({ settings: ON });
+    p.user('performanceMode', true);
+    p.user('performanceMode', true);
+    check('on, on again: the copy still holds the player\'s values', JSON.stringify(p.backup()) === JSON.stringify(ON));
+    p.user('performanceMode', false);
+    check('on, on, off: every value back (jelly physics on)', vals(p.S) === vals(ON) && p.store.lmPerfBackup === undefined);
+    const t = p.toasts.length;
+    p.user('performanceMode', false);
+    check('off again: nothing put back, no message', vals(p.S) === vals(ON) && p.toasts.length === t);
+}
+{
+    const hkSrc = fs.readFileSync(path.join(ROOT, 'ogario', 'hotkeysCommand.js'), 'utf8').replace(/\r\n/g, '\n');
+    const hi = hkSrc.indexOf("'hk-performanceMode': {"), hj = hkSrc.indexOf("'hk-mergeRings'", hi);
+    [true, false].forEach((menu) => {
+        const p = page({ settings: ON, boxes: menu ? KEYS.filter((k) => k !== 'hudBlur').concat('performanceMode') : [] });
+        const hk = vm.runInContext('({' + hkSrc.slice(hi, hj) + '})', p.ctx)['hk-performanceMode'];
+        const w = menu ? 'hotkey (switch in the menu)' : 'hotkey (no menu)';
+        hk.keyDown();
+        check(w + ' on: effects off, the copy holds the player\'s values', p.S.performanceMode === true && p.S.jellyPhisycs === false && JSON.stringify(p.backup()) === JSON.stringify(ON) &&
+            (!menu || p.boxes.performanceMode.checked === true && p.boxes.performanceMode.moves === 1));
+        p.slider('hudBlur', 5);
+        hk.keyDown();
+        check(w + ' off: the values back, the blur set meanwhile kept', p.S.performanceMode === false && p.S.jellyPhisycs === true && p.S.videoSkins === true && p.S.hudBlur === 5 &&
+            (!menu || p.boxes.performanceMode.checked === false && p.boxes.performanceMode.moves === 2));
+    });
+}
+{
+    /* storage full with an older stored copy: the copy of this "on" (in memory) is the one put back */
+    const stale = Object.assign({}, ON, { jellyPhisycs: false, videoSkins: false });
+    const p = page({ settings: ON, full: true, store: { lmPerfBackup: JSON.stringify(stale) } });
+    p.user('performanceMode', true);
+    check('storage full: the older stored copy is not kept beside the one in memory', p.store.lmPerfBackup === undefined && p.ctx._lmPerfBackupMem.jellyPhisycs === true);
+    p.user('performanceMode', false);
+    check('storage full, mode off: the values of this "on" come back, not the older copy', vals(p.S) === vals(ON));
 }
 
 /* the texts: in every complete language, and Greek differs from English */
