@@ -214,7 +214,6 @@
       "description": "Statistics and analytics settings.",
       "settings": [
         "gameOverCard",
-        "killFeed",
         "analytics"
       ]
     },

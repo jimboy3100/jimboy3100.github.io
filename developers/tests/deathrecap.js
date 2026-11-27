@@ -5,14 +5,11 @@ const i18n = require('./lib/i18n-env');
 /* texts of the language packs (English unless code is given) */
 const T = (k, v, code) => i18n.t('modules.deathrecap.' + k, v, code);
 const cells = (n, code) => (n === 1 ? T('cell', null, code) : T('cells', [n], code));
-/* a pack text as a regex: {0} {1} ... match the given patterns */
-const esc = (x) => x.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&');
-const tplRe = (k, pats, whole) => new RegExp((whole ? '^' : '') + T(k).split(/(\{\d+\})/).map(p => { const m = /^\{(\d+)\}$/.exec(p); return m ? pats[+m[1]] : esc(p); }).join('') + (whole ? '$' : ''));
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'modules', 'deathrecap.js'), 'utf8');
 
 let now = 1000000, listeners = {}, intervals = 0;
 const store = {};
-/* just enough DOM for the kill feed */
+/* just enough DOM for the module */
 class El {
   constructor() { this.children = []; this.style = {}; this.textContent = ''; this.parentNode = null; }
   get childNodes() { return this.children; }
@@ -27,7 +24,8 @@ const body = new El(), byId = {};
 body.contains = () => false;
 const origAppend = body.appendChild.bind(body);
 body.appendChild = c => { if (c.id) byId[c.id] = c; return origAppend(c); };
-const feedLines = () => (byId['lm-killfeed'] ? byId['lm-killfeed'].children.map(c => c.textContent) : []);
+/* the kill feed is removed: no line of it may appear */
+const feedGone = () => !byId['lm-killfeed'] && !body.children.length;
 const ctx = {
   window: null, Date: { now: () => now }, Math, Number, String, Array, Float64Array, Int32Array, Uint16Array, Infinity, isFinite,
   localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } },
@@ -37,7 +35,7 @@ const ctx = {
   LMEvents: { on(n, f) { (listeners[n] = listeners[n] || []).push(f); }, off(n, f) { listeners[n] = (listeners[n] || []).filter(x => x !== f); } }
 };
 ctx.window = ctx;
-ctx.legendmod5 = { gameOverStats: false, killFeed: false, recordReplays: true };
+ctx.legendmod5 = { gameOverStats: false, recordReplays: true };
 ctx.legendmod = { play: false, playerCells: [], cells: [], playerMass: 0, ws: 'wss://x' };
 vm.createContext(ctx);
 i18n(ctx);
@@ -184,9 +182,8 @@ check('live: loss attributed exactly to Eater', texts.some(t => t.endsWith(': ' 
 check('live: killer from the eat events', texts[texts.length - 1].endsWith(': ' + T('eatenBy', ['Eater'])), texts);
 check('live: sparkline samples', rc && rc.spark.length > 20);
 check('live: no replay links when not recording', rc && rc.slot === null);
-/* the mass-loss alert is gone: a big loss with the kill feed off adds no line */
-check('big mass loss: no feed line (no mass-loss alert)', feedLines().length === 0, feedLines());
-check('kill feed off: no eat or death lines', !feedLines().some(t => tplRe('feedAte', ['.*', '.*']).test(t) || tplRe('feedDied', ['.*']).test(t) || t === T('feedDiedNone')), feedLines());
+/* the mass-loss alert and the kill feed are gone: eats, a big loss and a death add nothing to the page */
+check('big mass loss, eats and a death: no feed line on the page', feedGone(), body.children.length);
 
 // --- "near" nick comes only from a close, bigger, visible enemy
 listeners.spawn[0]({ time: now });
@@ -217,27 +214,23 @@ check('far and small cells are not "near"', last.nick == null, last);
 ctx.legendmod5.gameOverStats = false; D.sync();
 check('off again: listeners removed, flag off', !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false);
 
-/* kill feed: the eats of one player's cells add up while they go on, also when a split (or another
- * event) came between them; the line went back to the last eat alone once that split was over 2 s old */
+/* an old saved killFeed: true (the kill feed is removed) starts nothing: no listeners, no timer, no line */
 {
   ctx.legendmod5.killFeed = true; D.sync(); D._test.reset();
+  const before = intervals;
   lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0]];
-  listeners.spawn[0]({ time: now });
-  now += 250; D._test.tick();
   D.eat(lm.playerCells[0], { size: 300, targetNick: 'Chain' }, true, false, 300);
-  now += 1000; lm.playerCells = [own(0, 1060), own(300, 1060)]; D._test.tick();
-  now += 500; D.eat(lm.playerCells[0], { size: 300, targetNick: 'Chain' }, true, false, 300);
-  now += 1700; D.eat(lm.playerCells[1], { size: 300, targetNick: 'Chain' }, true, false, 300);
-  const fl = feedLines();
-  check('kill feed: three eats of one player across a split add up', fl[fl.length - 1] === T('feedAte', ['Chain', '2,700']), fl);
-  lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
-  ctx.legendmod5.killFeed = false; D.sync();
+  D.eat({ size: 2500, targetNick: 'Hunter' }, lm.playerCells[0], false, true, 1500);
+  check('old killFeed value alone: nothing listens, no timer, nothing on the page',
+    !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false && intervals === before && feedGone());
+  lm.playerCells = []; lm.play = false;
+  delete ctx.legendmod5.killFeed; D.sync();
 }
 
-/* who ate me: the eats of one player go on in one event across my split; the death line still names
- * that player (the killer search stopped at the newer split that was over and found no eater) */
+/* who ate me: the eats of one player go on in one event across my split; the recap's death step still
+ * names that player (the killer search stopped at the newer split that was over and found no eater) */
 {
-  ctx.legendmod5.killFeed = true; D.sync(); D._test.reset();
+  ctx.legendmod5.gameOverStats = true; D.sync(); D._test.reset();
   const hunter = { x: 2500, y: 0, size: 2500, targetNick: 'Hunter' };
   lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0]];
   listeners.spawn[0]({ time: now });
@@ -247,28 +240,34 @@ check('off again: listeners removed, flag off', !(listeners.spawn || []).length 
   now += 1000; D.eat(hunter, own(0, 600), false, true, 600);
   now += 1100; D.eat(hunter, lm.playerCells[0], false, true, 1000); D.eat(hunter, lm.playerCells[1], false, true, 1000);
   lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
-  const fl = feedLines();
-  check('kill feed: the death line names the player whose eats went on across my split', fl[fl.length - 1] === T('feedDied', ['Hunter']), fl);
-  ctx.legendmod5.killFeed = false; D.sync();
+  const k = D.killer(), ds = D.last() && D.last().steps[D.last().steps.length - 1];
+  check('killer: names the player whose eats went on across my split (recap death step too)', !!k && k.nick === 'Hunter' && !!ds && ds.kind === 'death' && ds.nick === 'Hunter', [k, ds]);
+  check('no kill feed line after the death', feedGone());
+  /* Replay Studio rebuilding a seek (window._lmReplayQuiet): its eats were counted already, none is added */
+  D._test.reset(); ctx._lmReplayQuiet = true;
+  D.eat({ size: 2500, targetNick: 'Rebuilt' }, own(0, 600), false, true, 600);
+  ctx._lmReplayQuiet = false;
+  check('replay rebuild: an eat is not counted (no killer from it)', !(D.killer() && D.killer().nick === 'Rebuilt'), D.killer());
+  ctx.legendmod5.gameOverStats = false; D.sync();
 }
 
 /* who ate me (ogario.v4.js lmKillerWanted): one rule for the server's report, the remove packets
  * and the guard against naming my own multibox unit; the Game Over card (which shows Eaten by and
- * the death recap: one switch, no switch per part), the match history and the kill feed each need it */
+ * the death recap: one switch, no switch per part) and the match history each need it */
 {
   const core = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
   const a = core.indexOf('\nfunction lmKillerWanted(');
   check('lmKillerWanted in the core', a >= 0);
   if (a >= 0) {
     const b = core.indexOf('\n}\n', a);
-    const kc = { defaultmapsettings: { gameOverStats: false, matchHistory: false, killFeed: false } };
+    const kc = { defaultmapsettings: { gameOverStats: false, matchHistory: false } };
     vm.createContext(kc);
     vm.runInContext(core.slice(a, b + 3), kc);
-    const W = (o) => kc.lmKillerWanted(Object.assign({ gameOverStats: false, matchHistory: false, killFeed: false }, o));
-    check('killer: not kept with all three off', W({}) === false && kc.lmKillerWanted() === false);
-    check('killer: kept for each of the Game Over card, Match history, Kill feed alone', W({ gameOverStats: true }) && W({ matchHistory: true }) && W({ killFeed: true }));
-    /* the retired part switches of old saved settings no longer keep it */
-    check('killer: old showKiller / deathRecap values alone do not keep it', W({ showKiller: true }) === false && W({ deathRecap: true }) === false);
+    const W = (o) => kc.lmKillerWanted(Object.assign({ gameOverStats: false, matchHistory: false }, o));
+    check('killer: not kept with both off', W({}) === false && kc.lmKillerWanted() === false);
+    check('killer: kept for each of the Game Over card, Match history alone', W({ gameOverStats: true }) && W({ matchHistory: true }));
+    /* the retired switches of old saved settings (part switches, the removed kill feed) no longer keep it */
+    check('killer: old showKiller / deathRecap / killFeed values alone do not keep it', W({ showKiller: true }) === false && W({ deathRecap: true }) === false && W({ killFeed: true }) === false);
     kc.defaultmapsettings.gameOverStats = true;
     check('killer: reads the live settings by default', kc.lmKillerWanted() === true);
     /* every place that keeps the killer or the multibox guard uses the one rule */
@@ -278,7 +277,7 @@ check('off again: listeners removed, flag off', !(listeners.spawn || []).length 
 }
 
 /* one killer on the Game Over card (ogario.v4.js lmKillerShown): the "Eaten by" row and the match
- * history name the player the recap's death step and the kill feed name (the most mass taken in the
+ * history name the player the recap's death step names (the most mass taken in the
  * last 2 s), not the last eater of the remove packets; the server's report wins in both */
 {
   const core = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
@@ -301,13 +300,12 @@ check('off again: listeners removed, flag off', !(listeners.spawn || []).length 
       lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
     };
     const bigA = { x: 0, y: 0, size: 1100, targetNick: 'BigA' }, tinyB = { x: 0, y: 0, size: 300, targetNick: 'TinyB' };
-    ctx.legendmod5.gameOverStats = true; ctx.legendmod5.killFeed = true; D.sync();
+    ctx.legendmod5.gameOverStats = true; D.sync();
     /* BigA takes 2,000 mass 1.5 s before the death, TinyB eats the last 50 */
     life([[500, bigA, Math.sqrt(200000), 12100], [1500, tinyB, Math.sqrt(5000), 900]]);
-    const rc = D.last(), dstep = rc && rc.steps[rc.steps.length - 1], fl = feedLines(), k1 = S();
+    const rc = D.last(), dstep = rc && rc.steps[rc.steps.length - 1], k1 = S();
     check('one killer: the core\'s last eater is TinyB (the old card row)', lm._lmKiller.nick === 'TinyB');
     check('one killer: the recap death step names BigA', !!dstep && dstep.kind === 'death' && dstep.nick === 'BigA', dstep);
-    check('one killer: the kill feed died line names BigA', fl[fl.length - 1] === T('feedDied', ['BigA']), fl);
     check('one killer: the card row / match history name BigA too, without TinyB\'s mass', !!k1 && k1.nick === 'BigA' && !k1.virus && k1.mass === null, k1);
     /* the two rules agree: the mass of the eater is kept */
     life([[500, bigA, Math.sqrt(200000), 12100]]);
@@ -318,8 +316,8 @@ check('off again: listeners removed, flag off', !(listeners.spawn || []).length 
     lm._lmKiller = { nick: 'Srv', mass: 4321, virus: false, server: true, at: now, cellId: 7 };
     const k3 = S();
     check('one killer: the server report wins with its mass', !!k3 && k3.nick === 'Srv' && k3.mass === 4321, k3);
-    /* recap, kill feed and alert all off: the core's own killer as before */
-    ctx.legendmod5.gameOverStats = false; ctx.legendmod5.killFeed = false; D.sync();
+    /* recap off: the core's own killer as before */
+    ctx.legendmod5.gameOverStats = false; D.sync();
     lm._lmKiller = { nick: 'TinyB', mass: 900, virus: false, at: now };
     const k4 = S();
     check('one killer: with the recap off the core\'s killer stays', !!k4 && k4.nick === 'TinyB' && k4.mass === 900, k4);

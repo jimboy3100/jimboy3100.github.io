@@ -21558,7 +21558,6 @@ var defaultmapsettings = {
      * Game Over card, so a saved value of the old switch is skipped on load */
     matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
     analytics: false,             /* record games for the Analytics window (ogario/modules/analytics.js; localStorage, capped) */
-    killFeed: false,              /* small fading list of your eats of player cells and your deaths, left of the leaderboard */
     hideEventBanner: false,       /* hide the Expanding Land event countdown banner (shown only when the server sends events) */
     streamMode: false,
     hideSkinUrl: false,
@@ -21868,18 +21867,18 @@ function lmRenameOldHotkeys(map) {
     }
     return changed;
 }
-/* Who ate me: kept while anything shows it: the Game Over card ("Eaten by" and its death recap),
- * the match history and the kill feed. One rule for the server's report (lmKiller)
+/* Who ate me: kept while anything shows it: the Game Over card ("Eaten by" and its death recap)
+ * and the match history. One rule for the server's report (lmKiller)
  * and the one seen in the remove packets, and for the guard against my own multibox unit being
  * named, so no switch combination gets the killer from one and not the other. */
 function lmKillerWanted(s) {
     s = s || defaultmapsettings;
-    return !!(s && (s.gameOverStats || s.matchHistory || s.killFeed));
+    return !!(s && (s.gameOverStats || s.matchHistory));
 }
 /* The killer shown by the Game Over card ("Eaten by") and kept in the match history: while the
- * death recap / kill feed records eats (_lmDROn), its rule (deathrecap.js killerNow: the server's
- * report, else who took the most mass in the last 2 s), so the card row, the recap's death step
- * and the kill feed name the same player; else legendmod._lmKiller (at most 15 s old). The mass
+ * death recap records eats (_lmDROn), its rule (deathrecap.js killerNow: the server's
+ * report, else who took the most mass in the last 2 s), so the card row and the recap's death step
+ * name the same player; else legendmod._lmKiller (at most 15 s old). The mass
  * is the eater's, known only for _lmKiller's player. "Watch killer" keeps _lmKiller.cellId. */
 function lmKillerShown(now) {
     now = now || Date.now();
@@ -22915,12 +22914,12 @@ function thelegendmodproject() {
                 'font-family': defaultSettings.hudFontFamily,
                 'font-weight': defaultSettings.hudFontWeight
             });
-            /* HUD parts outside #overlays-hud (bell, kill feed, command bar...) read the font from here */
+            /* HUD parts outside #overlays-hud (broadcast, practice HUD...) read the font from here */
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
             this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
                 /* the newer in-game parts are added to body, not #overlays-hud: same HUD font and weight
-                 * (kill feed, broadcast, practice HUD, screenshot chip) */
-                '#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
+                 * (broadcast, practice HUD, screenshot chip) */
+                '#lm-dir-bc,#lm-pr-hud,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
         },
         setHudScale() {
             /* Issue #8: a value saved on a bigger screen is shown at most at this screen's slider
@@ -25531,7 +25530,6 @@ function thelegendmodproject() {
                         _lmMatchHistoryButton();
                         break;
                     case 'gameOverStats':
-                    case 'killFeed':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
                         break;
                     case 'hideEventBanner':
@@ -26935,7 +26933,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27043,7 +27041,7 @@ function thelegendmodproject() {
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
             /* Spectating: click to follow */
             this.addOptions(["clickSpectate"], "spectateGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "showTime", "showStopwatch", "killFeed", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "showTime", "showStopwatch", "analytics"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
@@ -54191,7 +54189,7 @@ function thelegendmodproject() {
                     this._lmVirSndAt = Date.now();
                     application.playSound(application.virusSoundurl);
                 }
-                /* Death recap / kill feed (ogario/modules/deathrecap.js): exact eats by and of my cells
+                /* Death recap (ogario/modules/deathrecap.js): exact eats by and of my cells
                  * (merges, viruses, kills, who ate my pieces); one flag check while its options are off */
                 if (window._lmDROn && eaterID) {
                     var _lmDrMine = !!(eaterID.isPlayerCell || (this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)));
@@ -88184,7 +88182,7 @@ window.lmReplayResetWorld = lmReplayResetWorld;
 /* Replay Studio (ogario/modules/replaystudio.js seekTo) rebuilds a seek or a step backwards by
  * handling the recording's packets again. While it does, window._lmReplayQuiet is set and the
  * packets change only the world: no sounds (playSound), LMEvents, toasts (the Studio puts a silent
- * toastr in place meanwhile), kill feed lines (deathrecap.js), spawn / death / respawn handling,
+ * toastr in place meanwhile), death recap eats (deathrecap.js), spawn / death / respawn handling,
  * menu, Game Over card, death effects or restart reconnect. 2: the chat lines of this packet are
  * still in the chat box, so displayChatMessage adds none. Every chat line of a replay packet keeps
  * its session (window._lmRpSess) and packet (window._lmRpAt); seeking back to packet from takes
@@ -88508,7 +88506,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading AgarTool script:', e);
     }
-    /* Death recap and kill feed (no listeners or timers while its options are off) */
+    /* Death recap (no listeners or timers while its option is off) */
     try {
         var deathRecapScript = document.createElement('script');
         deathRecapScript.type = 'text/javascript';

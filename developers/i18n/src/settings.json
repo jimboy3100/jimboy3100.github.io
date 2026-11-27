@@ -3653,24 +3653,6 @@
     "ja": "分析：試合を記録（ダッシュボード、ヒートマップ。このブラウザに保存）",
     "it": "Statistiche avanzate: registra le tue partite (pannello, mappe di calore; salvate in questo browser)"
   },
-  "settings.killFeed": {
-    "en": "Kill feed (your eats and deaths, next to the leaderboard)",
-    "el": "Kill feed (τι έφαγες και ποιος σε έφαγε, δίπλα στην κατάταξη)",
-    "es": "Registro de kills (lo que comes y tus muertes, junto a la clasificación)",
-    "bg": "Лента с убийства (твоите изяждания и смърти, до класацията)",
-    "fr": "Kill feed (tes kills et tes morts, à côté du classement)",
-    "ar": "سجل الأكل (ما أكلته ومرات موتك، بجانب لوحة الصدارة)",
-    "zh": "擊殺動態（你吃掉與被吃，顯示在排行榜旁）",
-    "ru": "Лента убийств (ваши поедания и смерти, рядом с топом)",
-    "de": "Kill-Feed (deine Kills und Tode, neben der Bestenliste)",
-    "tr": "Kill feed (yediklerin ve ölümlerin, sıralamanın yanında)",
-    "pl": "Kill feed (twoje zjedzenia i śmierci, obok rankingu)",
-    "nl": "Killfeed (je kills en sterfgevallen, naast de ranglijst)",
-    "pt": "Kill feed (o que você comeu e suas mortes, ao lado do ranking)",
-    "id": "Kill feed (yang kamu makan dan kematianmu, di samping leaderboard)",
-    "ja": "キルフィード（食べた相手と死亡、ランキングの横）",
-    "it": "Kill feed (chi mangi e le tue morti, accanto alla classifica)"
-  },
   "settings.hideEventBanner": {
     "en": "Hide the server event countdown",
     "el": "Απόκρυψη αντίστροφης μέτρησης event του server (Expanding Land)",

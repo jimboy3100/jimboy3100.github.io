@@ -83,7 +83,7 @@
     {
       "id": "stats",
       "name": "Stats and analytics",
-      "description": "Live stats HUD (mass, FPS, ping, PPS, jitter, server Hz, alive time, 16-cell count). Kill feed (6s, 5 lines). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. Analytics dashboard with heatmaps, 500 game summaries and the match history.",
+      "description": "Live stats HUD (mass, FPS, ping, PPS, jitter, server Hz, alive time, 16-cell count). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. Analytics dashboard with heatmaps, 500 game summaries and the match history.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -132,12 +132,6 @@
       "id": "deathrecap",
       "name": "Death recap",
       "description": "Game Over card showing the last 20 seconds of your life as 3-6 summarised steps with a mass sparkline. Attributes the killer by name and mass from eat events. Expanding Land uses server-provided killer info for accuracy.",
-      "url": "https://www.legendmod.ml/features.html"
-    },
-    {
-      "id": "killfeed",
-      "name": "Kill feed",
-      "description": "Fading list of kills and deaths displayed left of the leaderboard. Each entry stays 6 seconds, maximum 5 visible at once. Shows mass gained or lost per event.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

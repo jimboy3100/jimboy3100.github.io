@@ -40,7 +40,7 @@
         '#toast-container .toast-message', '#exp-imp label'];
     var HUD_TEXT = ['#leaderboard-hud', '#top5-hud', '#stats-hud', '#time-hud', '#target-hud', '#pause-hud', '#chat-box',
         /* the newer HUD parts on body: they are made when first used, so they are measured once they exist */
-        '#lm-killfeed', '#lm-dir-bc', '#lm-pr-hud', '#lm-shot-chip'];
+        '#lm-dir-bc', '#lm-pr-hud', '#lm-shot-chip'];
     var textStyle = null, textSig = '', textSeen = '';
     function present(list) { return list.filter(function (sel) { return !!D.querySelector(sel); }).join(); }
     function measure(list, k, out) {
@@ -77,7 +77,7 @@
 
     /* ═══ Applying the options ═══ */
 
-    /* HUD parts made later (kill feed, notification bell, quick bar...) are measured once they
+    /* HUD parts made later (practice HUD, screenshot chip...) are measured once they
      * exist: looked for every 2 s, only while a HUD text size other than 1 is set */
     var hudTimer = null;
     function sync(force) {

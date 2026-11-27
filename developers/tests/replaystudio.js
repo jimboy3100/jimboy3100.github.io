@@ -272,7 +272,7 @@ function driverEnv(packets, opts) {
   env.died = () => g.LMEvents.emit('death', { time: clock, mass: 1, msAlive: 1 });
   env.frame = () => { if (l.play) g.LMEvents.emit('massUpdate', { mass: 10, cells: l.playerCells.length }); };
   /* real: the game's own handlers (sideSrc) for chat lines, sounds, spawn, death, respawn and menu, the
-   * real kill feed (deathrecap.js) and a chat box; env.hooks lists what they did besides the world */
+   * real death recap (deathrecap.js) and a chat box; env.hooks lists what they did besides the world */
   if (opts.real) {
     const hooks = env.hooks = [];
     g.Date = class extends Date { static now() { return clock; } };
@@ -280,7 +280,7 @@ function driverEnv(packets, opts) {
     class El {
       constructor(tag) { this.tagName = tag; this.children = []; this.style = {}; this.attrs = {}; this._text = ''; this.parentNode = null; this.id = ''; }
       get textContent() { return this._text; }
-      set textContent(v) { this._text = String(v); if (this._made) hooks.push('feed'); } /* only the kill feed makes elements */
+      set textContent(v) { this._text = String(v); }
       get childNodes() { return this.children; }
       get firstChild() { return this.children[0] || null; }
       get lastChild() { return this.children[this.children.length - 1] || null; }
@@ -319,7 +319,7 @@ function driverEnv(packets, opts) {
     g.$ = g.jQuery = q;
     const toast = () => { hooks.push('toast'); };
     g.toastr = { success: toast, info: toast, warning: toast, error: toast, clear() { }, options: {} };
-    g.defaultmapsettings = Object.assign(g.defaultmapsettings, { showChatBox: true, chatSounds: true, autoResp: true, killFeed: true });
+    g.defaultmapsettings = Object.assign(g.defaultmapsettings, { showChatBox: true, chatSounds: true, autoResp: true });
     g.legendmod5 = g.defaultmapsettings;
     g.chatLimit = 100;
     g.ogario = l; /* the game's ogario is its protocol object (window.legendmod) */
@@ -593,10 +593,10 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     app.onPlayerDeath();
     check('death in a replay: no session stats, personal best or match history (' + inReplay.join(',') + '); a live death has them (' + calls.join(',') + ')', !inReplay.length && calls.join() === 'stats,best,history');
   }
-  /* What packets do besides the world (chat lines, kill feed, sounds, toasts, spawn / death / respawn
+  /* What packets do besides the world (chat lines, sounds, toasts, spawn / death / respawn
    * handling, menu, LMEvents) happens once, when they are played; seeks and steps backwards, which
    * handle packets again to rebuild the world, do none of it. The chat box then shows the lines up to
-   * the position, each once. Real handlers of the game (sideSrc), real kill feed. */
+   * the position, each once. Real handlers of the game (sideSrc). */
   if (Object.keys(sideSrc).every(k => sideSrc[k])) {
     const story = [pk(64, 50), pk(1, 1, 10, 5), pk(32, 1), pk(1, 2, 20, 5), pk(99, 1)];
     for (let i = 0; i < 6; i++) story.push(pk(4, 1, 11 + i));
@@ -618,9 +618,9 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     e.start(k, 0, true);
     e.advance(8000);
     const fwd = e.hooks.slice();
-    check('played forwards: chat lines, sounds, kill feed, toasts, spawn, death, respawn and events happen once each (' + fwd.join(' ') + ')',
+    check('played forwards: chat lines, sounds, toasts, spawn, death, respawn and events happen once each (' + fwd.join(' ') + ')',
       e.st().pos === story.length && JSON.stringify(e.chatLines()) === JSON.stringify(linesTo(story.length)) &&
-      count(fwd, 'sound') === 5 && count(fwd, 'ev:chat') === 5 && count(fwd, 'feed') === 2 && count(fwd, 'toast') === 1 &&
+      count(fwd, 'sound') === 5 && count(fwd, 'ev:chat') === 5 && count(fwd, 'toast') === 1 &&
       count(fwd, 'spawn') === 2 && count(fwd, 'ev:spawn') === 2 && count(fwd, 'death') === 1 && count(fwd, 'ev:death') === 1 && count(fwd, 'respawn') === 1);
     /* backwards to the start (every step rebuilt), slow packets so rebuilds take several slices */
     e.hooks.length = 0;
@@ -646,7 +646,7 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     const hist = e.g.application.chatHistory.map(h => +(/line (\d+)/.exec(h.message) || [0, -1])[1]);
     check('backwards (' + steps + ' steps) and ' + (seeks.length + 2) + ' seeks: the chat box shows the lines up to the position, each once' + (bad.length ? ' (wrong: ' + bad.slice(0, 4).join(' ') + ')' : ''),
       steps > 10 && !bad.length && JSON.stringify(hist) === JSON.stringify(linesTo(35)));
-    check('backwards and seeks: no chat sound, kill feed line, toast, spawn / death / respawn handling, menu or event (' + e.hooks.slice(0, 8).join(' ') + ')', !e.hooks.length);
+    check('backwards and seeks: no chat sound, toast, spawn / death / respawn handling, menu or event (' + e.hooks.slice(0, 8).join(' ') + ')', !e.hooks.length);
     check('rebuilds in slices hold the last frame (' + sliced + ' slices) and only while they run' + (holdBad.length ? ' (' + holdBad.slice(0, 4).join(', ') + ')' : ''), sliced > 5 && !holdBad.length);
     /* a busy page (2.5 s between two slices, as measured on a loaded machine): the frame stays held */
     {
@@ -669,9 +669,9 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     e.RS.drive.play(1);
     e.advance(8000);
     const again = e.hooks.slice();
-    check('played forwards again after going back: chat lines, sounds, feed, toast, spawn, death, respawn happen again, once (' + again.join(' ') + ')',
+    check('played forwards again after going back: chat lines, sounds, toast, spawn, death, respawn happen again, once (' + again.join(' ') + ')',
       e.st().pos === story.length && JSON.stringify(e.chatLines()) === JSON.stringify(linesTo(story.length)) &&
-      count(again, 'sound') === 5 && count(again, 'feed') === 2 && count(again, 'toast') === 1 && count(again, 'spawn') === 2 && count(again, 'death') === 1 && count(again, 'respawn') === 1);
+      count(again, 'sound') === 5 && count(again, 'toast') === 1 && count(again, 'spawn') === 2 && count(again, 'death') === 1 && count(again, 'respawn') === 1);
     /* a step forwards is played, not rebuilt */
     const lastChat = chatAt[chatAt.length - 1][0];
     e.RS.drive.seek(lastChat, false); e.advance(500);

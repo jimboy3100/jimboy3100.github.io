@@ -1,5 +1,5 @@
-// Death recap (ogario/modules/deathrecap.js): off by default with no listeners; the recap panel and the
-// kill feed fit the screen (915x412 phone too) and stay off the card and the leaderboard; state restored.
+// Death recap (ogario/modules/deathrecap.js): off by default with no listeners; the recap panel fits the
+// screen (915x412 phone too) and stays off the card; the kill feed is removed (no setting, switch or line); state restored.
 // The Game Over card is one switch (gameOverStats): with it on, the card shows who ate you, the mass graph
 // and the recap without a switch per part (massGraph / showKiller / deathRecap are gone).
 (async () => {
@@ -10,17 +10,18 @@
   var D = window.LMDeathRecap, s = window.legendmod5, lm = window.legendmod;
   need('module loaded', !!D);
   if (!D || !s || !lm) return { fail: fail, info: info };
-  need('options off by default', s.gameOverStats === false && s.killFeed === false);
+  need('option off by default', s.gameOverStats === false);
   /* also no mass-loss alert (removed) */
   need('no switch per card part', ['massGraph', 'showKiller', 'deathRecap', 'massLossAlert', 'massLossPct'].every(function (k) { return !document.getElementById(k) && !(k in LM_SETTINGS_DEFAULTS); }));
   need('nothing runs while off', window._lmDROn === false && !window.LMEvents._has('death') && !window.LMEvents._has('spawn'));
-  need('menu switches', ['gameOverStats', 'killFeed'].every(function (k) { return !!document.getElementById(k); }) && !document.getElementById('massLossPct-slider'));
-  var keep = { gameOverStats: s.gameOverStats, killFeed: s.killFeed }, keepK = lm._lmKiller, keepH = window.application && application._lmMassHist;
+  need('menu switch', !!document.getElementById('gameOverStats') && !document.getElementById('massLossPct-slider'));
+  need('no kill feed setting or switch', !('killFeed' in s) && !('killFeed' in LM_SETTINGS_DEFAULTS) && !document.getElementById('killFeed'));
+  var keep = { gameOverStats: s.gameOverStats }, keepK = lm._lmKiller, keepH = window.application && application._lmMassHist;
   var inBox = function (r) { return r.width > 0 && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; };
   var overlap = function (a, b) { return a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom; };
   var u = { finalMass: 9000, highestMass: 24500, topPosition: 2, finalPosition: 5, timeTotal: 95, timeInLeaderboard: 60, massConsumed: 30000, foodEaten: 100, playersEaten: 3, normalCellsEaten: 5, virusesEaten: 1 };
   try {
-    s.gameOverStats = true; s.killFeed = true; D.sync();
+    s.gameOverStats = true; D.sync();
     need('on: listeners and flag', window._lmDROn === true && window.LMEvents._has('death'));
     var T = D._test, t0 = Date.now() - 25000;
     T.reset();
@@ -54,26 +55,15 @@
       if (card && panel.parentNode === modal) need('recap beside the card, not over it', !overlap(card.getBoundingClientRect(), panel.getBoundingClientRect()));
       info.wide = panel.parentNode === modal;
     }
-    T.feed('ate', 'You ate Someone (1,200)', 'Someone');
-    var feed = document.getElementById('lm-killfeed'), lb = document.getElementById('leaderboard-hud');
-    need('kill feed shown', !!feed && feed.childNodes.length === 1);
-    if (feed) {
-      var fr = feed.firstChild.getBoundingClientRect();
-      need('kill feed on screen', inBox(fr));
-      if (lb && lb.getBoundingClientRect().width) need('kill feed off the leaderboard', !overlap(fr, lb.getBoundingClientRect()));
-      var lbd = document.getElementById('leaderboard-data'), lbd1 = lbd && lbd.firstElementChild;
-      if (lbd1 && lbd1.getBoundingClientRect().width) need('kill feed off the leaderboard mass column', !overlap(fr, lbd1.getBoundingClientRect()));
-      info.feed = [Math.round(fr.left), Math.round(fr.top), Math.round(fr.right), Math.round(fr.bottom)];
-      if (lb) { var lr = lb.getBoundingClientRect(); info.lb = [Math.round(lr.left), Math.round(lr.top), Math.round(lr.right), Math.round(lr.bottom)]; }
-    }
+    need('no kill feed line after the death', !document.getElementById('lm-killfeed') && typeof T.feed === 'undefined');
   } finally {
     var m = document.getElementById('lm-gameover-modal');
     if (m && m.parentNode) m.parentNode.removeChild(m);
     if (lm._gameOverDismissTimer) { clearTimeout(lm._gameOverDismissTimer); lm._gameOverDismissTimer = null; }
-    s.gameOverStats = keep.gameOverStats; s.killFeed = keep.killFeed;
+    s.gameOverStats = keep.gameOverStats;
     lm._lmKiller = keepK; if (window.application) application._lmMassHist = keepH;
     D._test.reset(); D.sync();
   }
-  need('off again: nothing listens, feed removed', window._lmDROn === false && !window.LMEvents._has('death') && !document.getElementById('lm-killfeed'));
+  need('off again: nothing listens', window._lmDROn === false && !window.LMEvents._has('death') && !document.getElementById('lm-killfeed'));
   return { fail: fail, info: info };
 })()
