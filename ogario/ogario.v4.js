@@ -21775,7 +21775,7 @@ function lmSettingsCommit(view) {
 /* The settings export carries these stored keys with the gameplay settings: the configuration of
  * the phone controls, the gamepad and the add-on windows. Configuration only: never game history,
  * statistics, recordings, watch lists, backups, secrets or plugin code. type: 'o' an object, 'a' an
- * array; clear: the import removes it when the export has none (it described the settings being
+ * array, 's' plain text (not JSON; max: its longest length, re: its form); clear: the import removes it when the export has none (it described the settings being
  * replaced). Each module checks the value again when it reads it. */
 var LM_EXPORT_KEYS = [
     { key: 'lmPerfBackup', type: 'o', clear: true },
@@ -21803,9 +21803,13 @@ var LM_EXPORT_KEYS = [
      * bar, are configuration; its recently used list is history and stays on the device) */
     { key: 'lmCommandCentre', type: 'o', only: ['fav'] },
     /* the muted notification categories (the read mark and the list filter stay on the device) */
-    { key: 'lmNotificationPrefs', type: 'o', only: ['muted'] }
+    { key: 'lmNotificationPrefs', type: 'o', only: ['muted'] },
+    /* Settings > Voice (LMexpress/LMexpress.sniff3.js): the chat prefix and the speech language */
+    { key: 'prefix', type: 's', max: 32 },
+    { key: 'lang', type: 's', max: 16, re: /^(?:default|[A-Za-z]{2,3}(?:-[A-Za-z]{2,4})?)$/ }
 ];
 function lmExportFits(e, v) {
+    if (e.type === 's') return typeof v === 'string' && v.length <= e.max && (!e.re || e.re.test(v));
     return e.type === 'a' ? Array.isArray(v) : !!v && typeof v === 'object' && !Array.isArray(v);
 }
 function lmExportPick(e, v) {
@@ -21819,7 +21823,7 @@ function lmExportExtras(ls) {
     var out = {};
     LM_EXPORT_KEYS.forEach(function (e) {
         try {
-            var v = JSON.parse(ls.getItem(e.key) || 'null');
+            var v = e.type === 's' ? ls.getItem(e.key) : JSON.parse(ls.getItem(e.key) || 'null');
             if (lmExportFits(e, v)) out[e.key] = lmExportPick(e, v);
         } catch (err) { }
     });
@@ -21845,7 +21849,7 @@ function lmImportExtras(src, set, remove, step, get) {
                 try { cur = JSON.parse((get ? get(e.key) : window.localStorage.getItem(e.key)) || 'null'); } catch (err) { }
                 v = Object.assign(lmExportFits(e, cur) ? cur : {}, lmExportPick(e, v));
             }
-            set(e.key, JSON.stringify(v));
+            set(e.key, e.type === 's' ? v : JSON.stringify(v));
         } else if (e.clear) remove(e.key);
     });
 }

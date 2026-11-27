@@ -246,6 +246,21 @@ check('diff: a set differing only in the phone control layout is not the same', 
     dst4.setItem('lmNotificationPrefs', J({ readId: 3, muted: {}, cat: 'all', type: 'all' }));
     imp(out4, (k, t) => dst4.setItem(k, t), k => dst4.removeItem(k), null, k => dst4.getItem(k));
     check('import: muted categories come in, this device keeps its read mark', dst4.getItem('lmNotificationPrefs') === J({ readId: 3, muted: { chat: true }, cat: 'all', type: 'all' }));
+    /* Settings > Voice: the chat prefix and the speech language, stored as plain text (not JSON) */
+    const src5 = makeStorage(0);
+    src5.setItem('prefix', 'VX'); src5.setItem('lang', 'ja');
+    const out5 = JSON.parse(J(exp(src5)));
+    check('export: the voice prefix and language', out5.prefix === 'VX' && out5.lang === 'ja');
+    check('export: a device that never set them exports none', !('prefix' in JSON.parse(J(exp(makeStorage(0))))) && !('lang' in JSON.parse(J(exp(makeStorage(0))))));
+    const dst5 = makeStorage(0);
+    dst5.setItem('prefix', 'old'); dst5.setItem('lang', 'de');
+    imp(out5, (k, t) => dst5.setItem(k, t), k => dst5.removeItem(k));
+    check('import: the voice prefix and language come in as text', dst5.getItem('prefix') === 'VX' && dst5.getItem('lang') === 'ja');
+    imp({ prefix: 'x'.repeat(40), lang: '"><b>' }, (k, t) => dst5.setItem(k, t), k => dst5.removeItem(k));
+    imp({ prefix: 7, lang: ['ja'] }, (k, t) => dst5.setItem(k, t), k => dst5.removeItem(k));
+    check('import: a voice value that does not fit, or none, leaves this device\'s', dst5.getItem('prefix') === 'VX' && dst5.getItem('lang') === 'ja');
+    imp({ lang: 'default' }, (k, t) => dst5.setItem(k, t), k => dst5.removeItem(k));
+    check('import: the voice language All', dst5.getItem('lang') === 'default');
   }
 }
 
