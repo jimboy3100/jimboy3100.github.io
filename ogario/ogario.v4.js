@@ -79823,6 +79823,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             if (window.fullSpectator) {
                 for (let i = 0; i < spects.length; i++) {
+                    /* a multibox unit has its numbered box above (a full spectator's box around it was wrong) */
+                    if (!spects[i] || spects[i].player) continue;
                     this.newViewport(this.ctx, spects[i].number, spects[i].getX(spects[i].viewX), spects[i].getY(spects[i].viewY), spects[i].isSpectateEnabled, spects[i].isFreeSpectate, [], [], spects[i]);
                 }
             }

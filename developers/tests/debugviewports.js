@@ -6,6 +6,9 @@
  * blows boxes 2, 3 up past the map; food of another unit or of the main connection is not counted;
  * a unit without food keeps the old screen-sized box; box 1 is gone once the food is (disconnect,
  * server switch) instead of staying at the last server's place; box 1 ignores the units' food.
+ * Full Map (full spectator, newViewport with spect.js's getX/getY): spectators still connecting
+ * get their boxes once their views arrive; a box at the map's edge stays inside the map with a
+ * connection's own map offset and with Rotate Map; a multibox unit gets no full-spectator box.
  * node developers/tests/debugviewports.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -142,5 +145,19 @@ for (const c of [{ name: 'own map offset', off: [3000, -2000], vector: null }, {
     check(c.name + ': box held inside the map', b && b.minX >= -7071 - 1e-6 && b.maxY <= 7071 + 1e-6 && Math.min(b.minY, b.maxY) >= -7071 - 1e-6,
         b && [b.minX, b.minY, b.maxX, b.maxY].map(Math.round));
 }
+/* 6. a multibox unit with Full Map open: its box is its numbered one ("2"), no full-spectator box */
+{
+    const e = env({ full: true });
+    const u = e.spect(Object.assign(spectAt(1, null, null), unit(1, 2000, 1000), { mapOffsetFixed: true, viewX: 2000, viewY: 1000 }));
+    food(e.LM.foodMulti, 2000, 1000, 1500, 1);
+    const s = e.spect(spectAt(2, -4671, -6071));
+    s.mapOffsetFixed = true; s.viewX = -4671; s.viewY = -6071;
+    const bs = e.frame();
+    check('unit: its box 2 is drawn', !!byLabel(bs, '2'), JSON.stringify(bs.map((b) => b.label)));
+    check('unit: no full-spectator box around the unit', !byLabel(bs, 'Viewport# 1'), JSON.stringify(bs.map((b) => b.label)));
+    check('spectator next to the unit keeps its box', finite(byLabel(bs, 'Viewport# 2')));
+    void u;
+}
+
 console.log(failed ? 'FAILED ' + failed : 'all debugviewports checks passed');
 process.exit(failed ? 1 : 0);
