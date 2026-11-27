@@ -25,7 +25,8 @@ Chrome is found automatically; set `CHROME_PATH` to use a specific binary.
 Output goes to `developers/tests/out/` (ignored by git). `--prune DAYS` first removes the run folders there
 and the temporary Chrome profiles of the tests that start their own Chrome (`%TEMP%lm-glbatch-*` and the like)
 not changed for DAYS days (0.25 = 6 hours; or alone: `node developers/tests/lib/testchrome.js prune DAYS`).
-A folder a running test uses is never removed, and Chromes left in an old folder by killed runs are ended first.
+A folder changed in the last hour or used by a running test is never removed (also with `--prune 0`), and Chromes
+left in an old folder by killed runs are ended first.
 
 ## What it checks
 

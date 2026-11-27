@@ -108,9 +108,14 @@ function newest(dir) {
 /* the test Chromes' own temporary profiles in the system temp folder (fs.mkdtempSync names: the
  * prefix of the test and 6 random characters). The tests that start their own Chrome remove them
  * after proc.kill(), which fails while Chrome's child processes still hold the folder. */
-const TEMP_PROFILE = /^lm-(agarloader|bench|cellcolors|cellshadows|ext|extreal|glbatch|lmxupdate|skinbanks|skinqueue|trace|usload)-[A-Za-z0-9]{6}$/;
+const TEMP_PROFILE = /^lm-(agarloader|bench|cellcolors|cellshadows|ext|extreal|glbatch|launch-ext|launch-prof|lmxupdate|skinbanks|skinqueue|trace|usload)-[A-Za-z0-9]{6}$/;
 
-/* removes the folders of `roots` not changed for `days` days (fractions work: 0.25 = 6 hours).
+/* a folder changed in the last hour is always kept: a running test also uses folders no Chrome
+ * process names (the extension copy of extensionreal.js, a run folder before its Chrome starts or
+ * while run.js reads its result.json), so a very small `days` (0) must not remove them */
+const MIN_AGE = 3600000;
+
+/* removes the folders of `roots` not changed for `days` days (fractions work: 0.25 = 6 hours; at least 1 hour).
  * roots: [{ dir, match }] (match: a RegExp the folder name must fit; none: every folder).
  * A folder some live test Chrome uses (its browser process runs and the runner that started it does:
  * a smoke run of this or another agent) is kept, whatever its age; nothing is removed when the
@@ -124,7 +129,7 @@ function pruneDirs(roots, days, opts) {
   if (!list) return { removed: [], kept: [], active: 0, orphans: [], error: 'the process list could not be read' };
   const alive = opts.alive || isAlive;
   const sep = win ? '\\' : '/';
-  const limit = (opts.now || Date.now()) - Number(days) * 86400000;
+  const limit = (opts.now || Date.now()) - Math.max(Number(days) * 86400000, MIN_AGE);
   const removed = [], kept = [], orphans = [];
   let active = 0;
   roots.forEach(root => {

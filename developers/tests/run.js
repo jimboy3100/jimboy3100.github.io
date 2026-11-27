@@ -14,7 +14,7 @@
 //   e.g. plugins-*, stay together and in order), each part in its own page with its own page-error check.
 // --keep: keep each run's Chrome profile in its output folder (removed otherwise, also after a failed run).
 // --prune DAYS: first remove the run folders in out/ and the temporary profiles of the Chrome tests not
-//   changed for DAYS days (0.25 = 6 hours), never one a running test uses; also: node developers/tests/lib/testchrome.js prune DAYS.
+//   changed for DAYS days (0.25 = 6 hours), never one changed in the last hour or a running test uses; also: node developers/tests/lib/testchrome.js prune DAYS.
 // Env: CHROME_PATH (optional), SMOKE_SECS (default 14), SMOKE_PROBES (like --probes),
 // SMOKE_LIMIT (like --limit: seconds the probes may take per page; default 15 per probe, at least 240),
 // SMOKE_QUICK=1 (like --quick), SMOKE_JOBS (like --jobs).

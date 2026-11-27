@@ -123,6 +123,12 @@ const HANG = 'new Promise(function () { })';
     reset();
     r = T.prune(root, 0.05, { list: () => [] });
     check('prune: 0.05 days (1.2 hours) removes it', ls() === '', ls());
+    /* 0 days: a folder changed in the last hour stays (a running test may use it without a Chrome in it:
+     * before its Chrome starts, while run.js reads result.json, the extension copy of extensionreal.js) */
+    reset();
+    mk('desktop-running', 10 / 1440);
+    r = T.prune(root, 0, { list: () => [] });
+    check('prune: 0 days keeps a folder changed 10 minutes ago, removes the 2.4 hours old one', ls() === 'desktop-running', ls());
 
     reset();
     const killed = [];
@@ -139,7 +145,7 @@ const HANG = 'new Promise(function () { })';
       const tmp = path.join(root, 'tmp');
       const mkT = (n, daysOld) => { const d = path.join(tmp, n); fs.mkdirSync(d, { recursive: true }); const t = new Date(Date.now() - daysOld * 86400000); fs.utimesSync(d, t, t); };
       fs.rmSync(root, { recursive: true, force: true });
-      mkT('lm-glbatch-a1B2c3', 2); mkT('lm-usload-Zz9yX8', 2); mkT('lm-glbatch-q9q9q9', 0.01); mkT('lm-glbatch-toolong7', 2); mkT('lm-mine', 2); mkT('other-a1B2c3', 2);
+      mkT('lm-glbatch-a1B2c3', 2); mkT('lm-usload-Zz9yX8', 2); mkT('lm-launch-prof-Ab12Cd', 2); mkT('lm-bench-x1y2z3', 2); mkT('lm-glbatch-q9q9q9', 0.01); mkT('lm-glbatch-toolong7', 2); mkT('lm-mine', 2); mkT('other-a1B2c3', 2);
       r = T.pruneDirs([{ dir: tmp, match: T.TEMP_PROFILE }], 1, { list: () => [] });
       check('prune: old temporary test profiles removed, new ones and other folders kept', fs.readdirSync(tmp).sort().join(',') === 'lm-glbatch-q9q9q9,lm-glbatch-toolong7,lm-mine,other-a1B2c3', fs.readdirSync(tmp).sort().join(','));
     }
