@@ -1236,11 +1236,28 @@
          * attached, and chatClose's own synthetic Enter then ran chatClose again. */
         var chatEnterFn = null;
         var _chatFocusTimer = null;
+        /* the text of a dismissed message, in case the game hides its chat box meanwhile (opening
+         * the box empties it) */
+        var _chatDraft = '';
+        function chatShown() {
+            var mb = document.getElementById('message-box');
+            return !!(mb && mb.getClientRects().length);
+        }
+        /* the game's own chat box command (the chat hotkey's), not a synthetic Enter: Enter may be
+         * bound to something else, and on a box still open with a dismissed draft it SENT the draft */
+        function hasGameChat() {
+            return typeof application !== 'undefined' && !!application && typeof application.enterChatMessage === 'function';
+        }
         function chatOpen() {
             chatOn = true;
             var gen = ++_chatGen;
-            // Open chat box — dispatch Enter on document to open game's chat
-            emitKey(13);
+            /* a dismissed message is still in the open box: only the focus comes back */
+            if (!chatShown()) {
+                if (hasGameChat()) application.enterChatMessage(); else emitKey(13);
+                var inp0 = document.getElementById('message');
+                if (inp0 && _chatDraft && !inp0.value) inp0.value = _chatDraft;
+            }
+            _chatDraft = '';
             // Focus immediately (user gesture context) for Firefox
             var inp = document.getElementById('message');
             if (inp) {
@@ -1282,7 +1299,13 @@
             /* first, before the synthetic Enter below: it must not reach a leftover listener */
             if (chatEnterFn && inp) inp.removeEventListener('keydown', chatEnterFn);
             chatEnterFn = null;
-            if (send && inp && inp.value.length > 0) {
+            /* send: the game's chat command sends the text and closes its box (an empty box just
+             * closes); when the Enter key already did that, the box is gone and nothing is sent twice.
+             * Dismiss keeps the box and its text. */
+            var gameChat = hasGameChat();
+            if (send && gameChat && chatShown()) application.enterChatMessage();
+            if (!send && inp) _chatDraft = inp.value;
+            if (send && !gameChat && inp && inp.value.length > 0) {
                 // Send the message by dispatching Enter on the input
                 var ev = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, key: 'Enter', keyCode: 13, which: 13 });
                 /* Firefox ignores keyCode/which in the constructor (0): the chat listeners check keyCode 13 */
@@ -1299,7 +1322,7 @@
              * Dismiss (send=false) should NOT dispatch Enter — it was closing the
              * game's chat UI even when the user just tapped away to dismiss.
              * Guard with generation to prevent stale callback from closing a reopened chat. */
-            if (send) {
+            if (send && !gameChat) {
                 var closeGen = _chatGen;
                 setTimeout(function () {
                     if (closeGen !== _chatGen) return; /* chat reopened — do not send Enter */
