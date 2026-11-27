@@ -26,6 +26,13 @@
     const RECONNECT_MIN = 1000
     const RECONNECT_MAX = 15000
     const CAPTCHA_HOLD = 5 * 60 * 1000 // captcha mode ends after this long without opcode 85/87
+    /* A socket that hangs (no 242 this long after it was created, or no 32/85/87 this long after a
+       spawn packet) is closed and the bot reconnects; it never sits there counted as connected. */
+    const HANDSHAKE_DEADLINE = 10000
+    const SPAWN_DEADLINE = 10000
+    /* Connections in a row lost before the bot spawned on them (refused, closed, hung): the bot stops.
+       When every bot of the session stopped this way, the client gets 14 and the session ends. */
+    const MAX_FAILURES = 6
     const CONNECTING = 0, OPEN = 1     // WebSocket readyState values (ws and browsers)
     // Canonical map width: the mouse (opcode 6) and the ghost cells (opcode 10) come from the
     // client centred and scaled to it; each bot maps them into its own connection's map.
@@ -417,6 +424,23 @@
             exitCaptchaMode()
         }
 
+        // Every bot of the session stopped after MAX_FAILURES failed connections: the client gets
+        // 14 (u16 last close code) and the session ends (1, then 2), instead of retrying for ever.
+        function checkAllGaveUp(code) {
+            if (!session.active || stoppingBots || userBots.length < bots.amount || !userBots.every(bot => bot.gaveUp)) return
+            const c = (code || 0) & 0xffff
+            sendToUser(new Uint8Array([14, c & 255, c >> 8]))
+            logger.error('The game server refused every bot, bots stopped')
+            beginShutdown(userWS)
+        }
+
+        // Bots waiting for a captcha token, and bots that stopped after failed connections
+        function countBots(test) {
+            let n = 0
+            for (const bot of userBots) if (test(bot)) n++
+            return n
+        }
+
         // The player's own cells are never a bot target (sendMode nick, opcode 7).
         function isPlayerEntity(entity) {
             return !!user.nickName && entity.name === user.nickName
@@ -461,10 +485,18 @@
                 this.reconnectTimeout = null
                 this.reconnectAttempts = 0
                 this.destroyed = false
+                // Hung-socket deadline and consecutive connections lost before a spawn on them
+                this.deadlineTimeout = null
+                this.spawnedHere = false
+                this.failures = 0
+                this.lastCloseCode = 0
+                this.gaveUp = false
+                this.orientProvisional = false
                 this.connect()
             }
             reset() {
                 this.markDead()
+                this.clearDeadline()
                 if (this.isConnected) {
                     this.isConnected = false
                     connectedBots--
@@ -488,12 +520,14 @@
                 this.fixX = 1
                 this.fixY = 1
                 this.orientFixed = false
+                this.orientProvisional = false
                 this.ghostCells = []
                 this.offsetFixed = false
                 this.offsetFixedAt = 0
                 this.handshakeDone = false
                 this.waitingToken = null
                 this.spawnToken = null
+                this.spawnedHere = false
             }
             connect() {
                 this.reset()
@@ -502,7 +536,7 @@
                 } catch (e) {
                     this.ws = null
                     logger.error('Bot cannot connect:', e.message)
-                    this.scheduleReconnect()
+                    this.lost(0, 'cannot connect')
                     return
                 }
                 if (opts.binaryType) this.ws.binaryType = opts.binaryType
@@ -510,6 +544,58 @@
                 this.ws.onmessage = this.onmessage.bind(this)
                 this.ws.onerror = this.onerror.bind(this)
                 this.ws.onclose = this.onclose.bind(this)
+                this.setDeadline(HANDSHAKE_DEADLINE, 'no handshake')
+            }
+            setDeadline(ms, why) {
+                this.clearDeadline()
+                this.deadlineTimeout = setTimeout(() => {
+                    this.deadlineTimeout = null
+                    if (this.destroyed || !session.active || stoppingBots || !this.ws) return
+                    this.abandon(why)
+                }, ms)
+            }
+            clearDeadline() {
+                if (this.deadlineTimeout) {
+                    clearTimeout(this.deadlineTimeout)
+                    this.deadlineTimeout = null
+                }
+            }
+            // Closes a hung socket (also one still connecting) without waiting for its close event.
+            abandon(why) {
+                const ws = this.ws
+                this.detachSocket()
+                if (ws) { try { ws.close() } catch (e) {} }
+                this.lost(0, why)
+            }
+            // The socket is gone (code: its close code, 0 when we closed it). Counts a failure when
+            // the bot never spawned on it and was not waiting for a captcha, then reconnects or stops.
+            lost(code, why) {
+                const failed = !this.spawnedHere && !this.waitingToken
+                this.reset()
+                if (this.destroyed || !session.active || stoppingBots) return
+                if (failed) {
+                    this.failures++
+                    this.lastCloseCode = code || 0
+                    logger.warn('Bot could not join the game server (' + (why || 'closed') + (code ? ', close code ' + code : '') + '), ' + this.failures + '/' + MAX_FAILURES)
+                    if (this.failures >= MAX_FAILURES) {
+                        this.giveUp()
+                        return
+                    }
+                }
+                this.scheduleReconnect()
+            }
+            giveUp() {
+                this.gaveUp = true
+                if (this.reconnectTimeout) {
+                    clearTimeout(this.reconnectTimeout)
+                    this.reconnectTimeout = null
+                }
+                logger.error('Bot stopped after ' + this.failures + ' failed connections in a row' + (this.lastCloseCode ? ' (last close code ' + this.lastCloseCode + ')' : ''))
+                checkAllGaveUp(this.lastCloseCode)
+            }
+            sendSpawn(token) {
+                this.send(buffers.spawn(bots.name, token))
+                this.setDeadline(SPAWN_DEADLINE, 'no answer to spawn')
             }
             detachSocket() {
                 if (this.ws) {
@@ -545,7 +631,7 @@
                 this.followMouse = false
             }
             scheduleReconnect() {
-                if (this.destroyed || this.reconnectTimeout || !session.active || stoppingBots) return
+                if (this.destroyed || this.gaveUp || this.reconnectTimeout || !session.active || stoppingBots) return
                 const delay = Math.min(RECONNECT_MIN * Math.pow(2, this.reconnectAttempts), RECONNECT_MAX)
                 this.reconnectAttempts++
                 this.reconnectTimeout = setTimeout(() => {
@@ -579,28 +665,27 @@
                 }
                 this.waitingToken = null
                 this.spawnToken = token === '0' ? '0' : 'token'
-                this.send(buffers.spawn(bots.name, token))
+                this.sendSpawn(token)
             }
             // Hands a queued token to this bot if it waits for one. Returns true when used.
             useToken() {
                 if (!this.waitingToken || !this.canSpawn()) return false
                 const token = takeToken()
                 if (!token) return false
-                if (this.waitingToken === 'v3') this.send(buffers.captchaV3(token))
-                else {
+                if (this.waitingToken === 'v3') {
+                    this.send(buffers.captchaV3(token))
+                    this.setDeadline(SPAWN_DEADLINE, 'no answer to the captcha')
+                } else {
                     this.spawnToken = 'token'
-                    this.send(buffers.spawn(bots.name, token))
+                    this.sendSpawn(token)
                 }
                 this.waitingToken = null
                 return true
             }
+            // Counted as connected only from the game server's 242 (an open socket can still hang).
             onopen() {
                 this.send(buffers.protocolVersion(game.protocolVersion))
                 this.send(buffers.clientVersion(game.clientVersion))
-                if (!this.isConnected) {
-                    this.isConnected = true
-                    connectedBots++
-                }
             }
             onmessage(message) {
                 try {
@@ -620,17 +705,19 @@
                     if (ws && (ws.readyState === CONNECTING || ws.readyState === OPEN)) ws.close()
                 }, 1000)
             }
-            onclose() {
+            onclose(event) {
                 // Null the ws reference so GC can collect the socket
                 this.detachSocket()
-                this.reset()
-                this.scheduleReconnect()
+                this.lost(event && event.code, event && event.reason)
             }
             handleBuffer(buffer) {
                 const reader = new Reader(buffer)
                 switch (reader.readUint8()) {
                     case 32:
                         this.cellsIDs.push(reader.readUint32())
+                        this.clearDeadline()
+                        this.spawnedHere = true
+                        this.failures = 0
                         if (!this.isAlive) {
                             this.isAlive = true
                             this.waitingToken = null
@@ -659,12 +746,14 @@
                         break
                     case 85:
                         // Captcha required: keep the connection and spawn on the next token.
+                        this.clearDeadline()
                         enterCaptchaMode()
                         this.waitingToken = 'spawn'
                         this.useToken()
                         break
                     case 87:
                         // Captcha v3 required: answer with opcode 88 + token.
+                        this.clearDeadline()
                         enterCaptchaMode()
                         this.waitingToken = 'v3'
                         this.useToken()
@@ -682,6 +771,11 @@
                     }
                     case 242:
                         this.handshakeDone = true
+                        this.clearDeadline()
+                        if (!this.isConnected) {
+                            this.isConnected = true
+                            connectedBots++
+                        }
                         if (this.waitingToken) this.useToken()
                         else this.trySpawn()
                         break
@@ -727,8 +821,9 @@
             // The top players (ghost cells) are the same players on the player's and on
             // this bot's connection, so their distance from the map centre must match
             // per axis, either as is (same) or with the sign flipped (mirrored).
+            // After the 10 s fallback (orientProvisional) it keeps looking: a real decision replaces it.
             detectOrientation() {
-                if (this.orientFixed || !this.offsetFixed) return
+                if ((this.orientFixed && !this.orientProvisional) || !this.offsetFixed) return
                 const refs = user.ghostRef
                 if (!refs || !refs.length || !this.ghostCells.length) return
                 // the two lists must be from about the same moment
@@ -774,14 +869,28 @@
                 this.fixX = fx
                 this.fixY = fy
                 this.orientFixed = true
+                this.orientProvisional = false
             }
-            // No decision 10 s after the map border was known: keep today's 1/1.
+            // No decision 10 s after the map border was known: follow with 1/1 for now (provisional:
+            // the ghost cells keep being compared and a real decision replaces it).
             checkOrientationFallback() {
-                if (!this.orientFixed && this.offsetFixed && Date.now() - this.offsetFixedAt >= 10000) this.orientFixed = true
+                if (!this.orientFixed && this.offsetFixed && Date.now() - this.offsetFixedAt >= 10000) {
+                    this.orientFixed = true
+                    this.orientProvisional = true
+                }
+            }
+            removeEntity(id) {
+                const at = this.cellsIDs.indexOf(id)
+                if (at >= 0) this.cellsIDs.splice(at, 1)
+                delete this.viewportEntities[id]
             }
             updateViewportEntities(reader) {
+                // Eat records (eater, eaten): the eaten cell is gone, also when the remove list leaves it out
                 const eatRecordLength = reader.readUint16()
-                for (let i = 0; i < eatRecordLength; i++) reader.byteOffset += 8
+                for (let i = 0; i < eatRecordLength; i++) {
+                    reader.byteOffset += 4
+                    this.removeEntity(reader.readUint32())
+                }
                 while (true) {
                     const id = reader.readUint32()
                     if (id === 0) break
@@ -802,11 +911,7 @@
                     this.viewportEntities[entity.id] = entity
                 }
                 const removeRecordLength = reader.readUint16()
-                for (let i = 0; i < removeRecordLength; i++) {
-                    const removedEntityID = reader.readUint32()
-                    if (this.cellsIDs.includes(removedEntityID)) this.cellsIDs.splice(this.cellsIDs.indexOf(removedEntityID), 1)
-                    delete this.viewportEntities[removedEntityID]
-                }
+                for (let i = 0; i < removeRecordLength; i++) this.removeEntity(reader.readUint32())
                 if (this.isAlive && this.cellsIDs.length === 0) {
                     // Died: respawn with the same token rule as the first spawn
                     this.markDead()
@@ -1115,7 +1220,7 @@
                         user.ghostRef = refs
                         user.ghostRefAt = Date.now()
                         for (const bot of userBots) {
-                            if (!bot.orientFixed) bot.detectOrientation()
+                            if (!bot.orientFixed || bot.orientProvisional) bot.detectOrientation()
                         }
                         break
                     }
@@ -1142,8 +1247,10 @@
             if (statusInterval) { clearInterval(statusInterval); statusInterval = null }
             statusInterval = setInterval(() => {
                 // no server player total here (54 is the top-10 leaderboard): Legend Mod counts the
-                // players itself from the whole leaderboard (opcode 53) it gets as the player
-                sendToUser(new Uint8Array([4, clamp8(connectedBots), clamp8(spawnedBots)]))
+                // players itself from the whole leaderboard (opcode 53) it gets as the player.
+                // 4, connected (from 242), spawned, waiting for a captcha, stopped after failed connections
+                sendToUser(new Uint8Array([4, clamp8(connectedBots), clamp8(spawnedBots),
+                    clamp8(countBots(bot => !!bot.waitingToken)), clamp8(countBots(bot => bot.gaveUp))]))
             }, 1000)
             userWS = ws
             logger.good('User connected!')

@@ -8260,8 +8260,26 @@ window.connectionBots = {
     setStatus(key, color) {
         var el = document.getElementById('userStatus')
         if (!el) return
+        this.live = false
         el.style.color = color
         _lmG1set(el, key)
+    },
+    /* Message 4 also carries the bots waiting for a captcha and the bots the game server refused
+       (bot servers before that send only 3 bytes): then the status line says so instead of Connected. */
+    sessionStatus(waiting, refused) {
+        var el = document.getElementById('userStatus')
+        if (!el) return
+        var text = function (key, en, n) { var s = lmT(key, [n]); return !s || s === key ? en.replace('{0}', n) : s }
+        var line = waiting ? text('pkg.bots.captchaWaiting', 'Waiting for a captcha: {0}', waiting)
+            : refused ? text('pkg.bots.refusedCount', 'Refused by the game server: {0}', refused) : null
+        if (!line) {
+            if (this.live) this.setStatus('game1.bots.connected', '#00C02E')
+            return
+        }
+        this.live = true
+        if (el.removeAttribute) el.removeAttribute('data-i18n')
+        el.style.color = '#FF9800'
+        if (el.textContent !== line) el.textContent = line
     },
     /* Start or Stop: busy = Stop (connecting for a Start, bots starting or running), else Start */
     buttons(busy) {
@@ -8308,7 +8326,10 @@ window.connectionBots = {
                 window.bots.ai = false
                 if (typeof window._brResetFill === 'function') window._brResetFill()
                 if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
-                this.runAction(next)
+                if (next) this.runAction(next)
+                /* the session stopped by a server change has ended: the bots may follow now (not when
+                   a Start / Fill lobby pressed meanwhile just ran: that one replaces the follow) */
+                else if (typeof window._lmBotsTryResume === 'function') window._lmBotsTryResume()
                 break
             }
             case 3:
@@ -8317,6 +8338,7 @@ window.connectionBots = {
             case 4:
                 window.userBots.spawned = dataView.getUint8(2)
                 $('#botCount').html(`${dataView.getUint8(1)}/${dataView.getUint8(2)}/${window.userBots.sessionAmount || window.bots.amount}`)
+                this.sessionStatus(dataView.byteLength > 3 ? dataView.getUint8(3) : 0, dataView.byteLength > 4 ? dataView.getUint8(4) : 0)
                 /* our bots in the Battle Royale lobby count */
                 if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
                 break
@@ -8335,6 +8357,13 @@ window.connectionBots = {
                 /* The bot server cannot join this game server (not an agar.io arena). */
                 toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.agarOnly', 'The bots work on agar.io servers only.'))
                 break
+            case 14: {
+                /* The game server refused every bot (each lost 6 connections in a row before it could
+                   spawn): the session ends (1 and 2 follow). u16: the last close code. */
+                var code = message.data.byteLength >= 3 ? dataView.getUint16(1, true) : 0
+                toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('pkg.bots.refused', 'The game server refused the bots’ connections. The bots stopped.') + (code ? ' (' + code + ')' : ''))
+                break
+            }
         }
     },
     onclose(event) {
@@ -8370,8 +8399,23 @@ window.connectionBots = {
     }
 }
 /* Stop the bot session, also while it is still starting (Start sent, no bot spawned yet)
-   or still connecting for a Start / Fill lobby (cancelled). */
-window._lmBotsStop = function () {
+   or still connecting for a Start / Fill lobby (cancelled).
+   serverChange (LM.connect, a new game server: mode or region switch, reconnect after a drop, a
+   version change, a party): bots started with Start (also still starting or connecting; not a
+   Battle Royale fill) are remembered and start again on the new server once it is ready
+   (_lmBotsTryResume). Any other stop (the Stop button) forgets them. */
+window._lmBotsStop = function (serverChange) {
+    var ub = window.userBots, cb = window.connectionBots
+    if (serverChange) {
+        if ((ub.startedBots || ub.startSent || cb.pending === 'start') && !window._brFilling) {
+            window._lmBotsForget()
+            var p = window._lmBotsResume = { timer: null }
+            /* the new server is not ready in 30 s (no server found, no map border): say why they stopped */
+            p.timer = setTimeout(function () { if (window._lmBotsResume === p) window._lmBotsCannotFollow() }, 30000)
+        }
+        /* the new server is not an agar.io arena: the bots cannot join it */
+        if (window._lmBotsResume && window.legendmod && !window.legendmod.integrity) window._lmBotsCannotFollow()
+    } else window._lmBotsForget()
     window.connectionBots.cancel()
     if ((window.userBots.startedBots || window.userBots.startSent) && window.connectionBots.ws && window.connectionBots.ws.readyState === WebSocket.OPEN) {
         window.connectionBots.send(new Uint8Array([1]).buffer)
@@ -8382,6 +8426,29 @@ window._lmBotsStop = function () {
     /* the bots leave: they are not counted in this server's lobby any more */
     window.userBots.spawned = 0
     if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
+}
+/* Bots waiting to follow the player to the new game server ({ timer }), else null */
+window._lmBotsResume = null
+window._lmBotsForget = function () {
+    var p = window._lmBotsResume
+    window._lmBotsResume = null
+    if (p && p.timer) clearTimeout(p.timer)
+}
+window._lmBotsCannotFollow = function () {
+    window._lmBotsForget()
+    toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('pkg.bots.serverChanged', 'The bots stopped because the game server changed.'))
+}
+/* Run by the new server's map border (its handshake is done, the game is ready) and by the end of
+   the old session (message 2): Start again once both happened. true when it started. */
+window._lmBotsTryResume = function () {
+    var lm = window.legendmod, ub = window.userBots, cb = window.connectionBots
+    if (!window._lmBotsResume || !lm) return false
+    /* the old session is still ending, or a Start / Fill lobby is already on its way */
+    if (ub.startedBots || ub.startSent || cb.pending) return false
+    if (!lm.ws || !lm.integrity || !(ub.offsetFixed && ub.offsetSeq === (lm._connectSeq || 0))) return false
+    window._lmBotsForget()
+    if (typeof window._lmBotsStart === 'function') window._lmBotsStart()
+    return true
 }
 window.gameBots = {
     url: '',
@@ -41624,7 +41691,8 @@ function thelegendmodproject() {
             if (this.battleRoyale) { this.battleRoyale.joined = false; this.battleRoyale.started = false; this.battleRoyale.countdown = false; this.battleRoyale.players = 0; this.battleRoyale.shrinkTime = 0; this.battleRoyale.timeLeft = 0; }
             this.imsoloPartyFriend = null;
             if (this.arrowFB && this.arrowFB[0]) this.arrowFB[0].visible = false;
-            window._lmBotsStop()
+            /* a new game server: running bots stop here and follow once it is ready (_lmBotsTryResume) */
+            window._lmBotsStop(true)
             window.userBots.isAlive = false
             window.userBots.macroFeedInterval = null
             if (this.serverType === 'garix') {
@@ -53184,6 +53252,8 @@ function thelegendmodproject() {
                 window.userBots.scaleY = 14142.135623730952 / (maxY - minY);
                 window.userBots.offsetSeq = this._connectSeq || 0;
                 window.userBots.offsetFixed = true;
+                /* this server is ready: bots stopped by the server change start again here (once) */
+                if (window._lmBotsResume && typeof window._lmBotsTryResume === 'function') setTimeout(window._lmBotsTryResume, 0);
             }
             this._lmBorderTraceAdd(src, 0, minX, minY, maxX, maxY);
             return true;
@@ -86001,6 +86071,8 @@ function setGUIEvents() {
         /* Clamp this session only: the saved amount stays what the user typed. */
         var _lmBotsN = Math.max(1, Math.min(window.bots.amount, 197 - legendmod.leaderboard.length));
         window.userBots.startSent = true
+        /* this session replaces bots still waiting to follow from the previous server */
+        if (typeof window._lmBotsForget === 'function') window._lmBotsForget()
         window.userBots.sessionAmount = _lmBotsN
         cb.send(window.buffers.startBots(legendmod.ws, window.gameBots.protocolVersion, window.gameBots.clientVersion, window.userBots.isAlive, window.unescape(window.encodeURIComponent(window.bots.nameLM)), _lmBotsN))
         if (legendmod.gameMode != ":party") cb.send(window.buffers.sendMode(window.unescape(window.encodeURIComponent(ogarcopythelb.nick))))
@@ -86155,6 +86227,7 @@ function setGUIEvents() {
         }
         /* This session only: the user's own bot amount setting is not changed. */
         window.userBots.startSent = true
+        if (typeof window._lmBotsForget === 'function') window._lmBotsForget()
         window.userBots.sessionAmount = needed
         cb.buttons(true)
         cb.send(window.buffers.startBots(

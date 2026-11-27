@@ -13,7 +13,8 @@ const tagged = (...args) => console.log('[SERVER]', ...args)
 const server = core.createServer({
     WebSocket,
     murmur2,
-    socketOptions: { origin: 'https://agar.io' },
+    // handshakeTimeout: a game server that never answers the upgrade does not hold a bot for ever
+    socketOptions: { origin: 'https://agar.io', handshakeTimeout: 10000 },
     log: { good: tagged, warn: tagged, error: tagged }
 })
 

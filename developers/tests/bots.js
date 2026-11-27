@@ -221,9 +221,10 @@ for (const [file, M] of Object.entries(servers)) {
 
         // no captcha: spawn with '0'
         const b1 = newBot();
-        check(tag + 'open counts one connected bot', st().connectedBots === 1);
+        check(tag + 'open alone is not counted as connected (the socket can still hang)', st().connectedBots === 0);
         const sentBefore = b1.ws.sent.length;
         ready(b1);
+        check(tag + '242 counts one connected bot', st().connectedBots === 1);
         check(tag + 'no token: spawns with token 0', b1.ws.sent.length === sentBefore + 1 && last(b1).equals(expectSpawn(NAME, '0')));
         check(tag + 'no captcha: client gets no 12', c.count([12]) === 0);
 
@@ -318,6 +319,7 @@ for (const [file, M] of Object.entries(servers)) {
         for (let i = 0; i < 6; i++) M.addBotTick();
         check(tag + 'start loop never exceeds amount (bots still connecting)', M.userBots.length === 2 && FakeWS.instances.length === 2);
         check(tag + 'start loop bots connect to the game url with the agar.io origin', FakeWS.instances.every(w => w.url === GAME_URL && w.opts.origin === 'https://agar.io'));
+        check(tag + 'bot sockets get a handshake timeout (a game server that never answers the upgrade)', FakeWS.instances.every(w => w.opts.handshakeTimeout === 10000));
 
         // malformed input does not throw
         let ok = true;
@@ -557,10 +559,20 @@ for (const [file, M] of Object.entries(servers)) {
             check(tag + 'no fallback before 10 s', !b.orientFixed);
             Date.now = () => at + 10001;
             try { b.move(); } finally { Date.now = realNow; }
-            check(tag + 'fallback after 10 s: 1/1', b.orientFixed && b.fixX === 1 && b.fixY === 1);
+            check(tag + 'fallback after 10 s: 1/1, provisional', b.orientFixed && b.orientProvisional && b.fixX === 1 && b.fixY === 1);
             b.handleCompressedBuffer(op69(refs, -1, -1));
             M.handleUserMessage(c, op10(refs));
-            check(tag + 'after the fallback the orientation stays', b.fixX === 1 && b.fixY === 1);
+            check(tag + 'after the fallback a real decision (opcode 10) replaces it', b.fixX === -1 && b.fixY === -1 && b.orientFixed && !b.orientProvisional);
+            b.handleCompressedBuffer(op69(refs, 1, 1));
+            M.handleUserMessage(c, op10(refs));
+            check(tag + 'a real decision then stays', b.fixX === -1 && b.fixY === -1);
+            // the same through opcode 69 arriving after the player's reference
+            const b2 = orientBot();
+            Date.now = () => b2.offsetFixedAt + 10001;
+            try { b2.move(); } finally { Date.now = realNow; }
+            M.handleUserMessage(c, op10(refs));
+            b2.handleCompressedBuffer(op69(refs, 1, -1));
+            check(tag + 'after the fallback a real decision (opcode 69) replaces it', b2.fixX === 1 && b2.fixY === -1 && !b2.orientProvisional);
         }
         {
             c = begin(5);
@@ -592,6 +604,129 @@ for (const [file, M] of Object.entries(servers)) {
         console.log = out;
     }
     check(tag + 'behavioural suite ran without exceptions' + (threw ? ' (' + threw.stack + ')' : ''), !threw);
+}
+
+// ---- bot core reliability (fake clock): hung sockets, refused connections, captcha status, eat list ----
+{
+    const core = require(path.join(botsDir, 'botcore'));
+    const real = { setTimeout: global.setTimeout, clearTimeout: global.clearTimeout, setInterval: global.setInterval, clearInterval: global.clearInterval, now: Date.now };
+    let now = 1e12, seq = 0;
+    const timers = new Map();
+    const add = (fn, ms, every) => { const id = ++seq; timers.set(id, { fn, at: now + Math.max(0, ms || 0), every }); return id; };
+    const advance = ms => {
+        const end = now + ms;
+        for (;;) {
+            let next = null;
+            for (const [id, t] of timers) if (t.at <= end && (!next || t.at < next[1].at)) next = [id, t];
+            if (!next) break;
+            now = next[1].at;
+            if (next[1].every) next[1].at += next[1].every; else timers.delete(next[0]);
+            next[1].fn();
+        }
+        now = end;
+    };
+    global.setTimeout = (fn, ms) => add(fn, ms); global.clearTimeout = id => { timers.delete(id); };
+    global.setInterval = (fn, ms) => add(fn, ms, ms); global.clearInterval = id => { timers.delete(id); };
+    Date.now = () => now;
+    let threw = null;
+    try {
+        const URL1 = 'wss://web-arenas-live-v25-0.agario.miniclippt.com/eu-west-2/1-2-3-4';
+        const start = n => Buffer.concat([Buffer.from([0]), Buffer.from(URL1), Buffer.from([0]), u32(22), u32(31000), Buffer.from([1]), Buffer.from('b'), Buffer.from([0, n])]);
+        const logs = [];
+        const session = n => {
+            const S = core.createServer({ WebSocket: FakeWS, log: { good() {}, warn: (...a) => logs.push(a.join(' ')), error: (...a) => logs.push(a.join(' ')) } });
+            const c = new FakeClient();
+            S.onUserConnection(c);
+            FakeWS.instances.length = 0;
+            S.handleUserMessage(c, start(n));
+            advance(160 * n);
+            return { S, c, status: () => { const s = c.sent.filter(b => b[0] === 4).pop(); return s ? Array.from(s) : null; } };
+        };
+        const msg = (ws, bytes) => ws.onmessage({ data: Buffer.from(bytes) });
+        const refuse = (ws, code) => { ws.readyState = 3; ws.onclose({ code }); };
+        const nextSocket = () => { const n = FakeWS.instances.length; for (let i = 0; i < 40 && FakeWS.instances.length === n; i++) advance(500); return FakeWS.instances[FakeWS.instances.length - 1]; };
+
+        // hung sockets: no 242 / no answer to the spawn within 10 s -> closed, the bot reconnects
+        let { S, c, status } = session(2);
+        const [b1, b2] = S.userBots, [w1, w2] = FakeWS.instances;
+        w1.open(); w2.open();
+        advance(1000);
+        check('core: open sockets are not counted as connected before 242', status()[1] === 0);
+        msg(w1, [242]);
+        advance(1000);
+        check('core: status [4, connected, spawned, captcha, stopped]: 242 counts the bot', JSON.stringify(status()) === '[4,1,0,0,0]');
+        advance(8500);
+        check('core: no 242 within 10 s: the socket is closed, the bot reconnects', w2.readyState === 3 && b2.ws === null && !!b2.reconnectTimeout && b2.failures === 1 && logs.some(l => /no handshake/.test(l)));
+        check('core: spawn sent 9.5 s ago: still waiting', w1.readyState === 1 && b1.failures === 0);
+        advance(1000);
+        check('core: no answer to the spawn within 10 s: the socket is closed', w1.readyState === 3 && b1.ws === null && b1.failures === 1 && logs.some(l => /no answer to spawn/.test(l)));
+        // the reconnected bot spawns: its failures are forgotten; a later close is no failure
+        const w3 = nextSocket();
+        const bw3 = S.userBots.find(b => b.ws === w3);
+        w3.open(); msg(w3, [242]); msg(w3, [32, ...u32(777)]);
+        check('core: spawned after reconnecting: no deadline, failures reset', bw3.isAlive && !bw3.deadlineTimeout && bw3.failures === 0);
+        advance(20000);
+        check('core: a playing bot is never closed by a deadline', w3.readyState === 1 && bw3.isAlive);
+        // eat list: the bot's cell eaten (eat record only) -> dead, respawns at once
+        const spawns = () => w3.sent.filter(p => p[0] === 0).length;
+        const before = spawns();
+        bw3.handleCompressedBuffer(Buffer.concat([Buffer.from([16]), u16(1), u32(999), u32(777), u32(0), u16(0)]));
+        check('core: a cell eaten in the eat list (not in the remove list) is a death: respawn sent', !bw3.isAlive && bw3.cellsIDs.length === 0 && spawns() === before + 1 && !!bw3.deadlineTimeout);
+        msg(w3, [32, ...u32(778)]);
+        refuse(w3, 1006);
+        check('core: closed after it spawned on that socket: no failure counted', bw3.failures === 0 && !!bw3.reconnectTimeout);
+        // refused again and again (403 -> 1006): the bot stops after 6 failures; the session goes on
+        const other = S.userBots.find(b => b !== bw3);
+        let guard = 0;
+        while (!other.gaveUp && guard++ < 20) {
+            const w = nextSocket();
+            if (w === bw3.ws) { w.open(); msg(w, [242]); msg(w, [32, ...u32(900 + guard)]); continue; }
+            if (other.ws === w) refuse(w, 1006);
+        }
+        check('core: 6 refused connections in a row: the bot stops (no reconnect), close code kept and logged', other.gaveUp && other.failures === 6 && !other.reconnectTimeout && other.ws === null && other.lastCloseCode === 1006 && logs.some(l => /close code 1006/.test(l)));
+        const n = FakeWS.instances.length;
+        advance(60000);
+        check('core: a stopped bot opens no socket any more; status counts it', !FakeWS.instances.slice(n).some(w => other.ws === w) && status()[4] === 1 && c.count([14]) === 0 && S.session.active);
+        // the last bot fails too: client gets 14 + close code, then 1 and 2, session over
+        guard = 0;
+        if (bw3.ws) refuse(bw3.ws, 1006);
+        while (!bw3.gaveUp && guard++ < 20) { const w = nextSocket(); if (bw3.ws === w) refuse(w, 1006); }
+        advance(2500);
+        const m14 = c.sent.find(b => b[0] === 14);
+        check('core: every bot stopped: client gets 14 with the close code, then 1 and 2, session ends', !!m14 && m14.length === 3 && m14.readUInt16LE(1) === 1006 &&
+            c.sent.findIndex(b => b[0] === 14) < c.sent.findIndex(b => b.length === 1 && b[0] === 1) && c.count([2]) === 1 && !S.session.active && S.userBots.length === 0);
+        const left = [...timers.values()].filter(t => !t.every).length;
+        check('core: after the session ended no bot timer is left', left === 0);
+        S.onUserClose(c);
+
+        // captcha: waiting bots keep their socket (no deadline, no failure) and are counted
+        ({ S, c, status } = session(1));
+        const w = FakeWS.instances[0], b = S.userBots[0];
+        w.open(); msg(w, [242]); msg(w, [85]);
+        advance(60000);
+        check('core: a bot waiting for a captcha is not closed by a deadline', w.readyState === 1 && b.waitingToken === 'spawn' && !b.deadlineTimeout);
+        check('core: status counts the bot waiting for a captcha', JSON.stringify(status()) === '[4,1,0,1,0]');
+        refuse(w, 1006);
+        check('core: a socket lost while waiting for a captcha is no failure', b.failures === 0 && !!b.reconnectTimeout);
+        S.resetServer(); S.onUserClose(c);
+        check('core: reset leaves no timer', timers.size === 0);
+
+        // a socket that cannot be created: counted like a refused one, no exception
+        const Throwing = function () { throw new Error('bad url'); };
+        const S3 = core.createServer({ WebSocket: Throwing, log: {} });
+        const c3 = new FakeClient(); S3.onUserConnection(c3);
+        S3.handleUserMessage(c3, start(1));
+        advance(200);
+        advance(120000);
+        check('core: WebSocket constructor throwing: the bot stops after 6 tries, client gets 14', S3.userBots.length === 0 && c3.count([2]) === 1 && c3.sent.some(m => m[0] === 14));
+        S3.onUserClose(c3);
+    } catch (e) {
+        threw = e;
+    } finally {
+        Object.assign(global, { setTimeout: real.setTimeout, clearTimeout: real.clearTimeout, setInterval: real.setInterval, clearInterval: real.clearInterval });
+        Date.now = real.now;
+    }
+    check('core: reliability suite ran without exceptions' + (threw ? ' (' + threw.stack + ')' : ''), !threw);
 }
 
 // ---- both servers: forbidden features stay out; no process.exit on stop ----
@@ -736,13 +871,30 @@ for (const file of ['server.js', 'server-fast.js']) {
 
     // window._lmBotsStop
     const stopSrc = extract('window._lmBotsStop = function');
-    check('ogario: _lmBotsStop extractable', !!stopSrc);
+    const followSrc = ['window._lmBotsForget = function', 'window._lmBotsCannotFollow = function', 'window._lmBotsTryResume = function'].map(m => extract(m));
+    check('ogario: _lmBotsStop and the follow helpers extractable', !!stopSrc && followSrc.every(Boolean));
+    /* window with the real _lmBotsStop / follow helpers, fake timers and toasts */
+    const followWin = (o) => {
+        const sent = [], toasts = [], timers = [];
+        let cancels = 0, starts = 0;
+        const w = {
+            userBots: Object.assign({ startedBots: false, startSent: false, offsetFixed: true, offsetSeq: 1 }, o.userBots),
+            legendmod: Object.assign({ ws: 'wss://web-arenas-live-v25-0.agario.miniclippt.com/eu-west-2/5-6-7-8', integrity: true, _connectSeq: 2 }, o.legendmod),
+            connectionBots: { pending: o.pending || null, ws: o.readyState == null ? null : { readyState: o.readyState }, send: b => sent.push(ab(b)), cancel() { cancels++; this.pending = null; } },
+            _brFilling: !!o.filling,
+            _lmBotsStart() { starts++; }
+        };
+        const sb = { window: w, WebSocket: { OPEN: 1 }, Uint8Array, Premadeletter123: 'LM', _lmTH: (k, d) => k,
+            toastr: { warning: m => toasts.push(m) },
+            setTimeout: (fn, ms) => { timers.push({ fn, ms, live: true }); return timers.length; },
+            clearTimeout: id => { if (timers[id - 1]) timers[id - 1].live = false; } };
+        run(stopSrc + '\n' + followSrc.join('\n') + '\nwindow._lmBotsResume = null', sb);
+        return { w, sent, toasts, timers, get cancels() { return cancels; }, get starts() { return starts; } };
+    };
     const stopCase = (startedBots, startSent, readyState) => {
-        const sent = [];
-        let cancels = 0;
-        const w = { userBots: { startedBots, startSent }, connectionBots: { ws: readyState == null ? null : { readyState }, send: b => sent.push(ab(b)), cancel() { cancels++; } } };
-        run(stopSrc + '; window._lmBotsStop()', { window: w, WebSocket: { OPEN: 1 }, Uint8Array });
-        return { sent, startSent: w.userBots.startSent, cancels };
+        const f = followWin({ userBots: { startedBots, startSent }, readyState });
+        f.w._lmBotsStop();
+        return { sent: f.sent, startSent: f.w.userBots.startSent, cancels: f.cancels };
     };
     let r = stopCase(true, false, 1);
     check('ogario: _lmBotsStop sends [1] when bots run', r.sent.length === 1 && r.sent[0].equals(Buffer.from([1])));
@@ -755,7 +907,53 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: _lmBotsStop does not send on a closed socket, clears startSent', r.sent.length === 0 && r.startSent === false);
     r = stopCase(true, true, null);
     check('ogario: _lmBotsStop without a socket does not throw', r.sent.length === 0 && r.startSent === false);
-    check('ogario: Stop button and new game server use _lmBotsStop', /getElementById\('stopBots'\)\.addEventListener\('click', \(\) => \{\s*window\._lmBotsStop\(\)/.test(ogSrc) && (ogSrc.match(/window\._lmBotsStop\(\)/g) || []).length >= 3);
+    check('ogario: Stop button stops for good, a new game server stops with serverChange', /getElementById\('stopBots'\)\.addEventListener\('click', \(\) => \{\s*window\._lmBotsStop\(\)/.test(ogSrc) &&
+        (ogSrc.match(/window\._lmBotsStop\(true\)/g) || []).length === 1 && /this\.arrowFB\[0\]\.visible = false;[\s\S]{0,200}window\._lmBotsStop\(true\)/.test(ogSrc));
+    check('ogario: the player\'s map border (game ready) runs _lmBotsTryResume', /window\.userBots\.offsetFixed = true;\s*\/\*[^*]*\*\/\s*if \(window\._lmBotsResume && typeof window\._lmBotsTryResume === 'function'\) setTimeout\(window\._lmBotsTryResume, 0\)/.test(ogSrc));
+
+    // bots follow the player to a new game server (mode / region switch, reconnect, version change, party)
+    {
+        let f = followWin({ userBots: { startedBots: true }, readyState: 1 });
+        f.w._lmBotsStop(true);
+        check('follow: server change with bots running: [1] sent, bots remembered, 30 s timer', f.sent.length === 1 && f.sent[0][0] === 1 && !!f.w._lmBotsResume && f.timers.length === 1 && f.timers[0].ms === 30000 && f.toasts.length === 0);
+        check('follow: not before the old session ended (no message 2 yet)', f.w._lmBotsTryResume() === false && f.starts === 0);
+        f.w.userBots.startedBots = false; // message 2
+        f.w.userBots.offsetSeq = 1; // border of the old connection only
+        check('follow: not before the new server\'s map border', f.w._lmBotsTryResume() === false && f.starts === 0);
+        f.w.userBots.offsetSeq = 2;
+        check('follow: old session over + new server ready: Start runs once, timer cleared', f.w._lmBotsTryResume() === true && f.starts === 1 && !f.w._lmBotsResume && !f.timers[0].live && f.w._lmBotsTryResume() === false && f.starts === 1);
+        f = followWin({ userBots: { startedBots: true }, readyState: 1 });
+        f.w._lmBotsStop(true);
+        f.w.userBots.startedBots = false;
+        f.w._lmBotsStop();
+        f.w.userBots.offsetSeq = 2;
+        check('follow: the Stop button after a server change: no restart', !f.w._lmBotsResume && f.w._lmBotsTryResume() === false && f.starts === 0 && !f.timers[0].live);
+        f = followWin({ userBots: { startSent: true }, readyState: 1 });
+        f.w._lmBotsStop(true);
+        check('follow: bots still starting (Start sent) follow too', !!f.w._lmBotsResume);
+        f = followWin({ pending: 'start' });
+        f.w._lmBotsStop(true);
+        f.w.userBots.offsetSeq = 2;
+        check('follow: a Start still connecting follows too', f.w._lmBotsTryResume() === true && f.starts === 1);
+        f = followWin({ readyState: 1 });
+        f.w._lmBotsStop(true);
+        check('follow: no bots running: nothing remembered', !f.w._lmBotsResume && f.timers.length === 0);
+        f = followWin({ userBots: { startedBots: true }, readyState: 1, filling: true });
+        f.w._lmBotsStop(true);
+        check('follow: a Battle Royale fill does not follow', !f.w._lmBotsResume);
+        f = followWin({ userBots: { startedBots: true }, readyState: 1, legendmod: { integrity: false } });
+        f.w._lmBotsStop(true);
+        check('follow: new server not on agar.io: toast "stopped because the game server changed", nothing pending', !f.w._lmBotsResume && f.toasts.length === 1 && f.toasts[0].includes('pkg.bots.serverChanged'));
+        f = followWin({ userBots: { startedBots: true }, readyState: 1 });
+        f.w._lmBotsStop(true);
+        f.w.userBots.startedBots = false;
+        f.w._lmBotsStop(true); // a second switch before the first server was ready: still remembered
+        check('follow: a second server change keeps them remembered', !!f.w._lmBotsResume && f.toasts.length === 0);
+        f.timers[0].fn();
+        check('follow: new server not ready in 30 s: toast, nothing pending', !f.w._lmBotsResume && f.toasts.length === 1 && f.toasts[0].includes('pkg.bots.serverChanged') && (f.w.userBots.offsetSeq = 2, f.w._lmBotsTryResume() === false));
+        check('follow: Start and Fill lobby forget a pending follow when they start', /window\.userBots\.startSent = true\s*\/\*[^*]*\*\/\s*if \(typeof window\._lmBotsForget === 'function'\) window\._lmBotsForget\(\)/.test(ogSrc) &&
+            /window\.userBots\.startSent = true\s*if \(typeof window\._lmBotsForget === 'function'\) window\._lmBotsForget\(\)\s*window\.userBots\.sessionAmount = needed/.test(ogSrc));
+    }
 
     // brResetFill / brStopFilling
     const resetSrc = extract('function brResetFill()');
@@ -829,6 +1027,25 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: message 2 resets the session, shows Start, resets a BR fill', k.w.userBots.startedBots === false && k.w.userBots.startSent === false && k.w.resets === 1 &&
         k.els.startBots.style.display === 'inline' && !k.els.startBots.disabled && k.els.stopBots.style.display === 'none');
     check('ogario: connectionBots has no captcha popups or token loop', !('startCaptcha' in k.cb) && !('closeCaptcha' in k.cb) && !('captchaActive' in k.cb));
+    // status line: bots waiting for a captcha / refused (message 4 bytes 3 and 4), message 14, follow on message 2
+    {
+        const q = makeCB();
+        q.cb.onopen();
+        q.msg([4, 2, 0]);
+        check('ogario: 3-byte status (older bot servers): status stays Connected', q.els.userStatus.i18n === 'game1.bots.connected');
+        q.msg([4, 2, 0, 2, 0]);
+        check('ogario: bots waiting for a captcha: the status line says so with the count, not Connected', q.els.userStatus.textContent === 'Waiting for a captcha: 2' && q.els.userStatus.style.color === '#FF9800');
+        q.msg([4, 2, 1, 0, 1]);
+        check('ogario: bots refused by the game server: counted in the status line', q.els.userStatus.textContent === 'Refused by the game server: 1');
+        q.msg([4, 2, 2, 0, 0]);
+        check('ogario: nobody waiting or refused: Connected again', q.els.userStatus.i18n === 'game1.bots.connected' && q.els.userStatus.style.color === '#00C02E');
+        q.msg([14, 0xee, 0x03]);
+        check('ogario: message 14: toast "refused", with the close code', q.toasts.some(t => t[0] === 'warning' && t[1].includes('pkg.bots.refused') && t[1].includes('(1006)')));
+        let tries = 0;
+        q.w._lmBotsTryResume = () => { tries++; };
+        q.msg([2]);
+        check('ogario: message 2 lets bots stopped by a server change follow (_lmBotsTryResume)', tries === 1);
+    }
 
     // Start / Stop / Fill lobby: the real connectionBots, _lmBotsStop, botsStart and brFill with fake sockets
     const startSrc = extract('function botsStart()');
@@ -865,10 +1082,10 @@ for (const file of ['server.js', 'server-fast.js']) {
             toastr: { info: m => toasts.push(m), warning: m => toasts.push(m), success: m => toasts.push(m) },
             $: () => ({ html() {}, is: () => true }),
             _lmG1set(e, key) { if (e) e.i18n = key; }, lmT: key => key, _lmTH: key => key, Premadeletter123: 'LM',
-            setTimeout: f => { timers.push(f); return timers.length; }, setInterval: () => 99, clearInterval() {},
+            setTimeout: f => { timers.push(f); return timers.length; }, clearTimeout() {}, setInterval: () => 99, clearInterval() {},
             localStorage: { getItem: () => null, removeItem: key => removed.push(key) }
         };
-        run(cbSrc + '\n' + stopSrc + '\n' + resetSrc + '\n' + stopFillSrc + '\n' + startSrc + '\n' + fillSrc +
+        run(cbSrc + '\n' + stopSrc + '\n' + followSrc.join('\n') + '\nwindow._lmBotsResume = null\n' + resetSrc + '\n' + stopFillSrc + '\n' + startSrc + '\n' + fillSrc +
             '\nfunction brUpdateSection() {}\nwindow._lmBotsStart = botsStart; window._lmBrFill = brFill; window._brResetFill = brResetFill; window._brStopFilling = brStopFilling', sb);
         const cb = w.connectionBots;
         const flush = () => { while (timers.length) timers.shift()(); };
@@ -1182,7 +1399,7 @@ for (const file of ['server.js', 'server-fast.js']) {
         const spawned4 = k.w.userBots.spawned;
         k.msg([2]);
         check('ogario: message 4 records the spawned bots of the session, message 2 clears them', spawned4 === 5 && k.w.userBots.spawned === 0);
-        const st = { userBots: { startedBots: true, startSent: false, spawned: 7 }, connectionBots: { ws: { readyState: 1 }, send() {}, cancel() {} } };
+        const st = { userBots: { startedBots: true, startSent: false, spawned: 7 }, connectionBots: { ws: { readyState: 1 }, send() {}, cancel() {} }, _lmBotsForget() {} };
         run(stopSrc + '; window._lmBotsStop()', { window: st, WebSocket: { OPEN: 1 }, Uint8Array });
         check('ogario: Stop / server switch: our bots no longer counted on this server', st.userBots.spawned === 0);
     }
@@ -1536,7 +1753,7 @@ for (const file of ['server.js', 'server-fast.js']) {
         check('quick HUDs: one click handler for the three buttons, blurred after a click', /on\("click", "\.quick-menu, \.quick-bots, \.quick-br", function \(event\) \{[\s\S]{0,120}this\.blur\(\)[\s\S]{0,200}app\.toggleQuickPanel\(/.test(ogSrc));
         check('quick HUDs: settings profiles re-apply the flags', fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'modules', 'profiles.js'), 'utf8').includes("showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots'"));
         check('quick HUDs: the open button\'s ring in the theme colour', ogSrc.includes(".quick.lm-quick-on{box-shadow:0 0 0 2px ' + defaultSettings.menuMainColor + '}"));
-        check('bots button: LM.connect still stops running bots on a server switch', /window\._lmBotsStop\(\)\s*\r?\n\s*window\.userBots\.isAlive = false/.test(ogSrc));
+        check('bots button: LM.connect still stops running bots on a server switch (they follow, serverChange)', /window\._lmBotsStop\(true\)\s*\r?\n\s*window\.userBots\.isAlive = false/.test(ogSrc));
     }
 
     // every agar.io mode takes bots: no "Party bots only" gate or message
@@ -1904,7 +2121,7 @@ async function browserBots() {
     }
     // status every second, then Stop: 1, 2, sockets closed, worker terminated, no timer left
     wk.run(1000); step();
-    check('browser: status [4, connected, spawned] every second', count([4, 2, 0]) >= 1);
+    check('browser: status [4, connected, spawned, waiting for a captcha, stopped] every second', count([4, 2, 0, 1, 0]) >= 1);
     sock.send(new Uint8Array([1]).buffer);
     wk.run(2100); step();
     check('browser: Stop: 1 then 2, all game sockets closed, worker terminated, idle status', count([1]) === 1 && count([2]) === 3 && GameWS.all.every(w => w.readyState === 3) && worker.terminated && !sock._worker && count([4, 0, 0]) === 3);
