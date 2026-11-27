@@ -495,6 +495,78 @@
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "skins/jquery.min.js",
+      "canonicalPath": "lib/jquery-3.7.1.min.js",
+      "reason": "jQuery 1.11.1 (2014) of the site pages. index.html, skins/index.html, Lc/Lc.html and Lc/PROJETOX.HTML/original/lc.html now load the shared lib/jquery-3.7.1.min.js (their only jQuery code is skins/skins.js and Lazy Load 1.9.7, checked in a browser with jquery-migrate 3.5.2: deprecated-but-supported calls only; test developers/tests/sitelibs.js). No reference in expandingland, legendworld-help, LegendWorld or deltav4; no built path reaches it (the only lib/ address built at run time is the library guard in ogario/ogario.v4.js, which names perfect-scrollbar, colorpicker, rangeslider and bootstrap-3.4.1 only). No saved setting, profile or replay names a library file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "lib/bootstrap.min.js",
+      "canonicalPath": "lib/bootstrap-3.4.1.min.js",
+      "reason": "Bootstrap 3.3.7 JS. themes/index.html (modal windows) and LMexpress/LMexpress.html now load lib/bootstrap-3.4.1.min.js like play.html (3.4.1 = the 3.3.7 API plus the XSS fixes). Its other mentions were the retired lib/sw.js precache list (addAll errors are caught) and the removed AllFilesNew.txt export. No reference in expandingland, legendworld-help, LegendWorld or deltav4; no built path reaches it (the only lib/ address built at run time is the library guard in ogario/ogario.v4.js, which names perfect-scrollbar, colorpicker, rangeslider and bootstrap-3.4.1 only). No saved setting, profile or replay names a library file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "lib/jquery-ui.js",
+      "canonicalPath": "lib/jquery-ui-1.13.3-draggable.js",
+      "reason": "Full jQuery UI 1.12.1 (527 KB). Nothing ever loaded this copy: since the 2026-07-30 move into lib/ no tracked file named it, and before that play.html and LMexpress.html loaded jQuery UI from code.jquery.com. Legend Mod uses only .draggable(); play.html and now LMexpress/LMexpress.html load the Draggable-only 1.13.3 build. No reference in expandingland, legendworld-help, LegendWorld or deltav4; no built path reaches it (the only lib/ address built at run time is the library guard in ogario/ogario.v4.js, which names perfect-scrollbar, colorpicker, rangeslider and bootstrap-3.4.1 only). No saved setting, profile or replay names a library file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "lib/pixi.js",
+      "canonicalPath": null,
+      "reason": "PixiJS 3.0.10 (2016). Not a current renderer: Legend Mod draws with Canvas 2D and its own WebGL / WebGL2 batches. Its last user was the test page play.test.html (script tag removed 2026-03-10, page deleted 2026-07-26); since the move into lib/ (2026-07-30) no tracked file in any of the five repositories named it. The developer benchmark developers/bench/pixi-mesh.js uses PixiJS 7 from npm, not this copy. No reference in expandingland, legendworld-help, LegendWorld or deltav4; no built path reaches it (the only lib/ address built at run time is the library guard in ogario/ogario.v4.js, which names perfect-scrollbar, colorpicker, rangeslider and bootstrap-3.4.1 only). No saved setting, profile or replay names a library file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "lib/pixi-canvas.js",
+      "canonicalPath": null,
+      "reason": "pixi-canvas helper (draws Canvas2D calls through PixiJS 3). Same history as the PixiJS 3 copy: only play.test.html loaded it, until 2026-03-10; nothing since. No reference in expandingland, legendworld-help, LegendWorld or deltav4; no built path reaches it (the only lib/ address built at run time is the library guard in ogario/ogario.v4.js, which names perfect-scrollbar, colorpicker, rangeslider and bootstrap-3.4.1 only). No saved setting, profile or replay names a library file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "lib/litegl.min.js",
+      "canonicalPath": null,
+      "reason": "litegl (WebGL helper needed by Canvas2DtoWebGL). Only LMexpress2.html loaded it, a 2019 experiment deleted in 2019-07 (re-added and gone again 2019-12); nothing since. Not used by the current WebGL renderer. No reference in expandingland, legendworld-help, LegendWorld or deltav4; no built path reaches it (the only lib/ address built at run time is the library guard in ogario/ogario.v4.js, which names perfect-scrollbar, colorpicker, rangeslider and bootstrap-3.4.1 only). No saved setting, profile or replay names a library file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "lib/Canvas2DtoWebGL.js",
+      "canonicalPath": null,
+      "reason": "Canvas2DtoWebGL (replaces Canvas2D calls by WebGL, needs litegl). Only the 2019 LMexpress2.html experiment loaded it; nothing since. Not used by the current WebGL renderer. No reference in expandingland, legendworld-help, LegendWorld or deltav4; no built path reaches it (the only lib/ address built at run time is the library guard in ogario/ogario.v4.js, which names perfect-scrollbar, colorpicker, rangeslider and bootstrap-3.4.1 only). No saved setting, profile or replay names a library file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "lib/gl-matrix-min.js",
+      "canonicalPath": null,
+      "reason": "gl-matrix (matrix maths for litegl). Only the 2019 LMexpress2.html experiment loaded it; nothing since. No reference in expandingland, legendworld-help, LegendWorld or deltav4; no built path reaches it (the only lib/ address built at run time is the library guard in ogario/ogario.v4.js, which names perfect-scrollbar, colorpicker, rangeslider and bootstrap-3.4.1 only). No saved setting, profile or replay names a library file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
     }
   ]
 }

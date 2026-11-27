@@ -15,7 +15,7 @@ Web content repository for hosting Legend Mod (Agario client).
 ## Dependencies (Inbound)
 - `jquery` (Library).
 - `bootstrap` (Library).
-- `pixi.js` (Library).
+- `jquery-ui` (Library, Draggable only). One copy of each library in `lib/` (see lib/README.md).
 
 ## Dependents (Outbound)
 - Users of Legend Mod.
