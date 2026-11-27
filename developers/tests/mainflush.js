@@ -6,6 +6,7 @@
  *   the main socket's world and keep the units' cells, pellets and viruses (their viruses left
  *   LM.viruses: spect.js lists a virus once, so its range ring was gone)
  * - a connection flush ends the Expanding Land spawn gate (it dropped the new connection's updates)
+ * - an own last cell eaten in an update whose records are cut short still ends the life
  * node developers/tests/mainflush.js [ogario.v4.js] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -157,6 +158,39 @@ const mainGone = (L) => !L.indexedCells[11] && !L.indexedCells[13] && !L.indexed
     M._spawnTransitGate = true;
     M.flushCellsData(true); /* the respawn flush of the same connection keeps the gate */
     check('the Expanding Land respawn flush keeps the gate (it waits for this connection\'s spawn)', M._spawnTransitGate === true);
+}
+
+/* ---- 3. own last cell eaten in an update whose records are cut short ---- */
+function ownWorld() {
+    const L = client();
+    L.playerCellIDs = [11]; L.play = true;
+    feed(L, [], [{ id: 11, x: 100, y: 200, size: 120, color: [200, 50, 50], name: 'Me' }, { id: 99, x: 0, y: 0, size: 300, color: [1, 2, 3], name: 'Big' }], []);
+    return L;
+}
+{
+    const C = ownWorld();
+    feed(C, [[99, 11]], [{ id: 99, x: 1, y: 1, size: 310, color: [1, 2, 3], name: 'Big' }], []);
+    check('control: the last own cell eaten in a whole update ends the life', C.play === false && C.g.userBots.isAlive === false);
+}
+for (const [what, n] of [['a cell record', 1 + 2 + 8 + 6], ['the remove list', null]]) {
+    const L = ownWorld();
+    check('(the own cell is own: ' + what + ')', L.playerCells.length === 1);
+    const full = packet([[99, 11]], [{ id: 99, x: 1, y: 1, size: 310, color: [1, 2, 3], name: 'Big' }], [5, 6]);
+    const bytes = full.slice(0, n || full.length - 3);
+    L.handleMessage(dv(bytes));
+    const timers = L.g.timers.length;
+    feed(L, [], [{ id: 99, x: 2, y: 2, size: 311 }], []);
+    check('own last cell eaten, ' + what + ' cut short: the life ends (play stayed on with no cell)', L.play === false && L.g.userBots.isAlive === false && !L.indexedCells[11],
+        { play: L.play, playerCells: L.playerCells.length });
+    /* the next update whose eat list is cut short handles no second death */
+    L.handleMessage(dv([16, 5, 0, 1, 2]));
+    check('a later update cut in its eat list handles no second death (' + what + ')', L.g.timers.length === timers);
+}
+{
+    /* a cut update that did not eat an own cell ends nothing */
+    const L = ownWorld();
+    L.handleMessage(dv(packet([], [{ id: 99, x: 1, y: 1, size: 310, color: [1, 2, 3], name: 'Big' }], []).slice(0, 1 + 2 + 6)));
+    check('a cut update without an own eat leaves the life on', L.play === true && L.playerCells.length === 1);
 }
 
 console.log(fail ? fail + ' FAILED' : 'all main flush checks passed');

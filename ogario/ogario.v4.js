@@ -54203,7 +54203,23 @@ function thelegendmodproject() {
                 for (i = 0; i < n; i++, offset += 4) mem.delete(view.readUInt32LE(offset));
             } catch (e) { }
         },
+        /* A packet whose eat list is whole but whose cell records or remove list are cut short
+         * throws after its eats were applied: an own last cell eaten there still ends the life.
+         * The death check is at the end of the update and the next packet resets
+         * removePlayerCell, so the death was lost: play stayed on with no cell. */
         updateCells(view, offset) {
+            this._lmDeathDue = false;
+            try {
+                this._lmUpdateCellsRun(view, offset);
+            } catch (e) {
+                if (this._lmDeathDue) {
+                    this._lmDeathDue = false;
+                    this._lmOwnDeathCheck();
+                }
+                throw e;
+            }
+        },
+        _lmUpdateCellsRun(view, offset) {
             /* A packet cut short must not leave half of a section applied (a caught RangeError
              * rolls nothing back): the eat list and the remove list are checked whole before
              * they are used, and each record is read whole before anything is changed. An eat
@@ -54240,6 +54256,7 @@ function thelegendmodproject() {
 
             this.removePlayerCell =
                 false;
+            this._lmDeathDue = true;
 
 
             /*
@@ -55444,6 +55461,27 @@ function thelegendmodproject() {
             }
 
 
+            this._lmDeathDue = false;
+            this._lmOwnDeathCheck();
+
+            if (this._lmND) this._lmWuEnd(true);
+            //window.counterCell=0;
+            if (
+                window.autoPlay &&
+                legendmod.play
+            ) {
+                calcTarget();
+            }
+
+
+            //if(defaultmapsettings.clickTargeting) clickTargeting.check();
+            //if (window.historystate && legendmod.play) {historystate();}
+
+
+
+        },
+        /* the own cells are all gone in this update: the life ends (updateCells) */
+        _lmOwnDeathCheck() {
             /*
              * ============================================================
              * PLAYER DEATH FINALIZATION
@@ -55734,22 +55772,6 @@ function thelegendmodproject() {
                     }
                 }
             }
-
-            if (this._lmND) this._lmWuEnd(true);
-            //window.counterCell=0;
-            if (
-                window.autoPlay &&
-                legendmod.play
-            ) {
-                calcTarget();
-            }
-
-
-            //if(defaultmapsettings.clickTargeting) clickTargeting.check();
-            //if (window.historystate && legendmod.play) {historystate();}
-
-
-
         },
         /* "My custom colour" turned off: the own cells got the profile colour when they were
          * added and the server sends a cell's colour only then, so they kept it until the next
