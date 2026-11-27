@@ -244,7 +244,7 @@ function lmSetMbUnit(unit) {
     if (unit !== prev && window.LMEvents._has('multiboxSwap')) window.LMEvents.emit('multiboxSwap', { unit: unit, previous: prev });
 }
 window.lmSetMbUnit = lmSetMbUnit;
-window.OgVer = 3.703;
+window.OgVer = 3.704;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
