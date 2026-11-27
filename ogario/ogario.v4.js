@@ -21177,13 +21177,13 @@ var defaultmapsettings = {
     scanTrickDirections: 16,
     scanTrickDistance: 10000000,
     scanTrickRoundedDistance: 20000,
-    scanTrickStatus: true,
+    /* scanTrickStatus and lineSplitStatus (a switch for each status line) are gone: the line
+     * shows by itself while the technique is in use (saved values of them are skipped on load) */
     /* Line split (hk-lineSplit): splits per press (3 = x8, 4 = x16), ms
      * between splits, ms the aim stays locked after the last split. */
     lineSplitCount: 3,
     lineSplitDelay: 50,
     lineSplitHold: 1000,
-    lineSplitStatus: true,
     lineSplitGuide: true,
 
     stickyCell: false,
@@ -26909,10 +26909,10 @@ function thelegendmodproject() {
             $('<div class="lm-mb-ring-colors-note" style="margin:4px 0 2px;font-size:11px;opacity:.82;"></div>')
                 .attr('data-i18n', 'pkg.w.mbRingColorsNote').text(lmT('pkg.w.mbRingColorsNote')).appendTo('.mbRingsGroup');
             /* Scan Trick section: was never built, so its settings could not be changed. */
-            this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB", "scanTrickStatus"], "scanTrickGroup");
+            this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB"], "scanTrickGroup");
             Settings.addScanTrickControls();
             /* Line split section; its key is set in Hotkeys ("Line split"). */
-            this.addOptions(["lineSplitStatus", "lineSplitGuide"], "lineSplitGroup");
+            this.addOptions(["lineSplitGuide"], "lineSplitGroup");
             this.addSliderBox(".lineSplitGroup", "lineSplitCount", 1, 4, 1);
             this.addSliderBox(".lineSplitGroup", "lineSplitDelay", 0, 200, 5);
             this.addSliderBox(".lineSplitGroup", "lineSplitHold", 0, 3000, 100);
@@ -56113,12 +56113,12 @@ function thelegendmodproject() {
             this.updateScanTrickStatus();
         },
         /*
-         * "Show Scan Trick status": a small HUD line while the Scan Trick key
-         * is held (the setting had no display). Updated only on change.
+         * Scan Trick status: a small HUD line while the Scan Trick key is held,
+         * always (it had a switch of its own). Updated only on change.
          */
         updateScanTrickStatus() {
             var text = '';
-            if (defaultmapsettings.scanTrickStatus && defaultmapsettings.scanTrick && this.scanTrickActive) {
+            if (defaultmapsettings.scanTrick && this.scanTrickActive) {
                 text = lmT('settings.scanTrickGroup') + (this.scanTrickSnapped ? ' (' + lmT('game2.directions', [this.getScanTrickDirectionCount()]) + ')' : '');
             }
             if (text === this._scanTrickStatusText) return;
@@ -56325,10 +56325,10 @@ function thelegendmodproject() {
             /* Hand the aim back to the real cursor now, not at the next 40 ms tick. */
             this.sendPosition();
         },
-        /* "Show line split status": a HUD line while the aim is locked. */
+        /* Line split status: a HUD line while the aim is locked, always (it had a switch of its own). */
         updateLineSplitStatus() {
             var text = '';
-            if (this.lineSplitActive && defaultmapsettings.lineSplitStatus) {
+            if (this.lineSplitActive) {
                 text = lmT('settings.lineSplitGroup') + ' x' + Math.pow(2, this.lineSplitSplits);
             }
             if (text === this._lineSplitStatusText) return;

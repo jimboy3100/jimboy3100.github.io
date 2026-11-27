@@ -11090,24 +11090,6 @@
     "ja": "スナップ時の投影距離",
     "it": "Distanza di proiezione agganciata"
   },
-  "settings.scanTrickStatus": {
-    "en": "Show Scan Trick status",
-    "el": "Εμφάνιση κατάστασης Scan Trick",
-    "es": "Mostrar estado de Scan Trick",
-    "bg": "Покажи състоянието на Scan Trick",
-    "fr": "Afficher l'état du Scan Trick",
-    "ar": "إظهار حالة Scan Trick",
-    "zh": "顯示 Scan Trick 狀態",
-    "ru": "Показывать статус Scan Trick",
-    "de": "Scan-Trick-Status anzeigen",
-    "tr": "Scan Trick durumunu göster",
-    "pl": "Pokaż status Scan Trick",
-    "nl": "Scan Trick-status tonen",
-    "pt": "Mostrar o estado do Scan Trick",
-    "id": "Tampilkan status Scan Trick",
-    "ja": "スキャントリックの状態を表示",
-    "it": "Mostra lo stato di Scan Trick"
-  },
   "settings.hk-scanTrick": {
     "en": "Hold Scan Trick",
     "el": "Κράτα πατημένο για Scan Trick",
@@ -11197,24 +11179,6 @@
     "id": "Kunci bidikan setelah split terakhir (ms)",
     "ja": "最後の分裂後に照準を固定（ms）",
     "it": "Blocco della mira dopo l'ultimo split (ms)"
-  },
-  "settings.lineSplitStatus": {
-    "en": "Show line split status",
-    "el": "Εμφάνιση κατάστασης line split",
-    "es": "Mostrar estado del line split",
-    "bg": "Покажи статуса на line split",
-    "fr": "Afficher l'état du line split",
-    "ar": "إظهار حالة الانقسام الخطي",
-    "zh": "顯示直線分裂狀態",
-    "ru": "Показывать статус линейного сплита",
-    "de": "Line-Split-Status anzeigen",
-    "tr": "Line split durumunu göster",
-    "pl": "Pokaż status line splitu",
-    "nl": "Status line split tonen",
-    "pt": "Mostrar o estado do line split",
-    "id": "Tampilkan status line split",
-    "ja": "ライン分裂の状態を表示",
-    "it": "Mostra lo stato del line split"
   },
   "settings.lineSplitGuide": {
     "en": "Draw line split aim line",
