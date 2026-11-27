@@ -42053,13 +42053,7 @@ function thelegendmodproject() {
                         if (this._playerCellIDSet) this._playerCellIDSet.add(cellId);
                         if (!this.play) {
                             this.play = true;
-                            this.isSpectateEnabled = false;
-                            /* Spawning ends free spectate: without this reset sendSpectate's
-                             * !isFreeSpectate guard blocks the next Spectate click after death. */
-                            this.isFreeSpectate = false;
-                            this._isWorldSpectating = false;
-                            this._worldSpecPanX = 0;
-                            this._worldSpecPanY = 0;
+                            this._lmSpawnEndsSpectate();
                             application.hideMenu();
                             this.playerColor = null;
                             application.onPlayerSpawn();
@@ -42430,7 +42424,7 @@ function thelegendmodproject() {
                                     }
                                     if (!self.play) {
                                         self.play = true;
-                                        self.isSpectateEnabled = false;
+                                        self._lmSpawnEndsSpectate();
                                         application.hideMenu();
                                         self.playerColor = null;
                                         application.onPlayerSpawn();
@@ -43117,6 +43111,17 @@ function thelegendmodproject() {
                 return;
             }
             this.sendAction(1);
+        },
+        /* Spawning ends every spectate mode (follow, free spectate, World Spectate) on every
+         * protocol. A free spectate flag left on after the spawn was the wrong way round after the
+         * next death: Q there started free spectate on the server while the flag went off, and
+         * Watch killer and the leaderboard / click follows judged by the stale flag. */
+        _lmSpawnEndsSpectate() {
+            this.isSpectateEnabled = false;
+            this.isFreeSpectate = false;
+            this._isWorldSpectating = false;
+            this._worldSpecPanX = 0;
+            this._worldSpecPanY = 0;
         },
         sendFreeSpectate() {
             if (this._lmSpecLb != null) { this._lmSpecLb = null; this._lmSpecLbHud(); }
@@ -44822,7 +44827,7 @@ function thelegendmodproject() {
                          * before it fires does not send an unrequested respawn. */
                         this._lmSpawnRetrySeq = (this._lmSpawnRetrySeq || 0) + 1;
                         this.play = true;
-                        this.isSpectateEnabled = false
+                        this._lmSpawnEndsSpectate();
                         application.hideMenu();
                         this.playerColor = null;
                         application.onPlayerSpawn();
@@ -53726,7 +53731,7 @@ function thelegendmodproject() {
                         if (this._playerCellIDSet) this._playerCellIDSet.add(id);
                         if (!this.play) {
                             this.play = true;
-                            this.isSpectateEnabled = false;
+                            this._lmSpawnEndsSpectate();
                             application.hideMenu();
                             this.playerColor = null;
                             application.onPlayerSpawn();
