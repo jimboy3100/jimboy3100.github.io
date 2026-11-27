@@ -24110,6 +24110,8 @@ function thelegendmodproject() {
         },
         setShowFood() {
             ogario.showFood = !ogario.showFood;
+            /* shown or hidden by the player now, not by Auto hide food */
+            ogario._lmFoodAutoHid = false;
         },
         /* Show/hide HUD (Alt+H) is the one HUD hide: with ogario/modules/smalltools.js (loaded at
          * start) it hides the whole HUD, also Legend Mod's own boxes, windows and popups, and keeps
@@ -25757,6 +25759,15 @@ function thelegendmodproject() {
                         break;
                     case 'disableChat':
                         this.setDisableChat();
+                        break;
+                    case 'autoHideFood':
+                        /* turned off: the food it hid (spectating, over 1000 mass) comes back now, not at the
+                         * next Play; turned on again in this life, it hides again over 1000 mass */
+                        if (!checked) {
+                            if (ogario._lmFoodAutoHid) ogario.showFood = true;
+                            ogario._lmFoodAutoHid = false;
+                            ogario.foodIsHidden = false;
+                        }
                         break;
                     case 'mentionNotify':
                         if (checked && typeof Notification !== 'undefined' && Notification.permission === 'default') {
@@ -28448,6 +28459,7 @@ function thelegendmodproject() {
                 ) {
                     ogario.showFood =
                         false;
+                    ogario._lmFoodAutoHid = true;
                 }
             });
             $(document).on("click", ".btn-spectate", function () {
@@ -28570,6 +28582,7 @@ function thelegendmodproject() {
             /* agar.io's own key handler is not installed (window.addKeyListeners below spectateBlind) */
             if (defaultmapsettings.autoHideFood) {
                 ogario.showFood = true
+                ogario._lmFoodAutoHid = false;
             };
 
         },
@@ -28582,6 +28595,7 @@ function thelegendmodproject() {
             /* agar.io's own key handler is not installed (window.addKeyListeners below spectateBlind) */
             if (defaultmapsettings.autoHideFood) {
                 ogario.showFood = false;
+                ogario._lmFoodAutoHid = true;
             }
         },
         join() {
@@ -82845,6 +82859,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 LM.foodIsHidden =
                     true;
+                LM._lmFoodAutoHid = true;
 
                 return;
             }
