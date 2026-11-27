@@ -182,7 +182,8 @@ check('game replay hooks found in ogario.v4.js', Object.keys(coreSrc).every(k =>
  * menu) and its renderer's frame callback; lmReplayChatCut is new (missing in older cores) */
 const sideSrc = {
   chat: cut4('        displayChatMessage(time, caseof, plId, msg, unnamed, srvName) {\n', '        displayUserList('),
-  sound: cut4('\n        playSound(audio) {\n', '        /* mixer channel of one'), /* (not the commented-out one before it) */
+  /* playSound with its volume lookup (_lmSoundChannel), up to the next method; not the commented-out copy before it */
+  sound: cut4('\n        playSound(audio) {\n', '        setFBIDs() {'),
   spawn: cut4('        onPlayerSpawn() {\n', '        onPlayerDeath() {\n'),
   resp: cut4('        autoResp() {\n', '        setAutoResp() {'),
   menu: cut4('        showMenu(value) {\n', '        escapeHTML: function'),
