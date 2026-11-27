@@ -1,0 +1,20 @@
+{
+  "pkg.r23w.langChanged": {
+    "en": "Language changed.",
+    "el": "Η γλώσσα άλλαξε.",
+    "es": "Idioma cambiado.",
+    "bg": "Езикът е сменен.",
+    "fr": "Langue changée.",
+    "ar": "تم تغيير اللغة.",
+    "zh": "語言已變更。",
+    "ru": "Язык изменён.",
+    "de": "Sprache geändert.",
+    "tr": "Dil değiştirildi.",
+    "pl": "Język został zmieniony.",
+    "nl": "Taal gewijzigd.",
+    "pt": "Idioma alterado.",
+    "id": "Bahasa diubah.",
+    "ja": "言語を変更しました。",
+    "it": "Lingua cambiata."
+  }
+}

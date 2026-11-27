@@ -87,6 +87,30 @@
   var dbg = $('#lm-copy-debug');
   if (!dbg.length || norm(dbg.text()) !== norm(lmT('game1.set.copyDebug')) || !/[\u0370-\u03ff]/.test(dbg.text())) badLinks.push('#lm-copy-debug: ' + norm(dbg.text()).slice(0, 30));
   need('Settings links, Export / import titles and sound rows named by their own id in Greek' + (badLinks.length ? ': ' + badLinks.join(', ') : ''), !badLinks.length);
+  /* the Settings tab rows take the new language at once, as after a reload (they kept the language the
+   * menu was built in): switches, sliders, named fields, section headings, the presets row, the search
+   * box and the "Needs: ..." notes */
+  var greek = function (s) { return /[\u0370-\u03ff]/.test(String(s || '')); };
+  var stale = [];
+  $('#og-options .options-box > label').each(function () {
+    var f = this.querySelector('input[type="checkbox"][id]'), want = f && textLanguage[f.id];
+    if (!f || !greek(want) || !this.firstChild || this.firstChild.nodeType !== 3) return;
+    if (norm(this.firstChild.nodeValue) !== norm(want)) stale.push(f.id + ': ' + norm(this.firstChild.nodeValue).slice(0, 24));
+  });
+  $('#og-options .slider-box, #og-options .input-box').each(function () {
+    var f = this.querySelector('input[id], select[id]'), t = this.querySelector('.value-label, .title-box');
+    if (!f || !t || t.hasAttribute('data-i18n')) return;
+    var want = textLanguage[f.id.replace(/-(slider|select)$/, '')];
+    if (greek(want) && norm(t.textContent).indexOf(norm(want)) !== 0 && !greek(t.textContent)) stale.push(f.id + ': ' + norm(t.textContent).slice(0, 24));
+  });
+  $('#og-options .options-box > h5').each(function () { if (greek(textLanguage[this.getAttribute('data-lm-head')]) && !greek(this.textContent)) stale.push('heading ' + norm(this.textContent).slice(0, 24)); });
+  var pre = [['.lm-presets-title', 'lmPresets'], ['.lm-preset-undo', 'lmPresetUndo'], ['.lm-new-toggle', 'lmShowNewOptions'], ['.lm-profiles-open', 'lmSettingsProfiles']];
+  $('.lm-preset-btn').each(function () { var p = application.lmPresets && application.lmPresets[this.getAttribute('data-preset')]; if (p && p.key) pre.push([this, p.key]); });
+  pre.forEach(function (p) { var e = $(p[0]).first(); if (e.length && norm(e.text()).replace(/:$/, '') !== norm(lmT(p[1]))) stale.push('presets: ' + norm(e.text()).slice(0, 24)); });
+  if (!greek($('#lm-settings-search').attr('placeholder'))) stale.push('search box');
+  $('#og-options .lm-dep-off[data-lm-why]').each(function () { if (!greek(this.getAttribute('data-lm-why'))) stale.push('note ' + this.getAttribute('data-lm-why').slice(0, 24)); });
+  info.settingsStale = stale.length;
+  need('Settings rows in Greek at once' + (stale.length ? ': ' + stale.slice(0, 5).join(', ') : ''), !stale.length);
   var cog = $('.ogicon-cog').first();
   need('settings tab tooltip Greek', !cog.length || cog.attr('data-original-title') === window.Languageletter2);
   var play = $('[data-itr="page_play"]').first();

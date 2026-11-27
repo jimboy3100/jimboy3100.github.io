@@ -21692,6 +21692,22 @@ if (window.LMi18n) window.LMi18n.onChange(function () {
         var s = textLanguage[f.id.replace(/-slider$/, '')];
         if (typeof s === 'string' && s) name(t, s);
     });
+    /* the rest of the Settings tab that is not a switch, slider or heading (renamed below by
+     * data-lm-key): the text fields and lists with a name (Hide chat messages containing, Snapped
+     * directions), the notes, the director button, the search box; they kept the language the menu
+     * was built in until a reload */
+    var own = function (k) { var s = k && textLanguage[k]; return typeof s === 'string' && s ? s : ''; };
+    $('#og-options .options-box .input-box').each(function () {
+        var t = this.querySelector('.title-box'), f = this.querySelector('input[id], select[id]'), s;
+        if (t && f && !t.hasAttribute('data-i18n') && (s = own(f.id.replace(/-select$/, '')))) name(t, s);
+    });
+    var s2;
+    if ((s2 = own('mergeNote'))) $('#og-options .mergeGroup > .lm-group-note').text(s2);
+    if ((s2 = own('configNote'))) $('#og-options .profiles > .lm-group-note').text(s2);
+    if ((s2 = own('lmDirectorBtn'))) $('#lm-director-btn').text(s2);
+    if (window.lmT) $('#lm-settings-search').attr('placeholder', '\uD83D\uDD0D ' + window.lmT('searchSettings'));
+    /* the "Needs: ..." / "Not available on this server" notes under the rows */
+    if (window.application && typeof application._lmDepRefresh === 'function') application._lmDepRefresh();
 });
 /* Choose Language: the Settings tab's switches, sliders and section headings take the new names at once
  * (they kept the language they were built in until a reload, and the language pack handler's English
@@ -26716,15 +26732,16 @@ function thelegendmodproject() {
                 try { undoSnap = JSON.parse(window.localStorage.getItem(undoKey) || 'null'); } catch (e) { }
                 if (!undoSnap || typeof undoSnap !== 'object') undoSnap = null;
                 var row = $('<div class="lm-presets-row"></div>');
-                row.append($('<span class="lm-presets-title"></span>').text(_lmTx('lmPresets', 'Presets') + ':'));
+                /* data-i18n: the row follows a language change */
+                row.append($('<span class="lm-presets-title"></span>').append($('<span data-i18n="lmPresets"></span>').text(_lmTx('lmPresets', 'Presets')), ':'));
                 Object.keys(presets).forEach(function (id) {
-                    var pBtn = $('<button type="button" class="btn btn-xs lm-preset-btn"></button>').attr('data-preset', id).text(_lmTx(presets[id].key, presets[id].en)).appendTo(row);
+                    var pBtn = $('<button type="button" class="btn btn-xs lm-preset-btn"></button>').attr({ 'data-preset': id, 'data-i18n': presets[id].key }).text(_lmTx(presets[id].key, presets[id].en)).appendTo(row);
                     if (presets[id].tip) pBtn.attr({ title: _lmTx(presets[id].tip, ''), 'data-i18n-title': presets[id].tip });
                 });
-                var undoBtn = $('<button type="button" class="btn btn-xs lm-preset-undo"></button>').text(_lmTx('lmPresetUndo', 'Undo preset')).appendTo(row);
-                var newBtn = $('<button type="button" class="btn btn-xs lm-new-toggle"></button>').text(_lmTx('lmShowNewOptions', 'Show new options')).appendTo(row);
+                var undoBtn = $('<button type="button" class="btn btn-xs lm-preset-undo" data-i18n="lmPresetUndo"></button>').text(_lmTx('lmPresetUndo', 'Undo preset')).appendTo(row);
+                var newBtn = $('<button type="button" class="btn btn-xs lm-new-toggle" data-i18n="lmShowNewOptions"></button>').text(_lmTx('lmShowNewOptions', 'Show new options')).appendTo(row);
                 /* named sets of all settings, theme and hotkeys (ogario/modules/profiles.js) */
-                $('<button type="button" class="btn btn-xs lm-profiles-open"></button>').text(_lmTx('lmSettingsProfiles', 'Settings profiles')).appendTo(row).on('click', function () {
+                $('<button type="button" class="btn btn-xs lm-profiles-open" data-i18n="lmSettingsProfiles"></button>').text(_lmTx('lmSettingsProfiles', 'Settings profiles')).appendTo(row).on('click', function () {
                     if (window.LMProfiles) window.LMProfiles.open();
                     else if (window.toastr) toastr.info(lmT('game1.set.profilesLoading'));
                     return false;
@@ -26797,7 +26814,8 @@ function thelegendmodproject() {
                         item.addClass('lm-new-opt');
                         count++;
                         if (!show) return;
-                        var b = $('<span class="lm-new-badge"></span>').text(_lmTx('lmNewBadge', 'NEW'));
+                        /* data-i18n: the badge follows a language change */
+                        var b = $('<span class="lm-new-badge" data-i18n="lmNewBadge"></span>').text(_lmTx('lmNewBadge', 'NEW'));
                         var title = item.find('.value-label, .title-box').first();
                         if (title.length) title.append(' ', b); else $(el).before(b, ' ');
                     });

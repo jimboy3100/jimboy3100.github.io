@@ -4819,8 +4819,8 @@ function changeModLanguage(fromUser) {
      * texts and every data-i18n element (LMi18n.onChange listeners), saves languagemod */
     window.LMi18n.setLang(languagemod, function () {
         _lmRunLanguageHandler();
-        /* the settings rows were built from the labels at start-up: they change on the next reload */
-        if (fromUser === true && window.toastr) toastr.info(_lmEscLang(window.lmT('core.langChanged')));
+        /* the menus take the new language at once (the Settings rows too): no reload is needed */
+        if (fromUser === true && window.toastr) toastr.info(_lmEscLang(window.lmT('pkg.r23w.langChanged')));
     });
 }
 /* A language passed by expanding.land or help.expanding.land while the game is in their frame (saved
