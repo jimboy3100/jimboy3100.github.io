@@ -2,7 +2,8 @@
 // while Opponents rings and Cursor tracking are on, and Settings > Stats: the ping
 // jitter only while FPS is on (it is written after the ping, after the FPS); while those are off they
 // are dimmed and say what they need, as the other dependent options. With Stats off the jitter says
-// it needs Stats (the outermost switch that is off). The parent switch is turned off
+// it needs Stats (the outermost switch that is off). While the bubble tracker is on, Cursor tracking
+// and Split prediction say it stops them (it replaces the cursor lines). The parent switch is turned off
 // and on again with a real click (a tap on phones); every setting is put back.
 (async () => {
   var fail = [], info = {};
@@ -18,7 +19,7 @@
     });
   };
   var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['showStatsFPS', 'showStatsJitter']];
-  var keep = { showStats: defaultmapsettings.showStats };
+  var keep = { showStats: defaultmapsettings.showStats, bubbleCursorTracker: defaultmapsettings.bubbleCursorTracker };
   pairs.forEach(function (p) { keep[p[0]] = defaultmapsettings[p[0]]; keep[p[1]] = defaultmapsettings[p[1]]; });
   var needs = application._lmMenuText('lmDepNeeds');
   var plain = function (k) { return $('<div>').html(application._lmMenuText(k)).text().trim(); };
@@ -69,6 +70,21 @@
     info.statsOff = { showStatsJitter: why('showStatsJitter'), showStatsFrameTime: why('showStatsFrameTime') };
     ['showStatsJitter', 'showStatsFrameTime'].forEach(function (k) {
       if (info.statsOff[k] !== needs + ': ' + plain('showStats')) fail.push(k + ' with Stats off says ' + (info.statsOff[k] || 'nothing'));
+    });
+    /* the bubble tracker replaces the cursor lines: while it is on, Cursor tracking and Split
+     * prediction (on) draw nothing and say so; turned off again they are not dimmed for it */
+    var offWhile = lmT('pkg.s3xvw.depOffWhile') + ': ' + plain('bubbleCursorTracker');
+    if (!defaultmapsettings.cursorTracking) await flip('cursorTracking');
+    if (defaultmapsettings.bubbleCursorTracker) await flip('bubbleCursorTracker');
+    var bt0 = { cursorTracking: why('cursorTracking'), splitPrediction: why('splitPrediction') };
+    await flip('bubbleCursorTracker');
+    var bt1 = { cursorTracking: why('cursorTracking'), splitPrediction: why('splitPrediction') };
+    await flip('bubbleCursorTracker');
+    var bt2 = { cursorTracking: why('cursorTracking'), splitPrediction: why('splitPrediction') };
+    info.bubbleTracker = { off: bt0, on: bt1 };
+    ['cursorTracking', 'splitPrediction'].forEach(function (k) {
+      if (bt1[k] !== offWhile) fail.push(k + ' with the bubble tracker on says ' + (bt1[k] || 'nothing'));
+      if (bt0[k] === offWhile || bt2[k] === offWhile) fail.push(k + ' says the bubble tracker stops it while that is off');
     });
   } catch (e) {
     fail.push('threw ' + e);

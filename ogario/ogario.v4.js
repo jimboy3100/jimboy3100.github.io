@@ -27338,6 +27338,10 @@ function thelegendmodproject() {
                     DEPS[p].forEach(function (c) { parentOf[c] = p; if (keys.indexOf(c) < 0) keys.push(c); });
                 });
                 Object.keys(SRV).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
+                /* option -> switch that stops it while on: the bubble tracker replaces the cursor lines,
+                 * so Cursor tracking and Split prediction (it dims those lines) draw nothing then */
+                var OFF_WHILE = { cursorTracking: 'bubbleCursorTracker' };
+                Object.keys(OFF_WHILE).forEach(function (k) { if (keys.indexOf(k) < 0) keys.push(k); });
                 var plain = function (s) { return String(s == null ? '' : s).replace(/<[^>]*>/g, '').trim(); };
                 var itemOf = function (k) {
                     var el = document.getElementById(k + '-slider') || document.getElementById(k);
@@ -27385,7 +27389,13 @@ function thelegendmodproject() {
                         for (var p = parentOf[k], n = 0; p && n < 5; p = parentOf[p], n++) {
                             if (defaultmapsettings.hasOwnProperty(p) && !defaultmapsettings[p]) off = p;
                         }
+                        /* a switch that is on and stops it or one of the switches it needs */
+                        var stop = '';
+                        for (var q = k, m = 0; q && m < 5 && !stop; q = parentOf[q], m++) {
+                            if (OFF_WHILE[q] && defaultmapsettings[OFF_WHILE[q]]) stop = OFF_WHILE[q];
+                        }
                         if (off) why = app._lmMenuText('lmDepNeeds') + ': ' + plain(app._lmMenuText(off));
+                        else if (stop) why = lmT('pkg.s3xvw.depOffWhile') + ': ' + plain(app._lmMenuText(stop));
                         else if (SRV[k]) why = srvNote(SRV[k]);
                         mark(it, why);
                     });
