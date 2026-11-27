@@ -37790,7 +37790,13 @@ function thelegendmodproject() {
             if (this.shortMass && this.mass >= 1000) {
                 this.kMass = Math.round(this.mass / 100) / 10;
                 this.massTxt = this.kMass + 'k';
+                this._lmMassK = true;
                 return true;
+            }
+            if (this._lmMassK) {
+                /* Mass format went from 12.3k to exact: the exact text once, not after a 2% change */
+                this._lmMassK = false;
+                this.lastMass = 0;
             }
             if (this.optimizedMass) {
                 this.redrawMass = Math.abs((this.mass - this.lastMass) / this.mass) >= 0.02 || this.rescale;
