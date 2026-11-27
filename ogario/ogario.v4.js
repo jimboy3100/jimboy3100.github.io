@@ -5230,10 +5230,19 @@ function _lmTokenBoxDone(sel) {
 }
 function _lmSetTokenBox(sel, value) {
     $(sel).each(function () {
-        if (this._lmTyped && this === document.activeElement) return;
+        /* kept: the value it would have shown, for code that reads the box as the current server */
+        if (this._lmTyped && this === document.activeElement) { this._lmHeld = value == null ? '' : String(value); return; }
         this._lmTyped = false;
+        this._lmHeld = null;
         $(this).val(value);
     });
+}
+/* The box's value, or the current server's while the box keeps the player's typing. */
+function _lmTokenBoxValue(id) {
+    var el = document.getElementById(id);
+    if (!el) return '';
+    if (el._lmHeld != null && el._lmTyped && el === document.activeElement) return String(el._lmHeld);
+    return String(el.value || '');
 }
 /* The Private list entries with a fixed address (the load-balanced ones get theirs on each pick).
  * delt.io list from Delta's client (servers/feeds.ts). */
@@ -43181,7 +43190,9 @@ function thelegendmodproject() {
             //if (!window.RecordedProtocol[$("#server-token").val()]){
             //console.log('a'+$("#server-token").val())		
             //window.temporaryRecordedProtocol2 = window.temporaryRecordedProtocol
-            if (!$("#server-token").val().includes("replay") && !$("#server-token").val().includes("imsolo.pro:2109/")) {
+            /* the connected server, also while the player types another address in the box */
+            var _lmTok = _lmTokenBoxValue('server-token');
+            if (!_lmTok.includes("replay") && !_lmTok.includes("imsolo.pro:2109/")) {
                 /* every connect attempt opened a new slot: 5 failed reconnects pushed every real
                  * recording out of the list of 5. A slot that got almost nothing (10 packets or
                  * fewer, hidden in the replay list anyway) is dropped first. */
@@ -43193,19 +43204,19 @@ function thelegendmodproject() {
                     delete window.RecordedProtocol[_lmPrevArena];
                     delete window.RecordedArenasSpecifications[_lmPrevArena];
                 }
-                if (window.RecordedArenasSpecifications[$("#server-token").val()]) {
+                if (window.RecordedArenasSpecifications[_lmTok]) {
                     /* Fallback when all 9 numbered slots are taken, so an older recording is never overwritten. */
-                    window.temporaryRecordedProtocol = $("#server-token").val() + '(' + Date.now() + ')'
+                    window.temporaryRecordedProtocol = _lmTok + '(' + Date.now() + ')'
                     for (var i = 1; i < 10; i++) {
-                        if (!window.RecordedArenasSpecifications[$("#server-token").val() + '(' + i + ')']) {
-                            window.temporaryRecordedProtocol = $("#server-token").val() + '(' + i + ')'
+                        if (!window.RecordedArenasSpecifications[_lmTok + '(' + i + ')']) {
+                            window.temporaryRecordedProtocol = _lmTok + '(' + i + ')'
                             break;
                         } else {
 
                         }
                     }
                 } else {
-                    window.temporaryRecordedProtocol = $("#server-token").val()
+                    window.temporaryRecordedProtocol = _lmTok
                 }
                 window.catholicCalculator = 0
                 window._lmRecSlotBytes = 0
