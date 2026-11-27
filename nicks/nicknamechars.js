@@ -1,7 +1,6 @@
-$("#main-menu").hide();
-$("#skins-panel").hide();
-$("#quick-menu").hide();
-$("#exp-bar").hide();
+/* the menu panels that were shown come back on close (ogario.v4.js lmMenuPanelsHide) */
+if (typeof lmMenuPanelsHide === 'function') lmMenuPanelsHide();
+else $("#main-menu, #skins-panel, #quick-menu, #exp-bar").hide();
 $('body').append(
     '<div class="modal fade in" id="legendchars" aria-hidden="false" style="display:block;">' +
     '<div class="modal-backdrop fade in"></div>' +
@@ -30,8 +29,6 @@ if (typeof lmPromoChrome === 'function') lmPromoChrome('#legendchars');
 
 function closecustomskinsIframe(){
     $("#legendchars").remove();
-    $("#main-menu").show();
-    $("#skins-panel").show();
-    $("#quick-menu").show();
-    $("#exp-bar").show();
+    if (typeof lmMenuPanelsRestore === 'function') lmMenuPanelsRestore();
+    else $("#main-menu, #skins-panel, #quick-menu, #exp-bar").show();
 }

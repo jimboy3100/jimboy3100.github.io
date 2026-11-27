@@ -86049,10 +86049,24 @@ function repeatSendingSpecialSkins() {
     }
 }
 
+/* Windows in the place of the menu (Mod Info / Templates, Nick characters) hide the menu panels.
+ * Closing them shows again only the panels that were shown: the skins panel turned off in the
+ * settings, or the quick menu that the quick bots replace, stayed visible after a close. */
+var LM_MENU_PANELS = '#main-menu, #skins-panel, #quick-menu, #exp-bar';
+function lmMenuPanelsHide() {
+    /* a second window opened over the first keeps the first one's record */
+    if (!window._lmMenuPanelsShown) window._lmMenuPanelsShown = $(LM_MENU_PANELS).filter(function () { return $(this).css('display') !== 'none'; });
+    $(LM_MENU_PANELS).hide();
+}
+function lmMenuPanelsRestore() {
+    var shown = window._lmMenuPanelsShown;
+    window._lmMenuPanelsShown = null;
+    if (shown) shown.show(); else $(LM_MENU_PANELS).show();
+}
 function openhelper() {
     if ($('#legendhelper').length) {
         $('#legendhelper').show();
-        $('#main-menu, #skins-panel, #quick-menu, #exp-bar').hide();
+        lmMenuPanelsHide();
         return;
     }
     var s = document.createElement("script");
@@ -86075,7 +86089,7 @@ function opennamechars() {
     /* nicknamechars.js adds the #legendchars window and its Back button only hides it:
      * show that window again instead of adding another window and iframe on every click */
     if ($('#legendchars').length) {
-        $('#main-menu, #skins-panel, #quick-menu, #exp-bar').hide();
+        lmMenuPanelsHide();
         $('#legendchars').show();
         return;
     }
