@@ -109,6 +109,16 @@ ctx.LMHudEditor = { adoptPending() { taken++; } };
 loadOld({ statsPosition: 'bottom' });
 check('stats: a loaded HUD editor is asked to take it', taken === 1);
 delete ctx.LMHudEditor;
+/* a touch-only phone draws the stats line 4 px from the left at 0.75 (LMmobile.js): the layout keeps that */
+ctx.matchMedia = q => ({ matches: q === '(pointer: coarse)' });
+loadOld({ statsPosition: 'bottom' });
+const phBL = adoptQ();
+loadOld({ statsPosition: 'center' });
+check('stats: on a phone bottom left is 4 px from the left at 0.75, the centre at 0.75', J(phBL) === J({ stats: { h: 'l', x: 4, v: 'b', y: 10, s: 0.75 } }) && J(adoptQ()) === J({ stats: { h: 'c', x: 0, v: 'b', y: 10, s: 0.75 } }));
+ctx.matchMedia = q => ({ matches: q === '(pointer: coarse)' || q === '(any-pointer: fine)' });
+loadOld({ statsPosition: 'bottom' });
+check('stats: a touch laptop (it has a mouse too) keeps the desktop place', J(adoptQ()) === J({ stats: E_BL }));
+delete ctx.matchMedia;
 /* Theme > Chat "Chat Position": the corner of the chat popups (the real loadThemeSettings) */
 const ST = vm.runInContext('({' + String.fromCharCode(10) + cut('        loadThemeSettings() {', '        saveThemeSettings() {') + '        saveThemeSettings() { }' + String.fromCharCode(10) + '})', ctx);
 const TDf = ctx.LM_THEME_DEFAULTS;

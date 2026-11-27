@@ -21808,9 +21808,13 @@ function lmHudAdoptOld(s, theme) {
             var cen = s.statsAtCenter === true || s.statsAtCenter === 'true';
             pos = cen ? 'center' : top ? 'top' : 'bottom';
         }
-        /* 10 px from the left (or centred) and from the bottom (css/legend.css #stats-hud, .hud-bottom) */
-        if (pos === 'bottom') e = { h: 'l', x: 10, v: 'b', y: 10, s: 1 };
-        else if (pos === 'center') e = { h: 'c', x: 0, v: 'b', y: 10, s: 1 };
+        /* 10 px from the left (or centred) and from the bottom (css/legend.css #stats-hud, .hud-bottom);
+         * a touch-only phone (LMmobile.js, loaded as play.html decides) draws the line 4 px from the
+         * left at 0.75 */
+        var ph = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches && !window.matchMedia('(any-pointer: fine)').matches);
+        var sx = ph ? 4 : 10, sc = ph ? 0.75 : 1;
+        if (pos === 'bottom') e = { h: 'l', x: sx, v: 'b', y: 10, s: sc };
+        else if (pos === 'center') e = { h: 'c', x: 0, v: 'b', y: 10, s: sc };
     }
     if (e) {
         try {
