@@ -18,7 +18,10 @@
     LM.play = true;
     await sleep(200);
     if (menu()) { fail.push('the menu did not hide for the faked life'); }
-    LM.socket.close();
+    var s0 = LM.socket;
+    s0.close();
+    /* a loaded machine can keep the socket closing for seconds: judge once it is closed */
+    for (w = 0; w < 40 && s0.readyState !== 3; w++) await sleep(250);
     await sleep(800);
     info.afterDrop = { play: LM.play, menu: menu(), rs: LM.socket && LM.socket.readyState };
     if (LM.play) fail.push('still in the game after the connection dropped');
