@@ -42,7 +42,7 @@ function block(start, from, text) {
 const methods = ['        drawViewPorts(ctx) {', '        _lmViewTrim(g, n) {', '        _lmConnFoodBoxes(list) {', '        calMinMax() {', '        calMinMaxMulti() {'].map((m) => [m, block(m)]);
 const spectMethods = ['    getX(x) {', '    getY(y) {', '    convertX(x) {', '    convertY(y) {', '    _lmTileDisplay() {', '    _lmTileRaw() {', '    _lmTileTick(now) {',
     '    _lmXf() {', '    worldToRawX(x) {', '    worldToRawY(y) {', '    rawToWorldX(x) {', '    rawToWorldY(y) {', '    _lmTileArrived(raw) {',
-    '    _lmWorldRectDisplay(r) {', '    _lmServerViewDisplay() {', '    _lmServerViewWorld() {', '    _lmFeedOk() {', '    isOutsideServerView(rawX, rawY, size) {']
+    '    _lmWorldRectDisplay(r, out) {', '    _lmServerViewDisplay(out) {', '    _lmServerViewWorld(out) {', '    _lmFeedOk() {', '    isOutsideServerView(rawX, rawY, size) {']
     .map((m) => [m, block(m, 0, spectSrc)]);
 /* the coordinate contract (lmRawToWorld ... lmXfInv), top of spect.js, which those methods use */
 const xf0 = spectSrc.indexOf('var LM_WORLD_SIZE'), xf1 = spectSrc.indexOf('/* orientation candidates');
@@ -343,6 +343,10 @@ const covers = (plan, vw, vh, half) => {
             g.forEach((v, k) => { if (!atEdge[k] && v > 40) gaps.push(q.n + ':' + 'LRTB'[k] + v.toFixed(1)); });
         });
         check('live: every pellet a spectator got while settled is inside its view' + tag, !outside.length, outside.slice(0, 5).join(' '));
+        /* the ghost cells read every spectator's view every frame into one kept array: same box */
+        const keep = [0, 0, 0, 0];
+        const same = sps.every((sp) => { const a = sp._lmServerViewDisplay(), b = sp._lmServerViewDisplay(keep); return b === keep && a.every((v, k) => v === b[k]); });
+        check('live: the view filled into a kept array is the same box (no new array)' + tag, same);
         check('live: the views are tight (a pellet within 40 of every inner edge)' + tag, !gaps.length, gaps.join(' '));
         /* neighbours on the grid (tile index: row * 3 + col of 6024750d's centred 3 x 5 cut) */
         const spOf = (t) => sps[L.sp.findIndex((q) => q.tile === t)];

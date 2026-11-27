@@ -83630,10 +83630,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 _ghostCov.push(LM.srvViewMinX, LM.srvViewMinY, LM.srvViewMaxX, LM.srvViewMaxY);
                             }
                             var _gSps = window.spects;
+                            /* one array kept between frames (it made two new ones per spectator) */
+                            var _gRect = this._lmGhostCovR || (this._lmGhostCovR = [0, 0, 0, 0]);
                             if (_gSps) for (var _gs = 0; _gs < _gSps.length; _gs++) {
                                 var _gSp = _gSps[_gs];
                                 if (!_gSp || typeof _gSp._lmServerViewDisplay !== 'function' || !_gSp._lmFeedOk() || !_gSp.isSocketOpen()) continue;
-                                var _gR = _gSp._lmServerViewDisplay();
+                                var _gR = _gSp._lmServerViewDisplay(_gRect);
                                 if (_gR) _ghostCov.push(_gR[0], _gR[1], _gR[2], _gR[3]);
                             }
                         }

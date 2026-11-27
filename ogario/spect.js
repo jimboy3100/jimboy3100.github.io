@@ -314,10 +314,15 @@ window.addSpectator = addSpectator;
  * and 0.4 for a free spectator.
  */
 var LM_VIEW_BASE_W = 2028.7, LM_VIEW_BASE_H = 1188.8, LM_SPECT_FREE_SCALE = 0.4;
-function lmServerViewSize(scale) {
+/* out: an array to fill instead of a new one (callers that run every frame) */
+function lmServerViewSize(scale, out) {
     if (!(scale > 0.01 && scale <= 4)) scale = LM_SPECT_FREE_SCALE;
-    return [LM_VIEW_BASE_W / scale, LM_VIEW_BASE_H / scale];
+    var o = out || [0, 0];
+    o[0] = LM_VIEW_BASE_W / scale; o[1] = LM_VIEW_BASE_H / scale;
+    return o;
 }
+/* scratch of Spect._lmServerViewWorld / _lmServerViewDisplay (used at once, never kept) */
+var _lmSvSize = [0, 0], _lmSvWorld = [0, 0, 0, 0];
 function lmPlayerViewScale(totalSize) {
     return Math.pow(Math.min(64 / (totalSize > 0 ? totalSize : 1), 1), 0.4);
 }
@@ -987,19 +992,22 @@ class Spect {
     /* A world rectangle [minX, minY, maxX, maxY] in the main connection's display space (its
      * frame, then Rotate Map), where getX draws this connection's cells; sorted again after the
      * flip. null until the main border is fixed. */
-    _lmWorldRectDisplay(r) {
+    _lmWorldRectDisplay(r, out) {
         var LM = legendmod;
         if (!r || !LM || !LM.mapOffsetFixed) return null;
         var x0 = lmDisplayFlip(lmMainCentre(0) + r[0] / lmMainScale(0), 0), x1 = lmDisplayFlip(lmMainCentre(0) + r[2] / lmMainScale(0), 0);
         var y0 = lmDisplayFlip(lmMainCentre(1) + r[1] / lmMainScale(1), 1), y1 = lmDisplayFlip(lmMainCentre(1) + r[3] / lmMainScale(1), 1);
         if (!Number.isFinite(x0) || !Number.isFinite(x1) || !Number.isFinite(y0) || !Number.isFinite(y1)) return null;
-        return [Math.min(x0, x1), Math.min(y0, y1), Math.max(x0, x1), Math.max(y0, y1)];
+        var o = out || [0, 0, 0, 0];
+        o[0] = Math.min(x0, x1); o[1] = Math.min(y0, y1); o[2] = Math.max(x0, x1); o[3] = Math.max(y0, y1);
+        return o;
     }
 
     /* Show viewports: this connection's server view around its server camera, drawn where its
-     * cells are drawn */
-    _lmServerViewDisplay() {
-        return this._lmWorldRectDisplay(this._lmServerViewWorld());
+     * cells are drawn. out: an array to fill instead of a new one (the ghost cells' coverage,
+     * every frame) */
+    _lmServerViewDisplay(out) {
+        return this._lmWorldRectDisplay(this._lmServerViewWorld(_lmSvWorld), out);
     }
 
     /* The tile centre in the main connection's display space (world -> main frame with its
@@ -2146,12 +2154,14 @@ class Spect {
      * bigger cell is sent while its circle reaches into it, isOutsideServerView). null until
      * the border and a camera are known.
      */
-    _lmServerViewWorld() {
+    _lmServerViewWorld(out) {
         if (!this.mapOffsetFixed || !this._lmCamAt || !Number.isFinite(this.viewX) || !Number.isFinite(this.viewY)) return null;
-        var v = lmServerViewSize(this.scale);
+        var v = lmServerViewSize(this.scale, _lmSvSize);
         var x = this.rawToWorldX(this.viewX), y = this.rawToWorldY(this.viewY);
         if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
-        return [x - v[0] / 2, y - v[1] / 2, x + v[0] / 2, y + v[1] / 2];
+        var o = out || [0, 0, 0, 0];
+        o[0] = x - v[0] / 2; o[1] = y - v[1] / 2; o[2] = x + v[0] / 2; o[3] = y + v[1] / 2;
+        return o;
     }
 
     /* true when a cell of this connection (raw centre, size = radius) is OUTSIDE its server

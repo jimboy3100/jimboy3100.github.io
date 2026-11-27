@@ -213,8 +213,15 @@ check('eaten on one connection only: shown again after the animation', backF >= 
     check('ghost near the edge of the main view (within the lag margin): drawn', drawn([gh(4950, 1000, 5000)], [], mainView) === 1);
     check('ghost: a list 1 s old shrinks the view by 560 (ghost 400 inside the edge: drawn)', drawn([gh(4600, 1000, 5000)], [], () => { mainView(); LM.ghostCellsTime = Date.now() - 1000; }) === 1);
     check('ghost outside every view: drawn', drawn([gh(-2000, 1000, 5000)], [], mainView) === 1);
-    const sp = (ok, open) => ({ number: 3, _lmFeedOk: () => ok, isSocketOpen: () => open, _lmServerViewDisplay: () => [1000, 0, 4000, 2000] });
+    /* fills the array it is given, as Spect._lmServerViewDisplay does */
+    const outs = [];
+    const sp = (ok, open) => ({ number: 3, _lmFeedOk: () => ok, isSocketOpen: () => open,
+        _lmServerViewDisplay: (out) => { outs.push(out); const o = out || []; o[0] = 1000; o[1] = 0; o[2] = 4000; o[3] = 2000; return o; } });
     check('ghost inside a verified open spectator\'s server view: stale, not drawn', drawn(top(), [], () => { g.window.spects = [sp(true, true)]; }) === 0);
+    const two = [sp(true, true), sp(true, true)];
+    outs.length = 0; drawn(top(), [], () => { g.window.spects = two; }); drawn(top(), [], () => { g.window.spects = two; });
+    check('ghost coverage: every spectator\'s view read into one kept array, frame after frame (no new arrays)',
+        outs.length === 4 && Array.isArray(outs[0]) && outs.every((o) => o === outs[0]), outs.length + ' reads');
     check('ghost inside an unverified spectator\'s view (calibrating): drawn', drawn(top(), [], () => { g.window.spects = [sp(false, true)]; }) === 1);
     check('ghost inside a reconnecting spectator\'s view: drawn', drawn(top(), [], () => { g.window.spects = [sp(true, false)]; }) === 1);
     check('ghost list without a time (other servers): coverage not used, drawn', drawn(top(), [], () => { mainView(); LM.ghostCellsTime = 0; }) === 1);
