@@ -794,13 +794,17 @@
         if (!R || !Number.isFinite(R.camX) || !Number.isFinite(R.camY)) return;
         api.camLockX = R.camX;
         api.camLockY = R.camY;
+        _camLockSock = LM.socket || null;
         api.camLocked = true;
         toast(tr('camLocked'));
     }
-    /* setView(): the locked point, or false (and unlocked) once you play again */
+    /* setView(): the locked point, or false (and unlocked) once you play again or the connection
+     * changes (another server or a reconnect: the point belongs to the old world, whose coordinates
+     * the new connection does not share, so the camera stayed on empty space) */
+    var _camLockSock = null;
     function camLockTarget(LM, out) {
         if (!api.camLocked) return false;
-        if (!spectating(LM)) { api.camLocked = false; return false; }
+        if (!spectating(LM) || (LM.socket || null) !== _camLockSock) { api.camLocked = false; _camLockSock = null; return false; }
         out.x = api.camLockX;
         out.y = api.camLockY;
         return true;

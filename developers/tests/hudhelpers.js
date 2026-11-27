@@ -178,6 +178,17 @@ check('countdown text', P.countdownText(12.2) === '13' && P.countdownText(0.01) 
     check('camera lock ends when you play', !H.camLockTarget(ctx.legendmod, pt) && !H.camLocked);
     H.toggleCamLock();
     check('camera lock refused while playing', !H.camLocked);
+    /* another server or a reconnect: the locked point belongs to the old world */
+    ctx.legendmod.play = false;
+    ctx.legendmod.socket = { id: 1 };
+    H.toggleCamLock();
+    check('camera lock kept while the connection stays', H.camLocked && H.camLockTarget(ctx.legendmod, pt) && pt.x === 100);
+    ctx.legendmod.socket = { id: 2 };
+    check('camera lock ends with a new connection', !H.camLockTarget(ctx.legendmod, pt) && !H.camLocked);
+    H.toggleCamLock();
+    check('camera lock on the new connection works', H.camLocked && H.camLockTarget(ctx.legendmod, pt));
+    H.toggleCamLock();
+    delete ctx.legendmod.socket;
 }
 
 // precision zoom with zoom bookmarks while it is held (audit A6)
