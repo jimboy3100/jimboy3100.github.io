@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "類 Vanilla（灰色）",
 "misc.rotate.unrotated": "小地圖尚未旋轉，只有區塊會旋轉",
 "misc.dl.confirm": "確定要載入 Dying Light 範本嗎？<br>請先把設定存成檔案，否則會遺失。",
-"misc.dl.hudMap": "地圖",
 "misc.dl.hudLead": "死得最多的人",
 "misc.dl.hudTeam": "倖存者",
 "misc.dl.pic1": "Volatile 攻擊",

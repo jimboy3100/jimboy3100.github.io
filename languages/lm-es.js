@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Estilo Vanilla (Gris)",
 "misc.rotate.unrotated": "El minimapa aún no gira, solo giran los sectores",
 "misc.dl.confirm": "¿Seguro que quieres cargar la plantilla Dying Light?<br>Guarda tus ajustes en un archivo, porque se perderán.",
-"misc.dl.hudMap": "El Mapa",
 "misc.dl.hudLead": "Los Más Muertos",
 "misc.dl.hudTeam": "Los Vivos",
 "misc.dl.pic1": "Ataque de Volátil",

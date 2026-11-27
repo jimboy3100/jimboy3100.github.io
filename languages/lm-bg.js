@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Като Vanilla (Сиво)",
 "misc.rotate.unrotated": "Миникартата още не се върти, въртят се само секторите",
 "misc.dl.confirm": "Сигурни ли сте, че искате да заредите шаблона Dying Light?<br>Запазете настройките си във файл, защото ще бъдат загубени.",
-"misc.dl.hudMap": "Картата",
 "misc.dl.hudLead": "Най-мъртвите",
 "misc.dl.hudTeam": "Живите",
 "misc.dl.pic1": "Атака на Волатайл",

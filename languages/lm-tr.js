@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Vanilla benzeri (Gri)",
 "misc.rotate.unrotated": "Mini harita henüz dönmüyor, yalnızca sektörler dönüyor",
 "misc.dl.confirm": "Dying Light şablonunu yüklemek istediğinize emin misiniz?<br>Ayarlarınızı bir dosyaya kaydedin, yoksa kaybolacaklar.",
-"misc.dl.hudMap": "Harita",
 "misc.dl.hudLead": "En Ölüler",
 "misc.dl.hudTeam": "Hayatta Kalanlar",
 "misc.dl.pic1": "Volatile saldırısı",

@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "バニラ風（グレー）",
 "misc.rotate.unrotated": "ミニマップ自体は回転せず、セクターだけが回転します",
 "misc.dl.confirm": "Dying Lightテンプレートを読み込みますか？<br>現在の設定は失われるので、ファイルに保存しておいてください。",
-"misc.dl.hudMap": "マップ",
 "misc.dl.hudLead": "最も死んだ者たち",
 "misc.dl.hudTeam": "生存者たち",
 "misc.dl.pic1": "ボラタイルの襲撃",

@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Σαν Vanilla (Γκρι)",
 "misc.rotate.unrotated": "Το minimap δεν περιστρέφεται ακόμα, περιστρέφονται μόνο οι τομείς",
 "misc.dl.confirm": "Είστε σίγουροι ότι θέλετε να φορτώσετε το πρότυπο Dying Light;<br>Αποθηκεύστε τις ρυθμίσεις σας σε αρχείο, γιατί θα χαθούν.",
-"misc.dl.hudMap": "Ο Χάρτης",
 "misc.dl.hudLead": "Οι Πιο Νεκροί",
 "misc.dl.hudTeam": "Οι Ζωντανοί",
 "misc.dl.pic1": "Επίθεση Volatile",

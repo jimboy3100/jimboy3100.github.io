@@ -38,7 +38,7 @@
   if ($('#virusSoundurl').closest('.input-box').prev().find('#virusSound').length !== 1) fail.push('virus sound file not next to its switch');
   // the HUD box images / titles and the screen background image are in the Theme tab (no chooser in Tools)
   if ($('#backgroundPic').length) fail.push('Manual background chooser still in the Tools tab');
-  [['minimapPicture', 'theme-minimap'], ['minbtext', 'theme-minimap'], ['leadbPicture', 'theme-hud'], ['leadbtext', 'theme-hud'],
+  [['minimapPicture', 'theme-minimap'], ['leadbPicture', 'theme-hud'], ['leadbtext', 'theme-hud'],
     ['teambPicture', 'theme-hud'], ['teambtext', 'theme-hud'], ['canvasPicture', 'theme-images']].forEach(function (p) {
     var el = document.getElementById(p[0]);
     if (!el || !$(el).closest('#' + p[1] + ' .input-box').length) fail.push('#' + p[0] + ' not in Theme #' + p[1]);

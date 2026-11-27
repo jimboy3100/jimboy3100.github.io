@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Façon Vanilla (Gris)",
 "misc.rotate.unrotated": "La mini-carte ne tourne pas encore, seuls les secteurs tournent",
 "misc.dl.confirm": "Voulez-vous vraiment charger le modèle Dying Light ?<br>Enregistrez vos réglages dans un fichier, car ils seront perdus.",
-"misc.dl.hudMap": "La Carte",
 "misc.dl.hudLead": "Les Plus Morts",
 "misc.dl.hudTeam": "Les Vivants",
 "misc.dl.pic1": "Attaque de Volatile",

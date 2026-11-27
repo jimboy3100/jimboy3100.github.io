@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Zoals Vanilla (Grijs)",
 "misc.rotate.unrotated": "De minimap draait nog niet, alleen de sectoren draaien",
 "misc.dl.confirm": "Weet je zeker dat je het Dying Light-sjabloon wilt laden?<br>Sla je instellingen op in een bestand, want ze gaan verloren.",
-"misc.dl.hudMap": "De Kaart",
 "misc.dl.hudLead": "De Doodsten",
 "misc.dl.hudTeam": "De Levenden",
 "misc.dl.pic1": "Volatile-aanval",

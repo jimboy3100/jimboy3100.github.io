@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Stile Vanilla (grigio)",
 "misc.rotate.unrotated": "La minimappa non ruota ancora, ruotano solo i settori",
 "misc.dl.confirm": "Sei sicuro di voler caricare il modello Dying Light?<br>Salva le impostazioni su un file, perché andranno perse.",
-"misc.dl.hudMap": "La Mappa",
 "misc.dl.hudLead": "I Più Morti",
 "misc.dl.hudTeam": "I Vivi",
 "misc.dl.pic1": "Attacco di Volatile",

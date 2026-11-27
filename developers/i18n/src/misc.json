@@ -2231,24 +2231,6 @@
     "ja": "Dying Lightテンプレートを読み込みますか？<br>現在の設定は失われるので、ファイルに保存しておいてください。",
     "it": "Sei sicuro di voler caricare il modello Dying Light?<br>Salva le impostazioni su un file, perché andranno perse."
   },
-  "misc.dl.hudMap": {
-    "en": "The Map",
-    "el": "Ο Χάρτης",
-    "es": "El Mapa",
-    "bg": "Картата",
-    "fr": "La Carte",
-    "ar": "الخريطة",
-    "zh": "地圖",
-    "ru": "Карта",
-    "de": "Die Karte",
-    "tr": "Harita",
-    "pl": "Mapa",
-    "nl": "De Kaart",
-    "pt": "O Mapa",
-    "id": "Peta",
-    "ja": "マップ",
-    "it": "La Mappa"
-  },
   "misc.dl.hudLead": {
     "en": "The Most Dead",
     "el": "Οι Πιο Νεκροί",

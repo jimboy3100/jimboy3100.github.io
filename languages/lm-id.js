@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Mirip Vanilla (Abu-abu)",
 "misc.rotate.unrotated": "Minimap belum berputar, hanya sektor yang berputar",
 "misc.dl.confirm": "Yakin mau memuat template Dying Light?<br>Simpan pengaturanmu ke file, karena pengaturan akan hilang.",
-"misc.dl.hudMap": "Peta",
 "misc.dl.hudLead": "Paling Mati",
 "misc.dl.hudTeam": "Yang Hidup",
 "misc.dl.pic1": "Serangan Volatile",

@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Vanilla like (Grey)",
 "misc.rotate.unrotated": "Minimap is still unrotated, only sectors rotate",
 "misc.dl.confirm": "Are you sure you want to load the Dying Light template?<br>Save your settings to a file, because they will be lost.",
-"misc.dl.hudMap": "The Map",
 "misc.dl.hudLead": "The Most Dead",
 "misc.dl.hudTeam": "The Alive",
 "misc.dl.pic1": "Volatile Attack",

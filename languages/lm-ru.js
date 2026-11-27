@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Как Vanilla (Серый)",
 "misc.rotate.unrotated": "Миникарта пока не вращается, вращаются только секторы",
 "misc.dl.confirm": "Точно загрузить шаблон Dying Light?<br>Сохраните настройки в файл, иначе они пропадут.",
-"misc.dl.hudMap": "Карта",
 "misc.dl.hudLead": "Самые мёртвые",
 "misc.dl.hudTeam": "Живые",
 "misc.dl.pic1": "Атака прыгуна",

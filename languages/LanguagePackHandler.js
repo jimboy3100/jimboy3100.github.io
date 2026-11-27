@@ -374,7 +374,6 @@ $('#backgroundPic>option:nth-child(5)').text(Languageletter323);
 
 
 $('#minimapPicture').attr('placeholder',Languageletter331).attr('data-original-title',Languageletter330);
-$('#minbtext').attr('placeholder',Languageletter332);
 $('#leadbPicture').attr('placeholder',Languageletter333a).attr('data-original-title',Languageletter330);
 /* the leaderboard's logo text field has its own name (it was given the teamboard's, and the teamboard's kept the old language) */
 $('#leadbtext').attr('placeholder',Languageletter333);

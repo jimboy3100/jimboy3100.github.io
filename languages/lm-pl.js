@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Jak Vanilla (Szary)",
 "misc.rotate.unrotated": "Minimapa jeszcze się nie obraca, obracają się tylko sektory",
 "misc.dl.confirm": "Na pewno wczytać szablon Dying Light?<br>Zapisz ustawienia do pliku, bo zostaną utracone.",
-"misc.dl.hudMap": "Mapa",
 "misc.dl.hudLead": "Najbardziej martwi",
 "misc.dl.hudTeam": "Żywi",
 "misc.dl.pic1": "Atak Zmiennego",

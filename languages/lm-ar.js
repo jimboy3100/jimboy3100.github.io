@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "مثل Vanilla (رمادي)",
 "misc.rotate.unrotated": "الخريطة المصغّرة لا تدور بعد، تدور القطاعات فقط",
 "misc.dl.confirm": "هل أنت متأكد أنك تريد تحميل قالب Dying Light؟<br>احفظ إعداداتك في ملف، لأنها ستضيع.",
-"misc.dl.hudMap": "الخريطة",
 "misc.dl.hudLead": "الأكثر موتًا",
 "misc.dl.hudTeam": "الأحياء",
 "misc.dl.pic1": "هجوم الفولاتايل",

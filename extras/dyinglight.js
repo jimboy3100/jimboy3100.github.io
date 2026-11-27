@@ -25,8 +25,6 @@ function acceptedDying(){
 //setTimeout(function () {
 function dyinglighttemplate(){
 	
-$("#minbtext").val(_lmDT('misc.dl.hudMap'));
-$("#minbtext").blur();
 $("#leadbtext").val(_lmDT('misc.dl.hudLead'));
 $("#leadbtext").blur();
 $("#teambtext").val(_lmDT('misc.dl.hudTeam'));
@@ -152,7 +150,6 @@ aab();
 function stopdyinglight(){
 	localStorage.setItem("musicUrl", defaultMusicUrl);
 	$("#minimapPicture").val("").blur();
-	$("#minbtext").val("").blur();
 	$("#leadbtext").val("").blur();
 	$("#teambtext").val("").blur();
 	$("#imgUrl").val("").blur();
@@ -275,7 +272,6 @@ function legenddefaultsettings() {
         $('#import-settings-btn').click();
     } else if (dyinglight1load == "yes") {
         $("#minimapPicture").val("").blur();
-        $("#minbtext").val("").blur();
         $("#leadbtext").val("").blur();
         $("#teambtext").val("").blur();
         $("#imgUrl").val("").blur();

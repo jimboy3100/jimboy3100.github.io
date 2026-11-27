@@ -1532,7 +1532,6 @@
 "misc.helper.vanillaLike": "Wie Vanilla (Grau)",
 "misc.rotate.unrotated": "Die Minimap dreht sich noch nicht, nur die Sektoren drehen sich",
 "misc.dl.confirm": "Möchtest du die Dying-Light-Vorlage wirklich laden?<br>Speichere deine Einstellungen in einer Datei, sonst gehen sie verloren.",
-"misc.dl.hudMap": "Die Karte",
 "misc.dl.hudLead": "Die Totesten",
 "misc.dl.hudTeam": "Die Lebenden",
 "misc.dl.pic1": "Volatile-Angriff",

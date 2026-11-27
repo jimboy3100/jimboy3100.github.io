@@ -93,7 +93,6 @@ var _lmChatDefaults = { pic1urlimg: pic1urlimg, pic2urlimg: pic2urlimg, pic3urli
 (function () { try { for (var i = 1; i <= 6; i++) { localStorage.removeItem('yt' + i + 'urlimg'); localStorage.removeItem('yt' + i + 'dataimg'); } } catch (e) { } })();
 var lastIP = localStorage.getItem("lastIP");
 var previousnickname = localStorage.getItem("previousnickname");
-var minbtext = localStorage.getItem("minbtext");
 var leadbtext = localStorage.getItem("leadbtext");
 var teambtext = localStorage.getItem("teambtext");
 var imgUrl = localStorage.getItem("imgUrl");
@@ -1763,10 +1762,6 @@ function parseLegendJSONAPI(LegendJSON) {
     if (LegendJSON.legendSettings.imgHref == "null" || LegendJSON.legendSettings.imgHref == null) {
         LegendJSON.legendSettings.imgHref = ""
     };
-    LegendJSON.legendSettings.minbtext = localStorage.getItem("minbtext");
-    if (LegendJSON.legendSettings.minbtext == "null" || LegendJSON.legendSettings.minbtext == null) {
-        LegendJSON.legendSettings.minbtext = ""
-    };
     LegendJSON.legendSettings.pic1urlimg = localStorage.getItem("pic1urlimg");
     if (LegendJSON.legendSettings.pic1urlimg == "null" || LegendJSON.legendSettings.pic1urlimg == null) {
         LegendJSON.legendSettings.pic1urlimg = ""
@@ -1956,7 +1951,6 @@ function saveLegendJSONAPI() {
         _lmImportSet("teambtext", LegendJSON.legendSettings.teambtext);
         _lmImportSet("imgUrl", LegendJSON.legendSettings.imgUrl);
         _lmImportSet("imgHref", LegendJSON.legendSettings.imgHref);
-        _lmImportSet("minbtext", LegendJSON.legendSettings.minbtext);
         _lmImportSet("pic1urlimg", LegendJSON.legendSettings.pic1urlimg);
         _lmImportSet("pic2urlimg", LegendJSON.legendSettings.pic2urlimg);
         _lmImportSet("pic3urlimg", LegendJSON.legendSettings.pic3urlimg);
@@ -3076,16 +3070,6 @@ function setminbgname() {
     lmHudBgImage("#minimap-hud", minimapbckimg);
 }
 
-function setminbtext() {
-    minbtext = $("#minbtext").val();
-    localStorage.setItem("minbtext", minbtext);
-    var c = document.getElementById("minimap-sectors");
-    var ctx = c.getContext("2d");
-    ctx.clearRect(0, 0, c.width, c.height / 9);
-    ctx.font = "16px Georgia";
-    ctx.fillText(minbtext, c.width / 2, 22);
-}
-
 function setleadbgname() {
     leadbimg = $("#leadbPicture").val();
     localStorage.setItem("leadbimg", leadbimg);
@@ -3452,10 +3436,6 @@ function triggerLMbtns() {
     document.getElementById("teambtext").value = localStorage.getItem("teambtext");
     if ($('#teambtext').val() != "") {
         setteambtext();
-    }
-    document.getElementById("minbtext").value = localStorage.getItem("minbtext");
-    if ($('#minbtext').val() != "" && $('#minbtext').val() != null) {
-        setminbtext();
     }
     document.getElementById("pic1url").value = localStorage.getItem("pic1urlimg");
     if ($('#pic1url').val() != "") {
@@ -5034,7 +5014,6 @@ function initializeLM(modVersion) {
         '<div id="lm-tools-imgs" class="input-box" style="text-align: center; font-size: 12px; margin-top: 2px; padding: 4px 0 0px 0;">' +
 
         '<input id="minimapPicture" class="form-control" placeholder="' + _lmxE('pack.minimapImageUrl') + '" value="" style="margin-top: 2px; display: block;" onblur="setminbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
-        '<input id="minbtext" class="form-control" placeholder="' + _lmxE('pack.minimapText') + '" value="" style="margin-top: 2px; display: block;" onblur="setminbtext();">' +
         '<input id="leadbPicture" class="form-control" placeholder="' + _lmxE('pack.leaderboardImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setleadbgname();" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
         '<input id="leadbtext" class="form-control" placeholder="' + _lmxE('lmx.ex.leaderboardLogoText') + '" value="" style="margin-top: 2px; display: none; " onblur="setleadbtext();">' +
         '<input id="teambPicture" class="form-control" placeholder="' + _lmxE('pack.teamboardImageUrl') + '" value="" style="margin-top: 2px; display: none;" onblur="setteambgname();" data-toggle="tooltip" data-placement="right"  data-original-title="' + _lmxE('pack.urlOfImageStarting') + '" >' +
@@ -5083,7 +5062,7 @@ function initializeLM(modVersion) {
      * The screen image is not Theme > Images > Custom background image: that one is drawn on the map
      * (it moves with the camera), this one stays still on the screen over it. */
     (function _lmManualImagesToTheme() {
-        var rows = [['#theme-minimap', 'minimapPicture', 'pack.minimapImageUrl'], ['#theme-minimap', 'minbtext', 'pack.minimapText'],
+        var rows = [['#theme-minimap', 'minimapPicture', 'pack.minimapImageUrl'],
             ['#theme-hud', 'leadbPicture', 'pack.leaderboardImageUrl'], ['#theme-hud', 'leadbtext', 'lmx.ex.leaderboardLogoText'],
             ['#theme-hud', 'teambPicture', 'pack.teamboardImageUrl'], ['#theme-hud', 'teambtext', 'pack.teamboardLogoText'],
             ['#theme-images', 'canvasPicture', 'pkg.d1.screenBg']];
