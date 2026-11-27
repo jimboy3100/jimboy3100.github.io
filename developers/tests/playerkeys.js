@@ -164,6 +164,12 @@ const errOf = (f) => { try { f(); return ''; } catch (e) { return String(e && e.
     check('vanillaskins with these nicks and skin names: no throw, nothing but URLs stored and loaded', bad.length === 0, bad.join('; '));
     V.vanillaskins('dog', '%doge', '#123456');
     check('  a real skin name still resolves', A.customSkinKey('dog', '#123456', '%doge') === 'https://jimboy3000.github.io/vanillaskins/doge.png');
+    /* a level skin id: the configuration's picture (choco_golem.png), not the base-name guess
+     * Choco_Golem.png, which is no file */
+    vm.runInContext('window.VanillaSkinUrlMap["%choco_golem_level_1"] = "https://jimboy3000.github.io/vanillaskins/choco_golem.png";', ctx);
+    V.vanillaskins('golem', '%choco_golem_level_1', '#123456');
+    const golem = A.customSkinKey('golem', '#123456', '%choco_golem_level_1');
+    check('  a level skin id shows the configuration picture (' + golem + ')', golem === 'https://jimboy3000.github.io/vanillaskins/choco_golem.png');
     check('  no prototype changed', protoIntact());
 }
 

@@ -217,11 +217,11 @@
         map = map || window.VanillaSkinUrlMap;
         if (t === 'url' || t === 'video' || t === 'data') return id;
         if (t === 'custom') return custom(id);
-        if (t === 'level') return level(id);
-        if ((t === 'premium' || t === 'spine') && map) {
-            var bare = id.charAt(0) === '%' ? id.slice(1) : id.indexOf('skin_') === 0 ? id.slice(5) : id;
-            return map[id] || map['%' + bare] || map[bare] || map[('%' + bare).toLowerCase()] || map[bare.toLowerCase()] || '';
-        }
+        var bare = id.charAt(0) === '%' ? id.slice(1) : id.indexOf('skin_') === 0 ? id.slice(5) : id;
+        var fromMap = map ? map[id] || map['%' + bare] || map[bare] || map[('%' + bare).toLowerCase()] || map[bare.toLowerCase()] || '' : '';
+        /* level skins: the configuration's picture (VanillaSkinUrlMap) before the base-name guess */
+        if (t === 'level') return fromMap || level(id);
+        if (t === 'premium' || t === 'spine') return fromMap;
         return '';
     }
     /*

@@ -51581,8 +51581,8 @@ function thelegendmodproject() {
                     return [window.LM_CUSTOM_SKINS_CDN + "/" + link + ".png", type];
                 } else if (link.includes && link.includes("_level_")) {
                     type = "potion";
-                    /* the base skin's picture (ogario/skinresolver.js level) */
-                    return [_lmSkinRes().level(link), type];
+                    /* the configuration's picture (VanillaSkinUrlMap), else the base skin's name (ogario/skinresolver.js) */
+                    return [_lmSkinRes().idUrl(link) || _lmSkinRes().level(link), type];
                 } else if (window.VanillaSkinUrlMap) {
                     var mapKey = link.replace('skin_', '%');
                     var mapUrl = window.VanillaSkinUrlMap[mapKey]
@@ -53630,7 +53630,7 @@ function thelegendmodproject() {
                     if (gKind === 'custom') skinUrl = skinRes.custom(g) + '?';
                     else if (gKind === 'level') {
                         isAnimated = true;
-                        skinUrl = skinRes.level(g);
+                        skinUrl = skinRes.idUrl(g) || skinRes.level(g);
                     }
                     else if (gKind === 'premium' || gKind === 'spine') skinUrl = skinRes.idUrl(g);
                 }

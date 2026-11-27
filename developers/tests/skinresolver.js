@@ -213,6 +213,8 @@ const enc = (p) => p.split('/').map(encodeURIComponent).join('/');
         const missing = lv.filter((s) => !map[s.productId] || !held(map[s.productId])).map((s) => s.productId + ' -> ' + map[s.productId]);
         const moved = lv.filter((s) => spine[s.productId] && spine[s.productId] !== 'SkinEffects' && map[s.productId] !== R.vanilla(spine[s.productId] + '.png')).map((s) => s.productId);
         check('level skins of the real configuration (' + lv.length + '): one of the places of each holds its picture', lv.length > 100 && missing.length === 0, missing.slice(0, 5).join(', '));
+        check('  a level id (cells, owned skins) gets the configuration picture: %choco_golem_level_2 -> ' + R.idUrl('%choco_golem_level_2', map), R.idUrl('%choco_golem_level_2', map) === R.vanilla('choco_golem.png') &&
+            R.idUrl('skin_deranged_level_1', map) === map['skin_deranged_level_1'] && R.idUrl('%alien_kid_level_2', Object.create(null)) === R.level('alien_kid'));
         const sb = R.resolve(map['skin_songbird_level_1'] || '').cands || [];
         check('  a spine name that is no file here (SongBird.png) tries the base-name picture next (Songbird.png), at most 3 places', sb.length <= 3 && sb.indexOf(J + 'vanillaskins/Songbird.png') > 0, sb.join(' '));
         check('  levels 1 and 3 keep their spine picture (choco_golem.png, BigCheese.png); level 2 takes level 1\'s', moved.length === 0 &&
