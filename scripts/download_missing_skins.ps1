@@ -1,8 +1,7 @@
 # download_missing_skins.ps1 - Downloads ALL missing skins (accepts any image format)
 param(
     [string]$RepoRoot = "C:\Github_repos\jimboy3100.github.io",
-    [string]$ConfigId = "10912",
-    [int]$MaxPerFolder = 999
+    [string]$ConfigId = "10912"
 )
 
 $cdnBase = "https://configs-web.agario.miniclippt.com/live/v15/$ConfigId/"
@@ -29,26 +28,15 @@ foreach ($s in $config.gameConfig.'Visual - Prod. Spine Animations') {
 }
 Write-Host "Total skins in config: $($skinFiles.Count)" -ForegroundColor Gray
 
-# Find existing files across all folders
-$existing = @{}
-for ($n = 1; $n -le 20; $n++) {
-    $dirName = if ($n -eq 1) { "vanillaskins" } else { "vanillaskins$n" }
-    $dirPath = Join-Path $RepoRoot $dirName
-    if (Test-Path $dirPath) {
-        foreach ($f in (Get-ChildItem $dirPath -Filter "*.png" -ErrorAction SilentlyContinue)) {
-            $existing[$f.Name] = $dirPath
-        }
-    }
-}
-$lrPath = Join-Path $RepoRoot "lowresskins"
-if (Test-Path $lrPath) {
-    foreach ($f in (Get-ChildItem $lrPath -Filter "*.png" -ErrorAction SilentlyContinue)) {
-        $existing[$f.Name] = $lrPath
-    }
-}
+# What is already here: vanillaskins/ (the folder the game reads) and the names the skin registry
+# resolves to another file (copies that were removed must not come back)
+. (Join-Path $RepoRoot "scripts\skin-registry.ps1")
+$registry = Read-SkinRegistry $RepoRoot
+$state = Get-SkinState $RepoRoot
+$targetDir = Join-Path $RepoRoot "vanillaskins"
 
-$missing = $skinFiles.Keys | Where-Object { -not $existing.ContainsKey($_) } | Sort-Object
-Write-Host "Already have: $($existing.Count)" -ForegroundColor Gray
+$missing = $skinFiles.Keys | Where-Object { -not (Test-SkinPresent $state $registry $_) } | Sort-Object
+Write-Host "Already have: $($state.Names.Count)" -ForegroundColor Gray
 Write-Host "Missing: $($missing.Count)" -ForegroundColor Yellow
 
 if ($missing.Count -eq 0) {
@@ -56,39 +44,12 @@ if ($missing.Count -eq 0) {
     exit 0
 }
 
-# Track folder counts
-$folderCounts = @{}
-function Get-NextFolder {
-    for ($n = 1; $n -le 20; $n++) {
-        $dirName = if ($n -eq 1) { "vanillaskins" } else { "vanillaskins$n" }
-        $dirPath = Join-Path $RepoRoot $dirName
-        if (-not $folderCounts.ContainsKey($dirName)) {
-            if (Test-Path $dirPath) {
-                $folderCounts[$dirName] = (Get-ChildItem $dirPath -Filter "*.png" -ErrorAction SilentlyContinue).Count
-            } else {
-                $folderCounts[$dirName] = 0
-            }
-        }
-        if ($folderCounts[$dirName] -lt $MaxPerFolder) {
-            if (-not (Test-Path $dirPath)) {
-                New-Item -ItemType Directory -Path $dirPath -Force | Out-Null
-                Write-Host "  Created: $dirName/" -ForegroundColor Cyan
-            }
-            return @{ Path = $dirPath; Name = $dirName }
-        }
-    }
-    return $null
-}
-
-# Download
-$dl = 0; $fail = 0; $i = 0
+# Download (into vanillaskins/ only)
+$dl = 0; $fail = 0; $copies = 0; $i = 0
 foreach ($file in $missing) {
     $i++
-    $target = Get-NextFolder
-    if (-not $target) { Write-Host "All folders full!" -ForegroundColor Red; break }
-
-    $dest = Join-Path $target.Path $file
-    Write-Host "  [$i/$($missing.Count)] $($target.Name)/$file... " -NoNewline
+    $dest = Join-Path $targetDir $file
+    Write-Host "  [$i/$($missing.Count)] vanillaskins/$file... " -NoNewline
 
     try {
         Invoke-WebRequest -Uri ($cdnBase + $file + "?") -OutFile $dest -Headers $headers -TimeoutSec 15
@@ -98,10 +59,16 @@ foreach ($file in $missing) {
             Write-Host "TOO SMALL ($sz bytes)" -ForegroundColor Red
             $fail++
         } else {
-            $sizeKB = [math]::Round($sz / 1024, 1)
-            Write-Host "OK (${sizeKB}KB)" -ForegroundColor Green
-            $dl++
-            $folderCounts[$target.Name]++
+            $same = Test-SkinDuplicate $state $RepoRoot "vanillaskins/$file" $dest
+            if ($same) {
+                Write-Host "same picture as $same (not kept, recorded as an alias)" -ForegroundColor Yellow
+                $copies++
+            } else {
+                $sizeKB = [math]::Round($sz / 1024, 1)
+                Write-Host "OK (${sizeKB}KB)" -ForegroundColor Green
+                $dl++
+                Add-SkinState $state "vanillaskins/$file" $dest
+            }
         }
     } catch {
         Write-Host "FAILED" -ForegroundColor Red
@@ -113,13 +80,6 @@ foreach ($file in $missing) {
 
 Write-Host "`n=== Done ===" -ForegroundColor Cyan
 Write-Host "  Downloaded: $dl" -ForegroundColor Green
+Write-Host "  Same picture as a file already here (not kept): $copies" -ForegroundColor Gray
 Write-Host "  Failed: $fail" -ForegroundColor $(if ($fail -gt 0) { "Red" } else { "Gray" })
-
-for ($n = 1; $n -le 20; $n++) {
-    $dirName = if ($n -eq 1) { "vanillaskins" } else { "vanillaskins$n" }
-    $dirPath = Join-Path $RepoRoot $dirName
-    if (Test-Path $dirPath) {
-        $cnt = (Get-ChildItem $dirPath -Filter "*.png" -ErrorAction SilentlyContinue).Count
-        Write-Host "  $dirName/: $cnt files" -ForegroundColor Green
-    }
-}
+if ($dl -gt 0 -or $copies -gt 0) { Update-SkinRegistry $RepoRoot }

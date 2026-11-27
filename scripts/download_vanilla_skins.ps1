@@ -1,17 +1,15 @@
 # download_vanilla_skins.ps1
 # Downloads ALL vanilla agar.io skins from the Miniclip CDN
-# Usage: .\download_vanilla_skins.ps1 [-ConfigId 10912] [-OutputDir vanillaskins2]
+# Usage: .\download_vanilla_skins.ps1 [-ConfigId 10912]
+# New pictures go to vanillaskins/; names the skin registry resolves (copies) are not downloaded again.
 
 param(
     [string]$ConfigId = "",
-    [string]$OutputDir = "vanillaskins",
     [string]$RepoRoot = "c:\Github_repos\jimboy3100.github.io"
 )
 
 $ErrorActionPreference = "Continue"
-$outPath = Join-Path $RepoRoot $OutputDir
-
-# Create output directory
+$outPath = Join-Path $RepoRoot "vanillaskins"
 if (-not (Test-Path $outPath)) {
     New-Item -ItemType Directory -Path $outPath -Force | Out-Null
 }
@@ -103,99 +101,46 @@ if ($spine) {
 $uniqueFiles = $skinFiles.Keys | Sort-Object -Unique
 Write-Host "  Total unique skin files: $($uniqueFiles.Count)" -ForegroundColor Green
 
-# Check what we already have
-# Build a map of which folder each existing file is in
-$existingLocation = @{}
-$existingPaths = @("lowresskins")
-for ($n = 1; $n -le 20; $n++) {
-    $existingPaths += if ($n -eq 1) { "vanillaskins" } else { "vanillaskins$n" }
-}
-foreach ($dir in $existingPaths) {
-    $dirPath = Join-Path $RepoRoot $dir
-    if (Test-Path $dirPath) {
-        foreach ($f in (Get-ChildItem -Path $dirPath -Name -Filter "*.png")) {
-            $existingLocation[$f] = $dirPath
-        }
-    }
-}
-
-# Helper: find folder with room (max 999 files), create new numbered folder if needed
-$MAX_PER_FOLDER = 999
-$folderCounts = @{}
-
-function Get-TargetFolder {
-    # Check vanillaskins, vanillaskins2, vanillaskins3, etc.
-    for ($n = 1; $n -le 20; $n++) {
-        $dirName = if ($n -eq 1) { "vanillaskins" } else { "vanillaskins$n" }
-        $dirPath = Join-Path $RepoRoot $dirName
-        
-        if (-not $folderCounts.ContainsKey($dirName)) {
-            if (Test-Path $dirPath) {
-                $folderCounts[$dirName] = (Get-ChildItem $dirPath -Filter "*.png" -ErrorAction SilentlyContinue).Count
-            } else {
-                $folderCounts[$dirName] = 0
-            }
-        }
-        
-        if ($folderCounts[$dirName] -lt $MAX_PER_FOLDER) {
-            if (-not (Test-Path $dirPath)) {
-                New-Item -ItemType Directory -Path $dirPath -Force | Out-Null
-                Write-Host "  Created folder: $dirName/" -ForegroundColor Cyan
-            }
-            return @{ Path = $dirPath; Name = $dirName }
-        }
-    }
-    return $null
-}
-
-# Report folder counts
-Write-Host "`n  Folder capacity:" -ForegroundColor Gray
-for ($n = 1; $n -le 10; $n++) {
-    $dirName = if ($n -eq 1) { "vanillaskins" } else { "vanillaskins$n" }
-    $dirPath = Join-Path $RepoRoot $dirName
-    if (Test-Path $dirPath) {
-        $cnt = (Get-ChildItem $dirPath -Filter "*.png" -ErrorAction SilentlyContinue).Count
-        $folderCounts[$dirName] = $cnt
-        Write-Host "    $dirName/: $cnt / $MAX_PER_FOLDER" -ForegroundColor $(if ($cnt -ge $MAX_PER_FOLDER) { "Red" } else { "Green" })
-    }
-}
+# Check what we already have: vanillaskins/ (the folder the game reads) and the names the skin
+# registry resolves to another file (copies that were removed must not come back)
+. (Join-Path $RepoRoot "scripts\skin-registry.ps1")
+$registry = Read-SkinRegistry $RepoRoot
+$state = Get-SkinState $RepoRoot
+$targetDir = Join-Path $RepoRoot "vanillaskins"
+Write-Host "  vanillaskins/: $($state.Names.Count) files, registry aliases: $($registry.Alias.Count)" -ForegroundColor Gray
 
 # Step 4: Download missing skins
-Write-Host "`n[4/4] Downloading skins (max $MAX_PER_FOLDER per folder)..." -ForegroundColor Yellow
+Write-Host "`n[4/4] Downloading skins into vanillaskins/..." -ForegroundColor Yellow
 
 $downloaded = 0
 $failed = 0
 $skipped = 0
+$copies = 0
 $total = $uniqueFiles.Count
 
 $counter = 0
 foreach ($file in $uniqueFiles) {
     $counter++
-    
-    # Skip if already exists anywhere
-    if ($existingLocation.ContainsKey($file)) {
+
+    # Skip if already here (or a copy of a file that is here)
+    $why = Test-SkinPresent $state $registry $file
+    if ($why) {
+        if ($why -ne "exists") { Write-Host "  skip $file ($why)" -ForegroundColor DarkGray }
         $skipped++
         continue
     }
 
-    # Find a folder with room
-    $target = Get-TargetFolder
-    if (-not $target) {
-        Write-Host "  ERROR: All folders full (999 each)!" -ForegroundColor Red
-        break
-    }
-    
-    $destFile = Join-Path $target.Path $file
+    $destFile = Join-Path $targetDir $file
     $skinUrl = "${cdnBase}${file}?"
     $pct = [math]::Round(($counter / $total) * 100)
-    Write-Host "  [$counter/$total] ($pct%) $($target.Name)/$file... " -NoNewline
-    
+    Write-Host "  [$counter/$total] ($pct%) vanillaskins/$file... " -NoNewline
+
     try {
         $headers = @{
             "User-Agent" = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         }
         Invoke-WebRequest -Uri $skinUrl -OutFile $destFile -Headers $headers -TimeoutSec 15
-        
+
         # Verify it's actually a PNG (not an error page)
         $bytes = [System.IO.File]::ReadAllBytes($destFile)
         if ($bytes.Length -lt 100 -or $bytes[0] -ne 0x89 -or $bytes[1] -ne 0x50) {
@@ -203,18 +148,23 @@ foreach ($file in $uniqueFiles) {
             Write-Host "INVALID (not PNG)" -ForegroundColor Red
             $failed++
         } else {
-            $sizeKB = [math]::Round($bytes.Length / 1024, 1)
-            Write-Host "OK (${sizeKB}KB) -> $($target.Name)/" -ForegroundColor Green
-            $downloaded++
-            $folderCounts[$target.Name]++
-            $existingLocation[$file] = $target.Path
+            $same = Test-SkinDuplicate $state $RepoRoot "vanillaskins/$file" $destFile
+            if ($same) {
+                Write-Host "same picture as $same (not kept, recorded as an alias)" -ForegroundColor Yellow
+                $copies++
+            } else {
+                $sizeKB = [math]::Round($bytes.Length / 1024, 1)
+                Write-Host "OK (${sizeKB}KB)" -ForegroundColor Green
+                $downloaded++
+                Add-SkinState $state "vanillaskins/$file" $destFile
+            }
         }
     } catch {
         Write-Host "FAILED" -ForegroundColor Red
         if (Test-Path $destFile) { Remove-Item $destFile -Force }
         $failed++
     }
-    
+
     # Brief pause to avoid rate limiting
     Start-Sleep -Milliseconds 100
 }
@@ -222,20 +172,11 @@ foreach ($file in $uniqueFiles) {
 # Summary
 Write-Host "`n=== Download Summary ===" -ForegroundColor Cyan
 Write-Host "  Downloaded: $downloaded" -ForegroundColor Green
-Write-Host "  Skipped (already exists): $skipped" -ForegroundColor Gray
+Write-Host "  Skipped (already here): $skipped" -ForegroundColor Gray
+Write-Host "  Same picture as a file already here (not kept): $copies" -ForegroundColor Gray
 Write-Host "  Failed: $failed" -ForegroundColor $(if ($failed -gt 0) { "Red" } else { "Gray" })
 
-Write-Host "`n  Final folder counts:" -ForegroundColor Gray
-for ($n = 1; $n -le 10; $n++) {
-    $dirName = if ($n -eq 1) { "vanillaskins" } else { "vanillaskins$n" }
-    $dirPath = Join-Path $RepoRoot $dirName
-    if (Test-Path $dirPath) {
-        $cnt = (Get-ChildItem $dirPath -Filter "*.png" -ErrorAction SilentlyContinue).Count
-        Write-Host "    $dirName/: $cnt files" -ForegroundColor Green
-    }
+if ($downloaded -gt 0 -or $copies -gt 0) {
+    Update-SkinRegistry $RepoRoot
+    Write-Host "`n  Next: cd $RepoRoot ; git add vanillaskins ogario/skinregistry.js developers/audit/manifest.json ; git commit -m 'add $downloaded vanilla skins' ; git push" -ForegroundColor Yellow
 }
-
-if ($downloaded -gt 0) {
-    Write-Host "`n  Next: cd $RepoRoot ; git add . ; git commit -m 'add $downloaded vanilla skins' ; git push" -ForegroundColor Yellow
-}
-
