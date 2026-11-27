@@ -1,6 +1,6 @@
 /* Replay Studio for Legend Mod: a timeline with automatic bookmarks, playback at the recorded
  * speed (0.25x-4x) forwards or backwards, pause and packet-by-packet stepping, colour filters,
- * instant replay of the last seconds, a replay library in IndexedDB and clip export (.lm).
+ * a replay library in IndexedDB and clip export (.lm).
  * It plays every replay: the Replay button, a replay^ server token, Death recap links and
  * ?replay= links (with ?replayStart= / ?replayEnd= packet numbers) all open it.
  *
@@ -1154,73 +1154,6 @@
         skinBackup = null;
     }
 
-    /* instant replay: the last N seconds of the current recording. A replay needs the game
-     * connection, so while alive it waits for the death instead of leaving the server. */
-    var armed = false;
-    function instantSecs() { var v = +dms().instantReplaySecs; return v >= 15 && v <= 60 ? v : 30; }
-    function instant() {
-        if (dms().recordReplays === false) { toast('warning', T('recOff')); return; }
-        if (inReplay()) {
-            if (active()) { P.dir = 1; seekTime(REC.endT - instantSecs() * 1000, true); }
-            return;
-        }
-        var key = liveKey(), arr = recArr(key);
-        if (!arr || arr.length <= 10) { toast('info', T('nothing')); return; }
-        var l = LM();
-        if (l && l.play) {
-            setArmed(!armed);
-            toast('info', T(armed ? 'armed' : 'disarmed'));
-            return;
-        }
-        openInstant(key);
-    }
-    /* listens for the death only while armed */
-    var deathTimer = 0;
-    function onDeath() {
-        if (!armed || inReplay()) return;
-        var key = liveKey();
-        var deathSocket = window.legendmod && window.legendmod.socket;
-        /* cancel any previous pending timer (multi-cell sequential consumption) */
-        if (deathTimer) { clearTimeout(deathTimer); deathTimer = 0; }
-        /* a moment for the last packets (the eat) to arrive */
-        deathTimer = setTimeout(function () {
-            deathTimer = 0;
-            if (!armed || inReplay()) return;
-            /* P0 fix: verify freshness - liveKey() must still match the death's key */
-            if (liveKey() !== key) return;
-            /* abort if the player has already respawned or is spawning */
-            var l = LM();
-            if (l && (l.play || l.isSpawning)) return;
-            /* P0 fix: compare actual socket objects, not URL strings */
-            if (!window.legendmod || window.legendmod.socket !== deathSocket) return;
-            openInstant(key);
-        }, 900);
-    }
-    function cancelDeathTimer() {
-        if (deathTimer) { clearTimeout(deathTimer); deathTimer = 0; }
-    }
-    function setArmed(on) {
-        armed = !!on;
-        cancelDeathTimer();
-        if (!window.LMEvents) return;
-        LMEvents.off('death', onDeath);
-        LMEvents.off('spawn', cancelDeathTimer);
-        if (armed) {
-            LMEvents.on('death', onDeath);
-            LMEvents.on('spawn', cancelDeathTimer);
-        }
-    }
-    function openInstant(key) {
-        setArmed(false);
-        if (!recArr(key)) return;
-        open(key);
-        openRec(key);
-        P.pos = 0;
-        P.dir = 1;
-        leaveAt = Date.now(); /* asked for: no "leaves the game" notice */
-        startReplay(key, posAtTime(REC.t, REC.n, REC.endT - instantSecs() * 1000), true);
-    }
-
     /* ------------------------------------------------------------------ */
     /* Overlays: recorded cursor and split moments                         */
     /* ------------------------------------------------------------------ */
@@ -1827,23 +1760,6 @@
         W.saveB = full(btn(K('save'), '', function () { if (REC) saveMemory(REC.key); }));
         r2.appendChild(W.saveB);
         r2.appendChild(full(btn(K('export'), '', function () { if (REC) exportMemory(REC.key); })));
-        r2.appendChild(full(btn(K('instant'), '', function () { instant(); })));
-        W.secs = el('select', 'margin-right:3px;');
-        W.secs.classList.add('lm-rs-full');
-        [15, 30, 45, 60].forEach(function (v) { var o = el('option'); o.value = String(v); W.secs.appendChild(o); });
-        L(function () {
-            W.secs.title = T('instant');
-            for (var i = 0; i < W.secs.options.length; i++) W.secs.options[i].textContent = T('secsN', [W.secs.options[i].value]);
-        });
-        W.secs.addEventListener('change', function () {
-            var d = dms();
-            d.instantReplaySecs = +W.secs.value;
-            try { if (window.application && application.saveSettings) application.saveSettings(d, 'ogarioSettings'); } catch (e) { }
-            /* change: the slider's knob (rangeslider) moves to the value too; with val() alone it
-             * stayed where it was while the number next to it changed */
-            $('#instantReplaySecs-slider').val(d.instantReplaySecs).trigger('change'); $('#instantReplaySecs-value').text(d.instantReplaySecs);
-        });
-        r2.appendChild(W.secs);
         /* leave the replay: end the session (skins back), then join the previous server */
         W.backB = btn(K('backGame'), '', function () { dispose('stopped'); if (window._lmJoinPrevServer) window._lmJoinPrevServer(); });
         r2.appendChild(W.backB);
@@ -1948,7 +1864,6 @@
         /* closing ends the playback session (see dispose): the stopped replay world stays shown,
          * still as a replay, until a server is joined */
         dispose('stopped');
-        cancelDeathTimer();
     }
     function isOpen() { return !!(W && W.style.display !== 'none'); }
     function ui() {
@@ -1971,9 +1886,6 @@
             });
         }
         if (REC) W.sel.value = REC.key;
-        /* the instant replay length is a setting, also shown with no recording: the list showed
-         * its first choice (15 s) then, whatever the setting was */
-        if (String(instantSecs()) !== W.secs.value) W.secs.value = String(instantSecs());
         var lb = document.getElementById('lm-replay-bar');
         W.style.bottom = lb && lb.style.display !== 'none' && W.offsetHeight < innerHeight - 80 ? (parseInt(lb.style.bottom, 10) || 14) + 16 + 'px' : '';
         if (!REC) {
@@ -2146,10 +2058,9 @@
 
     /* entry point used by ogario.v4.js (window.lmReplayStudio) and the hotkeys */
     RS.run = function (action, arg) {
-        /* another replay asked for (Death recap, instant replay, a replay^ token): a pending
+        /* another replay asked for (Death recap, a replay^ token): a pending
          * ?replay= download no longer is what the player wants */
-        if (action === 'instant' || action === 'watch') urlJob.cancel();
-        if (action === 'instant') return instant();
+        if (action === 'watch') urlJob.cancel();
         if (action === 'toggle') return isOpen() ? close() : open(arg);
         if (action === 'close') return close();
         /* arg: [recording key, start packet] */
@@ -2163,7 +2074,7 @@
     /* the library for scripts and the smoke test */
     RS.store = { list: libList, get: libGet, put: libPut, update: libUpdateMeta, remove: libDelete };
     RS.state = function () {
-        return { open: isOpen(), key: REC && REC.key, pos: P.pos, n: REC ? REC.n : 0, playing: P.playing, driving: P.driving, speed: P.speed, dir: P.dir, fx: OPT.fx, stopAt: P.stopAt, marks: REC ? REC.marks.length : 0, armed: armed, seeking: !!P.ff };
+        return { open: isOpen(), key: REC && REC.key, pos: P.pos, n: REC ? REC.n : 0, playing: P.playing, driving: P.driving, speed: P.speed, dir: P.dir, fx: OPT.fx, stopAt: P.stopAt, marks: REC ? REC.marks.length : 0, seeking: !!P.ff };
     };
     /* the transport without the window, for scripts and developers/tests/replaystudio.js */
     RS.drive = { play: play, pause: pause, seek: seekTo, step: stepPacket, select: select, clip: function (inMs, outMs) { P.inMs = inMs; P.outMs = outMs; return makeClip(); } };

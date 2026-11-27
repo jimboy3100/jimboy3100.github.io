@@ -47,7 +47,7 @@
     {
       "id": "replays",
       "name": "Replay tools and Replay Studio",
-      "description": "Record server packets for faithful replays. Replay Studio: full timeline with automatic bookmarks, variable speed (0.25x-4x), pause, packet-by-packet stepping, forward/backward seeking, timeline scrubbing. Instant replay plays last 15-60 seconds. Clip export as .lm files. Match history stores last 50 lives. Personal bests tracked. Replay library in IndexedDB.",
+      "description": "Record server packets for faithful replays. Replay Studio: full timeline with automatic bookmarks, variable speed (0.25x-4x), pause, packet-by-packet stepping, forward/backward seeking, timeline scrubbing. Clip export as .lm files. Match history stores last 50 lives. Personal bests tracked. Replay library in IndexedDB.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

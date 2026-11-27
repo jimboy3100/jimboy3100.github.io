@@ -485,24 +485,6 @@
     "ja": "リプレイを録画（メモリを使用）",
     "it": "Registra replay (usa memoria)"
   },
-  "settings.instantReplaySecs": {
-    "en": "Instant replay length (seconds)",
-    "el": "Διάρκεια instant replay (δευτερόλεπτα)",
-    "es": "Duración de la repetición instantánea (segundos)",
-    "bg": "Дължина на моментното повторение (секунди)",
-    "fr": "Durée du replay instantané (secondes)",
-    "ar": "مدة الإعادة الفورية (ثوانٍ)",
-    "zh": "即時重播長度（秒）",
-    "ru": "Длина мгновенного реплея (секунды)",
-    "de": "Länge des Sofort-Replays (Sekunden)",
-    "tr": "Anlık tekrar süresi (saniye)",
-    "pl": "Długość natychmiastowej powtórki (sekundy)",
-    "nl": "Lengte directe replay (seconden)",
-    "pt": "Duração do replay instantâneo (segundos)",
-    "id": "Durasi replay instan (detik)",
-    "ja": "インスタントリプレイの長さ（秒）",
-    "it": "Durata replay istantaneo (secondi)"
-  },
   "settings.glAntialias": {
     "en": "Anti-aliasing (smoother edges, after reload)",
     "el": "Anti-aliasing (πιο ομαλές άκρες, μετά την επαναφόρτωση)",
@@ -5254,24 +5236,6 @@
     "id": "Buka Replay Studio",
     "ja": "Replay Studio を開く",
     "it": "Apri Replay Studio"
-  },
-  "settings.hk-instantReplay": {
-    "en": "Instant replay (last seconds; opens after you die)",
-    "el": "Instant replay (τελευταία δευτερόλεπτα· ανοίγει όταν πεθάνεις)",
-    "es": "Repetición instantánea (últimos segundos; se abre al morir)",
-    "bg": "Моментно повторение (последните секунди; отваря се след смърт)",
-    "fr": "Replay instantané (dernières secondes ; s'ouvre après ta mort)",
-    "ar": "إعادة فورية (آخر ثوانٍ؛ تفتح بعد موتك)",
-    "zh": "即時重播（最後幾秒；死亡後開啟）",
-    "ru": "Мгновенный реплей (последние секунды; открывается после смерти)",
-    "de": "Sofort-Replay (letzte Sekunden; öffnet nach deinem Tod)",
-    "tr": "Anlık tekrar (son saniyeler; öldükten sonra açılır)",
-    "pl": "Natychmiastowa powtórka (ostatnie sekundy; otwiera się po śmierci)",
-    "nl": "Directe replay (laatste seconden; opent als je doodgaat)",
-    "pt": "Replay instantâneo (últimos segundos; abre após você morrer)",
-    "id": "Replay instan (detik terakhir; terbuka setelah kamu mati)",
-    "ja": "インスタントリプレイ（直前の数秒、死亡後に開く）",
-    "it": "Replay istantaneo (ultimi secondi; si apre dopo la morte)"
   },
   "settings.hk-gamepadWindow": {
     "en": "Open / close the Gamepad window",

@@ -171,7 +171,7 @@
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Replay tools</schema:name>
-    <schema:description>Packet recording, instant replay, Replay Studio, match history, personal bests.</schema:description>
+    <schema:description>Packet recording, Replay Studio, match history, personal bests.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-gamepad">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>

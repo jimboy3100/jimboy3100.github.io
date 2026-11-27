@@ -356,18 +356,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-instantReplay': {
-				get label() {
-					return lmT('settings.hk-instantReplay');
-				},
-				defaultKey: '',
-				keyDown() {
-					/* plays the end of the current recording; while alive it waits for the death (a replay leaves the server) */
-					if (typeof window.lmReplayStudio === 'function') window.lmReplayStudio('instant');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			/* opens the practice arena window (ogario/modules/practice.js); no default key */
 			'hk-practice': {
 				get label() {

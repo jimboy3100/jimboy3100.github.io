@@ -280,7 +280,7 @@
         "lm:Feature"
       ],
       "name": "Replay tools",
-      "description": "Packet recording, instant replay, Replay Studio, match history, personal bests."
+      "description": "Packet recording, Replay Studio, match history, personal bests."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-gamepad",

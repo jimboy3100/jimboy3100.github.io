@@ -21395,7 +21395,6 @@ var defaultmapsettings = {
     unlockedFPS: false,
     highDPI: false,
     recordReplays: true,          /* off = no packets kept for replays (saves memory) */
-    instantReplaySecs: 30,        /* Replay Studio: the instant replay hotkey plays the last 15-60 s */
     glAntialias: true,            /* WebGL anti-aliasing (MSAA); read when the GPU context is created */
     performanceMode: false,       /* one switch for weak PCs/phones: turns the costly effects off */
     fpsLimit: 0,                  /* frames per second cap (0 = off), and 25 while the menu is shown and you are not playing: less heat/battery on laptops and phones */
@@ -21644,7 +21643,6 @@ var LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));
  * cannot show (fps limit -1, mass format 1.7) never reaches the game. Ranges and steps are
  * those of the menu sliders (the gamepad ones: ogario/modules/gamepad-ui.js). */
 var LM_SETTINGS_SCHEMA = Object.freeze({
-    instantReplaySecs: [15, 60, 15],
     fpsLimit: [0, 240, 10],
     /* its slider is gone; 3-4 from older versions are read as 2 (ensureMbSlots) */
     multiboxAmount: [2, 4, 1],
@@ -21826,7 +21824,7 @@ function lmFoldClickFollow(s) {
  * (its FPS, ping and renderer are there), "Open the Lab" (removed) opens User Scripts. An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts; Save the
  * current zoom as zoom level 1-5; Skin collections, part of the player profiles now; the Command
- * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile) is free. For the stored hotkeys (loadHotkeys) and a settings
+ * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay) is free. For the stored hotkeys (loadHotkeys) and a settings
  * profile's (profiles.js), so an older set keeps those keys. Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
@@ -21840,7 +21838,7 @@ function lmRenameOldHotkeys(map) {
     for (var k in map) {
         if (!own(k)) continue;
         var v = String(map[k]), to = '', keyed = false, z;
-        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo))$/.test(v)) { delete map[k]; changed = true; continue; }
+        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo)|instantReplay)$/.test(v)) { delete map[k]; changed = true; continue; }
         /* the spectator director's commands and camera lock (removed) */
         if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
         /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey */
@@ -27058,7 +27056,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'statsPosition', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'statsPosition', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27169,7 +27167,7 @@ function thelegendmodproject() {
             /* Spectating: click to follow */
             this.addOptions(["clickSpectate"], "spectateGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "hideEventBanner", "showTime", "showStopwatch", "killFeed", "analytics"], "statsGroup");
-            /* Replays and history: the instant replay length slider is added below */
+            /* Replays and history */
             this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
             $('#recordReplays').closest('label').after($('<button type="button" id="lm-rec-clear" class="btn btn-xs btn-danger" style="display:block;margin:2px 0 6px;"></button>')
@@ -27223,7 +27221,6 @@ function thelegendmodproject() {
             $('<button type="button" id="lm-perf-diag-btn" class="btn btn-xs btn-block btn-primary" style="margin:4px 0 2px;"></button>')
                 .attr('data-i18n', 'settings.lmPerfDiag').text(lmT('settings.lmPerfDiag')).appendTo('.perfGroup')
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
-            this.addSliderBox(".replayGroup", "instantReplaySecs", 15, 60, 15);
             /* one choice for the mass text ("Short mass" was a second switch for the same) */
             this.addChoiceBox(".massGroup", "massFormat", "settings.massFormat", [[1, 'pkg.mg.massExact'], [2, 'pkg.mg.massShort'], [3, 'pkg.mg.massAuto']]);
             this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
@@ -27260,7 +27257,6 @@ function thelegendmodproject() {
                     /* not Mass format: it also sets the team list, leaderboard, target and tab title
                      * mass texts (shortMassFormat), which show with the cell mass off too */
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass'],
-                    recordReplays: ['instantReplaySecs'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
                     /* Settings > Helpers: the bubble style of the opponent rings, the bubble look of
                      * Cursor tracking and the dimming of its line are drawn only with these on */
@@ -27274,7 +27270,7 @@ function thelegendmodproject() {
                  * split prediction need agar.io's merge times (LM.integrity && !LM.isLegendWorld); replays are
                  * recorded in _lmHandlePacket, which Sigmally and Senpa packets never reach */
                 var SRV_AGARIO = ['agario'], SRV_REPLAYS = ['agario', 'expandingland', 'garix', 'imsolo', 'agar2', 'deltio', 'private'];
-                var SRV = { hudMergeCountdown: SRV_AGARIO, hudMergeSound: SRV_AGARIO, splitPrediction: SRV_AGARIO, recordReplays: SRV_REPLAYS, instantReplaySecs: SRV_REPLAYS };
+                var SRV = { hudMergeCountdown: SRV_AGARIO, hudMergeSound: SRV_AGARIO, splitPrediction: SRV_AGARIO, recordReplays: SRV_REPLAYS };
                 /* server type (window.legendmod.serverType) -> its name; private servers: modules.profiles.serverPrivate */
                 // i18n-ok: server proper names
                 var SRV_NAMES = { agario: 'agar.io', expandingland: 'Expanding Land', senpa: 'Senpa', garix: 'Garix', sigmally: 'Sigmally', imsolo: 'Imsolo', agar2: 'Agar2', deltio: 'delt.io', private: '' };
@@ -88877,7 +88873,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         console.warn('[LM] Error loading analytics script:', e);
     }
     /* Replay Studio (timeline, bookmarks, replay library): loaded the first time it is opened.
-     * lmReplayStudio('open') opens the window, ('instant') runs the instant replay hotkey. */
+     * lmReplayStudio('open') opens the window. */
     var _lmRsQueue = null;
     window.lmReplayStudio = function (action, arg) {
         if (window.LMReplayStudio && typeof window.LMReplayStudio.run === 'function') return window.LMReplayStudio.run(action, arg);

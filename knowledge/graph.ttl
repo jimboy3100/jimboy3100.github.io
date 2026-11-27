@@ -81,7 +81,7 @@
 
 <https://www.legendmod.ml/knowledge/#feature-replays> a schema:DefinedTerm, lm:Feature ;
   schema:name "Replay tools" ;
-  schema:description "Packet recording, instant replay, Replay Studio, match history, personal bests." .
+  schema:description "Packet recording, Replay Studio, match history, personal bests." .
 
 <https://www.legendmod.ml/knowledge/#feature-gamepad> a schema:DefinedTerm, lm:Feature ;
   schema:name "Gamepad support" ;

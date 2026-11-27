@@ -709,5 +709,16 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
 }
 
 }
+
+/* the instant replay is removed: a key a player had on its hotkey is free again (lmRenameOldHotkeys,
+ * run by loadHotkeys and for settings profiles); other hotkeys keep their keys */
+{
+  const v4 = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+  const a = v4.indexOf('function lmRenameOldHotkeys(map) {'), b = v4.indexOf('\n}', a);
+  const hk = { '81': 'hk-instantReplay', '': 'hk-instantReplay', '87': 'hk-replayStudio' };
+  let changed = false;
+  if (a > 0 && b > a) changed = vm.runInNewContext(v4.slice(a, b + 2) + '\nlmRenameOldHotkeys(hotkeys);', { hotkeys: hk });
+  check('instant replay hotkey: its saved key is freed, the Replay Studio key stays', changed === true && same(hk, { '87': 'hk-replayStudio' }));
+}
 console.log(fail ? fail + ' failed' : 'all replay studio checks passed');
 process.exit(fail ? 1 : 0);

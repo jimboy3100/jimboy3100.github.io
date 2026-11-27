@@ -74,7 +74,7 @@
   $('#og-options input[type=checkbox][id], #og-options input[type=range][id]').each(function () { if (seen[this.id]) dup.push(this.id); seen[this.id] = 1; });
   if (dup.length) fail.push('options built twice: ' + dup.slice(0, 5).join(', '));
   // options in their section, and every heading has a text
-  var place = { recordReplays: 'replayGroup', 'instantReplaySecs-slider': 'replayGroup', 'lm-perf-diag-btn': 'perfGroup',
+  var place = { recordReplays: 'replayGroup', 'lm-perf-diag-btn': 'perfGroup',
     adaptivePerf: 'perfGroup', hudMergeCountdown: 'mergeGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
     reducedMotion: 'expandingLandGroup', clickSpectate: 'spectateGroup',
     'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
@@ -84,14 +84,15 @@
     else if (!$(el).closest('.options-box.' + place[id]).length) fail.push('#' + id + ' not in .' + place[id]);
   });
   /* one Click to follow option; the spectator director is gone */
-  ['lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
+  /* the instant replay is removed: no length slider */
+  ['lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
   if (window.LMDirector || document.querySelector('script[src*="modules/director.js"]')) fail.push('spectator director still loaded');
   $('#og-options > .options-box > h5').each(function () {
     var t = $(this).text().trim();
     if (!t || t === 'undefined') fail.push('empty heading in .' + $(this).parent().attr('class'));
   });
   // dependency marks match the parent switches (nothing is changed here)
-  var deps = { showStats: 'showStatsMass', showMiniMap: 'showMiniMapGuides', showMass: 'hudRelativeMass', recordReplays: 'instantReplaySecs-slider' };
+  var deps = { showStats: 'showStatsMass', showMiniMap: 'showMiniMapGuides', showMass: 'hudRelativeMass' };
   if (typeof application._lmDepRefresh !== 'function') fail.push('no dependency refresh');
   else {
     application._lmDepRefresh();

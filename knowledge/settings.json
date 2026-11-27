@@ -359,8 +359,7 @@
       "description": "Replay recording and playback settings.",
       "settings": [
         "recordReplays",
-        "matchHistory",
-        "instantReplaySecs"
+        "matchHistory"
       ]
     },
     {
