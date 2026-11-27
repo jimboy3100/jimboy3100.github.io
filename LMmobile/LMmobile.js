@@ -682,7 +682,7 @@
         buildQuickCmds();
         sp.querySelector('#lm-qcmd').addEventListener('change', function () { prefs.quickCmds = this.checked; savePrefs(); buildQuickCmds(); layoutRefresh(); });
         sp.querySelector('#lm-mbbtn').addEventListener('change', function () { prefs.mbButton = this.checked; savePrefs(); buildMbButton(); if (typeof repositionButtons === 'function') repositionButtons(); layoutRefresh(); });
-        sp.querySelector('#lm-pingbtn').addEventListener('change', function () { prefs.pingBtn = this.checked; savePrefs(); buildPingButton(); });
+        sp.querySelector('#lm-pingbtn').addEventListener('change', function () { prefs.pingBtn = this.checked; savePrefs(); buildPingButton(); layoutRefresh(); });
         sp.querySelector('#lm-netgraph').addEventListener('change', function () { prefs.netGraph = this.checked; savePrefs(); syncNetGraph(); });
         sp.querySelector('#lm-fixjs').addEventListener('change', function () { prefs.fixedJoystick = this.checked; savePrefs(); });
         sp.querySelector('#lm-dz').addEventListener('input', function () {
