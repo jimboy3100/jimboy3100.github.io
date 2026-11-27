@@ -138,7 +138,7 @@ if (_lmOnLegendWebsite()) {
 
     //$(".row").hide()
     modVersion = "1.8"
-    init(modVersion);
+    init(modVersion, "website"); /* no Legend Express loader: no update notice */
     $(".btn.btn-warning.btn-spectate.btn-needs-server").children()[0].className = "ogicon-eye"
     legendmod.gameMode = ":party"
     $("#gamemode").change(function () {
@@ -336,25 +336,87 @@ urlIpWhenOpened();
 
 //emphasischat();
 //specialeffecttargeting();
-/* true when version a is older than b: "1.8.7" < "1.9" < "1.10" < "2.0" */
-function lmxVersionBelow(a, b) {
-    var x = String(a || '').split('.'), y = String(b || '').split('.');
+/* Legend Express update notice. The newest loader of each kind; the loaders since LMX_OWNER_SINCE write
+ * the single-owner record (sessionStorage "lm-loader-owner", html[data-lm-loader]:
+ * "<extension|userscript>:<performance.timeOrigin>") before they take over agar.io's page. */
+var LMX_LATEST = { userscript: '1.9', extension: '1.9' };
+var LMX_OWNER_SINCE = '1.9';
+var LMX_UPDATE_URL = { userscript: 'https://www.legendmod.ml/LMexpress/LMexpress.user.js', extension: 'https://www.legendmod.ml/LMexpress/LegendExpressExtension.zip' };
+
+/* Compares dotted versions by number, so "1.10" is newer than "1.9" and "1.8" equals "1.8.0": -1, 0 or 1 */
+function _lmxCompareVersions(a, b) {
+    var x = String(a == null ? '' : a).split('.'), y = String(b == null ? '' : b).split('.');
     for (var i = 0; i < Math.max(x.length, y.length); i++) {
         var p = parseInt(x[i], 10) || 0, q = parseInt(y[i], 10) || 0;
-        if (p !== q) return p < q;
+        if (p !== q) return p < q ? -1 : 1;
     }
-    return false;
+    return 0;
 }
-function startLM(modVersion) {
+
+/* The loader that named itself in the single-owner record for this page load, or '' */
+function _lmxOwnerLoader() {
+    /* the loaders use navigationStart where the browser has no timeOrigin */
+    var origin = 0, seen = [];
+    try { origin = performance.timeOrigin || performance.timing.navigationStart; } catch (e) { }
+    try { seen.push(sessionStorage.getItem('lm-loader-owner')); } catch (e) { }
+    try { seen.push(document.documentElement.getAttribute('data-lm-loader')); } catch (e) { }
+    for (var i = 0; i < seen.length; i++) {
+        var m = /^(extension|userscript):(.+)$/.exec(seen[i] || '');
+        /* a record of an earlier page load in this tab has another timeOrigin */
+        if (m && origin && Number(m[2]) === origin) return m[1];
+    }
+    return '';
+}
+
+/* What started Legend Mod: 'website' (www.legendmod.ml and its frames), 'userscript' or 'extension' */
+function _lmxLoaderKind(modVersion, loaderName) {
+    if (loaderName === 'website' || _lmOnLegendWebsite()) return 'website';
+    if (loaderName === 'userscript' || loaderName === 'extension') return loaderName;
+    var owner = _lmxOwnerLoader(), v = String(modVersion == null ? '' : modVersion);
+    if (_lmxCompareVersions(v, LMX_OWNER_SINCE) >= 0) return owner || 'userscript';
+    /* An old loader, which does not name itself. Beside a new one it is the other kind (the new one wrote the record). */
+    if (owner) return owner === 'extension' ? 'userscript' : 'extension';
+    /* Only the extension had 1.8.0 and 1.8.3 (the userscript had "1.8", never 1.8.3). Of the versions
+     * both had, the extension's 1.8.4 and 1.8.5 mirror their on/off switch in lmExpressEnabled; the
+     * userscript never wrote it. Every other old version is a userscript. */
+    if (v === '1.8.0' || v === '1.8.3') return 'extension';
+    var mirror = null;
+    try { mirror = localStorage.getItem('lmExpressEnabled'); } catch (e) { }
+    if ((v === '1.8.4' || v === '1.8.5') && mirror != null) return 'extension';
+    return 'userscript';
+}
+
+/* "Legend Express x is available" for a userscript or extension older than the newest one, once per tab
+ * session. Website visitors have no loader to update. Returns the loader kind it was shown for, or ''. */
+function _lmxUpdateNotice(modVersion, loaderName) {
+    /* the website starts LM while this file is still running, before LMX_LATEST is set */
+    var kind = _lmxLoaderKind(modVersion, loaderName);
+    if (kind === 'website') return '';
+    var latest = (LMX_LATEST || {})[kind];
+    if (!latest || _lmxCompareVersions(modVersion, latest) >= 0) return '';
+    try {
+        if (sessionStorage.getItem('lmUpdateNoticeShown') === kind + ' ' + latest) return '';
+        sessionStorage.setItem('lmUpdateNoticeShown', kind + ' ' + latest);
+    } catch (e) { }
+    /* the text is escaped; the two versions go in as highlighted HTML */
+    var html = _lmEscHtml(_lmxT('lmx.ex.updateAvailable', ['\u0001', '\u0002']))
+        .replace('\u0001', '<font color="yellow"><b>' + _lmEscHtml(latest) + '</b></font>')
+        .replace('\u0002', '<font color="yellow"><b>v' + _lmEscHtml(modVersion) + '</b></font>');
+    if (kind === 'extension') html += '<br>' + _lmxE('lmx.ex.updateExtension');
+    html += '<br><a target="_blank" rel="noopener" href="' + LMX_UPDATE_URL[kind] + '"><font color="yellow"><b><u>' + _lmxE('lmx.ex.updateLink') + '</u></b></font></a>';
+    try {
+        toastr.info(html, '', { timeOut: 20000, extendedTimeOut: 20000 }).css('width', '350px');
+    } catch (e) { }
+    return kind;
+}
+
+function startLM(modVersion, loaderName) {
     if (!window.LMstarted) {
         window.LMstarted = true
         // ANNOUNCEMENTS
         //toastr.info('<b><font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">'+'Legend mod </span></font> is back!<br><font color="red"></b>Enable Vanilla skins on Settings</font>').css("width", "350px");
         window.LMVersion = modVersion;
-        /* versions compared number by number: Legend Express 1.9 (and later) is newer than 1.8, not an old one */
-        if (lmxVersionBelow(modVersion, "1.8")) {
-            toastr.info(_lmxT('lmx.ex.canBeUpdated', ['<font color="yellow"><b>v' + _lmEscHtml(modVersion) + '</b></font>', '<font color="yellow"><b>v1.8</b></font>', '<a target="_blank" href="https://jimboy3100.github.io"><font color="yellow"><b><u>jimboy3100.github.io</u></b></font></a>']));
-        }
+        _lmxUpdateNotice(modVersion, loaderName);
 
         //$("#ogario-party").wrap('<div style="display: none;" id="hidendivtoken"></div>');
         //universalchat();
@@ -6592,19 +6654,20 @@ function showonceusers3returner(showonceusers3) {
     return showonceusers3;
 }
 
-function init(modVersion) {
+/* init(<version>[, <loader>]): called by the Legend Express loaders ("userscript" / "extension") and the website ("website") */
+function init(modVersion, loaderName) {
     if (!document.getElementById("message-box")) {
         /* Use MutationObserver instead of 200ms polling */
         var _obs = new MutationObserver(function (m, obs) {
             if (document.getElementById("message-box")) {
                 obs.disconnect();
-                startLM(modVersion);
+                startLM(modVersion, loaderName);
             }
         });
         _obs.observe(document.body, { childList: true, subtree: true });
         return;
     }
-    return startLM(modVersion);
+    return startLM(modVersion, loaderName);
 }
 
 function initializeLM(modVersion) {

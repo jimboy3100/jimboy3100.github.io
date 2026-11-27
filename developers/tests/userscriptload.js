@@ -256,10 +256,11 @@ const rpt = (name, v, l) => { if (report) console.log('  ' + name + ': ' + fmt(v
   }
   /* the mod's "can be updated" notice (LMexpress.js startLM) compares the loader's version number by number:
    * this userscript's 1.9 is not an old version */
-  const below = /function lmxVersionBelow\(a, b\) \{[\s\S]*?\r?\n\}/.exec(fs.readFileSync(path.join(repo, 'LMexpress', 'LMexpress.js'), 'utf8'));
-  check('LMexpress.js: lmxVersionBelow found', !!below);
-  if (below) {
-    const f = new Function(below[0] + '; return lmxVersionBelow;')();
+  const cmp = /function _lmxCompareVersions\(a, b\) \{[\s\S]*??
+\}/.exec(fs.readFileSync(path.join(repo, 'LMexpress', 'LMexpress.js'), 'utf8'));
+  check('LMexpress.js: _lmxCompareVersions found', !!cmp);
+  if (cmp) {
+    const c = new Function(cmp[0] + '; return _lmxCompareVersions;')(), f = (a, b) => c(a, b) < 0;
     check('update notice: 1.7 is below 1.8; 1.8, 1.8.5, 1.8.7, 1.9, 1.9.1, 1.10 and 2.0 are not',
       f('1.7', '1.8') && f('1.7.9', '1.8') && ['1.8', '1.8.5', '1.8.7', '1.9', '1.9.1', '1.10', '2.0'].every(x => !f(x, '1.8')) && f('1.8.7', '1.9') && !f('1.10', '1.9'));
   }
