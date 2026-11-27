@@ -29,7 +29,9 @@ man.records.forEach((r) => {
         'canonicalPath' in r && (r.canonicalPath === null || typeof r.canonicalPath === 'string') && BOOL.every((k) => typeof r[k] === 'boolean'));
     check('oldPath listed once: ' + id, !seen.has(id));
     seen.add(id);
-    if (r.approvedForDeletion) check('approved deletion is gone from the tree: ' + id, !tracked.has(id) && !fs.existsSync(path.join(repo, id)));
+    /* "deleted": false is an approved deletion not carried out yet (the manifest-driven deletion step removes it) */
+    if (r.approvedForDeletion && r.deleted !== false) check('approved deletion is gone from the tree: ' + id, !tracked.has(id) && !fs.existsSync(path.join(repo, id)));
+    if (r.deleted === false) check('approved deletion not carried out yet is still in the tree: ' + id, tracked.has(id));
     /* a file kept for its public URL must still be published */
     if (r.externalUrlSupported && !r.approvedForDeletion) check('kept for its public URL, still in the tree: ' + id, tracked.has(id));
     if (r.canonicalPath && !/^https:\/\//.test(r.canonicalPath)) {
@@ -43,10 +45,30 @@ const SKIP = /^(vanillaskins|lowresskins)\//;
 /* the registers of the deletions themselves (they name every deleted file on purpose) */
 const RECORDS = new Set(['developers/audit/manifest.json', 'developers/i18n/scan-config.json', 'developers/tests/i18n-archived.js',
     'developers/tests/auditmedia.js']);
+/* the skin resolver's register, its generator input and its test */
+const RESOLVER = /^(ogario\/skinregistry\.js$|developers\/skins\/|developers\/tests\/skinresolver\.js$)/;
 const texts = [...tracked].filter((f) => TEXT.test(path.basename(f)) && !SKIP.test(f) && !RECORDS.has(f));
 /* media files (pictures, videos, sounds); pages and scripts have their own checks (i18n-archived.js and others) */
 const MEDIA = /\.(png|jpe?g|gif|webp|bmp|ico|svg|mp4|webm|mp3|ogg|wav)$/i;
 const migrated = man.records.filter((r) => r.internalReferencesMigrated && MEDIA.test(r.oldPath));
+/* a file name made of these characters is always cut out whole by NAME (the characters before it end a path) */
+const NAME = /[A-Za-z0-9_%+~-][A-Za-z0-9_%+~.-]*\.(?:png|jpe?g|gif|webp|bmp|ico|svg|mp4|webm|mp3|ogg|wav)/gi;
+const EXT = /\.(?:png|jpe?g|gif|webp|bmp|ico|svg|mp4|webm|mp3|ogg|wav)/gi;
+/* each name cut out, and each start of it that ends in a media extension ("a.png" inside "a.png2.png") */
+function namesIn(src) {
+    const out = new Set();
+    (src.match(NAME) || []).forEach((m) => { out.add(m); EXT.lastIndex = 0; let x; while ((x = EXT.exec(m))) out.add(m.slice(0, x.index + x[0].length)); });
+    return out;
+}
+const SIMPLE = /^[A-Za-z0-9_%+~-][A-Za-z0-9_%+~.-]*$/;
+{
+    const n = namesIn('url(banners/a.png2.png) src="./b%20c.GIF" x=d.png?v=1 "e.f.jpg"');
+    check('the name pre-filter cuts out every media name', ['a.png', 'a.png2.png', 'b%20c.GIF', 'd.png', 'e.f.jpg'].every((s) => n.has(s)));
+}
+migrated.forEach((r) => {
+    r.base = path.basename(r.oldPath); r.encBase = encodeURIComponent(r.base);
+    r.simple = SIMPLE.test(r.base) && SIMPLE.test(r.encBase);
+});
 const hits = {};
 if (migrated.length) {
     const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -54,12 +76,17 @@ if (migrated.length) {
         let st; try { st = fs.statSync(path.join(repo, f)); } catch (e) { return; }
         if (!st.isFile() || st.size > 8e6) return;
         const src = fs.readFileSync(path.join(repo, f), 'latin1');
+        /* every media file name the text holds; only records named there need the full search */
+        const names = namesIn(src);
         migrated.forEach((r) => {
+            if (r.simple && !names.has(r.base) && !names.has(r.encBase)) return;
             const p = r.oldPath, base = path.basename(p), dir = path.dirname(p);
             const enc = p.split('/').map(encodeURIComponent).join('/');
             let found = src.indexOf(p) >= 0 || src.indexOf(enc) >= 0;
             /* a page in the same folder can name it relatively (src="name.png") */
             if (!found && path.dirname(f) === dir) found = new RegExp('(^|["\'(\\s=]|\\./)' + esc(base) + '(["\')?#\\s]|$)', 'm').test(src);
+            /* the skin resolver keeps old skin paths as aliases on purpose (that is the legacy support) */
+            if (found && r.legacyResolverSupported && RESOLVER.test(f)) found = false;
             if (found) (hits[p] = hits[p] || []).push(f);
         });
     });
