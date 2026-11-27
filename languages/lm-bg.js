@@ -1324,7 +1324,6 @@
 "lmx.ex.icon4": "Смърт!",
 "lmx.ex.icon5": "Спокойно!",
 "lmx.ex.icon6": "Легенда!",
-"lmx.ex.promoVideo": "Рекламно видео",
 "lmx.ex.botNames": "Имена на ботове",
 "lmx.ex.botNamesHint": "Виж псевдонимите на ботовете",
 "lmx.ex.joinBack": "Върни се",

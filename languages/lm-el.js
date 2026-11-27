@@ -1324,7 +1324,6 @@
 "lmx.ex.icon4": "Θάνατος!",
 "lmx.ex.icon5": "Χαλάρωσε!",
 "lmx.ex.icon6": "Θρύλος!",
-"lmx.ex.promoVideo": "Διαφημιστικό βίντεο",
 "lmx.ex.botNames": "Ονόματα bots",
 "lmx.ex.botNamesHint": "Δες τα nick των bots",
 "lmx.ex.joinBack": "Επιστροφή",

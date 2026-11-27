@@ -1324,7 +1324,6 @@
 "lmx.ex.icon4": "死亡！",
 "lmx.ex.icon5": "放輕鬆！",
 "lmx.ex.icon6": "傳奇！",
-"lmx.ex.promoVideo": "宣傳影片",
 "lmx.ex.botNames": "機器人名稱",
 "lmx.ex.botNamesHint": "查看機器人的暱稱",
 "lmx.ex.joinBack": "重新加入",

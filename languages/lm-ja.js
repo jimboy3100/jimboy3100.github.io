@@ -1324,7 +1324,6 @@
 "lmx.ex.icon4": "死！",
 "lmx.ex.icon5": "落ち着いて！",
 "lmx.ex.icon6": "レジェンド！",
-"lmx.ex.promoVideo": "プロモーション動画",
 "lmx.ex.botNames": "ボットの名前",
 "lmx.ex.botNamesHint": "ボットのニックネームを見る",
 "lmx.ex.joinBack": "再参加",

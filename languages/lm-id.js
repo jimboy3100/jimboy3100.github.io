@@ -1324,7 +1324,6 @@
 "lmx.ex.icon4": "Mati!",
 "lmx.ex.icon5": "Santai!",
 "lmx.ex.icon6": "Legenda!",
-"lmx.ex.promoVideo": "Video promosi",
 "lmx.ex.botNames": "Nama bot",
 "lmx.ex.botNamesHint": "Lihat nick para bot",
 "lmx.ex.joinBack": "Masuk lagi",

@@ -1324,7 +1324,6 @@
 "lmx.ex.icon4": "Śmierć!",
 "lmx.ex.icon5": "Wyluzuj!",
 "lmx.ex.icon6": "Legenda!",
-"lmx.ex.promoVideo": "Film promocyjny",
 "lmx.ex.botNames": "Nazwy botów",
 "lmx.ex.botNamesHint": "Pokaż nicki botów",
 "lmx.ex.joinBack": "Wróć",

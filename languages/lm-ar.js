@@ -1324,7 +1324,6 @@
 "lmx.ex.icon4": "موت!",
 "lmx.ex.icon5": "استرخِ!",
 "lmx.ex.icon6": "أسطورة!",
-"lmx.ex.promoVideo": "فيديو ترويجي",
 "lmx.ex.botNames": "أسماء البوتات",
 "lmx.ex.botNamesHint": "عرض أسماء البوتات",
 "lmx.ex.joinBack": "العودة",

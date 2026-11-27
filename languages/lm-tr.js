@@ -1324,7 +1324,6 @@
 "lmx.ex.icon4": "Ölüm!",
 "lmx.ex.icon5": "Rahatla!",
 "lmx.ex.icon6": "Efsane!",
-"lmx.ex.promoVideo": "Tanıtım videosu",
 "lmx.ex.botNames": "Bot adları",
 "lmx.ex.botNamesHint": "Botların takma adlarını gör",
 "lmx.ex.joinBack": "Geri katıl",

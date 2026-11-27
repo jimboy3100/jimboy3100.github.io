@@ -10172,24 +10172,6 @@
     "ja": "レジェンド！",
     "it": "Leggenda!"
   },
-  "lmx.ex.promoVideo": {
-    "en": "Promotional Video",
-    "el": "Διαφημιστικό βίντεο",
-    "es": "Vídeo promocional",
-    "bg": "Рекламно видео",
-    "fr": "Vidéo promotionnelle",
-    "ar": "فيديو ترويجي",
-    "zh": "宣傳影片",
-    "ru": "Промо-видео",
-    "de": "Werbevideo",
-    "tr": "Tanıtım videosu",
-    "pl": "Film promocyjny",
-    "nl": "Promotievideo",
-    "pt": "Vídeo promocional",
-    "id": "Video promosi",
-    "ja": "プロモーション動画",
-    "it": "Video promozionale"
-  },
   "lmx.ex.botNames": {
     "en": "Bot names",
     "el": "Ονόματα bots",

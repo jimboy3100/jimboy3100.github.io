@@ -1324,7 +1324,6 @@
 "lmx.ex.icon4": "Dood!",
 "lmx.ex.icon5": "Ontspan!",
 "lmx.ex.icon6": "Legende!",
-"lmx.ex.promoVideo": "Promotievideo",
 "lmx.ex.botNames": "Botnamen",
 "lmx.ex.botNamesHint": "Bekijk de bijnamen van de bots",
 "lmx.ex.joinBack": "Opnieuw meedoen",

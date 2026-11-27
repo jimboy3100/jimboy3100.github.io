@@ -346,7 +346,6 @@ if($('#leadbtext').val()==""){
 };
 $("#ChatBtn").attr("data-original-title", Languageletter300);
 $("#Images").attr("data-original-title", Languageletter302);
-$("#yout").attr("data-original-title", Languageletter303);
 $("#Cutnames").attr("data-original-title", Languageletter304);
 $("#Bino").attr("data-original-title", Languageletter305);
 $("#playerBtn").attr("data-original-title", Languageletter306);
@@ -361,7 +360,7 @@ $("#notesServer").text(Languageletter314 + ": ");
 if($("#target-status").text()=="[Target not set]"){$("#target-status").text(Languageletter315)}
 
 $("#legendmanualback").text(Languageletter316 + ":  ");
-$("#legendmanualmess").text(Languageletter317 + ":  ");
+$("#legendmanualmess").text(Languageletter302 + ":  ");
 $("#chatbtntitle").text(Languageletter318 + ":  ");
 $("#legenddiscordwebh").text(Languageletter319 +"  ");
 $("#legendotherscripts").text(Languageletter364 +":");
@@ -400,13 +399,6 @@ $('#pic4url').attr('placeholder',Languageletter342c + " 4").attr("data-original-
 $('#pic5url').attr('placeholder',Languageletter342c + " 5").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
 $('#pic6url').attr('placeholder',Languageletter342c + " 6").attr("data-original-title", Languageletter339 + " http://i.imgur.com/RVBi3T1.gif");
 
-$('#yt1url').attr('placeholder',Languageletter342d + " 1").attr("data-original-title", Languageletter340);
-$('#yt2url').attr('placeholder',Languageletter342d + " 2").attr("data-original-title", Languageletter340);
-$('#yt3url').attr('placeholder',Languageletter342d + " 3").attr("data-original-title", Languageletter340);
-$('#yt4url').attr('placeholder',Languageletter342d + " 4").attr("data-original-title", Languageletter340);
-$('#yt5url').attr('placeholder',Languageletter342d + " 5").attr("data-original-title", Languageletter340);
-$('#yt6url').attr('placeholder',Languageletter342d + " 6").attr("data-original-title", Languageletter340);
-
 $('#pic1data').attr('placeholder',Languageletter342a + " 1");
 $('#pic2data').attr('placeholder',Languageletter342a + " 2");
 $('#pic3data').attr('placeholder',Languageletter342a + " 3");
@@ -414,12 +406,6 @@ $('#pic4data').attr('placeholder',Languageletter342a + " 4");
 $('#pic5data').attr('placeholder',Languageletter342a + " 5");
 $('#pic6data').attr('placeholder',Languageletter342a + " 6");
 
-$('#yt1data').attr('placeholder',Languageletter342b + " 1");
-// $('#yt2data').attr('placeholder',Languageletter342b + " 2");
-$('#yt3data').attr('placeholder',Languageletter342b + " 3");
-$('#yt4data').attr('placeholder',Languageletter342b + " 4");
-$('#yt5data').attr('placeholder',Languageletter342b + " 5");
-$('#yt6data').attr('placeholder',Languageletter342b + " 6");
 
 
 $('#discwebhook1').attr('placeholder',Languageletter342 + ' 1').attr('data-original-title', Languageletter343 + '. https://discordapp.com/api/webhooks/.../...');
