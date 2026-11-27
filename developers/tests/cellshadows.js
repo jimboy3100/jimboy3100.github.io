@@ -92,6 +92,11 @@ const D = new Function('return ' + F.defaults)();
         r = run([player]);
         check(J + 'shadows turned off again: WebGL, the reason of the last frame is cleared', r.ok === true && !r.why, JSON.stringify(r));
     }
+    /* "Spawn special effects" has no effect any more (no switch): a saved true keeps WebGL */
+    ms.spawnSpecialEffects = true;
+    const rs = run([food, ej, player]);
+    check('a saved spawnSpecialEffects = true: WebGL, no Canvas2D reason', rs.ok === true && !rs.why, JSON.stringify(rs));
+    ms.spawnSpecialEffects = false;
 }
 
 /* ---------------- headless Chrome: real WebGL + real Canvas2D ---------------- */

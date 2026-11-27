@@ -21106,7 +21106,7 @@ var defaultmapsettings = {
     //massBooster: false,
     quickResp: true,
     autoResp: false,
-    spawnSpecialEffects: false,
+    spawnSpecialEffects: false,   /* retired: its spawn effect was taken out (no switch; kept so saved settings and scripts stay valid) */
     deathParticles: true,         /* particle burst when a cell is eaten */
     eatPulse: true,               /* brief size pulse on the eater cell */
     animatedRainbowColor: false,
@@ -26885,7 +26885,8 @@ function thelegendmodproject() {
 
             this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
             this.addOptions([], "boardGroup");
-            this.addOptions(["quickResp", "autoResp", "spawnSpecialEffects"], "respGroup");
+            /* "Spawn special effects" is gone: its effect was taken out, and the switch only made every frame use the Canvas renderer */
+            this.addOptions(["quickResp", "autoResp"], "respGroup");
             this.addOptions(["noNames", "optimizedNames", "autoHideNames", "hideMyName", "hideTeammatesNames", "namesStroke"], "namesGroup");
             this.addOptions(["showMass", "optimizedMass", "autoHideMass", "hideMyMass", "hideEnemiesMass", "virusSpikes", "virMassShots", "massStroke", "potionsDrinker", "hudRelativeMass"], "massGroup");
             this.addOptions(["noSkins", "customSkins", "vanillaSkins", "ownVanillaSkin", "videoSkins", "videoDestorted", "videoSkinsMusic2", "videoOthersSkinSoundLevelproportion"], "skinsGroup");
@@ -62012,9 +62013,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
              */
             if (
                 dyinglight1load ===
-                    'yes' ||
-                defaultmapsettings
-                    .spawnSpecialEffects
+                    'yes'
             ) {
                 return this._lmNoGL(this.GLW.BODY_FX);
             }
