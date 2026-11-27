@@ -1305,8 +1305,11 @@
         }
         function feedStop() {
             feedWatch(false);
-            if (feedMacroOn && typeof application !== 'undefined' && application.macroFeed) application.macroFeed(false);
+            /* let go first: the game keeps feeding while a key, mouse or pad button still holds it
+             * (window._lmMacroFeedHeld asks this button too) */
+            var was = feedMacroOn;
             feedMacroOn = false;
+            if (was && typeof application !== 'undefined' && application.macroFeed) application.macroFeed(false);
             clearInterval(feedIv); feedIv = null;
         }
         window._lmMobileFeedStop = feedStop;
@@ -1324,6 +1327,8 @@
             E[on ? 'on' : 'off']('death', feedDeath);
             E[on ? 'on' : 'off']('serverChange', feedStop);
         }
+        /* true while the Feed button holds the game's macro feed: letting E go must not stop it */
+        window._lmMobileFeedHeld = function () { return feedMacroOn; };
         bFeed.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             if (isMenuVisible()) return; /* B6 */

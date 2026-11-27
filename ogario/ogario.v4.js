@@ -85462,8 +85462,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
         try { if (window.LMGamepad && typeof window.LMGamepad.isHeld === 'function' && window.LMGamepad.isHeld(command)) return true; } catch (e) { }
         return false;
     };
-    /* true while a key, mouse button or gamepad button bound to macro feed is still held (the
-     * gamepad clears its own hold before it releases: letting E go stopped a feed the pad held) */
+    /* true while a key, mouse button, gamepad button or the phone Feed button bound to macro feed is
+     * still held (the gamepad and the phone button clear their own hold before they release: letting
+     * E go stopped a feed the pad or the Feed button held) */
     window._lmMacroFeedHeld = function () {
         for (var k in keyBlind) {
             if (keyBlind[k] && hotkeys[k] === 'hk-macroFeed') return true;
@@ -85472,6 +85473,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (_lmMouseCmdHeld[w] === 'hk-macroFeed') return true;
         }
         try { if (window.LMGamepad && typeof window.LMGamepad.isHeld === 'function' && window.LMGamepad.isHeld('hk-macroFeed')) return true; } catch (e) { }
+        try { if (typeof window._lmMobileFeedHeld === 'function' && window._lmMobileFeedHeld()) return true; } catch (e) { }
         return false;
     };
     /* the command a mouse button runs ('' when none): its key in the Hotkeys window */
