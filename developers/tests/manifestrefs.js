@@ -49,8 +49,9 @@ const A = { approvedForDeletion: true, internalReferencesMigrated: true };
 const tracked = execSync('git -c core.quotepath=off ls-files', { cwd: repo, encoding: 'utf8', maxBuffer: 64 << 20 }).split('\n').filter(Boolean);
 const trackedSet = new Set(tracked);
 records.forEach((r) => approvalProblems(r, trackedSet.has(r.oldPath)).forEach((m) => ok(false, r.oldPath + ': ' + m)));
-/* files that may name removed paths: the manifest and the tests that check they stay removed */
-const SKIP = new Set(['developers/audit/manifest.json', 'developers/tests/i18n-archived.js', 'developers/tests/manifestrefs.js', 'developers/tests/concatexport.js', 'developers/tests/swretire.js']);
+/* files that may name removed paths: the manifest, the tests that check they stay removed and the
+ * changelog, whose release notes say which files a release removed */
+const SKIP = new Set(['developers/audit/manifest.json', 'developers/tests/i18n-archived.js', 'developers/tests/manifestrefs.js', 'developers/tests/concatexport.js', 'developers/tests/swretire.js', 'changelog.html']);
 /* the scanner's config: its lists of deleted pages and assets are records too, the rest (files to scan) is not */
 const SCAN_CONFIG = 'developers/i18n/scan-config.json';
 const RECORD_KEYS = ['deleted', 'deletedAssets'];
