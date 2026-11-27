@@ -42442,6 +42442,9 @@ function thelegendmodproject() {
                 if (window.LMReplayStudio && typeof window.LMReplayStudio.dispose === 'function') { try { window.LMReplayStudio.dispose('left'); } catch (e) { } }
                 if (window._lmEvReplayOn && typeof _lmEvReplay === 'function') _lmEvReplay(false, 'left');
                 window._lmReplayPaused = false;
+                /* no replay plays any more: the one watched last is not kept from the memory budget
+                 * and "Clear recordings in memory" as the playing one (it was, until the next replay) */
+                this.playingReplayServer = null;
             }
             //if (!window.RecordedProtocol[$("#server-token").val()]){
             //console.log('a'+$("#server-token").val())		
