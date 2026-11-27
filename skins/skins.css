@@ -17,11 +17,11 @@ body {
 }
 
 ::-webkit-input-placeholder { 
-    color: #d1d1d1 !important; 
+    color: #767676 !important; 
 }
 
 ::-moz-placeholder { 
-    color: #d1d1d1 !important;
+    color: #767676 !important;
 }
 
 ::-moz-selection {
@@ -97,7 +97,7 @@ object-fit: cover;
 #skin-url {
     width: 500px;
     height: 42px;
-    color: #d1d1d1;
+    color: #767676;
     font-family: "OpenSans-Semibold", sans-serif;
     font-size: 1em;
     border-radius: 8px;

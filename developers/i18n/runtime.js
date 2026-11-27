@@ -485,8 +485,15 @@
             var st = document.createElement('style');
             st.id = 'lm-i18n-css';
             /* the open list in dark text on white whatever the page's colours: it inherited the page's
-             * grey text (themes page) and showed it on the browser's white list */
-            st.textContent = '.lm-lang-select{font:inherit;font-size:.85em;padding:2px 4px;border-radius:4px;max-width:9em;cursor:pointer}' +
+             * grey text (themes page) and showed it on the browser's white list.
+             * The closed list: a page whose stylesheet gives fields the page's text colour but not a
+             * background (normalize.css on the home page) showed the dark theme's white text on the
+             * browser's white field, so the chosen language could not be seen. Its background now follows
+             * its text: black behind light text, white behind dark text (the browser's own look when the
+             * page leaves the field alone). :where() keeps it below any page, mod or theme rule that
+             * styles the field itself (.agario-panel select, the theme bridge, the companion's setup). */
+            st.textContent = ':where(.lm-lang-select){background-color:oklch(from currentColor calc((0.565 - l) * 1000) 0 0)}' +
+                '.lm-lang-select{font:inherit;font-size:.85em;padding:2px 4px;border-radius:4px;max-width:9em;cursor:pointer}' +
                 '.lm-lang-select option{background-color:#fff;color:#1a1a1a}.lm-lang-select option:checked{background-color:#d3e3fd}';
             (document.head || document.documentElement).appendChild(st);
         }

@@ -1691,14 +1691,14 @@ setTimeout(function(){
 $("#ogario-theme").click(function() {
       $( "#themes" ).show();
       $( "#themesubmission" ).hide();
-      $("#ogario-theme").css("cssText", "background: rgba(102,79,141,.5); color:white;");
+      $("#ogario-theme").css("cssText", "background: rgb(102,79,141); color:white;");
       $("#themesub").css("cssText", "color:#828282;");
   });
   
   $("#themesub").click(function() {
       $( "#themes" ).hide();
       $( "#themesubmission" ).show();
-      $("#themesub").css("cssText", "background: rgba(102,79,141,.5); color:white;");
+      $("#themesub").css("cssText", "background: rgb(102,79,141); color:white;");
       $("#ogario-theme").css("cssText", "color:#828282;");
   });
   
@@ -1711,7 +1711,7 @@ $("#ogario-theme").click(function() {
 <div class="row">
 <div id="themesPg" style="text-align: center;">
 <div style="padding-bottom:25px;font-size:20px">
-<button data-i18n="site.themes.lmThemes" id="ogario-theme" class="btn btn-theme white" style="background: rgba(102, 79, 141, 0.5); color: white;">LM THEMES</button>
+<button data-i18n="site.themes.lmThemes" id="ogario-theme" class="btn btn-theme white" style="background: rgb(102, 79, 141); color: white;">LM THEMES</button>
 <button data-i18n="site.themes.yourTheme" id="themesub" class="btn btn-themesub white" style="color: rgb(130, 130, 130);">YOUR THEME</button>
 <span data-lm-lang-picker style="margin-inline-start:8px;font-size:14px"></span>
 </div>
