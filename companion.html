@@ -72,6 +72,10 @@ html.lm-themed-root #setup { background: var(--lm-pc2); border-radius: var(--lm-
 html.lm-themed-root #setup p, html.lm-themed-root #setup li, html.lm-themed-root #setup label { color: var(--lm-tc); }
 html.lm-themed-root #setup input[type=text], html.lm-themed-root #setup input[type=number], html.lm-themed-root #setup select { background: var(--lm-pc); color: var(--lm-tc); border-color: var(--line); }
 html.lm-themed-root #setup button, html.lm-themed-root #setup a.btn { background: var(--lm-btn1); color: var(--lm-btn-tc); }
+/* the overlay boxes mirror the game HUD: the HUD palette and font (the setup page keeps the menu one) */
+html.lm-themed-root .w { background: var(--lm-hud-bg); color: var(--lm-hud-tc); font-family: var(--lm-hud-font, inherit); }
+html.lm-themed-root #setup h1, html.lm-themed-root #setup h2 { color: var(--lm-mc); }
+html.lm-themed-root .w .lbl, html.lm-themed-root .w .muted, html.lm-themed-root table.stats td:first-child { color: color-mix(in srgb, var(--lm-hud-tc) 62%, transparent); }
 </style>
 <link rel="canonical" href="https://www.legendmod.ml/companion.html">
 <meta name="description" content="Live second-screen and streaming overlay for an active Legend Mod session.">
@@ -152,9 +156,10 @@ html.lm-themed-root #setup button, html.lm-themed-root #setup a.btn { background
     var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
 
     /* ── look ── */
-    /* no accent in the link: the menu theme's accent when the mod opened this page (#lm=...) */
+    /* no accent in the link: the HUD accent of the theme when the mod opened this page (#lm=...),
+     * as the boxes mirror the game HUD */
     var lmTheme = window.lmThemeBridge && window.lmThemeBridge.getTheme();
-    if (lmTheme && !/[?&]accent=/.test(location.search)) cfg.accent = lmTheme.mc;
+    if (lmTheme && !/[?&]accent=/.test(location.search)) cfg.accent = lmTheme.hm || lmTheme.mc;
     document.documentElement.style.setProperty('--accent', cfg.accent);
     /* also on body: the theme bridge's site colours set --accent there (the menu accent) */
     document.body.style.setProperty('--accent', cfg.accent);
