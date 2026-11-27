@@ -29224,13 +29224,33 @@ function thelegendmodproject() {
                         console.log('[MB] Main player died, auto-switched to spect ' + window.multiboxPlayerEnabled);
 
                         // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
+                        /* Its pellets and viruses go too (as the spawn flush in onPlay): left in LM.food /
+                         * LM.viruses without an index entry, the server's later remove records could not
+                         * find them (ghosts for good) and a pellet sent again was there twice.
+                         * The socket stays open and the server still counts the other cells as ours: it
+                         * sends them later as plain updates, without colour or name, so what they were
+                         * added with is kept in the connection's cell identities (updateCells _lmIdMem,
+                         * kept current while dropped by _lmCellIdentityScan). Expanding Land keeps them
+                         * anyway; on agar.io (same record format) they start here. */
+                        var _lmIdKeep = legendmod._lmCellIdentity || (legendmod.connectionIntegrity && !legendmod.isLegendWorld ? (legendmod._lmCellIdentity = new Map()) : null);
                         legendmod.playerCells = lmIdxClear(legendmod.playerCells, '_playerIdx');
                         legendmod.cells = lmIdxFilter(legendmod.cells, '_cellsIdx', function (c) { return c.spectator && c.spectator > 0; });
                         for (var _cid in legendmod.indexedCells) {
-                            if (!legendmod.indexedCells[_cid].spectator || legendmod.indexedCells[_cid].spectator === 0) {
+                            var _lmDc = legendmod.indexedCells[_cid];
+                            if (!_lmDc.spectator || _lmDc.spectator === 0) {
+                                if (_lmIdKeep && !_lmDc.isFood && !_lmDc.isVirus && !_lmDc.isEjected && !_lmIdKeep.has(+_cid)) {
+                                    var _lmDn = _lmDc._lmSrvName || _lmDc.targetNick || '';
+                                    _lmIdKeep.set(+_cid, { color: _lmDc.color || null, skin: _lmDc.skin || null, name: _lmDn, named: !!_lmDn });
+                                }
                                 delete legendmod.indexedCells[_cid];
                             }
                         }
+                        legendmod.food = lmIdxClear(legendmod.food, '_foodIdx');
+                        if (typeof lmFoodRebuild === 'function') lmFoodRebuild(); /* the units' pellets stay in the food list */
+                        legendmod.viruses = lmIdxClear(legendmod.viruses, '_virusIdx');
+                        legendmod.removedCells = legendmod.removedCells ? legendmod.removedCells.filter(function (c) { return c && c.spectator > 0; }) : [];
+                        if (typeof legendmod.clearJellyIndex === 'function') legendmod.clearJellyIndex();
+                        if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
                         // Flag to suppress main client adding spectator cells
                         window.mainPlayerDeadMbActive = true;
                         legendmod._lmMultiCellsSeenAt = Date.now();
@@ -53098,7 +53118,11 @@ function thelegendmodproject() {
             }
             /* cell identities (updateCells _lmIdMem) belong to this connection; the Expanding Land
              * respawn wipe (true) keeps them: the server still counts those cells as ours */
-            if (_connectionLevelFlush && this._lmCellIdentity) this._lmCellIdentity.clear();
+            if (_connectionLevelFlush && this._lmCellIdentity) {
+                /* elsewhere they exist only from a multibox death switch on this connection */
+                if (_isExpandingLandClient(this)) this._lmCellIdentity.clear();
+                else this._lmCellIdentity = null;
+            }
             /* the colour remembered per nick (updateCells, spect.js) belongs to this server: on the
              * next one the same nick is mostly someone else, and a colour once wrong (black) stayed
              * for the whole page session. A respawn on this server keeps it. */
@@ -54449,10 +54473,11 @@ function thelegendmodproject() {
         },
         /* An Expanding Land world update (opcode 16) that is dropped (spawn transit gate, dead
          * main client while a multibox unit plays): only keeps the cell identities of updateCells
-         * (_lmIdMem) current, so cells it added are not nameless and grey once updates flow again. */
+         * (_lmIdMem) current, so cells it added are not nameless and grey once updates flow again.
+         * Elsewhere the identities exist only after the multibox death switch (agar.io format). */
         _lmCellIdentityScan(view, offset) {
             var mem = this._lmCellIdentity;
-            if (!mem || !_isExpandingLandClient(this)) return;
+            if (!mem) return;
             var str = function () {
                 for (var text = ''; ;) {
                     var c = view.readUInt8(offset++);
@@ -54618,8 +54643,9 @@ function thelegendmodproject() {
              * later records are plain updates. Our respawn wipe (onPlay / sendNick) clears cells
              * the server still counts as ours, so they came back from those updates with no
              * nick, skin or colour. Keep what each cell was added with until the server
-             * removes it (also from dropped updates: _lmCellIdentityScan). */
-            var _lmIdMem = _isExpandingLandEatFx ? (this._lmCellIdentity || (this._lmCellIdentity = new Map())) : null;
+             * removes it (also from dropped updates: _lmCellIdentityScan). Elsewhere only once the
+             * multibox death switch (onPlayerDeath) has wiped the cells of an open socket. */
+            var _lmIdMem = _isExpandingLandEatFx ? (this._lmCellIdentity || (this._lmCellIdentity = new Map())) : (this._lmCellIdentity || null);
 
 
             for (

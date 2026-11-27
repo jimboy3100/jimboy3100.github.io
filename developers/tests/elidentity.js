@@ -147,6 +147,45 @@ Object.assign(L, { serverType: 'private', isLegendWorld: false, gameMode: ':ffa'
 L.flushCellsData();
 feed([], [{ id: 201, size: 120, color: [200, 50, 50], name: 'Other' }], []);
 check('other servers: no identities kept', L._lmCellIdentity === undefined && !!cell(201) && cell(201).targetNick === 'Other');
+
+/* agar.io (same record format): the multibox death switch (onPlayerDeath, main player dead, a unit
+ * plays) wipes the cells of the main socket, which stays open and drops its updates meanwhile.
+ * Its pellets and viruses went out of the index but stayed in LM.food / LM.viruses: the server's
+ * remove records could not find them (ghosts for good) and a pellet sent again was there twice.
+ * The players came back from plain updates without colour or name. */
+const deathSwitch = block("if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {");
+if (!deathSwitch) { console.log('FAIL onPlayerDeath multibox switch not found'); process.exit(1); }
+g.__death = null;
+vm.runInContext('with (__env) { __death = function () { ' + deathSwitch + ' }; }', g);
+Object.assign(L, { serverType: 'agario', isLegendWorld: false, connectionIntegrity: true, gameMode: ':ffa' });
+L.flushCellsData();
+L.cells = []; L.food = []; L.viruses = []; L.indexedCells = {};
+feed([], [
+    { id: 301, size: 140, color: [200, 40, 40], skin: '', name: 'Enemy' },
+    { id: 951, size: 12, color: [10, 20, 30], food: true }
+], []);
+const enemyColor = cell(301) && cell(301).color;
+g.defaultmapsettings.mbSwitchAfterDeath = true;
+g.spects = [{ number: 1, active: true }];
+g.lmSetMbUnit = (n) => { g.multiboxPlayerEnabled = n; };
+const pellet = L.food[0];
+g.__death();
+check('death switch: the focus goes to the living unit', g.multiboxPlayerEnabled === 1 && g.mainPlayerDeadMbActive === true);
+check('death switch: the main socket pellets leave the food list with the index (were ghosts)', L.food.length === 0 && !cell(951) && !cell(301));
+/* dropped while held: only the identities are kept current */
+L._lmKeepMainSuppressed = () => true;
+feed([], [{ id: 302, size: 100, color: [40, 200, 40], skin: '', name: 'Newcomer' }], []);
+check('held: no cell is added', !cell(302));
+g.mainPlayerDeadMbActive = false;
+L._lmKeepMainSuppressed = () => false;
+feed([], [{ id: 301, size: 141 }, { id: 302, size: 101 }, { id: 951, size: 12, color: [10, 20, 30], food: true }], []);
+check('after the hold a plain update brings the wiped player back with its name and colour (was grey)', !!cell(301) && cell(301).targetNick === 'Enemy' && cell(301).color === enemyColor);
+check('a player added while held comes back with its name', !!cell(302) && cell(302).targetNick === 'Newcomer' && !!cell(302).color);
+check('a pellet sent again is there once', L.food.length === 1 && L.food[0] !== pellet);
+feed([], [], [951, 301]);
+check('the server removes it: gone (was a ghost that could not be removed)', L.food.length === 0 && !cell(301));
+L.flushCellsData();
+check('agar.io: another connection drops the identities', L._lmCellIdentity == null);
 check('nothing logged as an error', g.errors.length === 0);
 
 console.log(fail ? fail + ' FAILED' : 'all passed');
