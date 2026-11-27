@@ -23,6 +23,11 @@ const caseBody = ci < 0 ? null : src.slice(ci + "                    case 'recor
 const pkt = block('if (defaultmapsettings.recordReplays !== false && lmRecRoom(');
 if (!caseBody || !pkt) { console.log('FAIL code not found'); process.exit(1); }
 const overhead = /\nvar LM_REC_PKT_OVERHEAD = \d+;/.exec(src);
+/* the start of a connection's recording slot in replayfunctions (connect): counters, the stop flag,
+ * the array, whether Replay Studio data is kept */
+const slotA = src.indexOf('                window.catholicCalculator = 0\n'), slotB = src.indexOf('window.RecordedProtocolArenas.push(window.temporaryRecordedProtocol)', slotA);
+const slotCode = slotA < 0 || slotB < 0 || slotB - slotA > 3000 ? null : src.slice(slotA, slotB);
+if (!slotCode) { console.log('FAIL connection slot code not found'); process.exit(1); }
 
 let failed = 0;
 /* the English texts of the language packs (developers/i18n/src), as lmT gives them */
@@ -63,13 +68,12 @@ function boot() {
     ctx._lmRecFull = false;
     ctx._lmRecChkAt = 1e9;
     ctx._lmRecLive = true;
-    /* a new connection, like connect() */
+    /* a new connection: connect()'s own slot code */
+    vm.runInContext('function newSlot() {\n' + slotCode + '\n}', ctx);
     ctx.reconnect = () => {
         ctx.temporaryRecordedProtocol = 'next';
-        ctx.RecordedProtocol.next = [];
         ctx.RecordedProtocolArenas.push('next');
-        ctx.catholicCalculator = 0; ctx._lmRecSlotBytes = 0; ctx._lmRecFull = false;
-        ctx._lmRecLive = ctx.defaultmapsettings.recordReplays !== false;
+        ctx.newSlot();
     };
     return { ctx, toasts, asked };
 }
@@ -95,6 +99,43 @@ const pk = () => new DataView(new ArrayBuffer(8));
     ctx.reconnect();
     ctx.recordPacket(pk());
     check('on again: the next connection records', ctx.RecordedProtocol.next.length === 1);
+}
+
+/* joined with recording off, switched on during that game (a settings profile, a script or the
+ * switch): nothing is recorded from the middle of the connection (it would have no map border, no
+ * own cells and no times); the next connection records */
+{
+    const { ctx, toasts } = boot();
+    ctx.defaultmapsettings.recordReplays = false;
+    ctx.reconnect();
+    ctx.recordPacket(pk());
+    check('joined while off: nothing recorded', ctx.RecordedProtocol.next.length === 0 && !ctx.RecordedProtocol.next._lm);
+    ctx.defaultmapsettings.recordReplays = true;
+    ctx.setRec(true);
+    ctx.recordPacket(pk()); ctx.recordPacket(pk());
+    check('joined while off, switched on: no packets from the middle of the connection (' + ctx.RecordedProtocol.next.length + ')', ctx.RecordedProtocol.next.length === 0);
+    check('joined while off, switched on: told it records from the next server', toasts.some(t => /next server/i.test(t[1])));
+    ctx.temporaryRecordedProtocol = 'next2';
+    ctx.RecordedProtocolArenas.push('next2');
+    ctx.newSlot();
+    ctx.recordPacket(pk());
+    check('joined while off, switched on: the next connection records', ctx.RecordedProtocol.next2.length === 1 && !!ctx.RecordedProtocol.next2._lm);
+}
+
+/* a press of the Settings switch sends the old value first (Switchery in a label), then the new
+ * one: switching on says only that the next server is recorded, not also "no longer recorded" */
+{
+    const { ctx, toasts } = boot();
+    ctx.defaultmapsettings.recordReplays = false;
+    ctx.setRec(true); ctx.setRec(false);
+    const offToasts = toasts.length;
+    check('switch off: told once', offToasts === 1 && /not recorded/i.test(toasts[0][1]));
+    ctx.defaultmapsettings.recordReplays = true;
+    ctx.setRec(false); ctx.setRec(true);
+    const onT = toasts.slice(offToasts).map(t => t[1]);
+    check('switch on: only the next-server notice (' + onT.join(' | ') + ')', onT.length === 1 && /next server/i.test(onT[0]));
+    ctx.recordPacket(pk());
+    check('switch on: this connection stays unrecorded', ctx.RecordedProtocol.live.length === 20);
 }
 
 /* the explicit clear */

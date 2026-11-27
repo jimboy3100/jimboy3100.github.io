@@ -24725,9 +24725,12 @@ function thelegendmodproject() {
                          * (_lmRecFull, reset by connect()), so switching back on does not resume it
                          * with a gap: a new recording starts with the next connection. */
                         if (!checked && window.RecordedProtocol && window.temporaryRecordedProtocol && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+                            /* told only when it stops here: a press of the Settings switch sends the
+                             * old value first (Switchery in a label), so switching on came here too
+                             * and said "not recorded any more" next to "recorded again" */
+                            if (!window._lmRecFull && window.toastr) toastr.info(lmT('game1.rec.off'));
                             window._lmRecFull = true;
                             window._lmRecLive = false;
-                            if (window.toastr) toastr.info(lmT('game1.rec.off'));
                         }
                         /* Switched back on during a game: this connection's recording stopped (above,
                          * or it was never started). A new one starts with the next connection
@@ -25811,11 +25814,11 @@ function thelegendmodproject() {
 					
 					<button id="stopBots" class="btn btn-danger" data-i18n="game1.bots.stop">${_lmG1e(lmT('game1.bots.stop'))}</button>
 					<br>
-					<div id="brBotsSection" style="display:none;margin:8px 15px;padding:8px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.3)">
-					<b style="color:#ff9800">⚔ Battle Royale Lobby</b><br>
-					<span id="brLobbyStatus" style="font-size:12px">Waiting for lobby data…</span><br>
-					<button id="brFillLobby" class="btn btn-warning btn-sm" style="margin-top:4px">Fill Lobby</button>
-					<button id="brStopFill" class="btn btn-danger btn-sm" style="margin-top:4px;display:none">Stop</button>
+					<div id="brBotsSection" style="display:none;margin:8px 15px;padding:8px;border-radius:var(--lm-radius,6px);background:var(--lm-pc2,rgba(0,0,0,0.3))">
+					<b style="color:var(--lm-tc-h,#ff9800)">⚔ <span data-i18n="game2.brLobbyTitle">${_lmG1e(lmT('game2.brLobbyTitle'))}</span></b><br>
+					<span id="brLobbyStatus" style="font-size:12px" data-i18n="game2.brWaitingData">${_lmG1e(lmT('game2.brWaitingData'))}</span><br>
+					<button id="brFillLobby" class="btn btn-warning btn-sm" style="margin-top:4px" data-i18n="game2.brFillLobby">${_lmG1e(lmT('game2.brFillLobby'))}</button>
+					<button id="brStopFill" class="btn btn-danger btn-sm" style="margin-top:4px;display:none" data-i18n="game2.brStop">${_lmG1e(lmT('game2.brStop'))}</button>
 					</div>				
 					<br><u><a href="https://github.com/jimboy3100/jimboy3100.github.io/tree/master/ExampleScripts/agario-bots2" target="_blank">${_lmG1s('game1.bots.install')}</a></u>	
 					<u><a href="https://www.youtube.com/watch?v=rQMhxwIytro&feature=youtu.be" target="_blank">${_lmG1s('game1.bots.tutPc')}</a></u>	
@@ -41673,8 +41676,11 @@ function thelegendmodproject() {
                 }
                 window.catholicCalculator = 0
                 window._lmRecSlotBytes = 0
-                /* memory budget (window._lmRecBudgetCheck): not full, check on the first packet */
-                window._lmRecFull = false
+                /* memory budget (window._lmRecBudgetCheck): not full, check on the first packet.
+                 * Joined with recording off: this connection's recording is stopped from its start,
+                 * so switching it on during the game (a profile, a script, the switch) does not
+                 * record from the middle (no map border, own cells or times); the next one records */
+                window._lmRecFull = defaultmapsettings.recordReplays === false
                 window._lmRecChkAt = 0
                 window.RecordedProtocol[window.temporaryRecordedProtocol] = []
                 /* Replay Studio times and samples (see window._lmRecM), only while recording */
@@ -84098,9 +84104,10 @@ function setGUIEvents() {
         if (!status) return
         var br = legendmod.battleRoyale
         if (br.joined) {
-            status.textContent = 'Players: ' + br.players + ' | State: ' + (br.state === 0 ? 'Waiting' : br.state === 1 ? 'Starting' : 'In game')
+            var stateStr = br.state === 0 ? _lmTH('game2.brStateWaiting', 'Waiting') : br.state === 1 ? _lmTH('game2.brStateStarting', 'Starting') : _lmTH('game2.brStateInGame', 'In game')
+            status.textContent = _lmTH('game2.brPlayers', 'Players: {0} | State: {1}').replace('{0}', br.players).replace('{1}', stateStr)
         } else {
-            status.textContent = 'Not in lobby yet'
+            status.textContent = _lmTH('game2.brNotInLobby', 'Not in lobby yet')
         }
     }
 
@@ -84121,29 +84128,34 @@ function setGUIEvents() {
 
     document.getElementById('brFillLobby').addEventListener('click', () => {
         if (legendmod.gameMode !== ':battleroyale') {
-            toastr.warning('<b>[' + Premadeletter123 + ']:</b> Battle Royale mode required')
+            toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brModeRequired', 'Battle Royale mode required'))
             return
         }
         if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) {
             window.connectionBots.connect()
-            toastr.info('<b>[' + Premadeletter123 + ']:</b> Connecting to bot server…')
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brConnecting', 'Connecting to bot server…'))
             return
         }
         if (!legendmod.ws || !window.EnvConfig.configVersion || !window.master.clientVersion) {
-            toastr.warning('<b>[' + Premadeletter123 + ']:</b> Not connected to game server')
+            toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brNoGameServer', 'Not connected to game server'))
             return
         }
         if (window.userBots.startedBots) {
-            toastr.info('<b>[' + Premadeletter123 + ']:</b> Bots already running')
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brBotsRunning', 'Bots already running'))
             return
         }
 
         var br = legendmod.battleRoyale
+        // Validate lobby state: must be joined and in waiting state (0)
+        if (!br.joined || br.state !== 0) {
+            toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brNotWaiting', 'Lobby is not in waiting state'))
+            return
+        }
         // Estimate bots needed: lobby requires ~15 players; fill the gap
         var currentPlayers = br.players || 0
         var needed = 15 - currentPlayers
         if (needed <= 0) {
-            toastr.info('<b>[' + Premadeletter123 + ']:</b> Lobby already has ' + currentPlayers + ' players')
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brLobbyFull', 'Lobby already has {0} players').replace('{0}', currentPlayers))
             return
         }
         needed = Math.min(needed, 190)
@@ -84162,7 +84174,7 @@ function setGUIEvents() {
         window._brFilling = true
         document.getElementById('brFillLobby').style.display = 'none'
         document.getElementById('brStopFill').style.display = ''
-        toastr.info('<b>[' + Premadeletter123 + ']:</b> Filling BR lobby with ' + needed + ' bots…')
+        toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brFilling', 'Filling BR lobby with {0} bots…').replace('{0}', needed))
 
         // Watch for lobby state changes: auto-stop when game starts, mode changes, or bots disconnect
         if (window._brLobbyWatcher) clearInterval(window._brLobbyWatcher)
@@ -84170,13 +84182,13 @@ function setGUIEvents() {
             brUpdateSection()
             if (legendmod.gameMode !== ':battleroyale') { brStopFilling(); return }
             if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) {
-                toastr.warning('<b>[' + Premadeletter123 + ']:</b> Bot server disconnected')
+                toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brDisconnected', 'Bot server disconnected'))
                 brStopFilling()
                 return
             }
             if (legendmod.battleRoyale.state > 1) {
                 // Game has started, stop filling
-                toastr.success('<b>[' + Premadeletter123 + ']:</b> BR game started!')
+                toastr.success('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brGameStarted', 'BR game started!'))
                 brStopFilling()
             }
         }, 2000)

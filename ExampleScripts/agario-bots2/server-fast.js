@@ -436,7 +436,12 @@ class Bot {
 let shutdownInterval = null
 
 function resetServer() {
+    // Cancel pending per-bot timeouts before disconnecting
     for (const bot of userBots) {
+        if (bot.followMouseTimeout) {
+            clearTimeout(bot.followMouseTimeout)
+            bot.followMouseTimeout = null
+        }
         if (bot.ws) {
             bot.ws.onmessage = null
             bot.ws.onerror = null
@@ -446,6 +451,19 @@ function resetServer() {
         }
     }
     userBots.length = 0
+    // Disconnect the dataBot (it connects per game URL, not per control connection)
+    if (dataBot.ws) {
+        dataBot.isConnected = false
+        dataBot.ws.onmessage = null
+        dataBot.ws.onclose = null
+        try { dataBot.ws.close() } catch(e) {}
+        dataBot.ws = null
+    }
+    dataBot.buffersKey = 0
+    dataBot.playersAmount = 0
+    dataBot.lastPlayersAmount = 0
+    // Reset session state; do NOT clear statusInterval (it belongs to the
+    // control connection, not the bot session, and is recreated on reconnect)
     stoppingBots = false
     connectedBots = 0
     spawnedBots = 0
@@ -458,7 +476,6 @@ function resetServer() {
     bots.ai = false
     if (moveInterval) { clearInterval(moveInterval); moveInterval = null }
     if (startBotsInterval) { clearInterval(startBotsInterval); startBotsInterval = null }
-    if (statusInterval) { clearInterval(statusInterval); statusInterval = null }
     console.log('[SERVER] Session ended. Ready for new connection.')
 }
 
@@ -505,7 +522,7 @@ new WebSocket.Server({
                 }
                 break
             case 1:
-                if(user.startedBots && !stoppingBots){
+                if((user.startedBots || startBotsInterval) && !stoppingBots){
                     stoppingBots = true
                     ws.send(Buffer.from([1]))
                     let seconds = 0
@@ -557,7 +574,7 @@ new WebSocket.Server({
     ws.on('close', () => {
         // Clean up status interval on disconnect
         if(statusInterval){ clearInterval(statusInterval); statusInterval = null }
-        if(user.startedBots && !stoppingBots){
+        if((user.startedBots || startBotsInterval) && !stoppingBots){
             stoppingBots = true
             let seconds = 0
             if(shutdownInterval) clearInterval(shutdownInterval)

@@ -395,5 +395,99 @@ const Entity = require(path.join(botsDir, 'entity'));
     check('opcode 7 round-trip: y decoded', r.readInt32() === 3200);
 }
 
+// ---- server.js: improved lifecycle (followMouseTimeout, dataBot, statusInterval, startup cancel) ----
+{
+    const serverSrc = fs.readFileSync(path.join(botsDir, 'server.js'), 'utf8');
+    // Extract resetServer function body
+    const resetMatch = serverSrc.match(/function resetServer\(\)\s*\{([\s\S]*?)\n\}/);
+    check('server.js resetServer extractable', !!resetMatch);
+    if (resetMatch) {
+        const resetBody = resetMatch[1];
+        check('server.js resetServer clears followMouseTimeout', resetBody.includes('followMouseTimeout'));
+        check('server.js resetServer disconnects dataBot', resetBody.includes('dataBot.ws'));
+        check('server.js resetServer resets dataBot.buffersKey', resetBody.includes('dataBot.buffersKey = 0'));
+        check('server.js resetServer does NOT clear statusInterval', !resetBody.includes('clearInterval(statusInterval)'));
+    }
+    // Stop handler allows stopping during startup (before user.startedBots is true)
+    check('server.js stop handler allows startup cancel', serverSrc.includes('user.startedBots || startBotsInterval'));
+    // Close handler also allows startup cancel
+    const closeSection = serverSrc.substring(serverSrc.indexOf("ws.on('close'"));
+    check('server.js close handler allows startup cancel', closeSection.includes('user.startedBots || startBotsInterval'));
+}
+
+// ---- server-fast.js: improved lifecycle (followMouseTimeout, dataBot, statusInterval, startup cancel) ----
+{
+    const fastSrc = fs.readFileSync(path.join(botsDir, 'server-fast.js'), 'utf8');
+    const resetMatch = fastSrc.match(/function resetServer\(\)\s*\{([\s\S]*?)\n\}/);
+    check('server-fast.js resetServer extractable', !!resetMatch);
+    if (resetMatch) {
+        const resetBody = resetMatch[1];
+        check('server-fast.js resetServer clears followMouseTimeout', resetBody.includes('followMouseTimeout'));
+        check('server-fast.js resetServer disconnects dataBot', resetBody.includes('dataBot.ws'));
+        check('server-fast.js resetServer resets dataBot.buffersKey', resetBody.includes('dataBot.buffersKey = 0'));
+        check('server-fast.js resetServer does NOT clear statusInterval', !resetBody.includes('clearInterval(statusInterval)'));
+    }
+    check('server-fast.js stop handler allows startup cancel', fastSrc.includes('user.startedBots || startBotsInterval'));
+    const closeSection = fastSrc.substring(fastSrc.indexOf("ws.on('close'"));
+    check('server-fast.js close handler allows startup cancel', closeSection.includes('user.startedBots || startBotsInterval'));
+}
+
+// ---- ogario.v4.js: BR i18n (translated strings) ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    // HTML template uses i18n data attributes
+    check('ogario: BR section uses data-i18n for lobby title', ogSrc.includes('data-i18n="game2.brLobbyTitle"'));
+    check('ogario: BR section uses data-i18n for waiting data', ogSrc.includes('data-i18n="game2.brWaitingData"'));
+    check('ogario: BR fill button uses data-i18n', ogSrc.includes('data-i18n="game2.brFillLobby"'));
+    check('ogario: BR stop button uses data-i18n', ogSrc.includes('data-i18n="game2.brStop"'));
+    // JS logic uses _lmTH for translated toastr messages
+    check('ogario: BR mode required message uses i18n', ogSrc.includes("_lmTH('game2.brModeRequired'"));
+    check('ogario: BR connecting message uses i18n', ogSrc.includes("_lmTH('game2.brConnecting'"));
+    check('ogario: BR no game server message uses i18n', ogSrc.includes("_lmTH('game2.brNoGameServer'"));
+    check('ogario: BR bots running message uses i18n', ogSrc.includes("_lmTH('game2.brBotsRunning'"));
+    check('ogario: BR lobby full message uses i18n', ogSrc.includes("_lmTH('game2.brLobbyFull'"));
+    check('ogario: BR filling message uses i18n', ogSrc.includes("_lmTH('game2.brFilling'"));
+    check('ogario: BR disconnected message uses i18n', ogSrc.includes("_lmTH('game2.brDisconnected'"));
+    check('ogario: BR game started message uses i18n', ogSrc.includes("_lmTH('game2.brGameStarted'"));
+    // Status text uses translated state strings
+    check('ogario: BR status uses i18n state strings', ogSrc.includes("_lmTH('game2.brStateWaiting'"));
+    check('ogario: BR status uses i18n players template', ogSrc.includes("_lmTH('game2.brPlayers'"));
+    check('ogario: BR not in lobby uses i18n', ogSrc.includes("_lmTH('game2.brNotInLobby'"));
+    // No hardcoded English in BR toastr (all toastr calls use _lmTH)
+    check('ogario: BR no hardcoded "Battle Royale mode required" in toastr', !ogSrc.includes("']:</b> Battle Royale mode required'"));
+    check('ogario: BR no hardcoded "Connecting to bot server" in toastr', !ogSrc.includes("']:</b> Connecting to bot server"));
+}
+
+// ---- ogario.v4.js: BR theme consistency ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    // BR section uses CSS custom properties instead of hardcoded colors
+    check('ogario: BR section background uses CSS var', ogSrc.includes('var(--lm-pc2,rgba(0,0,0,0.3))'));
+    check('ogario: BR title color uses CSS var', ogSrc.includes('var(--lm-tc-h,#ff9800)'));
+    check('ogario: BR section no hardcoded background rgba(0,0,0,0.3) in brBotsSection', !ogSrc.includes('brBotsSection" style="display:none;margin:8px 15px;padding:8px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.3)'));
+}
+
+// ---- ogario.v4.js: BR waiting-lobby validation ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    check('ogario: BR fill validates lobby state (br.state !== 0)', ogSrc.includes('br.state !== 0'));
+    check('ogario: BR fill validates lobby joined', ogSrc.includes('!br.joined'));
+    check('ogario: BR fill shows not-waiting message', ogSrc.includes("_lmTH('game2.brNotWaiting'"));
+}
+
+// ---- i18n: BR keys exist in game2.json ----
+{
+    const game2 = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'i18n', 'src', 'game2.json'), 'utf8'));
+    const brKeys = ['brLobbyTitle', 'brWaitingData', 'brFillLobby', 'brStop', 'brPlayers',
+                    'brStateWaiting', 'brStateStarting', 'brStateInGame', 'brNotInLobby',
+                    'brModeRequired', 'brConnecting', 'brNoGameServer', 'brBotsRunning',
+                    'brLobbyFull', 'brNotWaiting', 'brFilling', 'brDisconnected', 'brGameStarted'];
+    for (const key of brKeys) {
+        const fullKey = 'game2.' + key;
+        check('i18n: ' + fullKey + ' has en', !!(game2[fullKey] && game2[fullKey].en));
+        check('i18n: ' + fullKey + ' has el', !!(game2[fullKey] && game2[fullKey].el));
+    }
+}
+
 console.log('\n' + (fail ? 'FAIL: ' + fail + ' failure(s)' : 'ALL PASS'));
 process.exit(fail ? 1 : 0);
