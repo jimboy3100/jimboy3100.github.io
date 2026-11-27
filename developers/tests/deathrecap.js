@@ -277,5 +277,57 @@ check('off again: listeners removed, flag off', !(listeners.spawn || []).length 
   }
 }
 
+/* one killer on the Game Over card (ogario.v4.js lmKillerShown): the "Eaten by" row and the match
+ * history name the player the recap's death step and the kill feed name (the most mass taken in the
+ * last 2 s), not the last eater of the remove packets; the server's report wins in both */
+{
+  const core = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+  const a = core.indexOf('\nfunction lmKillerShown(');
+  check('lmKillerShown in the core', a >= 0);
+  if (a >= 0) {
+    vm.runInContext(core.slice(a, core.indexOf('\n}\n', a) + 3), ctx);
+    const S = () => ctx.lmKillerShown(now);
+    const life = (eats) => {
+      D._test.reset(); lm._lmKiller = null;
+      lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0]];
+      listeners.spawn[0]({ time: now });
+      for (let i = 0; i < 8; i++) { now += 250; D._test.tick(); }
+      /* each eat as the core records it: _lmKiller = the last eater, then the recap's eat count */
+      eats.forEach(([dt, eater, size, eaterMass]) => {
+        now += dt;
+        lm._lmKiller = { nick: eater.targetNick, mass: eaterMass, virus: false, at: now };
+        D.eat(eater, own(0, size), false, true, size);
+      });
+      lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
+    };
+    const bigA = { x: 0, y: 0, size: 1100, targetNick: 'BigA' }, tinyB = { x: 0, y: 0, size: 300, targetNick: 'TinyB' };
+    ctx.legendmod5.gameOverStats = true; ctx.legendmod5.killFeed = true; D.sync();
+    /* BigA takes 2,000 mass 1.5 s before the death, TinyB eats the last 50 */
+    life([[500, bigA, Math.sqrt(200000), 12100], [1500, tinyB, Math.sqrt(5000), 900]]);
+    const rc = D.last(), dstep = rc && rc.steps[rc.steps.length - 1], fl = feedLines(), k1 = S();
+    check('one killer: the core\'s last eater is TinyB (the old card row)', lm._lmKiller.nick === 'TinyB');
+    check('one killer: the recap death step names BigA', !!dstep && dstep.kind === 'death' && dstep.nick === 'BigA', dstep);
+    check('one killer: the kill feed died line names BigA', fl[fl.length - 1] === T('feedDied', ['BigA']), fl);
+    check('one killer: the card row / match history name BigA too, without TinyB\'s mass', !!k1 && k1.nick === 'BigA' && !k1.virus && k1.mass === null, k1);
+    /* the two rules agree: the mass of the eater is kept */
+    life([[500, bigA, Math.sqrt(200000), 12100]]);
+    const k2 = S();
+    check('one killer: same player in both rules keeps the eater\'s mass', !!k2 && k2.nick === 'BigA' && k2.mass === 12100, k2);
+    /* the server's report wins (Expanding Land), with its mass */
+    life([[500, bigA, Math.sqrt(200000), 12100], [1500, tinyB, Math.sqrt(5000), 900]]);
+    lm._lmKiller = { nick: 'Srv', mass: 4321, virus: false, server: true, at: now, cellId: 7 };
+    const k3 = S();
+    check('one killer: the server report wins with its mass', !!k3 && k3.nick === 'Srv' && k3.mass === 4321, k3);
+    /* recap, kill feed and alert all off: the core's own killer as before */
+    ctx.legendmod5.gameOverStats = false; ctx.legendmod5.killFeed = false; D.sync();
+    lm._lmKiller = { nick: 'TinyB', mass: 900, virus: false, at: now };
+    const k4 = S();
+    check('one killer: with the recap off the core\'s killer stays', !!k4 && k4.nick === 'TinyB' && k4.mass === 900, k4);
+    lm._lmKiller = { nick: 'Old', mass: 1, virus: false, at: now - 16000 };
+    check('one killer: an old killer (over 15 s) is not shown', S() === null);
+    lm._lmKiller = null;
+  }
+}
+
 console.log(fail ? fail + ' failed' : 'all death recap checks passed');
 process.exit(fail ? 1 : 0);

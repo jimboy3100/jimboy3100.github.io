@@ -637,6 +637,9 @@
         card: card,
         /* the recap of the last death (steps as shown on the card), or null */
         last: function () { return recap; },
+        /* who ate me by the recap's rule (the server's report, else the most mass taken in the last
+         * 2 s): the Game Over card's "Eaten by" and the match history name the same player */
+        killer: function () { return killerNow(); },
         _pure: { fmtNum: fmtNum, makeRing: makeRing, ringPush: ringPush, sampleAt: sampleAt, peakSince: peakSince, lossCheck: lossCheck, attribute: attribute, summarise: summarise, stepText: stepText, stepLabel: stepLabel },
         /* for developers/tests (unit test and smoke probe): feed samples and events by hand */
         _test: {

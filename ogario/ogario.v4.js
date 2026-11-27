@@ -640,7 +640,7 @@ function _lmMatchHistoryPaint(host) {
         list.forEach(function (r) {
             var t = +r.t, d = t > 0 ? new Date(t) : null;
             var k = r.killer && typeof r.killer === 'object' ? r.killer : null;
-            var kt = !k ? '—' : k.virus ? lmT('game1.mh.virus') : (String(k.nick || '') || '?') + ' (' + Math.round(+k.mass || 0).toLocaleString() + ')';
+            var kt = !k ? '—' : k.virus ? lmT('game1.mh.virus') : (String(k.nick || '') || '?') + (+k.mass ? ' (' + Math.round(+k.mass).toLocaleString() + ')' : '');
             var row = el('tr');
             row.className = 'lm-mh-row';
             [d && !isNaN(d.getTime()) ? d.toLocaleString() : '—', Math.round(+r.mass || 0).toLocaleString(), fmtTime(r.ms), kt, String(r.server || '') || '—', String(r.mode || '') || '—'].forEach(function (v, i) {
@@ -21887,6 +21887,23 @@ function lmKillerWanted(s) {
     s = s || defaultmapsettings;
     return !!(s && (s.gameOverStats || s.matchHistory || s.killFeed));
 }
+/* The killer shown by the Game Over card ("Eaten by") and kept in the match history: while the
+ * death recap / kill feed records eats (_lmDROn), its rule (deathrecap.js killerNow: the server's
+ * report, else who took the most mass in the last 2 s), so the card row, the recap's death step
+ * and the kill feed name the same player; else legendmod._lmKiller (at most 15 s old). The mass
+ * is the eater's, known only for _lmKiller's player. "Watch killer" keeps _lmKiller.cellId. */
+function lmKillerShown(now) {
+    now = now || Date.now();
+    var k = window.legendmod && legendmod._lmKiller;
+    if (!(k && now - (k.at || 0) < 15000)) k = null;
+    var r = null;
+    try { r = window._lmDROn && window.LMDeathRecap && typeof LMDeathRecap.killer === 'function' ? LMDeathRecap.killer() : null; } catch (e) { r = null; }
+    if (r && r.exact) {
+        var same = !!(k && !!k.virus === !!r.virus && (r.virus || String(k.nick || '') === String(r.nick || '')));
+        return { nick: String(r.nick || ''), virus: !!r.virus, mass: same ? Number(k.mass) || 0 : null };
+    }
+    return k ? { nick: String(k.nick || ''), virus: !!k.virus, mass: Number(k.mass) || 0 } : null;
+}
 /* S5: one place announces gameplay setting changes. Every path that changes one (switch,
  * slider, text box, select, hotkey toggle, profile, preset, gamepad, import of a part) saves
  * through application.saveSettings(defaultmapsettings, 'ogarioSettings'); the save compares
@@ -29163,12 +29180,13 @@ function thelegendmodproject() {
             /* optional match history: one record per life (server host only, no tokens) */
             if (defaultmapsettings.matchHistory && !_lmPracticeLife) {
                 try {
-                    var _lmMhK = window.legendmod && legendmod._lmKiller;
+                    var _lmMhK = lmKillerShown(_lmNow);
                     _lmMatchHistory({
                         t: _lmNow,
                         mass: Math.round(+ogario.playerScore || 0),
                         ms: this._lmLifeStartAt ? Math.max(0, Math.min(_lmNow - this._lmLifeStartAt, 6 * 3600 * 1000)) : 0,
-                        killer: _lmMhK && _lmNow - (_lmMhK.at || 0) < 15000 ? { nick: String(_lmMhK.nick || '').slice(0, 40), mass: ~~_lmMhK.mass, virus: !!_lmMhK.virus } : null,
+                        /* mass 0: not known (the recap named another player than _lmKiller) */
+                        killer: _lmMhK ? { nick: _lmMhK.nick.slice(0, 40), mass: ~~_lmMhK.mass, virus: _lmMhK.virus } : null,
                         server: _lmHostOnly(window.legendmod && legendmod.ws),
                         mode: String(($('#gamemode option:selected').text() || '').trim() || $('#gamemode').val() || '').slice(0, 30)
                     });
@@ -49755,11 +49773,11 @@ function thelegendmodproject() {
                 { icon: '🦠', k: 'virusesEaten', label: _lmTH('virusesEaten', ''),    value: (u.virusesEaten || 0).toLocaleString() }
             ];
 
-            /* who ate the last cell, when known (recorded in the eat loop, at most 15 s ago) */
-            var _lmK = this._lmKiller;
-            if (_lmK && Date.now() - _lmK.at < 15000) {
-                var _lmKName = _lmK.virus ? _lmTH('game2.virus', '') : (_lmK.nick ? application.escapeHTML(_lmK.nick) : _lmTH('game2.unnamedCell', ''));
-                stats.unshift({ icon: '\ud83d\udde1\ufe0f', k: 'eatenBy', label: _lmTH('eatenBy', ''), value: _lmKName + (_lmK.virus ? '' : ' (' + fmtMass(_lmK.mass) + ')'), accent: true });
+            /* who ate me, when known (lmKillerShown: the death recap's rule while it records eats) */
+            var _lmK = this._lmKiller, _lmKS = lmKillerShown();
+            if (_lmKS) {
+                var _lmKName = _lmKS.virus ? _lmTH('game2.virus', '') : (_lmKS.nick ? application.escapeHTML(_lmKS.nick) : _lmTH('game2.unnamedCell', ''));
+                stats.unshift({ icon: '\ud83d\udde1\ufe0f', k: 'eatenBy', label: _lmTH('eatenBy', ''), value: _lmKName + (_lmKS.virus || _lmKS.mass == null ? '' : ' (' + fmtMass(_lmKS.mass) + ')'), accent: true });
             }
             /* "Watch killer": only when the server sent the eating cell's id (lmKiller field 5) */
             var _lmKWatch = _lmK && Date.now() - _lmK.at < 15000 && _lmK.cellId && !_lmK.virus;
