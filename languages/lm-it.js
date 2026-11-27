@@ -506,7 +506,7 @@
 "game1.set.unavailable": "(non disponibile)",
 "game1.set.universalChatOff": "La chat universale di Agar Tool non è disponibile in questa versione",
 "game1.set.directorLoading": "La regia della modalità spettatore si sta ancora caricando. Riprova tra poco.",
-"game1.set.lineSplitHelp": "<strong>Come si usa:</strong> assegna \"Line split\" a un tasto nella finestra Tasti rapidi, oppure a un tasto del mouse nella sua sezione Controllo mouse. Punta il cursore dove deve andare la linea e premilo una volta: la mira si blocca su quella linea, parte lo split e la mira resta bloccata per il tempo indicato sopra. Premilo di nuovo per annullare.",
+"game1.set.lineSplitHelp": "<strong>Come si usa:</strong> assegna \"Line split\" a un tasto della tastiera o del mouse nella finestra Tasti rapidi. Punta il cursore dove deve andare la linea e premilo una volta: la mira si blocca su quella linea, parte lo split e la mira resta bloccata per il tempo indicato sopra. Premilo di nuovo per annullare.",
 "game1.set.gamepadLoading": "Lo script del gamepad si sta ancora caricando. Riprova tra poco.",
 "game1.set.copyDebug": "Copia info di debug",
 "game1.set.debugCopied": "Info di debug copiate. Incollale nella tua segnalazione del bug.",

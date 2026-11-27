@@ -506,7 +506,7 @@
 "game1.set.unavailable": "(kullanılamıyor)",
 "game1.set.universalChatOff": "Agar Tool evrensel sohbeti bu sürümde yok",
 "game1.set.directorLoading": "İzleyici yönetmeni hâlâ yükleniyor. Biraz sonra tekrar deneyin.",
-"game1.set.lineSplitHelp": "<strong>Kullanım:</strong> “Line split”i Kısayol tuşları penceresinde bir tuşa veya aynı penceredeki Fare kontrolü bölümünde bir fare tuşuna atayın. İmleci çizginin gideceği yere tutun ve bir kez basın: nişan o çizgiye kilitlenir, splitler yapılır ve nişan yukarıdaki süre boyunca kilitli kalır. İptal için tekrar basın.",
+"game1.set.lineSplitHelp": "<strong>Kullanım:</strong> “Line split”i Kısayol tuşları penceresinde bir tuşa veya fare tuşuna atayın. İmleci çizginin gideceği yere tutun ve bir kez basın: nişan o çizgiye kilitlenir, splitler yapılır ve nişan yukarıdaki süre boyunca kilitli kalır. İptal için tekrar basın.",
 "game1.set.gamepadLoading": "Oyun kolu betiği hâlâ yükleniyor. Biraz sonra tekrar deneyin.",
 "game1.set.copyDebug": "Hata ayıklama bilgisini kopyala",
 "game1.set.debugCopied": "Hata ayıklama bilgisi kopyalandı. Hata raporunuza yapıştırın.",

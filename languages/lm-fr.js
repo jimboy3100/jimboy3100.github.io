@@ -506,7 +506,7 @@
 "game1.set.unavailable": "(indisponible)",
 "game1.set.universalChatOff": "Le chat universel d'Agar Tool n'est pas disponible dans cette version",
 "game1.set.directorLoading": "Le réalisateur spectateur se charge encore. Réessayez dans un instant.",
-"game1.set.lineSplitHelp": "<strong>Utilisation :</strong> attribuez « Line split » à une touche dans la fenêtre Raccourcis, ou à un bouton de souris dans sa section Contrôle de la souris. Pointez le curseur là où la ligne doit aller et appuyez une fois : la visée se verrouille sur cette ligne, les splits partent, et la visée reste verrouillée pendant le temps ci-dessus. Appuyez à nouveau pour annuler.",
+"game1.set.lineSplitHelp": "<strong>Utilisation :</strong> attribuez « Line split » à une touche ou à un bouton de souris dans la fenêtre Raccourcis. Pointez le curseur là où la ligne doit aller et appuyez une fois : la visée se verrouille sur cette ligne, les splits partent, et la visée reste verrouillée pendant le temps ci-dessus. Appuyez à nouveau pour annuler.",
 "game1.set.gamepadLoading": "Le script de la manette se charge encore. Réessayez dans un instant.",
 "game1.set.copyDebug": "Copier les infos de débogage",
 "game1.set.debugCopied": "Infos de débogage copiées. Collez-les dans votre rapport de bug.",

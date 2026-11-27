@@ -506,7 +506,7 @@
 "game1.set.unavailable": "(tidak tersedia)",
 "game1.set.universalChatOff": "Chat universal Agar Tool tidak tersedia di versi ini",
 "game1.set.directorLoading": "Sutradara spectator masih dimuat. Coba lagi sebentar lagi.",
-"game1.set.lineSplitHelp": "<strong>Cara pakai:</strong> pasang \"Line split\" ke tombol di jendela Hotkey, atau ke tombol mouse di bagian Kontrol tetikus pada jendela itu. Arahkan kursor ke tempat garis yang diinginkan lalu tekan sekali: bidikan terkunci di garis itu, split dijalankan, dan bidikan tetap terkunci selama waktu di atas. Tekan lagi untuk membatalkan.",
+"game1.set.lineSplitHelp": "<strong>Cara pakai:</strong> pasang \"Line split\" ke tombol keyboard atau tombol mouse di jendela Hotkey. Arahkan kursor ke tempat garis yang diinginkan lalu tekan sekali: bidikan terkunci di garis itu, split dijalankan, dan bidikan tetap terkunci selama waktu di atas. Tekan lagi untuk membatalkan.",
 "game1.set.gamepadLoading": "Script gamepad masih dimuat. Coba lagi sebentar lagi.",
 "game1.set.copyDebug": "Salin info debug",
 "game1.set.debugCopied": "Info debug disalin. Tempel ke laporan bug kamu.",

@@ -506,7 +506,7 @@
 "game1.set.unavailable": "(niet beschikbaar)",
 "game1.set.universalChatOff": "De universele Agar Tool-chat is niet beschikbaar in deze versie",
 "game1.set.directorLoading": "De kijkregie wordt nog geladen. Probeer het zo opnieuw.",
-"game1.set.lineSplitHelp": "<strong>Gebruik:</strong> wijs „Line split” toe aan een toets in het venster Sneltoetsen, of aan een muisknop in het onderdeel Muisbesturing van dat venster. Richt de cursor waar de lijn moet komen en druk één keer: het richten vergrendelt op die lijn, de splits gaan af en het richten blijft vergrendeld voor de tijd hierboven. Druk opnieuw om te annuleren.",
+"game1.set.lineSplitHelp": "<strong>Gebruik:</strong> wijs „Line split” toe aan een toets of muisknop in het venster Sneltoetsen. Richt de cursor waar de lijn moet komen en druk één keer: het richten vergrendelt op die lijn, de splits gaan af en het richten blijft vergrendeld voor de tijd hierboven. Druk opnieuw om te annuleren.",
 "game1.set.gamepadLoading": "Het gamepadscript wordt nog geladen. Probeer het zo opnieuw.",
 "game1.set.copyDebug": "Debuginfo kopiëren",
 "game1.set.debugCopied": "Debuginfo gekopieerd. Plak het in je foutmelding.",

@@ -506,7 +506,7 @@
 "game1.set.unavailable": "(no disponible)",
 "game1.set.universalChatOff": "El chat universal de Agar Tool no está disponible en esta versión",
 "game1.set.directorLoading": "El director de espectador aún se está cargando. Inténtalo en un momento.",
-"game1.set.lineSplitHelp": "<strong>Uso:</strong> asigna «Line split» a una tecla en la ventana Atajos de teclado, o a un botón del ratón en su sección Control del ratón. Apunta el cursor hacia donde debe ir la línea y púlsalo una vez: la puntería se fija en esa línea, se hacen los splits y sigue fijada durante el tiempo de arriba. Púlsalo de nuevo para cancelar.",
+"game1.set.lineSplitHelp": "<strong>Uso:</strong> asigna «Line split» a una tecla o a un botón del ratón en la ventana Atajos de teclado. Apunta el cursor hacia donde debe ir la línea y púlsalo una vez: la puntería se fija en esa línea, se hacen los splits y sigue fijada durante el tiempo de arriba. Púlsalo de nuevo para cancelar.",
 "game1.set.gamepadLoading": "El script del mando aún se está cargando. Inténtalo en un momento.",
 "game1.set.copyDebug": "Copiar info de depuración",
 "game1.set.debugCopied": "Info de depuración copiada. Pégala en tu informe de error.",

@@ -506,7 +506,7 @@
 "game1.set.unavailable": "（無法使用）",
 "game1.set.universalChatOff": "此版本無法使用 Agar Tool 通用聊天",
 "game1.set.directorLoading": "觀戰導播仍在載入，請稍後再試。",
-"game1.set.lineSplitHelp": "<strong>用法：</strong>在快捷鍵視窗中把「Line split」設定給按鍵，或在同一視窗的滑鼠控制區塊中指定給滑鼠按鍵。把游標指向線要去的方向並按一次：瞄準會鎖定在那條線上、執行分裂，並在上方設定的時間內保持鎖定。再按一次取消。",
+"game1.set.lineSplitHelp": "<strong>用法：</strong>在快捷鍵視窗中把「Line split」設定給按鍵或滑鼠按鍵。把游標指向線要去的方向並按一次：瞄準會鎖定在那條線上、執行分裂，並在上方設定的時間內保持鎖定。再按一次取消。",
 "game1.set.gamepadLoading": "手把程式仍在載入，請稍後再試。",
 "game1.set.copyDebug": "複製除錯資訊",
 "game1.set.debugCopied": "除錯資訊已複製。請貼到你的錯誤回報中。",

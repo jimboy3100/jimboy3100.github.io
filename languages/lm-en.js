@@ -506,7 +506,7 @@
 "game1.set.unavailable": "(unavailable)",
 "game1.set.universalChatOff": "Agar Tool universal chat is not available in this version",
 "game1.set.directorLoading": "The spectator director is still loading. Try again in a moment.",
-"game1.set.lineSplitHelp": "<strong>Usage:</strong> assign \"Line split\" to a key in the Hotkeys window, or to a mouse button in its Mouse control section. Point the cursor where the line should go and press it once: the aim locks on that line, the splits fire, and the aim stays locked for the time above. Press it again to cancel.",
+"game1.set.lineSplitHelp": "<strong>Usage:</strong> assign \"Line split\" to a key or a mouse button in the Hotkeys window. Point the cursor where the line should go and press it once: the aim locks on that line, the splits fire, and the aim stays locked for the time above. Press it again to cancel.",
 "game1.set.gamepadLoading": "The gamepad script is still loading. Try again in a moment.",
 "game1.set.copyDebug": "Copy debug info",
 "game1.set.debugCopied": "Debug info copied. Paste it into your bug report.",

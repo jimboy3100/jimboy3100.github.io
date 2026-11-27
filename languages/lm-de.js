@@ -506,7 +506,7 @@
 "game1.set.unavailable": "(nicht verfügbar)",
 "game1.set.universalChatOff": "Der universelle Agar-Tool-Chat ist in dieser Version nicht verfügbar",
 "game1.set.directorLoading": "Die Zuschauer-Regie lädt noch. Versuche es gleich noch einmal.",
-"game1.set.lineSplitHelp": "<strong>Verwendung:</strong> Lege „Line split“ im Fenster Tastenbelegung auf eine Taste oder im Bereich Maussteuerung desselben Fensters auf eine Maustaste. Zeige mit dem Cursor dorthin, wo die Linie hin soll, und drücke einmal: Das Ziel rastet auf dieser Linie ein, die Splits werden ausgeführt, und das Ziel bleibt für die obige Zeit fixiert. Erneut drücken zum Abbrechen.",
+"game1.set.lineSplitHelp": "<strong>Verwendung:</strong> Lege „Line split“ im Fenster Tastenbelegung auf eine Taste oder Maustaste. Zeige mit dem Cursor dorthin, wo die Linie hin soll, und drücke einmal: Das Ziel rastet auf dieser Linie ein, die Splits werden ausgeführt, und das Ziel bleibt für die obige Zeit fixiert. Erneut drücken zum Abbrechen.",
 "game1.set.gamepadLoading": "Das Gamepad-Skript lädt noch. Versuche es gleich noch einmal.",
 "game1.set.copyDebug": "Debug-Infos kopieren",
 "game1.set.debugCopied": "Debug-Infos kopiert. Füge sie in deinen Fehlerbericht ein.",

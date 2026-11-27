@@ -506,7 +506,7 @@
 "game1.set.unavailable": "(niedostępne)",
 "game1.set.universalChatOff": "Uniwersalny czat Agar Tool jest niedostępny w tej wersji",
 "game1.set.directorLoading": "Reżyser obserwacji wciąż się wczytuje. Spróbuj za chwilę.",
-"game1.set.lineSplitHelp": "<strong>Użycie:</strong> przypisz „Line split” do klawisza w oknie Skróty klawiszowe lub do przycisku myszy w jego sekcji Sterowanie myszką. Skieruj kursor tam, gdzie ma być linia, i naciśnij raz: celownik blokuje się na tej linii, wykonują się splity, a celownik pozostaje zablokowany przez czas powyżej. Naciśnij ponownie, aby anulować.",
+"game1.set.lineSplitHelp": "<strong>Użycie:</strong> przypisz „Line split” do klawisza lub przycisku myszy w oknie Skróty klawiszowe. Skieruj kursor tam, gdzie ma być linia, i naciśnij raz: celownik blokuje się na tej linii, wykonują się splity, a celownik pozostaje zablokowany przez czas powyżej. Naciśnij ponownie, aby anulować.",
 "game1.set.gamepadLoading": "Skrypt pada wciąż się wczytuje. Spróbuj za chwilę.",
 "game1.set.copyDebug": "Kopiuj informacje diagnostyczne",
 "game1.set.debugCopied": "Skopiowano informacje. Wklej je do zgłoszenia błędu.",
