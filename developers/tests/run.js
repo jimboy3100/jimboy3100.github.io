@@ -6,18 +6,22 @@
 // loads the real game servers, which are not always reachable.
 //
 // Usage: node developers/tests/run.js [--secs N] [--only desktop|mobile] [--probes a,b] [--limit N] [--keep]
-//                                     [--quick] [--jobs N]
+//                                     [--quick] [--jobs N] [--prune DAYS]
 // --quick: leave out the slow probes (the SLOW list in run.js, about 60% of the probe time); a quick pre-check,
 //   the full run stays the default.
 // --jobs N: up to N headless Chromes at once (default 1, the old sequential run). 2 runs desktop and
 //   mobile side by side; more splits each mode's probes into parts (probes sharing a name prefix,
 //   e.g. plugins-*, stay together and in order), each part in its own page with its own page-error check.
+// --keep: keep each run's Chrome profile in its output folder (removed otherwise, also after a failed run).
+// --prune DAYS: first remove the run folders in out/ and the temporary profiles of the Chrome tests not
+//   changed for DAYS days (0.25 = 6 hours), never one a running test uses; also: node developers/tests/lib/testchrome.js prune DAYS.
 // Env: CHROME_PATH (optional), SMOKE_SECS (default 14), SMOKE_PROBES (like --probes),
 // SMOKE_LIMIT (like --limit: seconds the probes may take per page; default 15 per probe, at least 240),
 // SMOKE_QUICK=1 (like --quick), SMOKE_JOBS (like --jobs).
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const testChrome = require('./lib/testchrome');
 
 const here = __dirname;
 const repo = path.resolve(here, '..', '..');
@@ -34,6 +38,8 @@ const only = argVal('--only', '');
 const pick = String(argVal('--probes', process.env.SMOKE_PROBES || '')).split(',').map(s => s.trim().replace(/\.js$/, '')).filter(Boolean);
 const quick = args.includes('--quick') || process.env.SMOKE_QUICK === '1';
 const jobs = Math.max(1, Math.floor(Number(argVal('--jobs', process.env.SMOKE_JOBS || 1))) || 1);
+const keep = args.includes('--keep');
+const pruneDays = argVal('--prune', '');
 
 /* probes of 5 s or more per mode (seconds: the slower of desktop / mobile, from the "probe x: ok (N s)"
  * lines of a full run). --quick leaves them out; --jobs uses the numbers to give the parts equal time
@@ -81,6 +87,10 @@ async function pool(items, n, fn) {
 }
 
 (async () => {
+  if (pruneDays !== '') {
+    if (!(Number(pruneDays) >= 0)) { console.log('--prune needs a number of days'); process.exit(1); }
+    console.log(testChrome.pruneReport(outRoot, Number(pruneDays), true));
+  }
   // 1. syntax (in parallel: node --check of the big files takes about a second each)
   const syntaxJobs = Math.max(2, Math.min(6, jobs * 2));
   let checked = 0;
@@ -158,7 +168,11 @@ async function pool(items, n, fn) {
     if (jobs === 1) console.log(head); else console.log('started ' + t.label + ' (' + t.list.length + ' probes)');
     const started = Date.now();
     const r = await runNode(smokeArgs, { timeout: (secs + limit + 120) * 1000,
-      env: Object.assign({}, process.env, { SMOKE_PROBE_LIMIT: String(limit) }) });
+      env: Object.assign({}, process.env, { SMOKE_PROBE_LIMIT: String(limit) }, keep ? { SMOKE_KEEP_PROFILE: '1' } : {}) });
+    /* smoke.js ends its Chrome and removes the profile on its own; when it was killed (out of time) or
+     * did not get that far, its Chrome may still run: end every process using the profile, then remove it */
+    const profile = path.join(out, 'profile');
+    if (fs.existsSync(profile) && !(keep && (r.status === 0 || r.status === 4))) testChrome.cleanupProfile(profile, { search: true, keep });
     if (jobs > 1) console.log('finished ' + t.label + ' in ' + Math.round((Date.now() - started) / 1000) + ' s');
     return { t, r, out, limit, head };
   }
@@ -210,7 +224,6 @@ async function pool(items, n, fn) {
     const ok = res.errorCount === 0 && probeProblems.length === 0;
     if (!ok) failed = true;
     summary.push(mode + ': ' + (ok ? 'ok' : 'FAILED') + ' (page errors ' + res.errorCount + ', probe problems ' + probeProblems.length + ', log errors ' + res.logErrorCount + ')');
-    if (!args.includes('--keep')) { try { fs.rmSync(path.join(out, 'profile'), { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); } catch (e) { } }
     return lines;
   }
 

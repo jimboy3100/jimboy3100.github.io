@@ -13,9 +13,12 @@
 // If <outDir>/probe.js exists it is evaluated in the page after [seconds]. A probe can send real mouse
 // clicks / touch taps and key presses with window.__lmInput (see Runtime.bindingCalled below).
 // A machine-readable summary is written to <outDir>/result.json.
+// On every exit (also a timeout, an error or a failed start) Chrome is ended with all its child processes
+// and <outDir>/profile is removed; SMOKE_KEEP_PROFILE=1 keeps the profile (run.js --keep).
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const testChrome = require('./lib/testchrome');
 
 const repo = process.argv[2];
 const out = process.argv[3];
@@ -61,9 +64,21 @@ const proc = spawn(chrome, ['--headless=new', '--remote-debugging-port=0', '--us
   '--lang=' + (process.env.SMOKE_LANG || 'en-US'),
   ...(process.platform === 'linux' ? ['--no-sandbox', '--disable-dev-shm-usage', '--enable-unsafe-swiftshader'] : []),
   'about:blank'], { stdio: 'ignore' });
-proc.on('error', e => { console.log('chrome failed to start:', e.message); process.exit(2); });
+proc.on('error', e => { console.log('chrome failed to start:', e.message); finish(2); });
 let procExit = null;
 proc.on('exit', c => { procExit = c; });
+/* every way out ends this run's Chrome: proc.kill() ended only the browser process, and on Windows its
+ * GPU, network, renderer and crashpad processes kept running and kept the profile (and its folder) */
+let ws = null, finishing = false;
+function finish(code) {
+  if (finishing) return;
+  finishing = true;
+  try { if (ws) ws.close(); } catch (e) { }
+  testChrome.cleanupProfile(profile, { pid: procExit === null ? proc.pid : 0, keep: process.env.SMOKE_KEEP_PROFILE === '1' });
+  process.exit(code);
+}
+/* Ctrl+C, or the console closed */
+['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'].forEach(s => { try { process.on(s, () => { console.log('smoke run stopped (' + s + ')'); finish(130); }); } catch (e) { } });
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let id = 0; const pending = new Map(); const errors = []; const logs = [];
@@ -86,15 +101,15 @@ function probeMark(name) {
     try { const l = fs.readFileSync(portFile, 'utf8').split(/\r?\n/); if (Number(l[0]) > 0 && l[1]) { port = Number(l[0]); browserPath = l[1].trim(); } } catch (e) { }
     if (!port) await sleep(200);
   }
-  if (!port) { console.log('chrome did not start' + (procExit !== null ? ' (it exited, code ' + procExit + ')' : ': no DevToolsActivePort in ' + profile)); proc.kill(); process.exit(2); }
+  if (!port) { console.log('chrome did not start' + (procExit !== null ? ' (it exited, code ' + procExit + ')' : ': no DevToolsActivePort in ' + profile)); finish(2); }
   for (let i = 0; i < 50 && procExit === null; i++) { try { ver = await (await fetch('http://127.0.0.1:' + port + '/json/version')).json(); break; } catch (e) { await sleep(200); } }
-  if (!ver) { console.log('chrome did not start: no answer on DevTools port ' + port); proc.kill(); process.exit(2); }
+  if (!ver) { console.log('chrome did not start: no answer on DevTools port ' + port); finish(2); }
   /* the browser on that port must be the one this run started, not another run's */
-  if (!String(ver.webSocketDebuggerUrl || '').endsWith(browserPath)) { console.log('chrome did not start: DevTools port ' + port + ' belongs to another Chrome (' + ver.webSocketDebuggerUrl + ', expected ' + browserPath + ')'); proc.kill(); process.exit(2); }
+  if (!String(ver.webSocketDebuggerUrl || '').endsWith(browserPath)) { console.log('chrome did not start: DevTools port ' + port + ' belongs to another Chrome (' + ver.webSocketDebuggerUrl + ', expected ' + browserPath + ')'); finish(2); }
   const targets = await (await fetch('http://127.0.0.1:' + port + '/json/list')).json();
   const page = targets.find(t => t.type === 'page');
-  if (!page) { console.log('chrome did not start: no page target on DevTools port ' + port); proc.kill(); process.exit(2); }
-  const ws = new WebSocket(page.webSocketDebuggerUrl);
+  if (!page) { console.log('chrome did not start: no page target on DevTools port ' + port); finish(2); }
+  ws = new WebSocket(page.webSocketDebuggerUrl);
   const send = (method, params = {}) => new Promise(res => { const i = ++id; pending.set(i, res); ws.send(JSON.stringify({ id: i, method, params })); });
   ws.onmessage = async ev => {
     const m = JSON.parse(ev.data);
@@ -217,5 +232,5 @@ function probeMark(name) {
   [...new Set(logs)].slice(0, 25).forEach(e => console.log('  ' + e));
   fs.writeFileSync(path.join(out, 'result.json'), JSON.stringify({ served, missing: [...new Set(missing)], errors: [...new Set(errors)], errorCount: errors.length,
     logErrors: [...new Set(logs)], logErrorCount: logs.length, probe: probeValue === undefined ? null : probeValue, probeTimes, timedOut }, null, 2));
-  ws.close(); proc.kill(); process.exit(timedOut ? 4 : 0);
-})().catch(e => { console.log('harness error', e); proc.kill(); process.exit(3); });
+  finish(timedOut ? 4 : 0);
+})().catch(e => { console.log('harness error', e); finish(3); });

@@ -11,7 +11,8 @@ node developers/tests/run.js
 ```
 
 Options: `--secs N` (wait before probing, default 14, or env `SMOKE_SECS`),
-`--only desktop` / `--only mobile`, `--keep` (keep the Chrome profile in the output folder),
+`--only desktop` / `--only mobile`, `--keep` (keep the Chrome profile in the output folder; without it the
+profile is removed after every run, also a failed or killed one),
 `--probes a,b` (only these probes from `probes/`, or env `SMOKE_PROBES`), `--limit N` (seconds the probes
 may take per run, or env `SMOKE_LIMIT`; default 15 per probe, at least 240). Each probe line shows its time;
 when the limit is hit the probes that finished are still reported and the one that was running is named.
@@ -21,7 +22,10 @@ order); the full run took 711 s sequentially and 193 s with `--jobs 4`. `--quick
 out the slow probes (the `SLOW` list in run.js, about 60% of the probe time): `--quick --jobs 4` took 99 s.
 The default (no option) is still the full sequential run.
 Chrome is found automatically; set `CHROME_PATH` to use a specific binary.
-Output goes to `developers/tests/out/` (ignored by git).
+Output goes to `developers/tests/out/` (ignored by git). `--prune DAYS` first removes the run folders there
+and the temporary Chrome profiles of the tests that start their own Chrome (`%TEMP%lm-glbatch-*` and the like)
+not changed for DAYS days (0.25 = 6 hours; or alone: `node developers/tests/lib/testchrome.js prune DAYS`).
+A folder a running test uses is never removed, and Chromes left in an old folder by killed runs are ended first.
 
 ## What it checks
 
@@ -83,7 +87,9 @@ node developers/tests/smoke.js <repoDir> <outDir> [secs] [url] [mobile]
 
 If `<outDir>/probe.js` exists it is evaluated in the page (an expression, usually an async IIFE
 returning a string) and printed as `PROBE:`. A summary is written to `<outDir>/result.json`.
-Use a fresh `outDir` for each run; it holds the Chrome profile.
+Use a fresh `outDir` for each run; it holds the Chrome profile. On every exit (also a probe timeout, an
+error or a failed start) Chrome is ended with all its child processes (on Windows `taskkill /T /F`) and the
+profile is removed; `SMOKE_KEEP_PROFILE=1` keeps it.
 
 A probe in `probes/` is one expression that resolves to `{ fail: [...], info: {...} }`;
 any entry in `fail` (or a thrown error) fails the run.
