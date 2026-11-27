@@ -234,6 +234,8 @@ reset();
 for (let i = 0; i < 200; i++) body();
 const sp = Object.create(g.Spect.prototype);
 Object.assign(sp, { number: 1, player: true, integrity: true, active: true, foodCalibrated: true, nick: 'Unit', playerCellIDs: [], time: 0 });
+/* its transform counts as verified (spect.js _lmFeedOk): its pellets feed the food list */
+sp._lmFeedOk = function () { return true; };
 const OWN_IDS = [], unitIds = [];
 for (let i = 0; i < 16; i++) OWN_IDS.push(900000 + i);
 /* the unit keeps its own cell ids in the stored (unit) form */

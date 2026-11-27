@@ -1662,25 +1662,48 @@ function lmUnitCellId(id, unitNumber) {
 function lmRawCellId(id) {
     return id % LM_UNIT_ID_STEP;
 }
+/* May this connection's pellets and cells take part in the reconciliation (spect.js _lmFeedOk:
+ * border known and orientation VERIFIED)? A PROVISIONAL or CONFLICTED spectator's cells and
+ * pellets could be mirrored or shifted: they are not drawn, hide nothing and are matched with
+ * nothing until it is verified (lmFoodFrame, the frame's hide step). A multibox unit's own cells
+ * are always drawn. */
+function lmSrcFeeds(sp) {
+    return !sp || typeof sp._lmFeedOk !== 'function' || !!sp._lmFeedOk();
+}
+/* per connection number, whether it feeds this frame (filled by the frame's hide step) */
+var _lmMbFeed = [];
+function _lmMbFeeds(c) {
+    return !(c.spectator > 0) || _lmMbFeed[c.spectator] !== false;
+}
 /*
  * The same cell drawn from another connection, found by position and size.
  * A raw cell id says nothing across connections (agar.io numbers cells per
  * connection; where two connections share a number it can be two different
  * cells), so copies are never matched by id: each cell object is one
  * connection's observation (spectator / _lmSrc, _lmGen, _lmRawId) and keeps
- * its own position, size and mass. Which copy is drawn: the main player's and
- * a unit's own cells always; otherwise the main connection's, then the lowest
- * unit number's. Returns the copy that is drawn instead of this one, or null
- * if this one is drawn.
+ * its own position, size and mass. Which copy is drawn (_lmMbOutranks): the
+ * main player's and a unit's own cells always; otherwise the main
+ * connection's, then the copy that was already drawn last frame (a copy that
+ * comes into another connection's view later hides behind it, so the drawn
+ * copy does not switch to every new lower-numbered spectator), then the
+ * lowest unit number's. Returns the copy that is drawn instead of this one, or
+ * null if this one is drawn.
  *
- * A copy matches only with the same kind (virus, ejected), the same server
- * colour (_lmRawColor: the colour the server sent, before profile / team /
- * name colours), the same size within 10 % and the same place: the server
- * positions of both (targetX/Y), each moved on by its own speed to the
- * frame's time, within max(8, 0.12 * radius) plus 25 ms of both speeds (at
- * most 60). It used to be max(1.2 * radius, 60) on the drawn
- * (interpolated) positions, which hid a different enemy, virus or a split
- * piece next to a cell as its "copy".
+ * A copy matches only with the same kind (virus, ejected), the same size
+ * within 10 %, the same server name when both have one and the same place:
+ * the server positions of both (targetX/Y), each moved on by its own speed to
+ * the frame's time, within max(8, 0.12 * radius) plus 40 ms of both speeds
+ * (at most 60); the copy a cell hid behind last frame is kept up to 1.5 times
+ * that. It used to be max(1.2 * radius, 60) on the drawn (interpolated)
+ * positions, which hid a different enemy, virus or a split piece next to a
+ * cell as its "copy".
+ * The colour is not compared: agar.io gives every connection its own colour
+ * for one player (live Full Map capture, 15 spectators: 2302 copies of one
+ * cell on two connections, none with the same server colour; same size and
+ * name in all of them), so with the colour rule no copy was ever hidden and
+ * each cell was drawn once per connection that saw it, each in its own colour.
+ * The drawn copy shows the colour the cell was first shown with
+ * (lmMbShareLook), so the colour does not change when another copy is drawn.
  * One to one: a copy hides only behind its nearest match, and only if no
  * other cell of its own connection is nearer to that match (mutual nearest),
  * so two cells of one connection never hide behind one cell of another and
@@ -1800,6 +1823,9 @@ function _lmMbBuildGrid() {
     for (i = 0; cells && i < cells.length; i++) {
         var c = cells[i];
         if (!c || c.removed || c.isFood || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
+        /* an unverified connection's cells are matched with nothing, except a unit's own cells
+         * (always drawn: the main connection's copy of one still hides behind it) */
+        if (!_lmMbFeeds(c) && !c.isPlayerCellMulti) continue;
         _lmMbPosAt(c, _lmMbBuildT, p);
         if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) continue;
         if (count >= _lmMbTmpPX.length) {
@@ -1819,24 +1845,43 @@ function _lmMbBuildGrid() {
     _lmMbSortInto(_lmMbOwn, count, true);
     for (i = 0; i < count; i++) _lmMbTmpCells[i] = null;
 }
-/* server colour of a cell as its connection received it */
-function _lmMbRawColor(c) {
-    return c._lmRawColor ? c._lmRawColor : null;
+/* server name of a cell as its connection received it ('' or null: none received) */
+function _lmMbSrvName(c) {
+    return c._lmSrvName || null;
 }
-/* how far apart two copies of one cell may be (see the comment above) */
+/* How far apart two copies of one cell may be (see the comment above). Live Full Map capture
+ * (15 spectators, 2524 copies found one to one): copies of one cell moved to one time are
+ * 1.3 apart (median), 10.7 (90 %), 45 (99 %), most of it from the cells' speed and the
+ * packet age (25 ms apart at 90 %, 119 ms at 99 %); with 25 ms of the speeds 99.4 % were in
+ * reach, with 40 ms all of them, and no second cell of that connection was. */
+var LM_MB_SPEED_MS = 40;
 function _lmMbTwinTol(radius, a, b) {
     var speed = (a ? _lmMbSpeed(a) : 0) + (b ? _lmMbSpeed(b) : 0);
-    return Math.max(8, 0.12 * radius) + Math.min(60, speed * 25);
+    return Math.max(8, 0.12 * radius) + Math.min(60, speed * LM_MB_SPEED_MS);
 }
-/* the largest tolerance of a cell of this radius and speed against any indexed cell */
+/* the largest tolerance of a cell of this radius and speed against any indexed cell (a new
+ * match; the kept link of last frame is tested without a search) */
 function _lmMbTwinReach(radius, speed) {
-    return Math.max(8, 0.12 * radius) + Math.min(60, ((speed || 0) + _lmMbMaxSpeed) * 25);
+    return Math.max(8, 0.12 * radius) + Math.min(60, ((speed || 0) + _lmMbMaxSpeed) * LM_MB_SPEED_MS);
+}
+/* Frame number of the hide step (the frame loop counts it); a cell drawn last frame has
+ * _lmMbSticky === _lmMbFrame (set where every hidden copy is shown again, before the search). */
+var _lmMbFrame = 0;
+/* Is copy a (connection ca) drawn rather than copy b (connection cb)? Own cells are decided by
+ * the caller. Main connection first, then the copy drawn last frame (hysteresis), then the
+ * lower connection number. A total order: of two copies exactly one outranks the other. */
+function _lmMbOutranks(a, ca, b, cb) {
+    if (!ca !== !cb) return !ca;
+    var sa = a._lmMbSticky === _lmMbFrame, sb = b._lmMbSticky === _lmMbFrame;
+    if (sa !== sb) return sa;
+    return ca < cb;
 }
 /* Squared distance between two copies of one cell, or -1 when they are not copies of one
  * cell. With anyOrder the drawing order (which copy is drawn, hidden copies) is not checked:
- * used for the mutual nearest test. */
+ * used for the mutual nearest test. keep: the copy it hid behind last frame (1.5 times the
+ * tolerance, so a copy does not flicker in and out at the edge of it). */
 var _lmMbPosB = { x: 0, y: 0 };
-function _lmMbTwinDist2(cell, other, radius, anyOrder) {
+function _lmMbTwinDist2(cell, other, radius, anyOrder, keep) {
     if (!other || other === cell || other.removed || other.isFood) return -1;
     /* a hidden copy is not drawn, so this one must stay (else the cell is drawn by no connection) */
     if (!anyOrder && other.invisible === true) return -1;
@@ -1846,25 +1891,91 @@ function _lmMbTwinDist2(cell, other, radius, anyOrder) {
     var otherOwn = theirs ? !!other.isPlayerCellMulti : !!other.isPlayerCell;
     var cellOwn = mine ? !!cell.isPlayerCellMulti : !!cell.isPlayerCell;
     if (otherOwn && cellOwn) return -1; /* own cells of two connections: two players */
-    if (!anyOrder && !otherOwn && !(theirs < mine)) return -1; /* this copy is the one drawn */
-    /* Every connection gets the same kind, server colour and name for one cell. Own cells
-     * take the player's profile colour and nick (myCustomColor, the unit's profile), so the
-     * colour compared is the server's (_lmRawColor). Without it (no colour received yet)
-     * the drawn colours are compared for other cells only, as before. */
+    if (!anyOrder && !otherOwn && !_lmMbOutranks(other, theirs, cell, mine)) return -1; /* this copy is the one drawn */
+    /* Every connection gets the same kind, size and name for one cell, but its own colour
+     * (see the comment above), so the colour is not compared. The name compared is the
+     * server's (_lmSrvName), not the drawn one: own cells show the profile nick, and LM
+     * rewrites some nicks on the main connection only. */
     if (!!cell.isVirus !== !!other.isVirus || !!cell.isEjected !== !!other.isEjected) return -1;
     if ((otherOwn || cellOwn) && (cell.isVirus || cell.isEjected)) return -1;
-    var rc = _lmMbRawColor(cell), ro = _lmMbRawColor(other);
-    if (rc && ro) {
-        if (rc !== ro) return -1;
-    } else if (!otherOwn && !cellOwn && other.color !== cell.color) return -1;
-    if (!otherOwn && !cellOwn && cell.targetNick && other.targetNick && cell.targetNick !== other.targetNick) return -1;
+    var nc = _lmMbSrvName(cell), no = _lmMbSrvName(other);
+    if (nc && no && nc !== no) return -1;
     var r2 = _lmMbCellRadius(other);
     if (!(Math.abs(radius - r2) <= Math.max(4, 0.1 * Math.max(radius, r2)))) return -1;
     var a = _lmMbPosOf(cell, _lmMbPos), b = _lmMbPosOf(other, _lmMbPosB);
     var dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
     if (!Number.isFinite(d2)) return -1;
-    var tol = _lmMbTwinTol(radius, cell, other);
+    var tol = _lmMbTwinTol(radius, cell, other) * (keep ? 1.5 : 1);
     return d2 <= tol * tol ? d2 : -1;
+}
+/*
+ * One look for the copies of one cell: a hidden copy and the copy drawn instead of it show
+ * the same colour, the one the cell was shown with first (_lmMbLookT: when this copy's colour
+ * was first drawn; the older one is kept). Every connection gets its own server colour for
+ * one cell, so a cell without a name (colour from the server, not from its name) changed
+ * colour whenever another copy came to be drawn. An own cell keeps its profile colour, and its
+ * copies take it. Viruses keep their own colour. The colour taken is kept in _lmMbLook: the
+ * main connection's next packet keeps it while the server's colour for that cell is the same.
+ * Not with "one colour for spectator cells" (oneColoredSpectator: they are meant to look
+ * different).
+ */
+function lmMbShareLook(hidden, drawn) {
+    if (hidden.isVirus || drawn.isVirus || !hidden.color || !drawn.color) return;
+    if (typeof defaultmapsettings !== 'undefined' && defaultmapsettings && defaultmapsettings.oneColoredSpectator) return;
+    var t = _lmMbBuildT || 1;
+    if (!hidden._lmMbLookT) hidden._lmMbLookT = t;
+    if (!drawn._lmMbLookT) drawn._lmMbLookT = t;
+    var drawnOwn = drawn.spectator > 0 ? !!drawn.isPlayerCellMulti : !!drawn.isPlayerCell;
+    /* Party: skins are found by nick and the main connection's colour (customSkinsMap[nick +
+     * colour]), so the main copy keeps its colour there */
+    var LMp = typeof window !== 'undefined' ? window.legendmod : null;
+    var mainKeeps = !(drawn.spectator > 0) && !!LMp && LMp.gameMode === ':party';
+    if (drawnOwn || mainKeeps || drawn._lmMbLookT <= hidden._lmMbLookT) {
+        if (hidden.color !== drawn.color) hidden.color = hidden._lmMbLook = drawn.color;
+        hidden._lmMbLookT = drawn._lmMbLookT;
+    } else {
+        if (drawn.color !== hidden.color) drawn.color = drawn._lmMbLook = hidden.color;
+        drawn._lmMbLookT = hidden._lmMbLookT;
+    }
+    _lmMbLookSet(hidden);
+    if (!drawnOwn && !mainKeeps) _lmMbLookSet(drawn);
+}
+/*
+ * The shared colour of a player per connection: a connection gives all cells of one player
+ * the same server colour (and agar.io sends it once, with the cell's first packet; live: no
+ * colour change for any cell), but each connection another one. Once a copy is matched, its
+ * connection's server colour and name lead to the shared colour, so this player's other
+ * pieces on that connection (split pieces no other connection sees) take it when they are made
+ * (updateCells, spect.js), not their connection's own colour. Keyed by connection, server
+ * colour and server name (two players of one name have other colours); bounded, and emptied
+ * with the world (lmObsResetAll).
+ */
+var _lmMbLooks = new Map();
+var LM_MB_LOOKS_MAX = 4096;
+function _lmMbLookKey(src, gen, raw, name) {
+    return raw ? src + '.' + (gen || 0) + '|' + raw + '|' + (name || '') : null;
+}
+function _lmMbLookSet(c) {
+    /* stored already with this colour and time (no key string each frame) */
+    if (c._lmMbLookSC === c.color && c._lmMbLookST === c._lmMbLookT) return;
+    c._lmMbLookSC = c.color;
+    c._lmMbLookST = c._lmMbLookT;
+    var src = c.spectator > 0 ? c.spectator : 0;
+    var k = _lmMbLookKey(src, c._lmGen, c._lmRawColor, c._lmSrvName);
+    if (!k) return;
+    var e = _lmMbLooks.get(k);
+    if (e && e.c === c.color && e.t === c._lmMbLookT) return;
+    if (!e && _lmMbLooks.size >= LM_MB_LOOKS_MAX) _lmMbLooks.clear();
+    _lmMbLooks.set(k, { c: c.color, t: c._lmMbLookT });
+}
+/* the shared colour ({c: colour, t: when it was first shown}) of a cell made with this server
+ * colour and name on this connection (number and socket generation), or null */
+function lmMbLookOf(src, gen, raw, name) {
+    var k = _lmMbLookKey(src, gen, raw, name);
+    return k ? _lmMbLooks.get(k) || null : null;
+}
+function lmMbLooksReset() {
+    _lmMbLooks.clear();
 }
 function _lmMbIsPreferredTwin(cell, other, radius) {
     return _lmMbTwinDist2(cell, other, radius) >= 0;
@@ -1921,8 +2032,13 @@ function lmMultiboxPositionTwin(cell) {
     }
     var mine = cell.spectator > 0 ? cell.spectator : 0;
     var best = null;
-    /* the copy it hid behind last frame, while it is still a match (no search) */
-    if (cell._lmMbTwin && _lmMbTwinDist2(cell, cell._lmMbTwin, radius) >= 0) best = cell._lmMbTwin;
+    /* the copy it hid behind last frame, while it is still a match (no search; 1.5 times the
+     * tolerance) */
+    var kept = false;
+    if (cell._lmMbTwin && _lmMbTwinDist2(cell, cell._lmMbTwin, radius, false, true) >= 0) {
+        best = cell._lmMbTwin;
+        kept = true;
+    }
     cell._lmMbTwin = null;
     var p = _lmMbPosOf(cell, _lmMbPosC);
     if (!best) {
@@ -1932,7 +2048,7 @@ function lmMultiboxPositionTwin(cell) {
     if (!best) return null;
     /* one to one: hidden only if this is the nearest cell of its connection to that copy
      * (only cells nearer to it than this one can be, so the search reaches no farther) */
-    var bp = _lmMbPosOf(best, _lmMbPosC), bd = _lmMbTwinDist2(cell, best, radius, true);
+    var bp = _lmMbPosOf(best, _lmMbPosC), bd = _lmMbTwinDist2(cell, best, radius, true, kept);
     var nearest = _lmMbNearest(_lmMbAll, best, _lmMbCellRadius(best), bp.x, bp.y, Math.sqrt(bd > 0 ? bd : 0) + 1e-6, mine, -1, true, true);
     if (nearest && nearest !== cell) return null;
     cell._lmMbTwin = best;
@@ -2017,6 +2133,8 @@ var _lmFood = {
     spectObs: 0,
     /* each connection's transform when its pellets were placed (lmFoodFrame) */
     sig: new Map(),
+    /* whether each connection fed the list last frame (spect.js _lmFeedOk) */
+    feed: new Map(),
     seq: 0
 };
 function _lmFoodSrcOf(c) {
@@ -2030,6 +2148,19 @@ function _lmFoodPosX(c) {
 }
 function _lmFoodPosY(c) {
     return Number.isFinite(c.targetY) ? c.targetY : c.y;
+}
+/* The connections that have a copy of a pellet: bits of an integer for connections 0 to 30 (no
+ * Set made per pellet: a Full Map start places some 10000 of them at once), a Set past that. */
+function _lmFoodHasSrc(e, src) {
+    return src < 31 ? (e.mask & (1 << src)) !== 0 : !!(e.maskX && e.maskX.has(src));
+}
+function _lmFoodSrcSet(e, src, on) {
+    if (src < 31) {
+        if (on) e.mask |= 1 << src;
+        else e.mask &= ~(1 << src);
+    } else if (on) {
+        (e.maskX || (e.maskX = new Set())).add(src);
+    } else if (e.maskX) e.maskX.delete(src);
 }
 /* main socket first, then the lowest number; a copy that is drawn before a hidden one */
 function _lmFoodPickRep(ent) {
@@ -2057,7 +2188,7 @@ function _lmFoodAttach(cell) {
             if (!bucket) continue;
             for (var i = 0; i < bucket.length; i++) {
                 var e = bucket[i];
-                if (e.srcMask.has(src)) continue; /* one copy per connection */
+                if (_lmFoodHasSrc(e, src)) continue; /* one copy per connection */
                 if (!(Math.abs(e.size - size) <= 1)) continue;
                 var dx = e.x - x, dy = e.y - y, d = dx * dx + dy * dy;
                 if (d < bestD || (d === bestD && best && e.seq < best.seq) || (d === bestD && !best)) {
@@ -2068,7 +2199,7 @@ function _lmFoodAttach(cell) {
         }
     }
     if (!best) {
-        best = { x: x, y: y, size: size, obs: [], srcMask: new Set(), rep: null, slot: -1, key: 0, bslot: -1, seq: ++F.seq };
+        best = { x: x, y: y, size: size, obs: [], mask: 0, maskX: null, rep: null, slot: -1, key: 0, bslot: -1, seq: ++F.seq };
         best.key = _lmFoodKey(bx, by);
         var b = F.grid.get(best.key);
         if (!b) {
@@ -2082,13 +2213,13 @@ function _lmFoodAttach(cell) {
         F.ents.push(best);
     }
     best.obs.push(cell);
-    best.srcMask.add(src);
+    _lmFoodSrcSet(best, src, true);
     cell._lmFoodEnt = best;
     cell._lmFoodInv = !!cell.invisible;
     if (src > 0) {
         F.spectObs++;
         /* the transform it was placed with (lmFoodFrame) */
-        if (!F.sig.has(src)) F.sig.set(src, _lmFoodSigOf(_lmFoodSpect(src)));
+        if (!F.sig.has(src)) F.sig.set(src, _lmFoodSigOf(_lmFoodSpect(src), []));
     }
     _lmFoodPickRep(best);
 }
@@ -2101,7 +2232,7 @@ function _lmFoodDetach(cell) {
     if (k < 0) return;
     ent.obs[k] = ent.obs[ent.obs.length - 1];
     ent.obs.pop();
-    ent.srcMask.delete(src);
+    _lmFoodSrcSet(ent, src, false);
     if (src > 0) F.spectObs--;
     if (ent.obs.length) {
         /* the pellet is still seen by another connection: that copy is drawn from now on */
@@ -2203,17 +2334,26 @@ function lmObsResetAll() {
     });
     _lmSrcObs.clear();
     _lmFoodOff();
+    if (typeof lmMbLooksReset === 'function') lmMbLooksReset();
 }
 /* A connection's transform (Full Map offset, orientation) changed since its pellets were
  * placed: place that connection's pellets again (its own cells only, see lmObsOfSource). */
-function _lmFoodSigOf(sp) {
-    if (!sp || typeof sp.getX !== 'function' || typeof sp.getY !== 'function') return '0';
+/* where raw 0 and 1000 land on both axes (4 numbers into out): compared every frame for each
+ * connection without a string (it was 4 numbers joined into a string per connection per frame) */
+function _lmFoodSigOf(sp, out) {
+    out[0] = out[1] = out[2] = out[3] = 0;
+    if (!sp || typeof sp.getX !== 'function' || typeof sp.getY !== 'function') return out;
     try {
-        return sp.getX(0) + ',' + sp.getY(0) + ',' + sp.getX(1000) + ',' + sp.getY(1000);
+        out[0] = sp.getX(0);
+        out[1] = sp.getY(0);
+        out[2] = sp.getX(1000);
+        out[3] = sp.getY(1000);
     } catch (e) {
-        return '0';
+        out[0] = out[1] = out[2] = out[3] = 0;
     }
+    return out;
 }
+var _lmFoodSigNow = [0, 0, 0, 0];
 function _lmFoodSpect(number) {
     var spects = window.spects;
     for (var i = 0; spects && i < spects.length; i++) if (spects[i] && spects[i].number === number) return spects[i];
@@ -2221,15 +2361,30 @@ function _lmFoodSpect(number) {
 }
 function lmFoodFrame() {
     var F = _lmFood, spects = window.spects;
-    if (!F.on || !spects) return;
+    if (!spects) return;
     for (var i = 0; i < spects.length; i++) {
         var sp = spects[i];
         if (!sp || !(sp.number > 0)) continue;
         var set = _lmSrcObs.get(sp.number);
-        if (!set || !set.size) continue;
-        var sig = _lmFoodSigOf(sp), old = F.sig.get(sp.number);
-        if (old === sig) continue;
-        F.sig.set(sp.number, sig);
+        /* a connection that starts or stops feeding: its pellets join or leave the list at
+         * once (a pellet is sent once, so they are not waited for) */
+        var feeds = lmSrcFeeds(sp);
+        if (F.feed.get(sp.number) !== feeds) {
+            F.feed.set(sp.number, feeds);
+            if (set) set.forEach(function (c) {
+                if (!c.isFood || c.removed) return;
+                if (feeds) lmFoodAdd(c);
+                else lmFoodRemove(c);
+            });
+        }
+        if (!F.on || !feeds || !set || !set.size) continue;
+        var sig = _lmFoodSigOf(sp, _lmFoodSigNow), old = F.sig.get(sp.number);
+        if (old && Object.is(old[0], sig[0]) && Object.is(old[1], sig[1]) && Object.is(old[2], sig[2]) && Object.is(old[3], sig[3])) continue;
+        if (!old) F.sig.set(sp.number, old = []);
+        old[0] = sig[0];
+        old[1] = sig[1];
+        old[2] = sig[2];
+        old[3] = sig[3];
         var moved = [];
         set.forEach(function (c) { if (c._lmFoodEnt) { moved.push(c); _lmFoodDetach(c); } });
         for (var k = 0; k < moved.length; k++) _lmFoodAttach(moved[k]);
@@ -2238,9 +2393,9 @@ function lmFoodFrame() {
 /* The pellets to draw this frame: one per pellet while other connections have food. */
 function lmFoodDrawList() {
     var LM = window.legendmod;
+    if (window.spects && window.spects.length) lmFoodFrame();
     if (!_lmFood.on) return LM ? LM.food : null;
-    lmFoodFrame();
-    return _lmFood.on ? _lmFood.list : LM.food;
+    return _lmFood.list;
 }
 /* counts for the Performance diagnostics and tests */
 function lmFoodStats() {
@@ -54702,6 +54857,7 @@ function thelegendmodproject() {
                 //
                 //
                 var rawServerColor = color;
+                var _lmNickCol = false, _lmLook = null;
                 if (!isVirus && !isFood) {
                     if (name != "" && this.gameMode != ":teams" && this.gameMode != ":party") {
                         /* Team colour first: a nick cached before the team relay gave its
@@ -54709,8 +54865,13 @@ function thelegendmodproject() {
                         var _tmColor = this._teamColorMap ? this._teamColorMap.get(name) : undefined;
                         if (_tmColor) {
                             color = _tmColor;
+                            _lmNickCol = true;
                         } else if (LM.cellcolors[name]) {
+                            /* the colour first seen for this nick on this server (all its cells one
+                             * colour; the spectators read the same one, so the copies of a named
+                             * cell match without lmMbLookOf) */
                             color = LM.cellcolors[name];
+                            _lmNickCol = true;
                         }
                         if (!_tmColor && !LM.cellcolors[name] && color) LM.cellcolors[name] = color;
                         if (rawServerColor && color) {
@@ -54732,6 +54893,14 @@ function thelegendmodproject() {
                     } else if (name === "" && rawServerColor && this._colorByRawMap && this._colorByRawMap.get(rawServerColor)) {
                         /* Nameless popped/split fragment inherits parent cell's unified color */
                         color = this._colorByRawMap.get(rawServerColor);
+                        _lmNickCol = true;
+                    }
+                    /* Full Map / multibox: the colour another connection's copy of this player was
+                     * shown with (each connection gets its own server colour for one player); not
+                     * over a team or nick colour */
+                    if (!_lmNickCol && rawServerColor && window.spects && window.spects.length) {
+                        _lmLook = lmMbLookOf(0, this._connectSeq || 0, rawServerColor, name);
+                        if (_lmLook) color = _lmLook.c;
                     }
                 }
                 //				
@@ -54745,8 +54914,12 @@ function thelegendmodproject() {
                     cellUpdateCells ? (cellUpdateCells.imsoloOwnerID = imsoloOwnerID) : null;
                 }
                 if (cellUpdateCells) {
-                    if (color && !cellUpdateCells.isFood && !cellUpdateCells.isVirus) {
+                    /* a copy that took the colour another connection's copy was shown with
+                     * (lmMbShareLook) keeps it while the server's colour stays the same */
+                    if (color && !cellUpdateCells.isFood && !cellUpdateCells.isVirus &&
+                        !(cellUpdateCells._lmMbLook && (!rawServerColor || rawServerColor === cellUpdateCells._lmRawColor))) {
                         cellUpdateCells.color = color;
+                        cellUpdateCells._lmMbLook = null;
                     }
                 } else {
                     cellUpdateCells = new ogarbasicassembly(id, x, y, size, color, isFood, isVirus, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
@@ -54797,6 +54970,14 @@ function thelegendmodproject() {
                     this.indexedCells[id] = cellUpdateCells;
                 }
                 cellUpdateCells.invisible = invisible;
+                /* the shared colour of this player's copies (lmMbLookOf), kept by the next packets */
+                if (_lmLook && !cellUpdateCells.isPlayerCell) {
+                    cellUpdateCells._lmMbLook = _lmLook.c;
+                    if (!cellUpdateCells._lmMbLookT || _lmLook.t < cellUpdateCells._lmMbLookT) cellUpdateCells._lmMbLookT = _lmLook.t;
+                }
+                /* the server's name, before the own cells' nick (copies on other connections are
+                 * compared by it, lmMultiboxPositionTwin) */
+                if (namePresent && name) cellUpdateCells._lmSrvName = name;
                 if (cellUpdateCells.isPlayerCell) {
                     name = this.playerNick;
                     if (this.ws && this.ws.includes("replay")) {
@@ -79685,9 +79866,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * and the survivor is found in this same frame (no frame drawn twice or
                  * without the cell) */
                 if (_mbAny) {
+                    /* a copy drawn last frame (it was in LM.cells then and not hidden) is kept
+                     * drawn before a copy that only came now (_lmMbOutranks) */
+                    var _mbPrevF = _lmMbFrame++;
+                    var _mbSp = window.spects;
+                    _lmMbFeed.length = 0;
+                    for (i = 0; i < _mbSp.length; i++) if (_mbSp[i] && _mbSp[i].number > 0) _lmMbFeed[_mbSp[i].number] = lmSrcFeeds(_mbSp[i]);
                     for (i = 0; i < LM.cells.length; i++) {
                         cell = LM.cells[i];
-                        if (cell && cell._lmMbPosDup) {
+                        if (!cell) continue;
+                        if (cell._lmMbSeenF === _mbPrevF && !cell._lmMbPosDup && !cell.invisible) cell._lmMbSticky = _lmMbFrame;
+                        cell._lmMbSeenF = _lmMbFrame;
+                        /* when its colour was first shown (lmMbShareLook keeps the older one) */
+                        if (!cell._lmMbLookT) cell._lmMbLookT = LM.time || 1;
+                        if (cell._lmMbPosDup) {
                             cell._lmMbPosDup = false;
                             cell.invisible = false;
                         }
@@ -79724,12 +79916,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     /* The same cell from another connection at the same place. Hidden, not
                      * dropped, so it keeps moving and is shown again as soon as the other copy
                      * goes (this search runs every frame, before the cells are drawn). */
+                    /* a cell of a connection whose transform is not verified (not its own cell):
+                     * not drawn this frame (shown again by the next frame's first pass) */
+                    if (_mbAny && !cell.isFood && !_lmMbFeeds(cell) && !cell.isPlayerCellMulti) {
+                        cell._lmMbPosDup = true;
+                        cell.invisible = true;
+                        cell._lmMbTwin = null;
+                    }
                     if (_mbAny && !cell.invisible && !cell.isFood) {
                         var _mbTwin = lmMultiboxPositionTwin(cell);
                         if (_mbTwin) {
                             cell._lmMbPosDup = true;
                             cell.invisible = true;
                             _mbTwin._lmMbHides = cell;
+                            /* one colour for the copies (the one shown first) */
+                            lmMbShareLook(cell, _mbTwin);
                         }
                     }
 

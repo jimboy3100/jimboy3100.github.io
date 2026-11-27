@@ -1,8 +1,10 @@
 // Unit check of the multibox position twin rule (lmMultiboxPositionTwin in ogario.v4.js), run
 // through the frame's real hide step and compaction (cut from drawRender): a cell seen by two
-// connections is drawn once, matched by position (time-adjusted), size and server colour, one
-// to one; never by raw id. A different cell next to a copy (enemy of the same size, virus, a
-// split piece, a cell with the same raw id) is never hidden.
+// connections is drawn once, matched by position (time-adjusted), size, kind and server name, one
+// to one; never by raw id and never by colour (agar.io gives every connection its own colour for
+// one cell). A different cell next to a copy (enemy of the same size with another name, virus, a
+// split piece, a cell with the same raw id) is never hidden. The drawn copy keeps the colour the
+// cell was shown with first, and the copy drawn last frame stays drawn (no switching).
 // Usage: node developers/tests/mbtwin.js [ogario.v4.js]
 const fs = require('fs');
 const path = require('path');
@@ -90,17 +92,77 @@ for (const order of ['main first', 'unit first']) {
     run([b, a]);
     check('different ids, same cell: one representative, the main copy', !a.invisible && b.invisible);
 }
-/* 6. Two different enemies of the same size, side by side, on different connections */
+/* 6. One cell, each connection with its own server colour (live agar.io: always): drawn once, in
+ * the colour it was shown with first, also after the drawn copy changes */
 {
-    const a = cell({ spectator: 0, color: '#123456' });
-    const b = cell({ spectator: 1, x: 1006, color: '#654321' });
-    run([b, a]);
-    check('different colours: both drawn', drawn([a, b]) === 2);
-    /* the server colour decides when known: same drawn colour (team, name colour), other server colour */
-    const c = cell({ spectator: 0, color: '#123456', _lmRawColor: '#111111' });
-    const d = cell({ spectator: 1, x: 1006, color: '#123456', _lmRawColor: '#222222' });
-    run([d, c]);
-    check('different server colours: both drawn', drawn([c, d]) === 2);
+    const ctx = env(2);
+    const a = cell({ spectator: 1, color: '#7de506', _lmRawColor: '#7de506' });
+    run([a], 2, ctx);
+    const b = cell({ spectator: 2, x: 1004, color: '#5106e5', _lmRawColor: '#5106e5' });
+    const c = cell({ spectator: 0, x: 1002, color: '#06e575', _lmRawColor: '#06e575' });
+    ctx.window.legendmod.cells.push(b, c);
+    run(ctx.window.legendmod.cells, 2, ctx);
+    check('other server colour on every connection: drawn once', drawn([a, b, c]) === 1 && !c.invisible, drawn([a, b, c]));
+    check('other server colour on every connection: drawn in the colour shown first', c.color === '#7de506' && a.color === '#7de506' && b.color === '#7de506', [a.color, b.color, c.color]);
+    c.removed = true;
+    run(ctx.window.legendmod.cells, 2, ctx);
+    check('drawn copy gone: the survivor keeps that colour', drawn([a, b]) === 1 && (a.invisible ? b : a).color === '#7de506');
+    /* two different enemies of the same size side by side: other names */
+    const d = cell({ spectator: 0, color: '#123456', _lmSrvName: 'alpha' });
+    const e = cell({ spectator: 1, x: 1006, color: '#123456', _lmSrvName: 'beta' });
+    run([e, d]);
+    check('same colour, other names: both drawn', drawn([d, e]) === 2);
+}
+/* 6b. Hysteresis: a cell drawn by spectator 7 that comes into the view of spectator 3 stays drawn
+ * by spectator 7 (the new copy hides behind it); two copies both new: the lower number */
+{
+    const ctx = env(7);
+    const a = cell({ spectator: 7, color: '#111111' });
+    run([a], 2, ctx);
+    const b = cell({ spectator: 3, x: 1003, color: '#222222' });
+    ctx.window.legendmod.cells.push(b);
+    run(ctx.window.legendmod.cells, 5, ctx);
+    check('copy that comes later hides behind the drawn one', !a.invisible && b.invisible);
+    const c = cell({ spectator: 5, x: 3000, color: '#333333' });
+    const d = cell({ spectator: 4, x: 3002, color: '#444444' });
+    ctx.window.legendmod.cells.push(c, d);
+    run(ctx.window.legendmod.cells, 3, ctx);
+    check('two new copies: the lower number drawn', !d.invisible && c.invisible);
+    /* the main connection's copy is drawn before a spectator's, also one drawn already; the colour stays */
+    const m = cell({ spectator: 0, x: 1001, color: '#555555' });
+    ctx.window.legendmod.cells.push(m);
+    run(ctx.window.legendmod.cells, 2, ctx);
+    check('main copy drawn first, colour kept', !m.invisible && a.invisible && b.invisible && m.color === '#111111', [m.invisible, a.invisible, b.invisible, m.color]);
+}
+/* 6d. Party: skins are found by nick and the main connection's colour, so the main copy keeps its
+ * colour and the spectator's copy takes it (also when the spectator saw the cell first) */
+{
+    const ctx = env(2);
+    ctx.window.legendmod.gameMode = ':party';
+    const a = cell({ spectator: 1, color: '#7de506' });
+    run([a], 2, ctx);
+    const m = cell({ spectator: 0, x: 1002, color: '#06e575' });
+    ctx.window.legendmod.cells.push(m);
+    run(ctx.window.legendmod.cells, 2, ctx);
+    check('party: main copy drawn in its own colour, the copy takes it', !m.invisible && a.invisible && m.color === '#06e575' && a.color === '#06e575', [m.color, a.color]);
+}
+/* 6c. The kept link (the copy it hid behind last frame) reaches 1.5 times the tolerance; a new
+ * link only the tolerance */
+{
+    const ctx = env(2);
+    const a = cell({ spectator: 1, color: '#7de506' });
+    run([a], 2, ctx);
+    const b = cell({ spectator: 2, x: 1004, color: '#5106e5' });
+    ctx.window.legendmod.cells.push(b);
+    run(ctx.window.legendmod.cells, 2, ctx);
+    check('kept link: hidden', b.invisible && b._lmMbTwin === a);
+    b.targetX = 1000 + 12 * 1.4; /* tolerance 12 for radius 100, not moving */
+    run(ctx.window.legendmod.cells, 1, ctx);
+    check('kept link within 1.5 tolerance: still hidden', b.invisible);
+    const c = cell({ spectator: 2, x: 3000 + 12 * 1.4, color: '#5106e5' });
+    const d = cell({ spectator: 1, x: 3000, color: '#7de506' });
+    run([c, d], 1, env(2));
+    check('new link beyond the tolerance: both drawn', drawn([c, d]) === 2);
 }
 /* 7. A virus next to an enemy of the same size and colour */
 {
@@ -109,14 +171,14 @@ for (const order of ['main first', 'unit first']) {
     run([virus, enemy]);
     check('virus next to an enemy: both drawn', drawn([enemy, virus]) === 2);
 }
-/* 8. Two enemies with the same colour but different names */
+/* 8. Two enemies with the same colour but different server names (_lmSrvName, not the drawn nick) */
 {
-    const a = cell({ spectator: 0, color: '#123456', targetNick: 'alpha' });
-    const b = cell({ spectator: 1, x: 1006, color: '#123456', targetNick: 'beta' });
+    const a = cell({ spectator: 0, color: '#123456', targetNick: 'alpha', _lmSrvName: 'alpha' });
+    const b = cell({ spectator: 1, x: 1006, color: '#123456', targetNick: 'beta', _lmSrvName: 'beta' });
     run([b, a]);
     check('different names: both drawn', drawn([a, b]) === 2);
     /* the name is only compared when both copies have one */
-    const c = cell({ spectator: 0, color: '#123456', targetNick: 'alpha' });
+    const c = cell({ spectator: 0, color: '#123456', targetNick: 'alpha', _lmSrvName: 'alpha' });
     const d = cell({ spectator: 1, x: 1006, color: '#123456', targetNick: '' });
     run([d, c]);
     check('name on one copy only: still one cell', !c.invisible && d.invisible);
@@ -166,12 +228,13 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     check('profile colour (' + tag + '): main player cell drawn once, the own copy', unitCopyOfMain.invisible && !mainOwn.invisible);
     check('profile colour (' + tag + '): unit cell drawn once, the own copy', mainCopyOfUnit.invisible && !unitOwn.invisible);
 }
-/* 9c. An enemy over the unit's own cell with another server colour is never hidden behind it */
+/* 9c. An enemy over the unit's own cell with another server name is never hidden behind it (the
+ * own cell shows the profile nick; its server name is compared) */
 {
-    const own = cell({ spectator: 1, isPlayerCellMulti: true, color: '#01d9cc', _lmRawColor: '#e56c00' });
-    const enemy = cell({ spectator: 0, x: 1002, color: '#777777', _lmRawColor: '#6b6b6b' });
+    const own = cell({ spectator: 1, isPlayerCellMulti: true, color: '#01d9cc', targetNick: 'Coco', _lmSrvName: 'Coco' });
+    const enemy = cell({ spectator: 0, x: 1002, color: '#777777', targetNick: 'Rex', _lmSrvName: 'Rex' });
     run([enemy, own]);
-    check('enemy over an own cell, other server colour: both drawn', drawn([own, enemy]) === 2);
+    check('enemy over an own cell, other server name: both drawn', drawn([own, enemy]) === 2);
 }
 /* 12. Raw ids say nothing across connections: the same raw id on two connections, two cells */
 {
@@ -216,6 +279,24 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     check('representative gone: one survivor drawn at once', before === 1 && drawn([b, c]) === 1 && !b.invisible && c.invisible, before + '/' + drawn([b, c]));
 }
 
+/* 15. A connection whose transform is not verified (spect.js _lmFeedOk false: PROVISIONAL,
+ * CONFLICTED): its cells are not drawn, hide nothing and nothing hides behind them, except its own
+ * cells (a multibox unit's), which stay drawn with the main copy hidden behind them */
+{
+    const ctx = env(2);
+    ctx.window.spects[1]._lmFeedOk = () => false;
+    const a = cell({ spectator: 2, x: 1000, color: '#111111' });
+    const b = cell({ spectator: 1, x: 1003, color: '#222222' });
+    const own = cell({ spectator: 2, isPlayerCellMulti: true, x: 5000, color: '#333333' });
+    const m = cell({ spectator: 0, x: 5002, color: '#444444' });
+    run([a, b, own, m], 3, ctx);
+    check('unverified connection: its cell not drawn, the verified copy drawn', a.invisible && !b.invisible && !b._lmMbTwin);
+    check('unverified unit: its own cell drawn, the main copy hidden behind it', !own.invisible && m.invisible);
+    ctx.window.spects[1]._lmFeedOk = () => true;
+    run(ctx.window.legendmod.cells, 2, ctx);
+    check('verified again: one copy drawn', drawn([a, b]) === 1);
+}
+
 /* 10. Search against a scan of every cell (same rule, nearest + mutual nearest), frame by frame,
  * on seeded crowded scenes with 3 connections, own cells, viruses, ejected mass, hidden and
  * removed cells; and the candidate tests per frame in a crowded bucket. */
@@ -229,7 +310,7 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
         for (let i = 0; i < n; i++) {
             const x = (rnd() - 0.5) * 3000, y = (rnd() - 0.5) * 2000, z = 20 + rnd() * 250, col = cols[(rnd() * 4) | 0];
             const kind = rnd(), nick = rnd() < 0.5 ? 'n' + ((rnd() * 5) | 0) : '';
-            const o = { x, y, size: z, targetSize: z, color: col, targetNick: nick, isVirus: kind < 0.1, isEjected: kind > 0.9 };
+            const o = { x, y, size: z, targetSize: z, color: col, targetNick: nick, _lmSrvName: nick, isVirus: kind < 0.1, isEjected: kind > 0.9 };
             const conns = 1 + ((rnd() * 3) | 0);
             for (let k = 0; k < conns; k++) add(Object.assign({}, o, { spectator: k, x: x + (rnd() - 0.5) * 12, y: y + (rnd() - 0.5) * 12, invisible: rnd() < 0.03, removed: rnd() < 0.02 }));
         }
@@ -257,7 +338,7 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
         if (!r) return null;
         const mine = c.spectator > 0 ? c.spectator : 0;
         let best = null, bestD = Infinity;
-        if (c._refTwin) { const d = dist(c, c._refTwin, r); if (d >= 0) { best = c._refTwin; bestD = d; } }
+        if (c._refTwin) { const d = dist(c, c._refTwin, r, false, true); if (d >= 0) { best = c._refTwin; bestD = d; } }
         c._refTwin = null;
         if (!best) for (const o of cells) {
             if (o.removed || o.isFood || (o.spectator > 0 ? o.spectator : 0) === mine) continue;
@@ -302,7 +383,7 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     /* candidate tests per frame in a crowded bucket: 300 ejected blobs on 2 connections */
     const cells = scene(0, 300, 0);
     const ctx = run(cells, 3, env(1));
-    vm.runInContext('var _lmTests = 0; var _lmD0 = _lmMbTwinDist2; _lmMbTwinDist2 = function (a, b, r, o) { _lmTests++; return _lmD0(a, b, r, o); };', ctx);
+    vm.runInContext('var _lmTests = 0; var _lmD0 = _lmMbTwinDist2; _lmMbTwinDist2 = function (a, b, r, o, k) { _lmTests++; return _lmD0(a, b, r, o, k); };', ctx);
     run(cells, 1, ctx);
     const tests = vm.runInContext('_lmTests', ctx);
     check('crowded bucket, no own cells: main copies test no candidates (' + tests + ' tests for ' + cells.length + ' cells)', tests <= cells.length * 4, tests);

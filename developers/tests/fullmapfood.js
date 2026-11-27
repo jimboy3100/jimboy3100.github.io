@@ -59,20 +59,24 @@ function reset() {
 function spect(number) {
     const sp = Object.create(g.Spect.prototype);
     Object.assign(sp, { number, player: false, integrity: true, active: false, foodCalibrated: true, nick: '', playerCellIDs: [], time: 0, connectionGeneration: 1 });
+    /* its transform counts as verified (spect.js _lmFeedOk, tested in spectcoords.js) unless a
+     * test says otherwise: its pellets take part in the list */
+    sp._lmFeedOk = function () { return this._testFeed !== false; };
     g.spects.push(sp);
     return sp;
 }
 /* agar.io update body: eats, cells (id, x, y, size, flags[, ext], colour), 0, removes */
 function packet(eats, cells, removes) {
-    const b = Buffer.alloc(8 + eats.length * 8 + cells.length * 20 + 4 + removes.length * 4);
+    const b = Buffer.alloc(8 + eats.length * 8 + cells.reduce((n, c) => n + 20 + (c.name ? c.name.length + 1 : 0), 0) + 4 + removes.length * 4);
     let o = 0;
     b.writeUInt16LE(eats.length, o); o += 2;
     for (const [a, v] of eats) { b.writeUInt32LE(a, o); b.writeUInt32LE(v, o + 4); o += 8; }
     for (const c of cells) {
         b.writeUInt32LE(c.id, o); b.writeInt32LE(c.x, o + 4); b.writeInt32LE(c.y, o + 8); b.writeUInt16LE(c.size || 11, o + 12); o += 14;
         const col = c.color === undefined ? 0x40a0f0 : c.color;
-        b.writeUInt8(128 | 2 | (c.virus ? 1 : 0), o++); b.writeUInt8(c.food === false ? 0 : 1, o++);
+        b.writeUInt8(128 | 2 | (c.virus ? 1 : 0) | (c.name ? 8 : 0), o++); b.writeUInt8(c.food === false ? 0 : 1, o++);
         b.writeUInt8((col >> 16) & 255, o++); b.writeUInt8((col >> 8) & 255, o++); b.writeUInt8(col & 255, o++);
+        if (c.name) { o += b.write(c.name, o, 'latin1'); b.writeUInt8(0, o++); }
     }
     b.writeUInt32LE(0, o); o += 4;
     b.writeUInt16LE(removes.length, o); o += 2;
@@ -229,6 +233,53 @@ reset();
     const list = drawList();
     check('offset fixed: placed again, the pellet drawn once', list.length === 2 && list.includes(m), list.length);
 }
+/* 6b. A spectator whose orientation is not verified (PROVISIONAL, CONFLICTED: _lmFeedOk false) does
+ *     not feed the list: its pellets are not drawn and hide no other copy; once verified they join
+ *     at once (a pellet is sent once), and they leave again when it becomes CONFLICTED */
+reset();
+{
+    const m = mainFood(1, 100, 100, hex(0x40a0f0));
+    const sp = spect(1);
+    sp._testFeed = false; /* PROVISIONAL */
+    sp.updateCells(packet([], [{ id: 9, x: 100, y: 100 }, { id: 10, x: 900, y: 100 }], []), 0);
+    let list = drawList();
+    check('unverified spectator: its pellets are not drawn', list.length === 1 && list[0] === m, list.length);
+    sp._testFeed = true; /* VERIFIED */
+    list = drawList();
+    check('verified: its pellets join at once, the shared one drawn once', list.length === 2 && list.includes(m), list.length);
+    sp._testFeed = false; /* CONFLICTED */
+    list = drawList();
+    check('conflicted: its pellets leave the list', list.length === 1 && list[0] === m, list.length);
+}
+/* 6b. a spectator's named cells: the colour first seen for the nick (LM.cellcolors, shared with
+ * the main connection), teammates only with a colour they sent, own cells the profile colour
+ * without it becoming the nick's colour */
+reset();
+{
+    const sp = spect(1);
+    LM.cellcolors = Object.create(null);
+    LM.cellcolors.Bob = '#123456';
+    g.application.teamPlayers = [{ nick: 'Mate', color: '#ffffff' }, { nick: 'Sent', color: '#3366ff', _lmColorSent: true }];
+    g.profiles[0] = { color: '#ff00ff' };
+    g.application.selectedProfile = 0;
+    g.defaultmapsettings.myCustomColor = true;
+    sp.playerCellIDs = [sp.newID(24)];
+    sp.active = true; /* an own cell arriving would start the cursor timer */
+    sp.updateCells(packet([], [{ id: 20, x: 100, y: 100, size: 60, food: false, name: 'Bob', color: 0x00c800 },
+        { id: 21, x: 300, y: 100, size: 60, food: false, name: 'Mate', color: 0xc80000 },
+        { id: 22, x: 500, y: 100, size: 60, food: false, name: 'Sent', color: 0xc80000 },
+        { id: 23, x: 700, y: 100, size: 60, food: false, name: 'New', color: 0x0000c8 },
+        { id: 24, x: 900, y: 100, size: 60, food: false, name: 'Me', color: 0x00c8c8 }], []), 0);
+    const col = (raw) => { const c = LM.cells.find((x) => x._lmRawId === raw); return c ? c.color : 'none'; };
+    check('spectator: a nick seen before keeps that colour', col(20) === '#123456', col(20));
+    check('spectator: a teammate that sent no colour keeps the server colour', col(21) === hex(0xc80000), col(21));
+    check('spectator: a teammate that sent a colour is drawn in it', col(22) === '#3366ff', col(22));
+    check('spectator: a new nick keeps its server colour and is remembered with it', col(23) === hex(0x0000c8) && LM.cellcolors.New === hex(0x0000c8), [col(23), LM.cellcolors.New]);
+    check('spectator: own cell in the profile colour, not remembered as the nick colour', col(24) === '#ff00ff' && !LM.cellcolors.Me, [col(24), LM.cellcolors.Me]);
+    g.application.teamPlayers = [];
+    g.defaultmapsettings.myCustomColor = false;
+}
+
 /* 7. Canvas2D and Expanding Land WebGL draw the same list */
 reset();
 {

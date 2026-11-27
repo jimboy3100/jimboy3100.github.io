@@ -2483,8 +2483,9 @@ class Spect {
                 //snez
                 color = legendmod.rgb2Hex(~~(r * 0.9), ~~(g * 0.9), ~~(b * 0.9));
             }
-            /* the server's colour, before the name, team, profile and food colours below:
-             * copies of one cell on two connections are matched by it */
+            /* the server's colour, before the name, team, profile and food colours below (kept
+             * as _lmRawColor: the shared colour of a player on this connection, lmMbLookOf; copies
+             * on two connections are not matched by it, each gets its own) */
             const rawColor = color;
             if (flags & 4) {
                 skin = encode();
@@ -2520,23 +2521,41 @@ class Spect {
             id = this.newID(id);
 
             //FOR COLOR
+            /* The unit's own cells take the profile colour, teammates the colour they sent
+             * (_lmColorSent, as on the main connection), other named cells the colour first seen
+             * for the nick (LM.cellcolors, shared with the main connection, so all connections
+             * draw a nick in one colour). Cells without such a colour take the colour this
+             * player's copies on the other connections are shown with (lmMbLookOf below,
+             * lmMbShareLook in ogario.v4.js): each connection gets its own server colour for one
+             * player. */
+            let ownOrTeamColor = false;
             if (!isVirus && !isFood && name !== "") {
-                if (legendmod.cellcolors[name]) {
-                    color = legendmod.cellcolors[name]
+                let ownCustom = false;
+                if (this.playerCellIDs.indexOf(id) !== -1) {
+                    if (defaultmapsettings.myCustomColor && profiles[application.selectedProfile]) {
+                        color = profiles[application.selectedProfile].color
+                        ownOrTeamColor = ownCustom = true
+                    }
                 } else {
-                    if (this.playerCellIDs.indexOf(id) !== -1) {
-                        if (defaultmapsettings.myCustomColor) {
-                            color = profiles[application.selectedProfile].color
+                    const mates = application.teamPlayers;
+                    for (let t = 0; mates && t < mates.length; t++) {
+                        if (mates[t] && mates[t].nick === name && mates[t].color && mates[t]._lmColorSent) {
+                            color = mates[t].color
+                            ownOrTeamColor = true
                         }
-                    } else {
-                        application.teamPlayers.forEach((found) => {
-                            if (found.nick === name) {
-                                color = found.color
-                            }
-                        })
                     }
                 }
-                if (!legendmod.cellcolors[name]) legendmod.cellcolors[name] = color
+                if (!ownOrTeamColor && legendmod.cellcolors[name]) {
+                    color = legendmod.cellcolors[name]
+                    ownOrTeamColor = true
+                }
+                /* the profile colour is no colour of the nick (main _lmOwnColorsRestore) */
+                if (!ownCustom && !legendmod.cellcolors[name] && color) legendmod.cellcolors[name] = color
+            }
+            let look = null;
+            if (!isVirus && !isFood && !ownOrTeamColor && rawColor && typeof lmMbLookOf === 'function') {
+                look = lmMbLookOf(this.number, this.connectionGeneration, rawColor, name);
+                if (look) color = look.c;
             }
             //
 
@@ -2568,6 +2587,11 @@ class Spect {
                 cell._lmGen = this.connectionGeneration;
                 cell._lmRawId = rawId;
                 cell._lmRawColor = rawColor || null;
+                if (look) {
+                    /* made in the colour this player is shown with on the other connections */
+                    cell._lmMbLook = look.c;
+                    cell._lmMbLookT = look.t;
+                }
                 lmObsTrack(cell, this.number);
                 //if (!isFood) {
                 if (!isFood && !remove) {
@@ -2616,6 +2640,8 @@ class Spect {
 
             if (name) {
                 cell.targetNick = name;
+                /* the server's name (copies on other connections are compared by it) */
+                cell._lmSrvName = name;
             }
             if (cell.isPlayerCell) {
                 cell.targetNick = this.nick
@@ -2661,7 +2687,9 @@ class Spect {
             /* one entry per pellet of all connections (ogario.v4.js lmFoodAdd) */
             if (isFood && !cell.removed) {
                 if (cell._lmFoodEnt) lmFoodTouch(cell);
-                else lmFoodAdd(cell);
+                /* only while this connection's transform is verified (lmFoodFrame adds its
+                 * pellets when it becomes so) */
+                else if (this._lmFeedOk()) lmFoodAdd(cell);
             }
 
             // In multibox mode or for player cells, cells must NEVER be hidden
@@ -2734,9 +2762,12 @@ class Spect {
     }
 
     getOwnPlayerCells() {
-        return legendmod.playerCellsMulti.filter((cell) => {
-            return cell && !cell.removed && cell.spectator === this.number;
-        });
+        const all = legendmod.playerCellsMulti, n = this.number, out = [];
+        for (let i = 0; i < all.length; i++) {
+            const cell = all[i];
+            if (cell && !cell.removed && cell.spectator === n) out.push(cell);
+        }
+        return out;
     }
 
     newID(id) {
@@ -2775,22 +2806,28 @@ class Spect {
         }
         this.playerSize = size;
         this.playerMass = ~~(targetSize / 100);
-        this.recalculatePlayerMass();
+        this.recalculatePlayerMass(ownCells);
         /* No 10 ms timer chain any more: setView() calls this every frame
          * (LM.updateMultiboxUnitPositions), also while the main player is dead. */
     }
 
-    recalculatePlayerMass() {
+    /* ownCells: this unit's own cells when the caller has them (every frame from
+     * calculatePlayerMassAndPosition), else they are collected. Smallest and biggest in one pass:
+     * it copied and sorted the cells every frame for two values. */
+    recalculatePlayerMass(ownCells) {
         if (this.playerScore = Math.max(this.playerScore, this.playerMass),
         defaultmapsettings.virColors || defaultmapsettings.splitRange || defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.showStatsSTE) {
-            const cells = this.getOwnPlayerCells().slice();
+            const cells = ownCells || this.getOwnPlayerCells();
             const CellLength = cells.length;
             if (CellLength > 0) {
-                cells.sort(function (cells, CellLength) {
-                    return cells.size === CellLength.size ? cells.id - CellLength.id : cells.size - CellLength.size;
-                });
-                this.playerMinMass = ~~(cells[0].size * cells[0].size / 100);
-                this.playerMaxMass = ~~(cells[CellLength - 1].size * cells[CellLength - 1].size / 100);
+                let minS = Infinity, maxS = -Infinity;
+                for (let i = 0; i < CellLength; i++) {
+                    const s = cells[i].size;
+                    if (s < minS) minS = s;
+                    if (s > maxS) maxS = s;
+                }
+                this.playerMinMass = ~~(minS * minS / 100);
+                this.playerMaxMass = ~~(maxS * maxS / 100);
             } else {
                 this.playerMinMass = 0;
                 this.playerMaxMass = 0;
