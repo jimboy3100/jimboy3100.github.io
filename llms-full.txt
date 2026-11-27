@@ -288,7 +288,7 @@ Drag and resize HUD elements with named layouts. Features:
 - **Death recap**: Last 20 seconds as 3-6 summarised steps with mass sparkline, showing splits, virus pops, being eaten. Attributes killer from eat events. Expanding Land uses server-provided killer info.
 - **Killer display**: "Eaten by: nick (mass)" on the Game Over card
 - **Mass loss alerts**: Notification when you lose a configurable percentage (10-90%) of mass within 2 seconds
-- **Analytics window**: Statistics dashboard with heatmaps, play pattern analysis (coach), personal objectives (up to 8 custom goals), up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis.
+- **Analytics window**: Statistics dashboard with heatmaps and the match history, up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis.
 - **Notification centre**: Bell icon with unread count, filterable list by category (achievements, bests, party, replay, connection, settings, chat, other), mark read, clear, suppress toasts by category. Up to 200 notifications, max 120KB in localStorage.
 - **Network history**: Ping, jitter, packet rate and disconnect statistics across sessions
 - **Session stats**: Games played, best mass, time played per tab session (sessionStorage)
@@ -558,7 +558,7 @@ A full playback tool for game replays with timeline, automatic bookmarks, variab
 A tool to drag and resize 15 HUD components (leaderboard, minimap, stats, chat, etc.) into named layouts. Up to 20 layouts with grid snapping (8/16/32px), lock/unlock, and edge-relative positioning for responsiveness.
 
 **What is the Analytics Dashboard?**
-A statistics window with heatmaps, play pattern analysis (coach), up to 8 custom objectives, 500 game summaries, and split analysis. It tracks position history (3,600 samples per game, 50 games) and provides tips based on your play patterns.
+A statistics window with a dashboard (games, highest mass, survival, top-10 rate, weekly chart, best servers and modes), heatmaps and the match history, from up to 500 game summaries. It tracks position history (3,600 samples per game, 50 games).
 
 **What is the Radial Menu?**
 A hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot for quick access without memorising keys. Hold the radial menu key, point to a slot, and release to activate.

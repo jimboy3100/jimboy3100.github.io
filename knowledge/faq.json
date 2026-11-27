@@ -167,7 +167,7 @@
     },
     {
       "question": "What is the Analytics Dashboard?",
-      "answer": "A statistics window with heatmaps, play pattern analysis (coach), up to 8 custom objectives, 500 game summaries, and split analysis. It tracks position history (3,600 samples per game, 50 games) and provides tips based on your play patterns."
+      "answer": "A statistics window with a dashboard (games, highest mass, survival, top-10 rate, weekly chart, best servers and modes), heatmaps and the match history, from up to 500 game summaries. It tracks position history (3,600 samples per game, 50 games)."
     },
     {
       "question": "What is the Radial Menu?",

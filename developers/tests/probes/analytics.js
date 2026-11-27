@@ -12,7 +12,7 @@
   need('no recording listeners while off', !window.LMEvents._has('split') && !window.LMEvents._has('massUpdate'));
   need('hotkey without a default key', typeof hotkeysCommand === 'object' && hotkeysCommand['hk-analytics'] && hotkeysCommand['hk-analytics'].defaultKey === '');
   need('Analytics button in the profile stats', !document.getElementById('user-stats') || !!document.getElementById('lm-analytics-btn'));
-  var keys = ['lmAnalyticsGames', 'lmAnalyticsTracks', 'lmAnalyticsGoals', 'lmMatchHistory'], saved = {};
+  var keys = ['lmAnalyticsGames', 'lmAnalyticsTracks', 'lmMatchHistory'], saved = {};
   var optMh = window.legendmod5 && window.legendmod5.matchHistory, optAn = window.legendmod5 && window.legendmod5.analytics, origConfirm = window.confirm;
   keys.forEach(function (k) { saved[k] = localStorage.getItem(k); });
   try {
@@ -25,7 +25,6 @@
     }
     localStorage.setItem('lmAnalyticsGames', JSON.stringify({ v: 1, games: games }));
     localStorage.setItem('lmAnalyticsTracks', JSON.stringify({ v: 1, tracks: tracks }));
-    localStorage.removeItem('lmAnalyticsGoals');
     A.open('dash');
     var md = document.getElementById('lm-analytics');
     need('window opens', !!md && A.isOpen());
@@ -101,14 +100,7 @@
     var dl = document.querySelector('[data-layer="death"]');
     if (dl) dl.click();
     need('deaths layer', !!document.getElementById('lm-analytics-heat'));
-    document.getElementById('lm-analytics-tab-coach').click();
-    need('coach report', !!document.getElementById('lm-analytics-overall') && document.querySelectorAll('#lm-analytics-tips li').length >= 2 &&
-      document.querySelectorAll('[data-part]').length === 5);
-    document.getElementById('lm-analytics-tab-goals').click();
-    need('daily objectives', document.querySelectorAll('#lm-analytics-daily .lm-analytics-goal').length === 3);
-    document.getElementById('lm-analytics-goal-target').value = '1500';
-    document.getElementById('lm-analytics-goal-add').click();
-    need('custom objective added', document.querySelectorAll('#lm-analytics-custom .lm-analytics-goal').length === 1);
+    need('three tabs, no Coach or Objectives', document.querySelectorAll('#lm-analytics-tabs [data-tab]').length === 3 && !document.getElementById('lm-analytics-tab-coach') && !document.getElementById('lm-analytics-tab-goals'));
     var x = document.getElementById('lm-analytics-close');
     var xr = x.getBoundingClientRect();
     need('close button is a touch-sized target', xr.width >= 32 && xr.height >= 32);

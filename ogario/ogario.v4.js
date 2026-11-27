@@ -22040,7 +22040,6 @@ var LM_EXPORT_KEYS = [
     { key: 'lmCustomMacros', type: 'o' },
     { key: 'lmThemeWorkshop', type: 'o' },
     { key: 'lmPracticeCfg', type: 'o' },
-    { key: 'lmAnalyticsGoals', type: 'o' },
     /* the small tools (ogario/modules/smalltools.js): the radial menu's commands and the
      * screenshot options */
     { key: 'lmRadialMenu', type: 'o' },
@@ -43420,7 +43419,7 @@ function thelegendmodproject() {
         },
         sendSplit() {
             this.sendPosition();
-            /* "split" for scripts and the Analytics coach: one event per split sent; before = own
+            /* "split" for scripts and Analytics: one event per split sent; before = own
              * cell count when it was sent */
             if (this.play && window.LMEvents._has('split')) window.LMEvents.emit('split', { time: Date.now(), count: 1, before: this.playerCells ? this.playerCells.length : 0 });
             if (this.serverType === 'senpa') {
@@ -89085,7 +89084,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading death recap script:', e);
     }
-    /* Analytics window (stats, heatmaps, coach, objectives); records only while its option is on */
+    /* Analytics window (stats, heatmaps, history); records only while its option is on */
     try {
         var analyticsScript = document.createElement('script');
         analyticsScript.type = 'text/javascript';

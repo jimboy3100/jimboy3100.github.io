@@ -25,7 +25,7 @@
       "id": "analytics",
       "file": "ogario/modules/analytics.js",
       "lines": 1159,
-      "description": "Statistics dashboard with heatmaps, play pattern analysis (coach), personal objectives, game summaries. Tracks position samples, splits, kills.",
+      "description": "Statistics dashboard with heatmaps and the match history, from game summaries. Tracks position samples, splits, kills.",
       "feature": "Stats and Analytics"
     },
     {

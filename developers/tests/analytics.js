@@ -1,5 +1,5 @@
-/* Analytics checks: aggregation, coach scoring, heatmap binning, objective generation and a
- * recorded life, against ogario/modules/analytics.js loaded in a vm with stubs.
+/* Analytics checks: aggregation, heatmap binning and a recorded life (no Coach or objective toast,
+ * nothing stored for them), against ogario/modules/analytics.js loaded in a vm with stubs.
  * node developers/tests/analytics.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const i18n = require('./lib/i18n-env');
@@ -124,85 +124,6 @@ check('track validation', C.sanitizeTrack({ t: 1, p: 'AAB' }) === null && C.sani
     check('no games: zeros, no top-10 value', e.games === 0 && e.highest === 0 && e.top10 === null && e.weeks.length === 8);
 }
 
-/* ---------- coach */
-{
-    const s = C.coachScores(G({ ms: 5 * MIN, peak: 2500, end: 1250, spl: 4, splLoss: 0.25, cov: 18, edge: 0.1, n: 300 }));
-    check('survival 5 min = 63', s.survival === 63);
-    check('growth 500/min = 52', s.rate === 500 && s.growth === 52);
-    check('splits 25 % average loss = 50', s.splits === 50);
-    /* coverage 18 / min(24, 3 + 15) = 1; edge 0.1 / 0.5 = 0.2 -> 100 * (0.6 + 0.4 * 0.8) = 92 */
-    check('movement = 92', s.movement === 92);
-    check('retention = 50', s.retention === 50);
-    check('overall = average of the parts', s.overall === Math.round((63 + 52 + 50 + 92 + 50) / 5));
-    const n = C.coachScores(G({ spl: 0, n: 2 }));
-    check('no splits / few samples: null parts', n.splits === null && n.movement === null);
-    const m = C.coachScores(C.sanitizeGame({ src: 'mh', t: clock, ms: 10 * MIN, peak: 50000 }));
-    check('old match history game: survival and growth only', m.splits === null && m.movement === null && m.retention === null && m.survival === 86 && m.growth === 100);
-    check('very short life: growth uses at least 30 s', C.coachScores(G({ ms: 1000, peak: 25 })).rate === 50);
-}
-{
-    const prev = [];
-    for (let i = 0; i < 12; i++) prev.push(G({ t: clock - (20 - i) * MIN, ms: 10 * MIN, peak: 5000 }));
-    const g = G({ ms: 2 * MIN, peak: 1000, end: 300, loss20: 0.42, spl: 3, splBad: 2, splLoss: 0.4, n: 200, edge: 0.5, cov: 3 });
-    const games = prev.concat([g]);
-    const rec = C.recentAverages(games, games.length - 1);
-    check('recent average: last 10 games before this one', rec.n === 10 && rec.ms === 10 * MIN && rec.survival === 86);
-    const tips = C.coachSuggestions(g, C.coachScores(g), rec);
-    check('2-4 suggestions', tips.length >= 2 && tips.length <= 4);
-    check('final 20 s loss comes first with its number', tips[0][0] === 'sgFinal' && C.text(tips[0][0], tips[0][1]).indexOf('42%') !== -1);
-    check('split rule names the splits', tips.some(t => t[0] === 'sgSplits' && C.text(t[0], t[1]).indexOf('2 of your 3 splits') === 0));
-    check('at most 3 problems', tips.filter(t => /^sg(Final|Splits|Edge|Coverage|Short|Growth|Retention)$/.test(t[0])).length <= 3);
-    const good = G({ ms: 12 * MIN, peak: 20000, end: 20000, first: 95000, n: 700, cov: 24, edge: 0.05, spl: 0 });
-    const t2 = C.coachSuggestions(good, C.coachScores(good), { n: 0 });
-    check('good game: praise for 1st place plus a tip (2 lines)', t2.length === 2 && t2[0][0] === 'sgFirst' && C.text(t2[0][0], t2[0][1]).indexOf('1:35') !== -1 && /^sgTip/.test(t2[1][0]));
-    check('suggestion texts come from the language pack', C.text('sgFirst', ['1:35']) === i18n.t('modules.analytics.sgFirst', ['1:35']));
-    ctx.LMi18n.setLang('el', { save: false });
-    const el = C.text(t2[0][0], t2[0][1]);
-    check('suggestions follow the language (Greek)', el === i18n.t('modules.analytics.sgFirst', t2[0][1], 'el') && el.indexOf('1:35') !== -1 && el !== i18n.t('modules.analytics.sgFirst', t2[0][1]));
-    ctx.LMi18n.setLang('en', { save: false });
-    const same = C.coachSuggestions(g, C.coachScores(g), rec);
-    check('suggestions are deterministic', JSON.stringify(same) === JSON.stringify(tips));
-}
-
-/* ---------- objectives */
-check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.niceFloor(87) === 87 && C.niceFloor(0) === 0 && C.niceFloor(5.5) === 5);
-{
-    const d0 = C.generateDaily([], '2026-11-25');
-    check('no history: play 3, survive 2 min, reach 500', JSON.stringify(d0.map(g => g.type + g.target)) === JSON.stringify(['games3', 'survive2', 'mass500']));
-    const hist = [];
-    for (let i = 0; i < 30; i++) hist.push(G({ t: clock - (30 - i) * DAYMS / 3, peak: 1000 + i * 100, ms: (2 + (i % 6)) * MIN, bestPos: i % 2 ? 4 : 0 }));
-    const d1 = C.generateDaily(hist, '2026-11-25'), d2 = C.generateDaily(hist, '2026-11-25');
-    check('3 daily objectives, games first, ids carry the day', d1.length === 3 && d1[0].type === 'games' && d1.every(g => g.id.indexOf('2026-11-25:') === 0));
-    check('same day, same objectives', JSON.stringify(d1) === JSON.stringify(d2));
-    check('games target = median games per day (3)', d1[0].target === 3);
-    const all = C.generateDaily(hist, 'x'), types = {};
-    ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].forEach(k => C.generateDaily(hist, k).forEach(g => { types[g.type] = g.target; }));
-    check('mass target = median peak rounded down (2400)', types.mass === 2400);
-    check('mass target is reached by at least half the games', hist.filter(g => g.peak >= types.mass).length >= 15);
-    check('survive target = median minutes (4)', types.survive === 4);
-    check('top target from the leaderboard history (5)', types.top === 5);
-    check('beat average = average peak (2450)', types.beatAvg === 2450);
-    check('different days rotate the other two', Object.keys(types).length === 5 && all.length === 3);
-    const from = clock - 1000;
-    const today = [G({ t: clock, peak: 3000, ms: 6.5 * MIN, bestPos: 4 }), G({ t: clock + 1, peak: 1000, ms: MIN, bestPos: 0 })];
-    const P = (type, target) => C.goalProgress({ id: 'x', type, target }, today, from);
-    check('progress: mass', P('mass', 3000).done && near(P('mass', 6000).frac, 0.5));
-    check('progress: survive (minutes, one decimal)', P('survive', 6).done && P('survive', 6).value === 6.5 && !P('survive', 7).done);
-    check('progress: top', P('top', 5).done && !P('top', 3).done && P('top', 3).value === 4);
-    check('progress: games', P('games', 2).done && near(P('games', 4).frac, 0.5));
-    check('progress: beat average needs more than the average', !P('beatAvg', 3000).done && P('beatAvg', 3000).frac < 1 && P('beatAvg', 2999).done);
-    check('progress counts only games since the start', C.goalProgress({ id: 'x', type: 'games', target: 1 }, today, clock + 5).value === 0);
-    check('custom objective validation', C.sanitizeGoal({ type: 'nope', target: 1 }, true) === null && C.sanitizeGoal({ type: 'survive', target: 9999 }, true).target === 360 && C.sanitizeGoal({ type: 'mass', target: 0 }, true) === null);
-    const st1 = { day: '', daily: [], custom: [], done: { 'old:games': 1 } }, st2 = { day: '', daily: [], custom: [], done: {} };
-    C.ensureDaily(st1, hist, clock);
-    C.ensureDaily(st2, hist.concat([G({ t: clock, peak: 99999, ms: 60 * MIN })]), clock);
-    check('daily objectives ignore games of the same day', JSON.stringify(st1.daily) === JSON.stringify(st2.daily));
-    st1.daily = [{ id: 'old:games', type: 'games', target: 1 }];
-    st1.day = '2020-01-01';
-    check('a new day replaces them and forgets old marks', C.ensureDaily(st1, hist, clock) && !st1.done['old:games'] && st1.day === C.dayKey(clock));
-    check('same day: kept', !C.ensureDaily(st1, hist, clock));
-}
-
 /* ---------- practice / replay lives and a life cut by a server change or disconnect (audit A16) */
 {
   ctx.legendmod5.analytics = true;
@@ -277,10 +198,9 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     check('position samples once a second', g.n >= 59 && g.n <= 61 && tracks.length === 1 && tracks[0].p.length === g.n * 2);
     check('spawn at the left edge, death further right', C.decodeCells(tracks[0].s)[0][0] === 0 && C.decodeCells(tracks[0].d)[0][0] > 40 && tracks[0].shape === 's' && tracks[0].map === 14142);
     check('end mass is the last update', g.end === mass);
-    check('coach toast after the game', toasts.some(t => t[0] === 'info' && t[1].indexOf('Coach: ') !== -1));
-    check('objective toast for the completed objective only', toasts.filter(t => t[0] === 'success').length === 1 && toasts.some(t => t[0] === 'success' && t[1].indexOf('Reach 500 mass') !== -1));
-    const goals = JSON.parse(store.get('lmAnalyticsGoals'));
-    check('daily objectives stored for today', goals.v === 1 && goals.day === C.dayKey(clock) && goals.daily.length === 3);
+    check('no Coach or objective toast after the game', toasts.length === 0);
+    check('no objectives stored', store.get('lmAnalyticsGoals') == null);
+    check('no Coach or objective helpers left', !C.coachScores && !C.generateDaily && !C.goalProgress);
     store.set('lmAnalyticsTracks', '{"v":1,"tracks":[{"t":1,"p":"<script>"}]}');
     check('tampered track store reads empty', C.parseStore(store.get('lmAnalyticsTracks'), 'tracks', C.sanitizeTrack, 50).length === 0);
     /* a second life: split, then eaten 2 s later -> that split lost everything */
