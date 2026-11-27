@@ -31,11 +31,12 @@ const src = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8').r
 /* The jelly passes of renderFrame, from the step decision to the profiler call. */
 const frameBlock = B.sliceBetween(src, '                    var _jellyStep =\n', '                    if (\n                        window\n                            .clientProfiler');
 function makeFrameRunner(J) {
-    const fn = new Function('LM', '_jellyCells', 'performance', 'console', frameBlock + '\nreturn _jellyStep;');
+    /* window: the stand-in of bench-dense.js (the block reads window._lmScope, the diagnostics timers; off here) */
+    const fn = new Function('LM', '_jellyCells', 'performance', 'console', 'window', frameBlock + '\nreturn _jellyStep;');
     return function (scratch, rafTs) {
         J.drawRender._jellyFrameId++;
         J.drawRender._lmRafTs = rafTs;
-        return fn.call(J.drawRender, J.LM, scratch, J.env.performance, console);
+        return fn.call(J.drawRender, J.LM, scratch, J.env.performance, console, J.env.window);
     };
 }
 /* The frame sequence before the cadence: prepare, index, move on every frame. */
