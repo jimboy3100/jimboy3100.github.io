@@ -27396,7 +27396,7 @@ function thelegendmodproject() {
             //this.addOptions(["unlockedFPS"], "animationGroup");
             /* Settings menu layout: one place per option. Ids and stored keys did not change when
              * options moved (recordReplays to Replays, performanceMode to Performance, reducedMotion
-             * to Accessibility, the gameplay sounds to Sounds, merge options to Merging, click
+             * to Expanding Land, the gameplay sounds to Sounds, merge options to Merging, click
              * spectate and the stream overlay to Spectating, jelly physics and the eat animation from
              * Skins to Animation, the developer console from Stats to Performance). */
             this.addOptions(["highDPI", "glAntialias", "menuFpsCap", "jellyPhisycs", "suckAnimation"], "animationGroup");
@@ -27469,8 +27469,11 @@ function thelegendmodproject() {
                 _lmG1h('game1.set.lineSplitHelp') +
                 '</div>'
             );
+            /* Expanding Land: Reduced motion only changes Expanding Land effects (its death shake and
+             * particles, its entrance spin) */
+            this.addOptions(["reducedMotion"], "expandingLandGroup");
             /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
-            this.addOptions(["reducedMotion"], "accessibilityGroup");
+            this.addOptions([], "accessibilityGroup");
             this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);
             /* HUD text size is in Theme > HUD, next to the HUD scale (setThemeMenu) */
             this.addOptions([], "macroGroup");

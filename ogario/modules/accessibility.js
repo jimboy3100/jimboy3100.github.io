@@ -3,8 +3,9 @@
  *   a11yHudTextScale  larger HUD text (leaderboard, stats, clock, chat); follows the HUD scale
  *                     (its slider is in Theme > HUD next to the HUD scale; still a gameplay setting)
  * While they are off this file adds no style or loop.
- * (Colour-blind colours and a high-contrast HUD: the theme preset "Colour-blind safe"; less
- * motion and flashing: the reducedMotion option.)
+ * (Colour-blind colours and a high-contrast HUD: the theme preset "Colour-blind safe"; the
+ * Expanding Land effects (death shake, particles, entrance spin): Reduced motion in
+ * Settings > Expanding Land.)
  */
 (function () {
     'use strict';

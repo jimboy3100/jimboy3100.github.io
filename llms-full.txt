@@ -306,7 +306,7 @@ Drag and resize HUD elements with named layouts. Features:
 - **Hide country flag**: Remove country flag from chat
 
 ### 19. Accessibility
-- **Reduced motion**: Disables death screen shake, death particles, entrance animations, and Expanding Land entrance spin
+- **Reduced motion** (Settings > Expanding Land): Disables the Expanding Land death screen shake, death particles and entrance spin
 - **Text scale**: Adjust menu text size (1.0-1.6x) independently from HUD scale
 - **HUD text scale**: Adjust in-game HUD text (leaderboard, stats, clock, chat) on top of the HUD scale (Theme > HUD, next to HUD scale)
 - **Colour-blind safe theme preset**: Okabe-Ito palette with opaque HUD, bigger minimap marks
@@ -374,7 +374,8 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Stats**: Game Over card stats, mass graph, kill feed, death recap, mass loss alerts, analytics, match history
 - **Merge**: Countdown, sound, progress rings
 - **Indicators**: Opponent colours, rings, virus colours, split range (single/double/triple/quad), virus range, cursor tracking, split prediction, bubble indicators, teammates indicators
-- **Accessibility**: Reduced motion, text scale (1.0-1.6x), HUD text scale, indicators
+- **Expanding Land**: Reduced motion (no Expanding Land death shake, death particles or entrance spin)
+- **Accessibility**: Text scale (1.0-1.6x), HUD text scale, indicators
 - **Grid/Borders**: Grid, sectors, map borders, border glow, rainbow borders
 - **Effects**: No colours, custom colour, transparent skins/cells/viruses, virus glow, cell contours, cell shadows, animated rainbow, death particles, eat pulse
 - **Zoom**: Auto zoom, mass-weighted camera

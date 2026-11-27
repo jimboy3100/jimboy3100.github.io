@@ -277,13 +277,20 @@
     {
       "id": "accessibility",
       "name": "Accessibility",
-      "description": "Accessibility and motion settings.",
+      "description": "Accessibility settings.",
       "settings": [
-        "reducedMotion",
         "textScale",
         "hudTextScale",
         "indicatorSize",
         "colourBlindSafe"
+      ]
+    },
+    {
+      "id": "expandingland",
+      "name": "Expanding Land",
+      "description": "Settings for Expanding Land only.",
+      "settings": [
+        "reducedMotion"
       ]
     },
     {

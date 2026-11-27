@@ -4103,6 +4103,24 @@
     "ja": "アクセシビリティ",
     "it": "Accessibilità"
   },
+  "settings.expandingLandGroup": {
+    "en": "Expanding Land",
+    "el": "Expanding Land",
+    "es": "Expanding Land",
+    "bg": "Expanding Land",
+    "fr": "Expanding Land",
+    "ar": "Expanding Land",
+    "zh": "Expanding Land",
+    "ru": "Expanding Land",
+    "de": "Expanding Land",
+    "tr": "Expanding Land",
+    "pl": "Expanding Land",
+    "nl": "Expanding Land",
+    "pt": "Expanding Land",
+    "id": "Expanding Land",
+    "ja": "Expanding Land",
+    "it": "Expanding Land"
+  },
   "settings.a11yTextScale": {
     "en": "Menu text size (1 = normal)",
     "el": "Μέγεθος κειμένου μενού (1 = κανονικό)",
