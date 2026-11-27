@@ -86,7 +86,7 @@ function page(opts) {
     });
     ctx.LM = ctx.ogario = ctx.legendmod = LM;
     const app = vm.runInContext('({' + appSrc.join(',\n') + '})', ctx);
-    Object.assign(app, { playerID: opts.playerID || 0, teamPlayers: [], socket: null, privateMode: false });
+    Object.assign(app, { playerID: opts.playerID || 0, teamPlayers: [], socket: null });
     ctx.application = app;
     /* the relay wrapper of LMexpress/standby-server.js: always "open", one inner socket */
     const relay = { isFake: true, readyState: 1, sockets: [{ readyState: 1 }], sent: [], send(b) { this.sent.push(new DataView(b)); } };
@@ -295,15 +295,12 @@ safe('route', () => {
     q.ctx.LMPractice = { on: true };
     q.app.sendTeamWave();
     check('practice arena: not sent to teammates', q.relay.sent.length === 0, q.relay.sent.length);
-    /* private mode: the relay down, the private socket open (not the relay that gave our ID) */
+    /* the relay wrapper down, our own relay socket open */
     const r = page({ playerID: 17 });
     r.border(-7071, -7071, 7071, 7071, 'private');
     r.relay.sockets[0].readyState = 3;
     const own = { readyState: 1, OPEN: 1, sent: [], send(b) { this.sent.push(b); } };
-    r.app.socket = own; r.app.privateMode = true;
-    r.app.sendTeamWave();
-    check('private mode, relay down: not sent to the private socket', own.sent.length === 0 && r.relay.sent.length === 0);
-    r.app.privateMode = false; r.tick(400);
+    r.app.socket = own;
     r.app.sendTeamWave();
     check('public mode, wrapper down: our own open socket is used', own.sent.length === 1, own.sent.length);
 });

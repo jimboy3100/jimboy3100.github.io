@@ -5237,24 +5237,6 @@
     "ja": "チャット音のミュート / 解除",
     "it": "Silenzia / riattiva i suoni della chat"
   },
-  "settings.hk-switchServerMode": {
-    "en": "Switch server [public/private]",
-    "el": "Αλλαγή server [δημόσιος/ιδιωτικός]",
-    "es": "Cambiar servidor [público/privado]",
-    "bg": "Смени сървъра [публичен/частен]",
-    "fr": "Changer de serveur [public/privé]",
-    "ar": "تبديل السيرفر [عام/خاص]",
-    "zh": "切換伺服器 [公開/私人]",
-    "ru": "Сменить сервер [публичный/приватный]",
-    "de": "Server wechseln [öffentlich/privat]",
-    "tr": "Sunucu değiştir [genel/özel]",
-    "pl": "Przełącz serwer [publiczny/prywatny]",
-    "nl": "Server wisselen [openbaar/privé]",
-    "pt": "Trocar servidor [público/privado]",
-    "id": "Ganti server [publik/privat]",
-    "ja": "サーバー切り替え［公開/プライベート］",
-    "it": "Cambia server [pubblico/privato]"
-  },
   "settings.hk-showTargeting": {
     "en": "Show/hide targeting panel",
     "el": "Εμφάνιση/απόκρυψη πάνελ στόχευσης",

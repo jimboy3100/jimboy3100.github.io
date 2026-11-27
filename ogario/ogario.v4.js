@@ -21862,7 +21862,7 @@ function lmFoldClickFollow(s) {
  * (its FPS, ping and renderer are there), "Open the Lab" (removed) opens User Scripts. An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts; Save the
  * current zoom as zoom level 1-5; Skin collections, part of the player profiles now; the Command
- * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay) is free. For the stored hotkeys (loadHotkeys) and a settings
+ * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address) is free. For the stored hotkeys (loadHotkeys) and a settings
  * profile's (profiles.js), so an older set keeps those keys. Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
@@ -21876,7 +21876,7 @@ function lmRenameOldHotkeys(map) {
     for (var k in map) {
         if (!own(k)) continue;
         var v = String(map[k]), to = '', keyed = false, z;
-        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo)|instantReplay)$/.test(v)) { delete map[k]; changed = true; continue; }
+        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode)$/.test(v)) { delete map[k]; changed = true; continue; }
         /* the spectator director's commands and camera lock (removed) */
         if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
         /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey,
@@ -23533,10 +23533,8 @@ function thelegendmodproject() {
     var application = window.application = {
         name: 'LM express',
         version: 'v1',
-        privateMode: false,
         protocolMode: true,
         publicIP: 'wss://wss.ogario.eu:3443',
-        privateIP: null,
         updateInterval: 1000,
         updateTick: 0,
         updateMaxTick: 2,
@@ -31398,7 +31396,7 @@ function thelegendmodproject() {
         connect() {
             /* A socket to the same relay is still connecting: keep it (closing it lost the
              * join state); its onopen sends the current party data. */
-            var _lmTarget = this.privateMode && this.privateIP ? this.privateIP : this.publicIP;
+            var _lmTarget = this.publicIP;
             if (this.socket && this.socket.readyState === WebSocket.CONNECTING && this._lmRelayTarget === _lmTarget) {
                 this.flushData();
                 this.setParty();
@@ -31419,74 +31417,47 @@ function thelegendmodproject() {
             }
             this.setParty();
             //console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Connecting to ogario socket'),
-            if (this.privateMode && this.privateIP) {
-                this.socket = new WebSocket(this.privateIP);
-                /* Ensure the standby-server relay (window.ogarioWS) routes
-                 * incoming chat/minimap messages to our handler. */
-                if (window.ogarioWS) {
-                    window.ogarioWS.onmessage = this.handleMessage.bind(this);
-                }
-            } else {
-                this.socket = new WebSocket(this.publicIP);
-            }
+            this.socket = new WebSocket(this.publicIP);
             this.socket.ogarioWS = true;
             this.socket.binaryType = 'arraybuffer';
             var app = this;
-            if (!this.privateMode) {
-                /* Public server: send ogario handshake and wire handleMessage */
-                this.socket.onopen = () => {
-                    var buf = app.createView(3);
-                    buf.setUint8(0, 0);
-                    buf.setUint16(1, 401, true);
-                    app.sendBuffer(buf);
+            /* send the ogario handshake and wire handleMessage */
+            this.socket.onopen = () => {
+                var buf = app.createView(3);
+                buf.setUint8(0, 0);
+                buf.setUint16(1, 401, true);
+                app.sendBuffer(buf);
 
-                    buf.setUint8(0, 5);
-                    buf.setUint16(1, 20, true);
-                    app.sendBuffer(buf);
+                buf.setUint8(0, 5);
+                buf.setUint16(1, 20, true);
+                app.sendBuffer(buf);
 
-                    /* The relay wrapper (standby-server) reopens its inner socket by itself and
-                     * replays only its cached opcodes; the lastSent* dedupe then kept 10-16 from
-                     * being sent after this handshake, and opcode 13 (custom colour) is never
-                     * cached, so it was lost after every inner reconnect. Resend all party data. */
-                    app._lmResetSentPartyData();
-                    app.sendPartyData();
-                    app._lmRelayRetries = 0;
-                    /* after a reconnect the relay must learn we are alive again */
-                    if (ogario.play) app.sendPlayerSpawn();
-                }
-                this.socket.onmessage = function (buf) {
-                    app.handleMessage(buf);
-                }
-            } else {
-                /* Private server: legendmod owns the game socket.
-                 * We wire handleMessage into ogarioWS relay instead. */
-                this.socket.onopen = () => {
-                    app._lmResetSentPartyData();
-                    app.sendPartyData();
-                    /* A working relay ends any public-relay retry state; otherwise the 60 s
-                     * slow poll kept closing this socket and flushing teammates every minute. */
-                    app._lmRelayRetries = 0;
-                    if (app._lmRelaySlowPoll) {
-                        clearInterval(app._lmRelaySlowPoll);
-                        app._lmRelaySlowPoll = null;
-                    }
-                };
+                /* The relay wrapper (standby-server) reopens its inner socket by itself and
+                 * replays only its cached opcodes; the lastSent* dedupe then kept 10-16 from
+                 * being sent after this handshake, and opcode 13 (custom colour) is never
+                 * cached, so it was lost after every inner reconnect. Resend all party data. */
+                app._lmResetSentPartyData();
+                app.sendPartyData();
+                app._lmRelayRetries = 0;
+                /* after a reconnect the relay must learn we are alive again */
+                if (ogario.play) app.sendPlayerSpawn();
+            }
+            this.socket.onmessage = function (buf) {
+                app.handleMessage(buf);
             }
             var _lmSock = this.socket;
             this.socket.onclose = function (buf) {
                 //app.flushData();
                 /* closeConnection() detaches this handler first, so this is an unexpected
                  * drop: reconnect the public relay with backoff instead of staying dead. */
-                if (app.socket !== _lmSock || app.privateMode) return;
+                if (app.socket !== _lmSock) return;
                 var tries = app._lmRelayRetries = (app._lmRelayRetries || 0) + 1;
                 if (tries > 20) {
                     /* After 20 failed reconnects, switch to slow polling (every 60s) */
                     if (!app._lmRelaySlowPoll) {
                         app._lmRelaySlowPoll = setInterval(function () {
-                            /* The slow poll only revives the public relay: in private mode
-                             * connect() would tear down the working private relay. */
-                            if (app._lmRelayRetries <= 20 || app.privateMode) {
-                                app._lmRelayRetries = app.privateMode ? 0 : app._lmRelayRetries;
+                            /* a working relay (retries reset by its onopen) ends the slow poll */
+                            if (app._lmRelayRetries <= 20) {
                                 clearInterval(app._lmRelaySlowPoll);
                                 app._lmRelaySlowPoll = null;
                                 return;
@@ -31511,11 +31482,6 @@ function thelegendmodproject() {
                 console.log('\x1b[32m%s\x1b[34m%s\x1b[0m', consoleMsgLM, ' Socket error', buf);
                 window.noOgarioSocket = true;
             };
-            /* Must be after all native socket setup — ogarioWS relay handler for private */
-            if (this.privateMode && window.ogarioWS) {
-                window.ogarioWS.onmessage = function (buf) { app.handleMessage(buf); };
-            }
-
         },
         Socket3connect(srv) {
             // Secondary socket replaced by zero-width chat steganography
@@ -31549,31 +31515,6 @@ function thelegendmodproject() {
             setTimeout(function () {
                 app.connect();
             }, 1000);
-        },
-        switchServerMode() {
-            if (this.privateIP) {
-                this.privateMode = !this.privateMode;
-                if (this.isSocketOpen()) {
-                    this.closeConnection();
-                    toastr.error(lmT('game1.ps.closed'));
-                }
-                if (this.privateMode) {
-                    toastr.info(lmT('game1.ps.toPrivate'));
-                    $(".party-panel").show();
-                } else {
-                    toastr.info(lmT('game1.ps.toPublic'));
-                    $("#active-parties").empty();
-                    $(".party-panel").hide();
-                }
-                /* onJoin -> connect -> flushData resets the game's alive state; keep it. */
-                var _lmWasPlaying = ogario.play, _lmColor = ogario.playerColor;
-                this.onJoin();
-                if (_lmWasPlaying) {
-                    ogario.play = true;
-                    ogario.playerColor = _lmColor;
-                    this.onPlayerSpawn();
-                }
-            }
         },
         isSocketOpen() {
             return null !== this.socket && this.socket.readyState === this.socket.OPEN;
@@ -32577,7 +32518,7 @@ function thelegendmodproject() {
                     return r;
                 }
             }
-            if (!this.privateMode && this.socket && this.socket !== r && this.isSocketOpen()) {
+            if (this.socket && this.socket !== r && this.isSocketOpen()) {
                 st.route = 'socket';
                 return this.socket;
             }
@@ -32874,18 +32815,7 @@ function thelegendmodproject() {
             encode(customColor);
             encode(playerColor);
 
-            if (
-                this.privateMode &&
-                window.ogarioWS &&
-                window.ogarioWS.readyState ===
-                WebSocket.OPEN
-            ) {
-                window.ogarioWS.send(
-                    view.buffer
-                );
-            } else {
-                this.sendBuffer(view);
-            }
+            this.sendBuffer(view);
         },
         sendPlayerPosition() {
             /* a practice arena position is not on any server: teammates must not see it */
@@ -32903,13 +32833,7 @@ function thelegendmodproject() {
                 } else {
                     view.setUint32(13, this.playerMass, true);
                 }
-                /* Route op30 to relay (not game server) when on private server */
-                if (this.privateMode && window.ogarioWS) {
-                    /* send() throws while the relay is (re)connecting; that aborted the whole team tick */
-                    try { window.ogarioWS.send(view.buffer); } catch (e) { }
-                } else {
-                    this.sendBuffer(view);
-                }
+                this.sendBuffer(view);
             }
         },
         sendChatInvisibleData(dataObj) {
@@ -34331,7 +34255,7 @@ function thelegendmodproject() {
                     return true;
                 }
                 /* All other servers: use chat relay websocket (shared with Delta) */
-                else if (this.isSocketOpen() || (this.privateMode && window.ogarioWS)) {
+                else if (this.isSocketOpen()) {
                     var fullMessage = currentNick + ': ' + message;
                     var view = this.createView(10 + 2 * fullMessage.length);
                     view.setUint8(0, 100);
@@ -34340,16 +34264,7 @@ function thelegendmodproject() {
                     view.setUint32(6, 0, true);
                     for (var length = 0; length < fullMessage.length; length++) view.setUint16(10 + 2 * length, fullMessage.charCodeAt(length), true);
 
-                    if (this.privateMode) {
-                        /* Private servers: route chat through window.ogarioWS (standby-server relay).
-                         * ogarioWS.send() calls sendAll() which routes op100 to chat.delt.io/ws
-                         * and stamps the correct relay playerID automatically. */
-                        if (window.ogarioWS) {
-                            try { window.ogarioWS.send(view.buffer); } catch (e) { } /* throws while connecting */
-                        }
-                    } else {
-                        this.sendBuffer(view);
-                    }
+                    this.sendBuffer(view);
                     this.lastMessageSentTime = Date.now();
                     return true;
                 }
@@ -84331,7 +84246,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     var currentCommand = hotkeysCommand[command],
                         text = '';
                     text = setup.keysText(command);
-                    if ('hk-switchServerMode' === command && application && !application.privateIP) continue;
                     /* stored/imported key names go into a value attribute too */
                     text = String(text).replace(/[&<>"']/g, function (c) { return escapeChar[c]; });
                     if ('command' === currentCommand.type) {

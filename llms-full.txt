@@ -34,7 +34,6 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 | J | Autoplay |
 | Z | Reset zoom (hold) |
 | + | Quit game (respawn) |
-| - | Switch server mode |
 | = | Voice chat (push-to-talk) |
 | ~ (Tilde) | Multibox follow mouse |
 

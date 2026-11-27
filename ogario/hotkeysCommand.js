@@ -977,15 +977,6 @@
                 keyUp: null,
                 type: 'special'
             },
-            'hk-switchServerMode': {
-                get label() { return lmT('settings.hk-switchServerMode'); },
-                defaultKey: '-',
-                keyDown() {
-                    application && application.switchServerMode();
-                },
-                keyUp: null,
-                type: 'normal'
-            },
             'hk-showTargeting': {
                 get label() { return lmT('settings.hk-showTargeting'); },
                 defaultKey: '',

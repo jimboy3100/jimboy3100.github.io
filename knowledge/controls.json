@@ -105,12 +105,6 @@
       "category": "core"
     },
     {
-      "input": "- (Minus)",
-      "action": "Switch server mode",
-      "notes": "Change between FFA/Teams",
-      "category": "core"
-    },
-    {
       "input": "= (Equals)",
       "action": "Voice chat",
       "notes": "Push-to-talk voice chat",

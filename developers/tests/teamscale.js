@@ -76,7 +76,7 @@ function page(conn, opts) {
     ctx.LM = ctx.ogario = ctx.legendmod = LM;
     const app = vm.runInContext('({' + appSrc.concat(OPT).join(',\n') + '})', ctx);
     const relay = { isFake: true, readyState: 1, OPEN: 1, sockets: [{ readyState: 1 }], sent: [], send(b) { this.sent.push(new DataView(b)); } };
-    Object.assign(app, { playerID: opts.playerID || 7, teamPlayers: [], socket: relay, privateMode: false, targeting: false });
+    Object.assign(app, { playerID: opts.playerID || 7, teamPlayers: [], socket: relay, targeting: false });
     ctx.ogarioWS = relay;
     ctx.application = app;
     vm.runInContext(cellSrc, ctx);
