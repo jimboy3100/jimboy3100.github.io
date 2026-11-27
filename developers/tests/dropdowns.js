@@ -46,7 +46,19 @@ var rows = [];
             bg: cs.backgroundColor, color: cs.color, ratio: Math.round(ratio(bg, fg) * 100) / 100 });
     });
 });
-return { themed: document.documentElement.classList.contains('lm-themed-root'), lang: !!document.querySelector('select.lm-lang-select'), rows: rows };
+/* the closed language box where it has a solid background of its own (a see-through one shows the page) */
+var closed = function () {
+    var s = document.querySelector('select.lm-lang-select'), cs = s && getComputedStyle(s), bg = cs && parse(cs.backgroundColor);
+    if (!s || bg[3] < 1) return null;
+    return { bg: cs.backgroundColor, color: cs.color, ratio: Math.round(ratio(bg, over(parse(cs.color), bg)) * 100) / 100 };
+};
+var c1 = closed();
+/* the page's own dark mode (index.html: body.dark-theme) */
+var had = document.body.classList.contains('dark-theme');
+document.body.classList.add('dark-theme');
+var c2 = closed();
+if (!had) document.body.classList.remove('dark-theme');
+return { themed: document.documentElement.classList.contains('lm-themed-root'), lang: !!document.querySelector('select.lm-lang-select'), rows: rows, closed: c1, closedDark: c2 };
 })()`;
 
 function run(name, url) {
@@ -67,7 +79,8 @@ function run(name, url) {
 const L = 'https://www.legendmod.ml/';
 /* skins/index.html: the reported page (full stylesheet), with all three themes; then a full and site pages */
 const CASES = [['skins', 'skins/index.html', 'dark'], ['skins', 'skins/index.html', 'light'], ['skins', 'skins/index.html', 'grey'],
-    ['changelog', 'changelog.html', 'grey'], ['faq', 'faq.html', 'grey'], ['index', 'index.html', 'light'], ['themes', 'themes/index.html', 'dark']];
+    ['changelog', 'changelog.html', 'grey'], ['faq', 'faq.html', 'grey'], ['index', 'index.html', 'light'], ['index', 'index.html', 'dark'], ['index', 'index.html', 'grey'],
+    ['themes', 'themes/index.html', 'dark']];
 for (const [page, rel, t] of CASES) {
     const name = page + '-' + t;
     const p = run(name, L + rel + '#lm=' + enc(THEMES[t]));
@@ -78,7 +91,13 @@ for (const [page, rel, t] of CASES) {
     check(name + ': every open dropdown choice is readable (' + p.rows.length + ' choices, contrast >= 4.5)', p.rows.length >= 6 && !bad.length, bad.slice(0, 6));
     const dis = p.rows.filter(r => /:disabled/.test(r.el)), en = p.rows.filter(r => r.el === 'option');
     check(name + ': a disabled choice still looks different from the others', dis.length > 0 && en.length > 0 && dis.every(d => d.color !== en[0].color), { dis: dis[0], en: en[0] });
+    /* the closed language box on the home page: the browser's white box took the theme's light text
+     * (normalize.css color: inherit), white on white under a dark or grey theme */
+    if (page === 'index') check(name + ': the closed language box is readable (contrast >= 4.5)', !!p.closed && p.closed.ratio >= 4.5, p.closed);
 }
+/* the home page's own dark mode, no Legend Mod theme */
+const ix = run('index-pagedark', L + 'index.html');
+if (ix) check('index own dark mode: the closed language box is readable (contrast >= 4.5)', !!ix.closedDark && ix.closedDark.ratio >= 4.5, ix.closedDark);
 
 /* a direct visit (no theme): the page's own grey text reached the language list (themes page), shown on
  * the browser's white list; the language list's own style (developers/i18n/runtime.js) keeps it readable */
