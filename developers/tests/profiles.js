@@ -366,10 +366,27 @@ function bootApply() {
   check('profile replacing every preset setting: Undo preset gone', e.ls.getItem('lmPresetUndo') === null && row === null);
   e.ls.setItem('lmPresetUndo', J({ fpsLimit: 0 })); row = 'unset';
   e.P.undo();
-  check('profile Undo after a preset: Undo preset gone (all settings replaced)', e.S.fpsLimit === 120 && e.ls.getItem('lmPresetUndo') === null && row === null);
+  check('profile Undo after a preset: Undo preset as it was before that profile (all settings replaced)', e.S.fpsLimit === 120 && e.ls.getItem('lmPresetUndo') === J({ jellyPhisycs: true }) && J(row) === J({ jellyPhisycs: true }));
   e.ls.setItem('lmPresetUndo', J({ fpsLimit: 0 })); row = 'unset';
   e.P.applySet({ t: { miniMapWidth: e.c.LM_THEME_DEFAULTS.miniMapWidth + 7 } }, 'theme only');
   check('a set without settings keeps Undo preset', e.ls.getItem('lmPresetUndo') === J({ fpsLimit: 0 }) && row === 'unset');
+}
+{
+  /* preset, then a profile, then its Undo: the settings are back to the preset's, so Undo preset
+   * works again; a preset made only after the profile goes with the Undo */
+  const e = bootApply();
+  let row = 'unset';
+  e.c.application._lmPresetUndoSet = r => { row = r; };
+  e.S.fpsLimit = 60;
+  e.ls.setItem('lmPresetUndo', J({ fpsLimit: 0 }));
+  e.P.applySet({ s: { fpsLimit: 120 } }, 'P');
+  e.P.undo();
+  check('preset, profile, Undo: Undo preset back (stored and in the row)', e.S.fpsLimit === 60 && e.ls.getItem('lmPresetUndo') === J({ fpsLimit: 0 }) && J(row) === J({ fpsLimit: 0 }));
+  e.ls.removeItem('lmPresetUndo');
+  e.P.applySet({ s: { fpsLimit: 120 } }, 'P');
+  e.ls.setItem('lmPresetUndo', J({ fpsLimit: 120 })); row = 'unset';
+  e.P.undo();
+  check('profile, preset, Undo: no Undo preset (none before the profile)', e.S.fpsLimit === 60 && e.ls.getItem('lmPresetUndo') === null && row === null);
 }
 {
   const e = bootApply();

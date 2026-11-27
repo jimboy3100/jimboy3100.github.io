@@ -925,16 +925,19 @@
         if (pbEntry) entries.push(pbEntry);
         /* the same for the values from before a Settings preset (Undo preset): those of the
          * settings this set replaces go, so Undo preset never puts them back over the set's */
-        var presetUndo = null;
+        var presetUndo = null, puBefore = null;
         if (c.s) {
             var pu = readJSON('lmPresetUndo');
-            if (isObj(pu)) {
+            if (isObj(pu)) puBefore = pu;
+            /* Undo returns the settings to the moment before the set it undoes, so the copy kept
+             * then comes back too (a preset before a profile stays undoable); a backup replaces all */
+            var keep = opts.reason === 'undo' ? opts.pu : isRestore ? null : puBefore;
+            if (isObj(keep)) {
                 presetUndo = {};
-                /* a backup or Undo replaces all settings */
-                if (!isRestore) Object.keys(pu).forEach(function (k) { if (!has(data.s, k)) presetUndo[k] = pu[k]; });
+                Object.keys(keep).forEach(function (k) { if (opts.reason === 'undo' || !has(data.s, k)) presetUndo[k] = keep[k]; });
                 if (!Object.keys(presetUndo).length) presetUndo = null;
-                entries.push({ key: 'lmPresetUndo', text: presetUndo ? JSON.stringify(presetUndo) : null });
             }
+            if (puBefore || presetUndo) entries.push({ key: 'lmPresetUndo', text: presetUndo ? JSON.stringify(presetUndo) : null });
         }
         /* 2. a backup of the current state, and the Undo.
          * P1 fix: backup is written as part of the transaction so a failed write
@@ -949,6 +952,7 @@
             entries.push({ key: KEY_BACKUPS, text: JSON.stringify(newBackupList) });
         }
         var undoEntry = opts.reason !== 'undo' ? { t: Date.now(), name: name, data: cur } : null;
+        if (undoEntry && puBefore) undoEntry.pu = puBefore;
         if (undoEntry) entries.push({ key: KEY_UNDO, text: JSON.stringify(undoEntry) });
         if (!writeTransaction(entries)) {
             toast('error', esc(tx('storageFull')));
@@ -1086,12 +1090,12 @@
         var u = readJSON(KEY_UNDO);
         if (!isObj(u)) return null;
         var data = cleanBundle(u.data);
-        return data ? { t: num(u.t), name: cleanName(u.name), data: data } : null;
+        return data ? { t: num(u.t), name: cleanName(u.name), data: data, pu: isObj(u.pu) ? u.pu : null } : null;
     }
     function undo() {
         var u = loadUndo();
         if (!u) { toast('info', esc(tx('nothingUndo'))); return false; }
-        var r = applyBundle(u.data, { name: u.name, reason: 'undo' });
+        var r = applyBundle(u.data, { name: u.name, reason: 'undo', pu: u.pu });
         if (r) { undoMem = null; removeKey(KEY_UNDO); }
         if (isOpen()) render();
         return !!r;
