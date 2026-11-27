@@ -8,7 +8,8 @@
  * see is removed; a spectator disconnect removes only its own cells (from its index, not a scan
  * of the world); cells of an earlier socket are dropped; a spectator whose residual is corrected
  * has its pellets placed again; after an orientation flip (Rotate Map) every pellet is drawn once
- * where it now is; Canvas2D and Expanding Land WebGL get the same list. Prints the food
+ * where it now is; Canvas2D and Expanding Land WebGL get the same list; a connection number
+ * used again starts without the old connection's food state or shared colours. Prints the food
  * observations against the pellets drawn and the cost of the list.
  * node developers/tests/fullmapfood.js */
 'use strict';
@@ -31,6 +32,8 @@ vm.createContext(g);
 vm.runInContext([
     slice('var LM_UNIT_ID_STEP = ', 'var _lmMbGridTime = -1;'),
     slice('var _lmSrcObs = new Map();', 'var LM_MB_RING_MIN_SCREEN_PX'),
+    /* the shared colours per connection (forgotten when one closes) */
+    slice('var _lmMbLooks = new Map();', 'function _lmMbIsPreferredTwin('),
     'var _DEATH_SLOWMO_ANIM = 600;',
     'var defaultmapsettings = { virusesRange: true, animation: 120, shortMass: false, virMassShots: false, rainbowFood: true };',
     'var defaultSettings = { foodColor: "#5000ff", foodSize: 0 };',
@@ -347,6 +350,47 @@ reset();
     const flushMs = Number(process.hrtime.bigint() - t1) / 1e6;
     console.log('info food: ' + (st.observations - 1500) + ' spectator + 1500 main observations -> ' + st.pellets + ' pellets drawn (before: ' + st.observations + ' drawn, ' + (st.observations - 1500) + ' of them as cells); packets ' + addMs.toFixed(1) + ' ms, list per frame ' + frameUs.toFixed(2) + ' us, 5 disconnects ' + flushMs.toFixed(1) + ' ms');
     check('all spectators gone: back to LM.food', drawList() === LM.food && LM.food.length === 1500);
+}
+/* a connection number used again (Full Map off / on, a reconnect: spect.js numbers from 1
+ * again): the new connection starts from nothing of the old one's food state or colours */
+reset();
+{
+    const gone = (sp) => { sp.flushCellsData(); sp._lmDropLooks(); g.spects.splice(g.spects.indexOf(sp), 1); };
+    const pel = (base, n, x0) => Array.from({ length: n }, (_, i) => ({ id: base + i, x: x0 + i * 40, y: 300 }));
+    /* pellets that come before the orientation is verified, no frame until it is (hidden tab,
+     * food hidden or zoomed out): all drawn once it is verified */
+    const a = spect(1);
+    a.updateCells(packet([], pel(100, 50, 0), []), 0);
+    check('reused number: the first connection\'s 50 pellets drawn', drawList().length === 50, drawList().length);
+    gone(a);
+    const b = spect(1);
+    b._testFeed = false;
+    b.updateCells(packet([], pel(200, 50, 0), []), 0);
+    b._testFeed = true;
+    const l = drawList();
+    check('reused number: the new connection\'s 50 pellets from before its verification are drawn (were 0: the old one\'s "fed" was kept)', l.length === 50 && l.every((c) => c.spectator === 1), l.length);
+    /* with a unit open (the list stays on): a new tile with the old number and another transform */
+    reset();
+    const unit = spect(1);
+    unit.updateCells(packet([], pel(300, 5, 5000), []), 0);
+    const t1 = spect(2);
+    t1.getX = (x) => x + 300; t1.getY = (y) => y;
+    t1.updateCells(packet([], pel(400, 40, 0), []), 0);
+    drawList();
+    gone(t1);
+    const t2 = spect(2);
+    t2.getX = (x) => x - 300; t2.getY = (y) => y;
+    t2.updateCells(packet([], pel(500, 40, 0), []), 0);
+    const own = Array.from(vm.runInContext('lmObsOfSource(2)', g)), ents = own.map((c) => c._lmFoodEnt);
+    drawList();
+    const moved = own.filter((c, i) => c._lmFoodEnt !== ents[i]).length;
+    check('reused number beside a unit: the new tile\'s 40 pellets are not placed again on the first frame (were 40: the old tile\'s transform was compared)', own.length === 40 && moved === 0, own.length + ' / ' + moved);
+    check('reused number beside a unit: 45 pellets drawn', drawList().length === 45, drawList().length);
+    /* shared colours: the closed connection's go, another connection's (12, the main socket) stay */
+    vm.runInContext('[2, 12, 0].forEach(function (s) { _lmMbLookSet({ spectator: s, _lmGen: 1, _lmRawColor: "#40a0f0", _lmSrvName: "x", color: "#123456", _lmMbLookT: 1 }); });', g);
+    gone(t2);
+    const look = (s) => vm.runInContext('lmMbLookOf(' + s + ', 1, "#40a0f0", "x")', g);
+    check('a closed connection\'s shared colours are forgotten, the others\' kept', !look(2) && !!look(12) && !!look(0));
 }
 
 console.log(fail ? fail + ' check(s) failed' : 'all fullmapfood checks passed');

@@ -634,6 +634,7 @@ class Spect {
         if (this.active) this.terminate();
         else if (window.multiboxPlayerEnabled === this.number && legendmod.play) lmSetMbUnit(0);
         this.flushCellsData()
+        this._lmDropLooks()
         this.resetConnectionState()
         console.log('closed')
         if (shouldReconnect) {
@@ -677,6 +678,7 @@ class Spect {
             this.ws = null;
         }
         this.flushCellsData()
+        this._lmDropLooks()
         this.resetConnectionState()
         this.closedByUser = true
     }
@@ -705,7 +707,25 @@ class Spect {
                 else lmObsUntrack(cell);
             }
         }
+        /* its pellets are gone, so the food list forgets this connection too: the number is
+         * reused (Full Map off / on, reconnect) and an old "fed last frame" kept the next
+         * connection's pellets that came before its orientation was verified out of the list
+         * for good (no frame in between: hidden tab, food hidden), and an old transform placed
+         * all its pellets again on the first frame (ogario.v4.js lmFoodFrame) */
+        if (typeof _lmFood !== 'undefined' && _lmFood) {
+            _lmFood.feed.delete(this.number);
+            _lmFood.sig.delete(this.number);
+        }
+    }
 
+    /* The shared colours seen on this connection (ogario.v4.js _lmMbLooks, keyed by number and
+     * socket generation) end with its socket: they were only dropped with the whole world or at
+     * the size cap (which also dropped the live connections' ones), and a new spectator with the
+     * same number and generation (Full Map off / on) read the old one's colours. */
+    _lmDropLooks() {
+        if (typeof _lmMbLooks === 'undefined' || !_lmMbLooks || !_lmMbLooks.size) return;
+        var p = this.number + '.';
+        _lmMbLooks.forEach(function (v, k) { if (k.lastIndexOf(p, 0) === 0) _lmMbLooks.delete(k); });
     }
 
     /* Removes this connection's cells that came from another socket generation. */
