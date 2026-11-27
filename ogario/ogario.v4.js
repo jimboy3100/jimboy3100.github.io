@@ -27973,6 +27973,37 @@ function thelegendmodproject() {
             $("input[type='range']").rangeslider({
                 "polyfill": false
             });
+            /* The menu is shrunk with a CSS transform on phones and short windows. The slider library
+             * measures the pointer in screen pixels but the knob in unscaled pixels, so the knob lagged
+             * behind the pointer and a click set a value away from it: give it both in unscaled pixels.
+             * Unscaled sliders keep the library's own code. */
+            (function () {
+                var rs = null;
+                $("input[type='range']").each(function () { if (!rs) rs = $(this).data('plugin_rangeslider') || null; });
+                var P = rs && Object.getPrototypeOf(rs);
+                if (!P || P._lmScaleFix || typeof P.getRelativePosition !== 'function' || typeof P.getPositionFromNode !== 'function') return;
+                P._lmScaleFix = true;
+                var rel0 = P.getRelativePosition, node0 = P.getPositionFromNode;
+                var dimOf = function (s) { return s.DIMENSION === 'height' ? 'Height' : 'Width'; };
+                /* screen pixels per unscaled pixel of the track, and the track's start on screen */
+                var scaleOf = function (s) {
+                    var r = s.$range && s.$range[0];
+                    if (!r || !r.getBoundingClientRect) return null;
+                    var b = r.getBoundingClientRect(), d = dimOf(s), o = r['offset' + d];
+                    var k = o > 0 ? b[d.toLowerCase()] / o : 1;
+                    return Math.abs(k - 1) < 0.001 || !(k > 0) ? null : { k: k, start: b[s.DIRECTION === 'top' ? 'top' : 'left'] };
+                };
+                P.getRelativePosition = function () {
+                    var v = rel0.apply(this, arguments), sc = scaleOf(this);
+                    return sc ? v / sc.k : v;
+                };
+                /* used for the knob: the track's start plus the knob's distance from it in unscaled pixels */
+                P.getPositionFromNode = function (n) {
+                    var sc = scaleOf(this);
+                    if (!sc || !n || !n.getBoundingClientRect) return node0.apply(this, arguments);
+                    return sc.start + (n.getBoundingClientRect()[this.DIRECTION === 'top' ? 'top' : 'left'] - sc.start) / sc.k;
+                };
+            })();
             toastr.options = {
                 "newestOnTop": false,
                 "positionClass": "toast-bottom-left",
