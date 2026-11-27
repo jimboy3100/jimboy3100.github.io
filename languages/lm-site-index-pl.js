@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "Wyślij mi e-mailem swój symbol i link do strony, aby go dodać",
 "site.index.macrosEventsHotkeys": "60++ makr / zdarzeń / skrótów klawiszowych (",
 "site.index.scriptDoesManyCalculations": "Skrypt wykonuje wiele obliczeń",
-"site.index.toolsForQuestsYoutubers": "Narzędzia do zadań / dla youtuberów / timery / automatyczne zbieranie monet / odtwarzacz YouTube",
+"site.index.toolsForQuestsYoutubers": "Narzędzia do zadań / dla youtuberów / timery / automatyczne zbieranie monet",
 "site.index.sendMessagePicturesVideos": "Wysyłaj zdjęcia, filmy i różne komendy w wiadomościach bezpośrednio do skryptu członka drużyny",
 "site.index.changeVariousTexturesAdd": "Zmieniaj różne tekstury, dodawaj zdjęcia do HUD, obrazki klanu i linki",
 "site.index.discordWebhookHandlerS": "Obsługa webhooków Discord do wysyłania IP i wiele więcej...",

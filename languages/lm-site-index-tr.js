@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "Güncellemeler için sembolünüzü ve web bağlantınızı bana e-postayla gönderin",
 "site.index.macrosEventsHotkeys": "60++ Makro / Olay / Kısayol Tuşu (",
 "site.index.scriptDoesManyCalculations": "Betik birçok hesaplama yapar",
-"site.index.toolsForQuestsYoutubers": "Görevler / YouTuber'lar / zamanlayıcılar / otomatik coin toplayıcı / YouTube video oynatıcı için araçlar",
+"site.index.toolsForQuestsYoutubers": "Görevler / YouTuber'lar / zamanlayıcılar / otomatik coin toplayıcı için araçlar",
 "site.index.sendMessagePicturesVideos": "Takım arkadaşınızın betiğine doğrudan resimli, videolu mesajlar ve çeşitli mesaj komutları gönderin",
 "site.index.changeVariousTexturesAdd": "Çeşitli dokuları değiştirin, HUD'lara fotoğraflar, klan resimleri ve URL bağlantıları ekleyin",
 "site.index.discordWebhookHandlerS": "IP göndermek için Discord webhook işleyicileri ve çok daha fazlası...",

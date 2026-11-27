@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "Kirim email simbol dan link web kalian untuk update",
 "site.index.macrosEventsHotkeys": "60++ Makro / Event / Hotkey (",
 "site.index.scriptDoesManyCalculations": "Script melakukan banyak perhitungan",
-"site.index.toolsForQuestsYoutubers": "Alat untuk misi / youtuber / timer / penggali koin otomatis / pemutar video youtube",
+"site.index.toolsForQuestsYoutubers": "Alat untuk misi / youtuber / timer / penggali koin otomatis",
 "site.index.sendMessagePicturesVideos": "Kirim pesan, gambar, video, dan berbagai perintah pesan langsung ke script rekan tim",
 "site.index.changeVariousTexturesAdd": "Ganti berbagai tekstur, tambahkan foto di HUD serta gambar dan link klan",
 "site.index.discordWebhookHandlerS": "Handler webhook Discord untuk mengirim IP, dan masih banyak lagi...",

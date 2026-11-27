@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "Пришлите мне на почту ваш символ и ссылку на сайт для обновлений",
 "site.index.macrosEventsHotkeys": "60++ макросов / событий / горячих клавиш (",
 "site.index.scriptDoesManyCalculations": "Скрипт выполняет множество расчётов",
-"site.index.toolsForQuestsYoutubers": "Инструменты для квестов / ютуберов / таймеры / автосбор монет / YouTube-плеер",
+"site.index.toolsForQuestsYoutubers": "Инструменты для квестов / ютуберов / таймеры / автосбор монет",
 "site.index.sendMessagePicturesVideos": "Отправляйте сообщения, картинки, видео и различные команды прямо в скрипт тиммейта",
 "site.index.changeVariousTexturesAdd": "Меняйте различные текстуры, добавляйте фото в HUD, картинки клана и ссылки",
 "site.index.discordWebhookHandlerS": "Обработчики Discord webhook для отправки IP и многое другое...",

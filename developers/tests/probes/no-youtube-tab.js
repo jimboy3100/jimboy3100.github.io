@@ -15,6 +15,9 @@
   window.addEventListener('error', onErr);
   window.addEventListener('unhandledrejection', onErr);
 
+  /* the Tools tab is added by LMexpress.js, which may still be starting when the probe runs first: the checks below need it */
+  var tw0 = Date.now();
+  while (!$('.menu-tabs > li.legend-tab').length && Date.now() - tw0 < 20000) await sleep(100);
   /* 1. nothing of the tab or the player is left */
   ['.music-tab', '.menu-tabs a[href="#music"]', '#music', '#musicFrame', '#musicUrl', '#youtubeplayer', '#afteryoutubeplayer',
     '#playerBtn', '#playerI', '#msgcommand5', '.radio-panel', '.ogario-yt-panel'].forEach(function (s) {

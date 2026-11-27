@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "請將你的符號與網站連結寄給我以便更新",
 "site.index.macrosEventsHotkeys": "60++ 巨集 / 事件 / 快速鍵 (",
 "site.index.scriptDoesManyCalculations": "腳本會進行大量計算",
-"site.index.toolsForQuestsYoutubers": "任務 / YouTuber / 計時器 / 金幣自動挖掘 / YouTube 影片播放器工具",
+"site.index.toolsForQuestsYoutubers": "任務 / YouTuber / 計時器 / 金幣自動挖掘工具",
 "site.index.sendMessagePicturesVideos": "直接傳送訊息、圖片、影片以及各種訊息指令到隊友的腳本",
 "site.index.changeVariousTexturesAdd": "更換各種材質，在 HUD 上加入照片、戰隊圖片與網址連結",
 "site.index.discordWebhookHandlerS": "用於傳送 IP 的 Discord webhook 處理器，以及更多功能...",

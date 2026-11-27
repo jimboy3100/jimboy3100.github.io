@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "Στείλτε μου email το σύμβολο και τον σύνδεσμό σας για ενημερώσεις",
 "site.index.macrosEventsHotkeys": "60++ Macros / Events / Πλήκτρα συντόμευσης (",
 "site.index.scriptDoesManyCalculations": "Το script κάνει πολλούς υπολογισμούς",
-"site.index.toolsForQuestsYoutubers": "Εργαλεία για αποστολές / youtubers / χρονόμετρα / αυτόματη συλλογή νομισμάτων / YouTube video player",
+"site.index.toolsForQuestsYoutubers": "Εργαλεία για αποστολές / youtubers / χρονόμετρα / αυτόματη συλλογή νομισμάτων",
 "site.index.sendMessagePicturesVideos": "Στείλτε εικόνες, βίντεο και διάφορες εντολές μηνυμάτων απευθείας στο script του συμπαίκτη",
 "site.index.changeVariousTexturesAdd": "Αλλάξτε διάφορες υφές, προσθέστε φωτογραφίες στα huds, εικόνες clan και συνδέσμους url",
 "site.index.discordWebhookHandlerS": "Διαχείριση Discord webhook για αποστολή IP και πολλά ακόμη...",

@@ -11,7 +11,7 @@
 "site.helper.serverTitle": "同じサーバーに入るには？",
 "site.helper.server": "1. SIP コード：ランキングの下の COPY->TOKEN をクリックします。パーティーモードではパーティーコード、他のモードではロックされた SIP サーバーがコピーされます<br>作成した SIP は他のMODやバニラと互換があり、ほかの情報も含みます。（URL に入れて使います）<br><i>SIP で入ると Connector で入るより FPS が上がります</i><br><br>2. Connector から IP かパーティーコードをコピーして友達に送り、Connect を押します。<br><br>3. 地域リストの左にあるツールボタンから Server WS や Server token も使えます。",
 "site.helper.tabsTitle": "パネルのタブ",
-"site.helper.tabs": "HOME：名前、パスワード、地域、モードの変更、ログイン、プレイ、観戦など<br>USER：プロフィール、クエスト、スキン、ログアウトなど<br>API：ツール。水色のボタンはオン推奨、紫は任意です<br>SETTINGS：ゲーム画面の描画ツール。プレイにとても役立ちます！<br>THEME：6つの小タブを含むインターフェースのカスタマイズ設定<br>HOTKEYS：コマンド用のショートカットキー<br>YOUTUBE AND SOUNDS：好きな URL の YouTube。ゲーム開始時に自動再生もできます",
+"site.helper.tabs": "HOME：名前、パスワード、地域、モードの変更、ログイン、プレイ、観戦など<br>USER：プロフィール、クエスト、スキン、ログアウトなど<br>API：ツール。水色のボタンはオン推奨、紫は任意です<br>SETTINGS：ゲーム画面の描画ツール。プレイにとても役立ちます！<br>THEME：6つの小タブを含むインターフェースのカスタマイズ設定<br>HOTKEYS：コマンド用のショートカットキー",
 "site.helper.moreTitle": "その他",
 "site.helper.more": "<i>Hide/Show everything と Timer calculator は YouTuber やクエストプレイヤーの要望で追加されました</i><br>ミニマップ、ランキング、チームボード、メイン画面を画像の URL で変更したり、メッセージアイコンや YouTube 動画（例: http://i.imgur.com/RVBi3T1.gif）をカスタマイズしたり、チャットの位置を変えたりできます<br>TOOLS タブでは Shortcuts ボタンをオンにするのがおすすめです。観戦中は双眼鏡（または Q キー）、コピーツール、YouTube ボタン、全画面が使えます<br>チームチャットの表示・非表示を切り替える Chat ボタン、標準の imgur アイコンや自分のアイコンを送れる 6 つのメッセージアイコン、チームメイトのスクリプトに直接指示を出す 6 つのメッセージコマンドもあります",
 "site.helper.more2": "左右に 2 つのサイドパネルもあります。左は小さなツール、右はプロフィール用です。<br>設定のインポート・エクスポートは SETTINGS -> IMPORT/EXPORT SETTINGS から：コードを貼り付けて（インポート）するか、エクスポートします<br>",

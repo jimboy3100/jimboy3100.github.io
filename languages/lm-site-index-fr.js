@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "Envoyez-moi par e-mail votre symbole et votre lien web pour les mises à jour",
 "site.index.macrosEventsHotkeys": "60++ Macros / Événements / Raccourcis (",
 "site.index.scriptDoesManyCalculations": "Le script effectue de nombreux calculs",
-"site.index.toolsForQuestsYoutubers": "Outils pour quêtes / youtubeurs / minuteurs / récolte automatique de pièces / lecteur vidéo YouTube",
+"site.index.toolsForQuestsYoutubers": "Outils pour quêtes / youtubeurs / minuteurs / récolte automatique de pièces",
 "site.index.sendMessagePicturesVideos": "Envoyez des images, des vidéos et diverses commandes de message directement au script de vos coéquipiers",
 "site.index.changeVariousTexturesAdd": "Modifiez diverses textures, ajoutez des photos sur les huds, des images de clan et des liens url",
 "site.index.discordWebhookHandlerS": "Gestion des webhooks Discord pour envoyer l'IP, et bien plus encore...",

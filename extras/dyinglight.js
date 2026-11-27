@@ -24,7 +24,6 @@ function acceptedDying(){
 
 //setTimeout(function () {
 function dyinglighttemplate(){
-localStorage.setItem("musicUrl", "https://www.youtube.com/watch?v=jL6ckpJ7K7E");
 	
 $("#minbtext").val(_lmDT('misc.dl.hudMap'));
 $("#minbtext").blur();
@@ -61,16 +60,11 @@ if(dyinglight1load=="yes"){
 
 
 
-$("#musicUrl").val("https://www.youtube.com/watch?v=9iDYnAireiw");
-//musicPlayer.setVolume("25");
 setTimeout(function () {
 btnmgs();
 $('*[data-itr="page_play"]').click(function() {
 	olddeath2();
 	if (usedonce3==1){
-	if (typeof YT !== 'undefined') {
-	musicPlayer.playVideo();
-	}
 	launchIntoFullscreen(document.documentElement);	
 	}
 	return usedonce3=0;
@@ -80,7 +74,6 @@ $('*[data-itr="page_play"]').click(function() {
 $("#leaderboard-positions").css('background-image', 'url(" http://rs437.pbsrc.com/albums/qq95/anuksanamoon27/HALLOWEEN/f76e322d.png~c200 ")');
 
 
-setTimeout(function () {$("#playerBtn").focusout();}, 2100);
 	
 
 toastr["error"](_lmDT('misc.dl.disableHint')).css("width", "350px");
@@ -281,7 +274,6 @@ function legenddefaultsettings() {
         window.history.pushState(null, null, window.location.pathname);
         $('#import-settings-btn').click();
     } else if (dyinglight1load == "yes") {
-        localStorage.setItem("musicUrl", defaultMusicUrl);
         $("#minimapPicture").val("").blur();
         $("#minbtext").val("").blur();
         $("#leadbtext").val("").blur();

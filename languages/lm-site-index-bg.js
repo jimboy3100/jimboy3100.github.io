@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "Изпратете ми по имейл символа и уеб връзката си за обновяване",
 "site.index.macrosEventsHotkeys": "60++ макроса / събития / клавиши (",
 "site.index.scriptDoesManyCalculations": "Скриптът прави много изчисления",
-"site.index.toolsForQuestsYoutubers": "Инструменти за мисии / ютубъри / таймери / автоматично събиране на монети / YouTube видео плейър",
+"site.index.toolsForQuestsYoutubers": "Инструменти за мисии / ютубъри / таймери / автоматично събиране на монети",
 "site.index.sendMessagePicturesVideos": "Изпращайте снимки, видеа и различни команди в съобщения директно към скрипта на съотборника",
 "site.index.changeVariousTexturesAdd": "Сменяйте различни текстури, добавяйте снимки в HUD, картинки на клана и URL връзки",
 "site.index.discordWebhookHandlerS": "Обработка на Discord webhook за изпращане на IP и много други...",

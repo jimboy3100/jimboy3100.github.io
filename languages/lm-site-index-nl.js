@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "Mail me je symbool en weblink voor updates",
 "site.index.macrosEventsHotkeys": "60++ macro's / events / sneltoetsen (",
 "site.index.scriptDoesManyCalculations": "Script doet veel berekeningen",
-"site.index.toolsForQuestsYoutubers": "Tools voor quests / youtubers / timers / automatische muntenverzamelaar / YouTube-videospeler",
+"site.index.toolsForQuestsYoutubers": "Tools voor quests / youtubers / timers / automatische muntenverzamelaar",
 "site.index.sendMessagePicturesVideos": "Stuur afbeeldingen, video's en diverse berichtcommando's rechtstreeks naar het script van je teamgenoot",
 "site.index.changeVariousTexturesAdd": "Pas diverse texturen aan, voeg foto's toe aan HUD's en clanafbeeldingen en URL-links",
 "site.index.discordWebhookHandlerS": "Discord-webhookhandlers voor het versturen van IP, en nog veel meer...",

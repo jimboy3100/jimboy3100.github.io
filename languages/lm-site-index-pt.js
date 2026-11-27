@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "me mande por e-mail seu símbolo e link para atualizações",
 "site.index.macrosEventsHotkeys": "Mais de 60 macros / eventos / atalhos (",
 "site.index.scriptDoesManyCalculations": "o script faz muitos cálculos",
-"site.index.toolsForQuestsYoutubers": "Ferramentas para missões / youtubers / timers / coletor automático de moedas / player de vídeos do YouTube",
+"site.index.toolsForQuestsYoutubers": "Ferramentas para missões / youtubers / timers / coletor automático de moedas",
 "site.index.sendMessagePicturesVideos": "Envie imagens, vídeos e vários comandos de mensagem direto para o script do seu aliado",
 "site.index.changeVariousTexturesAdd": "Mude várias texturas, coloque fotos nos HUDs, imagens do clã e links",
 "site.index.discordWebhookHandlerS": "Webhooks do Discord para enviar o IP, e muito mais...",

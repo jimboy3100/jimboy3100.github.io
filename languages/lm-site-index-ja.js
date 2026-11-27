@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "更新のため、あなたの記号とウェブリンクをメールで送ってください",
 "site.index.macrosEventsHotkeys": "60種類以上のマクロ / イベント / ショートカットキー (",
 "site.index.scriptDoesManyCalculations": "スクリプトが多くの計算を行います",
-"site.index.toolsForQuestsYoutubers": "クエスト / YouTuber / タイマー / コイン自動回収 / YouTube 動画プレーヤー用のツール",
+"site.index.toolsForQuestsYoutubers": "クエスト / YouTuber / タイマー / コイン自動回収用のツール",
 "site.index.sendMessagePicturesVideos": "メッセージ、画像、動画、各種メッセージコマンドを味方のスクリプトに直接送信",
 "site.index.changeVariousTexturesAdd": "さまざまなテクスチャを変更し、HUD に写真やクランの画像、URL リンクを追加",
 "site.index.discordWebhookHandlerS": "IP を送信する Discord Webhook ハンドラーなど、ほかにも多数...",

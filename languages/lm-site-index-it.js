@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "Mandami via email il tuo simbolo e il tuo link per gli aggiornamenti",
 "site.index.macrosEventsHotkeys": "Oltre 60 macro / eventi / tasti rapidi (",
 "site.index.scriptDoesManyCalculations": "lo script fa molti calcoli",
-"site.index.toolsForQuestsYoutubers": "Strumenti per missioni / youtuber / timer / raccolta automatica di monete / lettore video di youtube",
+"site.index.toolsForQuestsYoutubers": "Strumenti per missioni / youtuber / timer / raccolta automatica di monete",
 "site.index.sendMessagePicturesVideos": "Invia messaggi, immagini, video e vari comandi di messaggio direttamente allo script dei compagni di squadra",
 "site.index.changeVariousTexturesAdd": "Cambia varie texture, aggiungi foto agli HUD, immagini del clan e link",
 "site.index.discordWebhookHandlerS": "Gestione dei webhook di Discord per inviare l'IP, e molto altro...",

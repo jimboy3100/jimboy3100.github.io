@@ -132,7 +132,7 @@
 "site.index.emailMeYourSymbol": "راسلني برمزك ورابط موقعك لإضافتهما في التحديثات",
 "site.index.macrosEventsHotkeys": "أكثر من 60 ماكرو / حدث / مفتاح اختصار (",
 "site.index.scriptDoesManyCalculations": "يجري السكربت حسابات كثيرة",
-"site.index.toolsForQuestsYoutubers": "أدوات للمهام / صنّاع محتوى YouTube / المؤقتات / الجمع التلقائي للعملات / مشغّل فيديو YouTube",
+"site.index.toolsForQuestsYoutubers": "أدوات للمهام / صنّاع محتوى YouTube / المؤقتات / الجمع التلقائي للعملات",
 "site.index.sendMessagePicturesVideos": "أرسل رسائل وصورًا وفيديوهات وأوامر رسائل متنوعة مباشرة إلى سكربت زميلك في الفريق",
 "site.index.changeVariousTexturesAdd": "غيّر خامات متنوعة، وأضف صورًا على الواجهة وصور الكلان وروابط URL",
 "site.index.discordWebhookHandlerS": "معالجات Discord webhook لإرسال عنوان IP، والكثير غير ذلك...",
