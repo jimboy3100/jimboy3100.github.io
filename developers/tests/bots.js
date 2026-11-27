@@ -1051,6 +1051,25 @@ for (const file of ['server.js', 'server-fast.js']) {
         check('BR fill: bots started by hand stay when the battle begins', brLog.stops === 0 && !brLog.toasts.length);
         brStatus(15, 10, true, {}, { mode: ':ffa', w: { _brFilling: true } });
         check('BR fill: another mode ends the fill', brLog.stops === 1);
+        // a language change: the packs fill every [data-i18n] element (lib/lm-i18n.js apply) after the onChange listeners; no timer rewrites the lobby line
+        {
+            const reg = (ogSrc.match(/\r?\n    if \(window\.LMi18n && typeof window\.LMi18n\.onChange === 'function'\) window\.LMi18n\.onChange\(function \(\) \{ brUpdateSection\(\) \}\)/) || [''])[0];
+            const attrEl = () => { const a = { 'data-i18n': 'game2.brWaitingData' }; return { style: {}, textContent: 'Waiting for lobby data…', getAttribute: k => (k in a ? a[k] : null), removeAttribute: k => { delete a[k]; }, setAttribute: (k, v) => { a[k] = String(v); } }; };
+            const els = { brBotsSection: el(), brLobbyStatus: attrEl() };
+            const dict = { en: { 'game2.brWaitingData': 'Waiting for lobby data…', 'game2.brPlayers': 'Players: {0} | State: {1}', 'game2.brStateWaiting': 'Waiting' },
+                fr: { 'game2.brWaitingData': 'En attente des données du lobby…', 'game2.brPlayers': 'Joueurs : {0} | État : {1}', 'game2.brStateWaiting': 'En attente' } };
+            let lang = 'en';
+            const listeners = [];
+            const w = { userBots: { spawned: 0, startedBots: false, startSent: false }, LMi18n: { onChange: fn => listeners.push(fn) } };
+            const lm = { gameMode: ':battleroyale', battleRoyale: { players: 9, started: false, countdown: false } };
+            run(updSrc + '\nfunction brStopFilling() {}\n' + reg + '\nbrUpdateSection()', { window: w, legendmod: lm, document: { getElementById: id => els[id] || null }, _lmTH: (k, d) => dict[lang][k] || d, Math, Premadeletter123: 'LM', toastr: {} });
+            const packsApply = () => { for (const id in els) { const e = els[id], k = e.getAttribute && e.getAttribute('data-i18n'); if (k && dict[lang][k]) e.textContent = dict[lang][k]; } };
+            const st = els.brLobbyStatus;
+            lang = 'fr'; listeners.forEach(f => f('fr', 'en')); packsApply();
+            check('BR status: a language change in the lobby rewrites the lobby line in the new language (not "Waiting for lobby data" until the next lobby packet): ' + st.textContent, !!reg && listeners.length === 1 && st.textContent === 'Joueurs : 9 | État : En attente');
+            lang = 'en'; packsApply();
+            check('BR status: the live line carries no data-i18n the packs would write over it', st.getAttribute('data-i18n') === null && st.textContent === 'Joueurs : 9 | État : En attente');
+        }
         // no timer: the Battle Royale lobby packets of the main connection, our bots' count and the server/mode switch update it
         const brHook = 'if (this === window.legendmod && window._brUpdateSection) window._brUpdateSection();';
         const c176 = ogSrc.indexOf('this.battleRoyale.countdown = true;');
@@ -1242,7 +1261,7 @@ for (const file of ['server.js', 'server-fast.js']) {
             return i < 0 || j < 0 ? '' : ogSrc.slice(i + 1, j + 10).trim().replace(/,$/, '');
         };
         const line = name => { const m = ogSrc.match(new RegExp('\\n        (' + name + ': [^\\n]*),\\r?\\n')); return m ? m[1] : ''; };
-        const names = ['quickOpenPanel', 'applyQuickPanels', 'setQuickPanel', 'toggleQuickPanel', 'setShowQuickMenu', 'setShowQuickBots', '_lmQuickBefore', 'syncQuickPanels', '_lmQuickSwitchBR', 'displayPartyBots'];
+        const names = ['quickOpenPanel', 'applyQuickPanels', 'setQuickPanel', 'toggleQuickPanel', 'setShowQuickMenu', 'setShowQuickBots', '_lmQuickBefore', '_lmQuickBotsShown', 'syncQuickPanels', '_lmQuickSwitchBR', 'displayPartyBots'];
         const parts = names.map(method).concat([line('_lmQuickIds'), line('_lmQuickBotsButton')]);
         check('quick HUDs: controller methods extractable', parts.every(Boolean));
         const PANELS = { menu: '#quick-menu', bots: '#quick-bots', br: '#quick-br' };
@@ -1311,9 +1330,10 @@ for (const file of ['server.js', 'server-fast.js']) {
         q.server(false, ':ffa');
         check('bots button: hidden on other servers', !q.btn('bots'));
         q.app.setQuickPanel('menu');
-        q.s.showQuickBots = true; q.app.setShowQuickBots(); // a settings import / profile with the bots panel open
-        q.app.syncQuickPanels();
-        check('bots button: an imported open bots panel is closed again, the quick menu stays', !q.s.showQuickBots && q.open().join() === 'menu' && q.consistent());
+        q.s.showQuickBots = true; q.app.setShowQuickBots(); // a settings profile with the bots panel open (profiles.js: s[k] = v, then setShowQuickBots; no sync follows)
+        check('bots button: a profile with the bots panel open: it stays closed at once, its flag off, the quick menu stays', !q.s.showQuickBots && q.open().join() === 'menu' && q.consistent());
+        q.s.showQuickMenu = false; q.app.setShowQuickMenu(); q.s.showQuickBots = true; q.app.setShowQuickBots(); // a profile with the menu off and the bots panel open
+        check('bots button: a profile with only the bots panel open: no HUD open, flags = what is shown', !q.s.showQuickBots && q.open().length === 0 && q.consistent());
         // Battle Royale: its button on agar.io Battle Royale only; the HUD opens by itself and the one before comes back
         q = make();
         q.app.setShowQuickMenu();

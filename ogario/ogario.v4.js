@@ -28218,6 +28218,9 @@ function thelegendmodproject() {
             var s = defaultmapsettings, ids = this._lmQuickIds;
             if (this._lmQuickBR) { s.showQuickMenu = false; s.showQuickBots = false; }
             else if (s.showQuickMenu && s.showQuickBots) s.showQuickBots = false;
+            /* the bots panel only with its button: one saved open (a profile, an imported setting)
+               stays closed and its flag off while the button is hidden */
+            if (s.showQuickBots && !this._lmQuickBotsShown()) { s.showQuickBots = false; this.saveSettings(s, 'ogarioSettings'); }
             var open = this.quickOpenPanel();
             for (var k in ids) {
                 $(ids[k][0]).stop(true, true).toggle(open === k);
@@ -28260,10 +28263,15 @@ function thelegendmodproject() {
          * the agar.io mode changes (the mode select, setParty); a Battle Royale lobby packet updates
          * the Battle Royale HUD itself (brUpdateSection). */
         _lmQuickBotsButton: false,
+        /* the bots button is shown: only with _lmQuickBotsButton, on agar.io */
+        _lmQuickBotsShown() {
+            var lm = window.legendmod;
+            return !!this._lmQuickBotsButton && !!(lm && lm.integrity);
+        },
         syncQuickPanels() {
             var lm = window.legendmod, agar = !!(lm && lm.integrity), known = !!(lm && lm.ws);
             var inBR = agar && known && lm.gameMode === ':battleroyale';
-            var bots = !!this._lmQuickBotsButton && agar;
+            var bots = this._lmQuickBotsShown();
             /* no cache: it runs on events only, and a button made after an earlier sync gets its state too */
             $('.quick.quick-bots.ogicon-trophy').toggle(bots);
             $('.quick.quick-br').toggle(inBR);
@@ -86242,16 +86250,21 @@ function setGUIEvents() {
         var status = document.getElementById('brLobbyStatus')
         if (!status) return
         /* 178 sends the players of the lobby before the battle too; 176 = countdown, 177 = battle begun. */
+        var text
         if (br.players || br.started || br.countdown) {
             var stateStr = br.started ? _lmTH('game2.brStateInGame', 'In game') : br.countdown ? _lmTH('game2.brStateStarting', 'Starting') : _lmTH('game2.brStateWaiting', 'Waiting')
             /* our bots in the lobby: the spawned bots of this session (message 4), never more than the lobby */
             var ours = window.userBots.startedBots || window.userBots.startSent ? Math.min(window.userBots.spawned || 0, br.players || 0) : 0
-            status.textContent = ours > 0
+            text = ours > 0
                 ? _lmTH('game2.brPlayersBots', 'Players: {0} ({1} real + {2} bots) | State: {3}').replace('{0}', br.players).replace('{1}', br.players - ours).replace('{2}', ours).replace('{3}', stateStr)
                 : _lmTH('game2.brPlayers', 'Players: {0} | State: {1}').replace('{0}', br.players).replace('{1}', stateStr)
         } else {
-            status.textContent = _lmTH('game2.brNotInLobby', 'Not in lobby yet')
+            text = _lmTH('game2.brNotInLobby', 'Not in lobby yet')
         }
+        /* a live line: a language change must not put the first "Waiting for lobby data" back
+           over it (data-i18n); the language change rewrites it here instead (LMi18n.onChange) */
+        if (status.removeAttribute) status.removeAttribute('data-i18n')
+        if (status.textContent !== text) status.textContent = text
     }
 
     /* Forget a fill (its buttons) without touching the bots: after Stop bots, a manual
@@ -86344,6 +86357,8 @@ function setGUIEvents() {
     }
     window._lmBrFill = brFill
     window._brUpdateSection = brUpdateSection
+    /* no timer rewrites the lobby line: a language change does */
+    if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () { brUpdateSection() })
     document.getElementById('brFillLobby').addEventListener('click', () => brFill())
 
     document.getElementById('brStopFill').addEventListener('click', brStopFilling)
