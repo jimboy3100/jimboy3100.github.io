@@ -42,8 +42,7 @@
         { id: 'targetPanel', sel: '#target-panel-hud' },
         { id: 'chatBox', sel: '#chat-box' },
         { id: 'chatInput', sel: '#message-box' },
-        { id: 'popups', sel: '#toast-container' },
-        { id: 'bell', sel: '#lm-notif-bell' }
+        { id: 'popups', sel: '#toast-container' }
     ];
     var BY_ID = {};
     COMPONENTS.forEach(function (c) { BY_ID[c.id] = c; });

@@ -77,19 +77,13 @@
     {
       "id": "hudeditor",
       "name": "HUD Editor",
-      "description": "Drag and resize 12 HUD components (leaderboard, minimap, stats, team, time, target, chatBox, chatInput, popups, bell, etc.). Up to 20 named layouts. Scale 0.3x-3x per box. Grid snapping (0/8/16/32px). Lock and hide per box. Edge-relative positioning for responsiveness.",
+      "description": "Drag and resize 12 HUD components (leaderboard, minimap, stats, team, time, target, chatBox, chatInput, popups, etc.). Up to 20 named layouts. Scale 0.3x-3x per box. Grid snapping (0/8/16/32px). Lock and hide per box. Edge-relative positioning for responsiveness.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
       "id": "stats",
       "name": "Stats and analytics",
       "description": "Live stats HUD (mass, FPS, ping, PPS, jitter, server Hz, alive time, 16-cell count). Kill feed (6s, 5 lines). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. Analytics dashboard with heatmaps, 500 game summaries and the match history.",
-      "url": "https://www.legendmod.ml/features.html"
-    },
-    {
-      "id": "notifications",
-      "name": "Notification centre",
-      "description": "Bell icon with unread count. 8 categories: achievements, bests, party, replay, connection, settings, chat, other. Up to 200 notifications (120KB). Filterable list, mark read, clear, per-category muting. Sound mixer integration.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

@@ -21623,7 +21623,6 @@ var defaultmapsettings = {
     virusSoundurl: 'https://www.legendmod.ml/sounds/sound-gunshot.mp3',
     x16Sound: false,              /* sound when the own cells reach 16 pieces */
     non16Sound: false,            /* sound when they merge back below 16 */
-    notificationCentre: false,    /* bell + list of the last toasts (ogario/modules/notifications.js) */
     agarToolTeam: false,          /* AgarTool players with my tag as teammates: team list, minimap, chat (ogario/modules/agartool.js) */
     /* Settings > Sounds volumes, 0..1: the sound's own volume x master; 1 = unchanged */
     volMaster: 1,
@@ -21881,8 +21880,8 @@ function lmRenameOldHotkeys(map) {
         /* the spectator director's commands and camera lock (removed) */
         if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
         /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey,
-         * the custom macros */
-        if (/^hk-(?:radialMenu|radialEditor|screenshotTool|screenshotCapture|customMacro[1-3])$/.test(v)) { delete map[k]; changed = true; continue; }
+         * the custom macros, the notification centre */
+        if (/^hk-(?:radialMenu|radialEditor|screenshotTool|screenshotCapture|customMacro[1-3]|notifCentre)$/.test(v)) { delete map[k]; changed = true; continue; }
         /* the Theme workshop window (removed: My themes is in the Theme tab, under the Theme preset) */
         if (v === 'hk-lmThemeWorkshop') { delete map[k]; changed = true; continue; }
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
@@ -21982,8 +21981,6 @@ var LM_EXPORT_KEYS = [
     /* importOnly: the old skin collections are player profiles now (lmMergeSkinCollections after
      * the import's reload); an older export still brings its skins in, a new one has none */
     { key: 'lmSkinCollections', type: 'o', importOnly: true },
-    /* the muted notification categories (the read mark and the list filter stay on the device) */
-    { key: 'lmNotificationPrefs', type: 'o', only: ['muted'] },
     /* Settings > Voice (LMexpress/LMexpress.sniff3.js): the chat prefix and the speech language */
     { key: 'prefix', type: 's', max: 32 },
     { key: 'lang', type: 's', max: 16, re: /^(?:default|[A-Za-z]{2,3}(?:-[A-Za-z]{2,4})?)$/ }
@@ -22961,9 +22958,8 @@ function thelegendmodproject() {
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
             this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
                 /* the newer in-game parts are added to body, not #overlays-hud: same HUD font and weight
-                 * (bell, kill feed, broadcast, practice HUD, screenshot chip);
-                 * the notification list is a window (menu theme, lmUiKit in LMexpress.js) */
-                '#lm-notif-bell,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
+                 * (kill feed, broadcast, practice HUD, screenshot chip) */
+                '#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
         },
         setHudScale() {
             /* Issue #8: a value saved on a bigger screen is shown at most at this screen's slider
@@ -25670,10 +25666,6 @@ function thelegendmodproject() {
                             ogario.foodIsHidden = false;
                         }
                         break;
-                    case 'notificationCentre':
-                        /* show / remove the bell now (the module also checks every 2 s) */
-                        if (window.LMNotifications) window.LMNotifications.refresh();
-                        break;
                     case 'chatSounds':
                         this.setChatSoundsBtn();
                         break;
@@ -27014,7 +27006,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27119,7 +27111,7 @@ function thelegendmodproject() {
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
             /* Spectating: click to follow */
             this.addOptions(["clickSpectate"], "spectateGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "showTime", "showStopwatch", "killFeed", "analytics"], "statsGroup");
@@ -34422,11 +34414,8 @@ function thelegendmodproject() {
             }
             return '';
         },
-        /* the answer to the player's own click (user lists, mute / unmute): shown also when the
-         * Notification centre mutes its category (LMNotifications.showAlways) */
+        /* the answer to the player's own click (user lists, mute / unmute) */
         _lmAskedToast(type, message, title, options) {
-            var N = window.LMNotifications;
-            if (N && typeof N.showAlways === 'function') return N.showAlways.apply(N, arguments);
             return toastr[type].apply(toastr, Array.prototype.slice.call(arguments, 1));
         },
         muteChatUser(id) {
@@ -88733,16 +88722,9 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading settings profiles script:', e);
     }
-    /* Notification centre (the bell and recording only while its option is on) */
-    try {
-        var notifScript = document.createElement('script');
-        notifScript.type = 'text/javascript';
-        notifScript.src = 'https://www.legendmod.ml/ogario/modules/notifications.js?v=' + (window.OgVer || '');
-        notifScript.charset = 'utf-8';
-        document.body.appendChild(notifScript);
-    } catch (e) {
-        console.warn('[LM] Error loading notifications script:', e);
-    }
+    /* The notification centre is removed: its list of past toasts and its muted categories are
+     * deleted from this browser */
+    try { localStorage.removeItem('lmNotifications'); localStorage.removeItem('lmNotificationPrefs'); } catch (e) { }
     /* The Command Centre is removed: what it kept (stars, recently used) is deleted from this browser */
     try { localStorage.removeItem('lmCommandCentre'); } catch (e) { }
     /* The spectator director is removed: its camera settings, bookmarks and watchlist are deleted from this browser */
