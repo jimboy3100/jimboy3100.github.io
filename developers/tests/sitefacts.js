@@ -118,5 +118,10 @@ fs.readdirSync(src).filter((n) => /^site-.*\.json$/.test(n) && !/changelog/.test
     });
 });
 
+/* the comparison says who made it (it is published by one of the compared mods) */
+const cmp = fs.readFileSync(path.join(repo, 'compare.html'), 'utf8');
+const disc = (cmp.match(/<p\b[^>]*data-i18n="site\.compare\.madeByLegendMod"[^>]*>([^<]+)<\/p>/) || [])[1] || '';
+ok(/Legend Mod/.test(disc) && /not a neutral/.test(disc), 'compare.html says it is made by the Legend Mod project and is not neutral ("' + disc + '")');
+
 console.log(fails ? 'sitefacts: ' + fails + ' FAILED of ' + checked : 'sitefacts: all ' + checked + ' checks passed');
 process.exit(fails ? 1 : 0);
