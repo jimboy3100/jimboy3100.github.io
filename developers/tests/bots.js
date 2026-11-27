@@ -489,5 +489,25 @@ const Entity = require(path.join(botsDir, 'entity'));
     }
 }
 
+// ---- ogario.v4.js: P4 CAPTCHA popup security ----
+{
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    // The message listener must check event.origin
+    check('captcha: message listener checks event.origin', ogSrc.includes("event.origin !== 'https://agar.io'"));
+    // The message listener must verify event.source against registered popup windows
+    check('captcha: message listener checks event.source against capthaWindow', ogSrc.includes('event.source === window.capthaWindow[ci]'));
+    // The message listener must require an active bot connection
+    check('captcha: message listener requires active bot connection', ogSrc.includes('connectionBots.ws.readyState !== WebSocket.OPEN') && ogSrc.includes('!window.connectionBots.ws'));
+    // Verify guards appear BEFORE sendSpawn2 within the message listener
+    // Find the listener body between addEventListener("message" and the matching closing
+    const listenerStart = ogSrc.indexOf('addEventListener("message", function (event)');
+    const spawnCall = listenerStart > -1 ? ogSrc.indexOf('sendSpawn2', listenerStart) : -1;
+    const originCheck = listenerStart > -1 ? ogSrc.indexOf("event.origin", listenerStart) : -1;
+    const sourceCheck = listenerStart > -1 ? ogSrc.indexOf("event.source", listenerStart) : -1;
+    check('captcha: message listener found', listenerStart > -1 && spawnCall > -1);
+    check('captcha: origin check appears before sendSpawn2', originCheck > -1 && originCheck < spawnCall);
+    check('captcha: source check appears before sendSpawn2', sourceCheck > -1 && sourceCheck < spawnCall);
+}
+
 console.log('\n' + (fail ? 'FAIL: ' + fail + ' failure(s)' : 'ALL PASS'));
 process.exit(fail ? 1 : 0);

@@ -7226,22 +7226,21 @@ window.connectionBots = {
             window.addEventListener("message", function (event) {
                 /* Only reCAPTCHA tokens from the captcha popups: ignore YouTube, ads, extensions, OAuth relays. */
                 if (typeof event.data !== 'string' || !/^[A-Za-z0-9_\-]{20,}$/.test(event.data)) return;
-                //if (event.data.includes('captcha-')){
-                //event.data.replace('captcha-','');	
+                /* P4: verify origin — only accept messages from the captcha popup's origin */
+                if (event.origin !== 'https://agar.io') return;
+                /* P4: verify source — must be one of the registered captcha popup WindowProxy objects */
+                var knownSource = false;
+                for (var ci = 0; ci < window.captchaOpenedWindow; ci++) {
+                    if (window.capthaWindow[ci] && event.source === window.capthaWindow[ci]) { knownSource = true; break; }
+                }
+                if (!knownSource) return;
+                /* P4: require the bot connection to be active */
+                if (!window.connectionBots.ws || window.connectionBots.ws.readyState !== WebSocket.OPEN) return;
                 if (legendmod.integrity) {
                     legendmod.sendSpawn2(event.data);
                 } else {
                     legendmod.sendSpawn2('0');
                 }
-                //}
-                /*else if (event.data.includes('sendTimeOutTokenBots-')){
-                    event.data.replace('sendTimeOutTokenBots-','');
-                    if (event.data=="true") window.sendTimeOutTokenBots = true;
-                }
-                else if (event.data.includes('cookieCaptchaOK-')){
-                    event.data.replace('cookieCaptchaOK-','');
-                    if (event.data=="true") window.cookieCaptchaOK = true;
-                }*/
             });
         }
 
