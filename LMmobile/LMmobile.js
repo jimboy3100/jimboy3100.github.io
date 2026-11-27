@@ -302,44 +302,39 @@
          * resize, orientation, visualViewport and menu size changes, and keeps the layout while
          * the phone keyboard is open for a field in the menu. ── */
         window._lm_fitHC = function () { if (typeof window.lmMenuFit === 'function') window.lmMenuFit(); };
-        /* ── Mobile visual overrides: proportional to user settings ── */
-        (function mobileVisuals() {
-            /* Values this function wrote last time: reduce only values that changed since
-             * (a theme load), never our own output again (the observer re-runs apply). */
-            var lastGrid = null, lastFood = null;
-            function apply() {
-                if (typeof defaultSettings !== 'undefined' && defaultSettings.gridColor !== lastGrid) {
-                    // Grid: keep user's color, reduce opacity proportionally (×0.3)
-                    var gc = defaultSettings.gridColor || '#00243e';
-                    if (gc.indexOf('rgba') === 0) {
-                        // Extract rgba components, multiply alpha by 0.3
-                        var parts = gc.replace(/rgba?\(/, '').replace(')', '').split(',');
-                        var a = parseFloat(parts[3] || 1) * 0.3;
-                        defaultSettings.gridColor = 'rgba(' + parts[0].trim() + ',' +
-                            parts[1].trim() + ',' + parts[2].trim() + ',' + a.toFixed(2) + ')';
-                    } else {
-                        // Hex or named color — wrap in rgba with low alpha
-                        defaultSettings.gridColor = 'rgba(0,36,62,.15)';
-                    }
-                    lastGrid = defaultSettings.gridColor;
+        /* ── Phone visuals: a fainter grid and smaller food than the theme says. The core calls
+         * window._lmPhoneVis(true) right before it draws a frame and (false) right after it, so the
+         * theme keeps the player's own values: this wrote the reduced ones into the theme itself, so a
+         * save, Theme Workshop preview / Revert or a settings profile kept them (and each load reduced
+         * them again), and the player's "Sectors background" setting was turned off. ── */
+        (function phoneVisuals() {
+            var inGrid = null, outGrid = null, keep = false, grid = null, food = 0;
+            /* the player's grid colour at 0.3 of its opacity (a hex colour: 0.15, as before) */
+            function fainter(gc) {
+                gc = String(gc || '');
+                var m = /^rgba?\(([^)]*)\)$/i.exec(gc.trim());
+                if (m) {
+                    var p = m[1].split(',');
+                    if (p.length >= 3) return 'rgba(' + p[0].trim() + ',' + p[1].trim() + ',' + p[2].trim() + ',' + (parseFloat(p[3] || 1) * 0.3).toFixed(2) + ')';
                 }
-                if (typeof defaultSettings !== 'undefined' && defaultSettings.foodSize !== lastFood) {
-                    // FoodSize: proportional (60% of user's setting, min 1)
-                    var userFood = defaultSettings.foodSize || 5;
-                    defaultSettings.foodSize = Math.max(1, Math.round(userFood * 0.6));
-                    lastFood = defaultSettings.foodSize;
+                var h = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(gc.trim());
+                if (h) {
+                    var x = h[1].length === 3 ? h[1].replace(/(.)/g, '$1$1') : h[1];
+                    return 'rgba(' + parseInt(x.slice(0, 2), 16) + ',' + parseInt(x.slice(2, 4), 16) + ',' + parseInt(x.slice(4, 6), 16) + ',0.15)';
                 }
-                if (typeof defaultmapsettings !== 'undefined') {
-                    defaultmapsettings.showBgSectors = false; // no sector background
-                }
+                return 'rgba(0,36,62,.15)';
             }
-            apply();
-            /* Re-apply after theme loads — observe for defaultSettings changes */
-            if (typeof MutationObserver !== 'undefined') {
-              var _themeObs = new MutationObserver(function() { apply(); });
-              _themeObs.observe(document.body, { childList: true, subtree: true });
-              setTimeout(function() { _themeObs.disconnect(); }, 10000);
-            }
+            window._lmPhoneVis = function (on) {
+                if (typeof defaultSettings === 'undefined' || !defaultSettings) return;
+                /* a frame that threw before its end: the player's values back first */
+                if (keep) { defaultSettings.gridColor = grid; defaultSettings.foodSize = food; keep = false; }
+                if (!on) return;
+                grid = defaultSettings.gridColor; food = defaultSettings.foodSize; keep = true;
+                if (grid !== inGrid) { inGrid = grid; outGrid = fainter(grid); }
+                defaultSettings.gridColor = outGrid;
+                /* 60 % of the food size (at least 1; 0 stays 0) */
+                if (food > 0) defaultSettings.foodSize = Math.max(1, Math.round(food * 0.6));
+            };
         })();
 
         /* ═══════════════════════════════════════════════════════

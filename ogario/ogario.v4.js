@@ -83185,6 +83185,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * used to stop rendering permanently (frozen game). */
             try {
                 drawRender.countFps();
+                /* phones (LMmobile.js): their fainter grid and smaller food only while the frame is
+                 * drawn, so the theme keeps the player's values; undone in the finally below */
+                var _lmPv = window._lmPhoneVis;
+                if (_lmPv) _lmPv(true);
                 /* frame timing for Adaptive performance / Performance diagnostics
                  * (ogario/modules/perf.js); also when the frame throws (its time and the
                  * error are kept, the error still goes to the handler below) */
@@ -83221,6 +83225,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                 } catch (_resetError) { }
             } finally {
+                if (_lmPv) { try { _lmPv(false); } catch (_lmPvE) { } }
                 /* Freeze detector: connected and visible, but no world update for >1 s.
                  * Also detects short stalls (200–3000 ms) the old 3 s threshold missed. */
                 try {
