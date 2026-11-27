@@ -43,6 +43,19 @@
     if (pe(mm) !== 'auto') fail.push('menu hidden: the minimap takes no taps (' + pe(mm) + ')');
     if (pe(lb) !== 'auto') fail.push('menu hidden: the compact leaderboard takes no taps (' + pe(lb) + ')');
     act.forEach(function (k) { if (c[k] && pe(c[k]) === 'none') fail.push('menu hidden: ' + k + ' takes no taps'); });
+    /* a tap enlarges the minimap: Split, Feed, 4x and 16x move off it within a moment (up to 3.702
+     * only on the 5 s poll), and back once a second tap shrinks it */
+    var R = function (el) { var r = el.getBoundingClientRect(); return { l: r.left, t: r.top, r: r.right, b: r.bottom }; };
+    var hit = function (a, b) { return a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.t < a.b - 1; };
+    var btns = ['split', 'feed', 'x4', 'x16'].filter(function (k) { return c[k] && c[k].getClientRects().length; });
+    var at0 = btns.map(function (k) { return R(c[k]); });
+    mm.dispatchEvent(new Event('touchstart'));
+    await sleep(700);
+    info.bigMinimap = [R(mm).l, R(mm).t, R(mm).r, R(mm).b].map(Math.round);
+    btns.forEach(function (k) { if (hit(R(c[k]), R(mm))) fail.push('enlarged minimap covers ' + k); });
+    mm.dispatchEvent(new Event('touchstart'));
+    await sleep(700);
+    btns.forEach(function (k, i) { var r = R(c[k]); if (Math.abs(r.l - at0[i].l) > 1 || Math.abs(r.t - at0[i].t) > 1) fail.push(k + ' not back in place after the minimap shrank: ' + [r.l, r.t].map(Math.round) + ' (was ' + [at0[i].l, at0[i].t].map(Math.round) + ')'); });
   } finally {
     try { if (keepPrefs === null) localStorage.removeItem('lm-mobile-prefs'); else localStorage.setItem('lm-mobile-prefs', keepPrefs); } catch (e) { }
     if (H.reloadPrefs) H.reloadPrefs();

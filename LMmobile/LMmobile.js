@@ -1745,12 +1745,17 @@
         (function () {
             var mm = document.getElementById('minimap-hud');
             if (!mm) return;
-            var expanded = false;
+            var expanded = false, placeT = 0;
             // The mobile stylesheet uses !important, so inline writes must be !important too
             hudTaps();
             mm.addEventListener('touchstart', function (e) {
                 e.stopPropagation();
                 expanded = !expanded;
+                /* Split / Feed and 4x / 16x are placed from the minimap's box: place them again once
+                 * its .25 s scale change is done (a ResizeObserver does not see a transform, so the
+                 * enlarged minimap covered them until the 5 s poll) */
+                clearTimeout(placeT);
+                placeT = setTimeout(repositionButtons, 300);
                 /* a minimap moved by a HUD layout: 2x of its layout size, kept on screen */
                 var he = window.LMHudEditor;
                 if (he && he.owns && he.owns('minimap')) { he.boost('minimap', expanded ? 2 : 0); return; }
