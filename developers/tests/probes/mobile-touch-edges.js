@@ -67,6 +67,9 @@
      * area), and the middle of the gap between two of them still takes none */
     var tc = document.getElementById('toast-container'), tcPe = tc ? tc.style.pointerEvents : '';
     if (tc) tc.style.pointerEvents = 'none';
+    /* a phone held upright shows the "rotate" cover over the game: the row is checked under it */
+    var po = document.getElementById('lm-portrait-ov'), poDisp = po ? po.style.display : '';
+    if (po) po.style.display = 'none';
     var row = [].filter.call(H.root.drawer.children, function (el) { return el.classList.contains('lm-d') && el.getClientRects().length; });
     var pairs = 0, hits = [], gaps = [];
     for (var i = 0; i + 1 < row.length; i++) {
@@ -78,6 +81,7 @@
       if (e2 && (row[i].contains(e2) || row[i + 1].contains(e2))) gaps.push(row[i].textContent + '|' + row[i + 1].textContent);
     }
     if (tc) tc.style.pointerEvents = tcPe;
+    if (po) po.style.display = poDisp;
     info.tapArea = { pairs: pairs, size: row.length ? Math.round(row[0].getBoundingClientRect().width) : 0 };
     if (!pairs) fail.push('no two buttons side by side in the left row');
     if (hits.length) fail.push('a tap just outside a left-row button missed it: ' + hits.join(', '));
