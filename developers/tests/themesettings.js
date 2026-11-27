@@ -48,7 +48,7 @@ const TD = ctx.LM_THEME_DEFAULTS, SCH = ctx.LM_THEME_SCHEMA, V = ctx.lmThemeValu
 /* the real Settings methods that store theme values */
 const Settings = vm.runInContext('({\n' +
   cut('        loadThemeSettings() {', '        saveThemeSettings() {') +
-  cut('        addSliderBox(id, name, min, max, step, callback) {', '        addScanTrickControls() {') +
+  cut('        addSliderBox(id, name, min, max, step, callback) {', '        addInputBox(id, name, holder, callback) {') +
   cut('        changePreset(names, theme) {', '        changeThemePreset(name) {') + '\n})', ctx);
 ctx.ogario = {};
 

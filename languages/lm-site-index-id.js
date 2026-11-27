@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Opsi baru</b> (nonaktif secara default): rekor pribadi sepanjang masa dengan lencana Rekor baru! di kartu Game Over, jitter ping di sebelah PING, 25 FPS saat menu terbuka, Stop saat dilepas di mobile. Hotkey untuk menyalin link server.",
 "site.index.newOptionOffBy": "<b>Opsi baru</b> (nonaktif secara default): <b>Riwayat match</b>, 50 game terakhirmu (massa, waktu hidup, siapa yang memakanmu, server, mode) di jendela di bawah menu.",
 "site.index.gridNoLongerShimmers": "Grid tidak lagi berkedip atau bergetar saat bergerak; kamera multibox mengikuti unitmu dengan mulus.",
-"site.index.scanTrickTheHotkey": "Scan Trick: hotkey-nya bernama \"Hold Scan Trick\" dan game memberi tahu jika belum ada tombol yang diatur. Pengaturan cloud dilindungi dengan kode sinkronisasi.",
+"site.index.scanTrickTheHotkey": "Pengaturan cloud dilindungi dengan kode sinkronisasi.",
 "site.index.newOptionOffBy2": "<b>Opsi baru</b> (nonaktif secara default): <b>Dukungan gamepad / controller</b> di kontrol Mouse. Stik kiri untuk bergerak, A split, B feed (tahan), X double split, Y respawn, RB split 16, LB ganti multibox, Start menu, stik kanan zoom.",
 "site.index.makingReplayIframes": "Membuat iframe replay",
 "site.index.saveYourReplayAnd": "Simpan replay kamu lalu unggah sebagai file atau sebagai .lm mentah ke web",

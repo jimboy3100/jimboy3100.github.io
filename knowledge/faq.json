@@ -55,7 +55,7 @@
     },
     {
       "question": "What is a scan trick?",
-      "answer": "A movement technique where cursor position snaps to fixed directional increments (8-32 directions) for precise cell positioning."
+      "answer": "A movement technique: while its key is held the cell heads far out toward the cursor at the exact angle; with the left mouse button held too, the direction snaps to one of 16 (22.5 degrees each). It has no settings."
     },
     {
       "question": "What is line split?",

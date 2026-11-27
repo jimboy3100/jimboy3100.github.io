@@ -54,7 +54,9 @@ check('the top of a range that is not a whole number of steps stays reachable (g
 check('zero where the range allows it', V('hudBlur', 0) === 0 && V('lineSplitDelay', 0) === 0 && V('zoomSpeedValue2', 0) === 0 && V('volMaster', 0) === 0);
 check('NaN, Infinity, -Infinity refused (the default stays)', [NaN, Infinity, -Infinity].every(x => V('animation', x) === undefined && V('volMaster', x) === undefined));
 check('numeric strings from old saves converted and fitted, other strings refused', V('fpsLimit', '60') === 60 && V('fpsLimit', ' 65 ') === 70 && V('fpsLimit', '') === undefined && V('fpsLimit', '6O') === undefined && V('fpsLimit', true) === undefined);
-check('a setting with choices takes only those (scan directions 8/16/32)', V('scanTrickDirections', 32) === 32 && V('scanTrickDirections', '8') === 8 && V('scanTrickDirections', 12) === undefined && V('scanTrickDirections', 16.5) === undefined);
+/* Scan Trick is only its key: none of its old settings is a setting any more */
+const SCAN_OLD = ['scanTrick', 'scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDirections', 'scanTrickDistance', 'scanTrickRoundedDistance', 'scanTrickStatus'];
+check('no Scan Trick setting is left (default, schema, value)', SCAN_OLD.every(k => !(k in D) && !(k in SCH) && V(k, D[k] === undefined ? 1 : D[k]) === undefined && V(k, true) === undefined) || (console.log('   left: ' + SCAN_OLD.filter(k => k in D || k in SCH).join(', ')), false));
 check('a text setting with choices (toast position) takes only those', V('positionClass', 'toast-top-right') === 'toast-top-right' && V('positionClass', 'toast-middle') === undefined);
 check('settings without a slider have a range too (domination rate)', V('dominationRate', 4 / 3) === 4 / 3 && V('dominationRate', 0) === 1 && V('dominationRate', 9) === 4 && V('dominatedRate', 0.6) === 0.6);
 check('booleans: "true"/"false" converted, other values refused', V('showMass', 'false') === false && V('showMass', 1) === undefined && V('showMass', true) === true);
@@ -63,7 +65,7 @@ check('the old multibox count 3-4 is still read (ensureMbSlots maps it to 2)', V
 
 // ── S1 the import path of the settings file (the real loop of importSettings)
 const impLoop = cut("                    var _impS = importValue.ogarioSettings;", "                if (Object.prototype.hasOwnProperty.call(importValue, 'ogarioThemeSettings')");
-const imported = { ogarioSettings: { macroFeeding: -100, fpsLimit: 'x', massFormat: 1.7, showMass: 'false', scanTrickDirections: 12, nope: 1, profileNumber: 30, animation: Infinity } };
+const imported = { ogarioSettings: { macroFeeding: -100, fpsLimit: 'x', massFormat: 1.7, showMass: 'false', positionClass: 'toast-middle', scanTrickDirections: 8, scanTrickDistance: 20000, scanTrickRounded: false, nope: 1, profileNumber: 30, animation: Infinity } };
 vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(imported);
 /* shortMass: the copy that follows Mass format (12.3k = 2) */
 check('import: values fitted, unusable ones dropped (their defaults apply)', J(imported.ogarioSettings) === J({ macroFeeding: 1, massFormat: 2, showMass: false, profileNumber: 30, shortMass: true }));
@@ -74,11 +76,12 @@ check('import: an old export with the second video volume keeps its loudness', J
 // ── S1 loading (the real loadSettings): a damaged save is fitted, the rest kept
 const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);
 ctx.ogario = {};
-const saved = Object.assign({}, D, { fpsLimit: 145, massFormat: 1.7, hudBlur: 3, showMass: !D.showMass, scanTrickDirections: 7, chatHideWords: 'spam' });
+const saved = Object.assign({}, D, { fpsLimit: 145, massFormat: 1.7, hudBlur: 3, showMass: !D.showMass, positionClass: 'toast-middle', scanTrickDirections: 8, scanTrickDistance: 20000, scanTrickRounded: false, chatHideWords: 'spam' });
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();
 const S = ctx.defaultmapsettings;
-check('load: off-range/off-step values fitted, invalid choice keeps the default, valid values kept', S.fpsLimit === 150 && S.massFormat === 2 && S.hudBlur === 3 && S.showMass === !D.showMass && S.scanTrickDirections === D.scanTrickDirections && S.chatHideWords === 'spam');
+check('load: off-range/off-step values fitted, invalid choice keeps the default, valid values kept', S.fpsLimit === 150 && S.massFormat === 2 && S.hudBlur === 3 && S.showMass === !D.showMass && S.positionClass === D.positionClass && S.chatHideWords === 'spam');
+check('load: old saved Scan Trick settings are skipped quietly', SCAN_OLD.every(k => !(k in S)) || (console.log('   kept: ' + SCAN_OLD.filter(k => k in S).join(', ')), false));
 // ── one video skin volume: the removed second slider (volVideo) is folded into the level once
 check('volVideo is no setting any more (no second video volume)', !('volVideo' in D) && !('volVideo' in SCH) && V('volVideo', 0.5) === undefined);
 const fold = (o) => { ctx._f = o; vm.runInContext('lmFoldVideoVolume(_f)', ctx); return ctx._f; };
@@ -232,10 +235,10 @@ ctx._lmG1tag = () => '';
 if (!ctx.document) ctx.document = { getElementById: () => null };
 events.length = 0;
 let setThrew = null;
-try { app2.setSettings('massFormat', 1.7); app2.setSettings('macroFeeding', -100); app2.setSettings('scanTrickDirections', 12); } catch (e) { setThrew = e; }
-check('setSettings from a script: a number put on its range and step, an invalid choice ignored', !setThrew && S.massFormat === 2 && S.macroFeeding === 1 && S.scanTrickDirections === D.scanTrickDirections || (console.log('   ' + (setThrew && setThrew.message)), false));
+try { app2.setSettings('massFormat', 1.7); app2.setSettings('macroFeeding', -100); app2.setSettings('positionClass', 'toast-middle'); } catch (e) { setThrew = e; }
+check('setSettings from a script: a number put on its range and step, an invalid choice ignored', !setThrew && S.massFormat === 2 && S.macroFeeding === 1 && S.positionClass === D.positionClass || (console.log('   ' + (setThrew && setThrew.message)), false));
 const evKeys = events.map(e => e[1]);
-check('setSettings: events for the values that changed only', evKeys.indexOf('scanTrickDirections') < 0 && evKeys.indexOf('macroFeeding') >= 0);
+check('setSettings: events for the values that changed only', evKeys.indexOf('positionClass') < 0 && evKeys.indexOf('macroFeeding') >= 0);
 events.length = 0;
 const before = S.showGrid;
 app2.setSettings('showGrid', before);
@@ -472,12 +475,6 @@ const depRefresh = vm.runInContext('(function (app, $, document, lmT) {' + depSr
 const dmsDep = vm.runInContext('defaultmapsettings', ctx);
 const depWhy = k => (rows[k] && rows[k].cls.has('lm-dep-off') ? rows[k].at['data-lm-why'] : '');
 const depRun = set => { Object.assign(dmsDep, D, set); depRefresh(); };
-depRun({ scanTrick: false });
-check('Scan trick off: its rounding, LMB-only and both distances are dimmed and need Scan trick',
-  ['scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDistance', 'scanTrickRoundedDistance'].every(k => depWhy(k) === 'Needs: scanTrick') || (console.log('   ' + J(['scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDistance', 'scanTrickRoundedDistance'].map(depWhy))), false));
-depRun({ scanTrickRounded: false });
-check('Scan trick on, rounding off: LMB-only and the rounded distance need the rounding, the other distance works',
-  depWhy('scanTrickOnlyWhileLMB') === 'Needs: scanTrickRounded' && depWhy('scanTrickRoundedDistance') === 'Needs: scanTrickRounded' && depWhy('scanTrickDistance') === '' && depWhy('scanTrickRounded') === '');
 depRun({ showMapBorders: false, rainbowMapBorders: true });
 check('Map borders off: rainbow borders and their speed are dimmed (only the border uses them)',
   depWhy('rainbowMapBorders') === 'Needs: showMapBorders' && depWhy('rainbowBorderSpeed') === 'Needs: showMapBorders');
@@ -490,7 +487,7 @@ check('Show mass off: the cell mass options are dimmed, Mass format is not (it s
 check('Multibox rings category removed: no ring setting left (the ring on the player you control has none)', !Object.keys(D).some(k => /^mbRing/.test(k)));
 depRun({});
 check('defaults: none of these dimmed, and every switch of the list is a real setting',
-  ['scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDistance', 'scanTrickRoundedDistance', 'rainbowMapBorders'].every(k => depWhy(k) === '') &&
+  ['rainbowMapBorders'].every(k => depWhy(k) === '') &&
   Object.keys(rows).every(k => k in D) || (console.log('   not settings: ' + Object.keys(rows).filter(k => !(k in D)).join(', ')), false));
 
 console.log(fail ? fail + ' settings check(s) FAILED' : 'all settings checks passed');

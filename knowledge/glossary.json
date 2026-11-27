@@ -89,7 +89,7 @@
     },
     {
       "term": "Scan trick",
-      "definition": "A movement technique where cursor position snaps to fixed directional increments (8-32 directions). Allows precise cell positioning for split tricks.",
+      "definition": "A movement technique: while its key is held the cell heads far toward the cursor direction; with the left mouse button held too, the direction snaps to one of 16. Allows precise cell positioning for split tricks.",
       "category": "techniques"
     },
     {

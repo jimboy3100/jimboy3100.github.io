@@ -95,7 +95,7 @@
     {
       "id": "scantrick",
       "name": "Scan trick and line split",
-      "description": "Scan trick: snap cursor to 8-32 fixed directional increments for precise cell positioning. Options: rounded, left-mouse-only, status display. Line split: straight-line rapid multi-split (x8 or x16) with configurable delay, hold time, and guide lines.",
+      "description": "Scan trick: hold its key and the cell heads far out toward the cursor at the exact angle; with the left mouse button held too it snaps to 16 directions (no settings). Line split: straight-line rapid multi-split (x8 or x16) with configurable delay, hold time, and guide lines.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

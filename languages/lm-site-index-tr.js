@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Yeni seçenekler</b> (varsayılan olarak kapalı): Oyun Sonu kartında New best! rozetiyle tüm zamanların kişisel rekorları, PING'in yanında ping dalgalanması, menü açıkken 25 FPS, mobilde Stop on release. Sunucu bağlantısını kopyalamak için kısayol tuşu.",
 "site.index.newOptionOffBy": "<b>Yeni seçenek</b> (varsayılan olarak kapalı): <b>Maç geçmişi</b>, menünün altındaki bir pencerede son 50 oyununuz (kütle, hayatta kalma süresi, sizi kimin yediği, sunucu, mod).",
 "site.index.gridNoLongerShimmers": "Izgara artık hareket ederken titremiyor veya sarsılmıyor; multibox kamerası biriminizi akıcı şekilde takip ediyor.",
-"site.index.scanTrickTheHotkey": "Scan Trick: kısayol tuşunun adı \"Hold Scan Trick\" ve tuş atanmadığında oyun bunu size bildiriyor. Bulut ayarları bir senkronizasyon koduyla korunuyor.",
+"site.index.scanTrickTheHotkey": "Bulut ayarları bir senkronizasyon koduyla korunuyor.",
 "site.index.newOptionOffBy2": "<b>Yeni seçenek</b> (varsayılan olarak kapalı): Mouse control bölümünde <b>Gamepad / controller support</b>. Sol çubuk hareket, A split, B feed (basılı tut), X çift split, Y yeniden doğma, RB 16'lı split, LB multibox değiştirme, Start menü, sağ çubuk yakınlaştırma.",
 "site.index.makingReplayIframes": "Tekrar iframe'leri oluşturma",
 "site.index.saveYourReplayAnd": "Tekrarınızı kaydedin ve web'e dosya olarak veya ham .lm olarak yükleyin",

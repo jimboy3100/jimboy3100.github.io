@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Neue Optionen</b> (standardmäßig aus): persönliche Allzeit-Bestwerte mit einem New-best!-Badge auf der Game-Over-Karte, Ping-Jitter neben PING, 25 FPS bei offenem Menü, mobil „Stopp beim Loslassen“. Hotkey zum Kopieren des Serverlinks.",
 "site.index.newOptionOffBy": "<b>Neue Option</b> (standardmäßig aus): <b>Match-Verlauf</b>, deine letzten 50 Spiele (Masse, Überlebenszeit, wer dich gefressen hat, Server, Modus) in einem Fenster unter dem Menü.",
 "site.index.gridNoLongerShimmers": "Das Gitter flimmert oder wackelt beim Bewegen nicht mehr; die Multibox-Kamera folgt deiner Einheit flüssig.",
-"site.index.scanTrickTheHotkey": "Scan Trick: Der Hotkey heißt „Scan-Trick halten“, und das Spiel sagt dir Bescheid, wenn keine Taste belegt ist. Cloud-Einstellungen sind mit einem Sync-Code geschützt.",
+"site.index.scanTrickTheHotkey": "Cloud-Einstellungen sind mit einem Sync-Code geschützt.",
 "site.index.newOptionOffBy2": "<b>Neue Option</b> (standardmäßig aus): <b>Gamepad-/Controller-Unterstützung</b> unter Maussteuerung. Linker Stick bewegt, A Split, B Feed (halten), X Doppelsplit, Y Respawn, RB 16er-Split, LB Multibox-Wechsel, Start Menü, rechter Stick Zoom.",
 "site.index.makingReplayIframes": "Replay-iframes erstellen",
 "site.index.saveYourReplayAnd": "Speichere dein Replay und lade es als Datei oder als rohe .lm-Datei ins Web hoch",

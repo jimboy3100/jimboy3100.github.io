@@ -173,19 +173,6 @@
       ]
     },
     {
-      "id": "scantrick",
-      "name": "Scan Trick",
-      "description": "Cursor snapping technique settings.",
-      "settings": [
-        "scanTrickEnabled",
-        "scanDirections",
-        "scanDistance",
-        "scanRounded",
-        "scanLeftMouseOnly",
-        "scanStatusDisplay"
-      ]
-    },
-    {
       "id": "linesplit",
       "name": "Line Split",
       "description": "Straight-line multi-split technique settings.",

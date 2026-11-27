@@ -43,17 +43,10 @@
     {
       "id": "scantrick",
       "name": "Scan trick",
-      "description": "Cursor position snaps to fixed directional increments (8-32 directions, configurable distance). Provides pixel-perfect cell positioning for split tricks.",
+      "description": "While its key is held the cell heads far out toward the cursor at the exact angle; with the left mouse button held too, the direction snaps to one of 16 (22.5 degrees each). Provides precise cell positioning for split tricks.",
       "difficulty": "advanced",
-      "keys": "Configurable hotkey (hold action)",
-      "tips": "Start with 8 directions and increase. Use 'rounded' mode for gentler snapping. Enable status display to see active direction.",
-      "settings": {
-        "directions": "8 to 32",
-        "distance": "Configurable snap distance",
-        "rounded": "Smoother snapping option",
-        "leftMouseOnly": "Only activate with left mouse",
-        "statusDisplay": "Show active direction indicator"
-      }
+      "keys": "Hold Scan Trick (set it in the Hotkeys window, hold action)",
+      "tips": "Hold the left mouse button too for one of 16 fixed directions. It has no settings."
     },
     {
       "id": "virusshot",

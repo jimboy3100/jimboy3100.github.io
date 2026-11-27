@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Nuove opzioni</b> (disattivate di base): record personali di sempre con un badge Nuovo record! nella scheda Game Over, jitter del ping accanto a PING, 25 FPS mentre il menu è aperto, Stop al rilascio su mobile. Tasto rapido per copiare il link del server.",
 "site.index.newOptionOffBy": "<b>Nuova opzione</b> (disattivata di base): <b>Cronologia partite</b>, le tue ultime 50 partite (massa, tempo di sopravvivenza, chi ti ha mangiato, server, modalità) in una finestra sotto il menu.",
 "site.index.gridNoLongerShimmers": "La griglia non sfarfalla e non trema più durante il movimento; la telecamera del multibox segue la tua unità in modo fluido.",
-"site.index.scanTrickTheHotkey": "Scan Trick: il tasto rapido si chiama \"Hold Scan Trick\" e il gioco ti avvisa quando non c'è nessun tasto impostato. Le impostazioni nel cloud sono protette da un codice di sincronizzazione.",
+"site.index.scanTrickTheHotkey": "Le impostazioni nel cloud sono protette da un codice di sincronizzazione.",
 "site.index.newOptionOffBy2": "<b>Nuova opzione</b> (disattivata di base): <b>Supporto gamepad / controller</b> in Controllo mouse. Stick sinistro per muoverti, A split, B feed (tieni premuto), X double split, Y respawn, RB split x16, LB cambio multibox, Start menu, stick destro zoom.",
 "site.index.makingReplayIframes": "Creare iframe dei replay",
 "site.index.saveYourReplayAnd": "Salva il tuo replay e caricalo online come file o come .lm grezzo",

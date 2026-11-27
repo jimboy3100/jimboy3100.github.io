@@ -21628,17 +21628,10 @@ var defaultmapsettings = {
     /* deathParticles and eatPulse live in defaultmapsettings (the gameplay
      * settings object); removed here to avoid confusion – the theme copy
      * was never read by game logic and could diverge from the actual value. */
-    /*
-     * ═══════════════════════════════════════════════════════════════════════
-     * SCAN TRICK SETTINGS
-     * ═══════════════════════════════════════════════════════════════════════
-     */
-    scanTrick: true,
-    scanTrickRounded: true,
-    scanTrickOnlyWhileLMB: true,
-    scanTrickDirections: 16,
-    scanTrickDistance: 10000000,
-    scanTrickRoundedDistance: 20000,
+    /* Scan Trick has no settings: its key (hk-scanTrick) always works with a fixed
+     * distance and 16 directions while LMB is held (saved values of scanTrick,
+     * scanTrickRounded, scanTrickOnlyWhileLMB, scanTrickDirections and both
+     * distances are skipped on load like any unknown key). */
     /* scanTrickStatus and lineSplitStatus (a switch for each status line) are gone: the line
      * shows by itself while the technique is in use (saved values of them are skipped on load) */
     /* Line split (hk-lineSplit): splits per press (3 = x8, 4 = x16), ms
@@ -21838,9 +21831,6 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     adaptivePerfTarget: [30, 120, 30],
     /* its slider is gone; 3-4 from older versions are read as 2 (ensureMbSlots) */
     multiboxAmount: [2, 4, 1],
-    scanTrickDirections: { choices: [8, 16, 32] },
-    scanTrickDistance: [100000, 10000000, 100000],
-    scanTrickRoundedDistance: [1000, 100000, 1000],
     lineSplitCount: [1, 4, 1],
     lineSplitDelay: [0, 200, 5],
     lineSplitHold: [0, 3000, 100],
@@ -22613,136 +22603,6 @@ function thelegendmodproject() {
         /* a theme label, or its English text when the language has none */
         _lmThemeText(name) {
             return textLanguage[name] || (typeof displayText !== 'undefined' && displayText.en && displayText.en[name]) || name;
-        },
-        /*
-         * ═══════════════════════════════════════════════════════════════════
-         * SCAN TRICK SETTINGS UI
-         * ═══════════════════════════════════════════════════════════════════
-         */
-        addScanTrickControls() {
-            var app =
-                this;
-
-            var section =
-                $('.scanTrickGroup');
-
-            if (!section.length) {
-                return;
-            }
-
-            /*
-             * Prevent duplication if the menu is rebuilt.
-             */
-            if (
-                $('#scanTrickDirections-select')
-                    .length
-            ) {
-                return;
-            }
-
-            section.append(
-                '<div class="input-box scan-trick-direction-box">' +
-                    '<span class="title-box">' +
-                        textLanguage
-                            .scanTrickDirections +
-                    '</span>' +
-                    '<select ' +
-                        'id="scanTrickDirections-select" ' +
-                        'class="form-control">' +
-                        '<option value="8" data-i18n="game1.scan.dirs" data-i18n-vars=\'{"0":"8","1":"45"}\'>' + _lmG1e(lmT('game1.scan.dirs', ['8', '45'])) + '</option>' +
-                        '<option value="16" data-i18n="game1.scan.dirs" data-i18n-vars=\'{"0":"16","1":"22.5"}\'>' + _lmG1e(lmT('game1.scan.dirs', ['16', '22.5'])) + '</option>' +
-                        '<option value="32" data-i18n="game1.scan.dirs" data-i18n-vars=\'{"0":"32","1":"11.25"}\'>' + _lmG1e(lmT('game1.scan.dirs', ['32', '11.25'])) + '</option>' +
-                    '</select>' +
-                '</div>'
-            );
-
-            $('#scanTrickDirections-select')
-                .val(
-                    String(
-                        defaultmapsettings
-                            .scanTrickDirections ||
-                        16
-                    )
-                )
-                .on(
-                    'change',
-                    function () {
-                        var value =
-                            parseInt(
-                                this.value,
-                                10
-                            );
-
-                        if (
-                            value !== 8 &&
-                            value !== 16 &&
-                            value !== 32
-                        ) {
-                            value = 16;
-                        }
-
-                        defaultmapsettings
-                            .scanTrickDirections =
-                            value;
-
-                        window.application.saveSettings(
-                            defaultmapsettings,
-                            'ogarioSettings'
-                        );
-
-                        if (
-                            LM.scanTrickHeld
-                        ) {
-                            LM.getCursorPosition();
-                        }
-                    }
-                );
-
-            /*
-             * Exact-angle projection distance.
-             */
-            /* application's slider: these live in defaultmapsettings (Settings' own
-             * addSliderBox writes the theme object) and must be saved. */
-            window.application.addSliderBox(
-                '.scanTrickGroup',
-                'scanTrickDistance',
-                100000,
-                10000000,
-                100000,
-                null
-            );
-
-            /*
-             * Snapped-angle projection distance.
-             */
-            /* application's slider: these live in defaultmapsettings (Settings' own
-             * addSliderBox writes the theme object) and must be saved. */
-            window.application.addSliderBox(
-                '.scanTrickGroup',
-                'scanTrickRoundedDistance',
-                1000,
-                100000,
-                1000,
-                null
-            );
-
-            /*
-             * Explanation visible directly in the settings section.
-             */
-            section.append(
-                '<div class="scan-trick-help" ' +
-                    'style="' +
-                        'margin-top:8px;' +
-                        'padding:8px 10px;' +
-                        'font-size:11px;' +
-                        'line-height:1.45;' +
-                        'opacity:.82;' +
-                        'border-left:3px solid #00b9ff;' +
-                        'background:rgba(0,0,0,.18);' +
-                    '">' +
-                    _lmG1h('game1.scan.help') +
-                '</div>'
-            );
         },
         addInputBox(id, name, holder, callback) {
             $(id).append('<div class=\"input-box\"><span class=\"title-box\">' + textLanguage[name] + '</span><input id=\"' + name + '\" class=\"form-control\" ' + _lmG1a('placeholder', holder) + ' /></div>');
@@ -25912,13 +25772,6 @@ function thelegendmodproject() {
             }
         },
         setSettings(id, checked) {
-            /* Scan Trick does nothing until its hold key is set (no default key): say so when it is turned on */
-            if (id === 'scanTrick' && checked === true && window.toastr) {
-                var _lmStBound = false;
-                for (var _lmStK in hotkeys) { if (hotkeys.hasOwnProperty(_lmStK) && hotkeys[_lmStK] === 'hk-scanTrick') { _lmStBound = _lmStK; break; } }
-                if (!_lmStBound) toastr.info(_lmG1tag('game1.tag.scanTrick', 'game1.scan.setKey'));
-                else toastr.info(_lmG1tag('game1.tag.scanTrick', 'game1.scan.hold', [$('<div>').text(_lmStBound).html()]));
-            }
             if (checked === true && (id === 'x16Sound' || id === 'non16Sound' || id === 'hudMergeSound')) {
                 defaultmapsettings[id] = true;
                 this._lmLoadOptSounds();
@@ -27508,9 +27361,6 @@ function thelegendmodproject() {
                 .attr('data-i18n', 'lmRecClear').text(lmT('lmRecClear'))
                 .on('click', function () { window._lmRecClearMemory(true); return false; }));
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
-            /* Scan Trick section: was never built, so its settings could not be changed. */
-            this.addOptions(["scanTrick", "scanTrickRounded", "scanTrickOnlyWhileLMB"], "scanTrickGroup");
-            Settings.addScanTrickControls();
             /* Line split section; its key is set in Hotkeys ("Line split"). */
             this.addOptions(["lineSplitGuide"], "lineSplitGroup");
             this.addSliderBox(".lineSplitGroup", "lineSplitCount", 1, 4, 1);
@@ -27608,10 +27458,6 @@ function thelegendmodproject() {
                      * Cursor tracking and the dimming of its line are drawn only with these on */
                     oppRings: ['bubbleInd'],
                     cursorTracking: ['splitPrediction', 'bubbleCursorTracker'],
-                    /* read only while the Scan trick key works (scanTrick); the LMB-only rule and the
-                     * rounded distance only while its directions are rounded */
-                    scanTrick: ['scanTrickRounded', 'scanTrickDistance'],
-                    scanTrickRounded: ['scanTrickOnlyWhileLMB', 'scanTrickRoundedDistance'],
                     /* the rainbow colour is used only where the map border is drawn */
                     showMapBorders: ['rainbowMapBorders'],
                     rainbowMapBorders: ['rainbowBorderSpeed']
@@ -56476,62 +56322,15 @@ function thelegendmodproject() {
          * ═══════════════════════════════════════════════════════════════════
          */
 
-        getScanTrickDirectionCount() {
-            var directions =
-                parseInt(
-                    defaultmapsettings.scanTrickDirections,
-                    10
-                );
-
-            if (!Number.isFinite(directions)) {
-                directions = 16;
-            }
-
-            /*
-             * Restrict values to supported, predictable sector counts.
-             */
-            if (directions <= 8) {
-                return 8;
-            }
-
-            if (directions <= 16) {
-                return 16;
-            }
-
-            return 32;
-        },
-
-        getScanTrickDistance(snapped) {
-            var distance =
-                snapped
-                    ? Number(
-                        defaultmapsettings
-                            .scanTrickRoundedDistance
-                    )
-                    : Number(
-                        defaultmapsettings
-                            .scanTrickDistance
-                    );
-
-            if (!Number.isFinite(distance)) {
-                distance =
-                    snapped
-                        ? 20000
-                        : 10000000;
-            }
-
-            /*
-             * Keep enough distance to create a stable direction, but remain
-             * safely inside signed Int32 packet coordinates.
-             */
-            return Math.max(
-                1000,
-                Math.min(
-                    100000000,
-                    distance
-                )
-            );
-        },
+        /* The Scan Trick has no settings, only its key. Directions while LMB is held too,
+         * as before: 16 (22.5 degrees each). */
+        SCAN_TRICK_DIRECTIONS: 16,
+        /* How far ahead of the cell the aim point goes, exact angle or snapped: the old
+         * slider's maximum (10,000,000 world units), the value it always defaulted to. The
+         * direction then barely changes while the cell crosses the map (under 0.1 degree),
+         * and the point plus the map offset, a mirrored map, the bots' scale or a server
+         * subtracting the cell position stays far inside signed Int32 packet coordinates. */
+        SCAN_TRICK_DISTANCE: 10000000,
 
         getScanTrickOrigin() {
             var originX =
@@ -56725,7 +56524,7 @@ function thelegendmodproject() {
          *
          *     angle from screen center to mouse
          *              ↓
-         *     optional angular quantization
+         *     16 directions while LMB is held too
          *              ↓
          *     far target from player/view origin
          *
@@ -56856,11 +56655,7 @@ function thelegendmodproject() {
                 viewScale +
                 viewY;
 
-            if (
-                !defaultmapsettings
-                    .scanTrick ||
-                !this.scanTrickHeld
-            ) {
+            if (!this.scanTrickHeld) {
                 this.scanTrickActive =
                     false;
 
@@ -56873,7 +56668,6 @@ function thelegendmodproject() {
                 this.cursorY =
                     normalCursorY;
 
-                this.updateScanTrickStatus();
                 return;
             }
 
@@ -56903,22 +56697,15 @@ function thelegendmodproject() {
             }
 
             /*
-             * Stage.js snaps only while LMB is held. The setting allows users
-             * to make snapping permanent whenever the Scan Trick key is held.
+             * Snapped to one of 16 directions only while LMB is held too
+             * (as Stage.js does); otherwise the exact angle.
              */
             var snapped =
-                !!defaultmapsettings
-                    .scanTrickRounded &&
-                (
-                    !defaultmapsettings
-                        .scanTrickOnlyWhileLMB ||
-                    this.scanTrickLMB
-                );
+                !!this.scanTrickLMB;
 
             if (snapped) {
                 var directions =
-                    this
-                        .getScanTrickDirectionCount();
+                    this.SCAN_TRICK_DIRECTIONS;
 
                 var step =
                     Math.PI *
@@ -56951,10 +56738,7 @@ function thelegendmodproject() {
                 Math.sin(angle);
 
             var projectionDistance =
-                this
-                    .getScanTrickDistance(
-                        snapped
-                    );
+                this.SCAN_TRICK_DISTANCE;
 
             var origin =
                 this
@@ -56996,32 +56780,7 @@ function thelegendmodproject() {
 
             this.cursorY =
                 cursorY;
-            this.updateScanTrickStatus();
         },
-        /*
-         * Scan Trick status: a small HUD line while the Scan Trick key is held,
-         * always (it had a switch of its own). Updated only on change.
-         */
-        updateScanTrickStatus() {
-            var text = '';
-            if (defaultmapsettings.scanTrick && this.scanTrickActive) {
-                text = lmT('settings.scanTrickGroup') + (this.scanTrickSnapped ? ' (' + lmT('game2.directions', [this.getScanTrickDirectionCount()]) + ')' : '');
-            }
-            if (text === this._scanTrickStatusText) return;
-            this._scanTrickStatusText = text;
-            var el = document.getElementById('scan-trick-status');
-            if (!el) {
-                if (!text) return;
-                el = document.createElement('div');
-                el.id = 'scan-trick-status';
-                el.className = 'hud';
-                el.style.cssText = 'position:fixed;left:50%;top:120px;transform:translateX(-50%);padding:2px 10px;font-size:13px;pointer-events:none;z-index:100;';
-                document.body.appendChild(el);
-            }
-            el.textContent = text;
-            el.style.display = text ? 'block' : 'none';
-        },
-
         /*
          * ═══════════════════════════════════════════════════════════════
          * LINE SPLIT
@@ -57225,7 +56984,6 @@ function thelegendmodproject() {
                 el = document.createElement('div');
                 el.id = 'line-split-status';
                 el.className = 'hud';
-                /* Below the Scan Trick status line (top: 120px). */
                 el.style.cssText = 'position:fixed;left:50%;top:146px;transform:translateX(-50%);padding:2px 10px;font-size:13px;pointer-events:none;z-index:100;';
                 document.body.appendChild(el);
             }

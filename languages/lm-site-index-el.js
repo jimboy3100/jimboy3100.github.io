@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Νέες επιλογές</b> (απενεργοποιημένες από προεπιλογή): προσωπικά ρεκόρ όλων των εποχών με σήμα New best! στην κάρτα Game Over, διακύμανση ping δίπλα στο PING, 25 FPS όσο είναι ανοιχτό το μενού, Stop on release στο κινητό. Hotkey για αντιγραφή του συνδέσμου server.",
 "site.index.newOptionOffBy": "<b>Νέα επιλογή</b> (απενεργοποιημένη από προεπιλογή): <b>Ιστορικό αγώνων</b>, τα τελευταία 50 παιχνίδια σας (μάζα, χρόνος ζωής, ποιος σας έφαγε, server, λειτουργία) σε παράθυρο κάτω από το μενού.",
 "site.index.gridNoLongerShimmers": "Το πλέγμα δεν τρεμοπαίζει ούτε κουνιέται πια κατά την κίνηση· η κάμερα multibox ακολουθεί ομαλά τη μονάδα σας.",
-"site.index.scanTrickTheHotkey": "Scan Trick: το hotkey λέγεται «Hold Scan Trick» και το παιχνίδι σας ενημερώνει όταν δεν έχει οριστεί πλήκτρο. Οι ρυθμίσεις cloud προστατεύονται με κωδικό συγχρονισμού.",
+"site.index.scanTrickTheHotkey": "Οι ρυθμίσεις cloud προστατεύονται με κωδικό συγχρονισμού.",
 "site.index.newOptionOffBy2": "<b>Νέα επιλογή</b> (απενεργοποιημένη από προεπιλογή): <b>Gamepad / controller support</b> στον έλεγχο ποντικιού. Αριστερός μοχλός κίνηση, A split, B feed (κρατημένο), X double split, Y respawn, RB 16 split, LB εναλλαγή multibox, Start μενού, δεξιός μοχλός zoom.",
 "site.index.makingReplayIframes": "Δημιουργία iframes για replays",
 "site.index.saveYourReplayAnd": "Αποθηκεύστε το replay σας και ανεβάστε το ως αρχείο ή ως raw .lm στο διαδίκτυο",

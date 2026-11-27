@@ -85,7 +85,6 @@ function boot(opts) {
   check('cat: [SETTINGS]: tag', cat('<b>[SETTINGS]:</b> Saved') === 'settings');
   check('cat: [PARTY]: tag', cat('<b>[PARTY]:</b> Invalid Agar.io Party code.') === 'party');
   check('cat: [AUTH]: tag -> connection', cat('<b>[AUTH]:</b> Unexpected disconnect detected.') === 'connection');
-  check('cat: [SCAN TRICK]: tag -> settings', cat('<b>[SCAN TRICK]:</b> Set a key') === 'settings');
   check('cat: badge unlocked -> achievements', cat('<b>\u{1F3C5}</b> Badge unlocked: Hunter') === 'achievements');
   check('cat: personal best', cat('New best! 12000 mass') === 'bests');
   check('cat: party invitation via [PARTY]', cat('<b>[PARTY]:</b> Bob invited you to a party. Click to join.') === 'party');

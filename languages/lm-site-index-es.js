@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Nuevas opciones</b> (desactivadas por defecto): récords personales históricos con la insignia New best! en la tarjeta de Game Over, variación del ping junto a PING, 25 FPS con el menú abierto, Stop on release en móvil. Hotkey para copiar el enlace del servidor.",
 "site.index.newOptionOffBy": "<b>Nueva opción</b> (desactivada por defecto): <b>Historial de partidas</b>, tus últimas 50 partidas (masa, tiempo de vida, quién te comió, servidor, modo) en una ventana bajo el menú.",
 "site.index.gridNoLongerShimmers": "La cuadrícula ya no parpadea ni tiembla al moverte; la cámara del multibox sigue a tu unidad con suavidad.",
-"site.index.scanTrickTheHotkey": "Scan Trick: la hotkey se llama \"Hold Scan Trick\" y el juego te avisa cuando no hay ninguna tecla asignada. Los ajustes en la nube están protegidos con un código de sincronización.",
+"site.index.scanTrickTheHotkey": "Los ajustes en la nube están protegidos con un código de sincronización.",
 "site.index.newOptionOffBy2": "<b>Nueva opción</b> (desactivada por defecto): <b>Gamepad / controller support</b> en Control del ratón. Stick izquierdo para mover, A split, B feed (mantener), X double split, Y reaparecer, RB 16 split, LB cambio de multibox, Start menú, stick derecho zoom.",
 "site.index.makingReplayIframes": "Crear iframes de repeticiones",
 "site.index.saveYourReplayAnd": "Guarda tu repetición y súbela como archivo o como .lm sin procesar a la web",

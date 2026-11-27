@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>新選項</b>（預設關閉）：歷史個人最佳紀錄，並在遊戲結束卡片上顯示 New best! 徽章、PING 旁的延遲抖動、開啟選單時降為 25 FPS、行動版「放開即停止」。複製伺服器連結的快速鍵。",
 "site.index.newOptionOffBy": "<b>新選項</b>（預設關閉）：<b>對局紀錄</b>，在選單下方的視窗中顯示最近 50 場對局（質量、存活時間、誰吃了你、伺服器、模式）。",
 "site.index.gridNoLongerShimmers": "移動時網格不再閃爍或晃動；多開鏡頭會平順地跟隨你的單位。",
-"site.index.scanTrickTheHotkey": "Scan Trick：快速鍵名稱為「按住 Scan Trick」，未設定按鍵時遊戲會提醒你。雲端設定以同步碼保護。",
+"site.index.scanTrickTheHotkey": "雲端設定以同步碼保護。",
 "site.index.newOptionOffBy2": "<b>新選項</b>（預設關閉）：滑鼠控制中的<b>遊戲手把 / 控制器支援</b>。左搖桿移動、A 分裂、B 吐球（按住）、X 雙重分裂、Y 重生、RB 16 分裂、LB 切換多開、Start 選單、右搖桿縮放。",
 "site.index.makingReplayIframes": "製作重播 iframe",
 "site.index.saveYourReplayAnd": "儲存你的重播，並以檔案或原始 .lm 格式上傳到網路上",

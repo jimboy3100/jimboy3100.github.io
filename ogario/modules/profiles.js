@@ -827,10 +827,6 @@
         }
         /* a dropdown of Settings (Mass format): setSettings applies it, saves and shows it */
         if (el && el.tagName === 'SELECT' && $(el).closest('#og-options').length && app && app.setSettings) { app.setSettings(k, v); return; }
-        /* a dropdown named after its setting (Scan Trick directions): its change handler applies
-         * and saves; set alone, the dropdown kept showing the old choice */
-        var dd = document.getElementById(k + '-select');
-        if (dd && dd.tagName === 'SELECT' && $(dd).closest('#og-options').length) { dd.value = String(v); $(dd).trigger('change'); return; }
         var sl = $('#' + k + '-slider');
         /* also a gameplay slider shown in the Theme tab (HUD text size, Theme > HUD) */
         if (sl.length && sl.closest('#og-options, #theme').length) { sl.val(v).trigger('input').trigger('change'); return; }

@@ -23,7 +23,7 @@
     /* "[TAG]:" prefixes used by the toasts. SERVER (the generic prefix) and ERROR are not
      * listed: their text decides. */
     var TAGS = {
-        'SETTINGS': 'settings', 'PRESET': 'settings', 'SCAN TRICK': 'settings', 'MULTIBOX': 'settings',
+        'SETTINGS': 'settings', 'PRESET': 'settings', 'MULTIBOX': 'settings',
         'PARTY': 'party', 'TEAM': 'party', 'CLAN': 'party', 'INVITE': 'party',
         'CHAT': 'chat',
         'AUTH': 'connection', 'CONNECTION': 'connection', 'SERVERS': 'connection',

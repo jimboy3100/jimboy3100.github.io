@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Nouvelles options</b> (désactivées par défaut) : records personnels absolus avec un badge New best! sur la carte Game Over, gigue du ping à côté de PING, 25 FPS quand le menu est ouvert, Stop on release sur mobile. Hotkey pour copier le lien du serveur.",
 "site.index.newOptionOffBy": "<b>Nouvelle option</b> (désactivée par défaut) : <b>Historique des parties</b>, vos 50 dernières parties (masse, temps de survie, qui vous a mangé, serveur, mode) dans une fenêtre sous le menu.",
 "site.index.gridNoLongerShimmers": "La grille ne scintille plus et ne tremble plus pendant les déplacements ; la caméra multibox suit votre unité en douceur.",
-"site.index.scanTrickTheHotkey": "Scan Trick : la hotkey s'appelle « Hold Scan Trick » et le jeu vous prévient quand aucune touche n'est définie. Les paramètres cloud sont protégés par un code de synchronisation.",
+"site.index.scanTrickTheHotkey": "Les paramètres cloud sont protégés par un code de synchronisation.",
 "site.index.newOptionOffBy2": "<b>Nouvelle option</b> (désactivée par défaut) : <b>Gamepad / controller support</b> dans Contrôle de la souris. Stick gauche pour se déplacer, A split, B feed (maintenir), X double split, Y respawn, RB 16 split, LB changement d'unité multibox, Start menu, stick droit zoom.",
 "site.index.makingReplayIframes": "Créer des iframes de replay",
 "site.index.saveYourReplayAnd": "Enregistrez votre replay et mettez-le en ligne sous forme de fichier ou de .lm brut",

@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Nowe opcje</b> (domyślnie wyłączone): rekordy wszech czasów z odznaką Nowy rekord! na karcie Game Over, wahania pingu obok PING, 25 FPS przy otwartym menu, mobilne Zatrzymanie po puszczeniu. Skrót do kopiowania linku do serwera.",
 "site.index.newOptionOffBy": "<b>Nowa opcja</b> (domyślnie wyłączona): <b>Historia meczów</b> — twoje ostatnie 50 gier (masa, czas życia, kto cię zjadł, serwer, tryb) w oknie pod menu.",
 "site.index.gridNoLongerShimmers": "Siatka nie migocze już ani nie drga podczas ruchu; kamera multiboxa płynnie podąża za twoją jednostką.",
-"site.index.scanTrickTheHotkey": "Scan Trick: skrót nazywa się \"Hold Scan Trick\", a gra informuje, gdy nie ustawiono klawisza. Ustawienia w chmurze są chronione kodem synchronizacji.",
+"site.index.scanTrickTheHotkey": "Ustawienia w chmurze są chronione kodem synchronizacji.",
 "site.index.newOptionOffBy2": "<b>Nowa opcja</b> (domyślnie wyłączona): <b>Obsługa gamepada / kontrolera</b> w Sterowaniu myszą. Lewy drążek porusza, A split, B feed (przytrzymaj), X podwójny split, Y odrodzenie, RB split na 16, LB zmiana jednostki multiboxa, Start menu, prawy drążek przybliża.",
 "site.index.makingReplayIframes": "Tworzenie iframe z powtórkami",
 "site.index.saveYourReplayAnd": "Zapisz powtórkę i prześlij ją jako plik lub surowy .lm do sieci",

@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Novas opções</b> (desligadas por padrão): recordes pessoais de todos os tempos com um selo Novo recorde! no card de Game Over, variação do ping ao lado de PING, 25 FPS com o menu aberto, Parar ao soltar no celular. Atalho para copiar o link do servidor.",
 "site.index.newOptionOffBy": "<b>Nova opção</b> (desligada por padrão): <b>Histórico de partidas</b>, suas últimas 50 partidas (massa, tempo vivo, quem te comeu, servidor, modo) em uma janela abaixo do menu.",
 "site.index.gridNoLongerShimmers": "A grade não tremeluz nem treme mais durante o movimento; a câmera do multibox segue sua unidade com suavidade.",
-"site.index.scanTrickTheHotkey": "Scan Trick: o atalho se chama \"Segurar Scan Trick\" e o jogo avisa quando nenhuma tecla está definida. As configurações na nuvem são protegidas com um código de sincronização.",
+"site.index.scanTrickTheHotkey": "As configurações na nuvem são protegidas com um código de sincronização.",
 "site.index.newOptionOffBy2": "<b>Nova opção</b> (desligada por padrão): <b>Suporte a gamepad / controle</b> em Controle do mouse. Analógico esquerdo move, A split, B feed (segurar), X double split, Y respawn, RB split 16, LB troca do multibox, Start menu, analógico direito zoom.",
 "site.index.makingReplayIframes": "Criando iframes de replay",
 "site.index.saveYourReplayAnd": "Salve seu replay e envie para a internet como arquivo ou como .lm bruto",

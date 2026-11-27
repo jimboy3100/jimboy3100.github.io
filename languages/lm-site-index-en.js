@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>New options</b> (off by default): all-time personal bests with a New best! badge on the Game Over card, ping jitter next to PING, 25 FPS while the menu is open, mobile Stop on release. Hotkey to copy the server link.",
 "site.index.newOptionOffBy": "<b>New option</b> (off by default): <b>Match history</b>, your last 50 games (mass, time alive, who ate you, server, mode) in a window under the menu.",
 "site.index.gridNoLongerShimmers": "Grid no longer shimmers or shakes while moving; the multibox camera follows your unit smoothly.",
-"site.index.scanTrickTheHotkey": "Scan Trick: the hotkey is called \"Hold Scan Trick\" and the game tells you when no key is set. Cloud settings are protected with a sync code.",
+"site.index.scanTrickTheHotkey": "Cloud settings are protected with a sync code.",
 "site.index.newOptionOffBy2": "<b>New option</b> (off by default): <b>Gamepad / controller support</b> in Mouse control. Left stick moves, A split, B feed (hold), X double split, Y respawn, RB 16 split, LB multibox swap, Start menu, right stick zoom.",
 "site.index.makingReplayIframes": "Making replay iframes",
 "site.index.saveYourReplayAnd": "Save your replay and upload it as file or as raw .lm on the web",

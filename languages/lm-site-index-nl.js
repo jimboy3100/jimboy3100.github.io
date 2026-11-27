@@ -255,7 +255,7 @@
 "site.index.newOptionsOffBy2": "<b>Nieuwe opties</b> (standaard uit): persoonlijke records aller tijden met een New best!-badge op de Game Over-kaart, ping-jitter naast PING, 25 FPS zolang het menu open is, Stop on release op mobiel. Sneltoets om de serverlink te kopiëren.",
 "site.index.newOptionOffBy": "<b>Nieuwe optie</b> (standaard uit): <b>Wedstrijdgeschiedenis</b>, je laatste 50 games (massa, overlevingstijd, wie je opat, server, modus) in een venster onder het menu.",
 "site.index.gridNoLongerShimmers": "Het raster flikkert of trilt niet meer tijdens het bewegen; de multibox-camera volgt je unit soepel.",
-"site.index.scanTrickTheHotkey": "Scan Trick: de sneltoets heet \"Hold Scan Trick\" en de game laat het weten als er geen toets is ingesteld. Cloudinstellingen zijn beveiligd met een synccode.",
+"site.index.scanTrickTheHotkey": "Cloudinstellingen zijn beveiligd met een synccode.",
 "site.index.newOptionOffBy2": "<b>Nieuwe optie</b> (standaard uit): <b>Gamepad / controller support</b> in Mouse control. Linkerstick beweegt, A split, B feed (ingedrukt houden), X double split, Y respawn, RB 16 split, LB multibox wisselen, Start menu, rechterstick zoom.",
 "site.index.makingReplayIframes": "Replay-iframes maken",
 "site.index.saveYourReplayAnd": "Sla je replay op en upload hem als bestand of als ruwe .lm op het web",

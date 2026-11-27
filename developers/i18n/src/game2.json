@@ -2195,24 +2195,6 @@
     "ja": "FFA PowerUp でのスコア、<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>おめでとうございます</span>！<br>  あなたのライセンスは <font color='blue'><b>{0}</b></font> まで Giveaway Premium として保存されます。Mod をご利用いただきありがとうございます！",
     "it": "<span style='text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);'>Complimenti</span> per il tuo punteggio in FFA PowerUp.<br>  La tua licenza è registrata come Giveaway Premium fino al <font color='blue'><b>{0}</b></font>. Grazie per usare la nostra mod!"
   },
-  "game2.directions": {
-    "en": "{0} directions",
-    "el": "{0} κατευθύνσεις",
-    "es": "{0} direcciones",
-    "bg": "{0} посоки",
-    "fr": "{0} directions",
-    "ar": "{0} اتجاهات",
-    "zh": "{0} 個方向",
-    "ru": "направлений: {0}",
-    "de": "{0} Richtungen",
-    "tr": "{0} yön",
-    "pl": "kierunki: {0}",
-    "nl": "{0} richtingen",
-    "pt": "{0} direções",
-    "id": "{0} arah",
-    "ja": "{0} 方向",
-    "it": "{0} direzioni"
-  },
   "game2.profTitle": {
     "en": "CLIENT PROFILER",
     "el": "ΠΡΟΦΙΛ ΑΠΟΔΟΣΗΣ",
