@@ -22877,6 +22877,16 @@ function thelegendmodproject() {
     function lmSkinLayerTouch(st, layer, frame) {
         if (st && layer >= 0 && layer < st.max && st.used[layer] < frame) st.used[layer] = frame;
     }
+    /* the layers of a second texture array (_lmSkinBankAdd) after the first one's: free, handed
+     * out in order */
+    function lmSkinLayersGrow(st, extra) {
+        for (var i = 0; i < extra; i++) {
+            st.used.push(-1);
+            st.owner.push(null);
+        }
+        st.max += extra;
+        return st;
+    }
     /*
      * CPU skin cache: which URLs to drop. entries = [url, lastUse, bytes] for the URLs that
      * hold an image or canvas. Least recently used first, never one used within minIdle ms
@@ -62989,6 +62999,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 flat in float v_isVirus;
 
                 uniform sampler2DArray u_skinArray;
+                uniform sampler2DArray u_skinArray2;
 
                 uniform float u_virusStrokeWidth;
                 uniform float u_virusSpikesEnabled;
@@ -63465,7 +63476,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             0.5 +
                             0.5;
 
+                        /* layers from 128 on: the second texture array (_lmSkinBankAdd) */
                         vec4 skinSample =
+                            v_skinLayer >= 128.0 ?
+                            texture(
+                                u_skinArray2,
+                                vec3(
+                                    skinUV,
+                                    v_skinLayer - 128.0
+                                )
+                            ) :
                             texture(
                                 u_skinArray,
                                 vec3(
@@ -63554,6 +63574,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         cellProgram,
                         'u_skinArray'
                     );
+                this.u_skinArray2 = gl.getUniformLocation(cellProgram, 'u_skinArray2');
 
                 this.u_cell_virusExtraRadius =
                     gl.getUniformLocation(
@@ -63834,6 +63855,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     );
 
                 // Skin TEXTURE_2D_ARRAY (512×512, 128 layers, ~128 MB VRAM)
+                /* the second skin array is made again only when needed; never again once a
+                 * context that had one was lost (it may have been the 128 MB too many) */
+                if (this.glSkinArray2) this._lmSkinBankNo = true;
+                this.glSkinArray2 = null;
                 this.glSkinArray = gl.createTexture();
                 gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
                 this.glSkinTexSize = 512;
@@ -65094,8 +65119,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
 
-            /* every layer was drawn in this or the previous frame (over 128 skins on screen):
-             * this one stays body-only, nothing is queued or decoded for it */
+            /* every layer was drawn in this or the previous frame (over 256 skins on screen, or
+             * over 128 without a second array, see _lmSkinLayerFree): this one stays body-only,
+             * nothing is queued or decoded for it */
             var layer = this._lmSkinLayerFree();
             if (layer < 0) return -1;
 
@@ -65112,14 +65138,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
             try {
                 var srcCanvas = this._lmSkinSized(node, size);
 
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this._lmSkinArrayOf(layer));
 
                 gl.texSubImage3D(
                     gl.TEXTURE_2D_ARRAY,
                     0,
                     0,
                     0,
-                    layer,
+                    layer % (this.glSkinMaxLayers || 128),
                     size,
                     size,
                     1,
@@ -65336,8 +65362,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         if (!bmp) cv = this._lmSkinSized(node, size);
                         /* job.sync: any other picture, uploaded from itself exactly as the synchronous path did */
                         if (job.sync || !this._lmSkinGpuPut(cv, layer, !!bmp)) {
-                            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
-                            gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, cv);
+                            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this._lmSkinArrayOf(layer));
+                            gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer % (this.glSkinMaxLayers || 128), size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, cv);
                             gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
                         }
                     } catch (upErr) {
@@ -65420,7 +65446,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * caller uploads from the canvas). Throws as texImage2D does (tainted canvas). */
         _lmSkinGpuPut(src, layer, copy) {
             var g = this._lmSkinPut, gl = this.gl, size = this.glSkinTexSize || 512;
-            if (!g || !gl || !this.glSkinArray) return false;
+            if (!g || !gl || !this._lmSkinArrayOf(layer)) return false;
             if (copy) {
                 var gc = this._lmSkinGpuScratch;
                 if (!gc) {
@@ -65456,16 +65482,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             try {
                 gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER, g.fb);
-                gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, this.glSkinArray, 0, layer);
+                var arr = this._lmSkinArrayOf(layer);
+                gl.framebufferTextureLayer(gl.DRAW_FRAMEBUFFER, gl.COLOR_ATTACHMENT0, arr, 0, layer % (this.glSkinMaxLayers || 128));
                 /* WebGL reports no error by throwing: whether the layers can be drawn into is asked
                  * once per texture array (every layer has the same format), not per skin (the
                  * question waits for the GPU) */
-                if (g.checked !== this.glSkinArray) {
-                    g.checked = this.glSkinArray;
-                    g.complete = gl.checkFramebufferStatus(gl.DRAW_FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
-                    if (!g.complete) console.warn('[LegendMod WebGL] skin layers cannot be drawn into; skins are uploaded from their canvas');
+                if (arr._lmPutOk === undefined) {
+                    arr._lmPutOk = gl.checkFramebufferStatus(gl.DRAW_FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE;
+                    if (!arr._lmPutOk) console.warn('[LegendMod WebGL] skin layers cannot be drawn into; skins are uploaded from their canvas');
                 }
-                if (g.complete) {
+                if (arr._lmPutOk) {
                     gl.viewport(0, 0, size, size);
                     gl.useProgram(g.prog);
                     gl.bindVertexArray(g.vao);
@@ -65488,11 +65514,53 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* Skin layer bookkeeping around lmSkinLayersNew / lmSkinLayerPick / lmSkinLayerTake.
          * Created again with the texture array in initWebGL (also after a context restore). */
         _lmSkinLayers() {
-            return this._glSkinLayers || (this._glSkinLayers = lmSkinLayersNew(this.glSkinMaxLayers || 128));
+            return this._glSkinLayers || (this._glSkinLayers = lmSkinLayersNew((this.glSkinMaxLayers || 128) * (this.glSkinArray2 ? 2 : 1)));
         },
-        /* the layer the next upload may write, or -1 */
+        /* the layer the next upload may write, or -1. Every layer drawn in this or the previous
+         * frame (more than 128 skins on screen): a second texture array instead of leaving the
+         * rest body-only; layers 128-255 are in it */
         _lmSkinLayerFree() {
-            return lmSkinLayerPick(this._lmSkinLayers(), this._glSkinFrame || 0);
+            var st = this._lmSkinLayers(), layer = lmSkinLayerPick(st, this._glSkinFrame || 0);
+            if (layer < 0 && st.max === (this.glSkinMaxLayers || 128) && this._lmSkinBankAdd()) {
+                lmSkinLayersGrow(st, this.glSkinMaxLayers || 128);
+                layer = lmSkinLayerPick(st, this._glSkinFrame || 0);
+            }
+            return layer;
+        },
+        /* the second skin texture array (as the first: 128 layers of 512 px, 128 MB), made the
+         * first time more than 128 skins are drawn in two frames; until then nothing is held */
+        _lmSkinBankAdd() {
+            var gl = this.gl, n = this.glSkinMaxLayers || 128, size = this.glSkinTexSize || 512;
+            /* the shaders take layers from 128 on from it */
+            if (n !== 128 || !gl || !this.glSkinArray || this.glSkinArray2 || this._lmSkinBankNo || (gl.isContextLost && gl.isContextLost())) return false;
+            try {
+                var tex = gl.createTexture();
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, tex);
+                gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, size, size, n);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+                this.glSkinArray2 = tex;
+                return true;
+            } catch (e) {
+                this._lmSkinBankNo = true;
+                return false;
+            }
+        },
+        /* the texture array that holds skin layer l (layer l - 128 of the second one from 128 on) */
+        _lmSkinArrayOf(l) {
+            return l >= (this.glSkinMaxLayers || 128) && this.glSkinArray2 ? this.glSkinArray2 : this.glSkinArray;
+        },
+        /* both skin arrays for a cell or jelly draw: the first on unit 0, the second on unit 11
+         * (no other program samples there; while there is none, the first again: a sampler needs
+         * a texture array bound) */
+        _lmSkinBind(gl) {
+            gl.activeTexture(gl.TEXTURE11);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray2 || this.glSkinArray);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
         },
         /* a layer is drawn in this frame: it is not reused before the frame after next */
         _lmSkinLayerUsed(layer) {
@@ -73090,6 +73158,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 flat in float v_skinAlpha;
 
                 uniform sampler2DArray u_skinArray;
+                uniform sampler2DArray u_skinArray2;
 
                 out vec4 fragColor;
 
@@ -73120,7 +73189,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         v_skinLayer >=
                         0.0
                     ) {
+                        /* layers from 128 on: the second texture array (_lmSkinBankAdd) */
                         vec4 skin =
+                            v_skinLayer >= 128.0 ?
+                            texture(
+                                u_skinArray2,
+                                vec3(
+                                    clamp(
+                                        v_uv,
+                                        vec2(0.0),
+                                        vec2(1.0)
+                                    ),
+                                    v_skinLayer - 128.0
+                                )
+                            ) :
                             texture(
                                 u_skinArray,
                                 vec3(
@@ -73227,6 +73309,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         jellyProgram,
                         'u_skinArray'
                     );
+                this.u_jelly_skinArray2 = gl.getUniformLocation(jellyProgram, 'u_skinArray2');
 
 
                 /*
@@ -76217,17 +76300,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
                 /*
-                 * Shared custom-skin texture array.
+                 * Shared custom-skin texture arrays (unit 0, the second one on unit 11).
                  */
-                gl.activeTexture(
-                    gl.TEXTURE0
-                );
-
-
-                gl.bindTexture(
-                    gl.TEXTURE_2D_ARRAY,
-                    this.glSkinArray
-                );
+                this._lmSkinBind(gl);
 
 
                 /*
@@ -76267,6 +76342,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                     0
                 );
+                gl.uniform1i(this.u_jelly_skinArray2, 11);
 
 
                 gl.bindBuffer(
@@ -77338,9 +77414,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             gl.depthFunc(gl.LESS);
             gl.depthMask(true);
 
-            // Bind skin texture array to unit 0
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+            // Bind skin texture arrays (unit 0, the second one on unit 11)
+            this._lmSkinBind(gl);
 
             gl.useProgram(
                 this.glCellProgram
@@ -77366,6 +77441,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.u_skinArray,
                 0
             );
+            gl.uniform1i(this.u_skinArray2, 11);
 
             /*
              * ============================================================

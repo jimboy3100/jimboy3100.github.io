@@ -75,7 +75,7 @@ function grabVar(src, name) {
  * (the real rule spreads new mass textures over frames, which would make the comparison depend
  * on timing). */
 const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim',
-    'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch', 'lmSkinUnpremulLut', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinSlack',
+    'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch', 'lmSkinUnpremulLut', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinSlack', 'lmSkinLayersGrow',
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing',
     'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages', 'lmTextAtlasBankCap', 'lmTextAtlasUnit',
     'lmSkinsShown', 'lmColorInt'];
@@ -730,6 +730,10 @@ function pageLib() {
         atlasOracle: atlasOracle,
         virusPixel: virusPixel,
         skinUploads: skinUploads,
+        /* for other page tests (developers/tests/skinbanks.js) */
+        setup: setup,
+        frame: frame,
+        pixels: pixels,
         compare: async function (oldSrc, newSrc, defaults, cfg, scene) {
             var a = setup(oldSrc, defaults, cfg, scene), b = setup(newSrc, defaults, cfg, scene);
             /* two frames: textures are made in the first, the second is the steady state */
@@ -1004,6 +1008,6 @@ async function main() {
     }
 }
 
-module.exports = { rendererFactory, findChrome };
+module.exports = { rendererFactory, findChrome, pageLib };
 
 if (require.main === module) main();
