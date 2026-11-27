@@ -29,7 +29,7 @@ function method(name) {
 }
 const ctx = { console };
 vm.createContext(ctx);
-vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinJobDrop'].map(grab).join('\n'), ctx);
+vm.runInContext(['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassTexDue', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinJobDrop', 'lmSkinSlack'].map(grab).join('\n'), ctx);
 let failed = 0;
 const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) failed++; };
 const C = ctx;
@@ -139,7 +139,7 @@ async function skinMethods() {
         document: { hidden: false, addEventListener: (t, f) => { listeners[t] = f; } },
         requestAnimationFrame: (f) => { raf.push(f); return raf.length; }, cancelAnimationFrame: (id) => { raf[id - 1] = null; },
         setTimeout: (f) => { timers.push(f); return 1000 + timers.length; },
-        lmSkinJobsRun: C.lmSkinJobsRun, lmSkinJobPick: C.lmSkinJobPick, lmSkinJobDrop: C.lmSkinJobDrop };
+        lmSkinJobsRun: C.lmSkinJobsRun, lmSkinJobPick: C.lmSkinJobPick, lmSkinJobDrop: C.lmSkinJobDrop, lmSkinSlack: C.lmSkinSlack };
     vm.createContext(sb);
     vm.runInContext('Object.assign(app, {' + ['_lmSkinJobAdd', '_lmSkinJobTrim', '_lmSkinJobDropOne', '_lmSkinDecodeNext', '_lmSkinJobsSchedule', '_lmSkinJobRun', '_lmSkinCanvases'].map(method).join(',\n') + '});', sb);
     const made = [];

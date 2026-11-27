@@ -22945,12 +22945,27 @@ function thelegendmodproject() {
     }
     /* runs jobs until budgetMs of this frame is used: the first always runs, each next one only
      * when it is expected to fit (running average of the last ones, as _lmScheduleSkinUploads).
-     * clock() gives ms. Returns the new average. */
-    function lmSkinJobsRun(jobs, budgetMs, avg, clock, now, seenMs, run) {
-        var t0 = clock(), n = 0;
+     * clock() gives ms. Returns the new average.
+     * slack (lmSkinSlack): the skin canvases and the GPU skin uploads share one budget per frame
+     * (stamp: the requestAnimationFrame time, the same for every callback of a frame; none from a
+     * timer). Each used its own 4 ms before, and the first job of each always ran: two queues in
+     * one frame added up. A queue that comes second in a frame starts only when its next job is
+     * expected to fit into what is left, unless it ran nothing in its previous frame
+     * (lane.starved): every queue still moves at least every other frame. */
+    function lmSkinJobsRun(jobs, budgetMs, avg, clock, now, seenMs, run, slack, stamp, lane) {
+        var t0 = clock(), n = 0, used = 0;
+        if (slack) {
+            if (stamp == null || slack.stamp !== stamp) {
+                slack.stamp = stamp == null ? null : stamp;
+                slack.used = 0;
+            }
+            used = slack.used;
+        }
+        var first = !used || !lane || lane.starved;
         while (jobs.length) {
             var ts = clock();
-            if (n++ && ts - t0 + avg > budgetMs) break;
+            if ((n || !first) && used + ts - t0 + avg > budgetMs) break;
+            n++;
             var job = jobs.splice(lmSkinJobPick(jobs, now, seenMs), 1)[0];
             try {
                 run(job);
@@ -22958,7 +22973,13 @@ function thelegendmodproject() {
             var d = clock() - ts;
             avg = avg ? avg * 0.8 + d * 0.2 : d;
         }
+        if (slack) slack.used = used + clock() - t0;
+        if (lane) lane.starved = !n && jobs.length > 0;
         return avg;
+    }
+    /* the skin work done so far in the current frame by both skin queues (lmSkinJobsRun) */
+    function lmSkinSlack() {
+        return lmSkinSlack.s || (lmSkinSlack.s = { stamp: null, used: 0 });
     }
     /*
      * WebGL jelly bodies are drawn as one indexed triangle list. Fan of one body: its centre vertex
@@ -29687,19 +29708,20 @@ function thelegendmodproject() {
                 })(job);
             }
         },
-        /* 4 ms of canvases per frame (the first job of a frame always runs) */
+        /* 4 ms of canvases per frame, shared with the GPU skin uploads (lmSkinSlack) */
         _lmSkinJobsSchedule() {
             if (this._lmSkinJobRaf) return;
             var self = this;
-            var tick = function () {
+            var tick = function (stamp) {
                 self._lmSkinJobRaf = 0;
                 /* jobs age while they wait: the cap is applied again here, not only on new jobs */
                 self._lmSkinJobTrim();
                 var jobs = self._lmSkinJobs || [];
                 var clock = typeof performance !== 'undefined' && performance.now ? function () { return performance.now(); } : Date.now;
+                var lane = self._lmSkinJobLane || (self._lmSkinJobLane = { starved: false });
                 self._lmSkinJobMs = lmSkinJobsRun(jobs, 4, self._lmSkinJobMs || 0, clock, Date.now(), 1000, function (job) {
                     self._lmSkinJobRun(job);
-                });
+                }, lmSkinSlack(), stamp, lane);
                 if (jobs.length) self._lmSkinJobsSchedule();
             };
             /* a hidden tab gets no animation frames: skins still finish there (timers). A frame
@@ -65047,6 +65069,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (pend) {
                 var pendJob = pend.nodes.get(node) || (typeof sourceNode === 'string' ? pend.keys[sourceNode] : null);
                 if (pendJob) {
+                    /* still wanted: a draw asked for it in this frame (_lmSkinPurge) */
+                    pendJob.seen = this._glSkinFrame || 0;
                     if (typeof sourceNode === 'string' && !pend.keys[sourceNode]) {
                         pend.keys[sourceNode] = pendJob;
                         pendJob.keys.push(sourceNode);
@@ -65062,7 +65086,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             /* Decoded skin images and canvases go the async way: a canvas as texSubImage3D source
              * is read back from the GPU synchronously (15-65 ms main-thread stall per new skin).
-             * Only image elements without createImageBitmap (or that it cannot decode) stay here. */
+             * Only a node without a size stays here (_lmQueueSkinUpload). */
             if (this._lmQueueSkinUpload(node, typeof sourceNode === 'string' ? sourceNode : null)) {
                 return -1;
             }
@@ -65133,26 +65157,40 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * A canvas with no decodable image behind it is put into its layer the same way, from
          * the same frame job. Uploads run from requestAnimationFrame with a small time budget per
          * frame. The cell is drawn body-only (as while its skin loads) until its layer is ready.
-         * Returns false when the node cannot use this path (the synchronous upload is used then). */
+         * At most _lmSkinBmpMax decodes run at once and at most _lmSkinQueueBytesMax of decoded
+         * bitmaps wait for their layer (before, every new skin on screen started its decode at
+         * once: 200 skins held about 200 MB of bitmaps); past either a skin is not queued in this
+         * frame and its next draw asks again. Any other picture (an image createImageBitmap cannot
+         * decode, or no createImageBitmap) is uploaded as before, texSubImage3D from the picture,
+         * but from the same frame job instead of inside the draw (it waits for the GPU: 15-65 ms,
+         * once for every such skin of a frame before). Returns false when the node has no size
+         * (the synchronous upload is used then). */
+        _lmSkinBmpMax: 8,
+        _lmSkinQueueBytesMax: 32 * 1048576,
         _lmQueueSkinUpload(node, key) {
             if (!node) return false;
             var src = node._lmSrc || node;
             var bitmap = typeof createImageBitmap === 'function' && !node._lmBmpFail && typeof HTMLImageElement !== 'undefined' &&
                 src instanceof HTMLImageElement && src.complete && src.naturalWidth > 0 && !src._failed;
             var canvas = !bitmap && typeof HTMLCanvasElement !== 'undefined' && node instanceof HTMLCanvasElement && node.width > 0 && node.height > 0;
-            if (!bitmap && !canvas) return false;
+            var sync = !bitmap && !canvas && node.width > 0 && node.height > 0;
+            if (!bitmap && !canvas && !sync) return false;
             var size = this.glSkinTexSize || 512;
             /* same intermediate size as before: the cacheSkin canvas (512 / graphics) */
             var w = node !== src && node.width > 0 ? node.width : size;
             var h = node !== src && node.height > 0 ? node.height : size;
+            var bytes = bitmap ? w * h * 4 : 0;
+            if (bitmap && ((this._lmSkinBmpN || 0) >= this._lmSkinBmpMax ||
+                (this._lmSkinQBytes || 0) > 0 && this._lmSkinQBytes + bytes > this._lmSkinQueueBytesMax)) return true;
             var pend = this._lmSkinPend || (this._lmSkinPend = { nodes: new WeakMap(), keys: {} });
-            var job = { node: node, keys: key ? [key] : [], clip: !!node._lmCircle && node !== src };
+            /* seen: the last frame a draw asked for it (_lmSkinStale) */
+            var job = { node: node, keys: key ? [key] : [], clip: !!node._lmCircle && node !== src, seen: this._glSkinFrame || 0, bytes: bytes, sync: sync, bmp: null };
             pend.nodes.set(node, job);
             if (key) pend.keys[key] = job;
             var self = this;
-            if (canvas) {
-                /* the canvas itself is the picture (as the synchronous upload used it) */
-                (this._lmSkinReady || (this._lmSkinReady = [])).push([job, null]);
+            if (!bitmap) {
+                /* the canvas (or picture) itself is uploaded, as the synchronous upload used it */
+                (this._lmSkinReady || (this._lmSkinReady = [])).push(job);
                 this._lmScheduleSkinUploads();
                 return true;
             }
@@ -65165,18 +65203,33 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     return Promise.reject(e);
                 }
             };
+            this._lmSkinBmpN = (this._lmSkinBmpN || 0) + 1;
+            this._lmSkinQBytes = (this._lmSkinQBytes || 0) + bytes;
             var p = src._lmBlob ? make(src._lmBlob).catch(function () { return make(src); }) : make(src);
             p.then(function (bmp) {
-                (self._lmSkinReady || (self._lmSkinReady = [])).push([job, bmp]);
+                self._lmSkinBmpN--;
+                /* no context, or no draw asked for it lately: closed now, not kept in the queue */
+                if (!self.gl || self._lmSkinStale(job)) {
+                    self._lmDropSkinJob(job);
+                    try { bmp.close(); } catch (e) { }
+                    return;
+                }
+                job.bmp = bmp;
+                (self._lmSkinReady || (self._lmSkinReady = [])).push(job);
                 self._lmScheduleSkinUploads();
             }, function () {
-                /* undecodable here: the next draw uses the synchronous upload */
+                self._lmSkinBmpN--;
+                /* undecodable here: the next draw queues the upload from the picture */
                 node._lmBmpFail = true;
                 self._lmDropSkinJob(job);
             });
             return true;
         },
         _lmDropSkinJob(job) {
+            if (job.bytes) {
+                this._lmSkinQBytes -= job.bytes;
+                job.bytes = 0;
+            }
             var pend = this._lmSkinPend;
             if (!pend) return;
             if (pend.nodes.get(job.node) === job) pend.nodes.delete(job.node);
@@ -65184,26 +65237,43 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (pend.keys[job.keys[i]] === job) delete pend.keys[job.keys[i]];
             }
         },
+        /* no draw asked for this skin in the last 60 frames (off screen, a disconnect, dropped
+         * from the skin cache): it would take a layer another skin may still need */
+        _lmSkinStale(job) {
+            return (this._glSkinFrame || 0) - job.seen > 60;
+        },
+        /* stale queued skins: bitmap closed at once, no layer taken; a draw that asks for one
+         * again queues it again */
+        _lmSkinPurge(q) {
+            var k = 0;
+            for (var i = 0; i < q.length; i++) {
+                var job = q[i];
+                if (!this._lmSkinStale(job)) {
+                    q[k++] = job;
+                    continue;
+                }
+                this._lmDropSkinJob(job);
+                try { if (job.bmp) job.bmp.close(); } catch (e) { }
+                job.bmp = null;
+            }
+            q.length = k;
+        },
+        /* 4 ms per frame, shared with the skin canvases (lmSkinJobsRun, lmSkinSlack): the next
+         * upload starts only when it is expected to fit (running average of the last ones);
+         * skins drawn in this or the previous frame first */
         _lmScheduleSkinUploads() {
             if (this._lmSkinRaf) return;
             var self = this;
-            this._lmSkinRaf = requestAnimationFrame(function () {
+            this._lmSkinRaf = requestAnimationFrame(function (stamp) {
                 self._lmSkinRaf = 0;
                 var q = self._lmSkinReady || [];
-                var t0 = performance.now();
-                /* 4 ms per frame: the next upload starts only when it is expected to fit
-                 * (running average of the last ones); the first one always runs */
-                var avg = self._lmSkinJobMs || 0;
-                var n = 0;
-                while (q.length) {
-                    var ts = performance.now();
-                    if (n++ && ts - t0 + avg > 4) break;
-                    var it = q.shift();
-                    self._lmUploadSkinJob(it[0], it[1]);
-                    var d = performance.now() - ts;
-                    avg = avg ? avg * 0.8 + d * 0.2 : d;
-                }
-                self._lmSkinJobMs = avg;
+                self._lmSkinPurge(q);
+                var lane = self._lmSkinLane || (self._lmSkinLane = { starved: false });
+                self._lmSkinJobMs = lmSkinJobsRun(q, 4, self._lmSkinJobMs || 0, function () { return performance.now(); }, self._glSkinFrame || 0, 2, function (job) {
+                    var bmp = job.bmp;
+                    job.bmp = null;
+                    self._lmUploadSkinJob(job, bmp);
+                }, lmSkinSlack(), stamp, lane);
                 if (q.length) self._lmScheduleSkinUploads();
             });
         },
@@ -65249,7 +65319,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     try {
                         /* a canvas without an image: the canvas itself, at the layer size (as the synchronous upload) */
                         if (!bmp) cv = this._lmSkinSized(node, size);
-                        if (!this._lmSkinGpuPut(cv, layer, !!bmp)) {
+                        /* job.sync: any other picture, uploaded from itself exactly as the synchronous path did */
+                        if (job.sync || !this._lmSkinGpuPut(cv, layer, !!bmp)) {
                             gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
                             gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, size, size, 1, gl.RGBA, gl.UNSIGNED_BYTE, cv);
                             gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
