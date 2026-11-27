@@ -53002,6 +53002,15 @@ function thelegendmodproject() {
             if (_connectionLevelFlush) {
                 lmSetMbUnit(0);
             }
+            /* the life ends with its connection (server change, lost connection, practice arena):
+             * the score (best mass of the life) was only reset by a death, so the next life showed
+             * and recorded the old life's best; its start is cleared at once (the 1 s check misses
+             * a spawn on the new connection within a second) */
+            if (_connectionLevelFlush && this === window.legendmod) {
+                this.playerScore = 0;
+                this.playerMass = 0;
+                if (window.application) window.application._lmLifeStartAt = 0;
+            }
             /* cell identities (updateCells _lmIdMem) belong to this connection; the Expanding Land
              * respawn wipe (true) keeps them: the server still counts those cells as ours */
             if (_connectionLevelFlush && this._lmCellIdentity) this._lmCellIdentity.clear();
