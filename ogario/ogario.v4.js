@@ -62923,6 +62923,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         _self._lmMassBytes = 0;
                         _self._lmTextAtlas = null;
                         if (_self.glCanvas) _self.glCanvas.style.display = '';
+                        /* hidden again by _lmGlFrameStart while WebGL acceleration is off */
+                        _self._lmGlHidden = false;
                         _self.initWebGL();
                         _self.resizeCanvas();
                     }, false);
@@ -64223,22 +64225,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * context that had one was lost (it may have been the 128 MB too many) */
                 if (this.glSkinArray2) this._lmSkinBankNo = true;
                 this.glSkinArray2 = null;
-                this.glSkinArray = gl.createTexture();
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
-                this.glSkinTexSize = 512;
-                this.glSkinMaxLayers = 128;
-                gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, 128);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
-
-                this.glSkinMap = {};
-                this.glSkinNodeMap = new WeakMap();
+                this._lmGlSkinArrayMake(gl);
                 this.glSkinAlphaMode = new WeakMap();
-                /* which skin owns each layer and when it was last drawn (lmSkinLayerPick) */
-                this._glSkinLayers = lmSkinLayersNew(this.glSkinMaxLayers);
                 /* new skins go into their layer on the GPU (_lmSkinGpuPut) */
                 this.initWebGLSkinPut(gl, createAndLinkProgram);
 
@@ -65454,7 +65442,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
 
         uploadSkinTexture(sourceNode, keyNode) {
-            if (!this.gl || !sourceNode) return -1;
+            /* no skin array while WebGL is off for a while (_lmGlSkinRelease) */
+            if (!this.gl || !this.glSkinArray || !sourceNode) return -1;
 
             var node = keyNode || sourceNode;
 
@@ -65782,6 +65771,38 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * (developers/tests/glbatch.js). Units 2 and 3 hold the scratch and the table; nothing else
          * uses them. Without this program the caller uploads from the canvas as before.
          */
+        /* the first skin texture array (512 x 512, 128 layers, ~128 MB) and its empty layer
+         * bookkeeping: made by initWebGL, and again when WebGL is turned on after _lmGlSkinRelease */
+        _lmGlSkinArrayMake(gl) {
+            this.glSkinArray = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, this.glSkinArray);
+            this.glSkinTexSize = 512;
+            this.glSkinMaxLayers = 128;
+            gl.texStorage3D(gl.TEXTURE_2D_ARRAY, 1, gl.RGBA8, 512, 512, 128);
+            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D_ARRAY, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+            this.glSkinMap = {};
+            this.glSkinNodeMap = new WeakMap();
+            /* which skin owns each layer and when it was last drawn (lmSkinLayerPick) */
+            this._glSkinLayers = lmSkinLayersNew(this.glSkinMaxLayers);
+        },
+        /* both skin texture arrays freed (WebGL off for a while): the skins are uploaded again
+         * once WebGL draws them (_lmGlSkinArrayMake on turning it on) */
+        _lmGlSkinRelease() {
+            var gl = this.gl;
+            if (gl && !(gl.isContextLost && gl.isContextLost())) {
+                if (this.glSkinArray2) gl.deleteTexture(this.glSkinArray2);
+                if (this.glSkinArray) gl.deleteTexture(this.glSkinArray);
+            }
+            this.glSkinArray = null;
+            this.glSkinArray2 = null;
+            this.glSkinMap = {};
+            this.glSkinNodeMap = new WeakMap();
+            this._glSkinLayers = null;
+        },
         /* this._frameHours, the local hour: a Date only when the next local hour starts (or the
          * clock went back), not one every frame */
         _lmFrameHours(now) {
@@ -65792,6 +65813,39 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this._frameHoursNext = now + 3600000 - (d.getMinutes() * 60000 + d.getSeconds() * 1000 + d.getMilliseconds());
             }
             return this._frameHours;
+        },
+        /* Start of every frame. WebGL on: the GL canvas is cleared to transparent black (the
+         * Canvas2D background and grid show through) with the frame blend. WebGL acceleration
+         * turned off: the empty GL canvas is cleared once and hidden (not cleared and composited
+         * every frame), and after 10 s off the skin texture arrays (128-256 MB) are freed; turned
+         * on again, it shows and the skin array is made again. */
+        _lmGlFrameStart(now) {
+            var gl = this.gl;
+            if (defaultmapsettings.webgl2Acceleration === false) {
+                if (!this._lmGlHidden && this.glCanvas) {
+                    if (gl) {
+                        gl.clearColor(0, 0, 0, 0.0);
+                        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+                    }
+                    this.glCanvas.style.display = 'none';
+                    this._lmGlHidden = true;
+                    this._lmGlOffAt = now;
+                }
+                if (this.glSkinArray && this._lmGlHidden && now - this._lmGlOffAt > 10000) this._lmGlSkinRelease();
+                return;
+            }
+            if (this._lmGlHidden) {
+                this._lmGlHidden = false;
+                if (this.glCanvas) this.glCanvas.style.display = '';
+            }
+            if (!gl) return;
+            if (!this.glSkinArray && !(gl.isContextLost && gl.isContextLost())) this._lmGlSkinArrayMake(gl);
+            gl.clearColor(0, 0, 0, 0.0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+            /* Enable blending once for the entire frame so rings, food, and
+             * other overlays drawn before the cell batch are alpha-correct. */
+            gl.enable(gl.BLEND);
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
         },
         initWebGLSkinPut(gl, createAndLinkProgram) {
             this._lmSkinPut = null;
@@ -78318,20 +78372,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
         renderFrame() {
             /* Frame id: lets cell.draw() tell whether jelly points were updated this frame. */
             this._jellyFrameId = (this._jellyFrameId || 0) + 1;
-            /* Clear WebGL with transparent black each frame — the GL canvas (base + 3)
-             * must be transparent so the Canvas2D background (base) and grid (base + 1) show through. */
-            if (this.gl) {
-                this.gl.clearColor(0, 0, 0, 0.0);
-                this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-                /* Enable blending once for the entire frame so rings, food, and
-                 * other overlays drawn before the cell batch are alpha-correct. */
-                this.gl.enable(this.gl.BLEND);
-                this.gl.blendFuncSeparate(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA, this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
-            }
             //await this.sleep(4); //Sonia5			
             //this.ctx.start2D();
             this.renderStarted = performance.now()
             var _now = Date.now();
+            /* the GL canvas (base + 3): cleared to transparent with the frame blend, or hidden while
+             * WebGL acceleration is off (_lmGlFrameStart) */
+            this._lmGlFrameStart(_now);
             /* skin LRU stamps use the frame time (cleared again after the frame in render()) */
             if (typeof application !== 'undefined' && application) application._lmTouchNow = _now;
             /* Per-frame caches — avoids per-cell string scans and Date allocations */

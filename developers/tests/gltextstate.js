@@ -128,6 +128,36 @@ const allocDone = (async () => {
     check(bad === 0 && dates <= 6, 'frame hour: matches getHours() over 3 hours and after the clock went back, with ' + dates + ' Dates for ~10800 frames');
 }
 
+// -- 4. WebGL acceleration off: GL canvas cleared once and hidden, skin arrays freed, on again
+{
+    const { R, env } = make();
+    const log = [];
+    R.gl = recGL(log, { isContextLost: () => false });
+    R.glCanvas = { style: { display: '' } };
+    R.glSkinArray = { first: 1 }; R.glSkinArray2 = { second: 1 };
+    const count = (name) => log.filter((c) => c[0] === name).length;
+    R._lmGlFrameStart(1000);
+    check(count('clear') === 1 && log.some((c) => c[0] === 'blendFuncSeparate' && c[1].join() === FRAME_BLEND), 'WebGL on: the frame clears the GL canvas and sets the frame blend');
+    env.defaultmapsettings.webgl2Acceleration = false;
+    log.length = 0;
+    R._lmGlFrameStart(2000);
+    check(count('clear') === 1 && R.glCanvas.style.display === 'none', 'WebGL off: the GL canvas is cleared once and hidden');
+    for (let t = 2016; t < 11000; t += 16) R._lmGlFrameStart(t);
+    check(count('clear') === 1 && R.glSkinArray && R.glSkinArray2, 'WebGL off: no clear in later frames; skin arrays kept for the first 10 s');
+    R._lmGlFrameStart(12100);
+    check(count('deleteTexture') === 2 && !R.glSkinArray && !R.glSkinArray2, 'WebGL off for 10 s: both skin texture arrays are freed');
+    R._lmGlFrameStart(13000);
+    check(count('deleteTexture') === 2, 'WebGL off: freed once');
+    env.defaultmapsettings.webgl2Acceleration = true;
+    log.length = 0;
+    R._lmGlFrameStart(14000);
+    check(R.glCanvas.style.display === '' && count('createTexture') === 1 && count('texStorage3D') === 1 && R.glSkinArray && !R.glSkinArray2 && R._glSkinLayers && R._glSkinLayers.max === 128,
+        'WebGL on again: the GL canvas shows, the skin array and its layer bookkeeping are made again');
+    check(count('clear') === 1, 'WebGL on again: the frame clears the GL canvas');
+    R._lmGlFrameStart(14016);
+    check(count('createTexture') === 1 && count('clear') === 2, 'WebGL on: the array is made once, the canvas cleared every frame');
+}
+
 /* (allocDone: the heap sampling of part 3) */
 Promise.resolve(typeof allocDone === 'undefined' ? null : allocDone).then(() => {
     if (failed) { console.log(failed + ' check(s) failed'); process.exit(1); }
