@@ -1211,8 +1211,12 @@
         if (!on) deferredKey = null;
     }
     function onLifeEnd() { evaluateSoon(300); }
+    /* a replay or the practice arena runs with the recorded / practice server's type and mode, not
+     * the server played on: no switch for them (checked again when the replay ends or the mode
+     * of the server played on comes back) */
+    function notLive() { return !!(window._lmEvReplayOn || (window.LMPractice && window.LMPractice.on)); }
     function evaluateRules(now) {
-        if (!ready()) return;
+        if (!ready() || notLive()) return;
         var rules = loadRules();
         if (!rules.enabled) { lastAutoKey = null; defer(false); return; }
         var L = window.legendmod || {};
@@ -1255,6 +1259,7 @@
     function onPad() { evaluateSoon(400); }
     /* the mode can change on the same server (it is compared once per frame while listened to) */
     function onModeChange() { evaluateSoon(800); }
+    function onReplayStop() { evaluateSoon(1500); }
     function listen(on) {
         if (on === listening) return;
         listening = on;
@@ -1263,8 +1268,8 @@
         if (!on) { clearTimeout(evalT); evalT = null; defer(false); }
         var E = window.LMEvents;
         if (E && typeof E.on === 'function') {
-            if (on) { E.on('serverChange', onServerChange); E.on('gameModeChange', onModeChange); }
-            else { E.off('serverChange', onServerChange); E.off('gameModeChange', onModeChange); }
+            if (on) { E.on('serverChange', onServerChange); E.on('gameModeChange', onModeChange); E.on('replayStop', onReplayStop); }
+            else { E.off('serverChange', onServerChange); E.off('gameModeChange', onModeChange); E.off('replayStop', onReplayStop); }
         }
         var f = on ? 'addEventListener' : 'removeEventListener';
         window[f]('gamepadconnected', onPad);

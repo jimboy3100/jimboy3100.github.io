@@ -443,6 +443,41 @@ check('zoom bookmarks: [0, 0, 0] is kept (explicitly none: the Undo / backup of 
     check('auto off: no listeners left', !e.c.LMEvents._has('gameModeChange') && !e.c.LMEvents._has('death') && !e.c.LMEvents._has('serverChange'));
   }
 }
+{
+  // automatic switching: a replay or the practice arena has the recorded / practice server's type
+  // and mode, not the server played on: no switch for them, checked again once they end
+  const e = bootApply();
+  const cur = e.S.showMass;
+  e.ls.setItem('lmSettingsProfiles', J([{ id: 'p1', name: 'Teams', data: { s: { showMass: !cur } } }]));
+  e.ls.setItem('lmSettingsProfilesRules', J({ enabled: true, mode: { ':teams': 'p1' } }));
+  e.c.legendmod = { serverType: 'deltio', gameMode: ':ffa', play: false };
+  e.P.core.listen(true);
+  e.c._lmEvReplayOn = true;
+  e.c.legendmod.gameMode = ':teams';
+  e.emit('serverChange', { host: 'replay' });
+  e.emit('gameModeChange', { mode: 'teams', previous: 'ffa' });
+  e.runTimers();
+  check('auto: no switch for the game mode of a replay', e.S.showMass === cur);
+  e.c._lmEvReplayOn = false;
+  e.emit('replayStop', { reason: 'stopped' });
+  e.runTimers();
+  check('auto: checked again once the replay ends', e.S.showMass === !cur);
+  e.P.core.listen(false);
+  check('auto off: no replay listener left', !e.c.LMEvents._has('replayStop'));
+
+  const e2 = bootApply();
+  const cur2 = e2.S.showMass;
+  e2.ls.setItem('lmSettingsProfiles', J([{ id: 'p1', name: 'FFA', data: { s: { showMass: !cur2 } } }]));
+  e2.ls.setItem('lmSettingsProfilesRules', J({ enabled: true, mode: { ':ffa': 'p1' } }));
+  e2.c.legendmod = { serverType: 'deltio', gameMode: ':teams', play: false };
+  e2.P.core.listen(true);
+  e2.c.LMPractice = { on: true };
+  e2.c.legendmod.gameMode = ':ffa';
+  e2.emit('gameModeChange', { mode: 'ffa', previous: 'teams' });
+  e2.runTimers();
+  check('auto: no switch for the practice arena\'s game mode', e2.S.showMass === cur2);
+  e2.P.core.listen(false);
+}
 
 {
   // texts from the language packs, and a language change shows the next message in that language
