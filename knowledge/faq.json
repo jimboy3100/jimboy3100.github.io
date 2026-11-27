@@ -91,7 +91,7 @@
     },
     {
       "question": "How do I use a gamepad?",
-      "answer": "Connect any standard gamepad (Xbox, PlayStation, etc.) and Legend Mod auto-detects it. Go to Settings → Controls → Gamepad to customise mapping, dead zone, response curve and vibration. The left stick controls movement and buttons map to split, feed and macro actions."
+      "answer": "Connect any standard gamepad (Xbox, PlayStation, etc.) and Legend Mod auto-detects it. Its buttons are bound in the Hotkeys window like keys and mouse buttons (click a command's field and press the pad button). Stick sensitivity, dead zone, response curve, triggers, vibration and a live test are in the Gamepad window (Hotkeys window > Gamepad). The left stick moves, the right stick zooms; by default A splits, B feeds, X double splits, Y respawns, LB swaps multibox units, RB does a 16 split and Start opens the menu."
     },
     {
       "question": "What is the Theme Bridge?",

@@ -280,12 +280,9 @@
         if (!t) return;
         try { (t[kind] || t.info).call(t, '<b>[' + esc(tx('tag')) + ']:</b> ' + html); } catch (e) { }
     }
-    /* the current theme as a body (an enlarged minimap counts with its normal width) */
+    /* the current theme as a body */
     function captureBody() {
-        var t = Object.assign({}, T());
-        var orig = W.Settings && W.Settings._lmMiniBigOrig;
-        if (orig) { t.miniMapWidth = orig; t.miniMapTop = Math.round(20 * orig / 200); }
-        var body = { theme: sparseTheme(cleanThemeMap(t) || {}) };
+        var body = { theme: sparseTheme(cleanThemeMap(Object.assign({}, T())) || {}) };
         var s = S(), sd = W.LM_SETTINGS_DEFAULTS || {}, snd = {}, n = 0;
         if (s) SOUND_KEYS.forEach(function (k) {
             var v = soundValue(k, s[k]);
@@ -354,8 +351,6 @@
     function applyBody(body, name) {
         if (!ready() || !body) return false;
         var St = W.Settings;
-        /* the theme sets the minimap width: an enlarged minimap ends */
-        if (St._lmMiniBigOrig) St._lmMiniBigOrig = 0;
         setValues(effectiveTheme(body, T()));
         setSounds(body.sounds);
         var ok = true;
