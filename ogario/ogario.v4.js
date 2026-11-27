@@ -27747,6 +27747,14 @@ function thelegendmodproject() {
             $(document).on("input change", "#nick, #clantag, #skin, #color", function () {
                 app.saveProfileFields();
             });
+            /* the colour picker of the skin field writes #color without an input or change
+             * event, so a picked profile colour was lost on a reload; saved once the picking
+             * pauses (the event comes for every step of a drag) */
+            var _lmProfColorT = null;
+            $(document).on("changeColor.colorpicker", ".skin", function () {
+                clearTimeout(_lmProfColorT);
+                _lmProfColorT = setTimeout(function () { app.saveProfileFields(); }, 250);
+            });
             $(document).on("change", "#og-options input[type='checkbox']", function () {
                 var template = $(this);
                 app.setSettings(template.attr("id"), template.prop("checked"));
