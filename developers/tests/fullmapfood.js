@@ -8,8 +8,11 @@
  * see is removed; a spectator disconnect removes only its own cells (from its index, not a scan
  * of the world); cells of an earlier socket are dropped; a spectator whose residual is corrected
  * has its pellets placed again; after an orientation flip (Rotate Map) every pellet is drawn once
- * where it now is; Canvas2D and Expanding Land WebGL get the same list; a connection number
- * used again starts without the old connection's food state or shared colours. Prints the food
+ * where it now is, each pellet placed once for it; a main ClearAll or respawn flush keeps the other
+ * connections' cells and pellets (their servers cleared nothing); a rebuild of the list takes no
+ * unverified connection's pellets; a pellet whose drawn copy leaves moves to the copy drawn next
+ * (live capture with a small residual); Canvas2D and Expanding Land WebGL get the same list; a
+ * connection number used again starts without the old connection's food state or shared colours. Prints the food
  * observations against the pellets drawn and the cost of the list.
  * node developers/tests/fullmapfood.js */
 'use strict';
@@ -53,6 +56,8 @@ vm.runInContext([
     '  ' + (function () { const a = src.indexOf('        drawFood() {'), b = src.indexOf('        drawCachedFood(ctx, food, scale, reset) {', a); return src.slice(a, b).trim().replace(/,$/, ''); })(),
     '};',
     'this.LM = LM;',
+    /* the main socket's flush (ClearAll 18, respawn: a boolean; a connection change: none) */
+    'LM.flushCellsData = ({ ' + (function () { const a = src.indexOf('        flushCellsData(preserveMapGeometry) {'), b = src.indexOf('        /* Spectator toggles', a); return src.slice(a, b).trim().replace(/,$/, ''); })() + ' }).flushCellsData;',
     /* the orientation flip of every local coordinate store (Rotate Map, teammate orientation) */
     'this.flipper = { deathLocations: [],',
     '  ' + (function () { const a = src.indexOf('        _retranslateAllOnFlip('), b = src.lastIndexOf('        /*', src.indexOf('        settechvnr(b) {', a)); return src.slice(a, b).trim().replace(/,$/, ''); })(),
@@ -281,6 +286,118 @@ reset();
     sp._testFeed = false; /* CONFLICTED */
     list = drawList();
     check('conflicted: its pellets leave the list', list.length === 1 && list[0] === m, list.length);
+}
+/* 6c. main ClearAll (opcode 18 -> flushCellsData(false)) and the Expanding Land respawn flush (true)
+ *     clear only the main socket's world: the spectator and multibox sockets stay open and their
+ *     servers send a pellet, a virus, a name once, so their cells stay (before: every spectator
+ *     pellet, virus and name was gone, for good on a static Full Map tile) */
+for (const arg of [false, true]) {
+    reset();
+    const m = mainFood(1, 100, 100, hex(0x40a0f0));
+    const sp = spect(1), unit = spect(2);
+    unit.player = true;
+    unit.active = true; /* already playing (its first own cell starts timers) */
+    unit.playerCellIDs = [unit.newID(7000)];
+    const cells = [];
+    for (let i = 0; i < 200; i++) cells.push({ id: 10 + i, x: 1000 + i * 40, y: 0 });
+    sp.updateCells(packet([], cells.concat([{ id: 5000, x: 9000, y: 9000, size: 80, food: false, name: 'P' },
+        { id: 5001, x: 8000, y: 8000, size: 100, food: false, virus: true }]), []), 0);
+    unit.updateCells(packet([], [{ id: 7000, x: 3000, y: 3000, size: 60, food: false }, { id: 7001, x: 1000, y: 0 }], []), 0);
+    check('flush(' + arg + '): before, every pellet drawn once', drawList().length === 201, drawList().length);
+    LM.flushCellsData(arg);
+    let list = drawList();
+    check('flush(' + arg + '): the spectator pellets stay drawn, the main pellet goes', list.length === 200 && list.every((c) => c.spectator > 0) && LM.food.length === 0 && !list.includes(m), list.length);
+    const pl = LM.cells.find((c) => c.spectator === 1 && !c.isVirus);
+    check('flush(' + arg + '): the spectator player keeps its name, its virus stays', !!pl && pl.targetNick === 'P' && LM.viruses.length === 1 && LM.viruses[0].spectator === 1, pl && pl.targetNick);
+    check('flush(' + arg + '): the multibox unit keeps its own cell', LM.playerCellsMulti.length === 1 && LM.playerCellsMulti[0].spectator === 2 && LM.cells.includes(LM.playerCellsMulti[0]));
+    check('flush(' + arg + '): no main socket cell is left', !LM.indexedCells[1] && Object.keys(LM.indexedCells).every((k) => LM.indexedCells[k].spectator > 0));
+    /* the main server sends its pellet again: drawn once with the spectator copies */
+    mainFood(1, 100, 100, hex(0x40a0f0));
+    sp.updateCells(packet([], [{ id: 5000, x: 9010, y: 9000, size: 80, food: false }], []), 0);
+    list = drawList();
+    check('flush(' + arg + '): the main pellet back, each pellet drawn once', list.length === 201 && list.filter((c) => !c.spectator).length === 1, list.length);
+    sp.updateCells(packet([], [], cells.map((c) => c.id)), 0);
+    /* left: the main pellet and the unit's copy of the pellet at (1000, 0) */
+    check('flush(' + arg + '): the kept pellets still leave with their removal records', drawList().length === 2, drawList().length);
+}
+/* 6d. the list rebuilt (spawn gate, opcode 32, ClearAll): an unverified connection's pellets stay
+ *     out (before: they joined it and stayed drawn, lmFoodFrame acts only on a state change) */
+reset();
+{
+    const m = mainFood(1, 100, 100, hex(0x40a0f0));
+    const a = spect(1), b = spect(2);
+    b._testFeed = false; /* PROVISIONAL */
+    a.updateCells(packet([], [{ id: 5, x: 100, y: 100 }], []), 0);
+    b.updateCells(packet([], [{ id: 6, x: 103, y: 100 }, { id: 7, x: 900, y: 900 }], []), 0);
+    check('rebuild: before, only the verified pellets', drawList().length === 1 && drawList()[0] === m);
+    vm.runInContext('LM.food = lmIdxClear(LM.food, "_foodIdx"); lmFoodRebuild();', g);
+    drawList();
+    let list = drawList();
+    check('rebuild: no unverified pellet drawn', list.length === 1 && list[0].spectator === 1, list.map((c) => (c.spectator || 0) + '@' + c.x).join(' '));
+    b._testFeed = true;
+    list = drawList();
+    check('rebuild: verified later, its pellets join', list.length === 2 && list.filter((c) => c.spectator === 2).length === 1, list.length);
+}
+/* 6e. live capture: the copy that made a pellet's entry leaves (out of its view, disconnect) and
+ *     another connection's copy arrives; with a residual of +-2 on two connections (orientation
+ *     verified, d not yet) the pellet is still drawn once: the entry moved to the copy drawn now
+ *     (before: it kept the departed copy's place and some 44 pellets were drawn twice, 2 apart) */
+{
+    const L = JSON.parse(read(path.join(__dirname, 'lib', 'fullmap-food-live.json')));
+    const M = L.main, conv = {};
+    for (const c of L.conns) {
+        const w = c.maxX - c.minX, h = c.maxY - c.minY, r = c.n === 2 ? 2 : c.n === 4 ? -2 : 0;
+        conv[c.n] = { c, fx: (x) => r + M.minX + (c.o[0] > 0 ? (x - c.minX) / w : (c.maxX - x) / w) * M.w,
+            fy: (y) => M.minY + (c.o[1] > 0 ? (y - c.minY) / h : (c.maxY - y) / h) * M.h };
+    }
+    const load = (order, firstLeaves) => {
+        reset();
+        const sps = {};
+        for (const n of order) {
+            const c = conv[n].c, sp = sps[n] = spect(n);
+            sp.getX = conv[n].fx; sp.getY = conv[n].fy;
+            sp.updateCells(packet([], c.food.map((p, i) => ({ id: 10 + i, x: p[0], y: p[1], size: p[2] })), []), 0);
+            if (firstLeaves && n === order[1]) sps[order[0]].updateCells(packet([], [], conv[order[0]].c.food.map((p, i) => 10 + i)), 0);
+        }
+        return stats().pellets;
+    };
+    for (const o of [[2, 3, 4], [4, 3, 2]]) {
+        const a = load(o, true), b = load(o.slice(1));
+        check('live capture, residual 2: ' + o[0] + ' leaves after ' + o[1] + ', then ' + o[2] + ': each pellet once (' + a + ' drawn, ' + b + ' without ' + o[0] + ')', a === b, a + '/' + b);
+    }
+}
+/* 6f. Rotate Map / orientation flip at Full Map scale: every pellet placed once for it (before: the
+ *     spectators' pellets a second time in the next frame, their transforms stored before the flip) */
+reset();
+{
+    Object.assign(LM, { _lmBorderCX: 0, _lmBorderCY: 0, _lmBorderKX: 1, _lmBorderKY: 1, mapOffsetX: 0, mapOffsetY: 0,
+        mapMinX: -7071, mapMaxX: 7071, mapMinY: -7071, mapMaxY: 7071, vector: [[0, 0], [1, 0]], vnr: 0 });
+    LM.translateX = (v) => LM.mapMaxX - (v - LM.mapMinX);
+    LM.translateY = (v) => v;
+    let s = 7;
+    const rnd = () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648;
+    for (let i = 0; i < 300; i++) mainFood(i + 1, Math.floor(rnd() * 6000), Math.floor(rnd() * 6000), hex(0x40a0f0));
+    const sps = [1, 2, 3].map((n) => Object.assign(spect(n), { mapOffsetFixed: true, mapOffsetX: 0, mapOffsetY: 0, fixX: 1, fixY: 1, fix3x: 0, fix3y: 0, _lmKX: 1, _lmKY: 1, _lmSameFrame: false }));
+    sps.forEach((sp, k) => {
+        const v = [];
+        for (let i = 0; i < 400; i++) v.push({ id: 10 + i, x: Math.floor(rnd() * 7000) - 3500 + k * 500, y: Math.floor(rnd() * 7000) - 3500 });
+        sp.updateCells(packet([], v, []), 0);
+    });
+    drawList();
+    const before = stats();
+    vm.runInContext('var __att = 0, __attOrig = _lmFoodAttach; _lmFoodAttach = function (c) { __att++; return __attOrig(c); };', g);
+    g.flipper._retranslateAllOnFlip(false, false, [1, 0]);
+    LM.vnr = 1;
+    drawList();
+    const n1 = vm.runInContext('__att', g);
+    vm.runInContext('__att = 0', g);
+    drawList();
+    const n2 = vm.runInContext('__att', g);
+    vm.runInContext('_lmFoodAttach = __attOrig', g);
+    const after = stats();
+    check('flip: every observation placed once (' + n1 + ' of ' + before.observations + '), none in the frame after', n1 === before.observations && n2 === 0, n1 + '/' + n2);
+    check('flip: as many pellets as before', after.pellets === before.pellets && after.observations === before.observations, before.pellets + '/' + after.pellets);
+    delete LM.translateX; delete LM.translateY; LM.vector = null; LM.vnr = 0;
 }
 /* 6b. a spectator's named cells: the colour first seen for the nick (LM.cellcolors, shared with
  * the main connection), teammates only with a colour they sent, own cells the profile colour

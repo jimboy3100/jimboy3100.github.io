@@ -2198,6 +2198,8 @@ var _lmFood = {
     sig: new Map(),
     /* whether each connection fed the list last frame (spect.js _lmFeedOk) */
     feed: new Map(),
+    /* every pellet to be placed again at the next frame (lmFoodReplaceAll) */
+    replaceAll: false,
     seq: 0
 };
 function _lmFoodSrcOf(c) {
@@ -2225,7 +2227,10 @@ function _lmFoodSrcSet(e, src, on) {
         (e.maskX || (e.maskX = new Set())).add(src);
     } else if (e.maskX) e.maskX.delete(src);
 }
-/* main socket first, then the lowest number; a copy that is drawn before a hidden one */
+/* main socket first, then the lowest number; a copy that is drawn before a hidden one. The entry
+ * moves to where its drawn copy is: it kept the place of the copy that made it after that copy
+ * left or was placed again, and copies further than LM_FOOD_TOL from that old place became a
+ * second pellet next to the drawn one. */
 function _lmFoodPickRep(ent) {
     var best = null, bestSrc = Infinity, bestHidden = true;
     for (var i = 0; i < ent.obs.length; i++) {
@@ -2237,7 +2242,39 @@ function _lmFoodPickRep(ent) {
         }
     }
     ent.rep = best;
-    if (ent.slot >= 0) _lmFood.list[ent.slot] = best;
+    if (ent.slot >= 0) {
+        _lmFood.list[ent.slot] = best;
+        if (best) _lmFoodMoveEnt(ent, _lmFoodPosX(best), _lmFoodPosY(best));
+    }
+}
+/* an entry to another place: to the other bucket in O(1) as _lmFoodDetach takes one out */
+function _lmFoodMoveEnt(ent, x, y) {
+    if (!Number.isFinite(x) || !Number.isFinite(y) || (x === ent.x && y === ent.y)) return;
+    var F = _lmFood;
+    ent.x = x;
+    ent.y = y;
+    var key = _lmFoodKey(Math.floor(x / LM_FOOD_BUCKET), Math.floor(y / LM_FOOD_BUCKET));
+    if (key === ent.key) return;
+    var b = F.grid.get(ent.key);
+    if (b) {
+        var last = b.pop();
+        if (last !== ent) {
+            b[ent.bslot] = last;
+            last.bslot = ent.bslot;
+        }
+        if (!b.length) {
+            F.grid.delete(ent.key);
+            F.pool.push(b);
+        }
+    }
+    ent.key = key;
+    var nb = F.grid.get(key);
+    if (!nb) {
+        nb = F.pool.length ? F.pool.pop() : [];
+        F.grid.set(key, nb);
+    }
+    ent.bslot = nb.length;
+    nb.push(ent);
 }
 function _lmFoodAttach(cell) {
     var F = _lmFood, src = _lmFoodSrcOf(cell);
@@ -2376,12 +2413,19 @@ function lmFoodTouch(cell) {
     }
 }
 /* Every pellet moved at once, outside its packets (Rotate Map / orientation flip,
- * _retranslateAllOnFlip): each is placed again where it is now. The places of the main
+ * _retranslateAllOnFlip): each is placed again where it is now, once, at the next frame
+ * (lmFoodFrame). Done here, every spectator's pellets were placed a second time in that frame:
+ * the flip's new orientation is set after this call, so their stored transforms were still the
+ * old one. The places of the main
  * socket's pellets were kept from before (only a spectator's own transform change places its
  * pellets again, lmFoodFrame), so after a flip a spectator copy matched the place a main pellet
  * had left: that pellet was drawn twice and the one now there not at all. */
 function lmFoodReplaceAll() {
+    if (_lmFood.on) _lmFood.replaceAll = true;
+}
+function _lmFoodReplaceAllNow() {
     var F = _lmFood;
+    F.replaceAll = false;
     if (!F.on) return;
     var cells = [];
     for (var i = 0; i < F.ents.length; i++) {
@@ -2395,13 +2439,17 @@ function lmFoodReplaceAll() {
     F.ents.length = 0;
     F.spectObs = 0;
     for (i = 0; i < cells.length; i++) _lmFoodAttach(cells[i]);
+    /* each connection's transform its pellets are placed with now */
+    F.sig.forEach(function (old, src) { _lmFoodSigOf(_lmFoodSpect(src), old); });
 }
 /* Main socket's LM.food replaced (spawn, ClearAll) or the world reset: build again from the
- * pellets that are still there. */
+ * pellets that are still there, of the connections that feed the list (an unverified one's
+ * pellets joined it and stayed drawn: lmFoodFrame takes them out only when its state changes). */
 function lmFoodRebuild() {
     if (!_lmFood.on) return;
     var keep = [];
-    _lmSrcObs.forEach(function (set) {
+    _lmSrcObs.forEach(function (set, src) {
+        if (!lmSrcFeeds(_lmFoodSpect(src))) return;
         set.forEach(function (c) { if (c.isFood && !c.removed) keep.push(c); });
     });
     _lmFoodOff();
@@ -2445,6 +2493,7 @@ function _lmFoodSpect(number) {
 }
 function lmFoodFrame() {
     var F = _lmFood, spects = window.spects;
+    if (F.replaceAll) _lmFoodReplaceAllNow();
     if (!spects) return;
     for (var i = 0; i < spects.length; i++) {
         var sp = spects[i];
@@ -2477,7 +2526,7 @@ function lmFoodFrame() {
 /* The pellets to draw this frame: one per pellet while other connections have food. */
 function lmFoodDrawList() {
     var LM = window.legendmod;
-    if (window.spects && window.spects.length) lmFoodFrame();
+    if (_lmFood.replaceAll || (window.spects && window.spects.length)) lmFoodFrame();
     if (!_lmFood.on) return LM ? LM.food : null;
     return _lmFood.list;
 }
@@ -52963,14 +53012,30 @@ function thelegendmodproject() {
                 /* Invalidate cached grid pattern — canvas context may change on reconnect */
                 drawRender._staticGridPattern = null;
             }
-            this.indexedCells = {};
-            this.cells = [];
+            /* A ClearAll packet or a respawn flush clears only this socket's world: the multibox
+             * and spectator sockets stay open and their servers cleared nothing (each sends a
+             * pellet, a virus, a name once), so their cells stay, as the spawn gate keeps them.
+             * Dropped here, a static Full Map tile showed no food, viruses or names again. */
+            var _lmKeepSp = !_connectionLevelFlush && this === window.legendmod;
+            var _lmIsSp = function (c) { return c && c.spectator > 0; };
+            if (_lmKeepSp) {
+                var _lmKeptIdx = {};
+                for (var _lmKi in this.indexedCells) {
+                    if (_lmIsSp(this.indexedCells[_lmKi])) _lmKeptIdx[_lmKi] = this.indexedCells[_lmKi];
+                }
+                this.indexedCells = _lmKeptIdx;
+                this.cells = lmIdxFilter(this.cells || [], '_cellsIdx', _lmIsSp);
+            } else {
+                this.indexedCells = {};
+                this.cells = [];
+            }
             /* the jelly point grid (and the frame's jelly list) still hold the old world's
              * cells; a tab that is hidden or disconnected may not draw another frame */
             if (typeof this.clearJellyIndex === 'function') this.clearJellyIndex();
             if (typeof drawRender !== 'undefined' && drawRender && drawRender._jellyCellsScratch) drawRender._jellyCellsScratch.length = 0;
-            this.playerCells = [];
-            this.playerCellsMulti = []; //for multi fix
+            if (_lmKeepSp) this.playerCells = lmIdxClear(this.playerCells, '_playerIdx');
+            else this.playerCells = [];
+            if (!_lmKeepSp) this.playerCellsMulti = []; //for multi fix
             this.playerCellIDs = [];
             if (this._playerCellIDSet) this._playerCellIDSet.clear();
             /* Clear stale server-color → team-color mappings to prevent
@@ -52978,11 +53043,18 @@ function thelegendmodproject() {
             if (this._colorByRawMap) this._colorByRawMap.clear();
             if (this._colorByRawNick) this._colorByRawNick.clear();
             this.ghostCells = [];
-            this.food = [];
-            this.foodMulti = []; //for multi fix
-            /* every connection's cells left the world above: per-connection index and food list too */
-            if (typeof lmObsResetAll === 'function') lmObsResetAll();
-            this.viruses = [];
+            if (_lmKeepSp) {
+                this.food = lmIdxClear(this.food, '_foodIdx');
+                /* the other connections' pellets stay in the food list, this socket's go */
+                if (typeof lmFoodRebuild === 'function') lmFoodRebuild();
+                this.viruses = lmIdxFilter(this.viruses || [], '_virusIdx', _lmIsSp);
+            } else {
+                this.food = [];
+                this.foodMulti = []; //for multi fix
+                /* every connection's cells left the world above: per-connection index and food list too */
+                if (typeof lmObsResetAll === 'function') lmObsResetAll();
+                this.viruses = [];
+            }
             this.removedCells = [];
             /* Only a connection-level flush resets the multibox units. A ClearAll packet or
              * the Expanding Land respawn flush keeps their sockets, so their own-cell IDs
