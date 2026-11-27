@@ -55376,10 +55376,17 @@ function thelegendmodproject() {
          * server's). */
         _lmOwnColorsRestore() {
             var cells = this.playerCells || [], nick = this.playerNick, keep = null;
+            if (this.gameMode === ':teams') return;
+            /* a spectator / multibox connection remembers the own nick with the profile colour
+             * (spect.js): that is no colour of the nick, the server's is */
+            var _prof = typeof profiles !== 'undefined' && profiles[application.selectedProfile] ? profiles[application.selectedProfile].color : null;
+            var unify = nick && this.gameMode !== ':party';
+            if (unify && _prof && this.cellcolors[nick] === _prof) delete this.cellcolors[nick];
             for (var i = 0; i < cells.length; i++) {
                 var c = cells[i], raw = c._lmRawColor || c.rawServerColor || null;
-                var col = (nick && this.gameMode !== ':teams' && this.gameMode !== ':party' && this.cellcolors[nick]) || raw;
-                if (col && this.gameMode !== ':teams') { c.color = col; keep = keep || col; }
+                var col = (unify && this.cellcolors[nick]) || raw;
+                if (unify && raw && !this.cellcolors[nick]) this.cellcolors[nick] = raw;
+                if (col) { c.color = col; keep = keep || col; }
             }
             if (keep) this.playerColor = keep;
         },

@@ -142,6 +142,16 @@ if (typeof L._lmOwnColorsRestore === 'function') L._lmOwnColorsRestore();
 check('turned off: the own cell has its server colour again', C(21) === hex(200, 40, 40), C(21));
 feed([{ id: 22, color: [200, 40, 40], name: 'Me', skin: '' }]);
 check('turned off: a new own piece has the server colour too', C(22) === hex(200, 40, 40), C(22));
+/* a spectator / multibox connection had remembered the own nick with the profile colour (spect.js) */
+reset();
+g.defaultmapsettings.myCustomColor = true;
+L.playerCellIDs = [23, 24];
+L.cellcolors.Me = '#000000';
+feed([{ id: 23, color: [200, 40, 40], name: 'Me', skin: '' }]);
+g.defaultmapsettings.myCustomColor = false;
+if (typeof L._lmOwnColorsRestore === 'function') L._lmOwnColorsRestore();
+feed([{ id: 24, color: [200, 40, 40], name: 'Me', skin: '' }]);
+check('turned off after a spectator remembered the profile colour: server colour, also for a new piece', C(23) === hex(200, 40, 40) && C(24) === hex(200, 40, 40), [C(23), C(24)]);
 g.profiles = [];
 
 /* section: team colours (the Legend Mod relay) */
