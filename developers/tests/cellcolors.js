@@ -128,6 +128,20 @@ L.handleMessage(new DataView(pk.buffer.slice(0, pk.byteLength - 12)));
 check('a cut packet changes no colour', C(11) === hex(0, 255, 0) || C(11) === hex(255, 0, 0), C(11));
 check('the cut record makes no half cell with a wrong colour', C(15) === '(no cell)' || C(15) === hex(1, 2, 3), C(15));
 
+/* section: "My custom colour" turned off gives the own cells their server colour back */
+reset();
+g.profiles = [{ nick: 'Me', color: '#000000' }];
+g.defaultmapsettings.myCustomColor = true;
+L.playerCellIDs = [21, 22];
+feed([{ id: 21, color: [200, 40, 40], name: 'Me', skin: '' }]);
+check('own cell with my custom colour (black profile colour) is black', C(21) === '#000000', C(21));
+g.defaultmapsettings.myCustomColor = false;
+if (typeof L._lmOwnColorsRestore === 'function') L._lmOwnColorsRestore();
+check('turned off: the own cell has its server colour again', C(21) === hex(200, 40, 40), C(21));
+feed([{ id: 22, color: [200, 40, 40], name: 'Me', skin: '' }]);
+check('turned off: a new own piece has the server colour too', C(22) === hex(200, 40, 40), C(22));
+g.profiles = [];
+
 /* ---------------- headless Chrome: real WebGL + real Canvas2D ---------------- */
 const cellStart = src.indexOf('function ogarbasicassembly(');
 const cellEnd = src.indexOf('}).call(ogarbasicassembly.prototype)');
@@ -271,6 +285,16 @@ async function chromePart() {
             check(tag + ': WebGL ' + JSON.stringify(want), near(a.px, want), [a.px, a.gl, a.why]);
             check(tag + ': Canvas2D the same', near(b.px, want), b.px);
             check(tag + ': no disc cached for a string that is no colour', b.keys.every((k) => /^#[0-9a-f]{6}$/i.test(k)), b.keys);
+        }
+        /* own cell, "My custom colour": drawn in the custom colour by both, the cell keeps its own */
+        for (const jelly of [false, true]) for (const on of [true, false]) {
+            const cells = [{ id: 2, x: 0, y: 0, size: 60, color: '#ff3b3b', isPlayerCell: true }];
+            const cfg = { jelly, play: true, own: { color: '#123456' }, map: { myCustomColor: on }, cells };
+            const a = await draw(Object.assign({ gl: true }, cfg)), b = await draw(Object.assign({ gl: false }, cfg));
+            const want = on ? [0x12, 0x34, 0x56] : [255, 59, 59], tag = (jelly ? 'jelly on' : 'jelly off') + ', own cell, my custom colour ' + (on ? 'on' : 'off');
+            check(tag + ': WebGL ' + JSON.stringify(want), near(a.px, want), a.px);
+            check(tag + ': Canvas2D the same', near(b.px, want), b.px);
+            check(tag + ': Canvas2D leaves the cell its own colour', b.colors[0] === '#ff3b3b', b.colors);
         }
     } finally {
         await stop();

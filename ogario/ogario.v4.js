@@ -25412,6 +25412,9 @@ function thelegendmodproject() {
                     ogario[id] = checked;
                 }
                 switch (id) {
+                    case 'myCustomColor':
+                        if (!checked && _lmSetWas && window.legendmod && legendmod._lmOwnColorsRestore) legendmod._lmOwnColorsRestore();
+                        break;
                     case 'clickSpectate':
                         if (!checked && window.legendmod && legendmod._lmSpecCell) legendmod._lmSpecCellStop();
                         break;
@@ -38779,10 +38782,13 @@ function thelegendmodproject() {
                             _appliedShadow = true;
                         }
 
+                        /* the own colour is drawn, not written into the cell (as WebGL does): with
+                         * "my custom colour" turned off the cell shows its server colour again */
+                        var _lmBodyColor = this.color;
                         if (LM.play || LM.playerCellsMulti.length) {
                             if (this.isPlayerCell || this.isPlayerCellMulti) {
                                 if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
-                                    this.color = ogarcopythelb.color;
+                                    _lmBodyColor = ogarcopythelb.color;
                                 }
                             }
                             else {
@@ -38805,7 +38811,7 @@ function thelegendmodproject() {
                          * never produce an invisible ordinary cell. Instead of flat
                          * #808080 grey, use a deterministic gradient avatar.
                          */
-                        var color2 = this.color;
+                        var color2 = _lmBodyColor;
                         var _useFallbackGradient = false;
 
                         /* Cache the resolved colour per cell; it only changes on a server update. */
@@ -38843,8 +38849,8 @@ function thelegendmodproject() {
                                 _useFallbackGradient = true;
                             }
                         }
-                        if (this._colorSrc !== this.color || !this._colorSrcSet) {
-                            this._colorSrc = this.color;
+                        if (this._colorSrc !== _lmBodyColor || !this._colorSrcSet) {
+                            this._colorSrc = _lmBodyColor;
                             this._colorSrcSet = true;
                             this._colorResolved = color2;
                             this._colorFallback = _useFallbackGradient;
@@ -55338,6 +55344,19 @@ function thelegendmodproject() {
 
 
 
+        },
+        /* "My custom colour" turned off: the own cells got the profile colour when they were
+         * added and the server sends a cell's colour only then, so they kept it until the next
+         * spawn. They take the colour they would have had without it (the nick's colour, else the
+         * server's). */
+        _lmOwnColorsRestore() {
+            var cells = this.playerCells || [], nick = this.playerNick, keep = null;
+            for (var i = 0; i < cells.length; i++) {
+                var c = cells[i], raw = c._lmRawColor || c.rawServerColor || null;
+                var col = (nick && this.gameMode !== ':teams' && this.gameMode !== ':party' && this.cellcolors[nick]) || raw;
+                if (col && this.gameMode !== ':teams') { c.color = col; keep = keep || col; }
+            }
+            if (keep) this.playerColor = keep;
         },
         color2Hex(number) {
             var color = number.toString(16);
