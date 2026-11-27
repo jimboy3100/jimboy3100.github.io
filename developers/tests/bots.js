@@ -782,7 +782,7 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: brStopFilling stops the fill bots once', r.stops === 1);
     check('ogario: no Battle Royale watcher timer (the lobby packets and the bot connection drive the fill)', !ogSrc.includes('_brLobbyWatcher') && !/setInterval\(\s*brUpdateSection/.test(ogSrc));
     check('ogario: brResetFill/brStopFilling exposed on window', ogSrc.includes('window._brStopFilling = brStopFilling') && ogSrc.includes('window._brResetFill = brResetFill'));
-    check('ogario: BR fill no longer writes window.bots.amount', /needed = Math\.min\(needed, 190\)[\s\S]{0,400}sessionAmount = needed/.test(ogSrc) && !/window\.bots\.amount = needed/.test(ogSrc));
+    check('ogario: BR fill no longer writes window.bots.amount', /needed = Math\.min\(needed, 190\)[\s\S]{0,900}sessionAmount = needed/.test(ogSrc) && !/window\.bots\.amount = needed/.test(ogSrc));
 
     // connectionBots messages: 0, 1, 2, 4, 5 (gone), 12, 13
     const cbSrc = extract('window.connectionBots = {');
@@ -837,7 +837,7 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: botsStart, brFill and botsServerPlayersText extractable', !!startSrc && !!fillSrc && !!playersSrc);
     const flow = (opts) => {
         opts = opts || {};
-        const els = {}, toasts = [], timers = [], socks = [];
+        const els = {}, toasts = [], timers = [], socks = [], removed = [];
         const getEl = id => els[id] || (els[id] = el());
         class FakeSock {
             constructor(url, kind) {
@@ -866,14 +866,14 @@ for (const file of ['server.js', 'server-fast.js']) {
             $: () => ({ html() {}, is: () => true }),
             _lmG1set(e, key) { if (e) e.i18n = key; }, lmT: key => key, _lmTH: key => key, Premadeletter123: 'LM',
             setTimeout: f => { timers.push(f); return timers.length; }, setInterval: () => 99, clearInterval() {},
-            localStorage: { getItem: () => null }
+            localStorage: { getItem: () => null, removeItem: key => removed.push(key) }
         };
         run(cbSrc + '\n' + stopSrc + '\n' + resetSrc + '\n' + stopFillSrc + '\n' + startSrc + '\n' + fillSrc +
             '\nfunction brUpdateSection() {}\nwindow._lmBotsStart = botsStart; window._lmBrFill = brFill; window._brResetFill = brResetFill; window._brStopFilling = brStopFilling', sb);
         const cb = w.connectionBots;
         const flush = () => { while (timers.length) timers.shift()(); };
         const ops = s => s.sent.filter(p => typeof p !== 'string').map(p => p[0]);
-        return { w, lm, cb, els, toasts, socks, flush, ops, start: () => w._lmBotsStart(), fill: () => w._lmBrFill(), stop: () => w._lmBotsStop() };
+        return { w, lm, cb, els, toasts, socks, removed, flush, ops, start: () => w._lmBotsStart(), fill: () => w._lmBrFill(), stop: () => w._lmBotsStop() };
     };
     for (const [path, host] of [['worker', 'browser'], ['ws', 'ws://localhost:1337']]) {
         const f = flow({ host });
@@ -925,8 +925,45 @@ for (const file of ['server.js', 'server-fast.js']) {
         check('Start: connection failed: Disconnected, Start shown, notice to check the address', f.els.userStatus.i18n === 'game1.bots.disconnected' && f.cb.pending === null &&
             f.els.startBots.style.display === 'inline' && f.toasts.length === 1 && f.toasts[0].includes('game1.bots.connectFailed'));
         const g = flow({ host: 'localhost:1337' });
+        g.w.application = { _lmQuickBotsShown: () => true };
         g.start();
-        check('Start: an address that is not ws:// fails without throwing', g.socks.length === 0 && g.cb.ws === null && g.toasts.some(t => t.includes('game1.bots.connectFailed')) && g.els.startBots.style.display === 'inline');
+        check('Start: an address that is not ws:// fails without throwing (address field shown: the notice)', g.socks.length === 0 && g.cb.ws === null && g.toasts.some(t => t.includes('game1.bots.connectFailed')) && g.els.startBots.style.display === 'inline');
+    }
+    {
+        // a bot server address saved by an earlier version while the bots panel (its only editor) is hidden
+        for (const host of ['wss://party-bots--legendmod.repl.co', 'ws://localhost:1337', 'localhost:1337']) {
+            const f = flow({ host, lm: { gameMode: ':battleroyale', battleRoyale: { players: 5, started: false, countdown: false } } });
+            f.w.application = { _lmQuickBotsShown: () => false };
+            f.fill();
+            if (f.socks[0] && f.socks[0].kind === 'ws') f.socks[0].fail();
+            const wk = f.socks.find(x => x.kind === 'worker');
+            check('Saved bot address ' + host + ' that does not answer, bots panel hidden: Fill lobby goes on with the browser bots, no "check the address" notice', !!wk && f.cb.ws === wk &&
+                f.cb.pending === 'fill' && f.w.SERVER_HOST === 'browser' && f.w.bots.remoteIP === 'browser' && f.removed.includes('localstoredBotsRemoteIP') && f.els.botsRemoteIP.value === 'browser' &&
+                !f.toasts.some(t => t.includes('game1.bots.connectFailed')));
+            if (wk) { wk.open(); f.flush(); }
+            const pk = wk && wk.sent.find(p => typeof p !== 'string' && p[0] === 0);
+            check('... the same click fills the lobby (10 bots)', !!pk && pk[pk.length - 1] === 10 && f.w._brFilling === true);
+        }
+        const g = flow({ host: 'ws://localhost:1337' });
+        g.w.application = { _lmQuickBotsShown: () => true };
+        g.start(); g.socks[0].fail();
+        check('Bot address that does not answer, address field shown: kept, the notice to check it, no fallback', g.socks.length === 1 && g.w.SERVER_HOST === 'ws://localhost:1337' &&
+            !g.removed.length && g.toasts.some(t => t.includes('game1.bots.connectFailed')));
+        const w = flow({ host: 'browser' });
+        w.start(); w.socks[0].fail();
+        check('Browser bots that fail: the notice, no retry loop', w.socks.length === 1 && w.toasts.some(t => t.includes('game1.bots.connectFailed')));
+        // a changed address takes effect on the next Start when no bots run (the open socket was kept until a reload)
+        const c = flow({ host: 'ws://localhost:1337' });
+        c.start(); c.socks[0].open(); c.flush(); c.socks[0].push([0]);
+        c.w.SERVER_HOST = 'browser';
+        c.start();
+        check('Changed address while bots run: nothing reconnects', c.socks.length === 1);
+        c.stop(); c.socks[0].push([1]); c.socks[0].push([2]);
+        c.start();
+        check('Changed address, no bots running: the next Start uses the new address, the old socket closed quietly', c.socks.length === 2 && c.socks[1].kind === 'worker' &&
+            c.socks[0].readyState === 3 && c.socks[0].onclose === null && c.cb.pending === 'start' && !c.toasts.some(t => t.includes('game1.bots.wsClosed')));
+        c.start();
+        check('Same address: the open connection is reused', c.socks.length === 2);
     }
     {
         const f = flow({ lm: { integrity: false, ws: 'wss://eu.expanding.land' } });
@@ -978,6 +1015,51 @@ for (const file of ['server.js', 'server-fast.js']) {
         h.fill();
         h.stop();
         check('Stop while a Fill connects: cancelled', h.socks[0].readyState === 3 && h.cb.pending === null);
+    }
+    {
+        // Fill lobby again within the ~2 s the bot core needs to stop the previous bots (it drops a start meanwhile)
+        const BR = { gameMode: ':battleroyale', battleRoyale: { players: 5, started: false, countdown: false } };
+        const starts = s => s.sent.filter(p => typeof p !== 'string' && p[0] === 0).length;
+        for (const spawned of [false, true]) {
+            const f = flow({ lm: BR });
+            f.fill(); const s = f.socks[0]; s.open(); f.flush();
+            if (spawned) s.push([0]);
+            f.w._brStopFilling();
+            check('Stop fill (' + (spawned ? 'bots spawned' : 'bots still joining') + '): [1] sent, Fill lobby shown', f.ops(s)[f.ops(s).length - 1] === 1 && f.els.brFillLobby.style.display === '');
+            f.toasts.length = 0;
+            f.fill(); f.flush();
+            check('... Fill lobby again at once: no start the bot core would drop, no false "Filling" or "already running" notice, it waits', starts(s) === 1 && f.cb.pending === 'fill' &&
+                !f.w._brFilling && f.toasts.length === 1 && f.toasts[0].includes('game1.bots.stopping'));
+            f.fill();
+            check('... a second click while it waits: nothing more', starts(s) === 1 && f.toasts.length === 1);
+            s.push([1]); s.push([2]); f.flush();
+            const pk = s.sent.filter(p => typeof p !== 'string' && p[0] === 0)[1];
+            check('... message 2 (the old bots stopped): the waiting fill starts on the same connection (10 bots), Stop fill shown', starts(s) === 2 && !!pk && pk[pk.length - 1] === 10 &&
+                f.w._brFilling === true && f.els.brFillLobby.style.display === 'none' && f.w.userBots.startSent === true && f.toasts.some(t => t.includes('game2.brFilling')));
+        }
+        // a server switch (LM.connect -> _lmBotsStop) or the battle beginning stops them the same way
+        const g = flow({ lm: BR });
+        g.start(); g.socks[0].open(); g.flush(); g.socks[0].push([0]);
+        g.stop();
+        g.start();
+        check('Start again while the bots stop: waits, nothing sent', starts(g.socks[0]) === 1 && g.cb.pending === 'start');
+        g.socks[0].push([2]); g.flush();
+        check('... message 2: it starts', starts(g.socks[0]) === 2 && g.w.userBots.startSent === true);
+        const h = flow({ lm: BR });
+        h.fill(); h.socks[0].open(); h.flush();
+        h.w._brStopFilling(); h.fill(); h.stop();
+        h.socks[0].push([2]); h.flush();
+        check('Stop pressed while a fill waits for the old bots: nothing starts', starts(h.socks[0]) === 1 && h.cb.pending === null && !h.w._brFilling);
+        const o = flow({ lm: BR });
+        o.fill(); o.socks[0].open(); o.flush();
+        o.w._brStopFilling(); o.fill(); o.socks[0].close();
+        check('Bot connection closed while a fill waits: forgotten, nothing waits any more', o.cb.pending === null && !o.w.userBots.stopSentAt);
+        const t = flow({ lm: BR });
+        t.fill(); t.socks[0].open(); t.flush();
+        t.w._brStopFilling();
+        t.w.userBots.stopSentAt = Date.now() - 6000;
+        t.fill();
+        check('A bot server that never answers the Stop (no message 2 in 5 s): Fill lobby is not held back', starts(t.socks[0]) === 2 && t.w._brFilling === true);
     }
 
     // "On this server": players (and bot groups) from the whole agar.io leaderboard, no fake capacity

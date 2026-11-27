@@ -8186,6 +8186,26 @@ window.connectionBots = {
         host = host == null ? '' : String(host).trim().toLowerCase()
         return host === '' || host === 'browser'
     },
+    hostKey(host) {
+        return this.isBrowserHost(host) ? 'browser' : String(host).trim()
+    },
+    /* Stop was sent and its end (message 2) has not come yet: the bot core keeps the old session
+       for about 2 s and drops a start sent meanwhile. 5 s at most, so a bot server that never
+       answers cannot hold Start / Fill lobby back. */
+    stopping() {
+        var t = window.userBots.stopSentAt
+        return !!t && Date.now() - t < 5000
+    },
+    /* the Bots address field can be opened (the bots panel and its button are shown) */
+    addressEditable() {
+        var app = window.application
+        return !!(app && typeof app._lmQuickBotsShown === 'function' && app._lmQuickBotsShown())
+    },
+    /* run a Start / Fill lobby that waited for the connection or for the previous bots to stop */
+    runAction(action) {
+        var run = action === 'start' ? window._lmBotsStart : action === 'fill' ? window._lmBrFill : null
+        if (typeof run === 'function') setTimeout(function () { run() }, 0)
+    },
     connect() {
         /* A second click while the socket is still connecting opened a second socket,
            so onopen/onclose ran twice (false "Disconnected"). */
@@ -8196,6 +8216,7 @@ window.connectionBots = {
             try { old.close() } catch (e) { }
         }
         this.inBrowser = this.isBrowserHost(window.SERVER_HOST)
+        this.host = this.hostKey(window.SERVER_HOST)
         this.opened = false
         var ws
         try {
@@ -8220,7 +8241,15 @@ window.connectionBots = {
     /* true: the connection is open, do the action now. false: it is connecting (started here when
        needed) and onopen runs the action ('start' or 'fill') again; the last action asked wins. */
     ensure(action) {
-        if (this.ws && this.ws.readyState === WebSocket.OPEN) return true
+        var open = this.ws
+        if (open && open.readyState === WebSocket.OPEN) {
+            /* a changed Bots address takes effect on the next Start / Fill lobby (no bots running):
+               the open connection to the old one used to stay until a reload */
+            if (this.host === this.hostKey(window.SERVER_HOST) || window.userBots.startedBots || window.userBots.startSent || this.stopping()) return true
+            this.ws = null
+            open.onopen = open.onmessage = open.onclose = null
+            try { open.close() } catch (e) { }
+        }
         this.pending = action
         this.connect()
         return false
@@ -8263,8 +8292,7 @@ window.connectionBots = {
         /* Start / Fill lobby pressed while not connected: continue it now (one click). */
         var action = this.pending
         this.pending = null
-        var run = action === 'start' ? window._lmBotsStart : action === 'fill' ? window._lmBrFill : null
-        if (typeof run === 'function') setTimeout(function () { run() }, 0)
+        this.runAction(action)
     },
     onmessage(message) {
         const dataView = new DataView(message.data)
@@ -8279,7 +8307,11 @@ window.connectionBots = {
                 document.getElementById('stopBots').disabled = true
                 _lmG1set(document.getElementById('stopBots'), 'game1.bots.stopping')
                 break
-            case 2:
+            case 2: {
+                /* the previous bots have stopped: a Start / Fill lobby pressed meanwhile runs now */
+                var next = window.userBots.stopSentAt ? this.pending : null
+                window.userBots.stopSentAt = 0
+                if (next) this.pending = null
                 document.getElementById('botsAI').style.color = '#DA0A00'
                 document.getElementById('botsAI').innerText = lmT('game1.bots.disabled')
                 this.buttons(false)
@@ -8289,7 +8321,9 @@ window.connectionBots = {
                 window.bots.ai = false
                 if (typeof window._brResetFill === 'function') window._brResetFill()
                 if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
+                this.runAction(next)
                 break
+            }
             case 3:
                 toastr.info(lmT('game1.bots.captchaIp'))
                 break
@@ -8318,7 +8352,9 @@ window.connectionBots = {
     },
     onclose(event) {
         var failed = !this.opened
+        var action = this.pending
         this.pending = null
+        window.userBots.stopSentAt = 0
         this.setStatus('game1.bots.disconnected', '#DA0A00')
         document.getElementById('botsAI').style.color = '#DA0A00'
         document.getElementById('botsAI').innerText = lmT('game1.bots.disabled')
@@ -8330,6 +8366,17 @@ window.connectionBots = {
         // Clean up Battle Royale fill state on bot server disconnect
         if (typeof window._brStopFilling === 'function') window._brStopFilling()
         if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
+        /* A bot server address saved earlier that does not answer while the Bots address field
+           cannot be opened (the bots panel is hidden): nobody could change it, so every Start /
+           Fill lobby failed. Forget it and use the bots in this browser, for this click too. */
+        if (failed && !this.inBrowser && !this.addressEditable()) {
+            window.SERVER_HOST = window.bots.remoteIP = 'browser'
+            try { localStorage.removeItem('localstoredBotsRemoteIP') } catch (e) { }
+            var field = document.getElementById('botsRemoteIP')
+            if (field) field.value = 'browser'
+            if (action) { this.pending = action; this.connect() }
+            return
+        }
         /* never opened: the browser bots' code did not load, or no bot server at that address */
         if (failed) toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.connectFailed', 'The bots cannot connect. Check the address: browser, or your bot server (ws://localhost:1337).'))
         else toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game1.bots.wsClosed'))
@@ -8341,6 +8388,8 @@ window._lmBotsStop = function () {
     window.connectionBots.cancel()
     if ((window.userBots.startedBots || window.userBots.startSent) && window.connectionBots.ws && window.connectionBots.ws.readyState === WebSocket.OPEN) {
         window.connectionBots.send(new Uint8Array([1]).buffer)
+        /* the bots stop about 2 s later (message 2): a Start / Fill lobby meanwhile waits for it */
+        window.userBots.stopSentAt = Date.now()
     }
     window.userBots.startSent = false
     /* the bots leave: they are not counted in this server's lobby any more */
@@ -85977,7 +86026,7 @@ function setGUIEvents() {
             toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + html)
             cb.buttons(false)
         }
-        if (window.userBots.startedBots || window.userBots.startSent) {
+        if (window.userBots.startedBots && !cb.stopping() || window.userBots.startSent) {
             toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brBotsRunning', 'Bots already running'))
             return
         }
@@ -85988,6 +86037,8 @@ function setGUIEvents() {
         if (!window.bots.amount) return refuse(lmT('game2.botsAmount'))
         if (typeof window._brResetFill === 'function') window._brResetFill()
         cb.buttons(true)
+        /* the previous bots are still stopping: start when they have (message 2) */
+        if (cb.stopping()) { cb.pending = 'start'; return }
         if (!cb.ensure('start')) return
         /* Clamp this session only: the saved amount stays what the user typed. */
         var _lmBotsN = Math.max(1, Math.min(window.bots.amount, 197 - legendmod.leaderboard.length));
@@ -86108,7 +86159,7 @@ function setGUIEvents() {
             toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brNoGameServer', 'Not connected to game server'))
             return
         }
-        if (window.userBots.startedBots || window.userBots.startSent || cb.pending === 'start') {
+        if (window.userBots.startedBots && !cb.stopping() || window.userBots.startSent || cb.pending === 'start') {
             toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brBotsRunning', 'Bots already running'))
             return
         }
@@ -86133,6 +86184,13 @@ function setGUIEvents() {
             return
         }
         needed = Math.min(needed, 190)
+        /* the previous bots are still stopping (Stop fill, the battle began, a server switch):
+           the bot core would drop this start, so it fills when they have stopped (message 2) */
+        if (cb.stopping()) {
+            cb.pending = 'fill'
+            toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + lmT('game1.bots.stopping'))
+            return
+        }
         if (!cb.ensure('fill')) {
             toastr.info('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game2.brConnecting', 'Connecting to bot server…'))
             return
