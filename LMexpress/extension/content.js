@@ -2,10 +2,25 @@
 /*MIT License*/
 
 /*
+ * Single owner. With both Legend Express loaders installed (this extension and the userscript) only one
+ * may take over agar.io's page. The one that takes over names itself first, in sessionStorage
+ * "lm-loader-owner" and html[data-lm-loader], as "<extension|userscript>:<performance.timeOrigin>".
+ * A record of the other loader with this page load's timeOrigin means it already owns this page, so
+ * this script then does nothing. A record with another timeOrigin is from an earlier page load in this tab.
+ */
+const OWNER_KEY = 'lm-loader-owner';
+const OWNER_ATTR = 'data-lm-loader';
+const ownerMark = 'extension:' + performance.timeOrigin;
+const otherLoaderOwned = otherLoaderOwns();
+
+/*
  * Loads Legend Mod in place of agar.io's own page:
  *   agar.io/ and agar.io/legendmod...  -> Legend Mod's play.html
  *   agar.io/captcha                     -> the captcha helper page (the bots open it)
- * Every other agar.io path is left alone.
+ * Every other agar.io path is left alone (the userscript, when installed, handles /hslo, /neo ...).
+ * agar.io/ itself arrives here as agar.io/legendmod/ (rules_legend.json, while the switch is on): that
+ * address is a small page of agar.io's own without agar.io's game scripts and ads, so the
+ * browser never downloads or starts them.
  *
  * The page is fetched by background.js, which checks it came over https with a
  * 2xx status, and is then written over agar.io.
@@ -40,7 +55,8 @@ const isCaptchaPath = path === '/captcha' || path === '/captcha/';
 let mirroredOn = true;
 try { mirroredOn = localStorage.getItem(ENABLED_KEY) !== '0'; } catch (e) { }
 let stopped = false;
-if ((isLegendPath || isCaptchaPath) && mirroredOn) {
+if (!otherLoaderOwned && (isLegendPath || isCaptchaPath) && mirroredOn) {
+    claimOwner();
     stopAgario();
     if (isLegendPath) showLoading();
 }
@@ -49,12 +65,17 @@ chrome.storage.local.get({ enabled: true }, (result) => {
     const isEnabled = result.enabled !== false;
     console.log('[Legend Express] Extension status:', isEnabled ? 'Enabled' : 'Disabled');
     try { localStorage.setItem(ENABLED_KEY, isEnabled ? '1' : '0'); } catch (e) { }
+    /* the userscript runs Legend Mod on this page: leave it alone, whatever the switch says */
+    if (!stopped && otherLoaderOwns()) return;
 
     if (!isEnabled) {
         // If we are on a mod-redirected page but extension is disabled, go back to vanilla agar.io
         if (path.startsWith('/legendmod')) {
             console.log('[Legend Express] Redirecting to vanilla agar.io...');
-            location.href = 'https://agar.io/' + location.hash;
+            /* the agar.io/ rule must be off first, or agar.io/ comes straight back here; at most once
+             * in 10 s, so a rule that could not be switched off never makes a reload loop */
+            const target = 'https://agar.io/' + (path === '/legendmod/' ? location.search : '') + location.hash;
+            if (!recentlyDone('lmExpressLeft')) chrome.runtime.sendMessage({ type: 'syncRules' }, () => { void chrome.runtime.lastError; location.href = target; });
         } else if (stopped) {
             /* stopped on an out-of-date "on": agar.io's page again, now left alone */
             location.reload();
@@ -62,6 +83,18 @@ chrome.storage.local.get({ enabled: true }, (result) => {
         return;
     }
 
+    if (!stopped) {
+        if (!isLegendPath && !isCaptchaPath) return;
+        /* Switched on since the last visit (the mirror said off): agar.io's page has been running and may
+         * have started its game. Taking over now would leave its scripts, timers and connections running
+         * beside Legend Mod, so the page is loaded once more, now taken over at its start. At most once
+         * in 10 s: if the mirror could not be saved, the page is taken over late instead of reloading again. */
+        if (!recentlyDone('lmExpressReload')) {
+            location.reload();
+            return;
+        }
+        claimOwner();
+    }
     if (isLegendPath) {
         loadLegendPage();
     } else if (isCaptchaPath) {
@@ -70,6 +103,37 @@ chrome.storage.local.get({ enabled: true }, (result) => {
     }
 });
 
+/* True when the other loader (the userscript) named itself owner of this page load */
+function otherLoaderOwns() {
+    const seen = [];
+    try { seen.push(sessionStorage.getItem(OWNER_KEY)); } catch (e) { }
+    try { seen.push(document.documentElement.getAttribute(OWNER_ATTR)); } catch (e) { }
+    return seen.some((value) => {
+        const m = /^(extension|userscript):(.+)$/.exec(value || '');
+        return !!m && m[1] !== 'extension' && Number(m[2]) === performance.timeOrigin;
+    });
+}
+function claimOwner() {
+    try { sessionStorage.setItem(OWNER_KEY, ownerMark); } catch (e) { }
+    markPage();
+    /* agar.io/ sent to agar.io/legendmod/ by rules_legend.json: the address bar shows agar.io/ again, with
+     * its ?query and #hash, before anything reads it (the launch link, Legend Mod itself) */
+    if (path === '/legendmod/') {
+        try { history.replaceState(history.state, '', '/' + location.search + location.hash); } catch (e) { }
+    }
+}
+/* document.open() starts a new <html>: name the owner on it again after every page written */
+function markPage() {
+    try { document.documentElement.setAttribute(OWNER_ATTR, ownerMark); } catch (e) { }
+}
+
+/* True when this was already done less than 10 s ago in this tab (then it is not done again) */
+function recentlyDone(key) {
+    let again = false;
+    try { again = Date.now() - (+sessionStorage.getItem(key) || 0) < 10000; sessionStorage.setItem(key, String(Date.now())); } catch (e) { }
+    return again;
+}
+
 /* Stop agar.io's page: no more parsing, no more of its scripts (the fetched page replaces it) */
 function stopAgario() {
     if (stopped) return;
@@ -77,8 +141,22 @@ function stopAgario() {
     /* document.open() drops the rest of agar.io's page and its scripts. Not window.stop(): it marks the
      * page's parser as aborted, and the browser then ignores the later document.open()/write() of the
      * Legend page (the player got a white page) */
-    try { document.open(); document.write('<!DOCTYPE html><html><head></head><body></body></html>'); document.close(); } catch (e) { }
+    try { writePage('<!DOCTYPE html><html><head></head><body></body></html>'); } catch (e) { }
     try { document.documentElement.innerHTML = ''; } catch (e) { }
+    markPage();
+}
+
+/* Write a whole page over agar.io's: through writer.js in agar.io's own world (Firefox refuses
+ * document.open() from this isolated world), here when writer.js is not there */
+function writePage(html) {
+    let written = false;
+    try { written = !window.dispatchEvent(new CustomEvent('lmx-write-page', { detail: html, cancelable: true })); } catch (e) { }
+    if (!written) {
+        document.open();
+        document.write(html);
+        document.close();
+    }
+    markPage();
 }
 
 function loadLegendPage() {
@@ -95,8 +173,8 @@ function loadLegendPage() {
     loadPage(legendPage, true);
 }
 
-/* Fetch a page through background.js and write it over agar.io */
-function loadPage(pageUrl, isLegendPage) {
+/* Fetch a page through background.js and write it over agar.io; a failed download is tried once more */
+function loadPage(pageUrl, isLegendPage, retried) {
     /* Stop agar.io's own page (already done at document_start unless the switch was just turned on) */
     const wasStopped = stopped;
     stopAgario();
@@ -111,22 +189,23 @@ function loadPage(pageUrl, isLegendPage) {
             : '';
         if (problem) {
             console.error('[LMexpress] Could not load page ' + pageUrl + ' (' + problem + ')');
+            if (!retried) {
+                setTimeout(() => loadPage(pageUrl, isLegendPage, true), 1500);
+                return;
+            }
             showLoadError(pageUrl, problem);
             return;
         }
-        const html = isLegendPage ? addInitCall(response.data) : response.data;
-        document.open();
-        document.write(html);
-        document.close();
+        writePage(isLegendPage ? addInitCall(response.data) : response.data);
     });
 }
 
-/* Add the mod's init(<version>) call at the end of the Legend page's body, after its own scripts */
+/* Add the mod's init(<version>, "extension") call at the end of the Legend page's body, after its own scripts */
 function addInitCall(html) {
     /* JSON quoting, with "<" escaped so the version text can never close the script tag */
     const version = JSON.stringify(modVersion).replace(/</g, '\\u003c');
     const call = '<script>' +
-        'if (typeof init === "function") { init(' + version + '); }' +
+        'if (typeof init === "function") { init(' + version + ', "extension"); }' +
         ' else { console.error("[LMexpress] init() is missing: LMexpress.js did not load"); }' +
         '</script>';
     const bodyEnd = html.toLowerCase().lastIndexOf('</body>');
@@ -160,9 +239,7 @@ function showLoadError(url, problem) {
         '<p><a style="color:#6cf;" href="' + escapeHtml(location.href) + '">' + escapeHtml(text('lmx.ext.tryAgain')) + '</a>' +
         ' &middot; ' + escapeHtml(text('lmx.ext.switchOff')) + '</p>' +
         '</body></html>';
-    document.open();
-    document.write(page);
-    document.close();
+    writePage(page);
 }
 
 function escapeHtml(text) {

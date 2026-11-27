@@ -15,7 +15,38 @@ function isAllowedUrl(url) {
     }
 }
 
+/*
+ * rules_legend.json sends agar.io/ to agar.io/legendmod/, a small page of agar.io's own (its 404 page;
+ * content.js puts the address back): agar.io's front page made the browser download its game scripts
+ * and ads next to Legend Mod's, although content.js stops that page before they run.
+ * The rule follows the on/off switch, so with the switch off agar.io/ is agar.io's page again.
+ */
+const legendRuleset = 'legend_page';
+function syncLegendRules() {
+    return new Promise((resolve) => {
+        chrome.storage.local.get({ enabled: true }, (result) => {
+            const on = result.enabled !== false;
+            const change = on ? { enableRulesetIds: [legendRuleset] } : { disableRulesetIds: [legendRuleset] };
+            chrome.declarativeNetRequest.updateEnabledRulesets(change, () => {
+                if (chrome.runtime.lastError) console.error('[LMexpress] Could not switch the agar.io rule: ' + chrome.runtime.lastError.message);
+                resolve(on);
+            });
+        });
+    });
+}
+/* an update or a browser start can bring back the manifest's default (on) */
+chrome.runtime.onInstalled.addListener(() => { syncLegendRules(); });
+chrome.runtime.onStartup.addListener(() => { syncLegendRules(); });
+chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && changes.enabled) syncLegendRules();
+});
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    /* content.js, before it leaves agar.io/legendmod with the switch off: the rule must be off first */
+    if (request && request.type === 'syncRules' && sender.id === chrome.runtime.id) {
+        syncLegendRules().then((on) => sendResponse({ on }));
+        return true;
+    }
     if (!request || request.type !== 'fetch') {
         return false;
     }

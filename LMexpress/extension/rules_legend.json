@@ -1,0 +1,34 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "redirect",
+            "redirect": {
+                "regexSubstitution": "https://agar.io/legendmod/\\1"
+            }
+        },
+        "condition": {
+            "regexFilter": "^https://agar\\.io/(\\?.*)?$",
+            "resourceTypes": ["main_frame"]
+        }
+    },
+    {
+        "id": 2,
+        "priority": 1,
+        "action": {
+            "type": "modifyHeaders",
+            "responseHeaders": [
+                {
+                    "header": "Content-Type",
+                    "operation": "set",
+                    "value": "text/html; charset=utf-8"
+                }
+            ]
+        },
+        "condition": {
+            "regexFilter": "^https://agar\\.io/(legendmod|captcha)(/|\\?|$)",
+            "resourceTypes": ["main_frame", "sub_frame"]
+        }
+    }
+]

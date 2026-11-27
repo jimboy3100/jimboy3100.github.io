@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Legend Express Agar.io Extension",
-    "version": "1.8.5",
+    "version": "1.9.0",
     "description": "__MSG_description__",
     "default_locale": "en",
     "author": "Jimboy3100",
@@ -37,10 +37,26 @@
                 "id": "sigmally_origin",
                 "enabled": true,
                 "path": "rules_sigmally.json"
+            },
+            {
+                "id": "legend_page",
+                "enabled": true,
+                "path": "rules_legend.json"
             }
         ]
     },
     "content_scripts": [
+        {
+            "matches": [
+                "https://agar.io/*"
+            ],
+            "js": [
+                "writer.js"
+            ],
+            "run_at": "document_start",
+            "all_frames": true,
+            "world": "MAIN"
+        },
         {
             "matches": [
                 "https://agar.io/*"

@@ -30,6 +30,8 @@ const loaders = {
     ' storage: { local: { get: function (d, cb) { setTimeout(function () { cb({ enabled: true }); }, 30); }, set: function () { } } } };\n' +
     read('LMexpress/extension/texts.js') + '\n' + read('LMexpress/extension/content.js')
 };
+/* the extension with writer.js (it writes the pages from agar.io's own world, as Firefox needs) */
+loaders['extension+writer'] = read('LMexpress/extension/writer.js') + '\n' + loaders.extension;
 /* agar.io's page: its scripts mark window.__vanilla; long enough that it is still being parsed */
 const agarPage = '<!DOCTYPE html><html><head><meta charset="windows-1252"><title>Agar.io</title></head><body>' +
   '<script>window.__vanilla = 1;</script>' + '<p>agar.io</p>'.repeat(20000) + '<script>window.__vanilla = 2;</script></body></html>';
@@ -85,7 +87,7 @@ async function runLoader(name) {
 }
 
 (async () => {
-  for (const name of ['userscript', 'extension']) {
+  for (const name of ['userscript', 'extension', 'extension+writer']) {
     const r = await runLoader(name);
     check(name + ': the Legend page is written over agar.io (no white page)', r.legend);
     check(name + ': its scripts run and get the init call', r.script === 1 && r.init === '9.9.9');
