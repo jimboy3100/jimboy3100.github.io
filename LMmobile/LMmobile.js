@@ -10,7 +10,7 @@
  *  • Feed   (⬤)        — hold to eject mass (W)
  *  • Menu   (☰)        — toggle main HUD / ESC
  *  • Chat   (💬)        — open chat, tap Send or anywhere else to send & close
- *  • Fullscreen (⛶)    — toggle fullscreen
+ *  • Fullscreen        — entered when a game starts (Play)
  *  • Pinch-to-zoom      — two-finger pinch → WheelEvent
  */
 
@@ -177,8 +177,6 @@
         'padding:6px 18px;border-radius:20px;pointer-events:none;z-index:100001;' +
         'opacity:0;transition:opacity .2s}.lm-z.on{opacity:1}' +
 
-        '#lm-cb{display:none!important}' +
-
         /* prevent iOS auto-zoom on chat input focus (needs >=16px) */
         '#message{font-size:16px!important}' +
 
@@ -205,14 +203,6 @@
 
         /* minimap tap-to-expand transition */
         '#minimap-hud{transition:transform .25s ease!important}' +
-
-        /* portrait orientation prompt */
-        '#lm-orient-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);' +
-        'background:rgba(0,36,62,.95);background:color-mix(in srgb,var(--lm-pc,#00243e) 95%,transparent);border:2px solid rgba(1,217,204,.5);border:2px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 50%,transparent);' +
-        'color:var(--lm-mc,#01d9cc);font:600 16px/1.6 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
-        'padding:20px 28px;border-radius:16px;z-index:100004;text-align:center;' +
-        'opacity:0;transition:opacity .5s;pointer-events:none}' +
-        '#lm-orient-toast.on{opacity:1}' +
 
         /* ── Persistent portrait overlay (blocks gameplay in portrait) ── */
         '#lm-portrait-ov{position:fixed;top:0;left:0;width:100%;height:100%;z-index:200000;' +
@@ -249,7 +239,7 @@
         /* not the Game Over card: it scrolls inside itself, and a scrolling box around it cut off
          * the death recap shown beside it */
         '.lm-modal-overlay .lm-modal-container{max-height:96vh!important;overflow-y:auto!important}#lm-room-modal{max-height:94vh!important}' +
-        '#lm-mh-close,#lm-room-close,.lm-modal-close,#lm-challenges-modal .lm-modal-header>button{min-width:44px!important;min-height:44px!important}' +
+        '#lm-room-close,.lm-modal-close,#lm-challenges-modal .lm-modal-header>button{min-width:44px!important;min-height:44px!important}' +
         /* net graph: top middle (at the left it sat under the chat box) */
         '#lm-net-graph{left:50%!important;top:54px!important;transform:translateX(-50%)}' +
 
@@ -270,17 +260,9 @@
         /* a chat popup's mute button: on desktop it shows on hover, which a touch never gives
          * (shown here, with a thumb-sized tap area around the icon) */
         '.toast .mute-user{display:block!important;padding:8px;margin:-8px}' +
-        /* User Scripts window switches ("Runs at start", experiments): the menu is drawn at about 0.6
+        /* User Scripts window switches ("Runs at start"): the menu is drawn at about 0.6
          * on a phone, which made them 11 px; larger here, so they stay a thumb's size on the screen */
-        'label.lm-us-tg{min-height:52px!important}label.lm-us-tg input{width:32px!important;height:32px!important}' +
-
-        /* fullscreen prompt toast */
-        '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
-        'background:rgba(0,36,62,.92);background:color-mix(in srgb,var(--lm-pc,#00243e) 92%,transparent);border:1px solid rgba(1,217,204,.45);border:1px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 45%,transparent);' +
-        'color:var(--lm-mc,#01d9cc);font:600 14px/1.4 var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
-        'padding:10px 20px;border-radius:24px;z-index:100003;' +
-        'opacity:0;transition:opacity .4s;pointer-events:none;text-align:center}' +
-        '#lm-fs-toast.on{opacity:1}';
+        'label.lm-us-tg{min-height:52px!important}label.lm-us-tg input{width:32px!important;height:32px!important}';
 
     document.head.appendChild(css);
 
@@ -394,18 +376,6 @@
         document.addEventListener('gesturechange', function (e) { e.preventDefault(); }, { passive: false });
         document.addEventListener('gestureend', function (e) { e.preventDefault(); }, { passive: false });
 
-        /* ═══════════════════════════════════════════════════════
-         *  DEVICE TIERING
-         *  Low-end (≤2 cores): disable expensive effects
-         *  Everyone else: full quality
-         * ═══════════════════════════════════════════════════════ */
-        var cores = navigator.hardwareConcurrency || 4;
-        if (cores <= 2) {
-            window.LM_LOW_END = true;
-            var lowCSS = document.createElement('style');
-            lowCSS.textContent = '*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}';
-            document.head.appendChild(lowCSS);
-        }
         /* (HiDPI canvas requires changes to ogario.v4.js resizeCanvas — cannot be patched externally) */
 
         /* ── Fullscreen + Landscape helper ──
@@ -476,25 +446,11 @@
         window.addEventListener('orientationchange', function () { requestAnimationFrame(checkOrientation); });
         /* No recurring fallback needed — resize + orientationchange events cover it */
 
-        /* ── Wake Lock (prevent screen from sleeping during gameplay) ── */
-        /* (not used: the menu sync below takes the lock while playing and releases it in the
-         * menu; this one was taken at load and never released, so the screen never slept) */
-        var wakeLock = null;
-        function requestWakeLock() {
-            try {
-                if ('wakeLock' in navigator) {
-                    navigator.wakeLock.request('screen').then(function (wl) {
-                        wakeLock = wl;
-                    }).catch(function () { });
-                }
-            } catch (e) { }
-        }
-
 
         /* ═══════════════════════════════════════════════════════
          *  DOM — Game-controller layout
          *
-         *  LEFT  (#lm-mc-l) — utilities:  ☰ 💬 ⛶  /  🤖 ⏸
+         *  LEFT  (#lm-mc-l) — utilities:  ☰ 💬  /  🤖 ⏸
          *  RIGHT (#lm-mc-r) — actions:    [2×][16×] / ⚔ / ⬤
          *
          *  Left thumb  = joystick (canvas touch)
@@ -578,17 +534,6 @@
         drawer.appendChild(bFwd);
         drawer.appendChild(bChat);
         drawer.appendChild(bWave);
-
-        var bStop = mkd(prefs.targetMode ? '⌖' : '⇶');
-        bStop.style.display = 'none';
-        drawer.appendChild(bStop);
-        
-        bStop.addEventListener('touchstart', function(e) {
-            e.preventDefault(); e.stopPropagation();
-            prefs.targetMode = !prefs.targetMode;
-            bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
-            savePrefs();
-        }, { passive: false });
 
         /* ☰ menu button: leftmost, always visible, toggles helloContainer */
         var bMenu = mkb('☰', null, true);
@@ -705,10 +650,9 @@
         sp.querySelector('#lm-novib').addEventListener('change', function () { prefs.muteVibration = this.checked; savePrefs(); });
         sp.querySelector('#lm-stoprel').addEventListener('change', function () { prefs.stopOnRelease = this.checked; savePrefs(); });
         /* Direction on touch (like agar.io): the touch point is the cursor, no joystick
-         * (prefs.targetMode was saved but nothing read it; its drawer toggle stays hidden) */
+         * (prefs.targetMode, also read by the joystick) */
         sp.querySelector('#lm-tdir').addEventListener('change', function () {
             prefs.targetMode = this.checked;
-            bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
             if (prefs.targetMode) jHide();
             savePrefs();
         });
@@ -1059,10 +1003,6 @@
         var zP = mk('div'); zP.className = 'lm-z'; document.body.appendChild(zP);
         var zT = null;
 
-        var cBar = mk('div'); cBar.id = 'lm-cb';
-        cBar.innerHTML = '';
-        document.body.appendChild(cBar);
-
         /* apply initial prefs */
         applyPrefs();
         /* lm-mobile-prefs changed from outside (settings profile, its Undo, an import): read it
@@ -1083,7 +1023,6 @@
                 ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact'], ['lm-zoombtn', 'zoomBtns'], ['lm-freespec', 'freeSpecBtn'],
                 ['lm-respbtn', 'respawnBtn'], ['lm-macrobtn', 'macroBtns']
             ].forEach(function (c) { var el = q(c[0]); if (el) el.checked = !!prefs[c[1]]; });
-            bStop.textContent = prefs.targetMode ? '⌖' : '⇶';
             if (prefs.targetMode) jHide();
             buildQuickCmds();
             buildMbButton();
@@ -1152,8 +1091,6 @@
                 emitKey(27); // fallback: ESC
             }
         }, { passive: false });
-
-        /* (fullscreen toggled via goFullscreenLandscape on Play button tap) */
 
         /* ═══════════════════════════════════════════════════════
          *  BUTTON DEBOUNCE — prevents accidental double-fires
@@ -1501,8 +1438,6 @@
         canvas.addEventListener('touchend', chatDismissEnd, { passive: true });
         canvas.addEventListener('touchcancel', chatDismissEnd, { passive: true });
 
-        /* (fullscreen toggle handled by bFull listener above) */
-
         /* ═══════════════════════════════════════════════════════
          *  SWIPE GESTURES (left half of canvas)
          *  swipe right → split | swipe up → double split
@@ -1805,7 +1740,7 @@
         })();
 
         /* ═══════════════════════════════════════════════════════
-         *  MINIMAP TAP-TO-TOGGLE (70% ↔ 100%)
+         *  MINIMAP TAP-TO-TOGGLE (small ↔ full size)
          * ═══════════════════════════════════════════════════════ */
         (function () {
             var mm = document.getElementById('minimap-hud');
@@ -2311,13 +2246,6 @@
         });
 
         /* ═══════════════════════════════════════════════════════
-         *  TWA DETECTION (Google Play WebView)
-         * ═══════════════════════════════════════════════════════ */
-        var isTWA = (window.matchMedia('(display-mode: standalone)').matches ||
-            window.matchMedia('(display-mode: fullscreen)').matches ||
-            navigator.standalone === true);
-
-        /* ═══════════════════════════════════════════════════════
          *  FULLSCREEN ↔ MENU SYNC  (M1: event-driven, replaces 500ms poll)
          *  helloContainer hidden → enter fullscreen (always)
          *  helloContainer visible → exit fullscreen (browser only)
@@ -2427,10 +2355,9 @@
          * ═══════════════════════════════════════════════════════ */
         document.addEventListener('touchstart', function (e) {
             /* the settings panel (opened by the gear) also closes when tapping elsewhere */
-            if (!drawer.classList.contains('on') && !sp.classList.contains('on')) return;
+            if (!sp.classList.contains('on')) return;
             // If tap is outside the drawer, menu button, and settings panel — close
             if (rootL.contains(e.target)) return;
-            drawer.classList.remove('on');
             sp.classList.remove('on');
             rootL.style.opacity = prefs.btnOpacity;
         }, { passive: true });
@@ -2442,15 +2369,13 @@
             window.visualViewport.addEventListener('resize', function () {
                 var vv = window.visualViewport;
                 var kbHeight = window.innerHeight - vv.height;
-                /* the visible chat input is #message-box (#lm-cb is hidden): keep it above the
+                /* the chat input is #message-box: keep it above the
                  * keyboard where the keyboard only shrinks the visual viewport (iOS, new Chrome) */
                 var mb = document.getElementById('message-box');
                 if (kbHeight > 100) {
-                    // Keyboard is open — shift chat bar above keyboard
-                    cBar.style.bottom = kbHeight + 'px';
+                    // Keyboard is open — shift the chat input above it
                     if (mb) { mb.style.setProperty('bottom', (kbHeight + 8) + 'px', 'important'); mb.style.setProperty('top', 'auto', 'important'); }
                 } else {
-                    cBar.style.bottom = '';
                     /* top: a HUD layout may place the chat input from the top */
                     if (mb) { mb.style.removeProperty('bottom'); mb.style.removeProperty('top'); }
                 }
@@ -2464,7 +2389,6 @@
         (function lowEndCheck() {
             var cores = navigator.hardwareConcurrency || 4;
             if (cores <= 4) {
-                window.LM_LOW_END = true;
                 // Disable backdrop-filter (expensive on GPU-weak devices)
                 var lowCss = document.createElement('style');
                 lowCss.textContent = '.lm-b,.lm-u,.lm-s,#lm-sp{backdrop-filter:none!important;' +
