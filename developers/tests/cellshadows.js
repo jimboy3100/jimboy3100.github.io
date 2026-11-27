@@ -99,7 +99,7 @@ const protoSrc = '(function (env) {\n' +
     'var window = env.window, LM = env.LM, legendmod = env.LM, application = env.application, defaultSettings = env.defaultSettings,\n' +
     '  defaultmapsettings = env.defaultmapsettings, drawRender = env.drawRender, ogario = env.ogario, ogarcopythelb = env.ogarcopythelb,\n' +
     '  SpecialEffectPlayers = {}, profiles = [], dyinglight1load = "no", _EAT_PULSE_DURATION = 150, _EAT_PULSE_MAGNITUDE = 0.08;\n' +
-    topFn('lmSkinsShown') + '\n' +
+    topFn('lmSkinsShown') + '\n' + topFn('lmColorInt') + '\nvar _lmColorIntCache = new Map(), _lmColorCtx = null;\n' +
     /* only for cells without a valid colour (none here) */
     'function _getFallbackGradient() { return null; }\n' +
     'return { draw: ' + cellMethod('draw') + ' };\n})';

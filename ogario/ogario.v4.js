@@ -38835,6 +38835,13 @@ function thelegendmodproject() {
                                 color2 = "#808080";
                                 _useFallbackGradient = true;
                             }
+                            /* A string that is no colour ('#f80ff', '#NaNNaNNaN'): Canvas2D ignores it
+                             * and fills with its default black (the cached disc stayed black), WebGL
+                             * drew it grey. Both now give the fallback; real '#000000' stays black. */
+                            else if (lmColorInt(color2) < 0) {
+                                color2 = "#808080";
+                                _useFallbackGradient = true;
+                            }
                         }
                         if (this._colorSrc !== this.color || !this._colorSrcSet) {
                             this._colorSrc = this.color;
@@ -83486,6 +83493,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             canvas = null;
         },
         preDrawCellsColors(color) {
+            /* no disc for a string that is no colour: the canvas would ignore it and cache black */
+            if (lmColorInt(color) < 0) return;
             /* Store canvas directly — drawImage() accepts <canvas> as source.
              * Eliminates PNG encode (toDataURL) + async Image decode per color. */
             var size = 128;
