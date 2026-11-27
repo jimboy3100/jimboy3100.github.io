@@ -36171,88 +36171,59 @@ function thelegendmodproject() {
                 numPoints = 100;
             }
 
-            /*
-             * Keep pointsVel exactly aligned with points.
-             */
-            while (
-                this.points.length >
-                numPoints
-            ) {
-                var removeIndex =
-                    Math.random() *
-                    this.points.length |
-                    0;
-
-                this.points.splice(
-                    removeIndex,
-                    1
-                );
-
-                this.pointsVel.splice(
-                    removeIndex,
-                    1
-                );
+            /* Preserve the exact point count, random index selection, insertion
+             * order and velocity sequence. Avoid splice's temporary arrays and
+             * recycle retired point records in a bounded shared pool.
+             * The collision index is rebuilt after all perimeters are prepared;
+             * no queries use the previous frame's retired point records. */
+            var points = this.points, velocities = this.pointsVel;
+            if (points.length === numPoints) return;
+            var pool = window._lmJellyPointPool || (window._lmJellyPointPool = []);
+            var len, k, point, velocity, copy;
+            while (points.length > numPoints) {
+                len = points.length;
+                var removeIndex = Math.random() * len | 0;
+                var retired = points[removeIndex];
+                for (k = removeIndex; k + 1 < len; k++) {
+                    points[k] = points[k + 1];
+                    velocities[k] = velocities[k + 1];
+                }
+                points.pop();
+                velocities.pop();
+                if (retired && pool.length < 8192) {
+                    retired.parent = null; // never retain the old logical cell
+                    pool.push(retired);
+                }
             }
 
-            /*
-             * Initialize a fresh perimeter.
-             */
-            if (
-                this.points.length === 0 &&
-                numPoints !== 0
-            ) {
-                this.points.push({
-                    x: this.x,
-                    y: this.y,
-                    rl: this.size,
-                    parent: this
-                });
-
-                this.pointsVel.push(
-                    Math.random() -
-                    0.5
-                );
+            if (points.length === 0 && numPoints !== 0) {
+                copy = pool.pop() || { x: 0, y: 0, rl: 0, parent: null };
+                copy.x = this.x;
+                copy.y = this.y;
+                copy.rl = this.size;
+                copy.parent = this;
+                points.push(copy);
+                velocities.push(Math.random() - 0.5);
             }
 
-            /*
-             * Increase point count without causing a visible discontinuity:
-             * duplicate an existing neighboring point and velocity.
-             */
-            while (
-                this.points.length <
-                numPoints
-            ) {
-                var insertIndex =
-                    Math.random() *
-                    this.points.length |
-                    0;
-
-                var point =
-                    this.points[
-                        insertIndex
-                    ];
-
-                var velocity =
-                    this.pointsVel[
-                        insertIndex
-                    ];
-
-                this.points.splice(
-                    insertIndex,
-                    0,
-                    {
-                        x: point.x,
-                        y: point.y,
-                        rl: point.rl,
-                        parent: this
-                    }
-                );
-
-                this.pointsVel.splice(
-                    insertIndex,
-                    0,
-                    velocity
-                );
+            while (points.length < numPoints) {
+                len = points.length;
+                var insertIndex = Math.random() * len | 0;
+                point = points[insertIndex];
+                velocity = velocities[insertIndex];
+                copy = pool.pop() || { x: 0, y: 0, rl: 0, parent: null };
+                copy.x = point.x;
+                copy.y = point.y;
+                copy.rl = point.rl;
+                copy.parent = this;
+                points.push(copy);
+                velocities.push(velocity);
+                for (k = len; k > insertIndex; k--) {
+                    points[k] = points[k - 1];
+                    velocities[k] = velocities[k - 1];
+                }
+                points[insertIndex] = copy;
+                velocities[insertIndex] = velocity;
             }
         };
 
@@ -80034,8 +80005,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             var blend = 0;
             if (spectObj && spectObj.staticX != null && spectObj.staticY != null) {
-                var destX = spectObj.getX(spectObj.staticX);
-                var destY = spectObj.getY(spectObj.staticY);
+                /* the grid point is already in the main map's space (spect.js sends convertX of it):
+                 * getX on it moved it by the connection's own offset or mirrored it with Rotate Map */
+                var destX = spectObj.staticX;
+                var destY = spectObj.staticY;
                 var dx = viewX - destX;
                 var dy = viewY - destY;
                 var dist = Math.sqrt(dx * dx + dy * dy);

@@ -404,6 +404,57 @@ function maxDiff(a, b) {
         check('  and it moves normally on the next frame', c0.points.every((p) => isFinite(p.x) && Math.abs(Math.hypot(p.x - c0.x, p.y - c0.y) - c0.size) < 3));
     }
 
+    /* Resize repeatedly while zooming and growing. The original splice algorithm
+     * is the oracle: every point, velocity and random draw must be identical. */
+    {
+        const J = B.loadJelly(), rng = B.makeRng(73);
+        J.setRandomSeed(73);
+        const live = [new J.Cell(), new J.Cell(), new J.Cell()];
+        const ref = live.map(() => ({ points: [], pointsVel: [] }));
+        let equal = true, reused = false;
+        for (let frame = 0; frame < 60; frame++) {
+            const scale = [1, 0.1, 0.8, 0.25, 1.6][frame % 5];
+            J.drawRender.scale = scale;
+            for (let c = 0; c < live.length; c++) {
+                const cell = live[c], old = ref[c];
+                cell.points = cell.points || []; cell.pointsVel = cell.pointsVel || [];
+                cell.x = c * 900 + frame; cell.y = -frame; cell.size = 50 + ((frame * 37 + c * 29) % 190);
+                cell.isVirus = c === 2;
+                let n = cell.isVirus ? 100 : Math.min(Math.max(cell.size * scale | 0, 5), 120);
+                while (old.points.length > n) {
+                    const i = rng() * old.points.length | 0;
+                    old.points.splice(i, 1); old.pointsVel.splice(i, 1);
+                }
+                if (!old.points.length && n) {
+                    old.points.push({ x: cell.x, y: cell.y, rl: cell.size });
+                    old.pointsVel.push(rng() - 0.5);
+                }
+                while (old.points.length < n) {
+                    const i = rng() * old.points.length | 0;
+                    old.points.splice(i, 0, { ...old.points[i] });
+                    old.pointsVel.splice(i, 0, old.pointsVel[i]);
+                }
+                const poolBefore = new Set(J.window._lmJellyPointPool || []);
+                cell.updateNumPoints();
+                reused = reused || cell.points.some(p => poolBefore.has(p));
+                equal = equal && cell.points.length === n && cell.pointsVel.length === n &&
+                    new Set(cell.points).size === n &&
+                    cell.points.every((p, i) => p.parent === cell && p.x === old.points[i].x &&
+                        p.y === old.points[i].y && p.rl === old.points[i].rl &&
+                        cell.pointsVel[i] === old.pointsVel[i]);
+                for (let i = 0; i < n; i++) {
+                    cell.points[i].x += i; old.points[i].x += i;
+                    cell.points[i].rl += 0.125; old.points[i].rl += 0.125;
+                    cell.pointsVel[i] += 0.01; old.pointsVel[i] += 0.01;
+                }
+            }
+        }
+        check('60 changing zoom/size frames: pooled resize exactly matches original splice geometry and velocity', equal);
+        check('point pool reuses records and retains no old parent', reused &&
+            J.window._lmJellyPointPool.length <= 8192 &&
+            J.window._lmJellyPointPool.every(p => p.parent === null));
+    }
+
     if (failed) {
         console.log(failed + ' check(s) failed');
         process.exit(1);

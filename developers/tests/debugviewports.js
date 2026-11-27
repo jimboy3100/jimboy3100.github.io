@@ -127,5 +127,20 @@ const spectAt = (number, sx, sy) => ({ number, player: false, staticX: sx, stati
     check('once their views arrive: both spectators have their box', finite(v1) && finite(v2), JSON.stringify(later));
     check('the box is around the spectator\'s view', v2 && Math.abs((v2.minX + v2.maxX) / 2 - 400) < 1, v2 && [v2.minX, v2.maxX]);
 }
+/* 5. the spectator's own map offset differs from the main connection's (agar.io gives every
+ *    connection its own), and with Rotate Map: its box at the map edge still stays inside the map */
+for (const c of [{ name: 'own map offset', off: [3000, -2000], vector: null }, { name: 'Rotate Map', off: [0, 0], vector: [[true, true]] }]) {
+    const e = env({ full: true, mb: false, vector: c.vector });
+    const s = e.spect(spectAt(1, -4671, -6071));
+    s.mapOffsetFixed = true; s.mapOffsetX = c.off[0]; s.mapOffsetY = c.off[1];
+    /* the server view that getX/getY place exactly at the grid point */
+    const flip = (v, min, max) => max - (v - min);
+    const mx = c.vector ? flip(-4671, -7071, 7071) : -4671, my = c.vector ? flip(-6071, -7071, 7071) : -6071;
+    s.viewX = mx - c.off[0]; s.viewY = my - c.off[1];
+    check(c.name + ': the spectator\'s view is at its grid point', Math.abs(s.getX(s.viewX) + 4671) < 1e-6 && Math.abs(s.getY(s.viewY) + 6071) < 1e-6);
+    const b = byLabel(e.frame(), 'Viewport# 1');
+    check(c.name + ': box held inside the map', b && b.minX >= -7071 - 1e-6 && b.maxY <= 7071 + 1e-6 && Math.min(b.minY, b.maxY) >= -7071 - 1e-6,
+        b && [b.minX, b.minY, b.maxX, b.maxY].map(Math.round));
+}
 console.log(failed ? 'FAILED ' + failed : 'all debugviewports checks passed');
 process.exit(failed ? 1 : 0);
