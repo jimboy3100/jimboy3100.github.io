@@ -12,7 +12,9 @@
  * _lmSrc/_lmGen/_lmRawId/_lmRawX/_lmRawY, and the food check finds the orientation and
  * verifies (d = 0, also on live food) or corrects d with reprojection; votes need independent
  * evidence (top-player lists 1.5 s apart, other pellets); a CONFLICTED source is not fed to the
- * reconciliation (_lmFeedOk); anchors die with their pellet or socket.
+ * reconciliation (_lmFeedOk); anchors die with their pellet or socket; live pellet pairs of FFA,
+ * Experimental, Party and FFA with Rotate Map agree per mode; ClearAll and later borders keep a
+ * connection's transform.
  * node developers/tests/spectcoords.js [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -342,6 +344,52 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     sp.resetConnectionState();
     check('a closed / new socket: every old anchor dead, the reference rebuilt without them',
         A.every((a) => !a.alive) && vm.runInContext('lmFoodReference', ctx)(Date.now() + 5100).grid.n === 0 && sp._lmAnchors.length === 0);
+}
+
+/* 9. live agar.io per mode (developers/tests/lib/fullmap-modes-live.json: FFA, Experimental, Party and
+ *    FFA with Rotate Map on, main + 15 Full Map spectators each): pellets seen by two connections land
+ *    on one world point (median <= 1.5, p95 <= 2.5, 97 % within 2), each connection with its own
+ *    full border, scale and orientation */
+{
+    const M = JSON.parse(fs.readFileSync(path.join(__dirname, 'lib', 'fullmap-modes-live.json'), 'utf8'));
+    for (const m of M.modes) {
+        const P = m.pairs;
+        if (!P || P.p.length < 20) { check('live ' + m.label + ': 20 or more pellet pairs', false, P ? P.p.length : 0); continue; }
+        const LM = mainOf(P.b[0] || m.main.border), ctx = load(LM), conns = {};
+        for (const n in P.b) if (+n) { conns[n] = unitB(ctx, P.b[n], { number: +n }); conns[n].setOrientation(P.o[n][0], P.o[n][1]); }
+        const world = (n, x, y) => (+n ? [conns[n].rawToWorldX(x), conns[n].rawToWorldY(y)] : [(x - LM._lmBorderCX) * LM._lmBorderKX, (y - LM._lmBorderCY) * LM._lmBorderKY]);
+        const d = P.p.map((p) => { const a = world(p[0], p[1], p[2]), b = world(p[4], p[5], p[6]); return Math.hypot(a[0] - b[0], a[1] - b[1]); }).sort((a, b) => a - b);
+        const med = d[d.length >> 1], p95 = d[Math.floor(d.length * 0.95)], in2 = d.filter((v) => v <= 2).length / d.length;
+        const ws = Object.values(P.b).map((b) => (b[2] - b[0]).toFixed(0));
+        check('live ' + m.label + ' (' + m.gameMode + ', vnr ' + m.vnr + ', ' + d.length + ' pairs, widths ' + Math.min(...ws) + '..' + Math.max(...ws) + '): median ' + med.toFixed(2) + ' <= 1.5, p95 ' + p95.toFixed(2) + ' <= 2.5, ' + (100 * in2).toFixed(1) + ' % within 2',
+            med <= 1.5 && p95 <= 2.5 && in2 >= 0.97);
+    }
+}
+
+/* 10. ClearAll (opcode 18) and the later borders of a connection keep its transform: C, k, mirror and d
+ *     stay as the first full border set them (a playing connection also gets ~4250 x 2560 view rects);
+ *     only a new socket (resetConnectionState) takes a new border */
+{
+    const LM = mainClient(-7100, -7000, 14142.1356, 14142.1356), ctx = load(LM);
+    ctx.window.buffer = { Buffer };
+    ctx.window.lmCellIdx = { filter: (a, k, f) => a.filter(f), remove() { return false; } };
+    const sp = unitB(ctx, [-5755.624, -6626.416, 8418.153, 7540.138], { number: 3 });
+    sp.setOrientation(-1, 1);
+    const xf = () => JSON.stringify([sp.mapOffsetX, sp.mapOffsetY, sp._lmKX, sp._lmKY, sp.fixX, sp.fixY, sp.fix3x, sp.fix3y, sp.mapOffsetFixed]);
+    const before = xf(), pt = [sp.rawToWorldX(1234), sp.rawToWorldY(-2345)];
+    const border = (l, t, r, b) => { const v = new DataView(new ArrayBuffer(33)); v.setUint8(0, 64); [l, t, r, b].forEach((x, i) => v.setFloat64(1 + 8 * i, x, true)); return v; };
+    let err = null;
+    try {
+        sp.handleMessage(new DataView(new Uint8Array([18]).buffer));
+        sp.handleMessage(border(-1200, -800, 3050, 1760));
+        sp.handleMessage(border(-7000, -7100, 7189, 7002));
+    } catch (e) { err = e.message; }
+    check('ClearAll, a view rect and another full border: the transform is unchanged (k ' + sp._lmKX.toFixed(6) + ', ' + sp._lmKY.toFixed(6) + ')',
+        !err && xf() === before && sp.rawToWorldX(1234) === pt[0] && sp.rawToWorldY(-2345) === pt[1], err || xf());
+    sp.connectionGeneration++;
+    sp.resetConnectionState();
+    sp.handleMessage(border(-7000, -7100, 7189, 7002));
+    check('a new socket takes its own border (k ' + sp._lmKX.toFixed(6) + ')', sp.mapOffsetFixed && near(sp._lmKX, W / 14189) && near(sp.mapOffsetX, -94.5));
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all spectcoords checks passed');

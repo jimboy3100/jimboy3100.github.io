@@ -15,7 +15,8 @@
  * with and without Rotate Map; targets go out at most twice a second; a spectator box contains
  * exactly the cells its view contains (4 orientations x per-axis scales x Rotate Map); on a live
  * capture of 15 settled Full Map spectators every pellet is inside its box, the boxes are tight
- * and neighbouring boxes overlap.
+ * and neighbouring boxes overlap; on FFA, Experimental and Party captures every pellet is inside
+ * its box and the farthest one per axis is within LM_FULLMAP_EDGE of the planned view.
  * node developers/tests/debugviewports.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -334,6 +335,49 @@ const covers = (plan, vw, vh, half) => {
             if (t < 12) { const d = box(t + 3); minY = Math.min(minY, Math.min(a.maxY, d.maxY) - Math.max(a.minY, d.minY)); }
         }
         check('live: neighbouring boxes overlap like the views (at least 350 / 140 on the centred cut)' + tag, minX >= 350 && minY >= 140, [minX.toFixed(1), minY.toFixed(1)]);
+    }
+}
+
+/* 12. live agar.io FFA, Experimental and Party (developers/tests/lib/fullmap-modes-live.json, main + 15
+ *     free spectators each; the settled ones): the server view is the same in every mode, so one view
+ *     base serves them all: every pellet nearest a side of a view is inside its box (2 units: camera and
+ *     integer positions; one FFA pellet was 1.4 past), and per mode the farthest pellet seen on each axis
+ *     (either side) is within LM_FULLMAP_EDGE of the planned half view (the outer views still reach the
+ *     map edge). One
+ *     snapshot each, so pellets are too sparse here for the tightness check of case 11 */
+{
+    const M = JSON.parse(fs.readFileSync(path.join(__dirname, 'lib', 'fullmap-modes-live.json'), 'utf8'));
+    const W = 14142.135623730952;
+    check('live modes: FFA, Experimental and Party captured, 8 or more settled views each',
+        ['ffa', 'exp', 'party'].every((l) => M.modes.some((m) => m.label === l && m.views.length >= 8)), M.modes.map((m) => m.label + ':' + m.views.length).join());
+    for (const m of M.modes) for (const rot of [null, [[true, true]], [[true, false]]]) {
+        const mb = m.main.border;
+        const e = env({ full: true, mb: false, vector: rot, main: { mapOffsetX: -(mb[0] + mb[2]) / 2, mapOffsetY: -(mb[1] + mb[3]) / 2, _lmBorderCX: (mb[0] + mb[2]) / 2, _lmBorderCY: (mb[1] + mb[3]) / 2,
+            _lmBorderKX: W / (mb[2] - mb[0]), _lmBorderKY: W / (mb[3] - mb[1]), mapMinX: mb[0], mapMinY: mb[1], mapMaxX: mb[2], mapMaxY: mb[3] } });
+        const sps = m.views.map((q) => e.spect(spectAt(q.n, null, null, { mapOffsetFixed: true, mapOffsetX: -(q.border[0] + q.border[2]) / 2, mapOffsetY: -(q.border[1] + q.border[3]) / 2,
+            fixX: q.s[0], fixY: q.s[1], _lmKX: W / (q.border[2] - q.border[0]), _lmKY: W / (q.border[3] - q.border[1]), viewX: q.cam[0], viewY: q.cam[1], scale: q.cam[2], _lmCamAt: 1 })));
+        const bs = e.frame();
+        const tag = ' (' + m.label + (rot ? ', Rotate Map ' + JSON.stringify(rot[0]) : '') + ')';
+        const outside = [], far = [0, 0, 0, 0];
+        m.views.forEach((q, i) => {
+            const b = byLabel(bs, 'Viewport# ' + q.n), sp = sps[i];
+            if (!b) { outside.push(q.n + ': no box'); return; }
+            const pts = q.ext.map((f) => [sp.getX(f[0]), sp.getY(f[1])]);
+            for (const p of pts) if (p[0] < b.minX - 2 || p[0] > b.maxX + 2 || p[1] < b.minY - 2 || p[1] > b.maxY + 2) outside.push(q.n + ':' + p.map((v) => v.toFixed(1)));
+            /* world distance from the camera per side (-x, +x, -y, +y) */
+            const cx = sp.rawToWorldX(q.cam[0]), cy = sp.rawToWorldY(q.cam[1]);
+            for (const f of q.ext) {
+                const dx = sp.rawToWorldX(f[0]) - cx, dy = sp.rawToWorldY(f[1]) - cy;
+                far[0] = Math.max(far[0], -dx); far[1] = Math.max(far[1], dx); far[2] = Math.max(far[2], -dy); far[3] = Math.max(far[3], dy);
+            }
+        });
+        check('live: every pellet nearest a side of a settled view is inside its box' + tag, !outside.length, outside.slice(0, 5).join(' '));
+        if (rot) continue;
+        const plan = e.c.lmFullMapPlan(W, W, ...e.c.lmServerViewSize(e.c.LM_SPECT_FREE_SCALE));
+        const edge = vm.runInContext('LM_FULLMAP_EDGE', e.c);
+        const short = [plan.viewW / 2 - Math.max(far[0], far[1]), plan.viewH / 2 - Math.max(far[2], far[3])];
+        check('live: the farthest pellet per axis is at most ' + edge + ' inside the planned half view and at most 2 past it (x ' + short[0].toFixed(1) + ', y ' + short[1].toFixed(1) + ')' + tag,
+            short.every((v) => v >= -2 && v <= edge));
     }
 }
 
