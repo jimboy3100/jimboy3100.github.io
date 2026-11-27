@@ -181,6 +181,36 @@ L.flushCellsData();
 feed([{ id: 44, color: [0, 200, 0], name: 'Bob', skin: '' }]);
 check('the next server: the nick has its server colour, not the previous server\'s', C(44) === hex(0, 200, 0), C(44));
 
+/* section: WebGL colour settings (ghost cells, bubbles): the real drawRender with a GL stub */
+{
+    const F0 = rendererFactory(src);
+    const D0 = new Function('return ' + F0.defaults)();
+    const env = { window: { navigator: {}, devicePixelRatio: 1, legendmod: {} }, LM: { gameMode: ':ffa' }, application: {}, defaultSettings: D0.defaultSettings,
+        defaultmapsettings: D0.defaultmapsettings, ogarcopythelb: {}, ogario: {} };
+    const R0 = new Function('return (' + F0.factory.replace(/return R;\n\}$/, 'R.__lmColorInt = lmColorInt; return R;\n}') + ')')()(env);
+    const gl = new Proxy({}, { get: (t, k) => (k in t ? t[k] : (typeof k === 'string' && /^[A-Z_0-9]+$/.test(k) ? 0 : noop)) });
+    Object.assign(R0, { gl, glProgram: {}, glInstanceData: new Float32Array(70), glMaxInstances: 10, canvasWidth: 800, canvasHeight: 600, camX: 0, camY: 0, scale: 1 });
+    R0.glBubbleData = new Float32Array(90);
+    R0.glBubbleProgram = {};
+    const rgbOf = (fn, col) => {
+        R0.glInstanceData.fill(-1);
+        R0.glBubbleData.fill(-1);
+        const cell = [{ x: 0, y: 0, size: 50, targetX: 10, targetY: 0 }];
+        if (fn === 'drawWebGLFilledBatch') R0.drawWebGLFilledBatch(cell, col, 1);
+        else if (fn === 'drawWebGLBubbleBatch') R0.drawWebGLBubbleBatch(cell, col, 1);
+        else R0.drawWebGLBubbleBatchCursor(cell, 100, 0, col, 1);
+        const at = fn === 'drawWebGLFilledBatch' ? [R0.glInstanceData, 3] : [R0.glBubbleData, 5];
+        return Array.from(at[0].slice(at[1], at[1] + 3)).map((v) => Math.round(v * 255));
+    };
+    for (const fn of ['drawWebGLFilledBatch', 'drawWebGLBubbleBatch', 'drawWebGLBubbleBatchCursor']) {
+        if (typeof R0[fn] !== 'function') continue;
+        check(fn + ': a black colour setting is drawn black', JSON.stringify(rgbOf(fn, '#000000')) === '[0,0,0]', rgbOf(fn, '#000000'));
+        check(fn + ': #3366ff is drawn #3366ff', JSON.stringify(rgbOf(fn, '#3366ff')) === '[51,102,255]', rgbOf(fn, '#3366ff'));
+    }
+    check('_lmGlColorInt reads bare hex digits', R0._lmGlColorInt('abc') === 0xaabbcc && R0._lmGlColorInt('3366ff') === 0x3366ff);
+    check('... and lmColorInt still says \'abc\' is no colour (Canvas2D cannot draw it)', R0.__lmColorInt('abc') === -1, R0.__lmColorInt('abc'));
+}
+
 /* ---------------- headless Chrome: real WebGL + real Canvas2D ---------------- */
 const cellStart = src.indexOf('function ogarbasicassembly(');
 const cellEnd = src.indexOf('}).call(ogarbasicassembly.prototype)');

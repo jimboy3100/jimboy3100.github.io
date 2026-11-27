@@ -65804,11 +65804,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmGlColorInt(c) {
             if (typeof c === "number") return Number.isFinite(c) && c >= 0 ? (c & 0xffffff) : -1;
             if (typeof c !== "string" || !c) return -1;
-            var v = _lmColorIntCache.get(c);
+            if (c.charCodeAt(0) === 35) return lmColorInt(c);
+            /* the other strings ('abc' as hex digits, names) in a map of their own: in lmColorInt's
+             * cache 'abc' became a colour for lmColorInt too, which Canvas2D cannot draw (black) */
+            var bare = this._lmBareHexInt || (this._lmBareHexInt = new Map());
+            var v = bare.get(c);
             if (v !== undefined) return v;
-            if (!/^[0-9a-f]{3}$|^[0-9a-f]{6}$/i.test(c)) return lmColorInt(c);
-            v = lmColorInt("#" + c);
-            _lmColorIntCache.set(c, v);
+            v = /^[0-9a-f]{3}$|^[0-9a-f]{6}$/i.test(c) ? lmColorInt("#" + c) : lmColorInt(c);
+            if (bare.size > 200) bare.clear();
+            bare.set(c, v);
             return v;
         },
         drawWebGLGridShader() {
@@ -70154,7 +70158,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 minY = this.camY - halfH; maxY = this.camY + halfH;
             }
 
-            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+            /* a black setting stays black (parseInt || white drew it white), also rgb() and names */
+            var cInt = this._lmGlColorInt(colorHex || '#ffffff');
+            if (cInt < 0) cInt = 0xffffff;
             var rR = ((cInt >> 16) & 255) / 255;
             var rG = ((cInt >> 8) & 255) / 255;
             var rB = (cInt & 255) / 255;
@@ -71737,7 +71743,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var minX = this.camX - halfW, maxX = this.camX + halfW;
             var minY = this.camY - halfH, maxY = this.camY + halfH;
 
-            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+            /* a black setting stays black (parseInt || white drew it white), also rgb() and names */
+            var cInt = this._lmGlColorInt(colorHex || '#ffffff');
+            if (cInt < 0) cInt = 0xffffff;
             var rR = ((cInt >> 16) & 255) / 255;
             var rG = ((cInt >> 8) & 255) / 255;
             var rB = (cInt & 255) / 255;
@@ -71803,7 +71811,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var minX = this.camX - halfW, maxX = this.camX + halfW;
             var minY = this.camY - halfH, maxY = this.camY + halfH;
 
-            var cInt = parseInt((colorHex || '#ffffff').replace('#', ''), 16) || 0xffffff;
+            /* a black setting stays black (parseInt || white drew it white), also rgb() and names */
+            var cInt = this._lmGlColorInt(colorHex || '#ffffff');
+            if (cInt < 0) cInt = 0xffffff;
             var rR = ((cInt >> 16) & 255) / 255;
             var rG = ((cInt >> 8) & 255) / 255;
             var rB = (cInt & 255) / 255;
@@ -72096,7 +72106,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     data[idx + 2] = coords[i * 3 + 2];
                     var cInt = cell._colorInt;
                     if (cInt === undefined || cell._colorStr !== colorHex) {
-                        cInt = parseInt((colorHex || '#ff0000').replace('#', ''), 16) || 0xff0000;
+                        cInt = lmColorInt(colorHex);
+                        if (cInt < 0) cInt = 0xff0000;
                         cell._colorInt = cInt;
                         cell._colorStr = colorHex;
                     }
@@ -72121,7 +72132,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                     var cInt = cell._colorInt;
                     if (cInt === undefined || cell._colorStr !== colorHex) {
-                        cInt = parseInt((colorHex || '#ff0000').replace('#', ''), 16) || 0xff0000;
+                        cInt = lmColorInt(colorHex);
+                        if (cInt < 0) cInt = 0xff0000;
                         cell._colorInt = cInt;
                         cell._colorStr = colorHex;
                     }
