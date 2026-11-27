@@ -1401,6 +1401,11 @@ input.hide-url::selection,input.stream-mode::selection{
     color:#fff;
     font-weight:700 
 }
+/* a right-to-left nick (Arabic, Hebrew) or text keeps its place in the line: without it the numbers
+   at the start of the message joined the nick's right-to-left run and showed before the nick */
+.message-nick,.message-text,.command-nick,.command-text{
+    unicode-bidi:isolate
+}
 .user-list{
     padding-left:14px 
 }
