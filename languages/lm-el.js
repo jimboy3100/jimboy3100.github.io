@@ -760,7 +760,6 @@
 "game2.sbStopTip": "Διακοπή αναζήτησης servers",
 "game2.sbMoreTip": "Αναζήτηση περισσότερων servers {0}",
 "game2.sbPartyNoScan": "Οι servers party δεν σαρώνονται",
-"game2.avoidReverseSplit": "Αποφυγή αντίστροφου split...",
 "game2.promoTitle": "Εξέλιξη 2020",
 "game2.replayOnly": "Μόνο σε replay: δείτε πρώτα ένα replay.",
 "game2.replaySeekTip": "Replay: πατήστε για μετακίνηση",

@@ -760,7 +760,6 @@
 "game2.sbStopTip": "Остановить поиск серверов",
 "game2.sbMoreTip": "Найти ещё серверы {0}",
 "game2.sbPartyNoScan": "Серверы пати нельзя просканировать",
-"game2.avoidReverseSplit": "Избегаем обратного сплита...",
 "game2.promoTitle": "Разработка 2020",
 "game2.replayOnly": "Только для повторов: сначала включите повтор.",
 "game2.replaySeekTip": "Повтор: нажмите для перемотки",

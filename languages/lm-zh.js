@@ -760,7 +760,6 @@
 "game2.sbStopTip": "停止尋找伺服器",
 "game2.sbMoreTip": "尋找更多 {0} 伺服器",
 "game2.sbPartyNoScan": "組隊伺服器無法掃描",
-"game2.avoidReverseSplit": "避免反向分裂...",
 "game2.promoTitle": "2020 開發",
 "game2.replayOnly": "僅限重播：請先觀看重播。",
 "game2.replaySeekTip": "重播：點擊跳轉",

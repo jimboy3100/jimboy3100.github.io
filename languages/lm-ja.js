@@ -760,7 +760,6 @@
 "game2.sbStopTip": "サーバーの検索を停止",
 "game2.sbMoreTip": "ほかの {0} サーバーを探す",
 "game2.sbPartyNoScan": "パーティーサーバーはスキャンできません",
-"game2.avoidReverseSplit": "逆分裂を回避中...",
 "game2.promoTitle": "2020年の開発",
 "game2.replayOnly": "リプレイ専用です：先にリプレイを再生してください。",
 "game2.replaySeekTip": "リプレイ：クリックでシーク",

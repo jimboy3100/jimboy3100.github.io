@@ -760,7 +760,6 @@
 "game2.sbStopTip": "Sunucu aramayı durdur",
 "game2.sbMoreTip": "Daha fazla {0} sunucusu ara",
 "game2.sbPartyNoScan": "Parti sunucuları taranamaz",
-"game2.avoidReverseSplit": "Ters bölünmeden kaçınılıyor...",
 "game2.promoTitle": "2020 geliştirmesi",
 "game2.replayOnly": "Yalnızca tekrar: önce bir tekrar izle.",
 "game2.replaySeekTip": "Tekrar: atlamak için tıkla",

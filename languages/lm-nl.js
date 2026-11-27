@@ -760,7 +760,6 @@
 "game2.sbStopTip": "Stop met servers zoeken",
 "game2.sbMoreTip": "Meer {0}-servers zoeken",
 "game2.sbPartyNoScan": "Partyservers kunnen niet worden doorzocht",
-"game2.avoidReverseSplit": "Omgekeerde split vermijden...",
 "game2.promoTitle": "Ontwikkeling 2020",
 "game2.replayOnly": "Alleen in replays: bekijk eerst een replay.",
 "game2.replaySeekTip": "Replay: klik om te spoelen",

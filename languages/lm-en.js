@@ -760,7 +760,6 @@
 "game2.sbStopTip": "Stop looking for servers",
 "game2.sbMoreTip": "Look for more {0} servers",
 "game2.sbPartyNoScan": "Party servers can’t be scanned",
-"game2.avoidReverseSplit": "Avoiding reverse split...",
 "game2.promoTitle": "2020 development",
 "game2.replayOnly": "Replay only: watch a replay first.",
 "game2.replaySeekTip": "Replay: click to seek",

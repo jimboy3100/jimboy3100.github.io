@@ -214,8 +214,8 @@
     },
     {
       "input": "K",
-      "action": "Toggle ghost cells info",
-      "notes": "Show/hide ghost cell details",
+      "action": "Toggle ghost cells",
+      "notes": "Show/hide the ghosts of leaderboard players out of view (with name and skin)",
       "category": "toggle"
     },
     {

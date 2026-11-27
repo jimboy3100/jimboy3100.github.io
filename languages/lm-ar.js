@@ -760,7 +760,6 @@
 "game2.sbStopTip": "إيقاف البحث عن الخوادم",
 "game2.sbMoreTip": "ابحث عن المزيد من خوادم {0}",
 "game2.sbPartyNoScan": "لا يمكن البحث في خوادم البارتي",
-"game2.avoidReverseSplit": "تجنّب الانقسام العكسي...",
 "game2.promoTitle": "تطوير 2020",
 "game2.replayOnly": "للإعادة فقط: شاهد إعادة أولًا.",
 "game2.replaySeekTip": "الإعادة: انقر للتنقل",

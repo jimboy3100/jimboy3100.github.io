@@ -760,7 +760,6 @@
 "game2.sbStopTip": "Berhenti mencari server",
 "game2.sbMoreTip": "Cari lebih banyak server {0}",
 "game2.sbPartyNoScan": "Server party tidak bisa di-scan",
-"game2.avoidReverseSplit": "Menghindari reverse split...",
 "game2.promoTitle": "Pengembangan 2020",
 "game2.replayOnly": "Khusus replay: tonton replay dulu.",
 "game2.replaySeekTip": "Replay: klik untuk melompat",

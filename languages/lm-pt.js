@@ -760,7 +760,6 @@
 "game2.sbStopTip": "Parar de procurar servidores",
 "game2.sbMoreTip": "Procurar mais servidores {0}",
 "game2.sbPartyNoScan": "Servidores de party não podem ser escaneados",
-"game2.avoidReverseSplit": "Evitando reverse split...",
 "game2.promoTitle": "Desenvolvimento 2020",
 "game2.replayOnly": "Só no replay: assista a um replay primeiro.",
 "game2.replaySeekTip": "Replay: clique para ir até o ponto",

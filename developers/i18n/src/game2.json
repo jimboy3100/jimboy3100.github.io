@@ -3635,24 +3635,6 @@
     "ja": "パーティーサーバーはスキャンできません",
     "it": "I server party non si possono cercare"
   },
-  "game2.avoidReverseSplit": {
-    "en": "Avoiding reverse split...",
-    "el": "Αποφυγή αντίστροφου split...",
-    "es": "Evitando split inverso...",
-    "bg": "Избягване на обратен сплит...",
-    "fr": "Évitement du split inversé...",
-    "ar": "تجنّب الانقسام العكسي...",
-    "zh": "避免反向分裂...",
-    "ru": "Избегаем обратного сплита...",
-    "de": "Umgekehrter Split wird vermieden...",
-    "tr": "Ters bölünmeden kaçınılıyor...",
-    "pl": "Unikanie odwróconego splitu...",
-    "nl": "Omgekeerde split vermijden...",
-    "pt": "Evitando reverse split...",
-    "id": "Menghindari reverse split...",
-    "ja": "逆分裂を回避中...",
-    "it": "Evito il reverse split..."
-  },
   "game2.promoTitle": {
     "en": "2020 development",
     "el": "Εξέλιξη 2020",
