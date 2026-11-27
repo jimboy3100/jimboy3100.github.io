@@ -161,12 +161,30 @@
         }
         return out;
     }
+    /* Items merged into another one or moved: a star or recent entry of the old id stays on what
+     * took its place (Short mass -> Mass format, FPS at top / Stats at center -> Stats position,
+     * Screenshot mode -> Show/hide HUD, zoom bookmarks -> zoom levels, the Lab -> User Scripts,
+     * the old Mouse control and gamepad switches -> their blocks of the Hotkeys window);
+     * without this the star was dropped silently */
+    var RENAMED = {
+        'opt:shortMass': 'set:massFormat', 'opt:fpsAtTop': 'set:statsPosition', 'opt:statsAtCenter': 'set:statsPosition',
+        'hk:hk-screenshotMode': 'hk:hk-showHUD', 'hk:hk-zoomRecall1': 'hk:hk-zoom1', 'hk:hk-zoomRecall2': 'hk:hk-zoom2', 'hk:hk-zoomRecall3': 'hk:hk-zoom3',
+        'win:lab': 'win:plugins', 'sec:lmLabGroup': 'win:plugins', 'hk:hk-lmLab': 'hk:hk-lmPlugins',
+        'sec:mouseGroup': 'sec:lmHkMouse', 'opt:mouseSplit': 'sec:lmHkMouse', 'opt:mouseFeed': 'sec:lmHkMouse', 'opt:mouseWheelClick': 'sec:lmHkMouse',
+        'opt:mouseCommand4': 'sec:lmHkMouse', 'opt:mouseCommand5': 'sec:lmHkMouse', 'set:leftClick': 'sec:lmHkMouse', 'set:rightClick': 'sec:lmHkMouse',
+        'set:middleClick': 'sec:lmHkMouse', 'set:mouse4Click': 'sec:lmHkMouse', 'set:mouse5Click': 'sec:lmHkMouse',
+        'opt:gamepadEnabled': 'sec:lmHkGamepad', 'set:gamepadDeadzone': 'sec:lmHkGamepad'
+    };
+    function renamed(a) {
+        if (!Array.isArray(a)) return a;
+        return a.map(function (v) { return typeof v === 'string' && Object.prototype.hasOwnProperty.call(RENAMED, v) ? RENAMED[v] : v; });
+    }
     /* stored state from a JSON string (or object); anything malformed reads as empty */
     function parseStore(raw) {
         var o = null;
         try { o = typeof raw === 'string' ? JSON.parse(raw) : raw; } catch (e) { o = null; }
         if (!o || typeof o !== 'object' || Array.isArray(o)) o = {};
-        return { fav: cleanList(o.fav, MAX_FAV), recent: cleanList(o.recent, MAX_RECENT) };
+        return { fav: cleanList(renamed(o.fav), MAX_FAV), recent: cleanList(renamed(o.recent), MAX_RECENT) };
     }
     function withRecent(st, id) {
         var r = [id].concat((st.recent || []).filter(function (x) { return x !== id; }));

@@ -24645,6 +24645,19 @@ function thelegendmodproject() {
                 checked = lmSettingValue(id, checked);
                 if (checked === undefined) return;
             }
+            /* the multibox ring colours are theme settings (Theme > Basic theming) and the gameplay
+             * key only a copy of them: a script setting the copy sets the theme colour (the copy
+             * alone changed nothing on screen), its colour box and the saved theme */
+            if (LM_MB_RING_THEME_KEYS.indexOf(id) >= 0 && null !== checked && typeof defaultSettings !== 'undefined') {
+                var _lmRingC = lmThemeValue(id, checked);
+                if (_lmRingC !== undefined && defaultSettings[id] !== _lmRingC) {
+                    defaultSettings[id] = _lmRingC;
+                    if (ogario.hasOwnProperty(id)) ogario[id] = _lmRingC;
+                    try { $('#theme .' + id + '-picker').colorpicker('setValue', _lmRingC); } catch (eRc) { }
+                    defaultSettings[id] = _lmRingC;
+                    try { if (window.Settings && window.Settings.saveThemeSettings) window.Settings.saveThemeSettings(); } catch (eRs) { }
+                }
+            }
             if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {
                 /* Adaptive performance keeps lowered values for now: the player's change wins */
                 if (window.LMPerf) { try { window.LMPerf.onSetting(id, checked); } catch (e) { } }
