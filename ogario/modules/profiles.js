@@ -150,34 +150,6 @@
     /* A set of settings: s gameplay, t theme, h hotkeys (k: the hotkey commands that existed when
      * it was saved), m phone controls. A part that is missing (or has nothing valid) is not applied. */
     var PART_FNS = { s: cleanSettings, t: cleanTheme, h: cleanHotkeys, m: cleanMobile };
-    /* The multibox ring colours are theme settings now (Theme > Basic theming); the gameplay
-     * settings only keep a copy of them. A set saved before has them in its gameplay part: a theme
-     * part without them takes them from there, so the set keeps its colours; a set without a theme
-     * part (gameplay only) gets a theme part of just these colours. The copy itself is left out (it
-     * would show as a second change and be put back by the theme). A set captured now never has
-     * the copy without its theme (captureCurrent leaves it out). Returns true when the gameplay
-     * part had nothing else (it is then dropped). */
-    var RING_KEYS = ['mbRingColorP1', 'mbRingColorP2'];
-    function moveRingColors(out) {
-        if (!out.s) return false;
-        RING_KEYS.forEach(function (k) {
-            if (!own.call(out.s, k)) return;
-            var v = themeValue(k, out.s[k]);
-            delete out.s[k];
-            if (v === undefined) return;
-            if (!out.t) out.t = {};
-            if (!own.call(out.t, k)) out.t[k] = v;
-        });
-        if (Object.keys(out.s).length) return false;
-        delete out.s;
-        return true;
-    }
-    /* only ring colours: the theme part an old gameplay-only set gets (moveRingColors) */
-    function ringPatch(t) {
-        if (!isObj(t)) return false;
-        var k = Object.keys(t);
-        return k.length > 0 && k.every(function (x) { return RING_KEYS.indexOf(x) >= 0; });
-    }
     /* A set saved while "Video skins volume" (volVideo) existed, or with settings that became one
      * choice since ("Short mass" + "Mass format", the two stats position switches), or with the bubble
      * tracker on its own (a look of Cursor tracking now): the core's own migration (lmFoldLegacySettings)
@@ -211,7 +183,6 @@
             var c = PART_FNS[p](p === 's' ? foldLegacySettings(b[p]) : p === 'h' ? renameOldHotkeys(b[p]) : b[p]);
             if (c) { out[p] = c; any = true; }
         }
-        if (moveRingColors(out) || out.t) any = !!(out.s || out.t || out.h || out.m);
         if (out.h) { var k = cleanKnown(b.k); if (k) out.k = k; }
         /* phone preferences that did not exist (Undo / backups): restoring them removes the store */
         if (isAbsent(b.m)) { out.m = absentPart(); any = true; }
@@ -733,12 +704,6 @@
         } else {
             sData = liveS;
         }
-        /* without the theme the gameplay copy of the ring colours stays out (it would be taken
-         * for the colours of a set saved before they moved to the theme) */
-        if ((parts.t === false || !T()) && isObj(sData) && RING_KEYS.some(function (k) { return own.call(sData, k); })) {
-            sData = Object.assign({}, sData);
-            RING_KEYS.forEach(function (k) { delete sData[k]; });
-        }
         var data = { s: sData };
         if (parts.t !== false && T()) {
             data.t = Object.assign({}, T());
@@ -759,21 +724,9 @@
         if (parts.explicit) markMissing(data, parts.m !== false, parts.g !== false);
         return cleanBundle(data);
     }
-    /* Update: the current settings in the parts the set has. The theme part of an old
-     * gameplay-only set is just its ring colours (moveRingColors): only those colours are
-     * updated, the set never gets the whole theme. */
+    /* Update: the current settings in the parts the set has */
     function updatedSet(d) {
-        var patch = ringPatch(d.t);
-        var data = captureCurrent({ t: !!d.t && !patch, h: !!d.h, m: !!(d.m || d.ml), g: !!d.gp, hl: false });
-        if (data && patch) {
-            var live = T(), t = {};
-            Object.keys(d.t).forEach(function (k) {
-                var v = themeValue(k, live && own.call(live, k) ? live[k] : d.t[k]);
-                if (v !== undefined) t[k] = v;
-            });
-            if (Object.keys(t).length) data.t = t;
-        }
-        return data;
+        return captureCurrent({ t: !!d.t, h: !!d.h, m: !!(d.m || d.ml), g: !!d.gp, hl: false });
     }
     /* the saved settings (what a reload would load): the state before a change that is being saved */
     function snapshotFromStorage() {
@@ -954,8 +907,7 @@
          * Profile-apply still merges, so switching profiles preserves new settings. */
         var isRestore = opts.reason === 'restore' || opts.reason === 'undo';
         if (c.s) entries.push({ key: 'ogarioSettings', text: JSON.stringify(isRestore ? Object.assign({}, data.s) : Object.assign({}, cur.s, data.s)) });
-        /* the ring colours of an old gameplay set are a patch, never a whole theme */
-        if (c.t) entries.push({ key: 'ogarioThemeSettings', text: JSON.stringify(isRestore && !ringPatch(data.t) ? Object.assign({}, data.t) : Object.assign({}, cur.t, data.t)) });
+        if (c.t) entries.push({ key: 'ogarioThemeSettings', text: JSON.stringify(isRestore ? Object.assign({}, data.t) : Object.assign({}, cur.t, data.t)) });
         if (c.h) entries.push({ key: 'ogarioHotkeys', text: JSON.stringify(data.h) });
         var curM = isObj(cur.m) && !isAbsent(cur.m) ? cur.m : {};
         if (c.m) entries.push({ key: 'lm-mobile-prefs', text: isAbsent(data.m) ? null : JSON.stringify(isRestore ? Object.assign({}, data.m) : Object.assign({}, curM, data.m)) });
@@ -1382,10 +1334,8 @@
     function partsBadge(d, only) {
         if (only === 'gp') return gt('pkg.pt.gpBadge') || tx('partGP');
         var p = [];
-        /* the ring colour patch of an old gameplay-only set is part of its gameplay settings */
-        var rp = ringPatch(d.t);
-        if (d.s || rp) p.push(tx('partS'));
-        if (d.t && !rp) p.push(tx('partT'));
+        if (d.s) p.push(tx('partS'));
+        if (d.t) p.push(tx('partT'));
         if (d.h) p.push(tx('partH'));
         /* every part the set brings: a set with only a phone control layout or gamepad buttons
          * said nothing about them (the "none" of an Undo or backup is no part) */

@@ -191,10 +191,10 @@ const lateSrc = block(src, lateA);
 const textClassSrc = block(src, src.indexOf('function irenderfromagario()'));
 const autoHideSrc = block(src, src.indexOf('setAutoHideCellInfo(t) {'));
 /* the multibox ring rule and the skin gate cell.draw uses (absent in older versions) */
-const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing', 'lmSkinsShown', 'lmColorInt'].map((n) => {
+const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRing', 'lmSkinsShown', 'lmColorInt'].map((n) => {
     const i = src.indexOf('\nfunction ' + n + '(');
     return i < 0 ? '' : block(src, i + 1);
-}).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', '_lmColorIntCache'].map((n) => {
+}).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmColorIntCache'].map((n) => {
     const m = new RegExp('\\nvar ' + n + ' = [^\\n]*').exec(src);
     return m ? m[0].slice(1) : '';
 }).join('\n');
@@ -543,12 +543,25 @@ r = frame(S1);
 check('earlier smaller cell under the badge: WebGL, badge and labels above it, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 /* multibox ring: over the badge, under the labels */
 strokes.on = true; window.legendmod = LM; LM.multiBoxPlayerExists = true;
-setSettings({ map: { FBTracking: true, mbRingsP1: true, mbRingSizeP1: 10 } });
+setSettings({ map: { FBTracking: true } });
 friend.isPlayerCell = true;
 scene([friend]);
 r = frame(S1);
 check('FB badge on an own cell with a multibox ring: WebGL, badge > ring > labels on the overlay, equal', r.gl && fgOps(r).join(' ') === 'fbBadge stroke txt txt' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + fgOps(r).join(' ') + ' ' + r.d.n + ' px');
 check('  the GL ring pass leaves that cell out', typeof R.buildWebGLMultiboxRingData !== 'function' || (friend._webglRendered = true, R.buildWebGLMultiboxRingData([LM.cells], new Float32Array(64), 4) === 0));
+/* the ring is fixed: only on the player you control (player 1 here), its colour, 6% of the radius; old ring settings do nothing */
+(function () {
+    const keep = Object.assign({}, ms);
+    Object.assign(ms, { mbRingsP1: false, mbRingsP2: true, mbRingSizeP1: 50, mbRingColorP1: '#000000' });
+    const own = lmRing({ isPlayerCell: true }, 100, 1), unit = lmRing({ spectator: 1, isPlayerCellMulti: true }, 100, 1);
+    LM.multiBoxPlayerExists = false;
+    const solo = lmRing({ isPlayerCell: true }, 100, 1);
+    LM.multiBoxPlayerExists = true;
+    Object.keys(ms).forEach((k) => { if (!(k in keep)) delete ms[k]; });
+    Object.assign(ms, keep);
+    check('multibox ring: on the player you control only, its fixed colour and width; none without multibox',
+        own && own.player === 1 && own.color === '#FF2FD6' && Math.abs(own.width - 6) < 1e-9 && unit === null && solo === null, JSON.stringify([own, unit, solo]));
+})();
 friend._webglRendered = false; friend.isPlayerCell = false; strokes.on = false; LM.multiBoxPlayerExists = false;
 /* high DPI, resize */
 setSettings({ map: { FBTracking: true } });

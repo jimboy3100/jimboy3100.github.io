@@ -24,7 +24,7 @@ const themeDefs = vm.runInNewContext('(function(){' + cut('var defaultSettings =
 check('theme default: square corners (hudRoundedCorners false)', themeDefs.hudRoundedCorners === false);
 const valueCtx = { LM_THEME_DEFAULTS: themeDefs, LM_THEME_SCHEMA: {}, lmSchemaFit: (r, n) => n, LM_THEME_COLOR: /x/ };
 vm.createContext(valueCtx);
-vm.runInContext(cut('function lmThemeValue(', '\n/* The multibox ring colours'), valueCtx);
+vm.runInContext(cut('function lmThemeValue(', '\ncimg2 = new Image;'), valueCtx);
 check('theme schema: a boolean (stored, imported, profiles, Theme Workshop)', valueCtx.lmThemeValue('hudRoundedCorners', true) === true &&
     valueCtx.lmThemeValue('hudRoundedCorners', 'false') === false && valueCtx.lmThemeValue('hudRoundedCorners', 1) === undefined);
 /* after the HUD scale and the HUD text size slider that sits next to it */
@@ -40,8 +40,7 @@ function loadTheme(storedTheme, oldKey, full) {
     const ctx = {
         window: { localStorage: ls }, JSON, Object, $: { extend: Object.assign },
         defaultSettings: d, ogario: {}, defaultmapsettings: undefined,
-        readLocalStorageJSON: readJSON(ls), lmThemeValue: valueCtx.lmThemeValue,
-        lmMbRingThemeCarry: () => false, lmMbRingMirror: () => { }
+        readLocalStorageJSON: readJSON(ls), lmThemeValue: valueCtx.lmThemeValue
     };
     vm.createContext(ctx);
     const St = vm.runInContext('({\n' + cut('        loadThemeSettings() {', '        restoreThemeSettings() {') + '\n})', ctx);
@@ -113,7 +112,7 @@ function load(stored, oldKey) {
         defaultmapsettings: ms, defaultSettings: {}, ogario: {},
         readLocalStorageJSON: readJSON(ls),
         lmSettingValue: (k, v) => (typeof v === typeof defs[k] ? v : undefined),
-        lmMbRingMirror: () => { }, lmFoldVideoVolume: () => false, lmFoldLegacySettings: () => false, lmSettingsUserView: () => ms, lmSettingsCommit: () => { }, _lmSettingsSeen: null
+        lmFoldVideoVolume: () => false, lmFoldLegacySettings: () => false, lmSettingsUserView: () => ms, lmSettingsCommit: () => { }, _lmSettingsSeen: null
     };
     vm.createContext(ctx);
     const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);

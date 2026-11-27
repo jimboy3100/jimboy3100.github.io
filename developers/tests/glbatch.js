@@ -79,7 +79,7 @@ const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag'
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing',
     'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages', 'lmTextAtlasBankCap', 'lmTextAtlasUnit',
     'lmSkinsShown', 'lmColorInt'];
-const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', '_lmColorIntCache'];
+const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmColorIntCache'];
 
 function rendererFactory(src) {
     src = src.replace(/\r\n/g, '\n');
@@ -168,7 +168,8 @@ function pageLib() {
     function makeEnv(defaults, cfg) {
         var ds = Object.assign({}, defaults.defaultSettings, cfg.settings || {});
         var dm = Object.assign({}, defaults.defaultmapsettings, { jellyPhisycs: !!cfg.jelly, customSkins: true, virusGlow: true,
-            mbRingsP1: true, mbRingsP2: true }, cfg.map || {});
+            /* older versions: their ring settings set as the one fixed ring now (on the player you control) */
+            mbRingsP1: true, mbRingsP2: true, mbRingsActiveOnly: true }, cfg.map || {});
         var LM = { cells: [], playerCells: [], playerCellsMulti: [], play: true, showCustomSkins: true, gameMode: ':ffa', hideSmallBots: false,
             multiBoxPlayerExists: true, removedCells: [], sortCells: false, indexedCells: {} };
         var application = { gameMode: ':ffa', customSkinsMap: {}, customSkinsCache: {}, loadSkin: function () { }, _lmTouchSkin: function () { },

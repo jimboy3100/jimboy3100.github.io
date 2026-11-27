@@ -391,25 +391,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-mbRings': {
-				get label() {
-					return lmT('settings.hk-mbRings');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (!application || typeof defaultmapsettings === 'undefined') return;
-					/* mbRings was split into mbRingsP1 and mbRingsP2: toggle both (any ring on = both off) */
-					var _mbNew = !(defaultmapsettings.mbRingsP1 || defaultmapsettings.mbRingsP2);
-					defaultmapsettings.mbRingsP1 = _mbNew;
-					defaultmapsettings.mbRingsP2 = _mbNew;
-					if (typeof application.syncHotkeyOption === 'function') {
-						application.syncHotkeyOption('mbRingsP1');
-						application.syncHotkeyOption('mbRingsP2');
-					}
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-gamepadWindow': {
 				get label() {
 					return lmT('settings.hk-gamepadWindow');

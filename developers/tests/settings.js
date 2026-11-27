@@ -425,15 +425,14 @@ check('Map borders off: rainbow borders and their speed are dimmed (only the bor
   depWhy('rainbowMapBorders') === 'Needs: showMapBorders' && depWhy('rainbowBorderSpeed') === 'Needs: showMapBorders');
 depRun({ rainbowMapBorders: false });
 check('rainbow borders off: only their speed is dimmed', depWhy('rainbowMapBorders') === '' && depWhy('rainbowBorderSpeed') === 'Needs: rainbowMapBorders');
-depRun({ mbRingsP1: false, mbRingsP2: true });
-check('multibox ring of player 1 off: its size dimmed, player 2 size not', depWhy('mbRingSizeP1') === 'Needs: mbRingsP1' && depWhy('mbRingSizeP2') === '');
 depRun({ showMass: false });
 /* Mass format also sets the HUD mass texts (team list, leaderboard, tab title), shown without cell mass */
 check('Show mass off: the cell mass options are dimmed, Mass format is not (it still sets the HUD mass texts)',
   depWhy('autoHideMass') === 'Needs: showMass' && depWhy('massFormat') === '');
+check('Multibox rings category removed: no ring setting left (the ring on the player you control has none)', !Object.keys(D).some(k => /^mbRing/.test(k)));
 depRun({});
 check('defaults: none of these dimmed, and every switch of the list is a real setting',
-  ['scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDistance', 'scanTrickRoundedDistance', 'rainbowMapBorders', 'mbRingSizeP2'].every(k => depWhy(k) === '') &&
+  ['scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDistance', 'scanTrickRoundedDistance', 'rainbowMapBorders'].every(k => depWhy(k) === '') &&
   Object.keys(rows).every(k => k in D) || (console.log('   not settings: ' + Object.keys(rows).filter(k => !(k in D)).join(', ')), false));
 
 console.log(fail ? fail + ' settings check(s) FAILED' : 'all settings checks passed');

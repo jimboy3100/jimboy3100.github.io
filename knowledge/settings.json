@@ -166,10 +166,6 @@
       "description": "Multiple game connection settings.",
       "settings": [
         "multiboxAmount",
-        "multiboxRingsP1",
-        "multiboxRingsP2",
-        "multiboxRingSize",
-        "activeOnlyRings",
         "multiboxFreeze",
         "switchAfterDeath",
         "middleCameraView",

@@ -30,7 +30,7 @@ function load(stored, lab) {
         defaultmapsettings: ms, defaultSettings: {}, ogario: {},
         readLocalStorageJSON: (k, d) => { try { const v = ls.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
         lmSettingValue: (k, v) => (typeof v === typeof defs[k] ? v : undefined),
-        lmMbRingMirror: () => { }, lmFoldVideoVolume: () => false, lmFoldLegacySettings: () => false, lmSettingsUserView: () => ms, lmSettingsCommit: () => { }, _lmSettingsSeen: null
+        lmFoldVideoVolume: () => false, lmFoldLegacySettings: () => false, lmSettingsUserView: () => ms, lmSettingsCommit: () => { }, _lmSettingsSeen: null
     };
     vm.createContext(ctx);
     const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);

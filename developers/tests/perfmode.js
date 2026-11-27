@@ -277,9 +277,8 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     q.undo();
     check('Competitive Undo: split prediction back off', q.S.splitPrediction === false);
     q.preset('multibox');
-    check('Multibox preset: the multibox rings and switching on', q.S.mbRingsP1 === true && q.S.mbSwitchAfterDeath === true);
+    check('Multibox preset: switching after death on, no ring settings (the ring is fixed)', q.S.mbSwitchAfterDeath === true && !('mbRingsP1' in q.S));
     q.undo();
-    check('Multibox preset Undo: player 1 ring back to its default', q.S.mbRingsP1 === false);
 }
 
 /* 12. without perf.js (it failed to load): the copy rules still hold */
