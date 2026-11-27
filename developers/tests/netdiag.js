@@ -166,6 +166,17 @@ const D = (t) => t.L._lmND;
     check('opcode 16 RangeError path keeps packets/s (countPps for all 3, as before)', t.L.ppsCalls === 3);
     check('nothing logged as an error', t.g.errors.length === 0, t.g.errors.join(' | '));
 }
+/* 1a. raw and compressed opcode 16 whose eat count is more than the packet holds: nothing of it
+ * is applied (thrown before the first eat), counted as a rejected world update, not as another packet */
+{
+    const eatCut = () => { const w = upd([[1, 2], [3, 4]], [], []); return new DataView(new Uint8Array(w.b.slice(0, 12)).buffer); };
+    const t = twin('opcode 16 with an eat list cut short', [
+        (t) => { clock.t = 2090; t.L.onMessage(msg(eatCut())); },
+        (t) => { clock.t = 2095; t.L.decompressMessage = () => Buffer.from(new Uint8Array(eatCut().buffer)); t.L.handleMessage(new DataView(new Uint8Array([255, 0, 0, 0, 0, 0, 0]).buffer)); }
+    ]);
+    const d = D(t);
+    check('eat list cut short (raw and compressed): attempted and rejected, no other packet rejected, nothing open', d.wRx === 2 && d.wTry === 2 && d.wBad === 2 && d.wOk === 0 && d.pBad === 0 && d.open === 0 && d.badAt === 2095, JSON.stringify([d.wTry, d.wBad, d.pBad, d.open]));
+}
 /* 1b. opcode 16 whose parser throws another error (not a RangeError): thrown on as before,
  * counted once as a rejected world update, not also as another packet rejected */
 {

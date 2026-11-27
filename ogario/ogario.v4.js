@@ -54380,13 +54380,14 @@ function thelegendmodproject() {
             /* A packet cut short must not leave half of a section applied (a caught RangeError
              * rolls nothing back): the eat list and the remove list are checked whole before
              * they are used, and each record is read whole before anything is changed. An eat
-             * list cut short changes nothing and is no world update. */
+             * list cut short changes nothing and is no world update for the freeze detector. */
+            /* network diagnostics: an attempt. Its reads throw on a short packet (counted as
+             * rejected where it is caught, also an eat list cut short), so getting to the end
+             * is a complete update */
+            if (this._lmND) this._lmWuBegin();
             var eatEventsLength = view.readUInt16LE(offset);
             if (offset + 2 + eatEventsLength * 8 > view.length) throw new RangeError('World update: eat list cut short');
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
-            /* network diagnostics: an attempt. Its reads throw on a short packet (counted as
-             * rejected where it is caught), so getting to the end is a complete update */
-            if (this._lmND) this._lmWuBegin();
 
             //window.updateCellsClock=true;
             this.megaFFAscore();

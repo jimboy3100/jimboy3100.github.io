@@ -278,3 +278,13 @@ without Chrome. `node developers/tests/cellcolors.js [ogario.v4.js] [--no-chrome
 drawLegendWorldDeformedCanvasCell (every Canvas2D-drawn cell), counted with V8's sampling heap
 profiler in optimized code and in the Maglev tier, against a reference version; the paths that do
 draw make the same calls as the reference. `node developers/tests/framealloc.js [--ref REV] [--old FILE]`
+
+`malformed.js` feeds the real handleMessage / updateCells / decompressMessage (agar.io, Expanding
+Land and private servers, opcode 16 plain and compressed in 255) the 979 world updates of
+extras/jim.lm and written agar.io, Expanding Land and protocol 6-10 packets: the world they build
+must stay the one of the parser before its checks (golden digests). Then every truncation of them,
+malformed counts, flags and terminators, the decoder's size and ratio limits and a bounded fuzz:
+a packet cut short changes nothing it has not read whole and never throws out of handleMessage.
+Leaderboards (opcodes 49, 53) and the protocol 6-10 minimap (252) cut short keep the previous ones.
+`node developers/tests/malformed.js [ogario.v4.js] [--old old-ogario.v4.js]` (`--old`: also times
+the valid packets with that version)
