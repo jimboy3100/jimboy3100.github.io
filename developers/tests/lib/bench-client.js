@@ -207,6 +207,8 @@ async function main(argv) {
         await evalJs(benchSrc + '\n;true');
         if (setupJs) {
             try { setup = await evalJs(setupJs); } catch (e) { setup = 'setup failed: ' + e.message; }
+            /* an expression without a value (LMPerf.keepRecording(true) returns nothing): null, not undefined */
+            if (setup === undefined) setup = null;
             console.log('bench: setup: ' + JSON.stringify(setup).slice(0, 500));
         }
         const speed = "[LMBenchDense.calibrate(function () { return performance.now(); }), LMBenchDense.calibrateGpu()]";
@@ -226,7 +228,7 @@ async function main(argv) {
             }
             if (extraJs) {
                 try { runs[runs.length - 1].extra = await evalJs(extraJs); } catch (e) { runs[runs.length - 1].extra = 'eval failed: ' + e.message; }
-                console.log('    extra: ' + JSON.stringify(runs[runs.length - 1].extra).slice(0, 2000));
+                console.log('    extra: ' + String(JSON.stringify(runs[runs.length - 1].extra)).slice(0, 2000));
             }
             let hot = null;
             if (has('--profile')) {
