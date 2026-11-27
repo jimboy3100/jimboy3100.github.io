@@ -266,6 +266,10 @@
       "name": "Expanding Land",
       "description": "Settings for Expanding Land only.",
       "settings": [
+        "showStatsWorldSize",
+        "showStatsDecayInfo",
+        "showStatsServerHz",
+        "hideEventBanner",
         "reducedMotion"
       ]
     },

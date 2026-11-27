@@ -990,7 +990,7 @@
     "it": "Apri le <span class=\"strong\">Impostazioni</span> (icona dell'ingranaggio)"
   },
   "site.legendffa.findTheStatsSection": {
-    "en": "Find the <span class=\"strong\">Stats</span> section",
+    "en": "Find the <span class=\"strong\">Expanding Land</span> section",
     "el": "Βρες την ενότητα <span class=\"strong\">Στατιστικά</span>",
     "es": "Busca la sección <span class=\"strong\">Estadísticas</span>",
     "bg": "Намери раздела <span class=\"strong\">Статистики</span>",
@@ -1008,7 +1008,7 @@
     "it": "Trova la sezione <span class=\"strong\">Statistiche</span>"
   },
   "site.legendffa.toggleDecayInfoExpanding": {
-    "en": "Toggle <span class=\"accent\">\"Decay Info (Expanding Land)\"</span> on or off",
+    "en": "Toggle <span class=\"accent\">\"Decay Info\"</span> on or off",
     "el": "Άναψε ή σβήσε το <span class=\"accent\">\"Πληροφορίες φθοράς (Expanding Land)\"</span>",
     "es": "Activa o desactiva <span class=\"accent\">\"Info de pérdida de masa (Expanding Land)\"</span>",
     "bg": "Включи или изключи <span class=\"accent\">\"Информация за загубата на маса (Expanding Land)\"</span>",

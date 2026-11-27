@@ -76,7 +76,8 @@
   // options in their section, and every heading has a text
   var place = { recordReplays: 'replayGroup', 'lm-perf-diag-btn': 'perfGroup',
     adaptivePerf: 'perfGroup', hudMergeCountdown: 'mergeGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
-    reducedMotion: 'expandingLandGroup', clickSpectate: 'spectateGroup',
+    reducedMotion: 'expandingLandGroup', showStatsWorldSize: 'expandingLandGroup', showStatsDecayInfo: 'expandingLandGroup',
+    showStatsServerHz: 'expandingLandGroup', hideEventBanner: 'expandingLandGroup', clickSpectate: 'spectateGroup',
     'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
   Object.keys(place).forEach(function (id) {
     var el = document.getElementById(id);

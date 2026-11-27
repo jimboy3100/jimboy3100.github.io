@@ -27132,7 +27132,7 @@ function thelegendmodproject() {
             this.addChoiceBox(".hudGroup", "statsPosition", "settings.statsPosition", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
             /* Spectating: click to follow */
             this.addOptions(["clickSpectate"], "spectateGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "hideEventBanner", "showTime", "showStopwatch", "killFeed", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "showTime", "showStopwatch", "killFeed", "analytics"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
@@ -27150,9 +27150,10 @@ function thelegendmodproject() {
                 _lmG1h('game1.set.lineSplitHelp') +
                 '</div>'
             );
-            /* Expanding Land: Reduced motion only changes Expanding Land effects (its death shake and
-             * particles, its entrance spin) */
-            this.addOptions(["reducedMotion"], "expandingLandGroup");
+            /* Expanding Land: options that do something only there. The world size, decay and
+             * server Hz parts of the stats line (still dimmed while the stats line is off), the
+             * event countdown, and Reduced motion (its death shake and particles, its entrance spin) */
+            this.addOptions(["showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "hideEventBanner", "reducedMotion"], "expandingLandGroup");
             /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
             this.addOptions([], "accessibilityGroup");
             this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);

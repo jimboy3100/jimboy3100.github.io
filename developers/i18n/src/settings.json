@@ -3420,7 +3420,7 @@
     "it": "n/16: Pezzi"
   },
   "settings.showStatsWorldSize": {
-    "en": "World Size (Expanding Land)",
+    "en": "World Size",
     "el": "Μέγεθος κόσμου (Expanding Land)",
     "es": "Tamaño del mundo (Expanding Land)",
     "bg": "Размер на света (Expanding Land)",
@@ -3438,7 +3438,7 @@
     "it": "Dimensione del mondo (Expanding Land)"
   },
   "settings.showStatsDecayInfo": {
-    "en": "Decay Info (Expanding Land)",
+    "en": "Decay Info",
     "el": "Πληροφορίες φθοράς (Expanding Land)",
     "es": "Info de pérdida de masa (Expanding Land)",
     "bg": "Информация за загубата на маса (Expanding Land)",
@@ -3654,7 +3654,7 @@
     "it": "Jitter del ping (+/- ms, accanto a PING)"
   },
   "settings.showStatsServerHz": {
-    "en": "Server Hz (Expanding Land)",
+    "en": "Server Hz",
     "el": "Hz του server (Expanding Land)",
     "es": "Hz del servidor (Expanding Land)",
     "bg": "Hz на сървъра (Expanding Land)",
@@ -3762,7 +3762,7 @@
     "it": "Kill feed (chi mangi e le tue morti, accanto alla classifica)"
   },
   "settings.hideEventBanner": {
-    "en": "Hide the server event countdown (Expanding Land)",
+    "en": "Hide the server event countdown",
     "el": "Απόκρυψη αντίστροφης μέτρησης event του server (Expanding Land)",
     "es": "Ocultar la cuenta atrás de eventos del servidor (Expanding Land)",
     "bg": "Скрий обратното броене за събития на сървъра (Expanding Land)",
