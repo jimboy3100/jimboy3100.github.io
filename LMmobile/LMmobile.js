@@ -2140,6 +2140,10 @@
             applyLbCompact();
             lb.addEventListener('touchstart', function (e) {
                 if (!prefs.lbCompact) return;
+                /* a tap on a player's mass / sector entry targets that player (its click): it does not
+                 * also change the rows (that hid the tapped row or took a second action) */
+                var t = e.target;
+                if (t && t.closest && t.closest('.lb-data')) return;
                 e.stopPropagation();
                 /* cycle: compact (5) → top 10 → all → compact */
                 lb._lmExpanded = (lb._lmExpanded + 1) % 3;

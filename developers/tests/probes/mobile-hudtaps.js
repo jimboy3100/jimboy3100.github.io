@@ -56,6 +56,17 @@
     mm.dispatchEvent(new Event('touchstart'));
     await sleep(700);
     btns.forEach(function (k, i) { var r = R(c[k]); if (Math.abs(r.l - at0[i].l) > 1 || Math.abs(r.t - at0[i].t) > 1) fail.push(k + ' not back in place after the minimap shrank: ' + [r.l, r.t].map(Math.round) + ' (was ' + [at0[i].l, at0[i].t].map(Math.round) + ')'); });
+    /* compact leaderboard: a tap on a player's mass / sector entry only targets (its click); a tap
+     * elsewhere on the leaderboard changes the rows. Up to 3.702 the entry did both. */
+    var span = lb.querySelector('.lb-data'), own = null;
+    if (!span) { own = span = document.createElement('span'); span.className = 'lb-data'; lb.appendChild(span); }
+    var ex0 = lb._lmExpanded;
+    span.dispatchEvent(new Event('touchstart', { bubbles: true }));
+    if (lb._lmExpanded !== ex0) fail.push('compact leaderboard: a tap on a mass entry changed the rows (' + ex0 + ' -> ' + lb._lmExpanded + ')');
+    lb.dispatchEvent(new Event('touchstart', { bubbles: true }));
+    if (lb._lmExpanded === ex0) fail.push('compact leaderboard: a tap on it no longer changes the rows');
+    while (lb._lmExpanded !== ex0) lb.dispatchEvent(new Event('touchstart', { bubbles: true }));
+    if (own) own.remove();
   } finally {
     try { if (keepPrefs === null) localStorage.removeItem('lm-mobile-prefs'); else localStorage.setItem('lm-mobile-prefs', keepPrefs); } catch (e) { }
     if (H.reloadPrefs) H.reloadPrefs();
