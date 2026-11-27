@@ -27569,7 +27569,9 @@ function thelegendmodproject() {
                     /* the ping and its jitter are written after the FPS */
                     showStatsFPS: ['showStatsFrameTime', 'showStatsJitter'],
                     showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
-                    showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass', 'massFormat'],
+                    /* not Mass format: it also sets the team list, leaderboard, target and tab title
+                     * mass texts (shortMassFormat), which show with the cell mass off too */
+                    showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass'],
                     adaptivePerf: ['adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes'],
                     recordReplays: ['instantReplaySecs'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
