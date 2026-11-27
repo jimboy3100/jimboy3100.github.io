@@ -95,7 +95,7 @@ Triple split, crazy double split, line split, custom macro 1-3, performance mode
 | Scroll wheel | Zoom in/out |
 
 ### Gamepad
-Full gamepad/controller support with customizable button mapping (16 buttons). Default map: A=split, B=feed(macro), X=doubleSplit, Y=respawn, LB=multiboxSwap, RB=split16, Start=menu. Settings: dead zone (0.05-0.5), move range, response curve (0.5-3), zoom sensitivity (0.2-4), trigger threshold, axis inversion, haptic vibration on split and death.
+Full gamepad/controller support. The 16 buttons are bound in the Hotkeys window like keys and mouse buttons (click a field, press the pad button; shown as PAD A ...). Default map: A=split, B=feed(macro), X=doubleSplit, Y=respawn, LB=multiboxSwap, RB=split16, Start=menu. Settings: dead zone (0.05-0.5), move range, response curve (0.5-3), zoom sensitivity (0.2-4), trigger threshold, axis inversion, haptic vibration on split and death (Gamepad window, with a live test).
 
 ### Mobile Touch
 Dedicated mobile touch controls with on-screen buttons for split, feed, and other actions. The game page supports fullscreen, screen wake lock (phone stays awake), and landscape orientation.

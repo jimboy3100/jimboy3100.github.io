@@ -1273,10 +1273,10 @@
             '#lm-sp-overlay .lm-sp-grid > div{display:flex;align-items:center;justify-content:space-between;gap:6px}';
         document.head.appendChild(st);
     }
-    /* o.only 'gp': at the gamepad profiles (the Gamepad window's shortcut) */
+    /* o.only 'gp': at the gamepad profiles */
     function open(o) {
         if (!ready()) { toast('info', esc(tx('loading'))); return; }
-        /* the Gamepad window's shortcut opens the gamepad profiles, the Settings button all of them */
+        /* { only: 'gp' } opens the gamepad profiles, the Settings button all of them */
         if (!isOpen() || isObj(o)) gpView = !!(isObj(o) && o.only === 'gp');
         if (gpView) tab = 'profiles';
         if (isOpen()) { render(); return; }
@@ -1373,8 +1373,7 @@
     }
     function renderProfiles(body) {
         var $ = jq(), inc = includes();
-        /* the gamepad profiles (buttons and tuning only): their own view, also opened from the
-         * Gamepad window */
+        /* the gamepad profiles (buttons and tuning only): their own view */
         if (gpView) $('<div class="lm-sp-note"></div>').text(gt('pkg.pt.gpNote')).appendTo(body);
         var r1 = $('<div class="lm-sp-row"></div>').appendTo(body);
         $('<input type="text" id="lm-sp-name" maxlength="40" autocomplete="off">').attr('placeholder', tx('namePh')).appendTo(r1);

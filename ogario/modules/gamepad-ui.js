@@ -1,6 +1,7 @@
-/* Legend Mod Gamepad window: button map, stick / zoom / trigger tuning, a shortcut to the gamepad profiles (Settings profiles) and a live
- * controller test with dead zone calibration. Loaded by ogario/gamepad.js (LMGamepad.openWindow)
- * the first time the window opens; it only shows and edits what LMGamepad keeps.
+/* Legend Mod Gamepad window: stick / zoom / trigger tuning and a live controller test with dead
+ * zone calibration (the buttons are bound in the Hotkeys window, like keys and mouse buttons).
+ * Loaded by ogario/gamepad.js (LMGamepad.openWindow) the first time the window opens; it only
+ * shows and edits what LMGamepad keeps.
  * While the window is open the pad's buttons are only shown here, not used in the game.
  * Sized for a 915x412 phone screen: the body scrolls, the cross and a tap outside close it.
  */
@@ -12,13 +13,6 @@
     /* texts: developers/i18n/src (modules.gamepadui.*); vars: { l: .., r: .. } for {l} {r} */
     var P = 'modules.gamepadui.';
     function t(k, vars) { return typeof window.lmT === 'function' ? window.lmT(P + k, vars) : k; }
-    /* the label of a gamepad action (LMGamepad.ACTIONS keeps English ones: used when a key is missing) */
-    var ACTION_KEYS = { split: 'actSplit', feed: 'actFeed', doubleSplit: 'actDoubleSplit', split16: 'actSplit16', multiboxSwap: 'actMultiboxSwap', respawn: 'actRespawn', menu: 'actMenu' };
-    function actionLabel(a, fallback) {
-        if (!Object.prototype.hasOwnProperty.call(ACTION_KEYS, a)) return fallback;
-        var s = t(ACTION_KEYS[a]);
-        return s === P + ACTION_KEYS[a] || s === ACTION_KEYS[a] ? fallback : s;
-    }
     /* button names: the letters printed on a pad stay, the D-pad directions are translated */
     var DPAD = { 'D-pad up': 'dpadUp', 'D-pad down': 'dpadDown', 'D-pad left': 'dpadLeft', 'D-pad right': 'dpadRight' };
     function buttonTitle(name) { return Object.prototype.hasOwnProperty.call(DPAD, name) ? t('dpad', [t(DPAD[name])]) : name; }
@@ -38,7 +32,7 @@
     var TOGGLES = ['gamepadInvertX', 'gamepadInvertY', 'gamepadInvertZoom', 'gamepadVibrate'];
 
     var modal = null, backdrop = null, body = null, tabsEl = null, msgEl = null;
-    var tab = 'buttons';
+    var tab = 'tuning';
     var raf = 0;
     var live = null;       // elements the live loop updates on the current tab
     var testPad = -1;      // pad index shown on the Test tab
@@ -101,98 +95,6 @@
             // i18n-ok: CSS
             '#lm-gp-modal .lm-gp-chip.on{background:' + c.mc + ';color:' + c.pc + ';}';
         document.head.appendChild(s);
-    }
-
-    /* hotkeys of the registry, in its order (the same list as the mouse button choices) */
-    function hotkeyList() {
-        var out = [];
-        var h = window.hotkeysCommand || (typeof hotkeysCommand !== 'undefined' ? hotkeysCommand : null);
-        if (!h) return out;
-        for (var id in h) {
-            if (!Object.prototype.hasOwnProperty.call(h, id) || !/^hk-/.test(id)) continue;
-            var label = '';
-            try { label = h[id] && h[id].label; } catch (e) { label = ''; }
-            out.push([id, typeof label === 'string' && label ? label : id]);
-        }
-        return out;
-    }
-
-    /* one select with every action, cloned for each button */
-    function actionSelect() {
-        var g = G();
-        var s = document.createElement('select');
-        var o = document.createElement('option');
-        o.value = 'none';
-        o.textContent = t('none');
-        s.appendChild(o);
-        var og = document.createElement('optgroup');
-        og.label = t('title');
-        for (var a in g.ACTIONS) {
-            o = document.createElement('option');
-            o.value = a;
-            o.textContent = actionLabel(a, g.ACTIONS[a]);
-            og.appendChild(o);
-        }
-        s.appendChild(og);
-        og = document.createElement('optgroup');
-        og.label = t('groupHotkeys');
-        hotkeyList().forEach(function (h) {
-            o = document.createElement('option');
-            o.value = h[0];
-            o.textContent = h[1];
-            og.appendChild(o);
-        });
-        s.appendChild(og);
-        return s;
-    }
-
-    function setSelect(sel, value) {
-        for (var i = 0; i < sel.options.length; i++) {
-            if (sel.options[i].value === value) { sel.selectedIndex = i; return; }
-        }
-        /* a hotkey that no longer exists (or not loaded yet): keep it visible */
-        var o = document.createElement('option');
-        o.value = value;
-        o.textContent = t('unknown', [value]);
-        sel.appendChild(o);
-        sel.value = value;
-    }
-
-    function buildButtons(c) {
-        var g = G();
-        var wrap = el('div');
-        var grid = el('div', 'display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:5px 12px;');
-        var m = g.getMap();
-        var tpl = actionSelect();
-        var chips = [];
-        g.BUTTON_NAMES.forEach(function (name, i) {
-            var row = el('div', 'display:flex;align-items:center;gap:6px;min-width:0;');
-            var chip = el('div', '', buttonChip(name));
-            chip.className = 'lm-gp-chip';
-            chip.title = buttonTitle(name);
-            chips.push(chip);
-            var sel = tpl.cloneNode(true);
-            sel.id = 'lm-gp-btn-' + i;
-            sel.style.flex = '1';
-            sel.style.width = '100%';
-            setSelect(sel, m[i]);
-            sel.addEventListener('change', function () {
-                if (!g.setButton(i, sel.value)) setSelect(sel, g.getMap()[i]);
-            });
-            row.appendChild(chip);
-            row.appendChild(sel);
-            grid.appendChild(row);
-        });
-        wrap.appendChild(grid);
-        var foot = el('div', 'display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;');
-        var reset = btn(t('resetButtons'), 'btn-warning');
-        reset.id = 'lm-gp-reset-buttons';
-        reset.addEventListener('click', function () { g.resetMap(); show('buttons'); });
-        foot.appendChild(reset);
-        foot.appendChild(el('div', 'flex:1;min-width:200px;font-size:11px;color:' + c.tc2 + ';', t('buttonsHint')));
-        wrap.appendChild(foot);
-        live = { chips: chips };
-        return wrap;
     }
 
     function buildTuning(c) {
@@ -262,26 +164,6 @@
         foot.appendChild(vib);
         foot.appendChild(reset);
         wrap.appendChild(foot);
-        live = null;
-        return wrap;
-    }
-
-    /* Named gamepad setups are Settings profiles (ogario/modules/profiles.js, gamepad-only ones:
-     * buttons and sensitivity, nothing else); this tab opens them there. */
-    function buildProfiles(c) {
-        var wrap = el('div');
-        var tg = function (k) { return typeof window.lmT === 'function' ? window.lmT(k) : k; };
-        wrap.appendChild(el('div', 'font-size:12px;color:' + c.tc2 + ';margin:4px 0 10px;line-height:1.5;', tg('pkg.pt.gpMoved')));
-        var go = btn(tg('pkg.pt.gpOpen'), 'btn-primary');
-        go.id = 'lm-gp-profiles-open';
-        go.addEventListener('click', function () {
-            var P = window.LMProfiles;
-            if (!P || typeof P.open !== 'function') { note(tg('game1.set.profilesLoading')); return; }
-            /* the pad works again while the profiles are chosen and applied */
-            close();
-            P.open({ only: 'gp' });
-        });
-        wrap.appendChild(go);
         live = null;
         return wrap;
     }
@@ -465,7 +347,7 @@
         note('');
         while (body.firstChild) body.removeChild(body.firstChild);
         live = null;
-        var f = name === 'tuning' ? buildTuning : name === 'profiles' ? buildProfiles : name === 'test' ? buildTest : buildButtons;
+        var f = name === 'test' ? buildTest : buildTuning;
         body.appendChild(f(c));
     }
 
@@ -507,7 +389,7 @@
         var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:var(--lm-w-hpad,6px 8px 6px 12px);border-bottom:1px solid ' + c.pc2 + ';background:var(--lm-w-head,linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%));');
         head.appendChild(el('div', 'font-size:var(--lm-w-title,15px);font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;flex:none;', '\ud83c\udfae ' + t('title')));
         tabsEl = el('div', 'flex:1;min-width:0;display:flex;align-items:center;gap:4px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;');
-        [['buttons', t('tabButtons')], ['tuning', t('tabTuning')], ['profiles', t('tabProfiles')], ['test', t('tabTest')]].forEach(function (d) {
+        [['tuning', t('tabTuning')], ['test', t('tabTest')]].forEach(function (d) {
             var b = el('div', 'flex:none;cursor:pointer;font-size:var(--lm-w-fs,12px);padding:0 10px;height:var(--lm-w-ctl,30px);line-height:var(--lm-w-ctl,30px);border-radius:var(--lm-radius-s,4px);border:1px solid ' + c.pc2 + ';', d[1]);
             b.id = 'lm-gp-tab-' + d[0];
             b.setAttribute('data-tab', d[0]);

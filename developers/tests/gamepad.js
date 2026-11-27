@@ -1,8 +1,13 @@
 /* Gamepad checks: runs ogario/gamepad.js against simulated controllers (lifecycle, button map,
- * held hotkeys, inverted axes, trigger threshold, profile and storage validation).
+ * held hotkeys, inverted axes, trigger threshold, profile and storage validation, the buttons
+ * bound in the Hotkeys window and the old own actions read as their hotkey commands).
  * node developers/tests/gamepad.js */
 const fs=require('fs'),vm=require('vm');
 const src=fs.readFileSync(process.argv[2] || require('path').join(__dirname, '..', '..', 'ogario', 'gamepad.js'),'utf8');
+/* the core's rule for removed / merged commands (keys and pad buttons) */
+const v4=fs.readFileSync(require('path').join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'),'utf8');
+const rnA=v4.indexOf('function lmRenameOldHotkeys(map) {'),rnB=v4.indexOf('\n}',rnA);
+const renameSrc=v4.slice(rnA,rnB+2);
 let raf=[],listeners={},dlisteners={},pads=[],moves=[],calls=[],focus=true;
 const canvas={dispatchEvent(e){if(e.type==='mousemove')moves.push([e.clientX,e.clientY]);}};
 const ctx={
@@ -36,7 +41,7 @@ check('blur: feed released and stays released',calls[calls.length-1]==='feed:fal
 focus=true;pads=[pad(0,true,true)];calls=[];step();
 check('refocus: held feed resumes',calls.includes('feed:true'));
 // 4 customization: a fresh page per case (own storage, hotkeys and settings)
-function page(o={}){
+function page(o={},pre){
  const st=o.store||{},c={raf:[],moves:[],wheels:[],calls:[],L:{},focus:true,pads:o.pads||[]};
  const cv={dispatchEvent(e){if(e.type==='mousemove')c.moves.push([e.clientX,e.clientY]);if(e.type==='wheel')c.wheels.push(e.deltaY);}};
  const w={innerWidth:1000,innerHeight:800,navigator:{getGamepads:()=>c.pads},
@@ -52,7 +57,7 @@ function page(o={}){
   'hk-tripleSplit':{keyDown(){c.calls.push('triple')},keyUp:null},
   'hk-hold':{keyDown(){c.calls.push('hold:down')},keyUp(){c.calls.push('hold:up')}},
   'hk-macroFeed':{keyDown(){c.calls.push('mf:down')},keyUp(){c.calls.push('mf:up')}}};
- vm.createContext(w);vm.runInContext(src,w);
+ vm.createContext(w);if(pre){vm.runInContext(pre,w);w.lmRenameOldHotkeys=vm.runInContext('lmRenameOldHotkeys',w);}vm.runInContext(src,w);
  c.w=w;c.G=w.LMGamepad;c.store=st;
  c.step=()=>{const q=c.raf;c.raf=[];q.forEach(f=>f());};
  c.go=()=>{c.L.gamepadconnected({gamepad:c.pads[0]});c.step();};
@@ -62,7 +67,7 @@ function page(o={}){
 const gp=(btn={},axes=[0,0,0,0])=>{const b=[];for(let i=0;i<16;i++){const v=btn[i];b.push(typeof v==='number'?{pressed:v>0.1,value:v}:{pressed:!!v,value:v?1:0});}return {index:0,id:'pad',connected:true,mapping:'standard',buttons:b,axes};};
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 { const c=page();
-  check('defaults: the old fixed map',same(c.G.getMap(),{0:'split',1:'feed',2:'doubleSplit',3:'respawn',4:'multiboxSwap',5:'split16',6:'none',7:'none',8:'none',9:'menu',10:'none',11:'none',12:'none',13:'none',14:'none',15:'none'}));
+  check('defaults: the old fixed map, as hotkey commands',same(c.G.getMap(),{0:'hk-split',1:'hk-macroFeed',2:'hk-doubleSplit',3:'hk-quickResp',4:'hk-multiboxswap',5:'hk-split16',6:'none',7:'none',8:'none',9:'menu',10:'none',11:'none',12:'none',13:'none',14:'none',15:'none'}));
   c.pads=[gp({0:true})];c.go();c.step();
   check('defaults: A splits once while held',c.calls.filter(x=>x==='split').length===1);
   check('defaults: nothing written to storage',!('lmGamepad' in c.store)); }
@@ -127,11 +132,11 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   const bad=G._cleanConfig({map:{0:'<script>',1:5,2:'hk-a b',3:'hk-ok',4:'none',99:'split'},profiles:[
     {name:' My  <pad> ',map:{0:'menu'},opts:{gamepadDeadzone:9,gamepadMoveCurve:'2',gamepadInvertX:'true',gamepadVibrate:true,evil:1}},
     {name:'my pad',map:{}},{name:''},{name:'x'.repeat(50)},null,[],'str',{name:7}]});
-  check('validate: bad map entries keep their default',bad.map[0]==='split'&&bad.map[1]==='feed'&&bad.map[2]==='doubleSplit'&&bad.map[3]==='hk-ok'&&bad.map[4]==='none'&&!(99 in bad.map));
+  check('validate: bad map entries keep their default',bad.map[0]==='hk-split'&&bad.map[1]==='hk-macroFeed'&&bad.map[2]==='hk-doubleSplit'&&bad.map[3]==='hk-ok'&&bad.map[4]==='none'&&!(99 in bad.map));
   const p0=bad.profiles[0];
   check('validate: names cleaned, duplicates and unusable profiles dropped',bad.profiles.length===2&&p0.name==='My pad'&&bad.profiles[1].name.length===32);
   check('validate: opts clamped, wrong types and unknown keys dropped',same(p0.opts,{gamepadDeadzone:0.5,gamepadVibrate:true}));
-  check('validate: profile map filled to 16 buttons',p0.map[0]==='menu'&&p0.map[1]==='feed'&&Object.keys(p0.map).length===16);
+  check('validate: profile map filled to 16 buttons',p0.map[0]==='menu'&&p0.map[1]==='hk-macroFeed'&&Object.keys(p0.map).length===16);
   check('validate: not an object gives the defaults',same(G._cleanConfig('x').map,G.defaultMap())&&same(G._cleanConfig([1]).profiles,[]));
   const many=[];for(let i=0;i<30;i++)many.push({name:'p'+i});
   check('validate: at most 20 profiles',G._cleanConfig({profiles:many}).profiles.length===20);
@@ -158,9 +163,43 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('profiles: old setups named like built-in object properties are kept',c.G._cleanConfig(JSON.parse(o.store.lmGamepad)).profiles.map(p=>p.name).join()===names.join());
   o.full=true;c.G.setButton(1,'hk-tripleSplit');o.full=false;
   check('profiles: a button changed while the storage is full is in use',c.G.getMap()[1]==='hk-tripleSplit'&&JSON.parse(o.store.lmGamepad).map[1]!=='hk-tripleSplit');
-  check('profiles: once profiles.js has the old list, this copy goes and the buttons in use are saved',typeof c.G._dropLegacy==='function'&&c.G._dropLegacy()===true&&!('profiles' in JSON.parse(o.store.lmGamepad))&&JSON.parse(o.store.lmGamepad).map[1]==='hk-tripleSplit'&&JSON.parse(o.store.lmGamepad).map[0]==='split');
+  check('profiles: once profiles.js has the old list, this copy goes and the buttons in use are saved',typeof c.G._dropLegacy==='function'&&c.G._dropLegacy()===true&&!('profiles' in JSON.parse(o.store.lmGamepad))&&JSON.parse(o.store.lmGamepad).map[1]==='hk-tripleSplit'&&JSON.parse(o.store.lmGamepad).map[0]==='hk-split');
   c.G.setButton(2,'none');
   check('profiles: a later save does not bring the old list back',!('profiles' in JSON.parse(o.store.lmGamepad))); }
+/* the button map is part of the Hotkeys window (merged from the Gamepad window's Buttons tab) */
+{ const old=page({store:{lmGamepad:JSON.stringify({v:1,map:{0:'split',1:'feed',2:'doubleSplit',3:'respawn',4:'multiboxSwap',5:'split16',6:'hk-tripleSplit',9:'menu',10:'none'}})}});
+  check('merge: old own actions are read as their hotkey commands',same(old.G.getMap(),{0:'hk-split',1:'hk-macroFeed',2:'hk-doubleSplit',3:'hk-quickResp',4:'hk-multiboxswap',5:'hk-split16',6:'hk-tripleSplit',7:'none',8:'none',9:'menu',10:'none',11:'none',12:'none',13:'none',14:'none',15:'none'}));
+  check('merge: nothing written until a change',JSON.parse(old.store.lmGamepad).map[0]==='split');
+  old.pads=[gp({1:true})];old.go();old.step();old.pads=[gp()];old.step();
+  check('merge: an old feed button holds macro feed',old.calls.join().indexOf('mf:down,mf:up')>=0);
+  check('merge: key names',old.G.padIndex('PAD A')===0&&old.G.padIndex('PAD START')===9&&old.G.padIndex('PAD RIGHT')===15&&old.G.padIndex('PAD Z')===-1&&old.G.padIndex('A')===-1&&same(old.G.keysOf('hk-split'),['PAD A'])); }
+{ /* removed or merged commands on a button: the core's rule, as for the keys */
+  const c=page({store:{lmGamepad:JSON.stringify({v:1,map:{0:'hk-precisionZoom',1:'hk-zoomRecall2',9:'hk-bigMinimap',3:'hk-tripleSplit'}})}},renameSrc);
+  const m=c.G.getMap();
+  check('merge: a removed command frees its button (Start: the menu again)',m[0]==='none'&&m[9]==='menu'&&m[1]==='hk-zoom2'&&m[3]==='hk-tripleSplit'); }
+{ const c=page();const G=c.G;
+  const snap=G.getMap();
+  check('hotkeys window: a button on a command, its other button freed, what it ran before returned',G.bind(2,'hk-split')==='hk-doubleSplit'&&G.getMap()[2]==='hk-split'&&G.getMap()[0]==='none');
+  check('hotkeys window: only in memory until Save',!('lmGamepad' in c.store));
+  check('hotkeys window: bad button or command refused',G.bind(16,'hk-split')===null&&G.bind(1.5,'hk-split')===null&&G.bind(0,'<b>')===null&&G.bind(0,'menu')===null);
+  G.bind(9,'hk-tripleSplit');G.free('hk-tripleSplit');
+  check('hotkeys window: DEL frees a command; Start opens the menu again',G.getMap()[9]==='menu');
+  check('hotkeys window: Save stores the buttons',G.commit()===true&&JSON.parse(c.store.lmGamepad).map[2]==='hk-split');
+  G.restore(snap);
+  check('hotkeys window: Close puts the buttons back',same(G.getMap(),snap)&&JSON.parse(c.store.lmGamepad).map[0]==='hk-split');
+  G.bind(0,'hk-tripleSplit');G.resetMap(true);
+  check('hotkeys window: Restore gives the default buttons (kept by Save)',same(G.getMap(),G.defaultMap())&&JSON.parse(c.store.lmGamepad).map[0]==='hk-split'); }
+{ /* a key field of the Hotkeys window has the focus: a pressed button is bound, not run */
+  const c=page();const bound=[];
+  const field={tagName:'INPUT',id:'hk-feed',classList:{contains:k=>k==='custom-key-in'},closest:q=>q==='#hotkeys'?{}:null};
+  c.w.legendmod6={setHotkey:(k,id)=>bound.push(k+'>'+id)};
+  c.w.document.activeElement=field;
+  c.pads=[gp({0:true})];c.go();c.step();
+  check('hotkeys field: the pressed button is bound to the field command, once while held',same(bound,['PAD A>hk-feed'])&&!c.calls.includes('split'));
+  c.pads=[gp({0:true,9:true})];c.step();
+  check('hotkeys field: Start is bound too, not the menu',same(bound,['PAD A>hk-feed','PAD START>hk-feed']));
+  c.w.document.activeElement=null;c.pads=[gp()];c.step();c.pads=[gp({0:true})];c.step();
+  check('hotkeys field: without the focus the button runs its command again',c.calls.includes('split')); }
 { const G=page().G;
   check('calibration: suggested dead zone',G.suggestDeadzone(0)===0.05&&G.suggestDeadzone(0.06)===0.11&&G.suggestDeadzone(0.071)===0.13&&G.suggestDeadzone(0.9)===0.5&&G.suggestDeadzone('x')===0.05); }
 { const c=page();let rum=[];const p=gp({0:true});p.vibrationActuator={playEffect(t,o){rum.push(o.duration);return Promise.resolve();}};

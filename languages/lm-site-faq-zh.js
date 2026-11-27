@@ -18,7 +18,7 @@
 "site.faq.howDoIUse": "如何在 Legend Mod 中使用多開（multibox）？",
 "site.faq.multiboxGivesYouA": "多開功能讓你在同一個分頁中擁有第二個單位。在「快捷鍵」視窗（選單中的鍵盤圖示）中為 <strong>Multibox 切換下一個</strong> 設定一個按鍵：按下後會啟動第二個單位，之後可在兩個細胞之間切換控制。MultiBox 選項可以讓視角顯示兩個單位的中間位置、在單位周圍畫出圓環並凍結未使用的單位，而且每個單位都能使用自己的造型設定檔。",
 "site.faq.doesLegendModSupport": "Legend Mod 支援遊戲手把嗎？",
-"site.faq.yesLegendModIs3": "支援！Legend Mod 具備<strong>遊戲手把支援</strong>。只要連接 Xbox、PlayStation 或其他瀏覽器以標準配置辨識的手把，就能立即使用。按鍵、靈敏度和設定檔都在快捷鍵視窗的遊戲手把區塊中。左搖桿移動、右搖桿縮放、A 分裂、X 雙重分裂、RB 分裂 16 次、B 吐球（按住）、Y 重生、LB 切換多開單位，Start 開啟選單。",
+"site.faq.yesLegendModIs3": "支援！Legend Mod 具備<strong>遊戲手把支援</strong>。只要連接 Xbox、PlayStation 或其他瀏覽器以標準配置辨識的手把，就能立即使用。手把按鈕在快捷鍵視窗中像按鍵一樣設定（點一下欄位再按按鈕）；靈敏度與即時測試在那裡的遊戲手把視窗中。左搖桿移動、右搖桿縮放、A 分裂、X 雙重分裂、RB 分裂 16 次、B 吐球（按住）、Y 重生、LB 切換多開單位，Start 開啟選單。",
 "site.faq.skinsVisuals": "🎨 造型與視覺",
 "site.faq.howDoIAdd": "如何新增自訂造型？",
 "site.faq.openTheLegendMod": "使用 Legend Mod 選單「首頁」分頁中的造型欄位（在你的暱稱下方），以及「設定」中的「造型」區塊。你可以：1) 貼上任何圖片網址作為造型。2) 上傳自己的圖片檔。3) 使用<strong>造型輪播器</strong>循環切換多個造型。4) 新增 GIF 動畫或影片造型。5) 到 <a href=\"/skins/\">legendmod.ml/skins</a> 瀏覽社群造型。",

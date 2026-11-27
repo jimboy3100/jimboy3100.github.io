@@ -26634,8 +26634,8 @@ function thelegendmodproject() {
         },
         /* The gamepad in the Hotkeys window, above the keys: every input
          * binding is there and none is in Settings (owner's rule). Mouse buttons are bound in the
-         * key fields themselves (hotkeysSetup.mouseKeys); gamepad support is always on (the
-         * Gamepad window sets its buttons). */
+         * key fields themselves (hotkeysSetup.mouseKeys), gamepad buttons too ('PAD A', pressed on
+         * the pad; ogario/gamepad.js); gamepad support is always on. */
         buildHotkeysControls() {
             var cfg = $('#hotkeys-cfg');
             if (!cfg.length || document.getElementById('lm-hk-controls')) return;
@@ -26646,9 +26646,9 @@ function thelegendmodproject() {
                 return $('<h5 class="lm-hk-head menu-main-color"></h5>').attr({ 'data-i18n': key, 'data-lm-sec': sec }).text(lmT(key));
             };
             box.append(head('modules.gamepadui.title', 'lmHkGamepad'));
-            /* Gamepad window: button map, sensitivity, dead zone, a shortcut to the gamepad
-             * profiles (Settings profiles) and a live test
-             * (ogario/gamepad.js loads ogario/modules/gamepad-ui.js the first time it opens) */
+            /* Gamepad window: sensitivity, dead zone, triggers, vibration and a live test (the
+             * buttons are bound in the key fields below; ogario/gamepad.js loads
+             * ogario/modules/gamepad-ui.js the first time it opens) */
             var gpRow = $('<div class="row lm-hk-ctl lm-hk-btnrow"></div>');
             $('<button type="button" id="lm-gamepad-btn" class="btn btn-sm btn-block btn-primary"></button>')
                 .attr('data-i18n', 'settings.gamepadWindow').text(lmT('settings.gamepadWindow'))
@@ -84552,6 +84552,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (window.toastr) toastr.error(lmT('modules.smalltools.storageFull'));
                 return false;
             }
+            /* the gamepad buttons bound in this window (ogario/gamepad.js keeps them) */
+            var gp = this.pad();
+            if (gp && gp.commit() === false) {
+                if (window.toastr) toastr.error(lmT('modules.smalltools.storageFull'));
+                return false;
+            }
             return true;
         },
         saveCommands() {
@@ -84567,15 +84573,27 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         resetHotkeys() {
             this.loadDefaultHotkeys();
+            var gp = this.pad();
+            if (gp) gp.resetMap(true);
             this.lastPressedKey = '';
             this.lastKeyId = '';
+            this.showAllKeys();
+        },
+        /* every key field shows its keys, mouse and gamepad buttons again (ogario/gamepad.js calls
+         * it when its buttons change from outside) */
+        showAllKeys() {
             var setup = this;
             $('#hotkeys-cfg .custom-key-in').each(function () { if (hotkeysCommand[this.id]) setup.showKeys(this.id); });
+        },
+        /* ogario/gamepad.js, when it is loaded and has the Hotkeys window's binding functions */
+        pad() {
+            var g = window.LMGamepad;
+            return g && typeof g.bind === 'function' && typeof g.keysOf === 'function' ? g : null;
         },
         setHotkeysMenu() {
             //var t = this;
             const setup = this;
-            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"lm-hk-title\" class=\"menu-main-color\" data-i18n=\"settings.hotkeys\">' + _lmTH('settings.hotkeys', '') + '</div><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\" data-i18n=\"settings.restoreSettings\">' + _lmTH('settings.restoreSettings', '') + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\" data-i18n=\"settings.saveSett\">' + _lmTH('settings.saveSett', '') + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\" data-i18n=\"settings.close\">' + _lmTH('settings.close', '') + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li data-i18n=\"settings.hk-inst-assign\">' + _lmTH('settings.hk-inst-assign', '') + '</li><li data-i18n=\"settings.hk-inst-delete\">' + _lmTH('settings.hk-inst-delete', '') + '</li><li data-i18n=\"settings.hk-inst-keys\">' + _lmTH('settings.hk-inst-keys', '') + '</li><li data-i18n=\"pkg.mb.hkInstMouse\">' + _lmTH('pkg.mb.hkInstMouse', '') + '</li></ul></div></div>'), hotkeysCommand)
+            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"lm-hk-title\" class=\"menu-main-color\" data-i18n=\"settings.hotkeys\">' + _lmTH('settings.hotkeys', '') + '</div><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\" data-i18n=\"settings.restoreSettings\">' + _lmTH('settings.restoreSettings', '') + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\" data-i18n=\"settings.saveSett\">' + _lmTH('settings.saveSett', '') + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\" data-i18n=\"settings.close\">' + _lmTH('settings.close', '') + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li data-i18n=\"settings.hk-inst-assign\">' + _lmTH('settings.hk-inst-assign', '') + '</li><li data-i18n=\"settings.hk-inst-delete\">' + _lmTH('settings.hk-inst-delete', '') + '</li><li data-i18n=\"settings.hk-inst-keys\">' + _lmTH('settings.hk-inst-keys', '') + '</li><li data-i18n=\"pkg.mb.hkInstMouse\">' + _lmTH('pkg.mb.hkInstMouse', '') + '</li><li data-i18n=\"pkg.rm3w.hkInstPad\">' + _lmTH('pkg.rm3w.hkInstPad', '') + '</li></ul></div></div>'), hotkeysCommand)
                 if (hotkeysCommand.hasOwnProperty(command)) {
                     var currentCommand = hotkeysCommand[command],
                         text = '';
@@ -84611,6 +84629,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     //hotkeysSetup.saveHotkeys();
                     if (!setup.saveHotkeys()) return;
                     setup.openSnapshot = null;
+                    setup.openPadSnapshot = null;
                     $('#hotkeys').fadeOut(500);
                 }),
                 $(document).on('click', '#close-hotkeys', function (event) {
@@ -84621,6 +84640,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 $(document).on('click', '.hotkeys-link', function (event) {
                     if (!$('#hotkeys').is(':visible') || !setup.openSnapshot) {
                         setup.openSnapshot = JSON.stringify(hotkeys);
+                        var gpOpen = setup.pad();
+                        setup.openPadSnapshot = gpOpen ? gpOpen.getMap() : null;
                     }
                     $('#hotkeys').fadeIn(500);
                     $('#hotkeys-cfg').perfectScrollbar('update');
@@ -84825,9 +84846,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             return keys.concat(mouse);
         },
-        /* the text of a command's field */
+        /* the text of a command's field: its key, mouse buttons and gamepad buttons ('PAD A') */
         keysText(id) {
-            return this.keysOf(id).join(' / ');
+            var gp = this.pad(), pads = [];
+            try { if (gp) pads = gp.keysOf(id); } catch (e) { }
+            return this.keysOf(id).concat(pads).join(' / ');
         },
         showKeys(id) {
             var text = this.keysText(id);
@@ -84866,6 +84889,26 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                     if (_lmKc && _lmKc.level === 'warn' && window.toastr) toastr.warning(lmT('game2.hkBrowserWarn', [_lmKe(key), _lmKe(_lmKc.what)]));
                 }
+                /* a gamepad button ('PAD A', pressed on the pad while the field has the focus):
+                 * the button goes to this command, its other button is free (one per command,
+                 * like the mouse buttons); the command that had the button loses it */
+                var _lmGp = this.pad(), _lmPi = _lmGp ? _lmGp.padIndex(key) : -1;
+                if (_lmPi >= 0) {
+                    var _lmPadWas = _lmGp.bind(_lmPi, id);
+                    this.showKeys(id);
+                    this.lastPressedKey = key;
+                    this.lastKeyId = id;
+                    if (typeof _lmPadWas === 'string' && _lmPadWas !== id && hotkeysCommand[_lmPadWas]) {
+                        this.showKeys(_lmPadWas);
+                        if (window.toastr) {
+                            var _lmPadLbl = $('<div>').text(hotkeysCommand[_lmPadWas].label || _lmPadWas).html();
+                            var _lmPadNow = this.keysText(_lmPadWas);
+                            toastr.info(_lmPadNow ? lmT('game2.hkMoved', [_lmPadLbl, $('<div>').text(_lmPadNow).html()]) : lmT('game2.hkUnbound', [_lmPadLbl]));
+                        }
+                    }
+                    return;
+                }
+                if (key === 'DEL' && _lmGp) _lmGp.free(id);
                 /* DEL clears the row; a key replaces the row's key and a mouse button its mouse
                  * buttons, so a command keeps a key and a button */
                 var _lmMouseNew = this.isMouseKey(key), _lmOld = this.keysOf(id);
@@ -84937,7 +84980,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     hotkeys = JSON.parse(this.openSnapshot);
                 } catch (eSnap) { }
             }
+            var gp = this.pad();
+            if (gp && this.openPadSnapshot) gp.restore(this.openPadSnapshot);
             this.openSnapshot = null;
+            this.openPadSnapshot = null;
             this.lastPressedKey = '';
             this.lastKeyId = '';
             this.refreshHotkeysMenu();

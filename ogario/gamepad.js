@@ -2,10 +2,12 @@
  * Always on: it reads the pads only while one is connected (gamepadconnected starts the frame
  * loop, which ends when none is left), so without a controller it costs nothing. The old option
  * "gamepadEnabled" is ignored (old profiles and imports may still have it).
- * Buttons, stick sensitivity, triggers, inverted axes and vibration are set in the Gamepad window
- * (Hotkeys window > Gamepad, or its hotkey). The window lives in ogario/modules/gamepad-ui.js and
- * is loaded the first time it opens. Named gamepad setups are Settings profiles (gamepad-only
- * ones, ogario/modules/profiles.js).
+ * The buttons are bound in the Hotkeys window like keys and mouse buttons: a key field takes a
+ * pad button pressed while it has the focus ('PAD A' ... next to its key), Save keeps it, Close
+ * undoes it, Restore gives the default buttons. Stick sensitivity, triggers, inverted axes,
+ * vibration and the live test are in the Gamepad window (Hotkeys window > Gamepad, or its
+ * hotkey; ogario/modules/gamepad-ui.js, loaded the first time it opens). Named gamepad setups are
+ * Settings profiles (gamepad-only ones, ogario/modules/profiles.js).
  * The button map is kept in localStorage 'lmGamepad' (JSON, checked on load); the sliders and
  * toggles are ordinary gameplay settings (gamepad* in defaultmapsettings).
  */
@@ -16,9 +18,9 @@
 
     /* Standard mapping button index -> action.
      * 0 A, 1 B, 2 X, 3 Y, 4 LB, 5 RB, 6 LT, 7 RT, 8 Back, 9 Start, 10 LS, 11 RS, 12-15 D-pad.
-     * An action is one of the gamepad actions below, a hotkey id from hotkeysCommand ('hk-...',
-     * keyDown on press, keyUp on release) or 'none'. These defaults are the fixed map from
-     * before the buttons could be changed. */
+     * An action is a hotkey id from hotkeysCommand ('hk-...', keyDown on press, keyUp on release),
+     * 'menu' (Start: the menu, like Esc, while no command is on it) or 'none'. These defaults are
+     * the fixed map from before the buttons could be changed. */
     /* the texts come from the language packs (developers/i18n/src/game2.json); the key itself when the
      * translations are not loaded (unit tests) */
     function T(key) { return window.lmT ? window.lmT(key) : key; }
@@ -30,32 +32,30 @@
     }
     var BUTTON_NAMES = buttonNames();
     var BUTTON_COUNT = BUTTON_NAMES.length;
+    /* the key names of the buttons in the hotkeys fields, like 'MOUSE RIGHT' (i18n-ok: key names) */
+    var KEY_NAMES = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'BACK', 'START', 'LS', 'RS', 'UP', 'DOWN', 'LEFT', 'RIGHT'];
+    var START = 9;
     var DEFAULT_MAP = {
-        0: 'split',        // A
-        1: 'feed',         // B (hold = macro feed)
-        2: 'doubleSplit',  // X
-        3: 'respawn',      // Y (quick respawn, or Play when dead)
-        4: 'multiboxSwap', // LB
-        5: 'split16',      // RB
-        9: 'menu'          // Start (toggle menu, like Esc)
+        0: 'hk-split',        // A
+        1: 'hk-macroFeed',    // B (held: macro feed)
+        2: 'hk-doubleSplit',  // X
+        3: 'hk-quickResp',    // Y (quick respawn, or Play when dead)
+        4: 'hk-multiboxswap', // LB (existing units only)
+        5: 'hk-split16',      // RB
+        9: 'menu'             // Start (toggle menu, like Esc)
     };
-    /* the gamepad's own actions (labels for the window: getters, in the chosen language) */
-    var ACTIONS = {
-        get split() { return T('game2.gpSplit'); },
-        get feed() { return T('game2.gpFeed'); },
-        get doubleSplit() { return T('game2.gpDoubleSplit'); },
-        get split16() { return T('game2.gpSplit16'); },
-        get multiboxSwap() { return T('game2.gpMultiboxSwap'); },
-        get respawn() { return T('game2.gpRespawn'); },
-        get menu() { return T('game2.gpMenu'); }
-    };
+    /* The gamepad's own actions of older versions are the hotkey commands that do the same: a
+     * stored, imported or profile map is read with these (saved again only when it changes). */
+    var OLD_ACTIONS = { split: 'hk-split', feed: 'hk-macroFeed', doubleSplit: 'hk-doubleSplit', split16: 'hk-split16', multiboxSwap: 'hk-multiboxswap', respawn: 'hk-quickResp' };
+    /* what a button runs when the command is not there (the hotkeys file not loaded yet) */
+    var APP_FALLBACK = { 'hk-split': 'split', 'hk-doubleSplit': 'doubleSplit', 'hk-split16': 'split16' };
     var TRIGGERS = { 6: 1, 7: 1 };  // LT, RT: analog, pressed from the trigger threshold
     var AXIS_MOVE_X = 0, AXIS_MOVE_Y = 1, AXIS_ZOOM = 3;
     var DEAD_ZONE = 0.2;
     var ZOOM_INTERVAL = 50;  // ms between zoom wheel steps
     var ZOOM_STRENGTH = 24;  // wheel deltaY at full tilt per step (120 = one mouse wheel notch)
     /* actions that still work while the menu is open */
-    var MENU_ACTIONS = { menu: 1, respawn: 1 };
+    var MENU_ACTIONS = { menu: 1, 'hk-quickResp': 1 };
     var STORE_KEY = 'lmGamepad';
     var MAX_PROFILES = 20;
     /* the tuning settings: [min, max, default] for numbers, the default for toggles. The
@@ -75,7 +75,6 @@
 
     var running = false;
     var prevPressed = {};    // "padIndex:button" -> bool
-    var feedHeld = false;
     var holdActive = {};     // hotkey id -> keyDown sent, keyUp not yet
     var lastMove = null;
     var lastZoomAt = 0;
@@ -91,20 +90,35 @@
         return Object.prototype.hasOwnProperty.call(o, k);
     }
 
-    /* an action name that can be stored, else null */
+    /* an action name that can be stored, else null (an old own action is its hotkey command) */
     function cleanAction(a) {
         if (typeof a !== 'string') return null;
-        if (a === 'none' || hasOwn(ACTIONS, a)) return a;
+        if (a === 'none' || a === 'menu') return a;
+        if (hasOwn(OLD_ACTIONS, a)) return OLD_ACTIONS[a];
         return /^hk-[A-Za-z0-9_-]{1,40}$/.test(a) ? a : null;
     }
 
-    /* a full map (one entry per button) from anything: unusable entries keep their default */
+    /* what a button without a command does: Start opens the menu, the others nothing */
+    function freed(i) { return i === START ? 'menu' : 'none'; }
+
+    /* a full map (one entry per button) from anything: unusable entries keep their default. A
+     * command merged into another or removed (the core's lmRenameOldHotkeys, the same rule as for
+     * the keys) is renamed, or its button is free. */
     function cleanMap(m) {
         var out = {};
         var ok = m && typeof m === 'object' && !Array.isArray(m);
         for (var i = 0; i < BUTTON_COUNT; i++) {
             var v = ok && hasOwn(m, String(i)) ? cleanAction(m[i]) : null;
             out[i] = v || (hasOwn(DEFAULT_MAP, i) ? DEFAULT_MAP[i] : 'none');
+        }
+        if (typeof window.lmRenameOldHotkeys === 'function') {
+            try {
+                var hk = {};
+                for (var j = 0; j < BUTTON_COUNT; j++) if (/^hk-/.test(out[j])) hk['PAD ' + j] = out[j];
+                if (window.lmRenameOldHotkeys(hk)) {
+                    for (var k = 0; k < BUTTON_COUNT; k++) if (/^hk-/.test(out[k])) out[k] = hasOwn(hk, 'PAD ' + k) ? hk['PAD ' + k] : freed(k);
+                }
+            } catch (e) { }
         }
         return out;
     }
@@ -316,6 +330,7 @@
 
     /* a hotkey with a keyUp is held (macro feed, scan trick...): down while the button is */
     function isHold(id) {
+        if (id === 'hk-macroFeed') return true;
         var c = hotkey(id);
         return !!(c && typeof c.keyUp === 'function');
     }
@@ -354,27 +369,24 @@
     }
 
     function isSplit(action) {
-        return action === 'split' || action === 'doubleSplit' || action === 'split16' ||
-            (/^hk-/.test(action) && /split/i.test(action) && !/^hk-show/.test(action));
+        return /^hk-/.test(action) && /split/i.test(action) && !/^hk-show/.test(action);
     }
 
-    function setFeed(on) {
-        if (on === feedHeld) return;
-        feedHeld = on;
-        if (!hk('hk-macroFeed', !on)) {
-            var a = app();
-            if (a && a.macroFeed) a.macroFeed(on);
-        }
+    /* one held command down or up; macro feed without the hotkeys file goes to the game itself */
+    function holdHk(id, up) {
+        if (hk(id, up) || id !== 'hk-macroFeed') return;
+        var a = app();
+        if (a && a.macroFeed) a.macroFeed(!up);
     }
 
     /* held hotkeys: keyUp for the ones let go, keyDown for the newly wanted */
     function setHolds(wanted) {
         var id;
         for (id in holdActive) {
-            if (!wanted[id]) { delete holdActive[id]; hk(id, true); }
+            if (!wanted[id]) { delete holdActive[id]; holdHk(id, true); }
         }
         for (id in wanted) {
-            if (!holdActive[id]) { holdActive[id] = true; hk(id, false); }
+            if (!holdActive[id]) { holdActive[id] = true; holdHk(id, false); }
         }
     }
 
@@ -397,23 +409,15 @@
         if (b) b.click();
     }
 
+    /* a button press runs its command as the key does, but for what the pad always did with these */
     function run(action) {
         var a = app();
         switch (action) {
-            case 'split':
-                if (a && a.split) a.split(); else hk('hk-split');
-                break;
-            case 'doubleSplit':
-                if (a && a.doubleSplit) a.doubleSplit(); else hk('hk-doubleSplit');
-                break;
-            case 'split16':
-                if (a && a.split16) a.split16(); else hk('hk-split16');
-                break;
-            case 'multiboxSwap':
+            case 'hk-multiboxswap':
                 /* only swap between existing units: with none, multiboxswap() would open a new connection */
                 if (a && a.multiboxswap && window.spects && window.spects.length && window.legendmod && window.legendmod.multiBoxPlayerExists) a.multiboxswap();
                 break;
-            case 'respawn':
+            case 'hk-quickResp':
                 respawn();
                 break;
             case 'menu':
@@ -421,12 +425,11 @@
                 break;
             default:
                 /* a hotkey without keyUp: one press */
-                if (/^hk-/.test(action)) hk(action, false);
+                if (/^hk-/.test(action) && !hk(action, false) && hasOwn(APP_FALLBACK, action) && a && typeof a[APP_FALLBACK[action]] === 'function') a[APP_FALLBACK[action]]();
         }
     }
 
     function release() {
-        setFeed(false);
         setHolds({});
         prevPressed = {};
         lastMove = null;
@@ -478,10 +481,11 @@
         if (!list.length) { running = false; release(); watchDeath(); return; }
         if (!map) load();
         var off = away() || suspended;
-        var blockAll = off || (typing() && !menuOpen());
+        /* a key field of the Hotkeys window has the focus: a pressed button is bound to its command */
+        var field = off ? null : bindField();
+        var blockAll = off || !!field || (typing() && !menuOpen());
         var blockGame = off || typing() || menuOpen();
         var thr = opt('gamepadTrigger');
-        var feedWanted = false;
         var holdWanted = {};
         var moved = false;
         var zoomed = false;
@@ -493,15 +497,15 @@
             var buttons = pad.buttons || [];
             for (var bi = 0; bi < BUTTON_COUNT; bi++) {
                 var action = map[bi];
-                if (!action || action === 'none') continue;
                 var isDown = buttonDown(buttons[bi], bi, thr);
                 var id = pad.index + ':' + bi;
                 var was = !!prevPressed[id];
                 prevPressed[id] = isDown;
-                if (action === 'feed') {
-                    if (isDown && !blockGame) feedWanted = true;
+                if (field) {
+                    if (isDown && !was) bindPress(field, bi);
                     continue;
                 }
+                if (!action || action === 'none') continue;
                 if (/^hk-/.test(action) && isHold(action)) {
                     if (isDown && !blockGame) holdWanted[action] = true;
                     if (isDown && !was) lastPadIndex = pad.index;
@@ -549,7 +553,6 @@
         for (var id2 in prevPressed) {
             if (!present[id2.split(':')[0]]) delete prevPressed[id2];
         }
-        setFeed(feedWanted);
         setHolds(holdWanted);
         requestAnimationFrame(frame);
     }
@@ -557,7 +560,6 @@
     /* Focus lost while Feed (or another held hotkey) is held: the frames stop with the tab
      * hidden, so release here (the keyboard and mouse have the same on blur) */
     function leave() {
-        setFeed(false);
         setHolds({});
         lastMove = null;
         /* P1 fix #74: clear prevPressed so that buttons physically held while the page
@@ -609,13 +611,44 @@
      * loop for any pad connected later) */
     start();
 
+    /* ── The Hotkeys window binds the buttons (ogario.v4.js hotkeysSetup) ── */
+    function hkSetup() { return window.legendmod6 || null; }
+    /* the key field of the Hotkeys window that has the focus, else null */
+    function bindField() {
+        var a = document.activeElement;
+        if (!a || a.tagName !== 'INPUT' || !a.id || !/^hk-/.test(a.id) || !a.classList || !a.classList.contains('custom-key-in')) return null;
+        return a.closest && a.closest('#hotkeys') ? a : null;
+    }
+    function bindPress(field, i) {
+        var h = hkSetup();
+        try { if (h && typeof h.setHotkey === 'function') h.setHotkey('PAD ' + KEY_NAMES[i], field.id); } catch (e) { }
+    }
+    /* the fields show the buttons again (a settings profile, this file loaded after the window) */
+    function fieldsChanged() {
+        var h = hkSetup();
+        try { if (h && typeof h.showAllKeys === 'function') h.showAllKeys(); } catch (e) { }
+    }
+    /* 'PAD A' -> 0, else -1 */
+    function padIndex(key) {
+        var m = /^PAD ([A-Z]+)$/.exec(String(key || ''));
+        return m ? KEY_NAMES.indexOf(m[1]) : -1;
+    }
+    /* the buttons of a command, as key names */
+    function keysOf(cmd) {
+        if (!map) load();
+        var out = [];
+        for (var i = 0; i < BUTTON_COUNT; i++) if (map[i] === cmd) out.push('PAD ' + KEY_NAMES[i]);
+        return out;
+    }
+    /* a command's buttons are free (Start: the menu again); in memory until commit */
+    function freeCommand(cmd) {
+        if (!map) load();
+        setHolds({});
+        for (var i = 0; i < BUTTON_COUNT; i++) if (map[i] === cmd) map[i] = freed(i);
+    }
+
     /* the Gamepad window: ogario/modules/gamepad-ui.js, loaded the first time it opens */
     var uiLoading = false;
-    /* the Hotkeys window's conflict list (open behind the Gamepad window) lists gamepad buttons
-     * that run a command a key runs too: it follows a button change */
-    function conflictsChanged() {
-        try { if (window.legendmod6 && typeof window.legendmod6.refreshConflicts === 'function') window.legendmod6.refreshConflicts(); } catch (e) { }
-    }
 
     function openWindow(toggle) {
         var ui = window.LMGamepadUI;
@@ -648,7 +681,7 @@
 
     window.LMGamepad = {
         get BUTTON_NAMES() { return buttonNames(); },
-        ACTIONS: ACTIONS,
+        KEY_NAMES: KEY_NAMES,
         OPTS: OPTS,
         defaultMap: function () { return cleanMap(null); },
         getMap: function () { if (!map) load(); return cleanMap(map); },
@@ -661,18 +694,40 @@
             if (map[i] === a) return true;
             /* a hotkey held on the button being changed goes up first */
             setHolds({});
-            if (map[i] === 'feed') setFeed(false);
             map[i] = a;
             save();
-            conflictsChanged();
+            fieldsChanged();
             return true;
         },
-        resetMap: function () {
+        /* the default buttons; temp: in memory only (the Hotkeys window's Restore, kept by Save) */
+        resetMap: function (temp) {
             setHolds({});
-            setFeed(false);
             map = cleanMap(null);
+            if (!temp) { save(); fieldsChanged(); }
+        },
+        /* The Hotkeys window: 'PAD A' ... are the key names of the buttons. bind() puts a button on
+         * a command (its other button goes: one per command, like the mouse buttons) and returns
+         * what the button ran before; free() frees a command's buttons. Both only in memory until
+         * commit() (Save); restore(snapshot) puts a getMap() copy back (Close). */
+        padIndex: padIndex,
+        keysOf: keysOf,
+        bind: function (i, cmd) {
+            if (!(i >= 0 && i < BUTTON_COUNT) || i !== Math.floor(i) || typeof cmd !== 'string' || !/^hk-[A-Za-z0-9_-]{1,40}$/.test(cmd)) return null;
+            if (!map) load();
+            var was = map[i];
+            freeCommand(cmd);
+            map[i] = cmd;
+            return was;
+        },
+        free: freeCommand,
+        commit: function () { return save(); },
+        restore: function (snap) {
+            if (!snap || typeof snap !== 'object') return;
+            var m = cleanMap(snap);
+            if (map && JSON.stringify(m) === JSON.stringify(map)) return;
+            setHolds({});
+            map = m;
             save();
-            conflictsChanged();
         },
         getOpts: currentOpts,
         setOpts: applyOpts,
@@ -684,13 +739,13 @@
         /* Gamepad window open: the buttons are only shown there, not used in the game */
         setSuspended: function (on) {
             suspended = !!on;
-            if (suspended) { setFeed(false); setHolds({}); lastMove = null; }
+            if (suspended) { setHolds({}); lastMove = null; }
         },
         /* lets go of everything held (before the buttons are replaced from outside, e.g. a settings profile) */
-        release: function () { setFeed(false); setHolds({}); },
+        release: function () { setHolds({}); },
         buttonDown: function (b, i) { return buttonDown(b, i, opt('gamepadTrigger')); },
         /* true while a button holds this hotkey command */
-        isHeld: function (id) { return !!(hasOwn(holdActive, id) && holdActive[id]) || (id === 'hk-macroFeed' && feedHeld); },
+        isHeld: function (id) { return !!(hasOwn(holdActive, id) && holdActive[id]); },
         suggestDeadzone: suggestDeadzone,
         testRumble: function (pad) { return rumble(pad, 250, 0.7, true); },
         canVibrate: canVibrate,
@@ -702,9 +757,11 @@
         _cleanOpt: cleanOpt,
         _stickOffset: stickOffset,
         _buttonDown: buttonDown,
-        /* a settings profile with other buttons: the conflict list follows them too */
-        _reload: function () { load(); conflictsChanged(); },
+        /* a settings profile with other buttons: the Hotkeys window fields follow them */
+        _reload: function () { load(); fieldsChanged(); },
         /* profiles.js has the old list now: it leaves this file's copy, the buttons in use are saved */
         _dropLegacy: function () { if (!map) load(); legacyProfiles = []; return save(); }
     };
+    /* the Hotkeys window built before this file loaded shows the buttons now */
+    fieldsChanged();
 })();

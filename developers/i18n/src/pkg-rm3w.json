@@ -1,0 +1,20 @@
+{
+  "pkg.rm3w.hkInstPad": {
+    "en": "Gamepad buttons are keys too: click a field and press a button on the pad. A field keeps one pad button. Start opens the menu (like Esc) while no command is on it.",
+    "el": "Και τα κουμπιά του χειριστηρίου είναι πλήκτρα: κάνε κλικ σε ένα πεδίο και πάτησε ένα κουμπί στο χειριστήριο. Ένα πεδίο κρατά ένα κουμπί χειριστηρίου. Το Start ανοίγει το μενού (όπως το Esc) όσο δεν έχει εντολή.",
+    "es": "Los botones del mando también son teclas: haz clic en un campo y pulsa un botón del mando. Cada campo guarda un botón del mando. Start abre el menú (como Esc) mientras no tenga ningún comando.",
+    "bg": "Бутоните на геймпада също са клавиши: кликни в поле и натисни бутон на геймпада. Едно поле пази един бутон на геймпада. Start отваря менюто (като Esc), докато няма команда на него.",
+    "fr": "Les boutons de la manette sont aussi des touches : cliquez sur un champ et appuyez sur un bouton de la manette. Un champ garde un bouton de manette. Start ouvre le menu (comme Échap) tant qu'aucune commande n'y est.",
+    "ar": "أزرار ذراع التحكم مفاتيح أيضًا: انقر على حقل واضغط زرًا على الذراع. يحتفظ كل حقل بزر واحد من الذراع. يفتح Start القائمة (مثل Esc) ما دام لا يحمل أي أمر.",
+    "zh": "手把按鈕也是按鍵：點一下欄位，再按手把上的按鈕。每個欄位保留一個手把按鈕。Start 沒有指令時會開啟選單（如同 Esc）。",
+    "ru": "Кнопки геймпада тоже клавиши: нажмите на поле и нажмите кнопку на геймпаде. В поле хранится одна кнопка геймпада. Start открывает меню (как Esc), пока на нём нет команды.",
+    "de": "Gamepad-Tasten sind auch Tasten: Klicke in ein Feld und drücke eine Taste am Pad. Ein Feld behält eine Pad-Taste. Start öffnet das Menü (wie Esc), solange kein Befehl darauf liegt.",
+    "tr": "Oyun kolu düğmeleri de tuştur: bir alana tıkla ve koldaki bir düğmeye bas. Bir alan bir kol düğmesi tutar. Start üzerinde komut yokken menüyü açar (Esc gibi).",
+    "pl": "Przyciski pada to też klawisze: kliknij pole i naciśnij przycisk na padzie. Pole trzyma jeden przycisk pada. Start otwiera menu (jak Esc), dopóki nie ma na nim polecenia.",
+    "nl": "Gamepadknoppen zijn ook toetsen: klik op een veld en druk op een knop van de pad. Een veld houdt één padknop. Start opent het menu (zoals Esc) zolang er geen opdracht op staat.",
+    "pt": "Os botões do controle também são teclas: clique num campo e aperte um botão do controle. Cada campo guarda um botão do controle. Start abre o menu (como Esc) enquanto não tiver comando.",
+    "id": "Tombol gamepad juga tombol: klik sebuah kolom lalu tekan tombol di gamepad. Satu kolom menyimpan satu tombol gamepad. Start membuka menu (seperti Esc) selama tidak ada perintah di sana.",
+    "ja": "ゲームパッドのボタンもキーです：欄をクリックしてパッドのボタンを押します。1つの欄に入るパッドのボタンは1つです。Start はコマンドがない間メニューを開きます（Esc と同じ）。",
+    "it": "Anche i pulsanti del gamepad sono tasti: clicca un campo e premi un pulsante del pad. Un campo tiene un pulsante del pad. Start apre il menu (come Esc) finché non ha un comando."
+  }
+}
