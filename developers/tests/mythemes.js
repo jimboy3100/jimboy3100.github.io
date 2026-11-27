@@ -29,7 +29,7 @@ ctx.textLanguage = { bgColor: 'Background', hudScale: '<b>HUD</b> scale', messag
 vm.createContext(ctx);
 i18n(ctx);
 /* the real schema: preset maps, defaultSettings + LM_THEME_DEFAULTS + lmThemeValue, the gameplay settings validator */
-vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
+vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), ctx);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
 vm.runInContext(mod, ctx);

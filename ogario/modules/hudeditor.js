@@ -9,8 +9,8 @@
  * one screen still fits another, and it is clamped into the screen on load, resize and rotation
  * (the saved value is kept: back on the bigger screen the box goes back where it was).
  *
- * The positions are one stylesheet of !important rules: they win over the theme settings (chat
- * position, stats at the top / centre, HUD scale, minimap size), the phone stylesheet and the
+ * The positions are one stylesheet of !important rules: they win over the theme settings (HUD
+ * scale, minimap size), the phone stylesheet and the
  * inline styles other code writes, and removing the stylesheet restores all of that unchanged.
  */
 (function () {
@@ -600,6 +600,42 @@
     api.open = function () { withUI(function (ui) { ui.open(); }); };
     api.close = function () { if (W.LMHudEditorUI) W.LMHudEditorUI.close(false); };
     api.toggle = function () { if (api.isEditing()) api.close(); else api.open(); };
+
+    /* The editor is the one place for HUD positions: the removed position settings (Game stats
+     * position, Chat Position) leave a saved place other than their default in lmHudAdopt
+     * ({ box: entry }, ogario.v4.js lmHudAdoptOld). It goes once into the active layout (a box that
+     * layout already moves keeps its place), or into a new one when none is active, so nothing
+     * jumps. true when a layout was saved and drawn. */
+    var ADOPT_KEY = 'lmHudAdopt';
+    function adoptPending() {
+        var raw = null;
+        try { raw = W.localStorage ? W.localStorage.getItem(ADOPT_KEY) : null; } catch (e) { return false; }
+        if (raw === null) return false;
+        try { W.localStorage.removeItem(ADOPT_KEY); } catch (e) { }
+        var add = null;
+        try { add = cleanComps(JSON.parse(raw)); } catch (e) { return false; }
+        var st = load(), cur = layoutByName(st.active), c = cur ? clone(cur.c) : {}, n = 0;
+        for (var id in add) {
+            if (!own.call(add, id) || !add[id].h || (c[id] && c[id].h)) continue;
+            if (c[id] && c[id].lock) add[id].lock = true;
+            if (c[id] && c[id].hide) add[id].hide = true;
+            c[id] = add[id];
+            n++;
+        }
+        if (!n) return false;
+        var name = cur ? cur.name : '';
+        if (!name) {
+            var base = typeof W.lmT === 'function' ? W.lmT('modules.hudeditorui.custom') : 'Custom';
+            base = cleanName(base) || 'Custom';
+            name = base;
+            for (var k = 2; findIndex(st.list, name) >= 0 && k <= MAX_LAYOUTS + 1; k++) name = cleanName(base.slice(0, NAME_MAX - 4) + ' ' + k);
+        }
+        var saved = api.saveLayout(name, c);
+        if (!saved) return false;
+        if (cur) { if (!preview) refresh(); return true; }
+        return api.applyLayout(saved, true);
+    }
+    api.adoptPending = adoptPending;
     api._internal = { load: load, save: save, comps: comps, eff: function () { return eff; }, measureBox: measureBox, view: view, tx: tx, reset: function () { store = null; } };
 
     function esc(s) {
@@ -665,6 +701,6 @@
     ['resize', 'orientationchange'].forEach(function (n) { W.addEventListener(n, refreshSoon); });
     D.addEventListener('fullscreenchange', refreshSoon);
     D.addEventListener('webkitfullscreenchange', refreshSoon);
-    /* the saved layout, only when one is active */
-    if (load().active) render();
+    /* the saved layout, only when one is active (an old position setting first goes into it) */
+    if (!adoptPending() && load().active) render();
 })();

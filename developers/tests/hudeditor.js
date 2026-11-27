@@ -465,5 +465,41 @@ const J = o => JSON.parse(JSON.stringify(o));
   }
 }
 
+/* ── the removed position settings (Game stats position, Chat Position) go once into the layout ── */
+{
+  const JS = JSON.stringify;
+  const BC = { h: 'c', x: 0, v: 'b', y: 10, s: 1 }, TR = { h: 'r', x: 12, v: 't', y: 12, s: 1 };
+  const boxes = { '#stats-hud': { w: 300, h: 20 }, '#toast-container': { w: 280, h: 60 } };
+  let st = makeStorage();
+  st.setItem('lmHudAdopt', JSON.stringify({ stats: BC, popups: TR }));
+  let b = boot({ storage: st, boxes });
+  let l = b.api.get(b.api.active());
+  check('no layout before: a new active layout "Custom" with the stats at the bottom centre and the popups at the top right',
+    b.api.active() === 'Custom' && l && JS(l.c.stats) === JS(BC) && JS(l.c.popups) === JS(TR) && st.getItem('lmHudAdopt') === null);
+  check('... and it is drawn at once', (b.css() || '').includes('#stats-hud{') && (b.css() || '').includes('#toast-container{'));
+  b = boot({ storage: st, boxes });
+  check('once: the next start changes nothing', b.api.active() === 'Custom' && b.api.list().length === 1);
+
+  st = makeStorage();
+  st.setItem('lmHudLayouts', JSON.stringify({ active: 'Mine', list: [{ name: 'Custom', c: {} }, { name: 'Mine', c: { popups: { h: 'l', x: 5, v: 'b', y: 5, s: 1 }, stats: { hide: true }, team: { h: 'l', x: 1, v: 't', y: 1, s: 1 } } }] }));
+  st.setItem('lmHudAdopt', JSON.stringify({ stats: BC, popups: TR }));
+  b = boot({ storage: st, boxes });
+  l = b.api.get('Mine');
+  check('active layout: the stats join it (keeping its hidden flag), the popups it already places stay, the rest untouched',
+    b.api.active() === 'Mine' && JS(l.c.stats) === JS(Object.assign({}, BC, { hide: true })) && l.c.popups.x === 5 && l.c.team.x === 1 && b.api.list().length === 2);
+
+  st = makeStorage();
+  st.setItem('lmHudLayouts', JSON.stringify({ active: '', list: [{ name: 'Custom', c: { team: { lock: true } } }] }));
+  st.setItem('lmHudAdopt', JSON.stringify({ stats: BC }));
+  b = boot({ storage: st, boxes });
+  check('no active layout and "Custom" taken: a new one beside it, the old one unchanged',
+    b.api.active() === 'Custom 2' && JS(b.api.get('Custom').c) === JS({ team: { lock: true } }) && JS(b.api.get('Custom 2').c.stats) === JS(BC));
+
+  st = makeStorage();
+  st.setItem('lmHudAdopt', '{broken');
+  b = boot({ storage: st, boxes });
+  check('a broken queue is dropped, nothing is made', b.api.active() === '' && b.api.list().length === 0 && st.getItem('lmHudAdopt') === null);
+}
+
 console.log(fail ? fail + ' FAILED' : 'all ok');
 process.exit(fail ? 1 : 0);

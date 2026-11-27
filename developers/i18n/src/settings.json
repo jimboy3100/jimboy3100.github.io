@@ -3185,42 +3185,6 @@
     "ja": "ランキングを中央に",
     "it": "Classifica centrata"
   },
-  "settings.fpsAtTop": {
-    "en": "Game stats at the top",
-    "el": "Στατιστικά παιχνιδιού πάνω",
-    "es": "Estadísticas del juego arriba",
-    "bg": "Статистики на играта горе",
-    "fr": "Stats du jeu en haut",
-    "ar": "إحصائيات اللعبة في الأعلى",
-    "zh": "遊戲統計置頂",
-    "ru": "Статистика игры сверху",
-    "de": "Spielstatistik oben",
-    "tr": "Oyun istatistikleri üstte",
-    "pl": "Statystyki gry na górze",
-    "nl": "Spelstatistieken bovenaan",
-    "pt": "Estatísticas do jogo no topo",
-    "id": "Statistik game di atas",
-    "ja": "ゲーム統計を上部に",
-    "it": "Statistiche di gioco in alto"
-  },
-  "settings.statsAtCenter": {
-    "en": "Game stats at the bottom centre",
-    "el": "Στατιστικά παιχνιδιού κάτω στο κέντρο",
-    "es": "Estadísticas del juego abajo en el centro",
-    "bg": "Статистики на играта долу в центъра",
-    "fr": "Stats du jeu en bas au centre",
-    "ar": "إحصائيات اللعبة في الأسفل بالمنتصف",
-    "zh": "遊戲統計置於底部中央",
-    "ru": "Статистика игры снизу по центру",
-    "de": "Spielstatistik unten mittig",
-    "tr": "Oyun istatistikleri altta ortada",
-    "pl": "Statystyki gry na dole pośrodku",
-    "nl": "Spelstatistieken onderaan in het midden",
-    "pt": "Estatísticas do jogo embaixo, no centro",
-    "id": "Statistik game di bawah tengah",
-    "ja": "ゲーム統計を下部中央に",
-    "it": "Statistiche di gioco in basso al centro"
-  },
   "settings.tweenMaxEffect": {
     "en": "3D HUD tilt (follows the mouse)",
     "el": "3D κλίση του HUD (ακολουθεί το ποντίκι)",
@@ -6622,24 +6586,6 @@
     "id": "Preset tema",
     "ja": "テーマのプリセット",
     "it": "Preset del tema"
-  },
-  "settings.chatPosition": {
-    "en": "Chat Position",
-    "el": "Θέση chat",
-    "es": "Posición del chat",
-    "bg": "Позиция на чата",
-    "fr": "Position du chat",
-    "ar": "موضع الدردشة",
-    "zh": "聊天位置",
-    "ru": "Позиция чата",
-    "de": "Chat-Position",
-    "tr": "Sohbet konumu",
-    "pl": "Pozycja czatu",
-    "nl": "Chatpositie",
-    "pt": "Posição do chat",
-    "id": "Posisi chat",
-    "ja": "チャットの位置",
-    "it": "Posizione della chat"
   },
   "settings.themeType": {
     "en": "Theme type",
@@ -11215,23 +11161,5 @@
     "id": "Tampilkan stopwatch (di atas minimap)",
     "ja": "ストップウォッチを表示（ミニマップの上）",
     "it": "Mostra cronometro (sopra la minimappa)"
-  },
-  "settings.statsPosition": {
-    "en": "Game stats position",
-    "el": "Θέση στατιστικών παιχνιδιού",
-    "es": "Posición de las estadísticas",
-    "bg": "Позиция на статистиката",
-    "fr": "Position des statistiques",
-    "ar": "موضع إحصاءات اللعبة",
-    "zh": "遊戲統計位置",
-    "ru": "Положение статистики",
-    "de": "Position der Spielstatistik",
-    "tr": "Oyun istatistiklerinin yeri",
-    "pl": "Położenie statystyk gry",
-    "nl": "Positie van de spelstatistieken",
-    "pt": "Posição das estatísticas",
-    "id": "Posisi statistik game",
-    "ja": "ゲーム統計の位置",
-    "it": "Posizione delle statistiche"
   }
 }

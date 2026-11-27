@@ -19133,24 +19133,6 @@ var emoticonicons = {
  * (languages/lm-<code>.js). displayText.en is the English set: the fallback of _lmMenuText.
  * textLanguage (below) is the chosen language. */
 var displayText = { en: window.LMi18n ? window.LMi18n.prefixed('settings.', 'en') : {} };
-var chatPositions = {
-    bottomleft: {
-        get name() { return lmT('game1.preset.chatDefault'); },
-        positionClass: "toast-bottom-left"
-    },
-    bottomright: {
-        get name() { return lmT('game1.preset.bottomRight'); },
-        positionClass: "toast-bottom-right"
-    },
-    topleft: {
-        get name() { return lmT('game1.preset.topLeft'); },
-        positionClass: "toast-top-left"
-    },
-    topright: {
-        get name() { return lmT('game1.preset.topRight'); },
-        positionClass: "toast-top-right"
-    }
-}
 var themePresets = {
     legendv2: {
         name: 'Legend v2',
@@ -19716,11 +19698,11 @@ var indicatorMenus = {
         get name() { return lmT('game1.preset.smile'); }
     }
 }
-/* The theme selects built from these maps (chat position, graphics, indicators) take the names of the
+/* The theme selects built from these maps (graphics, indicators) take the names of the
  * newly chosen language at once (the names are getters on lmT) */
 if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
     if (typeof $ !== 'function') return;
-    [['chatPosition', chatPositions], ['graphics', graphicMenus], ['indicators', indicatorMenus]].forEach(function (p) {
+    [['graphics', graphicMenus], ['indicators', indicatorMenus]].forEach(function (p) {
         for (var k in p[1]) if (Object.prototype.hasOwnProperty.call(p[1], k)) $('#' + p[0] + ' option[value="' + k + '"]').text(p[1][k].name);
     });
 });
@@ -19760,7 +19742,6 @@ function _lmCssUrl(u) {
 }
 var defaultSettings = {
     checkonetimeLc2: false,
-    chatPos: 'bottomleft',
     preset: 'legendv2',
     darkTheme: true,
     mainColor: '#01d9cc',
@@ -19973,7 +19954,6 @@ var LM_THEME_SCHEMA = (function () {
         cellShadowBlur: [0, 100, 0],
         cellShadowOffsetX: [-50, 50, 0],
         cellShadowOffsetY: [-50, 50, 0],
-        chatPos: { choices: keys(chatPositions) },
         preset: { choices: keys(themePresets) },
         menuPreset: { choices: keys(themeMenus) },
         graphics: { choices: keys(graphicMenus) },
@@ -21406,7 +21386,6 @@ function _spawnDeathBurst(wx, wy, victimSize, victimColor) {
 
 /* ─── §3.2 defaultmapsettings — Gameplay Toggles ─── */
 var defaultmapsettings = {
-    positionClass: "toast-bottom-left",
     /* WebGL2 is enabled by default, but every frame is preflighted.
      * Unsupported or visually ambiguous scenes fall back atomically to Canvas2D. */
     webgl2Acceleration: true,
@@ -21571,9 +21550,6 @@ var defaultmapsettings = {
     showDevConsole: false,        /* developer console: render time by the FPS, profiler box, packet log; its switch is in the Performance diagnostics window */
     //normalLb: true,
     centeredLb: true,
-    fpsAtTop: true,               /* copy of statsPosition 'top' for scripts and older versions (lmFoldLegacySettings) */
-    statsAtCenter: false,         /* copy of statsPosition 'center' (it won over "at the top") */
-    statsPosition: 'top',         /* game stats line: 'top' left, 'bottom' left, 'center' bottom centre */
     tweenMaxEffect: false,
     top5skins: true,
     showStats: true,
@@ -21709,9 +21685,7 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     volCommands: [0, 1, 0.01],
     volGameplay: [0, 1, 0.01],
     a11yTextScale: [1, 1.6, 0.05],
-    a11yHudTextScale: [1, 1.6, 0.05],
-    positionClass: { choices: ['toast-bottom-left', 'toast-bottom-right', 'toast-top-left', 'toast-top-right'] },
-    statsPosition: { choices: ['top', 'bottom', 'center'] }
+    a11yHudTextScale: [1, 1.6, 0.05]
 });
 /* the number of decimals of a step or bound (0.05 -> 2), to drop float noise after snapping */
 function lmSchemaDecimals(x) {
@@ -21781,15 +21755,14 @@ function lmGlAAPending() {
     return !(dr && dr.gl && typeof dr._lmGlAA === 'boolean' && dr._lmGlAA === (defaultmapsettings.glAntialias !== false));
 }
 /* Settings that became one choice: "Short mass" and "Mass format" are massFormat (1 exact, 2 12.3k,
- * 3 auto; the 0 of older versions meant "as Short mass"); "Game stats at the top" and "at the bottom
- * centre" are statsPosition (top / bottom / center; the centre won over the top). The old keys
- * stay as copies that follow the choice (scripts and older versions read them). A stored, imported or profile set from before
- * gets its choice from the old keys once, before the values are checked; then the copies are
+ * 3 auto; the 0 of older versions meant "as Short mass"). The old key stays as a copy that follows
+ * the choice (scripts and older versions read it). A stored, imported or profile set from before
+ * gets its choice from the old key once, before the values are checked; then the copy is
  * written from the choice. Also folds the old video volume and the virus pop / eat sounds. Returns true when s changed. */
 function lmFoldLegacySettings(s) {
     if (!s || typeof s !== 'object') return false;
     var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
-    var was = JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]);
+    var was = JSON.stringify([s.massFormat, s.shortMass]);
     var changed = lmFoldVideoVolume(s);
     /* the bubble tracker is the bubble look of Cursor tracking now; older versions drew it on its
      * own: such a set gets Cursor tracking on, so the same bubble is drawn (and nothing else) */
@@ -21817,21 +21790,49 @@ function lmFoldLegacySettings(s) {
         var mfOk = lmSettingValue('massFormat', s.massFormat);
         if (mfOk !== undefined) s.shortMass = mfOk === 2;
     }
-    var pos = has('statsPosition') ? lmSettingValue('statsPosition', s.statsPosition) : undefined;
-    if (pos === undefined && (has('fpsAtTop') || has('statsAtCenter'))) {
-        var top = has('fpsAtTop') ? lmSettingValue('fpsAtTop', s.fpsAtTop) : undefined;
-        var cen = has('statsAtCenter') ? lmSettingValue('statsAtCenter', s.statsAtCenter) : undefined;
-        if (top === undefined) top = LM_SETTINGS_DEFAULTS.fpsAtTop;
-        if (cen === undefined) cen = LM_SETTINGS_DEFAULTS.statsAtCenter;
-        pos = cen ? 'center' : top ? 'top' : 'bottom';
+    return changed || JSON.stringify([s.massFormat, s.shortMass]) !== was;
+}
+/* The HUD editor (Theme > HUD > Edit HUD, ogario/modules/hudeditor.js) is the one place for HUD
+ * positions: Settings > HUD "Game stats position" (statsPosition; before it the switches fpsAtTop
+ * and statsAtCenter) and Theme > Chat "Chat Position" (chatPos, the corner of the popups) are gone.
+ * A saved place other than the default goes once into the active HUD layout: it is left in
+ * lmHudAdopt as { box: entry as the editor stores it } and hudeditor.js takes it. The old keys are
+ * removed from the stored set s (theme: the theme settings). Returns true when s had one. */
+var LM_HUD_ADOPT_KEY = 'lmHudAdopt';
+function lmHudAdoptOld(s, theme) {
+    if (!s || typeof s !== 'object') return false;
+    var has = function (k) { return Object.prototype.hasOwnProperty.call(s, k); };
+    var keys = theme ? ['chatPos'] : ['statsPosition', 'fpsAtTop', 'statsAtCenter'];
+    if (!keys.some(has)) return false;
+    var id = theme ? 'popups' : 'stats', e = null;
+    if (theme) {
+        /* the toastr corners (lib/toastr.min.css): 12 px from both edges; bottom left was the default */
+        if (s.chatPos === 'topleft') e = { h: 'l', x: 12, v: 't', y: 12, s: 1 };
+        else if (s.chatPos === 'topright') e = { h: 'r', x: 12, v: 't', y: 12, s: 1 };
+        else if (s.chatPos === 'bottomright') e = { h: 'r', x: 12, v: 'b', y: 12, s: 1 };
+    } else {
+        var pos = s.statsPosition;
+        if (pos !== 'top' && pos !== 'bottom' && pos !== 'center') {
+            /* older sets: the two switches (the centre won over the top) */
+            var top = !(s.fpsAtTop === false || s.fpsAtTop === 'false');
+            var cen = s.statsAtCenter === true || s.statsAtCenter === 'true';
+            pos = cen ? 'center' : top ? 'top' : 'bottom';
+        }
+        /* 10 px from the left (or centred) and from the bottom (css/legend.css #stats-hud, .hud-bottom) */
+        if (pos === 'bottom') e = { h: 'l', x: 10, v: 'b', y: 10, s: 1 };
+        else if (pos === 'center') e = { h: 'c', x: 0, v: 'b', y: 10, s: 1 };
     }
-    if (pos !== undefined) {
-        s.statsPosition = pos;
-        /* the centre says nothing about the top: that copy keeps its value */
-        if (pos !== 'center') s.fpsAtTop = pos === 'top';
-        s.statsAtCenter = pos === 'center';
+    if (e) {
+        try {
+            var q = JSON.parse(window.localStorage.getItem(LM_HUD_ADOPT_KEY) || '{}');
+            if (!q || typeof q !== 'object' || Array.isArray(q)) q = {};
+            q[id] = e;
+            window.localStorage.setItem(LM_HUD_ADOPT_KEY, JSON.stringify(q));
+        } catch (eQ) { }
+        if (window.LMHudEditor && typeof window.LMHudEditor.adoptPending === 'function') { try { window.LMHudEditor.adoptPending(); } catch (eA) { } }
     }
-    return changed || JSON.stringify([s.massFormat, s.shortMass, s.statsPosition, s.fpsAtTop, s.statsAtCenter]) !== was;
+    keys.forEach(function (k) { delete s[k]; });
+    return true;
 }
 /* "Optimized mass OR Merge timer" (optimizedMass) is gone: its off state drew a merge-seconds number
  * under the own cells, which Merge countdown (hudMergeCountdown) shows. A stored, imported or profile
@@ -22269,6 +22270,10 @@ function thelegendmodproject() {
             ) {
                 storage = null;
             }
+            /* the old Chat Position: a corner other than bottom left goes once into the HUD layout */
+            if (storage && lmHudAdoptOld(storage, true)) {
+                try { window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(storage)); } catch (eCp) { }
+            }
             for (const setup in defaultSettings) {
                 if (defaultSettings.hasOwnProperty(setup)) {
                     if (storage && Object.prototype.hasOwnProperty.call(storage, setup)) {
@@ -22644,7 +22649,6 @@ function thelegendmodproject() {
             this.addColorBox('#theme-chat', 'commandsTimeColor', 'setChatColors');
             this.addColorBox('#theme-chat', 'commandsNickColor', 'setChatColors');
             this.addRgbaColorBox('#theme-chat', 'chatBoxColor', 'setChatColors');
-            this.addPresetBox('#theme-chat', 'chatPosition', chatPositions, 'chatPos', 'changeChatThemePosition');
             this.addSliderBox('#theme-chat', 'chatScale', 1, 2, 0.01, 'setChatScale');
             this.addColorBox('#theme-minimap', 'miniMapSectorsColor', 'setMiniMapSectorsColor');
             this.addColorBox('#theme-minimap', 'miniMapSectorColor');
@@ -22771,10 +22775,6 @@ function thelegendmodproject() {
         change5Cmd(name) {
             defaultmapsettings.mouse5Click = window.MouseClicks[name]
             application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },
-        changeChatThemePosition(name) {
-            this.changePreset(name, chatPositions);
-            this.setChatPosition();
         },
         setFonts() {
             this.setFont('namesFont', defaultSettings.namesFont);
@@ -23107,15 +23107,6 @@ function thelegendmodproject() {
             this.setHud();
             this.setChat();
             this.setMiniMap();
-        },
-        setChatPosition() {
-            if (defaultSettings.chatPos) {
-                toastr.remove();
-                /* an unknown imported value threw during start-up */
-                if (!chatPositions[defaultSettings.chatPos]) defaultSettings.chatPos = 'bottomleft';
-                if (!chatPositions[defaultSettings.chatPos]) return;
-                toastr.options.positionClass = chatPositions[defaultSettings.chatPos].positionClass;
-            }
         },
         init() {
             this.loadThemeSettings();
@@ -24466,25 +24457,6 @@ function thelegendmodproject() {
         //setNormalLb() {
         //defaultmapsettings.normalLb ? $('#leaderboard-hud h5').html(textLanguage.leaderboard) : $('#leaderboard-hud h5').html('legendmod');
         //},
-        setFpsAtTop() {
-            //defaultmapsettings.fpsAtTop ? $('#stats-hud').removeClass('hud-bottom').addClass('hud-top') : $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
-            /* Game stats position (Settings > HUD); a HUD editor layout that places the stats wins
-             * over it (its !important rules, ogario/modules/hudeditor.js) */
-            var _lmPos = defaultmapsettings.statsPosition, _lmCenter = _lmPos === 'center';
-            if (_lmPos === 'top') {
-                $('#stats-hud').removeClass('hud-bottom').addClass('hud-top');
-            } else {
-                $('#stats-hud').removeClass('hud-top').addClass('hud-bottom');
-            }
-            /* bottom centre (like Delta); the top centre is taken by the target HUD */
-            if (_lmCenter && !document.getElementById('lm-stats-center-css')) {
-                var _lmSc = document.createElement('style');
-                _lmSc.id = 'lm-stats-center-css';
-                _lmSc.textContent = '#stats-hud.lm-stats-center{left:0;right:0;margin:0 auto;width:max-content;max-width:calc(100% - 20px);text-align:center}';
-                document.head.appendChild(_lmSc);
-            }
-            $('#stats-hud').toggleClass('lm-stats-center', _lmCenter);
-        },
         setTweenMaxEffect() {
             if (defaultmapsettings.tweenMaxEffect) initTilt()
             else stopTilt();
@@ -25353,7 +25325,8 @@ function thelegendmodproject() {
             }
             /* the old second video volume (folded into the level) and the settings that became one
              * choice (lmFoldLegacySettings): the save is rewritten, so it is folded once */
-            if (settings && lmFoldLegacySettings(settings)) {
+            /* the old Game stats position: a place other than the top goes once into the HUD layout */
+            if (settings && (lmFoldLegacySettings(settings) | lmHudAdoptOld(settings, false))) {
                 try { window.localStorage.setItem('ogarioSettings', JSON.stringify(settings)); } catch (e) { }
             }
             for (const option in defaultmapsettings) {
@@ -25731,18 +25704,6 @@ function thelegendmodproject() {
                     //case 'normalLb':
                     //this.setNormalLb();
                     //break;
-                    /* copies of Game stats position now: a script (or an older addon) setting one
-                     * moves the stats as it did (the centre wins over the top) */
-                    case 'fpsAtTop':
-                    case 'statsAtCenter':
-                        defaultmapsettings.statsPosition = defaultmapsettings.statsAtCenter ? 'center' : defaultmapsettings.fpsAtTop ? 'top' : 'bottom';
-                        this._lmChoiceSync('statsPosition');
-                        this.setFpsAtTop();
-                        break;
-                    case 'statsPosition':
-                        this._lmChoiceSync('statsPosition');
-                        this.setFpsAtTop();
-                        break;
                     /* "Short mass" is a copy of Mass format now: a script (or an older addon) setting
                      * it picks 12.3k or exact; it never had an effect in auto (3) */
                     case 'shortMass':
@@ -27053,7 +27014,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'statsPosition', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27159,8 +27120,6 @@ function thelegendmodproject() {
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre"], "hudGroup");
-            /* one choice for where the game stats line is ("at the top" and "at the bottom centre" were two switches) */
-            this.addChoiceBox(".hudGroup", "statsPosition", "settings.statsPosition", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
             /* Spectating: click to follow */
             this.addOptions(["clickSpectate"], "spectateGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "showTime", "showStopwatch", "killFeed", "analytics"], "statsGroup");
@@ -27365,7 +27324,7 @@ function thelegendmodproject() {
             $('#messageSound').closest('.input-box').insertAfter($('#volChat-slider').closest('.slider-box'));
             $('#commandSound').closest('.input-box').insertAfter($('#volCommands-slider').closest('.slider-box'));
             $('#virusSoundurl').closest('.input-box').insertAfter($('#virusSound').closest('label'));
-            $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color" style="font-size: 19px">' + _lmG1s('game1.menu.team') + '<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
+            $("body").append('<div id="overlays-hud" data-gamemode=":ffa"><div id="stats-hud" class="hud hud-top stats-hud-color"></div> <div id="top5-hud" class="hud"><h5 class="hud-main-color" style="font-size: 19px">' + _lmG1s('game1.menu.team') + '<span class="team-top"></span></h5><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' + //<div class="hud-main-color team-top-menu"><a href="#" data-limit="5" class="team-top-limit active">5</a> | <a href="#" data-limit="10" class="team-top-limit">10</a> | <a href="#" data-limit="100" class="team-top-limit">100</a></div><ol id="top5-pos"></ol><div id="top5-total"><span class="hud-main-color ogicon-users"></span> ' +
                 textLanguage.totalPartyPlayers + ': <span id="top5-total-players" class="top5-mass-color">0</span>   <span class="hud-main-color ogicon-pacman"></span> ' +
                 textLanguage.totalPartyMass + ': <span id="top5-total-mass" class="top5-mass-color">0</span></div></div> <div id="time-hud" class="hud time-hud-color"></div> <div id="pause-hud" class="hud">' +
                 //textLanguage.pause + '</div> <div id="leaderboard-hud" class="hud-b"><h5 class="hud-main-color">jimboy3100.github.io</h5><div id="leaderboard-data"></div><div id="leaderboard-positions"></div></div> <div id="btl-leaderboard-hud"><div class="hud hud-c"><span id="btl-players-status">Players ready</span>: <span id="btl-players-count">0</span></div></div> <div id="minimap-hud" class="hud-b"><canvas id="minimap-sectors"></canvas><canvas id="minimap"></canvas></div><div id="target-hud" class="hud"><div id="target-player"><span id="target-skin"><img src="https://www.legendmod.ml/banners/static/img/blank.png" alt=""> </span><span id="target-nick"></span><span id="target-status" class="hud-main-color">' + //class="hud-main-color">[' +
@@ -36493,7 +36452,6 @@ function thelegendmodproject() {
             this.setupSkinUploadInterface();
             if (Settings) {
                 Settings.setTheme();
-                Settings.setChatPosition();
             }
             this.setShowQuickMenu();
             /* the bots and Battle Royale buttons follow the game server (hidden until an agar.io connection) */
@@ -36516,7 +36474,6 @@ function thelegendmodproject() {
             this.setCenteredLb();
             //this.setNormalLb();
             this.setVanillaSkins();
-            this.setFpsAtTop();
             this.setTweenMaxEffect();
             this.displayStats();
             this.setBlockPopups();
@@ -88659,7 +88616,10 @@ function lmReplayBarTick() {
     var total = Math.max(1, window.RecordedProtocol[srv].length - 2);
     var cur = Math.max(0, Math.min(total, window.legendmod.playingReplayRecord || 0));
     if (bar.style.display === 'none') bar.style.display = '';
-    var _lmBb = (window.legendmod5 && window.legendmod5.statsPosition === 'center') ? '40px' : '14px';
+    /* higher while a HUD layout puts the stats line at the bottom centre, under the bar */
+    var _lmHe = window.LMHudEditor, _lmSt = _lmHe && _lmHe.owns('stats') ? _lmHe.get(_lmHe.active()) : null;
+    _lmSt = _lmSt && _lmSt.c ? _lmSt.c.stats : null;
+    var _lmBb = _lmSt && _lmSt.h === 'c' && _lmSt.v === 'b' ? '40px' : '14px';
     if (bar.style.bottom !== _lmBb) bar.style.bottom = _lmBb;
     bar.firstChild.style.width = (cur / total * 100).toFixed(1) + '%';
     bar.lastChild.textContent = (window._lmReplayPaused ? '\u275A\u275A ' : '') + cur + ' / ' + total;

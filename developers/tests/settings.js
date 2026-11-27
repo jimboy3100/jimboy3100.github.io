@@ -23,7 +23,7 @@ const events = [];
 ctx.LMEvents = { listen: true, _has(n) { return this.listen && n === 'settingsChange'; }, emit(n, d) { events.push([n, d.key, d.value]); if (ctx._onEmit) ctx._onEmit(d); } };
 vm.createContext(ctx);
 vm.runInContext(cut('function readLocalStorageJSON(key, fallbackValue) {', '/* ─── Persistent Skin & Audio Storage'), ctx);
-vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
+vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), ctx);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
 vm.runInContext('var profiles = [];', ctx);
@@ -60,7 +60,7 @@ check('numeric strings from old saves converted and fitted, other strings refuse
 /* Scan Trick is only its key: none of its old settings is a setting any more */
 const SCAN_OLD = ['scanTrick', 'scanTrickRounded', 'scanTrickOnlyWhileLMB', 'scanTrickDirections', 'scanTrickDistance', 'scanTrickRoundedDistance', 'scanTrickStatus'];
 check('no Scan Trick setting is left (default, schema, value)', SCAN_OLD.every(k => !(k in D) && !(k in SCH) && V(k, D[k] === undefined ? 1 : D[k]) === undefined && V(k, true) === undefined) || (console.log('   left: ' + SCAN_OLD.filter(k => k in D || k in SCH).join(', ')), false));
-check('a text setting with choices (toast position) takes only those', V('positionClass', 'toast-top-right') === 'toast-top-right' && V('positionClass', 'toast-middle') === undefined);
+check('the old toast position (positionClass, no menu row) is no setting: the HUD editor places the popups', V('positionClass', 'toast-top-right') === undefined);
 check('settings without a slider have a range too (domination rate)', V('dominationRate', 4 / 3) === 4 / 3 && V('dominationRate', 0) === 1 && V('dominationRate', 9) === 4 && V('dominatedRate', 0.6) === 0.6);
 check('booleans: "true"/"false" converted, other values refused', V('showMass', 'false') === false && V('showMass', 1) === undefined && V('showMass', true) === true);
 check('free text kept, unknown keys refused', V('chatHideWords', 'a,b') === 'a,b' && V('chatHideWords', 5) === undefined && V('noSuchSetting', 1) === undefined && V('__proto__', 1) === undefined);

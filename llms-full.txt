@@ -211,7 +211,6 @@ In-game text chat with rich features:
 - **Voice chat**: Push-to-talk with = key
 - **Quick response**: Y key sends preset message
 - **Auto response**: Automatic responses
-- **Chat position**: 4 options (bottom-left, bottom-right, top-left, top-right)
 - **Chat commands**: 50 customizable chat command slots with one-keypress sending
 - **Team pings**: Help, Danger, Go here, Virus pings at cursor position (configurable hotkeys)
 
@@ -249,10 +248,10 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one),
 - **Mass format**: one choice: exact, short (12.3k, the former Short mass switch) or auto (exact below 10000, then 12.3k, 123k, 1.2M)
 - **Virus range circles**: Rings showing virus ejection range
 - **Mass in tab title**: Browser tab shows current mass
-- **Game stats position**: one choice: top left, bottom left or bottom centre (a HUD editor layout wins), configurable stats elements
+- **Game stats**: configurable stats elements (placed with the HUD editor)
 
 ### 13. HUD Editor
-Drag and resize HUD elements with named layouts. Features:
+Drag and resize HUD elements with named layouts (the one place for HUD positions: chat popups, stats line and the rest). Features:
 - **Movable elements**: Leaderboard, minimap, stats, team panel, time, target, chat
 - **Named layouts**: Up to 20 saved in localStorage
 - **Snapping**: Snap to grid (8/16/32px options)

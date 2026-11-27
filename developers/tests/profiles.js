@@ -26,7 +26,7 @@ ctx.hotkeysCommand = { 'hk-feed': { defaultKey: 'W' }, 'hk-split': { defaultKey:
 vm.createContext(ctx);
 i18n(ctx);
 /* the real schemas and validators (the preset maps, defaultSettings + LM_THEME_SCHEMA + lmThemeValue, defaultmapsettings + LM_SETTINGS_DEFAULTS + lmSettingValue) */
-vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
+vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), ctx);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
 vm.runInContext(mod, ctx);
@@ -314,7 +314,7 @@ function bootApply() {
   c.LMMobileEditor = { reload() { calls.push('ml-reload'); } };
   vm.createContext(c);
   i18n(c);
-  vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), c);
+  vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), c);
   vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), c);
   vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), c);
   vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'hudeditor.js'), 'utf8'), c);
@@ -868,9 +868,9 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
    * profile's changes list showed "Short mass (k)" and "Stats at center" next to the choice */
   const base = Object.assign({}, ctx.defaultmapsettings);
   const a = C.cleanBundle({ s: base });
-  const b = C.cleanBundle({ s: Object.assign({}, base, { massFormat: 1, statsPosition: 'center' }) });
+  const b = C.cleanBundle({ s: Object.assign({}, base, { massFormat: 1 }) });
   const keys = C.diffBundles(a, b).map(r => r.key).sort().join();
-  check('copies of a choice: only the choices are listed as changes (' + keys + ')', keys === 'massFormat,statsPosition');
+  check('copies of a choice: only the choices are listed as changes (' + keys + ')', keys === 'massFormat');
   const old = C.cleanBundle({ s: { shortMass: false } });
   const ko = C.diffBundles(a, old).map(r => r.key).sort().join();
   check('copies of a choice: an older set with only Short mass lists Mass format (' + ko + ')', ko === 'massFormat');

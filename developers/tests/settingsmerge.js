@@ -1,8 +1,8 @@
 /* Settings that became one choice, with the real code of ogario/ogario.v4.js:
  *   Mass format: "Short mass" + "Mass format" (0 = as Short mass) are massFormat 1 / 2 / 3; the old
  *   key stays a copy (lmFoldLegacySettings on load, import, profiles; setSettings for scripts).
- *   Game stats position: "at the top" + "at the bottom centre" are statsPosition top / bottom /
- *   center, the switches copies of it; setFpsAtTop places the stats line from it.
+ *   Game stats position and Theme > Chat "Chat Position" are gone (the HUD editor places the boxes):
+ *   a saved place other than the default goes once into the HUD layout (lmHudAdoptOld, lmHudAdopt).
  *   Cursor tracking: the bubble tracker is its bubble look; an old set with the bubble alone gets
  *   Cursor tracking on, and setSettings keeps the pair so (Cursor tracking off takes the look off).
  * node developers/tests/settingsmerge.js */
@@ -24,7 +24,7 @@ ctx.localStorage = makeStorage();
 ctx.LMEvents = { _has() { return false; }, emit() { } };
 vm.createContext(ctx);
 vm.runInContext(cut('function readLocalStorageJSON(key, fallbackValue) {', '/* ─── Persistent Skin & Audio Storage'), ctx);
-vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
+vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), ctx);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
 vm.runInContext('var profiles = [];', ctx);
@@ -62,20 +62,17 @@ const S = ctx.defaultmapsettings, reSaved = JSON.parse(ctx.localStorage.getItem(
 check('mass: load of an old save with Short mass off -> exact, save rewritten', S.massFormat === 1 && S.shortMass === false && reSaved.massFormat === 1);
 
 // the real setSettings: scripts and older addons still set the old key or 0
-const app2 = vm.runInContext('({\n' + cut('        setSettings(id, checked) {', '        profiling() {') + cut('        _lmChoiceSync(name) {', '        addSliderBox(id, name') + (main.indexOf("_lmPos === 'top'") >= 0 ? cut('        setFpsAtTop() {', '        setTweenMaxEffect() {') : '') + '\n})', ctx);
+const app2 = vm.runInContext('({\n' + cut('        setSettings(id, checked) {', '        profiling() {') + cut('        _lmChoiceSync(name) {', '        addSliderBox(id, name') + '\n})', ctx);
 app2.saveSettings = function () { };
 app2._lmLoadOptSounds = function () { };
 ctx.hotkeys = {};
-/* the classes setFpsAtTop gives the stats line */
-const cls = new Set();
-const statsEl = { removeClass(c) { c.split(' ').forEach(x => cls.delete(x)); return this; }, addClass(c) { c.split(' ').forEach(x => cls.add(x)); return this; }, toggleClass(c, on) { if (on) cls.add(c); else cls.delete(c); return this; } };
-ctx.$ = (q) => (q === '#stats-hud' ? statsEl : { length: 0, prop() { }, val() { }, text() { }, css() { }, show() { }, hide() { }, toggle() { }, toggleClass() { }, addClass() { }, removeClass() { }, attr() { }, on() { }, off() { }, find() { return this; }, closest() { return this; }, each() { } });
+ctx.$ = (q) => ({ length: 0, prop() { }, val() { }, text() { }, css() { }, show() { }, hide() { }, toggle() { }, toggleClass() { }, addClass() { }, removeClass() { }, attr() { }, on() { }, off() { }, find() { return this; }, closest() { return this; }, each() { } });
 ctx.toastr = { info() { }, warning() { }, success() { } };
 ctx.legendmod = {};
 ctx.lmT = k => k;
 ctx._lmG1tag = () => '';
-const sel = { tagName: 'SELECT', value: '' }, posSel = { tagName: 'SELECT', value: '' };
-ctx.document = { getElementById: id => (id === 'massFormat' ? sel : id === 'statsPosition' ? posSel : null), createElement: () => ({}), head: { appendChild() { } } };
+const sel = { tagName: 'SELECT', value: '' };
+ctx.document = { getElementById: id => (id === 'massFormat' ? sel : null), createElement: () => ({}), head: { appendChild() { } } };
 app2.setSettings('massFormat', 2);
 check('mass: choosing 12.3k turns the Short mass copy on and shows it in the dropdown', S.massFormat === 2 && S.shortMass === true && sel.value === '2');
 app2.setSettings('shortMass', false);
@@ -87,40 +84,51 @@ app2.setSettings('massFormat', 2);
 app2.setSettings('massFormat', 0);
 check('mass: a script setting format 0 ("as Short mass") keeps 12.3k', S.massFormat === 2 && S.shortMass === true);
 
-// -- 2. Game stats position
-const P = ['statsPosition', 'fpsAtTop', 'statsAtCenter'];
-const placed = () => (cls.has('hud-top') ? 'top' : cls.has('hud-bottom') ? 'bottom' : '?') + (cls.has('lm-stats-center') ? '+center' : '');
-check('stats: the default is at the top, as before (top on, centre off)', D.statsPosition === 'top' && D.fpsAtTop === true && D.statsAtCenter === false);
-check('stats: three positions, nothing else', V('statsPosition', 'center') === 'center' && V('statsPosition', 'bottom') === 'bottom' && V('statsPosition', 'left') === undefined);
-check('stats: old top on, centre off -> top', J(pick(fold({ fpsAtTop: true, statsAtCenter: false })[0], P)) === J({ statsPosition: 'top', fpsAtTop: true, statsAtCenter: false }));
-check('stats: old top off, centre off -> bottom', J(pick(fold({ fpsAtTop: false, statsAtCenter: false })[0], P)) === J({ statsPosition: 'bottom', fpsAtTop: false, statsAtCenter: false }));
-check('stats: old centre on wins over the top (both combinations) -> center', fold({ fpsAtTop: true, statsAtCenter: true })[0].statsPosition === 'center' && fold({ fpsAtTop: false, statsAtCenter: 'true' })[0].statsPosition === 'center');
-check('stats: only one old key = the other one at its default', fold({ fpsAtTop: false })[0].statsPosition === 'bottom' && fold({ statsAtCenter: false })[0].statsPosition === 'top');
-const sNew = fold({ statsPosition: 'bottom', fpsAtTop: true, statsAtCenter: true });
-check('stats: a new save: the choice wins and the copies follow it', J(pick(sNew[0], P)) === J({ statsPosition: 'bottom', fpsAtTop: false, statsAtCenter: false }));
-check('stats: a consistent new save is left as it is', fold({ statsPosition: 'center', fpsAtTop: true, statsAtCenter: true })[1] === false);
-check('stats: an old export at the bottom centre stays there', runImport({ fpsAtTop: false, statsAtCenter: true }).statsPosition === 'center');
-const oldSave = Object.assign({}, D, { fpsAtTop: false, statsAtCenter: false });
-delete oldSave.statsPosition;
-ctx.localStorage.setItem('ogarioSettings', JSON.stringify(oldSave));
+// -- 2. Game stats position and Chat Position are the HUD editor's now (one place for HUD positions)
+const adoptQ = () => JSON.parse(ctx.localStorage.getItem('lmHudAdopt') || 'null');
+const E_BL = { h: 'l', x: 10, v: 'b', y: 10, s: 1 }, E_BC = { h: 'c', x: 0, v: 'b', y: 10, s: 1 };
+check('stats: no Game stats position setting any more, nor its two old switches', !('statsPosition' in D) && !('fpsAtTop' in D) && !('statsAtCenter' in D) && V('statsPosition', 'center') === undefined && V('fpsAtTop', true) === undefined);
+check('popups: no toast position setting (positionClass) either', !('positionClass' in D) && V('positionClass', 'toast-top-right') === undefined);
+const loadOld = (extra) => { ctx.localStorage.removeItem('lmHudAdopt'); ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, D, extra))); app.loadSettings(); return JSON.parse(ctx.localStorage.getItem('ogarioSettings')); };
+let sv = loadOld({ statsPosition: 'center', fpsAtTop: true, statsAtCenter: true });
+check('stats: a saved bottom centre goes once into the HUD layout (centred, 10 px up); the old keys leave the save', J(adoptQ()) === J({ stats: E_BC }) && !('statsPosition' in sv) && !('fpsAtTop' in sv) && !('statsAtCenter' in sv) && !('statsPosition' in S));
+ctx.localStorage.removeItem('lmHudAdopt');
 app.loadSettings();
-check('stats: load of an old save with the stats at the bottom -> bottom, save rewritten', S.statsPosition === 'bottom' && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).statsPosition === 'bottom');
-const hasPlace = typeof app2.setFpsAtTop === 'function';
-check('stats: setFpsAtTop places from the choice', hasPlace);
-if (hasPlace) {
-  app2.setSettings('statsPosition', 'top');
-  check('stats: top -> the stats line at the top, the dropdown shows it', placed() === 'top' && posSel.value === 'top' && S.fpsAtTop === true && S.statsAtCenter === false);
-  app2.setSettings('statsPosition', 'center');
-  check('stats: center -> bottom centre, the centre copy on', placed() === 'bottom+center' && S.statsAtCenter === true);
-  app2.setSettings('statsPosition', 'bottom');
-  check('stats: bottom -> bottom left', placed() === 'bottom' && S.fpsAtTop === false && S.statsAtCenter === false);
-  app2.setSettings('fpsAtTop', true);
-  check('stats: a script turning "at the top" on moves the stats to the top', S.statsPosition === 'top' && placed() === 'top' && posSel.value === 'top');
-  app2.setSettings('statsAtCenter', true);
-  check('stats: a script turning "at the bottom centre" on: centre (it wins over the top)', S.statsPosition === 'center' && placed() === 'bottom+center');
-  app2.setSettings('statsAtCenter', false);
-  check('stats: and off again: back to the top it had', S.statsPosition === 'top' && placed() === 'top');
-}
+check('stats: once: the next load leaves nothing for the layout', adoptQ() === null);
+loadOld({ statsPosition: 'bottom' });
+check('stats: bottom left -> 10 px from the left and the bottom', J(adoptQ()) === J({ stats: E_BL }));
+loadOld({ fpsAtTop: false, statsAtCenter: false });
+check('stats: an older save with the two switches (top off) -> bottom left', J(adoptQ()) === J({ stats: E_BL }));
+loadOld({ fpsAtTop: 'false', statsAtCenter: 'true' });
+check('stats: an older save with the centre on (it won over the top) -> bottom centre', J(adoptQ()) === J({ stats: E_BC }));
+sv = loadOld({ statsPosition: 'top', fpsAtTop: true, statsAtCenter: false });
+check('stats: at the top (the default place) nothing goes to the layout; the keys still leave the save', adoptQ() === null && !('statsPosition' in sv) && !('fpsAtTop' in sv));
+/* the HUD editor already loaded (an import loads the settings again): it takes the place at once */
+let taken = 0;
+ctx.LMHudEditor = { adoptPending() { taken++; } };
+loadOld({ statsPosition: 'bottom' });
+check('stats: a loaded HUD editor is asked to take it', taken === 1);
+delete ctx.LMHudEditor;
+/* Theme > Chat "Chat Position": the corner of the chat popups (the real loadThemeSettings) */
+const ST = vm.runInContext('({' + String.fromCharCode(10) + cut('        loadThemeSettings() {', '        saveThemeSettings() {') + '        saveThemeSettings() { }' + String.fromCharCode(10) + '})', ctx);
+const TDf = ctx.LM_THEME_DEFAULTS;
+const loadTheme = (extra, keepQ) => { if (!keepQ) ctx.localStorage.removeItem('lmHudAdopt'); ctx.localStorage.setItem('ogarioThemeSettings', JSON.stringify(Object.assign({}, TDf, extra))); ST.loadThemeSettings(); return JSON.parse(ctx.localStorage.getItem('ogarioThemeSettings')); };
+check('popups: no Chat Position theme setting any more', !('chatPos' in TDf) && ctx.lmThemeValue('chatPos', 'topright') === undefined && typeof ctx.chatPositions === 'undefined');
+let tv = loadTheme({ chatPos: 'topright' });
+check('popups: a saved top right corner goes once into the HUD layout (12 px from both edges); the key leaves the save', J(adoptQ()) === J({ popups: { h: 'r', x: 12, v: 't', y: 12, s: 1 } }) && !('chatPos' in tv) && !('chatPos' in ctx.defaultSettings));
+ctx.localStorage.removeItem('lmHudAdopt');
+ST.loadThemeSettings();
+check('popups: once: the next load leaves nothing for the layout', adoptQ() === null);
+loadTheme({ chatPos: 'topleft' });
+check('popups: top left', J(adoptQ()) === J({ popups: { h: 'l', x: 12, v: 't', y: 12, s: 1 } }));
+loadTheme({ chatPos: 'bottomright' });
+check('popups: bottom right', J(adoptQ()) === J({ popups: { h: 'r', x: 12, v: 'b', y: 12, s: 1 } }));
+tv = loadTheme({ chatPos: 'bottomleft' });
+check('popups: bottom left (the default) and unknown corners: nothing for the layout, the key leaves the save', adoptQ() === null && !('chatPos' in tv) && (loadTheme({ chatPos: '__proto__' }), adoptQ() === null));
+loadOld({ statsPosition: 'center' });
+loadTheme({ chatPos: 'topright' }, true);
+check('stats and popups together: both wait for the layout', J(adoptQ()) === J({ stats: E_BC, popups: { h: 'r', x: 12, v: 't', y: 12, s: 1 } }));
+ctx.localStorage.removeItem('lmHudAdopt');
 
 // ── 3. Cursor tracking looks: the bubble tracker is the bubble look of Cursor tracking
 const CT = ['cursorTracking', 'bubbleCursorTracker'];

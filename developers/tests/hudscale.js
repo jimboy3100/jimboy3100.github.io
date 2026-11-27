@@ -26,7 +26,7 @@ function start(screenH, storage) {
   ctx.textLanguage = {};
   vm.createContext(ctx);
   vm.runInContext(cut('function readLocalStorageJSON(key, fallbackValue) {', '/* ─── Persistent Skin & Audio Storage'), ctx);
-  vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
+  vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), ctx);
   vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
   vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
   vm.runInContext('var profiles = [];', ctx);

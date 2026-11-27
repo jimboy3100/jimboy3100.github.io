@@ -40,7 +40,7 @@ ctx.$ = ctx.jQuery = el;
 ctx.textLanguage = {};
 vm.createContext(ctx);
 vm.runInContext(cut('function readLocalStorageJSON(key, fallbackValue) {', '/* ─── Persistent Skin & Audio Storage'), ctx);
-vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), ctx);
+vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), ctx);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), ctx);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), ctx);
 vm.runInContext('var profiles = [];', ctx);
@@ -90,8 +90,8 @@ check('settings without a slider have a range (cell shadow, minimap top), any va
 check('font weights 400/700 kept, others put on 100..900', V('hudFontWeight', 400) === 400 && V('namesFontWeight', 700) === 700 && V('massFontWeight', 5000) === 900 && V('massFontWeight', 0) === 100);
 check('NaN, Infinity, -Infinity refused (the default stays)', [NaN, Infinity, -Infinity].every(x => V('foodSize', x) === undefined && V('menuOpacity', x) === undefined));
 check('numeric strings from old saves converted and fitted, other strings refused', V('foodSize', '7') === 7 && V('menuOpacity', ' 0.5 ') === 0.5 && V('foodSize', '') === undefined && V('foodSize', '7px') === undefined && V('foodSize', true) === undefined);
-check('choices: preset / menu theme / chat position / graphics / indicators take only their lists', V('preset', 'legendv1') === 'legendv1' && V('preset', 'nope') === undefined && V('menuPreset', 'agario') === 'agario' && V('chatPos', 'topright') === 'topright' && V('chatPos', 'middle') === undefined && V('graphics', 'very_low') === 'very_low' && V('indicators', 'heart') === 'heart' && V('indicators', '<b>') === undefined);
-check('choices are own keys only (no prototype names)', V('preset', 'toString') === undefined && V('chatPos', '__proto__') === undefined && V('graphics', 'constructor') === undefined);
+check('choices: preset / menu theme / graphics / indicators take only their lists (Chat Position is gone: the HUD editor places the popups)', V('preset', 'legendv1') === 'legendv1' && V('preset', 'nope') === undefined && V('menuPreset', 'agario') === 'agario' && V('chatPos', 'topright') === undefined && V('graphics', 'very_low') === 'very_low' && V('indicators', 'heart') === 'heart' && V('indicators', '<b>') === undefined);
+check('choices are own keys only (no prototype names)', V('preset', 'toString') === undefined && V('menuPreset', '__proto__') === undefined && V('graphics', 'constructor') === undefined);
 check('fonts take the font list, families the family list', V('namesFont', 'oswald-bold') === 'oswald-bold' && V('hudFont', 'comic-sans') === undefined && V('miniMapNickFontFamily', 'Allura') === 'Allura' && V('massFontFamily', 'Arial') === undefined);
 check('colours: hex, rgb(a) and colour names kept', V('bgColor', '#abc') === '#abc' && V('mainColor', '#01d9ccff') === '#01d9ccff' && V('hudColor', 'rgba(0,0,0,0.4)') === 'rgba(0,0,0,0.4)' && V('namesColor', 'red') === 'red' && V('cellShadowColor', 'rgb(1, 2, 3)') === 'rgb(1, 2, 3)');
 check('colours: CSS / HTML injection and non-colours refused', ['red;}body{display:none', '#fff" onload="x', 'url(https://x.com/a.png)', 'expression(alert(1))', '', '#ggg', 5].every(x => V('bgColor', x) === undefined && V('messageColor', x) === undefined));
@@ -100,7 +100,7 @@ check('free text kept (URLs, sector symbol), booleans as before, unknown keys re
 
 // ── shipped data is kept exactly: the theme presets, the menu themes
 const presetOff = [];
-[['themePresets', ctx.themePresets], ['themeMenus', ctx.themeMenus], ['chatPositions', ctx.chatPositions]].forEach(([n, m]) => {
+[['themePresets', ctx.themePresets], ['themeMenus', ctx.themeMenus]].forEach(([n, m]) => {
   Object.keys(m).forEach(p => Object.keys(m[p]).forEach(k => { if (own(TD, k) && V(k, m[p][k]) !== m[p][k]) presetOff.push(n + '.' + p + '.' + k + '=' + m[p][k]); }));
 });
 check('every theme preset / menu theme value is kept exactly', presetOff.length === 0 || (console.log('   ' + presetOff.join(', ')), false));
@@ -160,7 +160,7 @@ check('slider input: not a number changes nothing', DS.bordersWidth === 40 && cb
 const pc = { console, JSON, Math, Date, Object, Array, Number, String, isFinite, setTimeout() { }, clearTimeout() { }, lmT: k => k };
 pc.window = pc; pc.localStorage = makeStorage();
 vm.createContext(pc);
-vm.runInContext(cut('var chatPositions = {', 'var defaultSettings = {'), pc);
+vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), pc);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), pc);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), pc);
 vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'profiles.js'), 'utf8'), pc);
