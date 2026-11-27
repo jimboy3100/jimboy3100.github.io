@@ -39,7 +39,10 @@ man.records.forEach((r) => {
 /* text that can name a file: pages, scripts, styles, data, docs, userscript headers */
 const TEXT = /\.(html?|js|mjs|css|json|md|txt|xml|ps1|py|svg|webmanifest|yml)$|^[^.]+$/i;
 const SKIP = /^(vanillaskins|lowresskins)\//;
-const texts = [...tracked].filter((f) => TEXT.test(path.basename(f)) && !SKIP.test(f) && f !== 'developers/audit/manifest.json' && f !== 'AllFilesNew.txt');
+/* the registers of the deletions themselves (they name every deleted file on purpose) and the source export nothing loads */
+const RECORDS = new Set(['developers/audit/manifest.json', 'developers/i18n/scan-config.json', 'developers/tests/i18n-archived.js',
+    'developers/tests/auditmedia.js', 'AllFilesNew.txt']);
+const texts = [...tracked].filter((f) => TEXT.test(path.basename(f)) && !SKIP.test(f) && !RECORDS.has(f));
 const migrated = man.records.filter((r) => r.internalReferencesMigrated);
 const hits = {};
 if (migrated.length) {

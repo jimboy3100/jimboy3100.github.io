@@ -4866,6 +4866,24 @@
       "legacyResolverSupported": false,
       "externalUrlSupported": true,
       "approvedForDeletion": false
+    },
+    {
+      "oldPath": "banners/FAYiz/Donate-Box_goodwill.png",
+      "canonicalPath": null,
+      "reason": "Its only user ever was the archived page extras/banneranimatedFayiz3.html, which is deleted (see the record above); no other file in the history of this repository, and no other repository (expandingland, legendworld-help, LegendWorld, deltav4), names it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/FAYiz/FayizBig.jpg",
+      "canonicalPath": null,
+      "reason": "Unused picture (0.8 MB): no file in the whole history of this repository and no other repository (expandingland, legendworld-help, LegendWorld, deltav4) ever named it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
     }
   ]
 }
