@@ -52506,6 +52506,7 @@ function thelegendmodproject() {
             /* Clear stale server-color → team-color mappings to prevent
              * colors from a previous server leaking into a new one */
             if (this._colorByRawMap) this._colorByRawMap.clear();
+            if (this._colorByRawNick) this._colorByRawNick.clear();
             this.ghostCells = [];
             this.food = [];
             this.foodMulti = []; //for multi fix
@@ -53921,7 +53922,7 @@ function thelegendmodproject() {
             var _myNick = (typeof profiles !== 'undefined' && profiles[application.selectedProfile]) ? profiles[application.selectedProfile].nick : '';
             for (var _ti = 0; _ti < application.teamPlayers.length; _ti++) {
                 var _tp = application.teamPlayers[_ti];
-                if (_tp.nick && _tp.nick !== _myNick && _tp.color) {
+                if (_tp.nick && _tp.nick !== _myNick && _tp.color && _tp._lmColorSent) {
                     _tcm.set(_tp.nick, _tp.color);
                 }
             }
@@ -54500,9 +54501,21 @@ function thelegendmodproject() {
                         if (!_tmColor && !LM.cellcolors[name] && color) LM.cellcolors[name] = color;
                         if (rawServerColor && color) {
                             if (!this._colorByRawMap) this._colorByRawMap = new Map();
-                            this._colorByRawMap.set(rawServerColor, color);
+                            if (!this._colorByRawNick) this._colorByRawNick = new Map();
+                            var _rawWas = this._colorByRawMap.get(rawServerColor);
+                            /* Two nicks with one server colour but different colours here (a teammate's
+                             * team colour, a remembered nick colour): a nameless piece cannot say whose
+                             * it is, so it keeps its server colour (null) instead of the last nick's. */
+                            if (_rawWas !== color && _rawWas !== null) {
+                                if (_rawWas === undefined || this._colorByRawNick.get(rawServerColor) === name) {
+                                    this._colorByRawMap.set(rawServerColor, color);
+                                    this._colorByRawNick.set(rawServerColor, name);
+                                } else {
+                                    this._colorByRawMap.set(rawServerColor, null);
+                                }
+                            }
                         }
-                    } else if (name === "" && rawServerColor && this._colorByRawMap && this._colorByRawMap.has(rawServerColor)) {
+                    } else if (name === "" && rawServerColor && this._colorByRawMap && this._colorByRawMap.get(rawServerColor)) {
                         /* Nameless popped/split fragment inherits parent cell's unified color */
                         color = this._colorByRawMap.get(rawServerColor);
                     }
@@ -85770,6 +85783,9 @@ function minimapCell(envId, cb, i, s) {
         var isHexColor = function (value) {
             return typeof value === 'string' && /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(value);
         };
+        /* the white of a teammate that sent no colour is for the minimap and team list only:
+         * _lmColorSent says the colour is the teammate's own, so only then it colours cells */
+        if (isHexColor(i)) this._lmColorSent = true;
         this.color = isHexColor(i) ? i : (this.color || '#ffffff');
         if (isHexColor(inRevIdx) && 7 === inRevIdx.length) {
             this.customColor = inRevIdx;

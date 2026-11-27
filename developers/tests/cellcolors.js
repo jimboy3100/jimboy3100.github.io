@@ -18,7 +18,9 @@ const fs = require('fs'), vm = require('vm'), path = require('path'), os = requi
 const { rendererFactory, findChrome } = require('./glbatch.js');
 
 const root = path.join(__dirname, '..', '..');
-const src = fs.readFileSync(process.argv[2] || path.join(root, 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+/* [ogario.v4.js] [--no-chrome] */
+const ARGS = process.argv.slice(2), NO_CHROME = ARGS.indexOf('--no-chrome') >= 0, FILE = ARGS.filter((a) => a.slice(0, 2) !== '--')[0];
+const src = fs.readFileSync(FILE || path.join(root, 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
 let failed = 0;
 const check = (name, ok, info) => { console.log((ok ? 'ok   ' : 'FAIL ') + name + (ok || info === undefined ? '' : '  [' + JSON.stringify(info) + ']')); if (!ok) failed++; };
 const cut = (from, to) => { const a = src.indexOf(from), b = src.indexOf(to, a); return a < 0 || b < 0 ? null : src.slice(a, b).replace(/,\s*$/, ''); };
@@ -142,6 +144,31 @@ feed([{ id: 22, color: [200, 40, 40], name: 'Me', skin: '' }]);
 check('turned off: a new own piece has the server colour too', C(22) === hex(200, 40, 40), C(22));
 g.profiles = [];
 
+/* section: team colours (the Legend Mod relay) */
+const mmc = block('\nfunction minimapCell(');
+g.defaultSettings = { miniMapTeammatesColor: '#ffffff' };
+vm.runInContext(mmc + '\nthis.minimapCell = minimapCell;', g);
+const mate = (nick, col) => { const m = new g.minimapCell(1, nick, nick, ''); m.setColor(col, col); return m; };
+reset();
+g.application.teamPlayers = [mate('Plain', undefined), mate('Blue', '#3366ff'), mate('Ink', '#000000')];
+feed([{ id: 31, color: [200, 40, 40], name: 'Plain', skin: '' }, { id: 32, color: [40, 200, 40], name: 'Blue', skin: '' }, { id: 33, color: [40, 40, 200], name: 'Ink', skin: '' }]);
+check('a teammate that sent no colour keeps the server colour (the minimap white is not a cell colour)', C(31) === hex(200, 40, 40), C(31));
+check('a teammate that sent a colour is drawn in it', C(32) === '#3366ff', C(32));
+check('a teammate that sent black is black (an explicit colour)', C(33) === '#000000', C(33));
+/* a stranger with the same server colour as the teammate: its nameless pieces keep their own */
+feed([{ id: 34, color: [40, 200, 40], name: 'Stranger', skin: '' }]);
+/* the teammate's cell again (a later record), then a nameless piece with that server colour */
+feed([{ id: 32, color: [40, 200, 40], name: 'Blue' }]);
+feed([{ id: 35, color: [40, 200, 40], size: 40 }]);
+check('a stranger with the teammate\'s server colour keeps it', C(34) === hex(40, 200, 40), C(34));
+check('a nameless piece of that server colour is not given the team colour', C(35) === hex(40, 200, 40), C(35));
+reset();
+g.application.teamPlayers = [mate('Blue', '#3366ff')];
+feed([{ id: 36, color: [40, 200, 40], name: 'Blue', skin: '' }]);
+feed([{ id: 37, color: [40, 200, 40], size: 40 }]);
+check('a nameless piece of the teammate (no other nick with that colour) has the team colour', C(37) === '#3366ff', C(37));
+g.application.teamPlayers = [];
+
 /* ---------------- headless Chrome: real WebGL + real Canvas2D ---------------- */
 const cellStart = src.indexOf('function ogarbasicassembly(');
 const cellEnd = src.indexOf('}).call(ogarbasicassembly.prototype)');
@@ -245,7 +272,7 @@ function pageLib() {
 }
 
 async function chromePart() {
-    const chrome = findChrome();
+    const chrome = NO_CHROME ? null : findChrome();
     if (!chrome) { console.log('cellcolors: Chrome part skipped (Chrome not found; set CHROME_PATH)'); return; }
     const port = 9400 + Math.floor(Math.random() * 400);
     const profile = fs.mkdtempSync(path.join(os.tmpdir(), 'lm-cellcolors-'));
