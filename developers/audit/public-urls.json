@@ -30,7 +30,6 @@
         { "path": "LMexpress/extension/manifest.json", "why": "the Chrome extension" },
         { "path": "LMexpress/LegendExpressExtension.zip", "why": "the extension download (clan article link)" },
         { "path": "LMexpress/mobileApp/**", "why": "the Android app (APK download)" },
-        { "path": "LMmobile/LMmobile.user.js", "why": "the mobile userscript" },
         { "path": "LMmobile/index.html", "why": "the mobile page" },
         { "path": "apps/**", "why": "the iOS app source (it opens play.html)" },
         { "path": "knowledge/**", "why": "the public knowledge base (machine readable, linked from llms.txt)" },
