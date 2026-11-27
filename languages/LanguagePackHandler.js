@@ -137,8 +137,8 @@ $(".options-box.skinsGroup>LABEL").replace('Video skins', Languageletter61b);
 
 $(".options-box.foodGroup>h5").text(Languageletter6a2);
 $(".options-box.foodGroup>LABEL").replace('Optimized food', Languageletter62);
-$(".options-box.foodGroup>LABEL").replace('Auto hide food - mass', Languageletter63);
-$(".options-box.foodGroup>LABEL").replace('Auto hide food - zoom', Languageletter64);
+/* Auto hide food - mass / zoom and Ghost cells info: ogario.v4.js names them by their own setting
+ * (data-lm-key); these lines gave them other English words after a switch back to English */
 $(".options-box.foodGroup>LABEL").replace('Rainbow food', Languageletter65);
 //$(".options-box.foodGroup>LABEL").replace('mass', Languageletter49);
 //$(".options-box.foodGroup>LABEL").replace('zoom', Languageletter37b);
@@ -183,7 +183,6 @@ $(".options-box.helpersGroup>LABEL").replace('Slow double split range', Language
 $(".options-box.helpersGroup>LABEL").replace('Viruses range', Languageletter88);
 $(".options-box.helpersGroup>LABEL").replace('Cursor tracking', Languageletter89);
 $(".options-box.helpersGroup>LABEL").replace('Teammates indicators', Languageletter90);
-$(".options-box.helpersGroup>LABEL").replace('Ghost cells info', Languageletter90a + " " + Externalletter1.toLowerCase());
 $(".options-box.helpersGroup>LABEL").replace('Ghost cells', Languageletter90a);
 
 $(".options-box.mouseGroup>h5").text(Languageletter91);
