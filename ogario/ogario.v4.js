@@ -54328,6 +54328,8 @@ function thelegendmodproject() {
             try {
                 var n = view.readUInt16LE(offset), i;
                 offset += 2;
+                /* an eat or remove list cut short deletes nothing (updateCells does not apply it) */
+                if (offset + n * 8 > view.length) return;
                 for (i = 0; i < n; i++, offset += 8) mem.delete(view.readUInt32LE(offset + 4));
                 for (; ;) {
                     var id = view.readUInt32LE(offset);
@@ -54346,7 +54348,7 @@ function thelegendmodproject() {
                         named = true;
                         if (!LM.integrity && name && name.includes('}')) name = name.split('}')[1];
                     }
-                    if (ext & 4) offset += 4;
+                    if (ext & 4) { view.readUInt32LE(offset); offset += 4; } /* (throws when cut short, like updateCells) */
                     if (ext & 1 || !(color || skin !== null || named)) continue;
                     var e = mem.get(id);
                     if (!e) mem.set(id, e = { color: null, skin: null, name: '', named: false });
@@ -54356,10 +54358,17 @@ function thelegendmodproject() {
                 }
                 n = view.readUInt16LE(offset);
                 offset += 2;
+                if (offset + n * 4 > view.length) return;
                 for (i = 0; i < n; i++, offset += 4) mem.delete(view.readUInt32LE(offset));
             } catch (e) { }
         },
         updateCells(view, offset) {
+            /* A packet cut short must not leave half of a section applied (a caught RangeError
+             * rolls nothing back): the eat list and the remove list are checked whole before
+             * they are used, and each record is read whole before anything is changed. An eat
+             * list cut short changes nothing and is no world update. */
+            var eatEventsLength = view.readUInt16LE(offset);
+            if (offset + 2 + eatEventsLength * 8 > view.length) throw new RangeError('World update: eat list cut short');
             this._lmLastWorldUpdate = Date.now(); /* freeze detector (drawRender.render) */
             /* network diagnostics: an attempt. Its reads throw on a short packet (counted as
              * rejected where it is caught), so getting to the end is a complete update */
@@ -54447,11 +54456,7 @@ function thelegendmodproject() {
              *
              * Other servers continue using the exact normal eat animation.
              */
-            var eatEventsLength =
-                view.readUInt16LE(
-                    offset
-                );
-
+            /* (eatEventsLength: read and checked at the top) */
             offset += 2;
 
 
@@ -54911,6 +54916,30 @@ function thelegendmodproject() {
                         name = name.split('}')[1];
                     }
                 }
+                /* The rest of the record is read here, before anything is changed: a record cut
+                 * short throws now and leaves no trace (same bytes, same order as before). */
+                if (isLegacyMultiOgar && (flags & 0x40)) {
+                    imsoloOwnerID = view.readUInt16LE(offset);
+                    offset += 2;
+                }
+                if (isLegacyMultiOgar && (flags & 0x80)) {
+                    // Protocol 6-10: extended = uint16 cellType + string partyCode (UTF-8, null-terminated)
+                    imsoloCellType = view.readUInt16LE(offset);
+                    offset += 2;
+                    var _pc = '', _pcEnd = false;
+                    while (offset < view.byteLength) {
+                        var _ch = view.readUInt8(offset++);
+                        if (_ch === 0) { _pcEnd = true; break; }
+                        _pc += String.fromCharCode(_ch);
+                    }
+                    /* no terminator: the packet ends inside this record */
+                    if (!_pcEnd) throw new RangeError('World update: party code cut short');
+                    imsoloPartyCode = _pc;
+                }
+                if (extendedFlags & 4) {
+                    accountID = view.readUInt32LE(offset);
+                    offset += 4;
+                }
                 /* (_lmIdMem) keep the colour, skin and name of each non-food cell; a cell we no
                  * longer have gets them back when the server only sends an update for it */
                 if (_lmIdMem && !(extendedFlags & 1)) {
@@ -54934,8 +54963,7 @@ function thelegendmodproject() {
                 }
                 // MultiOgar / LegacyProtocol (protocols 6-10): flag 0x40 and 0x80 come AFTER color/skin/name in byte stream
                 if (isLegacyMultiOgar && (flags & 0x40)) {
-                    imsoloOwnerID = view.readUInt16LE(offset);
-                    offset += 2;
+                    /* (imsoloOwnerID: read with the record above) */
                     if ((!namePresent || name === "") && this.imsoloPlayersByID && this.imsoloPlayersByID.has(imsoloOwnerID)) {
                         var _ownerPlayer = this.imsoloPlayersByID.get(imsoloOwnerID);
                         if (_ownerPlayer && _ownerPlayer.name) {
@@ -54944,18 +54972,7 @@ function thelegendmodproject() {
                         }
                     }
                 }
-                if (isLegacyMultiOgar && (flags & 0x80)) {
-                    // Protocol 6-10: extended = uint16 cellType + string partyCode (UTF-8, null-terminated)
-                    imsoloCellType = view.readUInt16LE(offset);
-                    offset += 2;
-                    var _pc = '';
-                    while (offset < view.byteLength) {
-                        var _ch = view.readUInt8(offset++);
-                        if (_ch === 0) break;
-                        _pc += String.fromCharCode(_ch);
-                    }
-                    imsoloPartyCode = _pc;
-                }
+                /* (flag 0x80: cell type and party code read with the record above) */
                 //Jimboy's
                 if (16 & flags) {
                     //isAgitated = true;
@@ -55184,8 +55201,7 @@ function thelegendmodproject() {
                     name = '';
                 }
                 if (extendedFlags & 4) {
-                    accountID = view.readUInt32LE(offset);
-                    offset += 4;
+                    /* (accountID: read with the record above) */
                     cellUpdateCells.accID = accountID;
                     let friend = LM.fbOnline.find(element => {
                         return element.id === accountID
@@ -55232,6 +55248,8 @@ function thelegendmodproject() {
                     offset
                 );
 
+            /* the whole remove list or none of it */
+            if (offset + 2 + eatEventsLength * 4 > view.length) throw new RangeError('World update: remove list cut short');
             offset += 2;
 
 
