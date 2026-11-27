@@ -80048,6 +80048,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var tTopY = rawTopY + (clampedTopY - rawTopY) * blend;
             var tMaxX = rawMaxX + (clampedMaxX - rawMaxX) * blend;
             var tBottomY = rawBottomY + (clampedBottomY - rawBottomY) * blend;
+            /* a spectator still connecting has no view yet: no box, and none kept, so its first view
+             * starts the box (kept from that frame as NaN, it never showed once the view came) */
+            if (!Number.isFinite(tMinX) || !Number.isFinite(tTopY) || !Number.isFinite(tMaxX) || !Number.isFinite(tBottomY)) {
+                if (spectObj) spectObj._drawMinX = null;
+                return;
+            }
 
             if (spectObj) {
                 // If tab was hidden or position jumped (e.g. tab switch or desync > 800px), snap immediately!

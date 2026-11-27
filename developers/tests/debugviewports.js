@@ -13,25 +13,31 @@ const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 
 let failed = 0;
 const check = (name, ok, info) => { console.log((ok ? 'ok   ' : 'FAIL ') + name + (ok || info === undefined ? '' : '  [' + info + ']')); if (!ok) failed++; };
 
-function block(start, from) {
-    const i = src.indexOf(start, from || 0);
+function block(start, from, text) {
+    text = text || src;
+    const i = text.indexOf(start, from || 0);
     if (i < 0) return null;
     let d = 0;
-    for (let k = src.indexOf('{', i); k < src.length; k++) {
-        if (src[k] === '{') d++;
-        else if (src[k] === '}' && !--d) return src.slice(i, k + 1);
+    for (let k = text.indexOf('{', i); k < text.length; k++) {
+        if (text[k] === '{') d++;
+        else if (text[k] === '}' && !--d) return text.slice(i, k + 1);
     }
     return null;
 }
-const methods = ['        drawViewPorts(ctx) {', '        _lmUnitFoodBox(sp) {', '        calMinMax() {'].map((m) => [m, block(m)]);
+const methods = ['        drawViewPorts(ctx) {', '        _lmUnitFoodBox(sp) {', '        calMinMax() {', '        newViewport(ctx, name'].map((m) => [m, block(m)]);
+/* a spectator connection's own coordinate conversion (ogario/spect.js) */
+const spectSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'spect.js'), 'utf8').replace(/\r\n/g, '\n');
+const spectGetXY = ['    getX(x) {', '    getY(y) {'].map((m) => block(m, 0, spectSrc));
 /* drawViewport is written "drawViewport: function (...)" */
 const dv = block('        drawViewport: function (ctx, text');
 methods.forEach((m) => { if (!m[1] && m[0].indexOf('_lm') >= 0) m[1] = '        _lmUnitFoodBox() { return null; }'; });
-const missing = methods.filter((m) => !m[1]).map((m) => m[0].trim()).concat(dv ? [] : ['drawViewport']);
+const missing = methods.filter((m) => !m[1]).map((m) => m[0].trim()).concat(dv ? [] : ['drawViewport'])
+    .concat(spectGetXY.every(Boolean) ? [] : ['spect.js getX/getY']);
 if (missing.length) { console.log('FAIL code not found: ' + missing.join(', ')); process.exit(1); }
 
 function env(o) {
-    const LM = { food: [], foodMulti: [], viewXTrue: 0, viewYTrue: 0, multiBoxPlayerExists: true };
+    const LM = { food: [], foodMulti: [], viewXTrue: 0, viewYTrue: 0, multiBoxPlayerExists: o.mb !== false,
+        mapMinX: -7071, mapMinY: -7071, mapMaxX: 7071, mapMaxY: 7071, mapOffsetX: 0, mapOffsetY: 0, vector: o.vector || null, vnr: 0 };
     const boxes = [];
     const ctx2d = {
         fillText(text, x, y) { this._t = text; },
@@ -41,14 +47,17 @@ function env(o) {
             boxes.push({ label: this._t, minX: Math.min(...xs), maxX: Math.max(...xs), minY: Math.min(...ys), maxY: Math.max(...ys) });
         }
     };
-    const win = { fullSpectator: false, spects: o.spects || [] };
+    const win = { fullSpectator: !!o.full, spects: o.spects || [] };
+    win.legendmod = LM;
     const c = { window: win, LM, legendmod: LM, spects: win.spects, defaultSettings: { foodSize: 5, bordersColor: '#ff0000' },
         defaultmapsettings: { multiboxAmount: 3 }, Math, Number, String, console, document: { hidden: false } };
     vm.createContext(c);
-    vm.runInContext('var drawRender = {' + methods.map((m) => m[1]).concat([dv]).join(',\n') + '};', c);
+    vm.runInContext('var drawRender = {' + methods.map((m) => m[1]).concat([dv]).join(',\n') + '};' +
+        /* a spectator connection with spect.js's own getX / getY */
+        'var SpectXY = class { constructor(p) { Object.assign(this, p); }\n' + spectGetXY.join('\n') + '\n};', c);
     const dr = c.drawRender;
     dr.ctx = ctx2d; dr.canvasWidth = 1600; dr.canvasHeight = 900; dr.scale = o.scale || 0.5;
-    return { LM, dr, boxes, frame() { boxes.length = 0; dr.calMinMax(); dr.drawViewPorts(ctx2d); return boxes.slice(); } };
+    return { LM, dr, boxes, spect(p) { const sp = vm.runInContext('(p) => new SpectXY(p)', c)(p); win.spects.push(sp); return sp; }, frame() { boxes.length = 0; dr.calMinMax(); dr.drawViewPorts(ctx2d); return boxes.slice(); } };
 }
 /* food spread +-r around (cx, cy), owned by connection `spectator` (0 = main) */
 function food(list, cx, cy, r, spectator) {
@@ -100,5 +109,23 @@ const MAP = 15957;
     check('new server food: box 1 at the new view', b && Math.round(b.maxX) === -2015, b && b.maxX);
 }
 
+/* Full Map (full spectator, agar.io): one box "Viewport# n" per spectator connection, around its
+ * server camera (getX/getY of its view), held inside the map near its grid point (staticX/Y). */
+const finite = (b) => b && [b.minX, b.maxX, b.minY, b.maxY].every(Number.isFinite);
+const spectAt = (number, sx, sy) => ({ number, player: false, staticX: sx, staticY: sy, isSpectateEnabled: false, isFreeSpectate: false,
+    mapOffsetFixed: false, mapOffsetX: 0, mapOffsetY: 0, fixX: 1, fixY: 1, fix3x: 0, fix3y: 0 });
+/* 4. Full Map opened with Show viewports on: the spectators are still connecting (no view yet) */
+{
+    const e = env({ full: true, mb: false });
+    const s1 = e.spect(spectAt(1, -4671, -6071)), s2 = e.spect(spectAt(2, 400, -6071));
+    const first = e.frame();
+    check('connecting spectators: no box with an unknown place', first.every(finite), JSON.stringify(first));
+    [s1, s2].forEach((s) => { s.mapOffsetFixed = true; s.viewX = s.staticX; s.viewY = s.staticY; });
+    e.frame();
+    const later = e.frame();
+    const v1 = byLabel(later, 'Viewport# 1'), v2 = byLabel(later, 'Viewport# 2');
+    check('once their views arrive: both spectators have their box', finite(v1) && finite(v2), JSON.stringify(later));
+    check('the box is around the spectator\'s view', v2 && Math.abs((v2.minX + v2.maxX) / 2 - 400) < 1, v2 && [v2.minX, v2.maxX]);
+}
 console.log(failed ? 'FAILED ' + failed : 'all debugviewports checks passed');
 process.exit(failed ? 1 : 0);
