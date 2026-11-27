@@ -124,6 +124,16 @@ ctx._onEmit = d => { if (d.key === 'showGrid') { ctx._onEmit = null; S.showTop5 
 S.showGrid = !S.showGrid;
 app.saveSettings(S, 'ogarioSettings');
 check('a listener that changes a setting: each change announced once', J(events.map(e => e[1])) === J(['showGrid', 'showTop5']));
+/* S09: two settings changed in one save, and the listener of the first changes the second again:
+ * the last event of the second is its value now (before, the outer save sent the older one after it) */
+events.length = 0;
+ctx._onEmit = d => { if (d.key === 'showMass') { ctx._onEmit = null; S.hudBlur = 3; app.saveSettings(S, 'ogarioSettings'); } };
+S.showMass = !S.showMass; S.hudBlur = 1;
+app.saveSettings(S, 'ogarioSettings');
+check('nested change of a setting the same save changed: its last event is its value now', J(events.map(e => e[1] + '=' + e[2])) === J(['showMass=' + S.showMass, 'hudBlur=3']) || (console.log('   ' + J(events)), false));
+events.length = 0;
+app.saveSettings(S, 'ogarioSettings');
+check('...and nothing left to announce afterwards', events.length === 0);
 events.length = 0;
 ctx.LMEvents.listen = false;
 S.hudBlur = 5;
@@ -139,19 +149,36 @@ app.saveSettings(S, 'ogarioSettings');
 check('a value only lowered by Adaptive performance (not the player) is not announced', events.length === 0 && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).animation === 80);
 delete S.toJSON;
 S.animation = 80;
-/* a full storage: the change is in effect, so it is announced; the error reaches the caller as before */
-const realSet = ctx.localStorage.setItem;
+/* a full storage: the change is in effect, so it is announced; the error reaches the caller as before.
+ * S09: the player is told once that it is not saved, and the next save stores everything */
+const realSet = ctx.localStorage.setItem, toasts = [];
+ctx.toastr = { warning(t) { toasts.push(t); } };
+ctx.lmT = k => k;
 ctx.localStorage.setItem = () => { throw new Error('QuotaExceededError'); };
 S.hudBlur = 6;
 let threw = false;
 try { app.saveSettings(S, 'ogarioSettings'); } catch (e) { threw = true; }
-ctx.localStorage.setItem = realSet;
 check('a full storage: the error is thrown as before and the change still announced', threw && events.length === 1 && events[0][1] === 'hudBlur' && events[0][2] === 6);
+check('a full storage: the player is warned that it is not saved', toasts.length === 1 && ctx._lmSettingsUnsaved === true);
+S.showGrid = !S.showGrid;
+try { app.saveSettings(S, 'ogarioSettings'); } catch (e) { }
+check('still full: no second warning for the next save', toasts.length === 1);
+ctx.localStorage.setItem = realSet;
+S.hudBlur = 5;
+app.saveSettings(S, 'ogarioSettings');
+const reS = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
+check('storage works again: the next save stores every change, no longer unsaved', reS.hudBlur === 5 && reS.showGrid === S.showGrid && ctx._lmSettingsUnsaved === false);
+ctx.localStorage.setItem = () => { throw new Error('QuotaExceededError'); };
+S.hudBlur = 6;
+try { app.saveSettings(S, 'ogarioSettings'); } catch (e) { }
+ctx.localStorage.setItem = realSet;
+check('full again later: warned again', toasts.length === 2);
+delete ctx.toastr; delete ctx.lmT;
 events.length = 0;
 const long = 'x'.repeat(800);
 S.chatHideWords = long;
 app.saveSettings(S, 'ogarioSettings');
-check('text values in events are cut at 500 characters', events.length === 1 && events[0][2].length === 500);
+check('text values in events are cut at 500 characters, the save keeps the whole text', events.length === 1 && events[0][2].length === 500 && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).chatHideWords === long);
 
 // ── S5 the real setSettings: validates script values, no event for the same value
 const ss = cut('        setSettings(id, checked) {', '        profiling() {');

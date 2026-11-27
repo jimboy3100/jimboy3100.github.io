@@ -21910,7 +21910,10 @@ function lmKillerShown(now) {
  * the last saved ones and sends one 'settingsChange' per changed key. A slider is announced
  * when its debounced save runs (it rests or is released), not on every step; an unchanged
  * value is not announced. */
-var _lmSettingsSeen = null;
+var _lmSettingsSeen = null, _lmSettingsBy = {}, _lmSettingsRun = 0;
+/* true while a change is in effect but the browser storage refused to keep it (the next save
+ * writes every setting again) */
+var _lmSettingsUnsaved = false;
 function lmSettingsUserView() {
     var s = defaultmapsettings;
     if (typeof s.toJSON === 'function') { try { return s.toJSON(); } catch (e) { } }
@@ -21924,15 +21927,20 @@ function lmSettingsCommit(view) {
         return;
     }
     /* keys and values are taken before any listener runs: one that changes a setting saves
-     * again, and that save announces its own change */
-    var changed = null;
+     * again, and that save announces its own change. _lmSettingsBy names the save that took a
+     * key's value last, so this one skips a key a listener's save announced anew meanwhile
+     * (its last event is then the value now, not this save's older one) */
+    var changed = null, run = ++_lmSettingsRun;
     for (k in LM_SETTINGS_DEFAULTS) {
         v = view[k];
-        if (seen[k] !== v && (v === v || seen[k] === seen[k])) { seen[k] = v; (changed || (changed = [])).push(k, v); }
+        if (seen[k] !== v && (v === v || seen[k] === seen[k])) { seen[k] = v; _lmSettingsBy[k] = run; (changed || (changed = [])).push(k, v); }
     }
     if (!changed || !window.LMEvents || !window.LMEvents._has('settingsChange')) return;
     for (var i = 0; i < changed.length; i += 2) {
         v = changed[i + 1];
+        if (_lmSettingsBy[changed[i]] !== run) continue;
+        /* text is cut to 500 characters for plugins (LMEvents.md); Legend Mod's own listeners
+         * read the whole value from the settings */
         if (typeof v === 'boolean' || typeof v === 'number' || typeof v === 'string') {
             window.LMEvents.emit('settingsChange', { key: changed[i], value: typeof v === 'string' ? v.slice(0, 500) : v });
         }
@@ -25624,10 +25632,15 @@ function thelegendmodproject() {
             if (name === 'ogarioSettings' && option === defaultmapsettings) {
                 /* the shared change path: the save announces what changed (lmSettingsCommit),
                  * also when the storage is full (the change is in effect all the same) */
-                var view = lmSettingsUserView();
+                var view = lmSettingsUserView(), saved = false;
                 try {
                     window.localStorage.setItem(name, JSON.stringify(view));
+                    saved = true;
                 } finally {
+                    /* in effect but not kept: the player is told once until a save works again;
+                     * the caller still gets the error and the next save writes every setting */
+                    if (!saved && !_lmSettingsUnsaved) { try { if (window.toastr) toastr.warning(lmT('modules.smalltools.storageFull')); } catch (eW) { } }
+                    _lmSettingsUnsaved = !saved;
                     lmSettingsCommit(view);
                 }
                 return;
