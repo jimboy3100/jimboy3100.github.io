@@ -87,9 +87,7 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 	'<u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="legenddefaultsettings(); return false">' + _lmHTx('misc.helper.legendDefault') + '</u><br>'+
 	'<img src="https://jimboy3100.github.io/banners/iconvanilla.jpg" alt="' + _lmHT('misc.helper.vanillaLike') + '" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="vanillalike(); return false" > '+
 	'<u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="vanillalike(); return false">' + _lmHTx('misc.helper.vanillaLike') + '</u><br>'+
-	'<p style="color:var(--lm-mc,#fff); font-size:15px; margin:6px 0;" align="middle"><b>' + _lmHTx('pack.orChooseAnExpansion') + '</b></p></div>'+
-	/* i18n-ok: Dying Light is the game's name */
-	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight(); return false"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a><u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="opendyinglight(); return false">Dying Light</u></div>'+	   
+	'</div>'+
 	'<br><br></div></div>');
 //$('#TemplatesBtn').hide();	
 }

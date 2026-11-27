@@ -5738,7 +5738,6 @@ function logoutPSArenas() {
     }
 }
 
-var dyinglight1load = localStorage.getItem("dyinglight1load");
 //var MassBigFFAAnnouncement = localStorage.getItem("MassBigFFAAnnouncement");
 var PremiumLimitedDateStart = localStorage.getItem("PremiumLimitedDateStart");
 
@@ -19865,8 +19864,6 @@ var defaultSettings = {
     commanderImage4: "https://www.legendmod.ml/banners/drawCommander4.png",
     commanderImage5: "https://www.legendmod.ml/banners/drawCommander5.png",
     commanderImage6: "https://www.legendmod.ml/banners/iconJustWatchPro.png",
-    commanderImageDyingLight: "https://www.legendmod.ml/banners/icondyinglightzombie.png",
-    commanderImageDyingLightvirus: "https://www.legendmod.ml/banners/icondyinglightvirus.png",
 
     ////
     miniMapFont: 'ubuntu-bold',
@@ -20117,26 +20114,7 @@ iconSpecialSkinEffectsTiger.src = 'https://www.legendmod.ml/banners/iconSpecialS
 iconSpecialSkinEffectsPanicAtDisco = new Image;
 iconSpecialSkinEffectsPanicAtDisco.src = 'https://www.legendmod.ml/banners/iconSpecialSkinEffectsPanicAtDisco.png';
 */
-if (dyinglight1load === "yes") {
-    cimgDyingLight = new Image;
-    cimgDyingLight.src = defaultSettings.commanderImageDyingLight;
-    //cimgDyingLightvirus = new Image;
-    //cimgDyingLightvirus.src = defaultSettings.commanderImageDyingLightvirus;
-}
-/*
-                cimgDyingLight1 = new Image;
-                cimgDyingLight1.src = 'https://www.legendmod.ml/banners/icondyinglightzombie2.png';
-                cimgDyingLight2 = new Image;
-                cimgDyingLight2.src = 'https://www.legendmod.ml/banners/icondyinglightzombie3.png';
-                cimgDyingLight3 = new Image;
-                cimgDyingLight3.src = 'https://www.legendmod.ml/banners/icondyinglightzombie4.png';
-                cimgDyingLight4 = new Image;
-                cimgDyingLight4.src = 'https://www.legendmod.ml/banners/icondyinglightzombie5.png';
-                cimgDyingLight5 = new Image;
-                cimgDyingLight5.src = 'https://www.legendmod.ml/banners/icondyinglightzombiebig.png';
-                cimgDyingLight6 = new Image;
-                cimgDyingLight6.src = 'https://www.legendmod.ml/banners/icondyinglightvolaltile.png';
-                */
+
 
 
 var SkinExplain = [{
@@ -38510,7 +38488,7 @@ function thelegendmodproject() {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsPanicAtDisco", this.x - 1 * y, this.y - 1 * y, y / 1, y / 4, style);
                     //style.drawImage(iconSpecialSkinEffectsPanicAtDisco, this.x - 1 * y, this.y - 1 * y, y/1, y/4);	
                     this.drawSpecialSkinDancer(style, y);
-                } else if (this.targetNick.includes("The Dying Light") || this.SpecialEffect === "RedArrow" || this.SpecialEffect2 === "RedArrow") {
+                } else if (this.SpecialEffect === "RedArrow" || this.SpecialEffect2 === "RedArrow") {
                     if (cimg5 && cimg5.complete && cimg5.naturalWidth > 0) { try { style.drawImage(cimg5, this.x - 2 * y, this.y - 2 * y, 2 * 2 * y, 2 * 2 * y); } catch (e) { } }
                 } else if (this.SpecialEffect === "HappyNewYear" || this.SpecialEffect2 === "HappyNewYear") {
                     this.drawImageSpecialSkin("iconSpecialSkinEffectsHappyNewYear", this.x + 0.2 * y, this.y + 0.3 * y, y / 1.5, y / 1, style);
@@ -39339,10 +39317,6 @@ function thelegendmodproject() {
                             style.shadowOffsetY = 0;
                         }
 
-                        /*if (dyinglight1load != "yes"){
-                                        style.globalAlpha = 1;
-                                        s = false;
-                                    }*/
                         //var node = null;
 
 
@@ -39727,11 +39701,6 @@ function thelegendmodproject() {
                                             style.restore();
                                         }
                                     }
-                                }
-                                if (dyinglight1load === "yes" && node == null && this.targetNick.includes(LM.playerNick) === false && !this.isFood && this.mass > 12) {
-                                    try {
-                                        style.drawImage(cimgDyingLight, this.x - y, this.y - y, 2 * y, 2 * y);
-                                    } catch (e) { }
                                 }
                             }
                             this.drawSpecialSkin(style, y)
@@ -61851,19 +61820,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
-            /*
-             * These features contain Canvas-only body-attached effects whose
-             * DOM ordering cannot be reproduced atomically against a separate
-             * WebGL canvas.
-             */
-            if (
-                dyinglight1load ===
-                    'yes'
-            ) {
-                return this._lmNoGL(this.GLW.BODY_FX);
-            }
-
-
             /* Teammate indicators (GL text pass or overlay) and the Facebook friend
              * marker (overlay): checked per visible cell below, not per frame just
              * because the option is on. */
@@ -81193,50 +81149,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 alpha;
 
             /*
-             * Dying-light background image.
-             */
-            if (
-                dyinglight1load ===
-                    'yes' &&
-                typeof cimg5 !==
-                    'undefined' &&
-                cimg5 &&
-                !cimg5._failed &&
-                (
-                    cimg5.width > 0 ||
-                    cimg5.naturalWidth > 0
-                )
-            ) {
-                try {
-                    ctx.drawImage(
-                        cimg5,
-
-                        legendmod.mapMinX -
-                            LM.mapSize -
-                            1,
-
-                        legendmod.mapMinY -
-                            LM.mapSize -
-                            1,
-
-                        (
-                            legendmod.mapMaxX -
-                            legendmod.mapMinX
-                        ) *
-                            3,
-
-                        (
-                            legendmod.mapMaxY -
-                            legendmod.mapMinY
-                        ) *
-                            3
-                    );
-                }
-                catch (error) {
-                }
-            }
-
-            /*
              * Normal custom map background.
              */
             if (
@@ -88584,6 +88496,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
     /* The stream companion, Discover features, the Analytics objectives and the profile badges are removed:
      * what they kept is deleted from this browser */
     try { ['lmCompanionPrivacy', 'lmDiscover', 'lmAnalyticsGoals', 'lmBadges'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
+    /* The Dying Light theme is removed: its saved on/off state is deleted from this browser */
+    try { localStorage.removeItem('dyinglight1load'); } catch (e) { }
     /* AgarTool team: AgarTool players with my tag on the same agar.io server as teammates (no socket or timer while its option is off) */
     try {
         var agarToolScript = document.createElement('script');
