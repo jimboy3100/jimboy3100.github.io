@@ -1,5 +1,5 @@
-/* Small tools and accessibility: conflict detection, debug info redaction, radial sector choice, skin
- * collection checks and the accessibility helpers (pure parts of ogario/modules/smalltools.js
+/* Small tools and accessibility: conflict detection, debug info redaction, radial sector choice
+ * and the accessibility helpers (pure parts of ogario/modules/smalltools.js
  * and ogario/modules/accessibility.js, loaded in a vm without a document).
  * node developers/tests/smalltools.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
@@ -127,43 +127,6 @@ check('debug info: room path and token gone', dbg.indexOf('SECRETROOM42') < 0 &&
 check('debug info: browser version not taken for an IP', dbg.indexOf('Chrome/120.0.0.0') >= 0);
 check('debug info: skin file and nick gone', dbg.indexOf('AbCdEf1') < 0 && dbg.indexOf('MyNickName') < 0);
 
-/* ── skin collections ── */
-let col = C.cleanCollections({
-    folders: ['Fun', 'Fun', '', 5, '<b>x</b>'.repeat(10), 'Clan'],
-    items: {
-        'https://a.example/x.png': { f: 'Fun', t: ['Red', 'red', ' blue ', 3, 'x'.repeat(40)], s: true, a: 5 },
-        'https://a.example/y.png': { f: 'Missing', t: 'cool, Cool,  fast', s: 'yes' },
-        'bad<url>': { s: true },
-        '': { s: true },
-        'https://a.example/z.png': 'not an object',
-        ['https://a.example/' + 'q'.repeat(700)]: { s: true }
-    }
-});
-check('collections: folders unique, non-empty, short', J(col.folders.slice(0, 2)) === J(['Fun', '<b>x</b><b>x</b><b>x</b><b>x</b>']) && col.folders.length === 3 && col.folders[2] === 'Clan');
-check('collections: tags lower case, unique, trimmed, short', J(col.items['https://a.example/x.png'].t) === J(['red', 'blue', 'x'.repeat(24)]));
-check('collections: tags from a comma string', J(col.items['https://a.example/y.png'].t) === J(['cool', 'fast']));
-check('collections: unknown folder becomes no folder', col.items['https://a.example/y.png'].f === '');
-check('collections: favourite only when true', col.items['https://a.example/x.png'].s === true && col.items['https://a.example/y.png'].s === false);
-check('collections: bad keys / values dropped', Object.keys(col.items).length === 2);
-check('collections: garbage = empty', J(C.cleanCollections('x')) === J({ v: 1, folders: [], items: {} }) && J(C.cleanCollections([1, 2])) === J({ v: 1, folders: [], items: {} }));
-const many = { items: {} };
-for (let i = 0; i < 700; i++) many.items['https://s.example/' + i] = { s: true };
-check('collections: at most 500 skins', Object.keys(C.cleanCollections(many).items).length === 500);
-check('collections: a stored round trip is stable', J(C.cleanCollections(JSON.parse(J(col)))) === J(col));
-check('collections: empty entry detection', C.emptyItem({ f: '', t: [], s: false }) && !C.emptyItem({ f: '', t: ['a'], s: false }) && !C.emptyItem({ f: '', t: [], s: false, a: 3 }));
-const skins = [
-    { url: 'https://a.example/x.png', label: 'Profile 1: Me' },
-    { url: 'https://a.example/y.png', label: 'Profile 2' },
-    { url: 'https://a.example/w.png', label: 'saved here' }
-];
-const urls = l => l.map(s => s.url.slice(-5));
-check('filter: all, favourites first', J(urls(C.filterSkins(skins, col, '', ''))) === J(['x.png', 'y.png', 'w.png']));
-check('filter: favourites', J(urls(C.filterSkins(skins, col, '', '*'))) === J(['x.png']));
-check('filter: folder', J(urls(C.filterSkins(skins, col, '', 'Fun'))) === J(['x.png']));
-check('filter: no folder', J(urls(C.filterSkins(skins, col, '', '-'))) === J(['y.png', 'w.png']));
-check('filter: #tag', J(urls(C.filterSkins(skins, col, '#cool', ''))) === J(['y.png']));
-check('filter: words over label and tags', J(urls(C.filterSkins(skins, col, 'profile blue', ''))) === J(['x.png']));
-check('filter: no match', C.filterSkins(skins, col, 'nothing-here', '').length === 0);
 check('screenshot options: only true counts', J(C.cleanShotOpts({ lb: true, map: 'yes' })) === J({ lb: true, map: false }) && J(C.cleanShotOpts(null)) === J({ lb: false, map: false }));
 
 /* ── accessibility ── */

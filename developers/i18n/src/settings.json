@@ -4985,24 +4985,6 @@
     "ja": "スクリーンショットウィンドウ",
     "it": "Finestra screenshot"
   },
-  "settings.hk-skinCollections": {
-    "en": "Skin collections",
-    "el": "Συλλογές skins",
-    "es": "Colecciones de skins",
-    "bg": "Колекции скинове",
-    "fr": "Collections de skins",
-    "ar": "مجموعات السكنات",
-    "zh": "造型收藏",
-    "ru": "Коллекции скинов",
-    "de": "Skin-Sammlungen",
-    "tr": "Skin koleksiyonları",
-    "pl": "Kolekcje skinów",
-    "nl": "Skincollecties",
-    "pt": "Coleções de skins",
-    "id": "Koleksi skin",
-    "ja": "スキンコレクション",
-    "it": "Collezioni di skin"
-  },
   "settings.hk-lmThemeWorkshop": {
     "en": "Theme workshop: open / close window",
     "el": "Εργαστήριο θεμάτων: άνοιγμα / κλείσιμο",

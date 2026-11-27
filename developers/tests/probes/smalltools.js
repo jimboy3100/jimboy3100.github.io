@@ -11,12 +11,12 @@
   var T = window.LMSmallTools, A = window.LMAccessibility, s = window.legendmod5;
   need('modules loaded', !!(T && T.open && A && A.sync));
   if (!T || !A || !s) return { fail: fail, info: info };
-  var KEYS = ['lmRadialMenu', 'lmSkinCollections', 'lmSmallTools'], stored = {};
+  var KEYS = ['lmRadialMenu', 'lmSmallTools'], stored = {};
   KEYS.forEach(function (k) { try { stored[k] = localStorage.getItem(k); } catch (e) { } });
   var OPTS = ['a11yTextScale', 'a11yHudTextScale', 'a11yIndicators'], keep = {};
   OPTS.forEach(function (k) { keep[k] = s[k]; });
   var inBox = function (r) { return r.width > 0 && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; };
-  var HK = ['hk-radialMenu', 'hk-radialEditor', 'hk-screenshotCapture', 'hk-screenshotTool', 'hk-skinCollections'];
+  var HK = ['hk-radialMenu', 'hk-radialEditor', 'hk-screenshotCapture', 'hk-screenshotTool'];
   try {
     need('options off by default', LM_SETTINGS_DEFAULTS.a11yIndicators === false &&
       LM_SETTINGS_DEFAULTS.a11yTextScale === 1 && LM_SETTINGS_DEFAULTS.a11yHudTextScale === 1);
@@ -29,9 +29,28 @@
     }
     var allOff = !s.a11yIndicators && s.a11yTextScale === 1 && s.a11yHudTextScale === 1;
     if (allOff) need('accessibility off: nothing added', !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind'));
-    /* the Collections button has no setting of its own: it is always in the skins panel */
-    need('no Collections button setting', !('skinCollections' in LM_SETTINGS_DEFAULTS) && !document.getElementById('skinCollections'));
-    if (document.getElementById('skins-panel')) need('collections button in the skins panel', !!document.getElementById('lm-skin-collections'));
+    /* Skin collections are part of the player profiles: no window, button, setting, hotkey or
+     * Command Centre command of their own; a star on every profile in the skins panel instead */
+    T.open('skins');
+    need('Skin collections: no window, button, setting, hotkey or command', !T.isOpen() && !document.getElementById('lm-st-skins') && !document.getElementById('lm-skin-collections') &&
+      !('skinCollections' in LM_SETTINGS_DEFAULTS) && !('hk-skinCollections' in hotkeysCommand) &&
+      !(window.LMCommandCentre && window.LMCommandCentre.items().some(function (it) { return /skinCollections/.test(it.id); })));
+    var star = document.querySelector('#skins .skin-box .lm-prof-star[data-profile="1"]'), p1 = window.profiles && window.profiles[1];
+    if (document.getElementById('skins')) {
+      need('a star on every profile', !!star && document.querySelectorAll('#skins .lm-prof-star').length === document.querySelectorAll('#skins .skin-box').length);
+      need('profile search only with more than 15 profiles', !!document.getElementById('lm-prof-search') && (window.profiles.length > 15) === ($('#lm-prof-search').css('display') !== 'none'));
+    }
+    info.profileStars = document.querySelectorAll('#skins .lm-prof-star').length;
+    if (star && p1) {
+      var favWas = p1.fav === true, selWas = $('#skins a.selected').attr('id');
+      star.click();
+      var saved = null;
+      try { saved = JSON.parse(localStorage.getItem('ogarioPlayerProfiles'))[1]; } catch (e) { }
+      need('star click: favourite saved with the profile, ring shown, selection kept', (p1.fav === true) !== favWas && !!saved && (saved.fav === true) === (p1.fav === true) &&
+        $(star).closest('.skin-box').hasClass('lm-prof-fav') === (p1.fav === true) && $('#skins a.selected').attr('id') === selWas);
+      star.click();
+      need('star click again: back as it was', (p1.fav === true) === favWas);
+    }
     /* the conflict list is in the Hotkeys window only (its own section, not a header button and
      * not a small tools window / hotkey / Command Centre command of its own) */
     need('no conflicts button in the hotkeys window header', !document.getElementById('lm-hk-conflicts') && !$('#hotkeys-menu #lm-hk-conf-btn').length);
@@ -73,7 +92,7 @@
     need('keyCheck refuses browser keys', T.keyCheck && T.keyCheck('CTRL+T') && T.keyCheck('CTRL+T').level === 'block' && !T.keyCheck('Q'));
 
     /* every window opens on screen and closes with its x */
-    var wins = { radial: 'lm-st-radial', screenshot: 'lm-st-shot', skins: 'lm-st-skins' };
+    var wins = { radial: 'lm-st-radial', screenshot: 'lm-st-shot' };
     for (var name in wins) {
       T.open(name);
       await sleep(60);
@@ -88,11 +107,6 @@
       need(name + ' closes', !document.getElementById(wins[name]) && !T.isOpen());
       info[name] = [Math.round(r.width), Math.round(r.height)];
     }
-    /* hotkeys toggle the windows */
-    hotkeysCommand['hk-skinCollections'].keyDown();
-    need('skin collections hotkey opens', T.isOpen('skins'));
-    hotkeysCommand['hk-skinCollections'].keyDown();
-    need('skin collections hotkey toggles', !T.isOpen());
     /* the existing Settings > Copy debug info text goes through the redaction */
     var nick = document.getElementById('nick');
     var dbgText = T.redactReport('Server: wss://x.example:443/el-room/ROOMTOKEN9 nick ' + ((nick && nick.value) || ''));
@@ -164,11 +178,6 @@
     var pv = document.getElementById('lm-st-shot-preview');
     if (pv) { need('preview fits', inBox(pv.getBoundingClientRect())); pv.querySelector('button').click(); }
 
-    /* skin collections button */
-    T.sync();
-    var sb = document.getElementById('lm-skin-collections');
-    if (sb) { sb.click(); await sleep(50); need('collections button opens the window', T.isOpen('skins')); T.close(); }
-
     /* accessibility options one by one */
     s.a11yIndicators = true; A.sync();
     need('indicator canvas on', !!document.getElementById('lm-a11y-ind'));
@@ -183,7 +192,7 @@
     delete hotkeysCommand['hk-zzProbe'];
     OPTS.forEach(function (k) { s[k] = keep[k]; });
     KEYS.forEach(function (k) { try { if (stored[k] == null) localStorage.removeItem(k); else localStorage.setItem(k, stored[k]); } catch (e) { } });
-    A.sync(); T.sync();
+    A.sync();
   }
   return { fail: fail, info: info };
 })()

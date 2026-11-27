@@ -165,10 +165,11 @@
      * took its place (Short mass -> Mass format, FPS at top / Stats at center -> Stats position,
      * Screenshot mode -> Show/hide HUD, zoom bookmarks -> zoom levels, the Lab -> User Scripts,
      * the old Mouse control and gamepad switches -> their blocks of the Hotkeys window, the Game Over
-     * card parts -> the card's one switch, the Collections button switch -> the Skin collections command,
-     * the Scan Trick / line split status switches -> their sections, Ghost cells info -> Ghost cells,
-     * the developer console switch -> the Performance section with the diagnostics window);
-     * without this the star was dropped silently */
+     * card parts -> the card's one switch, the Scan Trick / line split status switches -> their
+     * sections, Ghost cells info -> Ghost cells, the developer console switch -> the Performance
+     * section with the diagnostics window); without this the star was dropped silently. '' = gone
+     * with nothing in its place (the Skin collections window and its Collections button switch: the
+     * player profiles have its favourites and search now), the star is dropped quietly */
     var RENAMED = {
         'opt:shortMass': 'set:massFormat', 'opt:fpsAtTop': 'set:statsPosition', 'opt:statsAtCenter': 'set:statsPosition',
         'hk:hk-screenshotMode': 'hk:hk-showHUD', 'hk:hk-zoomRecall1': 'hk:hk-zoom1', 'hk:hk-zoomRecall2': 'hk:hk-zoom2', 'hk:hk-zoomRecall3': 'hk:hk-zoom3',
@@ -178,7 +179,7 @@
         'set:middleClick': 'sec:lmHkMouse', 'set:mouse4Click': 'sec:lmHkMouse', 'set:mouse5Click': 'sec:lmHkMouse',
         'opt:gamepadEnabled': 'sec:lmHkGamepad', 'set:gamepadDeadzone': 'sec:lmHkGamepad',
         'opt:massGraph': 'opt:gameOverStats', 'opt:showKiller': 'opt:gameOverStats', 'opt:deathRecap': 'opt:gameOverStats',
-        'opt:skinCollections': 'hk:hk-skinCollections',
+        'opt:skinCollections': '', 'hk:hk-skinCollections': '',
         'opt:scanTrickStatus': 'sec:scanTrickGroup', 'opt:lineSplitStatus': 'sec:lineSplitGroup',
         'opt:showGhostCellsInfo': 'opt:showGhostCells', 'opt:showDevConsole': 'sec:perfGroup'
     };

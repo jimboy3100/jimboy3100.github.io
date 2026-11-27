@@ -69,7 +69,7 @@
 
 <https://www.legendmod.ml/knowledge/#feature-skins> a schema:DefinedTerm, lm:Feature ;
   schema:name "Custom skins, video skins and skin tools" ;
-  schema:description "Custom image URLs, video skins, skin collections, skin checker, IndexedDB cache." .
+  schema:description "Custom image URLs, video skins, profile favourites and search, skin checker, IndexedDB cache." .
 
 <https://www.legendmod.ml/knowledge/#feature-themes> a schema:DefinedTerm, lm:Feature ;
   schema:name "Themes and HUD customization" ;

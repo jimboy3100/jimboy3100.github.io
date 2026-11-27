@@ -1,11 +1,10 @@
 /* Legend Mod small tools: radial command menu, the conflict list of the Hotkeys window, the HUD hide of
- * Show/hide HUD (Alt+H, the former screenshot mode) with its capture, and skin collections.
+ * Show/hide HUD (Alt+H, the former screenshot mode) with its capture. (The skin collections window
+ * is gone: its favourites and search are part of the player profiles in the skins panel.)
  * Everything is off until used: windows and hotkeys without default keys
- * (all listed in the Command Centre), and the "Collections" button of the skins panel, whose window
- * loads its data only when opened. Nothing runs per frame while no tool is open.
+ * (all listed in the Command Centre). Nothing runs per frame while no tool is open.
  * Stored data, each in its own localStorage key, checked when read:
  *   lmRadialMenu      the commands of the radial menu (hotkey ids, up to 8)
- *   lmSkinCollections folders, tags and favourites of skins (the profiles keep their own format)
  *   lmSmallTools      screenshot options
  * It also takes private data out of the text of Settings > "Copy debug info" (redactReport).
  */
@@ -18,17 +17,12 @@
 
     function own(o, k) { return !!o && Object.prototype.hasOwnProperty.call(o, k); }
     function isObj(o) { return !!o && typeof o === 'object' && !Array.isArray(o); }
-    /* printable text of limited length (shown with textContent, stored as JSON) */
-    function cleanText(s, max) {
-        if (typeof s !== 'string') return '';
-        return s.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
-    }
 
     /* Texts from the language packs (developers/i18n/src, keys modules.smalltools.*): the chosen
      * language, else English. vars fill {0} {1}. A few labels are the same as settings / hotkey labels
      * and use those keys. */
     var TP = 'modules.smalltools.';
-    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-showHUD', shotHelp: 'pkg.mg.shotHelp', shotTainted: 'pkg.mg.shotTainted', skinsTitle: 'settings.hk-skinCollections', cMouseOff: 'pkg.mb.cMouseOff', cMoved: 'pkg.mb.cMoved', cMovedOk: 'pkg.mb.cMovedOk' };
+    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-showHUD', shotHelp: 'pkg.mg.shotHelp', shotTainted: 'pkg.mg.shotTainted', cMouseOff: 'pkg.mb.cMouseOff', cMoved: 'pkg.mb.cMoved', cMovedOk: 'pkg.mb.cMovedOk' };
     function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(own(SHARED, k) ? SHARED[k] : TP + k, vars) : k; }
     function langDir() { return W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'; }
 
@@ -188,63 +182,6 @@
         return s;
     }
 
-    /* ── skin collections ── */
-    var COL_MAX_ITEMS = 500, COL_MAX_FOLDERS = 40, COL_MAX_TAGS = 10;
-    function cleanSkinKey(u) {
-        if (typeof u !== 'string') return '';
-        u = u.trim();
-        if (!u || u.length > 600 || /[\u0000-\u001f\u007f<>"]/.test(u)) return '';
-        return u;
-    }
-    function cleanTag(t) { return cleanText(t, 24).toLowerCase().replace(/,/g, ''); }
-    function cleanFolder(f) { return cleanText(f, 32); }
-    function cleanTags(list) {
-        var out = [];
-        (Array.isArray(list) ? list : typeof list === 'string' ? list.split(',') : []).forEach(function (t) {
-            t = cleanTag(t);
-            if (t && out.indexOf(t) < 0 && out.length < COL_MAX_TAGS) out.push(t);
-        });
-        return out;
-    }
-    /* { v: 1, folders: [name], items: { skinUrl: { f: folder|'', t: [tag], s: favourite, a: added } } } */
-    function cleanCollections(raw) {
-        var out = { v: 1, folders: [], items: {} };
-        if (!isObj(raw)) return out;
-        (Array.isArray(raw.folders) ? raw.folders : []).forEach(function (f) {
-            f = cleanFolder(f);
-            if (f && out.folders.indexOf(f) < 0 && out.folders.length < COL_MAX_FOLDERS) out.folders.push(f);
-        });
-        var items = isObj(raw.items) ? raw.items : {}, n = 0;
-        Object.keys(items).forEach(function (k) {
-            var key = cleanSkinKey(k), it = items[k];
-            if (!key || !isObj(it) || n >= COL_MAX_ITEMS || own(out.items, key)) return;
-            var f = cleanFolder(it.f);
-            if (f && out.folders.indexOf(f) < 0) f = '';
-            var o = { f: f, t: cleanTags(it.t), s: it.s === true };
-            if (typeof it.a === 'number' && isFinite(it.a) && it.a > 0) o.a = Math.floor(it.a);
-            out.items[key] = o;
-            n++;
-        });
-        return out;
-    }
-    /* an entry that carries nothing is not stored */
-    function emptyItem(it) { return !it || (!it.f && !it.s && !(it.t && it.t.length) && !it.a); }
-    /* skins: [{ url, label, profile }]; folder: '' all, '*' favourites, '-' unfiled, else a folder name */
-    function filterSkins(skins, col, query, folder) {
-        var q = String(query || '').toLowerCase().trim().split(/\s+/).filter(Boolean);
-        return skins.filter(function (sk) {
-            var it = col.items[sk.url] || { f: '', t: [], s: false };
-            if (folder === '*' && !it.s) return false;
-            if (folder === '-' && it.f) return false;
-            if (folder && folder !== '*' && folder !== '-' && it.f !== folder) return false;
-            if (!q.length) return true;
-            var hay = (sk.url + ' ' + (sk.label || '') + ' ' + it.f + ' ' + it.t.join(' ') + (it.s ? ' favourite favorite' : '')).toLowerCase();
-            return q.every(function (w) { return w.charAt(0) === '#' ? it.t.indexOf(w.slice(1)) >= 0 : hay.indexOf(w) >= 0; });
-        }).sort(function (a, b) {
-            var sa = (col.items[a.url] || {}).s ? 1 : 0, sb = (col.items[b.url] || {}).s ? 1 : 0;
-            return sb - sa;
-        });
-    }
     function cleanShotOpts(raw) {
         return { lb: isObj(raw) && raw.lb === true, map: isObj(raw) && raw.map === true };
     }
@@ -252,8 +189,7 @@
     var core = {
         cleanRadial: cleanRadial, pickSector: pickSector, sectorAngle: sectorAngle, RADIAL_MAX: RADIAL_MAX,
         findConflicts: findConflicts, BROWSER_KEYS: BROWSER_KEYS, redact: redact,
-        cleanCollections: cleanCollections, cleanTags: cleanTags, filterSkins: filterSkins, emptyItem: emptyItem,
-        cleanSkinKey: cleanSkinKey, cleanShotOpts: cleanShotOpts
+        cleanShotOpts: cleanShotOpts
     };
     var api = W.LMSmallTools = { _core: core };
     if (!D || !D.createElement) return;
@@ -357,9 +293,6 @@
             '#lm-radial .lm-rd-item.on{background:' + c.mc + ';color:' + c.pc + ';border-color:#fff;}' +
             '#lm-radial .lm-rd-ring{position:absolute;border-radius:50%;border:2px dashed rgba(255,255,255,0.35);pointer-events:none;box-sizing:border-box;}' +
             '#lm-radial .lm-rd-dot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;pointer-events:none;}' +
-            '.lm-st-skin{display:flex;flex-direction:column;gap:4px;padding:6px;border-radius:var(--lm-radius,6px);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);min-width:0;}' +
-            '.lm-st-skin img{width:48px;height:48px;border-radius:50%;object-fit:cover;background:rgba(0,0,0,0.3);flex:none;}' +
-            '.lm-st-star{cursor:pointer;font-size:20px;line-height:30px;width:30px;text-align:center;flex:none;user-select:none;}' +
             '.lm-st-conf{padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);line-height:1.45;}' +
             '.lm-st-lvl{display:inline-block;min-width:44px;margin-right:6px;padding:0 4px;border-radius:var(--lm-radius-s,3px);font-size:10px;font-weight:700;text-align:center;text-transform:uppercase;}';
         D.head.appendChild(s);
@@ -1025,192 +958,6 @@
         w.foot.appendChild(button(t('close'), false, closeWin));
     }
 
-    /* ═══ 4. Skin collections ═══ */
-
-    var COL_KEY = 'lmSkinCollections';
-    function loadCol() { return cleanCollections(lsGet(COL_KEY)); }
-    function saveCol(col) {
-        Object.keys(col.items).forEach(function (k) { if (emptyItem(col.items[k])) delete col.items[k]; });
-        if (!lsSet(COL_KEY, cleanCollections(col))) toast('error', t('storageFull'));
-    }
-    /* the profiles' skins (read only: ogarioPlayerProfiles keeps its format) plus kept URLs */
-    function allSkins(col) {
-        var list = [], at = {};
-        var add = function (url, label, prof) {
-            url = cleanSkinKey(url);
-            if (!url) return;
-            if (own(at, url)) { if (prof != null && list[at[url]].profile == null) { list[at[url]].profile = prof; list[at[url]].label = label; } return; }
-            at[url] = list.length;
-            list.push({ url: url, label: label, profile: prof });
-        };
-        var pr = Array.isArray(W.profiles) ? W.profiles : [];
-        pr.forEach(function (p, i) { if (p && typeof p.skinURL === 'string') add(p.skinURL, t('profile', i + 1) + (p.nick ? ': ' + cleanText(p.nick, 30) : ''), i); });
-        var extra = lsGet('ogarioPlayerProfilesExtra');
-        if (Array.isArray(extra)) extra.forEach(function (p, i) { if (p && typeof p.skinURL === 'string') add(p.skinURL, t('profile', pr.length + i + 1) + (p.nick ? ': ' + cleanText(p.nick, 30) : ''), null); });
-        Object.keys(col.items).forEach(function (u) { add(u, t('saved'), null); });
-        return list;
-    }
-    function useSkin(url) {
-        var lm = W.legendmod, app = W.application, input = D.getElementById('skin');
-        if (!input || !app) return;
-        if (lm && lm.play) { toast('info', t('skinLater')); return; }
-        input.value = url;
-        /* same as clicking an example skin link: previews update, then the profile is saved */
-        try { if (W.jQuery) W.jQuery(input).click(); } catch (e) { }
-        try { if (typeof app.setPlayerSettings === 'function') app.setPlayerSettings(); } catch (e) { }
-        toast('success', t('skinSet'));
-    }
-    var skinUi = { q: '', folder: '' };
-    function openSkins() {
-        var w = openWin('lm-st-skins', t('skinsTitle'), 760);
-        var col = loadCol();
-        w.body.appendChild(el('p', '', t('skinsHelp'))).className = 'lm-st-help';
-        var bar = el('div', 'display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px;');
-        var q = el('input', 'flex:1 1 160px;');
-        q.type = 'search';
-        q.placeholder = t('search');
-        q.value = skinUi.q;
-        var fsel = el('select', 'flex:0 1 160px;');
-        fsel.id = 'lm-st-skins-folder';
-        /* a field, not prompt(): dialogs can be blocked inside the expanding.land frame */
-        var fname = el('input', 'flex:0 1 130px;');
-        fname.type = 'text';
-        fname.placeholder = t('folderName');
-        fname.maxLength = 32;
-        var nf = button(t('newFolder'), false, function () {
-            var n = cleanFolder(fname.value);
-            if (!n) { fname.focus(); return; }
-            fname.value = '';
-            if (col.folders.indexOf(n) < 0 && col.folders.length < COL_MAX_FOLDERS) col.folders.push(n);
-            skinUi.folder = n;
-            saveCol(col);
-            fillFolders();
-            draw();
-        });
-        var df = button(t('delFolder'), false, function () {
-            var f = skinUi.folder;
-            if (!f || f === '*' || f === '-') return;
-            col.folders = col.folders.filter(function (x) { return x !== f; });
-            Object.keys(col.items).forEach(function (k) { if (col.items[k].f === f) col.items[k].f = ''; });
-            skinUi.folder = '';
-            saveCol(col);
-            fillFolders();
-            draw();
-        });
-        bar.appendChild(q);
-        bar.appendChild(fsel);
-        bar.appendChild(fname);
-        bar.appendChild(nf);
-        bar.appendChild(df);
-        w.body.appendChild(bar);
-        var addRow = el('div', 'display:flex;gap:6px;margin:0 0 8px;');
-        var au = el('input', 'flex:1;');
-        au.type = 'text';
-        au.placeholder = t('addUrl');
-        addRow.appendChild(au);
-        addRow.appendChild(button(t('add'), false, function () {
-            /* kept as the address the skin field plays it with (checkSkinURL): a link typed
-             * without https:// (i.imgur.com/..., an imgur page) had no picture here, and once
-             * used it was listed twice (the profile keeps the https:// one) */
-            var raw = au.value, app = W.application;
-            if (app && typeof app.checkSkinURL === 'function') { try { raw = app.checkSkinURL(raw); } catch (e) { } }
-            var u = cleanSkinKey(raw);
-            if (!u) return;
-            var it = col.items[u] || (col.items[u] = { f: '', t: [], s: false });
-            it.a = Date.now();
-            if (skinUi.folder && skinUi.folder !== '*' && skinUi.folder !== '-') it.f = skinUi.folder;
-            au.value = '';
-            saveCol(col);
-            draw();
-        }));
-        w.body.appendChild(addRow);
-        var grid = el('div', 'display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:6px;');
-        grid.id = 'lm-st-skins-list';
-        w.body.appendChild(grid);
-        function fillFolders() {
-            fsel.textContent = '';
-            [['', t('all')], ['*', '★ ' + t('favs')], ['-', t('unfiled')]].concat(col.folders.map(function (f) { return [f, f]; })).forEach(function (o) {
-                var op = el('option', '', o[1]);
-                op.value = o[0];
-                fsel.appendChild(op);
-            });
-            if (skinUi.folder && skinUi.folder !== '*' && skinUi.folder !== '-' && col.folders.indexOf(skinUi.folder) < 0) skinUi.folder = '';
-            fsel.value = skinUi.folder;
-            df.style.display = skinUi.folder && skinUi.folder !== '*' && skinUi.folder !== '-' ? '' : 'none';
-        }
-        function item(url) { return col.items[url] || (col.items[url] = { f: '', t: [], s: false }); }
-        function draw() {
-            grid.textContent = '';
-            var list = filterSkins(allSkins(col), col, skinUi.q, skinUi.folder);
-            if (!list.length) grid.appendChild(el('div', 'opacity:.8;padding:8px 0;', t('noSkinsFound')));
-            list.slice(0, 300).forEach(function (sk) {
-                var it = col.items[sk.url] || { f: '', t: [], s: false };
-                var card = el('div');
-                card.className = 'lm-st-skin';
-                var top = el('div', 'display:flex;align-items:center;gap:6px;min-width:0;');
-                var img = el('img');
-                img.loading = 'lazy';
-                img.referrerPolicy = 'no-referrer';
-                img.alt = '';
-                if (/^https?:\/\//i.test(sk.url)) img.src = sk.url;
-                top.appendChild(img);
-                var name = el('div', 'flex:1;min-width:0;overflow:hidden;');
-                name.appendChild(el('div', 'font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;', sk.label));
-                var u = el('div', 'opacity:.65;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;', sk.url);
-                u.title = sk.url;
-                name.appendChild(u);
-                top.appendChild(name);
-                var star = el('div', 'color:' + (it.s ? '#ffcc33' : 'rgba(255,255,255,0.4)') + ';', it.s ? '★' : '☆');
-                star.className = 'lm-st-star';
-                star.title = t('favs');
-                star.setAttribute('role', 'button');
-                star.addEventListener('click', function () { var x = item(sk.url); x.s = !x.s; saveCol(col); draw(); });
-                top.appendChild(star);
-                card.appendChild(top);
-                var row = el('div', 'display:flex;gap:4px;');
-                var fs = el('select', 'flex:1;');
-                [['', t('unfiled')]].concat(col.folders.map(function (f) { return [f, f]; })).forEach(function (o) { var op = el('option', '', o[1]); op.value = o[0]; fs.appendChild(op); });
-                fs.value = it.f || '';
-                fs.addEventListener('change', function () { item(sk.url).f = fs.value; saveCol(col); if (skinUi.folder && skinUi.folder !== '*') draw(); });
-                row.appendChild(fs);
-                row.appendChild(button(t('use'), true, function () { useSkin(sk.url); }));
-                if (sk.profile != null && W.application && typeof W.application.selectProfile === 'function') {
-                    row.appendChild(button(t('profileBtn'), false, function () { try { W.application.selectProfile(sk.profile); } catch (e) { } }));
-                } else if (sk.profile == null && own(col.items, sk.url)) {
-                    row.appendChild(button('✕', false, function () { delete col.items[sk.url]; saveCol(col); draw(); }));
-                }
-                card.appendChild(row);
-                var tg = el('input', 'width:100%;');
-                tg.type = 'text';
-                tg.placeholder = t('tags');
-                tg.value = it.t.join(', ');
-                tg.maxLength = 260;
-                tg.addEventListener('change', function () { item(sk.url).t = cleanTags(tg.value); tg.value = item(sk.url).t.join(', '); saveCol(col); });
-                card.appendChild(tg);
-                grid.appendChild(card);
-            });
-        }
-        q.addEventListener('input', function () { skinUi.q = q.value; draw(); });
-        fsel.addEventListener('change', function () { skinUi.folder = fsel.value; fillFolders(); draw(); });
-        fillFolders();
-        draw();
-        w.foot.appendChild(button(t('close'), false, closeWin));
-    }
-    /* the "Collections" button of the skins panel: always there (it was behind a setting of its
-     * own, skinCollections); the window and its data load on the first click */
-    var SKINS_ICON = '\u2605 ';
-    function syncSkinsButton() {
-        var b = D.getElementById('lm-skin-collections'), panel = D.getElementById('skins-panel');
-        if (b || !panel) return;
-        b = el('a', 'margin-bottom:6px;', SKINS_ICON + t('skinsBtn'));
-        b.id = 'lm-skin-collections';
-        b.className = 'btn btn-block btn-info';
-        b.href = '#';
-        b.addEventListener('click', function (e) { e.preventDefault(); openSkins(); });
-        var more = D.getElementById('more-skins');
-        if (more && more.parentNode === panel) panel.insertBefore(b, more); else panel.appendChild(b);
-    }
-
     /* ═══ Private data out of Settings > "Copy debug info" ═══ */
 
     function secretsNow() {
@@ -1227,8 +974,8 @@
 
     /* ═══ Wiring ═══ */
 
-    var WINS = { radial: openRadialEditor, screenshot: openShotWindow, skins: openSkins };
-    var WIN_IDS = { radial: 'lm-st-radial', screenshot: 'lm-st-shot', skins: 'lm-st-skins' };
+    var WINS = { radial: openRadialEditor, screenshot: openShotWindow };
+    var WIN_IDS = { radial: 'lm-st-radial', screenshot: 'lm-st-shot' };
     api.open = function (name) { if (own(WINS, name)) WINS[name](); };
     api.toggle = function (name) { if (!own(WINS, name)) return; if (isOpen(WIN_IDS[name])) closeWin(); else WINS[name](); };
     api.close = closeWin;
@@ -1262,25 +1009,15 @@
         }
         return null;
     };
-    api.sync = function () { syncSkinsButton(); };
-
-    /* the skins panel is built after this file may load */
-    var tries = 0;
-    (function waitUi() {
-        syncSkinsButton();
-        if (!D.getElementById('skins-panel') && ++tries < 60) setTimeout(waitUi, 1000);
-    })();
-
-    /* Language change: an open window is built again in the new language (the skins window keeps
-     * its search and folder), the screenshot chip and the skins panel button follow. */
+    /* Language change: an open window is built again in the new language, the screenshot chip
+     * follows. */
     if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {
         try {
             if (win) for (var n in WIN_IDS) if (own(WIN_IDS, n) && WIN_IDS[n] === win.id) { WINS[n](); break; }
             refreshConflicts();
-            var cap = D.getElementById('lm-shot-cap'), sx = D.getElementById('lm-shot-x'), sb = D.getElementById('lm-skin-collections');
+            var cap = D.getElementById('lm-shot-cap'), sx = D.getElementById('lm-shot-x');
             if (cap) cap.textContent = t('shotCapture');
             if (sx) sx.title = t('close');
-            if (sb) sb.textContent = SKINS_ICON + t('skinsBtn');
         } catch (e) { }
     });
 })();

@@ -197,6 +197,7 @@ ctx.application = P;
 P.setSkinPreview = function () { };
 P.profiling = function () { };
 P.setProfileboxShadow = function () { };
+P._lmProfileTools = function () { };
 P.setProfile = function () { this.setProfileCalls = (this.setProfileCalls || 0) + 1; };
 P.saveProfileFields = function () { this.savedFields = (this.savedFields || 0) + 1; };
 const named = n => Array.from({ length: n }, (_, i) => ({ nick: 'P' + i, clanTag: 'T', skinURL: 'https://i.imgur.com/s' + i + '.png', color: '#00ff00' }));
@@ -248,6 +249,21 @@ dom.skins = nicks().map((_, i) => 'profile-' + i);
 check('import + load at 10: 10 shown, the others kept', exported.length === 54 && nicks().length === 10 && extraNicks().length === 44);
 setCount(54);
 check('raised again after the import: every profile back in its place', J(nicks()) === J(exported));
+/* the old Skin collections window's links move into the profiles on the load, once */
+setCount(10);
+ctx.localStorage.setItem('lmSkinCollections', J({ v: 1, folders: ['Fun'], items: { 'https://i.imgur.com/s3.png': { f: '', t: [], s: true }, 'https://k.example/new.png': { f: 'Fun', t: [], s: false } } }));
+vm.runInContext('profiles = []', ctx);
+P.loadProfiles();
+const allP = () => vm.runInContext('profiles', ctx).concat(JSON.parse(ctx.localStorage.getItem('ogarioPlayerProfilesExtra') || '[]'));
+const stored = JSON.parse(ctx.localStorage.getItem('ogarioPlayerProfiles'));
+check('skin collections on load: the new link is a hidden profile, the kept favourite stars its profile, the old key is gone',
+  ctx.localStorage.getItem('lmSkinCollections') === null && allP().filter(p => p.skinURL === 'https://k.example/new.png' && p.nick === 'Fun').length === 1 &&
+  stored[3].fav === true && allP().length === 55);
+P.loadProfiles();
+check('skin collections on load: a second load adds nothing', allP().length === 55);
+ctx.localStorage.setItem('lmSkinCollections', '{broken');
+P.loadProfiles();
+check('skin collections on load: a broken value is just removed', ctx.localStorage.getItem('lmSkinCollections') === null && allP().length === 55);
 
 console.log(fail ? fail + ' settings check(s) FAILED' : 'all settings checks passed');
 process.exit(fail ? 1 : 0);

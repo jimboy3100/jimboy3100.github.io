@@ -115,7 +115,7 @@
     },
     {
       "question": "How do I export or import settings?",
-      "answer": "Open Settings → Profiles → Export to save all your settings, themes and skin collections as a JSON file. Use Import to load them on another device. Settings Profiles (up to 30) can also auto-switch per server type, game mode or input device."
+      "answer": "Open Settings → Profiles → Export to save all your settings, themes and player profiles as a JSON file. Use Import to load them on another device. Settings Profiles (up to 30) can also auto-switch per server type, game mode or input device."
     },
     {
       "question": "What is the LMEvents API?",

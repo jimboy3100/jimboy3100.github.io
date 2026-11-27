@@ -21854,9 +21854,9 @@ function lmFoldLegacySettings(s) {
  * "Screenshot mode" is Show/hide HUD, "Open the Lab" opens User
  * Scripts (the Lab experiments are there). An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts, a list in
- * the Hotkeys window now; Save the current zoom as zoom level 1-5, removed) is free. For the stored
- * hotkeys (loadHotkeys) and a settings profile's
- * (profiles.js), so an older set keeps those keys. Returns true when map changed. */
+ * the Hotkeys window now; Save the current zoom as zoom level 1-5, removed; Skin collections, part
+ * of the player profiles now) is free. For the stored hotkeys (loadHotkeys) and a settings
+ * profile's (profiles.js), so an older set keeps those keys. Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
     var own = function (k) { return Object.prototype.hasOwnProperty.call(map, k); };
@@ -21869,7 +21869,7 @@ function lmRenameOldHotkeys(map) {
     for (var k in map) {
         if (!own(k)) continue;
         var v = String(map[k]), to = '', keyed = false, z;
-        if (v === 'hk-hotkeyConflicts' || /^hk-zoomSave[1-5]$/.test(v)) { delete map[k]; changed = true; continue; }
+        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || /^hk-zoomSave[1-5]$/.test(v)) { delete map[k]; changed = true; continue; }
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
         else if (v === 'hk-screenshotMode') to = 'hk-showHUD';
         else if (v === 'hk-lmLab') { to = 'hk-lmPlugins'; keyed = true; }
@@ -21943,10 +21943,12 @@ var LM_EXPORT_KEYS = [
     { key: 'lmPracticeCfg', type: 'o' },
     { key: 'lmAnalyticsGoals', type: 'o' },
     { key: 'lmCompanionPrivacy', type: 'o' },
-    /* the small tools (ogario/modules/smalltools.js): the radial menu's commands, the skin
-     * collections (folders, tags, favourites) and the screenshot options */
+    /* the small tools (ogario/modules/smalltools.js): the radial menu's commands and the
+     * screenshot options */
     { key: 'lmRadialMenu', type: 'o' },
-    { key: 'lmSkinCollections', type: 'o' },
+    /* importOnly: the old skin collections are player profiles now (lmMergeSkinCollections after
+     * the import's reload); an older export still brings its skins in, a new one has none */
+    { key: 'lmSkinCollections', type: 'o', importOnly: true },
     { key: 'lmSmallTools', type: 'o' },
     /* only: just these fields of the object (the Command Centre's starred commands, also its quick
      * bar, are configuration; its recently used list is history and stays on the device) */
@@ -21971,6 +21973,7 @@ function lmExportPick(e, v) {
 function lmExportExtras(ls) {
     var out = {};
     LM_EXPORT_KEYS.forEach(function (e) {
+        if (e.importOnly) return;
         try {
             var v = e.type === 's' ? ls.getItem(e.key) : JSON.parse(ls.getItem(e.key) || 'null');
             if (lmExportFits(e, v)) out[e.key] = lmExportPick(e, v);
@@ -22001,6 +22004,75 @@ function lmImportExtras(src, set, remove, step, get) {
             set(e.key, e.type === 's' ? v : JSON.stringify(v));
         } else if (e.clear) remove(e.key);
     });
+}
+/* Player profile favourites and search (the skins panel), and the move of the old Skin collections
+ * window (lmSkinCollections: folders, tags and favourites of skin links) into the profiles. A
+ * favourite is the optional field fav: true of a profile; older versions ignore it. */
+/* a skin link as it is compared: trimmed, not too long, printable */
+function lmSkinLinkKey(u) {
+    if (typeof u !== 'string') return '';
+    u = u.trim();
+    return u && u.length <= 600 && !/[\u0000-\u001f\u007f<>"]/.test(u) ? u : '';
+}
+/* a profile that holds nothing of the player's: no skin, no clan tag, no star, its default name */
+function lmProfileUnused(p) {
+    return !!p && typeof p === 'object' && p.skinURL === '' && !p.clanTag && p.fav !== true &&
+        (p.nick === '' || /^Profile #\d+$/.test(p.nick));
+}
+/* the skins panel search: every word is in the nick, the clan tag or the skin link; the word *
+ * keeps the favourites */
+function lmProfileMatches(p, q) {
+    if (!p || typeof p !== 'object') return false;
+    var words = String(q == null ? '' : q).toLowerCase().trim().split(/\s+/).filter(Boolean);
+    var hay = [p.nick, p.clanTag, p.skinURL].map(function (s) { return typeof s === 'string' ? s : ''; }).join(' ').toLowerCase();
+    return words.every(function (w) { return w === '*' || w === '★' ? p.fav === true : hay.indexOf(w) >= 0; });
+}
+/* The skin links kept in the old Skin collections (raw: the parsed lmSkinCollections, any value)
+ * into the player profiles (list) and the hidden ones (extra: ogarioPlayerProfilesExtra, the
+ * profiles above the profile count). A link no profile has becomes a profile: an unused one of the
+ * list first (not those in keep: the selected ones), else a new hidden one; its folder or first tag
+ * is its nick, else the default one. A favourite stays one, also on a profile that had the link.
+ * Folders and tags go. list and extra change in place; running it again adds nothing.
+ * Returns { added, hidden, favs }. */
+function lmMergeSkinCollections(raw, list, extra, keep, color) {
+    var res = { added: 0, hidden: 0, favs: 0 };
+    var own = function (o, k) { return Object.prototype.hasOwnProperty.call(o, k); };
+    var items = raw && typeof raw === 'object' && raw.items && typeof raw.items === 'object' && !Array.isArray(raw.items) ? raw.items : null;
+    if (!items || !Array.isArray(list) || !Array.isArray(extra)) return res;
+    if (!Array.isArray(keep)) keep = [];
+    var at = {}, free = [], todo = [];
+    list.concat(extra).forEach(function (p) {
+        var k = p && typeof p === 'object' ? lmSkinLinkKey(p.skinURL) : '';
+        if (k && !own(at, k)) at[k] = p;
+    });
+    list.forEach(function (p, i) { if (keep.indexOf(i) < 0 && lmProfileUnused(p)) free.push(i); });
+    var name = function (it) {
+        var n = typeof it.f === 'string' && it.f.trim() ? it.f : Array.isArray(it.t) && typeof it.t[0] === 'string' ? it.t[0] : '';
+        return n.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 15);
+    };
+    /* the old window kept at most 500 */
+    Object.keys(items).slice(0, 500).forEach(function (k, n) {
+        var url = lmSkinLinkKey(k), it = items[k];
+        if (url && it && typeof it === 'object' && !Array.isArray(it)) todo.push({ url: url, it: it, fav: it.s === true, n: n });
+    });
+    /* the favourites first: they get the visible profiles */
+    todo.sort(function (a, b) { return (b.fav ? 1 : 0) - (a.fav ? 1 : 0) || a.n - b.n; });
+    todo.forEach(function (x) {
+        var p = own(at, x.url) ? at[x.url] : null;
+        if (p) {
+            if (x.fav && p.fav !== true) { p.fav = true; res.favs++; }
+            return;
+        }
+        var slot = free.length ? free.shift() : -1, nick = name(x.it);
+        if (slot >= 0) p = list[slot];
+        else { p = { nick: '', clanTag: '', skinURL: '', color: color }; extra.push(p); res.hidden++; }
+        p.nick = nick || 'Profile #' + (slot >= 0 ? slot + 1 : list.length + extra.length);
+        p.skinURL = x.url;
+        if (x.fav) p.fav = true;
+        at[x.url] = p;
+        res.added++;
+    });
+    return res;
 }
 /* ─── §3.3 profiles — Player Profile Storage ─── */
 var profiles = [];
@@ -26124,6 +26196,7 @@ function thelegendmodproject() {
                     });
                 }
             }
+            this._lmSkinCollectionsToProfiles();
             application.saveSettings(profiles, 'ogarioPlayerProfiles');
             setTimeout(function () {
                 application.profiling();
@@ -26169,6 +26242,32 @@ function thelegendmodproject() {
                 ogarcopythelb.skinURL = profiles[this.selectedProfile].skinURL;
                 ogarcopythelb.color = profiles[this.selectedProfile].color;
             }
+        },
+        /* Once, at the first load after the update: the skin links of the old Skin collections
+         * window become player profiles (lmMergeSkinCollections; the selected profiles are not
+         * used for them), then lmSkinCollections goes. An empty or broken value is just removed.
+         * When the storage is full nothing is removed and the next load tries again (the links
+         * already in a profile are not added twice). */
+        _lmSkinCollectionsToProfiles() {
+            var ls = window.localStorage, raw = null, col = null;
+            try { raw = ls.getItem('lmSkinCollections'); } catch (e) { return; }
+            if (raw === null) return;
+            try { col = JSON.parse(raw); } catch (e) { col = null; }
+            var extra = readLocalStorageJSON('ogarioPlayerProfilesExtra', []);
+            if (!Array.isArray(extra)) extra = [];
+            var keep = [readLocalStorageJSON('ogarioSelectedProfile', 0), readLocalStorageJSON('ogarioSelectedOldProfile', 0)].map(function (v) { return parseInt(v, 10); });
+            var res = lmMergeSkinCollections(col, profiles, extra, keep, defaultSettings.mainColor);
+            try {
+                if (res.hidden) ls.setItem('ogarioPlayerProfilesExtra', JSON.stringify(extra));
+                if (res.added || res.favs) ls.setItem('ogarioPlayerProfiles', JSON.stringify(profiles));
+                ls.removeItem('lmSkinCollections');
+            } catch (e) { return; }
+            if (!res.added) return;
+            setTimeout(function () {
+                try {
+                    if (window.toastr) toastr.info(lmT(res.hidden ? 'pkg.skcol.movedHidden' : 'pkg.skcol.moved', [res.added, res.hidden]));
+                } catch (e) { }
+            }, 4000);
         },
         /* The player profile list made as long as the profile count n. Profiles a lower count
          * cuts off are kept in 'ogarioPlayerProfilesExtra' (the ones just cut off first) and come
@@ -26235,6 +26334,7 @@ function thelegendmodproject() {
                     list.append('<div class="skin-box"><a href="#profile-' + j + '" id="profile-' + j + '" data-profile="' + j + '"></a></div>');
                     this.setSkinPreview(profiles[j].skinURL, 'profile-' + j);
                 }
+                this._lmProfileTools();
             }
             this.setProfile();
             if (defaultmapsettings.multiBoxShadow) this.setProfileboxShadow();
@@ -26469,6 +26569,73 @@ function thelegendmodproject() {
 
             // Badges hidden per user request
             $('.mb-badge').remove();
+        },
+        /* The skins panel's profile tools: a star on every profile (its fav field, saved with the
+         * profiles: a favourite has a gold ring) and, with more profiles than the default 15, a
+         * search over their nicks, clan tags and skin links (lmProfileMatches). They took the
+         * place of the Skin collections window. Built again when the boxes or the language change. */
+        _lmProfileTools() {
+            var app = this, list = $('#skins');
+            if (!list.length || !Array.isArray(profiles)) return;
+            if (!document.getElementById('lm-prof-css')) {
+                $('<style id="lm-prof-css" type="text/css">').text(
+                    '#skins .lm-prof-star{position:absolute;top:0;right:0;width:24px;height:24px;line-height:24px;text-align:center;font-size:17px;cursor:pointer;z-index:3;color:rgba(255,255,255,.6);text-shadow:0 1px 2px #000;user-select:none;}' +
+                    '#skins .lm-prof-star:hover,#skins .lm-prof-star:focus{color:#fff;outline:none;}' +
+                    '#skins .lm-prof-star.on{color:#ffcc33;}' +
+                    '#skins .skin-box.lm-prof-fav>a{outline:3px solid #ffcc33;outline-offset:-1px;}' +
+                    '#skins .skin-box.lm-prof-off{display:none;}' +
+                    '#lm-prof-search{width:100%;margin:0 0 6px;}' +
+                    '#lm-prof-none{opacity:.8;padding:4px 0;clear:both;}'
+                ).appendTo('head');
+            }
+            if (!this._lmProfToolsOn) {
+                this._lmProfToolsOn = true;
+                var toggle = function (el) {
+                    var i = parseInt($(el).attr('data-profile'), 10), p = profiles[i];
+                    if (!p || typeof p !== 'object') return;
+                    if (p.fav === true) delete p.fav; else p.fav = true;
+                    try { app.saveSettings(profiles, 'ogarioPlayerProfiles'); } catch (e) { }
+                    app._lmProfileStar(i);
+                    app._lmProfileFilter();
+                };
+                /* a sibling of the profile link: a tap on it does not select the profile */
+                $(document).on('click', '#skins .lm-prof-star', function (ev) { ev.preventDefault(); ev.stopPropagation(); toggle(this); });
+                $(document).on('keydown', '#skins .lm-prof-star', function (ev) {
+                    if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); ev.stopPropagation(); toggle(this); }
+                });
+                $(document).on('input', '#lm-prof-search', function () { app._lmProfileFilter(); });
+                if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () { try { app._lmProfileTools(); } catch (e) { } });
+            }
+            for (var i = 0; i < profiles.length; i++) this._lmProfileStar(i);
+            var q = $('#lm-prof-search');
+            if (!q.length) q = $('<input id="lm-prof-search" type="search" class="form-control input-sm" maxlength="60" spellcheck="false">').insertBefore(list);
+            q.attr('placeholder', lmT('pkg.skcol.search')).attr('aria-label', lmT('pkg.skcol.search'));
+            var many = profiles.length > 15;
+            if (!many) q.val('');
+            q.css('display', many ? '' : 'none');
+            this._lmProfileFilter();
+        },
+        _lmProfileStar(i) {
+            var a = $('#profile-' + i), box = a.closest('.skin-box'), p = profiles[i];
+            if (!box.length || !p) return;
+            var s = box.children('.lm-prof-star');
+            if (!s.length) s = $('<span class="lm-prof-star" role="button" tabindex="0"></span>').attr('data-profile', i).appendTo(box);
+            var on = p.fav === true, tip = lmT(on ? 'pkg.skcol.unstar' : 'pkg.skcol.star');
+            s.toggleClass('on', on).text(on ? '★' : '☆').attr({ title: tip, 'aria-label': tip, 'aria-pressed': on ? 'true' : 'false' });
+            box.toggleClass('lm-prof-fav', on);
+        },
+        /* only the profiles that match the search are shown (all when it is empty) */
+        _lmProfileFilter() {
+            var q = $('#lm-prof-search').val() || '', shown = 0;
+            for (var i = 0; i < profiles.length; i++) {
+                var ok = lmProfileMatches(profiles[i], q);
+                if (ok) shown++;
+                $('#profile-' + i).closest('.skin-box').toggleClass('lm-prof-off', !ok);
+            }
+            var none = $('#lm-prof-none');
+            if (shown || !q.trim()) { none.remove(); return; }
+            if (!none.length) none = $('<div id="lm-prof-none"></div>').insertAfter('#skins');
+            none.text(lmT('pkg.skcol.none'));
         },
         prevProfile() {
             var newIdx = (profiles.length + this.selectedProfile - 1) % profiles.length;
@@ -27592,7 +27759,7 @@ function thelegendmodproject() {
                     $("#profile-" + e).addClass("selected");
                 }
             }
-
+            this._lmProfileTools();
         },
         setUI() {
             var app = this;
@@ -89629,9 +89796,9 @@ Object.defineProperty(Array.prototype, 'stDev', {
             console.warn('[LM] Error loading the practice arena:', e);
         }
     };
-    /* Small tools: radial command menu, hotkey conflicts, screenshot mode, skin collections and the
-     * bug report (windows and hotkeys without default keys; nothing runs until one is used) */
-    /* Small tools: radial command menu, hotkey conflicts, screenshot mode and skin collections
+    /* Small tools: radial command menu, hotkey conflicts, screenshot mode and the bug report
+     * (windows and hotkeys without default keys; nothing runs until one is used) */
+    /* Small tools: radial command menu, hotkey conflicts and screenshot mode
      * (windows and hotkeys without default keys; nothing runs until one is used) */
     try {
         var smallToolsScript = document.createElement('script');

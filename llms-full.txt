@@ -82,7 +82,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
 
 ### Hotkeys Without Default Keys (All Configurable)
-Triple split, crazy double split, line split, custom macro 1-3, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, instant replay, replay pause/speed/seek, Command Centre, radial menu, radial editor, gamepad window, profiles window, theme workshop, copy server link, net graph, performance diagnostics, chat sounds toggle, notification centre, team pings (Help/Danger/Go here/Virus), spectate next top player, spectator director controls (8 hotkeys), scan trick (hold), screenshot capture/window (Show/hide HUD, Alt+H, hides the whole HUD with a capture button), skin collections, limit position (hold), multibox swap, middle multi-view, multibox rings, enlarge minimap, auto zoom toggle, hotkey conflicts window, HUD editor, user scripts/plugins, Lab (experimental), transparent skins, hide teammates names, private minimap, in-game spectator, camera lock, precision zoom (hold), zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
+Triple split, crazy double split, line split, custom macro 1-3, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, instant replay, replay pause/speed/seek, Command Centre, radial menu, radial editor, gamepad window, profiles window, theme workshop, copy server link, net graph, performance diagnostics, chat sounds toggle, notification centre, team pings (Help/Danger/Go here/Virus), spectate next top player, spectator director controls (8 hotkeys), scan trick (hold), screenshot capture/window (Show/hide HUD, Alt+H, hides the whole HUD with a capture button), limit position (hold), multibox swap, middle multi-view, multibox rings, enlarge minimap, auto zoom toggle, hotkey conflicts window, HUD editor, user scripts/plugins, Lab (experimental), transparent skins, hide teammates names, private minimap, in-game spectator, camera lock, precision zoom (hold), zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
 
 ### Mouse
 | Button | Default Action |
@@ -108,7 +108,7 @@ Apply custom images to cells. Supports PNG, JPG, GIF and SVG image URLs. Skins a
 - **Vanilla skins**: Original game skins (from VanillaSkinUrlMap)
 - **Custom skins**: User-provided image URLs
 - **Video skins**: Play MP4, WebM or OGV video files as cell skins with configurable audio level and ducking
-- **Skin Collections**: Organise skins into folders/collections with tags and favourites for quick switching
+- **Player profile favourites and search**: A star on each player profile in the skins panel marks the favourites; with more than 15 profiles a search box finds them by nick, clan tag or skin link (* = favourites)
 - **Skin Checker**: Tool to test whether a skin URL loads correctly before using it in-game
 - **Transparent skins**: Make your own cell skin semi-transparent
 - **No Skins mode**: Disable all skins for a cleaner view

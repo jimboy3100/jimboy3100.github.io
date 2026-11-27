@@ -208,8 +208,8 @@ check('diff: a set differing only in the phone control layout is not the same', 
       'lm-director-bookmarks': [{ x: 1, y: 2 }], lmPracticeCfg: { bots: 4 }, lmAnalyticsGoals: { v: 1, custom: [] },
       lmSettingsProfiles: [{ id: 'p1', name: 'P', data: { s: { showMass: true } } }], lmSettingsProfilesRules: { enabled: false },
       lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPerfBackup: { jellyPhisycs: true }, lmPresetUndo: { s: {} },
-      /* the radial menu's commands, the skin collections (folders, tags, favourites) and the screenshot options */
-      lmRadialMenu: { v: 1, items: ['hk-feed'] }, lmSkinCollections: { v: 1, folders: ['F'], items: {} }, lmSmallTools: { shot: { lb: true, map: false } }
+      /* the radial menu's commands and the screenshot options */
+      lmRadialMenu: { v: 1, items: ['hk-feed'] }, lmSmallTools: { shot: { lb: true, map: false } }
     };
     const priv = { lmAnalyticsGames: [{ m: 1 }], lmAnalyticsTracks: [{ t: 1 }], lmPracticeStore: { best: 1 }, 'lm-director-watch': ['nick'], lmSettingsBackups: [{ t: 1 }], ogarioPlayerProfiles: [1] };
     Object.keys(conf).concat(Object.keys(priv)).forEach(k => src.setItem(k, J(conf[k] || priv[k])));
@@ -218,6 +218,14 @@ check('diff: a set differing only in the phone control layout is not the same', 
     check('export: no history, statistics, watch list or backups', Object.keys(priv).every(k => !(k in out)));
     src.setItem('lm-zoom-bookmarks', '[1,0,3]');
     check('export: the removed zoom bookmarks are not carried', !('lm-zoom-bookmarks' in exp(src)));
+    /* the old skin collections are player profiles now: never exported, but an older export
+     * still brings them in (they become profiles on the reload after the import) */
+    const srcC = makeStorage(0);
+    srcC.setItem('lmSkinCollections', J({ v: 1, items: { 'https://s.example/a.png': { s: true } } }));
+    check('export: no skin collections (they are player profiles now)', !('lmSkinCollections' in JSON.parse(J(exp(srcC)))));
+    const dstC = makeStorage(0);
+    imp({ lmSkinCollections: { v: 1, items: { 'https://s.example/a.png': { s: true } } } }, (k, t) => dstC.setItem(k, t), k => dstC.removeItem(k));
+    check('import: an older export still brings its skin collections in', dstC.getItem('lmSkinCollections') === J({ v: 1, items: { 'https://s.example/a.png': { s: true } } }));
     const dst = makeStorage(0);
     dst.setItem('lmPerfBackup', '{"old":1}'); dst.setItem('lmHudLayouts', '{"keep":1}');
     imp(out, (k, t) => dst.setItem(k, t), k => dst.removeItem(k));
@@ -767,12 +775,12 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
   const add = { 'hk-lmPlugins': { defaultKey: '' }, 'hk-zoom1': { defaultKey: '' }, 'hk-zoom2': { defaultKey: '' }, 'hk-showHUD': { defaultKey: '' } };
   Object.assign(ctx.hotkeysCommand, add);
   try {
-    const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', W: 'hk-feed', X: 'hk-hotkeyConflicts', K: 'hk-zoomSave3' } });
+    const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', W: 'hk-feed', X: 'hk-hotkeyConflicts', K: 'hk-zoomSave3', Y: 'hk-skinCollections' } });
     check('renamed commands: Open the Lab key opens User Scripts', h && h.h.F9 === 'hk-lmPlugins');
     check('renamed commands: a zoom bookmark key goes to its zoom level', h && h.h['ALT+1'] === 'hk-zoom1');
     check('renamed commands: a zoom level with its own key keeps it, the old key is free', h && h.h.Z === 'hk-zoom2' && !('ALT+2' in h.h));
     check('renamed commands: Screenshot mode key is Show/hide HUD', h && h.h.F2 === 'hk-showHUD');
-    check('renamed commands: other keys stay, a removed command is dropped', h && h.h.W === 'hk-feed' && !('X' in h.h) && !('K' in h.h));
+    check('renamed commands: other keys stay, a removed command (Hotkey conflicts, zoom save, Skin collections) is dropped', h && h.h.W === 'hk-feed' && !('X' in h.h) && !('K' in h.h) && !('Y' in h.h));
     const h2 = C.cleanBundle({ h: { F9: 'hk-lmLab', F10: 'hk-lmPlugins' } });
     check('renamed commands: User Scripts with a key of its own: the Lab key is free', h2 && h2.h.F10 === 'hk-lmPlugins' && !('F9' in h2.h));
     const raw = { h: { F9: 'hk-lmLab' } };
@@ -794,6 +802,48 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
   check('copies of a choice: an older set with only Short mass lists Mass format (' + ko + ')', ko === 'massFormat');
 }
 check('gamepad texts: in the packs, Greek differs', ['pkg.pt.gpView', 'pkg.pt.gpNote', 'pkg.pt.saveGp', 'pkg.pt.gpBadge', 'pkg.pt.gpEmpty', 'pkg.pt.gpMoved', 'pkg.pt.gpOpen', 'pkg.pt.allView', 'pkg.pt.fromPreset', 'pkg.pt.fromPresetNote', 'pkg.pt.empty', 'pkg.n34.gpPending'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
+
+// ── player profiles: favourite star, search and the move of the old Skin collections into them
+{
+  const M = ctx.lmMergeSkinCollections, Q = ctx.lmProfileMatches;
+  check('skin collections move: helpers exist', typeof M === 'function' && typeof Q === 'function');
+  if (typeof M === 'function' && typeof Q === 'function') {
+    const prof = (n, s, extra) => Object.assign({ nick: n, clanTag: '', skinURL: s, color: '#fff' }, extra || {});
+    const mk = () => [prof('Me', 'https://s.example/me.png'), prof('Profile #2', ''), prof('Profile #3', ''), prof('Profile #4', '')];
+    const col = { v: 1, folders: ['Fun'], items: {
+      'https://s.example/me.png': { f: '', t: [], s: true },
+      'https://s.example/a.png': { f: 'Fun', t: ['red'], s: false },
+      ' https://s.example/b.png ': { f: '', t: ['clan war'], s: true },
+      'https://s.example/c.png': { f: '', t: [], s: false },
+      'https://s.example/d.png': { f: '', t: [], s: false },
+      'bad<url>': { s: true }, 'https://s.example/e.png': 'x'
+    } };
+    let list = mk(), extra = [];
+    let res = M(JSON.parse(J(col)), list, extra, [1, 0], '#123');
+    check('skin collections move: every kept link is in a profile once (' + J(res) + ')', res.added === 4 && J(list.concat(extra).map(p => p.skinURL).filter(Boolean).sort()) === J(['https://s.example/a.png', 'https://s.example/b.png', 'https://s.example/c.png', 'https://s.example/d.png', 'https://s.example/me.png']));
+    check('skin collections move: the selected profile 2 is not used, the free ones are', list[1].skinURL === '' && list[2].skinURL !== '' && list[3].skinURL !== '');
+    check('skin collections move: favourites get the visible profiles first and keep the star', list[2].skinURL === 'https://s.example/b.png' && list[2].fav === true);
+    check('skin collections move: a favourite already in a profile stars that profile', list[0].fav === true && res.favs === 1);
+    check('skin collections move: folder or first tag becomes the nick, else the default one', list[2].nick === 'clan war' && list.concat(extra).some(p => p.skinURL === 'https://s.example/a.png' && p.nick === 'Fun') && list.concat(extra).some(p => p.skinURL === 'https://s.example/d.png' && /^Profile #\d+$/.test(p.nick)));
+    check('skin collections move: no room left -> hidden profiles with the given colour', res.hidden === 2 && extra.length === 2 && extra.every(p => p.color === '#123' && p.clanTag === '' && !('f' in p)));
+    const before = J([list, extra]);
+    res = M(JSON.parse(J(col)), list, extra, [1, 0], '#123');
+    check('skin collections move: running it again adds nothing', res.added === 0 && res.favs === 0 && J([list, extra]) === before);
+    const bad = [null, 'x', 5, [], { items: [] }, { items: 'x' }, { v: 1 }];
+    check('skin collections move: an empty or broken value changes nothing', bad.every(v => { const l = mk(), e = []; const r = M(v, l, e, [0], '#fff'); return r.added === 0 && J(l) === J(mk()) && e.length === 0; }));
+    const many = { items: {} };
+    for (let i = 0; i < 700; i++) many.items['https://s.example/m' + i + '.png'] = {};
+    const l2 = mk(), e2 = [];
+    check('skin collections move: at most the 500 the old window kept', M(many, l2, e2, [0], '#fff').added === 500 && l2.length + e2.length === 501);
+    // search: every word in the nick, clan tag or skin link; * keeps the favourites
+    const p1 = prof('Jimbo', 'https://i.imgur.com/AbC.png', { clanTag: 'LM', fav: true }), p2 = prof('Other', 'https://s.example/x.png');
+    check('profile search: empty finds all', Q(p1, '') && Q(p2, '  '));
+    check('profile search: words over nick, clan tag and link, any case', Q(p1, 'jim lm') && Q(p1, 'IMGUR') && !Q(p2, 'jim') && !Q(p1, 'jim other'));
+    check('profile search: * = favourites', Q(p1, '*') && !Q(p2, '*') && Q(p1, '* jim') && !Q(p1, '* other'));
+    check('profile search: a broken profile never matches', !Q(null, '') && !Q('x', ''));
+    check('profile texts: in the packs, Greek differs', ['pkg.skcol.search', 'pkg.skcol.star', 'pkg.skcol.unstar', 'pkg.skcol.none', 'pkg.skcol.moved', 'pkg.skcol.movedHidden'].every(k => i18n.t(k) !== k && i18n.t(k, null, 'el') !== i18n.t(k)));
+  }
+}
 
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');
 process.exit(fail ? 1 : 0);

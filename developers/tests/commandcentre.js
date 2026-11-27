@@ -88,7 +88,7 @@ st = C.parseStore({ fav: ['opt:shortMass', 'opt:fpsAtTop', 'opt:statsAtCenter', 
 check('store: merged items keep their star on the successor', st.fav.join() === 'set:massFormat,set:statsPosition,hk:hk-showHUD,hk:hk-zoom2,win:plugins,opt:showGrid');
 check('store: moved controls keep their recent entry on their block', st.recent.join() === 'sec:lmHkMouse,sec:lmHkGamepad,hk:hk-lmPlugins');
 check('store: a star on a Game Over card part stays on the card switch', C.parseStore({ fav: ['opt:massGraph', 'opt:showKiller', 'opt:deathRecap'] }).fav.join() === 'opt:gameOverStats');
-check('store: a star on the old Collections button switch stays on the Skin collections command', C.parseStore({ fav: ['opt:skinCollections'] }).fav.join() === 'hk:hk-skinCollections');
+check('store: a star on the removed Skin collections window (or its old button switch) is dropped quietly', C.parseStore({ fav: ['opt:skinCollections', 'hk:hk-skinCollections', 'opt:showGrid'] }).fav.join() === 'opt:showGrid');
 check('store: a star on the old Ghost cells info switch stays on Ghost cells', C.parseStore({ fav: ['opt:showGhostCellsInfo'] }).fav.join() === 'opt:showGhostCells');
 check('store: a star on the old developer console switch goes to the Performance section', C.parseStore({ fav: ['opt:showDevConsole'] }).fav.join() === 'sec:perfGroup');
 check('store: a star on the successor and its old item is one star', C.parseStore({ fav: ['set:massFormat', 'opt:shortMass'] }).fav.join() === 'set:massFormat');

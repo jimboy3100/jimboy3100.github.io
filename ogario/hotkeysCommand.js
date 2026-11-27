@@ -881,17 +881,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-skinCollections': {
-				get label() {
-					return lmT('settings.hk-skinCollections');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMSmallTools) window.LMSmallTools.toggle('skins');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-limitposition': {
 				get label() {
 					return lmT('settings.hk-limitposition');

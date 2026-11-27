@@ -157,7 +157,7 @@
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Custom skins, video skins and skin tools</schema:name>
-    <schema:description>Custom image URLs, video skins, skin collections, skin checker, IndexedDB cache.</schema:description>
+    <schema:description>Custom image URLs, video skins, profile favourites and search, skin checker, IndexedDB cache.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-themes">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
