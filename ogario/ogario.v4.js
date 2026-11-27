@@ -28532,7 +28532,8 @@ function thelegendmodproject() {
                 legendmod.removedCells = [];
                 legendmod.food = lmIdxClear(legendmod.food, '_foodIdx');
                 if (typeof lmFoodRebuild === 'function') lmFoodRebuild(); /* the units' pellets stay in the food list, the main socket's go */
-                legendmod.viruses = lmIdxClear(legendmod.viruses, '_virusIdx');
+                /* the units' viruses stay listed (spect.js lists a virus once, when it is added) */
+                legendmod.viruses = lmIdxFilter(legendmod.viruses, '_virusIdx', function (c) { return c && c.spectator > 0; });
                 legendmod.playerCells = lmIdxClear(legendmod.playerCells, '_playerIdx');
                 if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
 
@@ -28929,7 +28930,8 @@ function thelegendmodproject() {
                         }
                         legendmod.food = lmIdxClear(legendmod.food, '_foodIdx');
                         if (typeof lmFoodRebuild === 'function') lmFoodRebuild(); /* the units' pellets stay in the food list */
-                        legendmod.viruses = lmIdxClear(legendmod.viruses, '_virusIdx');
+                        /* the units' viruses stay listed (spect.js lists a virus once, when it is added) */
+                        legendmod.viruses = lmIdxFilter(legendmod.viruses, '_virusIdx', function (c) { return c && c.spectator > 0; });
                         legendmod.removedCells = legendmod.removedCells ? legendmod.removedCells.filter(function (c) { return c && c.spectator > 0; }) : [];
                         if (typeof legendmod.clearJellyIndex === 'function') legendmod.clearJellyIndex();
                         if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
@@ -44803,7 +44805,8 @@ function thelegendmodproject() {
                         this.removedCells = [];
                         this.food = lmIdxClear(this.food, '_foodIdx');
                         if (typeof lmFoodRebuild === 'function') lmFoodRebuild();
-                        this.viruses = lmIdxClear(this.viruses, '_virusIdx');
+                        /* the units' viruses stay listed (spect.js lists a virus once, when it is added) */
+                        this.viruses = lmIdxFilter(this.viruses, '_virusIdx', function (c) { return c && c.spectator > 0; });
                         this.playerCells = lmIdxClear(this.playerCells, '_playerIdx');
                         if (this._cellsDirty !== undefined) this._cellsDirty = true;
                         this._spawnTransitGate = false;
