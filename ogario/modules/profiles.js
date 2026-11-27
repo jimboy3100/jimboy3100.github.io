@@ -811,7 +811,13 @@
         var tl = window.textLanguage || {};
         /* gamepad tuning: the labels of the Gamepad window */
         if (part === 's' || part === 't') return stripTags(tl[key]) || (part === 's' && (presetLabel(key) || gt('modules.gamepadui.' + key))) || key;
-        if (part === 'm') return has(MOBILE_SCHEMA, key) ? tx('m_' + key) : key;
+        if (part === 'm') {
+            if (!has(MOBILE_SCHEMA, key)) return key;
+            /* the later phone preferences are named in the phone controls' own texts (pkg.agm.m_<key>) */
+            var I18 = window.LMi18n, pk = 'pkg.agm.m_' + key; /* i18n-ok: a text key */
+            if (I18 && typeof I18.has === 'function' && !I18.has(P + 'm_' + key) && I18.has(pk)) return window.lmT(pk);
+            return tx('m_' + key);
+        }
         if (key === 'spec-messageKey') return tx('chatKey');
         var c = window.hotkeysCommand && window.hotkeysCommand[key], l = '';
         try { l = c && c.label; } catch (e) { }
