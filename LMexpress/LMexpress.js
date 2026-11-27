@@ -9230,6 +9230,47 @@ function lmUiKit() {
         ':where(.lm-w) ::-webkit-scrollbar-thumb{background:' + (mix ? A('var(--lm-tc, #fff)', '22%') : 'rgba(255,255,255,.22)') + ';border-radius:var(--lm-radius-s,4px)}' +
         ':where(.lm-w) ::-webkit-scrollbar-track{background:transparent}';
     (document.head || document.documentElement).appendChild(st);
+    lmUiAccent();
+    /* the theme sets --lm-mc, --lm-pc, --lm-pc2 and --lm-tc on <html> (ogario.v4.js setMenu*Color) */
+    try {
+        new MutationObserver(lmUiAccent).observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+    } catch (e) { }
+}
+/* --lm-w-acc: the accent as text on window panels (active tabs, primary buttons): the accent itself,
+ * or the menu text colour when the accent cannot be read on the panels. With the light "Agar.io"
+ * menu preset the accent #5bc0de on the #cccccc panel was 1.3:1 (Theme workshop tab, Discover
+ * Open buttons); every theme whose accent reads well on its panels keeps the accent. */
+var _lmUiAccSig = '';
+function lmUiAccent() {
+    var r = document.documentElement, cs = r.style;
+    var mc = cs.getPropertyValue('--lm-mc').trim(), pc = cs.getPropertyValue('--lm-pc').trim();
+    var pc2 = cs.getPropertyValue('--lm-pc2').trim(), tc = cs.getPropertyValue('--lm-tc').trim();
+    var sig = mc + '|' + pc + '|' + pc2 + '|' + tc;
+    if (sig === _lmUiAccSig) return;
+    _lmUiAccSig = sig;
+    var lum = function (c) {
+        var m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(c), v;
+        if (m) {
+            var h = m[1].length === 3 ? m[1].replace(/(.)/g, '$1$1') : m[1];
+            v = [parseInt(h.substr(0, 2), 16), parseInt(h.substr(2, 2), 16), parseInt(h.substr(4, 2), 16)];
+        } else {
+            m = /^rgba?\(\s*(\d+)[\s,]+(\d+)[\s,]+(\d+)/i.exec(c);
+            if (!m) return -1;
+            v = [+m[1], +m[2], +m[3]];
+        }
+        v = v.map(function (x) { x /= 255; return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4); });
+        return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2];
+    };
+    var ratio = function (a, b) { return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); };
+    var lm = lum(mc), lp = lum(pc), lp2 = lum(pc2), lt = lum(tc);
+    var acc = 'var(--lm-mc, #01d9cc)';
+    /* unknown colour formats keep the accent, as before */
+    if (lm >= 0 && lt >= 0 && (lp >= 0 || lp2 >= 0)) {
+        var worst = Math.min(lp >= 0 ? ratio(lm, lp) : 99, lp2 >= 0 ? ratio(lm, lp2) : 99);
+        var worstT = Math.min(lp >= 0 ? ratio(lt, lp) : 99, lp2 >= 0 ? ratio(lt, lp2) : 99);
+        if (worst < 3 && worstT > worst) acc = 'var(--lm-tc, #ffffff)';
+    }
+    if (cs.getPropertyValue('--lm-w-acc').trim() !== acc) cs.setProperty('--lm-w-acc', acc);
 }
 window.lmUiKit = lmUiKit;
 //2. Administration Tools
