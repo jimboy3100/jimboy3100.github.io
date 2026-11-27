@@ -40497,6 +40497,7 @@ function thelegendmodproject() {
             /* a new connection has no border yet: never re-apply the previous server's one */
             this._lmServerBorder = null;
             this._lmBorderCX = this._lmBorderCY = this._lmBorderKX = this._lmBorderKY = null;
+            this._lmFullBorder = null;
             this._lmBorderTraceAdd('connect', 0);
             this.isLegendWorld = false; // reset Expanding Land state on new connection
             LM.isLegendWorld = false;    // ALSO reset on the LM object (separate from legendmod)
@@ -51937,7 +51938,17 @@ function thelegendmodproject() {
              * Real connection/server changes still call flushCellsData() without
              * preserveMapGeometry, so stale borders are still removed there.
              */
-            if (!preserveMapGeometry) {
+            /* agar.io sends its full border only at the handshake: a ClearAll on the same socket
+             * keeps it (the view rects that follow used to become the map) */
+            var _lmKeepFull = !preserveMapGeometry && !_connectionLevelFlush && !LM.isLegendWorld && this.connectionIntegrity &&
+                this.serverType !== 'deltio' && this._lmFullBorderNow();
+            if (_lmKeepFull) {
+                this._lmApplyFullBorder(_lmKeepFull.minX, _lmKeepFull.minY, _lmKeepFull.maxX, _lmKeepFull.maxY);
+                this.mapOffsetFixed = true;
+                if (typeof ogario !== 'undefined') ogario.mapOffsetFixed = true;
+                this.viewX = this.mapMidX;
+                this.viewY = this.mapMidY;
+            } else if (!preserveMapGeometry) {
                 if (this.connectionIntegrity) {
                     this.mapMinX = 0;
                     this.mapMinY = 0;
@@ -52087,6 +52098,39 @@ function thelegendmodproject() {
                     ' food ' + box(e.food) + ' cam ' + box(e.cam) + ' dpr ' + r(e.dpr) + ' canvas ' + box(e.canvas);
             });
         },
+        /*
+         * agar.io's full map border (the first opcode 64 over 14000 x 14000; it comes twice at the
+         * handshake and never changes; the ~4250 x 2560 view rects sent while playing never count).
+         * Every connection gets its own offset, mirror and scale per axis: borders 14073..14211
+         * wide and 14072..14199 high, so the real edges are used, not mapOffset 7071 - right
+         * (which put mapMinX 47.6 off the real edge on a 14189.6 wide border). Cells stay in the
+         * raw frame; raw + mapOffsetX is the centred coordinate (map centre 0) the minimap,
+         * sectors, death markers, waves and the team relay use; mapMidX/Y = the exact centre, so
+         * Rotate Map (translateX/Y) mirrors about it; mapSize / mapOffset stay 14142 / 7071 (the
+         * minimap and sector scale; an edge is at most 0.2% past it). C and k of spect.js's
+         * transform: world = k * (raw - C), the full map 14142.1356 wide edge to edge.
+         * Kept for the connection (_lmFullBorder): a ClearAll restores it (flushCellsData).
+         */
+        _lmApplyFullBorder(left, top, right, bottom) {
+            this.mapOffsetX = -(left + right) / 2;
+            this.mapOffsetY = -(top + bottom) / 2;
+            this.mapMinX = left;
+            this.mapMinY = top;
+            this.mapMaxX = right;
+            this.mapMaxY = bottom;
+            this.mapMidX = (left + right) / 2;
+            this.mapMidY = (top + bottom) / 2;
+            this._lmBorderCX = (left + right) / 2;
+            this._lmBorderCY = (top + bottom) / 2;
+            this._lmBorderKX = 14142.135623730952 / (right - left);
+            this._lmBorderKY = 14142.135623730952 / (bottom - top);
+            this._lmFullBorder = Object.freeze({ minX: left, minY: top, maxX: right, maxY: bottom, epoch: this._connectSeq || 0 });
+        },
+        /* this connection's agar.io full border, or null (none yet, or from an earlier socket) */
+        _lmFullBorderNow() {
+            var b = this._lmFullBorder;
+            return b && b.epoch === (this._connectSeq || 0) ? b : null;
+        },
         setMapOffset(left, top, right, bottom) {
             /* a NaN, infinite, reversed or empty border changes nothing (see _lmOnServerBorder) */
             if (!this._lmBorderValid(left, top, right, bottom)) return;
@@ -52203,24 +52247,23 @@ function thelegendmodproject() {
                     /* spect.js: Expanding Land units share this frame (no centre or scale needed) */
                     this._lmBorderCX = this._lmBorderCY = this._lmBorderKX = this._lmBorderKY = null;
                 } else if ((this.connectionIntegrity && this.serverType !== 'deltio') || temp2) {
-                    this.mapOffsetX = this.mapOffset - right;
-                    this.mapOffsetY = this.mapOffset - bottom;
-                    /* Exact centre and scale of the full-map border: C and k of this connection in
-                     * spect.js's transform (world = k * (raw - C)). agar.io gives every connection
-                     * its own offset and its own scale per axis (full borders 14073..14211 wide),
-                     * so world = the full map 14142.1356 wide edge to edge. Only a full border sets
-                     * them; a partial one (the ~4250 x 2560 view rect) or a ClearAll keeps them. */
+                    var _lmFull = isFullPacket ? null : this._lmFullBorderNow();
                     if (isFullPacket) {
-                        this._lmBorderCX = (left + right) / 2;
-                        this._lmBorderCY = (top + bottom) / 2;
-                        this._lmBorderKX = 14142.135623730952 / pWidth;
-                        this._lmBorderKY = 14142.135623730952 / pHeight;
+                        this._lmApplyFullBorder(left, top, right, bottom);
+                    } else if (_lmFull) {
+                        /* a view rect after a ClearAll (mapOffsetFixed off): the full border stays */
+                        this._lmApplyFullBorder(_lmFull.minX, _lmFull.minY, _lmFull.maxX, _lmFull.maxY);
+                        this.mapOffsetFixed = true;
+                    } else {
+                        /* no full border on this connection yet (a replay that starts later):
+                         * provisional from this one, as before */
+                        this.mapOffsetX = this.mapOffset - right;
+                        this.mapOffsetY = this.mapOffset - bottom;
+                        this.mapMinX = -this.mapOffset - this.mapOffsetX;
+                        this.mapMinY = -this.mapOffset - this.mapOffsetY;
+                        this.mapMaxX = this.mapOffset - this.mapOffsetX;
+                        this.mapMaxY = this.mapOffset - this.mapOffsetY;
                     }
-
-                    this.mapMinX = -this.mapOffset - this.mapOffsetX;
-                    this.mapMinY = -this.mapOffset - this.mapOffsetY;
-                    this.mapMaxX = this.mapOffset - this.mapOffsetX;
-                    this.mapMaxY = this.mapOffset - this.mapOffsetY;
                 } else {
                     var currentWidth =
                         (this.mapMaxX != null && this.mapMinX != null)

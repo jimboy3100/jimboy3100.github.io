@@ -35,7 +35,10 @@ function between(a, b, from) {
 }
 const methods = ['        _lmBorderValid(', '        _lmOnServerBorder(', '        _lmServerBorderNow()', '        _lmReapplyServerBorder(',
     '        _lmBorderTraceAdd(', '        borderTrace()', '        setMapOffset(left', '        handleMapEvent(eventType',
-    '        handleSubmessage(message) {', '        calMinMax() {', '        drawMapBorders(ctx, macros'].map((m) => [m, block(m)]);
+    '        handleSubmessage(message) {', '        calMinMax() {', '        drawMapBorders(ctx, macros', '        _lmApplyFullBorder(', '        _lmFullBorderNow()',
+    '        translateX(x) {', '        translateY(x) {'].map((m) => [m, block(m)]);
+const sectorFn = block('        calculateMapSector(t, xgh2');
+if (!sectorFn) { console.log('FAIL code not found: calculateMapSector'); process.exit(1); }
 const pktStart = src.indexOf('        handleMessage(data) {\n'), pktEnd = src.indexOf('        countPps() {', pktStart);
 const teams = block('function _lmElTeamsActive(');
 const resume = between("LM._lmBorderTraceAdd('visible', hiddenMs);", "LM._lmReapplyServerBorder('resume', false);");
@@ -260,15 +263,54 @@ const foodBox = (h, half) => { h.food = []; for (let x = -half; x <= half; x += 
     h.handleMessage(circle(30000));
     check(name + ': not zero-size', h.mapMaxX - h.mapMinX === 30000 && box(h) === want(30000) && h.mapSize === 30000, box(h));
 });
-/* and the agar.io branch itself is unchanged */
+/* and the agar.io branch itself: a 14142 border as before */
 {
     const t = boot(), h = t.h;
     t.connect();
     h.connectionIntegrity = true; /* set by _finishConnect for agar.io */
     h.handleMessage(border(1000, 2000, 15142, 16142));
-    check('agar.io border unchanged (14142, offset from right/bottom)', h.mapSize === 14142 && h.mapMinX === 1000 && h.mapMaxY === 16142 && h.mapOffsetFixed);
+    check('agar.io 14142 border: same map as before (edges, offset, size 14142)', h.mapSize === 14142 && h.mapOffset === 7071 && h.mapMinX === 1000 && h.mapMaxY === 16142 &&
+        h.mapOffsetX === -8071 && h.mapOffsetY === -9071 && h.mapOffsetFixed);
     h.handleMessage(border(5000, 5000, 9000, 9000));
     check('agar.io: a later small opcode 64 is still ignored', h.mapMinX === 1000);
+}
+/* 7b. agar.io gives every connection its own scale: a live full border 14189.6 x 14102.1 (LM put the
+ *     edges at 7071 - right: mapMinX -7277.0, 47.6 off the real -7324.6) */
+{
+    const B = [-7324.601462458406, -6192.663946706215, 6864.994673375264, 7909.431799099125];
+    const t = boot(), h = t.h;
+    t.connect();
+    h.connectionIntegrity = true;
+    h.handleMessage(border(B[0], B[1], B[2], B[3]));
+    const cx = (B[0] + B[2]) / 2, cy = (B[1] + B[3]) / 2;
+    check('live border: map edges are the real ones', h.mapMinX === B[0] && h.mapMinY === B[1] && h.mapMaxX === B[2] && h.mapMaxY === B[3] && h.mapOffsetFixed, box(h));
+    check('live border: exact centre (mapMid, mapOffsetX = -centre) and spect.js scale', h.mapMidX === cx && h.mapMidY === cy && h.mapOffsetX === -cx && h.mapOffsetY === -cy &&
+        h._lmBorderCX === cx && Math.abs(h._lmBorderKX * (B[2] - B[0]) - 14142.135623730952) < 1e-9 && Math.abs(h._lmBorderKY * (B[3] - B[1]) - 14142.135623730952) < 1e-9);
+    /* sectors (application.calculateMapSector, raw coordinates as the minimap passes them) */
+    const app = vm.runInContext('({' + sectorFn + '})', t.ctx);
+    t.ctx.LM.mapOffsetFixed = true;
+    const sec = (x, y) => app.calculateMapSector(x, y, true);
+    check('live border: sectors A1 at the top left edge, C3 at the centre, E5 at the bottom right edge',
+        sec(B[0] + 1, B[1] + 1) === 'A1' && sec(cx, cy) === 'C3' && sec(B[2] - 1, B[3] - 1) === 'E5', [sec(B[0] + 1, B[1] + 1), sec(cx, cy), sec(B[2] - 1, B[3] - 1)].join());
+    /* minimap: px = (x + mapOffsetX + mapOffset) * width / mapSize: the edges at the minimap edges (within 0.2%) */
+    const mm = (x, off) => (x + off + h.mapOffset) / h.mapSize;
+    check('live border: minimap puts the edges at its edges and the centre in the middle',
+        Math.abs(mm(B[0], h.mapOffsetX)) < 0.002 && Math.abs(mm(B[2], h.mapOffsetX) - 1) < 0.002 && Math.abs(mm(B[1], h.mapOffsetY)) < 0.002 &&
+        Math.abs(mm(B[3], h.mapOffsetY) - 1) < 0.002 && mm(cx, h.mapOffsetX) === 0.5, [mm(B[0], h.mapOffsetX), mm(B[2], h.mapOffsetX)].join());
+    /* Rotate Map mirrors about the real centre: an edge onto the other edge, twice = back */
+    let drift = 0;
+    for (const x of [B[0], cx, B[2], 1234.5, -6000.25]) drift = Math.max(drift, Math.abs(h.translateX(h.translateX(x)) - x));
+    check('live border: Rotate Map mirrors edge onto edge, centre fixed, no drift', h.translateX(B[0]) === B[2] && h.translateY(B[3]) === B[1] && h.translateX(cx) === cx && drift < 1e-9);
+    /* the view rects of a playing connection, and after a ClearAll (mapOffsetFixed off) too */
+    h.handleMessage(border(-1716.85, 834.87, 2533.1, 3394.9));
+    check('live border: a view rect (4250 x 2560) never becomes the map', h.mapMinX === B[0] && h.mapMaxY === B[3]);
+    h.mapOffsetFixed = false;
+    h.handleMessage(border(-1716.85, 834.87, 2533.1, 3394.9));
+    check('live border: after a ClearAll a view rect keeps the full border', h.mapMinX === B[0] && h.mapMaxY === B[3] && h.mapOffsetX === -cx && h.mapOffsetFixed);
+    t.connect();
+    h.connectionIntegrity = true;
+    h.handleMessage(border(-1716.85, 834.87, 2533.1, 3394.9));
+    check('live border: a new socket does not reuse the previous one\'s full border', h.mapMinX !== B[0] && !h.mapOffsetFixed && h._lmFullBorderNow() === null);
 }
 
 /* 8. consumers: Canvas border, world-spectate camera clamp, deformation centre use the same circle */

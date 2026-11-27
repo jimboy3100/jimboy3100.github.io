@@ -38,7 +38,7 @@ const APP = ['lmWaveStats()', 'lmWaveOffsetX()', 'lmWaveOffsetY()', 'lmWaveSeen(
     'lmPingLabel(type)', 'addLmPing(', 'sendTeamPing(type)', 'sendTeamWave()', 'lmWaveRoute()', 'sendWavePing(', 'checkPlayerID(id)',
     'isSocketOpen()', 'readMessage(message)'];
 const appSrc = APP.map(h => method(h)).filter(Boolean);
-const LMSRC = ['sendWaves(', 'setMapOffset(', '_lmBorderValid('].map(h => method(h));
+const LMSRC = ['sendWaves(', 'setMapOffset(', '_lmBorderValid(', '_lmApplyFullBorder(', '_lmFullBorderNow()'].map(h => method(h));
 const drawSrc = method('drawWaves()');
 const reportSrc = (() => { const i = src.indexOf('function lmDebugReport() {'); if (i < 0) return null; let d = 0, k = src.indexOf('{', i); for (; k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}' && --d === 0) return src.slice(i, k + 1); } return null; })();
 if (LMSRC.some(s => !s) || !drawSrc || !reportSrc) { console.log('FAIL source markers not found'); process.exit(1); }

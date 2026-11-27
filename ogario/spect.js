@@ -315,8 +315,10 @@ function addFullSpectator() {
         window.fullSpectator = false
         return
     }
-    var mapW = LM.mapMaxX - LM.mapMinX, mapH = LM.mapMaxY - LM.mapMinY;
-    if (!LM.mapOffsetFixed || !(mapW >= 1) || !(mapH >= 1)) return;
+    /* tiles are world coordinates (lmRawToWorld): the full agar.io map is LM_WORLD_SIZE wide and
+     * high in them, whatever the main connection's own scale (its border is 14073..14211 wide) */
+    var mapW = LM_WORLD_SIZE, mapH = LM_WORLD_SIZE;
+    if (!LM.mapOffsetFixed) return;
     var view = lmServerViewSize(LM_SPECT_FREE_SCALE);
     var plan = lmFullMapPlan(mapW, mapH, view[0], view[1], LM_FULLMAP_MAX);
     if (!plan) {
@@ -865,15 +867,14 @@ class Spect {
         this.staticPositionController = setInterval(() => this._lmTileTick(), 50);
     }
 
-    /* The tile centre in the main connection's display space (Rotate Map applied), like the
-     * cursor convertX/convertY take; null until the main border is fixed. */
+    /* The tile centre in the main connection's display space (world -> main frame with its
+     * centre and scale, then Rotate Map), where getX draws this connection's cells; null until
+     * the main border is fixed. */
     _lmTileDisplay() {
         var LM = legendmod;
         if (this.staticX == null || this.staticY == null || !LM || !LM.mapOffsetFixed) return null;
-        var x = this.staticX + (LM.mapMinX + LM.mapMaxX) / 2, y = this.staticY + (LM.mapMinY + LM.mapMaxY) / 2;
-        var v = LM.vector && LM.vector[LM.vnr];
-        if (v && v[0]) x = LM.mapMaxX - (x - LM.mapMinX);
-        if (v && v[1]) y = LM.mapMaxY - (y - LM.mapMinY);
+        var x = lmDisplayFlip(lmMainCentre(0) + this.staticX / lmMainScale(0), 0);
+        var y = lmDisplayFlip(lmMainCentre(1) + this.staticY / lmMainScale(1), 1);
         return (Number.isFinite(x) && Number.isFinite(y)) ? [x, y] : null;
     }
 
