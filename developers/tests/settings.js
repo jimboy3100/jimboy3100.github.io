@@ -54,7 +54,7 @@ check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);
 check('massFormat 1.7 -> 2 (a mode, not a fraction)', V('massFormat', 1.7) === 2);
 check('fractional step values snap to the slider step', V('zoomSpeedValue2', -0.134) === -0.13 && V('a11yTextScale', 1.12) === 1.1 && V('gamepadTrigger', 0.93) === 0.95);
 check('the top of a range that is not a whole number of steps stays reachable (gamepadTrigger 0.95)', V('gamepadTrigger', 0.95) === 0.95 && V('gamepadTrigger', 5) === 0.95);
-check('zero where the range allows it', V('hudBlur', 0) === 0 && V('lineSplitDelay', 0) === 0 && V('zoomSpeedValue2', 0) === 0 && V('volMaster', 0) === 0);
+check('zero where the range allows it', V('lineSplitHold', 0) === 0 && V('lineSplitDelay', 0) === 0 && V('zoomSpeedValue2', 0) === 0 && V('volMaster', 0) === 0);
 check('NaN, Infinity, -Infinity refused (the default stays)', [NaN, Infinity, -Infinity].every(x => V('animation', x) === undefined && V('volMaster', x) === undefined));
 check('numeric strings from old saves converted and fitted, other strings refused', V('fpsLimit', '60') === 60 && V('fpsLimit', ' 65 ') === 70 && V('fpsLimit', '') === undefined && V('fpsLimit', '6O') === undefined && V('fpsLimit', true) === undefined);
 /* Scan Trick is only its key: none of its old settings is a setting any more */
@@ -79,11 +79,12 @@ check('import: an old export with the second video volume keeps its loudness', J
 // ── S1 loading (the real loadSettings): a damaged save is fitted, the rest kept
 const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);
 ctx.ogario = {};
-const saved = Object.assign({}, D, { fpsLimit: 145, massFormat: 1.7, hudBlur: 3, showMass: !D.showMass, positionClass: 'toast-middle', scanTrickDirections: 8, scanTrickDistance: 20000, scanTrickRounded: false, chatHideWords: 'spam' });
+const saved = Object.assign({}, D, { fpsLimit: 145, massFormat: 1.7, macroFeeding: 3, hudBlur: 3, showMass: !D.showMass, positionClass: 'toast-middle', scanTrickDirections: 8, scanTrickDistance: 20000, scanTrickRounded: false, chatHideWords: 'spam' });
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();
 const S = ctx.defaultmapsettings;
-check('load: off-range/off-step values fitted, invalid choice keeps the default, valid values kept', S.fpsLimit === 150 && S.massFormat === 2 && S.hudBlur === 3 && S.showMass === !D.showMass && S.positionClass === D.positionClass && S.chatHideWords === 'spam');
+check('load: off-range/off-step values fitted, invalid choice keeps the default, valid values kept', S.fpsLimit === 150 && S.massFormat === 2 && S.macroFeeding === 3 && S.showMass === !D.showMass && S.positionClass === D.positionClass && S.chatHideWords === 'spam');
+check('the removed HUD background blur: an old saved value is ignored quietly', !('hudBlur' in D) && !('hudBlur' in SCH) && !('hudBlur' in S) && V('hudBlur', 3) === undefined);
 check('load: old saved Scan Trick settings are skipped quietly', SCAN_OLD.every(k => !(k in S)) || (console.log('   kept: ' + SCAN_OLD.filter(k => k in S).join(', ')), false));
 // ── one video skin volume: the removed second slider (volVideo) is folded into the level once
 check('volVideo is no setting any more (no second video volume)', !('volVideo' in D) && !('volVideo' in SCH) && V('volVideo', 0.5) === undefined);
@@ -179,22 +180,22 @@ app.loadSettings();
 events.length = 0;
 app.saveSettings(S, 'ogarioSettings');
 check('a save with nothing changed sends no event', events.length === 0);
-S.hudBlur = 4; S.showMass = !S.showMass;
+S.macroFeeding = 4; S.showMass = !S.showMass;
 app.saveSettings(S, 'ogarioSettings');
-check('one event per changed setting, with its new value', J(events) === J([['settingsChange', 'showMass', S.showMass], ['settingsChange', 'hudBlur', 4]]));
+check('one event per changed setting, with its new value', J(events) === J([['settingsChange', 'showMass', S.showMass], ['settingsChange', 'macroFeeding', 4]]));
 events.length = 0;
 app.saveSettings(S, 'ogarioSettings');
 app.saveSettings(S, 'ogarioSettings');
 check('saving again (a slider released after its debounced save) sends nothing', events.length === 0);
-check('the save still writes the settings', JSON.parse(ctx.localStorage.getItem('ogarioSettings')).hudBlur === 4);
+check('the save still writes the settings', JSON.parse(ctx.localStorage.getItem('ogarioSettings')).macroFeeding === 4);
 app.saveSettings([{ nick: 'x' }], 'ogarioPlayerProfiles');
 check('other storage keys are saved as before, without events', events.length === 0 && ctx.localStorage.getItem('ogarioPlayerProfiles') === '[{"nick":"x"}]');
 /* a slider dragged 1 -> 2 -> 3 -> 2 (input events) then saved once: one event, the final value */
-S.hudBlur = 1; S.hudBlur = 2; S.hudBlur = 3; S.hudBlur = 2;
+S.macroFeeding = 1; S.macroFeeding = 2; S.macroFeeding = 3; S.macroFeeding = 2;
 app.saveSettings(S, 'ogarioSettings');
-check('a coalesced slider change is one event with the final value', J(events) === J([['settingsChange', 'hudBlur', 2]]));
+check('a coalesced slider change is one event with the final value', J(events) === J([['settingsChange', 'macroFeeding', 2]]));
 events.length = 0;
-S.hudBlur = 1; S.hudBlur = 2;
+S.macroFeeding = 1; S.macroFeeding = 2;
 app.saveSettings(S, 'ogarioSettings');
 check('a change and back before the save is no change (no event)', events.length === 0);
 /* a listener that changes another setting: its save announces that one, no repeat of the first */
@@ -206,16 +207,16 @@ check('a listener that changes a setting: each change announced once', J(events.
 /* S09: two settings changed in one save, and the listener of the first changes the second again:
  * the last event of the second is its value now (before, the outer save sent the older one after it) */
 events.length = 0;
-ctx._onEmit = d => { if (d.key === 'showMass') { ctx._onEmit = null; S.hudBlur = 3; app.saveSettings(S, 'ogarioSettings'); } };
-S.showMass = !S.showMass; S.hudBlur = 1;
+ctx._onEmit = d => { if (d.key === 'showMass') { ctx._onEmit = null; S.macroFeeding = 3; app.saveSettings(S, 'ogarioSettings'); } };
+S.showMass = !S.showMass; S.macroFeeding = 1;
 app.saveSettings(S, 'ogarioSettings');
-check('nested change of a setting the same save changed: its last event is its value now', J(events.map(e => e[1] + '=' + e[2])) === J(['showMass=' + S.showMass, 'hudBlur=3']) || (console.log('   ' + J(events)), false));
+check('nested change of a setting the same save changed: its last event is its value now', J(events.map(e => e[1] + '=' + e[2])) === J(['showMass=' + S.showMass, 'macroFeeding=3']) || (console.log('   ' + J(events)), false));
 events.length = 0;
 app.saveSettings(S, 'ogarioSettings');
 check('...and nothing left to announce afterwards', events.length === 0);
 events.length = 0;
 ctx.LMEvents.listen = false;
-S.hudBlur = 5;
+S.macroFeeding = 5;
 app.saveSettings(S, 'ogarioSettings');
 ctx.LMEvents.listen = true;
 app.saveSettings(S, 'ogarioSettings');
@@ -234,21 +235,21 @@ const realSet = ctx.localStorage.setItem, toasts = [];
 ctx.toastr = { warning(t) { toasts.push(t); } };
 ctx.lmT = k => k;
 ctx.localStorage.setItem = () => { throw new Error('QuotaExceededError'); };
-S.hudBlur = 6;
+S.macroFeeding = 6;
 let threw = false;
 try { app.saveSettings(S, 'ogarioSettings'); } catch (e) { threw = true; }
-check('a full storage: the error is thrown as before and the change still announced', threw && events.length === 1 && events[0][1] === 'hudBlur' && events[0][2] === 6);
+check('a full storage: the error is thrown as before and the change still announced', threw && events.length === 1 && events[0][1] === 'macroFeeding' && events[0][2] === 6);
 check('a full storage: the player is warned that it is not saved', toasts.length === 1 && ctx._lmSettingsUnsaved === true);
 S.showGrid = !S.showGrid;
 try { app.saveSettings(S, 'ogarioSettings'); } catch (e) { }
 check('still full: no second warning for the next save', toasts.length === 1);
 ctx.localStorage.setItem = realSet;
-S.hudBlur = 5;
+S.macroFeeding = 5;
 app.saveSettings(S, 'ogarioSettings');
 const reS = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
-check('storage works again: the next save stores every change, no longer unsaved', reS.hudBlur === 5 && reS.showGrid === S.showGrid && ctx._lmSettingsUnsaved === false);
+check('storage works again: the next save stores every change, no longer unsaved', reS.macroFeeding === 5 && reS.showGrid === S.showGrid && ctx._lmSettingsUnsaved === false);
 ctx.localStorage.setItem = () => { throw new Error('QuotaExceededError'); };
-S.hudBlur = 6;
+S.macroFeeding = 6;
 try { app.saveSettings(S, 'ogarioSettings'); } catch (e) { }
 ctx.localStorage.setItem = realSet;
 check('full again later: warned again', toasts.length === 2);
@@ -303,43 +304,34 @@ check('setSettings on and off: two events, the new value each time', J(events) =
   };
   const slSrc = main.slice(main.lastIndexOf('        addSliderBox(', main.indexOf('/* the range and step come from the settings schema, not from the call */')), main.indexOf('        setLang() {'));
   const A3 = vm.runInContext('({\n' + ss + slSrc + '\n})', ctx);
-  let saves = 0, blurs = 0, counts = 0, timer = null;
+  let saves = 0, feeds = 0, counts = 0, timer = null;
   A3.saveSettings = function (o, n) { saves++; return app.saveSettings(o, n); };
-  A3.applyHudBlur = () => { blurs++; };
+  A3._lmTestFeedCb = () => { feeds++; };
   A3.setProfileCount = () => { counts++; };
   A3._lmLoadOptSounds = function () { };
   if (!ctx.textLanguage) ctx.textLanguage = {};
   const q0 = ctx.$, st0 = ctx.setTimeout;
   ctx.$ = fakeQ; ctx.setTimeout = (f) => { timer = f; return 1; };
   try {
-    S.hudBlur = 5; S.performanceMode = false; S.profileNumber = 15;
-    ctx.localStorage.removeItem('lmPerfBackup');
-    A3.addSliderBox('.hudGroup', 'hudBlur', 0, 8, 1, 'applyHudBlur');
+    S.macroFeeding = 5; S.profileNumber = 15;
+    A3.addSliderBox('.macroGroup', 'macroFeeding', 1, 160, 1, '_lmTestFeedCb');
     A3.addSliderBox('.profiles', 'profileNumber', 10, 54, 1, 'setProfileCount');
-    const sl = fakeQ('#hudBlur-slider');
+    const sl = fakeQ('#macroFeeding-slider');
     saves = 0;
     sl.val(4).trigger('input');
-    check('slider moved: value and label 4, its callback once, no save while it moves', S.hudBlur === 4 && els['hudBlur-value'].text === '4' && blurs === 1 && saves === 0 && typeof timer === 'function');
+    check('slider moved: value and label 4, its callback once, no save while it moves', S.macroFeeding === 4 && els['macroFeeding-value'].text === '4' && feeds === 1 && saves === 0 && typeof timer === 'function');
     sl.trigger('change');
-    check('slider let go: saved once', saves === 1 && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).hudBlur === 4);
+    check('slider let go: saved once', saves === 1 && JSON.parse(ctx.localStorage.getItem('ogarioSettings')).macroFeeding === 4);
     /* a script, a preset or a profile without the slider: the slider and its callback follow */
-    blurs = 0;
-    A3.setSettings('hudBlur', 6);
+    feeds = 0;
+    A3.setSettings('macroFeeding', 6);
     A3.setSettings('profileNumber', 30);
-    check('setSettings of a slider setting: the slider and its value show it, its callback runs once', els['hudBlur-slider'].value === '6' && els['hudBlur-value'].text === '6' && blurs === 1 &&
+    check('setSettings of a slider setting: the slider and its value show it, its callback runs once', els['macroFeeding-slider'].value === '6' && els['macroFeeding-value'].text === '6' && feeds === 1 &&
       els['profileNumber-slider'].value === '30' && els['profileNumber-value'].text === '30' && counts === 1);
     A3.setSettings('profileNumber', 15);
-    /* Performance mode on with the blur 5, the slider to 3 and then 0 by hand, the mode off: 0 stays */
-    A3.setSettings('hudBlur', 5);
-    A3.setSettings('performanceMode', true);
-    check('Performance mode on: the slider shows the blur it turned off', S.hudBlur === 0 && els['hudBlur-slider'].value === '0');
-    sl.val(3).trigger('input'); sl.val(0).trigger('input').trigger('change');
-    A3.setSettings('performanceMode', false);
-    check('blur set to 0 by hand while Performance mode is on: still 0 after the mode goes off', S.hudBlur === 0 && els['hudBlur-slider'].value === '0' && S.jellyPhisycs === D.jellyPhisycs);
   } finally {
     ctx.$ = q0; ctx.setTimeout = st0;
-    S.hudBlur = D.hudBlur; S.performanceMode = false; S.profileNumber = D.profileNumber;
-    ctx.localStorage.removeItem('lmPerfBackup');
+    S.macroFeeding = D.macroFeeding; S.profileNumber = D.profileNumber;
   }
 }
 

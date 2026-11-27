@@ -82,7 +82,7 @@
   var cv = document.getElementById('canvas');
   /* the page may not have resized since LMmobile set its pixel ratio: start from a fresh size */
   try { window.drawRender.resizeCanvas(); } catch (e) { }
-  var w0 = cv ? cv.width : 0, own = JSON.stringify([S.jellyPhisycs, S.videoSkins, S.hudBlur, S.eatPulse]);
+  var w0 = cv ? cv.width : 0, own = JSON.stringify([S.jellyPhisycs, S.videoSkins, S.eatPulse]);
   S.adaptivePerf = true; P.configChanged();
   P._setLevel(3);
   await sleep(100);
@@ -99,7 +99,7 @@
   window.application.saveSettings(S, 'ogarioSettings');
   await sleep(100);
   if (cv && cv.width !== w0) fail.push('resolution not restored (' + cv.width + ' vs ' + w0 + ')');
-  if (JSON.stringify([S.jellyPhisycs, S.videoSkins, S.hudBlur, S.eatPulse]) !== own) fail.push('values not restored');
+  if (JSON.stringify([S.jellyPhisycs, S.videoSkins, S.eatPulse]) !== own) fail.push('values not restored');
   if (window._lmPerfFrame) fail.push('frame hook left after turning it off');
   return { fail: fail, info: info };
 })()

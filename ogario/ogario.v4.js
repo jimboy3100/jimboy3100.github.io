@@ -21571,7 +21571,6 @@ var defaultmapsettings = {
     chatHideWords: '',            /* chat lines (nick or text) containing one of these words are not shown; empty = off */
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
     rainbowBorderSpeed: 5,        /* 5 = the original speed */
-    hudBlur: 0,                   /* frosted-glass blur behind HUD panels, px (0 = off) */
     /* timeFormat (clock format) is gone: the clock always shows the browser's date and time; saved values are skipped on load */
     massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
@@ -21666,7 +21665,6 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     /* 0 ("as Short mass") of older versions is folded before the check (lmFoldLegacySettings) */
     massFormat: [1, 3, 1],
     rainbowBorderSpeed: [1, 20, 1],
-    hudBlur: [0, 8, 1],
     animation: [5, 200, 1],
     macroFeeding: [1, 160, 1],
     macroSplitDelay: [20, 120, 1],
@@ -24670,14 +24668,6 @@ function thelegendmodproject() {
                 }
             }
         },
-        /* "HUD background blur": frosted-glass panels (leaderboard, minimap, stats, team...) */
-        applyHudBlur() {
-            var px = Math.max(0, Math.min(8, +defaultmapsettings.hudBlur || 0));
-            var st = document.getElementById('lm-hud-blur');
-            if (!px) { if (st) st.parentNode.removeChild(st); return; }
-            if (!st) { st = document.createElement('style'); st.id = 'lm-hud-blur'; document.head.appendChild(st); }
-            st.textContent = '.hud,.hud-b,.hud-c{-webkit-backdrop-filter:blur(' + px + 'px);backdrop-filter:blur(' + px + 'px)}';
-        },
         displayTime() {
             if (defaultmapsettings.showTime) {
                 this.timeHUD.textContent = new Date().toLocaleString();
@@ -25762,7 +25752,7 @@ function thelegendmodproject() {
                                     try { window.localStorage.removeItem('lmPerfBackup'); } catch (e2) { }
                                     if (window.toastr) toastr.warning(_lmG1tag('game1.tag.performance', 'game1.perf.storageFull'));
                                 }
-                                _lmPerfKeys.forEach(function (k) { _lmPerfSet(k, k === 'hudBlur' ? 0 : false); });
+                                _lmPerfKeys.forEach(function (k) { _lmPerfSet(k, false); });
                             } else {
                                 /* the copy in memory is the one of this "on" (its storage write failed) */
                                 var _lmPerfOld = window._lmPerfBackupMem && typeof window._lmPerfBackupMem === 'object' ? window._lmPerfBackupMem : null;
@@ -25773,11 +25763,7 @@ function thelegendmodproject() {
                                         if (!Object.prototype.hasOwnProperty.call(_lmPerfOld, k)) return;
                                         var v = _lmPerfOld[k];
                                         /* the backup can come from an import: only a value of the setting's type */
-                                        if (k === 'hudBlur') {
-                                            v = Number(v);
-                                            if (!Number.isFinite(v)) return;
-                                            v = Math.min(8, Math.max(0, v));
-                                        } else if (typeof v !== 'boolean') return;
+                                        if (typeof v !== 'boolean') return;
                                         _lmPerfSet(k, v);
                                     });
                                 }
@@ -25786,8 +25772,6 @@ function thelegendmodproject() {
                         } finally {
                             this._lmPerfApplying = false;
                         }
-                        /* HUD blur (backdrop-filter over the game canvas) is applied at once */
-                        if (typeof this.applyHudBlur === 'function') this.applyHudBlur();
                         if (window.toastr) toastr.info(lmT(checked ? 'game1.perf.modeOn' : 'game1.perf.modeOff'));
                         break;
                 }
@@ -25807,7 +25791,7 @@ function thelegendmodproject() {
         /* The settings Performance mode turns off; it keeps their earlier values ('lmPerfBackup')
          * to put back when it is turned off. */
         _lmPerfModeKeys: ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor',
-            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias', 'hudBlur'],
+            'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias'],
         /* What the player sets while the mode is on wins over that copy: turning the mode off
          * puts back only the values nobody changed meanwhile. setSettings calls this before a
          * value is stored (after Adaptive performance put its lowered values back), presets and
@@ -25823,7 +25807,7 @@ function thelegendmodproject() {
                 if (value !== false || defaultmapsettings.performanceMode !== true) return;
                 drop = keys.filter(function (k) {
                     var v = defaultmapsettings[k];
-                    return k === 'hudBlur' ? Number(v) !== 0 : v !== false;
+                    return v !== false;
                 });
             } else if (defaultmapsettings.performanceMode === true && !this._lmPerfApplying && keys.indexOf(id) >= 0) {
                 drop = [id];
@@ -26880,7 +26864,7 @@ function thelegendmodproject() {
                     /* with the switches its options need: Stats for FPS / PPS, Cursor tracking for
                      * split prediction (its line or bubble look stays the player's) */
                     competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStats: true, showStatsFPS: true, showStatsPPS: true, cursorTracking: true, splitPrediction: true } },
-                    battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0, highDPI: false, showBgSectors: false } },
+                    battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, highDPI: false, showBgSectors: false } },
                     /* tip: what it changes and what it leaves (not a privacy guarantee: nothing drawn
                      * in the game is hidden) */
                     streamer: { key: 'lmPresetStreamer', en: 'Streamer', tip: 'pkg.pt.streamerTip', set: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false, streamMode: true, hideSkinUrl: true }, lbl: { streamMode: 'pkg.pt.streamMode', hideSkinUrl: 'pkg.pt.hideSkinUrl' } },
@@ -26989,7 +26973,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27155,9 +27139,7 @@ function thelegendmodproject() {
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
             /* one choice for the mass text ("Short mass" was a second switch for the same) */
             this.addChoiceBox(".massGroup", "massFormat", "settings.massFormat", [[1, 'pkg.mg.massExact'], [2, 'pkg.mg.massShort'], [3, 'pkg.mg.massAuto']]);
-            this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
             this.addSliderBox(".gridGroup", "rainbowBorderSpeed", 1, 20, 1);
-            this.applyHudBlur();
 
             this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
             this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);

@@ -125,7 +125,6 @@ Full visual customization of the game interface using CSS variables and theme pr
 - **Rainbow food**: Coloured food pellets
 - **Rainbow map borders**: Animated colour-cycling map edge
 - **Virus effects**: Spikes, glow, and jelly physics on virus cells
-- **HUD blur**: Frosted-glass backdrop behind HUD panels (configurable px)
 - **Grid and sector display**: Toggle grid lines and sector labels
 URL: https://www.legendmod.ml/themes/
 
@@ -172,7 +171,7 @@ Record and replay game sessions. Features:
 - **FPS cap**: Limit frames per second (0-240 in steps of 10) to reduce heat/battery
 - **Performance mode**: Single switch that disables costly effects for weak PCs and phones
 - **Performance mode automatic** (`adaptivePerf`): Monitors real frame times. When FPS stays below 60 (or the FPS cap / screen refresh rate when lower), automatically disables effects in 2 levels:
-  - Level 1: Decorative effects off (suckAnimation, eatPulse, borderGlow, animatedRainbowColor, showBgSectors, hudBlur)
+  - Level 1: Decorative effects off (suckAnimation, eatPulse, borderGlow, animatedRainbowColor, showBgSectors)
   - Level 2: Jelly physics and video skins off
   - Self-healing: Effects re-enable when performance improves
   - Smart detection: Only counts slow when drawing takes ≥40% of frame time

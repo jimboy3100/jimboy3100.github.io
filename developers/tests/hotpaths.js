@@ -205,7 +205,7 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
         localStorage: { getItem: () => null, setItem() { }, removeItem() { } },
         legendmod5: { adaptivePerf: true, fpsLimit: 0 },
         legendmod: { cells: [], isSocketOpen: () => false, quadtree: { occupancy() { reads++; return { points: 10, cells: 1, step: 10, used: 1, fullest: 10, perQuery: 10, mostRead: 10 }; } } },
-        application: { saveSettings() { }, setAnimatedRainbowColor() { }, applyHudBlur() { }, _lmSkinJobAdd: jobAdd, _lmSkinJobRun: jobRun },
+        application: { saveSettings() { }, setAnimatedRainbowColor() { }, _lmSkinJobAdd: jobAdd, _lmSkinJobRun: jobRun },
         drawRender: { dpr: 1, resizeCanvas() { }, _lmQueueSkinUpload: upQ, _lmUploadSkinJob: upRun }
     };
     ctx.window = ctx;

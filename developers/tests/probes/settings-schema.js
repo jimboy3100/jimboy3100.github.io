@@ -26,10 +26,10 @@
   LMEvents.on('settingsChange', onSet);
   try {
     // a slider dragged over several steps and released: one event, the final value
-    var sl = $('#hudBlur-slider'), was = S.hudBlur;
+    var sl = $('#lineSplitCount-slider'), was = S.lineSplitCount;
     var other = was === 3 ? 4 : 3;
     sl.val(1).trigger('input'); sl.val(2).trigger('input'); sl.val(other).trigger('input'); sl.trigger('change');
-    if (got.join() !== 'hudBlur=' + other) fail.push('slider events: ' + got.join());
+    if (got.join() !== 'lineSplitCount=' + other) fail.push('slider events: ' + got.join());
     // a value between the steps set from a script: the slider and the game agree
     got.length = 0;
     var mf = $('#rainbowBorderSpeed-slider'), mfWas = S.rainbowBorderSpeed;
@@ -49,7 +49,7 @@
     got.length = 0;
     // unchanged values: no event
     application.setSettings('showGrid', S.showGrid);
-    $('#hudBlur-slider').trigger('change');
+    $('#lineSplitCount-slider').trigger('change');
     if (got.length) fail.push('events without a change: ' + got.join());
     // a text box (applied on change)
     var tb = document.getElementById('chatHideWords');

@@ -39,7 +39,7 @@
     var TARGET = 60;
     var LEVEL_KEYS = [
         [],
-        ['suckAnimation', 'eatPulse', 'borderGlow', 'animatedRainbowColor', 'showBgSectors', 'hudBlur'],
+        ['suckAnimation', 'eatPulse', 'borderGlow', 'animatedRainbowColor', 'showBgSectors'],
         ['jellyPhisycs', 'videoSkins']
     ];
     var MAX_LEVEL = 2;
@@ -187,8 +187,8 @@
         return 0;
     }
 
-    function loweredValue(k) { return k === 'hudBlur' ? 0 : false; }
-    function isOn(k, v) { return k === 'hudBlur' ? +v > 0 : v === true; }
+    function loweredValue(k) { return false; }
+    function isOn(k, v) { return v === true; }
     /* the settings lowered at a level (levels 1 and 2; level 3 is the resolution) */
     function keysForLevel(level) {
         var out = [];
@@ -1767,7 +1767,6 @@
         var a = app();
         if (!a || !changed.length) return;
         try { if (changed.indexOf('animatedRainbowColor') >= 0 && a.setAnimatedRainbowColor) a.setAnimatedRainbowColor(); } catch (e) { }
-        try { if (changed.indexOf('hudBlur') >= 0 && a.applyHudBlur) a.applyHudBlur(); } catch (e) { }
     }
 
     function applyLevel(levelChanged) {

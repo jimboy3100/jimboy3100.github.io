@@ -104,20 +104,20 @@ st = P.newController(); run(st, 40, 3); run(st, 60, 10); run(st, 40, 3); run(st,
 check('repeated bounces: wait capped at 120 s', st.upAfter === 120);
 
 /* ---- overrides: runtime only, exact restore ---- */
-const base = () => ({ suckAnimation: true, eatPulse: true, borderGlow: false, animatedRainbowColor: true, showBgSectors: true, hudBlur: 3, jellyPhisycs: true, videoSkins: true, highDPI: true, showMass: true });
+const base = () => ({ suckAnimation: true, eatPulse: true, borderGlow: false, animatedRainbowColor: true, showBgSectors: true, jellyPhisycs: true, videoSkins: true, highDPI: true, showMass: true });
 let s = base(), mirror = { eatPulse: true };
 let ov = P.createOverrides(s, mirror);
 let changed = ov.sync(1, false);
-check('level 1 lowers the decorative effects that were on', s.suckAnimation === false && s.eatPulse === false && s.animatedRainbowColor === false && s.showBgSectors === false && s.hudBlur === 0);
+check('level 1 lowers the decorative effects that were on', s.suckAnimation === false && s.eatPulse === false && s.animatedRainbowColor === false && s.showBgSectors === false);
 check('an effect the player had off is not touched', changed.indexOf('borderGlow') < 0 && s.borderGlow === false);
 check('level 1 leaves jelly physics, video skins, other settings', s.jellyPhisycs === true && s.videoSkins === true && s.highDPI === true && s.showMass === true);
 check('a mirrored key is lowered there too', mirror.eatPulse === false);
 const view = ov.userView();
-check('userView has the player\'s own values', view.hudBlur === 3 && view.suckAnimation === true && view.borderGlow === false && s.hudBlur === 0);
+check('userView has the player\'s own values', view.eatPulse === true && view.suckAnimation === true && view.borderGlow === false && s.eatPulse === false);
 ov.sync(2, false);
-check('level 2 adds jelly physics and video skins', s.jellyPhisycs === false && s.videoSkins === false && s.hudBlur === 0);
+check('level 2 adds jelly physics and video skins', s.jellyPhisycs === false && s.videoSkins === false && s.eatPulse === false);
 ov.sync(1, false);
-check('back to level 1 restores level 2 keys exactly', s.jellyPhisycs === true && s.videoSkins === true && s.hudBlur === 0);
+check('back to level 1 restores level 2 keys exactly', s.jellyPhisycs === true && s.videoSkins === true && s.eatPulse === false);
 ov.sync(0, false);
 check('level 0 restores everything exactly', JSON.stringify(s) === JSON.stringify(base()) && mirror.eatPulse === true && ov.size() === 0);
 ov.sync(2, false);
@@ -131,9 +131,9 @@ ov.check();
 check('a lowered key changed elsewhere is no longer managed', !ov.isLowered('showBgSectors') && ov.isLocked('showBgSectors'));
 ov.sync(0, false); ov.sync(2, false);
 check('... and stays as the player set it for the session', s.showBgSectors === true);
-ov.userChanged('hudBlur'); s.hudBlur = 0; /* the player moves the slider to 0 while lowered */
+ov.userChanged('eatPulse'); s.eatPulse = false; /* the player turns it off while lowered */
 ov.sync(0, false);
-check('player set a lowered key to the lowered value: it stays', s.hudBlur === 0);
+check('player set a lowered key to the lowered value: it stays', s.eatPulse === false);
 check('other keys restored', s.jellyPhisycs === true && s.suckAnimation === true);
 s = base(); ov = P.createOverrides(s, null); ov.sync(2, false); ov.restoreAll();
 check('restoreAll puts back every value', JSON.stringify(s) === JSON.stringify(base()));
@@ -158,7 +158,7 @@ function page(settings, stored, extra, lang) {
         document: { hidden: false, addEventListener(t, f) { listeners[t] = f; }, removeEventListener() { }, getElementById: (id) => id === 'overlays' ? overlays : null, createElement: () => ({ style: {} }), body: { appendChild() { } } },
         localStorage: { getItem: (k) => store.hasOwnProperty(k) ? store[k] : null, setItem: (k, v) => { store[k] = String(v); }, removeItem: (k) => { delete store[k]; } },
         toastr: { info: (t) => toasts.push(t) },
-        application: { setAnimatedRainbowColor() { calls.push('rainbow'); }, applyHudBlur() { calls.push('blur'); }, saveSettings(o, n) { store[n] = JSON.stringify(o); } },
+        application: { setAnimatedRainbowColor() { calls.push('rainbow'); }, saveSettings(o, n) { store[n] = JSON.stringify(o); } },
         drawRender: { dpr: 1, resizeCanvas() { calls.push('resize:' + ctx._lmAdaptiveScale); } },
         legendmod: { cells: [], pps: 0, ping: 0, isSocketOpen: () => false },
         /* window listeners (blur / focus for the window-not-in-front gaps) */
@@ -186,11 +186,11 @@ frames(pg, 31 * 4, 33.3, 20); /* about 4 s at 30 with heavy drawing */
 check('30 FPS for 3 s: level 1, one message', pg.ctx.LMPerf.level() === 1 && pg.toasts.length === 1);
 check('the level message comes from the language pack', pg.toasts[0] === i18n.t('settings.lmAdaptiveLevel1') && /level 1/.test(pg.toasts[0]));
 const S = pg.ctx.legendmod5;
-check('level 1 values lowered at runtime', S.suckAnimation === false && S.hudBlur === 0 && pg.calls.indexOf('rainbow') >= 0 && pg.calls.indexOf('blur') >= 0);
+check('level 1 values lowered at runtime', S.suckAnimation === false && S.eatPulse === false && pg.calls.indexOf('rainbow') >= 0);
 pg.ctx.application.saveSettings(S, 'ogarioSettings');
 let saved = JSON.parse(pg.store.ogarioSettings);
-check('saved settings hold the player\'s values', saved.suckAnimation === true && saved.hudBlur === 3 && saved.animatedRainbowColor === true && !('toJSON' in saved));
-check('export (nested) holds them too', JSON.parse(JSON.stringify({ ogarioSettings: S })).ogarioSettings.hudBlur === 3);
+check('saved settings hold the player\'s values', saved.suckAnimation === true && saved.eatPulse === true && saved.animatedRainbowColor === true && !('toJSON' in saved));
+check('export (nested) holds them too', JSON.parse(JSON.stringify({ ogarioSettings: S })).ogarioSettings.eatPulse === true);
 /* each level helps a little (about 7% more FPS) but the game is still slow and drawing-bound */
 frames(pg, 205, 31, 20);
 check('still slow: level 2', pg.ctx.LMPerf.level() === 2 && S.jellyPhisycs === false);
@@ -201,17 +201,17 @@ check('one message per level', pg.toasts.length === 2 && pg.toasts[1] === i18n.t
 /* menu opened: own values back (presets and Performance mode see them), frames ignored */
 pg.overlays.style.display = '';
 frames(pg, 60, 33.3, 20);
-check('menu open: own values in place, level kept', S.jellyPhisycs === true && S.hudBlur === 3 && pg.ctx.LMPerf.level() === 2);
+check('menu open: own values in place, level kept', S.jellyPhisycs === true && S.eatPulse === true && pg.ctx.LMPerf.level() === 2);
 pg.overlays.style.display = 'none';
 frames(pg, 2, 33.3, 20);
-check('menu closed: lowered again', S.jellyPhisycs === false && S.hudBlur === 0);
+check('menu closed: lowered again', S.jellyPhisycs === false && S.eatPulse === false);
 /* a reload while lowered: what was saved is the player's own settings */
 pg.ctx.application.saveSettings(S, 'ogarioSettings');
 const reloaded = page(JSON.parse(pg.store.ogarioSettings), pg.store);
-check('after a reload: the player\'s values, level 0', reloaded.ctx.legendmod5.jellyPhisycs === true && reloaded.ctx.legendmod5.hudBlur === 3 && reloaded.ctx.LMPerf.level() === 0);
+check('after a reload: the player\'s values, level 0', reloaded.ctx.legendmod5.jellyPhisycs === true && reloaded.ctx.legendmod5.eatPulse === true && reloaded.ctx.LMPerf.level() === 0);
 /* Performance mode turned on in game: it must back up the own values */
 pg.ctx.LMPerf.onSetting('performanceMode', true);
-check('Performance mode: own values in place before its backup', S.jellyPhisycs === true && S.hudBlur === 3 && S.suckAnimation === true);
+check('Performance mode: own values in place before its backup', S.jellyPhisycs === true && S.eatPulse === true && S.suckAnimation === true);
 frames(pg, 2, 33.3, 20);
 /* fast again: back one level per 10 s */
 frames(pg, 60 * 9, 16.7, 2);
@@ -231,7 +231,7 @@ check('checkbox change of a lowered key is kept', S.suckAnimation === false && S
 /* turning it off restores everything and removes the hook */
 pg.ctx.LMPerf._setLevel(2);
 S.adaptivePerf = false; pg.ctx.LMPerf.configChanged();
-check('automatic off: own values, no hook, full resolution', S.jellyPhisycs === true && S.hudBlur === 3 && pg.ctx._lmPerfFrame == null && !(pg.ctx._lmAdaptiveScale > 0));
+check('automatic off: own values, no hook, full resolution', S.jellyPhisycs === true && S.eatPulse === true && pg.ctx._lmPerfFrame == null && !(pg.ctx._lmAdaptiveScale > 0));
 /* the old message switch is gone: a saved "off" of it keeps nothing quiet */
 const quiet = page(Object.assign(user(), { adaptivePerf: true, adaptivePerfToasts: false }));
 frames(quiet, 31 * 5, 33.3, 20);
@@ -631,7 +631,7 @@ const stubs = () => {
     const lm = { cells: new Array(412), pps: 0, ping: 0, isSocketOpen: () => false };
     lm.handleMessage = function (ms) { stubs.ctx._now += ms; };
     lm.updateCells = function () { };
-    const ap = { setAnimatedRainbowColor() { }, applyHudBlur() { }, saveSettings() { }, _lmSkinJobs: [1, 2, 3], _lmSkinDecodeWait: [4, 5] };
+    const ap = { setAnimatedRainbowColor() { }, saveSettings() { }, _lmSkinJobs: [1, 2, 3], _lmSkinDecodeWait: [4, 5] };
     ap._lmSkinJobTrim = function (ms) { stubs.ctx._now += ms || 0; };
     ap.displayTop5 = function () { };
     return { drawRender: dr, legendmod: lm, application: ap, PerformanceObserver: FakePO2, repeatSendingSpecialSkins: function () { stubs.ctx._now += 1; } };
@@ -744,7 +744,7 @@ const mkCells = () => {
         _lmSkinJobMap: new Map(), _lmSkinJobs: [], _lmSkinDecodeWait: [],
         _lmSkinJobAdd(img, url) { if (this._lmSkinJobMap.has(url)) return; const j = { url }; this._lmSkinJobMap.set(url, j); this._lmSkinJobs.push(j); },
         _lmSkinJobRun(job) { this._lmSkinJobs.splice(this._lmSkinJobs.indexOf(job), 1); this._lmSkinJobMap.delete(job.url); return 'ran'; },
-        setAnimatedRainbowColor() { }, applyHudBlur() { }, saveSettings() { }
+        setAnimatedRainbowColor() { }, saveSettings() { }
     };
     const dr = {
         dpr: 1, resizeCanvas() { }, _lmSkinReady: [], _lmSkinBmpN: 2, _lmSkinQBytes: 2 * 1048576, _lmSkinPend: { nodes: new WeakMap(), keys: {} },

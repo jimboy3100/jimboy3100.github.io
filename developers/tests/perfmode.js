@@ -21,7 +21,7 @@ const cut = (a, b, from) => {
 const defaultsSrc = cut('var defaultmapsettings = {', '\nvar LM_EXPORT_KEYS');
 /* (an older core without the copy rules: the same list, no rules; for before/after runs) */
 const ownSrc = main.indexOf('        _lmPerfModeKeys:') >= 0 ? cut('        _lmPerfModeKeys:', '        profiling() {') :
-    "_lmPerfModeKeys: ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor', 'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias', 'hudBlur'], _lmPerfModeOwn() { },";
+    "_lmPerfModeKeys: ['jellyPhisycs', 'videoSkins', 'highDPI', 'showBgSectors', 'animatedRainbowColor', 'borderGlow', 'suckAnimation', 'eatPulse', 'glAntialias'], _lmPerfModeOwn() { },";
 const setStart = main.indexOf('        setSettings(id, checked) {');
 const headSrc = cut('            if (defaultmapsettings.hasOwnProperty(id) && null !== checked) {', '                switch (id) {', setStart);
 const caseSrc = cut("                    case 'performanceMode':", "                this.saveSettings(defaultmapsettings, 'ogarioSettings');", setStart);
@@ -87,7 +87,7 @@ function page(opts) {
     /* the application: the real members and the real start of setSettings + its performanceMode case */
     vm.runInContext('var application = ({' + ownSrc +
         'setSettings(id, checked) {\n' + headSrc + 'switch (id) {\n' + caseSrc + "this.saveSettings(defaultmapsettings, 'ogarioSettings');\n}\n}," +
-        'saveSettings(o, n) { localStorage.setItem(n, JSON.stringify(o)); }, setAnimatedRainbowColor() { }, applyHudBlur() { } });\nthis.application = application;', ctx);
+        'saveSettings(o, n) { localStorage.setItem(n, JSON.stringify(o)); }, setAnimatedRainbowColor() { } });\nthis.application = application;', ctx);
     if (opts.boxes) opts.boxes.forEach((k) => {
         /* only a bubbling change reaches the settings handler; one that does not bubble moves the Switchery */
         boxes[k] = { type: 'checkbox', inMenu: true, checked: !!ctx.defaultmapsettings[k], moves: 0, dispatchEvent(e) { if (e && e.bubbles) ctx.application.setSettings(k, this.checked); else this.moves++; } };
@@ -98,13 +98,12 @@ function page(opts) {
     const S = ctx.defaultmapsettings, A = ctx.application;
     const backup = () => { const t = store.lmPerfBackup; return t ? JSON.parse(t) : null; };
     const user = (id, v) => A.setSettings(id, v);           /* a switch or a hotkey */
-    const slider = (id, v) => { S[id] = v; };                /* a slider / script: no setSettings */
     const preset = (id) => ctx._lmPresetRow.h['click .lm-preset-btn'].call({ dataset: { 'data-preset': id } });
     const undo = () => ctx._lmUndoBtn.h.click();
     const frames = (n, dt, r) => { for (let i = 0; i < n; i++) { ctx._t = (ctx._t || 1) + dt; ctx._lmPerfFrame(ctx._t, ctx._t + r); } };
-    return { ctx, S, A, store, toasts, confirms, backup, user, slider, preset, undo, frames, overlays, boxes };
+    return { ctx, S, A, store, toasts, confirms, backup, user, preset, undo, frames, overlays, boxes };
 }
-const ON = { jellyPhisycs: true, videoSkins: true, highDPI: true, showBgSectors: true, animatedRainbowColor: true, borderGlow: true, suckAnimation: true, eatPulse: true, glAntialias: true, hudBlur: 3 };
+const ON = { jellyPhisycs: true, videoSkins: true, highDPI: true, showBgSectors: true, animatedRainbowColor: true, borderGlow: true, suckAnimation: true, eatPulse: true, glAntialias: true };
 const KEYS = Object.keys(ON);
 const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
 
@@ -119,7 +118,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
 {
     const p = page({ settings: ON });
     p.user('performanceMode', true);
-    check('mode on: all costly effects off, the copy holds the player\'s values', KEYS.every((k) => p.S[k] === (k === 'hudBlur' ? 0 : false)) && JSON.stringify(p.backup()) === JSON.stringify(ON));
+    check('mode on: all costly effects off, the copy holds the player\'s values', KEYS.every((k) => p.S[k] === false) && JSON.stringify(p.backup()) === JSON.stringify(ON));
     p.user('performanceMode', false);
     check('mode off: every value back', vals(p.S) === vals(ON) && p.store.lmPerfBackup === undefined);
 }
@@ -130,16 +129,15 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     p.user('performanceMode', true);
     p.user('jellyPhisycs', true);        /* switch on again */
     p.user('borderGlow', true); p.user('borderGlow', false); /* on and off again: off is the choice */
-    p.slider('hudBlur', 5);              /* the HUD blur slider (no setSettings) */
     check('a switch set while on leaves the copy', p.backup() && !('jellyPhisycs' in p.backup()) && !('borderGlow' in p.backup()) && p.backup().videoSkins === true);
     p.user('performanceMode', false);
-    check('mode off: hand changes kept (jelly on, glow off, blur 5)', p.S.jellyPhisycs === true && p.S.borderGlow === false && p.S.hudBlur === 5);
+    check('mode off: hand changes kept (jelly on, glow off)', p.S.jellyPhisycs === true && p.S.borderGlow === false);
     check('mode off: the untouched settings come back', p.S.videoSkins === true && p.S.highDPI === true && p.S.suckAnimation === true && p.S.glAntialias === true);
 }
 
 /* 3. the mode's own changes (and the checkbox events they cause) are not hand changes */
 {
-    const p = page({ settings: ON, boxes: KEYS.filter((k) => k !== 'hudBlur') });
+    const p = page({ settings: ON, boxes: KEYS });
     p.user('performanceMode', true);
     check('mode on through the switches: the copy is complete', JSON.stringify(p.backup()) === JSON.stringify(ON));
     p.user('performanceMode', false);
@@ -150,7 +148,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
 {
     const p = page({ settings: Object.assign({}, ON, { adaptivePerf: true }) });
     p.ctx.LMPerf._setLevel(2);
-    check('adaptive level 2 lowered effects for now', p.S.jellyPhisycs === false && p.S.suckAnimation === false && p.S.hudBlur === 0);
+    check('adaptive level 2 lowered effects for now', p.S.jellyPhisycs === false && p.S.suckAnimation === false);
     p.user('performanceMode', true);
     check('mode on during level 2: the copy has the player\'s values, not the lowered ones', JSON.stringify(p.backup()) === JSON.stringify(ON));
     /* while on: the player turns jelly on while level 2 is on: the player's choice, kept */
@@ -170,11 +168,11 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
 {
     const p = page({ settings: ON });
     p.user('performanceMode', true);
-    p.preset('battery');                 /* sets jelly, video skins, rainbow, glow, suck off, blur 0 */
-    check('preset over the mode: its keys leave the copy', !['jellyPhisycs', 'videoSkins', 'animatedRainbowColor', 'borderGlow', 'suckAnimation', 'hudBlur', 'highDPI', 'showBgSectors'].some((k) => k in p.backup()) &&
+    p.preset('battery');                 /* sets jelly, video skins, rainbow, glow, suck off */
+    check('preset over the mode: its keys leave the copy', !['jellyPhisycs', 'videoSkins', 'animatedRainbowColor', 'borderGlow', 'suckAnimation', 'highDPI', 'showBgSectors'].some((k) => k in p.backup()) &&
         p.backup().glAntialias === true && p.backup().eatPulse === true);
     p.user('performanceMode', false);
-    check('mode off after a preset: the preset values stay, the rest comes back', p.S.jellyPhisycs === false && p.S.videoSkins === false && p.S.hudBlur === 0 &&
+    check('mode off after a preset: the preset values stay, the rest comes back', p.S.jellyPhisycs === false && p.S.videoSkins === false &&
         p.S.highDPI === false && p.S.showBgSectors === false && p.S.eatPulse === true && p.S.glAntialias === true);
     /* the preset Undo has the values from before the preset: the mode's (they were in place) */
     p.user('performanceMode', true);
@@ -188,10 +186,10 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     p.ctx.LMPerf._setLevel(2);
     p.preset('battery');
     const snap = JSON.parse(p.store.lmPresetUndo);
-    check('preset Undo snapshot: the player\'s values, not the lowered ones', snap.jellyPhisycs === true && snap.suckAnimation === true && snap.hudBlur === 3);
+    check('preset Undo snapshot: the player\'s values, not the lowered ones', snap.jellyPhisycs === true && snap.suckAnimation === true);
     p.undo();
     p.ctx.LMPerf._setLevel(0);
-    check('Undo then adaptive back to 0: the player\'s values', p.S.jellyPhisycs === true && p.S.suckAnimation === true && p.S.hudBlur === 3);
+    check('Undo then adaptive back to 0: the player\'s values', p.S.jellyPhisycs === true && p.S.suckAnimation === true);
 }
 
 /* 7. a settings profile applied while the mode is on (its own copy), then the mode off */
@@ -215,7 +213,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     const p = page({ settings: JSON.parse(first.store.ogarioSettings), store: { lmPerfBackup: first.store.lmPerfBackup } });
     p.user('showBgSectors', true);
     p.user('performanceMode', false);
-    check('after a reload: hand change kept, the rest back', p.S.showBgSectors === true && p.S.jellyPhisycs === true && p.S.hudBlur === 3);
+    check('after a reload: hand change kept, the rest back', p.S.showBgSectors === true && p.S.jellyPhisycs === true);
 }
 
 /* 9. storage full: the copy in memory follows the same rules */
@@ -291,7 +289,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     p.ctx.LMPerf.onSetting('performanceMode', false);
     p.ctx.LMPerf.onSetting('performanceMode');
     p.user('performanceMode', false);
-    check('the same Performance mode value again: the effects Adaptive performance lowered stay lowered', p.S.jellyPhisycs === false && p.S.suckAnimation === false && p.S.hudBlur === 0 &&
+    check('the same Performance mode value again: the effects Adaptive performance lowered stay lowered', p.S.jellyPhisycs === false && p.S.suckAnimation === false &&
         p.ctx.LMPerf.userValue('jellyPhisycs') === true);
     /* a key that was off when its level came, turned on by hand (hotkey) while that level is on: kept, as a lowered key the player changes */
     const q = page({ settings: Object.assign({}, ON, AD, { showBgSectors: false, videoSkins: false }) });
@@ -313,7 +311,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     r.ctx.LMPerf._setLevel(1);
     check('a key turned on before its level: lowered for now when the level comes', r.S.eatPulse === false && r.ctx.LMPerf.userValue('eatPulse') === true);
     /* the mode on again while it is on (a script): nothing switches, the lowered values stay lowered */
-    const m = page({ settings: Object.assign({}, ON, AD, { performanceMode: true }), boxes: KEYS.filter((k) => k !== 'hudBlur') });
+    const m = page({ settings: Object.assign({}, ON, AD, { performanceMode: true }), boxes: KEYS });
     m.ctx.LMPerf._setLevel(2);
     m.user('performanceMode', true);
     check('Performance mode on again during level 2: no copy of lowered values, they stay lowered', m.backup() === null && m.S.jellyPhisycs === false && m.ctx.LMPerf.userValue('jellyPhisycs') === true);
@@ -331,7 +329,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     p.ctx.LMPerf.onSetting = function (k, v) { asked[k] = (asked[k] || 0) + 1; return realOn.call(this, k, v); };
     p.preset('battery');
     const keys = Object.keys(p.A.lmPresets.battery.set).filter((k) => k in p.S);
-    check('preset: every key asks the mode\'s copy and Adaptive performance once (switch, same value, slider, other)', keys.every((k) => own[k] === 1 && asked[k] === 1) ||
+    check('preset: every key asks the mode\'s copy and Adaptive performance once (switch, same value, other)', keys.every((k) => own[k] === 1 && asked[k] === 1) ||
         (console.log('   own ' + JSON.stringify(own) + ' asked ' + JSON.stringify(asked)), false));
     check('preset: its keys left the mode\'s copy, also the one already at its value', p.backup() && !('highDPI' in p.backup()) && !('jellyPhisycs' in p.backup()) && p.backup().eatPulse === true);
 }
@@ -384,7 +382,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     p.user('performanceMode', true);
     p.user('jellyPhisycs', true);
     p.user('performanceMode', false);
-    check('no perf.js: hand change kept, the rest back', p.S.jellyPhisycs === true && p.S.videoSkins === true && p.S.hudBlur === 3);
+    check('no perf.js: hand change kept, the rest back', p.S.jellyPhisycs === true && p.S.videoSkins === true);
 }
 
 /* 13. the mode acts on a real change only: a second "on" (a script) kept the copy of the
@@ -404,15 +402,14 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     const hkSrc = fs.readFileSync(path.join(ROOT, 'ogario', 'hotkeysCommand.js'), 'utf8').replace(/\r\n/g, '\n');
     const hi = hkSrc.indexOf("'hk-performanceMode': {"), hj = hkSrc.indexOf("'hk-mergeRings'", hi);
     [true, false].forEach((menu) => {
-        const p = page({ settings: ON, boxes: menu ? KEYS.filter((k) => k !== 'hudBlur').concat('performanceMode') : [] });
+        const p = page({ settings: ON, boxes: menu ? KEYS.concat('performanceMode') : [] });
         const hk = vm.runInContext('({' + hkSrc.slice(hi, hj) + '})', p.ctx)['hk-performanceMode'];
         const w = menu ? 'hotkey (switch in the menu)' : 'hotkey (no menu)';
         hk.keyDown();
         check(w + ' on: effects off, the copy holds the player\'s values', p.S.performanceMode === true && p.S.jellyPhisycs === false && JSON.stringify(p.backup()) === JSON.stringify(ON) &&
             (!menu || p.boxes.performanceMode.checked === true && p.boxes.performanceMode.moves === 1));
-        p.slider('hudBlur', 5);
         hk.keyDown();
-        check(w + ' off: the values back, the blur set meanwhile kept', p.S.performanceMode === false && p.S.jellyPhisycs === true && p.S.videoSkins === true && p.S.hudBlur === 5 &&
+        check(w + ' off: the values back', p.S.performanceMode === false && p.S.jellyPhisycs === true && p.S.videoSkins === true &&
             (!menu || p.boxes.performanceMode.checked === false && p.boxes.performanceMode.moves === 2));
     });
 }
