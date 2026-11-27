@@ -44154,8 +44154,9 @@ function thelegendmodproject() {
                     /* Server-space view centre (viewXTrue is client space; mirrored maps differ). */
                     var _viewServerX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue;
                     var _viewServerY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue;
-                    /* "Freeze inactive multibox unit" also holds the inactive main player. */
-                    if (defaultmapsettings.multiKeepMoving && !defaultmapsettings.mbFreeze && Number.isFinite(this.distX) && Number.isFinite(this.distY)) {
+                    /* "Freeze inactive multibox unit" also holds the inactive main player, and so does
+                     * Pause (the unit holds on Pause too, spect.js sendCursor): it kept running. */
+                    if (!this.pause && defaultmapsettings.multiKeepMoving && !defaultmapsettings.mbFreeze && Number.isFinite(this.distX) && Number.isFinite(this.distY)) {
                         //cursorX = this.playerX + this.distX;
                         //cursorY = this.playerY + this.distY;
                         cursorX = _viewServerX + this.distX;
