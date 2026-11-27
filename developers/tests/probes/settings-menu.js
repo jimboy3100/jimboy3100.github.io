@@ -98,8 +98,10 @@
     var Dc = window.LMDiscovery && LMDiscovery.core;
     if (!Dc || typeof Dc.capValue !== 'function') fail.push('no Discover support table');
     else {
-      var cv0 = Dc.capValue, st0 = Dc.serverTypeOf, spWhy = function () { return String($('#splitPrediction').closest('label').attr('data-lm-why') || ''); };
+      var cv0 = Dc.capValue, st0 = Dc.serverTypeOf, ct0 = defaultmapsettings.cursorTracking, spWhy = function () { return String($('#splitPrediction').closest('label').attr('data-lm-why') || ''); };
       try {
+        /* Split prediction also needs Cursor tracking: that note comes first while it is off */
+        defaultmapsettings.cursorTracking = true;
         Dc.capValue = function () { return 'n'; };
         Dc.serverTypeOf = function () { return 'senpa'; };
         application._lmDepRefresh();
@@ -108,7 +110,10 @@
         Dc.serverTypeOf = function () { return 'private'; };
         application._lmDepRefresh();
         if (spWhy() !== application._lmMenuText('lmDepServer') + ' (' + lmT('modules.discovery.type.private') + ')') fail.push('private server note: ' + spWhy());
-      } finally { Dc.capValue = cv0; Dc.serverTypeOf = st0; application._lmDepRefresh(); }
+        defaultmapsettings.cursorTracking = false;
+        application._lmDepRefresh();
+        if (spWhy().indexOf(application._lmMenuText('lmDepNeeds')) !== 0) fail.push('split prediction without cursor tracking: ' + spWhy());
+      } finally { Dc.capValue = cv0; Dc.serverTypeOf = st0; defaultmapsettings.cursorTracking = ct0; application._lmDepRefresh(); }
     }
     // the Game Over card is one switch: no switch per part of it
     ['massGraph', 'showKiller', 'deathRecap'].forEach(function (k) {

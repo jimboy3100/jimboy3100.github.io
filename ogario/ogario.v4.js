@@ -27290,7 +27290,12 @@ function thelegendmodproject() {
                     companionLive: ['companionChat'],
                     recordReplays: ['instantReplaySecs'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
-                    massLossAlert: ['massLossPct']
+                    massLossAlert: ['massLossPct'],
+                    /* Settings > Helpers: the bubble style of the opponent rings, the dimming of the
+                     * cursor lines and the ghost cells' skins and nicks are drawn only with these on */
+                    oppRings: ['bubbleInd'],
+                    cursorTracking: ['splitPrediction'],
+                    showGhostCells: ['showGhostCellsInfo']
                 };
                 /* option -> row of the Discovery support table (ogario/modules/discovery.js) */
                 var SRV = { hudMergeCountdown: 'mergeCountdown', hudMergeSound: 'mergeCountdown', splitPrediction: 'splitPrediction', recordReplays: 'replays', instantReplaySecs: 'replays' };
