@@ -4,12 +4,12 @@
  * "gamepadEnabled" is ignored (old profiles and imports may still have it).
  * The buttons are bound in the Hotkeys window like keys and mouse buttons: a key field takes a
  * pad button pressed while it has the focus ('PAD A' ... next to its key), Save keeps it, Close
- * undoes it, Restore gives the default buttons. Stick sensitivity, triggers, inverted axes,
- * vibration and the live test are in the Gamepad window (Hotkeys window > Gamepad;
- * ogario/modules/gamepad-ui.js, loaded the first time it opens). Named gamepad setups are
+ * undoes it, Restore gives the default buttons. Stick sensitivity, triggers and the live test
+ * are in the Gamepad window (Hotkeys window > Gamepad; ogario/modules/gamepad-ui.js, loaded the
+ * first time it opens). Named gamepad setups are
  * Settings profiles (gamepad-only ones, ogario/modules/profiles.js).
- * The button map is kept in localStorage 'lmGamepad' (JSON, checked on load); the sliders and
- * toggles are ordinary gameplay settings (gamepad* in defaultmapsettings).
+ * The button map is kept in localStorage 'lmGamepad' (JSON, checked on load); the sliders
+ * are ordinary gameplay settings (gamepad* in defaultmapsettings).
  */
 (function () {
     'use strict';
@@ -58,19 +58,15 @@
     var MENU_ACTIONS = { menu: 1, 'hk-quickResp': 1 };
     var STORE_KEY = 'lmGamepad';
     var MAX_PROFILES = 20;
-    /* the tuning settings: [min, max, default] for numbers, the default for toggles. The
+    /* the tuning settings: [min, max, default]. The
      * defaults give the behaviour from before they existed (stick range 0.45 of the screen,
-     * linear, zoom 24 per step, triggers at half way, no vibration). */
+     * linear, zoom 24 per step, triggers at half way). The sticks and the zoom are never inverted. */
     var OPTS = {
         gamepadDeadzone: [0.05, 0.5, 0.2],
         gamepadMoveRange: [0.15, 1, 0.45],
         gamepadMoveCurve: [0.5, 3, 1],
         gamepadZoomSens: [0.2, 4, 1],
-        gamepadTrigger: [0.1, 0.95, 0.5],
-        gamepadInvertX: false,
-        gamepadInvertY: false,
-        gamepadInvertZoom: false,
-        gamepadVibrate: false
+        gamepadTrigger: [0.1, 0.95, 0.5]
     };
 
     var running = false;
@@ -79,7 +75,6 @@
     var lastMove = null;
     var lastZoomAt = 0;
     var announced = {};
-    var lastPadIndex = -1;   // pad that pressed a button last (vibration on death)
     var suspended = false;   // the Gamepad window is open: buttons are tested there, not used
     var map = null;          // current button map (from storage, else the defaults)
     /* the named profiles of older versions ({ name, map, opts }): only kept in storage until
@@ -127,7 +122,6 @@
     function cleanOpt(k, v) {
         if (!hasOwn(OPTS, k)) return undefined;
         var d = OPTS[k];
-        if (typeof d === 'boolean') return typeof v === 'boolean' ? v : undefined;
         if (typeof v !== 'number' || !isFinite(v)) return undefined;
         /* the settings schema of the core (range and slider step), so a value set here is the
          * one the menu slider shows and the next load keeps */
@@ -224,7 +218,7 @@
         var s = settings();
         var v = s ? cleanOpt(k, s[k]) : undefined;
         if (v !== undefined) return v;
-        return typeof OPTS[k] === 'boolean' ? OPTS[k] : OPTS[k][2];
+        return OPTS[k][2];
     }
 
     function currentOpts() {
@@ -244,7 +238,6 @@
             if (a && a.saveSettings) a.saveSettings(s, 'ogarioSettings');
         } catch (e) { }
         /* (the dead zone slider is only in the Gamepad window, not in the menu) */
-        watchDeath();
     }
 
     function pads() {
@@ -339,35 +332,6 @@
         return window.application || null;
     }
 
-    function canVibrate(pad) {
-        return !!(pad && ((pad.vibrationActuator && typeof pad.vibrationActuator.playEffect === 'function') ||
-            (pad.hapticActuators && pad.hapticActuators[0] && typeof pad.hapticActuators[0].pulse === 'function')));
-    }
-
-    /* short rumble where the browser and the pad have one; only with the option on, except
-     * the window's test button (force) */
-    function rumble(pad, ms, strength, force) {
-        if (!pad || (!force && !opt('gamepadVibrate'))) return false;
-        try {
-            var a = pad.vibrationActuator;
-            var r = null;
-            if (a && typeof a.playEffect === 'function') {
-                r = a.playEffect('dual-rumble', { startDelay: 0, duration: ms, strongMagnitude: strength, weakMagnitude: strength });
-            } else if (pad.hapticActuators && pad.hapticActuators[0] && typeof pad.hapticActuators[0].pulse === 'function') {
-                r = pad.hapticActuators[0].pulse(strength, ms);
-            } else return false;
-            if (r && typeof r.catch === 'function') r.catch(function () { });
-            return true;
-        } catch (e) { }
-        return false;
-    }
-
-    function padByIndex(i) {
-        var list = pads();
-        for (var p = 0; p < list.length; p++) if (list[p].index === i) return list[p];
-        return list[0] || null;
-    }
-
     function isSplit(action) {
         return /^hk-/.test(action) && /split/i.test(action) && !/^hk-show/.test(action);
     }
@@ -449,7 +413,7 @@
 
     /* stick (x, y) -> offset from the screen centre as a part of the stick range (-1..1 each),
      * or null inside the dead zone. Curve 1 is linear; above 1 small tilts move less. */
-    function stickOffset(x, y, dz, curve, invX, invY) {
+    function stickOffset(x, y, dz, curve) {
         x = Number(x) || 0;
         y = Number(y) || 0;
         var m = Math.sqrt(x * x + y * y);
@@ -457,7 +421,7 @@
         var t = Math.min(1, (m - dz) / (1 - dz));
         if (curve !== 1) t = Math.pow(t, curve);
         var k = t / m;
-        return [(invX ? -x : x) * k, (invY ? -y : y) * k];
+        return [x * k, y * k];
     }
 
     /* dead zone for a stick that drifts this far at rest: the drift plus a margin, rounded up to
@@ -478,7 +442,7 @@
 
     function frame() {
         var list = pads();
-        if (!list.length) { running = false; release(); watchDeath(); return; }
+        if (!list.length) { running = false; release(); return; }
         if (!map) load();
         var off = away() || suspended;
         /* a key field of the Hotkeys window has the focus: a pressed button is bound to its command */
@@ -508,21 +472,18 @@
                 if (!action || action === 'none') continue;
                 if (/^hk-/.test(action) && isHold(action)) {
                     if (isDown && !blockGame) holdWanted[action] = true;
-                    if (isDown && !was) lastPadIndex = pad.index;
                     continue;
                 }
                 if (!isDown || was) continue; // edge trigger
                 if (blockAll) continue;
                 if (blockGame && !MENU_ACTIONS[action]) continue;
-                lastPadIndex = pad.index;
                 run(action);
-                if (isSplit(action)) rumble(pad, 60, 0.4);
             }
             var dz = deadZone();
             var axes = pad.axes || [];
             if (!blockGame && !moved) {
                 /* released stick: no event, the cell keeps the last direction (like mobile) */
-                var o = stickOffset(axes[AXIS_MOVE_X], axes[AXIS_MOVE_Y], dz, opt('gamepadMoveCurve'), opt('gamepadInvertX'), opt('gamepadInvertY'));
+                var o = stickOffset(axes[AXIS_MOVE_X], axes[AXIS_MOVE_Y], dz, opt('gamepadMoveCurve'));
                 if (o) {
                     var r = Math.min(window.innerWidth, window.innerHeight) * opt('gamepadMoveRange');
                     var px = window.innerWidth / 2 + o[0] * r, py = window.innerHeight / 2 + o[1] * r;
@@ -540,7 +501,7 @@
                     if (Math.abs(z) > dz && now - lastZoomAt >= ZOOM_INTERVAL) {
                         lastZoomAt = now;
                         zoomed = true;
-                        wheel((opt('gamepadInvertZoom') ? -z : z) * ZOOM_STRENGTH * opt('gamepadZoomSens'));
+                        wheel(z * ZOOM_STRENGTH * opt('gamepadZoomSens'));
                     }
                 }
             }
@@ -576,7 +537,6 @@
     function start() {
         if (running || !pads().length) return;
         running = true;
-        watchDeath();
         requestAnimationFrame(frame);
     }
 
@@ -590,23 +550,6 @@
         var pre = e.gamepad.index + ':';
         for (var k in prevPressed) if (k.indexOf(pre) === 0) delete prevPressed[k];
     });
-    /* vibration on death (option, off by default). Listens only while the option is on and a
-     * pad is read: the game skips building an event nobody listens to. */
-    var deathOn = false;
-    function onDeath() {
-        if (!suspended && pads().length) rumble(padByIndex(lastPadIndex), 300, 0.8);
-    }
-    function watchDeath() {
-        var want = running && opt('gamepadVibrate');
-        if (want === deathOn) return;
-        try {
-            var E = window.LMEvents;
-            if (!E || typeof E.on !== 'function') return;
-            if (want) E.on('death', onDeath); else E.off('death', onDeath);
-            deathOn = want;
-        } catch (e) { }
-    }
-
     /* a pad already connected when this file loaded (no polling: gamepadconnected starts the
      * loop for any pad connected later) */
     start();
@@ -733,7 +676,7 @@
         setOpts: applyOpts,
         resetOpts: function () {
             var o = {};
-            for (var k in OPTS) o[k] = typeof OPTS[k] === 'boolean' ? OPTS[k] : OPTS[k][2];
+            for (var k in OPTS) o[k] = OPTS[k][2];
             applyOpts(o);
         },
         /* Gamepad window open: the buttons are only shown there, not used in the game */
@@ -747,8 +690,6 @@
         /* true while a button holds this hotkey command */
         isHeld: function (id) { return !!(hasOwn(holdActive, id) && holdActive[id]); },
         suggestDeadzone: suggestDeadzone,
-        testRumble: function (pad) { return rumble(pad, 250, 0.7, true); },
-        canVibrate: canVibrate,
         pads: pads,
         openWindow: openWindow,
         /* checks and pure helpers (developers/tests/gamepad.js) */

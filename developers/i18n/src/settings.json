@@ -1835,24 +1835,6 @@
     "ja": "スティッキーセル（左クリック、右ボタン長押し）",
     "it": "Cellule adesive (tasto sinistro, tieni premuto il destro)"
   },
-  "settings.gamepadEnabled": {
-    "en": "Gamepad / controller support",
-    "el": "Υποστήριξη gamepad / χειριστηρίου",
-    "es": "Soporte para gamepad / mando",
-    "bg": "Поддръжка на геймпад / контролер",
-    "fr": "Prise en charge manette",
-    "ar": "دعم ذراع التحكم / وحدة التحكم",
-    "zh": "遊戲手把 / 控制器支援",
-    "ru": "Поддержка геймпада / контроллера",
-    "de": "Gamepad-/Controller-Unterstützung",
-    "tr": "Gamepad / kontrolcü desteği",
-    "pl": "Obsługa gamepada / kontrolera",
-    "nl": "Gamepad- / controllerondersteuning",
-    "pt": "Suporte a gamepad / controle",
-    "id": "Dukungan gamepad / kontroler",
-    "ja": "ゲームパッド / コントローラー対応",
-    "it": "Supporto gamepad / controller"
-  },
   "settings.gamepadDeadzone": {
     "en": "Gamepad stick dead zone",
     "el": "Νεκρή ζώνη μοχλού gamepad",

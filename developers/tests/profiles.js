@@ -606,7 +606,7 @@ function bootApply() {
   const oldPad = {
     v: 1, map: { 0: 'hk-tripleSplit', 1: 'feed' },
     profiles: [
-      { name: 'Phone', map: { 0: 'hk-tripleSplit', 1: 'feed', 2: '<x>' }, opts: { gamepadMoveRange: 0.7, gamepadVibrate: true, gamepadEnabled: true, nope: 1 } },
+      { name: 'Phone', map: { 0: 'hk-tripleSplit', 1: 'feed', 2: '<x>' }, opts: { gamepadMoveRange: 0.7, gamepadMoveCurve: 2, gamepadVibrate: true, gamepadEnabled: true, nope: 1 } },
       { name: 'Xbox', map: { 0: 'split' }, opts: { gamepadDeadzone: 9 } },
       { name: '', map: {} }, 'junk'
     ]
@@ -619,7 +619,7 @@ function bootApply() {
   check('gamepad migration: both named gamepad profiles became gamepad-only Settings profiles, the own one kept', n === 2 && list.length === 3 && list[0].id === 'p1' && pads.length === 2);
   check('gamepad migration: a name a full profile has gets a number', pads[0].name === 'Phone 2' && pads[1].name === 'Xbox');
   check('gamepad migration: buttons and tuning carried, unusable values dropped', pads[0].data.gp.map[0] === 'hk-tripleSplit' && pads[0].data.gp.map[1] === 'feed' && !('2' in pads[0].data.gp.map) &&
-    pads[0].data.s.gamepadMoveRange === 0.7 && pads[0].data.s.gamepadVibrate === true && !('gamepadEnabled' in pads[0].data.s) && Object.keys(pads[0].data).sort().join() === 'gp,s');
+    pads[0].data.s.gamepadMoveRange === 0.7 && pads[0].data.s.gamepadMoveCurve === 2 && !('gamepadVibrate' in pads[0].data.s) && !('gamepadEnabled' in pads[0].data.s) && Object.keys(pads[0].data).sort().join() === 'gp,s');
   check('gamepad migration: a value out of range is fitted (as the slider would)', pads[1].data.s.gamepadDeadzone === 0.5);
   const after = JSON.parse(e.ls.getItem('lmGamepad'));
   check('gamepad migration: the list leaves lmGamepad, the current buttons stay, the pad reads them again', !('profiles' in after) && J(after.map) === J(oldPad.map) && e.calls.indexOf('gp-reload') >= 0);
@@ -628,22 +628,22 @@ function bootApply() {
   e.ls.setItem('lmGamepad', J(oldPad));
   check('gamepad migration: names already moved are not added twice', PC.migrateGamepadProfiles() === 0 && JSON.parse(e.ls.getItem('lmSettingsProfiles')).length === 3 && !('profiles' in JSON.parse(e.ls.getItem('lmGamepad'))));
   /* applying a gamepad profile changes the buttons and the tuning, nothing else */
-  e.S.gamepadMoveRange = 0.45; e.S.gamepadVibrate = false;
+  e.S.gamepadMoveRange = 0.45; e.S.gamepadMoveCurve = 1;
   e.ls.setItem('lmGamepad', J({ v: 1, map: { 0: 'split' } }));
   const showMass = e.S.showMass;
   e.calls.length = 0;
   const r = e.P.applyById(pads[0].id);
-  check('gamepad profile: applied, only the gamepad changes', !!r && e.S.gamepadMoveRange === 0.7 && e.S.gamepadVibrate === true && e.S.showMass === showMass &&
+  check('gamepad profile: applied, only the gamepad changes', !!r && e.S.gamepadMoveRange === 0.7 && e.S.gamepadMoveCurve === 2 && e.S.showMass === showMass &&
     JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'hk-tripleSplit' && e.calls.indexOf('gp-release') >= 0);
   check('gamepad profile: the message names the tuning as the Gamepad window does', /Movement range/.test(e.toasts[e.toasts.length - 1][1]));
   e.P.undo();
-  check('gamepad profile: Undo puts the tuning and the buttons back', e.S.gamepadMoveRange === 0.45 && e.S.gamepadVibrate === false && JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'split');
+  check('gamepad profile: Undo puts the tuning and the buttons back', e.S.gamepadMoveRange === 0.45 && e.S.gamepadMoveCurve === 1 && JSON.parse(e.ls.getItem('lmGamepad')).map[0] === 'split');
   /* capture: the current buttons and tuning only, without the old list */
   e.ls.setItem('lmGamepad', J({ v: 1, map: { 3: 'hk-feed' }, profiles: [] }));
   e.S.gamepadZoomSens = 2;
   const g = PC.captureGamepad();
   check('gamepad profile: saving takes the buttons and every tuning setting, nothing else', g.gp.map[3] === 'hk-feed' && !('profiles' in g.gp) && g.s.gamepadZoomSens === 2 &&
-    Object.keys(g.s).every(k => /^gamepad[A-Z]/.test(k) && k !== 'gamepadEnabled') && Object.keys(g.s).length === 9 && !g.t && !g.h);
+    Object.keys(g.s).every(k => /^gamepad[A-Z]/.test(k) && k !== 'gamepadEnabled') && Object.keys(g.s).length === 5 && !g.t && !g.h);
   check('a full capture leaves the old gamepad list out too', !('profiles' in (PC.captureCurrent().gp || {})));
   check('gamepad-only kept on read', C.cleanProfiles([{ id: 'g', name: 'G', data: { gp: { v: 1, map: {} } }, only: 'gp' }, { id: 'h', name: 'H', data: { gp: { v: 1, map: {} } }, only: 'x' }]).map(p => p.only || '-').join() === 'gp,-');
 }

@@ -16,23 +16,5 @@
     "id": "Jendela Analitik (beserta riwayat permainan) gagal dimuat. Periksa koneksimu lalu coba lagi.",
     "ja": "分析ウィンドウ（試合履歴を含む）を読み込めませんでした。接続を確認して、もう一度お試しください。",
     "it": "Impossibile caricare la finestra Statistiche (con la cronologia delle partite). Controlla la connessione e riprova."
-  },
-  "pkg.hf.shareAgain": {
-    "en": "Sharing did not work here. Tap Share again to try another way.",
-    "el": "Η κοινοποίηση δεν λειτούργησε εδώ. Πάτησε ξανά «Κοινοποίηση» για να δοκιμάσεις άλλον τρόπο.",
-    "es": "No se pudo compartir aquí. Toca Compartir otra vez para probar de otra forma.",
-    "bg": "Споделянето не се получи тук. Натисни „Сподели“ отново, за да опиташ по друг начин.",
-    "fr": "Le partage n'a pas fonctionné ici. Touche Partager à nouveau pour essayer autrement.",
-    "ar": "لم تنجح المشاركة هنا. اضغط مشاركة مرة أخرى لتجربة طريقة أخرى.",
-    "zh": "這裡無法分享。再點一次「分享」以改用其他方式。",
-    "ru": "Поделиться здесь не получилось. Нажми «Поделиться» ещё раз, чтобы попробовать иначе.",
-    "de": "Teilen hat hier nicht geklappt. Tippe noch einmal auf Teilen, um es anders zu versuchen.",
-    "tr": "Paylaşım burada olmadı. Başka bir yol denemek için Paylaş'a tekrar dokun.",
-    "pl": "Udostępnianie tu nie zadziałało. Stuknij Udostępnij jeszcze raz, aby spróbować inaczej.",
-    "nl": "Delen lukte hier niet. Tik nog eens op Delen om het op een andere manier te proberen.",
-    "pt": "Não deu para compartilhar aqui. Toque em Compartilhar de novo para tentar de outro jeito.",
-    "id": "Berbagi tidak berhasil di sini. Ketuk Bagikan lagi untuk mencoba cara lain.",
-    "ja": "ここでは共有できませんでした。もう一度「共有」をタップすると別の方法で試します。",
-    "it": "Qui la condivisione non ha funzionato. Tocca di nuovo Condividi per provare in un altro modo."
   }
 }

@@ -1,5 +1,5 @@
 /* Gamepad checks: runs ogario/gamepad.js against simulated controllers (lifecycle, button map,
- * held hotkeys, inverted axes, trigger threshold, profile and storage validation, the buttons
+ * held hotkeys, never inverted axes, no vibration, trigger threshold, profile and storage validation, the buttons
  * bound in the Hotkeys window and the old own actions read as their hotkey commands).
  * node developers/tests/gamepad.js */
 const fs=require('fs'),vm=require('vm');
@@ -101,12 +101,13 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('suspended: a press held from the window does not fire on close',!c.calls.includes('split'));
   c.G.setButton(1,'hk-macroFeed');c.pads=[gp({1:true})];c.step();c.pads=[gp()];c.step();
   check('hold: hk-macroFeed on a button is held, then released',c.calls.join().indexOf('mf:down,mf:up')>=0&&!c.calls.includes('feed:true')); }
+/* the sticks are never inverted: a saved gamepadInvertX / Y (removed option) changes nothing */
 { const c=page({settings:{gamepadInvertX:true,gamepadInvertY:true}});
   c.pads=[gp({},[1,0.5,0,0])];c.go();
   const p=c.moves[c.moves.length-1];
-  check('invert: X and Y mirrored around the centre',!!p&&p[0]<500&&p[1]<400);
+  check('not inverted: right and down stay right and down with an old saved invert',!!p&&p[0]>500&&p[1]>400);
   const d=page();d.pads=[gp({},[1,0.5,0,0])];d.go();const q=d.moves[d.moves.length-1];
-  check('invert off: same distance, other side',!!q&&Math.abs((q[0]-500)+(p[0]-500))<1e-6&&Math.abs((q[1]-400)+(p[1]-400))<1e-6);
+  check('not inverted: same place as without the old value',!!q&&Math.abs(q[0]-p[0])<1e-6&&Math.abs(q[1]-p[1])<1e-6);
   const r=page({settings:{gamepadMoveRange:0.9}});r.pads=[gp({},[1,0,0,0])];r.go();
   check('move range: full tilt at 0.9 of the screen height',Math.abs(r.moves[0][0]-(500+800*0.9))<1e-6);
   const e=page();e.pads=[gp({},[1,0,0,0])];e.go();
@@ -117,7 +118,7 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 { const z=page({settings:{gamepadInvertZoom:true,gamepadZoomSens:2}});z.pads=[gp({},[0,0,0,1])];z.go();
   const y=page();y.pads=[gp({},[0,0,0,1])];y.go();
   check('zoom: default 24 per step',y.wheels[0]===24);
-  check('zoom: inverted and twice as fast',z.wheels[0]===-48); }
+  check('zoom: not inverted by an old saved value, twice as fast',z.wheels[0]===48); }
 { const c=page();c.G.setButton(6,'hk-tripleSplit');
   const n=()=>c.calls.filter(x=>x==='triple').length;
   c.pads=[gp({6:0.3})];c.go();c.step();
@@ -135,7 +136,7 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('validate: bad map entries keep their default',bad.map[0]==='hk-split'&&bad.map[1]==='hk-macroFeed'&&bad.map[2]==='hk-doubleSplit'&&bad.map[3]==='hk-ok'&&bad.map[4]==='none'&&!(99 in bad.map));
   const p0=bad.profiles[0];
   check('validate: names cleaned, duplicates and unusable profiles dropped',bad.profiles.length===2&&p0.name==='My pad'&&bad.profiles[1].name.length===32);
-  check('validate: opts clamped, wrong types and unknown keys dropped',same(p0.opts,{gamepadDeadzone:0.5,gamepadVibrate:true}));
+  check('validate: opts clamped, wrong types and unknown keys (also the removed invert / vibrate) dropped',same(p0.opts,{gamepadDeadzone:0.5}));
   check('validate: profile map filled to 16 buttons',p0.map[0]==='menu'&&p0.map[1]==='hk-macroFeed'&&Object.keys(p0.map).length===16);
   check('validate: not an object gives the defaults',same(G._cleanConfig('x').map,G.defaultMap())&&same(G._cleanConfig([1]).profiles,[]));
   const many=[];for(let i=0;i<30;i++)many.push({name:'p'+i});
@@ -202,18 +203,12 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('hotkeys field: without the focus the button runs its command again',c.calls.includes('split')); }
 { const G=page().G;
   check('calibration: suggested dead zone',G.suggestDeadzone(0)===0.05&&G.suggestDeadzone(0.06)===0.11&&G.suggestDeadzone(0.071)===0.13&&G.suggestDeadzone(0.9)===0.5&&G.suggestDeadzone('x')===0.05); }
-{ const c=page();let rum=[];const p=gp({0:true});p.vibrationActuator={playEffect(t,o){rum.push(o.duration);return Promise.resolve();}};
+/* vibration is removed: an old saved gamepadVibrate rumbles nothing and listens to no death */
+{ const c=page({settings:{gamepadVibrate:true}});let rum=[];const p=gp({0:true});p.vibrationActuator={playEffect(t,o){rum.push(o.duration);return Promise.resolve();}};
   c.pads=[p];c.go();
-  check('vibration off: no rumble on split, no death listener',c.calls.includes('split')&&rum.length===0&&!(c.ev.death||[]).length);
+  check('no vibration: split without rumble, no death listener',c.calls.includes('split')&&rum.length===0&&!(c.ev.death||[]).length);
   c.G.setOpts({gamepadVibrate:true});
-  check('vibration on: listens to death',(c.ev.death||[]).length===1);
-  c.pads=[gp()];c.step();const q=gp({0:true});q.vibrationActuator=p.vibrationActuator;c.pads=[q];c.step();
-  check('vibration on: rumble on split',rum.length===1);
-  c.ev.death[0]({});
-  check('vibration on: rumble on death',rum.length===2&&rum[1]===300);
-  c.G.setOpts({gamepadVibrate:false});
-  check('vibration off again: death listener removed',!(c.ev.death||[]).length);
-  check('test button rumbles with the option off',c.G.testRumble(q)===true&&rum.length===3); }
+  check('no vibration: the old option is not taken',c.w.legendmod5.gamepadVibrate===true&&!(c.ev.death||[]).length&&c.G.testRumble===undefined); }
 /* always on: the old gamepadEnabled option is ignored, nothing polls while no pad is connected */
 { const c=page({settings:{gamepadEnabled:false}});
   check('always on: no timer and no frame loop without a pad',c.tick===undefined&&c.raf.length===0);

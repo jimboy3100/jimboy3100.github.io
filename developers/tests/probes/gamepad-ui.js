@@ -55,6 +55,7 @@
   var x = document.getElementById('lm-gp-close').getBoundingClientRect();
   if (x.width < 30 || x.height < 30) fail.push('close button too small for touch');
   if (md.querySelectorAll('select[id^="lm-gp-btn-"]').length || document.getElementById('lm-gp-tab-buttons') || document.getElementById('lm-gp-tab-profiles')) fail.push('the Gamepad window still has the button map or the profiles tab');
+  if (md.querySelector('input[type=checkbox], #lm-gp-vibrate')) fail.push('the Gamepad window still has the invert / vibration switches or the vibration test');
   info.tabs = [].map.call(md.querySelectorAll('[data-tab]'), function (e) { return e.getAttribute('data-tab'); }).join();
   if (!document.getElementById('lm-gp-gamepadMoveRange')) fail.push('sensitivity sliders missing (first tab)');
   var tt = document.getElementById('lm-gp-tab-test');

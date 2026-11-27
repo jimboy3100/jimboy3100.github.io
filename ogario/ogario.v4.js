@@ -21414,17 +21414,14 @@ var defaultmapsettings = {
     lineSplitGuide: true,
 
     stickyCell: false,
-    gamepadEnabled: false, /* no longer used: gamepad support is always on (kept for old profiles and imports) */
     gamepadDeadzone: 0.2, /* stick dead zone (0.05-0.5); 0.2 was the fixed value before */
     /* Gamepad window (ogario/modules/gamepad-ui.js); the button map and profiles are in localStorage 'lmGamepad' */
     gamepadMoveRange: 0.45, /* stick at full tilt = this part of the smaller screen side (0.15-1) */
     gamepadMoveCurve: 1, /* stick response curve (0.5-3), 1 = linear */
     gamepadZoomSens: 1, /* right stick zoom speed multiplier (0.2-4) */
     gamepadTrigger: 0.5, /* LT/RT count as pressed from this pull (0.1-0.95) */
-    gamepadInvertX: false, /* left stick left/right inverted */
-    gamepadInvertY: false, /* left stick up/down inverted */
-    gamepadInvertZoom: false, /* right stick zoom direction inverted */
-    gamepadVibrate: false, /* rumble on split and death where the pad supports it */
+    /* gamepadEnabled (support is always on), gamepadInvertX / Y / Zoom (never inverted) and gamepadVibrate
+     * (removed) are gone: saved values are skipped on load */
     //showPartyBots: false,
     showMiniMap: true,
     rotateMap: true,              /* retired: it only started the removed map orientation server (no switch; kept so saved settings and scripts stay valid) */
@@ -26273,7 +26270,7 @@ function thelegendmodproject() {
                 return $('<h5 class="lm-hk-head menu-main-color"></h5>').attr({ 'data-i18n': key, 'data-lm-sec': sec }).text(lmT(key));
             };
             box.append(head('modules.gamepadui.title', 'lmHkGamepad'));
-            /* Gamepad window: sensitivity, dead zone, triggers, vibration and a live test (the
+            /* Gamepad window: sensitivity, dead zone, triggers and a live test (the
              * buttons are bound in the key fields below; ogario/gamepad.js loads
              * ogario/modules/gamepad-ui.js the first time it opens) */
             var gpRow = $('<div class="row lm-hk-ctl lm-hk-btnrow"></div>');
@@ -48918,16 +48915,6 @@ function thelegendmodproject() {
                 'font-size:13px;color:' + tc2 + ';line-height:1;' +
                 'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
                 'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);">📋</div>' +
-                '<div id="lm-go-share" data-i18n-title="shareStats" title="' + _lmTH('shareStats', '') + '" style="' +
-                'position:absolute;top:8px;left:40px;cursor:pointer;' +
-                'font-size:13px;color:' + tc2 + ';line-height:1;' +
-                'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
-                'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);">\ud83d\udd17</div>' + // i18n-ok: an icon
-                '<div id="lm-go-dlcard" data-i18n-title="game2.downloadCard" title="' + _lmTH('game2.downloadCard', '') + '" style="' +
-                'position:absolute;top:8px;left:68px;cursor:pointer;' +
-                'font-size:13px;color:' + tc2 + ';line-height:1;' +
-                'width:24px;height:24px;display:flex;align-items:center;justify-content:center;' +
-                'border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.05);">📸</div>' +
                 '<div style="font-size:18px;font-weight:700;color:' + mc + ';letter-spacing:1px;text-transform:uppercase;">' +
                 '☠️ ' + '<span data-i18n="gameOver">' + _lmTH('gameOver', '') + '</span></div>' +
                 '</div>' +
@@ -48936,28 +48923,6 @@ function thelegendmodproject() {
                 '<div style="padding:8px 12px 12px;">' + rows + '</div>' +
                 (_lmKWatch ? '<div style="padding:0 12px 10px;text-align:center;"><button id="lm-go-watch" type="button" style="background:' + mc + ';color:var(--lm-btn-tc,#fff);border:0;border-radius:var(--lm-radius-s,4px);padding:5px 14px;font-size:12px;font-weight:700;cursor:pointer;">\ud83d\udc41\ufe0f <span data-i18n="watchKiller">' + _lmTH('watchKiller', '') + '</span></button></div>' : '') + // i18n-ok: an icon before the translated label
                 (_lmGraph ? '<div style="padding:0 12px 12px;"><canvas id="lm-go-graph" width="276" height="60" style="width:276px;height:60px;display:block;max-width:100%;border-radius:var(--lm-radius-s,4px);background:rgba(0,0,0,0.2);"></canvas></div>' : '') +
-
-                /* referral link (hidden on very small viewports to keep card compact); sharing the
-                 * match card is the share icon in the header */
-                '<div class="lm-go-extra">' +
-
-                /* Referral / invite link */
-                '<div style="padding:0 12px 10px;text-align:center;">' +
-                '<div id="lm-go-reflink" style="' +
-                'display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.2);' +
-                'border-radius:var(--lm-radius-s,6px);padding:4px 8px;cursor:pointer;' +
-                'transition:background 0.15s;" ' +
-                'onmouseover="this.style.background=\'rgba(0,0,0,0.35)\'" ' +
-                'onmouseout="this.style.background=\'rgba(0,0,0,0.2)\'">' +
-                '<span style="font-size:11px;">🔗</span>' +
-                '<input id="lm-go-refurl" readonly style="' +
-                'flex:1;background:transparent;border:0;color:' + tc2 + ';' +
-                'font-size:10px;font-family:monospace;cursor:pointer;outline:0;' +
-                'overflow:hidden;text-overflow:ellipsis;" value="">' +
-                '<span style="font-size:10px;color:' + mc + ';font-weight:700;white-space:nowrap;" data-i18n="game2.copy">' + _lmTH('game2.copy', '') + '</span>' +
-                '</div></div>' +
-                '</div>' + /* close .lm-go-extra */
-
                 '</div></div>';
 
             /* Dismiss helper */
@@ -48982,7 +48947,7 @@ function thelegendmodproject() {
                     '.lm-go-icon{font-size:14px;width:24px;text-align:center;flex-shrink:0}' +
                     /* i18n-ok: CSS */ '.lm-go-label{flex:1;font-size:11px;color:' + tc2 + ';padding-left:6px}' +
                     '.lm-go-value{font-size:13px;font-weight:700;text-align:right;min-width:60px}' +
-                    '@media(max-height:500px){.lm-go-extra{display:none}.lm-go-row{padding:2px 4px}}';
+                    '@media(max-height:500px){.lm-go-row{padding:2px 4px}}';
                 document.head.appendChild(style);
             }
 
@@ -49053,304 +49018,8 @@ function thelegendmodproject() {
                     else done(false);
                 } catch (err) { done(false); }
             });
-            /* Share (the one share button; there was also a "Share match card" button): the match card
-             * image with the text and your link through the phone/browser share sheet, the text and
-             * link alone where files cannot be shared, else a tweet in a new tab. Cancelling the sheet
-             * is no error. Saving the image is the camera icon. */
-            var shareBtn = document.getElementById('lm-go-share');
-            /* The share sheet needs the tap itself (a browser refuses it a moment later, Safari at
-             * once), so the card is drawn before: while the Game Over card is shown, just after it
-             * has appeared (a tap before that waits for it). One share at a time: the button waits
-             * until the sheet is closed. When the sheet refuses (other than the player cancelling),
-             * nothing else opens by itself (a second sheet or a tweet without a tap is blocked):
-             * the next tap tries the text and the link, then a tweet. The card then stays until it
-             * is closed (no auto-dismiss after a tap on Share). */
-            var shareCard = null, shareStep = 0, cardState = 0, cardWait = [];
-            var canShareFile = !!(navigator.share && navigator.canShare && typeof File === 'function');
-            var drawCard = function (cb) {
-                if (cardState === 2) { cb(); return; }
-                cardWait.push(cb);
-                if (cardState === 1) return;
-                cardState = 1;
-                _lmRenderMatchCard(function (blob) {
-                    try { shareCard = blob ? new File([blob], 'legend-mod-match.png', { type: 'image/png' }) : null; } catch (err) { shareCard = null; }
-                    cardState = 2;
-                    /* readable flag only (the tests wait for it instead of a fixed delay) */
-                    if (shareBtn) shareBtn._lmCardReady = true;
-                    var w = cardWait;
-                    cardWait = [];
-                    w.forEach(function (f) { f(); });
-                });
-            };
-            if (shareBtn && canShareFile) setTimeout(function () { if (shareBtn.isConnected) drawCard(function () { }); }, 300);
-            if (shareBtn) shareBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                if (shareBtn._lmBusy) return;
-                /* no auto-dismiss while the card is drawn and the sheet is open */
-                if (goSelf && goSelf._gameOverDismissTimer) { clearTimeout(goSelf._gameOverDismissTimer); goSelf._gameOverDismissTimer = null; }
-                var where = '';
-                try { where = [$('#region').val() === 'Private' ? '' : $('#region option:selected').text(), $('#gamemode option:selected').text()].map(function (v) { return String(v || '').trim(); }).filter(Boolean).join(' '); } catch (err) { }
-                var text = (where ? lmT('game2.shareTextOn', [fmtMass(u.highestMass || u.finalMass), fmtTime(u.timeTotal || u.longestTimeAlive || 0), where.slice(0, 60)]) : lmT('game2.shareText', [fmtMass(u.highestMass || u.finalMass), fmtTime(u.timeTotal || u.longestTimeAlive || 0)])) + ' - Legend Mod';
-                var _sNick = '';
-                try { _sNick = String($('#nick').val() || '').trim().replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 30); } catch(e2) {}
-                var url = 'https://www.legendmod.ml/' + (_sNick ? '?ref=' + _sNick : '');
-                var tweet = function () { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), '_blank', 'noopener'); };
-                /* i18n-ok: Legend Mod is the name */ var data = { title: 'Legend Mod - ' + lmT('game2.matchCompleteTitle'), text: text, url: url };
-                /* tapped before the card is ready: it is finished first (the browser still counts
-                 * the tap for a moment; a refusal goes to the text and link on the next tap) */
-                if (shareStep === 0 && canShareFile && cardState !== 2) {
-                    shareBtn._lmBusy = true;
-                    shareBtn.style.opacity = '0.5';
-                    drawCard(function () { shareBtn._lmBusy = false; openSheet(); });
-                    return;
-                }
-                openSheet();
-                function openSheet() {
-                var withFile = null;
-                if (shareStep === 0 && shareCard) {
-                    try { if (navigator.canShare({ files: [shareCard] })) withFile = { title: data.title, text: data.text, url: data.url, files: [shareCard] }; } catch (err) { withFile = null; }
-                }
-                var sheet = withFile || (shareStep <= 1 && navigator.share ? data : null);
-                if (!sheet) { tweet(); return; }
-                var done = function () { shareBtn._lmBusy = false; shareBtn.style.opacity = ''; };
-                var refused = function (err) {
-                    done();
-                    /* i18n-ok: AbortError is an error name */ if (err && err.name === 'AbortError') return;
-                    shareStep = withFile ? 1 : 2;
-                    if (window.toastr) toastr.info(lmT('pkg.hf.shareAgain'));
-                };
-                shareBtn._lmBusy = true;
-                shareBtn.style.opacity = '0.5';
-                try {
-                    var pr = navigator.share(sheet);
-                    if (pr && typeof pr.then === 'function') pr.then(done, refused);
-                    else done();
-                } catch (err) { refused(err); }
-                }
-            });
-
-            /* ═══ MATCH CARD RENDERER ═══ */
-            /* Generates a branded 1200×630 canvas image with player stats */
-            function _lmRenderMatchCard(callback) {
-                var W = 1200, H = 630;
-                var c = document.createElement('canvas');
-                c.width = W; c.height = H;
-                var ctx = c.getContext('2d');
-
-                /* Background gradient */
-                var bg = ctx.createLinearGradient(0, 0, W, H);
-                bg.addColorStop(0, '#0a1628');
-                bg.addColorStop(0.5, '#0d2137');
-                bg.addColorStop(1, '#0a1628');
-                ctx.fillStyle = bg;
-                ctx.fillRect(0, 0, W, H);
-
-                /* Subtle grid pattern */
-                ctx.strokeStyle = 'rgba(1,217,204,0.04)';
-                ctx.lineWidth = 1;
-                for (var gx = 0; gx < W; gx += 40) { ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, H); ctx.stroke(); }
-                for (var gy = 0; gy < H; gy += 40) { ctx.beginPath(); ctx.moveTo(0, gy); ctx.lineTo(W, gy); ctx.stroke(); }
-
-                /* Top accent bar */
-                var accent = ctx.createLinearGradient(0, 0, W, 0);
-                accent.addColorStop(0, mc);
-                accent.addColorStop(1, '#7c3aed');
-                ctx.fillStyle = accent;
-                ctx.fillRect(0, 0, W, 5);
-
-                /* "LEGEND MOD" header */
-                ctx.fillStyle = mc;
-                ctx.font = 'bold 18px "Segoe UI", Arial, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.letterSpacing = '4px';
-                ctx.fillText('☠ LEGEND MOD', W / 2, 50);
-
-                /* "MATCH COMPLETE" title */
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 42px "Segoe UI", Arial, sans-serif';
-                ctx.letterSpacing = '2px';
-                ctx.fillText(lmT('game2.matchComplete'), W / 2, 100);
-
-                /* Divider line */
-                var divGrad = ctx.createLinearGradient(200, 0, W - 200, 0);
-                divGrad.addColorStop(0, 'rgba(1,217,204,0)');
-                divGrad.addColorStop(0.5, mc);
-                divGrad.addColorStop(1, 'rgba(1,217,204,0)');
-                ctx.fillStyle = divGrad;
-                ctx.fillRect(200, 118, W - 400, 2);
-
-                /* Stat cards — 2×2 grid */
-                var cardStats = [
-                    { label: window.lmT('highestMass'), value: fmtMass(u.highestMass || u.finalMass), icon: '👑' },
-                    { label: lmT('game2.bestRank'), value: u.topPosition ? '#' + u.topPosition : '—', icon: '🏆' },
-                    { label: lmT('game2.survival'), value: fmtTime(u.timeTotal || u.longestTimeAlive || 0), icon: '⏱️' },
-                    { label: lmT('game2.eliminations'), value: String(u.playersEaten || 0), icon: '⚔️' }
-                ];
-
-                var cardW = 240, cardH = 150, gapX = 40, gapY = 30;
-                var startX = (W - (cardW * 2 + gapX)) / 2;
-                var startY = 150;
-
-                for (var ci = 0; ci < 4; ci++) {
-                    var col = ci % 2, row = Math.floor(ci / 2);
-                    var cx = startX + col * (cardW + gapX);
-                    var cy = startY + row * (cardH + gapY);
-
-                    /* Card background */
-                    ctx.fillStyle = 'rgba(0,36,62,0.7)';
-                    _lmRoundRect(ctx, cx, cy, cardW, cardH, 10);
-                    ctx.fill();
-
-                    /* Card border */
-                    ctx.strokeStyle = 'rgba(1,217,204,0.2)';
-                    ctx.lineWidth = 1;
-                    _lmRoundRect(ctx, cx, cy, cardW, cardH, 10);
-                    ctx.stroke();
-
-                    /* Icon */
-                    ctx.font = '28px "Segoe UI Emoji", "Apple Color Emoji", sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(cardStats[ci].icon, cx + cardW / 2, cy + 40);
-
-                    /* Value */
-                    ctx.fillStyle = mc;
-                    ctx.font = 'bold 36px "Segoe UI", Arial, sans-serif';
-                    ctx.fillText(cardStats[ci].value, cx + cardW / 2, cy + 85);
-
-                    /* Label */
-                    ctx.fillStyle = '#8096a7';
-                    ctx.font = '14px "Segoe UI", Arial, sans-serif';
-                    ctx.fillText(cardStats[ci].label, cx + cardW / 2, cy + 115);
-                }
-
-                /* Additional stats row */
-                var extraStats = [
-                    { label: window.lmT('foodEaten'), value: String(u.foodEaten || 0) },
-                    { label: window.lmT('massConsumed'), value: fmtMass(u.massConsumed || 0) },
-                    { label: window.lmT('virusesEaten'), value: String(u.virusesEaten || 0) }
-                ];
-                var extraY = startY + 2 * (cardH + gapY) + 10;
-                var extraW = (cardW * 2 + gapX) / 3 - 10;
-                for (var ei = 0; ei < 3; ei++) {
-                    var ex = startX + ei * (extraW + 15);
-                    ctx.fillStyle = 'rgba(0,36,62,0.5)';
-                    _lmRoundRect(ctx, ex, extraY, extraW, 50, 6);
-                    ctx.fill();
-                    ctx.fillStyle = '#8096a7';
-                    ctx.font = '11px "Segoe UI", Arial, sans-serif';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(extraStats[ei].label, ex + extraW / 2, extraY + 18);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold 18px "Segoe UI", Arial, sans-serif';
-                    ctx.fillText(extraStats[ei].value, ex + extraW / 2, extraY + 40);
-                }
-
-                /* "Can you beat my score?" */
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'italic 22px "Segoe UI", Arial, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(lmT('game2.beatMyScore'), W / 2, H - 70);
-
-                /* Bottom bar with URL */
-                ctx.fillStyle = 'rgba(0,0,0,0.3)';
-                ctx.fillRect(0, H - 45, W, 45);
-                var urlGrad = ctx.createLinearGradient(0, 0, W, 0);
-                urlGrad.addColorStop(0, mc);
-                urlGrad.addColorStop(1, '#7c3aed');
-                ctx.fillStyle = urlGrad;
-                ctx.fillRect(0, H - 45, W, 2);
-
-                ctx.fillStyle = mc;
-                ctx.font = 'bold 16px "Segoe UI", Arial, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('www.legendmod.ml', W / 2, H - 16);
-
-                /* Convert to blob and callback */
-                try {
-                    c.toBlob(function (blob) {
-                        callback(blob, c);
-                    }, 'image/png');
-                } catch (err) {
-                    callback(null, c);
-                }
-            }
-
-            /* Rounded rect helper (no built-in roundRect in older Chrome) */
-            function _lmRoundRect(ctx, x, y, w, h, r) {
-                ctx.beginPath();
-                ctx.moveTo(x + r, y);
-                ctx.lineTo(x + w - r, y);
-                ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-                ctx.lineTo(x + w, y + h - r);
-                ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-                ctx.lineTo(x + r, y + h);
-                ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-                ctx.lineTo(x, y + r);
-                ctx.quadraticCurveTo(x, y, x + r, y);
-                ctx.closePath();
-            }
-
-            /* Download card button (📸 icon in header) */
-            var dlCardBtn = document.getElementById('lm-go-dlcard');
-            if (dlCardBtn) dlCardBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                /* one save at a time, as Share: a quick second tap while the image is encoded saved it twice */
-                if (dlCardBtn._lmBusy) return;
-                if (goSelf && goSelf._gameOverDismissTimer) { clearTimeout(goSelf._gameOverDismissTimer); goSelf._gameOverDismissTimer = null; }
-                dlCardBtn._lmBusy = true;
-                dlCardBtn.style.opacity = '0.5';
-                _lmRenderMatchCard(function (blob) {
-                    dlCardBtn._lmBusy = false;
-                    dlCardBtn.style.opacity = '';
-                    if (!blob) { if (window.toastr) toastr.warning(_lmTH('game2.cardFailed', '')); return; }
-                    var url = URL.createObjectURL(blob);
-                    var a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'legend-mod-match-' + Date.now() + '.png';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
-                    if (window.toastr) toastr.success(_lmTH('game2.cardDownloaded', '') + ' 📸');
-                });
-            });
-
-            /* Referral / invite link: populate and wire up */
-            var refLinkEl = document.getElementById('lm-go-reflink');
-            var refUrlEl = document.getElementById('lm-go-refurl');
-            if (refLinkEl && refUrlEl) {
-                /* Build referral URL using player nick or a generated ID */
-                var _refNick = '';
-                try { _refNick = String($('#nick').val() || '').trim().replace(/[^A-Za-z0-9_\-]/g, '').slice(0, 30); } catch(e) {}
-                if (!_refNick) _refNick = 'player' + Math.floor(Math.random() * 90000 + 10000);
-                var _refUrl = 'https://www.legendmod.ml/?ref=' + _refNick;
-                refUrlEl.value = _refUrl;
-                refLinkEl.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    try {
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            navigator.clipboard.writeText(_refUrl).then(function() {
-                                if (window.toastr) toastr.success(_lmTH('game2.inviteCopiedShare', ''));
-                            }, function() {
-                                refUrlEl.select();
-                                document.execCommand('copy');
-                                if (window.toastr) toastr.success(_lmTH('game2.inviteCopied', '') + ' 🔗');
-                            });
-                        } else {
-                            refUrlEl.select();
-                            document.execCommand('copy');
-                            if (window.toastr) toastr.success(_lmTH('game2.inviteCopied', '') + ' 🔗');
-                        }
-                    } catch(err) {
-                        refUrlEl.select();
-                        try { document.execCommand('copy'); } catch(e2) {}
-                    }
-                });
-            }
-
             /* Auto-dismiss after 12 seconds. Cancel the previous modal's timer so it
-             * does not close this one early (dismissGameOver looks the modal up by id).
-             * Interaction with share/download buttons clears this timer. */
+             * does not close this one early (dismissGameOver looks the modal up by id). */
             if (this._gameOverDismissTimer) clearTimeout(this._gameOverDismissTimer);
             var goSelf = this;
             this._gameOverDismissTimer = setTimeout(function () {
