@@ -42375,7 +42375,8 @@ function thelegendmodproject() {
                         var vx = data.getFloat32(1, true);
                         var vy = data.getFloat32(5, true);
                         var vs = data.getFloat32(9, true);
-                        if (!window.multiboxPlayerEnabled) {
+                        /* as agar.io's opcode 17: only a multibox frame keeps the camera */
+                        if (!this._lmMbFramed) {
                             this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(vx) : vx;
                             this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(vy) : vy;
                         }
@@ -45058,10 +45059,13 @@ function thelegendmodproject() {
                     }
                     window.testobjectsOpcode17 = data;
                     var x = data.getFloat32(s, true);
+                    /* The view centre is left to the multibox camera only while it has a frame
+                     * (drawRender.setView, _lmMbFramed). With no unit cells (dead, connecting,
+                     * respawning) it has none, and skipping on the multibox settings or a focused
+                     * unit froze the camera, e.g. spectating with both players dead. */
+                    var _lmMbCam = !!this._lmMbFramed;
 
-                    if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists) {
-                        //
-                    } else if (!window.multiboxPlayerEnabled) {
+                    if (!_lmMbCam) {
                         this.viewX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
                     }
                     this.viewXTrue = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(x) : x;
@@ -45069,9 +45073,7 @@ function thelegendmodproject() {
                     s += 4;
                     var y = data.getFloat32(s, true);
 
-                    if ((defaultmapsettings.middleMultiView || window.middleMultiViewFlag) && legendmod.multiBoxPlayerExists) {
-                        //
-                    } else if (!window.multiboxPlayerEnabled) {
+                    if (!_lmMbCam) {
                         this.viewY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
                     }
                     this.viewYTrue = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(y) : y;
@@ -78665,6 +78667,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 _mbZoomSize = _mbFrame.size;
                 _mbPlaying = true;
             }
+            /* read by the main socket's opcode 17: the server's view centre moves the camera
+             * whenever the multibox frame does not */
+            LM._lmMbFramed = !!_mbFrame;
             window.middleMultiViewFlag = !!(_mbFrame && _mbFrame.both > 0.5);
             this.setScale(_mbZoomSize, _mbFrame ? _mbFrame.zoom : 1, _mbPlaying);
 
