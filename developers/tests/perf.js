@@ -703,6 +703,107 @@ pr.ctx.application.displayTop5 = theirs;
 pr.ctx.LMPerf.keepRecording(false);
 check('a method replaced meanwhile is not put back over the new one', pr.ctx.application.displayTop5 === theirs);
 
+/* ---- the jelly collision index (ogario/wasm_quadtree.js occupancy) and skin queue waits ---- */
+/* the real index; the oracle is its own touches() with a counter in the bucket loop and no early
+ * return, asked at every indexed point (integer positions: float32 the same as the index's) */
+const qtSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'wasm_quadtree.js'), 'utf8').replace(/\r\n/g, '\n');
+const loadQt = (s) => { const c = vm.createContext({}); vm.runInContext(s + '\nthis.QT = WasmQuadTree;', c); return c; };
+/* cells for one index (an index marks its cells with its build number) */
+const mkCells = () => {
+    let seed = 7;
+    const rnd = () => (seed = (Math.imul(seed, 48271) % 2147483647 + 2147483647) % 2147483647) / 2147483647;
+    const out = [];
+    for (let i = 0; i < 60; i++) {
+        /* half of them crowded around the middle (overlapping), the rest spread out */
+        const cx = Math.round(i < 30 ? rnd() * 80 : rnd() * 3000 - 1500), cy = Math.round(i < 30 ? rnd() * 80 : rnd() * 3000 - 1500), r = 20 + Math.round(rnd() * 120);
+        const c = { id: i + 1, points: [] };
+        for (let k = 0; k < 40; k++) c.points.push({ x: cx + Math.round(Math.cos(k / 40 * 2 * Math.PI) * r), y: cy + Math.round(Math.sin(k / 40 * 2 * Math.PI) * r), parent: c });
+        out.push(c);
+    }
+    return out;
+};
+{
+    const QT = loadQt(qtSrc).QT;
+    const tA = qtSrc.indexOf('    function touches('), tB = qtSrc.indexOf('    function anyForeign(', tA);
+    const counted = qtSrc.slice(0, tA) + qtSrc.slice(tA, tB).replace('var o = k * 3;', 'READ++; var o = k * 3;').replace('if (dx * dx + dy * dy <= 25) return true;', 'if (dx * dx + dy * dy <= 25) { }') + qtSrc.slice(tB);
+    const oc = loadQt('var READ = 0;\n' + counted), Q2 = oc.QT;
+    const qtCells = mkCells();
+    QT.rebuild(-2000, -2000, 4000, 4000, qtCells); Q2.rebuild(-2000, -2000, 4000, 4000, mkCells());
+    const pts = []; qtCells.forEach(c => c.points.forEach(p => pts.push(p)));
+    let most = 0;
+    pts.forEach(p => { const r0 = oc.READ; Q2.touches(p.x, p.y, -1); most = Math.max(most, oc.READ - r0); });
+    const o = QT.occupancy(0);
+    check('jelly index occupancy: every point, the points one touches() reads (average and most) as counted in touches()', o.points === pts.length && o.sampled === pts.length &&
+        Math.abs(o.perQuery - oc.READ / pts.length) < 1e-9 && o.mostRead === most && o.cells === 60 && o.step >= 10);
+    /* fullest bucket: the most points of one bucket (step x step, from the smallest x / y) */
+    const mx = Math.min(...pts.map(p => p.x)), my = Math.min(...pts.map(p => p.y)), byB = {};
+    pts.forEach(p => { const k = Math.floor((p.x - mx) * (1 / o.step)) + ',' + Math.floor((p.y - my) * (1 / o.step)); byB[k] = (byB[k] || 0) + 1; });
+    check('jelly index occupancy: fullest bucket and buckets used', o.fullest === Math.max(...Object.values(byB)) && o.used === Object.keys(byB).length);
+    const s = QT.occupancy(100);
+    check('jelly index occupancy sampled: at most the sample size, average close to the full one', s.sampled === 100 && s.perQuery > o.perQuery * 0.5 && s.perQuery < o.perQuery * 2);
+    const ask = () => pts.map((p, i) => QT.touches(p.x + 3, p.y - 2, i % 60) ? 1 : 0).join('');
+    const before = ask();
+    QT.occupancy(0);
+    check('jelly index occupancy changes nothing (same answers after it)', ask() === before && before.indexOf('1') >= 0);
+    QT.clear();
+    const e = QT.occupancy(4096);
+    check('jelly index occupancy: an empty index gives zeros', e.points === 0 && e.sampled === 0 && e.perQuery === 0 && e.fullest === 0);
+}
+{
+    const QT = loadQt(qtSrc).QT;
+    const ap = {
+        _lmSkinJobMap: new Map(), _lmSkinJobs: [], _lmSkinDecodeWait: [],
+        _lmSkinJobAdd(img, url) { if (this._lmSkinJobMap.has(url)) return; const j = { url }; this._lmSkinJobMap.set(url, j); this._lmSkinJobs.push(j); },
+        _lmSkinJobRun(job) { this._lmSkinJobs.splice(this._lmSkinJobs.indexOf(job), 1); this._lmSkinJobMap.delete(job.url); return 'ran'; },
+        setAnimatedRainbowColor() { }, applyHudBlur() { }, saveSettings() { }
+    };
+    const dr = {
+        dpr: 1, resizeCanvas() { }, _lmSkinReady: [], _lmSkinBmpN: 2, _lmSkinQBytes: 2 * 1048576, _lmSkinPend: { nodes: new WeakMap(), keys: {} },
+        _lmQueueSkinUpload(node) { const j = { node }; this._lmSkinPend.nodes.set(node, j); this._lmSkinReady.push(j); return true; },
+        _lmUploadSkinJob(job) { this._lmSkinReady.splice(this._lmSkinReady.indexOf(job), 1); return 'up'; }
+    };
+    const lm = { cells: new Array(5), pps: 0, ping: 0, isSocketOpen: () => false, quadtree: QT };
+    const origs = [ap._lmSkinJobAdd, ap._lmSkinJobRun, dr._lmQueueSkinUpload, dr._lmUploadSkinJob];
+    const qp = rec({ application: ap, drawRender: dr, legendmod: lm, PerformanceObserver: FakePO2 });
+    const A = qp.ctx.application, D = qp.ctx.drawRender;
+    A._lmSkinJobAdd(null, 'old.png');
+    const oldJob = A._lmSkinJobMap.get('old.png');
+    check('skin queue, off: nothing wrapped, a queued job gets no queue time', A._lmSkinJobAdd === origs[0] && D._lmUploadSkinJob === origs[3] && !('_lmQt' in oldJob));
+    qp.ctx.LMPerf.keepRecording(true);
+    check('skin queue, recording: the queue and run methods wrapped', A._lmSkinJobAdd !== origs[0] && A._lmSkinJobRun !== origs[1] && D._lmQueueSkinUpload !== origs[2] && D._lmUploadSkinJob !== origs[3]);
+    for (let i = 0; i < 5; i++) qp.frame(16.7, 2);
+    QT.rebuild(-2000, -2000, 4000, 4000, mkCells());
+    const t0 = qp.ctx._now;
+    A._lmSkinJobAdd(null, 'a.png');
+    A._lmSkinJobAdd(null, 'old.png');
+    const node = {};
+    check('skin queue: a wrapped call gives the same result', D._lmQueueSkinUpload(node) === true);
+    check('skin queue: only jobs made while recording get a queue time (a job asked for again keeps none)', A._lmSkinJobMap.get('a.png')._lmQt === t0 && !('_lmQt' in oldJob));
+    qp.ctx._now = t0 + 300;
+    check('skin queue: run gives the same result', A._lmSkinJobRun(A._lmSkinJobMap.get('a.png')) === 'ran');
+    A._lmSkinJobAdd(null, 'b.png');
+    /* a 400 ms freeze: the upload queued at t0 and job b (queued at t0 + 300) still waiting */
+    qp.frame(400, 2);
+    const fz = qp.ctx.LMPerf.freezes().pop();
+    check('freeze: the oldest skin waits and the decodes going on', fz && new RegExp('a skin waiting ' + Math.round(qp.t - t0 - 300) + ' ms for its canvases').test(fz.line) && new RegExp('a skin waiting ' + Math.round(qp.t - t0) + ' ms for its upload').test(fz.line) &&
+        /skin decodes 2 \(2\.0 MB\)/.test(fz.line));
+    const o = QT.occupancy(4096);
+    check('freeze: the jelly index (fullest bucket, points read per question)', fz.bd.jx && fz.bd.jx.fullest === o.fullest && fz.bd.jx.points === o.points &&
+        new RegExp('jelly index: fullest bucket ' + o.fullest + ' points, ' + (Math.round(o.perQuery * 10) / 10).toFixed(1) + ' read per point').test(fz.line));
+    const tu = qp.ctx._now;
+    D._lmUploadSkinJob(D._lmSkinReady[0]);
+    A._lmSkinJobRun(oldJob);
+    const w = qp.ctx.LMPerf.skinWaits();
+    check('skin queue waits: canvases and uploads counted (a job queued before recording is not)', w.canvas.n === 1 && w.canvas.max === 300 && w.upload.n === 1 && w.upload.max === tu - t0);
+    const rp = qp.ctx.LMPerf.report();
+    check('report: skin queue waits and the jelly index at the last freeze', /Skin queue waits since recording \(queued to done, decode included\): canvases 1, average 300\.0 ms, longest 300 ms; GPU uploads 1/.test(rp) &&
+        /Jelly collision index at the last freeze: 2400 points of 60 cells, buckets [\d.]+ units \(\d+ used\), fullest \d+ points/.test(rp));
+    qp.ctx.LMPerf.keepRecording(false);
+    check('skin queue, recording off: originals back', A._lmSkinJobAdd === origs[0] && A._lmSkinJobRun === origs[1] && D._lmQueueSkinUpload === origs[2] && D._lmUploadSkinJob === origs[3]);
+    A._lmSkinJobAdd(null, 'c.png');
+    check('skin queue, off again: no queue time', !('_lmQt' in A._lmSkinJobMap.get('c.png')));
+}
+
 /* ---- connections, GPU time, timers and the timeline: pure parts ---- */
 check('gap cause: the page busy for half of it or more is the client', P.classifyStall({ gap: 400, blocked: 200, others: 0, known: true }) === 'client');
 check('gap cause: page free, another connection to the server got messages: the server', P.classifyStall({ gap: 400, blocked: 30, others: 1, known: true }) === 'server');

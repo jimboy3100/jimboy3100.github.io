@@ -219,5 +219,41 @@ check('skin auto toggle no longer fakes key presses', toggleSrc.length > 0 && !/
     console.log('     unit message, diagnostics off: ' + med(ta).toFixed(1) + ' ns with the check, ' + med(tb).toFixed(1) + ' ns without (median of 6 alternating runs of ' + N + ')');
 }
 
+/* ---- Performance diagnostics off: the jelly index occupancy (a loop over its buckets) and the
+ * skin queue times cost nothing. ogario/modules/perf.js in a page: with only the frame hook on
+ * (Adaptive performance) a freeze reads no index and the skin queue methods are not wrapped;
+ * while recording the index is read once per freeze, not on the slow frames under 250 ms ---- */
+{
+    const perfSrc = fs.readFileSync(path.join(root, 'ogario', 'modules', 'perf.js'), 'utf8');
+    let reads = 0, t = 1000;
+    const jobAdd = function () { }, jobRun = function () { }, upQ = function () { return true; }, upRun = function () { };
+    const ctx = {
+        performance: { now: () => t }, setInterval: () => 0, clearInterval() { }, setTimeout: () => 0, addEventListener() { }, devicePixelRatio: 1, innerWidth: 900, innerHeight: 500, navigator: {},
+        document: { hidden: false, addEventListener() { }, removeEventListener() { }, getElementById: () => null, createElement: () => ({ style: {} }), body: { appendChild() { } } },
+        localStorage: { getItem: () => null, setItem() { }, removeItem() { } },
+        legendmod5: { adaptivePerf: true, adaptivePerfTarget: 60, netHistory: false, fpsLimit: 0 },
+        legendmod: { cells: [], isSocketOpen: () => false, quadtree: { occupancy() { reads++; return { points: 10, cells: 1, step: 10, used: 1, fullest: 10, perQuery: 10, mostRead: 10 }; } } },
+        application: { saveSettings() { }, setAnimatedRainbowColor() { }, applyHudBlur() { }, _lmSkinJobAdd: jobAdd, _lmSkinJobRun: jobRun },
+        drawRender: { dpr: 1, resizeCanvas() { }, _lmQueueSkinUpload: upQ, _lmUploadSkinJob: upRun }
+    };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    vm.runInContext(perfSrc, ctx);
+    ctx.LMPerf.configChanged();
+    const frame = (dt) => { t += dt; ctx._lmPerfFrame.raf(t); ctx._lmPerfFrame(t, t + 2); t += 2; };
+    for (let i = 0; i < 20; i++) frame(16.7);
+    frame(400); frame(16.7);
+    const sameSkin = () => ctx.application._lmSkinJobAdd === jobAdd && ctx.application._lmSkinJobRun === jobRun && ctx.drawRender._lmQueueSkinUpload === upQ && ctx.drawRender._lmUploadSkinJob === upRun;
+    check('diagnostics not recording: a freeze reads no jelly index, skin queue methods not wrapped', typeof ctx._lmPerfFrame === 'function' && reads === 0 && sameSkin());
+    ctx.LMPerf.keepRecording(true);
+    for (let i = 0; i < 5; i++) frame(120);
+    const slow = reads;
+    frame(400); frame(16.7);
+    check('recording: the jelly index is read at a freeze only (not on slow frames)', slow === 0 && reads === 1);
+    ctx.LMPerf.keepRecording(false);
+    frame(400); frame(16.7);
+    check('recording stopped: no index read, skin queue methods put back', reads === 1 && sameSkin());
+}
+
 console.log(failed ? 'FAILED: ' + failed : 'all hotpaths checks passed');
 process.exit(failed ? 1 : 0);

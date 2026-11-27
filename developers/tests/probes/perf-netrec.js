@@ -13,9 +13,20 @@
   if (!P || typeof P.timeline !== 'function') return { fail: ['LMPerf.timeline missing (ogario/modules/perf.js)'] };
   if (window._lmNetRec) fail.push('connection recorder set while diagnostics are off');
   var nativeTO = window.setTimeout, onMsg = lm && lm.onMessage;
+  var ap = window.application, dr = window.drawRender;
+  var skinM = [[ap, '_lmSkinJobAdd'], [ap, '_lmSkinJobRun'], [dr, '_lmQueueSkinUpload'], [dr, '_lmUploadSkinJob']].map(function (p) { return [p[0], p[1], p[0] && p[0][p[1]]]; });
   P.keepRecording(true);
   if (!window._lmNetRec || typeof window._lmNetRec.b !== 'function') fail.push('recording: no connection recorder');
   if (!(lm && lm.onMessage && lm.onMessage._lmScopeOf === onMsg)) fail.push('recording: main connection messages not wrapped');
+  /* skin queue waits: the real queue / run methods are timed while recording */
+  skinM.forEach(function (p) { if (!(p[2] && p[0][p[1]] && p[0][p[1]]._lmScopeOf === p[2])) fail.push('recording: ' + p[1] + ' not wrapped for the skin queue waits'); });
+  /* the real jelly index answers the occupancy question (also when empty) */
+  if (!(lm && lm.quadtree && typeof lm.quadtree.occupancy === 'function')) info.jellyIndex = 'no index (jelly off or the JS fallback)';
+  else {
+    var oc = lm.quadtree.occupancy(4096);
+    info.jellyIndex = oc.points + ' points, fullest ' + oc.fullest + ', ' + oc.perQuery.toFixed(1) + ' read per point';
+    if (!(oc.sampled <= 4096 && oc.points >= 0 && (oc.points === 0 || oc.perQuery >= 1))) fail.push('jelly index occupancy: ' + JSON.stringify(oc));
+  }
   var PO = window.PerformanceObserver, loaf = !!(PO && PO.supportedEntryTypes && PO.supportedEntryTypes.indexOf('long-animation-frame') >= 0);
   info.timers = loaf ? 'named by the long animation frames' : 'wrapped';
   if (loaf ? window.setTimeout !== nativeTO : !(window.setTimeout && window.setTimeout._lmScopeOf === nativeTO)) fail.push('recording: setTimeout ' + (loaf ? 'wrapped although the long animation frames name the timers' : 'not timed'));
@@ -60,6 +71,7 @@
   if (window._lmNetRec) fail.push('recording off: connection recorder left');
   if (lm && lm.onMessage !== onMsg) fail.push('recording off: main connection messages still wrapped');
   if (window.setTimeout !== nativeTO) fail.push('recording off: setTimeout not put back');
+  skinM.forEach(function (p) { if (p[0] && p[0][p[1]] !== p[2]) fail.push('recording off: ' + p[1] + ' not put back'); });
   var n0 = P.timeline().rows.length;
   await sleep(500);
   if (P.timeline().rows.length !== n0) fail.push('recording off: the timeline still grows');

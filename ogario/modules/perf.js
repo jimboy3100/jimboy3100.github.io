@@ -520,7 +520,9 @@
         /* the jelly steps of renderFrame (its 'jelly physics' marker keeps the rest), the WebGL scene
          * check and its overlay mark tests, the text atlas growth, timer callbacks, multibox / spectator units */
         'jelly prepare', 'jelly index', 'jelly move', 'GL preflight', 'overlay checks', 'cache resize', 'timers',
-        'unit packets', 'unit cells update'];
+        'unit packets', 'unit cells update',
+        /* a skin queued for its canvases or its GPU upload (the decode it starts is the browser's) */
+        'skin queue'];
     var SCOPE_DEPTH = 32;
 
     /* Self time of named parts of the code between two frame callbacks (a part called inside
@@ -1020,12 +1022,14 @@
      * The time of the parts below is added up between two frame callbacks; a frame gap of
      * 50 ms or more is copied into a ring of the last 32 (no allocation), a freeze keeps its
      * own breakdown. Long animation frames (Chrome 123+) tell which script callback ran. */
-    var LOAF_MAX = 60, SLOW_SLOTS = 32, META_N = 16;
+    var LOAF_MAX = 60, SLOW_SLOTS = 32, META_N = 20;
     var sc = createScopes(now);
     var slowRing = createScopeRing(SLOW_SLOTS, sc.n, META_N);
     /* t, gap, cells, skin jobs, skin uploads, text bytes, heap MB, timed ms, then (fillMore) visible
      * bodies, food, jelly cells, jelly points, skin upload bytes, text atlas resizes, replay bytes
-     * recorded, why the frame was not WebGL (GLW id) */
+     * recorded, why the frame was not WebGL (GLW id), the longest a skin has waited for its canvases
+     * and for its GPU upload (ms, skins queued since recording), bitmap decodes going on and their
+     * bytes */
     var slowMeta = new Float64Array(META_N);
     var loafs = createEventRing(LOAF_MAX);
     var loafObs = null, attrOn = false, patched = [];
@@ -1035,9 +1039,9 @@
         ['legendmod', 'updateCells', 'cells update'], ['legendmod', 'handleLeaderboard', 'leaderboard'],
         ['legendmod', 'sortCells', 'cell sort'], ['legendmod', 'compareCells', 'cell compare'], ['legendmod', 'sendPosition', 'send position'],
         ['drawRender', 'renderFrame', 'render'], ['drawRender', 'drawWebGLCellBatch', 'WebGL cells'], ['drawRender', 'drawWebGLBatch', 'WebGL batch'],
-        ['drawRender', '_lmRasterText', 'text raster'], ['drawRender', '_lmUploadSkinJob', 'skin texture upload'],
+        ['drawRender', '_lmRasterText', 'text raster'], ['drawRender', '_lmUploadSkinJob', 'skin texture upload', qRunWrap],
         ['drawRender', 'uploadSkinTexture', 'uploadSkinTexture'],
-        ['application', '_lmSkinJobRun', 'skin canvas job'], ['application', '_lmSkinJobTrim', 'skin job trim'],
+        ['application', '_lmSkinJobRun', 'skin canvas job', qRunWrap], ['application', '_lmSkinJobTrim', 'skin job trim'],
         ['application', 'displayTop5', 'teamboard'],
         ['application', 'drawMiniMap', 'minimap'], ['application', 'updateTeamPlayers', 'team players'],
         ['application', 'displayStats', 'stats HUD'], ['application', 'saveSettings', 'settings save'],
@@ -1052,7 +1056,9 @@
         /* the main connection's messages (all protocols come through onMessage): the connection timeline */
         ['legendmod', 'onMessage', 'packets', netWrap], ['drawRender', '_lmTextAtlasResize', 'cache resize', atlasWrap],
         ['drawRender', '_lmTextAtlasBank', 'cache resize', atlasWrap],
-        ['window', 'setTimeout', 'timers', timerWrap], ['window', 'setInterval', 'timers', timerWrap]
+        ['window', 'setTimeout', 'timers', timerWrap], ['window', 'setInterval', 'timers', timerWrap],
+        /* when a skin was queued: its wait until its canvases / its upload (queue waits) */
+        ['application', '_lmSkinJobAdd', 'skin queue', qAddWrap], ['drawRender', '_lmQueueSkinUpload', 'skin queue', qAddWrap]
     ];
 
     function patchTarget(k) {
@@ -1236,6 +1242,47 @@
         return w;
     }
 
+    /* Queue waits of the skins queued while recording: a canvas job (application._lmSkinJobAdd ->
+     * _lmSkinJobRun, its image decode included) and a GPU upload (drawRender._lmQueueSkinUpload ->
+     * _lmUploadSkinJob, its bitmap decode included). The job gets its queue time (_lmQt) when it is
+     * made; skins queued before recording are not counted. */
+    var qw = { cn: 0, cSum: 0, cMax: 0, un: 0, uSum: 0, uMax: 0 };
+    function qAddWrap(fn, part, name) {
+        var timed = sc.wrap(fn, part), up = name === '_lmQueueSkinUpload';
+        /* _lmQueueSkinUpload(node): its job is in _lmSkinPend.nodes; _lmSkinJobAdd(img, url): in _lmSkinJobMap */
+        var jobOf = function (o, a, url) {
+            return up ? (a && o._lmSkinPend && o._lmSkinPend.nodes ? o._lmSkinPend.nodes.get(a) : null) : (o._lmSkinJobMap ? o._lmSkinJobMap.get(url) : null);
+        };
+        var w = function (a, url) {
+            if (!sc.on) return fn.apply(this, arguments);
+            /* only a job this call made (one queued before recording has no queue time) */
+            var had = jobOf(this, a, url), t = now(), r = timed.apply(this, arguments), j = jobOf(this, a, url);
+            if (j && j !== had && !(j._lmQt > 0)) j._lmQt = t;
+            return r;
+        };
+        w._lmScopeOf = fn;
+        return w;
+    }
+    function qRunWrap(fn, part, name) {
+        var timed = sc.wrap(fn, part), up = name === '_lmUploadSkinJob';
+        var w = function (job) {
+            if (sc.on && job && job._lmQt > 0) {
+                var d = now() - job._lmQt;
+                job._lmQt = 0;
+                if (up) { qw.un++; qw.uSum += d; if (d > qw.uMax) qw.uMax = d; } else { qw.cn++; qw.cSum += d; if (d > qw.cMax) qw.cMax = d; }
+            }
+            return timed.apply(this, arguments);
+        };
+        w._lmScopeOf = fn;
+        return w;
+    }
+    /* the longest wait of the skins still queued (list: jobs; ms) */
+    function oldestWait(list, t) {
+        var m = 0;
+        for (var i = 0; list && i < list.length; i++) { var j = list[i]; if (j && j._lmQt > 0 && t - j._lmQt > m) m = t - j._lmQt; }
+        return m;
+    }
+
     /* timer callbacks (set while recording) are timed under 'timers', by the function's name */
     var timerStat = {}, timerN = 0, TIMER_LABELS = 64;
     function timerLabel(fn) {
@@ -1359,6 +1406,8 @@
         conns = {}; connIds = []; nrDepth = 0;
         timerStat = {}; timerN = 0;
         atlas.n = 0; atlas.bytes = 0;
+        qw.cn = qw.cSum = qw.cMax = qw.un = qw.uSum = qw.uMax = 0;
+        jx = null;
         gq.n = 0; gq.at = 0; gq.total = 0; gq.max = 0; gq.disjoint = 0;
     }
 
@@ -1412,6 +1461,19 @@
         m[13] = atlas.n;
         m[14] = +window._lmRecSlotBytes || 0;
         m[15] = dr && dr._lmFrameGL === false && dr._lmGlWhy > 0 ? dr._lmGlWhy : 0;
+        var a = app(), t = now();
+        m[16] = a ? Math.max(oldestWait(a._lmSkinDecodeWait, t), oldestWait(a._lmSkinJobs, t)) : 0;
+        m[17] = dr ? oldestWait(dr._lmSkinReady, t) : 0;
+        m[18] = dr ? +dr._lmSkinBmpN || 0 : 0;
+        m[19] = dr ? +dr._lmSkinQBytes || 0 : 0;
+    }
+    /* The jelly collision index at a freeze (LM.quadtree.occupancy: a loop over its buckets and
+     * up to 4096 points, so only for a freeze, not for every slow frame): null without one. */
+    var jx = null;
+    function jellyIndex() {
+        var lm = window.legendmod, q = lm && lm.quadtree;
+        if (!q || typeof q.occupancy !== 'function') return null;
+        try { var o = q.occupancy(4096); return o && o.points > 0 ? o : null; } catch (e) { return null; }
     }
     function metaParts(m) {
         var q = [];
@@ -1426,6 +1488,9 @@
         if (m[13]) q.push(tp('qAtlas', 'text atlas resized {0}x', [m[13]]));
         if (m[14]) q.push(tp('qReplay', 'replay {0} MB', [f1(m[14] / 1048576)]));
         if (m[15]) { var ids = window.drawRender && window.drawRender.GLW_IDS; q.push('Canvas2D: ' + ((ids && ids[m[15]]) || m[15])); }
+        if (m[16] >= 1) q.push(tp('qSkinWaitJob', 'a skin waiting {0} ms for its canvases', [Math.round(m[16])]));
+        if (m[17] >= 1) q.push(tp('qSkinWaitUp', 'a skin waiting {0} ms for its upload', [Math.round(m[17])]));
+        if (m[18]) q.push(tp('qSkinDecodes', 'skin decodes {0} ({1} MB)', [m[18], f1(m[19] / 1048576)]));
         return { s: ', ', p: q };
     }
     /* the timed parts of the frame gap that ends now (a freeze: rare, so a small object) */
@@ -1433,8 +1498,13 @@
         fillMeta(slowMeta, t, g);
         var r = rendererName();
         try { if (r === 'WebGL' && window.WebGL2RenderingContext && window.drawRender.gl instanceof window.WebGL2RenderingContext) r = 'WebGL2'; } catch (e) { }
-        var qp = metaParts(slowMeta);
-        return { r: r, s: topScopes(sc.acc, sc.cnt, sc.names, 0.5, 8), tot: Math.round(slowMeta[7]), q: partsText(qp, null), qp: qp };
+        var qp = metaParts(slowMeta), o = jellyIndex(), x = null;
+        if (o) {
+            x = { points: o.points, cells: o.cells, step: Math.round(o.step * 10) / 10, used: o.used, fullest: o.fullest, perQuery: Math.round(o.perQuery * 10) / 10, mostRead: o.mostRead };
+            jx = x;
+            qp.p.push(tp('qJellyIndex', 'jelly index: fullest bucket {0} points, {1} read per point', [o.fullest, f1(o.perQuery)]));
+        }
+        return { r: r, s: topScopes(sc.acc, sc.cnt, sc.names, 0.5, 8), tot: Math.round(slowMeta[7]), q: partsText(qp, null), qp: qp, jx: x };
     }
     var ctl = newController();
     var overrides = null;
@@ -2072,6 +2142,10 @@
             return k + ' ' + Math.round(s.ms) + ' ms / ' + s.n + 'x, max ' + f1(s.max) + ' ms';
         }).join('; '));
         if (atlas.n) lines.push('Text atlas resized ' + atlas.n + 'x since recording, ' + f1(atlas.bytes / 1048576) + ' MB of new texture');
+        if (qw.cn || qw.un) lines.push('Skin queue waits since recording (queued to done, decode included): canvases ' + qw.cn + (qw.cn ? ', average ' + f1(qw.cSum / qw.cn) + ' ms, longest ' + Math.round(qw.cMax) + ' ms' : '') +
+            '; GPU uploads ' + qw.un + (qw.un ? ', average ' + f1(qw.uSum / qw.un) + ' ms, longest ' + Math.round(qw.uMax) + ' ms' : ''));
+        if (jx) lines.push('Jelly collision index at the last freeze: ' + jx.points + ' points of ' + jx.cells + ' cells, buckets ' + jx.step + ' units (' + jx.used + ' used), fullest ' + jx.fullest +
+            ' points, a point question reads ' + jx.perQuery + ' points on average, ' + jx.mostRead + ' at most (sampled)');
     }
     /* the raw timeline around the last 3 counted freezes and connection gaps (±1 s, at most 120
      * rows each), times from the page's time origin (performance.timeOrigin) */
@@ -2524,6 +2598,9 @@
         connections: function () { return connIds.map(function (id) { var c = conns[id]; return { id: id, kind: c.kind, host: c.host, n: c.n, bytes: c.bytes, world: c.world, gaps: c.gaps, maxGap: c.maxGap, maxCause: c.maxCause, causes: JSON.parse(JSON.stringify(c.causes)), bursts: c.bursts, burstMax: c.burstMax, sendQ: c.sendQ, maxMs: c.maxMs }; }); },
         gpu: function () { return { supported: !!gq.ext, frames: gq.total, max: gq.max, disjoint: gq.disjoint, stats: gq.n ? gpuStats() : null }; },
         timers: function () { return JSON.parse(JSON.stringify(timerStat)); },
+        /* skin queue waits since recording; the jelly index now and at the last freeze */
+        skinWaits: function () { return { canvas: { n: qw.cn, avg: qw.cn ? qw.cSum / qw.cn : 0, max: qw.cMax }, upload: { n: qw.un, avg: qw.un ? qw.uSum / qw.un : 0, max: qw.uMax } }; },
+        jellyIndex: function () { return { now: jellyIndex(), lastFreeze: jx }; },
         /* for tests: the timing scopes (window._lmScope while attribution is on) */
         _scopes: sc,
         hostOf: hostOf,
