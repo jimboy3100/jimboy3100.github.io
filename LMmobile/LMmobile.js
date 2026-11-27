@@ -66,7 +66,9 @@
         'display:flex;flex-direction:row;align-items:flex-end;gap:6px}' +
 
         /* ── Drawer: always visible, horizontal row to right of ☰ ── */
-        '#lm-drawer{display:flex;flex-direction:row;align-items:flex-end;gap:8px;' + /* was 5px: mis-taps toggled AutoPlay */
+        /* wrap-reverse: a row that is too long for the space (repositionButtons sets max-width) goes on
+         * upward in a second row, the menu button stays at the bottom */
+        '#lm-drawer{display:flex;flex-direction:row;flex-wrap:wrap-reverse;align-items:flex-end;gap:8px;' + /* was 5px: mis-taps toggled AutoPlay */
         'pointer-events:auto}' +
 
         /* ── Drawer button: smaller than trigger, equal size ── */
@@ -685,7 +687,8 @@
             sp.querySelector('#lm-bs-v').textContent = this.value + '%';
             applyPrefs();
         });
-        sp.querySelector('#lm-bs').addEventListener('change', function () { savePrefs(); });
+        /* the left row's room is in screen pixels: refit it for the new size */
+        sp.querySelector('#lm-bs').addEventListener('change', function () { savePrefs(); repositionButtons(); });
         sp.querySelector('#lm-hf').addEventListener('input', function () {
             prefs.hudFade = parseInt(this.value, 10) / 100;
             sp.querySelector('#lm-hf-v').textContent = this.value + '%';
@@ -1999,6 +2002,18 @@
                 smallR.style.left = 'auto';
                 smallR.style.bottom = '160px';
             }
+            /* The left row ends before the right-hand controls at the bottom (Split / Feed, the minimap)
+             * and wraps upward from there: with the optional buttons on (quick chat, multibox, ping,
+             * zoom, free spectate) it ran under Feed, and on a 640 px wide phone past the screen edge.
+             * The usual row is shorter than the space, so it stays as it was. */
+            var lim = vw - 4;
+            [rootR, mm].forEach(function (el) {
+                if (!el) return;
+                var q = el.getBoundingClientRect();
+                if (q.width >= 1 && q.height >= 1 && q.bottom > vh - 120 && q.left < lim) lim = q.left;
+            });
+            var dmw = Math.floor(Math.max(48, (lim - 8 - drawer.getBoundingClientRect().left) / (prefs.btnScale || 1))) + 'px';
+            if (drawer.style.maxWidth !== dmw) drawer.style.maxWidth = dmw;
             /* controls placed in the control editor are not in these groups: they only get
              * clamped to the (maybe rotated or resized) screen */
             layoutRefresh();
