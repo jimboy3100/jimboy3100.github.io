@@ -42,6 +42,7 @@
         { "path": "skins/skins3.html", "why": "old address, forwards to skins/" },
         { "path": "skins/skinsworking.html", "why": "old address, forwards to skins/" },
         { "path": "extras/website/index.html", "why": "old address, forwards to the home page" },
+        { "path": "LMexpress/privacy.html", "why": "old address of the extension's privacy policy, forwards to privacy.html#extension" },
         { "path": "LMexpress/legend.sniff2.js", "why": "loaded by old userscript installations" },
         { "path": "discordBot/**", "why": "the Discord bot's public privacy policy and terms (linked from its listing)" }
     ],

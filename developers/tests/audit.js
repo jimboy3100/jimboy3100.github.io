@@ -78,6 +78,26 @@ r = ex('ext/manifest.json', JSON.stringify({ manifest_version: 3, default_locale
 ok(r.refs.some((x) => x.target === 'ext/content.js') && r.refs.some((x) => x.target === 'ext/_locales/de/messages.json'), 'extension manifest and every locale');
 ok(r.refs.some((x) => x.raw === 'gone.js' && x.status === 'missing'), 'missing extension script');
 
+/* this repository's rules: build scripts, their outputs and files a probe reads are not "unused"
+   (nothing links them, so without a rule they were UNREACHABLE: deletion candidates) */
+{
+    const { globMatcher, readJson } = require('../audit/inventory');
+    const root = path.resolve(__dirname, '..', '..');
+    const exr = readJson(path.join(root, 'developers', 'audit', 'exceptions.json'));
+    const pu = readJson(path.join(root, 'developers', 'audit', 'public-urls.json'));
+    const rule = globMatcher(exr.rules), compat = globMatcher(pu.compatibility.map((e) => e.path));
+    const want = { 'developers/extension-zip.js': 'DEVELOPMENT', 'developers/bots-zip.js': 'DEVELOPMENT', 'developers/bench/pixi-mesh.js': 'DEVELOPMENT',
+        'LMexpress/LegendExpressExtension-firefox.zip': 'GENERATED', 'ExampleScripts/agario-bots2/agario-bots.zip': 'GENERATED',
+        'agario/bundle_start.js': 'DEVELOPMENT', 'ogario/protocols/Legendworld.md': 'DEVELOPMENT' };
+    for (const p of Object.keys(want)) {
+        ok(fs.existsSync(path.join(root, p)), p + ' is in the repository');
+        ok((rule(p) || {}).class === want[p], p + ' is ' + want[p] + ' by exceptions.json (got ' + JSON.stringify(rule(p)) + ')');
+    }
+    ok((rule('agario/bundle_end.js') || {}).class === 'HISTORICAL', 'the other agar.io client copies stay historical');
+    ok(!rule('LMexpress/LegendExpressExtension.zip'), 'the Chrome extension download keeps its class from its links');
+    ok(!!compat('LMexpress/privacy.html'), 'the old extension privacy address is a compatibility address');
+}
+
 /* a whole run on a small git repository */
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'lm-audit-test-'));
 try {
