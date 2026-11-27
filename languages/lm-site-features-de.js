@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "Sieh dir an, wie dein letztes Leben gelaufen ist.",
 "site.features.copyStatsButtonOn": "Button zum Kopieren der Stats auf der Game-Over-Karte",
 "site.features.optionalMassGraphOf": "Optionaler Masse-Graph deines Lebens",
-"site.features.optionalAllTimePersonal": "Optionale persönliche Allzeit-Bestwerte mit <i>Neuer Rekord!</i>-Badge",
+"site.features.optionalAllTimePersonal": "Persönliche Allzeit-Bestwerte mit <i>Neuer Rekord!</i>-Badge",
 "site.features.optionalEatenByRow": "Optionale Zeile <i>Gefressen von</i> mit Nick und Masse dessen, der dich gefressen hat",
 "site.features.optionalMatchHistoryYour": "Optionaler Match-Verlauf: deine letzten 50 Spiele im Fenster Analyse (Tab Spielverlauf), mit einem Button unter dem Menü",
 "site.features.sessionSummaryUnderThe": "Sitzungsübersicht unter dem Menü",

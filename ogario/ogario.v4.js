@@ -424,7 +424,7 @@ function _lmEventBanner(data) {
     el.style.display = '';
 }
 window._lmEventBanner = _lmEventBanner;
-/* All-time personal bests (option "personalBests"): kept in this browser only.
+/* All-time personal bests (always on, no option): kept in this browser only.
  * Returns which records this life broke (never on the very first recorded game). */
 function _lmPersonalBests(update) {
     var s = { m: 0, t: 0, g: 0 };
@@ -21734,7 +21734,8 @@ var defaultmapsettings = {
      * the mass graph and the last 20 s (ogario/modules/deathrecap.js). massGraph, showKiller and
      * deathRecap were a switch per part; they are gone (saved values of them are skipped on load). */
     gameOverStats: false,
-    personalBests: false,         /* best mass, longest life and games kept in this browser (localStorage) */
+    /* personalBests is gone: the all-time personal bests are always kept (localStorage) and shown on the
+     * Game Over card, so a saved value of the old switch is skipped on load */
     matchHistory: false,          /* last 50 lives (mass, time alive, killer, server, mode) kept in this browser (localStorage) */
     analytics: false,             /* record games for the Analytics window (ogario/modules/analytics.js; localStorage, capped) */
     killFeed: false,              /* small fading list of your eats of player cells and your deaths, left of the leaderboard */
@@ -27466,7 +27467,7 @@ function thelegendmodproject() {
             this.addOptions(["clickSpectate"], "spectateGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "hideEventBanner", "showTime", "showStopwatch", "killFeed", "massLossAlert", "analytics"], "statsGroup");
             /* Replays and history: the instant replay length slider is added below */
-            this.addOptions(["recordReplays", "matchHistory", "personalBests"], "replayGroup");
+            this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
             $('#recordReplays').closest('label').after($('<button type="button" id="lm-rec-clear" class="btn btn-xs btn-danger" style="display:block;margin:2px 0 6px;"></button>')
                 .attr('data-i18n', 'lmRecClear').text(lmT('lmRecClear'))
@@ -29146,7 +29147,7 @@ function thelegendmodproject() {
             var _lmPracticeLife = !!(window.LMPractice && window.LMPractice.on) || !!window._lmEvReplayOn;
             /* session summary: this life's best mass and time alive */
             if (!_lmPracticeLife) try { _lmSessionStats({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 }); } catch (e) { }
-            if (defaultmapsettings.personalBests && !_lmPracticeLife) {
+            if (!_lmPracticeLife) {
                 try {
                     this._lmNewBest = _lmPersonalBests({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 });
                     this._lmNewBest.at = Date.now();
@@ -49646,7 +49647,6 @@ function thelegendmodproject() {
                 } catch (e) { }
             }
             this._lmRefreshBestRow = function () {
-                if (!defaultmapsettings.personalBests) return;
                 var md = document.getElementById('lm-gameover-modal');
                 var card = md && md.querySelector('.lm-go-card');
                 if (!card) return;

@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "Δείτε πώς πήγε η τελευταία σας ζωή.",
 "site.features.copyStatsButtonOn": "Κουμπί αντιγραφής στατιστικών στην κάρτα Game Over",
 "site.features.optionalMassGraphOf": "Προαιρετικό γράφημα μάζας της ζωής σας",
-"site.features.optionalAllTimePersonal": "Προαιρετικά προσωπικά ρεκόρ όλων των εποχών με σήμα <i>Νέο ρεκόρ!</i>",
+"site.features.optionalAllTimePersonal": "Προσωπικά ρεκόρ όλων των εποχών με σήμα <i>Νέο ρεκόρ!</i>",
 "site.features.optionalEatenByRow": "Προαιρετική γραμμή <i>Σε έφαγε</i> με το nick και τη μάζα αυτού που σας έφαγε",
 "site.features.optionalMatchHistoryYour": "Προαιρετικό ιστορικό αγώνων: τα τελευταία 50 παιχνίδια σας στο παράθυρο Αναλυτικά (καρτέλα Ιστορικό αγώνων), με κουμπί κάτω από το μενού",
 "site.features.sessionSummaryUnderThe": "Σύνοψη συνεδρίας κάτω από το μενού",

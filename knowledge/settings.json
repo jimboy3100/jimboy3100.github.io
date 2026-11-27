@@ -381,7 +381,6 @@
       "settings": [
         "recordReplays",
         "matchHistory",
-        "personalBests",
         "instantReplaySecs"
       ]
     },

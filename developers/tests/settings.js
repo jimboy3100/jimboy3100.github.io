@@ -126,6 +126,10 @@ check('timeFormat is no setting: refused, and a saved value is skipped on load',
   clock.displayTime();
   check('clock: one format, the browser date and time, also with an old saved format', clock.timeHUD.textContent === 'DATE+TIME');
 }
+/* the all-time personal bests are always on: the old switch is no setting, a saved value of it is skipped */
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { personalBests: false })));
+app.loadSettings();
+check('personalBests is no setting: refused, and a saved value is skipped on load', !('personalBests' in D) && V('personalBests', true) === undefined && !('personalBests' in S));
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();

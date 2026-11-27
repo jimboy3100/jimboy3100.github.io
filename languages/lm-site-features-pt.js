@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "Veja como foi a sua última vida.",
 "site.features.copyStatsButtonOn": "Botão de copiar estatísticas no card de Game Over",
 "site.features.optionalMassGraphOf": "Gráfico de massa opcional da sua vida",
-"site.features.optionalAllTimePersonal": "Recordes pessoais de todos os tempos opcionais, com o selo <i>Novo recorde!</i>",
+"site.features.optionalAllTimePersonal": "Recordes pessoais de todos os tempos, com o selo <i>Novo recorde!</i>",
 "site.features.optionalEatenByRow": "Linha opcional <i>Comido por</i> com o nick e a massa de quem te comeu",
 "site.features.optionalMatchHistoryYour": "Histórico de partidas opcional: as suas últimas 50 partidas na janela Análises (aba Histórico de partidas), com um botão abaixo do menu",
 "site.features.sessionSummaryUnderThe": "Resumo da sessão abaixo do menu",

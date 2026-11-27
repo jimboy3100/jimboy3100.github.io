@@ -372,7 +372,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
 - **Gamepad**: Enable, dead zone, move range, curve, zoom sensitivity, trigger, axis inversion, vibrate
 - **Privacy/Extras**: Streamer mode, hide skin URL, hide name, hide country, block popups
-- **Stats**: Game Over card stats, mass graph, kill feed, death recap, mass loss alerts, analytics, personal bests, match history
+- **Stats**: Game Over card stats, mass graph, kill feed, death recap, mass loss alerts, analytics, match history
 - **Merge**: Countdown, sound, progress rings
 - **Indicators**: Opponent colours, rings, virus colours, split range (single/double/triple/quad), virus range, cursor tracking, split prediction, bubble indicators, teammates indicators
 - **Accessibility**: Reduced motion, text scale (1.0-1.6x), HUD text scale, indicators
@@ -383,7 +383,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Names**: No names, optimized, auto-hide, hide mine, hide teammates, stroke
 - **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, mass format (exact / 12.3k / auto), virus spikes, virus mass shots, stroke, relative mass
 - **Spectate**: Click to follow (a player cell, a leaderboard mass, or the minimap in Expanding Land World Spectate)
-- **Replay**: Record replays, match history, personal bests, analytics
+- **Replay**: Record replays, match history, analytics
 - **Macro**: Feeding speed, split delay, pop-split delay
 - **Config**: Settings profiles
 

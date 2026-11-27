@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "查看你上一條命的表現。",
 "site.features.copyStatsButtonOn": "遊戲結束卡片上的複製數據按鈕",
 "site.features.optionalMassGraphOf": "可選的本局質量變化圖",
-"site.features.optionalAllTimePersonal": "可選的歷史個人最佳紀錄，並附 <i>新紀錄！</i> 徽章",
+"site.features.optionalAllTimePersonal": "歷史個人最佳紀錄，並附 <i>新紀錄！</i> 徽章",
 "site.features.optionalEatenByRow": "可選的 <i>被吃掉</i> 列，顯示吃掉你的玩家暱稱與質量",
 "site.features.optionalMatchHistoryYour": "可選的對局紀錄：在「分析」視窗（「對戰記錄」分頁）中顯示最近 50 場對局，選單下方有按鈕",
 "site.features.sessionSummaryUnderThe": "選單下方的本次遊玩摘要",

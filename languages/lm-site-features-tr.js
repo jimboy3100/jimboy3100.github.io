@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "Son canınızın nasıl geçtiğini görün.",
 "site.features.copyStatsButtonOn": "Oyun Sonu kartında istatistikleri kopyalama düğmesi",
 "site.features.optionalMassGraphOf": "Canınız boyunca isteğe bağlı kütle grafiği",
-"site.features.optionalAllTimePersonal": "<i>Yeni rekor!</i> rozetiyle isteğe bağlı tüm zamanların kişisel rekorları",
+"site.features.optionalAllTimePersonal": "<i>Yeni rekor!</i> rozetiyle tüm zamanların kişisel rekorları",
 "site.features.optionalEatenByRow": "Sizi yiyen oyuncunun nick'i ve kütlesiyle isteğe bağlı <i>Yiyen</i> satırı",
 "site.features.optionalMatchHistoryYour": "İsteğe bağlı maç geçmişi: son 50 oyununuz Analiz penceresinde (Maç geçmişi sekmesi), menünün altında bir düğmeyle",
 "site.features.sessionSummaryUnderThe": "Menünün altında oturum özeti",

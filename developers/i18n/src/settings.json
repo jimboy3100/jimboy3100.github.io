@@ -3959,24 +3959,6 @@
     "ja": "ゲームオーバー画面（統計、倒した相手、質量グラフ、直前20秒）",
     "it": "Scheda Game Over (le tue statistiche, chi ti ha mangiato, grafico della massa, gli ultimi 20 s)"
   },
-  "settings.personalBests": {
-    "en": "All-time personal bests (New best! on the Game Over card)",
-    "el": "Προσωπικά ρεκόρ όλων των εποχών (Νέο ρεκόρ! στην κάρτα Game Over)",
-    "es": "Récords personales de siempre (¡Nuevo récord! en la tarjeta de fin de partida)",
-    "bg": "Лични рекорди за всички времена (Нов рекорд! на картата за край на играта)",
-    "fr": "Records personnels (Nouveau record ! sur la carte de fin de partie)",
-    "ar": "أفضل أرقامك على الإطلاق (رقم قياسي جديد! في بطاقة نهاية اللعبة)",
-    "zh": "歷來個人最佳（遊戲結束卡片上的「新紀錄！」）",
-    "ru": "Личные рекорды за всё время (Новый рекорд! на карточке конца игры)",
-    "de": "Persönliche Bestwerte (Neuer Rekord! auf der Game-Over-Karte)",
-    "tr": "Tüm zamanların kişisel rekorları (Oyun sonu kartında Yeni rekor!)",
-    "pl": "Rekordy osobiste (Nowy rekord! na karcie końca gry)",
-    "nl": "Persoonlijke records aller tijden (Nieuw record! op de game-over-kaart)",
-    "pt": "Recordes pessoais de todos os tempos (Novo recorde! no card de Game Over)",
-    "id": "Rekor pribadi sepanjang masa (Rekor baru! di kartu Game Over)",
-    "ja": "自己ベスト記録（ゲームオーバー画面に「新記録！」）",
-    "it": "Record personali di sempre (Nuovo record! nella scheda Game Over)"
-  },
   "settings.matchHistory": {
     "en": "Match history (last 50 games, button under the menu)",
     "el": "Ιστορικό αγώνων (τελευταία 50 παιχνίδια, κουμπί κάτω από το μενού)",

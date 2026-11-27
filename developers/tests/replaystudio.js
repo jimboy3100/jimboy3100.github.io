@@ -242,7 +242,7 @@ function driverEnv(packets, opts) {
   g.setInterval = () => 0; g.clearInterval = () => { };
   g.requestAnimationFrame = () => 0; g.cancelAnimationFrame = () => { };
   g.localStorage = { getItem: () => null, setItem() { } };
-  g.defaultmapsettings = { recordReplays: true, personalBests: true, matchHistory: true };
+  g.defaultmapsettings = { recordReplays: true, matchHistory: true };
   const env = { g, handled: 0, seenCtx: [], log: [], ctxLog: [], hist: [], costMs: opts.costMs || 0, busy: 0 };
   /* a live connection or a replay one (recreateWS: replay tokens play 500 ms after the connect) */
   const connect = t => {
@@ -577,7 +577,8 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     const g = { Math, Date, JSON, Object, Array, String, Number, console: { log: noop, warn: noop } };
     g.window = g;
     g.LMEvents = { _has: () => false, emit: noop };
-    g.defaultmapsettings = { personalBests: true, matchHistory: true };
+    /* no personalBests option: the all-time personal bests are always kept */
+    g.defaultmapsettings = { matchHistory: true };
     g.ogario = { playerScore: 900, play: true };
     g._lmSessionStats = () => calls.push('stats'); g._lmPersonalBests = () => { calls.push('best'); return {}; }; g._lmMatchHistory = () => calls.push('history');
     g.$ = () => ({ text: () => '', val: () => '' });

@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "See how your last life went.",
 "site.features.copyStatsButtonOn": "Copy stats button on the Game Over card",
 "site.features.optionalMassGraphOf": "Optional mass graph of your life",
-"site.features.optionalAllTimePersonal": "Optional all-time personal bests with a <i>New best!</i> badge",
+"site.features.optionalAllTimePersonal": "All-time personal bests with a <i>New best!</i> badge",
 "site.features.optionalEatenByRow": "Optional <i>Eaten by</i> row with the nick and mass that ate you",
 "site.features.optionalMatchHistoryYour": "Optional match history: your last 50 games in the Analytics window (Match history tab), with a button under the menu",
 "site.features.sessionSummaryUnderThe": "Session summary under the menu",

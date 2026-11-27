@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "Вижте как мина последният ви живот.",
 "site.features.copyStatsButtonOn": "Бутон за копиране на статистиката на картата Game Over",
 "site.features.optionalMassGraphOf": "Незадължителна графика на масата през живота ви",
-"site.features.optionalAllTimePersonal": "Незадължителни лични рекорди за всички времена със значка <i>Нов рекорд!</i>",
+"site.features.optionalAllTimePersonal": "Лични рекорди за всички времена със значка <i>Нов рекорд!</i>",
 "site.features.optionalEatenByRow": "Незадължителен ред <i>Изяден от</i> с ника и масата на този, който ви е изял",
 "site.features.optionalMatchHistoryYour": "Незадължителна история на мачовете: последните ви 50 игри в прозореца Анализи (раздел История на игрите), с бутон под менюто",
 "site.features.sessionSummaryUnderThe": "Обобщение на сесията под менюто",

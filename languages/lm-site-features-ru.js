@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "Посмотрите, как прошла ваша последняя жизнь.",
 "site.features.copyStatsButtonOn": "Кнопка копирования статистики на карточке Game Over",
 "site.features.optionalMassGraphOf": "График массы за жизнь по желанию",
-"site.features.optionalAllTimePersonal": "Личные рекорды за всё время со значком <i>Новый рекорд!</i> по желанию",
+"site.features.optionalAllTimePersonal": "Личные рекорды за всё время со значком <i>Новый рекорд!</i>",
 "site.features.optionalEatenByRow": "Строка <i>Съеден игроком</i> с ником и массой того, кто вас съел, по желанию",
 "site.features.optionalMatchHistoryYour": "История матчей по желанию: ваши последние 50 игр в окне «Аналитика» (вкладка «История матчей»), кнопка под меню",
 "site.features.sessionSummaryUnderThe": "Итоги сессии под меню",

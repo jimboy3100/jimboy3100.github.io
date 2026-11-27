@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "Zie hoe je laatste leven ging.",
 "site.features.copyStatsButtonOn": "Knop om stats te kopiëren op de Game Over-kaart",
 "site.features.optionalMassGraphOf": "Optionele massagrafiek van je leven",
-"site.features.optionalAllTimePersonal": "Optionele persoonlijke records aller tijden met een <i>Nieuw record!</i>-badge",
+"site.features.optionalAllTimePersonal": "Persoonlijke records aller tijden met een <i>Nieuw record!</i>-badge",
 "site.features.optionalEatenByRow": "Optionele <i>Opgegeten door</i>-regel met de nick en massa van wie jou opat",
 "site.features.optionalMatchHistoryYour": "Optionele wedstrijdgeschiedenis: je laatste 50 games in het venster Analyse (tabblad Speelgeschiedenis), met een knop onder het menu",
 "site.features.sessionSummaryUnderThe": "Sessieoverzicht onder het menu",

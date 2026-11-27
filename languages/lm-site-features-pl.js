@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "Zobacz, jak poszło ci ostatnie życie.",
 "site.features.copyStatsButtonOn": "Przycisk kopiowania statystyk na karcie Game Over",
 "site.features.optionalMassGraphOf": "Opcjonalny wykres masy z twojego życia",
-"site.features.optionalAllTimePersonal": "Opcjonalne rekordy wszech czasów z odznaką <i>Nowy rekord!</i>",
+"site.features.optionalAllTimePersonal": "Rekordy wszech czasów z odznaką <i>Nowy rekord!</i>",
 "site.features.optionalEatenByRow": "Opcjonalny wiersz <i>Zjedzony przez</i> z nickiem i masą gracza, który cię zjadł",
 "site.features.optionalMatchHistoryYour": "Opcjonalna historia meczów: twoje ostatnie 50 gier w oknie Analityka (karta Historia meczów), z przyciskiem pod menu",
 "site.features.sessionSummaryUnderThe": "Podsumowanie sesji pod menu",

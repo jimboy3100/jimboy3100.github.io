@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "Lihat bagaimana jalannya nyawa terakhirmu.",
 "site.features.copyStatsButtonOn": "Tombol salin statistik di kartu Game Over",
 "site.features.optionalMassGraphOf": "Grafik massa opsional selama kamu hidup",
-"site.features.optionalAllTimePersonal": "Rekor pribadi sepanjang masa (opsional) dengan lencana <i>Rekor baru!</i>",
+"site.features.optionalAllTimePersonal": "Rekor pribadi sepanjang masa dengan lencana <i>Rekor baru!</i>",
 "site.features.optionalEatenByRow": "Baris <i>Dimakan oleh</i> (opsional) berisi nick dan massa pemain yang memakanmu",
 "site.features.optionalMatchHistoryYour": "Riwayat pertandingan opsional: 50 game terakhirmu di jendela Analitik (tab Riwayat pertandingan), dengan tombol di bawah menu",
 "site.features.sessionSummaryUnderThe": "Ringkasan sesi di bawah menu",

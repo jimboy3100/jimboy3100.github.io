@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "اعرف كيف سارت حياتك الأخيرة.",
 "site.features.copyStatsButtonOn": "زر نسخ الإحصائيات على بطاقة نهاية اللعبة",
 "site.features.optionalMassGraphOf": "رسم بياني اختياري لكتلتك خلال حياتك",
-"site.features.optionalAllTimePersonal": "أفضل أرقامك الشخصية على الإطلاق (اختياري) مع شارة <i>رقم قياسي جديد!</i>",
+"site.features.optionalAllTimePersonal": "أفضل أرقامك الشخصية على الإطلاق مع شارة <i>رقم قياسي جديد!</i>",
 "site.features.optionalEatenByRow": "سطر <i>أكلك</i> اختياري يعرض اسم وكتلة من أكلك",
 "site.features.optionalMatchHistoryYour": "سجل مباريات اختياري: آخر 50 مباراة لك في نافذة التحليلات (تبويب سجل المباريات)، مع زر أسفل القائمة",
 "site.features.sessionSummaryUnderThe": "ملخص الجلسة أسفل القائمة",

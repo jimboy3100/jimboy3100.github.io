@@ -72,7 +72,7 @@
 "site.features.seeHowYourLast": "直前のライフの結果を確認できます。",
 "site.features.copyStatsButtonOn": "ゲームオーバーカードに統計コピーボタン",
 "site.features.optionalMassGraphOf": "ライフ中の質量グラフ（任意）",
-"site.features.optionalAllTimePersonal": "歴代の自己ベストと<i>自己ベスト更新！</i>バッジ（任意）",
+"site.features.optionalAllTimePersonal": "歴代の自己ベストと<i>自己ベスト更新！</i>バッジ",
 "site.features.optionalEatenByRow": "あなたを食べた相手のニックネームと質量を示す<i>食べた相手</i>の行（任意）",
 "site.features.optionalMatchHistoryYour": "対戦履歴：直近50試合を「分析」ウィンドウ（「対戦履歴」タブ）に表示、メニューの下にボタン（任意）",
 "site.features.sessionSummaryUnderThe": "メニューの下にセッションのまとめを表示",
