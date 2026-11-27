@@ -77,6 +77,22 @@
             queued.forEach(function (q) { try { real[q[0]].apply(real, q[1]); } catch (er) { } });
         });
     }
+    /* A click on a switch whose box is in a <label> (every Settings switch): Switchery sent a
+     * change with the box's OLD value, then the label ticked the box and sent the real one, so
+     * each click ran its setting twice, first backwards. Turning Performance mode off ran "on"
+     * first, which saved the already lowered effects as the ones to give back: jelly physics
+     * and the other effects stayed off. The label's own change is the only one now. */
+    var fixSwitchery = function (Sw) {
+        var p = Sw && Sw.prototype, orig = p && p.bindClick;
+        if (typeof orig !== 'function' || orig._lmLabelFix) return;
+        p.bindClick = function () {
+            var par = this.element && this.element.parentNode;
+            if (par && par.tagName && par.tagName.toLowerCase() === 'label') return;
+            return orig.apply(this, arguments);
+        };
+        p.bindClick._lmLabelFix = true;
+    };
+    fixSwitchery(window.Switchery);
     if (typeof window.Switchery === 'undefined') {
         var made = [];
         var S = function (el, opts) { made.push([el, opts]); this.element = el; };
@@ -87,6 +103,7 @@
         load('switchery.min.js', function (ok) {
             var real = window.Switchery;
             if (!ok || !real || real._lmStandIn) return;
+            fixSwitchery(real);
             made.forEach(function (m) { try { if (m[0] && m[0].parentNode) new real(m[0], m[1]); } catch (er) { } });
         });
     }
