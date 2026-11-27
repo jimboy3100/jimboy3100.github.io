@@ -39024,21 +39024,28 @@ function thelegendmodproject() {
                         }
                         //style.filter='grayscale(100%)';
                         //
-                        var node = null
+                        var node = null, _lmSkinKey = null;
                         if (lmSkinsShown() && !this.isEjected) {
-                            node = application.getCustomSkin(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti));
+                            /* getCustomSkin in two steps: the key also names the video skin below */
+                            _lmSkinKey = application.customSkinKey(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti));
+                            node = _lmSkinKey ? application.getCachedSkin(application.customSkinsCache, _lmSkinKey) : null;
                         }
                         var node2, node2IsVideo = false;
-                        /* no name, no video skin either (a skin mapped to '' would show on every unnamed cell) */
-                        if (defaultmapsettings.videoSkins && this.targetNick && String(this.targetNick).trim()) {
-                            node2 = LM.gameMode != ":party" ? application.customSkinsMap[this.targetNick] : application.customSkinsMap[this.targetNick + this.color];
+                        /* The video skin is the cell's skin from that same lookup (no name: none), the one
+                         * the WebGL batch hands to this renderer for a video. The name-only map lookup
+                         * here missed a video sent with the cell (Expanding Land skin URLs), so such a
+                         * cell showed no video in either renderer, and it played custom video skins
+                         * with Custom skins off. */
+                        if (defaultmapsettings.videoSkins && _lmSkinKey) {
+                            node2 = _lmSkinKey;
                             if (typeof node2 === 'string' && node2) {
                                 /* cached per URL (a string cannot carry a property: defineProperty threw
                                  * for every skinned cell in every frame) */
                                 var _lmVc = window._lmVideoUrlCache || (window._lmVideoUrlCache = new Map());
                                 node2IsVideo = _lmVc.get(node2);
                                 if (node2IsVideo === undefined) {
-                                    node2IsVideo = node2.includes(".mp4") || node2.includes(".webm") || node2.includes(".ogv");
+                                    /* the WebGL batch's test for a video skin */
+                                    node2IsVideo = /\.(mp4|webm|ogv)(?:[?#]|$)/i.test(node2);
                                     if (_lmVc.size > 2000) _lmVc.clear();
                                     _lmVc.set(node2, node2IsVideo);
                                 }
