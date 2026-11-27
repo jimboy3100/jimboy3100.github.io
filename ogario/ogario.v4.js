@@ -42223,8 +42223,15 @@ function thelegendmodproject() {
                 var opcode = rU8();
                 var self = this;
 
+                /* A packet cut short makes a reader throw a RangeError: caught below, so it does
+                 * not escape into the WASM module that calls this (the main handleMessage does
+                 * the same). Each record is read whole before it is applied. */
+                try {
                 switch (opcode) {
                     case 0: { // Init
+                        /* worldSize u32, clientID u16, count u8, count x u16: all there before the
+                         * map changes or the auth is sent */
+                        if (raw.length < 8 || raw.length < 8 + raw[7] * 2) throw new RangeError('init cut short');
                         var worldSize = rU32();
                         var clientID = rU16();
                         var count = rU8();
@@ -42403,9 +42410,20 @@ function thelegendmodproject() {
                         /* Cells are built like garixUpdateCells/updateCells: indexedCells +
                          * ogarbasicassembly, removed through removeCell(). Positions get the
                          * map rotation (Delta receiveX/receiveY). */
-                        /* diagnostics: its reader throws on a short packet, so getting to the
-                         * end is a complete update */
+                        /* diagnostics: an attempt; complete only when every section was whole
+                         * (a cut one ends as incomplete below, or as rejected in the catch) */
                         if (self._lmND) { self._lmWuRx(0); self._lmWuBegin(); }
+                        /* Layout (Delta ProtocolSenpa): u16 eaten x {u32 eater, u32 victim};
+                         * u16 added x {u32 id, i32 x, i32 y, u16 size, u8 type, type 0: u16 player
+                         * + u24 colour, 2: u24 colour, 5: u16 n + n bytes}; u16 moved x {u32 id,
+                         * i32 x, i32 y, u16 size}; u16 removed x u32 id (0 ends it early); then
+                         * optional extras, ignored. Each section or record is checked against
+                         * the bytes left before it is applied: a packet whose eat section does
+                         * not fit changes nothing; one cut short later keeps what came before
+                         * (the protocol has nothing to undo it with), still gets the own-cell
+                         * death check, and is not counted in packets/s (as when it threw). */
+                        if (raw.length < 5 || raw.length < 5 + dv.getUint16(1, true) * 8) throw new RangeError('eat events cut short');
+                        var _spCut = false;
                         self.megaFFAscore();
                         self.time = Date.now();
                         self.removePlayerCell = false;
@@ -42436,6 +42454,11 @@ function thelegendmodproject() {
                         // Added cells
                         var addedCount = rU16();
                         while (addedCount-- > 0) {
+                            /* the whole record (15 bytes and what its type adds) is there before
+                             * any of it is used; a cut one ends the packet here */
+                            var _spO = _off.v, _spT = raw[_spO + 14];
+                            var _spN = _spO + 15 + (_spT === 0 ? 5 : _spT === 2 ? 3 : _spT === 5 ? 2 : 0);
+                            if (_spN > raw.length || (_spT === 5 && _spN + dv.getUint16(_spO + 15, true) > raw.length)) { _spCut = true; break; }
                             var cellID = rU32();
                             var cx = rI32();
                             var cy = rI32();
@@ -42542,7 +42565,10 @@ function thelegendmodproject() {
                             cell.updateTime = self.time;
                         }
                         // Updated cells
-                        var updatedCount = rU16();
+                        /* fixed 14-byte records: the whole section fits or none of it is used */
+                        var updatedCount = 0;
+                        if (!_spCut && (raw.length - _off.v < 2 || raw.length - _off.v - 2 < dv.getUint16(_off.v, true) * 14)) _spCut = true;
+                        if (!_spCut) updatedCount = rU16();
                         while (updatedCount-- > 0) {
                             var cellID = rU32();
                             var cx = rI32();
@@ -42562,8 +42588,11 @@ function thelegendmodproject() {
                             }
                         }
                         // Removed cells
-                        var removedCount = rU16();
+                        var removedCount = 0;
+                        if (!_spCut && raw.length - _off.v < 2) _spCut = true;
+                        if (!_spCut) removedCount = rU16();
                         while (removedCount-- > 0) {
+                            if (raw.length - _off.v < 4) { _spCut = true; break; }
                             var cellID = rU32();
                             if (cellID === 0) break;
                             var cell = self.indexedCells[cellID];
@@ -42592,6 +42621,13 @@ function thelegendmodproject() {
                             application.showMenu(300);
                             window.userBots.isAlive = false;
                             if (window.userBots.startedBots) window.connectionBots.send(new Uint8Array([5, Number(window.userBots.isAlive)]).buffer);
+                        }
+                        if (_spCut) {
+                            /* incomplete, counted as such: the catch only warns */
+                            if (self._lmND) self._lmWuEnd(false);
+                            var _spE = new RangeError('world update cut short');
+                            _spE.lmCounted = true;
+                            throw _spE;
                         }
                         if (self._lmND) self._lmWuEnd(true);
                         self.countPps();
@@ -42687,6 +42723,16 @@ function thelegendmodproject() {
                     default:
                         console.log('%c[Senpa]%c Unknown opcode: ' + opcode, 'color:#fa3', 'color:inherit');
                         break;
+                }
+                } catch (eSp) {
+                    /* diagnostics as handleMessage: a world update that threw is rejected, another packet counted apart */
+                    if (this._lmND && !eSp.lmCounted && !this._lmWuFail()) this._lmND.pBad++;
+                    if (!(eSp instanceof RangeError)) throw eSp;
+                    var _spNow = Date.now();
+                    if (!(this._lmBadPacketAt > _spNow - 5000)) {
+                        this._lmBadPacketAt = _spNow;
+                        console.warn('[Senpa] Ignoring a truncated packet (opcode ' + opcode + ', ' + raw.length + ' bytes):', eSp.message);
+                    }
                 }
                 return;
             }
@@ -44961,7 +45007,11 @@ function thelegendmodproject() {
                         let isFBFriend = false;
                         position++;
                         if (flags & 2) {
+                            var _lbS = s;
                             nick = encode();
+                            /* every name ends with its 0 (agar.io, Delta writeZTStringZero): one that
+                             * runs to the end of the packet without it is cut short */
+                            if (s === _lbS || data.getUint8(s - 1) !== 0) { _lbCut = true; break; }
                         }
                         if (flags & 4) {
                             if (s + 4 > data.byteLength) { _lbCut = true; break; }
@@ -45535,8 +45585,13 @@ function thelegendmodproject() {
                             if (s + 8 > data.byteLength) break; // need 4+4 for x,y
                             var _pfX = data.getInt32(s, true); s += 4;
                             var _pfY = data.getInt32(s, true); s += 4;
+                            /* nick\0 skin\0: a string without its 0 keeps the previous friend */
+                            var _pfS = s;
                             var _pfNick = encode();
+                            if (s === _pfS || data.getUint8(s - 1) !== 0) break;
+                            _pfS = s;
                             var _pfSkin = encode();
+                            if (s === _pfS || data.getUint8(s - 1) !== 0) break;
                             // Store for minimap rendering if needed
                             this.imsoloPartyFriend = { x: _pfX, y: _pfY, nick: _pfNick, skin: _pfSkin };
                         } else {
@@ -45561,21 +45616,30 @@ function thelegendmodproject() {
                 case 252: // 0xFC — Minimap Ghost Cells (Imsolo/Agar2/private)
                     if (this.serverType === 'imsolo' || this.serverType === 'agar2' || this.serverType === 'private' || this.protocolFamily === 'legacy-multiogar') {
                         if (s + 2 > data.byteLength) break;
+                        /* u16 n x {u16 player, i32 x, i32 y, i32 mass, colour\0, name\0}. Built aside:
+                         * the list (and the cell names below) change only when all n records are
+                         * there with both strings ended by their 0; a cut packet keeps the previous
+                         * list, so no cell is named from a cut name. */
                         var ghostCount = data.getUint16(s, true); s += 2;
-                        this.imsoloGhostCells = [];
-                        if (!this.imsoloPlayersByID) this.imsoloPlayersByID = new Map();
-                        this.imsoloPlayersByID.clear();
-                        for (var gi = 0; gi < ghostCount && s + 14 <= data.byteLength; gi++) {
+                        var _gList = [], _gS;
+                        for (var gi = 0; gi < ghostCount && s + 16 <= data.byteLength; gi++) {
                             var gPlayerID = data.getUint16(s, true); s += 2;
                             var gX = data.getInt32(s, true); s += 4;
                             var gY = data.getInt32(s, true); s += 4;
                             var gMass = data.getInt32(s, true); s += 4;
+                            _gS = s;
                             var gColor = encode();
+                            if (s === _gS || data.getUint8(s - 1) !== 0) break;
+                            _gS = s;
                             var gName = encode();
-                            var gObj = { id: gPlayerID, x: gX, y: gY, mass: gMass, color: gColor, name: gName };
-                            this.imsoloGhostCells.push(gObj);
-                            this.imsoloPlayersByID.set(gPlayerID, gObj);
+                            if (s === _gS || data.getUint8(s - 1) !== 0) break;
+                            _gList.push({ id: gPlayerID, x: gX, y: gY, mass: gMass, color: gColor, name: gName });
                         }
+                        if (_gList.length !== ghostCount) throw new RangeError('ghost cells cut short');
+                        this.imsoloGhostCells = _gList;
+                        if (!this.imsoloPlayersByID) this.imsoloPlayersByID = new Map();
+                        this.imsoloPlayersByID.clear();
+                        for (gi = 0; gi < _gList.length; gi++) this.imsoloPlayersByID.set(_gList[gi].id, _gList[gi]);
                         // Backfill nicknames on existing active cells if ghost map arrives after cells
                         if (this.imsoloPlayersByID.size > 0 && this.cells && this.cells.length > 0) {
                             for (var ci = 0; ci < this.cells.length; ci++) {

@@ -253,7 +253,8 @@ const D = (t) => t.L._lmND;
     check('Sigmally: the cell is there as before', !!t.L.indexedCells[31] && t.L.indexedCells[31].targetNick === 'Sig');
 }
 
-/* 6. Senpa (opcode 20 in onMessage): complete, truncated (its reader throws out of onMessage) */
+/* 6. Senpa (opcode 20 in onMessage): complete, cut inside a record (incomplete), an eat count the
+ * packet cannot hold (rejected); both caught in onMessage, so nothing stays open */
 {
     const sp = (cut) => {
         const w = bytes().u8(20).u16(0).u16(1).u32(41).u32(5).u32(6).u16(90).u8(1).u16(0).u16(0);
@@ -262,10 +263,11 @@ const D = (t) => t.L._lmND;
     const t = twin('Senpa world updates', [
         (t) => { Object.assign(t.L, { serverType: 'senpa', _senpaPlayers: {}, _senpaClients: {} }); clock.t = 7000; t.L.onMessage(msg(sp())); },
         (t) => { clock.t = 7010; t.L.onMessage(msg(sp(true))); },
-        (t) => { clock.t = 7020; t.L.onMessage(msg(sp())); }
+        (t) => { clock.t = 7020; t.L.onMessage(msg(sp())); },
+        (t) => { clock.t = 7030; t.L.onMessage(msg(new DataView(new Uint8Array([20, 255, 0, 0]).buffer))); }
     ]);
     const d = D(t);
-    check('Senpa: complete updates applied; the truncated one (thrown, uncaught) counted as rejected at the next attempt', d.wRx === 3 && d.wOk === 2 && d.wBad === 1 && d.wLost === 1 && d.open === 0, JSON.stringify([d.wOk, d.wBad, d.wLost, d.open]));
+    check('Senpa: complete updates applied; the one cut inside a record incomplete, the eat count that does not fit rejected, none left open', d.wRx === 4 && d.wOk === 2 && d.wPart === 1 && d.wBad === 1 && d.wLost === 0 && d.open === 0 && d.pBad === 0, JSON.stringify([d.wOk, d.wPart, d.wBad, d.wLost, d.open, d.pBad]));
 }
 
 /* 7. replay: playback and seek (packets through handleMessage, not a socket callback) */
