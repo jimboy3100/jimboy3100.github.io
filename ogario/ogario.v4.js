@@ -26897,18 +26897,32 @@ function thelegendmodproject() {
                     /* mouse buttons are bound in the key fields: the window's line that says how */
                     var mLab = lmT('pkg.mb.mouseButtons'), mInst = $('#hotkeys-inst [data-i18n="pkg.mb.hkInstMouse"]');
                     if (q && !newOnly && mInst.length && (norm(mLab).indexOf(q) >= 0 || (q.length >= 4 && norm(mInst.text()).indexOf(q) >= 0))) hits.push(['hotkeys-inst', mLab]);
-                    if (!hits.length) { hkHint.hide(); return; }
-                    hkHint.append($('<span style="margin-right:4px;"></span>').attr('data-i18n', 'pkg.hk.searchHint').text(lmT('pkg.hk.searchHint')));
-                    hits.forEach(function (h) {
-                        $('<button type="button" class="btn btn-xs btn-info lm-ss-hk-go" style="margin:0 4px 2px 0;white-space:normal;"></button>')
-                            .attr('data-hk-id', h[0]).text(h[1]).appendTo(hkHint);
+                    /* gameplay settings whose slider is in the Theme tab (HUD text size, Theme > HUD):
+                     * found here as before they moved, a click opens the Theme tab at them */
+                    var thHits = [];
+                    if (q && !newOnly) $('#theme .slider-box input[type="range"][id$="-slider"]').each(function () {
+                        var k = this.id.slice(0, -7), txt = $.trim($(this).closest('.slider-box').find('.value-label').first().text()).replace(/:$/, '');
+                        if (Object.prototype.hasOwnProperty.call(defaultmapsettings, k) && txt && norm(txt).indexOf(q) >= 0) thHits.push([k, txt]);
+                    });
+                    if (!hits.length && !thHits.length) { hkHint.hide(); return; }
+                    [[hits, 'pkg.hk.searchHint'], [thHits, 'pkg.r26bw.themeHint']].forEach(function (g) {
+                        if (!g[0].length) return;
+                        hkHint.append($('<span style="margin-right:4px;"></span>').attr('data-i18n', g[1]).text(lmT(g[1])));
+                        g[0].forEach(function (h) {
+                            $('<button type="button" class="btn btn-xs btn-info lm-ss-hk-go" style="margin:0 4px 2px 0;white-space:normal;"></button>')
+                                .attr('data-hk-id', h[0]).text(h[1]).appendTo(hkHint);
+                        });
                     });
                     hkHint.show();
                 };
                 hkHint.on('click', '.lm-ss-hk-go', function (e) {
                     e.preventDefault();
                     var CC = window.LMCommandCentre;
-                    if (!(CC && typeof CC.reveal === 'function' && CC.reveal(this.getAttribute('data-hk-id')))) $('.hotkeys-link').first().trigger('click');
+                    var id = this.getAttribute('data-hk-id');
+                    if (CC && typeof CC.reveal === 'function' && CC.reveal(id)) return;
+                    var sl = document.getElementById(id + '-slider');
+                    if (sl && $(sl).closest('#theme').length) $('.menu-tabs a[href="#theme"]').first().trigger('click');
+                    else $('.hotkeys-link').first().trigger('click');
                 });
                 var apply = function () {
                     var q = norm(inp.val()).trim();

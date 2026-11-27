@@ -2,6 +2,7 @@
 // "at the top" / "at the bottom centre" switches); choosing a value moves the stats line.
 // HUD text size is in Theme > HUD right after HUD scale (not in Settings > Accessibility), still the
 // gameplay setting: moving it changes legendmod5.a11yHudTextScale and is saved with the settings.
+// The Settings search finds it there and its button opens Theme > HUD (it found nothing after the move).
 (async () => {
   var fail = [], info = {};
   var S = window.legendmod5;
@@ -41,6 +42,31 @@
     ts.value = String(tWas);
     ts.dispatchEvent(new Event('input', { bubbles: true }));
     ts.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+  // the Settings search still finds it (it did in Settings > Accessibility) and its button opens
+  // the Theme tab at it
+  var ss = document.getElementById('lm-settings-search');
+  if (ts && ss) {
+    var lab = $.trim($(tsBox).find('.value-label').first().text()).replace(/:$/, '');
+    var activeTab = $('.menu-tabs li.active a').first();
+    ss.value = lab;
+    ss.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise(function (r) { setTimeout(r, 300); });
+    var go = $('#lm-ss-hk .lm-ss-hk-go[data-hk-id="a11yHudTextScale"]');
+    info.search = lab + ': ' + go.length;
+    if (!go.length) fail.push('the Settings search does not find HUD text size (' + lab + ')');
+    else {
+      go.trigger('click');
+      await new Promise(function (r) { setTimeout(r, 900); });
+      var thActive = $('.menu-tabs a[href="#theme"]').parent().hasClass('active') || $('#theme').hasClass('active');
+      var hudPane = $('#theme-hud');
+      info.searchGo = thActive + '/' + (hudPane.css('display') !== 'none');
+      if (!thActive || hudPane.css('display') === 'none') fail.push('the search button does not open Theme > HUD: ' + info.searchGo);
+    }
+    ss.value = '';
+    ss.dispatchEvent(new Event('input', { bubbles: true }));
+    await new Promise(function (r) { setTimeout(r, 200); });
+    if (activeTab.length) activeTab.trigger('click');
   }
   return { fail: fail, info: info };
 })()
