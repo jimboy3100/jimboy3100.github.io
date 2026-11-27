@@ -345,7 +345,6 @@ if($('#leadbtext').val()==""){
 	$("#leaderboard-hud > h5").text(Languageletter299);
 };
 $("#ChatBtn").attr("data-original-title", Languageletter300);
-$("#SendCommands").attr("data-original-title", Languageletter301);
 $("#Images").attr("data-original-title", Languageletter302);
 $("#yout").attr("data-original-title", Languageletter303);
 $("#Cutnames").attr("data-original-title", Languageletter304);
@@ -373,12 +372,6 @@ $('#backgroundPic>option:nth-child(3)').text(Languageletter321);
 $('#backgroundPic>option:nth-child(4)').text(Languageletter322);
 $('#backgroundPic>option:nth-child(5)').text(Languageletter323);
 
-$('#msgcommand1').attr("data-original-title", Languageletter324);
-$('#msgcommand2').attr("data-original-title", Languageletter325);
-$('#msgcommand3').attr("data-original-title", Languageletter326);
-$('#msgcommand4').attr("data-original-title", Languageletter327);
-$('#msgcommand5').attr("data-original-title", Languageletter328);
-$('#msgcommand6').attr("data-original-title", Languageletter329);
 
 
 $('#minimapPicture').attr('placeholder',Languageletter331).attr('data-original-title',Languageletter330);
