@@ -21669,7 +21669,7 @@ if (!textLanguage) textLanguage = displayText['en'] || {};
 displayText[lang] = textLanguage;
 /* Expose textLanguage globally so hotkeysCommand.js (loaded as a separate <script>) and the modules can
  * read the labels. A language change updates this same object (rows built later, hotkey names and
- * tooltips read it anew); the settings rows already built keep their text until a reload. */
+ * tooltips read it anew); the rows already built are renamed by the handlers below. */
 window.textLanguage = textLanguage;
 /* English labels for the Command Centre search (it matches the English text in every language) */
 window._lmEnglishLabels = displayText['en'] || {};
@@ -21693,6 +21693,24 @@ if (window.LMi18n) window.LMi18n.onChange(function () {
         var s = textLanguage[f.id.replace(/-slider$/, '')];
         if (typeof s === 'string' && s) name(t, s);
     });
+});
+/* Choose Language: the Settings tab's switches, sliders and section headings take the new names at once
+ * (they kept the language they were built in until a reload, and the language pack handler's English
+ * replacements stayed after a switch back). Only rows built from their own setting's name carry
+ * data-lm-key (addOptions, addOptionTo, addSliderBox); the text before the switch or the ": " stays. */
+if (window.LMi18n) window.LMi18n.onChange(function () {
+    var root = document.getElementById('og-options');
+    if (!root) return;
+    var rows = root.querySelectorAll('[data-lm-key]');
+    for (var i = 0; i < rows.length; i++) {
+        var s = textLanguage[rows[i].getAttribute('data-lm-key')];
+        if (typeof s !== 'string' || !s || s.indexOf('<') >= 0) continue;
+        for (var n = rows[i].firstChild; n; n = n.nextSibling) if (n.nodeType === 3 && /\S/.test(n.nodeValue)) {
+            var m = /^(\s*)[\s\S]*?(\s*:?\s*)$/.exec(n.nodeValue);
+            n.nodeValue = m[1] + s + m[2];
+            break;
+        }
+    }
 });
 
 defineChatCommand();
@@ -26131,11 +26149,11 @@ function thelegendmodproject() {
          * Command Centre, the probes and the modules use to find it. */
         addOptions(options, section, head) {
             if (options) {
-                $('#og-options').append('<div class=\"options-box ' + section + '\"><h5 class=\"menu-main-color\">' + this._lmMenuText(head || section) + '</h5></div>');
+                $('#og-options').append('<div class=\"options-box ' + section + '\"><h5 class=\"menu-main-color\" data-lm-key=\"' + (head || section) + '\">' + this._lmMenuText(head || section) + '</h5></div>');
                 for (var i = 0; i < options.length; i++) {
                     var option = options[i];
                     if (defaultmapsettings.hasOwnProperty(option)) {
-                        $('.' + section).append('<label>' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
+                        $('.' + section).append('<label data-lm-key=\"' + option + '\">' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
                         $('#' + option).prop('checked', defaultmapsettings[option]);
                     }
                 }
@@ -26144,7 +26162,7 @@ function thelegendmodproject() {
         /* One more switch in an options box made by addOptions (same markup). */
         addOptionTo(section, option) {
             if (!defaultmapsettings.hasOwnProperty(option)) return;
-            $(section).append('<label>' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
+            $(section).append('<label data-lm-key=\"' + option + '\">' + this._lmMenuText(option) + ' <input type=\"checkbox\" class=\"js-switch\" id=\"' + option + '\"></label>');
             $('#' + option).prop('checked', defaultmapsettings[option]);
         },
         /* The gamepad and the conflict list in the Hotkeys window, above the keys: every input
@@ -26262,7 +26280,7 @@ function thelegendmodproject() {
             /* the range and step come from the settings schema, not from the call */
             var _lmRule = Object.prototype.hasOwnProperty.call(LM_SETTINGS_SCHEMA, name) && Array.isArray(LM_SETTINGS_SCHEMA[name]) ? LM_SETTINGS_SCHEMA[name] : null;
             if (_lmRule) { min = _lmRule[0]; max = _lmRule[1]; step = _lmRule[2] > 0 ? _lmRule[2] : 'any'; }
-            $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\"></span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\"></div>');
+            $(id).append('<div class=\"slider-box\"><div class=\"box-label\"><span class=\"value-label\" data-lm-key=\"' + name + '\">' + textLanguage[name] + ': </span><span id=\"' + name + '-value\" class=\"value\"></span></div><input id=\"' + name + '-slider\" type=\"range\" min=\"' + min + '\" max=\"' + max + '\" step=\"' + step + '\"></div>');
             var app = this;
             /* The slider's range is the setting's valid range: a stored or imported value outside
              * it (animation delay -10, gamepad dead zone 4) or between its steps is brought onto
