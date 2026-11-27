@@ -230,7 +230,7 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         await new Promise(resolve => w2.LMi18n.setLang('fr', resolve));
         ok(w2.LMi18n.loaded('fr') && w2.lmT('leagues') === all.core.leagues.fr, 'non-registering primary script retries alternate host');
     }
-    /* Discover cards must match the feature titles, and all mod packs must actually register. */
+    /* all mod packs must actually register */
     {
         const w = page({});
         w.run('languages/lm-i18n.js');
@@ -239,8 +239,6 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
             await new Promise(resolve => w.LMi18n.setLang(code, resolve));
             ok(w.LMi18n.loaded(code) && w.LMi18n.lang() === code, code + ': mod pack registered');
             ok(w.lmT('discord.post') === (all.discord['discord.post'][code] || all.discord['discord.post'].en), code + ': Discord button');
-            ok(w.lmT('modules.discovery.card.plugins') === w.lmT('lmx.sn.title'), code + ': Discover User Scripts title');
-            ok(w.lmT('modules.discovery.card.replayStudio') === w.lmT('modules.replaystudio.title'), code + ': Discover Replay Studio title');
         }
     }
     /* Locale IDs are append-only. The four added last (13-16) are released like the first twelve:

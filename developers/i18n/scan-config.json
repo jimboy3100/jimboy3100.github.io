@@ -31,7 +31,6 @@
     "languages/lm-i18n.js",
     "lib/lm-i18n.js",
     "developers/i18n/runtime.js",
-    "ogario/modules/discovery.js",
     "ogario/modules/notifications.js",
     "ogario/modules/profiles.js",
     "ogario/modules/themeworkshop.js",

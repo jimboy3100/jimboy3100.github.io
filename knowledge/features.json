@@ -123,12 +123,6 @@
       "url": "https://www.legendmod.ml/features.html"
     },
     {
-      "id": "discovery",
-      "name": "Discovery / Feature Guide",
-      "description": "17 feature guide cards with one-tap option switches. Opened from the link in the \"What's new\" toast after an update (never by itself). Server compatibility table: 9 server types × 14 capabilities (replays, multibox, merge countdown, spectate, chat, etc.). Shows 'What works on this server' per connection.",
-      "url": "https://www.legendmod.ml/features.html"
-    },
-    {
       "id": "accessibility",
       "name": "Accessibility features",
       "description": "Reduced motion (no death shake, particles, entrance spin). Menu text scale (1.0-1.6x). HUD text scale (independent). Colour-blind safe theme preset (Okabe-Ito). Clean HUD preset. Focus warning toast.",

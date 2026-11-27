@@ -27538,8 +27538,14 @@ function thelegendmodproject() {
                     mbRingsP1: ['mbRingSizeP1'],
                     mbRingsP2: ['mbRingSizeP2']
                 };
-                /* option -> row of the Discovery support table (ogario/modules/discovery.js) */
-                var SRV = { hudMergeCountdown: 'mergeCountdown', hudMergeSound: 'mergeCountdown', splitPrediction: 'splitPrediction', recordReplays: 'replays', instantReplaySecs: 'replays' };
+                /* option -> the server types it works on (checked against the code): the merge countdown and
+                 * split prediction need agar.io's merge times (LM.integrity && !LM.isLegendWorld); replays are
+                 * recorded in _lmHandlePacket, which Sigmally and Senpa packets never reach */
+                var SRV_AGARIO = ['agario'], SRV_REPLAYS = ['agario', 'expandingland', 'garix', 'imsolo', 'agar2', 'deltio', 'private'];
+                var SRV = { hudMergeCountdown: SRV_AGARIO, hudMergeSound: SRV_AGARIO, splitPrediction: SRV_AGARIO, recordReplays: SRV_REPLAYS, instantReplaySecs: SRV_REPLAYS };
+                /* server type (window.legendmod.serverType) -> its name; private servers: modules.profiles.serverPrivate */
+                // i18n-ok: server proper names
+                var SRV_NAMES = { agario: 'agar.io', expandingland: 'Expanding Land', senpa: 'Senpa', garix: 'Garix', sigmally: 'Sigmally', imsolo: 'Imsolo', agar2: 'Agar2', deltio: 'delt.io', private: '' };
                 var parentOf = {}, keys = [];
                 Object.keys(DEPS).forEach(function (p) {
                     DEPS[p].forEach(function (c) { parentOf[c] = p; if (keys.indexOf(c) < 0) keys.push(c); });
@@ -27556,23 +27562,18 @@ function thelegendmodproject() {
                     var it = $(el).closest('.slider-box, .input-box, label');
                     return it.length ? it : null;
                 };
-                /* the connected server's type and whether a support row says it does not work there */
-                var core = function () { var D = window.LMDiscovery; return D && D.core && Array.isArray(D.core.CAPS) ? D.core : null; };
-                var srvNote = function (capId) {
-                    var c = core();
-                    if (!c) return '';
-                    var type = '';
-                    try { type = c.serverTypeOf(window.legendmod); } catch (e) { type = ''; }
-                    if (!type) return '';
-                    for (var i = 0; i < c.CAPS.length; i++) {
-                        if (!c.CAPS[i] || c.CAPS[i].id !== capId) continue;
-                        if (c.capValue(c.CAPS[i], type) !== 'n') return '';
-                        /* the server's name from the support table (it has no 'en' field: the note said "(undefined)") */
-                        var name = type;
-                        (c.SERVER_TYPES || []).forEach(function (s) { if (s && s.id === type) name = s.name || (typeof c.t === 'function' ? c.t('type.' + type) : type); });
-                        return app._lmMenuText('lmDepServer') + ' (' + name + ')';
-                    }
-                    return '';
+                /* the connected server's type ('' when unknown or not connected) */
+                var srvType = function (LM) {
+                    if (!LM || typeof LM !== 'object') return '';
+                    if (LM.isLegendWorld === true) return 'expandingland';
+                    var t = typeof LM.serverType === 'string' ? LM.serverType : '';
+                    return Object.prototype.hasOwnProperty.call(SRV_NAMES, t) ? t : '';
+                };
+                /* why an option does nothing on the connected server ('' when it works there) */
+                var srvNote = function (types) {
+                    var type = srvType(window.legendmod);
+                    if (!type || types.indexOf(type) >= 0) return '';
+                    return app._lmMenuText('lmDepServer') + ' (' + (SRV_NAMES[type] || lmT('modules.profiles.serverPrivate')) + ')';
                 };
                 var mark = function (it, why) {
                     var was = it.hasClass('lm-dep-off');
@@ -89211,16 +89212,6 @@ Object.defineProperty(Array.prototype, 'stDev', {
     /* Skin editor removed — use the standalone Skin Checker & Editor at legendmod.ml/skins/skinchecker.html */
     window.lmMacroEditor = _lmLazyModule('macroeditor.js', 'LMMacroEditor', 'game2.macroEditor'); /* the name is a key: the load error toast translates it */
     try { if (localStorage.getItem('lmCustomMacros')) window.lmMacroEditor('load'); } catch (e) { }
-    /* Discover features guide and "What works on this server" (the link of the "What's new" toast) */
-    try {
-        var discoveryScript = document.createElement('script');
-        discoveryScript.type = 'text/javascript';
-        discoveryScript.src = 'https://www.legendmod.ml/ogario/modules/discovery.js?v=' + (window.OgVer || '');
-        discoveryScript.charset = 'utf-8';
-        document.body.appendChild(discoveryScript);
-    } catch (e) {
-        console.warn('[LM] Error loading discovery script:', e);
-    }
     /* Theme workshop window (Theme tab button, hotkey without a default key);
      * nothing runs until it is opened */
     try {

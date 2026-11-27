@@ -103,25 +103,30 @@
     });
     info.dimmed = $('#og-options .lm-dep-off').length;
     /* a server without a feature: its note names the server (it said "(undefined)") */
-    var Dc = window.LMDiscovery && LMDiscovery.core;
-    if (!Dc || typeof Dc.capValue !== 'function') fail.push('no Discover support table');
+    var LMc = window.legendmod;
+    if (!LMc) fail.push('no window.legendmod');
     else {
-      var cv0 = Dc.capValue, st0 = Dc.serverTypeOf, ct0 = defaultmapsettings.cursorTracking, spWhy = function () { return String($('#splitPrediction').closest('label').attr('data-lm-why') || ''); };
+      var st0 = LMc.serverType, lw0 = LMc.isLegendWorld, ct0 = defaultmapsettings.cursorTracking, spWhy = function () { return String($('#splitPrediction').closest('label').attr('data-lm-why') || ''); };
       try {
         /* Split prediction also needs Cursor tracking: that note comes first while it is off */
         defaultmapsettings.cursorTracking = true;
-        Dc.capValue = function () { return 'n'; };
-        Dc.serverTypeOf = function () { return 'senpa'; };
+        LMc.isLegendWorld = false;
+        LMc.serverType = 'senpa';
         application._lmDepRefresh();
         info.serverNote = spWhy();
         if (info.serverNote !== application._lmMenuText('lmDepServer') + ' (Senpa)') fail.push('server note: ' + info.serverNote);
-        Dc.serverTypeOf = function () { return 'private'; };
+        LMc.serverType = 'private';
         application._lmDepRefresh();
-        if (spWhy() !== application._lmMenuText('lmDepServer') + ' (' + lmT('modules.discovery.type.private') + ')') fail.push('private server note: ' + spWhy());
+        if (spWhy() !== application._lmMenuText('lmDepServer') + ' (' + lmT('modules.profiles.serverPrivate') + ')') fail.push('private server note: ' + spWhy());
+        /* replays work on private servers: no note there */
+        if ($('#recordReplays').closest('label').attr('data-lm-why')) fail.push('replays dimmed on a private server');
+        LMc.serverType = 'agario';
+        application._lmDepRefresh();
+        if (spWhy()) fail.push('split prediction dimmed on agar.io: ' + spWhy());
         defaultmapsettings.cursorTracking = false;
         application._lmDepRefresh();
         if (spWhy().indexOf(application._lmMenuText('lmDepNeeds')) !== 0) fail.push('split prediction without cursor tracking: ' + spWhy());
-      } finally { Dc.capValue = cv0; Dc.serverTypeOf = st0; defaultmapsettings.cursorTracking = ct0; application._lmDepRefresh(); }
+      } finally { LMc.serverType = st0; LMc.isLegendWorld = lw0; defaultmapsettings.cursorTracking = ct0; application._lmDepRefresh(); }
     }
     // the Game Over card is one switch: no switch per part of it
     ['massGraph', 'showKiller', 'deathRecap'].forEach(function (k) {

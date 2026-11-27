@@ -346,12 +346,6 @@ Extend Legend Mod with custom JavaScript. Features:
 - **Catalogue**: Browse example plugins
 - **Version compatibility checking**: minVersion/maxVersion enforcement
 
-### 26. Discovery / Feature Guide
-Feature guide cards that introduce Legend Mod features. Features:
-- **One-tap option switches**: Try features directly from guide cards
-- **Opened from**: the link in the "What's new" toast after an update (never by itself)
-- **Server compatibility table**: "What works on this server" per server type (agar.io, Expanding Land, private servers)
-
 ### 27. Additional Presets
 Beyond Streamer, Legend Mod offers one-click presets:
 - **Competitive**: Enables opponent colours, rings, virus colours, split range, merge rings, mass, FPS/PPS stats
