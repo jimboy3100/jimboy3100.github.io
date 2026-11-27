@@ -548,8 +548,11 @@
     <script>
         /* A touch-only device, not any device with a touchscreen (touch laptops have a mouse). */
         if (window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(any-pointer: fine)').matches) {
+            /* the page's own ?v= (as ogario.v4.js above), so a release never pairs new files with an old LMmobile.js from the cache */
+            var _lmv = document.querySelector('script[src*="/ogario/ogario.v4.js"]');
             var _lmm = document.createElement('script');
-            _lmm.src = 'https://www.legendmod.ml/LMmobile/LMmobile.js?v=3.697';
+            _lmm.charset = 'utf-8';
+            _lmm.src = 'https://www.legendmod.ml/LMmobile/LMmobile.js' + (_lmv ? (/\?v=[^&#]+/.exec(_lmv.src) || [''])[0] : '');
             document.body.appendChild(_lmm);
         }
     </script>
