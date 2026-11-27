@@ -3851,24 +3851,6 @@
     "ja": "HUD背景のぼかし（0 = オフ）",
     "it": "Sfocatura sfondo HUD (0 = off)"
   },
-  "settings.timeFormat": {
-    "en": "Clock format (0 date+time, 1 time, 2 24h)",
-    "el": "Μορφή ρολογιού (0 ημερομηνία+ώρα, 1 ώρα, 2 24ωρο)",
-    "es": "Formato del reloj (0 fecha+hora, 1 hora, 2 24h)",
-    "bg": "Формат на часовника (0 дата+час, 1 час, 2 24ч)",
-    "fr": "Format de l'horloge (0 date+heure, 1 heure, 2 24h)",
-    "ar": "صيغة الساعة (0 تاريخ+وقت، 1 وقت، 2 24 ساعة)",
-    "zh": "時鐘格式（0 日期+時間，1 時間，2 24 小時制）",
-    "ru": "Формат часов (0 дата+время, 1 время, 2 24ч)",
-    "de": "Uhrformat (0 Datum+Zeit, 1 Zeit, 2 24h)",
-    "tr": "Saat biçimi (0 tarih+saat, 1 saat, 2 24s)",
-    "pl": "Format zegara (0 data+czas, 1 czas, 2 24h)",
-    "nl": "Klokformaat (0 datum+tijd, 1 tijd, 2 24u)",
-    "pt": "Formato do relógio (0 data+hora, 1 hora, 2 24h)",
-    "id": "Format jam (0 tanggal+waktu, 1 waktu, 2 24j)",
-    "ja": "時計の形式（0 日付+時刻、1 時刻、2 24時間）",
-    "it": "Formato orologio (0 data+ora, 1 ora, 2 24h)"
-  },
   "settings.massInTitle": {
     "en": "Mass in the browser tab title",
     "el": "Μάζα στον τίτλο της καρτέλας",

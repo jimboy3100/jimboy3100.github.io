@@ -246,7 +246,7 @@
 "site.index.themeTemplatesLegendHelper": "Theme templates (Legend Helper) keep your profiles, hotkeys and chat commands; exports include hidden profiles.",
 "site.index.expandingLandEscCloses": "Expanding Land: Esc closes only the top window, potion buttons cannot be pressed twice, logout closes all shop windows.",
 "site.index.newSettingsSearchBox": "<b>New:</b> settings search box, a <b>Bound keys</b> list in Hotkeys, a session summary under the menu, an optional <b>FPS limit</b> (saves battery), and a hotkey to toggle Performance mode.",
-"site.index.newOptionsOffBy": "<b>New options</b> (off by default): time alive in the stats, mass in the tab title, desktop notification when someone mentions you, rainbow map borders, HUD blur, clock format, merge rings on/off. Server and party boxes now suggest your last 5 joins.",
+"site.index.newOptionsOffBy": "<b>New options</b> (off by default): time alive in the stats, mass in the tab title, desktop notification when someone mentions you, rainbow map borders, HUD blur, merge rings on/off. Server and party boxes now suggest your last 5 joins.",
 "site.index.expandingLandHotkeysFor": "<b>Expanding Land:</b> hotkeys for Leagues, Shop, Challenges, Potions and Claim All; Claim All shows when something is ready. <b>Mobile:</b> optional quick chat buttons, multibox button, and vibration settings.",
 "site.index.new": "New:",
 "site.index.replayPauseSpeedAnd": "replay pause, speed and seek hotkeys; multibox view and ring hotkeys; optional sounds for 16 pieces and viruses; optional trail of your path on the minimap; a copy button on the Game Over card. Replays no longer jump to the end at Start.",

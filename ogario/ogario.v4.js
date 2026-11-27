@@ -21624,7 +21624,7 @@ var defaultmapsettings = {
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
     rainbowBorderSpeed: 5,        /* 5 = the original speed */
     hudBlur: 0,                   /* frosted-glass blur behind HUD panels, px (0 = off) */
-    timeFormat: 0,                /* clock HUD: 0 date+time (as before), 1 time, 2 24h */
+    /* timeFormat (clock format) is gone: the clock always shows the browser's date and time; saved values are skipped on load */
     massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
     showStatsJitter: false,       /* standard deviation of the last 20 pings, shown as PING: 45 ±6 */
@@ -21730,7 +21730,6 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     massFormat: [1, 3, 1],
     rainbowBorderSpeed: [1, 20, 1],
     hudBlur: [0, 8, 1],
-    timeFormat: [0, 2, 1],
     massLossPct: [10, 90, 5],
     animation: [5, 200, 1],
     macroFeeding: [1, 160, 1],
@@ -24952,12 +24951,7 @@ function thelegendmodproject() {
         },
         displayTime() {
             if (defaultmapsettings.showTime) {
-                /* Clock format: 0 = date and time (as before), 1 = time only, 2 = 24-hour HH:MM:SS */
-                var _lmNowD = new Date(), _lmTf = +defaultmapsettings.timeFormat || 0, time;
-                if (_lmTf === 1) time = _lmNowD.toLocaleTimeString();
-                else if (_lmTf === 2) time = ('0' + _lmNowD.getHours()).slice(-2) + ':' + ('0' + _lmNowD.getMinutes()).slice(-2) + ':' + ('0' + _lmNowD.getSeconds()).slice(-2);
-                else time = _lmNowD.toLocaleString();
-                this.timeHUD.textContent = time;
+                this.timeHUD.textContent = new Date().toLocaleString();
                 this._lmClockClear();
                 if (!this._displayTimeInterval) {
                     var app = this;
@@ -27270,7 +27264,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'timeFormat', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27449,7 +27443,6 @@ function thelegendmodproject() {
                 .attr('data-i18n', 'settings.lmPerfDiag').text(lmT('settings.lmPerfDiag')).appendTo('.perfGroup')
                 .on('click', function () { if (window.LMPerf) window.LMPerf.openDiag(); return false; });
             this.addSliderBox(".replayGroup", "instantReplaySecs", 15, 60, 15);
-            this.addSliderBox(".statsGroup", "timeFormat", 0, 2, 1, "displayTime");
             /* one choice for the mass text ("Short mass" was a second switch for the same) */
             this.addChoiceBox(".massGroup", "massFormat", "settings.massFormat", [[1, 'pkg.mg.massExact'], [2, 'pkg.mg.massShort'], [3, 'pkg.mg.massAuto']]);
             this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");

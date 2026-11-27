@@ -111,6 +111,21 @@ S.volMaster = 0.5; S.volChat = 0.4; S.volGameplay = 1;
 check('sound volume: own volume x master; other sounds the master only; video level x master', Math.abs(ctx.lmSoundVolume('volChat') - 0.2) < 1e-12 && ctx.lmSoundVolume('volGameplay') === 0.5 && ctx.lmSoundVolume('') === 0.5 && Math.abs(ctx._lmVideoVol(0.8) - 0.4) < 1e-12);
 S.volMaster = 'x'; S.volChat = 7;
 check('sound volume: a bad value counts as 1, kept inside 0..1', ctx.lmSoundVolume('volChat') === 1 && ctx._lmVideoVol(3) === 1 && ctx._lmVideoVol(NaN) === 0);
+/* the clock format option is gone: a saved format is skipped and the clock shows the browser's
+ * date and time (its format before the option existed) */
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { timeFormat: 2 })));
+app.loadSettings();
+check('timeFormat is no setting: refused, and a saved value is skipped on load', !('timeFormat' in D) && V('timeFormat', 2) === undefined && !('timeFormat' in S));
+{
+  const src = cut('displayTime() {', '/* The clock has a fixed top');
+  const cctx = { defaultmapsettings: { showTime: true, timeFormat: 2 }, $() { return { hide() { } }; }, setInterval() { return 1; }, clearInterval() { } };
+  cctx.Date = function () { return { toLocaleString: () => 'DATE+TIME', toLocaleTimeString: () => 'TIME', getHours: () => 1, getMinutes: () => 2, getSeconds: () => 3 }; };
+  vm.createContext(cctx);
+  const clock = vm.runInContext('({' + src.trim().replace(/,\s*$/, '') + '})', cctx);
+  clock.timeHUD = {}; clock._lmClockClear = function () { };
+  clock.displayTime();
+  check('clock: one format, the browser date and time, also with an old saved format', clock.timeHUD.textContent === 'DATE+TIME');
+}
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();

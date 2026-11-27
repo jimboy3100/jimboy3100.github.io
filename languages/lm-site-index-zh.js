@@ -246,7 +246,7 @@
 "site.index.themeTemplatesLegendHelper": "主題範本（Legend Helper）會保留你的設定檔、快速鍵與聊天指令；匯出內容包含隱藏的設定檔。",
 "site.index.expandingLandEscCloses": "Expanding Land：Esc 只會關閉最上層視窗，藥水按鈕無法連按兩次，登出時會關閉所有商店視窗。",
 "site.index.newSettingsSearchBox": "<b>新功能：</b>設定搜尋框、快速鍵中的<b>已綁定按鍵</b>清單、選單下方的本次遊玩摘要、可選的 <b>FPS 上限</b>（節省電量），以及切換效能模式的快速鍵。",
-"site.index.newOptionsOffBy": "<b>新選項</b>（預設關閉）：統計中的存活時間、分頁標題中的質量、有人提到你時的桌面通知、彩虹地圖邊框、HUD 模糊、時鐘格式、合併圓環開/關。伺服器與組隊框現在會建議你最近加入的 5 個。",
+"site.index.newOptionsOffBy": "<b>新選項</b>（預設關閉）：統計中的存活時間、分頁標題中的質量、有人提到你時的桌面通知、彩虹地圖邊框、HUD 模糊、合併圓環開/關。伺服器與組隊框現在會建議你最近加入的 5 個。",
 "site.index.expandingLandHotkeysFor": "<b>Expanding Land：</b>聯賽、商店、挑戰、藥水與全部領取的快速鍵；有可領取項目時會顯示全部領取。<b>行動版：</b>可選的快速聊天按鈕、多開按鈕與震動設定。",
 "site.index.new": "新功能:",
 "site.index.replayPauseSpeedAnd": "重播暫停、速度與跳轉快速鍵；多開視角與圓環快速鍵；16 塊與病毒的可選音效；小地圖上可選的移動軌跡；遊戲結束卡片上的複製按鈕。重播在開始時不再直接跳到結尾。",
