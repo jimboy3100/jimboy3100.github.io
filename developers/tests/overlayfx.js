@@ -212,6 +212,9 @@ const fbImage = img('fbBadge', 40, 40);
 const application = {
     customSkinsMap: {}, customSkinsCache: {},
     getCustomSkin(nick) { return this.skins && this.skins[nick] || null; },
+    /* Cell.draw: getCustomSkin in two steps (the key also names a video skin) */
+    customSkinKey(nick) { return this.skins && this.skins[nick] ? nick : null; },
+    getCachedSkin(cache, key) { return this.skins && this.skins[key] || null; },
     setAutoHideCellInfo: new Function('ogario', 'return function ' + autoHideSrc.replace(/^setAutoHideCellInfo/, ''))(ogario)
 };
 const env = { window: window, LM: LM, application: application, defaultSettings: ds, defaultmapsettings: ms, ogarcopythelb: {}, ogario: ogario };
