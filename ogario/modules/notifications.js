@@ -774,9 +774,17 @@
         ui.changed();
     }
 
+    /* While the option is on (or the bell is still shown) a 2 s look: a toastr made again is
+     * wrapped and the bell finds a free spot again (the HUD moves when the menu closes or a panel
+     * opens). Off: no timer; the switch (setSettings) and a settingsChange from a profile, preset
+     * or import call refresh. */
+    var pollTimer = null;
     function refresh() {
         if (root.toastr && !root.toastr._lmNotifWrapped) wrapToastr(root.toastr);
         try { ui.sync(); } catch (e) { }
+        var on = enabled() || !!ui.bell;
+        if (on && !pollTimer && root.setInterval) pollTimer = root.setInterval(refresh, 2000);
+        else if (!on && pollTimer) { root.clearInterval(pollTimer); pollTimer = null; }
     }
 
     /* ── start ── */
@@ -809,6 +817,7 @@
         categories: CATEGORIES.slice(),
         _avoidRects: avoidRects,
         _bellPlace: function () { return ui.placedAt; },
+        _pollOn: function () { return !!pollTimer; },
         _core: {
             stripHtml: stripHtml, decodeEntities: decodeEntities, detectCategory: detectCategory, makeItem: makeItem,
             sanitizeItems: sanitizeItems, parseStore: parseStore, serializeStore: serializeStore, parsePrefs: parsePrefs,
@@ -836,8 +845,8 @@
         });
         root.addEventListener('resize', function () { if (ui.bell) { ui.placedAt = null; refresh(); } });
     }
-    /* the option can also change by a settings import or preset: check it every 2 s (and
-     * look again for a free spot, the HUD moves when the menu closes or a panel opens) */
-    if (root.setInterval) root.setInterval(refresh, 2000);
+    if (root.LMEvents && typeof root.LMEvents.on === 'function') {
+        root.LMEvents.on('settingsChange', function (d) { if (d && d.key === 'notificationCentre') root.setTimeout(refresh, 0); });
+    }
     refresh();
 })(window);
