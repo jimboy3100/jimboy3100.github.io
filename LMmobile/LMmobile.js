@@ -495,7 +495,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, jsResponseCurve: 'linear', zoomBtns: false, freeSpecBtn: false };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, jsResponseCurve: 'linear', zoomBtns: false, freeSpecBtn: false, jsSize: 1, jsOpacity: 1 };
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
          * settings profile or its Undo that removed the store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
@@ -528,6 +528,8 @@
                     if (saved.joystickDeadZone !== undefined) prefs.joystickDeadZone = num(saved.joystickDeadZone, 0, 40, prefs.joystickDeadZone);
                     if (saved.lbCompact !== undefined) prefs.lbCompact = !!saved.lbCompact;
                     if (saved.jsResponseCurve !== undefined && /^(linear|ease|aggressive)$/.test(saved.jsResponseCurve)) prefs.jsResponseCurve = saved.jsResponseCurve;
+                    if (saved.jsSize !== undefined) prefs.jsSize = num(saved.jsSize, 0.5, 2, prefs.jsSize);
+                    if (saved.jsOpacity !== undefined) prefs.jsOpacity = num(saved.jsOpacity, 0.2, 1, prefs.jsOpacity);
                     if (saved.zoomBtns !== undefined) prefs.zoomBtns = !!saved.zoomBtns;
                     if (saved.freeSpecBtn !== undefined) prefs.freeSpecBtn = !!saved.freeSpecBtn;
                 }
@@ -605,6 +607,11 @@
             '<label><input type="checkbox" id="lm-fixjs"' + (prefs.fixedJoystick ? ' checked' : '') + '> ' + tx('misc.mobile.fixedJoystick', 'lm-t') + '</label>' +
             '<label>' + tx('misc.mobile.deadZone', 'lm-t') + ' <span id="lm-dz-v">' + Math.max(8, prefs.joystickDeadZone) + '</span></label>' +
             '<input type="range" id="lm-dz" min="8" max="40" step="2" value="' + Math.max(8, prefs.joystickDeadZone) + '">' +
+            /* the joystick's drawn size (its knob's travel grows with it) and opacity; 100 % = as before */
+            '<label>' + tx('pkg.agm.jsSize', 'lm-t') + ' <span id="lm-jss-v">' + Math.round(prefs.jsSize * 100) + '%</span></label>' +
+            '<input type="range" id="lm-jss" min="50" max="200" step="10" value="' + Math.round(prefs.jsSize * 100) + '">' +
+            '<label>' + tx('pkg.agm.jsOpacity', 'lm-t') + ' <span id="lm-jso-v">' + Math.round(prefs.jsOpacity * 100) + '%</span></label>' +
+            '<input type="range" id="lm-jso" min="20" max="100" step="5" value="' + Math.round(prefs.jsOpacity * 100) + '">' +
             '<label><input type="checkbox" id="lm-lbc"' + (prefs.lbCompact ? ' checked' : '') + '> ' + tx('misc.mobile.lbCompact', 'lm-t') + '</label>' +
             '<label>' + tx('misc.mobile.responseCurve', 'lm-t') + ' <select id="lm-jrc">' +
                 '<option value="linear"' + (prefs.jsResponseCurve === 'linear' ? ' selected' : '') + '>' + T('misc.mobile.curveLinear') + '</option>' +
@@ -644,7 +651,20 @@
             rootR.style.transformOrigin = 'bottom right';
             smallR.style.transform = 'scale(' + prefs.btnScale + ')';
             smallR.style.transformOrigin = 'bottom right';
+            joystickLook();
             layoutRefresh();
+        }
+        /* joystick size and opacity (gear panel); at 100 % the stylesheet's own 120 / 50 px and full
+         * opacity, as before */
+        function joystickLook() {
+            var k = prefs.jsSize || 1, o = prefs.jsOpacity;
+            JR = 55 * k;
+            [[jO, 120], [jI, 50]].forEach(function (j) {
+                var px = k === 1 ? '' : Math.round(j[1] * k) + 'px';
+                if (j[0].style.width !== px) { j[0].style.width = px; j[0].style.height = px; }
+                var op = o >= 1 ? '' : String(o);
+                if (j[0].style.opacity !== op) j[0].style.opacity = op;
+            });
         }
 
         /* slider handlers — M6: save on 'change' (slider release) not every 'input' tick */
@@ -719,6 +739,18 @@
             sp.querySelector('#lm-dz-v').textContent = this.value;
         });
         sp.querySelector('#lm-dz').addEventListener('change', function () { savePrefs(); });
+        sp.querySelector('#lm-jss').addEventListener('input', function () {
+            prefs.jsSize = parseInt(this.value, 10) / 100;
+            sp.querySelector('#lm-jss-v').textContent = this.value + '%';
+            joystickLook();
+        });
+        sp.querySelector('#lm-jss').addEventListener('change', function () { savePrefs(); });
+        sp.querySelector('#lm-jso').addEventListener('input', function () {
+            prefs.jsOpacity = parseInt(this.value, 10) / 100;
+            sp.querySelector('#lm-jso-v').textContent = this.value + '%';
+            joystickLook();
+        });
+        sp.querySelector('#lm-jso').addEventListener('change', function () { savePrefs(); });
         sp.querySelector('#lm-lbc').addEventListener('change', function () {
             prefs.lbCompact = this.checked;
             savePrefs();
@@ -977,6 +1009,8 @@
             setRange('lm-op', Math.round(prefs.btnOpacity * 100), Math.round(prefs.btnOpacity * 100) + '%');
             setRange('lm-bs', Math.round(prefs.btnScale * 100), Math.round(prefs.btnScale * 100) + '%');
             setRange('lm-dz', Math.max(8, prefs.joystickDeadZone), String(Math.max(8, prefs.joystickDeadZone)));
+            setRange('lm-jss', Math.round(prefs.jsSize * 100), Math.round(prefs.jsSize * 100) + '%');
+            setRange('lm-jso', Math.round(prefs.jsOpacity * 100), Math.round(prefs.jsOpacity * 100) + '%');
             setRange('lm-hf', Math.round(prefs.hudFade * 100), Math.round(prefs.hudFade * 100) + '%');
             [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'], ['lm-taphap', 'tapHaptic'],
                 ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-netgraph', 'netGraph'], ['lm-tdir', 'targetMode'],
@@ -1420,7 +1454,7 @@
         var jId = null;
         var asp = window.innerWidth / window.innerHeight;
         // JS sensitivity now comes from prefs (live-updated by slider)
-        var JR = 55;
+        var JR = 55 * (prefs.jsSize || 1); /* the knob's travel (joystickLook) */
 
         window.addEventListener('resize', function () {
             asp = window.innerWidth / window.innerHeight;
