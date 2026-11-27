@@ -34,6 +34,10 @@
 
     var reg = { lr: null, a: null, x: null, j: null, src: '' };
     var cache = new Map();
+    /* level skin pictures: canonical spine path -> the base-name guess, tried after it (the
+     * configuration's spine name is the right file for all but "SongBird", whose file is
+     * Songbird.png; the guess is no file for 13 skins). Set by buildVanillaMap. */
+    var levelAlt = Object.create(null);
     var listeners = [];
 
     function setOf(s) {
@@ -96,6 +100,11 @@
             if (MANAGED.test(filePath)) {
                 var c = canonicalPath(filePath);
                 var cands = pathCandidates(c);
+                var alt = levelAlt[c];
+                if (alt) {
+                    var ac = pathCandidates(alt);
+                    for (var q = 0; q < ac.length && cands.length < MAX_CANDIDATES; q++) if (cands.indexOf(ac[q]) === -1) cands = cands.concat(ac[q]);
+                }
                 return entry(cands[0], cands, c, 'repo');
             }
             /* any other file of this site: one identity whatever spelling of the site was used */
@@ -150,11 +159,16 @@
     function flag(name) { return name ? fileUrl('agario/live/flags/' + String(name).toLowerCase() + '.png') : ''; }
     /* level skins (skin_alien_kid_level_2, %alien_kid_level_2): the picture of the base skin */
     function level(id) {
+        var p = levelGuessPath(id);
+        return p ? pathCandidates(p)[0] : '';
+    }
+    /* the canonical path of that picture's name guess (Alien_Kid.png) */
+    function levelGuessPath(id) {
         var n = String(id || '').replace(/^%/, '').replace(/^skin_/, '').replace(/_level_\d+$/, '');
         if (!n) return '';
         n = n.charAt(0).toUpperCase() + n.slice(1);
         n = n.replace(/_\s*([a-z])/g, function (d, e) { return '_' + e.toUpperCase(); });
-        return vanilla(n + '.png');
+        return canonicalPath('vanillaskins/' + n + '.png');
     }
     /* uploaded custom skins keep their id as is (official addCustomSkin: '%x' -> 'skin_x') */
     function custom(id) {
@@ -213,18 +227,37 @@
     /*
      * The one VanillaSkinUrlMap builder (agar.io configuration loaded or replaced, login, registry
      * loaded): productId, "%name", "name" and their lower-case forms -> URL. Level skins take their
-     * base skin's picture (their spine entry is often "SkinEffects", which is no skin picture).
+     * spine picture, as before ("choco_golem.png"; the base-name guess "Choco_Golem.png" is no file
+     * for 13 skins); level 2, whose spine entry is "SkinEffects" (no skin picture), takes level 1's.
      */
+    function levelSpine(pId, spineMap) {
+        if (!spineMap) return '';
+        var n = spineMap[pId];
+        if (n && n !== 'SkinEffects') return n;
+        var base = pId.replace(/_level_\d+$/, '_level_');
+        for (var l = 1; l <= 3; l++) { n = spineMap[base + l]; if (n && n !== 'SkinEffects') return n; }
+        return '';
+    }
     function buildVanillaMap(equippable, spineMap) {
         var map = Object.create(null);
         var spine = Object.create(null);
+        var altChanged = false;
         if (!equippable || !equippable.length) return map;
         for (var i = 0; i < equippable.length; i++) {
             var skin = equippable[i];
             if (!skin || !skin.productId) continue;
             var pId = String(skin.productId);
             var url = '', isSpine = false;
-            if (/_level_\d+$/.test(pId)) { url = level(pId); isSpine = skin.image === 'uses_spine'; }
+            if (/_level_\d+$/.test(pId)) {
+                isSpine = skin.image === 'uses_spine';
+                var lsp = isSpine ? levelSpine(pId, spineMap) : '';
+                url = !isSpine && skin.image ? vanilla(skin.image) : lsp ? vanilla(lsp + '.png') : level(pId);
+                if (lsp) {
+                    var lc = canonicalPath('vanillaskins/' + lsp + '.png');
+                    var gc = levelGuessPath(pId);
+                    if (gc && gc !== lc && levelAlt[lc] !== gc) { levelAlt[lc] = gc; altChanged = true; }
+                }
+            }
             else if (skin.image && skin.image !== 'uses_spine') url = vanilla(skin.image);
             else if (skin.image === 'uses_spine' && spineMap && spineMap[pId]) { url = vanilla(spineMap[pId] + '.png'); isSpine = true; }
             if (!url) continue;
@@ -232,6 +265,8 @@
             var keys = ['%' + raw, ('%' + raw).toLowerCase(), pId, pId.toLowerCase(), raw, raw.toLowerCase()];
             for (var k = 0; k < keys.length; k++) { map[keys[k]] = url; if (isSpine) spine[keys[k]] = 1; }
         }
+        /* resolved entries of those paths must list the new place */
+        if (altChanged) cache.clear();
         Object.defineProperty(map, '_lmSpine', { value: spine, enumerable: false });
         return map;
     }

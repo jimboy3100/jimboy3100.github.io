@@ -204,6 +204,20 @@ const enc = (p) => p.split('/').map(encodeURIComponent).join('/');
         R.custom('skin_custom_ab_cd.png?x') === ctx.LM_CUSTOM_SKINS_CDN + '/skin_custom_ab_cd.png');
     check('name skins: flag and free names', R.classifyName('Albania', { albania: 1 }, {}) === 'flag' && R.classifyName('poland', {}, { poland: 'poland.png' }) === 'free' && R.classifyName('bob', {}, {}) === '');
     check('level skins take the base skin picture (not the spine "SkinEffects" entry)', map['skin_alien_kid_level_2'] === R.level('alien_kid') && map['%alien_kid_level_2'] === R.vanilla('Alien_Kid.png') && !/SkinEffects/.test(Object.values(map).join()));
+    {
+        /* level skins: the spine picture (level 2: level 1's); the base-name guess was no file for
+         * choco_golem, deranged ... (13 skins, 39 products) and another picture for big_cheese */
+        const mir = new Set(fs.readFileSync(path.join(ROOT, 'developers', 'skins', 'mirror-jimboy3000.txt'), 'utf8').split(/\r?\n/).filter((l) => l && l[0] !== '#').map((l) => l.slice(l.indexOf(' ') + 1)));
+        const held = (u) => R.resolve(u).cands.some((c) => { const rel = decodeURIComponent(c.replace(/^https:\/\/[^/]+\//, '')); return c.indexOf(J) === 0 ? mir.has(rel) : exists(rel); });
+        const lv = eq.filter((s) => /_level_\d+$/.test(s.productId));
+        const missing = lv.filter((s) => !map[s.productId] || !held(map[s.productId])).map((s) => s.productId + ' -> ' + map[s.productId]);
+        const moved = lv.filter((s) => spine[s.productId] && spine[s.productId] !== 'SkinEffects' && map[s.productId] !== R.vanilla(spine[s.productId] + '.png')).map((s) => s.productId);
+        check('level skins of the real configuration (' + lv.length + '): one of the places of each holds its picture', lv.length > 100 && missing.length === 0, missing.slice(0, 5).join(', '));
+        const sb = R.resolve(map['skin_songbird_level_1'] || '').cands || [];
+        check('  a spine name that is no file here (SongBird.png) tries the base-name picture next (Songbird.png), at most 3 places', sb.length <= 3 && sb.indexOf(J + 'vanillaskins/Songbird.png') > 0, sb.join(' '));
+        check('  levels 1 and 3 keep their spine picture (choco_golem.png, BigCheese.png); level 2 takes level 1\'s', moved.length === 0 &&
+            map['skin_choco_golem_level_2'] === R.vanilla(spine['skin_choco_golem_level_1'] + '.png') && map['skin_big_cheese_level_1'] === R.vanilla('BigCheese.png'), moved.slice(0, 5).join(', '));
+    }
     const nMap = Object.keys(map).length;
     check('VanillaSkinUrlMap from the real configuration: ' + nMap + ' keys, no prototype, every product of the configuration found', Object.getPrototypeOf(map) === null &&
         eq.filter((s) => s.image && s.image !== 'uses_spine').every((s) => map[s.productId]));
@@ -337,6 +351,25 @@ const report = {};
         const ids = ['%custom_ab', 'custom_ab', 'skin_custom_ab_cd', '12345', '%alien_kid_level_2'];
         const diff = ids.filter((id) => st.idUrl(id) !== R.idUrl(id));
         check('  stand-in gives uploaded and level skins the same URLs as the resolver', diff.length === 0, diff.map((id) => id + ': ' + st.idUrl(id) + ' / ' + R.idUrl(id)).join('; '));
+    }
+    /* 8. the teammate target HUD (updateTarget) finds a skin loaded under its canonical key: a
+     * gallery URL of a lowres copy is cached as vanillaskins/<name> on the mirror; the HUD looked
+     * the original URL up, missed it on every update and showed the blank picture */
+    {
+        const h = harness();
+        const gallery = L + 'lowresskins/fungi_warlord.png';
+        h.load(gallery);
+        await h.settle();
+        const attrs = [];
+        const jq = { attr(k, v) { attrs.push(v); return jq; }, css() { return jq; }, html() { return jq; }, text() { return jq; }, show() { return jq; }, hide() { return jq; } };
+        h.ctx.$ = () => jq;
+        h.ctx.ogario = {};
+        h.ctx.textLanguage = {};
+        vm.runInContext('Object.assign(application, {' + method('_lmSkinCacheKey') + ',' + method('updateTarget') +
+            ', escapeHTML: function (s) { return s; }, shortMassFormat: function (m) { return String(m); }, calculateMapSector: function () { return "A1"; }, setTargetStatus: function () { } });', h.ctx);
+        h.A.updateTarget('mate', gallery, 0, 0, 100, '#ff0000');
+        const key = R.key(gallery);
+        check('target HUD: a skin cached under its canonical key is shown (src ' + attrs[attrs.length - 1] + ')', key !== gallery && !!h.A.customSkinsCache[key] && attrs[attrs.length - 1] === key && h.A.targetSkinURL === gallery);
     }
 
     /* ---- players' old saved data: URLs resolved where they are used, nothing rewritten ---- */

@@ -35401,19 +35401,22 @@ function thelegendmodproject() {
              */
             var cachedSkin =
                 null;
+            /* the key loadSkin keeps it under (ogario/skinresolver.js: another spelling or a
+             * copy of the same file is cached under its canonical URL) */
+            var skinKeyUrl = skinUrl && this._lmSkinCacheKey ? this._lmSkinCacheKey(skinUrl) : skinUrl;
 
             if (skinUrl) {
                 cachedSkin =
                     this.customSkinsCache[
-                        skinUrl +
+                        skinKeyUrl +
                         '_cached2'
                     ] ||
                     this.customSkinsCache[
-                        skinUrl +
+                        skinKeyUrl +
                         '_cached'
                     ] ||
                     this.customSkinsCache[
-                        skinUrl
+                        skinKeyUrl
                     ] ||
                     null;
             }
@@ -35425,7 +35428,7 @@ function thelegendmodproject() {
                 $('#target-skin img')
                     .attr(
                         'src',
-                        skinUrl
+                        skinKeyUrl
                     );
 
                 this.targetSkinURL =
