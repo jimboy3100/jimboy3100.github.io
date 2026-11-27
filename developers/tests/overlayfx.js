@@ -194,7 +194,7 @@ const autoHideSrc = block(src, src.indexOf('setAutoHideCellInfo(t) {'));
 const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRing', 'lmSkinsShown', 'lmColorInt'].map((n) => {
     const i = src.indexOf('\nfunction ' + n + '(');
     return i < 0 ? '' : block(src, i + 1);
-}).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmColorIntCache'].map((n) => {
+}).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache'].map((n) => {
     const m = new RegExp('\\nvar ' + n + ' = [^\\n]*').exec(src);
     return m ? m[0].slice(1) : '';
 }).join('\n');

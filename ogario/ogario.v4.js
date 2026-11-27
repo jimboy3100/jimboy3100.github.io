@@ -2681,9 +2681,13 @@ function lmPlayGate(force) {
     return r;
 }
 window.lmPlayGate = lmPlayGate;
+/* one reused result: both renderers read it at once, before the next cell asks */
+var _lmMbRingOut = { player: 0, color: '', width: 0 };
 /*
  * The ring of this cell, or null for none: { player, color, width }, width in
  * world units. radius = the cell's drawn radius, scale = the camera zoom.
+ * The object is reused (no allocation per cell per frame): read it before
+ * asking for the next cell's ring.
  */
 function lmMultiboxRing(cell, radius, scale) {
     var LM = window.legendmod;
@@ -2693,11 +2697,10 @@ function lmMultiboxRing(cell, radius, scale) {
     if (!player || player !== lmMultiboxControlledPlayer()) return null;
     var width = radius * LM_MB_RING_SIZE / 100;
     if (scale > 0) width = Math.max(width, LM_MB_RING_MIN_SCREEN_PX / scale);
-    return {
-        player: player,
-        color: LM_MB_RING_DEFAULT_COLORS[player],
-        width: Math.min(width, radius)
-    };
+    _lmMbRingOut.player = player;
+    _lmMbRingOut.color = LM_MB_RING_DEFAULT_COLORS[player];
+    _lmMbRingOut.width = Math.min(width, radius);
+    return _lmMbRingOut;
 }
 
 /*

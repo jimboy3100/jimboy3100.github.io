@@ -79,7 +79,7 @@ const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag'
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing',
     'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages', 'lmTextAtlasBankCap', 'lmTextAtlasUnit',
     'lmSkinsShown', 'lmColorInt'];
-const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmColorIntCache'];
+const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache'];
 
 function rendererFactory(src) {
     src = src.replace(/\r\n/g, '\n');
