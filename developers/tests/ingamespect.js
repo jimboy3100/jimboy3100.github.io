@@ -125,5 +125,39 @@ for (const withUnit of [false, true]) {
     check('no premium: no spectator socket', e.win.spects.length === 0);
 }
 
+/* 7-9. a multibox unit and an in-game spectator open together (since the unit no longer blocks the
+ * spectator): the multibox switch keys (application.multiboxchange / multiboxback) and the
+ * spectator's Follow / Free mode (changeSpectatorMode), cut out of ogario.v4.js */
+const mbMethods = ['        multiboxchange() {', '        multiboxback() {', '        changeSpectatorMode() {'].map((m) => [m, block(m)]);
+if (mbMethods.some((m) => !m[1])) { console.log('FAIL code not found: ' + mbMethods.filter((m) => !m[1]).map((m) => m[0].trim()).join(', ')); process.exit(1); }
+function mbEnv() {
+    const e = env();
+    const c = e.ctx;
+    Object.assign(c, { profiles: [], ogarcopythelb: {}, core: null, play: () => { c.played = (c.played || 0) + 1; },
+        addBox: () => { const u = c.addUnit(); c.legendmod.multiBoxPlayerExists = true; return u; } });
+    c.window.addBox = c.addBox;
+    c.legendmod = c.LM;
+    vm.runInContext('Object.assign(application, {' + mbMethods.map((m) => m[1]).join(',\n') + '}); application.hideMenu = function () {};' +
+        'application.cacheCustomSkin = function () {}; application.mbSlots = [0, 1, 2];', c);
+    return e;
+}
+const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectators(e.win).slice(-1)[0]; return Object.assign(s, { staticX: null, isSpectateEnabled: false, isFreeSpectate: false }, extra || {}); };
+/* 7. multibox switch with a unit and an in-game spectator: it goes main -> unit -> main, never to the spectator */
+{
+    const e = mbEnv();
+    const unit = e.ctx.addUnit();
+    unit.active = true; unit.respawn = () => { unit.respawned = true; };
+    e.LM.multiBoxPlayerExists = true;
+    e.app.setShowIngameSpectator();
+    const sp = spectators(e.win)[0];
+    sp.respawn = () => { sp.respawned = true; };
+    const seen = [];
+    for (let i = 0; i < 4; i++) { e.app.multiboxchange(); seen.push(e.win.multiboxPlayerEnabled || 0); }
+    check('multibox switch: only the main player and the unit, never the spectator', seen.join(',') === [unit.number, 0, unit.number, 0].join(','), seen.join(','));
+    const back = [];
+    for (let i = 0; i < 4; i++) { e.app.multiboxback(); back.push(e.win.multiboxPlayerEnabled || 0); }
+    check('multibox switch back: only the main player and the unit, never the spectator', back.join(',') === [unit.number, 0, unit.number, 0].join(','), back.join(','));
+    check('the spectator was not told to spawn', !sp.respawned && !sp.closed && e.win.ingameSpectator === true);
+}
 console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
 process.exit(failed ? 1 : 0);

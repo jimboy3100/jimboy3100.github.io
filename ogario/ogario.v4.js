@@ -23376,12 +23376,14 @@ function thelegendmodproject() {
             }
 
             /* multiboxPlayerEnabled is the unit NUMBER (spect.js, getActiveSpect); a unit can be
-             * removed from the middle of spects, so walk by position but store the number. */
-            var totalUnits = 1 + spects.length;
+             * removed from the middle of spects, so walk by position but store the number.
+             * Only the units: an in-game or full spectator open beside them is in spects too. */
+            var units = spects.filter(function (s) { return s && s.player; });
+            var totalUnits = 1 + units.length;
             var currentIdx = 0;
             if (window.multiboxPlayerEnabled) {
-                for (var _si = 0; _si < spects.length; _si++) {
-                    if (spects[_si] && spects[_si].number === window.multiboxPlayerEnabled) { currentIdx = _si + 1; break; }
+                for (var _si = 0; _si < units.length; _si++) {
+                    if (units[_si].number === window.multiboxPlayerEnabled) { currentIdx = _si + 1; break; }
                 }
             }
             var nextIdx = (currentIdx + 1) % totalUnits;
@@ -23393,13 +23395,13 @@ function thelegendmodproject() {
                 }
             } else {
                 var spectIdx = nextIdx - 1;
-                lmSetMbUnit((spects[spectIdx] && spects[spectIdx].number) || nextIdx);
-                if (spects[spectIdx]) {
-                    if (!spects[spectIdx].active) {
-                        spects[spectIdx].respawn();
+                lmSetMbUnit((units[spectIdx] && units[spectIdx].number) || nextIdx);
+                if (units[spectIdx]) {
+                    if (!units[spectIdx].active) {
+                        units[spectIdx].respawn();
                     }
                     /* mbSlots is indexed by the unit number (0 = main), same as spect.js */
-                    var unitNo = spects[spectIdx].number || nextIdx;
+                    var unitNo = units[spectIdx].number || nextIdx;
                     var pSlot = (application.mbSlots && unitNo < application.mbSlots.length) ? application.mbSlots[unitNo] : application.selectedOldProfile;
                     if (profiles[pSlot] && profiles[pSlot].skinURL) {
                         this.cacheCustomSkin(profiles[pSlot].nick, profiles[pSlot].color || '#000000', profiles[pSlot].skinURL);
@@ -23427,12 +23429,14 @@ function thelegendmodproject() {
                 return;
             }
 
-            var totalUnits = 1 + spects.length;
+            /* only the units, as in multiboxchange */
+            var units = spects.filter(function (s) { return s && s.player; });
+            var totalUnits = 1 + units.length;
             /* Same as multiboxchange: find the position of the current unit NUMBER. */
             var currentIdx = 0;
             if (window.multiboxPlayerEnabled) {
-                for (var _sj = 0; _sj < spects.length; _sj++) {
-                    if (spects[_sj] && spects[_sj].number === window.multiboxPlayerEnabled) { currentIdx = _sj + 1; break; }
+                for (var _sj = 0; _sj < units.length; _sj++) {
+                    if (units[_sj].number === window.multiboxPlayerEnabled) { currentIdx = _sj + 1; break; }
                 }
             }
             var prevIdx = (currentIdx - 1 + totalUnits) % totalUnits;
@@ -23444,13 +23448,13 @@ function thelegendmodproject() {
                 }
             } else {
                 var spectIdx2 = prevIdx - 1;
-                lmSetMbUnit((spects[spectIdx2] && spects[spectIdx2].number) || prevIdx);
-                if (spects[spectIdx2]) {
-                    if (!spects[spectIdx2].active) {
-                        spects[spectIdx2].respawn();
+                lmSetMbUnit((units[spectIdx2] && units[spectIdx2].number) || prevIdx);
+                if (units[spectIdx2]) {
+                    if (!units[spectIdx2].active) {
+                        units[spectIdx2].respawn();
                     }
                     /* mbSlots is indexed by the unit number (0 = main), same as spect.js */
-                    var unitNo2 = spects[spectIdx2].number || prevIdx;
+                    var unitNo2 = units[spectIdx2].number || prevIdx;
                     var pSlot2 = (application.mbSlots && unitNo2 < application.mbSlots.length) ? application.mbSlots[unitNo2] : application.selectedOldProfile;
                     if (profiles[pSlot2] && profiles[pSlot2].skinURL) {
                         this.cacheCustomSkin(profiles[pSlot2].nick, profiles[pSlot2].color || '#000000', profiles[pSlot2].skinURL);
