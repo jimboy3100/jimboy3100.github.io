@@ -21505,7 +21505,6 @@ var defaultmapsettings = {
     /* timeFormat (clock format) is gone: the clock always shows the browser's date and time; saved values are skipped on load */
     massInTitle: false,           /* browser tab title shows the mass while playing */
     showStatsPPS: true,
-    showStatsJitter: false,       /* standard deviation of the last 20 pings, shown as PING: 45 ±6 */
     showStatsFrameTime: false,    /* frame time next to the FPS: FPS: 60 (16.7 ms) (was the Lab experiment "frameTime") */
     showStatsServerHz: true,
 
@@ -24525,14 +24524,6 @@ function thelegendmodproject() {
                     var activeSpect = (window.multiboxPlayerEnabled && typeof spects !== "undefined" && getActiveSpect(window.multiboxPlayerEnabled)) ? getActiveSpect(window.multiboxPlayerEnabled) : null;
                     var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
                     if (currentPing) t += ' | PING: ' + currentPing;
-                    var _lmPh2 = drawRender._lmPingHist;
-                    if (currentPing && defaultmapsettings.showStatsJitter && !(activeSpect && activeSpect.ping != null) && _lmPh2 && _lmPh2.length >= 3) {
-                        var _lmPm = 0, _lmPv = 0, _lmPi;
-                        for (_lmPi = 0; _lmPi < _lmPh2.length; _lmPi++) _lmPm += _lmPh2[_lmPi];
-                        _lmPm /= _lmPh2.length;
-                        for (_lmPi = 0; _lmPi < _lmPh2.length; _lmPi++) _lmPv += (_lmPh2[_lmPi] - _lmPm) * (_lmPh2[_lmPi] - _lmPm);
-                        t += ' \u00b1' + Math.round(Math.sqrt(_lmPv / _lmPh2.length));
-                    }
                     if (window.multiboxPlayerEnabled) {
                         t += ' | <span style="color:#00E5FF;font-weight:bold">[MB ' + (window.multiboxPlayerEnabled + 1) + '/' + ((typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }).length : 0) + 1) + ']</span>';
                     } else if (legendmod.multiBoxPlayerExists) {
@@ -26852,7 +26843,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'showStatsJitter', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26958,7 +26949,7 @@ function thelegendmodproject() {
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "showTime", "showStopwatch", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsAlive", "massInTitle", "gameOverStats", "showTime", "showStopwatch", "analytics"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
@@ -27035,8 +27026,7 @@ function thelegendmodproject() {
             (function (app) {
                 var DEPS = {
                     showStats: ['showStatsMass', 'showStatsWorldSize', 'showStatsDecayInfo', 'showStatsServerHz', 'showStatsESTE', 'showStatsEMTE', 'showStatsMTE', 'showStatsSTE', 'showStatsTTE', 'showStatsPTE', 'showStatsN16', 'showStatsFPS', 'showStatsPPS', 'showStatsAlive'],
-                    /* the ping and its jitter are written after the FPS */
-                    showStatsFPS: ['showStatsFrameTime', 'showStatsJitter'],
+                    showStatsFPS: ['showStatsFrameTime'],
                     showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
                     /* not Mass format: it also sets the team list, leaderboard, target and tab title
                      * mass texts (shortMassFormat), which show with the cell mass off too */
@@ -46707,10 +46697,6 @@ function thelegendmodproject() {
                 case 31:
                     if (window.agarpingstarted) {
                         drawRender.ping = Date.now() - window.agarpingstarted;
-                        /* last 20 samples for the optional jitter display */
-                        var _lmPh = drawRender._lmPingHist || (drawRender._lmPingHist = []);
-                        _lmPh.push(drawRender.ping);
-                        if (_lmPh.length > 20) _lmPh.shift();
                     }
                     break;
                 //ping 30 pong 31

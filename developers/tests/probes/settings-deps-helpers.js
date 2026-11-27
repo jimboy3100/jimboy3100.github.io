@@ -1,7 +1,7 @@
 // Settings > Helpers: Bubble indicators and Split prediction do something only
-// while Opponents rings and Cursor tracking are on, and Settings > Stats: the ping
-// jitter only while FPS is on (it is written after the ping, after the FPS); while those are off they
-// are dimmed and say what they need, as the other dependent options. With Stats off the jitter says
+// while Opponents rings and Cursor tracking are on, and Settings > Stats: the frame
+// time only while FPS is on (it is written after the FPS); while those are off they
+// are dimmed and say what they need, as the other dependent options. With Stats off the frame time says
 // it needs Stats (the outermost switch that is off). The bubble tracker is the bubble look of Cursor
 // tracking: it needs Cursor tracking, choosing it turns Cursor tracking on, and while it is on only
 // Split prediction (it dims the line) says it has no effect. The parent switch is turned off
@@ -19,7 +19,7 @@
       window.__lmInput(JSON.stringify({ id: id, type: window.LM_IS_MOBILE ? 'tap' : 'click', x: x, y: y }));
     });
   };
-  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['cursorTracking', 'bubbleCursorTracker'], ['showStatsFPS', 'showStatsJitter']];
+  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['cursorTracking', 'bubbleCursorTracker'], ['showStatsFPS', 'showStatsFrameTime']];
   var keep = { showStats: defaultmapsettings.showStats, bubbleCursorTracker: defaultmapsettings.bubbleCursorTracker };
   pairs.forEach(function (p) { keep[p[0]] = defaultmapsettings[p[0]]; keep[p[1]] = defaultmapsettings[p[1]]; });
   var needs = application._lmMenuText('lmDepNeeds');
@@ -65,11 +65,11 @@
       if (off.indexOf(needs) !== 0 || off.indexOf(plain(parent)) < 0) fail.push(child + ' does not say it needs ' + parent + ' while it is off (' + (off || 'not dimmed') + ')');
       if (on.indexOf(needs) === 0 || back.indexOf(needs) === 0) fail.push(child + ' says it needs ' + parent + ' while it is on');
     }
-    /* Stats off, FPS on: the jitter and the frame time need Stats */
+    /* Stats off, FPS on: the frame time needs Stats */
     defaultmapsettings.showStats = false;
     application._lmDepRefresh();
-    info.statsOff = { showStatsJitter: why('showStatsJitter'), showStatsFrameTime: why('showStatsFrameTime') };
-    ['showStatsJitter', 'showStatsFrameTime'].forEach(function (k) {
+    info.statsOff = { showStatsFrameTime: why('showStatsFrameTime') };
+    ['showStatsFrameTime'].forEach(function (k) {
       if (info.statsOff[k] !== needs + ': ' + plain('showStats')) fail.push(k + ' with Stats off says ' + (info.statsOff[k] || 'nothing'));
     });
     /* the bubble look of Cursor tracking: while it is on, Split prediction (it dims the line) says

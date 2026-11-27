@@ -265,7 +265,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Click-to-spectate**: Click a leaderboard entry to follow that player in spectate
 
 ### 15. Stats and Analytics
-- **Live stats HUD**: Mass, FPS, ping, PPS (packets per second), server Hz, jitter, alive time, world size, decay info, 16-cell count
+- **Live stats HUD**: Mass, FPS, ping, PPS (packets per second), server Hz, alive time, world size, decay info, 16-cell count
 - **Game Over card**: Displays session statistics after death
 - **Mass graph**: Graph of mass over your life on the Game Over card
 - **Death recap**: Last 20 seconds as 3-6 summarised steps with mass sparkline, showing splits, virus pops, being eaten. Attributes killer from eat events. Expanding Land uses server-provided killer info.

@@ -3491,24 +3491,6 @@
     "ja": "PPS：毎秒パケット数",
     "it": "PPS: pacchetti al secondo"
   },
-  "settings.showStatsJitter": {
-    "en": "Ping jitter (+/- ms, next to PING)",
-    "el": "Jitter του ping (+/- ms, δίπλα στο PING)",
-    "es": "Jitter del ping (+/- ms, junto a PING)",
-    "bg": "Джитър на пинга (+/- ms, до PING)",
-    "fr": "Jitter du ping (+/- ms, à côté de PING)",
-    "ar": "تذبذب ping (+/- ms، بجانب PING)",
-    "zh": "Ping 抖動（+/- ms，在 PING 旁）",
-    "ru": "Джиттер пинга (+/- ms, рядом с PING)",
-    "de": "Ping-Jitter (+/- ms, neben PING)",
-    "tr": "Ping jitter (+/- ms, PING yanında)",
-    "pl": "Jitter pingu (+/- ms, obok PING)",
-    "nl": "Ping-jitter (+/- ms, naast PING)",
-    "pt": "Jitter do ping (+/- ms, ao lado do PING)",
-    "id": "Jitter ping (+/- ms, di samping PING)",
-    "ja": "Pingのジッター（±ms、PINGの横）",
-    "it": "Jitter del ping (+/- ms, accanto a PING)"
-  },
   "settings.showStatsServerHz": {
     "en": "Server Hz",
     "el": "Hz του server (Expanding Land)",

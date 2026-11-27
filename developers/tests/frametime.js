@@ -60,5 +60,19 @@ check('stats line: unchanged with it off', stats(false, 60) === 'FPS: 60');
 check('stats line: no frame time before the first FPS value', stats(true, 0) === 'FPS: 0');
 check('the Lab is removed', !fs.existsSync(path.join(root, 'ogario', 'modules', 'lab.js')));
 
+/* the removed ping jitter option: the ping after the FPS is the plain value, an old saved
+ * showStatsJitter is ignored, and the pong handler keeps no ping history any more */
+const pingLine = cut('                    var activeSpect', '                    if (window.multiboxPlayerEnabled) {');
+const ping = (ms, p) => vm.runInNewContext('var t = "FPS: 60"; ' + pingLine + '; t', { defaultmapsettings: ms, drawRender: { ping: p, _lmPingHist: [10, 90, 10, 90] }, window: {}, getActiveSpect: () => null });
+check('stats line: PING after the FPS, no +/- even with an old saved showStatsJitter', ping({ showStatsJitter: true }, 45) === 'FPS: 60 | PING: 45');
+check('stats line: no PING before the first pong', ping({}, 0) === 'FPS: 60');
+check('ping jitter: no default and no Settings > Stats switch', !('showStatsJitter' in defs) && !/showStatsJitter/.test(main));
+r = load({ showStatsJitter: true, showMass: true });
+check('ping jitter: an old saved value loads quietly and is not kept', !('showStatsJitter' in r.ms) && r.ms.showMass === true);
+const pong = cut('                case 31:\n                    if (window.agarpingstarted) {', '                    break;');
+const dr = {};
+vm.runInNewContext(pong.replace('case 31:', ''), { window: { agarpingstarted: Date.now() - 40 }, drawRender: dr, Date });
+check('pong: sets the ping, keeps no history', dr.ping >= 40 && dr.ping < 1000 && !('_lmPingHist' in dr));
+
 console.log(fail ? fail + ' FAILED' : 'all frame time checks passed');
 process.exit(fail ? 1 : 0);
