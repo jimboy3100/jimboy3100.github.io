@@ -404,6 +404,10 @@
             if (!window.confirm(confirmText(pm.ok ? pm.meta : null, url))) { refresh(); return false; }
         }
         confirmed[n] = code;
+        /* the slot runs again in this page (Load once more, an edited version, or the plugin
+         * installed again after Erase): the copy that runs now stops first, so one copy runs and
+         * the switch here turns off the one that runs (each Load added a copy that nothing stopped) */
+        if (r.opts && r.status === 'running') callOpt(n, 'onDisable');
         r.status = 'running';
         r.opts = null;
         r.schema = [];
