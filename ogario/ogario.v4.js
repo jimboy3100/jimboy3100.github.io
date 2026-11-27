@@ -21105,10 +21105,19 @@ var LM_EXPORT_KEYS = [
      * collections (folders, tags, favourites) and the screenshot options */
     { key: 'lmRadialMenu', type: 'o' },
     { key: 'lmSkinCollections', type: 'o' },
-    { key: 'lmSmallTools', type: 'o' }
+    { key: 'lmSmallTools', type: 'o' },
+    /* only: just these fields of the object (the Command Centre's starred commands, also its quick
+     * bar, are configuration; its recently used list is history and stays on the device) */
+    { key: 'lmCommandCentre', type: 'o', only: ['fav'] }
 ];
 function lmExportFits(e, v) {
     return e.type === 'a' ? Array.isArray(v) : !!v && typeof v === 'object' && !Array.isArray(v);
+}
+function lmExportPick(e, v) {
+    if (!e.only) return v;
+    var out = {};
+    e.only.forEach(function (f) { if (Object.prototype.hasOwnProperty.call(v, f)) out[f] = v[f]; });
+    return out;
 }
 /* the registered keys found in storage ls, as { key: value } */
 function lmExportExtras(ls) {
@@ -21116,7 +21125,7 @@ function lmExportExtras(ls) {
     LM_EXPORT_KEYS.forEach(function (e) {
         try {
             var v = JSON.parse(ls.getItem(e.key) || 'null');
-            if (lmExportFits(e, v)) out[e.key] = v;
+            if (lmExportFits(e, v)) out[e.key] = lmExportPick(e, v);
         } catch (err) { }
     });
     /* old Gamepad window setups still waiting for a free profile go with the buttons, in the old
@@ -21128,13 +21137,21 @@ function lmExportExtras(ls) {
     return out;
 }
 /* writes the registered keys of an import through set(key, text) / remove(key) (the import's
- * transaction); step(key) names the key being written, for the error message */
-function lmImportExtras(src, set, remove, step) {
+ * transaction); step(key) names the key being written, for the error message; get(key) reads the
+ * stored text (default localStorage) for the keys exported in part */
+function lmImportExtras(src, set, remove, step, get) {
     LM_EXPORT_KEYS.forEach(function (e) {
         if (step) step(e.key);
         var v = Object.prototype.hasOwnProperty.call(src, e.key) ? src[e.key] : undefined;
-        if (lmExportFits(e, v)) set(e.key, JSON.stringify(v));
-        else if (e.clear) remove(e.key);
+        if (lmExportFits(e, v)) {
+            /* in part: the imported fields over this device's value (its other fields stay) */
+            if (e.only) {
+                var cur = null;
+                try { cur = JSON.parse((get ? get(e.key) : window.localStorage.getItem(e.key)) || 'null'); } catch (err) { }
+                v = Object.assign(lmExportFits(e, cur) ? cur : {}, lmExportPick(e, v));
+            }
+            set(e.key, JSON.stringify(v));
+        } else if (e.clear) remove(e.key);
     });
 }
 /* ─── §3.3 profiles — Player Profile Storage ─── */

@@ -227,6 +227,16 @@ check('diff: a set differing only in the phone control layout is not the same', 
     imp({ lmHudLayouts: [1, 2], 'lm-zoom-bookmarks': { a: 1 }, lmSettingsProfiles: { a: 1 } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
     check('import: a value of the wrong type is not written', dst2.getItem('lmHudLayouts') === '{"keep":1}' && dst2.getItem('lm-zoom-bookmarks') === null && dst2.getItem('lmSettingsProfiles') === null);
     check('import: Performance mode backup of the replaced settings goes when the export has none', dst2.getItem('lmPerfBackup') === null);
+    /* Command Centre: the starred commands (also its quick bar) are configuration, the recently
+     * used ones history: only the stars go, the importing device keeps its own recent list */
+    const src3 = makeStorage(0);
+    src3.setItem('lmCommandCentre', J({ fav: ['hk:hk-feed', 'opt:showMass'], recent: ['hk:hk-split'] }));
+    const out3 = JSON.parse(J(exp(src3)));
+    check('export: the Command Centre stars, not its recently used list', J(out3.lmCommandCentre) === J({ fav: ['hk:hk-feed', 'opt:showMass'] }));
+    const dst3 = makeStorage(0);
+    dst3.setItem('lmCommandCentre', J({ fav: ['opt:x'], recent: ['hk:hk-menu'] }));
+    imp(out3, (k, t) => dst3.setItem(k, t), k => dst3.removeItem(k), null, k => dst3.getItem(k));
+    check('import: the stars come in, this device keeps its recently used list', dst3.getItem('lmCommandCentre') === J({ fav: ['hk:hk-feed', 'opt:showMass'], recent: ['hk:hk-menu'] }));
   }
 }
 
