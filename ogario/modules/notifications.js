@@ -823,7 +823,17 @@
         root.LMi18n.onChange(function () { try { ui.relabel(); } catch (e) { } });
     }
     if (root.addEventListener) {
-        root.addEventListener('pagehide', function () { if (saveTimer) saveNow(); });
+        root.addEventListener('pagehide', function () {
+            if (!saveTimer) return;
+            /* Export / Import Settings reloads the page after writing the muted categories: the
+             * stored ones are kept (a mute change is written at once, so nothing of ours is lost) */
+            if (root._lmSettingsReload) {
+                var ls = storage(), raw = null;
+                try { raw = ls && ls.getItem(PREFS_KEY); } catch (e) { }
+                prefs.muted = parsePrefs(raw).muted;
+            }
+            saveNow();
+        });
         root.addEventListener('resize', function () { if (ui.bell) { ui.placedAt = null; refresh(); } });
     }
     /* the option can also change by a settings import or preset: check it every 2 s (and

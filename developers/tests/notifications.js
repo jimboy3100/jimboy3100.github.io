@@ -42,6 +42,8 @@ function boot(opts) {
     clearTimeout: () => {},
     Date, Math, Number, JSON, String, Array, Object
   };
+  /* window events (pagehide) when the test asks for them */
+  if (opts.ev) ctx.addEventListener = (n, f) => { (opts.ev[n] = opts.ev[n] || []).push(f); };
   ctx.window = ctx;
   vm.createContext(ctx);
   i18n(ctx);
@@ -235,6 +237,30 @@ function boot(opts) {
   check('filter: category + type', f.length === 1 && f[0].m === '[SETTINGS]: b');
   const all = b.core.filterItems(b.api.items().map(i => ({ id: i.id, t: i.t, ty: i.type, c: i.category, m: i.text })), 'all', 'all');
   check('filter: newest first', all.length === 3 && all[0].m === 'Connection lost');
+}
+
+/* 8b. Export / Import Settings carries the muted categories and reloads the page: a list save still
+ * waiting at pagehide (a toast in the last second) keeps what the import wrote */
+{
+  const ev = {}, storage = makeStorage();
+  const b = boot({ storage, ev });
+  b.api.setMuted('chat', true);
+  b.toastr.info('a toast just before the import');
+  /* the import: this device's read mark and filter stay, the muted categories come from the file */
+  const p = JSON.parse(storage.getItem('lmNotificationPrefs'));
+  p.muted = { party: true };
+  storage.setItem('lmNotificationPrefs', JSON.stringify(p));
+  b.ctx._lmSettingsReload = true;
+  (ev.pagehide || []).forEach(f => f());
+  const after = JSON.parse(storage.getItem('lmNotificationPrefs'));
+  check('import + reload: the imported muted categories stay', JSON.stringify(after.muted) === JSON.stringify({ party: true }));
+  check('import + reload: the pending list save is still written', JSON.parse(storage.getItem('lmNotifications') || '{}').items.length === 1);
+  /* without an import the pending save writes as before */
+  const ev2 = {}, st2 = makeStorage();
+  const b2 = boot({ storage: st2, ev: ev2 });
+  b2.toastr.info('x');
+  (ev2.pagehide || []).forEach(f => f());
+  check('pagehide: the pending list save is written', JSON.parse(st2.getItem('lmNotifications') || '{}').items.length === 1);
 }
 
 /* 9. volume math */
