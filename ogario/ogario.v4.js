@@ -83764,21 +83764,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ctx.restore();
             }
         },
-        drawCursorTracking(ctx, players, cursorX, cursorY) {
-            /* WebGL2 fast path for cursor tracking lines */
-            var _ctAlpha = defaultSettings.darkTheme ? 0.75 : 0.35;
-            if ((typeof defaultmapsettings.webgl2Acceleration === "undefined" || defaultmapsettings.webgl2Acceleration)
-                && this.drawWebGLLineBatch(players, cursorX, cursorY, defaultSettings.cursorTrackingColor, _ctAlpha, 4)) {
-                return;
-            }
-            ctx.lineWidth = 4,
-                ctx.globalAlpha = _ctAlpha;
-            ctx.strokeStyle = defaultSettings.cursorTrackingColor;
-            ctx.beginPath();
-            for (var o = 0; o < players.length; o++) { if (!players[o]) continue; ctx.moveTo(players[o].x, players[o].y), ctx.lineTo(cursorX, cursorY); }
-            ctx.stroke();
-            ctx.globalAlpha = 1;
-        },
         drawCircles(
             ctx,
             players,
