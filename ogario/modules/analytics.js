@@ -526,7 +526,8 @@
             peak: 0, end: 0, log: [], bestPos: 0, lastPos: 0, prevPos: 0, lbAt: 0, first: 0,
             pending: [], splitLoss: [], lastSplit: 0,
             srv: typeof window._lmHostOnly === 'function' && o ? window._lmHostOnly(o.ws) : '',
-            st: o ? String(o.serverType || '').slice(0, 20) : '', mode: modeText()
+            st: o ? String(o.serverType || '').slice(0, 20) : '', mode: modeText(),
+            seq: o ? o._connectSeq || 0 : 0
         };
     }
     /* one position sample per interval; past MAX_SAMPLES every second sample goes and the
@@ -567,6 +568,7 @@
     function onMass(e) {
         var now = Date.now(), m = +e.mass || 0;
         if (m <= 0 || notLive(e)) return;
+        checkSession();
         if (!life) beginLife(now);
         if (m > life.peak) life.peak = m;
         life.end = m;
@@ -577,12 +579,14 @@
         sample(now);
     }
     function onSplit(e) {
+        checkSession();
         if (!life) return;
         var now = +e.time || Date.now();
         if (now - life.lastSplit > SPLIT_GROUP && life.end > 0) life.pending.push({ t: now, m0: life.end, min: life.end });
         life.lastSplit = now;
     }
     function onLeaderboard(e) {
+        checkSession();
         if (!life) return;
         var now = Date.now(), p = Math.max(0, +e.position || 0);
         if (life.prevPos === 1 && life.lbAt) life.first += Math.min(now - life.lbAt, 5000);
@@ -592,6 +596,7 @@
         if (p > 0 && (!life.bestPos || p < life.bestPos)) life.bestPos = p;
     }
     function onDeath(e) {
+        checkSession();
         var L = life;
         life = null;
         if (!L || notLive(e)) return;
@@ -664,12 +669,15 @@
         if (!on) life = null;
     }
     /* the life ends with the connection: joining another server or losing the connection drops
-     * the unfinished life (no death comes for it; the next mass update would continue it) */
+     * the unfinished life (no death comes for it; the next mass update would continue it).
+     * Checked when the next event of the life comes (at most 4 mass updates a second), not by a timer. */
     function onServerChange() { life = null; }
     function checkSession() {
         var o = lm();
         if (!life) return;
         if (!o || (typeof o.isSocketOpen === 'function' && !o.isSocketOpen())) { life = null; return; }
+        /* connected again (also to the same server) */
+        if ((o._connectSeq || 0) !== life.seq) { life = null; return; }
         var host = typeof window._lmHostOnly === 'function' ? window._lmHostOnly(o.ws) : '';
         if (life.srv && host && host !== life.srv) life = null;
     }
@@ -1169,6 +1177,9 @@
     }
 
     window.LMAnalytics = Object.freeze({
+        /* the option, the listeners and the entry points again (a settings change, the Match
+         * history link added or removed: ogario.v4.js _lmMatchHistoryButton) */
+        sync: tick,
         open: open,
         close: close,
         isOpen: function () { return !!(md && md.parentNode); },
@@ -1181,8 +1192,13 @@
             niceFloor: niceFloor, quantile: quantile, dayKey: dayKey, ensureDaily: ensureDaily, text: T
         })
     });
-    if (typeof setInterval === 'function') setInterval(tick, 1000);
     tick();
+    /* a profile, preset or import (or the switch) that changes recording or Match history */
+    if (window.LMEvents && typeof window.LMEvents.on === 'function') {
+        window.LMEvents.on('settingsChange', function (d) {
+            if (d && (d.key === 'analytics' || d.key === 'matchHistory') && typeof setTimeout === 'function') setTimeout(tick, 0);
+        });
+    }
     /* language change: the open window, the profile button and the footer link follow it */
     if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(function () {
         try {

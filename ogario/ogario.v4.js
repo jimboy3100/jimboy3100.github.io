@@ -384,8 +384,13 @@ function _lmHostOnly(u) {
 }
 window._lmHostOnly = _lmHostOnly;
 function _lmMhT(k, en) { var s = window.lmT && window.lmT(k); return s && s !== k ? s : en; }
-/* "Match history" link under the menu footer (only while the option is on) */
+/* "Match history" link under the menu footer (only while the option is on); the Analytics
+ * footer link is shown only while this one is not: it follows at once (analytics.js) */
 function _lmMatchHistoryButton() {
+    _lmMatchHistoryButtonNow();
+    if (window.LMAnalytics && typeof window.LMAnalytics.sync === 'function') { try { window.LMAnalytics.sync(); } catch (e) { } }
+}
+function _lmMatchHistoryButtonNow() {
     var on = typeof defaultmapsettings !== 'undefined' && defaultmapsettings.matchHistory;
     var b = document.getElementById('lm-mh-btn');
     if (!on) { if (b && b.parentNode) b.parentNode.removeChild(b); return; }

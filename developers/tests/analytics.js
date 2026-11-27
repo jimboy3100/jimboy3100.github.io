@@ -39,6 +39,9 @@ vm.createContext(ctx);
 i18n(ctx);
 vm.runInContext(src, ctx);
 const A = ctx.LMAnalytics, C = A.core;
+/* the option is applied by LMAnalytics.sync (settingsChange, the Match history link); older
+ * versions ran it from a 1 s timer */
+if (!tickFn) tickFn = A.sync;
 
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
@@ -224,7 +227,7 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
   LMEvents.emit('death', { time: clock, mass: 300, msAlive: clock - tB, context: 'live' });
   const g1 = games();
   check('server change: the old unfinished life is not merged into the next', g1.length === 1 && g1[0].srv === 'b.example' && g1[0].peak === 300);
-  /* disconnected mid-life: the next tick drops it, a late death records nothing */
+  /* disconnected mid-life: the next event of the life drops it, a late death records nothing */
   store.clear();
   ctx.legendmod.isSocketOpen = () => true;
   LMEvents.emit('spawn', { time: clock, context: 'live' });
