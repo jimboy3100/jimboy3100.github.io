@@ -88,6 +88,23 @@ check('clip small: start at In, earlier packets at time 0', small.idx[small.star
 check('clip: times never go back', small.times.every((v, i, a) => !i || v >= a[i - 1]));
 check('clip: In at a checkpoint starts there', L.cutInterval(times, 300, 310, { checkpoints: [0, 300] }).idx[0] === 300);
 check('clip: out of range is clamped', L.cutInterval(times, -5, 5000, {}).idx.length === 1000);
+/* a clip that starts at a later checkpoint takes the newest packet of each kind from before it */
+{
+  const bdv = (x0, y0, x1, y1, gt) => { const v = new DataView(new ArrayBuffer(gt == null ? 33 : 37)); v.setUint8(0, 64); [x0, y0, x1, y1].forEach((x, i) => v.setFloat64(1 + i * 8, x, true)); if (gt != null) v.setUint32(33, gt, true); return v; };
+  const one = (...b) => new DataView(new Uint8Array(b).buffer);
+  check('carry kinds: borders (handshake with game type, full agar.io, other), beacon, leaderboard, pie, camera',
+    typeof L.carryKind === 'function' && L.carryKind(bdv(-7071, -7071, 7071, 7071, 0)) === 'bg' && L.carryKind(bdv(-7071, -7071, 7071, 7071, 0xFFFFFFFF)) === 'bf' && L.carryKind(bdv(0, 0, 14190, 14100)) === 'bf' &&
+    L.carryKind(bdv(100, 100, 4350, 2660)) === 'b' && L.carryKind(one(64, 1, 2)) === '' && L.carryKind(one(240, 0x4C, 0x57, 1)) === 'el' && L.carryKind(one(240, 0x4C, 0x4D)) === '' &&
+    L.carryKind(one(49, 0)) === 'lb' && L.carryKind(one(53)) === 'lb' && L.carryKind(one(54)) === 'lb' && L.carryKind(one(50)) === 'pie' && L.carryKind(one(17)) === 'cam' &&
+    L.carryKind(one(16)) === '' && L.carryKind(one(18)) === '');
+  const carry = [1, 'bg', 2, 'el', 5, 'lb', 40, 'b', 120, 'lb', 250, 'cam', 299, 'b', 310, 'lb', 650, 'b'];
+  const c1 = L.cutInterval(times, 600, 700, { checkpoints: [0, 300], compact: false, carry });
+  check('clip carry: newest of each kind before the checkpoint, in packet order, then the checkpoint (' + c1.idx.slice(0, 6) + ')',
+    same(c1.idx.slice(0, 6), [1, 2, 120, 250, 299, 300]) && c1.idx.length === 405 && c1.idx[c1.start] === 600 && c1.times.slice(0, 6).every(v => v === 0) && c1.times[c1.start] === 30000);
+  const c2 = L.cutInterval(times, 600, 700, { checkpoints: [0, 300], compact: true, isCell: cell, warmMs: 10000, carry });
+  check('clip carry: compact clips too, times never go back', c2.idx.slice(0, 5).join() === '1,2,120,250,299' && c2.idx[5] === 300 && c2.idx[c2.start] === 600 && c2.times.every((v, i, a) => !i || v >= a[i - 1]));
+  check('clip carry: a clip from packet 0 has everything already', same(L.cutInterval(times, 10, 50, { checkpoints: [0, 300], carry }).idx, L.cutInterval(times, 10, 50, { checkpoints: [0, 300] }).idx));
+}
 const cs = L.cutSide({ s: [5000, 1, 1, 0, 65000, 2, 1, 0], e: [61000, 'k', 30, 80000, 'd', 9], c: [] }, 50000, 50000, 69900);
 check('clip: samples and events of the span, rebased', same(cs.s, [15000, 2, 1, 0]) && same(cs.e, [11000, 'k', 30]));
 
@@ -188,6 +205,7 @@ function applyPk(w, d, env) {
   else if (op === 32) { if (w.playerCellIDs.indexOf(a) === -1) w.playerCellIDs.push(a); const x = w.indexedCells[a]; if (x && w.playerCells.indexOf(x) === -1) w.playerCells.push(x); if (!w.play) { w.play = true; env && env.spawned(); } }
   else if (op === 20) { w.playerCellIDs = []; w.playerCells = []; }
   else if (op === 18) { w.indexedCells = {}; w.cells = []; w.playerCells = []; w.playerCellIDs = []; if (!w.isLegendWorld) { w.mapMinX = -70; w.mapMaxX = 70; w.mapSize = 140; } }
+  else if (op === 64 && d.byteLength >= 33) { const x0 = d.getFloat64(1, true), x1 = d.getFloat64(17, true); w.mapMinX = x0; w.mapMaxX = x1; w.mapSize = x1 - x0; w._lmServerBorder = Object.freeze({ minX: x0, maxX: x1 }); } // the real layout (bd)
   else if (op === 64) { w.mapMinX = -a * 10; w.mapMaxX = a * 10; w.mapSize = a * 20; w._lmServerBorder = Object.freeze({ minX: -a * 10, maxX: a * 10 }); }
   else if (op === 17) { w.viewX = a; w.scale = b / 10; }
   else if (op === 49) { w.leaderboard = []; for (let i = 0; i < a; i++) w.leaderboard.push({ nick: 'p' + i + '.' + b, id: i }); w.playerPosition = a; }
@@ -520,6 +538,36 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     check('import while active: the old session ends (own skins), the import plays with its skins', mid === 'https://own.example/bob.png' && s.driving && s.key === k2 && s.pos === small.length && e.g.application.customSkinsMap.bob === 'https://imp.example/bob.png');
     check('import while active: replayStop for the old recording, replayStart for the new one, all as a replay (' + e.log.join(' ') + ')', e.log.join() === 'replayStart,replayStop:stopped,replayStart' && e.seenCtx.every(Boolean) && !noLive(e).length);
   }
+  /* a clip cut from after a "clear all" plays like the full replay from that moment: the border,
+   * leaderboard and camera of the packets before that checkpoint go with it, on both map kinds */
+  [false, true].forEach(el => {
+    const name = el ? 'Expanding Land' : 'agar.io-like';
+    const bd = (x0, x1, gt) => { const v = new DataView(new ArrayBuffer(gt == null ? 33 : 37)); v.setUint8(0, 64); [x0, x0, x1, x1].forEach((x, i) => v.setFloat64(1 + i * 8, x, true)); if (gt != null) v.setUint32(33, gt, true); return v; };
+    const rec = [bd(-700, 700, 0), pk(240, 0x4C, 0x57, 1), pk(49, 3, 1), pk(17, 5, 10)];
+    for (let i = 1; i <= 8; i++) rec.push(pk(1, i, i * 3, 4 + i));
+    rec.push(pk(32, 1), pk(18));
+    for (let i = 10; i <= 15; i++) rec.push(pk(1, i, i, 3));
+    rec.push(bd(-900, 900), pk(49, 4, 2), pk(17, 9, 12), pk(4, 10, 50), pk(18));          // the map grows, then clear all
+    const cp = rec.length - 1;
+    for (let i = 20; i <= 30; i++) rec.push(pk(1, i, i, 2));
+    rec.push(pk(32, 20));
+    for (let i = 0; i < 10; i++) rec.push(pk(4, 20, i));
+    const out = rec.length - 1;
+    rec.push(bd(-300, 300), pk(49, 2, 9), pk(17, 40, 8), pk(1, 40, 4, 4), pk(18));        // after Out: the map shrinks
+    const e = driverEnv(null, { el });
+    const k = e.add('wss://clip.example/' + (el ? 'el' : 'ag'), rec);
+    e.start(k, rec.length, false);
+    const a = cp + 4, want = e.ref(out + 1);
+    const c = e.RS.drive.clip(a * 40, out * 40);
+    const k2 = e.add('clip-' + name + '.lm', c ? c.packets : [pk(16)]);
+    e.start(k2, c ? c.packets.length : 1, false);
+    const got = sig(e.l), noColors = s => JSON.stringify(Object.assign(JSON.parse(s), { colors: 0 }));
+    const w = JSON.parse(want);
+    check(name + ': a clip from after a clear all ends with the world of the full replay (border ' + JSON.parse(got).border + ' / ' + w.border + ', leaderboard ' + JSON.parse(got).lb.length + ' / ' + w.lb.length + ')',
+      !!c && noColors(got) === noColors(want) && w.border[0] === (el ? -900 : -70) && w.lb.length === 4 && w.cam[0] === 9);
+    check(name + ': the clip starts at that clear all, with the newest border, beacon, leaderboard and camera from before it at time 0',
+      !!c && c.packets.length === 5 + (out + 1 - cp) && c.packets[5] === rec[cp] && [0, 1, 20, 21, 22].every((j, i) => c.packets[i] === rec[j]) && c.packets[c.side.start] === rec[a]);
+  });
   /* the game's death handler: no session stats, personal bests or match history for a replay */
   {
     const noop = () => { };

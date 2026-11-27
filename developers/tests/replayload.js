@@ -44,6 +44,17 @@ check('limits: exposed', has('LIMITS') && LIM.packets >= 90000 && LIM.bytes >= 1
 const jim = fs.readFileSync(path.join(root, 'extras', 'jim.lm'), 'utf8');
 const jp = attempt(() => L.parseLmText(jim));
 check('legacy: extras/jim.lm opens (1026 packets, estimated times)', jp.v && jp.v.packets.length === 1026 && jp.v.side.est === true);
+/* a clip of it cut from after its last "clear all" (packet 554; a leaderboard every 27 packets, the
+ * next one at 575, so the clip has none of its own): the handshake border (with the game type), the
+ * newest border and the newest leaderboard from before it go along */
+if (jp.v && typeof L.carryKind === 'function') {
+  const pk = jp.v.packets, cps = [0], carry = [];
+  pk.forEach((d, i) => { if (i && d.getUint8(0) === 18) cps.push(i); const k = L.carryKind(d); if (k) carry.push(i, k); });
+  const cut = L.cutInterval(L.estTimes(pk.length), 560, 572, { checkpoints: cps, carry });
+  check('legacy clip: starts at the clear all at 554 with borders 1, 26 and leaderboard 545 before it (' + cut.idx.slice(0, 4) + ')',
+    same(cps, [0, 25, 554]) && same(cut.idx.slice(0, 4), [1, 26, 545, 554]) && cut.idx[cut.start] === 560 && cut.idx.length === 3 + 572 - 554 &&
+    !cut.idx.slice(3).some(i => pk[i].getUint8(0) === 49));
+} else check('legacy clip: carry helper present', false);
 
 /* small budgets for the oversized fixtures: nothing big is ever built */
 const withLimits = (o, f) => { const keep = Object.assign({}, LIM); Object.assign(LIM, o); try { return f(); } finally { Object.assign(LIM, keep); } };

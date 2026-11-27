@@ -268,10 +268,36 @@
         return Math.round(p);
     }
 
+    /* What a packet (a DataView, opened if compressed) gives a clip that starts later (cutInterval
+     * carry): its kind, '' for none. A "clear all" keeps these and servers send them again only
+     * when they change, so the newest one of each kind before the clip goes with it: the map border
+     * (64; 'bg' the handshake one with the game type, 'bf' a full agar.io border, which comes only
+     * at the handshake, 'b' the others, such as agar.io's view rects or Expanding Land's tier
+     * changes), the Expanding Land beacon (240 'LW', else it is read as a private server), the
+     * leaderboard (49, 53, 54), the team pie (50) and the camera (17). */
+    function carryKind(d) {
+        try {
+            var n = d.byteLength, op = d.getUint8(0);
+            if (op === 64) {
+                if (n < 33) return '';
+                var w = d.getFloat64(17, true) - d.getFloat64(1, true), h = d.getFloat64(25, true) - d.getFloat64(9, true);
+                if (n >= 37) { var gt = d.getUint32(33, true); if (gt === 0 || gt === 1) return 'bg'; }
+                return w > 14000 && h > 14000 ? 'bf' : 'b';
+            }
+            if (op === 240) return n >= 3 && d.getUint8(1) === 0x4C && d.getUint8(2) === 0x57 ? 'el' : '';
+            if (op === 49 || op === 53 || op === 54) return 'lb';
+            if (op === 50) return 'pie';
+            if (op === 17) return 'cam';
+        } catch (e) { }
+        return '';
+    }
     /* Cut packets [a, b) (indices) for a clip. The world state at a depends on what came
      * before, so the clip starts at the newest world reset <= a (checkpoint). Compact mode
      * leaves out cell updates (isCell) older than warmMs before a: the cells come back with
      * the warm-up packets; names sent only once long before may be missing in such a clip.
+     * carry: [index, kind, ...] of the recording in packet order (carryKind); the newest packet
+     * of each kind before that checkpoint comes first, at time 0, so the clip has the border,
+     * leaderboard and camera the recording had there.
      * Returns { idx: kept original indices, times (rebased), start: playback position, base }. */
     function cutInterval(times, a, b, opts) {
         opts = opts || {};
@@ -283,6 +309,13 @@
         var warm = isNum(opts.warmMs) ? opts.warmMs : 10000;
         var w = Math.max(p, Math.min(a, firstAtOrAfter(times, n, times[a] - warm)));
         var idx = [], i;
+        var cy = p > 0 && Array.isArray(opts.carry) ? opts.carry : null, seen = {};
+        for (i = cy ? cy.length - 2 : -1; i >= 0; i -= 2) {
+            if (!(cy[i] < p) || !cy[i + 1] || seen[cy[i + 1]]) continue;
+            seen[cy[i + 1]] = 1;
+            idx.push(cy[i]);
+        }
+        idx.reverse();
         for (i = p; i < w; i++) if (!opts.compact || !opts.isCell || !opts.isCell(i)) idx.push(i);
         for (i = w; i < b; i++) idx.push(i);
         var base = opts.compact ? times[w] : times[p];
@@ -556,7 +589,7 @@
 
     var lib = {
         EST_MS: EST_MS, encodeTimes: encodeTimes, decodeTimes: decodeTimes, cleanTimes: cleanTimes, estTimes: estTimes,
-        posAtTime: posAtTime, firstAtOrAfter: firstAtOrAfter, checkpointBefore: checkpointBefore,
+        posAtTime: posAtTime, firstAtOrAfter: firstAtOrAfter, checkpointBefore: checkpointBefore, carryKind: carryKind,
         makeSidecar: makeSidecar, readSidecar: readSidecar, findSidecar: findSidecar,
         detectBookmarks: detectBookmarks, peakMass: peakMass, cutInterval: cutInterval, cutSide: cutSide,
         validateRecord: validateRecord, parseTags: parseTags, sortRecords: sortRecords, searchRecords: searchRecords,
@@ -636,7 +669,7 @@
             if (!meta && !side.t) side.est = true;
             arr._lmSide = side;
         }
-        REC = { key: key, arr: arr, spec: Array.isArray(spec) ? spec : [], side: side, n: 0, t: null, marks: [], cps: [0], cpSet: {}, cpsScan: 1, marksAt: -1 };
+        REC = { key: key, arr: arr, spec: Array.isArray(spec) ? spec : [], side: side, n: 0, t: null, marks: [], cps: [0], cpSet: {}, carry: [], cpsScan: 0, marksAt: -1 };
         refreshRec();
         return REC;
     }
@@ -664,17 +697,20 @@
         for (var i = r.cpsScan; i < n; i++) {
             var d = r.arr[i];
             if (!d || !d.byteLength) continue;
-            var op = d.getUint8(0);
+            var op = d.getUint8(0), dv = d;
             /* P1 fix #40: LZ4-compressed packets (opcode 255) must be decompressed
              * before the opcode can be checked. Without this, cps stays [0] for
              * compressed recordings and all backward seeks replay from packet 0. */
             if (op === 255) {
                 var l = LM();
                 if (l && typeof l.decompressMessage === 'function') {
-                    try { var m = l.decompressMessage(d); if (m && m.length) op = m.readUInt8(0); } catch (e) { }
+                    try { var m = l.decompressMessage(d); if (m && m.length) { op = m.readUInt8(0); if (op === 64) dv = new DataView(m.buffer, m.byteOffset || 0, m.length); } } catch (e) { }
                 }
             }
-            if (op === 18) { r.cps.push(i); r.cpSet[i] = 1; }
+            if (op === 18 && i > 0) { r.cps.push(i); r.cpSet[i] = 1; }
+            /* what a clip that starts at a later checkpoint takes along (cutInterval carry) */
+            var ck = (op === 64 || op === 240 || op === 49 || op === 50 || op === 53 || op === 54 || op === 17) ? carryKind(dv) : '';
+            if (ck) r.carry.push(i, ck);
         }
         r.cpsScan = n;
         r.endT = n ? r.t[n - 1] : 0;
@@ -1617,7 +1653,7 @@
             }
             return false;
         };
-        var cut = cutInterval(REC.t, a, b, { checkpoints: REC.cps, compact: OPT.compact, isCell: isCell, warmMs: 10000 });
+        var cut = cutInterval(REC.t, a, b, { checkpoints: REC.cps, carry: REC.carry, compact: OPT.compact, isCell: isCell, warmMs: 10000 });
         var cs = cutSide(REC.side, cut.base, cut.base, cut.endT);
         var side = { lmrs: 1, t: encodeTimes(cut.times), s: cs.s, e: cs.e, c: cs.c };
         if (cut.start > 0) side.start = cut.start;
@@ -2128,5 +2164,5 @@
         return { open: isOpen(), key: REC && REC.key, pos: P.pos, n: REC ? REC.n : 0, playing: P.playing, driving: P.driving, speed: P.speed, dir: P.dir, fx: OPT.fx, stopAt: P.stopAt, marks: REC ? REC.marks.length : 0, armed: armed, seeking: !!P.ff };
     };
     /* the transport without the window, for scripts and developers/tests/replaystudio.js */
-    RS.drive = { play: play, pause: pause, seek: seekTo, step: stepPacket, select: select };
+    RS.drive = { play: play, pause: pause, seek: seekTo, step: stepPacket, select: select, clip: function (inMs, outMs) { P.inMs = inMs; P.outMs = outMs; return makeClip(); } };
 })();
