@@ -806,7 +806,9 @@
         row.setAttribute('data-id', it.id);
         row.appendChild(mk('span', 'lm-cc-kind', kindLabel(it)));
         var main = mk('span', 'lm-cc-main');
-        main.appendChild(mk('span', 'lm-cc-label', it.label));
+        /* a long name is cut with "..." on one line (German, Russian, Bulgarian, Greek): its tooltip has it all */
+        var lab = main.appendChild(mk('span', 'lm-cc-label', it.label));
+        if (it.label) lab.title = it.label;
         var sub = it.section || '';
         if (it.en && normalize(it.en) !== normalize(it.label)) sub = (sub ? sub + ' \u00b7 ' : '') + it.en;
         if (sub) main.appendChild(mk('span', 'lm-cc-sub', sub));
