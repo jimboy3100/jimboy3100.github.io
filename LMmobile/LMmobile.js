@@ -497,7 +497,7 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, jsResponseCurve: 'linear', zoomBtns: false, freeSpecBtn: false, jsSize: 1, jsOpacity: 1 };
+        var prefs = { jsSensitivity: 300, btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, netGraph: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, jsResponseCurve: 'linear', zoomBtns: false, freeSpecBtn: false, jsSize: 1, jsOpacity: 1, respawnBtn: false, macroBtns: false };
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
          * settings profile or its Undo that removed the store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
@@ -532,6 +532,8 @@
                     if (saved.jsResponseCurve !== undefined && /^(linear|ease|aggressive)$/.test(saved.jsResponseCurve)) prefs.jsResponseCurve = saved.jsResponseCurve;
                     if (saved.jsSize !== undefined) prefs.jsSize = num(saved.jsSize, 0.5, 2, prefs.jsSize);
                     if (saved.jsOpacity !== undefined) prefs.jsOpacity = num(saved.jsOpacity, 0.2, 1, prefs.jsOpacity);
+                    if (saved.respawnBtn !== undefined) prefs.respawnBtn = !!saved.respawnBtn;
+                    if (saved.macroBtns !== undefined) prefs.macroBtns = !!saved.macroBtns;
                     if (saved.zoomBtns !== undefined) prefs.zoomBtns = !!saved.zoomBtns;
                     if (saved.freeSpecBtn !== undefined) prefs.freeSpecBtn = !!saved.freeSpecBtn;
                 }
@@ -622,6 +624,8 @@
             '</select></label>' +
             '<label><input type="checkbox" id="lm-zoombtn"' + (prefs.zoomBtns ? ' checked' : '') + '> ' + tx('misc.mobile.zoomBtns', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-freespec"' + (prefs.freeSpecBtn ? ' checked' : '') + '> ' + tx('misc.mobile.freeSpec', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-respbtn"' + (prefs.respawnBtn ? ' checked' : '') + '> ' + tx('pkg.agm.respawnBtn', 'lm-t') + '</label>' +
+            '<label><input type="checkbox" id="lm-macrobtn"' + (prefs.macroBtns ? ' checked' : '') + '> ' + tx('pkg.agm.macroBtns', 'lm-t') + '</label>' +
             /* move, resize, fade or hide each touch control (LMmobile-editor.js, loaded on the first tap) */
             '<button type="button" id="lm-ed-open">' + tx('misc.mobile.editControls') + '</button>';
         drawer.appendChild(sp);
@@ -765,6 +769,8 @@
         });
         sp.querySelector('#lm-zoombtn').addEventListener('change', function () { prefs.zoomBtns = this.checked; savePrefs(); buildZoomButtons(); layoutRefresh(); });
         sp.querySelector('#lm-freespec').addEventListener('change', function () { prefs.freeSpecBtn = this.checked; savePrefs(); buildFreeSpecButton(); layoutRefresh(); });
+        sp.querySelector('#lm-respbtn').addEventListener('change', function () { prefs.respawnBtn = this.checked; savePrefs(); buildActionButtons(); layoutRefresh(); });
+        sp.querySelector('#lm-macrobtn').addEventListener('change', function () { prefs.macroBtns = this.checked; savePrefs(); buildActionButtons(); layoutRefresh(); });
 
         /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
         var rootR = mk('div'); rootR.id = 'lm-mc-r';
@@ -978,6 +984,44 @@
             drawerInsert(bFreeSpec);
         }
         buildFreeSpecButton();
+        /* optional Quick respawn button (the Y hotkey's command, application.quickResp: it works with
+         * Settings > Quick respawn on, else the button says so) and custom macro buttons M1-M3 (the
+         * Custom macro hotkeys' command: the macro checks itself that you are alive and playing) */
+        var bResp = null, macroBtns = [];
+        function buildActionButtons() {
+            if (bResp && bResp.parentNode) bResp.parentNode.removeChild(bResp);
+            macroBtns.forEach(function (b) { if (b.parentNode) b.parentNode.removeChild(b); });
+            bResp = null; macroBtns = [];
+            if (prefs.respawnBtn) {
+                bResp = mkd('\u21BB');
+                bResp.addEventListener('touchstart', function (e) {
+                    e.preventDefault(); e.stopPropagation();
+                    debounced(function () {
+                        if (typeof defaultmapsettings !== 'undefined' && !defaultmapsettings.quickResp) {
+                            if (window.toastr) toastr.info(escH(T('pkg.agm.respawnOff')));
+                            return;
+                        }
+                        if (typeof application !== 'undefined' && application && typeof application.quickResp === 'function') application.quickResp();
+                    }, 'resp', 1000);
+                }, { passive: false });
+                drawerInsert(bResp);
+            }
+            if (prefs.macroBtns) {
+                for (var mi = 1; mi <= 3; mi++) {
+                    (function (n) {
+                        var b = mkd('M' + n);
+                        b.addEventListener('touchstart', function (e) {
+                            e.preventDefault(); e.stopPropagation();
+                            if (isMenuVisible()) return;
+                            debounced(function () { if (typeof window.lmMacroEditor === 'function') window.lmMacroEditor('run', n); }, 'macro' + n, 300);
+                        }, { passive: false });
+                        drawerInsert(b);
+                        macroBtns.push(b);
+                    })(mi);
+                }
+            }
+        }
+        buildActionButtons();
         /* net graph (the desktop hotkey), kept in step with the setting */
         function syncNetGraph() {
             if (typeof window.lmToggleNetGraph === 'function' && !!window._lmNetGraph !== prefs.netGraph) window.lmToggleNetGraph();
@@ -1017,7 +1061,8 @@
             setRange('lm-hf', Math.round(prefs.hudFade * 100), Math.round(prefs.hudFade * 100) + '%');
             [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'], ['lm-taphap', 'tapHaptic'],
                 ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-netgraph', 'netGraph'], ['lm-tdir', 'targetMode'],
-                ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact'], ['lm-zoombtn', 'zoomBtns'], ['lm-freespec', 'freeSpecBtn']
+                ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact'], ['lm-zoombtn', 'zoomBtns'], ['lm-freespec', 'freeSpecBtn'],
+                ['lm-respbtn', 'respawnBtn'], ['lm-macrobtn', 'macroBtns']
             ].forEach(function (c) { var el = q(c[0]); if (el) el.checked = !!prefs[c[1]]; });
             /* sync response curve dropdown */
             var jrcEl = q('lm-jrc'); if (jrcEl) jrcEl.value = prefs.jsResponseCurve;
@@ -1028,6 +1073,7 @@
             buildPingButton();
             buildZoomButtons();
             buildFreeSpecButton();
+            buildActionButtons();
             syncNetGraph();
             applyLbCompact();
             applyPrefs();
@@ -2153,7 +2199,8 @@
                     q1: quickBtns[0] || null, q2: quickBtns[1] || null, q3: quickBtns[2] || null, q4: quickBtns[3] || null,
                     chat: bChat, ping: bPing || null, wave: bWave, autoplay: bAI, pause: bPaus,
                     rewind: bRwd, forward: bFwd, gear: bCfg, menu: bMenu,
-                    zoomIn: bZoomIn || null, zoomOut: bZoomOut || null, freeSpec: bFreeSpec || null };
+                    zoomIn: bZoomIn || null, zoomOut: bZoomOut || null, freeSpec: bFreeSpec || null,
+                    respawn: bResp || null, m1: macroBtns[0] || null, m2: macroBtns[1] || null, m3: macroBtns[2] || null };
             },
             home: ctlHome,
             setJoyZone: function (z) { joyZone = z || null; },
