@@ -2735,24 +2735,6 @@
     "ja": "開く",
     "it": "Apri"
   },
-  "game2.noFocus": {
-    "en": "NO FOCUS",
-    "el": "ΧΩΡΙΣ ΕΣΤΙΑΣΗ",
-    "es": "SIN FOCO",
-    "bg": "НЯМА ФОКУС",
-    "fr": "PAS DE FOCUS",
-    "ar": "لا تركيز",
-    "zh": "未聚焦",
-    "ru": "НЕТ ФОКУСА",
-    "de": "KEIN FOKUS",
-    "tr": "ODAK YOK",
-    "pl": "BRAK FOKUSU",
-    "nl": "GEEN FOCUS",
-    "pt": "SEM FOCO",
-    "id": "TIDAK FOKUS",
-    "ja": "フォーカスなし",
-    "it": "NESSUN FOCUS"
-  },
   "game2.ngCanvasOff": {
     "en": "Canvas (WebGL off)",
     "el": "Canvas (WebGL ανενεργό)",

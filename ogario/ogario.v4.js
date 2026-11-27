@@ -21541,7 +21541,6 @@ var defaultmapsettings = {
     showLbData: true,
     lbHideBots: false,
     clickSpectate: false,         /* click to follow: in free spectate a player cell or leaderboard mass click follows that player; in Expanding Land World Spectate a minimap click moves the camera (was three switches, lmFoldClickFollow) */
-    noFocusHud: false,            /* warn while playing when keys/mouse no longer reach the game (alt-tab, 2nd window) */           /* small toast "#3 (passed nick)" when you climb the leaderboard */            /* leaderboard: a nick seen 3+ times is shown once as "name x N" */
     showTime: false,
     showStopwatch: false,         /* start / pause / stop stopwatch above the minimap (was the Tools tab button "Show Timer Calc.") */
     showDevConsole: false,        /* developer console: render time by the FPS, profiler box, packet log; its switch is in the Performance diagnostics window */
@@ -27054,7 +27053,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27159,7 +27158,7 @@ function thelegendmodproject() {
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "noFocusHud", "centeredLb", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre"], "hudGroup");
             /* one choice for where the game stats line is ("at the top" and "at the bottom centre" were two switches) */
             this.addChoiceBox(".hudGroup", "statsPosition", "settings.statsPosition", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
             /* Spectating: click to follow */
@@ -86584,24 +86583,6 @@ $(document).on('keydown', '#message', function (e) {
     this.value = h[idx];
     try { this.setSelectionRange(this.value.length, this.value.length); } catch (e2) { }
 });
-/* "NO FOCUS" tag (like Delta): while playing, the window lost focus so hotkeys and the
- * mouse no longer reach the game. Checked 3x per second; nothing is created while off. */
-setInterval(function () {
-    try {
-        var el = document.getElementById('lm-nofocus');
-        var show = !!(window.legendmod5 && window.legendmod5.noFocusHud && window.legendmod && window.legendmod.play && !document.hasFocus());
-        if (show && !el) {
-            el = document.createElement('div');
-            el.id = 'lm-nofocus';
-            el.textContent = lmT('game2.noFocus');
-            el.setAttribute('data-i18n', 'game2.noFocus');
-            el.style.cssText = 'position:fixed;top:38%;left:50%;transform:translateX(-50%);z-index:150;pointer-events:none;' +
-                'font:700 28px sans-serif;letter-spacing:3px;color:#ff4d4d;text-shadow:0 0 6px #000,0 0 2px #000;';
-            document.body.appendChild(el);
-        }
-        if (el) el.style.display = show ? '' : 'none';
-    } catch (e) { }
-}, 333);
 /* Net graph (hotkey, no default key; not saved): FPS and ping of the last ~30 s,
  * sampled 4x per second. Nothing runs until it is opened. */
 window.lmToggleNetGraph = function () {

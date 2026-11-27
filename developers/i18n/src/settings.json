@@ -3365,24 +3365,6 @@
     "ja": "追跡中",
     "it": "Stai seguendo"
   },
-  "settings.noFocusHud": {
-    "en": "Show NO FOCUS when the game window is not active",
-    "el": "Εμφάνιση NO FOCUS όταν το παράθυρο του παιχνιδιού δεν είναι ενεργό",
-    "es": "Mostrar NO FOCUS cuando la ventana del juego no está activa",
-    "bg": "Покажи NO FOCUS, когато прозорецът на играта не е активен",
-    "fr": "Afficher NO FOCUS quand la fenêtre du jeu n'est pas active",
-    "ar": "إظهار NO FOCUS عندما تكون نافذة اللعبة غير نشطة",
-    "zh": "遊戲視窗未啟用時顯示 NO FOCUS",
-    "ru": "Показывать NO FOCUS, когда окно игры неактивно",
-    "de": "NO FOCUS anzeigen, wenn das Spielfenster nicht aktiv ist",
-    "tr": "Oyun penceresi etkin değilken NO FOCUS göster",
-    "pl": "Pokaż NO FOCUS, gdy okno gry nie jest aktywne",
-    "nl": "NO FOCUS tonen als het spelvenster niet actief is",
-    "pt": "Mostrar NO FOCUS quando a janela do jogo não estiver ativa",
-    "id": "Tampilkan NO FOCUS saat jendela game tidak aktif",
-    "ja": "ゲーム画面が非アクティブのとき NO FOCUS を表示",
-    "it": "Mostra NO FOCUS quando la finestra del gioco non è attiva"
-  },
   "settings.centeredLb": {
     "en": "Centered leaderboard",
     "el": "Κατάταξη στο κέντρο",
@@ -10243,7 +10225,7 @@
     "id": "Line split",
     "ja": "ライン分裂",
     "it": "Line split"
-  },
+  },
   "settings.macroEditor": {
     "en": "Custom macros (split, feed, wait, move to mouse)",
     "el": "Δικά σου macros (split, feed, αναμονή, κίνηση προς το ποντίκι)",
