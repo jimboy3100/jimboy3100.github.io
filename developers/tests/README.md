@@ -143,6 +143,24 @@ machine. Store a new baseline with `--update-baseline` when a change is meant to
 numbers, and say why in the commit. Without Chrome it is skipped.
 The same scenes run from the browser console of the game page: see the top of `lib/bench-scene.js`.
 
+## Network worker prototype (not used by the client)
+
+```
+node developers/tests/netpipe.js              # checks in Node (worker_threads)
+node developers/tests/netpipe-bench.js --run  # A/B in the real client, headless Chrome
+```
+
+`lib/netpipe.js` decodes the LZ4 packets (opcode 255) of a connection in a worker with the
+client's own `decompressMessage` (its source text) and applies every packet on the main thread in
+arrival order: per-connection queue, generation number, bounded packets/bytes in the worker,
+flush before a close or a socket change, fallback to the main thread when the worker fails or
+stays silent. `netpipe.js` compares the worker's bytes and rejections with the main thread's (WASM
+and JS decoder, valid, malformed and oversized packets) and checks order, key changes queued
+behind a worker packet, backpressure, flush, failure, timeout and that the received bytes stay
+whole for the replay recorder. `netpipe-bench.js --run` measured no gain beyond the noise and
+later world updates (numbers at its top), so the client keeps decoding on the main thread.
+Without `--run` it is a quick self-check.
+
 ## WebGL batching check and benchmark
 
 ```
