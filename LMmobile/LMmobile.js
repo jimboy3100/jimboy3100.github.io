@@ -78,7 +78,10 @@
         'background:rgba(0,36,62,.50);background:color-mix(in srgb,var(--lm-pc,#00243e) 50%,transparent);border:1.5px solid rgba(1,217,204,.22);border:1.5px solid color-mix(in srgb,var(--lm-mc,#01d9cc) 22%,transparent);' +
         'box-shadow:0 0 6px rgba(1,217,204,.06);box-shadow:0 0 6px color-mix(in srgb,var(--lm-mc,#01d9cc) 6%,transparent);' +
         'color:rgba(255,255,255,.8);font-family:var(--lm-hud-font,Ubuntu\,Roboto\,sans-serif);' +
-        'font-weight:700;transition:transform .1s,background .15s}' +
+        'font-weight:700;transition:transform .1s,background .15s;position:relative}' +
+        /* a thumb-sized tap area (44 px) around the 40 px circle, drawn as before; half the
+         * 8 px gap to the next button stays a gap */
+        '.lm-d::after{content:"";position:absolute;top:-4px;right:-4px;bottom:-4px;left:-4px;border-radius:50%}' +
         '.lm-d.p{transform:scale(.88);background:rgba(1,217,204,.20);background:color-mix(in srgb,var(--lm-mc,#01d9cc) 20%,transparent)}' +
         '.lm-d.lm-active{background:rgba(1,217,204,.18)!important;background:color-mix(in srgb,var(--lm-mc,#01d9cc) 18%,transparent)!important;border-color:rgba(1,217,204,.55)!important;border-color:color-mix(in srgb,var(--lm-mc,#01d9cc) 55%,transparent)!important}' +
 

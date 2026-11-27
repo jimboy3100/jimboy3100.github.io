@@ -63,6 +63,25 @@
     window.removeEventListener('wheel', eatWheel, true);
     info.pinchWheels = wheels;
     if (wheels) fail.push('the finger that closed the chat box made a pinch with a second finger (' + wheels + ' zoom steps)');
+    /* (3) the left row's buttons take a tap up to 1.5 px outside their 40 px circle (a 44 px tap
+     * area), and the middle of the gap between two of them still takes none */
+    var tc = document.getElementById('toast-container'), tcPe = tc ? tc.style.pointerEvents : '';
+    if (tc) tc.style.pointerEvents = 'none';
+    var row = [].filter.call(H.root.drawer.children, function (el) { return el.classList.contains('lm-d') && el.getClientRects().length; });
+    var pairs = 0, hits = [], gaps = [];
+    for (var i = 0; i + 1 < row.length; i++) {
+      var ra = row[i].getBoundingClientRect(), rb = row[i + 1].getBoundingClientRect(), y = ra.top + ra.height / 2;
+      if (Math.abs(ra.top - rb.top) > 2 || rb.left <= ra.right) continue;
+      pairs++;
+      var e1 = document.elementFromPoint(ra.right + 1.5, y), e2 = document.elementFromPoint((ra.right + rb.left) / 2, y);
+      if (!(e1 && row[i].contains(e1))) hits.push(row[i].textContent + ' (' + (e1 ? e1.tagName + '#' + e1.id + '.' + e1.className : 'none') + ')');
+      if (e2 && (row[i].contains(e2) || row[i + 1].contains(e2))) gaps.push(row[i].textContent + '|' + row[i + 1].textContent);
+    }
+    if (tc) tc.style.pointerEvents = tcPe;
+    info.tapArea = { pairs: pairs, size: row.length ? Math.round(row[0].getBoundingClientRect().width) : 0 };
+    if (!pairs) fail.push('no two buttons side by side in the left row');
+    if (hits.length) fail.push('a tap just outside a left-row button missed it: ' + hits.join(', '));
+    if (gaps.length) fail.push('the gap between two left-row buttons takes taps: ' + gaps.join(', '));
   } finally {
     window.removeEventListener('wheel', eatWheel, true);
     app.sendTeamPing = keepPing; app.enterChatMessage = keepChat;
