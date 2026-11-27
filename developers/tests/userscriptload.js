@@ -169,6 +169,8 @@ async function withChrome(server, fn) {
     await send('Page.enable');
     await send('Performance.enable');
     await send('Fetch.enable', { patterns: [{ urlPattern: '*://agar.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }, { urlPattern: '*://hslo.io/*' }] });
+    /* no Player Monitor entry for this test browser (lib/nopresence.js) */
+    await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./lib/nopresence').source });
     await send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: true, flatten: true });
     /* like a userscript manager: in a JS world of its own, not the page's */
     await send('Page.addScriptToEvaluateOnNewDocument', { source: injected, worldName: 'userscript' });

@@ -197,6 +197,8 @@ function probeMark(name) {
   /* like --no-first-run: the one-time language window stays away unless SMOKE_FIRSTRUN asks for it
    * (developers/tests/i18n-firstrun.js); the probes test it on purpose */
   if (!process.env.SMOKE_FIRSTRUN) await send('Page.addScriptToEvaluateOnNewDocument', { source: "try { if (!localStorage.getItem('lmLangAsked')) localStorage.setItem('lmLangAsked', '1'); } catch (e) { }" });
+  /* no Player Monitor entry for this test browser (lib/nopresence.js) */
+  await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./lib/nopresence').source });
   /* window.__lmScriptsDone[src]: every script element that has loaded or failed (a probe or run.js
    * waits for the module scripts the game adds after it started, a readiness signal of their own) */
   await send('Page.addScriptToEvaluateOnNewDocument', { source: "try { var d = window.__lmScriptsDone = {}, f = function (e) { var t = e.target; if (t && t.tagName === 'SCRIPT' && t.src) d[t.src] = e.type; }; document.addEventListener('load', f, true); document.addEventListener('error', f, true); } catch (e) { }" });

@@ -69,6 +69,8 @@ async function runLoader(name) {
     await new Promise(r => ws.onopen = r);
     await send('Page.enable');
     await send('Fetch.enable', { patterns: [{ urlPattern: '*://agar.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }] });
+    /* no Player Monitor entry for this test browser (lib/nopresence.js) */
+    await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./lib/nopresence').source });
     /* like a document-start userscript / content script: run as soon as agar.io's <html> exists, while its page is parsed */
     await send('Page.addScriptToEvaluateOnNewDocument', { source: 'if (location.hostname === "agar.io") { var __o = new MutationObserver(function () {' +
       ' if (!document.documentElement) return; __o.disconnect();' +

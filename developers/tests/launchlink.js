@@ -89,6 +89,8 @@ const lmJs = launchFn + '\nwindow.__link = _lmLaunchLink(); try { localStorage.s
     await send('Page.enable', {}, s);
     await send('Network.enable', {}, s);
     await send('Fetch.enable', { patterns: [{ urlPattern: '*://agar.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }] }, s);
+    /* no Player Monitor entry for this test browser (lib/nopresence.js) */
+    await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./lib/nopresence').source }, s);
     await send('Page.addScriptToEvaluateOnNewDocument', { source: injected, worldName: 'tampermonkey' }, s);
     await send('Network.setCookie', { name: '__us', value: us ? 'on' : 'off', domain: 'agar.io', path: '/', secure: true }, s);
     if (url) send('Page.navigate', { url }, s);

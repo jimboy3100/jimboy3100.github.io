@@ -353,6 +353,8 @@ if (require.main === module) {
       return r && r.result ? r.result.value : undefined;
     };
     await send('Page.enable'); await send('Runtime.enable');
+    /* no Player Monitor entry for this test browser (lib/nopresence.js) */
+    await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./lib/nopresence').source });
     console.log('opening ' + url + ' (Chrome ' + (ver.Browser || '') + ')');
     await send('Page.navigate', { url });
     /* Legend Mod's diagnostics: recording with the freeze breakdown, also with the window closed */

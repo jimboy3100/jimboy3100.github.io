@@ -89,6 +89,8 @@ const STATE = 'JSON.stringify({ href: location.href, charset: document.character
     const s = (await send('Target.attachToTarget', { targetId: t.result.targetId, flatten: true })).result.sessionId;
     await send('Page.enable', {}, s);
     await send('Fetch.enable', { patterns: [{ urlPattern: '*://agar.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }] }, s);
+    /* no Player Monitor entry for this test browser (lib/nopresence.js) */
+    await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./lib/nopresence').source }, s);
     if (preload) await send('Page.addScriptToEvaluateOnNewDocument', { source: preload }, s);
     requested.length = 0;
     await send('Page.navigate', { url }, s);

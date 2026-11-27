@@ -187,6 +187,8 @@ async function main(argv) {
         await send('Emulation.setUserAgentOverride', { userAgent: (ver['User-Agent'] || '').replace('HeadlessChrome', 'Chrome'), acceptLanguage: 'en-US' });
         await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceScaleFactor: 1, mobile: false });
         await send('Page.addScriptToEvaluateOnNewDocument', { source: "try { if (!localStorage.getItem('lmLangAsked')) localStorage.setItem('lmLangAsked', '1'); } catch (e) { }" });
+        /* no Player Monitor entry for this test browser (lib/nopresence.js) */
+        await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./nopresence').source });
         await send('Fetch.enable', { patterns: [{ urlPattern: '*://jimboy3100.github.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }, { urlPattern: '*://legendmod.ml/*' }] });
         await send('Page.navigate', { url: 'https://www.legendmod.ml/play.html' });
         const evalJs = async (expr) => {

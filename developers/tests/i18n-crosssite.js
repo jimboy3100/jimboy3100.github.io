@@ -123,6 +123,8 @@ const ok = (c, m) => { console.log((c ? 'ok   ' : 'FAIL ') + m); if (!c) fails++
     await new Promise((r) => { ws.onopen = r; });
     await send('Page.enable'); await send('Runtime.enable');
     await send('Fetch.enable', { patterns: [{ urlPattern: '*' }] });
+    /* no Player Monitor entry for this test browser (lib/nopresence.js) */
+    await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./lib/nopresence').source });
 
     const frameIds = async () => {
         const t = await send('Page.getFrameTree');
