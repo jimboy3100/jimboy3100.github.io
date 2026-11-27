@@ -61,6 +61,10 @@ runs in Node (`node developers/tests/<name>.js`) and must exit 0 before a commit
 - `audit.js`: the audit tool itself, on small inputs and on a throw-away git repository.
 - `repodoc.js`: every path `developers/REPOSITORY.md` names (the folders, the files kept on purpose, the
   ones never to delete) is a tracked path, so its deletion rules point at the real files.
+- `auditmedia.js`: deleted, replaced and re-encoded media: nothing names a removed or no longer used
+  picture or video (also relatively from a page of its folder), the copies kept for outside links are still
+  there, the animated WebP that replaced a GIF keeps its size, frames, timing and loop, and the pictures
+  re-encoded losslessly keep their size and bit depth.
 
 ## Repository audit (before deleting or moving files)
 
