@@ -83768,7 +83768,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         loadDefaultHotkeys() {
             hotkeys = {};
             for (const command in hotkeysCommand) {
-                if (hotkeysCommand.hasOwnProperty(command)) {
+                /* commands without a default key get none (the last of them was put on the key '') */
+                if (hotkeysCommand.hasOwnProperty(command) && hotkeysCommand[command].defaultKey) {
                     hotkeys[hotkeysCommand[command].defaultKey] = command;
                 }
             }
@@ -84291,7 +84292,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         keysOf(id) {
             var keys = [], mouse = [];
             for (var k in hotkeys) {
-                if (hotkeys.hasOwnProperty(k) && k !== 'spec-messageKey' && hotkeys[k] === id) (this.isMouseKey(k) ? mouse : keys).push(k);
+                /* '' is no key (older saves have it): a mouse button showed as " / MOUSE RIGHT" */
+                if (hotkeys.hasOwnProperty(k) && k && k !== 'spec-messageKey' && hotkeys[k] === id) (this.isMouseKey(k) ? mouse : keys).push(k);
             }
             return keys.concat(mouse);
         },
