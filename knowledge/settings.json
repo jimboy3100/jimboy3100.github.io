@@ -115,7 +115,9 @@
         "indicators",
         "onlineStatus",
         "stickyCell",
-        "massInTab"
+        "massInTab",
+        "hudMoveDir",
+        "commandCentreBar"
       ]
     },
     {
@@ -264,7 +266,8 @@
         "massLossAlerts",
         "analytics",
         "personalBests",
-        "matchHistory"
+        "matchHistory",
+        "notificationCentre"
       ]
     },
     {

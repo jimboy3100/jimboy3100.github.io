@@ -15,8 +15,8 @@
 
 | # | Check | Theme | Status |
 |---|-------|-------|--------|
-| 1.1 | Leaderboard HUD uses `--lm-hud-fw` for font weight | Dark/Light | ☐ |
-| 1.2 | Leaderboard HUD uses `--lm-hud-fs` for font size | Dark/Light | ☐ |
+| 1.1 | Theme > HUD font Bold / regular changes the weight of the leaderboard (`#overlays-hud`) and of the bell, quick bar, cell panel and kill feed (`--lm-hud-fw`) | Dark/Light | ☐ |
+| 1.2 | Theme > HUD scale grows and shrinks the leaderboard and the HUD parts on body (`--lm-hud-scale`; each sizes its own text from it) | Dark/Light | ☐ |
 | 1.3 | Minimap HUD respects `--lm-hud-font` | Dark/Light | ☐ |
 | 1.4 | Stats HUD respects `--lm-hud-font` | Dark/Light | ☐ |
 
@@ -86,8 +86,8 @@
 
 | # | Check | Status |
 |---|-------|--------|
-| 7.1 | `IMAGE_RE` rejects URLs with `@` (userinfo) | ☐ |
-| 7.2 | Bridge only accepts `legendmod.ml` / `legendmod.gg` origins | ☐ |
+| 7.1 | A background image with user:pass@, a non-https address or a fragment is refused (`image()` in lm-theme-bridge.js) | ☐ |
+| 7.2 | Bridge only accepts the exact https origins www.legendmod.ml, legendmod.ml and jimboy3100.github.io (agar.io too as the game page) | ☐ |
 | 7.3 | Invalid CSS property names are rejected | ☐ |
 
 ## 8. WebGL Hybrid Renderer (D3)
