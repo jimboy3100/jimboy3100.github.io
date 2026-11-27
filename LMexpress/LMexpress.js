@@ -5749,10 +5749,11 @@ function SNEZServers() {
     }
 
     // ---------------
-    /* The clan tag is the team password: the relay gets only a one-way hash
-     * of it ("h:" + FNV-1a 32 of the UTF-8 bytes), the same on every client,
-     * so equal tags still group together. No real name is sent; the agar.io
-     * account IDs are, because the server now serves them only to the monitor key. */
+    /* The clan tag is the team password. The relay groups players by a one-way
+     * hash of it in `tag` ("h:" + FNV-1a 32 of the UTF-8 bytes, the same on every
+     * client) and also gets the tag itself in `tagPlain` (owner's choice,
+     * 2026-11-27), which the server serves only to the monitor key, like the
+     * agar.io account IDs. No real name is sent. */
     function _lmTagHash(tag) {
         tag = String(tag || "");
         if (!tag) return "";
@@ -5769,6 +5770,7 @@ function SNEZServers() {
         nickname: null,
         server: null,
         tag: null,
+        tagPlain: null,
         hidecountry: false,
         isPlaying: false,
         AID: null,
@@ -5845,6 +5847,7 @@ function SNEZServers() {
             if (state.nickname != nick.value ||
                 state.server != servertemp ||
                 state.tag != tagHash ||
+                state.tagPlain != tag.value ||
                 state.isPlaying != (window.ogario && window.ogario.play) ||
                 state.agarioLEVEL != window.agarioLEVEL ||
                 state.agarioUID != (window.agarioUID || null) ||
@@ -5856,6 +5859,7 @@ function SNEZServers() {
                 state.nickname = nick.value;
                 state.server = servertemp;
                 state.tag = tagHash;
+                state.tagPlain = tag.value;
                 state.hidecountry = defaultmapsettings.hidecountry;
                 state.agarioLEVEL = window.agarioLEVEL;
                 state.agarioUID = window.agarioUID || null;

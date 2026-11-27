@@ -940,8 +940,9 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
         setupDragging(document.getElementById('lm-main-win'), document.getElementById('lm-drag'));
     }
 
-    /* Same as Legend Mod (LMexpress _lmTagHash): the relay only gets "h:" + FNV-1a 32
-     * of the clan tag (the team password), never the tag itself. */
+    /* Same as Legend Mod (LMexpress _lmTagHash): the relay groups by "h:" + FNV-1a 32
+     * of the clan tag (the team password) in `tag`; the tag itself goes in `tagPlain`,
+     * served only to the monitor key. */
     function lmTagHash(tag) {
         tag = String(tag || "");
         if (!tag) return "";
@@ -1013,6 +1014,7 @@ win.LM_PRIVATE_SERVER_URL = "wss://ffa.legendmod.ml:8080";
                         nickname: (document.querySelector('input[name="nickA"]')?.value || "Unnamed") + " (DM)",
                         server: `live-arena-${sip}.agar.io&?r=${document.querySelector('select[name="region"]')?.value}&?m=${document.querySelector('select[name="gamemode"]')?.value}`,
                         tag: lmTagHash(document.querySelector('input[name="clantag"]')?.value || ""),
+                        tagPlain: document.querySelector('input[name="clantag"]')?.value || "",
                         agarioLEVEL: win
                             .agarioLEVEL || 0, country: LM_MASTER.myCountryCode.toUpperCase()
                     }
