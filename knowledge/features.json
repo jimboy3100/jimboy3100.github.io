@@ -63,12 +63,6 @@
       "url": "https://www.legendmod.ml/features.html"
     },
     {
-      "id": "companion",
-      "name": "Second-screen companion",
-      "description": "Broadcast live game state to a second browser window via BroadcastChannel at up to 4 states/second. Data: mass, rank, cells, time alive, leaderboard top 10, minimap, events, trail, chat. Widgets: card, mass, rank, time, minimap, leaderboard, stats, events, chat. Layouts: column, row, grid. Privacy-aware. Works as OBS source.",
-      "url": "https://www.legendmod.ml/companion-guide.html"
-    },
-    {
       "id": "chat",
       "name": "Chat system",
       "description": "In-game text chat with image/video sharing, emoticons, auto-translation, universal cross-server chat, mention notifications, coloured nicks, word filter, player ID display. 50 customizable chat command slots. Voice chat (push-to-talk). Team pings (Help, Danger, Go here, Virus). Chat message and command sounds with their own volumes (Settings > Sounds).",

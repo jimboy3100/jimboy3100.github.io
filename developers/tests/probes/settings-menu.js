@@ -76,7 +76,7 @@
   // options in their section, and every heading has a text
   var place = { recordReplays: 'replayGroup', 'instantReplaySecs-slider': 'replayGroup', netHistory: 'perfGroup', 'lm-perf-diag-btn': 'perfGroup',
     adaptivePerf: 'perfGroup', hudMergeCountdown: 'mergeGroup', hudMergeSound: 'mergeGroup', mergeRings: 'mergeGroup', virusSound: 'soundsGroup',
-    reducedMotion: 'accessibilityGroup', companionLive: 'spectateGroup', clickSpectate: 'spectateGroup',
+    reducedMotion: 'accessibilityGroup', clickSpectate: 'spectateGroup',
     'profileNumber-slider': 'profiles', showCellShadows: 'transparencyGroup' };
   Object.keys(place).forEach(function (id) {
     var el = document.getElementById(id);
@@ -91,7 +91,7 @@
     if (!t || t === 'undefined') fail.push('empty heading in .' + $(this).parent().attr('class'));
   });
   // dependency marks match the parent switches (nothing is changed here)
-  var deps = { showStats: 'showStatsMass', showMiniMap: 'showMiniMapGuides', showMass: 'hudRelativeMass', recordReplays: 'instantReplaySecs-slider', companionLive: 'companionChat', adaptivePerf: 'adaptivePerfToasts' };
+  var deps = { showStats: 'showStatsMass', showMiniMap: 'showMiniMapGuides', showMass: 'hudRelativeMass', recordReplays: 'instantReplaySecs-slider', adaptivePerf: 'adaptivePerfToasts' };
   if (typeof application._lmDepRefresh !== 'function') fail.push('no dependency refresh');
   else {
     application._lmDepRefresh();

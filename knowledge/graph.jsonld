@@ -49,7 +49,6 @@
         "Settings profiles",
         "Performance diagnostics",
         "Adaptive performance",
-        "Second-screen companion",
         "Chat system",
         "HUD helpers",
         "Accessibility features",
@@ -84,9 +83,6 @@
         },
         {
           "@id": "https://www.legendmod.ml/knowledge/#feature-performance"
-        },
-        {
-          "@id": "https://www.legendmod.ml/knowledge/#feature-companion"
         },
         {
           "@id": "https://www.legendmod.ml/knowledge/#feature-accessibility"
@@ -303,15 +299,6 @@
       ],
       "name": "Performance diagnostics",
       "description": "WebGL2 acceleration, adaptive performance, FPS cap, diagnostics window."
-    },
-    {
-      "@id": "https://www.legendmod.ml/knowledge/#feature-companion",
-      "@type": [
-        "DefinedTerm",
-        "lm:Feature"
-      ],
-      "name": "Second-screen companion",
-      "description": "Broadcast live game state to a second window via BroadcastChannel."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-accessibility",

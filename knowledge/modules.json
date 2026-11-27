@@ -29,13 +29,6 @@
       "feature": "Stats and Analytics"
     },
     {
-      "id": "companion",
-      "file": "ogario/modules/companion.js",
-      "lines": 685,
-      "description": "Second-screen companion broadcasting live game state via BroadcastChannel. Mass, rank, minimap, leaderboard, chat widgets.",
-      "feature": "Companion"
-    },
-    {
       "id": "deathrecap",
       "file": "ogario/modules/deathrecap.js",
       "lines": 685,

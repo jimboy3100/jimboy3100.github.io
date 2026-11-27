@@ -371,9 +371,7 @@
       "name": "Spectate",
       "description": "Spectator mode settings.",
       "settings": [
-        "clickSpectate",
-        "companionLive",
-        "companionChat"
+        "clickSpectate"
       ]
     },
     {

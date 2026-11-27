@@ -36,7 +36,6 @@
     <schema:featureList>Settings profiles</schema:featureList>
     <schema:featureList>Performance diagnostics</schema:featureList>
     <schema:featureList>Adaptive performance</schema:featureList>
-    <schema:featureList>Second-screen companion</schema:featureList>
     <schema:featureList>Chat system</schema:featureList>
     <schema:featureList>HUD helpers</schema:featureList>
     <schema:featureList>Accessibility features</schema:featureList>
@@ -54,7 +53,6 @@
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-replays"/>
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-gamepad"/>
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-performance"/>
-    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-companion"/>
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-accessibility"/>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/#extension">
@@ -186,12 +184,6 @@
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Performance diagnostics</schema:name>
     <schema:description>WebGL2 acceleration, adaptive performance, FPS cap, diagnostics window.</schema:description>
-  </rdf:Description>
-  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-companion">
-    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
-    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
-    <schema:name>Second-screen companion</schema:name>
-    <schema:description>Broadcast live game state to a second window via BroadcastChannel.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-accessibility">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>

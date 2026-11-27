@@ -6767,24 +6767,6 @@
     "ja": "プロジェクトの公式情報",
     "it": "Informazioni ufficiali sul progetto"
   },
-  "site.index.companionGuide": {
-    "en": "Companion guide",
-    "el": "Οδηγός Companion",
-    "es": "Guía de Companion",
-    "bg": "Ръководство за Companion",
-    "fr": "Guide Companion",
-    "ar": "دليل Companion",
-    "zh": "Companion 指南",
-    "ru": "Руководство Companion",
-    "de": "Companion-Anleitung",
-    "tr": "Companion kılavuzu",
-    "pl": "Poradnik Companion",
-    "nl": "Companion-handleiding",
-    "pt": "Guia complementar",
-    "id": "Panduan pendamping",
-    "ja": "コンパニオンガイド",
-    "it": "Guida a Companion"
-  },
   "site.index.expandingLandDynamicMap": {
     "en": "Expanding Land dynamic map",
     "el": "Δυναμικός χάρτης Expanding Land",

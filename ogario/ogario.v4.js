@@ -21692,8 +21692,6 @@ var defaultmapsettings = {
     massLossAlert: false,         /* a kill feed line when you lose massLossPct % of your mass within 2 s */
     massLossPct: 30,              /* mass-loss alert threshold in % (10-90) */
     hideEventBanner: false,       /* hide the Expanding Land event countdown banner (shown only when the server sends events) */
-    companionLive: false,         /* live state on BroadcastChannel('legendmod-live') for companion.html (ogario/modules/companion.js) */
-    companionChat: false,         /* ... with the last chat lines too */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -22051,7 +22049,6 @@ var LM_EXPORT_KEYS = [
     { key: 'lmThemeWorkshop', type: 'o' },
     { key: 'lmPracticeCfg', type: 'o' },
     { key: 'lmAnalyticsGoals', type: 'o' },
-    { key: 'lmCompanionPrivacy', type: 'o' },
     /* the small tools (ogario/modules/smalltools.js): the radial menu's commands and the
      * screenshot options */
     { key: 'lmRadialMenu', type: 'o' },
@@ -25999,11 +25996,6 @@ function thelegendmodproject() {
                         /* show / remove the bell now (the module also checks every 2 s) */
                         if (window.LMNotifications) window.LMNotifications.refresh();
                         break;
-                    case 'companionLive':
-                    case 'companionChat':
-                        /* start / stop publishing for companion.html */
-                        if (window.LMCompanion && window.LMCompanion.refresh) window.LMCompanion.refresh();
-                        break;
                     case 'chatSounds':
                         this.setChatSoundsBtn();
                         break;
@@ -27313,7 +27305,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'personalBests', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'companionLive', 'companionChat', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'massInTitle', 'mergeRings', 'mentionNotify', 'rainbowMapBorders', 'hudBlur', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'hideEventBanner', 'noFocusHud', 'statsPosition', 'centerWeightCamera', 'zoomSmooth', 'rainbowBorderSpeed', 'showStatsJitter', 'menuFpsCap', 'chatHideWords', 'gameBrightness', 'gameSaturation', 'sectorsSymbol', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'clickSpectate', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMoveDir', 'hudMergeCountdown', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massFormat', 'notificationCentre', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'netHistory', 'killFeed', 'massLossAlert', 'massLossPct', 'analytics', 'instantReplaySecs', 'showStatsFrameTime'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -27421,8 +27413,8 @@ function thelegendmodproject() {
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "noFocusHud", "centeredLb", "tweenMaxEffect", "top5skins", "hudCellPanel", "notificationCentre"], "hudGroup");
             /* one choice for where the game stats line is ("at the top" and "at the bottom centre" were two switches) */
             this.addChoiceBox(".hudGroup", "statsPosition", "settings.statsPosition", [['top', 'pkg.mg.statsTop'], ['bottom', 'pkg.mg.statsBottom'], ['center', 'pkg.mg.statsCenter']]);
-            /* Spectating and streaming: click to follow and the stream overlay */
-            this.addOptions(["clickSpectate", "companionLive", "companionChat"], "spectateGroup");
+            /* Spectating: click to follow */
+            this.addOptions(["clickSpectate"], "spectateGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsJitter", "showStatsAlive", "massInTitle", "gameOverStats", "hideEventBanner", "showTime", "showStopwatch", "killFeed", "massLossAlert", "analytics"], "statsGroup");
             /* Replays and history: the instant replay length slider is added below */
             this.addOptions(["recordReplays", "matchHistory", "personalBests"], "replayGroup");
@@ -27529,7 +27521,6 @@ function thelegendmodproject() {
                     showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass', 'massFormat'],
                     adaptivePerf: ['adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes'],
-                    companionLive: ['companionChat'],
                     recordReplays: ['instantReplaySecs'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
                     massLossAlert: ['massLossPct'],
@@ -89105,16 +89096,6 @@ Object.defineProperty(Array.prototype, 'stDev', {
             console.warn('[LM] Error loading Replay Studio:', e);
         }
     };
-    /* Stream overlay / second screen (publishes only while its option is on) */
-    try {
-        var companionScript = document.createElement('script');
-        companionScript.type = 'text/javascript';
-        companionScript.src = 'https://www.legendmod.ml/ogario/modules/companion.js?v=' + (window.OgVer || '');
-        companionScript.charset = 'utf-8';
-        document.body.appendChild(companionScript);
-    } catch (e) {
-        console.warn('[LM] Error loading companion script:', e);
-    }
     /* HUD editor: saved HUD layouts (applied only when one is active); the editor itself loads
      * when it is first opened (Theme > HUD, a hotkey with no default key) */
     try {

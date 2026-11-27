@@ -82,10 +82,6 @@
       "answer": "5 script slots for custom JavaScript extensions with plugin header format, settings API (up to 20 settings), version compatibility checking, and a catalogue of example plugins."
     },
     {
-      "question": "What is the companion second screen?",
-      "answer": "A feature that broadcasts live game state (minimap, mass, cell positions, chat) to a second browser window or device via BroadcastChannel. Useful for multi-monitor setups or streaming."
-    },
-    {
       "question": "What is the death recap?",
       "answer": "A Game Over card feature showing the last 20 seconds of your life as 3-6 summarised steps with a mass sparkline, plus the killer's name and mass."
     },

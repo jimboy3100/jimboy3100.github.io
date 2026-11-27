@@ -97,22 +97,6 @@ LMEvents.on('massUpdate', bigMass);
 LMEvents.on('spawn', function () { LMEvents.off('massUpdate', bigMass); LMEvents.on('massUpdate', bigMass); });
 ```
 
-## Stream overlay channel
-
-With the option "Stream overlay / second screen" on, ogario/modules/companion.js posts on
-`new BroadcastChannel('legendmod-live')` (same origin, same browser only), which companion.html reads:
-
-- `{ v: 1, kind: 'state', t, state }` at most 4 times per second (an unchanged state every 2 s):
-  `state` is `{ playing, mass, best, cells, rank, bestRank, alive, kills, nick, skin, country, server, serverType, mode,
-  lb: [{ nick, me }], map: { own: { x, y }, team: [{ x, y, nick, color }], ghosts: [{ x, y, r }], trail: [{ x, y }] }, chat? }`.
-  Map coordinates are 0..1 across the map. Stream mode, "hide skin URL" and "hide my country" empty the fields they hide;
-  `chat` is there only with "Stream overlay: include chat lines".
-- `{ v: 1, kind: 'event', t, event }`: `event.type` is `spawn`, `death`, `best`, `kill` or `stats`.
-- `{ v: 1, kind: 'bye' }` when the option is turned off or the tab closes.
-- A page can post `{ v: 1, kind: 'hello' }` to get a state at once.
-
-Treat everything received as text: nicks and chat come from other players.
-
 Count your splits in each life:
 
 ```js

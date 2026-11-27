@@ -299,16 +299,6 @@ Drag and resize HUD elements with named layouts. Features:
 - **Line split**: Straight-line rapid split (3 = x8, 4 = x16) with configurable delay, hold time, and guide lines
 - **Guides**: Visual guide lines showing scan trick and line split directions
 
-### 17. Second-Screen Companion
-Broadcast live game state to a second browser window or device via BroadcastChannel ('legendmod-live') at up to 4 states/second. Features:
-- **Data published**: Mass, rank, cells, time alive, eaten cells, server/mode, leaderboard top 10, minimap data, events, trail (last ~60s), chat lines (optional)
-- **Widgets**: Card, mass, rank, time, minimap, leaderboard, stats, events, chat
-- **Layouts**: Column, row, grid
-- **Privacy-aware**: Stream mode, hide skin URL, hide country applied before publishing
-- **Cross-origin support**: When game runs on agar.io, opens companion.html via window.postMessage
-- Works as OBS source or second screen
-URL: https://www.legendmod.ml/companion-guide.html
-
 ### 18. Privacy and Streamer Mode
 - **Streamer preset**: One-click preset that hides country, chat, chat images/videos, dev console
 - **Stream mode**: Blurs nick, clan tag, and skin URL fields in menu
@@ -398,7 +388,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Respawn**: Quick respawn, auto respawn, spawn effects
 - **Names**: No names, optimized, auto-hide, hide mine, hide teammates, stroke
 - **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, mass format (exact / 12.3k / auto), virus spikes, virus mass shots, stroke, relative mass
-- **Spectate**: Click to follow (a player cell, a leaderboard mass, or the minimap in Expanding Land World Spectate), companion live/chat
+- **Spectate**: Click to follow (a player cell, a leaderboard mass, or the minimap in Expanding Land World Spectate)
 - **Replay**: Record replays, match history, personal bests, analytics
 - **Macro**: Feeding speed, split delay, pop-split delay
 - **Config**: Settings profiles
@@ -414,7 +404,7 @@ Each language has: core language pack (lm-XX.js), plus separate translation pack
 
 - **Rendering**: WebGL2 with per-frame preflight and atomic Canvas2D fallback
 - **Storage**: localStorage for settings/hotkeys/profiles/history; IndexedDB for skin caching (1,000 skins, 600 audio, LRU eviction)
-- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, accessibility.js (246), analytics.js (1159), companion.js (685), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), notifications.js (812), replaystudio.js (1615), profiles.js (1386), practice.js (707), macroeditor.js (511), plugins.js (940), discovery.js (613), smalltools.js (1219), perf.js (1848), themeworkshop.js (1254), hotkeysCommand.js (2056)
+- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, accessibility.js (246), analytics.js (1159), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), notifications.js (812), replaystudio.js (1615), profiles.js (1386), practice.js (707), macroeditor.js (511), plugins.js (940), discovery.js (613), smalltools.js (1219), perf.js (1848), themeworkshop.js (1254), hotkeysCommand.js (2056)
 - **PWA**: Progressive Web App with fullscreen game mode, manifest.json ("Legend Mod - Expanding Land"), landscape orientation, theme_color #00243e; no service worker on this site (the old one is unregistered by play.html; the Expanding Land app at expanding.land has its own)
 - **Extension**: Chrome extension "Legend Express" (manifest v3, version 1.8.5, author Jimboy3100). Permissions: storage, declarativeNetRequest. Host permissions: agar.io, jimboy3100.github.io, legendmod.ml, sigmally.com, senpa.io, mi.com. Content scripts run on agar.io at document_start. Background: service worker. Does NOT collect, store or transmit personal data externally.
 - **Userscript**: Legend Express userscript for Tampermonkey / Greasemonkey (https://www.legendmod.ml/LMexpress/LMexpress.user.js), version 1.9.
@@ -523,9 +513,6 @@ A movement technique where cursor position snaps to fixed directional increments
 **What is line split?**
 A rapid multi-split technique (x8 or x16) in a straight line toward the cursor. Configurable timing (delay between splits) and lock duration.
 
-**What is the companion second screen?**
-A feature that broadcasts live game state (minimap, mass, cell positions, chat) to a second browser window or device via BroadcastChannel. Useful for multi-monitor setups or streaming.
-
 **What is the death recap?**
 A Game Over card feature showing the last 20 seconds of your life as 3-6 summarised steps with a mass sparkline, plus the killer's name and mass.
 
@@ -632,7 +619,6 @@ Settings > Sounds has each sound's switch, sound file and volume: chat message a
 - [Developers](https://www.legendmod.ml/developers/) — developer resources
 - [Skins gallery](https://www.legendmod.ml/skins/) — custom skin browser
 - [Themes gallery](https://www.legendmod.ml/themes/) — theme browser
-- [Companion guide](https://www.legendmod.ml/companion-guide.html) — second screen setup
 - [Mobile](https://www.legendmod.ml/LMmobile/) — mobile touch controls
 - [Privacy policy](https://www.legendmod.ml/privacy.html)
 - [Terms of service](https://www.legendmod.ml/terms.html)

@@ -43,7 +43,9 @@
         { "from": "extras/website/anchors.css", "paths": ["extras/website/fonts/fonts.css"], "why": "@import of a style sheet that is not there (a 404 on the pages that use anchors.css)", "defect": true },
         { "from": "themes/themes.css", "paths": ["fonts/icomoon/icomoon.eot", "fonts/icomoon/icomoon.ttf", "fonts/icomoon/icomoon.woff", "fonts/icomoon/icomoon.svg"], "why": "icon font of the themes page is not in fonts/", "defect": true },
         { "from": "expandingland:knowledge/resources.json", "paths": ["skins/checker.html", "skins/rotator.html", "nicknames/"], "why": "copy of knowledge/resources.json from before its links were corrected (skins/skinchecker.html, skinrotator.html, nicks/)", "defect": true },
-        { "from": "legendworld-help:knowledge/resources.json", "paths": ["skins/checker.html", "skins/rotator.html", "nicknames/"], "why": "copy of knowledge/resources.json from before its links were corrected (skins/skinchecker.html, skinrotator.html, nicks/)", "defect": true }
+        { "from": "legendworld-help:knowledge/resources.json", "paths": ["skins/checker.html", "skins/rotator.html", "nicknames/"], "why": "copy of knowledge/resources.json from before its links were corrected (skins/skinchecker.html, skinrotator.html, nicks/)", "defect": true },
+        { "from": "expandingland:knowledge/*.json", "paths": ["companion-guide.html"], "why": "copy of knowledge/ from before the stream companion (companion.html, companion-guide.html) was removed", "defect": true },
+        { "from": "legendworld-help:knowledge/*.json", "paths": ["companion-guide.html"], "why": "copy of knowledge/ from before the stream companion (companion.html, companion-guide.html) was removed", "defect": true }
     ],
     "integrityIgnoreSources": [
         { "glob": "developers/tests/**", "why": "test fixtures use made-up addresses on purpose" },

@@ -291,7 +291,7 @@ const msgText = (html) => { const m = /<span class="message-text">(.*?)<\/span>/
 
 {
   /* Settings > Disable chat: Expanding Land / private server chat (99) is dropped like relay chat,
-   * no hidden chat box lines, no history (bubbles), no events (notifications, companion page) */
+   * no hidden chat box lines, no history (bubbles), no events (notifications) */
   const b = boot();
   const seen = [];
   b.ctx.window.LMEvents = { _has: () => true, emit: (n, d) => seen.push(d) };

@@ -250,7 +250,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     check('Reduced motion confirmed: jelly off, Undo has it on', q.S.jellyPhisycs === false && q.S.reducedMotion === true && JSON.parse(q.store.lmPresetUndo).jellyPhisycs === true);
     q.undo();
     check('Undo: jelly on again', q.S.jellyPhisycs === true && q.S.reducedMotion === false);
-    const before = { disableChat: q.S.disableChat, companionChat: q.S.companionChat };
+    const before = { disableChat: q.S.disableChat };
     const eyes = [];
     q.A.setStreamMode = () => eyes.push('stream:' + q.S.streamMode);
     q.A.setHideSkinUrl = () => eyes.push('url:' + q.S.hideSkinUrl);
@@ -258,8 +258,8 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     const msg = q.confirms[q.confirms.length - 1];
     check('Streamer preset: the confirmation says what it is not, and names the privacy controls', msg.indexOf(i18n.t('pkg.pt.streamerTip')) > 0 && /not a privacy guarantee/.test(i18n.t('pkg.pt.streamerTip')) && /Stream mode/.test(i18n.t('pkg.pt.streamerTip')));
     check('Streamer preset: the confirmation lists Stream mode and Hide skin URL by name', msg.indexOf('- ' + i18n.t('pkg.pt.streamMode') + ': ON') >= 0 && msg.indexOf('- ' + i18n.t('pkg.pt.hideSkinUrl') + ': ON') >= 0);
-    check('Streamer preset: its display keys, Stream mode and Hide skin URL change (as the Streaming template did), the chat box and overlay chat do not', q.S.hidecountry === true && q.S.showChat === false &&
-        q.S.streamMode === true && q.S.hideSkinUrl === true && JSON.stringify(before) === JSON.stringify({ disableChat: q.S.disableChat, companionChat: q.S.companionChat }));
+    check('Streamer preset: its display keys, Stream mode and Hide skin URL change (as the Streaming template did), the chat box does not', q.S.hidecountry === true && q.S.showChat === false &&
+        q.S.streamMode === true && q.S.hideSkinUrl === true && JSON.stringify(before) === JSON.stringify({ disableChat: q.S.disableChat }));
     check('Streamer preset: the eye buttons follow', eyes.join() === 'stream:true,url:true');
     q.undo();
     check('Streamer preset Undo: Stream mode and Hide skin URL off again, the eye buttons follow', q.S.streamMode === false && q.S.hideSkinUrl === false && q.S.hidecountry === false && eyes.slice(2).sort().join() === 'stream:false,url:false');
@@ -292,7 +292,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
 }
 
 /* the texts: in every complete language, and Greek differs from English */
-['pkg.pt.streamerTip', 'pkg.i.streamModeTip', 'pkg.i.companionShares', 'pkg.pt.presetTeams', 'pkg.pt.streamMode', 'pkg.pt.hideSkinUrl'].forEach((k) => {
+['pkg.pt.streamerTip', 'pkg.i.streamModeTip', 'pkg.pt.presetTeams', 'pkg.pt.streamMode', 'pkg.pt.hideSkinUrl'].forEach((k) => {
     check(k + ': English and Greek', i18n.t(k) !== k && i18n.t(k, null, 'el') !== k && i18n.t(k, null, 'el') !== i18n.t(k));
 });
 check('legacy textStroke / mouseInvert kept with their defaults (saved settings and old scripts)', (() => {
