@@ -12062,24 +12062,6 @@
     "ja": "{0}秒でタイムアウト",
     "it": "tempo scaduto dopo {0} s"
   },
-  "lmx.im.login": {
-    "en": "Log in",
-    "el": "Σύνδεση",
-    "es": "Iniciar sesión",
-    "bg": "Вход",
-    "fr": "Se connecter",
-    "ar": "تسجيل الدخول",
-    "zh": "登入",
-    "ru": "Войти",
-    "de": "Anmelden",
-    "tr": "Giriş yap",
-    "pl": "Zaloguj się",
-    "nl": "Inloggen",
-    "pt": "Entrar",
-    "id": "Masuk",
-    "ja": "ログイン",
-    "it": "Accedi"
-  },
   "lmx.vs.marquee": {
     "en": "MP4, video skin",
     "el": "MP4, skin βίντεο",

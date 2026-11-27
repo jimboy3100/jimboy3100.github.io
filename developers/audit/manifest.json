@@ -648,6 +648,24 @@
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "LMexpress/LMImplements.js",
+      "canonicalPath": null,
+      "reason": "2018 page script for the agar.io/LMImplements login page (hid the HUD, moved the login buttons); its only text key lmx.im.login is removed from developers/i18n/src/lmx.json and the language packs. The only caller ever was the agar.io/LMImplements route of LMexpress.user.js versions before 2018-11-13; that route also needed http://cdn.ogario.ovh/v3 (offline) and root-level jimboy3100.github.io files moved years ago, so it has not worked for years. Current Legend Mod, the extension, the userscripts, mobile and the other repositories (expandingland, legendworld-help, LegendWorld, deltav4) do not load it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "LMexpress/LMImplementsStart.js",
+      "canonicalPath": null,
+      "reason": "2018 loader for the same page; it only put the archived banner extras/banneranimatedImplementsLM.html in an iframe. Removed from developers/i18n/scan-config.json and the developers/tests/i18n-archived.js exception list. The only caller ever was the agar.io/LMImplements route of LMexpress.user.js versions before 2018-11-13; that route also needed http://cdn.ogario.ovh/v3 (offline) and root-level jimboy3100.github.io files moved years ago, so it has not worked for years. Current Legend Mod, the extension, the userscripts, mobile and the other repositories (expandingland, legendworld-help, LegendWorld, deltav4) do not load it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
     }
   ]
 }
