@@ -376,6 +376,7 @@
     var work = null;      /* { landscape, portrait } being edited */
     var orient = 'landscape';
     var defs = {};        /* id -> default rectangle (where LMmobile.js puts it) in this orientation */
+    var ctxOff = {};      /* id -> true: the control is not shown at the moment (no usual place to measure) */
     var fixedRects = [];  /* things that stay: minimap, the other left-row buttons */
     var px = {};          /* id -> proxy element */
     var sel = null;
@@ -391,16 +392,25 @@
         return { x: r.left, y: r.top, w: r.width, h: r.height };
     }
     function measure() {
-        var v = vwh(), els = H.controls();
+        var v = vwh(), els = H.controls(), off = [];
         defs = {};
         fixedRects = [];
+        ctxOff = {};
         CONTROLS.forEach(function (c) {
             if (c.zone) { defs[c.id] = { x: 0, y: 0, w: v.w, h: v.h }; return; }
             var el = els[c.id];
             if (!el) return;
             natSize(c.id, el);
             var r = rectOf(el);
-            defs[c.id] = r.w > 0 ? clampRect(r, v.w, v.h, 0) : { x: v.w / 2 - 26, y: v.h / 2 - 26, w: 52, h: 52 };
+            if (r.w > 0) defs[c.id] = clampRect(r, v.w, v.h, 0);
+            else off.push(c.id);
+        });
+        /* not shown right now (the replay seek buttons outside a replay): side by side in the middle,
+         * and left out of the overlap check until the player places one (they all sat on one spot in
+         * the middle and were reported as overlapping each other and whatever was moved there) */
+        off.forEach(function (id, i) {
+            ctxOff[id] = true;
+            defs[id] = clampRect({ x: v.w / 2 - 26 + (i - (off.length - 1) / 2) * 60, y: v.h / 2 - 26, w: 52, h: 52 }, v.w, v.h, 0);
         });
         var mm = D.getElementById('minimap-hud');
         if (mm) {
@@ -664,7 +674,7 @@
             var o = e && e.o !== undefined ? e.o : H.prefs.btnOpacity;
             p.style.opacity = String(Math.max(0.45, o));
             p.classList.toggle('hid', !!(e && e.hide));
-            if (!(e && e.hide)) items.push({ id: c.id, lk: c.lk, lv: c.lv, x: r.x, y: r.y, w: r.w, h: r.h, round: true });
+            if (!(e && e.hide) && !(ctxOff[c.id] && !e)) items.push({ id: c.id, lk: c.lk, lv: c.lv, x: r.x, y: r.y, w: r.w, h: r.h, round: true });
         });
         var pairs = findOverlaps(items.concat(fixedRects), 2);
         var bad = {};
