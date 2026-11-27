@@ -10,7 +10,7 @@
   if (!A) return { fail: fail, info: info };
   need('option off by default', window.legendmod5 && window.legendmod5.analytics === false);
   need('no recording listeners while off', !window.LMEvents._has('split') && !window.LMEvents._has('massUpdate'));
-  need('hotkey without a default key', typeof hotkeysCommand === 'object' && hotkeysCommand['hk-analytics'] && hotkeysCommand['hk-analytics'].defaultKey === '');
+  need('no Analytics hotkey (the button and the footer link open it)', typeof hotkeysCommand === 'object' && !hotkeysCommand['hk-analytics']);
   need('Analytics button in the profile stats', !document.getElementById('user-stats') || !!document.getElementById('lm-analytics-btn'));
   var keys = ['lmAnalyticsGames', 'lmAnalyticsTracks', 'lmMatchHistory'], saved = {};
   var optMh = window.legendmod5 && window.legendmod5.matchHistory, optAn = window.legendmod5 && window.legendmod5.analytics, origConfirm = window.confirm;

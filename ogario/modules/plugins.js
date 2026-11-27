@@ -1,5 +1,4 @@
 /* Legend Mod plugins, inside the User Scripts panel (its 5 slots: a URL or pasted code each).
- * The "User Scripts (plugins)" hotkey without a default key opens it.
  *
  * A user script can start with a header that makes it a plugin:
  *
@@ -911,7 +910,7 @@
         return true;
     }
 
-    /* opens the User Scripts panel (from the hotkey) */
+    /* opens the User Scripts panel */
     function open(v) {
         var $ = jq();
         /* the list of slots unless a view is asked for */
@@ -942,7 +941,6 @@
         ready: ready,
         open: open,
         close: close,
-        toggle: function (v) { if (isOpen()) close(); else open(v); },
         isOpen: isOpen,
         /* the 5 slots with their header and state */
         list: function () {

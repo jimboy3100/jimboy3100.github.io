@@ -843,20 +843,20 @@ function fullProfiles(n) { return Array.from({ length: n }, (_, i) => ({ id: 'f'
 }
 {
   /* a set saved before commands were merged into others: their keys go where the stored hotkeys
-   * take them on load (Open the Lab -> User Scripts, zoom bookmark -> zoom level, Screenshot mode
-   * -> Show/hide HUD); the profile check dropped them as unknown commands, so the key did nothing */
-  const add = { 'hk-lmPlugins': { defaultKey: '' }, 'hk-zoom1': { defaultKey: '' }, 'hk-zoom2': { defaultKey: '' }, 'hk-showHUD': { defaultKey: '' }, 'hk-perfDiag': { defaultKey: '' } };
+   * take them on load (zoom bookmark -> zoom level, Screenshot mode -> Show/hide HUD, the net graph
+   * -> Performance diagnostics; Open the Lab is free); the profile check dropped them as unknown commands, so the key did nothing */
+  const add = { 'hk-zoom1': { defaultKey: '' }, 'hk-zoom2': { defaultKey: '' }, 'hk-showHUD': { defaultKey: '' }, 'hk-perfDiag': { defaultKey: '' } };
   Object.assign(ctx.hotkeysCommand, add);
   try {
     const h = C.cleanBundle({ h: { F9: 'hk-lmLab', 'ALT+1': 'hk-zoomRecall1', 'ALT+2': 'hk-zoomRecall2', Z: 'hk-zoom2', F2: 'hk-screenshotMode', N: 'hk-netGraph', W: 'hk-feed', X: 'hk-hotkeyConflicts', K: 'hk-zoomSave3', Y: 'hk-skinCollections', C: 'hk-commandCentre' } });
-    check('renamed commands: Open the Lab key opens User Scripts', h && h.h.F9 === 'hk-lmPlugins');
+    check('renamed commands: Open the Lab key is free', h && !('F9' in h.h));
     check('renamed commands: a zoom bookmark key goes to its zoom level', h && h.h['ALT+1'] === 'hk-zoom1');
     check('renamed commands: a zoom level with its own key keeps it, the old key is free', h && h.h.Z === 'hk-zoom2' && !('ALT+2' in h.h));
     check('renamed commands: Screenshot mode key is Show/hide HUD', h && h.h.F2 === 'hk-showHUD');
     check('renamed commands: the net graph key opens Performance diagnostics', h && h.h.N === 'hk-perfDiag');
     check('renamed commands: other keys stay, a removed command (Hotkey conflicts, zoom save, Skin collections, Command Centre) is dropped', h && h.h.W === 'hk-feed' && !('X' in h.h) && !('K' in h.h) && !('Y' in h.h) && !('C' in h.h));
-    const h2 = C.cleanBundle({ h: { F9: 'hk-lmLab', F10: 'hk-lmPlugins' } });
-    check('renamed commands: User Scripts with a key of its own: the Lab key is free', h2 && h2.h.F10 === 'hk-lmPlugins' && !('F9' in h2.h));
+    const h2 = C.cleanBundle({ h: { F9: 'hk-lmLab', F10: 'hk-lmPlugins', F11: 'hk-elShop', F12: 'hk-replayFwd', W: 'hk-feed' } });
+    check('renamed commands: keys of the removed window and replay hotkeys are free', h2 && JSON.stringify(h2.h) === JSON.stringify({ W: 'hk-feed' }));
     const raw = { h: { F9: 'hk-lmLab' } };
     C.cleanBundle(raw);
     check('renamed commands: the stored set itself is not changed', raw.h.F9 === 'hk-lmLab');

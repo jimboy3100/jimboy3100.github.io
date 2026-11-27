@@ -9,7 +9,7 @@
  * bell stay above as before; with one window open every value is back to its own.
  * Windows: direct children of <body> that are or hold a .lm-modal-container, z-index up to 999992.
  * The menu takes part only when a page of it is opened from outside it (LMWinStack.front from the
- * User Scripts hotkey). It keeps its own value (the Hotkeys window, colour
+ * script API LMPlugins.open). It keeps its own value (the Hotkeys window, colour
  * pickers and tooltips stay above it): the older windows go just under it until it closes or
  * another window is opened or touched, or Esc is pressed in the menu, then everything is as usual
  * again. Opened from the menu's own tabs, Esc or menu button, the menu stays under the windows.

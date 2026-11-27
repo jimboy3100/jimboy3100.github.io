@@ -21854,24 +21854,26 @@ function lmFoldClickFollow(s) {
 }
 /* Hotkey commands merged into others: "Go to zoom bookmark 1-3" are the zoom level hotkeys 1-3,
  * "Screenshot mode" is Show/hide HUD, "Show / hide net graph" is Show / hide performance diagnostics
- * (its FPS, ping and renderer are there), "Open the Lab" (removed) opens User Scripts. An old command's key goes to the new one when that has no
+ * (its FPS, ping and renderer are there). An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts; Save the
  * current zoom as zoom level 1-5; Skin collections, part of the player profiles now; the Command
- * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled; the old Multibox toggle back) is free. For the stored hotkeys (loadHotkeys) and a settings
+ * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled; the old Multibox toggle back;
+ * Open the Lab; the keys that only opened a window or a panel or switched a rarely changed setting
+ * (their window, panel or switch stays)) is free. For the stored hotkeys (loadHotkeys) and a settings
  * profile's (profiles.js), so an older set keeps those keys. Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
+    var gone = /^hk-(?:lmLab|analytics|performanceMode|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|middleMultiView|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor)$/;
     var own = function (k) { return Object.prototype.hasOwnProperty.call(map, k); };
-    /* the '' entry holds a command without a key (no binding): User Scripts' check skips it */
-    var bound = function (cmd, keyed) {
-        for (var x in map) if (own(x) && (!keyed || x) && map[x] === cmd) return true;
+    var bound = function (cmd) {
+        for (var x in map) if (own(x) && map[x] === cmd) return true;
         return false;
     };
     var changed = false;
     for (var k in map) {
         if (!own(k)) continue;
-        var v = String(map[k]), to = '', keyed = false, z;
-        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode|showQuest|multiboxback)$/.test(v)) { delete map[k]; changed = true; continue; }
+        var v = String(map[k]), to = '', z;
+        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(precisionZoom|bigMinimap|lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode|showQuest|multiboxback)$/.test(v) || gone.test(v)) { delete map[k]; changed = true; continue; }
         /* the spectator director's commands and camera lock (removed) */
         if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
         /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey,
@@ -21882,9 +21884,8 @@ function lmRenameOldHotkeys(map) {
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
         else if (v === 'hk-screenshotMode') to = 'hk-showHUD';
         else if (v === 'hk-netGraph') to = 'hk-perfDiag';
-        else if (v === 'hk-lmLab') { to = 'hk-lmPlugins'; keyed = true; }
         if (!to) continue;
-        if (bound(to, keyed) || (keyed && !k)) delete map[k]; else map[k] = to;
+        if (bound(to)) delete map[k]; else map[k] = to;
         changed = true;
     }
     return changed;
@@ -88361,8 +88362,8 @@ function playReplayLM(temp, startAt) {
     }
 }
 
-/* Replay controls (hotkeys without default keys, the replay bar, the phone buttons):
- * pause/resume, speed, seek by 250 packets. Replay Studio plays every replay and runs them. */
+/* Replay controls of the replay bar and the phone buttons: pause/resume and seek.
+ * Replay Studio plays every replay and runs them. */
 function lmReplayActive() {
     var rs = window.LMReplayStudio;
     return !!(rs && typeof rs.isDriving === 'function' && rs.isDriving());
@@ -88375,14 +88376,10 @@ function lmReplayNeedActive() {
 function lmReplayTogglePause() {
     if (lmReplayNeedActive()) window.LMReplayStudio.command('pause');
 }
-function lmReplaySpeed(f) {
-    if (lmReplayNeedActive()) window.LMReplayStudio.command('speed', f);
-}
 function lmReplaySeek(delta) {
     if (lmReplayNeedActive()) window.LMReplayStudio.command('seek', delta);
 }
 window.lmReplayTogglePause = lmReplayTogglePause;
-window.lmReplaySpeed = lmReplaySpeed;
 window.lmReplaySeek = lmReplaySeek;
 /* Watch a recording from one packet on (Death recap step links): Replay Studio seeks when that
  * recording already plays, else joins it without adding the replay to the recent servers
@@ -88566,7 +88563,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading gamepad script:', e);
     }
-    /* Settings profiles window (Settings > Settings profiles, hotkeys without default keys);
+    /* Settings profiles window (Settings > Settings profiles);
      * its automatic switching is off until turned on there */
     try {
         var profilesScript = document.createElement('script');

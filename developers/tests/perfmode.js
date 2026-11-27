@@ -386,7 +386,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
 }
 
 /* 13. the mode acts on a real change only: a second "on" (a script) kept the copy of the
- * player's values; the hotkey (with and without the switch in the menu) and a storage failure */
+ * player's values; a storage failure */
 {
     const p = page({ settings: ON });
     p.user('performanceMode', true);
@@ -399,19 +399,9 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     check('off again: nothing put back, no message', vals(p.S) === vals(ON) && p.toasts.length === t);
 }
 {
-    const hkSrc = fs.readFileSync(path.join(ROOT, 'ogario', 'hotkeysCommand.js'), 'utf8').replace(/\r\n/g, '\n');
-    const hi = hkSrc.indexOf("'hk-performanceMode': {"), hj = hkSrc.indexOf("'hk-mergeRings'", hi);
-    [true, false].forEach((menu) => {
-        const p = page({ settings: ON, boxes: menu ? KEYS.concat('performanceMode') : [] });
-        const hk = vm.runInContext('({' + hkSrc.slice(hi, hj) + '})', p.ctx)['hk-performanceMode'];
-        const w = menu ? 'hotkey (switch in the menu)' : 'hotkey (no menu)';
-        hk.keyDown();
-        check(w + ' on: effects off, the copy holds the player\'s values', p.S.performanceMode === true && p.S.jellyPhisycs === false && JSON.stringify(p.backup()) === JSON.stringify(ON) &&
-            (!menu || p.boxes.performanceMode.checked === true && p.boxes.performanceMode.moves === 1));
-        hk.keyDown();
-        check(w + ' off: the values back', p.S.performanceMode === false && p.S.jellyPhisycs === true && p.S.videoSkins === true &&
-            (!menu || p.boxes.performanceMode.checked === false && p.boxes.performanceMode.moves === 2));
-    });
+    /* the Performance mode hotkey is removed: the Settings switch turns it on and off */
+    const hkSrc = fs.readFileSync(path.join(ROOT, 'ogario', 'hotkeysCommand.js'), 'utf8');
+    check('no Performance mode hotkey', hkSrc.indexOf("'hk-performanceMode'") < 0);
 }
 {
     /* storage full with an older stored copy: the copy of this "on" (in memory) is the one put back */

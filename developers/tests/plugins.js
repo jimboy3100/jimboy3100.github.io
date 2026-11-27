@@ -169,18 +169,18 @@ check('catalogue rejects bad entries', P.validateCatalogue({ plugins: [{ name: '
 /* ---- the Lab is removed: no module of it, nothing loads it ---- */
 check('lab: lab.js gone and not loaded', !fs.existsSync(path.join(root, 'ogario', 'modules', 'lab.js')) && fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8').indexOf('modules/lab.js') < 0);
 
-/* ---- the old "Open the Lab" hotkey: its key opens User Scripts (ogario.v4.js lmRenameOldHotkeys,
- * which loadHotkeys and the settings profiles use) ---- */
+/* ---- the old "Open the Lab" hotkey and the removed User Scripts hotkey: their keys are free again
+ * (ogario.v4.js lmRenameOldHotkeys, which loadHotkeys and the settings profiles use) ---- */
 (function () {
     const v4src = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
     const a = v4src.indexOf('function lmRenameOldHotkeys(map) {'), b = v4src.indexOf('\n}', a);
-    check('loadHotkeys moves the Lab hotkey', a > 0 && b > a && v4src.indexOf('lmRenameOldHotkeys(hotkeys);') > 0);
+    check('loadHotkeys drops the Lab hotkey', a > 0 && b > a && v4src.indexOf('lmRenameOldHotkeys(hotkeys);') > 0);
     if (!(a > 0 && b > a)) return;
     const run = hk => { vm.runInNewContext(v4src.slice(a, b + 2) + '\nlmRenameOldHotkeys(hotkeys);', { hotkeys: hk }); return hk; };
     const one = run({ L: 'hk-lmLab', '': 'hk-lmPlugins', W: 'hk-moveUp' });
-    check('Lab key -> User Scripts when no key opens it', one.L === 'hk-lmPlugins' && one.W === 'hk-moveUp' && one[''] === 'hk-lmPlugins');
+    check('Lab key and User Scripts entry freed, other keys stay', JSON.stringify(one) === JSON.stringify({ W: 'hk-moveUp' }));
     const two = run({ L: 'hk-lmLab', U: 'hk-lmPlugins' });
-    check('Lab key freed when a key opens User Scripts already', !('L' in two) && two.U === 'hk-lmPlugins');
+    check('Lab key and User Scripts key freed', JSON.stringify(two) === '{}');
     const three = run({ '': 'hk-lmLab' });
     check('no key: nothing bound', !('' in three));
 })();

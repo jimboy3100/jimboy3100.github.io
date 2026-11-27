@@ -31,6 +31,7 @@ function loadCommands() {
     const ids = Object.keys(hc);
     check('the former "Go to zoom bookmark" hotkeys are not listed', !ids.some(id => /^hk-zoomRecall/.test(id)));
     check('"Save the current zoom as zoom level" hotkeys are gone', !ids.some(id => /^hk-zoomSave/.test(id)) && !('hk-zoomSave1' in hc));
+    check('the window, replay and setting hotkeys are gone', !['hk-analytics', 'hk-elShop', 'hk-elClaimAll', 'hk-replayFwd', 'hk-replayStudio', 'hk-performanceMode', 'hk-mergeRings', 'hk-lmPlugins', 'hk-hudEditor', 'hk-copyServerLink'].some(id => id in hc) && 'hk-dance' in hc && 'hk-scanTrick' in hc && 'hk-practice' in hc);
     check('zoom levels keep Alt+1-5', [1, 2, 3, 4, 5].every(n => hc['hk-zoom' + n].defaultKey === 'ALT+' + n));
     const fixed = [0.5, 0.25, 0.125, 0.075, 0.05];
     [1, 2, 3, 4, 5].forEach(n => hc['hk-zoom' + n].keyDown());
@@ -64,7 +65,13 @@ function loadCommands() {
     h = run({ 'K': 'hk-zoomSave1', 'ALT+5': 'hk-zoom5', 'L': 'hk-zoomSave5', 'Q': 'hk-feed' });
     check('a key on a removed "Save the current zoom as zoom level" is free again', !('K' in h) && !('L' in h) && h['ALT+5'] === 'hk-zoom5' && h.Q === 'hk-feed');
     h = run({ 'Z': 'hk-precisionZoom', 'MOUSE 4': 'hk-bigMinimap', 'F7': 'hk-lmProfileNext', 'F8': 'hk-lmProfilePrev', 'F9': 'hk-lmProfileUndo', 'F10': 'hk-lmProfilesWindow', 'Q': 'hk-feed' });
-    check('keys on the removed precision zoom, enlarge minimap and profile next / previous / Undo are free again', JSON.stringify(h) === JSON.stringify({ 'F10': 'hk-lmProfilesWindow', 'Q': 'hk-feed' }));
+    check('keys on the removed precision zoom, enlarge minimap and profile next / previous / Undo are free again', JSON.stringify(h) === JSON.stringify({ 'Q': 'hk-feed' }));
+    /* hotkeys that only opened a window or a panel or switched a rarely changed setting */
+    const goneIds = ['hk-analytics', 'hk-performanceMode', 'hk-mergeRings', 'hk-elLeagues', 'hk-elShop', 'hk-elChallenges', 'hk-elPotions', 'hk-elClaimAll', 'hk-replayPause', 'hk-replayFaster', 'hk-replaySlower', 'hk-replayFwd', 'hk-replayBack', 'hk-replayStudio', 'hk-middleMultiView', 'hk-mbRings', 'hk-gamepadWindow', 'hk-lmProfilesWindow', 'hk-lmThemeWorkshop', 'hk-copyServerLink', 'hk-chatSounds', 'hk-notifCentre', 'hk-lmPlugins', 'hk-hudEditor', 'hk-lmLab'];
+    const st = { 'Q': 'hk-feed', 'ALT+R': 'hk-dance', 'MOUSE 5': 'hk-scanTrick' };
+    goneIds.forEach((id, n) => { st['F' + n] = id; });
+    h = run(st);
+    check('keys on the removed window, replay and setting hotkeys are free again, the play keys stay', JSON.stringify(h) === JSON.stringify({ 'Q': 'hk-feed', 'ALT+R': 'hk-dance', 'MOUSE 5': 'hk-scanTrick' }));
     h = run({ 'ALT+1': 'hk-zoom1', 'W': 'hk-split' });
     check('nothing changes without the former hotkeys', JSON.stringify(h) === JSON.stringify({ 'ALT+1': 'hk-zoom1', 'W': 'hk-split' }));
 }

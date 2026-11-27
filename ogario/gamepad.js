@@ -5,8 +5,8 @@
  * The buttons are bound in the Hotkeys window like keys and mouse buttons: a key field takes a
  * pad button pressed while it has the focus ('PAD A' ... next to its key), Save keeps it, Close
  * undoes it, Restore gives the default buttons. Stick sensitivity, triggers, inverted axes,
- * vibration and the live test are in the Gamepad window (Hotkeys window > Gamepad, or its
- * hotkey; ogario/modules/gamepad-ui.js, loaded the first time it opens). Named gamepad setups are
+ * vibration and the live test are in the Gamepad window (Hotkeys window > Gamepad;
+ * ogario/modules/gamepad-ui.js, loaded the first time it opens). Named gamepad setups are
  * Settings profiles (gamepad-only ones, ogario/modules/profiles.js).
  * The button map is kept in localStorage 'lmGamepad' (JSON, checked on load); the sliders and
  * toggles are ordinary gameplay settings (gamepad* in defaultmapsettings).
@@ -650,10 +650,10 @@
     /* the Gamepad window: ogario/modules/gamepad-ui.js, loaded the first time it opens */
     var uiLoading = false;
 
-    function openWindow(toggle) {
+    function openWindow() {
         var ui = window.LMGamepadUI;
         if (ui && typeof ui.open === 'function') {
-            if (toggle && ui.isOpen && ui.isOpen()) ui.close(); else ui.open();
+            ui.open();
             return;
         }
         if (uiLoading) return;

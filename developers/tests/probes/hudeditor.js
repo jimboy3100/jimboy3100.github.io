@@ -37,8 +37,7 @@
 
   if (HE.active()) fail.push('a layout is active by default');
   if (document.getElementById('lm-hud-layout')) fail.push('layout stylesheet present without a layout');
-  var hk = window.hotkeysCommand && hotkeysCommand['hk-hudEditor'];
-  if (!hk || hk.defaultKey !== '') fail.push('hk-hudEditor missing or has a default key');
+  if (window.hotkeysCommand && hotkeysCommand['hk-hudEditor']) fail.push('hotkey hk-hudEditor still there (removed)');
   if (!document.getElementById('lm-he-open')) fail.push('Edit HUD button missing in Theme > HUD');
   var lb = document.getElementById('leaderboard-hud');
   if (!lb) return { fail: fail.concat(['#leaderboard-hud missing']) };

@@ -1102,10 +1102,9 @@
     RS.isDriving = function () { return active(); };
     /* ogario.v4.js (replayfunctions): a live server was joined, the replay is left */
     RS.dispose = function (reason) { dispose(reason === 'left' ? 'left' : 'stopped'); };
-    /* the replay hotkeys (ogario.v4.js lmReplayTogglePause / Speed / Seek) */
+    /* the replay bar and the phone buttons (ogario.v4.js lmReplayTogglePause / lmReplaySeek) */
     RS.command = function (cmd, arg) {
         if (cmd === 'pause') { if (P.playing || (P.ff && P.ff.resume)) pause(); else play(); return true; }
-        if (cmd === 'speed') { setSpeed(arg < 1 ? P.speed * 2 : P.speed / 2); toast('info', T('speed') + ' ' + P.speed + 'x'); return true; }
         if (cmd === 'seek') { seekTo(shownPos() + (arg | 0)); return true; }
         return false;
     };
@@ -2056,12 +2055,11 @@
         if (isOpen()) { ui(); if (tab === 'library') refreshLibrary(); }
     });
 
-    /* entry point used by ogario.v4.js (window.lmReplayStudio) and the hotkeys */
+    /* entry point used by ogario.v4.js (window.lmReplayStudio) */
     RS.run = function (action, arg) {
         /* another replay asked for (Death recap, a replay^ token): a pending
          * ?replay= download no longer is what the player wants */
         if (action === 'watch') urlJob.cancel();
-        if (action === 'toggle') return isOpen() ? close() : open(arg);
         if (action === 'close') return close();
         /* arg: [recording key, start packet] */
         if (action === 'watch') return Array.isArray(arg) ? watch(arg[0], arg[1]) : watch(arg, 0);
@@ -2077,5 +2075,5 @@
         return { open: isOpen(), key: REC && REC.key, pos: P.pos, n: REC ? REC.n : 0, playing: P.playing, driving: P.driving, speed: P.speed, dir: P.dir, fx: OPT.fx, stopAt: P.stopAt, marks: REC ? REC.marks.length : 0, seeking: !!P.ff };
     };
     /* the transport without the window, for scripts and developers/tests/replaystudio.js */
-    RS.drive = { play: play, pause: pause, seek: seekTo, step: stepPacket, select: select, clip: function (inMs, outMs) { P.inMs = inMs; P.outMs = outMs; return makeClip(); } };
+    RS.drive = { play: play, pause: pause, seek: seekTo, step: stepPacket, speed: setSpeed, select: select, clip: function (inMs, outMs) { P.inMs = inMs; P.outMs = outMs; return makeClip(); } };
 })();

@@ -3,7 +3,7 @@
  * new ones from the Settings presets, gamepad-only sets (buttons and tuning: the named profiles the
  * Gamepad window had), optional automatic switching per server type / game mode / input
  * device (off by default), a comparison of any two sets, and the last 5 automatic settings backups.
- * Opened from Settings (next to Presets) or a hotkey (no default keys).
+ * Opened from Settings (next to Presets).
  * These are not the player profiles (ogarioPlayerProfiles: nick and skin).
  *
  * A profile is applied through the real controls, like the presets: a checkbox gets a bubbling
@@ -167,8 +167,8 @@
         try { fold(c); } catch (e) { return s; }
         return c;
     }
-    /* A set saved before hotkey commands were merged into others (zoom bookmarks, Screenshot mode,
-     * Open the Lab): the core's rule for the stored hotkeys (lmRenameOldHotkeys) moves their keys
+    /* A set saved before hotkey commands were merged into others (zoom bookmarks, Screenshot mode)
+     * or removed: the core's rule for the stored hotkeys (lmRenameOldHotkeys) moves their keys
      * (on a copy) before the check, which dropped them as unknown commands. */
     function renameOldHotkeys(h) {
         if (!isObj(h) || typeof window.lmRenameOldHotkeys !== 'function') return h;
@@ -1328,7 +1328,6 @@
     }
     if (window.LMi18n && typeof window.LMi18n.onChange === 'function') window.LMi18n.onChange(relabel);
     function close() { var el = document.getElementById('lm-sp-overlay'); if (el) el.parentNode.removeChild(el); window.removeEventListener('keydown', onEsc, true); }
-    function toggle() { if (isOpen()) close(); else open(); }
     function partsBadge(d, only) {
         if (only === 'gp') return gt('pkg.pt.gpBadge') || tx('partGP');
         var p = [];
@@ -1659,7 +1658,6 @@
     window.LMProfiles = {
         open: open,
         close: close,
-        toggle: toggle,
         undo: undo,
         list: function () { return loadProfiles().map(function (p) { return { id: p.id, name: p.name }; }); },
         applyById: function (id) { var p = findProfile(id); return p ? applyProfile(p) : null; },

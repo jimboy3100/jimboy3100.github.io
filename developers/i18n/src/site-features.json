@@ -1511,24 +1511,6 @@
     "ja": "指定した単語を含む行を隠すワードフィルター（任意）",
     "it": "Filtro parole opzionale che nasconde le righe con le parole che scegli tu"
   },
-  "site.features.hotkeyToMuteUnmute": {
-    "en": "Hotkey to mute / unmute chat sounds",
-    "el": "Πλήκτρο για σίγαση / κατάργηση σίγασης ήχων chat",
-    "es": "Atajo para silenciar / activar los sonidos del chat",
-    "bg": "Клавиш за изключване / включване на звуците на чата",
-    "fr": "Raccourci pour couper / rétablir les sons du chat",
-    "ar": "مفتاح اختصار لكتم / تشغيل أصوات الدردشة",
-    "zh": "將聊天音效靜音 / 取消靜音的快速鍵",
-    "ru": "Горячая клавиша для выключения / включения звуков чата",
-    "de": "Hotkey zum Stummschalten der Chat-Sounds",
-    "tr": "Sohbet seslerini kapatıp açmak için kısayol tuşu",
-    "pl": "Skrót do wyciszania / włączania dźwięków czatu",
-    "nl": "Sneltoets om chatgeluiden te dempen / aan te zetten",
-    "pt": "Atalho para silenciar / ativar os sons do chat",
-    "id": "Hotkey untuk bisukan / bunyikan suara chat",
-    "ja": "チャットの音をミュート/ミュート解除するショートカットキー",
-    "it": "Tasto rapido per silenziare / riattivare i suoni della chat"
-  },
   "site.features.smartSettingsNew": {
     "en": "Smart Settings <span class=\"badge badge-new\">New</span>",
     "el": "Έξυπνες ρυθμίσεις <span class=\"badge badge-new\">Νέο</span>",
@@ -1996,24 +1978,6 @@
     "id": "Riwayat pertandingan tersimpan di akunmu, di semua perangkat",
     "ja": "対戦履歴をアカウントに保存し、どの端末からでも確認可能",
     "it": "Cronologia partite sul tuo account, su ogni dispositivo"
-  },
-  "site.features.hotkeysForLeaguesShop": {
-    "en": "Hotkeys for Leagues, Shop, Challenges, Potions and Claim All",
-    "el": "Πλήκτρα για Πρωταθλήματα, Κατάστημα, Προκλήσεις, Φίλτρα και Claim All",
-    "es": "Atajos para Ligas, Tienda, Retos, Pociones y Claim All",
-    "bg": "Клавиши за Лиги, Магазин, Предизвикателства, Отвари и Вземи всички",
-    "fr": "Raccourcis pour Ligues, Boutique, Défis, Potions et Claim All",
-    "ar": "مفاتيح اختصار للدوريات والمتجر والتحديات والجرعات واستلام الكل",
-    "zh": "聯賽、商店、挑戰、藥水與全部領取的快速鍵",
-    "ru": "Горячие клавиши для Лиг, Магазина, Заданий, Зелий и Забрать всё",
-    "de": "Hotkeys für Ligen, Shop, Challenges, Tränke und Claim All",
-    "tr": "Ligler, Mağaza, Görevler, İksirler ve Hepsini al için kısayol tuşları",
-    "pl": "Skróty do Lig, Sklepu, Wyzwań, Mikstur i Odbierz wszystko",
-    "nl": "Sneltoetsen voor Competities, Winkel, Uitdagingen, Drankjes en Alles ophalen",
-    "pt": "Atalhos para Ligas, Loja, Desafios, Poções e Resgatar tudo",
-    "id": "Hotkey untuk Liga, Toko, Tantangan, Ramuan, dan Klaim semua",
-    "ja": "リーグ、ショップ、チャレンジ、ポーション、すべて受け取るのショートカットキー",
-    "it": "Tasti rapidi per Leghe, Negozio, Sfide, Pozioni e Riscatta tutto"
   },
   "site.features.userScriptApiNew": {
     "en": "User Script API <span class=\"badge badge-new\">New</span>",

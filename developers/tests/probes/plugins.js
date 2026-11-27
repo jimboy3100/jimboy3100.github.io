@@ -10,12 +10,8 @@
   if (window.LMLab) fail.push('the removed Lab (LMLab) is still loaded');
   if (!document.getElementById('lm-us-bar')) fail.push('no Editor / Plugins / Catalogue switch in the User Scripts panel');
   if (typeof window._lmUsGate !== 'function') fail.push('slot gate missing');
-  ['hk-lmPlugins'].forEach(function (h) {
-    if (!hotkeysCommand[h]) fail.push('hotkey ' + h + ' missing');
-    else if (hotkeysCommand[h].defaultKey !== '') fail.push('hotkey ' + h + ' has a default key');
-  });
-  // the Lab is removed: no hotkey or Settings section of its own
-  if (hotkeysCommand['hk-lmLab']) fail.push('a separate Lab hotkey still exists');
+  // the Lab is removed: no hotkey or Settings section of its own; User Scripts opens from the menu
+  if (hotkeysCommand['hk-lmLab'] || hotkeysCommand['hk-lmPlugins']) fail.push('a Lab or User Scripts hotkey still exists');
   if (document.querySelector('#og-options .lmLabGroup')) fail.push('the Settings tab still has a Lab section');
   if (document.getElementById('lm-pl-overlay') || document.getElementById('lm-plugins-btn')) fail.push('a separate plugin manager window still exists');
   if (!$('#legend #OpenuserScripts').length) fail.push('User Scripts button missing in the Tools tab');

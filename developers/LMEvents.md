@@ -107,7 +107,7 @@ LMEvents.on('death', function () { LMEvents.api.toast(splits + ' splits'); split
 
 ## Plugins
 
-Plugins live in the User Scripts panel (its "User Scripts" button, or the "Open User Scripts" hotkey). Its "Plugins" view lists the 5 slots with their header, whether each runs at start,
+Plugins live in the User Scripts panel (its "User Scripts" button). Its "Plugins" view lists the 5 slots with their header, whether each runs at start,
 compatibility and settings; its "Catalogue" view installs example plugins into a free slot.
 A plugin is an ordinary user script that starts with a header:
 

@@ -8,29 +8,6 @@
             textLanguage = window.textLanguage || {};
         }
         if (typeof chatCommand === 'undefined') chatCommand = {};
-        /* Expanding Land panel hotkeys (no default keys): only on Expanding Land and when the
-         * panel buttons are enabled (logged in, same check as the buttons); the key closes the
-         * panel again when it is open */
-        window._lmElPanelKey = function (modalId, open) {
-            try {
-                var L = window.legendmod;
-                var onEl = !!(L && (L.isLegendWorld || L.serverType === 'expandingland'));
-                if (!onEl) {
-                    if (window.toastr) toastr.info(lmT('game2.hkElOnly'));
-                    return;
-                }
-                if (modalId) {
-                    var cur = document.getElementById(modalId);
-                    if (cur) { cur.parentNode.removeChild(cur); return; }
-                }
-                var btn = document.getElementById('lm-leagues-btn');
-                if (!btn || btn.disabled) {
-                    if (window.toastr) toastr.info((window._lmLoginHint && window._lmLoginHint()) || lmT('game2.hkLoginFirst'));
-                    return;
-                }
-                open();
-            } catch (e) { }
-        };
         hotkeysCommand = {
             'hk-feed': {
                 get label() { return lmT('settings.hk-feed'); },
@@ -74,21 +51,6 @@
                 defaultKey: 'Q',
                 keyDown() {
                     application && application.doubleSplit();
-                },
-                keyUp: null,
-                type: 'normal'
-            },
-            /* opens the Analytics window (ogario/modules/analytics.js); no default key */
-            'hk-analytics': {
-                get label() {
-                    return lmT('settings.hk-analytics');
-                },
-                defaultKey: '',
-                keyDown() {
-                    if (window.LMAnalytics) {
-                        if (window.LMAnalytics.isOpen()) window.LMAnalytics.close();
-                        else window.LMAnalytics.open();
-                    }
                 },
                 keyUp: null,
                 type: 'normal'
@@ -165,162 +127,6 @@
 				},
 				type: 'normal'
 			},	
-			/* Performance mode on/off without opening the settings (no default key). setSettings
-			 * runs its backup/restore of the effect settings once, with the old value still in
-			 * place (it acts only on a real change); the switch then follows with a change that
-			 * does not bubble, which moves only its Switchery. */
-			'hk-performanceMode': {
-				get label() {
-					return lmT('settings.hk-performanceMode');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (!application || typeof defaultmapsettings === 'undefined' || typeof application.setSettings !== 'function') return;
-					application.setSettings('performanceMode', !defaultmapsettings.performanceMode);
-					var on = defaultmapsettings.performanceMode === true;
-					var cb = document.getElementById('performanceMode');
-					if (cb && cb.type === 'checkbox' && cb.checked !== on) {
-						cb.checked = on;
-						try { cb.dispatchEvent(new Event('change', { bubbles: false })); } catch (e) { }
-					}
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-mergeRings': {
-				get label() {
-					return lmT('settings.hk-mergeRings');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (!application || typeof defaultmapsettings === 'undefined') return;
-					defaultmapsettings.mergeRings = defaultmapsettings.mergeRings === false;
-					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('mergeRings');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-elLeagues': {
-				get label() {
-					return lmT('settings.hk-elLeagues');
-				},
-				defaultKey: '',
-				keyDown() {
-					_lmElPanelKey('lm-leagues-modal', function () { if (typeof window.showLeaguesModal === 'function') window.showLeaguesModal(); });
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-elShop': {
-				get label() {
-					return lmT('settings.hk-elShop');
-				},
-				defaultKey: '',
-				keyDown() {
-					_lmElPanelKey('lm-main-shop-modal', function () { if (typeof window.showShopModal === 'function') window.showShopModal(); });
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-elChallenges': {
-				get label() {
-					return lmT('settings.hk-elChallenges');
-				},
-				defaultKey: '',
-				keyDown() {
-					_lmElPanelKey('lm-challenges-modal', function () { if (typeof window.showChallengesModal === 'function') window.showChallengesModal(); });
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-elPotions': {
-				get label() {
-					return lmT('settings.hk-elPotions');
-				},
-				defaultKey: '',
-				keyDown() {
-					_lmElPanelKey('lm-potions-help-modal', function () { if (typeof window.showPotionsHelpModal === 'function') window.showPotionsHelpModal(); });
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-elClaimAll': {
-				get label() {
-					return lmT('settings.hk-elClaimAll');
-				},
-				defaultKey: '',
-				keyDown() {
-					_lmElPanelKey('', function () { var b = document.getElementById('lm-claim-all-btn'); if (b && (b.disabled || /\u23F3/.test(b.textContent))) return; /* same double-press guard as the button */ if (typeof window.claimAllRewardsAndGifts === 'function') window.claimAllRewardsAndGifts(); });
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-replayPause': {
-				get label() {
-					return lmT('settings.hk-replayPause');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (typeof window.lmReplayTogglePause === 'function') window.lmReplayTogglePause();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-replayFaster': {
-				get label() {
-					return lmT('settings.hk-replayFaster');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (typeof window.lmReplaySpeed === 'function') window.lmReplaySpeed(0.5);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-replaySlower': {
-				get label() {
-					return lmT('settings.hk-replaySlower');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (typeof window.lmReplaySpeed === 'function') window.lmReplaySpeed(2);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-replayFwd': {
-				get label() {
-					return lmT('settings.hk-replayFwd');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (typeof window.lmReplaySeek === 'function') window.lmReplaySeek(250);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-replayBack': {
-				get label() {
-					return lmT('settings.hk-replayBack');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (typeof window.lmReplaySeek === 'function') window.lmReplaySeek(-250);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-replayStudio': {
-				get label() {
-					return lmT('settings.hk-replayStudio');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (typeof window.lmReplayStudio === 'function') window.lmReplayStudio('toggle');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			/* opens the practice arena window (ogario/modules/practice.js); no default key */
 			'hk-practice': {
 				get label() {
@@ -333,63 +139,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-middleMultiView': {
-				get label() {
-					return lmT('settings.hk-middleMultiView');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (!application || typeof defaultmapsettings === 'undefined') return;
-					defaultmapsettings.middleMultiView = !defaultmapsettings.middleMultiView;
-					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('middleMultiView');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-gamepadWindow': {
-				get label() {
-					return lmT('settings.hk-gamepadWindow');
-				},
-				defaultKey: '',
-				keyDown() {
-					/* ogario/gamepad.js (loads the window the first time); the key closes it again */
-					if (window.LMGamepad && typeof window.LMGamepad.openWindow === 'function') window.LMGamepad.openWindow(true);
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			/* Settings profiles window (ogario/modules/profiles.js): no default key */
-			'hk-lmProfilesWindow': {
-				get label() {
-					return lmT('settings.hk-lmProfilesWindow');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMProfiles) window.LMProfiles.toggle();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-copyServerLink': {
-				get label() {
-					return lmT('settings.hk-copyServerLink');
-				},
-				defaultKey: '',
-				keyDown() {
-					/* same as the TK&PW button in the menu */
-					var b = document.getElementById('copySIPandPass');
-					if (b) {
-						$(b).trigger('click');
-						/* the copy selects a hidden input: give the keys back to the game */
-						var ae = document.activeElement;
-						if (ae && ae.id === 'tempCopy') ae.blur();
-						if (window.toastr) { if (String($('#server-token').val() || '').trim()) toastr.info(lmT('game2.hkLinkCopied')); else toastr.info(lmT('game2.hkLinkNotYet')); }
-					}
-					else if (window.toastr) toastr.info(lmT('game2.hkLinkNotYet'));
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-perfDiag': {
 				get label() {
 					return lmT('settings.hk-perfDiag');
@@ -397,22 +146,6 @@
 				defaultKey: '',
 				keyDown() {
 					if (window.LMPerf && typeof window.LMPerf.toggleDiag === 'function') window.LMPerf.toggleDiag();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			'hk-chatSounds': {
-				get label() {
-					return lmT('settings.hk-chatSounds');
-				},
-				defaultKey: '',
-				keyDown() {
-					/* same as the speaker button in the chat box */
-					if (!application || typeof defaultmapsettings === 'undefined') return;
-					defaultmapsettings.chatSounds = !defaultmapsettings.chatSounds;
-					if (typeof application.setChatSoundsBtn === 'function') application.setChatSoundsBtn();
-					if (typeof application.syncHotkeyOption === 'function') application.syncHotkeyOption('chatSounds');
-					if (window.toastr) toastr.info(defaultmapsettings.chatSounds ? lmT('game2.hkChatSoundsOn') : lmT('game2.hkChatSoundsOff'));
 				},
 				keyUp: null,
 				type: 'normal'
@@ -519,31 +252,6 @@
 						game.setScanTrickHeld(false);
 					}
 				},
-				type: 'normal'
-			},
-			/* User Scripts panel with its plugin views (ogario/modules/plugins.js; the removed Lab's
-			 * "Open the Lab" hotkey became this one: loadHotkeys) */
-			'hk-lmPlugins': {
-				get label() {
-					return lmT('settings.hk-lmPlugins');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMPlugins && typeof window.LMPlugins.toggle === 'function') window.LMPlugins.toggle('plugins');
-				},
-				keyUp: null,
-				type: 'normal'
-			},
-			/* HUD editor (ogario/modules/hudeditor.js): opens / closes the frames over the HUD boxes */
-			'hk-hudEditor': {
-				get label() {
-					return lmT('settings.hk-hudEditor');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMHudEditor && typeof window.LMHudEditor.toggle === 'function') window.LMHudEditor.toggle();
-				},
-				keyUp: null,
 				type: 'normal'
 			},
 			'hk-limitposition': {

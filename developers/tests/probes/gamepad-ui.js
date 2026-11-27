@@ -8,9 +8,7 @@
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
   var G = window.LMGamepad, hs = window.legendmod6;
   if (!G) return { fail: ['window.LMGamepad missing (ogario/gamepad.js not loaded)'] };
-  var hk = hotkeysCommand['hk-gamepadWindow'];
-  if (!hk) fail.push('hotkey hk-gamepadWindow missing');
-  else if (hk.defaultKey !== '') fail.push('hk-gamepadWindow has a default key');
+  if (hotkeysCommand['hk-gamepadWindow']) fail.push('hotkey hk-gamepadWindow still there (removed)');
   var b = $('#hotkeys #lm-hk-controls #lm-gamepad-btn');
   if (!b.length) return { fail: fail.concat(['no Gamepad button in the Hotkeys window']) };
   var stored = null;

@@ -1,7 +1,7 @@
 /* Legend Mod HUD layouts: moved, resized, locked or hidden HUD boxes, saved as named layouts
  * (localStorage lmHudLayouts, validated on read). This file is the small part that applies the
  * active layout; the editor itself (frames, snapping, the layouts panel) is in hudeditor-ui.js,
- * loaded the first time the editor opens (Theme > HUD > Edit HUD, or a hotkey with no default key).
+ * loaded the first time the editor opens (Theme > HUD > Edit HUD).
  *
  * With no active layout nothing is applied: no style element, no timer, every box where the game
  * puts it. A layout only lists the boxes the player changed; the others keep their normal place.
@@ -598,8 +598,6 @@
     }
     api.open = function () { withUI(function (ui) { ui.open(); }); };
     api.close = function () { if (W.LMHudEditorUI) W.LMHudEditorUI.close(false); };
-    api.toggle = function () { if (api.isEditing()) api.close(); else api.open(); };
-
     /* The editor is the one place for HUD positions: the removed position settings (Game stats
      * position, Chat Position) leave a saved place other than their default in lmHudAdopt
      * ({ box: entry }, ogario.v4.js lmHudAdoptOld). It goes once into the active layout (a box that

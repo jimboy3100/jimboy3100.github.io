@@ -5,11 +5,7 @@
   var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
   for (var i = 0; i < 40 && !(window.LMProfiles && document.getElementById('og-options')); i++) await wait(250);
   if (!window.LMProfiles) return { fail: ['LMProfiles not loaded'] };
-  ['hk-lmProfileNext', 'hk-lmProfilePrev', 'hk-lmProfileUndo'].forEach(function (h) { if (hotkeysCommand[h]) fail.push('hotkey ' + h + ' still there (removed)'); });
-  ['hk-lmProfilesWindow'].forEach(function (h) {
-    if (!hotkeysCommand[h]) fail.push('hotkey ' + h + ' missing');
-    else if (hotkeysCommand[h].defaultKey !== '') fail.push('hotkey ' + h + ' has a default key');
-  });
+  ['hk-lmProfileNext', 'hk-lmProfilePrev', 'hk-lmProfileUndo', 'hk-lmProfilesWindow'].forEach(function (h) { if (hotkeysCommand[h]) fail.push('hotkey ' + h + ' still there (removed)'); });
   if (!(application.saveSettings && application.saveSettings._lmSp)) fail.push('automatic backups: saveSettings not watched');
   if (!(application.importSettings && application.importSettings._lmSp)) fail.push('automatic backups: importSettings not watched');
   var keys = ['lmSettingsProfiles', 'lmSettingsProfilesRules', 'lmSettingsBackups', 'lmSettingsProfilesUndo', 'lmSettingsProfilesLast'];
@@ -89,13 +85,13 @@
     }
     // theme and hotkeys apply live, and Undo puts them back
     var mw = defaultSettings.miniMapWidth, hkBefore = JSON.stringify(hotkeys);
-    var hk2 = JSON.parse(hkBefore); hk2['CTRL+F9'] = 'hk-lmProfilesWindow';
+    var hk2 = JSON.parse(hkBefore); hk2['CTRL+F9'] = 'hk-showMass';
     var res = LMProfiles.applySet({ t: { miniMapWidth: mw + 20 }, h: hk2 }, 'probe');
     if (!res || res.length !== 2) fail.push('theme + hotkey set: ' + (res ? res.length : res) + ' changes instead of 2');
     if (defaultSettings.miniMapWidth !== mw + 20) fail.push('theme value not applied');
     if (JSON.parse(localStorage.getItem('ogarioThemeSettings') || '{}').miniMapWidth !== mw + 20) fail.push('theme value not saved');
-    if (hotkeys['CTRL+F9'] !== 'hk-lmProfilesWindow') fail.push('hotkey not applied live');
-    if (JSON.parse(localStorage.getItem('ogarioHotkeys') || '{}')['CTRL+F9'] !== 'hk-lmProfilesWindow') fail.push('hotkey not saved');
+    if (hotkeys['CTRL+F9'] !== 'hk-showMass') fail.push('hotkey not applied live');
+    if (JSON.parse(localStorage.getItem('ogarioHotkeys') || '{}')['CTRL+F9'] !== 'hk-showMass') fail.push('hotkey not saved');
     LMProfiles.undo();
     if (defaultSettings.miniMapWidth !== mw) fail.push('Undo did not put the theme back');
     if ('CTRL+F9' in hotkeys) fail.push('Undo did not put the hotkeys back');

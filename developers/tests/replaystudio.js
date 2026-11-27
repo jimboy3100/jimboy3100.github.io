@@ -171,7 +171,7 @@ const coreSrc = {
   reset: cut4('function lmReplayResetWorld() {', 'window.lmReplayResetWorld = lmReplayResetWorld;'),
   ev: cut4('function _lmEvReplay(on, reason, start) {', 'window._lmEvReplay = _lmEvReplay;'),
   types: cut4('var LM_REPLAY_PROTOCOLS = ', '/* The replay connection (token replay^<key>)'),
-  play: cut4('function playReplayLM(temp, startAt) {', '/* Replay controls (hotkeys'),
+  play: cut4('function playReplayLM(temp, startAt) {', '/* Replay controls of the replay bar'),
   rf: cut4('        replayfunctions() {\n', '        closeConnection() {'),
   /* the Join box value replayfunctions names the recording after (missing in older cores) */
   tbv: cut4('function _lmTokenBoxValue(id) {', '/* The Private list entries') || '',
@@ -437,7 +437,7 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
     e.RS.drive.play(-1);
     e.advance(1500, watch);
     /* speed change and pause while going back, forwards again, then back again */
-    e.RS.command('speed', 0.5);
+    e.RS.drive.speed(e.st().speed * 2);
     e.advance(1000, watch);
     e.RS.drive.pause();
     lastAt = -1;
@@ -710,15 +710,15 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
 
 }
 
-/* the instant replay is removed: a key a player had on its hotkey is free again (lmRenameOldHotkeys,
- * run by loadHotkeys and for settings profiles); other hotkeys keep their keys */
+/* the instant replay and the replay hotkeys are removed: a key a player had on one is free again
+ * (lmRenameOldHotkeys, run by loadHotkeys and for settings profiles); other hotkeys keep their keys */
 {
   const v4 = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
   const a = v4.indexOf('function lmRenameOldHotkeys(map) {'), b = v4.indexOf('\n}', a);
-  const hk = { '81': 'hk-instantReplay', '': 'hk-instantReplay', '87': 'hk-replayStudio' };
+  const hk = { '81': 'hk-instantReplay', '': 'hk-instantReplay', '87': 'hk-replayStudio', '88': 'hk-replayPause', '89': 'hk-replayFwd', '70': 'hk-feed' };
   let changed = false;
   if (a > 0 && b > a) changed = vm.runInNewContext(v4.slice(a, b + 2) + '\nlmRenameOldHotkeys(hotkeys);', { hotkeys: hk });
-  check('instant replay hotkey: its saved key is freed, the Replay Studio key stays', changed === true && same(hk, { '87': 'hk-replayStudio' }));
+  check('instant replay and replay hotkeys: their saved keys are freed, the feed key stays', changed === true && same(hk, { '70': 'hk-feed' }));
 }
 console.log(fail ? fail + ' failed' : 'all replay studio checks passed');
 process.exit(fail ? 1 : 0);
