@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "Enkele tips voor stabielere FPS:",
 "site.index.useOptimizedNamesAnd": "Gebruik de opties “Optimized names” en “Optimized mass”",
 "site.index.useAutoHideMass": "Gebruik de optie “Auto hide mass”",
-"site.index.useShortMassOption": "Gebruik de optie “Short mass”",
+"site.index.useShortMassOption": "Zet “Massanotatie” op “Verkort (12.3k)”",
 "site.index.disableAutoZoom": "Schakel automatisch zoomen uit",
 "site.index.chooseAgarIoServers": "Kies agar.io-servers die dicht bij je in de buurt zijn",
 "site.index.doNotUseAny": "Gebruik geen helpers als je ze niet nodig hebt. Minder tekenen betekent betere prestaties",

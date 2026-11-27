@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "بعض النصائح للحصول على FPS أكثر ثباتًا:",
 "site.index.useOptimizedNamesAnd": "استخدم خياري «أسماء محسّنة» و«كتلة محسّنة»",
 "site.index.useAutoHideMass": "استخدم خيار «إخفاء الكتلة تلقائيًا»",
-"site.index.useShortMassOption": "استخدم خيار «Short mass»",
+"site.index.useShortMassOption": "اضبط «تنسيق الكتلة» على «مختصرة (12.3k)»",
 "site.index.disableAutoZoom": "عطّل التكبير التلقائي",
 "site.index.chooseAgarIoServers": "اختر خوادم agar.io القريبة منك",
 "site.index.doNotUseAny": "لا تستخدم أي نوع من الأدوات المساعدة إن لم تكن بحاجة إليها. كلما قلّ ما يُرسم تحسّن الأداء",

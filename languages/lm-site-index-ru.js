@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "Несколько советов для более стабильного FPS:",
 "site.index.useOptimizedNamesAnd": "Используйте опции «Оптимизированные имена» и «Оптимизированная масса»",
 "site.index.useAutoHideMass": "Используйте опцию «Автоскрытие массы»",
-"site.index.useShortMassOption": "Используйте опцию «Укороченная масса»",
+"site.index.useShortMassOption": "Выберите в «Формат массы» вариант «Краткая (12.3k)»",
 "site.index.disableAutoZoom": "Отключите автомасштаб",
 "site.index.chooseAgarIoServers": "Выбирайте серверы agar.io поближе к вам",
 "site.index.doNotUseAny": "Не используйте помощники, если они вам не нужны. Меньше рисовать — выше производительность",

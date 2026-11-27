@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "Algumas dicas para ter um FPS mais estável:",
 "site.index.useOptimizedNamesAnd": "Use as opções “Nomes otimizados” e “Massa otimizada”",
 "site.index.useAutoHideMass": "Use a opção “Ocultar massa automaticamente”",
-"site.index.useShortMassOption": "Use a opção “Massa curta”",
+"site.index.useShortMassOption": "Defina “Formato da massa” como “Abreviada (12.3k)”",
 "site.index.disableAutoZoom": "Desative o zoom automático",
 "site.index.chooseAgarIoServers": "Escolha servidores do agar.io perto de você",
 "site.index.doNotUseAny": "Não use nenhum tipo de helper se não precisar. Menos coisas para desenhar significa mais desempenho",

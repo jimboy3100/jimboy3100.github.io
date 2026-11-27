@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "Daha kararlı FPS için bazı ipuçları:",
 "site.index.useOptimizedNamesAnd": "“Optimized names” ve “Optimized mass” seçeneklerini kullanın",
 "site.index.useAutoHideMass": "“Auto hide mass” seçeneğini kullanın",
-"site.index.useShortMassOption": "“Short mass” seçeneğini kullanın",
+"site.index.useShortMassOption": "“Kütle biçimi”ni “Kısa (12.3k)” yapın",
 "site.index.disableAutoZoom": "Otomatik yakınlaştırmayı kapatın",
 "site.index.chooseAgarIoServers": "Size yakın agar.io sunucularını seçin",
 "site.index.doNotUseAny": "İhtiyacınız yoksa hiçbir yardımcıyı kullanmayın. Daha az çizim, daha iyi performans demektir",

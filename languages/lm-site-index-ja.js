@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "FPS を安定させるためのヒント：",
 "site.index.useOptimizedNamesAnd": "「名前の最適化」と「質量の最適化」オプションを使う",
 "site.index.useAutoHideMass": "「質量を自動で隠す」オプションを使う",
-"site.index.useShortMassOption": "「質量の短縮表示」オプションを使う",
+"site.index.useShortMassOption": "「質量の表示形式」を「短縮 (12.3k)」にする",
 "site.index.disableAutoZoom": "自動ズームを無効にする",
 "site.index.chooseAgarIoServers": "近くの agar.io サーバーを選ぶ",
 "site.index.doNotUseAny": "必要のないヘルパーは使わない。描画が少ないほどパフォーマンスが上がります",

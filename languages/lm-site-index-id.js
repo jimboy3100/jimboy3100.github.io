@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "Beberapa tips agar FPS lebih stabil:",
 "site.index.useOptimizedNamesAnd": "Pakai opsi “Optimized names” dan “Optimized mass”",
 "site.index.useAutoHideMass": "Pakai opsi “Auto hide mass”",
-"site.index.useShortMassOption": "Pakai opsi “Short mass”",
+"site.index.useShortMassOption": "Atur “Format massa” ke “Singkat (12.3k)”",
 "site.index.disableAutoZoom": "Matikan auto zoom",
 "site.index.chooseAgarIoServers": "Pilih server agar.io yang dekat denganmu",
 "site.index.doNotUseAny": "Jangan pakai helper apa pun kalau tidak perlu. Semakin sedikit yang digambar, semakin baik performanya",

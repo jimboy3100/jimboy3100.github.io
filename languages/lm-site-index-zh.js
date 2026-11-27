@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "讓 FPS 更穩定的一些技巧:",
 "site.index.useOptimizedNamesAnd": "使用「最佳化名稱」與「最佳化質量」選項",
 "site.index.useAutoHideMass": "使用「自動隱藏質量」選項",
-"site.index.useShortMassOption": "使用「縮短質量」選項",
+"site.index.useShortMassOption": "把「質量格式」設為「簡短 (12.3k)」",
 "site.index.disableAutoZoom": "停用自動縮放",
 "site.index.chooseAgarIoServers": "選擇離你較近的 agar.io 伺服器",
 "site.index.doNotUseAny": "不需要時請勿使用任何輔助工具。要繪製的東西越少，效能越好",

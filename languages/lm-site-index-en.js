@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "Some tips to get more stable FPS:",
 "site.index.useOptimizedNamesAnd": "Use “Optimized names” and “Optimized mass” option",
 "site.index.useAutoHideMass": "Use “Auto hide mass” option",
-"site.index.useShortMassOption": "Use “Short mass” option",
+"site.index.useShortMassOption": "Set “Mass format” to “Short (12.3k)”",
 "site.index.disableAutoZoom": "Disable auto zoom",
 "site.index.chooseAgarIoServers": "Choose agar.io servers that are close to you",
 "site.index.doNotUseAny": "Do not use any kind of helpers if you don’t need them. Less to draw means better performance",

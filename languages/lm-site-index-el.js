@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "Μερικές συμβουλές για πιο σταθερά FPS:",
 "site.index.useOptimizedNamesAnd": "Χρησιμοποιήστε τις επιλογές «Optimized names» και «Optimized mass»",
 "site.index.useAutoHideMass": "Χρησιμοποιήστε την επιλογή «Auto hide mass»",
-"site.index.useShortMassOption": "Χρησιμοποιήστε την επιλογή «Short mass»",
+"site.index.useShortMassOption": "Ορίστε τη «Μορφή μάζας» σε «Συντομευμένη (12.3k)»",
 "site.index.disableAutoZoom": "Απενεργοποιήστε το αυτόματο zoom",
 "site.index.chooseAgarIoServers": "Επιλέξτε servers του agar.io που είναι κοντά σας",
 "site.index.doNotUseAny": "Μη χρησιμοποιείτε κανενός είδους βοηθήματα αν δεν τα χρειάζεστε. Λιγότερα στοιχεία για σχεδίαση σημαίνουν καλύτερη απόδοση",

@@ -322,7 +322,7 @@
 "site.index.someTipsToGet": "Kilka porad dla stabilniejszego FPS:",
 "site.index.useOptimizedNamesAnd": "Używaj opcji „Optimized names” i „Optimized mass”",
 "site.index.useAutoHideMass": "Używaj opcji „Auto hide mass”",
-"site.index.useShortMassOption": "Używaj opcji „Short mass”",
+"site.index.useShortMassOption": "Ustaw „Format masy” na „Skrócona (12.3k)”",
 "site.index.disableAutoZoom": "Wyłącz automatyczne przybliżanie",
 "site.index.chooseAgarIoServers": "Wybieraj serwery agar.io blisko siebie",
 "site.index.doNotUseAny": "Nie używaj żadnych pomocników, jeśli ich nie potrzebujesz. Mniej do rysowania oznacza lepszą wydajność",
