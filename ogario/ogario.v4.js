@@ -4532,6 +4532,36 @@ function changeregion() {
     }
 }
 
+/* The Private list entries with a fixed address (the load-balanced ones get theirs on each pick).
+ * delt.io list from Delta's client (servers/feeds.ts). */
+var _lmPrivateListUrls = {
+    5001: 'wss://ffa.legendmod.ml:8080',
+    5002: 'wss://api.legendmod.ml/el-teams',
+    10020: 'wss://party.delt.io',
+    10021: 'wss://party2.delt.io',
+    10022: 'wss://ffa.delt.io',
+    10023: 'wss://solo.delt.io',
+    10024: 'wss://party.na.delt.io',
+    10025: 'wss://exp.delt.io',
+    10026: 'wss://dag.delt.io',
+    10027: 'wss://rookery.delt.io',
+    10028: 'wss://arctida.delt.io'
+};
+/* A server joined without the list (Join box, ?sip= link, previous server hotkey, a script) is
+ * shown in the list: it kept the last picked entry (Expanding Land FFA while on Teams), and the
+ * server history, the match history and the address bar link took that wrong mode. No change
+ * event: the connection is already being made. */
+function _lmSyncPrivateList(url) {
+    var u = String(url || '').replace(/\/+$/, ''), v = '';
+    Object.keys(_lmPrivateListUrls).forEach(function (k) { if (_lmPrivateListUrls[k] === u) v = k; });
+    if (!v || typeof $ !== 'function' || $('#region').val() !== 'Private' || $('#gamemode').val() === v) return;
+    if (!$('#gamemode option[value="' + v + '"]').length) return;
+    $('#gamemode').val(v);
+    /* the room window puts this back when it closes without joining */
+    window._lmPrivGmPrev = v;
+}
+window._lmSyncPrivateList = _lmSyncPrivateList;
+
 /* restoreLast: only from the region picker (changeregion). ?sip= links (joinSIPonstart)
  * and replays keep 5001 exactly as before. */
 function deleteGamemode(temp, restoreLast) {
@@ -4780,11 +4810,11 @@ function deleteGamemode(temp, restoreLast) {
         legendmod.gameMode = ':ffa';
         // Expanding Land FFA - only active private server
         if ($('#gamemode').val() == 5001) {
-            core.connect('wss://ffa.legendmod.ml:8080');
+            core.connect(_lmPrivateListUrls[5001]);
         }
         // Expanding Land Teams (same server, separate accounts and progress)
         else if ($('#gamemode').val() == 5002) {
-            core.connect('wss://api.legendmod.ml/el-teams');
+            core.connect(_lmPrivateListUrls[5002]);
         }
         // Imsolo & Agar2 private server connections (multi-protocol support)
         // Arctida & Dagestan: use ImSolo load balancer API with fallback to hardcoded URLs
@@ -4935,17 +4965,7 @@ function deleteGamemode(temp, restoreLast) {
         }
         // delt.io servers (10020-10028), list from Delta's client (servers/feeds.ts)
         else if (parseInt($('#gamemode').val()) >= 10020 && parseInt($('#gamemode').val()) <= 10028) {
-            var deltioMap = {
-                10020: 'wss://party.delt.io',
-                10021: 'wss://party2.delt.io',
-                10022: 'wss://ffa.delt.io',
-                10023: 'wss://solo.delt.io',
-                10024: 'wss://party.na.delt.io',
-                10025: 'wss://exp.delt.io',
-                10026: 'wss://dag.delt.io',
-                10027: 'wss://rookery.delt.io',
-                10028: 'wss://arctida.delt.io'
-            };
+            var deltioMap = _lmPrivateListUrls;
             legendmod.gameMode = (parseInt($('#gamemode').val()) === 10020 || parseInt($('#gamemode').val()) === 10021 || parseInt($('#gamemode').val()) === 10024) ? ':party' : ':ffa';
             core.connect(deltioMap[parseInt($('#gamemode').val())]);
         } else {
@@ -23369,7 +23389,10 @@ function thelegendmodproject() {
         multiboxchange() {
             this.hideMenu();
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
+                /* flushSpecsData closes the in-game spectator too: its switch goes off with it
+                 * (left on, the next press only turned it off and opened nothing) */
                 window.fullSpectator = false;
+                window.ingameSpectator = false;
                 LM.flushSpecsData();
                 if (typeof window.addBox === "function") window.addBox();
                 else if (typeof addBox === "function") addBox();
@@ -23423,7 +23446,10 @@ function thelegendmodproject() {
         multiboxback() {
             this.hideMenu();
             if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
+                /* flushSpecsData closes the in-game spectator too: its switch goes off with it
+                 * (left on, the next press only turned it off and opened nothing) */
                 window.fullSpectator = false;
+                window.ingameSpectator = false;
                 LM.flushSpecsData();
                 if (typeof window.addBox === "function") window.addBox();
                 else if (typeof addBox === "function") addBox();
@@ -39991,6 +40017,7 @@ function thelegendmodproject() {
                     $('#region').append('<option value="Private" data-i18n="game1.region.private">' + _lmG1e(lmT('game1.region.private')) + '</option>');
                 }
                 $('#region').val('Private');
+                _lmSyncPrivateList(t);
             }
 
             var app = this;

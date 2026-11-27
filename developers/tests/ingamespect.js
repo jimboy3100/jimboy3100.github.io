@@ -5,7 +5,9 @@
  * Cases: toggle on/off, a multibox unit open (it blocked the spectator), spawn closes the
  * spectator with its flag (the flag alone was cleared and the next toggle did nothing), resuming
  * while alive keeps it, the multibox unit survives every spectator toggle and spawn, no premium:
- * no spectator socket.
+ * no spectator socket. With a unit and a spectator open together: the multibox switch keys go only
+ * between the main player and the units, the follow / free mode switch reaches the spectator, and
+ * starting multibox turns the spectator switch off with its socket.
  * node developers/tests/ingamespect.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -181,5 +183,17 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
     e2.app.changeSpectatorMode();
     check('only a spectating unit: it switches to free spectate as before', u.isFreeSpectate === true);
 }
+/* 9. starting multibox ends the in-game spectator: its switch goes off with its socket */
+{
+    const e = mbEnv();
+    e.app.setShowIngameSpectator();
+    const sp = spectators(e.win)[0];
+    e.app.multiboxchange();
+    check('multibox start: spectator socket closed, a unit opened', sp.closed && spectators(e.win).length === 0 && e.win.spects.length === 1 && e.win.spects[0].player);
+    check('multibox start: the in-game spectator switch is off with it', e.win.ingameSpectator === false);
+    e.app.setShowIngameSpectator();
+    check('the first press afterwards starts the spectator again', e.win.ingameSpectator === true && spectators(e.win).length === 1);
+}
+
 console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
 process.exit(failed ? 1 : 0);
