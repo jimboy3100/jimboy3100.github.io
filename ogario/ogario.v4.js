@@ -26634,7 +26634,7 @@ function thelegendmodproject() {
             $("#nick").before('<input id="clantag" class="form-control" ' + _lmG1a('placeholder', 'game1.menu.clanTagPh') + ' maxlength="10"><div class="input-group nick"></div>');
             $("#nick").appendTo($(".nick"));
             $(".nick").append('<span class="input-group-btn"><button id="stream-mode" class="btn active ogicon-eye"' + _lmG1a('title', 'pkg.i.streamModeTip') + '></button></span>');
-            $(".nick").after('<div class="input-group skin"><input id="skin" class="form-control" ' + _lmG1a('placeholder', 'game1.menu.skinUrlPh') + ' maxlength="150"><input type="hidden" id="color" value="' + ogarcopythelb.color + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye" style="display: none"></button></span></div>');
+            $(".nick").after('<div class="input-group skin"><input id="skin" class="form-control" ' + _lmG1a('placeholder', 'game1.menu.skinUrlPh') + ' maxlength="150"><input type="hidden" id="color" value="' + ogarcopythelb.color + '" maxlength="7" /><span class="input-group-addon"><i></i></span><span class="input-group-btn"><button id="hide-url" class="btn active ogicon-eye"' + _lmG1a('title', 'pkg.pt.hideSkinUrl') + ' style="display: none"></button></span></div>');
             $('#stream-mode').before('<button id="opennamechars" class="btn btn-info" style="background-color: transparent;" onclick="opennamechars();return false;"><i class="fa fa-language"></i></button>');
             $('#opennamechars').tooltip({
                 title: function () { return lmT('game1.menu.nickFont'); },
@@ -28160,11 +28160,13 @@ function thelegendmodproject() {
             }
         },
         setHideSkinUrl() {
+            /* the eye button is shown while the address is hidden: the Streamer preset or a
+             * settings profile turns this on, and nothing else in the menu turns it off */
             if (defaultmapsettings.hideSkinUrl) {
-                $("#hide-url").addClass("ogicon-eye-blocked");
+                $("#hide-url").addClass("ogicon-eye-blocked").show();
                 $("#skin").addClass("hide-url");
             } else {
-                $("#hide-url").removeClass("ogicon-eye-blocked");
+                $("#hide-url").removeClass("ogicon-eye-blocked").hide();
                 $("#skin").removeClass("hide-url");
             }
         },
