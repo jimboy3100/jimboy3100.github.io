@@ -31,6 +31,7 @@ function run(name, env, probe) {
     if (!fs.existsSync(file)) return { err: 'smoke run failed: ' + text.slice(0, 800) };
     const res = JSON.parse(fs.readFileSync(file, 'utf8'));
     try { fs.rmSync(path.join(out, 'profile'), { recursive: true, force: true, maxRetries: 5, retryDelay: 300 }); } catch (e) { }
+    res.text = text;
     return res;
 }
 
@@ -92,7 +93,8 @@ function probeNew(code) {
   need('settings labels translated', textLanguage.showMass === E.showMass);
   need('window shown', await wait(function () { return !!document.getElementById('lm-lang-first'); }, 15000));
   var box = document.getElementById('lm-lang-first');
-  if (!box) return { fail: fail, info: info };
+  /* what held the window back (it waits for the boot screen to go, the menu and no game) */
+  if (!box) { info.why = { boot: !!document.getElementById('lm-boot'), menu: !!(window.jQuery && $('#main-menu').is(':visible')), overlays: !!(window.jQuery && $('#overlays').is(':visible')), play: !!(window.legendmod && legendmod.play), asked: localStorage.getItem('lmLangAsked'), saved: localStorage.getItem('languagemod') }; return { fail: fail, info: info }; }
   var sel = box.querySelector('select.lm-lang-select');
   need('browser language picked', sel && sel.value === E.n);
   var names = sel ? Array.prototype.map.call(sel.options, function (o) { return o.textContent; }) : [];
@@ -154,7 +156,7 @@ let failed = 0, skipped = false;
     const problems = [];
     if (res.err) problems.push(res.err);
     /* an empty result (the probe threw or the page went away) is not a pass */
-    if (!p || !Array.isArray(p.fail)) problems.push('no probe result: ' + JSON.stringify(res.probe).slice(0, 300));
+    if (!p || !Array.isArray(p.fail)) problems.push('no probe result: ' + JSON.stringify(res.probe).slice(0, 300) + ' | ' + String(res.text || '').replace(/\s+/g, ' ').slice(-400));
     else (p.fail || []).forEach((f) => problems.push(f));
     if (res.errorCount) problems.push('page errors: ' + res.errors.slice(0, 3).join(' / '));
     console.log(name + ': ' + (problems.length ? 'FAIL ' + problems.join('; ') : 'ok') + (p && p.info ? ' ' + JSON.stringify(p.info) : ''));
