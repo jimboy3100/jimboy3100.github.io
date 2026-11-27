@@ -290,6 +290,18 @@ const kev = k => ({ k, keyCode: k.charCodeAt(0), target: { tagName: 'CANVAS', cl
 ctx.document.onkeydown(kev('Q')); ctx.hotkeys.Q = ''; ctx.document.onkeyup(kev('Q'));
 ctx.hotkeys.Q = 'hk-scanTrick'; ctx.document.onkeydown(kev('Q')); ctx.hotkeys.Q = 'hk-other'; ctx.document.onkeyup(kev('Q'));
 check('scan trick key unbound or rebound while held: its keyup still ends the scan trick (not the new command)', J(holds) === J(['down', 'up', 'down', 'up']));
+/* the modifier let go before the key while the key auto-repeats: no bare-key command, and the
+ * next press of the combo works (CTRL+E permanent feed could not be turned off) */
+const combo = [];
+ctx.keyBlind = {}; ctx.hotkeys = { Q: 'hk-doubleSplit', 'ALT+Q': 'hk-popSplit' };
+ctx.hotkeysCommand = { 'hk-doubleSplit': { keyDown() { combo.push('double'); } }, 'hk-popSplit': { keyDown() { combo.push('pop'); } } };
+const kc = (k, code, rep) => ({ k, keyCode: code, repeat: !!rep, target: { tagName: 'CANVAS', className: '' }, preventDefault() { } });
+const altQ = () => { ctx.document.onkeydown(kc('ALT', 18)); ctx.document.onkeydown(kc('ALT+Q', 81)); };
+altQ(); ctx.document.onkeydown(kc('ALT+Q', 81, true)); ctx.document.onkeyup(kc('ALT', 18));
+ctx.document.onkeydown(kc('Q', 81, true)); ctx.document.onkeyup(kc('Q', 81));
+check('Alt let go before Q (Q auto-repeats): no double split, nothing left held', J(combo) === J(['pop']) && !Object.keys(ctx.keyBlind).some(k => ctx.keyBlind[k]));
+altQ(); ctx.document.onkeyup(kc('ALT+Q', 81)); ctx.document.onkeyup(kc('ALT', 18));
+check('and the next Alt+Q pops again', J(combo) === J(['pop', 'pop']));
 
 // ── S4 the profile count, live
 const dom = { nick: true, skins: [] };

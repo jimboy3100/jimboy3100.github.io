@@ -85347,6 +85347,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* a hotkey field takes keys, never text: auto-repeat of a held key typed into it
          * ("E" became "Eeee") and the old key then stayed bound */
         if (_hkTarget.className === hotkeysSetup.inputClassName) event.preventDefault();
+        /* auto-repeat of a key the game took: the modifier let go first turns ALT+Q into Q, which
+         * ran Q's command and replaced the held ALT+Q, so ALT+Q stayed held and its next press was
+         * ignored. A repeat belongs to the press that started it, released at its keyup. */
+        var _lmHeldName = event.repeat ? _lmHeldByCode[event.keyCode] : '';
+        if (_lmHeldName) {
+            if ((!_isTypingTarget && hotkeys[_lmHeldName]) || _hkTarget.className === hotkeysSetup.inputClassName) event.preventDefault();
+            return;
+        }
         if ((!_isTypingTarget || _isEscOutsideInput || _hkTarget.className === hotkeysSetup.inputClassName || (_hkTarget.tagName === 'INPUT' && _hkTarget.id === 'message' && pressedKey === hotkeys['spec-messageKey'])) && '' !== pressedKey && !keyBlind[pressedKey]) {
 
             _lmHeldByCode[event.keyCode] = pressedKey;
