@@ -81,6 +81,14 @@ check('import: an old export with the minimap click on has click to follow on', 
   const exp = vm.runInContext('LM_EXPORT_KEYS', (() => { const c = { console }; vm.createContext(c); vm.runInContext(cut('var LM_EXPORT_KEYS = [', '];') + '];', c); return c; })());
   check('settings export: no director configuration', !exp.some(e => /^lm-director/.test(e.key)));
   check('the director module is not loaded any more', main.indexOf('modules/director.js') < 0 && !fs.existsSync(path.join(root, 'ogario', 'modules', 'director.js')));
+  // the startup line that deletes the director's saved data, run on a storage that has it
+  const ln = main.split(/\r?\n/).find(l => l.indexOf("'lm-director-watch'") >= 0 && l.indexOf('removeItem') >= 0);
+  const sctx = { localStorage: makeStorage() };
+  ['lm-director', 'lm-director-bookmarks', 'lm-director-watch', 'lmHudLayouts'].forEach(k => sctx.localStorage.setItem(k, '{}'));
+  vm.createContext(sctx);
+  if (ln) vm.runInContext(ln, sctx);
+  check('startup: the director\'s saved camera settings, bookmarks and watchlist are deleted, other data stays',
+    !!ln && ['lm-director', 'lm-director-bookmarks', 'lm-director-watch'].every(k => sctx.localStorage.getItem(k) === null) && sctx.localStorage.getItem('lmHudLayouts') === '{}');
 }
 
 if (fail) { console.log(fail + ' check(s) FAILED'); process.exit(1); }

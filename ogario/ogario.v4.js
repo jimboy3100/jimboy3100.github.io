@@ -89129,6 +89129,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
     }
     /* The Command Centre is removed: what it kept (stars, recently used) is deleted from this browser */
     try { localStorage.removeItem('lmCommandCentre'); } catch (e) { }
+    /* The spectator director is removed: its camera settings, bookmarks and watchlist are deleted from this browser */
+    try { ['lm-director', 'lm-director-bookmarks', 'lm-director-watch'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* AgarTool team: AgarTool players with my tag on the same agar.io server as teammates (no socket or timer while its option is off) */
     try {
         var agarToolScript = document.createElement('script');
