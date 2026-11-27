@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Opacidade do joystick",
 "pkg.agm.respawnBtn": "Botão de renascer rápido",
 "pkg.agm.m_respawnBtn": "Botão de renascer rápido",
-"pkg.agm.m_macroBtns": "Botões de macros personalizadas (M1-M3)",
 "pkg.agm.respawnOff": "O renascer rápido está desligado: ative-o primeiro nas Configurações",
 "pkg.agm.ctlRespawn": "Respawn rápido",
 "pkg.bots.serverChanged": "Os bots pararam porque o servidor do jogo mudou.",

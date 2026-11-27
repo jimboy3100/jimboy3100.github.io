@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Joystick opacity",
 "pkg.agm.respawnBtn": "Quick respawn button",
 "pkg.agm.m_respawnBtn": "Quick respawn button",
-"pkg.agm.m_macroBtns": "Custom macro buttons (M1-M3)",
 "pkg.agm.respawnOff": "Quick respawn is off: turn it on in Settings first",
 "pkg.agm.ctlRespawn": "Quick respawn",
 "pkg.bots.serverChanged": "The bots stopped because the game server changed.",

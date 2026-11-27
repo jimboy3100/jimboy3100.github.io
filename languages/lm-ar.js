@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "عتامة عصا التحكم",
 "pkg.agm.respawnBtn": "زر العودة السريعة",
 "pkg.agm.m_respawnBtn": "زر العودة السريعة",
-"pkg.agm.m_macroBtns": "أزرار الماكرو المخصصة (M1-M3)",
 "pkg.agm.respawnOff": "العودة السريعة متوقفة: فعّلها أولاً من الإعدادات",
 "pkg.agm.ctlRespawn": "إعادة ظهور سريعة",
 "pkg.bots.serverChanged": "توقفت البوتات لأن سيرفر اللعبة تغيّر.",

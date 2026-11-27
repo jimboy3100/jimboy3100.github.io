@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Αδιαφάνεια χειριστηρίου",
 "pkg.agm.respawnBtn": "Κουμπί γρήγορου respawn",
 "pkg.agm.m_respawnBtn": "Κουμπί γρήγορου respawn",
-"pkg.agm.m_macroBtns": "Κουμπιά προσαρμοσμένων μακροεντολών (M1-M3)",
 "pkg.agm.respawnOff": "Το γρήγορο respawn είναι ανενεργό: ενεργοποιήστε το πρώτα στις Ρυθμίσεις",
 "pkg.agm.ctlRespawn": "Γρήγορο respawn",
 "pkg.bots.serverChanged": "Τα bots σταμάτησαν επειδή άλλαξε ο server του παιχνιδιού.",

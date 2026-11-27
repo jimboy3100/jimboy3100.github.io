@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Opasitas joystick",
 "pkg.agm.respawnBtn": "Tombol respawn cepat",
 "pkg.agm.m_respawnBtn": "Tombol respawn cepat",
-"pkg.agm.m_macroBtns": "Tombol makro kustom (M1-M3)",
 "pkg.agm.respawnOff": "Respawn cepat mati: nyalakan dulu di Pengaturan",
 "pkg.agm.ctlRespawn": "Respawn cepat",
 "pkg.bots.serverChanged": "Bot berhenti karena server game berganti.",

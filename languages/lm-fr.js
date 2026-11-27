@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Opacité du joystick",
 "pkg.agm.respawnBtn": "Bouton de réapparition rapide",
 "pkg.agm.m_respawnBtn": "Bouton de réapparition rapide",
-"pkg.agm.m_macroBtns": "Boutons des macros personnalisées (M1-M3)",
 "pkg.agm.respawnOff": "La réapparition rapide est désactivée : activez-la d'abord dans les Paramètres",
 "pkg.agm.ctlRespawn": "Réapparition rapide",
 "pkg.bots.serverChanged": "Les bots se sont arrêtés car le serveur de jeu a changé.",

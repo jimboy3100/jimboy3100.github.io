@@ -77,7 +77,6 @@
 - 🔄 Replays with pause, speed & seek
 - ☠️ Death recap — what happened in your last 20 seconds
 - 📈 Analytics dashboard — mass/min, top-10 rate, heatmaps
-- 🔔 Notification centre for achievements & personal bests
 
 ### More
 - 🎮 Full gamepad/controller support (PS, Xbox, generic)

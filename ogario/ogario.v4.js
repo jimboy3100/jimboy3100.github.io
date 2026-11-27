@@ -23844,7 +23844,7 @@ function thelegendmodproject() {
         /* The skins hotkeys name the mode they just entered ("vanilla only" was read as "vanilla
          * off"). Not called by toggleSkins itself: the timed skin toggle (LMexpress) runs that every
          * second. A press replaces the previous message, so fast presses leave one toast; it goes
-         * through toastr, so the notification centre keeps it and a category muted there stays quiet.
+         * through toastr.
          * modeChanged: the custom/agar.io mode changed while "No skins" may still hide them all. */
         skinsModeMsg(modeChanged) {
             var ms = defaultmapsettings, hidden = !!(this.noSkins || ms.noSkins);

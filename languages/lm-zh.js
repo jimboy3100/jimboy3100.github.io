@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "搖桿不透明度",
 "pkg.agm.respawnBtn": "快速重生按鈕",
 "pkg.agm.m_respawnBtn": "快速重生按鈕",
-"pkg.agm.m_macroBtns": "自訂巨集按鈕（M1-M3）",
 "pkg.agm.respawnOff": "快速重生已關閉：請先在設定中開啟",
 "pkg.agm.ctlRespawn": "快速重生",
 "pkg.bots.serverChanged": "遊戲伺服器已變更，機器人已停止。",

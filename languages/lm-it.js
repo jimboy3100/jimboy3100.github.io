@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Opacità joystick",
 "pkg.agm.respawnBtn": "Pulsante respawn rapido",
 "pkg.agm.m_respawnBtn": "Pulsante respawn rapido",
-"pkg.agm.m_macroBtns": "Pulsanti macro personalizzate (M1-M3)",
 "pkg.agm.respawnOff": "Il respawn rapido è disattivato: attivalo prima nelle Impostazioni",
 "pkg.agm.ctlRespawn": "Respawn rapido",
 "pkg.bots.serverChanged": "I bot si sono fermati perché il server di gioco è cambiato.",

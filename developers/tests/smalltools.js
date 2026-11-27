@@ -46,6 +46,9 @@ check('removed: no radial or screenshot options helpers', !('pickSector' in C) &
     check('removed: a key on their hotkeys (and on the custom macros and the notification centre) is free again, Alt+H stays', J(hk) === J({ 'ALT+H': 'hk-showHUD', W: 'hk-feed' }));
     const hc = fs.readFileSync(path.join(dir, '..', 'hotkeysCommand.js'), 'utf8');
     check('removed: their hotkeys and the custom macro ones are gone', !/'hk-(radialMenu|radialEditor|screenshotCapture|screenshotTool|customMacro[1-3]|notifCentre)'/.test(hc) && /'hk-showHUD'/.test(hc));
+    /* the phone M1-M3 option's label (named by the settings profiles' phone list) is not shipped */
+    const en = fs.readFileSync(path.join(dir, '..', '..', 'languages', 'lm-en.js'), 'utf8');
+    check('removed: the phone custom macro buttons text is not shipped', en.indexOf('pkg.agm.') >= 0 && en.indexOf('pkg.agm.m_macroBtns') < 0);
 }
 
 /* ── the hotkey conflict list is gone (the key check of the Hotkeys window stays) ── */

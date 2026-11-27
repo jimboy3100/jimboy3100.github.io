@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Joystick-Deckkraft",
 "pkg.agm.respawnBtn": "Taste für schnelles Respawnen",
 "pkg.agm.m_respawnBtn": "Taste für schnelles Respawnen",
-"pkg.agm.m_macroBtns": "Tasten für eigene Makros (M1-M3)",
 "pkg.agm.respawnOff": "Schnelles Respawnen ist aus: zuerst in den Einstellungen einschalten",
 "pkg.agm.ctlRespawn": "Schneller Respawn",
 "pkg.bots.serverChanged": "Die Bots wurden gestoppt, weil sich der Spielserver geändert hat.",

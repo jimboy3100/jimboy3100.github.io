@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Dekking joystick",
 "pkg.agm.respawnBtn": "Knop voor snel respawnen",
 "pkg.agm.m_respawnBtn": "Knop voor snel respawnen",
-"pkg.agm.m_macroBtns": "Knoppen voor eigen macro's (M1-M3)",
 "pkg.agm.respawnOff": "Snel respawnen staat uit: zet het eerst aan in Instellingen",
 "pkg.agm.ctlRespawn": "Snelle respawn",
 "pkg.bots.serverChanged": "De bots zijn gestopt omdat de gameserver is gewijzigd.",

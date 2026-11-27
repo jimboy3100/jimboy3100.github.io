@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Joystick opaklığı",
 "pkg.agm.respawnBtn": "Hızlı yeniden doğma düğmesi",
 "pkg.agm.m_respawnBtn": "Hızlı yeniden doğma düğmesi",
-"pkg.agm.m_macroBtns": "Özel makro düğmeleri (M1-M3)",
 "pkg.agm.respawnOff": "Hızlı yeniden doğma kapalı: önce Ayarlar'dan açın",
 "pkg.agm.ctlRespawn": "Hızlı yeniden doğma",
 "pkg.bots.serverChanged": "Oyun sunucusu değiştiği için botlar durdu.",

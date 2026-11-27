@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "ジョイスティックの不透明度",
 "pkg.agm.respawnBtn": "クイックリスポーンボタン",
 "pkg.agm.m_respawnBtn": "クイックリスポーンボタン",
-"pkg.agm.m_macroBtns": "カスタムマクロボタン（M1-M3）",
 "pkg.agm.respawnOff": "クイックリスポーンはオフです。先に設定でオンにしてください",
 "pkg.agm.ctlRespawn": "クイックリスポーン",
 "pkg.bots.serverChanged": "ゲームサーバーが変わったため、ボットは停止しました。",

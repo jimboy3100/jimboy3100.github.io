@@ -2736,7 +2736,6 @@
 "pkg.agm.m_jsOpacity": "Krycie joysticka",
 "pkg.agm.respawnBtn": "Przycisk szybkiego odrodzenia",
 "pkg.agm.m_respawnBtn": "Przycisk szybkiego odrodzenia",
-"pkg.agm.m_macroBtns": "Przyciski własnych makr (M1-M3)",
 "pkg.agm.respawnOff": "Szybkie odrodzenie jest wyłączone: najpierw włącz je w Ustawieniach",
 "pkg.agm.ctlRespawn": "Szybkie odrodzenie",
 "pkg.bots.serverChanged": "Boty zatrzymały się, bo zmienił się serwer gry.",

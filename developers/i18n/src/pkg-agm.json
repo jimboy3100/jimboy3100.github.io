@@ -269,24 +269,6 @@
     "ja": "クイックリスポーンボタン",
     "it": "Pulsante respawn rapido"
   },
-  "pkg.agm.m_macroBtns": {
-    "en": "Custom macro buttons (M1-M3)",
-    "el": "Κουμπιά προσαρμοσμένων μακροεντολών (M1-M3)",
-    "es": "Botones de macros personalizadas (M1-M3)",
-    "bg": "Бутони за потребителски макроси (M1-M3)",
-    "fr": "Boutons des macros personnalisées (M1-M3)",
-    "ar": "أزرار الماكرو المخصصة (M1-M3)",
-    "zh": "自訂巨集按鈕（M1-M3）",
-    "ru": "Кнопки своих макросов (M1-M3)",
-    "de": "Tasten für eigene Makros (M1-M3)",
-    "tr": "Özel makro düğmeleri (M1-M3)",
-    "pl": "Przyciski własnych makr (M1-M3)",
-    "nl": "Knoppen voor eigen macro's (M1-M3)",
-    "pt": "Botões de macros personalizadas (M1-M3)",
-    "id": "Tombol makro kustom (M1-M3)",
-    "ja": "カスタムマクロボタン（M1-M3）",
-    "it": "Pulsanti macro personalizzate (M1-M3)"
-  },
   "pkg.agm.respawnOff": {
     "en": "Quick respawn is off: turn it on in Settings first",
     "el": "Το γρήγορο respawn είναι ανενεργό: ενεργοποιήστε το πρώτα στις Ρυθμίσεις",
