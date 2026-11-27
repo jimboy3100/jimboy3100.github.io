@@ -4,7 +4,8 @@
 // from the option's computed background and colour (an option without one shows the select's, over
 // white). Until 3.699 the list took the panel and text colours of the theme, unreadable with grey
 // panels, and some windows had their own theme rule for it. The lists must look the same in every
-// theme. The theme is put back.
+// theme. The theme is put back. The main panel (#main-panel: game mode, region, server list) is the
+// exception: its lists keep the colours of their closed box, as before 3.699 (owner, 2026-11-27).
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -44,7 +45,7 @@
       Settings.setMenu();
       await sleep(50);
       var n = 0, bad = [], look = [];
-      [].forEach.call(document.querySelectorAll('select'), function (sel) {
+      [].forEach.call(document.querySelectorAll('select:not(#main-panel select)'), function (sel) {
         var sbg = over(parse(getComputedStyle(sel).backgroundColor), [255, 255, 255, 1]);
         [].forEach.call(sel.querySelectorAll('option, optgroup'), function (o, j) {
           if (j > 3) return;
@@ -56,6 +57,20 @@
         });
       });
       info[name] = n;
+      /* main panel: no colours of their own on the choices, so Chrome draws the list in the select's */
+      var mp = 0, mbad = [];
+      [].forEach.call(document.querySelectorAll('#main-panel select'), function (sel) {
+        var sc = getComputedStyle(sel).color;
+        [].forEach.call(sel.querySelectorAll('option, optgroup'), function (o, j) {
+          if (j > 3) return;
+          var cs = getComputedStyle(o);
+          mp++;
+          if ((parse(cs.backgroundColor)[3] !== 0 || cs.color !== sc) && mbad.length < 3) mbad.push((sel.id || 'select') + ' ' + o.tagName.toLowerCase() + ': ' + cs.color + ' on ' + cs.backgroundColor + ' (closed box text ' + sc + ')');
+        });
+      });
+      info[name + 'MainPanel'] = mp;
+      if (!mp) fail.push(name + ': no main panel dropdown choices found');
+      if (mbad.length) fail.push(name + ': main panel dropdown lists do not keep the closed box colours: ' + mbad.join('; '));
       looks[name] = look.sort().join(',');
       /* the same colours whatever the theme: the list does not take the theme */
       if (name !== 'dark' && looks[name] !== looks.dark) fail.push(name + ': the open dropdown lists change colour with the theme');

@@ -22903,8 +22903,10 @@ function thelegendmodproject() {
             /* The open list of every dropdown never takes the theme: Chrome draws it from the option's
              * colours (or the select's, over white), and theme text on the theme or the browser's white
              * could not be read (grey panels, light themes). Dark text on white, as in the browser, for
-             * every window (the one rule for this: windows add none of their own) */
-            css += 'select option,select optgroup{background-color:#fff!important;color:#1a1a1a!important}select option:checked{background-color:#d3e3fd!important}select option:disabled{color:#6b6b6b!important}';
+             * every window (the one rule for this: windows add none of their own). Not in the main
+             * panel (#main-panel: game mode, region, server list): there the owner wants the list as
+             * before, in the solid colours of its closed box (the select's panel and text colours) */
+            css += 'select option:not(#main-panel option),select optgroup:not(#main-panel optgroup){background-color:#fff!important;color:#1a1a1a!important}select option:checked:not(#main-panel option){background-color:#d3e3fd!important}select option:disabled:not(#main-panel option){color:#6b6b6b!important}';
             this.addCustomCSS('menuPanelColorCSS', css);
             /* Keep inline --lm-pc/pc2 in sync */
             try { var _r = document.documentElement.style; _r.setProperty('--lm-pc', _lmCssVal(defaultSettings.menuPanelColor, '#00243e')); _r.setProperty('--lm-pc2', _lmCssVal(defaultSettings.menuPanelColor2, '#002f52')); } catch(e){}
