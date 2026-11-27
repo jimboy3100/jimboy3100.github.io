@@ -39,9 +39,9 @@ man.records.forEach((r) => {
 /* text that can name a file: pages, scripts, styles, data, docs, userscript headers */
 const TEXT = /\.(html?|js|mjs|css|json|md|txt|xml|ps1|py|svg|webmanifest|yml)$|^[^.]+$/i;
 const SKIP = /^(vanillaskins|lowresskins)\//;
-/* the registers of the deletions themselves (they name every deleted file on purpose) and the source export nothing loads */
+/* the registers of the deletions themselves (they name every deleted file on purpose) */
 const RECORDS = new Set(['developers/audit/manifest.json', 'developers/i18n/scan-config.json', 'developers/tests/i18n-archived.js',
-    'developers/tests/auditmedia.js', 'AllFilesNew.txt']);
+    'developers/tests/auditmedia.js']);
 const texts = [...tracked].filter((f) => TEXT.test(path.basename(f)) && !SKIP.test(f) && !RECORDS.has(f));
 /* media files (pictures, videos, sounds); pages and scripts have their own checks (i18n-archived.js and others) */
 const MEDIA = /\.(png|jpe?g|gif|webp|bmp|ico|svg|mp4|webm|mp3|ogg|wav)$/i;

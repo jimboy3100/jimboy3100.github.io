@@ -4793,6 +4793,13 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: it is an article picture, named in the whole git history only by the two 29.12.2025 announcement articles, never by a theme, preset, setting default or picture list a player could have picked and saved",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml; outside links to the article pages keep working (the pages stay at their addresses)"
+      },
       "approvedForDeletion": true
     },
     {
@@ -4802,15 +4809,29 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, and in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it (only the removed archived page extras/banneranimatedFayiz3.html ever did)",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml"
+      },
       "approvedForDeletion": true
     },
     {
       "oldPath": "banners/VideoLegendModPromo.mp4",
-      "canonicalPath": "https://dkyriak.github.io/VideoLegendModPromo.mp4",
+      "canonicalPath": null,
       "reason": "Byte-identical copy (9.5 MB, same SHA-1) of the video the skins gallery (skins/index.html, video skins) shows and players use as a video skin: https://dkyriak.github.io/VideoLegendModPromo.mp4. This copy got its name in March 2026 and nothing in any repository ever loaded it.",
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: the skins gallery and every video skin list give players the https://dkyriak.github.io/VideoLegendModPromo.mp4 address, and this copy was never shown or loaded by any page or script in the history",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml"
+      },
       "approvedForDeletion": true
     },
     {
@@ -4820,6 +4841,13 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, and in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml"
+      },
       "approvedForDeletion": true
     },
     {
@@ -4829,6 +4857,13 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, and in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml"
+      },
       "approvedForDeletion": true
     },
     {
@@ -4838,6 +4873,13 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, and in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it; the custom grid loads the fixed banners/grid3.png and its address is never built from a number or a setting",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml"
+      },
       "approvedForDeletion": true
     },
     {
@@ -4847,6 +4889,13 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, and in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it; it only appeared in commented-out lines, the custom grid loads the fixed banners/grid3.png and its address is never built from a number or a setting",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml"
+      },
       "approvedForDeletion": true
     },
     {
@@ -4856,6 +4905,13 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": true,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": true,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, and in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "kept published: a picture of the clan slideshow that people may have linked from outside; expandingland, legendworld-help, LegendWorld and deltav4 do not name it"
+      },
       "approvedForDeletion": false
     },
     {
@@ -4865,6 +4921,13 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": true,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": true,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, and in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "kept published: a clan page picture that people may have linked from outside; expandingland, legendworld-help, LegendWorld and deltav4 do not name it"
+      },
       "approvedForDeletion": false
     },
     {
@@ -4874,6 +4937,13 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, and in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it (only the removed archived page extras/banneranimatedFayiz3.html ever did)",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml"
+      },
       "approvedForDeletion": true
     },
     {
@@ -4883,6 +4953,13 @@
       "internalReferencesMigrated": true,
       "legacyResolverSupported": false,
       "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-27",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, and in the whole git history no theme, preset, setting default or picture list a player could have picked and saved names it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK (13 revisions) names it; not in sitemap.xml"
+      },
       "approvedForDeletion": true
     }
   ]
