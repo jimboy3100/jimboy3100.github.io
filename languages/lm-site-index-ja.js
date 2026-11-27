@@ -31,7 +31,7 @@
 "site.index.mapUpTo1024": "マップ (最大 1024×)",
 "site.index.dynamicMap": "<i class=\"fas fa-expand-arrows-alt\" style=\"font-size:0.65rem;\"></i> ダイナミックマップ",
 "site.index.potions": "<i class=\"fas fa-flask\" style=\"font-size:0.65rem;\"></i> ポーション",
-"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> 1024人のリアルプレイヤー",
+"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> マルチプレイヤーアリーナ",
 "site.index.antiTeam": "<i class=\"fas fa-shield-alt\" style=\"font-size:0.65rem;\"></i> チーム行為対策",
 "site.index.playNow": "今すぐプレイ",
 "site.index.androidApp": "Android アプリ",

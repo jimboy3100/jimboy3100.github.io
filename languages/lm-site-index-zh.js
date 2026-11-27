@@ -31,7 +31,7 @@
 "site.index.mapUpTo1024": "地圖（最大 1024×）",
 "site.index.dynamicMap": "<i class=\"fas fa-expand-arrows-alt\" style=\"font-size:0.65rem;\"></i> 動態地圖",
 "site.index.potions": "<i class=\"fas fa-flask\" style=\"font-size:0.65rem;\"></i> 藥水",
-"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> 1024 名真人玩家",
+"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> 多人競技場",
 "site.index.antiTeam": "<i class=\"fas fa-shield-alt\" style=\"font-size:0.65rem;\"></i> 反組隊",
 "site.index.playNow": "立即遊玩",
 "site.index.androidApp": "Android 應用程式",

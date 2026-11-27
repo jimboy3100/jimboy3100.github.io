@@ -490,8 +490,8 @@ During arena contraction, the outer ring becomes a Danger Zone. Being in it adds
 Coordinate scrambling: each connected player receives unique offsets (scramble_x, scramble_y, scramble_id) using LCG PRNG seeded per connection, preventing external tools from sharing exact positions. Additional security: TLS ban table, WebSocket handshake rate limiting, constant-time password comparison, MurmurHash3 IP hashing, IPv6 /64 prefix grouping.
 
 ### Server Technology
-- Written in pure C for maximum performance (~5ms tick, 8× faster than typical Node.js implementations)
-- Supports up to 3,840 concurrent real players per arena
+- Written in pure C for performance (~5ms tick)
+- Supports up to 3,840 simultaneous players per arena; how many people and server-controlled bots are online varies
 - Encrypted WebSocket connections (WSS/TLS)
 - OpenMP parallelised for multi-core scaling
 - Live /status endpoint showing player count, spectators, uptime and map scale
@@ -541,7 +541,7 @@ Yes. The server controls expansion and contraction of the circular arena. The ma
 Not necessarily. Human and server-controlled bot counts vary by arena. In-game counters distinguish the populations.
 
 **What is the maximum player count?**
-Expanding Land supports up to 3,840 concurrent real players per arena. Actual counts depend on server configuration and should not be confused with measured concurrent human attendance.
+Expanding Land supports up to 3,840 simultaneous players per arena. Actual counts depend on server configuration and should not be confused with measured concurrent human attendance.
 
 **How do I install Legend Mod?**
 Install the "Legend Express" Chrome extension from the Chrome Web Store, or visit the play page at legendmod.ml/play.html to use the web client directly.

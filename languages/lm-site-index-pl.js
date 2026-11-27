@@ -31,7 +31,7 @@
 "site.index.mapUpTo1024": "Mapa (do 1024×)",
 "site.index.dynamicMap": "<i class=\"fas fa-expand-arrows-alt\" style=\"font-size:0.65rem;\"></i> Dynamiczna mapa",
 "site.index.potions": "<i class=\"fas fa-flask\" style=\"font-size:0.65rem;\"></i> Mikstury",
-"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> 1024 prawdziwych graczy",
+"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> Arena wieloosobowa",
 "site.index.antiTeam": "<i class=\"fas fa-shield-alt\" style=\"font-size:0.65rem;\"></i> Anty-team",
 "site.index.playNow": "Graj teraz",
 "site.index.androidApp": "Aplikacja na Androida",

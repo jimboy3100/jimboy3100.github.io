@@ -68,7 +68,7 @@
 "site.compare.p2pWebrtc": "P2P / WebRTC",
 "site.compare.moddingApi": "API modding",
 "site.compare.verdict": "📊 Kesimpulan",
-"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> dan <strong>Delta</strong> adalah dua mod agar.io dengan fitur terlengkap saat ini, jauh di depan Ogario dan HSLO. Legend Mod unggul dengan dukungan gamepad, skin rotator, akselerasi WASM, macro gerakan terbalik, dan kode yang sepenuhnya open source. Legend Mod juga satu-satunya mod dengan dukungan HP bawaan dan punya server privat sendiri (Expanding Land).",
+"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> dan <strong>Delta</strong> adalah dua mod agar.io dengan fitur terlengkap saat ini, jauh di depan Ogario dan HSLO. Legend Mod unggul dengan dukungan gamepad, skin rotator, akselerasi WASM, macro gerakan terbalik, dan kode yang sepenuhnya open source. Legend Mod juga punya dukungan HP bawaan dan server privat sendiri (Expanding Land).",
 "site.compare.deltaIsAPowerhouse": "<strong>Delta</strong> juga sangat kuat dengan keunggulannya sendiri: tiga mesin rendering terpisah (Canvas, Pixi, WebGL) dengan shader kustom, skin video (MP4/WebM), bot minion AI, spectate multi-viewport (1×/4×/16×), sistem akun lengkap dengan login Google/Facebook, dukungan P2P WebRTC, API modding, dan server privat sendiri di delt.io dengan banyak mode game. Kedua mod ini mendukung Sigmally dan Senpa.io.",
 "site.compare.bottomLineBothLegend": "<strong>Intinya:</strong> Legend Mod dan Delta sama-sama pilihan yang sangat bagus. Pilih Legend Mod kalau kamu mau open source, gamepad, dan dukungan HP. Pilih Delta kalau kamu mau skin video, bot AI, spectate multi-viewport, dan sistem akun. Mana pun pilihannya, kamu dapat mod kelas atas."
 }]);

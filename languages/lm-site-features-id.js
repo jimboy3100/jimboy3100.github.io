@@ -28,7 +28,7 @@
 "site.features.optionalFpsLimitAnd": "Batas FPS opsional dan 25 FPS saat menu terbuka (hemat baterai)",
 "site.features.autoHideFoodOption": "Opsi sembunyikan makanan otomatis",
 "site.features.multiServerSupportExclusive": "Dukungan Banyak Server <span class=\"badge badge-exclusive\">Eksklusif</span>",
-"site.features.theOnlyModThat": "Satu-satunya mod yang bisa dipakai di banyak server game.",
+"site.features.theOnlyModThat": "Bisa dipakai di banyak server game.",
 "site.features.officialAgarIo": "Agar.io resmi",
 "site.features.new": "Baru",
 "site.features.expandingLandOwnServer": "Expanding Land (server sendiri)",

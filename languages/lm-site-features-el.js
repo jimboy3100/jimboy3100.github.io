@@ -28,7 +28,7 @@
 "site.features.optionalFpsLimitAnd": "Προαιρετικό όριο FPS και 25 FPS όσο είναι ανοιχτό το μενού (εξοικονομεί μπαταρία)",
 "site.features.autoHideFoodOption": "Επιλογή αυτόματης απόκρυψης τροφής",
 "site.features.multiServerSupportExclusive": "Υποστήριξη πολλών servers <span class=\"badge badge-exclusive\">Αποκλειστικό</span>",
-"site.features.theOnlyModThat": "Το μόνο mod που λειτουργεί σε πολλούς game servers.",
+"site.features.theOnlyModThat": "Λειτουργεί σε πολλούς game servers.",
 "site.features.officialAgarIo": "Επίσημο Agar.io",
 "site.features.new": "Νέο",
 "site.features.expandingLandOwnServer": "Expanding Land (δικός μας server)",

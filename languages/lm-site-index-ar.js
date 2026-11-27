@@ -31,7 +31,7 @@
 "site.index.mapUpTo1024": "الخريطة (حتى 1024×)",
 "site.index.dynamicMap": "<i class=\"fas fa-expand-arrows-alt\" style=\"font-size:0.65rem;\"></i> خريطة ديناميكية",
 "site.index.potions": "<i class=\"fas fa-flask\" style=\"font-size:0.65rem;\"></i> الجرعات",
-"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> 1024 لاعبًا حقيقيًا",
+"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> ساحة متعددة اللاعبين",
 "site.index.antiTeam": "<i class=\"fas fa-shield-alt\" style=\"font-size:0.65rem;\"></i> مكافحة التحالف",
 "site.index.playNow": "العب الآن",
 "site.index.androidApp": "تطبيق Android",

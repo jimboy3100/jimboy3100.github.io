@@ -31,7 +31,7 @@
 "site.index.mapUpTo1024": "Harita (1024×'e kadar)",
 "site.index.dynamicMap": "<i class=\"fas fa-expand-arrows-alt\" style=\"font-size:0.65rem;\"></i> Dinamik Harita",
 "site.index.potions": "<i class=\"fas fa-flask\" style=\"font-size:0.65rem;\"></i> İksirler",
-"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> 1024 Gerçek Oyuncu",
+"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> Çok oyunculu arena",
 "site.index.antiTeam": "<i class=\"fas fa-shield-alt\" style=\"font-size:0.65rem;\"></i> Anti-Team",
 "site.index.playNow": "Şimdi Oyna",
 "site.index.androidApp": "Android Uygulaması",

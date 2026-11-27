@@ -18,7 +18,7 @@
 "site.faq.howDoIUse": "如何在 Legend Mod 中使用多開（multibox）？",
 "site.faq.multiboxGivesYouA": "多開功能讓你在同一個分頁中擁有第二個單位。在「快捷鍵」視窗（選單中的鍵盤圖示）中為 <strong>Multibox 切換下一個</strong> 設定一個按鍵：按下後會啟動第二個單位，之後可在兩個細胞之間切換控制。MultiBox 選項可以讓視角顯示兩個單位的中間位置、在單位周圍畫出圓環並凍結未使用的單位，而且每個單位都能使用自己的造型設定檔。",
 "site.faq.doesLegendModSupport": "Legend Mod 支援遊戲手把嗎？",
-"site.faq.yesLegendModIs3": "支援！Legend Mod 是唯一具備<strong>遊戲手把支援</strong>的 agar.io 擴充功能。只要連接 Xbox、PlayStation 或其他瀏覽器以標準配置辨識的手把，就能立即使用。按鍵、靈敏度和設定檔都在快捷鍵視窗的遊戲手把區塊中。左搖桿移動、右搖桿縮放、A 分裂、X 雙重分裂、RB 分裂 16 次、B 吐球（按住）、Y 重生、LB 切換多開單位，Start 開啟選單。",
+"site.faq.yesLegendModIs3": "支援！Legend Mod 具備<strong>遊戲手把支援</strong>。只要連接 Xbox、PlayStation 或其他瀏覽器以標準配置辨識的手把，就能立即使用。按鍵、靈敏度和設定檔都在快捷鍵視窗的遊戲手把區塊中。左搖桿移動、右搖桿縮放、A 分裂、X 雙重分裂、RB 分裂 16 次、B 吐球（按住）、Y 重生、LB 切換多開單位，Start 開啟選單。",
 "site.faq.skinsVisuals": "🎨 造型與視覺",
 "site.faq.howDoIAdd": "如何新增自訂造型？",
 "site.faq.openTheLegendMod": "使用 Legend Mod 選單「首頁」分頁中的造型欄位（在你的暱稱下方），以及「設定」中的「造型」區塊。你可以：1) 貼上任何圖片網址作為造型。2) 上傳自己的圖片檔。3) 使用<strong>造型輪播器</strong>循環切換多個造型。4) 新增 GIF 動畫或影片造型（Legend Mod 獨家）。5) 到 <a href=\"/skins/\">legendmod.ml/skins</a> 瀏覽社群造型。",
@@ -29,7 +29,7 @@
 "site.faq.legendModHasBuilt": "Legend Mod 內建防延遲功能：1) 在設定中開啟「效能模式（低階電腦/手機）」，或在設定搜尋框旁選擇 <strong>省電</strong> 預設。2) 停用動畫與影片造型。3) 設定 FPS 上限，並開啟「選單開啟時 25 FPS」，以減少發熱並節省電量。4) 使用顯示/隱藏食物快速鍵或自動隱藏食物選項隱藏食物。5) WASM 加速與 WebGL 繪製預設為開啟。6) 關閉其他瀏覽器分頁。7) 使用有線網路而非 Wi-Fi。",
 "site.faq.servers": "🌐 伺服器",
 "site.faq.doesLegendModWork": "Legend Mod 能在 Sigmally 和 Senpa.io 上使用嗎？",
-"site.faq.yesLegendModIs4": "可以！Legend Mod 是<strong>唯一支援多個遊戲伺服器的 agar.io 擴充功能</strong>：官方 agar.io、Sigmally 和 Senpa.io。所有巨集、造型與功能在所有支援的伺服器上都能使用。你也可以在 <strong>Expanding Land</strong> 上遊玩，這是 Legend Mod 自己的私人伺服器，最多可容納 720 名玩家，網址為 <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>。",
+"site.faq.yesLegendModIs4": "可以！Legend Mod <strong>支援多個遊戲伺服器</strong>：官方 agar.io、Sigmally 和 Senpa.io。所有巨集、造型與功能在所有支援的伺服器上都能使用。你也可以在 <strong>Expanding Land</strong> 上遊玩，這是 Legend Mod 自己的私人伺服器，每個競技場最多可容納 3840 名玩家，網址為 <a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>。",
 "site.faq.whatIsExpandingLand": "什麼是 Expanding Land？",
 "site.faq.expandingLandIsAn": "Expanding Land 是獨立的多人瀏覽器細胞遊戲，圓形地圖會擴張與收縮。真人玩家與伺服器機器人的數量因競技場而異。<a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>。"
 }]);

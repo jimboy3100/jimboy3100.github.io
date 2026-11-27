@@ -68,7 +68,7 @@
 "site.compare.p2pWebrtc": "P2P / WebRTC",
 "site.compare.moddingApi": "Modding API",
 "site.compare.verdict": "📊 Verdict",
-"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> and <strong>Delta</strong> are the two most feature-rich agar.io mods available today, both far ahead of Ogario and HSLO. Legend Mod stands out with its gamepad support, skin rotator, WASM acceleration, reverse movement macro, and being fully open source. It's also the only mod with native mobile support and runs its own private server (Expanding Land).",
+"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> and <strong>Delta</strong> are the two most feature-rich agar.io mods available today, both far ahead of Ogario and HSLO. Legend Mod stands out with its gamepad support, skin rotator, WASM acceleration, reverse movement macro, and being fully open source. It also has native mobile support and runs its own private server (Expanding Land).",
 "site.compare.deltaIsAPowerhouse": "<strong>Delta</strong> is a powerhouse with its own impressive strengths: three separate rendering engines (Canvas, Pixi, WebGL) with custom shaders, video skins (MP4/WebM), AI minion bots, multi-viewport spectating (1×/4×/16×), a full account system with Google/Facebook login, P2P WebRTC support, a modding API, and its own private servers at delt.io with multiple game modes. Both mods support Sigmally and Senpa.io.",
 "site.compare.bottomLineBothLegend": "<strong>Bottom line:</strong> Both Legend Mod and Delta are excellent choices. Legend Mod is the best pick if you want open source, gamepad, and mobile support. Delta is the best pick if you want video skins, AI bots, multi-viewport spectating, and an account system. Either way, you're getting a top-tier mod."
 }]);

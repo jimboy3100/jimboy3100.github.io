@@ -28,7 +28,7 @@
 "site.features.optionalFpsLimitAnd": "سقف اختياري للـ FPS و25 FPS أثناء فتح القائمة (يوفّر البطارية)",
 "site.features.autoHideFoodOption": "خيار الإخفاء التلقائي للطعام",
 "site.features.multiServerSupportExclusive": "دعم عدة خوادم <span class=\"badge badge-exclusive\">حصري</span>",
-"site.features.theOnlyModThat": "المود الوحيد الذي يعمل على عدة خوادم لعب.",
+"site.features.theOnlyModThat": "يعمل على عدة خوادم لعب.",
 "site.features.officialAgarIo": "Agar.io الرسمي",
 "site.features.new": "جديد",
 "site.features.expandingLandOwnServer": "Expanding Land (خادمنا الخاص)",

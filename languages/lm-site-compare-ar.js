@@ -68,7 +68,7 @@
 "site.compare.p2pWebrtc": "P2P / WebRTC",
 "site.compare.moddingApi": "واجهة API للتعديل",
 "site.compare.verdict": "📊 الحكم",
-"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> و<strong>Delta</strong> هما أغنى مودين بالميزات لـ agar.io اليوم، وكلاهما متقدم كثيرًا على Ogario وHSLO. يتميز Legend Mod بدعم يد التحكم، ومبدّل السكنات، وتسريع WASM، وماكرو الحركة العكسية، وبأنه مفتوح المصدر بالكامل. وهو أيضًا المود الوحيد بدعم أصلي للجوال، ويشغّل خادمه الخاص (Expanding Land).",
+"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> و<strong>Delta</strong> هما أغنى مودين بالميزات لـ agar.io اليوم، وكلاهما متقدم كثيرًا على Ogario وHSLO. يتميز Legend Mod بدعم يد التحكم، ومبدّل السكنات، وتسريع WASM، وماكرو الحركة العكسية، وبأنه مفتوح المصدر بالكامل. ويدعم أيضًا الجوال بشكل أصلي، ويشغّل خادمه الخاص (Expanding Land).",
 "site.compare.deltaIsAPowerhouse": "<strong>Delta</strong> قوة حقيقية بمزايا مبهرة خاصة به: ثلاثة محركات رسم منفصلة (Canvas وPixi وWebGL) مع مظلّلات مخصصة، وسكنات فيديو (MP4/WebM)، وبوتات minion بالذكاء الاصطناعي، ومشاهدة بعدة نوافذ عرض (1×/4×/16×)، ونظام حسابات كامل مع تسجيل الدخول عبر Google/Facebook، ودعم P2P WebRTC، وواجهة API للتعديل، وخوادمه الخاصة على delt.io بأنماط لعب متعددة. كلا الموديْن يدعمان Sigmally وSenpa.io.",
 "site.compare.bottomLineBothLegend": "<strong>الخلاصة:</strong> Legend Mod وDelta خياران ممتازان. Legend Mod هو الأفضل إذا أردت مصدرًا مفتوحًا ويد تحكم ودعمًا للجوال. Delta هو الأفضل إذا أردت سكنات فيديو وبوتات بالذكاء الاصطناعي ومشاهدة بعدة نوافذ عرض ونظام حسابات. في الحالتين ستحصل على مود من الطراز الأول."
 }]);

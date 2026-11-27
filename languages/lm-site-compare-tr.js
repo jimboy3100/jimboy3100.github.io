@@ -68,7 +68,7 @@
 "site.compare.p2pWebrtc": "P2P / WebRTC",
 "site.compare.moddingApi": "Modding API",
 "site.compare.verdict": "📊 Sonuç",
-"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> ve <strong>Delta</strong>, bugün mevcut en çok özelliğe sahip iki agar.io modu; ikisi de Ogario ve HSLO'nun çok önünde. Legend Mod; gamepad desteği, skin döndürücüsü, WASM hızlandırması, ters hareket makrosu ve tamamen açık kaynak olmasıyla öne çıkıyor. Ayrıca yerel mobil desteğe sahip tek mod ve kendi özel sunucusunu (Expanding Land) çalıştırıyor.",
+"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> ve <strong>Delta</strong>, bugün mevcut en çok özelliğe sahip iki agar.io modu; ikisi de Ogario ve HSLO'nun çok önünde. Legend Mod; gamepad desteği, skin döndürücüsü, WASM hızlandırması, ters hareket makrosu ve tamamen açık kaynak olmasıyla öne çıkıyor. Ayrıca yerel mobil desteğe sahip ve kendi özel sunucusunu (Expanding Land) çalıştırıyor.",
 "site.compare.deltaIsAPowerhouse": "<strong>Delta</strong> kendine has etkileyici güçlü yanlarıyla tam bir canavar: özel shader'larla üç ayrı çizim motoru (Canvas, Pixi, WebGL), video skinler (MP4/WebM), yapay zekâlı minion botları, çoklu görünümde izleme (1×/4×/16×), Google/Facebook girişli eksiksiz bir hesap sistemi, P2P WebRTC desteği, bir modding API'si ve delt.io'da birden çok oyun modu sunan kendi özel sunucuları. İki mod da Sigmally ve Senpa.io'yu destekliyor.",
 "site.compare.bottomLineBothLegend": "<strong>Özetle:</strong> Legend Mod da Delta da mükemmel seçimler. Açık kaynak, gamepad ve mobil destek istiyorsan en iyi seçim Legend Mod. Video skinler, yapay zekâ botları, çoklu görünümde izleme ve hesap sistemi istiyorsan en iyi seçim Delta. Hangisini seçersen seç, üst düzey bir mod elde ediyorsun."
 }]);

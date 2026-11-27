@@ -28,7 +28,7 @@
 "site.features.optionalFpsLimitAnd": "FPS上限の設定と、メニュー表示中の25 FPS制限（任意、バッテリー節約）",
 "site.features.autoHideFoodOption": "エサの自動非表示オプション",
 "site.features.multiServerSupportExclusive": "複数サーバー対応 <span class=\"badge badge-exclusive\">独自機能</span>",
-"site.features.theOnlyModThat": "複数のゲームサーバーで使える唯一のModです。",
+"site.features.theOnlyModThat": "複数のゲームサーバーで使えます。",
 "site.features.officialAgarIo": "公式Agar.io",
 "site.features.new": "新機能",
 "site.features.expandingLandOwnServer": "Expanding Land（独自サーバー）",

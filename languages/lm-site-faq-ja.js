@@ -18,7 +18,7 @@
 "site.faq.howDoIUse": "Legend Modでマルチボックスはどう使いますか？",
 "site.faq.multiboxGivesYouA": "マルチボックスを使うと、同じタブで2体目のユニットを操作できます。ショートカットウィンドウ（メニューのキーボードアイコン）で<strong>マルチボックス切り替え（次へ）</strong>にキーを割り当ててください。キーを押すと2体目のユニットが出現し、その後は2つのセルの操作を切り替えます。MultiBoxのオプションでは、両ユニットの中心の表示、ユニットを囲むリングの描画、操作していないユニットの固定ができ、ユニットごとに別のスキンプロファイルも使えます。",
 "site.faq.doesLegendModSupport": "Legend Modはゲームパッドに対応していますか？",
-"site.faq.yesLegendModIs3": "はい！Legend Modは<strong>ゲームパッドに対応</strong>した唯一のagar.io拡張機能です。ブラウザが標準レイアウトとして認識するXbox、PlayStationなどのコントローラーを接続するだけで、すぐに使えます。ボタン、感度、プロファイルはショートカットウィンドウの「ゲームパッド」セクションにあります。左スティックで移動、右スティックでズーム、Aで分裂、Xでダブル分裂、RBで16分裂、B（長押し）で質量放出、Yでリスポーン、LBでマルチボックスのユニット切り替え、Startでメニューを開きます。",
+"site.faq.yesLegendModIs3": "はい！Legend Modは<strong>ゲームパッドに対応</strong>しています。ブラウザが標準レイアウトとして認識するXbox、PlayStationなどのコントローラーを接続するだけで、すぐに使えます。ボタン、感度、プロファイルはショートカットウィンドウの「ゲームパッド」セクションにあります。左スティックで移動、右スティックでズーム、Aで分裂、Xでダブル分裂、RBで16分裂、B（長押し）で質量放出、Yでリスポーン、LBでマルチボックスのユニット切り替え、Startでメニューを開きます。",
 "site.faq.skinsVisuals": "🎨 スキンと見た目",
 "site.faq.howDoIAdd": "カスタムスキンはどうやって追加しますか？",
 "site.faq.openTheLegendMod": "Legend Modメニューの「ホーム」タブにあるスキン欄（ニックネームの下）と、「設定」の「スキン」セクションを使います。できること：1）好きな画像のURLを貼り付けてスキンにする。2）自分の画像ファイルをアップロードする。3）<strong>スキンローテーター</strong>で複数のスキンを順番に切り替える。4）GIFアニメーションや動画のスキンを追加する（Legend Mod独自の機能）。5）<a href=\"/skins/\">legendmod.ml/skins</a>でコミュニティのスキンを探す。",
@@ -29,7 +29,7 @@
 "site.faq.legendModHasBuilt": "Legend Modにはラグ対策機能が組み込まれています：1）設定で「パフォーマンスモード（低スペックPC/スマホ向け）」をオンにするか、設定の検索欄の横にある<strong>省電力</strong>プリセットを選ぶ。2）アニメーションスキンと動画スキンを無効にする。3）FPS上限を設定し、「メニュー表示中は25 FPS」をオンにして発熱とバッテリー消費を抑える。4）エサの表示/非表示のショートカットキーや、エサの自動非表示オプションでエサを隠す。5）WASMによる高速化とWebGL描画は初期設定でオンになっています。6）ほかのブラウザタブを閉じる。7）Wi-Fiではなく有線のインターネット接続を使う。",
 "site.faq.servers": "🌐 サーバー",
 "site.faq.doesLegendModWork": "Legend ModはSigmallyやSenpa.ioでも使えますか？",
-"site.faq.yesLegendModIs4": "はい！Legend Modは、公式agar.io、Sigmally、Senpa.ioという複数のゲームサーバーに対応した<strong>唯一のagar.io拡張機能</strong>です。すべてのマクロ、スキン、機能が対応サーバーのどこでも使えます。<a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>では、最大720人が遊べるLegend Mod独自のプライベートサーバー<strong>Expanding Land</strong>でもプレイできます。",
+"site.faq.yesLegendModIs4": "はい！Legend Modは、公式agar.io、Sigmally、Senpa.ioという<strong>複数のゲームサーバー</strong>に対応しています。すべてのマクロ、スキン、機能が対応サーバーのどこでも使えます。<a href=\"https://expanding.land\" target=\"_blank\" rel=\"noopener\">expanding.land</a>では、1アリーナ最大3840人が遊べるLegend Mod独自のプライベートサーバー<strong>Expanding Land</strong>でもプレイできます。",
 "site.faq.whatIsExpandingLand": "Expanding Landとは何ですか？",
 "site.faq.expandingLandIsAn": "Expanding Landは、広がったり縮んだりする円形のマップで遊ぶ、独立したマルチプレイヤーのブラウザ向けセルゲームです。人間のプレイヤーとサーバーが操作するボットの数はアリーナによって異なります。<a href=\"https://expanding.land/\" target=\"_blank\" rel=\"noopener\">Expanding Land</a>。"
 }]);

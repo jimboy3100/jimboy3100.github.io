@@ -5,7 +5,7 @@
   "officialWebsite": "https://expanding.land/",
   "documentation": "https://help.expanding.land/",
   "version": "2026",
-  "serverTechnology": "Pure C with OpenMP parallelisation (~5ms tick, ~8x faster than typical Node.js implementations)",
+  "serverTechnology": "Pure C with OpenMP parallelisation (~5ms tick)",
   "buildFlags": "-O3 -march=native -flto -fopenmp (never -ffast-math)",
   "maxPlayersPerArena": 3840,
   "spectatorSlots": "200+",

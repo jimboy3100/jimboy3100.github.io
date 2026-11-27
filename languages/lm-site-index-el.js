@@ -31,7 +31,7 @@
 "site.index.mapUpTo1024": "Χάρτης (έως 1024×)",
 "site.index.dynamicMap": "<i class=\"fas fa-expand-arrows-alt\" style=\"font-size:0.65rem;\"></i> Δυναμικός χάρτης",
 "site.index.potions": "<i class=\"fas fa-flask\" style=\"font-size:0.65rem;\"></i> Φίλτρα",
-"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> 1024 πραγματικοί παίκτες",
+"site.index.realPlayers": "<i class=\"fas fa-users\" style=\"font-size:0.65rem;\"></i> Αρένα πολλών παικτών",
 "site.index.antiTeam": "<i class=\"fas fa-shield-alt\" style=\"font-size:0.65rem;\"></i> Anti-Team",
 "site.index.playNow": "Παίξτε τώρα",
 "site.index.androidApp": "Εφαρμογή Android",

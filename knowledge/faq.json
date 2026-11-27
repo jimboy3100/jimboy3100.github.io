@@ -23,7 +23,7 @@
     },
     {
       "question": "What is the maximum player count?",
-      "answer": "Expanding Land supports up to 3,840 concurrent real players per arena. Actual counts depend on server configuration."
+      "answer": "Expanding Land supports up to 3,840 simultaneous players per arena. Actual counts depend on server configuration."
     },
     {
       "question": "How do I install Legend Mod?",

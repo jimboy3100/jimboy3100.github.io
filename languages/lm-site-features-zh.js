@@ -28,7 +28,7 @@
 "site.features.optionalFpsLimitAnd": "可選的 FPS 上限，以及開啟選單時降為 25 FPS（節省電量）",
 "site.features.autoHideFoodOption": "自動隱藏食物選項",
 "site.features.multiServerSupportExclusive": "多伺服器支援 <span class=\"badge badge-exclusive\">獨家</span>",
-"site.features.theOnlyModThat": "唯一能在多個遊戲伺服器上使用的模組。",
+"site.features.theOnlyModThat": "可在多個遊戲伺服器上使用。",
 "site.features.officialAgarIo": "官方 Agar.io",
 "site.features.new": "新功能",
 "site.features.expandingLandOwnServer": "Expanding Land（自有伺服器）",

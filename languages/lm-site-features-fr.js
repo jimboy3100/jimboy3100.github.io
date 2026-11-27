@@ -28,7 +28,7 @@
 "site.features.optionalFpsLimitAnd": "Limite de FPS optionnelle et 25 FPS quand le menu est ouvert (économise la batterie)",
 "site.features.autoHideFoodOption": "Option de masquage automatique de la nourriture",
 "site.features.multiServerSupportExclusive": "Prise en charge multi-serveurs <span class=\"badge badge-exclusive\">Exclusif</span>",
-"site.features.theOnlyModThat": "Le seul mod qui fonctionne sur plusieurs serveurs de jeu.",
+"site.features.theOnlyModThat": "Fonctionne sur plusieurs serveurs de jeu.",
 "site.features.officialAgarIo": "Agar.io officiel",
 "site.features.new": "Nouveau",
 "site.features.expandingLandOwnServer": "Expanding Land (notre serveur)",

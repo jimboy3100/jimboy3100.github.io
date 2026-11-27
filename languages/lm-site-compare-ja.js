@@ -68,7 +68,7 @@
 "site.compare.p2pWebrtc": "P2P / WebRTC",
 "site.compare.moddingApi": "Mod用API",
 "site.compare.verdict": "📊 結論",
-"site.compare.legendModAndDelta": "<strong>Legend Mod</strong>と<strong>Delta</strong>は、現在利用できるagar.io Modの中で最も機能が充実した2つで、どちらもOgarioやHSLOを大きく引き離しています。Legend Modの強みは、ゲームパッド対応、スキンローテーター、WASMによる高速化、逆方向移動のマクロ、そして完全なオープンソースであることです。ネイティブのモバイル対応を備え、独自のプライベートサーバー（Expanding Land）を運営している唯一のModでもあります。",
+"site.compare.legendModAndDelta": "<strong>Legend Mod</strong>と<strong>Delta</strong>は、現在利用できるagar.io Modの中で最も機能が充実した2つで、どちらもOgarioやHSLOを大きく引き離しています。Legend Modの強みは、ゲームパッド対応、スキンローテーター、WASMによる高速化、逆方向移動のマクロ、そして完全なオープンソースであることです。ネイティブのモバイル対応を備え、独自のプライベートサーバー（Expanding Land）も運営しています。",
 "site.compare.deltaIsAPowerhouse": "<strong>Delta</strong>も独自の強みを持つ強力なModです。カスタムシェーダー対応の3つの描画エンジン（Canvas、Pixi、WebGL）、動画スキン（MP4/WebM）、AIミニオンボット、マルチ画面観戦（1×/4×/16×）、Google/Facebookログインに対応した本格的なアカウントシステム、P2P WebRTC対応、Mod用API、そして複数のゲームモードを備えたdelt.ioの独自プライベートサーバーがあります。どちらのModもSigmallyとSenpa.ioに対応しています。",
 "site.compare.bottomLineBothLegend": "<strong>まとめ：</strong>Legend ModもDeltaも、どちらも優れた選択肢です。オープンソース、ゲームパッド、モバイル対応を重視するならLegend Modが最適です。動画スキン、AIボット、マルチ画面観戦、アカウントシステムを重視するならDeltaが最適です。どちらを選んでも、トップクラスのModが手に入ります。"
 }]);

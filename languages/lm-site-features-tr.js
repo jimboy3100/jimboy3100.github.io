@@ -28,7 +28,7 @@
 "site.features.optionalFpsLimitAnd": "İsteğe bağlı FPS sınırı ve menü açıkken 25 FPS (pil tasarrufu)",
 "site.features.autoHideFoodOption": "Yemi otomatik gizleme seçeneği",
 "site.features.multiServerSupportExclusive": "Çoklu Sunucu Desteği <span class=\"badge badge-exclusive\">Özel</span>",
-"site.features.theOnlyModThat": "Birden çok oyun sunucusunda çalışan tek mod.",
+"site.features.theOnlyModThat": "Birden çok oyun sunucusunda çalışır.",
 "site.features.officialAgarIo": "Resmi Agar.io",
 "site.features.new": "Yeni",
 "site.features.expandingLandOwnServer": "Expanding Land (kendi sunucumuz)",

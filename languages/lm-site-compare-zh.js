@@ -68,7 +68,7 @@
 "site.compare.p2pWebrtc": "P2P / WebRTC",
 "site.compare.moddingApi": "模組 API",
 "site.compare.verdict": "📊 結論",
-"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> 與 <strong>Delta</strong> 是目前功能最豐富的兩款 agar.io 模組，都遠遠領先 Ogario 與 HSLO。Legend Mod 的亮點是手把支援、造型輪播、WASM 加速、反向移動巨集，而且完全開放原始碼。它也是唯一原生支援行動裝置的模組，並經營自己的私人伺服器 (Expanding Land)。",
+"site.compare.legendModAndDelta": "<strong>Legend Mod</strong> 與 <strong>Delta</strong> 是目前功能最豐富的兩款 agar.io 模組，都遠遠領先 Ogario 與 HSLO。Legend Mod 的亮點是手把支援、造型輪播、WASM 加速、反向移動巨集，而且完全開放原始碼。它也原生支援行動裝置，並經營自己的私人伺服器 (Expanding Land)。",
 "site.compare.deltaIsAPowerhouse": "<strong>Delta</strong> 實力強大，擁有自己的亮眼優勢：三套獨立繪製引擎（Canvas、Pixi、WebGL）與自訂著色器、影片造型 (MP4/WebM)、AI 小兵機器人、多視窗觀戰 (1×/4×/16×)、支援 Google/Facebook 登入的完整帳號系統、P2P WebRTC 支援、模組 API，以及位於 delt.io、提供多種遊戲模式的自有私人伺服器。兩款模組都支援 Sigmally 與 Senpa.io。",
 "site.compare.bottomLineBothLegend": "<strong>總結：</strong>Legend Mod 和 Delta 都是絕佳選擇。如果你想要開放原始碼、手把與行動裝置支援，Legend Mod 是最佳選擇。如果你想要影片造型、AI 機器人、多視窗觀戰與帳號系統，Delta 是最佳選擇。無論選哪個，你都會得到頂級模組。"
 }]);

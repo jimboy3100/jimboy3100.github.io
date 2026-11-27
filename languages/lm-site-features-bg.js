@@ -28,7 +28,7 @@
 "site.features.optionalFpsLimitAnd": "Незадължително ограничение на FPS и 25 FPS, докато менюто е отворено (пести батерия)",
 "site.features.autoHideFoodOption": "Опция за автоматично скриване на храната",
 "site.features.multiServerSupportExclusive": "Поддръжка на няколко сървъра <span class=\"badge badge-exclusive\">Ексклузивно</span>",
-"site.features.theOnlyModThat": "Единственият мод, който работи на няколко игрови сървъра.",
+"site.features.theOnlyModThat": "Работи на няколко игрови сървъра.",
 "site.features.officialAgarIo": "Официален Agar.io",
 "site.features.new": "Ново",
 "site.features.expandingLandOwnServer": "Expanding Land (собствен сървър)",
