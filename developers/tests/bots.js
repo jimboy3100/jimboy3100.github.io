@@ -925,10 +925,13 @@ for (const file of ['server.js', 'server-fast.js']) {
     // Player position no longer sent alongside mouse
     check('ogario: no player position sent with mouse', !ogSrc.includes('window.connectionBots.send(window.buffers.playerPosition('));
 
-    // displayPartyBots shows button in FFA/EXP/BR
-    check('ogario: displayPartyBots shows in FFA', ogSrc.includes('legendmod.gameMode === ":ffa"') && ogSrc.includes('.show()'));
-    check('ogario: displayPartyBots shows in EXP', ogSrc.includes('legendmod.gameMode === ":experimental"'));
-    check('ogario: displayPartyBots shows in BR', ogSrc.includes('legendmod.gameMode === ":battleroyale"'));
+    // the bots button is shown on every server (the panel refuses non-agar.io servers itself)
+    check('ogario: bots button never created hidden', !ogSrc.includes('class="quick quick-bots ogicon-trophy" style="display: none;"'));
+    {
+        const i = ogSrc.indexOf('displayPartyBots() {');
+        const body = i < 0 ? '' : ogSrc.slice(i, ogSrc.indexOf('setBlockPopups()', i));
+        check('ogario: displayPartyBots always shows the bots button', body.includes('$(".quick.quick-bots.ogicon-trophy").show()') && !body.includes('.hide()'));
+    }
 
     // Start bots gate allows FFA/EXP/BR
     check('ogario: start bots gate includes FFA', ogSrc.includes('":ffa"') && ogSrc.includes('":experimental"') && ogSrc.includes('":battleroyale"'));
