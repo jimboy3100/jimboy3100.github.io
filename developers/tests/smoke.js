@@ -200,8 +200,9 @@ function probeMark(name) {
   /* no Player Monitor entry for this test browser (lib/nopresence.js) */
   await send('Page.addScriptToEvaluateOnNewDocument', { source: require('./lib/nopresence').source });
   /* window.__lmScriptsDone[src]: every script element that has loaded or failed (a probe or run.js
-   * waits for the module scripts the game adds after it started, a readiness signal of their own) */
-  await send('Page.addScriptToEvaluateOnNewDocument', { source: "try { var d = window.__lmScriptsDone = {}, f = function (e) { var t = e.target; if (t && t.tagName === 'SCRIPT' && t.src) d[t.src] = e.type; }; document.addEventListener('load', f, true); document.addEventListener('error', f, true); } catch (e) { }" });
+   * waits for the module scripts the game adds after it started, a readiness signal of their own);
+   * window.__lmScriptsAtDcl: the same at DOMContentLoaded, the scripts play.html's loading screen counted */
+  await send('Page.addScriptToEvaluateOnNewDocument', { source: "try { var d = window.__lmScriptsDone = {}, f = function (e) { var t = e.target; if (t && t.tagName === 'SCRIPT' && t.src) d[t.src] = e.type; }; document.addEventListener('load', f, true); document.addEventListener('error', f, true); document.addEventListener('DOMContentLoaded', function () { window.__lmScriptsAtDcl = Object.assign({}, d); }, true); } catch (e) { }" });
   await send('Fetch.enable', { patterns: [{ urlPattern: '*://jimboy3100.github.io/*' }, { urlPattern: '*://www.legendmod.ml/*' }, { urlPattern: '*://legendmod.ml/*' }]
     .concat(blocked.map(h => ({ urlPattern: '*://' + h + '/*' }))) });
   if (mobile) {

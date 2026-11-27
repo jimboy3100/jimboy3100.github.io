@@ -12,8 +12,11 @@
   try { n = +localStorage.getItem('lmBootScripts') || 0; } catch (e) { }
   info.scripts = n;
   /* a load where a script failed is not remembered (play.html), e.g. a third-party script while the
-   * network drops (connect.facebook.net: ERR_NAME_NOT_RESOLVED); smoke.js lists each script's load or error */
-  var bad = Object.keys(window.__lmScriptsDone || {}).filter(function (k) { return window.__lmScriptsDone[k] === 'error'; });
+   * network drops (connect.facebook.net: ERR_NAME_NOT_RESOLVED); smoke.js lists each script's load or error.
+   * Only the failures play.html counted, those before DOMContentLoaded: a script that failed later (a
+   * module or another probe's) does not excuse a count that was not stored */
+  var dcl = window.__lmScriptsAtDcl || {};
+  var bad = Object.keys(dcl).filter(function (k) { return dcl[k] === 'error'; });
   if (!(n > 5) && bad.length) info.notStored = bad.slice(0, 3);
   else if (!(n > 5)) fail.push('script count not remembered (' + n + ')');
   if (!document.getElementById('main-menu')) fail.push('no #main-menu (the screen waits for it)');
