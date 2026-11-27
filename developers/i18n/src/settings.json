@@ -4301,24 +4301,6 @@
     "ja": "セルの影（セルの下に影、重くなる）",
     "it": "Ombre delle cellule (ombra sotto le cellule, più lento)"
   },
-  "settings.hk-lmThemeWorkshop": {
-    "en": "Theme workshop: open / close window",
-    "el": "Εργαστήριο θεμάτων: άνοιγμα / κλείσιμο",
-    "es": "Taller de temas: abrir / cerrar ventana",
-    "bg": "Работилница за теми: отвори / затвори прозореца",
-    "fr": "Atelier de thèmes : ouvrir / fermer la fenêtre",
-    "ar": "ورشة الثيمات: فتح / إغلاق النافذة",
-    "zh": "主題工坊：開啟 / 關閉視窗",
-    "ru": "Мастерская тем: открыть / закрыть окно",
-    "de": "Theme-Werkstatt: Fenster öffnen / schließen",
-    "tr": "Tema atölyesi: pencereyi aç / kapat",
-    "pl": "Warsztat motywów: otwórz / zamknij okno",
-    "nl": "Themawerkplaats: venster openen / sluiten",
-    "pt": "Oficina de temas: abrir / fechar janela",
-    "id": "Workshop tema: buka / tutup jendela",
-    "ja": "テーマワークショップ：ウィンドウを開く / 閉じる",
-    "it": "Laboratorio temi: apri / chiudi finestra"
-  },
   "settings.hotkeys": {
     "en": "Hotkeys",
     "el": "Πλήκτρα συντόμευσης",
@@ -10207,7 +10189,7 @@
     "id": "Line split",
     "ja": "ライン分裂",
     "it": "Line split"
-  },
+  },
   "settings.macroEditor": {
     "en": "Custom macros (split, feed, wait, move to mouse)",
     "el": "Δικά σου macros (split, feed, αναμονή, κίνηση προς το ποντίκι)",

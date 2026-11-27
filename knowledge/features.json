@@ -21,9 +21,9 @@
       "url": "https://www.legendmod.ml/themes/"
     },
     {
-      "id": "themeworkshop",
-      "name": "Theme Workshop",
-      "description": "Create, save, rename, copy and delete custom themes. My Themes library stores up to 30 themes with 5 saved versions each. Live preview with 15-second auto-revert. Side-by-side comparison. Gallery of shipped themes. Theme packages include theme, sounds, cursor, background and HUD layout. Validated against LM_THEME_DEFAULTS schema. HTTPS-only URLs.",
+      "id": "mythemes",
+      "name": "My themes",
+      "description": "Part of the Theme presets in the Theme tab: under the Theme preset list, save the current theme under a name (up to 30), apply one by picking it, Update it with the current theme (the last 5 versions are kept and an older version can be picked to bring it back) or delete it. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

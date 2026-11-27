@@ -32,7 +32,7 @@
     "developers/i18n/runtime.js",
     "ogario/modules/notifications.js",
     "ogario/modules/profiles.js",
-    "ogario/modules/themeworkshop.js",
+    "ogario/modules/mythemes.js",
     "ogario/modules/hudeditor.js",
     "ogario/modules/hudeditor-ui.js",
     "ogario/modules/perf.js",

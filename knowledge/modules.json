@@ -113,11 +113,11 @@
       "feature": "Performance"
     },
     {
-      "id": "themeworkshop",
-      "file": "ogario/modules/themeworkshop.js",
-      "lines": 1254,
-      "description": "Theme creation and management. Up to 30 themes with 5 versions each, live preview, gallery, export/import.",
-      "feature": "Theme Workshop"
+      "id": "mythemes",
+      "file": "ogario/modules/mythemes.js",
+      "lines": 484,
+      "description": "My themes in the Theme tab (under Theme preset): saved themes, up to 30 with 5 versions each, applied by picking them.",
+      "feature": "My themes"
     },
     {
       "id": "hotkeysCommand",

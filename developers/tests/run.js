@@ -36,7 +36,7 @@ if (args.includes('--help') || args.includes('-h')) {
 }
 const secs = Number(argVal('--secs', process.env.SMOKE_SECS || 14));
 const only = argVal('--only', '');
-/* only these probes (names without .js), e.g. --probes themeworkshop,zzz-practice */
+/* only these probes (names without .js), e.g. --probes notifications,zzz-practice */
 const pick = String(argVal('--probes', process.env.SMOKE_PROBES || '')).split(',').map(s => s.trim().replace(/\.js$/, '')).filter(Boolean);
 /* the fast set is the default (owner: the updates waited on the tests); --full runs every probe */
 const quick = !(args.includes('--full') || process.env.SMOKE_FULL === '1');
@@ -50,7 +50,7 @@ const pruneDays = argVal('--prune', '');
  * (any other probe counts as 2 s). Update when a probe gets much slower or faster. */
 const SLOW = {
   'smalltools': 10, 'themebridge': 8, 'winstack': 6, 'replaystudio': 6,
-  'themeworkshop': 5, 'perf': 5, 'server-token-typing': 31, 'conn-drop-menu': 10
+  'perf': 5, 'server-token-typing': 31, 'conn-drop-menu': 10
 };
 const weight = name => SLOW[name] || 2;
 

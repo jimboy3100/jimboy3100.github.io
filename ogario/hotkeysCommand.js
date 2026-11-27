@@ -417,18 +417,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			/* Theme workshop window (ogario/modules/themeworkshop.js): no default key */
-			'hk-lmThemeWorkshop': {
-				get label() {
-					return lmT('settings.hk-lmThemeWorkshop');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMThemeWorkshop && typeof window.LMThemeWorkshop.toggle === 'function') window.LMThemeWorkshop.toggle();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-copyServerLink': {
 				get label() {
 					return lmT('settings.hk-copyServerLink');

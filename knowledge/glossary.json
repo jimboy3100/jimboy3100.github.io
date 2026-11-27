@@ -123,8 +123,8 @@
       "category": "community"
     },
     {
-      "term": "Theme Workshop",
-      "definition": "A tool to create, save, rename, copy and delete custom themes. Supports up to 30 themes with 5 versions each, live preview with auto-revert.",
+      "term": "My themes",
+      "definition": "Your own saved themes, under the Theme preset list in the Theme tab: up to 30, each with its last 5 versions.",
       "category": "el-specific"
     },
     {

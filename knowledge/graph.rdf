@@ -159,7 +159,7 @@
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Themes and HUD customization</schema:name>
-    <schema:description>CSS variable-based themes, 8 presets, Theme Workshop with live preview.</schema:description>
+    <schema:description>CSS variable-based themes, 8 presets and My themes (saved themes with versions).</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-multibox">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>

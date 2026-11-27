@@ -19890,7 +19890,7 @@ var LM_THEME_DEFAULTS = Object.freeze(Object.assign({}, defaultSettings));
 var LM_THEME_COLOR = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|[a-z]+)$/i;
 /* The valid theme values, as LM_SETTINGS_SCHEMA is for the gameplay settings: [min, max, step]
  * (step 0 = any value in the range), { choices: [...] } or { color: true }. It is the one schema
- * for loading, importing, settings profiles, the Theme Workshop, the theme presets and the Theme
+ * for loading, importing, settings profiles, My themes, the theme presets and the Theme
  * tab sliders (Settings.addSliderBox builds its range from it). Ranges and steps are those of the
  * Theme tab sliders, the lists those of its selects. */
 var LM_THEME_SCHEMA = (function () {
@@ -21649,7 +21649,7 @@ var defaultmapsettings = {
 var LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));
 /* The valid values of the gameplay settings that are not plain switches or free text:
  * [min, max, step] (step 0 = any value in the range) or { choices: [...] }. It is the one
- * schema for loading, importing, profiles, the Theme Workshop, the cloud download and the
+ * schema for loading, importing, profiles, My themes, the cloud download and the
  * sliders (application.addSliderBox builds its range from it), so a value the slider
  * cannot show (fps limit -1, mass format 1.7) never reaches the game. Ranges and steps are
  * those of the menu sliders (the gamepad ones: ogario/modules/gamepad-ui.js). */
@@ -21849,6 +21849,8 @@ function lmRenameOldHotkeys(map) {
         if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
         /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey */
         if (/^hk-(?:radialMenu|radialEditor|screenshotTool|screenshotCapture)$/.test(v)) { delete map[k]; changed = true; continue; }
+        /* the Theme workshop window (removed: My themes is in the Theme tab, under the Theme preset) */
+        if (v === 'hk-lmThemeWorkshop') { delete map[k]; changed = true; continue; }
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
         else if (v === 'hk-screenshotMode') to = 'hk-showHUD';
         else if (v === 'hk-lmLab') { to = 'hk-lmPlugins'; keyed = true; }
@@ -21941,7 +21943,7 @@ var LM_EXPORT_KEYS = [
     { key: 'lmSettingsProfilesRules', type: 'o' },
     { key: 'lmHudLayouts', type: 'o' },
     { key: 'lmCustomMacros', type: 'o' },
-    { key: 'lmThemeWorkshop', type: 'o' },
+    { key: 'lmThemeWorkshop', type: 'o' },     /* My themes (ogario/modules/mythemes.js) */
     { key: 'lmPracticeCfg', type: 'o' },
     /* importOnly: the old skin collections are player profiles now (lmMergeSkinCollections after
      * the import's reload); an older export still brings its skins in, a new one has none */
@@ -22268,8 +22270,6 @@ function thelegendmodproject() {
             window.localStorage.setItem('ogarioThemeSettings', JSON.stringify(defaultSettings));
         },
         restoreThemeSettings() {
-            /* a Theme Workshop preview ends first */
-            if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
             if (window.localStorage.getItem('ogarioThemeSettings') !== null) {
                 window.localStorage.removeItem('ogarioThemeSettings');
                 window._lmSettingsReload = true;
@@ -22513,7 +22513,8 @@ function thelegendmodproject() {
                 '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + textLanguage.miniMapTheming +
                 '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"' + textLanguage.imagesTheming +
                 '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>');
-            /* the Theme preset and Menu theme lists are in the Theme workshop (Gallery: Built-in presets) */
+            /* the Theme presets: the shipped game presets, and My themes under them (ogario/modules/mythemes.js) */
+            this.addPresetBox('#theme-main', 'themePreset', themePresets, 'preset', 'changeThemePreset');
             this.addColorBox('#theme-main', 'bgColor', 'setBgColor');
             this.addColorBox('#theme-main', 'bordersColor');
             this.addColorBox('#theme-main', 'borderGlowColor');
@@ -22568,6 +22569,7 @@ function thelegendmodproject() {
             this.addSliderBox('#theme-main', 'textAlpha', 0.1, 1, 0.01);
             this.addSliderBox('#theme-main', 'ghostCellsAlpha', 0.01, 1, 0.01);
             this.addPresetBox('#theme-main', 'indicators', indicatorMenus, 'indicators', 'changeIndicators');
+            this.addPresetBox('#theme-menu', 'menuPreset', themeMenus, 'menuPreset', 'changeMenuPreset');
             this.addSliderBox('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity');
             this.addColorBox('#theme-menu', 'menuMainColor', 'setMenuMainColor');
             this.addColorBox('#theme-menu', 'menuBtnTextColor', 'setMenuButtons');
@@ -22666,18 +22668,11 @@ function thelegendmodproject() {
              * that other code changes for itself are never written. */
             var _lmThemeSaveT = null;
             $(document).on('changeColor.colorpicker input change', '#theme input, #theme select, #theme .input-group', function () {
-                /* the Theme workshop setting the controls for a preview or its Revert is not input */
+                /* My themes setting the controls of a theme it applies is not input (it saves the theme itself) */
                 if (Settings._lmThemeQuiet) return;
                 clearTimeout(_lmThemeSaveT);
                 _lmThemeSaveT = setTimeout(function () { _lmThemeSaveT = null; Settings.saveThemeSettings(); }, 600);
             });
-            /* a pending auto-save is done now (the Theme workshop, before a preview changes the controls) */
-            Settings.lmFlushThemeSave = function () {
-                if (!_lmThemeSaveT) return;
-                clearTimeout(_lmThemeSaveT);
-                _lmThemeSaveT = null;
-                Settings.saveThemeSettings();
-            };
             $('#theme').append('<div class=\"restore-settings\"><a href=\"#\" id=\"lm-restore-theme\">' + textLanguage.restoreThemeSettings + '</a></div>'),
                 $(document).on('click', '#theme .restore-settings a', function (e) {
                     e.preventDefault();
@@ -22849,7 +22844,7 @@ function thelegendmodproject() {
         },
         setMenuButtons() {
             var css = 'a,a:hover{color:' + defaultSettings.btn1Color + '}.btn,#hotkeys-cfg .custom-key-in{color:' + defaultSettings.menuBtnTextColor + '}.btn-primary{background-color:' + defaultSettings.btn1Color + '!important}.btn-primary:active,.btn-primary:disabled,.btn-primary:focus,.btn-primary:hover{background-color:' + defaultSettings.btn1Color2 + '!important}.btn-success{background-color:' + defaultSettings.btn2Color + '!important}.btn-success:active,.btn-success:disabled,.btn-success:focus,.btn-success:hover{background-color:' + defaultSettings.btn2Color2 + '!important}.btn-warning{background-color:' + defaultSettings.btn3Color + '!important}.btn-warning:active,.btn-warning:disabled,.btn-warning:focus,.btn-warning:hover{background-color:' + defaultSettings.btn3Color2 + '!important}.btn-danger{background-color:' + defaultSettings.btn4Color + '!important}.btn-danger:active,.btn-danger:disabled,.btn-danger:focus,.btn-danger:hover{background-color:' + defaultSettings.btn4Color2 + '!important}#hotkeys-cfg .custom-key-in{background-color:' + defaultSettings.btn4Color2 + ';border-color:' + defaultSettings.btn4Color2 + '}';
-            /* .btn-info (Theme Workshop, many Legend buttons) used Bootstrap's own light blue: it takes
+            /* .btn-info (My themes, many Legend buttons) used Bootstrap's own light blue: it takes
              * button colour 2. Not !important, so buttons styled inline (e.g. transparent) keep their look */
             css += '.btn.btn-info{background-color:' + defaultSettings.btn2Color + ';border-color:' + defaultSettings.btn2Color + ';color:' + defaultSettings.menuBtnTextColor + '}.btn.btn-info:active,.btn.btn-info:focus,.btn.btn-info:hover{background-color:' + defaultSettings.btn2Color2 + ';border-color:' + defaultSettings.btn2Color2 + ';color:' + defaultSettings.menuBtnTextColor + '}';
             /* information pop-ups (toastr info) were always #018cf6, the default of button colour 1 */
@@ -25518,8 +25513,6 @@ function thelegendmodproject() {
                  * put back if any step fails. Before, the removal of the hidden profiles
                  * (ogarioPlayerProfilesExtra) and the hotkey list were outside it: a failed
                  * import said "all changes rolled back" with the hidden profiles gone. */
-                /* a Theme Workshop preview ends first: nothing of it may be in what is kept */
-                if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
                 var _impBackup = {};
                 var _impTouched = [];
                 var _impKeep = function (key) {
@@ -25582,8 +25575,6 @@ function thelegendmodproject() {
             }
         },
         restoreSettings() {
-            /* a Theme Workshop preview ends first (its sounds are gameplay settings) */
-            if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
             clearTimeout(this._lmSettingsSaveT);
             this._lmSettingsSaveT = null;
             /* Performance mode's backup and the preset undo snapshot hold values of the settings
@@ -27019,8 +27010,6 @@ function thelegendmodproject() {
                     });
                     var tip = p.tip ? _lmTx(p.tip, '') : '';
                     if (!window.confirm(_lmTx(p.key, p.en) + '\n' + _lmTx('lmPresetConfirm', 'Apply this preset? These settings change (Undo puts them back):') + '\n\n' + lines.join('\n') + (tip ? '\n\n' + tip : ''))) return false;
-                    /* a Theme Workshop preview ends first: the save below would store its sounds */
-                    if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
                     /* a second preset keeps the values from before the first one */
                     /* the player's values, not one Adaptive performance has lowered for now */
                     var snap = undoSnap || {};
@@ -27035,7 +27024,6 @@ function thelegendmodproject() {
                     return false;
                 });
                 undoBtn.on('click', function () {
-                    if (window.LMThemeWorkshop && window.LMThemeWorkshop.settle) { try { window.LMThemeWorkshop.settle(); } catch (eTw) { } }
                     var snap = undoSnap;
                     undoSnap = null;
                     try { window.localStorage.removeItem(undoKey); } catch (e) { }
@@ -89050,16 +89038,15 @@ Object.defineProperty(Array.prototype, 'stDev', {
     /* Skin editor removed — use the standalone Skin Checker & Editor at legendmod.ml/skins/skinchecker.html */
     window.lmMacroEditor = _lmLazyModule('macroeditor.js', 'LMMacroEditor', 'game2.macroEditor'); /* the name is a key: the load error toast translates it */
     try { if (localStorage.getItem('lmCustomMacros')) window.lmMacroEditor('load'); } catch (e) { }
-    /* Theme workshop window (Theme tab button, hotkey without a default key);
-     * nothing runs until it is opened */
+    /* My themes (the Theme tab, under the Theme preset list): saved themes and their versions */
     try {
-        var themeWorkshopScript = document.createElement('script');
-        themeWorkshopScript.type = 'text/javascript';
-        themeWorkshopScript.src = 'https://www.legendmod.ml/ogario/modules/themeworkshop.js?v=' + (window.OgVer || '');
-        themeWorkshopScript.charset = 'utf-8';
-        document.body.appendChild(themeWorkshopScript);
+        var myThemesScript = document.createElement('script');
+        myThemesScript.type = 'text/javascript';
+        myThemesScript.src = 'https://www.legendmod.ml/ogario/modules/mythemes.js?v=' + (window.OgVer || '');
+        myThemesScript.charset = 'utf-8';
+        document.body.appendChild(myThemesScript);
     } catch (e) {
-        console.warn('[LM] Error loading theme workshop script:', e);
+        console.warn('[LM] Error loading my themes script:', e);
     }
     /* Window stacking: the window opened or touched last comes in front of the other open ones */
     try {
