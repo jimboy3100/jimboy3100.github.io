@@ -166,6 +166,15 @@ const D = (t) => t.L._lmND;
     check('opcode 16 RangeError path keeps packets/s (countPps for all 3, as before)', t.L.ppsCalls === 3);
     check('nothing logged as an error', t.g.errors.length === 0, t.g.errors.join(' | '));
 }
+/* 1b. opcode 16 whose parser throws another error (not a RangeError): thrown on as before,
+ * counted once as a rejected world update, not also as another packet rejected */
+{
+    const t = twin('opcode 16 parser throwing a TypeError', [
+        (t) => { clock.t = 2100; t.L.onMessage(msg(valid())); }
+    ], (t) => { t.L.megaFFAscore = function () { throw new TypeError('x'); }; });
+    const d = D(t);
+    check('TypeError in the parser: one world update rejected, no other packet rejected, nothing open', d.wTry === 1 && d.wBad === 1 && d.pBad === 0 && d.wOk === 0 && d.open === 0, JSON.stringify([d.wBad, d.pBad, d.open]));
+}
 
 /* 2. compressed (opcode 255): truncated frame, valid, decompressed but cut short */
 {

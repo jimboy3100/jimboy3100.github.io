@@ -46331,9 +46331,10 @@ function thelegendmodproject() {
                             this.updateCells(new window.buffer.Buffer(data.buffer), s);
                         }
                     } catch (e) {
-                        /* diagnostics: rejected, not applied (packets/s below still counts it) */
-                        if (this._lmND) this._lmWuFail();
+                        /* diagnostics: rejected, not applied (packets/s below still counts it); an
+                         * error thrown on is counted once by the packet handler's catch */
                         if (e instanceof RangeError) {
+                            if (this._lmND) this._lmWuFail();
                             // Buffer overread — malformed or unexpected cell data format; skip this packet
                         } else {
                             throw e;
