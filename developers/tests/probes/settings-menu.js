@@ -19,6 +19,8 @@
   if ($('#og-settings').find('.lmLabGroup, .lm-lab-note, #lm-lab-reset, [id^="lmLab-"]').length) fail.push('Lab section in the Settings tab');
   // "Spawn special effects" had no effect left (its spawn effect was taken out): no switch for it
   if (document.getElementById('spawnSpecialEffects')) fail.push('Spawn special effects switch in Settings (it does nothing)');
+  // "Rotate Map" only started the removed map orientation server: no switch for it
+  if (document.getElementById('rotateMap')) fail.push('Rotate Map switch in Settings (it does nothing)');
   // one link to the skins page: the skins panel's Add skins button (the left column had a second one)
   if ($('#quick-menu .quick-more-skins').length) fail.push('second Skins link in the left column');
   if ($('#skins-panel #more-skins').attr('href') !== 'https://www.legendmod.ml/skins/') fail.push('Add skins button missing or not the skins page');

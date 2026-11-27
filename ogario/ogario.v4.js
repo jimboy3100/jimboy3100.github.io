@@ -21434,7 +21434,7 @@ var defaultmapsettings = {
     gamepadVibrate: false, /* rumble on split and death where the pad supports it */
     //showPartyBots: false,
     showMiniMap: true,
-    rotateMap: true,
+    rotateMap: true,              /* retired: it only started the removed map orientation server (no switch; kept so saved settings and scripts stay valid) */
     showMiniMapGrid: false,
     showMiniMapGuides: true,
     showExtraMiniMapGuides: true,
@@ -27166,7 +27166,9 @@ function thelegendmodproject() {
             this.addSliderBox(".soundsGroup", "volCommands", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volGameplay", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volNotifications", 0, 1, 0.01);
-            this.addOptions(["rotateMap", "showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
+            /* no "Rotate Map" switch: it only started the old map orientation server (SLGconnect), long
+             * gone; teammates' map orientation is matched without it */
+            this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
             this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "splitPrediction", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "hudMoveDir", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
@@ -41312,9 +41314,6 @@ function thelegendmodproject() {
             var app = this;
             setTimeout(function () {
                 application.Socket3connect(t);
-                if (defaultmapsettings.rotateMap) {
-                    application.SLGconnect(t);
-                }
                 pauseVideos()
                 if (typeof Universalchatfix === 'function') {
                     Universalchatfix()
