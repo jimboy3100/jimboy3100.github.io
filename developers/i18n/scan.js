@@ -16,7 +16,8 @@
  * (kind "key": a key the packs do not have, e.g. lmT('x', 'English') whose English is the fallback).
  * HTML: text between tags and title/placeholder/alt/aria-label/value attributes, outside <head>,
  * <script> (scanned as JavaScript) and <style>, unless the element carries data-i18n / data-i18n-html /
- * data-i18n-<attribute>.
+ * data-i18n-<attribute>, or data-i18n-off="why" (content kept as written in one language, such as
+ * release notes made from the git history; give that element its lang).
  * Not reported: console.*, throw, lines (or the line after a comment line) containing "i18n-ok"
  * (write why: e.g. // i18n-ok: chat command sent to teammates), and the allowlist in
  * developers/i18n/scan-config.json ("allow": { "<file>" or "*": ["exact text", "/regex/"] }).
@@ -176,7 +177,7 @@ function htmlParts(html, onText, onAttr, onScript) {
                 onAttr(a, found[a], m.index);
             });
             Object.keys(found).forEach((a) => {
-                if (/^data-i18n/.test(a) && a !== 'data-i18n-vars' && found[a]) onAttr('key', found[a], m.index, true); /* vars: values, not keys */
+                if (/^data-i18n/.test(a) && a !== 'data-i18n-vars' && a !== 'data-i18n-off' && found[a]) onAttr('key', found[a], m.index, true); /* vars: values, off: a reason, not keys */
             });
         }
         if (tag === 'script' || tag === 'style') {
@@ -188,7 +189,7 @@ function htmlParts(html, onText, onAttr, onScript) {
             re.lastIndex = last = e ? e.index + e[0].length : html.length;
             continue;
         }
-        if (!VOID.has(tag) && !m[4]) stack.push({ tag, i18n: has('data-i18n') || has('data-i18n-html'), html: has('data-i18n-html') });
+        if (!VOID.has(tag) && !m[4]) stack.push({ tag, i18n: has('data-i18n') || has('data-i18n-html') || has('data-i18n-off'), html: has('data-i18n-html') });
     }
     const tail = html.slice(last);
     if (tail.trim() && !translated() && !inHead()) onText(tail, last);

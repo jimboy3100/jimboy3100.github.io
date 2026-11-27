@@ -132,6 +132,7 @@
         .tag-new { background: #22c55e22; color: #22c55e; border: 1px solid #22c55e44; }
         .tag-fix { background: #3b82f622; color: #3b82f6; border: 1px solid #3b82f644; }
         .tag-perf { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b44; }
+        .tag-change { background: #a1a1aa22; color: #a1a1aa; border: 1px solid #a1a1aa44; }
         .back-link {
             display: inline-block;
             margin-bottom: 24px;
@@ -180,11 +181,1788 @@
         <a href="/rss.xml" class="rss-link">📡 RSS Feed</a>
     </p>
 
+    <div class="version" id="v3701" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.701</span>
+            <span class="version-title">Opponent colours and split range rings, Multibox &amp; Bots</span>
+            <time class="version-date" datetime="2026-11-27">2026-11-27</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Opponent colours and split range rings</strong> — after a camera jump (respawn, spectating another player, switching the camera to another place) the cells at the new place get their colour and rings in the first frame</li>
+            <li><span class="tag tag-perf">Perf</span> <strong>Multibox</strong> — the per-frame search for the other connection's copy of each cell (so a cell seen by two connections is drawn once) costs less: it reads the cells near it as sorted bucket columns instead of probing every bucket in a big or…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Bots</strong> — work with or without a captcha, follow the player on FFA/EXP in each bot's own map orientation, and a working Battle Royale Fill lobby</li>
+            <li><span class="tag tag-change">Change</span> <strong>Bots</strong> — accept the agar.io game servers the matchmaker sends today (web-arenas-live-*.agario.miniclippt.com/&lt;region&gt;/&lt;ip&gt;)</li>
+            <li><span class="tag tag-perf">Perf</span> <strong>Jelly on 120/144 Hz screens</strong> — the jelly wobbles and dents at the speed it has on a 60 Hz screen, and costs about half as much</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Full Map</strong> — the spectators tile the map from the server view of a free spectator (1024 x 600 x 4.95 = 5069 x 2970): 3 x 5 equal cells centred on the map, so neighbouring views overlap by 354 / 142 and reach 177 / 71 past the edge…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Settings profiles, automatic switching</strong> — watching a replay or playing in the practice arena no longer switches the profile</li>
+            <li><span class="tag tag-change">Change</span> Export / Import Settings also carry the radial menu's commands, the skin collections (folders, tags and favourites) and the screenshot options (leaderboard / minimap in captures)</li>
+            <li><span class="tag tag-change">Change</span> Settings &gt; Accessibility &gt; Menu text size also makes the text of the Legend Mod windows larger (Settings profiles, Command Centre, Analytics, Custom macros, Theme Workshop, Replay Studio and the other windows): it scaled only the…</li>
+            <li><span class="tag tag-change">Change</span> Export / Import Settings also carry the Command Centre's starred commands (also its quick bar)</li>
+            <li><span class="tag tag-change">Change</span> Export / Import Settings also carry the muted notification categories (Notifications window)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Multibox units, in-game and Full Map spectators</strong> — one coordinate transform per connection, world = s * k * (raw - C) + d and its exact inverse raw = C + s * (world - d) / k, for every cell, food pellet, top player and view coming in and every mouse, unit movement and Full Map…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>agar.io map border</strong> — the map is the real full border of the connection, not 14142 counted back from its right and bottom edges. agar.io gives every connection its own size (full borders 14073 to 14211 wide and 14072 to 14199 high), so the left and…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Bots</strong> — browser bots (the bot server's code in a Web Worker, no Node.js, start.bat or local network permission) and bots that follow the player on agar.io's scaled maps</li>
+            <li><span class="tag tag-change">Change</span> <strong>Bots button</strong> — the trophy button in the main menu that opens the bots panel is shown on every server</li>
+            <li><span class="tag tag-change">Change</span> <strong>Install guide, step 3</strong> — on Chrome 138 and newer Tampermonkey runs user scripts only with &quot;Allow User Scripts&quot; switched on in its Details page</li>
+            <li><span class="tag tag-change">Change</span> <strong>Full Map and multibox</strong> — each pellet is drawn once, cells are never matched by raw id</li>
+            <li><span class="tag tag-change">Change</span> <strong>Language list on the website</strong> — the chosen language could not be seen on the home page (and the Legend Clan page) in the dark theme, white text in a white box. normalize.css gives every field the page's text colour but leaves the browser's white field background</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Settings profiles and backups</strong> — the parts line under each one names every part it brings: a phone control layout alone shows Phone controls, gamepad buttons and saved zoom levels are named too, and a backup that only records that a part did not exist yet no…</li>
+            <li><span class="tag tag-fix">Fix</span> Companion page opened from the game with an accent colour in its link (accent=...): the boxes use that accent again</li>
+            <li><span class="tag tag-change">Change</span> <strong>Companion page opened from the game</strong> — its boxes (card, mass, leaderboard, events, chat...) take the game HUD's colours, accent and font, as the overlay shows the HUD</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Mod Info / Templates and Nick characters windows</strong> — closing them shows again only the menu panels that were shown before</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Skin changer window (the fake skin report button)</strong> — closing it shows again only the menu panels that were shown before</li>
+            <li><span class="tag tag-new">New</span> <strong>Home page opened from the game with its theme</strong> — the Play Expanding Land and Add Legend Express buttons, the active tab and the step numbers take the theme's first button colour (and its hover colour) and button text colour</li>
+            <li><span class="tag tag-change">Change</span> <strong>Legend pages opened from the game with its theme</strong> — a phone's browser bar takes the theme's panel colour (meta theme-color), and Restore website theme gives the page its own bar colour back</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Menu</strong> — the Youtube &amp; Sounds tab and its YouTube player are removed (tab button, player, address box, the play/pause button above the minimap and the &quot;Open Youtube Music&quot; team command)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Tools tab</strong> — the Main Banner icon and link fields are gone</li>
+            <li><span class="tag tag-change">Change</span> <strong>Connection lost while in the game</strong> — the menu comes back with Play, as after a death (the life is over, the server forgets the player)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Performance diagnostics</strong> — a packet gap going on when you leave the server (Disconnect, a server change) is listed then, with its time up to that moment</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Dropdown lists</strong> — the open list of every dropdown in the game (Settings, Theme, Hotkeys, Discover &gt; This server, Notifications, Director, HUD editor, Settings profiles and the other windows) shows dark text on white whatever the theme, with the…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Website facts</strong> — the FAQ, Features, Compare, Legend Clan and Expanding Land FFA pages (the one help.expanding.land shows), the project facts and llms-full.txt give one arena capacity, up to 3840 players per arena, in every language…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Settings catalog (knowledge/settings.json)</strong> — the Notification centre switch is listed again (a clean-up of retired entries had dropped it, though it is a live option in Settings &gt; HUD), and the HUD movement arrow and the Command Centre quick bar are listed too</li>
+            <li><span class="tag tag-change">Change</span> <strong>Windows</strong> — accent-coloured text on window panels stays readable with light menu colours</li>
+            <li><span class="tag tag-change">Change</span> <strong>Performance diagnostics (recording)</strong> — every connection gets a timeline</li>
+            <li><span class="tag tag-perf">Perf</span> <strong>Skin loading</strong> — the skin canvases and the GPU skin uploads share one 4 ms budget per frame</li>
+            <li><span class="tag tag-change">Change</span> <strong>Lc Senpai article in Greek</strong> — says, like the original English text and the other languages, that the room's players also do not want to kill everyone and avoid the Lc-EA servers</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Phones</strong> — the fainter grid and smaller food of the phone view no longer change the theme</li>
+            <li><span class="tag tag-change">Change</span> <strong>Search engines</strong> — the Old Deals shop page the mod opens, the old Skin Rotator copies (extras/skinrotator2 and 3, now pointing to skinrotator.html) and the third-party agarvaii example client are marked noindex…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phones</strong> — a held Feed button, the joystick, a pinch, a flick and the ping choice are let go when the window loses focus or is left (a call, the app switcher), on a rotation, when a settings profile changes the phone controls and when a…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Compare page</strong> — says under the table, in every language, that it is made by the Legend Mod project and is not a neutral review, and that the other mods change too (it compared Legend Mod with other mods without saying who made it)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Discover window</strong> — Esc closes it first wherever the focus is, also when a window was opened under it (a hotkey or a script while it is open)</li>
+            <li><span class="tag tag-new">New</span> <strong>Label atlas (nick and mass texts on WebGL)</strong> — it grows by adding a texture array (a bank) for the new pages and never copies the pages in use, and gives an empty bank back only after it has held no label for 10 s</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phones, compact leaderboard (gear panel option)</strong> — your own place lower down and the player / bot count stay shown</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Match history Clear (Analytics &gt; History)</strong> — the question no longer says the Analytics Dashboard and statistics are kept</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phone control editor</strong> — a control moved out of its group takes no taps while the main menu is open…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Performance diagnostics</strong> — timer callbacks are timed by a wrapper only where the browser has no long animation frames</li>
+            <li><span class="tag tag-change">Change</span> <strong>Sitemap</strong> — the dates of last change of the home, skins, privacy, terms, FAQ, Features, Compare and Legend Clan pages are the days their texts last changed (all pages still said 2026-11-25)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Phone control editor, Layouts &gt; Built-in presets</strong> — Classic, Left-handed, Competitive and Multibox no longer overlap</li>
+            <li><span class="tag tag-change">Change</span> Language packs rebuilt from their sources (the generated files were behind the merged language sources)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Record replays</strong> — turning the option off a second time in one game (or after joining with it off, or after the replay memory filled up) says again that this connection is not recorded any more</li>
+            <li><span class="tag tag-change">Change</span> <strong>Home page language list</strong> — the closed box shows dark text on its white box under every theme</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>More than 128 skins on screen with WebGL</strong> — every one is drawn with its skin</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Settings profiles</strong> — the comparison names the later phone preferences (Fixed joystick, Dead zone, Compact leaderboard, Response curve, Zoom +/- buttons, Free spectate button) in the player's language</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Legend Express userscript 1.9</strong> — agar.io's page is replaced at the userscript's first step by a loading screen in the player's menu colours (the tab stayed blank until play.html had downloaded), and the page is never stopped with window.stop() nor agar.io's…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Legend Express extension 1.9.0</strong> — agar.io/ is sent to agar.io/legendmod/ (a small agar.io page) by a declarativeNetRequest rule while the switch is on, so agar.io's front page with its game scripts and ads is no longer downloaded next to Legend Mod</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Full Map viewports and placement from live agar.io numbers</strong> — the spectators did not leave gaps, the debug boxes did not show their views</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>WebGL renderer</strong> — a selected cell (sticky cells) or the reverse-trick targets no longer switch the whole frame to Canvas2D</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>WebGL renderer</strong> — teammate indicators and chat bubbles over cells no longer switch the whole frame to Canvas2D whenever a later cell or its labels come near them (every frame in a crowded view with a teammate or a chatting player on screen)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Archived pages</strong> — the 39 old promo banners, loaders, skin rotator copies and old site copies listed as archived in developers/i18n/scan-config.json are removed together with what only they used…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Settings &gt; Accessibility</strong> — with Menu text size and HUD text size both above 1, the notification panel's text is no longer enlarged twice (1.5 and 1.5 made it 2.25 times larger, 27 px instead of 18 px)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Export / Import Settings</strong> — the imported muted notification categories are kept when a toast came less than a second before the import</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Big worlds (full map, world spectate, more than 2500 cells)</strong> — a frame after a world update no longer goes over every cell looking for a second copy of an id</li>
+            <li><span class="tag tag-change">Change</span> <strong>Legend Express update notice</strong> — &quot;Legend Express 1.9 is available! Your installed version: x&quot; (with an &quot;Update Legend Express&quot; link) for userscripts and extensions older than 1.9, at most once per tab session</li>
+            <li><span class="tag tag-change">Change</span> Menu footer and home page show the right Legend Express version: the footer read v1.8.730 · 3.7 (the userscript's version glued to an old &quot;30&quot; suffix, and the mod build 3.700 printed as 3.7)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3700" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.700</span>
+            <span class="version-title">Jelly physics, Cell sorting &amp; Replay Studio</span>
+            <time class="version-date" datetime="2026-11-27">2026-11-27</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Jelly physics</strong> — changing the number of perimeter points (zooming, a cell growing or shrinking) no longer makes new arrays and point objects each time</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Cell sorting</strong> — a cell list with empty slots in it keeps the time limit on its sort</li>
+            <li><span class="tag tag-change">Change</span> <strong>Replay Studio</strong> — choosing the instant replay length in the Studio moves the knob of the Settings &gt; Replays slider to it</li>
+            <li><span class="tag tag-change">Change</span> <strong>Show viewports with Full Map (full spectator) open</strong> — a multibox unit also got a full spectator's box (Viewport# n, of a spectator's size around its server camera) on top of its own numbered box</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phones</strong> — the mute button of a chat popup can be tapped</li>
+            <li><span class="tag tag-fix">Fix</span> WebGL scene check with teammate indicators, chat bubbles, FB badges or special effects on screen: a cell far from all of them is passed in one step instead of being compared with every one of their boxes…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme workshop, Practice and Spectator director</strong> — Esc closes them wherever the focus is, as it closes Analytics and Custom macros</li>
+            <li><span class="tag tag-change">Change</span> <strong>Match history Clear (Analytics &gt; History)</strong> — the question says what goes and what stays: only the list of this device is cleared, the games Analytics recorded (its Dashboard and statistics) and the account's history on the server are kept</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Notification centre on a short screen (915x412 phone)</strong> — with the mute switches open (Toasts...) the notification list stays in the panel and every switch can be reached</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Record replays</strong> — joined with the option off and switched on during that game (by a settings profile, a script or the switch), the rest of that connection was recorded from its middle, without map border, own cells or times</li>
+            <li><span class="tag tag-change">Change</span> Multibox switch keys with the in-game or full spectator open beside a multibox unit: switching went main, unit, then to the spectator's connection, so your keys and mouse controlled no cell until the next press</li>
+            <li><span class="tag tag-change">Change</span> <strong>Game Over card on a phone</strong> — the one-time &quot;Turn on Death recap&quot; hint is shown right under the card's header when the card is taller than the screen</li>
+            <li><span class="tag tag-change">Change</span> Spectator mode switch (follow a player / free camera) with the in-game spectator open beside a multibox unit: it changed nothing, because it only looked at the first connection, which was the unit</li>
+            <li><span class="tag tag-fix">Fix</span> Starting multibox with the in-game spectator on closed the spectator but left its switch on, so the next press of the hotkey or the top bar button only turned it off and opened nothing</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phones</strong> — the User Scripts window switches (Runs at start, Lab experiments) are a thumb's size on the screen</li>
+            <li><span class="tag tag-change">Change</span> <strong>Bot CAPTCHA security</strong> — verify popup origin, registered source and active connection before accepting tokens</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Windows</strong> — Profiles, Theme Workshop, Command Centre, Custom Macros and Discover show their text in the menu's font again, like Performance, Analytics, Notifications, Director, Gamepad, the small tools windows and the menu itself</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3699" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.699</span>
+            <span class="version-title">Performance diagnostics, Phones &amp; Bot servers</span>
+            <time class="version-date" datetime="2026-11-27">2026-11-27</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Performance diagnostics</strong> — a packet gap (no world update) still going on when the connection closes or the server changes is listed in the events with its time up to then</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Phones</strong> — the multibox button (gear panel option) shows the swap sign again once no multibox unit is left</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Bot servers</strong> — fix buffer.length crash, remove unrequested orbit logic and position reporting</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>User Scripts</strong> — a plugin loaded again in its slot (Load once more, or an edited version) runs one copy, and its Runs at start switch stops it</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>User Scripts</strong> — Erase script on a slot whose plugin runs stops the plugin, as turning the slot off does, with the same message</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Multibox ring colours</strong> — a script that sets a ring colour the old way (as a gameplay setting, application.setSettings) sets the theme colour again, with its colour box in Theme &gt; Basic theming and the saved theme</li>
+            <li><span class="tag tag-change">Change</span> <strong>Performance diagnostics</strong> — a freeze's breakdown also times the trimming of the waiting skin jobs (skin job trim), and its skin jobs count includes the skins waiting for an image decode, which the waiting-job cap counts too</li>
+            <li><span class="tag tag-change">Change</span> <strong>Show viewports with Full Map (full spectator) open</strong> — the spectators' boxes (Viewport# 1, 2 ...) never appeared when Show viewports was already on, because the first frame drew them before their connections had a view and kept that empty place for good</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Phones</strong> — the clock (Settings &gt; Stats &gt; Show current time) is on the screen again, at the top centre</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Reusable bot-server lifecycle</strong> — reset state on stop instead of process.exit</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3698" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.698</span>
+            <span class="version-title">Bot integration, Bot end-to-end &amp; Theme &gt; Sectors X / Y</span>
+            <time class="version-date" datetime="2026-11-27">2026-11-27</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Bot integration</strong> — built-in client sends player position (opcode 11), FFA/EXP/BR mode support, shared menu background</li>
+            <li><span class="tag tag-change">Change</span> <strong>Bot end-to-end</strong> — opcode 7/11 length guard, opcode 9 handling, Battle Royale fill-lobby button, behavioral tests</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme &gt; Sectors X / Y</strong> — the minimap's sector grid follows the new count at once</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme workshop</strong> — Apply, Preview and Revert move the knobs of the Theme tab sliders to the values they set</li>
+            <li><span class="tag tag-change">Change</span> <strong>Discover window</strong> — Esc closes it after a server type is chosen in This server and after a click or tap on its text</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Expanding Land</strong> — the minimap is a circle again, with Rounded corners on or off</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme &gt; Images</strong> — the cursor list marks the cursor in use when its address is typed in the cursor box or a settings profile sets it (none for an address of no listed cursor)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Phone control editor</strong> — the replay seek buttons (shown only during a replay) no longer count as overlapping</li>
+            <li><span class="tag tag-change">Change</span> <strong>Battle Royale fill-lobby lifecycle</strong> — disconnect cleanup, idempotent stop, lobby-full rejection, bot server watcher</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Phones</strong> — the chat button no longer sends a message you dismissed</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3697" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.697</span>
+            <span class="version-title">Bots</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Bots</strong> — ghost-cell-based player orientation for FFA/EXP, bot position reporting for minimap</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Bots</strong> — server-fast.js parity with server.js, remaining reliability fixes</li>
+            <li><span class="tag tag-change">Change</span> LMEvents multiboxSwap is sent for every change of the multibox unit you control, from one setter (lmSetMbUnit): a focused unit dying (focus back to the main player or to the next living unit), a unit taking the focus when it…</li>
+            <li><span class="tag tag-change">Change</span> Radial menu open while the window loses focus (Alt+Tab, a click into another window, the tab hidden): it closes without running anything</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3696" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.696</span>
+            <span class="version-title">Settings catalog &amp; HUD editor</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Settings catalog</strong> — removed retired/dead/duplicate entries (gamepadEnabled, invertMouse, unlockedFPS, notificationCentre, duplicate transparentSkins and cellContours from Effects)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Macro feed held on a gamepad button and on a key at once</strong> — letting the key go stopped the feed while the pad button was still held</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>HUD editor</strong> — the Command Centre opened over it with Ctrl+K takes its own keys</li>
+            <li><span class="tag tag-fix">Fix</span> While a replay plays in Replay Studio, text boxes take every key again: space, W, E, R, T, Enter and Esc, which the Studio keeps from the game, could not be typed in the Command Centre search, the chat or when renaming a…</li>
+            <li><span class="tag tag-change">Change</span> Command Centre opened over another window that closes on Esc (Custom macros, the Gamepad window, Analytics...): Esc closes the Command Centre only, the next Esc that window</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3695" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.695</span>
+            <span class="version-title">Settings profiles, Notification centre &amp; Game Over card</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Settings profiles</strong> — deleting a profile also drops its link to a HUD layout (the layout itself and the links of other profiles stay; a rename keeps the link)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Notification centre</strong> — the mute boxes in the panel follow LMNotifications.setMuted (also while the panel is closed, it is kept)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Game Over card</strong> — the camera icon saves the match card once per tap, as Share waits for its sheet (dimmed while the image is made)</li>
+            <li><span class="tag tag-new">New</span> <strong>Analytics History tab with the Match history option off</strong> — says the option is off and that played games are not added to the list, with a Turn on button (the Settings switch itself)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Analytics Objectives</strong> — a language change or a game ending while an objective is typed keeps its type, the number, the focus and the scroll (the tab is drawn again)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3694" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.694</span>
+            <span class="version-title">Custom macros window</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> A mouse button bound in the Hotkeys window and released over a layer that keeps mouseup from the game (the radial menu its own press opened, the Command Centre, editor windows) is released now: the radial menu on a mouse button…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Custom macros window</strong> — the first step change after renaming a macro (deleting, moving, a new count or action) was lost, made on an old copy of the macro</li>
+            <li><span class="tag tag-fix">Fix</span> A HUD layout that moves the minimap away from a long leaderboard gives the leaderboard its HUD scale at once, and the normal HUD fits it again at once: it stayed small (or over the minimap) until its size changed</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3693" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.693</span>
+            <span class="version-title">Menu footer, Notification centre &amp; Settings profiles</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Menu footer</strong> — the session line (This session: games, best mass, time played), the Match history link and the private room link take a newly chosen language at once</li>
+            <li><span class="tag tag-change">Change</span> <strong>Notification centre</strong> — Esc closes the panel wherever the focus is</li>
+            <li><span class="tag tag-change">Change</span> <strong>Settings profiles</strong> — renaming a profile to the name of another one gives it a numbered name (Alpha 2), as a new profile gets</li>
+            <li><span class="tag tag-change">Change</span> <strong>Settings profiles window</strong> — Esc closes it like the other windows (with another window in front of it, that one closes first)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3692" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.692</span>
+            <span class="version-title">Expanding Land team chat &amp; Bot reliability</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Expanding Land team chat</strong> — the server sends a team line (opcode 202, with a clan tag or in Teams mode) to the team mates but not back to the sender, so you never saw your own team lines</li>
+            <li><span class="tag tag-change">Change</span> <strong>Bot reliability</strong> — TLS scope, JSON guards, timer cleanup, socket lifecycle, regression tests</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3691" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.691</span>
+            <span class="version-title">Expanding Land chat, Video skin too-long warning &amp; Room code field</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Expanding Land chat</strong> — your own public line comes back from the server under its name with no sender id, so it was handled like a stranger's line (chat sound, mute button, hide words, reported own:false to user scripts)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Video skin too-long warning</strong> — the video's address (the one the skin is played with) was compared with the raw skin field, so a link typed without https:// never got the warning, and the skin preview and the profile box both checked the same video, so a…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Room code field</strong> — codes never contain I, O, 0 or 1 (none of the four is in the code alphabet, so a look-alike cannot be changed into another), and a code typed with one of them got &quot;Enter the 6-character room code&quot; as if it were too short</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3690" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.690</span>
+            <span class="version-title">Mobile UX</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Mobile UX</strong> — multibox indicator, joystick response curve, zoom and free-spectate buttons</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3689" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.689</span>
+            <span class="version-title">Smooth bot rotation &amp; Hotkeys window</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Smooth bot rotation</strong> — persistent direction and movement lerp</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Hotkeys window</strong> — the key list ends where the instructions start again</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3688" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.688</span>
+            <span class="version-title">Skin field &amp; Chat mentions</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Skin field</strong> — a skin link typed without https:// (i.imgur.com/..., an imgur page link) is saved and played as https://, but the skin preview and the profile box loaded it as a path on this site and stayed empty</li>
+            <li><span class="tag tag-change">Change</span> <strong>Chat mentions</strong> — a chat line with your nick was marked only in the chat box</li>
+            <li><span class="tag tag-change">Change</span> Copy leaderboard (hotkey and the leaderboard menu's copy button) and TK &amp; ALL: the rows were copied run together (&quot;1. Alice2. Bob3. Carl&quot;)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3687" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.687</span>
+            <span class="version-title">Every language but English</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Theme &gt; HUD leaderboard, team list and minimap image URL</strong> — emptying the URL gives the box its normal look back (it kept an empty image at 0.8 opacity for the rest of the session, also after the Team5 and troll chat commands put the image back)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Every language but English</strong> — the Settings tab's Copy debug info link keeps its own name (the language pack handler counted the restore links by position, so it was called Restore theme default settings while the Theme tab's restore link stayed in English)</li>
+            <li><span class="tag tag-fix">Fix</span> A long leaderboard (20 rows on a 1366 x 768 window, e.g. on Expanding Land) no longer reaches over the minimap and the button rows above it: it is drawn smaller from its top right corner until it ends above them…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3686" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.686</span>
+            <span class="version-title">Settings profiles</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Settings profiles</strong> — a profile's changes list names Game stats position by its label in every language (it showed the raw key statsPosition)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3685" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.685</span>
+            <span class="version-title">HUD text size</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>HUD text size</strong> — the slider is in Theme &gt; HUD right after HUD scale (it multiplies the HUD scale) instead of Settings &gt; Accessibility</li>
+            <li><span class="tag tag-fix">Fix</span> Fix 16 bot code defects (P0 crashes, P1 functional, P2 design)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3684" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.684</span>
+            <span class="version-title">Show/hide HUD</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Show/hide HUD</strong> — Alt+H is the one HUD hide and does what Screenshot mode did: it hides the whole HUD (also Legend Mod boxes, windows and popups) and keeps the game view with a small Capture / x chip</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3683" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.683</span>
+            <span class="version-title">Game stats position</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Game stats position</strong> — the &quot;Game stats at the top&quot; and &quot;Game stats at the bottom centre&quot; switches are one &quot;Game stats position&quot; choice in Settings &gt; HUD: Top left (the default as before), Bottom left or Bottom centre</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3682" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.682</span>
+            <span class="version-title">Window stacking, Ingame Spectator &amp; Show viewports</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Window stacking</strong> — Esc with a menu page in front of windows no longer throws when the key event's target is not a page element (window.dispatchEvent on window, or no target)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Ingame Spectator</strong> — pressing Play closed only the spectator's switch, not its connection, so it kept running unseen and the next press of the hotkey or the top bar button did nothing</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Show viewports</strong> — with Expanding Land World Spectate (Full Map) open, the boxes 2, 3 of the multibox units were sized from the main camera's zoom, so zoomed out over the whole map they grew far past the map</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3681" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.681</span>
+            <span class="version-title">FAQ and Features pages &amp; Mass format</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>FAQ and Features pages</strong> — a controller works as soon as it is connected (the pages still said to turn on Gamepad / controller support first, which is always on now)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Mass format</strong> — &quot;Short mass&quot; and the &quot;Mass format&quot; slider are one &quot;Mass format&quot; choice in Settings &gt; Mass: Exact (12345), Short (12.3k, the default as before) or Auto (exact below 10000, then 12.3k, 123k, 1.2M)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3680" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.680</span>
+            <span class="version-title">Tools tab &amp; Theme &gt; HUD &quot;Rounded corners&quot;</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Tools tab</strong> — Hide Shortcuts | Hide Everything on the first row</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme &gt; HUD &quot;Rounded corners&quot;</strong> — the switch takes its name in the new language at once on Choose Language, like the other Theme tab rows</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3679" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.679</span>
+            <span class="version-title">Mouse buttons are hotkeys</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Theme tab and Hotkeys window in every language but English</strong> — each row has its own setting's name again</li>
+            <li><span class="tag tag-change">Change</span> <strong>Mouse buttons are hotkeys</strong> — every key field takes the right button, wheel click and side buttons 4 / 5 (Shift + left click the left button) next to its key, and a bound button runs its command once per press like a key…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3678" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.678</span>
+            <span class="version-title">Theme workshop &amp; Replay Studio</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Theme workshop</strong> — a preview and its Revert never write the stored theme…</li>
+            <li><span class="tag tag-perf">Perf</span> <strong>Replay Studio</strong> — while a seek or a step backwards is rebuilt, the last frame is held up to 5 s between two slices (was 1 s: a loaded device stalled 1 to 3 s between slices and the frames then showed the world half rebuilt)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Where-to-find texts match the menu as it is now</strong> — Custom macros' &quot;Hotkey: not set&quot; note has a button that opens the Hotkeys window at the slot's &quot;Custom macro N&quot; row (scrolled to, blinking, through the Command Centre reveal, which now also takes key rows of the Hotkeys window)…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3677" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.677</span>
+            <span class="version-title">Mobile UX</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Mobile UX</strong> — fix audit defects B1-B7</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3676" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.676</span>
+            <span class="version-title">The Lab is part of the</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>The Lab is part of the User Scripts window</strong> — the &quot;Lab (experimental)&quot; section is gone from the Settings tab (its note, &quot;No experiments right now&quot; and Reset Lab)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3675" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.675</span>
+            <span class="version-title">Mobile UX</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Mobile UX</strong> — wave button, stats-teamboard overlap fix, hudFade slider, top-10 leaderboard</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3674" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.674</span>
+            <span class="version-title">Hotkeys window &amp; Theme &gt; Images</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Hotkeys window</strong> — the x next to a key field clears the key again with a real click or tap</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme &gt; Images</strong> — a cursor picked from the cursor list is saved like the tab's other controls</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Loading with Rounded HUD saved (Tools tab)</strong> — no error any more</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Loading with Show Timer Calc. saved (Tools tab)</strong> — no error any more</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Clock (Settings &gt; Stats &gt; Show current time)</strong> — a clock switched on is shown again after a reload (every load hid it while the switch stayed on, so no clock was visible anywhere)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3673" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.673</span>
+            <span class="version-title">Mobile UX &amp; Dropdown lists</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Mobile UX</strong> — fix follow-up defects — drawer, radial scope, chat gen, slider</li>
+            <li><span class="tag tag-change">Change</span> <strong>Dropdown lists</strong> — a dark select's open list kept the browser's white background with the light theme text, so the choices could not be read (Discover &gt; This server and other LM windows)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3672" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.672</span>
+            <span class="version-title">Zoom levels</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Zoom levels</strong> — the zoom bookmarks were the zoom level hotkeys again, now they are one: &quot;Save the current zoom as zoom level 1-5&quot; (no default keys) and Zoom level 1-5 (Alt+1-5) then go to that zoom, otherwise to their fixed zoom as before</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3671" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.671</span>
+            <span class="version-title">Mobile UX</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> The remaining live extras pages in the player's language (16 languages): the Mega FFA promo shown on the home page (2020.html), the 2020 promo, social icons, scrambled quote and members banners of the clan page, the clan history…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Mobile UX</strong> — fix audit defects A1-A5, chat bugs, gear guard</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3670" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.670</span>
+            <span class="version-title">Mobile UX &amp; Language packs</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Mobile UX</strong> — M4 combat ergonomics, M5 compact HUD, M6 performance, built-in presets</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Language packs</strong> — rebuilt for the new mobile texts in misc.json (generated files were out of date again)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3669" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.669</span>
+            <span class="version-title">Mobile UX, Friends while logged out &amp; Leagues &gt; More Prizes without prize data</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Mobile UX</strong> — M1 event-driven state sync, M2 chat send/dismiss separation, M3 extended editor controls, M6 ResizeObserver</li>
+            <li><span class="tag tag-change">Change</span> Esc with two windows open that close on Esc (Analytics, Radial menu / Screenshot / Skin collections, Custom Macros): only the window in front closes, the next Esc the other one…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Friends while logged out</strong> — one toast says it, no browser alert any more (the alert stopped the game and a toast said it again)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Leagues &gt; More Prizes without prize data</strong> — the toast says it as before, the console gets a warning instead of an error (it is an expected state)</li>
+            <li><span class="tag tag-fix">Fix</span> User Scripts &gt; Catalogue when it cannot be loaded (offline, file missing): one try per opening, the panel says it failed and opening the catalogue again tries once more…</li>
+            <li><span class="tag tag-new">New</span> <strong>Analytics &gt; Objectives</strong> — &quot;Beat your average&quot; + Add with no games played yet says there are no games yet (the button did nothing)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Language packs</strong> — rebuilt for the new mobile texts in misc.json (the generated files were out of date)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3668" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.668</span>
+            <span class="version-title">HUD editor</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Fix Legend Clan canonical to match sitemap URL</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>HUD editor</strong> — the minimap canvases get the minimap's size before the game first draws it…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3667" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.667</span>
+            <span class="version-title">Replay Studio</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Replay Studio, seeking and playing backwards</strong> — the packets handled again to rebuild a moment change only the world: no chat line twice (the chat box shows the lines up to the moment, each once; seeking back takes the later ones out), no chat sound, toast, kill feed line…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3666" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.666</span>
+            <span class="version-title">Tests, Knowledge &amp; Team waves from Delta</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Tests</strong> — the Game Over share probe waits for the match card image to be ready (a flag on the Share button set when the image is drawn) instead of a fixed 1.2 s, which a busy machine at a low frame rate did not reach</li>
+            <li><span class="tag tag-new">New</span> <strong>Knowledge</strong> — expand FAQ to 48 entries, add monitor/sound/deathrecap features, update llms-full.txt</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Team waves from Delta</strong> — a Delta player's wave is no longer dropped when its playerID (a tab ID) equals our relay ID</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3665" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.665</span>
+            <span class="version-title">Privacy and Terms pages &amp; Replay links and files</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Privacy and Terms pages opened from the game with its theme</strong> — they use the full Theme Bridge stylesheet, so their background, text and headings take the theme's colours and the theme's background image fills the window…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Privacy and Terms pages</strong> — &quot;Back to Expanding Land&quot; goes to expanding.land (on www.legendmod.ml it opened the Legend Mod home page)</li>
+            <li><span class="tag tag-change">Change</span> The moved LMexpress/privacy.html keeps the language and theme it was opened with (#lm= / ?lm=) when it forwards to privacy.html#extension (it dropped them, so the policy showed in English without the theme)</li>
+            <li><span class="tag tag-fix">Fix</span> Privacy and Terms pages of expanding.land and help.expanding.land: the note that the English text is the binding one is in all 16 languages (its key was missing, so every other language showed it in English)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Replay links and files</strong> — only the newest ?replay= download opens (an older one finishing later is dropped and its request aborted)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3664" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.664</span>
+            <span class="version-title">Replay Studio, playing backwards</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Replay Studio, playing backwards</strong> — each step now shows the world of that moment (handling earlier packets again left removed and eaten cells gone and kept cells from later on)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3663" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.663</span>
+            <span class="version-title">Settings profiles, Settings menu &amp; Windows</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Settings profiles</strong> — Update on a gameplay-only set saved before the ring colours moved to the theme keeps it gameplay-only (it updates just its ring colours; it saved the whole current theme into it, so applying it later replaced the theme)</li>
+            <li><span class="tag tag-new">New</span> <strong>Settings menu</strong> — the list's scrollbar follows its content (rows added later, a section opened, a language or text size change): its thumb and scroll range were left at the old size until the list was scrolled, because the list's height and the…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Windows</strong> — Esc in a menu page opened over windows (Command Centre, User Scripts hotkey) brings the windows back in front instead of closing one unseen under the menu</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3662" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.662</span>
+            <span class="version-title">Gamepad profiles</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Legend Express userscript 1.8.7 and extension 1.8.5</strong> — agar.io showed a white page instead of Legend Mod. window.stop() at document start marks agar.io's page parser as aborted, and the browser then ignores the later document.open()/write() of play.html</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Gamepad profiles</strong> — the old Gamepad window setups all become gamepad profiles (one whose name a gamepad profile has, with other buttons, gets a number; one with the same buttons under its own name is kept; names like &quot;constructor&quot; work)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3661" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.661</span>
+            <span class="version-title">GPU skin upload, Who ate you &amp; Game Over Share</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>GPU skin upload</strong> — when the skin layers cannot be drawn into (an incomplete framebuffer, asked once per texture array), the skin is uploaded from its canvas instead of being marked as uploaded with nothing drawn</li>
+            <li><span class="tag tag-change">Change</span> <strong>Who ate you</strong> — kept by one rule for Eaten by, Match history, Death recap and Kill feed, for the server's report and the one seen in the game, and the guard against naming your own multibox unit works with any of them…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Game Over Share</strong> — the match card image is drawn while the card is shown, so the share sheet opens at the tap (a browser refuses it a moment later)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3660" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.660</span>
+            <span class="version-title">Command Centre, Match history (History tab of Analytics) &amp; Renderer</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> Settings profiles, backups and Undo saved before the video volume and ring colour changes keep them: a set with the old Video skins volume is folded into Video skin sound level…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Command Centre</strong> — a button in the Tools tab (under User Scripts) opens it, so it is reachable by touch on phones and tablets without a keyboard, a hotkey or the quick bar</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Match history (History tab of Analytics)</strong> — the chosen Account (server) list stays chosen when the window is drawn again (opened again, a language change), an open list goes back to This device after a logout or an account change…</li>
+            <li><span class="tag tag-change">Change</span> Main menu in a very small window (a narrow split screen, a short embed): it always fits inside</li>
+            <li><span class="tag tag-change">Change</span> <strong>Renderer</strong> — unused WebGL code removed (a frame mode switch nothing called and its phase field, and two batch aliases for food and viruses nothing called)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3659" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.659</span>
+            <span class="version-title">One place per purpose &amp; Design</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>One place per purpose</strong> — the Settings presets are the one list of starter setups…</li>
+            <li><span class="tag tag-new">New</span> <strong>Design</strong> — add lm-theme-bridge.js to knowledge and companion-guide pages</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3658" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.658</span>
+            <span class="version-title">Replay Studio plays every replay and</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Replay Studio plays every replay and the old replay window is removed: the Replay button of the Home tab, Command Centre &gt; Replays, replay^ server tokens, Death recap links and ?replay= links (with replayStart / replayEnd) open…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3657" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.657</span>
+            <span class="version-title">Leaderboard, HUD editor &amp; Windows</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Leaderboard</strong> — names with decorative characters (stacked accents, Javanese ornaments, tall scripts) no longer draw into the rows above and below: each row clips its text at its own top and bottom…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>HUD editor</strong> — the names of boxes that share a corner (stats line, phone stats, team list, chat box at the top left on phones; target and target panel) no longer lie on top of each other or under a resize handle: a name keeps its usual spot…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Windows</strong> — the window opened or touched last is in front: User Scripts or a menu page opened from its hotkey or the Command Centre no longer opens behind Custom Macros (the older windows go under the menu until it closes), Profiles no…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3656" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.656</span>
+            <span class="version-title">Game Over card</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> Dead selectors removed from the login / logout button locks (ogario.v4.js, skinsAndDeals.js, lm_extended_ui.js) and the language handler: #SpecialDealsQuickBtn, .lm-skins-btn, .lm-deals-btn and .lm-leagues-btn exist nowhere…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Game Over card</strong> — one Share button: the share icon now shares the match card image with the text (mass, time, server) and your link, or the text and link where images cannot be shared, else a tweet</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3655" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.655</span>
+            <span class="version-title">Video skins, Settings &gt; Lab &amp; Menu left column</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Video skins</strong> — one volume slider</li>
+            <li><span class="tag tag-change">Change</span> <strong>Settings &gt; Lab</strong> — its User Scripts (plugins) button is removed</li>
+            <li><span class="tag tag-change">Change</span> <strong>Menu left column</strong> — its Skins link is removed</li>
+            <li><span class="tag tag-change">Change</span> <strong>Sounds in one place</strong> — the message, command and virus shot sound files moved from the Sounds panel of the Youtube &amp; Sounds tab to Settings &gt; Sounds, each next to its volume or switch (same settings, searchable there)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Settings layout</strong> — Jelly physics and the cell eat animation moved from Skins to Animation, Show developer console (render time and profiler) from Stats to Performance and network</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme tab</strong> — the minimap, leaderboard and teamboard images and titles (Theme &gt; Minimap, Theme &gt; HUD) and the screen background image (Theme &gt; Images, under the map background image) moved there from the Manual background chooser of the Tools…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3654" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.654</span>
+            <span class="version-title">Menu dialogs on phones &amp; Phones</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Menu dialogs on phones</strong> — the Report as fake (change skin) window, built hidden, is centred when it opens (it opened half a screen down with about 300 px below the screen that could not be reached) and a dialog taller than the screen scrolls by touch</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Phones</strong> — a two-finger pinch on the open menu changes the HUD scale again (the menu layer lies over the game canvas, whose pinch handler never got those touches)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3653" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.653</span>
+            <span class="version-title">Mouse buttons</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> Mouse buttons, sticky cells and gamepad support moved from the Settings tab to the Hotkeys window (Mouse control and Gamepad blocks above a Keyboard heading, same setting keys, switches and command lists, saved at once)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3652" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.652</span>
+            <span class="version-title">Skins website, One privacy policy page &amp; Old copies of the website</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Frame time on the stats line is a Stats option (Settings &gt; Stats, next to FPS: &quot;Frame time in the FPS counter&quot;, off by default) instead of a Lab experiment: stats line items have one place</li>
+            <li><span class="tag tag-fix">Fix</span> Match history is the History tab of the Analytics window (one window for your past games: list, statistics, heatmaps, coach, objectives) instead of a window of its own</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Copy debug info is the one report for a bug report</strong> — it now ends with the performance report (frame times, freezes, renderer, network) and the Copy button of the Performance diagnostics window copies the same text, with private data taken out of both parts</li>
+            <li><span class="tag tag-change">Change</span> <strong>Skins website</strong> — one gallery page (/skins/)</li>
+            <li><span class="tag tag-change">Change</span> <strong>One privacy policy page</strong> — LMexpress/privacy.html (the Legend Express extension policy, the same text as section 4 of privacy.html) now forwards to privacy.html#extension and left the sitemap</li>
+            <li><span class="tag tag-change">Change</span> <strong>Old copies of the website</strong> — extras/website/ (index, index2, index3: older versions of the home page with dead links) forward to the home page and left the sitemap</li>
+            <li><span class="tag tag-change">Change</span> <strong>Leagues</strong> — the old User Leagues Info (BETA) window is removed (LMexpress/userLeaguesInfoRequest.js and its loader; its button was already gone and, if loaded, it replaced the bridge that feeds the Leagues window)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Skins &amp; Deals</strong> — the potion selector window that nothing opened is removed</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3651" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.651</span>
+            <span class="version-title">Settings &gt; Lab</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Settings &gt; Lab</strong> — a click on the &quot;Frame time in the FPS counter&quot; switch turns it on (it hit the list's scroll bar rail, which scrolled the list up, and the box was never ticked)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3650" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.650</span>
+            <span class="version-title">WebGL skins</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> <strong>WebGL skins</strong> — a new skin goes into its texture layer through a GPU canvas, a 2D texture and one draw instead of texSubImage3D from a canvas kept in CPU memory, which waited for the GPU to finish the frames before it…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3649" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.649</span>
+            <span class="version-title">Players named like members of Object</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Players named like members of Object or Array (&quot;constructor&quot;, &quot;toString&quot;, &quot;valueOf&quot;, &quot;hasOwnProperty&quot;, &quot;__proto__&quot;, &quot;at&quot;, &quot;map&quot;, &quot;length&quot;...) keep their skin, colour and effects: the nick maps…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3648" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.648</span>
+            <span class="version-title">Skins hotkeys</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> Videoskins lang picker + expand llms-full.txt anti-cheat &amp; anti-teaming details</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Skins hotkeys</strong> — each press of Toggle skins shows a short message naming the mode it entered (Skins: custom + agar.io, Skins: custom only, Skins: agar.io only; vanilla only was read as vanilla off), with a note when Show/hide skins still hides…</li>
+            <li><span class="tag tag-fix">Fix</span> Expanding Land team chat of a player without a nick (his client writes &quot;Unnamed: &quot;): shown under the name the server sends for him, the account name or the translated unnamed label, instead of &quot;Account name: Unnamed: text&quot; in…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3647" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.647</span>
+            <span class="version-title">Keys, Language across Legend sites &amp; Game in a Legend frame</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Keys</strong> — Q free spectate keeps working after the hotkeys window was opened and after a death also outside protocol mode (the old OGARio reset left an empty key handler there instead of putting the Q handler back)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Language across Legend sites</strong> — frames with a jimboy3100.github.io address (GitHub Pages runs them on www.legendmod.ml: expanding.land skins and themes, legendffa and the unblocked game on help.expanding.land) get and send the language</li>
+            <li><span class="tag tag-fix">Fix</span> Mod Info window (extras/helper.html), its FAQ and the gift page (rewardday2.html) in the player's language: their texts come from the language packs in all 16 languages…</li>
+            <li><span class="tag tag-change">Change</span> Banners shown in the Mod Info window, on the gift page and on the website home page (feature slider, link icons, logo cartridge) in the player's language: their texts and icon tooltips come from the language packs in all 16…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Game in a Legend frame</strong> — only a language passed by the embedding site updates the Choose Language list and reruns the language pack handler (LMi18n.onChange listeners get from = 'peer' for it)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3646" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.646</span>
+            <span class="version-title">HUD scale</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Expanding Land chat of logged-in players without a nick</strong> — lines sent under an account name longer than 15 characters are shown instead of dropped, the name cut short on screen with the full name in the tooltip, the click-to-reply text, the mute list and the chat bubbles…</li>
+            <li><span class="tag tag-fix">Fix</span> Settings menu without perfect-scrollbar (agar.io can refuse its script): the settings list and the other scroll boxes scroll natively inside their own height while the plugin is missing…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>HUD scale</strong> — a larger value chosen on a bigger screen is kept</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3645" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.645</span>
+            <span class="version-title">Skins</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Skins</strong> — Vanilla skins off hides only the agar.io skins (skin ids, flag and free name skins) and keeps every custom skin, the own one included…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3644" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.644</span>
+            <span class="version-title">HUD editor</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>HUD editor</strong> — the full stats line (Mass | Score | 1/16 | FPS | PING | PPS, shown on phones by tapping the phone stats) can be placed while it is folded</li>
+            <li><span class="tag tag-change">Change</span> <strong>Expanding Land chat of players without a nick</strong> — shown under a translated Unnamed player label in the chat box and popups (also when the label is longer than 15 characters) and never as a bubble over a cell, since the chat packet carries no player or cell id</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3643" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.643</span>
+            <span class="version-title">Build update</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> New build number; the code changes are on <a href="https://github.com/jimboy3100/jimboy3100.github.io/compare/ef3d90bf...5dc2f3c1" target="_blank" rel="noopener">GitHub</a></li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3642" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.642</span>
+            <span class="version-title">HUD cell panel, Project facts page &amp; Keys</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>HUD cell panel</strong> — its text and width follow the HUD scale again (Theme &gt; HUD)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Project facts page</strong> — the Changelog, Modules, Languages and Compatibility links are shown in the visitor's language (16 languages)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Keys</strong> — one Space is one split again when an older loader left agar.io's own key handler in the page (Play and Spectate installed it next to the hotkeys: two splits per Space, two ejects per W, whatever keys were bound)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3641" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.641</span>
+            <span class="version-title">Expanding Land &amp; WebGL labels</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Expanding Land</strong> — cells no longer come back without nick, skin and colour (grey) after pressing Play or respawning</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>WebGL labels</strong> — the label atlas may grow past 16 pages up to its memory budget (twice the text + mass budgets, within the GPU layer limit) in steps of a quarter, so dense worlds no longer leave hundreds of labels with their own texture and draw…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3640" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.640</span>
+            <span class="version-title">Special effects</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Special effects</strong> — a player whose nick names an Array method (at, map, join...) or whose effect is not text no longer throws in every frame and keeps its nick and mass (in WebGL frames they were moved to the overlay and lost)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3639" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.639</span>
+            <span class="version-title">Multibox ring colours are theme settings</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Multibox ring colours are theme settings</strong> — Player 1 / Player 2 ring color moved from Settings &gt; Multibox rings to Theme &gt; Basic theming (next to the teammate indicator), with theme export/import, settings profiles, the Theme Workshop and presets</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3638" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.638</span>
+            <span class="version-title">Knowledge, knowledge/index.html &amp; Multibox on agar.io</span>
+            <time class="version-date" datetime="2026-11-26">2026-11-26</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> <strong>Knowledge</strong> — add changelog.json, modules.json</li>
+            <li><span class="tag tag-change">Change</span> <strong>Knowledge</strong> — prettify graph.jsonld and index.html formatting</li>
+            <li><span class="tag tag-new">New</span> Fix 404 canonical URLs, expand sitemap lastmod, add crawler hints, fix knowledge/index.html duplicate body, add .well-known/llms.txt</li>
+            <li><span class="tag tag-new">New</span> <strong>Knowledge</strong> — add languages.json (16 languages), compatibility.json (4 games, 6 platforms, feature matrix)</li>
+            <li><span class="tag tag-new">New</span> <strong>knowledge/index.html</strong> — add data-i18n attributes to Changelog, Modules, Languages, Compatibility links</li>
+            <li><span class="tag tag-change">Change</span> Lang picker on monitor pages + expand FAQ/knowledge graphs</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Multibox on agar.io</strong> — each own cell is drawn once again (the main player's and the unit's cells were drawn twice, the other connection's copy with its skin next to or over the own one, also counted as an opponent for rings and split ranges): own cells…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3637" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.637</span>
+            <span class="version-title">Main menu fits the window</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Main menu fits the window</strong> — one layout owner sizes and centres the menu from its real header, tab bar and footer, the open tab's settings list gets the room that is left (scrolls to its last row), hudScale is the menu scale whenever it fits and is never…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3636" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.636</span>
+            <span class="version-title">WebGL labels</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> <strong>WebGL labels</strong> — a new nick or mass label goes into the label atlas by a 2D upload and a GPU copy instead of texSubImage3D from the canvas, which waited for the GPU (6-70 ms per label on an Intel UHD, about 60 ms of every dense frame)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3635" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.635</span>
+            <span class="version-title">Web pages in the visitor's language &amp; Translations</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Web pages in the visitor's language</strong> — legendffa (shown on help.expanding.land), the Expanding Land description, companion guide, project facts, developer and video skin guides, LM Express privacy, nickname characters, LM Mobile, old deals and the player monitor now…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Translations</strong> — Greek and Traditional Chinese settings and old pack texts read naturally…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Translations</strong> — Arabic settings and old pack texts read naturally (الكتلة, السيرفر, الثيم, لوحة الصدارة, بارتي; wrong meanings fixed such as virus transparency, Turkey, troll on death)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3634" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.634</span>
+            <span class="version-title">Translations &amp; Theme settings</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Translations</strong> — Spanish and German settings and old pack texts read naturally…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Translations</strong> — Dutch and Polish settings and old pack texts read naturally…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Translations</strong> — French and Turkish settings and old pack texts read naturally…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Translations</strong> — Russian and Bulgarian settings and old pack texts read naturally…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme settings</strong> — one schema of ranges, steps, choices and colour formats for every theme setting (loading, Export/Import Settings, settings profiles, the Theme Workshop, the theme presets and the Theme tab sliders), so a stored theme value is…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3633" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.633</span>
+            <span class="version-title">Languages</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Languages</strong> — Brazilian Portuguese, Indonesian, Japanese and Italian released…</li>
+            <li><span class="tag tag-change">Change</span> Userscript 1.8.6 (detects Brazilian Portuguese, Indonesian, Japanese and Italian browsers)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3632" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.632</span>
+            <span class="version-title">Knowledge &amp; WebGL renderer</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> <strong>Knowledge</strong> — add extension.json, presets.json</li>
+            <li><span class="tag tag-change">Change</span> <strong>WebGL renderer</strong> — frames with an FB friend badge or a special effect (hats, crowns, smoke...) stay on WebGL, the badge or effect and then that cell's multibox ring, nick and mass go on the overlay in the Canvas2D order…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3631" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.631</span>
+            <span class="version-title">Translations, HUD &amp; Performance report</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Translations</strong> — module window terms in the 11 other languages follow the glossary (split, feed, replay, spectate, minimap, leaderboard, server, hotkey, theme), leftover English translated, wrong meanings fixed…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>HUD</strong> — the cell panel follows the HUD weight and scale</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Performance report</strong> — a long animation frame with two or more scripts no longer stops the report and the diagnostics window with an error (each script is listed)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Language packs</strong> — pt-BR/id/ja/it for game1, game2, site-index and the skins/nicks/themes/404/skinrotator pages</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Cell shadows</strong> — with WebGL acceleration a frame with a shadowed cell on screen is drawn by Canvas2D (the GPU batch has no shadow pass, so the option did nothing there)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3630" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.630</span>
+            <span class="version-title">Knowledge expansion, Knowledge &amp; Settings</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Chat bubbles over cells follow only Show chat and Show my own chat: they no longer need the mass label, look the same in Canvas2D and WebGL with names or mass hidden (own or enemy cells, auto-hide), use the cell's current nick…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Knowledge expansion</strong> — llms-full.txt 7x larger, enriched JSON files with descriptions, new controls.json and faq.json, graph.jsonld applicationCategory fix</li>
+            <li><span class="tag tag-change">Change</span> <strong>Knowledge</strong> — expand graph (32 entities), regenerate TTL/RDF, expand llms-full.txt (554 lines)</li>
+            <li><span class="tag tag-new">New</span> <strong>Knowledge</strong> — add glossary, techniques, settings JSON</li>
+            <li><span class="tag tag-change">Change</span> <strong>Settings</strong> — Performance mode puts back only the values nobody changed while it was on (switches, hotkeys, presets and their Undo, sliders win over its copy; a settings profile keeps its own copy)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Translations</strong> — Legend Clan pages, articles, changelog, compare, FAQ, features, privacy and terms in Brazilian Portuguese, Indonesian, Japanese and Italian (Beta)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3629" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.629</span>
+            <span class="version-title">Windows, SEO and discovery &amp; Language packs</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Windows</strong> — shared window kit (lmUiKit) with --lm-w-* sizes and the menu surface (opacity, background image)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Windows</strong> — Profiles, Performance, Gamepad, HUD Editor, Replay Studio, Macro Editor, Theme Workshop, Command Centre, Discover, Analytics/Coach/Goals, Director, Notifications, Practice, User Scripts, Lab, Death Recap and the small tools…</li>
+            <li><span class="tag tag-change">Change</span> <strong>SEO and discovery</strong> — knowledge graph, llms.txt, factual corrections, metadata on all pages, sitemap and robots cleanup</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Language packs</strong> — removed translator recruitment, translation fixes, four new languages (pt-BR/id/ja/it Beta), companion title fix and test update for SEO canonical link</li>
+            <li><span class="tag tag-change">Change</span> Remove Command Centre button from settings presets row</li>
+            <li><span class="tag tag-fix">Fix</span> Fix duplicate Switchery toggles for noSkins and noColors</li>
+            <li><span class="tag tag-new">New</span> <strong>Knowledge graph</strong> — fix Expanding Land applicationCategory, add llms.txt refs to robots.txt</li>
+            <li><span class="tag tag-new">New</span> Add IndexNow key for search engine instant URL submission</li>
+            <li><span class="tag tag-change">Change</span> <strong>Translations</strong> — settings labels in Brazilian Portuguese, Indonesian, Japanese and Italian (Beta)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Language packs</strong> — Brazilian Portuguese, Indonesian, Japanese and Italian for the lmx, shop, misc, core and agario areas</li>
+            <li><span class="tag tag-change">Change</span> <strong>Translations</strong> — old pack texts in Brazilian Portuguese, Indonesian, Japanese and Italian (Beta)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Settings</strong> — one schema of ranges, steps and choices for every gameplay setting (loading, import and cloud download, settings profiles, scripts calling setSettings, the gamepad window and the sliders), so a stored value is always one the…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Language packs</strong> — pt/id/ja/it game terms follow the glossary</li>
+            <li><span class="tag tag-change">Change</span> <strong>Language packs</strong> — new pt/id/it settings labels use the glossary terms</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Translations</strong> — fix wrong meanings in the 12 languages (3D HUD tilt, map-edge macro, lighter multibox rendering, outline not stroke, FFA, party mode, shifted popup and animated skin texts, Discord, player not game) and translate leftovers still…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Expanding Land border</strong> — the map comes only from this connection's last valid opcode 64 packet (plain and compressed), kept apart from the show-viewports food box</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phones</strong> — the leaderboard and its mass/sector column end above the right-hand touch controls and the minimap (tighter rows and a smaller box when a 20-row leaderboard would reach them, every row kept)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Translations</strong> — module windows in Brazilian Portuguese, Indonesian, Japanese and Italian (Beta)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Language packs</strong> — glossary terms for split, feed, party, boost, replay, leaderboard and minimap in the lmx, misc, core and agario areas</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3628" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.628</span>
+            <span class="version-title">Map border shrank</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Map border shrank (Expanding Land, mostly phones)</strong> — the show-viewports box from 3.614 was stored in LM.viewMin/Max, the fields that hold the server's map border, so every frame overwrote the border with the food box and a tab coming back from background rebuilt the map from it</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3627" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.627</span>
+            <span class="version-title">Jelly point grid, Multibox position twin &amp; WebGL overlay marks</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Jelly point grid</strong> — release the indexed scene on flush, empty/failed builds and hidden tab</li>
+            <li><span class="tag tag-change">Change</span> <strong>Multibox position twin</strong> — main-connection cells search only the units' own cells</li>
+            <li><span class="tag tag-change">Change</span> <strong>WebGL overlay marks</strong> — prepare the overlay before the cell pass, keep Canvas2D order</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme Bridge</strong> — exact HTTPS origins, anchors kept, safe background export, strict schema, live sync, HUD schema, Restore website theme</li>
+            <li><span class="tag tag-perf">Perf</span> <strong>Cell lists</strong> — O(1) membership for every list, no scans in removeCell</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3626" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.626</span>
+            <span class="version-title">LMexpress.js</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>LMexpress.js</strong> — the comment above _lmxT/_lmxE lost its */ (split over two lines), so both functions were commented out and LMexpress stopped at adminstuff ('_lmxE is not defined')</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3625" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.625</span>
+            <span class="version-title">P2 O(1) removedCells with _removedIdx</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> P2 O(1) removedCells with _removedIdx (was O(R^2) indexOf), P1a FB badge draw in WebGL branch</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3624" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.624</span>
+            <span class="version-title">P1a overlay lifecycle</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> P1a overlay lifecycle, P2a O(1) removeCell index rebuild, P3 quadtree clear, T4a smalltools modal class, T6/T7 bridge UTF-8 safe btoa + bare domain, A-profile ml/template fix</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3623" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.623</span>
+            <span class="version-title">skinsAndDeals z-index unification</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> skinsAndDeals z-index unification (2000000-&gt;999990, 2100000-&gt;999996)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3622" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.622</span>
+            <span class="version-title">Unified z-index scale</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> Unified z-index scale, .lm-modal-container on all module dialogs</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3621" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.621</span>
+            <span class="version-title">T4 modal z-index standardization</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> T4 modal z-index standardization, font-family vars, visual test checklist</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3620" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.620</span>
+            <span class="version-title">WebGL overlay context fix</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> WebGL overlay context fix, T2 dead code cleanup, T3 mobile theme-color</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3619" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.619</span>
+            <span class="version-title">Theme CSS vars</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> Theme CSS vars (T2 radius, T3 mobile fonts, T4 modal footer, D3 hybrid renderer)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3618" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.618</span>
+            <span class="version-title">Theme/HUD fixes</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> Theme/HUD fixes, O(1) removeCell, bridge security, accessibility</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3617" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.617</span>
+            <span class="version-title">IndexNow</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Legend Clan pages follow the language too</strong> — the clan home page (both designs), rules, members, the Projeto X pages, every announcement and history article and the Discord login window show their texts in the visitor's language (12 languages, Arabic right to left) with a…</li>
+            <li><span class="tag tag-change">Change</span> Changelog, Compare, Privacy, Terms, Skin Rotator, 404, Themes, Nicknames and the Skins pages (with the Skin Checker) show their texts in the visitor's language with a language list, Arabic right to left</li>
+            <li><span class="tag tag-change">Change</span> <strong>IndexNow</strong> — site key file and a manual submission script (developers/indexnow.py, run by hand; no CI)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3616" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.616</span>
+            <span class="version-title">Translation tools, Web pages follow the language too &amp; WebGL jelly bodies</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Translations come from one source (developers/i18n/src, built into languages/lm-&lt;code&gt;.js): lmT, the settings labels, the old language-pack texts and agar.io's page texts all follow Choose Language, the missing translations were…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Translation tools</strong> — hard-coded text scanner (developers/i18n/scan.js, per-file strict list), page extractor (html-extract.js), README with the steps for adding texts</li>
+            <li><span class="tag tag-change">Change</span> <strong>Web pages follow the language too</strong> — index, features and FAQ show their texts in the visitor's language (the one passed from the mod with the Theme Bridge, the site's Choose Language, else the browser's) with a language list, Arabic right to left</li>
+            <li><span class="tag tag-perf">Perf</span> <strong>WebGL jelly bodies</strong> — all bodies in one indexed draw and all outlines in another instead of one triangle fan per cell, about half the bytes uploaded per frame and indices reused while point counts stay the same</li>
+            <li><span class="tag tag-change">Change</span> Login, bots, boost, VIP, party, potion, chat and settings messages, theme option names and the scan trick help follow Choose Language (first part of the game texts)</li>
+            <li><span class="tag tag-fix">Fix</span> Phone controls, the control editor, the login and account toasts, play.html's profile/boost/potion/region texts and the Mod Info, templates, nickname characters and Dying Light windows come from the language packs in all 12…</li>
+            <li><span class="tag tag-change">Change</span> Game texts from the second half of the mod come from the language packs in all 12 languages: server and purchase toasts, disconnect reasons, game over card and match card, stats and profile panels, leaderboard footer, profiler…</li>
+            <li><span class="tag tag-change">Change</span> Command Centre, Discover features, the streaming companion (also companion.html) and the notification centre show every text in the chosen language (all 12, from the language packs) and follow a language change at once</li>
+            <li><span class="tag tag-change">Change</span> Settings profiles, Theme Workshop and the HUD layout editor show every text in the chosen language (all 12, from the language packs) and follow a language change at once</li>
+            <li><span class="tag tag-change">Change</span> Performance diagnostics and the spectator director show every text in the chosen language (all 12, from the language packs) and follow a language change at once</li>
+            <li><span class="tag tag-change">Change</span> Replay Studio, the practice arena and the death recap show every text in the chosen language (all 12, from the language packs) and follow a language change at once</li>
+            <li><span class="tag tag-change">Change</span> Menu, bots panel, skin upload, purchase, server connection and team ping texts, time units and product names follow Choose Language (second part of the game texts)</li>
+            <li><span class="tag tag-change">Change</span> Analytics, the small tools (skin collections, hotkey check, radial menu, screenshot mode) and the HUD helpers show every text in the chosen language (all 12, from the language packs) and follow a language change at once</li>
+            <li><span class="tag tag-change">Change</span> Plugins, Lab, the macro editor and the gamepad window show every text in the chosen language (all 12, from the language packs) and follow a language change at once</li>
+            <li><span class="tag tag-change">Change</span> <strong>First visit</strong> — a small window asks for the language once on the main menu (the browser's one picked; OK saves it like Choose Language, the cross or Esc keeps the browser's language unsaved)</li>
+            <li><span class="tag tag-fix">Fix</span> Legend Express extension and userscript texts follow Choose Language: popup, loading and error pages in all 12 languages (texts.js and the userscript's texts generated from the language packs by developers/i18n/extension.js), the…</li>
+            <li><span class="tag tag-change">Change</span> LMexpress texts come from the language packs in all 12 languages (LMexpress.js, extended UI, shop, replay, user scripts, voice chat, leagues info): menus, tooltips and toasts follow Choose Language and the persistent panels…</li>
+            <li><span class="tag tag-perf">Perf</span> <strong>WebGL nick and mass labels</strong> — kept in one texture-array atlas and drawn with one instanced draw per frame instead of a texture bind, four uniforms and a draw each, in the same order and depth</li>
+            <li><span class="tag tag-change">Change</span> <strong>Translation scanner</strong> — ogario.v4.js on the strict list (no hard-coded English text left in either half)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Phone control editor</strong> — its bar uses the screen width before it wraps (with longer texts, e.g. Greek, it wrapped at half the screen)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3615" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.615</span>
+            <span class="version-title">User Scripts &amp; Shop help button</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>User Scripts</strong> — the active (success) buttons use the player's button colour 2 instead of a fixed green</li>
+            <li><span class="tag tag-change">Change</span> <strong>Shop help button</strong> — opens the old deals page once (an inline onclick opened it a second time) and with the player's theme</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3614" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.614</span>
+            <span class="version-title">Theme Workshop</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Rounded / Square HUD sets --lm-radius (windows) and --lm-radius-s (their buttons and fields): one stylesheet gives the menu and HUD corners from it instead of two hand-written lists, and the Legend windows…</li>
+            <li><span class="tag tag-change">Change</span> Both WebGL skin lookups (cell batch and per-cell) use the shared application.customSkinKey, which includes the team list skins</li>
+            <li><span class="tag tag-new">New</span> <strong>Legend pages follow the menu theme when the mod opens them</strong> — one helper (lmThemeUrl) adds the theme to every Legend page the mod opens (menu footer, quick menu Themes / Skins, More skins, More FPS, Server Monitor, old deals, promo windows, Companion) and never to other sites</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Game Over, Mod Info and Skin Changer follow the theme</strong> — the Share Match Card button goes from the accent to button colour 3 (was a fixed purple), button text in the theme's button text colour, corners from Rounded / Square HUD, the card fits narrow screens</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme Workshop</strong> — no import / export tab of its own (two import / export places confused players)</li>
+            <li><span class="tag tag-fix">Fix</span> Legend pages opened from the mod also get the player's Legend Mod language (languagemod 1-12, the only setting sent; html data-lm-lang and lmThemeBridge.getLang()), and the theme and language are kept for the browser tab so every…</li>
+            <li><span class="tag tag-fix">Fix</span> Phone controls, the phone settings panel, overlays and the layout editor take the menu theme (accent, panels, button colours 1 and 3) instead of fixed dark blue / cyan, with the same transparency, sizes and geometry…</li>
+            <li><span class="tag tag-fix">Fix</span> Show viewports (top bar, first button) draws the server's view again: since the per-frame culling bounds (3.477) reused LM.camMin/Max, the box was the screen edge and never visible</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3613" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.613</span>
+            <span class="version-title">Custom skins sent over the chat</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Custom skins sent over the chat socket (and other skins loaded from another address or given as a cell's own URL) are drawn in game again, not only on the teamboard and for a moment while cells overlap: the WebGL renderer now…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3612" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.612</span>
+            <span class="version-title">Theme bridge &amp; Theme properties</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Theme bridge</strong> — a theme message is accepted only from the parent / opener window on a Legend origin, and the mod sends it only to Legend pages (no '*')</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Teammates' custom skins show on their cells again</strong> — a name skin (the &quot;bait&quot; flag) no longer replaces a skin already set for that name, and a teammate's cell draws the skin its team list row shows in every renderer (Canvas, WebGL, WebGL jelly), also when the name map lost it or the…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Theme properties</strong> — one set on :root written by the theme setters</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3611" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.611</span>
+            <span class="version-title">Shop (special skin effects)</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Shop (special skin effects)</strong> — follows the user theme (panel, text, accent, button colours 1/2/4) with the same header as the other Legend windows</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3610" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.610</span>
+            <span class="version-title">Theme &amp; Profile tab</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Theme</strong> — HUD background colour applies (invalid selector dropped the rule), switches, info buttons and info pop-ups follow the theme, shop header like the other windows, nickname page themed</li>
+            <li><span class="tag tag-change">Change</span> <strong>Profile tab</strong> — compact (no empty gaps), badges behind a Badges x/y button that opens a themed window with each badge and what it needs</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3609" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.609</span>
+            <span class="version-title">The menu follows the player's menu</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>The menu follows the player's menu theme again</strong> — the loading screen was a &lt;div&gt; in &lt;head&gt;, which ends &lt;head&gt; for the browser, so every stylesheet after it went into &lt;body&gt;, after the theme's style tags, and their default colours (navy panels, cyan) won</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3608" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.608</span>
+            <span class="version-title">Build update</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> New build number; the code changes are on <a href="https://github.com/jimboy3100/jimboy3100.github.io/compare/26c280a2...c677d1ba" target="_blank" rel="noopener">GitHub</a></li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3607" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.607</span>
+            <span class="version-title">Menu buttons Hide Shortcuts</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Menu buttons Hide Shortcuts, Rounded Hud, Hide Everything, Timer Calc. and YouTube background switch back on the second click: Bootstrap's own button toggle (data-toggle=button) undid the state the buttons set themselves, so…</li>
+            <li><span class="tag tag-change">Change</span> Rounded / Square Hud also cover the main menu, skins panel, quick menu, XP bar and timer tools, with !important in the style itself</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3606" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.606</span>
+            <span class="version-title">Jelly physics on crowded screens</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Jelly physics on crowded screens</strong> — the collision index is a packed point grid instead of quadtree.wasm, which held only 32768 points and 4096 results per query (cells past that silently lost their collisions) and called back into JS for every point it found</li>
+            <li><span class="tag tag-fix">Fix</span> Jelly physics skips cells that are not drawn (multibox copies hidden as duplicates, small bots while Hide small bots is on): they no longer dent the shown cells they overlap, and a cell shown again starts with a round perimeter</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3605" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.605</span>
+            <span class="version-title">User Scripts window</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Cache-bust legendhelper.js URL to force fresh fetch (SyntaxError fix)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>User Scripts window</strong> — the list of the 5 slots (Plugins) is the main view and opens first</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3604" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.604</span>
+            <span class="version-title">Theme #1 same layout as other</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Theme #1 same layout as other themes, Replay dark theme, HUD toggle self-managed aria-pressed</li>
+            <li><span class="tag tag-fix">Fix</span> Remove stray closing brace in legendhelper.js (SyntaxError)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Legend Express extension 1.8.4 and userscript 1.8.5</strong> — agar.io's own page is stopped at once (window.stop at document_start) instead of after the asynchronous on/off switch and the page download, so a slow download or a sleeping extension worker no longer leaves the vanilla game…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3603" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.603</span>
+            <span class="version-title">Loading screen in the language chosen</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> Loading screen in the language chosen in Legend Mod (Choose Language, all 12 languages, Arabic right to left)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3602" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.602</span>
+            <span class="version-title">Settings profiles</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Mod Info button fallback, themed modal body/footer/inputs, Theme #1 CSS cache-bust</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Settings profiles</strong> — phone preferences are applied the first time on a device and at once (the phone controls read them again, panel switches included), their Undo removes them when there were none, and the gamepad buttons have their own Include…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3601" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.601</span>
+            <span class="version-title">Settings profiles</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> <strong>Settings profiles</strong> — Undo and backups of a state without zoom bookmarks, gamepad buttons or a phone control layout say so, and restoring them removes what a profile added (it stayed)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3600" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.600</span>
+            <span class="version-title">Set --lm-mc/pc/tc CSS vars from user</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Set --lm-mc/pc/tc CSS vars from user theme instead of removing them</li>
+            <li><span class="tag tag-fix">Fix</span> Adaptive performance lowers effects only while drawing is what is slow (at least half of each frame): when the time goes to packets, scripts or the browser, fewer effects could not help and only made the game look worse</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3599" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.599</span>
+            <span class="version-title">Cloud settings never ask for a sync code</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Unify all popup borders, theme Replay modal, fix Theme #1 sizing</li>
+            <li><span class="tag tag-change">Change</span> <strong>Cloud settings never ask for a sync code</strong> — Upload and Download use the Google / Facebook account that is logged in (the settings server checks the login with Google / Facebook, so only that account can read or write its record)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3598" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.598</span>
+            <span class="version-title">Skins</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Unify all popup visual chrome to match lmPromoChrome style</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Skins</strong> — a picture that is fully transparent or solid black is no skin (placeholder and broken skin links of chat teammates drew black cells and black team list avatars)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3597" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.597</span>
+            <span class="version-title">Loading screen instead of a white</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Loading screen instead of a white page while Legend Mod loads: Legend Mod title, Loading... please wait (Greek for Greek browsers), a progress bar and the file being loaded, in the player's menu colours</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3596" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.596</span>
+            <span class="version-title">Theme #1 no longer constrained to</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Theme #1 no longer constrained to small fixed size (matches others)</li>
+            <li><span class="tag tag-fix">Fix</span> Set --lm-* CSS vars from actual user theme, not hardcoded defaults</li>
+            <li><span class="tag tag-fix">Fix</span> Restore Save for Later, Results and Search panels to original transparent style</li>
+            <li><span class="tag tag-fix">Fix</span> Remove obsolete 1-by-1 manual search leaderboard prompt</li>
+            <li><span class="tag tag-fix">Fix</span> Theme #1 image now stretches full width and displays block like others</li>
+            <li><span class="tag tag-fix">Fix</span> Guard lmThemeData in lmPromoChrome + make all theme images full-width</li>
+            <li><span class="tag tag-fix">Fix</span> Themed windows, Theme Workshop presets, settings menu groups, renderer and macro fixes</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3595" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.595</span>
+            <span class="version-title">Precision zoom</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Custom macros stop on death, respawn, reconnect, server or unit switch, practice/replay transitions and when the tab loses focus (they no longer start while dead or in the menu)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Precision zoom</strong> — a zoom bookmark recalled while it is held is the zoom after release, saving while held stores the zoom it returns to (also after the wheel), both clamped, and it is released on a reconnect or unit switch</li>
+            <li><span class="tag tag-change">Change</span> Accessibility symbols compare with the unit you control (also a multibox unit while the main player is dead), with the biggest/smallest cell choice of the opponent colours, and are not drawn during replays</li>
+            <li><span class="tag tag-fix">Fix</span> Command Centre and Discover features refuse to toggle a disabled or read-only switch (checked when run)</li>
+            <li><span class="tag tag-change">Change</span> LMEvents data says where an event comes from (context live, practice or replay; api.getContext)</li>
+            <li><span class="tag tag-new">New</span> Add Legend Mod Theme Bridge for external site theming</li>
+            <li><span class="tag tag-fix">Fix</span> Turning &quot;Record replays&quot; off (by hand, profile, preset or auto rule) keeps the recordings in memory and only stops this connection's recording, with a new confirmed &quot;Clear recordings in memory&quot; button</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3594" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.594</span>
+            <span class="version-title">Settings profiles</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> Remove duplicate legendhelper code, add dark iframe backgrounds for themed popups</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Settings profiles</strong> — zoom bookmarks, gamepad buttons and phone control layouts are compared and applied (gamepad buttons let go and reloaded, phone controls placed again)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3593" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.593</span>
+            <span class="version-title">Find player / server</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Home tab background image now uses !important CSS to survive agar.io overrides</li>
+            <li><span class="tag tag-change">Change</span> <strong>Find player / server</strong> — send the search to lm-ws when the connection opens (the server that replaced SNEZ answers only a search, so the list never came and nothing was found)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3592" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.592</span>
+            <span class="version-title">Skinchanger</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Skinchanger</strong> — convert to Bootstrap modal with themed close button</li>
+            <li><span class="tag tag-new">New</span> Adaptive performance no longer lowers the resolution by default (the picture got blurry): new option &quot;may lower the resolution (blurrier)&quot;, off</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3591" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.591</span>
+            <span class="version-title">Compare, Themes &amp; Footer</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Compare</strong> — rewrite with accurate Delta mod features from codebase research</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Compare</strong> — fix cannon split and custom macros accuracy for Delta</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Themes</strong> — fix Theme #1 image size to match other themes</li>
+            <li><span class="tag tag-change">Change</span> <strong>Footer</strong> — match OgVer color to version label (remove opacity)</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Helper</strong> — center Mod Info panel on screen with fixed positioning</li>
+            <li><span class="tag tag-change">Change</span> <strong>Panels</strong> — convert Mod Info and Nickname Chars to Bootstrap modal pattern</li>
+            <li><span class="tag tag-change">Change</span> <strong>Performance diagnostics</strong> — each freeze gets a breakdown of what ran during it (packets, cell update and sort, render phases, skin and text textures, HUD timers, storage writes) and the browser's long animation frames with the script that ran, a line like…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3590" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.590</span>
+            <span class="version-title">Themes &amp; Critical (agar.io)</span>
+            <time class="version-date" datetime="2026-11-25">2026-11-25</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> Remove skin editor from Legend Mod, merge into skinchecker.html</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Themes</strong> — remove broken sniikz.com nav links and offcanvas menus</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Critical (agar.io)</strong> — the mod no longer stops at start when Chrome refuses a document.write library on a slow connection (perfectScrollbar is not a function): missing jQuery plugins, toastr and Switchery get a stand-in, are loaded again with a normal…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3589" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.589</span>
+            <span class="version-title">Performance diagnostics &amp; Hotkeys window</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Performance diagnostics</strong> — drag the window by its title bar (mouse or touch)</li>
+            <li><span class="tag tag-change">Change</span> <strong>Hotkeys window</strong> — no Bound keys and Conflicts buttons (the window already shows every key)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3588" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.588</span>
+            <span class="version-title">Settings</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Settings</strong> — Performance diagnostics, Open companion and User Scripts (plugins) buttons were white text on a near-white background (invisible)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3587" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.587</span>
+            <span class="version-title">Hotkeys window</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Hotkeys window</strong> — Close is the last button on the right again (Bound keys and Conflicts come before it)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3586" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.586</span>
+            <span class="version-title">Performance diagnostics</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> <strong>Performance diagnostics</strong> — freezes of 250 ms - 10 s in the foreground are counted with duration and time and are part of the frame times, measured between frame callbacks before the FPS limit so its own gaps and a hidden tab are not stalls…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3585" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.585</span>
+            <span class="version-title">Skin jobs</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Skin jobs</strong> — past twice the waiting-job cap even recently requested skins are dropped (least recently asked for first, never one drawn in this frame) and the cap is applied again on every queue frame, not only on new jobs</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3584" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.584</span>
+            <span class="version-title">WebGL mass text</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>WebGL mass text</strong> — the per-cell textures count their bytes against their own budget and are trimmed every 30 frames (at once when over it)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3583" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.583</span>
+            <span class="version-title">WebGL mass text keeps one texture</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> WebGL mass text keeps one texture per cell that is redrawn in place when the mass changes (at most about 2 ms of redraws per frame, a value never shows longer than 100 ms late) instead of a new cached texture for every value</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3582" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.582</span>
+            <span class="version-title">Resolve 6 P1 bugs - edge</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Resolve 6 P1 bugs - edge canvas VRAM, ensureEntry crash, saveNamed rollback, layout desync, mid-drag rotation, precision zoom preservation</li>
+            <li><span class="tag tag-fix">Fix</span> Resolve 4 P2 bugs - double .lm extension, speed reschedule, dynamic maxCells, prototype pollution guard</li>
+            <li><span class="tag tag-fix">Fix</span> Resolve 5 P2 bugs - evalT cancel on listen(false), duplicate save guard, daily objective undergen, zoom bookmarks in profiles, writeBookmarks helper</li>
+            <li><span class="tag tag-fix">Fix</span> Resolve 3 P2 bugs - overlay canvas DOM cleanup, empty storage defaults, simultaneous pinch detection</li>
+            <li><span class="tag tag-change">Change</span> Replays share one memory budget across all recordings in memory (by device, about 150 MB on phones, 300 MB on desktop): the oldest recordings are freed from memory first, then the current one stops like at 100 MB</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3581" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.581</span>
+            <span class="version-title">WebGL skins</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> Cell sorting no longer stalls a frame when many cells arrive out of order (bulk spawn, reconnect, world spectate)</li>
+            <li><span class="tag tag-fix">Fix</span> Resolve 6 P1 bugs - checkpoint compression, restore purity, spawn accuracy, editor rollback, beep timing, precision zoom</li>
+            <li><span class="tag tag-perf">Perf</span> <strong>WebGL skins</strong> — with more than 128 skins the least recently drawn texture layer is reused instead of rebuilding the whole 128 MB skin array and drawing with Canvas2D for 5 s (periodic stall)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3580" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.580</span>
+            <span class="version-title">Analytics</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> <strong>Analytics</strong> — a life's end mass is again the last mass before the death (the death event's mass is 0 once the cells are gone, which made the retention score always 0)</li>
+            <li><span class="tag tag-change">Change</span> Remove the duplicate result image (Game Over card icon, Settings button, hotkey, Command Centre entry and its window)</li>
+            <li><span class="tag tag-fix">Fix</span> Resolve 5 P1 bugs - profiles slider/prototype/crashguard, perf session-start/ping-sampling</li>
+            <li><span class="tag tag-fix">Fix</span> Resolve 6 P1 bugs - replay ghost cells/budget/live-playback/back-to-game, gamepad zoom-conflict/edge-trigger</li>
+            <li><span class="tag tag-fix">Fix</span> Resolve 5 P1 bugs - auto-switch timeout, server hop tracking, replay warnings, growth formula, heatmap shape</li>
+            <li><span class="tag tag-fix">Fix</span> Video skins no longer call play() for every video cell in every frame: one play at a time per video with a short backoff, playback starts once enough data is buffered, freed videos leave no timers behind, players sharing one…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3579" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.579</span>
+            <span class="version-title">Phones</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Resolve 6 P1 bugs - replay skins, memory cap, Live indicator, analytics retention/quota/clock</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Phones</strong> — the game canvas gets its 2x resolution right after start instead of only after the first rotation, fullscreen or menu resize</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3578" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.578</span>
+            <span class="version-title">Resolve 11 P1 bugs from deep</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Resolve 11 P1 bugs from deep audit</li>
+            <li><span class="tag tag-change">Change</span> Theme workshop window (Theme tab button, hotkey without a default key, Command Centre): my themes (save the current theme, rename, copy, delete, the last 5 saved versions of each with restore), live preview with Keep / Revert…</li>
+            <li><span class="tag tag-fix">Fix</span> Remove the Servers window's favourites key from export/import and its Greek label again (they came back with an earlier fix commit)</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3577" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.577</span>
+            <span class="version-title">Resolve 19 P0 bugs from deep</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-fix">Fix</span> Resolve 19 P0 bugs from deep 3.571 audit</li>
+            <li><span class="tag tag-change">Change</span> Discover features (Command Centre, link in the What's new toast; opens by itself once after an update for returning players, can be turned off): a card per optional feature with what it does, one-tap switches on the real options…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3576" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.576</span>
+            <span class="version-title">Skin editor</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Skin editor</strong> — load an image from a link or this device, crop it in a circle, zoom, rotate and preview it in cells of several sizes with your name and mass, then download a PNG or keep it in this browser for local preview only</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3575" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.575</span>
+            <span class="version-title">User Scripts panel</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>User Scripts panel</strong> — plugins (a user script with a ==LMPlugin== header: name, version, author, Legend Mod version limits, declared permissions), its header shown under the slot chooser, a Plugins view with every slot's header, compatibility…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3574" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.574</span>
+            <span class="version-title">Practice arena &amp; Small tools</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> Practice arena (new window, from the Command Centre or its hotkey, no default key): offline drills against bots in a world simulated in the browser, nothing sent to any server</li>
+            <li><span class="tag tag-change">Change</span> <strong>Practice arena</strong> — starting a session cancels a pending automatic reconnect or delayed join of the server left, which could replace the session mid-run</li>
+            <li><span class="tag tag-fix">Fix</span> Small tools, each off until used and listed in the Command Centre (hotkeys without default keys): radial command menu…</li>
+            <li><span class="tag tag-fix">Fix</span> <strong>Small tools</strong> — removed what Legend Mod already has: the bug report window, its hotkey and error capture (Settings &gt; Copy debug info now leaves out nicks, clan tags, skin URLs, tokens and room paths instead), the colour-blind palettes with their…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3573" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.573</span>
+            <span class="version-title">Fix freeze investigation findings - optimize</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-perf">Perf</span> Fix freeze investigation findings - optimize special skin timer, video timer leak, enhanced stall diagnostics</li>
+            <li><span class="tag tag-change">Change</span> Spectator director (window in the Command Centre and a hotkey with no default key; nothing runs until it is used, never while playing): automatic camera in free spectate and Expanding Land World Spectate that follows the most…</li>
+            <li><span class="tag tag-change">Change</span> HUD editor (Theme &gt; HUD &gt; Edit HUD, a hotkey with no default key, the Command Centre): frames over the leaderboard, minimap, stats, team list, time, target, chat box, chat input, popups, network graph, cell panel, notification…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3572" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.572</span>
+            <span class="version-title">Servers window removed</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> Branded match card image generator + referral system</li>
+            <li><span class="tag tag-change">Change</span> Revert &quot;Merge Servers window (favourites, recent, arenas, private servers, Expanding Land)&quot;</li>
+            <li><span class="tag tag-change">Change</span> <strong>Servers window removed</strong> — the existing server controls already cover it</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3571" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.571</span>
+            <span class="version-title">Growth</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-change">Change</span> <strong>Growth</strong> — README overhaul with badges and CTA, changelog page, RSS feed, internal cross-links, manifest description update</li>
+            <li><span class="tag tag-change">Change</span> Servers window (button next to the server token box, hotkey with no default key, Command Centre): favourites with your own labels (localStorage lmServerFavs, exported and imported with the gameplay settings), recent servers, the…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Stream overlay / second screen (option, off by default)</strong> — the game publishes mass, rank, cells, time alive, cells eaten, server and mode, leaderboard top 10, minimap (own dot, trail, teammates, ghost cells), events and optional chat at most 4 times per second on…</li>
+        </ul>
+    </div>
+
+    <div class="version" id="v3570" lang="en" data-i18n-off="release notes from the git history">
+        <div class="version-header">
+            <span class="version-number">v3.570</span>
+            <span class="version-title">Server list</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
+        </div>
+        <ul>
+            <li><span class="tag tag-new">New</span> Add OG, Twitter, canonical, noindex metadata to 92 pages - 25 article fragments wrapped in full HTML with OG, Twitter Card, canonical - 63 banner/iframe/utility pages marked noindex - 4 headless fragments wrapped in minimal HTML…</li>
+            <li><span class="tag tag-change">Change</span> Analytics window (Settings &gt; Stats option &quot;Analytics&quot;, off by default; Analytics button in the profile stats, hotkey with no default key, menu footer link while recording): dashboard with games, highest mass, average survival and…</li>
+            <li><span class="tag tag-change">Change</span> <strong>Server list</strong> — the same arena reached under two addresses is shown once (its players mostly the same as your arena's or as a listed one's within 2 minutes; the other address is named in the tooltip)</li>
+            <li><span class="tag tag-new">New</span> Replay Studio (new window, opened from the replay window's Studio button or its hotkey, no default key): timeline with automatic bookmarks (own deaths, kills, virus pops, double/triple splits, 1st place, big mass loss) that jump…</li>
+            <li><span class="tag tag-change">Change</span> Touch control editor (Edit controls in the phone gear panel, also in the Command Centre): the game input pauses and the joystick zone, Split, Feed, 4x, 16x, multibox, quick chat and menu buttons can be dragged and resized…</li>
+        </ul>
+    </div>
+
     <div class="version" id="v3569">
         <div class="version-header">
             <span class="version-number">v3.569</span>
             <span data-i18n="site.changelog.deathRecapKillFeed" class="version-title">Death Recap, Kill Feed &amp; Mass-Loss Alert</span>
-            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
         </div>
         <ul>
             <li data-i18n-html="site.changelog.newDeathRecapOn"><span class="tag tag-new">New</span> <strong>Death recap</strong> on the Game Over card — the last 20 seconds as 3-6 steps: mass &amp; cells, splits, viruses, merges, quick mass losses, who ate you — with a mass sparkline</li>
@@ -199,7 +1977,7 @@
         <div class="version-header">
             <span class="version-number">v3.568</span>
             <span data-i18n="site.changelog.adaptivePerformanceNetworkDiagnostics" class="version-title">Adaptive Performance &amp; Network Diagnostics</span>
-            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
         </div>
         <ul>
             <li data-i18n-html="site.changelog.perfAdaptivePerformanceAuto"><span class="tag tag-perf">Perf</span> <strong>Adaptive performance</strong> — auto-optimizes when FPS drops: effects → jelly physics → resolution, restores when stable</li>
@@ -212,7 +1990,7 @@
         <div class="version-header">
             <span class="version-number">v3.567</span>
             <span data-i18n="site.changelog.commandCentreNotificationsSound" class="version-title">Command Centre, Notifications &amp; Sound Mixer</span>
-            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
         </div>
         <ul>
             <li data-i18n-html="site.changelog.newCommandCentreCtrl"><span class="tag tag-new">New</span> <strong>Command Centre (Ctrl+K)</strong> — search every hotkey, switch, slider, theme setting and menu window; recent &amp; starred items</li>
@@ -226,7 +2004,7 @@
         <div class="version-header">
             <span class="version-number">v3.566</span>
             <span data-i18n="site.changelog.hudHelpersSettingsProfiles" class="version-title">HUD Helpers &amp; Settings Profiles</span>
-            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
         </div>
         <ul>
             <li data-i18n-html="site.changelog.newMovementDirectionArrow"><span class="tag tag-new">New</span> <strong>Movement direction arrow</strong> from how your cells really move (also multibox)</li>
@@ -244,7 +2022,7 @@
         <div class="version-header">
             <span class="version-number">v3.565</span>
             <span data-i18n="site.changelog.gamepadCustomizationBadges" class="version-title">Gamepad Customization &amp; Badges</span>
-            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
         </div>
         <ul>
             <li data-i18n-html="site.changelog.newGamepadButtonMapping"><span class="tag tag-new">New</span> <strong>Gamepad button mapping</strong> — any pad button can run any hotkey command; hold commands stay held</li>
@@ -261,7 +2039,7 @@
         <div class="version-header">
             <span class="version-number">v3.564</span>
             <span data-i18n="site.changelog.protocolHardeningBugFixes" class="version-title">Protocol Hardening &amp; Bug Fixes</span>
-            <span data-i18n="site.changelog.november2026" class="version-date">November 2026</span>
+            <time class="version-date" datetime="2026-11-24">2026-11-24</time>
         </div>
         <ul>
             <li data-i18n-html="site.changelog.fixTruncatedPacketsDropped"><span class="tag tag-fix">Fix</span> Truncated packets dropped with a warning instead of uncaught RangeError</li>

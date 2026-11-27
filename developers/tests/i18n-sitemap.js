@@ -64,7 +64,7 @@ locs.forEach((loc) => {
     if (mod) areas = areas.concat(modAreas);
     const used = new Set();
     (html.match(/data-i18n(?:-[a-z-]+)?="([^"]+)"/g) || []).forEach((x) => {
-        if (/^data-i18n-vars=/.test(x)) return;
+        if (/^data-i18n-(vars|off)=/.test(x)) return; /* off: a reason, not a key */
         used.add(x.replace(/^[^"]*"/, '').replace(/"$/, ''));
     });
     let m;
@@ -96,7 +96,7 @@ SIBLINGS.forEach(([host, dir]) => {
             let areas = ['site'];
             (m ? m[1].split(/[\s,]+/).filter(Boolean) : []).forEach((a) => { if (a === 'mod') areas = areas.concat(modAreas); else areas.push(a); });
             (html.match(/data-i18n(?:-[a-z-]+)?="([^"]+)"/g) || []).forEach((x) => {
-                if (/^data-i18n-vars=/.test(x)) return;
+                if (/^data-i18n-(vars|off)=/.test(x)) return; /* off: a reason, not a key */
                 const k = x.replace(/^[^"]*"/, '').replace(/"$/, '');
                 keys++;
                 ok(has(areas, k), rel + ': key ' + k + ' is in none of its areas (' + areas.filter((a) => a.indexOf('site') === 0).join(', ') + ')');

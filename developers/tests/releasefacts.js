@@ -2,7 +2,11 @@
 // What the website says about its releases, its feed and its search box is true:
 // - rss.xml and opensearch.xml point only at files and changelog anchors that exist here, and the
 //   pages link the feed and the search description that exist; no page description, feed text or
-//   search description calls Legend Mod "the best agar.io extension" (nothing backs that up).
+//   search description calls Legend Mod "the best agar.io extension" (nothing backs that up);
+// - changelog.html has an anchor (#v3701) for every released build (a "Version 3.xxx" commit) from
+//   its oldest one on, newest first, dated by that commit, and is at most 10 builds behind;
+//   rss.xml lists its newest releases with the times of their "Version" commits
+//   (developers/tools/changelog-releases.js writes both).
 // Usage: node developers/tests/releasefacts.js
 'use strict';
 const fs = require('fs');
@@ -75,6 +79,66 @@ Array.from(new Set(pages)).forEach((p) => {
         ok(!SUPERLATIVE.test(c), p + ': unproven claim in its description "' + c.slice(0, 120) + '"');
     });
 });
+
+/* ---- releases: changelog.html and rss.xml against the "Version 3.xxx" commits ---- */
+const tool = require(path.join(repo, 'developers', 'tools', 'changelog-releases.js'));
+let rels = [];
+try { rels = tool.releases(repo); } catch (e) { console.log('skip releases: no git history (' + e.message.split('\n')[0] + ')'); }
+if (rels.length) {
+    const byV = {};
+    rels.forEach((r) => { byV[r.v] = r; });
+    const html = read('changelog.html');
+    const entries = tool.changelogEntries(html);
+    const ids = tool.anchors(html);
+    ok(entries.length === ids.length && entries.length > 0, 'changelog.html: every release block is read (' + entries.length + ' of ' + ids.length + ')');
+    const vs = ids.map(tool.versionOf).map(parseFloat);
+    ok(vs.every((v, i) => !i || v < vs[i - 1]), 'changelog.html: releases newest first, each once');
+    ids.forEach((id) => ok(!!byV[tool.versionOf(id)], 'changelog.html #' + id + ': a released build (it has a "Version ' + tool.versionOf(id) + '" commit)'));
+    /* every build released since the oldest one on the page has its anchor */
+    const oldest = vs[vs.length - 1], newest = vs[0];
+    const missing = rels.filter((r) => parseFloat(r.v) >= oldest && parseFloat(r.v) <= newest && ids.indexOf(tool.anchorOf(r.v)) < 0).map((r) => r.v);
+    ok(!missing.length, 'changelog.html: no released build is left out (' + missing.join(', ') + ')');
+    /* a few builds may come out before their notes are written, not more */
+    const behind = rels.filter((r) => parseFloat(r.v) > newest).map((r) => r.v);
+    ok(behind.length <= 10, 'changelog.html stops at v' + newest.toFixed(3) + ', ' + behind.length + ' released builds after it (' + behind.slice(0, 3).join(', ') + '...): run node developers/tools/changelog-releases.js');
+    entries.forEach((e) => {
+        const r = byV[e.v];
+        if (!r) return;
+        ok(e.date === r.date, 'changelog.html #' + e.id + ': dated ' + e.date + ', its "Version" commit is from ' + r.date);
+        ok(new RegExp('id="' + e.id + '"[^>]*>\\s*<div class="version-header">\\s*<span class="version-number">v' + e.v.replace('.', '\\.') + '</span>').test(html), 'changelog.html #' + e.id + ': shows v' + e.v);
+        ok(e.title && e.items.length > 0, 'changelog.html #' + e.id + ': has a title and notes');
+    });
+    /* a release without language pack keys says it is English (lang) and why it has no keys
+     * (data-i18n-off, which the hard-coded text scanner developers/i18n/scan.js honours) */
+    (html.match(/<div class="version" id="v\d+"[^>]*>[\s\S]*?\n    <\/div>/g) || []).forEach((b) => {
+        if (/data-i18n(-html)?="/.test(b)) return;
+        ok(/^<div class="version" id="v\d+" lang="en" data-i18n-off="[^"]+">/.test(b), 'changelog.html ' + b.slice(0, 40) + ': English notes without pack keys are marked lang="en" data-i18n-off');
+    });
+
+    /* rss.xml: the newest releases of the page, each dated by its "Version" commit */
+    const feed = tags(rss, 'item').map((it) => ({ title: tags(it, 'title')[0] || '', link: tags(it, 'link')[0] || '', date: tags(it, 'pubDate')[0] || '' }));
+    ok(feed.length >= Math.min(10, entries.length), 'rss.xml lists the newest releases (' + feed.length + ')');
+    feed.forEach((f, i) => {
+        const e = entries[i] || {};
+        ok(f.link === 'https://www.legendmod.ml/changelog.html#' + e.id, 'rss.xml item ' + (i + 1) + ' is the page\'s release ' + (i + 1) + ' (#' + e.id + '), not ' + f.link);
+        ok(f.title.replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>') === 'v' + e.v + ' — ' + e.title, 'rss.xml item ' + (i + 1) + ': title "' + f.title + '" is the page\'s "' + e.title + '"');
+        const d = new Date(f.date);
+        ok(!isNaN(d) && d.toUTCString().replace(/GMT$/, '+0000') === f.date, 'rss.xml item ' + (i + 1) + ': pubDate "' + f.date + '" is a valid RFC 822 date (weekday included)');
+        const r = byV[e.v];
+        ok(!!r && d.getTime() === new Date(r.iso).getTime(), 'rss.xml item ' + (i + 1) + ': pubDate ' + f.date + ' is the time of its "Version ' + e.v + '" commit (' + (r && r.iso) + ')');
+    });
+    const last = tags(channel, 'lastBuildDate')[0] || '';
+    ok(!!feed[0] && last === feed[0].date, 'rss.xml lastBuildDate "' + last + '" is its newest item\'s date');
+
+    /* the notes come from commit subjects as the tool reads them */
+    const n1 = tool.noteOf('Hotkeys window: Close is the last button on the right again (Bound keys; Conflicts); the rest. Test x.js');
+    ok(n1.area === 'Hotkeys window' && n1.text === 'Close is the last button on the right again (Bound keys; Conflicts)' && n1.tag === 'fix', 'a note: area, first sentence outside brackets, tag (' + JSON.stringify(n1) + ')');
+    const n2 = tool.noteOf('Version 3.618 - Theme/HUD fixes, O(1) removeCell');
+    ok(n2.text === 'Theme/HUD fixes, O(1) removeCell' && !n2.area, 'a "Version" commit with text gives its text (' + JSON.stringify(n2) + ')');
+    ok(tool.devOnly('Version 3.701', ['play.html']) && !tool.devOnly('Version 3.618 - Theme fixes', ['play.html']) &&
+        tool.devOnly('Probe x: passes', ['developers/tests/probes/x.js', 'developers/README.md']) && !tool.devOnly('Menu: y', ['developers/tests/a.js', 'ogario/ogario.v4.js']),
+    'commits players do not see are left out (build number alone, developer files only)');
+}
 
 console.log(fails ? 'releasefacts: ' + fails + ' FAILED of ' + checked : 'releasefacts: all ' + checked + ' checks passed');
 process.exit(fails ? 1 : 0);
