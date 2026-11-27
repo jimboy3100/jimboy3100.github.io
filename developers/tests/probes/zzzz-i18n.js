@@ -115,6 +115,8 @@
   var hts = $('#a11yHudTextScale-slider').closest('.slider-box').find('.value-label');
   need('Theme > HUD text size keeps the ": " before its value', !hts.length || /:\s*$/.test(hts.text()));
   need('Theme > Teamboard logo text field Greek', !$('#teambtext').length || greek($('#teambtext').attr('placeholder')));
+  /* the Leaderboard logo text field is named as the leaderboard's, not as the teamboard's */
+  need('Theme > Leaderboard logo text field named as the leaderboard one: ' + $('#leadbtext').attr('placeholder'), !$('#leadbtext').length || $('#leadbtext').attr('placeholder') === lmT('pack.leaderboardLogoText'));
   var cog = $('.ogicon-cog').first();
   need('settings tab tooltip Greek', !cog.length || cog.attr('data-original-title') === window.Languageletter2);
   var play = $('[data-itr="page_play"]').first();
@@ -134,6 +136,7 @@
   if (sel) { $(sel).val('1'); changeModLanguage(false); } else L.setLang(1);
   await wait(function () { return L.lang() === 'en'; }, 5000);
   need('back to English', lmT('leagues') === english.leagues && textLanguage.showMass === english.showMass);
+  need('Leaderboard logo text field in English again', !$('#leadbtext').length || $('#leadbtext').attr('placeholder') === lmT('pack.leaderboardLogoText'));
   /* a run in another browser language goes back to it (not saved, as before the probe) */
   if (info.start !== 'en') { L.setLang(info.start); await wait(function () { return L.lang() === info.start; }, 5000); }
   try { if (saved == null) localStorage.removeItem('languagemod'); else localStorage.setItem('languagemod', saved); } catch (e) { }

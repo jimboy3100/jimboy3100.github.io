@@ -384,9 +384,10 @@ $('#msgcommand6').attr("data-original-title", Languageletter329);
 $('#minimapPicture').attr('placeholder',Languageletter331).attr('data-original-title',Languageletter330);
 $('#minbtext').attr('placeholder',Languageletter332);
 $('#leadbPicture').attr('placeholder',Languageletter333a).attr('data-original-title',Languageletter330);
-$('#leadbtext').attr('placeholder',Languageletter334);
+/* the leaderboard's logo text field has its own name (it was given the teamboard's, and the teamboard's kept the old language) */
+$('#leadbtext').attr('placeholder',Languageletter333);
 $('#teambPicture').attr('placeholder',Languageletter334a).attr('data-original-title',Languageletter330);
-$('#leadbtext').attr('placeholder',Languageletter334);
+$('#teambtext').attr('placeholder',Languageletter334);
 $('#canvasPicture').attr('placeholder',Languageletter335).attr('data-original-title',Languageletter330);
 $('#imgUrl').attr('placeholder',Languageletter336).attr('data-original-title',Languageletter330);
 $('#imgHref').attr('placeholder',Languageletter337).attr('data-original-title',Languageletter341);
