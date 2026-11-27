@@ -257,6 +257,9 @@
         '#chat-box,#messages{position:fixed!important;left:4px!important}' +
         '#message-box{position:fixed!important;left:50%!important;bottom:72px!important;transform:translate(-50%,0)!important}' +
         '#toast-container{position:fixed!important}' +
+        /* a chat popup's mute button: on desktop it shows on hover, which a touch never gives
+         * (shown here, with a thumb-sized tap area around the icon) */
+        '.toast .mute-user{display:block!important;padding:8px;margin:-8px}' +
 
         /* fullscreen prompt toast */
         '#lm-fs-toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);' +
