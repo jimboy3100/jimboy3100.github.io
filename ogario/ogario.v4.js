@@ -83684,26 +83684,25 @@ function pickPlayerCellBySize(players, selectBiggest) {
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
                 if (!t) continue;
-                var dx = cursorX - t.x;
-                var dy = cursorY - t.y;
-                var rad = Math.atan2(dy, dx) + Math.PI / 2;
-                var r = t.size / 3;
-
-                ctx.save();
-                ctx.translate(t.x, t.y);
-                ctx.rotate(rad);
-
-                let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size);
-                grad.addColorStop(0, color);
-                grad.addColorStop(1, color + "00");
-
-                ctx.fillStyle = grad;
-                ctx.globalAlpha = alpha;
-                ctx.beginPath();
-                ctx.arc(0, -(t.size - r), r, 0, Math.PI * 2, false);
-                ctx.fill();
-                ctx.restore();
+                this._lmDrawGradBubble(ctx, t, Math.atan2(cursorY - t.y, cursorX - t.x) + Math.PI / 2, color, alpha);
             }
+        },
+        /* Canvas2D gradient bubble on the cell edge (radius size/3), rad turns it from straight up:
+         * the cursor bubble and the opponent bubbles differ only in the angle and the colour */
+        _lmDrawGradBubble(ctx, t, rad, color, alpha) {
+            var r = t.size / 3;
+            ctx.save();
+            ctx.translate(t.x, t.y);
+            ctx.rotate(rad);
+            var grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size);
+            grad.addColorStop(0, color);
+            grad.addColorStop(1, color + "00");
+            ctx.fillStyle = grad;
+            ctx.globalAlpha = alpha;
+            ctx.beginPath();
+            ctx.arc(0, -(t.size - r), r, 0, 6.283185307179586, false);
+            ctx.fill();
+            ctx.restore();
         },
         drawCircles(
             ctx,
@@ -83755,29 +83754,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * Canvas2D only: every cell and virus must cover the opponent
              * bubbles, and the GL layer is above this canvas.
              */
-            var _pi2 = 6.283185307179586;
             for (let length = 0; length < players.length; length++) {
                 let t = players[length];
                 if (!t) continue;
-                let r = t.size / 3;
-                /* Use atan2 directly → radians, no sqrt/acos/degrees/back-to-radians */
-                var rad = Math.atan2(t.targetX - t.x, t.y - t.targetY);
-
-                ctx.save();
-                ctx.translate(t.x, t.y);
-                ctx.rotate(rad);
-
-                let grad = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size);
-                grad.addColorStop(0, stroke);
-                grad.addColorStop(1, stroke + "00");
-
-                ctx.fillStyle = grad;
-                ctx.globalAlpha = alpha;
-                ctx.beginPath();
-                ctx.arc(0, 0 - (t.size - r), r, 0, _pi2, false);
-                ctx.fill();
-                ctx.globalAlpha = 1;
-                ctx.restore();
+                /* toward where the cell moves */
+                this._lmDrawGradBubble(ctx, t, Math.atan2(t.targetX - t.x, t.y - t.targetY), stroke, alpha);
             }
         },
         //Sonia (added entire function)

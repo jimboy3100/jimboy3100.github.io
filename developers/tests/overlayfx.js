@@ -19,6 +19,7 @@
  * text passes skip it), so its reference uses the same rasters. So a difference is always a
  * mark: lost, misplaced, wrong alpha, or above something it is under in Canvas2D.
  * It does not run a GPU: drawWebGLCellBatch and the text pass are not executed here.
+ * Also the Canvas2D gradient bubbles (opponents, cursor) on a recording context.
  * Cases: teammate only, chat only, FB badge (with its nick and mass, multibox ring, text and
  * skin alpha, Teams, no skin), FB arrow, special effects (custom skins off, an effect of a
  * cell outside the frame), the chat bubble of a cell outside the GL view, overlapping cells (later cell over a mark or the moved labels,
@@ -1063,6 +1064,76 @@ reset(); setSettings();
     const got = R._lmFxCovered(far, n);
     R._lmFxBoxes = real;
     check('  a cell far from all 200 marks: no hit, no box read', got === 0 && reads === 0, reads + ' reads');
+}
+
+/* section: gradient bubbles with the real drawRender on a recording 2D context: the opponent
+ * bubbles (drawBubbleCircles, toward where the cell moves) and the cursor bubble (drawBCursorTracking
+ * on Canvas2D, toward the cursor) make exactly the canvas calls of the loops they had before they
+ * shared one helper (same transform, gradient, alpha and arc) */
+{
+const F = rendererFactory(src);
+const D = new Function('return ' + F.defaults)();
+const LM = { play: true, playerCells: [], playerCellsMulti: [], cursorX: 0, cursorY: 0, integrity: true };
+const env = { window: { navigator: {}, devicePixelRatio: 1, legendmod: {} }, LM, application: {}, defaultSettings: D.defaultSettings,
+    defaultmapsettings: D.defaultmapsettings, ogarcopythelb: {}, ogario: {} };
+const R = new Function('return (' + F.factory + ')')()(env);
+
+/* every call and property write, rounded so the same maths gives the same text */
+function recorder() {
+    const log = [];
+    const n = (v) => (typeof v === 'number' ? Math.round(v * 1e6) / 1e6 : v);
+    const grad = (args) => ({ addColorStop: (...a) => log.push('stop ' + a.map(n).join(',')), _a: args });
+    const ctx = new Proxy({}, {
+        get(t, k) {
+            if (k === 'createLinearGradient') return (...a) => { log.push('grad ' + a.map(n).join(',')); return grad(a); };
+            return (...a) => log.push(String(k) + ' ' + a.map(n).join(','));
+        },
+        set(t, k, v) { log.push(String(k) + '=' + (v && v._a ? 'grad' : n(v))); return true; }
+    });
+    return { ctx, log };
+}
+/* the loop as it was before the helper: translate, rotate, gradient, alpha, arc at size - r */
+function reference(cells, angleOf, color, alpha, resetAlpha) {
+    const { ctx, log } = recorder();
+    for (const t of cells) {
+        if (!t) continue;
+        const r = t.size / 3;
+        ctx.save(); ctx.translate(t.x, t.y); ctx.rotate(angleOf(t));
+        const g = ctx.createLinearGradient(0, -t.size, 0, r * 2 - t.size);
+        g.addColorStop(0, color); g.addColorStop(1, color + '00');
+        ctx.fillStyle = g; ctx.globalAlpha = alpha; ctx.beginPath();
+        ctx.arc(0, -(t.size - r), r, 0, Math.PI * 2, false); ctx.fill();
+        if (resetAlpha) ctx.globalAlpha = 1;
+        ctx.restore();
+    }
+    return log;
+}
+const cells = [{ x: 100, y: -40, size: 90, targetX: 130, targetY: 10 }, null, { x: -300, y: 250, size: 33, targetX: -300, targetY: 250 },
+    { x: 7, y: 9, size: 400, targetX: -50, targetY: -80 }];
+const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+/* restore() puts globalAlpha back, so the opponent loop's extra "globalAlpha = 1" before it changed nothing */
+const noReset = (log) => log.filter((x, i) => !(x === 'globalAlpha=1' && log[i + 1] === 'restore '));
+
+{
+    const { ctx, log } = recorder();
+    R.drawBubbleCircles(ctx, cells, 15, 13, 0.75, '#ff0000');
+    const ref = reference(cells, (t) => Math.atan2(t.targetX - t.x, t.y - t.targetY), '#ff0000', 0.75, true);
+    check('opponent bubbles: the same canvas calls as before (direction of movement)', same(noReset(log), noReset(ref)), log.length + ' vs ' + ref.length);
+    check('opponent bubbles: one gradient per cell', log.filter((x) => x.startsWith('grad ')).length === 3);
+}
+{
+    D.defaultmapsettings.webgl2Acceleration = false;
+    D.defaultSettings.darkTheme = true;
+    D.defaultSettings.cursorTrackingColor = '#00ccff';
+    const { ctx, log } = recorder();
+    R.drawBCursorTracking(ctx, cells, 500, -200);
+    const ref = reference(cells, (t) => Math.atan2(-200 - t.y, 500 - t.x) + Math.PI / 2, '#00ccff', 0.75, false);
+    check('cursor bubble (Canvas2D): the same canvas calls as before (toward the cursor)', same(noReset(log), noReset(ref)), log.length + ' vs ' + ref.length);
+    D.defaultSettings.darkTheme = false;
+    const r2 = recorder();
+    R.drawBCursorTracking(r2.ctx, cells, 500, -200);
+    check('cursor bubble: light theme alpha 0.35', r2.log.indexOf('globalAlpha=0.35') >= 0);
+}
 }
 
 console.log(failed ? failed + ' overlay check(s) FAILED' : 'overlayfx ok');
