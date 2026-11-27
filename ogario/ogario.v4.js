@@ -8326,7 +8326,6 @@ SpecialEffectPlayers = Object.create(null);
 
 var Socket3;
 window.socket3Opened = false;
-window.SLG3NumberTries = 0;
 window.socket3NumberTries = 0;
 var customLMID = Math.floor(Math.random() * 100000);
 
@@ -32981,57 +32980,6 @@ function thelegendmodproject() {
             rec.x = view.getInt32(6, true); rec.y = view.getInt32(10, true); rec.t = Date.now();
             return true;
         },
-        //Sonia4
-        SLGHandler(message) {
-            var packet = this.unpackSLG(message);
-            if (packet == null) return;
-            switch (message.charAt(0)) {
-                case "R":
-                    this.getSuperLegendSDATA(packet);
-                    break;
-                case "Q":
-                    //this.getSLGQinfo(packet);
-                    break;
-            }
-        },
-        SLGSimpleHandler(message) {
-            //console.log("SLGSimpleHandler recieve", message);
-            if (message == null) {
-                return;
-            } else {
-                const ids = window.decodeURIComponent(escape(message.t));
-                //console.log(ids)
-                //var id = this.checkPlayerID(ids);
-                const id = this.checkPlayerNick(ids);
-                if (id !== null && this.teamPlayers[id]) {
-                    this.teamPlayers[id].lbgpi = parseInt(message.s, 10);
-                    //if (this.top5[id]){
-                    //this.top5[id].lbgpi = parseInt(lbgpi, 10); //
-                    //}
-
-                }
-            }
-        },
-        //Sonia4
-        packSLG(message) {
-            message += this.packInt(this.playerID, 4);
-            return message;
-        },
-        //Sonia4
-        unpackSLG(message) {
-            message = message.slice(1);
-            return message;
-        },
-        //Sonia4
-        getSLGID(message) {
-            message = message.slice(0, 2)
-            return this.unpackInt(message);
-        },
-        //Sonia4
-        getSLGVal(message) {
-            message = message.slice(2);
-            return message;
-        },
         /* ─── §4.16 Player State Sync ─── */
         sendPlayerState(state) {
             /* Practice arena (ogario/modules/practice.js): its spawns and deaths are not the team's business */
@@ -33329,168 +33277,6 @@ function thelegendmodproject() {
                 }
             }
         },
-        packInt(x, m) {
-            var s = "";
-            if (m === 2) {
-                s += String.fromCharCode(x)
-            } else {
-                var p = x / Math.pow(2, 16);
-                var r = x % Math.pow(2, 16);
-                s += String.fromCharCode(Math.floor(p));
-                s += String.fromCharCode(Math.floor(r));
-            }
-            return s;
-        },
-        packFloat(x, m) {
-            if (m === 2) {
-                x = Math.floor(x * 100000);
-            } else {
-                x = Math.floor(x * 1000000000);
-            }
-            return this.packInt(x, m);
-        },
-        unpackInt(s) {
-            var x = 0;
-            if (s.length === 1) {
-                x += s.charCodeAt(0);
-            } else {
-                x += s.charCodeAt(0) * Math.pow(2, 16);
-                x += s.charCodeAt(1);
-            }
-            return x;
-        },
-        unpackFloat(s) {
-            let x = this.unpackInt(s);
-            if (s.length === 1) {
-                x = x / 100000;
-            } else {
-                x = x / 1000000000;
-            }
-            return x;
-        },
-        getrel(x, axis) {
-            var v = window.legendmod;
-            if (axis === 0) return x / (v.mapMaxX - v.mapMinX);
-            else return x / (v.mapMaxY - v.mapMinY);
-        },
-        getreal(x, axis) {
-            var v = window.legendmod;
-            if (axis === 0) return x * (v.mapMaxX - v.mapMinX) + v.mapMinX;
-            else return x * (v.mapMaxY - v.mapMinY) + v.mapMinY;
-        },
-        sendSLGQinfo() {
-            let z;
-            let i;
-            //return;
-            var msg = "";
-            var vlen = window.legendmod.viruses.length;
-            msg += this.packInt(vlen, 2);
-            for (i = 0; i < vlen; i++) {
-                z = window.legendmod.viruses[i];
-                msg += this.packInt(z.id, 4);
-                msg += this.packFloat(this.getrel(z.x, 0), 4);
-                msg += this.packFloat(this.getrel(z.y, 1), 4);
-                msg += this.packInt(~~(z.size), 2);
-            }
-            var cmsg = "";
-            var clen = 0;
-            var cells = window.legendmod.cells;
-            for (i = 0; i < cells.length; i++) {
-                z = cells[i];
-                if (!z.isVirus) {
-                    cmsg += this.packInt(z.id, 4);
-                    cmsg += this.packFloat(this.getrel(z.x, 0), 4);
-                    cmsg += this.packFloat(this.getrel(z.y, 1), 4);
-                    cmsg += this.packInt(~~(z.size), 2);
-                    clen++;
-                }
-            }
-            msg += this.packInt(clen, 2);
-            msg += cmsg;
-
-            //Here should be food part
-
-            this.sendSLG("Q", msg);
-
-            var today = new Date();
-            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds();
-            //console.log("Package Sent:",time)
-        },
-        getSLGQinfo(t) {
-            let di;
-            let fx;
-            let fy;
-            let ds;
-            let x;
-            let y;
-            let cellUpdateSLGCells;
-            //return ;
-            var ids = this.getSLGID(t);
-            var id = this.checkPlayerID(ids);
-            console.log(t);
-            if (null == id) return;
-            let msg = this.getSLGVal(t);
-            //Get viruses
-            const vlen = this.unpackInt(msg.slice(0, 1));
-            msg = msg.slice(1);
-            const temp = [];
-            for (var i = 0; i < vlen; i++) {
-                di = this.unpackInt(msg.slice(0, 2));
-                fx = this.unpackFloat(msg.slice(2, 4));
-                fy = this.unpackFloat(msg.slice(4, 6));
-                ds = this.unpackInt(msg.slice(6, 7));
-                msg = msg.slice(7);
-                x = this.getreal(fx, 0);
-                y = this.getreal(fy, 1);
-                cellUpdateSLGCells = new ogarbasicassembly(di, x, y, ds, null, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-                cellUpdateSLGCells.time = this.time;
-                cellUpdateSLGCells.isVirus = true;
-                temp.push(cellUpdateSLGCells);
-                if (!cellUpdateSLGCells.isInView()) {
-                    if (legendmod.indexedCells.hasOwnProperty(di)) {
-                        cellUpdateSLGCells = legendmod.indexedCells[di];
-                    } else {
-                        legendmod.indexedCells[di] = cellUpdateSLGCells;
-                    }
-                }
-            }
-            if (this.teamPlayers[id]) {
-                this.teamPlayers[id].dvirs = temp;
-            }
-
-            //Get normal cells
-            var clen = this.unpackInt(msg.slice(0, 1));
-            msg = msg.slice(1);
-            var tempx = [];
-            var cells = window.legendmod.cells;
-            for (var i = 0; i < clen; i++) {
-                di = this.unpackInt(msg.slice(0, 2));
-                fx = this.unpackFloat(msg.slice(2, 4));
-                fy = this.unpackFloat(msg.slice(4, 6));
-                ds = this.unpackInt(msg.slice(6, 7));
-                msg = msg.slice(7);
-                x = this.getreal(fx, 0);
-                y = this.getreal(fy, 1);
-                cellUpdateSLGCells = new ogarbasicassembly(di, x, y, ds, null, false, true, false, defaultmapsettings.shortMass, defaultmapsettings.virMassShots);
-                cellUpdateSLGCells.isVirus = false;
-                temp.push(cellUpdateSLGCells);
-                if (!cellUpdateSLGCells.isInView()) {
-                    if (legendmod.indexedCells.hasOwnProperty(di)) {
-                        cellUpdateSLGCells = legendmod.indexedCells[di];
-                    } else {
-                        legendmod.indexedCells[di] = cellUpdateSLGCells;
-                    }
-                }
-            }
-            if (this.teamPlayers[id]) {
-                this.teamPlayers[id].dcells = tempx;
-            }
-            var today = new Date();
-            var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds() + ":" + today.getMilliseconds();
-            console.log("Package Received:", ids, id, time)
-
-            //Here should be food part
-        },
         sendChatInvisibleData(dataObj) {
             if (!window.legendmod || typeof window.legendmod.sendMessage !== 'function') return;
             /* Opcode 99 chat is not part of the agar.io protocol (chat 99 is already skipped
@@ -33550,29 +33336,6 @@ function thelegendmodproject() {
                     } catch (e) { }
                 }
                 this.sendChatInvisibleData(temp);
-            }
-        },
-        //Sonia4
-        sendSuperLegendSDATA() {
-            if (ogario.play && this.playerID) {
-                var s = "";
-                s += window.legendmod.bgpi;
-                this.sendSLG("R", s);
-            }
-        },
-        sendSimpleLegendSDATA() { },
-        //Sonia4
-        getSuperLegendSDATA(t) {
-            var ids = this.getSLGID(t);
-            var id = this.checkPlayerID(ids);
-            if (null != id) {
-                var s = this.getSLGVal(t);
-                var lbgpi = s.slice(0, 1);
-                this.teamPlayers[id].lbgpi = parseInt(lbgpi, 10);
-                //if (this.top5[id]){
-                //this.top5[id].lbgpi = parseInt(lbgpi, 10); //
-                //}
-
             }
         },
         /* ─── §4.17 Team Player Tracking ─── */
