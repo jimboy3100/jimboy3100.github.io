@@ -61067,6 +61067,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
             b[n + 1] = y0 - 4;
             b[n + 2] = x1 + 4;
             b[n + 3] = y1 + 4;
+            /* Conservative union of all effect boxes. _lmOutCellFx may discard
+             * some appended boxes; retaining their bounds is harmless (it can
+             * only cause extra exact checks). The first box resets the union. */
+            if (n === 0) {
+                this._lmFxMinX = Math.min(b[n], b[n + 2]);
+                this._lmFxMinY = Math.min(b[n + 1], b[n + 3]);
+                this._lmFxMaxX = Math.max(b[n], b[n + 2]);
+                this._lmFxMaxY = Math.max(b[n + 1], b[n + 3]);
+            } else {
+                this._lmFxMinX = Math.min(this._lmFxMinX, b[n], b[n + 2]);
+                this._lmFxMinY = Math.min(this._lmFxMinY, b[n + 1], b[n + 3]);
+                this._lmFxMaxX = Math.max(this._lmFxMaxX, b[n], b[n + 2]);
+                this._lmFxMaxY = Math.max(this._lmFxMaxY, b[n + 1], b[n + 3]);
+            }
             this._lmFxKinds[n >> 2] = why || this.GLW.COVERED;
             return n + 4;
         },
@@ -61076,6 +61090,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var rb = cell.size * 1.15 + 4, x = cell.x, y = cell.y, b = this._lmFxBoxes;
             this._lmLabelExt(cell);
             var lw = this._lmExtW, lh = this._lmExtH;
+            /* Reject distant cells in O(1). Keep the original precise checks
+             * and first-hit ordering for every potentially overlapping cell. */
+            var ex = Math.max(Math.abs(rb), lw, 0), ey = Math.max(Math.abs(rb), lh, 0);
+            if (n && (x + ex < this._lmFxMinX || x - ex > this._lmFxMaxX ||
+                y + ey < this._lmFxMinY || y - ey > this._lmFxMaxY)) return 0;
             for (var k = 0; k < n; k += 4) {
                 var x0 = b[k], y0 = b[k + 1], x1 = b[k + 2], y1 = b[k + 3];
                 var hit = lw > 0 && x - lw < x1 && x + lw > x0 && y - lh < y1 && y + lh > y0;

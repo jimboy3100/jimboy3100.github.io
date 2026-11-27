@@ -933,5 +933,59 @@ if (C) {
     check('  every reason has a name', Object.keys(G).every((k) => typeof R.GLW_IDS[G[k]] === 'string') && new Set(R.GLW_IDS).size === R.GLW_IDS.length);
 }
 
+/* ---- the mark box check of later cells: same first hit as the full scan, far cells skip it ---- */
+reset(); setSettings();
+{
+    /* the full scan over every box (the check before the bounds of all boxes were kept) */
+    const fullScan = (cell, n) => {
+        const rb = cell.size * 1.15 + 4, x = cell.x, y = cell.y, b = R._lmFxBoxes;
+        R._lmLabelExt(cell);
+        const lw = R._lmExtW, lh = R._lmExtH;
+        for (let k = 0; k < n; k += 4) {
+            const x0 = b[k], y0 = b[k + 1], x1 = b[k + 2], y1 = b[k + 3];
+            let hit = lw > 0 && x - lw < x1 && x + lw > x0 && y - lh < y1 && y + lh > y0;
+            if (!hit) {
+                const ddx = x < x0 ? x0 - x : x > x1 ? x - x1 : 0, ddy = y < y0 ? y0 - y : y > y1 ? y - y1 : 0;
+                hit = ddx * ddx + ddy * ddy < rb * rb;
+            }
+            if (hit) return R._lmFxKinds[k >> 2] || R.GLW.COVERED;
+        }
+        return 0;
+    };
+    let s = 11;
+    const rnd = () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648;
+    const kinds = [R.GLW.COVER_TEAM, R.GLW.COVER_CHAT, R.GLW.COVER_FB, R.GLW.COVER_FX, R.GLW.COVER_LABELS];
+    let same = true, hits = 0, misses = 0, info = '';
+    for (let round = 0; round < 40 && same; round++) {
+        /* a frame's boxes; some rounds drop the last ones again (a mark wholly off screen) */
+        let n = 0;
+        const boxes = 1 + (rnd() * 30 | 0), cx = (rnd() - 0.5) * 8000, cy = (rnd() - 0.5) * 8000;
+        for (let k = 0; k < boxes; k++) {
+            const x0 = cx + (rnd() - 0.5) * 1500, y0 = cy + (rnd() - 0.5) * 1500;
+            const m = R._lmFxPush(n, x0, y0, x0 + rnd() * 300, y0 + rnd() * 200, kinds[rnd() * kinds.length | 0]);
+            n = round % 3 === 0 && k === boxes - 1 && boxes > 1 ? n : m;
+        }
+        for (let t = 0; t < 200; t++) {
+            const near = rnd() < 0.5;
+            const cell = makeCell({ x: (near ? cx : 0) + (rnd() - 0.5) * (near ? 2500 : 14000), y: (near ? cy : 0) + (rnd() - 0.5) * (near ? 2500 : 14000),
+                size: 10 + rnd() * 600, targetNick: rnd() < 0.6 ? 'cell' + t : '' });
+            const want = fullScan(cell, n), got = R._lmFxCovered(cell, n);
+            if (want) hits++; else misses++;
+            if (want !== got) { same = false; info = 'round ' + round + ' cell ' + t + ' want ' + want + ' got ' + got; break; }
+        }
+    }
+    check('mark boxes: a later cell gets the same first covering box as the full scan (8000 cells, hits and misses)', same && hits > 100 && misses > 100, info || hits + ' hits ' + misses + ' misses');
+    /* a cell far from every mark reads none of the boxes */
+    let n = 0;
+    for (let k = 0; k < 200; k++) n = R._lmFxPush(n, k * 3, 0, k * 3 + 20, 20, R.GLW.COVER_TEAM);
+    const real = R._lmFxBoxes;
+    let reads = 0;
+    R._lmFxBoxes = new Proxy(real, { get(t, p) { if (typeof p === 'string' && /^\d+$/.test(p)) reads++; return t[p]; } });
+    const far = makeCell({ x: 5000, y: 5000, size: 80, targetNick: 'far' });
+    const got = R._lmFxCovered(far, n);
+    R._lmFxBoxes = real;
+    check('  a cell far from all 200 marks: no hit, no box read', got === 0 && reads === 0, reads + ' reads');
+}
+
 console.log(failed ? failed + ' overlay check(s) FAILED' : 'overlayfx ok');
 process.exit(failed ? 1 : 0);
