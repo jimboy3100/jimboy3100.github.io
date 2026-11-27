@@ -38156,7 +38156,8 @@ function thelegendmodproject() {
             return LM.time - (this.updateTime || this.time) >= anim;
         };
         this.isInView = function () {
-            if (window.fullSpectator) return this.id > 0;
+            /* the screen, with Full Map too (every cell of the map counted as in view, so jelly
+             * ran for the whole map's cells every frame) */
             /* Use precomputed viewport bounds (LM.camMinX/Y/MaxX/Y) instead of 4 divisions per call */
             return this.id > 0 &&
                 this.x + this.size + 40 > LM.camMinX &&
@@ -38165,7 +38166,6 @@ function thelegendmodproject() {
                 this.y - this.size - 40 < LM.camMaxY;
         };
         this.isInV = function () {
-            if (window.fullSpectator) return true;
             if (this.x + this.size < LM.camMinX || this.y + this.size < LM.camMinY || this.x - this.size > LM.camMaxX || this.y - this.size > LM.camMaxY) {
                 return false;
             }
@@ -56257,13 +56257,14 @@ function thelegendmodproject() {
                 var _cB = defaultSettings.enemyBColor, _cS = defaultSettings.enemySColor;
                 var _cSSTE = defaultSettings.enemySSTEColor, _cSSTED = defaultSettings.enemySSTEDColor;
                 /* Viewport culling: skip cells outside visible area + ring offset margin */
-                var _cullMinX = window.fullSpectator ? ((LM.mapMinX != null ? LM.mapMinX : -7071) - 800) : (LM.camMinX - 800);
-                var _cullMinY = window.fullSpectator ? ((LM.mapMinY != null ? LM.mapMinY : -7071) - 800) : (LM.camMinY - 800);
-                var _cullMaxX = window.fullSpectator ? ((LM.mapMaxX != null ? LM.mapMaxX : 7071) + 800) : (LM.camMaxX + 800);
-                var _cullMaxY = window.fullSpectator ? ((LM.mapMaxY != null ? LM.mapMaxY : 7071) + 800) : (LM.camMaxY + 800);
+                /* the screen, with Full Map too (it took the whole map's cells) */
+                var _cullMinX = LM.camMinX - 800;
+                var _cullMinY = LM.camMinY - 800;
+                var _cullMaxX = LM.camMaxX + 800;
+                var _cullMaxY = LM.camMaxY + 800;
                 /* the frame grows its view by the server's view later (calMinMax): keep that
                  * area too, as the box of the last frame gave it here before */
-                if (!window.fullSpectator && Number.isFinite(LM.srvViewMinX) && Number.isFinite(LM.srvViewMaxY)) {
+                if (Number.isFinite(LM.srvViewMinX) && Number.isFinite(LM.srvViewMaxY)) {
                     _cullMinX = Math.min(_cullMinX, LM.srvViewMinX - 800); _cullMinY = Math.min(_cullMinY, LM.srvViewMinY - 800);
                     _cullMaxX = Math.max(_cullMaxX, LM.srvViewMaxX + 800); _cullMaxY = Math.max(_cullMaxY, LM.srvViewMaxY + 800);
                 }
@@ -70064,48 +70065,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ) +
                 halfH;
 
-            /*
-             * Full-world spectator intentionally sees the complete map.
-             */
-            if (
-                window.fullSpectator
-            ) {
-                minX =
-                    (
-                        LM.mapMinX !=
-                            null
-                            ? LM.mapMinX
-                            : -7071
-                    ) -
-                    500;
-
-                maxX =
-                    (
-                        LM.mapMaxX !=
-                            null
-                            ? LM.mapMaxX
-                            : 7071
-                    ) +
-                    500;
-
-                minY =
-                    (
-                        LM.mapMinY !=
-                            null
-                            ? LM.mapMinY
-                            : -7071
-                    ) -
-                    500;
-
-                maxY =
-                    (
-                        LM.mapMaxY !=
-                            null
-                            ? LM.mapMaxY
-                            : 7071
-                    ) +
-                    500;
-            }
+            /* the screen, with Full Map too (it culled by the map border: every pellet of the whole
+             * map went through the renderer every frame, all but the screen unseen) */
 
             var defaultFoodColor =
                 defaultSettings.foodColor ||
@@ -70793,17 +70754,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var viewScale = this.scale || 1;
 
             var minX, maxX, minY, maxY;
-            if (window.fullSpectator) {
-                minX = (LM.mapMinX != null ? LM.mapMinX : -7071) - 500;
-                maxX = (LM.mapMaxX != null ? LM.mapMaxX : 7071) + 500;
-                minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
-                maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
-            } else {
-                var halfW = (this.canvasWidth / viewScale / 2) + 500;
-                var halfH = (this.canvasHeight / viewScale / 2) + 500;
-                minX = this.camX - halfW; maxX = this.camX + halfW;
-                minY = this.camY - halfH; maxY = this.camY + halfH;
-            }
+            /* the screen, with Full Map too (it culled by the map border: every cell and pellet of
+             * the whole map went through the renderer every frame, all but the screen unseen) */
+            var halfW = (this.canvasWidth / viewScale / 2) + 500;
+            var halfH = (this.canvasHeight / viewScale / 2) + 500;
+            minX = this.camX - halfW; maxX = this.camX + halfW;
+            minY = this.camY - halfH; maxY = this.camY + halfH;
 
             /* a black setting stays black (parseInt || white drew it white), also rgb() and names */
             var cInt = this._lmGlColorInt(colorHex || '#ffffff');
@@ -72717,17 +72673,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var viewScale = this.scale || 1;
 
             var minX, maxX, minY, maxY;
-            if (window.fullSpectator) {
-                minX = (LM.mapMinX != null ? LM.mapMinX : -7071) - 500;
-                maxX = (LM.mapMaxX != null ? LM.mapMaxX : 7071) + 500;
-                minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
-                maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
-            } else {
-                var halfW = (this.canvasWidth / viewScale / 2) + 200;
-                var halfH = (this.canvasHeight / viewScale / 2) + 200;
-                minX = this.camX - halfW; maxX = this.camX + halfW;
-                minY = this.camY - halfH; maxY = this.camY + halfH;
-            }
+            /* the screen, with Full Map too (it culled by the map border: every cell and pellet of
+             * the whole map went through the renderer every frame, all but the screen unseen) */
+            var halfW = (this.canvasWidth / viewScale / 2) + 200;
+            var halfH = (this.canvasHeight / viewScale / 2) + 200;
+            minX = this.camX - halfW; maxX = this.camX + halfW;
+            minY = this.camY - halfH; maxY = this.camY + halfH;
 
             if (window.legendWasmInstance && cellsArray.length > 50) {
                 var wasmMem = window.legendWasmInstance.exports.memory.buffer;
@@ -77647,17 +77598,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             // Viewport culling bounds
             var minX, maxX, minY, maxY;
-            if (window.fullSpectator) {
-                minX = (LM.mapMinX != null ? LM.mapMinX : -7071) - 500;
-                maxX = (LM.mapMaxX != null ? LM.mapMaxX : 7071) + 500;
-                minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
-                maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
-            } else {
-                var halfW = (this.canvasWidth / viewScale / 2) + 200;
-                var halfH = (this.canvasHeight / viewScale / 2) + 200;
-                minX = this.camX - halfW; maxX = this.camX + halfW;
-                minY = this.camY - halfH; maxY = this.camY + halfH;
-            }
+            /* the screen, with Full Map too (it culled by the map border: every cell and pellet of
+             * the whole map went through the renderer every frame, all but the screen unseen) */
+            var halfW = (this.canvasWidth / viewScale / 2) + 200;
+            var halfH = (this.canvasHeight / viewScale / 2) + 200;
+            minX = this.camX - halfW; maxX = this.camX + halfW;
+            minY = this.camY - halfH; maxY = this.camY + halfH;
 
 
             /* Teams cells show no skins (same as Cell.draw) */
@@ -80889,6 +80835,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  *
                  * Therefore Canvas is now FALLBACK ONLY.
                  */
+                /* A cell far off screen (body, nick, mass, effects and rings all outside it) is not
+                 * drawn: with Full Map the world holds the cells of the whole map, and each was
+                 * drawn in Canvas2D every frame (the GL batch leaves out the cells off screen),
+                 * hundreds of arcs, skins and texts nobody sees. The margin: 4 radii (long nicks,
+                 * hats) plus 600 screen pixels, 1000 more units with the Expanding Land map
+                 * deformation (it moves cells up to ~700); a cell with a chat bubble is drawn as
+                 * before (the bubble can be wide). */
+                var _dcScale = this.scale || 1, _dcPad = 600 / _dcScale +
+                    ((this.isLegendWorldMapDeformationVisible && this.isLegendWorldMapDeformationVisible()) ? 1000 : 0);
+                var _dcMinX = LM.camMinX - _dcPad, _dcMaxX = LM.camMaxX + _dcPad, _dcMinY = LM.camMinY - _dcPad, _dcMaxY = LM.camMaxY + _dcPad;
+                var _dcCull = Number.isFinite(_dcMinX) && Number.isFinite(_dcMaxX) && Number.isFinite(_dcMinY) && Number.isFinite(_dcMaxY);
                 for (
                     var cellDrawIndex = 0;
                     cellDrawIndex <
@@ -80905,6 +80862,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         drawCell.removed
                     ) {
                         continue;
+                    }
+                    if (_dcCull && !drawCell._webglRendered) {
+                        var _dcR = 4 * drawCell.size;
+                        if ((drawCell.x + _dcR < _dcMinX || drawCell.x - _dcR > _dcMaxX || drawCell.y + _dcR < _dcMinY || drawCell.y - _dcR > _dcMaxY) &&
+                            !drawCell.lmChatLine()) {
+                            /* counted as drawn when draw() would have counted it (its removal still fades) */
+                            if (drawCell.invisible !== true && !(LM.hideSmallBots && drawCell.size <= 36)) drawCell.redrawed++;
+                            continue;
+                        }
                     }
 
 
@@ -83016,25 +82982,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
             ctx.save();
 
             var minX, maxX, minY, maxY;
-            if (window.fullSpectator) {
-                minX = (LM.mapMinX != null ? LM.mapMinX : -7071) - 500;
-                maxX = (LM.mapMaxX != null ? LM.mapMaxX : 7071) + 500;
-                minY = (LM.mapMinY != null ? LM.mapMinY : -7071) - 500;
-                maxY = (LM.mapMaxY != null ? LM.mapMaxY : 7071) + 500;
-            } else {
-                var viewScale = scale || this.scale || 1;
-                /* drawRender has no viewX/viewY (NaN bounds culled nothing):
-                 * use the camera, as drawVirusesRange does. Extra margin while
-                 * the EL deformation can shift food (up to ~700 units). */
-                var cullPad = 200 + ((this.isLegendWorldMapDeformationVisible &&
-                    this.isLegendWorldMapDeformationVisible()) ? 1000 : 0);
-                var halfW = (this.canvasWidth / viewScale / 2) + cullPad;
-                var halfH = (this.canvasHeight / viewScale / 2) + cullPad;
-                var cullX = (this.camX != null) ? this.camX : (LM.viewX || 0);
-                var cullY = (this.camY != null) ? this.camY : (LM.viewY || 0);
-                minX = cullX - halfW; maxX = cullX + halfW;
-                minY = cullY - halfH; maxY = cullY + halfH;
-            }
+            /* the screen, with Full Map too (it culled by the map border: every cell and pellet of
+             * the whole map went through the renderer every frame, all but the screen unseen) */
+            var viewScale = scale || this.scale || 1;
+            /* drawRender has no viewX/viewY (NaN bounds culled nothing):
+             * use the camera, as drawVirusesRange does. Extra margin while
+             * the EL deformation can shift food (up to ~700 units). */
+            var cullPad = 200 + ((this.isLegendWorldMapDeformationVisible &&
+                this.isLegendWorldMapDeformationVisible()) ? 1000 : 0);
+            var halfW = (this.canvasWidth / viewScale / 2) + cullPad;
+            var halfH = (this.canvasHeight / viewScale / 2) + cullPad;
+            var cullX = (this.camX != null) ? this.camX : (LM.viewX || 0);
+            var cullY = (this.camY != null) ? this.camY : (LM.viewY || 0);
+            minX = cullX - halfW; maxX = cullX + halfW;
+            minY = cullY - halfH; maxY = cullY + halfH;
             var twoPi = Math.PI * 2;
             var defaultFoodColor = defaultSettings.foodColor || "#FF0000";
 

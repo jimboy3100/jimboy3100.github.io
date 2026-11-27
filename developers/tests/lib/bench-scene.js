@@ -49,7 +49,11 @@
      * sizeMul (bigger cells: more jelly points), bots: like Expanding Land's bots, every player has
      * its own name and skin URL (a different image per player, BOT_SKINS) and this share of the
      * players dies and comes back each tick with a new id, name and skin (0: names only, as before;
-     * botSkins false: no skins). */
+     * botSkins false: no skins). Layout 'fullmap': Full Map, the bodies and food over the whole
+     * map, the main socket seeing its own view only and sockets - 1 Full Map spectators (real
+     * spect.js units without a player, on the tiles lmFullMapPlan gives) seeing their tile, each
+     * connection with its own cell ids and its own colour for a player, as on agar.io; a cell
+     * leaving a connection's view is removed from it. */
     function scene(o) {
         var s = {
             bodies: o.bodies | 0, food: o.food | 0, sockets: o.sockets || 1, jelly: o.jelly !== false, labels: o.labels !== false,
@@ -79,6 +83,13 @@
         if (kind === 'bots') {
             out.push(scene({ bodies: 150, food: 2000 }), scene({ bodies: 150, food: 2000, bots: 0.004, botSkins: false }),
                 scene({ bodies: 150, food: 2000, bots: 0.0001 }), scene({ bodies: 150, food: 2000, bots: 0.004 }));
+            return out;
+        }
+        /* Full Map: the main socket and 15 spectators, with and without Full Map culling the
+         * same world (fullmap off: the main socket alone, the same world) */
+        if (kind === 'fullmap') {
+            out.push(scene({ bodies: 400, food: 10000, layout: 'fullmap', sockets: 16, socketIds: true }),
+                scene({ bodies: 400, food: 10000, layout: 'fullmap', sockets: 1, socketIds: true }));
             return out;
         }
         if (kind === 'quick') {
@@ -115,9 +126,9 @@
         var w = { spec: spec, rnd: rnd, tick: 0, nextId: 10, bodies: [], food: [], own: [], vw: vw, vh: vh, removedFood: [], addedFood: [], removedBodies: [], players: 0 };
         /* main socket's own cell in the middle, the unit's own cell to the right */
         w.own.push({ id: 1, x: 0, y: 0, r: 150, vx: 0, vy: 0, color: [0, 200, 255], name: 'Bench', unit: 0 });
-        if (spec.sockets > 1) w.own.push({ id: 2, x: 700, y: 120, r: 130, vx: 0, vy: 0, color: [255, 120, 0], name: 'Unit', unit: 1 });
-        var crowd = spec.layout === 'crowd', wide = spec.layout === 'wide', span = wide ? 4 : 1.25;
-        var spanX = crowd ? 2600 : vw * span, spanY = crowd ? 2000 : vh * span;
+        if (spec.sockets > 1 && spec.layout !== 'fullmap') w.own.push({ id: 2, x: 700, y: 120, r: 130, vx: 0, vy: 0, color: [255, 120, 0], name: 'Unit', unit: 1 });
+        var crowd = spec.layout === 'crowd', wide = spec.layout === 'wide', full = spec.layout === 'fullmap', span = wide ? 4 : 1.25;
+        var spanX = crowd ? 2600 : full ? 2 * MAP_HALF - 400 : vw * span, spanY = crowd ? 2000 : full ? 2 * MAP_HALF - 400 : vh * span;
         function size() {
             var r = rnd(), s;
             if (r < 0.7) s = 32 + rnd() * 50; else if (r < 0.95) s = 82 + rnd() * 170; else s = 250 + rnd() * 450;
@@ -134,7 +145,7 @@
             /* a player of 1-8 pieces around one point (coincident pieces now and then) */
             player++;
             var n = 1 + ((rnd() * 8) | 0), cx = (rnd() - 0.5) * spanX, cy = (rnd() - 0.5) * spanY;
-            if (!crowd && rnd() < 0.06) cx = (rnd() < 0.5 ? -1 : 1) * (vw / 2 + 600 + rnd() * 1500);
+            if (!crowd && !full && rnd() < 0.06) cx = (rnd() < 0.5 ? -1 : 1) * (vw / 2 + 600 + rnd() * 1500);
             var col = PALETTE[(rnd() * PALETTE.length) | 0], nick = spec.bots ? 'Bot ' + player : 'P' + player, vx = (rnd() - 0.5) * 16, vy = (rnd() - 0.5) * 16;
             var skin = spec.bots && spec.botSkins ? BOT_SKINS[player % BOT_SKINS.length] : null;
             var coincident = rnd() < 0.15, s0 = size();
@@ -145,10 +156,17 @@
             }
         }
         w.players = player;
-        var fx = vw * (wide ? 4 : 1.5), fy = vh * (wide ? 4 : 1.5);
+        var fx = full ? 2 * MAP_HALF - 40 : vw * (wide ? 4 : 1.5), fy = full ? 2 * MAP_HALF - 40 : vh * (wide ? 4 : 1.5);
         for (var f = 0; f < spec.food; f++) w.food.push(newFood(w, fx, fy));
         w.foodSpan = [fx, fy];
-        w.box = [crowd ? 1400 : vw * (wide ? 2 : 0.7), crowd ? 1100 : vh * (wide ? 2 : 0.7)];
+        w.box = full ? [MAP_HALF - 2700, MAP_HALF - 2700] : [crowd ? 1400 : vw * (wide ? 2 : 0.7), crowd ? 1100 : vh * (wide ? 2 : 0.7)];
+        /* fullmap: what each connection sees (main: its own view; then the tiles, set by setup) and
+         * the ids it was sent (a cell leaving that view is removed from it) */
+        if (full) {
+            w.views = [[-vw * 0.6, -vh * 0.6, vw * 0.6, vh * 0.6]];
+            w.sent = [];
+            for (var q = 0; q < spec.sockets; q++) w.sent.push(new Set());
+        }
         return w;
     }
     function newFood(w, fx, fy) {
@@ -232,30 +250,56 @@
     var UNIT_ID_SHIFT = 1000000;
     function socketId(spec, unit, id) { return unit > 0 && spec && spec.socketIds ? id + UNIT_ID_SHIFT * unit : id; }
 
-    /* what a socket sees: unit 0 (main) everything, unit 1 the right part of the world */
-    function sees(unit, x) { return unit === 0 || x > -300; }
+    /* what a socket sees: unit 0 (main) everything, unit 1 the right part of the world;
+     * fullmap: its view (w.views) */
+    function sees(w, unit, c) {
+        if (w.views) {
+            var v = w.views[unit];
+            return !!v && c.x >= v[0] && c.x <= v[2] && c.y >= v[1] && c.y <= v[3];
+        }
+        return unit === 0 || c.x > -300;
+    }
     /* the update packet (16) of one socket. Main: the private-server layout of
      * practice-sim.js (flag 0x80: cell type + party code). Unit: the layout spect.js reads
      * (no 0x80; food is size < 21). fresh: every cell with colour and name. */
     function encodeUpdate(w, unit, fresh) {
-        var b = new Writer(), main = unit === 0, i, c;
+        var b = new Writer(), main = unit === 0, i, c, sent = w.sent ? w.sent[unit] : null, gone = sent ? [] : null;
         b.u8(16);
         b.u16(0);
         function cell(c, type) {
             var isNew = fresh || c._new;
+            /* fullmap: a cell new to this connection gets its colour and name; it is removed
+             * from it when it leaves its view */
+            if (sent) {
+                if (!sent.has(c.id)) { sent.add(c.id); isNew = true; }
+            }
             var flags = (main ? 0x80 : 0) | (type === 2 ? 1 : 0) | (isNew ? 2 : 0) | (isNew && c.skin ? 4 : 0) | (isNew && c.name ? 8 : 0);
             b.u32(socketId(w.spec, unit, c.id)); b.i32(Math.round(c.x)); b.i32(Math.round(c.y)); b.u16(Math.round(c.r)); b.u8(flags);
-            if (flags & 2) { b.u8(c.color[0]); b.u8(c.color[1]); b.u8(c.color[2]); }
+            /* fullmap: every connection gets its own colour for one player (live agar.io) */
+            if (flags & 2) {
+                if (sent && unit > 0 && type === 0) { b.u8((c.color[0] + 37 * unit) & 255); b.u8((c.color[1] + 71 * unit) & 255); b.u8((c.color[2] + 13 * unit) & 255); }
+                else { b.u8(c.color[0]); b.u8(c.color[1]); b.u8(c.color[2]); }
+            }
             if (flags & 4) b.str(c.skin);
             if (flags & 8) b.str(c.name);
             if (main) { b.u16(type); b.u8(0); }
         }
-        for (i = 0; i < w.own.length; i++) { c = w.own[i]; if (sees(unit, c.x)) cell(c, 0); }
-        for (i = 0; i < w.bodies.length; i++) { c = w.bodies[i]; if (sees(unit, c.x)) cell(c, c.virus ? 2 : 0); }
-        if (fresh) { for (i = 0; i < w.food.length; i++) { c = w.food[i]; if (sees(unit, c.x)) cell(c, 1); } }
-        else for (i = 0; i < w.addedFood.length; i++) { c = w.addedFood[i]; if (sees(unit, c.x)) { c._new = true; cell(c, 1); c._new = false; } }
+        for (i = 0; i < w.own.length; i++) { c = w.own[i]; if ((!w.views || c.unit === unit) && sees(w, unit, c)) cell(c, 0); }
+        for (i = 0; i < w.bodies.length; i++) {
+            c = w.bodies[i];
+            if (sees(w, unit, c)) cell(c, c.virus ? 2 : 0);
+            else if (sent && sent.has(c.id)) { sent.delete(c.id); gone.push(c.id); }
+        }
+        if (fresh) { for (i = 0; i < w.food.length; i++) { c = w.food[i]; if (sees(w, unit, c)) cell(c, 1); } }
+        else for (i = 0; i < w.addedFood.length; i++) { c = w.addedFood[i]; if (sees(w, unit, c)) { c._new = true; cell(c, 1); c._new = false; } }
         b.u32(0);
         var rem = fresh ? [] : w.removedBodies.length ? w.removedFood.concat(w.removedBodies) : w.removedFood;
+        if (sent) {
+            /* only what this connection was sent (eaten food, dead players), and what left its view */
+            var mine = [];
+            for (i = 0; i < rem.length; i++) if (sent.has(rem[i])) { sent.delete(rem[i]); mine.push(rem[i]); }
+            rem = mine.concat(gone);
+        }
         b.u16(rem.length);
         for (i = 0; i < rem.length; i++) b.u32(socketId(w.spec, unit, rem[i]));
         return b.done();
@@ -488,8 +532,31 @@
         feedMain(encodeBorder());
         feedMain(encodeAddOwn(1));
         feedMain(encodeUpdate(s.w, 0, true));
+        /* Full Map: real spect.js spectators (no player) on stand-in sockets, on the tiles of the
+         * plan Full Map uses (lmFullMapPlan), with Full Map on (window.fullSpectator) */
+        if (spec.layout === 'fullmap' && spec.sockets > 1 && typeof Spect === 'function' && window.spects && typeof window.lmFullMapPlan === 'function') {
+            var vs = typeof lmServerViewSize === 'function' ? lmServerViewSize(typeof LM_SPECT_FREE_SCALE === 'number' ? LM_SPECT_FREE_SCALE : 0.4) : [5069, 2970];
+            var plan = window.lmFullMapPlan(2 * MAP_HALF, 2 * MAP_HALF, vs[0], vs[1], spec.sockets - 1);
+            var prevCreateF = window.createLegendWebSocket;
+            s.prevFull = window.fullSpectator;
+            window.fullSpectator = true;
+            for (var t = 0; plan && t < plan.tiles.length && t < spec.sockets - 1; t++) {
+                var tile = plan.tiles[t];
+                s.w.views[t + 1] = [tile.x - vs[0] / 2, tile.y - vs[1] / 2, tile.x + vs[0] / 2, tile.y + vs[1] / 2];
+                window.createLegendWebSocket = function (url) { return fakeSocket(url); };
+                var sp;
+                try { sp = new Spect({ staticX: tile.x, staticY: tile.y, tile: tile.index }); } finally { window.createLegendWebSocket = prevCreateF; }
+                window.spects.push(sp);
+                sp._lmBench = true;
+                s.units.push(sp);
+                try { sp.socket.onopen(); } catch (e) { console.warn('[bench] spectator open', e); }
+                feedUnit(sp, encodeBorder());
+                feedUnit(sp, encodeUpdate(s.w, t + 1, true));
+            }
+            if (prevCreateF === undefined) try { delete window.createLegendWebSocket; } catch (e) { }
+        }
         /* multibox units: real spect.js units on stand-in sockets */
-        if (spec.sockets > 1 && typeof window.addBox === 'function' && window.spects) {
+        if (spec.layout !== 'fullmap' && spec.sockets > 1 && typeof window.addBox === 'function' && window.spects) {
             var prevCreate = window.createLegendWebSocket;
             for (var u = 1; u < spec.sockets && u < 2; u++) {
                 window.createLegendWebSocket = function (url) { return fakeSocket(url); };
@@ -521,6 +588,7 @@
             if (i >= 0) window.spects.splice(i, 1);
         });
         if (!window.spects.some(function (x) { return x && x.player; })) l.multiBoxPlayerExists = false;
+        if ('prevFull' in s) window.fullSpectator = s.prevFull;
         window.multiboxPlayerEnabled = null;
         s.sock.readyState = 3;
         if (l.socket === s.sock) { l.socket = null; l.ws = null; l.connectionOpened = false; }
@@ -762,10 +830,16 @@
         feedMain(encodeClear());
         feedMain(encodeBorder());
         feedMain(encodeAddOwn(1));
+        var views = s.w.views;
         s.w = createWorld(s.spec);
+        if (views) s.w.views = views;
         for (var t = 0; t < ticks; t++) step(s.w);
         feedMain(encodeUpdate(s.w, 0, true));
-        s.units.forEach(function (u, i) { feedUnit(u, encodeAddOwn(socketId(s.spec, i + 1, 2))); feedUnit(u, encodeUpdate(s.w, i + 1, true)); });
+        s.units.forEach(function (u, i) {
+            if (!views) feedUnit(u, encodeAddOwn(socketId(s.spec, i + 1, 2)));
+            else feedUnit(u, encodeBorder());
+            feedUnit(u, encodeUpdate(s.w, i + 1, true));
+        });
         await sleep(opts.settleMs || 1500);
         var dr = DR();
         var rnd = makeRng(777);

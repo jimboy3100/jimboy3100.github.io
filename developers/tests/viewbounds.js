@@ -97,15 +97,20 @@ g.fullSpectator = false; g.multiboxPlayerEnabled = false;
     check('no server view: a cell far off screen is skipped (no work for it)', far.oppColor === null && LM.biggerSTECellsCache.length === 1, String(far.oppColor));
 }
 
-/* 4. World Spectate (full map) still uses the map */
+/* 4. Full Map: the spectators bring the cells of the whole map, but only the view (and the ring
+ * margin) is judged, as without it (every cell of the map was judged each frame, for colours
+ * and rings nobody sees); a cell whose ring can reach the screen is judged */
 {
     g.fullSpectator = true;
     LM.mapMinX = LM.mapMinY = -7071; LM.mapMaxX = LM.mapMaxY = 7071;
+    LM.srvViewMinX = LM.srvViewMinY = LM.srvViewMaxX = LM.srvViewMaxY = NaN;
     world(0, 0);
     const far = { id: 3, x: 7000, y: 7000, size: 170, targetX: 7000, targetY: 7000, oppColor: null };
-    LM.cells.push(far);
+    const near = { id: 4, x: 960 + 700, y: 0, size: 170, targetX: 960 + 700, targetY: 0, oppColor: null };
+    LM.cells.push(far, near);
     g.frame.call(renderer(0, 0));
-    check('full map spectate: a cell anywhere on the map is judged', far.oppColor === 'bste', String(far.oppColor));
+    check('full map: a cell far off screen is skipped, as without Full Map', far.oppColor === null, String(far.oppColor));
+    check('full map: a cell off screen whose ring reaches it is judged', near.oppColor === 'bste', String(near.oppColor));
     g.fullSpectator = false;
 }
 
