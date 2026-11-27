@@ -22,7 +22,11 @@
   await sleep(2500);
   var open = !!(lm && lm.isSocketOpen && lm.isSocketOpen());
   info.connected = open;
-  var cs = P.connections(), main = cs.filter(function (c) { return c.id === 0; })[0];
+  var mainOf = function () { return P.connections().filter(function (c) { return c.id === 0; })[0]; };
+  /* a live server that is slow to send (a busy test server sent nothing for 2.5 s after the
+   * connection opened): on until its first message is recorded (bounded) */
+  for (var mw = 0; mw < 50 && open && !(mainOf() && mainOf().n > 0); mw++) { await sleep(200); open = !!lm.isSocketOpen(); }
+  var cs = P.connections(), main = mainOf();
   info.main = main ? main.n + ' messages, ' + main.world + ' world updates, host ' + main.host : 'none';
   if (open && !(main && main.n > 0)) fail.push('connected but no main connection messages recorded');
   if (main && /token|\?|\//.test(main.host)) fail.push('connection host holds more than the host: ' + main.host);
@@ -34,8 +38,13 @@
   /* the page blocked for 400 ms: the messages wait in the browser */
   if (open) {
     var g0 = P.events().filter(function (e) { return e.type === 'connection gap'; }).length;
-    nativeTO(function () { var t = performance.now(); while (performance.now() - t < 400) { } }, 0);
+    var n0 = (mainOf() || {}).n || 0, nBlock = -1;
+    nativeTO(function () { var t = performance.now(); while (performance.now() - t < 400) { } nBlock = (mainOf() || {}).n || 0; }, 0);
     await sleep(1500);
+    /* the gap is noted when the next message comes after the block: a slow server may send it later
+     * (bounded) */
+    for (var bw = 0; bw < 30 && nBlock >= 0 && ((mainOf() || {}).n || 0) <= nBlock; bw++) await sleep(200);
+    info.msgs = [n0, nBlock, (mainOf() || {}).n || 0];
     var gaps = P.events().filter(function (e) { return e.type === 'connection gap'; }).slice(g0);
     info.gap = gaps.length ? gaps.map(function (e) { return e.dur + ' ms ' + e.net.cause + ', busy ' + e.net.blocked + ' ms, ' + e.net.q + ' at once'; }).join('; ') : 'none';
     if (!gaps.some(function (e) { return e.net && e.net.c === 0 && e.net.cause === 'client' && e.net.blocked >= 300; })) fail.push('a 400 ms block of the page gave no client gap on the main connection: ' + info.gap);

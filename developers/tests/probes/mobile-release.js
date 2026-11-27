@@ -50,6 +50,9 @@
   } finally {
     app.macroFeed = keepFeed;
     try { keepFeed.call(app, false); } catch (e) { }
+    /* the window is in front again, as after a real blur: the faked blur left Performance
+     * diagnostics counting every later stall as "window not in front" (probe perf failed) */
+    window.dispatchEvent(new Event('focus'));
     if (menuWas) app.showMenu();
   }
   return { fail: fail, info: info };

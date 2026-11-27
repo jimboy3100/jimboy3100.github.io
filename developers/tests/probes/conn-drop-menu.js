@@ -26,7 +26,11 @@
     info.afterDrop = { play: LM.play, menu: menu(), rs: LM.socket && LM.socket.readyState };
     if (LM.play) fail.push('still in the game after the connection dropped');
     if (!menu()) fail.push('the menu did not come back after the connection dropped while in the game');
-    for (w = 0; w < 60 && !(open() && LM.ws === ws0); w++) await sleep(250);
+    /* 15 s, and on (up to 45 s) while a retry is still pending or connecting: when the live server
+     * refused the first retries, the next ones come 4 and 8 s later */
+    var retrying = function () { return !!LM._reconnTimer || !!(LM.socket && LM.socket.readyState === 0); };
+    for (w = 0; w < 180 && !(open() && LM.ws === ws0) && (w < 60 || retrying()); w++) await sleep(250);
+    info.reconnectMs = w * 250;
     info.reconnected = open() && LM.ws === ws0;
     if (!info.reconnected) fail.push('no auto-reconnect to ' + ws0);
   } catch (e) {

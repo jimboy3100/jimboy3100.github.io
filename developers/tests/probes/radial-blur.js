@@ -62,6 +62,8 @@
   } catch (e) { fail.push('radial blur: ' + e); }
   finally {
     try { T.radialClose(); } catch (e) { }
+    /* the window is in front again, as after a real blur (later probes see a focused window) */
+    window.dispatchEvent(new Event('focus'));
     delete hotkeysCommand['hk-zzProbe'];
     if (hadJ) hotkeys.J = oldJ; else delete hotkeys.J;
     if (ov) ov.style.display = ovDisp;

@@ -4,6 +4,16 @@
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
   var key = window.temporaryRecordedProtocol, arr = key && window.RecordedProtocol[key];
+  /* playing backwards is watched for over a second, so the live recording must hold a few seconds.
+   * After a probe that joined a server again it held only 1 to 3 s: playing backwards from its
+   * middle reached the start while the probe still watched it step back. Waits while the page
+   * records the live server (bounded; 5 s when nothing is recorded at all) */
+  var recMs = function () { var t = arr && arr._lm && arr._lm.t; return t && t.length ? t[t.length - 1] - t[0] : 0; };
+  for (var rw = 0; rw < 75 && recMs() < 4000 && (arr || rw < 25); rw++) {
+    await sleep(200);
+    key = window.temporaryRecordedProtocol; arr = key && window.RecordedProtocol[key];
+  }
+  info.recordedMs = recMs();
   info.packets = arr ? arr.length : 0;
   if (!arr || arr.length < 30 || !arr._lm) { info.skipped = 'no live recording'; return { fail: fail, info: info }; }
   info.timed = arr._lm.t.length === arr.length;
@@ -118,6 +128,9 @@
   }
   // backwards: the reverse play button steps back (each step is rebuilt: the position runs up to it
   // while a step is rebuilt, so only the positions shown between rebuilds count)
+  /* from the end: the whole recording before it (a short one reached its start from the middle) */
+  RS.command('seek', RS.state().n - RS.state().pos);
+  await settle(RS.state().n);
   var mid = RS.state().pos;
   var revB = Array.prototype.filter.call(document.querySelectorAll('#lm-rs .lm-rs-b[title="' + CSS.escape(lmT('pkg.rp.playRev')) + '"]'), function (b) { return b.textContent === '◀'; })[0];
   if (!revB) fail.push('no play backwards button');
@@ -133,7 +146,9 @@
     st = RS.state();
     info.backwards = { from: mid, to: st.pos, dir: st.dir, steps: back };
     if (!(st.dir === -1 && st.playing && st.pos < mid && back > 0)) fail.push('backwards playback did not step back: ' + JSON.stringify(info.backwards));
-    RS.command('pause');
+    /* the pause command plays again when stopped: only while it plays (at the start it plays
+     * backwards from the end again, and every check after this one failed with it) */
+    if (st.playing) RS.command('pause');
     if (RS.state().playing) fail.push('still playing backwards after pause');
     /* the world reached by playing backwards is the one the packets up to there make */
     await settle();
