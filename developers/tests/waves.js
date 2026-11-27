@@ -35,7 +35,7 @@ function method(header, from) {
     return null;
 }
 const APP = ['lmWaveStats()', 'lmWaveOffsetX()', 'lmWaveOffsetY()', 'lmWaveSeen(', 'lmWaveSenderIndex(', 'readWavePing(view)',
-    'lmPingLabel(type)', 'addLmPing(', 'sendTeamPing(type)', 'sendTeamWave()', 'lmWaveRoute()', 'sendWavePing(', 'checkPlayerID(id)',
+    'lmPingLabel(type)', 'addLmPing(', 'lmMarkerPoint()', 'sendTeamPing(type)', 'sendTeamWave()', 'lmWaveRoute()', 'sendWavePing(', 'checkPlayerID(id)',
     'isSocketOpen()', 'readMessage(message)', 'lmTeamScale('];
 const appSrc = APP.map(h => method(h)).filter(Boolean);
 const LMSRC = ['sendWaves(', 'setMapOffset(', '_lmBorderValid(', '_lmApplyFullBorder(', '_lmFullBorderNow()'].map(h => method(h));
@@ -328,6 +328,31 @@ safe('draw', () => {
     const line = text.split('\n').filter(l => l.indexOf('Team waves:') === 0)[0];
     check('Copy debug info has the team wave line', !!line, text.slice(0, 300));
     check('... without IDs or positions', line && !/\b(42|99|640|480)\b/.test(line), line);
+});
+
+/* ---------- 8. a cursor off the screen (the phone joystick's far synthetic mouse) ---------- */
+safe('off-screen aim', () => {
+    const p = page({ playerID: 5 });
+    p.border(-7071, -7071, 7071, 7071, 'private');
+    /* a 915x412 screen at view scale 0.5 around (1000, 500): it shows x -830..2830, y 88..912 */
+    Object.assign(p.LM, { canvasWidth: 915, canvasHeight: 412, viewScale: 0.5 });
+    p.dr.camX = 1000; p.dr.camY = 500;
+    p.LM.cursorX = 1000 + 18000; p.LM.cursorY = 500 + 300;
+    p.app.sendTeamPing(7);
+    const pg = p.LM._lmPings[0];
+    check('ping aimed 18,000 units away is marked on the screen', pg && Math.abs(pg.x - 1000) <= 915 && Math.abs(pg.y - 500) <= 412, pg && [pg.x, pg.y].join());
+    check('... in the aimed direction', pg && pg.x > 1000 + 600 && Math.abs((pg.y - 500) / (pg.x - 1000) - 300 / 18000) < 1e-6, pg && [pg.x, pg.y].join());
+    check('... the drawn wave too', p.LM.Waves.length === 1 && Math.abs(p.LM.Waves[0].x - pg.x) < 1e-6);
+    p.tick(400);
+    p.LM.cursorX = 1000 - 40000; p.LM.cursorY = 500 - 40000;
+    p.app.sendTeamWave();
+    const w = p.LM.Waves[1];
+    check('wave aimed off the screen is drawn on the screen', w && Math.abs(w.x - 1000) <= 915 && Math.abs(w.y - 500) <= 412, w && [w.x, w.y].join());
+    p.tick(600);
+    p.LM.cursorX = 1500; p.LM.cursorY = 300;
+    p.app.sendTeamPing(5);
+    const pg2 = p.LM._lmPings[1];
+    check('a cursor on the screen is marked where it is', pg2 && pg2.x === 1500 && pg2.y === 300, pg2 && [pg2.x, pg2.y].join());
 });
 
 console.log(failed ? failed + ' check(s) failed' : 'all wave checks passed');

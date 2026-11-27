@@ -40,7 +40,7 @@ const need = (s, what) => { if (!s) { console.log('FAIL source marker not found:
 const APP = ['getPlayerX()', 'getPlayerY()', 'sendPlayerPosition()', 'updateTeamPlayerPosition(message)', 'checkPlayerID(id)',
     'isSocketOpen()', 'createView(value)', 'sendBuffer(value)', 'readMessage(message)',
     'lmWaveStats()', 'lmWaveOffsetX()', 'lmWaveOffsetY()', 'lmWaveSeen(', 'lmWaveSenderIndex(', 'readWavePing(view)',
-    'lmPingLabel(type)', 'sendTeamWave()', 'lmWaveRoute()', 'sendWavePing(', 'updateTarget('];
+    'lmPingLabel(type)', 'lmMarkerPoint()', 'sendTeamWave()', 'lmWaveRoute()', 'sendWavePing(', 'updateTarget('];
 const appSrc = APP.map(h => need(method(h), h));
 const OPT = ['lmTeamScale(', 'lmTeamWorldOut(', 'lmTeamWorldIn('].map(h => method(h)).filter(Boolean);
 const LMSRC = ['sendWaves(', 'setMapOffset(', '_lmBorderValid(', '_lmApplyFullBorder(', '_lmFullBorderNow()', 'translateX(x)', 'translateY(x)']

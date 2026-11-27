@@ -32849,14 +32849,29 @@ function thelegendmodproject() {
             list.push({ x: x, y: y, type: type, label: label, color: color, time: Date.now() });
             if (list.length > 20) list.splice(0, list.length - 20);
         },
+        /* The world point a ping or wave marks: the cursor, moved in along its direction from the
+         * screen centre when it lies off the screen. The phone joystick aims with a far synthetic
+         * mouse (thumb offset times its sensitivity), thousands of units off screen and often
+         * outside the map; a mouse on the screen is never moved. */
+        lmMarkerPoint() {
+            var lm = window.legendmod, x = lm.cursorX, y = lm.cursorY, dr = window.drawRender;
+            if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+            var s = lm.viewScale, hw = lm.canvasWidth * 0.5, hh = lm.canvasHeight * 0.5;
+            if (!(Math.abs(s) > 0.000001) || !(hw > 0) || !(hh > 0) || !dr || !Number.isFinite(dr.camX) || !Number.isFinite(dr.camY)) return [x, y];
+            var dx = (x - dr.camX) * s, dy = (y - dr.camY) * s, k = Math.max(Math.abs(dx) / hw, Math.abs(dy) / hh);
+            if (!(k > 1)) return [x, y];
+            k /= 0.9;
+            return [dr.camX + dx / k / s, dr.camY + dy / k / s];
+        },
         /* hk-ping*: wave + label at the cursor, sent to teammates as opcode 45 with the type */
         sendTeamPing(type) {
             var lm = window.legendmod;
             if (!lm || !lm.sendWaves || !Array.isArray(lm.Waves) || !this.lmPingLabel(type)) return;
             var now = Date.now();
             if (this._lmLastPing && now - this._lmLastPing < 500) return;
-            var x = lm.cursorX, y = lm.cursorY;
-            if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+            var at = this.lmMarkerPoint();
+            if (!at) return;
+            var x = at[0], y = at[1];
             this._lmLastPing = now;
             var color = (typeof ogarcopythelb !== 'undefined' && ogarcopythelb && ogarcopythelb.color) || defaultSettings.splitRangeColor;
             if (typeof color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(color)) color = '#00e6ff';
@@ -32894,9 +32909,10 @@ function thelegendmodproject() {
             if (!lm || !lm.sendWaves || !Array.isArray(lm.Waves)) return;
             var now = Date.now();
             if (this._lmLastWave && now - this._lmLastWave < 300) return;
+            var at = this.lmMarkerPoint();
+            if (!at) return;
             this._lmLastWave = now;
-            var x = lm.cursorX, y = lm.cursorY;
-            if (!Number.isFinite(x) || !Number.isFinite(y)) return;
+            var x = at[0], y = at[1];
             lm.sendWaves(x, y, defaultSettings.splitRangeColor || '#00e6ff', 1000, 'wave:self', false);
             try {
                 this.sendWavePing(x + this.lmWaveOffsetX(), y + this.lmWaveOffsetY(), 4);
