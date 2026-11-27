@@ -917,24 +917,6 @@
     "ja": "死亡後の統計をスキップ",
     "it": "Salta le statistiche dopo la morte"
   },
-  "settings.showQuest": {
-    "en": "Show quest",
-    "el": "Εμφάνιση αποστολής",
-    "es": "Mostrar misión",
-    "bg": "Покажи мисията",
-    "fr": "Afficher la quête",
-    "ar": "إظهار المهمة",
-    "zh": "顯示任務",
-    "ru": "Показывать задание",
-    "de": "Quest anzeigen",
-    "tr": "Görevi göster",
-    "pl": "Pokaż zadanie",
-    "nl": "Opdracht tonen",
-    "pt": "Mostrar missão",
-    "id": "Tampilkan misi",
-    "ja": "クエストを表示",
-    "it": "Mostra missione"
-  },
   "settings.autoZoom": {
     "en": "Auto zoom",
     "el": "Αυτόματο ζουμ",

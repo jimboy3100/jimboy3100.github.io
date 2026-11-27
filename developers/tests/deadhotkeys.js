@@ -51,6 +51,9 @@ gone.forEach(c => check(c + ': no hotkey command', hkSrc.indexOf("'" + c + "'") 
   check('no quest HUD element', v4.indexOf('quest-hud') < 0 && v4.indexOf('<div id="btl-hud" class="hud"></div>') > 0);
   check('no quest HUD styles', ['css/legend.css', 'css/ogario.v3.css'].every(f => read(f).indexOf('quest-hud') < 0));
   check('no quest show/hide methods', !/\n        set(Show)?Quest\(\) \{/.test(v4));
+  /* nor the Settings > Extras row that moved agar.io's #showQuest box in under its label (skipStats stays) */
+  check('no Show quest row in Extras', v4.indexOf('#showQuest') < 0 && v4.indexOf('$("#skipStats").appendTo($(".skipStats"));') > 0);
+  check('settings.showQuest: no text', read('languages/lm-en.js').indexOf('"settings.showQuest"') < 0);
 }
 
 if (fail) { console.log(fail + ' check(s) failed'); process.exit(1); }

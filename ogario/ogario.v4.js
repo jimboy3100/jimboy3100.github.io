@@ -26489,16 +26489,14 @@ function thelegendmodproject() {
                 /* noSkins and noColors are LM's own checkboxes (created by addOptions with
                  * class js-switch): they already get a Switchery from the js-switch loop.
                  * Adding js-switch-vanilla to them caused a SECOND Switchery (duplicate toggle).
-                 * Only skipStats and showQuest are true agar.io vanilla checkboxes here. */
-                $("#skipStats, #showQuest").addClass("js-switch-vanilla");
+                 * Only skipStats is a true agar.io vanilla checkbox here. */
+                $("#skipStats").addClass("js-switch-vanilla");
                 //$(".skinsGroup h5").after('<label class="noSkins">' + textLanguage.noSkins + " </label>");
                 //$("#noSkins").appendTo($(".noSkins")); 
                 //$(".transparencyGroup h5").after('<label class="noColors">' + textLanguage.noColors + " </label>");
                 //$("#noColors").appendTo($(".noColors"));
                 $(".extrasGroup h5").after('<label class="skipStats">' + textLanguage.skipStats + " </label>");
                 $("#skipStats").appendTo($(".skipStats"));
-                $(".skipStats").after('<label class="showQuest">' + textLanguage.showQuest + " </label>");
-                $("#showQuest").appendTo($(".showQuest"));
                 $("#options").remove();
                 $("#settingsChoice").appendTo($(".extrasGroup")).addClass("select-wrapper");
             }
