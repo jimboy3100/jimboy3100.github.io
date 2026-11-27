@@ -484,8 +484,38 @@ for (const [file, M] of Object.entries(servers)) {
             else { b.handleCompressedBuffer(op69(refs, fx, fy)); M.handleUserMessage(c, op10(refs)); }
             check(tag + 'orientation ' + fx + '/' + fy + ' detected', b.orientFixed && b.fixX === fx && b.fixY === fy);
             const t = followTarget(b, 1234, -567);
-            check(tag + 'orientation ' + fx + '/' + fy + ' follow target', t && t[0] === 1234 * fx + CX && t[1] === -567 * fy + CY);
+            check(tag + 'orientation ' + fx + '/' + fy + ' follow target', t && Math.abs(t[0] - (1234 * fx + CX)) <= 2 && Math.abs(t[1] - (-567 * fy + CY)) <= 2);
         });
+        {
+            // agar.io: each connection's full border has its own width/height (14073..14210) and centre;
+            // the player sends canonical units u = (raw - C) * 14142.1356 / W, each bot maps them back
+            const S = 14142.135623730952;
+            const P = { cx: 812.25, cy: -1540.5, w: 14189.596, h: 14110.375 };   // the player's map
+            const Q = { cx: -2210.75, cy: 3305.125, w: 14098.493, h: 14197.902 }; // this bot's map
+            const border = m => b => b.handleCompressedBuffer(Buffer.concat([Buffer.from([64]), f64(m.cx - m.w / 2), f64(m.cy - m.h / 2), f64(m.cx + m.w / 2), f64(m.cy + m.h / 2)]));
+            const canon = (m, x, y) => [Math.round((x - m.cx) * S / m.w), Math.round((y - m.cy) * S / m.h)];
+            // the same top players, raw in the player's map; on the bot's map: scaled, own centre, mirrored
+            const players = [{ x: 4000, y: -5200, mass: 5000 }, { x: -3500, y: 2500, mass: 3000 }, { x: 1800, y: 4700, mass: 1500 }];
+            const onBot = (fx, fy) => players.map(r => ({ x: Q.cx + fx * (r.x - P.cx) * Q.w / P.w, y: Q.cy + fy * (r.y - P.cy) * Q.h / P.h, mass: r.mass }));
+            cases.forEach(([fx, fy]) => {
+                c = begin(5);
+                const b = newBot(); ready(b);
+                b.handleCompressedBuffer(Buffer.concat([Buffer.from([64]), f64(-2125), f64(-1280), f64(2125), f64(1280)])); // view rect
+                const viewRectIgnored = !b.offsetFixed;
+                border(Q)(b);
+                border({ cx: 0, cy: 0, w: 4250, h: 2560 })(b); // view rects later change nothing
+                check(tag + 'scaled map ' + fx + '/' + fy + ': view rects ignored, first full border = map', viewRectIgnored && b.offsetFixed && Math.abs(b.offsetX - Q.cx) < 1e-9 && Math.abs(b.offsetY - Q.cy) < 1e-9 && Math.abs(b.scaleX - Q.w / S) < 1e-12 && Math.abs(b.scaleY - Q.h / S) < 1e-12);
+                M.handleUserMessage(c, op10(players.map(r => { const u = canon(P, r.x, r.y); return { x: u[0], y: u[1], mass: r.mass }; })));
+                b.handleCompressedBuffer(Buffer.concat([Buffer.from([69]), u16(players.length),
+                    ...onBot(fx, fy).map(r => Buffer.concat([i32(Math.round(r.x)), i32(Math.round(r.y)), u32(r.mass), Buffer.from([0])]))]));
+                check(tag + 'scaled map ' + fx + '/' + fy + ': orientation detected', b.orientFixed && b.fixX === fx && b.fixY === fy);
+                const mouse = { x: 3333.3, y: -4444.4 }; // the player's mouse, raw in the player's map
+                const u = canon(P, mouse.x, mouse.y);
+                const t = followTarget(b, u[0], u[1]);
+                const want = [Q.cx + fx * (mouse.x - P.cx) * Q.w / P.w, Q.cy + fy * (mouse.y - P.cy) * Q.h / P.h];
+                check(tag + 'scaled map ' + fx + '/' + fy + ': bot targets the player\'s mouse within 2 units', t && Math.abs(t[0] - want[0]) <= 2 && Math.abs(t[1] - want[1]) <= 2);
+            });
+        }
         {
             c = begin(5);
             const b = orientBot();
@@ -789,12 +819,12 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: no ghostRef while bots are not started', gs.length === 0);
 
     // _lmOnServerBorder: bot offset from the player's own connection only
-    const borderIdx = ogSrc.indexOf('if (~~(maxX - minX) === LM.mapSize && ~~(maxY - minY) === LM.mapSize && window.userBots && this === window.legendmod) {');
-    const borderSrc = borderIdx > -1 ? extract('if (~~(maxX', borderIdx) : null;
+    const borderIdx = ogSrc.indexOf('if (maxX - minX > 14000 && maxY - minY > 14000 && window.userBots && this === window.legendmod &&');
+    const borderSrc = borderIdx > -1 ? extract('if (maxX - minX > 14000', borderIdx) : null;
     check('ogario: bot offset block found', !!borderSrc);
-    const borderCase = (isMain, minX, minY, maxX, maxY) => {
-        const self = {};
-        const w = { userBots: { offsetX: 0, offsetY: 0 }, legendmod: isMain ? self : {} };
+    const borderCase = (isMain, minX, minY, maxX, maxY, userBots, seq) => {
+        const self = { _connectSeq: seq || 1 };
+        const w = { userBots: userBots || { offsetX: 0, offsetY: 0 }, legendmod: isMain ? self : {} };
         run('var minX = ' + minX + ', minY = ' + minY + ', maxX = ' + maxX + ', maxY = ' + maxY + ';\n' + borderSrc, { window: w, LM: { mapSize: 14142 } }, self);
         return w.userBots;
     };
@@ -804,6 +834,59 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('ogario: bot offset not taken from another connection', bo.offsetFixed !== true && bo.offsetX === 0);
     bo = borderCase(true, 0, 0, 5000, 5000);
     check('ogario: bot offset not taken from a partial border', bo.offsetFixed !== true);
+    bo = borderCase(true, 100 - 14189.596 / 2, 50 - 14110.375 / 2, 100 + 14189.596 / 2, 50 + 14110.375 / 2);
+    check('ogario: bot frame from a scaled agar.io border: centre and canonical scale', bo.offsetFixed && bo.offsetX === 100 && bo.offsetY === 50 &&
+        Math.abs(bo.scaleX * 14189.596 - 14142.135623730952) < 1e-6 && Math.abs(bo.scaleY * 14110.375 - 14142.135623730952) < 1e-6);
+    borderCase(true, -2125, -1280, 2125, 1280, bo);
+    borderCase(true, -7071, -7071, 7071, 7071, bo);
+    check('ogario: bot frame: view rects and later borders of the same connection change nothing', bo.offsetX === 100 && bo.offsetY === 50);
+    borderCase(true, -7071, -7071, 7071, 7071, bo, 2);
+    check('ogario: bot frame: the next connection takes its own first border', bo.offsetX === 0 && bo.offsetY === 0 && bo.offsetSeq === 2);
+
+    // player -> bots end to end: the real border, mouse and ghost cell code of ogario.v4.js feeding server.js
+    {
+        const out0 = console.log;
+        const M = servers['server.js'];
+        const S = 14142.135623730952;
+        const P = { cx: -3010.5, cy: 2200.25, w: 14098.493, h: 14072.8 };   // the player's map
+        const Q = { cx: 4500.75, cy: -1250.5, w: 14189.596, h: 14198.1 };   // a bot's map
+        const ubP = borderCase(true, P.cx - P.w / 2, P.cy - P.h / 2, P.cx + P.w / 2, P.cy + P.h / 2, { startedBots: true, isAlive: true });
+        const players = [{ x: 2500, y: -4100, mass: 6000 }, { x: -6200, y: 3900, mass: 2500 }, { x: 900, y: 6100, mass: 1200 }];
+        const ghostOut = [];
+        const wg = { userBots: ubP, buffers: B, connectionBots: { send: b => ghostOut.push(ab(b)) } };
+        const gself = { ghostCells: players.map(r => ({ rawX: r.x, rawY: r.y, mass: r.mass })), ghostCellsTime: 50000 };
+        wg.legendmod = gself;
+        run(ghostSrc, { window: wg }, gself);
+        const mouseOut = [];
+        const wm = { userBots: ubP, legendmod: { vector: [[true, false]], vnr: 0 }, buffers: B, connectionBots: { send: b => mouseOut.push(ab(b)) } };
+        const raw = { x: -5000.4, y: 7000.6 }; // the player's mouse, raw on the player's map (Rotate map flips x)
+        run(extract(mouseMarker, mouseIdx), { window: wm }, { cursorX: -raw.x, cursorY: raw.y, translateX: x => -x, translateY: y => y });
+        check('ogario->server: ghost ref and mouse sent', ghostOut.length === 1 && mouseOut.length === 1);
+        const mirror = [[1, 1], [-1, 1], [1, -1], [-1, -1]];
+        console.log = () => {};
+        const out = mirror.map(([fx, fy]) => {
+            M.resetServer();
+            const c = new FakeClient();
+            M.onUserConnection(c);
+            M.handleUserMessage(c, startPacket('b', 1));
+            const b = new M.Bot(); M.userBots.push(b); b.ws.open();
+            b.handleBuffer(Buffer.from([242, 0, 0, 0, 0]));
+            b.handleCompressedBuffer(Buffer.concat([Buffer.from([64]), f64(Q.cx - Q.w / 2), f64(Q.cy - Q.h / 2), f64(Q.cx + Q.w / 2), f64(Q.cy + Q.h / 2)]));
+            M.handleUserMessage(c, ghostOut[0]);
+            b.handleCompressedBuffer(Buffer.concat([Buffer.from([69]), u16(players.length), ...players.map(r => Buffer.concat([
+                i32(Math.round(Q.cx + fx * (r.x - P.cx) * Q.w / P.w)), i32(Math.round(Q.cy + fy * (r.y - P.cy) * Q.h / P.h)), u32(r.mass), Buffer.from([0])]))]));
+            M.handleUserMessage(c, mouseOut[0]);
+            M.user.isAlive = true; M.bots.ai = false; b.followMouse = true;
+            b.move();
+            const pk = b.ws.sent[b.ws.sent.length - 1];
+            const want = [Q.cx + fx * (raw.x - P.cx) * Q.w / P.w, Q.cy + fy * (raw.y - P.cy) * Q.h / P.h];
+            const ok = b.orientFixed && b.fixX === fx && b.fixY === fy && pk[0] === 16 && Math.abs(pk.readInt32LE(1) - want[0]) <= 2 && Math.abs(pk.readInt32LE(5) - want[1]) <= 2;
+            M.resetServer();
+            return ok;
+        });
+        console.log = out0;
+        check('ogario->server: different map sizes, all 4 mirrors: the bot finds its orientation and targets the player\'s mouse within 2 units', out.every(Boolean));
+    }
 
     // Start / Fill: agar.io only, session amount local
     check('ogario: Start requires legendmod.integrity', /getElementById\('startBots'\)\.addEventListener[\s\S]{0,400}if \(!legendmod\.integrity\) \{[\s\S]{0,200}game1\.bots\.agarOnly/.test(ogSrc));
@@ -997,5 +1080,240 @@ for (const file of ['server.js', 'server-fast.js']) {
     check('captcha: source check appears before sendSpawn2', sourceCheck > -1 && sourceCheck < spawnCall);
 }
 
-console.log('\n' + (fail ? 'FAIL: ' + fail + ' failure(s)' : 'ALL PASS'));
-process.exit(fail ? 1 : 0);
+// ---- browser bots: botcore.js in a Web Worker (emulated: vm context without require/Buffer) ----
+// The real LMBotsWorkerSocket and connectionBots of ogario.v4.js, the real botcore.js, a fake
+// game server WebSocket and a manual clock for both sides.
+async function browserBots() {
+    const vm = require('vm');
+    const coreSrc = fs.readFileSync(path.join(botsDir, 'botcore.js'), 'utf8');
+    const ogSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    const core = require(path.join(botsDir, 'botcore'));
+    const algorithm = core.algorithm;
+    const extractFrom = (marker) => {
+        const start = ogSrc.indexOf(marker);
+        if (start < 0) return null;
+        let i = ogSrc.indexOf('{', start), depth = 0;
+        for (; i < ogSrc.length; i++) {
+            const ch = ogSrc[i], nx = ogSrc[i + 1];
+            if (ch === '/' && nx === '/') { i = ogSrc.indexOf('\n', i); continue; }
+            if (ch === '/' && nx === '*') { i = ogSrc.indexOf('*/', i + 2) + 1; continue; }
+            if (ch === '"' || ch === "'" || ch === '`') { for (i++; i < ogSrc.length && ogSrc[i] !== ch; i++) if (ogSrc[i] === '\\') i++; continue; }
+            if (ch === '{') depth++;
+            else if (ch === '}' && --depth === 0) return ogSrc.slice(start, i + 1);
+        }
+        return null;
+    };
+
+    // murmur2 copy in botcore.js = murmurhash-js 1.0.0 (values from the npm package, seed 255)
+    const vectors = [['', 1981237060], ['a', 1381613397], ['ab', 2681217873], ['abc', 3785473039], ['abcd', 724329609],
+        ['live-arena-ab-12x.agar.io3.11.21', 2125815976], ['web-arenas-live-v25-0.agario.miniclippt.com/eu-west-2/10.1.2.33.11.21', 1372224960], ['éÿĀx', 2990779056]];
+    let npm = null;
+    try { npm = require(require.resolve('murmurhash-js', { paths: [botsDir] })).murmur2; } catch (e) { }
+    check('botcore: murmur2 = murmurhash-js output' + (npm ? ' (npm package found too)' : ''), vectors.every(([s, h]) => core.murmur2(s, 255) === h && (!npm || npm(s, 255) === h && npm(s, 7) === core.murmur2(s, 7))));
+    check('botcore: no Node modules or Buffer in the shared core', !/require\(|Buffer\./.test(coreSrc.replace(/\/\/.*$/gm, '')));
+    check('botcore: no orbit logic / bot positions / process.exit', !coreSrc.includes('distToPlayer') && !/\[9\]/.test(coreSrc) && !coreSrc.includes('process.exit'));
+
+    // manual clock: setTimeout/setInterval of one side
+    const clock = () => {
+        const c = { now: 0, list: [], id: 0 };
+        c.setTimeout = (fn, ms) => { const t = { id: ++c.id, fn, at: c.now + (ms || 0) }; c.list.push(t); return t.id; };
+        c.setInterval = (fn, ms) => { const t = { id: ++c.id, fn, at: c.now + ms, every: ms }; c.list.push(t); return t.id; };
+        c.clear = id => { c.list = c.list.filter(t => t.id !== id); };
+        c.run = ms => {
+            const end = c.now + ms;
+            for (;;) {
+                const due = c.list.filter(t => t.at <= end).sort((a, b) => a.at - b.at)[0];
+                if (!due) break;
+                c.now = due.at;
+                if (due.every) due.at += due.every; else c.clear(due.id);
+                due.fn();
+            }
+            c.now = end;
+        };
+        return c;
+    };
+    const page = clock(), wk = clock();
+    // the game server side of each bot socket
+    class GameWS {
+        constructor(url, opts) { this.url = url; this.opts = opts; this.readyState = 0; this.sent = []; GameWS.all.push(this); }
+        send(d) { this.sent.push(Buffer.from(d)); }
+        close() { if (this.readyState === 3) return; this.readyState = 3; if (this.onclose) this.onclose({}); }
+        open() { this.readyState = 1; this.onopen && this.onopen({}); }
+        push(bytes) { const b = Buffer.from(bytes); this.onmessage({ data: b.buffer.slice(b.byteOffset, b.byteOffset + b.length) }); }
+    }
+    GameWS.all = [];
+    const blobs = {}, workers = [];
+    const cloneAB = d => typeof d === 'string' ? d : new Uint8Array(new Uint8Array(d)).buffer;
+    class FakeWorker {
+        constructor(url) {
+            this.terminated = false;
+            this.timers = new Set();
+            workers.push(this);
+            const self = this;
+            const add = id => (self.timers.add(id), id);
+            const clear = id => { self.timers.delete(id); wk.clear(id); };
+            /* messages to the page arrive in a later task (step()) */
+            const ctx = this.ctx = {
+                WebSocket: GameWS, URL, console: { warn() {}, log() {} },
+                setTimeout: (f, ms) => add(wk.setTimeout(f, ms)), setInterval: (f, ms) => add(wk.setInterval(f, ms)), clearTimeout: clear, clearInterval: clear,
+                postMessage: d => { const c = cloneAB(d); page.setTimeout(() => { if (!self.terminated && self.onmessage) self.onmessage({ data: c }); }, 0); }
+            };
+            ctx.self = ctx;
+            vm.createContext(ctx);
+            /* the blob's last line starts the worker; keep its server for the test */
+            vm.runInContext(blobs[url].replace(';LMBotCore.runWorker(self);', ';self.__server = LMBotCore.runWorker(self);'), ctx);
+        }
+        postMessage(d) { if (!this.terminated) this.ctx.onmessage({ data: cloneAB(d) }); }
+        /* like a real worker: its timers stop; live = what was still running (leak check) */
+        terminate() {
+            this.terminated = true;
+            this.live = wk.list.filter(t => this.timers.has(t.id));
+            this.live.forEach(t => wk.clear(t.id));
+        }
+    }
+    const listeners = {};
+    const win = {
+        OgVer: '9.9', SERVER_HOST: '',
+        addEventListener: (n, f) => { listeners[n] = f; }, removeEventListener: (n, f) => { if (listeners[n] === f) delete listeners[n]; }
+    };
+    const fetched = [];
+    const sb = {
+        window: win, Uint8Array, ArrayBuffer, console: { warn() {} },
+        setTimeout: page.setTimeout, Worker: FakeWorker,
+        Blob: class { constructor(parts) { this.text = parts.join(''); } },
+        URL: { createObjectURL: b => { const u = 'blob:' + Object.keys(blobs).length; blobs[u] = b.text; return u; }, revokeObjectURL: u => { delete blobs[u]; } },
+        fetch: url => { fetched.push(url); return Promise.resolve({ ok: true, text: () => Promise.resolve(coreSrc) }); }
+    };
+    const sockSrc = extractFrom('class LMBotsWorkerSocket {');
+    check('browser: LMBotsWorkerSocket extractable', !!sockSrc);
+    vm.createContext(sb);
+    vm.runInContext(sockSrc + '\nwindow.LMBotsWorkerSocket = LMBotsWorkerSocket', sb);
+
+    // connectionBots.connect: browser worker for an empty address or "browser", else the WebSocket
+    const cbSrc = extractFrom('window.connectionBots = {');
+    const made = [];
+    const cbw = { SERVER_HOST: '', OgVer: '9.9', LMBotsWorkerSocket: function (src) { made.push(['worker', src]); this.readyState = 0; } };
+    const WS = function (url) { made.push(['ws', url]); this.readyState = 0; };
+    WS.OPEN = 1; WS.CONNECTING = 0;
+    const cbCtx = { window: cbw, WebSocket: WS };
+    vm.createContext(cbCtx);
+    vm.runInContext(cbSrc, cbCtx);
+    const CB = cbw.connectionBots;
+    const pick = host => { cbw.SERVER_HOST = host; CB.ws = null; made.length = 0; CB.connect(); return made[0] && made[0][0]; };
+    check('browser: connect uses the worker for "", "browser", " Browser ", null', ['', 'browser', ' Browser ', null].every(h => pick(h) === 'worker' && CB.inBrowser === true));
+    check('browser: worker code from the bots folder on legendmod.ml', (pick('browser'), made[0][1] === 'https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=9.9'));
+    check('browser: connect uses the WebSocket for a bot server address', ['ws://localhost:1337', 'wss://party-bots--x.repl.co'].every(h => pick(h) === 'ws' && made[0][1] === h && CB.inBrowser === false));
+    check('browser: Bots address default is "browser" when none was saved', /if \(storedbotsRemoteIP == null \|\| storedbotsRemoteIP === ""\) \{\s*storedbotsRemoteIP = "browser";/.test(ogSrc) &&
+        ogSrc.includes('list="botsRemoteIPList"') && ogSrc.includes('<option value="browser" data-i18n="game1.bots.hostBrowser">'));
+    // browser mode: message 12 is a notice without the captcha popups button, startCaptcha does nothing
+    {
+        const toasts = [], popups = [];
+        const w = { userBots: {}, bots: {}, captchaOpenedWindow: 1, capthaWindow: [] };
+        const ctx = { window: w, WebSocket: WS, DataView, Uint8Array, toastr: { warning: m => toasts.push(m), info: m => toasts.push(m) }, _lmTH: k => k, lmT: k => k,
+            Premadeletter123: 'LM', createCaptchaWindow: i => popups.push(i), legendmod: { sendTokenForBots() {}, sendTimeOutTokenForBots() {} }, setTimeout() {} };
+        vm.createContext(ctx);
+        vm.runInContext(cbSrc, ctx);
+        const cb = w.connectionBots;
+        cb.inBrowser = true; cb.ws = { readyState: 1 };
+        cb.onmessage({ data: new Uint8Array([12]).buffer });
+        cb.startCaptcha();
+        check('browser: message 12 shows the wait notice, no captcha button, no popups', toasts.length === 1 && toasts[0].includes('game1.bots.captchaWait') && !toasts[0].includes('lm-bots-captcha-open') && popups.length === 0 && !cb.captchaActive);
+    }
+
+    // the worker socket end to end
+    const got = [];
+    const sock = new win.LMBotsWorkerSocket('https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=t');
+    sock.onmessage = e => got.push(Buffer.from(e.data));
+    let opened = 0, closed = 0;
+    sock.onopen = () => opened++;
+    sock.onclose = () => closed++;
+    check('browser: connecting (readyState 0) until the code is loaded', sock.readyState === 0 && fetched.length === 1);
+    await new Promise(r => setImmediate(r));
+    const count = bytes => got.filter(b => b.equals(Buffer.from(bytes))).length;
+    check('browser: open after the load, idle status [4,0,0], no worker yet', sock.readyState === 1 && opened === 1 && count([4, 0, 0]) === 1 && workers.length === 0);
+    const step = () => page.run(0);
+    sock.send(new Uint8Array([6, 0, 0, 0, 0, 0, 0, 0, 0]).buffer);
+    sock.send(new Uint8Array([1]).buffer);
+    check('browser: idle: other messages start nothing, Stop answers 2', workers.length === 0 && count([2]) === 1);
+
+    const URL1 = 'wss://live-arena-ab-12x.agar.io:443/';
+    const start = (url, n) => Buffer.concat([Buffer.from([0]), Buffer.from(url, 'latin1'), Buffer.from([0]), u32(22), u32(31000), Buffer.from([1]), Buffer.from('Bot', 'latin1'), Buffer.from([0]), Buffer.from([n])]);
+    const toAB = b => b.buffer.slice(b.byteOffset, b.byteOffset + b.length);
+    // not an agar.io server: 13, 2 and the worker goes
+    sock.send(toAB(start('wss://imsolo.pro:2102', 3)));
+    step();
+    check('browser: non-agar.io server: 13 then 2, worker terminated, idle again', workers.length === 1 && workers[0].terminated && count([13]) === 1 && count([2]) === 2 && !sock._worker && count([4, 0, 0]) === 2);
+
+    sock.send(toAB(start(URL1, 2)));
+    const worker = workers[1], srv = worker && worker.ctx.__server;
+    check('browser: Start runs a new worker with the bot core', !!srv && !worker.terminated && srv.session.active && srv.bots.amount === 2);
+    wk.run(400);
+    check('browser: bots join the game server like the browser does (no ws options, arraybuffer)', GameWS.all.length === 2 && GameWS.all.every(w => w.url === URL1 && w.opts === undefined && w.binaryType === 'arraybuffer'));
+    const [g1, g2] = GameWS.all;
+    g1.open(); g2.open();
+    check('browser: handshake 254/255 sent', g1.sent.length === 2 && g1.sent[0][0] === 254 && g1.sent[1].readUInt32LE(1) === 31000);
+    // bot 1 without a cipher: the spawn packet bytes
+    g1.push([242, 0, 0, 0, 0]);
+    check('browser: spawn packet = 0, nick, 0, "0", 0 (like server.js)', g1.sent[2] && g1.sent[2].equals(expectSpawn('Bot', '0')));
+    // bot 2 with the cipher: key = murmur2(host + path + version, 255)
+    g2.push(Buffer.concat([Buffer.from([241]), i32(77), Buffer.from('3.11.21'), Buffer.from([0])]));
+    g2.push(algorithm.rotateBufferBytes(Buffer.from([242, 0, 0, 0, 0]), 77 ^ 31000)); // the game server's packets: decryption key ^ client version
+    const enc = g2.sent[2] && Buffer.from(g2.sent[2]);
+    check('browser: cipher key from the vendored murmur2 (= npm value)', !!enc && algorithm.rotateBufferBytes(enc, 2125815976).equals(expectSpawn('Bot', '0')));
+    // captcha: 12 once, the bot waits, tokens are not taken
+    const b1 = srv.userBots.find(b => b.ws === g1);
+    g1.push([85]);
+    sock.send(JSON.stringify({ message: 'botscode', msg: JSON.stringify('tok_' + 'Qw9-'.repeat(30)) }));
+    step();
+    check('browser: captcha: client gets 12 once, the bot keeps its socket and waits, no token taken', count([12]) === 1 && b1.waitingToken === 'spawn' && g1.readyState === 1 && g1.sent.length === 3 && srv.session.tokens.length === 0);
+    // orientation and follow on a scaled, mirrored map
+    {
+        const S = 14142.135623730952, Q = { cx: 1500.5, cy: -800.25, w: 14189.596, h: 14098.493 }, fx = -1, fy = 1;
+        /* 255: LZ4 block of one literal run (the game server compresses its world packets) */
+        const packed = b => { const n = b.length, head = [Math.min(n, 15) << 4]; if (n >= 15) { let r = n - 15; while (r >= 255) { head.push(255); r -= 255; } head.push(r); } return Buffer.concat([Buffer.from([255]), u32(n), Buffer.from(head), b]); };
+        g1.push(packed(Buffer.concat([Buffer.from([64]), f64(-2125), f64(-1280), f64(2125), f64(1280)]))); // a view rect first
+        g1.push(packed(Buffer.concat([Buffer.from([64]), f64(Q.cx - Q.w / 2), f64(Q.cy - Q.h / 2), f64(Q.cx + Q.w / 2), f64(Q.cy + Q.h / 2)])));
+        const refs = [{ x: 3000, y: -2000, mass: 5000 }, { x: -4000, y: 1500, mass: 3000 }, { x: 1000, y: 4200, mass: 1500 }];
+        sock.send(toAB(Buffer.concat([Buffer.from([10, refs.length]), ...refs.map(r => Buffer.concat([i32(r.x), i32(r.y), u32(r.mass)]))])));
+        g1.push(packed(Buffer.concat([Buffer.from([69]), u16(refs.length), ...refs.map(r => Buffer.concat([i32(Math.round(Q.cx + fx * r.x * Q.w / S)), i32(Math.round(Q.cy + fy * r.y * Q.h / S)), u32(r.mass), Buffer.from([0])]))])));
+        sock.send(toAB(Buffer.concat([Buffer.from([6]), i32(1234), i32(-567)])));
+        srv.user.isAlive = true; b1.followMouse = true;
+        b1.move();
+        const p = g1.sent[g1.sent.length - 1];
+        check('browser: orientation found from ghost cells, bot follows the mouse on its scaled mirrored map', b1.orientFixed && b1.fixX === fx && b1.fixY === fy && p[0] === 16 &&
+            Math.abs(p.readInt32LE(1) - (Q.cx + fx * 1234 * Q.w / S)) <= 2 && Math.abs(p.readInt32LE(5) - (Q.cy + fy * -567 * Q.h / S)) <= 2);
+    }
+    // status every second, then Stop: 1, 2, sockets closed, worker terminated, no timer left
+    wk.run(1000); step();
+    check('browser: status [4, connected, spawned] every second', count([4, 2, 0]) >= 1);
+    sock.send(new Uint8Array([1]).buffer);
+    wk.run(2100); step();
+    check('browser: Stop: 1 then 2, all game sockets closed, worker terminated, idle status', count([1]) === 1 && count([2]) === 3 && GameWS.all.every(w => w.readyState === 3) && worker.terminated && !sock._worker && count([4, 0, 0]) === 3);
+    check('browser: Stop: no bot timer left in the worker but its status interval', worker.live.length === 1 && worker.live[0].every === 1000);
+    // a new Start after Stop: a fresh worker; then close() (new connect / disconnect)
+    sock.send(toAB(start(URL1, 1)));
+    wk.run(200);
+    const w3 = workers[2], g3 = GameWS.all[2];
+    g3.open();
+    check('browser: Start after Stop runs a fresh worker', !!w3 && !w3.terminated && w3.ctx.__server.session.active && GameWS.all.length === 3);
+    sock.close();
+    check('browser: close: the worker closes its game sockets, readyState 3', sock.readyState === 3 && g3.readyState === 3 && !listeners.pagehide);
+    page.run(400);
+    check('browser: close: worker terminated with no timer left, onclose once, blob URL revoked', w3.terminated && w3.live.length === 0 && closed === 1 && (page.run(1000), Object.keys(blobs).length === 0));
+    sock.send(toAB(start(URL1, 1)));
+    check('browser: closed socket sends nothing', workers.length === 3);
+    // page closing while bots run: terminated at once
+    {
+        const s2 = new win.LMBotsWorkerSocket('x');
+        await new Promise(r => setImmediate(r));
+        s2.send(toAB(start(URL1, 1)));
+        const w4 = workers[3];
+        listeners.pagehide();
+        check('browser: page closing terminates the running worker', s2.readyState === 3 && w4.terminated);
+    }
+}
+
+browserBots().catch(e => check('browser bots: suite ran without exceptions (' + (e && e.stack) + ')', false)).then(() => {
+    console.log('\n' + (fail ? 'FAIL: ' + fail + ' failure(s)' : 'ALL PASS'));
+    process.exit(fail ? 1 : 0);
+});

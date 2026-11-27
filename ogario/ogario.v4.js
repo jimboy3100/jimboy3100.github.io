@@ -7150,7 +7150,7 @@ const standardDeviation = (arr, usePopulation = false) => {
 window.botsSpawncode = [];
 window.botsSpawncodeNum = 0;
 
-window.SERVER_HOST = 'wss://localhost:1337' // Hostname/IP of the server where the bots are running [Default = localhost (your own pc)]
+window.SERVER_HOST = 'browser' // 'browser' (or empty): browser bots in a Web Worker; else the address of a bot server, e.g. ws://localhost:1337 (start.bat)
 //window.SERVER_PORT = 1337 // Port number used on the server where the bots are running [Default = 1337]
 class Writer {
     constructor(size) {
@@ -7206,16 +7206,17 @@ window.buffers = {
         writer.writeInt32(y)
         return writer.dataView.buffer
     },
-    /* [10, u8 n, n x (i32 x, i32 y, u32 mass)]: the player's ghost cells, centred on the map
-       like the mouse, so each bot can find its own map orientation on FFA/EXP. */
-    ghostRef(cells, offsetX, offsetY) {
+    /* [10, u8 n, n x (i32 x, i32 y, u32 mass)]: the player's ghost cells, centred on the map and
+       in canonical units like the mouse (scale: 1 when left out), so each bot can find its own map
+       orientation on FFA/EXP. */
+    ghostRef(cells, offsetX, offsetY, scaleX, scaleY) {
         const n = Math.min(cells.length, 10)
         const writer = new Writer(2 + n * 12)
         writer.writeUint8(10)
         writer.writeUint8(n)
         for (let i = 0; i < n; i++) {
-            writer.writeInt32(~~(cells[i].rawX - offsetX))
-            writer.writeInt32(~~(cells[i].rawY - offsetY))
+            writer.writeInt32(~~((cells[i].rawX - offsetX) * (scaleX || 1)))
+            writer.writeInt32(~~((cells[i].rawY - offsetY) * (scaleY || 1)))
             writer.writeUint32(cells[i].mass >>> 0)
         }
         return writer.dataView.buffer
@@ -7249,8 +7250,95 @@ function createCaptchaWindow(i) {
     }
     window.capthaWindow[i] = window.open("https://agar.io/captcha");
 }
+/* Browser bots: the bot server's own code (ExampleScripts/agario-bots2/botcore.js, the file server.js
+   runs) in a Web Worker of this page, so no bot server is needed and the game's thread only posts the
+   control messages. It looks like the bot server's WebSocket to connectionBots: readyState, send,
+   close, onopen/onmessage/onclose, the same binary messages both ways. "Connect" loads the code;
+   a worker runs only from Start (or Fill lobby) until the session ends (message 2), a new connect or
+   the page closing. Its bots join the game server with this page's origin, spawn with token '0'
+   like the player, and only wait when the game server asks for a captcha (no tokens). */
+class LMBotsWorkerSocket {
+    constructor(src) {
+        this.readyState = 0
+        this.binaryType = 'arraybuffer'
+        this.onopen = this.onmessage = this.onclose = null
+        this._worker = null
+        this._url = null
+        var self = this
+        this._unload = function () { self._end(false) }
+        window.addEventListener('pagehide', this._unload)
+        fetch(src).then(function (r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status)
+            return r.text()
+        }).then(function (code) {
+            if (self.readyState !== 0) return
+            self._url = URL.createObjectURL(new Blob([code + '\n;LMBotCore.runWorker(self);\n'], { type: 'text/javascript' }))
+            self.readyState = 1
+            if (self.onopen) self.onopen({})
+            self._status()
+        }).catch(function (e) {
+            console.warn('[LM] Browser bots cannot load:', e)
+            self._end(false)
+        })
+    }
+    send(data) {
+        if (this.readyState !== 1) return
+        var op = typeof data === 'string' ? -1 : new Uint8Array(data)[0]
+        if (!this._worker) {
+            /* idle: only Start runs a worker; Stop answers like a bot server without a session */
+            if (op === 1) return this._deliver(new Uint8Array([2]).buffer)
+            if (op !== 0) return
+            var self = this, w = this._worker = new Worker(this._url)
+            w.onmessage = function (e) {
+                if (self._worker !== w || !(e.data instanceof ArrayBuffer)) return
+                /* message 2: the session ended and the worker closed its bots: the worker goes */
+                if (new Uint8Array(e.data)[0] === 2) self._stopWorker(false)
+                self._deliver(e.data)
+                if (!self._worker && self.readyState === 1) self._status()
+            }
+            w.onerror = function (e) {
+                if (e && e.preventDefault) e.preventDefault()
+                console.warn('[LM] Browser bots stopped:', e && e.message)
+                if (self._worker === w) self._end(false)
+            }
+        }
+        this._worker.postMessage(data)
+    }
+    close() { this._end(true) }
+    _deliver(buffer) {
+        if (this.readyState === 1 && this.onmessage) this.onmessage({ data: buffer })
+    }
+    /* idle: no bot connected or spawned (a bot server sends this every second) */
+    _status() { this._deliver(new Uint8Array([4, 0, 0]).buffer) }
+    /* polite: the worker first closes its bots' game connections, then it is terminated */
+    _stopWorker(polite) {
+        var w = this._worker
+        this._worker = null
+        if (!w) return
+        w.onmessage = w.onerror = null
+        if (!polite) return w.terminate()
+        try { w.postMessage('close') } catch (e) { }
+        setTimeout(function () { w.terminate() }, 300)
+    }
+    _end(polite) {
+        if (this.readyState === 3) return
+        this.readyState = 3
+        window.removeEventListener('pagehide', this._unload)
+        this._stopWorker(polite)
+        if (this._url) { var url = this._url; this._url = null; setTimeout(function () { URL.revokeObjectURL(url) }, 1000) }
+        var self = this
+        setTimeout(function () { if (self.onclose) self.onclose({ code: 1000 }) }, 0)
+    }
+}
+window.LMBotsWorkerSocket = LMBotsWorkerSocket
 window.connectionBots = {
     ws: null,
+    /* browser bots (Web Worker) for an empty Bots address or "browser", else a bot server */
+    inBrowser: false,
+    isBrowserHost(host) {
+        host = host == null ? '' : String(host).trim().toLowerCase()
+        return host === '' || host === 'browser'
+    },
     connect() {
         /* A second click while the socket is still connecting opened a second socket,
            so onopen/onclose ran twice (orphan captcha popups, false "Disconnected"). */
@@ -7261,7 +7349,8 @@ window.connectionBots = {
             try { old.close() } catch (e) { }
         }
         //this.ws = new WebSocket(`ws://${window.SERVER_HOST}:${window.SERVER_PORT}`) //ws is needed for firefox
-        var ws = this.ws = new WebSocket(`${window.SERVER_HOST}`)
+        this.inBrowser = this.isBrowserHost(window.SERVER_HOST)
+        var ws = this.ws = this.inBrowser ? new window.LMBotsWorkerSocket('https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=' + (window.OgVer || '')) : new WebSocket(`${window.SERVER_HOST}`)
         //this.ws = new WebSocket(`ws://agario-bots--jimboy3100.repl.co`)
         var self = this
         var current = function (fn) {
@@ -7294,7 +7383,7 @@ window.connectionBots = {
         }
     },
     startCaptcha() {
-        if (this.captchaActive) return
+        if (this.captchaActive || this.inBrowser) return
         if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return
         this.captchaActive = true
         window.RequestedTokens = 100000;
@@ -7394,8 +7483,11 @@ window.connectionBots = {
                 break
             case 12:
                 /* The game server asks the bots for a captcha. Browsers open popups only from a
-                   click, so the captcha windows open from the button in this notice. */
-                if (!this.captchaActive) {
+                   click, so the captcha windows open from the button in this notice.
+                   Browser bots take no tokens: they wait and try again with '0' (after 5 minutes). */
+                if (this.inBrowser) {
+                    toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.captchaNeeded', 'The game server asks the bots for a captcha.') + ' ' + _lmTH('game1.bots.captchaWait', 'The bots wait and try again in a few minutes.'))
+                } else if (!this.captchaActive) {
                     toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.captchaNeeded', 'The game server asks the bots for a captcha.') +
                         ' <button type="button" class="btn btn-warning btn-xs lm-bots-captcha-open">' + _lmTH('game1.bots.captchaOpen', 'Solve captcha') + '</button>', '', { timeOut: 0, extendedTimeOut: 0 })
                 }
@@ -7446,6 +7538,8 @@ window.userBots = {
     mouseY: 0,
     offsetX: 0,
     offsetY: 0,
+    scaleX: 1,
+    scaleY: 1,
     macroFeedInterval: null
 }
 window.bots = {
@@ -25961,7 +26055,7 @@ function thelegendmodproject() {
             //<span id="captchaErrors" style="display:inline-block;">Errors: <span id="captchaErrors1">0</span></span>
             //<div2><button id="instant" class="btn btn-success">Instant (only for testers)</button></div2>
             //var CPUamount=window.navigator.hardwareConcurrency-1;
-            // i18n-ok: the bots panel below: "Repl.it VPS" is a product name, every other text comes from the packs
+            // i18n-ok: the bots panel below: "Repl.it VPS" is a product name, "browser" and ws://localhost:1337 are values to type, every other text comes from the packs
             $(".left-container").append(`<div id="quick-bots" class="agario-panel agario-side-panel"><h2 id="botsInfo"></h2>									
 					<h5 id="botsAuthor" class="main-color">${_lmG1s('game1.bots.title')}</h5>
 					<div id="botClient" style="margin-left:15px; margin-right:15px; font-family: Tahoma; color: rgb(255, 255, 255); z-index: 9999; border-radius: var(--lm-radius,6px); min-height: 16px; min-width: 200px; background-color: rgba(2, 0, 0, 0.4);">
@@ -25976,7 +26070,8 @@ function thelegendmodproject() {
 					<input type="number" id="botsAmount" ${_lmG1a('placeholder', 'game1.bots.amountPh')} min="1" max="190" spellcheck="false">
 
 					
-					<input type="text" id="botsRemoteIP" placeholder="ws://localhost:1337" maxlength="100" spellcheck="false">
+					<input type="text" id="botsRemoteIP" placeholder="browser" list="botsRemoteIPList" maxlength="100" spellcheck="false"${_lmG1a('title', 'game1.bots.hostTip')}>
+					<datalist id="botsRemoteIPList"><option value="browser" data-i18n="game1.bots.hostBrowser">${_lmG1e(lmT('game1.bots.hostBrowser'))}</option><option value="ws://localhost:1337" data-i18n="game1.bots.hostServer">${_lmG1e(lmT('game1.bots.hostServer'))}</option></datalist>
 					<br>
 					<button id="connectBots" class="btn btn-success" data-i18n="game1.bots.connect">${_lmG1e(lmT('game1.bots.connect'))}</button>
 					<br>
@@ -43108,12 +43203,13 @@ function thelegendmodproject() {
                 }
             }
             if (window.userBots.startedBots && window.userBots.isAlive) {
-                /* The bots get the mouse in the player's server frame, centred on the map:
-                   undo a Rotate map / teammate mirror first, or every bot followed the mirrored point.
-                   Each bot maps it into its own frame (offset + its own mirror, opcode 10 below). */
+                /* The bots get the mouse in the player's server frame, centred on the map and in canonical
+                   units (scale = 14142.135623730952 / map width, _lmOnServerBorder): undo a Rotate map /
+                   teammate mirror first, or every bot followed the mirrored point. Each bot maps it into
+                   its own frame (centre, scale + its own mirror, opcode 10 below). */
                 var _lmBv = window.legendmod.vector[window.legendmod.vnr];
-                window.userBots.mouseX = (_lmBv[0] ? this.translateX(this.cursorX) : this.cursorX) - window.userBots.offsetX;
-                window.userBots.mouseY = (_lmBv[1] ? this.translateY(this.cursorY) : this.cursorY) - window.userBots.offsetY;
+                window.userBots.mouseX = ((_lmBv[0] ? this.translateX(this.cursorX) : this.cursorX) - window.userBots.offsetX) * (window.userBots.scaleX || 1);
+                window.userBots.mouseY = ((_lmBv[1] ? this.translateY(this.cursorY) : this.cursorY) - window.userBots.offsetY) * (window.userBots.scaleY || 1);
                 window.connectionBots.send(window.buffers.mousePosition(window.userBots.mouseX, window.userBots.mouseY))
             }
         },
@@ -44189,7 +44285,7 @@ function thelegendmodproject() {
                     if (this === window.legendmod && window.userBots && window.userBots.startedBots && window.userBots.offsetFixed &&
                         this.ghostCells.length && !(this._lmBotGhostSentAt > this.ghostCellsTime - 1000)) {
                         this._lmBotGhostSentAt = this.ghostCellsTime;
-                        window.connectionBots.send(window.buffers.ghostRef(this.ghostCells, window.userBots.offsetX, window.userBots.offsetY));
+                        window.connectionBots.send(window.buffers.ghostRef(this.ghostCells, window.userBots.offsetX, window.userBots.offsetY, window.userBots.scaleX, window.userBots.scaleY));
                     }
                     break;
 
@@ -52047,10 +52143,19 @@ function thelegendmodproject() {
             this.viewMinX = minX; this.viewMinY = minY; this.viewMaxX = maxX; this.viewMaxY = maxY;
             this._lmServerBorder = Object.freeze({ minX: minX, minY: minY, maxX: maxX, maxY: maxY, epoch: this._connectSeq || 0 });
             this.setMapOffset(minX, minY, maxX, maxY);
-            /* Bot offset: the player's own connection only (a multibox unit or spectator has its own frame). */
-            if (~~(maxX - minX) === LM.mapSize && ~~(maxY - minY) === LM.mapSize && window.userBots && this === window.legendmod) {
+            /* Bot frame: the player's own connection only (a multibox unit or spectator has its own frame).
+             * agar.io gives every connection its own map: the full border is 14073..14210 wide and high
+             * (a scale per axis) with its own centre, and playing connections also get small view-rect
+             * borders (about 4250 x 2560) that are not the map. The first border wider and taller than
+             * 14000 on this connection is its map; the bots get the mouse and the ghost cells in canonical
+             * units, (raw - centre) * 14142.135623730952 / width, and map them into their own map. */
+            if (maxX - minX > 14000 && maxY - minY > 14000 && window.userBots && this === window.legendmod &&
+                !(window.userBots.offsetFixed && window.userBots.offsetSeq === (this._connectSeq || 0))) {
                 window.userBots.offsetX = (minX + maxX) / 2;
                 window.userBots.offsetY = (minY + maxY) / 2;
+                window.userBots.scaleX = 14142.135623730952 / (maxX - minX);
+                window.userBots.scaleY = 14142.135623730952 / (maxY - minY);
+                window.userBots.offsetSeq = this._connectSeq || 0;
                 window.userBots.offsetFixed = true;
             }
             this._lmBorderTraceAdd(src, 0, minX, minY, maxX, maxY);
@@ -84412,8 +84517,9 @@ function setGUIEvents() {
         e.preventDefault()
     })
     var storedbotsRemoteIP = localStorage.getItem("localstoredBotsRemoteIP");
+    /* never saved (or emptied): browser bots; a saved bot server address keeps working */
     if (storedbotsRemoteIP == null || storedbotsRemoteIP === "") {
-        storedbotsRemoteIP = "ws://localhost:1337";
+        storedbotsRemoteIP = "browser";
     }
     window.captchaOpenedWindow = 1;
     /*var captchaSpeed = localStorage.getItem("captchaSpeed2");
