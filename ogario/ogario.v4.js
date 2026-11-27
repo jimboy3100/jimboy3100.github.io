@@ -44808,8 +44808,11 @@ function thelegendmodproject() {
                 while (s < data.byteLength && data.getUint8(s) !== 0) s++;
                 var slice = new Uint8Array(data.buffer, data.byteOffset + start, s - start);
                 if (s < data.byteLength) s++;
+                else _lmStrCut = true;
                 return textDecoder.decode(slice);
             };
+            /* true once a string ran to the end of the packet without its terminator */
+            var _lmStrCut = false;
             var s = 0;
             var opcode = data.getUint8(s++);
 
@@ -45061,19 +45064,30 @@ function thelegendmodproject() {
                         this.handleLeaderboard();
                         break;
                     }
-                    /* too short for the count: keep the previous board (it was emptied above) */
-                    if (s + 4 > data.byteLength) { this.leaderboard = _lb49Prev || []; break; }
+                    /* A board cut short (count, a row or a name terminator missing) or with more
+                     * than 200 rows keeps the previous one: the rows are read into a list first,
+                     * and the board, its bot skins and the leaderboard update come only when the
+                     * whole list was there (the board was emptied above). */
+                    this.leaderboard = _lb49Prev || [];
+                    if (s + 4 > data.byteLength) break;
                     var count = data.getUint32(s, true);
                     s += 4;
-                    if (count > 200 || s > data.byteLength) { break; }
+                    if (count > 200) { break; }
+                    var _lb49Rows = [];
+                    for (i = 0; i < count && s + 4 <= data.byteLength && !_lmStrCut; ++i) {
+                        _lb49Rows.push(!!data.getUint32(s, true));
+                        s += 4;
+                        _lb49Rows.push(encode());
+                    }
+                    if (i < count || _lmStrCut) break;
+                    this.leaderboard = [];
                     {
-                        for (i = 0; i < count && s + 4 <= data.byteLength; ++i) {
-                            var isMe = !!data.getUint32(s, true);
-                            s += 4;
+                        for (i = 0; i < count; ++i) {
+                            var isMe = _lb49Rows[2 * i];
                             if (isMe) {
                                 isMe = 'isPlayer'
                             }
-                            var rawNick = encode();
+                            var rawNick = _lb49Rows[2 * i + 1];
                             let nick = "";
                             try {
                                 nick = window.decodeURIComponent(window.escape(rawNick));

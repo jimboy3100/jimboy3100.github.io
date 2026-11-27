@@ -287,6 +287,10 @@ const goldens = {};
     }
     const jimPacked = run('private', JIM.map(p => p[0] === 16 ? compressed(p) : p));
     check('jim.lm compressed: the same world', digest(jimPacked.join('\n')) === goldens.jim);
+    reset(L, 'expandingland');
+    feed(board49([[0, 'Bot ★ A'], [1, 'Me'], [0, 'Bot B']]));
+    goldens.board = digest(state(L));
+    check('opcode 49 board (Expanding Land layout) is the golden one (' + goldens.board + ')', goldens.board === GOLDEN.board && L.leaderboard.length === 3 && L.lbShown === 1);
 }
 
 /* ---- 2. every truncation of every golden packet, plain and compressed ---- */
@@ -426,6 +430,61 @@ function same(kind, pre, bad) {
     for (const [name, b] of bad) check('compressed: ' + name + ': dropped, the world unchanged', same('agario', [AG[0]], b));
     reset(L, 'agario'); feed(AG[0]); feed(good);
     check('compressed: the valid packet is applied', L.indexedCells[11].targetX === 104 && L.pps === 2);
+}
+
+/* ---- 5. opcode 49 (Expanding Land / private leaderboard): a board cut short keeps the previous one ---- */
+{
+    const full = board49([[0, 'Bot ★ A'], [1, 'Me'], [0, 'Bot B']]);
+    let bad = [];
+    for (let n = 1; n < full.length; n++) {
+        reset(L, 'expandingland');
+        feed(board49([[0, 'Old']]));
+        try { feed(full.slice(0, n)); } catch (e) { bad.push(n + ' threw'); continue; }
+        if (!(L.leaderboard.length === 1 && L.leaderboard[0].nick === 'Old' && L.lbShown === 1)) bad.push(n);
+    }
+    check('opcode 49: every truncation keeps the previous board' + (bad.length ? ' (not at ' + bad.slice(0, 6).join(', ') + ')' : ''), bad.length === 0);
+    reset(L, 'expandingland');
+    feed(board49([[0, 'Old']]));
+    const big = full.slice(); big[1] = 201;
+    feed(big);
+    check('opcode 49: a count above 200 keeps the previous board', L.leaderboard.length === 1 && L.leaderboard[0].nick === 'Old');
+    feed(board49([]));
+    check('opcode 49: an empty board is a board', L.leaderboard.length === 0 && L.lbShown === 2);
+}
+
+/* ---- 5b. opcode 53 (agar.io leaderboard: {u8 flags, [name\0 if 2], [u32 id if 4]} until the end)
+ * and 252 (protocol 6-10 minimap: u16 count, {u16 id, i32 x, i32 y, i32 mass, color\0, name\0}) ---- */
+{
+    const b53 = (rows) => { const w = writer(); w.u8(53); rows.forEach(r => { w.u8(r[0]); if (r[0] & 2) w.str(r[1]); if (r[0] & 4) w.u32(r[2]); }); return w.b; };
+    const full = b53([[2, 'Alpha'], [6, 'Bravo ★', 77], [8]]);
+    reset(L, 'agario'); feed(b53([[2, 'Old']]));
+    const lb0 = JSON.stringify(L.leaderboard);
+    feed(full);
+    check('opcode 53: a whole board is shown', L.leaderboard.length === 3 && L.leaderboard[1].nick === 'Bravo ★' && L.leaderboard[1].id === 77 && L.lbShown === 2);
+    const cut53 = [];
+    for (let n = 2; n < full.length; n++) {
+        reset(L, 'agario'); feed(b53([[2, 'Old']]));
+        feed(full.slice(0, n));
+        /* opcode 53 has no row count: a cut between two rows is a shorter whole board */
+        const whole = n === b53([[2, 'Alpha']]).length || n === full.length - 1;
+        if (!whole && (JSON.stringify(L.leaderboard) !== lb0 || L.lbShown !== 1)) cut53.push(n);
+    }
+    check('opcode 53: every cut inside a name or id keeps the previous board' + (cut53.length ? ' (not at ' + cut53.slice(0, 6).join(', ') + ')' : ''), cut53.length === 0);
+
+    const b252 = (rows) => { const w = writer(); w.u8(252).u16(rows.length); rows.forEach(r => { w.u16(r[0]).u32(r[1]).u32(r[2]).u32(r[3]); w.str(r[4]); w.str(r[5]); }); return w.b; };
+    const g = b252([[5, 100, -200, 3000, '#ff0000', 'Owner'], [6, 1, 2, 30, '', 'Two']]);
+    reset(L, 'private'); feed(b252([[9, 0, 0, 1, '#000000', 'Prev']]));
+    const prev = JSON.stringify([L.imsoloGhostCells, [...L.imsoloPlayersByID.entries()]]);
+    feed(g);
+    check('opcode 252: a whole list is kept with its owner names',
+        L.imsoloGhostCells.length === 2 && L.imsoloGhostCells[0].x === 100 && L.imsoloGhostCells[0].y === -200 && L.imsoloPlayersByID.get(6).name === 'Two' && !L.imsoloPlayersByID.has(9));
+    const cut252 = [];
+    for (let n = 3; n < g.length; n++) {
+        reset(L, 'private'); feed(b252([[9, 0, 0, 1, '#000000', 'Prev']]));
+        feed(g.slice(0, n));
+        if (JSON.stringify([L.imsoloGhostCells, [...L.imsoloPlayersByID.entries()]]) !== prev) cut252.push(n);
+    }
+    check('opcode 252: every truncation keeps the previous ghost cells and owner names' + (cut252.length ? ' (not at ' + cut252.slice(0, 6).join(', ') + ')' : ''), cut252.length === 0);
 }
 
 /* ---- 6. bounded fuzz: mutated golden packets never throw, the world stays bounded ---- */
