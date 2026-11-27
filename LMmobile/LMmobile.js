@@ -2069,14 +2069,16 @@
                 var massText = mass > 0 ? mass + ' \u00b7 ' + cells + '/' + maxCells : '';
                 if (massSpan.textContent !== massText) massSpan.textContent = massText;
 
-                // Ping
-                var ping = -1;
-                if (typeof window.pingTime !== 'undefined') ping = window.pingTime;
-                else if (typeof ogario !== 'undefined' && ogario.ping) ping = ogario.ping;
-                else if (typeof connection !== 'undefined' && connection.ping) ping = connection.ping;
+                /* Ping: the value the desktop stats line shows (the controlled multibox
+                 * unit's own ping, else the main connection's drawRender.ping); the
+                 * desktop stats line is hidden on phones, so this is their only ping */
+                var ping = 0;
+                var mbUnit = window.multiboxPlayerEnabled && typeof getActiveSpect === 'function' ? getActiveSpect(window.multiboxPlayerEnabled) : null;
+                if (mbUnit && mbUnit.ping != null) ping = +mbUnit.ping || 0;
+                else if (window.drawRender) ping = +window.drawRender.ping || 0;
 
                 var dotText = '';
-                if (ping >= 0) {
+                if (ping > 0) {
                     var icon = ping <= 80 ? '\ud83d\udfe2' : ping <= 200 ? '\ud83d\udfe1' : '\ud83d\udd34';
                     dotText = icon + ' ' + Math.round(ping) + 'ms';
                 }
