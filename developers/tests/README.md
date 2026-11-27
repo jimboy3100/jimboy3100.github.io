@@ -215,3 +215,15 @@ canUseWebGLScene in Node (a frame with a shadowed cell on screen goes to Canvas2
 real WebGL batch and the real cell.draw composed like the page, jelly on/off, WebGL/Canvas2D,
 shadows off/default/blur 0, with overlapping cells, food and ejected mass. The Chrome part is
 skipped without Chrome. `node developers/tests/cellshadows.js [ogario.v4.js]`
+
+`cellcolors.js` checks cell colours from the packet to the screen. In Node the real
+handleMessage / updateCells / flushCellsData get agar.io world updates: a record without colour
+keeps the known colour, a new cell without colour has none (drawn grey, never black), server
+black stays black, channels below 16 are padded, a cut packet changes no colour; team colours
+(real minimapCell) colour cells only when the teammate sent one and do not reach a stranger's
+nameless pieces; the colour remembered per nick is forgotten on the next server; "My custom
+colour" turned off gives the own cells their colour back; the WebGL colour settings keep black;
+the parser's colour diagnostics. In headless Chrome the real WebGL batch and the real cell.draw
+(jelly on/off) draw the same colour for valid colours, black, strings that are no colour and no
+colour, and the own custom colour without writing it into the cell. The Chrome part is skipped
+without Chrome. `node developers/tests/cellcolors.js [ogario.v4.js] [--no-chrome]`
