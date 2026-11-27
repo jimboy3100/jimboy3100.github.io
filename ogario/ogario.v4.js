@@ -65782,6 +65782,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * (developers/tests/glbatch.js). Units 2 and 3 hold the scratch and the table; nothing else
          * uses them. Without this program the caller uploads from the canvas as before.
          */
+        /* this._frameHours, the local hour: a Date only when the next local hour starts (or the
+         * clock went back), not one every frame */
+        _lmFrameHours(now) {
+            if (!(now < this._frameHoursNext && now >= this._frameHoursAt)) {
+                var d = new Date(now);
+                this._frameHours = d.getHours();
+                this._frameHoursAt = now;
+                this._frameHoursNext = now + 3600000 - (d.getMinutes() * 60000 + d.getSeconds() * 1000 + d.getMilliseconds());
+            }
+            return this._frameHours;
+        },
         initWebGLSkinPut(gl, createAndLinkProgram) {
             this._lmSkinPut = null;
             try {
@@ -72224,10 +72235,40 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* ===== WebGL Text-as-Texture Rendering =====
          * Renders nick/mass/chat text to an offscreen Canvas2D, uploads as GL texture,
          * then draws as a textured quad on the GL canvas with correct depth Z. */
-        getOrCreateTextTexture(text, font, fillStyle, strokeStyle, strokeWidth) {
+        getOrCreateTextTexture(text, font, fillStyle, strokeStyle, strokeWidth, memo) {
             if (!this.gl || !this.glTextProgram) return null;
-            var cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
+            /* memo (an object kept by the caller, e.g. per cell) holds the last key: the key is
+             * built only when one of its parts changed, not on every frame */
+            var cacheKey;
+            if (memo && memo.text === text && memo.font === font && memo.fill === fillStyle && memo.stroke === strokeStyle && memo.sw === strokeWidth) {
+                cacheKey = memo.key;
+            } else {
+                cacheKey = text + '|' + font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
+                if (memo) {
+                    memo.text = text;
+                    memo.font = font;
+                    memo.fill = fillStyle;
+                    memo.stroke = strokeStyle;
+                    memo.sw = strokeWidth;
+                    memo.key = cacheKey;
+                }
+            }
             return this._lmTextCached(cacheKey, null, text, font, fillStyle, strokeStyle, strokeWidth);
+        },
+        /* nick font strings by pixel size, made once per size while weight and family stay */
+        _lmNickFont(weight, px, family) {
+            var m = this._lmNickFonts;
+            if (!m || this._lmNickFontW !== weight || this._lmNickFontF !== family) {
+                m = this._lmNickFonts = new Map();
+                this._lmNickFontW = weight;
+                this._lmNickFontF = family;
+            }
+            var f = m.get(px);
+            if (f === undefined) {
+                f = weight + ' ' + px + 'px ' + family;
+                m.set(px, f);
+            }
+            return f;
         },
         /* The text cache entry of cacheKey; on a miss made from src (an image or canvas of a
          * mark, _lmRasterImage) or else from the text (_lmRasterText). */
@@ -72808,7 +72849,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmMassTexture(cell, text, font, fillStyle, strokeStyle, strokeWidth) {
             if (!this.gl || !this.glTextProgram) return null;
             var pool = this._lmMassTex || (this._lmMassTex = new Map());
-            var style = font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
+            /* the style string is the same for every cell: made again only when a part changed */
+            var sm = this._lmMassStyleMemo || (this._lmMassStyleMemo = { font: null, fill: null, stroke: null, sw: 0, style: '' });
+            if (sm.font !== font || sm.fill !== fillStyle || sm.stroke !== strokeStyle || sm.sw !== strokeWidth) {
+                sm.font = font;
+                sm.fill = fillStyle;
+                sm.stroke = strokeStyle;
+                sm.sw = strokeWidth;
+                sm.style = font + '|' + fillStyle + '|' + (strokeStyle || '') + '|' + (strokeWidth || 0);
+            }
+            var style = sm.style;
             var entry = pool.get(cell);
             var frame = this._lmTextFrame || 0;
             if (entry) {
@@ -73275,7 +73325,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var nickStrokeColor = defaultSettings.namesStrokeColor || '#000000';
             var massStrokeColor = defaultSettings.massStrokeColor || '#000000';
 
-            var nickFont = fontWeight + ' ' + nickFontSize + 'px ' + fontFamily;
+            var nickFont = this._lmNickFont(fontWeight, nickFontSize, fontFamily);
             var nickStrokeW = defaultmapsettings.namesStroke
                 ? ~~(nickFontSize * 0.1 * strokeScale) : 0;
 
@@ -73302,7 +73352,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var nickWorldH = 0;
 
             if (showNick) {
-                var nickEntry = this.getOrCreateTextTexture(cell.targetNick, nickFont, nickColor, nickStrokeColor, nickStrokeW);
+                var nickEntry = this.getOrCreateTextTexture(cell.targetNick, nickFont, nickColor, nickStrokeColor, nickStrokeW,
+                    cell._lmNickKey || (cell._lmNickKey = { text: null, font: null, fill: null, stroke: null, sw: 0, key: '' }));
                 if (nickEntry) {
                     nickWorldH = nickWorldFontSize * 1.4;
                     this.drawWebGLTextQuad(nickEntry, cell.x, cell.y, 0, nickWorldH, z);
@@ -73389,12 +73440,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     defaultSettings.massFontWeight ||
                     fontWeight;
 
-                var massFont =
-                    massFontWeight +
-                    ' ' +
-                    massFontSize +
-                    'px ' +
-                    massFontFamily;
+                /* made again only when the weight or family setting changed */
+                if (this._lmMassFontW !== massFontWeight || this._lmMassFontF !== massFontFamily || !this._lmMassFont) {
+                    this._lmMassFontW = massFontWeight;
+                    this._lmMassFontF = massFontFamily;
+                    this._lmMassFont = massFontWeight + ' ' + massFontSize + 'px ' + massFontFamily;
+                }
+                var massFont = this._lmMassFont;
 
                 var massStrokeW =
                     defaultmapsettings.massStroke
@@ -78285,7 +78337,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* Per-frame caches — avoids per-cell string scans and Date allocations */
             LM._isReplay = !!(LM.ws && LM.ws.includes("replay"));
             this._frameSeconds = ~~(_now / 1000) % 60; /* Date.getSeconds() equivalent */
-            this._frameHours = new Date(_now).getHours(); /* only once per frame, not per cell */
+            this._lmFrameHours(_now); /* only once per frame, not per cell */
             /* Background-tab recovery: if >1s since last render, the tab was hidden.
              * Snap all cells to their target positions instantly to avoid stale ghosts. */
             if (LM.time && (_now - LM.time) > 1000) {
@@ -78752,6 +78804,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
 
+            /* With no shake and no entrance the layers keep the reset styles written once when the
+             * last effect ended: no strings, closure or style reads every frame for nothing. */
+            var _elLayersIdle = !_shakeCssTransform && !_elEntranceRunning && this._elEntranceAlpha === 1;
+            if (!_elLayersIdle || !this._elLayersReset) {
             /*
              * ============================================================
              * CALCULATE THE MAP CENTER IN SCREEN COORDINATES
@@ -79039,6 +79095,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     .opacity =
                     '1';
             }
+            } /* end of the layer styles (_elLayersIdle) */
+            this._elLayersReset = _elLayersIdle;
 
 
             /*

@@ -66,6 +66,68 @@ const FRAME_BLEND = [GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA, GL.ONE, GL.ONE_MINUS_
     check(px(fonts[2]) >= 1.8 * px(fonts[1]), 'nick texture: drawn at about twice the pixels with pixel ratio 2 (' + fonts[1] + ' / ' + fonts[2] + ')');
 }
 
+// -- 3. label pass: no per-frame strings while every label is cached; changes still get new keys
+const memoOk = (() => {
+    const { R, env } = make({ LM_DPR: 1 });
+    env.defaultmapsettings.showMass = true;
+    R.gl = {}; R.glTextProgram = {}; R.scale = 1; R.canvasWidth = 800; R.canvasHeight = 600;
+    const keys = [], massFonts = [];
+    R._lmTextCached = (key) => { keys.push(key); return { w: 10, h: 10 }; };
+    R._lmMassTexture = (cell, text, font) => { massFonts.push(font); return { w: 10, h: 10 }; };
+    R.drawWebGLTextQuad = () => {};
+    const cell = { id: 1, x: 0, y: 0, size: 100, targetNick: 'Legend', _webglRendered: true, isVirus: false, color: '#ff0000' };
+    R.drawWebGLCellText(cell);
+    R.drawWebGLCellText(cell);
+    cell.targetNick = 'Other';
+    R.drawWebGLCellText(cell);
+    env.defaultSettings.namesColor = '#123456';
+    R.drawWebGLCellText(cell);
+    env.defaultSettings.namesFontFamily = 'Arial';
+    env.defaultSettings.massFontWeight = '400';
+    R.drawWebGLCellText(cell);
+    const k = keys.map((s) => s.split('|'));
+    check(keys.length === 5 && keys[0] === keys[1], 'label keys: the same key while nothing changed');
+    check(k[2][0] === 'Other' && k[3][2] === '#123456' && /Arial$/.test(k[4][1]), 'label keys: a new nick, colour or font family gives a new key (' + keys.slice(2).join(' ; ') + ')');
+    check(/^400 100px /.test(massFonts[4]) && massFonts[0] === massFonts[3], 'mass font: follows the weight setting (' + massFonts[3] + ' -> ' + massFonts[4] + ')');
+    return { R, env };
+})();
+const allocDone = (async () => {
+    const { R } = memoOk;
+    const hit = { w: 10, h: 10 };
+    R._lmTextCached = () => hit; R._lmMassTexture = () => hit;
+    const cells = [];
+    for (let i = 0; i < 200; i++) cells.push({ id: i + 1, x: i * 50, y: 0, size: 60 + i, mass: 100 + i, targetNick: 'Player' + i, _webglRendered: true, isVirus: false, color: '#ff0000' });
+    const frame = () => { for (const c of cells) R.drawWebGLCellText(c); };
+    for (let i = 0; i < 300; i++) frame();
+    const s = new inspector.Session(); s.connect();
+    const post = (m, p) => new Promise((res, rej) => s.post(m, p || {}, (e, r) => e ? rej(e) : res(r)));
+    await post('HeapProfiler.startSampling', { samplingInterval: 256, includeObjectsCollectedByMajorGC: true, includeObjectsCollectedByMinorGC: true });
+    const N = 300;
+    for (let i = 0; i < N; i++) frame();
+    const { profile } = await post('HeapProfiler.stopSampling');
+    let total = 0;
+    (function walk(n) { if (n.callFrame.functionName === 'drawWebGLCellText' || n.callFrame.functionName === 'getOrCreateTextTexture' || n.callFrame.functionName === '_lmNickFont') total += n.selfSize; n.children.forEach(walk); })(profile.head);
+    s.disconnect();
+    const per = Math.round(total / N);
+    /* the working copy before measured ~22 KB per frame here (key and font strings per cell) */
+    check(per < 2000, 'label pass: ' + per + ' bytes allocated per frame for 200 cached labels (was ~22 KB)');
+})();
+
+// -- 3b. local hour of the frame without a Date per frame
+{
+    const { R } = make();
+    let bad = 0, dates = 0;
+    const RealDate = Date;
+    const t0 = new RealDate(2026, 10, 28, 9, 58, 30).getTime();
+    global.Date = function (t) { dates++; return new RealDate(t); };
+    try {
+        for (let t = t0; t < t0 + 3 * 3600000; t += 997) if (R._lmFrameHours(t) !== new RealDate(t).getHours()) bad++;
+        const back = t0 - 7200000; /* the clock set back two hours */
+        if (R._lmFrameHours(back) !== new RealDate(back).getHours()) bad++;
+    } finally { global.Date = RealDate; }
+    check(bad === 0 && dates <= 6, 'frame hour: matches getHours() over 3 hours and after the clock went back, with ' + dates + ' Dates for ~10800 frames');
+}
+
 /* (allocDone: the heap sampling of part 3) */
 Promise.resolve(typeof allocDone === 'undefined' ? null : allocDone).then(() => {
     if (failed) { console.log(failed + ' check(s) failed'); process.exit(1); }
