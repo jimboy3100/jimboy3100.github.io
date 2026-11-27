@@ -282,6 +282,69 @@ function _lmG1tag(tagKey, key, vars) { return '<b>[' + _lmG1e(lmT(tagKey)) + ']:
 function _lmG1h(key) { return '<span data-i18n-html="' + key + '">' + lmT(key) + '</span>'; }
 function _lmG1set(el, key) { if (el) { el.setAttribute('data-i18n', key); el.textContent = lmT(key); } return el; }
 function _lmTH(key, en) { var s = (window.lmT && window.lmT(key)) || en; if (!s || s === key) s = en; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+/* Theme > HUD / Minimap image of the leaderboard, team list and minimap boxes (saved as leadbimg,
+ * teambimg and minimapbckimg). restore() runs as soon as the HUD is built: the images came only from
+ * the last step of LMexpress.js's start, so the HUD showed seconds without them on a slow load and
+ * for the whole session when anything earlier in that start threw. A fetch that fails is tried again
+ * (2 s, 4 s ... 64 s and when the browser is back online) instead of leaving the box bare. */
+window.lmHudBg = (function () {
+    var KEYS = [['#leaderboard-hud', 'leadbimg'], ['#top5-hud', 'teambimg'], ['#minimap-hud', 'minimapbckimg']];
+    var MAX_TRIES = 6, state = {};
+    function load(sel, st) {
+        var img = new Image();
+        st.busy = true;
+        img.onload = function () {
+            if (state[sel] !== st) return;
+            st.busy = false; st.failed = false;
+            var el = document.querySelector(sel);
+            /* after a failed fetch the box keeps the broken image until its style changes; leave it
+             * alone when something else (a chat command's image) is shown there now */
+            if (st.n && el && el.style.backgroundImage === st.css) {
+                el.style.backgroundImage = 'none';
+                void getComputedStyle(el).backgroundImage;
+                el.style.backgroundImage = st.css;
+            }
+        };
+        img.onerror = function () {
+            if (state[sel] !== st) return;
+            st.busy = false;
+            if (st.n >= MAX_TRIES) { st.failed = true; return; }
+            st.n++;
+            st.timer = setTimeout(function () { st.timer = 0; if (state[sel] === st) load(sel, st); }, 1000 * Math.pow(2, st.n));
+        };
+        img.src = st.url;
+    }
+    function apply(sel, url) {
+        var el = document.querySelector(sel), st = state[sel];
+        if (!el) return;
+        /* the same image again (the start, a field losing focus): keep the load or the retries going */
+        if (url && st && st.url === url && !st.failed && el.style.backgroundImage === st.css) return;
+        if (st && st.timer) clearTimeout(st.timer);
+        delete state[sel];
+        if (!url) { el.style.backgroundImage = ''; el.style.opacity = ''; return; }
+        el.style.backgroundImage = 'url("' + url + '")';
+        el.style.opacity = '0.8';
+        st = state[sel] = { url: url, css: el.style.backgroundImage, n: 0, timer: 0, busy: false, failed: false };
+        load(sel, st);
+    }
+    function restore() {
+        KEYS.forEach(function (k) {
+            var v = null;
+            try { v = localStorage.getItem(k[1]); } catch (e) { }
+            if (v && v !== 'null') apply(k[0], v);
+        });
+    }
+    window.addEventListener('online', function () {
+        Object.keys(state).forEach(function (sel) {
+            var st = state[sel];
+            if (st.busy || (!st.timer && !st.failed)) return;
+            if (st.timer) clearTimeout(st.timer);
+            st.timer = 0; st.failed = false; st.n = Math.max(st.n, 1);
+            load(sel, st);
+        });
+    });
+    return { apply: apply, restore: restore };
+})();
 /* Session summary under the menu footer: games, best mass and time played in this tab
  * (sessionStorage: resets when the tab closes). Display only. */
 function _lmSessionStats(update) {
@@ -27343,6 +27406,8 @@ function thelegendmodproject() {
                 '<a href="#" id="cancel-targeting" class="ogicon-cancel-circle"></a>' +
                 '<a href="#" id="change-target" class="ogicon-arrow-right"></a></div>' +
                 '<div id="quest-hud" class="hud"></div> <div id="btl-hud" class="hud"></div></div>');
+            /* the saved Theme > HUD images at once, not only at the end of LMexpress.js's start */
+            try { window.lmHudBg.restore(); } catch (e) { }
             $('body').append('<ul id="messages"></ul>');
             /* LW: show debug/spectate buttons on legendmod.ml too */
             //if (window.legendModFromWebsite && !window.expandingLand) {

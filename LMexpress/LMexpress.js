@@ -4646,6 +4646,8 @@ function clearTimer() {
 /* a HUD box's own background image (minimap, leaderboard, team list); an empty URL gives the box
  * its normal look back instead of an empty image at 0.8 opacity for the rest of the session */
 function lmHudBgImage(sel, url) {
+    /* ogario.v4.js applies them from when the HUD is built and tries a failed image again */
+    if (window.lmHudBg) return window.lmHudBg.apply(sel, url);
     if (url) $(sel).css('background-image', 'url("' + url + '")').css({ opacity: 0.8 });
     else $(sel).css({ 'background-image': '', opacity: '' });
 }
@@ -6857,6 +6859,13 @@ function initializeLM(modVersion) {
             /* the screen image right under the map background image and its transparency */
             var after = r[1] === 'canvasPicture' ? $('#backgroundAlpha-slider').closest('.slider-box') : $();
             if (after.length && after.parent().is(host)) row.insertAfter(after); else row.appendTo(host);
+        });
+        /* the saved HUD images in their fields now: an empty field losing focus saves "" over the
+         * image, and the fields were filled only by the last step of the start (never when it threw) */
+        [['minimapPicture', 'minimapbckimg'], ['leadbPicture', 'leadbimg'], ['teambPicture', 'teambimg']].forEach(function (f) {
+            var el = document.getElementById(f[0]), v = null;
+            try { v = localStorage.getItem(f[1]); } catch (e) { }
+            if (el && !el.value && v && v !== 'null') el.value = v;
         });
         /* nothing left in the Tools tab box once they moved: no empty gap there */
         var src = $('#lm-tools-imgs');
