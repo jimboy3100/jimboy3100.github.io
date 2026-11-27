@@ -1,6 +1,6 @@
 /* Deleted / moved / re-encoded media: developers/audit/manifest.json must be complete and true.
  * - every record has all fields; an approved deletion is really gone and what replaces it exists;
- * - "internalReferencesMigrated" records: no tracked text file names the old path any more
+ * - "internalReferencesMigrated" media records: no tracked text file names the old path any more
  *   (as a path, a URL, or a relative name from a page in the same folder);
  * - re-encoded media keep what a player sees: the animated WebP that replaced a GIF has the GIF's
  *   size, frame count, total duration and loop.
@@ -43,7 +43,9 @@ const SKIP = /^(vanillaskins|lowresskins)\//;
 const RECORDS = new Set(['developers/audit/manifest.json', 'developers/i18n/scan-config.json', 'developers/tests/i18n-archived.js',
     'developers/tests/auditmedia.js', 'AllFilesNew.txt']);
 const texts = [...tracked].filter((f) => TEXT.test(path.basename(f)) && !SKIP.test(f) && !RECORDS.has(f));
-const migrated = man.records.filter((r) => r.internalReferencesMigrated);
+/* media files (pictures, videos, sounds); pages and scripts have their own checks (i18n-archived.js and others) */
+const MEDIA = /\.(png|jpe?g|gif|webp|bmp|ico|svg|mp4|webm|mp3|ogg|wav)$/i;
+const migrated = man.records.filter((r) => r.internalReferencesMigrated && MEDIA.test(r.oldPath));
 const hits = {};
 if (migrated.length) {
     const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
