@@ -30,7 +30,10 @@
       if (q.width < 1 || q.height < 1) return;
       if (q.left < r.right && r.left < q.right && q.top < r.bottom && r.top < q.bottom) hits.push(el.id || el.textContent);
     });
-    if (hits.length) fail.push('clock covers ' + hits.join(', '));
+    /* a phone in portrait shows the rotate overlay over the game (the clock is not seen there) */
+    var rot = document.getElementById('lm-portrait-ov');
+    if (rot && rot.classList.contains('on')) info.rotateOverlay = hits;
+    else if (hits.length) fail.push('clock covers ' + hits.join(', '));
   } finally {
     app.setSettings('showTime', keep);
     if (typeof app.displayTime === 'function') app.displayTime();

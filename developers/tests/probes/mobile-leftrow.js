@@ -23,7 +23,8 @@
     H.reposition();
     await sleep(100);
     info.usualRow = Math.round(R(drawer).h);
-    if (info.usualRow > 50) fail.push('the usual left row (options off) is ' + info.usualRow + ' px high (more than one row)');
+    /* (a portrait phone has no room for one row: it wraps there too, under the rotate overlay) */
+    if (info.usualRow > 50 && innerWidth > innerHeight) fail.push('the usual left row (options off) is ' + info.usualRow + ' px high (more than one row)');
     set(true);
     H.reposition();
     await sleep(200);
