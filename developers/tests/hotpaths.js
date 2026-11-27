@@ -183,5 +183,41 @@ check('skin auto toggle no longer fakes key presses', toggleSrc.length > 0 && !/
     check('started without application: tick does nothing and does not throw', (() => { delete ctx.application; try { my.skinToggle_update(); return true; } catch (e) { return false; } })());
 }
 
+/* ---- Performance diagnostics off: the message handler of a multibox / spectator unit
+ * (spect.js onmessage) reads one global, window._lmNetRec, and handles the message as before;
+ * per message it costs about the same as without that check (printed, not judged: timings
+ * flake on a busy machine) ---- */
+{
+    const spect = fs.readFileSync(path.join(root, 'ogario', 'spect.js'), 'utf8').replace(/\r\n/g, '\n');
+    const om = spect.slice(spect.indexOf('\n    onmessage(message) {'), spect.indexOf('\n    onerror(socket, generation) {'));
+    const reads = [];
+    const win = new Proxy({}, { get(t, k) { reads.push(String(k)); return undefined; } });
+    const ctx = vm.createContext({ window: win, DataView, RangeError, console });
+    const U = vm.runInContext('(class {' + om + '\n})', ctx);
+    let handled = null;
+    U.prototype.handleMessage = function (v) { handled = v; };
+    const buf = new ArrayBuffer(8);
+    new U().onmessage({ data: buf });
+    check('diagnostics off: a unit message reads window._lmNetRec once and is handled as before', om.length > 0 && reads.join() === '_lmNetRec' && handled instanceof DataView && handled.buffer === buf);
+    U.prototype.handleMessage = function () { throw new RangeError('short'); };
+    let thrown = false;
+    try { new U().onmessage({ data: buf }); } catch (e) { thrown = true; }
+    check('diagnostics off: a truncated unit message is still swallowed', !thrown);
+    /* the same handler without the check, as before it */
+    const plain = om.replace(/\n\s*\/\* Performance diagnostics[\s\S]*?\*\/\n\s*const nr = [^\n]*\n\s*try \{/, '\n        {').replace(/\} finally \{\n\s*if \(nk >= 0\) nr\.e\(nk\);\n\s*\}/, '}');
+    /* timed in this realm (a vm context makes every global read slow, a page does not) */
+    const mk = (s) => new Function('window', 'console', 'return (class {' + s + '\n});')({ _lmNetRec: null }, console);
+    const A = mk(om), Bp = mk(plain);
+    A.prototype.handleMessage = Bp.prototype.handleMessage = function () { };
+    const a = new A(), b = new Bp(), msg = { data: buf }, N = 200000, ta = [], tb = [];
+    for (let k = 0; k < 6; k++) {
+        let t0 = process.hrtime.bigint(); for (let i = 0; i < N; i++) a.onmessage(msg); ta.push(Number(process.hrtime.bigint() - t0) / N);
+        t0 = process.hrtime.bigint(); for (let i = 0; i < N; i++) b.onmessage(msg); tb.push(Number(process.hrtime.bigint() - t0) / N);
+    }
+    const med = (x) => x.slice().sort((p, q) => p - q)[x.length >> 1];
+    check('the handler without the check still builds (for the timing)', plain !== om && !/_lmNetRec/.test(plain));
+    console.log('     unit message, diagnostics off: ' + med(ta).toFixed(1) + ' ns with the check, ' + med(tb).toFixed(1) + ' ns without (median of 6 alternating runs of ' + N + ')');
+}
+
 console.log(failed ? 'FAILED: ' + failed : 'all hotpaths checks passed');
 process.exit(failed ? 1 : 0);

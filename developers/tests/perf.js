@@ -528,9 +528,9 @@ check('position of a plain function', P.enclosingName(srcText, srcText.indexOf('
 /* ---- freeze classification ---- */
 const fzBase = { t: 10000, w: Date.now(), dur: 287 };
 let cf = P.classifyFreeze(Object.assign({}, fzBase, { bd: { r: 'WebGL2', s: [{ n: 'skin texture upload', ms: 241 }, { n: 'cells update', ms: 21 }, { n: 'render', ms: 17 }], q: '' } }), [], [], { loaf: true });
-check('dominant part is the probable contributor', cf.probable === 'skin texture upload' && /^287 ms freeze \d\d:\d\d:\d\d\.\d{3} · WebGL2 · skin texture upload 241 ms, cells update 21 ms, render 17 ms · LoAF: none · network normal · probable contributor: skin texture upload$/.test(cf.line));
+check('dominant part is the probable contributor', cf.probable === 'skin texture upload' && /^287 ms freeze \d\d:\d\d:\d\d\.\d{3} · WebGL2 · skin texture upload 241 ms, cells update 21 ms, render 17 ms · LoAF: none · network normal · probable contributor: skin texture upload · cause: client \(this page\)$/.test(cf.line));
 cf = P.classifyFreeze(Object.assign({}, fzBase, { bd: { r: 'WebGL2', s: [{ n: 'render', ms: 40 }, { n: 'packets', ms: 30 }], q: '' } }), [], [], { loaf: true });
-check('no dominant part: unattributed', cf.probable === '' && /unattributed \(GC\/GPU\/browser\?\)$/.test(cf.line));
+check('no dominant part: unattributed', cf.probable === '' && /unattributed \(GC\/GPU\/browser\?\) · cause: unknown$/.test(cf.line));
 const lfAt = Object.assign({}, lf, { t: 10000 - 287 + 2 });
 cf = P.classifyFreeze(Object.assign({}, fzBase, { bd: { r: 'WebGL2', s: [{ n: 'render', ms: 30 }], q: '' } }), [lfAt], [], { loaf: true });
 check('LoAF overlapping the freeze names the script; it dominates', /LoAF 280 ms: uploadSkinTexture \(ogario\.v4\.js:12345678\) 241 ms/.test(cf.line) && cf.probable === 'script uploadSkinTexture (ogario.v4.js)');
@@ -618,15 +618,216 @@ pr.ctx.application.displayTop5 = theirs;
 pr.ctx.LMPerf.keepRecording(false);
 check('a method replaced meanwhile is not put back over the new one', pr.ctx.application.displayTop5 === theirs);
 
+/* ---- connections, GPU time, timers and the timeline: pure parts ---- */
+check('gap cause: the page busy for half of it or more is the client', P.classifyStall({ gap: 400, blocked: 200, others: 0, known: true }) === 'client');
+check('gap cause: page free, another connection to the server got messages: the server', P.classifyStall({ gap: 400, blocked: 30, others: 1, known: true }) === 'server');
+check('gap cause: page free, nothing came on any connection: network or server', P.classifyStall({ gap: 400, blocked: 0, others: 0, known: true }) === 'network');
+check('gap cause: tab hidden: background; frames not measured: unknown', P.classifyStall({ gap: 400, blocked: 400, background: true, known: true }) === 'background' && P.classifyStall({ gap: 400, blocked: 0 }) === 'unknown');
+check('longest block: the part of one frame gap inside the window, or the one still going on',
+    P.longestBlock([[1100, 300], [1500, 40], [1900, 120]], 1000, 2000, 50, 0) === 120 && P.longestBlock([[1100, 300]], 1000, 2000, 50, 1450) === 550 &&
+    P.longestBlock([[1500, 40]], 1000, 2000, 50, 0) === 0 && P.longestBlock([[1300, 250]], 1000, 2000, 50, 0) === 250);
+const tline = P.createTimeline(4);
+const row0 = tline.push(10, P.TL.MSG, 0, 0, 100, 4);
+tline.push(20, P.TL.RAF, 300, 16, 0, 0);
+check('timeline: a row gets its duration when it ends; connection numbers kept in 0..255', tline.set(row0, 2.5, 5) && tline.rows(0, 100)[0].join() === '10,3,0,2.5,100,5' && tline.rows(0, 100)[1][2] === 255);
+for (let i = 0; i < 5; i++) tline.push(30 + i, P.TL.FRAME, 0, 1, 0, 0);
+check('timeline: bounded (the oldest rows go); a row already overwritten is not changed', tline.size() === 4 && tline.rows(0, 100).length === 4 && tline.rows(0, 100)[0][0] === 31 && tline.set(row0, 1) === false);
+check('timeline: rows by time, kind and a limit (the newest)', tline.rows(32, 33).length === 2 && tline.rows(0, 100, P.TL.RAF).length === 0 && tline.rows(0, 100, 0, 1)[0][0] === 34);
+check('timeline row text', P.rowText([1010, P.TL.MSG, 2, 3.04, 1520, 7], 1000) === '+10 msg c2 3 ms 1520 B world at once after busy' &&
+    P.rowText([1400, P.TL.GAP, 0, 400, 2, 0], 1000) === '+400 gap c0 400 ms network, busy 0 ms');
+cf = P.classifyFreeze({ t: 10000, w: Date.now(), dur: 300, gpu: 220, bd: { r: 'WebGL2', s: [{ n: 'render', ms: 20 }], q: '' } }, [], [], { loaf: true });
+check('a freeze whose frames took the GPU over half of it: GPU', cf.probable === 'GPU' && cf.cause === 'GPU' && /GPU 220 ms/.test(cf.line) && /cause: GPU$/.test(cf.line));
+cf = P.classifyFreeze({ t: 10000, w: Date.now(), dur: 300, gpu: 220, bd: { r: 'WebGL2', s: [{ n: 'cells update', ms: 200 }], q: '' } }, [], [], { loaf: true });
+check('a timed part over half of it stays the contributor, the GPU time is listed', cf.probable === 'cells update' && cf.cause === 'client' && /GPU 220 ms/.test(cf.line));
+
+/* ---- in a page: messages per connection (main + a unit with the real spect.js handler), gaps and their cause ---- */
+const spectSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'spect.js'), 'utf8').replace(/\r\n/g, '\n');
+const omA = spectSrc.indexOf('\n    onmessage(message) {'), omB = spectSrc.indexOf('\n    onerror(socket, generation) {', omA);
+check('spect.js onmessage found', omA > 0 && omB > omA);
+const netPage = () => {
+    const sock = { bufferedAmount: 0 }, usock = { bufferedAmount: 1234 };
+    const lm = { cells: new Array(30), food: new Array(7), pps: 0, ping: 0, play: true, isSocketOpen: () => true, ws: 'wss://game.example:443/play?token=SECRET', socket: sock };
+    lm.updateCells = function () { };
+    lm.onMessage = function (m) { if (m.boom) throw new Error('bad packet'); if (m.world) this.updateCells(); pg.ctx._now += m.ms || 0; return 'handled'; };
+    const dr = { dpr: 1, resizeCanvas() { }, renderFrame() { }, glSkinTexSize: 512 };
+    const pg = rec({ legendmod: lm, drawRender: dr, PerformanceObserver: FakePO2 });
+    const Unit = vm.runInContext('(class Unit {' + spectSrc.slice(omA, omB) + '\n})', pg.ctx);
+    Unit.prototype.handleMessage = function () { if (this.world) this.updateCells(); };
+    Unit.prototype.updateCells = function () { };
+    pg.unit = Object.assign(new Unit(), { number: 1, player: true, ws: lm.ws, socket: usock, world: true });
+    pg.Unit = Unit;
+    pg.msg = (bytes, o) => Object.assign({ data: new ArrayBuffer(bytes) }, o || {});
+    return pg;
+};
+let np = netPage();
+const origOnMessage = np.ctx.legendmod.onMessage, origUnitCells = np.Unit.prototype.updateCells;
+np.unit.onmessage(np.msg(10));
+check('not recording: no connection recorder, main messages not wrapped, a unit message is handled as before',
+    np.ctx._lmNetRec == null && np.ctx.legendmod.onMessage === origOnMessage && np.Unit.prototype.updateCells === origUnitCells);
+np.ctx.LMPerf.keepRecording(true);
+check('recording: the recorder is set, main messages wrapped (same result)', np.ctx._lmNetRec && np.ctx.legendmod.onMessage !== origOnMessage &&
+    np.ctx.legendmod.onMessage(np.msg(100, { world: true })) === 'handled');
+/* steady: a message every 40 ms on both, frames every 16.7 ms */
+const both = (k, worldMain) => { for (let i = 0; i < k; i++) { np.frame(20, 2); np.ctx.legendmod.onMessage(np.msg(200, { world: worldMain !== false, ms: 1 })); np.frame(20, 2); np.unit.onmessage(np.msg(150)); } };
+both(20);
+let cs = np.ctx.LMPerf.connections();
+check('both connections counted: messages, bytes, world updates, host only, the send queue', cs.length === 2 && cs[0].id === 0 && cs[0].n === 21 && cs[0].world === 21 && cs[0].bytes === 100 + 20 * 200 &&
+    cs[1].id === 1 && cs[1].kind === 'unit' && cs[1].n === 20 && cs[1].world === 20 && cs[0].host === 'game.example' && cs[1].sendQ === 1234 && cs[0].gaps === 0);
+check('the unit\'s world update is timed while recording (its class method wrapped)', np.Unit.prototype.updateCells !== origUnitCells);
+/* 1) the main connection gets nothing for 500 ms while frames run and the unit keeps getting its messages: the server */
+for (let i = 0; i < 12; i++) { np.frame(20, 2); np.frame(20, 2); np.unit.onmessage(np.msg(150)); }
+np.frame(20, 2);
+np.ctx.legendmod.onMessage(np.msg(200, { world: true }));
+cs = np.ctx.LMPerf.connections();
+let gapEv = np.ctx.LMPerf.events().filter(e => e.type === 'connection gap');
+check('main connection silent, page free, unit served: a gap of the server', cs[0].gaps === 1 && cs[0].maxCause === 'server' && cs[0].maxGap >= 480 && gapEv.length === 1 && gapEv[0].net.cause === 'server' &&
+    /main connection, server \(this connection only\)/.test(gapEv[0].info));
+/* 2) both silent for 600 ms while frames run: network or server */
+for (let i = 0; i < 15; i++) np.frame(20, 2);
+np.ctx.legendmod.onMessage(np.msg(200, { world: true }));
+np.unit.onmessage(np.msg(150));
+cs = np.ctx.LMPerf.connections();
+check('every connection silent while the page was free: network or server (main: the unit came back after it)', cs[0].causes.network === 1 && cs[1].causes.network === 1);
+/* 3) the page blocked for 700 ms (no frame callback): messages waited; they came at once after it */
+both(3);
+np.t += 700; np.ctx._now = np.t;
+np.ctx.legendmod.onMessage(np.msg(300, { world: true }));
+for (let i = 0; i < 4; i++) { np.ctx._now += 1; np.ctx.legendmod.onMessage(np.msg(250)); }
+np.frame(0.5, 2);
+cs = np.ctx.LMPerf.connections();
+gapEv = np.ctx.LMPerf.events().filter(e => e.type === 'connection gap');
+const lastGap = gapEv[gapEv.length - 1];
+check('the page busy for the whole gap: the client, with the messages that came at once after it', cs[0].causes.client === 1 && lastGap.net.cause === 'client' && lastGap.net.blocked >= 690 &&
+    lastGap.net.q === 4 && lastGap.net.qb === 1000 && cs[0].bursts >= 1 && /page busy \d+ ms of it/.test(lastGap.info));
+both(5);
+/* the timeline: rows with the message flags; the report: connections, gap causes, the timeline around the gaps, no token */
+const tlr = np.ctx.LMPerf.timeline();
+const msgRows = tlr.rows.filter(r => r[1] === P.TL.MSG);
+check('timeline: every message a row (world flag, at once after a gap, after a busy page); hosts apart, no payload',
+    msgRows.length >= 60 && msgRows.some(r => (r[5] & 1) && r[2] === 0) && msgRows.some(r => r[5] & 2) && msgRows.some(r => r[5] & 4) && tlr.hosts[0] === 'game.example' && tlr.hosts[1] === 'game.example' &&
+    tlr.rows.some(r => r[1] === P.TL.GAP && r[4] === P.STALL_CAUSES.indexOf('client')) && tlr.rows.some(r => r[1] === P.TL.RAF));
+rep = np.ctx.LMPerf.report();
+check('report: connections with their gap causes, the timeline around the gaps, no token',
+    /Connections since recording/.test(rep) && /\n  main game\.example: \d+ messages, [\d.]+ KB, \d+ world updates/.test(rep) && /\(server x1, network x1, client x1\)/.test(rep) &&
+    /\n  unit 1 game\.example: /.test(rep) && /then 4 messages \(1\.0 KB\) came at once/.test(rep) && /Timeline around the last 3 freezes \/ gaps \(ms from time origin \d+; c0 main connection, cN unit N, c0 game\.example, c1 game\.example\):/.test(rep) &&
+    /\n    \+\d+(\.\d)? gap c0 \d+(\.\d)? ms client, busy \d+ ms/.test(rep) && rep.indexOf('SECRET') < 0 && rep.indexOf('token') < 0);
+/* a new socket (reconnect) or another server: its first message is not a gap */
+np.ctx.legendmod.socket = { bufferedAmount: 0 };
+np.t += 3000; np.ctx._now = np.t;
+const gapsNow = np.ctx.LMPerf.connections()[0].gaps;
+np.ctx.legendmod.onMessage(np.msg(50));
+check('a new socket starts again: the time it took is not a gap', np.ctx.LMPerf.connections()[0].gaps === gapsNow);
+/* a message whose handling throws: the error still reaches the caller, its row ends, the next one is recorded */
+let threw = false;
+try { np.ctx.legendmod.onMessage(np.msg(5, { boom: true })); } catch (e) { threw = /bad packet/.test(e.message); }
+const msgsBefore = np.ctx.LMPerf.timeline().rows.filter(r => r[1] === P.TL.MSG).length;
+np.ctx.legendmod.onMessage(np.msg(7));
+check('a message that throws: the error goes on, its row and timed part end, the next message is recorded',
+    threw && np.ctx.LMPerf.timeline().rows.filter(r => r[1] === P.TL.MSG).length === msgsBefore + 1 && np.ctx.LMPerf._scopes.depth() === 0);
+threw = false;
+np.ctx.LMPerf.keepRecording(false);
+check('recording off: recorder gone, main messages and the unit class put back', np.ctx._lmNetRec === null && np.ctx.legendmod.onMessage === origOnMessage && np.Unit.prototype.updateCells === origUnitCells);
+const rowsOff = np.ctx.LMPerf.timeline().rows.length;
+np.unit.onmessage(np.msg(10)); np.ctx.legendmod.onMessage(np.msg(10));
+check('recording off: messages leave nothing in the timeline', np.ctx.LMPerf.timeline().rows.length === rowsOff && !threw);
+
+/* ---- GPU time: timer queries around renderFrame in the real render loop, never waited for ---- */
+const fakeGl = () => {
+    const g = { ext: { TIME_ELAPSED_EXT: 0x88BF, GPU_DISJOINT_EXT: 0x8FBB }, QUERY_RESULT_AVAILABLE: 0x8867, QUERY_RESULT: 0x8866, made: 0, active: null, ended: [], calls: [], disjoint: false, ns: 4e6 };
+    g.getExtension = (n) => n === 'EXT_disjoint_timer_query_webgl2' ? g.ext : null;
+    g.isContextLost = () => false;
+    g.createQuery = () => ({ id: ++g.made, avail: false, ns: 0 });
+    g.beginQuery = (t, q) => { g.calls.push('begin'); q.avail = false; g.active = q; };
+    g.endQuery = () => { g.calls.push('end'); g.active.ns = g.ns; g.ended.push(g.active); g.active = null; };
+    g.getQueryParameter = (q, p) => p === g.QUERY_RESULT_AVAILABLE ? q.avail : q.ns;
+    g.getParameter = (p) => p === g.ext.GPU_DISJOINT_EXT ? g.disjoint : null;
+    g.finish = () => g.calls.push('finish'); g.readPixels = () => g.calls.push('readPixels'); g.getError = () => { g.calls.push('getError'); return 0; };
+    /* the GPU finishes the frames queued so far (a frame later in a browser) */
+    g.done = () => { g.ended.forEach(q => { q.avail = true; }); g.ended.length = 0; };
+    return g;
+};
+lp = loop({ fpsLimit: 0 });
+const gl = fakeGl();
+lp.dr.gl = gl;
+lp.dr.renderFrame = () => { lp.ctx._now += 2; };
+for (let i = 0; i < 5; i++) lp.tick(16.7);
+check('not recording: no timer query', gl.calls.length === 0);
+lp.ctx.LMPerf.keepRecording(true);
+for (let i = 0; i < 30; i++) { lp.tick(16.7); gl.done(); }
+let gs = lp.ctx.LMPerf.gpu();
+check('recording: one query per drawn frame, read when its result is there; no finish, read back or error query',
+    gs.supported && gs.frames >= 28 && gs.stats[0] === '4.0' && gl.calls.filter(c => c === 'begin').length === 30 && gl.calls.indexOf('finish') < 0 && gl.calls.indexOf('readPixels') < 0 && gl.calls.indexOf('getError') < 0 && gl.made <= 8);
+/* results that never come: at most 8 queries wait, then frames go untimed (nothing blocks) */
+const begun = gl.calls.filter(c => c === 'begin').length;
+for (let i = 0; i < 20; i++) lp.tick(16.7);
+check('results late: at most 8 queries wait, frames still drawn', gl.calls.filter(c => c === 'begin').length - begun <= 8);
+gl.done();
+/* a freeze whose frame kept the GPU 280 ms: GPU */
+lp.tick(16.7); gl.done();
+gl.ns = 280e6;
+lp.tick(16.7);
+lp.tick(320); gl.done(); gl.ns = 4e6;
+for (let i = 0; i < 5; i++) { lp.tick(16.7); gl.done(); }
+const gfz = lp.ctx.LMPerf.freezes().pop();
+check('a freeze with its frame 280 ms on the GPU: probable contributor GPU', !!gfz && gfz.cause === 'GPU' && gfz.gpu >= 279 && /GPU 280 ms/.test(gfz.line));
+gl.disjoint = true;
+const fr0 = lp.ctx.LMPerf.gpu().frames;
+for (let i = 0; i < 3; i++) { lp.tick(16.7); gl.done(); }
+check('a disjoint period: its results are dropped', lp.ctx.LMPerf.gpu().frames === fr0 && lp.ctx.LMPerf.gpu().disjoint >= 2);
+check('report: GPU time per frame', /GPU time per frame \(timer query\): \d+ frames, p50\/p95\/max /.test(lp.ctx.LMPerf.report()));
+lp.ctx.LMPerf.keepRecording(false);
+const callsOff = gl.calls.length;
+for (let i = 0; i < 5; i++) lp.tick(16.7);
+check('recording off: no query, the last one ended', gl.calls.length === callsOff && !gl.active);
+lp = loop({ fpsLimit: 0 });
+lp.dr.gl = Object.assign(fakeGl(), { getExtension: () => null });
+lp.ctx.LMPerf.keepRecording(true);
+for (let i = 0; i < 5; i++) lp.tick(16.7);
+check('no timer query extension: said so in the report, frames drawn as before', /GPU time per frame \(timer query\): not supported/.test(lp.ctx.LMPerf.report()) && lp.dr.gl.calls.length === 0);
+
+/* ---- timers set while recording and the text atlas growth ---- */
+const tmPage = () => {
+    const pend = [];
+    const pg = rec({ setTimeout: function (f, ms) { pend.push([f, [].slice.call(arguments, 2)]); return pend.length; }, PerformanceObserver: FakePO2,
+        drawRender: { dpr: 1, resizeCanvas() { }, _lmTextAtlasBank(a, layers) { a.layers = layers; return true; } } });
+    pg.pend = pend;
+    pg.runTimers = () => { const p = pend.splice(0); p.forEach(([f, a]) => { if (typeof f === "function") f.apply(null, a); }); };
+    return pg;
+};
+let tp2 = tmPage();
+const nativeTO = tp2.ctx.setTimeout;
+tp2.ctx._now = 1000;
+tp2.ctx.LMPerf.keepRecording(true);
+check('recording: setTimeout wrapped', tp2.ctx.setTimeout !== nativeTO);
+let got = null;
+const id1 = tp2.ctx.setTimeout(function saveSkins(a, b) { got = a + b; tp2.ctx._now += 30; }, 10, 2, 3);
+tp2.ctx.setTimeout(function () { tp2.ctx._now += 5; }, 10);
+tp2.ctx.setTimeout('x = 1', 10);
+tp2.runTimers();
+const tst = tp2.ctx.LMPerf.timers();
+check('timer callbacks: same arguments and id, timed by name (anonymous by the start of its code)', got === 5 && id1 === 1 && tst.saveSkins && tst.saveSkins.n === 1 && tst.saveSkins.ms === 30 &&
+    Object.keys(tst).some(k => /^anonymous function \(\) \{ tp2\.ctx\._now \+= 5; \}/.test(k)) && tp2.pend.length === 0);
+const atl = { w: 2048, h: 1024, layers: 2 };
+tp2.ctx.drawRender._lmTextAtlasBank(atl, 4);
+tp2.ctx.drawRender._lmTextAtlasBank(atl, 4);
+rep = tp2.ctx.LMPerf.report();
+check('text atlas: a new bank counted with its new pages only (a bank already there: nothing)', atl.layers === 4 && /Text atlas resized 1x since recording, 16\.0 MB of new texture/.test(rep) && /Timer callbacks set since recording \(most time first\): saveSkins 30 ms \/ 1x/.test(rep));
+tp2.ctx.LMPerf.keepRecording(false);
+check('recording off: setTimeout put back', tp2.ctx.setTimeout === nativeTO);
+
+
 /* ---- ogario.v4.js: the inline markers and wrapped methods exist ---- */
 const marks = v4.match(/window\._lmScope\.b\('([^']+)'\)|S\.b\('([^']+)'\)/g) || [];
 const markNames = marks.map(m => /'([^']+)'/.exec(m)[1]);
 check('inline markers use known part names', markNames.length >= 5 && markNames.every(n => P.SCOPES.indexOf(n) >= 0));
 check('every inline marker is closed', (v4.match(/window\._lmScope\.e\(_lmSc\w+\)/g) || []).length === (v4.match(/var _lmSc\w+ = window\._lmScope \? window\._lmScope\.b\(/g) || []).length);
 const perfSrc = src.replace(/\r\n/g, '\n');
-const patches = [...perfSrc.matchAll(/\['(legendmod|drawRender|application|window|Storage\.prototype)', '([\w$]+)', '([^']+)'\]/g)];
-const methodIn = (name) => new RegExp('\\n {8}' + name.replace(/\$/g, '\\$') + '\\([^)]*\\) \\{|\\nfunction ' + name + '\\(|window\\.' + name + ' = function').test(v4);
-const missing = patches.filter(p => p[1] !== 'Storage.prototype' && !methodIn(p[2])).map(p => p[2]);
+/* [object, method, part] and [object, method, part, wrapper]; the browser's own timers are not in ogario.v4.js */
+const patches = [...perfSrc.matchAll(/\['(legendmod|drawRender|application|window|Storage\.prototype)', '([\w$]+)', '([^']+)'(?:, \w+)?\]/g)];
+const methodIn = (name) => new RegExp('\\n {8}' + name.replace(/\$/g, '\\$') + '(\\([^)]*\\) \\{|: function \\()|\\nfunction ' + name + '\\(|window\\.' + name + ' = function').test(v4);
+/* the text atlas grows by a resize (older core) or by a new bank: one of the two is there */
+const altOf = { _lmTextAtlasResize: '_lmTextAtlasBank', _lmTextAtlasBank: '_lmTextAtlasResize' };
+const missing = patches.filter(p => p[1] !== 'Storage.prototype' && !(p[1] === 'window' && /^set(Timeout|Interval)$/.test(p[2])) && !methodIn(p[2]) && !(altOf[p[2]] && methodIn(altOf[p[2]]))).map(p => p[2]);
 check('every wrapped method is defined in ogario.v4.js (' + patches.length + ')', patches.length >= 20 && missing.length === 0 && patches.every(p => P.SCOPES.indexOf(p[3]) >= 0) || (console.log('  missing:', missing), false));
 
 /* the resolution option switched off while at level 3: back to level 2 and full resolution at once */

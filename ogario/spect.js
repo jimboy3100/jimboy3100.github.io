@@ -524,16 +524,23 @@ class Spect {
     }
 
     onmessage(message) {
-        message = new DataView(message.data);
-        //if (this.buffersKey) message.data = algorithm.rotateBufferBytes(message.data, this.buffersKey)
-
-        if (this.protocolKey) {
-            message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
-        }
+        /* Performance diagnostics (ogario/modules/perf.js; null while it does not record): when
+         * this unit's messages are handled, per unit, as for the main connection */
+        const nr = window._lmNetRec, nk = nr ? nr.b(this.number, this, message) : -1;
         try {
-            this.handleMessage(message);
-        } catch (e) {
-            if (!(e instanceof RangeError)) console.error('[SPECT] onmessage error:', e);
+            message = new DataView(message.data);
+            //if (this.buffersKey) message.data = algorithm.rotateBufferBytes(message.data, this.buffersKey)
+
+            if (this.protocolKey) {
+                message = this.shiftMessage(message, this.protocolKey ^ this.clientVersion);
+            }
+            try {
+                this.handleMessage(message);
+            } catch (e) {
+                if (!(e instanceof RangeError)) console.error('[SPECT] onmessage error:', e);
+            }
+        } finally {
+            if (nk >= 0) nr.e(nk);
         }
     }
 

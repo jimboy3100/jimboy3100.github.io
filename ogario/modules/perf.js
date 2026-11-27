@@ -433,7 +433,8 @@
     /* event types -> their text (other types, e.g. from scripts, are shown as they are) */
     var EV_KEYS = {
         'freeze': 'evFreeze', 'pause': 'evPause', 'long task': 'evLongTask', 'render error': 'evRenderError',
-        'renderer': 'evRenderer', 'packet gap': 'evPacketGap', 'visibility': 'evVisibility', 'disconnect': 'evDisconnect', 'connect': 'evConnect', 'window': 'evWindow'
+        'renderer': 'evRenderer', 'packet gap': 'evPacketGap', 'visibility': 'evVisibility', 'disconnect': 'evDisconnect', 'connect': 'evConnect', 'window': 'evWindow',
+        'connection gap': 'evSocketGap'
     };
     /* English details sent by ogario.v4.js (the freeze detector) -> their text */
     var INFO_KEYS = { 'no world update': 'infoNoUpdate', 'no world update, playing': 'infoNoUpdatePlaying' };
@@ -456,7 +457,11 @@
     var SCOPES = ['packets', 'decompress', 'cells update', 'leaderboard', 'cell sort', 'cell compare', 'send position',
         'render', 'WebGL cells', 'WebGL batch', 'grid', 'jelly physics', 'text pass', 'text raster', 'rings/HUD pass',
         'skin texture upload', 'uploadSkinTexture', 'skin canvas job', 'skin job trim', 'teamboard', 'minimap', 'team players', 'stats HUD',
-        'settings save', 'special skins sync', 'video skins', 'replay bar', 'replay budget', 'storage write'];
+        'settings save', 'special skins sync', 'video skins', 'replay bar', 'replay budget', 'storage write',
+        /* the jelly steps of renderFrame (its 'jelly physics' marker keeps the rest), the WebGL scene
+         * check and its overlay mark tests, the text atlas growth, timer callbacks, multibox / spectator units */
+        'jelly prepare', 'jelly index', 'jelly move', 'GL preflight', 'overlay checks', 'cache resize', 'timers',
+        'unit packets', 'unit cells update'];
     var SCOPE_DEPTH = 32;
 
     /* Self time of named parts of the code between two frame callbacks (a part called inside
@@ -736,8 +741,108 @@
             }
         }
         if (bd && (bd.qp || bd.q)) parts.push(bd.qp && tr ? partsText(bd.qp, tr) : bd.q);
+        /* the GPU time of the frames drawn in it (timer queries, where the browser has them) */
+        var gpu = +fz.gpu || 0, cause = probable ? 'client' : 'unknown';
+        if (gpu >= 1) parts.push(say(tr, 'cfGpu', 'GPU {0} ms', [Math.round(gpu)]));
+        if (!probable && gpu > dur * 0.5) { probable = 'GPU'; probText = say(tr, 'causeGpu', 'GPU'); cause = 'GPU'; }
         parts.push(probable ? say(tr, 'cfProbable', 'probable contributor: {0}', [probText]) : say(tr, 'cfUnattr', 'unattributed (GC/GPU/browser?)'));
-        return { line: parts.join(' \u00b7 '), probable: probable };
+        parts.push(say(tr, 'cfCause', 'cause: {0}', [causeText(cause, tr)]));
+        return { line: parts.join(' \u00b7 '), probable: probable, cause: cause };
+    }
+
+    /* ---- connections, GPU time and the timeline (diagnostics only) ---- */
+
+    /* causes of a freeze or of a gap in a connection's messages -> their text */
+    var CAUSE_KEYS = { 'client': ['causeClient', 'client (this page)'], 'GPU': ['causeGpu', 'GPU'], 'network': ['causeNet', 'network or server'],
+        'server': ['causeServer', 'server (this connection only)'], 'background': ['causeBackground', 'tab in the background (not counted)'], 'unknown': ['causeUnknown', 'unknown'] };
+    function causeText(c, tr) { var k = CAUSE_KEYS[c] || CAUSE_KEYS.unknown; return say(tr, k[0], k[1]); }
+
+    /* Why a connection got no message for gap ms. The browser gives no arrival time (the time
+     * stamp of a WebSocket message is when the page handles it), so the gap is judged by what the
+     * page could do meanwhile. blocked: the longest stretch of it without a frame callback (the
+     * page busy: messages that arrived then waited; the rest of the gap was on the way);
+     * others: other connections to the same server that got a message during it; background:
+     * the tab was hidden during it; known: frames were measured during it.
+     * Returns 'background', 'client' (the page was busy for half of it or more), 'server' (only
+     * this connection: the other ones to the same server kept getting theirs), 'network'
+     * (network or server: nothing came while the page was free) or 'unknown'. */
+    function classifyStall(o) {
+        if (o.background) return 'background';
+        if (!o.known) return 'unknown';
+        if ((+o.blocked || 0) >= (+o.gap || 0) * 0.5) return 'client';
+        return o.others > 0 ? 'server' : 'network';
+    }
+
+    /* The longest part of [t0, t1] inside one frame callback gap of at least min ms: rows
+     * [[t, d]...] (a gap ending at t, d long) and the gap still going on since `since` (0: none). */
+    function longestBlock(rows, t0, t1, min, since) {
+        var best = 0, i, a, b;
+        for (i = 0; i < rows.length; i++) {
+            if (!(rows[i][1] >= min)) continue;
+            a = Math.max(t0, rows[i][0] - rows[i][1]); b = Math.min(t1, rows[i][0]);
+            if (b - a > best) best = b - a;
+        }
+        if (since > 0 && t1 - since >= min) { a = Math.max(t0, since); if (t1 - a > best) best = t1 - a; }
+        return best;
+    }
+
+    /* The last `max` rows of a timeline in typed arrays made once: time (performance.now ms),
+     * kind (TL), connection (0 main, n unit n), d (ms) and two numbers a, b per kind:
+     *   raf: d = time since the previous frame callback   frame: d = render ms
+     *   msg: d = handling ms, a = bytes, b = flags (1 world update, 2 came at once after a gap,
+     *        4 no frame callback for 50 ms or more before it)
+     *   gpu: d = GPU ms of the frame started at t          long task / loaf: d, a = script ms
+     *   gap: d = ms without a message, a = cause (STALL_CAUSES), b = page busy ms of it
+     * No message bytes and no addresses: the connections' hosts are kept apart. */
+    var TL = { RAF: 1, FRAME: 2, MSG: 3, GPU: 4, LONGTASK: 5, LOAF: 6, GAP: 7 };
+    var TL_NAMES = ['', 'raf', 'frame', 'msg', 'gpu', 'long task', 'loaf', 'gap'];
+    var STALL_CAUSES = ['unknown', 'client', 'network', 'server', 'background'];
+    function createTimeline(max) {
+        var tt = new Float64Array(max), kk = new Uint8Array(max), cc = new Uint8Array(max), dd = new Float32Array(max), aa = new Float32Array(max), bb = new Float32Array(max);
+        var seq = 0;
+        var T = {
+            max: max,
+            seq: function () { return seq; },
+            size: function () { return Math.min(seq, max); },
+            clear: function () { seq = 0; },
+            /* returns the row's number, for set() */
+            push: function (t, kind, conn, d, a, b) {
+                var i = seq % max;
+                tt[i] = t; kk[i] = kind; cc[i] = conn > 255 ? 255 : conn > 0 ? conn : 0; dd[i] = d; aa[i] = a || 0; bb[i] = b || 0;
+                return seq++;
+            },
+            /* a row pushed before gets its duration (and b); false when it was overwritten meanwhile */
+            set: function (s, d, b) {
+                if (!(s >= 0) || s >= seq || seq - s > max) return false;
+                var i = s % max;
+                dd[i] = d;
+                if (b != null) bb[i] = b;
+                return true;
+            },
+            /* rows with t0 <= t <= t1 (and of kind, if given), oldest first, at most limit (the
+             * newest): [[t, kind, conn, d, a, b]] (for the report and the checks: allocates) */
+            rows: function (t0, t1, kind, limit) {
+                var out = [], n = Math.min(seq, max), j;
+                for (j = seq - 1; j >= seq - n; j--) {
+                    var i = j % max;
+                    if (tt[i] > t1 || tt[i] < t0 || (kind && kk[i] !== kind)) continue;
+                    out.push([tt[i], kk[i], cc[i], dd[i], aa[i], bb[i]]);
+                    if (limit && out.length >= limit) break;
+                }
+                return out.reverse();
+            }
+        };
+        return T;
+    }
+    /* one timeline row as text: "+1234.5 msg c0 2.1 ms 1520 B world" (time from t0) */
+    function rowText(r, t0) {
+        var k = r[1], s = (r[0] - t0 >= 0 ? '+' : '') + (Math.round((r[0] - t0) * 10) / 10) + ' ' + (TL_NAMES[k] || k);
+        if (k === TL.MSG || k === TL.GAP) s += ' c' + r[2];
+        s += ' ' + (Math.round(r[3] * 10) / 10) + ' ms';
+        if (k === TL.MSG) s += ' ' + r[4] + ' B' + (r[5] & 1 ? ' world' : '') + (r[5] & 2 ? ' at once' : '') + (r[5] & 4 ? ' after busy' : '');
+        else if (k === TL.GAP) s += ' ' + (STALL_CAUSES[r[4]] || '?') + ', busy ' + Math.round(r[5]) + ' ms';
+        else if ((k === TL.LOAF || k === TL.LONGTASK) && r[4]) s += ', scripts ' + Math.round(r[4]) + ' ms';
+        return s;
     }
 
     var pure = {
@@ -745,6 +850,8 @@
         timeText: timeText, SCOPES: SCOPES, createScopes: createScopes, createScopeRing: createScopeRing, topScopes: topScopes,
         scriptFile: scriptFile, cleanInvoker: cleanInvoker, parseLoaf: parseLoaf, scriptText: scriptText, loafLine: loafLine,
         enclosingName: enclosingName, classifyFreeze: classifyFreeze, LOAF_MIN: LOAF_MIN,
+        classifyStall: classifyStall, longestBlock: longestBlock, createTimeline: createTimeline, rowText: rowText, TL: TL,
+        STALL_CAUSES: STALL_CAUSES, CAUSE_KEYS: CAUSE_KEYS, causeText: causeText,
         hostOf: hostOf, classifyGap: classifyGap, createEventRing: createEventRing, eventLine: eventLine,
         STALL_MS: STALL_MS, FREEZE_MS: FREEZE_MS, PAUSE_MS: PAUSE_MS,
         TARGETS: TARGETS, LEVEL_KEYS: LEVEL_KEYS, MAX_LEVEL: MAX_LEVEL, CTL: CTL,
@@ -814,10 +921,13 @@
      * The time of the parts below is added up between two frame callbacks; a frame gap of
      * 50 ms or more is copied into a ring of the last 32 (no allocation), a freeze keeps its
      * own breakdown. Long animation frames (Chrome 123+) tell which script callback ran. */
-    var LOAF_MAX = 60, SLOW_SLOTS = 32, META_N = 8;
+    var LOAF_MAX = 60, SLOW_SLOTS = 32, META_N = 16;
     var sc = createScopes(now);
     var slowRing = createScopeRing(SLOW_SLOTS, sc.n, META_N);
-    var slowMeta = new Float64Array(META_N); /* t, gap, cells, skin jobs, skin uploads, text bytes, heap MB, timed ms */
+    /* t, gap, cells, skin jobs, skin uploads, text bytes, heap MB, timed ms, then (fillMore) visible
+     * bodies, food, jelly cells, jelly points, skin upload bytes, text atlas resizes, replay bytes
+     * recorded, why the frame was not WebGL (GLW id) */
+    var slowMeta = new Float64Array(META_N);
     var loafs = createEventRing(LOAF_MAX);
     var loafObs = null, attrOn = false, patched = [];
     /* [object, method, part]: wrapped only while attribution is on, put back when it stops */
@@ -834,7 +944,16 @@
         ['application', 'displayStats', 'stats HUD'], ['application', 'saveSettings', 'settings save'],
         ['window', 'repeatSendingSpecialSkins', 'special skins sync'], ['window', 'checkVideos', 'video skins'],
         ['window', 'lmReplayBarTick', 'replay bar'], ['window', '_lmRecBudgetCheck', 'replay budget'],
-        ['Storage.prototype', 'setItem', 'storage write']
+        ['Storage.prototype', 'setItem', 'storage write'],
+        /* garix / Sigmally world updates count as 'cells update' too (a world update of a message) */
+        ['legendmod', 'garixUpdateCells', 'cells update'], ['legendmod', '_handleSigmallyCellUpdate', 'cells update'],
+        ['legendmod', 'prepareJellyCells', 'jelly prepare'], ['legendmod', 'updateQuadtree', 'jelly index'],
+        ['drawRender', 'canUseWebGLScene', 'GL preflight'], ['drawRender', '_lmFxCovered', 'overlay checks'],
+        ['drawRender', '_lmCellFx', 'overlay checks'], ['drawRender', '_lmOutCellFx', 'overlay checks'],
+        /* the main connection's messages (all protocols come through onMessage): the connection timeline */
+        ['legendmod', 'onMessage', 'packets', netWrap], ['drawRender', '_lmTextAtlasResize', 'cache resize', atlasWrap],
+        ['drawRender', '_lmTextAtlasBank', 'cache resize', atlasWrap],
+        ['window', 'setTimeout', 'timers', timerWrap], ['window', 'setInterval', 'timers', timerWrap]
     ];
 
     function patchTarget(k) {
@@ -847,7 +966,7 @@
             var p = PATCHES[i], o = patchTarget(p[0]);
             try {
                 if (!o || typeof o[p[1]] !== 'function' || o[p[1]]._lmScopeOf) continue;
-                var orig = o[p[1]], own = hasOwn(o, p[1]), w = sc.wrap(orig, p[2]);
+                var orig = o[p[1]], own = hasOwn(o, p[1]), w = p[3] ? p[3](orig, p[2], p[1]) : sc.wrap(orig, p[2]);
                 o[p[1]] = w;
                 if (o[p[1]] === w) patched.push([o, p[1], orig, w, own]);
             } catch (e) { }
@@ -879,6 +998,7 @@
                         var l = parseLoaf(es[i], host);
                         l.w = w - (n - l.t);
                         loafs.push(l);
+                        if (tl && sc.on) tl.push(l.t, TL.LOAF, 0, l.dur, l.scriptMs, l.block);
                     }
                 });
                 loafObs.observe({ type: 'long-animation-frame', buffered: false });
@@ -889,17 +1009,269 @@
         }
     }
 
+    /* ---------- connections, GPU time, timers and the timeline (while attribution is on) ----------
+     * Every message of the main connection (legendmod.onMessage, wrapped) and of the multibox /
+     * spectator units (spect.js onmessage calls window._lmNetRec) is a timeline row: when it was
+     * handled, how long, its size and whether it updated the world. A connection that got nothing
+     * for 100 ms or more gets a gap row with its probable cause (classifyStall), and from 250 ms an
+     * event. The rows live in typed arrays made the first time recording starts. */
+    var TL_MAX = 16384, GAP_EVENT = FREEZE_MS, BURST_MS = 8;
+    var tl = null, recStart = 0;
+    var SC_PACKETS = sc.ids['packets'], SC_UNIT = sc.ids['unit packets'], SC_CELLS = sc.ids['cells update'],
+        SC_UCELLS = sc.ids['unit cells update'], SC_TIMERS = sc.ids['timers'], SC_SKINUP = sc.ids['skin texture upload'];
+    var conns = {}, connIds = [];
+    /* the messages being handled (one inside another: a replay or a test calling in) */
+    var NR_DEPTH = 8, nrDepth = 0, nrRow = new Float64Array(NR_DEPTH), nrSc = new Int32Array(NR_DEPTH), nrCnt = new Float64Array(NR_DEPTH),
+        nrConn = new Int32Array(NR_DEPTH), nrT = new Float64Array(NR_DEPTH), nrFlags = new Int32Array(NR_DEPTH);
+
+    function connOf(id, owner) {
+        var c = conns[id];
+        if (!c) {
+            c = conns[id] = { id: id, kind: id === 0 ? 'main' : owner && owner.player ? 'unit' : 'spectator', ws: null, sock: null, host: '',
+                n: 0, bytes: 0, world: 0, last: 0, prev: 0, ms: 0, maxMs: 0, gaps: 0, maxGap: 0, maxCause: '', causes: {}, bursts: 0, burstMax: 0,
+                burstEv: null, burstN: 0, burstB: 0, sendQ: 0 };
+            connIds.push(id);
+            /* a unit's world update: its class method, wrapped like the main one */
+            if (id !== 0 && owner) patchOne(Object.getPrototypeOf(owner), 'updateCells', 'unit cells update');
+        }
+        if (owner && (owner.ws !== c.ws || owner.socket !== c.sock)) {
+            /* another server or a new socket: its first message is not a gap */
+            if (owner.ws !== c.ws) c.host = hostOf(owner.ws);
+            c.ws = owner.ws; c.sock = owner.socket; c.last = 0; c.burstEv = null;
+        }
+        return c;
+    }
+    function connLabel(c) { return c.id === 0 ? tp('connMain', 'main connection') : tp('connUnit', 'unit {0}', [c.id]); }
+
+    /* no message on connection c for g ms until t; busy: ms since the last frame callback */
+    function gapEnd(c, t, g, busy) {
+        var t0 = t - g, bg = !!document.hidden || (fr.visAt > 0 && fr.visAt >= t0);
+        var blocked = longestBlock(tl.rows(t0, t + 1, TL.RAF).map(function (r) { return [r[0], r[3]]; }), t0, t, LONG_FRAME, busy >= LONG_FRAME ? t - busy : 0);
+        var others = 0;
+        for (var i = 0; i < connIds.length; i++) {
+            var o = conns[connIds[i]];
+            /* it got a message during the gap, and not only one that ended a silence of its own */
+            if (o !== c && o.host === c.host && o.last > t0 && o.last - o.prev < g * 0.5) others++;
+        }
+        var cause = classifyStall({ gap: g, blocked: blocked, others: others, background: bg, known: fr.rafPrev > 0 && t0 >= recStart });
+        tl.push(t, TL.GAP, c.id, g, STALL_CAUSES.indexOf(cause), blocked);
+        if (cause === 'background') return;
+        c.gaps++;
+        c.causes[cause] = (c.causes[cause] || 0) + 1;
+        if (g > c.maxGap) { c.maxGap = g; c.maxCause = cause; }
+        if (g < GAP_EVENT) return;
+        var lm = window.legendmod, p = [connLabel(c), tp(CAUSE_KEYS[cause][0], CAUSE_KEYS[cause][1])];
+        if (blocked >= LONG_FRAME) p.push(tp('infoBusy', 'page busy {0} ms of it', [Math.round(blocked)]));
+        if (c.id === 0 && window.mainPlayerDeadMbActive) p.push(tp('infoMbDead', 'main player dead, a unit plays'));
+        else if (c.id === 0 && lm && !lm.play) p.push(tp('infoNotPlaying', 'not playing'));
+        var ev = pushEvent('connection gap', g, { s: ', ', p: p }, false, t);
+        if (ev) { ev.net = { c: c.id, host: c.host, cause: cause, blocked: Math.round(blocked), q: 0, qb: 0 }; c.burstEv = ev; }
+    }
+
+    /* a message of connection id (0: main, n: unit n; owner: its legendmod / Spect, msg: the
+     * MessageEvent) starts being handled; returns what to give to nrEnd, -1 when not recording */
+    function nrBegin(id, owner, msg) {
+        if (!sc.on || !tl || nrDepth >= NR_DEPTH) return -1;
+        var t = now();
+        id = id > 0 ? Math.min(255, id | 0) : 0;
+        var c = connOf(id, owner), d = msg && msg.data, bytes = d && d.byteLength > 0 ? d.byteLength : 0;
+        var busy = fr.rafPrev > 0 && !document.hidden ? t - fr.rafPrev : 0, flags = busy >= LONG_FRAME ? 4 : 0;
+        if (c.last) {
+            var g = t - c.last;
+            if (g >= STALL_MS) { c.burstN = 0; c.burstB = 0; gapEnd(c, t, g, busy); c.burstOn = true; }
+            else if (c.burstOn && g < BURST_MS) {
+                /* came at once after the gap: they waited somewhere (in the page while it was busy,
+                 * or on the way) */
+                flags |= 2;
+                c.burstN++; c.burstB += bytes;
+                if (c.burstN === 1) c.bursts++;
+                if (c.burstN > c.burstMax) c.burstMax = c.burstN;
+                if (c.burstEv) { c.burstEv.net.q = c.burstN; c.burstEv.net.qb = c.burstB; }
+            } else c.burstOn = false;
+        }
+        c.n++; c.bytes += bytes; c.prev = c.last; c.last = t;
+        var s = owner && owner.socket;
+        if (s && s.bufferedAmount > c.sendQ) c.sendQ = s.bufferedAmount;
+        var k = nrDepth++;
+        nrConn[k] = id; nrT[k] = t; nrFlags[k] = flags;
+        nrCnt[k] = sc.cnt[id === 0 ? SC_CELLS : SC_UCELLS];
+        nrRow[k] = tl.push(t, TL.MSG, id, 0, bytes, flags);
+        nrSc[k] = sc.b(id === 0 ? SC_PACKETS : SC_UNIT);
+        return k;
+    }
+    function nrEnd(k) {
+        if (!(k >= 0) || k >= nrDepth) return;
+        nrDepth = k;
+        var t = now(), id = nrConn[k], dt = t - nrT[k], c = conns[id];
+        sc.e(nrSc[k]);
+        var world = sc.cnt[id === 0 ? SC_CELLS : SC_UCELLS] !== nrCnt[k];
+        if (tl) tl.set(nrRow[k], dt, nrFlags[k] | (world ? 1 : 0));
+        if (c) { c.ms += dt; if (dt > c.maxMs) c.maxMs = dt; if (world) c.world++; }
+    }
+    var netRec = { b: nrBegin, e: nrEnd };
+    function netWrap(fn) {
+        var w = function (message) {
+            var k = nrBegin(0, this, message);
+            if (k < 0) return fn.apply(this, arguments);
+            try { return fn.apply(this, arguments); } finally { nrEnd(k); }
+        };
+        w._lmScopeOf = fn;
+        return w;
+    }
+
+    /* text atlas growth: count, and the bytes of the new texture (a.w x a.h RGBA pages): all
+     * `layers` for a resize (a new array the pages are copied into), the pages from a.layers up
+     * for a new bank (_lmTextAtlasBank: the older banks stay) */
+    var atlas = { n: 0, bytes: 0 };
+    function atlasWrap(fn, part, name) {
+        var timed = sc.wrap(fn, part), bank = name === '_lmTextAtlasBank';
+        var w = function (a, layers) {
+            if (sc.on && a) {
+                var pages = bank ? (+layers || 0) - (+a.layers || 0) : +layers || 0;
+                if (pages > 0) { atlas.n++; atlas.bytes += a.w * a.h * 4 * pages || 0; }
+            }
+            return timed.apply(this, arguments);
+        };
+        w._lmScopeOf = fn;
+        return w;
+    }
+
+    /* timer callbacks (set while recording) are timed under 'timers', by the function's name */
+    var timerStat = {}, timerN = 0, TIMER_LABELS = 64;
+    function timerLabel(fn) {
+        var n = fn.name ? String(fn.name).slice(0, 60) : '';
+        if (n) return n;
+        /* an anonymous function: the start of its code, without the line breaks */
+        try { return 'anonymous ' + cleanText(Function.prototype.toString.call(fn).slice(0, 160).replace(/\s+/g, ' '), 70); } catch (e) { return 'anonymous'; }
+    }
+    function noteTimer(lab, ms) {
+        var st = timerStat[lab];
+        if (!st) {
+            if (timerN >= TIMER_LABELS) { lab = 'other'; st = timerStat[lab]; }
+            if (!st) { st = timerStat[lab] = { ms: 0, n: 0, max: 0 }; timerN++; }
+        }
+        st.ms += ms; st.n++;
+        if (ms > st.max) st.max = ms;
+    }
+    function timerWrap(orig) {
+        var w = function (fn) {
+            if (!sc.on || typeof fn !== 'function') return orig.apply(window, arguments);
+            var args = Array.prototype.slice.call(arguments), lab = null;
+            args[0] = function () {
+                if (!sc.on) return fn.apply(this, arguments);
+                var d = sc.b(SC_TIMERS), t0 = now();
+                try { return fn.apply(this, arguments); } finally {
+                    sc.e(d);
+                    noteTimer(lab || (lab = timerLabel(fn)), now() - t0);
+                }
+            };
+            return orig.apply(window, args);
+        };
+        w._lmScopeOf = orig;
+        return w;
+    }
+
+    /* one method wrapped later (a unit's class once its first message comes); put back with the others */
+    function patchOne(o, m, part) {
+        try {
+            if (!o || typeof o[m] !== 'function' || o[m]._lmScopeOf) return;
+            var orig = o[m], own = hasOwn(o, m), w = sc.wrap(orig, part);
+            o[m] = w;
+            if (o[m] === w) patched.push([o, m, orig, w, own]);
+        } catch (e) { }
+    }
+
+    /* GPU time of each drawn frame: a TIME_ELAPSED query around renderFrame (drawRender.render
+     * calls _lmPerfFrame.g0 before it, the frame hook ends it), read a few frames later when the
+     * result is there: never waited for (no finish, no read back). Only where the browser has
+     * EXT_disjoint_timer_query_webgl2; a result in a disjoint period (GPU reset, power state) is
+     * dropped. */
+    var GQ_MAX = 8;
+    var gq = { gl: null, ext: null, cur: null, curT: 0, qs: new Array(GQ_MAX), qt: new Float64Array(GQ_MAX), qh: 0, qc: 0, free: [],
+        ms: new Float32Array(RING), at: 0, n: 0, total: 0, max: 0, disjoint: 0 };
+    function gpuReset(gl) {
+        gq.gl = gl; gq.ext = null; gq.cur = null; gq.qh = 0; gq.qc = 0; gq.free.length = 0;
+        for (var i = 0; i < GQ_MAX; i++) gq.qs[i] = null;
+        try { gq.ext = gl ? gl.getExtension('EXT_disjoint_timer_query_webgl2') || null : null; } catch (e) { gq.ext = null; }
+    }
+    function gpuPoll(gl) {
+        var ext = gq.ext;
+        while (gq.qc > 0) {
+            var q = gq.qs[gq.qh];
+            if (!gl.getQueryParameter(q, gl.QUERY_RESULT_AVAILABLE)) break;
+            if (gl.getParameter(ext.GPU_DISJOINT_EXT)) gq.disjoint++;
+            else {
+                var ms = gl.getQueryParameter(q, gl.QUERY_RESULT) / 1e6;
+                gq.ms[gq.at] = ms; gq.at = (gq.at + 1) % RING;
+                if (gq.n < RING) gq.n++;
+                gq.total++;
+                if (ms > gq.max) gq.max = ms;
+                if (tl) tl.push(gq.qt[gq.qh], TL.GPU, 0, ms, 0, 0);
+            }
+            gq.free.push(q);
+            gq.qs[gq.qh] = null;
+            gq.qh = (gq.qh + 1) % GQ_MAX; gq.qc--;
+        }
+    }
+    function gpuBegin() {
+        if (!sc.on || gq.cur) return;
+        var dr = window.drawRender, gl = dr && dr.gl;
+        if (!gl) return;
+        try {
+            if (gl !== gq.gl) gpuReset(gl);
+            if (!gq.ext || gl.isContextLost()) return;
+            gpuPoll(gl);
+            if (gq.qc >= GQ_MAX) return;
+            var q = gq.free.pop() || gl.createQuery();
+            if (!q) return;
+            gl.beginQuery(gq.ext.TIME_ELAPSED_EXT, q);
+            gq.cur = q; gq.curT = now();
+        } catch (e) { gq.cur = null; }
+    }
+    function gpuEnd() {
+        var q = gq.cur;
+        if (!q) return;
+        gq.cur = null;
+        try {
+            gq.gl.endQuery(gq.ext.TIME_ELAPSED_EXT);
+            var i = (gq.qh + gq.qc) % GQ_MAX;
+            gq.qs[i] = q; gq.qt[i] = gq.curT; gq.qc++;
+        } catch (e) { }
+    }
+    /* the longest GPU time of the frames started in [t0, t1] */
+    function gpuAround(t0, t1) {
+        if (!tl) return 0;
+        var r = tl.rows(t0, t1, TL.GPU), m = 0;
+        for (var i = 0; i < r.length; i++) if (r[i][3] > m) m = r[i][3];
+        return m;
+    }
+
+    function recReset() {
+        if (!tl) tl = createTimeline(TL_MAX);
+        tl.clear();
+        recStart = now();
+        conns = {}; connIds = []; nrDepth = 0;
+        timerStat = {}; timerN = 0;
+        atlas.n = 0; atlas.bytes = 0;
+        gq.n = 0; gq.at = 0; gq.total = 0; gq.max = 0; gq.disjoint = 0;
+    }
+
     function attribution(on) {
         if (on === attrOn) return;
         attrOn = on;
         if (on) {
+            recReset();
             installPatches();
             sc.clear();
             sc.on = true;
             window._lmScope = sc;
+            window._lmNetRec = netRec;
         } else {
             sc.on = false;
             window._lmScope = null;
+            window._lmNetRec = null;
+            nrDepth = 0;
+            gpuEnd();
             removePatches();
         }
         observeLoaf(on);
@@ -917,6 +1289,23 @@
         m[6] = 0;
         try { if (window.performance && performance.memory) m[6] = Math.round(performance.memory.usedJSHeapSize / 1048576); } catch (e) { }
         m[7] = sc.total();
+        fillMore(m, lm, dr);
+    }
+    /* the world and the caches at a slow frame (a loop over the cells: only then) */
+    function fillMore(m, lm, dr) {
+        var i, vis = 0, pts = 0, cells = lm && lm.cells, jc = dr && dr._jellyCellsScratch;
+        for (i = 0; cells && i < cells.length; i++) { var c = cells[i]; if (c && !c.removed && !c.invisible) vis++; }
+        for (i = 0; jc && i < jc.length; i++) if (jc[i] && jc[i].points) pts += jc[i].points.length;
+        m[8] = vis;
+        m[9] = lm && lm.food ? lm.food.length : 0;
+        m[10] = jc ? jc.length : 0;
+        m[11] = pts;
+        /* every upload fills one skin layer of glSkinTexSize x glSkinTexSize RGBA */
+        var ts = dr ? +dr.glSkinTexSize || 512 : 512;
+        m[12] = sc.cnt[SC_SKINUP] * ts * ts * 4;
+        m[13] = atlas.n;
+        m[14] = +window._lmRecSlotBytes || 0;
+        m[15] = dr && dr._lmFrameGL === false && dr._lmGlWhy > 0 ? dr._lmGlWhy : 0;
     }
     function metaParts(m) {
         var q = [];
@@ -924,6 +1313,13 @@
         if (m[3]) q.push(tp('qSkinJobs', 'skin jobs {0}', [m[3]]));
         if (m[4]) q.push(tp('qSkinUploads', 'skin uploads {0}', [m[4]]));
         if (m[5]) q.push(tp('qTextTextures', 'text textures {0} MB', [f1(m[5] / 1048576)]));
+        if (m[8]) q.push(tp('qVisible', '{0} visible', [m[8]]));
+        if (m[9]) q.push(tp('qFood', '{0} food', [m[9]]));
+        if (m[10]) q.push(tp('qJelly', 'jelly {0} cells / {1} points', [m[10], m[11]]));
+        if (m[12]) q.push(tp('qSkinBytes', 'skin uploads {0} MB', [f1(m[12] / 1048576)]));
+        if (m[13]) q.push(tp('qAtlas', 'text atlas resized {0}x', [m[13]]));
+        if (m[14]) q.push(tp('qReplay', 'replay {0} MB', [f1(m[14] / 1048576)]));
+        if (m[15]) { var ids = window.drawRender && window.drawRender.GLW_IDS; q.push('Canvas2D: ' + ((ids && ids[m[15]]) || m[15])); }
         return { s: ', ', p: q };
     }
     /* the timed parts of the frame gap that ends now (a freeze: rare, so a small object) */
@@ -1023,6 +1419,7 @@
                 slowRing.push(sc.acc, sc.cnt, slowMeta);
             }
             noteGap(t, g);
+            if (tl && sc.on) tl.push(t, TL.RAF, 0, g, 0, 0);
         }
         if (sc.on) sc.reset();
         fr.rafPrev = t;
@@ -1032,6 +1429,9 @@
     /* called by drawRender.render() around renderFrame() while measuring, also when it threw
      * (err: what it threw) */
     function onFrame(t0, t1, err) {
+        /* the GPU query of this frame (gpuBegin) ends with it */
+        if (gq.cur) gpuEnd();
+        if (tl && sc.on) tl.push(t0, TL.FRAME, 0, t1 - t0, 0, 0);
         var prev = fr.prev;
         var dt = prev ? t0 - prev : 0;
         fr.prev = t0;
@@ -1076,6 +1476,7 @@
         }
     }
     onFrame.raf = onRaf;
+    onFrame.g0 = gpuBegin;
 
     function endSecond() {
         /* the renderer changed (WebGL lost, turned off...) */
@@ -1116,6 +1517,7 @@
                         fr.ltN++;
                         if (d > fr.ltMax) fr.ltMax = d;
                         if (d >= LONGTASK_LOG) pushEvent('long task', d, '', false, +es[i].startTime || null);
+                        if (tl && sc.on) tl.push(+es[i].startTime || 0, TL.LONGTASK, 0, d, 0, 0);
                     }
                 });
                 lto.observe({ entryTypes: ['longtask'] });
@@ -1437,10 +1839,12 @@
             lines.push('Map border (last ' + Math.min(bt.length, 20) + ' of ' + bt.length + '):');
             bt.slice(-20).forEach(function (l) { lines.push('  ' + l); });
         }
+        recLines(lines);
         var ev = events.list(), ll = loafs.list(), lopt = loafOpts();
         lines.push('Events (' + ev.length + ', last ' + EVENTS_MAX + ' kept' + (keepRec ? ', recording also with the window closed' : '') + '):');
         ev.forEach(function (e) {
-            lines.push('  ' + (e.type === 'freeze' ? classifyFreeze(e, ll, ev, lopt).line + (e.info ? ' (' + e.info + ')' : '') + ' @' + Math.round(e.t) : eventLine(e)));
+            lines.push('  ' + (e.type === 'freeze' ? classifyFreeze(withGpu(e), ll, ev, lopt).line + (e.info ? ' (' + e.info + ')' : '') + ' @' + Math.round(e.t) :
+                eventLine(e) + (e.net && e.net.q ? ', then ' + e.net.q + ' messages (' + f1(e.net.qb / 1024) + ' KB) came at once' : '') + (e.net ? ' @' + Math.round(e.t) : '')));
         });
         var tot = slowRing.totals();
         if (tot.frames) {
@@ -1452,6 +1856,7 @@
             lines.push('Long animation frames (\u2265' + LOAF_MIN + ' ms, ' + ll.length + ' kept, last 20):');
             ll.slice(-20).forEach(function (l) { lines.push('  ' + timeText(l.w) + ' ' + loafLine(l) + ' @' + Math.round(l.t)); });
         }
+        timelineLines(lines);
         var hist = readHistory();
         if (hist.length) {
             lines.push('Last sessions:');
@@ -1461,13 +1866,64 @@
     }
 
     function loafOpts() { return { loaf: !!loafObs || loafs.size() > 0, scopes: attrOn }; }
+
+    /* a freeze event with the GPU time of the frames drawn in it (results come a few frames late) */
+    function withGpu(e) {
+        if (e && e.type === 'freeze' && tl) { var g = gpuAround(e.t - e.dur - 1, e.t + 1); if (g > (e.gpu || 0)) e.gpu = g; }
+        return e;
+    }
+    /* [p50, p95, max] GPU ms of the last measured frames */
+    function gpuStats() {
+        var a = sortedCopy(Array.prototype.slice.call(gq.ms, 0, gq.n));
+        return [f1(percentile(a, 50)), f1(percentile(a, 95)), f1(a.length ? a[a.length - 1] : 0)];
+    }
+    /* the connections, GPU time, timers and text atlas since recording started (report) */
+    function recLines(lines) {
+        if (!tl) return;
+        lines.push('Connections since recording (' + Math.round((now() - recStart) / 1000) + ' s; a message\'s time is when the page handled it: the browser gives no arrival time, ' +
+            'so a gap counts as the page\'s when it was busy for half of it or more, as the server\'s when only this connection waited, otherwise as network or server):');
+        if (!connIds.length) lines.push('  no messages');
+        connIds.forEach(function (id) {
+            var c = conns[id], cs = Object.keys(c.causes).map(function (k) { return k + ' x' + c.causes[k]; }).join(', ');
+            lines.push('  ' + (c.id === 0 ? 'main' : c.kind + ' ' + c.id) + (c.host ? ' ' + c.host : '') + ': ' + c.n + ' messages, ' + f1(c.bytes / 1024) + ' KB, ' + c.world + ' world updates, handling ' +
+                (c.n ? f1(c.ms / c.n) : '0') + ' ms average / ' + f1(c.maxMs) + ' ms max, gaps ≥' + STALL_MS + ' ms: ' + c.gaps + (cs ? ' (' + cs + ')' : '') +
+                (c.maxGap ? ', longest ' + Math.round(c.maxGap) + ' ms (' + c.maxCause + ')' : '') +
+                (c.bursts ? ', came at once after a gap ' + c.bursts + 'x (up to ' + c.burstMax + ' messages)' : '') + ', send queue max ' + c.sendQ + ' B');
+        });
+        lines.push('GPU time per frame (timer query): ' + (gq.n ? gq.total + ' frames, p50/p95/max ' + gpuStats().join(' / ') + ' ms' + (gq.disjoint ? ', ' + gq.disjoint + ' dropped (disjoint)' : '') :
+            gq.gl && !gq.ext ? 'not supported by this browser / GPU' : gq.gl ? 'no result yet' : 'no WebGL context'));
+        var labs = Object.keys(timerStat).sort(function (a, b) { return timerStat[b].ms - timerStat[a].ms; }).slice(0, 8);
+        if (labs.length) lines.push('Timer callbacks set since recording (most time first): ' + labs.map(function (k) {
+            var s = timerStat[k];
+            return k + ' ' + Math.round(s.ms) + ' ms / ' + s.n + 'x, max ' + f1(s.max) + ' ms';
+        }).join('; '));
+        if (atlas.n) lines.push('Text atlas resized ' + atlas.n + 'x since recording, ' + f1(atlas.bytes / 1048576) + ' MB of new texture');
+    }
+    /* the raw timeline around the last 3 counted freezes and connection gaps (±1 s, at most 120
+     * rows each), times from the page's time origin (performance.timeOrigin) */
+    function timelineLines(lines) {
+        if (!tl || !tl.size()) return;
+        var ev = events.list(), inc = [];
+        for (var i = ev.length - 1; i >= 0 && inc.length < 3; i--) {
+            if ((ev[i].type === 'freeze' && !/not counted/.test(ev[i].info)) || (ev[i].type === 'connection gap' && ev[i].net)) inc.push(ev[i]);
+        }
+        if (!inc.length) return;
+        var origin = window.performance && performance.timeOrigin ? Math.round(performance.timeOrigin) : 0;
+        lines.push('Timeline around the last ' + inc.length + ' freezes / gaps (ms from time origin ' + origin + '; c0 main connection, cN unit N' +
+            connIds.filter(function (id) { return conns[id].host; }).map(function (id) { return ', c' + id + ' ' + conns[id].host; }).join('') + '):');
+        inc.reverse().forEach(function (e) {
+            var t0 = e.t - e.dur - 1000, t1 = e.t + 1000, rows = tl.rows(t0, t1, 0, 120);
+            lines.push('  ' + e.type + ' ' + e.dur + ' ms ending @' + Math.round(e.t) + ', ' + rows.length + ' rows:');
+            rows.forEach(function (r) { lines.push('    ' + rowText(r, 0)); });
+        });
+    }
     /* every counted freeze with its attribution line */
     function attributed() {
         var ev = events.list(), ll = loafs.list(), lopt = loafOpts(), out = [];
         for (var i = 0; i < ev.length; i++) {
             if (ev[i].type !== 'freeze' || /not counted/.test(ev[i].info)) continue;
-            var c = classifyFreeze(ev[i], ll, ev, lopt);
-            out.push({ t: ev[i].t, w: ev[i].w, dur: ev[i].dur, info: ev[i].info, bd: ev[i].bd || null, line: c.line, probable: c.probable });
+            var c = classifyFreeze(withGpu(ev[i]), ll, ev, lopt);
+            out.push({ t: ev[i].t, w: ev[i].w, dur: ev[i].dur, info: ev[i].info, bd: ev[i].bd || null, line: c.line, probable: c.probable, cause: c.cause, gpu: ev[i].gpu || 0 });
         }
         return out;
     }
@@ -1769,16 +2225,21 @@
             T('statCells', [lm && lm.cells ? lm.cells.length : 0]) + '   ' + rnText(rendererName(), tr) + '\n' +
             T('statScale', [window.devicePixelRatio || 1, dr && dr.dpr ? f1(dr.dpr) : '-']) + '\n' +
             (adaptiveOn ? T('statAdaptiveOn', [ctl.level, MAX_LEVEL, Math.round(target)]) : T('statAdaptiveOff')) + '\n' +
-            T('statAttr', [attrOn ? T('on') : T('off'), loafObs ? T('on') : '-']);
+            T('statAttr', [attrOn ? T('on') : T('off'), loafObs ? T('on') : '-']) +
+            (gq.n ? '\n' + T('statGpu', gpuStats()) : attrOn && gq.gl && !gq.ext ? '\n' + T('statGpuNone') : '');
         var ev = events.list(), ll = loafs.list(), lopt = loafOpts();
         lopt.tr = tr;
         diag.evs.textContent = ev.length ? ev.slice(-30).reverse().map(function (e) {
-            return e.type === 'freeze' ? classifyFreeze(e, ll, ev, lopt).line : eventLine(e, tr);
+            return e.type === 'freeze' ? classifyFreeze(withGpu(e), ll, ev, lopt).line : eventLine(e, tr);
         }).join('\n') : TS('lmPerfNoEvents');
         var sum = sessionSummary(), pn = pingNow();
         diag.nstats.textContent =
             T('netPing', [pn.v || '-', sum.pingAvg, sum.pingP95, sum.jitter]) + '\n' +
             T('netPackets', [lm ? +lm.pps || 0 : 0, sum.ppsAvg, sum.disc, sum.reconn]) +
+            connIds.map(function (id) {
+                var c = conns[id];
+                return '\n' + partsText({ s: '', p: [connLabel(c)] }, tr) + ': ' + T('netConnGaps', [c.gaps, Math.round(c.maxGap), c.maxCause ? causeText(c.maxCause, tr) : '-']);
+            }).join('') +
             net.closes.slice(-3).map(function (c) {
                 /* the reason is the server's own text */
                 return '\n  ' + new Date(c.t).toLocaleTimeString() + ' ' + T('infoCode', [c.code]) + (c.reason ? ' ' + c.reason : '') + (c.clean ? '' : ' ' + T('notClean'));
@@ -1840,6 +2301,19 @@
         /* freezes with their breakdown and attribution line; long animation frames (cleaned) */
         freezes: attributed,
         loafs: function () { return loafs.list(); },
+        /* the raw timeline since recording started (rows [t, kind, connection, d, a, b], see
+         * createTimeline), with the time origin and each connection's host: no message bytes */
+        timeline: function (t0, t1) {
+            if (!tl) return null;
+            var hosts = {};
+            connIds.forEach(function (id) { hosts[id] = conns[id].host; });
+            return { origin: window.performance && performance.timeOrigin || 0, start: recStart, kinds: TL, causes: STALL_CAUSES, hosts: hosts,
+                rows: tl.rows(t0 == null ? -Infinity : +t0, t1 == null ? Infinity : +t1, 0, 0) };
+        },
+        /* per connection since recording started (copies) */
+        connections: function () { return connIds.map(function (id) { var c = conns[id]; return { id: id, kind: c.kind, host: c.host, n: c.n, bytes: c.bytes, world: c.world, gaps: c.gaps, maxGap: c.maxGap, maxCause: c.maxCause, causes: JSON.parse(JSON.stringify(c.causes)), bursts: c.bursts, burstMax: c.burstMax, sendQ: c.sendQ, maxMs: c.maxMs }; }); },
+        gpu: function () { return { supported: !!gq.ext, frames: gq.total, max: gq.max, disjoint: gq.disjoint, stats: gq.n ? gpuStats() : null }; },
+        timers: function () { return JSON.parse(JSON.stringify(timerStat)); },
         /* for tests: the timing scopes (window._lmScope while attribution is on) */
         _scopes: sc,
         hostOf: hostOf,

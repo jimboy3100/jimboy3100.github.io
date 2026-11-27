@@ -79094,6 +79094,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                          * ───────────────────────────────────────────────────
                          */
 
+                        /* timed on its own (diagnostics "jelly move"; prepare and index are their methods) */
+                        var _lmScMove = window._lmScope ? window._lmScope.b('jelly move') : -1;
                         for (
                             var jellyMoveIndex = 0;
                             jellyMoveIndex <
@@ -79131,6 +79133,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             }
                         }
                     }
+                    if (_lmScMove >= 0 && window._lmScope) window._lmScope.e(_lmScMove);
 
 
                     if (
@@ -83116,6 +83119,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * error are kept, the error still goes to the handler below) */
                 if (_lmPf) {
                     var _lmPt0 = performance.now(), _lmPerr = null;
+                    /* its GPU time while the diagnostics record (a timer query the hook ends) */
+                    if (_lmPf.g0) { try { _lmPf.g0(); } catch (_lmPfE3) { } }
                     try {
                         drawRender.renderFrame();
                     } catch (_lmFrameError) {

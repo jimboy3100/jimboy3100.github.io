@@ -153,7 +153,7 @@ function selfCheck() {
     const root = path.join(__dirname, '..', '..');
     const core = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
     B.WRAPS.forEach((w) => ok(new RegExp('\\n\\s+' + w[1].replace(/\$/g, '\\$') + '(\\s*:\\s*function\\s*)?\\s*\\(').test(core), 'ogario.v4.js has no method ' + w[1] + ' (stage ' + w[2] + ')'));
-    ['grid', 'jelly physics', 'text pass', 'rings/HUD pass'].forEach((m) => ok(core.indexOf("_lmScope.b('" + m + "')") >= 0, 'inline timing marker missing: ' + m));
+    ['grid', 'jelly physics', 'jelly move', 'text pass', 'rings/HUD pass'].forEach((m) => ok(core.indexOf("_lmScope.b('" + m + "')") >= 0, 'inline timing marker missing: ' + m));
     /* the gate */
     const meta = { gpu: 'G', browser: '150.0.1', errors: [], calibrationMs: 100 };
     const r = { name: 's', errors: 0, missingStages: [], renderMs: { p50: 10 }, frameMs: { p95: 20 }, glShare: 1, counts: { draws: 10, pointsSubmitted: 1000 }, world: { cells: 1001 } };

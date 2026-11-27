@@ -277,9 +277,10 @@
     /* timed parts: self time between two frames, like perf.js createScopes (a part called
      * inside another counts only for itself) */
     /* 'jelly physics' is the inline marker of renderFrame around prepare + build + the
-     * movePoints loop: with prepare and build timed on their own, its self time is the loop */
+     * movePoints loop ('jelly move', a marker of its own): with the three timed on their own,
+     * its self time is what is left around them */
     var STAGES = ['packets', 'cells update', 'unit packets', 'render', 'cell sort', 'cell compare', 'grid', 'helpers',
-        'food', 'jelly physics', 'jelly prepare', 'jelly build', 'eligibility', 'WebGL cells', 'WebGL batch', 'multibox rings',
+        'food', 'jelly physics', 'jelly prepare', 'jelly build', 'jelly move', 'eligibility', 'WebGL cells', 'WebGL batch', 'multibox rings',
         'text pass', 'text raster', 'post overlays', 'rings/HUD pass', 'minimap', 'leaderboard', 'teamboard', 'stats HUD', 'skin jobs', 'skin upload'];
     function createScopes(clock, names) {
         var n = names.length, ids = {}, i;

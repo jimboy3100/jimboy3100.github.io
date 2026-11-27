@@ -65,7 +65,7 @@ function fmtRow(r, prev) {
     const c = r.counts || {};
     return '| ' + [r.name, r.fps + (pr ? delta(r.fps, pr.fps) : ''), r.frameMs.p50 + '/' + r.frameMs.p95 + '/' + r.frameMs.p99,
         r.renderMs.p50 + (pr ? delta(r.renderMs.p50, pr.renderMs.p50) : '') + '/' + r.renderMs.p95, r.glShare,
-        Math.round(r.packetMsPerSec * 10) / 10, g('jelly prepare') + '/' + g('jelly build') + '/' + g('jelly physics'), g('food'),
+        Math.round(r.packetMsPerSec * 10) / 10, g('jelly prepare') + '/' + g('jelly build') + '/' + Math.round((g('jelly move') + g('jelly physics')) * 1000) / 1000, g('food'),
         Math.round((g('text pass') + g('text raster')) * 1000) / 1000, c.uploadMs + ' / ' + c.textRasters,
         c.draws, c.pointsSubmitted + '/' + c.pointsIndexed, r.world.cells + '/' + r.world.food, r.heapMB.after,
         r.diff ? (r.diff.sizeDiffers ? 'size' : r.diff.max + ' / ' + r.diff.differingPct + '%') : ''].join(' | ') + ' |';
