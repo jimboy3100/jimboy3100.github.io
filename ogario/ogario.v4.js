@@ -42305,11 +42305,13 @@ function thelegendmodproject() {
         },
         /* Freeze detector (drawRender.render): a new connection or a closed one starts it again,
          * so the last world update and the latches of the previous server do not carry over */
-        _lmResetFreezeDetector() {
+        _lmResetFreezeDetector(closing) {
             /* a packet gap still open when the connection closes or changes was never listed
-             * (it is listed only when world updates come back): list it with its time up to now */
+             * (it is listed only when world updates come back): list it, timed up to now when the
+             * connection is just ending; on a new open only as measured, as the time since the
+             * last update then also holds the time between the two connections */
             if (window.drawRender && drawRender._lmStallMax && this._lmLastWorldUpdate) {
-                var _lmGap = Math.max(drawRender._lmStallMax, Date.now() - this._lmLastWorldUpdate);
+                var _lmGap = closing ? Math.max(drawRender._lmStallMax, Date.now() - this._lmLastWorldUpdate) : drawRender._lmStallMax;
                 if (_lmGap >= 250 && window.LMPerf && window.LMPerf.event) {
                     try { window.LMPerf.event('packet gap', _lmGap, 'no world update' + (this.play ? ', playing' : '')); } catch (_lmEvE) { }
                 }
@@ -42327,7 +42329,7 @@ function thelegendmodproject() {
                 t ? ('code ' + t.code + (t.reason ? ' reason "' + t.reason + '"' : '') + (t.wasClean === false ? ' (not clean)' : '')) : '',
                 this._connOpenTime ? ('after ' + (Date.now() - this._connOpenTime) + ' ms open') : 'before open',
                 this.clientKey ? '(241 key ok)' : '(no 241 key)', LM.loginConfirmed ? '(logged in)' : '(not logged in)');
-            if (this === window.legendmod) this._lmResetFreezeDetector();
+            if (this === window.legendmod) this._lmResetFreezeDetector(true);
             if (window.LMPerf && this === window.legendmod) {
                 try { window.LMPerf.netEvent('close', { code: t && t.code, reason: t && t.reason, wasClean: t && t.wasClean, openMs: this._connOpenTime ? Date.now() - this._connOpenTime : 0 }); } catch (e) { }
             }
@@ -42537,6 +42539,8 @@ function thelegendmodproject() {
                 this.sigPingInterval = null;
             }
             if (this.socket) {
+                /* no close event comes (handlers dropped below): a packet gap going on is timed up to now */
+                if (this === window.legendmod) this._lmResetFreezeDetector(true);
                 this.socket.onopen = null;
                 this.socket.onmessage = null;
                 this.socket.onerror = null;

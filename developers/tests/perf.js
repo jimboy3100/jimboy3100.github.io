@@ -380,7 +380,7 @@ check('back in front: such a gap is a freeze again', /Freezes \(≥250 ms, foreg
 const v4 = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
 const rStart = v4.indexOf('\n        render() {\n            /* Performance diagnostics');
 const rEnd = v4.indexOf('\n        init() {\n            this.setCanvas();', rStart);
-const resetSrc = /\n        (_lmResetFreezeDetector\(\) \{[\s\S]*?\n        \}),\n/.exec(v4);
+const resetSrc = /\n        (_lmResetFreezeDetector\([^)]*\) \{[\s\S]*?\n        \}),\n/.exec(v4);
 check('render() and the freeze detector reset found in ogario.v4.js', rStart > 0 && rEnd > rStart && !!resetSrc);
 const loop = (settings, frameFn, extra) => {
     const pg = page(Object.assign(user(), settings), null, extra);
@@ -431,14 +431,31 @@ check('packet gap listed when world updates come back', lp.ctx.LMPerf.events().s
 lp.ctx.legendmod._lmLastWorldUpdate = Date.now() - 2000; lp.tick(16.7);
 lp.ctx.legendmod._lmLastWorldUpdate = Date.now() - 3500; lp.tick(16.7);
 check('latched again by a new stall', !!lp.dr._lmFreezeLogged && !!lp.dr._lmStallLogged && lp.dr._lmStallMax >= 3500);
-const gapsBefore = lp.ctx.LMPerf.events().filter(e => e.type === 'packet gap').length;
+const gapsOf = () => lp.ctx.LMPerf.events().filter(e => e.type === 'packet gap');
+const gapsBefore = gapsOf().length;
+lp.ctx.legendmod._lmResetFreezeDetector(true);
+check('a packet gap still open when the connection closes is listed, not lost', gapsOf().length === gapsBefore + 1 && gapsOf()[gapsBefore].dur >= 3500);
 lp.ctx.legendmod._lmResetFreezeDetector();
-const gapsAfter = lp.ctx.LMPerf.events().filter(e => e.type === 'packet gap');
-check('a packet gap still open at close / server change is listed, not lost', gapsAfter.length === gapsBefore + 1 && gapsAfter[gapsAfter.length - 1].dur >= 3500);
-lp.ctx.legendmod._lmResetFreezeDetector();
-check('a second reset lists nothing more', lp.ctx.LMPerf.events().filter(e => e.type === 'packet gap').length === gapsBefore + 1);
+check('a second reset lists nothing more', gapsOf().length === gapsBefore + 1);
 check('reset on connect / close: latches and the last update time cleared', !lp.dr._lmFreezeLogged && !lp.dr._lmStallLogged && !lp.dr._lmStallMax && lp.ctx.legendmod._lmLastWorldUpdate === 0);
-check('ogario calls the reset on open and on close', (v4.match(/if \(this === window\.legendmod\) this\._lmResetFreezeDetector\(\);/g) || []).length === 2);
+/* leaving the server during a stall (Disconnect, a server change: closeConnection, no close
+ * event): the gap is listed then, not at the next open with the time spent in between */
+const closeSrc = /\n        (closeConnection\(\) \{[\s\S]*?\n        \}),\n/.exec(v4.slice(resetSrc.index));
+check('closeConnection of the game connection found', !!closeSrc);
+vm.runInContext('legendmod.closeConnection = ({' + closeSrc[1] + '}).closeConnection;', lp.ctx);
+lp.ctx.legendmod._lmLastWorldUpdate = Date.now() - 3500; lp.tick(16.7);
+lp.ctx.legendmod.socket = { readyState: 1, OPEN: 1, close() { } };
+lp.ctx.legendmod.closeConnection();
+check('a stall still going on when you leave the server is listed then, with its time up to then', gapsOf().length === gapsBefore + 2 && gapsOf()[gapsBefore + 1].dur >= 3500 && gapsOf()[gapsBefore + 1].dur < 5000 && lp.ctx.legendmod.socket === null);
+lp.ctx.legendmod._lmResetFreezeDetector();
+check('the next connection opening lists nothing more', gapsOf().length === gapsBefore + 2);
+/* a measured gap left open, the next connection opens a minute later: only what was measured */
+lp.ctx.legendmod._lmLastWorldUpdate = Date.now() - 3500; lp.tick(16.7);
+lp.ctx.legendmod._lmLastWorldUpdate = Date.now() - 60000;
+lp.ctx.legendmod._lmResetFreezeDetector();
+check('opening a connection does not count the time since the last server', gapsOf().length === gapsBefore + 3 && gapsOf()[gapsBefore + 2].dur < 5000);
+check('ogario calls the reset on open, on close and when leaving the server', (v4.match(/if \(this === window\.legendmod\) this\._lmResetFreezeDetector\(\);/g) || []).length === 1 &&
+    (v4.match(/if \(this === window\.legendmod\) this\._lmResetFreezeDetector\(true\);/g) || []).length === 2);
 
 /* long tasks: only observed while recording, where supported */
 const observers = [];
