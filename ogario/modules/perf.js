@@ -455,7 +455,7 @@
      * ogario.v4.js (window._lmScope.b('grid') ... e(depth)). */
     var SCOPES = ['packets', 'decompress', 'cells update', 'leaderboard', 'cell sort', 'cell compare', 'send position',
         'render', 'WebGL cells', 'WebGL batch', 'grid', 'jelly physics', 'text pass', 'text raster', 'rings/HUD pass',
-        'skin texture upload', 'uploadSkinTexture', 'skin canvas job', 'teamboard', 'minimap', 'team players', 'stats HUD',
+        'skin texture upload', 'uploadSkinTexture', 'skin canvas job', 'skin job trim', 'teamboard', 'minimap', 'team players', 'stats HUD',
         'settings save', 'special skins sync', 'video skins', 'replay bar', 'replay budget', 'storage write'];
     var SCOPE_DEPTH = 32;
 
@@ -828,7 +828,8 @@
         ['drawRender', 'renderFrame', 'render'], ['drawRender', 'drawWebGLCellBatch', 'WebGL cells'], ['drawRender', 'drawWebGLBatch', 'WebGL batch'],
         ['drawRender', '_lmRasterText', 'text raster'], ['drawRender', '_lmUploadSkinJob', 'skin texture upload'],
         ['drawRender', 'uploadSkinTexture', 'uploadSkinTexture'],
-        ['application', '_lmSkinJobRun', 'skin canvas job'], ['application', 'displayTop5', 'teamboard'],
+        ['application', '_lmSkinJobRun', 'skin canvas job'], ['application', '_lmSkinJobTrim', 'skin job trim'],
+        ['application', 'displayTop5', 'teamboard'],
         ['application', 'drawMiniMap', 'minimap'], ['application', 'updateTeamPlayers', 'team players'],
         ['application', 'displayStats', 'stats HUD'], ['application', 'saveSettings', 'settings save'],
         ['window', 'repeatSendingSpecialSkins', 'special skins sync'], ['window', 'checkVideos', 'video skins'],
@@ -909,7 +910,8 @@
         var lm = window.legendmod, dr = window.drawRender, a = app();
         m[0] = t; m[1] = g;
         m[2] = lm && lm.cells ? lm.cells.length : 0;
-        m[3] = a && a._lmSkinJobs ? a._lmSkinJobs.length : 0;
+        /* waiting image decodes count too: the waiting-job cap covers both lists */
+        m[3] = a ? (a._lmSkinJobs ? a._lmSkinJobs.length : 0) + (a._lmSkinDecodeWait ? a._lmSkinDecodeWait.length : 0) : 0;
         m[4] = dr && dr._lmSkinReady ? dr._lmSkinReady.length : 0;
         m[5] = dr ? (+dr._lmTextBytes || 0) + (+dr._lmMassBytes || 0) : 0;
         m[6] = 0;

@@ -541,12 +541,13 @@ const stubs = () => {
     const lm = { cells: new Array(412), pps: 0, ping: 0, isSocketOpen: () => false };
     lm.handleMessage = function (ms) { stubs.ctx._now += ms; };
     lm.updateCells = function () { };
-    const ap = { setAnimatedRainbowColor() { }, applyHudBlur() { }, saveSettings() { }, _lmSkinJobs: [1, 2, 3] };
+    const ap = { setAnimatedRainbowColor() { }, applyHudBlur() { }, saveSettings() { }, _lmSkinJobs: [1, 2, 3], _lmSkinDecodeWait: [4, 5] };
+    ap._lmSkinJobTrim = function (ms) { stubs.ctx._now += ms || 0; };
     ap.displayTop5 = function () { };
     return { drawRender: dr, legendmod: lm, application: ap, PerformanceObserver: FakePO2, repeatSendingSpecialSkins: function () { stubs.ctx._now += 1; } };
 };
 const ex = stubs();
-const origUpload = ex.drawRender._lmUploadSkinJob, origHandle = ex.legendmod.handleMessage, origRepeat = ex.repeatSendingSpecialSkins, origRF = ex.drawRender.renderFrame;
+const origTrim = ex.application._lmSkinJobTrim, origUpload = ex.drawRender._lmUploadSkinJob, origHandle = ex.legendmod.handleMessage, origRepeat = ex.repeatSendingSpecialSkins, origRF = ex.drawRender.renderFrame;
 pr = rec(ex);
 stubs.ctx = pr.ctx;
 check('attribution off: nothing wrapped, no _lmScope, no LoAF observer', pr.ctx.drawRender._lmUploadSkinJob === origUpload && pr.ctx.legendmod.handleMessage === origHandle &&
@@ -558,6 +559,7 @@ pr.ctx.legendmod5.adaptivePerf = false; pr.ctx.LMPerf.configChanged();
 pr.ctx.LMPerf.keepRecording(true);
 check('recording: parts wrapped (also global functions), _lmScope set, LoAF observed (not buffered)', pr.ctx.drawRender._lmUploadSkinJob !== origUpload && pr.ctx.repeatSendingSpecialSkins !== origRepeat &&
     pr.ctx._lmScope === pr.ctx.LMPerf._scopes && loafObs2().length === 1 && loafObs2()[0].on && loafObs2()[0].opts.buffered === false);
+check('recording: the skin job trim is timed too', pr.ctx.application._lmSkinJobTrim !== origTrim);
 check('a wrapped method gives the same result', pr.ctx.drawRender.renderFrame() === 'drawn' && pr.ctx.drawRender.uploadSkinTexture() === 7);
 for (let i = 0; i < 30; i++) pr.frame(16.7, 2);
 /* during the next gap: one skin upload takes 240 ms, a packet 20 ms */
@@ -568,7 +570,7 @@ for (let i = 0; i < 5; i++) pr.frame(16.7, 2);
 let fzs = pr.ctx.LMPerf.freezes();
 check('synthetic stall: one freeze with its breakdown', fzs.length === 1 && fzs[0].dur === 300 && fzs[0].bd && fzs[0].bd.s[0].n === 'skin texture upload' && fzs[0].bd.s[0].ms === 240 && fzs[0].bd.s[1].n === 'packets');
 check('synthetic stall attributed to the skin upload', fzs[0].probable === 'skin texture upload' && /skin texture upload 240 ms, packets 20 ms/.test(fzs[0].line) && /probable contributor: skin texture upload/.test(fzs[0].line));
-check('breakdown carries queue sizes', /412 cells, skin jobs 3, skin uploads 2, text textures 3\.0 MB/.test(fzs[0].line));
+check('breakdown carries queue sizes (skin jobs: canvas jobs and waiting decodes)', /412 cells, skin jobs 5, skin uploads 2, text textures 3\.0 MB/.test(fzs[0].line));
 rep = pr.ctx.LMPerf.report();
 check('report: breakdown state, probable contributors and slow frames', /Freeze breakdown: on, long animation frames: observed/.test(rep) && /Probable contributors: skin texture upload x1/.test(rep) &&
     /Slow frames \(≥50 ms, last 1\): average 300 ms, timed parts in total: skin texture upload 240 ms \(1x\), packets 20 ms \(1x\)/.test(rep));
