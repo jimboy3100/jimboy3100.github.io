@@ -191,5 +191,30 @@ if (usLang) {
     check('userscript: pt-BR / id / ja / it browsers get 13-16', pick('pt-BR', null) === 13 && pick('id-ID', null) === 14 && pick('ja-JP', null) === 15 && pick('it-IT', null) === 16);
     check('userscript: "in" is Indonesian, unknown is English, stored wins', pick('in', null) === 14 && pick('sv', null) === 1 && pick('ja-JP', '2') === 2 && pick('fr-FR', null) === 5);
 }
+/* the userscript run as written in a stand-in agar.io page: scripts (what agar.io's parser has put in
+ * so far), the downloads it makes and the page it writes */
+function runUs(pathname, scripts) {
+    const ss = {}, gets = [], writes = [];
+    const storage = { getItem: (k) => (k in ss ? ss[k] : null), setItem: (k, v) => { ss[k] = String(v); }, removeItem: (k) => { delete ss[k]; } };
+    const html = { getAttribute: () => null, setAttribute: () => { }, nextSibling: null };
+    const doc = { readyState: 'loading', documentElement: html, currentScript: null, getElementById: () => null,
+        getElementsByTagName: () => (scripts || []).map((f) => f(html)), addEventListener() { },
+        open() { }, write(h) { writes.push(h); }, close() { } };
+    html.parentNode = doc;
+    const agarPage = '<!doctype html><html><head><script>window.aiptag = {};</script><base href=""><script src="bundle_commons.js"></script></head><body></body></html>';
+    vm.runInNewContext(us, { document: doc, location: { pathname, href: 'https://agar.io' + pathname, origin: 'https://agar.io', hash: '', reload() { gets.push('reload'); } },
+        localStorage: storage, sessionStorage: storage, navigator: { language: 'en' }, performance: { timeOrigin: 1, now: () => 0 },
+        console: { log() { }, warn() { }, error() { } }, setTimeout: () => 0, clearTimeout() { }, JSON, Date, Math, String, Object, RegExp, parseInt,
+        GM_info: { script: { version: '1.9' } }, GM_getValue: () => null, GM_setValue() { }, GM_deleteValue() { },
+        GM_xmlhttpRequest: (o) => { gets.push(o.url); o.onload({ status: 200, finalUrl: o.url, responseText: o.url === 'https://agar.io/' ? agarPage : '' }); } });
+    return { gets, writes, boot: JSON.parse(ss['lmx-boot'] || '{}') };
+}
+/* agar.io serves its game only at "/": /normal is its 404 page, so the game page is written there */
+for (const p of ['/normal', '/Normal/']) {
+    const n = runUs(p);
+    const page = n.writes[n.writes.length - 1] || '';
+    check('userscript ' + p + ': agar.io\'s game page is downloaded and written (not its 404 page left)', n.gets.join() === 'https://agar.io/' && page.indexOf('window.aiptag') > 0 && n.boot.states.map((x) => x[0]).pop() === 'READY');
+    check('userscript ' + p + ': its relative links resolve against agar.io/', page.indexOf('<head><base href="https://agar.io/"><script>window.aiptag') > 0);
+}
 console.log(fail ? fail + ' FAILED' : 'all extension checks passed');
 process.exit(fail ? 1 : 0);

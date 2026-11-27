@@ -38,7 +38,7 @@
  *
  * agar.io/<mode> picks what runs in place of agar.io's own page: Legend Mod's play.html (agar.io/,
  * /legendmod, /neo, /mobile and unknown paths), another page (/captcha), a userscript (/hslo,
- * /agartool), a notice (/vanilla, /ogario, /delta), or nothing at all (/normal: agar.io untouched).
+ * /agartool), a notice (/vanilla, /ogario, /delta), or agar.io's own game page (/normal).
  *
  * Stages: ROUTING -> TAKEOVER -> LOADING -> INITIALIZING -> READY, and FAILED / RECOVERY from any of
  * them (at most one guarded reload per cause, never a loop). Parts, in this order:
@@ -90,14 +90,15 @@ var legendPage = 'https://www.legendmod.ml/play.html?' + pageVersion;
  * script: userscript fetched and run
  * legend: the page is Legend Mod's play.html, so it gets the init(<version>) call and the release cache
  * extra:  userscript run on top of the Legend page
+ * base:   address the page's relative links resolve against (written at agar.io/normal/ too)
  * notice: { title, text, host, link, linkText } page shown instead (the mod's server is gone): text keys,
  *         host goes into the text's {0}
- * bypass: agar.io's own page is left alone
  */
 var modes = {
     legendmod: { page: legendPage, legend: true },
-    /* agar.io untouched: its page is neither stopped nor downloaded again */
-    normal:    { bypass: true },
+    /* agar.io without the mod: agar.io serves its game only at "/" (/normal, like every other path, is
+     * its 404 page), so its front page is downloaded and written here */
+    normal:    { page: 'https://agar.io/', base: 'https://agar.io/' },
     hslo:      { script: 'https://hslo.io/install.user.js' },
     agartool:  { script: 'https://www.agartool.io/agartool.user.js' },
     /* Checked 2026-11: imasters.org.ru no longer answers over https (http only, which is
@@ -113,7 +114,6 @@ var modes = {
 /* "/Normal/" and "/normal" are the same mode */
 var modeName = location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
 var mode = Object.prototype.hasOwnProperty.call(modes, modeName) ? modes[modeName] : modes.legendmod;
-if (mode.bypass) return;
 /* early: none of agar.io's scripts ran yet; partial: its page is still being read, but its first scripts
  * ran (agar.io's game code is in its <head>, so it is running); late: its whole page and game ran (the
  * manager was slow). A partial or late start gets the same recovery. */
@@ -502,6 +502,7 @@ function writeFromPageWorld(html) {
 function loadPage(pageUrl) {
     fetchText(pageUrl, false, function (html) {
         go('INITIALIZING');
+        if (mode.base) html = html.replace(/<head(\s[^>]*)?>/i, function (head) { return head + '<base href="' + mode.base + '">'; });
         writePage(html);
         go('READY');
     }, function (problem, err) {
