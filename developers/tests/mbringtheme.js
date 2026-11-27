@@ -260,6 +260,17 @@ check('profiles: stored profiles and backups fold too', (function () {
 PS.videoSkinSoundLevel = 0.9;
 pc.LMProfiles.applySet({ s: { videoSkinSoundLevel: 0.9, volVideo: 0 } }, 'old muted');
 check('profiles: applying an old muted set mutes the video skins', PS.videoSkinSoundLevel === 0);
+/* an Undo saved by an older version with the video skins muted: the restore keeps them muted */
+pc.LMProfiles.undo(); /* uses up the in-memory Undo of the apply above */
+PS.videoSkinSoundLevel = 0.9;
+pc.localStorage.setItem('lmSettingsProfilesUndo', JSON.stringify({ t: Date.now(), name: 'x', data: { s: Object.assign({}, PS, { videoSkinSoundLevel: 0.8, volVideo: 0 }) } }));
+check('profiles: the Undo of an old state with the video skins muted mutes them', pc.LMProfiles.undo() && PS.videoSkinSoundLevel === 0);
+/* a stored profile of an older version (also what a rule applies by itself, the same apply) */
+pc.localStorage.setItem('lmSettingsProfiles', JSON.stringify([{ id: 'oldvv', name: 'Old video', data: { s: { videoSkinSoundLevel: 0.8, volVideo: 0.5 } } }]));
+PS.videoSkinSoundLevel = 0.9;
+pc.LMProfiles.applyById('oldvv');
+check('profiles: applying a stored old profile with the video skins at half folds it into the level', Math.abs(PS.videoSkinSoundLevel - 0.4) < 1e-9);
+check('profiles: the old key does not come back into the gameplay settings', !('volVideo' in PS));
 
 console.log(fail ? fail + ' multibox ring colour check(s) FAILED' : 'all multibox ring colour checks passed');
 process.exit(fail ? 1 : 0);
