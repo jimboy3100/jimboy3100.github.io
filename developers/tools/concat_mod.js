@@ -19,7 +19,7 @@ const path = require('path');
 
 /* one export per component; the names are the ones the earlier exports used */
 const COMPONENTS = {
-    client: { file: 'LegendMod.txt', from: 'repo', list: ['ogario/ogario.v4.js', 'LMexpress/LMexpress.js', 'LMexpress/lm_extended_ui.js', 'LMexpress/skinsAndDeals.js', 'LMexpress/LMexpress.user.js', 'play.html'] },
+    client: { file: 'LegendMod.txt', from: 'repo', list: ['ogario/ogario.v4.js', 'LMexpress/LMexpress.js', 'LMexpress/lm_extended_ui.js', 'LMexpress/skinsAndDeals.js', 'LMexpress/LMexpress.user.js', 'extras/legendhelper.js', 'play.html'] },
     userscript: { file: 'client.js', from: 'repo', list: ['LMexpress/LMexpress.user.js'], raw: true },
     render: { file: 'render.js', from: 'repo', list: ['ogario/ogario.v4.js'], raw: true },
     server: { file: 'LegendWorld.txt', from: 'legendworld', dir: 'src', match: /\.(c|h)$/ },

@@ -64,6 +64,9 @@ try {
 
     /* the real repository: defaults resolve to it and every client source it lists exists */
     tool.COMPONENTS.client.list.forEach((f) => ok(fs.existsSync(path.join(repo, f)), 'client export lists a missing file: ' + f));
+    /* the client export keeps every source the root tool joined (extras/legendhelper.js, the Mod Info window, was dropped) */
+    ['ogario/ogario.v4.js', 'LMexpress/LMexpress.js', 'LMexpress/lm_extended_ui.js', 'LMexpress/skinsAndDeals.js', 'LMexpress/LMexpress.user.js', 'extras/legendhelper.js', 'play.html']
+        .forEach((f) => ok(tool.COMPONENTS.client.list.indexOf(f) >= 0, 'client export no longer joins ' + f));
     ok(!fs.existsSync(path.join(repo, 'concat_mod.js')) && !fs.existsSync(path.join(repo, 'AllFilesNew.txt')), 'old root export tool / export is back');
 } finally {
     fs.rmSync(base, { recursive: true, force: true });
