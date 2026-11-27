@@ -2375,6 +2375,27 @@ function lmFoodTouch(cell) {
         _lmFoodPickRep(ent);
     }
 }
+/* Every pellet moved at once, outside its packets (Rotate Map / orientation flip,
+ * _retranslateAllOnFlip): each is placed again where it is now. The places of the main
+ * socket's pellets were kept from before (only a spectator's own transform change places its
+ * pellets again, lmFoodFrame), so after a flip a spectator copy matched the place a main pellet
+ * had left: that pellet was drawn twice and the one now there not at all. */
+function lmFoodReplaceAll() {
+    var F = _lmFood;
+    if (!F.on) return;
+    var cells = [];
+    for (var i = 0; i < F.ents.length; i++) {
+        var obs = F.ents[i].obs;
+        for (var j = 0; j < obs.length; j++) cells.push(obs[j]);
+    }
+    for (i = 0; i < cells.length; i++) cells[i]._lmFoodEnt = null;
+    F.grid.forEach(function (b) { b.length = 0; F.pool.push(b); });
+    F.grid.clear();
+    F.list.length = 0;
+    F.ents.length = 0;
+    F.spectObs = 0;
+    for (i = 0; i < cells.length; i++) _lmFoodAttach(cells[i]);
+}
 /* Main socket's LM.food replaced (spawn, ClearAll) or the world reset: build again from the
  * pellets that are still there. */
 function lmFoodRebuild() {
@@ -34205,6 +34226,8 @@ function thelegendmodproject() {
                         );
                 }
             }
+            /* 6. the reconciled food list: its pellets are placed again where they are now */
+            if (typeof lmFoodReplaceAll === 'function') lmFoodReplaceAll();
         },
 
         /*

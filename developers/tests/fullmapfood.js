@@ -7,7 +7,8 @@
  * another connection's copy is drawn at once; a pellet eaten by a cell the spectator does not
  * see is removed; a spectator disconnect removes only its own cells (from its index, not a scan
  * of the world); cells of an earlier socket are dropped; a spectator whose residual is corrected
- * has its pellets placed again; Canvas2D and Expanding Land WebGL get the same list. Prints the food
+ * has its pellets placed again; after an orientation flip (Rotate Map) every pellet is drawn once
+ * where it now is; Canvas2D and Expanding Land WebGL get the same list. Prints the food
  * observations against the pellets drawn and the cost of the list.
  * node developers/tests/fullmapfood.js */
 'use strict';
@@ -48,7 +49,11 @@ vm.runInContext([
     '  drawCachedFood: function (ctx, list) { this.got.push(["canvas", list]); },',
     '  ' + (function () { const a = src.indexOf('        drawFood() {'), b = src.indexOf('        drawCachedFood(ctx, food, scale, reset) {', a); return src.slice(a, b).trim().replace(/,$/, ''); })(),
     '};',
-    'this.LM = LM;'
+    'this.LM = LM;',
+    /* the orientation flip of every local coordinate store (Rotate Map, teammate orientation) */
+    'this.flipper = { deathLocations: [],',
+    '  ' + (function () { const a = src.indexOf('        _retranslateAllOnFlip('), b = src.lastIndexOf('        /*', src.indexOf('        settechvnr(b) {', a)); return src.slice(a, b).trim().replace(/,$/, ''); })(),
+    '};'
 ].join('\n'), g);
 vm.runInContext(spectSrc + '\nthis.Spect = Spect;', g);
 const LM = g.LM;
@@ -232,6 +237,29 @@ reset();
     sp._lmApplyTransform(1, 1, 30, 0);
     const list = drawList();
     check('offset fixed: placed again, the pellet drawn once', list.length === 2 && list.includes(m), list.length);
+}
+/* 6a. Rotate Map / orientation flip (_retranslateAllOnFlip moves every cell, main and spectator):
+ *     every pellet is drawn once where it now is (the main pellets kept their old places, so a
+ *     spectator copy of another pellet matched one: that one was drawn twice, the other not) */
+reset();
+{
+    Object.assign(LM, { _lmBorderCX: 0, _lmBorderCY: 0, _lmBorderKX: 1, _lmBorderKY: 1, mapOffsetX: 0, mapOffsetY: 0,
+        mapMinX: -1000, mapMaxX: 1000, mapMinY: -1000, mapMaxY: 1000, vector: [[0, 0], [1, 0]], vnr: 0 });
+    LM.translateX = (v) => LM.mapMaxX - (v - LM.mapMinX);
+    LM.translateY = (v) => v;
+    const m1 = mainFood(1, 100, 100, hex(0x40a0f0)), m2 = mainFood(2, -100, 300, hex(0x40a0f0));
+    const sp = spect(1);
+    Object.assign(sp, { mapOffsetFixed: true, mapOffsetX: 0, mapOffsetY: 0, fixX: 1, fixY: 1, fix3x: 0, fix3y: 0, _lmKX: 1, _lmKY: 1, _lmSameFrame: false });
+    /* the spectator sees pellet 1 (the main socket's too) and a third one at (100, 300) */
+    sp.updateCells(packet([], [{ id: 9, x: 100, y: 100 }, { id: 10, x: 100, y: 300 }], []), 0);
+    check('before the flip: three pellets, each drawn once', drawList().length === 3, drawList().length);
+    g.flipper._retranslateAllOnFlip(false, false, [1, 0]);
+    LM.vnr = 1;
+    const list = drawList(), at = (x, y) => list.filter((c) => Math.abs(c.x - x) < 1 && Math.abs(c.y - y) < 1).length;
+    check('after the flip: the main pellets moved', m1.x === -100 && m2.x === 100, m1.x + ',' + m2.x);
+    check('after the flip: every pellet drawn once where it now is', list.length === 3 && at(-100, 100) === 1 && at(100, 300) === 1 && at(-100, 300) === 1,
+        list.map((c) => c.x + ',' + c.y + '/' + (c.spectator || 0)).join(' '));
+    delete LM.translateX; delete LM.translateY; LM.vector = null; LM.vnr = 0;
 }
 /* 6b. A spectator whose orientation is not verified (PROVISIONAL, CONFLICTED: _lmFeedOk false) does
  *     not feed the list: its pellets are not drawn and hide no other copy; once verified they join
