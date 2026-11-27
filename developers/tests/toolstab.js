@@ -145,6 +145,29 @@ sctx.lmShowStopwatch(0);
 check('panel: shown and hidden, the timer text box set for the timer', shown.length === 2 && shown[0][0] === '#timertools-hud' && shown[0][1] === true && shown[1][1] === false && sctx.TimerLM.timerDiv && sctx.TimerLM.timerDiv.id === 'timer');
 check('the start applies the saved choice', /lmShowStopwatch\(!!\(window\.legendmod5 && window\.legendmod5\.showStopwatch\)\);/.test(lmx));
 
+/* the stopwatch itself: start, pause, go on, stop (the real functions; time and the 250 ms tick by hand) */
+{
+  let now = 1000000, tick = null;
+  const div = { innerHTML: '00:00' };
+  const tctx = { console: { log() {} }, TimerLM: { timerDiv: div }, Math, String,
+    Date: function () { return { getTime: () => now }; },
+    setInterval: f => { tick = f; return 1; }, clearInterval: () => { tick = null; },
+    $: () => ({ show() {}, hide() {} }) };
+  tctx.Date.now = () => now;
+  vm.createContext(tctx);
+  vm.runInContext(cutIn(lmx, 'function displayTimer() {', '\n/* Settings > Stats "Show stopwatch"') + cutIn(lmx, 'function startTimer() {', '\n/* a HUD box'), tctx);
+  const run = ms => { for (let t = 0; t < ms; t += 250) { now += 250; if (tick) tick(); } };
+  tctx.startTimer(); run(10000);
+  now += 200; tctx.stopTimer();          /* paused 200 ms after the last tick */
+  now += 60000;                          /* a minute paused */
+  tctx.startTimer(); now += 800; if (tick) tick();
+  check('stopwatch: the time from the last tick to the pause is kept (10.2 s + 0.8 s: 11 s shown, 10 s before)', div.innerHTML === '00:11');
+  tctx.stopTimer(); tctx.clearTimer(); now += 5000; tctx.stopTimer();
+  check('stopwatch: stop clears it (a pause after it shows nothing)', div.innerHTML === '00:00' && tctx.TimerLM.difference === 0);
+  tctx.startTimer(); run(3725000);
+  check('stopwatch: hours shown, minutes wrap at 60', div.innerHTML === '1:02:05');
+}
+
 /* ═══ Tools tab: the buttons are gone, Hide Everything is right of Hide Shortcuts ═══ */
 const tools = cutIn(lmx, "'<button id=\"SHOSHOBtn\"", "'<button id=\"OpenuserScripts\"");
 check('no Rounded / Square HUD or Show Timer Calc. button', !/id="(MAINBTBtn|TIMEcalBtn)"|#(MAINBTBtn|TIMEcalBtn)/.test(lmx));

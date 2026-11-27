@@ -4642,7 +4642,11 @@ function stopTimer() {
     $("#playtimer").show();
     $("#stoptimer").hide();
     $("#cleartimer").show();
+    /* keep the time up to the pause: the 250 ms tick last counted up to 250 ms before it, and
+     * every pause lost that much */
+    if (TimerLM.timerInterval) displayTimer();
     clearInterval(TimerLM.timerInterval); // stop updating the timer
+    TimerLM.timerInterval = null;
 
 }
 
@@ -4651,6 +4655,7 @@ function clearTimer() {
     $("#stoptimer").hide();
     $("#cleartimer").hide();
     clearInterval(TimerLM.timerInterval);
+    TimerLM.timerInterval = null;
     TimerLM.timerDiv.innerHTML = "00:00";
     TimerLM.lastShown = "00:00";
     TimerLM.difference = 0;
