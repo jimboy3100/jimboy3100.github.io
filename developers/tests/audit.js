@@ -96,6 +96,22 @@ ok(r.refs.some((x) => x.raw === 'gone.js' && x.status === 'missing'), 'missing e
     ok((rule('agario/bundle_end.js') || {}).class === 'HISTORICAL', 'the other agar.io client copies stay historical');
     ok(!rule('LMexpress/LegendExpressExtension.zip'), 'the Chrome extension download keeps its class from its links');
     ok(!!compat('LMexpress/privacy.html'), 'the old extension privacy address is a compatibility address');
+    /* build-registry.js reads its mirror snapshot by path.join(__dirname, ...), which the scan does not follow */
+    for (const p of ['developers/skins/build-registry.js', 'developers/skins/mirror-jimboy3000.txt']) {
+        ok(fs.existsSync(path.join(root, p)), p + ' is in the repository');
+        ok((rule(p) || {}).class === 'DEVELOPMENT', p + ' is DEVELOPMENT by exceptions.json (got ' + JSON.stringify(rule(p)) + ')');
+    }
+    /* the deletion manifest names removed files on purpose: no broken reference for repo-integrity.js,
+       while the same address in a page still is one */
+    const mtext = JSON.stringify({ records: [{ oldPath: 'ExampleScripts/gone.user.js', canonicalPath: 'play.html',
+        reason: 'it only injects //jimboy3100.github.io/extension/extension.js, removed long ago' }] }, null, 1);
+    const mm = A.missingRefs({ ex: exr, cross: [], scan: new Map([
+        ['developers/audit/manifest.json', ex('developers/audit/manifest.json', mtext)],
+        ['play.html', ex('play.html', '<script src="https://www.legendmod.ml/extension/extension.js"></script>')]]) });
+    const inMan = mm.filter((m) => m.from === 'developers/audit/manifest.json');
+    ok(inMan.some((m) => m.path === 'extension/extension.js'), 'the address in the manifest is read (got ' + JSON.stringify(mm) + ')');
+    ok(inMan.length && inMan.every((m) => m.ignored), 'the manifest is an ignored source');
+    ok(mm.some((m) => m.from === 'play.html' && m.path === 'extension/extension.js' && !m.ignored), 'the same address in a page still fails');
 }
 
 /* a whole run on a small git repository */

@@ -12,6 +12,7 @@
         { "glob": "developers/tools/**", "class": "DEVELOPMENT", "why": "developer tools (source export)" },
         { "glob": "developers/*.js", "class": "DEVELOPMENT", "why": "build scripts: extension-zip.js writes the two extension downloads, bots-zip.js the bot server download" },
         { "glob": "developers/bench/**", "class": "DEVELOPMENT", "why": "benchmarks" },
+        { "glob": "developers/skins/**", "class": "DEVELOPMENT", "why": "build-registry.js writes ogario/skinregistry.js; mirror-jimboy3000.txt is the mirror snapshot it reads (path.join(__dirname, ...), which the reference scan does not follow)" },
         { "glob": "LMexpress/LegendExpressExtension-firefox.zip", "class": "GENERATED", "why": "the Firefox build of the extension (desktop and Android), written by developers/extension-zip.js" },
         { "glob": "ExampleScripts/agario-bots2/agario-bots.zip", "class": "GENERATED", "why": "the bot server download (its README links it), written by developers/bots-zip.js" },
         { "glob": "ogario/protocols/*.md", "class": "DEVELOPMENT", "why": "protocol notes" },
@@ -47,6 +48,7 @@
     "integrityIgnoreSources": [
         { "glob": "developers/tests/**", "why": "test fixtures use made-up addresses on purpose" },
         { "glob": "agario/mc/**", "why": "old agar.io client snapshot" },
-        { "glob": "agario/css/**", "why": "copy of agar.io style sheets; their font and image paths are agar.io paths" }
+        { "glob": "agario/css/**", "why": "copy of agar.io style sheets; their font and image paths are agar.io paths" },
+        { "glob": "developers/audit/manifest.json", "why": "the deletion manifest names removed files and their old addresses on purpose; its canonicalPath values are checked apart" }
     ]
 }
