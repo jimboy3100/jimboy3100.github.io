@@ -4,6 +4,7 @@
  *   (as a path, a URL, or a relative name from a page in the same folder);
  * - re-encoded media keep what a player sees: the animated WebP that replaced a GIF has the GIF's
  *   size, frame count, total duration and loop.
+ * - pictures re-encoded losslessly at their own address keep their size and bit depth.
  * node developers/tests/auditmedia.js */
 'use strict';
 const fs = require('fs'), path = require('path');
@@ -86,6 +87,23 @@ Object.keys(WEBP).forEach((f) => {
     check(f + ' is an animated WebP of ' + e.w + 'x' + e.h + ', ' + e.frames + ' frames, ' + e.ms + ' ms, loop ' + e.loop +
         (i ? ' (got ' + i.w + 'x' + i.h + ', ' + i.frames + ', ' + i.ms + ' ms, loop ' + i.loop + ')' : ''),
         i && i.animated && i.w === e.w && i.h === e.h && i.frames === e.frames && i.ms === e.ms && i.loop === e.loop);
+});
+
+/* pictures re-encoded losslessly at the same address (same decoded pixels, checked when they were
+ * re-encoded): they stay 8-bit PNGs of the same size, and smaller than before */
+const PNG = {
+    'Lc/PROJETOX.HTML/dragon.png': [1920, 1080, 1139307], 'Lc/PROJETOX.HTML/junk.png': [2509, 1314, 2532971],
+    'Lc/PROJETOX.HTML/junk1.png': [2509, 1314, 2384050], 'Lc/PROJETOX.HTML/logo.png': [1536, 1024, 1207122],
+    'Lc/PROJETOX.HTML/mido.png': [2850, 1694, 4018182], 'Lc/PROJETOX.HTML/prod.png': [1920, 1052, 1878864],
+    'Lc/PROJETOX.HTML/weare.png': [1920, 1080, 1434942], 'banners/Lc2026.png': [1536, 1024, 2817139]
+};
+Object.keys(PNG).forEach((f) => {
+    const [w, h, before] = PNG[f];
+    let b = null; try { b = fs.readFileSync(path.join(repo, f)); } catch (e) { }
+    const ok = b && b.toString('latin1', 1, 4) === 'PNG' && b.toString('ascii', 12, 16) === 'IHDR';
+    const got = ok ? b.readUInt32BE(16) + 'x' + b.readUInt32BE(20) + ', ' + b[24] + '-bit, ' + b.length + ' bytes' : 'not a PNG';
+    check(f + ' is an 8-bit PNG of ' + w + 'x' + h + ' under ' + before + ' bytes (got ' + got + ')',
+        ok && b.readUInt32BE(16) === w && b.readUInt32BE(20) === h && b[24] === 8 && b.length < before);
 });
 
 console.log(fail ? fail + ' FAILED' : 'all passed');
