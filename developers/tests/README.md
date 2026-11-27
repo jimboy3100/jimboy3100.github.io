@@ -36,6 +36,45 @@ Output goes to `developers/tests/out/` (ignored by git).
 The run fails on a syntax error, an uncaught page exception, a `console.error`, or a probe failure.
 Network/console log errors are printed as warnings only, because the live servers are not always reachable.
 
+## Node tests (the normal list)
+
+Every `developers/tests/*.js` except `run.js`, `smoke.js`, `crlf.js`, `trace.js` and `trace-summary.js`
+runs in Node (`node developers/tests/<name>.js`) and must exit 0 before a commit. Among them:
+
+- `repo-integrity.js`: no reference to a file that is not on the site. It reads every text file
+  (HTML attributes, CSS `url()` / `@import`, extension and web app manifests, userscript metadata, and
+  `www.legendmod.ml` / `legendmod.ml` / `jimboy3100.github.io` addresses anywhere, also JSON-escaped ones)
+  and checks each complete reference the way GitHub Pages serves it (exact letter case, folder
+  `index.html`, extensionless `.html`). Dynamic paths (`'banners/' + name + '.png'`) and comments are not
+  failures. It also checks the Legend Mod addresses used by the repositories next to this one
+  (`expandingland`, `legendworld-help`, `LegendWorld`, `deltav4`, read only) when they are there, so deleting a
+  file another site loads fails here, and that `developers/audit/manifest.json` is well formed (its approval
+  rule and removed paths are checked by `manifestrefs.js`). Known old
+  broken references are listed with the reason in `developers/audit/exceptions.json` (`missingAllowed`;
+  `defect: true` = still to fix). `--list` prints every reference to a missing file as JSON, `--comments`
+  the ones in comments, `--no-cross` skips the other repositories.
+- `audit.js`: the audit tool itself, on small inputs and on a throw-away git repository.
+
+## Repository audit (before deleting or moving files)
+
+```
+node developers/audit/audit.js            # [--no-cross] [--top N] [--quiet]
+```
+
+Writes `developers/tests/out/audit/` (ignored by git): `summary.txt` (printed too), `classification.json` /
+`.csv` (every tracked file with its class and why), `duplicates.json` (identical files by git blob),
+`reachability.json` (how each file is reached from the entry points), `references.json`, `missing.json`,
+`crossrepo.json`, `inventory.json`. Classes: ACTIVE (reached from an entry point of
+`developers/audit/public-urls.json`: play.html, index.html, the sitemap pages, the userscript, the extension,
+LMmobile, the apps, knowledge/), COMPATIBILITY (old addresses, files other repositories use), GENERATED and
+DEVELOPMENT (rules in `exceptions.json`), HISTORICAL (archived pages in `developers/i18n/scan-config.json`,
+old snapshots, and files only they use), DUPLICATE (unused copy of a used file), UNKNOWN (not reached, but
+its name is written in a used file or comment, or it fits a dynamic path) and UNREACHABLE (no reference
+found: still not enough alone to delete, old installations and other sites may load it by URL).
+Reachability follows references from code, not whether a function is still called: a file used only by
+dead code counts as ACTIVE. Every deleted or moved file gets a record in `developers/audit/manifest.json`.
+`node developers/audit/duplicates.js` and `node developers/audit/references.js <file>` work on their own.
+
 ## Single runs
 
 ```

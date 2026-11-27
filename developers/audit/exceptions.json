@@ -1,0 +1,51 @@
+{
+    "description": "Documented decisions for developers/audit/audit.js and developers/tests/repo-integrity.js. rules: class of files by glob from the repository root (** any depth, * inside one folder; first match wins); GENERATED, DEVELOPMENT and COMPATIBILITY always apply, HISTORICAL only when no active file uses the file. historicalRoots: old pages and snapshots kept for history (their own references make files HISTORICAL, not ACTIVE); developers/i18n/scan-config.json 'archived' is read as well. missingAllowed: references to missing files that are known, with the reason ('from' is a file or glob, 'repo:file' for another repository; 'paths' the missing site paths); defect: true marks a real broken link still to fix. repo-integrity.js fails on any other reference to a missing file. integrityIgnoreSources: files whose references are not checked at all.",
+    "rules": [
+        { "glob": "languages/lm-*.js", "class": "GENERATED", "why": "developers/i18n/build.js from developers/i18n/src" },
+        { "glob": "lib/lm-i18n.js", "class": "GENERATED", "why": "developers/i18n/build.js (page runtime)" },
+        { "glob": "developers/tests/**", "class": "DEVELOPMENT", "why": "tests" },
+        { "glob": "developers/audit/**", "class": "DEVELOPMENT", "why": "this audit tool and the deletion manifest" },
+        { "glob": "developers/i18n/**", "class": "DEVELOPMENT", "why": "translation sources and build scripts" },
+        { "glob": "developers/*.md", "class": "DEVELOPMENT", "why": "developer notes" },
+        { "glob": "developers/*.py", "class": "DEVELOPMENT", "why": "developer tool" },
+        { "glob": "developers/*.cjs", "class": "DEVELOPMENT", "why": "developer tool" },
+        { "glob": "developers/tools/**", "class": "DEVELOPMENT", "why": "developer tools (source export)" },
+        { "glob": "scripts/**", "class": "DEVELOPMENT", "why": "maintenance scripts" },
+        { "glob": ".github/**", "class": "DEVELOPMENT", "why": "repository settings" },
+        { "glob": ".gitignore", "class": "DEVELOPMENT", "why": "repository settings" },
+        { "glob": ".agents/**", "class": "DEVELOPMENT", "why": "repository notes" },
+        { "glob": "AGENTS.md", "class": "DEVELOPMENT", "why": "repository notes" },
+        { "glob": "SYSTEM.md", "class": "DEVELOPMENT", "why": "repository documentation" },
+        { "glob": "**/README.md", "class": "DEVELOPMENT", "why": "folder documentation (shown by GitHub)" },
+        { "glob": "**/readme.md", "class": "DEVELOPMENT", "why": "folder documentation (shown by GitHub)" },
+        { "glob": "apps/**", "class": "DEVELOPMENT", "why": "app source code (the app itself opens play.html)" },
+        { "glob": "wasm/*.c", "class": "DEVELOPMENT", "why": "source of the .wasm files" },
+        { "glob": "wasm/build.sh", "class": "DEVELOPMENT", "why": "builds the .wasm files" },
+        { "glob": "ogario/*.c", "class": "DEVELOPMENT", "why": "source of a .wasm file" },
+        { "glob": "agario/mc/**", "class": "HISTORICAL", "why": "old agar.io client snapshots" },
+        { "glob": "agario/bundle_*.js", "class": "HISTORICAL", "why": "old agar.io client snapshots (LM does not load them)" }
+    ],
+    "historicalRoots": [],
+    "missingAllowed": [
+        { "from": "ExampleScripts/LMmozzila.user.js", "paths": ["extension/extension.js"], "why": "old example userscript; the file it loaded was removed years ago" },
+        { "from": "ExampleScripts/MassBarAddon.user.js", "paths": ["ExampleScripts/legendmodAddonDAVI.js"], "why": "old example userscript" },
+        { "from": "agarscripts/goodoldlegendmod.user.js", "paths": ["legendmod.js", "legend.sniff.js", "legend.sniff2.js", "legend.sniff3.js"], "why": "the v3.1 userscript, kept for history; those files moved long ago" },
+        { "from": "agarscripts/legendmod.user.js", "paths": ["old/oldskins.js"], "why": "old userscript, kept for history" },
+        { "from": "extras/legendhelper.js", "paths": ["legend.github.io/banners/grey-08.jpg", "extras/bleedmod.js"], "why": "old helper script" },
+        { "from": "ogario/protocols/MultiOgar.md", "paths": ["ogario/ogario.test.v4.js"], "why": "protocol notes linking a test build that was removed" },
+        { "from": "lib/bootstrap-colorpicker.min.css", "paths": ["img/bootstrap-colorpicker/hue-horizontal.png", "img/bootstrap-colorpicker/alpha-horizontal.png"], "why": "vendor style sheet; these images are only requested by the horizontal colour picker, which is not used" },
+        { "from": "developers/videoskins.html", "paths": ["banners/testragizeihkardiamou.mp4", "banners/testvideoafroman.mp4", "banners/testvideomama.mp4"], "why": "example video skins named on the developer page are no longer in banners/", "defect": true },
+        { "from": "extras/website/anchors.css", "paths": ["extras/website/fonts/fonts.css"], "why": "@import of a style sheet that is not there (a 404 on the pages that use anchors.css)", "defect": true },
+        { "from": "themes/themes.css", "paths": ["fonts/icomoon/icomoon.eot", "fonts/icomoon/icomoon.ttf", "fonts/icomoon/icomoon.woff", "fonts/icomoon/icomoon.svg"], "why": "icon font of the themes page is not in fonts/", "defect": true },
+        { "from": "expandingland:knowledge/resources.json", "paths": ["skins/checker.html", "skins/rotator.html", "nicknames/"], "why": "copy of knowledge/resources.json from before its links were corrected (skins/skinchecker.html, skinrotator.html, nicks/)", "defect": true },
+        { "from": "legendworld-help:knowledge/resources.json", "paths": ["skins/checker.html", "skins/rotator.html", "nicknames/"], "why": "copy of knowledge/resources.json from before its links were corrected (skins/skinchecker.html, skinrotator.html, nicks/)", "defect": true }
+    ],
+    "integrityIgnoreSources": [
+        { "glob": "developers/tests/**", "why": "test fixtures use made-up addresses on purpose" },
+        { "glob": "agario/mc/**", "why": "old agar.io client snapshot" },
+        { "glob": "agario/css/**", "why": "copy of agar.io style sheets; their font and image paths are agar.io paths" },
+        { "glob": "ExampleScripts/Dead-mod/**", "why": "third-party mod snapshot kept as an example" },
+        { "glob": "ExampleScripts/hslo/**", "why": "third-party mod snapshot kept as an example" },
+        { "glob": "ExampleScripts/agarvaii/**", "why": "third-party mod snapshot kept as an example" }
+    ]
+}

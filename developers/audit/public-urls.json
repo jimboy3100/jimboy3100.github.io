@@ -1,0 +1,59 @@
+{
+    "description": "Supported entry points and public addresses of Legend Mod, read by developers/audit/audit.js and developers/tests/repo-integrity.js. entryPoints: what players, browsers, the userscript, the extension and the apps open first (their references make other files ACTIVE). compatibility: addresses kept for old installations, old links and other sites (COMPATIBILITY when nothing current uses them). dataDrivenCollections: folders whose file names come from data at run time (agar.io's configuration), so a dynamic pattern in an active file reaches every file in them. Globs: ** any depth, * inside one folder.",
+    "hosts": {
+        "own": ["www.legendmod.ml", "legendmod.ml", "jimboy3100.github.io", "www.jimboy3100.github.io"],
+        "mirror": ["jimboy3000.github.io"],
+        "ownRepo": "jimboy3100/jimboy3100.github.io"
+    },
+    "sitemaps": ["sitemap.xml"],
+    "entryPoints": [
+        { "path": "index.html", "why": "home page" },
+        { "path": "play.html", "why": "the game page (agar.io, the userscript, the extension, Expanding Land and the apps load it)" },
+        { "path": "404.html", "why": "GitHub Pages error page" },
+        { "path": "CNAME", "why": "GitHub Pages custom domain" },
+        { "path": ".nojekyll", "why": "GitHub Pages: serve files as they are" },
+        { "path": "robots.txt", "why": "search engines" },
+        { "path": "sitemap.xml", "why": "search engines" },
+        { "path": "rss.xml", "why": "feed readers" },
+        { "path": "opensearch.xml", "why": "browser search box" },
+        { "path": "manifest.json", "why": "web app manifest (installable page, Android app)" },
+        { "path": "favicon.ico", "why": "browsers ask for it" },
+        { "path": "llms.txt", "why": "site summary for search engines and crawlers" },
+        { "path": "llms-full.txt", "why": "site summary for search engines and crawlers" },
+        { "path": ".well-known/**", "why": "domain verification, security.txt, Android asset links" },
+        { "path": "google8d8badb7f518c0a6.html", "why": "Google Search Console verification" },
+        { "path": "7e0ef7e8e761e41f6d831e9753b3286c.txt", "why": "site verification file" },
+        { "path": "a1b2c3d4e5f6g7h8indexnow.txt", "why": "IndexNow key" },
+        { "path": "LICENSE", "why": "licence" },
+        { "path": "MITlicence.txt", "why": "licence" },
+        { "path": "LMexpress/LMexpress.user.js", "why": "the userscript (install, @updateURL and @downloadURL)" },
+        { "path": "LMexpress/extension/manifest.json", "why": "the Chrome extension" },
+        { "path": "LMexpress/LegendExpressExtension.zip", "why": "the extension download (clan article link)" },
+        { "path": "LMexpress/mobileApp/**", "why": "the Android app (APK download)" },
+        { "path": "LMmobile/LMmobile.user.js", "why": "the mobile userscript" },
+        { "path": "LMmobile/index.html", "why": "the mobile page" },
+        { "path": "apps/**", "why": "the iOS app source (it opens play.html)" },
+        { "path": "knowledge/**", "why": "the public knowledge base (machine readable, linked from llms.txt)" },
+        { "path": "agario/live/GameConfiguration.json", "why": "fallback copy of agar.io's configuration (ogario.v4.js fallbackUrl)" }
+    ],
+    "compatibility": [
+        { "path": "languages/LanguagePack*.js", "why": "old language pack addresses: small loaders for languages/lm-*.js (other pages and scripts load them by URL)" },
+        { "path": "skins/skins.html", "why": "old address, forwards to skins/" },
+        { "path": "skins/skins3.html", "why": "old address, forwards to skins/" },
+        { "path": "skins/skinsworking.html", "why": "old address, forwards to skins/" },
+        { "path": "extras/website/index.html", "why": "old address, forwards to the home page" },
+        { "path": "LMexpress/legend.sniff2.js", "why": "loaded by old userscript installations" },
+        { "path": "discordBot/**", "why": "the Discord bot's public privacy policy and terms (linked from its listing)" }
+    ],
+    "dataDrivenCollections": [
+        { "glob": "vanillaskins/**", "why": "agar.io skin images by the names in agar.io's configuration (vanilla skins, shop, rotator)" },
+        { "glob": "lowresskins/**", "why": "agar.io skin images by the names in agar.io's configuration (gallery, fallbacks)" },
+        { "glob": "agario/live/flags/**", "why": "flag skins by country / flag name" }
+    ],
+    "crossRepos": [
+        { "name": "expandingland", "path": "../expandingland", "why": "expanding.land wraps play.html and uses the language files" },
+        { "name": "legendworld-help", "path": "../legendworld-help", "why": "help.expanding.land" },
+        { "name": "LegendWorld", "path": "../LegendWorld", "why": "the game server (Delta and agar2 use it)" },
+        { "name": "deltav4", "path": "../deltav4", "why": "Delta (read only): it may load legendmod.ml / jimboy3100.github.io assets" }
+    ]
+}
