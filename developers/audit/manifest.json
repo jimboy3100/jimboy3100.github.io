@@ -4785,6 +4785,15 @@
     {"oldPath":"vanillaskins/jurassic_fury.png","canonicalPath":"vanillaskins/t_predator.png","reason":"byte-identical copy","sha":"bde72f3642ad96a7","internalReferencesMigrated":true,"legacyResolverSupported":true,"legacyResolverNeeded":true,"externalUrlSupported":true,"externalUrlNeeded":true,"approvedForDeletion":false,"deleted":false,"evidence":"skin-config-name","package":"CL3W"},
     {"oldPath":"vanillaskins/sea_grinner.png","canonicalPath":"vanillaskins/googly_fang.png","reason":"byte-identical copy","sha":"84f58be1e181c024","internalReferencesMigrated":true,"legacyResolverSupported":true,"legacyResolverNeeded":true,"externalUrlSupported":true,"externalUrlNeeded":true,"approvedForDeletion":false,"deleted":false,"evidence":"skin-config-name","package":"CL3W"},
     {"oldPath":"vanillaskins/sparkle_kraken.png","canonicalPath":"vanillaskins/star_kraken.png","reason":"byte-identical copy","sha":"7611a8b8c441c251","internalReferencesMigrated":true,"legacyResolverSupported":true,"legacyResolverNeeded":true,"externalUrlSupported":true,"externalUrlNeeded":true,"approvedForDeletion":false,"deleted":false,"evidence":"skin-config-name","package":"CL3W"},
-    {"oldPath":"vanillaskins/terror_tooth.png","canonicalPath":"vanillaskins/brainless.png","reason":"byte-identical copy","sha":"92ce60d8cc014ddc","internalReferencesMigrated":true,"legacyResolverSupported":true,"legacyResolverNeeded":true,"externalUrlSupported":true,"externalUrlNeeded":true,"approvedForDeletion":false,"deleted":false,"evidence":"skin-config-name","package":"CL3W"}
+    {"oldPath":"vanillaskins/terror_tooth.png","canonicalPath":"vanillaskins/brainless.png","reason":"byte-identical copy","sha":"92ce60d8cc014ddc","internalReferencesMigrated":true,"legacyResolverSupported":true,"legacyResolverNeeded":true,"externalUrlSupported":true,"externalUrlNeeded":true,"approvedForDeletion":false,"deleted":false,"evidence":"skin-config-name","package":"CL3W"},
+    {
+      "oldPath": "Lc/articles/images/Lcgif.gif",
+      "canonicalPath": "Lc/articles/images/Lcgif.webp",
+      "reason": "Legend Clan logo animation of the two 29.12.2025 announcement articles (24.6 MB GIF). Re-encoded as a lossless animated WebP (18.7 MB): same 720x720 size, the same 150 frames with the same durations, endless loop, every decoded pixel identical (checked in Python and in Chrome with ImageDecoder). Only those two articles used it; no other repository, setting or saved data names it.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "approvedForDeletion": true
+    }
   ]
 }
