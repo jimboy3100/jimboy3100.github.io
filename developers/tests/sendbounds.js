@@ -66,7 +66,7 @@ const handler = (() => {
     if (a < 0 || b < 0) { need.push('handleMessage'); return ''; }
     return src.slice(a, b).replace(/,\s*$/, '');
 })();
-const recHelpers = [get(src, '\nfunction lmRecRoom('), get(src, '\nfunction lmRecPacketBytes(')];
+const recHelpers = [get(src, '\nfunction lmRecRoom('), get(src, '\nfunction lmRecPacketBytes('), get(src, '\nfunction _lmTokenBoxValue(')];
 const spectParts = ['    isSocketOpen() {', '    createView(value) {', '    sendBuffer(data) {', '    sendMessage(message) {', '    sendAction(action) {',
     '    sendPosition(x, y) {', '    shiftKey(key) {', '    shiftMessage(view, key, write) {', '    onopen() {'].map((m) => get(spectSrc, m));
 const standbySend = (() => { const i = standbySrc.indexOf('        this.send = function (data) {'); return i < 0 ? (need.push('standby send'), '') : block(standbySrc, 'function (data) {', i); })();
@@ -291,7 +291,7 @@ function lmEnv() {
     const ctx = {
         console: { log() { }, warn: (...a) => warns.push(a.join(' ')), error: (...a) => warns.push('ERROR ' + a.join(' ')) },
         defaultmapsettings: { recordReplays: true }, TextDecoder, Uint8Array, DataView, Date, Math, RangeError,
-        $: () => ({ val: () => 'wss://example.test' }), drawRender: {}, _lmElTeamsActive: () => false,
+        $: () => ({ val: () => 'wss://example.test' }), document: { getElementById: () => null, activeElement: null }, drawRender: {}, _lmElTeamsActive: () => false,
         application: {}, LM: {}, catholicCalculator: 0, temporaryRecordedProtocol: 'x', RecordedProtocol: { x: [] }, _lmRecChkAt: 1048576, _lmRecBudgetCheck() { },
         buffer: { Buffer: function (ab) { return Buffer.from(ab); } },
     };

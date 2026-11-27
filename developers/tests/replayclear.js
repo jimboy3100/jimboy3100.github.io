@@ -44,11 +44,12 @@ function boot() {
         lmT: enT, _lmMhT: (k, en) => { const t = enT(k); return t !== k ? t : en; },
         defaultmapsettings: { recordReplays: true },
         legendmod: { playingReplayServer: null },
-        $: () => ({ val: () => 'wss://live-arena.example:443' })
+        $: () => ({ val: () => 'wss://live-arena.example:443' }),
+        document: { getElementById: () => null, activeElement: null }
     };
     ctx.window = ctx;
     vm.createContext(ctx);
-    vm.runInContext([overhead ? overhead[0] : '', fn('lmRecRoom'), fn('lmRecPacketBytes'), fn('lmRecByteBudget'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'), fn('lmRecFreeMemory'),
+    vm.runInContext([overhead ? overhead[0] : '', fn('lmRecRoom'), fn('lmRecPacketBytes'), fn('lmRecByteBudget'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'), fn('lmRecFreeMemory'), fn('_lmTokenBoxValue'),
         (block('window._lmRecBudgetCheck = function') || '') + ';',
         (block('window._lmRecKeepOnClear = function') || '') + ';', (block('window._lmRecClearMemory = function') || '') + ';',
         /* like setSettings: the value it had, then the new one stored, then the case */

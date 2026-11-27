@@ -44843,8 +44843,9 @@ function thelegendmodproject() {
             var _recServerToken;
             /* recordReplays off: keep no packets (an undefined setting counts as on) */
             /* also stop at 100 MB per recording (5 are kept): busy servers send big packets,
-             * and when all kept recordings use up the memory budget (lmRecRoom, _lmRecFull) */
-            if (defaultmapsettings.recordReplays !== false && lmRecRoom(window.catholicCalculator, window._lmRecSlotBytes, window._lmRecFull) && !(_recServerToken = $("#server-token").val()).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+             * and when all kept recordings use up the memory budget (lmRecRoom, _lmRecFull);
+             * the connected server, not text still typed into the Join box, says what is recorded */
+            if (defaultmapsettings.recordReplays !== false && lmRecRoom(window.catholicCalculator, window._lmRecSlotBytes, window._lmRecFull) && !(_recServerToken = _lmTokenBoxValue('server-token')).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 var _lmRecArr = window.RecordedProtocol[window.temporaryRecordedProtocol];
                 _lmRecArr[window.catholicCalculator] = data
                 /* its time for Replay Studio (accurate playback speed and seeking) */

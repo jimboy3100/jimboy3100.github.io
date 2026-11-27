@@ -16,12 +16,12 @@ function block(start) {
     }
 }
 const fn = (name) => block('\nfunction ' + name + '(').slice(1);
-const ctx = { console: { info() { ctx.infos++; }, log() {} }, infos: 0, Math, Date, Array, DataView, ArrayBuffer, Uint8Array, navigator: {} };
+const ctx = { console: { info() { ctx.infos++; }, log() {} }, infos: 0, Math, Date, Array, DataView, ArrayBuffer, Uint8Array, navigator: {}, document: { getElementById: () => null, activeElement: null } };
 ctx.window = ctx;
 vm.createContext(ctx);
 const overhead = /\nvar LM_REC_PKT_OVERHEAD = \d+;/.exec(src);
 if (!overhead) throw Error('LM_REC_PKT_OVERHEAD not found');
-vm.runInContext([overhead[0], fn('lmRecRoom'), fn('lmRecByteBudget'), fn('lmRecPacketBytes'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'),
+vm.runInContext([overhead[0], fn('lmRecRoom'), fn('lmRecByteBudget'), fn('lmRecPacketBytes'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'), fn('_lmTokenBoxValue'),
     block('window._lmRecM = function') + ';', block('window._lmRecEv = function') + ';', block('window._lmRecBudgetCheck = function') + ';'].join('\n'), ctx);
 /* the packet recording branch, run as a function of one packet */
 vm.runInContext('function recordPacket(data) { var _recServerToken;\n' +
