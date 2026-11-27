@@ -32325,6 +32325,40 @@ function thelegendmodproject() {
             }
             return ogario.mapOffsetY || 0;
         },
+        /* World units per unit of our centred coordinates (axis 0 = x, 1 = y). Every agar.io
+         * connection has its own map scale (full borders 14073..14211 wide), so the same spot is
+         * up to 35 units apart in two teammates' centred coordinates. Team positions (opcode 30)
+         * and waves (opcode 45) go out in world units, the full map 14142.1 wide as Delta sends
+         * them, and come back divided by our own scale. 1 on private servers, on Expanding Land
+         * and before the full border (LM._lmBorderKX/KY, see _lmApplyFullBorder). */
+        lmTeamScale(axis) {
+            var k = axis ? LM._lmBorderKY : LM._lmBorderKX;
+            return !LM.isLegendWorld && Number.isFinite(k) && k > 0 ? k : 1;
+        },
+        /* An opcode 30 position in world units, as integers whose sum is even: x is rounded to
+         * the nearer of its two neighbours that gives that (less than 1 unit off, the old code
+         * truncated up to 1). Older builds send this connection's own units with no such rule,
+         * so the receiver can tell them apart (lmTeamWorldIn) without a change of the packet. */
+        lmTeamWorldOut(view) {
+            var wx = this.getPlayerX() * this.lmTeamScale(0);
+            var x = Math.round(wx), y = Math.round(this.getPlayerY() * this.lmTeamScale(1));
+            if ((x + y) & 1) x += wx >= x ? 1 : -1;
+            view.setInt32(5, x, true);
+            view.setInt32(9, y, true);
+        },
+        /* Does this teammate send world units? One odd sum marks an older build for good (its
+         * positions stay as they always were); 6 even sums in a row from different positions
+         * mark a world-unit sender (an older build gets there by chance once in 64, and only
+         * until its next odd sum). Stored on the teammate: -1 older build, 1..6 even so far. */
+        lmTeamWorldIn(tm, x, y) {
+            if ((x + y) & 1) tm._lmTeamWorld = -1;
+            else if (tm._lmTeamWorld !== -1 && (x !== tm._lmTeamWX || y !== tm._lmTeamWY)) {
+                tm._lmTeamWX = x;
+                tm._lmTeamWY = y;
+                if (!(tm._lmTeamWorld >= 6)) tm._lmTeamWorld = (tm._lmTeamWorld || 0) + 1;
+            }
+            return tm._lmTeamWorld >= 6;
+        },
         /* Own echo or a second delivery of the same wave (8 recent ones of each, no allocation).
          * Our echo is a wave we sent in the last 5 s, same type and point, with our ID in it
          * (both fields, or the 32-bit ID of the old ogario layout). The ID alone is not enough:
@@ -32399,7 +32433,11 @@ function thelegendmodproject() {
             if (idx !== null && this.teamPlayers[idx] && this.teamPlayers[idx].color) color = this.teamPlayers[idx].color;
             /* hex only: anything else threw in the wave gradient and dropped whole frames */
             if (typeof color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(color)) color = '#00e6ff';
-            var x = wx - this.lmWaveOffsetX(), y = wy - this.lmWaveOffsetY();
+            /* world units (Delta and this build, lmTeamScale), except from a teammate whose
+             * positions show an older build (lmTeamWorldIn): its waves are in its own units */
+            var old = idx !== null && this.teamPlayers[idx] && this.teamPlayers[idx]._lmTeamWorld === -1;
+            var x = (old ? wx : wx / this.lmTeamScale(0)) - this.lmWaveOffsetX();
+            var y = (old ? wy : wy / this.lmTeamScale(1)) - this.lmWaveOffsetY();
             if (lm.Waves.length > 30) lm.Waves.splice(0, lm.Waves.length - 30);
             lm.sendWaves(x, y, color, 1000, 'wave:' + playerID, false);
             /* counted once when drawn and once when it expires (drawWaves) */
@@ -32521,8 +32559,9 @@ function thelegendmodproject() {
             view.setUint16(1, lo, true);
             view.setUint16(3, lo, true);
             view.setUint8(5, type || 0);
-            view.setInt32(6, Math.round(wx), true);
-            view.setInt32(10, Math.round(wy), true);
+            /* wx, wy: our centred coordinates, sent in world units (lmTeamScale) */
+            view.setInt32(6, Math.round(wx * this.lmTeamScale(0)), true);
+            view.setInt32(10, Math.round(wy * this.lmTeamScale(1)), true);
             try { ws.send(buffer); } catch (e) {
                 st.notSent++;
                 return false;
@@ -32867,8 +32906,8 @@ function thelegendmodproject() {
                 view.setUint8(0, 30);
                 view.setUint32(1, this.playerID, true);
 
-                view.setInt32(5, this.getPlayerX(), true);
-                view.setInt32(9, this.getPlayerY(), true);
+                /* x, y at 5 and 9: world units (lmTeamWorldOut) */
+                this.lmTeamWorldOut(view);
 
                 if (typeof ogario.playerMass !== 'undefined') {
                     view.setUint32(13, ogario.playerMass, true);
@@ -33299,6 +33338,11 @@ function thelegendmodproject() {
                 if (a > 249999) return; //to stop the spammer
                 //if (a > 360000) return;
                 var n = this.teamPlayers[i];
+                /* world units back to our centred coordinates; an older build's as they come */
+                if (this.lmTeamWorldIn(n, s, o)) {
+                    s /= this.lmTeamScale(0);
+                    o /= this.lmTeamScale(1);
+                }
                 n.setPosition(s, o);
                     n.mass = a,
                     n.alive = true,

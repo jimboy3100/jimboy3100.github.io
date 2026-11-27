@@ -36,7 +36,7 @@ function method(header, from) {
 }
 const APP = ['lmWaveStats()', 'lmWaveOffsetX()', 'lmWaveOffsetY()', 'lmWaveSeen(', 'lmWaveSenderIndex(', 'readWavePing(view)',
     'lmPingLabel(type)', 'addLmPing(', 'sendTeamPing(type)', 'sendTeamWave()', 'lmWaveRoute()', 'sendWavePing(', 'checkPlayerID(id)',
-    'isSocketOpen()', 'readMessage(message)'];
+    'isSocketOpen()', 'readMessage(message)', 'lmTeamScale('];
 const appSrc = APP.map(h => method(h)).filter(Boolean);
 const LMSRC = ['sendWaves(', 'setMapOffset(', '_lmBorderValid(', '_lmApplyFullBorder(', '_lmFullBorderNow()'].map(h => method(h));
 const drawSrc = method('drawWaves()');
