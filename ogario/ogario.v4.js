@@ -54516,6 +54516,12 @@ function thelegendmodproject() {
                 var _cullMinY = window.fullSpectator ? ((LM.mapMinY != null ? LM.mapMinY : -7071) - 800) : (LM.camMinY - 800);
                 var _cullMaxX = window.fullSpectator ? ((LM.mapMaxX != null ? LM.mapMaxX : 7071) + 800) : (LM.camMaxX + 800);
                 var _cullMaxY = window.fullSpectator ? ((LM.mapMaxY != null ? LM.mapMaxY : 7071) + 800) : (LM.camMaxY + 800);
+                /* the frame grows its view by the server's view later (calMinMax): keep that
+                 * area too, as the box of the last frame gave it here before */
+                if (!window.fullSpectator && Number.isFinite(LM.srvViewMinX) && Number.isFinite(LM.srvViewMaxY)) {
+                    _cullMinX = Math.min(_cullMinX, LM.srvViewMinX - 800); _cullMinY = Math.min(_cullMinY, LM.srvViewMinY - 800);
+                    _cullMaxX = Math.max(_cullMaxX, LM.srvViewMaxX + 800); _cullMaxY = Math.max(_cullMaxY, LM.srvViewMaxY + 800);
+                }
                 var _cells = this.cells, _len = _cells.length;
 
                 for (var t = 0; t < _len; t++) {
@@ -76812,11 +76818,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 LM.cells[i].moveCell();
             }
             this.setView();
-            LM.getCursorPosition();
-            LM.sortCells();
-            LM.compareCells();
 
-            /* Precompute viewport bounds once per frame (#7) */
+            /* Precompute viewport bounds once per frame (#7), right after the camera moved:
+             * compareCells below culls by them (it ran before them and judged the cells
+             * against the last frame's view, so after a camera jump the cells at the new
+             * place had no opponent colour or split ring for a frame) */
             var _invScale = 1.0 / (this.scale || 1);
             LM.camMinX = this.camX - this.canvasWidth * 0.5 * _invScale;
             LM.camMinY = this.camY - this.canvasHeight * 0.5 * _invScale;
@@ -76829,6 +76835,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 LM.camMaxMultiX = this.camXMulti + this.canvasWidth * 0.5 * _invScale;
                 LM.camMaxMultiY = this.camYMulti + this.canvasHeight * 0.5 * _invScale;
             }
+            LM.getCursorPosition();
+            LM.sortCells();
+            LM.compareCells();
 
             /* Build chat/command lookup map once per frame — with message filters */
             var _chatMap = this._chatLookup || (this._chatLookup = new Map());
