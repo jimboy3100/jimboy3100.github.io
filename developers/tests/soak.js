@@ -86,6 +86,8 @@ const S = (() => {
     ctx.window = ctx;
     vm.createContext(ctx);
     vm.runInContext(spectSrc + '\n;window.Spect = Spect;', ctx);
+    /* the core's "a player of ours alive" test, which spect.js calls on a death */
+    vm.runInContext(cut(src, 'function lmMbAlive(p) {', 'window.lmMbAlive = lmMbAlive;'), ctx);
     /* one method of the LM object, up to its closing brace (the comment before the next one left out) */
     const m = (name, next) => { const b = cut(src, '        ' + name + '(', next); return b.slice(0, b.lastIndexOf('\n        }') + 10); };
     const methods = [
