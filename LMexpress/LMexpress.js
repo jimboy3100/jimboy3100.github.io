@@ -5464,11 +5464,12 @@ function initializeLM(modVersion) {
     */
 
 
-    $("#menu-footer").text("");
+    /* positioning parent for "More FPS", centred on the footer whatever the version label's width */
+    $("#menu-footer").text("").css("position", "relative");
     //$("#agario-main-buttons").after('<div id="LEGENDAds4"></div>'); //
     //$("#LEGENDAds4").load("https://www.legendmod.ml/banners/bannerLMdevs"); //
     $("#menu-footer").prepend('<span style="float: left; font-size: 13px;"><a target="_blank" href="https://jimboy3100.github.io" style="color: #ffffff;" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.website') + '" data-placement="left">v' + modVersion +
-        '</a></span><span style="float: left;  margin-left: 30%; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.improvePerformance') + '" data-placement="top" style ="font-size: 13px"; target="_blank">' + _lmxE('pack.moreFps') + '</a></span>' +
+        '</a></span><span class="lm-footer-fps" style="position: absolute; left: 50%; top: 5px; transform: translateX(-50%); white-space: nowrap; font-size: 13px;"><a id="MorefpsText" href="https://www.legendmod.ml/?nav=FPS" data-toggle="tooltip" data-title="' + _lmxE('lmx.ex.improvePerformance') + '" data-placement="top" style ="font-size: 13px"; target="_blank">' + _lmxE('pack.moreFps') + '</a></span>' +
         '<a style="float: right;  margin-top: -2px" target="_blank" href="https://www.buymeacoffee.com/legendmod">☕︎</a>');
     /* Build number next to the release label (bug reports can name it), plus a one-time
      * "What's new" toast when the build changes for someone who played before. */
