@@ -1,6 +1,7 @@
 /* Skin cache checks: the WebGL skin layer reuse (least recently drawn layer, never one drawn in
  * this or the previous frame), the CPU skin cache eviction (URL count and byte budget, only
- * entries that hold images) and the download queue cap. The helpers are taken from
+ * entries that hold images), the download queue cap and the one skin lookup of the WebGL cell
+ * batch and jelly resolver (the real renderer on a stub context). The helpers are taken from
  * ogario/ogario.v4.js.
  * node developers/tests/skincache.js */
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -123,11 +124,55 @@ check('unpremultiply table: alpha 255 keeps the colour, alpha 0 gives 0, 255 at 
 check('unpremultiply table: rises with the premultiplied value', lutMono);
 check('unpremultiply table: rounds half to even in 32-bit floats (p 5 at alpha 6 gives 212, half up would give 213)', lut[6 * 256 + 5] === 212 && lut[6 * 256 + 1] === 42 && lut[2 * 256 + 1] === 128);
 
-/* one skin lookup: the WebGL cell batch asks application.customSkinKey (the lookup of getCustomSkin,
- * which follows loadSkin's URL aliases and a cell's own skin URL) instead of a copy of its own,
- * which drew chat-socket skins only in frames that fell back to Canvas2D */
-check('WebGL batch uses the shared skin lookup', src.indexOf('var skinUrl = application.customSkinKey(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti));') > 0);
-check('no second copy of the nick lookup in the batch', src.indexOf("skinUrl = application.customSkinsMap[mode] ||") < 0);
+/* one skin lookup, with the real renderer (window.drawRender, run on a stub WebGL context): the
+ * WebGL cell batch and the jelly skin resolver ask application.customSkinKey (the lookup of
+ * getCustomSkin, which follows loadSkin's URL aliases and a cell's own skin URL) with the cell's
+ * name, colour, skin and own flag, and draw the key it gives; a copy of their own drew chat-socket
+ * skins only in frames that fell back to Canvas2D. No own skin: the Dying Light skin while it is
+ * on (lmWorldSkinKey, as Cell.draw), never over an own skin. */
+{
+    const { rendererFactory } = require('./glbatch.js');
+    const F = rendererFactory(src), D = new Function('return ' + F.defaults)();
+    const asked = [], touched = [];
+    const LMs = { cells: [], playerCells: [], playerCellsMulti: [], play: false, showCustomSkins: true, gameMode: ':ffa' };
+    const app = {
+        gameMode: ':ffa', customSkinsCache: { 'key:own': { width: 64 }, 'key:dl': { width: 64 } },
+        /* a nick map the batch must not read by itself: only customSkinKey decides */
+        customSkinsMap: { plain: 'key:map-only' },
+        customSkinKey(nick, color, skin, nameOnly, own) { asked.push([nick, color, skin, nameOnly, own].join('|')); return nick === 'skinned' ? 'key:own' : null; },
+        loadSkin() { }, _lmTouchSkin(k) { touched.push(k); }, _lmSkinCacheKey(u) { return u; },
+        setVirusColor() { return '#33ff33'; }, setVirusStrokeColor() { return '#33ff33'; }, playSound() { }
+    };
+    const win = { legendmod: LMs, application: app };
+    const env = { window: win, LM: LMs, application: app, defaultSettings: Object.assign({}, D.defaultSettings),
+        defaultmapsettings: Object.assign({}, D.defaultmapsettings, { jellyPhisycs: false, customSkins: true }),
+        ogarcopythelb: { color: '#01d9cc' }, ogario: { viewScale: 1 } };
+    const R = new Function('return (' + F.factory.replace(/return R;\n\}$/, 'R.__dlSync = lmDlSync; return R;\n}') + ')')()(env);
+    /* any GL call is a no-op, constants are 1 */
+    R.gl = new Proxy({}, { get: (t, k) => typeof k === 'string' && /^[A-Z0-9_]+$/.test(k) ? 1 : function () { return {}; } });
+    R.glCellProgram = {}; R.glCellInstanceData = new Float32Array(64 * 32); R.glCellMaxInstances = 64;
+    R.glSkinArray = {}; R.glSkinMap = { 'key:own': 3, 'key:dl': 4 };
+    R._glSkinLayers = { max: 128, next: 0, used: new Array(128).fill(-1), owner: new Array(128).fill(null) };
+    R.scale = 1; R.camX = 0; R.camY = 0; R.canvasWidth = 1920; R.canvasHeight = 1080;
+    const mk = (o) => Object.assign({ x: 0, y: 0, size: 60, color: '#3388ff', targetNick: 'enemy', skin: '', isPlayerCell: false, isPlayerCellMulti: false,
+        isFood: false, isEjected: false, isVirus: false, removed: false, invisible: false, isInView() { return true; } }, o);
+    const cells = [mk({ targetNick: 'skinned', skin: 'sk1' }), mk({ targetNick: 'plain' }), mk({ targetNick: 'me', isPlayerCell: true }), mk({ targetNick: 'unit', isPlayerCellMulti: true })];
+    R.__dlSync();
+    let drawn = R.drawWebGLCellBatch(cells);
+    check('WebGL batch asks customSkinKey with name, colour, skin and own flag', drawn === true && asked.join() === ['skinned|#3388ff|sk1|false|false', 'plain|#3388ff||false|false', 'me|#3388ff||false|true', 'unit|#3388ff||false|true'].join(), asked.join());
+    check('  and draws the key it gives, nothing for the others (no lookup of its own)', touched.join() === 'key:own', touched.join());
+    asked.length = 0; touched.length = 0;
+    const jr = R._resolveWebGLJellySkin(cells[0], false, R.glSkinArray), jn = R._resolveWebGLJellySkin(cells[1], false, R.glSkinArray);
+    check('jelly skin resolver: the same lookup and key', asked[0] === 'skinned|#3388ff|sk1|false|false' && jr.requested && jr.layer === 3 && !jn.requested && touched.join() === 'key:own', JSON.stringify([asked, jr, jn, touched]));
+    win.LMDyingLight = { isEnabled() { return true; }, getFallbackSkinKey() { return 'key:dl'; } };
+    R.__dlSync();
+    asked.length = 0; touched.length = 0;
+    drawn = R.drawWebGLCellBatch(cells);
+    check('Dying Light on: another player without a skin gets its skin in the batch, the own skin wins, own cells none', drawn === true && touched.join() === 'key:own,key:dl', touched.join());
+    touched.length = 0;
+    const jd = R._resolveWebGLJellySkin(cells[1], false, R.glSkinArray);
+    check('  and in the jelly resolver', jd.requested && jd.layer === 4 && touched.join() === 'key:dl', JSON.stringify(jd));
+}
 check('getCustomSkin goes through customSkinKey', /getCustomSkin\(nick, color, skinKey, nameOnly, own\) \{\s*var key = this\.customSkinKey\(nick, color, skinKey, nameOnly, own\);/.test(src));
 
 console.log(failed ? failed + ' check(s) failed' : 'all skin cache checks passed');
