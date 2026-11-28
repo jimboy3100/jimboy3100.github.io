@@ -2429,6 +2429,9 @@ class Spect {
          * part of the map only: a flip negates it, a scale scales it, a shift leaves it */
         var kvx = mapX(1) - mapX(0), kvy = mapY(1) - mapY(0);
         this._lmForEachUnitCell(function (cell) {
+            /* a cell of an earlier socket (its removal fade) was drawn under that socket's
+             * transform, not this one's: it keeps its drawn place until the fade ends */
+            if (cell._lmGen !== undefined && cell._lmGen !== gen) return;
             if (cell._lmVX) cell._lmVX *= kvx;
             if (cell._lmVY) cell._lmVY *= kvy;
             var live = !cell.removed && cell._lmGen === gen;

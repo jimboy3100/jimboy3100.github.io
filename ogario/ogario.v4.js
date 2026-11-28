@@ -30707,9 +30707,13 @@ function thelegendmodproject() {
                     }
                 }
                 // All mbSlots profile skins: the units' (slot 2 on) only by their link, as their
-                // cells carry them; under the profile's nick they replaced the main player's skin
+                // cells carry them; under the profile's nick they replaced the main player's skin.
+                // P1, P2 and the slots Add Player may open (lmMbCapacity) or open now: a slot above
+                // the capacity keeps its profile but plays nobody (as setProfileboxShadow)
                 if (self.mbSlots) {
+                    var _msCap = typeof lmMbCapacity === 'function' ? lmMbCapacity() : 2;
                     for (var _ms = 0; _ms < self.mbSlots.length; _ms++) {
+                        if (_ms >= 2 && _ms + 1 > _msCap && !(typeof lmMbPlayers !== 'undefined' && lmMbPlayers && lmMbPlayers.get(_ms + 1))) continue;
                         var _prof = profiles[self.mbSlots[_ms]];
                         if (_ms > 0) {
                             if (_prof && _prof.skinURL && typeof lmPreloadUnitSkin === 'function') lmPreloadUnitSkin(_prof.skinURL);
@@ -35884,6 +35888,14 @@ function thelegendmodproject() {
                         );
                 }
             }
+            /*
+             * 5a. World Spectate pan (Legend World / Expanding Land): an offset from
+             * viewX/viewY, so the camera point is view + pan. Flipped with the view
+             * (translate(view + pan) = translate(view) - pan): the spectate view stays
+             * on the same place.
+             */
+            if (xFlipped && Number.isFinite(legendmod._worldSpecPanX)) legendmod._worldSpecPanX = -legendmod._worldSpecPanX;
+            if (yFlipped && Number.isFinite(legendmod._worldSpecPanY)) legendmod._worldSpecPanY = -legendmod._worldSpecPanY;
             /*
              * 5b. What is sent between frames: the cursor (getCursorPosition, each
              * frame), a running line split's locked target, and each placed unit's

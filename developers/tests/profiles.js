@@ -436,6 +436,31 @@ tplIds.forEach(id => {
       a.setProfileboxShadow();
       check('    ... a profile of several players glows once, for the first of them', c.css['0'] === '0px 0px 20px#110010' && c.css['1'] === '' && c.css['2'] === '');
     }
+    {
+      /* onPlayerSpawn's skin preload (its 200 ms timer run at once): P1 / P2 and the slots Add Player may
+       * open (the maximum) or open now; a slot above the maximum and not open keeps its profile, nothing loaded */
+      const sp = src.slice(src.indexOf('        onPlayerSpawn() {'), src.indexOf('        onPlayerDeath() {'));
+      const i0 = sp.indexOf('            var self = this;'), i1 = sp.indexOf('}, 200);', i0);
+      const ls = makeStorage(0);
+      ls.setItem('lmMbProfileSlots', J({ v: 1, slots: [0, 1, 2, 3, 4, 5] }));
+      ls.setItem('ogarioSelectedProfile', '0'); ls.setItem('ogarioSelectedOldProfile', '1');
+      const c = reload(ls, 4, 12), a = c.application, pre = [], reg = [];
+      vm.runInContext('var ogarcopythelb = { nick: "", skinURL: "" }, ogario = {}, core = { registerSkin(n, a, u) { window._reg.push(n + "=" + u); } };\n' +
+        'function lmPreloadUnitSkin(u) { window._pre.push(u); }\n' + 'application._lmSpawnSkins = function () { var setTimeout = function (f) { f(); };\n' + sp.slice(i0, i1 + 8) + '\n};', c);
+      c._pre = pre; c._reg = reg;
+      a.cacheCustomSkin = function () { };
+      a._lmSpawnSkins();
+      check('spawn skin preload: P1 registered, P2..P4 (within the maximum 4) preloaded, P5 / P6 (above it, not open) not (' + J(pre) + ')',
+        i0 > 0 && i1 > i0 && J(reg) === '["p0=s0"]' && J(pre) === '["s1","s2","s3"]');
+      c.defaultmapsettings.multiboxAmount = 2; pre.length = 0;
+      const r = c.lmMbPlayers.reserve(), r4 = c.lmMbPlayers.reserve(), r5 = c.lmMbPlayers.reserve();
+      c.lmMbPlayers.attach({ number: 1, player: true, slotId: r.slotId, slotEpoch: r.slotEpoch });
+      c.lmMbPlayers.attach({ number: 2, player: true, slotId: r4.slotId, slotEpoch: r4.slotEpoch });
+      c.lmMbPlayers.attach({ number: 3, player: true, slotId: r5.slotId, slotEpoch: r5.slotEpoch });
+      c.lmMbPlayers.slots[3] = null;
+      a._lmSpawnSkins();
+      check('    ... the maximum 2: P2 and the open P4 only (P3 closed, P5 / P6 above it) (' + J(pre) + ')', J(pre) === '["s1","s3"]');
+    }
   }
   check('settings load / import open no connection: only enable and Add Player call addBox',
     (src.match(/\badd\(\)/g) || []).length === 2 && /add \? add\(\) : null/.test(blk('        _lmMbStart() {')) && /add \? add\(\) : null/.test(blk('        mbAddPlayer() {')) &&

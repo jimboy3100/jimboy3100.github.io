@@ -837,7 +837,8 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
  *     of an earlier socket move with the map; what is sent between frames keeps its server point
  *     (each unit's centre for hold / freeze / provisional, the cursor, a line split's locked target);
  *     the food calibration (raw evidence, two snaps) goes on across a flip and its reprojection lands
- *     under the new flip */
+ *     under the new flip; the earlier socket's fade keeps its drawn place when the new border comes;
+ *     the World Spectate pan is flipped with the view (the camera stays on the same place) */
 {
     const core = fs.readFileSync(process.argv[3] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
     const cut = (start) => { const i = core.indexOf(start); if (i < 0) throw new Error('not found in ogario.v4.js: ' + start); let d = 0; for (let k = core.indexOf('{', i); k < core.length; k++) { if (core[k] === '{') d++; else if (core[k] === '}' && !--d) return core.slice(i, k + 1); } return null; };
@@ -876,6 +877,7 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         check('  ... a placed unit\'s cell moved with the map: at its placement from raw under the flip', near(placed.targetX, u2.getX(Math.round(c2[0] + 2500)), 1e-6) &&
             near(placed.y, u2.getY(Math.round(c2[1] + 1800)), 1e-6) && near(placed.y, LM.translateY(LM.worldY(1800)), 1), [placed.y, u2.getY(Math.round(c2[1] + 1800))].join());
         check('  ... the removal fade of its earlier socket (drawn) moved with the map', fade.removed && fade.x === fadeX && near(fade.y, LM.translateY(fadeY), 1e-9), [fade.y, LM.translateY(fadeY)].join());
+        const fadeDrawn = [fade.x, fade.y, fade.startX, fade.startY, fade.targetX, fade.targetY].join();
         /* its border comes (mirrored on x): its cells are placed from raw under the flip of now */
         u3.setMapOffset(c3[0] - W2, c3[1] - W2, c3[0] + W2, c3[1] + W2);
         u3.setOrientation(-1, 1);
@@ -883,6 +885,8 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         check('  ... then its border: the cell drawn at its placement from raw under the flip (drawn, start and target), the same raw back',
             near(early.x, want[0], 1e-6) && near(early.y, want[1], 1e-6) && near(early.startY, want[1], 1e-6) && near(early.targetY, want[1], 1e-6) &&
             near(early.y, LM.translateY(LM.worldY(-1100)), 1) && u3.convertY(early.y) === raw[1], [early.x, early.y, early.startY, early.targetY, want].join());
+        check('  ... and the removal fade of its earlier socket keeps its drawn place (not re-placed as if raw under the new border)',
+            [fade.x, fade.y, fade.startX, fade.startY, fade.targetX, fade.targetY].join() === fadeDrawn, [fade.x, fade.y].join() + ' / ' + fadeDrawn);
         check('  ... and its pellet (it never moves by itself: drawn at the mirrored place for good before)', near(pellet.x, wantF[0], 1e-6) && near(pellet.y, wantF[1], 1e-6),
             [pellet.x, pellet.y, wantF].join());
         F._applyAbsoluteVnr(0);
@@ -949,6 +953,24 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         check('  ... its cell reprojected onto the main copy under the flip, the same raw back',
             near(cell.targetX, LM.translateX(LM.worldX(-2000)), 1) && near(cell.x, LM.translateX(LM.worldX(-2000)), 1) && near(cell.targetY, LM.worldY(2000), 1) &&
             sp.convertX(cell.targetX) === body[0], [cell.x, cell.targetX, LM.translateX(LM.worldX(-2000))].join());
+        LM.vnr = 0;
+    }
+    {
+        /* World Spectate (Legend World / Expanding Land): the pan is an offset from viewX/viewY; the
+         * camera point view + pan is flipped with the view, so the spectate view stays on the same place */
+        const LM = mainClient(-7071.067811865476, -7071.067811865476), ctx = load(LM), F = flipperOf(ctx);
+        LM.viewX = 1234.5; LM.viewY = -2345.25; LM._worldSpecPanX = 1800; LM._worldSpecPanY = -650;
+        const camAt = () => [LM.viewX + LM._worldSpecPanX, LM.viewY + LM._worldSpecPanY];
+        const c0 = camAt();
+        F._applyAbsoluteVnr(2);
+        const c1 = camAt();
+        check('Rotate Map (flip x and y) in World Spectate: the panned camera point is flipped with the view (the same place)',
+            near(c1[0], LM.translateX(c0[0]), 1e-9) && near(c1[1], LM.translateY(c0[1]), 1e-9) && LM._worldSpecPanX === -1800 && LM._worldSpecPanY === 650, c1.join() + ' / ' + c0.join());
+        F._applyAbsoluteVnr(3);
+        const c2 = camAt();
+        check('  ... one axis back (x only): only the x pan changes sign, the camera point flipped on x', near(c2[0], c0[0], 1e-9) && near(c2[1], c1[1], 1e-9) && LM._worldSpecPanX === 1800 && LM._worldSpecPanY === 650, c2.join());
+        F._applyAbsoluteVnr(0);
+        check('  ... and back: the pan and the camera point as before', near(camAt()[0], c0[0], 1e-9) && near(camAt()[1], c0[1], 1e-9) && LM._worldSpecPanX === 1800 && LM._worldSpecPanY === -650);
         LM.vnr = 0;
     }
 }

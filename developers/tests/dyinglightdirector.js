@@ -203,10 +203,12 @@ function phones() {
             flush();
         });
         };
-        /* the last script, once on: the figures over an hour of the cycle, then the threat look */
+        /* the last script, once on: the figures over an hour or more of the cycle, then the threat look */
         window.__go = function () {
             flush();
-            for (var i = 0; i < 3600 && out.figs.length < 6; i++) { advance(1000); flush(); }
+            /* the kind of each figure is random: go on (at most 16 figures, 3 h) until both kinds came */
+            var both = function () { return out.figs.some(function (f) { return f.watcher; }) && out.figs.some(function (f) { return !f.watcher; }); };
+            for (var i = 0; i < 10800 && out.figs.length < 16 && (out.figs.length < 6 || !both()); i++) { advance(1000); flush(); }
             window.lmDlThreat = function () { return { t: T, unit: 0, level: 2, valid: true }; };
             advance(1500);
             var v = document.querySelector('.lm-dl-threat');
