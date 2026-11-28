@@ -261,6 +261,42 @@ async function dyingLightLifecycle() {
         vm.runInContext('lmDyingLightStartup()', c2);
         check('old flag "null": removed, stays off', store.dyinglight1load === undefined && c2.defaultmapsettings.dyingLight === false && c2.LMDyingLight.state === 'off');
     }
+
+    /* an old "yes" whose script does not load, then an import that turns the switch off while the
+     * pictures still load (a start with it saved on) */
+    {
+        const c3 = { localStorage, document, Image: Img, console: { warn() { }, log() { } }, Promise, setTimeout, clearTimeout, Object, JSON, Array, String, Number, Error,
+            toastr: { warning: () => { } }, confirm: () => true, $: () => ({ off() { return this; }, on() { return this; } }), lmT: k => k };
+        c3.window = c3; vm.createContext(c3);
+        vm.runInContext(cutIn(main, '(function () {\n    if (window.LMEvents && window.LMEvents._lm === 1) return;', '\nwindow.spects'), c3);
+        vm.runInContext(cutIn(main, 'var defaultmapsettings = {', '\n};') + '\n};\nvar LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));\n' +
+            cutIn(main, 'var _lmSettingsSeen = null', '\n/* The settings export carries'), c3);
+        vm.runInContext('var application = { saveSettings: function (o, n) { var v = lmSettingsUserView(); localStorage.setItem(n, JSON.stringify(v)); lmSettingsCommit(v); } };' +
+            'lmSettingsCommit(lmSettingsUserView());', c3);
+        vm.runInContext(lmxText + cutIn(lmx, '/* Dying Light expansion (extras/dyinglight.js, window.LMDyingLight)', '\nfunction bluebtns()'), c3);
+        const D3 = c3.defaultmapsettings;
+        scripts.length = 0; pics.length = 0;
+        store.dyinglight1load = 'yes'; c3.dyinglight1load = 'yes';
+        vm.runInContext('lmDyingLightStartup()', c3);
+        scripts.shift().onerror(); await tick();
+        check('old flag "yes", script not loaded: the old readers\' flag is off', c3.dyinglight1load === null && !c3.LMDyingLight && store.dyinglight1load === undefined);
+        vm.runInContext('stopdyinglight()', c3);
+        check('...and the switch turns off without the script', D3.dyingLight === false && JSON.parse(store.ogarioSettings).dyingLight === false && c3.dyinglight1load === null);
+        D3.dyingLight = true; c3.application.saveSettings(D3, 'ogarioSettings');
+        const q = vm.runInContext('opendyinglight(true)', c3);
+        vm.runInContext(dl, c3); scripts.shift().onload(); await tick();
+        const loading = c3.LMDyingLight.state === 'loading' && pics.length > 0;
+        D3.dyingLight = false; c3.application.saveSettings(D3, 'ogarioSettings');
+        flushPics(true); await tick();
+        check('import turns the switch off while the pictures load: off, stays off', loading && (await q) === false && c3.LMDyingLight.state === 'off' &&
+            D3.dyingLight === false && JSON.parse(store.ogarioSettings).dyingLight === false && c3.dyinglight1load === null && !c3.LMEvents._has('settingsChange'));
+        /* Restore defaults reloads the page: a theme that finishes loading then saves nothing */
+        const saved = store.ogarioSettings;
+        const q2 = c3.LMDyingLight.enable({ confirm: false });
+        c3._lmSettingsReload = true; delete store.ogarioSettings;
+        flushPics(true); await q2;
+        check('Restore defaults while it loads: the settings are not saved back', store.ogarioSettings === undefined && saved !== undefined);
+    }
 }
 
 dyingLightLifecycle().catch(e => { check('Dying Light lifecycle ran: ' + (e && e.stack), false); }).then(() => {

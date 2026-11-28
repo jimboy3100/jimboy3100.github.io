@@ -3922,7 +3922,8 @@ function lmDyingLightScript() {
 }
 /* the switch alone, while the script is not there (a failed load, a stale saved value) */
 function lmDyingLightSave(on) {
-    var ok = typeof defaultmapsettings === "object" && !!defaultmapsettings;
+    /* not while Restore defaults / an import reloads the page (the save would undo it) */
+    var ok = typeof defaultmapsettings === "object" && !!defaultmapsettings && !window._lmSettingsReload;
     if (ok && defaultmapsettings.dyingLight !== on) {
         defaultmapsettings.dyingLight = on;
         try { application.saveSettings(defaultmapsettings, "ogarioSettings"); } catch (e) { ok = false; }
@@ -3952,6 +3953,8 @@ function opendyinglight(startup) {
 function stopdyinglight() {
     ++_lmDlWant;
     var api = window.LMDyingLight;
+    /* without the script: the old readers in ogario.v4.js stop with the global flag too */
+    if (!(api && api._lm === 1)) window.dyinglight1load = null;
     var p = api && api._lm === 1 ? api.disable() : (lmDyingLightSave(false), Promise.resolve(true));
     lmDyingLightBanner();
     return p;
@@ -3978,7 +3981,10 @@ function lmDyingLightStartup() {
     var legacy = null;
     try { legacy = localStorage.getItem("dyinglight1load"); } catch (e) { }
     if (legacy !== null) lmDyingLightSave(legacy === "yes");
-    if (legacy !== "yes") window.dyinglight1load = null;
+    /* the old readers in ogario.v4.js follow the global flag: only the script sets it, while on
+     * (an old "yes" with a script that does not load would leave them on with no way to turn
+     * them off) */
+    window.dyinglight1load = null;
     $(document).off("click.lmDl").on("click.lmDl", "[data-lm-dl]", function (e) {
         e.preventDefault();
         if (this.getAttribute("data-lm-dl") === "on") opendyinglight();

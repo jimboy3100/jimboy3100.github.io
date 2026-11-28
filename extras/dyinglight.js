@@ -58,6 +58,9 @@
      * the theme is still on or off for this visit, the storage warning comes from saveSettings. */
     function persist(on) {
         var s = W.defaultmapsettings;
+        /* Restore defaults / an import is reloading the page: a save now would put the old
+         * settings back */
+        if (W._lmSettingsReload) return false;
         if (!s || typeof s !== 'object' || !Object.prototype.hasOwnProperty.call(s, 'dyingLight')) return false;
         if (s.dyingLight !== on) {
             s.dyingLight = on;
@@ -134,12 +137,16 @@
         if (zombie && !(W.cimgDyingLight && W.cimgDyingLight.naturalWidth > 0)) W.cimgDyingLight = zombie;
         bg = scene ? Object.freeze({ url: SCENE_URL, img: scene, alpha: 1 }) : null;
         addStyle();
-        /* Restore defaults / an import that turns the switch off: the theme follows */
+        for (var i = 0; i < parts.length; i++) startPart(parts[i], g);
+    }
+    /* An import (or a script) that turns the switch off, also while the pictures still load: the
+     * theme follows (else the end of the loading would save the switch on again) */
+    function listen() {
+        if (onSettings) return;
         onSettings = function (d) {
             if (d && d.key === 'dyingLight' && d.value === false && state !== 'off') disable();
         };
         if (W.LMEvents && typeof W.LMEvents.on === 'function') W.LMEvents.on('settingsChange', onSettings);
-        for (var i = 0; i < parts.length; i++) startPart(parts[i], g);
     }
     /* everything this file put on the page, and only that */
     function teardown() {
@@ -167,6 +174,7 @@
         if (opts && opts.confirm && !confirmed()) return Promise.resolve(false);
         var g = ++generation;
         setState('loading');
+        listen();
         var p = job = Promise.all([preload(SKIN_KEY), preload(SCENE_URL)]).then(function (r) {
             /* turned off (or on anew) while the pictures came: this activation is over */
             if (g !== generation) return false;
