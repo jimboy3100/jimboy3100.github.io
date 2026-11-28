@@ -53,7 +53,7 @@ let r = C.parsePackage(JSON.stringify(pkg({
 })));
 check('valid package accepted', r.ok);
 const t = r.ok ? r.pkg.body.theme : {};
-check('values converted to the setting types', t.bgColor === '#101010' && t.hudScale === 1.2 && t.darkTheme === false && t.namesFont === 'roboto-bold' && t.menuPreset === 'legendv2');
+check('values converted to the setting types, an old Menu theme name dropped quietly', t.bgColor === '#101010' && t.hudScale === 1.2 && t.darkTheme === false && t.namesFont === 'roboto-bold' && !('menuPreset' in t));
 check('numbers clamped to the slider range', t.miniMapWidth === 400);
 check('cursor URL becomes the theme cursor', t.customCursor === 'https://www.legendmod.ml/cursors/cursor_10.cur');
 check('unknown keys dropped (theme, sounds, top level)', !('notATheme' in t) && r.dropped.includes('notATheme') && r.dropped.includes('sounds.other') && r.dropped.includes('extraTop'));
@@ -87,7 +87,7 @@ ctx.LMi18n.setLang('en');
 r = C.parsePackage(pkg({ theme: { bgColor: 'red;background:url(javascript:x)', mainColor: '#12345g', hudColor: 'rgba(0,0,0,0.4)', borderGlowColor: 'expression(alert(1))', virusColor: 'blue' } }));
 check('colour check: CSS injection refused, plain colours kept', r.ok && !('bgColor' in r.pkg.body.theme) && !('mainColor' in r.pkg.body.theme) && !('borderGlowColor' in r.pkg.body.theme) && r.pkg.body.theme.hudColor === 'rgba(0,0,0,0.4)' && r.pkg.body.theme.virusColor === 'blue');
 r = C.parsePackage(pkg({ theme: { bgColor: '#000', namesFont: 'Comic Sans; }', namesFontFamily: 'x}*{display:none', preset: 'constructor', menuPreset: 'legendv2', graphics: 'high' } }));
-check('fonts and presets must be known names', r.ok && !('namesFont' in r.pkg.body.theme) && !('namesFontFamily' in r.pkg.body.theme) && !('preset' in r.pkg.body.theme) && r.pkg.body.theme.menuPreset === 'legendv2' && r.pkg.body.theme.graphics === 'high');
+check('fonts must be known names; old Theme preset / Menu theme names dropped', r.ok && !('namesFont' in r.pkg.body.theme) && !('namesFontFamily' in r.pkg.body.theme) && !('preset' in r.pkg.body.theme) && !('menuPreset' in r.pkg.body.theme) && r.pkg.body.theme.graphics === 'high');
 /* theme options removed since (chat position, sector symbol, game brightness / saturation, HUD text
  * size): a stored or imported value of them is not a theme value */
 r = C.parsePackage(pkg({ theme: { bgColor: '#000', chatPos: 'topright', sectorsSymbol: '*', gameBrightness: 90, gameSaturation: 90, a11yHudTextScale: 1.2 } }));
@@ -200,7 +200,7 @@ check('gallery: fonts consistent with their family / weight', cat.themes.every(t
 check('gallery: a catalogue of another format is refused', C.cleanCatalogue({ format: 'x', themes: [] }) === null && C.cleanCatalogue({ format: 'lm-theme-catalogue', themes: [{ format: 'lm-theme', version: 1, theme: { bgColor: 'javascript:x' } }] }).length === 0);
 check('catalogue file is small', catalogue.length < 256 * 1024);
 
-// ── built-in presets (the Theme preset / Menu theme lists that moved from the Theme tab)
+// ── built-in presets (the removed Theme preset / Menu theme lists of the Theme tab: the workshop is their one place)
 const B = C.builtins();
 const nGame = Object.keys(ctx.themePresets).length, nMenu = Object.keys(ctx.themeMenus).length;
 check('built-in: every game and menu preset listed', B.filter(b => b.kind === 'game').length === nGame && B.filter(b => b.kind === 'menu').length === nMenu && nGame >= 8 && nMenu >= 3);
@@ -208,11 +208,12 @@ check('built-in: distinct ids', new Set(B.map(b => b.bid)).size === B.length && 
 B.forEach(b => {
   const src = (b.kind === 'menu' ? ctx.themeMenus : ctx.themePresets)[b.key];
   const m = C.presetMap(b) || {};
-  /* the old list set every key of the preset that is a setting (Settings.changePreset); except
-   * lbTeammateColor: not drawn, only a marker LMexpress reads, and never part of a theme */
+  /* the old list set every key of the preset that is a setting (the removed Settings.changePreset); except
+   * lbTeammateColor: not drawn, only a marker LMexpress reads, never part of a theme body (Apply
+   * still sets it with the preset, as the list did: probe themeworkshop) */
   const keys = Object.keys(src).filter(k => k !== 'name' && k !== 'lbTeammateColor' && Object.prototype.hasOwnProperty.call(TD, k));
   const lost = keys.filter(k => !(k in m) || J(m[k]) !== J(C.themeValue(k, src[k])));
-  check('built-in "' + b.name + '" (' + b.kind + '): every value kept' + (lost.length ? ' (lost: ' + lost.join(', ') + ')' : ''), lost.length === 0 && m[b.kind === 'menu' ? 'menuPreset' : 'preset'] === b.key);
+  check('built-in "' + b.name + '" (' + b.kind + '): every value kept' + (lost.length ? ' (lost: ' + lost.join(', ') + ')' : ''), lost.length === 0 && !('preset' in m) && !('menuPreset' in m));
 });
 const base = { theme: { bgColor: '#123456', hudScale: 1.2 } };
 const lv1 = B.filter(b => b.kind === 'menu' && b.key === 'legendv1')[0];

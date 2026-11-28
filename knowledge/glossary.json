@@ -124,7 +124,7 @@
     },
     {
       "term": "Theme Workshop",
-      "definition": "The window of your own saved themes (Theme tab, button under the Theme preset list): up to 30 themes with 5 versions each, live preview with auto-revert, Compare and a gallery.",
+      "definition": "The window of your own saved themes (Theme tab, button at its top): up to 30 themes with 5 versions each, live preview with auto-revert, Compare and a gallery.",
       "category": "el-specific"
     },
     {

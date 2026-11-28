@@ -427,11 +427,11 @@
     }
 
     /* ═══ Built-in presets ═══
-     * The "Theme preset" (themePresets) and "Menu theme" (themeMenus) lists that were in the Theme
-     * tab. A preset only names some settings and is put over the current theme, so everything it
-     * does not name stays as it is, as the lists did; it also records its name (preset /
-     * menuPreset). Values go through the same checks as an imported theme. */
-    var BUILTIN_SETS = [['game', 'themePresets', 'preset'], ['menu', 'themeMenus', 'menuPreset']];
+     * The shipped game presets (themePresets) and menu presets (themeMenus); this window is the one
+     * place for them (the Theme tab's Theme preset and Menu theme lists are gone). A preset only
+     * names some settings and is put over the current theme, so everything it does not name stays
+     * as it is, as the lists did. Values go through the same checks as an imported theme. */
+    var BUILTIN_SETS = [['game', 'themePresets'], ['menu', 'themeMenus']];
     function builtins() {
         var out = [];
         BUILTIN_SETS.forEach(function (set) {
@@ -451,7 +451,6 @@
         if (!isObj(p)) return null;
         var defs = schema() || {}, raw = {};
         Object.keys(p).forEach(function (k) { if (k !== 'name' && own.call(defs, k)) raw[k] = p[k]; });
-        raw[set[2]] = b.key;
         return cleanThemeMap(raw) || null;
     }
     /* the preset over a theme body (shown in the gallery and in Compare) */
@@ -502,7 +501,15 @@
     function builtinTarget(b) {
         var m = presetMap(b), d = T();
         if (!m || !d) return null;
-        return Object.assign(Object.assign({}, d), m);
+        var t = Object.assign(Object.assign({}, d), m);
+        /* lbTeammateColor is no theme value (a marker LMexpress passes on), but the old lists set
+         * it with the preset: applied the same way here */
+        var set = BUILTIN_SETS.filter(function (x) { return x[0] === b.kind; })[0], p = W[set[1]][b.key];
+        if (own.call(p, 'lbTeammateColor') && has(d, 'lbTeammateColor')) {
+            var lv = W.lmThemeValue('lbTeammateColor', p.lbTeammateColor);
+            if (lv !== undefined) t.lbTeammateColor = lv;
+        }
+        return t;
     }
     function findBuiltin(bid) { return builtins().filter(function (x) { return x.bid === bid; })[0] || null; }
     /* a preset applied and saved at once, as the old lists did */
@@ -516,8 +523,7 @@
         toast(ok ? 'success' : 'warning', esc(ok ? tx('kept', b.name) : tx('saveFailed')));
         return true;
     }
-    var SELECT_IDS = { preset: 'themePreset' };
-    /* one theme value through its control, as a theme preset sets it (Settings.changePreset) */
+    /* one theme value through its control (colour picker, slider, text box, list) */
     function setThemeOpt(k, v) {
         var $ = jq(), d = T();
         d[k] = v;
@@ -531,7 +537,7 @@
         /* the change moves the slider's knob (rangeslider) to the value: with val() alone the knob
          * stayed where it was (the Theme tab's auto-save skips it, St._lmThemeQuiet) */
         if (sl.length && sl.closest('#theme').length) { sl.val(v).trigger('change'); $('#' + k + '-value').text(v); }
-        var box = $('#theme input[type=text]#' + k + ', #theme select#' + (SELECT_IDS[k] || k));
+        var box = $('#theme input[type=text]#' + k + ', #theme select#' + k);
         if (box.length) box.val(v);
         if (k === 'customCursor') {
             $('#theme-images .cursor-box a').removeClass('active').filter(function () { return $('img', this).attr('src') === v; }).addClass('active');
@@ -619,7 +625,7 @@
         var el = D.querySelector('#lm-tw-pv .lm-tw-pv-left');
         if (el) el.textContent = tx('revertsIn', Math.max(0, Math.ceil((preview.deadline - Date.now()) / 1000)));
     }
-    /* the theme changed after the preview set it (the player, a theme preset, another tool) */
+    /* the theme changed after the preview set it (the player, the settings import, another tool) */
     function changedSince(p) {
         var d = T();
         for (var k in p.applied) if (own.call(p.applied, k) && !same(d[k], p.applied[k])) return true;
@@ -664,7 +670,7 @@
                 /* the preview's own values (the Theme tab saves 600 ms after the preview set its
                  * controls): not saved */
                 if (!changedSince(preview)) return;
-                /* a newer change during the preview (the player, a theme preset): the preview ends
+                /* a newer change during the preview (the player, the settings import): the preview ends
                  * first, so its timer can never roll this change back, then the save goes through */
                 endPreview(false, false, false, true);
             }
@@ -1188,14 +1194,14 @@
 
     /* ═══ Start ═══ */
     var started = false;
-    /* the window's button: in the Theme tab, under the Theme preset list (the tab has no Save
-     * button any more, before which it used to be) */
+    /* the window's button: at the top of the Theme tab, where the Theme preset list was (the
+     * shipped presets are in this window now) */
     function addButton() {
         var $ = jq();
         if (!$ || $('#theme .lm-tw-open').length) return !!$;
-        var anchor = $('#themePreset').closest('.preset-box');
+        var anchor = $('#theme-main');
         if (!anchor.length) return false;
-        $('<button type="button" class="btn btn-block btn-info lm-tw-open"></button>').attr('data-i18n', P + 'title').text(tx('title')).insertAfter(anchor.first()).on('click', function (e) {
+        $('<button type="button" class="btn btn-block btn-info lm-tw-open"></button>').attr('data-i18n', P + 'title').text(tx('title')).prependTo(anchor.first()).on('click', function (e) {
             e.preventDefault();
             open();
         });
@@ -1209,7 +1215,7 @@
     }
     var tries = 0;
     function boot() {
-        if (ready() && jq()('#themePreset').closest('.preset-box').length) { init(); return; }
+        if (ready() && jq()('#theme-main').length) { init(); return; }
         if (++tries < 240) setTimeout(boot, 500);
     }
     setTimeout(boot, 0);

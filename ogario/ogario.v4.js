@@ -19268,7 +19268,6 @@ function _lmCssUrl(u) {
 }
 var defaultSettings = {
     checkonetimeLc2: false,
-    preset: 'legendv2',
     darkTheme: true,
     mainColor: '#01d9cc',
     bgColor: '#000a11',
@@ -19332,7 +19331,6 @@ var defaultSettings = {
     borderGlowSize: 14,
     ghostCellsAlpha: 0.3,
     virusStrokeSize: 14,
-    menuPreset: 'legendv2',
     graphics: 'high',
     indicators: 'normal',
     menuMainColor: '#01d9cc',
@@ -19473,8 +19471,6 @@ var LM_THEME_SCHEMA = (function () {
         cellShadowBlur: [0, 100, 0],
         cellShadowOffsetX: [-50, 50, 0],
         cellShadowOffsetY: [-50, 50, 0],
-        preset: { choices: keys(themePresets) },
-        menuPreset: { choices: keys(themeMenus) },
         graphics: { choices: keys(graphicMenus) },
         indicators: { choices: keys(indicatorMenus) }
     };
@@ -21985,8 +21981,8 @@ function thelegendmodproject() {
                 '\"></a></li><li class=\"theme-minimap-tab\"><a href=\"#theme-minimap\" class=\"ogicon-location2\" data-toggle=\"tab-tooltip\" title=\"' + textLanguage.miniMapTheming +
                 '\"></a></li><li class=\"theme-images-tab\"><a href=\"#theme-images\" class=\"ogicon-compass\" data-toggle=\"tab-tooltip\" title=\"' + textLanguage.imagesTheming +
                 '\"></a></li></ul><div id=\"theme-main\" class=\"submenu-panel\"></div><div id=\"theme-menu\" class=\"submenu-panel\"></div><div id=\"theme-hud\" class=\"submenu-panel\"></div><div id=\"theme-chat\" class=\"submenu-panel\"></div><div id=\"theme-minimap\" class=\"submenu-panel\"></div><div id=\"theme-images\" class=\"submenu-panel\"></div>');
-            /* the Theme presets: the shipped game presets; the Theme workshop button goes under them (ogario/modules/themeworkshop.js) */
-            this.addPresetBox('#theme-main', 'themePreset', themePresets, 'preset', 'changeThemePreset');
+            /* the shipped game and menu presets are in the Theme workshop (ogario/modules/themeworkshop.js),
+             * whose button goes at the top of this part */
             this.addColorBox('#theme-main', 'bgColor', 'setBgColor');
             this.addColorBox('#theme-main', 'bordersColor');
             this.addColorBox('#theme-main', 'borderGlowColor');
@@ -22038,7 +22034,6 @@ function thelegendmodproject() {
             this.addSliderBox('#theme-main', 'textAlpha', 0.1, 1, 0.01);
             this.addSliderBox('#theme-main', 'ghostCellsAlpha', 0.01, 1, 0.01);
             this.addPresetBox('#theme-main', 'indicators', indicatorMenus, 'indicators', 'changeIndicators');
-            this.addPresetBox('#theme-menu', 'menuPreset', themeMenus, 'menuPreset', 'changeMenuPreset');
             this.addSliderBox('#theme-menu', 'menuOpacity', 0.1, 1, 0.01, 'setMenuOpacity');
             this.addColorBox('#theme-menu', 'menuMainColor', 'setMenuMainColor');
             this.addColorBox('#theme-menu', 'menuBtnTextColor', 'setMenuButtons');
@@ -22144,41 +22139,6 @@ function thelegendmodproject() {
                     'input': '#color'
                 });
         },
-        changePreset(names, theme) {
-            if (theme[names]) {
-                defaultSettings[names] = names;
-                var names = theme[names];
-            } else {
-                return;
-            }
-            for (const name in names) {
-                if (names.hasOwnProperty(name) && defaultSettings.hasOwnProperty(name)) {
-                    /* a preset value goes through the theme schema like a stored one */
-                    var _lmPv = lmThemeValue(name, names[name]);
-                    if (_lmPv === undefined) continue;
-                    defaultSettings[name] = _lmPv;
-                    if (ogario.hasOwnProperty(name)) {
-                        ogario[name] = defaultSettings[name];
-                    }
-                    //console.log(name)
-                    if ($('#theme .' + name + '-picker')) {
-                        $('#theme .' + name + '-picker').colorpicker('setValue', defaultSettings[name]);
-                    }
-                    if ($('#' + name + '-slider')) {
-                        $('#' + name + '-slider').val(defaultSettings[name]).change();
-                        /* the label updater is bound to 'input' only */
-                        $('#' + name + '-value').text(defaultSettings[name]);
-                    }
-                    if ($('input[type=text]#' + name) || $('select#' + name)) {
-                        $('#' + name).val(defaultSettings[name]);
-                    }
-                }
-            }
-        },
-        changeThemePreset(name) {
-            this.changePreset(name, themePresets);
-            this.setTheme();
-        },
         changeleftCmd(name) {
             defaultmapsettings.leftClick = window.MouseClicks[name]
             application.saveSettings(defaultmapsettings, 'ogarioSettings');
@@ -22244,10 +22204,6 @@ function thelegendmodproject() {
         },
 
         changeIndicators(value) { },
-        changeMenuPreset(name) {
-            this.changePreset(name, themeMenus);
-            this.setMenu();
-        },
         changeGraphics(value) {
 
         },
@@ -87316,7 +87272,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     }
     /* The custom macros are removed: the macros kept in this browser are deleted */
     try { localStorage.removeItem('lmCustomMacros'); } catch (e) { }
-    /* Theme workshop window (its button in the Theme tab, under the Theme preset list);
+    /* Theme workshop window (its button at the top of the Theme tab);
      * nothing runs until it is opened */
     try {
         var themeWorkshopScript = document.createElement('script');

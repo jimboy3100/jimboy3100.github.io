@@ -129,12 +129,12 @@ Full visual customization of the game interface using CSS variables and theme pr
 URL: https://www.legendmod.ml/themes/
 
 ### 3. Theme Workshop
-The Theme tab starts with the Theme preset list (and Menu theme in its Menu part). Under it, the Theme workshop button opens the window:
+The Theme tab starts with the Theme workshop button. The window is the one place for the built-in game and menu presets (the Theme tab has no Theme preset or Menu theme list):
 - **My themes**: save the current theme, rename, copy and delete; up to 30 themes, kept in this browser (Export / Import settings carries them), each with a small picture
 - **Versions**: Update keeps the last 5 versions; any one can be previewed, compared or restored
 - **Live preview**: shows a theme for 15 seconds (Keep / Revert), then your theme comes back by itself
 - **Compare**: any two themes (current, saved, a version, a preset, a gallery theme) setting by setting
-- **Gallery**: the built-in presets and themes shipped with Legend Mod, to preview, apply or install
+- **Gallery**: the built-in presets (8 game presets, 3 menu presets) and themes shipped with Legend Mod, to preview, apply or install
 - **Validation**: All values checked against LM_THEME_DEFAULTS schema; URLs must be HTTPS
 
 ### 5. Multiboxing
@@ -460,7 +460,7 @@ A Game Over card feature showing the last 20 seconds of your life as 3-6 summari
 An offline mode where you practice against bots without connecting to a server. Uses MultiOgar protocol. Tracks personal bests and replays ghost of your best run.
 
 **What is the Theme Workshop?**
-A window opened from the Theme workshop button in the Theme tab (under the Theme preset list): save the current theme (up to 30 themes, 5 versions each), rename, copy and delete themes, restore an older version, live preview with 15-second auto-revert, side-by-side comparison of any two themes, and a gallery of built-in presets and shipped themes.
+A window opened from the Theme workshop button at the top of the Theme tab: save the current theme (up to 30 themes, 5 versions each), rename, copy and delete themes, restore an older version, live preview with 15-second auto-revert, side-by-side comparison of any two themes, and a gallery of built-in presets and shipped themes.
 
 **What are User Scripts / Plugins?**
 Legend Mod supports 5 user script slots for custom JavaScript extensions. Plugins use a standard header format and can register settings via the LMPlugins API.
@@ -505,7 +505,7 @@ A tool to drag and resize 15 HUD components (leaderboard, minimap, stats, chat, 
 In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) and Heatmaps (position history, 3,600 samples per game, 50 games). They are recorded with Settings > Replays > Record replays, on by default.
 
 **How do presets work?**
-Legend Mod offers one-click presets: Competitive (enables rings, mass, split range), Battery Saver (caps FPS, disables effects), Streamer (hides personal info), Reduced Motion (no animations), and Clean HUD (minimal interface). Theme presets include 8 colour schemes.
+Legend Mod offers one-click presets: Competitive (enables rings, mass, split range), Battery Saver (caps FPS, disables effects), Streamer (hides personal info), Reduced Motion (no animations), and Clean HUD (minimal interface). 8 built-in theme presets and 3 menu presets are in the Theme workshop's Gallery.
 
 **What is ghost cells?**
 An Expanding Land-exclusive feature. When you die, a transparent cell appears at your death location, visible on the minimap. Ghost cells help you track where deaths occurred and avoid dangerous areas.

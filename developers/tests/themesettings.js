@@ -1,8 +1,8 @@
 /* Theme settings checks with the real code of ogario/ogario.v4.js and its modules: the theme
  * schema (LM_THEME_SCHEMA + lmThemeValue: type, range, step, choices, colour format) and every
- * path that stores theme values (loadThemeSettings, the settings import, the theme presets
- * through Settings.changePreset, the Theme tab sliders through Settings.addSliderBox and
- * the Theme Workshop). Valid values and the defaults never change.
+ * path that stores theme values (loadThemeSettings, the settings import, the Theme tab sliders
+ * through Settings.addSliderBox and the Theme Workshop, which has the shipped presets). Valid
+ * values and the defaults never change.
  * node developers/tests/themesettings.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -17,7 +17,7 @@ function makeStorage() {
   const m = new Map();
   return { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => { m.set(k, String(v)); }, removeItem: k => { m.delete(k); }, _map: m };
 }
-/* a jQuery stand-in that records what the slider builder and the preset setter do */
+/* a jQuery stand-in that records what the slider builder does */
 const dom = {};
 function el(sel) {
   if (sel && typeof sel === 'object') return sel;
@@ -48,8 +48,7 @@ const TD = ctx.LM_THEME_DEFAULTS, SCH = ctx.LM_THEME_SCHEMA, V = ctx.lmThemeValu
 /* the real Settings methods that store theme values */
 const Settings = vm.runInContext('({\n' +
   cut('        loadThemeSettings() {', '        saveThemeSettings() {') +
-  cut('        addSliderBox(id, name, min, max, step, callback) {', '        addInputBox(id, name, holder, callback) {') +
-  cut('        changePreset(names, theme) {', '        changeThemePreset(name) {') + '\n})', ctx);
+  cut('        addSliderBox(id, name, min, max, step, callback) {', '        addInputBox(id, name, holder, callback) {') + '\n})', ctx);
 ctx.ogario = {};
 
 // ── the schema
@@ -90,8 +89,9 @@ check('settings without a slider have a range (cell shadow, minimap top), any va
 check('font weights 400/700 kept, others put on 100..900', V('hudFontWeight', 400) === 400 && V('namesFontWeight', 700) === 700 && V('massFontWeight', 5000) === 900 && V('massFontWeight', 0) === 100);
 check('NaN, Infinity, -Infinity refused (the default stays)', [NaN, Infinity, -Infinity].every(x => V('foodSize', x) === undefined && V('menuOpacity', x) === undefined));
 check('numeric strings from old saves converted and fitted, other strings refused', V('foodSize', '7') === 7 && V('menuOpacity', ' 0.5 ') === 0.5 && V('foodSize', '') === undefined && V('foodSize', '7px') === undefined && V('foodSize', true) === undefined);
-check('choices: preset / menu theme / graphics / indicators take only their lists (Chat Position is gone: the HUD editor places the popups)', V('preset', 'legendv1') === 'legendv1' && V('preset', 'nope') === undefined && V('menuPreset', 'agario') === 'agario' && V('chatPos', 'topright') === undefined && V('graphics', 'very_low') === 'very_low' && V('indicators', 'heart') === 'heart' && V('indicators', '<b>') === undefined);
-check('choices are own keys only (no prototype names)', V('preset', 'toString') === undefined && V('menuPreset', '__proto__') === undefined && V('graphics', 'constructor') === undefined);
+check('choices: graphics / indicators take only their lists (Chat Position is gone: the HUD editor places the popups)', V('chatPos', 'topright') === undefined && V('graphics', 'very_low') === 'very_low' && V('indicators', 'heart') === 'heart' && V('indicators', '<b>') === undefined);
+check('the removed Theme preset / Menu theme names are no settings any more', !own(TD, 'preset') && !own(TD, 'menuPreset') && V('preset', 'legendv1') === undefined && V('menuPreset', 'agario') === undefined);
+check('choices are own keys only (no prototype names)', V('indicators', 'toString') === undefined && V('indicators', '__proto__') === undefined && V('graphics', 'constructor') === undefined);
 check('fonts take the font list, families the family list', V('namesFont', 'oswald-bold') === 'oswald-bold' && V('hudFont', 'comic-sans') === undefined && V('miniMapNickFontFamily', 'Allura') === 'Allura' && V('massFontFamily', 'Arial') === undefined);
 check('colours: hex, rgb(a) and colour names kept', V('bgColor', '#abc') === '#abc' && V('mainColor', '#01d9ccff') === '#01d9ccff' && V('hudColor', 'rgba(0,0,0,0.4)') === 'rgba(0,0,0,0.4)' && V('namesColor', 'red') === 'red' && V('cellShadowColor', 'rgb(1, 2, 3)') === 'rgb(1, 2, 3)');
 check('colours: CSS / HTML injection and non-colours refused', ['red;}body{display:none', '#fff" onload="x', 'url(https://x.com/a.png)', 'expression(alert(1))', '', '#ggg', 5].every(x => V('bgColor', x) === undefined && V('messageColor', x) === undefined));
@@ -117,7 +117,7 @@ ctx.localStorage.setItem('ogarioThemeSettings', JSON.stringify(Object.assign({},
 })));
 Settings.loadThemeSettings();
 check('load: off-range/off-step numbers fitted, valid values kept exactly', DS.bordersWidth === 14 && DS.namesScale === 2 && DS.hudScale === 1.2 && DS.foodSize === 9 && DS.virusAlpha === 0.25 && DS.cellShadowBlur === 0);
-check('load: a bad colour, an unknown preset or font keeps the default; valid ones kept', DS.bgColor === TD.bgColor && DS.mainColor === '#123456' && DS.preset === TD.preset && DS.menuPreset === 'legendv1' && DS.namesFont === TD.namesFont && DS.namesFontFamily === 'Oswald' && DS.lbTeammateColor === 'marker' && DS.sectorsFontSize === TD.sectorsFontSize);
+check('load: a bad colour or font keeps the default; old saved preset names ignored; valid ones kept', DS.bgColor === TD.bgColor && DS.mainColor === '#123456' && !own(DS, 'preset') && !own(DS, 'menuPreset') && DS.namesFont === TD.namesFont && DS.namesFontFamily === 'Oswald' && DS.lbTeammateColor === 'marker' && DS.sectorsFontSize === TD.sectorsFontSize);
 ctx.localStorage.setItem('ogarioThemeSettings', JSON.stringify(TD));
 Settings.loadThemeSettings();
 check('load: the stored defaults come back unchanged', Object.keys(TD).every(k => DS[k] === TD[k]));
@@ -127,15 +127,6 @@ const impLoop = cut("                    var _impT = importValue.ogarioThemeSett
 const imported = { ogarioThemeSettings: { bordersWidth: 13, chatScale: 7, bgColor: 'url(x)', mVirusColor: '#ce6363', graphics: 'ultra', indicators: 'smile', hudFont: 'roboto', nope: 1, menuOpacity: 'NaN' } };
 vm.runInContext('(function (importValue) {\n' + impLoop.replace(/\}\s*$/, '') + '\n})', ctx)(imported);
 check('import: values fitted, unusable ones dropped (their defaults apply)', J(imported.ogarioThemeSettings) === J({ bordersWidth: 14, chatScale: 2, mVirusColor: '#ce6363', indicators: 'smile', hudFont: 'roboto' }));
-
-// ── the theme presets (the real Settings.changePreset)
-Object.keys(TD).forEach(k => { DS[k] = TD[k]; });
-Settings.changePreset('legendv1', ctx.themePresets);
-const lv1 = ctx.themePresets.legendv1;
-check('preset: a shipped preset sets its values exactly', Object.keys(lv1).every(k => !own(TD, k) || DS[k] === lv1[k]));
-Settings.changePreset('odd', { odd: { bordersWidth: 999, virusAlpha: 0.4, namesFont: 'bad', bgColor: 'red;}', foodSize: NaN } });
-check('preset: a value that does not fit is fitted or left out', DS.bordersWidth === 200 && DS.virusAlpha === 0.4 && DS.namesFont === TD.namesFont && DS.bgColor === lv1.bgColor && DS.foodSize === (own(lv1, 'foodSize') ? lv1.foodSize : TD.foodSize));
-check('preset: the slider shows the stored value', el('#bordersWidth-slider').v === 200 && el('#bordersWidth-value').t === 200);
 
 // ── the Theme tab sliders (the real Settings.addSliderBox)
 let cb = 0;
@@ -169,7 +160,7 @@ vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), pc);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), pc);
 vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'themeworkshop.js'), 'utf8'), pc);
 const W = pc.LMThemeWorkshop.core;
-check('workshop: the same schema (fitted, choices, colours)', W.themeValue('bordersWidth', 13) === 14 && W.themeValue('namesScale', 99) === 2 && W.themeValue('namesFont', 'bad') === undefined && W.themeValue('preset', 'legendv1') === 'legendv1' && W.themeValue('bgColor', 'url(x)') === undefined && W.themeValue('bgColor', '#010203') === '#010203');
+check('workshop: the same schema (fitted, choices, colours)', W.themeValue('bordersWidth', 13) === 14 && W.themeValue('namesScale', 99) === 2 && W.themeValue('namesFont', 'bad') === undefined && W.themeValue('preset', 'legendv1') === undefined && W.themeValue('bgColor', 'url(x)') === undefined && W.themeValue('bgColor', '#010203') === '#010203');
 check('workshop: every default it takes is kept exactly', Object.keys(TD).every(k => { const v = W.themeValue(k, TD[k]); return v === undefined || v === TD[k]; }));
 
 console.log(fail ? fail + ' theme settings check(s) FAILED' : 'all theme settings checks passed');

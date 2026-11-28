@@ -1,5 +1,7 @@
-// Theme workshop: the window opens from its button under the Theme preset list (no hotkey) and
-// fits the screen; My themes has no row in the Theme tab any more; a gallery theme is installed and previewed; Revert (and the automatic
+// Theme workshop: the window opens from its button at the top of the Theme tab (no hotkey) and
+// fits the screen; the Theme tab has no My themes row and no Theme preset / Menu theme lists any
+// more; the gallery lists every shipped game and menu preset, and Apply sets the values the old
+// lists set; a gallery theme is installed and previewed; Revert (and the automatic
 // revert) put the theme back exactly; a theme with a URL shows it first; compare, export and
 // import work; the x closes it. Everything is put back.
 (async () => {
@@ -9,8 +11,9 @@
   var TW = window.LMThemeWorkshop;
   if (!TW || !TW.open) return { fail: ['LMThemeWorkshop not loaded'] };
   if (window.hotkeysCommand && hotkeysCommand['hk-lmThemeWorkshop']) fail.push('the removed hotkey hk-lmThemeWorkshop is back');
-  var openBtn = $('#theme .lm-tw-open'), presetBox = $('#themePreset').closest('.preset-box');
-  if (!presetBox.length || !openBtn.prev().is(presetBox)) fail.push('workshop button not under the Theme preset list');
+  var openBtn = $('#theme .lm-tw-open');
+  if (openBtn.length !== 1 || !openBtn.is($('#theme-main').children().first())) fail.push('workshop button not at the top of the Theme tab');
+  if ($('#themePreset, #menuPreset').length) fail.push('the removed Theme preset / Menu theme list is still there');
   if ($('#lm-mythemes-box, #lm-mythemes').length || window.LMMyThemes) fail.push('the removed My themes row is still there');
   var keys = ['lmThemeWorkshop', 'ogarioThemeSettings', 'ogarioSettings'];
   var saved = {};
@@ -106,6 +109,34 @@
     if (TW.previewing()) fail.push('preview did not revert by itself');
     if (JSON.stringify(defaultSettings) !== themeBefore) fail.push('automatic revert did not restore the theme exactly');
     if (JSON.stringify([defaultmapsettings.messageSound, defaultmapsettings.commandSound, defaultmapsettings.virusSoundurl]) !== soundsBefore) fail.push('sounds changed');
+
+    // the shipped presets: every one listed; Apply sets what the old Theme preset / Menu theme
+    // lists set (each preset value through the theme schema, as the removed Settings.changePreset did)
+    $('#lm-tw .lm-tw-tabs button[data-tab=gallery]').trigger('click');
+    var nPresets = Object.keys(themePresets).length + Object.keys(themeMenus).length;
+    info.presets = $('#lm-tw [data-act=bapply]').length + '/' + nPresets;
+    if ($('#lm-tw [data-act=bapply]').length !== nPresets) fail.push('gallery lists ' + info.presets + ' shipped presets');
+    var before = JSON.parse(JSON.stringify(defaultSettings));
+    [['game-legendv1', themePresets.legendv1], ['game-colorblind', themePresets.colorblind], ['menu-agario', themeMenus.agario]].forEach(function (pr) {
+      var start = JSON.parse(JSON.stringify(defaultSettings)), p = pr[1], bad = [];
+      if (!$('#lm-tw [data-act=bapply][data-id=' + pr[0] + ']').length) { fail.push('no Apply for ' + pr[0]); return; }
+      $('#lm-tw [data-act=bapply][data-id=' + pr[0] + ']').trigger('click');
+      for (var k in defaultSettings) {
+        var want = start[k];
+        if (Object.prototype.hasOwnProperty.call(p, k)) { var v = lmThemeValue(k, p[k]); if (v !== undefined) want = v; }
+        /* a font's family / weight follow the font (setFont), as with the old lists */
+        if (/Font(Family|Weight)$/.test(k) && defaultSettings[k] !== start[k]) continue;
+        if (JSON.stringify(defaultSettings[k]) !== JSON.stringify(want)) bad.push(k + ': ' + defaultSettings[k] + ' (want ' + want + ')');
+      }
+      if (bad.length) fail.push(pr[0] + ' applied other values than the old list: ' + bad.slice(0, 5).join('; '));
+      if (localStorage.getItem('ogarioThemeSettings') !== JSON.stringify(defaultSettings)) fail.push(pr[0] + ' not saved');
+    });
+    if ('preset' in defaultSettings || 'menuPreset' in defaultSettings) fail.push('the removed preset names are still settings');
+    /* the theme from before the presets */
+    TW.preview({ theme: before }, 'probe');
+    TW.keep();
+    defaultSettings.lbTeammateColor = before.lbTeammateColor;
+    if (JSON.stringify(defaultSettings) !== themeBefore) fail.push('theme not put back after the preset checks');
 
     // the x closes it
     $('#lm-tw .lm-tw-x').trigger('click');

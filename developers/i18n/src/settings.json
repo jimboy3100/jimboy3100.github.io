@@ -5798,24 +5798,6 @@
     "ja": "基本テーマ",
     "it": "Tema di base"
   },
-  "settings.themePreset": {
-    "en": "Theme preset",
-    "el": "Προρύθμιση θέματος",
-    "es": "Preajuste de tema",
-    "bg": "Готова тема",
-    "fr": "Préréglage du thème",
-    "ar": "ثيم جاهز",
-    "zh": "主題預設組合",
-    "ru": "Пресет темы",
-    "de": "Theme-Voreinstellung",
-    "tr": "Hazır tema",
-    "pl": "Preset motywu",
-    "nl": "Themapreset",
-    "pt": "Tema predefinido",
-    "id": "Preset tema",
-    "ja": "テーマのプリセット",
-    "it": "Preset del tema"
-  },
   "settings.themeType": {
     "en": "Theme type",
     "el": "Τύπος θέματος",
@@ -6823,24 +6805,6 @@
     "id": "Menu",
     "ja": "メニュー",
     "it": "Menu"
-  },
-  "settings.menuPreset": {
-    "en": "Menu theme",
-    "el": "Θέμα μενού",
-    "es": "Tema del menú",
-    "bg": "Тема на менюто",
-    "fr": "Thème du menu",
-    "ar": "ثيم القائمة",
-    "zh": "選單主題",
-    "ru": "Тема меню",
-    "de": "Menü-Theme",
-    "tr": "Menü teması",
-    "pl": "Motyw menu",
-    "nl": "Menuthema",
-    "pt": "Tema do menu",
-    "id": "Tema menu",
-    "ja": "メニューのテーマ",
-    "it": "Tema del menu"
   },
   "settings.menuMainColor": {
     "en": "Main color",

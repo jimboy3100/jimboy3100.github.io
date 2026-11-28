@@ -23,7 +23,7 @@
     {
       "id": "themeworkshop",
       "name": "Theme Workshop",
-      "description": "Theme tab, the Theme workshop button under the Theme preset list: My themes (save the current theme, rename, copy, delete, up to 30 themes with their last 5 saved versions, restore a version), a small picture of each theme, live preview with Keep / Revert (back by itself after 15 s), Compare any two themes setting by setting, and a Gallery of the built-in presets and of themes shipped with Legend Mod. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS.",
+      "description": "Theme tab, the Theme workshop button at its top (the one place for the built-in game and menu presets): My themes (save the current theme, rename, copy, delete, up to 30 themes with their last 5 saved versions, restore a version), a small picture of each theme, live preview with Keep / Revert (back by itself after 15 s), Compare any two themes setting by setting, and a Gallery of the built-in presets and of themes shipped with Legend Mod. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
