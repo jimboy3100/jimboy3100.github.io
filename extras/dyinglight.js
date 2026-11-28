@@ -120,7 +120,12 @@
          * settings back */
         if (W._lmSettingsReload) return (saved = false);
         if (!s || typeof s !== 'object' || !Object.prototype.hasOwnProperty.call(s, 'dyingLight')) return (saved = false);
-        if (s.dyingLight !== on) {
+        var flag = null;
+        try { flag = W.localStorage.getItem('dyinglight1load'); } catch (e) { }
+        /* saved also when the value is this one already but may not be kept: a save the browser
+         * refused (application's _lmSettingsUnsaved, e.g. the settings turned it off) or the old
+         * flag still there (a second turn-off would remove it unkept) */
+        if (s.dyingLight !== on || W._lmSettingsUnsaved === true || flag !== null) {
             s.dyingLight = on;
             try { W.application.saveSettings(s, 'ogarioSettings'); } catch (e) { ok = false; }
         }
@@ -132,6 +137,9 @@
         if (!on) {
             try { W.localStorage.setItem('dyinglight1load', 'no'); return (saved = 'flag'); } catch (e) { }
             try { if (W.toastr) W.toastr.warning(tx('pkg.dlv4life.notSaved')); } catch (e2) { }
+        } else if (flag === 'no') {
+            /* a turn-on not kept: an older turn-off kept in the flag must not win at the reload */
+            try { W.localStorage.removeItem('dyinglight1load'); } catch (e) { }
         }
         return (saved = false);
     }

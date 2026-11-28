@@ -288,6 +288,17 @@ async function dyingLightLifecycle() {
     try { await L.disable(); } catch (e) { }
     check('settings refused: off, kept in the old flag, nothing more to tell', L.state === 'off' && L.saved() === 'flag' && store.dyinglight1load === 'no' &&
         JSON.parse(store.ogarioSettings).dyingLight === true && toasts.indexOf('pkg.dlv4life.notSaved') < 0);
+    /* still refused: a second turn-off (the value already off for the visit) keeps the flag */
+    await L.disable();
+    check('...turned off again while still refused: the old flag stays', L.saved() === 'flag' && store.dyinglight1load === 'no');
+    /* still refused, turned on: the older turn-off in the flag does not win at the reload */
+    await loaded(L.enable());
+    check('...turned on while still refused: not kept, the older turn-off flag goes', L.isEnabled() && L.saved() === false && store.dyinglight1load === undefined);
+    /* the settings turn it off elsewhere and their save was refused (application keeps the change
+     * for the visit, _lmSettingsUnsaved): the turn-off is kept in the flag */
+    ctx._lmSettingsUnsaved = true; D.dyingLight = false; ctx.lmSettingsCommit(ctx.lmSettingsUserView());
+    check('...turned off by a refused settings save: off, kept in the old flag', L.state === 'off' && L.saved() === 'flag' && store.dyinglight1load === 'no');
+    ctx._lmSettingsUnsaved = false;
     {
         /* the reload: the settings as stored (on), the start reads the old flag first */
         D.dyingLight = JSON.parse(store.ogarioSettings).dyingLight;
