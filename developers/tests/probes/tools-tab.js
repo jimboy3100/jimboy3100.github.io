@@ -1,7 +1,7 @@
 // Tools tab in the real menu: row 1 is Hide Shortcuts | Hide Everything (red), the Rounded / Square
-// HUD and Show Timer Calc. buttons are gone; their settings: Theme > HUD "Rounded corners" (square
-// by default; the switch rounds the menu and HUD corners and is saved) and Settings > Stats "Show
-// stopwatch" next to "Show current time" (off by default; shows the stopwatch above the minimap).
+// HUD and Show Timer Calc. buttons are gone; Rounded / Square HUD is Theme > HUD "Rounded corners"
+// (square by default; the switch rounds the menu and HUD corners and is saved). The stopwatch is
+// removed: no "Show stopwatch" switch and no stopwatch above the minimap.
 // Stored settings and the values are put back.
 (async () => {
   var fail = [], info = {};
@@ -11,7 +11,7 @@
   var T = defaultSettings, S = window.legendmod5;
   var keepTheme = null, keepSet = null;
   try { keepTheme = localStorage.getItem('ogarioThemeSettings'); keepSet = localStorage.getItem('ogarioSettings'); } catch (e) { }
-  var keepRound = T.hudRoundedCorners, keepWatch = S.showStopwatch;
+  var keepRound = T.hudRoundedCorners;
   var change = function (el, v) { el.checked = v; el.dispatchEvent(new Event('change', { bubbles: true })); };
   try {
     /* row 1 */
@@ -52,22 +52,12 @@
       Settings.setTheme();
       need('setTheme: the switch and the corners follow the value', rc.checked === false && radius() === '0px');
     }
-    /* Settings > Stats: Show stopwatch */
-    var sw = document.getElementById('showStopwatch'), stt = document.getElementById('showTime');
-    need('stats default: stopwatch off', LM_SETTINGS_DEFAULTS.showStopwatch === false);
-    need('Settings > Stats: Show stopwatch after Show current time', !!sw && !!stt && $(sw).closest('.statsGroup').length === 1 && $(stt).closest('label')[0].nextElementSibling === $(sw).closest('label')[0]);
-    if (sw) {
-      change(sw, true);
-      await sleep(50);
-      need('on: the stopwatch is shown', S.showStopwatch === true && $('#timertools-hud').css('display') !== 'none');
-      change(sw, false);
-      await sleep(50);
-      need('off: the stopwatch is hidden', S.showStopwatch === false && $('#timertools-hud').css('display') === 'none');
-    }
+    /* the stopwatch is removed */
+    need('no Show stopwatch switch or setting', !document.getElementById('showStopwatch') && !('showStopwatch' in LM_SETTINGS_DEFAULTS) && !('showStopwatch' in S));
+    need('no stopwatch above the minimap', !document.getElementById('timertools-hud') && !document.getElementById('playtimer') && typeof window.lmShowStopwatch === 'undefined');
   } finally {
     T.hudRoundedCorners = keepRound;
     try { Settings.setHudCorners(); } catch (e) { }
-    if (document.getElementById('showStopwatch') && S.showStopwatch !== keepWatch) change(document.getElementById('showStopwatch'), keepWatch);
     await sleep(800);
     try {
       if (keepTheme === null) localStorage.removeItem('ogarioThemeSettings'); else localStorage.setItem('ogarioThemeSettings', keepTheme);

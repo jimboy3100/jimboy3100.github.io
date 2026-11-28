@@ -205,8 +205,6 @@ var messageone = 1; //If legendmod is being used
 var seticon = "YES";
 var searching;
 var timerId;
-/* kept when a saved Show Timer Calc. already made it: init() above runs the saved Tools buttons first */
-TimerLM = window.TimerLM || {};
 var MSGCOMMANDS = "";
 var MSGCOMMANDS2;
 var MSGNICK;
@@ -1658,7 +1656,7 @@ function parseLegendJSONAPI(LegendJSON) {
     LegendJSON.legendSettings.showToken = localStorage.getItem("showTK");
     LegendJSON.legendSettings.showPlayer = localStorage.getItem("showPlayer");
     LegendJSON.legendSettings.SHOSHOBtn = localStorage.getItem("SHOSHOBtn");
-    /* Rounded / Square HUD and the stopwatch are settings now (theme hudRoundedCorners, showStopwatch) */
+    /* Rounded / Square HUD is a theme setting now (hudRoundedCorners); the stopwatch is removed */
     LegendJSON.legendSettings.timesopened = localStorage.getItem("timesopened");
 
     LegendJSON.legendSettings.languagemod = localStorage.getItem("languagemod");
@@ -1912,10 +1910,9 @@ function saveLegendJSONAPI() {
         _lmImportSet("showTK", LegendJSON.legendSettings.showToken);
         _lmImportSet("showPlayer", LegendJSON.legendSettings.showPlayer);
         _lmImportSet("SHOSHOBtn", LegendJSON.legendSettings.SHOSHOBtn);
-        /* an older export's Rounded / Square HUD and stopwatch buttons: the next start carries them
-         * into the settings once (loadThemeSettings, loadSettings in ogario.v4.js) */
+        /* an older export's Rounded / Square HUD button: the next start carries it into the theme
+         * settings once (loadThemeSettings in ogario.v4.js); its removed stopwatch button is ignored */
         _lmImportSet("MAINBTBtn", LegendJSON.legendSettings.MAINBTBtn);
-        _lmImportSet("TIMEcalBtn", LegendJSON.legendSettings.TIMEcalBtn);
         _lmImportSet("timesopened", LegendJSON.legendSettings.timesopened);
 
         /* dyinglight1load (the removed Dying Light theme) in an old settings file is skipped */
@@ -2932,90 +2929,6 @@ function Ultimouse() {
     }
 }
 */
-function displayTimer() {
-    // initilized all local variables:
-    var minutes = '00',
-        seconds = '00',
-        time = '',
-        timeNow = new Date().getTime();
-
-    TimerLM.difference = timeNow - TimerLM.timerStarted;
-
-
-    // wrap at 60 (not > 60, which showed "01:60") and keep the hours
-    var total = Math.max(0, Math.floor(TimerLM.difference / 1000));
-    var hours = Math.floor(total / 3600);
-    seconds = total % 60;
-    minutes = Math.floor(total / 60) % 60;
-    if (seconds < 10) {
-        seconds = '0' + String(seconds);
-    }
-    if (minutes < 10) {
-        minutes = '0' + String(minutes);
-    }
-
-    if (hours > 0) time += hours + ':'
-    time += minutes + ':'
-    time += seconds
-
-    /* only touch the DOM when the shown text changes */
-    if (TimerLM.lastShown !== time) {
-        TimerLM.lastShown = time;
-        TimerLM.timerDiv.innerHTML = time;
-    }
-}
-
-/* Settings > Stats "Show stopwatch" (showStopwatch, ogario.v4.js; was the Tools tab button
- * "Show Timer Calc."): the start / pause / stop stopwatch above the minimap */
-function lmShowStopwatch(show) {
-    /* TimerLM can be missing when the start runs (seen in the headless first-run pages) */
-    if (!window.TimerLM) window.TimerLM = {};
-    window.TimerLM.timerDiv = document.getElementById('timer');
-    $("#timertools-hud").toggle(!!show);
-}
-window.lmShowStopwatch = lmShowStopwatch;
-function startTimer() {
-    $("#playtimer").hide();
-    $("#stoptimer").show();
-    $("#cleartimer").show();
-    // save start time
-    TimerLM.timerStarted = new Date().getTime()
-    console.log('TimerLM.timerStarted: ' + TimerLM.timerStarted)
-
-    if (TimerLM.difference > 0) {
-        TimerLM.timerStarted = TimerLM.timerStarted - TimerLM.difference
-    }
-    // update timer periodically
-    if (TimerLM.timerInterval) clearInterval(TimerLM.timerInterval);
-    TimerLM.timerInterval = setInterval(function () {
-        displayTimer()
-    }, 250); /* the display has 1 s resolution: 100 Hz was wasted work */
-
-}
-
-function stopTimer() {
-    $("#playtimer").show();
-    $("#stoptimer").hide();
-    $("#cleartimer").show();
-    /* keep the time up to the pause: the 250 ms tick last counted up to 250 ms before it, and
-     * every pause lost that much */
-    if (TimerLM.timerInterval) displayTimer();
-    clearInterval(TimerLM.timerInterval); // stop updating the timer
-    TimerLM.timerInterval = null;
-
-}
-
-function clearTimer() {
-    $("#playtimer").show();
-    $("#stoptimer").hide();
-    $("#cleartimer").hide();
-    clearInterval(TimerLM.timerInterval);
-    TimerLM.timerInterval = null;
-    TimerLM.timerDiv.innerHTML = "00:00";
-    TimerLM.lastShown = "00:00";
-    TimerLM.difference = 0;
-}
-
 
 /* a HUD box's own background image (minimap, leaderboard, team list); an empty URL gives the box
  * its normal look back instead of an empty image at 0.8 opacity for the rest of the session */
@@ -3360,8 +3273,6 @@ function triggerLMbtns() {
     if (SHOSHOBtn == "true") {
         $("#SHOSHOBtn").click();
     }
-    /* Settings > Stats "Show stopwatch" */
-    lmShowStopwatch(!!(window.legendmod5 && window.legendmod5.showStopwatch));
 
     document.getElementById("minimapPicture").value = localStorage.getItem("minimapbckimg");
     if ($('#minimapPicture').val() != "") {
@@ -4926,11 +4837,6 @@ function initializeLM(modVersion) {
         '</div>');
     $("#notes").append('<button id="closeBtn" class="btn btn-danger" style="margin-top: 20px;" data-original-title="" title="">' + _lmxE('pack.close') + '</button>');
 
-    $("#minimap-hud").prepend('<div id="timertools-hud" class="hud" align="center" style="width: 50%; height: 30px; padding: 0px; pointer-events: auto; position: absolute; right: 0px; top: -90px; display: block;">' +
-        '<button id="playtimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100% display: block;" onclick="startTimer();" data-toggle="tooltip" data-i18n-title="lmx.ex.startTimer" data-original-title="' + _lmxE('lmx.ex.startTimer') + '" ><i id="playtime" class="fa fa-play-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="stoptimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%; display: none;" onclick="stopTimer();" data-toggle="tooltip" data-i18n-title="lmx.ex.pauseTimer" data-original-title="' + _lmxE('lmx.ex.pauseTimer') + '"><i id="pausetime" class="fa fa-pause-circle" style="padding-left: 0px;"></i></button>' +
-        '<button id="cleartimer" class="btn-link" style="padding: 0px; color: #d6d3d3; width: 16%; height: 100%; display: none;" onclick="clearTimer();" data-toggle="tooltip" data-i18n-title="lmx.ex.stopTimer" data-original-title="' + _lmxE('lmx.ex.stopTimer') + '"><i id="cleartime" class="fa fa-stop-circle" style="padding-left: 0px;"></i></button>' +
-        '<a id="timer" style="padding: 0px; color: #d6d3d3; width: 12%; height: 100% position: absolute; right: 0px;">00:00</a>');
     $(".menu-tabs>:nth-child(2)").after('<li class="legend-tab" style="width: 16.66%; padding:12px;" data-toggle="tooltip" data-original-title="' + _lmxE('pack.tools') + '" data-placement="top"><a style="margin-top: 2px; height: 100%; padding:12px;" onclick="$(\'#main-menu\').children(\'div\').hide(); $(\'.menu-tabs\').children(\'li\').removeClass(\'active\'); $(\'.menu-tabs\').children(\'li\').children(\'a\').removeClass(\'active\'); $(\'#legend\').fadeIn(); $(this).addClass(\'active\'); $(this).parent().addClass(\'active\'); " href="javascript:void(0);" class="fa fa-puzzle-piece fa-lg"></a></li>');
     $(".menu-tabs").children().attr("style", "width: 16.66%");
     //$(".profile-tab").hide();
@@ -4945,7 +4851,7 @@ function initializeLM(modVersion) {
         '<div id="TimesUsedPanel" class="user-name" style="display:inline-block;">Times Used: <div id="TimesUsed" style="display:inline-block"></div></div><br>' +
         '</div></div>' +*/
         '<button id="SHOSHOBtn" type="button" class="btn btn-sm btn-warning" aria-pressed="false" autocomplete="off" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-right: 0.5%;"><i class="fa fa-puzzle-piece"></i>' + Premadeletter42 + '</button>' +
-        /* Rounded / Square HUD is Theme > HUD "Rounded corners", the stopwatch is Settings > Stats "Show stopwatch" */
+        /* Rounded / Square HUD is Theme > HUD "Rounded corners" */
         '<button id="HideAllBthn" type="button" class="btn btn-sm btn-danger" aria-pressed="false" autocomplete="off" data-toggle="tooltip" data-placement="right" data-original-title="' + _lmxE('lmx.ex.hideAllTip') + '" style="margin-top: 2px; width: 49.5%; border-color: darkslategrey; margin-left: 0.5%;"><i class="fa fa-exclamation-triangle"></i>' + Premadeletter49 + '</button>' +
 
         '<button id="OpenuserScripts" type="submit" class="btn btn-primary btn 2" style="margin-top: 2px; display: block; width: 100%; padding: 4px 0 6px 0;"><i class="fa fa-code"></i>' + _lmxE('pack.userScripts') + '</button>' +
@@ -5583,8 +5489,6 @@ function initializeLM(modVersion) {
     /* the clock stays when Settings > Stats > Show current time is on (it was hidden on every load,
      * so a clock switched on never came back after a reload) */
     if (!(window.legendmod5 && window.legendmod5.showTime)) $("#time-hud").hide();
-
-    $("#timertools-hud").hide();
 
     $("#TimesUsed").text(timesopened);
     LMserverbox();

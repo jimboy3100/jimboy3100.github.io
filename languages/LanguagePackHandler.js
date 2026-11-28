@@ -27,8 +27,6 @@ $("#MAINBTBtn").click();
 $("#MAINBTBtn").click();
 $("#HideAllBthn").click();
 $("#HideAllBthn").click();
-$("#TIMEcalBtn").click();
-$("#TIMEcalBtn").click();
 if (languagemod!=6){
 $('#region').replace("North America",Premadeletter134).replace("South America",Premadeletter135).replace("Europe",Premadeletter136).replace("Russia",Premadeletter137).replace("Turkey",Premadeletter138).replace("East Asia",Premadeletter139).replace("China",Premadeletter139a).replace("Oceania",Premadeletter140).replace(" -- Select a Region -- ",Premadeletter140a);
 }

@@ -1,8 +1,8 @@
 /* The Tools tab buttons that became settings, with the real code of ogario/ogario.v4.js and
  * LMexpress/LMexpress.js: "Rounded / Square HUD" is the theme option hudRoundedCorners (Theme >
  * HUD, square by default: its corners, the switch, the one-time carry of the old MAINBTBtn key),
- * "Show Timer Calc." is the stats option showStopwatch (Settings > Stats, off by default: the
- * stopwatch panel, the one-time carry of the old TIMEcalBtn key).
+ * "Show Timer Calc." (later the stats option showStopwatch) is removed with its stopwatch: old saved
+ * values are ignored and the old TIMEcalBtn key is deleted on load.
  * node developers/tests/toolstab.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -87,7 +87,7 @@ function corners(rounded, opt) {
 let c = corners(false);
 check('square: --lm-radius 0px, --lm-radius-s 0px', c.props['--lm-radius'] === '0px' && c.props['--lm-radius-s'] === '0px');
 check('the corner stylesheet everywhere the old button reached (menu, buttons, fields, HUD boxes, minimap)', c.appended.length === 1 && c.appended[0].id === 'RNCN' &&
-    ['.agario-panel', '#main-menu', '.btn', '.form-control', '#chat-box', '#stats-hud', '#time-hud', '#timertools-hud', '.menu-tabs', '#leaderboard-hud', '#top5-hud', '#minimap-hud', '#menu-footer', '.agario-profile-picture']
+    ['.agario-panel', '#main-menu', '.btn', '.form-control', '#chat-box', '#stats-hud', '#time-hud', '.menu-tabs', '#leaderboard-hud', '#top5-hud', '#minimap-hud', '#menu-footer', '.agario-profile-picture']
         .every(s => c.appended[0].css.indexOf(s) >= 0) && /border-radius:var\(--lm-radius\)!important/.test(c.appended[0].css));
 check('open Legend pages are told (theme bridge)', c.notified === 1);
 c = corners(true);
@@ -99,10 +99,9 @@ check('a value set elsewhere moves the switch with a change that does not bubble
 c = corners(false, { cb: { checked: false } });
 check('the switch already right: no event', c.events.length === 0);
 
-/* ═══ Stopwatch (gameplay setting) ═══ */
+/* ═══ Stopwatch: removed (owner) ═══ */
 const defs = vm.runInNewContext('(function(){' + cut('var defaultmapsettings = {', '\nvar ') + '; return defaultmapsettings; })()', { window: {}, navigator: { userAgent: '' } });
-check('stats default: stopwatch off', defs.showStopwatch === false);
-check('Settings > Stats: a switch next to "Show current time"', /"showTime", "showStopwatch"[^\]]*\], "statsGroup"\)/.test(main));
+check('no showStopwatch setting', !('showStopwatch' in defs) && !/"showStopwatch"|case 'showStopwatch'/.test(main));
 
 function load(stored, oldKey) {
     const ls = makeStorage();
@@ -119,55 +118,13 @@ function load(stored, oldKey) {
     vm.createContext(ctx);
     const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);
     app.loadSettings();
-    return { ms, ls, saved: JSON.parse(ls.getItem('ogarioSettings') || 'null') };
+    return { ms, ls };
 }
-let r = load({ showMass: true }, 'true');
-check('carry: a stopwatch left shown stays shown', r.ms.showStopwatch === true);
-check('carry: saved with the settings, the old key gone', r.saved && r.saved.showStopwatch === true && r.saved.showMass === true && r.ls.getItem('TIMEcalBtn') === null);
-r = load(null, 'true');
-check('carry: also without saved settings', r.ms.showStopwatch === true && r.saved && r.saved.showStopwatch === true);
-r = load({}, 'false');
-check('carry: a hidden stopwatch stays off, the old key gone', r.ms.showStopwatch === false && r.ls.getItem('TIMEcalBtn') === null);
-r = load({ showStopwatch: false }, 'true');
-check('carry: once: a saved choice wins over the old key', r.ms.showStopwatch === false && r.ls.getItem('TIMEcalBtn') === null);
-r = load({ showStopwatch: true });
-check('no old key: the saved value loads', r.ms.showStopwatch === true);
-
-/* the switch's side effect (setSettings) and the panel (LMexpress.js) */
-check('setSettings shows / hides the panel', /case 'showStopwatch':\n[^\n]*\n\s*if \(typeof window\.lmShowStopwatch === 'function'\) window\.lmShowStopwatch\(defaultmapsettings\.showStopwatch\);/.test(main));
-const shown = [];
-/* no TimerLM yet (the start can run before it exists): made on the way */
-const sctx = { document: { getElementById: id => (id === 'timer' ? { id } : null) }, $: sel => ({ toggle: v => { shown.push([sel, v]); } }) };
-vm.createContext(sctx);
-sctx.window = sctx;
-vm.runInContext(cutIn(lmx, 'function lmShowStopwatch(show) {', '\nwindow.lmShowStopwatch'), sctx);
-sctx.lmShowStopwatch(true);
-sctx.lmShowStopwatch(0);
-check('panel: shown and hidden, the timer text box set for the timer', shown.length === 2 && shown[0][0] === '#timertools-hud' && shown[0][1] === true && shown[1][1] === false && sctx.TimerLM.timerDiv && sctx.TimerLM.timerDiv.id === 'timer');
-check('the start applies the saved choice', /lmShowStopwatch\(!!\(window\.legendmod5 && window\.legendmod5\.showStopwatch\)\);/.test(lmx));
-
-/* the stopwatch itself: start, pause, go on, stop (the real functions; time and the 250 ms tick by hand) */
-{
-  let now = 1000000, tick = null;
-  const div = { innerHTML: '00:00' };
-  const tctx = { console: { log() {} }, TimerLM: { timerDiv: div }, Math, String,
-    Date: function () { return { getTime: () => now }; },
-    setInterval: f => { tick = f; return 1; }, clearInterval: () => { tick = null; },
-    $: () => ({ show() {}, hide() {} }) };
-  tctx.Date.now = () => now;
-  vm.createContext(tctx);
-  vm.runInContext(cutIn(lmx, 'function displayTimer() {', '\n/* Settings > Stats "Show stopwatch"') + cutIn(lmx, 'function startTimer() {', '\n/* a HUD box'), tctx);
-  const run = ms => { for (let t = 0; t < ms; t += 250) { now += 250; if (tick) tick(); } };
-  tctx.startTimer(); run(10000);
-  now += 200; tctx.stopTimer();          /* paused 200 ms after the last tick */
-  now += 60000;                          /* a minute paused */
-  tctx.startTimer(); now += 800; if (tick) tick();
-  check('stopwatch: the time from the last tick to the pause is kept (10.2 s + 0.8 s: 11 s shown, 10 s before)', div.innerHTML === '00:11');
-  tctx.stopTimer(); tctx.clearTimer(); now += 5000; tctx.stopTimer();
-  check('stopwatch: stop clears it (a pause after it shows nothing)', div.innerHTML === '00:00' && tctx.TimerLM.difference === 0);
-  tctx.startTimer(); run(3725000);
-  check('stopwatch: hours shown, minutes wrap at 60', div.innerHTML === '1:02:05');
-}
+let r = load({ showMass: true, showStopwatch: true }, 'true');
+check('load: an old saved stopwatch is ignored, the old TIMEcalBtn key deleted, other settings load', !('showStopwatch' in r.ms) && r.ms.showMass === true && r.ls.getItem('TIMEcalBtn') === null);
+r = load(null, 'false');
+check('load: the old key is deleted also without saved settings', !('showStopwatch' in r.ms) && r.ls.getItem('TIMEcalBtn') === null);
+check('LMexpress: no stopwatch panel, timer functions or TimerLM state', !/timertools-hud|lmShowStopwatch|TimerLM|function (startTimer|stopTimer|clearTimer|displayTimer)\(|lmx\.ex\.(start|pause|stop)Timer|"TIMEcalBtn"/.test(lmx));
 
 /* ═══ Tools tab: the buttons are gone, Hide Everything is right of Hide Shortcuts ═══ */
 const tools = cutIn(lmx, "'<button id=\"SHOSHOBtn\"", "'<button id=\"OpenuserScripts\"");

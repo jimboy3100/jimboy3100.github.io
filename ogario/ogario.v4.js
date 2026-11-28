@@ -21014,7 +21014,6 @@ var defaultmapsettings = {
     showTargeting: true,
     showLbData: true,
     showTime: false,
-    showStopwatch: false,         /* start / pause / stop stopwatch above the minimap (was the Tools tab button "Show Timer Calc.") */
     showDevConsole: false,        /* developer console: render time by the FPS, profiler box, packet log; its switch is in the Performance diagnostics window */
     //normalLb: true,
     centeredLb: true,
@@ -22311,7 +22310,7 @@ function thelegendmodproject() {
             var R = 'var(--lm-radius)', R15 = 'calc(var(--lm-radius) * 1.5)';
             $('head').append($('<style type="text/css" id="RNCN">').text(
                 '.agario-panel,#main-menu,.center-container,.btn,.form-control,.input-group-addon,#chat-box,.input-group-sm>.input-group-addon,' +
-                '.agario-party,.agario-side-panel,#skins-panel,#quick-menu,#exp-bar,#exp-bar .progress,#hotkeys,#legendAdImg,#stats-hud,#time-hud,#timertools-hud{border-radius:' + R + '!important}' + // i18n-ok: CSS
+                '.agario-party,.agario-side-panel,#skins-panel,#quick-menu,#exp-bar,#exp-bar .progress,#hotkeys,#legendAdImg,#stats-hud,#time-hud{border-radius:' + R + '!important}' + // i18n-ok: CSS
                 '.menu-tabs,#main-panel,#profile,#legend,#og-settings,#theme{border-radius:' + R + ' ' + R + ' 0 0!important}' + // i18n-ok: CSS
                 '.skin,.input-group-btn,.input-group.nick{border-radius:0 ' + R15 + ' ' + R15 + ' 0!important}' +
                 /* round colour dots and profile picture when rounded, square when square */
@@ -24145,7 +24144,7 @@ function thelegendmodproject() {
             if (mm) {
                 this._lmLbFitRo.observe(mm);
                 for (var c = mm.firstElementChild; c; c = c.nextElementSibling) this._lmLbFitRo.observe(c);
-                /* the button rows (stopwatch, shortcuts, images...) are added to the minimap later
+                /* the button rows (shortcuts, images...) are added to the minimap later
                  * (LMexpress): watched once added, so showing or hiding one refits the leaderboard */
                 if (typeof MutationObserver === 'function') {
                     var ro = this._lmLbFitRo;
@@ -24695,21 +24694,11 @@ function thelegendmodproject() {
             }
             /* the key of the removed Lab (lmLab) is not used any more */
             try { window.localStorage.removeItem('lmLab'); } catch (eLab) { }
-            /* the Tools tab button "Show Timer Calc." (localStorage TIMEcalBtn) became the stats option
-             * showStopwatch: a stopwatch left shown comes along once */
-            var _lmOldTimer = null;
-            try { _lmOldTimer = window.localStorage.getItem('TIMEcalBtn'); } catch (eTc) { }
-            if (_lmOldTimer === 'true' && !(settings && Object.prototype.hasOwnProperty.call(settings, 'showStopwatch'))) defaultmapsettings.showStopwatch = true;
+            /* the key of the removed stopwatch (the old Tools tab button "Show Timer Calc.") is not used any more */
+            try { window.localStorage.removeItem('TIMEcalBtn'); } catch (eTc) { }
             /* the loaded values are the ones later changes are compared with (settingsChange) */
             _lmSettingsSeen = null;
             lmSettingsCommit(lmSettingsUserView());
-            /* the same for the old stopwatch key */
-            if (_lmOldTimer !== null) {
-                try {
-                    if (_lmOldTimer === 'true' && defaultmapsettings.showStopwatch) this.saveSettings(defaultmapsettings, 'ogarioSettings');
-                    window.localStorage.removeItem('TIMEcalBtn');
-                } catch (eTc2) { }
-            }
         },
         saveSettings(option, name) {
             if (name === 'ogarioSettings' && option === defaultmapsettings) {
@@ -25226,10 +25215,6 @@ function thelegendmodproject() {
                         break;
                     case 'blockPopups':
                         this.setBlockPopups();
-                        break;
-                    case 'showStopwatch':
-                        /* the stopwatch panel is made by LMexpress.js */
-                        if (typeof window.lmShowStopwatch === 'function') window.lmShowStopwatch(defaultmapsettings.showStopwatch);
                         break;
                     case 'adaptivePerf':
                         if (window.LMPerf) window.LMPerf.configChanged();
@@ -26518,7 +26503,7 @@ function thelegendmodproject() {
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showStopwatch"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays"], "replayGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
@@ -30010,7 +29995,7 @@ function thelegendmodproject() {
                 if (_lmMmHud) {
                     _lmMmHud.style.setProperty('border-radius', _isCircle ? '50%' : '0', _isCircle ? 'important' : '');
                     /* the circle clips the two minimap canvases, not the box: the button rows above the
-                     * minimap (shortcuts, stopwatch, images...) are its children placed above its top
+                     * minimap (shortcuts, images...) are its children placed above its top
                      * edge, and overflow:hidden on the box cut them all away. The sectors canvas sits
                      * 9 px in on each side, so its ellipse is 9 px wider than itself (the box's ellipse). */
                     _lmMmHud.style.overflow = 'visible';

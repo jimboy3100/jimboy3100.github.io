@@ -373,7 +373,7 @@ const J = o => JSON.parse(JSON.stringify(o));
 }
 
 
-/* ── the button rows above the minimap (stopwatch, shortcuts, images...: LMexpress puts them inside
+/* ── the button rows above the minimap (shortcuts, images...: LMexpress puts them inside
  * #minimap-hud above its top edge), with the real drawMiniMap and _lmLbFitWatch of ogario/ogario.v4.js:
  * the round Expanding Land minimap clipped the whole box (overflow hidden) and so cut the rows away;
  * a row added later and shown or hidden never refitted the leaderboard ── */
@@ -437,8 +437,8 @@ const J = o => JSON.parse(JSON.stringify(o));
       app._lmLbFitWatch(lb, mm);
       app._lmLbFitWatch(lb, mm);
       chk('watched once: the leaderboard, the minimap and its children of now', roCbs.length === 1 && observed.has(lb) && observed.has(mm) && observed.has(canvas));
-      /* LMexpress prepends the stopwatch row later (the MutationObserver sees it) */
-      const row = mkChild('timertools-hud');
+      /* LMexpress prepends the shortcuts row later (the MutationObserver sees it) */
+      const row = mkChild('shortcuts-hud');
       mm.firstElementChild = row; row.nextElementSibling = canvas;
       moCbs.forEach(cb => cb([{ type: 'childList', addedNodes: [row, { nodeType: 3 }], removedNodes: [] }]));
       chk('a row added to the minimap later is watched too', observed.has(row) && observed.size === 4, 'observed ' + Array.from(observed).map(e => e.id).join(','));

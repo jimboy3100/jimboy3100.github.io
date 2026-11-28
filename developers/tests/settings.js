@@ -57,7 +57,9 @@ const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptive
   /* line split: its own delay (the split macros' one is used) and its aim line switch (always drawn) */
   'lineSplitDelay', 'lineSplitGuide',
   /* the menu text size (Settings > Accessibility; the browser zoom does it) */
-  'a11yTextScale'];
+  'a11yTextScale',
+  /* the stopwatch above the minimap (Settings > Stats "Show stopwatch") */
+  'showStopwatch'];
 check('removed settings are no settings any more (a saved value is ignored)', GONE.every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined && V(k, 30) === undefined));
 check('line split: 2-4 splits per press, a saved 1 is read as 2', V('lineSplitCount', 1) === 2 && V('lineSplitCount', 4) === 4 && V('lineSplitCount', 9) === 4 && SCH.lineSplitCount[0] === 2);
 check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);
@@ -163,7 +165,7 @@ check('zoomSmooth is no setting: refused, and a saved value is skipped on load',
   cam.scale = 1; cam._lmFrameF = 0.5; cam.setScale(0, 1); cam.setScale(0, 1);
   check('zoom glide: (9*scale + target)/10 per 60 fps frame whatever an old save had, the same over two 120 fps frames', Math.abs(at60 - 1.1) < 1e-12 && Math.abs(cam.scale - 1.1) < 1e-12 && zctx.LM.viewScale === cam.scale);
 }
-ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { a11yIndicators: true, hudRelativeMass: false, menuFpsCap: true, massLossAlert: true, massLossPct: 40, adaptivePerfTarget: 120, hudCellPanel: true, killFeed: true, hideEventBanner: true })));
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { a11yIndicators: true, hudRelativeMass: false, menuFpsCap: true, massLossAlert: true, massLossPct: 40, adaptivePerfTarget: 120, hudCellPanel: true, killFeed: true, hideEventBanner: true, showStopwatch: true })));
 app.loadSettings();
 const reSaved3 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 /* the size symbols were removed, not merged: an old saved value changes nothing (Relative mass stays off) */

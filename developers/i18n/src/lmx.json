@@ -7198,7 +7198,7 @@
     "id": "Tidak ada penawaran promo saat ini. Penawaran berganti — cek lagi nanti!",
     "ja": "現在プロモーションオファーはありません。入れ替わるので後でまた確認してね！",
     "it": "Nessuna offerta promozionale al momento. Cambiano a rotazione — ricontrolla più tardi!"
-  },
+  },
   "lmx.sd.coinsN": {
     "en": "{0} Coins",
     "el": "{0} νομίσματα",
@@ -7234,7 +7234,7 @@
     "id": "{0} DNA",
     "ja": "{0} DNA",
     "it": "{0} DNA"
-  },
+  },
   "lmx.sd.promoOnlyTipLong": {
     "en": "This skin is available only through Agar.io's rotating promotional offers (like The Doctor's Curiosities). Check in-game for active offers!",
     "el": "Αυτό το skin διατίθεται μόνο μέσω των εναλλασσόμενων προσφορών του Agar.io (όπως The Doctor's Curiosities). Δες μέσα στο παιχνίδι για ενεργές προσφορές!",
@@ -10063,60 +10063,6 @@
     "id": "Cara memakai skin video: {0}",
     "ja": "動画スキンの使い方：{0}",
     "it": "Come usare le skin video: {0}"
-  },
-  "lmx.ex.startTimer": {
-    "en": "Start timer",
-    "el": "Έναρξη χρονομέτρου",
-    "es": "Iniciar temporizador",
-    "bg": "Пусни таймера",
-    "fr": "Lancer le chrono",
-    "ar": "بدء المؤقت",
-    "zh": "開始計時",
-    "ru": "Запустить таймер",
-    "de": "Timer starten",
-    "tr": "Sayacı başlat",
-    "pl": "Uruchom stoper",
-    "nl": "Timer starten",
-    "pt": "Iniciar timer",
-    "id": "Mulai timer",
-    "ja": "タイマー開始",
-    "it": "Avvia timer"
-  },
-  "lmx.ex.pauseTimer": {
-    "en": "Pause timer",
-    "el": "Παύση χρονομέτρου",
-    "es": "Pausar temporizador",
-    "bg": "Пауза на таймера",
-    "fr": "Mettre le chrono en pause",
-    "ar": "إيقاف المؤقت مؤقتًا",
-    "zh": "暫停計時",
-    "ru": "Пауза таймера",
-    "de": "Timer pausieren",
-    "tr": "Sayacı duraklat",
-    "pl": "Wstrzymaj stoper",
-    "nl": "Timer pauzeren",
-    "pt": "Pausar timer",
-    "id": "Jeda timer",
-    "ja": "タイマー一時停止",
-    "it": "Metti in pausa il timer"
-  },
-  "lmx.ex.stopTimer": {
-    "en": "Stop timer",
-    "el": "Διακοπή χρονομέτρου",
-    "es": "Detener temporizador",
-    "bg": "Спри таймера",
-    "fr": "Arrêter le chrono",
-    "ar": "إيقاف المؤقت",
-    "zh": "停止計時",
-    "ru": "Остановить таймер",
-    "de": "Timer stoppen",
-    "tr": "Sayacı durdur",
-    "pl": "Zatrzymaj stoper",
-    "nl": "Timer stoppen",
-    "pt": "Parar timer",
-    "id": "Hentikan timer",
-    "ja": "タイマー停止",
-    "it": "Ferma timer"
   },
   "lmx.ex.loginPlayFirst": {
     "en": "Log in with Google/Facebook and play a game first",
