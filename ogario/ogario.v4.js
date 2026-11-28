@@ -42088,7 +42088,6 @@ function thelegendmodproject() {
         playerColor: null,
         playerNick: '',
         playerPosition: 0,
-        //playerPositionMulti: null,
         leaderboard: [],
         botNicks: [],
         biggerSTEDCellsCache: [], //Sonia

@@ -2146,7 +2146,6 @@ class Spect {
                 //console.log('[SPECT] case 16');
                 this.updateCells(new window.buffer.Buffer(view.buffer), offset);
                 //jimboy3100
-                //if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
                 if (this.player && this.active && this.getOwnPlayerCells().length === 0) {
                     console.log('[SPECT] Multibox Player ' + this.number + ' lost');
                     this.terminate()
@@ -2867,7 +2866,6 @@ class Spect {
             case 16:
                 this.updateCells(message, offset);
                 //jimboy3100
-                //if (this.player && this.active && legendmod.playerCellsMulti.length==0 && this.timer && Date.now()-this.timer>3000){
                 if (this.player && this.active && this.getOwnPlayerCells().length === 0) {
                     console.log('[SPECT] Multibox Player ' + this.number + ' lost');
                     this.terminate()
