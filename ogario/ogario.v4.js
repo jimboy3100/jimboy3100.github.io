@@ -7096,7 +7096,7 @@ var _lmDl = false, _lmDlApi = null;
  * t (performance.now of that frame), unit (the multibox unit, 0 = main player), level (0 none,
  * 1 a bigger player near, 2 one that can split onto one of your cells from where it is), valid
  * (false while not playing or not asked). Nobody asks while Dying Light is off. */
-var _lmDlThr = false, _lmDlThreat = { t: 0, unit: 0, level: 0, valid: false };
+var _lmDlThr = false, _lmDlThreat = { t: 0, unit: 0, level: 0, valid: false }, LM_DL_THR_MS = 240;
 window.lmDlThreat = function () { return _lmDlThreat; };
 function lmDlSync() {
     var dl = window.LMDyingLight, on = false, api = null, thr = false;
@@ -7126,9 +7126,14 @@ function lmDlThreatLevel(cell, size, own, domRate) {
         if (!c || c.removed || !(c.size > 0)) continue;
         var r = size / (~~(c.size * c.size * 0.01) || 1);
         if (r < domRate) continue;
-        var dx = cell.x - c.x, dy = cell.y - c.y, gap = Math.sqrt(dx * dx + dy * dy) - c.size;
-        if ((r >= domRate * 2 && gap <= cs + 760) || (r >= domRate * 4 && gap <= 2 * cs + 760)) return 2;
-        if (gap <= cs + 1520) lvl = 1;
+        /* the reach is from the own cell's edge: compared squared from its centre */
+        var dx = cell.x - c.x, dy = cell.y - c.y, d2 = dx * dx + dy * dy, e;
+        if (r >= domRate * 2) {
+            e = cs + 760 + c.size;
+            if (d2 <= e * e) return 2;
+            if (r >= domRate * 4) { e += cs; if (d2 <= e * e) return 2; }
+        }
+        if (!lvl) { e = cs + 1520 + c.size; if (d2 <= e * e) lvl = 1; }
     }
     return lvl;
 }
@@ -57439,9 +57444,12 @@ function thelegendmodproject() {
             var _isPlaying = (window.multiboxPlayerEnabled && getActiveSpect && getActiveSpect(window.multiboxPlayerEnabled)) ?
                 lmUnitCellsInto(window.multiboxPlayerEnabled, this._lmActCells || (this._lmActCells = [])).length > 0 :
                 !!(this.play && this.playerCells && this.playerCells.length > 0);
-            /* Dying Light's threat look asked for the threat level (lmDlSync): judged in this pass */
+            /* Dying Light's threat look asked for the threat level (lmDlSync): judged in this pass,
+             * about 4 times a second (its look reads it as often), at once for another player to control */
             var _dlThr = _lmDlThr;
             if (_dlThr && !_isPlaying) { _lmDlThreat.valid = false; _lmDlThreat.level = 0; }
+            if (_dlThr && _isPlaying && _lmDlThreat.valid && window.performance.now() - _lmDlThreat.t < LM_DL_THR_MS &&
+                _lmDlThreat.unit === (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled) ? +window.multiboxPlayerEnabled || 0 : 0)) _dlThr = false;
             if (_isPlaying && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange || defaultmapsettings.tripleSplitRange || _dlThr)) {
                 var _splitOrRings = defaultmapsettings.splitRange || defaultmapsettings.oppRings;
                 /* Triple split range: separate pooled cache of enemies >= 8x (can triple-split onto you) */
@@ -57591,7 +57599,9 @@ function thelegendmodproject() {
                     _lmDlThreat.t = window.performance.now();
                     _lmDlThreat.unit = _activeSpect2 ? +window.multiboxPlayerEnabled || 0 : 0;
                     _lmDlThreat.level = _dlLvl;
-                    _lmDlThreat.valid = _dlOwn.length > 0 && _mass > 0;
+                    /* from the own cells themselves: playerMinMass / playerMaxMass are only kept
+                     * up while an opponent indicator is on */
+                    _lmDlThreat.valid = _dlMin > 0 && _dlMin < Infinity;
                 }
                 /* Truncate arrays to actual count (no splice, just length assignment) */
                 if (_splitOrRings) {

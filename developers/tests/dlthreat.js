@@ -30,7 +30,8 @@ L.playerCells = [own];
 L.playerMinMass = L.playerMaxMass = 100;
 const cell = (mass, x, o) => Object.assign({ x, y: 0, size: Math.sqrt(mass * 100), isPlayerCell: false }, o || {});
 const snap = () => ctx.lmDlThreat();
-const frame = (cells) => { L.cells = cells; ctx.lmDlSync(); L.compareCells(); return snap(); };
+/* one frame dt ms after the last (the level is judged about 4 times a second: 250 ms apart by default) */
+const frame = (cells, dt) => { T += dt === undefined ? 250 : dt; L.cells = cells; ctx.lmDlSync(); L.compareCells(); return snap(); };
 
 /* nobody asks: no pass (no setting is on), no snapshot */
 let s = frame([cell(400, 500)]);
@@ -43,6 +44,43 @@ s = frame([cell(400, 100 + 1000)]);
 check('the same just out of its split reach, within twice it: level 1', s.level === 1, s.level);
 s = frame([cell(400, 100 + 2000)]);
 check('far away: level 0', s.level === 0 && s.valid, s.level);
+/* the reach is from the own cell's edge (compared squared): exactly at it counts, just past it not */
+s = frame([cell(400, 100 + 200 + 760)]);
+check('exactly at the split reach: 2', s.level === 2, s.level);
+s = frame([cell(400, 100 + 200 + 761)]);
+check('just past it: 1', s.level === 1, s.level);
+s = frame([cell(150, 100 + Math.sqrt(15000) + 1520)]);
+check('exactly at the near reach: 1', s.level === 1, s.level);
+s = frame([cell(150, 100 + Math.sqrt(15000) + 1521)]);
+check('just past it: 0', s.level === 0, s.level);
+/* sampled about 4 times a second, not every frame */
+s = frame([cell(400, 500)]);
+const t0 = s.t;
+s = frame([cell(400, 100 + 2000)], 16);
+check('a frame 16 ms later keeps the last judgement (no pass for the threat)', s.level === 2 && s.t === t0, JSON.stringify(s));
+s = frame([cell(400, 100 + 2000)], 200);
+check('...also 216 ms later', s.level === 2 && s.t === t0, JSON.stringify(s));
+s = frame([cell(400, 100 + 2000)], 34);
+check('250 ms later it is judged again', s.level === 0 && s.t === T, JSON.stringify(s));
+let calls = 0;
+const realLevel = ctx.lmDlThreatLevel;
+ctx.lmDlThreatLevel = function () { calls++; return realLevel.apply(this, arguments); };
+const crowd = [];
+for (let i = 0; i < 50; i++) crowd.push(cell(400, 3000 + i * 10));
+frame(crowd);
+const one = calls;
+for (let i = 0; i < 14; i++) frame(crowd, 16);
+check('60 frames a second for 224 ms: the cells judged once, not every frame', one === 50 && calls === 50, one + ' / ' + calls);
+ctx.lmDlThreatLevel = realLevel;
+/* the reference mass with every opponent indicator off: playerMinMass / playerMaxMass are not
+ * kept up then (0 here); the own cells give it */
+L.playerMinMass = L.playerMaxMass = 0;
+s = frame([cell(400, 500)]);
+check('indicators off (cached mass 0): still valid, judged from the own cells', s.valid === true && s.level === 2, JSON.stringify(s));
+L.playerMinMass = L.playerMaxMass = 5000;
+s = frame([cell(400, 500)]);
+check('...a stale cached mass from an older life changes nothing', s.valid === true && s.level === 2, JSON.stringify(s));
+L.playerMinMass = L.playerMaxMass = 100;
 /* 16x: double split reach 2 x 400 + 760 */
 s = frame([cell(1600, 100 + 1500)]);
 check('a double split reach (16x) counts', s.level === 2, s.level);
@@ -63,8 +101,9 @@ L.playerCells = [own];
 units[3] = { playerMinMass: 100, playerMaxMass: 100 };
 ctx.multiboxPlayerEnabled = 3;
 L.playerCellsMulti = [{ x: 10000, y: 0, size: 100, spectator: 3 }];
-s = frame([cell(400, 500), cell(400, 10000 + 100 + 500)]);
-check('a selected unit: judged by its own cells', s.level === 2 && s.unit === 3, JSON.stringify(s));
+ctx.multiboxPlayerEnabled = 0; frame([cell(400, 500)]); ctx.multiboxPlayerEnabled = 3;
+s = frame([cell(400, 500), cell(400, 10000 + 100 + 500)], 16);
+check('a selected unit: judged by its own cells at once (not 250 ms later)', s.level === 2 && s.unit === 3 && s.t === T, JSON.stringify(s));
 s = frame([cell(400, 500)]);
 check('...a danger to the main player only is not its threat', s.level === 0 && s.unit === 3, JSON.stringify(s));
 ctx.multiboxPlayerEnabled = 0;
