@@ -20140,7 +20140,7 @@ var defaultSettings = {
     btn3Color2: '#3a3e4f',
     btn4Color: '#c9302c',
     btn4Color2: '#c9302c',
-    menuBg: 'https://www.legendmod.ml/banners/static/img/pattern.png',
+    menuBg: 'https://i.imgur.com/oNKOdq4.png',
     menuOpacity: 1,
     hudMainColor: '#626fa6',
     hudColor: 'rgba(0,0,0,0.72)',
