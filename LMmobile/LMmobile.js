@@ -1111,7 +1111,7 @@
         }
 
         /* ═══════════════════════════════════════════════════════
-         *  SPLIT — Space (keyCode 32)
+         *  SPLIT — application.split (the Space command)
          * ═══════════════════════════════════════════════════════ */
         bSplit.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
@@ -1212,7 +1212,7 @@
         });
 
         /* ═══════════════════════════════════════════════════════
-         *  FEED — W (keyCode 87), hold to repeat
+         *  FEED — application.macroFeed (the W command), held
          * ═══════════════════════════════════════════════════════ */
         var feedMacroOn = false;
         /* The game's own macro feed: it follows the player's feed-speed setting, pauses in a
@@ -1297,7 +1297,7 @@
         /* (game menu is accessed via the drawer — ☰ now only toggles the drawer) */
 
         /* ═══════════════════════════════════════════════════════
-         *  CHAT — Enter (keyCode 13)
+         *  CHAT — application.enterChatMessage (the Enter command)
          * ═══════════════════════════════════════════════════════ */
         var chatOn = false;
         /* generation counter: every chatOpen and chatClose increments it; delayed
