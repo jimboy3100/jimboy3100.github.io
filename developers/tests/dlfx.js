@@ -159,6 +159,40 @@ async function theme() {
     E.emit('spawn', { time: 8 });
     check('on again: one burst per spawn (one listener), same design per name', n === 1 && L.getFallbackSkinKey(cell('alpha')) === a1);
     await L.disable();
+    drawRender.startSpawnBurst = orig;
+
+    /* with the multibox players' events (lmMbPlayerEvent: playerSpawned for every player of ours,
+     * its connection number in source): the burst at the cells of the player that spawned */
+    ctx.lmMbPlayerEvent = function () { };
+    const u17 = { player: true, number: 17, cells: [], ready: true, getOwnPlayerCells() { return this.cells; }, transformReady() { return this.ready; } };
+    ctx.lmMbPlayers = { getBySource: k => k === 17 ? u17 : null };
+    const q2 = L.enable({ confirm: false });
+    flush();
+    await q2;
+    check('players events: one playerSpawned listener, none on spawn', E._has('playerSpawned') && !E._has('spawn'));
+    fx.active = false; setPos(500, -300);
+    u17.cells.push({ x: 9000, y: 100 }, { x: 9100, y: 300 }, { x: 0, y: 0, removed: true });
+    E.emit('playerSpawned', { slot: 2, source: 17, role: 'unit', life: 1 });
+    check('a unit spawning while the main player lives: at the unit\'s own cells, not the main player\'s', fx.active && fx.x === 9050 && fx.y === 200 && fx.color === '#a12b30');
+    fx.active = false;
+    E.emit('playerSpawned', { slot: 1, source: 0, role: 'main', life: 2 });
+    check('the main player spawning: at its own cells', fx.active && fx.x === 500 && fx.y === -300);
+    fx.active = false;
+    u17.ready = false;
+    E.emit('playerSpawned', { slot: 2, source: 17, role: 'unit', life: 2 });
+    check('a unit whose cells are not on this map yet: nothing yet', !fx.active);
+    u17.ready = true;
+    await wait(170);
+    check('...one try later at its cells', fx.active && fx.x === 9050 && fx.y === 200);
+    fx.active = false;
+    E.emit('playerSpawned', { slot: 3, source: 23, role: 'unit', life: 1 });
+    await wait(170);
+    check('a player that is not in the registry: no burst (never at the main player)', !fx.active);
+    E.emit('playerSpawned', { slot: 2, source: 17, role: 'unit', life: 3, context: 'practice' });
+    check('a unit in the practice arena (its context): no burst', !fx.active);
+    await L.disable();
+    check('off: no playerSpawned listener left', !E._has('playerSpawned') && !E._has('spawn'));
+    delete ctx.lmMbPlayerEvent; delete ctx.lmMbPlayers;
 }
 
 theme().catch(e => check('theme ran: ' + (e && e.stack), false)).then(() => {

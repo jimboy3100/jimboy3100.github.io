@@ -12,7 +12,8 @@
  *   particlePalette(), effect(name), setEffect(name, on): the themed death particle colours,
  *     the spawn burst and the Game Over card, each can be suppressed on its own
  *   getBackground(): { url, img, alpha } of the map scene while on, else null
- *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat, background(), replay() })
+ *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat, background(), replay(), changed() })
+ *     changed(): an effect was allowed or suppressed, or the intensity changed, while on
  *   replayLook({ i, cy, ck }) / replayLook(null), replay(), replayScoped(): the look of a replay
  *     recorded with the theme on (ogario/modules/replaystudio.js): see replayLook below
  * LMEvents 'dyingLightChange' { state, enabled, generation } is sent on every state change. */
@@ -72,7 +73,7 @@
     var running = [];         /* the parts started by this activation, stopped in reverse order */
     var styleEl = null, onSettings = null;
     var byNick = new Map();   /* nick -> design key, at most 512 names, emptied on disable */
-    var onSpawn = null, spawnTimer = 0, burstAt = 0;
+    var onSpawn = null, spawnEv = 'spawn', spawnTimer = 0, burstAt = 0;
     /* A replay recorded with the theme on (replayLook): rp is its recorded look { i, cy, ck } (the
      * intensity, the Day and night setting, the director's clock at the replay position), read by
      * the director instead of the player's. scoped: this activation was made only for the replay
@@ -186,37 +187,57 @@
      * spawn. Expanding Land / Legend World start their own; nothing in a replay, the practice
      * arena or with Reduced motion. The point is the own cells' centre in the frame the burst is
      * drawn in (the cells' own coordinates; getPlayerX() adds mapOffsetX, which put the burst off
-     * the player on a server whose border is not centred). No own cell yet: one try 150 ms later. */
-    function spawnBurst(g, again) {
+     * the player on a server whose border is not centred). No own cell yet: one try 150 ms later.
+     * With the multibox players' events (playerSpawned) it is the player that spawned: src is its
+     * connection number (0 the main player) and its own cells give the point, so a unit's spawn
+     * is not drawn at the main player. */
+    function spawnBurst(g, again, src) {
         spawnTimer = 0;
         if (g !== generation || state !== 'on' || !FX.spawn) return;
         var dr = W.drawRender, lm = W.legendmod, ms = W.defaultmapsettings;
         if (!lm || !dr || typeof dr.startSpawnBurst !== 'function') return;
         if (lm.isLegendWorld || lm.serverType === 'expandingland' || (ms && ms.reducedMotion) ||
             (W.LMPractice && W.LMPractice.on) || W._lmEvReplayOn) return;
-        var pc = lm.playerCells, n = pc && pc.length > 0 ? pc.length : 0, x = 0, y = 0;
-        for (var i = 0; i < n; i++) { x += +pc[i].x; y += +pc[i].y; }
+        var pc = src ? unitCells(src) : lm.playerCells, n = 0, x = 0, y = 0;
+        for (var i = 0; pc && i < pc.length; i++) {
+            if (!pc[i] || pc[i].removed) continue;
+            x += +pc[i].x; y += +pc[i].y; n++;
+        }
         if (!n || !isFinite(x) || !isFinite(y)) {
-            if (!again) spawnTimer = setTimeout(function () { spawnBurst(g, true); }, 150);
+            if (!again) spawnTimer = setTimeout(function () { spawnBurst(g, true, src); }, 150);
             return;
         }
         dr.startSpawnBurst(x / n, y / n, SPAWN_COLOUR);
         burstAt = dr._spawnEffect ? dr._spawnEffect.startTime : 0;
     }
+    /* the own cells of a multibox unit (its connection number) from the players' registry
+     * (lmMbPlayers; else window.spects for a unit of an older spect.js), once its cells are on
+     * this map (transformReady); else null */
+    function unitCells(src) {
+        var reg = W.lmMbPlayers, sp = reg && typeof reg.getBySource === 'function' ? reg.getBySource(src) : null, list = W.spects;
+        for (var i = 0; !sp && list && i < list.length; i++) if (list[i] && list[i].player === true && +list[i].number === src) sp = list[i];
+        if (!sp || sp.player !== true || typeof sp.getOwnPlayerCells !== 'function') return null;
+        if (typeof sp.transformReady === 'function' && !sp.transformReady()) return null;
+        return sp.getOwnPlayerCells();
+    }
+    /* the players' spawn event: playerSpawned (every player of ours, with its connection number),
+     * else (an older core) spawn, the main player's */
+    function spawnEvent() { return typeof W.lmMbPlayerEvent === 'function' ? 'playerSpawned' : 'spawn'; }
     function startFx(g) {
         syncGameOver();
         if (onSpawn || !W.LMEvents || typeof W.LMEvents.on !== 'function') return;
+        spawnEv = spawnEvent();
         onSpawn = function (e) {
             if (spawnTimer) clearTimeout(spawnTimer);
             spawnTimer = 0;
             /* the event's own context (practice / replay); older cores: the flags in spawnBurst */
             if (e && e.context && e.context !== 'live') return;
-            spawnBurst(g, false);
+            spawnBurst(g, false, e && +e.source > 0 ? +e.source : 0);
         };
-        W.LMEvents.on('spawn', onSpawn);
+        W.LMEvents.on(spawnEv, onSpawn);
     }
     function stopFx() {
-        if (onSpawn && W.LMEvents && typeof W.LMEvents.off === 'function') W.LMEvents.off('spawn', onSpawn);
+        if (onSpawn && W.LMEvents && typeof W.LMEvents.off === 'function') W.LMEvents.off(spawnEv, onSpawn);
         onSpawn = null;
         if (spawnTimer) clearTimeout(spawnTimer);
         spawnTimer = 0;
@@ -247,6 +268,13 @@
             running.push(p);
         } catch (e) { warn('part ' + (p.name || '?') + ' did not start', e); }
     }
+    /* the running parts' changed() (an effect allowed or suppressed, the intensity changed) */
+    function changed() {
+        for (var i = 0; i < running.length; i++) {
+            var p = running[i];
+            try { if (typeof p.changed === 'function') p.changed(); } catch (e) { warn('part ' + (p.name || '?'), e); }
+        }
+    }
     function stopParts() {
         while (running.length) {
             var p = running.pop();
@@ -269,7 +297,7 @@
         if (onSettings) return;
         onSettings = function (d) {
             if (d && d.key === 'dyingLight' && d.value === false && state !== 'off') disable();
-            else if (d && d.key === 'dyingLightIntensity' && syncIntensity()) emit();
+            else if (d && d.key === 'dyingLightIntensity' && syncIntensity()) { emit(); changed(); }
         };
         if (W.LMEvents && typeof W.LMEvents.on === 'function') W.LMEvents.on('settingsChange', onSettings);
     }
@@ -438,6 +466,7 @@
             if (!INTENSITIES[name] || name === intensityV) return false;
             intensityV = name;
             emit();
+            changed();
             return true;
         },
         getFallbackSkinKey: getFallbackSkinKey,
@@ -471,6 +500,7 @@
             FX[name] = !!on;
             if (name === 'variants') byNick.clear();
             if (name === 'gameOver') syncGameOver();
+            changed();
             return true;
         },
         hasForegroundFx: function () { return anyRunning('fx'); },
