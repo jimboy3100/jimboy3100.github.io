@@ -100,7 +100,7 @@
 | 8.3b | Merge timer visible above cells | ☐ | ☐ | ☐ |
 | 8.4 | Teammate indicators visible above cells | ☐ | ☐ | ☐ |
 | 8.5 | FB skin arrow on overlay canvas (GL) | ☐ | ☐ | ☐ |
-| 8.6 | Rings/contours still work (Canvas2D fallback) | ☐ | ☐ | ☐ |
+| 8.6 | Rings and cell contours still work (contours: drawn by WebGL too, hollow inside, skins over the ring) | ☐ | ☐ | ☐ |
 | 8.7 | Cell selection ring visible | ☐ | ☐ | ☐ |
 
 ## 9. Accessibility (Settings Audit)

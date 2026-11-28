@@ -16,7 +16,7 @@
  * Usage:
  *   node developers/tests/glbatch.js              visual comparison (quick)
  *   node developers/tests/glbatch.js --bench      + benchmark table
- *   node developers/tests/glbatch.js --fx         only the GL marks, FB badge / effects, merge timer and selected ring
+ *   node developers/tests/glbatch.js --fx         only the GL marks, FB badge / effects, merge timer, selected ring and cell contours
  *                                                 against Canvas2D (quick)
  *     --ref REF      git revision of the reference version (default c677d1ba = 3.608)
  *     --old FILE     reference ogario.v4.js from a file instead of git
@@ -1040,7 +1040,127 @@ function pageLib() {
         window.SpecialEffectPlayers = undefined;
         return res;
     }
+    /* Cell contours drawn by the GL batch (u_contour / the ring in the jelly fill stream) against
+     * Canvas2D doing what Cell.draw does: per cell in order, the body stroked 20 wide in its colour
+     * (at cellsAlpha), then the skin clipped to the body (jelly: with its border stroke). Cells:
+     * one without skin seen through the empty inside of a later big one, an opaque skin, a skin
+     * with see-through parts. Pixels within 1.5 px of an edge are compared apart, skin texels
+     * apart (texture filtering); cfg.labels: the earlier cell's nick must show through. */
+    function contoursGpu(src, defaults, cfg) {
+        function disc(id, x, y, r, color, nick) {
+            var pts = [], n = 128;
+            for (var i = 0; i < n; i++) pts.push(x + Math.cos(i / n * 2 * Math.PI) * r, y + Math.sin(i / n * 2 * Math.PI) * r);
+            return { id: id, x: x, y: y, size: r, isVirus: false, maxPointRad: r, pts: pts, color: color, nick: nick };
+        }
+        var scene = [disc(1, -260, -40, 70, '#3388ff', 'under'), disc(2, 230, 60, 110, '#ff8800', 'Legend'),
+            disc(3, -40, 190, 130, '#cc33ff', 'sk1n'), disc(4, -200, 40, 260, '#33ff66', '')];
+        var map = { noNames: !cfg.labels, showMass: false, cellContours: true };
+        var settings = {};
+        if (cfg.alpha) { map.transparentCells = true; settings.cellsAlpha = cfg.alpha; }
+        var o = setup(src, defaults, { scale: cfg.scale, jelly: cfg.jelly, map: map, settings: settings }, scene);
+        var R = o.R, env = o.env, dpr = cfg.dpr || 1;
+        R.canvasWidth = W / dpr; R.canvasHeight = H / dpr;
+        frame(o);
+        var ok = frame(o);
+        var p1 = pixels(R);
+        var res = { ok: ok, strict: 0, strictMax: 0, over2: 0, skin: 0, skinSum: 0, skinOver24: 0, edge: 0, edgeSum: 0, edgeMax: 0,
+            rim: 0, hollow: '', labelPx: 0, glError: 0 };
+        var sc = cfg.scale * dpr, cells = env.LM.cells, skins = window.__glbSkinned;
+        if (cfg.labels) {
+            /* the same frame without the nick: pixels inside the earlier cell must differ */
+            env.defaultmapsettings.noNames = true;
+            frame(o); frame(o);
+            var p0 = pixels(R), c1 = cells[0];
+            for (var ly = 0; ly < H; ly++) for (var lx = 0; lx < W; lx++) {
+                var wx = (lx + 0.5 - W / 2) / sc + R.camX, wy = (ly + 0.5 - H / 2) / sc + R.camY;
+                if ((wx - c1.x) * (wx - c1.x) + (wy - c1.y) * (wy - c1.y) > 50 * 50) continue;
+                var li = ((H - 1 - ly) * W + lx) * 4;
+                if (p0[li] !== p1[li] || p0[li + 1] !== p1[li + 1] || p0[li + 2] !== p1[li + 2]) res.labelPx++;
+            }
+            res.glError = R.gl.getError();
+            R.gl.getExtension('WEBGL_lose_context').loseContext();
+            return res;
+        }
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var x = c.getContext('2d');
+        x.setTransform(sc, 0, 0, sc, W / 2 - R.camX * sc, H / 2 - R.camY * sc);
+        /* [cell, radius]: edges; [cell, r0, r1]: the jelly skin border's outer half (GL draws it
+         * outside the body too, with or without contours: left out, as the whole border with
+         * cellsAlpha, see below) */
+        var edges = [], rims = [];
+        function path(cl) {
+            x.beginPath();
+            if (cfg.jelly) {
+                x.moveTo(cl.points[0].x, cl.points[0].y);
+                for (var k = 1; k < cl.points.length; k++) x.lineTo(cl.points[k].x, cl.points[k].y);
+            } else x.arc(cl.x, cl.y, cl.size, 0, 2 * Math.PI, false);
+            x.closePath();
+        }
+        for (var i = 0; i < cells.length; i++) {
+            var cl = cells[i], sk = skins[cl.targetNick];
+            x.globalAlpha = cfg.alpha || 1;
+            x.lineWidth = 20;
+            x.strokeStyle = cl.color;
+            path(cl);
+            x.stroke();
+            x.globalAlpha = 1;
+            edges.push([cl, cl.size - 10], [cl, cl.size + 10], [cl, cl.size]);
+            if (sk === undefined) continue;
+            var img = skinCanvas(sk);
+            x.save();
+            path(cl);
+            x.clip();
+            if (cfg.jelly) {
+                var lw = Math.max(~~(cl.size / 50), 10), rr = cl.maxPointRad;
+                x.drawImage(img, cl.x - rr - lw, cl.y - rr - lw, 2 * rr + 2 * lw, 2 * rr + 2 * lw);
+                x.lineWidth = lw;
+                x.strokeStyle = cl.color;
+                x.stroke();
+                edges.push([cl, cl.size + lw / 2], [cl, cl.size - lw / 2]);
+                /* with cellsAlpha the whole border: the GL bands pass draws it after every body,
+                 * so a later transparent ring hides it (also without contours) */
+                rims.push([cl, cfg.alpha ? cl.size - lw / 2 : cl.size, cl.size + lw / 2]);
+            } else x.drawImage(img, cl.x - cl.size, cl.y - cl.size, 2 * cl.size, 2 * cl.size);
+            x.restore();
+        }
+        x.setTransform(1, 0, 0, 1, 0, 0);
+        var ref = x.getImageData(0, 0, W, H).data;
+        function dist(cl, px, py) {
+            var ex = W / 2 + (cl.x - R.camX) * sc, ey = H / 2 + (cl.y - R.camY) * sc;
+            return Math.sqrt((px - ex) * (px - ex) + (py - ey) * (py - ey));
+        }
+        for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+            var gs = ((H - 1 - yy) * W + xx) * 4, rs = (yy * W + xx) * 4;
+            var ra = ref[rs + 3], m = 0;
+            for (var ch = 0; ch < 3; ch++) m = Math.max(m, Math.abs(p1[gs + ch] - Math.round(ref[rs + ch] * ra / 255)));
+            m = Math.max(m, Math.abs(p1[gs + 3] - ra));
+            var px = xx + 0.5, py = yy + 0.5, edge = false, inSkin = false, rim = false, e;
+            for (e = 0; e < edges.length; e++) if (Math.abs(dist(edges[e][0], px, py) - edges[e][1] * sc) < 1.5) { edge = true; break; }
+            if (edge) { res.edge++; res.edgeSum += m; if (m > res.edgeMax) res.edgeMax = m; continue; }
+            for (e = 0; e < rims.length; e++) { var rd = dist(rims[e][0], px, py); if (rd > rims[e][1] * sc && rd < rims[e][2] * sc) rim = true; }
+            if (rim) { res.rim++; continue; }
+            /* inside the skin of the topmost cell that paints here */
+            for (e = cells.length - 1; e >= 0; e--) {
+                var dc = dist(cells[e], px, py), sz = cells[e].size * sc;
+                if (dc < sz + 10 * sc && (dc > sz - 10 * sc || skins[cells[e].targetNick] !== undefined)) { inSkin = skins[cells[e].targetNick] !== undefined && dc < sz; break; }
+            }
+            if (inSkin) { res.skin++; res.skinSum += m; if (m > 24) res.skinOver24++; continue; }
+            res.strict++;
+            if (m > res.strictMax) res.strictMax = m;
+            if (m > 2) res.over2++;
+        }
+        /* on the earlier cell's ring, inside the later big one: its own colour (seen through) */
+        var h = cells[0], hx = Math.round(W / 2 + (h.x + h.size - R.camX) * sc), hy = Math.round(H / 2 + (h.y - R.camY) * sc), hs = ((H - 1 - hy) * W + hx) * 4;
+        res.hollow = [p1[hs], p1[hs + 1], p1[hs + 2], p1[hs + 3]].join(',');
+        res.edgeMean = res.edge ? res.edgeSum / res.edge : 0;
+        res.skinMean = res.skin ? res.skinSum / res.skin : 0;
+        res.glError = R.gl.getError();
+        R.gl.getExtension('WEBGL_lose_context').loseContext();
+        return res;
+    }
     return {
+        contoursGpu: contoursGpu,
         ringGpu: ringGpu,
         marksGpu: marksGpu,
         fgGpu: fgGpu,
@@ -1236,11 +1356,32 @@ async function main() {
                 check(nm + ': the same pixels as Canvas2D drawing them (max channel diff <= 4)', fr.over4 === 0);
             }
         }
-        /* --fx: only the marks / timer / ring checks above (a few seconds) */
+        /* cell contours drawn by the GL batch (working copy only) */
+        if (NEW.factory.indexOf('u_cell_contour') >= 0) {
+            for (const cc of [{ scale: 1, jelly: true }, { scale: 1, jelly: false }, { scale: 0.55, jelly: true, dpr: 2 }, { scale: 1.4, jelly: false, dpr: 2 },
+                { scale: 1, jelly: true, alpha: 0.6 }, { scale: 0.8, jelly: false, alpha: 0.5 }, { scale: 1, jelly: true, labels: true }, { scale: 1, jelly: false, labels: true }]) {
+                const cr = await evaluate('__glb.contoursGpu(__glbNew, __glbDefaults, ' + JSON.stringify(cc) + ')');
+                const nm = 'GL contours ' + JSON.stringify(cc);
+                if (cc.labels) {
+                    console.log('     ' + nm + ': nick pixels of the earlier cell seen through the later one ' + cr.labelPx);
+                    check(nm + ': drawn, no GL error, the nick of the earlier cell shows through the empty inside of the later one', cr.ok && cr.glError === 0 && cr.labelPx > 100);
+                    continue;
+                }
+                const a = cc.alpha || 1, want = [51, 136, 255].map((v) => Math.round(v * a)).concat([Math.round(255 * a)]);
+                console.log('     ' + nm + ': px ' + cr.strict + ' (max diff to Canvas2D ' + cr.strictMax + ', >2: ' + cr.over2 + '), skin px ' + cr.skin + ' (mean ' + cr.skinMean.toFixed(2) + ', >24: ' + cr.skinOver24 +
+                    '), edge px ' + cr.edge + ' (max ' + cr.edgeMax + ', mean ' + cr.edgeMean.toFixed(2) + '), skin border rim px left out ' + cr.rim + ', ring seen through ' + cr.hollow);
+                check(nm + ': drawn, no GL error', cr.ok && cr.glError === 0 && cr.strict > 100000);
+                check(nm + ': the same pixels as Canvas2D (rings, empty insides, cells seen through; max channel diff <= 2)', cr.over2 === 0);
+                check(nm + ': skins over the rings as Canvas2D (mean diff <= 3, < 1% over 24)', cr.skinMean <= 3 && cr.skinOver24 < cr.skin * 0.01);
+                check(nm + ': antialiased edges as Canvas2D (mean diff <= 16)', cr.edgeMean <= 16);
+                check(nm + ': the earlier cell shows through the empty inside of the later one', cr.hollow.split(',').every((v, k) => Math.abs(+v - want[k]) <= 2));
+            }
+        }
+        /* --fx: only the marks / timer / ring / contour checks above (a few seconds) */
         if (FX) {
             if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); failed++; }
             if (failed) { console.log(failed + ' check(s) failed'); return done(1); }
-            console.log('glbatch ok (--fx: GL marks, FB badge / effects, merge timer and selected ring only)');
+            console.log('glbatch ok (--fx: GL marks, FB badge / effects, merge timer, selected ring and cell contours only)');
             return done(0);
         }
         /* the labels are really drawn: labels on and off give different pictures */

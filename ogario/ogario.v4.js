@@ -63448,14 +63448,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * Cell contours still use the incompatible Canvas geometry path.
-             *
-             * This is a presentation-feature fallback, NOT a server-specific
-             * jelly implementation.
+             * Cell contours: the batch strokes the bodies itself (the ring in
+             * the jelly fill stream, u_contour in the circle shader), in the
+             * Cell.draw order. Only a renderer without those stays on Canvas2D.
              */
             if (
                 defaultmapsettings
-                    .cellContours
+                    .cellContours &&
+                (
+                    defaultmapsettings.jellyPhisycs
+                        ? !this.glJellyDrawRings
+                        : !this.u_cell_contour
+                )
             ) {
                 return this._lmNoGL(this.GLW.CONTOURS);
             }
@@ -64898,6 +64902,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
                 uniform float u_glowPass;
 
+                /*
+                 * Cell contours: x = half the Canvas2D line width (0 = off), y = how
+                 * far the quad of an ordinary cell grows for the outer half and its
+                 * antialiased edge.
+                 */
+                uniform vec2 u_contour;
+
                 out vec4 v_color;
                 out vec2 v_localWorld;
 
@@ -64915,7 +64926,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     float quadRadius =
                         a_radius +
                         isVirus *
-                        u_virusExtraRadius;
+                        u_virusExtraRadius +
+                        (1.0 - isVirus) *
+                        u_contour.y;
 
                     v_color =
                         a_color;
@@ -64996,6 +65009,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 uniform vec3 u_virusGlowColor;
 
                 uniform float u_glowPass;
+
+                uniform vec2 u_contour;
 
                 out vec4 fragColor;
 
@@ -65411,6 +65426,140 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      *
                      * Existing cell/skin behaviour remains unchanged.
                      */
+                    /*
+                     * Cell contours, the order of Cell.draw: the body is not filled
+                     * but stroked (a ring of u_contour.x on both sides of the edge,
+                     * at the body alpha), then the skin clipped to the circle over
+                     * it. The inside stays empty (no depth write there), so earlier
+                     * cells and their labels show through as on Canvas2D.
+                     */
+                    if (
+                        u_contour.x >
+                        0.0
+                    ) {
+                        float cRadial =
+                            length(
+                                v_localWorld
+                            );
+
+                        float cPx =
+                            max(
+                                fwidth(
+                                    cRadial
+                                ),
+                                0.0001
+                            );
+
+                        float cRingA =
+                            clamp(
+                                v_color.a,
+                                0.0,
+                                1.0
+                            ) *
+                            clamp(
+                                0.5 -
+                                (
+                                    abs(
+                                        cRadial -
+                                        v_radius
+                                    ) -
+                                    u_contour.x
+                                ) /
+                                cPx,
+                                0.0,
+                                1.0
+                            );
+
+                        vec3 cPremul =
+                            v_color.rgb *
+                            cRingA;
+
+                        float cOutA =
+                            cRingA;
+
+                        if (
+                            v_skinLayer >=
+                            0.0
+                        ) {
+                            vec2 cUV =
+                                v_localWorld /
+                                max(
+                                    v_radius,
+                                    0.0001
+                                ) *
+                                0.5 +
+                                0.5;
+
+                            vec4 cSkin =
+                                v_skinLayer >= 128.0 ?
+                                texture(
+                                    u_skinArray2,
+                                    vec3(
+                                        cUV,
+                                        v_skinLayer - 128.0
+                                    )
+                                ) :
+                                texture(
+                                    u_skinArray,
+                                    vec3(
+                                        cUV,
+                                        v_skinLayer
+                                    )
+                                );
+
+                            float cSkinA =
+                                clamp(
+                                    cSkin.a *
+                                    v_skinAlpha,
+                                    0.0,
+                                    1.0
+                                ) *
+                                clamp(
+                                    0.5 -
+                                    (
+                                        cRadial -
+                                        v_radius
+                                    ) /
+                                    cPx,
+                                    0.0,
+                                    1.0
+                                );
+
+                            cPremul =
+                                cSkin.rgb *
+                                cSkinA +
+                                cPremul *
+                                (
+                                    1.0 -
+                                    cSkinA
+                                );
+
+                            cOutA =
+                                cSkinA +
+                                cOutA *
+                                (
+                                    1.0 -
+                                    cSkinA
+                                );
+                        }
+
+                        if (
+                            cOutA <=
+                            0.001
+                        ) {
+                            discard;
+                        }
+
+                        fragColor =
+                            vec4(
+                                cPremul /
+                                cOutA,
+                                cOutA
+                            );
+
+                        return;
+                    }
+
                     vec2 unitPos =
                         v_localWorld /
                         max(
@@ -65613,6 +65762,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     gl.getUniformLocation(
                         cellProgram,
                         'u_glowPass'
+                    );
+
+                this.u_cell_contour =
+                    gl.getUniformLocation(
+                        cellProgram,
+                        'u_contour'
                     );
 
                 // Cell VAO:
@@ -76050,6 +76205,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     new Int32Array(
                         this.glJellyDrawCapacity
                     );
+                /* 1: the cell's contour ring is in the fill stream before its fan */
+                this.glJellyDrawRings =
+                    new Int32Array(
+                        this.glJellyDrawCapacity
+                    );
 
 
                 this.glJellyDrawStrokeStarts =
@@ -76679,6 +76839,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         new Int32Array(
                             drawCap
                         );
+                    this.glJellyDrawRings =
+                        new Int32Array(
+                            drawCap
+                        );
 
 
                     this.glJellyDrawStrokeStarts =
@@ -76841,9 +77005,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.glJellyIndexData;
             var strokeIdx =
                 this.glJellyStrokeIndexData;
+            /* 1: a contour ring (2 vertices per point) before the fan, 6 indices per point */
+            var rings =
+                this.glJellyDrawRings;
             var fi =
                 from > 0
-                    ? fillAt[from - 1] + counts[from - 1] * 3
+                    ? fillAt[from - 1] + counts[from - 1] * (3 + 6 * rings[from - 1])
                     : 0;
             var si =
                 from > 0
@@ -76868,6 +77035,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                 fillAt[k] =
                     fi;
+
+                if (rings[k]) {
+                    fi =
+                        lmJellyBandIndices(
+                            fillIdx,
+                            fi,
+                            starts[k] - 2 * n,
+                            n
+                        );
+                }
 
                 fi =
                     lmJellyFanIndices(
@@ -76905,7 +77082,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             out.fillTotal =
                 to > 0
-                    ? fillAt[last] + counts[last] * 3
+                    ? fillAt[last] + counts[last] * (3 + 6 * rings[last])
                     : 0;
             out.strokeTotal =
                 to > 0
@@ -76935,7 +77112,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             b,
             innerA,
             outerA,
-            z
+            z,
+            toFill
         ) {
             var n =
                 points
@@ -77170,6 +77348,36 @@ function pickPlayerCellBySize(players, selectBiggest) {
              *
              * Locals only in this loop (see _lmJellyWriteFill).
              */
+            if (toFill) {
+                /* the contour of a cell: into the fill stream, before its fan, in
+                 * the fill layout (no skin), so it is drawn under the cell's skin
+                 * in the same draw, in the cell order */
+                var fd = this.glJellyVertexData;
+                var fs = this.glJellyStride;
+                var fo = this._glJellyVertexCount * fs;
+                var fOffX = this._glJellyOffX || 0;
+                var fOffY = this._glJellyOffY || 0;
+                for (var fe = 0; fe < n; fe++) {
+                    var fp = points[fe];
+                    for (var side = 0; side < 2; side++) {
+                        var off = side ? outerOffset : innerOffset;
+                        fd[fo] = fp.x + nx[fe] * off + fOffX;
+                        fd[fo + 1] = fp.y + ny[fe] * off + fOffY;
+                        fd[fo + 2] = 0.5;
+                        fd[fo + 3] = 0.5;
+                        fd[fo + 4] = r;
+                        fd[fo + 5] = g;
+                        fd[fo + 6] = b;
+                        fd[fo + 7] = side ? outerA : innerA;
+                        fd[fo + 8] = -1;
+                        fd[fo + 9] = 1;
+                        fd[fo + 10] = z;
+                        fo += fs;
+                    }
+                }
+                this._glJellyVertexCount += n * 2;
+                return 1;
+            }
             var d =
                 this.glJellyStrokeVertexData;
             var stride =
@@ -77688,6 +77896,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     );
 
 
+                /* Cell contours: half the Canvas2D line width (20) of the stroke that
+                 * replaces the body fill of every cell but viruses (0: off) */
+                var jellyContour =
+                    defaultmapsettings.cellContours ? 10 : 0;
+
+
                 var needFill =
                     0;
 
@@ -77813,6 +78027,18 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             .points
                             .length *
                         3;
+
+
+                    /* its contour ring: two vertices and two triangles per point */
+                    if (
+                        jellyContour &&
+                        !jellyCountCell.isVirus
+                    ) {
+                        needFill +=
+                            jellyCountCell.points.length * 2;
+                        needFillIdx +=
+                            jellyCountCell.points.length * 6;
+                    }
 
 
                     needDraws++;
@@ -78478,14 +78704,34 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     /*
                      * Centre + this frame's perimeter points; the index list
                      * makes the fan triangles (centre, point i, point i + 1).
+                     * Cell contours (Cell.draw): the body is not filled but stroked
+                     * 10 inside and outside its edge at the body alpha, before the
+                     * skin; the ring goes into the fill stream just before the fan,
+                     * the fan keeps only the skin (an empty inside writes no depth).
                      */
+                    var jellyRing =
+                        jellyContour && !cell.isVirus
+                            ? this.writeWebGLJellyStrokeBand(
+                                cell,
+                                points,
+                                -jellyContour,
+                                jellyContour,
+                                bodyRGB[0],
+                                bodyRGB[1],
+                                bodyRGB[2],
+                                bodyAlpha,
+                                bodyAlpha,
+                                z,
+                                true
+                            )
+                            : 0;
                     var fillStart =
                         this._lmJellyWriteFill(
                             cell,
                             points,
                             textureRadius,
                             bodyRGB,
-                            bodyAlpha,
+                            jellyRing ? 0 : bodyAlpha,
                             skinRes.layer,
                             skinRes.alpha,
                             z
@@ -78622,13 +78868,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         jellyDrawCount < jellyIdxValid &&
                         (
                             jellyDrawCounts[jellyDrawCount] !== pointCount ||
-                            jellyDrawBands[jellyDrawCount] !== jellyBands
+                            jellyDrawBands[jellyDrawCount] !== jellyBands ||
+                            this.glJellyDrawRings[jellyDrawCount] !== jellyRing
                         )
                     ) {
                         jellyIdxValid =
                             jellyDrawCount;
                     }
 
+
+                    this.glJellyDrawRings[jellyDrawCount] =
+                        jellyRing;
 
                     this.glJellyDrawStarts[jellyDrawCount] =
                         fillStart;
@@ -79900,6 +80150,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 _virusGlowRGB[1],
                 _virusGlowRGB[2]
             );
+
+            /* Cell contours (0: filled bodies): the quad of an ordinary cell grows by
+             * the outer half of the stroke and 1.5 px for its antialiased edge. */
+            var _contourHW = defaultmapsettings.cellContours ? 10 : 0;
+            if (this.u_cell_contour) {
+                gl.uniform2f(this.u_cell_contour, _contourHW, _contourHW ? _contourHW + 1.5 / viewScale : 0);
+            }
 
             gl.bindBuffer(
                 gl.ARRAY_BUFFER,

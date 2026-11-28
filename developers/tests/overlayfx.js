@@ -583,6 +583,17 @@ check('FB badge with transparent skins (jelly on): WebGL, badge with the skin al
 setSettings({ map: { FBTracking: true, transparentSkins: true, jellyPhisycs: false } });
 r = frame(S1);
 check('  jelly off (fixed circles keep the old alpha rule): Canvas2D, reason "alpha", equal', !r.gl && why() === 'alpha' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+/* cell contours: the GL batch strokes the bodies itself (glbatch.js compares its pixels with
+ * Canvas2D), so they keep WebGL; a renderer without the contour resources stays on Canvas2D */
+for (const jelly of [true, false]) {
+    setSettings({ map: { cellContours: true, jellyPhisycs: jelly } });
+    R.glJellyDrawRings = new Int32Array(8); R.u_cell_contour = {};
+    const withRes = R.canUseWebGLScene(LM.cells), whyWith = why();
+    delete R.glJellyDrawRings; delete R.u_cell_contour;
+    const without = R.canUseWebGLScene(LM.cells), whyWithout = why();
+    check('cell contours (jelly ' + (jelly ? 'on' : 'off') + '): WebGL; Canvas2D (reason "contours") only without the contour resources',
+        withRes && whyWith === 'webgl' && !without && whyWithout === 'contours', whyWith + ' / ' + whyWithout);
+}
 setSettings({ map: { FBTracking: true } });
 LM.gameMode = ':teams';
 r = frame(S1);
