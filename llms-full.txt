@@ -243,7 +243,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Configurable limit**: Show top 5-20 entries
 - **Top 5 skins**: Display skins of leaderboard leaders
 - **Centred leaderboard**: Position leaderboard at centre-right
-- **Click-to-spectate**: Click a leaderboard entry to follow that player in spectate
+- **Click-to-spectate**: Click a leaderboard entry or a player cell to follow that player in spectate; on a phone a short tap on a player cell does the same
 
 ### 15. Stats and Analytics
 - **Live stats HUD**: Mass, frame time, ping, PPS (packets per second), server Hz, alive time, world size, decay info, 16-cell count

@@ -1550,6 +1550,45 @@
         }, { passive: true });
 
         /* ═══════════════════════════════════════════════════════
+         *  TAP TO FOLLOW (spectating only)
+         *  A short single tap on a player cell follows that player, as a desktop left click
+         *  (legendmod._lmSpecClickAt: never while playing, so in the game every touch stays the
+         *  joystick's). A drag, a pinch, a second finger, a long press or a tap on the fixed
+         *  joystick never does.
+         * ═══════════════════════════════════════════════════════ */
+        var TAP_MOVE = 10, TAP_MS = 300; /* px the finger may move, ms it may stay down */
+        var tapSt = null; /* {id, x, y, t, moved} of the one finger down, null when it cannot be a tap */
+        function tapFollowOk(st, x, y, now, fingersLeft) {
+            return !!st && !st.moved && fingersLeft === 0 && now - st.t <= TAP_MS &&
+                Math.abs(x - st.x) <= TAP_MOVE && Math.abs(y - st.y) <= TAP_MOVE;
+        }
+        function tapOnFixedJoy(x, y) {
+            if (!prefs.fixedJoystick) return false;
+            var jz = joyZone;
+            var cx = jz ? (jz.l + jz.r) / 2 : window.innerWidth * 0.2, cy = jz ? (jz.t + jz.b) / 2 : window.innerHeight * 0.7;
+            var dx = x - cx, dy = y - cy;
+            return dx * dx + dy * dy <= (JR + 10) * (JR + 10);
+        }
+        canvas.addEventListener('touchstart', function (e) {
+            /* e.touches: a finger anywhere (on a button too) makes it a two-finger touch */
+            var t = e.changedTouches[0];
+            tapSt = !chatOn && e.touches.length === 1 && t ? { id: t.identifier, x: t.clientX, y: t.clientY, t: Date.now(), moved: false } : null;
+        }, { passive: true });
+        canvas.addEventListener('touchmove', function (e) {
+            var t = tapSt && tById(e.changedTouches, tapSt.id);
+            if (t && (Math.abs(t.clientX - tapSt.x) > TAP_MOVE || Math.abs(t.clientY - tapSt.y) > TAP_MOVE)) tapSt.moved = true;
+        }, { passive: true });
+        canvas.addEventListener('touchend', function (e) {
+            var st = tapSt, t = st && tById(e.changedTouches, st.id);
+            tapSt = null;
+            if (!t || !tapFollowOk(st, t.clientX, t.clientY, Date.now(), e.touches.length) || tapOnFixedJoy(t.clientX, t.clientY)) return;
+            var L = window.legendmod;
+            /* taken: no emulated mouse click after it (it would run the same follow again) */
+            if (L && typeof L._lmSpecClickAt === 'function' && L._lmSpecClickAt(e.target, t.clientX, t.clientY) && e.cancelable) e.preventDefault();
+        }, { passive: false });
+        canvas.addEventListener('touchcancel', function () { tapSt = null; }, { passive: true });
+
+        /* ═══════════════════════════════════════════════════════
          *  PINCH-TO-ZOOM  (dual mode)
          *    Menu visible  → scale HUD  (hudScale, 0.3 – 1.0)
          *    In-game       → zoom map   (WheelEvent)

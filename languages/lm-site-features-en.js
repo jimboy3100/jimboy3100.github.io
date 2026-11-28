@@ -78,7 +78,7 @@
 "site.features.spectatingNew": "Spectating <span class=\"badge badge-new\">New</span>",
 "site.features.followTheActionIn": "Follow the action in free spectate.",
 "site.features.followALeaderboardPlayer": "Follow a leaderboard player: click a leaderboard mass or use the <i>follow next leaderboard player</i> hotkey",
-"site.features.optionalClickAPlayer": "Click to follow while spectating: click a player cell or a leaderboard mass to follow that player, click empty space to stop",
+"site.features.optionalClickAPlayer": "Click to follow while spectating: click a player cell or a leaderboard mass to follow that player, click empty space to stop (on a phone: a short tap on a player cell)",
 "site.features.expandingLandWorldSpectate": "Expanding Land World Spectate: optional minimap click moves the camera there",
 "site.features.chatToolsNew": "Chat Tools <span class=\"badge badge-new\">New</span>",
 "site.features.aFasterCleanerChat": "A faster, cleaner chat.",

@@ -9,6 +9,9 @@
  *     at all with the option off (the default)
  *   - no follow while playing, while a multibox unit plays on, or when not spectating
  *   - the Expanding Land minimap click moves the World Spectate camera with no option
+ *   - phones (real tap handlers of LMmobile/LMmobile.js): a short single tap on a player cell while
+ *     spectating follows it through the desktop click path; drags, pinches, a second finger, long
+ *     presses, buttons, the fixed joystick, the menu, the chat box and playing never do
  *   - the director's hotkeys, camera lock and saved data stay gone
  * node developers/tests/clickfollow.js   (LM_ROOT=<other checkout> runs it on another version) */
 const fs = require('fs'), vm = require('vm'), path = require('path');
@@ -85,7 +88,8 @@ check('fold: a set without them is left as it is', vm.runInContext('lmFoldLegacy
 
 // ── the follows on the real LM methods
 const NAMES = ['sendAction', 'createView', 'sendSpectate', '_lmSpawnEndsSpectate', 'sendFreeSpectate', 'sendPosition', 'translateX', 'translateY',
-  'targetingLead', '_lmSpecFree', '_lmSpecLbCheck', '_lmSpecLbHud', '_lmSpecCellPick', '_lmSpecCellPos', '_lmSpecCellStop', '_lmSpecCellHud', '_lmSpecFollowTop'];
+  'targetingLead', '_lmSpecFree', '_lmSpecLbCheck', '_lmSpecLbHud', '_lmSpecCellPick', '_lmSpecCellPos', '_lmSpecCellStop', '_lmSpecCellHud', '_lmSpecFollowTop',
+  '_lmSpecClickAt', 'getCursorPosition'];
 const lmSrc = '({' + NAMES.filter(n => main.indexOf('\n        ' + n + '(', main.indexOf('    var LM = {')) > 0).map(n => method(n, '    var LM = {')).join(',\n') + '})';
 function makeLM(opts) {
   const lm = vm.runInContext(lmSrc, ctx);
@@ -252,6 +256,103 @@ const cursorOut = lm => { lm.sent.length = 0; lm._lmLastCursorAt = 0; lm.sendPos
   lm._isWorldSpectating = false;
   app._lmMmSpecPE();
   check('out of World Spectate the minimap lets the mouse through again', st.pe === '');
+}
+
+{ // a phone tap on a cell: the real tap handlers of LMmobile.js feed the desktop click path
+  const mob = fs.readFileSync(path.join(root, 'LMmobile', 'LMmobile.js'), 'utf8');
+  const i = mob.indexOf('        var TAP_MOVE = '), j = mob.indexOf('PINCH-TO-ZOOM', i);
+  check('LMmobile.js has the tap to follow handlers', i > 0 && j > i);
+  ctx._ovVisible = false;
+  ctx.$ = () => ({ is: () => ctx._ovVisible });
+  ctx.innerWidth = 1000; ctx.innerHeight = 500;
+  const L = {};
+  const canvas = { tagName: 'CANVAS', closest: () => null, addEventListener(t, f) { (L[t] = L[t] || []).push(f); } };
+  const mctx = vm.createContext({ Math, Date, window: ctx, canvas, chatOn: false, joyZone: null, JR: 55, prefs: { fixedJoystick: false },
+    tById(list, id) { for (let k = 0; k < list.length; k++) if (list[k].identifier === id) return list[k]; return null; } });
+  vm.runInContext(i > 0 ? mob.slice(i, mob.lastIndexOf('/*', j)) : '', mctx);
+  const realNow = Date.now; let clock = 1e6;
+  Date.now = () => clock;
+  let prevented = 0;
+  const fire = (type, x, y, o) => {
+    o = o || {};
+    const tt = { identifier: o.id || 0, clientX: x, clientY: y };
+    const n = o.touches != null ? o.touches : (type === 'touchstart' || type === 'touchmove' ? 1 : 0);
+    const ev = { target: o.target || canvas, cancelable: true, changedTouches: [tt], touches: new Array(n), preventDefault() { prevented++; } };
+    (L[type] || []).forEach(f => f(ev));
+  };
+  const tap = (x, y, o) => {
+    o = o || {}; prevented = 0;
+    fire('touchstart', x, y, { target: o.target });
+    clock += o.ms || 80;
+    if (o.moveTo) fire('touchmove', o.moveTo[0], o.moveTo[1], { target: o.target });
+    const e = o.endAt || [x, y];
+    fire('touchend', e[0], e[1], { target: o.target, touches: o.left || 0 });
+    clock += 1000;
+  };
+  /* the screen centre (500, 250) is world (0, 0) at scale 1: bob's big cell (300, 400) is at screen
+   * (800, 650), eve (-900, -900) at (-400, -650) */
+  const phone = o => makeLM(Object.assign({ canvasWidth: 1000, canvasHeight: 500, viewScale: 1, viewX: 0, viewY: 0 }, o));
+  try {
+    let lm = phone({ isSpectateEnabled: true });
+    tap(803, 646);
+    check('phone, follow camera: a short tap on a player cell switches to free spectate and follows it (the desktop click path)',
+      lm.isFreeSpectate === true && !!lm._lmSpecCell && lm._lmSpecCell.nick === 'bob' && lm.sent.indexOf(18) >= 0 && prevented === 1,
+      JSON.stringify([lm.isFreeSpectate, lm._lmSpecCell, lm.sent, prevented]));
+    const c = cursorOut(lm);
+    check('the cursor sent is that player', c && c.x === 340 && c.y === 400, JSON.stringify(c));
+    tap(-400, -650);
+    check('a tap on another player follows that one', !!lm._lmSpecCell && lm._lmSpecCell.nick === 'eve', JSON.stringify(lm._lmSpecCell));
+    tap(2500, 2250);
+    check('a tap on empty space stops the follow (as a desktop click), free spectate stays', lm._lmSpecCell === null && lm.isFreeSpectate === true);
+
+    lm = phone({ isSpectateEnabled: true });
+    tap(800, 650, { moveTo: [840, 650], endAt: [800, 650] });
+    check('a drag (40 px, back to the start) never follows', !lm._lmSpecCell && lm.isFreeSpectate === false && lm.sent.length === 0 && prevented === 0);
+    tap(800, 650, { endAt: [815, 650] });
+    check('lifted 15 px away: no follow', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    tap(800, 650, { ms: 600 });
+    check('a long press (600 ms) never follows', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    prevented = 0;
+    fire('touchstart', 800, 650); fire('touchstart', 600, 300, { id: 1, touches: 2 }); clock += 50;
+    fire('touchend', 800, 650, { touches: 1 }); fire('touchend', 600, 300, { id: 1, touches: 0 });
+    check('a pinch (two fingers) never follows', !lm._lmSpecCell && lm.isFreeSpectate === false && prevented === 0);
+    tap(800, 650, { left: 1 });
+    check('another finger still down (a thumb on a button) when lifted: no follow', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    tap(800, 650, { target: { tagName: 'DIV', closest: () => null } });
+    check('a touch on a button or the joystick ring (not the canvas) never follows', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    mctx.prefs.fixedJoystick = true;
+    lm.cells.push({ x: -300, y: 100, size: 100, nick: 'joy', color: '#00f' }); /* screen (200, 350): the fixed joystick */
+    tap(200, 350);
+    check('a tap on the fixed joystick never follows', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    tap(800, 650);
+    check('with a fixed joystick a tap elsewhere still follows', !!lm._lmSpecCell && lm._lmSpecCell.nick === 'bob');
+    mctx.prefs.fixedJoystick = false;
+
+    lm = phone({ play: true, cursorX: 111, cursorY: 222 });
+    tap(800, 650);
+    check('playing: a tap changes nothing (no follow, nothing sent, cursor kept, the touch not consumed)',
+      !lm._lmSpecCell && lm.isFreeSpectate === false && lm.sent.length === 0 && lm.cursorX === 111 && lm.cursorY === 222 && prevented === 0);
+    lm = phone({ cursorX: 111, cursorY: 222 });
+    tap(800, 650);
+    check('not spectating: a tap changes nothing', !lm._lmSpecCell && lm.sent.length === 0 && lm.cursorX === 111 && prevented === 0);
+    lm = phone({ isSpectateEnabled: true });
+    ctx._ovVisible = true; tap(800, 650); ctx._ovVisible = false;
+    check('menu open: a tap changes nothing', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    mctx.chatOn = true; tap(800, 650); mctx.chatOn = false;
+    check('chat box open: the tap only closes it, no follow', !lm._lmSpecCell && lm.isFreeSpectate === false);
+
+    lm = phone({ isLegendWorld: true, _isWorldSpectating: true });
+    tap(800, 650);
+    check('Expanding Land World Spectate: a tap on a player goes to free spectate (Spectate 1, then Q 18) and follows',
+      JSON.stringify(lm.sent) === '[1,18]' && lm.isFreeSpectate === true && !!lm._lmSpecCell && lm._lmSpecCell.nick === 'bob', JSON.stringify(lm.sent));
+
+    /* the desktop left click runs the same helper with the mouse cursor */
+    lm = phone({ isSpectateEnabled: true, cursorX: -900, cursorY: -900 });
+    check('desktop: a canvas click follows the cell under the mouse cursor', lm._lmSpecClickAt(canvas) === true && !!lm._lmSpecCell && lm._lmSpecCell.nick === 'eve');
+    lm = phone({ isSpectateEnabled: true, cursorX: -900, cursorY: -900 });
+    const hudCanvas = { tagName: 'CANVAS', closest: s => (s.indexOf('.hud') >= 0 ? {} : null) };
+    check('desktop: a click on a HUD canvas is not taken', lm._lmSpecClickAt(hudCanvas) === false && !lm._lmSpecCell);
+  } finally { Date.now = realNow; }
 }
 
 if (fail) { console.log(fail + ' check(s) FAILED'); process.exit(1); }

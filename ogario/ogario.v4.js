@@ -51333,6 +51333,20 @@ function thelegendmodproject() {
             this._lmSpecCell = pick;
             return this._lmSpecCell;
         },
+        /* A left click on the game canvas (desktop) or a short single tap on it (phone, LMmobile) while
+         * spectating: the player cell under it is followed, empty space stops (_lmSpecCellPick). Never
+         * while playing, on the HUD or with the menu open. A tap passes its screen point (a phone has
+         * no mouse cursor). True when the click or tap was taken. */
+        _lmSpecClickAt(target, clientX, clientY) {
+            if (this.play || !(this.isFreeSpectate || this.isSpectateEnabled || this._isWorldSpectating)) return false;
+            if (!target || target.tagName !== 'CANVAS' || (target.closest && target.closest('.hud, .hud-b, #overlays')) || $("#overlays").is(":visible")) return false;
+            if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
+                this.clientX = clientX; this.clientY = clientY;
+                this.getCursorPosition();
+            }
+            this._lmSpecCellPick(this.cursorX, this.cursorY);
+            return true;
+        },
         _lmSpecCellPos() {
             var t = this._lmSpecCell;
             if (!t) return null;
@@ -83823,11 +83837,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         if (_lmMT.closest && _lmMT.closest('a, label, .switchery')) return;
         /* while spectating a left click on a player cell follows it (from the follow camera or World
          * Spectate it switches to free spectate first) and a click on empty space stops; nothing
-         * happens while playing */
-        if (1 === event.which && window.legendmod && !LM.play && (LM.isFreeSpectate || LM.isSpectateEnabled || LM._isWorldSpectating) &&
-            _lmMT.tagName === 'CANVAS' && !(_lmMT.closest && _lmMT.closest('.hud, .hud-b, #overlays')) && !$("#overlays").is(":visible")) {
-            LM._lmSpecCellPick(LM.cursorX, LM.cursorY);
-        }
+         * happens while playing (a phone tap goes the same way, LMmobile) */
+        if (1 === event.which && window.legendmod) LM._lmSpecClickAt(_lmMT);
         if (!$("#overlays").is(":visible")) {
             /* a mouse button runs the command its key is bound to in the Hotkeys window, like a
              * key: keyDown now, keyUp on mouseup (held commands such as macro feed) */

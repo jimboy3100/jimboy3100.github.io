@@ -1353,7 +1353,7 @@
     "it": "Segui un giocatore della classifica: clicca su una massa in classifica oppure usa il tasto rapido <i>segui il prossimo giocatore in classifica</i>"
   },
   "site.features.optionalClickAPlayer": {
-    "en": "Click to follow while spectating: click a player cell or a leaderboard mass to follow that player, click empty space to stop",
+    "en": "Click to follow while spectating: click a player cell or a leaderboard mass to follow that player, click empty space to stop (on a phone: a short tap on a player cell)",
     "el": "Κλικ για ακολούθηση στο spectate: κάνε κλικ σε ένα κύτταρο παίκτη ή σε μια μάζα του πίνακα κατάταξης για να ακολουθήσεις αυτόν τον παίκτη, κλικ σε κενό χώρο για διακοπή",
     "es": "Clic para seguir al espectar: haz clic en una célula de jugador o en una masa de la clasificación para seguir a ese jugador, clic en un espacio vacío para parar",
     "bg": "Клик за следване при наблюдение: кликни върху клетка на играч или маса в класацията, за да следваш този играч, клик на празно място спира",
