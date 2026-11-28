@@ -3172,9 +3172,10 @@ function _lmFoodSrcSet(e, src, on) {
 var LM_FOOD_COMP_MAX = 64;
 /* reused work state (nothing made per packet): the search's mark, whether it stopped at
  * LM_FOOD_COMP_MAX (its groups are then not known to be lone), the copies around a change, the
- * places still to look around, the buckets around one place, the groups made, the candidate
+ * places still to look around, the buckets around one place, the entries of the search's current
+ * step and the place of the change (_lmFoodGather), the groups made, the candidate
  * pairs (distance, copy, group) and their order; the grid and the constants, read here in one go */
-var _lmFoodW = { stamp: 0, capped: false, comp: [], front: [], bks: [], groups: [], pairs: [], ord: [], grid: _lmFood.grid, tol: LM_FOOD_TOL, max: LM_FOOD_COMP_MAX, bsz: LM_FOOD_BUCKET };
+var _lmFoodW = { stamp: 0, capped: false, comp: [], front: [], bks: [], lvl: [], ox: 0, oy: 0, groups: [], pairs: [], ord: [], grid: _lmFood.grid, tol: LM_FOOD_TOL, max: LM_FOOD_COMP_MAX, bsz: LM_FOOD_BUCKET };
 /* a copy's connection (_lmFoodSrcOf) is kept on it while it is in the list: _lmFoodSrcN */
 function _lmFoodCmp(a, b) {
     if (a._lmFoodInv !== b._lmFoodInv) return a._lmFoodInv ? 1 : -1;
@@ -3267,14 +3268,32 @@ function _lmFoodEntDrop(ent) {
 }
 /* Adds to `out` the whole entries of every copy within LM_FOOD_TOL (size +-1) of a place in
  * `front` (copies: a new one, or a departed one's old place), and of the copies so reached, at
- * most LM_FOOD_COMP_MAX copies. The 3x3 buckets of a place are looked up once for all places in
- * one bucket (the copies of one pellet nearly always are); around a lone entry's copies there is
- * nothing more to find. Empties `front`. */
+ * most LM_FOOD_COMP_MAX copies. The search goes step by step (the entries next to the places, then
+ * the entries next to their copies, ...); in the step that goes past LM_FOOD_COMP_MAX the entries
+ * nearest the change (front[0]) come first, as many as fit, then the search stops. So the copies
+ * grouped again do not depend on the order of the entries in the buckets (before, the entries met
+ * first in the buckets were taken up to the limit, then any smaller one after them: the same groups
+ * and the same change were grouped in another way when only the order in a bucket differed, which
+ * follows the copies that came and went there). The 3x3 buckets of a place are looked up once for
+ * all places in one bucket (the copies of one pellet nearly always are); around a lone entry's
+ * copies there is nothing more to find. Empties `front`. */
 function _lmFoodGather(out, front) {
-    var W = _lmFoodW, grid = W.grid, stamp = ++W.stamp, bks = W.bks, capped = false;
+    var W = _lmFoodW, grid = W.grid, stamp = ++W.stamp, bks = W.bks, lvl = W.lvl, capped = false;
     var tol = W.tol, tol2 = tol * tol, far = 2 * tol, max = W.max, bsz = W.bsz;
     var lbx = NaN, lby = NaN, nb = 0;
+    /* the places of this step end at `end`; `keep`: the copies taken before it; lvl: its entries */
+    var end = front.length, keep = out.length;
+    if (front.length) {
+        W.ox = front[0]._lmFoodX;
+        W.oy = front[0]._lmFoodY;
+    }
     for (var q = 0; q < front.length; q++) {
+        if (q === end) {
+            if (capped) break;
+            end = front.length;
+            keep = out.length;
+            lvl.length = 0;
+        }
         var p = front[q], px = p._lmFoodX, py = p._lmFoodY, ps = p._lmFoodS;
         var bx = Math.floor(px / bsz), by = Math.floor(py / bsz);
         if (bx !== lbx || by !== lby) {
@@ -3301,13 +3320,15 @@ function _lmFoodGather(out, front) {
                     near = dx * dx + dy * dy <= tol2 && Math.abs(m._lmFoodS - ps) <= 1;
                 }
                 if (!near) continue;
+                e.st = stamp;
+                lvl.push(e);
+                if (capped) continue;
                 if (out.length + e.obs.length > max) {
-                    /* left out: no longer known to be alone either */
+                    /* this step is taken again below, in the fixed order */
                     capped = true;
-                    e.lone = false;
+                    out.length = keep;
                     continue;
                 }
-                e.st = stamp;
                 for (j = 0; j < e.obs.length; j++) {
                     out.push(e.obs[j]);
                     if (!e.lone) front.push(e.obs[j]);
@@ -3316,9 +3337,36 @@ function _lmFoodGather(out, front) {
         }
     }
     for (t = 0; t < nb; t++) bks[t] = null;
+    if (capped) {
+        /* the step that went over: nearest the change first, up to the first entry that does not
+         * fit; the ones left out are no longer known to be alone either */
+        lvl.sort(_lmFoodLvlCmp);
+        var fits = true;
+        for (i = 0; i < lvl.length; i++) {
+            e = lvl[i];
+            e.lone = false;
+            if (fits && out.length + e.obs.length > max) fits = false;
+            if (fits) for (j = 0; j < e.obs.length; j++) out.push(e.obs[j]);
+        }
+    }
+    lvl.length = 0;
     front.length = 0;
     W.capped = capped;
     return out;
+}
+/* entries of the step that went over: by distance to the change, then place, then the drawn
+ * copy's connection and raw id (one copy, one entry) */
+function _lmFoodLvlCmp(a, b) {
+    var W = _lmFoodW, ax = a.x - W.ox, ay = a.y - W.oy, bx = b.x - W.ox, by = b.y - W.oy;
+    var d = ax * ax + ay * ay - (bx * bx + by * by);
+    if (d) return d;
+    d = a.x - b.x;
+    if (d) return d;
+    d = a.y - b.y;
+    if (d) return d;
+    d = a.rep._lmFoodSrcN - b.rep._lmFoodSrcN;
+    if (d) return d;
+    return (a.rep._lmRawId || a.rep.id || 0) - (b.rep._lmRawId || b.rep.id || 0);
 }
 /* candidate pairs by distance; equal distances keep the order they were listed in (the copies,
  * then the groups, in the fixed order) */

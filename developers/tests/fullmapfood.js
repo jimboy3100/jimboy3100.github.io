@@ -18,8 +18,11 @@
  * feed state that changes and changes back between two frames is followed; Rainbow food keeps a
  * pellet's colour when another connection's copy is drawn; an unverified steered unit's pellet
  * is left to another connection only where it has a copy, whatever the order of two such units;
- * a tile stalled behind the main socket gives up its pellets until it is fresh. Prints the food
- * observations against the pellets drawn and the cost of the list.
+ * a tile stalled behind the main socket gives up its pellets until it is fresh; past
+ * LM_FOOD_COMP_MAX copies around a change the copies grouped again do not depend on the order of
+ * the entries in the grid buckets, and dense pellets every connection sees are drawn once in any
+ * history and over a Rotate Map flip. Prints the food observations against the pellets drawn and
+ * the cost of the list and of a dense place.
  * node developers/tests/fullmapfood.js */
 'use strict';
 const fs = require('fs'), vm = require('vm'), path = require('path');
@@ -1169,6 +1172,104 @@ reset();
     const m = mainFood(7, 3001, 3000, hex(0x40a0f0));
     const ents = vm.runInContext('_lmFood.ents', g), l = drawList();
     check('a main copy coming after a spectator copy: drawn in the same entry', ents.length === 3 && m._lmFoodEnt === e0 && l[e0.slot] === m && e0.x === 3001 && e0.obs.length === 2, ents.length);
+}
+/* 16. dense food past LM_FOOD_COMP_MAX copies around a change: the search stops at the limit, and
+ *     the copies it takes do not depend on the order of the entries in the grid buckets (before,
+ *     the entries met first were taken up to the limit: the same groups and the same change gave
+ *     other groups when only that order differed); pellets every connection sees are drawn once
+ *     in any arrival order, with removals, copies seen again and moved copies; a Rotate Map flip
+ *     keeps them and their Rainbow colours; a lone pellet next to the dense place stays lone */
+{
+    const MAX = vm.runInContext('LM_FOOD_COMP_MAX', g), TOL = vm.runInContext('LM_FOOD_TOL', g);
+    const mk = (seed) => { let s = seed; return () => (s = (s * 1103515245 + 12345) % 2147483648) / 2147483648; };
+    vm.runInContext('var _tCap = 0, _tGather = _lmFoodGather; _lmFoodGather = function (o, f) { var r = _tGather(o, f); if (_lmFoodW.capped) _tCap++; return r; };', g);
+    const ents = () => vm.runInContext('_lmFood.ents', g);
+    const sig = () => ents().map((e) => e.obs.map((c) => c.spectator + ':' + c._lmRawId).sort().join(',')).sort().join(' ');
+    /* no entry with two copies of one connection, every hidden copy within LM_FOOD_TOL of the drawn one */
+    const sound = () => ents().every((e) => new Set(e.obs.map((c) => c.spectator)).size === e.obs.length && e.obs.every((c) => Math.hypot(c._lmFoodX - e.rep._lmFoodX, c._lmFoodY - e.rep._lmFoodY) <= TOL && Math.abs(c._lmFoodS - e.rep._lmFoodS) <= 1));
+    /* (a) 10 connections, copies 3 apart with up to 3 off: one component of ~1500 copies */
+    const K = 10, pos = (rnd) => [Math.floor(rnd() * 30) * 3 + Math.round((rnd() - 0.5) * 6), Math.floor(rnd() * 10) * 3 + Math.round((rnd() - 0.5) * 6)];
+    const runs = [0, 1, 2].map((shuffle) => {
+        reset();
+        vm.runInContext('_tCap = 0', g);
+        const sps = Array.from({ length: K }, (_, k) => spect(k + 1)), rnd = mk(7);
+        const t0 = process.hrtime.bigint();
+        for (let i = 0; i < 1500; i++) {
+            const k = Math.floor(rnd() * K), [x, y] = pos(rnd);
+            sps[k].updateCells(packet([], [{ id: 1000 + i, x, y, size: 10 }], []), 0);
+        }
+        const start = sig();
+        if (shuffle) {
+            /* the same entries in the buckets in another order (bslot kept right) */
+            g._tRnd = mk(100 + shuffle);
+            vm.runInContext('_lmFood.grid.forEach(function (b) { for (var i = b.length - 1; i > 0; i--) { var j = Math.floor(_tRnd() * (i + 1)), t = b[i]; b[i] = b[j]; b[j] = t; } for (i = 0; i < b.length; i++) b[i].bslot = i; })', g);
+        }
+        const ev = [], er = mk(11);
+        let ok = true;
+        for (let i = 0; i < 300; i++) {
+            const k = Math.floor(er() * K);
+            if (er() < 0.5) sps[k].updateCells(packet([], [], [1000 + Math.floor(er() * 1500)]), 0);
+            else { const [x, y] = pos(er); sps[k].updateCells(packet([], [{ id: 5000 + i, x, y, size: 10 }], []), 0); }
+            ev.push(sig());
+            if (i % 30 === 0) ok = ok && sound();
+        }
+        const ms = Number(process.hrtime.bigint() - t0) / 1e6;
+        return { start, ev, ok: ok && sound(), caps: vm.runInContext('_tCap', g), ms, n: ents().length, obs: stats().observations };
+    });
+    let first = -1;
+    for (let i = 0; i < runs[0].ev.length && first < 0; i++) if (runs.some((r) => r.ev[i] !== runs[0].ev[i])) first = i;
+    check('dense food: the same groups with the entries in another order in their buckets, 300 changes past ' + MAX + ' copies (' + runs[0].caps + ' searches at the limit): the same groups after each', runs.every((r) => r.start === runs[0].start) && runs[0].caps > 100 && first < 0, 'first other result at change ' + first);
+    check('dense food: no entry with two copies of one connection or a hidden copy past ' + TOL + ' from its drawn copy', runs.every((r) => r.ok));
+    console.log('info dense food: ' + runs[0].obs + ' copies in one place, ' + runs[0].n + ' pellets drawn; 1500 copies + 300 changes ' + runs.map((r) => r.ms.toFixed(1)).join(' / ') + ' ms');
+    /* (b) pellets 6 apart, each seen by every connection at most 1 off (its own copy nearer than
+     *     any other pellet's): 36 pellets in one component of 216 or 432 copies */
+    for (const KC of [6, 12]) {
+        const pel = [];
+        for (let i = 0; i < 6; i++) for (let j = 0; j < 6; j++) pel.push({ x: 2000 + i * 6, y: 2000 + j * 6 });
+        const res = [];
+        let caps = 0;
+        for (const seed of [1, 2, 3]) {
+            reset();
+            vm.runInContext('_tCap = 0', g);
+            const rnd = mk(seed * 13), sps = Array.from({ length: KC }, (_, k) => spect(k + 1)), live = new Set();
+            const put = (k, i) => {
+                const x = pel[i].x + Math.floor(rnd() * 3) - 1, y = pel[i].y + Math.floor(rnd() * 3) - 1;
+                sps[k].updateCells(packet([], [{ id: 100 + i, x, y, size: 10, color: (i * 7919 + k * 104729) & 0xffffff }], []), 0);
+                live.add(k * 100 + i);
+            };
+            /* arrivals, removals, copies seen again and moved copies in another order each time */
+            for (let step = 0; step < 1500; step++) {
+                const k = Math.floor(rnd() * KC), i = Math.floor(rnd() * pel.length);
+                if (live.has(k * 100 + i) && rnd() < 0.4) {
+                    sps[k].updateCells(packet([], [], [100 + i]), 0);
+                    live.delete(k * 100 + i);
+                } else put(k, i);
+            }
+            for (let k = 0; k < KC; k++) for (let i = 0; i < pel.length; i++) if (!live.has(k * 100 + i)) put(k, i);
+            caps += vm.runInContext('_tCap', g);
+            const by = ents().map((e) => new Set(e.obs.map((c) => c._lmRawId)));
+            res.push({ n: by.length, mixed: by.filter((s) => s.size > 1).length, once: new Set(by.map((s) => [...s][0])).size, ok: sound(), groups: ents().map((e) => e.obs.length === KC).every(Boolean) });
+        }
+        check('dense food: 36 pellets 6 apart seen by ' + KC + ' connections (' + 36 * KC + ' copies, ' + caps + ' searches at the limit), 3 histories: each pellet drawn once, no entry with two pellets\' copies', caps > 0 && res.every((r) => r.n === 36 && r.mixed === 0 && r.once === 36 && r.ok && r.groups), res.map((r) => r.n + '/' + r.mixed).join(' '));
+    }
+    /* (c) the last of them flipped (lmFoodReplaceAll: every copy placed again): the same pellets in
+     *     their colours; a lone pellet next to the dense place: lone, its drawn copy leaving moves it */
+    const iso = spect(13);
+    iso.updateCells(packet([], [{ id: 900, x: 2045, y: 2000, size: 10 }], []), 0);
+    const loneEnt = ents().find((e) => e.obs.some((c) => c.spectator === 13));
+    const cols = () => ents().map((e) => e.rep._lmRawId + '=' + e.color).sort().join(' ');
+    const before = sig(), colBefore = cols();
+    drawList();
+    vm.runInContext('lmFoodReplaceAll()', g);
+    drawList();
+    check('dense food: a Rotate Map flip (every copy placed again) gives the same pellets in their colours', sig() === before && cols() === colBefore && stats().pellets === 37, stats().pellets);
+    const le = ents().find((e) => e.obs.some((c) => c.spectator === 13));
+    const s14 = spect(14);
+    s14.updateCells(packet([], [{ id: 901, x: 2046, y: 2000, size: 10 }], []), 0);
+    const slot = le.slot;
+    iso.updateCells(packet([], [], [900]), 0);
+    check('dense food: a lone pellet next to the dense place stays lone, its drawn copy leaving moves it (same entry and slot)', loneEnt && le.lone && le.slot === slot && le.rep.spectator === 14 && le.x === 2046 && stats().pellets === 37, le && le.lone + '/' + le.slot);
+    vm.runInContext('_lmFoodGather = _tGather', g);
 }
 
 console.log(fail ? fail + ' check(s) failed' : 'all fullmapfood checks passed');
