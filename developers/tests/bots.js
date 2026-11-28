@@ -1752,7 +1752,7 @@ for (const file of ['server.js', 'server-fast.js']) {
         q.app.toggleQuickPanel('bots');
         check('quick HUDs: opening the bots panel writes its players line', plBefore === 0 && plRef === 1);
         check('quick HUDs: one click handler for the three buttons, blurred after a click', /on\("click", "\.quick-menu, \.quick-bots, \.quick-br", function \(event\) \{[\s\S]{0,120}this\.blur\(\)[\s\S]{0,200}app\.toggleQuickPanel\(/.test(ogSrc));
-        check('quick HUDs: the open button\'s ring in the theme colour', ogSrc.includes(".quick.lm-quick-on{box-shadow:0 0 0 2px ' + defaultSettings.menuMainColor + '}"));
+        check('quick HUDs: the open button\'s ring in the theme colour', ogSrc.includes(".quick.lm-quick-on{box-shadow:0 0 0 2px ' + S.menuMainColor + '}"));
         check('bots button: LM.connect still stops running bots on a server switch (they follow, serverChange)', /window\._lmBotsStop\(true\)\s*\r?\n\s*window\.userBots\.isAlive = false/.test(ogSrc));
     }
 

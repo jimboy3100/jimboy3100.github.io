@@ -44,6 +44,7 @@ vm.runInContext([
     'function lmMbFrameHide() { }',
     /* Dying Light on / off for the frame (overlayfx.js tests it) */
     'function lmDlSync() { return false; }',
+    'var _lmDlThr = false, _lmDlThreat = { t: 0, unit: 0, level: 0, valid: false };',
     'var LM = {', block('        compareCells() {'), '};',
     'var legendmod = LM; window.legendmod = LM;',
     'this.LM = LM;',
