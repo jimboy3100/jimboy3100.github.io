@@ -93,7 +93,7 @@
 
 <https://www.legendmod.ml/knowledge/#feature-accessibility> a schema:DefinedTerm, lm:Feature ;
   schema:name "Accessibility features" ;
-  schema:description "Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset." .
+  schema:description "Reduced motion, colour-blind preset." .
 
 <https://help.expanding.land/knowledge/#mechanic-dynamic-map> a schema:DefinedTerm, lm:GameMechanic ;
   schema:name "Dynamic circular arena" ;

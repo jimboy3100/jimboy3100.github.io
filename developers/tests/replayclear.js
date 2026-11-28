@@ -1,7 +1,6 @@
-/* "Record replays" switched off (by hand, a preset or a script) must not
- * free the recordings already in memory: only new packets stop, for the rest of this connection.
- * Freeing them is the explicit, confirmed "Clear recordings in memory" (window._lmRecClearMemory),
- * which keeps a replay that is playing, one being saved and the one still being recorded.
+/* "Record replays" switched off (by hand, a preset or a script) must not free the recordings
+ * already in memory: only new packets stop, for the rest of this connection. Recordings are
+ * deleted in Replay Studio's library (the "Clear recordings in memory" button of Settings is removed).
  * The code is taken from ogario/ogario.v4.js: the recordReplays case of setSettings, the packet
  * recording branch of _lmHandlePacket and the clear helpers.
  * node developers/tests/replayclear.js [ogario.v4.js] */
@@ -49,9 +48,8 @@ function boot() {
     };
     ctx.window = ctx;
     vm.createContext(ctx);
-    vm.runInContext([overhead ? overhead[0] : '', fn('lmRecRoom'), fn('lmRecPacketBytes'), fn('lmRecByteBudget'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'), fn('lmRecFreeMemory'), fn('_lmTokenBoxValue'),
+    vm.runInContext([overhead ? overhead[0] : '', fn('lmRecRoom'), fn('lmRecPacketBytes'), fn('lmRecByteBudget'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'), fn('_lmTokenBoxValue'),
         (block('window._lmRecBudgetCheck = function') || '') + ';',
-        (block('window._lmRecKeepOnClear = function') || '') + ';', (block('window._lmRecClearMemory = function') || '') + ';',
         /* like setSettings: the value it had, then the new one stored, then the case */
         'function setRec(checked) {\nvar _lmSetWas = defaultmapsettings.recordReplays;\ndefaultmapsettings.recordReplays = checked;\n' + caseBody + '\n}',
         'function recordPacket(data) { var _recServerToken;\n' + pkt + '\n}'].join('\n'), ctx);
@@ -162,27 +160,8 @@ const pk = () => new DataView(new ArrayBuffer(8));
     check('memory full, switch off: told it is not recorded, not "next server" (' + t.join(' | ') + ')', t.length === 1 && /not recorded/i.test(t[0]));
 }
 
-/* the explicit clear */
-{
-    const { ctx, toasts, asked } = boot();
-    check('clear: helper exists', typeof ctx._lmRecClearMemory === 'function');
-    if (typeof ctx._lmRecClearMemory === 'function') {
-        ctx.legendmod.playingReplayServer = 'old1';
-        ctx.RecordedProtocol.old2._lmSaving = true;
-        ctx.answer = false;
-        check('clear: cancelled confirm frees nothing', ctx._lmRecClearMemory(true) === 0 && ctx.RecordedProtocolArenas.length === 4 && asked.length === 1 && /\b1\b/.test(asked[0]));
-        ctx.answer = true;
-        const n = ctx._lmRecClearMemory(true);
-        check('clear: frees the others (' + n + ')', n === 1 && !ctx.RecordedProtocol.old3 && !ctx.RecordedArenasSpecifications.old3);
-        check('clear: keeps the playing, the saving and the live recording', ctx.RecordedProtocolArenas.join() === 'old1,old2,live');
-        check('clear: says how many were freed', toasts.some(t => t[0] === 'success' && /1/.test(t[1])));
-        ctx.setRec(false);
-        ctx.RecordedProtocol.old2._lmSaving = false;
-        ctx.legendmod.playingReplayServer = null;
-        check('clear: a stopped live recording can be freed too', ctx._lmRecClearMemory(false) === 3 && ctx.RecordedProtocolArenas.length === 0);
-        check('clear: nothing left: says so, no confirm', ctx._lmRecClearMemory(true) === 0 && asked.length === 2 && toasts.some(t => /No replay recordings/.test(t[1])));
-    }
-}
+/* the Settings button and its helpers are gone */
+check('no "Clear recordings in memory" helpers left in ogario.v4.js', src.indexOf('_lmRecClearMemory') < 0 && src.indexOf('lmRecFreeMemory') < 0 && src.indexOf('lm-rec-clear') < 0);
 
 console.log(failed ? failed + ' failed' : 'all replay clear checks passed');
 process.exit(failed ? 1 : 0);

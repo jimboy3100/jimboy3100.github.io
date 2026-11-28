@@ -1,7 +1,7 @@
-/* Small tools and accessibility: debug info redaction, the removed radial menu and screenshot
- * window (gone, their stored data removed at start, a key on their hotkeys freed) and the
- * accessibility helpers (pure parts of ogario/modules/smalltools.js
- * and ogario/modules/accessibility.js, loaded in a vm without a document).
+/* Small tools: debug info redaction and the removed radial menu and screenshot window (gone,
+ * their stored data removed at start, a key on their hotkeys freed) (pure parts of
+ * ogario/modules/smalltools.js, loaded in a vm without a document). The accessibility module
+ * (menu text size) is removed: the file is not shipped.
  * node developers/tests/smalltools.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const i18n = require('./lib/i18n-env');
@@ -11,12 +11,10 @@ ctx.window = ctx;
 vm.createContext(ctx);
 i18n(ctx);
 vm.runInContext(fs.readFileSync(path.join(dir, 'smalltools.js'), 'utf8'), ctx);
-vm.runInContext(fs.readFileSync(path.join(dir, 'accessibility.js'), 'utf8'), ctx);
 const C = ctx.LMSmallTools && ctx.LMSmallTools._core;
-const A = ctx.LMAccessibility && ctx.LMAccessibility._core;
 let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
-if (!C || !A) { console.log('FAIL core helpers not exported'); process.exit(1); }
+if (!C) { console.log('FAIL core helpers not exported'); process.exit(1); }
 const J = x => JSON.stringify(x);
 
 /* ── the radial menu and the screenshot window are removed ── */
@@ -90,9 +88,8 @@ check('debug info: browser version not taken for an IP', dbg.indexOf('Chrome/120
 check('debug info: skin file and nick gone', dbg.indexOf('AbCdEf1') < 0 && dbg.indexOf('MyNickName') < 0);
 
 
-/* ── accessibility ── */
-check('a11y: text scale clamped', A.cleanScale(2) === 1.6 && A.cleanScale(0.5) === 1 && A.cleanScale('x') === 1 && A.cleanScale(1.234) === 1.23);
-check('a11y: scale rule keeps the ratio to the parent', A.scaleRule('#x', 0.8, 1.25) === '#x{font-size:100% !important;}' && A.scaleRule('#x', 0, 2) === '');
+/* ── the accessibility module (menu text size) is removed ── */
+check('a11y: the module file is gone', !fs.existsSync(path.join(dir, 'accessibility.js')));
 
 console.log(fail ? fail + ' FAILED' : 'all passed');
 process.exit(fail ? 1 : 0);

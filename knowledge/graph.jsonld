@@ -306,7 +306,7 @@
         "lm:Feature"
       ],
       "name": "Accessibility features",
-      "description": "Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset."
+      "description": "Reduced motion, colour-blind preset."
     },
     {
       "@id": "https://help.expanding.land/knowledge/#mechanic-dynamic-map",

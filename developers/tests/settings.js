@@ -53,11 +53,13 @@ const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptive
    * the original 5), the chat #id and word filter, the 16 pieces sounds, the minimap trail, the triple split range,
    * the Split prediction switch (always part of the cursor line), and the collapsed leaderboard bots */
   'centerWeightCamera', 'rainbowBorderSpeed', 'chatShowId', 'chatHideWords', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'tripleSplitRange',
-  'splitPrediction', 'lbHideBots'];
+  'splitPrediction', 'lbHideBots',
+  /* the menu text size (Settings > Accessibility; the browser zoom does it) */
+  'a11yTextScale'];
 check('removed settings are no settings any more (a saved value is ignored)', GONE.every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined && V(k, 30) === undefined));
 check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);
 check('massFormat 1.7 -> 2 (a mode, not a fraction)', V('massFormat', 1.7) === 2);
-check('fractional step values snap to the slider step', V('zoomSpeedValue2', -0.134) === -0.13 && V('a11yTextScale', 1.12) === 1.1 && V('gamepadTrigger', 0.93) === 0.95);
+check('fractional step values snap to the slider step', V('zoomSpeedValue2', -0.134) === -0.13 && V('volMaster', 0.123) === 0.12 && V('gamepadTrigger', 0.93) === 0.95);
 check('the top of a range that is not a whole number of steps stays reachable (gamepadTrigger 0.95)', V('gamepadTrigger', 0.95) === 0.95 && V('gamepadTrigger', 5) === 0.95);
 check('zero where the range allows it', V('lineSplitHold', 0) === 0 && V('lineSplitDelay', 0) === 0 && V('zoomSpeedValue2', 0) === 0 && V('volMaster', 0) === 0);
 check('NaN, Infinity, -Infinity refused (the default stays)', [NaN, Infinity, -Infinity].every(x => V('animation', x) === undefined && V('volMaster', x) === undefined));

@@ -7125,9 +7125,8 @@ function lmUiKit() {
     var st = document.createElement('style');
     st.id = 'lm-ui-kit';
     st.textContent =
-        /* the text sizes follow Settings > Accessibility > menu text size (--lm-font-scale, set by
-         * ogario/modules/accessibility.js): sizes, not multipliers, so nested text is scaled once */
-        ':root{--lm-w-fs:calc(12px * var(--lm-font-scale, 1));--lm-w-fs-s:calc(11px * var(--lm-font-scale, 1));--lm-w-title:calc(14px * var(--lm-font-scale, 1));--lm-w-gap:6px;--lm-w-pad:8px 12px;--lm-w-hpad:4px 6px 4px 12px;' + // i18n-ok: CSS
+        /* the text sizes: sizes, not multipliers, so nested text is not scaled twice */
+        ':root{--lm-w-fs:12px;--lm-w-fs-s:11px;--lm-w-title:14px;--lm-w-gap:6px;--lm-w-pad:8px 12px;--lm-w-hpad:4px 6px 4px 12px;' + // i18n-ok: CSS
         '--lm-w-ctl:28px;--lm-w-x:36px;' +
         '--lm-w-surface:' + s1 + ';' + // i18n-ok: CSS
         '--lm-w-bg:linear-gradient(' + s1 + ',' + s1 + '),var(--lm-menu-bg, none) center/cover no-repeat;' + // i18n-ok: CSS

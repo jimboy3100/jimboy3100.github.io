@@ -15,13 +15,6 @@
       "feature": "Themes"
     },
     {
-      "id": "accessibility",
-      "file": "ogario/modules/accessibility.js",
-      "lines": 93,
-      "description": "Accessibility features: menu text scale (HUD text follows the HUD scale; reduced motion is a core option).",
-      "feature": "Accessibility"
-    },
-    {
       "id": "analytics",
       "file": "ogario/modules/analytics.js",
       "lines": 1159,

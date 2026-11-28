@@ -87,7 +87,9 @@
   /* no spectate options (the follows are always on), no Spectating and streaming section; the spectator director is gone */
   /* the instant replay is removed: no length slider */
   if ($('#og-options .spectateGroup').length) fail.push('Spectating and streaming section still in the menu');
-  ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider', 'hudMergeCountdown'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
+  ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider', 'hudMergeCountdown', 'lm-rec-clear', 'a11yTextScale-slider'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
+  /* the NEW badges with Show new options, the info notes and the Accessibility section are removed */
+  if ($('.lm-new-toggle, .lm-new-badge, #og-options .lm-group-note, #og-options .accessibilityGroup').length) fail.push('NEW badges, Show new options, an info note or the Accessibility section still in the menu');
   if (window.LMDirector || document.querySelector('script[src*="modules/director.js"]')) fail.push('spectator director still loaded');
   $('#og-options > .options-box > h5').each(function () {
     var t = $(this).text().trim();

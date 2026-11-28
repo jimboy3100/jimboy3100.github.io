@@ -4972,43 +4972,6 @@ window._lmRecBudgetCheck = function () {
         console.info('[Replays] Memory budget reached: this recording stops here');
     }
 };
-/* Frees kept recordings on request ("Clear recordings in memory" under the option). keep(key, arr)
- * says which stay. Returns the number freed. Only memory: the Replay Studio library and saved
- * .lm files are not touched. */
-function lmRecFreeMemory(list, rp, specs, keep) {
-    var n = 0;
-    if (!Array.isArray(list) || !rp) return 0;
-    for (var i = list.length - 1; i >= 0; i--) {
-        var k = list[i];
-        if (keep(k, rp[k])) continue;
-        list.splice(i, 1);
-        delete rp[k];
-        if (specs) delete specs[k];
-        n++;
-    }
-    return n;
-}
-/* what the button frees: everything except a replay that is playing, one being saved to the
- * library and the one this connection is still recording */
-window._lmRecKeepOnClear = function (k, a) {
-    if (k === (window.legendmod && window.legendmod.playingReplayServer)) return true;
-    if (a && a._lmSaving) return true;
-    return k === window.temporaryRecordedProtocol && typeof defaultmapsettings !== 'undefined' &&
-        defaultmapsettings.recordReplays !== false && !window._lmRecFull;
-};
-window._lmRecClearMemory = function (ask) {
-    var list = window.RecordedProtocolArenas, rp = window.RecordedProtocol, n = 0, i;
-    if (Array.isArray(list) && rp) for (i = 0; i < list.length; i++) if (!window._lmRecKeepOnClear(list[i], rp[list[i]])) n++;
-    if (!n) {
-        if (window.toastr) toastr.info(_lmMhT('lmRecClearNone', 'No replay recordings in memory to clear.'));
-        return 0;
-    }
-    if (ask && !window.confirm(_lmMhT('lmRecClearAsk', 'Free {0} replay recording(s) kept in memory? This cannot be undone. Replays saved in the Replay Studio library and .lm files stay.').replace('{0}', n))) return 0;
-    n = lmRecFreeMemory(list, rp, window.RecordedArenasSpecifications, window._lmRecKeepOnClear);
-    if (n) console.info('[Replays] Cleared ' + n + ' recording(s) from memory');
-    if (window.toastr) toastr.success(_lmMhT('lmRecCleared', 'Freed {0} replay recording(s) from memory.').replace('{0}', n));
-    return n;
-};
 /* event types: d death (best mass), s spawn, k own cell ate a player cell (its mass),
  * v own cell popped a virus, p split sent (1 split, 2 double...), f feeding */
 window._lmRecEv = function (type, v) {
@@ -21164,8 +21127,6 @@ var defaultmapsettings = {
     middleClick: 'hk-multiboxswap',
     mouse4Click: 'hk-doubleSplit',
     mouse5Click: 'hk-split16',
-    /* accessibility (ogario/modules/accessibility.js); 1 / false = unchanged */
-    a11yTextScale: 1,             /* menu text size */
     //
     FacebookIDs: ''
 };
@@ -21208,8 +21169,7 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     volMaster: [0, 1, 0.01],
     volChat: [0, 1, 0.01],
     volCommands: [0, 1, 0.01],
-    volGameplay: [0, 1, 0.01],
-    a11yTextScale: [1, 1.6, 0.05]
+    volGameplay: [0, 1, 0.01]
 });
 /* the number of decimals of a step or bound (0.05 -> 2), to drop float noise after snapping */
 function lmSchemaDecimals(x) {
@@ -21654,8 +21614,6 @@ if (window.LMi18n) window.LMi18n.onChange(function () {
         if (t && f && !t.hasAttribute('data-i18n') && (s = own(f.id.replace(/-select$/, '')))) name(t, s);
     });
     var s2;
-    if ((s2 = own('mergeNote'))) $('#og-options .mergeGroup > .lm-group-note').text(s2);
-    if ((s2 = own('configNote'))) $('#og-options .profiles > .lm-group-note').text(s2);
     if (window.lmT) $('#lm-settings-search').attr('placeholder', '\uD83D\uDD0D ' + window.lmT('searchSettings'));
     /* the "Needs: ..." / "Not available on this server" notes under the rows */
     if (window.application && typeof application._lmDepRefresh === 'function') application._lmDepRefresh();
@@ -25054,9 +25012,8 @@ function thelegendmodproject() {
                         break;
                     case 'recordReplays':
                         /* Switched off: only new packets stop. The recordings already in memory stay
-                         * (a profile, preset or auto rule turning this off must not destroy them);
-                         * the button "Clear recordings in memory" frees them on request
-                         * (window._lmRecClearMemory). The recording of this connection ends here
+                         * (a preset turning this off must not destroy them); Replay Studio's library
+                         * lists them and deletes them. The recording of this connection ends here
                          * (_lmRecFull, reset by connect()), so switching back on does not resume it
                          * with a gap: a new recording starts with the next connection. */
                         if (!checked && window.RecordedProtocol && window.temporaryRecordedProtocol && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
@@ -26282,10 +26239,10 @@ function thelegendmodproject() {
                 if (!document.getElementById('lm-ss-style')) {
                     var st = document.createElement('style');
                     st.id = 'lm-ss-style';
-                    st.textContent = '#og-options .lm-ss-hide,#theme-main > .lm-ss-hide{display:none!important}';
+                    st.textContent = '#og-options .lm-ss-hide{display:none!important}';
                     document.head.appendChild(st);
                 }
-                /* Presets and "New" badges, next to the search box. A preset changes only its own
+                /* Presets, next to the search box. A preset changes only its own
                  * keys, after confirm(), through the same paths as the switches and sliders (so
                  * their side effects run); the old values are kept for Undo. Nothing changes
                  * without a click. */
@@ -26448,7 +26405,6 @@ function thelegendmodproject() {
             this.addOptionTo('.helpersGroup', 'stickyCell');
             /* Merging: sound and rings together, with what each needs from the server */
             this.addOptions(["hudMergeSound", "mergeRings"], "mergeGroup");
-            $('<div class="lm-group-note"></div>').text(this._lmMenuText('mergeNote')).appendTo('.mergeGroup');
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
@@ -26456,10 +26412,6 @@ function thelegendmodproject() {
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showStopwatch"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays"], "replayGroup");
-            /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
-            $('#recordReplays').closest('label').after($('<button type="button" id="lm-rec-clear" class="btn btn-xs btn-danger" style="display:block;margin:2px 0 6px;"></button>')
-                .attr('data-i18n', 'lmRecClear').text(lmT('lmRecClear'))
-                .on('click', function () { window._lmRecClearMemory(true); return false; }));
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Line split section; its key is set in Hotkeys ("Line split"). */
             this.addOptions(["lineSplitGuide"], "lineSplitGroup");
@@ -26475,9 +26427,6 @@ function thelegendmodproject() {
              * server Hz parts of the stats line (still dimmed while the stats line is off), and
              * Reduced motion (its death shake and particles, its entrance spin) */
             this.addOptions(["showStatsWorldSize", "showStatsDecayInfo", "showStatsServerHz", "reducedMotion"], "expandingLandGroup");
-            /* Accessibility section (ogario/modules/accessibility.js applies these; all off = unchanged) */
-            this.addOptions([], "accessibilityGroup");
-            this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);
             this.addOptions([], "macroGroup");
             /* Configuration: keeps the 'profiles' class (the probes find the section by it) */
             this.addOptions([], "profiles", "configGroup");
@@ -26515,7 +26464,6 @@ function thelegendmodproject() {
             this.addSliderBox(".boardGroup", "teamboardlimit", 5, 40, 5);
 
             this.addSliderBox(".profiles", "profileNumber", 10, 54, 1, "setProfileCount");
-            $('<div class="lm-group-note"></div>').text(this._lmMenuText('configNote')).appendTo('.profiles');
             this.addSliderBox(".macroGroup", "macroFeeding", 1, 160, 1);
             this.addSliderBox(".macroGroup", "macroSplitDelay", 20, 120, 1);
             this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
@@ -26603,8 +26551,7 @@ function thelegendmodproject() {
                     var st = document.createElement('style');
                     st.id = 'lm-dep-style';
                     st.textContent = '#og-options .lm-dep-off{opacity:.5}#og-options .lm-dep-off:hover{opacity:.8}' +
-                        '#og-options .lm-dep-off[data-lm-why]::after{content:attr(data-lm-why);display:block;font-size:10px;font-style:italic;line-height:1.3;padding-top:2px}' +
-                        '#og-options .lm-group-note{font-size:11px;line-height:1.4;opacity:.8;padding:4px 12px 6px}';
+                        '#og-options .lm-dep-off[data-lm-why]::after{content:attr(data-lm-why);display:block;font-size:10px;font-style:italic;line-height:1.3;padding-top:2px}';
                     document.head.appendChild(st);
                 }
                 /* the change handler that saves the setting may run after this one */
@@ -41819,7 +41766,7 @@ function thelegendmodproject() {
                 if (window._lmEvReplayOn && typeof _lmEvReplay === 'function') _lmEvReplay(false, 'left');
                 window._lmReplayPaused = false;
                 /* no replay plays any more: the one watched last is not kept from the memory budget
-                 * and "Clear recordings in memory" as the playing one (it was, until the next replay) */
+                 * as the playing one (it was, until the next replay) */
                 this.playingReplayServer = null;
             }
             //if (!window.RecordedProtocol[$("#server-token").val()]){
@@ -87243,16 +87190,6 @@ Object.defineProperty(Array.prototype, 'stDev', {
         document.body.appendChild(smallToolsScript);
     } catch (e) {
         console.warn('[LM] Error loading small tools script:', e);
-    }
-    /* Accessibility options (no style, canvas or loop while they are off) */
-    try {
-        var a11yScript = document.createElement('script');
-        a11yScript.type = 'text/javascript';
-        a11yScript.src = 'https://www.legendmod.ml/ogario/modules/accessibility.js?v=' + (window.OgVer || '');
-        a11yScript.charset = 'utf-8';
-        document.body.appendChild(a11yScript);
-    } catch (e) {
-        console.warn('[LM] Error loading accessibility script:', e);
     }
     /* Plugin manager (runs only the plugins the player turned on) */
     try {

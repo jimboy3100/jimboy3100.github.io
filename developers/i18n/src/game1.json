@@ -1584,7 +1584,7 @@
     "it": "Importazione non riuscita: la memoria del browser è piena ({0} non salvato). Tutte le modifiche sono state annullate."
   },
   "game1.rec.off": {
-    "en": "Replay recording is off: this connection is not recorded any more. Recordings already in memory are kept (Clear recordings in memory frees them).",
+    "en": "Replay recording is off: this connection is not recorded any more. Recordings already in memory are kept (Replay Studio's library lists and deletes them).",
     "el": "Η εγγραφή replay είναι ανενεργή: αυτή η σύνδεση δεν καταγράφεται πια. Οι εγγραφές που υπάρχουν ήδη στη μνήμη κρατιούνται (το «Εκκαθάριση εγγραφών από τη μνήμη» τις ελευθερώνει).",
     "es": "La grabación de repeticiones está desactivada: esta conexión ya no se graba. Las grabaciones en memoria se conservan («Borrar grabaciones de la memoria» las libera).",
     "bg": "Записът на повторения е изключен: тази връзка вече не се записва. Записите в паметта се пазят („Изчисти записите от паметта“ ги освобождава).",

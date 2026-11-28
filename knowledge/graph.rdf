@@ -188,7 +188,7 @@
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Accessibility features</schema:name>
-    <schema:description>Reduced motion, text scale, HUD text scale, opponent indicators, colour-blind preset.</schema:description>
+    <schema:description>Reduced motion, colour-blind preset.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://help.expanding.land/knowledge/#mechanic-dynamic-map">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>

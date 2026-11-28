@@ -243,7 +243,6 @@
       "name": "Accessibility",
       "description": "Accessibility settings.",
       "settings": [
-        "textScale",
         "colourBlindSafe"
       ]
     },

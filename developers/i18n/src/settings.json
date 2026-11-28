@@ -3278,24 +3278,6 @@
     "ja": "ゲームオーバー画面（統計、倒した相手、質量グラフ、直前20秒）",
     "it": "Scheda Game Over (le tue statistiche, chi ti ha mangiato, grafico della massa, gli ultimi 20 s)"
   },
-  "settings.accessibilityGroup": {
-    "en": "Accessibility",
-    "el": "Προσβασιμότητα",
-    "es": "Accesibilidad",
-    "bg": "Достъпност",
-    "fr": "Accessibilité",
-    "ar": "إمكانية الوصول",
-    "zh": "無障礙",
-    "ru": "Доступность",
-    "de": "Barrierefreiheit",
-    "tr": "Erişilebilirlik",
-    "pl": "Dostępność",
-    "nl": "Toegankelijkheid",
-    "pt": "Acessibilidade",
-    "id": "Aksesibilitas",
-    "ja": "アクセシビリティ",
-    "it": "Accessibilità"
-  },
   "settings.expandingLandGroup": {
     "en": "Expanding Land",
     "el": "Expanding Land",
@@ -3313,24 +3295,6 @@
     "id": "Expanding Land",
     "ja": "Expanding Land",
     "it": "Expanding Land"
-  },
-  "settings.a11yTextScale": {
-    "en": "Menu text size (1 = normal)",
-    "el": "Μέγεθος κειμένου μενού (1 = κανονικό)",
-    "es": "Tamaño del texto del menú (1 = normal)",
-    "bg": "Размер на текста в менюто (1 = нормален)",
-    "fr": "Taille du texte des menus (1 = normal)",
-    "ar": "حجم نص القائمة (1 = عادي)",
-    "zh": "選單文字大小（1 = 一般）",
-    "ru": "Размер текста меню (1 = обычный)",
-    "de": "Textgröße im Menü (1 = normal)",
-    "tr": "Menü yazı boyutu (1 = normal)",
-    "pl": "Rozmiar tekstu menu (1 = normalny)",
-    "nl": "Tekstgrootte menu (1 = normaal)",
-    "pt": "Tamanho do texto do menu (1 = normal)",
-    "id": "Ukuran teks menu (1 = normal)",
-    "ja": "メニューの文字サイズ（1 = 標準）",
-    "it": "Dimensione testo del menu (1 = normale)"
   },
   "settings.perfGroup": {
     "en": "Performance and network",
@@ -3386,24 +3350,6 @@
     "ja": "合体",
     "it": "Fusione"
   },
-  "settings.mergeNote": {
-    "en": "The sound uses the agar.io merge times (agar.io only). The rings work on every server, estimated from the mass.",
-    "el": "Η αντίστροφη μέτρηση και ο ήχος χρησιμοποιούν τους χρόνους συγχώνευσης του agar.io (μόνο agar.io). Οι κύκλοι λειτουργούν σε κάθε server· εκτός agar.io είναι εκτίμηση από τη μάζα.",
-    "es": "La cuenta atrás y el sonido usan los tiempos de fusión de agar.io (solo agar.io). Los anillos funcionan en todos los servidores; fuera de agar.io son una estimación según la masa.",
-    "bg": "Отброяването и звукът използват времената за сливане на agar.io (само agar.io). Кръговете работят на всеки сървър; извън agar.io са оценка по масата.",
-    "fr": "Le compte à rebours et le son utilisent les temps de fusion d'agar.io (agar.io uniquement). Les anneaux marchent sur tous les serveurs ; hors agar.io, c'est une estimation selon la masse.",
-    "ar": "يستخدم العدّ التنازلي والصوت أوقات الدمج في agar.io (agar.io فقط). تعمل الحلقات على كل سيرفر؛ وخارج agar.io تكون تقديرية حسب الكتلة.",
-    "zh": "倒數與音效使用 agar.io 的合併時間（僅限 agar.io）。進度圈適用於所有伺服器；在 agar.io 以外是依質量估算。",
-    "ru": "Отсчёт и звук используют время слияния agar.io (только agar.io). Кольца работают на любом сервере; вне agar.io это оценка по массе.",
-    "de": "Countdown und Sound nutzen die Merge-Zeiten von agar.io (nur agar.io). Ringe funktionieren auf jedem Server; außerhalb von agar.io sind sie eine Schätzung aus der Masse.",
-    "tr": "Sayaç ve ses agar.io birleşme sürelerini kullanır (yalnızca agar.io). Halkalar her sunucuda çalışır; agar.io dışında kütleden tahmindir.",
-    "pl": "Odliczanie i dźwięk używają czasów łączenia agar.io (tylko agar.io). Pierścienie działają na każdym serwerze; poza agar.io to szacunek na podstawie masy.",
-    "nl": "Aftelling en geluid gebruiken de merge-tijden van agar.io (alleen agar.io). Ringen werken op elke server; buiten agar.io zijn ze een schatting op basis van de massa.",
-    "pt": "A contagem e o som usam os tempos de fusão do agar.io (só no agar.io). Os anéis funcionam em todos os servidores; fora do agar.io são uma estimativa pela massa.",
-    "id": "Hitung mundur dan suara memakai waktu gabung agar.io (hanya agar.io). Cincin berfungsi di semua server; di luar agar.io itu perkiraan dari massa.",
-    "ja": "カウントダウンと音は agar.io の合体時間を使います（agar.io のみ）。リングはどのサーバーでも動作し、agar.io 以外では質量からの推定です。",
-    "it": "Il conto alla rovescia e il suono usano i tempi di fusione di agar.io (solo agar.io). Gli anelli funzionano su ogni server; fuori da agar.io sono una stima basata sulla massa."
-  },
   "settings.controlsGroup": {
     "en": "Controls (mouse, keyboard, gamepad)",
     "el": "Χειρισμός (ποντίκι, πληκτρολόγιο, gamepad)",
@@ -3457,24 +3403,6 @@
     "id": "Konfigurasi (profil, preset, cadangan)",
     "ja": "構成（プロファイル、プリセット、バックアップ）",
     "it": "Configurazione (profili, preset, backup)"
-  },
-  "settings.configNote": {
-    "en": "Presets: the buttons under the search box. Export / import and Restore default settings: the buttons below the settings.",
-    "el": "Προρυθμίσεις: τα κουμπιά κάτω από την αναζήτηση. Εξαγωγή / εισαγωγή και επαναφορά προεπιλογών: τα κουμπιά κάτω από τις ρυθμίσεις.",
-    "es": "Preajustes: los botones bajo el buscador. Exportar / importar y Restaurar ajustes predeterminados: los botones bajo los ajustes.",
-    "bg": "Готови настройки: бутоните под полето за търсене. Експорт / импорт и настройки по подразбиране: бутоните под настройките.",
-    "fr": "Préréglages : boutons sous la recherche. Export / import et Restaurer les paramètres par défaut : boutons sous les paramètres.",
-    "ar": "الإعدادات الجاهزة: الأزرار أسفل مربع البحث. التصدير / الاستيراد واستعادة الإعدادات الافتراضية: الأزرار أسفل الإعدادات.",
-    "zh": "預設組合：搜尋框下方的按鈕。匯出 / 匯入及還原預設設定：設定下方的按鈕。",
-    "ru": "Пресеты: кнопки под полем поиска. Экспорт / импорт и сброс настроек: кнопки под настройками.",
-    "de": "Voreinstellungen: die Buttons unter dem Suchfeld. Exportieren / Importieren und Standardeinstellungen wiederherstellen: die Buttons unter den Einstellungen.",
-    "tr": "Hazır ayarlar: arama kutusunun altındaki düğmeler. Dışa / içe aktar ve Varsayılan ayarları geri yükle: ayarların altındaki düğmeler.",
-    "pl": "Presety: przyciski pod polem wyszukiwania. Eksport / import i przywracanie ustawień domyślnych: przyciski pod ustawieniami.",
-    "nl": "Presets: de knoppen onder het zoekvak. Export / import en Standaardinstellingen herstellen: de knoppen onder de instellingen.",
-    "pt": "Predefinições: os botões abaixo da caixa de busca. Exportar / importar e Restaurar configurações padrão: os botões abaixo das configurações.",
-    "id": "Preset: tombol di bawah kotak pencarian. Ekspor / impor dan Pulihkan pengaturan default: tombol di bawah pengaturan.",
-    "ja": "プリセット：検索欄の下のボタン。エクスポート / インポートと初期設定に戻す：設定の下のボタン。",
-    "it": "Preset: i pulsanti sotto la casella di ricerca. Esporta / importa e Ripristina impostazioni predefinite: i pulsanti sotto le impostazioni."
   },
   "settings.lmDepNeeds": {
     "en": "Needs",

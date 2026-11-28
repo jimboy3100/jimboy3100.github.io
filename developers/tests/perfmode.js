@@ -94,7 +94,7 @@ function page(opts) {
     });
     if (opts.perf !== false) vm.runInContext(perfSrc, ctx);
     /* the presets row (box: the settings search area it is added to) */
-    vm.runInContext('(function () { var box = $("<div>"); var newOnly = false; var apply = function () { };\n' + presetSrc + '\nthis._lmPresetRow = row; this._lmUndoBtn = undoBtn; }).call(this);', ctx);
+    vm.runInContext('(function () { var box = $("<div>"); var apply = function () { };\n' + presetSrc + '\nthis._lmPresetRow = row; this._lmUndoBtn = undoBtn; }).call(this);', ctx);
     const S = ctx.defaultmapsettings, A = ctx.application;
     const backup = () => { const t = store.lmPerfBackup; return t ? JSON.parse(t) : null; };
     const user = (id, v) => A.setSettings(id, v);           /* a switch or a hotkey */
