@@ -1,5 +1,5 @@
 // Death recap (ogario/modules/deathrecap.js): off by default with no listeners; the recap panel fits the
-// screen (915x412 phone too) and stays off the card; the kill feed is removed (no setting, switch or line); state restored.
+// screen (915x412 phone too) and stays off the card; the kill feed and the mass-loss alert are removed (no setting, switch or line); state restored.
 // The Game Over card is one switch (gameOverStats): with it on, the card shows who ate you, the mass graph
 // and the recap without a switch per part (massGraph / showKiller / deathRecap are gone).
 (async () => {
@@ -10,11 +10,14 @@
   var D = window.LMDeathRecap, s = window.legendmod5, lm = window.legendmod;
   need('module loaded', !!D);
   if (!D || !s || !lm) return { fail: fail, info: info };
-  need('option off by default', s.gameOverStats === false);
+  /* on by default since the owner's shipped defaults; the probe turns it off to check the idle state */
+  var keep0 = s.gameOverStats;
+  need('option on by default (shipped defaults)', LM_SETTINGS_DEFAULTS.gameOverStats === true);
+  s.gameOverStats = false; D.sync();
   need('no switch per card part', ['massGraph', 'showKiller', 'deathRecap'].every(function (k) { return !document.getElementById(k) && !(k in LM_SETTINGS_DEFAULTS); }));
-  need('mass-loss alert: off by default, its switch and threshold slider in Settings > Stats', s.massLossAlert === false && LM_SETTINGS_DEFAULTS.massLossPct === 30 &&
-    !!document.getElementById('massLossAlert') && !!document.getElementById('massLossPct-slider'));
-  need('nothing runs while off', window._lmDROn === false && !window.LMEvents._has('death') && !window.LMEvents._has('spawn'));
+  need('no mass-loss alert (removed): no setting, switch or slider', ['massLossAlert', 'massLossPct'].every(function (k) { return !(k in s) && !(k in LM_SETTINGS_DEFAULTS) && !document.getElementById(k); }) && !document.getElementById('massLossPct-slider'));
+  /* (only its own flag: the gamepad vibration and Dying Light listen to death / spawn too) */
+  need('nothing runs while off', window._lmDROn === false);
   need('menu switch', !!document.getElementById('gameOverStats'));
   need('no kill feed setting or switch', !('killFeed' in s) && !('killFeed' in LM_SETTINGS_DEFAULTS) && !document.getElementById('killFeed'));
   var keep = { gameOverStats: s.gameOverStats }, keepK = lm._lmKiller, keepH = window.application && application._lmMassHist;
@@ -61,10 +64,11 @@
     var m = document.getElementById('lm-gameover-modal');
     if (m && m.parentNode) m.parentNode.removeChild(m);
     if (lm._gameOverDismissTimer) { clearTimeout(lm._gameOverDismissTimer); lm._gameOverDismissTimer = null; }
-    s.gameOverStats = keep.gameOverStats;
+    s.gameOverStats = false;
     lm._lmKiller = keepK; if (window.application) application._lmMassHist = keepH;
     D._test.reset(); D.sync();
   }
-  need('off again: nothing listens', window._lmDROn === false && !window.LMEvents._has('death') && !document.getElementById('lm-killfeed'));
+  need('off again: nothing listens', window._lmDROn === false && !document.getElementById('lm-killfeed'));
+  s.gameOverStats = keep0; D.sync();
   return { fail: fail, info: info };
 })()

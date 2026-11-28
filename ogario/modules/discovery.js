@@ -174,14 +174,14 @@
         run: function () { if (typeof W.lmReplayStudio === 'function') W.lmReplayStudio('view', 'dash'); }
     };
     /* (removed since, so without a card: the merge countdown and cell panel, the Record replays and
-     * Analytics switches (every game is recorded), the kill feed, Performance mode and its window,
+     * Analytics switches (every game is recorded), the kill feed and the mass-loss alert, Performance mode and its window,
      * the settings profiles window, the stream companion and the custom macros) */
     var CARDS = [
         { id: 'commandCentre', opts: ['commandCentreBar'], show: { commandCentreBar: '#lm-cc-bar' }, win: opener('LMCommandCentre.open') },
         { id: 'hudHelpers', opts: ['hudMoveDir', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats'] },
         { id: 'replayStudio', opts: [], win: opener('lmReplayStudio', 'open') },
         { id: 'analytics', opts: [], win: statsWin },
-        { id: 'deathRecap', opts: ['gameOverStats', 'massLossAlert'] },
+        { id: 'deathRecap', opts: ['gameOverStats'] },
         { id: 'gamepad', opts: [], win: opener('LMGamepad.openWindow') },
         { id: 'notifications', opts: ['notificationCentre'], show: { notificationCentre: '#lm-notif-bell' }, win: opener('LMNotifications.open') },
         { id: 'hudEditor', opts: [], win: opener('LMHudEditor.open') },

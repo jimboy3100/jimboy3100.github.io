@@ -24,12 +24,8 @@ const body = new El(), byId = {};
 body.contains = () => false;
 const origAppend = body.appendChild.bind(body);
 body.appendChild = c => { if (c.id) byId[c.id] = c; return origAppend(c); };
-/* the kill feed is removed: no line of it may appear (the box holds only mass-loss alert lines) */
-const feedGone = () => !(byId['lm-killfeed'] && byId['lm-killfeed'].parentNode) && !body.children.length;
-const feedLines = () => (byId['lm-killfeed'] ? byId['lm-killfeed'].children.map(c => c.textContent) : []);
-/* a pack text as a regex: {0} {1} ... match the given patterns */
-const esc = (x) => x.replace(/[.*+?^$()|[\]\\{}]/g, '\\$&');
-const tplRe = (k, pats, whole) => new RegExp((whole ? '^' : '') + T(k).split(/(\{\d+\})/).map(p => { const m = /^\{(\d+)\}$/.exec(p); return m ? pats[+m[1]] : esc(p); }).join('') + (whole ? '$' : ''));
+/* the kill feed and the mass-loss alert are removed: no line of either may appear (no #lm-killfeed box) */
+const feedGone = () => !byId['lm-killfeed'] && !body.children.length;
 const ctx = {
   window: null, Date: { now: () => now }, Math, Number, String, Array, Float64Array, Int32Array, Uint16Array, Infinity, isFinite,
   localStorage: { getItem: k => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } },
@@ -39,7 +35,7 @@ const ctx = {
   LMEvents: { on(n, f) { (listeners[n] = listeners[n] || []).push(f); }, off(n, f) { listeners[n] = (listeners[n] || []).filter(x => x !== f); } }
 };
 ctx.window = ctx;
-ctx.legendmod5 = { gameOverStats: false, massLossAlert: false, massLossPct: 30 };
+ctx.legendmod5 = { gameOverStats: false };
 ctx.legendmod = { play: false, playerCells: [], cells: [], playerMass: 0, ws: 'wss://x' };
 vm.createContext(ctx);
 i18n(ctx);
@@ -186,7 +182,7 @@ check('live: loss attributed exactly to Eater', texts.some(t => t.endsWith(': ' 
 check('live: killer from the eat events', texts[texts.length - 1].endsWith(': ' + T('eatenBy', ['Eater'])), texts);
 check('live: sparkline samples', rc && rc.spark.length > 20);
 check('live: no replay links when not recording', rc && rc.slot === null);
-/* the kill feed is gone: eats, a big loss and a death add nothing to the page while the mass-loss alert is off */
+/* the kill feed and the mass-loss alert are gone: eats, a big loss and a death add nothing to the page */
 check('big mass loss, eats and a death: no feed line on the page', feedGone(), body.children.length);
 
 // --- "near" nick comes only from a close, bigger, visible enemy
@@ -214,40 +210,23 @@ check('far and small cells are not "near"', last.nick == null, last);
   check('replay life: no recap built', D.last() === liveRecap);
 }
 
-/* the mass-loss alert: one line for a big loss with the exact eater, and it alone keeps the sampling on */
-{
-  ctx.legendmod5.gameOverStats = false; ctx.legendmod5.massLossAlert = true; D.sync(); D._test.reset();
-  check('mass-loss alert alone: listeners on, eats recorded', (listeners.spawn || []).length === 1 && ctx._lmDROn === true);
-  lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0]];
-  listeners.spawn[0]({ time: now });
-  for (let i = 0; i < 8; i++) { now += 250; D._test.tick(); }
-  const hunter = { x: 2500, y: 0, size: 2500, targetNick: 'Eater' };
-  now += 80; D.eat(hunter, own(0, 1000), false, true, 1000);
-  lm.playerCells = [own(0, 1100)]; lm.playerMass = 12100; now += 170; D._test.tick();
-  check('mass-loss alert line (30 %), exact eater', feedLines().length === 1 && tplRe('alertTo', ['\\d+', '[\\d,]+', 'Eater'], true).test(feedLines()[0]), feedLines());
-  now += 250; D._test.tick();
-  check('mass-loss alert: one line per loss', feedLines().length === 1, feedLines());
-  lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now });
-  ctx.legendmod5.massLossAlert = false; D.sync();
-  check('mass-loss alert off: its line goes, nothing listens', feedGone() && !(listeners.spawn || []).length && ctx._lmDROn === false);
-}
-
 // --- off again: everything stops
 ctx.legendmod5.gameOverStats = false; D.sync();
 check('off again: listeners removed, flag off', !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false);
 
-/* an old saved killFeed: true (the kill feed is removed) starts nothing: no listeners, no timer, no line */
+/* old saved killFeed / massLossAlert values (both removed) start nothing: no listeners, no timer, no line */
 {
-  ctx.legendmod5.killFeed = true; D.sync(); D._test.reset();
+  ctx.legendmod5.killFeed = true; ctx.legendmod5.massLossAlert = true; ctx.legendmod5.massLossPct = 10; D.sync(); D._test.reset();
   const before = intervals;
   lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0]];
   D.eat(lm.playerCells[0], { size: 300, targetNick: 'Chain' }, true, false, 300);
   D.eat({ size: 2500, targetNick: 'Hunter' }, lm.playerCells[0], false, true, 1500);
-  check('old killFeed value alone: nothing listens, no timer, nothing on the page',
+  check('old killFeed and massLossAlert values: nothing listens, no timer, nothing on the page',
     !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false && intervals === before && feedGone());
   lm.playerCells = []; lm.play = false;
-  delete ctx.legendmod5.killFeed; D.sync();
+  delete ctx.legendmod5.killFeed; delete ctx.legendmod5.massLossAlert; delete ctx.legendmod5.massLossPct; D.sync();
 }
+check('no alert line code left (no feed hook for tests)', typeof D._test.feed === 'undefined');
 
 /* who ate me: the eats of one player go on in one event across my split; the recap's death step still
  * names that player (the killer search stopped at the newer split that was over and found no eater) */

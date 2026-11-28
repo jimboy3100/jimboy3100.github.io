@@ -214,8 +214,7 @@
       "description": "Statistics and analytics settings.",
       "settings": [
         "gameOverCard",
-        "notificationCentre",
-        "massLossAlerts"
+        "notificationCentre"
       ]
     },
     {

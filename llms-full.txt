@@ -244,7 +244,6 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one),
 - **Move direction arrow**: Arrow showing real movement direction
 - **Edge teammates arrows**: Screen-edge indicators for off-screen teammates
 - **Edge threats arrows**: Screen-edge indicators for large cells that left the screen
-- **Mass loss alerts**: A line at the top right when you lose a configurable percentage (10-90%) of mass within 2 seconds
 - **Mass format**: one choice: exact, short (12.3k, the former Short mass switch) or auto (exact below 10000, then 12.3k, 123k, 1.2M)
 - **Virus range circles**: Rings showing virus ejection range
 - **Game stats**: configurable stats elements (placed with the HUD editor)
@@ -367,7 +366,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
 - **Gamepad**: dead zone, move range, curve, zoom sensitivity, trigger, axis inversion, vibrate (always on when a pad is connected)
 - **Privacy/Extras**: Streamer mode, hide skin URL, hide name, hide country, block popups
-- **Stats**: Game Over card stats, mass graph, death recap, mass loss alerts
+- **Stats**: Game Over card stats, mass graph, death recap
 - **Merge**: Sound, progress rings
 - **Indicators**: Opponent colours, rings, virus colours, split range (single/double/triple/quad), virus range, cursor tracking (with split prediction), bubble indicators, teammates indicators
 - **Expanding Land**: Reduced motion (no Expanding Land death shake, death particles or entrance spin)

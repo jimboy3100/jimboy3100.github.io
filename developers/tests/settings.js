@@ -46,9 +46,9 @@ check('every value a slider can show is kept exactly (no float drift: 0.35, -0.1
 check('macroFeeding -100 -> 1 (range)', V('macroFeeding', -100) === 1);
 check('profileNumber 1000000 -> 54', V('profileNumber', 1000000) === 54);
 check('fpsLimit -1 -> 0 (off), 0 stays 0', V('fpsLimit', -1) === 0 && V('fpsLimit', 0) === 0);
-/* removed or merged settings (kill feed, the event countdown's hide option, HUD helper cell panel, the removed 25 FPS menu cap, the
+/* removed or merged settings (kill feed, mass-loss alert, the event countdown's hide option, HUD helper cell panel, the removed 25 FPS menu cap, the
  * automatic Performance mode's own target / message / resolution options, the size symbols in Relative mass) */
-const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudCellPanel', 'killFeed', 'a11yIndicators', 'hideEventBanner',
+const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudCellPanel', 'killFeed', 'massLossAlert', 'massLossPct', 'a11yIndicators', 'hideEventBanner',
   /* options that tuned a detail: the rainbow border speed (fixed at the original 5), the chat word
    * filter and the Split prediction switch (always part of the cursor line) */
   'rainbowBorderSpeed', 'chatHideWords', 'splitPrediction',
@@ -231,10 +231,11 @@ const reSaved3 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 /* the size symbols were removed, not merged: an old saved value changes nothing (Relative mass stays off) */
 check('load: an old save with the size symbols on keeps Relative mass off, removed settings ignored', S.hudRelativeMass === false && !('a11yIndicators' in S) && reSaved3.hudRelativeMass !== true && GONE.every(k => !(k in S)));
 S.hudRelativeMass = D.hudRelativeMass;
-/* the mass-loss alert and the movement / edge arrows are back: off by default, saved values read again */
-check('load: the mass-loss alert, its threshold and the HUD arrows are read again (off by default)', S.massLossAlert === true && S.massLossPct === 40 && S.hudMoveDir === true && S.hudEdgeThreats === true &&
-  D.massLossAlert === false && D.massLossPct === 30 && D.hudMoveDir === false && D.hudEdgeTeammates === false && D.hudEdgeThreats === false && V('massLossPct', 5) === 10);
-['massLossAlert', 'massLossPct', 'hudMoveDir', 'hudEdgeThreats'].forEach(k => { S[k] = D[k]; });
+/* the movement / edge arrows are back: off by default, saved values read again; the mass-loss alert is
+ * removed again: its saved switch and threshold are ignored (in GONE above) */
+check('load: the HUD arrows are read again (off by default), the mass-loss alert is not', S.hudMoveDir === true && S.hudEdgeThreats === true &&
+  D.hudMoveDir === false && D.hudEdgeTeammates === false && D.hudEdgeThreats === false && !('massLossAlert' in D) && !('massLossAlert' in S) && !('massLossPct' in S));
+['hudMoveDir', 'hudEdgeThreats'].forEach(k => { S[k] = D[k]; });
 /* "Optimized mass (+/-2%) OR Merge timer (BETA)" is back (the original seconds merge timer, ogario/mergetimer.js):
  * on by default, and a saved off is read again; the agent-made Merge countdown stays removed */
 check('optimizedMass is a setting again, on by default', D.optimizedMass === true && V('optimizedMass', false) === false);

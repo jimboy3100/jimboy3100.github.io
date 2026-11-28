@@ -21956,8 +21956,6 @@ var defaultmapsettings = {
      * the mass graph and the last 20 s (ogario/modules/deathrecap.js). massGraph, showKiller and
      * deathRecap were a switch per part; they are gone (saved values of them are skipped on load). */
     gameOverStats: true,
-    massLossAlert: false,         /* a line at the top right when you lose massLossPct % of your mass within 2 s */
-    massLossPct: 30,              /* mass-loss alert threshold in % (10-90) */
     /* personalBests is gone: the all-time personal bests are always kept (localStorage) and shown on the
      * Game Over card, so a saved value of the old switch is skipped on load */
     /* matchHistory, analytics and recordReplays are gone: every game is recorded with its stats (the
@@ -22053,7 +22051,6 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     /* 0 ("as Short mass") of older versions is folded before the check (lmFoldLegacySettings) */
     massFormat: [1, 3, 1],
     hudBlur: [0, 8, 1],
-    massLossPct: [10, 90, 5],
     animation: [5, 200, 1],
     macroFeeding: [1, 160, 1],
     macroSplitDelay: [20, 120, 1],
@@ -23314,9 +23311,9 @@ function thelegendmodproject() {
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
             this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
                 /* the newer in-game parts are added to body, not #overlays-hud: same HUD font and weight
-                 * (bell, quick command bar, mass-loss alert lines, broadcast, practice HUD, radial menu, screenshot chip);
+                 * (bell, quick command bar, broadcast, practice HUD, radial menu, screenshot chip);
                  * the notification list is a window (menu theme, lmUiKit in LMexpress.js) */
-                '#lm-notif-bell,#lm-cc-bar,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
+                '#lm-notif-bell,#lm-cc-bar,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
         },
         setHudScale() {
             /* Issue #8: a value saved on a bigger screen is shown at most at this screen's slider
@@ -26079,7 +26076,6 @@ function thelegendmodproject() {
                         if (!checked && _lmSetWas && window.legendmod && legendmod._lmOwnColorsRestore) legendmod._lmOwnColorsRestore();
                         break;
                     case 'gameOverStats':
-                    case 'massLossAlert':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
                         break;
                     case 'autoResp':
@@ -27437,7 +27433,7 @@ function thelegendmodproject() {
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre", "commandCentreBar"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "massLossAlert", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Line split section; its key is set in Hotkeys ("Line split"). */
             this.addOptions([], "lineSplitGroup");
@@ -27494,7 +27490,6 @@ function thelegendmodproject() {
             this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
             /* no Hotkeys, mouse or gamepad controls here: they are only in the Hotkeys window (the
              * gamepad dead zone only in the Gamepad window) */
-            this.addSliderBox(".statsGroup", "massLossPct", 10, 90, 5);
             /* Options that do something only while another option is on, or only on some servers.
              * They stay saved and can still be changed; while they have no effect they are dimmed
              * and say why. Nothing here changes a setting. */
@@ -27506,7 +27501,6 @@ function thelegendmodproject() {
                      * mass texts (shortMassFormat), which show with the cell mass off too */
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
-                    massLossAlert: ['massLossPct'],
                     /* Settings > Helpers: the bubble style of the opponent rings and the bubble look of
                      * Cursor tracking are drawn only with these on */
                     oppRings: ['bubbleInd'],
@@ -88981,7 +88975,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading AgarTool script:', e);
     }
-    /* Death recap and mass-loss alerts (no listeners or timers while their options are off) */
+    /* Death recap (no listeners or timers while its option is off) */
     try {
         var deathRecapScript = document.createElement('script');
         deathRecapScript.type = 'text/javascript';
