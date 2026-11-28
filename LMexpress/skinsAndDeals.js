@@ -2545,7 +2545,7 @@ function SpecialDeals(defaultTab) {
              * floating over the game */
             window.addEventListener('keydown', function (e) {
                 if (e.keyCode !== 27 && e.key !== 'Escape') return;
-                var sub = $('#skin-packs-modal, #mobile-bundles-modal, #deal-buy-confirm-modal').last();
+                var sub = $('#skin-packs-modal, #deal-buy-confirm-modal').last();
                 if (!sub.length) return;
                 e.preventDefault();
                 e.stopPropagation();
@@ -3046,7 +3046,7 @@ function _lmScanDomForPromos() {
         for (var fi = 0; fi < found.length; fi++) {
             var cand = found[fi];
             if (cand.offsetParent === null) continue; /* hidden */
-            if (cand.closest && cand.closest('#specialShopModal, .lm-modal-overlay, #mobile-bundles-modal')) continue;
+            if (cand.closest && cand.closest('#specialShopModal, .lm-modal-overlay')) continue;
             el = cand;
             break;
         }
@@ -3182,199 +3182,6 @@ function _lmCheckForOffersManual() {
 window._lmCheckForOffersManual = _lmCheckForOffersManual;
 
 
-/* =====================================================================
- * MOBILE CONFIG FALLBACK FOR INAPP SKINS
- * The web config has 0 Wallet-Transactions, so INAPP skins like
- * medibull, dr_feather, beaver_fever show as "Promo Only".
- * This fetches the mobile config from biteyt.com to get transaction
- * data, enabling purchase of promotional bundles via Xsolla.
- * ===================================================================== */
-var _lmMobileTransactions = null;
-var _lmMobileProductBundles = null;
-var _lmMobileFetchState = 'idle'; /* idle | loading | loaded | failed */
-
-function _lmFetchMobileConfig() {
-    if (_lmMobileFetchState !== 'idle') return;
-    _lmMobileFetchState = 'loading';
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'https://biteyt.com/GameConfiguration.json', true);
-    xhr.timeout = 20000;
-    xhr.onload = function () {
-        try {
-            var data = JSON.parse(xhr.responseText);
-            var gc = data.gameConfig || data;
-            /* Normalize _value wrappers to flat format */
-            var txns = gc['Wallet - Transactions'] || [];
-            _lmMobileTransactions = txns.map(function (t) {
-                return {
-                    id: (t.id && t.id._value) || t.id || '',
-                    bundleId: (t.bundleId && t.bundleId._value) || t.bundleId || '',
-                    family: (t.family && t.family._value) || t.family || '',
-                    purchaseId: (t.purchaseId && t.purchaseId._value) || t.purchaseId || ''
-                };
-            });
-            var bundles = gc['Wallet - Product Bundles'] || [];
-            _lmMobileProductBundles = {};
-            for (var i = 0; i < bundles.length; i++) {
-                var b = bundles[i];
-                var bid = (b.id && b.id._value) || b.id || '';
-                var pid = (b.productId && b.productId._value) || b.productId || '';
-                var qty = (b.quantity && b.quantity._value) || b.quantity || 0;
-                if (!_lmMobileProductBundles[bid]) _lmMobileProductBundles[bid] = [];
-                _lmMobileProductBundles[bid].push({ productId: pid, quantity: qty });
-            }
-            _lmMobileFetchState = 'loaded';
-            console.log('[SHOP] Mobile config loaded: ' + _lmMobileTransactions.length + ' transactions, ' +
-                Object.keys(_lmMobileProductBundles).length + ' unique bundles');
-            /* Refresh skin shop if already built */
-            if (window._dealsShopBuilt && typeof window.populateDealsGrid === 'function') {
-                window.populateDealsGrid();
-            }
-        } catch (e) {
-            console.warn('[SHOP] Failed to parse mobile config:', e);
-            _lmMobileFetchState = 'failed';
-        }
-    };
-    xhr.onerror = xhr.ontimeout = function () {
-        console.warn('[SHOP] Failed to fetch mobile config');
-        _lmMobileFetchState = 'failed';
-    };
-    xhr.send();
-}
-
-/* Apple/Google priceTier → approximate USD mapping */
-var _lmPriceTierUSD = {
-    1: '$0.99', 2: '$1.99', 3: '$2.99', 4: '$3.99', 5: '$4.99',
-    6: '$5.99', 7: '$6.99', 8: '$7.99', 9: '$8.99', 10: '$9.99',
-    13: '$12.99', 15: '$14.99', 17: '$16.99', 20: '$19.99',
-    25: '$24.99', 28: '$27.99', 30: '$29.99', 35: '$34.99',
-    39: '$38.99', 40: '$39.99', 50: '$49.99', 54: '$53.99', 60: '$59.99'
-};
-
-/**
- * Find mobile transactions that contain a given skin productId.
- * Returns an array of { id, bundleId, purchaseId, contents[], priceTier, priceLabel }
- */
-function getMobileSkinTransactions(skinProductId) {
-    if (!_lmMobileTransactions || !_lmMobileProductBundles) return [];
-    var results = [];
-    var seen = {};
-    for (var i = 0; i < _lmMobileTransactions.length; i++) {
-        var txn = _lmMobileTransactions[i];
-        var contents = _lmMobileProductBundles[txn.bundleId];
-        if (!contents) continue;
-        var hasSkin = contents.some(function (c) { return c.productId === skinProductId; });
-        if (!hasSkin) continue;
-        /* Extract price tier from purchaseId */
-        var tierMatch = txn.purchaseId.match(/tier_(\d+)/);
-        var tier = tierMatch ? parseInt(tierMatch[1], 10) : 0;
-        /* Dedup by bundleId (same bundle can appear in multiple mp tiers) */
-        if (seen[txn.bundleId]) continue;
-        seen[txn.bundleId] = true;
-        results.push({
-            id: txn.id,
-            bundleId: txn.bundleId,
-            purchaseId: txn.purchaseId,
-            contents: contents,
-            priceTier: tier,
-            priceLabel: _lmPriceTierUSD[tier] || _lmsdT('lmx.sd.tierN', [tier])
-        });
-    }
-    results.sort(function (a, b) { return a.priceTier - b.priceTier; });
-    return results;
-}
-window.getMobileSkinTransactions = getMobileSkinTransactions;
-
-/**
- * Show a modal with mobile promotional bundles for an INAPP skin.
- */
-function _showMobileSkinBundlesModal(skinName, productId) {
-    var txns = getMobileSkinTransactions(productId);
-    if (!txns.length) {
-        if (window.toastr) toastr.info(lmShopMsg('shop', 'lmx.sd.noPromoBundles', [skinName]));
-        return;
-    }
-    var old = document.getElementById('mobile-bundles-modal');
-    if (old) old.remove();
-
-    var t = getShopTheme();
-    var rows = '';
-    for (var i = 0; i < txns.length; i++) {
-        var txn = txns[i];
-        var contentsHtml = '';
-        for (var j = 0; j < txn.contents.length; j++) {
-            var c = txn.contents[j];
-            var pname = c.productId.replace(/_/g, ' ').replace(/^skin /, '🎨 ');
-            if (c.productId === 'coin') pname = '🪙 ' + _lmsdT('lmx.sd.coinsN', [c.quantity.toLocaleString()]);
-            else if (c.productId === 'dna') pname = '🧬 ' + _lmsdT('lmx.sd.dnaN', [c.quantity.toLocaleString()]);
-            else if (c.productId.indexOf('xp_boost') !== -1) pname = '⚡ ' + _lmsdT('lmx.sd.xpBoostN', [c.productId.replace('xp_boost_', '')]);
-            else if (c.productId.indexOf('mass_boost') !== -1) pname = '💪 ' + _lmsdT('lmx.sd.massBoostN', [c.productId.replace('mass_boost_', '')]);
-            else if (c.productId.indexOf('potion') !== -1) pname = '🧪 ' + _lmsdT('lmx.sd.potionN', [c.productId.replace(/_/g, ' ').replace('potion ', '')]);
-            else if (c.productId.indexOf('skin_') !== -1) pname = '🎨 ' + c.productId.replace('skin_', '').replace(/_/g, ' ');
-            else pname = c.quantity + 'x ' + pname;
-            contentsHtml += '<span style="display: inline-block; background: rgba(255,255,255,0.06); border-radius:var(--lm-radius-s,4px); padding: 2px 6px; margin: 2px; font-size: 10px;">' + _sdEscHtml(pname) + '</span>';
-        }
-        rows += '<div class="deal-card" style="background: rgba(255,255,255,0.04); border: 1px solid ' + t.pc2 + '; border-radius:var(--lm-radius,6px); padding: 10px; margin-bottom: 8px; text-align: left;">';
-        rows += '<div style="display: flex; align-items: center; gap: 10px;">';
-        rows += '<div style="flex: 1; min-width: 0;">';
-        rows += '<div style="font-weight: 700; font-size: 12px; color: ' + t.tc + '; margin-bottom: 4px;">' + contentsHtml + '</div>';
-        rows += '</div>';
-        rows += '<div style="text-align: right; min-width: 70px;">';
-        rows += '<div style="font-size: 14px; font-weight: 700; color: #4caf50;">' + _sdEscHtml(txn.priceLabel) + '</div>';
-        rows += '<button type="button" class="btn btn-xs mobile-bundle-buy" data-purchase-id="' + _sdEscHtml(txn.purchaseId) + '" data-txn-id="' + _sdEscHtml(txn.id) + '" style="background: #4caf50; color: #fff; font-weight: 700; border: none; border-radius:var(--lm-radius,6px); padding: 3px 12px; margin-top: 3px; font-size: 11px; cursor: pointer;">' + _lmsdE('lmx.sd.buy') + '</button>';
-        rows += '</div></div></div>';
-    }
-
-    var modal = document.createElement('div');
-    modal.id = 'mobile-bundles-modal';
-    modal.className = 'lm-modal-overlay';
-    modal.style.cssText = 'position: fixed; inset: 0; z-index:999990; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); animation: lm-fade-in 0.15s ease; pointer-events: auto;';
-    modal.innerHTML =
-        '<div class="lm-modal-container" style="background: ' + t.pc + '; border: 1px solid ' + t.pc2 + '; width: 460px; max-width: calc(100vw - 32px); text-align: center; border-radius:var(--lm-radius,6px); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); font-family: \'Roboto Condensed\', sans-serif;">' + // i18n-ok: CSS
-            '<div style="background: ' + t.pc2 + '; padding: 14px 20px; font-size: 16px; font-weight: 900; color: #ff9800; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid rgba(255,255,255,0.08);">' +
-                '&#x1F3AF; ' + _lmsdE('lmx.sd.promoBundlesFor', [skinName]) +
-            '</div>' +
-            '<div style="padding: 8px 16px; font-size: 11px; color: #ff9800; background: rgba(255,152,0,0.1);">' +
-                '\u26A0 ' + _lmsdE('lmx.sd.promoBundlesNote') +
-            '</div>' +
-            '<div style="padding: 14px 16px; max-height: 50vh; overflow-y: auto;">' + rows + '</div>' +
-            '<div style="display: flex; padding: 12px 20px; background: ' + t.pc2 + '; border-top: 1px solid rgba(255,255,255,0.1);">' +
-                '<button id="mobile-bundles-close" type="button" style="flex: 1; padding: 10px; border-radius:var(--lm-radius,6px); font-weight: 800; font-size: 14px; cursor: pointer; background: rgba(255,255,255,0.08); color: ' + t.tc + '; border: 1px solid rgba(255,255,255,0.15);">' + _lmsdE('close') + '</button>' +
-            '</div>' +
-        '</div>';
-
-    document.body.appendChild(modal);
-
-    /* Close handlers */
-    document.getElementById('mobile-bundles-close').addEventListener('click', function () { modal.remove(); });
-    modal.addEventListener('click', function (e) { if (e.target === modal) modal.remove(); });
-
-    /* Buy buttons */
-    var buyBtns = modal.querySelectorAll('.mobile-bundle-buy');
-    for (var k = 0; k < buyBtns.length; k++) {
-        buyBtns[k].addEventListener('click', function (e) {
-            var pid = this.getAttribute('data-purchase-id');
-            var tid = this.getAttribute('data-txn-id');
-            if (pid && typeof window.openOfficialAgarIAP === 'function') {
-                modal.remove();
-                window.openOfficialAgarIAP(pid, { description: tid || pid });
-            } else {
-                toastr && toastr.error(lmShopMsg('shop', 'lmx.sd.payNotReady'));
-            }
-        });
-    }
-}
-window._showMobileSkinBundlesModal = _showMobileSkinBundlesModal;
-
-/*
- * DISABLED: mobile transactions only carry a generic price-tier SKU
- * (e.g. com.miniclip.agar.io.tier_5, shared by hundreds of bundles).
- * Buying it on web charged the player through Xsolla but agar.io could not
- * tell which bundle was bought, so nothing was delivered. Without this fetch
- * getMobileSkinTransactions() returns [] and INAPP skins show "Promo Only".
- */
-/* _lmFetchMobileConfig(); */
 
 
 /* Start the periodic promo refresh as soon as this file loads */
@@ -3416,31 +3223,9 @@ function setNewSkinPackButton(button, productId, displayName, purchaseInfo) {
     var packs = getSkinDealPacks(productId);
     if (!packs.length) {
         if (purchaseInfo.type !== 'REWARD') {
-            /* Check if mobile config has transactions for this skin */
-            var mobileTxns = getMobileSkinTransactions(productId);
-            if (mobileTxns.length > 0) {
-                button.textContent = '\uD83D\uDED2 ' + _lmsdT(mobileTxns.length > 1 ? 'lmx.sd.bundlesN' : 'lmx.sd.bundleN', [mobileTxns.length]);
-                button.disabled = false;
-                button.style.opacity = '1';
-                button.style.cursor = 'pointer';
-                button.style.pointerEvents = 'auto';
-                button.style.background = '#4caf50';
-                button.title = _lmsdT('lmx.sd.bundlesFromTip', ['$' + mobileTxns[0].priceLabel.replace('$','')]);
-                button.addEventListener('click', (function (pId, dName) {
-                    return function (evt) {
-                        evt.preventDefault();
-                        evt.stopPropagation();
-                        _showMobileSkinBundlesModal(dName, pId);
-                    };
-                })(productId, displayName));
-            } else if (_lmMobileFetchState === 'loading') {
-                button.textContent = '\u231B ' + _lmsdT('lmx.sd.loading');
-                button.title = _lmsdT('lmx.sd.loadingPromosTip');
-            } else {
-                button.textContent = _lmsdT('lmx.sd.promoOnly');
-                button.setAttribute('data-promo-only', '1');
-                button.title = _lmsdT('lmx.sd.promoOnlyTipLong');
-            }
+            button.textContent = _lmsdT('lmx.sd.promoOnly');
+            button.setAttribute('data-promo-only', '1');
+            button.title = _lmsdT('lmx.sd.promoOnlyTipLong');
         }
         return;
     }
@@ -8153,31 +7938,9 @@ function renderSkinPage(
                             };
                         })(_promo.callback));
                     } else {
-                        /* Check mobile config for purchasable bundles */
-                        var _mobileTxns = getMobileSkinTransactions(productId);
-                        if (_mobileTxns.length > 0) {
-                            buyButton.textContent = '\uD83D\uDED2 ' + _lmsdT(_mobileTxns.length > 1 ? 'lmx.sd.bundlesN' : 'lmx.sd.bundleN', [_mobileTxns.length]);
-                            buyButton.disabled = false;
-                            buyButton.style.opacity = '1';
-                            buyButton.style.cursor = 'pointer';
-                            buyButton.style.pointerEvents = 'auto';
-                            buyButton.style.background = '#4caf50';
-                            buyButton.title = _lmsdT('lmx.sd.bundlesFromTip', [_mobileTxns[0].priceLabel]);
-                            buyButton.addEventListener('click', (function (_pId, _dName) {
-                                return function (_evt) {
-                                    _evt.preventDefault();
-                                    _evt.stopPropagation();
-                                    _showMobileSkinBundlesModal(_dName, _pId);
-                                };
-                            })(productId, displayName));
-                        } else if (_lmMobileFetchState === 'loading') {
-                            buyButton.textContent = '\u231B ' + _lmsdT('lmx.sd.loading');
-                            buyButton.title = _lmsdT('lmx.sd.loadingPromosTip');
-                        } else {
-                            buyButton.textContent = _lmsdT('lmx.sd.promoOnly');
-                            buyButton.setAttribute('data-promo-only', '1');
-                            buyButton.title = _lmsdT('lmx.sd.promoOnlyTip');
-                        }
+                        buyButton.textContent = _lmsdT('lmx.sd.promoOnly');
+                        buyButton.setAttribute('data-promo-only', '1');
+                        buyButton.title = _lmsdT('lmx.sd.promoOnlyTip');
                     }
                 } else {
                     buyButton.textContent =
