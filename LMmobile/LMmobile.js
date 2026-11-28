@@ -741,13 +741,16 @@
         /* Active player indicator: P1 / P2 while a multibox unit exists, else the swap sign. The swap
          * event comes for every change of the unit you control; the last unit closing while the main
          * player has control sends none, so the 500 ms button timer (syncAiPause) checks it too. */
-        /* the number of the player you control: 1 = the main player, else 1 + the unit's place among
-         * the multibox units in window.spects (Full Map / in-game spectators skipped). Not the unit
-         * number: that is shared with the spectators and grows with each new connection, so every
-         * unit showed P2. Two players: P1 / P2 as before (the player slot later). */
+        /* the number of the player you control: 1 = the main player, else the unit's player slot
+         * (window.lmMbPlayers; a slot keeps its number while another player goes), for a unit
+         * without one 1 + its place among the multibox units in window.spects (Full Map / in-game
+         * spectators skipped). Not the unit number: that is shared with the spectators and grows
+         * with each new connection, so every unit showed P2. Two players: P1 / P2 as before. */
         function mbPlayerNo() {
-            var n = window.multiboxPlayerEnabled, list = window.spects, k = 1;
+            var n = window.multiboxPlayerEnabled, list = window.spects, k = 1, reg = window.lmMbPlayers;
             if (!n) return 1;
+            var sp = reg && reg.bySource ? reg.bySource.get(n) : null;
+            if (sp && sp.slotId >= 2) return sp.slotId;
             for (var i = 0; list && i < list.length; i++) {
                 if (!list[i] || !list[i].player) continue;
                 k++;
@@ -762,7 +765,9 @@
             if (want === _mbShown && bMb.textContent === want) return;
             _mbShown = want;
             bMb.textContent = want;
-            bMb.style.borderColor = want === '\u21C4' ? '' : p === 1 ? 'rgba(1,217,204,.6)' : 'rgba(255,165,0,.6)';
+            /* the player's colour, the one of its ring and roster chip (LM_MB_RING_DEFAULT_COLORS) */
+            var pal = window.LM_MB_RING_DEFAULT_COLORS;
+            bMb.style.borderColor = want === '\u21C4' ? '' : pal && pal[p] ? pal[p] + '99' : p === 1 ? 'rgba(1,217,204,.6)' : 'rgba(255,165,0,.6)';
         }
         function buildMbButton() {
             if (bMb && bMb.parentNode) bMb.parentNode.removeChild(bMb);

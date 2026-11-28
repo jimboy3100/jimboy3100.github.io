@@ -25643,6 +25643,58 @@ function thelegendmodproject() {
             }
             this.mbSelectAdjacent(-1);
         },
+        /* The multibox roster in the stats HUD, only while multibox is on: one chip per open player
+         * in slot order (its colour, a dot for alive / dead / connecting / offline, its mass; the
+         * player you control outlined), '+' (Add Player) until Settings "Multibox slots" is reached
+         * and 'x' on P3 on (Remove Player; P2 goes with multibox off). A click (a tap on the phone)
+         * controls that player; nothing of it reaches the game below. */
+        _lmMbRosterHtml() {
+            this._lmMbRosterBind();
+            var units = lmMbUnits(_lmMbList), cur = window.multiboxPlayerEnabled ? lmMultiboxControlledPlayer() : 1, h = '<div class="lm-mb-roster">', i, p, slot, st, mass;
+            for (i = -1; i < units.length; i++) {
+                p = i < 0 ? legendmod : units[i];
+                slot = lmMbSlotOf(p);
+                st = lmMbStatus(p);
+                mass = st === 'alive' ? Math.round(+p.playerMass || 0) : 0;
+                var col = LM_MB_RING_DEFAULT_COLORS[slot] || '#fff', tip = 'P' + slot + ': ' + lmT(st === 'alive' ? 'game1.hud.mbAlive' : st === 'dead' ? 'game1.hud.mbDead' : st === 'connecting' ? 'game1.hud.mbConnecting' : 'game1.hud.mbOffline');
+                h += '<span class="lm-mb-chip lm-mb-' + st + (slot === cur ? ' lm-mb-sel' : '') + '" data-lm-mb-slot="' + slot + '" role="button" title="' + _lmG1e(tip) + '" aria-label="' + _lmG1e(tip) +
+                    '" style="border-color:' + col + '"><i class="lm-mb-dot"></i><b style="color:' + col + '">P' + slot + '</b>' + (mass ? ' ' + mass : '') +
+                    (p.slotId >= 3 ? '<span class="lm-mb-x" data-lm-mb-rm="' + slot + '" role="button" title="' + _lmG1e(lmT('game1.hud.mbRemove')) + '">×</span>' : '') + '</span>';
+            }
+            if (lmMbPlayers.count() < lmMbCapacity()) h += '<span class="lm-mb-chip lm-mb-add" data-lm-mb-add="1" role="button" title="' + _lmG1e(lmT('game1.hud.mbAdd')) + '">+</span>';
+            return h + '</div>';
+        },
+        /* once: the roster's style (the HUD's font and scale, the theme's text colour) and one
+         * listener for every chip (the HUD is written again every 250 ms) */
+        _lmMbRosterBind() {
+            if (this._lmMbRosterOn || typeof document === 'undefined' || !document.addEventListener) return;
+            this._lmMbRosterOn = true;
+            var css = document.createElement('style');
+            css.id = 'lm-mb-roster-css';
+            css.textContent = '.lm-mb-roster{margin-top:2px;white-space:nowrap}' +
+                '.lm-mb-chip{display:inline-block;pointer-events:auto;cursor:pointer;border:1px solid;border-radius:8px;padding:0 6px;margin:0 4px 0 0;line-height:1.6;font-size:90%;touch-action:manipulation;user-select:none}' +
+                '.lm-mb-chip.lm-mb-sel{box-shadow:0 0 0 2px currentColor inset;font-weight:bold}' +
+                '.lm-mb-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:4px;vertical-align:middle;background:#4f4}' +
+                '.lm-mb-dead .lm-mb-dot{background:#f44}.lm-mb-connecting .lm-mb-dot{background:#ff0}.lm-mb-offline .lm-mb-dot{background:#888}' +
+                '.lm-mb-dead,.lm-mb-offline{opacity:.6}.lm-mb-connecting{border-style:dashed}' +
+                '.lm-mb-x{margin-left:6px;opacity:.8}.lm-mb-x:hover{opacity:1}.lm-mb-add{border-style:dashed;font-weight:bold}';
+            (document.head || document.documentElement).appendChild(css);
+            var app = this, chip = function (e) { var t = e.target; return t && t.closest ? t.closest('.lm-mb-chip') : null; };
+            /* the game below never sees the press (no split, no feed, no aim) */
+            ['mousedown', 'pointerdown', 'touchstart'].forEach(function (type) {
+                document.addEventListener(type, function (e) { if (chip(e)) e.stopPropagation(); }, { capture: true, passive: true });
+            });
+            document.addEventListener('click', function (e) {
+                var c = chip(e);
+                if (!c) return;
+                e.stopPropagation();
+                var rm = e.target.closest('[data-lm-mb-rm]');
+                if (rm) app.mbRemovePlayer(+rm.getAttribute('data-lm-mb-rm'));
+                else if (c.hasAttribute('data-lm-mb-add')) app.mbAddPlayer();
+                else app.mbSelectPlayer(+c.getAttribute('data-lm-mb-slot'));
+                app._statsHUDLastHTML = null;
+            }, true);
+        },
         multiboxFollowMouse() {
             if (!window.multiboxFollowMouse) {
                 window.multiboxFollowMouse = true
@@ -25898,10 +25950,11 @@ function thelegendmodproject() {
                     /* no ping while a replay plays: its recorded pongs answer no ping of this page
                      * (they read e.g. 31349 ms) */
                     if (currentPing && !(LM.ws && String(LM.ws).indexOf('replay') !== -1)) t += ' | PING: ' + currentPing;
-                    if (window.multiboxPlayerEnabled) {
-                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB ' + (window.multiboxPlayerEnabled + 1) + '/' + ((typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }).length : 0) + 1) + ']</span>';
-                    } else if (legendmod.multiBoxPlayerExists) {
-                        t += ' | <span style="color:#00E5FF;font-weight:bold">[MB 1/' + ((typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }).length : 0) + 1) + ']</span>'; /* real unit count (one unit is created) */
+                    /* [MB slot/players]: the slot of the player you control (P1 the main one) and how
+                     * many players are open, in that player's colour */
+                    if (window.multiboxPlayerEnabled || legendmod.multiBoxPlayerExists) {
+                        var _lmMbSl = window.multiboxPlayerEnabled ? lmMultiboxControlledPlayer() : 1;
+                        t += ' | <span style="color:' + (LM_MB_RING_DEFAULT_COLORS[_lmMbSl] || '#00E5FF') + ';font-weight:bold">[MB ' + _lmMbSl + '/' + (lmMbUnits(_lmMbList).length + 1) + ']</span>';
                     }
                 }
                 if (defaultmapsettings.showStatsPPS && LM.pps > 0) {
@@ -25911,6 +25964,7 @@ function thelegendmodproject() {
                     if (LM.pps < 20 || LM.pps > 32) color = 'color:red';
                     t += 'PPS: <span style="' + color + '">' + LM.pps + '</span>'; /* i18n-ok: PPS (packets per second), a technical abbreviation */
                 }
+                if (legendmod.multiBoxPlayerExists) t += this._lmMbRosterHtml();
                 /* Runs every 250 ms: skip the HTML re-parse when the text has not changed. */
                 if (this._statsHUDLastHTML !== t || this._statsHUDLastEl !== this.statsHUD) {
                     this.statsHUD.innerHTML = t;

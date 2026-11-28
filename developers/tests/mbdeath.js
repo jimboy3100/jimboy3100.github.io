@@ -595,6 +595,46 @@ function death(o) {
         check('the last living unit\'s socket drops: no game-over menu, the other unit\'s score kept', app.menuShown === 0 && other.playerScore === 77 && !s.ctx._lmMbDeathMenuAt);
     }
 }
+/* 5c. the roster in the stats HUD (application._lmMbRosterHtml / _lmMbRosterBind): a chip per open player
+ * in slot order with its state and mass, the controlled one outlined, '+' until the capacity, 'x' on
+ * P3 on; a click controls / adds / removes and never reaches the game */
+{
+    const rh = block(v4, '        _lmMbRosterHtml() {'), rb = block(v4, '        _lmMbRosterBind() {'), g1e = block(v4, 'function _lmG1e(s) {');
+    if (!rh || !rb || !g1e) check('roster code found', false);
+    else {
+        const lst = [], calls = [];
+        const ctx = { console: { log: noop, warn: noop }, Date, toastr: {} };
+        ctx.window = ctx;
+        ctx.document = { head: { appendChild: (el) => { ctx.css = el.textContent; } }, createElement: () => ({}), addEventListener: (type, fn, o) => lst.push({ type, fn, capture: o === true || !!(o && o.capture) }) };
+        vm.createContext(ctx);
+        vm.runInContext(v4.slice(a, b) + '\n' + g1e + '\nfunction lmT(k) { return k; }\n' + v4.slice(v4.indexOf('var LM_MB_RING_DEFAULT_COLORS'), v4.indexOf('\n', v4.indexOf('var LM_MB_RING_DEFAULT_COLORS'))) + '\n' +
+            ['function lmMultiboxControlledPlayer('].map((m) => block(v4, m)).join('\n') + '\n' +
+            'var defaultmapsettings = window.defaultmapsettings = { multiboxAmount: 4 };\n' +
+            'var legendmod = window.legendmod = { play: true, playerMass: 1234.4, multiBoxPlayerExists: true };\n' +
+            'var application = window.application = {' + rh + ',\n' + rb + ',\n mbSelectPlayer(s) { calls.push("sel" + s); }, mbAddPlayer() { calls.push("add"); }, mbRemovePlayer(s) { calls.push("rm" + s); } };', Object.assign(ctx, { calls }));
+        const reg = ctx.lmMbPlayers, mk = (n, active) => { const r = reg.reserve(); const u = { number: n, player: true, slotId: r.slotId, slotEpoch: r.slotEpoch, active, playerMass: 500, socket: {}, connectionOpened: true, _lmSpawnedOnce: active !== null }; reg.attach(u); ctx.spects.push(u); return u; };
+        mk(16, true); mk(3, false);
+        ctx.lmSetMbUnit(16);
+        const h = ctx.application._lmMbRosterHtml();
+        const chips = [...h.matchAll(/data-lm-mb-slot="(\d)"/g)].map((m) => m[1]).join();
+        check('roster: P1 P2 P3 in slot order, P2 (controlled) outlined, its mass, P3 dead', chips === '1,2,3' && /lm-mb-alive lm-mb-sel" data-lm-mb-slot="2"/.test(h) && /P2<\/b> 500/.test(h) &&
+            /lm-mb-dead" data-lm-mb-slot="3"/.test(h) && /P1<\/b> 1234/.test(h), chips);
+        check('    ... the slot colours (one palette), x only on P3, + below the capacity (4)', /border-color:#00E5FF/.test(h) && /border-color:#A855F7/.test(h) &&
+            (h.match(/data-lm-mb-rm/g) || []).length === 1 && /data-lm-mb-rm="3"/.test(h) && /data-lm-mb-add/.test(h));
+        mk(9, null);
+        const h2 = ctx.application._lmMbRosterHtml();
+        check('    ... a unit still connecting; at the capacity no +', /lm-mb-connecting" data-lm-mb-slot="4"/.test(h2) && !/data-lm-mb-add/.test(h2));
+        check('    ... texts from the packs (state and Remove / Add titles)', /game1\.hud\.mbAlive/.test(h) && /game1\.hud\.mbDead/.test(h) && /game1\.hud\.mbRemove/.test(h) && /game1\.hud\.mbAdd/.test(h));
+        const at = (attrs) => ({ closest: (sel) => { const m = /^\[([\w-]+)\]$/.exec(sel); return sel === '.lm-mb-chip' || (m && m[1] in attrs) ? { getAttribute: (k) => attrs[k], hasAttribute: (k) => k in attrs } : null; } });
+        const fire = (type, attrs) => { let stopped = false; lst.filter((l) => l.type === type).forEach((l) => l.fn({ target: at(attrs), stopPropagation() { stopped = true; } })); return stopped; };
+        const stop = fire('mousedown', { 'data-lm-mb-slot': '3' }) && fire('touchstart', { 'data-lm-mb-slot': '3' });
+        fire('click', { 'data-lm-mb-slot': '3' }); fire('click', { 'data-lm-mb-add': '1' }); fire('click', { 'data-lm-mb-slot': '3', 'data-lm-mb-rm': '3' });
+        check('roster click: select / add / remove, the press stopped before the game (mouse and touch), one style', stop && calls.join() === 'sel3,add,rm3' &&
+            lst.every((l) => l.capture) && /pointer-events:auto/.test(ctx.css || ''), calls.join());
+        ctx.application._lmMbRosterHtml();
+        check('    ... the listeners are added once', lst.filter((l) => l.type === 'click').length === 1);
+    }
+}
 /* 6. a spectator (Full Map tile, in-game spectator) with its active flag set is never a living
  * player (lmMbAlive): terminate and beforecalculation skip it for the focus and the last-death menu */
 {

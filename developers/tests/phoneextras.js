@@ -165,6 +165,15 @@ const spec = (n) => ({ number: n, player: false }), unit = (n) => ({ number: n, 
 check('two players, main controlled: P1', ind(null, [unit(1)]) === 'P1');
 check('two players, the unit controlled: P2 (also when a Full Map spectator took number 1)', ind(1, [unit(1)]) === 'P2' && ind(2, [spec(1), unit(2)]) === 'P2');
 check('three players: the second unit (number 5) is P3, not P2', ind(5, [spec(1), unit(2), spec(3), unit(5)]) === 'P3', ind(5, [spec(1), unit(2), spec(3), unit(5)]));
+/* units in player slots (lmMbPlayers): the slot, also after P3 was removed (P4 stays P4), and the slot's colour */
+{
+  const u4 = { number: 9, player: true, slotId: 4 };
+  ctx.lmMbPlayers = { bySource: new Map([[9, u4]]) };
+  ctx.LM_MB_RING_DEFAULT_COLORS = { 1: '#FF2FD6', 2: '#00E5FF', 3: '#A855F7', 4: '#10B981' };
+  check('slots: P4 stays P4 when P3 is gone, its border in the P4 colour', ind(9, [unit(2), u4]) === 'P4' && vm.runInContext('bMb.style.borderColor', ctx) === '#10B98199');
+  check('slots: the main player P1 in its colour', ind(null, [unit(2), u4]) === 'P1' && vm.runInContext('bMb.style.borderColor', ctx) === '#FF2FD699');
+  delete ctx.lmMbPlayers; delete ctx.LM_MB_RING_DEFAULT_COLORS;
+}
 
 console.log(fail ? fail + ' check(s) failed' : 'all phone extras checks passed');
 process.exit(fail ? 1 : 0);
