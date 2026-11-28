@@ -863,24 +863,6 @@
     "ja": "自動ズーム",
     "it": "Zoom automatico"
   },
-  "settings.unlockedFPS": {
-    "en": "Frames per sec",
-    "el": "Καρέ ανά δευτερόλεπτο",
-    "es": "Fotogramas por segundo",
-    "bg": "Кадри в секунда",
-    "fr": "Images par seconde",
-    "ar": "إطارات في الثانية",
-    "zh": "每秒幀數",
-    "ru": "Кадров в секунду",
-    "de": "Bilder pro Sekunde",
-    "tr": "Saniyedeki kare sayısı",
-    "pl": "Klatki na sekundę",
-    "nl": "Beelden per seconde",
-    "pt": "Quadros por segundo",
-    "id": "Frame per detik",
-    "ja": "フレームレート",
-    "it": "Fotogrammi al secondo"
-  },
   "settings.animation": {
     "en": "Animation delay",
     "el": "Καθυστέρηση κίνησης",
@@ -1186,24 +1168,6 @@
     "id": "Warna pelangi beranimasi",
     "ja": "虹色アニメーション",
     "it": "Colori arcobaleno animati"
-  },
-  "settings.autoHideCellsInfo": {
-    "en": "Auto hide names and mass",
-    "el": "Αυτόματη απόκρυψη ονομάτων και μάζας",
-    "es": "Ocultar nombres y masa automáticamente",
-    "bg": "Автоматично скривай имена и маса",
-    "fr": "Masquer auto les noms et la masse",
-    "ar": "إخفاء الأسماء والكتلة تلقائيًا",
-    "zh": "自動隱藏名稱和質量",
-    "ru": "Автоскрытие имён и массы",
-    "de": "Namen und Masse automatisch ausblenden",
-    "tr": "İsimleri ve kütleyi otomatik gizle",
-    "pl": "Autoukrywanie nicków i masy",
-    "nl": "Namen en massa automatisch verbergen",
-    "pt": "Ocultar nomes e massa automaticamente",
-    "id": "Sembunyikan nama dan massa otomatis",
-    "ja": "名前と質量を自動で隠す",
-    "it": "Nascondi nomi e massa automaticamente"
   },
   "settings.autoHideNames": {
     "en": "Auto hide names",
@@ -2213,24 +2177,6 @@
     "ja": "ウイルスの範囲",
     "it": "Raggio dei virus"
   },
-  "settings.textStroke": {
-    "en": "Names and mass stroke",
-    "el": "Περίγραμμα ονομάτων και μάζας",
-    "es": "Contorno de nombres y masa",
-    "bg": "Контур на имената и масата",
-    "fr": "Contour des noms et de la masse",
-    "ar": "إطار الأسماء والكتلة",
-    "zh": "名稱和質量描邊",
-    "ru": "Обводка имён и массы",
-    "de": "Kontur für Namen und Masse",
-    "tr": "İsim ve kütle dış çizgisi",
-    "pl": "Obwódki nicków i masy",
-    "nl": "Omlijning van namen en massa",
-    "pt": "Contorno de nomes e massa",
-    "id": "Garis tepi nama dan massa",
-    "ja": "名前と質量の縁取り",
-    "it": "Contorno di nomi e massa"
-  },
   "settings.namesStroke": {
     "en": "Names stroke",
     "el": "Περίγραμμα ονομάτων",
@@ -2464,24 +2410,6 @@
     "id": "Klik roda mouse",
     "ja": "ホイールクリック",
     "it": "Clic della rotellina"
-  },
-  "settings.mouseInvert": {
-    "en": "Invert mouse buttons",
-    "el": "Αντιστροφή κουμπιών ποντικιού",
-    "es": "Invertir botones del ratón",
-    "bg": "Размени бутоните на мишката",
-    "fr": "Inverser les boutons de la souris",
-    "ar": "عكس أزرار الفأرة",
-    "zh": "反轉滑鼠按鍵",
-    "ru": "Поменять кнопки мыши",
-    "de": "Maustasten vertauschen",
-    "tr": "Fare tuşlarını ters çevir",
-    "pl": "Odwróć przyciski myszy",
-    "nl": "Muisknoppen omwisselen",
-    "pt": "Inverter botões do mouse",
-    "id": "Balik tombol mouse",
-    "ja": "マウスボタンを入れ替え",
-    "it": "Inverti i tasti del mouse"
   },
   "settings.disableChat": {
     "en": "Disable chat",

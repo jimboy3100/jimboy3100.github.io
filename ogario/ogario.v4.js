@@ -22534,7 +22534,6 @@ function thelegendmodproject() {
     //if (displayText[r].comm15 != undefined) {
     //console.log(textLanguage.comm15);
     //}
-    window.MouseClicks = [];
     Settings = {
         menuMainColorCSS: null,
         menuPanelColorCSS: null,
@@ -22650,34 +22649,6 @@ function thelegendmodproject() {
                 var id = this.value;
                 defaultSettings[value] = id;
                 app[callback](id);
-            });
-        },
-        addPresetBox2(id, name, options, value, callback) {
-            for (var option in $(id).append('<label data-original-title="" title="">' + textLanguage[name] + '<div class=\"select-wrapper\" style="display:inline-block; width: 60%; float:right;"><select id=\"' + name + '\" class=\"form-control\"></select></div></label>'), options) {
-                Object.values(options) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['label'] + '</option>');
-                //options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
-            }
-            //$('#' + name).val(defaultSettings[value]);
-            var app = this;
-            $('#' + name).on('change', function () {
-                var id = this.value;
-                //console.log(id,name)
-                window.MouseClicks[name] = id;
-                app[callback](name);
-            });
-        },
-        addPresetBox3(id, name, options, value, callback) {
-            for (var option in $(id).after('<div class=\"select-wrapper\" style="display:inline-block; width: 48%; margin-Left: 10px"><select id=\"' + name + '\" class=\"form-control\"></select></div>'), options) {
-                Object.values(options) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['label'] + '</option>');
-                //options.hasOwnProperty(option) && $('#' + name).append('<option value=\"' + option + '\">' + options[option]['name'] + '</option>');
-            }
-            //$('#' + name).val(defaultSettings[value]);
-            var app = this;
-            $('#' + name).on('change', function () {
-                var id = this.value;
-                //console.log(id,name)
-                window.MouseClicks[name] = id;
-                app[callback](name);
             });
         },
         addColorBox(id, name, callback) {
@@ -23029,26 +23000,6 @@ function thelegendmodproject() {
                     'format': 'hex',
                     'input': '#color'
                 });
-        },
-        changeleftCmd(name) {
-            defaultmapsettings.leftClick = window.MouseClicks[name]
-            application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },
-        changerightCmd(name) {
-            defaultmapsettings.rightClick = window.MouseClicks[name]
-            application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },
-        changemiddleCmd(name) {
-            defaultmapsettings.middleClick = window.MouseClicks[name]
-            application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },
-        change4Cmd(name) {
-            defaultmapsettings.mouse4Click = window.MouseClicks[name]
-            application.saveSettings(defaultmapsettings, 'ogarioSettings');
-        },
-        change5Cmd(name) {
-            defaultmapsettings.mouse5Click = window.MouseClicks[name]
-            application.saveSettings(defaultmapsettings, 'ogarioSettings');
         },
         setFonts() {
             this.setFont('namesFont', defaultSettings.namesFont);
