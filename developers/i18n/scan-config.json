@@ -225,6 +225,8 @@
   },
   "archived": {},
   "redirects": {
+    "extras/website/index2.html": "forwards to the home page (it was an old copy of it)",
+    "extras/website/index3.html": "forwards to the home page (it was an old copy of it)",
     "extras/website/index.html": "forwards to the home page (it was an old copy of it); other pages use the CSS files of this folder"
   },
   "deleted": {

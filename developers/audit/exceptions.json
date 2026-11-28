@@ -18,6 +18,7 @@
         { "glob": "ogario/protocols/*.md", "class": "DEVELOPMENT", "why": "protocol notes" },
         { "glob": "agario/bundle_start.js", "class": "DEVELOPMENT", "why": "agar.io client copy that developers/tests/probes/keys-held.js reads agar.io's key handler from (LM does not load it)" },
         { "glob": "scripts/**", "class": "DEVELOPMENT", "why": "maintenance scripts" },
+        { "glob": "server-side/**", "class": "DEVELOPMENT", "why": "source of the small servers behind the site (socket and monitor server, settings store, clan server and extension; developers/REPOSITORY.md), kept for redeploying them; their views load their own assets inside the server, not from this site; the home page links the folder as source; robots.txt keeps it out of search" },
         { "glob": ".github/**", "class": "DEVELOPMENT", "why": "repository settings" },
         { "glob": ".gitignore", "class": "DEVELOPMENT", "why": "repository settings" },
         { "glob": ".agents/**", "class": "DEVELOPMENT", "why": "repository notes" },

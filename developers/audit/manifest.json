@@ -7233,6 +7233,38 @@
         "external": "never linked for installing: no page of this repository linked it in the whole git history (nothing else names it), so no one installed it by its address; expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
       },
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "themes/backgrounds/a.txt",
+      "canonicalPath": null,
+      "reason": "Empty placeholder (one line break, the same two bytes as .well-known/pki-validation/a.html) committed on 2018-03-24 to create the folder on GitHub; the folder has its own pictures since, and nothing ever named the file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: an empty text file, never a setting value",
+        "external": "no file of this repository or of expandingland, legendworld-help, LegendWorld and deltav4 ever named it (also not in their git history)"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "server-side/lc/a",
+      "canonicalPath": null,
+      "reason": "Empty placeholder (one line break) committed on 2022-01-30 to create the server-side/lc/ folder on GitHub; the folder holds the clan server and extension source since, and nothing ever named the file.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: an empty file, never a setting value",
+        "external": "no file of this repository or of expandingland, legendworld-help, LegendWorld and deltav4 ever named it (also not in their git history)"
+      },
+      "approvedForDeletion": true
     }
   ]
 }
