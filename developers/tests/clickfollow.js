@@ -153,6 +153,25 @@ const cursorOut = lm => { lm.sent.length = 0; lm._lmLastCursorAt = 0; lm.sendPos
     JSON.stringify(lm.sent) === '[1,18]' && lm.isFreeSpectate === true && lm._isWorldSpectating === false && lm._lmSpecLb === 0, JSON.stringify([lm.sent, lm.isFreeSpectate, lm._isWorldSpectating]));
   const lm2 = makeLM({ isLegendWorld: true, _isWorldSpectating: true });
   check('World Spectate: a player cell click does the same', !!lm2._lmSpecCellPick(300, 400) && JSON.stringify(lm2.sent) === '[1,18]' && lm2.isFreeSpectate === true, JSON.stringify(lm2.sent));
+  /* the free camera starts at the biggest player and travels to the clicked one: the follow is held
+   * while it is on the way (it ended after 2 s), and ends 2 s after the camera stops short of it */
+  const lm3 = makeLM({ isLegendWorld: true, _isWorldSpectating: true });
+  const realNow = Date.now; let clock = realNow();
+  Date.now = () => clock;
+  try {
+    lm3._lmSpecCellPick(-900, -900);
+    lm3.cells = []; lm3.leaderboard = []; lm3.viewXTrue = 6000; lm3.viewYTrue = 6000;
+    let held = true;
+    for (let k = 0; k < 20; k++) {
+      clock += 1000; lm3.viewXTrue -= 300; lm3.viewYTrue -= 300;
+      const c = cursorOut(lm3);
+      if (!lm3._lmSpecCell || !c || c.x !== -900 || c.y !== -900) held = false;
+    }
+    check('World Spectate cell follow: held while the camera travels there for 20 s (the cursor stays on that player)', held && !!lm3._lmSpecCell, JSON.stringify(lm3._lmSpecCell));
+    clock += 1000; lm3._lmSpecCellPos();
+    clock += 1500; lm3._lmSpecCellPos();
+    check('camera stopped short and the player not there: the follow ends 2 s later', lm3._lmSpecCell === null);
+  } finally { Date.now = realNow; }
 }
 { // other protocols: one free spectate, not toggled back off
   const sig = makeLM({ isSpectateEnabled: true, serverType: 'sigmally', sigOpcodeMap: { 1: 101, 18: 118, 19: 119 } });

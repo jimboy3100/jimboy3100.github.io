@@ -51756,7 +51756,7 @@ function thelegendmodproject() {
                 ws += w; wx += c.x * w; wy += c.y * w;
             }
             if (ws > 0) {
-                t.x = wx / ws; t.y = wy / ws; t.mass = ~~(ws / 100); t.at = now;
+                t.x = wx / ws; t.y = wy / ws; t.mass = ~~(ws / 100); t.at = now; t.vd = null;
             } else {
                 /* out of view: the leaderboard ghost with the same nick, else hold the last spot for 2 s */
                 var g = null;
@@ -51765,6 +51765,12 @@ function thelegendmodproject() {
                         if (this.leaderboard[j] && this.leaderboard[j].nick === t.nick && this.ghostCells[j]) { g = this.ghostCells[j]; break; }
                     }
                 }
+                /* a free camera still on its way there holds the spot too: free spectate starts
+                 * elsewhere (Expanding Land: at the biggest player, then 35 units a tick), and a
+                 * player clicked far away in World Spectate was dropped after 2 s on the way */
+                var _lmVd = Number.isFinite(this.viewXTrue) && Number.isFinite(this.viewYTrue) ? Math.abs(t.x - this.viewXTrue) + Math.abs(t.y - this.viewYTrue) : null;
+                if (_lmVd != null && t.vd != null && _lmVd < t.vd - 1) t.at = now;
+                t.vd = _lmVd;
                 if (g) { t.x = g.x; t.y = g.y; if (g.mass) t.mass = g.mass; t.at = now; }
                 else if (now - t.at > (t.wait || 2000)) {
                     if (t.id && window.toastr) toastr.info(_lmTH('watchKillerGone', ''));
