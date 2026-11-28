@@ -97,6 +97,10 @@
         /* the leaderboard's mass/sector column (a tap targets that player) lies over the menu's tab bar
          * in portrait and over the skins panel in landscape and ate those taps: none while the menu is open */
         '.lm-menu #leaderboard-hud .lb-data{pointer-events:none!important}' +
+        /* the button rows above the minimap (shortcuts, images, commands, scripts, administration)
+         * keep their inline pointer-events:auto, so hudTaps' none on #minimap-hud left them taking
+         * the menu's taps: none while the menu is open (still shown) */
+        '.lm-menu #minimap-hud>.hud,.lm-menu #minimap-hud>.hud *{pointer-events:none!important}' +
         /* left-row buttons that do nothing while the menu is open (wave, ping, zoom): on a
          * 640x360 phone the menu reaches under the row and they took its taps */
         '.lm-menu .lm-nomenu,.lm-menu .lm-nomenu *{pointer-events:none!important}' +
