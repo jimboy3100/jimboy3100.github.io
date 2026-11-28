@@ -4,7 +4,7 @@
  * agar.io world updates (opcode 16). A record without colour keeps the known colour, a new cell
  * without colour has none (the renderers draw their neutral fallback, never black), a later
  * colour is applied, server black (0,0,0) stays black, channels below 16 are padded, a cut
- * packet changes no colour.
+ * packet changes no colour. Multibox with the unit far away: the parser hides no main cell.
  *
  * Headless Chrome part (skipped without Chrome): the real window.drawRender (WebGL batch) and
  * the real cell.draw (Canvas2D), jelly on and off. A string that is no colour ('#f80ff',
@@ -212,6 +212,22 @@ check('the next server: the nick has its server colour, not the previous server\
     const k = (id) => (seen.find((s) => s[1] === id) || [])[0];
     check('diagnostics: server black, black from the nick colour, a cell without colour are named', k(52) === 'server black' && k(53) === 'drawn black' && k(54) === 'without colour' && seen.find((s) => s[1] === 53)[2] === hex(0, 200, 0), seen);
     check('diagnostics: a cell in its own colour is not listed', k(55) === undefined);
+}
+
+/* section: multibox on agar.io, the unit far from the main player. The parser hid every main
+ * cell outside a box made of a screen at (0,0) and the unit's pellets (isInViewCustom3, while
+ * playerCellsMulti had a cell): the main player's own cells and everything around them were not
+ * drawn. A copy of a cell seen by both connections is hidden by the twin search, not here. */
+{
+    reset({ multiBoxPlayerExists: true, playerCellsMulti: [{ id: 1 }], camMinMultiX: -5115, camMinMultiY: -4295, camMaxMultiX: 960, camMaxMultiY: 540 });
+    const old = block('        isInViewCustom3(');
+    if (old) Object.assign(L, vm.runInContext('({' + old + '})', g));
+    L.playerCellIDs = [61];
+    feed([{ id: 61, x: 3000, y: 3000, color: [200, 40, 40], name: 'Me', skin: '' }, { id: 62, x: 3050, y: 3000, size: 10, food: true }, { id: 63, x: -2900, y: -3000, color: [9, 99, 199], name: 'Near unit', skin: '' }]);
+    const shown = (id) => !!L.indexedCells[id] && L.indexedCells[id].invisible !== true;
+    check('multibox, unit far away: the main player\'s own cell is drawn', shown(61), L.indexedCells[61] && L.indexedCells[61].invisible);
+    check('multibox, unit far away: the pellet next to it is drawn', shown(62));
+    check('multibox, unit far away: a main cell beside the unit is drawn', shown(63));
 }
 
 /* section: WebGL colour settings (ghost cells, bubbles): the real drawRender with a GL stub */

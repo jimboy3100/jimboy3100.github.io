@@ -1,5 +1,5 @@
 /* "Show viewports" (debug, top bar set-debug) and the Full Map tiles, with the real code cut out of
- * ogario/ogario.v4.js (drawViewPorts, _lmConnFoodBoxes, calMinMax, calMinMaxMulti, drawViewport,
+ * ogario/ogario.v4.js (drawViewPorts, _lmConnFoodBoxes, calMinMax, drawViewport,
  * drawn on a recording context) and ogario/spect.js (the server view estimate, lmFullMapPlan,
  * getX/getY/convertX/convertY and the tile target code of a spectator connection).
  * Boxes: 1 = the main connection's food box, 2, 3 ... = a multibox unit's (unit number + 1),
@@ -10,7 +10,7 @@
  * without a real view (no planned tile, nothing for a connecting or closed spectator).
  * Cases: no box changes with zoom, window size or the controlled unit; units are found by role
  * and number (a spectator before a unit in spects), 0 is a valid unit centre; the food box is
- * padded on both sides; a Full Map spectator's food stays out of box 2 and calMinMaxMulti; the
+ * padded on both sides; a Full Map spectator's food stays out of box 2; the
  * Full Map grid from the measured view covers the map with overlapping seams within 15
  * connections; a tile target goes to the connection's raw frame and back for all 4 orientations
  * with and without Rotate Map; targets go out at most twice a second; a spectator box contains
@@ -39,7 +39,7 @@ function block(start, from, text) {
     }
     return null;
 }
-const methods = ['        drawViewPorts(ctx) {', '        _lmViewTrim(g, n) {', '        _lmConnFoodBoxes(list) {', '        calMinMax() {', '        calMinMaxMulti() {'].map((m) => [m, block(m)]);
+const methods = ['        drawViewPorts(ctx) {', '        _lmViewTrim(g, n) {', '        _lmConnFoodBoxes(list) {', '        calMinMax() {'].map((m) => [m, block(m)]);
 const spectMethods = ['    getX(x) {', '    getY(y) {', '    convertX(x) {', '    convertY(y) {', '    _lmTileDisplay() {', '    _lmTileRaw() {', '    _lmTileTick(now) {',
     '    _lmXf() {', '    worldToRawX(x) {', '    worldToRawY(y) {', '    rawToWorldX(x) {', '    rawToWorldY(y) {', '    _lmTileArrived(raw) {',
     '    _lmWorldRectDisplay(r, out) {', '    _lmServerViewDisplay(out) {', '    _lmServerViewWorld(out) {', '    _lmFeedOk() {', '    isOutsideServerView(rawX, rawY, size) {']
@@ -49,7 +49,7 @@ const xf0 = spectSrc.indexOf('var LM_WORLD_SIZE'), xf1 = spectSrc.indexOf('/* or
 /* the server view estimate and the planner: top of spect.js, up to addFullSpectator */
 const head0 = spectSrc.indexOf('var LM_VIEW_BASE_W'), head1 = spectSrc.indexOf('function addFullSpectator() {');
 const dv = block('        drawViewport: function (ctx, text');
-/* the per-connection observation index (lmObsTrack, lmObsOfSource) calMinMaxMulti reads */
+/* the per-connection observation index (lmObsTrack, lmObsOfSource) the test pellets are tracked in */
 const obs0 = src.indexOf('var _lmSrcObs = new Map();'), obs1 = src.indexOf('/* Speed of a cell', obs0);
 const missing = methods.concat(spectMethods).filter((m) => !m[1]).map((m) => m[0].trim()).concat(dv ? [] : ['drawViewport'])
     .concat(head0 >= 0 && head1 > head0 ? [] : ['spect.js lmServerViewSize / lmFullMapPlan'])
@@ -166,28 +166,6 @@ const MAP = 15957;
     check('box 2 is the unit\'s food only', b2 && b2.minX === 2000 - 1500 - 15 && b2.maxY === 1000 + 1500 + 15, b2 && [b2.minX, b2.maxY]);
     check('the spectator has its own food box', v2 && v2.minX === -4500 - 2400 - 15);
     check('no full-spectator box around the unit', !byLabel(bs, 'Viewport# 1'));
-    e.win.multiboxPlayerEnabled = null;
-    e.LM.camMinMultiX = e.LM.camMaxMultiX = e.LM.camMinMultiY = e.LM.camMaxMultiY = NaN;
-    e.LM.playerCellsMulti = [{}];
-    e.dr.calMinMaxMulti();
-    check('calMinMaxMulti: the units\' food only, padded on both sides', e.LM.camMinMultiX === 2000 - 1500 - 15 && e.LM.camMaxMultiX === 2000 + 1500 + 15 && e.LM.camMinMultiY === 1000 - 1500 - 15,
-        [e.LM.camMinMultiX, e.LM.camMaxMultiX, e.LM.camMinMultiY]);
-    /* a Full Map world (14 more spectators' pellets in foodMulti): only the unit's own pellets
-     * are read, not the whole list (it was scanned every frame); a pellet of the unit that left
-     * foodMulti no longer counts */
-    for (let n = 3; n <= 16; n++) food(e.LM.foodMulti, -6000 + n * 700, 5000, 600, n);
-    const fm = e.LM.foodMulti;
-    let reads = 0;
-    e.LM.foodMulti = new Proxy(fm, { get(t, k) { if (typeof k === 'string' && /^\d+$/.test(k)) reads++; return t[k]; } });
-    e.LM.camMinMultiX = e.LM.camMaxMultiX = e.LM.camMinMultiY = e.LM.camMaxMultiY = NaN;
-    e.dr.calMinMaxMulti();
-    check('calMinMaxMulti with Full Map: same box, reads only the unit\'s pellets', e.LM.camMinMultiX === 2000 - 1500 - 15 && e.LM.camMaxMultiY === 1000 + 1500 + 15 && reads <= 121,
-        [e.LM.camMinMultiX, e.LM.camMaxMultiY, reads, fm.length]);
-    for (const f of fm) if (f.spectator === 1 && f.x === 2000 - 1500) fm[f._foodMultiIdx] = null;
-    e.LM.foodMulti = fm;
-    e.LM.camMinMultiX = e.LM.camMaxMultiX = e.LM.camMinMultiY = e.LM.camMaxMultiY = NaN;
-    e.dr.calMinMaxMulti();
-    check('calMinMaxMulti: pellets gone from foodMulti are left out', e.LM.camMinMultiX === 2000 - 1500 + 300 - 15, e.LM.camMinMultiX);
 }
 
 /* ---- Full Map ---- */

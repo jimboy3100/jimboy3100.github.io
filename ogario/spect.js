@@ -2624,8 +2624,8 @@ class Spect {
                         }
                     }
                 } else if (isFood) {
-                    /* the unit's food box (calMinMaxMulti); drawn by the food pass from the
-                     * reconciled list (lmFoodAdd below), not as cells: added to LM.cells too,
+                    /* the connection's pellets (its debug viewport box, _lmConnFoodBoxes); drawn
+                     * by the food pass from the reconciled list (lmFoodAdd below), not as cells: added to LM.cells too,
                      * every pellet was drawn once more per connection that saw it */
                     _idx.push(legendmod.foodMulti, cell, '_foodMultiIdx');
                 }

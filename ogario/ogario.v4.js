@@ -51410,8 +51410,6 @@ function thelegendmodproject() {
             if (typeof drawRender !== 'undefined') {
                 drawRender.camX = 0;
                 drawRender.camY = 0;
-                drawRender.camXMulti = 0;
-                drawRender.camYMulti = 0;
                 /* Invalidate cached grid pattern — canvas context may change on reconnect */
                 drawRender._staticGridPattern = null;
             }
@@ -52071,15 +52069,6 @@ function thelegendmodproject() {
                 window.legendmod.lbgpi = calc;
                 return 4;
             }
-        },
-        isInViewCustom3(x, y, size) {
-            var randomNum = 0 // randomNum=40
-            var distance = size + randomNum
-            //var distance = size + randomNum + this.playerSize		
-            return !(x + distance < legendmod.camMinMultiX ||
-                y + distance < legendmod.camMinMultiY ||
-                x - distance > legendmod.camMaxMultiX ||
-                y - distance > legendmod.camMaxMultiY)
         },
         //https://github.com/NuclearC/agar.io-protocol
         megaFFAscore() {
@@ -53481,11 +53470,6 @@ function thelegendmodproject() {
                     }
                 }
                 //				
-                var invisible = false;
-
-                if (LM.playerCellsMulti.length && LM.multiBoxPlayerExists && LM.integrity) {
-                    invisible = !this.isInViewCustom3(x, y, size);
-                }
                 cellUpdateCells = this.indexedCells[id];
                 if (imsoloOwnerID > 0) {
                     cellUpdateCells ? (cellUpdateCells.imsoloOwnerID = imsoloOwnerID) : null;
@@ -53547,7 +53531,9 @@ function thelegendmodproject() {
                     }
                     this.indexedCells[id] = cellUpdateCells;
                 }
-                cellUpdateCells.invisible = invisible;
+                /* a copy of a cell another connection also sees is hidden by the twin search
+                 * (lmMultiboxPositionTwin) at the next frame, not here */
+                cellUpdateCells.invisible = false;
                 /* the shared colour of this player's copies (lmMbLookOf), kept by the next packets */
                 if (_lmLook && !cellUpdateCells.isPlayerCell) {
                     cellUpdateCells._lmMbLook = _lmLook.c;
@@ -55836,8 +55822,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
         canvasHeight: 0,
         camX: 0,
         camY: 0,
-        camXMulti: 0,
-        camYMulti: 0,
         scale: 1,
         fpsLastRequest: null,
         renderedFrames: 0,
@@ -77049,13 +77033,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             LM.camMinY = this.camY - this.canvasHeight * 0.5 * _invScale;
             LM.camMaxX = this.camX + this.canvasWidth * 0.5 * _invScale;
             LM.camMaxY = this.camY + this.canvasHeight * 0.5 * _invScale;
-
-            if (LM.multiBoxPlayerExists && window.multiboxPlayerEnabled) {
-                LM.camMinMultiX = this.camXMulti - this.canvasWidth * 0.5 * _invScale;
-                LM.camMinMultiY = this.camYMulti - this.canvasHeight * 0.5 * _invScale;
-                LM.camMaxMultiX = this.camXMulti + this.canvasWidth * 0.5 * _invScale;
-                LM.camMaxMultiY = this.camYMulti + this.canvasHeight * 0.5 * _invScale;
-            }
             LM.getCursorPosition();
             LM.sortCells();
             LM.compareCells();
@@ -78103,9 +78080,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.drawWaves();
                 }
 
-                if (LM.playerCellsMulti.length) {
-                    this.calMinMaxMulti();
-                }
                 this.calMinMax();
                 this.drawHelpers();
                 this.drawFood();
@@ -80880,57 +80854,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             t.fill();
             t.globalAlpha = 1;
             if (i) e = [];
-        },
-        calMinMaxMulti() {
-            if (legendmod.multiBoxPlayerExists && LM.foodMulti && LM.foodMulti.length) {
-                var foodOffset = 10 + defaultSettings.foodSize;
-                /* Like calMinMax: start from the multi camera rectangle and
-                 * only grow it with the food box. The old seed (playerXMulti/
-                 * playerYMulti) is never assigned, so it was always (0,0).
-                 * The camera rectangle is only fresh this frame while
-                 * multiboxPlayerEnabled (renderFrame); otherwise use the food
-                 * box alone so a stale rectangle does not keep growing. */
-                var _camMultiFresh = !!window.multiboxPlayerEnabled;
-                var minX = _camMultiFresh && Number.isFinite(LM.camMinMultiX) ? LM.camMinMultiX : Infinity;
-                var maxX = _camMultiFresh && Number.isFinite(LM.camMaxMultiX) ? LM.camMaxMultiX : -Infinity;
-                var minY = _camMultiFresh && Number.isFinite(LM.camMinMultiY) ? LM.camMinMultiY : Infinity;
-                var maxY = _camMultiFresh && Number.isFinite(LM.camMaxMultiY) ? LM.camMaxMultiY : -Infinity;
-                /* only the multibox units' food: a Full Map or in-game spectator's food is in
-                 * foodMulti too and stretched the units' view over the whole map. Read from each
-                 * unit's own cells (lmObsOfSource): foodMulti holds every Full Map spectator's
-                 * pellets (~11000), scanned every frame for the unit's few hundred (~1 ms). */
-                var box = this._lmMbFoodBox || (this._lmMbFoodBox = {
-                    n: 0, fx: 0, fy: 0, gx: 0, gy: 0,
-                    add: function (f) {
-                        if (!f || f.spectator !== this.n || LM.foodMulti[f._foodMultiIdx] !== f) return;
-                        var x = f.x, y = f.y;
-                        if (x < this.fx) this.fx = x; if (x > this.gx) this.gx = x;
-                        if (y < this.fy) this.fy = y; if (y > this.gy) this.gy = y;
-                    }
-                });
-                box.fx = box.fy = Infinity;
-                box.gx = box.gy = -Infinity;
-                var sp = window.spects || [], anyUnit = false;
-                for (var u = 0; u < sp.length; u++) {
-                    if (!sp[u] || !sp[u].player || sp[u].number == null) continue;
-                    anyUnit = true;
-                    var own = lmObsOfSource(sp[u].number);
-                    box.n = sp[u].number;
-                    if (own) own.forEach(box.add, box);
-                }
-                if (!anyUnit) return;
-                var fx = box.fx, fy = box.fy, gx = box.gx, gy = box.gy;
-                if (Number.isFinite(fx) && Number.isFinite(gx)) {
-                    /* padded on both sides (the max side was shifted down by the radius) */
-                    minX = Math.min(minX, fx - foodOffset); maxX = Math.max(maxX, gx + foodOffset);
-                    minY = Math.min(minY, fy - foodOffset); maxY = Math.max(maxY, gy + foodOffset);
-                }
-                if (Number.isFinite(minX) && Number.isFinite(maxX) &&
-                    Number.isFinite(minY) && Number.isFinite(maxY)) {
-                    LM.camMinMultiX = minX; LM.camMaxMultiX = maxX;
-                    LM.camMinMultiY = minY; LM.camMaxMultiY = maxY;
-                }
-            }
         },
         calMinMax() {
             var food = LM.food;
