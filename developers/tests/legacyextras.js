@@ -505,6 +505,36 @@ async function dyingLightLifecycle() {
         await L4.disable();
         check('turned off while it asks: answered no, the dialog gone', (await q) === false && !dialog() && L4.state === 'off');
         check('no browser question at all', natives === 0);
+        /* Esc goes no further (the game's Esc opened the menu; an older window closed under it:
+         * winstack.js), keys pressed in it never reach the game hotkeys */
+        q = L4.enable({ confirm: true });
+        let stops = 0;
+        const dg2 = dialog();
+        dg2.ls.keydown({ key: 'Enter', stopPropagation() { stops++; } });
+        dg2.ls.keyup({ key: 'Enter', stopPropagation() { stops++; } });
+        check('keys pressed in the dialog stay in it', stops === 2 && dg2._lmEsc === true && !!dialog());
+        stops = 0;
+        (dLs.keydown || []).forEach(f => f({ key: 'Escape', preventDefault() { }, stopPropagation() { stops++; } }));
+        check('...Esc answers no and goes no further', (await q) === false && stops === 1 && !dialog());
+        c4.LMWinStack = { escFor: () => false };
+        q = L4.enable({ confirm: true });
+        (dLs.keydown || []).forEach(f => f({ key: 'Escape', preventDefault() { }, stopPropagation() { stops++; } }));
+        check('...a newer window in front takes that Esc: the question stays open', !!dialog() && stops === 1);
+        delete c4.LMWinStack;
+        await L4.disable();
+        /* the dialog could not be shown: the browser's question, and the next turn-on asks again
+         * (the answer was kept as the open question, so every later turn-on had that answer) */
+        const app = body4.appendChild;
+        body4.appendChild = () => { throw new Error('no'); };
+        q = L4.enable({ confirm: true });
+        body4.appendChild = app;
+        const r1 = await q;
+        check('dialog not shown: the browser asks, no key listener left', natives === 1 && r1 === true && (dLs.keydown || []).length === 0);
+        await L4.disable();
+        q = L4.enable({ confirm: true });
+        check('...the next turn-on asks again in the dialog', !!dialog() && natives === 1);
+        btn('pkg.dlv4p.cancel').ls.click({});
+        check('...and its answer counts', (await q) === false && L4.state === 'off');
     }
 }
 

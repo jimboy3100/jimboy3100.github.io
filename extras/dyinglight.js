@@ -412,8 +412,11 @@
         if (!body || typeof d.createElement !== 'function' || typeof body.appendChild !== 'function') {
             return Promise.resolve(nativeAsk());
         }
-        asking = new Promise(function (resolve) {
-          var ov = null;
+        /* broke: the dialog could not be shown and the browser's question answered at once (the
+         * promise is settled already, so it is not kept as the open question) */
+        var broke = false;
+        var p = new Promise(function (resolve) {
+          var ov = null, unkey = null;
           try {
             try {
                 if (typeof W._lmEnsureModalCSS === 'function') W._lmEnsureModalCSS();
@@ -480,15 +483,23 @@
             box.appendChild(main);
             box.appendChild(foot);
             ov.appendChild(box);
+            /* Esc answers no and goes no further (the game's Esc opened the menu, an older window
+             * closed under this one: winstack.js, as the other Legend windows) */
             function onKey(e) {
-                if (e && (e.key === 'Escape' || e.keyCode === 27)) { if (e.preventDefault) e.preventDefault(); end(false); }
+                if (!e || (e.key !== 'Escape' && e.keyCode !== 27)) return;
+                if (W.LMWinStack && typeof W.LMWinStack.escFor === 'function' && !W.LMWinStack.escFor(ov, e)) return;
+                if (e.preventDefault) e.preventDefault();
+                if (e.stopPropagation) e.stopPropagation();
+                end(false);
             }
+            /* keys pressed in it never reach the game hotkeys (Enter on a button opened the chat) */
+            var keep = function (e) { if (e && e.key !== 'Escape' && e.keyCode !== 27 && e.stopPropagation) e.stopPropagation(); };
             function onBack(e) { if (e && e.target === ov) end(false); }
             function end(yes) {
                 if (askEnd !== end) return;
                 askEnd = null;
                 asking = null;
-                try { d.removeEventListener('keydown', onKey, true); } catch (e) { }
+                if (unkey) unkey();
                 if (ov.parentNode) ov.parentNode.removeChild(ov);
                 /* the intensity chosen is its setting, saved like the control under the banner does */
                 var ms = W.defaultmapsettings;
@@ -502,7 +513,12 @@
             no.addEventListener('click', function () { end(false); });
             ok.addEventListener('click', function () { end(true); });
             ov.addEventListener('click', onBack);
-            try { d.addEventListener('keydown', onKey, true); } catch (e) { }
+            ov._lmEsc = true;
+            ['keydown', 'keyup', 'keypress'].forEach(function (t) { ov.addEventListener(t, keep); });
+            try {
+                d.addEventListener('keydown', onKey, true);
+                unkey = function () { unkey = null; try { d.removeEventListener('keydown', onKey, true); } catch (e) { } };
+            } catch (e) { }
             body.appendChild(ov);
             try { if (typeof ok.focus === 'function') ok.focus(); } catch (e) { }
           } catch (e) {
@@ -510,11 +526,14 @@
             warn('question', e);
             askEnd = null;
             asking = null;
+            broke = true;
+            if (unkey) unkey();
             try { if (ov && ov.parentNode) ov.parentNode.removeChild(ov); } catch (e2) { }
             resolve(nativeAsk());
           }
         });
-        return asking || Promise.resolve(false);
+        asking = broke ? null : p;
+        return p;
     }
     function nativeAsk() {
         try { return !!W.confirm(tx('pkg.dlv3life.confirm')); } catch (e) { return false; }
