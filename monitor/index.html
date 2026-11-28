@@ -440,6 +440,7 @@ async function fetchStats() {
         const resp = await apiFetch(API_URL);
         const data = await resp.json();
         players = data.players || [];
+        lmMonLearnTags(players);
         updateUI();
         document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
     } catch (e) {
@@ -564,7 +565,7 @@ function updateUI() {
             return `<tr>
                 <td style="color:#b2bec3;font-size:11px">${globalIdx}</td>
                 <td><span class="status-dot ${isPlaying ? 'playing' : 'idle'}"></span><span class="nick ${isPlaying ? 'playing' : 'idle'}">${esc(p.nickname || '—')}</span></td>
-                <td>${(p.tagPlain || p.tag) ? '<span class="tag-badge"' + (p.tagPlain ? '' : ' title="Hashed tag (client sent no plain tag)"') + '>' + esc(p.tagPlain || p.tag) + '</span>' : ''}</td>
+                <td>${lmMonTagCell(p)}</td>
                 <td class="name-text">${esc(name)}</td>
                 <td><span style="font-size:11px; font-family:monospace; color:#636e72; max-width:120px; overflow:hidden; text-overflow:ellipsis; display:inline-block;">${esc(uid)}</span></td>
                 <td>${hasServer ? '<a href="https://agar.io/?ip=' + encodeURI(p.server) + '" target="_blank" style="font-size:11px; color:#0984e3; background:#f0f4ff; padding:2px 6px; border-radius:3px; text-decoration:none; font-family:monospace;" title="Click to join server" rel="noopener">' + esc(srv.id) + '</a>' : '<span style="color:#dfe6e9">—</span>'}</td>
@@ -639,6 +640,28 @@ function timeAgo(unixTs) {
 }
 
 function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML.replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
+/* The clan tag column. Current clients send the tag itself (tagPlain) and its hash (tag:
+ * "h:" + FNV-1a 32); a client without the plain tag (an older Legend Mod / Legend Express
+ * build still in a browser cache) sends only the hash. Players with the same clan tag have
+ * the same hash, so the plain tag is learned from every row that sent both and kept in this
+ * browser (lmMonTagHashes) for later visits; a hash nobody sent with its tag stays shown as
+ * the hash, marked. */
+const LM_MON_TAG_KEY = 'lmMonTagHashes';
+let _lmMonTags = (function () { try { return JSON.parse(localStorage.getItem(LM_MON_TAG_KEY)) || {}; } catch (e) { return {}; } })();
+function lmMonLearnTags(rows) {
+    let changed = false;
+    (rows || []).forEach(function (p) {
+        if (p && p.tagPlain && /^h:[0-9a-f]{8}$/.test(p.tag || '') && _lmMonTags[p.tag] !== p.tagPlain) { _lmMonTags[p.tag] = p.tagPlain; changed = true; }
+    });
+    if (changed) { try { localStorage.setItem(LM_MON_TAG_KEY, JSON.stringify(_lmMonTags)); } catch (e) { } }
+}
+function lmMonTagCell(p) {
+    const learned = !p.tagPlain && p.tag ? _lmMonTags[p.tag] : '';
+    const text = p.tagPlain || learned || p.tag || '';
+    if (!text) return '';
+    const title = p.tagPlain ? '' : learned ? ' title="This player\'s Legend Mod version sends only the hashed tag; the tag is known from another player with the same tag"' : ' title="Hashed tag: this player\'s Legend Mod version sends no plain tag, and no other player with this tag has been seen"';
+    return '<span class="tag-badge"' + title + '>' + esc(text) + '</span>';
+}
 /* country code goes into a class name and the page: only two letters */
 function ccOf(v) { v = String(v || 'un').toLowerCase(); return /^[a-z]{2}$/.test(v) ? v : 'un'; }
 
