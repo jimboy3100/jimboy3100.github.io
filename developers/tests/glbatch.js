@@ -323,16 +323,52 @@ function pageLib() {
         x.putImageData(img, 0, 0);
         return c.toDataURL('image/png');
     }
-    function diff(a, b) {
+    /* mask (one byte per pixel, readPixels rows): pixels left out of the comparison */
+    function diff(a, b, mask) {
         var max = 0, sum = 0, n = 0, big = 0, lit = 0, hash = 0;
         for (var i = 0; i < a.length; i++) {
             hash = (Math.imul(hash, 31) + b[i]) | 0;
+            if (mask && mask[i >> 2]) continue;
             var d = Math.abs(a[i] - b[i]);
             if (d) { n++; sum += d; if (d > max) max = d; if (d > 8) big++; }
             if ((i & 3) === 3 && a[i]) lit++;
         }
         return { max: max, mean: sum / a.length, differing: n, over8: big, litPixels: lit, hashNew: hash };
     }
+    /* The jelly skin border outside the body: the reference versions drew it on both sides of
+     * the edge, the working copy draws only its inner half as Cell.draw clips it to the body
+     * (contoursGpu with cfg.fill compares that with Canvas2D). The band from 1.5 px inside the
+     * edge to half the border width plus 1.5 px outside it, of every skinned jelly cell, is left
+     * out of a comparison with them (readPixels rows); null without jelly. */
+    function outerBorderMask(o, cfg) {
+        if (!cfg.jelly) return null;
+        var R = o.R, cells = o.env.LM.cells, skins = window.__glbSkinned, sc = cfg.scale * (cfg.dpr || 1);
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var x = c.getContext('2d');
+        x.setTransform(sc, 0, 0, sc, W / 2 - R.camX * sc, H / 2 - R.camY * sc);
+        for (var i = 0; i < cells.length; i++) {
+            var cl = cells[i];
+            if (cl.isVirus || skins[cl.targetNick] === undefined || cl.points.length < 3) continue;
+            var lw = Math.max(~~(cl.size / 50), 10);
+            x.beginPath();
+            x.moveTo(cl.points[0].x, cl.points[0].y);
+            for (var k = 1; k < cl.points.length; k++) x.lineTo(cl.points[k].x, cl.points[k].y);
+            x.closePath();
+            x.globalCompositeOperation = 'source-over';
+            x.lineWidth = lw + 3 / sc;
+            x.stroke();
+            x.globalCompositeOperation = 'destination-out';
+            x.fill();
+            x.globalCompositeOperation = 'source-over';
+            x.lineWidth = 3 / sc;
+            x.stroke();
+        }
+        var px = x.getImageData(0, 0, W, H).data, m = new Uint8Array(W * H);
+        for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) if (px[(yy * W + xx) * 4 + 3]) m[(H - 1 - yy) * W + xx] = 1;
+        return m;
+    }
+    function maskCount(m) { var n = 0; if (m) for (var i = 0; i < m.length; i++) n += m[i]; return n; }
     /* counts draw calls, GL calls and uploaded bytes by wrapping the context's methods */
     function instrument(gl) {
         var st = { draws: 0, calls: 0, bytes: 0 };
@@ -469,7 +505,9 @@ function pageLib() {
         var res = { prefilled: prefill(A.R) && prefill(B.R) };
         frame(A); frame(B);
         var okA = frame(A), okB = frame(B);
-        var r = diff(pixels(A.R), pixels(B.R));
+        var mask = outerBorderMask(B, cfg);
+        var r = diff(pixels(A.R), pixels(B.R), mask);
+        res.maskPx = maskCount(mask);
         res.okOld = okA; res.okNew = okB; res.max = r.max; res.differing = r.differing; res.lit = r.litPixels;
         /* where the labels are: the same page in both versions, and which banks they use */
         var banks = {}, pagesSame = 0, labels = 0, pageList = {};
@@ -1045,7 +1083,9 @@ function pageLib() {
      * (at cellsAlpha), then the skin clipped to the body (jelly: with its border stroke). Cells:
      * one without skin seen through the empty inside of a later big one, an opaque skin, a skin
      * with see-through parts. Pixels within 1.5 px of an edge are compared apart, skin texels
-     * apart (texture filtering); cfg.labels: the earlier cell's nick must show through. */
+     * apart (texture filtering); cfg.labels: the earlier cell's nick must show through.
+     * cfg.fill: contours off, the bodies filled (the jelly skin border clipped to the body, as
+     * Cell.draw: nothing of it outside). */
     function contoursGpu(src, defaults, cfg) {
         function disc(id, x, y, r, color, nick) {
             var pts = [], n = 128;
@@ -1054,7 +1094,7 @@ function pageLib() {
         }
         var scene = [disc(1, -260, -40, 70, '#3388ff', 'under'), disc(2, 230, 60, 110, '#ff8800', 'Legend'),
             disc(3, -40, 190, 130, '#cc33ff', 'sk1n'), disc(4, -200, 40, 260, '#33ff66', '')];
-        var map = { noNames: !cfg.labels, showMass: false, cellContours: true };
+        var map = { noNames: !cfg.labels, showMass: false, cellContours: !cfg.fill };
         var settings = {};
         if (cfg.alpha) { map.transparentCells = true; settings.cellsAlpha = cfg.alpha; }
         var o = setup(src, defaults, { scale: cfg.scale, jelly: cfg.jelly, map: map, settings: settings }, scene);
@@ -1099,12 +1139,18 @@ function pageLib() {
         for (var i = 0; i < cells.length; i++) {
             var cl = cells[i], sk = skins[cl.targetNick];
             x.globalAlpha = cfg.alpha || 1;
-            x.lineWidth = 20;
-            x.strokeStyle = cl.color;
             path(cl);
-            x.stroke();
+            if (cfg.fill) {
+                x.fillStyle = cl.color;
+                x.fill();
+                edges.push([cl, cl.size]);
+            } else {
+                x.lineWidth = 20;
+                x.strokeStyle = cl.color;
+                x.stroke();
+                edges.push([cl, cl.size - 10], [cl, cl.size + 10], [cl, cl.size]);
+            }
             x.globalAlpha = 1;
-            edges.push([cl, cl.size - 10], [cl, cl.size + 10], [cl, cl.size]);
             if (sk === undefined) continue;
             var img = skinCanvas(sk);
             x.save();
@@ -1116,7 +1162,7 @@ function pageLib() {
                 x.lineWidth = lw;
                 x.strokeStyle = cl.color;
                 x.stroke();
-                /* the border clipped to the body: GL draws only its inner half with contours */
+                /* the border clipped to the body: GL draws only its inner half */
                 edges.push([cl, cl.size - lw / 2]);
                 /* with cellsAlpha: the GL bands pass draws the border after every body, so a
                  * later transparent ring hides it (also without contours) */
@@ -1143,7 +1189,7 @@ function pageLib() {
             /* inside the skin of the topmost cell that paints here */
             for (e = cells.length - 1; e >= 0; e--) {
                 var dc = dist(cells[e], px, py), sz = cells[e].size * sc;
-                if (dc < sz + 10 * sc && (dc > sz - 10 * sc || skins[cells[e].targetNick] !== undefined)) { inSkin = skins[cells[e].targetNick] !== undefined && dc < sz; break; }
+                if (cfg.fill ? dc < sz : dc < sz + 10 * sc && (dc > sz - 10 * sc || skins[cells[e].targetNick] !== undefined)) { inSkin = skins[cells[e].targetNick] !== undefined && dc < sz; break; }
             }
             if (inSkin) { res.skin++; res.skinSum += m; if (m > 24) res.skinOver24++; continue; }
             res.strict++;
@@ -1184,7 +1230,9 @@ function pageLib() {
             }
             var okA = frame(a), okB = frame(b);
             var pa = pixels(a.R), pb = pixels(b.R);
-            var r = diff(pa, pb);
+            var mask = outerBorderMask(b, cfg);
+            var r = diff(pa, pb, mask);
+            r.maskPx = maskCount(mask);
             r.okOld = okA; r.okNew = okB;
             r.glError = b.R.gl.getError();
             if (cfg.dump) { r.pngOld = png(pa); r.pngNew = png(pb); }
@@ -1313,7 +1361,7 @@ async function main() {
             }
             stats.push(Object.assign({ case: c.name }, r));
             const pct = (100 * r.differing / (1920 * 1080 * 4)).toFixed(3);
-            console.log('     ' + c.name + ': max diff ' + r.max + ', mean ' + r.mean.toFixed(5) + ', channels differing ' + r.differing + ' (' + pct + '%), >8: ' + r.over8 + ', lit pixels ' + r.litPixels);
+            console.log('     ' + c.name + ': max diff ' + r.max + ', mean ' + r.mean.toFixed(5) + ', channels differing ' + r.differing + ' (' + pct + '%), >8: ' + r.over8 + ', lit pixels ' + r.litPixels + ', jelly skin border outside the body left out ' + (r.maskPx || 0) + ' px');
             check(c.name + ': both draw on WebGL, no GL error', r.okOld && r.okNew && r.glError === 0);
             /* identical geometry and textures: only rounding of the sub-texel weights may differ */
             check(c.name + ': same picture as the reference (max channel diff <= 8, < 0.05% channels over 8)', r.max <= 8 || r.over8 < 1920 * 1080 * 4 * 0.0005);
@@ -1359,7 +1407,8 @@ async function main() {
         /* cell contours drawn by the GL batch (working copy only) */
         if (NEW.factory.indexOf('u_cell_contour') >= 0) {
             for (const cc of [{ scale: 1, jelly: true }, { scale: 1, jelly: false }, { scale: 0.55, jelly: true, dpr: 2 }, { scale: 1.4, jelly: false, dpr: 2 },
-                { scale: 1, jelly: true, alpha: 0.6 }, { scale: 0.8, jelly: false, alpha: 0.5 }, { scale: 1, jelly: true, labels: true }, { scale: 1, jelly: false, labels: true }]) {
+                { scale: 1, jelly: true, alpha: 0.6 }, { scale: 0.8, jelly: false, alpha: 0.5 }, { scale: 1, jelly: true, labels: true }, { scale: 1, jelly: false, labels: true },
+                { scale: 1, jelly: true, fill: true }, { scale: 0.55, jelly: true, fill: true, dpr: 2 }, { scale: 1, jelly: true, fill: true, alpha: 0.6 }]) {
                 const cr = await evaluate('__glb.contoursGpu(__glbNew, __glbDefaults, ' + JSON.stringify(cc) + ')');
                 const nm = 'GL contours ' + JSON.stringify(cc);
                 if (cc.labels) {
@@ -1374,6 +1423,7 @@ async function main() {
                 check(nm + ': the same pixels as Canvas2D (rings, empty insides, cells seen through; max channel diff <= 2)', cr.over2 === 0);
                 check(nm + ': skins over the rings as Canvas2D (mean diff <= 3, < 1% over 24)', cr.skinMean <= 3 && cr.skinOver24 < cr.skin * 0.01);
                 check(nm + ': antialiased edges as Canvas2D (mean diff <= 16)', cr.edgeMean <= 16);
+                if (cc.fill) continue;
                 check(nm + ': the earlier cell shows through the empty inside of the later one', cr.hollow.split(',').every((v, k) => Math.abs(+v - want[k]) <= 2));
             }
         }
@@ -1410,7 +1460,7 @@ async function main() {
             await evaluate('window.__glbBankRef = ' + JSON.stringify(bankRef.factory) + '; true');
             const ao = await evaluate('__glb.atlasOracle(__glbBankRef, __glbNew, __glbDefaults, ' + JSON.stringify({ scale: 0.35, jelly: true }) + ', ' + JSON.stringify(await scene(500, 777)) + ')');
             console.log('     atlas banks: ' + ao.labels + ' nicks + ' + ao.mass + ' mass texts on pages ' + ao.pages + ' in ' + ao.banks + ' banks (' + ao.bankCount + ' banks, ' + ao.layers + ' pages made); same place as before ' +
-                ao.pagesSame + '/' + ao.labels + ' + ' + ao.massSame + '/' + ao.mass + '; frame differs in ' + ao.differing + ' channels (max ' + ao.max + ')');
+                ao.pagesSame + '/' + ao.labels + ' + ' + ao.massSame + '/' + ao.mass + '; frame differs in ' + ao.differing + ' channels (max ' + ao.max + '), jelly skin border outside the body left out ' + ao.maskPx + ' px');
             check('label atlas in banks: the same frame to the bit as one texture array, labels in the same places, over 4+ banks, no GL error',
                 ao.prefilled && ao.okOld && ao.okNew && ao.differing === 0 && ao.lit > 1920 * 1080 * 0.05 && ao.banks >= 4 && ao.pagesSame === ao.labels && ao.massSame === ao.mass && ao.labels > 20 && ao.glError === 0);
         } else console.log('     atlas banks: reference ' + opt('--atlas-ref', '2c6f70ad') + ' not available, comparison skipped');

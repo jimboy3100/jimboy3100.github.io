@@ -78946,11 +78946,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 -skinBorder *
                                     0.5,
 
-                                /* with a contour ring only the inner half, as Cell.draw
-                                 * clips the border to the body; the outer half lay over
-                                 * the ring (seen with cellsAlpha) */
-                                jellyRing ? 0 : skinBorder *
-                                    0.5,
+                                /* only the inner half, as Cell.draw clips the border to
+                                 * the body: the outer half made the cell lw/2 bigger than
+                                 * on Canvas2D (and lay over a contour ring) */
+                                0,
 
                                 bodyRGB[0],
                                 bodyRGB[1],
