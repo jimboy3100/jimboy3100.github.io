@@ -1890,6 +1890,10 @@ var LM_MB_SPEED_MS = 40;
  * for this long after that eat, so it is not drawn again before its own eat comes (and plays no
  * second eat animation). */
 var LM_MB_EAT_HOLD_MS = 200;
+/* how far apart two connections' packets of one cell may be for the size test to use the size
+ * before the newer packet (a split seen by one connection first; 99 % of packet ages within
+ * 119 ms in the live capture) */
+var LM_MB_SIZE_LAG_MS = 120;
 /* A connection whose socket is open but whose last whole world update is older than this is
  * stalled: its cells stay where they were last seen (a cell eaten or gone since is still listed).
  * agar.io sends a world update about every 40 ms. */
@@ -1953,7 +1957,16 @@ function _lmMbTwinDist2(cell, other, radius, anyOrder, keep) {
     var nc = _lmMbSrvName(cell), no = _lmMbSrvName(other);
     if (nc && no && nc !== no) return -1;
     var r2 = _lmMbCellRadius(other);
-    if (!(Math.abs(radius - r2) <= Math.max(4, 0.1 * Math.max(radius, r2)))) return -1;
+    if (!(Math.abs(radius - r2) <= Math.max(4, 0.1 * Math.max(radius, r2)))) {
+        /* A split (or a merge) reaches the connections one packet apart: one copy has the new
+         * size, the other not yet. When the two packets are at most LM_MB_SIZE_LAG_MS apart, the
+         * copy with the newer packet is compared with its size before that packet (startSize);
+         * otherwise (or when that size differs too) these are two cells. */
+        var nw = (cell.updateTime || 0) > (other.updateTime || 0) ? cell : other, ol = nw === cell ? other : cell;
+        var rs = Number(nw.startSize), ro = nw === cell ? r2 : radius;
+        if (!(Number.isFinite(rs) && Math.abs(rs - ro) <= Math.max(4, 0.1 * Math.max(rs, ro)) &&
+            nw.updateTime - (ol.updateTime || 0) <= LM_MB_SIZE_LAG_MS)) return -1;
+    }
     var a = _lmMbPosOf(cell, _lmMbPos), b = _lmMbPosOf(other, _lmMbPosB);
     var dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
     if (!Number.isFinite(d2)) return -1;

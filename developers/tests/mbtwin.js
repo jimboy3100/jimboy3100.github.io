@@ -459,6 +459,20 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
 
 }
 
+/* A split reaches the connections one packet apart: connection 1 has the parent split already
+ * (size 71, 100 before that packet), connection 2 not yet (100, its packet 25 ms older): drawn
+ * once, not as a second bigger cell for a tick. A cell of 71 next to a cell of 100 that changed
+ * no size is not matched. */
+{
+    const a = cell({ spectator: 1, size: 71, targetSize: 71, startSize: 100, updateTime: 1000 });
+    const b = cell({ spectator: 2, x: 1003, size: 100, targetSize: 100, startSize: 100, updateTime: 975 });
+    run([a, b], 2);
+    check('split one packet apart (71 on one connection, 100 on the other): drawn once', drawn([a, b]) === 1, drawn([a, b]));
+    const c = cell({ spectator: 1, size: 71, targetSize: 71, startSize: 71, updateTime: 1000 });
+    const d = cell({ spectator: 2, x: 1003, size: 100, targetSize: 100, startSize: 100, updateTime: 975 });
+    run([c, d], 2);
+    check('  a cell of 71 next to one of 100 (no size change): both drawn', drawn([c, d]) === 2, drawn([c, d]));
+}
 if (failed) {
     console.log(failed + ' check(s) failed');
     process.exit(1);
