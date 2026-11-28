@@ -20,7 +20,8 @@ const code = src.slice(start, end + 3);
 const ca = src.indexOf('var _cW = 0;'), cb = src.indexOf('* JELLY PHYSICS\n                 * CURRENT-FRAME PREPARATION', ca);
 if (ca < 0 || cb < 0) throw new Error('frame compaction not found in ogario.v4.js');
 const compact = src.slice(ca, cb).slice(0, src.slice(ca, cb).lastIndexOf('/*'));
-const loop = 'function _frame() { var LM = window.legendmod, i, cell;\n' + compact + '\n}';
+/* the frame: its hide step (lmMbFrameHide, before compareCells), then the compaction */
+const loop = 'function _frame() { var LM = window.legendmod, i, cell;\nlmMbFrameHide();\n' + compact + '\n}';
 
 let failed = 0;
 function check(name, ok, info) {
@@ -177,6 +178,118 @@ check('the drawn colour of a cell does not change', colourLinked > 200 && colour
     check('colour cache: two players of one name with other server colours keep their own looks', !!a && !!b && a.c === '#aa0000' && b.c === '#00aa00');
     vm.runInContext('lmMbLooksReset(); _lmMbLookSet(_live[0])', ctx);
     check('colour cache: a cell stored before a reset is stored again after it', !!vm.runInContext('lmMbLookOf(3, 1, "#112210", "p0")', ctx));
+}
+
+/* ---------- the result does not depend on the order of LM.cells ---------- */
+function fresh(n) {
+    const sp = [];
+    for (let k = 1; k <= (n || 15); k++) sp.push({ number: k, staticX: 0 });
+    const c = vm.createContext({ window: { legendmod: { cells: [], indexedCells: {}, time: 0 }, spects: sp }, Number, Math, Map, Float64Array, Int32Array, Array });
+    vm.runInContext(code + '\n' + loop, c);
+    return c;
+}
+/* hidden copies behind a copy that is hidden too (then the cell may be drawn by no connection) */
+const chains = (cs) => cs.filter((c) => !c.removed && c.invisible && c._lmMbTwin && c._lmMbTwin.invisible).length;
+const stateOf = (cs) => cs.map((c) => 'S' + c.spectator + ':' + (c.invisible ? 'H>' + (c._lmMbTwin ? 'S' + c._lmMbTwin.spectator : '-') : 'D')).join(' ');
+{
+    /* sources 1, 2, 3 see one named cell (radius 50) at x 0, 7 and 14: 1-2 and 2-3 are in
+     * tolerance (8), 1-3 is not; in list order 2 could hide behind 1 and 3 behind the hidden 2 */
+    const perms = [[1, 2, 3], [1, 3, 2], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]];
+    const seen = new Set();
+    let bad = 0;
+    for (const p of perms) {
+        const c = fresh(3), L = c.window.legendmod, cs = {};
+        for (const s of p) { cs[s] = { id: s * 4294967296 + 1, spectator: s, x: [0, 0, 7, 14][s], y: 0, size: 50, targetSize: 50, color: '#3f3', _lmRawColor: '#3f3',
+            isFood: false, removed: false, invisible: false, isVirus: false, isEjected: false, isPlayerCell: false, isPlayerCellMulti: false, _lmSrvName: 'X' }; L.cells.push(cs[s]); }
+        for (let f = 0; f < 3; f++) {
+            L.time += 16; c._frame();
+            const all = [cs[1], cs[2], cs[3]];
+            seen.add(stateOf(all));
+            if (chains(all) || all.some((x) => x.invisible && (!x._lmMbTwin || x._lmMbTwin.invisible))) bad++;
+        }
+    }
+    check('one cell 0 / 7 / 14 on 3 sources: the same result in all 6 list orders and 3 frames, no hidden copy behind a hidden one',
+        seen.size === 1 && bad === 0, [...seen].join(' | ') + ', bad ' + bad);
+}
+{
+    /* the live slice again with LM.cells reversed and shuffled every frame */
+    function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+    function replay(mode, seed) {
+        const c = fresh(15), L = c.window.legendmod, ob = new Map(), rnd = rng(seed), out = [];
+        for (const [ft, rows] of fix.frames) {
+            const seen = new Set();
+            for (let o = 0; o < rows.length; o += NF) {
+                const conn = rows[o], key = rows[o + 1], fl = rows[o + 7];
+                let x = ob.get(key);
+                if (!x || x.removed) {
+                    const raw = S[rows[o + 5]];
+                    x = { id: key, spectator: conn, color: raw, _lmRawColor: raw, isFood: false, removed: false, invisible: false,
+                        isVirus: !!(fl & 4), isEjected: !!(fl & 8), isPlayerCell: !!(fl & 16), isPlayerCellMulti: !!(fl & 32) };
+                    ob.set(key, x); L.cells.push(x);
+                }
+                const nick = rows[o + 6] >= 0 ? S[rows[o + 6]] : null;
+                if (nick) x._lmSrvName = nick;
+                x.x = x.targetX = rows[o + 2]; x.y = x.targetY = rows[o + 3];
+                x.size = x.targetSize = rows[o + 4]; x.updateTime = T0 + rows[o + 8];
+                x._lmVX = rows[o + 9] / 1000; x._lmVY = rows[o + 10] / 1000;
+                seen.add(x);
+            }
+            for (const x of ob.values()) if (!x.removed && !seen.has(x)) x.removed = true;
+            if (mode === 'rev') L.cells.reverse();
+            if (mode === 'shuf') for (let i = L.cells.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); const t = L.cells[i]; L.cells[i] = L.cells[j]; L.cells[j] = t; }
+            L.time = T0 + ft; c._frame();
+            const liveC = L.cells.filter((x) => !x.removed);
+            out.push({ ids: liveC.filter((x) => !x.invisible).map((x) => x.id).sort((a, b) => a - b).join(','), chains: chains(liveC) });
+        }
+        return out;
+    }
+    const base = replay('nat', 1);
+    let differ = 0, ch = base.reduce((a, r) => a + r.chains, 0);
+    for (const [m, s] of [['rev', 1], ['shuf', 1], ['shuf', 2], ['shuf', 3]]) {
+        const r = replay(m, s);
+        differ += r.filter((x, i) => x.ids !== base[i].ids).length;
+        ch += r.reduce((a, x) => a + x.chains, 0);
+    }
+    check('live slice in reversed and shuffled list orders: the same copies drawn every frame', differ === 0, differ + ' frames differ');
+    check('live slice: no hidden copy behind a hidden copy, in any order', ch === 0, ch);
+}
+
+/* ---------- connections whose transform is not verified ---------- */
+const feedMap = (c, m) => c.window.spects.forEach((s) => { s._lmFeedOk = () => m[s.number] !== false; });
+const mkc = (L, id, sp, x, size, extra) => { const o = Object.assign({ id, spectator: sp, x, y: 1000, size, targetSize: size, color: '#3f3', _lmRawColor: '#3f3',
+    isFood: false, removed: false, invisible: false, isVirus: false, isEjected: false, isPlayerCell: false, isPlayerCellMulti: false }, extra || {}); L.cells.push(o); return o; };
+{
+    /* unit 2 PROVISIONAL: its own cell "U" (mirrored, at a wrong place) lands on other players' unnamed cells */
+    const c = fresh(3), L = c.window.legendmod;
+    feedMap(c, { 2: false });
+    const own = mkc(L, 2 * 4294967296 + 1, 2, 1000, 80, { isPlayerCellMulti: true, _lmSrvName: 'U' });
+    const v3 = mkc(L, 3 * 4294967296 + 5, 3, 1003, 80);
+    const m0 = mkc(L, 77, 0, 1002, 80);
+    for (let f = 0; f < 2; f++) { L.time += 16; c._frame(); }
+    check('unverified unit: its own cell stays drawn and hides no unnamed cell of a verified connection',
+        !own.invisible && !m0.invisible && v3.invisible && v3._lmMbTwin === m0, stateOf([own, v3, m0]));
+}
+for (const order of [[3, 2], [2, 3]]) {
+    /* a kept link to a copy whose connection turns CONFLICTED this frame */
+    const c = fresh(3), L = c.window.legendmod, fm = {}, cs = {};
+    feedMap(c, fm);
+    for (const s of order) cs[s] = mkc(L, s * 4294967296 + 1, s, 500 + (s === 3 ? 2 : 0), 60, { _lmSrvName: 'P' });
+    L.time += 16; c._frame();
+    const before = stateOf([cs[2], cs[3]]);
+    fm[2] = false;
+    L.time += 16; c._frame();
+    check('kept link to a copy of a connection that turns CONFLICTED (list order ' + order + '): the verified copy drawn alone',
+        before === 'S2:D S3:H>S2' && cs[2].invisible && !cs[3].invisible && !cs[3]._lmMbTwin, before + ' -> ' + stateOf([cs[2], cs[3]]));
+}
+{
+    const c = fresh(3), L = c.window.legendmod;
+    const feeds = vm.runInContext('lmSrcFeeds', c), mbFeeds = vm.runInContext('_lmMbFeeds', c);
+    const a = mkc(L, 1 * 4294967296 + 1, 1, 0, 60), b = mkc(L, 3 * 4294967296 + 1, 3, 2, 60);
+    c.window.spects.splice(0, 1); /* connection 1 gone from window.spects, its cell still listed */
+    L.time += 16; c._frame();
+    check('a connection that is not there does not feed; a spect.js without _lmFeedOk (older copy) does',
+        feeds(null) === false && feeds({}) === true && mbFeeds({ spectator: 9 }) === false && mbFeeds({ spectator: 0 }) === true);
+    check('a cell of a connection gone from window.spects: not drawn, the verified copy drawn', a.invisible && !b.invisible && !b._lmMbTwin, stateOf([a, b]));
 }
 
 if (failed) {

@@ -40,7 +40,8 @@ const appMethods = ['        multiboxchange() {', '        multiboxswap() {'].ma
 const deathSwitch = block(v4, "if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {");
 const k = v4.indexOf('ALL OTHER SERVERS');
 const ucElse = k < 0 ? null : block(v4, 'else {', k);
-if (a < 0 || b < 0 || !respawn || appMethods.some((m) => !m) || !deathSwitch || !ucElse) { console.log('FAIL code not found'); process.exit(1); }
+const idxFilter = block(v4, '    function lmIdxFilter(');
+if (a < 0 || b < 0 || !respawn || appMethods.some((m) => !m) || !deathSwitch || !ucElse || !idxFilter) { console.log('FAIL code not found'); process.exit(1); }
 function death(o) {
     const ctx = { console: { log: noop, warn: noop }, toastr: {}, Date, menuShown: 0, menuHidden: 0, respawns: 0 };
     ctx.window = ctx;
@@ -51,13 +52,14 @@ function death(o) {
         'var defaultmapsettings = window.defaultmapsettings = { mbSwitchAfterDeath: true, mbAutoRespawn: false };\n' +
         'var application = window.application = { hideMenu() { window.menuHidden++; }, showMenu() { window.menuShown++; }, mbSlots: [0, 1], selectedOldProfile: 0,\n' +
         'onPlayerDeath() {\n' + deathSwitch + '\n},\n' + appMethods.join(',\n') + '};\n' +
-        'function lmIdxClear(a) { return []; } function lmIdxFilter(a, p, f) { return a.filter(f); }\n' +
+        'function lmIdxClear(a) { return []; }\n' + idxFilter + '\n' +
         'var legendmod = window.legendmod = { play: true, multiBoxPlayerExists: true, playerCells: [], cells: [], food: [], viruses: [], removedCells: [], indexedCells: {} }, LM = legendmod;\n' +
         'var profiles = [], ogarcopythelb = {}; function play() { legendmod.play = true; }\n' +
         'window.mainDies = function () { legendmod.play = false; ' + ucElse.slice(4) + ' };', ctx);
     const u = new ctx.Unit(1); u.active = o.unitAlive;
     ctx.spects.length = 0; ctx.spects.push(u);
     ctx.multiboxPlayerEnabled = null;
+    if (o.removed) { o.removed.forEach((c, i) => { c._removedIdx = i; }); ctx.legendmod.removedCells = o.removed; }
     ctx.mainDies();
     return ctx;
 }
@@ -69,6 +71,14 @@ function death(o) {
     const r = death({ unitAlive: true });
     check('main dies, the unit lives: the focus goes to it, no menu', r.menuShown === 0 && r.multiboxPlayerEnabled === 1 && r.respawns === 0,
         'menu ' + r.menuShown + ' focus=' + r.multiboxPlayerEnabled);
+    /* fading removed cells: the main connection's go, the unit's stay with their new slots
+     * (the frame drops a hidden one only when its slot is right) */
+    const rm = [{ spectator: 0 }, { spectator: 1 }, { spectator: 0 }, { spectator: 1 }];
+    const d = death({ unitAlive: true, removed: rm.slice() });
+    const kept = d.legendmod.removedCells;
+    check('main dies, the unit lives: its fading cells stay listed with their slots, the main ones leave the list',
+        kept.length === 2 && kept.every((c, i) => c.spectator === 1 && c._removedIdx === i) && rm[0]._removedIdx === -1 && rm[2]._removedIdx === -1,
+        kept.map((c) => c._removedIdx).join(',') + ' / ' + rm.map((c) => c._removedIdx).join(','));
 }
 
 /* 2. Pause: LM.sendPosition with the focus on the main player or on the unit */

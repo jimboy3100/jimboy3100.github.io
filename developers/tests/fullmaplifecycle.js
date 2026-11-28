@@ -45,7 +45,7 @@ vm.createContext(g);
 vm.runInContext('var LM = { cells: [], indexedCells: {}, time: 0, removedCells: [], viruses: [], food: [], foodMulti: [], playerCells: [], playerCellsMulti: [], playerCellIDs: [], leaderboard: [] };\n' +
     'window.legendmod = LM;\nfunction lmFoodRemove() {}\n' +
     'var defaultmapsettings = { showGhostCells: true }, defaultSettings = {};\n' +
-    twinCode + '\nfunction _frame() { var i, cell;\n' + compact + '\n}\n' + helpers + '\nvar _removeCell = ' + rmBody + ';\n' +
+    twinCode + '\nfunction _frame() { var i, cell;\nlmMbFrameHide();\n' + compact + '\n}\n' + helpers + '\nvar _removeCell = ' + rmBody + ';\n' +
     'var _ghostR = {' + ghostBody + '};', g);
 const LM = g.window.legendmod;
 for (let k = 1; k <= 15; k++) g.window.spects.push({ number: k, staticX: 0 });
@@ -144,7 +144,7 @@ for (const grp of G) {
     animD.push(anims(grp)); gapsD.push(gaps);
 }
 check('every copy leaves its view in turn: drawn once until the last goes', gapsD.every((n) => n === 0), hist(gapsD));
-check('every copy leaves its view in turn: one removal fade per cell (at most two)', animD.filter((n) => n === 1).length >= G.length - 2 && animD.every((n) => n <= 2), hist(animD));
+check('every copy leaves its view in turn: one removal fade per cell', animD.every((n) => n === 1), hist(animD));
 
 /* eaten on one connection only (the others never get the eat): hidden during the eat animation,
  * shown again after it (nothing lost) */
@@ -179,6 +179,87 @@ check('eaten on one connection only: shown again after the animation', backF >= 
     check('copies behind main cells dropped without removeCell(): drawn again', before === 'DHDH' && after.every(Boolean), before + ' then ' + after.join('/'));
 }
 
+/* one cell seen by connections 1 (drawn), 2 and 3 (hidden behind it): the copies leave in some
+ * order in one tick; the drawn one gives way without a fade while a live copy is left, whichever
+ * copy was hidden last */
+{
+    const mk3 = () => {
+        LM.cells.length = 0; LM.removedCells.length = 0;
+        const mk = (sp, x) => {
+            const c = { id: sp * 4294967296 + 1, spectator: sp, x, y: 0, targetX: x, targetY: 0, size: 60, targetSize: 60, color: '#33ff33', _lmRawColor: '#33ff33',
+                isFood: false, removed: false, invisible: false, redrawed: 0, isVirus: false, isEjected: false, isPlayerCell: false, isPlayerCellMulti: false,
+                updateTime: now, _lmVX: 0, _lmVY: 0, _cellsIdx: LM.cells.length, _lmSrvName: 'P' };
+            c.removeCell = g._removeCell; LM.cells.push(c); return c;
+        };
+        const R = mk(1, 0), A = mk(2, 1), B = mk(3, 2);
+        frame(now + 16); frame(now + 32);
+        return { R, A, B };
+    };
+    for (const [first, second, eaten] of [['B', 'R'], ['A', 'R'], ['R', null]]) {
+        const m = mk3(), all = [m.R, m.A, m.B];
+        const st = all.map((c) => c.invisible ? 'H' : 'D').join('');
+        m[first].removeCell(); if (second) m[second].removeCell();
+        const fades = anims(all);
+        frame(now + 48);
+        const liveN = live(all);
+        check('one cell on 3 connections, ' + first + (second ? ' then ' + second : '') + ' leave(s): no fade, one live copy drawn', st === 'DHH' && fades === 0 && liveN === 1, st + ' fades=' + fades + ' live=' + liveN);
+    }
+    {
+        const m = mk3(), all = [m.R, m.A, m.B];
+        m.A.removeCell(); m.B.removeCell(); m.R.removeCell();
+        check('one cell on 3 connections, every copy leaves: one fade', anims(all) === 1, anims(all));
+    }
+    {
+        const m = mk3(), all = [m.R, m.A, m.B];
+        m.A.removeCell(); m.R.removeCell(true);
+        check('one cell on 3 connections, the drawn copy eaten: its eat animation plays, the live copy stays hidden behind it', anims(all) === 1 && live(all) === 0, anims(all) + '/' + live(all));
+    }
+}
+
+/* the opponent colours, rings and split ranges (compareCells) and the virus ranges come after the
+ * frame's hide step: a copy hidden behind its twin and an unverified spectator's cell get none
+ * (every packet sets invisible = false again, so before the hide step every copy was counted) */
+{
+    const cmpBody = cut('        compareCells() {', '        setCellOppColor(isPlayer, mass) {', 'compareCells').trim().replace(/,$/, '');
+    vm.runInContext('var _cmp = {' + cmpBody + '};', g);
+    Object.assign(g.defaultmapsettings, { oppColors: true, oppRings: true, splitRange: true, dominationRate: 1.33, dominatedRate: 0.75 });
+    g.getActiveSpect = () => null;
+    const rf = cut('        renderFrame() {', 'var _cW = 0;', 'renderFrame');
+    const iSort = rf.indexOf('LM.sortCells();'), iHide = rf.indexOf('lmMbFrameHide();'), iCmp = rf.indexOf('LM.compareCells();');
+    const iVr = rf.indexOf('this.drawVirusesRange('), iHelp = rf.indexOf('this.drawHelpers();');
+    check('render frame: the hide step runs after sortCells, before compareCells, the virus ranges and drawHelpers',
+        iSort > 0 && iHide > iSort && iCmp > iHide && iVr > iHide && iHelp > iHide, [iSort, iHide, iCmp, iVr, iHelp].join(','));
+    now = load();
+    g.window.spects[14]._lmFeedOk = () => false; /* connection 15: not verified */
+    /* the next packets: every copy shown again, then the frame */
+    for (const c of LM.cells) if (c) c.invisible = false;
+    LM.time = now + 16;
+    g.lmMbFrameHide();
+    Object.assign(LM, { play: true, playerCells: [{}], playerMinMass: 200, playerMaxMass: 200, camMinX: -1e9, camMinY: -1e9, camMaxX: 1e9, camMaxY: 1e9, srvViewMinX: NaN });
+    g._cmp.compareCells.call(LM);
+    const caches = ['biggerSTEDCellsCache', 'biggerSTECellsCache', 'biggerCellsCache', 'SSCellsCache', 'smallerCellsCache', 'STECellsCache', 'STEDCellsCache'];
+    const ringN = caches.reduce((a, k) => a + LM[k].length, 0);
+    const big = (c) => c && !c.removed && !c.isVirus && !c.isPlayerCell && ~~(c.size * c.size * 0.01) > 14;
+    const drawnN = LM.cells.filter((c) => big(c) && !c.invisible).length, allN = LM.cells.filter(big).length;
+    const unver = LM.cells.filter((c) => big(c) && c.spectator === 15 && !c.isPlayerCellMulti);
+    check('opponent rings: one entry per drawn cell, none for hidden copies or an unverified spectator\'s cells',
+        ringN === drawnN && allN > drawnN + 50 && unver.length > 0 && unver.every((c) => c.invisible), ringN + ' entries, ' + drawnN + ' drawn, ' + allN + ' copies, ' + unver.length + ' unverified');
+    delete g.window.spects[14]._lmFeedOk;
+}
+
+/* the last connection closes: the search index lets go of the last frame's cells */
+{
+    now = load();
+    const all = vm.runInContext('_lmMbAll', g);
+    const held = all.cells.filter(Boolean).length;
+    const sp = g.window.spects;
+    g.window.spects = [];
+    frame(now + 16);
+    const left = all.cells.filter(Boolean).length;
+    g.window.spects = sp;
+    check('no connection left: the search index holds no cell', held > 100 && left === 0 && all.n === 0, held + ' then ' + left);
+}
+
 /* ---------- ghost cells ---------- */
 {
     const R = g._ghostR;
@@ -200,13 +281,19 @@ check('eaten on one connection only: shown again after the animation', backF >= 
     const top = () => [gh(2000, 1000, 5000)];
     const cell = (x, y, size, extra) => Object.assign({ x, y, size, isFood: false, isVirus: false, invisible: false, spectator: 0 }, extra || {});
     check('ghost without any cell or coverage: drawn', drawn(top(), []) === 1);
-    check('ghost: the player himself (same server name) hides it', drawn(top(), [cell(2100, 1050, 700, { spectator: 3, _lmSrvName: 'Top' })]) === 0);
+    check('ghost: the player himself (same server name) hides it', drawn(top(), [cell(2100, 1050, 700, { spectator: 3, _lmSrvName: 'Top' })], () => { g._lmMbFeed[3] = true; }) === 0);
     check('ghost: an unnamed cell there still hides it (names compared only when both are known)', drawn(top(), [cell(2100, 1050, 700)]) === 0);
     check('ghost: another named player inside its radius does not hide it', drawn(top(), [cell(2400, 1000, 300, { _lmSrvName: 'someone' })]) === 1);
     check('ghost: a cell of an unverified spectator does not hide it', drawn(top(), [cell(2050, 980, 700, { spectator: 3, _lmSrvName: 'Top' })], () => { g._lmMbFeed[3] = false; }) === 1);
-    check('ghost: a verified spectator\'s copy hidden behind its twin still hides it', drawn(top(), [cell(2100, 1050, 700, { spectator: 4, invisible: true, _lmSrvName: 'Top' })]) === 0);
+    check('ghost: a verified spectator\'s copy hidden behind its twin still hides it', drawn(top(), [cell(2100, 1050, 700, { spectator: 4, invisible: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[4] = true; }) === 0);
     check('ghost of me: my own cell hides it whatever its server name', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true, _lmSrvName: 'srv' })]) === 0);
-    check('ghost of a unit: the unit\'s own cell hides it', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'srv' })], () => { g._lmMbFeed[2] = false; }) === 0);
+    check('ghost of a verified unit: the unit\'s own cell hides it whatever its server name', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'srv' })], () => { g._lmMbFeed[2] = true; }) === 0);
+    check('ghost of an unverified unit: the unit\'s own cell with the ghost\'s name hides it', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[2] = false; }) === 0);
+    /* an unverified unit's cells may be mirrored: its own cell of another player is no proof */
+    check('ghost: an unverified unit\'s own cell of another name does not hide it', drawn(top(), [cell(2100, 1000, 300, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'Other' })], () => { g._lmMbFeed[2] = false; }) === 1);
+    check('ghost: an unverified unit\'s unnamed own cell does not hide it', drawn(top(), [cell(2100, 1000, 300, { spectator: 2, isPlayerCellMulti: true })], () => { g._lmMbFeed[2] = false; }) === 1);
+    check('ghost: ejected mass (size 45) inside it does not hide it', drawn(top(), [cell(2010, 1000, 45, { isEjected: true })]) === 1);
+    check('ghost: a cell of a connection that is gone (not in spects) does not hide it', drawn(top(), [cell(2100, 1000, 300, { spectator: 9, _lmSrvName: 'Top' })]) === 1);
     const mainView = () => { LM.srvViewMinX = 0; LM.srvViewMinY = -1000; LM.srvViewMaxX = 5000; LM.srvViewMaxY = 3000; };
     check('ghost inside the main server view without his cell: stale, not drawn', drawn(top(), [], mainView) === 0);
     check('ghost: another player there does not keep a stale ghost', drawn(top(), [cell(2400, 1000, 300, { _lmSrvName: 'someone' })], mainView) === 0);
@@ -215,7 +302,7 @@ check('eaten on one connection only: shown again after the animation', backF >= 
     check('ghost outside every view: drawn', drawn([gh(-2000, 1000, 5000)], [], mainView) === 1);
     /* fills the array it is given, as Spect._lmServerViewDisplay does */
     const outs = [];
-    const sp = (ok, open) => ({ number: 3, _lmFeedOk: () => ok, isSocketOpen: () => open,
+    const sp = (ok, open, age) => ({ number: 3, _lmFeedOk: () => ok, isSocketOpen: () => open, time: Date.now() - (age || 0),
         _lmServerViewDisplay: (out) => { outs.push(out); const o = out || []; o[0] = 1000; o[1] = 0; o[2] = 4000; o[3] = 2000; return o; } });
     check('ghost inside a verified open spectator\'s server view: stale, not drawn', drawn(top(), [], () => { g.window.spects = [sp(true, true)]; }) === 0);
     const two = [sp(true, true), sp(true, true)];
@@ -225,6 +312,14 @@ check('eaten on one connection only: shown again after the animation', backF >= 
     check('ghost inside an unverified spectator\'s view (calibrating): drawn', drawn(top(), [], () => { g.window.spects = [sp(false, true)]; }) === 1);
     check('ghost inside a reconnecting spectator\'s view: drawn', drawn(top(), [], () => { g.window.spects = [sp(true, false)]; }) === 1);
     check('ghost list without a time (other servers): coverage not used, drawn', drawn(top(), [], () => { mainView(); LM.ghostCellsTime = 0; }) === 1);
+    /* coverage only from a spectator whose view is fresh: its last update at (about) the list's time or later, and recent */
+    check('ghost inside a stalled spectator\'s view (last update 550 ms ago, after the list): drawn', drawn(top(), [], () => { g.window.spects = [sp(true, true, 550)]; LM.ghostCellsTime = Date.now() - 600; }) === 1);
+    check('ghost inside a spectator\'s view last updated well before the list: drawn', drawn(top(), [], () => { g.window.spects = [sp(true, true, 400)]; }) === 1);
+    check('ghost inside the view of a spectator whose own coverage test says stale: drawn', drawn(top(), [], () => { const o = sp(true, true); o._lmCoverageOk = () => false; g.window.spects = [o]; }) === 1);
+    check('ghost: a spectator\'s own coverage test is used when it has one (fresh, covers it)', drawn(top(), [], () => { const o = sp(false, false); o._lmCoverageOk = () => true; g.window.spects = [o]; }) === 0);
+    /* the list has not come again for over 3 s: its players may be anywhere */
+    check('ghost list past its max age: no ghost drawn', drawn([gh(2000, 1000, 5000), gh(-2000, 1000, 5000)], [], () => { LM.ghostCellsTime = Date.now() - 3500; }) === 0);
+    check('ghost list within its max age outside every view: drawn', drawn([gh(-2000, 1000, 5000)], [], () => { mainView(); LM.ghostCellsTime = Date.now() - 2500; }) === 1);
 }
 
 console.log(failed ? failed + ' FAILED' : 'all passed');

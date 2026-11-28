@@ -40,6 +40,8 @@ vm.runInContext([
     'var defaultSettings = { enemyBSTEDColor: "bsted", enemyBSTEColor: "bste", enemyBColor: "b", enemySColor: "s", enemySSTEColor: "sste", enemySSTEDColor: "ssted" };',
     'var ogarcopythelb = { color: "own" };',
     'function getActiveSpect() { return null; }',
+    /* the multibox hide step of the frame (no other connection here; fullmaplifecycle.js tests it) */
+    'function lmMbFrameHide() { }',
     'var LM = {', block('        compareCells() {'), '};',
     'var legendmod = LM; window.legendmod = LM;',
     'this.LM = LM;',

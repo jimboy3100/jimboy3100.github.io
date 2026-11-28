@@ -1674,14 +1674,25 @@ function lmRawCellId(id) {
  * border known and orientation VERIFIED)? A PROVISIONAL or CONFLICTED spectator's cells and
  * pellets could be mirrored or shifted: they are not drawn, hide nothing and are matched with
  * nothing until it is verified (lmFoodFrame, the frame's hide step). A multibox unit's own cells
- * are always drawn. */
+ * are always drawn, and so are the other cells of a unit already steered (lmMbFrameHide). A
+ * connection that is not there (closed, removed from window.spects while its cells are still
+ * listed) does not feed: nothing says where its cells are. A spect.js without _lmFeedOk (an
+ * older cached copy) feeds as before. */
 function lmSrcFeeds(sp) {
-    return !sp || typeof sp._lmFeedOk !== 'function' || !!sp._lmFeedOk();
+    return !!sp && (typeof sp._lmFeedOk !== 'function' || !!sp._lmFeedOk());
 }
-/* per connection number, whether it feeds this frame (filled by the frame's hide step) */
+/* Ghost cells (drawGhostCells): an agar.io ghost list older than this is not drawn; a spectator's
+ * server view counts as coverage when its last update came at most LM_GHOST_COV_SLACK ms before
+ * the list and less than LM_GHOST_COV_MAX_AGE ms ago. */
+var LM_GHOST_LIST_MAX_AGE = 3000, LM_GHOST_COV_SLACK = 100, LM_GHOST_COV_MAX_AGE = 500;
+/* per connection number, whether it feeds this frame (filled by the frame's hide step); a
+ * connection number not filled in is not in window.spects and does not feed */
 var _lmMbFeed = [];
+/* per connection number: a multibox unit whose cells are drawn while it is not verified
+ * (lmMbFrameHide) */
+var _lmMbDrawOnly = [];
 function _lmMbFeeds(c) {
-    return !(c.spectator > 0) || _lmMbFeed[c.spectator] !== false;
+    return !(c.spectator > 0) || _lmMbFeed[c.spectator] === true;
 }
 /*
  * The same cell drawn from another connection, found by position and size.
@@ -1717,6 +1728,10 @@ function _lmMbFeeds(c) {
  * so two cells of one connection never hide behind one cell of another and
  * a split piece seen by one connection only stays drawn.
  */
+/* Frame number of the hide step (lmMbFrameHide counts it); a cell drawn last frame has
+ * _lmMbSticky === _lmMbFrame (set where every hidden copy is shown again, before the search);
+ * removeCell() reads it too (the copies hidden behind a cell this frame). */
+var _lmMbFrame = 0;
 var _lmMbGridTime = -1;
 var _lmMbGridBuilt = false;
 function _lmMbCellRadius(cell) {
@@ -1872,9 +1887,6 @@ function _lmMbTwinTol(radius, a, b) {
 function _lmMbTwinReach(radius, speed) {
     return Math.max(8, 0.12 * radius) + Math.min(60, ((speed || 0) + _lmMbMaxSpeed) * LM_MB_SPEED_MS);
 }
-/* Frame number of the hide step (the frame loop counts it); a cell drawn last frame has
- * _lmMbSticky === _lmMbFrame (set where every hidden copy is shown again, before the search). */
-var _lmMbFrame = 0;
 /* Is copy a (connection ca) drawn rather than copy b (connection cb)? Own cells are decided by
  * the caller. Main connection first, then the copy drawn last frame (hysteresis), then the
  * lower connection number. A total order: of two copies exactly one outranks the other. */
@@ -1900,6 +1912,16 @@ function _lmMbTwinDist2(cell, other, radius, anyOrder, keep) {
     if (theirs === mine) return -1; /* same connection: a different cell */
     var otherOwn = theirs ? !!other.isPlayerCellMulti : !!other.isPlayerCell;
     var cellOwn = mine ? !!cell.isPlayerCellMulti : !!cell.isPlayerCell;
+    /* A PROVISIONAL or CONFLICTED connection's cells may be mirrored or shifted: matched with
+     * nothing, whichever side they are on. A unit's own cell stays drawn there, but stands in
+     * for another connection's copy only when both server names are known and the same (at a
+     * wrong place it hid unnamed cells of other players). */
+    var feedsO = _lmMbFeeds(other), feedsC = _lmMbFeeds(cell);
+    if ((!feedsO && !otherOwn) || (!feedsC && !cellOwn)) return -1;
+    if (!feedsO || !feedsC) {
+        var nu = _lmMbSrvName(cell);
+        if (!nu || nu !== _lmMbSrvName(other)) return -1;
+    }
     if (otherOwn && cellOwn) return -1; /* own cells of two connections: two players */
     if (!anyOrder && !otherOwn && !_lmMbOutranks(other, theirs, cell, mine)) return -1; /* this copy is the one drawn */
     /* Every connection gets the same kind, size and name for one cell, but its own colour
@@ -2039,6 +2061,120 @@ function _lmMbNearest(idx, cell, radius, px, py, reach, conn, notConn, anyOrder,
     }
     _lmMbBestD = bestD;
     return best;
+}
+/* A copy hidden behind `tw` this frame: the count of them (per frame) tells removeCell() whether
+ * a live copy is left when `tw` goes, whichever of them was hidden last (_lmMbHides). */
+function _lmMbNoteHide(tw, cell) {
+    if (tw._lmMbHidF !== _lmMbFrame) {
+        tw._lmMbHidF = _lmMbFrame;
+        tw._lmMbHidN = 0;
+    }
+    tw._lmMbHidN++;
+    tw._lmMbHides = cell;
+}
+/* kept between frames: count per drawing rank, the rank of each cell, the cells in rank order */
+var _lmMbOrdCnt = new Int32Array(64), _lmMbOrdKey = new Int32Array(1024), _lmMbOrdIdx = new Int32Array(1024);
+/*
+ * The frame's hide step (drawRender, right after sortCells and before compareCells, so opponent
+ * colours, rings, split and virus ranges see this frame's hidden copies). Every copy hidden last
+ * frame is shown first; a PROVISIONAL or CONFLICTED connection's cells (not a unit's own) are
+ * hidden; then each other cell looks for the copy drawn instead of it, in the order of
+ * _lmMbOutranks (main connection, then the copies drawn last frame, then the lower connection
+ * number; a counting sort, O(n)). That order makes the result the same in any order of
+ * LM.cells: a copy is only hidden behind a copy already decided to be drawn, never behind a
+ * hidden one (searched in list order, the cell's sort by size decided which copy stayed). */
+function lmMbFrameHide() {
+    var LM = window.legendmod, cells = LM && LM.cells, sps = window.spects, i, cell;
+    if (!cells || !sps || !sps.length) {
+        /* the last connection closed: the search index lets go of the last frame's cells */
+        if (_lmMbGridBuilt) {
+            _lmMbSortInto(_lmMbAll, 0, false);
+            _lmMbSortInto(_lmMbOwn, 0, true);
+            _lmMbGridBuilt = false;
+        }
+        return;
+    }
+    /* a copy drawn last frame (it was in LM.cells then and not hidden) is kept drawn before a
+     * copy that only came now (_lmMbOutranks) */
+    var prevF = _lmMbFrame++;
+    _lmMbFeed.length = 0;
+    _lmMbDrawOnly.length = 0;
+    for (i = 0; i < sps.length; i++) {
+        var sp = sps[i];
+        if (!sp || !(sp.number > 0)) continue;
+        _lmMbFeed[sp.number] = lmSrcFeeds(sp);
+        /* a multibox unit not verified yet is steered and followed by the camera already
+         * (transformReady): the cells round it are drawn (else the player could be eaten by a
+         * cell he does not see) but take no part in the matching */
+        if (!_lmMbFeed[sp.number] && sp.player === true && typeof sp.transformReady === 'function' && sp.transformReady()) _lmMbDrawOnly[sp.number] = true;
+    }
+    var vx0 = LM.srvViewMinX, vy0 = LM.srvViewMinY, vx1 = LM.srvViewMaxX, vy1 = LM.srvViewMaxY;
+    var mainView = Number.isFinite(vx0) && Number.isFinite(vy0) && Number.isFinite(vx1) && Number.isFinite(vy1);
+    var n = cells.length, maxConn = 0;
+    if (_lmMbOrdKey.length < n) {
+        _lmMbOrdKey = new Int32Array(n * 2);
+        _lmMbOrdIdx = new Int32Array(n * 2);
+    }
+    var key = _lmMbOrdKey;
+    for (i = 0; i < n; i++) {
+        key[i] = -1;
+        cell = cells[i];
+        if (!cell) continue;
+        if (cell._lmMbSeenF === prevF && !cell._lmMbPosDup && !cell.invisible) cell._lmMbSticky = _lmMbFrame;
+        cell._lmMbSeenF = _lmMbFrame;
+        /* when its colour was first shown (lmMbShareLook keeps the older one) */
+        if (!cell._lmMbLookT) cell._lmMbLookT = LM.time || 1;
+        if (cell._lmMbPosDup) {
+            cell._lmMbPosDup = false;
+            cell.invisible = false;
+        }
+        if (cell.removed || cell.isFood) continue;
+        /* a cell of a connection whose transform is not verified (not its own cell): not drawn
+         * this frame (shown again by the next frame's first step) */
+        if (!_lmMbFeeds(cell) && !cell.isPlayerCellMulti) {
+            /* a unit's draw-only cell outside the main server view (inside it the main
+             * connection draws that cell): drawn, never searched, hides nothing (not in the
+             * search grid, _lmMbTwinDist2 rejects it) */
+            if (_lmMbDrawOnly[cell.spectator] === true && !(mainView && cell.x > vx0 && cell.x < vx1 && cell.y > vy0 && cell.y < vy1)) continue;
+            cell._lmMbPosDup = true;
+            cell.invisible = true;
+            cell._lmMbTwin = null;
+            continue;
+        }
+        /* own cells of the main player or a unit are always drawn: no search */
+        if (cell.invisible || (cell.spectator > 0 ? cell.isPlayerCellMulti : cell.isPlayerCell)) continue;
+        var s = cell.spectator > 0 ? cell.spectator | 0 : 0;
+        if (s > maxConn) maxConn = s;
+        key[i] = s;
+    }
+    /* rank: 0 main, 1..M drawn last frame (by number), M+1..2M the others (by number) */
+    var nb = 2 * maxConn + 2;
+    if (_lmMbOrdCnt.length < nb) _lmMbOrdCnt = new Int32Array(nb * 2);
+    var cnt = _lmMbOrdCnt, idx = _lmMbOrdIdx;
+    cnt.fill(0, 0, nb);
+    for (i = 0; i < n; i++) {
+        s = key[i];
+        if (s < 0) continue;
+        if (s > 0 && cells[i]._lmMbSticky !== _lmMbFrame) s += maxConn;
+        key[i] = s;
+        cnt[s + 1]++;
+    }
+    for (i = 1; i < nb; i++) cnt[i] += cnt[i - 1];
+    var k = cnt[nb - 1];
+    for (i = 0; i < n; i++) if (key[i] >= 0) idx[cnt[key[i]]++] = i;
+    for (i = 0; i < k; i++) {
+        cell = cells[idx[i]];
+        var tw = lmMultiboxPositionTwin(cell);
+        if (tw) {
+            /* hidden, not dropped: it keeps moving and is shown again as soon as the other
+             * copy goes */
+            cell._lmMbPosDup = true;
+            cell.invisible = true;
+            _lmMbNoteHide(tw, cell);
+            /* one colour for the copies (the one shown first) */
+            lmMbShareLook(cell, tw);
+        }
+    }
 }
 var _lmMbPosC = { x: 0, y: 0 };
 function lmMultiboxPositionTwin(cell) {
@@ -28469,7 +28605,9 @@ function thelegendmodproject() {
                         if (typeof lmFoodRebuild === 'function') lmFoodRebuild(); /* the units' pellets stay in the food list */
                         /* the units' viruses stay listed (spect.js lists a virus once, when it is added) */
                         legendmod.viruses = lmIdxFilter(legendmod.viruses, '_virusIdx', function (c) { return c && c.spectator > 0; });
-                        legendmod.removedCells = legendmod.removedCells ? legendmod.removedCells.filter(function (c) { return c && c.spectator > 0; }) : [];
+                        /* with their slots (_removedIdx): a kept copy with a stale slot never left the list (its
+                         * fade end and the hidden-copy clean-up check the slot) */
+                        legendmod.removedCells = legendmod.removedCells ? lmIdxFilter(legendmod.removedCells, '_removedIdx', function (c) { return c && c.spectator > 0; }) : [];
                         if (typeof legendmod.clearJellyIndex === 'function') legendmod.clearJellyIndex();
                         if (legendmod._cellsDirty !== undefined) legendmod._cellsDirty = true;
                         // Flag to suppress main client adding spectator cells
@@ -37097,14 +37235,22 @@ function thelegendmodproject() {
              * of its cell, if one is still there (no frame without the cell). Not after an
              * eat: the other copies show a cell that is gone until their own eat comes, so
              * they stay hidden behind this one while its eat animation runs. */
+            /* a hidden copy that goes: one copy fewer behind the drawn one this frame */
+            var _mbTw = this._lmMbTwin;
+            if (this._lmMbPosDup && _mbTw && _mbTw._lmMbHidF === _lmMbFrame && _mbTw._lmMbHidN > 0) {
+                _mbTw._lmMbHidN--;
+                if (_mbTw._lmMbHides === this) _mbTw._lmMbHides = null;
+            }
             var _mbPosHidden = this._lmMbHides;
-            /* that live copy goes on drawing the cell: this one plays no removal fade */
-            var _mbTakes = false;
+            /* A live copy goes on drawing the cell: this one plays no removal fade. Counted (every
+             * copy hidden behind this one this frame, less those gone since), so it does not
+             * depend on which copy was hidden last; not after an eat (the cell is gone). */
+            var _mbTakes = !eaten && this._lmMbHidF === _lmMbFrame && this._lmMbHidN > 0;
             if (!eaten && _mbPosHidden && _mbPosHidden._lmMbPosDup && _mbPosHidden._lmMbTwin === this) {
                 _mbPosHidden._lmMbPosDup = false;
                 _mbPosHidden._lmMbTwin = null;
                 _mbPosHidden.invisible = false;
-                _mbTakes = !_mbPosHidden.removed;
+                _mbTakes = _mbTakes || !_mbPosHidden.removed;
             }
             this._lmMbHides = null;
 
@@ -77409,6 +77555,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             LM.camMaxY = this.camY + this.canvasHeight * 0.5 * _invScale;
             LM.getCursorPosition();
             LM.sortCells();
+            /* which copy of a cell seen by several connections is drawn, before the opponent
+             * colours, rings and ranges look at the cells (they skip the hidden ones) */
+            lmMbFrameHide();
             LM.compareCells();
 
             /* Build chat/command lookup map once per frame — with message filters */
@@ -78570,37 +78719,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
                 var _cW = 0;
 
-                /* Any multibox or spectator connection open: a cell seen by two connections is
-                 * drawn once, matched by position, size and server colour (lmMultiboxPositionTwin).
-                 * Cells are never matched by raw id: the copies of a unit's own cells on the main
-                 * socket used to be hidden by id (indexedCells[id + unit * LM_UNIT_ID_STEP]) and
-                 * spectator copies dropped from LM.cells by id (_renderSuppressed, shown again
-                 * only by their next packet), which hid other cells where ids differ. */
-                var _mbAny = !!(window.spects && window.spects.length);
-                /* every copy hidden last frame is shown first, so the search below sees this
-                 * frame's state in any order: the copy a hidden cell sat behind may have gone,
-                 * and the survivor is found in this same frame (no frame drawn twice or
-                 * without the cell) */
-                if (_mbAny) {
-                    /* a copy drawn last frame (it was in LM.cells then and not hidden) is kept
-                     * drawn before a copy that only came now (_lmMbOutranks) */
-                    var _mbPrevF = _lmMbFrame++;
-                    var _mbSp = window.spects;
-                    _lmMbFeed.length = 0;
-                    for (i = 0; i < _mbSp.length; i++) if (_mbSp[i] && _mbSp[i].number > 0) _lmMbFeed[_mbSp[i].number] = lmSrcFeeds(_mbSp[i]);
-                    for (i = 0; i < LM.cells.length; i++) {
-                        cell = LM.cells[i];
-                        if (!cell) continue;
-                        if (cell._lmMbSeenF === _mbPrevF && !cell._lmMbPosDup && !cell.invisible) cell._lmMbSticky = _lmMbFrame;
-                        cell._lmMbSeenF = _lmMbFrame;
-                        /* when its colour was first shown (lmMbShareLook keeps the older one) */
-                        if (!cell._lmMbLookT) cell._lmMbLookT = LM.time || 1;
-                        if (cell._lmMbPosDup) {
-                            cell._lmMbPosDup = false;
-                            cell.invisible = false;
-                        }
-                    }
-                }
+                /* The multibox / Full Map hide step (which copy of a cell seen by several connections
+                 * is drawn, lmMbFrameHide) ran at the start of the frame, before compareCells. */
 
                 for (
                     i = 0;
@@ -78625,30 +78745,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         continue;
                     }
 
-                    if (cell._lmMbPosDup) {
-                        cell._lmMbPosDup = false;
-                        cell.invisible = false;
-                    }
-                    /* The same cell from another connection at the same place. Hidden, not
-                     * dropped, so it keeps moving and is shown again as soon as the other copy
-                     * goes (this search runs every frame, before the cells are drawn). */
-                    /* a cell of a connection whose transform is not verified (not its own cell):
-                     * not drawn this frame (shown again by the next frame's first pass) */
-                    if (_mbAny && !cell.isFood && !_lmMbFeeds(cell) && !cell.isPlayerCellMulti) {
-                        cell._lmMbPosDup = true;
-                        cell.invisible = true;
-                        cell._lmMbTwin = null;
-                    }
-                    if (_mbAny && !cell.invisible && !cell.isFood) {
-                        var _mbTwin = lmMultiboxPositionTwin(cell);
-                        if (_mbTwin) {
-                            cell._lmMbPosDup = true;
-                            cell.invisible = true;
-                            _mbTwin._lmMbHides = cell;
-                            /* one colour for the copies (the one shown first) */
-                            lmMbShareLook(cell, _mbTwin);
-                        }
-                    }
 
 
                     if (
@@ -82510,6 +82606,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (defaultmapsettings.showGhostCells) {
                 var ghostsCells = LM.ghostCells;
                 if (!ghostsCells.length) return;
+                /* An agar.io list (opcode 69, rawX) that has not come again for LM_GHOST_LIST_MAX_AGE:
+                 * its players may be anywhere by now, so no ghost is drawn and no area is said to
+                 * be covered by it (the lag margin grew past every view, so old ghosts were drawn
+                 * everywhere). */
+                var _ghostNow = Date.now();
+                if (LM.ghostCellsTime > 0 && ghostsCells[0] && ghostsCells[0].rawX !== undefined &&
+                    _ghostNow - LM.ghostCellsTime > LM_GHOST_LIST_MAX_AGE) return;
                 /*
                  * Always Canvas2D. The WebGL layer sits ABOVE the 2D canvas, so GL
                  * ghosts covered real cells whenever the frame rendered cells on
@@ -82541,7 +82644,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _ghostCov = this._lmGhostCov || (this._lmGhostCov = []);
                 var _ghostCovF = false;
                 var _ghostLag = LM.ghostCellsTime > 0 ? (typeof LM_GHOST_TOL0 === 'number' ? LM_GHOST_TOL0 : 60) +
-                    (typeof LM_GHOST_SPEED === 'number' ? LM_GHOST_SPEED : 0.5) * Math.max(0, Date.now() - LM.ghostCellsTime) : NaN;
+                    (typeof LM_GHOST_SPEED === 'number' ? LM_GHOST_SPEED : 0.5) * Math.max(0, _ghostNow - LM.ghostCellsTime) : NaN;
                 for (var length = 0; length < ghostsCells.length; length++) {
                     var ghost = ghostsCells[length];
                     if (!ghost) continue;
@@ -82560,13 +82663,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * spectator whose orientation is not verified (not drawn, maybe mirrored: the
                      * frame's hide step test), hid the ghost while the player was not shown. The
                      * name of an opcode-69 ghost is the leaderboard's (its label); names are
-                     * compared only when both are known, own and unit cells always count. */
+                     * compared only when both are known, own and unit cells always count. Ejected
+                     * mass never hides a ghost (a blob of 40+ is no player cell). An unverified
+                     * unit's own cell may be drawn at a wrong place: it hides the ghost only with
+                     * the ghost's name. */
                     var _ghostName = ghost.rawX !== undefined && LM.leaderboard && LM.leaderboard[length] ? LM.leaderboard[length].nick : '';
                     var _ghostHasReal = false;
                     for (var _gc = 0; _gc < LM.cells.length; _gc++) {
                         var _rc = LM.cells[_gc];
                         if (!_rc || _rc.isFood || _rc.isVirus || _rc.size < 40) continue;
-                        if (_rc.spectator > 0 && !_rc.isPlayerCellMulti && !_lmMbFeeds(_rc)) continue;
+                        if (_rc.isEjected) continue;
+                        if (_rc.spectator > 0 && !_lmMbFeeds(_rc) && (!_rc.isPlayerCellMulti || !_ghostName || _rc._lmSrvName !== _ghostName)) continue;
                         if (_ghostName && _rc._lmSrvName && _rc._lmSrvName !== _ghostName && !_rc.isPlayerCell && !_rc.isPlayerCellMulti) continue;
                         var _gdx = _rc.x - x, _gdy = _rc.y - y;
                         if (_gdx * _gdx + _gdy * _gdy < sz * sz) { _ghostHasReal = true; break; }
@@ -82587,7 +82694,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             var _gRect = this._lmGhostCovR || (this._lmGhostCovR = [0, 0, 0, 0]);
                             if (_gSps) for (var _gs = 0; _gs < _gSps.length; _gs++) {
                                 var _gSp = _gSps[_gs];
-                                if (!_gSp || typeof _gSp._lmServerViewDisplay !== 'function' || !_gSp._lmFeedOk() || !_gSp.isSocketOpen()) continue;
+                                if (!_gSp || typeof _gSp._lmServerViewDisplay !== 'function') continue;
+                                /* its view says something only while it is fresh: a spectator covers
+                                 * an area when its last update came at most LM_GHOST_COV_SLACK before
+                                 * the list and less than LM_GHOST_COV_MAX_AGE ago (a stalled socket
+                                 * kept its last camera for good) */
+                                if (typeof _gSp._lmCoverageOk === 'function' ? !_gSp._lmCoverageOk(_ghostNow) : (!_gSp._lmFeedOk() || !_gSp.isSocketOpen())) continue;
+                                if (!(_gSp.time >= LM.ghostCellsTime - LM_GHOST_COV_SLACK && _ghostNow - _gSp.time < LM_GHOST_COV_MAX_AGE)) continue;
                                 var _gR = _gSp._lmServerViewDisplay(_gRect);
                                 if (_gR) _ghostCov.push(_gR[0], _gR[1], _gR[2], _gR[3]);
                             }

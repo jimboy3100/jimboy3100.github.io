@@ -19,7 +19,8 @@ const code = src.slice(start, end + 3);
 const ca = src.indexOf('var _cW = 0;'), cb = src.indexOf('* JELLY PHYSICS\n                 * CURRENT-FRAME PREPARATION', ca);
 if (ca < 0 || cb < 0) throw new Error('frame compaction not found in ogario.v4.js');
 const compact = src.slice(ca, cb).slice(0, src.slice(ca, cb).lastIndexOf('/*'));
-const loop = 'function _frame() { var LM = window.legendmod, i, cell;\n' + compact + '\n}';
+/* the frame: its hide step (lmMbFrameHide, before compareCells), then the compaction */
+const loop = 'function _frame() { var LM = window.legendmod, i, cell;\nlmMbFrameHide();\n' + compact + '\n}';
 
 let failed = 0;
 function check(name, ok, info) {
@@ -287,14 +288,47 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     ctx.window.spects[1]._lmFeedOk = () => false;
     const a = cell({ spectator: 2, x: 1000, color: '#111111' });
     const b = cell({ spectator: 1, x: 1003, color: '#222222' });
-    const own = cell({ spectator: 2, isPlayerCellMulti: true, x: 5000, color: '#333333' });
-    const m = cell({ spectator: 0, x: 5002, color: '#444444' });
-    run([a, b, own, m], 3, ctx);
+    /* its own cell stands in for the main copy only with the same server name on both */
+    const own = cell({ spectator: 2, isPlayerCellMulti: true, x: 5000, color: '#333333', _lmSrvName: 'U' });
+    const m = cell({ spectator: 0, x: 5002, color: '#444444', _lmSrvName: 'U' });
+    /* at a wrong place (mirrored), its own cell lands on other players' unnamed cells */
+    const own2 = cell({ spectator: 2, isPlayerCellMulti: true, x: 8000, color: '#333333', _lmSrvName: 'U' });
+    const m2 = cell({ spectator: 0, x: 8002, color: '#555555' });
+    const v2 = cell({ spectator: 1, x: 8003, color: '#666666' });
+    const own3 = cell({ spectator: 2, isPlayerCellMulti: true, x: -3000, color: '#333333', _lmSrvName: 'U' });
+    const m3 = cell({ spectator: 0, x: -3002, color: '#777777', _lmSrvName: 'other' });
+    run([a, b, own, m, own2, m2, v2, own3, m3], 3, ctx);
     check('unverified connection: its cell not drawn, the verified copy drawn', a.invisible && !b.invisible && !b._lmMbTwin);
-    check('unverified unit: its own cell drawn, the main copy hidden behind it', !own.invisible && m.invisible);
+    check('unverified unit: its own cell drawn, the main copy (same server name) hidden behind it', !own.invisible && m.invisible);
+    check('unverified unit: its own cell hides no unnamed cell of another connection', !own2.invisible && !m2.invisible && drawn([m2, v2]) === 1 && m2._lmMbTwin !== own2 && v2._lmMbTwin !== own2);
+    check('unverified unit: its own cell hides no cell of another name', !own3.invisible && !m3.invisible);
     ctx.window.spects[1]._lmFeedOk = () => true;
     run(ctx.window.legendmod.cells, 2, ctx);
     check('verified again: one copy drawn', drawn([a, b]) === 1);
+}
+/* 15b. A multibox unit not verified yet but steered (transformReady: the camera follows it): the
+ * cells only it sees are drawn (the player could be eaten by a cell he does not see), they hide
+ * nothing and nothing hides behind them; inside the main server view the main copy draws them */
+{
+    const ctx = env(2);
+    const unit = ctx.window.spects[1];
+    unit._lmFeedOk = () => false;
+    unit.transformReady = () => true;
+    const LM = ctx.window.legendmod;
+    LM.srvViewMinX = -1000; LM.srvViewMinY = -1000; LM.srvViewMaxX = 1000; LM.srvViewMaxY = 1000;
+    const enemy = cell({ spectator: 2, x: 6000, y: 6000, color: '#123456' });
+    const virus = cell({ spectator: 2, x: 6500, y: 6000, isVirus: true, color: '#33ff33' });
+    /* a verified spectator's cell at the same place as one of the unit's cells */
+    const v = cell({ spectator: 1, x: 7000, y: 6000, color: '#222222' });
+    const u = cell({ spectator: 2, x: 7002, y: 6000, color: '#333333' });
+    const inMain = cell({ spectator: 2, x: 0, y: 0, color: '#444444' });
+    run([enemy, virus, v, u, inMain], 3, ctx);
+    check('unverified unit: an enemy only it sees is drawn', !enemy.invisible && !virus.invisible);
+    check('unverified unit: its cells hide nothing and hide behind nothing', !v.invisible && !v._lmMbTwin && !u.invisible && !u._lmMbTwin);
+    check('unverified unit: its cell inside the main server view is left to the main connection', inMain.invisible);
+    unit.transformReady = () => false;
+    run(LM.cells, 1, ctx);
+    check('unit not steered yet: its cells are not drawn', enemy.invisible && virus.invisible && u.invisible);
 }
 
 /* 10. Search against a scan of every cell (same rule, nearest + mutual nearest), frame by frame,
@@ -363,6 +397,8 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
         const ctx = env(2);
         ctx.window.legendmod.cells = cells;
         const twin = vm.runInContext('lmMultiboxPositionTwin', ctx);
+        /* the frame's hide step fills which connections feed (both are verified here) */
+        vm.runInContext('_lmMbFeed[1] = _lmMbFeed[2] = true;', ctx);
         for (let f = 0; f < 3; f++) {
             /* cells move between world updates; the search indexes them once per update */
             for (const c of cells) if (!c.isPlayerCell && !c.isPlayerCellMulti) { c.x += (rnd() - 0.5) * 6; c.y += (rnd() - 0.5) * 6; }
@@ -394,6 +430,7 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     for (let i = 0; i < 40; i++) LM.cells.push(cell({ spectator: i % 2, x: -4000 + i * 200, y: (i % 5) * 900, size: 1500, targetSize: 1500, color: '#0' + (10000 + i) }));
     vm.runInContext('var _lmGets = 0; Map.prototype.get = (function (g) { return function (k) { _lmGets++; return g.call(this, k); }; })(Map.prototype.get);', L);
     const twin = vm.runInContext('lmMultiboxPositionTwin', L);
+    vm.runInContext('_lmMbFeed[1] = true;', L);
     LM.time++;
     for (const c of LM.cells) twin(c);
     vm.runInContext('_lmGets = 0', L);
