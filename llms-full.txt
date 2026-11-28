@@ -94,7 +94,7 @@ Triple split, crazy double split, line split, performance mode toggle, merge rin
 | Scroll wheel | Zoom in/out |
 
 ### Gamepad
-Full gamepad/controller support. The 16 buttons are bound in the Hotkeys window like keys and mouse buttons (click a field, press the pad button; shown as PAD A ...). Default map: A=split, B=feed(macro), X=doubleSplit, Y=respawn, LB=multiboxSwap, RB=split16, Start=menu. Settings: dead zone (0.05-0.5), move range, response curve (0.5-3), zoom sensitivity (0.2-4), trigger threshold, axis inversion, haptic vibration on split and death (Gamepad window, with a live test).
+Full gamepad/controller support. The 16 buttons are bound in the Hotkeys window like keys and mouse buttons (click a field, press the pad button; shown as PAD A ...). Default map: A=split, B=feed(macro), X=doubleSplit, Y=respawn, LB=multiboxSwap, RB=split16, Start=menu. Settings: dead zone (0.05-0.5), move range, response curve (0.5-3), zoom sensitivity (0.2-4), trigger threshold (Gamepad window, with a live test).
 
 ### Mobile Touch
 Dedicated mobile touch controls with on-screen buttons for split, feed, and other actions. The game page supports fullscreen, screen wake lock (phone stays awake), and landscape orientation.
@@ -317,7 +317,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Multibox**: Amount (2-4), freeze, auto-respawn, switch after death, camera view, shadow
 - **Line Split**: Count, delay, hold time, guide lines
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
-- **Gamepad**: Enable, dead zone, move range, curve, zoom sensitivity, trigger, axis inversion, vibrate
+- **Gamepad**: dead zone, move range, curve, zoom sensitivity, trigger (always on when a pad is connected)
 - **Privacy/Extras**: Streamer mode, hide skin URL, hide name, hide country, block popups
 - **Stats**: Game Over card stats, mass graph, death recap, analytics, match history
 - **Merge**: Sound, progress rings

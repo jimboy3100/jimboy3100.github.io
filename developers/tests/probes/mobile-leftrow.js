@@ -10,7 +10,7 @@
   for (var w0 = 0; w0 < 60 && !window._lmMobileHost; w0++) await sleep(250);
   var H = window._lmMobileHost, app = window.application, drawer = document.getElementById('lm-drawer');
   if (!H || !app || !drawer) return { fail: ['phone controls missing'] };
-  var IDS = ['lm-qcmd', 'lm-mbbtn', 'lm-pingbtn', 'lm-zoombtn', 'lm-freespec', 'lm-respbtn'];
+  var IDS = ['lm-qcmd', 'lm-mbbtn', 'lm-pingbtn', 'lm-zoombtn', 'lm-respbtn'];
   var keepPrefs = null; try { keepPrefs = localStorage.getItem('lm-mobile-prefs'); } catch (e) { }
   var ov = document.getElementById('overlays'), menuWas = !!(ov && ov.getClientRects().length);
   var set = function (on) { IDS.forEach(function (id) { var cb = document.getElementById(id); if (cb && cb.checked !== on) { cb.checked = on; cb.dispatchEvent(new Event('change', { bubbles: true })); } }); };

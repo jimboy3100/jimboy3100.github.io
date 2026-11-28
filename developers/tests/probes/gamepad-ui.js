@@ -65,13 +65,6 @@
   document.getElementById('lm-gp-close').click();
   await sleep(50);
   if (document.getElementById('lm-gp-modal') || document.getElementById('lm-gp-backdrop')) fail.push('close button did not close the window');
-  // the hotkey opens and closes it
-  hk && hk.keyDown();
-  await sleep(50);
-  if (!document.getElementById('lm-gp-modal')) fail.push('hotkey did not open the window');
-  hk && hk.keyDown();
-  await sleep(50);
-  if (document.getElementById('lm-gp-modal')) fail.push('hotkey did not close the window');
   if (!wasOpen) { $('#close-hotkeys').trigger('click'); await sleep(600); }
   return { fail: fail, info: info };
 })()

@@ -189,9 +189,7 @@
         "moveRange",
         "responseCurve",
         "zoomSensitivity",
-        "triggerThreshold",
-        "axisInversion",
-        "hapticVibration"
+        "triggerThreshold"
       ]
     },
     {

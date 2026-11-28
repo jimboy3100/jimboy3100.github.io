@@ -39,7 +39,7 @@
       "id": "gamepad",
       "file": "ogario/modules/gamepad.js",
       "lines": 748,
-      "description": "Full gamepad/controller support: the 16 buttons are bound in the Hotkeys window like keys; dead zone, response curve and haptic vibration in the Gamepad window (modules/gamepad-ui.js, with a live test).",
+      "description": "Full gamepad/controller support: the 16 buttons are bound in the Hotkeys window like keys; dead zone, response curve and triggers in the Gamepad window (modules/gamepad-ui.js, with a live test).",
       "feature": "Gamepad"
     },
     {

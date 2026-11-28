@@ -459,7 +459,9 @@
          *  USER PREFERENCES (localStorage)
          * ═══════════════════════════════════════════════════════ */
         var PREF_KEY = 'lm-mobile-prefs';
-        var prefs = { btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, zoomBtns: false, freeSpecBtn: false, jsSize: 1, jsOpacity: 1, respawnBtn: false };
+        var prefs = { btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, fixedJoystick: false, lbCompact: false, zoomBtns: false, jsSize: 1, respawnBtn: false };
+        /* removed options (a saved value is skipped): tapHaptic (the Split / Feed tap vibration), the
+         * joystick dead zone (always 8 px) and opacity (always full), the free spectate button */
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
          * removed or older store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
@@ -481,19 +483,15 @@
                     if (saved.targetMode !== undefined) prefs.targetMode = !!saved.targetMode;
                     if (saved.swipeSplit !== undefined) prefs.swipeSplit = !!saved.swipeSplit;
                     if (saved.muteVibration !== undefined) prefs.muteVibration = !!saved.muteVibration;
-                    if (saved.tapHaptic !== undefined) prefs.tapHaptic = !!saved.tapHaptic;
                     if (saved.quickCmds !== undefined) prefs.quickCmds = !!saved.quickCmds;
                     if (saved.mbButton !== undefined) prefs.mbButton = !!saved.mbButton;
                     if (saved.stopOnRelease !== undefined) prefs.stopOnRelease = !!saved.stopOnRelease;
                     if (saved.pingBtn !== undefined) prefs.pingBtn = !!saved.pingBtn;
                     if (saved.fixedJoystick !== undefined) prefs.fixedJoystick = !!saved.fixedJoystick;
-                    if (saved.joystickDeadZone !== undefined) prefs.joystickDeadZone = num(saved.joystickDeadZone, 0, 40, prefs.joystickDeadZone);
                     if (saved.lbCompact !== undefined) prefs.lbCompact = !!saved.lbCompact;
                     if (saved.jsSize !== undefined) prefs.jsSize = num(saved.jsSize, 0.5, 2, prefs.jsSize);
-                    if (saved.jsOpacity !== undefined) prefs.jsOpacity = num(saved.jsOpacity, 0.2, 1, prefs.jsOpacity);
                     if (saved.respawnBtn !== undefined) prefs.respawnBtn = !!saved.respawnBtn;
                     if (saved.zoomBtns !== undefined) prefs.zoomBtns = !!saved.zoomBtns;
-                    if (saved.freeSpecBtn !== undefined) prefs.freeSpecBtn = !!saved.freeSpecBtn;
                 }
             } catch (e) { }
         }
@@ -523,11 +521,6 @@
         
         drawer.appendChild(bAI);
         drawer.appendChild(bPaus);
-        /* replay seek: shown only while a replay plays (see syncAiPause) */
-        var bRwd = mkd('\u23EA'), bFwd = mkd('\u23E9');
-        bRwd.style.display = 'none'; bFwd.style.display = 'none';
-        drawer.appendChild(bRwd);
-        drawer.appendChild(bFwd);
         drawer.appendChild(bChat);
         drawer.appendChild(bWave);
 
@@ -548,22 +541,16 @@
             '<label><input type="checkbox" id="lm-sw"' + (prefs.swipeSplit ? ' checked' : '') + '> ' + tx('misc.mobile.flickSplit', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-novib"' + (prefs.muteVibration ? ' checked' : '') + '> ' + tx('misc.mobile.noVibration', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-stoprel"' + (prefs.stopOnRelease ? ' checked' : '') + '> ' + tx('misc.mobile.stopRelease', 'lm-t') + '</label>' +
-            '<label><input type="checkbox" id="lm-taphap"' + (prefs.tapHaptic ? ' checked' : '') + '> ' + tx('misc.mobile.tapHaptic', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-qcmd"' + (prefs.quickCmds ? ' checked' : '') + '> ' + tx('misc.mobile.quickChat', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-mbbtn"' + (prefs.mbButton ? ' checked' : '') + '> ' + tx('misc.mobile.mbButton', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-pingbtn"' + (prefs.pingBtn ? ' checked' : '') + '> ' + tx('misc.mobile.pingButton', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-tdir"' + (prefs.targetMode ? ' checked' : '') + '> ' + tx('misc.mobile.touchDir', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-fixjs"' + (prefs.fixedJoystick ? ' checked' : '') + '> ' + tx('misc.mobile.fixedJoystick', 'lm-t') + '</label>' +
-            '<label>' + tx('misc.mobile.deadZone', 'lm-t') + ' <span id="lm-dz-v">' + Math.max(8, prefs.joystickDeadZone) + '</span></label>' +
-            '<input type="range" id="lm-dz" min="8" max="40" step="2" value="' + Math.max(8, prefs.joystickDeadZone) + '">' +
-            /* the joystick's drawn size (its knob's travel grows with it) and opacity; 100 % = as before */
+            /* the joystick's drawn size (its knob's travel grows with it); 100 % = as before */
             '<label>' + tx('pkg.agm.jsSize', 'lm-t') + ' <span id="lm-jss-v">' + Math.round(prefs.jsSize * 100) + '%</span></label>' +
             '<input type="range" id="lm-jss" min="50" max="200" step="10" value="' + Math.round(prefs.jsSize * 100) + '">' +
-            '<label>' + tx('pkg.agm.jsOpacity', 'lm-t') + ' <span id="lm-jso-v">' + Math.round(prefs.jsOpacity * 100) + '%</span></label>' +
-            '<input type="range" id="lm-jso" min="20" max="100" step="5" value="' + Math.round(prefs.jsOpacity * 100) + '">' +
             '<label><input type="checkbox" id="lm-lbc"' + (prefs.lbCompact ? ' checked' : '') + '> ' + tx('misc.mobile.lbCompact', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-zoombtn"' + (prefs.zoomBtns ? ' checked' : '') + '> ' + tx('misc.mobile.zoomBtns', 'lm-t') + '</label>' +
-            '<label><input type="checkbox" id="lm-freespec"' + (prefs.freeSpecBtn ? ' checked' : '') + '> ' + tx('misc.mobile.freeSpec', 'lm-t') + '</label>' +
             '<label><input type="checkbox" id="lm-respbtn"' + (prefs.respawnBtn ? ' checked' : '') + '> ' + tx('pkg.agm.respawnBtn', 'lm-t') + '</label>' +
             /* move, resize, fade or hide each touch control (LMmobile-editor.js, loaded on the first tap) */
             '<button type="button" id="lm-ed-open">' + tx('misc.mobile.editControls') + '</button>';
@@ -604,16 +591,13 @@
             joystickLook();
             layoutRefresh();
         }
-        /* joystick size and opacity (gear panel); at 100 % the stylesheet's own 120 / 50 px and full
-         * opacity, as before */
+        /* joystick size (gear panel); at 100 % the stylesheet's own 120 / 50 px, as before */
         function joystickLook() {
-            var k = prefs.jsSize || 1, o = prefs.jsOpacity;
+            var k = prefs.jsSize || 1;
             JR = 55 * k;
             [[jO, 120], [jI, 50]].forEach(function (j) {
                 var px = k === 1 ? '' : Math.round(j[1] * k) + 'px';
                 if (j[0].style.width !== px) { j[0].style.width = px; j[0].style.height = px; }
-                var op = o >= 1 ? '' : String(o);
-                if (j[0].style.opacity !== op) j[0].style.opacity = op;
             });
         }
 
@@ -650,7 +634,6 @@
             if (prefs.targetMode) jHide();
             savePrefs();
         });
-        sp.querySelector('#lm-taphap').addEventListener('change', function () { prefs.tapHaptic = this.checked; savePrefs(); });
         /* Quick chat: chat commands 1-4 (Hotkeys > command texts) with one tap instead of the
          * keyboard; sent like the desktop command hotkeys (Expanding Land 2 s window included) */
         var quickBtns = [];
@@ -678,30 +661,18 @@
         sp.querySelector('#lm-mbbtn').addEventListener('change', function () { prefs.mbButton = this.checked; savePrefs(); buildMbButton(); if (typeof repositionButtons === 'function') repositionButtons(); layoutRefresh(); });
         sp.querySelector('#lm-pingbtn').addEventListener('change', function () { prefs.pingBtn = this.checked; savePrefs(); buildPingButton(); layoutRefresh(); });
         sp.querySelector('#lm-fixjs').addEventListener('change', function () { prefs.fixedJoystick = this.checked; savePrefs(); });
-        sp.querySelector('#lm-dz').addEventListener('input', function () {
-            prefs.joystickDeadZone = parseInt(this.value, 10);
-            sp.querySelector('#lm-dz-v').textContent = this.value;
-        });
-        sp.querySelector('#lm-dz').addEventListener('change', function () { savePrefs(); });
         sp.querySelector('#lm-jss').addEventListener('input', function () {
             prefs.jsSize = parseInt(this.value, 10) / 100;
             sp.querySelector('#lm-jss-v').textContent = this.value + '%';
             joystickLook();
         });
         sp.querySelector('#lm-jss').addEventListener('change', function () { savePrefs(); });
-        sp.querySelector('#lm-jso').addEventListener('input', function () {
-            prefs.jsOpacity = parseInt(this.value, 10) / 100;
-            sp.querySelector('#lm-jso-v').textContent = this.value + '%';
-            joystickLook();
-        });
-        sp.querySelector('#lm-jso').addEventListener('change', function () { savePrefs(); });
         sp.querySelector('#lm-lbc').addEventListener('change', function () {
             prefs.lbCompact = this.checked;
             savePrefs();
             applyLbCompact();
         });
         sp.querySelector('#lm-zoombtn').addEventListener('change', function () { prefs.zoomBtns = this.checked; savePrefs(); buildZoomButtons(); layoutRefresh(); });
-        sp.querySelector('#lm-freespec').addEventListener('change', function () { prefs.freeSpecBtn = this.checked; savePrefs(); buildFreeSpecButton(); layoutRefresh(); });
         sp.querySelector('#lm-respbtn').addEventListener('change', function () { prefs.respawnBtn = this.checked; savePrefs(); buildActionButtons(); layoutRefresh(); });
 
         /* ── RIGHT side: SPLIT + FEED (positioned by JS relative to minimap) ── */
@@ -912,33 +883,6 @@
             drawerInsert(bZoomIn); drawerInsert(bZoomOut);
         }
         buildZoomButtons();
-        /* optional free spectate button: toggles free spectate mode */
-        var bFreeSpec = null;
-        function buildFreeSpecButton() {
-            if (bFreeSpec && bFreeSpec.parentNode) bFreeSpec.parentNode.removeChild(bFreeSpec);
-            bFreeSpec = null;
-            if (!prefs.freeSpecBtn) return;
-            bFreeSpec = mkd('\uD83D\uDD0D'); /* 🔍 */
-            bFreeSpec.addEventListener('touchstart', function (e) {
-                e.preventDefault(); e.stopPropagation();
-                debounced(function () {
-                    if (typeof window.legendmod !== 'undefined' && window.legendmod && typeof window.legendmod.sendFreeSpectate === 'function') {
-                        window.legendmod.sendFreeSpectate();
-                    }
-                    syncFreeSpec();
-                }, 'fspec', 400);
-            }, { passive: false });
-            drawerInsert(bFreeSpec);
-            syncFreeSpec();
-        }
-        /* lit while free spectate is on; the game also ends it without this button (a spawn,
-         * a server change), so the buttons' 500 ms update checks it too */
-        function syncFreeSpec() {
-            if (!bFreeSpec) return;
-            var on = !!(window.legendmod && window.legendmod.isFreeSpectate);
-            if (bFreeSpec.classList.contains('lm-active') !== on) bFreeSpec.classList.toggle('lm-active', on);
-        }
-        buildFreeSpecButton();
         /* optional Quick respawn button (the Y hotkey's command, application.quickResp: it works with
          * Settings > Quick respawn on, else the button says so) */
         var bResp = null;
@@ -979,13 +923,11 @@
             var setRange = function (id, v, label) { var el = q(id); if (el) el.value = v; var l = q(id + '-v'); if (l) l.textContent = label; };
             setRange('lm-op', Math.round(prefs.btnOpacity * 100), Math.round(prefs.btnOpacity * 100) + '%');
             setRange('lm-bs', Math.round(prefs.btnScale * 100), Math.round(prefs.btnScale * 100) + '%');
-            setRange('lm-dz', Math.max(8, prefs.joystickDeadZone), String(Math.max(8, prefs.joystickDeadZone)));
             setRange('lm-jss', Math.round(prefs.jsSize * 100), Math.round(prefs.jsSize * 100) + '%');
-            setRange('lm-jso', Math.round(prefs.jsOpacity * 100), Math.round(prefs.jsOpacity * 100) + '%');
             setRange('lm-hf', Math.round(prefs.hudFade * 100), Math.round(prefs.hudFade * 100) + '%');
-            [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'], ['lm-taphap', 'tapHaptic'],
+            [['lm-sw', 'swipeSplit'], ['lm-novib', 'muteVibration'], ['lm-stoprel', 'stopOnRelease'],
                 ['lm-qcmd', 'quickCmds'], ['lm-mbbtn', 'mbButton'], ['lm-pingbtn', 'pingBtn'], ['lm-tdir', 'targetMode'],
-                ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact'], ['lm-zoombtn', 'zoomBtns'], ['lm-freespec', 'freeSpecBtn'],
+                ['lm-fixjs', 'fixedJoystick'], ['lm-lbc', 'lbCompact'], ['lm-zoombtn', 'zoomBtns'],
                 ['lm-respbtn', 'respawnBtn']
             ].forEach(function (c) { var el = q(c[0]); if (el) el.checked = !!prefs[c[1]]; });
             if (prefs.targetMode) jHide();
@@ -993,7 +935,6 @@
             buildMbButton();
             buildPingButton();
             buildZoomButtons();
-            buildFreeSpecButton();
             buildActionButtons();
             applyLbCompact();
             applyPrefs();
@@ -1001,7 +942,7 @@
         }
 
         /* ── Press effects ── */
-        [bMenu, bChat, bSplit, bFeed, bDbl, b16, bAI, bPaus, bRwd, bFwd, bWave].forEach(function (b) {
+        [bMenu, bChat, bSplit, bFeed, bDbl, b16, bAI, bPaus, bWave].forEach(function (b) {
             b.addEventListener('touchstart', function () { b.classList.add('p'); }, { passive: true });
             b.addEventListener('touchend', function () { b.classList.remove('p'); }, { passive: true });
             b.addEventListener('touchcancel', function () { b.classList.remove('p'); }, { passive: true });
@@ -1079,7 +1020,6 @@
         bSplit.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             if (isMenuVisible()) return; /* B6: no combat while menu is up */
-            if (prefs.tapHaptic) vibrate(10);
             /* call the split command directly: Space follows the player's hotkey map, which
              * imported desktop settings may have changed */
             debounced(function () {
@@ -1128,9 +1068,7 @@
         function syncAiPause() {
             bAI.classList.toggle('lm-active', !!window.autoPlay);
             bPaus.classList.toggle('lm-active', typeof application !== 'undefined' && !!application.pause);
-            var rp = replayBarShown(), rd = rp ? '' : 'none';
-            if (bRwd.style.display !== rd) { bRwd.style.display = rd; bFwd.style.display = rd; }
-            if (!rp) return;
+            if (!replayBarShown()) return;
             bPaus.classList.toggle('lm-active', !!window._lmReplayPaused);
             /* the replay bar seeks on mousedown: a touch seeks the same way */
             var rb = document.getElementById('lm-replay-bar');
@@ -1150,7 +1088,7 @@
             return !!(rb && rb.style.display !== 'none' && rb.getClientRects().length);
         }
         /* background timers skip work while the tab is hidden */
-        setInterval(function () { if (!document.hidden) { syncAiPause(); syncMbIndicator(); syncFreeSpec(); } }, 500);
+        setInterval(function () { if (!document.hidden) { syncAiPause(); syncMbIndicator(); } }, 500);
 
         /* ═══════════════════════════════════════════════════════
          *  PAUSE — calls application.setPause()
@@ -1168,12 +1106,6 @@
                 syncAiPause();
             }
         }, { passive: false });
-        [[bRwd, -250], [bFwd, 250]].forEach(function (r) {
-            r[0].addEventListener('touchstart', function (e) {
-                e.preventDefault(); e.stopPropagation();
-                if (replayBarShown() && typeof window.lmReplaySeek === 'function') window.lmReplaySeek(r[1]);
-            }, { passive: false });
-        });
 
         /* ═══════════════════════════════════════════════════════
          *  FEED — W (keyCode 87), hold to repeat
@@ -1224,7 +1156,6 @@
         bFeed.addEventListener('touchstart', function (e) {
             e.preventDefault(); e.stopPropagation();
             if (isMenuVisible()) return; /* B6 */
-            if (prefs.tapHaptic) vibrate(10);
             feedStart();
         }, { passive: false });
         bFeed.addEventListener('touchend', function (e) {
@@ -1531,8 +1462,7 @@
             var rx0 = t.clientX - org.x, ry0 = t.clientY - org.y;
             var rawD = Math.sqrt(rx0 * rx0 + ry0 * ry0);
             /* M4: Dead zone — movements inside the threshold are ignored */
-            var dz = prefs.joystickDeadZone || 0;
-            if (rawD < Math.max(8, dz)) return;
+            if (rawD < 8) return;
 
             /* only the direction steers: the virtual cursor goes far off screen in the
              * joystick's direction, so how far the thumb is pushed does not change the speed */
@@ -2179,8 +2109,8 @@
                 return { split: bSplit, feed: bFeed, x4: bDbl, x16: b16, multibox: bMb,
                     q1: quickBtns[0] || null, q2: quickBtns[1] || null, q3: quickBtns[2] || null, q4: quickBtns[3] || null,
                     chat: bChat, ping: bPing || null, wave: bWave, autoplay: bAI, pause: bPaus,
-                    rewind: bRwd, forward: bFwd, gear: bCfg, menu: bMenu,
-                    zoomIn: bZoomIn || null, zoomOut: bZoomOut || null, freeSpec: bFreeSpec || null,
+                    gear: bCfg, menu: bMenu,
+                    zoomIn: bZoomIn || null, zoomOut: bZoomOut || null,
                     respawn: bResp || null };
             },
             home: ctlHome,
