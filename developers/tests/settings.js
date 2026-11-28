@@ -373,6 +373,58 @@ check('setSettings on and off: two events, the new value each time', J(events) =
   S.optimizedMass = om; S.mergeRings = mr;
 }
 
+// ── S08b / S15a the real preset row: one save per preset and per Undo; an import's copy is the one Undo uses
+{
+  const mk = (html) => {
+    const o = { html, handlers: [], shown: null };
+    ['append', 'appendTo', 'text', 'attr'].forEach(f => { o[f] = function (a) { return f === 'attr' && typeof a === 'string' && arguments.length === 1 ? undefined : o; }; });
+    o.toggle = v => { o.shown = !!v; return o; }; o.show = () => { o.shown = true; return o; }; o.hide = () => { o.shown = false; return o; };
+    o.on = function () { o.handlers.push(arguments[arguments.length - 1]); return o; };
+    return o;
+  };
+  const made = [];
+  const old$ = ctx.$, oldDoc = ctx.document;
+  ctx.$ = x => { if (x && x._preset) return { attr: () => x._preset }; const o = mk(String(x)); made.push(o); return o; };
+  ctx.document = { getElementById: () => ({}) };
+  ctx.textLanguage = {};
+  ctx.confirm = () => true;
+  ctx.application = app2;
+  ctx.box = mk('box');
+  const pre = cut('                var _lmTx = function (k, en) {', '                /* the NEW badges');
+  vm.runInContext('(function () {\n' + pre + '\n})();', ctx);
+  const row = made.find(o => o.html.indexOf('lm-presets-row') >= 0), undo = made.find(o => o.html.indexOf('lm-preset-undo') >= 0);
+  const g0 = S.showGrid, m0 = S.macroFeeding;
+  app2.lmPresets.t = { key: 't', en: 'T', set: { showGrid: !g0, macroFeeding: m0 === 4 ? 5 : 4, massFormat: S.massFormat } };
+  let saves = 0;
+  const realSave = app2.saveSettings;
+  app2.saveSettings = function () { saves++; return realSave.apply(this, arguments); };
+  ctx.localStorage.removeItem('lmPresetUndo');
+  realSave.call(app2, S, 'ogarioSettings');
+  events.length = 0;
+  row.handlers[0].call({ _preset: 't' });
+  check('preset: one save for all its keys, each changed key announced once', saves === 1 && J(events.map(e => e[1]).sort()) === J(['macroFeeding', 'showGrid']) && S.showGrid === !g0 && undo.shown === true);
+  saves = 0; events.length = 0;
+  undo.handlers[0].call({});
+  check('Undo preset: one save, the old values back, the copy and the button gone', saves === 1 && S.showGrid === g0 && S.macroFeeding === m0 && events.length === 2 && ctx.localStorage.getItem('lmPresetUndo') === null && undo.shown === false);
+  /* an import applied without a reload replaced the stored copy, then removed it */
+  row.handlers[0].call({ _preset: 't' });
+  ctx.localStorage.setItem('lmPresetUndo', JSON.stringify({ showGrid: !g0 }));
+  app2._lmPresetUndoSync();
+  const mAfter = S.macroFeeding;
+  undo.handlers[0].call({});
+  check('Undo after an import: the imported copy is used (the values from before the import are not written)', S.showGrid === !g0 && S.macroFeeding === mAfter && undo.shown === false);
+  ctx.localStorage.removeItem('lmPresetUndo');
+  S.showGrid = g0; S.macroFeeding = m0; app2.saveSettings(S, 'ogarioSettings');
+  row.handlers[0].call({ _preset: 't' });
+  ctx.localStorage.removeItem('lmPresetUndo');
+  app2._lmPresetUndoSync();
+  const gNow = S.showGrid;
+  undo.handlers[0].call({});
+  check('an import without a copy: the Undo button hides and Undo changes nothing', undo.shown === false && S.showGrid === gNow);
+  S.showGrid = g0; S.macroFeeding = m0; app2.saveSettings = realSave; realSave.call(app2, S, 'ogarioSettings');
+  ctx.$ = old$; ctx.document = oldDoc; delete app2.lmPresets.t;
+}
+
 // ── S5b sliders (the real addSliderBox): one way with setSettings, the callback once, the save when the slider rests
 {
   const els = {};

@@ -25805,6 +25805,9 @@ function thelegendmodproject() {
                 var keys = Object.keys(sv).filter(function (k) { return own(defaultmapsettings, k); });
                 var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl', showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots', showSkinsPanel: 'setShowSkinsPanel', hideChat: 'setHideChat' };
                 var aa = false;
+                /* one save at the end (setSettings saves each key otherwise) */
+                var wasB = app._lmBatchSave;
+                app._lmBatchSave = true;
                 keys.forEach(function (k) {
                     if (same(defaultmapsettings[k], sv[k])) return;
                     try {
@@ -25820,7 +25823,10 @@ function thelegendmodproject() {
                     if (k === 'glAntialias') aa = true;
                     if (AFTER[k] && typeof app[AFTER[k]] === 'function') { try { app[AFTER[k]](); } catch (e) { } }
                 });
+                app._lmBatchSave = wasB;
                 try { this.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (e) { }
+                /* the Undo preset copy the import wrote or removed (lmImportExtras) */
+                if (typeof app._lmPresetUndoSync === 'function') { try { app._lmPresetUndoSync(); } catch (e) { } }
                 /* anti-aliasing is fixed when the WebGL canvas is made */
                 if (aa) { try { if (typeof window.lmGlAAPending !== 'function' || window.lmGlAAPending()) need.push('glAntialias'); } catch (e) { need.push('glAntialias'); } }
                 var MH = window._lmMobileHost, ME = window.LMMobileEditor;
@@ -26144,8 +26150,9 @@ function thelegendmodproject() {
                     if (_lmSlCb[id] && typeof this[_lmSlCb[id]] === 'function') this[_lmSlCb[id]]();
                 }
                 /* the save sends LMEvents 'settingsChange' when the value changed (lmSettingsCommit);
-                 * a slider being dragged saves once it rests */
-                if (!this._lmSliderInput) this.saveSettings(defaultmapsettings, 'ogarioSettings');
+                 * a slider being dragged saves once it rests; a batch (a preset, its Undo, an
+                 * import) saves once at its end, so every changed key is announced once */
+                if (!this._lmSliderInput && !this._lmBatchSave) this.saveSettings(defaultmapsettings, 'ogarioSettings');
             }
         },
         /* A setting's switch (and its Switchery, which follows a change event that does not
@@ -27200,8 +27207,9 @@ function thelegendmodproject() {
                     var after = k === 'streamMode' ? 'setStreamMode' : k === 'hideSkinUrl' ? 'setHideSkinUrl' : '';
                     if (after && typeof application[after] === 'function') application[after]();
                 };
-                /* The values from before the first of consecutive presets, for Undo (a reset and an
-                 * import reload the page). Undo puts
+                /* The values from before the first of consecutive presets, for Undo (Restore defaults
+                 * removes them and reloads; an import, applied without a reload, replaces or removes
+                 * them and calls _lmPresetUndoSync). Undo puts
                  * back the keys the presets set, also over a change by hand made since (the
                  * confirmation says so: "Undo puts them back"). */
                 var undoKey = 'lmPresetUndo';
@@ -27217,6 +27225,14 @@ function thelegendmodproject() {
                 });
                 var undoBtn = $('<button type="button" class="btn btn-xs lm-preset-undo" data-i18n="lmPresetUndo"></button>').text(_lmTx('lmPresetUndo', 'Undo preset')).appendTo(row);
                 undoBtn.toggle(!!undoSnap);
+                /* the stored copy read again (after an import): Undo then puts back the imported
+                 * copy, or nothing when the import had none, never the values from before it */
+                application._lmPresetUndoSync = function () {
+                    var s = null;
+                    try { s = JSON.parse(window.localStorage.getItem(undoKey) || 'null'); } catch (e) { }
+                    undoSnap = s && typeof s === 'object' && !Array.isArray(s) ? s : null;
+                    undoBtn.toggle(!!undoSnap);
+                };
                 box.append(row);
                 row.on('click', '.lm-preset-btn', function () {
                     var p = presets[$(this).attr('data-preset')];
@@ -27235,8 +27251,11 @@ function thelegendmodproject() {
                     keys.forEach(function (k) { if (!snap.hasOwnProperty(k)) snap[k] = defaultmapsettings[k]; });
                     undoSnap = snap;
                     try { window.localStorage.setItem(undoKey, JSON.stringify(snap)); } catch (e) { }
-                    keys.forEach(function (k) { setOpt(k, p.set[k]); });
-                    application.saveSettings(defaultmapsettings, 'ogarioSettings');
+                    /* one save for the whole preset (not one per key) */
+                    var wasB = application._lmBatchSave;
+                    application._lmBatchSave = true;
+                    try { keys.forEach(function (k) { setOpt(k, p.set[k]); }); }
+                    finally { application._lmBatchSave = wasB; application.saveSettings(defaultmapsettings, 'ogarioSettings'); }
                     undoBtn.show();
                     return false;
                 });
@@ -27248,11 +27267,14 @@ function thelegendmodproject() {
                     var failed = {}, nFailed = 0;
                     if (snap) {
                         /* the snapshot can come from an import: only values that fit their setting */
+                        var wasB = application._lmBatchSave;
+                        application._lmBatchSave = true;
                         Object.keys(snap).forEach(function (k) {
                             var v = lmSettingValue(k, snap[k]);
                             if (v === undefined || !defaultmapsettings.hasOwnProperty(k)) return;
                             try { setOpt(k, v); } catch (e) { failed[k] = snap[k]; nFailed++; }
                         });
+                        application._lmBatchSave = wasB;
                         try { application.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (e) { failed = snap; nFailed = 1; }
                     }
                     if (nFailed) {
