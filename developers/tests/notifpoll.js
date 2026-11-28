@@ -1,6 +1,6 @@
 /* Notification centre without its always-on 2 s poll: ogario/modules/notifications.js runs in a vm
- * with a small fake document. Option off: no setInterval; turned on by the switch (refresh, as
- * setSettings calls it) or by a profile / preset / import (settingsChange): the bell at once and one
+ * with a small fake document. Option off: no setInterval; turned on by the save of the switch, a
+ * preset or an import (settingsChange) or by a script (refresh): the bell at once and one
  * 2 s timer (a toastr made again is wrapped, the bell finds a free spot again); off: bell and timer
  * gone. A toastr made again while the option is off is wrapped once it is turned on.
  * node developers/tests/notifpoll.js [notifications.js] [--old <older notifications.js>] */
@@ -43,7 +43,7 @@ function suite(label, src) {
   e.ctx.toastr = mkToastr();
   e.tick();
   res.rewrappedOn = !!e.ctx.toastr._lmNotifWrapped && e.intervals.size === 1;
-  /* turned off by the switch (setSettings calls refresh): bell and timer gone */
+  /* turned off by a script (refresh): bell and timer gone */
   e.ctx.defaultmapsettings.notificationCentre = false;
   N.refresh();
   e.flush();

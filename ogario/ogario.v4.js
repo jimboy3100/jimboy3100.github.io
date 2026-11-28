@@ -26115,10 +26115,8 @@ function thelegendmodproject() {
                             toastr.warning(lmT('game1.notif.blocked'));
                         }
                         break;
-                    case 'notificationCentre':
-                        /* show / remove the bell now (the module also checks every 2 s) */
-                        if (window.LMNotifications) window.LMNotifications.refresh();
-                        break;
+                    /* notificationCentre: the save below announces it (settingsChange) and the
+                     * notification centre shows or removes its bell then; no second call here */
                     case 'chatSounds':
                         this.setChatSoundsBtn();
                         break;

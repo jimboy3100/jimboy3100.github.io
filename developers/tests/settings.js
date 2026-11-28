@@ -373,6 +373,14 @@ check('setSettings on and off: two events, the new value each time', J(events) =
   S.optimizedMass = om; S.mergeRings = mr;
 }
 
+/* the Notification centre switch: one way to the module, the settingsChange of the save */
+{
+  let n = 0; ctx.LMNotifications = { refresh() { n++; } };
+  const was = S.notificationCentre; app2.saveSettings(S, 'ogarioSettings'); events.length = 0;
+  app2.setSettings('notificationCentre', !was);
+  check('Notification centre switch: one settingsChange (the module refreshes on it), no second direct refresh', n === 0 && J(events) === J([['settingsChange', 'notificationCentre', !was]]));
+  app2.setSettings('notificationCentre', was); delete ctx.LMNotifications;
+}
 // ── S08b / S15a the real preset row: one save per preset and per Undo; an import's copy is the one Undo uses
 {
   const mk = (html) => {

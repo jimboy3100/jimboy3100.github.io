@@ -797,8 +797,10 @@
 
     /* While the option is on (or the bell is still shown) a 2 s look: a toastr made again is
      * wrapped and the bell finds a free spot again (the HUD moves when the menu closes or a panel
-     * opens). Off: no timer; the switch (setSettings) and a settingsChange from a profile, preset
-     * or import call refresh. */
+     * opens). Off: no timer. The one way in is settingsChange: the save of every change (the
+     * switch, a preset, an import, a script) announces it, and refresh is idempotent (one timer at
+     * most). The look stays a timer: no single event covers every HUD move (menu, panels, chat,
+     * the HUD editor, the phone buttons). */
     var pollTimer = null;
     function refresh() {
         if (root.toastr && !root.toastr._lmNotifWrapped) wrapToastr(root.toastr);
