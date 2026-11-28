@@ -20974,6 +20974,7 @@ var defaultmapsettings = {
     showMiniMapGuides: true,
     showExtraMiniMapGuides: true,
     showMiniMapGhostCells: true,
+    showMiniMapTrail: false,      /* last ~60 s of the own path on the minimap */
     oneColoredTeammates: false,
     //optimizedFood: true,
     rainbowFood: true,
@@ -25183,6 +25184,10 @@ function thelegendmodproject() {
                     case 'showMiniMapGrid':
                         if (!_lmSame) this.resetMiniMapSectors();
                         break;
+                    /* Issue #19: clear trail data when the minimap trail is turned off */
+                    case 'showMiniMapTrail':
+                        if (!checked && this._lmTrail) this._lmTrail.length = 0;
+                        break;
                     case 'disableChat':
                         this.setDisableChat();
                         break;
@@ -26543,7 +26548,7 @@ function thelegendmodproject() {
             this.addSliderBox(".soundsGroup", "volGameplay", 0, 1, 0.01);
             /* no "Rotate Map" switch: it only started the old map orientation server (SLGconnect), long
              * gone; teammates' map orientation is matched without it */
-            this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "oneColoredTeammates"], "miniMapGroup");
+            this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
             this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "bubbleCursorTracker", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells"], "helpersGroup"); //Sonia2
@@ -26622,7 +26627,7 @@ function thelegendmodproject() {
             (function (app) {
                 var DEPS = {
                     showStats: ['showStatsMass', 'showStatsWorldSize', 'showStatsDecayInfo', 'showStatsServerHz', 'showStatsESTE', 'showStatsEMTE', 'showStatsMTE', 'showStatsSTE', 'showStatsTTE', 'showStatsPTE', 'showStatsN16', 'showStatsFPS', 'showStatsPPS', 'showStatsAlive'],
-                    showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells'],
+                    showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
                     /* not Mass format: it also sets the team list, leaderboard and target
                      * mass texts (shortMassFormat), which show with the cell mass off too */
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass'],
@@ -30262,6 +30267,36 @@ function thelegendmodproject() {
                         }
                     }
                     //				
+                    /* optional own trail: a point every 500 ms, last 120 (~60 s); cleared when not
+                     * playing, on a map size change and on a jump (respawn, multibox swap) */
+                    if (defaultmapsettings.showMiniMapTrail) {
+                        var _lmTr = this._lmTrail || (this._lmTrail = []);
+                        if (!ogario.play || this._lmTrailMap !== LM.mapSize) {
+                            _lmTr.length = 0;
+                            this._lmTrailMap = LM.mapSize;
+                        } else {
+                            var _lmTrNow = Date.now();
+                            if (_lmTrNow - (this._lmTrailT || 0) >= 500) {
+                                this._lmTrailT = _lmTrNow;
+                                var _lmTrLast = _lmTr[_lmTr.length - 1];
+                                if (_lmTrLast && Math.abs(_lmTrLast.x - ogario.playerX) + Math.abs(_lmTrLast.y - ogario.playerY) > (LM.mapSize || 14000) / 4) _lmTr.length = 0;
+                                _lmTr.push({ x: ogario.playerX, y: ogario.playerY });
+                                if (_lmTr.length > 120) _lmTr.shift();
+                            }
+                            if (_lmTr.length > 1) {
+                                this.miniMapCtx.save();
+                                this.miniMapCtx.globalAlpha = 0.45;
+                                this.miniMapCtx.lineWidth = 1.5;
+                                this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellColor;
+                                this.miniMapCtx.beginPath();
+                                this.miniMapCtx.moveTo((_lmTr[0].x + r) * n, (_lmTr[0].y + l) * n);
+                                for (var _lmTi2 = 1; _lmTi2 < _lmTr.length; _lmTi2++) this.miniMapCtx.lineTo((_lmTr[_lmTi2].x + r) * n, (_lmTr[_lmTi2].y + l) * n);
+                                this.miniMapCtx.lineTo((ogario.playerX + r) * n, (ogario.playerY + l) * n);
+                                this.miniMapCtx.stroke();
+                                this.miniMapCtx.restore();
+                            }
+                        }
+                    }
                     if (this.miniMapCtx.beginPath(),
                         this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
                             defaultSettings.miniMapMyCellSize, 0, this.pi2, false),

@@ -220,6 +220,7 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one).
 - **Guides**: Lines showing cardinal directions and cell position
 - **Extra guides**: Additional positional reference lines
 - **Ghost cells**: Show death locations on the minimap
+- **Trail**: Last ~60 seconds of your movement path traced on the minimap
 - **Click-to-spectate**: Click on the minimap to move the spectator camera (Expanding Land World Spectate)
 - **Private minimap**: Hotkey to hide minimap from view
 - **One-coloured teammates**: All teammates shown in same colour on minimap
@@ -308,7 +309,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Skins**: Custom skins, video skins, collections, transparency, vanilla skins, skin checker, skin rotator
 - **Food**: Rainbow food, auto-hide food, food opacity
 - **Performance and Network**: WebGL, High DPI, FPS cap, performance mode (with its automatic choice), anti-aliasing
-- **Minimap**: Show/rotate, grid, guides, ghost cells, one-coloured teammates
+- **Minimap**: Show/rotate, grid, guides, ghost cells, trail, one-coloured teammates
 - **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, stats display, indicators, online status, sticky cell
 - **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, coloured nicks, hide country, AgarTool team
 - **Sounds**: Volume per sound and master volume, sound switches and files

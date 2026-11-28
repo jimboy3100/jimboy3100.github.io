@@ -1943,6 +1943,24 @@
     "ja": "ゴーストセルを表示",
     "it": "Mostra cellule fantasma"
   },
+  "settings.showMiniMapTrail": {
+    "en": "Show own trail on the minimap",
+    "el": "Εμφάνιση της πορείας μου στο minimap",
+    "es": "Mostrar mi rastro en el minimapa",
+    "bg": "Покажи моята следа на миникартата",
+    "fr": "Afficher ma trace sur la mini-carte",
+    "ar": "إظهار مساري على الخريطة المصغرة",
+    "zh": "在小地圖顯示自己的軌跡",
+    "ru": "Показывать свой след на миникарте",
+    "de": "Eigene Spur auf der Minimap anzeigen",
+    "tr": "Kendi izimi mini haritada göster",
+    "pl": "Pokaż własny ślad na minimapie",
+    "nl": "Eigen spoor op de minimap tonen",
+    "pt": "Mostrar meu rastro no minimapa",
+    "id": "Tampilkan jejak saya di minimap",
+    "ja": "ミニマップに自分の軌跡を表示",
+    "it": "Mostra la mia scia sulla minimappa"
+  },
   "settings.oneColoredTeammates": {
     "en": "One-colored teammates",
     "el": "Μονόχρωμοι συμπαίκτες",

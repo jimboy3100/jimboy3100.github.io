@@ -50,9 +50,9 @@ check('fpsLimit -1 -> 0 (off), 0 stays 0', V('fpsLimit', -1) === 0 && V('fpsLimi
  * automatic Performance mode's own target / message / resolution options, the size symbols in Relative mass) */
 const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'killFeed', 'a11yIndicators', 'hideEventBanner',
   /* options that tuned a detail or were gimmicks: the camera on the centre of mass, the rainbow border speed (fixed at
-   * the original 5), the chat #id and word filter, the 16 pieces sounds, the minimap trail, the triple split range,
+   * the original 5), the chat #id and word filter, the 16 pieces sounds, the triple split range,
    * the Split prediction switch (always part of the cursor line), and the collapsed leaderboard bots */
-  'centerWeightCamera', 'rainbowBorderSpeed', 'chatShowId', 'chatHideWords', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'tripleSplitRange',
+  'centerWeightCamera', 'rainbowBorderSpeed', 'chatShowId', 'chatHideWords', 'x16Sound', 'non16Sound', 'tripleSplitRange',
   'splitPrediction', 'lbHideBots',
   /* the menu text size (Settings > Accessibility; the browser zoom does it) */
   'a11yTextScale'];
