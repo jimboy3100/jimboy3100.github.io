@@ -51,6 +51,7 @@
         { "path": "banners/Lcclan33.*", "why": "Legend Clan page picture (same bytes as Lc/articles/images/indonesia-inggris.jpg); linked from outside" },
         { "path": "banners/iconLc5.jpg", "why": "Legend Clan page picture (Lc/Lc.html 2018 to 2026-02-25, by its raw.githubusercontent.com address)" },
         { "path": "banners/elegant-divider.png", "why": "Legend Clan page divider (Lc/Lc.html 2018 to 2026-02-25, by its raw.githubusercontent.com address)" },
+        { "path": "banners/IconCustomServer1.png", "why": "default of the customServerImage1 theme setting in 2020 (ogario.v4.js and its copies): saved settings and exported themes may hold the address" },
         { "path": "banners/pic6.png", "why": "the picture of this repository's README.md from 2017 to 2026-11-24; the README of every fork still shows it" },
         { "path": "banners/smallbannerlegendclan.png", "why": "picture of the 2017 userscripts (legendmod.user.js, goodoldlegendmod.user.js, potato.user.js, MultiplayerScript.user.js), still installed by raw.githubusercontent.com address" },
         { "path": "banners/iconexpanding-land.png", "why": "old Expanding Land app icon: in the Expanding Land APK and in the git history of expandingland's manifest.json and of help.expanding.land's og:image" },
