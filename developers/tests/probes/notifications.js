@@ -1,5 +1,5 @@
 // Notification centre: toasts are recorded, the bell covers no other visible element (menu
-// closed, as in game), the panel fits the screen and closes; the sound volumes are at their defaults.
+// closed, as in game), the panel fits the screen and closes; the mixer is at its defaults.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -7,16 +7,17 @@
   if (!N) return { fail: ['LMNotifications missing (ogario/modules/notifications.js not loaded)'] };
   if (!s || s.notificationCentre !== false) fail.push('notificationCentre should be off by default');
   if (document.getElementById('lm-notif-bell')) fail.push('bell shown while the option is off');
-  /* the sound volumes are Settings > Sounds (ogario.v4.js), at 1 by default; no ducking, no notification volume */
-  ['volMaster', 'volChat', 'volCommands', 'volGameplay'].forEach(function (k) {
-    if (!document.getElementById(k + '-slider')) fail.push('slider ' + k + ' missing');
-    else if (s[k] !== 1) fail.push(k + ' not 1 by default');
+  ['chat', 'commands', 'gameplay', 'video', 'notifications'].forEach(function (c) {
+    if (N.channelVolume(c) !== 1) fail.push('channel ' + c + ' not 1 by default');
   });
-  ['volNotifications-slider', 'audioDucking', 'virusPopSound', 'virusEatSound'].forEach(function (id) { if (document.getElementById(id)) fail.push(id + ' is back'); });
-  if (N.soundVolume || N.videoVolume || N.play) fail.push('the old mixer API is back in LMNotifications');
+  if (N.videoVolume(0.42) !== 0.42) fail.push('video volume changed by default');
+  ['volMaster', 'volChat', 'volCommands', 'volGameplay', 'volNotifications'].forEach(function (k) {
+    if (!document.getElementById(k + '-slider')) fail.push('slider ' + k + ' missing');
+  });
   /* one video skin volume: the level slider in Skins; the second one (volVideo) in Sounds is gone */
   if (document.getElementById('volVideo-slider') || 'volVideo' in s) fail.push('the removed video volume (volVideo) is back');
   if (!$('#videoSkinSoundLevel-slider').closest('.options-box.skinsGroup').length) fail.push('video skin sound level slider not in Skins');
+  if (!document.getElementById('audioDucking')) fail.push('audioDucking switch missing');
   if (!document.getElementById('notificationCentre')) fail.push('notificationCentre switch missing');
   if (!hotkeysCommand['hk-notifCentre'] || hotkeysCommand['hk-notifCentre'].defaultKey !== '') fail.push('hk-notifCentre missing or has a default key');
 

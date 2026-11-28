@@ -132,19 +132,40 @@ ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, save
 app.loadSettings();
 check('reverseTrick is no setting: refused, and a saved "on" is skipped on load', !('reverseTrick' in D) && V('reverseTrick', true) === undefined && !('reverseTrick' in S));
 // ── the virus pop / eat sounds are the virus sound; the notification volume, ducking and the pass toast are gone
-check('removed sound / toast settings are no settings any more', ['virusPopSound', 'virusEatSound', 'volNotifications', 'audioDucking', 'lbPassToast'].every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined));
+check('removed sound / toast settings are no settings any more', ['virusPopSound', 'virusEatSound', 'lbPassToast'].every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined));
 const lfold = (o) => { ctx._f = o; vm.runInContext('lmFoldLegacySettings(_f)', ctx); return ctx._f; };
 check('fold: pop or eat sound on turns the virus sound on', lfold({ virusSound: false, virusPopSound: true }).virusSound === true && lfold({ virusEatSound: true }).virusSound === true);
 check('fold: both off keep the virus sound as it was, the old keys go', J(lfold({ virusSound: false, virusPopSound: false, virusEatSound: false })) === J({ virusSound: false }) && J(lfold({ virusSound: true, virusPopSound: false })) === J({ virusSound: true }));
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { virusSound: false, virusPopSound: true, audioDucking: true, volNotifications: 0.2, lbPassToast: true })));
 app.loadSettings();
 const reSaved2 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
-check('load: an old save with the pop sound on has the virus sound on, the old keys are not loaded', S.virusSound === true && !('virusPopSound' in reSaved2) && !('virusPopSound' in S) && !('audioDucking' in S) && !('volNotifications' in S) && !('lbPassToast' in S));
+check('load: an old save with the pop sound on has the virus sound on, the old keys are not loaded', S.virusSound === true && !('virusPopSound' in reSaved2) && !('virusPopSound' in S) && !('lbPassToast' in S));
+check('sound mixer: the notification sounds volume (1) and audio ducking (off) are settings again, a saved value is read', D.volNotifications === 1 && D.audioDucking === false && J(SCH.volNotifications) === J([0, 1, 0.01]) && S.audioDucking === true && S.volNotifications === 0.2);
 vm.runInContext(cut('/* Settings > Sounds: a volume setting is a number', 'function checkIfPlayerIsInView'), ctx);
 S.volMaster = 0.5; S.volChat = 0.4; S.volGameplay = 1;
 check('sound volume: own volume x master; other sounds the master only; video level x master', Math.abs(ctx.lmSoundVolume('volChat') - 0.2) < 1e-12 && ctx.lmSoundVolume('volGameplay') === 0.5 && ctx.lmSoundVolume('') === 0.5 && Math.abs(ctx._lmVideoVol(0.8) - 0.4) < 1e-12);
 S.volMaster = 'x'; S.volChat = 7;
 check('sound volume: a bad value counts as 1, kept inside 0..1', ctx.lmSoundVolume('volChat') === 1 && ctx._lmVideoVol(3) === 1 && ctx._lmVideoVol(NaN) === 0);
+{
+  /* the real playSound: through the mixer module when it is loaded (its channel, then ducking), else the
+   * channel's volume x master; scripts' sounds are the notifications channel */
+  const psAt = main.search(/\n {8}playSound\(audio\) \{\r?\n/) + 1, psEnd = main.indexOf('        /* ─── §4.20 Targeting', psAt);
+  const P = vm.runInContext('({\n' + main.slice(psAt, psEnd) + '\n})', ctx);
+  const au = () => ({ volume: 1, currentTime: 5, pause() { }, play() { this.played = true; return Promise.resolve(); } });
+  P.messageSound = au(); P.commandSound = au(); P.virusSoundurl = au(); P._lmOptSoundCache = { x16: au() };
+  const chans = [P.messageSound, P.commandSound, P.virusSoundurl, P._lmOptSoundCache.x16, au()].map(x => P._lmSoundChannel(x));
+  S.volMaster = 1; S.volChat = 0.5; S.volNotifications = 0.25;
+  ctx.LMNotifications = undefined;
+  const a1 = au(), a2 = P.messageSound;
+  P.playSound(a1); P.playSound(a2);
+  const noMod = a1.volume === 0.25 && a2.volume === 0.5 && a1.played && a1.currentTime === 0;
+  const asked = [], ducked = [];
+  ctx.LMNotifications = { soundVolume(c) { asked.push(c); return 0.7; }, duckPlayback(a, c, pr) { ducked.push([c, !!(pr && pr.then)]); }, videoVolume(v) { return v / 2; } };
+  const a3 = P.commandSound; P.playSound(a3);
+  const withMod = a3.volume === 0.7 && J(asked) === J(['commands']) && J(ducked) === J([['commands', true]]) && ctx._lmVideoVol(0.8) === 0.4;
+  ctx.LMNotifications = undefined; S.volChat = 1; S.volNotifications = 1;
+  check('sound mixer: channels chat / commands / gameplay / notifications; without the module the channel volume x master, with it the mixer and ducking', J(chans) === J(['chat', 'commands', 'gameplay', 'gameplay', 'notifications']) && noMod && withMod);
+}
 /* the clock format option is gone: a saved format is skipped and the clock shows the browser's
  * date and time (its format before the option existed) */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { timeFormat: 2 })));

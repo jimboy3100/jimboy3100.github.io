@@ -207,8 +207,9 @@ Settings > Sounds: each sound's switch, file and volume, all multiplied by the m
 | Commands | volCommands | Chat command sounds |
 | Gameplay | volGameplay | Virus sound, 16 pieces sounds, merge sound |
 | Video skins | videoSkinSoundLevel (Settings > Skins) | Video skin audio |
+| Notifications | volNotifications | Any other sound (scripts) |
 
-Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one), x16Sound, non16Sound.
+Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one), x16Sound, non16Sound, audioDucking (off by default: a chat, command or other alert sound lowers the video skins for a moment, 0.3 volume, at most 10 s).
 
 ### 11. Minimap Features
 - **Rotating minimap**: Rotates to match camera orientation

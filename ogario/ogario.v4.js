@@ -8527,8 +8527,12 @@ function lmSoundVolume(key) {
     var s = window.defaultmapsettings || {};
     return _lmVol01(key ? s[key] : 1) * _lmVol01(s.volMaster);
 }
-/* video skin volume: their own "Video skin sound level" (Settings > Skins) times the master volume */
+/* video skin volume: their own "Video skin sound level" (Settings > Skins) times the master volume,
+ * through the sound mixer (ogario/modules/notifications.js) when it is loaded: lowered for a moment
+ * by a chat sound when "audioDucking" is on (off by default) */
 function _lmVideoVol(v) {
+    var m = window.LMNotifications;
+    if (m && typeof m.videoVolume === 'function') return m.videoVolume(v);
     var b = Number(v);
     if (!Number.isFinite(b)) b = 0;
     var r = b * _lmVol01((window.defaultmapsettings || {}).volMaster);
@@ -21497,6 +21501,8 @@ var defaultmapsettings = {
     volChat: 1,                   /* chat message sound */
     volCommands: 1,               /* command sound */
     volGameplay: 1,               /* virus shot, 16 pieces, virus pop / eat, merge ready */
+    volNotifications: 1,          /* any other sound (scripts: application.playSound, LMNotifications.play) */
+    audioDucking: false,          /* chat / alert sound lowers the video skins for a moment */
     //
     leftClick: 'hk-macroFeed',
     rightClick: 'hk-split',
@@ -21550,6 +21556,7 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     volChat: [0, 1, 0.01],
     volCommands: [0, 1, 0.01],
     volGameplay: [0, 1, 0.01],
+    volNotifications: [0, 1, 0.01],
     a11yTextScale: [1, 1.6, 0.05],
     a11yHudTextScale: [1, 1.6, 0.05]
 });
@@ -26929,14 +26936,16 @@ function thelegendmodproject() {
             this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry", "agarToolTeam", "mentionNotify", "chatShowId"], "chatGroup");
             //this.addOptions(["disableChat", "chatSounds", "chatEmoticons", "showChatImages", "showChatVideos", "showChatBox", "showChat", "showChatMyOwn", "showChatTranslation", "coloredNicks", "hidecountry"], "chatGroup"); // OLD: without universalChat
             /* Sounds: each sound's switch, file and volume, and the master volume, applied where each
-             * sound plays (playSound, lmSoundVolume; the video skin volume timer); all 1 = unchanged.
+             * sound plays (playSound through the mixer of ogario/modules/notifications.js, lmSoundVolume
+             * without it; the video skin volume timer); all 1 = unchanged, audio ducking off by default.
              * The virus sound is one switch: a virus shot, and an own cell popping or eating one
              * (the separate virusPopSound / virusEatSound switches became it, lmFoldLegacySettings). */
-            this.addOptions(["virusSound", "x16Sound", "non16Sound"], "soundsGroup");
+            this.addOptions(["virusSound", "x16Sound", "non16Sound", "audioDucking"], "soundsGroup");
             this.addSliderBox(".soundsGroup", "volMaster", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volChat", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volCommands", 0, 1, 0.01);
             this.addSliderBox(".soundsGroup", "volGameplay", 0, 1, 0.01);
+            this.addSliderBox(".soundsGroup", "volNotifications", 0, 1, 0.01);
             /* no "Rotate Map" switch: it only started the old map orientation server (SLGconnect), long
              * gone; teammates' map orientation is matched without it */
             this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
@@ -34468,26 +34477,36 @@ function thelegendmodproject() {
             if (audio && audio.play && !window._lmReplayQuiet) {
                 audio.pause();
                 audio.currentTime = 0;
-                /* Settings > Sounds: the sound's own volume x the master volume, all 1 by default */
+                /* sound mixer (ogario/modules/notifications.js): channel x master volume, all 1 by
+                 * default; a chat sound that plays may also lower the video skins (option audioDucking,
+                 * off by default). Without the module: the channel's volume x master (lmSoundVolume). */
+                var _lmMix = window.LMNotifications, _lmCh = this._lmSoundChannel(audio);
                 try {
-                    var _lmVol = lmSoundVolume(this._lmSoundChannel(audio));
+                    var _lmVol = _lmMix && _lmMix.soundVolume ? _lmMix.soundVolume(_lmCh) : lmSoundVolume(this._lmSoundVolKeys[_lmCh] || '');
                     if (audio.volume !== _lmVol) audio.volume = _lmVol;
                 } catch (eVol) { }
                 //audio.play();
                 var nopromise = {
                     catch: new Function()
                 };
-                (audio.play() || nopromise).catch(function () { });
+                var _lmPr = audio.play();
+                (_lmPr || nopromise).catch(function () { });
+                /* ducking of the video skins: only once the sound really plays and can be heard */
+                if (_lmMix && _lmMix.duckPlayback) {
+                    try { _lmMix.duckPlayback(audio, _lmCh, _lmPr); } catch (eDk) { }
+                }
             }
         },
-        /* the volume setting of one of the mod's sounds; any other sound (scripts) has the master volume only */
+        /* the volume setting of each mixer channel (Settings > Sounds) */
+        _lmSoundVolKeys: { chat: 'volChat', commands: 'volCommands', gameplay: 'volGameplay', notifications: 'volNotifications' },
+        /* mixer channel of one of the mod's sounds; any other sound (scripts) counts as a notification */
         _lmSoundChannel(audio) {
-            if (audio === this.messageSound) return 'volChat';
-            if (audio === this.commandSound) return 'volCommands';
-            if (audio === this.virusSoundurl) return 'volGameplay';
+            if (audio === this.messageSound) return 'chat';
+            if (audio === this.commandSound) return 'commands';
+            if (audio === this.virusSoundurl) return 'gameplay';
             var c = this._lmOptSoundCache;
-            if (c) for (var k in c) if (c.hasOwnProperty(k) && c[k] === audio) return 'volGameplay';
-            return '';
+            if (c) for (var k in c) if (c.hasOwnProperty(k) && c[k] === audio) return 'gameplay';
+            return 'notifications';
         },
         /* ─── §4.20 Targeting & Spectator ─── */
         setFBIDs() {
