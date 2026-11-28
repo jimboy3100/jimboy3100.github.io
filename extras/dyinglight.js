@@ -18,10 +18,12 @@
     if (W.LMDyingLight && W.LMDyingLight._lm === 1) return;
 
     var IMG = 'https://www.legendmod.ml/banners/';
-    /* the same picture as defaultSettings.commanderImageDyingLight: one fallback for every
-     * eligible body until a stable identity across Full Map / multibox copies is shared */
-    var SKIN_KEY = IMG + 'icondyinglightzombie.png';
-    var SCENE_URL = IMG + 'dyinglightback0.jpg';
+    /* the optimized copies (banners/dyinglight/manifest.json): the zombie of
+     * defaultSettings.commanderImageDyingLight at the 512 px of the WebGL skin layers, one
+     * fallback for every eligible body until a stable identity across Full Map / multibox copies
+     * is shared; the first scene of the old background chain */
+    var SKIN_KEY = IMG + 'dyinglight/skins/zombie-512.webp';
+    var SCENE_URL = IMG + 'dyinglight/backgrounds/back0-1920.webp';
     var MINIMAP_URL = IMG + 'dyinglightbabyteamboard.png';
     /* a picture that does not come is skipped, it never holds the theme back */
     var ASSET_WAIT_MS = 8000;
