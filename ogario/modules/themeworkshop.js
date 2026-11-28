@@ -641,6 +641,8 @@
         clearInterval(p.timer);
         var bar = D.getElementById('lm-tw-pv');
         if (bar) bar.parentNode.removeChild(bar);
+        /* the bar's resize listener; the window keeps its own while it is open */
+        if (!frame()) W.removeEventListener('resize', onResize);
         var St = W.Settings;
         if (keep) {
             var ok = true;

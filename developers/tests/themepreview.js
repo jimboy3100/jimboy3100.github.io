@@ -198,5 +198,19 @@ function boot() {
   check('slow apply: reverted by itself after its time', !b.TW.previewing() && d.bgColor === base);
 }
 
+/* 5. a preview started without the window (a script, Discover): its bar's resize listener goes with it */
+{
+  const b = boot(), on = new Set();
+  b.ctx.addEventListener = (t, f) => { if (t === 'resize') on.add(f); };
+  b.ctx.removeEventListener = (t, f) => { if (t === 'resize') on.delete(f); };
+  b.TW.preview({ theme: { bgColor: '#010203' } }, 'probe');
+  const during = on.size;
+  b.advance(b.clock.now + 16000);
+  check('preview without the window: resize listened to while the bar shows, removed when it ends', during === 1 && !b.TW.previewing() && on.size === 0);
+  b.TW.preview({ theme: { bgColor: '#010203' } }, 'probe');
+  b.TW.settle();
+  check('ended by settle: no resize listener left', on.size === 0);
+}
+
 console.log(fail ? fail + ' failed' : 'all theme preview checks passed');
 process.exit(fail ? 1 : 0);
