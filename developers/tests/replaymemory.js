@@ -22,7 +22,9 @@ ctx.window = ctx;
 vm.createContext(ctx);
 const overhead = /\nvar LM_REC_PKT_OVERHEAD = \d+;/.exec(src);
 if (!overhead) throw Error('LM_REC_PKT_OVERHEAD not found');
-vm.runInContext([overhead[0], fn('lmRecRoom'), fn('lmRecByteBudget'), fn('lmRecPacketBytes'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'), fn('_lmTokenBoxValue'),
+const tokVars = /\nvar _lmTokGen = 0, _lmRecTokMemo = [^\n]*;/.exec(src);
+if (!tokVars) throw Error('_lmTokGen not found');
+vm.runInContext([overhead[0], tokVars[0], fn('_lmTokChanged'), fn('_lmRecTokenOk'), fn('lmRecRoom'), fn('lmRecByteBudget'), fn('lmRecPacketBytes'), fn('lmRecArrBytes'), fn('lmRecBudgetPlan'), fn('_lmTokenBoxValue'),
     block('window._lmRecM = function') + ';', block('window._lmRecEv = function') + ';', block('window._lmRecBudgetCheck = function') + ';',
     block('window._lmRecKeepLatest = function') + ';'].join('\n'), ctx);
 /* the packet recording branch, run as a function of one packet */
@@ -189,6 +191,59 @@ C.isMobile = true;
 start('dev');
 C.recordPacket(pkt(10));
 check('device budget: phone with 4 GB gets 160 MiB', C._lmRecBudget === 160 * MiB);
+
+/* ---- the recording's size is kept up while it grows (no walk of the last game at the next one) ---- */
+session(4096 * MiB);
+start('sized');
+for (let i = 0; i < 500; i++) C.recordPacket(i % 7 ? pkt(100 + i) : new DataView(new ArrayBuffer(4000), 8, 16));
+const sized = C.RecordedProtocol.sized, want = Array.from(sized).reduce((t, d) => t + C.lmRecPacketBytes(d) + O, 0);
+check('size: counted while recording, equal to a full count', sized._lmBytesN === sized.length && sized._lmBytes === want);
+let walked = 0;
+const realBytes = C.lmRecPacketBytes;
+C.lmRecPacketBytes = (d) => (walked++, realBytes(d));
+start('after');
+C.recordPacket(pkt(10)); /* first packet: budget check over the previous game */
+C.lmRecPacketBytes = realBytes;
+check('size: the next game\'s budget check does not walk the previous recording', walked === 1 && C.lmRecArrBytes(sized) === want);
+
+/* ---- the server-token answer is kept until the box can change ---- */
+{
+    const store = new WeakMap();
+    class Box { get value() { return store.get(this) || ''; } set value(v) { store.set(this, String(v)); } }
+    const el = new Box();
+    el.isConnected = true;
+    el.value = 'wss://live-arena-x.agar.io';
+    let lookups = 0;
+    C.document = { getElementById: (id) => (lookups++, id === 'server-token' ? el : null), activeElement: null };
+    C.$ = () => ({ val: () => el.value });
+    session(4096 * MiB);
+    C.$ = () => ({ val: () => el.value });
+    start('tok');
+    lookups = 0;
+    for (let i = 0; i < 50; i++) C.recordPacket(pkt(10));
+    check('token: the box is read once for 50 packets', lookups === 2 && C.catholicCalculator === 50);
+    el.value = 'replay^abc';
+    C.recordPacket(pkt(10));
+    check('token: a write to the box is seen at the next packet', C.catholicCalculator === 50);
+    el.value = 'wss://imsolo.pro:2109/x';
+    C.recordPacket(pkt(10));
+    check('token: imsolo replay address not recorded', C.catholicCalculator === 50);
+    el.value = 'wss://live-arena-y.agar.io';
+    C.recordPacket(pkt(10));
+    check('token: a live address records again', C.catholicCalculator === 51);
+    /* the player typed (input listener) with the box focused: the server written last counts */
+    el._lmTyped = true; el._lmWrote = 'replay^typed'; C._lmTokChanged();
+    C.recordPacket(pkt(10));
+    check('token: typing state change is seen (focus / input bump the generation)', C.catholicCalculator === 51);
+    el._lmTyped = false; C._lmTokChanged();
+    C.recordPacket(pkt(10));
+    check('token: back to the box value', C.catholicCalculator === 52);
+    lookups = 0;
+    el.isConnected = false;
+    C.recordPacket(pkt(10));
+    check('token: a box taken out of the page is read again', lookups === 2);
+    C.document = { getElementById: () => null, activeElement: null };
+}
 
 console.log(failed ? failed + ' FAILED' : 'all replay memory checks passed');
 process.exit(failed ? 1 : 0);

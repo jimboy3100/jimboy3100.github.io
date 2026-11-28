@@ -66,7 +66,8 @@ const handler = (() => {
     if (a < 0 || b < 0) { need.push('handleMessage'); return ''; }
     return src.slice(a, b).replace(/,\s*$/, '');
 })();
-const recHelpers = [get(src, '\nfunction lmRecRoom('), get(src, '\nfunction lmRecPacketBytes('), get(src, '\nfunction _lmTokenBoxValue(')];
+const recVars = ['\nvar LM_REC_PKT_OVERHEAD = ', '\nvar _lmTokGen = 0, '].map((a) => { const i = src.indexOf(a); if (i < 0) { need.push(a.trim()); return ''; } return src.slice(i, src.indexOf('\n', i + 1)); });
+const recHelpers = [...recVars, get(src, '\nfunction _lmTokChanged('), get(src, '\nfunction _lmRecTokenOk('), get(src, '\nfunction lmRecRoom('), get(src, '\nfunction lmRecPacketBytes('), get(src, '\nfunction _lmTokenBoxValue(')];
 const spectParts = ['    isSocketOpen() {', '    createView(value) {', '    sendBuffer(data) {', '    sendMessage(message) {', '    sendAction(action) {',
     '    sendPosition(x, y) {', '    shiftKey(key) {', '    shiftMessage(view, key, write) {', '    onopen() {'].map((m) => get(spectSrc, m));
 const standbySend = (() => { const i = standbySrc.indexOf('        this.send = function (data) {'); return i < 0 ? (need.push('standby send'), '') : block(standbySrc, 'function (data) {', i); })();

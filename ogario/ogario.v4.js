@@ -5816,10 +5816,11 @@ function changeregion() {
  * (focused, changed since it was last written); a join from it lets it be written again. */
 document.addEventListener('input', function (e) {
     var t = e.target;
-    if (t && t.matches && t.matches('#server-ws, #server-token, #party-token, .party-token')) t._lmTyped = true;
+    if (t && t.matches && t.matches('#server-ws, #server-token, #party-token, .party-token')) { t._lmTyped = true; _lmTokGen++; }
 }, true);
 function _lmTokenBoxDone(sel) {
     $(sel).each(function () { this._lmTyped = false; });
+    _lmTokGen++;
 }
 function _lmSetTokenBox(sel, value) {
     $(sel).each(function () {
@@ -5831,6 +5832,30 @@ function _lmSetTokenBox(sel, value) {
         this._lmHeld = null;
         $(this).val(value);
     });
+    _lmTokGen++;
+}
+/* Replay recording asks on every packet whether the server-token box names a recordable server.
+ * The answer is kept until the box can give another value (written by code or _lmSetTokenBox,
+ * typed in, focus moved, the box gone), instead of a DOM lookup and a jQuery object per packet. */
+var _lmTokGen = 0, _lmRecTokMemo = { gen: -1, el: null, ok: false };
+function _lmTokChanged() { _lmTokGen++; }
+document.addEventListener('focusin', _lmTokChanged, true);
+document.addEventListener('focusout', _lmTokChanged, true);
+function _lmRecTokenOk() {
+    var m = _lmRecTokMemo;
+    if (m.gen === _lmTokGen && m.el && m.el.isConnected) return m.ok;
+    var el = document.getElementById('server-token'), v = _lmTokenBoxValue('server-token');
+    /* code writes the box with .value / .val() too: such a write changes the answer */
+    if (el && !el._lmValWatch) {
+        var d = Object.getOwnPropertyDescriptor(Object.getPrototypeOf(el), 'value');
+        if (d && d.get && d.set) {
+            Object.defineProperty(el, 'value', { configurable: true, enumerable: d.enumerable, get: function () { return d.get.call(this); }, set: function (x) { d.set.call(this, x); _lmTokGen++; } });
+            el._lmValWatch = true;
+        }
+    }
+    m.gen = _lmTokGen;
+    m.el = el && el._lmValWatch ? el : null;
+    return (m.ok = !v.includes("replay") && !v.includes("imsolo.pro:2109/"));
 }
 /* The box's value, or the current server's while the box keeps the player's typing. */
 function _lmTokenBoxValue(id) {
@@ -44781,17 +44806,20 @@ function thelegendmodproject() {
             /* Removed: every packet was copied and posted to the worker, which only
              * handles 'CULL' messages and ignored NETWORK_PACKET (1-3 MB/s of garbage). */
             /* Cap one recording at ~1 hour of packets so long sessions cannot exhaust memory. */
-            /* One #server-token lookup per packet instead of two. */
-            var _recServerToken;
             /* every game is recorded; it stops at 100 MB (busy servers send big packets) and when
              * the memory budget is used up (lmRecRoom, _lmRecFull); the connected server, not text
              * still typed into the Join box, says what is recorded */
-            if (lmRecRoom(window.catholicCalculator, window._lmRecSlotBytes, window._lmRecFull) && !(_recServerToken = _lmTokenBoxValue('server-token')).includes("replay") && !_recServerToken.includes("imsolo.pro:2109/") && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
+            if (lmRecRoom(window.catholicCalculator, window._lmRecSlotBytes, window._lmRecFull) && _lmRecTokenOk() && window.RecordedProtocol[window.temporaryRecordedProtocol]) {
                 var _lmRecArr = window.RecordedProtocol[window.temporaryRecordedProtocol];
                 _lmRecArr[window.catholicCalculator] = data
                 /* its time for Replay Studio (accurate playback speed and seeking) */
                 if (_lmRecArr._lm) _lmRecArr._lm.t[window.catholicCalculator] = Date.now() - _lmRecArr._lm.t0;
-                window._lmRecSlotBytes = (window._lmRecSlotBytes || 0) + lmRecPacketBytes(data)
+                var _lmRecPb = lmRecPacketBytes(data);
+                window._lmRecSlotBytes = (window._lmRecSlotBytes || 0) + _lmRecPb
+                /* the recording's size (lmRecArrBytes) kept up as it grows: the budget check at the
+                 * next game's first packet walked this whole recording (up to 90000 packets) once */
+                if (window.catholicCalculator === 0) { _lmRecArr._lmBytes = 0; _lmRecArr._lmBytesN = 0; }
+                if (_lmRecArr._lmBytesN === window.catholicCalculator) { _lmRecArr._lmBytes += _lmRecPb + LM_REC_PKT_OVERHEAD; _lmRecArr._lmBytesN++; }
 
                 //window.RecordedProtocolArenas[legendmod.ws][]
                 //window.RecordedProtocolArenas[window.specificRecordedProtocol[legendmod.ws]] = window.RecordedProtocol[window.catholicCalculator] 
