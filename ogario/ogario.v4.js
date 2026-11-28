@@ -39456,6 +39456,16 @@ function thelegendmodproject() {
                                 context.drawImage(data, ~~(this.x - width / 2), textureY, width, height);
                             } catch (e) { }
                         }
+                        /* where it went, for canUseWebGLScene (_lmCellMerge) */
+                        var _mgLen = 1;
+                        for (var _mgV = customTxt; _mgV >= 10 && _mgLen < 12; _mgV = ~~(_mgV / 10)) _mgLen++;
+                        this._lmMgW = width;
+                        this._lmMgH = height;
+                        this._lmMgDy = textureY - this.y;
+                        this._lmMgLen = _mgLen;
+                        this._lmMgS = this.size;
+                        this._lmMgZ = drawRender.scale;
+                        this._lmMgF = drawRender._glSkinFrame;
                     }
 
                 }
@@ -41215,7 +41225,8 @@ function thelegendmodproject() {
                          * cells lmLabels gives a mass) and the chat bubble the Canvas2D branch
                          * draws after them go on the overlay canvas, at the same place
                          * (this.margin from the nick layout) and with the same alpha (textAlpha). */
-                        var _mergeOn = !!(window.ExternalScripts && window.legendmod5.mergeTimer);
+                        /* (the GL text pass drew the timer: _lmGlMerge) */
+                        var _mergeOn = !!(window.ExternalScripts && window.legendmod5.mergeTimer) && !drawRender._lmGlMerged(this);
                         /* the GL text pass drew the bubble (_lmGlMarks) */
                         if (_glMk) _chatCe = null;
                         var _lab = _mergeOn && !cellMoved ? this.lmLabels(y,
@@ -63112,10 +63123,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * (drawRings) after the whole cell pass, over every cell and its labels.
              * In a WebGL frame they go on the overlay canvas at that same point of
              * the frame (renderFrame prepares it for _lmRingFg); on the main canvas,
-             * below the GL cells, they were hidden. Frames that cannot have the
-             * overlay stay on Canvas2D (reason selRing, checked below).
+             * below the GL cells, they were hidden. In frames that cannot have the
+             * overlay the GL scene draws it last (_lmRingGl, drawWebGLSelectedRing);
+             * without the ring program they stay on Canvas2D (reason selRing, below).
              */
             this._lmRingFg = false;
+            this._lmRingGl = false;
             var _glRing = !!(
                 (
                     LM.selected != null &&
@@ -63335,13 +63348,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
              */
             var _glMbShadow =
                 lmMbShadowOn();
-            /* No ring program (failed to build): Canvas2D draws the rings. */
-            if (
+            /* No ring program (failed to build): Canvas2D draws the rings, so only a frame
+             * with a ringed cell in the GL view stays on Canvas2D (checked per cell below):
+             * the ring is on the controlled unit only, not on every multibox frame. */
+            var _glNoMbRing =
                 !this.glMbRingProgram &&
-                LM.multiBoxPlayerExists
-            ) {
-                return this._lmNoGL(this.GLW.MB_RING_PROG);
-            }
+                !!LM.multiBoxPlayerExists;
 
 
             /* Chat bubbles (GL text pass or overlay): checked only for the visible cells
@@ -63351,7 +63363,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     ? this._chatLookup : null;
 
 
-            if (
+            /* The seconds merge timer (ogario/mergetimer.js) of own cells: drawn by the GL
+             * text pass at the cell's depth right after its nick and mass, as Canvas2D orders
+             * it (_lmGlMerge), so later cells and their labels cover it there; checked per
+             * cell below (_lmCellMerge), not a Canvas2D frame whenever the timer is on. */
+            var _glMerge = !!(
                 window
                     .ExternalScripts &&
                 window
@@ -63359,9 +63375,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 window
                     .legendmod5
                     .mergeTimer
-            ) {
-                return this._lmNoGL(this.GLW.MERGE);
-            }
+            );
 
 
             /*
@@ -63458,6 +63472,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             return false;
                         }
                     }
+                    /* its labels went on the overlay: its merge timer with them */
+                    if (_glMerge && cell.isPlayerCell && !cell.isVirus && cell._lmFgLab === this._glSkinFrame) {
+                        _glFxN = this._lmCellMerge(cell, _glFxN);
+                        if (_glFxN < 0) {
+                            return false;
+                        }
+                    }
                     if (
                         !this
                             ._isCellInsideFrame(
@@ -63484,6 +63505,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         /* _lmCellFx set the reason */
                         return false;
                     }
+                }
+
+                if (_glMerge && !_glOut && cell.isPlayerCell && !cell.isVirus) {
+                    _glFxN = this._lmCellMerge(cell, _glFxN);
+                    if (_glFxN < 0) {
+                        /* _lmCellMerge set the reason */
+                        return false;
+                    }
+                }
+
+                /* (the GL ring pass skips cells whose ring goes on the overlay) */
+                if (_glNoMbRing && !_glOut && cell._lmFgLab !== this._glSkinFrame && lmMultiboxRing(cell, cell.size, this.scale)) {
+                    return this._lmNoGL(this.GLW.MB_RING_PROG);
                 }
 
 
@@ -63516,11 +63550,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
 
             /* the rings need the overlay too (the join entrance and the death cinematic
-             * keep it for themselves, renderFrame needs the main transform for it) */
+             * keep it for themselves, renderFrame needs the main transform for it). Then the
+             * GL scene strokes it last, over every GL cell and label (drawWebGLSelectedRing):
+             * no overlay mark can be above it then (CINEMATIC / NOT_READY below). */
             if (_glRing && ((LM._elWorldEntrance && LM._elWorldEntrance.active) ||
                 (typeof _elDeathVisual !== 'undefined' && _elDeathVisual && _elDeathVisual.active) ||
                 !this.overlayCanvas || !this.ctx || typeof this.ctx.getTransform !== 'function')) {
-                return this._lmNoGL(this.GLW.SEL_RING);
+                if (!this.glMbRingProgram || !this.glMbRingVAO) return this._lmNoGL(this.GLW.SEL_RING);
+                this._lmRingGl = true;
+                _glRing = false;
             }
             /* the join entrance and the death cinematic keep the overlay for themselves
              * (renderFrame does not prepare it then): marks need Canvas2D */
@@ -63555,7 +63593,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * (BATCH: allowed but drawWebGLCellBatch failed; NO_GL / LOST: no context) for the
          * tests and the benches. COVER_*: a later cell may cover that
          * overlay mark (COVER_LABELS: the ring / labels moved onto the overlay with a badge
-         * or effect). GLW_IDS[n] names reason n. */
+         * or effect). MERGE: a merge timer box is needed but its place is not known yet
+         * (_lmCellMerge); SEL_RING / MB_RING_PROG: no ring program (it failed to build).
+         * GLW_IDS[n] names reason n. */
         GLW: {
             WEBGL: 0, OFF: 1, RESET: 2, NOT_READY: 3, SEL_RING: 4, NO_CELLS: 5, CONTOURS: 6, TEAMS: 7,
             ALPHA: 8, REPLAY: 9, BODY_FX: 10, MB_SHADOW: 11, MB_RING_PROG: 12, MERGE: 13, COVERED: 14,
@@ -63635,6 +63675,32 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmFxFail(why) {
             this._lmGlWhy = why;
             return -1;
+        },
+        /* canUseWebGLScene: the seconds merge timer of an own cell (cell.drawMerge). The GL text
+         * pass draws it (_lmMgOk, _lmGlMerge); there it only must not reach an overlay mark of an
+         * earlier cell (above it there). With the cell's labels on the overlay (_lmLabelsOnFg) it
+         * goes there with them and gets a box, so later cells keep clear of it. The box is where
+         * drawMerge put it last (_lmMg*, from the Canvas2D nick layout), with room for one more
+         * digit; when that is unknown or older than 2 frames, or the cell or the zoom changed by
+         * more than 5% since (a split), a frame that needs the box stays on Canvas2D (MERGE). */
+        _lmCellMerge(cell, n) {
+            var onFg = cell._lmFgLab === this._glSkinFrame;
+            if (!onFg) cell._lmMgOk = this._glSkinFrame;
+            /* (a GL timer with no overlay mark before it needs no box) */
+            if (!onFg && !n) return n;
+            /* the rule of drawMerge */
+            var ids = window.playerCellsId, e = ids && ids[cell.id], pc = window.legendmod && window.legendmod.playerCells;
+            if (!(cell.size > 40) || !e || !(e.mergeTime > 1) || !pc || pc.length < 2) return n;
+            var s = this.scale || 1;
+            if (!(cell._lmMgF >= this._glSkinFrame - 2) || !(Math.abs(cell.size - cell._lmMgS) <= 0.05 * cell.size) ||
+                !(Math.abs(s - cell._lmMgZ) <= 0.05 * s)) return this._lmFxFail(this.GLW.MERGE);
+            var len = 1;
+            for (var v = Math.round(e.mergeTime); v >= 10 && len < 12; v = ~~(v / 10)) len++;
+            var hw = 0.5 * cell._lmMgW * Math.max(len, cell._lmMgLen) / cell._lmMgLen + 2;
+            var y0 = cell.y + cell._lmMgDy - 2, y1 = cell.y + cell._lmMgDy + cell._lmMgH + 2;
+            if (onFg) return this._lmFxPush(n, cell.x - hw, y0, cell.x + hw, y1, this.GLW.COVER_LABELS);
+            var hit = this._lmFxHit(n, cell.x - hw, y0, cell.x + hw, y1);
+            return hit ? this._lmFxFail(hit) : n;
         },
         /* The GLW reason of the first of the n mark boxes this world box reaches, else 0 */
         _lmFxHit(n, x0, y0, x1, y1) {
@@ -72489,6 +72555,54 @@ function pickPlayerCellBySize(players, selectBiggest) {
             gl.depthMask(true);
         },
 
+        /* The ring of drawRing (drawRings: the selected cell, 20 units wide inside its edge,
+         * white at 0.75) as one instance of the multibox ring program into data: centre, outer
+         * radius, inner radius / outer, colour, depth. The program fades an edge over the pixel
+         * inside it, Canvas2D antialiasing over the pixel across it: both radii are half a pixel
+         * (px: world units per canvas pixel) bigger, so the edges are where Canvas2D has them.
+         * 0 when drawRing strokes nothing there (no positive arc radius). */
+        buildWebGLSelectedRingData(cell, data, px) {
+            var size = cell ? cell.size : 0;
+            if (!(size > 10) || !Number.isFinite(size) || !Number.isFinite(cell.x) || !Number.isFinite(cell.y)) return 0;
+            var h = px > 0 && Number.isFinite(px) ? 0.5 * px : 0;
+            data[0] = cell.x;
+            data[1] = cell.y;
+            data[2] = size + h;
+            data[3] = size > 20 ? (size - 20 + h) / (size + h) : 0;
+            data[4] = 1;
+            data[5] = 1;
+            data[6] = 1;
+            data[7] = 0.75;
+            data[8] = 0;
+            return 1;
+        },
+        /* The selected-cell ring in a WebGL frame whose overlay is taken (join entrance, death
+         * cinematic: canUseWebGLScene _lmRingGl): drawn last in the GL scene, over every GL cell
+         * and label as drawRings draws it after the cell pass. True when drawn (or nothing to
+         * draw), so renderFrame does not draw it again (_lmRingGlDone). */
+        drawWebGLSelectedRing() {
+            var gl = this.gl, LM = window.legendmod;
+            if (!gl || !this.glMbRingProgram || !this.glMbRingVAO || !this.glMbRingData || !LM || !LM.indexedCells) return false;
+            var scale = this.scale || 1;
+            var dpr = this.glCanvas && this.canvasWidth > 0 ? this.glCanvas.width / this.canvasWidth : 1;
+            if (!this.buildWebGLSelectedRingData(LM.indexedCells[LM.selected], this.glMbRingData, 1 / (scale * dpr))) return true;
+            gl.disable(gl.DEPTH_TEST);
+            gl.depthMask(false);
+            gl.enable(gl.BLEND);
+            gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+            gl.useProgram(this.glMbRingProgram);
+            gl.uniform2f(this.u_mbRing_viewCenter, this.camX, this.camY);
+            gl.uniform2f(this.u_mbRing_viewScale, 2.0 * scale / this.canvasWidth, 2.0 * scale / this.canvasHeight);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.glMbRingInstanceVBO);
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.glMbRingData, 0, 9);
+            gl.bindVertexArray(this.glMbRingVAO);
+            gl.drawArraysInstanced(gl.TRIANGLE_STRIP, 0, 4, 1);
+            gl.bindVertexArray(null);
+            gl.bindBuffer(gl.ARRAY_BUFFER, null);
+            gl.depthMask(true);
+            return true;
+        },
+
         drawWebGLRingsBatch(
             players,
             scaleOffset,
@@ -74116,6 +74230,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     } catch (e) {
                         /* one cached text item failing must not invalidate already-correct body geometry */
                     }
+                    /* the merge timer after the nick and mass, before the bubble */
+                    if (cell._lmMgOk === this._glSkinFrame) this._lmGlMerge(cell);
                     if (mk) this._lmGlMarks(cell, 2);
                 }
                 this._lmTextFlush();
@@ -74457,20 +74573,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmGlMarks(cell, which) {
             cell._lmMkAt = this._glSkinFrame;
             var ms = defaultmapsettings, c = this._lmMarkCtx();
-            c.z = cell._webglZ || 0.5;
-            c.globalAlpha = this.ctx ? this.ctx.globalAlpha : 1;
-            c.dx = 0;
-            c.dy = 0;
-            /* Expanding Land map deformation: cell.draw is moved (jelly) or drawn at the moved
-             * centre (drawLegendWorldDeformedCanvasCell) */
-            var deform = typeof this.isLegendWorldMapDeformationVisible === 'function' && this.isLegendWorldMapDeformationVisible();
-            if (deform) {
-                var p = this.getLegendWorldMapRenderPoint(cell.x, cell.y, this._lmMkPt || (this._lmMkPt = { x: 0, y: 0 }));
-                if (Number.isFinite(p.x - cell.x) && Number.isFinite(p.y - cell.y)) {
-                    c.dx = p.x - cell.x;
-                    c.dy = p.y - cell.y;
-                }
-            }
+            var deform = this._lmMarkAt(cell, c);
             try {
                 if (which === 1) {
                     /* the rule and size of cell.draw (eat pulse included) */
@@ -74511,9 +74614,65 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmGlChatMoved(cell, c, ce) {
             this.withLegendWorldDeformedCellRenderState(cell, function () { cell.lmChatBubble(c, ce, true, false); });
         },
+        /* _lmMarkCtx set up for a mark of this cell: its depth, the frame alpha and the Expanding
+         * Land map deformation (cell.draw is moved with jelly, else drawn at the moved centre by
+         * drawLegendWorldDeformedCanvasCell). Returns whether that deformation is on. */
+        _lmMarkAt(cell, c) {
+            c.z = cell._webglZ || 0.5;
+            c.globalAlpha = this.ctx ? this.ctx.globalAlpha : 1;
+            c.dx = 0;
+            c.dy = 0;
+            var deform = typeof this.isLegendWorldMapDeformationVisible === 'function' && this.isLegendWorldMapDeformationVisible();
+            if (deform) {
+                var p = this.getLegendWorldMapRenderPoint(cell.x, cell.y, this._lmMkPt || (this._lmMkPt = { x: 0, y: 0 }));
+                if (Number.isFinite(p.x - cell.x) && Number.isFinite(p.y - cell.y)) {
+                    c.dx = p.x - cell.x;
+                    c.dy = p.y - cell.y;
+                }
+            }
+            return deform;
+        },
+        /* The seconds merge timer of a WebGL own cell canUseWebGLScene gave to the GL layer
+         * (_lmMgOk), after its nick and mass in the text pass (the Canvas2D order): drawMerge
+         * itself onto _lmMarkCtx, on the cells lmLabels gives a mass and placed from the Canvas2D
+         * nick layout, as the WebGL branch of cell.draw drew it on the overlay. A later cell and
+         * its labels cover it as in Canvas2D. cell.draw leaves it out then (_lmGlMerged). */
+        _lmGlMerge(cell) {
+            cell._lmMgAt = this._glSkinFrame;
+            var ms = defaultmapsettings, c = this._lmMarkCtx();
+            var deform = this._lmMarkAt(cell, c);
+            try {
+                var lab = cell.lmLabels(cell.size, (ms.hideTeammatesNames && lmSkinsShown() && !cell.isEjected)
+                    ? application.getCustomSkin(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti)) : null);
+                if (!(lab & 1)) return;
+                cell.setDrawing();
+                cell.setDrawingScale();
+                if ((lab & 2) && cell.setNick(cell.targetNick)) cell.layoutNick();
+                if (!cell.setMass(cell.size)) return;
+                if (defaultSettings.textAlpha != 1) c.globalAlpha *= defaultSettings.textAlpha;
+                if (deform && !ms.jellyPhisycs) {
+                    /* drawn with the moved cell centre there */
+                    c.dx = 0;
+                    c.dy = 0;
+                    this._lmGlMergeMoved(cell, c);
+                } else {
+                    cell.drawMerge(c);
+                }
+            } catch (e) {
+                /* a timer failing must not stop the labels of the other cells */
+            }
+        },
+        /* the timer of _lmGlMerge with the Expanding Land map deformation (no jelly) */
+        _lmGlMergeMoved(cell, c) {
+            this.withLegendWorldDeformedCellRenderState(cell, function () { cell.drawMerge(c); });
+        },
         /* true when the GL text pass drew this cell's teammate indicator and chat bubble */
         _lmGlMarked(cell) {
             return this._glSkinFrame > 0 && cell._lmMkAt === this._glSkinFrame;
+        },
+        /* true when the GL text pass drew this cell's merge timer */
+        _lmGlMerged(cell) {
+            return this._glSkinFrame > 0 && cell._lmMgAt === this._glSkinFrame;
         },
         /* One quad of a text cache entry (a label or a mark), centred at worldX, worldY +
          * offsetY with half sizes halfW x halfH, at depth z, in the order of the calls. alpha
@@ -81261,6 +81420,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     defaultmapsettings.webgl2Acceleration === false ? this.GLW.OFF :
                         this._lmGlLost ? this.GLW.LOST : this.GLW.NO_GL;
                 if (this.gl) this._lmGlLost = false;
+                /* set by the GL scene when it drew the selected-cell ring (drawRings is then left out) */
+                this._lmRingGlDone = false;
                 var unifiedWebGLAllowed =
                     !!(
                         this.gl &&
@@ -81473,6 +81634,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                     );
                             }
                             if (_lmScText >= 0 && window._lmScope) window._lmScope.e(_lmScText);
+                        }
+                        /* the selected-cell ring, over everything above, when the overlay is taken */
+                        if (this._lmRingGl) {
+                            try {
+                                this._lmRingGlDone = this.drawWebGLSelectedRing();
+                            } catch (selRingError) {
+                                this._lmRingGlDone = false;
+                            }
                         }
 
 
@@ -81751,8 +81920,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
 
 
-                /* over every cell: on the overlay in a WebGL frame */
-                this.drawRings(_lmFxCtx);
+                /* over every cell: on the overlay in a WebGL frame (or drawn by the GL scene) */
+                if (!this._lmRingGlDone) this.drawRings(_lmFxCtx);
 
                 this.drawRMB();
 

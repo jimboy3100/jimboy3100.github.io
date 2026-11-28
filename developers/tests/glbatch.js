@@ -16,6 +16,8 @@
  * Usage:
  *   node developers/tests/glbatch.js              visual comparison (quick)
  *   node developers/tests/glbatch.js --bench      + benchmark table
+ *   node developers/tests/glbatch.js --fx         only the GL marks, merge timer and selected ring
+ *                                                 against Canvas2D (quick)
  *     --ref REF      git revision of the reference version (default c677d1ba = 3.608)
  *     --old FILE     reference ogario.v4.js from a file instead of git
  *     --bodies a,b   body counts for --bench (default 100,500,1000,2000)
@@ -35,6 +37,7 @@ const root = path.join(__dirname, '..', '..');
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 && i + 1 < args.length ? args[i + 1] : def; };
 const BENCH = args.indexOf('--bench') >= 0;
+const FX = args.indexOf('--fx') >= 0;
 
 function findChrome() {
     if (process.env.CHROME_PATH) return process.env.CHROME_PATH;
@@ -773,13 +776,31 @@ function pageLib() {
         mate.lmChatLine = function () { return ce; };
         mate.setDrawing = mate.setDrawingScale = function () { };
         mate.lmChatBubble = function (ctx) { var a = ctx.globalAlpha; ctx.globalAlpha = a * 0.5; ctx.drawImage(bub, BR[0], BR[1], BR[2], BR[3]); ctx.globalAlpha = a; };
+        /* the seconds merge timer (cfg.merge, _lmGlMerge): a text raster with stripes and an alpha
+         * ramp over the earlier cell and the mate's own body, partly under the later big cell;
+         * the cell side of drawMerge (its place comes from the Canvas2D nick layout) */
+        var mg = null, MB = [20, -30, 100, 50];
+        if (cfg.merge) {
+            mg = document.createElement('canvas');
+            mg.width = 100; mg.height = 50;
+            var mx = mg.getContext('2d');
+            for (var q = 0; q < 10; q++) { mx.fillStyle = q & 1 ? '#000000' : '#ffffff'; mx.fillRect(q * 10, 0, 10, 50); }
+            var mgr = mx.createLinearGradient(0, 0, 0, 50);
+            mgr.addColorStop(0, 'rgba(255,200,0,1)'); mgr.addColorStop(1, 'rgba(255,200,0,0.15)');
+            mx.fillStyle = mgr; mx.fillRect(0, 25, 100, 25);
+            mate.lmLabels = function () { return 1; };
+            mate.setNick = function () { return false; };
+            mate.setMass = function () { return true; };
+            mate.drawMerge = function (ctx) { ctx.drawImage(mg, MB[0], MB[1], MB[2], MB[3]); };
+        }
         if (cfg.textAlpha != null) env.defaultSettings.textAlpha = cfg.textAlpha;
         function shot(marks) {
             R._glSkinFrame = (R._glSkinFrame || 0) + 1;
             mate._lmMkOk = marks ? R._glSkinFrame : 0;
+            mate._lmMgOk = marks && mg ? R._glSkinFrame : 0;
             frame(o);
             var ok = frame(o);
-            return { ok: ok, px: pixels(R), marked: R._lmGlMarked(mate) };
+            return { ok: ok, px: pixels(R), marked: R._lmGlMarked(mate) && (!mg || R._lmGlMerged(mate)) };
         }
         var before = shot(false);
         if (cfg.restore) { await loseAndRestore(o); env.window.teammatenicks = ['mate']; before = shot(false); }
@@ -800,6 +821,9 @@ function pageLib() {
         x.setTransform(sc, 0, 0, sc, W / 2 - R.camX * sc, H / 2 - R.camY * sc);
         var ta = env.defaultSettings.textAlpha != null ? env.defaultSettings.textAlpha : 1;
         x.drawImage(ind, mate.x - 45, mate.y - mate.size - 90);
+        /* the timer after the (hidden) labels, with the label alpha, before the bubble */
+        x.globalAlpha = ta;
+        if (mg) x.drawImage(mg, MB[0], MB[1], MB[2], MB[3]);
         x.globalAlpha = ta * 0.5;
         x.drawImage(bub, BR[0], BR[1], BR[2], BR[3]);
         x.setTransform(1, 0, 0, 1, 0, 0);
@@ -809,6 +833,7 @@ function pageLib() {
         var bcx = W / 2 + (big.x - R.camX) * sc, bcy = H / 2 + (big.y - R.camY) * sc, br = big.size * sc;
         function box(wx, wy, ww, wh) { return [W / 2 + (wx - R.camX) * sc, H / 2 + (wy - R.camY) * sc, W / 2 + (wx + ww - R.camX) * sc, H / 2 + (wy + wh - R.camY) * sc]; }
         var boxes = [box(mate.x - 45, mate.y - mate.size - 90, 90, 50), box(BR[0], BR[1], BR[2], BR[3])];
+        if (mg) boxes.push(box(MB[0], MB[1], MB[2], MB[3]));
         var res = { ok: before.ok && after.ok, marked: after.marked, shown: 0, covered: 0, coveredDiff: 0, shownMax: 0, shownSum: 0, over4: 0, outside: 0, glError: 0 };
         var p1 = after.px;
         for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
@@ -841,7 +866,67 @@ function pageLib() {
         R.gl.getExtension('WEBGL_lose_context').loseContext();
         return res;
     }
+    /* The selected-cell ring of the GL scene (drawWebGLSelectedRing, frames whose overlay the join
+     * entrance or the death cinematic keeps) against Canvas2D drawRing over the same frame: last,
+     * over the selected cell and a later bigger cell that covers part of it. Pixels within 1.5 px
+     * of the ring's edges (antialiasing) are compared apart; nothing else may change. */
+    async function ringGpu(src, defaults, cfg) {
+        function disc(id, x, y, r) {
+            var pts = [], n = 128;
+            for (var i = 0; i < n; i++) pts.push(x + Math.cos(i / n * 2 * Math.PI) * r, y + Math.sin(i / n * 2 * Math.PI) * r);
+            return { id: id, x: x, y: y, size: r, isVirus: false, maxPointRad: r, pts: pts, color: ['#3388ff', '#33ff66'][id % 2], nick: '' };
+        }
+        var r0 = cfg.size || 120;
+        var o = setup(src, defaults, { scale: cfg.scale, jelly: cfg.jelly, map: { noNames: true, showMass: false } }, [disc(1, -40, 10, r0), disc(2, r0 + 20, 40, r0 * 1.25 + 10)]);
+        var R = o.R, env = o.env, dpr = cfg.dpr || 1;
+        R.canvasWidth = W / dpr; R.canvasHeight = H / dpr;
+        var sel = env.LM.cells.filter(function (c) { return c.id === 1; })[0];
+        frame(o);
+        frame(o);
+        var a0 = pixels(R);
+        if (cfg.restore) { await loseAndRestore(o); frame(o); frame(o); a0 = pixels(R); }
+        env.LM.indexedCells = { 1: sel };
+        env.LM.selected = 1;
+        var ok = frame(o);
+        var drawn = R.drawWebGLSelectedRing();
+        var p1 = pixels(R);
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var x = c.getContext('2d'), im = x.createImageData(W, H);
+        for (var y = 0; y < H; y++) for (var i = 0; i < W; i++) {
+            var s = ((H - 1 - y) * W + i) * 4, d = (y * W + i) * 4, al = a0[s + 3];
+            im.data[d] = al ? Math.min(255, Math.round(a0[s] * 255 / al)) : 0;
+            im.data[d + 1] = al ? Math.min(255, Math.round(a0[s + 1] * 255 / al)) : 0;
+            im.data[d + 2] = al ? Math.min(255, Math.round(a0[s + 2] * 255 / al)) : 0;
+            im.data[d + 3] = al;
+        }
+        x.putImageData(im, 0, 0);
+        var sc = cfg.scale * dpr;
+        x.setTransform(sc, 0, 0, sc, W / 2 - R.camX * sc, H / 2 - R.camY * sc);
+        R.drawRing(x, sel.x, sel.y, sel.size, 0.75, '#ffffff');
+        x.setTransform(1, 0, 0, 1, 0, 0);
+        var ref = x.getImageData(0, 0, W, H).data;
+        var cx = W / 2 + (sel.x - R.camX) * sc, cy = H / 2 + (sel.y - R.camY) * sc, ro = sel.size * sc, ri = Math.max(0, sel.size - 20) * sc;
+        var res = { ok: ok, drawn: drawn, band: 0, bandOver2: 0, bandMax: 0, edge: 0, edgeMax: 0, edgeSum: 0, outside: 0, glError: 0 };
+        for (var yy = 0; yy < H; yy++) for (var xx = 0; xx < W; xx++) {
+            var dd = Math.sqrt((xx + 0.5 - cx) * (xx + 0.5 - cx) + (yy + 0.5 - cy) * (yy + 0.5 - cy));
+            var gs = ((H - 1 - yy) * W + xx) * 4, rs = (yy * W + xx) * 4;
+            var ra = ref[rs + 3], m = 0;
+            for (var ch = 0; ch < 3; ch++) m = Math.max(m, Math.abs(p1[gs + ch] - Math.round(ref[rs + ch] * ra / 255)));
+            m = Math.max(m, Math.abs(p1[gs + 3] - ra));
+            var edge = Math.abs(dd - ro) < 1.5 || (ri > 0 && Math.abs(dd - ri) < 1.5);
+            if (edge) { res.edge++; res.edgeSum += m; if (m > res.edgeMax) res.edgeMax = m; continue; }
+            if (dd < ro && dd > ri) { res.band++; if (m > res.bandMax) res.bandMax = m; if (m > 2) res.bandOver2++; continue; }
+            /* away from the ring: the frame as before */
+            if (p1[gs] !== a0[gs] || p1[gs + 1] !== a0[gs + 1] || p1[gs + 2] !== a0[gs + 2] || p1[gs + 3] !== a0[gs + 3]) res.outside++;
+        }
+        res.edgeMean = res.edge ? res.edgeSum / res.edge : 0;
+        res.glError = R.gl.getError();
+        R.gl.getExtension('WEBGL_lose_context').loseContext();
+        return res;
+    }
     return {
+        ringGpu: ringGpu,
         marksGpu: marksGpu,
         atlasUploads: atlasUploads,
         atlasCapacity: atlasCapacity,
@@ -980,7 +1065,7 @@ async function main() {
             { name: 'jelly off, labels on, after WebGL context loss and restore', jelly: false, restore: true }
         ];
         const stats = [];
-        for (const c of cases) {
+        for (const c of FX ? [] : cases) {
             const cfg = Object.assign({ scale: 0.35, dump: !!opt('--dump', null) }, c);
             const sc = await scene(500, 777);
             const r = await evaluate('__glb.compare(__glbOld, __glbNew, __glbDefaults, ' + JSON.stringify(cfg) + ', ' + JSON.stringify(sc) + ')');
@@ -1000,7 +1085,9 @@ async function main() {
         }
         /* teammate indicator and chat bubble in the GL text pass (working copy only) */
         if (NEW.factory.indexOf('_lmGlMarks(cell, which)') >= 0) {
-            for (const mc of [{ scale: 1, jelly: true }, { scale: 0.6, jelly: false }, { scale: 1.3, jelly: true, dpr: 2 }, { scale: 1, jelly: true, textAlpha: 0.6 }, { scale: 1, jelly: true, restore: true }, { scale: 0.6, jelly: true, noAtlas: true, textAlpha: 0.8 }]) {
+            const mm = NEW.factory.indexOf('_lmGlMerge(cell)') >= 0;
+            for (const mc of [{ scale: 1, jelly: true }, { scale: 0.6, jelly: false }, { scale: 1.3, jelly: true, dpr: 2 }, { scale: 1, jelly: true, textAlpha: 0.6 }, { scale: 1, jelly: true, restore: true }, { scale: 0.6, jelly: true, noAtlas: true, textAlpha: 0.8 }]
+                .concat(mm ? [{ scale: 1, jelly: true, merge: true }, { scale: 0.6, jelly: false, merge: true, textAlpha: 0.7 }, { scale: 1.3, jelly: true, dpr: 2, merge: true }, { scale: 1, jelly: true, merge: true, restore: true, noAtlas: true }] : [])) {
                 const mr = await evaluate('__glb.marksGpu(__glbNew, __glbDefaults, ' + JSON.stringify(mc) + ')');
                 const nm = 'GL marks ' + JSON.stringify(mc);
                 console.log('     ' + nm + ': shown px ' + mr.shown + ' (max diff to Canvas2D ' + mr.shownMax + ', mean ' + mr.shownMean.toFixed(3) + ', >4: ' + mr.over4 + '), covered px ' + mr.covered +
@@ -1009,6 +1096,24 @@ async function main() {
                 check(nm + ': the later cell covers them (no pixel changed there), nothing else changed', mr.covered > 100 && mr.coveredDiff === 0 && mr.outside === 0);
                 check(nm + ': the same pixels as Canvas2D drawing them (max channel diff <= 4)', mr.over4 === 0);
             }
+        }
+        /* the selected-cell ring drawn by the GL scene (working copy only) */
+        if (NEW.factory.indexOf('drawWebGLSelectedRing()') >= 0) {
+            for (const rc of [{ scale: 1, jelly: true }, { scale: 0.45, jelly: false }, { scale: 1.6, jelly: true, dpr: 2 }, { scale: 1, jelly: true, size: 16 }, { scale: 1, jelly: true, restore: true }]) {
+                const rr = await evaluate('__glb.ringGpu(__glbNew, __glbDefaults, ' + JSON.stringify(rc) + ')');
+                const nm = 'GL selected ring ' + JSON.stringify(rc);
+                console.log('     ' + nm + ': ring px ' + rr.band + ' (max diff to Canvas2D ' + rr.bandMax + ', >2: ' + rr.bandOver2 + '), edge px ' + rr.edge + ' (max ' + rr.edgeMax + ', mean ' + rr.edgeMean.toFixed(2) + '), changed elsewhere ' + rr.outside);
+                check(nm + ': drawn, no GL error', rr.ok && rr.drawn && rr.glError === 0 && rr.band > 200);
+                check(nm + ': the same pixels as Canvas2D drawRing inside the ring (max channel diff <= 2), nothing else changed', rr.bandOver2 === 0 && rr.outside === 0);
+                check(nm + ': antialiased edges as Canvas2D (max channel diff <= 48, mean <= 10)', rr.edgeMax <= 48 && rr.edgeMean <= 10);
+            }
+        }
+        /* --fx: only the marks / timer / ring checks above (a few seconds) */
+        if (FX) {
+            if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); failed++; }
+            if (failed) { console.log(failed + ' check(s) failed'); return done(1); }
+            console.log('glbatch ok (--fx: GL marks, merge timer and selected ring only)');
+            return done(0);
         }
         /* the labels are really drawn: labels on and off give different pictures */
         check('labels are drawn (labels on and off differ)', stats[0].hashNew !== stats[2].hashNew && stats[1].hashNew !== stats[3].hashNew);

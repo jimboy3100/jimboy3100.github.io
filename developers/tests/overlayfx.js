@@ -119,7 +119,8 @@ class SoftCtx {
     stroke() {
         if (!strokes.on || !this._arc || typeof this.strokeStyle !== 'string') return;
         const m = this.m, cx = m[0] * this._arc[0] + m[4], cy = m[3] * this._arc[1] + m[5], k = Math.abs(m[0]);
-        const r0 = k * (this._arc[2] - this.lineWidth / 2), r1 = k * (this._arc[2] + this.lineWidth / 2);
+        /* (a line wider than twice the radius covers the centre too) */
+        const r0 = Math.max(0, k * (this._arc[2] - this.lineWidth / 2)), r1 = k * (this._arc[2] + this.lineWidth / 2);
         let h = 0; for (const ch of this.strokeStyle) h = (h * 31 + ch.charCodeAt(0)) % 9973;
         oplog.push(this.canvas.name + ':stroke');
         this._paint([cx - r1, cy - r1, cx + r1, cy + r1], colorFor(h), this._alpha, (px, py) => { const d = (px - cx) * (px - cx) + (py - cy) * (py - cy); return d <= r1 * r1 && d >= r0 * r0; });
@@ -178,9 +179,14 @@ function cellMethod(name) {
     for (let x; (x = re.exec(src)) && x.index < cellEnd;) m = x;
     if (!m) return null;
     const at = src.indexOf('function', m.index);
+    /* drawMerge has a brace in a // comment: it ends at the first line that is only "        };" */
+    if (name === 'drawMerge') {
+        const end = src.indexOf('\n        };', at);
+        return end < 0 ? null : src.slice(at, end + 10);
+    }
     return block(src, at);
 }
-const CELL_METHODS = ['draw', 'drawChat', 'lmChatLine', 'lmChatBubble', 'drawMass', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick', 'lmLabels', 'lmFbBadge',
+const CELL_METHODS = ['draw', 'drawChat', 'lmChatLine', 'lmChatBubble', 'drawMass', 'drawMerge', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick', 'lmLabels', 'lmFbBadge',
     'setNick', 'setMass', 'setDrawing', 'setDrawingScale', 'setScale', 'setFontSize', 'setStrokeSize'];
 const haveMethods = CELL_METHODS.filter((n) => cellMethod(n));
 const frameA = src.indexOf('/* whether this frame was drawn by WebGL (the pie overlay below, the benches) */');
@@ -231,7 +237,7 @@ const TextClass = new Function('document', 'window', textClassSrc + '\nreturn ir
 const proto = new Function('env', 'var window = env.window, LM = env.LM, legendmod = env.LM, application = env.application, defaultSettings = env.defaultSettings,' +
     ' defaultmapsettings = env.defaultmapsettings, drawRender = env.drawRender, ogario = env.ogario, SpecialEffectPlayers = env.SEP,' +
     ' irenderfromagario = env.TextClass, _EAT_PULSE_DURATION = 150, _EAT_PULSE_MAGNITUDE = 0.08;' +
-    ' function loadIconSpecialSkins() { } function checkVideos() { } function lmMultiboxControlledPlayer() { return 1; }\n' +
+    ' function loadIconSpecialSkins() { } function checkVideos() { } function lmMultiboxControlledPlayer() { return 1; } function CellTimerTrigger() { }\n' +
     ringSrc + '\n' +
     'return {' + haveMethods.map((n) => n + ': ' + cellMethod(n)).join(',\n') + '};')(Object.assign({ drawRender: R, SEP: SEP, TextClass: TextClass }, env));
 window.iconSpecialSkinEffectsHat3 = img('hat', 64, 64);
@@ -243,7 +249,7 @@ function stubRings() { }
 const main = new SoftCanvas(0, 0, 'main'), glc = new SoftCanvas(0, 0, 'gl'), overlay = new SoftCanvas(0, 0, 'overlay');
 Object.assign(R, {
     canvas: main, ctx: main.getContext(), overlayCanvas: overlay, overlayCtx: overlay.getContext(), glCanvas: glc,
-    gl: {}, glTextProgram: {}, glCellProgram: {}, glJellyProgram: {}, glJellyStrokeProgram: {}, glJellyVAO: {}, glJellyVBO: {}, glJellyStrokeVAO: {}, glJellyStrokeVBO: {}, glMbRingProgram: {},
+    gl: {}, glTextProgram: {}, glCellProgram: {}, glJellyProgram: {}, glJellyStrokeProgram: {}, glJellyVAO: {}, glJellyVBO: {}, glJellyStrokeVAO: {}, glJellyStrokeVBO: {}, glMbRingProgram: {}, glMbRingVAO: {},
     indicator: img('teamInd', 90, 50), heartIndicator: img('heartInd', 50, 50), smileIndicator: img('smileInd', 150, 150),
     isLegendWorldMapDeformationVisible: () => false, drawRings: stubRings, drawRMB() { }, drawViewPorts() { },
     drawFBTracking(ctx, players, x, y) { ctx.drawImage(fbArrow, x - 10, y - 10, 20, 20); }
@@ -341,6 +347,8 @@ function paintCellCanvas(c, ctx, realText) {
         if (realText) {
             if (fl.mass && c.setMass(c.size)) c.drawMass(ctx);
         } else paintLabels(ctx, c, fl);
+        /* the seconds merge timer after the mass (the real drawMerge, placed from the nick layout) */
+        if (fl.mass && c.drawMerge && window.ExternalScripts && window.legendmod5.mergeTimer && c.setMass(c.size)) c.drawMerge(ctx);
     }
     /* the chat bubble last, on its own setting (not tied to the labels) */
     const ce = c.lmChatLine();
@@ -420,7 +428,23 @@ function frame(s) {
             const fl = labelFlags(c);
             if (fl.on && !fg) paintLabels(gctx, c, fl);
             gctx.globalAlpha = pre;
+            /* the merge timer of the GL text pass: the real _lmGlMerge (and drawMerge) */
+            if (!fg && R._lmGlMerge && c._lmMgOk === R._glSkinFrame) R._lmGlMerge(c);
             if (mk) R._lmGlMarks(c, 2);
+        }
+        /* the selected-cell ring of the GL scene when the overlay is taken: the instance
+         * drawWebGLSelectedRing draws (buildWebGLSelectedRingData), stroked as that ring */
+        if (R._lmRingGl && R.buildWebGLSelectedRingData) {
+            const d = new Float64Array(9);
+            if (R.buildWebGLSelectedRingData(LM.indexedCells[LM.selected], d)) {
+                const lw = d[2] * (1 - d[3]), pa = gctx.globalAlpha;
+                gctx.globalAlpha = d[7];
+                gctx.strokeStyle = '#' + [d[4], d[5], d[6]].map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('');
+                gctx.lineWidth = lw;
+                gctx.beginPath(); gctx.arc(d[0], d[1], d[2] - lw / 2); gctx.stroke();
+                gctx.globalAlpha = pa;
+            }
+            R._lmRingGlDone = true;
         }
         gctx.restore();
     }
@@ -791,8 +815,40 @@ reset(); strokes.on = true; R.drawRings = realDrawRings;
     team([]);
     LM._elWorldEntrance = { active: true };
     r = frame(S1);
-    check('  join entrance (keeps the overlay): Canvas2D, reason selRing, equal', !r.gl && why() === 'selRing' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    const glRingPx = diff(r.out, frame(Object.assign({}, S1)).out).n;
+    check('  join entrance (keeps the overlay): WebGL, the GL scene draws the ring last (over the later cell), no overlay, equal',
+        r.gl && why() === 'webgl' && !r.shown && R._lmRingGl && r.d.n === 0 && !r.ops.includes('main:stroke') && !r.ops.includes('overlay:stroke') && r.ops.includes('gl:stroke'),
+        'gl ' + r.gl + ' ' + why() + ' shown ' + r.shown + ' ' + r.d.n + ' px ' + r.ops.filter((o) => /stroke/.test(o)).join(' '));
+    {
+        /* sensitivity: the same frame without the GL ring misses it */
+        const keep = R.buildWebGLSelectedRingData;
+        R.buildWebGLSelectedRingData = () => 0;
+        const bad = frame(S1);
+        R.buildWebGLSelectedRingData = keep;
+        check('  (the comparison sees a missing ring)', bad.gl && bad.d.n > 0 && glRingPx === 0, bad.d.n + ' px');
+    }
+    globalThis._elDeathVisual = { active: true };
     LM._elWorldEntrance = null;
+    r = frame({ W: 200, H: 140, dpr: 2, zoom: 0.8, camX: 0, camY: 0 });
+    check('  death cinematic, DPR 2, zoom 0.8: WebGL, GL ring, equal', r.gl && R._lmRingGl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
+    globalThis._elDeathVisual = null;
+    LM._elWorldEntrance = { active: true };
+    team(['over']);
+    r = frame(S1);
+    check('  join entrance with a teammate indicator (GL text pass): WebGL, ring over it, equal', r.gl && R._lmRingGl && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') ' + r.d.n + ' px');
+    team([]);
+    sel.size = 15;
+    r = frame(S1);
+    check('  join entrance, selected cell smaller than the ring width: WebGL, a full disc as the Canvas2D stroke, equal', r.gl && R._lmRingGl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    sel.size = 60;
+    const prog = R.glMbRingProgram;
+    R.glMbRingProgram = null;
+    r = frame(S1);
+    check('  join entrance without the ring program: Canvas2D, reason selRing, equal', !r.gl && why() === 'selRing' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    R.glMbRingProgram = prog;
+    LM._elWorldEntrance = null;
+    r = frame(S1);
+    check('  entrance over: the overlay ring again, no GL ring', r.gl && r.shown && !R._lmRingGl && r.d.n === 0, 'gl ' + r.gl + ' shown ' + r.shown + ' ' + r.d.n + ' px');
     LM.selected = null;
     r = frame(S1);
     check('  no cell selected: WebGL, overlay hidden, equal', r.gl && !r.shown && r.d.n === 0, 'gl ' + r.gl + ' shown ' + r.shown + ' ' + r.d.n + ' px');
@@ -802,6 +858,128 @@ reset(); strokes.on = true; R.drawRings = realDrawRings;
     LM.selected = null; LM.indexedCells = {};
 }
 R.drawRings = stubRings; strokes.on = false;
+
+/* ---- seconds merge timer (ogario/mergetimer.js) ----
+ * cell.drawMerge draws it after the cell's nick and mass (placed from the nick layout): in a
+ * WebGL frame the GL text pass draws it there at the cell's depth (_lmGlMerge), so later cells
+ * and labels cover it as in Canvas2D; it was a Canvas2D frame (reason merge) while it was on. */
+if (R._lmGlMerge) {
+    const mergeOn = (map) => { reset(); setSettings({ map: Object.assign({ mergeTimer: true }, map) }); window.ExternalScripts = true; window.legendmod5 = ms; };
+    const own = (o) => makeCell(Object.assign({ targetNick: 'me', isPlayerCell: true }, o));
+    const a = own({ x: -50, y: 20, size: 55 }), b = own({ x: 55, y: 25, size: 48 });
+    const timers = (cells, t) => { window.playerCellsId = {}; for (const c of cells) window.playerCellsId[c.id] = { mergeTime: t, historyMass: [] }; LM.playerCells = cells.slice(); };
+    const mpx = (r, c) => c.mergeCanvas && c.mergeCanvas.txtCanvas ? marked(r.out, c.mergeCanvas.txtCanvas.color) : 0;
+    mergeOn(); timers([a, b], 25);
+    scene([a, b]);
+    r = frame(S1);
+    check('merge timer on two own cells: WebGL (was Canvas2D "merge"), drawn by the GL text pass, no overlay, equal',
+        r.gl && !r.shown && mpx(r, a) > 0 && mpx(r, b) > 0 && R._lmGlMerged(a) && R._lmGlMerged(b) && r.d.n === 0,
+        'gl ' + r.gl + ' (' + why() + ') shown ' + r.shown + ' px ' + mpx(r, a) + '/' + mpx(r, b) + ' ' + r.d.n + ' px');
+    r = frame(S1);
+    check('  next frame: equal (drawn once, cell.draw leaves it out)', r.gl && !r.shown && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+    {
+        /* sensitivity: without the GL timer the frame misses it */
+        const keep = R._lmGlMerge;
+        R._lmGlMerge = function (c) { c._lmMgAt = this._glSkinFrame; };
+        const bad = frame(S1);
+        R._lmGlMerge = keep;
+        check('  (the comparison sees a missing timer)', bad.gl && bad.d.n > 0, bad.d.n + ' px');
+    }
+    window.playerCellsId[a.id].mergeTime = 7;
+    r = frame(S1);
+    check('  another number (redrawn raster): WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+    setSettings({ map: { mergeTimer: true }, set: { textAlpha: 0.6 } });
+    r = frame({ W: 200, H: 140, dpr: 2, zoom: 0.8, camX: 0, camY: 0 });
+    check('  textAlpha 0.6, DPR 2, zoom 0.8: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
+    /* a taller view: the timer sits above the nick, or under the centre without names */
+    const S2 = { W: 240, H: 260, dpr: 1, zoom: 1, camX: 0, camY: 0 };
+    setSettings({ map: { mergeTimer: true, noNames: true } });
+    r = frame(S2);
+    check('  names off (timer under the centre): WebGL, equal', r.gl && mpx(r, a) > 0 && r.d.n === 0, 'gl ' + r.gl + ' px ' + mpx(r, a) + ' ' + r.d.n + ' px');
+    setSettings({ map: { mergeTimer: true, hideMyMass: true } });
+    r = frame(S1);
+    check('  own mass hidden: no timer in both, WebGL, equal', r.gl && mpx(r, a) === 0 && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+    mergeOn(); timers([a], 25);
+    r = frame(S1);
+    check('  one own cell (nothing to merge): no timer, WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + r.d.n + ' px');
+    timers([a, b], 25);
+    /* a later bigger cell over the timer of a */
+    const big = makeCell({ x: -20, y: -95, size: 70, targetNick: 'big' });
+    scene([a, b, big]);
+    r = frame(S1);
+    check('  a later bigger cell over a timer: WebGL, it covers the GL timer as in Canvas2D, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    /* an earlier cell's hat (on the overlay, above the GL layer) over a's timer only: names off
+     * and big mass text put the timer well under a's body; b is drawn elsewhere */
+    mergeOn(); setSettings({ map: { mergeTimer: true, noNames: true }, set: { massScale: 9 } }); timers([a, b], 25);
+    const S3 = { W: 240, H: 420, dpr: 1, zoom: 1, camX: 0, camY: 0 };
+    a.y = -100;
+    scene([a]);
+    frame(S3);
+    SEP.hatty = 'Hat';
+    /* the hat (y - 1.5 r to y - 0.5 r) over the middle of the timer */
+    const hatty = makeCell({ x: a.x, y: a.y + a._lmMgDy + a._lmMgH / 2 + 16, size: 16, targetNick: 'hatty' });
+    check('  (test layout: the effect box stays clear of the body of a)', hatty.y - 2.5 * 16 * 1.08 - 4 > a.y + a.size * 1.15 + 4, a._lmMgDy + ' ' + a._lmMgH);
+    scene([hatty, a]);
+    a._lmMgF = undefined;
+    r = frame(S3);
+    check('  an earlier overlay effect over the timer, its place not known yet: Canvas2D, reason merge, equal', !r.gl && why() === 'merge' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    r = frame(S3);
+    check('  next frame (place known): Canvas2D (the effect is under the timer in Canvas2D), reason coveredEffect, equal', !r.gl && why() === 'coveredEffect' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    {
+        /* sensitivity: kept on WebGL there, the effect covers the timer */
+        const keep = R._lmCellMerge;
+        R._lmCellMerge = function (c, n) { c._lmMgOk = this._glSkinFrame; return n; };
+        const bad = frame(S3);
+        R._lmCellMerge = keep;
+        check('  (the comparison sees the effect over the GL timer)', bad.gl && bad.d.n > 0, 'gl ' + bad.gl + ' ' + bad.d.n + ' px');
+    }
+    hatty.x = a.x + 150;
+    r = frame(S3);
+    check('  effect away from it: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    a.size = 50;
+    hatty.x = a.x;
+    r = frame(S3);
+    check('  the cell changed size since its timer was placed (a split), effect near: Canvas2D, reason merge, equal', !r.gl && why() === 'merge' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    a.size = 55; a.y = 20;
+    delete SEP.hatty;
+    /* an own cell with an FB badge: its labels and its timer go on the overlay */
+    mergeOn({ FBTracking: true }); timers([a, b], 25);
+    application.customSkinsMap = { 'mefacebookskin': 'fbk' }; application.customSkinsCache = { 'fbk_cached4': fbImage };
+    application.skins = { me: img('meSkin', 64, 64) };
+    scene([a]);
+    frame(S1);
+    r = frame(S1);
+    check('  own cell with an FB badge: WebGL, its timer on the overlay with its labels, equal', r.gl && r.shown && mpx(r, a) > 0 && !R._lmGlMerged(a) && r.d.n === 0,
+        'gl ' + r.gl + ' ' + why() + ' shown ' + r.shown + ' px ' + mpx(r, a) + ' ' + r.d.n + ' px');
+    const late = makeCell({ x: a.x, y: a.y + a._lmMgDy - 66, size: 60, targetNick: 'late' });
+    scene([a, late]);
+    r = frame(S1);
+    check('  a later cell over the overlay timer: Canvas2D (the overlay is above it), equal', !r.gl && /^covered/.test(why()) && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    reset(); window.ExternalScripts = false; window.playerCellsId = null; LM.playerCells = [];
+}
+
+/* ---- no multibox ring program (it failed to build) ----
+ * Canvas2D draws the ring, so only a frame with the ringed cell (the controlled unit) in the GL
+ * view stays on Canvas2D, not every frame while multiboxing. */
+reset(); strokes.on = true; window.legendmod = LM; LM.multiBoxPlayerExists = true;
+{
+    const prog = R.glMbRingProgram;
+    R.glMbRingProgram = null;
+    const me = makeCell({ x: -20, y: 0, size: 60, targetNick: 'me', isPlayerCell: true });
+    const other = makeCell({ x: 80, y: 30, size: 40, targetNick: 'zz' });
+    scene([other, me]);
+    r = frame(S1);
+    check('no ring program, the ringed own cell on screen: Canvas2D, reason mbRingProg, ring drawn, equal', !r.gl && why() === 'mbRingProg' && r.ops.includes('main:stroke') && r.d.n === 0,
+        'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    me.x = 3000;
+    r = frame(S1);
+    check('  that cell far outside the view: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    me.x = -20;
+    R.glMbRingProgram = prog;
+    r = frame(S1);
+    check('  with the ring program: WebGL (GL ring pass), equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+}
+LM.multiBoxPlayerExists = false; strokes.on = false;
 
 /* ---- no marks: no clear, overlay hidden ---- */
 reset(); SEP.mate = 'Hat';
