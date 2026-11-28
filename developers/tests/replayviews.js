@@ -201,6 +201,16 @@ E2.emit('spawn', { time: Date.now() - 5000, context: 'live' });
 E2.emit('massUpdate', { mass: 700, cells: 1, context: 'live' });
 E2.emit('death', { time: Date.now(), mass: 700, msAlive: 5000, context: 'live' });
 check('a game ending while the Heatmaps are shown: drawn again with 4 games', rid('lm-analytics-heat-map') && rid('lm-analytics-heat-map').children[0].textContent === '14,142 (4)' && rView.contains(rid('lm-analytics-heat')));
+/* Coach and Objectives: views of the same window (the Coach and objective toasts open them there) */
+check('Coach and Objectives tabs with their names', !!rid('lm-rs-tab-coach') && rid('lm-rs-tab-coach').textContent === AT('tabCoach') && !!rid('lm-rs-tab-goals') && rid('lm-rs-tab-goals').textContent === AT('tabGoals'));
+rClick(rid('lm-rs-tab-coach'));
+check('Coach: the newest recorded game scored in the window (overall, 5 parts, 2-4 tips)', !!rid('lm-analytics-overall') && rView.contains(rid('lm-analytics-overall')) &&
+  walkAll(rView).filter(n => n.getAttribute && n.getAttribute('data-part')).length === 5 && rid('lm-analytics-tips').children.length >= 2 && rid('lm-analytics-tips').children.length <= 4);
+rClick(rid('lm-rs-tab-goals'));
+check('Objectives: three daily objectives and the form for own ones', !!rid('lm-analytics-daily') && rid('lm-analytics-daily').children.length === 3 && rView.contains(rid('lm-analytics-goal-add')));
+rClick(rid('lm-rs-tab-games'));
+r.ctx.LMReplayStudio.run('view', 'coach');
+check('run("view", "coach") (the Coach toast) shows the Coach', rView.style.display === 'block' && rView.contains(rid('lm-analytics-overall')));
 r.ctx.LMReplayStudio.run('close');
 
 /* --old: the window of the stats file from before the merge shows the same Dashboard and Heatmaps */

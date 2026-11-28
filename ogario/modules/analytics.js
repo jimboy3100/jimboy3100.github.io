@@ -1,4 +1,4 @@
-/* Legend Mod game stats: the Dashboard and Heatmaps views of the Replays window
+/* Legend Mod game stats: the Dashboard, Heatmaps, Coach and Objectives views of the Replays window
  * (ogario/modules/replaystudio.js draws them with LMAnalytics.paint; its Match history view is
  * ogario.v4.js _lmMatchHistoryPaint).
  * Games are recorded with "Record replays" (recordReplays, Settings > Replays, on by default), the one
@@ -16,10 +16,11 @@
 
     /* ------------------------------------------------------------------ constants */
     var SCHEMA = 1;
-    var KEY_GAMES = 'lmAnalyticsGames', KEY_TRACKS = 'lmAnalyticsTracks';
+    var KEY_GAMES = 'lmAnalyticsGames', KEY_TRACKS = 'lmAnalyticsTracks', KEY_GOALS = 'lmAnalyticsGoals';
     var MAX_GAMES = 500;          // game summaries kept (about 300 bytes each)
     var MAX_TRACKS = 50;          // games kept for the heatmaps
     var MAX_SAMPLES = 3600;       // position samples per game; longer lives are thinned (see sample())
+    var MAX_CUSTOM = 8;           // user objectives
     var GRID = 64;                // positions are stored on a 64x64 grid over the map, 2 characters each
     var ALPH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
     var SPLIT_GROUP = 400;        // splits closer than this are one split (macros send several)
@@ -38,7 +39,28 @@
     function str(v, n) { return typeof v === 'string' ? v.slice(0, n) : ''; }
     function avg(a) { var s = 0; for (var i = 0; i < a.length; i++) s += a[i]; return a.length ? s / a.length : 0; }
     function maxOf(a) { var m = 0; for (var i = 0; i < a.length; i++) if (a[i] > m) m = a[i]; return m; }
+    /* linear interpolation between the closest ranks of an ascending list */
+    function quantile(sorted, q) {
+        if (!sorted.length) return 0;
+        var p = (sorted.length - 1) * q, lo = Math.floor(p), hi = Math.ceil(p);
+        return sorted[lo] + (sorted[hi] - sorted[lo]) * (p - lo);
+    }
+    function sortNum(a) { return a.slice().sort(function (x, y) { return x - y; }); }
+    /* rounds down to two significant digits (3456 -> 3400) so a target taken from history stays reachable */
+    function niceFloor(v) {
+        if (!(v > 0)) return 0;
+        var mag = Math.pow(10, Math.max(0, Math.floor(Math.log(v) / Math.LN10) - 1));
+        return Math.max(1, Math.floor(v / mag) * mag);
+    }
+    function hashStr(s) {
+        var h = 2166136261;
+        for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul ? Math.imul(h, 16777619) : (h * 16777619) | 0; }
+        return h >>> 0;
+    }
     function pad2(n) { return (n < 10 ? '0' : '') + n; }
+    /* local calendar day, so the objectives change at the player's midnight */
+    function dayKey(t) { var d = new Date(t); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+    function dayStart(t) { var d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); }
     /* Monday 00:00 local time of the week holding t */
     function weekStart(t) {
         var d = new Date(t);
@@ -247,6 +269,53 @@
         return res;
     }
 
+    /* ------------------------------------------------------------------ Coach
+     * Scores are 0-100 (null = no data for that part):
+     *   survival  = 100 * (1 - e^(-minutes / 5))           1 min 18, 5 min 63, 10 min 86, 20 min 98
+     *   growth    = 100 * log10(1 + rate / 50) / 2          rate = peak mass / max(minutes alive, 0.5);
+     *                                                       50/min 15, 500/min 52, 5000/min and more 100
+     *   splits    = 100 * (1 - 2 * average split loss)      split loss = share of the mass at the split that
+     *                                                       was gone 0-5 s later (dying in that time = 100 %);
+     *                                                       50 % average loss or more scores 0; null without splits
+     *   movement  = 100 * (0.6 * coverage + 0.4 * (1 - min(1, edge / 0.5)))
+     *                coverage = visited cells of an 8x8 map grid / min(24, 3 + 3 * minutes), at most 1;
+     *                edge = share of position samples in the outer 6 % of the map; null under 5 samples
+     *   retention = 100 * end mass / peak mass              end mass = mass in the last update before the death
+     *   overall   = rounded average of the parts that have a value
+     * Old match history games have no positions, splits or end mass: only survival and growth. */
+    var PARTS = ['survival', 'growth', 'splits', 'movement', 'retention'];
+    function coachScores(g) {
+        var min = g.ms / 60000, s = {};
+        s.survival = Math.round(100 * (1 - Math.exp(-min / 5)));
+        /* P1 fix #50: cap the time denominator to 5 minutes so long domination runs
+         * are not penalized. Without this, rate = peak/minutes decreases as the player
+         * survives longer, even if they maintained high mass throughout. */
+        var rate = g.peak / Math.max(Math.min(min, 5), 0.5);
+        s.growth = Math.round(100 * clamp01(Math.log(1 + rate / 50) / Math.LN10 / 2));
+        var lm = g.src === 'lm';
+        s.splits = lm && g.spl > 0 ? Math.round(100 * clamp01(1 - 2 * g.splLoss)) : null;
+        if (lm && g.n >= 5) {
+            var cover = Math.min(1, g.cov / Math.min(24, 3 + 3 * min));
+            s.movement = Math.round(100 * (0.6 * cover + 0.4 * (1 - Math.min(1, g.edge / 0.5))));
+        } else s.movement = null;
+        s.retention = lm && g.peak > 0 ? Math.round(100 * clamp01(g.end / g.peak)) : null;
+        var have = PARTS.map(function (k) { return s[k]; }).filter(function (v) { return v !== null; });
+        s.overall = have.length ? Math.round(avg(have)) : 0;
+        s.rate = Math.round(rate);
+        return s;
+    }
+    /* averages of the up to 10 games before game index i (scores, time alive, growth rate) */
+    function recentAverages(games, i, count) {
+        count = count || 10;
+        var prev = games.slice(Math.max(0, i - count), i), out = { n: prev.length };
+        var sc = prev.map(coachScores);
+        PARTS.concat(['overall', 'rate']).forEach(function (k) {
+            var v = sc.map(function (s) { return s[k]; }).filter(function (x) { return x !== null; });
+            out[k] = v.length ? Math.round(avg(v)) : null;
+        });
+        out.ms = prev.length ? Math.round(avg(prev.map(function (g) { return g.ms; }))) : null;
+        return out;
+    }
     function fmtTime(ms) {
         var s = Math.max(0, Math.round((+ms || 0) / 1000)), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60);
         s = s % 60;
@@ -254,6 +323,107 @@
     }
     function fmtNum(n) { n = Math.round(+n || 0); return n.toLocaleString ? n.toLocaleString('en-US') : String(n); }
     function pct(f) { return Math.round(f * 100); }
+    /* Suggestions, deterministic: problems in a fixed order (at most 3), then good news, then a tip for
+     * the lowest part, so a report has 2-4 lines. Each line is [key, values] for the text table. */
+    function coachSuggestions(g, s, rec) {
+        var bad = [], good = [], min = g.ms / 60000, lm = g.src === 'lm';
+        var finalLoss = lm && g.peak >= 200 && g.loss20 >= 0.25;
+        if (finalLoss) bad.push(['sgFinal', [pct(g.loss20)]]);
+        if (lm && g.spl >= 2 && g.splLoss >= 0.2) bad.push(['sgSplits', [g.splBad, g.spl, pct(g.splLoss)]]);
+        if (lm && g.n >= 20 && g.edge >= 0.35) bad.push(['sgEdge', [pct(g.edge)]]);
+        if (lm && g.n >= 20 && min >= 3 && g.cov / Math.min(24, 3 + 3 * min) < 0.4) bad.push(['sgCoverage', [Math.round(g.cov / 64 * 100)]]);
+        if (rec.n >= 3 && rec.ms > 0 && g.ms < 0.6 * rec.ms) bad.push(['sgShort', [pct(1 - g.ms / rec.ms), fmtTime(rec.ms)]]);
+        if (rec.n >= 3 && rec.rate > 0 && s.rate < 0.7 * rec.rate) bad.push(['sgGrowth', [fmtNum(s.rate), fmtNum(rec.rate)]]);
+        if (lm && s.retention !== null && s.retention < 50 && !finalLoss) bad.push(['sgRetention', [s.retention]]);
+        if (lm && g.first >= 30000) good.push(['sgFirst', [fmtTime(g.first)]]);
+        if (rec.n >= 3 && rec.overall !== null && s.overall >= rec.overall + 10) good.push(['sgBetter', [s.overall - rec.overall]]);
+        var out = bad.slice(0, 3).concat(good).slice(0, 4);
+        if (out.length < 2) {
+            var low = null;
+            PARTS.forEach(function (k) { if (s[k] !== null && (low === null || s[k] < s[low])) low = k; });
+            var tip = low && ('sgTip' + low.charAt(0).toUpperCase() + low.slice(1));
+            if (tip && !out.some(function (x) { return x[0] === tip; })) out.push([tip, []]);
+        }
+        if (out.length < 2) out.push(['sgKeep', []]);
+        return out;
+    }
+
+    /* ------------------------------------------------------------------ objectives
+     * Objective: { id, type, target } (daily) or { id, type, target, since } (custom).
+     * Types: mass (reach target peak mass in one game), survive (live target minutes in one game),
+     * top (reach place target or better), games (play target games), beatAvg (peak mass above target,
+     * the average peak when the objective was made). Progress counts games from the start of the day
+     * (daily) or from `since` (custom). */
+    var GOAL_TYPES = ['mass', 'survive', 'top', 'games', 'beatAvg'];
+    var GOAL_MAX = { mass: 1e7, survive: 360, top: 100, games: 100, beatAvg: 1e9 };
+    function sanitizeGoal(r, custom) {
+        if (!r || typeof r !== 'object' || GOAL_TYPES.indexOf(r.type) === -1) return null;
+        var target = Number(r.target);
+        if (!(target >= 1)) return null;
+        target = Math.round(Math.min(target, GOAL_MAX[r.type]));
+        var g = { id: str(r.id, 40) || (r.type + ':' + target), type: r.type, target: target };
+        if (custom) g.since = num(r.since, 0, 4102444800000, 0);
+        return g;
+    }
+    /* Daily objectives from the last 30 games so they are reachable:
+     *   games   = median games per day played (days with games), 2-10
+     *   mass    = median peak mass, rounded down to 2 significant digits (half the games reach it)
+     *   survive = median minutes alive, whole minutes, at least 1
+     *   top     = smallest of 1/3/5/10 not below the median best place, only when 20 % or more of the
+     *             recorded games reached the leaderboard
+     *   beatAvg = average peak mass
+     * "games" is always one of the three; the other two rotate with the date. Under 3 games: play 3,
+     * survive 2 min and reach 80 % of the best mass so far (500 without any). */
+    function generateDaily(games, key) {
+        var recent = games.slice(-30);
+        var mk = function (type, target) { return { id: key + ':' + type, type: type, target: Math.max(1, Math.round(target)) }; };
+        if (recent.length < 3) {
+            var best = maxOf(recent.map(function (g) { return g.peak; }));
+            return [mk('games', 3), mk('survive', 2), mk('mass', best > 0 ? niceFloor(best * 0.8) : 500)];
+        }
+        var peaks = sortNum(recent.map(function (g) { return g.peak; }));
+        var mins = sortNum(recent.map(function (g) { return g.ms / 60000; }));
+        var perDay = {}, days = [];
+        recent.forEach(function (g) { var k = dayKey(g.t); if (!perDay[k]) { perDay[k] = 0; days.push(k); } perDay[k]++; });
+        var gamesT = Math.max(2, Math.min(10, Math.round(quantile(sortNum(days.map(function (k) { return perDay[k]; })), 0.5))));
+        var cand = [];
+        var massT = niceFloor(quantile(peaks, 0.5));
+        if (massT > 0) cand.push(mk('mass', massT));
+        cand.push(mk('survive', Math.max(1, Math.floor(quantile(mins, 0.5)))));
+        var lm = recent.filter(function (g) { return g.src === 'lm'; });
+        var pos = sortNum(lm.map(function (g) { return g.bestPos; }).filter(function (p) { return p > 0; }));
+        if (lm.length && pos.length >= Math.max(2, lm.length * 0.2)) {
+            var q = quantile(pos, 0.5), t = 10;
+            [1, 3, 5, 10].some(function (x) { if (x >= q) { t = x; return true; } return false; });
+            cand.push(mk('top', t));
+        }
+        var avgPeak = Math.round(avg(peaks));
+        if (avgPeak > 0) cand.push(mk('beatAvg', avgPeak));
+        /* P2 fix #92: when fewer than 2 candidates exist, the rotation loop
+         * could produce fewer than 3 daily objectives. Guard against empty cand
+         * and pad with the survive objective if needed. */
+        if (!cand.length) cand.push(mk('survive', Math.max(1, Math.floor(quantile(mins, 0.5)))));
+        var rot = hashStr(key) % cand.length, out = [mk('games', gamesT)];
+        for (var i = 0; i < cand.length && out.length < 3; i++) out.push(cand[(rot + i) % cand.length]);
+        return out;
+    }
+    function goalProgress(goal, games, from) {
+        var list = games.filter(function (g) { return g.t >= from; }), v = 0, done = false, frac = 0;
+        if (goal.type === 'games') { v = list.length; frac = v / goal.target; done = v >= goal.target; }
+        else if (goal.type === 'survive') { v = Math.floor(maxOf(list.map(function (g) { return g.ms; })) / 6000) / 10; frac = v / goal.target; done = v >= goal.target; }
+        else if (goal.type === 'top') {
+            v = 0;
+            list.forEach(function (g) { if (g.src === 'lm' && g.bestPos > 0 && (!v || g.bestPos < v)) v = g.bestPos; });
+            done = v > 0 && v <= goal.target;
+            frac = done ? 1 : 0;
+        } else {
+            v = maxOf(list.map(function (g) { return g.peak; }));
+            frac = v / goal.target;
+            done = goal.type === 'beatAvg' ? v > goal.target : v >= goal.target;
+            if (!done && frac >= 1) frac = 0.99;
+        }
+        return { value: v, target: goal.target, frac: clamp01(frac), done: done };
+    }
 
     /* ------------------------------------------------------------------ text
      * From the language packs (developers/i18n/src, keys modules.analytics.*): the chosen language,
@@ -262,6 +432,17 @@
     function T(key, vals) { return typeof window.lmT === 'function' ? window.lmT(TP + key, vals) : key; }
     /* texts that name the one recording switch (developers/i18n/src/pkg-rpm.json) */
     function TF(key) { return typeof window.lmT === 'function' ? window.lmT(key) : key; }
+    /* dates in the chosen language (zh is Traditional Chinese) */
+    function locale() { var c = window.LMi18n && window.LMi18n.lang ? window.LMi18n.lang() : 'en'; return c === 'zh' ? 'zh-TW' : c; }
+    function goalText(goal) {
+        var t = goal.target;
+        if (goal.type === 'mass') return T('gMass', [fmtNum(t)]);
+        if (goal.type === 'survive') return T('gSurvive', [t]);
+        if (goal.type === 'top') return t === 1 ? T('gTop1') : T('gTop', [t]);
+        if (goal.type === 'games') return T('gGames', [t]);
+        return T('gBeatAvg', [fmtNum(t)]);
+    }
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
 
     /* ------------------------------------------------------------------ storage */
     function lsGet(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
@@ -292,6 +473,36 @@
         } catch (e) { }
         return { m: 0, t: 0 };
     }
+    function loadGoals() {
+        var s = { v: SCHEMA, day: '', daily: [], custom: [], done: {} };
+        try {
+            var o = JSON.parse(lsGet(KEY_GOALS));
+            if (o && o.v === SCHEMA) {
+                s.day = /^\d{4}-\d\d-\d\d$/.test(o.day) ? o.day : '';
+                s.daily = (Array.isArray(o.daily) ? o.daily : []).slice(0, 5).map(function (g) { return sanitizeGoal(g, false); }).filter(Boolean);
+                s.custom = (Array.isArray(o.custom) ? o.custom : []).slice(0, MAX_CUSTOM).map(function (g) { return sanitizeGoal(g, true); }).filter(Boolean);
+                if (o.done && typeof o.done === 'object') Object.keys(o.done).slice(0, 50).forEach(function (k) { if (o.done[k] === 1) s.done[k.slice(0, 40)] = 1; });
+            }
+        } catch (e) { }
+        return s;
+    }
+    function saveGoals(s) { try { window.localStorage.setItem(KEY_GOALS, JSON.stringify(s)); } catch (e) { } }
+    /* a new day replaces the daily objectives and forgets their completion marks; they are made
+     * from the games before today, so the first game of the day does not change them */
+    function ensureDaily(s, games, now) {
+        var key = dayKey(now);
+        if (s.day === key && s.daily.length) return false;
+        /* P1 fix #53: backward clock skew (e.g. NTP correction) could make
+         * dayKey() return an earlier date, wiping today's objectives. Only
+         * regenerate when the new key is strictly later or the first ever. */
+        if (s.day && key < s.day) return false;
+        s.daily.forEach(function (g) { delete s.done[g.id]; });
+        s.day = key;
+        var start = dayStart(now);
+        s.daily = generateDaily(games.filter(function (g) { return g.t < start; }), key);
+        return true;
+    }
+    function goalFrom(goal, custom, now) { return custom ? goal.since : dayStart(now); }
 
     /* ------------------------------------------------------------------ recorder */
     var life = null, listening = false;
@@ -407,7 +618,8 @@
         var peak = Math.max(L.peak, +e.mass || 0);
         /* L.end stays the last mass update before the death: the death event's mass is
          * playerScore, which is 0 once the cells are gone, so using it made every eaten life
-         * end at 0. It is kept with the game (what was still there right before the final hit). */
+         * end at 0 and the Coach's retention score a constant 0. Retention compares the peak
+         * with what was still there right before the final hit. */
         if (peak <= 0 && ms < 1000) return;
         if (L.prevPos === 1 && L.lbAt) L.first += Math.min(now - L.lbAt, 5000);
         settleSplits(L, now, true);
@@ -434,9 +646,36 @@
         }
         afterGame(g);
     }
-    /* a shown view draws again with the game that just ended */
-    function afterGame() {
-        if (shown && shown.parentNode && (shown._lmAnView === 'dash' || shown._lmAnView === 'heat')) redraw();
+    function toast(kind, html, onclick) {
+        if (!window.toastr) return;
+        try { window.toastr[kind](html, '', onclick ? { onclick: onclick } : undefined); } catch (e) { }
+    }
+    /* the Coach and Objectives views live in the Replays window (ogario/modules/replaystudio.js) */
+    function open(which) {
+        if (typeof window.lmReplayStudio === 'function') window.lmReplayStudio('view', which);
+    }
+    /* after each recorded game: the Coach toast, then one toast per objective completed for the first time */
+    function afterGame(g) {
+        var games = allGames();
+        var i = games.length - 1;
+        for (var j = games.length - 1; j >= 0; j--) if (games[j].t === g.t && games[j].src === 'lm') { i = j; break; }
+        var s = coachScores(g), rec = recentAverages(games, i);
+        var tips = coachSuggestions(g, s, rec);
+        toast('info', '<b>📊</b> ' + esc(T('coachToast', [s.overall, T(tips[0][0], tips[0][1])])) + ' <i>' + esc(T('coachToastMore')) + '</i>',
+            function () { open('coach'); });
+        var st = loadGoals(), now = Date.now();
+        ensureDaily(st, games, now);
+        st.daily.concat(st.custom).forEach(function (goal) {
+            var custom = st.custom.indexOf(goal) !== -1;
+            if (st.done[goal.id]) return;
+            if (goalProgress(goal, games, goalFrom(goal, custom, now)).done) {
+                st.done[goal.id] = 1;
+                toast('success', '<b>🎯</b> ' + esc(T('goalDone', [goalText(goal)])), function () { open('goals'); });
+            }
+        });
+        saveGoals(st);
+        /* a shown view draws again with the game that just ended */
+        if (shown && shown.parentNode && VIEWS[shown._lmAnView]) redraw();
     }
     function setListening(on) {
         var E = window.LMEvents;
@@ -466,7 +705,8 @@
     function enabled() { var s = window.legendmod5 || window.defaultmapsettings; return !!(s && s.recordReplays !== false); }
 
     /* ------------------------------------------------------------------ views */
-    var shown = null, heat = { layer: 'move', n: 25, map: 0 };
+    var VIEWS = { dash: 1, heat: 1, coach: 1, goals: 1 };
+    var shown = null, coachIdx = -1, heat = { layer: 'move', n: 25, map: 0 };
     /* theme() gives CSS (var(--lm-x, current) so an open window follows a theme change);
      * theme(true) gives the resolved colours for SVG attributes and canvas */
     function theme(raw) {
@@ -495,20 +735,42 @@
     function section(body, title) {
         body.appendChild(el('div', 'margin:10px 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:' + theme().tc2 + ';', title));
     }
-    /* draws the Dashboard ('dash') or Heatmaps ('heat') into host; paint() draws the last one again.
-     * The Replays window sets host._lmAnView to null when it shows something else there. */
-    function paint(host, which) {
+    /* draws the Dashboard ('dash'), Heatmaps ('heat'), Coach ('coach') or Objectives ('goals') into
+     * host; paint() draws the last one again. The Replays window sets host._lmAnView to null when it
+     * shows something else there. */
+    function paint(host, which, fresh) {
         if (host) shown = host;
         host = shown;
         if (!host) return;
+        /* the Coach opened from its view or its toast starts at the newest game */
+        if (which === 'coach' && fresh) coachIdx = -1;
         if (which) host._lmAnView = which;
         which = host._lmAnView;
-        if (which !== 'dash' && which !== 'heat') return;
+        if (!VIEWS[which]) return;
+        /* Objectives drawn again (a language change, a game that ends): the objective being typed,
+         * its type, the focus and the scroll stay (they were lost mid-typing) */
+        var keep = null, gt = host.querySelector('#lm-analytics-goal-type'), gn = host.querySelector('#lm-analytics-goal-target');
+        if (which === 'goals' && gt && gn) keep = { type: gt.value, n: gn.value, focus: document.activeElement === gn ? gn.id : document.activeElement === gt ? gt.id : '', y: host.scrollTop };
         while (host.firstChild) host.removeChild(host.firstChild);
         try {
             if (which === 'heat') paintHeat(host);
+            else if (which === 'coach') paintCoach(host);
+            else if (which === 'goals') paintGoals(host);
             else paintDash(host);
         } catch (e) { try { console.warn('[LM stats] could not draw the view:', e); } catch (e2) { } }
+        if (keep) restoreGoalForm(host, keep);
+    }
+    function restoreGoalForm(body, k) {
+        var gt = body.querySelector('#lm-analytics-goal-type'), gn = body.querySelector('#lm-analytics-goal-target');
+        if (!gt || !gn) return;
+        if (gt.value !== k.type && gt.querySelector('option[value="' + k.type + '"]')) {
+            gt.value = k.type;
+            try { gt.dispatchEvent(new Event('change')); } catch (e) { }
+        }
+        gn.value = k.n;
+        body.scrollTop = k.y;
+        var f = k.focus && body.querySelector('#' + k.focus);
+        if (f) { try { f.focus({ preventScroll: true }); } catch (e) { f.focus(); } }
     }
     function redraw() { paint(null); }
     function note(body, text) {
@@ -690,6 +952,141 @@
         ctx.stroke();
         ctx.globalAlpha = 1;
     }
+    function deltaText(v, ref) { var d = Math.round(v - ref); return (d > 0 ? '+' : d < 0 ? '−' : '±') + Math.abs(d); }
+    function paintCoach(body) {
+        var t = theme(), games = allGames();
+        var idxs = [];
+        games.forEach(function (g, i) { if (g.src === 'lm') idxs.push(i); });
+        if (!enabled()) note(body, TF('pkg.rpm.recOff'));
+        if (!idxs.length) { note(body, T('coachNone')); return; }
+        idxs = idxs.slice(-50);
+        if (coachIdx < 0 || coachIdx >= idxs.length) coachIdx = idxs.length - 1;
+        var gi = idxs[coachIdx], g = games[gi], s = coachScores(g), rec = recentAverages(games, gi);
+        var nav = el('div', 'display:flex;align-items:center;gap:6px;flex-wrap:wrap;');
+        var pv = btn('◀', 'min-width:36px;', function () { coachIdx = Math.max(0, coachIdx - 1); paint(); });
+        pv.title = T('prev'); pv.setAttribute('aria-label', T('prev')); pv.disabled = coachIdx === 0;
+        var nx = btn('▶', 'min-width:36px;', function () { coachIdx = Math.min(idxs.length - 1, coachIdx + 1); paint(); });
+        nx.title = T('next'); nx.setAttribute('aria-label', T('next')); nx.disabled = coachIdx === idxs.length - 1;
+        nav.appendChild(pv);
+        nav.appendChild(nx);
+        var d = new Date(g.t);
+        nav.appendChild(el('div', 'flex:1 1 auto;min-width:0;color:' + t.tc2 + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;',
+            d.toLocaleString(locale()) + ' · ' + fmtNum(g.peak) + ' · ' + fmtTime(g.ms) + (g.srv ? ' · ' + g.srv : '')));
+        body.appendChild(nav);
+        var wrap = el('div', 'display:flex;flex-wrap:wrap;gap:12px;margin-top:6px;');
+        var left = el('div', 'flex:1 1 260px;min-width:0;');
+        var big = el('div', 'display:flex;align-items:baseline;gap:8px;margin-bottom:4px;');
+        big.id = 'lm-analytics-overall';
+        big.appendChild(el('span', 'font-size:12px;color:' + t.tc2 + ';', T('overall')));
+        big.appendChild(el('span', 'font-size:26px;font-weight:700;color:' + t.mc + ';', String(s.overall)));
+        big.appendChild(el('span', 'color:' + t.tc2 + ';', '/100'));
+        if (rec.overall !== null) big.appendChild(el('span', 'color:' + t.tc2 + ';', deltaText(s.overall, rec.overall) + ' ' + T('vsAvg')));
+        left.appendChild(big);
+        /* one bar per part; the thin tick on the track is the recent average, the number on the right the difference */
+        PARTS.forEach(function (k) {
+            var row = el('div', 'display:flex;align-items:center;gap:6px;padding:2px 0;');
+            row.setAttribute('data-part', k);
+            row.appendChild(el('span', 'flex:0 0 112px;color:' + t.tc2 + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', T(k)));
+            var track = el('span', 'flex:1 1 auto;height:8px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.08);position:relative;overflow:hidden;');
+            if (s[k] !== null) track.appendChild(el('span', 'position:absolute;left:0;top:0;bottom:0;width:' + s[k] + '%;background:' + BLUE + ';border-radius:var(--lm-radius-s,4px);'));
+            if (rec[k] !== null && rec[k] !== undefined) track.appendChild(el('span', 'position:absolute;top:-1px;bottom:-1px;width:2px;left:calc(' + rec[k] + '% - 1px);background:' + t.tc + ';opacity:.7;'));
+            row.appendChild(track);
+            row.appendChild(el('span', 'flex:0 0 28px;text-align:right;font-weight:700;', s[k] === null ? '—' : String(s[k])));
+            row.appendChild(el('span', 'flex:0 0 36px;text-align:right;color:' + t.tc2 + ';', s[k] !== null && rec[k] !== null && rec[k] !== undefined ? deltaText(s[k], rec[k]) : ''));
+            left.appendChild(row);
+        });
+        wrap.appendChild(left);
+        var right = el('div', 'flex:1 1 260px;min-width:0;');
+        section(right, T('suggestions'));
+        var ul = el('ul', 'margin:0;padding-left:18px;');
+        ul.id = 'lm-analytics-tips';
+        coachSuggestions(g, s, rec).forEach(function (x) { ul.appendChild(el('li', 'margin:2px 0;', T(x[0], x[1]))); });
+        right.appendChild(ul);
+        wrap.appendChild(right);
+        body.appendChild(wrap);
+    }
+    function goalRow(list, goal, prog, onDelete) {
+        var t = theme(), row = el('div', 'display:flex;align-items:center;gap:8px;padding:4px 0;border-top:1px solid rgba(255,255,255,0.06);');
+        row.className = 'lm-analytics-goal';
+        var mid = el('div', 'flex:1 1 auto;min-width:0;');
+        mid.appendChild(el('div', 'overflow:hidden;text-overflow:ellipsis;' + (prog.done ? 'color:' + t.mc + ';font-weight:700;' : ''), (prog.done ? '✓ ' : '') + goalText(goal)));
+        var bar = el('div', 'height:8px;border-radius:var(--lm-radius-s,4px);background:rgba(255,255,255,0.08);overflow:hidden;margin-top:2px;');
+        bar.setAttribute('role', 'progressbar');
+        bar.setAttribute('aria-valuemin', '0');
+        bar.setAttribute('aria-valuemax', '100');
+        bar.setAttribute('aria-valuenow', String(pct(prog.frac)));
+        bar.appendChild(el('div', 'height:100%;width:' + pct(prog.frac) + '%;background:' + (prog.done ? t.mc : BLUE) + ';border-radius:var(--lm-radius-s,4px);'));
+        mid.appendChild(bar);
+        row.appendChild(mid);
+        var val = goal.type === 'top' ? (prog.value ? '#' + prog.value : '—') + ' / #' + goal.target
+            : goal.type === 'survive' ? T('surviveVal', [prog.value, goal.target]) : fmtNum(prog.value) + ' / ' + fmtNum(goal.target);
+        row.appendChild(el('div', 'flex:0 0 auto;color:' + t.tc2 + ';white-space:nowrap;', val));
+        if (onDelete) {
+            var x = btn('✕', 'min-width:32px;padding:0;', onDelete);
+            x.title = T('delete');
+            x.setAttribute('aria-label', T('delete'));
+            row.appendChild(x);
+        }
+        list.appendChild(row);
+    }
+    function paintGoals(body) {
+        var t = theme(), games = allGames(), now = Date.now(), st = loadGoals();
+        if (ensureDaily(st, games, now)) saveGoals(st);
+        if (!enabled()) note(body, TF('pkg.rpm.recOff'));
+        section(body, T('today'));
+        var daily = el('div');
+        daily.id = 'lm-analytics-daily';
+        st.daily.forEach(function (goal) { goalRow(daily, goal, goalProgress(goal, games, goalFrom(goal, false, now))); });
+        body.appendChild(daily);
+        section(body, T('yours'));
+        var custom = el('div');
+        custom.id = 'lm-analytics-custom';
+        st.custom.forEach(function (goal) {
+            goalRow(custom, goal, goalProgress(goal, games, goalFrom(goal, true, now)), function () {
+                var s2 = loadGoals();
+                s2.custom = s2.custom.filter(function (x) { return x.id !== goal.id; });
+                delete s2.done[goal.id];
+                saveGoals(s2);
+                paint();
+            });
+        });
+        body.appendChild(custom);
+        var form = el('div', 'display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:6px;');
+        var type = el('select', 'font:inherit;font-size:var(--lm-w-fs,12px);min-height:var(--lm-w-ctl,28px);color:var(--lm-tc,#000);background:var(--lm-w-field,var(--lm-pc2,#fff));border:1px solid var(--lm-pc2,rgba(255,255,255,0.2));border-radius:var(--lm-radius-s,4px);');
+        type.id = 'lm-analytics-goal-type';
+        [['mass', 'tMass'], ['survive', 'tSurvive'], ['top', 'tTop'], ['games', 'tGames'], ['beatAvg', 'tBeatAvg']].forEach(function (o) {
+            var op = el('option', null, T(o[1])); op.value = o[0]; type.appendChild(op);
+        });
+        var inp = el('input', 'font:inherit;font-size:var(--lm-w-fs,12px);min-height:var(--lm-w-ctl,28px);width:90px;color:var(--lm-tc,#000);background:var(--lm-w-field,var(--lm-pc2,#fff));border:1px solid var(--lm-pc2,rgba(255,255,255,0.2));border-radius:var(--lm-radius-s,4px);padding:0 6px;box-sizing:border-box;');
+        inp.id = 'lm-analytics-goal-target';
+        inp.type = 'number';
+        inp.min = '1';
+        inp.inputMode = 'numeric';
+        /* "beat average" takes the current average peak as its target, so it needs no number */
+        var sync = function () { inp.style.display = type.value === 'beatAvg' ? 'none' : ''; inp.max = String(GOAL_MAX[type.value]); };
+        type.addEventListener('change', sync);
+        sync();
+        var add = btn(T('add'), '', function () {
+            var s2 = loadGoals();
+            if (s2.custom.length >= MAX_CUSTOM) { toast('warning', esc(T('customFull'))); return; }
+            var target = type.value === 'beatAvg' ? Math.round(avg(games.slice(-30).map(function (g) { return g.peak; }))) : Math.round(+inp.value);
+            var goal = sanitizeGoal({ id: 'c' + Date.now().toString(36), type: type.value, target: target, since: Date.now() }, true);
+            /* "beat average" has no field to focus: without games it has no average yet, say so */
+            if (!goal && type.value === 'beatAvg') { toast('info', esc(TF('pkg.rpm.noGames'))); return; }
+            if (!goal) { inp.focus(); return; }
+            s2.custom.push(goal);
+            saveGoals(s2);
+            /* added: the field starts empty again (a redraw keeps what is typed) */
+            inp.value = '';
+            paint();
+        });
+        add.id = 'lm-analytics-goal-add';
+        form.appendChild(type);
+        form.appendChild(inp);
+        form.appendChild(add);
+        body.appendChild(form);
+        body.appendChild(el('div', 'margin-top:8px;font-size:11px;color:' + t.tc2 + ';', T('goalsNote')));
+    }
 
     /* ------------------------------------------------------------------ recording switch */
     function tick() {
@@ -701,13 +1098,15 @@
     window.LMAnalytics = Object.freeze({
         /* the option and the listeners again (a settings change) */
         sync: tick,
-        /* the Dashboard or Heatmaps into an element (the Replays window) */
+        /* the Dashboard, Heatmaps, Coach or Objectives into an element (the Replays window) */
         paint: paint,
         /* pure parts, for the tests */
         core: Object.freeze({
             SCHEMA: SCHEMA, GRID: GRID, encodeCell: encodeCell, decodeCells: decodeCells, trackFacts: trackFacts, binHeat: binHeat,
             sanitizeGame: sanitizeGame, sanitizeTrack: sanitizeTrack, parseStore: parseStore, fromMatchHistory: fromMatchHistory,
-            mergeGames: mergeGames, aggregate: aggregate, weekStart: weekStart, text: T
+            mergeGames: mergeGames, aggregate: aggregate, weekStart: weekStart, coachScores: coachScores, recentAverages: recentAverages,
+            coachSuggestions: coachSuggestions, generateDaily: generateDaily, goalProgress: goalProgress, sanitizeGoal: sanitizeGoal,
+            niceFloor: niceFloor, quantile: quantile, dayKey: dayKey, ensureDaily: ensureDaily, text: T
         })
     });
     tick();

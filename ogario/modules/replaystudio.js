@@ -2,7 +2,7 @@
  * speed (0.25x-4x) forwards or backwards, pause and packet-by-packet stepping, colour filters,
  * a replay library in IndexedDB and clip export (.lm). Next to the Player and the Library it shows the
  * recorded games: the Match history list (ogario.v4.js _lmMatchHistoryPaint) and their stats, the
- * Dashboard and Heatmaps (ogario/modules/analytics.js LMAnalytics.paint); "Record replays" records
+ * Dashboard, Heatmaps, Coach and Objectives (ogario/modules/analytics.js LMAnalytics.paint); "Record replays" records
  * all of them. It plays every replay: the Replay button, a replay^ server token, Death recap links and
  * ?replay= links (with ?replayStart= / ?replayEnd= packet numbers) all open it.
  *
@@ -1755,8 +1755,10 @@
         W.tabG = btn(function () { return TF('matchHistory'); }, '', function () { setTab('games'); });
         W.tabD = btn(function () { return TF('modules.analytics.tabDash'); }, '', function () { setTab('dash'); });
         W.tabH = btn(function () { return TF('modules.analytics.tabHeat'); }, '', function () { setTab('heat'); });
-        W.tabG.id = 'lm-rs-tab-games'; W.tabD.id = 'lm-rs-tab-dash'; W.tabH.id = 'lm-rs-tab-heat';
-        [W.tabP, W.tabL, W.tabG, W.tabD, W.tabH].forEach(function (b) { tabs.appendChild(b); });
+        W.tabC = btn(function () { return TF('modules.analytics.tabCoach'); }, '', function () { setTab('coach'); });
+        W.tabO = btn(function () { return TF('modules.analytics.tabGoals'); }, '', function () { setTab('goals'); });
+        W.tabG.id = 'lm-rs-tab-games'; W.tabD.id = 'lm-rs-tab-dash'; W.tabH.id = 'lm-rs-tab-heat'; W.tabC.id = 'lm-rs-tab-coach'; W.tabO.id = 'lm-rs-tab-goals';
+        [W.tabP, W.tabL, W.tabG, W.tabD, W.tabH, W.tabC, W.tabO].forEach(function (b) { tabs.appendChild(b); });
         head.appendChild(tabs);
         head.appendChild(btn('\u2715', K('close'), close, 'min-width:38px;font-size:15px;color:var(--lm-tc2,#eee);'));
         W.appendChild(head);
@@ -1892,7 +1894,7 @@
         document.body.appendChild(W);
         return W;
     }
-    var VIEWS = { games: 1, dash: 1, heat: 1 };
+    var VIEWS = { games: 1, dash: 1, heat: 1, coach: 1, goals: 1 };
     function setTab(t) {
         if (t !== 'player' && t !== 'library' && !VIEWS[t]) t = 'player';
         tab = t;
@@ -1905,14 +1907,17 @@
         W.tabG.classList.toggle('on', t === 'games');
         W.tabD.classList.toggle('on', t === 'dash');
         W.tabH.classList.toggle('on', t === 'heat');
+        W.tabC.classList.toggle('on', t === 'coach');
+        W.tabO.classList.toggle('on', t === 'goals');
         if (t === 'library') refreshLibrary();
-        if (VIEWS[t]) drawView();
+        /* a view chosen again starts fresh (the Coach at the newest game) */
+        if (VIEWS[t]) drawView(true);
     }
     /* the shown games view: the match history list (each life: mass, time alive, killer, server,
      * mode) or the Dashboard / Heatmaps made from the same games. The stats file loads with the
      * game; while it is not there yet the view says so, asks for it again after a failed download
      * and draws itself once it is there. */
-    function drawView() {
+    function drawView(fresh) {
         if (!W || !VIEWS[tab]) return;
         var host = W.av;
         clearTimeout(drawView.t);
@@ -1920,7 +1925,7 @@
         while (host.firstChild) host.removeChild(host.firstChild);
         if (tab === 'games') { if (typeof window._lmMatchHistoryPaint === 'function') window._lmMatchHistoryPaint(host); return; }
         var A = window.LMAnalytics;
-        if (A && typeof A.paint === 'function') { A.paint(host, tab); return; }
+        if (A && typeof A.paint === 'function') { A.paint(host, tab, fresh === true); return; }
         /* stats without paint are the file from before the merge (it had a window of its own): this
          * file loads on first open, so a page loaded before an update can run the new window with the
          * old stats file. Waiting would end in "could not be loaded"; a page reload brings the current one */
@@ -1930,8 +1935,8 @@
         host.appendChild(msg);
         var start = Date.now();
         (function wait() {
-            if (!isOpen() || (tab !== 'dash' && tab !== 'heat')) return;
-            if (window.LMAnalytics) { drawView(); return; }
+            if (!isOpen() || tab === 'games' || !VIEWS[tab]) return;
+            if (window.LMAnalytics) { drawView(fresh); return; }
             if (window._lmAnalyticsLoadFailed || Date.now() - start > 15000) { msg.textContent = TF('pkg.rpm.loadFailed'); return; }
             drawView.t = setTimeout(wait, 500);
         })();
@@ -2170,6 +2175,8 @@
         if (action === 'watch') return Array.isArray(arg) ? watch(arg[0], arg[1]) : watch(arg, 0);
         /* arg: [URL, start packet, end packet] */
         if (action === 'url') return Array.isArray(arg) ? loadUrl(arg[0], arg[1], arg[2]) : loadUrl(arg);
+        /* arg: a games view ('coach', 'goals', ...): the Coach and objective toasts open theirs */
+        if (action === 'view') { open(); return setTab(arg); }
         return open(arg);
     };
     RS.open = open;

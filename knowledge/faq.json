@@ -159,7 +159,7 @@
     },
     {
       "question": "Where are my match history and game stats?",
-      "answer": "In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) and Heatmaps (position history, 3,600 samples per game, 50 games). They are recorded with Settings > Replays > Record replays, on by default."
+      "answer": "In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) Heatmaps (position history, 3,600 samples per game, 50 games), Coach (scores for survival, growth, splits, movement and retention with tips) and Objectives (three daily ones and up to 8 of your own). They are recorded with Settings > Replays > Record replays, on by default."
     },
     {
       "question": "How do presets work?",

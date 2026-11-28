@@ -1,6 +1,6 @@
 // Recorded games in the Replays window (ogario/modules/replaystudio.js): "Record replays" is the one
 // switch (no Analytics or Match history switch, window, button, footer link or hotkey any more); the
-// Match history, Dashboard and Heatmaps tabs draw with sample data in that same window, which fits the
+// Match history, Dashboard, Heatmaps, Coach and Objectives tabs draw with sample data in that same window, which fits the
 // screen. Restores localStorage after.
 (async () => {
   var fail = [], info = {};
@@ -15,7 +15,7 @@
   need('recording listeners with Record replays on', window.LMEvents._has('massUpdate') && window.LMEvents._has('death'));
   need('no Analytics hotkey, profile button or footer links', !(typeof hotkeysCommand === 'object' && hotkeysCommand['hk-analytics']) &&
     !document.getElementById('lm-analytics-btn') && !document.getElementById('lm-analytics-link') && !document.getElementById('lm-mh-btn'));
-  var keys = ['lmAnalyticsGames', 'lmAnalyticsTracks', 'lmMatchHistory'], saved = {}, origConfirm = window.confirm;
+  var keys = ['lmAnalyticsGames', 'lmAnalyticsTracks', 'lmAnalyticsGoals', 'lmMatchHistory'], saved = {}, origConfirm = window.confirm;
   keys.forEach(function (k) { saved[k] = localStorage.getItem(k); });
   var $id = function (x) { return document.getElementById(x); };
   var openStudio = async function () {
@@ -89,6 +89,16 @@
     var dl = document.querySelector('#lm-rs [data-layer="death"]');
     if (dl) dl.click();
     need('deaths layer', !!$id('lm-analytics-heat'));
+    /* the Coach and the objectives are views of the same window */
+    localStorage.removeItem('lmAnalyticsGoals');
+    $id('lm-rs-tab-coach').click();
+    need('coach report', !!document.querySelector('#lm-rs-games #lm-analytics-overall') && document.querySelectorAll('#lm-rs-games #lm-analytics-tips li').length >= 2 &&
+      document.querySelectorAll('#lm-rs-games [data-part]').length === 5);
+    $id('lm-rs-tab-goals').click();
+    need('daily objectives', document.querySelectorAll('#lm-rs-games #lm-analytics-daily .lm-analytics-goal').length === 3);
+    $id('lm-analytics-goal-target').value = '1500';
+    $id('lm-analytics-goal-add').click();
+    need('custom objective added', document.querySelectorAll('#lm-rs-games #lm-analytics-custom .lm-analytics-goal').length === 1);
     need('no window of its own', !$id('lm-analytics'));
   } catch (e) {
     fail.push('threw: ' + e);

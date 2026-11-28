@@ -21655,6 +21655,8 @@ var LM_EXPORT_KEYS = [
     { key: 'lmHudLayouts', type: 'o' },
     { key: 'lmThemeWorkshop', type: 'o' },     /* the Theme workshop's saved themes (ogario/modules/themeworkshop.js) */
     { key: 'lmPracticeCfg', type: 'o' },
+    /* Analytics: the Coach's objectives (ogario/modules/analytics.js) */
+    { key: 'lmAnalyticsGoals', type: 'o' },
     /* importOnly: the old skin collections are player profiles now (lmMergeSkinCollections after
      * the import's reload); an older export still brings its skins in, a new one has none */
     { key: 'lmSkinCollections', type: 'o', importOnly: true },
@@ -42569,7 +42571,7 @@ function thelegendmodproject() {
         },
         sendSplit() {
             this.sendPosition();
-            /* "split" for scripts and Analytics: one event per split sent; before = own
+            /* "split" for scripts and the Analytics coach: one event per split sent; before = own
              * cell count when it was sent */
             if (this.play && window.LMEvents._has('split')) window.LMEvents.emit('split', { time: Date.now(), count: 1, before: this.playerCells ? this.playerCells.length : 0 });
             if (this.serverType === 'senpa') {
@@ -87561,9 +87563,9 @@ Object.defineProperty(Array.prototype, 'stDev', {
     try { localStorage.removeItem('lmCommandCentre'); } catch (e) { }
     /* The spectator director is removed: its camera settings, bookmarks and watchlist are deleted from this browser */
     try { ['lm-director', 'lm-director-bookmarks', 'lm-director-watch'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
-    /* The stream companion, Discover features and the Analytics objectives are removed:
+    /* The stream companion and Discover features are removed:
      * what they kept is deleted from this browser */
-    try { ['lmCompanionPrivacy', 'lmDiscover', 'lmAnalyticsGoals'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
+    try { ['lmCompanionPrivacy', 'lmDiscover'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* The Mega FFA giveaway (mass counted on imsolo.pro:2102) is removed: its counter and start date are deleted */
     try { ['totalPlayerMassBigFFA', 'PremiumLimitedDateStart'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* The ?ref= invite links are removed: the inviter name they stored (never read) is deleted */
@@ -87588,7 +87590,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading death recap script:', e);
     }
-    /* Game stats for the Replays window's Dashboard and Heatmaps; records only while Record replays is on */
+    /* Game stats for the Replays window's Dashboard, Heatmaps, Coach and Objectives; records only while Record replays is on */
     try {
         var analyticsScript = document.createElement('script');
         analyticsScript.type = 'text/javascript';

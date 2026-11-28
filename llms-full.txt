@@ -254,7 +254,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Mass graph**: Graph of mass over your life on the Game Over card
 - **Death recap**: Last 20 seconds as 3-6 summarised steps with mass sparkline, showing splits, virus pops, being eaten. Attributes killer from eat events. Expanding Land uses server-provided killer info.
 - **Killer display**: "Eaten by: nick (mass)" on the Game Over card
-- **Game stats**: the Dashboard and Heatmaps views of the Replays window, next to the match history: up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis. Recorded with Record replays.
+- **Game stats**: the Dashboard, Heatmaps, Coach (play pattern analysis with tips) and Objectives (three daily, up to 8 custom) views of the Replays window, next to the match history: up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis. Recorded with Record replays.
 - **Session stats**: Games played, best mass, time played per tab session (sessionStorage)
 
 ### 16. Scan Trick and Line Split
@@ -500,7 +500,7 @@ A full playback tool for game replays with timeline, automatic bookmarks, variab
 A tool to drag and resize 15 HUD components (leaderboard, minimap, stats, chat, etc.) into named layouts. Up to 20 layouts with grid snapping (8/16/32px), lock/unlock, and edge-relative positioning for responsiveness.
 
 **Where are my match history and game stats?**
-In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) and Heatmaps (position history, 3,600 samples per game, 50 games). They are recorded with Settings > Replays > Record replays, on by default.
+In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) Heatmaps (position history, 3,600 samples per game, 50 games), Coach (scores for survival, growth, splits, movement and retention with tips) and Objectives (three daily ones and up to 8 of your own). They are recorded with Settings > Replays > Record replays, on by default.
 
 **How do presets work?**
 Legend Mod offers one-click presets: Competitive (enables rings, mass, split range), Battery Saver (caps FPS, disables effects), Streamer (hides personal info), Reduced Motion (no animations), and Clean HUD (minimal interface). 8 built-in theme presets and 3 menu presets are in the Theme workshop's Gallery.
