@@ -128,6 +128,9 @@ async function theme() {
         check('spawn: no burst with ' + name, !fx.active);
     }
 
+    E.emit('spawn', { time: 4, context: 'practice' });
+    check('spawn: no burst for an event of the practice arena (its context)', !fx.active);
+
     /* off: nothing left */
     E.emit('spawn', { time: 5 });
     const ours = fx.active;
