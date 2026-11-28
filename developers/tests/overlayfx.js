@@ -936,6 +936,16 @@ if (R._lmGlMerge) {
     hatty.x = a.x + 150;
     r = frame(S3);
     check('  effect away from it: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    /* own mass hidden: no timer is drawn, so its place never becomes known; it needs no box */
+    setSettings({ map: { mergeTimer: true, noNames: true, hideMyMass: true }, set: { massScale: 9 } });
+    hatty.x = a.x;
+    a._lmMgF = undefined;
+    frame(S3);
+    r = frame(S3);
+    check('  own mass hidden, effect where the timer would be: WebGL (no timer, no box), equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    setSettings({ map: { mergeTimer: true, noNames: true }, set: { massScale: 9 } });
+    hatty.x = a.x + 150;
+    frame(S3);
     a.size = 50;
     hatty.x = a.x;
     r = frame(S3);

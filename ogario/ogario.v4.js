@@ -63749,6 +63749,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* the rule of drawMerge */
             var ids = window.playerCellsId, e = ids && ids[cell.id], pc = window.legendmod && window.legendmod.playerCells;
             if (!(cell.size > 40) || !e || !(e.mergeTime > 1) || !pc || pc.length < 2) return n;
+            /* no mass label, no timer (own cells: the skin only changes the nick bit); its place
+             * would never become known and every such frame would stay on Canvas2D */
+            if (!(cell.lmLabels(cell.size, null) & 1)) return n;
             var s = this.scale || 1;
             if (!(cell._lmMgF >= this._glSkinFrame - 2) || !(Math.abs(cell.size - cell._lmMgS) <= 0.05 * cell.size) ||
                 !(Math.abs(s - cell._lmMgZ) <= 0.05 * s)) return this._lmFxFail(this.GLW.MERGE);
