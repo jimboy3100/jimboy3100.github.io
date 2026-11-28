@@ -50,9 +50,18 @@ check('Reduced motion: none, also with Dying Light', h._deathParticles.length ==
  * cells and multibox units' cells: only the other players get the themed colours */
 {
     const calls = main.split('_spawnDeathBurst(').slice(1).filter(c => /^\s*_(victim|remove)StartX/.test(c)).map(c => c.slice(0, c.indexOf(');')));
+    /* the eat caller's keepColour, run: the unit lookup only while Dying Light is on */
+    const keepSrc = calls[0] && calls[0].slice(calls[0].indexOf("'#808080',") + 10).replace(/\/\*[\s\S]*?\*\//g, '').trim();
+    let looks = 0;
+    const keep = (dlOn, v, was, unit) => new Function('_lmDl', 'victimID', 'victimRawID', '_victimWasPlayer', 'lmMbOwnUnitCell', 'return ' + keepSrc)(
+        dlOn, v, 7, was, () => { looks++; return unit; });
     check('burst callers: viruses, own cells and multibox unit cells keep their colour', calls.length === 2 &&
-        /isVirus \|\| _victimWasPlayer \|\| !!victimID\.isPlayerCellMulti \|\|\s*lmMbOwnUnitCell\(victimID, victimRawID\)/.test(calls[0]) &&
+        keep(true, { isVirus: true }, false, false) === true && keep(true, {}, true, false) === true && keep(true, { isPlayerCellMulti: true }, false, false) === true &&
+        keep(true, {}, false, true) === true && keep(true, {}, false, false) === false &&
         /cell\.isVirus \|\| !!cell\.isPlayerCell \|\| !!cell\.isPlayerCellMulti/.test(calls[1]));
+    looks = 0;
+    check('...without Dying Light no unit lookup per burst (a virus still says so, as before)', keep(false, {}, true, true) === false &&
+        keep(false, { isVirus: true }, false, true) === true && looks === 0);
 }
 
 /* 2. the theme: dyinglight.js with the real LMEvents */

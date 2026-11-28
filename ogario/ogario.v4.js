@@ -56275,9 +56275,10 @@ function thelegendmodproject() {
                             victimID.color ||
                             '#808080',
                             /* a virus, an own cell and a multibox unit's cell keep their colour
-                             * (Dying Light's colours are for the other players, as its skins) */
-                            !!victimID.isVirus || _victimWasPlayer || !!victimID.isPlayerCellMulti ||
-                            lmMbOwnUnitCell(victimID, victimRawID)
+                             * (Dying Light's colours are for the other players, as its skins).
+                             * The unit lookup runs only while Dying Light is on: unused without it */
+                            !!victimID.isVirus || (_lmDl && (_victimWasPlayer || !!victimID.isPlayerCellMulti ||
+                            lmMbOwnUnitCell(victimID, victimRawID)))
                         );
                     }
 
