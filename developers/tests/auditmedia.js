@@ -135,6 +135,18 @@ Object.keys(PNG).forEach((f) => {
 });
 
 
+/* the audit's reference scan reads inline handlers and javascript: links as script, so a page opened by
+ * onclick="pop('articles/x.html')" is a reference (Lc/Lc.html opens its articles that way) */
+{
+    const R = require(path.join(repo, 'developers', 'audit', 'references.js'));
+    const exist = new Set(['Lc/Lc.html', 'Lc/articles/a.html', 'Lc/articles/b.html', 'Lc/articles/c.html']);
+    const inv = { exist, dirs: new Set(['Lc', 'Lc/articles']), lower: new Map(), sorted: [...exist] };
+    const page = '<a onclick="pop(\'articles/a.html\');">A</a><a href="javascript:pop(\'articles/b.html\')">B</a><a title="articles/c.html">C</a>';
+    const got = R.extract('Lc/Lc.html', page, { cfg: R.loadConfig(repo), inv }).refs.filter((r) => r.status === 'ok').map((r) => r.target).sort();
+    check('references: onclick and javascript: handlers are read as script, a title is not (' + JSON.stringify(got) + ')',
+        JSON.stringify(got) === JSON.stringify(['Lc/articles/a.html', 'Lc/articles/b.html']));
+}
+
 /* the audit's perceptual duplicates (developers/audit/perceptual.js, PNG decoder without Chrome):
  * the same picture saved another way (other filter, palette, size, a few pixels changed) is one
  * group; another picture, or the same shape in another colour, is not */

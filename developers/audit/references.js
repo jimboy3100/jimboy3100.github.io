@@ -4,8 +4,9 @@
 //   of this repository on raw.githubusercontent.com / cdn.jsdelivr.net / github.com, in any text file;
 // - HTML attributes (src, href, poster, srcset, data-src ...), CSS url() / @import, extension and web
 //   app manifests, userscript metadata (@require, @icon, @updateURL ...);
-// - relative path strings in scripts and JSON ('img/x.png', "ogario/modules/x.js"), resolved against
-//   the file's folder and the site root (weak: a script runs in the page that loads it);
+// - relative path strings in scripts and JSON ('img/x.png', "ogario/modules/x.js"), also in inline
+//   handlers and javascript: links (onclick="pop('articles/x.html')"), resolved against the file's
+//   folder and the site root (weak: a script runs in the page that loads it);
 // - dynamic paths: 'https://www.legendmod.ml/banners/' + name + '.png', `.../${x}.js`, 'dir/' + x,
 //   kept as patterns (prefix, suffix) instead of single files.
 // Each reference says whether it is in a comment, and how it resolves on GitHub Pages (exact case,
@@ -386,7 +387,8 @@ function extract(rel, t, ctx) {
     }
     if (ctx.external) return { refs, patterns };
 
-    /* HTML attributes */
+    /* HTML attributes; inline handlers (onclick="pop('articles/x.html')") and javascript: links are script */
+    const handlerZones = [];
     if (kind === 'html') {
         const bm = /<base\s[^>]*href\s*=\s*["']([^"']+)["']/i.exec(t);
         let baseRel = null;
@@ -408,6 +410,12 @@ function extract(rel, t, ctx) {
             let am;
             while ((am = attrRe.exec(tm[2]))) {
                 const name = am[1].toLowerCase();
+                const js = /^on[a-z]+$/.test(name) || /^\s*javascript:/i.test(am[2] !== undefined ? am[2] : am[3] !== undefined ? am[3] : am[4] || '');
+                if (js) {
+                    const vs = tm.index + 1 + tm[1].length + am.index + am[0].indexOf('=') + 1;
+                    handlerZones.push([vs, tm.index + 1 + tm[1].length + am.index + am[0].length]);
+                    continue;
+                }
                 if (!ATTRS.has(name)) continue;
                 if (tag === 'link' && /rel\s*=\s*["']?(preconnect|dns-prefetch)/i.test(tm[2])) continue;
                 const val = (am[2] !== undefined ? am[2] : am[3] !== undefined ? am[3] : am[4]).trim().replace(/&amp;/g, '&');
@@ -482,7 +490,7 @@ function extract(rel, t, ctx) {
         add({ kind: 'rel', raw: v, at, strict: false, status: hit ? 'ok' : 'unresolved', target: hit || undefined });
     }
     if (inv && (kind === 'js' || e === 'json' || e === 'jsonld' || kind === 'html')) {
-        const zones = kind === 'html' ? blocks.scripts : [[0, t.length]];
+        const zones = kind === 'html' ? blocks.scripts.concat(handlerZones) : [[0, t.length]];
         for (const z of zones) {
             const s = t.slice(z[0], z[1]);
             REL_RE.lastIndex = 0;
