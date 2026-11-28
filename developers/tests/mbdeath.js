@@ -190,6 +190,8 @@ function death(o) {
     const i0 = v4.indexOf('window.testobjectsOpcode17 = data;');
     const caseStart = v4.lastIndexOf('case 17:', i0), caseEnd = v4.indexOf('break;', v4.indexOf('this.scale = data.getFloat32(s, true);', i0));
     const frame = block(v4, '        getMultiboxFrame(mainSize) {');
+    /* the camera helpers the frame uses (lmMbEachPlayer, lmMbCameraBox, ...) */
+    const camA = v4.indexOf('var LM_MB_CAMERA_NEAR = '), camHelpers = v4.slice(camA, v4.indexOf('/* OgVer set above', camA));
     if (i0 < 0 || caseStart < 0 || caseEnd < 0 || !frame) { console.log('FAIL opcode 17 not found'); process.exit(1); }
     const body = 'do {' + v4.slice(v4.indexOf(':', caseStart) + 1, caseEnd) + '} while (0);';
     const view = (middle, focus, framed) => {
@@ -199,7 +201,7 @@ function death(o) {
         vm.runInContext('var defaultmapsettings = { middleMultiView: ' + middle + ' };\n' +
             'var legendmod = window.legendmod = { multiBoxPlayerExists: true, vector: [[0, 0]], vnr: 0, playerCells: [], viewX: 100, viewY: 100 }, LM = legendmod;\n' +
             'var spects = window.spects = [{ number: 1, player: true, playerCellIDs: [], getOwnPlayerCells() { return []; } }];\n' +
-            'function getActiveSpect() { return null; }\nvar drawRender = { ' + frame + ' };\n' +
+            'function getActiveSpect() { return null; }\n' + camHelpers + '\nvar drawRender = { ' + frame + ' };\n' +
             'window.op17 = function (x, y) { var data = new DataView(new ArrayBuffer(13)); data.setFloat32(1, x, true); data.setFloat32(5, y, true); data.setFloat32(9, 0.4, true); var s = 1;\n' +
             body + '\n}.bind(legendmod);', ctx);
         ctx.multiboxPlayerEnabled = focus;

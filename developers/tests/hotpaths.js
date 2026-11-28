@@ -4,6 +4,7 @@
  * - lmTop5TempTeammates: a temporary (socket 3) teammate expires 6 s after its last update,
  *   is not added twice, and fresh ones stay listed.
  * - application._lmTop5Write: teamboard DOM writes only when something changed.
+ * - split range with multibox units: each unit's own cell index, no list per unit per frame.
  * Usage: node developers/tests/hotpaths.js */
 const fs = require('fs');
 const path = require('path');
@@ -221,6 +222,28 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
     check('hidden multibox copy: its jelly point records go back to the pool once each, holding no cell',
         old.length >= 5 && b.points.length === 0 && old.every((p) => pool.indexOf(p) >= 0 && p.parent === null) &&
         new Set(pool).size === pool.length && !a.points.some((p) => pool.indexOf(p) >= 0));
+}
+/* ---- split range (drawHelpers) with multibox units: each unit's rings come from its own cell
+ * index (the same list every frame, no list built per unit per frame); a Full Map spectator never
+ * draws own rings; the enemy rings are drawn once ---- */
+{
+    const a = src.indexOf('                if (defaultmapsettings.splitRange) {\n                    if (LM.playerCells && LM.playerCells.length) {');
+    const b = src.indexOf('/* Triple split range', a);
+    const calls = [];
+    const R = { ctx: {}, drawSplitRange(ctx, enemy, players) { calls.push(['range', enemy, players]); }, drawDoubleSplitRange(ctx, enemy, players) { calls.push(['double', enemy, players]); } };
+    const own = (n) => { const list = [{ id: n, size: 100 }]; return { number: n, player: true, playerCellIDs: [n], getOwnPlayerCells: () => list, list }; };
+    const u2 = own(2), u5 = own(5), dead = Object.assign(own(9), { playerCellIDs: [] });
+    const fm = { number: 3, player: false, playerCellIDs: [7], getOwnPlayerCells: () => [{ id: 7, size: 50 }] };
+    const LMx = { playerCells: [{ id: 1, size: 80 }], selectBiggestCell: false, biggerSTECellsCache: ['E1'], biggerSTEDCellsCache: ['E2'], indexedCells: { 7: { id: 7, size: 50 } } };
+    const run = new Function('LM', 'spects', 'defaultmapsettings', src.slice(a, b));
+    const frame = () => { calls.length = 0; run.call(R, LMx, [fm, u2, dead, u5], { splitRange: true }); return calls.slice(); };
+    const f1 = frame(), f2 = frame();
+    const unitLists = (f) => f.filter((c) => c[2] && c[2] !== LMx.playerCells).map((c) => c[2]);
+    check('split range: each unit draws from its own cell index (the same list every frame)', unitLists(f1).length === 4 && unitLists(f1).every((l, i) => l === unitLists(f2)[i]) &&
+        unitLists(f1)[0] === u2.list && unitLists(f1)[2] === u5.list);
+    check('split range: a Full Map spectator and a dead unit draw no own rings', !f1.some((c) => c[2] && (c[2][0].id === 7 || c[2][0].id === 9)));
+    check('split range: the enemy rings are drawn once (by the main player)', f1.filter((c) => c[1] === LMx.biggerSTECellsCache).length === 1);
+    check('split range: no list is built per unit per frame', !/var unitCells = \[\];/.test(src.slice(a, b)));
 }
 
 /* ---- the action resolver (lmActiveUnit(true), up to 100 calls a second from macro feed): no copy of

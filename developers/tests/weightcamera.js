@@ -3,6 +3,10 @@
  * (calculatePlayerMassAndPosition + setView: off = plain average of the own cells, on = the
  * mass-weighted centre, reached with the usual glide), the sent cursor (getCursorPosition: the
  * world point under the mouse on the drawn screen, alone and with a multibox unit), spectating.
+ * The multibox frame (drawRender.getMultiboxFrame) for 1..6 players: two players give exactly the
+ * result of the two-player version (kept below as OLD_FRAME) on 3000 seeded cases; 3..6 players fit
+ * with "View on middle of both"; the three view modes; main player dead; Full Map spectators and
+ * units without a place left out; no allocation per call.
  * node developers/tests/weightcamera.js [other ogario.v4.js] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -31,7 +35,7 @@ let t = 1000;
 ctx.window = ctx;
 vm.createContext(ctx);
 vm.runInContext(cut('var LM_MB_CAMERA_NEAR = ', '/* OgVer set above'), ctx);
-vm.runInContext('var playersLength = 0, spects = [], defaultmapsettings = {}; function getActiveSpect(n) { return spects[n - 1] || null; }', ctx);
+vm.runInContext('var playersLength = 0, spects = [], defaultmapsettings = {}; function getActiveSpect(n) { for (var i = 0; i < spects.length; i++) if (spects[i] && spects[i].number === n && spects[i].player !== false) return spects[i]; return null; }', ctx);
 ctx.LMEvents = { _has: () => false };
 const LM = vm.runInContext('({\n' + cut('        calculatePlayerMassAndPosition() {', '        recalculatePlayerMass() {') +
   cut('        getCursorPosition() {', '        getLineSplitSettings() {') + '\n})', ctx);
@@ -72,7 +76,7 @@ LM.clientX = 1060;
 
 /* a multibox unit alive far away, the main player controlled: the multibox frame keeps the camera */
 const unitCells = [{ x: 9000, y: 9000, size: 200 }];
-const unit = { player: true, playerCellIDs: [1], playerX: 9000, playerY: 9000, playerSize: 200, getOwnPlayerCells: () => unitCells, calculatePlayerMassAndPosition() { } };
+const unit = { number: 1, player: true, playerCellIDs: [1], playerX: 9000, playerY: 9000, playerSize: 200, getOwnPlayerCells: () => unitCells, calculatePlayerMassAndPosition() { } };
 ctx.spects.push(unit); LM.multiBoxPlayerExists = true; ctx.multiboxPlayerEnabled = 0;
 run(40);
 check('multibox, main controlled: the multibox frame keeps the camera (on the main player)', near(R.camX, avgX) && near(R.camY, 0));
@@ -82,6 +86,212 @@ run(60);
 check('multibox, unit controlled: the camera is on the unit and the cursor under the mouse', near(R.camX, 9000) && near(LM.cursorX, R.camX + 100 / R.scale));
 check('multibox frame: setView writes no window.middleMultiViewFlag (nothing read it)', !('middleMultiViewFlag' in ctx));
 ctx.spects.length = 0; LM.multiBoxPlayerExists = false; ctx.multiboxPlayerEnabled = 0;
+
+/* ---- the multibox frame for 1..6 players ---- */
+/* the two-player getMultiboxFrame as it was (6c4605621), the reference for two players */
+const OLD_FRAME = `({ getMultiboxFrame(mainSize) {
+            if (!LM.multiBoxPlayerExists || typeof spects === 'undefined' || !spects || !spects.length) return null;
+            var focus = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null;
+            var unit = null, unitCells = null;
+            var candidates = focus ? [focus].concat(spects) : spects;
+            for (var i = 0; i < candidates.length && !unit; i++) {
+                var sp = candidates[i];
+                if (!sp || !sp.player || !sp.playerCellIDs || !sp.playerCellIDs.length || !Number.isFinite(sp.playerX) ||
+                    (typeof sp.transformReady === 'function' && !sp.transformReady())) continue;
+                var cells = sp.getOwnPlayerCells();
+                if (cells.length) {
+                    unit = sp;
+                    unitCells = cells;
+                }
+            }
+            if (!unit) return null;
+            var p2 = lmMultiboxPlayerBox(unitCells, unit.playerX, unit.playerY, unit.playerSize);
+            var mainAlive = LM.playerCells && LM.playerCells.length && Number.isFinite(LM.viewXTrue);
+            if (!mainAlive) {
+                return { x: p2.x, y: p2.y, zoom: 1, both: 0, size: p2.size };
+            }
+            var p1 = lmMultiboxPlayerBox(LM.playerCells, LM.viewXTrue, LM.viewYTrue, mainSize);
+            var controlled = focus === unit ? p2 : p1;
+            var minX = Math.min(p1.minX, p2.minX), maxX = Math.max(p1.maxX, p2.maxX);
+            var minY = Math.min(p1.minY, p2.minY), maxY = Math.max(p1.maxY, p2.maxY);
+            var baseScale = this.getTargetScale(controlled.size, true);
+            var fit = Math.min(
+                (this.canvasWidth || 1) * 0.9 / Math.max(1, maxX - minX),
+                (this.canvasHeight || 1) * 0.9 / Math.max(1, maxY - minY)
+            ) / (baseScale > 0 ? baseScale : 1);
+            var both;
+            if (defaultmapsettings.middleMultiView) {
+                both = 1;
+            } else if (defaultmapsettings.middleMultiViewWhenClose) {
+                both = lmSmoothstep(LM_MB_CAMERA_FAR, LM_MB_CAMERA_NEAR, fit);
+            } else {
+                both = 0;
+            }
+            var boxX = (minX + maxX) / 2, boxY = (minY + maxY) / 2;
+            var zoomBoth = Math.min(1, Math.max(LM_MB_CAMERA_NEAR, fit));
+            return {
+                x: controlled.x + (boxX - controlled.x) * both,
+                y: controlled.y + (boxY - controlled.y) * both,
+                zoom: 1 + (zoomBoth - 1) * both,
+                both: both,
+                size: controlled.size
+            };
+        } })`;
+const R0 = vm.runInContext(OLD_FRAME, ctx);
+['getTargetScale', 'getZoom'].forEach((k) => { R0[k] = R[k]; });
+const NEAR = vm.runInContext('LM_MB_CAMERA_NEAR', ctx);
+let seed = 20261128;
+const rnd = () => { seed = (seed * 1103515245 + 12345) & 0x7fffffff; return seed / 0x7fffffff; };
+const blob = (cx, cy, k, smax) => Array.from({ length: k }, () => { const s = 20 + rnd() * smax; return { x: cx + (rnd() - 0.5) * 900, y: cy + (rnd() - 0.5) * 900, size: s, targetSize: s }; });
+/* a playing unit: its own cells, position and size as spect.js keeps them */
+const mkUnit = (num, cells, o) => Object.assign({
+    number: num, player: true, playerCellIDs: cells.map((_, i) => i + 1),
+    playerX: cells.reduce((a, c) => a + c.x / cells.length, 0), playerY: cells.reduce((a, c) => a + c.y / cells.length, 0),
+    playerSize: cells.reduce((a, c) => a + c.size, 0), transformReady: () => true, getOwnPlayerCells() { return cells; }
+}, o || {});
+const setMain = (cells, vx, vy) => { LM.playerCells = cells; LM.viewXTrue = vx; LM.viewYTrue = vy; LM.play = cells.length > 0; };
+const sizeOf = (cells) => cells.reduce((a, c) => a + c.size, 0);
+const same = (a, b) => (a === null && b === null) || (!!a && !!b && ['x', 'y', 'zoom', 'both', 'size'].every((k) => Object.is(a[k], b[k])));
+LM.multiBoxPlayerExists = true;
+
+/* two players (main + one unit; sometimes a second unit without a place yet or a Full Map
+ * spectator): the new frame is the old one bit for bit, every mode, both focuses, main dead,
+ * Auto zoom, other screen sizes */
+{
+    let diff = 0, cases = 0, blended = 0, firstDiff = '';
+    for (let k = 0; k < 3000; k++) {
+        const d = rnd() < 0.3 ? rnd() * 1500 : rnd() * 9000, ang = rnd() * Math.PI * 2;
+        const mc = blob(rnd() * 4000, rnd() * 4000, 1 + Math.floor(rnd() * 8), 500);
+        const uc = blob(mc[0].x + Math.cos(ang) * d, mc[0].y + Math.sin(ang) * d, 1 + Math.floor(rnd() * 8), 500);
+        setMain(rnd() < 0.15 ? [] : mc, mc[0].x + (rnd() - 0.5) * 200, mc[0].y + (rnd() - 0.5) * 200);
+        ctx.spects.length = 0;
+        ctx.spects.push(mkUnit(1, uc));
+        if (rnd() < 0.2) ctx.spects.push(mkUnit(2, blob(0, 0, 2, 300), { transformReady: () => false }));
+        if (rnd() < 0.1) ctx.spects.unshift({ number: 3, player: false, playerCellIDs: [1], playerX: 0, playerY: 0, getOwnPlayerCells: () => mc });
+        ctx.multiboxPlayerEnabled = rnd() < 0.5 ? 1 : (rnd() < 0.3 ? 2 : 0);
+        S.middleMultiView = rnd() < 0.3; S.middleMultiViewWhenClose = rnd() < 0.6;
+        LM.autoZoom = rnd() < 0.5; LM.zoomValue = 0.3 + rnd(); LM.scale = 0.2 + rnd() * 0.5;
+        R.canvasWidth = R0.canvasWidth = [1920, 1280, 2560, 800][k % 4]; R.canvasHeight = R0.canvasHeight = [1080, 720, 1440, 1280][k % 4];
+        const a = R0.getMultiboxFrame(sizeOf(LM.playerCells)), b = R.getMultiboxFrame(sizeOf(LM.playerCells));
+        cases++;
+        if (a && a.both > 0 && a.both < 1) blended++;
+        if (!same(a, b)) { diff++; if (!firstDiff) firstDiff = k + ': ' + JSON.stringify(a) + ' vs ' + JSON.stringify(b); }
+    }
+    check('two players: the frame is the two-player version\'s, bit for bit (' + cases + ' cases, ' + blended + ' blended)' + (firstDiff ? ' ' + firstDiff : ''), diff === 0 && blended > 50);
+}
+R.canvasWidth = R0.canvasWidth = 1920; R.canvasHeight = R0.canvasHeight = 1080;
+/* zoomed out (about 3400 x 1900 world units on screen) */
+LM.autoZoom = false; LM.zoomValue = 0.5; LM.scale = 1; ctx.multiboxPlayerEnabled = 0;
+
+/* 3..6 players */
+const visible = (f, all) => {
+    const scale = R.getTargetScale(f.size, true) * f.zoom, hw = R.canvasWidth / 2 / scale, hh = R.canvasHeight / 2 / scale;
+    return all.every((c) => c.x - c.size >= f.x - hw && c.x + c.size <= f.x + hw && c.y - c.size >= f.y - hh && c.y + c.size <= f.y + hh);
+};
+const cluster = (n, spread) => {
+    const groups = Array.from({ length: n }, (_, i) => blob(Math.cos(i * 1.3) * spread, Math.sin(i * 1.3) * spread * 0.5, 1 + (i % 3), 120));
+    setMain(groups[0], groups[0][0].x, groups[0][0].y);
+    ctx.spects.length = 0;
+    /* sparse unit numbers, not in spects order: the slot order is by number */
+    [5, 2, 18, 9, 3].slice(0, n - 1).forEach((num, i) => ctx.spects.push(mkUnit(num, groups[i + 1])));
+    return groups;
+};
+S.middleMultiView = true; S.middleMultiViewWhenClose = false;
+{
+    let fits = true;
+    for (let n = 3; n <= 6; n++) {
+        const g = cluster(n, 700), f = R.getMultiboxFrame(sizeOf(LM.playerCells));
+        fits = fits && !!f && f.both === 1 && f.zoom > NEAR && visible(f, [].concat(...g));
+    }
+    check('3..6 players close together, "View on middle of both": every player is on screen', fits);
+    const g = cluster(6, 700), f = R.getMultiboxFrame(sizeOf(LM.playerCells)), all = [].concat(...g);
+    const x0 = Math.min(...all.map((c) => c.x - c.size)), x1 = Math.max(...all.map((c) => c.x + c.size));
+    const y0 = Math.min(...all.map((c) => c.y - c.size)), y1 = Math.max(...all.map((c) => c.y + c.size));
+    check('6 players: centred on the box around all their cells (radius included)', near(f.x, (x0 + x1) / 2, 1e-6) && near(f.y, (y0 + y1) / 2, 1e-6));
+    const far = cluster(6, 9000), ff = R.getMultiboxFrame(sizeOf(LM.playerCells));
+    check('6 players far apart: the zoom still stops at 80 % of the normal zoom', ff.zoom === NEAR && !visible(ff, [].concat(...far)));
+}
+{
+    /* main + P2 close, P3 far */
+    const m = blob(0, 0, 2, 150), u2 = blob(600, 0, 2, 150), u3 = blob(20000, 0, 1, 150);
+    setMain(m, m[0].x, m[0].y);
+    ctx.spects.length = 0; ctx.spects.push(mkUnit(3, u3), mkUnit(2, u2));
+    S.middleMultiView = false; S.middleMultiViewWhenClose = true;
+    const f3 = Object.assign({}, R.getMultiboxFrame(sizeOf(m)));
+    ctx.spects.length = 0; ctx.spects.push(mkUnit(2, u2));
+    const f2 = Object.assign({}, R0.getMultiboxFrame(sizeOf(m)));
+    check('"when close": a far third player is left out, the close two are framed exactly as before', same(f2, f3) && f3.both > 0.99);
+    ctx.spects.length = 0; ctx.spects.push(mkUnit(3, u3), mkUnit(2, u2));
+    S.middleMultiView = false; S.middleMultiViewWhenClose = false;
+    const off = R.getMultiboxFrame(sizeOf(m));
+    check('neither view: only the player you control (main)', off.x === LM.viewXTrue && off.y === LM.viewYTrue && off.zoom === 1 && off.both === 0);
+    ctx.multiboxPlayerEnabled = 3;
+    const off3 = R.getMultiboxFrame(sizeOf(m)), u3s = ctx.spects[0];
+    check('neither view, P3 controlled: on P3 with its size', off3.x === u3s.playerX && off3.y === u3s.playerY && off3.size === u3s.playerSize && off3.zoom === 1);
+    S.middleMultiView = true;
+    const on = R.getMultiboxFrame(sizeOf(m));
+    check('"View on middle of both": all three, zoomed out at most to 80 %', on.both === 1 && on.zoom === NEAR && on.x > 5000);
+    ctx.multiboxPlayerEnabled = 0;
+}
+{
+    /* main dead: every living unit is framed, not only one */
+    const g = cluster(4, 600);
+    setMain([], NaN, NaN);
+    ctx.multiboxPlayerEnabled = 9;
+    S.middleMultiView = true;
+    const f = R.getMultiboxFrame(32);
+    check('main dead: the living units are all framed', !!f && f.both === 1 && visible(f, [].concat(g[1], g[2], g[3])));
+    S.middleMultiView = false; S.middleMultiViewWhenClose = false;
+    const f1 = R.getMultiboxFrame(32), p2 = ctx.spects[1];
+    check('main dead, the focused unit has no place: on the first placed unit in slot order (number 2)', p2.number === 2 && f1.x === p2.playerX && f1.size === p2.playerSize);
+    ctx.multiboxPlayerEnabled = 0;
+}
+{
+    /* passive spectators and units without a place never take part */
+    const m = blob(0, 0, 1, 100), u2 = blob(800, 0, 1, 100), spec = blob(-900, -400, 3, 100), unready = blob(0, 900, 1, 100);
+    setMain(m, m[0].x, m[0].y);
+    ctx.spects.length = 0;
+    ctx.spects.push({ number: 1, player: false, active: true, playerCellIDs: [1, 2, 3], playerX: -900, playerY: -400, playerSize: 300, getOwnPlayerCells: () => spec },
+        mkUnit(4, unready, { transformReady: () => false }), mkUnit(2, u2));
+    S.middleMultiView = true;
+    const f = Object.assign({}, R.getMultiboxFrame(sizeOf(m)));
+    ctx.spects.length = 0; ctx.spects.push(mkUnit(2, u2));
+    const ref = R0.getMultiboxFrame(sizeOf(m));
+    check('a Full Map spectator and a unit not placed yet are left out of the frame', same(f, ref));
+}
+{
+    /* no allocation per call: one reused result, and the heap does not grow. Measured in a plain
+     * function scope (the globals of a vm context are read through interceptors that allocate) */
+    cluster(6, 700);
+    S.middleMultiView = false; S.middleMultiViewWhenClose = true;
+    const a = R.getMultiboxFrame(32), b = R.getMultiboxFrame(32);
+    check('one reused result object', a === b);
+    const camBlock = cut('var LM_MB_CAMERA_NEAR = ', '/* OgVer set above');
+    const methods = cut('        getTargetScale(size, unitPlaying) {', '        /* fit (0..1)') + cut('        getZoom() {', '        renderFrame() {');
+    const frameNow = cut('        getMultiboxFrame(mainSize) {', '        getZoom() {');
+    /* the same scene in plain objects of this script (as the page's own objects) */
+    const copy = (cells) => cells.map((c) => ({ x: c.x, y: c.y, size: c.size, targetSize: c.targetSize }));
+    const pLM = { multiBoxPlayerExists: true, playerCells: copy(LM.playerCells), viewXTrue: LM.viewXTrue, viewYTrue: LM.viewYTrue, play: true, autoZoom: false, zoomValue: LM.zoomValue, scale: 1, serverType: 'agario' };
+    const pSpects = ctx.spects.map((u) => mkUnit(u.number, copy(u.getOwnPlayerCells())));
+    const plain = (frameSrc) => new Function('window', 'spects', 'defaultmapsettings', 'LM',
+        cut('function getActiveSpect(unitNumber) {', '/* The one place') + camBlock + '\nvar R = ({\n' + methods + frameSrc + '\n});\nR.canvasWidth = 1920; R.canvasHeight = 1080; return R;')(
+        { legendmod: pLM, multiboxPlayerEnabled: 0 }, pSpects, { middleMultiView: false, middleMultiViewWhenClose: true }, pLM);
+    const Rn = plain(frameNow), Ro = plain(OLD_FRAME.slice(OLD_FRAME.indexOf('getMultiboxFrame'), OLD_FRAME.lastIndexOf(' })')));
+    check('the plain copy gives the same frame', same(Rn.getMultiboxFrame(32), R.getMultiboxFrame(32)));
+    /* a full collection before each measure, so the measured calls fit in the young heap without one */
+    require('v8').setFlagsFromString('--expose-gc');
+    const gc = vm.runInNewContext('gc');
+    const grow = (Rx) => { for (let i = 0; i < 20000; i++) Rx.getMultiboxFrame(32); gc(); const h0 = process.memoryUsage().heapUsed; for (let i = 0; i < 3000; i++) Rx.getMultiboxFrame(32); return process.memoryUsage().heapUsed - h0; };
+    let gNew = -Infinity, gOld = Infinity;
+    for (let r = 0; r < 3; r++) { gNew = Math.max(gNew, grow(Rn)); gOld = Math.min(gOld, grow(Ro)); }
+    /* what may remain is a number V8 boxes on its own (a call it did not inline), never a list or a box */
+    check('no list or object per call (3000 calls with 6 players: ' + gNew + ' B, ' + (gNew / 3000).toFixed(1) + ' B a call; the two-player version ' + gOld + ' B)', gNew < 3000 * 40 && gOld > 3000 * 150);
+    const body = frameNow.split('\n').filter((ln) => ln.indexOf('this._lmMbCam = {') < 0).join('\n');
+    check('the frame builds no candidate list (no concat / new arrays per frame)', !/concat\(|= \[\]|new Array|\.filter\(|\.map\(/.test(body));
+}
+ctx.spects.length = 0; LM.multiBoxPlayerExists = false; ctx.multiboxPlayerEnabled = 0;
+S.middleMultiView = false; S.middleMultiViewWhenClose = false; LM.zoomValue = 1;
+setMain([big].concat(pieces), 0, 0);
 
 /* spectating (not playing): the server's view centre, the option changes nothing */
 run(30);

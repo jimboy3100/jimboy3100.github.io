@@ -3383,7 +3383,9 @@ window.lmFoodStats = lmFoodStats;
  * drawn over the skin and under the nick and mass.
  */
 var LM_MB_RING_MIN_SCREEN_PX = 2; /* never thinner than this on screen */
-var LM_MB_RING_DEFAULT_COLORS = { 1: '#FF2FD6', 2: '#00E5FF' };
+/* the colour of each player slot (P1 = the main client, P2..P6 = the units in slot order, see
+ * lmMbEachPlayer): ring, minimap marker */
+var LM_MB_RING_DEFAULT_COLORS = { 1: '#FF2FD6', 2: '#00E5FF', 3: '#A855F7', 4: '#10B981', 5: '#FFB020', 6: '#FF5A36' };
 var LM_MB_RING_SIZE = 6; /* the ring's width in % of the cell's radius */
 /* 1 = the main player's own cell, 2 = a multibox unit's own cell, 0 = neither */
 function lmMultiboxRingPlayer(cell) {
@@ -3569,9 +3571,19 @@ function lmSmoothstep(edge0, edge1, x) {
     return t * t * (3 - 2 * t);
 }
 /* One multibox player for the camera: its centre (cx, cy), size, and the box
- * around its cells (x +- radius), from where they are drawn. */
-function lmMultiboxPlayerBox(cells, cx, cy, size) {
-    var box = { x: cx, y: cy, size: size, minX: cx, maxX: cx, minY: cy, maxY: cy };
+ * around its cells (x +- radius), from where they are drawn. out: a box to fill,
+ * else a new one. */
+function lmMultiboxPlayerBox(cells, cx, cy, size, out) {
+    var box = out || { x: 0, y: 0, size: 0, minX: 0, maxX: 0, minY: 0, maxY: 0 };
+    box.x = cx; box.y = cy; box.size = size;
+    return lmMbBoxCells(cells, box);
+}
+/* the box around the cells into box, from its centre box.x / box.y. The camera fills its
+ * reused boxes this way: numbers passed as arguments to a call that is not inlined are
+ * allocated each time, fields are not */
+function lmMbBoxCells(cells, box) {
+    box.minX = box.maxX = box.x;
+    box.minY = box.maxY = box.y;
     for (var i = 0; cells && i < cells.length; i++) {
         var c = cells[i];
         if (!c || c.removed || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
@@ -3582,6 +3594,127 @@ function lmMultiboxPlayerBox(cells, cx, cy, size) {
         if (c.y + r > box.maxY) box.maxY = c.y + r;
     }
     return box;
+}
+/* Our players in slot order: P1 = the main client (window.legendmod), then the playing
+ * spect.js units (player true; never a Full Map or in-game spectator) by unit number, alive
+ * or not. fn(player, slot, arg) for each (slot 1..), returning true stops. Nothing is
+ * allocated: fn and arg are the caller's. A player registry can take this order over later. */
+function lmMbEachPlayer(fn, arg) {
+    var LM = window.legendmod, slot = 1, last = 0, next, n, s, i;
+    if (LM && fn(LM, 1, arg) === true) return;
+    if (typeof spects === 'undefined' || !spects) return;
+    for (; ;) {
+        next = null;
+        for (i = 0; i < spects.length; i++) {
+            s = spects[i];
+            if (!s || s.player !== true) continue;
+            n = +s.number || 0;
+            if (n > last && (!next || n < +next.number)) next = s;
+        }
+        if (!next) return;
+        last = +next.number;
+        if (fn(next, ++slot, arg) === true) return;
+    }
+}
+/* The camera box of one of our players into out (its centre, size and the box around its
+ * cells), or null while it has no place on this map: the main client while it has cells and
+ * a view centre (opcode 17); a unit while it has own cells, a position and a known offset /
+ * orientation (transformReady). The main client's size is the one out.size holds on entry. */
+function lmMbCameraBox(p, out) {
+    var LM = window.legendmod;
+    if (!p) return null;
+    if (p === LM) {
+        if (!LM.playerCells || !LM.playerCells.length || !Number.isFinite(LM.viewXTrue)) return null;
+        out.x = LM.viewXTrue;
+        out.y = LM.viewYTrue;
+        return lmMbBoxCells(LM.playerCells, out);
+    }
+    /* a unit whose offset/orientation isn't known yet has no place on this map */
+    if (!p.player || !p.playerCellIDs || !p.playerCellIDs.length || !Number.isFinite(p.playerX) ||
+        (typeof p.transformReady === 'function' && !p.transformReady())) return null;
+    var cells = p.getOwnPlayerCells();
+    if (!cells.length) return null;
+    out.x = p.playerX;
+    out.y = p.playerY;
+    out.size = p.playerSize;
+    return lmMbBoxCells(cells, out);
+}
+/* lmMbEachPlayer step of drawRender.getMultiboxFrame: the placed players' boxes, in slot order */
+function lmMbCameraCollect(p, slot, f) {
+    var b = f.boxes[f.n] || (f.boxes[f.n] = { x: 0, y: 0, size: 0, minX: 0, maxX: 0, minY: 0, maxY: 0 });
+    b.size = f.mainSize;
+    if (!lmMbCameraBox(p, b)) return;
+    f.who[f.n++] = p;
+    if (p !== window.legendmod) f.units++;
+}
+/*
+ * Minimap: a dot for each of our players placed on the map (P1 and every playing unit, as the
+ * camera places them), in its slot colour; the player you control full size with the own dot's
+ * stroke and drawn last, the others smaller. false (nothing drawn) while no multibox unit plays
+ * or none of our players is placed: the own dot is drawn as before. ctx: the minimap canvas,
+ * r / l: map offsets, n: scale, th: defaultSettings. Nothing allocated.
+ */
+var _lmMbMm = { ctx: null, r: 0, l: 0, n: 0, th: null, active: null, drawn: 0, aSlot: 0,
+    box: { x: 0, y: 0, size: 0, minX: 0, maxX: 0, minY: 0, maxY: 0 }, at: { x: 0, y: 0 } };
+/* one dot at b.x / b.y (b: a box, so no coordinate is passed as a number) */
+function lmMbMiniMapDot(m, b, slot, active) {
+    var ctx = m.ctx, th = m.th, size = th.miniMapMyCellSize;
+    ctx.beginPath();
+    ctx.arc((b.x + m.r) * m.n, (b.y + m.l) * m.n, active ? size : size * 0.75, 0, Math.PI * 2, false);
+    ctx.closePath();
+    if (active && th.miniMapMyCellStrokeSize > 0) {
+        ctx.lineWidth = th.miniMapMyCellStrokeSize;
+        ctx.strokeStyle = th.miniMapMyCellStrokeColor;
+        ctx.stroke();
+    }
+    ctx.fillStyle = LM_MB_RING_DEFAULT_COLORS[slot] || th.miniMapMyCellColor;
+    ctx.fill();
+}
+function lmMbMiniMapStep(p, slot, m) {
+    var b = lmMbCameraBox(p, m.box);
+    if (!b) return;
+    m.drawn++;
+    if (p === m.active) {
+        m.at.x = b.x; m.at.y = b.y; m.aSlot = slot;
+        return;
+    }
+    lmMbMiniMapDot(m, b, slot, false);
+}
+function lmMbMiniMapMarkers(ctx, r, l, n, th) {
+    var LM = window.legendmod;
+    if (!LM || !LM.multiBoxPlayerExists || !ctx || !th) return false;
+    var m = _lmMbMm, focus = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null;
+    m.ctx = ctx; m.r = r; m.l = l; m.n = n; m.th = th; m.active = focus || LM; m.drawn = 0; m.aSlot = 0;
+    lmMbEachPlayer(lmMbMiniMapStep, m);
+    if (m.aSlot) lmMbMiniMapDot(m, m.at, m.aSlot, true);
+    m.ctx = m.th = m.active = null;
+    return m.drawn > 0;
+}
+/*
+ * Rows (0-based) of the leaderboard lb that are our multibox units, into out (in rank order,
+ * reused). The evidence is each unit's own leaderboard: its server marks the row of that
+ * connection's player (opcode 53 flag 8 / opcode 49 isMe: id 'isPlayer'). That rank of lb counts
+ * when it shows the same nick (both lists come from the same server, a packet apart) and is not
+ * the main player's own row. A nick alone is no evidence: anybody may play under it.
+ */
+var _lmMbLb = { lb: null, out: null };
+function lmMbLbStep(p, slot, a) {
+    if (slot === 1 || !lmMbAlive(p) || !p.leaderboard) return;
+    var own = p.leaderboard, k, j;
+    for (k = 0; k < own.length; k++) if (own[k] && own[k].id === 'isPlayer') break;
+    if (k >= own.length) return;
+    var row = a.lb[k];
+    if (!row || row.id === 'isPlayer' || !row.nick || row.nick !== own[k].nick || a.out.indexOf(k) >= 0) return;
+    for (j = a.out.length; j > 0 && a.out[j - 1] > k; j--) a.out[j] = a.out[j - 1];
+    a.out[j] = k;
+}
+function lmMbLeaderboardRows(lb, out) {
+    out.length = 0;
+    if (!lb || !lb.length) return out;
+    _lmMbLb.lb = lb; _lmMbLb.out = out;
+    lmMbEachPlayer(lmMbLbStep, _lmMbLb);
+    _lmMbLb.lb = _lmMbLb.out = null;
+    return out;
 }
 /* OgVer set above at 3.554 (HEAD version) */
 
@@ -31663,9 +31796,16 @@ function thelegendmodproject() {
                     }
                     //				
                     /* optional own trail: a point every 500 ms, last 120 (~60 s); cleared when not
-                     * playing, on a map size change and on a jump (respawn, multibox swap) */
+                     * playing, on a map size change and on a jump (respawn, multibox swap). While
+                     * multibox units play it is P1's own path in P1's colour (the camera may be on a
+                     * unit or between the players) */
                     if (defaultmapsettings.showMiniMapTrail) {
                         var _lmTr = this._lmTrail || (this._lmTrail = []);
+                        var _lmTrX = ogario.playerX, _lmTrY = ogario.playerY, _lmTrMb = !!LM.multiBoxPlayerExists;
+                        if (_lmTrMb && ogario.playerCells && ogario.playerCells.length && Number.isFinite(ogario.viewXTrue) && Number.isFinite(ogario.viewYTrue)) {
+                            _lmTrX = ogario.viewXTrue;
+                            _lmTrY = ogario.viewYTrue;
+                        }
                         if (!ogario.play || this._lmTrailMap !== LM.mapSize) {
                             _lmTr.length = 0;
                             this._lmTrailMap = LM.mapSize;
@@ -31674,34 +31814,40 @@ function thelegendmodproject() {
                             if (_lmTrNow - (this._lmTrailT || 0) >= 500) {
                                 this._lmTrailT = _lmTrNow;
                                 var _lmTrLast = _lmTr[_lmTr.length - 1];
-                                if (_lmTrLast && Math.abs(_lmTrLast.x - ogario.playerX) + Math.abs(_lmTrLast.y - ogario.playerY) > (LM.mapSize || 14000) / 4) _lmTr.length = 0;
-                                _lmTr.push({ x: ogario.playerX, y: ogario.playerY });
+                                if (_lmTrLast && Math.abs(_lmTrLast.x - _lmTrX) + Math.abs(_lmTrLast.y - _lmTrY) > (LM.mapSize || 14000) / 4) _lmTr.length = 0;
+                                _lmTr.push({ x: _lmTrX, y: _lmTrY });
                                 if (_lmTr.length > 120) _lmTr.shift();
                             }
                             if (_lmTr.length > 1) {
                                 this.miniMapCtx.save();
                                 this.miniMapCtx.globalAlpha = 0.45;
                                 this.miniMapCtx.lineWidth = 1.5;
-                                this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellColor;
+                                this.miniMapCtx.strokeStyle = _lmTrMb ? LM_MB_RING_DEFAULT_COLORS[1] : defaultSettings.miniMapMyCellColor;
                                 this.miniMapCtx.beginPath();
                                 this.miniMapCtx.moveTo((_lmTr[0].x + r) * n, (_lmTr[0].y + l) * n);
                                 for (var _lmTi2 = 1; _lmTi2 < _lmTr.length; _lmTi2++) this.miniMapCtx.lineTo((_lmTr[_lmTi2].x + r) * n, (_lmTr[_lmTi2].y + l) * n);
-                                this.miniMapCtx.lineTo((ogario.playerX + r) * n, (ogario.playerY + l) * n);
+                                this.miniMapCtx.lineTo((_lmTrX + r) * n, (_lmTrY + l) * n);
                                 this.miniMapCtx.stroke();
                                 this.miniMapCtx.restore();
                             }
                         }
                     }
-                    if (this.miniMapCtx.beginPath(),
+                    /* multibox: a dot for each of our players in its slot colour (lmMbMiniMapMarkers);
+                     * else (or none placed) the own dot on the camera centre as before */
+                    if (!lmMbMiniMapMarkers(this.miniMapCtx, r, l, n, defaultSettings)) {
+                        this.miniMapCtx.beginPath();
                         this.miniMapCtx.arc((ogario.playerX + r) * n, (ogario.playerY + l) * n,
-                            defaultSettings.miniMapMyCellSize, 0, this.pi2, false),
-                        this.miniMapCtx.closePath(),
-                        defaultSettings.miniMapMyCellStrokeSize > 0 && (this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize,
-                            this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor,
-                            this.miniMapCtx.stroke()),
-                        this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor,
-                        this.miniMapCtx.fill(),
-                        this.teamPlayers.length) {
+                            defaultSettings.miniMapMyCellSize, 0, this.pi2, false);
+                        this.miniMapCtx.closePath();
+                        if (defaultSettings.miniMapMyCellStrokeSize > 0) {
+                            this.miniMapCtx.lineWidth = defaultSettings.miniMapMyCellStrokeSize;
+                            this.miniMapCtx.strokeStyle = defaultSettings.miniMapMyCellStrokeColor;
+                            this.miniMapCtx.stroke();
+                        }
+                        this.miniMapCtx.fillStyle = defaultSettings.miniMapMyCellColor;
+                        this.miniMapCtx.fill();
+                    }
+                    if (this.teamPlayers.length) {
                         c = 0;
                         /* Expanding Land: teammate positions (opcode 30 / PPv7) are getPlayerX(),
                          * which already adds ogario.mapOffsetX; adding it again drew them half a
@@ -53161,11 +53307,16 @@ function thelegendmodproject() {
                     _lmBotCnt[_lmBk] = (_lmBotCnt[_lmBk] || 0) + 1;
                 }
             }
+            /* rows of our multibox units, from each unit's own leaderboard (lmMbLeaderboardRows; was
+             * any row with player 2's profile nick, and one unit at most) */
+            var _lmMbRows = this._lmMbLbRows || (this._lmMbLbRows = []);
+            if (LM.multiBoxPlayerExists) lmMbLeaderboardRows(this.leaderboard, _lmMbRows);
+            else _lmMbRows.length = 0;
             for (var temp = 0; temp < this.leaderboard.length && defaultmapsettings.leaderboardlimit != temp; temp++) {
                 var html = '<span>';
                 if (this.leaderboard[temp].id === 'isPlayer') {
                     html = '<span class=\"me\">';
-                } else if (LM.multiBoxPlayerExists && profiles[application.selectedOldProfile] && this.leaderboard[temp].nick === profiles[application.selectedOldProfile].nick && this.leaderboard[temp].nick != "") {
+                } else if (_lmMbRows.length && _lmMbRows.indexOf(temp) >= 0) {
                     html = '<span class=\"me\">';
                 } else {
                     if (ogarcopythelb.clanTag.length && 0 != window.teammatenicks.includes(this.leaderboard[temp].nick)) {
@@ -53187,38 +53338,20 @@ function thelegendmodproject() {
                 /* <bdi>: a name's right-to-left text or direction marks stay inside the name (rank and bot count keep their place) */
                 teamText += html + (temp + 1) + '. <bdi>' + application.escapeHTML(this.leaderboard[temp].nick) + '</bdi>' + _lmBotSuffix + '</span>';
             }
-            //
-            if (LM.multiBoxPlayerExists && profiles[application.selectedOldProfile] && profiles[application.selectedProfile]) {
-                for (var temp = 0; temp < this.leaderboard.length; temp++) {
-                    if (this.leaderboard[temp].nick === profiles[application.selectedOldProfile].nick && profiles[application.selectedOldProfile].nick != profiles[application.selectedProfile].nick && this.leaderboard[temp].nick != "") {
-                        this.playerPositionMulti = temp;
-                    }
+            /* own rows past the shown limit, in rank order: the main player's (playerPosition is
+             * 1-based) and each unit's (0-based rows, shown as +1); playerPositionMulti = the first unit row */
+            this.playerPositionMulti = _lmMbRows.length ? _lmMbRows[0] : null;
+            var _lmLbLimit = defaultmapsettings.leaderboardlimit, _lmMainPos = this.playerPosition > _lmLbLimit ? this.playerPosition : 0;
+            for (var _lmMr = 0; _lmMr < _lmMbRows.length; _lmMr++) {
+                var _lmRow = _lmMbRows[_lmMr];
+                if (_lmRow < _lmLbLimit || _lmRow + 1 === this.playerPosition) continue;
+                if (_lmMainPos && _lmMainPos < _lmRow + 1) {
+                    teamText += '<span class=\"me\">' + _lmMainPos + '. <bdi>' + application.escapeHTML(this.playerNick) + '</bdi></span>';
+                    _lmMainPos = 0;
                 }
+                teamText += '<span class=\"me\">' + (_lmRow + 1) + '. <bdi>' + application.escapeHTML(this.leaderboard[_lmRow].nick) + '</bdi></span>';
             }
-            var tempPositionText = null
-            var tempPositionText2 = null
-            /* playerPositionMulti is 0-based (shown as +1): rank limit+1 must also be listed */
-            if (this.playerPositionMulti != null && this.playerPositionMulti >= defaultmapsettings.leaderboardlimit) {
-                tempPositionText = '<span class=\"me\">' + (this.playerPositionMulti + 1) + '. <bdi>' + application.escapeHTML(this.leaderboard[this.playerPositionMulti].nick) + '</bdi></span>';
-            }
-            //			
-            if (this.playerPosition > defaultmapsettings.leaderboardlimit) {
-                tempPositionText2 = '<span class=\"me\">' + this.playerPosition + '. <bdi>' + application.escapeHTML(this.playerNick) + '</bdi></span>';
-                //defaultmapsettings['showLbData'];
-            }
-            if (!tempPositionText) {
-                if (tempPositionText2) teamText += tempPositionText2
-            } else if (tempPositionText) {
-                if (this.playerPositionMulti != null && (this.playerPositionMulti + 1) > this.playerPosition) {
-                    teamText += tempPositionText2 || ''
-                    teamText += tempPositionText || ''
-                } else if (this.playerPositionMulti != null && (this.playerPositionMulti + 1) < this.playerPosition) {
-                    teamText += tempPositionText || ''
-                    teamText += tempPositionText2 || ''
-                } else if (this.playerPositionMulti != null && (this.playerPositionMulti + 1) === this.playerPosition) { //bug
-                    teamText += tempPositionText2 || ''
-                }
-            }
+            if (_lmMainPos) teamText += '<span class=\"me\">' + _lmMainPos + '. <bdi>' + application.escapeHTML(this.playerNick) + '</bdi></span>';
 
 
             // Expanding Land: Use server-sent player/bot counts (opcode 203)
@@ -79179,72 +79312,72 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * ═══════════════════════════════════════════════════════════════════
          *
          * null while no multibox unit is alive and placed on the map: the
-         * normal camera. Otherwise { x, y, zoom, both, size }:
+         * normal camera. Otherwise { x, y, zoom, both, size } (one reused
+         * object: read it before the next call). Every player of ours placed
+         * on the map takes part (P1 and P2..P6 in slot order, lmMbEachPlayer;
+         * never a Full Map or in-game spectator):
          *
-         *  - one player alive: on that player (the unit also when the main
-         *    player is dead and nothing switched the focus to it);
-         *  - both alive: on the player you control, or, when they are close
-         *    ("View on middle of both (when close)"), on both: centred on the
-         *    box around both players' cells, zoomed out as far as 80 % of the
-         *    normal zoom so that box fits on screen. Between close and far the
-         *    camera blends with the distance (both = 0..1), so it never jumps
-         *    when they drift apart or together;
-         *  - "View on middle of both": always on both (zoom out at most to 80 %).
+         *  - the camera starts on the player you control (the main player
+         *    while the focused unit has no place on the map; the first placed
+         *    unit when the main player is dead and the focused one is not);
+         *  - "View on middle of both (when close)": each other player in slot
+         *    order is taken in when the box around it and the players taken so
+         *    far fits: the camera moves to the middle of that box and zooms out
+         *    (as far as 80 % of the normal zoom) by its weight, smoothstep of
+         *    the fit between FAR and NEAR, so it never jumps when players drift
+         *    apart or together. With two players this is the two-player rule
+         *    as it was;
+         *  - "View on middle of both": every placed player (weight 1), zoom out
+         *    at most to 80 % (players further apart may stay off screen);
+         *  - neither: only the player you control.
          *
+         * both = the largest weight used (0 = only the controlled player).
          * size: the controlled player's size, for Auto zoom.
          */
         getMultiboxFrame(mainSize) {
             if (!LM.multiBoxPlayerExists || typeof spects === 'undefined' || !spects || !spects.length) return null;
-            var focus = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null;
-            var unit = null, unitCells = null;
-            var candidates = focus ? [focus].concat(spects) : spects;
-            for (var i = 0; i < candidates.length && !unit; i++) {
-                var sp = candidates[i];
-                /* a unit whose offset/orientation isn't known yet has no place on this map */
-                if (!sp || !sp.player || !sp.playerCellIDs || !sp.playerCellIDs.length || !Number.isFinite(sp.playerX) ||
-                    (typeof sp.transformReady === 'function' && !sp.transformReady())) continue;
-                var cells = sp.getOwnPlayerCells();
-                if (cells.length) {
-                    unit = sp;
-                    unitCells = cells;
-                }
-            }
-            if (!unit) return null;
-            var p2 = lmMultiboxPlayerBox(unitCells, unit.playerX, unit.playerY, unit.playerSize);
-            var mainAlive = LM.playerCells && LM.playerCells.length && Number.isFinite(LM.viewXTrue);
-            if (!mainAlive) {
-                return { x: p2.x, y: p2.y, zoom: 1, both: 0, size: p2.size };
-            }
-            var p1 = lmMultiboxPlayerBox(LM.playerCells, LM.viewXTrue, LM.viewYTrue, mainSize);
-            var controlled = focus === unit ? p2 : p1;
-            var minX = Math.min(p1.minX, p2.minX), maxX = Math.max(p1.maxX, p2.maxX);
-            var minY = Math.min(p1.minY, p2.minY), maxY = Math.max(p1.maxY, p2.maxY);
-            /* zoom factor that fits both (with a 5 % margin each side); >= 1: they already fit */
-            var baseScale = this.getTargetScale(controlled.size, true);
-            var fit = Math.min(
-                (this.canvasWidth || 1) * 0.9 / Math.max(1, maxX - minX),
-                (this.canvasHeight || 1) * 0.9 / Math.max(1, maxY - minY)
-            ) / (baseScale > 0 ? baseScale : 1);
-            var both;
+            var f = this._lmMbCam || (this._lmMbCam = { boxes: [], who: [], n: 0, units: 0, mainSize: 0, out: { x: 0, y: 0, zoom: 1, both: 0, size: 0 } });
+            f.n = f.units = 0;
+            f.mainSize = mainSize;
+            lmMbEachPlayer(lmMbCameraCollect, f);
+            for (var i = f.n; i < f.who.length; i++) f.who[i] = null;
+            if (!f.units) return null;
+            var focus = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null, a = 0;
+            for (i = 0; focus && i < f.n; i++) if (f.who[i] === focus) a = i;
+            var act = f.boxes[a], out = f.out;
+            var x = act.x, y = act.y, zoom = 1, both = 0;
             /* one choice in two switches: "middle of both" always (middleMultiView, also its hotkey)
              * wins over "middle of both when close" (middleMultiViewWhenClose), so the hotkey turns the
              * always-view on and off over the when-close one */
-            if (defaultmapsettings.middleMultiView) {
-                both = 1;
-            } else if (defaultmapsettings.middleMultiViewWhenClose) {
-                both = lmSmoothstep(LM_MB_CAMERA_FAR, LM_MB_CAMERA_NEAR, fit);
-            } else {
-                both = 0;
+            var mode = defaultmapsettings.middleMultiView ? 2 : defaultmapsettings.middleMultiViewWhenClose ? 1 : 0;
+            if (mode && f.n > 1) {
+                var baseScale = this.getTargetScale(act.size, true);
+                var minX = act.minX, maxX = act.maxX, minY = act.minY, maxY = act.maxY;
+                for (i = 0; i < f.n; i++) {
+                    if (i === a) continue;
+                    var b = f.boxes[i];
+                    var x0 = Math.min(minX, b.minX), x1 = Math.max(maxX, b.maxX);
+                    var y0 = Math.min(minY, b.minY), y1 = Math.max(maxY, b.maxY);
+                    /* zoom factor that fits the box (with a 5 % margin each side); >= 1: it already fits */
+                    var fit = Math.min(
+                        (this.canvasWidth || 1) * 0.9 / Math.max(1, x1 - x0),
+                        (this.canvasHeight || 1) * 0.9 / Math.max(1, y1 - y0)
+                    ) / (baseScale > 0 ? baseScale : 1);
+                    var w = mode === 2 ? 1 : lmSmoothstep(LM_MB_CAMERA_FAR, LM_MB_CAMERA_NEAR, fit);
+                    if (!(w > 0)) continue;
+                    x += ((x0 + x1) / 2 - x) * w;
+                    y += ((y0 + y1) / 2 - y) * w;
+                    zoom += (Math.min(1, Math.max(LM_MB_CAMERA_NEAR, fit)) - zoom) * w;
+                    if (w > both) both = w;
+                    minX = x0; maxX = x1; minY = y0; maxY = y1;
+                }
             }
-            var boxX = (minX + maxX) / 2, boxY = (minY + maxY) / 2;
-            var zoomBoth = Math.min(1, Math.max(LM_MB_CAMERA_NEAR, fit));
-            return {
-                x: controlled.x + (boxX - controlled.x) * both,
-                y: controlled.y + (boxY - controlled.y) * both,
-                zoom: 1 + (zoomBoth - 1) * both,
-                both: both,
-                size: controlled.size
-            };
+            out.x = x;
+            out.y = y;
+            out.zoom = zoom;
+            out.both = both;
+            out.size = act.size;
+            return out;
         },
         getZoom() {
             return Math.max(this.canvasWidth / 1080, this.canvasHeight / 1920) * LM.zoomValue;
@@ -81649,30 +81782,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                             if (
                                 !sp ||
+                                !sp.player ||
                                 !sp.playerCellIDs ||
                                 !sp.playerCellIDs.length
                             ) {
                                 continue;
                             }
 
-                            var unitCells = [];
-
-                            for (
-                                var c = 0;
-                                c < sp.playerCellIDs.length;
-                                c++
-                            ) {
-                                var cellObj =
-                                    LM.indexedCells[
-                                        sp.playerCellIDs[c]
-                                    ];
-
-                                if (cellObj) {
-                                    unitCells.push(
-                                        cellObj
-                                    );
-                                }
-                            }
+                            /* the unit's own cell index (a list per unit kept by spect.js,
+                             * read only): no new list per unit per frame */
+                            var unitCells =
+                                sp.getOwnPlayerCells();
 
                             if (!unitCells.length) {
                                 continue;
