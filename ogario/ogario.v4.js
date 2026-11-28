@@ -59885,11 +59885,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return;
             }
             this.resetDeathScreen();
-            this._spawnEffect.active = true;
-            this._spawnEffect.startTime = Date.now();
-            this._spawnEffect.x = worldX;
-            this._spawnEffect.y = worldY;
-            this._spawnEffect.color = color || '#00ccff';
+            this.startSpawnBurst(worldX, worldY, color);
+            /* Expanding Land's life cycle: its first frame also ends that server's death cinematic */
+            this._spawnEffect.el = true;
+        },
+        /* the spawn burst alone (presentation only, any server): rings and rays at a world point
+         * for 1.4 s on the existing effect pass. No death screen, game state or server check here:
+         * triggerSpawnEffect keeps those for Expanding Land / Legend World. */
+        startSpawnBurst(worldX, worldY, color) {
+            var fx = this._spawnEffect;
+            fx.active = true;
+            fx.startTime = Date.now();
+            fx.x = worldX;
+            fx.y = worldY;
+            fx.color = color || '#00ccff';
+            fx.el = false;
         },
         drawSpawnEffect(ctx) {
             var fx =
@@ -59914,7 +59924,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             if (
                 elapsed <
-                    30
+                    30 && fx.el !== false
             ) {
                 if (typeof window !== 'undefined' && typeof window._elDeathVisual !== 'undefined') {
                     window._elDeathVisual = null;
