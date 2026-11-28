@@ -66,7 +66,7 @@ function load(o) {
     need(ta >= 0 && tm >= 0 && tb >= 0, 'multibox hide step');
     need(ca >= 0 && cb >= 0, 'frame compaction');
     const compact = v4.slice(ca, cb).slice(0, v4.slice(ca, cb).lastIndexOf('/*'));
-    const methods = ['getOwnPlayerCells() {', 'beforecalculation() {', 'terminate(reason) {', 'respawn() {', '_lmSpawnReady() {', '_lmSpawn(kind) {', '_lmPendBound() {',
+    const methods = ['getOwnPlayerCells() {', 'beforecalculation() {', 'terminate(reason) {', 'respawn() {', '_lmSpawnReady() {', '_lmSpawn(kind) {', '_lmPendBound() {', '_lmCancelAutoResp() {',
         'calculatePlayerMassAndPosition(ownCells) {', 'recalculatePlayerMass(ownCells) {'].map((m) => need(block(sp, '    ' + m), 'spect.js ' + m));
     const deathSwitch = need(block(v4, "if ((defaultmapsettings.mbSwitchAfterDeath || (typeof lmMbSteersLiving === 'function' && lmMbSteersLiving())) && typeof spects !== 'undefined' && spects && spects.length > 0) {"), 'onPlayerDeath switch');
     const idx = ['    function lmIdxFilter(', '    function lmIdxClear('].map((m) => need(block(v4, m), m.trim()));

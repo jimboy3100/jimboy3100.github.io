@@ -1453,7 +1453,8 @@ for (const glow of [false, true]) {
  * Background auto-respawn off a manual respawn still spawns and a background death stays dead, also
  * through a reconnect; a manual respawn on an open socket before its handshake waits for the hello; one
  * unit holds the other account's login, a guest never logs in (also on 103); a login popup's
- * cancellation, timeout, removal and slot reuse release it and a late answer goes nowhere. */
+ * cancellation, timeout, removal and slot reuse release it and a late answer goes nowhere; a unit's own
+ * death without a game over auto-respawns once after LM_MB_AUTORESP_FALLBACK_MS (26e). */
 async function sec26() {
     const R = path.join(__dirname, '..', '..');
     const pc = { console: { log() { }, warn() { }, error() { } }, Uint8Array, ArrayBuffer, DataView, Array, Object, Math, String, Number, Promise, Error, TypeError, RangeError,
@@ -1588,6 +1589,48 @@ async function sec26() {
     p3.sendAccessToken('tok', 2);
     check('    ... with its cipher: sent once, marked as sent', p3.accessTokenSent === true && p3.socket.sent === sent + 1);
     check('26c. through all of it the guest P3 never sent a token', p3.tokens.length === 0);
+    /* 26e. the auto-respawn fallback: P3's own death on its socket (the real opcode 16 death check; its
+     * world update itself stubbed) waits LM_MB_AUTORESP_FALLBACK_MS for the game over (102 type 62),
+     * then auto-respawns once by itself */
+    c.buffer = { Buffer: function (ab) { return Buffer.from(ab); } };
+    p3.updateCells = () => { };
+    const fb = () => [...e.timers.entries()].filter(([, t]) => t.ms === 1500);
+    const live = (u) => { u.active = true; u._lmLife = (u._lmLife || 0) + 1; u._lmHasSpawned = true; };
+    const die = (u) => { later(3000); u.handleMessage(raw(16)); };
+    const fire = () => fb().forEach(([id, t]) => { e.timers.delete(id); t.fn(); });
+    c.defaultmapsettings.mbAutoRespawn = true;
+    hello(p3); /* its socket's hello: a life only comes after it */
+    live(p3); die(p3);
+    let k = p3.nicks;
+    check('26e. P3 dies on its socket (opcode 16): no spawn yet, one fallback armed for 1.5 s', p3.active === false && p3._lmDeadIdle === true && fb().length === 1 && p3.nicks === k, fb().length);
+    fire();
+    check('    ... no game over came: one auto-respawn of its own', p3.nicks === k + 1 && fb().length === 0);
+    later(3000); p3.handleMessage(p102(62));
+    check('    ... the game over coming late for the same death: no second spawn (one per death)', p3.nicks === k + 1);
+    live(p3); die(p3); k = p3.nicks;
+    later(200); p3.handleMessage(p102(62));
+    check('    ... next life, the game over comes first: it auto-respawns once and the fallback is cancelled', p3.nicks === k + 1 && fb().length === 0);
+    live(p3); die(p3); k = p3.nicks;
+    c.defaultmapsettings.mbAutoRespawn = false;
+    fire();
+    check('    ... Background auto-respawn turned off before the fallback: nothing', p3.nicks === k);
+    live(p3); die(p3);
+    check('    ... off at the death: no fallback armed', fb().length === 0 && p3.nicks === k);
+    c.defaultmapsettings.mbAutoRespawn = true;
+    live(p3); die(p3); k = p3.nicks;
+    later(200); p3.respawn();
+    check('    ... a manual respawn first: one spawn, the fallback cancelled', p3.nicks === k + 1 && fb().length === 0);
+    live(p3); die(p3); k = p3.nicks;
+    let stale = fb()[0];
+    p3.connect(); open(p3);
+    stale[1].fn();
+    check('    ... a new socket (generation) before the fallback: cancelled, and a late run of the old timer spawns nothing', fb().length === 0 && p3.nicks === k);
+    hello(p3); k = p3.nicks;
+    live(p3); die(p3);
+    stale = fb()[0];
+    e.app.mbRemovePlayer(3);
+    stale[1].fn();
+    check('    ... P3 removed before the fallback: cancelled, a late run spawns nothing', !!stale && fb().length === 0 && p3.nicks === k && !c.lmMbPlayers.isCurrent(p3));
     /* 25d. the Google sign-in on our domains (ogario.v4.master.js _lmSetupGis): an answer to a multibox
      * unit's popup that comes after its wait ended (60 s, cancelled, removed) stays for multibox */
     const msrc = fs.readFileSync(path.join(R, 'ogario', 'ogario.v4.master.js'), 'utf8').replace(/\r\n/g, '\n');

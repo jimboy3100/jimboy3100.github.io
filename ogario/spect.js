@@ -518,6 +518,9 @@ var LM_TILE_SETTLED = 4, LM_TILE_MOVING_MS = 500, LM_TILE_REFRESH_MS = 1000;
 var LM_CAM_FRESH_MS = 1000, LM_TILE_STALE_MS = 3000;
 /* a tile target waits this long after the border for the orientation (Spect._lmTileRaw) */
 var LM_TILE_UNVERIFIED_MS = 5000;
+/* a unit's own death (opcode 16) waits this long for the server's game over (102 type 62) before
+ * its Background auto-respawn goes out without it (Spect._lmArmAutoResp) */
+var LM_MB_AUTORESP_FALLBACK_MS = 1500;
 /* a unit's first spawn waits this long at most for its orientation (Spect._lmSpawnHold) */
 var LM_MB_SPAWN_HOLD_MS = 3000;
 /* tiles on one axis: the fewest views of length view covering map + 2 * edge with seams >= seam */
@@ -704,6 +707,8 @@ class Spect {
         if (this.pingInterval) clearInterval(this.pingInterval);
         if (this._lmRefuseTimer) clearTimeout(this._lmRefuseTimer);
         this._lmRefuseTimer = null;
+        /* a death's auto-respawn fallback belongs to its socket */
+        this._lmCancelAutoResp();
         this.positionController = null;
         this.staticPositionController = null;
         this.socketErrorTimer = null;
@@ -1167,8 +1172,38 @@ class Spect {
         if (kind !== 'hello' && now - (this._lmLastSpawnReq || 0) <= 2000) return false;
         this._lmLastSpawnReq = now;
         this._lmDeadIdle = false;
+        /* a spawn went out: the death's fallback has nothing left to do; one auto-respawn per
+         * death (the game over and the fallback do not both spawn it) */
+        this._lmCancelAutoResp();
+        this._lmAutoRespFor = kind === 'auto' ? this._lmLife || 0 : undefined;
         this.handleSendNick();
         return true;
+    }
+    /*
+     * The unit's own death on this socket (opcode 16, its last own cell gone): Background
+     * auto-respawn came only from the server's game over (102 type 62). If none comes for this
+     * socket within LM_MB_AUTORESP_FALLBACK_MS, one auto-respawn of its own: once per death, never
+     * a loop, with the 2 s limit and the rules of _lmSpawn. A game over or any spawn request first,
+     * a new socket, a close or removal (clearAsyncState), a new life or a login popup open for this
+     * socket: nothing.
+     */
+    _lmArmAutoResp() {
+        this._lmCancelAutoResp();
+        var ms = typeof defaultmapsettings !== 'undefined' && defaultmapsettings || {};
+        if (!this.player || this.closedByUser || !this.socket || ms.mbAutoRespawn === false) return false;
+        var sock = this.socket, gen = this.connectionGeneration, life = this._lmLife;
+        this._lmAutoRespTimer = setTimeout(() => {
+            this._lmAutoRespTimer = null;
+            if (this.closedByUser || this.socket !== sock || this.connectionGeneration !== gen || this.active || this._lmLife !== life) return;
+            if (this.slotId && typeof lmMbPlayers !== 'undefined' && lmMbPlayers && !lmMbPlayers.isCurrent(this)) return;
+            if (!this._lmSpawnReady() || (window.MultiPending === this && this._lmPendBound())) return;
+            this._lmSpawn('auto');
+        }, LM_MB_AUTORESP_FALLBACK_MS);
+        return true;
+    }
+    _lmCancelAutoResp() {
+        if (this._lmAutoRespTimer) clearTimeout(this._lmAutoRespTimer);
+        this._lmAutoRespTimer = null;
     }
     /* Opcode 102 (protobuf): which spawn it asks for, by its type ('' none). The game over (62) is
      * a death: Background auto-respawn; the login answer (11) spawns; before the first life any
@@ -1176,7 +1211,8 @@ class Spect {
      * Pong (31), disconnect (20), server going offline (34), unreadable or unrelated packets never. */
     _lm102Kind(type) {
         if (!this.player || typeof type !== 'number' || !(type >= 0)) return '';
-        if (type === 62) return 'auto';
+        /* this death already got its auto-respawn (the fallback came first) */
+        if (type === 62) return this._lmAutoRespFor !== undefined && this._lmAutoRespFor === (this._lmLife || 0) ? '' : 'auto';
         if (type === 11) return 'login';
         if (type === 20 || type === 31 || type === 34) return '';
         return !this._lmHasSpawned && this.accessTokenSent ? 'login' : '';
@@ -1185,6 +1221,8 @@ class Spect {
         /* the server ended this life: it waits dead (a reconnect does not bring it back with
          * Background auto-respawn off) */
         if (type === 62 && this.player && !this.active) this._lmDeadIdle = true;
+        /* the game over came: the death's fallback is not needed */
+        if (type === 62) this._lmCancelAutoResp();
         var kind = this._lm102Kind(type);
         return kind ? this._lmSpawn(kind) : false;
     }
@@ -2343,6 +2381,7 @@ class Spect {
                     /* dead until a respawn: a reconnect does not bring it back with Background auto-respawn off (_lmSpawn) */
                     this._lmDeadIdle = true;
                     this.terminate()
+                    this._lmArmAutoResp()
                 }
                 this.beforecalculation()
                 break;
@@ -3139,6 +3178,7 @@ class Spect {
                     /* dead until a respawn: a reconnect does not bring it back with Background auto-respawn off (_lmSpawn) */
                     this._lmDeadIdle = true;
                     this.terminate()
+                    this._lmArmAutoResp()
                 }
                 break;
             case 64:

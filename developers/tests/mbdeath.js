@@ -58,7 +58,7 @@ if (!inactiveRule) { console.log('FAIL lmMbInactiveMoves not found'); process.ex
 
 /* 1. death of the main player: updateCells (all other servers) after onPlayerDeath's switch */
 const a = v4.indexOf('/* LMEvents: hooks'), b = v4.indexOf('window.OgVer', a);
-const respawn = ['    respawn() {', '    _lmSpawnReady() {', '    _lmSpawn(kind) {', '    _lmPendBound() {'].map((m) => block(sp, m)).join('\n');
+const respawn = ['    respawn() {', '    _lmSpawnReady() {', '    _lmSpawn(kind) {', '    _lmPendBound() {', '    _lmCancelAutoResp() {'].map((m) => block(sp, m)).join('\n');
 const appMethods = ['        multiboxchange() {', '        multiboxswap() {'].map((m) => block(v4, m));
 const deathSwitch = block(v4, "if ((defaultmapsettings.mbSwitchAfterDeath || (typeof lmMbSteersLiving === 'function' && lmMbSteersLiving())) && typeof spects !== 'undefined' && spects && spects.length > 0) {");
 const k = v4.indexOf('ALL OTHER SERVERS');
