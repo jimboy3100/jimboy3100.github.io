@@ -1789,6 +1789,15 @@
             hudTaps();
             mm.addEventListener('touchstart', function (e) {
                 e.stopPropagation();
+                /* a tap on a button row placed above the minimap (shortcuts, images, commands,
+                 * scripts, administration: its .hud children) is only that button's; it may show
+                 * or hide another row, so 4x / 16x are placed again above the rows */
+                var t = e.target;
+                if (t && t.closest && t.closest('#minimap-hud > .hud')) {
+                    clearTimeout(placeT);
+                    placeT = setTimeout(repositionButtons, 300);
+                    return;
+                }
                 expanded = !expanded;
                 /* Split / Feed and 4x / 16x are placed from the minimap's box: place them again once
                  * its .25 s scale change is done (a ResizeObserver does not see a transform, so the
@@ -2070,7 +2079,15 @@
                 rootR.style.bottom = '4px';
 
                 // 4×/16×: row ABOVE minimap, aligned to right edge
-                var smBottom = vh - r.top + 6;
+                /* and above the button rows shown over its top edge (shortcuts, images, commands,
+                 * scripts, administration: absolutely placed children, outside its own box) */
+                var top = r.top;
+                for (var ci = 0, kids = mm.children; ci < kids.length; ci++) {
+                    if (!kids[ci].classList.contains('hud')) continue;
+                    var kq = kids[ci].getBoundingClientRect();
+                    if (kq.width >= 1 && kq.height >= 1 && kq.top < top && kq.bottom <= r.top + 2) top = kq.top;
+                }
+                var smBottom = vh - top + 6;
                 smallR.style.right = Math.max(4, vw - r.right) + 'px';
                 smallR.style.left = 'auto';
                 smallR.style.bottom = smBottom + 'px';
