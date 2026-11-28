@@ -36,7 +36,8 @@ if (window.isMobile){
 	defaultSettings.hudScale=0.70
 	$(".ogicon-home").click()
 	defaultSettings.miniMapWidth=90
-	$(".btn.btn-block.btn-success.btn-save").click()
+	/* the Theme tab has no Save button any more: save the theme directly */
+	if (window.Settings && typeof window.Settings.saveThemeSettings === "function") window.Settings.saveThemeSettings()
 }
 	
 function addStyleString(str) {

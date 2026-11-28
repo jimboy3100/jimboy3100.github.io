@@ -267,7 +267,6 @@ $('#themePreset>option:nth-child(5)').text(Languageletter137 + " 2");
 
 $("#lm-restore-theme").text(Languageletter170);
 if (typeof lmT === "function" && lmT("game1.set.copyDebug") !== "game1.set.copyDebug") $("#lm-copy-debug").text(lmT("game1.set.copyDebug"));
-$(".btn.btn-block.btn-success.btn-save").text(Languageletter171);
 
 
 $("#menuBg").attr('placeholder', Languageletter190);
