@@ -51,7 +51,7 @@ check('no FPS text left on the stats line', !/t \+= 'FPS: '/.test(main));
 
 /* the removed ping jitter option: the ping after the FPS is the plain value, an old saved
  * showStatsJitter is ignored, and the pong handler keeps no ping history any more */
-const pingLine = cut('                    var activeSpect', '                    if (window.multiboxPlayerEnabled) {');
+const pingLine = cut('                    var activeSpect', '                    /* [MB slot/players]');
 const ping = (ms, p, ws) => vm.runInNewContext('var t = "FPS: 60"; ' + pingLine + '; t', { defaultmapsettings: ms, drawRender: { ping: p, _lmPingHist: [10, 90, 10, 90] }, window: {}, getActiveSpect: () => null, LM: { ws: ws || 'wss://live-arena-1.agar.io:443' } });
 check('stats line: PING after the FPS, no +/- even with an old saved showStatsJitter', ping({ showStatsJitter: true }, 45) === 'FPS: 60 | PING: 45');
 check('stats line: no PING before the first pong', ping({}, 0) === 'FPS: 60');
