@@ -1,0 +1,991 @@
+{
+ "name": "Dying Light assets",
+ "version": 1,
+ "base": "https://www.legendmod.ml/",
+ "about": "Optimized copies of the Dying Light pictures and sounds. The old files under banners/ stay where they were (public URLs). bytes = file size, width/height = decoded size, decodedBytes = width * height * 4 (RGBA in memory or on the GPU). Backgrounds: \"full\" (at most 1920 x 1440) and \"small\" (at most 1280 x 960) for weak devices. Skins: square, whole figure centred with a 4% margin, alpha below 8/255 removed, transparent pixels fully transparent; 512 matches the 512 x 512 layers of the WebGL skin texture array, 256 for Canvas2D / small cells. Sounds: MP3 (plays in every browser incl. Safari / iOS); suggestedGain levels them to a similar loudness (multiply with the channel volume). Videos are never loaded automatically.",
+ "skinTextureSize": 512,
+ "backgrounds": [
+  {
+   "id": "back0",
+   "source": "https://www.legendmod.ml/banners/dyinglightback0.jpg",
+   "sourceBytes": 137546,
+   "sourceWidth": 1920,
+   "sourceHeight": 1080,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back0-1920.webp",
+     "bytes": 91110,
+     "width": 1920,
+     "height": 1080,
+     "decodedBytes": 8294400,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back0-1280.webp",
+     "bytes": 46404,
+     "width": 1280,
+     "height": 720,
+     "decodedBytes": 3686400,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 0
+  },
+  {
+   "id": "back1",
+   "source": "https://www.legendmod.ml/banners/dyinglightback1.jpg",
+   "sourceBytes": 677870,
+   "sourceWidth": 1920,
+   "sourceHeight": 1080,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back1-1920.webp",
+     "bytes": 210930,
+     "width": 1920,
+     "height": 1080,
+     "decodedBytes": 8294400,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back1-1280.webp",
+     "bytes": 95038,
+     "width": 1280,
+     "height": 720,
+     "decodedBytes": 3686400,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 1
+  },
+  {
+   "id": "back2",
+   "source": "https://www.legendmod.ml/banners/dyinglightback2.jpg",
+   "sourceBytes": 1528594,
+   "sourceWidth": 1920,
+   "sourceHeight": 1080,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back2-1920.webp",
+     "bytes": 325238,
+     "width": 1920,
+     "height": 1080,
+     "decodedBytes": 8294400,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back2-1280.webp",
+     "bytes": 141016,
+     "width": 1280,
+     "height": 720,
+     "decodedBytes": 3686400,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 2
+  },
+  {
+   "id": "back3",
+   "source": "https://www.legendmod.ml/banners/dyinglightback3.jpg",
+   "sourceBytes": 1679667,
+   "sourceWidth": 2560,
+   "sourceHeight": 1440,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back3-1920.webp",
+     "bytes": 265940,
+     "width": 1920,
+     "height": 1080,
+     "decodedBytes": 8294400,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back3-1280.webp",
+     "bytes": 143458,
+     "width": 1280,
+     "height": 720,
+     "decodedBytes": 3686400,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 3
+  },
+  {
+   "id": "back4",
+   "source": "https://www.legendmod.ml/banners/dyinglightback4.jpg",
+   "sourceBytes": 516136,
+   "sourceWidth": 1920,
+   "sourceHeight": 1080,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back4-1920.webp",
+     "bytes": 324608,
+     "width": 1920,
+     "height": 1080,
+     "decodedBytes": 8294400,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back4-1280.webp",
+     "bytes": 133626,
+     "width": 1280,
+     "height": 720,
+     "decodedBytes": 3686400,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 4
+  },
+  {
+   "id": "back5",
+   "source": "https://www.legendmod.ml/banners/dyinglightback5.jpg",
+   "sourceBytes": 421245,
+   "sourceWidth": 1920,
+   "sourceHeight": 1080,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back5-1920.webp",
+     "bytes": 308424,
+     "width": 1920,
+     "height": 1080,
+     "decodedBytes": 8294400,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back5-1280.webp",
+     "bytes": 103932,
+     "width": 1280,
+     "height": 720,
+     "decodedBytes": 3686400,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 5
+  },
+  {
+   "id": "back6",
+   "source": "https://www.legendmod.ml/banners/dyinglightback6.jpg",
+   "sourceBytes": 4514256,
+   "sourceWidth": 2560,
+   "sourceHeight": 1280,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back6-1920.webp",
+     "bytes": 174066,
+     "width": 1920,
+     "height": 960,
+     "decodedBytes": 7372800,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back6-1280.webp",
+     "bytes": 98476,
+     "width": 1280,
+     "height": 640,
+     "decodedBytes": 3276800,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 6
+  },
+  {
+   "id": "back7",
+   "source": "https://www.legendmod.ml/banners/dyinglightback7.jpg",
+   "sourceBytes": 3137816,
+   "sourceWidth": 1800,
+   "sourceHeight": 1440,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back7-1800.webp",
+     "bytes": 88426,
+     "width": 1800,
+     "height": 1440,
+     "decodedBytes": 10368000,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back7-1200.webp",
+     "bytes": 44726,
+     "width": 1200,
+     "height": 960,
+     "decodedBytes": 4608000,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 7
+  },
+  {
+   "id": "back8",
+   "source": "https://www.legendmod.ml/banners/dyinglightback8.jpg",
+   "sourceBytes": 3718493,
+   "sourceWidth": 1800,
+   "sourceHeight": 1440,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back8-1800.webp",
+     "bytes": 232856,
+     "width": 1800,
+     "height": 1440,
+     "decodedBytes": 10368000,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back8-1200.webp",
+     "bytes": 131634,
+     "width": 1200,
+     "height": 960,
+     "decodedBytes": 4608000,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 8
+  },
+  {
+   "id": "back9",
+   "source": "https://www.legendmod.ml/banners/dyinglightback9.jpg",
+   "sourceBytes": 4156633,
+   "sourceWidth": 2560,
+   "sourceHeight": 1280,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back9-1920.webp",
+     "bytes": 153824,
+     "width": 1920,
+     "height": 960,
+     "decodedBytes": 7372800,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back9-1280.webp",
+     "bytes": 84296,
+     "width": 1280,
+     "height": 640,
+     "decodedBytes": 3276800,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 9
+  },
+  {
+   "id": "back10",
+   "source": "https://www.legendmod.ml/banners/dyinglightback10.jpg",
+   "sourceBytes": 3679150,
+   "sourceWidth": 2560,
+   "sourceHeight": 1280,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back10-1920.webp",
+     "bytes": 61006,
+     "width": 1920,
+     "height": 960,
+     "decodedBytes": 7372800,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back10-1280.webp",
+     "bytes": 31896,
+     "width": 1280,
+     "height": 640,
+     "decodedBytes": 3276800,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 10
+  },
+  {
+   "id": "back11",
+   "source": "https://www.legendmod.ml/banners/dyinglightback11.jpg",
+   "sourceBytes": 785733,
+   "sourceWidth": 1918,
+   "sourceHeight": 968,
+   "use": "gameplay",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back11-1918.webp",
+     "bytes": 334956,
+     "width": 1918,
+     "height": 968,
+     "decodedBytes": 7426496,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back11-1280.webp",
+     "bytes": 161542,
+     "width": 1280,
+     "height": 646,
+     "decodedBytes": 3307520,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 11
+  },
+  {
+   "id": "backhub",
+   "source": "https://www.legendmod.ml/banners/dyinglightbackhub.jpg",
+   "sourceBytes": 287172,
+   "sourceWidth": 1920,
+   "sourceHeight": 1080,
+   "use": "menu",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/backhub-1920.webp",
+     "bytes": 202578,
+     "width": 1920,
+     "height": 1080,
+     "decodedBytes": 8294400,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/backhub-1280.webp",
+     "bytes": 124336,
+     "width": 1280,
+     "height": 720,
+     "decodedBytes": 3686400,
+     "variant": "small"
+    }
+   ]
+  },
+  {
+   "id": "back12",
+   "source": "https://www.legendmod.ml/banners/dyinglightback12.jpg",
+   "sourceBytes": 416314,
+   "sourceWidth": 1916,
+   "sourceHeight": 968,
+   "use": "menu",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back12-1916.webp",
+     "bytes": 113382,
+     "width": 1916,
+     "height": 968,
+     "decodedBytes": 7418752,
+     "variant": "full"
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/backgrounds/back12-1280.webp",
+     "bytes": 65176,
+     "width": 1280,
+     "height": 647,
+     "decodedBytes": 3312640,
+     "variant": "small"
+    }
+   ],
+   "legacyIndex": 12
+  }
+ ],
+ "skins": [
+  {
+   "id": "zombie",
+   "source": "https://www.legendmod.ml/banners/icondyinglightzombie.png",
+   "sourceBytes": 273130,
+   "sourceWidth": 600,
+   "sourceHeight": 501,
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie-512.webp",
+     "bytes": 54040,
+     "width": 512,
+     "height": 512,
+     "decodedBytes": 1048576,
+     "size": 512
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie-256.webp",
+     "bytes": 18674,
+     "width": 256,
+     "height": 256,
+     "decodedBytes": 262144,
+     "size": 256
+    }
+   ]
+  },
+  {
+   "id": "zombie2",
+   "source": "https://www.legendmod.ml/banners/icondyinglightzombie2.png",
+   "sourceBytes": 1040902,
+   "sourceWidth": 1024,
+   "sourceHeight": 1668,
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie2-512.webp",
+     "bytes": 29658,
+     "width": 512,
+     "height": 512,
+     "decodedBytes": 1048576,
+     "size": 512
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie2-256.webp",
+     "bytes": 11356,
+     "width": 256,
+     "height": 256,
+     "decodedBytes": 262144,
+     "size": 256
+    }
+   ]
+  },
+  {
+   "id": "zombie3",
+   "source": "https://www.legendmod.ml/banners/icondyinglightzombie3.png",
+   "sourceBytes": 573921,
+   "sourceWidth": 649,
+   "sourceHeight": 1230,
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie3-512.webp",
+     "bytes": 25122,
+     "width": 512,
+     "height": 512,
+     "decodedBytes": 1048576,
+     "size": 512
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie3-256.webp",
+     "bytes": 9844,
+     "width": 256,
+     "height": 256,
+     "decodedBytes": 262144,
+     "size": 256
+    }
+   ]
+  },
+  {
+   "id": "zombie4",
+   "source": "https://www.legendmod.ml/banners/icondyinglightzombie4.png",
+   "sourceBytes": 1998238,
+   "sourceWidth": 1500,
+   "sourceHeight": 2155,
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie4-512.webp",
+     "bytes": 24768,
+     "width": 512,
+     "height": 512,
+     "decodedBytes": 1048576,
+     "size": 512
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie4-256.webp",
+     "bytes": 9950,
+     "width": 256,
+     "height": 256,
+     "decodedBytes": 262144,
+     "size": 256
+    }
+   ]
+  },
+  {
+   "id": "zombie5",
+   "source": "https://www.legendmod.ml/banners/icondyinglightzombie5.png",
+   "sourceBytes": 797143,
+   "sourceWidth": 827,
+   "sourceHeight": 1014,
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie5-512.webp",
+     "bytes": 40734,
+     "width": 512,
+     "height": 512,
+     "decodedBytes": 1048576,
+     "size": 512
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombie5-256.webp",
+     "bytes": 14200,
+     "width": 256,
+     "height": 256,
+     "decodedBytes": 262144,
+     "size": 256
+    }
+   ]
+  },
+  {
+   "id": "zombiebig",
+   "source": "https://www.legendmod.ml/banners/icondyinglightzombiebig.png",
+   "sourceBytes": 773999,
+   "sourceWidth": 400,
+   "sourceHeight": 585,
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombiebig-512.webp",
+     "bytes": 32090,
+     "width": 512,
+     "height": 512,
+     "decodedBytes": 1048576,
+     "size": 512
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/zombiebig-256.webp",
+     "bytes": 12638,
+     "width": 256,
+     "height": 256,
+     "decodedBytes": 262144,
+     "size": 256
+    }
+   ]
+  },
+  {
+   "id": "volatile",
+   "source": "https://www.legendmod.ml/banners/icondyinglightvolaltile.png",
+   "sourceBytes": 283040,
+   "sourceWidth": 385,
+   "sourceHeight": 700,
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/volatile-512.webp",
+     "bytes": 33222,
+     "width": 512,
+     "height": 512,
+     "decodedBytes": 1048576,
+     "size": 512
+    },
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/skins/volatile-256.webp",
+     "bytes": 11870,
+     "width": 256,
+     "height": 256,
+     "decodedBytes": 262144,
+     "size": 256
+    }
+   ]
+  }
+ ],
+ "effects": [
+  {
+   "id": "virus",
+   "source": "https://www.legendmod.ml/banners/icondyinglightvirus.png",
+   "sourceBytes": 49383,
+   "sourceWidth": 146,
+   "sourceHeight": 150,
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/effects/virus-150.webp",
+     "bytes": 9794,
+     "width": 150,
+     "height": 150,
+     "decodedBytes": 90000
+    }
+   ]
+  },
+  {
+   "id": "handprints",
+   "source": "https://www.legendmod.ml/banners/dyinglightother6.png",
+   "sourceBytes": 34747,
+   "sourceWidth": 200,
+   "sourceHeight": 200,
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/effects/handprints-200.webp",
+     "bytes": 11060,
+     "width": 200,
+     "height": 200,
+     "decodedBytes": 160000
+    }
+   ]
+  }
+ ],
+ "interface": [
+  {
+   "id": "banner",
+   "source": "https://www.legendmod.ml/banners/dyinglightbanner.jpg",
+   "sourceBytes": 35263,
+   "sourceWidth": 950,
+   "sourceHeight": 190,
+   "use": "confirm toast background",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/banner-950.webp",
+     "bytes": 27408,
+     "width": 950,
+     "height": 190,
+     "decodedBytes": 722000
+    }
+   ]
+  },
+  {
+   "id": "banner2",
+   "source": "https://www.legendmod.ml/banners/dyinglightbanner2.jpg",
+   "sourceBytes": 35263,
+   "sourceWidth": 950,
+   "sourceHeight": 190,
+   "use": "HUD image (imgUrl)",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/banner2-950.webp",
+     "bytes": 27408,
+     "width": 950,
+     "height": 190,
+     "decodedBytes": 722000
+    }
+   ]
+  },
+  {
+   "id": "banner3",
+   "source": "https://www.legendmod.ml/banners/dyinglightbanner3.jpg",
+   "sourceBytes": 74925,
+   "sourceWidth": 950,
+   "sourceHeight": 190,
+   "use": "banner",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/banner3-950.webp",
+     "bytes": 31364,
+     "width": 950,
+     "height": 190,
+     "decodedBytes": 722000
+    }
+   ]
+  },
+  {
+   "id": "teamboard",
+   "source": "https://www.legendmod.ml/banners/dyinglightbabyteamboard.png",
+   "sourceBytes": 73129,
+   "sourceWidth": 323,
+   "sourceHeight": 256,
+   "use": "minimap background",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/teamboard-323.webp",
+     "bytes": 2880,
+     "width": 323,
+     "height": 256,
+     "decodedBytes": 330752
+    }
+   ]
+  },
+  {
+   "id": "leaderboard",
+   "source": "https://www.legendmod.ml/banners/dyinglightbabyleaderboard.png",
+   "sourceBytes": 254929,
+   "sourceWidth": 498,
+   "sourceHeight": 579,
+   "use": "leaderboard background",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/leaderboard-498.webp",
+     "bytes": 47128,
+     "width": 498,
+     "height": 579,
+     "decodedBytes": 1153368
+    }
+   ]
+  },
+  {
+   "id": "log",
+   "source": "https://www.legendmod.ml/banners/dyinglightother1.jpg",
+   "sourceBytes": 139997,
+   "sourceWidth": 1200,
+   "sourceHeight": 675,
+   "use": "chat log background",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/log-1200.webp",
+     "bytes": 83374,
+     "width": 1200,
+     "height": 675,
+     "decodedBytes": 3240000
+    }
+   ]
+  },
+  {
+   "id": "menu",
+   "source": "https://www.legendmod.ml/banners/dyinglightother2.jpg",
+   "sourceBytes": 535704,
+   "sourceWidth": 1306,
+   "sourceHeight": 1981,
+   "use": "menu panel background (#openfl-content)",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/menu-844.webp",
+     "bytes": 149378,
+     "width": 844,
+     "height": 1280,
+     "decodedBytes": 4321280
+    }
+   ]
+  },
+  {
+   "id": "toast-profile",
+   "source": "https://www.legendmod.ml/banners/dyinglightother4.jpg",
+   "sourceBytes": 5112,
+   "sourceWidth": 319,
+   "sourceHeight": 158,
+   "use": "toast background (profile quote, unused)",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/toast-profile-319.webp",
+     "bytes": 4966,
+     "width": 319,
+     "height": 158,
+     "decodedBytes": 201608
+    }
+   ]
+  },
+  {
+   "id": "toast-spectate",
+   "source": "https://www.legendmod.ml/banners/dyinglightother7.jpg",
+   "sourceBytes": 25512,
+   "sourceWidth": 416,
+   "sourceHeight": 242,
+   "use": "toast background (spectate quote)",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/toast-spectate-416.webp",
+     "bytes": 9214,
+     "width": 416,
+     "height": 242,
+     "decodedBytes": 402688
+    }
+   ]
+  },
+  {
+   "id": "toast-signal",
+   "source": "https://www.legendmod.ml/banners/dyinglightother8.jpg",
+   "sourceBytes": 21552,
+   "sourceWidth": 433,
+   "sourceHeight": 188,
+   "use": "toast background (disconnect / join quotes)",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/toast-signal-433.webp",
+     "bytes": 6396,
+     "width": 433,
+     "height": 188,
+     "decodedBytes": 325616
+    }
+   ]
+  },
+  {
+   "id": "other3",
+   "source": "https://www.legendmod.ml/banners/dyinglightother3.jpg",
+   "sourceBytes": 27804,
+   "sourceWidth": 585,
+   "sourceHeight": 300,
+   "use": "gallery",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/other3-585.webp",
+     "bytes": 11904,
+     "width": 585,
+     "height": 300,
+     "decodedBytes": 702000
+    }
+   ]
+  },
+  {
+   "id": "other5",
+   "source": "https://www.legendmod.ml/banners/dyinglightother5.jpg",
+   "sourceBytes": 25200,
+   "sourceWidth": 599,
+   "sourceHeight": 337,
+   "use": "gallery",
+   "variants": [
+    {
+     "url": "https://www.legendmod.ml/banners/dyinglight/interface/other5-599.webp",
+     "bytes": 18904,
+     "width": 599,
+     "height": 337,
+     "decodedBytes": 807452
+    }
+   ]
+  }
+ ],
+ "sounds": [
+  {
+   "id": "confirm",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/confirm.mp3",
+   "bytes": 41714,
+   "format": "audio/mpeg",
+   "durationMs": 2586,
+   "sampleRate": 44100,
+   "channels": 2,
+   "kbps": 128,
+   "rms": 0.012,
+   "peak": 0.084,
+   "suggestedGain": 1.0,
+   "loop": false,
+   "legacyUse": "enable confirmation toast",
+   "source": "https://www.legendmod.ml/banners/dyinglingsong5.mp3",
+   "sourceBytes": 60857
+  },
+  {
+   "id": "death-1",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/death-1.mp3",
+   "bytes": 67813,
+   "format": "audio/mpeg",
+   "durationMs": 5616,
+   "sampleRate": 44100,
+   "channels": 2,
+   "kbps": 96,
+   "rms": 0.195,
+   "peak": 1.0,
+   "suggestedGain": 0.15,
+   "loop": false,
+   "legacyUse": "first death (legacy cycle 1/3)",
+   "source": "https://www.legendmod.ml/banners/dyinglingsong3.mp3",
+   "sourceBytes": 223715
+  },
+  {
+   "id": "death-2",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/death-2.mp3",
+   "bytes": 96918,
+   "format": "audio/mpeg",
+   "durationMs": 8046,
+   "sampleRate": 44100,
+   "channels": 2,
+   "kbps": 96,
+   "rms": 0.02,
+   "peak": 0.107,
+   "suggestedGain": 1.0,
+   "loop": false,
+   "legacyUse": "second death (legacy cycle 2/3)",
+   "source": "https://www.legendmod.ml/banners/dyinglingsong4.mp3",
+   "sourceBytes": 212352
+  },
+  {
+   "id": "death-3",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/death-3.mp3",
+   "bytes": 63970,
+   "format": "audio/mpeg",
+   "durationMs": 5303,
+   "sampleRate": 44100,
+   "channels": 2,
+   "kbps": 96,
+   "rms": 0.014,
+   "peak": 0.078,
+   "suggestedGain": 1.0,
+   "loop": false,
+   "legacyUse": "third death (legacy cycle 3/3)",
+   "source": "https://www.legendmod.ml/banners/dyinglingsong6.mp3",
+   "sourceBytes": 126059
+  },
+  {
+   "id": "signal-lost",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/signal-lost.mp3",
+   "bytes": 78015,
+   "format": "audio/mpeg",
+   "durationMs": 9744,
+   "sampleRate": 44100,
+   "channels": 1,
+   "kbps": 64,
+   "rms": 0.018,
+   "peak": 0.082,
+   "suggestedGain": 1.0,
+   "loop": false,
+   "legacyUse": "disconnect",
+   "source": "https://www.legendmod.ml/banners/dyinglingsong7.mp3",
+   "sourceBytes": 236400
+  },
+  {
+   "id": "radio-join",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/radio-join.mp3",
+   "bytes": 96735,
+   "format": "audio/mpeg",
+   "durationMs": 12095,
+   "sampleRate": 44100,
+   "channels": 1,
+   "kbps": 64,
+   "rms": 0.059,
+   "peak": 0.285,
+   "suggestedGain": 0.5,
+   "loop": false,
+   "legacyUse": "copy server / join server quote",
+   "source": "https://www.legendmod.ml/banners/dyinglightsong10.mp3",
+   "sourceBytes": 289063
+  },
+  {
+   "id": "radio-spectate",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/radio-spectate.mp3",
+   "bytes": 93615,
+   "format": "audio/mpeg",
+   "durationMs": 11703,
+   "sampleRate": 44100,
+   "channels": 1,
+   "kbps": 64,
+   "rms": 0.078,
+   "peak": 0.428,
+   "suggestedGain": 0.39,
+   "loop": false,
+   "legacyUse": "spectate quote",
+   "source": "https://www.legendmod.ml/banners/dyinglightsong9.mp3",
+   "sourceBytes": 279658
+  },
+  {
+   "id": "radio-profile",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/radio-profile.mp3",
+   "bytes": 52973,
+   "format": "audio/mpeg",
+   "durationMs": 3291,
+   "sampleRate": 44100,
+   "channels": 2,
+   "kbps": 128,
+   "rms": 0.034,
+   "peak": 0.142,
+   "suggestedGain": 0.87,
+   "loop": false,
+   "legacyUse": "profile picture quote (commented out in the legacy script)",
+   "source": "https://www.legendmod.ml/banners/dyinglighsong8.mp3",
+   "sourceBytes": 77784
+  },
+  {
+   "id": "command",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/command.mp3",
+   "bytes": 17111,
+   "format": "audio/mpeg",
+   "durationMs": 1045,
+   "sampleRate": 44100,
+   "channels": 1,
+   "kbps": 128,
+   "rms": 0.173,
+   "peak": 0.987,
+   "suggestedGain": 0.17,
+   "loop": false,
+   "legacyUse": "commandSound of the legacy settings payload",
+   "source": "https://www.legendmod.ml/banners/dyinglingsong2.wav",
+   "sourceBytes": 94380
+  },
+  {
+   "id": "chime",
+   "url": "https://www.legendmod.ml/sounds/dyinglight/chime.mp3",
+   "bytes": 17111,
+   "format": "audio/mpeg",
+   "durationMs": 1045,
+   "sampleRate": 44100,
+   "channels": 1,
+   "kbps": 128,
+   "rms": 0.125,
+   "peak": 0.972,
+   "suggestedGain": 0.24,
+   "loop": false,
+   "legacyUse": "not referenced by the legacy script",
+   "source": "https://www.legendmod.ml/banners/dyinglingsong.wav",
+   "sourceBytes": 94252
+  }
+ ],
+ "videos": [
+  {
+   "id": "video1",
+   "url": "https://www.legendmod.ml/banners/testvideodyinglight.mp4",
+   "bytes": 17896837,
+   "format": "video/mp4",
+   "autoload": false
+  },
+  {
+   "id": "video2",
+   "url": "https://www.legendmod.ml/banners/testvideodyinglight2.mp4",
+   "bytes": 4153138,
+   "format": "video/mp4",
+   "autoload": false
+  }
+ ]
+}
