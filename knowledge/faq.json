@@ -119,7 +119,7 @@
     },
     {
       "question": "How does the merge timer work?",
-      "answer": "After splitting, cells cannot recombine immediately. The timer depends on each cell's mass — bigger cells take longer to merge. Legend Mod shows a countdown overlay and progress rings on your cells, plus an optional sound alert when cells are ready to merge."
+      "answer": "After splitting, cells cannot recombine immediately. The timer depends on each cell's mass — bigger cells take longer to merge. Legend Mod shows merge progress rings on your cells, plus an optional sound alert when cells are ready to merge."
     },
     {
       "question": "What game modes does Expanding Land have?",
