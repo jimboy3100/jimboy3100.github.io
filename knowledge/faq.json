@@ -1,5 +1,5 @@
 {
-  "updated": "2026-11-26",
+  "updated": "2026-11-28",
   "faq": [
     {
       "question": "What is Legend Mod?",
@@ -107,7 +107,7 @@
     },
     {
       "question": "How do I multibox?",
-      "answer": "Enable multiboxing in Settings → Connections. You can run up to 4 connections with colour-coded cell rings. Use the tab key (default) to switch active connections. A middle-camera view shows the averaged position of all your cells."
+      "answer": "Press the Multibox switch key (Tab by default): it starts a second player (P2), and each press after that controls the next player. While multibox is on, the stats HUD lists your players: click one to control it, + adds a player (up to Settings > MultiBox > Multibox slots, 2 to 6) and x removes one. The hotkey Multibox off (no default key) closes the other players. Each player plays its own skin profile, and the camera can frame all of them. Full Map can stay on while you play, also with multibox."
     },
     {
       "question": "What games does Legend Express support?",

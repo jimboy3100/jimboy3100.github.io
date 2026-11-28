@@ -78,6 +78,7 @@
 - 📈 Game stats in the Replays window — match history, mass/min, top-10 rate, heatmaps
 
 ### More
+- 👾 Multibox — 2 to 6 players from one tab, added, picked and removed in the stats HUD; Full Map (Premium) can stay on while you play, also with multibox
 - 🎮 Full gamepad/controller support (PS, Xbox, generic)
 - 📱 Mobile touch controls
 - ⌨️ Command Centre (Ctrl+K) — search 220+ settings

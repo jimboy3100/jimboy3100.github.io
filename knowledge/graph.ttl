@@ -81,7 +81,7 @@
 
 <https://www.legendmod.ml/knowledge/#feature-multibox> a schema:DefinedTerm, lm:Feature ;
   schema:name "Multibox controls" ;
-  schema:description "Control up to 4 connections with a ring on the controlled unit and middle camera view." .
+  schema:description "Play 2 to 6 players from one tab, added and picked in the stats HUD, with a ring on the player you control and a camera that frames the players." .
 
 <https://www.legendmod.ml/knowledge/#feature-replays> a schema:DefinedTerm, lm:Feature ;
   schema:name "Replay tools" ;

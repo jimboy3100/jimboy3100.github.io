@@ -171,7 +171,7 @@
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Multibox controls</schema:name>
-    <schema:description>Control up to 4 connections with a ring on the controlled unit and middle camera view.</schema:description>
+    <schema:description>Play 2 to 6 players from one tab, added and picked in the stats HUD, with a ring on the player you control and a camera that frames the players.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-replays">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>

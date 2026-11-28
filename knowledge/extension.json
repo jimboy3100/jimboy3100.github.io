@@ -1,6 +1,6 @@
 {
   "entity": "https://www.legendmod.ml/#extension",
-  "updated": "2026-11-27",
+  "updated": "2026-11-28",
   "name": "Legend Express Agar.io Extension",
   "manifestVersion": 3,
   "version": "1.8.5",
@@ -53,7 +53,7 @@
     "Custom skins and video skins",
     "Theme customization (160+ properties)",
     "Configurable controls and hotkeys (146+ bindings)",
-    "Multiboxing (up to 4 connections)",
+    "Multiboxing (2 to 6 players from one tab)",
     "Replay Studio with timeline and bookmarks",
     "Command Centre fuzzy search palette",
     "Gamepad support (16 buttons)",

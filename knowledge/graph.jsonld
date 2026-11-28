@@ -282,7 +282,7 @@
         "lm:Feature"
       ],
       "name": "Multibox controls",
-      "description": "Control up to 4 connections with a ring on the controlled unit and middle camera view."
+      "description": "Play 2 to 6 players from one tab, added and picked in the stats HUD, with a ring on the player you control and a camera that frames the players."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-replays",

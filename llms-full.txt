@@ -30,7 +30,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 | Enter | Open chat input / send message |
 | ~ (Tilde) | Quick respawn |
 | Escape | Open menu / enter free spectate |
-| Tab | Multibox switch (next unit) |
+| Tab | Multibox switch (starts multibox with P2, then the next player) |
 | Ctrl+K | Open Command Centre (fuzzy search palette) |
 | J | Autoplay |
 | Z | Reset zoom (hold) |
@@ -63,7 +63,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 | N | Scan trick (hold) |
 | B | Toggle background sectors |
 | Alt+B | Hide small bots |
-| V | Toggle spectator mode |
+| V | Full Map on/off (Premium) |
 | C | Show/clear chat history (hold) |
 | X | Toggle death location |
 
@@ -80,7 +80,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
 
 ### Hotkeys Without Default Keys (All Configurable)
-Triple split, crazy double split, line split, practice arena, team pings (Help/Danger/Go here/Virus), spectate next top player, spectator director (open, auto, broadcast, next / previous / add watched player, save mark, marks 1-5), scan trick (hold), radial menu, screenshot capture, limit position (hold), multibox swap, middle multi-view, auto zoom toggle, precision zoom (hold), enlarge minimap, transparent skins, hide teammates names, private minimap, in-game spectator (and its follow / free camera switch), auto respawn, targeting, bot controls (double/pop/16-split).
+Triple split, crazy double split, line split, practice arena, team pings (Help/Danger/Go here/Virus), spectate next top player, spectator director (open, auto, broadcast, next / previous / add watched player, save mark, marks 1-5), scan trick (hold), radial menu, screenshot capture, limit position (hold), multibox follow mouse, multibox off (close the other players), middle multi-view, auto zoom toggle, precision zoom (hold), enlarge minimap, transparent skins, hide teammates names, private minimap, in-game spectator (and its follow / free camera switch), auto respawn, targeting, bot controls (double/pop/16-split).
 
 ### Mouse
 | Button | Default Action |
@@ -149,15 +149,21 @@ A fuzzy-search palette (Ctrl+K) for every hotkey command, gameplay setting, them
 - **Actions**: Toggle switches, run hotkey commands (brief press for hold-actions), open menu sections, navigate tabs
 Activated by: Ctrl+K, assignable hotkey, or its button under User Scripts in the Tools tab
 
-### 6. Multiboxing
-Control up to 4 game connections simultaneously. Features:
-- **Control ring**: a ring inside the cell edges of the player you control (no settings)
-- **Middle camera view**: Frame both players on screen, with a "when close" option
-- **Auto-respawn**: Automatically respawn the inactive player after death
-- **Switch after death**: Auto-switch control to the surviving player
-- **Freeze mode**: Keep the inactive player's mouse position frozen
-- **Camera smoothing**: Lerp-based camera transitions when switching
-- **Multibox shadow**: Visual indicator on inactive player's cells
+### 6. Multiboxing and Full Map
+Play 2 to 6 players from one tab. Features:
+- **Player slots**: P1 is your main player, P2 to P6 the extra players, each on its own connection. A player keeps its slot and colour while it is open (P1 #FF2FD6, P2 #00E5FF, P3 #A855F7, P4 #10B981, P5 #FFB020, P6 #FF5A36); removing one does not renumber the others
+- **Start, switch, stop**: the Multibox switch key (Tab) starts multibox with P2 only, then controls the next player (with more than two players dead and connecting ones are passed). "Multibox off (close the other players)" has no default key: it closes P2 to P6 and gives control back to P1
+- **Roster**: while multibox is on, the stats HUD lists the open players in slot order (colour, alive / dead / connecting / offline, mass; the player you control outlined). Click a player to control it (a dead one spawns again), + is Add Player, x is Remove Player (on P3 to P6; on P2 only once it is the last other player, and then it is multibox off). On a phone the expanded stats show it
+- **Multibox slots (2-6)**: Settings > MultiBox, how many players Add Player may open, the main one included (default 3). It opens nothing by itself
+- **Profiles**: each slot plays its own player profile (nick and skin): P1 and P2 the two selected profiles, P3 to P6 a profile no other slot has
+- **Login**: P1 plays with your login; one other player at a time logs in with your account of the other login provider, the others play as guests
+- **Camera**: "View on middle of the players (when close)" (on by default) frames the players that are close, "View on middle of all players" frames all of them; with both off the camera follows the player you control
+- **Control ring and glow**: a ring on the cells of the player you control; "Players glow (profile colors)" lights each player's cells in its profile colour
+- **Minimap and leaderboard**: a dot for each player in its slot colour (the player you control full size); the leaderboard marks every row one of your connections owns
+- **Lives**: each player's life counts by itself in the session line, personal bests, match history (while you controlled it, shown as "· P3"), 16-pieces sounds and death recap. The game over comes when the last of your players dies; a lost connection is no death (the player reconnects in its slot)
+- **Other options**: freeze or keep moving the players you do not control, background auto-respawn, auto-switch focus after death, smooth camera, lighter rendering (one-colour cells)
+- **Full Map (Premium, V)**: the whole map from up to 15 extra spectator connections. It stays on while you play: Play, a death and the respawn keep it, and it turns on and off while alive without touching your players. Full Map and the In-game Spectator are one mode at a time; the In-game Spectator ends once a spawn is confirmed (your first own cell) and when multibox starts. Multibox works with Full Map on or off: starting, adding, removing or turning multibox off keeps Full Map, and Full Map on / off keeps your players. Full Map is not available in Teams and Battle Royale; on a server with more than 180 players it closes quietly (your players stay) and opens again at 170 players or fewer
+- **Scripts and plugins**: `window.lmMbPlayers` is the slot registry (`get(slot)`, `activeSlot`, `count()`; read it, do not change it). `application.mbEnable()`, `mbDisable()`, `mbAddPlayer()`, `mbRemovePlayer(slot)`, `mbSelectPlayer(slot)` and `mbSelectAdjacent(1 or -1)` do what the keys and the roster do. LMEvents sends `multiboxSwap` (with `slot` / `previousSlot`) and `playerAdded`, `playerRemoved`, `playerSpawned`, `playerDied`, `playerDisconnected` (developers/LMEvents.md)
 - **Bot controls**: Bot feed, bot split, bot macro feed, double/pop/16 bot split hotkeys
 
 ### 7. Replay System
@@ -360,7 +366,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, coloured nicks, hide country, AgarTool team, player ID
 - **Sounds**: Volume per sound and master volume, sound switches and files
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots, pass toast
-- **Multibox**: Amount (2-4), freeze, auto-respawn, switch after death, camera view, shadow
+- **Multibox**: Multibox slots (2-6), freeze or keep moving, background auto-respawn, switch after death, middle view, players glow, smooth camera, lighter rendering
 - **Line Split**: Splits per press, aim lock time
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert
 - **Gamepad**: dead zone, move range, curve, zoom sensitivity, trigger, axis inversion, vibrate (always on when a pad is connected)
@@ -588,7 +594,7 @@ Settings > Sounds has each sound's switch, sound file and volume: chat message a
 - **Line split**: Straight-line rapid multi-split for maximum distance
 - **Scan trick**: Hold its key to head far toward the cursor; with the left mouse button too, one of 16 fixed directions
 - **Teaming**: Two or more players cooperating; EL has anti-teaming system
-- **Multiboxing**: Controlling multiple game connections simultaneously (up to 4 in EL)
+- **Multiboxing**: Controlling multiple game connections simultaneously (Legend Mod: 2 to 6 players from one tab; up to 4 in EL)
 - **Spectator**: 200+ slots with free-roam camera in Expanding Land
 - **Coordinate scrambling**: Anti-cheat system giving different position offsets per player
 - **Theme Workshop**: Window for your own saved themes (up to 30, 5 versions each) with preview, Compare and a gallery

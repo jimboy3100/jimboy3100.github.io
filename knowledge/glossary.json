@@ -1,6 +1,6 @@
 {
   "entity": "https://expanding.land/#game",
-  "updated": "2026-11-25",
+  "updated": "2026-11-28",
   "glossary": [
     {
       "term": "Cell",
@@ -104,7 +104,7 @@
     },
     {
       "term": "Multiboxing",
-      "definition": "Controlling multiple game connections simultaneously. Expanding Land allows up to 4 simultaneous accounts per player. Legend Mod provides multibox UI and controls.",
+      "definition": "Controlling multiple game connections simultaneously. Expanding Land allows up to 4 simultaneous accounts per player. Legend Mod plays 2 to 6 players from one tab (P1 to P6), picked in the stats HUD.",
       "category": "strategy"
     },
     {

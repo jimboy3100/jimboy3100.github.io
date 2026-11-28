@@ -10,7 +10,7 @@ site and Delta may load any of them by that URL.
 | Path | What it is |
 | --- | --- |
 | `play.html`, `index.html` and the other root pages | The game page, the home page and the site pages in `sitemap.xml`. Root files such as `CNAME`, `.nojekyll`, `google*.html`, `7e0ef7e8...txt` and `a1b2c3...indexnow.txt` (site verification and IndexNow keys), `robots.txt`, `opensearch.xml`, `rss.xml`, `manifest.json`, `llms.txt`, `llms-full.txt`, `LICENSE`, `MITlicence.txt` and `VERSION.txt` (asked for by old installed userscripts) stay. |
-| `ogario/` | The game core (`ogario.v4.js`), its modules (`modules/`), the in-game spectator (`spect.js`) and small entry points loaded by `play.html` (keep even tiny ones such as `ogario.v4.static.js`). |
+| `ogario/` | The game core (`ogario.v4.js`), its modules (`modules/`), `spect.js` (the extra connections: multibox players P2 to P6, Full Map tiles and the in-game spectator) and small entry points loaded by `play.html` (keep even tiny ones such as `ogario.v4.static.js`). |
 | `LMexpress/` | The loader layer: userscript (`LMexpress.user.js`), `LMexpress.js`, shop, extension sources (`extension/`) and the extension zips, the Android app (`mobileApp/`). |
 | `LMmobile/` | Mobile controls and layout. |
 | `lib/` | One shared copy of each library (see `lib/README.md`); `lib/lm-i18n.js` and `lib/lm-theme-bridge.js` are shared with the other sites. |

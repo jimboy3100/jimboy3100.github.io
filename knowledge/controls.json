@@ -1,6 +1,6 @@
 {
   "entity": "https://expanding.land/#game",
-  "updated": "2026-11-26",
+  "updated": "2026-11-28",
   "controls": [
     {
       "input": "Mouse movement",
@@ -83,7 +83,7 @@
     {
       "input": "Tab",
       "action": "Multibox switch",
-      "notes": "Control the next multibox unit",
+      "notes": "Starts multibox with a second player (P2), then controls the next player",
       "category": "core"
     },
     {
@@ -256,8 +256,8 @@
     },
     {
       "input": "V",
-      "action": "Toggle spectator mode",
-      "notes": "Enter/exit spectate",
+      "action": "Full Map (Premium)",
+      "notes": "Whole-map view from extra spectator connections; it can stay on while you play",
       "category": "toggle"
     },
     {

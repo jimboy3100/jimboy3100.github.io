@@ -96,7 +96,7 @@
       "games": ["agar.io", "expanding-land", "sigmally", "senpa.io"]
     },
     "multibox": {
-      "description": "Multi-tab cell control",
+      "description": "2 to 6 players from one tab",
       "games": ["agar.io"]
     },
     "replays": {
