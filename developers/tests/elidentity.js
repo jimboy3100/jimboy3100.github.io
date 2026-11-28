@@ -131,6 +131,7 @@ check('while the transit gate is on, no cell is added', !cell(104));
 L._spawnTransitGate = false;
 feed([], [{ id: 104, size: 81 }], []);
 check('a cell added during the transit gate shows its nick and colour later', !!cell(104) && cell(104).targetNick === 'Gate C' && !!cell(104).color);
+check('and its unscaled server colour (_lmServerColor) with it', !!cell(104) && cell(104)._lmServerColor === '#dcdc14');
 
 /* the server removes and eats: nothing is kept for those ids */
 feed([[101, 104]], [], [103]);
@@ -197,6 +198,7 @@ L._lmKeepMainSuppressed = () => false;
 feed([], [{ id: 301, size: 141 }, { id: 302, size: 101 }, { id: 951, size: 12, color: [10, 20, 30], food: true }], []);
 check('after the hold a plain update brings the wiped player back with its name and colour (was grey)', !!cell(301) && cell(301).targetNick === 'Enemy' && cell(301).color === enemyColor);
 check('a player added while held comes back with its name', !!cell(302) && cell(302).targetNick === 'Newcomer' && !!cell(302).color);
+check('and its unscaled server colour (_lmServerColor)', !!cell(302) && cell(302)._lmServerColor === '#28c828');
 check('a pellet sent again is there once', L.food.length === 1 && L.food[0] !== pellet);
 feed([], [], [951, 301]);
 check('the server removes it: gone (was a ghost that could not be removed)', L.food.length === 0 && !cell(301));

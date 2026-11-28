@@ -55789,9 +55789,11 @@ function thelegendmodproject() {
                     if (0 === id) break;
                     offset += 10;
                     var flags = view.readUInt8(offset++), ext = 128 & flags ? view.readUInt8(offset++) : 0;
-                    var color = null, skin = null, name = '', named = false;
+                    var color = null, srv = null, skin = null, name = '', named = false;
                     if (2 & flags) {
                         color = this.rgb2Hex(~~(0.9 * view.readUInt8(offset)), ~~(0.9 * view.readUInt8(offset + 1)), ~~(0.9 * view.readUInt8(offset + 2)));
+                        /* the server's unscaled colour too, as updateCells keeps it (_lmServerColor) */
+                        srv = this.rgb2Hex(view.readUInt8(offset), view.readUInt8(offset + 1), view.readUInt8(offset + 2));
                         offset += 3;
                     }
                     if (4 & flags) skin = str();
@@ -55803,8 +55805,8 @@ function thelegendmodproject() {
                     if (ext & 4) { view.readUInt32LE(offset); offset += 4; } /* (throws when cut short, like updateCells) */
                     if (ext & 1 || !(color || skin !== null || named)) continue;
                     var e = mem.get(id);
-                    if (!e) mem.set(id, e = { color: null, skin: null, name: '', named: false });
-                    if (color) e.color = color;
+                    if (!e) mem.set(id, e = { color: null, srv: null, skin: null, name: '', named: false });
+                    if (color) { e.color = color; e.srv = srv; }
                     if (skin !== null) e.skin = skin;
                     if (named) { e.name = name; e.named = true; }
                 }
