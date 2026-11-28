@@ -303,7 +303,8 @@ function extract(rel, t, ctx) {
         seen.add(key);
         seenAt.add(r.at);
         r.line = line(r.at);
-        r.comment = inRanges(comments, r.at);
+        /* the ==UserScript== block is // comments, but its @require / @resource / @icon lines are loaded */
+        r.comment = r.kind === 'userscript' ? false : inRanges(comments, r.at);
         refs.push(r);
     };
     const addPattern = (prefix, suffix, raw, at, how) => {

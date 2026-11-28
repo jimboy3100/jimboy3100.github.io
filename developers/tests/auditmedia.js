@@ -148,6 +148,10 @@ Object.keys(PNG).forEach((f) => {
     const got = R.extract('Lc/Lc.html', page, { cfg: R.loadConfig(repo), inv }).refs.filter((r) => r.status === 'ok').map((r) => r.target).sort();
     check('references: onclick and javascript: handlers are read as script, a title is not (' + JSON.stringify(got) + ')',
         JSON.stringify(got) === JSON.stringify(['Lc/articles/a.html', 'Lc/articles/b.html']));
+    /* a userscript's @require is loaded although its metadata block is // comments; a plain comment is not */
+    const us = '// ==UserScript==\n// @require https://www.legendmod.ml/Lc/articles/a.html\n// ==/UserScript==\n// https://www.legendmod.ml/Lc/articles/b.html\n';
+    const live = R.extract('x.user.js', us, { cfg: R.loadConfig(repo), inv }).refs.filter((r) => r.status === 'ok' && !r.comment).map((r) => r.target);
+    check('references: a userscript @require counts, a commented address does not (' + JSON.stringify(live) + ')', JSON.stringify(live) === JSON.stringify(['Lc/articles/a.html']));
     /* markup built in a script string: $(x).after('<img src="/Lc/articles/c.html">' + n) */
     const js = "$('#x').after('<div><img width=\"16\" src=\"/Lc/articles/c.html\">: ' + n + '</div>');";
     const got2 = R.extract('Lc/x.js', js, { cfg: R.loadConfig(repo), inv }).refs.filter((r) => r.status === 'ok').map((r) => r.target);

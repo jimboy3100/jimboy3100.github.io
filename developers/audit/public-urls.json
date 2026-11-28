@@ -63,7 +63,12 @@
         { "path": "Lc/articles/lc-senpai.html", "why": "Legend Clan article, in sitemap.xml until 2026-11-24 and in Lc/sitemap.xml: indexed by search engines" },
         { "path": "Lc/sitemap.xml", "why": "the Legend Clan sitemap (2026-04-08) for search engines; its pages are public" },
         { "path": "extras/LcHistory/LcHistoryWebsite.html", "why": "the Legend Clan history page, linked from Lc/Lc.html 2018 to 2026-02-25 (and its Project X copy until 2026-11-25)" },
-        { "path": "ogario/protocols/botsAllowed.txt", "why": "read by the PowerShell bot installer of 2026-04 (ogario/protocols/install-bots.ps1, removed in 055ada78e) that people may still run" }
+        { "path": "ogario/protocols/botsAllowed.txt", "why": "read by the PowerShell bot installer of 2026-04 (ogario/protocols/install-bots.ps1, removed in 055ada78e) that people may still run" },
+        { "path": "ExampleScripts/LMAgartool.user.js", "why": "2018 userscript (AgarTool to Legend Mod), linked from the old site pages in 2018; installed copies load ExampleScripts/LMAgartool.js and socket-io.min.js (kept until the owner decides about old installs)" },
+        { "path": "ExampleScripts/LMtoAgartool.user.js", "why": "2018 userscript (Legend Mod to AgarTool), linked from the home page until 2023 and the old site copies until 2026-11-26; installed copies load ExampleScripts/LMtoAgartool.js (kept until the owner decides)" },
+        { "path": "ExampleScripts/LmAddonForDelta.user.js", "why": "userscript for Delta that people installed by its address (kept until the owner decides about old installs)" },
+        { "path": "ExampleScripts/AgarPacketSniffer/AgarPacketSniffer.user.js", "why": "userscript linked from the home page 2020 to 2026-02-25; installed copies @require ExampleScripts/AgarPacketSniffer/socket.io_agar.js" },
+        { "path": "ExampleScripts/libLM.user.js", "why": "userscript linked from the home page until 2026-11-23 and the old site copies until 2026-11-26 (installed copies)" }
     ],
     "dataDrivenCollections": [
         { "glob": "vanillaskins/**", "why": "agar.io skin images by the names in agar.io's configuration (vanilla skins, shop, rotator)" },

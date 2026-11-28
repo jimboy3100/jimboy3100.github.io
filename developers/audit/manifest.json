@@ -7121,6 +7121,118 @@
         "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names it; not in sitemap.xml"
       },
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/AgarSkinSnifferUploader.user.js",
+      "canonicalPath": null,
+      "reason": "example userscript (agar.io skin sniffer and uploader) that no page ever linked; nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a script or example page, never a setting value",
+        "external": "never linked for installing: no page of this repository linked it in the whole git history (nothing else names it), so no one installed it by its address; expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/createSkinsSniffer.js",
+      "canonicalPath": null,
+      "reason": "helper only the removed ExampleScripts/AgarSkinSnifferUploader.user.js named (2026-07); nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a script or example page, never a setting value",
+        "external": "never linked for installing: no page of this repository linked it in the whole git history (nothing else names it), so no one installed it by its address; expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/Agario%20Custom%20skin%20Uploader%20v2.user.js",
+      "canonicalPath": null,
+      "reason": "example userscript saved with a literal %20 in its name; no page ever linked it; nothing loads it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a script or example page, never a setting value",
+        "external": "never linked for installing: no page of this repository linked it in the whole git history (nothing else names it), so no one installed it by its address; expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/CanvasChangeGoldScript.js",
+      "canonicalPath": null,
+      "reason": "example script (canvas colour change) that no page or script ever named",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a script or example page, never a setting value",
+        "external": "never linked for installing: no page of this repository linked it in the whole git history (nothing else names it), so no one installed it by its address; expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/ListentoAgario.js",
+      "canonicalPath": null,
+      "reason": "example script (agar.io socket listener) that no page or script ever named",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a script or example page, never a setting value",
+        "external": "never linked for installing: no page of this repository linked it in the whole git history (nothing else names it), so no one installed it by its address; expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/agario-custom-skin.user.js",
+      "canonicalPath": null,
+      "reason": "copy of a Greasy Fork userscript (its own @updateURL / @downloadURL point to greasyfork.org, so installs update from there, not from here); no page ever linked this copy",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a script or example page, never a setting value",
+        "external": "never linked for installing: no page of this repository linked it in the whole git history (nothing else names it), so no one installed it by its address; expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ExampleScripts/pixiFoodExample.html",
+      "canonicalPath": null,
+      "reason": "PixiJS food rendering example page; no page or script ever linked it",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: a script or example page, never a setting value",
+        "external": "never linked for installing: no page of this repository linked it in the whole git history (nothing else names it), so no one installed it by its address; expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
     }
   ]
 }
