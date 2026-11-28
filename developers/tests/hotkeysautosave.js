@@ -174,6 +174,18 @@ p.sets.length = 0;
 p.click('#close-hotkeys');
 check('Close without a change writes nothing', p.sets.length === 0, p.sets);
 
+/* an import wrote gamepad buttons (they take effect at the next load): a later key change saves the
+ * keys but not the old pad map over them; a pad change in the window still saves the map */
+const importedMap = Object.assign({}, p.w.LMGamepad.defaultMap(), { 2: 'hk-split' });
+const imported = JSON.stringify({ v: 1, map: importedMap });
+p.store.lmGamepad = imported;
+p.hs.setHotkey('F3', 'hk-feed');
+p.run();
+check('import then a key change: key stored, imported pad buttons kept', p.stored().F3 === 'hk-feed' && p.store.lmGamepad === imported, p.store.lmGamepad);
+p.hs.setHotkey('PAD A', 'hk-feed');
+p.run();
+check('a pad change after it still saves the map', (p.stored('lmGamepad') || {}).map[0] === 'hk-feed');
+
 /* Restore asks first */
 let q = page({ confirm: false });
 q.hs.setHotkey('F9', 'hk-feed');

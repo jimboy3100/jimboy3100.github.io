@@ -82700,6 +82700,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         lastKeyId: '',
         _lmSaveT: null,
         _lmSaveFailed: false,
+        _lmPadDirty: false,
         defaultMessageKey: 'ENTER',
         inputClassName: 'custom-key-in form-control input-sm',
         loadDefaultHotkeys() {
@@ -82915,11 +82916,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (window.toastr) toastr.error(lmT('modules.smalltools.storageFull'));
                 return false;
             }
-            /* the gamepad buttons bound in this window (ogario/gamepad.js keeps them) */
+            /* the gamepad buttons bound in this window (ogario/gamepad.js keeps them), only after a
+             * pad change here: every key change saves, and the map in memory went over the buttons
+             * an import had just written (they take effect at the next load) */
             var gp = this.pad();
-            if (gp && gp.commit() === false) {
-                if (window.toastr) toastr.error(lmT('modules.smalltools.storageFull'));
-                return false;
+            if (gp && this._lmPadDirty) {
+                if (gp.commit() === false) {
+                    if (window.toastr) toastr.error(lmT('modules.smalltools.storageFull'));
+                    return false;
+                }
+                this._lmPadDirty = false;
             }
             return true;
         },
@@ -82951,7 +82957,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         resetHotkeys() {
             this.loadDefaultHotkeys();
             var gp = this.pad();
-            if (gp) gp.resetMap(true);
+            if (gp) { gp.resetMap(true); this._lmPadDirty = true; }
             this.lastPressedKey = '';
             this.lastKeyId = '';
             this.showAllKeys();
@@ -83267,6 +83273,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var _lmGp = this.pad(), _lmPi = _lmGp ? _lmGp.padIndex(key) : -1;
                 if (_lmPi >= 0) {
                     var _lmPadWas = _lmGp.bind(_lmPi, id);
+                    this._lmPadDirty = true;
                     this.showKeys(id);
                     this.lastPressedKey = key;
                     this.lastKeyId = id;
@@ -83281,7 +83288,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.queueSave();
                     return;
                 }
-                if (key === 'DEL' && _lmGp) _lmGp.free(id);
+                if (key === 'DEL' && _lmGp) { _lmGp.free(id); this._lmPadDirty = true; }
                 /* DEL clears the row; a key replaces the row's key and a mouse button its mouse
                  * buttons, so a command keeps a key and a button */
                 var _lmMouseNew = this.isMouseKey(key), _lmOld = this.keysOf(id);
