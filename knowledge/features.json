@@ -59,7 +59,7 @@
     {
       "id": "chat",
       "name": "Chat system",
-      "description": "In-game text chat with image/video sharing, emoticons, auto-translation, universal cross-server chat, mention notifications, coloured nicks. 50 customizable chat command slots. Voice chat (push-to-talk). Team pings (Help, Danger, Go here, Virus). Chat message and command sounds with their own volumes (Settings > Sounds).",
+      "description": "In-game text chat with image/video sharing, emoticons, auto-translation, universal cross-server chat, mention notifications, coloured nicks, player ID display. 50 customizable chat command slots. Voice chat (push-to-talk). Team pings (Help, Danger, Go here, Virus). Chat message and command sounds with their own volumes (Settings > Sounds).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -137,7 +137,7 @@
     {
       "id": "soundmixer",
       "name": "Sound volumes",
-      "description": "Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins).",
+      "description": "Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), the 16 pieces sounds, a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins).",
       "url": "https://www.legendmod.ml/features.html"
     }
   ]

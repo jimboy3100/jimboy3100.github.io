@@ -188,6 +188,7 @@ In-game text chat with rich features:
 - **Chat sounds**: Configurable notification sounds for messages and commands
 - **Chat history**: Up/Down arrow recalls last 20 sent messages
 - **Chat popups limited**: Maximum 6 chat popups on screen (prevents spam)
+- **Player ID display**: Show player relay IDs before nicknames
 - **Chat box toggle**: Show/hide the persistent chat panel
 - **Coloured nicks**: Different colours for different users
 - **Hide country**: Hide country flag from chat
@@ -204,10 +205,10 @@ Settings > Sounds: each sound's switch, file and volume, all multiplied by the m
 | Master | volMaster | Overall volume multiplier (0-100%) |
 | Chat | volChat | Chat message sounds |
 | Commands | volCommands | Chat command sounds |
-| Gameplay | volGameplay | Virus sound, merge sound |
+| Gameplay | volGameplay | Virus sound, 16 pieces sounds, merge sound |
 | Video skins | videoSkinSoundLevel (Settings > Skins) | Video skin audio |
 
-Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one).
+Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one), x16Sound, non16Sound.
 
 ### 11. Minimap Features
 - **Rotating minimap**: Rotates to match camera orientation
@@ -223,7 +224,7 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one).
 - **Customizable theming**: Sections colour, sector colour, guides colour, nick colour/stroke, cell colours, death location colour, font, sizes
 
 ### 12. HUD Helpers
-- **Split range circles**: Rings showing split distance around enemies (single, double and quad split)
+- **Split range circles**: Rings showing split distance around enemies (single, double, triple, and quad split)
 - **Split prediction**: Cursor tracking's lines are dimmed on own cells that cannot split (agar.io)
 - **Merge sound**: Audio cue when cells can merge
 - **Merge progress rings**: Visual progress rings on own cells
@@ -246,6 +247,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Configurable limit**: Show top 5-20 entries
 - **Top 5 skins**: Display skins of leaderboard leaders
 - **Centred leaderboard**: Position leaderboard at centre-right
+- **Hide bots**: Collapse repeated (bot) names on the leaderboard into one row
 - **Click-to-spectate**: Click a leaderboard entry or a player cell to follow that player in spectate; on a phone a short tap on a player cell does the same
 
 ### 15. Stats and Analytics
@@ -309,7 +311,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Food**: Rainbow food, auto-hide food, food opacity
 - **Minimap**: Show/rotate, grid, guides, ghost cells, trail, one-coloured teammates
 - **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, stats display, indicators, online status, sticky cell
-- **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, coloured nicks, hide country, AgarTool team
+- **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, coloured nicks, hide country, AgarTool team, player ID
 - **Sounds**: Volume per sound and master volume, sound switches and files
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots
 - **Multibox**: Amount (2-4), freeze, auto-respawn, switch after death, camera view, shadow
@@ -319,7 +321,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Privacy/Extras**: Streamer mode, hide skin URL, hide name, hide country, block popups
 - **Stats**: Game Over card stats, mass graph, death recap
 - **Merge**: Sound, progress rings
-- **Indicators**: Opponent colours, rings, virus colours, split range (single/double/quad), virus range, cursor tracking (with split prediction), bubble indicators, teammates indicators
+- **Indicators**: Opponent colours, rings, virus colours, split range (single/double/triple/quad), virus range, cursor tracking (with split prediction), bubble indicators, teammates indicators
 - **Expanding Land**: Reduced motion (no Expanding Land death shake, death particles or entrance spin)
 - **Accessibility**: Menu text scale (1.0-1.6x)
 - **Grid/Borders**: Grid, sectors, map borders, border glow, rainbow borders
@@ -510,7 +512,7 @@ Legend Mod offers one-click presets: Competitive (enables rings, mass, split ran
 An Expanding Land-exclusive feature. When you die, a transparent cell appears at your death location, visible on the minimap. Ghost cells help you track where deaths occurred and avoid dangerous areas.
 
 **How do sound controls work?**
-Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins).
+Settings > Sounds has each sound's switch, sound file and volume: chat message and command sounds (with their volumes), the virus sound (a virus is shot, or you pop or eat one), the 16 pieces sounds, a gameplay effects volume and a master volume (0-100%) that also scales the video skins (their own level is in Settings > Skins).
 
 ## Glossary of Key Terms
 

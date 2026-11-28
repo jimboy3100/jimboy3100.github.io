@@ -36,7 +36,7 @@ const g = { console, Math, Number, Infinity, NaN };
 g.window = g;
 vm.createContext(g);
 vm.runInContext([
-    'var defaultmapsettings = { oppColors: true, oppRings: true, splitRange: true, dominationRate: 1.33, dominatedRate: 0.75 };',
+    'var defaultmapsettings = { oppColors: true, oppRings: true, splitRange: true, tripleSplitRange: false, dominationRate: 1.33, dominatedRate: 0.75 };',
     'var defaultSettings = { enemyBSTEDColor: "bsted", enemyBSTEColor: "bste", enemyBColor: "b", enemySColor: "s", enemySSTEColor: "sste", enemySSTEDColor: "ssted" };',
     'var ogarcopythelb = { color: "own" };',
     'function getActiveSpect() { return null; }',
@@ -156,6 +156,24 @@ g.fullSpectator = false; g.multiboxPlayerEnabled = false;
     check('a small cell below the screen whose teammate indicator reaches it is drawn', drawn(cell({ y: 1125 + 170, size: 20 })) && !drawn(cell({ y: 1125 + 190, size: 20 })));
     check('a cell with a chat line far off screen is drawn', drawn(cell({ x: 6000, lmChatLine() { return 'hi'; } })));
     check('a cell left out still counts as drawn (its removal fades)', (() => { const c = cell({ x: 9000 }); drawn(c); return c.redrawed === 1; })());
+}
+
+/* Triple split range (Helpers, off by default): enemies 8x your mass or more are listed for their
+ * rings, only while it is on */
+{
+    const enemy = world(0, 0);
+    enemy.size = 340;
+    LM.camMinX = -960; LM.camMaxX = 960; LM.camMinY = -540; LM.camMaxY = 540;
+    g.frame.call(renderer(0, 0));
+    const off = LM.biggerTSTECellsCache ? LM.biggerTSTECellsCache.length : 0;
+    g.defaultmapsettings.tripleSplitRange = true;
+    g.frame.call(renderer(0, 0));
+    const on = LM.biggerTSTECellsCache ? LM.biggerTSTECellsCache.length : 0;
+    const small = world(0, 0);
+    g.frame.call(renderer(0, 0));
+    const smallOn = LM.biggerTSTECellsCache.length;
+    g.defaultmapsettings.tripleSplitRange = false;
+    check('triple split range: an enemy 11x your mass is listed only with the option on, a 3x one never', off === 0 && on === 1 && LM.biggerTSTECellsCache.length === 0 && smallOn === 0 && small.size === 170, off + ' ' + on + ' ' + smallOn);
 }
 
 console.log(fail ? fail + ' check(s) failed' : 'all checks passed');

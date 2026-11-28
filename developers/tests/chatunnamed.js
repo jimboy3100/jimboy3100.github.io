@@ -72,7 +72,7 @@ function boot(lang) {
     $: jq, _tag: '', _nick: 'Me',
     toastr: { success: (h) => toasts.push(h), warning: (h) => toasts.push(h) },
     document: { getElementById: () => null, hidden: false, createElement: () => ({}), head: { appendChild() {} } },
-    defaultmapsettings: { showChat: true, showChatBox: true, hideChat: true, chatSounds: false, coloredNicks: false, showChatMyOwn: false },
+    defaultmapsettings: { showChat: true, showChatBox: true, hideChat: true, chatSounds: false, coloredNicks: false, chatShowId: false, showChatMyOwn: false },
     legendmod: { cellcolors: {} },
     LM: { time: 0 },
     consoleMsgLM: '',
@@ -306,6 +306,20 @@ const msgText = (html) => { const m = /<span class="message-text">(.*?)<\/span>/
   b.ctx._tag = '';
   b.send('Bob', 'back on');
   check('Disable chat off again: lines shown', b.box.length === 1 && b.bubbles().has('Bob'));
+}
+
+{
+  /* "#id before chat nicks" (chatShowId, off by default): a dim #id before the nick of relay lines,
+   * none for server lines (their ids are made up from 0x40000001) or with the option off */
+  const b = boot();
+  b.relay('Tom: hello there', 4242);
+  const off = b.box[0] || '';
+  b.ctx.defaultmapsettings.chatShowId = true;
+  b.relay('Tom: hello again', 4242);
+  const on = b.box[1] || '';
+  b.send('Bob', 'server line');
+  const srv = b.box[2] || '';
+  check('#id before chat nicks: shown only with the option on and for relay ids', off.indexOf('lm-chat-id') === -1 && on.indexOf('#4242</span>') !== -1 && on.indexOf('#4242') < on.indexOf('message-nick') && srv.indexOf('lm-chat-id') === -1, on);
 }
 
 console.log(failed ? failed + ' FAILED' : 'all ok');

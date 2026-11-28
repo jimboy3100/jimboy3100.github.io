@@ -49,17 +49,18 @@ check('fpsLimit -1 -> 0 (off), 0 stays 0', V('fpsLimit', -1) === 0 && V('fpsLimi
 /* removed or merged settings (mass-loss alert, kill feed, the event countdown's hide option, HUD helper arrows and cell panel, the removed 25 FPS menu cap, the
  * automatic Performance mode's own target / message / resolution options, the size symbols in Relative mass) */
 const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'killFeed', 'a11yIndicators', 'hideEventBanner',
-  /* options that tuned a detail or were gimmicks: the rainbow border speed (fixed at
-   * the original 5), the chat #id and word filter, the 16 pieces sounds, the triple split range,
-   * the Split prediction switch (always part of the cursor line), and the collapsed leaderboard bots */
-  'rainbowBorderSpeed', 'chatShowId', 'chatHideWords', 'x16Sound', 'non16Sound', 'tripleSplitRange',
-  'splitPrediction', 'lbHideBots',
+  /* options that tuned a detail: the rainbow border speed (fixed at the original 5), the chat word
+   * filter and the Split prediction switch (always part of the cursor line) */
+  'rainbowBorderSpeed', 'chatHideWords', 'splitPrediction',
   /* line split: its own delay (the split macros' one is used) and its aim line switch (always drawn) */
   'lineSplitDelay', 'lineSplitGuide',
   /* the stopwatch above the minimap (Settings > Stats "Show stopwatch") */
   'showStopwatch',
   /* Settings > Performance and network: Performance mode and its automatic choice */
   'performanceMode', 'adaptivePerf'];
+/* restored (owner): the 16 pieces sounds, the triple split range, the leaderboard bot collapse and
+ * the chat #id are settings again, off by default, and a saved value is read */
+check('x16Sound / non16Sound / tripleSplitRange / lbHideBots / chatShowId: settings again, off by default, true kept', ['x16Sound', 'non16Sound', 'tripleSplitRange', 'lbHideBots', 'chatShowId'].every(k => D[k] === false && V(k, true) === true));
 check('removed settings are no settings any more (a saved value is ignored)', GONE.every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined && V(k, 30) === undefined));
 check('line split: 2-4 splits per press, a saved 1 is read as 2', V('lineSplitCount', 1) === 2 && V('lineSplitCount', 4) === 4 && V('lineSplitCount', 9) === 4 && SCH.lineSplitCount[0] === 2);
 check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);

@@ -130,7 +130,9 @@
         "volChat",
         "volCommands",
         "volGameplay",
-        "virusSound"
+        "virusSound",
+        "x16Sound",
+        "non16Sound"
       ]
     },
     {

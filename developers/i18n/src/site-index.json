@@ -4413,7 +4413,7 @@
     "it": "Novità:"
   },
   "site.index.replayPauseSpeedAnd": {
-    "en": "optional virus sounds; a copy button on the Game Over card. Replays no longer jump to the end at Start.",
+    "en": "optional sounds for 16 pieces and viruses; a copy button on the Game Over card. Replays no longer jump to the end at Start.",
     "el": "hotkeys παύσης, ταχύτητας και μετάβασης replay· hotkeys προβολής και δαχτυλιδιών multibox· προαιρετικοί ήχοι για 16 κομμάτια και ιούς· προαιρετικό ίχνος της διαδρομής σας στο minimap· κουμπί αντιγραφής στην κάρτα Game Over. Τα replays δεν πηδούν πια στο τέλος στην Έναρξη.",
     "es": "hotkeys de pausa, velocidad y salto de repeticiones; hotkeys de vista y anillos de multibox; sonidos opcionales para 16 piezas y para virus; rastro opcional de tu recorrido en el minimapa; un botón de copiar en la tarjeta de Game Over. Las repeticiones ya no saltan al final al iniciar.",
     "bg": "клавиши за пауза, скорост и превъртане на повторения; клавиши за изгледа и пръстените на мултибокса; незадължителни звуци за 16 части и вируси; незадължителна следа от пътя ви на миникартата; бутон за копиране на картата Game Over. Повторенията вече не скачат до края при Start.",
@@ -4431,7 +4431,7 @@
     "it": "tasti rapidi per pausa, velocità e spostamento nel replay; tasti rapidi per la vista e l'anello del multibox; suoni facoltativi per i 16 pezzi e per i virus; scia facoltativa del tuo percorso sulla minimappa; un pulsante Copia nella scheda Game Over. I replay non saltano più alla fine quando premi Avvia."
   },
   "site.index.newReplayProgressBar": {
-    "en": "<b>New:</b> replay progress bar (click to seek), hotkey to enlarge the minimap. <b>New options</b> (off by default): a mass graph on the Game Over card. Virus sounds now work on every server.",
+    "en": "<b>New:</b> replay progress bar (click to seek), hotkey to enlarge the minimap. <b>New options</b> (off by default): collapse repeated bot names on the leaderboard, a mass graph on the Game Over card. Virus sounds now work on every server.",
     "el": "<b>Νέο:</b> γραμμή προόδου replay (κλικ για μετάβαση), hotkey για μεγέθυνση του minimap. <b>Νέες επιλογές</b> (απενεργοποιημένες από προεπιλογή): σύμπτυξη επαναλαμβανόμενων ονομάτων bots στην κατάταξη, γράφημα μάζας στην κάρτα Game Over. Οι ήχοι ιών λειτουργούν πλέον σε κάθε server.",
     "es": "<b>Novedad:</b> barra de progreso de repetición (clic para saltar), hotkey para ampliar el minimapa. <b>Nuevas opciones</b> (desactivadas por defecto): agrupar nombres de bots repetidos en la clasificación, un gráfico de masa en la tarjeta de Game Over. Los sonidos de virus ahora funcionan en todos los servidores.",
     "bg": "<b>Ново:</b> лента за напредък на повторенията (щракнете за превъртане), клавиш за уголемяване на миникартата. <b>Нови опции</b> (изключени по подразбиране): свиване на повтарящи се имена на ботове в класацията, графика на масата на картата Game Over. Звуците на вирусите вече работят на всеки сървър.",
