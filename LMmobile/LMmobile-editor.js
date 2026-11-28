@@ -43,9 +43,12 @@
         { id: 'wave', lk: 'misc.editor.ctlWave', icon: '👋', hide: true, act: true },
         { id: 'autoplay', lk: 'misc.editor.ctlAutoplay', icon: '►', hide: true, act: true },
         { id: 'pause', lk: 'misc.editor.ctlPause', icon: '❚❚', hide: true, act: true },
+        { id: 'rewind', lk: 'misc.editor.ctlRewind', icon: '⏪', hide: true, act: true },
+        { id: 'forward', lk: 'misc.editor.ctlForward', icon: '⏩', hide: true, act: true },
         { id: 'gear', lk: 'misc.editor.ctlGear', icon: '⚙', hide: true },
         { id: 'zoomIn', lk: 'misc.editor.ctlZoomIn', icon: '+', hide: true, act: true },
         { id: 'zoomOut', lk: 'misc.editor.ctlZoomOut', icon: '−', hide: true, act: true },
+        { id: 'freeSpec', lk: 'misc.editor.ctlFreeSpec', icon: '🔍', hide: true, act: true },
         { id: 'respawn', lk: 'pkg.agm.ctlRespawn', icon: '↻', hide: true, act: true },
         { id: 'menu', lk: 'misc.editor.ctlMenu', icon: '☰' }
     ];
