@@ -80,6 +80,7 @@ check('multibox, main controlled: the sent cursor is the world point under the m
 ctx.multiboxPlayerEnabled = 1;
 run(60);
 check('multibox, unit controlled: the camera is on the unit and the cursor under the mouse', near(R.camX, 9000) && near(LM.cursorX, R.camX + 100 / R.scale));
+check('multibox frame: setView writes no window.middleMultiViewFlag (nothing read it)', !('middleMultiViewFlag' in ctx));
 ctx.spects.length = 0; LM.multiBoxPlayerExists = false; ctx.multiboxPlayerEnabled = 0;
 
 /* spectating (not playing): the server's view centre, the option changes nothing */

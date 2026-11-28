@@ -39,6 +39,11 @@ const J = v => JSON.stringify(v);
 check('settings profiles removed: no module, no loader, no button, no hotkey', !fs.existsSync(path.join(root, 'ogario', 'modules', 'profiles.js')) &&
   !/modules\/profiles\.js|LMProfiles|lm-profiles-open/.test(main) && !/'hk-lmProfilesWindow':/.test(fs.readFileSync(path.join(root, 'ogario', 'hotkeysCommand.js'), 'utf8')));
 check('settings profiles removed: texts gone from the packs', ['modules.profiles.title', 'lmSettingsProfiles', 'settings.hk-lmProfilesWindow', 'pkg.pt.gpMoved', 'game1.set.profilesLoading'].every(k => i18n.t(k) === k));
+/* the player profile badges (P1..P4 on the profile boxes) were removed right after their CSS was injected:
+ * no badge CSS in the core or skins/skins.css, and choosing a profile still updates the multibox slots */
+check('profile badges: no badge CSS left (core, skins.css), setProfile still updates the multibox slots',
+  !/mb-badge|updateProfileBadges|_mbBadgeCSSInjected/.test(main) && !/mb-badge/.test(fs.readFileSync(path.join(root, 'skins', 'skins.css'), 'utf8')) &&
+  /this\.ensureMbSlots\(\);\s*\},/.test(cut('        setProfile() {', '        ensureMbSlots() {')));
 {
   /* the loader deletes what the removed feature kept */
   const at = main.indexOf("['lmSettingsProfiles', 'lmSettingsProfilesRules', 'lmSettingsBackups', 'lmSettingsProfilesUndo', 'lmSettingsProfilesLast', 'lmGamepadPending']");

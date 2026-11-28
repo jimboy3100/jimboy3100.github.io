@@ -26642,7 +26642,8 @@ function thelegendmodproject() {
 
             $('#skins a').removeClass('selected');
             $('#skins a[data-profile=\'' + this.selectedProfile + '\']').addClass('selected');
-            this.updateProfileBadges();
+            /* the multibox slots follow the selected profiles */
+            this.ensureMbSlots();
         },
         /* ─── mbSlots: multibox slot → profile index mapping ─── */
         ensureMbSlots() {
@@ -26689,25 +26690,6 @@ function thelegendmodproject() {
             if (this.selectedOldProfile !== this.selectedProfile) {
                 $("#profile-" + this.selectedOldProfile).css('box-shadow', '0px 0px 20px' + profiles[this.selectedOldProfile].color);
             }
-        },
-        updateProfileBadges() {
-            if (typeof profiles === "undefined" || !profiles || !profiles.length) return;
-            this.ensureMbSlots();
-
-            // Inject badge CSS once
-            if (!this._mbBadgeCSSInjected) {
-                this._mbBadgeCSSInjected = true;
-                $("<style type='text/css'>").html(
-                    '.mb-badge{position:absolute!important;width:22px!important;height:22px!important;line-height:19px!important;border-radius:50%!important;font-family:Ubuntu,Roboto,sans-serif!important;font-weight:800!important;font-size:12px!important;text-align:center!important;color:#fff!important;text-shadow:0 1px 2px rgba(0,0,0,.9)!important;border:1.5px solid #fff!important;z-index:99!important;pointer-events:none!important;box-sizing:border-box!important;}' +
-                    '.mb-badge-1{background:linear-gradient(135deg,#00E5FF,#0072FF)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(0,229,255,.9)!important;}' +
-                    '.mb-badge-2{background:linear-gradient(135deg,#FF007F,#FF5500)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(255,0,127,.9)!important;}' +
-                    '.mb-badge-3{background:linear-gradient(135deg,#A855F7,#6366F1)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(168,85,247,.9)!important;}' +
-                    '.mb-badge-4{background:linear-gradient(135deg,#10B981,#059669)!important;box-shadow:0 2px 6px rgba(0,0,0,.6),0 0 10px rgba(16,185,129,.9)!important;}'
-                ).appendTo('head');
-            }
-
-            // Badges hidden per user request
-            $('.mb-badge').remove();
         },
         prevProfile() {
             var newIdx = (profiles.length + this.selectedProfile - 1) % profiles.length;
@@ -78620,7 +78602,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* read by the main socket's opcode 17: the server's view centre moves the camera
              * whenever the multibox frame does not */
             LM._lmMbFramed = !!_mbFrame;
-            window.middleMultiViewFlag = !!(_mbFrame && _mbFrame.both > 0.5);
             this.setScale(_mbZoomSize, _mbFrame ? _mbFrame.zoom : 1, _mbPlaying);
 
             var _activeSpect = window.multiboxPlayerEnabled && spects ? getActiveSpect(window.multiboxPlayerEnabled) : null;
