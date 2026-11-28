@@ -80,7 +80,6 @@
         "minimapGuides",
         "minimapExtraGuides",
         "minimapGhostCells",
-        "minimapTrail",
         "privateMinimap",
         "oneColouredTeammates"
       ]
