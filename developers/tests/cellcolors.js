@@ -4,13 +4,20 @@
  * agar.io world updates (opcode 16). A record without colour keeps the known colour, a new cell
  * without colour has none (the renderers draw their neutral fallback, never black), a later
  * colour is applied, server black (0,0,0) stays black, channels below 16 are padded, a cut
- * packet changes no colour. Multibox with the unit far away: the parser hides no main cell.
+ * packet changes no colour. Multibox with the unit far away: the parser hides no main cell. Battle
+ * Royale follows the same rules.
  *
  * Headless Chrome part (skipped without Chrome): the real window.drawRender (WebGL batch) and
  * the real cell.draw (Canvas2D), jelly on and off. A string that is no colour ('#f80ff',
  * '#NaNNaNNaN') is drawn with the same neutral fallback by both renderers (Canvas2D filled it
  * with its default black and cached that disc), real black stays black, a valid colour is
- * the same in both.
+ * the same in both. The whole cell draw runs (labels, rings, skins). An own multibox unit's cells
+ * keep my custom colour whatever unit has the focus. A skin that is loading, failed (also by CORS
+ * or decoding), dropped from the cache, a video not started or an animated skin still loading
+ * shows the cell's colour in both renderers; a ready skin, an animated skin's second picture and a
+ * skin the GPU cannot take show the skin. Each cell's draw leaves the drawing state (save depth,
+ * clip, alpha, composite, filter, colours, lines, shadow, transform) as it found it after skins,
+ * shadows, rings, contours and labels, so the next cell looks as when drawn alone.
  * node developers/tests/cellcolors.js [ogario.v4.js] */
 'use strict';
 const { spawn } = require('child_process');
@@ -129,6 +136,31 @@ const pk = packet([{ id: 11, color: [0, 255, 0] }, { id: 15, color: [1, 2, 3], n
 L.handleMessage(new DataView(pk.buffer.slice(0, pk.byteLength - 12)));
 check('a cut packet changes no colour', C(11) === hex(0, 255, 0) || C(11) === hex(255, 0, 0), C(11));
 check('the cut record makes no half cell with a wrong colour', C(15) === '(no cell)' || C(15) === hex(1, 2, 3), C(15));
+
+/* section: Battle Royale (':battleroyale'): only the main connection's parser draws there (Full Map
+ * is refused in it), with the same colour rules as FFA */
+reset({ gameMode: ':battleroyale' });
+feed([{ id: 51, color: [255, 0, 0], name: 'BrRed', skin: '' }]);
+check('Battle Royale: a new cell takes its colour', C(51) === hex(255, 0, 0), C(51));
+feed([{ id: 51, size: 120 }]);
+check('Battle Royale: an update without colour keeps it', C(51) === hex(255, 0, 0), C(51));
+feed([{ id: 52, size: 90 }]);
+check('Battle Royale: a new cell without colour has none (not black)', C(52) === null, C(52));
+feed([{ id: 52, color: [10, 200, 30], name: 'BrLate', skin: '' }]);
+check('Battle Royale: a later colour is applied', C(52) === hex(10, 200, 30), C(52));
+feed([{ id: 53, color: [0, 0, 0], name: 'BrCoal', skin: '' }, { id: 54, color: [15, 128, 255], name: 'BrPad', skin: '' }]);
+check('Battle Royale: server black stays black, channels below 16 are padded', C(53) === '#000000' && C(54) === hex(15, 128, 255), [C(53), C(54)]);
+feed([{ id: 55, color: [255, 0, 0], size: 40 }]);
+check('Battle Royale: a nameless piece of a player has its colour', C(55) === hex(255, 0, 0), C(55));
+g.profiles = [{ nick: 'Me', color: '#123456' }];
+g.defaultmapsettings.myCustomColor = true;
+L.playerCellIDs = [56];
+feed([{ id: 56, color: [200, 40, 40], name: 'Me', skin: '' }]);
+check('Battle Royale: own cell with my custom colour', C(56) === '#123456', C(56));
+g.defaultmapsettings.myCustomColor = false;
+if (typeof L._lmOwnColorsRestore === 'function') L._lmOwnColorsRestore();
+check('Battle Royale: my custom colour off gives the server colour back', C(56) === hex(200, 40, 40), C(56));
+g.profiles = [];
 
 /* section: "My custom colour" turned off gives the own cells their server colour back */
 reset();
@@ -257,10 +289,13 @@ function cellMethod(name) {
     return block(src.indexOf('function', m.index));
 }
 const F = rendererFactory(src);
+/* the whole cell prototype (draw with its labels, skins and rings) and the text canvases, when found */
+const protoA = src.indexOf('    (function () {\n        this.reset = function'), txtA = src.indexOf('    function irenderfromagario() {');
+const wholeProto = protoA > 0 && protoA < cellEnd && txtA > 0 && txtA < cellStart;
 const protoSrc = '(function (env) {\n' +
     'var window = env.window, LM = env.LM, legendmod = env.LM, application = env.application, defaultSettings = env.defaultSettings,\n' +
     '  defaultmapsettings = env.defaultmapsettings, drawRender = env.drawRender, ogario = env.ogario, ogarcopythelb = env.ogarcopythelb,\n' +
-    '  SpecialEffectPlayers = {}, profiles = [], dyinglight1load = "no", _EAT_PULSE_DURATION = 150, _EAT_PULSE_MAGNITUDE = 0.08;\n' +
+    '  SpecialEffectPlayers = {}, profiles = env.profiles || [], dyinglight1load = "no", _EAT_PULSE_DURATION = 150, _EAT_PULSE_MAGNITUDE = 0.08;\n' +
     block('\nfunction lmSkinsShown(').slice(1) + '\n' + lmc.slice(1) + '\nvar _lmColorIntCache = new Map(), _lmColorCtx = null;\n' +
     /* the own colour and "Player 1 & 2" glow rules (absent in older versions) */
     ['lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor'].map((n) => src.includes('\nfunction ' + n + '(') ? block('\nfunction ' + n + '(').slice(1) + '\n' : '').join('') +
@@ -268,7 +303,18 @@ const protoSrc = '(function (env) {\n' +
     (src.includes('\nfunction lmWorldSkinKey(') ? block('\nfunction lmWorldSkinKey(').slice(1) + '\nvar _lmDl = false;\n' : '') +
     /* the gradient avatar of a cell without colour: stubbed to the plain grey under it */
     'function _getFallbackGradient() { return null; }\n' +
-    'return { draw: ' + cellMethod('draw') + ' };\n})';
+    /* the multibox ring of the cell you control (unit 1 while multiboxPlayerEnabled is set) */
+    'function checkVideos() { }\nfunction lmMultiboxControlledPlayer() { return window.multiboxPlayerEnabled ? 2 : 1; }\n' +
+    ['LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_SIZE', '_lmMbRingOut'].map((n) => {
+        const m = new RegExp('\\nvar ' + n + ' = [^\\n]*').exec(src);
+        return m ? m[0].slice(1) : '';
+    }).join('\n') + '\n' +
+    ['lmMultiboxRingPlayer', 'lmMultiboxRing'].map((n) => (block('\nfunction ' + n + '(') || '').slice(1)).join('\n') + '\n' +
+    (wholeProto ? src.slice(txtA, cellStart) + '\nvar proto = {};\n' + src.slice(protoA, cellEnd) + '}).call(proto);\nreturn proto;\n})'
+        : 'return { draw: ' + cellMethod('draw') + ' };\n})');
+/* the skin lookup of the game (getCachedSkin over the URL's cache keys) */
+const skinAppSrc = '(function (env) {\nvar drawRender = env.drawRender;\n' + block('\nfunction _isValidSkin(').slice(1) +
+    '\nreturn {\n' + block('        getCachedSkin(skinCache, skinMap) {') + ',\n' + block('        _lmUrlKeys(url) {') + '\n};\n})';
 
 function pageLib() {
     var W = 200, H = 200;
@@ -278,11 +324,12 @@ function pageLib() {
     function makeEnv(defaults, cfg) {
         var ds = Object.assign({}, defaults.defaultSettings, cfg.settings || {});
         var dm = Object.assign({}, defaults.defaultmapsettings, NOSKIN, { jellyPhisycs: !!cfg.jelly, webgl2Acceleration: !!cfg.gl }, cfg.map || {});
-        var LM = { cells: [], playerCells: [], playerCellsMulti: [], play: !!cfg.play, showCustomSkins: true, gameMode: ':ffa', hideSmallBots: false,
+        var LM = { cells: [], playerCells: [], playerCellsMulti: [], play: !!cfg.play, showCustomSkins: true, gameMode: cfg.mode || ':ffa', hideSmallBots: false,
             multiBoxPlayerExists: false, removedCells: [], sortCells: false, indexedCells: {}, selected: null };
-        var application = { gameMode: ':ffa', customSkinsMap: {}, customSkinsCache: {}, loadSkin: function () { }, _lmTouchSkin: function () { },
+        var application = { gameMode: cfg.mode || ':ffa', customSkinsMap: {}, customSkinsCache: {}, loadSkin: function () { }, _lmTouchSkin: function () { },
             setAutoHideCellInfo: function () { return false; }, getCustomSkin: function () { return null; }, customSkinKey: function () { return null; },
-            setVirusColor: function () { return ds.virusColor; }, setVirusStrokeColor: function () { return ds.virusStrokeColor; }, playSound: function () { } };
+            setVirusColor: function () { return ds.virusColor; }, setVirusStrokeColor: function () { return ds.virusStrokeColor; }, playSound: function () { },
+            selectedProfile: 0, selectedOldProfile: 0 };
         var win = { navigator: { deviceMemory: 8 }, devicePixelRatio: 1, legendmod5: {} };
         win.legendmod = LM;
         win.multiboxPlayerEnabled = 0;
@@ -295,20 +342,86 @@ function pageLib() {
         for (var i = 0; i < n; i++) { var a = i * 2 * Math.PI / n; pts.push({ x: x + size * Math.cos(a), y: y + size * Math.sin(a) }); }
         return pts;
     }
-    function render(factorySrc, protoSrc, defaults, cfg) {
+    /* a skin picture of one colour */
+    function skinCv(col) {
+        var c = document.createElement('canvas');
+        c.width = c.height = 64;
+        var x = c.getContext('2d');
+        x.fillStyle = col;
+        x.fillRect(0, 0, 64, 64);
+        return c;
+    }
+    /* the skin of every cell with a name, in one state of its life (the cache as loadSkin leaves it) */
+    function setSkin(R, env, state) {
+        var app = env.application, cache = app.customSkinsCache, video = state === 'video';
+        var url = video ? 'https://skins.test/s.mp4' : 'https://skins.test/s.png';
+        app.customSkinKey = function (nick) { return nick ? url : null; };
+        /* a ready skin is on the GPU already (its upload is asynchronous) */
+        var onGpu = function (key, cv, layer) {
+            var gl = R.gl, n = R.glSkinTexSize || 512;
+            if (!gl) return;
+            var big = document.createElement('canvas');
+            big.width = big.height = n;
+            big.getContext('2d').drawImage(cv, 0, 0, n, n);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, R.glSkinArray);
+            gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, layer, n, n, 1, gl.RGBA, gl.UNSIGNED_BYTE, big);
+            gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+            R.glSkinMap[key] = layer;
+        };
+        if (state === 'ready') { cache[url] = skinCv('#0000ff'); onGpu(url, cache[url], 0); }
+        /* requested, the picture not loaded yet */
+        else if (state === 'loading') cache[url] = new Image();
+        /* load error, refused by CORS or not decodable: loadSkin marks it failed */
+        else if (state === 'failed') { cache[url] = skinCv('#0000ff'); cache[url]._failed = true; }
+        /* dropped from the cache (or never asked for): asked again, nothing to draw yet */
+        else if (state === 'evicted') { }
+        /* a video skin whose video has not started: the frame goes to Canvas2D */
+        else if (video) { env.defaultmapsettings.videoSkins = true; env.window.videoSkinPlayer = {}; }
+        /* an animated skin (two pictures), both still loading */
+        else if (state === 'animLoading') { cache[url] = new Image(); cache[url + '_cached3'] = new Image(); R._skinHalf = true; }
+        /* an animated skin showing its second picture */
+        else if (state === 'animSecond') {
+            cache[url] = skinCv('#0000ff'); cache[url + '_cached3'] = skinCv('#00ff00'); R._skinHalf = true;
+            onGpu(url, cache[url], 0); onGpu(url + '_cached3', cache[url + '_cached3'], 1);
+        }
+        /* loaded, but the GPU cannot take it (a picture without CORS): Canvas2D draws the frame */
+        else if (state === 'gpuRefused') { cache[url] = skinCv('#0000ff'); if (R.glSkinMap) R.glSkinMap[url] = -1; }
+    }
+    /* the drawing state a cell's draw must leave as it found it */
+    function snap(c, depth) {
+        var t = c.getTransform();
+        return [c.globalAlpha, c.globalCompositeOperation, c.filter, c.fillStyle, c.strokeStyle, c.lineWidth, c.lineJoin, c.shadowBlur, c.shadowColor,
+            c.shadowOffsetX, c.shadowOffsetY, [t.a, t.b, t.c, t.d, t.e, t.f].join(','), depth].join('|');
+    }
+    function counted(c) {
+        var d = { n: 0 }, save = c.save, restore = c.restore;
+        c.save = function () { d.n++; return save.call(this); };
+        c.restore = function () { d.n--; return restore.call(this); };
+        return d;
+    }
+    function render(factorySrc, protoSrc, defaults, cfg, skinAppSrc) {
         var env = makeEnv(defaults, cfg);
+        env.profiles = cfg.profiles || [];
+        if (cfg.mates) { env.window.teammatenicks = cfg.mates; env.window._lmTeammateNickSet = new Set(cfg.mates); }
         var R = (0, eval)('(' + factorySrc + ')')(env);
         env.window.drawRender = R;
         env.drawRender = R;
+        if (skinAppSrc) Object.assign(env.application, (0, eval)(skinAppSrc)(env));
         var proto = (0, eval)(protoSrc)(env);
-        var main = document.createElement('canvas'), out = document.createElement('canvas'), ov = document.createElement('canvas'), glc = document.createElement('canvas');
-        main.width = out.width = ov.width = glc.width = W;
-        main.height = out.height = ov.height = glc.height = H;
+        var main = document.createElement('canvas'), ov = document.createElement('canvas');
+        /* one GL canvas for every draw: its context is made once (a new one per draw cost about 0.2 s) */
+        var glc = window.__ccGlc || (window.__ccGlc = document.createElement('canvas'));
+        main.width = ov.width = glc.width = W;
+        main.height = ov.height = glc.height = H;
         R.glCanvas = glc; R.canvasWidth = W; R.canvasHeight = H;
-        R.initWebGL();
-        if (!R.gl) throw new Error('initWebGL failed');
+        /* a Canvas2D frame needs no GL context (making one per draw was most of the time) */
+        if (cfg.gl) {
+            R.initWebGL();
+            if (!R.gl) throw new Error('initWebGL failed');
+        }
         R.overlayCanvas = ov; R.overlayCtx = ov.getContext('2d');
         R.scale = 1; R.camX = 0; R.camY = 0; R._skinHalf = false;
+        if (cfg.skin) setSkin(R, env, cfg.skin);
         var cells = cfg.cells.map(function (o) {
             var c = Object.create(proto);
             return Object.assign(c, { isVirus: false, isFood: false, isEjected: false, invisible: false, removed: false, alpha: 0, redrawed: 0, _eatPulseTime: 0,
@@ -318,36 +431,73 @@ function pageLib() {
         env.LM.cells = cells;
         env.LM.playerCells = cells.filter(function (c) { return c.isPlayerCell && !(c.spectator > 0); });
         env.LM.playerCellsMulti = cells.filter(function (c) { return c.isPlayerCellMulti; });
+        /* multibox: the unit you control (0 = the main player) */
+        if (cfg.focus != null) { env.LM.multiBoxPlayerExists = true; env.window.multiboxPlayerEnabled = cfg.focus; }
         var gl = R.gl;
-        gl.viewport(0, 0, W, H);
+        if (gl) gl.viewport(0, 0, W, H);
         R._jellyFrameId = (R._jellyFrameId || 0) + 1;
         for (var i = 0; i < cells.length; i++) { cells[i]._jellyFrameId = R._jellyFrameId; cells[i]._webglRendered = false; }
-        gl.clearColor(0, 0, 0, 0);
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-        var m = main.getContext('2d');
+        if (gl) {
+            gl.clearColor(0, 0, 0, 0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        }
+        var m = main.getContext('2d'), fg = R.overlayCtx;
         m.fillStyle = '#ffffff';
         m.fillRect(0, 0, W, H);
         /* a fill left by earlier drawing: an ignored fillStyle must not show it */
         m.fillStyle = '#00ff00';
+        var dm = counted(m), df = counted(fg);
         m.save();
         m.translate(W / 2, H / 2);
-        var useGl = R.canUseWebGLScene(cells), drew = false;
+        fg.setTransform(m.getTransform());
+        var useGl = !!gl && R.canUseWebGLScene(cells), drew = false;
         if (useGl) {
             gl.enable(gl.BLEND);
             gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
             drew = R.drawWebGLCellBatch(cells);
             if (!drew) { gl.clear(gl.COLOR_BUFFER_BIT); for (i = 0; i < cells.length; i++) cells[i]._webglRendered = false; }
         }
-        for (i = 0; i < cells.length; i++) cells[i].draw(m, false);
+        /* the overlay above the GL layer, as in a frame drawn by WebGL */
+        R._foregroundCtx = useGl && drew ? fg : null;
+        var leaks = [], errors = [], cerr = console.error;
+        console.error = function () { errors.push([].slice.call(arguments).map(String).join(' ').slice(0, 300)); };
+        try {
+            for (i = 0; i < cells.length; i++) {
+                var b0 = snap(m, dm.n), f0 = snap(fg, df.n);
+                cells[i].draw(m, false);
+                var b1 = snap(m, dm.n), f1 = snap(fg, df.n);
+                if (b0 !== b1) leaks.push('cell ' + cells[i].id + ' main: ' + b0 + ' -> ' + b1);
+                if (f0 !== f1) leaks.push('cell ' + cells[i].id + ' overlay: ' + f0 + ' -> ' + f1);
+            }
+        } finally {
+            console.error = cerr;
+        }
+        /* a clip left by a draw would keep this corner white */
+        m.save();
+        m.setTransform(1, 0, 0, 1, 0, 0);
+        m.fillStyle = '#0000ff';
+        m.fillRect(0, 0, 2, 2);
         m.restore();
-        var o = out.getContext('2d');
-        o.drawImage(main, 0, 0);
-        o.drawImage(glc, 0, 0);
-        var px = o.getImageData(W / 2, H / 2, 1, 1).data;
-        var lose = gl.getExtension('WEBGL_lose_context');
-        if (lose) lose.loseContext();
-        return { gl: !!(useGl && drew), why: R._lmGlFallback || '', px: [px[0], px[1], px[2]], keys: Object.keys(R.cellsColored || {}),
-            colors: cells.map(function (c) { return c.color; }) };
+        var corner = m.getImageData(0, 0, 1, 1).data;
+        m.restore();
+        /* the pixel the three layers make at a point: the main canvas, the GL canvas over it (read
+         * with readPixels, premultiplied; drawing the GL canvas into a 2D one cost about 0.1 s), the overlay */
+        var pixel = function (at) {
+            var sx = W / 2 + at[0], sy = H / 2 + at[1];
+            var mp = m.getImageData(sx, sy, 1, 1).data, px = [mp[0], mp[1], mp[2]];
+            if (gl) {
+                var gp = new Uint8Array(4);
+                gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+                gl.readPixels(sx, H - 1 - sy, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, gp);
+                px = px.map(function (v, k) { return gp[k] + v * (1 - gp[3] / 255); });
+            }
+            var op = fg.getImageData(sx, sy, 1, 1).data;
+            return px.map(function (v, k) { return Math.round(op[k] * op[3] / 255 + v * (1 - op[3] / 255)); });
+        };
+        var px = pixel(cfg.at || [0, 0]), px2 = cfg.at2 ? pixel(cfg.at2) : null;
+        return { gl: !!(useGl && drew), why: R._lmGlFallback || '', px: px, px2: px2, keys: Object.keys(R.cellsColored || {}),
+            colors: cells.map(function (c) { return c.color; }), leaks: leaks, errors: errors, depth: [dm.n, df.n],
+            clipFree: corner[0] === 0 && corner[1] === 0 && corner[2] === 255 };
     }
     return { render: render };
 }
@@ -381,8 +531,8 @@ async function chromePart() {
             return m.result.result.value;
         };
         await evaluate('window.dyinglight1load = "no"; window.__cc = (' + pageLib.toString() + ')(); window.__ccF = ' + JSON.stringify(F.factory) + '; window.__ccP = ' + JSON.stringify(protoSrc) +
-            '; window.__ccD = ' + F.defaults + '; true');
-        const draw = (cfg) => evaluate('__cc.render(__ccF, __ccP, __ccD, ' + JSON.stringify(cfg) + ')');
+            '; window.__ccS = ' + JSON.stringify(skinAppSrc) + '; window.__ccD = ' + F.defaults + '; true');
+        const draw = (cfg) => evaluate('__cc.render(__ccF, __ccP, __ccD, ' + JSON.stringify(cfg) + ', __ccS)');
         const near = (a, b) => a && b && Math.abs(a[0] - b[0]) <= 2 && Math.abs(a[1] - b[1]) <= 2 && Math.abs(a[2] - b[2]) <= 2;
         const CASES = [['valid red', '#ff3b3b', [255, 59, 59]], ['server black', '#000000', [0, 0, 0]], ['5 hex digits', '#f80ff', [128, 128, 128]],
             ['NaN hex', '#NaNNaNNaN', [128, 128, 128]], ['no colour (null)', null, [128, 128, 128]]];
@@ -414,6 +564,77 @@ async function chromePart() {
             const want = [0x12, 0x34, 0x56], tag = (jelly ? 'jelly on' : 'jelly off') + ', unit cell, main player dead, no unit selected';
             check(tag + ': WebGL draws the own colour', near(a.px, want), [a.px, a.gl, a.why]);
             check(tag + ': Canvas2D the same', near(b.px, want), b.px);
+        }
+        /* the draws above ran the whole cell draw without an error (labels, rings and skins included) */
+        {
+            const r = await draw({ jelly: true, gl: false, cells: [{ id: 9, x: 0, y: 0, size: 60, color: '#ff3b3b' }] });
+            check('the cell draw runs to its end (no error caught in it)', r.errors.length === 0, r.errors);
+        }
+        /* multibox: a unit's own cell has the same colour whatever unit you control, the main player
+         * alive or dead, in both renderers, and its cell keeps its own colour */
+        for (const [jelly, on] of [[false, true]]) {
+            const unit = { id: 3, x: 0, y: 0, size: 60, color: '#ff3b3b', isPlayerCell: true, isPlayerCellMulti: true, spectator: 1 };
+            const want = on ? [0x12, 0x34, 0x56] : [255, 59, 59];
+            for (const [mainAlive, focus] of [[true, 0], [true, 1], [false, 1], [false, 0]]) {
+                const cells = [unit].concat(mainAlive ? [{ id: 4, x: 400, y: 400, size: 30, color: '#3366ff', isPlayerCell: true }] : []);
+                const cfg = { jelly, play: mainAlive, focus, own: { color: '#123456' }, map: { myCustomColor: on }, cells };
+                const a = await draw(Object.assign({ gl: true }, cfg)), b = await draw(Object.assign({ gl: false }, cfg));
+                const tag = (jelly ? 'jelly on' : 'jelly off') + ', my custom colour ' + (on ? 'on' : 'off') + ', main ' + (mainAlive ? 'alive' : 'dead') +
+                    ', focus on ' + (focus ? 'the unit' : 'the main player') + ': the unit\'s cell';
+                check(tag + ' in WebGL ' + JSON.stringify(want), near(a.px, want), [a.px, a.gl, a.why]);
+                check(tag + ' in Canvas2D the same', near(b.px, want), b.px);
+                check(tag + ' keeps its colour', a.colors[0] === '#ff3b3b' && b.colors[0] === '#ff3b3b', [a.colors, b.colors]);
+            }
+        }
+        /* Battle Royale: a cell in its colour, an own cell in my custom colour, in both renderers */
+        for (const jelly of [false]) {
+            const cfg = { jelly, mode: ':battleroyale', play: true, own: { color: '#123456' }, map: { myCustomColor: true }, at: [-50, 0], at2: [50, 0],
+                cells: [{ id: 11, x: -50, y: 0, size: 40, color: '#ff3b3b' }, { id: 12, x: 50, y: 0, size: 40, color: '#ff3b3b', isPlayerCell: true }] };
+            const a = await draw(Object.assign({ gl: true }, cfg)), b = await draw(Object.assign({ gl: false }, cfg));
+            const tag = 'Battle Royale, jelly ' + (jelly ? 'on' : 'off');
+            check(tag + ': a cell in its colour in WebGL and Canvas2D', near(a.px, [255, 59, 59]) && near(b.px, [255, 59, 59]), [a.px, b.px, a.gl]);
+            check(tag + ': the own cell in my custom colour in WebGL and Canvas2D', near(a.px2, [0x12, 0x34, 0x56]) && near(b.px2, [0x12, 0x34, 0x56]), [a.px2, b.px2]);
+        }
+        /* skins: a cell with a valid colour is drawn in it while its skin is not drawable (loading,
+         * failed or refused by CORS, dropped from the cache, a video not started, an animated skin
+         * still loading), by both renderers; a skin never changes the cell's colour. A ready skin,
+         * the second picture of an animated one and a skin the GPU cannot take (drawn by Canvas2D)
+         * show the skin. */
+        const SKINS = [['ready', [0, 0, 255]], ['loading', null], ['failed', null], ['evicted', null], ['video', null], ['animLoading', null],
+            ['animSecond', [0, 255, 0]], ['gpuRefused', [0, 0, 255]]];
+        /* (jelly on: the states its own resolver tells apart) */
+        for (const jelly of [false, true]) for (const [state, skinPx] of SKINS.filter((k) => !jelly || /^(ready|loading|gpuRefused)$/.test(k[0]))) {
+            const cells = [{ id: 5, x: 0, y: 0, size: 60, color: '#ff3b3b', targetNick: 'Sk' }];
+            const cfg = { jelly, skin: state, map: { customSkins: true }, cells };
+            const a = await draw(Object.assign({ gl: true }, cfg)), b = await draw(Object.assign({ gl: false }, cfg));
+            const want = skinPx || [255, 59, 59], tag = (jelly ? 'jelly on' : 'jelly off') + ', skin ' + state + ': ' + (skinPx ? 'the skin' : 'the cell colour');
+            check(tag + ' in WebGL ' + JSON.stringify(want), near(a.px, want), [a.px, a.gl, a.why]);
+            check(tag + ' in Canvas2D ' + JSON.stringify(want), near(b.px, want), b.px);
+            check((jelly ? 'jelly on' : 'jelly off') + ', skin ' + state + ': the cell keeps its colour, no error', a.colors[0] === '#ff3b3b' && b.colors[0] === '#ff3b3b' &&
+                !a.errors.length && !b.errors.length, [a.colors, b.colors, a.errors, b.errors]);
+        }
+        /* drawing state: what a cell's skin (jelly clip), shadow, multibox shadow and ring, opponent
+         * ring, transparency, contour, nick, mass, teammate indicator and a virus with its glow set
+         * is undone by the end of its draw (no save without restore, no clip, alpha, composite,
+         * filter, colour, line or shadow left), so the next cell's body is drawn as when it is
+         * drawn alone. The same in a WebGL frame (the marks on the overlay). */
+        for (const [gl, jelly, contours] of [[false, false, false], [false, true, false], [false, false, true], [false, true, true], [true, false, false], [true, true, false]]) {
+            const plain = { id: 8, x: 55, y: 55, size: 30, color: '#3366ff' };
+            const busy = [
+                { id: 6, x: -55, y: -55, size: 45, color: '#ff3b3b', targetNick: 'Dirty', oppColor: '#ffff00' },
+                { id: 7, x: 55, y: -55, size: 45, color: '#ff3b3b', targetNick: 'Dirty', isPlayerCell: true, isPlayerCellMulti: true, spectator: 1 },
+                { id: 10, x: -55, y: 55, size: 40, color: '#33ff33', isVirus: true }];
+            const cfg = { gl, jelly, play: true, focus: 1, skin: 'ready', at: [55, 55], profiles: [{ nick: 'Dirty', color: '#00ffff' }], mates: ['Dirty'],
+                map: { customSkins: true, noNames: false, showMass: true, showCellShadows: true, transparentCells: true, transparentSkins: true, oppColors: true,
+                    multiBoxShadow: true, teammatesInd: true, virusGlow: true, cellContours: contours },
+                settings: { cellsAlpha: 0.6, skinsAlpha: 0.5, textAlpha: 0.7 } };
+            const after = await draw(Object.assign({}, cfg, { cells: busy.concat([plain]) })), alone = await draw(Object.assign({}, cfg, { cells: [plain] }));
+            const tag = (gl ? 'WebGL frame' : 'Canvas2D') + ', jelly ' + (jelly ? 'on' : 'off') + ', contours ' + (contours ? 'on' : 'off');
+            check(tag + ': every cell leaves the drawing state as it found it', after.leaks.length === 0 && after.depth.join() === '0,0', [after.leaks, after.depth]);
+            check(tag + ': no clip is left', after.clipFree);
+            check(tag + ': the cell after skins, shadows, rings and labels looks as when drawn alone', near(after.px, alone.px) && !near(alone.px, [255, 255, 255]),
+                [after.px, alone.px]);
+            check(tag + ': no error caught in a cell draw', !after.errors.length, after.errors);
         }
     } finally {
         await stop();
