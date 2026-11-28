@@ -7,7 +7,8 @@
  * - Opcode 17 with no multibox frame (both players dead, spectating, "View on middle of both"):
  *   the camera follows the server's view (it stayed frozen).
  * - A unit that dies and respawns on the same socket while the main player is dead takes the
- *   focus again (terminate, beforecalculation) and hides the death menu; with the main player alive it
+ *   focus again (terminate, beforecalculation) and hides the death menu shown when it died (not one the player uses or opened
+ *   by hand, and the auto-respawn's delayed menu is cancelled); with the main player alive it
  *   does not. A dead unit's score, mass and split / eat numbers are 0, the next life shows its own score.
  * - The whole spect.js: a unit's split / eat numbers equal the main player's (recalculatePlayerMass)
  *   for one mass; the opcode 87 token is sent only on the socket that asked (not after a reconnect).
@@ -132,8 +133,15 @@ function death(o) {
     const term = block(sp, '    terminate() {'), before = block(sp, '    beforecalculation() {');
     const calc = block(sp, '    calculatePlayerMassAndPosition(ownCells) {'), recalc = block(sp, '    recalculatePlayerMass(ownCells) {');
     if (!term || !before || !calc || !recalc) { console.log('FAIL terminate / beforecalculation / calculatePlayerMassAndPosition / recalculatePlayerMass not found'); process.exit(1); }
-    const life = (mainAlive) => {
-        const ctx = { console: { log: noop, warn: noop }, toastr: {}, Date, Math, menuShown: 0, menuHidden: 0 };
+    /* o.use: the player uses the death menu (a key in the nick field) before the respawn; o.typing: the nick
+     * field has the focus; o.esc: the unit died with the main player alive (no death menu), then the main
+     * player died and the menu was opened by hand (Esc) */
+    const life = (mainAlive, o) => {
+        o = o || {};
+        const listeners = [], cleared = [];
+        const el = (inMenu) => ({ closest: (sel) => (inMenu && sel.indexOf('#overlays') >= 0 ? {} : null) });
+        const doc = { activeElement: el(false), addEventListener: (type, fn) => listeners.push([type, fn]) };
+        const ctx = { console: { log: noop, warn: noop }, toastr: {}, Date, Math, menuShown: 0, menuHidden: 0, document: doc, clearTimeout: (t) => cleared.push(t) };
         ctx.window = ctx;
         vm.createContext(ctx);
         vm.runInContext(v4.slice(a, b), ctx);
@@ -148,14 +156,21 @@ function death(o) {
         ctx.multiboxPlayerEnabled = null;
         u.cells = cells(300, 3); u.beforecalculation();          /* first life: focus, 2700 mass */
         const first = +ctx.multiboxPlayerEnabled || 0, score1 = u.playerScore;
+        if (o.esc) ctx.legendmod.play = true;
         u.cells = []; u.terminate();                             /* dies */
+        if (o.esc) { ctx.legendmod.play = false; ctx.application.showMenu(); }
         const dead = +ctx.multiboxPlayerEnabled || 0, menuAtDeath = ctx.menuShown;
         const stats = [u.playerScore, u.playerMass, u.playerSize, u.playerMinMass, u.playerMaxMass, u.playerSplitCells, u.STE, u.MTE, u.BMTE, u.BSTE, u.TTE, u.PTE];
         const hiddenBefore = ctx.menuHidden;
+        if (o.use) listeners.filter((l) => l[0] === 'keydown').forEach((l) => l[1]({ target: el(true) }));
+        if (o.typing) doc.activeElement = el(true);
+        /* the auto-respawn's delayed showMenu (application.showMenu) is pending */
+        ctx.application._lmAutoRespMenuT = 77;
         u.active = true; u.cells = cells(40, 1); u.beforecalculation();  /* background auto-respawn, same socket: 16 mass */
         return {
             focus: [first, dead, +ctx.multiboxPlayerEnabled || 0].join(','), score1: score1, stats: stats.join(','), score2: u.playerScore,
-            menu: [menuAtDeath, hiddenBefore, ctx.menuHidden].join(',')
+            menu: [menuAtDeath, hiddenBefore, ctx.menuHidden].join(','),
+            timer: (ctx.application._lmAutoRespMenuT === null && cleared.indexOf(77) >= 0) ? 'cleared' : 'pending'
         };
     };
     const dead = life(false), alive = life(true);
@@ -165,8 +180,13 @@ function death(o) {
         dead.score1 === 2700 && dead.stats === '0,0,0,0,0,0,0,0,0,0,0,0', dead.score1 + ' / ' + dead.stats);
     check('the next life shows only its own score (showed the best score of every life)', dead.score2 === 16 && alive.score2 === 16, dead.score2 + ',' + alive.score2);
     check('main dead: the death menu shown when the last unit died is hidden when the unit respawns and takes the focus',
-        dead.menu === '1,1,2', 'shown at death, hidden before, hidden after the respawn = ' + dead.menu);
-    check('main alive: a background respawn does not touch the menu', alive.menu === '0,0,0', alive.menu);
+        dead.menu === '1,0,1', 'shown at death, hidden before, hidden after the respawn = ' + dead.menu);
+    check('main dead: hiding it also cancels the auto-respawn\'s delayed menu (it came back over the unit)', dead.timer === 'cleared', dead.timer);
+    check('main alive: a background respawn does not touch the menu', alive.menu === '0,0,0' && alive.timer === 'pending', alive.menu + ' ' + alive.timer);
+    const used = life(false, { use: true }), typing = life(false, { typing: true }), esc = life(false, { esc: true });
+    check('main dead: the player used the death menu (a key in it) before the respawn: it stays up', used.menu === '1,0,0' && used.timer === 'pending', used.menu + ' ' + used.timer);
+    check('main dead: the nick field has the focus at the respawn: the menu stays up', typing.menu === '1,0,0', typing.menu);
+    check('main dead: a menu opened by hand (no death menu of the unit): the respawn leaves it up', esc.menu === '1,0,0' && esc.focus === '1,0,1', esc.menu + ' focus ' + esc.focus);
 }
 
 /* 5. the whole ogario/spect.js: the unit's split / eat numbers against the main player's

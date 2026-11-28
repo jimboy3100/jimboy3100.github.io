@@ -2328,6 +2328,18 @@ class Spect {
         if (!anyAlive) {
             // Last unit died — show menu
             application.showMenu();
+            /* the unit's own background respawn may hide this menu again (beforecalculation),
+             * unless the player uses it first (nick, server list, death card) */
+            window._lmMbDeathMenuAt = Date.now();
+            if (!window._lmMbMenuUse && typeof document !== 'undefined' && document && document.addEventListener) {
+                window._lmMbMenuUse = function (e) {
+                    var t = e && e.target;
+                    if (t && t.closest && t.closest('#overlays, .ogario-menu, #helloContainer')) window._lmMbDeathMenuAt = 0;
+                };
+                ['keydown', 'mousedown', 'touchstart', 'input', 'focusin'].forEach(function (type) {
+                    document.addEventListener(type, window._lmMbMenuUse, { capture: true, passive: true });
+                });
+            }
         }
     }
 
@@ -2752,13 +2764,24 @@ class Spect {
         if (ownCells.length) {
             if (!this.openSecond) {
                 this.openSecond = true;
+                /* only the first spawn after that death may hide its menu */
+                var _lmDeathMenu = window._lmMbDeathMenuAt;
+                window._lmMbDeathMenuAt = 0;
                 /* first spawn of this unit, a spawn the player asked for (Tab), or the main
                  * cell is dead: focus it. A background reconnect + auto-respawn used to take
                  * the focus mid-fight and freeze the main cell. */
                 if (!this._lmSpawnedOnce || this._lmFocusOnSpawn || !legendmod.play) {
                     lmSetMbUnit(this.number);
-                    /* the death menu (terminate: last player died) stayed up over the unit now played */
-                    if (!legendmod.play && typeof application !== 'undefined' && application && typeof application.hideMenu === 'function') application.hideMenu();
+                    /* the death menu (terminate: last player died) stayed up over the unit now played;
+                     * not a menu the player opened (Esc) or is using (typing a nick, server list) */
+                    var _lmAe = typeof document !== 'undefined' && document ? document.activeElement : null;
+                    if (!legendmod.play && _lmDeathMenu && !(_lmAe && _lmAe.closest && _lmAe.closest('#overlays, .ogario-menu, #helloContainer')) &&
+                        typeof application !== 'undefined' && application && typeof application.hideMenu === 'function') {
+                        /* and the auto-respawn's delayed showMenu must not bring it back over the unit */
+                        clearTimeout(application._lmAutoRespMenuT);
+                        application._lmAutoRespMenuT = null;
+                        application.hideMenu();
+                    }
                 }
                 this._lmSpawnedOnce = true;
                 this._lmFocusOnSpawn = false;
