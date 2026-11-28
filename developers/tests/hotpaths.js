@@ -203,6 +203,25 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
     check('compareCells: a dead selected unit is not playing (another unit\'s cells made every enemy "much smaller")', deadSel === undefined, deadSel);
     check('compareCells: the selected live unit is the reference (900 vs 900)', liveSel === '#FFDC00', liveSel);
 }
+/* ---- jelly (LM.prepareJellyCells): a multibox copy hidden behind another connection's copy
+ * gives its point records back to the shared pool (they were left to the garbage collector on
+ * every hide), each once, holding no cell ---- */
+{
+    const B = require('./bench-dense.js');
+    const J = B.loadJelly();
+    B.setCamera(J);
+    const body = (id, x) => Object.assign(new J.Cell(), { id: id, x: x, y: 0, size: 100, isVirus: false, isFood: false, removed: false, invisible: false, points: [], pointsVel: [], maxPointRad: 0 });
+    const a = body(1, 0), b = body(2, 3);
+    J.LM.cells = [a, b];
+    J.LM.prepareJellyCells(J.LM.cells, []);
+    const old = b.points.slice();
+    b.invisible = true; b._lmMbTwin = a;
+    J.LM.prepareJellyCells(J.LM.cells, []);
+    const pool = J.window._lmJellyPointPool || [];
+    check('hidden multibox copy: its jelly point records go back to the pool once each, holding no cell',
+        old.length >= 5 && b.points.length === 0 && old.every((p) => pool.indexOf(p) >= 0 && p.parent === null) &&
+        new Set(pool).size === pool.length && !a.points.some((p) => pool.indexOf(p) >= 0));
+}
 
 console.log(failed ? 'FAILED: ' + failed : 'all hotpaths checks passed');
 process.exit(failed ? 1 : 0);

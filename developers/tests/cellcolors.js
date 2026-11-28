@@ -262,6 +262,8 @@ const protoSrc = '(function (env) {\n' +
     '  defaultmapsettings = env.defaultmapsettings, drawRender = env.drawRender, ogario = env.ogario, ogarcopythelb = env.ogarcopythelb,\n' +
     '  SpecialEffectPlayers = {}, profiles = [], dyinglight1load = "no", _EAT_PULSE_DURATION = 150, _EAT_PULSE_MAGNITUDE = 0.08;\n' +
     block('\nfunction lmSkinsShown(').slice(1) + '\n' + lmc.slice(1) + '\nvar _lmColorIntCache = new Map(), _lmColorCtx = null;\n' +
+    /* the own colour and "Player 1 & 2" glow rules (absent in older versions) */
+    ['lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor'].map((n) => src.includes('\nfunction ' + n + '(') ? block('\nfunction ' + n + '(').slice(1) + '\n' : '').join('') +
     /* the world skin key, Dying Light off: the cell's own key (absent in older versions) */
     (src.includes('\nfunction lmWorldSkinKey(') ? block('\nfunction lmWorldSkinKey(').slice(1) + '\nvar _lmDl = false;\n' : '') +
     /* the gradient avatar of a cell without colour: stubbed to the plain grey under it */
@@ -314,7 +316,8 @@ function pageLib() {
                 points: cfg.jelly ? lobes(o.x, o.y, o.size, 48) : [], maxPointRad: o.size, isInView: function () { return true; } }, o);
         });
         env.LM.cells = cells;
-        env.LM.playerCells = cells.filter(function (c) { return c.isPlayerCell; });
+        env.LM.playerCells = cells.filter(function (c) { return c.isPlayerCell && !(c.spectator > 0); });
+        env.LM.playerCellsMulti = cells.filter(function (c) { return c.isPlayerCellMulti; });
         var gl = R.gl;
         gl.viewport(0, 0, W, H);
         R._jellyFrameId = (R._jellyFrameId || 0) + 1;
@@ -400,6 +403,17 @@ async function chromePart() {
             check(tag + ': WebGL ' + JSON.stringify(want), near(a.px, want), a.px);
             check(tag + ': Canvas2D the same', near(b.px, want), b.px);
             check(tag + ': Canvas2D leaves the cell its own colour', b.colors[0] === '#ff3b3b', b.colors);
+        }
+        /* a multibox unit's own cell while the main player is dead and no unit is selected: both
+         * renderers decide "playing" the same way (lmOwnColorPlaying), so both draw the own colour
+         * (WebGL needed the main player's cells or a selected unit) */
+        for (const jelly of [false, true]) {
+            const cells = [{ id: 3, x: 0, y: 0, size: 60, color: '#ff3b3b', isPlayerCell: true, isPlayerCellMulti: true, spectator: 1 }];
+            const cfg = { jelly, play: false, own: { color: '#123456' }, map: { myCustomColor: true }, cells };
+            const a = await draw(Object.assign({ gl: true }, cfg)), b = await draw(Object.assign({ gl: false }, cfg));
+            const want = [0x12, 0x34, 0x56], tag = (jelly ? 'jelly on' : 'jelly off') + ', unit cell, main player dead, no unit selected';
+            check(tag + ': WebGL draws the own colour', near(a.px, want), [a.px, a.gl, a.why]);
+            check(tag + ': Canvas2D the same', near(b.px, want), b.px);
         }
     } finally {
         await stop();

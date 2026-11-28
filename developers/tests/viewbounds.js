@@ -91,6 +91,17 @@ g.fullSpectator = false; g.multiboxPlayerEnabled = false;
     check('a cell in the server\'s view off the camera keeps its opponent colour', far.oppColor === 'bste', String(far.oppColor));
 }
 
+/* 2b. the camera on a multibox unit far from the main player: the main server view does not
+ * overlap the camera, so it is not added (as in calMinMax); a cell there is skipped */
+{
+    LM.srvViewMinX = LM.srvViewMinY = -2500; LM.srvViewMaxX = LM.srvViewMaxY = 2500;
+    world(9000, 6000);
+    const far = { id: 3, x: 1000, y: 0, size: 170, targetX: 1000, targetY: 0, oppColor: null };
+    LM.cells.push(far);
+    g.frame.call(renderer(9000, 6000));
+    check('camera on a unit far away: a cell in the main server view far off screen is skipped', far.oppColor === null, String(far.oppColor));
+}
+
 /* 3. without a server view (no food: NaN) only the camera box counts; a cell far away is skipped */
 {
     LM.srvViewMinX = LM.srvViewMinY = LM.srvViewMaxX = LM.srvViewMaxY = NaN;

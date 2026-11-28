@@ -1689,6 +1689,24 @@ function lmUnitCellId(id, unitNumber) {
 function lmRawCellId(id) {
     return id % LM_UNIT_ID_STEP;
 }
+/* Is this cell one of my multibox units' own cells, also as the main connection's copy of it?
+ * The main copy never carries isPlayerCellMulti: it is known by the unit cell it hides behind
+ * (_lmMbTwin) or by the unit's copy stored under lmUnitCellId(raw id, unit number), as the
+ * "Eaten by" check finds an eater. */
+function lmMbOwnUnitCell(cell, rawId) {
+    if (!cell) return false;
+    if (cell.isPlayerCellMulti) return true;
+    if (cell.spectator > 0) return false;
+    var tw = cell._lmMbTwin;
+    if (tw && tw.spectator > 0 && tw.isPlayerCellMulti) return true;
+    var sps = window.spects, LM = window.legendmod;
+    if (rawId == null || !sps || !sps.length || !LM || !LM.indexedCells) return false;
+    for (var i = 0; i < sps.length; i++) {
+        var s = sps[i], c = s && s.player && LM.indexedCells[lmUnitCellId(rawId, s.number)];
+        if (c && c.isPlayerCellMulti) return true;
+    }
+    return false;
+}
 /* May this connection's pellets and cells take part in the reconciliation (spect.js _lmFeedOk:
  * border known and orientation VERIFIED)? A PROVISIONAL or CONFLICTED spectator's cells and
  * pellets could be mirrored or shifted: they are not drawn, hide nothing and are matched with
@@ -6127,6 +6145,41 @@ function _isValidSkin(s) {
     if (typeof s.naturalWidth === "number" && s.naturalWidth > 0) return true;
     if (typeof s.width === "number" && s.width > 0) return true;
     return false;
+}
+/* "My custom colour" in both renderers. Drawn while I play: the main player in the game or a
+ * multibox unit alive (Cell.draw tested that, the WebGL batch the main player's cells or the
+ * selected unit's, so with the main player dead and no unit selected only Canvas2D drew it).
+ * lmOwnBodyColor: the colour an own cell (main player or unit) is drawn with, or null. */
+function lmOwnColorPlaying() {
+    var lm = window.legendmod;
+    return !!(lm && (lm.play || (lm.playerCellsMulti && lm.playerCellsMulti.length)));
+}
+function lmOwnBodyColor(cell) {
+    if (!cell || !(cell.isPlayerCell || cell.isPlayerCellMulti) || !lmOwnColorPlaying()) return null;
+    var ms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null;
+    var own = typeof ogarcopythelb !== 'undefined' ? ogarcopythelb : null;
+    return ms && ms.myCustomColor && own && own.color && window.legendmod.gameMode != ':teams' ? own.color : null;
+}
+/* "Player 1 & 2" glow (multiBoxShadow), on while a multibox unit is alive. lmMbShadowColor: an
+ * own cell (the main player's, or a unit's on its own connection) glows in its player's profile
+ * colour: the main player's profile (selectedProfile), a unit's its slot's (mbSlots[unit number],
+ * else selectedOldProfile, the profile spect.js gives the unit's nick and colour); null for any
+ * other cell. It was matched by nick against those two profiles: an enemy with that nick glowed
+ * too, and no cell glowed while the main player was dead. */
+function lmMbShadowOn() {
+    var ms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null, lm = window.legendmod;
+    return !!(ms && ms.multiBoxShadow && lm && lm.playerCellsMulti && lm.playerCellsMulti.length);
+}
+function lmMbShadowColor(cell) {
+    if (!cell || !lmMbShadowOn()) return null;
+    var unit = cell.spectator > 0;
+    if (unit ? !cell.isPlayerCellMulti : !cell.isPlayerCell) return null;
+    var app = window.application, pr = typeof profiles !== 'undefined' ? profiles : null;
+    if (!app || !pr) return null;
+    var idx = !unit ? app.selectedProfile :
+        (app.mbSlots && cell.spectator < app.mbSlots.length ? app.mbSlots[cell.spectator] : app.selectedOldProfile);
+    var p = pr[idx];
+    return (p && p.color) || null;
 }
 /* Cells draw skins at all: "No skins" is off and custom skins, vanilla (agar.io) skins or the
  * own vanilla skin are on. Which skin a cell gets is decided by application.customSkinKey. */
@@ -39200,11 +39253,9 @@ function thelegendmodproject() {
                         /* the own colour is drawn, not written into the cell (as WebGL does): with
                          * "my custom colour" turned off the cell shows its server colour again */
                         var _lmBodyColor = this.color;
-                        if (LM.play || LM.playerCellsMulti.length) {
+                        if (lmOwnColorPlaying()) {
                             if (this.isPlayerCell || this.isPlayerCellMulti) {
-                                if (defaultmapsettings.myCustomColor && ogarcopythelb.color && LM.gameMode != ":teams") {
-                                    _lmBodyColor = ogarcopythelb.color;
-                                }
+                                _lmBodyColor = lmOwnBodyColor(this) || _lmBodyColor;
                             }
                             else {
                                 if (LM.play && defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams" && this.oppColor) {
@@ -39818,16 +39869,11 @@ function thelegendmodproject() {
 
 
 
-                        if (defaultmapsettings.multiBoxShadow && this.targetNick != null && (this.targetNick === profiles[application.selectedOldProfile].nick || this.targetNick === profiles[application.selectedProfile].nick) && LM.playerCellsMulti && legendmod.playerCellsMulti.length) {
-                            if (legendmod.play && legendmod.playerCellsMulti) {
-                                if (this.targetNick === profiles[application.selectedOldProfile].nick) {
-                                    style.shadowBlur = 40;
-                                    style.shadowColor = profiles[application.selectedOldProfile].color;
-                                } else if (this.targetNick === profiles[application.selectedProfile].nick) {
-                                    style.shadowBlur = 40;
-                                    style.shadowColor = profiles[application.selectedProfile].color;
-                                }
-                            }
+                        /* "Player 1 & 2" glow: own cells by ownership, not by nick */
+                        var _lmMbGlow = defaultmapsettings.multiBoxShadow ? lmMbShadowColor(this) : null;
+                        if (_lmMbGlow) {
+                            style.shadowBlur = 40;
+                            style.shadowColor = _lmMbGlow;
                         }
                         //lylko
                         if (
@@ -40349,16 +40395,17 @@ function thelegendmodproject() {
          * bots while hideSmallBots is on) get no physics and are no
          * colliders: they used to be simulated every frame and dented the
          * drawn cells they overlap (a hidden multibox copy sits exactly on
-         * the shown one). Their points are dropped, so a cell shown again
-         * starts from a round perimeter like a new cell instead of one left
-         * from long ago.
+         * the shown one). Their points are dropped (back to the shared pool),
+         * so a cell shown again starts from a round perimeter like a new cell
+         * instead of one left from long ago.
          *
          * Multibox / Full Map: a hidden copy remembers the copy it sat behind
          * (_lmMbTwin, kept as _lmJellyFrom after the link is dropped). When it
          * is drawn in that copy's place it starts with that copy's perimeter
          * moved to its own centre, so the wobble and dents go on instead of
-         * snapping round (seedJellyCell). Without other connections nothing
-         * is linked and this costs nothing.
+         * snapping round (seedJellyCell), if that copy is still a copy of it
+         * (jellyFromOk). Without other connections nothing is linked and this
+         * costs nothing.
          *
          * hold: a frame between two jelly steps (jellyStepDue): perimeters
          * keep their point count until the next step; only a cell without
@@ -40372,6 +40419,8 @@ function thelegendmodproject() {
             hold
         ) {
             out.length = 0;
+            /* this pass, for the one taker per shape of jellyFromOk */
+            this._lmJellyPass = (this._lmJellyPass || 0) + 1;
 
             var hideSmall =
                 !!this.hideSmallBots;
@@ -40420,6 +40469,16 @@ function thelegendmodproject() {
                             if (this.seedJellyCell(jellyTo, cell)) jellyTo._lmJellyFrom = null;
                         }
 
+                        /* the dropped records go back to the shared pool (the copy above took
+                         * its own from it); no index is queried before the next step rebuilds it */
+                        var dropPool = window._lmJellyPointPool || (window._lmJellyPointPool = []);
+                        for (var dp = 0; dp < cell.points.length; dp++) {
+                            var dropped = cell.points[dp];
+                            if (dropped && dropPool.length < 8192) {
+                                dropped.parent = null;
+                                dropPool.push(dropped);
+                            }
+                        }
                         cell.points.length = 0;
 
                         if (cell.pointsVel) {
@@ -40431,6 +40490,13 @@ function thelegendmodproject() {
 
                     if (jellyTo || cell._lmJellyFrom) {
                         cell._lmJellyFrom = jellyTo || null;
+                        /* which observation it hid behind (connection, socket generation, raw
+                         * id): a recycled or reconnected cell object gives no shape later */
+                        if (jellyTo) {
+                            cell._lmJellyFromSrc = jellyTo.spectator > 0 ? jellyTo.spectator : 0;
+                            cell._lmJellyFromGen = jellyTo._lmGen;
+                            cell._lmJellyFromRaw = jellyTo._lmRawId;
+                        }
                     }
 
                     continue;
@@ -40484,6 +40550,7 @@ function thelegendmodproject() {
 
                     cell._lmJellyFrom = null;
                     hasPerimeter =
+                        this.jellyFromOk(cell, jellyFrom) &&
                         this.seedJellyCell(cell, jellyFrom);
                 }
 
@@ -40545,12 +40612,33 @@ function thelegendmodproject() {
             return out;
         },
         /*
+         * The copy a cell hid behind (_lmJellyFrom) is a link from an earlier frame. Its shape
+         * is taken only while it is still that observation (same connection, socket generation
+         * and raw id as when the link was made), is not drawn itself (two drawn copies: the
+         * match broke, they are two cells), is not hidden behind another copy (that one takes
+         * the shape) and gave its shape to no other cell in this pass (one source, one taker).
+         * seedJellyCell then checks kind, size, name and place.
+         */
+        jellyFromOk: function (cell, from) {
+            if (!from || from === cell) return false;
+            if ((from.spectator > 0 ? from.spectator : 0) !== cell._lmJellyFromSrc ||
+                from._lmGen !== cell._lmJellyFromGen || from._lmRawId !== cell._lmJellyFromRaw) {
+                return false;
+            }
+            if (!from.removed && from.invisible !== true) return false;
+            if (from.invisible === true && from._lmMbTwin && from._lmMbTwin !== cell) return false;
+            if (from._lmJellyGaveP === this._lmJellyPass) return false;
+            from._lmJellyGaveP = this._lmJellyPass;
+            return true;
+        },
+        /*
          * Give cell the perimeter of from, another connection's copy of the
          * same cell, moved by the centre difference: same radii, velocities
          * and point count (updateNumPoints adjusts the count on the next
          * step). Point records come from the shared pool; this runs once per
          * hand-over, not per frame. Refused for a copy that is not at the
-         * same place (a recycled cell object) or a virus/non-virus pair.
+         * same place (a recycled cell object), of another kind (virus,
+         * ejected), size or server name.
          * Returns whether cell has a perimeter now.
          */
         seedJellyCell: function (cell, from) {
@@ -40561,10 +40649,17 @@ function thelegendmodproject() {
                 n < 3 ||
                 !srcVel ||
                 srcVel.length !== n ||
-                !cell.isVirus !== !from.isVirus
+                !cell.isVirus !== !from.isVirus ||
+                !cell.isEjected !== !from.isEjected
             ) {
                 return false;
             }
+            /* the same cell as the twin match sees it: size within 10 % (at least 4) and the
+             * same server name when both have one */
+            var ra = cell.targetSize > 0 ? cell.targetSize : cell.size;
+            var rb = from.targetSize > 0 ? from.targetSize : from.size;
+            if (!(Math.abs(ra - rb) <= Math.max(4, 0.1 * Math.max(ra, rb)))) return false;
+            if (cell._lmSrvName && from._lmSrvName && cell._lmSrvName !== from._lmSrvName) return false;
             var dx = cell.x - from.x, dy = cell.y - from.y;
             var r = cell.size > from.size ? cell.size : from.size;
             /* also false for NaN */
@@ -54735,10 +54830,11 @@ function thelegendmodproject() {
                     this._lmKillerMultiAt = Date.now();
                 }
                 /* LMEvents 'kill': one of my cells ate a cell of another player (not food, ejected
-                 * mass, viruses or my multibox units' cells); only built while someone listens */
+                 * mass, viruses or my multibox units' cells: on this connection the victim is the
+                 * main copy of a unit cell, lmMbOwnUnitCell); only built while someone listens */
                 if (eaterID && !_victimWasPlayer && window.LMEvents._has('kill') &&
                     (eaterID.isPlayerCell || (this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID))) &&
-                    !victimID.isFood && !victimID.isEjected && !victimID.isVirus && !victimID.isPlayerCellMulti) {
+                    !victimID.isFood && !victimID.isEjected && !victimID.isVirus && !lmMbOwnUnitCell(victimID, victimRawID)) {
                     window.LMEvents.emit('kill', { time: Date.now(), nick: String(victimID.targetNick || '').slice(0, 60), mass: ~~(victimID.size * victimID.size / 100) });
                 }
                 /* LMEvents 'merge': one of my cells ate another of mine (counted only while a script
@@ -54766,11 +54862,12 @@ function thelegendmodproject() {
                         try { window.LMDeathRecap.eat(eaterID, victimID, _lmDrMine, _victimWasPlayer, _victimStartSize); } catch (e) { }
                     }
                 }
-                /* Replay Studio bookmarks (recording only): an own cell ate another player's cell or popped a virus */
+                /* Replay Studio bookmarks (recording only): an own cell ate another player's cell (not one of
+                 * my multibox units') or popped a virus */
                 if (window._lmRecLive && eaterID && this === window.legendmod && !_victimWasPlayer && !victimID.isFood && !victimID.isEjected &&
                     (eaterID.isPlayerCell || (this._playerCellIDSet && this._playerCellIDSet.has(eaterRawID)))) {
                     if (victimID.isVirus) window._lmRecEv('v', 1);
-                    else if (!victimID.isPlayerCellMulti && victimID.size * victimID.size >= 2500) window._lmRecEv('k', victimID.size * victimID.size / 100);
+                    else if (!lmMbOwnUnitCell(victimID, victimRawID) && victimID.size * victimID.size >= 2500) window._lmRecEv('k', victimID.size * victimID.size / 100);
                 }
                 /*
                  * ========================================================
@@ -56276,8 +56373,10 @@ function thelegendmodproject() {
                 var _cullMaxX = LM.camMaxX + 800;
                 var _cullMaxY = LM.camMaxY + 800;
                 /* the frame grows its view by the server's view later (calMinMax): keep that
-                 * area too, as the box of the last frame gave it here before */
-                if (Number.isFinite(LM.srvViewMinX) && Number.isFinite(LM.srvViewMaxY)) {
+                 * area too, as the box of the last frame gave it here before (only a view that
+                 * overlaps the camera, as there) */
+                if (Number.isFinite(LM.srvViewMinX) && Number.isFinite(LM.srvViewMaxY) &&
+                    LM.srvViewMinX < LM.camMaxX && LM.srvViewMaxX > LM.camMinX && LM.srvViewMinY < LM.camMaxY && LM.srvViewMaxY > LM.camMinY) {
                     _cullMinX = Math.min(_cullMinX, LM.srvViewMinX - 800); _cullMinY = Math.min(_cullMinY, LM.srvViewMinY - 800);
                     _cullMaxX = Math.max(_cullMaxX, LM.srvViewMaxX + 800); _cullMaxY = Math.max(_cullMaxY, LM.srvViewMaxY + 800);
                 }
@@ -62403,19 +62502,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * "Player 1 & 2" is a Canvas2D shadow glow. Multibox rings no longer
-             * need Canvas2D (drawWebGLMultiboxRings), so multiboxing keeps WebGL:
-             * The ring used to put every multibox frame on Canvas2D.
+             * "Player 1 & 2" is a Canvas2D shadow glow (the GPU batch has no shadow
+             * pass): a frame with a glowing own cell on screen stays on Canvas2D,
+             * checked per cell below (lmMbShadowColor, the rule cell.draw uses).
+             * Multibox rings no longer need Canvas2D (drawWebGLMultiboxRings), so
+             * multiboxing keeps WebGL: the ring used to put every multibox frame on
+             * Canvas2D.
              */
-            if (
-                defaultmapsettings
-                    .multiBoxShadow &&
-                LM.playerCellsMulti &&
-                LM.playerCellsMulti
-                    .length
-            ) {
-                return this._lmNoGL(this.GLW.MB_SHADOW);
-            }
+            var _glMbShadow =
+                lmMbShadowOn();
             /* No ring program (failed to build): Canvas2D draws the rings. */
             if (
                 !this.glMbRingProgram &&
@@ -62553,6 +62648,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (_glShadows && !cell.isEjected) {
                     this._lmGlFallback = 'cellShadows';
                     return this._lmNoGL(this.GLW.SHADOWS);
+                }
+
+                if (_glMbShadow && lmMbShadowColor(cell)) {
+                    return this._lmNoGL(this.GLW.MB_SHADOW);
                 }
 
                 if (_glFxCheck && !_glOut) {
@@ -76465,22 +76564,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     1;
 
 
+                /* the same rule as Cell.draw (lmOwnColorPlaying) */
                 var isPlaying =
-                    !!(
-                        (
-                            LM.play &&
-                            LM.playerCells &&
-                            LM.playerCells
-                                .length
-                        ) ||
-                        (
-                            window
-                                .multiboxPlayerEnabled &&
-                            LM.playerCellsMulti &&
-                            LM.playerCellsMulti
-                                .length
-                        )
-                    );
+                    lmOwnColorPlaying();
 
 
                 /*
@@ -76717,26 +76803,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             /*
                              * Own player color.
                              */
-                            if (
-                                (
-                                    cell
-                                        .isPlayerCell ||
-                                    cell
-                                        .isPlayerCellMulti ||
-                                    cell
-                                        .playerCellsMulti
-                                ) &&
-                                defaultmapsettings
-                                    .myCustomColor &&
-                                ogarcopythelb
-                                    .color &&
-                                LM.gameMode !==
-                                    ':teams'
-                            ) {
-                                bodyHex =
-                                    ogarcopythelb
-                                        .color;
-                            }
+                            bodyHex =
+                                lmOwnBodyColor(cell) ||
+                                bodyHex;
 
 
                             /* Opponent colours do not replace the body colour (one colour per
@@ -77806,21 +77875,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var colorHex;
                 var strokeHex;
 
+                /* the same rule as Cell.draw (lmOwnColorPlaying) */
                 var isPlaying =
-                    (
-                        LM.play &&
-                        LM.playerCells &&
-                        LM.playerCells.length >
-                        0
-                    ) ||
-                    (
-                        window
-                            .multiboxPlayerEnabled &&
-                        LM.playerCellsMulti &&
-                        LM.playerCellsMulti
-                            .length >
-                            0
-                    );
+                    lmOwnColorPlaying();
 
                 /*
                  * ========================================================
@@ -77916,21 +77973,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         '#808080';
 
                     if (isPlaying) {
-                        if (
-                            (
-                                cell.isPlayerCell ||
-                                cell.isPlayerCellMulti
-                            ) &&
-                            defaultmapsettings
-                                .myCustomColor &&
-                            ogarcopythelb.color &&
-                            LM.gameMode !==
-                                ':teams'
-                        ) {
-                            colorHex =
-                                ogarcopythelb
-                                    .color;
-                        }
+                        colorHex =
+                            lmOwnBodyColor(cell) ||
+                            colorHex;
                         /* Opponent colours do not replace the body colour (one colour per
                          * player, as on Canvas2D); Cell.draw adds them as a ring. */
                     }
@@ -82745,9 +82790,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
             minX -= foodOffset; minY -= foodOffset; maxX += foodOffset; maxY += foodOffset;
             LM.srvViewMinX = minX; LM.srvViewMaxX = maxX;
             LM.srvViewMinY = minY; LM.srvViewMaxY = maxY;
-            if (Number.isFinite(LM.camMinX)) { minX = Math.min(minX, LM.camMinX); maxX = Math.max(maxX, LM.camMaxX); minY = Math.min(minY, LM.camMinY); maxY = Math.max(maxY, LM.camMaxY); }
-            LM.camMinX = minX; LM.camMaxX = maxX;
-            LM.camMinY = minY; LM.camMaxY = maxY;
+            var c0 = LM.camMinX, c1 = LM.camMinY, c2 = LM.camMaxX, c3 = LM.camMaxY;
+            if (!(Number.isFinite(c0) && Number.isFinite(c1) && Number.isFinite(c2) && Number.isFinite(c3))) {
+                LM.camMinX = minX; LM.camMaxX = maxX;
+                LM.camMinY = minY; LM.camMaxY = maxY;
+                return;
+            }
+            /* The camera box is grown only by a server view that overlaps it: the main player's
+             * and each living multibox unit's (the cells just off screen that the server already
+             * sends keep their jelly). With the camera on a unit far from the main player, the
+             * box of both took in every cell between them (Canvas2D pass, jelly isInView). */
+            var g0 = c0, g1 = c1, g2 = c2, g3 = c3;
+            if (minX < c2 && maxX > c0 && minY < c3 && maxY > c1) {
+                g0 = Math.min(g0, minX); g1 = Math.min(g1, minY); g2 = Math.max(g2, maxX); g3 = Math.max(g3, maxY);
+            }
+            var sps = window.spects;
+            for (var s = 0; sps && s < sps.length; s++) {
+                var sp = sps[s];
+                if (!sp || sp.player !== true || sp.active !== true || typeof sp._lmServerViewDisplay !== 'function') continue;
+                var r = sp._lmServerViewDisplay(this._lmUnitViewBox || (this._lmUnitViewBox = [0, 0, 0, 0]));
+                if (!r || !(r[0] < c2 && r[2] > c0 && r[1] < c3 && r[3] > c1)) continue;
+                g0 = Math.min(g0, r[0]); g1 = Math.min(g1, r[1]); g2 = Math.max(g2, r[2]); g3 = Math.max(g3, r[3]);
+            }
+            LM.camMinX = g0; LM.camMaxX = g2;
+            LM.camMinY = g1; LM.camMaxY = g3;
         },
         drawFood() {
 

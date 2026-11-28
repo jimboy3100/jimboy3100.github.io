@@ -530,5 +530,32 @@ const covers = (plan, vw, vh, half) => {
     }
 }
 
-console.log(failed ? 'FAILED ' + failed : 'all debugviewports checks passed');
+/* 13. the culling box (LM.camMin/Max: Canvas2D cell pass, jelly isInView): the camera box grown only
+ * by a server view that overlaps it, the main player's (its food box) or a living unit's. With the
+ * camera on a unit far from the main player, the box of both took in every cell between them. */
+{
+    NOW = 5e11;
+    const e = env({ mb: true });
+    food(e.LM.food, 0, 0, 2500, 0);
+    const cam = (x, y) => { e.LM.camMinX = x - 1600; e.LM.camMaxX = x + 1600; e.LM.camMinY = y - 900; e.LM.camMaxY = y + 900; e.dr.calMinMax(); };
+    const box = () => [e.LM.camMinX, e.LM.camMinY, e.LM.camMaxX, e.LM.camMaxY];
+    const near = (a, b) => a.every((v, i) => Math.abs(v - b[i]) < 1e-6);
+    cam(0, 0);
+    check('culling box, camera on the main player: grown by its server view as before', near(box(), [-2515, -2515, 2515, 2515]), box());
+    cam(9000, 6000);
+    check('culling box, camera on a unit far away: the camera box only, not every cell up to the main player', near(box(), [7400, 5100, 10600, 6900]), box());
+    check('culling box: the main server view (Show viewports) is still its food box', e.LM.srvViewMinX === -2515 && e.LM.srvViewMaxX === 2515);
+    const u = e.spect(spectAt(2, 0, 0, { player: true, active: true, mapOffsetFixed: true, viewX: 9000, viewY: 6000, _lmCamAt: NOW, scale: 0.4 }));
+    const v = e.c.lmServerViewSize(0.4);
+    cam(9000, 6000);
+    check('culling box: grown by the living unit\'s server view around the camera', near(box(), [9000 - v[0] / 2, 6000 - v[1] / 2, 9000 + v[0] / 2, 6000 + v[1] / 2]), box());
+    cam(0, 0);
+    check('culling box: a unit\'s view far from the camera is not added', near(box(), [-2515, -2515, 2515, 2515]), box());
+    u.active = false;
+    cam(9000, 6000);
+    check('culling box: a dead unit\'s view is not added', near(box(), [7400, 5100, 10600, 6900]), box());
+    NOW = null;
+}
+
+console.log(failed ?'FAILED ' + failed : 'all debugviewports checks passed');
 process.exit(failed ? 1 : 0);

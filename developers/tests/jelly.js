@@ -467,6 +467,66 @@ function maxDiff(a, b) {
             check('a copy far away is not taken: round start perimeter', b.points.length === n && b.points.every((p) => p.rl === b.size) && b._lmJellyFrom === null);
         }
 
+        /* the remembered copy is checked again when its shape is taken (an earlier frame's link):
+         * only the same observation, still a copy of this cell, and one taker */
+        {
+            const round = (c) => c.points.length === n && c.points.every((p) => p.rl === c.size);
+            /* the match broke while both stay drawn: two cells, no shape */
+            {
+                const { a, b } = pair('ab');
+                b.invisible = false; b._lmMbTwin = null;
+                J.LM.cells = [a, b];
+                J.LM.prepareJellyCells(J.LM.cells, []);
+                check('remembered copy still drawn (the match broke): no shape taken, round start', round(b) && b._lmJellyFrom === null);
+            }
+            /* the cell object was reused for another cell or its connection reconnected */
+            for (const [what, change] of [['another socket generation', (a) => { a._lmGen = 8; }], ['another raw id', (a) => { a._lmRawId = 4321; }],
+                ['another connection', (a) => { a.spectator = 5; }]]) {
+                const a0 = body(J, 1, 100, 50, 100), b0 = body(J, 2, 103, 48, 100);
+                a0._lmGen = 7; a0._lmRawId = 1234;
+                ring(a0, n, 30, rng); a0.pointsVel = a0.pointsVel.map(() => rng() - 0.5);
+                b0.invisible = true; b0._lmMbTwin = a0;
+                J.LM.cells = [a0, b0];
+                J.LM.prepareJellyCells(J.LM.cells, []);
+                change(a0); a0.removed = true; b0.invisible = false; b0._lmMbTwin = null;
+                J.LM.cells = [b0];
+                J.LM.prepareJellyCells(J.LM.cells, []);
+                check('remembered copy is no longer that observation (' + what + '): no shape taken', round(b0) && b0._lmJellyFrom === null);
+            }
+            /* not the same cell any more: another size, another server name, ejected vs cell */
+            for (const [what, change] of [['size 130 vs 100', (a) => { a.size = 130; }], ['another server name', (a, b) => { a._lmSrvName = 'x'; b._lmSrvName = 'y'; }],
+                ['ejected mass', (a) => { a.isEjected = true; }]]) {
+                const { a, b } = pair('ab');
+                change(a, b); a.removed = true; b.invisible = false; b._lmMbTwin = null;
+                J.LM.cells = [b];
+                J.LM.prepareJellyCells(J.LM.cells, []);
+                check('remembered copy of ' + what + ': no shape taken', round(b));
+            }
+            /* two copies shown in its place in one pass: one taker only */
+            {
+                const { a, b } = pair('ab');
+                const c = body(J, 3, 98, 52, 100);
+                c.spectator = 3; c.invisible = true; c._lmMbTwin = a;
+                J.LM.cells = [a, c];
+                J.LM.prepareJellyCells(J.LM.cells, []);
+                a.removed = true;
+                for (const x of [b, c]) { x.invisible = false; x._lmMbTwin = null; }
+                J.LM.cells = [b, c];
+                J.LM.prepareJellyCells(J.LM.cells, []);
+                check('two copies shown where one was drawn: only one takes its shape', [b, c].filter(round).length === 1 && b.points.length === n && c.points.length === n);
+            }
+            /* hidden behind another copy now: that one takes the shape */
+            {
+                const { a, b } = pair('ab');
+                const d = body(J, 4, 101, 49, 100);
+                a.invisible = true; a._lmMbTwin = d; d.spectator = 6;
+                b.invisible = false; b._lmMbTwin = null;
+                J.LM.cells = [b, a, d];
+                J.LM.prepareJellyCells(J.LM.cells, []);
+                check('remembered copy now hidden behind another copy: this one starts round, that one takes the shape', round(b) && !round(d) && d.points.length === n);
+            }
+        }
+
         /* single connection: no twin links, the hand-over is never looked at */
         {
             const Js = B.loadJelly();

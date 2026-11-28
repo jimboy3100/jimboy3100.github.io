@@ -552,6 +552,70 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     check('...with the main connection seeing both: both own cells drawn, the two main copies hidden',
         !a2.invisible && !b2.invisible && m1.invisible && m2.invisible);
 }
+/* Kills (LMEvents 'kill', the replay's "k" bookmark): eating my own multibox unit is no kill. On
+ * the main connection the victim is the main copy of the unit's cell, which never carries
+ * isPlayerCellMulti (the old test): it is known by the unit cell it hides behind or by the unit's
+ * copy under lmUnitCellId (lmMbOwnUnitCell). */
+{
+    const ctx = env(1);
+    const has = vm.runInContext('typeof lmMbOwnUnitCell', ctx) === 'function';
+    const own = cell({ spectator: 1, isPlayerCellMulti: true, isPlayerCell: true, _lmSrvName: 'me' });
+    const mainCopy = cell({ spectator: 0, x: 1004, _lmSrvName: 'me' });
+    const enemy = cell({ spectator: 0, x: 3000, _lmSrvName: 'me' });
+    const unitEnemy = cell({ spectator: 1, x: 3003, _lmSrvName: 'me' });
+    run([mainCopy, own, enemy, unitEnemy], 3, ctx);
+    const f = has ? vm.runInContext('lmMbOwnUnitCell', ctx) : () => null;
+    check('kill check: the main copy of my unit\'s cell (hidden behind it) is my unit, not a kill', has && mainCopy._lmMbTwin === own && f(mainCopy, 11) === true);
+    check('kill check: the unit\'s own cell is my unit', f(own, 12) === true);
+    check('kill check: an enemy with my nick on either connection is a kill', f(enemy, 13) === false && f(unitEnemy, 14) === false);
+    /* not hidden (e.g. the unit's connection not verified yet): found by its id on the unit */
+    const LM = ctx.window.legendmod;
+    const lone = cell({ spectator: 0, x: 5000 });
+    LM.indexedCells[vm.runInContext('lmUnitCellId(777, 1)', ctx)] = cell({ spectator: 1, isPlayerCellMulti: true });
+    check('kill check: a main copy not hidden, my unit\'s cell by its id on the unit', f(lone, 777) === true && f(lone, 778) === false);
+    /* both kill sites of the eat handler use it */
+    const eatA = src.indexOf("/* LMEvents 'kill'"), eatB = src.indexOf('* EXPANDING LAND CINEMATIC EAT EFFECTS', eatA);
+    const eat = eatA > 0 && eatB > eatA ? src.slice(eatA, src.lastIndexOf('/*', eatB)) : '';
+    check('kill check: LMEvents kill and the replay "k" bookmark both ask lmMbOwnUnitCell, the dead isPlayerCellMulti test is gone',
+        /emit\('kill'/.test(eat) && /_lmRecEv\('k'/.test(eat) && (eat.match(/!lmMbOwnUnitCell\(victimID, victimRawID\)/g) || []).length === 2 && eat.indexOf('!victimID.isPlayerCellMulti') < 0);
+}
+
+/* "My custom colour" and the "Player 1 & 2" glow (multiBoxShadow), the rules both renderers use */
+{
+    const fnSrc = (n) => { const a = src.indexOf('\nfunction ' + n + '('); return a < 0 ? '' : src.slice(a + 1, src.indexOf('\n}\n', a) + 3); };
+    const names = ['lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor'];
+    const ok = names.every((n) => fnSrc(n));
+    const LM = { play: true, playerCells: [], playerCellsMulti: [], gameMode: ':ffa' };
+    const app = { selectedProfile: 0, selectedOldProfile: 1, mbSlots: [0, 1] };
+    const c = vm.createContext({ window: { legendmod: LM, application: app }, defaultmapsettings: { myCustomColor: true, multiBoxShadow: true },
+        ogarcopythelb: { color: '#123456' }, profiles: [{ nick: 'Me', color: '#aa0000' }, { nick: 'Me2', color: '#00bb00' }, { nick: 'Me3', color: '#0000cc' }] });
+    if (ok) vm.runInContext(names.map(fnSrc).join('\n'), c);
+    const F = (n) => (ok ? c[n] : () => undefined);
+    const mainCell = cell({ isPlayerCell: true, targetNick: 'Me' });
+    const unitCell = cell({ spectator: 1, isPlayerCell: true, isPlayerCellMulti: true, targetNick: 'Me2' });
+    const enemyMe = cell({ targetNick: 'Me' }), enemyMe2 = cell({ spectator: 1, targetNick: 'Me2' });
+    LM.playerCells = [mainCell]; LM.playerCellsMulti = [unitCell];
+    check('own colour: main player and unit cells, not an enemy', F('lmOwnBodyColor')(mainCell) === '#123456' && F('lmOwnBodyColor')(unitCell) === '#123456' && F('lmOwnBodyColor')(enemyMe) === null);
+    LM.play = false; LM.playerCells = [];
+    check('own colour: main player dead, a unit alive (none selected): still the own colour', F('lmOwnColorPlaying')() === true && F('lmOwnBodyColor')(unitCell) === '#123456');
+    LM.playerCellsMulti = [];
+    check('own colour: nobody alive: not playing', F('lmOwnColorPlaying')() === false && F('lmOwnBodyColor')(unitCell) === null);
+    LM.play = true; LM.playerCells = [mainCell]; LM.playerCellsMulti = [unitCell];
+    check('glow: main player in profile 1\'s colour, the unit in its slot\'s', F('lmMbShadowColor')(mainCell) === '#aa0000' && F('lmMbShadowColor')(unitCell) === '#00bb00');
+    check('glow: enemies with my nicks do not glow', F('lmMbShadowColor')(enemyMe) === null && F('lmMbShadowColor')(enemyMe2) === null);
+    const unit2 = cell({ spectator: 2, isPlayerCell: true, isPlayerCellMulti: true });
+    app.mbSlots = [0, 1, 2];
+    check('glow: a third player in its own slot\'s colour', F('lmMbShadowColor')(unit2) === '#0000cc');
+    LM.play = false; LM.playerCells = [];
+    check('glow: main player dead, the unit still glows', F('lmMbShadowColor')(unitCell) === '#00bb00');
+    LM.playerCellsMulti = [];
+    check('glow: no unit alive (no multibox): nothing glows', F('lmMbShadowOn')() === false && F('lmMbShadowColor')(mainCell) === null);
+    /* the renderers: Cell.draw by ownership, the WebGL gate per glowing cell on screen */
+    const gate = src.slice(src.indexOf('var _glMbShadow'), src.indexOf('/* Chat bubbles (GL text pass or overlay)'));
+    check('glow: Cell.draw has no nick match left, the WebGL batch falls back only for a glowing cell',
+        src.indexOf('this.targetNick === profiles[application.selectedOldProfile].nick') < 0 && /lmMbShadowColor\(this\)/.test(src) &&
+        /_glMbShadow && lmMbShadowColor\(cell\)/.test(src) && gate.indexOf('MB_SHADOW') < 0);
+}
 
 if (failed) {
     console.log(failed + ' check(s) failed');
