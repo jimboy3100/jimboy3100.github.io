@@ -86,6 +86,14 @@ if (O) {
     check('no shared budget: the same jobs in the same frames and order as the previous version (300 random queues)', same);
 } else console.log('     (previous version not available: oracle skipped)');
 
+/* ---- own skins first among the skins on screen ---- */
+{
+    const P = (jobs) => N.lmSkinJobPick(jobs, 5000, 1000);
+    check('own skin on screen picked before older skins on screen', P([{ seen: 0 }, { seen: 4990 }, { seen: 4995, own: true }]) === 2);
+    check('own skin not on screen: skins on screen first', P([{ seen: 0, own: true }, { seen: 4990 }]) === 1);
+    check('no own skin: the oldest on screen, else the oldest (as before)', P([{ seen: 0 }, { seen: 4990 }, { seen: 4995 }]) === 1 && P([{ seen: 0 }, { seen: 1 }]) === 0 && P([]) === -1);
+}
+
 /* ---- 2. the shared budget ---- */
 {
     const slack = N.lmSkinSlack(), laneA = { starved: false }, laneB = { starved: false };

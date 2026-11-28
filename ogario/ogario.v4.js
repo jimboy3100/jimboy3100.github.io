@@ -23699,13 +23699,18 @@ function thelegendmodproject() {
      * made inside the image's load callback, so a burst of finished downloads made dozens of
      * 512 px canvases (with a synchronous image decode each) before the next frame. They are made
      * from requestAnimationFrame now, a few per frame. Next job: the oldest one a draw asked for
-     * in the last seenMs (on screen), else the oldest one; -1 when there is none.
+     * in the last seenMs (on screen), the player's own skins (job.own: asked for by an own or
+     * multibox unit cell) before the others, else the oldest one; -1 when there is none.
      */
     function lmSkinJobPick(jobs, now, seenMs) {
+        var seen = -1;
         for (var i = 0; i < jobs.length; i++) {
-            if (jobs[i] && jobs[i].seen > 0 && now - jobs[i].seen < seenMs) return i;
+            if (jobs[i] && jobs[i].seen > 0 && now - jobs[i].seen < seenMs) {
+                if (jobs[i].own) return i;
+                if (seen < 0) seen = i;
+            }
         }
-        return jobs.length ? 0 : -1;
+        return seen >= 0 ? seen : jobs.length ? 0 : -1;
     }
     /* runs jobs until budgetMs of this frame is used: the first always runs, each next one only
      * when it is expected to fit (running average of the last ones, as _lmScheduleSkinUploads).
@@ -62200,7 +62205,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var mappedLayer = this.glSkinNodeMap.get(node);
 
             if (typeof mappedLayer !== 'number' && uploadReadyImage) {
-                mappedLayer = this.uploadSkinTexture(node, node);
+                mappedLayer = this.uploadSkinTexture(node, node, !!(cell && (cell.isPlayerCell || cell.isPlayerCellMulti)));
             }
 
             return {
@@ -65906,7 +65911,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         },
 
-        uploadSkinTexture(sourceNode, keyNode) {
+        /* own: asked for by the player's own (or a multibox unit's) cell, uploaded before other skins */
+        uploadSkinTexture(sourceNode, keyNode, own) {
             /* no skin array while WebGL is off for a while (_lmGlSkinRelease) */
             if (!this.gl || !this.glSkinArray || !sourceNode) return -1;
 
@@ -65941,6 +65947,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (pendJob) {
                     /* still wanted: a draw asked for it in this frame (_lmSkinPurge) */
                     pendJob.seen = this._glSkinFrame || 0;
+                    if (own) pendJob.own = true;
                     if (typeof sourceNode === 'string' && !pend.keys[sourceNode]) {
                         pend.keys[sourceNode] = pendJob;
                         pendJob.keys.push(sourceNode);
@@ -65958,7 +65965,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* Decoded skin images and canvases go the async way: a canvas as texSubImage3D source
              * is read back from the GPU synchronously (15-65 ms main-thread stall per new skin).
              * Only a node without a size stays here (_lmQueueSkinUpload). */
-            if (this._lmQueueSkinUpload(node, typeof sourceNode === 'string' ? sourceNode : null)) {
+            if (this._lmQueueSkinUpload(node, typeof sourceNode === 'string' ? sourceNode : null, own)) {
                 return -1;
             }
 
@@ -66038,7 +66045,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * (the synchronous upload is used then). */
         _lmSkinBmpMax: 8,
         _lmSkinQueueBytesMax: 32 * 1048576,
-        _lmQueueSkinUpload(node, key) {
+        _lmQueueSkinUpload(node, key, own) {
             if (!node) return false;
             var src = node._lmSrc || node;
             var bitmap = typeof createImageBitmap === 'function' && !node._lmBmpFail && typeof HTMLImageElement !== 'undefined' &&
@@ -66055,7 +66062,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 (this._lmSkinQBytes || 0) > 0 && this._lmSkinQBytes + bytes > this._lmSkinQueueBytesMax)) return true;
             var pend = this._lmSkinPend || (this._lmSkinPend = { nodes: new WeakMap(), keys: {} });
             /* seen: the last frame a draw asked for it (_lmSkinStale) */
-            var job = { node: node, keys: key ? [key] : [], clip: !!node._lmCircle && node !== src, seen: this._glSkinFrame || 0, bytes: bytes, sync: sync, bmp: null };
+            var job = { node: node, keys: key ? [key] : [], clip: !!node._lmCircle && node !== src, seen: this._glSkinFrame || 0, bytes: bytes, sync: sync, bmp: null, own: !!own };
             pend.nodes.set(node, job);
             if (key) pend.keys[key] = job;
             var self = this;
@@ -75982,7 +75989,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 layer =
                     this.uploadSkinTexture(
                         activeKey,
-                        node
+                        node,
+                        !!(cell.isPlayerCell || cell.isPlayerCellMulti)
                     );
             }
             if (!(layer >= 0) && activeKey !== skinUrl && this.glSkinMap[skinUrl] >= 0) {
@@ -78183,7 +78191,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
                         var mappedLayer = this.glSkinMap[activeKey];
                         if (mappedLayer === undefined && skinNode && !skinNode._failed && (skinNode.naturalWidth > 0 || skinNode.width > 0)) {
-                            mappedLayer = this.uploadSkinTexture(activeKey, skinNode);
+                            mappedLayer = this.uploadSkinTexture(activeKey, skinNode, !!(cell.isPlayerCell || cell.isPlayerCellMulti));
                             if (this.glSkinArray !== skinArrayAtStart) {
                                 return abortCellBatch();
                             }
