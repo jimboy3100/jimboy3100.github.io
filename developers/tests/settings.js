@@ -49,10 +49,10 @@ check('fpsLimit -1 -> 0 (off), 0 stays 0', V('fpsLimit', -1) === 0 && V('fpsLimi
 /* removed or merged settings (mass-loss alert, kill feed, the event countdown's hide option, HUD helper arrows and cell panel, the removed 25 FPS menu cap, the
  * automatic Performance mode's own target / message / resolution options, the size symbols in Relative mass) */
 const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptivePerfToasts', 'adaptivePerfRes', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel', 'massLossAlert', 'massLossPct', 'killFeed', 'a11yIndicators', 'hideEventBanner',
-  /* options that tuned a detail or were gimmicks: the camera on the centre of mass, the rainbow border speed (fixed at
+  /* options that tuned a detail or were gimmicks: the rainbow border speed (fixed at
    * the original 5), the chat #id and word filter, the 16 pieces sounds, the triple split range,
    * the Split prediction switch (always part of the cursor line), and the collapsed leaderboard bots */
-  'centerWeightCamera', 'rainbowBorderSpeed', 'chatShowId', 'chatHideWords', 'x16Sound', 'non16Sound', 'tripleSplitRange',
+  'rainbowBorderSpeed', 'chatShowId', 'chatHideWords', 'x16Sound', 'non16Sound', 'tripleSplitRange',
   'splitPrediction', 'lbHideBots',
   /* line split: its own delay (the split macros' one is used) and its aim line switch (always drawn) */
   'lineSplitDelay', 'lineSplitGuide',

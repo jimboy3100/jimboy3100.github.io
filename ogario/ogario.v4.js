@@ -20910,6 +20910,7 @@ var defaultmapsettings = {
     mbFreeze: false,
     mbAutoRespawn: true,
     cameraSmoothLerp: true,
+    centerWeightCamera: false,    /* camera target = mass-weighted centre of the own cells (like Delta) */
     /* optimizedMass is gone: the mass text is always redrawn on a 2% change (exact numbers: Mass format);
      * a saved value is ignored */
     shortMass: true,              /* copy of massFormat === 2 for scripts and older versions (lmFoldLegacySettings) */
@@ -26472,7 +26473,7 @@ function thelegendmodproject() {
              * a developer facility rather than a player setting. */
             this.addOptions(["performanceMode"], "perfGroup");
 
-            this.addOptions(["autoZoom"], "zoomGroup");
+            this.addOptions(["autoZoom", "centerWeightCamera"], "zoomGroup");
             this.addOptions([], "boardGroup");
             /* "Spawn special effects" is gone: its effect was taken out, and the switch only made every frame use the Canvas renderer */
             this.addOptions(["quickResp", "autoResp"], "respGroup");
@@ -54385,12 +54386,15 @@ function thelegendmodproject() {
                 this._lmEvMergeN = 0;
                 if (window.LMEvents._has('merge')) window.LMEvents.emit('merge', { merged: _lmEvMn, cells: playersLength });
             }
+            var _lmWS = 0, _lmWX = 0, _lmWY = 0;
             for (let length = 0; length < playersLength; length++) {
                 var n = this.playerCells[length];
                 size += n.size;
                 targetSize += n.targetSize * n.targetSize;
                 x += n.x / playersLength;
                 y += n.y / playersLength;
+                var _lmW = n.size * n.size;
+                _lmWS += _lmW; _lmWX += n.x * _lmW; _lmWY += n.y * _lmW;
                 /* Track min/max inline to avoid redundant sort in recalculatePlayerMass */
                 if (n.size < minSize) minSize = n.size;
                 if (n.size > maxSize) maxSize = n.size;
@@ -54400,6 +54404,9 @@ function thelegendmodproject() {
             this.viewY = y;
             this.viewXTrue = x;
             this.viewYTrue = y;
+            /* mass-weighted centre, used only for the camera with "centerWeightCamera" */
+            this._lmWeightX = _lmWS > 0 ? _lmWX / _lmWS : x;
+            this._lmWeightY = _lmWS > 0 ? _lmWY / _lmWS : y;
 
             this.playerSize = size;
             this.playerMass = ~~(targetSize / 100);
@@ -76738,6 +76745,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             var targetCamX = LM.viewX;
             var targetCamY = LM.viewY;
+            /* optional: follow the mass-weighted centre (viewX itself is unchanged: the minimap,
+             * sectors and multibox read it); a multibox frame below still takes over. The sent
+             * cursor needs nothing: getCursorPosition aims from the drawn camera (camX/Y). */
+            if (defaultmapsettings.centerWeightCamera && LM.play && LM.playerCells && LM.playerCells.length &&
+                Number.isFinite(LM._lmWeightX) && Number.isFinite(LM._lmWeightY)) {
+                targetCamX = LM._lmWeightX;
+                targetCamY = LM._lmWeightY;
+            }
 
             /* ═══ World Spectate: mouse-driven panning with center dead zone ═══
              * When in World Spectate on an Expanding Land server, the mouse

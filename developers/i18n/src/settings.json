@@ -899,6 +899,24 @@
     "ja": "マルチボックスのカメラを滑らかに",
     "it": "Telecamera multibox fluida"
   },
+  "settings.centerWeightCamera": {
+    "en": "Camera on the centre of mass (big cells count more)",
+    "el": "Κάμερα στο κέντρο μάζας (τα μεγάλα κύτταρα μετράνε περισσότερο)",
+    "es": "Cámara en el centro de masa (las células grandes cuentan más)",
+    "bg": "Камера в центъра на масата (големите клетки тежат повече)",
+    "fr": "Caméra au centre de masse (les grosses cellules comptent plus)",
+    "ar": "الكاميرا على مركز الكتلة (الخلايا الكبيرة تُحسب أكثر)",
+    "zh": "鏡頭置於質量中心（大細胞權重較高）",
+    "ru": "Камера в центре масс (крупные клетки весят больше)",
+    "de": "Kamera auf dem Massenschwerpunkt (große Zellen zählen mehr)",
+    "tr": "Kamera kütle merkezinde (büyük hücreler daha çok sayılır)",
+    "pl": "Kamera na środku masy (większe komórki ważą więcej)",
+    "nl": "Camera op het massamiddelpunt (grote cellen tellen zwaarder)",
+    "pt": "Câmera no centro de massa (células grandes contam mais)",
+    "id": "Kamera di pusat massa (sel besar lebih berpengaruh)",
+    "ja": "カメラを質量の中心に（大きいセルほど重視）",
+    "it": "Telecamera sul centro di massa (le cellule grandi contano di più)"
+  },
   "settings.skipStats": {
     "en": "Skip stats after death",
     "el": "Παράλειψη στατιστικών μετά τον θάνατο",

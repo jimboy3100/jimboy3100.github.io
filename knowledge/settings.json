@@ -287,7 +287,8 @@
       "name": "Zoom",
       "description": "Camera zoom settings.",
       "settings": [
-        "autoZoom"
+        "autoZoom",
+        "massWeightedCamera"
       ]
     },
     {
