@@ -54,6 +54,7 @@ function makeWorld(src) {
         function indexedPush(arr, c, k) { c[k] = arr.length; arr.push(c); }
         function lmIdxOf(arr, c, k) { return arr.indexOf(c); }
         function lmTimeAlive() { return 0; } /* the time alive (timealive.js tests it) */
+        function lmMbSteersLiving() { return false; } /* no multibox unit here (mbdeath.js tests it) */
         function lmIdxRemove(arr, c) { var i = arr.indexOf(c); if (i >= 0) arr.splice(i, 1); }
         function ogarbasicassembly(id, x, y, size, color, isFood, isVirus, a, b, c) {
             this.id = id; this.x = x; this.y = y; this.size = size; this.color = color;
