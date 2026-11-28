@@ -58,7 +58,7 @@ if (!inactiveRule) { console.log('FAIL lmMbInactiveMoves not found'); process.ex
 
 /* 1. death of the main player: updateCells (all other servers) after onPlayerDeath's switch */
 const a = v4.indexOf('/* LMEvents: hooks'), b = v4.indexOf('window.OgVer', a);
-const respawn = block(sp, '    respawn() {');
+const respawn = ['    respawn() {', '    _lmSpawnReady() {', '    _lmSpawn(kind) {', '    _lmPendBound() {'].map((m) => block(sp, m)).join('\n');
 const appMethods = ['        multiboxchange() {', '        multiboxswap() {'].map((m) => block(v4, m));
 const deathSwitch = block(v4, "if ((defaultmapsettings.mbSwitchAfterDeath || (typeof lmMbSteersLiving === 'function' && lmMbSteersLiving())) && typeof spects !== 'undefined' && spects && spects.length > 0) {");
 const k = v4.indexOf('ALL OTHER SERVERS');
@@ -70,7 +70,7 @@ function death(o) {
     ctx.window = ctx;
     vm.createContext(ctx);
     vm.runInContext(v4.slice(a, b), ctx);
-    vm.runInContext('window.Unit = class Unit { constructor(n) { this.number = n; this.player = true; this.active = true; }\n' +
+    vm.runInContext('window.Unit = class Unit { constructor(n) { this.number = n; this.player = true; this.active = true; this.connectionOpened = true; }\n' +
         'isSocketOpen() { return true; }\nhandleSendNick() { window.respawns++; }\n' + respawn + '\n}\n' +
         'var defaultmapsettings = window.defaultmapsettings = { mbSwitchAfterDeath: true, mbAutoRespawn: false };\n' +
         'var application = window.application = { hideMenu() { window.menuHidden++; }, showMenu() { window.menuShown++; }, mbSlots: [0, 1], selectedOldProfile: 0,\n' +

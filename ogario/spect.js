@@ -738,6 +738,8 @@ class Spect {
         this.ws = null
         this.nick = null
         this.accessTokenSent = false
+        /* the server's hello (242) on this socket (_lmSpawnReady) */
+        this._lmHello = false
         this.protocolKey = null
         this.clientKey = null
         this.clientVersion = null
@@ -1062,8 +1064,16 @@ class Spect {
 
     }
 
+    /* Every caller in this file passes a whole-buffer view (createView, new DataView(u8.buffer),
+     * the 226 answer is a new createView): data.buffer is exactly its bytes and goes as it is, no
+     * copy. A view on a part of a bigger buffer (byteOffset / byteLength) sends only its own bytes
+     * (the whole backing buffer put the bytes before and after it on the wire). sendMessage has
+     * already enciphered the view in place and stepped the key once: the slice is of those bytes. */
     sendBuffer(data) {
-        if (this.isSocketOpen()) this.socket.send(data.buffer);
+        if (!this.isSocketOpen()) return;
+        const buf = data && data.buffer;
+        if (!buf) return;
+        this.socket.send(data.byteOffset === 0 && data.byteLength === buf.byteLength ? buf : buf.slice(data.byteOffset, data.byteOffset + data.byteLength));
     }
 
     sendMessage(message) {
@@ -1094,16 +1104,13 @@ class Spect {
      * this unit play as guest.
      */
     _armMultiPendingTimeout(releaseOnly) {
-        var spect = this, gen = this.connectionGeneration;
+        var spect = this;
         if (this._multiPendingTimer) clearTimeout(this._multiPendingTimer);
         this._multiPendingTimer = setTimeout(function () {
             spect._multiPendingTimer = null;
-            if (window.MultiPending === spect) {
-                window.MultiPending = null;
-                console.warn('[SPECT] Multibox login not completed; continuing as guest');
-                /* only on the socket that waited (a later one sent its nick itself) */
-                if (!releaseOnly && !spect.closedByUser && spect.connectionGeneration === gen && typeof spect.handleSendNick === 'function') spect.handleSendNick();
-            }
+            if (window.MultiPending === spect) console.warn('[SPECT] Multibox login not completed; continuing as guest');
+            /* only on the socket that waited (a later one sent its nick itself) */
+            spect._lmLoginEnd(!releaseOnly);
         }, 60000);
     }
     /* this socket and slot wait for the login popup (MultiTokenReady takes its answer only for them) */
@@ -1112,6 +1119,74 @@ class Spect {
         this._lmPendGen = this.connectionGeneration
         this._lmPendEpoch = this.slotEpoch
         this._armMultiPendingTimeout()
+    }
+    /* the socket and slot that opened the login popup are still this unit's (no reconnect, no
+     * removal, the slot not given to another unit since) */
+    _lmPendBound() {
+        return !this.closedByUser && this._lmPendGen === this.connectionGeneration && this._lmPendEpoch === this.slotEpoch &&
+            (!this.slotId || typeof lmMbPlayers === 'undefined' || !lmMbPlayers || lmMbPlayers.isCurrent(this));
+    }
+    /* The login popup of this unit ended without a token (cancelled, blocked, 60 s): the login is
+     * free for the main player again, the timer goes, and with guest the socket that asked plays
+     * as guest (a later socket of it, a removed unit: nothing sent). */
+    _lmLoginEnd(guest) {
+        if (window.MultiPending !== this) return false;
+        window.MultiPending = null;
+        if (this._multiPendingTimer) { clearTimeout(this._multiPendingTimer); this._multiPendingTimer = null; }
+        var bound = this._lmPendBound();
+        /* a token that still comes for this popup is not sent (MultiTokenReady): it plays as guest */
+        this._lmPendGen = -1;
+        if (guest && bound) this._lmSpawn('hello');
+        return true;
+    }
+
+    /* The server takes a spawn on this socket: open, its handshake (254 / 255) sent, and on agar.io
+     * its cipher (opcode 241) and hello (242) read. Before that a spawn was dropped by sendMessage
+     * (no client key) and still counted for the 2 s limit, so the hello's own spawn came late. */
+    _lmSpawnReady() {
+        return this.isSocketOpen() && this.connectionOpened === true && (!this.integrity || (!!this.clientKey && this._lmHello === true));
+    }
+    /*
+     * One spawn request (handleSendNick: opcode 0 with the nick) of this unit, by kind:
+     *   'hello'  the first spawn on a socket: the server's hello (242, private servers the border),
+     *            the end of a login without a token, the guest fallback of a login. On a socket
+     *            after a lost one (reconnect) a unit that was dead with "Background auto-respawn"
+     *            off stays dead (it came back alive on every reconnect); a living one comes back.
+     *   'login'  the server's answer to this socket's login (opcode 102 after the token): the
+     *            same rule as 'hello'.
+     *   'auto'   the server's game over (102 type 62): Background auto-respawn (mbAutoRespawn).
+     *   'manual' respawn() (Tab, roster, Respawn): always, the setting is for background deaths.
+     * At most one every 2 s, except the socket's first ('hello': the last request may be the
+     * old socket's). Returns true when the request went out.
+     */
+    _lmSpawn(kind) {
+        if (!this.player) return false;
+        var now = Date.now(), ms = typeof defaultmapsettings !== 'undefined' && defaultmapsettings || {};
+        if (kind === 'auto' && ms.mbAutoRespawn === false) return false;
+        if ((kind === 'hello' || kind === 'login') && this._lmDeadIdle && this._lmHasSpawned && ms.mbAutoRespawn === false) return false;
+        if (kind !== 'hello' && now - (this._lmLastSpawnReq || 0) <= 2000) return false;
+        this._lmLastSpawnReq = now;
+        this._lmDeadIdle = false;
+        this.handleSendNick();
+        return true;
+    }
+    /* Opcode 102 (protobuf): which spawn it asks for, by its type ('' none). The game over (62) is
+     * a death: Background auto-respawn; the login answer (11) spawns; before the first life any
+     * other answer to this socket's token too (a refused login plays as guest, as every 102 did).
+     * Pong (31), disconnect (20), server going offline (34), unreadable or unrelated packets never. */
+    _lm102Kind(type) {
+        if (!this.player || typeof type !== 'number' || !(type >= 0)) return '';
+        if (type === 62) return 'auto';
+        if (type === 11) return 'login';
+        if (type === 20 || type === 31 || type === 34) return '';
+        return !this._lmHasSpawned && this.accessTokenSent ? 'login' : '';
+    }
+    _lm102(type) {
+        /* the server ended this life: it waits dead (a reconnect does not bring it back with
+         * Background auto-respawn off) */
+        if (type === 62 && this.player && !this.active) this._lmDeadIdle = true;
+        var kind = this._lm102Kind(type);
+        return kind ? this._lmSpawn(kind) : false;
     }
 
     //spects[0].sendGplusToken(master.accessToken)
@@ -1140,7 +1215,7 @@ class Spect {
                     this._fbUnavailableToastShown = true;
                     toastr.warning('<b>[' + lmT('game2.tag.multibox') + ']:</b> ' + lmT('game2.spFbGuest'));
                 }
-                this.handleSendNick()
+                this._lmSpawn('hello')
             } else {
                 this._lmPendLogin()
                 master.facebookLogin()
@@ -1150,10 +1225,10 @@ class Spect {
         } else if (!master.context) {
             //this.sendGplusToken(localStorage.getItem("accessTokenGPlus"))
             console.log('[SPECT] Login Tokens - Main: No, Multi: No')
-            this.handleSendNick()
+            this._lmSpawn('hello')
         } else {
             console.log('[SPECT] Login Tokens - Main: No, Multi: No')
-            this.handleSendNick()
+            this._lmSpawn('hello')
         }
     }
 
@@ -1170,6 +1245,11 @@ class Spect {
             return
         }
         if (this.accessTokenSent) {
+            return;
+        }
+        /* not on a closed socket or before its cipher (sendMessage drops it there): marked as
+         * sent, that socket never logged in */
+        if (!this.isSocketOpen() || !this.connectionOpened || !this.clientKey) {
             return;
         }
         if (!oW) {
@@ -2124,18 +2204,23 @@ class Spect {
                  * the first life, and never start a new spawn within 2 s of the last one. */
                 /* Since these sockets ping every 3 s, the server's pong (type 31) is a 102 too:
                  * it must not trigger a spawn (spectators spawned, dead units captcha'd every 3 s). */
-                var _lm102Type = -1;
+                /* Spectator sockets never spawn; which 102 spawns, and how: _lm102Kind / _lmSpawn
+                 * (an unreadable one never). */
+                var _lm102Type = -1, _lm102 = null;
                 try {
-                    var _lm102 = window.decodeMobileData(new Uint8Array(view.buffer, view.byteOffset + 1, view.byteLength - 1));
+                    _lm102 = window.decodeMobileData(new Uint8Array(view.buffer, view.byteOffset + 1, view.byteLength - 1));
                     if (_lm102 && _lm102.uncompressedData) _lm102Type = _lm102.uncompressedData.type;
-                } catch (e102) { }
-                /* Spectator sockets never spawn. */
-                if (this.player && _lm102Type !== 31 &&
-                    (!this._lmHasSpawned || defaultmapsettings.mbAutoRespawn !== false) &&
-                    Date.now() - (this._lmLastSpawnReq || 0) > 2000) {
-                    this._lmLastSpawnReq = Date.now();
-                    this.handleSendNick()
-                }
+                } catch (e102) { _lm102 = null; }
+                if (this.player && _lm102 && !_lm102.uncompressedData && _lm102.compressedData && _lm102.compressedData.length &&
+                    typeof window.decodeCompressedMobileData === 'function') {
+                    /* a compressed envelope (the main client inflates it too): decided once inflated,
+                     * only for the socket it came on */
+                    var _lm102Sock = this.socket, _lm102Gen = this.connectionGeneration;
+                    window.decodeCompressedMobileData(_lm102.compressedData).then((u) => {
+                        if (this.socket !== _lm102Sock || this.connectionGeneration !== _lm102Gen || this.closedByUser) return;
+                        this._lm102(u ? u.type : -1);
+                    }, () => { });
+                } else this._lm102(_lm102Type);
                 console.log('[SPECT] case 102');
                 //console.log(Date.now() - this.timeStarted, this.player, this.active, this.annoucementTold)
                 if (Date.now() - this.timeStarted > 4000 && this.player && !this.active && !this.annoucementTold) {
@@ -2147,7 +2232,9 @@ class Spect {
                 this.accessTokenSent = true
                 console.log('[SPECT] case 103');
                 application.cacheCustomSkin(ogarcopythelb.nick, ogario.playerColor, ogarcopythelb.skinURL);
-                this.getTheOppositeSocialToken();
+                /* only the unit of the login slot (lmMbTokenSlot) logs in with the other account: a
+                 * guest logging in too logged the holder out */
+                if (this.player && (typeof lmMbTokenSlot !== 'function' || lmMbTokenSlot(this))) this.getTheOppositeSocialToken();
                 break;
             case 104:
                 console.log('[SPECT] case 104');
@@ -2215,12 +2302,13 @@ class Spect {
                 console.log('[SPECT] case 242')
                 this.serverTime = view.getUint32(offset, true) * 1000;
                 this.serverTimeDiff = Date.now() - this.serverTime;
+                this._lmHello = true;
 
                 if (this.player == true) {
                     /* one unit logs in with the other provider's account (lmMbTokenSlot), the
                      * others play as guests: one account on two sockets logs the other out */
                     if (typeof lmMbTokenSlot === 'function' && !lmMbTokenSlot(this)) {
-                        this.handleSendNick()
+                        this._lmSpawn('hello')
                     } else if (!window.MultiWS || window.MultiWS != this.ws) {
                         window.MultiWS = this.ws
                         this.getTheOppositeSocialToken()
@@ -2228,7 +2316,7 @@ class Spect {
                         //console.log("[SPECT] SendNick without")
                         //this.sendCursor()
                         MultiTokenReady(this)
-                        this.handleSendNick()
+                        this._lmSpawn('hello')
                     }
                 } else {
                     this.sendSpectate();
@@ -2252,6 +2340,8 @@ class Spect {
                 //jimboy3100
                 if (this.player && this.active && this.getOwnPlayerCells().length === 0) {
                     console.log('[SPECT] Multibox Player ' + this.number + ' lost');
+                    /* dead until a respawn: a reconnect does not bring it back with Background auto-respawn off (_lmSpawn) */
+                    this._lmDeadIdle = true;
                     this.terminate()
                 }
                 this.beforecalculation()
@@ -2879,7 +2969,8 @@ class Spect {
 
         if (!this.integrity) {
             if (this.player) {
-                this.handleSendNick();
+                /* the socket's first spawn (as agar.io's hello, 242) */
+                this._lmSpawn('hello');
             } else if (!this.player) {
                 this.sendSpectate();
             }
@@ -2998,13 +3089,20 @@ class Spect {
          * spawns (beforecalculation used to hand it back on the next packet). */
         this._lmWantFocusAt = Date.now();
         this._lmFocusOnSpawn = true;
-        if (this.isSocketOpen()) {
+        /* asked for: its socket's hello / login answer spawns it also with Background auto-respawn off */
+        this._lmDeadIdle = false;
+        if (this.isSocketOpen() && !this._lmSpawnReady()) {
+            /* open, its handshake not done: its hello (242) spawns it (a spawn now was dropped
+             * without a client key and held the hello's spawn back for 2 s) */
+            return;
+        } else if (this.isSocketOpen()) {
+            /* its login popup is open for this socket: the login answer (or the guest fallback
+             * when it ends) spawns it, not a guest spawn under the login */
+            if (window.MultiPending === this && this._lmPendBound()) return;
             /* Repeated Tab presses must not start a captcha + spawn each. */
-            if (Date.now() - (this._lmLastSpawnReq || 0) <= 2000) return;
-            this._lmLastSpawnReq = Date.now();
-            this.handleSendNick();
+            this._lmSpawn('manual');
         } else if (this.socket && this.socket.readyState === WebSocket.CONNECTING) {
-            /* already connecting: the server's login reply (opcode 102) spawns it */
+            /* already connecting: the server's hello (242) or login reply (opcode 102) spawns it */
             return;
         } else {
             /* a manual respawn gets the full retry budget again */
@@ -3038,6 +3136,8 @@ class Spect {
                 //jimboy3100
                 if (this.player && this.active && this.getOwnPlayerCells().length === 0) {
                     console.log('[SPECT] Multibox Player ' + this.number + ' lost');
+                    /* dead until a respawn: a reconnect does not bring it back with Background auto-respawn off (_lmSpawn) */
+                    this._lmDeadIdle = true;
                     this.terminate()
                 }
                 break;
@@ -3641,6 +3741,7 @@ class Spect {
             this.active = true
             /* a new life of this unit (lifeGeneration) */
             this._lmLife = (this._lmLife || 0) + 1
+            this._lmDeadIdle = false
             /* its time alive starts with its first own cell (until terminate) */
             if (typeof lmTimeAlive === 'function') lmTimeAlive(this, 1)
             /* the grace of the unit in focus ends with its spawn; a unit chosen that waits to take
@@ -3819,13 +3920,22 @@ window.sendAction = action => {
     legendmod.sendAction(action);
 };
 
+/* The multibox login popup was cancelled (ogario.v4.master.js, Facebook): the unit that waited
+ * plays as guest now (it waited 60 s), on the socket that asked only (Spect._lmLoginEnd). */
+function lmMbLoginCancelled() {
+    var sp = window.MultiPending;
+    return !!(sp && typeof sp._lmLoginEnd === 'function' && sp._lmLoginEnd(true));
+}
+window.lmMbLoginCancelled = lmMbLoginCancelled;
+
 /* fromLogin: the answer of the login popup (ogario.v4.master.js), taken only for the socket and
  * slot that asked (a reconnect or a removed unit since: the token stays in master for the next
  * login and nothing is sent) */
 function MultiTokenReady(spector, fromLogin) {
     if (!spector) return;
-    if (fromLogin && (spector.closedByUser || spector._lmPendGen !== spector.connectionGeneration || spector._lmPendEpoch !== spector.slotEpoch ||
-        (spector.slotId && typeof lmMbPlayers !== 'undefined' && !lmMbPlayers.isCurrent(spector)))) return;
+    if (fromLogin && !spector._lmPendBound()) return;
+    /* the popup answered for this socket: its 60 s wait has nothing left to release */
+    if (fromLogin && spector._multiPendingTimer) { clearTimeout(spector._multiPendingTimer); spector._multiPendingTimer = null; }
     /*
      * The multibox player must log in with the OTHER provider's account.
      * Sending the main account's token logs the main connection out

@@ -16,6 +16,8 @@
  * number), Full Map off / on while multibox runs, multibox off (LM._lmMbStop), a refused unit; 23b:
  * the switch keys during the real first-spawn hold (Spect._lmSpawnHold) are not undone by that spawn.
  * Section 24: Rotate Map and the teammate orientation with Full Map off / on and 1, 2 and 6 players open.
+ * Section 26: a unit's spawn requests by kind (hello, login answer, game over / Background auto-respawn,
+ * reconnect, manual respawn) with real 102 packets, and the login popup's lifecycle.
  * node developers/tests/ingamespect.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -1443,5 +1445,183 @@ for (const glow of [false, true]) {
         threw && c.lmMbPlayers.count() === 5 && !c.lmMbPlayers._busy && !c.lmMbPlayers.reserved[6], c.lmMbPlayers.count());
 }
 
-console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
-process.exit(failed ? 1 : 0);
+/* 26. spawn requests of a unit by kind (real spect.js: opcode 242, 102, 103, respawn, the login popup)
+ * with real agar.io 102 packets, encoded and decoded by the page's protobuf schema (lib/protobuf.min.js,
+ * LMexpress/proto.decoder.js, ogario.v4.js decodeMobileData / decodeCompressedMobileData): the first
+ * spawn (hello), the login answer, Background auto-respawn (game over, type 62), reconnect and manual
+ * respawn are told apart; pong, disconnect, unrelated and unreadable 102s spawn nothing; with
+ * Background auto-respawn off a manual respawn still spawns and a background death stays dead, also
+ * through a reconnect; a manual respawn on an open socket before its handshake waits for the hello; one
+ * unit holds the other account's login, a guest never logs in (also on 103); a login popup's
+ * cancellation, timeout, removal and slot reuse release it and a late answer goes nowhere. */
+async function sec26() {
+    const R = path.join(__dirname, '..', '..');
+    const pc = { console: { log() { }, warn() { }, error() { } }, Uint8Array, ArrayBuffer, DataView, Array, Object, Math, String, Number, Promise, Error, TypeError, RangeError,
+        Blob, Response, DecompressionStream, setTimeout, clearTimeout };
+    pc.window = pc;
+    vm.createContext(pc);
+    const decA = src.indexOf('var root = protobuf.parse(proto'), decB = block('function decodeMobileData(data) {', decA);
+    const inflate = block('window.decodeCompressedMobileData = function (bytes) {');
+    if (decA < 0 || !decB || !inflate) { check('26. ogario.v4.js decodeMobileData / decodeCompressedMobileData found', false); return; }
+    vm.runInContext(fs.readFileSync(path.join(R, 'lib', 'protobuf.min.js'), 'utf8'), pc);
+    vm.runInContext(fs.readFileSync(path.join(R, 'LMexpress', 'proto.decoder.js'), 'utf8'), pc);
+    vm.runInContext(src.slice(decA, src.indexOf(decB, decA) + decB.length) + '\n' + inflate + ';\nwindow.decodeMobileData = decodeMobileData; window.__inner = compressed;', pc);
+    const p102 = (type) => { const enc = pc.mesega.encode({ contentType: 1, uncompressedData: { type } }).finish(); const b = new Uint8Array(enc.length + 1); b[0] = 102; b.set(enc, 1); return new DataView(b.buffer); };
+    const z102 = (type) => {
+        const z = require('zlib').deflateSync(Buffer.from(pc.__inner.encode({ type }).finish()));
+        const enc = pc.mesega.encode({ contentType: 2, compressedData: new Uint8Array(z) }).finish(); const b = new Uint8Array(enc.length + 1); b[0] = 102; b.set(enc, 1); return new DataView(b.buffer);
+    };
+    const raw = (...bytes) => new DataView(Uint8Array.from(bytes).buffer);
+    {
+        const t = pc.decodeMobileData(new Uint8Array(p102(62).buffer, 1));
+        check('26. fixture: a 102 game over decodes as type 62 with the page\'s schema', t && t.uncompressedData && t.uncompressedData.type === 62);
+    }
+    const e = realEnv();
+    const c = e.ctx;
+    Object.assign(c, { ogarcopythelb: {}, core: null, played: 0, play: () => { c.played++; } });
+    vm.runInContext('Object.assign(application, {' + mbMethods.map((m) => m[1]).join(',\n') + '}); application.hideMenu = function () {};', c);
+    c.defaultmapsettings.multiboxAmount = 3;
+    c.legendmod.play = true;
+    c.legendmod.clientVersionString = '3.708';
+    c.FB = { login() { } };
+    Object.assign(c.master, { context: 'google', accessTokenFB: null, accessTokenFBAt: 0, facebookLogin() { c.popups = (c.popups || 0) + 1; } });
+    c.decodeMobileData = pc.decodeMobileData; c.decodeCompressedMobileData = pc.decodeCompressedMobileData;
+    let clock = 1e6;
+    class FakeDate extends Date { }
+    FakeDate.now = () => clock;
+    c.Date = FakeDate;
+    const later = (ms) => { clock += ms; };
+    e.app.mbEnable();
+    const p3 = e.app.mbAddPlayer(), p2 = c.lmMbPlayers.get(2);
+    const spy = (u) => { u.tokens = []; u.nicks = 0; u.sendFbToken = (tk) => { u.tokens.push(tk); u.accessTokenSent = true; }; u.handleSendNick = () => { u.nicks++; }; };
+    spy(p2); spy(p3);
+    /* open: onopen (254 / 255); keys: as opcode 241; hello: opcode 242 */
+    const open = (u) => { u.socket.readyState = 1; u.socket.onopen(); u.protocolKey = 5; u.clientKey = 7; };
+    const hello = (u) => { u.handleMessage(new DataView(Uint8Array.of(242, 0, 0, 0, 0).buffer)); };
+    const drop = (u) => { u.socket.readyState = 3; u.socket.closed = true; u.socket.onclose(); const rt = u.reconnectTimer && e.timers.get(u.reconnectTimer); if (rt) { e.timers.delete(u.reconnectTimer); rt.fn(); } };
+    const waits = () => [...e.timers.entries()].filter(([, t]) => t.ms === 60000);
+    open(p2); hello(p2);
+    check('26. P2 holds the login (no cached token): it waits for the popup, no spawn yet', c.MultiPending === p2 && c.popups === 1 && p2.nicks === 0 && c.lmMbPlayers.tokenSlot === 2, [c.popups, p2.nicks].join());
+    open(p3); hello(p3);
+    check('    ... P3 plays as guest: its hello is its first spawn (one request), no token, no popup', p3.nicks === 1 && p3.tokens.length === 0 && c.popups === 1);
+    later(3000);
+    p2.handleMessage(p102(33)); p2.handleMessage(p102(31));
+    check('    ... P2 waiting: an unrelated 102 (33) and a pong (31) spawn nothing (any 102 spawned it as guest under its open login)', p2.nicks === 0, p2.nicks);
+    p2.respawn();
+    check('    ... a manual respawn of P2 while its popup is open waits for the login answer', p2.nicks === 0);
+    c.master.accessTokenFB = 'fresh'; c.master.accessTokenFBAt = clock;
+    c.MultiTokenReady(c.MultiPending, true); c.MultiPending = null;
+    p2.handleMessage(p102(11));
+    check('    ... the answer is sent on P2\'s socket, the server\'s login answer (102 type 11) spawns it once', p2.tokens.join() === 'fresh' && p2.nicks === 1, p2.tokens.join() + ' / ' + p2.nicks);
+    later(500); p2.handleMessage(p102(11));
+    check('    ... a second login answer within 2 s: no second spawn', p2.nicks === 1);
+    /* P3 lived and died (its game over comes as a 102) */
+    p3._lmHasSpawned = true; p3.active = false;
+    const n3 = p3.nicks;
+    for (const pk of [raw(102), raw(102, 0xff, 0xff, 0xff, 0xff), raw(102, 0x12, 0x05, 1, 2), p102(31), p102(20), p102(34), p102(22), p102(75), p102(11 + 1000)]) { later(3000); p3.handleMessage(pk); }
+    check('    ... P3: empty, unreadable, truncated, pong, disconnect, server offline, no proper response, wallet and unknown 102s never spawn', p3.nicks === n3, p3.nicks - n3);
+    later(3000); p3.handleMessage(p102(62));
+    check('    ... the game over (102 type 62) with Background auto-respawn on: one auto-respawn', p3.nicks === n3 + 1, p3.nicks - n3);
+    later(500); p3.handleMessage(p102(62));
+    check('    ... a second game over within 2 s: none', p3.nicks === n3 + 1);
+    c.defaultmapsettings.mbAutoRespawn = false;
+    later(3000); p3.handleMessage(p102(62));
+    check('    ... Background auto-respawn off: the game over spawns nothing, P3 waits dead', p3.nicks === n3 + 1 && p3._lmDeadIdle === true);
+    p3.respawn();
+    check('    ... a manual respawn (Tab / roster) still spawns it', p3.nicks === n3 + 2);
+    later(3000); p3.handleMessage(p102(62));
+    drop(p3); open(p3); hello(p3);
+    check('    ... dead in the background, then its socket drops and reconnects: no spawn on the new socket (it came back alive on every reconnect)', p3.nicks === n3 + 2 && !!p3.socket, p3.nicks - n3);
+    p3.respawn();
+    check('    ... the player respawns it on the new socket: it spawns', p3.nicks === n3 + 3);
+    drop(p3); open(p3); hello(p3);
+    check('    ... not dead (a requested life) when the socket drops: the reconnect spawns it again', p3.nicks === n3 + 4, p3.nicks - n3);
+    later(3000); p3.handleMessage(p102(62));
+    drop(p3); open(p3);
+    const req = p3._lmLastSpawnReq;
+    p3.respawn();
+    check('    ... a manual respawn on an open socket before its hello (242): nothing sent, the 2 s limit not taken', p3.nicks === n3 + 4 && p3._lmLastSpawnReq === req);
+    hello(p3);
+    check('    ... its hello spawns it once (the respawn was asked for, also with Background auto-respawn off)', p3.nicks === n3 + 5, p3.nicks - n3);
+    c.defaultmapsettings.mbAutoRespawn = true;
+    /* a compressed game over: decided once inflated, only for its socket */
+    later(3000);
+    p3.handleMessage(z102(62));
+    p3.connect(); open(p3);
+    later(3000);
+    p3.handleMessage(z102(62));
+    for (let i = 0; i < 100 && p3.nicks < n3 + 6; i++) await new Promise((r) => setTimeout(r, 20));
+    await new Promise((r) => setTimeout(r, 100));
+    check('    ... a compressed game over (contentType 2) auto-respawns once; the one of a socket replaced before it was inflated: nothing', p3.nicks === n3 + 6, p3.nicks - n3);
+    /* the guest never logs in: also not on an opcode 103 */
+    const pops = c.popups;
+    c.application.cacheCustomSkin = () => { };
+    p3.handleMessage(raw(103));
+    check('    ... a 103 on the guest P3: no login with the other account (it logged the holder out)', c.popups === pops && p3.tokens.length === 0 && c.MultiPending === null && c.lmMbPlayers.tokenSlot === 2);
+    /* the popup cancelled */
+    c.master.accessTokenFB = null; c.MultiWS = null;
+    p2.connect(); open(p2); hello(p2);
+    const n2 = p2.nicks;
+    check('    ... P2 reconnects without a cached token: the popup again', c.MultiPending === p2 && c.popups === pops + 1 && waits().length === 1);
+    check('    ... the popup cancelled (lmMbLoginCancelled): released at once, its 60 s wait gone, P2 plays as guest (one spawn)', c.lmMbLoginCancelled() === true && c.MultiPending === null && waits().length === 0 && p2.nicks === n2 + 1);
+    c.master.accessTokenFB = 'late'; c.master.accessTokenFBAt = clock;
+    c.MultiTokenReady(p2, true);
+    check('    ... a late answer for the cancelled popup is not sent', p2.tokens.join() === 'fresh');
+    /* the popup open while P2 is removed, its slot used again */
+    c.master.accessTokenFB = null; c.MultiWS = null;
+    p2.connect(); open(p2); hello(p2);
+    const asked = c.MultiPending;
+    e.app.mbRemovePlayer(2);
+    check('    ... P2 removed with its popup open: the login, its 60 s wait and the login slot are released', asked === p2 && c.MultiPending === null && waits().length === 0 && c.lmMbPlayers.tokenSlot === 0);
+    const q2 = e.app.mbAddPlayer();
+    spy(q2);
+    c.master.accessTokenFB = 'gone'; c.master.accessTokenFBAt = clock;
+    c.MultiTokenReady(asked, true);
+    check('    ... slot 2 used again by a new unit: the late answer reaches neither the old nor the new one', !!q2 && q2.slotId === 2 && q2 !== p2 && p2.tokens.join() === 'fresh' && q2.tokens.length === 0 && q2.nicks === 0);
+    check('    ... nothing pending: a late cancel does nothing', c.lmMbLoginCancelled() === false && q2.nicks === 0);
+    /* sendAccessToken: marked as sent only when it can go out */
+    p3.accessTokenSent = false; p3.clientKey = null;
+    const sent = p3.socket.sent;
+    p3.sendAccessToken('tok', 2);
+    check('26b. sendAccessToken before the socket\'s cipher: nothing sent, not marked as sent (that socket never logged in)', p3.accessTokenSent === false && p3.socket.sent === sent);
+    p3.clientKey = 7;
+    p3.sendAccessToken('tok', 2);
+    check('    ... with its cipher: sent once, marked as sent', p3.accessTokenSent === true && p3.socket.sent === sent + 1);
+    check('26c. through all of it the guest P3 never sent a token', p3.tokens.length === 0);
+    /* 25d. the Google sign-in on our domains (ogario.v4.master.js _lmSetupGis): an answer to a multibox
+     * unit's popup that comes after its wait ended (60 s, cancelled, removed) stays for multibox */
+    const msrc = fs.readFileSync(path.join(R, 'ogario', 'ogario.v4.master.js'), 'utf8').replace(/\r\n/g, '\n');
+    const gisSrc = (() => { const i = msrc.indexOf('    function _lmSetupGis() {'); if (i < 0) return null; let d = 0;
+        for (let k = msrc.indexOf('{', i); k < msrc.length; k++) { if (msrc[k] === '{') d++; else if (msrc[k] === '}' && !--d) return msrc.slice(i, k + 1); } return null; })();
+    if (!gisSrc) { check('26d. ogario.v4.master.js _lmSetupGis found', false); return; }
+    const g = { clicks: [], logins: [], ready: [], scripts: [] };
+    const btn = { parentNode: { insertBefore() { } }, nextSibling: null, addEventListener(t, fn) { if (t === 'click') g.clicks.push(fn); } };
+    const doc = { getElementById: (id) => (id === 'gplusLogin' ? btn : null), createElement: () => { const s = {}; g.scripts.push(s); return s; }, head: { appendChild() { } } };
+    const gwin = { MultiPending: null };
+    const gself = { google: { accounts: { id: { initialize(o) { g.cb = o.callback; }, prompt() { }, renderButton() { } } } }, updateStorage() { } };
+    const gopt = { loginIntent: '0', context: 'facebook', userInfo: {} };
+    const gmaster = { doLoginWithGPlus(t) { g.logins.push(t); } };
+    const gq = () => ({ attr() { return this; }, css() { return this; } });
+    const setup = new Function('self', 'window', 'document', 'options', 'master', '$', 'toastr', '_lmMT', '_lmMTag', '_lmDecodeJwtPayload', '_lmApplyGoogleProfile', 'MultiTokenReady', '_LM_GIS_CLIENT_ID', 'console',
+        gisSrc + '\nreturn _lmSetupGis;')(gself, gwin, doc, gopt, gmaster, gq, { info() { }, warning() { } }, (k, d) => d, () => '', () => ({}), () => { }, (u, fromLogin) => g.ready.push([u, fromLogin]), 'id', { log() { }, warn() { }, error() { } });
+    setup();
+    g.scripts[0].onload();
+    const unit = { name: 'P2' };
+    gwin.MultiPending = unit; g.clicks.forEach((fn) => fn());
+    g.cb({ credential: 'alt-1' });
+    check('26d. Google popup of a waiting unit answered: the unit takes it (MultiTokenReady fromLogin), the main player is not logged in', g.ready.length === 1 && g.ready[0][0] === unit && g.ready[0][1] === true &&
+        g.logins.length === 0 && gmaster.accessTokenGPlus === 'alt-1');
+    gwin.MultiPending = unit; g.clicks.forEach((fn) => fn());
+    gwin.MultiPending = null; /* its wait ended (60 s, cancelled, removed) before the answer */
+    g.cb({ credential: 'alt-2' });
+    check('    ... the answer comes after the unit\'s wait ended: kept for multibox only, the main player not logged into that account, its provider kept',
+        g.ready.length === 1 && g.logins.length === 0 && gmaster.accessTokenGPlus === 'alt-2' && gopt.context === 'facebook' && gopt.loginIntent === '0', [g.logins.join(), gopt.context].join(' / '));
+    g.clicks.forEach((fn) => fn());
+    g.cb({ credential: 'main-1' });
+    check('    ... the player\'s own Google click afterwards logs the main player in as before', g.logins.join() === 'main-1' && gopt.context === 'google');
+}
+
+sec26().then(() => {
+    console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
+    process.exit(failed ? 1 : 0);
+}, (err) => { console.error(err && err.stack || err); process.exit(1); });

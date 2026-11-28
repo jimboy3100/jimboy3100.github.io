@@ -15,7 +15,9 @@
  * relay adapter takes only an ArrayBuffer, the Expanding Land socket and the Senpa WASM socket
  * are outside this repo), so these checks guard the invariant instead: whole-buffer views, the
  * very same ArrayBuffer handed to the socket (no copy), unchanged bytes, encryption, key
- * order and packet order.
+ * order and packet order. Spect.sendBuffer (a multibox unit / spectator socket: always
+ * createLegendWebSocket / WebSocket, an ArrayBuffer either way) also guards a part of a bigger
+ * buffer: only its own bytes go (a slice, never taken by today's callers), whole views as before.
  * node developers/tests/sendbounds.js [ogario.v4.js] [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -284,6 +286,29 @@ function lmEnv() {
     check('Spect.shiftMessage: sentinels untouched, bytes XOR from the view start', bytesOf(back).join() === [0xaa, 1 ^ 0x0d, 2 ^ 0x0c, 0xbb].join());
     sp.socket = fakeSocket(3); sp.sendBuffer(v);
     check('Spect.sendBuffer: nothing while closed', sp.socket.sent.length === 0);
+    /* a view on a part of a bigger buffer: only its own bytes (data.buffer put the bytes around it on the wire) */
+    sp.socket = fakeSocket();
+    const big = new ArrayBuffer(8); new Uint8Array(big).set([0xaa, 16, 1, 2, 3, 0xbb, 0xbb, 0xbb]);
+    sp.sendBuffer(new DataView(big, 1, 4));
+    check('Spect.sendBuffer: a subview (byteOffset 1, byteLength 4 of 8) sends exactly its 4 bytes', sp.socket.sent.length === 1 && sp.socket.sent[0] instanceof ArrayBuffer &&
+        sp.socket.sent[0] !== big && hex(sp.socket.sent[0]) === '10010203', sp.socket.sent.map(hex).join(' '));
+    sp.sendBuffer(new DataView(big, 0, 3));
+    check('Spect.sendBuffer: a prefix view (byteLength 3 of 8) sends its 3 bytes', hex(sp.socket.sent[1]) === 'aa1001', hex(sp.socket.sent[1]));
+    const whole = sp.createView(3); sp.sendBuffer(whole);
+    check('Spect.sendBuffer: a whole-buffer view still goes as its own ArrayBuffer (no copy)', sp.socket.sent[2] === whole.buffer);
+    const bare = vm.runInContext('({' + spectParts.join(',\n') + '})', ctx); bare.socket = fakeSocket();
+    let threw = false; try { bare.sendBuffer(null); bare.sendBuffer(new ArrayBuffer(2)); } catch (e) { threw = true; }
+    check('Spect.sendBuffer: no view (null, a bare ArrayBuffer): nothing sent, no throw', !threw && bare.socket.sent.length === 0);
+    /* enciphered: a subview gets the same bytes and key steps as the same packet in a buffer of its own */
+    sp.socket = fakeSocket(); sp.connectionOpened = true;
+    const k0 = 0x12345678 | 0; sp.clientKey = k0;
+    const back5 = new ArrayBuffer(5); new Uint8Array(back5).set([0xee, 17, 0xee, 0xee, 0xee]);
+    sp.sendMessage(new DataView(back5, 1, 1));
+    const own = sp.createView(1); own.setUint8(0, 21); sp.sendMessage(own);
+    const want = [refXor([17], k0), refXor([21], refKey(k0))].map((a) => Buffer.from(a).toString('hex')).join(' ');
+    check('Spect.sendMessage: an enciphered subview sends its one byte, the key steps once per packet as for whole views', sp.socket.sent.map(hex).join(' ') === want &&
+        sp.clientKey === refKey(refKey(k0)), sp.socket.sent.map(hex).join(' ') + ' / ' + want);
+    check('    ... the bytes around the subview are untouched by the cipher', bytesOf(back5).join() === [0xee, 17 ^ (k0 & 255), 0xee, 0xee, 0xee].join(), bytesOf(back5).join());
 }
 
 /* ---- 10. incoming opcode 16: Buffer(data.buffer) shares the packet's bytes; recording keeps the same view ---- */

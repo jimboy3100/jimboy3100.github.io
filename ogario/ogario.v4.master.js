@@ -259,6 +259,7 @@ function legendmaster(self) {
                         console.warn(
                             "[Master] Facebook login returned no result"
                         );
+                        if (forMulti && typeof window.lmMbLoginCancelled === "function") window.lmMbLoginCancelled();
                         return;
                     }
 
@@ -288,6 +289,8 @@ function legendmaster(self) {
                 "[Master] Invalid Facebook authentication response:",
                 response
             );
+            /* the multibox popup cancelled: its unit plays as guest now, not after 60 s */
+            if (forMulti && typeof window.lmMbLoginCancelled === "function") window.lmMbLoginCancelled();
             return;
         }
 
@@ -380,6 +383,8 @@ function legendmaster(self) {
         var pendingRefresh = null;
         var refreshTimer = null;
         var userAsked = false;
+        /* the last Google click was for a multibox unit's login (window.MultiPending) */
+        var multiAsked = false;
         var gisFailed = false;
         var fallbackBox = null;
 
@@ -405,6 +410,8 @@ function legendmaster(self) {
              * token refresh was waiting (it gets the token too) */
             var asked = userAsked;
             userAsked = false;
+            var forMulti = asked && multiAsked;
+            if (asked) multiAsked = false;
             if (pendingRefresh) {
                 var cb = pendingRefresh;
                 pendingRefresh = null;
@@ -419,6 +426,15 @@ function legendmaster(self) {
                 master.accessTokenGPlusAt = Date.now();
                 MultiTokenReady(window.MultiPending, true);
                 window.MultiPending = null;
+                return;
+            }
+            if (forMulti) {
+                /* as Facebook's forMulti: the popup was opened for a multibox unit whose wait ended
+                 * (60 s, cancelled, removed). Keep the token for the next multibox login; never log
+                 * the MAIN player into that account (nor save Google as its provider). */
+                master.accessTokenGPlus = idToken;
+                master.accessTokenGPlusAt = Date.now();
+                console.warn("[Master] Late multibox Google login kept for multibox only");
                 return;
             }
             options.loginIntent = "1";
@@ -469,6 +485,7 @@ function legendmaster(self) {
                 return;
             }
             userAsked = true;
+            multiAsked = !!window.MultiPending;
             try {
                 self.google.accounts.id.prompt(function (n) {
                     /* One Tap was not shown (cookies, iframe, cool-down): offer Google's own button */
