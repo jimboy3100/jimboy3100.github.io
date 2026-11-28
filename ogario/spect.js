@@ -1017,6 +1017,7 @@ class Spect {
         if (typeof _lmFood !== 'undefined' && _lmFood) {
             _lmFood.feed.delete(this.number);
             _lmFood.sig.delete(this.number);
+            if (_lmFood.stale) _lmFood.stale.delete(this.number);
         }
     }
 

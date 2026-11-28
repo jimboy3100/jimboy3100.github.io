@@ -18,7 +18,9 @@
  * feed state that changes and changes back between two frames is followed; Rainbow food keeps a
  * pellet's colour when another connection's copy is drawn; an unverified steered unit's pellet
  * is left to another connection only where it has a copy, whatever the order of two such units;
- * a tile stalled behind the main socket gives up its pellets until it is fresh; past
+ * a stale tile or stalled played unit keeps its pellets except where a fresh view shows them gone
+ * (section 14c/14d: food evidence), and comes back with no duplicate; the pellet pool's references
+ * (section 18); past
  * LM_FOOD_COMP_MAX copies around a change the copies grouped again do not depend on the order of
  * the entries in the grid buckets, and dense pellets every connection sees are drawn once in any
  * history and over a Rotate Map flip; a flip moves jelly perimeters and the minimap trail, and a
@@ -45,6 +47,8 @@ g.window = g;
 vm.createContext(g);
 vm.runInContext([
     slice('var LM_UNIT_ID_STEP = ', 'var _lmMbGridTime = -1;'),
+    /* the shared "does this connection contribute now" (the food's stale evidence, section 14c) */
+    slice('function _lmMbStalled(sp, now) {', '/* the speed taken for a copy with one packet so far'),
     slice('var _lmSrcObs = new Map();', 'var LM_MB_RING_MIN_SCREEN_PX'),
     /* the shared colours per connection (forgotten when one closes) */
     slice('var _lmMbLooks = new Map();', '/* Nearest copy to `cell` in idx'),
@@ -1205,28 +1209,87 @@ for (const order of ['unit 4 first', 'unit 3 first']) {
     Object.assign(LM, { srvViewMinX: NaN, srvViewMinY: NaN, srvViewMaxX: NaN, srvViewMaxY: NaN });
     vm.runInContext('_lmMbFeed.length = 0; _lmMbDrawOnly.length = 0; _lmMbDoCov.length = 0;', g);
 }
-/* 14c. a Full Map tile 500 ms behind the main socket's fresh world updates (stalled): its pellets
- *     leave the list, so a pellet the player ate (the main copy gone) is not drawn from the tile's
- *     frozen copy for the whole stall; fresh again, its pellets are back; a busy page (every
- *     socket late, the main one too) drops nothing */
+/* 14c. food evidence (ogario.v4.js lmFoodFrame, _lmFoodStaleSweep): a Full Map tile 500 ms behind
+ *     the main socket's fresh world updates (stale): a pellet the player ate (the main copy gone)
+ *     inside the main server view is not drawn from the tile's frozen copy; its pellet outside every
+ *     fresh view stays drawn (no hole for the stall: absence of evidence); fresh again, both are
+ *     drawn once; a busy page (every socket late, the main one too) drops nothing */
 reset();
 {
     const t = spect(2);
     t.updateCells(packet([], [{ id: 1, x: 3000, y: 3000 }, { id: 2, x: 4000, y: 3000 }], []), 0);
     const m = mainFood(13, 3001, 3000, hex(0x40a0f0));
+    Object.assign(LM, { integrity: true, srvViewMinX: 2500, srvViewMinY: 2500, srvViewMaxX: 3500, srvViewMaxY: 3500 });
     LM._lmLastWorldUpdate = Date.now();
     const before = drawList().length;
     t._lmWorldAt = Date.now() - 500;
     m.removeCell();
-    const stalled = drawList().length;
+    const stalledL = drawList(), stalled = stalledL.length, kept = stalledL.map((c) => c._lmRawId).join();
     t._lmWorldAt = Date.now();
-    const back = drawList().length;
+    const back = drawList().length, backObs = stats().observations;
     t._lmWorldAt = Date.now() - 500;
     LM._lmLastWorldUpdate = Date.now() - 450;
     const busy = drawList().length;
     LM._lmLastWorldUpdate = 0;
-    check('tile 500 ms behind the fresh main socket: its pellets not drawn (a pellet the player ate stayed drawn), back once fresh', before === 2 && stalled === 0 && back === 2, before + ' / ' + stalled + ' / ' + back);
+    Object.assign(LM, { integrity: undefined, srvViewMinX: NaN, srvViewMinY: NaN, srvViewMaxX: NaN, srvViewMaxY: NaN });
+    check('tile 500 ms behind the fresh main socket: the pellet the player ate (in the main view) not drawn, its pellet no fresh view sees still drawn, both back once fresh (once each)',
+        before === 2 && stalled === 1 && kept === '2' && back === 2 && backObs === 2, before + ' / ' + stalled + ' (' + kept + ') / ' + back + ' / ' + backObs);
     check('every socket late (busy page): the tile\'s pellets still drawn', busy === 2, busy);
+}
+/* 14d. a played unit stalled (no world update for LM_MB_STALL_MS; lmSrcStale never holds a played
+ *     unit): a pellet eaten in the main view since (no main copy) is not drawn from its frozen copy,
+ *     a pellet the main socket still has is drawn once, one outside every fresh view stays; a fresh
+ *     live tile's view is evidence too, where that tile has a copy the pellet stays; the unit's next
+ *     update (its removal of the eaten pellet) brings the rest back with no duplicate; a unit
+ *     healthy but silent about its pellets keeps them all (absence from a packet is no removal) */
+reset();
+{
+    const now = Date.now(), ids = (l) => l.filter((c) => c.spectator === 3).map((c) => c._lmRawId).sort().join(',');
+    const u = spect(3);
+    u.player = true;
+    u.updateCells(packet([], [{ id: 1, x: 3000, y: 3000 }, { id: 2, x: 3200, y: 3000 }, { id: 3, x: 6000, y: 6000 }, { id: 4, x: 8000, y: 8000 }, { id: 5, x: 8200, y: 8000 }], []), 0);
+    const m1 = mainFood(21, 3001, 3000, hex(0x40a0f0));
+    mainFood(22, 3201, 3000, hex(0x40a0f0));
+    /* a fresh, verified Full Map tile on its place over (7500..8500): it has pellet 4, not 5 */
+    const t = spect(7);
+    t.tile = 3;
+    t.updateCells(packet([], [{ id: 40, x: 8001, y: 8000 }], []), 0);
+    t._lmCoverageOk = () => true;
+    t._lmTileArrived = () => true;
+    t._lmServerViewDisplay = (o) => { o[0] = 7500; o[1] = 7500; o[2] = 8500; o[3] = 8500; return o; };
+    Object.assign(LM, { integrity: true, srvViewMinX: 2500, srvViewMinY: 2500, srvViewMaxX: 3500, srvViewMaxY: 3500 });
+    LM._lmLastWorldUpdate = now;
+    const before = drawList().length;
+    u._lmWorldAt = now - 300;
+    const quiet = drawList().length;
+    m1.removeCell();
+    vm.runInContext('_lmFoodSweepAt = -Infinity;', g);
+    const healthyQuiet = drawList().length;
+    u._lmWorldAt = now - 1500;
+    const st = drawList(), stN = st.length, stIds = ids(st);
+    check('played unit healthy, its pellets unchanged: all drawn (a main copy eaten is no evidence against a contributing unit)', before === 5 && quiet === 5 && healthyQuiet === 5, before + ' / ' + quiet + ' / ' + healthyQuiet);
+    /* pellet 4: one entry with the tile's copy (drawn with the unit's copy, the first in the order: the same place) */
+    const e4 = vm.runInContext('_lmFood.ents', g).find((e) => e.obs.some((c) => c.spectator === 7));
+    check('played unit stalled: the pellet eaten in the main view and the one a fresh tile sees gone not drawn; the main socket pellet, the tile pellet and the unseen pellet drawn once',
+        stN === 3 && stIds === '3,4' && e4 && e4.obs.length === 2 && st.filter((c) => !c.spectator).length === 1, stN + ' ' + stIds);
+    /* a sweep later in the stall changes nothing more (bounded: only listed stale copies are looked at) */
+    vm.runInContext('_lmFoodSweepAt = -Infinity;', g);
+    check('played unit stalled: a later sweep keeps the same pellets', drawList().length === 3);
+    /* its next update: the eaten pellet removed by its server, the rest back, none twice */
+    u.updateCells(packet([], [], [1]), 0);
+    const rec = drawList(), recIds = rec.map((c) => (c.spectator || 0) + ':' + (c._lmRawId || c.id)).sort().join(',');
+    check('played unit fresh again: its pellets back once each (pellet 5 drawn again, the pellet it removed gone), no duplicate',
+        rec.length === 4 && stats().pellets === 4 && stats().observations === 6 && !rec.some((c) => c._lmRawId === 1), rec.length + ' ' + recIds + ' obs ' + stats().observations);
+    /* recovering while every view is stale (no main view, the tile stale too): nothing goes */
+    LM._lmLastWorldUpdate = 0;
+    t._lmWorldAt = now - 1500;
+    u._lmWorldAt = now - 1500;
+    check('every source stale, no fresh view: no pellet erased', drawList().length === 4, drawList().length);
+    u._lmWorldAt = t._lmWorldAt = Date.now();
+    /* the unit's socket closes: its pellets leave with it (flush), the others stay */
+    u.flushCellsData();
+    check('a stale unit leaving: its pellets gone, the main and tile pellets stay, its stale state forgotten', drawList().length === 2 && !vm.runInContext('_lmFood.stale.has(3)', g), drawList().length);
+    Object.assign(LM, { integrity: undefined, srvViewMinX: NaN, srvViewMinY: NaN, srvViewMaxX: NaN, srvViewMaxY: NaN });
 }
 /* 15. the list built again (lmFoodRebuild) while a connection is not verified, verified again
  *     before the next frame: its pellets are drawn (were left out: its feed state was kept) */
@@ -1394,6 +1457,67 @@ reset();
     sp.updateCells(packet([], [{ id: 74, x: 700, y: 720, size: 12 }], []), 0);
     const new74 = LM.indexedCells[uid(74, 1)];
     check('LM.indexedCells replaced: a record not found there makes a new cell, as before', new74 && new74 !== old74 && vm.runInContext('lmObsIds(1)', g).get(74) === new74);
+}
+/* 18. the pellet pool's references (Spect _lmFoodRelease / _lmRenew): a reused pellet keeps its
+ *     emptied jelly arrays (the constructor makes none for it); after a long life (list, a new
+ *     transform, an eat) it is a new pellet field for field; the old raw id leads nowhere (a late
+ *     removal or eat of it leaves the successor alone); released once; the pool stays bounded; a
+ *     new socket drops it; a whole-world reset leaves no live anchor and no cell a packet finds */
+reset();
+{
+    const prim = (c) => { const o = {}; for (const k of Object.keys(c)) if (k !== 'time' && k !== 'updateTime' && k !== '_lmEatenT' && (c[k] === null || typeof c[k] !== 'object')) o[k] = c[k]; return JSON.stringify(o); };
+    const uid = (raw, n) => g.lmUnitCellId(raw, n);
+    let sp = spect(1);
+    sp._lmAnchors = []; sp._lmAnchorNext = 0;
+    sp.updateCells(packet([], [{ id: 80, x: 300, y: 300 }, { id: 81, x: 340, y: 300, size: 40, food: false, name: 'eve' }], []), 0);
+    const p80 = LM.indexedCells[uid(80, 1)], pts = p80.points, ptsV = p80.pointsVel;
+    pts.push({ x: 1 }); ptsV.push(0);
+    drawList();
+    /* placed again for a new transform (lmFoodFrame), then eaten */
+    sp.fix3x = 0.5;
+    drawList();
+    sp.fix3x = 0;
+    sp.updateCells(packet([[81, 80]], [], []), 0);
+    const ids = vm.runInContext('lmObsIds(1)', g), pool = () => sp._lmFoodPool.length;
+    const pooled = pool();
+    sp._lmFoodRelease(p80);
+    check('released once: a second release of the same pellet does not pool it twice', pooled === 1 && pool() === 1, pooled + ' / ' + pool());
+    sp.updateCells(packet([], [{ id: 82, x: 500, y: 520, size: 12 }], []), 0);
+    const p82 = LM.indexedCells[uid(82, 1)];
+    check('reused pellet: the same jelly arrays, emptied (no array made for it)', p82 === p80 && p82.points === pts && p82.pointsVel === ptsV && !pts.length && !ptsV.length);
+    check('reused pellet: the old raw id is in no index, the new one is', !ids.has(80) && ids.get(82) === p82 && !LM.indexedCells[uid(80, 1)] && !p82._lmEaten && !p82.removed);
+    sp.updateCells(packet([[81, 80]], [], [80]), 0);
+    check('a late eat or removal of the old raw id leaves the successor alone', !p82.removed && ids.get(82) === p82 && p82._lmFoodEnt && drawList().includes(p82));
+    const keysReused = Object.keys(p82).join(), primReused = prim(p82);
+    reset();
+    sp = spect(1);
+    sp._lmAnchors = []; sp._lmAnchorNext = 0;
+    sp.updateCells(packet([], [{ id: 81, x: 340, y: 300, size: 40, food: false, name: 'eve' }], []), 0);
+    sp.updateCells(packet([], [{ id: 82, x: 500, y: 520, size: 12 }], []), 0);
+    const fresh = LM.indexedCells[uid(82, 1)];
+    drawList();
+    check('pellet reused after a long life (list, new transform, eaten): the fields of a new pellet, same order and values', Object.keys(fresh).join() === keysReused && prim(fresh) === primReused, prim(fresh) + ' vs ' + primReused);
+    /* bounded: LM_SPECT_FOOD_POOL at most, whatever goes */
+    const many = [];
+    for (let i = 0; i < 300; i++) many.push({ id: 1000 + i, x: 1000 + i * 30, y: 2000 });
+    sp.updateCells(packet([], many, []), 0);
+    sp.updateCells(packet([], [], many.map((c) => c.id)), 0);
+    const cap = vm.runInContext('LM_SPECT_FOOD_POOL', g);
+    check('pool bounded: ' + cap + ' kept of 300 removed', sp._lmFoodPool.length === cap, sp._lmFoodPool.length);
+    sp.resetConnectionState();
+    check('a new socket (resetConnectionState) drops the old socket\'s spare pellets', sp._lmFoodPool.length === 0);
+    /* a whole-world reset (connection flush): no index holds the pellets, none of them stays a live
+     * anchor (the connection's own flush that follows finds no index), none is found or reused */
+    sp._lmAnchors = []; sp._lmAnchorNext = 0;
+    sp.updateCells(packet([], [{ id: 90, x: 700, y: 700 }], []), 0);
+    const p90 = LM.indexedCells[uid(90, 1)], a90 = p90._lmAnchored;
+    const liveBefore = g.lmAnchorLive(a90, sp.connectionGeneration);
+    vm.runInContext('lmObsResetAll(); LM.indexedCells = {}; LM.foodMulti = [];', g);
+    sp.flushCellsData();
+    check('whole-world reset: the orphaned pellet is removed and its anchor no evidence', liveBefore && p90.removed && !g.lmAnchorLive(a90, sp.connectionGeneration));
+    sp.updateCells(packet([], [{ id: 90, x: 700, y: 700 }], []), 0);
+    const n90 = LM.indexedCells[uid(90, 1)];
+    check('whole-world reset: the same raw id again is a new pellet (the orphan is not revived or reused)', n90 && n90 !== p90 && !n90.removed && p90.removed && sp._lmFoodPool.indexOf(p90) < 0);
 }
 
 console.log(fail ? fail + ' check(s) failed' : 'all fullmapfood checks passed');

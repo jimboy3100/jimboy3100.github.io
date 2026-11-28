@@ -3625,6 +3625,8 @@ var _lmFood = {
     sig: new Map(),
     /* whether each connection fed the list last frame (spect.js _lmFeedOk) */
     feed: new Map(),
+    /* the connections whose pellets are stale evidence (verified, not contributing: lmFoodFrame) */
+    stale: new Map(),
     /* every pellet to be placed again at the next frame (lmFoodReplaceAll) */
     replaceAll: false
 };
@@ -4135,8 +4137,11 @@ function _lmFoodOff(keepFeed) {
     F.spectObs = 0;
     _lmFoodRankReset();
     F.sig.clear();
-    /* each connection's feed state too: the next frame looks at every connection again */
-    if (!keepFeed) F.feed.clear();
+    /* each connection's feed and stale state too: the next frame looks at every connection again */
+    if (!keepFeed) {
+        F.feed.clear();
+        F.stale.clear();
+    }
     F.on = false;
 }
 /* A pellet arrived (main socket: from indexedPush into LM.food; spect.js: its packets). */
@@ -4210,12 +4215,14 @@ function lmFoodRebuild() {
     var keep = [];
     _lmSrcObs.forEach(function (set, src) {
         /* its pellets are left out: the next frame looks at them again (it may feed again by then) */
-        if (!lmSrcFeeds(_lmFoodSpect(src))) {
+        if (!_lmFoodFeeds(_lmFoodSpect(src))) {
             _lmFood.feed.delete(src);
             return;
         }
+        /* a stale connection's pellets a fresh view showed gone stay out (_lmFoodStaleSweep) */
+        var stale = _lmFood.stale.get(src) === true;
         set.forEach(function (c) {
-            if (!c.isFood || c.removed) return;
+            if (!c.isFood || c.removed || (stale && !c._lmFoodEnt)) return;
             /* each pellet keeps its colour (Rainbow food) */
             if (c._lmFoodEnt) c._lmFoodCol = c._lmFoodEnt.color;
             keep.push(c);
@@ -4229,10 +4236,14 @@ function lmFoodRebuild() {
     for (var i = 1; i < keep.length; i++) if (!keep[i]._lmFoodEnt) _lmFoodAttach(keep[i]);
 }
 /* Whole world gone (connection flush, ClearAll, replay start): the cells of every connection
- * are dropped from the world with it, so the per-source index and the food list too. */
+ * are dropped from the world with it, so the per-source index and the food list too. Each such
+ * cell counts as removed: no packet finds it again (the index and LM.indexedCells are emptied),
+ * and the connection's own flush that follows (spect.js flushCellsData) finds no index left to
+ * remove it from, so a pellet's calibration anchor stayed live evidence (lmAnchorLive) for a
+ * pellet no longer in the world until that connection's next socket. */
 function lmObsResetAll() {
     _lmSrcObs.forEach(function (set) {
-        set.forEach(function (c) { c._lmObsSet = null; });
+        set.forEach(function (c) { c._lmObsSet = null; c.removed = true; });
         set.clear();
         if (set._lmIds) set._lmIds.clear();
     });
@@ -4263,24 +4274,119 @@ function _lmFoodSpect(number) {
     for (var i = 0; spects && i < spects.length; i++) if (spects[i] && spects[i].number === number) return spects[i];
     return null;
 }
+/*
+ * Food evidence. A connection's pellets take part in the list while its transform is verified
+ * (_lmFoodFeeds). A pellet is sent once, when it comes into view: a healthy connection that does
+ * not send a pellet again still has it (absence from a packet is no removal), and nothing outside
+ * a connection's view says anything about a pellet there. A connection that stops contributing
+ * (lmSrcContributes: a tile or spectator stale against the main socket, or any connection, a
+ * played unit too, without a world update for LM_MB_STALL_MS) keeps its pellets in the list:
+ * where no fresh view looks they are the only evidence there is (all of a stalled tile's pellets
+ * left the list, a hole for the whole stall, and a stalled played unit kept every pellet of its
+ * frozen view, also those eaten since, for the whole stall). Only a fresh view says a pellet is
+ * gone: inside the main socket's server view (the box of its pellets, while its world updates
+ * are fresh) or the server view of a live tile / spectator (contributing, view fresh and verified,
+ * a tile on its place), less an edge, a stale copy whose pellet has no copy of the main socket or
+ * of a contributing connection leaves the list (_lmFoodStaleSweep): eaten or gone while the copy
+ * was frozen. A played unit's view is an estimate and shows nothing gone. When the connection
+ * contributes again its pellets are all back in the list (its packets since then removed the
+ * ones that are gone; copies of one pellet are one entry, so none is drawn twice). The main
+ * socket's own pellets keep their rule (LM.food, its own world updates).
+ */
+var LM_FOOD_COV_EDGE = 50;
+/* the main view's edge, as the hide step's (LM_MB_MAINVIEW_EDGE) */
+var LM_FOOD_MAIN_EDGE = 100;
+var LM_FOOD_STALE_SWEEP_MS = 100;
+var _lmFoodCov = [], _lmFoodCovR = [0, 0, 0, 0], _lmFoodFreshAt = [], _lmFoodFreshQ = 0, _lmFoodSweepAt = -Infinity;
+function _lmFoodFeeds(sp) {
+    return !!sp && (typeof sp._lmFeedOk !== 'function' || !!sp._lmFeedOk());
+}
+function _lmFoodContributes(sp, now) {
+    return typeof lmSrcContributes === 'function' ? lmSrcContributes(sp, now) : lmSrcFeeds(sp, now);
+}
+/* a stale copy in the list: out when its pellet has no fresh copy and a fresh view holds its place */
+function _lmFoodStaleCheck(c) {
+    var ent = c._lmFoodEnt;
+    if (!ent || c.removed) return;
+    var obs = ent.obs, k;
+    for (k = 0; k < obs.length; k++) {
+        var s = obs[k]._lmFoodSrcN;
+        if (!(s > 0) || _lmFoodFreshAt[s] === _lmFoodFreshQ) return;
+    }
+    var x = c._lmFoodX, y = c._lmFoodY, cov = _lmFoodCov;
+    for (k = 0; k < cov.length; k += 4) {
+        if (x > cov[k] && y > cov[k + 1] && x < cov[k + 2] && y < cov[k + 3]) {
+            lmFoodRemove(c);
+            return;
+        }
+    }
+}
+/* the fresh views (main socket, live tiles / spectators) and the contributing connections of now;
+ * then every stale connection's listed copies checked against them */
+function _lmFoodStaleSweep(spects, now) {
+    var F = _lmFood, LM = window.legendmod, n = 0, cov = _lmFoodCov, i, sp, e;
+    var q = ++_lmFoodFreshQ;
+    _lmFoodSweepAt = now;
+    /* the main view as the hide step takes it (agar.io layout, world updates fresh) */
+    if (LM && LM.integrity && lmSrcMainFresh(now)) {
+        e = LM_FOOD_MAIN_EDGE;
+        var x0 = LM.srvViewMinX, y0 = LM.srvViewMinY, x1 = LM.srvViewMaxX, y1 = LM.srvViewMaxY;
+        if (x1 - x0 > 2 * e && y1 - y0 > 2 * e) {
+            cov[n++] = x0 + e; cov[n++] = y0 + e; cov[n++] = x1 - e; cov[n++] = y1 - e;
+        }
+    }
+    e = LM_FOOD_COV_EDGE;
+    for (i = 0; i < spects.length; i++) {
+        sp = spects[i];
+        if (!sp || !(sp.number > 0) || !_lmFoodContributes(sp, now)) continue;
+        _lmFoodFreshAt[sp.number] = q;
+        if (sp.player === true || typeof sp._lmCoverageOk !== 'function' || !sp._lmCoverageOk(now) || typeof sp._lmServerViewDisplay !== 'function') continue;
+        if (sp.tile != null && !(typeof sp._lmTileArrived === 'function' && sp._lmTileArrived(null, now))) continue;
+        var r = sp._lmServerViewDisplay(_lmFoodCovR);
+        if (!r || !(r[2] - r[0] > 2 * e) || !(r[3] - r[1] > 2 * e)) continue;
+        cov[n++] = r[0] + e; cov[n++] = r[1] + e; cov[n++] = r[2] - e; cov[n++] = r[3] - e;
+    }
+    cov.length = n;
+    if (!n) return;
+    for (i = 0; i < spects.length && F.on; i++) {
+        sp = spects[i];
+        if (!sp || F.stale.get(sp.number) !== true) continue;
+        var set = _lmSrcObs.get(sp.number);
+        if (set && set.size) set.forEach(_lmFoodStaleCheck);
+    }
+}
 function lmFoodFrame() {
     var F = _lmFood, spects = window.spects;
     if (F.replaceAll) _lmFoodReplaceAllNow();
     if (!spects) return;
+    var now = Date.now(), stales = 0;
     for (var i = 0; i < spects.length; i++) {
         var sp = spects[i];
         if (!sp || !(sp.number > 0)) continue;
         var set = _lmSrcObs.get(sp.number);
         /* a connection that starts or stops feeding: its pellets join or leave the list at
          * once (a pellet is sent once, so they are not waited for) */
-        var feeds = lmSrcFeeds(sp);
+        var feeds = _lmFoodFeeds(sp);
         if (F.feed.get(sp.number) !== feeds) {
             F.feed.set(sp.number, feeds);
+            _lmFoodSweepAt = -Infinity;
             if (set) set.forEach(function (c) {
                 if (!c.isFood || c.removed) return;
                 if (feeds) lmFoodAdd(c);
                 else lmFoodRemove(c);
             });
+        }
+        /* stale evidence (see above): its pellets stay; contributing again, all of them are back */
+        var stale = feeds && !_lmFoodContributes(sp, now);
+        if (stale) stales++;
+        if ((F.stale.get(sp.number) === true) !== stale) {
+            if (stale) {
+                F.stale.set(sp.number, true);
+                _lmFoodSweepAt = -Infinity;
+            } else {
+                F.stale.delete(sp.number);
+                if (feeds && set) set.forEach(function (c) { if (c.isFood && !c.removed && !c._lmFoodEnt) lmFoodAdd(c); });
+            }
         }
         if (!F.on || !feeds || !set || !set.size) continue;
         var sig = _lmFoodSigOf(sp, _lmFoodSigNow), old = F.sig.get(sp.number);
@@ -4294,6 +4400,7 @@ function lmFoodFrame() {
         set.forEach(function (c) { if (c._lmFoodEnt) { moved.push(c); _lmFoodDetach(c); } });
         for (var k = 0; k < moved.length; k++) _lmFoodAttach(moved[k]);
     }
+    if (stales && F.on && !(now - _lmFoodSweepAt >= 0 && now - _lmFoodSweepAt < LM_FOOD_STALE_SWEEP_MS)) _lmFoodStaleSweep(spects, now);
 }
 /* The pellets to draw this frame: one per pellet while other connections have food. */
 function lmFoodDrawList() {
@@ -39206,9 +39313,14 @@ function thelegendmodproject() {
          *
          * The point objects are kept directly on each cell, matching the
          * Delta-style CPU perimeter simulation.
+         * A pellet made new on its old object (_lmRenew) keeps its two arrays, emptied: none is
+         * made here for it (a new cell has none: the prototype holds no points).
          */
-        this.points = [];
-        this.pointsVel = [];
+        var _lmPts = this.points, _lmPtsV = this.pointsVel;
+        if (_lmPts) _lmPts.length = 0;
+        if (_lmPtsV) _lmPtsV.length = 0;
+        this.points = _lmPts || [];
+        this.pointsVel = _lmPtsV || [];
         this.maxPointRad = 0;
         /* centre the last movePoints() placed the points around (NaN: none yet) and
          * whether frames between jelly steps moved them since (LM.holdJellyCells) */
@@ -39485,18 +39597,10 @@ function thelegendmodproject() {
         };
         /* A removed pellet of a spect.js connection made into that connection's next pellet
          * (Spect._lmFoodRelease): the constructor runs again on it, so every field starts as on a
-         * new cell and in the same order (one object shape); the jelly point arrays are kept, empty. */
+         * new cell and in the same order (one object shape); the jelly point arrays are kept, empty
+         * (the constructor empties and keeps them: it makes no array, no closure for a reused one). */
         this._lmRenew = function (id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots) {
-            var p = this.points, pv = this.pointsVel;
             ogarbasicassembly.call(this, id, e, s, size, color, isFood, isVirus, isPlayer, shortMass, virusMassShots);
-            if (p) {
-                p.length = 0;
-                this.points = p;
-            }
-            if (pv) {
-                pv.length = 0;
-                this.pointsVel = pv;
-            }
             return this;
         };
 
