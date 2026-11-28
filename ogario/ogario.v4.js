@@ -25531,7 +25531,6 @@ function thelegendmodproject() {
             }
             if (!unit || !unit.number) return null;
             lmSetMbUnit(unit.number);
-            window.multiboxPlayerEnabledSaved = null;
             if (!legendmod.play) {
                 play();
             }
@@ -25619,7 +25618,6 @@ function thelegendmodproject() {
                 var prof = profiles[lmMbProfileIdx(sp)];
                 if (prof && prof.skinURL && typeof lmPreloadUnitSkin === 'function') lmPreloadUnitSkin(prof.skinURL);
             }
-            window.multiboxPlayerEnabledSaved = null;
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
                 core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                 if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
@@ -53610,35 +53608,7 @@ function thelegendmodproject() {
             let text = '';
             let teamText = '';
 
-            //
             this.playerPositionMulti = null;
-            /*if(LM.multiBoxPlayerExists && (window.multiboxPlayerEnabled || window.multiboxPlayerEnabledSaved)){
-            	
-                if (window.multiboxPlayerEnabled){
-                    for (var i=0; i<getActiveSpect(window.multiboxPlayerEnabled).leaderboard.length; i++){
-                        if (getActiveSpect(window.multiboxPlayerEnabled).leaderboard[i].id == "isPlayer"){		
-                                if (this.leaderboard[i]){ 
-                                    this.leaderboard[i].id = 'isPlayer'
-                                    this.playerPositionNickMulti  = this.leaderboard[i].nick
-                                    this.playerPositionMulti = i
-                                }								
-                            }
-                        }
-                    }                      
-                else if (window.multiboxPlayerEnabledSaved){
-                    for (var i=0; i<getActiveSpect(window.multiboxPlayerEnabledSaved).leaderboard.length; i++){
-                        if (getActiveSpect(window.multiboxPlayerEnabledSaved).leaderboard[i].id == "isPlayer"){	
-                            if (this.leaderboard[i]){
-                                this.leaderboard[i].id = 'isPlayer'	
-                                this.playerPositionNickMulti  = this.leaderboard[i].nick
-                                this.playerPositionMulti = i
-                            }
-                        }
-                    }
-                }  
-            	
-            }*/
-            //			
             /* optional: a nick seen 3+ times (bots, same rule as the bot counter) is listed once
              * as "name x N"; own, teammate and friend rows are never collapsed */
             var _lmBotCnt = null, _lmBotSeen = null, _lmLbHidden = null;
@@ -54267,7 +54237,6 @@ function thelegendmodproject() {
             if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
             lmSetMbUnit(0);
             for (var g = 0; g < gone.length; g++) if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerRemoved', gone[g], 'disabled');
-            window.multiboxPlayerEnabledSaved = null;
             if (closed && !this.play && window.application && typeof window.application.showMenu === 'function') window.application.showMenu();
             return closed;
         },
@@ -54294,7 +54263,6 @@ function thelegendmodproject() {
             /* every unit is closed: a focus left on one froze the main cell and camera
              * (HUD "[MB 2/1]") */
             lmSetMbUnit(0);
-            window.multiboxPlayerEnabledSaved = null;
             for (var g = 0; g < gone.length; g++) if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerRemoved', gone[g], 'closed');
         },
         /* A map border is four finite numbers with max above min on both axes. */
