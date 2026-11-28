@@ -1677,7 +1677,7 @@ function parseLegendJSONAPI(LegendJSON) {
     /* Rounded / Square HUD is a theme setting now (hudRoundedCorners); the stopwatch is removed */
     LegendJSON.legendSettings.timesopened = localStorage.getItem("timesopened");
 
-    LegendJSON.legendSettings.dyinglight1load = localStorage.getItem("dyinglight1load");
+    /* Dying Light: its switch is the gameplay setting dyingLight (exported with ogarioSettings) */
     LegendJSON.legendSettings.languagemod = localStorage.getItem("languagemod");
 
     LegendJSON.legendSettings.lastIP = localStorage.getItem("lastIP");
@@ -1982,6 +1982,7 @@ function saveLegendJSONAPI() {
         _lmImportSet("MAINBTBtn", LegendJSON.legendSettings.MAINBTBtn);
         _lmImportSet("timesopened", LegendJSON.legendSettings.timesopened);
 
+        /* an older file's Dying Light flag: the next start moves it into the setting dyingLight */
         _lmImportSet("dyinglight1load", LegendJSON.legendSettings.dyinglight1load);
         _lmImportSet("languagemod", LegendJSON.legendSettings.languagemod);
 
@@ -3877,20 +3878,114 @@ function triggerLMbtns() {
     if (!window.proLicenceUID && !document.getElementById("nick").value.includes("℄")){
         $("#LEGENDAds5").load("https://www.legendmod.ml/banners/agario2");
     }*/
-    if (dyinglight1load == null || dyinglight1load == "null") {
-        $("#LEGENDAds2").load("https://www.legendmod.ml/banners/bannerDyingLight");
-    } else if (dyinglight1load == "yes") {
-        opendyinglight();
-        $("#LEGENDAds2").load("https://www.legendmod.ml/banners/bannerStopDyingLight");
-    }
+    lmDyingLightStartup();
 }
 
-function opendyinglight() {
-    var s = document.createElement("script");
-    s.type = "text/javascript";
-    s.src = "https://www.legendmod.ml/extras/dyinglight.js";
-    $("body").append(s);
-
+/* Dying Light expansion (extras/dyinglight.js, window.LMDyingLight). Its switch is the gameplay
+ * setting dyingLight; the script is loaded only when the theme is turned on (never at a start with
+ * it off). opendyinglight / stopdyinglight stay the names old banners and templates call. */
+var _lmDlScript = null, _lmDlWant = 0, _lmDlFetching = false, _lmDlBound = false;
+/* one load at a time; a failed load is cleaned up and only the next press tries again */
+function lmDyingLightScript() {
+    if (window.LMDyingLight && window.LMDyingLight._lm === 1) return Promise.resolve(window.LMDyingLight);
+    if (_lmDlScript) return _lmDlScript;
+    _lmDlFetching = true;
+    _lmDlScript = new Promise(function (resolve, reject) {
+        var s = document.createElement("script");
+        s.id = "lm-dyinglight-js";
+        s.charset = "utf-8";
+        s.src = "https://www.legendmod.ml/extras/dyinglight.js?v=" + (window.OgVer || "");
+        s.onload = function () {
+            s.onload = s.onerror = null;
+            if (window.LMDyingLight && window.LMDyingLight._lm === 1) resolve(window.LMDyingLight);
+            else reject(new Error("extras/dyinglight.js did not start"));
+        };
+        s.onerror = function () {
+            s.onload = s.onerror = null;
+            if (s.parentNode) s.parentNode.removeChild(s);
+            reject(new Error("extras/dyinglight.js could not be loaded"));
+        };
+        (document.head || document.documentElement).appendChild(s);
+    });
+    _lmDlScript.then(function () {
+        _lmDlFetching = false;
+        /* the banner follows the theme's state from now on */
+        if (!_lmDlBound && window.LMEvents && typeof window.LMEvents.on === "function") {
+            _lmDlBound = true;
+            window.LMEvents.on("dyingLightChange", lmDyingLightBanner);
+        }
+    }, function () {
+        _lmDlFetching = false;
+        _lmDlScript = null;
+    });
+    return _lmDlScript;
+}
+/* the switch alone, while the script is not there (a failed load, a stale saved value) */
+function lmDyingLightSave(on) {
+    var ok = typeof defaultmapsettings === "object" && !!defaultmapsettings;
+    if (ok && defaultmapsettings.dyingLight !== on) {
+        defaultmapsettings.dyingLight = on;
+        try { application.saveSettings(defaultmapsettings, "ogarioSettings"); } catch (e) { ok = false; }
+    }
+    /* the old flag goes only once the setting is kept (else the next start moves it again) */
+    if (ok) { try { localStorage.removeItem("dyinglight1load"); } catch (e) { } }
+    return ok;
+}
+/* startup: true = a saved switch turns it on again (no question asked) */
+function opendyinglight(startup) {
+    var want = ++_lmDlWant;
+    var p = lmDyingLightScript();
+    lmDyingLightBanner();
+    return p.then(function (api) {
+        /* turned off again while the script came */
+        if (want !== _lmDlWant) return false;
+        return api.enable({ confirm: startup !== true });
+    }, function (e) {
+        try { console.warn("[Dying Light]", e); } catch (e2) { }
+        if (want === _lmDlWant) {
+            if (startup !== true && window.toastr) toastr.warning(_lmxE("pkg.dlv3life.failed"));
+            lmDyingLightBanner();
+        }
+        return false;
+    });
+}
+function stopdyinglight() {
+    ++_lmDlWant;
+    var api = window.LMDyingLight;
+    var p = api && api._lm === 1 ? api.disable() : (lmDyingLightSave(false), Promise.resolve(true));
+    lmDyingLightBanner();
+    return p;
+}
+function lmDyingLightToggle() {
+    var api = window.LMDyingLight;
+    var st = api && api._lm === 1 ? api.state : (_lmDlFetching ? "loading" : "off");
+    return st === "on" || st === "loading" ? stopdyinglight() : opendyinglight();
+}
+/* the Tools tab banner (#LEGENDAds2): on/off picture, no remote markup or scripts */
+function lmDyingLightBanner() {
+    var box = document.getElementById("LEGENDAds2");
+    if (!box) return;
+    var api = window.LMDyingLight;
+    var st = api && api._lm === 1 ? api.state : (_lmDlFetching ? "loading" : "off");
+    var on = st === "on", busy = st === "loading";
+    var tip = _lmxE(on ? "pkg.dlv3life.turnOff" : busy ? "pkg.dlv3life.loading" : "pkg.dlv3life.turnOn");
+    box.innerHTML = '<a class="lm-dl-banner" href="#" role="button" data-lm-dl="toggle" title="' + tip + '" aria-label="' + tip + '"' +
+        (busy ? ' aria-busy="true" style="opacity:.6"' : '') + '><img src="https://www.legendmod.ml/banners/' +
+        (on ? 'dyinglightbanner3.jpg' : 'dyinglightbanner2.jpg') + '" alt="Dying Light" height="70" style="width:100%"></a>';
+}
+/* moves the old flag dyinglight1load into the setting once, then turns a saved switch on again */
+function lmDyingLightStartup() {
+    var legacy = null;
+    try { legacy = localStorage.getItem("dyinglight1load"); } catch (e) { }
+    if (legacy !== null) lmDyingLightSave(legacy === "yes");
+    if (legacy !== "yes") window.dyinglight1load = null;
+    $(document).off("click.lmDl").on("click.lmDl", "[data-lm-dl]", function (e) {
+        e.preventDefault();
+        if (this.getAttribute("data-lm-dl") === "on") opendyinglight();
+        else lmDyingLightToggle();
+    });
+    lmDyingLightBanner();
+    if (typeof defaultmapsettings === "object" && defaultmapsettings && defaultmapsettings.dyingLight === true) opendyinglight(true);
 }
 
 function bluebtns() {

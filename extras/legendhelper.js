@@ -88,8 +88,9 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 	'<img src="https://jimboy3100.github.io/banners/iconvanilla.jpg" alt="' + _lmHT('misc.helper.vanillaLike') + '" id = "legendclanbanner" class="img-rounded" width=20% height="50" onclick="vanillalike(); return false" > '+
 	'<u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="vanillalike(); return false">' + _lmHTx('misc.helper.vanillaLike') + '</u><br>'+
 	'<p style="color:var(--lm-mc,#fff); font-size:15px; margin:6px 0;" align="middle"><b>' + _lmHTx('pack.orChooseAnExpansion') + '</b></p></div>'+
+	/* the click is bound once by LMexpress.js (lmDyingLightStartup): data-lm-dl="on" turns it on */
 	/* i18n-ok: Dying Light is the game's name */
-	'<div id="LEGENDAds2"><a id="legendAdAnchor2" onclick="opendyinglight(); return false"><img id="legendAdImg" height="70px" src="https://jimboy3100.github.io/banners/dyinglightbanner2.jpg" style="width: 40%"></a><u style="color:var(--lm-tc,#fff); font-size:13px; cursor:pointer;" align="right" onclick="opendyinglight(); return false">Dying Light</u></div>'+	   
+	'<div class="lm-dl-template"><a class="lm-dl-banner" href="#" role="button" data-lm-dl="on"><img height="70" src="https://www.legendmod.ml/banners/dyinglightbanner2.jpg" alt="Dying Light" style="width: 40%"></a><a href="#" role="button" data-lm-dl="on" style="color:var(--lm-tc,#fff); font-size:13px; text-decoration:underline;">Dying Light</a></div>'+	   
 	'<br><br></div></div>');
 //$('#TemplatesBtn').hide();	
 }

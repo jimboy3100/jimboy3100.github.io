@@ -1,8 +1,8 @@
 /* Original Legend Mod extras, with the real code of extras/legendhelper.js, LMexpress/LMexpress.js
  * and ogario/ogario.v4.js: the Mod Info templates (six one-click looks that keep the player's
- * profiles, hotkeys and chat commands), the Dying Light expansion (loaded once from its banner,
- * its saved state kept and exported), the nick easter eggs EasterEgg1/2/3 and the Facebook bubble
- * tracker option. node developers/tests/legacyextras.js */
+ * profiles, hotkeys and chat commands), the Dying Light expansion (window.LMDyingLight: turned on
+ * and off without a reload, its switch the setting dyingLight), the nick easter eggs EasterEgg1/2/3
+ * and the Facebook bubble tracker option. node developers/tests/legacyextras.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
 const rd = f => fs.readFileSync(path.join(root, f), 'utf8').replace(/\r\n/g, '\n');
@@ -42,7 +42,8 @@ function makeDom() {
     const page = d.log.html['#Userscriptshud3'] || '';
     const looks = ['agariowhitesettings', 'nosoups', 'vanillabetter', 'galaxysettings', 'legenddefaultsettings', 'vanillalike'];
     check('Templates page offers the six looks', looks.every(f => page.indexOf('onclick="' + f + '()') !== -1));
-    check('Templates page shows the Dying Light expansion banner', page.indexOf('opendyinglight()') !== -1 && page.indexOf('dyinglightbanner2.jpg') !== -1);
+    check('Templates page shows the Dying Light expansion banner (bound by LMexpress: no inline click, no second #LEGENDAds2)',
+        page.indexOf('data-lm-dl="on"') !== -1 && page.indexOf('dyinglightbanner2.jpg') !== -1 && page.indexOf('LEGENDAds2') === -1 && page.indexOf('onclick="opendyinglight') === -1);
     for (const f of looks) {
         d.els['import-settings'].value = ''; d.log.clicks.length = 0;
         vm.runInContext(f + '()', ctx);
@@ -62,10 +63,7 @@ function makeDom() {
     const d = makeDom();
     const ctx = { $: d.$, document: d.document, window: {}, toastr: d.toastr, Premadeletter3: 'egg1', Premadeletter4: 'egg2', Premadeletter5: 'egg3', Premadeletter6: '' };
     vm.createContext(ctx);
-    vm.runInContext(cutIn(lmx, 'function opendyinglight()', '\nfunction bluebtns()'), ctx);
     vm.runInContext(cutIn(lmx, 'function openbleedmod()', '\nfunction languagemodfun()'), ctx);
-    vm.runInContext('opendyinglight()', ctx);
-    check('Dying Light banner loads extras/dyinglight.js', d.log.scripts[0] === 'https://www.legendmod.ml/extras/dyinglight.js');
     const eggs = 'function nickPlay(nick) { $("#nick").val(nick); ' + cutIn(lmx, '        if ($("#nick").val() == "EasterEgg1") {', '\n    });\n    $("#nick").on("input"') + ' }';
     vm.runInContext(eggs, ctx);
     d.log.scripts.length = 0;
@@ -91,9 +89,9 @@ function makeDom() {
     vm.runInContext('nickPlay("EasterEgg1"); nickPlay("EasterEgg1")', ctx2);
     check('after Mod Info was opened: EasterEgg1 still loads extras/BleedingMod.js once',
         d2.log.scripts.length === 1 && d2.log.scripts[0] === 'https://www.legendmod.ml/extras/BleedingMod.js');
-    check('Dying Light state exported and imported again', /legendSettings\.dyinglight1load = localStorage\.getItem\("dyinglight1load"\)/.test(lmx) &&
-        /_lmImportSet\("dyinglight1load", LegendJSON\.legendSettings\.dyinglight1load\)/.test(lmx));
-    check('the saved Dying Light state is no longer deleted on load', !/removeItem\('dyinglight1load'\)/.test(main));
+    check('Dying Light: the old flag is no longer exported (dyingLight goes with the settings), an old file\'s flag is still read',
+        !/legendSettings\.dyinglight1load = /.test(lmx) && /_lmImportSet\("dyinglight1load", LegendJSON\.legendSettings\.dyinglight1load\)/.test(lmx));
+    check('Restore defaults also removes the old Dying Light flag', /restoreSettings\(\) \{[\s\S]{0,900}removeItem\('dyinglight1load'\)/.test(main));
     for (const f of ['extras/dyinglight.js', 'extras/BleedingMod.js', 'extras/rotating500images.js']) {
         let ok = true; try { new vm.Script(rd(f)); } catch (e) { ok = false; }
         check(f + ' is there and parses', ok);
@@ -107,5 +105,163 @@ function makeDom() {
     check('FBTracking switch in the helpers group', /this\.addOptions\(\[[^\]]*"FBTracking"[^\]]*\], "helpersGroup"\)/.test(main));
 }
 
-if (fail) { console.log(fail + ' failure(s)'); process.exit(1); }
-console.log('all legacy extras checks passed');
+/* ═══ Dying Light lifecycle: the real loader of LMexpress.js, the real extras/dyinglight.js, the
+ * real LMEvents, settings defaults and change announcements of ogario.v4.js ═══ */
+async function dyingLightLifecycle() {
+    const dl = rd('extras/dyinglight.js');
+    const lmxText = cutIn(lmx, 'function _lmxT(', '\n/* Choose Language') + '\n';
+    /* the old payloads are gone: settings imports, history rewrite, fullscreen, Play / disconnect
+     * hooks, timer chains, quote toasts, page audio, the old defaults reset, any Discord address */
+    check('extras/dyinglight.js has none of the old payloads',
+        !/import-settings|pushState|[Ff]ullscreen|core\.disconnect|olddeath|btnmgs|aab\d|createElement\(['"]audio|legenddefaultsettings|discord|webhook|playSound|toastr\["error"\]/i.test(dl) &&
+        (dl.match(/setTimeout\(/g) || []).length === 1);
+    check('old banner files: static markup, no ga() or inline script',
+        ['banners/bannerDyingLight', 'banners/bannerStopDyingLight'].every(f => { const t = rd(f); return /data-lm-dl="toggle"/.test(t) && !/ga\(|<script|onclick/.test(t); }));
+
+    const store = {};
+    const localStorage = {
+        getItem: k => Object.prototype.hasOwnProperty.call(store, k) ? store[k] : null,
+        setItem: (k, v) => { if (localStorage.full) throw new Error('QuotaExceededError'); store[k] = String(v); },
+        removeItem: k => { delete store[k]; }
+    };
+    /* pictures: each waits until the test lets it load (ok) or fail */
+    const pics = [];
+    class Img { set src(u) { this._src = u; pics.push(this); } get src() { return this._src; } }
+    const flushPics = ok => { while (pics.length) { const im = pics.shift(); if (ok) { im.naturalWidth = 64; im.onload && im.onload(); } else im.onerror && im.onerror(); } };
+    const head = { kids: [], appendChild(n) { n.parentNode = head; this.kids.push(n); if (n._script) scripts.push(n); return n; }, removeChild(n) { this.kids.splice(this.kids.indexOf(n), 1); n.parentNode = null; } };
+    const cls = new Set();
+    const scripts = [];
+    const box = { innerHTML: '' };
+    const document = {
+        head, documentElement: { classList: { add: c => { if (document.failClass) throw new Error('boom'); cls.add(c); }, remove: c => cls.delete(c) } },
+        createElement: t => (t === 'script' ? { _script: true } : { tag: t }),
+        getElementById: id => (id === 'LEGENDAds2' ? box : null)
+    };
+    const toasts = [];
+    const ctx = { localStorage, document, Image: Img, console: { warn() { }, log() { } }, Promise, setTimeout, clearTimeout, Object, JSON, Array, String, Number, Error,
+        toastr: { warning: m => toasts.push(m), info: () => { } }, confirm: () => ctx.answer, answer: true, OgVer: 3.7,
+        $: () => ({ off() { return this; }, on() { return this; } }), lmT: k => k };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    vm.runInContext(cutIn(main, '(function () {\n    if (window.LMEvents && window.LMEvents._lm === 1) return;', '\nwindow.spects'), ctx);
+    vm.runInContext(cutIn(main, 'var defaultmapsettings = {', '\n};') + '\n};\nvar LM_SETTINGS_DEFAULTS = Object.freeze(Object.assign({}, defaultmapsettings));\n' +
+        cutIn(main, 'var _lmSettingsSeen = null', '\n/* The settings export carries'), ctx);
+    vm.runInContext('var application = { saveSettings: function (o, n) { var v = lmSettingsUserView(); localStorage.setItem(n, JSON.stringify(v)); lmSettingsCommit(v); } };' +
+        'lmSettingsCommit(lmSettingsUserView()); var dyinglight1load = localStorage.getItem("dyinglight1load");', ctx);
+    vm.runInContext(lmxText + cutIn(lmx, '/* Dying Light expansion (extras/dyinglight.js, window.LMDyingLight)', '\nfunction bluebtns()'), ctx);
+    const states = [];
+    ctx.LMEvents.on('dyingLightChange', d => states.push(d.state));
+    const tick = () => new Promise(r => setImmediate(r));
+    const runScript = async () => { const s = scripts.shift(); vm.runInContext(dl, ctx); s.onload(); await tick(); };
+    const D = ctx.defaultmapsettings;
+    check('dyingLight: a gameplay setting, off by default', ctx.LM_SETTINGS_DEFAULTS.dyingLight === false);
+
+    /* a start with it off: nothing is loaded, the banner offers it */
+    ctx.application.saveSettings(D, 'ogarioSettings');
+    const snap = () => JSON.stringify(Object.keys(store).sort().map(k => [k, store[k]]));
+    const before = snap();
+    vm.runInContext('lmDyingLightStartup()', ctx);
+    check('start with it off: no script, no listener, the turn-on banner', scripts.length === 0 && !ctx.LMEvents._has('settingsChange') &&
+        /data-lm-dl="toggle"/.test(box.innerHTML) && /dyinglightbanner2/.test(box.innerHTML) && snap() === before);
+
+    /* a new activation asks first; No leaves everything as it was */
+    ctx.answer = false;
+    let p = vm.runInContext('opendyinglight()', ctx);
+    check('the script is loaded once, with the release version', scripts.length === 1 && /extras\/dyinglight\.js\?v=3\.7$/.test(scripts[0].src) && /aria-busy/.test(box.innerHTML));
+    await runScript();
+    check('refused at the question: off, nothing saved', (await p) === false && ctx.LMDyingLight.state === 'off' && snap() === before && pics.length === 0);
+
+    ctx.answer = true;
+    p = vm.runInContext('opendyinglight()', ctx);
+    await tick();
+    check('no second script load', scripts.length === 0 && ctx.LMDyingLight.state === 'loading');
+    flushPics(true);
+    check('on after the pictures', (await p) === true && ctx.LMDyingLight.isEnabled() && D.dyingLight === true && JSON.parse(store.ogarioSettings).dyingLight === true);
+    check('on: the old readers see the flag, the scoped style is there, the banner turns it off',
+        ctx.dyinglight1load === 'yes' && cls.has('lm-dl') && head.kids.some(n => n.id === 'lm-dl-style') && /dyinglightbanner3/.test(box.innerHTML));
+    const L = ctx.LMDyingLight;
+    const other = { mass: 200, targetNick: 'enemy' };
+    check('fallback skin only for another real player body', !!L.getFallbackSkinKey(other) && L.getFallbackSkinKey(other) === L.getFallbackSkinKey({ mass: 50, targetNick: 'x' }) &&
+        [{ mass: 200, targetNick: 'me', isPlayerCell: true }, { mass: 200, targetNick: 'u', isPlayerCellMulti: true }, { mass: 200, targetNick: 'f', isFood: true },
+         { mass: 200, targetNick: 'v', isVirus: true }, { mass: 20, targetNick: 'e', isEjected: true }, { mass: 10, targetNick: 's' }, { mass: 200, targetNick: '' }, { mass: 200, targetNick: 'r', removed: true }]
+            .every(c => L.getFallbackSkinKey(c) === null));
+    check('background while on', !!L.getBackground() && L.getBackground() === L.getBackground() && !!L.getBackground().img && !L.hasForegroundFx() && !L.needsThreatData());
+
+    /* off: the stored settings are exactly as before, nothing of it left on the page */
+    const gen = L.generation;
+    await vm.runInContext('stopdyinglight()', ctx);
+    check('off: stored settings identical to before, no style, flag cleared, no listener, no background',
+        snap() === before && L.state === 'off' && !cls.has('lm-dl') && !head.kids.some(n => n.id === 'lm-dl-style') && ctx.dyinglight1load === null &&
+        !ctx.LMEvents._has('settingsChange') && L.getBackground() === null && L.getFallbackSkinKey(other) === null && L.generation > gen);
+    check('states sent: loading, on, disabling, off', states.join() === 'loading,on,disabling,off');
+
+    /* on again: no new script, the pictures kept */
+    states.length = 0;
+    p = vm.runInContext('lmDyingLightToggle()', ctx);
+    check('on again at once (pictures kept)', (await p) === true && L.isEnabled() && pics.length === 0);
+    await L.disable(); await L.disable();
+    check('disable twice: off once', L.state === 'off' && states.join() === 'loading,on,disabling,off' && snap() === before);
+
+    /* turned off while the pictures load: a late load does nothing */
+    L.setIntensity('competitive');
+    const parts = [];
+    L.addPart({ name: 'probe', start: g => parts.push('start' + g), stop: () => parts.push('stop'), fx: true });
+    pics.length = 0;
+    p = L.enable({ confirm: false });
+    // the pictures are cached: a new enable resolves on the next tick; cut it while loading
+    check('loading', L.state === 'loading');
+    vm.runInContext('lmDyingLightToggle()', ctx);
+    check('cancelled while loading: off, nothing saved', (await p) === false && L.state === 'off' && snap() === before && !cls.has('lm-dl') && parts.length === 0);
+    p = L.enable(); const p2 = L.enable();
+    check('one enable at a time', p === p2 && (await p) === true && parts.join() === 'start' + L.generation && L.hasForegroundFx() && L.intensity() === 'competitive');
+    await L.disable();
+    check('parts stopped by the turn-off', parts[parts.length - 1] === 'stop' && !L.hasForegroundFx());
+
+    /* a start that fails part way: everything undone, the switch stays off */
+    document.failClass = true; toasts.length = 0;
+    check('failed start rolled back', (await L.enable()) === false && L.state === 'off' && !head.kids.some(n => n.id === 'lm-dl-style') &&
+        ctx.dyinglight1load === null && snap() === before && toasts.length === 1 && !ctx.LMEvents._has('settingsChange'));
+    document.failClass = false;
+
+    /* the settings turn it off (an import, Restore defaults' save): the theme follows */
+    await L.enable();
+    D.dyingLight = false; ctx.application.saveSettings(D, 'ogarioSettings');
+    check('setting turned off elsewhere: theme off', L.state === 'off' && !cls.has('lm-dl'));
+
+    /* storage refused on the turn-off: off for this visit all the same */
+    await L.enable(); localStorage.full = true;
+    try { await L.disable(); } catch (e) { }
+    localStorage.full = false;
+    check('storage full: still turned off', L.state === 'off' && !cls.has('lm-dl') && ctx.dyinglight1load === null);
+    ctx.application.saveSettings(D, 'ogarioSettings');
+
+    /* turned off while the script itself loads */
+    {
+        const c2 = { localStorage, document, Image: Img, console, Promise, setTimeout, clearTimeout, Object, JSON, Array, String, Number, Error,
+            toastr: { warning: () => { } }, confirm: () => true, $: () => ({ off() { return this; }, on() { return this; } }), lmT: k => k };
+        c2.window = c2; vm.createContext(c2);
+        vm.runInContext(cutIn(main, '(function () {\n    if (window.LMEvents && window.LMEvents._lm === 1) return;', '\nwindow.spects'), c2);
+        vm.runInContext(cutIn(main, 'var defaultmapsettings = {', '\n};') + '\n};\nvar application = { saveSettings: function (o, n) { localStorage.setItem(n, JSON.stringify(o)); } };', c2);
+        vm.runInContext(lmxText + cutIn(lmx, '/* Dying Light expansion (extras/dyinglight.js, window.LMDyingLight)', '\nfunction bluebtns()'), c2);
+        const q = vm.runInContext('opendyinglight()', c2);
+        vm.runInContext('stopdyinglight()', c2);
+        vm.runInContext(dl, c2); scripts.shift().onload(); await tick(); flushPics(true);
+        check('turned off before the script came: stays off', (await q) === false && c2.LMDyingLight.state === 'off' && c2.defaultmapsettings.dyingLight === false);
+        /* the old flag of an earlier version: moved into the setting once, no question at that start */
+        store.dyinglight1load = 'yes'; c2.dyinglight1load = 'yes';
+        let asked = 0; c2.confirm = () => { asked++; return true; };
+        vm.runInContext('lmDyingLightStartup()', c2);
+        await tick(); flushPics(true); await tick();
+        check('old flag "yes": moved into dyingLight, removed, on without asking', c2.defaultmapsettings.dyingLight === true && store.dyinglight1load === undefined &&
+            JSON.parse(store.ogarioSettings).dyingLight === true && c2.LMDyingLight.isEnabled() && asked === 0);
+        await c2.LMDyingLight.disable();
+        store.dyinglight1load = 'null';
+        vm.runInContext('lmDyingLightStartup()', c2);
+        check('old flag "null": removed, stays off', store.dyinglight1load === undefined && c2.defaultmapsettings.dyingLight === false && c2.LMDyingLight.state === 'off');
+    }
+}
+
+dyingLightLifecycle().catch(e => { check('Dying Light lifecycle ran: ' + (e && e.stack), false); }).then(() => {
+    if (fail) { console.log(fail + ' failure(s)'); process.exit(1); }
+    console.log('all legacy extras checks passed');
+});

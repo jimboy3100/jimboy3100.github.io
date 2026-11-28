@@ -21544,6 +21544,9 @@ var defaultmapsettings = {
     /* accessibility (ogario/modules/accessibility.js); 1 / false = unchanged */
     a11yTextScale: 1,             /* menu text size */
     a11yHudTextScale: 1,          /* HUD text size, on top of hudScale */
+    /* the Dying Light expansion (extras/dyinglight.js, its banner in the Tools tab); no menu switch.
+     * It replaces the old stored flag dyinglight1load (moved once by LMexpress.js) */
+    dyingLight: false,
     //
     FacebookIDs: ''
 };
@@ -25568,6 +25571,8 @@ function thelegendmodproject() {
              * pre-reset values back later (Undo preset) */
             try {
                 window.localStorage.removeItem('lmPresetUndo');
+                /* an old Dying Light flag would turn the theme on again after the reload */
+                window.localStorage.removeItem('dyinglight1load');
             } catch (e) { }
             if (window.localStorage.getItem('ogarioSettings') !== null) {
                 window.localStorage.removeItem('ogarioSettings');

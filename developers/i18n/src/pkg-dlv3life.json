@@ -1,0 +1,17 @@
+{
+  "pkg.dlv3life.confirm": {
+    "en": "Turn on the Dying Light theme? It only changes how the game looks while it is on. Your settings stay as they are, and the same banner turns it off at any time."
+  },
+  "pkg.dlv3life.failed": {
+    "en": "Dying Light could not be turned on. Legend Mod stays as it was."
+  },
+  "pkg.dlv3life.turnOn": {
+    "en": "Turn on Dying Light"
+  },
+  "pkg.dlv3life.turnOff": {
+    "en": "Turn off Dying Light"
+  },
+  "pkg.dlv3life.loading": {
+    "en": "Dying Light is loading (press again to cancel)"
+  }
+}
