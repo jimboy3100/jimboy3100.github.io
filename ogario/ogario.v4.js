@@ -5756,14 +5756,14 @@ function lmDlSync() {
 }
 /* The cells that may get the Dying Light skin: real player bodies only (no food, ejected mass,
  * virus, removed cell or hidden copy of a cell another connection draws), never an own cell of
- * the main player or of a multibox unit, mass 12 or more as before, a cell with a name (a cell
+ * the main player or of a multibox unit, mass more than 12 as before, a cell with a name (a cell
  * without one shows no skin in any path) and no Teams (no skins there). */
 function lmDlSkinCell(cell) {
     var lm = window.legendmod;
     return !!(cell && !cell.removed && !cell.invisible && !cell._lmMbPosDup &&
         !cell.isFood && !cell.isEjected && !cell.isVirus &&
         !cell.isPlayerCell && !cell.isPlayerCellMulti &&
-        cell.size * cell.size >= 1200 &&
+        cell.size * cell.size >= 1300 &&
         cell.targetNick && String(cell.targetNick).trim() &&
         !(lm && lm.gameMode === ':teams'));
 }

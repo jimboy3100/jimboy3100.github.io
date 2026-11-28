@@ -182,8 +182,10 @@ async function dyingLightLifecycle() {
     const L = ctx.LMDyingLight;
     const other = { mass: 200, targetNick: 'enemy' };
     check('fallback skin only for another real player body', !!L.getFallbackSkinKey(other) && L.getFallbackSkinKey(other) === L.getFallbackSkinKey({ mass: 50, targetNick: 'x' }) &&
+        /* mass label not drawn (cell.mass 0): the size decides */
+        L.getFallbackSkinKey({ mass: 0, size: 60, targetNick: 'n' }) === L.getFallbackSkinKey(other) &&
         [{ mass: 200, targetNick: 'me', isPlayerCell: true }, { mass: 200, targetNick: 'u', isPlayerCellMulti: true }, { mass: 200, targetNick: 'f', isFood: true },
-         { mass: 200, targetNick: 'v', isVirus: true }, { mass: 20, targetNick: 'e', isEjected: true }, { mass: 10, targetNick: 's' }, { mass: 200, targetNick: '' }, { mass: 200, targetNick: 'r', removed: true }]
+         { mass: 200, targetNick: 'v', isVirus: true }, { mass: 20, targetNick: 'e', isEjected: true }, { mass: 10, targetNick: 's' }, { mass: 0, size: 34, targetNick: 'z' }, { mass: 200, targetNick: '' }, { mass: 200, targetNick: 'r', removed: true }]
             .every(c => L.getFallbackSkinKey(c) === null));
     check('background while on', !!L.getBackground() && L.getBackground() === L.getBackground() && !!L.getBackground().img && !L.hasForegroundFx() && !L.needsThreatData());
 

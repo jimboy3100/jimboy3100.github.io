@@ -207,8 +207,10 @@
     }
 
     function getFallbackSkinKey(cell) {
+        /* the mass from the size (cell.mass is only kept while its mass label is drawn) */
+        var mass = cell && cell.size > 0 ? ~~(cell.size * cell.size / 100) : cell && cell.mass;
         if (state !== 'on' || !cell || cell.isFood || cell.isVirus || cell.isEjected || cell.removed ||
-            cell.isPlayerCell || cell.isPlayerCellMulti || !(cell.mass > 12) || !cell.targetNick) return null;
+            cell.isPlayerCell || cell.isPlayerCellMulti || !(mass > 12) || !cell.targetNick) return null;
         if (typeof W.lmSkinsShown === 'function' && !W.lmSkinsShown()) return null;
         var lm = W.legendmod;
         if (lm && lm.gameMode === ':teams') return null;
