@@ -10,7 +10,7 @@ const rd = f => fs.readFileSync(path.join(root, f), 'utf8').replace(/\r\n/g, '\n
 const main = rd('ogario/ogario.v4.js'), dl = rd('extras/dyinglight.js');
 const cutIn = (src, a, b) => { const i = src.indexOf(a), j = src.indexOf(b, i + a.length); if (i < 0 || j < 0) throw new Error('not found: ' + a); return src.slice(i, j); };
 let fail = 0;
-const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
+const check = (n, c, why) => { console.log((c ? "ok   " : "FAIL ") + n + (c || why === undefined ? "" : " (" + why + ")")); if (!c) fail++; };
 
 /* fake clock and one-shot timers */
 let T = 0, seq = 0;
@@ -60,11 +60,11 @@ class Aud {
     removeAttribute(k) { if (k === 'src') this._src = undefined; }
     load() { }
 }
-const plays = [], toasts = [];
+const plays = [], toasts = [], warns = [];
 /* the sounds playing come to their end */
 const endSounds = () => audios.forEach(a => { a.paused = true; });
 const ctx = {
-    document, Image: Img, Audio: Aud, console: { warn() { }, log() { } }, Promise, Object, JSON, Array, String, Number, Error, Map,
+    document, Image: Img, Audio: Aud, console: { warn: (m, e) => warns.push(m + ' ' + (e && e.message)), log() { } }, Promise, Object, JSON, Array, String, Number, Error, Map,
     setTimeout: setTimeout_, clearTimeout: clearTimeout_, performance: { now: () => T },
     /* the mixer: Gameplay channel x master x the sound's gain, as ogario/modules/notifications.js */
     LMNotifications: {
@@ -364,7 +364,9 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     {
         const acs = [];
         const prm = v => ({ value: v, ev: [], setValueAtTime(x, t) { this.ev.push(['set', x, t]); this.value = x; }, linearRampToValueAtTime(x, t) { this.ev.push(['lin', x, t]); },
-            exponentialRampToValueAtTime(x, t) { this.ev.push(['exp', x, t]); }, setTargetAtTime(x, t, c) { this.ev.push(['tgt', x, t, c]); this.target = x; }, cancelScheduledValues(t) { this.ev.push(['cancel', t]); } });
+            /* as the browsers: these throw on values they cannot take */
+            exponentialRampToValueAtTime(x, t) { if (!(x > 0) || !(t >= 0)) throw new RangeError('exp ' + x); this.ev.push(['exp', x, t]); },
+            setTargetAtTime(x, t, c) { if (!(c > 0) || !(t >= 0) || x !== x) throw new RangeError('tgt'); this.ev.push(['tgt', x, t, c]); this.target = x; }, cancelScheduledValues(t) { this.ev.push(['cancel', t]); } });
         class FakeAC {
             constructor() { this.state = 'running'; this.sampleRate = 8000; this._acc = 0; this._t0 = T; this.nodes = []; this.destination = this.node('dest'); acs.push(this); }
             get currentTime() { return (this._acc + (this.state === 'running' ? T - this._t0 : 0)) / 1000; }
@@ -375,12 +377,15 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
             }
             src(kind, extra) {
                 const ac = this;
-                return this.node(kind, Object.assign({ start(t) { this.at = t; }, stop(t) { this.end = t; } }, extra));
+                return this.node(kind, Object.assign({ start(t) { if (this.at != null || !(t >= 0)) throw new Error('start'); this.at = t; },
+                    stop(t) { if (this.at == null || !(t >= 0)) throw new Error('stop'); this.end = t; } }, extra));
             }
             createGain() { return this.node('gain', { gain: prm(1) }); }
             createBiquadFilter() { return this.node('filter', { type: 'lowpass', frequency: prm(350), Q: prm(1) }); }
             createOscillator() { return this.src('osc', { type: 'sine', frequency: prm(440) }); }
             createBufferSource() { return this.src('buf', { buffer: null, loop: false }); }
+            createDelay() { return this.node('delay', { delayTime: prm(0) }); }
+            createStereoPanner() { return this.node('pan', { pan: prm(0) }); }
             createBuffer(ch, n) { const d = new Float32Array(n); return { getChannelData: () => d, length: n }; }
             suspend() { if (this.state === 'running') { this._acc += T - this._t0; this.state = 'suspended'; } return Promise.resolve(); }
             resume() { if (this.state === 'suspended') { this._t0 = T; this.state = 'running'; } return Promise.resolve(); }
@@ -492,6 +497,67 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
         L.setIntensity('immersive');
         advance(1000);
 
+        /* the made event sounds: kinds by intensity, cooldowns and the gap between any two, suppressed */
+        {
+            let seed = 11;
+            ctx.__r = () => { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+            let figs = 0;
+            const bodyAppend = body.appendChild.bind(body);
+            body.appendChild = n => { figs++; return bodyAppend(n); };
+            const made = () => Object.entries(A().events).reduce((n, [k, v]) => n + (k === 'radioStatic' ? 0 : v), 0);
+            const radios = () => plays.filter(x => /^radio-/.test(x.id)).length;
+            const total = () => made() + radios() + figs;
+            /* secs of play; the times (director clock) of every rare event */
+            const sim = (secs, lateBy) => { const at = []; let n = total(); for (let i = 0; i < secs; i++) { endSounds(); advance(1000, lateBy); flushPics(true); const m = total(); if (m > n) at.push(info().clock); n = m; } return at; };
+            const gapsOk = (at, g) => at.slice(1).every((t, i) => t - at[i] >= g);
+            const ev0 = Object.assign({}, A().events), r0 = radios();
+            const atI = sim(90 * 60);
+            const evI = A().events;
+            const kindsI = Object.keys(evI).filter(k => k !== 'radioStatic');
+            check('events (Immersive): distant screams, growls, footsteps and static among the radio calls and figures, never two at once',
+                kindsI.length >= 3 && kindsI.every(k => ['scream', 'growl', 'footsteps', 'static'].includes(k)) && atI.length >= 10 && gapsOk(atI, 150000), JSON.stringify(evI) + ' ' + atI.length);
+            check('events: a radio call comes through a moment of static', (evI.radioStatic || 0) - (ev0.radioStatic || 0) === radios() - r0 && radios() > r0);
+            L.setIntensity('nightmare');
+            advance(1000);
+            const before = Object.assign({}, A().events);
+            const atN = sim(90 * 60);
+            const evN = A().events, kindsN = Object.keys(evN).filter(k => k !== 'radioStatic' && evN[k] > (before[k] || 0));
+            check('events (Nightmare): richer, not only more often: breathing and impacts too, more kinds, the 75 s gap kept',
+                kindsN.length >= 5 && (kindsN.includes('breathing') || kindsN.includes('impact')) && atN.length > atI.length && gapsOk(atN, 75000), JSON.stringify(evN) + ' ' + atN.length);
+            /* suppressed */
+            document.activeElement = { tagName: 'INPUT' };
+            let m0 = total();
+            sim(20 * 60);
+            check('events: none while typing', total() === m0);
+            document.activeElement = null;
+            ctx.matchMedia = q => ({ matches: /reduce/.test(q) });
+            m0 = made();
+            sim(20 * 60);
+            check('events: no made sound with the system\'s reduced motion', made() === m0);
+            delete ctx.matchMedia;
+            m0 = made();
+            sim(20 * 60, 600);
+            check('events: no made sound on a busy page', info().busy === true && made() === m0);
+            sim(15);
+            m0 = made();
+            ctx._lmEvReplayOn = true;
+            sim(10 * 60);
+            check('events: none in a replay', made() === m0);
+            ctx._lmEvReplayOn = false;
+            /* a respawn cuts the one playing */
+            let got = false;
+            for (let i = 0; i < 3600 && !got; i++) { endSounds(); advance(1000); got = A().fx; }
+            const bus = got && c.nodes.filter(n => n.kind === 'gain' && n.to.includes(out)).pop();
+            ctx.LMEvents.emit('spawn', {});
+            check('events: a spawn cuts the sound playing (faded at once, let go)', got && !A().fx && bus && bus.gain.target === 0);
+            advance(2000);
+            check('...its bus let go', bus.off === true);
+            body.appendChild = bodyAppend;
+            L.setIntensity('immersive');
+            advance(1000);
+        }
+
+        check('made sounds: none of them failed (the fake throws where the browsers do)', !warns.some(w => /\] (audio|sound|director)/.test(w)), warns.join('; '));
         await L.disable();
         check('off: the context closed and let go', c.state === 'closed' && A().ctx === null && A().bed === null);
         L.setIntensity('competitive');

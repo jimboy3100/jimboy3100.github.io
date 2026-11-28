@@ -649,17 +649,18 @@
  *     night 4-8, deep night 8-9, dawn 9-10; the next scene loads in the last 30 s of a phase and is
  *     shown once it is there (the renderer cross-fades), a scene that fails is skipped;
  *   - rare events at a slow roll with a cooldown each and a minimum gap between any two: a radio
- *     call (sound and a short story line), a shadow at the edge of the screen (400-800 ms), a watcher
- *     in a corner; the night falling (once a cycle) and a real death (its signal) or a dropped
- *     connection while playing;
+ *     call (sound and a short story line, through a moment of static), a shadow at the edge of the
+ *     screen (400-800 ms), a watcher in a corner, made sounds (a distant scream, a growl, footsteps,
+ *     radio static, in Nightmare also breathing and impacts, fuller variants); the night falling
+ *     (once a cycle) and a real death (its signal) or a dropped connection while playing;
  *   - its sounds through the Legend mixer (LMNotifications.play, Gameplay channel x master x gain),
  *     at most 2 at a time, never added to the page.
  *   - Immersive / Nightmare: an ambience made for each phase (cross-faded at the change) and a
  *     heartbeat that follows the threat look, synthesized (Web Audio) at the same mixer volume.
  * Intensity: competitive = the fixed scene, only the death / connection signals; immersive = the
- * cycle and rare events; nightmare = the same, more often. Nothing happens while the tab is hidden
+ * cycle and rare events; nightmare = more kinds of them, fuller, more often. Nothing happens while the tab is hidden
  * (paused, no catch-up after), in a replay, in the menu or spectating, while typing or on the Game
- * Over window, just after a spawn; no scares with the system's reduced motion or a busy page (ticks
+ * Over window, just after a spawn; no scares or made sounds with the system's reduced motion or a busy page (ticks
  * coming late, or under 30 FPS when the FPS counter is on), which also keeps the scene as it is, and
  * only the slow watcher with Legend's Reduced motion; no figures and no story lines in Stream mode. While on, the
  * menu and HUD show its colours over the player's theme (lmThemeOverride, never saved). */
@@ -696,7 +697,15 @@
     var EVENTS = {
         radio: { cooldownMs: 120000, w: { day: 1, dusk: 2, night: 2, deepNight: 1, dawn: 1 } },
         shadow: { cooldownMs: 120000, visual: true, sudden: true, w: { dusk: 1, night: 2, deepNight: 3 } },
-        watcher: { cooldownMs: 180000, visual: true, w: { night: 1, deepNight: 2 } }
+        watcher: { cooldownMs: 180000, visual: true, w: { night: 1, deepNight: 2 } },
+        /* made sounds (synthesized, they need the audio context); nw: Nightmare's weights (more
+         * kinds, breathing and impacts only then, each in a fuller variant) */
+        scream: { cooldownMs: 90000, made: true, w: { night: 1, deepNight: 2 }, nw: { dusk: 1, night: 2, deepNight: 3 } },
+        growl: { cooldownMs: 150000, made: true, w: { night: 1, deepNight: 1 }, nw: { dusk: 1, night: 2, deepNight: 2 } },
+        footsteps: { cooldownMs: 150000, made: true, w: { dusk: 1, night: 1, deepNight: 1 }, nw: { dusk: 1, night: 2, deepNight: 2 } },
+        'static': { cooldownMs: 120000, made: true, w: { day: 1, dusk: 1, night: 1, deepNight: 1, dawn: 1 }, nw: { day: 1, dusk: 1, night: 2, deepNight: 2, dawn: 1 } },
+        breathing: { cooldownMs: 240000, made: true, w: {}, nw: { night: 1, deepNight: 2 } },
+        impact: { cooldownMs: 180000, made: true, w: {}, nw: { night: 1, deepNight: 2 } }
     };
     var NIGHTFALL_MS = 300000, SPAWN_QUIET_MS = 8000, DEATH_GAP_MS = 10000, SIGNAL_GAP_MS = 30000, MAX_SOUNDS = 2;
     /* the handoff's palette over the player's menu / HUD colours */
@@ -893,12 +902,14 @@
         var scares = setting('dyingLightScares') !== false && !setting('streamMode') && !constrained && !noMotion();
         /* Legend's Reduced motion (on by default): no sudden figure, only the slow faint watcher */
         var calm = !!setting('reducedMotion');
+        /* the made sounds: not with the system's reduced motion or a busy page either */
+        var made = madeOk(constrained), rich = !!p.rich;
         var total = 0, k, pick = null;
-        for (k in EVENTS) total += weight(k, E, ph, scares, calm);
+        for (k in EVENTS) total += weight(k, E, ph, scares, calm, made, rich);
         if (!(total > 0)) return;
         var r = rnd() * total;
         for (k in EVENTS) {
-            var w = weight(k, E, ph, scares, calm);
+            var w = weight(k, E, ph, scares, calm, made, rich);
             if (w > 0) { pick = k; if (r < w) break; r -= w; }
         }
         k = pick;
@@ -906,14 +917,17 @@
         lastEventAt = E;
         if (k === 'radio') {
             radioN = radioN % RADIO.length;
+            /* the call comes through a moment of static */
+            if (made) sfx('static', false, 0.5, 'radioStatic');
             play(RADIO[radioN], LEVEL.radio);
             radioN++;
             if (p.toasts) toast(tx('pkg.dlv3dir.radio' + radioN));
-        } else ghost(k === 'watcher', E);
+        } else if (EVENTS[k].made) sfx(k, rich);
+        else ghost(k === 'watcher', E);
     }
-    function weight(k, E, ph, scares, calm) {
-        var ev = EVENTS[k], w = ev.w[ph.id] || 0;
-        if (!w || (ev.visual && !scares) || (ev.sudden && calm) || (lastAt[k] != null && E - lastAt[k] < ev.cooldownMs)) return 0;
+    function weight(k, E, ph, scares, calm, made, rich) {
+        var ev = EVENTS[k], w = ((rich && ev.nw) || ev.w)[ph.id] || 0;
+        if (!w || (ev.made && !made) || (ev.visual && !scares) || (ev.sudden && calm) || (lastAt[k] != null && E - lastAt[k] < ev.cooldownMs)) return 0;
         return w;
     }
     function nightfall(E, p) {
@@ -1071,7 +1085,7 @@
     }
     function acClose() {
         var c = ac;
-        ac = acOut = acNoise = bed = null;
+        ac = acOut = acNoise = bed = fx = null;
         acVol = -1;
         held = false;
         oldBeds.length = 0;
@@ -1092,6 +1106,7 @@
     function acHold() {
         if (!ac || held) return;
         held = true;
+        fxCut();
         bedCut();
         hbQuiet(true);
         if (ac.state === 'running') { try { var pr = ac.suspend(); if (pr && pr.catch) pr.catch(function () { }); } catch (e) { } }
@@ -1209,6 +1224,7 @@
             var b = oldBeds[i];
             if (!all && ac && ac.currentTime < b.end) continue;
             try { b.g.disconnect(); } catch (e) { }
+            if (b.parts) for (var j = 0; j < b.parts.length; j++) { try { b.parts[j].disconnect(); } catch (e) { } }
             oldBeds.splice(i, 1);
         }
     }
@@ -1258,6 +1274,194 @@
         o.connect(g); g.connect(dest);
         o.start(t0); o.stop(t0 + 0.22);
     }
+
+    /* -- the made event sounds: distant screams, growls, footsteps, breathing, radio static and
+     * interrupted broadcasts, impacts. One at a time, through one bus with a short echo (distance)
+     * into the same output; Nightmare plays fuller variants (rich: two voices, closer, coming
+     * nearer, a garbled voice in the static, a second blow). A spawn, a server change and every
+     * rest of the context cut the one playing. Levels inside the output: 0.15-0.35. -- */
+    var fx = null, sfxN = {};
+    function fxMake() {
+        if (fx) return fx;
+        var out = ac.createGain(), dry = ac.createGain(), wet = ac.createGain(), dl = ac.createDelay(1), fb = ac.createGain(), lp = ac.createBiquadFilter();
+        dry.connect(out);
+        wet.connect(dl);
+        dl.delayTime.value = 0.32;
+        lp.type = 'lowpass'; lp.frequency.value = 1800;
+        fb.gain.value = 0.35;
+        dl.connect(lp); lp.connect(fb); fb.connect(dl); lp.connect(out);
+        out.connect(acOut);
+        fx = { out: out, parts: [dry, wet, dl, fb, lp], end: 0 };
+        return fx;
+    }
+    function fxCut() {
+        if (!fx) return;
+        if (ac) {
+            glide(fx.out.gain, 0, 0.03);
+            oldBeds.push({ g: fx.out, srcs: [], parts: fx.parts, end: ac.currentTime + 0.3 });
+        }
+        fx = null;
+    }
+    /* where one sound enters the bus: its side (-1..1), how much of it is heard near and far */
+    function voice(near, far, x) {
+        var inp = ac.createGain(), at = inp, dg = ac.createGain(), wg = ac.createGain();
+        if (typeof ac.createStereoPanner === 'function') {
+            var pn = ac.createStereoPanner();
+            pn.pan.value = x;
+            inp.connect(pn);
+            at = pn;
+        }
+        dg.gain.value = near; wg.gain.value = far;
+        at.connect(dg); at.connect(wg);
+        dg.connect(fx.parts[0]); wg.connect(fx.parts[1]);
+        return inp;
+    }
+    function env(prm, t, a, peak, hold, rel) {
+        prm.setValueAtTime(0.0001, t);
+        prm.exponentialRampToValueAtTime(peak, t + a);
+        prm.setValueAtTime(peak, t + a + hold);
+        prm.exponentialRampToValueAtTime(0.0001, t + a + hold + rel);
+    }
+    function osc(type, hz, t, end) {
+        var o = ac.createOscillator();
+        o.type = type;
+        o.frequency.setValueAtTime(hz, t);
+        o.start(t);
+        o.stop(end);
+        return o;
+    }
+    /* noise through one filter, with its own envelope; gives the filter (for a sweep) */
+    function burst(t, a, hold, rel, type, hz, q, peak, dest) {
+        var s = noiseSrc(), f = ac.createBiquadFilter(), g = ac.createGain();
+        f.type = type; f.frequency.setValueAtTime(hz, t); f.Q.value = q;
+        s.connect(f); f.connect(g); g.connect(dest);
+        env(g.gain, t, a, peak, hold, rel);
+        s.start(t, rnd() * 0.9);
+        s.stop(t + a + hold + rel + 0.05);
+        return f;
+    }
+    function scream(t, rich) {
+        var dur = rich ? 2.2 : 1.5, inp = voice(0.45, 0.9, rnd() * 1.6 - 0.8);
+        var bp = ac.createBiquadFilter(), lp = ac.createBiquadFilter(), g = ac.createGain();
+        bp.type = 'bandpass'; bp.frequency.value = 1150; bp.Q.value = 2.5;
+        /* far away: the top of it is lost */
+        lp.type = 'lowpass'; lp.frequency.value = 1900;
+        bp.connect(lp); lp.connect(g); g.connect(inp);
+        env(g.gain, t, 0.18, 0.34, dur - 0.7, 0.5);
+        for (var i = 0; i < (rich ? 2 : 1); i++) {
+            var f0 = 520 + 90 * i + 60 * rnd(), o = osc('sawtooth', f0, t, t + dur + 0.1), vib = osc('sine', 5.2 + 1.3 * i, t, t + dur + 0.1), vg = ac.createGain();
+            o.frequency.linearRampToValueAtTime(f0 * 1.9, t + 0.32);
+            o.frequency.exponentialRampToValueAtTime(f0 * 0.8, t + dur);
+            vg.gain.value = 18 + 10 * i;
+            vib.connect(vg); vg.connect(o.frequency);
+            o.connect(bp);
+        }
+        return dur + 1.2;
+    }
+    function growl(t, rich) {
+        var dur = rich ? 2.1 : 1.5, inp = voice(rich ? 0.8 : 0.5, rich ? 0.3 : 0.6, rnd() * 1.4 - 0.7), g = ac.createGain();
+        g.connect(inp);
+        env(g.gain, t, 0.25, rich ? 0.34 : 0.26, dur - 0.65, 0.4);
+        /* a rough throat: noise in a low band, shaken about 25 times a second, over a low voice */
+        var s = noiseSrc(), f = ac.createBiquadFilter(), am = ac.createGain(), m = osc('sawtooth', 22 + 6 * rnd(), t, t + dur + 0.1), mg = ac.createGain();
+        f.type = 'bandpass'; f.frequency.value = 150; f.Q.value = 2.5;
+        am.gain.value = 0.6; mg.gain.value = 0.5;
+        m.connect(mg); mg.connect(am.gain);
+        s.connect(f); f.connect(am); am.connect(g);
+        s.start(t, rnd() * 0.9); s.stop(t + dur + 0.1);
+        var o = osc('sawtooth', rich ? 52 : 60, t, t + dur + 0.1), lp = ac.createBiquadFilter(), og = ac.createGain();
+        o.frequency.linearRampToValueAtTime(rich ? 41 : 48, t + dur);
+        lp.type = 'lowpass'; lp.frequency.value = 280;
+        og.gain.value = 0.35;
+        o.connect(lp); lp.connect(og); og.connect(g);
+        return dur + 0.8;
+    }
+    function footsteps(t, rich) {
+        var n = rich ? 7 : 5, gap = rich ? 0.5 : 0.6, x0 = rnd() < 0.5 ? -0.8 : 0.8;
+        for (var i = 0; i < n; i++) {
+            /* Nightmare: coming nearer (louder, to the middle); else passing by (up and down, across) */
+            var k = i / (n - 1), lvl = rich ? 0.08 + 0.22 * k : 0.1 + 0.16 * Math.sin(Math.PI * k);
+            var at = t + i * gap + rnd() * 0.04, inp = voice(1, 0.35, rich ? x0 * (1 - 0.8 * k) : x0 * (1 - 2 * k));
+            burst(at, 0.005, 0.02, 0.06, 'lowpass', 520, 0.8, lvl, inp);
+            /* the grit under the foot */
+            burst(at + 0.015, 0.003, 0.01, 0.03, 'bandpass', 1900, 1.2, lvl * 0.35, inp);
+            knock(at, lvl * 0.7, inp);
+        }
+        return n * gap + 0.8;
+    }
+    function breathing(t, rich) {
+        var n = rich ? 3 : 2, cyc = rich ? 2.1 : 2.8, inp = voice(rich ? 0.9 : 0.45, rich ? 0.2 : 0.7, rnd() * 1.2 - 0.6);
+        for (var i = 0; i < n; i++) {
+            var at = t + i * cyc;
+            burst(at, 0.5, 0.2, 0.5, 'bandpass', 1100, 0.9, rich ? 0.22 : 0.14, inp);
+            burst(at + 1, 0.3, 0.3, 0.7, 'bandpass', rich ? 600 : 750, 0.7, rich ? 0.26 : 0.17, inp);
+            if (rich) {
+                /* a rasp in the breath out */
+                var o = osc('sawtooth', 85, at + 1, at + 2.4), lp = ac.createBiquadFilter(), g = ac.createGain();
+                lp.type = 'lowpass'; lp.frequency.value = 300;
+                o.connect(lp); lp.connect(g); g.connect(inp);
+                env(g.gain, at + 1, 0.3, 0.05, 0.3, 0.7);
+            }
+        }
+        return n * cyc + 0.6;
+    }
+    /* radio static, a broadcast tone heard where it drops; rich: a garbled voice in it */
+    function crackle(t, rich, len) {
+        var dur = len || (rich ? 2.6 : 1.8), end = t + dur, inp = voice(0.9, 0.15, rnd() * 0.6 - 0.3);
+        var s = noiseSrc(), hp = ac.createBiquadFilter(), bp = ac.createBiquadFilter(), g = ac.createGain(), cg = ac.createGain();
+        hp.type = 'highpass'; hp.frequency.value = 1200;
+        bp.type = 'bandpass'; bp.frequency.value = 2600; bp.Q.value = 0.6;
+        s.connect(hp); hp.connect(bp); bp.connect(g); g.connect(inp);
+        s.start(t, rnd() * 0.9); s.stop(end + 0.05);
+        osc('sine', 1000, t, end + 0.05).connect(cg);
+        if (rich) {
+            var vo = osc('sawtooth', 135, t, end + 0.05), vf = ac.createBiquadFilter(), vv = osc('sine', 3.1, t, end + 0.05), vg = ac.createGain();
+            vf.type = 'bandpass'; vf.frequency.value = 850; vf.Q.value = 6;
+            vg.gain.value = 30;
+            vv.connect(vg); vg.connect(vo.frequency);
+            vo.connect(vf); vf.connect(cg);
+        }
+        cg.connect(inp);
+        g.gain.setValueAtTime(0, t);
+        cg.gain.setValueAtTime(0, t);
+        for (var at = t; at < end; at += 0.04 + 0.14 * rnd()) {
+            var lv = rnd();
+            g.gain.setValueAtTime(lv < 0.25 ? 0.02 : 0.08 + 0.14 * lv, at);
+            cg.gain.setValueAtTime(lv < 0.25 ? 0.05 : 0, at);
+        }
+        g.gain.setValueAtTime(0, end);
+        cg.gain.setValueAtTime(0, end);
+        return dur + 0.3;
+    }
+    /* a far blow on metal; rich: a second one */
+    function impact(t, rich) {
+        var inp = voice(0.35, 1, rnd() * 1.6 - 0.8);
+        for (var i = 0; i < (rich ? 2 : 1); i++) {
+            var at = t + 0.45 * i, lvl = i ? 0.7 : 1;
+            burst(at, 0.005, 0, 0.4, 'lowpass', 2600, 0.7, 0.32 * lvl, inp).frequency.exponentialRampToValueAtTime(180, at + 0.35);
+            knock(at, 0.5 * lvl, inp);
+            var rg = ac.createGain();
+            rg.connect(inp);
+            env(rg.gain, at, 0.003, 0.05 * lvl, 0, 0.9);
+            osc('sine', 310 * (i ? 0.9 : 1), at, at + 1).connect(rg);
+            osc('sine', 467 * (i ? 0.9 : 1), at, at + 1).connect(rg);
+        }
+        return (rich ? 0.45 : 0) + 1.5;
+    }
+    var SFX = { scream: scream, growl: growl, footsteps: footsteps, breathing: breathing, 'static': crackle, impact: impact };
+    /* the made sounds can play now: the context runs, none plays, a free page, no reduced motion */
+    function madeOk(constrained) {
+        return !!(ac && !held && ac.state === 'running' && !(fx && ac.currentTime < fx.end)) && !constrained && !noMotion();
+    }
+    function sfx(k, rich, len, as) {
+        if (!ac || held || ac.state !== 'running' || typeof SFX[k] !== 'function') return false;
+        var t = ac.currentTime;
+        if (fx && t < fx.end) return false;
+        try { fx = fxMake(); fx.end = t + SFX[k](t + 0.05, !!rich, len); } catch (e) { warn('sound ' + k, e); return false; }
+        as = as || k;
+        sfxN[as] = (sfxN[as] || 0) + 1;
+        return true;
+    }
     /* each tick: what is to be heard now */
     function sound() {
         var r = rec(), p = profile(r);
@@ -1284,6 +1488,7 @@
         stopSounds();
         hideGhost();
         hbQuiet(true);
+        fxCut();
         if (on) quietUntil = clock(now()) + SPAWN_QUIET_MS;
     }
     /* the replay's look changed (a seek, its clock, its end): shown at once, not at the next tick */
@@ -1302,6 +1507,7 @@
         stopSounds();
         hideGhost();
         hbQuiet(true);
+        fxCut();
     }
     function sub(name, fn) {
         var ev = W.LMEvents;
@@ -1315,7 +1521,7 @@
         timer = 0; acc = 0; runAt = 0; live = false; lastTick = 0; late = 0; okTicks = 0; busy = false;
         phase = null; wasRec = false; nextRollAt = 0; lastEventAt = -Infinity; lastAt = {}; lastMajorAt = -Infinity;
         quietUntil = 0; lastDeathAt = -Infinity; lastSignalAt = -Infinity; deathN = 0; radioN = 0;
-        shown = null; dropPend(); failed = {};
+        shown = null; dropPend(); failed = {}; sfxN = {};
     }
     function start(g) {
         var d = W.document;
@@ -1478,7 +1684,8 @@
                 sounds: audios.length, timer: !!timer, listeners: subs.length + (onVis ? 1 : 0), ghost: !!ghostEl,
                 threat: { on: tOn, level: tLvl, asked: tOn && tAsk(), timer: !!tTimer, listeners: tSubs.length + (tVis ? 1 : 0), shown: !!tEl },
                 audio: { ctx: ac ? ac.state : null, bed: bed ? bed.id + (bed.rich ? '+' : '') : null, fading: oldBeds.length,
-                    heart: { level: hb.lvl, bpm: Math.round(hb.bpm), vol: hb.vol, beats: hb.beats } }
+                    heart: { level: hb.lvl, bpm: Math.round(hb.bpm), vol: hb.vol, beats: hb.beats },
+                    fx: !!(fx && ac && ac.currentTime < fx.end), events: Object.assign({}, sfxN) }
             };
         }
     });
