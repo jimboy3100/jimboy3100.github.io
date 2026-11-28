@@ -348,6 +348,9 @@ for (let i = 0; i < 50; i++) body();
     };
     const ids = (sp) => sp.playerCellIDs.map((id) => id - sp.number * 4294967296).sort((a, b) => a - b).join(',');
 
+    /* LMEvents playerSpawned (ogario.v4.js lmMbPlayerEvent): asked once per life, at its first own cell */
+    const spawned = [];
+    g.lmMbPlayerEvent = (t, p) => { if (t === 'playerSpawned') spawned.push(p.number + ':' + p._lmLife); };
     own32(u, 1001);
     const pending = u.getOwnPlayerCells().length === 0 && ids(u) === '1001' && u.active === null;
     upd(u, [], [rec(1001)], []);
@@ -359,6 +362,8 @@ for (let i = 0; i < 50; i++) body();
     own32(u, 1002);
     check('record before ownership: the known cell is adopted by opcode 32, once (32 twice), same life',
         notYet && uc(1002)._lmOwner === u && u.getOwnPlayerCells().length === 2 && ids(u) === '1001,1002' && u._lmLife === 1 && ownOk(u));
+    check('playerSpawned: once for that life (the second own cell is no new life)', spawned.join() === '2:1', spawned.join());
+    delete g.lmMbPlayerEvent;
     own32(v, 1001);
     upd(v, [], [rec(1001)], []);
     check('another unit with the same raw id: its own cell, apart from this unit\'s',

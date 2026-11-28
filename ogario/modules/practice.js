@@ -191,8 +191,8 @@
         ses = { cfg: c, prev: prev, errors: 0, acc: 0, last: performance.now(), idleAt: 0, done: false, paused: false };
         setRecording(true);
         try { l.flushCellsData(); } catch (e) { }
+        /* lmSetMbUnit: the one writer of the controlled unit (it sends multiboxSwap) */
         if (typeof window.lmSetMbUnit === 'function') window.lmSetMbUnit(0);
-        else window.multiboxPlayerEnabled = null;
         window.mainPlayerDeadMbActive = false;
         l.play = false;
         l._spawnTransitGate = false;

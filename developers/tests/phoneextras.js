@@ -67,7 +67,7 @@ const lmBlock = ['sendSpectate() {', 'sendFreeSpectate() {', '_lmSpecFree() {'].
 }).join(',\n');
 const mkLM = (st) => {
   ctx._sent = [];
-  vm.runInContext('var lmMultiboxControlledPlayer = function () { return 0; }; var _L = {' + lmBlock + ', sendAction: function (o) { _sent.push(o); } };', ctx);
+  vm.runInContext('var lmMultiboxControlledPlayer = function () { return 1; }; var _L = {' + lmBlock + ', sendAction: function (o) { _sent.push(o); } };', ctx);
   return Object.assign(vm.runInContext('_L', ctx), { play: false, isFreeSpectate: false, isSpectateEnabled: false, _isWorldSpectating: false, isLegendWorld: false, serverType: 'agario' }, st);
 };
 let L = mkLM({ isSpectateEnabled: true });

@@ -223,26 +223,127 @@
 })();
 window.spects = window.spects || [];
 var spects = window.spects;
-/* Look up a multibox unit by its .number property.
+/* Multibox players (lmMbPlayers): which client plays in which slot. P1 is the main client
+ * (window.legendmod), P2..P6 are spect.js units (player true) in window.spects; the registry
+ * only points at them, everything else is read from the objects themselves. A unit keeps its
+ * slot for its whole life here (reconnects included) and no slot is renumbered when another
+ * one goes. Each occupancy of a slot has its own slotEpoch, so a late callback of a removed
+ * unit is told apart from the next unit in the same slot. The source is the connection number
+ * (spect.number: cell.spectator, composite cell ids, food and look keys), which the Full Map
+ * tiles and the in-game spectator share; only players get slots.
+ * reserve() holds the lowest free slot while its unit is made (addBox; at most six players,
+ * reservations included, and none while another one is being made), attach() registers the
+ * unit (never a second unit in a slot or under a source), release() frees the slot (a stale
+ * epoch frees nothing). ordered (the units in slot order) changes only there. tokenSlot: the
+ * one slot whose unit logs in with the other provider's account (spect.js case 242). */
+var LM_MB_MAX_PLAYERS = 6;
+/* how long after the last player's death its menu may still be hidden by a unit spawning (spect.js) */
+var LM_MB_DEATH_MENU_MS = 30000;
+var lmMbPlayers = window.lmMbPlayers && window.lmMbPlayers._lm === 1 ? window.lmMbPlayers : (window.lmMbPlayers = {
+    _lm: 1,
+    slots: [null, null, null, null, null, null, null],
+    reserved: [0, 0, 0, 0, 0, 0, 0],
+    bySource: new Map(),
+    ordered: [],
+    activeSlot: 1,
+    tokenSlot: 0,
+    revision: 0,
+    _epoch: 0,
+    _busy: false,
+    get: function (slot) {
+        if (slot === 1) return window.legendmod || null;
+        return slot >= 2 && slot <= LM_MB_MAX_PLAYERS ? this.slots[slot] || null : null;
+    },
+    getBySource: function (n) { return this.bySource.get(+n) || null; },
+    isCurrent: function (sp) { return !!sp && sp.slotId >= 2 && sp.slotId <= LM_MB_MAX_PLAYERS && this.slots[sp.slotId] === sp; },
+    /* P1 and every slot taken or held */
+    count: function () {
+        var n = 1;
+        for (var i = 2; i <= LM_MB_MAX_PLAYERS; i++) if (this.slots[i] || this.reserved[i]) n++;
+        return n;
+    },
+    reserve: function () {
+        if (this._busy) return null;
+        for (var i = 2; i <= LM_MB_MAX_PLAYERS; i++) {
+            if (this.slots[i] || this.reserved[i]) continue;
+            this.reserved[i] = ++this._epoch;
+            return { slotId: i, slotEpoch: this._epoch };
+        }
+        return null;
+    },
+    attach: function (sp) {
+        var s = sp ? sp.slotId : 0;
+        if (!sp || sp.player !== true || !(s >= 2 && s <= LM_MB_MAX_PLAYERS) || this.slots[s] || !sp.slotEpoch || this.reserved[s] !== sp.slotEpoch) return false;
+        var o = this.bySource.get(sp.number);
+        if ((o && o !== sp) || this.ordered.indexOf(sp) !== -1) return false;
+        this.slots[s] = sp;
+        this.reserved[s] = 0;
+        this.bySource.set(sp.number, sp);
+        this._rebuild();
+        return true;
+    },
+    release: function (slot, epoch) {
+        if (!(slot >= 2 && slot <= LM_MB_MAX_PLAYERS) || !epoch) return false;
+        var sp = this.slots[slot];
+        if (sp && sp.slotEpoch === epoch) {
+            if (this.bySource.get(sp.number) === sp) this.bySource.delete(sp.number);
+            this.slots[slot] = null;
+        } else if (!sp && this.reserved[slot] === epoch) this.reserved[slot] = 0;
+        else return false;
+        if (this.tokenSlot === slot) this.tokenSlot = 0;
+        this._rebuild();
+        return true;
+    },
+    /* every unit slot freed (all units closed: server change, lost main connection); returns them */
+    releaseAll: function () {
+        var gone = this.ordered.slice();
+        for (var i = 2; i <= LM_MB_MAX_PLAYERS; i++) { this.slots[i] = null; this.reserved[i] = 0; }
+        this.bySource.clear();
+        this.tokenSlot = 0;
+        this._rebuild();
+        return gone;
+    },
+    _rebuild: function () {
+        this.ordered.length = 0;
+        for (var i = 2; i <= LM_MB_MAX_PLAYERS; i++) if (this.slots[i]) this.ordered.push(this.slots[i]);
+        this.revision++;
+    }
+});
+/* Look up a multibox unit by its connection number (.number): the registry, else (a unit not
+ * made by addBox: an older spect.js, a script) the units in spects.
  * Unit numbers are max(existing)+1, NOT necessarily array index+1.
  * After deleting a middle unit the indices drift. Full Map tiles and the in-game spectator
  * share the numbering (a unit opened while Full Map runs gets 16 or more), but a spectator
  * (player false) is never the unit you control. */
 function getActiveSpect(unitNumber) {
-    if (!unitNumber || typeof spects === 'undefined' || !spects) return null;
+    if (!unitNumber) return null;
+    var sp = typeof lmMbPlayers !== 'undefined' ? lmMbPlayers.bySource.get(unitNumber) : null;
+    if (sp) return sp;
+    if (typeof spects === 'undefined' || !spects) return null;
     for (var i = 0; i < spects.length; i++) {
         if (spects[i] && spects[i].number === unitNumber && spects[i].player !== false) return spects[i];
     }
     return null;
 }
+/* The slot of a player: 1 for the main client (or none), a unit's slotId, 2 for a unit without
+ * one (not made by addBox: the old single unit) */
+function lmMbSlotOf(p) {
+    if (!p || p === window.legendmod) return 1;
+    return p.slotId >= 2 ? p.slotId : 2;
+}
+window.lmMbSlotOf = lmMbSlotOf;
 /* The one place that changes the multibox unit you control (window.multiboxPlayerEnabled:
  * a unit number, null = the main player). LMEvents 'multiboxSwap' is sent from here, once per
- * real change, so every path reports it: hotkeys, a unit dying, focus at spawn, reconnects. */
+ * real change, so every path reports it: hotkeys, a unit dying, focus at spawn, reconnects.
+ * lmMbPlayers.activeSlot follows it (slot and previousSlot in the event). */
 function lmSetMbUnit(unit) {
-    var prev = +window.multiboxPlayerEnabled || 0;
+    var prev = +window.multiboxPlayerEnabled || 0, reg = typeof lmMbPlayers !== 'undefined' ? lmMbPlayers : null;
+    var prevSlot = reg ? reg.activeSlot || 1 : (prev ? 2 : 1);
     unit = +unit || 0;
     window.multiboxPlayerEnabled = unit || null;
-    if (unit !== prev && window.LMEvents._has('multiboxSwap')) window.LMEvents.emit('multiboxSwap', { unit: unit, previous: prev });
+    var slot = unit ? lmMbSlotOf(getActiveSpect(unit) || {}) : 1;
+    if (reg) reg.activeSlot = slot;
+    if (unit !== prev && window.LMEvents._has('multiboxSwap')) window.LMEvents.emit('multiboxSwap', { unit: unit, previous: prev, slot: slot, previousSlot: prevSlot });
 }
 /* scope of a death for LMEvents 'death' (unit: 0 = the main player, else a multibox unit number):
  * 'unit' while the main player or another multibox unit still lives (only that one is lost, the
@@ -269,6 +370,133 @@ function lmMbAlive(p) {
 }
 window.lmMbAlive = lmMbAlive;
 window.lmSetMbUnit = lmSetMbUnit;
+/* The multibox units in slot order (lmMbPlayers.ordered), then any unit in spects without a
+ * slot (not made by addBox), into out (a new list without it). Spectators never. */
+function lmMbUnits(out) {
+    out = out || [];
+    out.length = 0;
+    var reg = lmMbPlayers, list = window.spects, i, s;
+    for (i = 0; i < reg.ordered.length; i++) out.push(reg.ordered[i]);
+    for (i = 0; list && i < list.length; i++) {
+        s = list[i];
+        if (s && s.player === true && !reg.isCurrent(s) && out.indexOf(s) === -1) out.push(s);
+    }
+    return out;
+}
+window.lmMbUnits = lmMbUnits;
+var _lmMbList = [];
+/* how many of our players live (the main one and the units) */
+function lmMbLiving() {
+    var n = lmMbAlive(window.legendmod) ? 1 : 0, u = lmMbUnits(_lmMbList);
+    for (var i = 0; i < u.length; i++) if (lmMbAlive(u[i])) n++;
+    return n;
+}
+/* the player the mouse and keys move now: the focused unit, else the main client */
+function lmMbFocused() {
+    var n = +window.multiboxPlayerEnabled || 0;
+    return n ? getActiveSpect(n) : window.legendmod || null;
+}
+/* Where the focus goes when the unit sp loses it (it died, its socket closed, it was removed):
+ * the main player while it plays (as before), else the next living unit after it in slot order
+ * (wrapping round; never a spectator), else none: 0, the main player's view. With "Auto-switch
+ * focus after death" off a death leaves it on the main player. A connection number. */
+function lmMbFallbackUnit(sp, reason) {
+    var lm = window.legendmod;
+    if (lm && lm.play) return 0;
+    if (reason === 'death' && typeof defaultmapsettings !== 'undefined' && defaultmapsettings && defaultmapsettings.mbSwitchAfterDeath === false) return 0;
+    var u = lmMbUnits(_lmMbList), k = u.indexOf(sp), n = u.length;
+    for (var i = 1; i <= n; i++) {
+        var s = u[(k + i + n) % n];
+        if (s && s !== sp && lmMbAlive(s)) return +s.number || 0;
+    }
+    return 0;
+}
+window.lmMbFallbackUnit = lmMbFallbackUnit;
+/* how many players Add Player may open (the main one included): Settings "Multibox slots",
+ * 2 to 6. It opens nothing by itself. */
+function lmMbCapacity() {
+    var d = typeof defaultmapsettings !== 'undefined' && defaultmapsettings ? Math.floor(+defaultmapsettings.multiboxAmount) : 0;
+    return d >= 2 ? Math.min(LM_MB_MAX_PLAYERS, d) : 2;
+}
+window.lmMbCapacity = lmMbCapacity;
+/* The profile a player plays: application.mbSlots[slot - 1] (P1 index 0, P2 index 1 ...), else
+ * the selected profile (P1) or the second one (a unit). */
+function lmMbProfileIdx(p) {
+    var app = window.application, slot = lmMbSlotOf(p), s = app && app.mbSlots;
+    if (s && s[slot - 1] != null) return s[slot - 1];
+    return app ? (slot === 1 ? app.selectedProfile : app.selectedOldProfile) : 0;
+}
+window.lmMbProfileIdx = lmMbProfileIdx;
+/* legendmod.multiBoxPlayerExists: one writer, true while a unit (player) exists */
+function lmMbSyncExists() {
+    var lm = window.legendmod, has = lmMbUnits(_lmMbList).length > 0;
+    if (lm) lm.multiBoxPlayerExists = has;
+    return has;
+}
+window.lmMbSyncExists = lmMbSyncExists;
+/* 'alive', 'dead', 'connecting' (no life on this socket yet) or 'offline' (it gave up
+ * reconnecting) */
+function lmMbStatus(p) {
+    if (!p) return 'offline';
+    if (p === window.legendmod) return p.play ? 'alive' : 'dead';
+    if (lmMbAlive(p)) return 'alive';
+    if (!p.socket && !p.reconnectTimer) return 'offline';
+    if (!p.connectionOpened || (p.active == null && !p._lmSpawnedOnce)) return 'connecting';
+    return 'dead';
+}
+window.lmMbStatus = lmMbStatus;
+/* LMEvents for one player's change, each once per change of what it is about: 'playerAdded' /
+ * 'playerRemoved' (the slot's occupancy, slotEpoch), 'playerSpawned' / 'playerDied' (the life,
+ * _lmLife), 'playerDisconnected' (the socket, connectionGeneration). p: the main client or a
+ * unit. Nothing is built while nobody listens. */
+var _lmMbEvBy = { playerAdded: 'slotEpoch', playerRemoved: 'slotEpoch', playerSpawned: '_lmLife', playerDied: '_lmLife', playerDisconnected: 'connectionGeneration' };
+function lmMbPlayerEvent(type, p, reason) {
+    var by = _lmMbEvBy[type];
+    if (!p || !by) return;
+    var v = p[by] || 0, seen = p._lmEvSeen || (p._lmEvSeen = {});
+    if (seen[type] === v) return;
+    seen[type] = v;
+    if (!window.LMEvents._has(type)) return;
+    var main = p === window.legendmod, slot = lmMbSlotOf(p);
+    window.LMEvents.emit(type, {
+        slot: slot, source: main ? 0 : +p.number || 0, slotEpoch: main ? 0 : +p.slotEpoch || 0,
+        socketGeneration: main ? +p._connectSeq || 0 : +p.connectionGeneration || 0, life: +p._lmLife || 0,
+        role: main ? 'main' : 'unit', active: lmMbFocused() === p,
+        living: lmMbLiving(), reason: reason || ''
+    });
+}
+window.lmMbPlayerEvent = lmMbPlayerEvent;
+/* Closes one unit for good (removePlayer, a captcha): its life ends ('removed': no death menu
+ * latch), the focus moves on if it had it, its socket closes, it leaves spects and its slot is
+ * freed (the others keep theirs). Once per unit. */
+function lmMbRemoveUnit(sp, reason) {
+    if (!sp || sp.player !== true || sp._lmRemoved) return false;
+    sp._lmRemoved = true;
+    reason = reason || 'removed';
+    if (sp.active === true && typeof sp.terminate === 'function') sp.terminate(reason);
+    else if (+window.multiboxPlayerEnabled === +sp.number) lmSetMbUnit(lmMbFallbackUnit(sp, reason));
+    if (typeof sp.closeConnection === 'function') sp.closeConnection();
+    var list = window.spects, i = list ? list.indexOf(sp) : -1;
+    if (i !== -1) list.splice(i, 1);
+    if (sp.slotId) lmMbPlayers.release(sp.slotId, sp.slotEpoch);
+    lmMbSyncExists();
+    lmMbPlayerEvent('playerRemoved', sp, reason);
+    return true;
+}
+window.lmMbRemoveUnit = lmMbRemoveUnit;
+/* Login with the other provider's account (spect.js case 242): one unit at a time holds it, the
+ * first to ask while no unit in a slot holds it; the others play as guests (one account on two
+ * sockets logs the other out, and they kept kicking each other). A unit without a slot (older
+ * spect.js) asks as before. */
+function lmMbTokenSlot(sp) {
+    if (!sp || !(sp.slotId >= 2)) return true;
+    var reg = lmMbPlayers, h = reg.tokenSlot;
+    if (h && h !== sp.slotId && reg.slots[h]) return false;
+    if (!reg.isCurrent(sp)) return false;
+    reg.tokenSlot = sp.slotId;
+    return true;
+}
+window.lmMbTokenSlot = lmMbTokenSlot;
 window.OgVer = 3.706;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
@@ -3383,23 +3611,32 @@ window.lmFoodStats = lmFoodStats;
  * drawn over the skin and under the nick and mass.
  */
 var LM_MB_RING_MIN_SCREEN_PX = 2; /* never thinner than this on screen */
-/* the colour of each player slot (P1 = the main client, P2..P6 = the units in slot order, see
- * lmMbEachPlayer): ring, minimap marker */
+/* the colour of each player slot (P1 = the main client, P2..P6 = the units in their slots, see
+ * lmMbEachPlayer): ring, minimap marker, roster chip and the phone indicator */
 var LM_MB_RING_DEFAULT_COLORS = { 1: '#FF2FD6', 2: '#00E5FF', 3: '#A855F7', 4: '#10B981', 5: '#FFB020', 6: '#FF5A36' };
 var LM_MB_RING_SIZE = 6; /* the ring's width in % of the cell's radius */
-/* 1 = the main player's own cell, 2 = a multibox unit's own cell, 0 = neither */
+/* The slot of the player that owns the cell: 1 = the main player's own cell, 2..6 = the own
+ * cell of the unit in that slot (its owner, cell._lmOwner; 2 for a unit without a slot), 0 =
+ * neither. Two players: 1 / 2 as before. */
 function lmMultiboxRingPlayer(cell) {
     if (!cell || cell.removed || cell.isFood || cell.isVirus || cell.isEjected) return 0;
-    if (cell.spectator > 0) return cell.isPlayerCellMulti ? 2 : 0;
+    if (cell.spectator > 0) {
+        if (!cell.isPlayerCellMulti) return 0;
+        var o = cell._lmOwner;
+        return o && o.slotId >= 2 ? o.slotId : 2;
+    }
     return cell.isPlayerCell ? 1 : 0;
 }
-/* The player the mouse and keys move now: 2 while a unit has the focus. */
+/* The slot of the player the mouse and keys move now: 1 = the main player, else the focused
+ * unit's (2 with two players). Callers ask "a unit?" with !== 1. */
 function lmMultiboxControlledPlayer() {
-    return window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled) ? 2 : 1;
+    var sp = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null;
+    return sp ? (sp.slotId >= 2 ? sp.slotId : 2) : 1;
 }
 /* C4: the player the mouse and keys move now, as window.core.split picks it (the selected
  * multibox unit when it exists, else the main player):
- * { index: 0 main | 1 unit, number: unit number (0 for the main player), playing: it has cells,
+ * { index: 0 main | 1 unit, number: unit number (0 for the main player), slotId: its slot (1 the
+ *   main player), sourceId: its connection number (0 the main one), playing: it has cells,
  *   cells: its own cells, mass: its total mass, minMass / maxMass: its smallest / biggest cell,
  *   refMass: the one opponents are compared with (maxMass with "biggest cell" selected, else
  *   minMass, as compareCells) }. min / max are measured from the cells here (the cached
@@ -3414,7 +3651,7 @@ function lmActiveUnit(lite) {
     if (!LM) return null;
     var n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null, src, cells = [], i;
     if (lite === true) {
-        if (sp) return { target: sp, transport: 'spect', slotId: sp.slotId || n, sourceId: n, sock: sp.socket, gen: sp.connectionGeneration, life: sp.playerCellIDs, alive: sp.player === true && sp.active === true };
+        if (sp) return { target: sp, transport: 'spect', slotId: sp.slotId >= 2 ? sp.slotId : 2, sourceId: n, sock: sp.socket, gen: sp.connectionGeneration, life: sp.playerCellIDs, alive: sp.player === true && sp.active === true };
         return { target: LM, transport: 'lm', slotId: LM.slotId || 1, sourceId: 0, sock: LM.socket, gen: LM._connectSeq || 0, life: window.application ? window.application._lmLifeStartAt : 0, alive: !!LM.play };
     }
     if (sp) src = typeof sp.getOwnPlayerCells === 'function' ? sp.getOwnPlayerCells() : [];
@@ -3429,7 +3666,7 @@ function lmActiveUnit(lite) {
     }
     var minMass = cells.length ? ~~(minS * minS / 100) : 0, maxMass = cells.length ? ~~(maxS * maxS / 100) : 0;
     return {
-        index: sp ? 1 : 0, number: sp ? n : 0,
+        index: sp ? 1 : 0, number: sp ? n : 0, slotId: sp ? (sp.slotId >= 2 ? sp.slotId : 2) : 1, sourceId: sp ? n : 0,
         playing: cells.length > 0 && (sp ? true : !!LM.play),
         cells: cells,
         mass: (sp ? +sp.playerMass : +LM.playerMass) || 0,
@@ -3598,10 +3835,17 @@ function lmMbBoxCells(cells, box) {
 /* Our players in slot order: P1 = the main client (window.legendmod), then the playing
  * spect.js units (player true; never a Full Map or in-game spectator) by unit number, alive
  * or not. fn(player, slot, arg) for each (slot 1..), returning true stops. Nothing is
- * allocated: fn and arg are the caller's. A player registry can take this order over later. */
+ * allocated: fn and arg are the caller's. The units made by addBox come in their player slots
+ * (lmMbPlayers: a slot keeps its number when another unit goes, so P4 stays P4 without P3); a
+ * unit without a slot (an older spect.js, a script) by its number as before. */
 function lmMbEachPlayer(fn, arg) {
     var LM = window.legendmod, slot = 1, last = 0, next, n, s, i;
     if (LM && fn(LM, 1, arg) === true) return;
+    var ord = typeof lmMbPlayers !== 'undefined' ? lmMbPlayers.ordered : null;
+    if (ord && ord.length) {
+        for (i = 0; i < ord.length; i++) if (fn(ord[i], ord[i].slotId, arg) === true) return;
+        return;
+    }
     if (typeof spects === 'undefined' || !spects) return;
     for (; ;) {
         next = null;
@@ -25292,45 +25536,87 @@ function thelegendmodproject() {
             }
             return unit;
         },
-        multiboxchange() {
-            this.hideMenu();
-            /* multiboxPlayerEnabled is the unit NUMBER (spect.js, getActiveSpect); a unit can be
-             * removed from the middle of spects, so walk by position but store the number.
-             * Only the units: an in-game or full spectator open beside them is in spects too. */
-            var units = typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }) : [];
-            /* no unit yet (Full Map tiles do not count): start multibox */
-            if (!units.length) {
-                this._lmMbStart();
-                return;
+        /* Multibox players, one implementation for the switch keys, the roster and scripts:
+         *   mbEnable()            multibox on with exactly one unit (P2), as the switch key starts
+         *                         it; once on, it opens nothing more
+         *   mbDisable()           the units (P2..P6) close and the focus is back on P1; Full Map and
+         *                         the in-game spectator stay (LM._lmMbStop)
+         *   mbAddPlayer()         one more unit in the lowest free slot, up to Settings "Multibox
+         *                         slots" (lmMbCapacity, six at most); with multibox off it is mbEnable
+         *   mbRemovePlayer(slot)  that unit closes; the others keep their slots and the slot is
+         *                         free for the next Add (with a new slotEpoch)
+         *   mbSelectPlayer(slot)  the focus to that player; a dead one spawns again
+         *   mbSelectAdjacent(dir) the next (1) or previous (-1) player in slot order (the switch keys)
+         * Nothing here opens a connection unless asked: enable and Add Player only. */
+        mbEnable() {
+            var u = lmMbUnits();
+            if (u.length) return u[0];
+            return this._lmMbStart();
+        },
+        mbDisable() {
+            return LM._lmMbStop();
+        },
+        mbAddPlayer() {
+            if (!lmMbUnits().length) return this.mbEnable();
+            if (lmMbPlayers.count() >= lmMbCapacity()) return null;
+            var add = typeof window.addBox === "function" ? window.addBox : null, unit = null;
+            try {
+                unit = add ? add() : null;
+            } catch (e) {
+                console.error('[MULTIBOX] The multibox unit could not be opened:', e);
             }
-            var totalUnits = 1 + units.length;
-            var currentIdx = 0;
+            return unit || null;
+        },
+        mbRemovePlayer(slot) {
+            var sp = lmMbPlayers.get(+slot);
+            if (!sp || sp === window.legendmod) return false;
+            return lmMbRemoveUnit(sp, 'removed');
+        },
+        mbSelectPlayer(slot) {
+            slot = +slot || 1;
+            var sp = slot === 1 ? null : lmMbPlayers.get(slot);
+            if (slot !== 1 && !sp) return false;
+            this._lmMbFocus(sp);
+            return true;
+        },
+        /* With two players the switch keys go P1 -> P2 -> P1 whatever their state, and a dead
+         * target spawns again (as always). With more, the next living player in slot order (dead
+         * and connecting ones are passed); only when none lives, the next one as with two. */
+        mbSelectAdjacent(dir) {
+            dir = dir < 0 ? -1 : 1;
+            var units = lmMbUnits(), n = 1 + units.length, cur = 0, i, k;
+            if (n < 2) return false;
             if (window.multiboxPlayerEnabled) {
-                for (var _si = 0; _si < units.length; _si++) {
-                    if (units[_si].number === window.multiboxPlayerEnabled) { currentIdx = _si + 1; break; }
+                for (i = 0; i < units.length; i++) {
+                    if (units[i].number === window.multiboxPlayerEnabled) { cur = i + 1; break; }
                 }
             }
-            var nextIdx = (currentIdx + 1) % totalUnits;
-
-            if (nextIdx === 0) {
+            var next = (cur + dir + n) % n;
+            if (n > 2) {
+                for (k = 1; k < n; k++) {
+                    i = (cur + dir * k + n * k) % n;
+                    if (lmMbAlive(i ? units[i - 1] : window.legendmod)) { next = i; break; }
+                }
+            }
+            this._lmMbFocus(next ? units[next - 1] : null);
+            return true;
+        },
+        /* The focus to a unit (sp) or to the main player (null); the one chosen spawns when dead.
+         * A unit's profile skin is only loaded by its link (its own cells carry it): stored under
+         * the profile's nick it replaced the main player's skin when both have that nick. */
+        _lmMbFocus(sp) {
+            if (!sp) {
                 lmSetMbUnit(0);
                 if (!legendmod.play) {
                     play();
                 }
             } else {
-                var spectIdx = nextIdx - 1;
-                lmSetMbUnit((units[spectIdx] && units[spectIdx].number) || nextIdx);
-                if (units[spectIdx]) {
-                    if (!units[spectIdx].active) {
-                        units[spectIdx].respawn();
-                    }
-                    /* mbSlots is indexed by the unit number (0 = main), same as spect.js */
-                    var unitNo = units[spectIdx].number || nextIdx;
-                    var pSlot = (application.mbSlots && unitNo < application.mbSlots.length) ? application.mbSlots[unitNo] : application.selectedOldProfile;
-                    if (profiles[pSlot] && profiles[pSlot].skinURL) {
-                        this.cacheCustomSkin(profiles[pSlot].nick, profiles[pSlot].color || '#000000', profiles[pSlot].skinURL);
-                    }
+                lmSetMbUnit(sp.number);
+                if (!sp.active) {
+                    sp.respawn();
                 }
+                var prof = profiles[lmMbProfileIdx(sp)];
+                if (prof && prof.skinURL && typeof lmPreloadUnitSkin === 'function') lmPreloadUnitSkin(prof.skinURL);
             }
             window.multiboxPlayerEnabledSaved = null;
             if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
@@ -25338,49 +25624,23 @@ function thelegendmodproject() {
                 if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
             }
         },
-        multiboxback() {
+        /* the switch keys: no unit yet (Full Map tiles do not count) starts multibox, else the
+         * next / previous player (mbSelectAdjacent) */
+        multiboxchange() {
             this.hideMenu();
-            /* only the units, as in multiboxchange; none yet: start multibox */
-            var units = typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }) : [];
-            if (!units.length) {
+            if (!lmMbUnits().length) {
                 this._lmMbStart();
                 return;
             }
-            var totalUnits = 1 + units.length;
-            /* Same as multiboxchange: find the position of the current unit NUMBER. */
-            var currentIdx = 0;
-            if (window.multiboxPlayerEnabled) {
-                for (var _sj = 0; _sj < units.length; _sj++) {
-                    if (units[_sj].number === window.multiboxPlayerEnabled) { currentIdx = _sj + 1; break; }
-                }
+            this.mbSelectAdjacent(1);
+        },
+        multiboxback() {
+            this.hideMenu();
+            if (!lmMbUnits().length) {
+                this._lmMbStart();
+                return;
             }
-            var prevIdx = (currentIdx - 1 + totalUnits) % totalUnits;
-
-            if (prevIdx === 0) {
-                lmSetMbUnit(0);
-                if (!legendmod.play) {
-                    play();
-                }
-            } else {
-                var spectIdx2 = prevIdx - 1;
-                lmSetMbUnit((units[spectIdx2] && units[spectIdx2].number) || prevIdx);
-                if (units[spectIdx2]) {
-                    if (!units[spectIdx2].active) {
-                        units[spectIdx2].respawn();
-                    }
-                    /* mbSlots is indexed by the unit number (0 = main), same as spect.js */
-                    var unitNo2 = units[spectIdx2].number || prevIdx;
-                    var pSlot2 = (application.mbSlots && unitNo2 < application.mbSlots.length) ? application.mbSlots[unitNo2] : application.selectedOldProfile;
-                    if (profiles[pSlot2] && profiles[pSlot2].skinURL) {
-                        this.cacheCustomSkin(profiles[pSlot2].nick, profiles[pSlot2].color || '#000000', profiles[pSlot2].skinURL);
-                    }
-                }
-            }
-            window.multiboxPlayerEnabledSaved = null;
-            if (!window.multiboxPlayerEnabled && ogarcopythelb.nick && ogarcopythelb.skinURL && typeof core !== "undefined" && core && typeof core.registerSkin === "function") {
-                core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
-                if (this.customSkinsMap && ogarcopythelb.nick) this.customSkinsMap[ogarcopythelb.nick] = ogarcopythelb.skinURL;
-            }
+            this.mbSelectAdjacent(-1);
         },
         multiboxFollowMouse() {
             if (!window.multiboxFollowMouse) {
@@ -29575,6 +29835,8 @@ function thelegendmodproject() {
                 this._lmEvSpawnLife = this._lmLifeStartAt;
                 window.LMEvents.emit('spawn', { time: Date.now() });
             }
+            /* P1's life for the multibox player events (once per life, LM._lmLife) */
+            if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerSpawned', window.legendmod);
             if (window._lmRecLive && this._lmRecSpawnLife !== this._lmLifeStartAt) {
                 this._lmRecSpawnLife = this._lmLifeStartAt;
                 window._lmRecEv('s', 0);
@@ -29624,10 +29886,15 @@ function thelegendmodproject() {
                         core.registerSkin(ogarcopythelb.nick, null, ogarcopythelb.skinURL, null);
                     }
                 }
-                // All mbSlots profile skins
+                // All mbSlots profile skins: the units' (slot 2 on) only by their link, as their
+                // cells carry them; under the profile's nick they replaced the main player's skin
                 if (self.mbSlots) {
                     for (var _ms = 0; _ms < self.mbSlots.length; _ms++) {
                         var _prof = profiles[self.mbSlots[_ms]];
+                        if (_ms > 0) {
+                            if (_prof && _prof.skinURL && typeof lmPreloadUnitSkin === 'function') lmPreloadUnitSkin(_prof.skinURL);
+                            continue;
+                        }
                         if (_prof && _prof.nick && _prof.skinURL) {
                             self.cacheCustomSkin(_prof.nick, _prof.color || '#000000', _prof.skinURL);
                             if (typeof core !== 'undefined' && core && typeof core.registerSkin === 'function') {
@@ -29706,6 +29973,7 @@ function thelegendmodproject() {
                     scope: lmDeathScope(0)
                 });
             }
+            if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerDied', window.legendmod, 'death');
             this._lmLifeStartAt = 0;
             ogario.play = false;
             ogario.playerColor = null;
@@ -29736,11 +30004,15 @@ function thelegendmodproject() {
 
             // Auto-switch to surviving multibox spect if any (only when "Auto-switch focus after death" is on)
             if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
-                for (var _i = 0; _i < spects.length; _i++) {
+                /* the living unit you control keeps the focus, else the first living unit in slot
+                 * order (P2, P3 ...); never a spectator */
+                var _lmMbU = typeof lmMbUnits === 'function' ? lmMbUnits() : spects, _lmMbF = getActiveSpect(+window.multiboxPlayerEnabled || 0);
+                if (lmMbAlive(_lmMbF)) _lmMbU = [_lmMbF];
+                for (var _i = 0; _i < _lmMbU.length; _i++) {
                     /* a living unit, never a spectator */
-                    if (lmMbAlive(spects[_i])) {
+                    if (lmMbAlive(_lmMbU[_i])) {
                         /* multiboxPlayerEnabled is the unit number, not index + 1 (units can be spliced) */
-                        lmSetMbUnit(spects[_i].number || (_i + 1));
+                        lmSetMbUnit(_lmMbU[_i].number);
                         console.log('[MB] Main player died, auto-switched to spect ' + window.multiboxPlayerEnabled);
 
                         // Flush main client's cells (spectator=0 or undefined) so its dead viewport stops
@@ -35141,10 +35413,12 @@ function thelegendmodproject() {
                 if (window.multiboxPlayerEnabled && typeof profiles !== 'undefined' && profiles) {
                     var mbSlot = window.multiboxPlayerEnabled;
                     var pIdx;
-                    /* mbSlots[unit number] is the profile of that multibox unit, else the second
-                     * profile (same as spect.js): a unit opened while Full Map runs is number 16 or
-                     * more, and only number 1 got the second profile (the others a profile by number) */
-                    if (application.mbSlots && application.mbSlots[mbSlot] != null) {
+                    /* the profile of the unit's slot (lmMbProfileIdx, as spect.js), else the second
+                     * profile */
+                    var _lmMbU = getActiveSpect(mbSlot);
+                    if (_lmMbU && typeof lmMbProfileIdx === 'function') {
+                        pIdx = lmMbProfileIdx(_lmMbU);
+                    } else if (application.mbSlots && application.mbSlots[mbSlot] != null) {
                         pIdx = application.mbSlots[mbSlot];
                     } else if (application.selectedOldProfile != null) {
                         pIdx = application.selectedOldProfile;
@@ -53486,7 +53760,7 @@ function thelegendmodproject() {
             if (this.play) return false;
             if (this.isFreeSpectate) return true;
             if (!this.isSpectateEnabled && !this._isWorldSpectating) return false;
-            if (lmMultiboxControlledPlayer() === 2) return false;
+            if (lmMultiboxControlledPlayer() !== 1) return false;
             /* from World Spectate Q goes to the follow camera: Spectate first leaves it */
             if (this._isWorldSpectating) this.sendSpectate();
             if (!this.isFreeSpectate) this.sendFreeSpectate();
@@ -53802,7 +54076,8 @@ function thelegendmodproject() {
             }
             if (keep.length !== sp.length) window.spects = keep;
             /* no unit left: a stale "a multibox player exists" made the next death spawn one */
-            if (!units && this.multiBoxPlayerExists) {
+            if (typeof lmMbSyncExists === 'function') lmMbSyncExists();
+            else if (!units && this.multiBoxPlayerExists) {
                 this.multiBoxPlayerExists = false;
                 if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
             }
@@ -53906,20 +54181,24 @@ function thelegendmodproject() {
          * the main player. Full Map tiles and the in-game spectator stay open, and so does the
          * main connection's own state (flushSpecsData, which closes everything, is for a server
          * change or a lost main connection). With the main player not in a game the menu opens,
-         * as after the death of the last player. */
+         * as after the death of the last player. Their slots are freed (application.mbDisable). */
         _lmMbStop() {
-            var sp = window.spects || [], keep = [], closed = 0;
+            var sp = window.spects || [], keep = [], closed = 0, gone = [];
             for (var i = 0; i < sp.length; i++) {
                 var s = sp[i];
                 if (!s) continue;
                 if (!s.player) { keep.push(s); continue; }
+                s._lmRemoved = true;
                 if (typeof s.closeConnection === 'function') s.closeConnection();
+                gone.push(s);
                 closed++;
             }
             if (keep.length !== sp.length) window.spects = keep;
+            if (typeof lmMbPlayers !== 'undefined') lmMbPlayers.releaseAll();
             this.multiBoxPlayerExists = false;
             if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
             lmSetMbUnit(0);
+            for (var g = 0; g < gone.length; g++) if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerRemoved', gone[g], 'disabled');
             window.multiboxPlayerEnabledSaved = null;
             if (closed && !this.play && window.application && typeof window.application.showMenu === 'function') window.application.showMenu();
             return closed;
@@ -53930,12 +54209,16 @@ function thelegendmodproject() {
             this._isWorldSpectating = false;
             this._worldSpecPanX = 0;
             this._worldSpecPanY = 0;
+            var gone = [];
             if (window.spects) {
                 window.spects.forEach((spect) => {
+                    if (spect && spect.player) { spect._lmRemoved = true; gone.push(spect); }
                     spect.closeConnection()
                 })
                 window.spects = [];
             }
+            /* every player slot is free again (the profiles keep their slots, application.mbSlots) */
+            if (typeof lmMbPlayers !== 'undefined') lmMbPlayers.releaseAll();
             /* No multibox player exists any more; a stale true made every later
              * death silently spawn a new multibox unit instead of the death menu. */
             this.multiBoxPlayerExists = false;
@@ -53944,6 +54227,7 @@ function thelegendmodproject() {
              * (HUD "[MB 2/1]") */
             lmSetMbUnit(0);
             window.multiboxPlayerEnabledSaved = null;
+            for (var g = 0; g < gone.length; g++) if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerRemoved', gone[g], 'closed');
         },
         /* A map border is four finite numbers with max above min on both axes. */
         _lmBorderValid(minX, minY, maxX, maxY) {
@@ -85733,7 +86017,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (window.legendmod && window.legendmod.play) return;
             /* the main player dead while a multibox unit plays on: Q double splits that unit, and
              * toggled free spectate on the main connection at the same time */
-            if (lmMultiboxControlledPlayer() === 2) return;
+            if (lmMultiboxControlledPlayer() !== 1) return;
             /* a held Q toggled it on every auto-repeat (random end state); ALT+Q / CTRL+Q
              * are other hotkeys */
             if (event.repeat || event.ctrlKey || event.altKey || event.metaKey) return;

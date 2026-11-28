@@ -23,7 +23,7 @@ const v = n => { const m = new RegExp('\\nvar ' + n + ' = [^\\n]*').exec(main); 
 const ctx = { window: { legendmod: { multiBoxPlayerExists: true }, multiboxPlayerEnabled: null }, spects: [{ number: 1 }] };
 vm.createContext(ctx);
 vm.runInContext(['LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_SIZE', '_lmMbRingOut'].map(v).join('\n') + '\n' +
-    ['getActiveSpect', 'lmMultiboxRingPlayer', 'lmMultiboxControlledPlayer', 'lmMultiboxRing'].map(fn).join('\n'), ctx);
+    ['getActiveSpect', 'lmMbSlotOf', 'lmMultiboxRingPlayer', 'lmMultiboxControlledPlayer', 'lmMultiboxRing'].map(fn).join('\n'), ctx);
 const ring = c => ctx.lmMultiboxRing(c, c.size, 1);
 
 const main1 = { isPlayerCell: true, size: 100 }, main2 = { isPlayerCell: true, size: 50 };
@@ -47,6 +47,27 @@ check('never thinner than 2 px on screen', ctx.lmMultiboxRing({ isPlayerCell: tr
 ctx.window.legendmod.multiBoxPlayerExists = false;
 check('not multiboxing: no ring', ringed() === '');
 ctx.window.legendmod.multiBoxPlayerExists = true;
+
+/* more players: each unit's own cells carry their owner (cell._lmOwner, spect.js _lmAdoptOwn) and so
+ * its slot; the ring is only on the controlled unit's cells, in its slot colour */
+{
+    const u3 = { number: 18, player: true, slotId: 3 }, u4 = { number: 5, player: true, slotId: 4 }, u2 = { number: 1, player: true, slotId: 2 };
+    ctx.spects.length = 0; ctx.spects.push(u2, u3, u4);
+    const c2 = { spectator: 1, isPlayerCellMulti: true, size: 80, _lmOwner: u2 }, c3 = { spectator: 18, isPlayerCellMulti: true, size: 80, _lmOwner: u3 },
+        c4 = { spectator: 5, isPlayerCellMulti: true, size: 80, _lmOwner: u4 };
+    const set = [main1, c2, c3, c4];
+    const on = () => set.filter(c => ring(c)).map(c => set.indexOf(c)).join();
+    check('four players: the cells say their slot (1, 2, 3, 4)', set.map(c => ctx.lmMultiboxRingPlayer(c)).join() === '1,2,3,4');
+    ctx.window.multiboxPlayerEnabled = 18;
+    check('P3 controlled: the ring only on P3, in its colour (violet)', on() === '2' && ring(c3).color === '#A855F7' && ctx.lmMultiboxControlledPlayer() === 3);
+    ctx.window.multiboxPlayerEnabled = 5;
+    check('P4 controlled: the ring only on P4 (green)', on() === '3' && ring(c4).color === '#10B981');
+    ctx.window.multiboxPlayerEnabled = 1;
+    check('P2 controlled: the ring only on P2, cyan as before', on() === '1' && ring(c2).color === '#00E5FF');
+    check('one palette for six players', ['#FF2FD6', '#00E5FF', '#A855F7', '#10B981', '#FFB020', '#FF5A36'].every((c, i) => vm.runInContext('LM_MB_RING_DEFAULT_COLORS', ctx)[i + 1] === c));
+    ctx.window.multiboxPlayerEnabled = null;
+    ctx.spects.length = 0; ctx.spects.push({ number: 1 });
+}
 
 /* the WebGL pass: the real buildWebGLMultiboxRingData over both own-cell lists */
 const mI = main.indexOf('        buildWebGLMultiboxRingData(lists, data, max) {');

@@ -298,7 +298,7 @@ function legendmaster(self) {
 				if (window.MultiPending){				
 					master.accessTokenFB = accessToken;
 					master.accessTokenFBAt = Date.now();				
-					MultiTokenReady(window.MultiPending);
+					MultiTokenReady(window.MultiPending, true);
 					window.MultiPending = null;
 				}
 				else if (forMulti) {
@@ -417,7 +417,7 @@ function legendmaster(self) {
             if (window.MultiPending) {
                 master.accessTokenGPlus = idToken;
                 master.accessTokenGPlusAt = Date.now();
-                MultiTokenReady(window.MultiPending);
+                MultiTokenReady(window.MultiPending, true);
                 window.MultiPending = null;
                 return;
             }
@@ -632,7 +632,7 @@ function legendmaster(self) {
 			if (window.MultiPending){				
 				master.accessTokenGPlus = event.getAuthResponse().id_token;
 				master.accessTokenGPlusAt = Date.now();
-				MultiTokenReady(window.MultiPending);
+				MultiTokenReady(window.MultiPending, true);
 				window.MultiPending = null;
 			}
 			else{

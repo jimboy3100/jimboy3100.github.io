@@ -172,6 +172,9 @@ const aliveFn = block('function lmMbAlive(');
 if (!aliveFn) { console.log('FAIL lmMbAlive not found'); process.exit(1); }
 vm.runInContext(aliveFn + '\nthis.lmMbAlive = lmMbAlive;', g);
 g.lmSetMbUnit = (n) => { g.multiboxPlayerEnabled = n; };
+g.getActiveSpect = (n) => (n && g.spects.find((x) => x && x.number === n && x.player !== false)) || null;
+/* the units in slot order (ogario.v4.js lmMbUnits; here the units of spects in their order) */
+g.lmMbUnits = () => g.spects.filter((x) => x && x.player === true);
 g.spects = [{ number: 2, player: false, active: true }];
 g.multiboxPlayerEnabled = null; g.mainPlayerDeadMbActive = false;
 g.__death();

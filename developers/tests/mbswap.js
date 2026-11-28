@@ -29,9 +29,9 @@ function block(src, start) {
 }
 /* LMEvents and (when present) lmSetMbUnit: from the LMEvents comment up to the version line */
 const a = v4.indexOf('/* LMEvents: hooks'), b = v4.indexOf('window.OgVer', a);
-const spectMethods = ['    terminate() {', '    beforecalculation() {'].map((m) => block(sp, m));
-const appMethods = ['        multiboxchange() {', '        multiboxback() {', '        _lmEvMbSwap(prev) {'].map((m) => block(v4, m)).filter(Boolean);
-if (a < 0 || b < 0 || spectMethods.some((m) => !m) || appMethods.length < 2) { console.log('FAIL code not found'); process.exit(1); }
+const spectMethods = ['    terminate(reason) {', '    beforecalculation() {'].map((m) => block(sp, m));
+const appMethods = ['        multiboxchange() {', '        multiboxback() {', '        mbSelectAdjacent(dir) {', '        mbSelectPlayer(slot) {', '        _lmMbFocus(sp) {'].map((m) => block(v4, m)).filter(Boolean);
+if (a < 0 || b < 0 || spectMethods.some((m) => !m) || appMethods.length < 5) { console.log('FAIL code not found'); process.exit(1); }
 
 function env(o) {
     o = o || {};
@@ -39,8 +39,8 @@ function env(o) {
     ctx.window = ctx;
     vm.createContext(ctx);
     vm.runInContext(v4.slice(a, b), ctx);
-    vm.runInContext('window.Unit = class Unit { constructor(n) { this.number = n; this.player = true; this.active = true; this.cells = 0; }\n' +
-        'getOwnPlayerCells() { return new Array(this.cells); }\ncalculatePlayerMassAndPosition() { }\n' +
+    vm.runInContext('window.Unit = class Unit { constructor(n) { this.number = n; this.player = true; this.active = true; this.cells = 0; this.respawns = 0; }\n' +
+        'getOwnPlayerCells() { return new Array(this.cells); }\ncalculatePlayerMassAndPosition() { }\nrespawn() { this.respawns++; }\n' +
         spectMethods.join('\n') + '\n}\n' +
         'var application = window.application = { hideMenu() { }, showMenu() { window.menuShown++; }, cacheCustomSkin() { }, mbSlots: [0, 1, 2], selectedOldProfile: 0,\n' +
         appMethods.join(',\n') + '};\n' +
@@ -48,7 +48,12 @@ function env(o) {
         'var profiles = [], ogarcopythelb = {}; function play() { legendmod.play = true; }', ctx);
     ctx.legendmod.play = o.mainAlive !== false;
     ctx.spects.length = 0;
-    for (let n = 1; n <= (o.units || 2); n++) ctx.spects.push(new ctx.Unit(n));
+    for (let n = 1; n <= (o.units || 2); n++) {
+        const u = new ctx.Unit(n);
+        /* o.slots: each unit in a player slot, as addBox makes them (slot = number + 1) */
+        if (o.slots) { const r = ctx.lmMbPlayers.reserve(); u.slotId = r.slotId; u.slotEpoch = r.slotEpoch; ctx.lmMbPlayers.attach(u); }
+        ctx.spects.push(u);
+    }
     ctx.multiboxPlayerEnabled = o.focus || null;
     const got = [];
     ctx.LMEvents.on('multiboxSwap', (d) => got.push(d.unit + '<' + d.previous));
@@ -121,12 +126,60 @@ for (const how of ['terminate', 'beforecalculation']) {
     let data = null;
     e.ctx.LMEvents.on('multiboxSwap', (d) => { data = d; });
     e.unit(2).terminate();
-    check('event data: { unit, previous, context }', data && Object.keys(data).sort().join() === 'context,previous,unit' && data.context === 'live', data && JSON.stringify(data));
+    check('event data: { unit, previous, slot, previousSlot, context }', data && Object.keys(data).sort().join() === 'context,previous,previousSlot,slot,unit' && data.context === 'live', data && JSON.stringify(data));
+}
+/* slots: the event and lmMbPlayers.activeSlot carry the player slot (P1 the main player); a unit
+ * without one is slot 2, as the single unit always was */
+{
+    const e = env({ focus: null, mainAlive: true, units: 3, slots: true });
+    const got = [];
+    e.ctx.LMEvents.on('multiboxSwap', (d) => got.push(d.slot + '<' + d.previousSlot));
+    e.ctx.application.multiboxchange();
+    e.ctx.application.multiboxchange();
+    e.ctx.application.multiboxback();
+    check('slots: the swap event says slot and previous slot (P1 -> P2 -> P3 -> P2)', got.join() === '2<1,3<2,2<3' && e.ctx.lmMbPlayers.activeSlot === 2, got.join());
+    const l = env({ focus: 2, mainAlive: true, units: 2 });
+    let d = null;
+    l.ctx.LMEvents.on('multiboxSwap', (x) => { d = x; });
+    l.ctx.lmSetMbUnit(1);
+    check('a unit without a slot is P2, as before', d && d.slot === 2 && d.unit === 1, d && JSON.stringify(d));
+}
+/* two players (main + one unit): the switch keys go P1 <-> P2 whatever their state, a dead target
+ * spawns again (respawn(), or play() for the main player), exactly as before */
+{
+    const e = env({ focus: null, mainAlive: true, units: 1, slots: true });
+    const u = e.unit(1);
+    u.active = false;
+    e.ctx.application.multiboxchange();
+    check('two players: the swap goes to the dead unit and spawns it', e.ctx.multiboxPlayerEnabled === 1 && u.respawns === 1, e.ctx.multiboxPlayerEnabled + ' ' + u.respawns);
+    e.ctx.legendmod.play = false;
+    e.ctx.application.multiboxback();
+    check('two players: back to the dead main player spawns it (play)', !e.ctx.multiboxPlayerEnabled && e.ctx.legendmod.play === true);
+}
+/* more players: the switch keys pass the dead (and connecting) ones; choosing a dead slot itself
+ * spawns it; with nobody else alive the next one is taken and spawned, as with two */
+{
+    const e = env({ focus: null, mainAlive: true, units: 4, slots: true });
+    e.unit(2).active = false; e.unit(3).active = null;
+    const seen = [];
+    for (let i = 0; i < 4; i++) { e.ctx.application.multiboxchange(); seen.push(e.ctx.multiboxPlayerEnabled || 0); }
+    check('five players, P3 dead and P4 connecting: next goes P1 -> P2 -> P5 -> P1 -> P2', seen.join() === '1,4,0,1' && e.unit(2).respawns === 0 && e.unit(3).respawns === 0, seen.join());
+    const back = [];
+    for (let i = 0; i < 3; i++) { e.ctx.application.multiboxback(); back.push(e.ctx.multiboxPlayerEnabled || 0); }
+    check('    ... back the same players the other way (P2 -> P1 -> P5 -> P2)', back.join() === '0,4,1', back.join());
+    check('    ... choosing the dead P3 itself: the focus on it and it spawns again', e.ctx.application.mbSelectPlayer(3) === true && e.ctx.multiboxPlayerEnabled === 2 && e.unit(2).respawns === 1);
+    check('    ... an empty slot cannot be chosen', e.ctx.application.mbSelectPlayer(6) === false && e.ctx.multiboxPlayerEnabled === 2);
+    for (let n = 1; n <= 4; n++) e.unit(n).active = false;
+    e.ctx.legendmod.play = false;
+    e.ctx.application.mbSelectPlayer(1);
+    e.ctx.legendmod.play = false;
+    e.ctx.application.multiboxchange();
+    check('    ... nobody alive: the next player (P2) is taken and spawned, as with two', e.ctx.multiboxPlayerEnabled === 1 && e.unit(1).respawns === 1, e.ctx.multiboxPlayerEnabled);
 }
 /* Q free spectate (spectateBlind) while the main player is dead and a unit has the focus: Q
  * double splits the unit and must not also toggle free spectate on the main connection */
 {
-    const fns = ['function getActiveSpect(', 'function lmMultiboxControlledPlayer(', '    function spectateBlind() {'].map((m) => block(v4, m));
+    const fns = ['function getActiveSpect(', 'function lmMbSlotOf(', 'function lmMultiboxControlledPlayer(', '    function spectateBlind() {'].map((m) => block(v4, m));
     if (fns.some((f) => !f)) check('Q free spectate code found', false);
     else {
         const sent = [];

@@ -13,7 +13,9 @@
  * - The whole spect.js: a unit's split / eat numbers equal the main player's (recalculatePlayerMass)
  *   for one mass; the opcode 87 token is sent only on the socket that asked (not after a reconnect).
  * - 1 to 6 playing clients x Full Map off / on (lib/mbplayers.js): deaths, focus, switch keys,
- *   profiles, enabling; what today's code can not do yet is listed as known (section 6).
+ *   profiles, enabling, Add Player (section 5); the player calls (enable, add, remove, select) against
+ *   the Multibox 2.0 cases: six at most with the slot being made, remove / reuse a slot, stale epochs,
+ *   the login slot, P1 dying while P4 plays, a reconnect while P5 plays, the last death's menu (5b).
  * - A spectator with its active flag set is no living player (lmMbAlive): never focused, and the
  *   last unit's death still shows the menu.
  * node developers/tests/mbdeath.js [ogario.v4.js] [spect.js] */
@@ -219,7 +221,7 @@ function death(o) {
 /* 4. a unit that dies and respawns on the same socket (spect.js terminate, beforecalculation,
  * calculatePlayerMassAndPosition, recalculatePlayerMass) */
 {
-    const term = block(sp, '    terminate() {'), before = block(sp, '    beforecalculation() {');
+    const term = block(sp, '    terminate(reason) {'), before = block(sp, '    beforecalculation() {');
     const calc = block(sp, '    calculatePlayerMassAndPosition(ownCells) {'), recalc = block(sp, '    recalculatePlayerMass(ownCells) {');
     if (!term || !before || !calc || !recalc) { console.log('FAIL terminate / beforecalculation / calculatePlayerMassAndPosition / recalculatePlayerMass not found'); process.exit(1); }
     /* o.use: the player uses the death menu (a key in the nick field) before the respawn; o.typing: the nick
@@ -362,15 +364,14 @@ function death(o) {
  *   death menu comes once, at the last death; the last unit's respawn takes the focus and hides
  *   that menu; after each, every cell is drawn once and each player's own mass is right.
  * - the switch keys visit every player once, in order, both ways; each unit plays its own profile.
- * - enabling multibox opens one controlled unit and keeps Full Map; K playing clients can be opened.
- * Configurations today's code fails are marked KNOWN with the reason (lib/mbplayers.js verdict). */
+ * - enabling multibox opens one controlled unit and keeps Full Map; K playing clients can be opened
+ *   (Add Player), each in its own slot.
+ * A configuration the code fails would be marked KNOWN with the reason (lib/mbplayers.js verdict); none is. */
 {
     const MB = require('./lib/mbplayers');
     const opt = { v4: process.argv[2], sp: process.argv[3], app: true };
-    const PROFILES = 'KNOWN N>2: the third and later units play the second profile: ensureMbSlots keeps 2 slots (ogario.v4.js:26538 ' +
-        'Math.min(multiboxAmount, 2)) and the slot is looked up by unit number with selectedOldProfile as fallback (ogario.v4.js:24585 / 24640, spect.js:2080 / 3032)';
-    const ADD = 'KNOWN N>2: no Add Player: spect.js:391 addBox() runs only from multiboxchange / multiboxback while no unit exists ' +
-        '(ogario.v4.js:24543 / 24599), so a third to sixth player can not be opened';
+    const PROFILES = 'KNOWN N>2: the third and later units play the second profile: ensureMbSlots and selectProfile keep 2 slots ' +
+        '(Math.min(multiboxAmount, 2))';
     const t0 = Date.now();
     for (let K = 1; K <= 6; K++) for (const fm of [false, true]) {
         const tag = 'K=' + K + ' (Full Map ' + (fm ? 'on' : 'off') + ')';
@@ -420,33 +421,186 @@ function death(o) {
             s.ctx.lmSetMbUnit(0); /* each unit took the focus at its first spawn: start on the main player */
             const units = s.players.slice(1).map((p) => p.src), fwd = [], back = [];
             for (let i = 0; i < K; i++) { app.multiboxchange(); fwd.push(s.focus()); }
-            const skins = app.skins.slice();
+            const skins = app.preloaded.slice();
             for (let i = 0; i < K; i++) { app.multiboxback(); back.push(s.focus()); }
             check(tag + ': the switch keys visit every player once, in order, both ways',
                 fwd.join() === units.concat([0]).join() && back.join() === units.slice().reverse().concat([0]).join(), fwd + ' / ' + back);
-            MB.verdict(check, tag + ': each unit plays its own profile', skins.length === K - 1 && new Set(skins).size === skins.length && !skins.includes('prof0'),
-                skins.join(','), K > 2 ? PROFILES : undefined);
+            /* the unit's skin is loaded by its link only, never stored under its nick (that replaced the
+             * main player's skin when both have the nick) */
+            MB.verdict(check, tag + ': each unit plays its own profile (its slot\'s), its skin loaded by its link only', skins.length === K - 1 && new Set(skins).size === skins.length &&
+                !skins.includes('skin0') && skins.every((u, i) => u === 'skin' + (i + 1)) && !app.skins.length, skins.join(',') + ' / nick ' + app.skins.join(','), K > 2 ? PROFILES : undefined);
         }
         {
             const s = MB.scene(Object.assign({ players: 1, fullMap: fm }, opt));
             const app = s.ctx.application, units = () => s.ctx.spects.filter((u) => u && u.player);
+            s.ctx.defaultmapsettings.multiboxAmount = K; /* Settings "Multibox slots" */
             app.multiboxchange();
             const u = units(), open = s.ctx.spects.filter((x) => x && !x.player && !x.closed).length;
             MB.verdict(check, tag + ': enabling multibox opens one unit, controlled, and keeps Full Map',
                 u.length === 1 && s.focus() === u[0].number && open === tiles, u.length + ' unit, focus ' + s.focus() + ', tiles ' + open + ' of ' + tiles);
+            app.multiboxchange();
+            check(tag + ': the switch key again: no second unit (it switches)', units().length === 1);
             if (K > 2) {
-                /* the switch key is the only control that opens a unit */
-                for (let i = 2; i < K; i++) app.multiboxchange();
-                MB.verdict(check, tag + ': ' + K + ' playing clients can be opened', units().length === K - 1, (units().length + 1) + ' playing', ADD);
+                /* Add Player opens one more each time, in the next slot */
+                for (let i = 2; i < K; i++) app.mbAddPlayer();
+                check(tag + ': ' + K + ' playing clients can be opened (Add Player), slots 2..' + K, units().length === K - 1 &&
+                    units().map((x) => x.slotId).join() === Array.from({ length: K - 1 }, (_, i) => i + 2).join() && s.ctx.lmMbPlayers.count() === K, (units().length + 1) + ' playing');
+                const tilesBefore = s.ctx.spects.filter((x) => x && !x.player).length;
+                app.mbDisable();
+                check(tag + ': multibox off: every unit closed, the slots free, focus on P1, ' + (fm ? 'the tiles stay' : 'nothing else closed'), units().length === 0 &&
+                    s.ctx.lmMbPlayers.count() === 1 && s.focus() === 0 && s.ctx.spects.filter((x) => x && !x.player).length === tilesBefore && s.LM.multiBoxPlayerExists === false);
             }
         }
     }
     console.log('info 1 to 6 players x Full Map off / on: ' + (Date.now() - t0) + ' ms');
 }
+/* 5b. the player calls (application.mbEnable / mbAddPlayer / mbRemovePlayer / mbSelectPlayer, lmMbPlayers)
+ * against the cases of the Multibox 2.0 specification (section 13) */
+{
+    const MB = require('./lib/mbplayers');
+    const opt = { v4: process.argv[2], sp: process.argv[3], app: true };
+    const fresh = (cap) => {
+        const s = MB.scene(Object.assign({ players: 1 }, opt));
+        s.ctx.defaultmapsettings.multiboxAmount = cap || 6;
+        return { s, app: s.ctx.application, reg: s.ctx.lmMbPlayers, units: () => s.ctx.spects.filter((x) => x && x.player) };
+    };
+    {
+        const { s, app, units } = fresh(3);
+        app.mbEnable(); app.mbEnable();
+        check('repeated enable: one unit (P2), controlled', units().length === 1 && units()[0].slotId === 2 && s.focus() === units()[0].number);
+        const u3 = app.mbAddPlayer();
+        check('add one: P3 opens in slot 3 and the focus stays where it was (it takes it at its first spawn)', !!u3 && u3.slotId === 3 && units().length === 2 && s.focus() === units()[0].number);
+        check('Settings "Multibox slots" 3 (the shipped default): no fourth player', app.mbAddPlayer() === null && units().length === 2);
+    }
+    {
+        const { s, app, reg, units } = fresh(6);
+        app.mbEnable();
+        const held = reg.reserve(); /* a slot held while its unit is being made */
+        for (let i = 0; i < 6; i++) app.mbAddPlayer();
+        check('max six players, the slot being made included: 4 more open, then none', units().length === 4 && reg.count() === 6 && held.slotId === 3 &&
+            units().map((x) => x.slotId).join() === '2,4,5,6', units().map((x) => x.slotId).join());
+        check('    ... addBox at six gives nothing (no extra socket)', s.ctx.addBox() === null && units().length === 4);
+        reg.release(held.slotId, held.slotEpoch);
+        s.ctx.spectHook = () => { s.ctx.inner = s.ctx.addBox(); };
+        const u = s.ctx.addBox();
+        check('    ... no unit is made while another one is (no reentrant creation)', !!u && u.slotId === 3 && s.ctx.inner === null && units().length === 5);
+    }
+    {
+        const { s, app, reg, units } = fresh(6);
+        app.mbEnable();
+        s.ctx.spectThrows = true;
+        let threw = false;
+        try { s.ctx.addBox(); } catch (e) { threw = true; }
+        check('making a unit fails: its slot is freed again (rollback)', threw && reg.count() === 2 && reg.reserve().slotId === 3);
+    }
+    {
+        const { s, app, reg, units } = fresh(6);
+        app.mbEnable();
+        for (let i = 0; i < 4; i++) app.mbAddPlayer();
+        const p6 = reg.get(6), n6 = p6.number;
+        units().forEach((x) => { x.active = true; });
+        check('remove P3 while P6 stays: P6 keeps slot 6 and its number, nobody is renumbered', app.mbRemovePlayer(3) === true && reg.get(6) === p6 && p6.number === n6 &&
+            units().map((x) => x.slotId).join() === '2,4,5,6' && reg.get(3) === null);
+        app.mbSelectPlayer(4);
+        const p4 = reg.get(4);
+        app.mbRemovePlayer(4);
+        check('remove the selected P4: the focus goes to a living player (the main one)', s.focus() === 0 && p4.closed && !reg.isCurrent(p4) && s.ctx.lmMbPlayers.activeSlot === 1);
+        s.LM.play = false;
+        app.mbSelectPlayer(5);
+        app.mbRemovePlayer(5);
+        check('    ... main player dead: the next living unit in slot order (P6)', s.focus() === p6.number, s.focus());
+        check('P1 cannot be removed', app.mbRemovePlayer(1) === false);
+        const seen = [];
+        const each = block(v4, 'function lmMbEachPlayer(');
+        if (each) {
+            vm.runInContext(each, s.ctx);
+            s.ctx.lmMbEachPlayer((p, slot) => { seen.push(slot + (p === s.LM ? 'm' : ':' + p.slotId)); });
+            check('lmMbEachPlayer (camera, minimap, leaderboard): the players in their slots, P6 stays P6 with P3-P5 gone', seen.join() === '1m,2:2,6:6', seen.join());
+        }
+    }
+    {
+        const { s, app, reg, units } = fresh(6);
+        app.mbEnable();
+        const old = app.mbAddPlayer(), oldEpoch = old.slotEpoch;
+        check('a unit still connecting (no life yet) can be removed', old.active === null && app.mbRemovePlayer(3) === true && old.closed && reg.get(3) === null);
+        const neu = app.mbAddPlayer();
+        check('    ... its slot is used again, with a new slotEpoch', !!neu && neu.slotId === 3 && neu.slotEpoch > oldEpoch && reg.get(3) === neu);
+        check('stale callbacks: the old unit is no longer current, its epoch frees nothing, removing it again does nothing',
+            !reg.isCurrent(old) && reg.release(3, oldEpoch) === false && reg.get(3) === neu && s.ctx.lmMbRemoveUnit(old) === false && units().includes(neu));
+        check('    ... the login slot: a removed unit never holds it', s.ctx.lmMbTokenSlot(old) === false && s.ctx.lmMbTokenSlot(neu) === true && reg.tokenSlot === 3);
+        const p2 = reg.get(2);
+        check('    ... one unit at a time logs in with the other account: P2 plays as guest while P3 holds it', s.ctx.lmMbTokenSlot(p2) === false);
+        app.mbRemovePlayer(3);
+        check('    ... the holder removed: the next unit asking gets it', reg.tokenSlot === 0 && s.ctx.lmMbTokenSlot(p2) === true && reg.tokenSlot === 2);
+    }
+    {
+        const { s, app } = fresh(4);
+        const ev = [];
+        ['playerAdded', 'playerRemoved'].forEach((t) => s.ctx.LMEvents.on(t, (d) => ev.push(t.slice(6) + d.slot + (d.reason ? ':' + d.reason : ''))));
+        app.mbEnable(); app.mbAddPlayer(); app.mbAddPlayer();
+        app.mbRemovePlayer(3); app.mbRemovePlayer(3);
+        app.mbDisable();
+        check('LMEvents playerAdded / playerRemoved: once per slot occupancy, with the reason', ev.join() === 'Added2,Added3,Added4,Removed3:removed,Removed2:disabled,Removed4:disabled', ev.join());
+    }
+    /* deaths and spawns in a scene of five players (the units in slots 2-5) */
+    {
+        const s = MB.scene(Object.assign({ players: 5 }, opt));
+        MB.populate(s); s.step(2);
+        const app = s.ctx.application, p4 = s.player(4);
+        app.mbSelectPlayer(4);
+        s.kill(1); s.step(1);
+        check('P1 dies while P4 (controlled) lives: the focus stays on P4', s.focus() === p4.src && s.ctx.mainPlayerDeadMbActive === true && app.menuShown === 0, s.focus());
+        const s2 = MB.scene(Object.assign({ players: 5 }, opt));
+        MB.populate(s2); s2.step(2);
+        s2.ctx.lmSetMbUnit(0);
+        s2.kill(1); s2.step(1);
+        check('P1 dies while P1 is controlled: the first living unit in slot order (P2)', s2.focus() === s2.player(2).src, s2.focus());
+        /* P5 controlled; P2 loses its socket and comes back on its own: P5 keeps the focus */
+        app.mbSelectPlayer(5);
+        s.reconnect(2); s.step(1);
+        check('P2 reconnects and respawns while P5 is controlled: no focus taken, no menu', s.focus() === s.player(5).src && app.menuShown === 0, s.focus());
+        /* P5 dies: the focus goes on to a living player; P3's background respawn does not take it */
+        s.kill(3); s.step(1);
+        s.kill(5); s.step(1);
+        check('controlled P5 dies, main dead: the next living unit after it in slot order (P2)', s.focus() === s.player(2).src, s.focus());
+        s.respawn(3, undefined, { background: true }); s.step(1);
+        check('    ... P3 respawning in the background does not take it from living P2', s.focus() === s.player(2).src);
+        const ev = [];
+        s.ctx.LMEvents.on('playerDied', (d) => ev.push('died' + d.slot + ':' + d.living));
+        s.ctx.LMEvents.on('playerDisconnected', (d) => ev.push('disc' + d.slot));
+        s.kill(2); s.step(1);
+        s.player(2).unit.terminate();
+        check('LMEvents playerDied: once per life, with the slot and how many still live', ev.join() === 'died2:2', ev.join());
+    }
+    /* the last death: the menu once; a unit's spawn hides it, unless the player used it or it is old */
+    for (const how of ['spawn', 'used', 'old']) {
+        const s = MB.scene(Object.assign({ players: 3 }, opt));
+        MB.populate(s); s.step(2);
+        const app = s.ctx.application;
+        s.kill(1); s.step(1); s.kill(2); s.step(1); s.kill(3); s.step(1);
+        const shown = app.menuShown, hidden = app.menuHidden;
+        if (how === 'used') s.useMenu();
+        if (how === 'old') s.ctx._lmMbDeathMenuAt = Date.now() - 31000;
+        s.respawn(3, undefined, { background: true }); s.step(1);
+        check('last death: one menu; ' + (how === 'spawn' ? 'the unit spawning again hides it and takes the focus' : how === 'used' ? 'the player clicked into it: it stays' : 'older than 30 s: it stays'),
+            shown === 1 && s.focus() === s.player(3).src && app.menuHidden - hidden === (how === 'spawn' ? 1 : 0), shown + ' / ' + (app.menuHidden - hidden));
+    }
+    /* a lost socket is no death: no menu, the others' scores stay */
+    {
+        const s = MB.scene(Object.assign({ players: 3 }, opt));
+        MB.populate(s); s.step(2);
+        const app = s.ctx.application;
+        s.kill(1); s.step(1); s.kill(2); s.step(1);
+        const p3 = s.player(3).unit, other = s.player(2).unit;
+        other.playerScore = 77;
+        p3.terminate('disconnect');
+        check('the last living unit\'s socket drops: no game-over menu, the other unit\'s score kept', app.menuShown === 0 && other.playerScore === 77 && !s.ctx._lmMbDeathMenuAt);
+    }
+}
 /* 6. a spectator (Full Map tile, in-game spectator) with its active flag set is never a living
  * player (lmMbAlive): terminate and beforecalculation skip it for the focus and the last-death menu */
 {
-    const term = block(sp, '    terminate() {'), before = block(sp, '    beforecalculation() {');
+    const term = block(sp, '    terminate(reason) {'), before = block(sp, '    beforecalculation() {');
     const env = () => {
         const ctx = { console: { log: noop, warn: noop }, toastr: {}, Date, Math, menuShown: 0, document: { addEventListener: noop } };
         ctx.window = ctx;

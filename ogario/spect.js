@@ -1,9 +1,15 @@
 //SPECS v4.8 WORKS UNTIL HERE
 
-function loadMultiCellSkin(spect) {
-    var profileIdx = (application.mbSlots && spect && spect.number < application.mbSlots.length)
+/* The profile a unit plays: the one of its player slot (lmMbProfileIdx, ogario.v4.js: P2 is
+ * application.mbSlots[1] ...). An older core: by its number, as before. */
+function lmUnitProfileIdx(spect) {
+    if (typeof lmMbProfileIdx === 'function') return lmMbProfileIdx(spect);
+    return (application.mbSlots && spect && spect.number < application.mbSlots.length)
         ? application.mbSlots[spect.number] : application.selectedOldProfile;
-    var prof = profiles[profileIdx];
+}
+
+function loadMultiCellSkin(spect) {
+    var prof = profiles[lmUnitProfileIdx(spect)];
     if (prof && prof.nick && prof.skinURL) {
         lmPreloadUnitSkin(prof.skinURL);
     }
@@ -401,13 +407,37 @@ function lmFoodReference(now) {
     return R;
 }
 
-/* Opens one multibox unit (a playing connection) and returns it. Its number is max + 1 of what
- * spects holds now (Full Map tiles included), so callers take unit.number from the object
- * returned, never a guessed 1. */
+/* Opens one multibox unit (a playing connection) in the lowest free player slot and returns it;
+ * null when six players are there (slots being opened count) or another one is being made. Its
+ * number is max + 1 of what spects holds now (Full Map tiles included), so callers take
+ * unit.number from the object returned, never a guessed 1. The slot is held before the unit is
+ * made and freed again when making it fails. */
 function addBox() {
-    let spect = new Spect({ player: true });
+    const reg = typeof lmMbPlayers !== 'undefined' ? lmMbPlayers : null;
+    const r = reg ? reg.reserve() : null;
+    if (reg && !r) return null;
+    let spect;
+    if (reg) reg._busy = true;
+    try {
+        spect = new Spect({ player: true, slotId: r ? r.slotId : 0, slotEpoch: r ? r.slotEpoch : 0 });
+    } catch (e) {
+        if (reg) { reg._busy = false; reg.release(r.slotId, r.slotEpoch); }
+        throw e;
+    }
+    if (reg) reg._busy = false;
     spects.push(spect);
-    legendmod.multiBoxPlayerExists = true;
+    if (reg && !reg.attach(spect)) {
+        /* a slot or source taken twice: never two units in one */
+        spect._lmRemoved = true;
+        spect.closeConnection();
+        const i = spects.indexOf(spect);
+        if (i !== -1) spects.splice(i, 1);
+        reg.release(r.slotId, r.slotEpoch);
+        return null;
+    }
+    if (typeof lmMbSyncExists === 'function') lmMbSyncExists();
+    else legendmod.multiBoxPlayerExists = true;
+    if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerAdded', spect);
     return spect;
 }
 window.addBox = addBox;
@@ -589,6 +619,9 @@ class Spect {
             return spect && spect.number > max ? spect.number : max;
         }, 0) + 1;
         this.player = options.player === true;
+        /* the player slot (2..6) and its occupancy (lmMbPlayers, addBox); 0 for a spectator */
+        this.slotId = this.player && options.slotId >= 2 ? options.slotId : 0;
+        this.slotEpoch = this.slotId ? options.slotEpoch || 0 : 0;
         this.staticX = options.staticX != null ? options.staticX : null;
         this.staticY = options.staticY != null ? options.staticY : null;
         /* Full Map: staticX / staticY are the tile centre in canonical world coordinates (map
@@ -620,6 +653,9 @@ class Spect {
     }
 
     clearAsyncState() {
+        /* the multibox login wait of an earlier socket (connect() arms it again for the release) */
+        if (this._multiPendingTimer) clearTimeout(this._multiPendingTimer);
+        this._multiPendingTimer = null;
         if (this.positionController) clearInterval(this.positionController);
         if (this.staticPositionController) clearInterval(this.staticPositionController);
         if (this.socketErrorTimer) clearTimeout(this.socketErrorTimer);
@@ -737,6 +773,9 @@ class Spect {
             try { oldSocket.close(); } catch (e) { }
         }
         const generation = this.connectionGeneration = lmSpectNextGen(this);
+        /* a login popup still open for the old socket: it is let go after 60 s as before, but
+         * that socket's nick is not sent on this one (its own login reply sends it) */
+        if (window.MultiPending === this) this._armMultiPendingTimeout(true);
         /* cells of an earlier socket of this unit (a second connect() while connecting) are
          * not this socket's: its ids may name other cells */
         this._lmDropOtherGenerations(generation);
@@ -842,9 +881,11 @@ class Spect {
         this.connectionOpened = false
         this.socket = null;
         /* a kicked/dropped unit kept the focus: the main cell and camera stayed frozen for
-         * the whole reconnect backoff (and no menu when the main player was dead) */
-        if (this.active) this.terminate();
+         * the whole reconnect backoff. A dropped socket is no death: no game-over menu, the
+         * unit reconnects in its slot */
+        if (this.active) this.terminate('disconnect');
         else if (window.multiboxPlayerEnabled === this.number && legendmod.play) lmSetMbUnit(0);
+        if (this.player && typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerDisconnected', this, shouldReconnect ? 'reconnect' : '');
         this.flushCellsData()
         this._lmDropLooks()
         this.resetConnectionState()
@@ -992,17 +1033,25 @@ class Spect {
      * stayed set and hijacked the next MAIN login. Release it after 60 s and let
      * this unit play as guest.
      */
-    _armMultiPendingTimeout() {
-        var spect = this;
+    _armMultiPendingTimeout(releaseOnly) {
+        var spect = this, gen = this.connectionGeneration;
         if (this._multiPendingTimer) clearTimeout(this._multiPendingTimer);
         this._multiPendingTimer = setTimeout(function () {
             spect._multiPendingTimer = null;
             if (window.MultiPending === spect) {
                 window.MultiPending = null;
                 console.warn('[SPECT] Multibox login not completed; continuing as guest');
-                if (!spect.closedByUser && typeof spect.handleSendNick === 'function') spect.handleSendNick();
+                /* only on the socket that waited (a later one sent its nick itself) */
+                if (!releaseOnly && !spect.closedByUser && spect.connectionGeneration === gen && typeof spect.handleSendNick === 'function') spect.handleSendNick();
             }
         }, 60000);
+    }
+    /* this socket and slot wait for the login popup (MultiTokenReady takes its answer only for them) */
+    _lmPendLogin() {
+        window.MultiPending = this
+        this._lmPendGen = this.connectionGeneration
+        this._lmPendEpoch = this.slotEpoch
+        this._armMultiPendingTimeout()
     }
 
     //spects[0].sendGplusToken(master.accessToken)
@@ -1016,8 +1065,7 @@ class Spect {
             if (master.accessTokenGPlus) {
                 MultiTokenReady(this)
             } else {
-                window.MultiPending = this
-                this._armMultiPendingTimeout()
+                this._lmPendLogin()
                 document.getElementById("gplusLogin").click()
                 //this.handleSendNick()
                 console.log('[SPECT] Login Tokens - Main: Google, Multi: Facebook')
@@ -1034,8 +1082,7 @@ class Spect {
                 }
                 this.handleSendNick()
             } else {
-                window.MultiPending = this
-                this._armMultiPendingTimeout()
+                this._lmPendLogin()
                 master.facebookLogin()
                 console.log('[SPECT] Login Tokens - Main: Facebook, Multi: Google')
             }
@@ -1937,6 +1984,11 @@ class Spect {
                     break;
                 }
                 toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game2.spCaptchaClosed'));
+                /* removed like Remove Player (its slot is free again, the others keep theirs) */
+                if (typeof lmMbRemoveUnit === 'function') {
+                    lmMbRemoveUnit(this, 'removed');
+                    break;
+                }
                 this.terminate()
                 /* The v2 captcha is not answered on this socket, so really close the
                  * unit: left connected it stayed in multibox switching and every
@@ -2061,7 +2113,11 @@ class Spect {
                 this.serverTimeDiff = Date.now() - this.serverTime;
 
                 if (this.player == true) {
-                    if (!window.MultiWS || window.MultiWS != this.ws) {
+                    /* one unit logs in with the other provider's account (lmMbTokenSlot), the
+                     * others play as guests: one account on two sockets logs the other out */
+                    if (typeof lmMbTokenSlot === 'function' && !lmMbTokenSlot(this)) {
+                        this.handleSendNick()
+                    } else if (!window.MultiWS || window.MultiWS != this.ws) {
                         window.MultiWS = this.ws
                         this.getTheOppositeSocialToken()
                     } else {
@@ -2136,9 +2192,7 @@ class Spect {
     }
 
     handleSendNick() {
-        var profileIdx = (application.mbSlots && this.number < application.mbSlots.length)
-            ? application.mbSlots[this.number] : application.selectedOldProfile;
-        var prof = profiles[profileIdx] || profiles[0];
+        var prof = profiles[lmUnitProfileIdx(this)] || profiles[0];
         if (prof && prof.nick && defaultmapsettings.multiBoxShadow) {
             this.sendNick(prof.nick);
             this.nick = prof.nick;
@@ -2693,7 +2747,12 @@ class Spect {
         }
     }
 
-    terminate() {
+    /* The unit's life ended. reason: 'death' (no own cell left; the default), 'disconnect' (its
+     * socket closed: no death, so no game-over menu; it reconnects in its slot) or 'removed'
+     * (closed for good: Remove Player, a captcha; the menu when nothing of ours lives, but a
+     * later spawn does not hide it). */
+    terminate(reason) {
+        reason = reason === 'disconnect' || reason === 'removed' ? reason : 'death';
         this.active = false;
         this._lmFocusOnSpawn = false;
         /* the next life on this socket is a new spawn for beforecalculation: with the main player
@@ -2717,9 +2776,12 @@ class Spect {
         // Auto-switch active camera to surviving multibox unit if available
         if (window.multiboxPlayerEnabled === this.number) {
             /* no other living unit: the focus stayed on this dead one and spectating then
-             * followed nobody (the main camera ignores its view while a unit has focus) */
+             * followed nobody (the main camera ignores its view while a unit has focus).
+             * lmMbFallbackUnit: the main player while it plays, else the next living unit in
+             * slot order (never a spectator) */
             var nextUnit = 0;
-            if (!legendmod.play) {
+            if (typeof lmMbFallbackUnit === 'function') nextUnit = lmMbFallbackUnit(this, reason);
+            else if (!legendmod.play) {
                 for (var s = 0; s < spects.length; s++) {
                     if (spects[s] && spects[s] !== this && lmMbAlive(spects[s])) {
                         nextUnit = spects[s].number;
@@ -2729,6 +2791,9 @@ class Spect {
             }
             lmSetMbUnit(nextUnit);
         }
+        if (this.player && reason === 'death' && typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerDied', this, reason);
+        /* a lost socket is no game over */
+        if (reason === 'disconnect') return;
 
         // Check if any unit is still alive (main player or other units; a spectator is no player)
         var anyAlive = legendmod.play;
@@ -2741,8 +2806,10 @@ class Spect {
         if (!anyAlive) {
             // Last unit died — show menu
             application.showMenu();
+            if (reason !== 'death') return;
             /* the unit's own background respawn may hide this menu again (beforecalculation),
-             * unless the player uses it first (nick, server list, death card) */
+             * unless the player uses it first (nick, server list, death card) or it is older
+             * than LM_MB_DEATH_MENU_MS */
             window._lmMbDeathMenuAt = Date.now();
             if (!window._lmMbMenuUse && typeof document !== 'undefined' && document && document.addEventListener) {
                 window._lmMbMenuUse = function (e) {
@@ -3205,13 +3272,17 @@ class Spect {
         if (ownCells.length) {
             if (!this.openSecond) {
                 this.openSecond = true;
-                /* only the first spawn after that death may hide its menu */
-                var _lmDeathMenu = window._lmMbDeathMenuAt;
+                /* only the first spawn after that death may hide its menu, a unit still in its
+                 * slot, and not long after (the player may have gone on with the menu) */
+                var _lmDeathMenu = window._lmMbDeathMenuAt && Date.now() - window._lmMbDeathMenuAt < LM_MB_DEATH_MENU_MS &&
+                    !(this.slotId && typeof lmMbPlayers !== 'undefined' && !lmMbPlayers.isCurrent(this));
                 window._lmMbDeathMenuAt = 0;
-                /* first spawn of this unit, a spawn the player asked for (Tab), or the main
-                 * cell is dead: focus it. A background reconnect + auto-respawn used to take
-                 * the focus mid-fight and freeze the main cell. */
-                if (!this._lmSpawnedOnce || this._lmFocusOnSpawn || !legendmod.play) {
+                /* first spawn of this unit, a spawn the player asked for (Tab), or the player you
+                 * control is not alive (the main cell dead, or the unit you control): focus it. A
+                 * background reconnect + auto-respawn used to take the focus mid-fight and freeze
+                 * the main cell, or another living unit's. */
+                var _lmCur = typeof lmMbFocused === 'function' ? lmMbFocused() : (window.multiboxPlayerEnabled ? null : legendmod);
+                if (!this._lmSpawnedOnce || this._lmFocusOnSpawn || _lmCur === this || !lmMbAlive(_lmCur)) {
                     lmSetMbUnit(this.number);
                     /* the death menu (terminate: last player died) stayed up over the unit now played;
                      * not a menu the player opened (Esc) or is using (typing a nick, server list) */
@@ -3230,10 +3301,13 @@ class Spect {
         } else if (window.multiboxPlayerEnabled === this.number &&
             !(this._lmWantFocusAt && Date.now() - this._lmWantFocusAt < 25000)) {
             let nextUnit = 0;
-            for (let i = 0; i < spects.length; i++) {
-                if (spects[i] && spects[i] !== this && lmMbAlive(spects[i])) {
-                    nextUnit = spects[i].number;
-                    break;
+            if (typeof lmMbFallbackUnit === 'function') nextUnit = lmMbFallbackUnit(this, 'lost');
+            else {
+                for (let i = 0; i < spects.length; i++) {
+                    if (spects[i] && spects[i] !== this && lmMbAlive(spects[i])) {
+                        nextUnit = spects[i].number;
+                        break;
+                    }
                 }
             }
             lmSetMbUnit(nextUnit);
@@ -3298,9 +3372,7 @@ class Spect {
         cell.isPlayerCell = true;
         cell.isPlayerCellMulti = true;
         cell.invisible = false;
-        var _mbPIdx = (application.mbSlots && this.number < application.mbSlots.length)
-            ? application.mbSlots[this.number] : application.selectedOldProfile;
-        var _mbProf = profiles[_mbPIdx];
+        var _mbProf = profiles[lmUnitProfileIdx(this)];
         /* Teams: the server's team colour, like the main connection (not the
          * food colour of "one colour for spectator cells") */
         if (legendmod.gameMode === ':teams') {
@@ -3331,6 +3403,7 @@ class Spect {
             this._lmWantFocusAt = 0
             this.sendCursor()
             loadMultiCellSkin(this)
+            if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerSpawned', this)
         }
         return true;
     }
@@ -3447,8 +3520,13 @@ window.sendAction = action => {
     legendmod.sendAction(action);
 };
 
-function MultiTokenReady(spector) {
+/* fromLogin: the answer of the login popup (ogario.v4.master.js), taken only for the socket and
+ * slot that asked (a reconnect or a removed unit since: the token stays in master for the next
+ * login and nothing is sent) */
+function MultiTokenReady(spector, fromLogin) {
     if (!spector) return;
+    if (fromLogin && (spector.closedByUser || spector._lmPendGen !== spector.connectionGeneration || spector._lmPendEpoch !== spector.slotEpoch ||
+        (spector.slotId && typeof lmMbPlayers !== 'undefined' && !lmMbPlayers.isCurrent(spector)))) return;
     /*
      * The multibox player must log in with the OTHER provider's account.
      * Sending the main account's token logs the main connection out

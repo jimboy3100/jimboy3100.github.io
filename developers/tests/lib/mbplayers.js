@@ -6,11 +6,14 @@
  *   ogario.v4.js: LMEvents .. getActiveSpect / lmSetMbUnit / lmDeathScope; the multibox hide step
  *     (var LM_UNIT_ID_STEP .. lmMultiboxPositionTwin) and drawRender's frame compaction (the same cut
  *     as mbtwin.js); onPlayerDeath's switch to a living unit, lmIdxFilter, lmIdxClear,
- *     LM.flushSpecsData (LM._lmSpecSetMode only records its calls in LM.calls); with app: true also
- *     application.multiboxchange / multiboxback / _lmMbStart / ensureMbSlots / syncFromMbSlots (six profiles).
+ *     LM.flushSpecsData, LM._lmMbStop (LM._lmSpecSetMode only records its calls in LM.calls); with
+ *     app: true also application.multiboxchange / multiboxback / _lmMbStart / the player calls (mbEnable,
+ *     mbAddPlayer, mbRemovePlayer, mbSelectPlayer, mbSelectAdjacent, _lmMbFocus) / ensureMbSlots /
+ *     syncFromMbSlots / selectProfile (six profiles).
  *   spect.js: getOwnPlayerCells, beforecalculation, terminate, respawn,
  *     calculatePlayerMassAndPosition, recalculatePlayerMass; with app: true also addBox (on a stand-in
- *     Spect numbered as spect.js numbers it: the highest number + 1).
+ *     Spect numbered as spect.js numbers it: the highest number + 1). The units of a scene are in their
+ *     player slots (lmMbPlayers: slot = their place + 2), as addBox puts them.
  * The world is a list of entities (physical cells): each has one copy, a cell object as spect.js /
  * updateCells make it (spectator, _lmSrc, _lmGen, _lmRawId, own-cell flags), on every source that
  * sees it, so the hide step's result can be checked against what is really there (audit()).
@@ -63,13 +66,15 @@ function load(o) {
     need(ta >= 0 && tm >= 0 && tb >= 0, 'multibox hide step');
     need(ca >= 0 && cb >= 0, 'frame compaction');
     const compact = v4.slice(ca, cb).slice(0, v4.slice(ca, cb).lastIndexOf('/*'));
-    const methods = ['getOwnPlayerCells() {', 'beforecalculation() {', 'terminate() {', 'respawn() {',
+    const methods = ['getOwnPlayerCells() {', 'beforecalculation() {', 'terminate(reason) {', 'respawn() {',
         'calculatePlayerMassAndPosition(ownCells) {', 'recalculatePlayerMass(ownCells) {'].map((m) => need(block(sp, '    ' + m), 'spect.js ' + m));
     const deathSwitch = need(block(v4, "if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {"), 'onPlayerDeath switch');
     const idx = ['    function lmIdxFilter(', '    function lmIdxClear('].map((m) => need(block(v4, m), m.trim()));
-    const app = ['        multiboxchange() {', '        multiboxback() {', '        _lmMbStart() {', '        ensureMbSlots() {', '        syncFromMbSlots() {'].map((m) => need(block(v4, m), m.trim()));
+    const app = ['        multiboxchange() {', '        multiboxback() {', '        _lmMbStart() {', '        mbEnable() {', '        mbDisable() {', '        mbAddPlayer() {',
+        '        mbRemovePlayer(slot) {', '        mbSelectPlayer(slot) {', '        mbSelectAdjacent(dir) {', '        _lmMbFocus(sp) {',
+        '        ensureMbSlots() {', '        syncFromMbSlots() {', '        selectProfile(value) {'].map((m) => need(block(v4, m), m.trim()));
     const addBox = need(block(sp, 'function addBox() {'), 'spect.js addBox');
-    const flush = need(block(v4, '        flushSpecsData() {'), 'flushSpecsData');
+    const flush = need(block(v4, '        flushSpecsData() {'), 'flushSpecsData') + ',\n' + need(block(v4, '        _lmMbStop() {'), '_lmMbStop');
     const r = {
         events: v4.slice(ea, eb), twin: v4.slice(ta, tb + 3),
         frame: 'function _lmFrame() { var LM = window.legendmod, i, cell;\nlmMbFrameHide();\n' + compact + '\n}',
@@ -86,7 +91,10 @@ function scene(o) {
     if (!(K >= 1 && K <= MAX_PLAYERS)) throw new Error('mbplayers: players 1..' + MAX_PLAYERS);
     const C = load(o);
     const ids = (o.ids || PLAYER_IDS).slice(0, K - 1), tileIds = o.fullMap ? (o.tileIds || TILE_IDS) : [];
-    const ctx = { console: { log: noop, warn: noop, error: noop }, Date, toastr: {}, setTimeout: () => 1, clearTimeout: noop, clearInterval: noop };
+    /* document: the death menu's listeners (terminate), so a test can use the menu (s.useMenu) */
+    const listeners = [];
+    const ctx = { console: { log: noop, warn: noop, error: noop }, Date, toastr: {}, setTimeout: () => 1, clearTimeout: noop, clearInterval: noop,
+        document: { activeElement: null, addEventListener: (type, fn) => listeners.push({ type, fn }) } };
     ctx.window = ctx;
     vm.createContext(ctx);
     /* compiled once per pair of files (and app), run in a new context per scene */
@@ -99,14 +107,21 @@ function scene(o) {
         /* six profiles, each with its own nick and skin; the main player plays profile 0, the first unit profile 1 */
         'var profiles = [0, 1, 2, 3, 4, 5].map(function (i) { return { nick: "prof" + i, color: "#00000" + i, skinURL: "skin" + i }; }), ogarcopythelb = {};\n' +
         'function play() { legendmod.play = true; }\n' +
-        'var application = window.application = { menuShown: 0, menuHidden: 0, autoResps: 0, mbSlots: [0, 1], selectedProfile: 0, selectedOldProfile: 1, skins: [],\n' +
+        'var application = window.application = { menuShown: 0, menuHidden: 0, autoResps: 0, mbSlots: [0, 1], selectedProfile: 0, selectedOldProfile: 1, skins: [], preloaded: [],\n' +
         ' showMenu() { this.menuShown++; }, hideMenu() { this.menuHidden++; }, autoResp() { this.autoResps++; }, cacheCustomSkin(nick) { this.skins.push(nick); },\n' +
+        ' setPlayerSettings() { }, setProfile() { this.ensureMbSlots(); }, setProfileboxShadow() { }, eraseProfileboxShadow() { },\n' +
         ' onPlayerDeath() {\n' + C.deathSwitch + '\nthis.autoResp();\n}' + (o.app ? ',\n' + C.app : '') + ' };\n' +
-        'window.Unit = class Unit { constructor(n, player) { this.number = n; this.player = player === true; this.active = null; this.playerCellIDs = [];\n' +
-        ' this.connectionGeneration = 1; this.openSecond = false; this.playerScore = 0; this.open = true; this.spawnRequests = 0; this.connects = 0; }\n' +
-        ' isSocketOpen() { return this.open; } handleSendNick() { this.spawnRequests++; } connect() { this.connects++; } closeConnection() { this.open = false; this.closed = true; }\n' + C.methods + '\n};\n' +
-        /* spect.js numbers a new connection as the highest number + 1 */
-        'window.Spect = class Spect extends Unit { constructor(op) { super(spects.reduce(function (m, s) { return s && s.number > m ? s.number : m; }, 0) + 1, !!(op && op.player === true)); } };\n' +
+        'window.Unit = class Unit { constructor(n, player, op) { this.number = n; this.player = player === true; this.active = null; this.playerCellIDs = [];\n' +
+        ' this.slotId = this.player && op && op.slotId >= 2 ? op.slotId : 0; this.slotEpoch = this.slotId ? op.slotEpoch : 0;\n' +
+        ' this.connectionGeneration = 1; this.openSecond = false; this.playerScore = 0; this.open = true; this.spawnRequests = 0; this.connects = 0; this.socket = {}; this.connectionOpened = true; }\n' +
+        ' isSocketOpen() { return this.open; } handleSendNick() { this.spawnRequests++; } connect() { this.connects++; } closeConnection() { this.open = false; this.closed = true; this.closedByUser = true; this.socket = null; }\n' + C.methods + '\n};\n' +
+        /* spect.js numbers a new connection as the highest number + 1; window.spectThrows / spectHook: the
+         * next one fails / runs a function while it is made (a reentrant addBox) */
+        'window.Spect = class Spect extends Unit { constructor(op) { if (window.spectThrows) { window.spectThrows = false; throw new Error("socket refused"); }\n' +
+        ' super(spects.reduce(function (m, s) { return s && s.number > m ? s.number : m; }, 0) + 1, !!(op && op.player === true), op);\n' +
+        ' if (window.spectHook) { var h = window.spectHook; window.spectHook = null; h(this); } } };\n' +
+        /* spect.js lmPreloadUnitSkin: a unit's skin is only loaded by its link */
+        'function lmPreloadUnitSkin(url) { application.preloaded.push(url); }\n' +
         C.addBox, { filename: 'mbplayers-scene.js' });
     C[sk].runInContext(ctx);
     ctx.defaultmapsettings.multiboxAmount = K;
@@ -120,8 +135,10 @@ function scene(o) {
     };
     s.players.push(Object.assign(addSource(0, null, 1, IDENT), { alive: true, lifeGeneration: 1 }));
     ids.forEach((id, i) => {
-        const u = new ctx.Unit(id, true);
+        const r = ctx.lmMbPlayers.reserve();
+        const u = new ctx.Unit(id, true, r);
         ctx.spects.push(u);
+        ctx.lmMbPlayers.attach(u);
         s.players.push(Object.assign(addSource(id, u, i + 2, IDENT), { alive: true, lifeGeneration: 1 }));
     });
     tileIds.forEach((id, i) => {
@@ -219,13 +236,14 @@ function scene(o) {
             for (const e of s.ents) { const c = e.copies.get(0); if (c && LM.cells.indexOf(c) < 0) { e.copies.delete(0); delete LM.indexedCells[c.id]; } }
         }
     };
-    /* a new life on the same socket: lifeGeneration + 1, new own cells (new raw ids) */
-    s.respawn = (slot, cells) => {
+    /* a new life on the same socket: lifeGeneration + 1, new own cells (new raw ids); o.background:
+     * the server spawned it on its own (auto-respawn after a death or reconnect), not respawn() */
+    s.respawn = (slot, cells, o3) => {
         const p = s.player(slot);
         if (!p || p.alive) return;
         p.lifeGeneration++;
         p.alive = true;
-        if (p.unit) p.unit.respawn();
+        if (p.unit) { if (!(o3 && o3.background)) p.unit.respawn(); }
         else { LM.play = true; ctx.mainPlayerDeadMbActive = false; p.observing = true; s.reobserve(0); }
         (cells || [{}]).forEach((c, i) => s.own(slot, Object.assign({ x: slot * 900 + i * 150, y: 0, size: 60, seenBy: p.lastSeenBy || [] }, c)));
     };
@@ -240,10 +258,11 @@ function scene(o) {
         p.unit.connectionGeneration++;
         p.unit.playerCellIDs = [];
         if (p.unit._lmOwn) p.unit._lmOwn.length = 0;
-        if (p.unit.active) p.unit.terminate();
+        /* spect.js onclose: a dropped socket ends the life, no death */
+        if (p.unit.active) p.unit.terminate('disconnect');
         p.alive = false;
         s.reobserve(p.src);
-        if (!o2 || o2.respawn !== false) s.respawn(slot, own.length ? own : undefined);
+        if (!o2 || o2.respawn !== false) s.respawn(slot, own.length ? own : undefined, { background: true });
     };
     /* a unit closed for good: its observations and cells go, it leaves window.spects, the slot
      * stays empty (no renumbering) */
@@ -268,6 +287,10 @@ function scene(o) {
         return s;
     };
     s.focus = () => +ctx.multiboxPlayerEnabled || 0;
+    /* the player clicks into the menu (the death menu's capture listeners, spect.js terminate) */
+    s.useMenu = () => { for (const l of listeners) if (l.type === 'mousedown') l.fn({ target: { closest: () => true } }); };
+    /* the slot of the player in focus (1 = the main player) */
+    s.focusSlot = () => ctx.lmMbPlayers.activeSlot;
 
     /* What the frame shows against what is there.
      * dup: entities drawn more than once; missing: entities with a listed copy on a feeding source

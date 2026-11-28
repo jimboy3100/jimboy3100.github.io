@@ -40,6 +40,10 @@ lmMethods.forEach((m) => { if (!m[1] && m[0].indexOf('_lm') >= 0) m[1] = m[0].tr
 const missing = appMethods.concat(lmMethods).filter((m) => !m[1]).map((m) => m[0].trim());
 if (missing.length || nickStart < 0 || nickEnd < 0) { console.log('FAIL code not found: ' + missing.concat(nickStart < 0 || nickEnd < 0 ? ['sendNick'] : []).join(', ')); process.exit(1); }
 const sendNick = src.slice(nickStart, nickEnd) + '        },';
+/* LMEvents, the player registry (lmMbPlayers) and its helpers, getActiveSpect / lmSetMbUnit: the real
+ * ones (an older file without the registry: the stand-ins below) */
+const evA = src.indexOf('/* LMEvents: hooks'), evB = src.indexOf('window.OgVer', evA);
+const events = evA >= 0 && evB > evA && src.indexOf('var lmMbPlayers', evA) > 0 && src.indexOf('var lmMbPlayers', evA) < evB ? src.slice(evA, evB) : '';
 
 function env(o) {
     o = o || {};
@@ -68,6 +72,7 @@ function env(o) {
     };
     if (o.quiet) ctx.console = { log() { }, warn() { }, error: console.error };
     vm.createContext(ctx);
+    if (events) vm.runInContext(events, ctx);
     /* _lmFullMapCrowd false: a leaderboard of few players arrived (_lmFullMapCrowdCheck) */
     vm.runInContext('var LM = window.legendmod = { integrity: true, mapOffsetFixed: true, _lmFullMapCrowd: false,' + lmMethods.map((m) => m[1]).join(',\n') + ',\n' + (o.nick || sendNick) + '\n};' +
         'var application = window.application = {' + appMethods.map((m) => m[1]).join(',\n') + '};', ctx);
@@ -192,9 +197,16 @@ for (const withUnit of [false, true]) {
 /* 7-9. a multibox unit and an in-game spectator open together (since the unit no longer blocks the
  * spectator): the multibox switch keys (application.multiboxchange / multiboxback) and the
  * spectator's Follow / Free mode (changeSpectatorMode), cut out of ogario.v4.js */
-const mbMethods = ['        multiboxchange() {', '        multiboxback() {', '        changeSpectatorMode() {', '        _lmMbStart() {'].map((m) => [m, block(m)]);
+const mbMethods = ['        multiboxchange() {', '        multiboxback() {', '        changeSpectatorMode() {', '        _lmMbStart() {', '        mbSelectAdjacent(dir) {', '        _lmMbFocus(sp) {',
+    '        mbEnable() {', '        mbAddPlayer() {', '        mbRemovePlayer(slot) {'].map((m) => [m, block(m)]);
 /* _lmMbStart is new: an older file without it still runs (its multiboxchange does not call it) */
 if (!mbMethods[3][1]) mbMethods[3][1] = '_lmMbStart() { }';
+/* the one switch of multiboxchange / multiboxback is newer still: an older file runs without it */
+if (!mbMethods[4][1]) mbMethods[4][1] = 'mbSelectAdjacent() { }';
+if (!mbMethods[5][1]) mbMethods[5][1] = '_lmMbFocus() { }';
+if (!mbMethods[6][1]) mbMethods[6][1] = 'mbEnable() { }';
+if (!mbMethods[7][1]) mbMethods[7][1] = 'mbAddPlayer() { }';
+if (!mbMethods[8][1]) mbMethods[8][1] = 'mbRemovePlayer() { }';
 if (mbMethods.some((m) => !m[1])) { console.log('FAIL code not found: ' + mbMethods.filter((m) => !m[1]).map((m) => m[0].trim()).join(', ')); process.exit(1); }
 function mbEnv() {
     const e = env();
@@ -351,6 +363,7 @@ function realEnv() {
         return s;
     };
     vm.createContext(ctx);
+    if (events) vm.runInContext(events, ctx);
     vm.runInContext('var legendmod = window.legendmod = { ws: "wss://test", integrity: true, mapOffsetFixed: true, _lmFullMapCrowd: false, mapMinX: -7071, mapMinY: -7071, mapMaxX: 7071, mapMaxY: 7071,' +
         ' mapOffsetX: 0, mapOffsetY: 0, vector: null, vnr: 0, playerCellsMulti: [], indexedCells: {}, cells: [], foodMulti: [], play: false,' +
         lmMethods.map((m) => m[1]).join(',\n') + ',\n' + sendNick + '}; var LM = legendmod; var ogario = legendmod;' +
@@ -980,6 +993,56 @@ for (const withUnit of [false, true]) {
             e.focus() === 0 && e.LM.play === true && !e.ctx.menuShown && e.same(grid, socks) &&
             (how === 'close' || (e.units().length === 0 && e.LM.multiBoxPlayerExists === false)), [e.focus(), e.ctx.menuShown, e.units().length].join());
     }
+}
+
+/* 24. the login with the other provider's account (real spect.js, case 242): one unit holds it, a
+ * third player plays as guest; a login popup's answer is taken only by the socket and slot that
+ * asked; the 60 s wait of an earlier socket sends no nick on the new one */
+{
+    const e = realEnv();
+    const c = e.ctx;
+    Object.assign(c, { ogarcopythelb: {}, core: null, played: 0, play: () => { c.played++; } });
+    vm.runInContext('Object.assign(application, {' + mbMethods.map((m) => m[1]).join(',\n') + '}); application.hideMenu = function () {};', c);
+    c.defaultmapsettings.multiboxAmount = 3;
+    c.legendmod.play = true;
+    c.FB = { login() { } };
+    Object.assign(c.master, { context: 'google', accessTokenFB: 'fb-token', accessTokenFBAt: Date.now(), facebookLogin() { c.popups = (c.popups || 0) + 1; } });
+    e.app.mbEnable();
+    const p3 = e.app.mbAddPlayer();
+    const p2 = c.lmMbPlayers.get(2);
+    const spy = (u) => { u.tokens = []; u.nicks = 0; u.sendFbToken = (t) => u.tokens.push(t); u.handleSendNick = () => { u.nicks++; }; };
+    spy(p2); spy(p3);
+    const login = (u) => { u.socket.readyState = 1; u.socket.onopen(); u.handleMessage(new DataView(Uint8Array.of(242, 0, 0, 0, 0).buffer)); };
+    login(p2); login(p3);
+    check('24. P2 logs in with the other account (cached token), P3 plays as guest (one account never on two sockets)',
+        p2.tokens.join() === 'fb-token' && p3.tokens.length === 0 && p3.nicks === 1 && c.lmMbPlayers.tokenSlot === 2, [p2.tokens, p3.tokens, p3.nicks].join(' / '));
+    login(p3);
+    check('    ... P3 again (a reconnect): still a guest', p3.tokens.length === 0 && p3.nicks === 2);
+    /* no cached token: the popup; P2 reconnects before the answer */
+    c.master.accessTokenFB = null; c.MultiWS = null;
+    login(p2);
+    check('    ... no cached token: P2 waits for the login popup', c.MultiPending === p2 && c.popups === 1);
+    const waits = () => [...e.timers.entries()].filter(([, t]) => t.ms === 60000);
+    p2.connect();
+    check('    ... P2 reconnects meanwhile: one 60 s wait left (the old socket\'s cleared)', waits().length === 1, waits().length);
+    c.master.accessTokenFB = 'late'; c.master.accessTokenFBAt = Date.now();
+    c.MultiTokenReady(c.MultiPending, true);
+    check('    ... the popup\'s answer for the old socket is not sent on the new one', p2.tokens.join() === 'fb-token');
+    const nicks = p2.nicks;
+    waits().forEach(([id, t]) => { e.timers.delete(id); t.fn(); });
+    check('    ... the 60 s wait ends: the login slot is let go, no nick on the new socket', c.MultiPending === null && p2.nicks === nicks);
+    c.master.accessTokenFB = null; c.MultiWS = null;
+    login(p2);
+    c.master.accessTokenFB = 'fresh'; c.master.accessTokenFBAt = Date.now();
+    c.MultiTokenReady(c.MultiPending, true);
+    check('    ... an answer for the socket that asked is sent', p2.tokens.join() === 'fb-token,fresh');
+    c.master.accessTokenFB = null; c.MultiWS = null;
+    login(p2);
+    const asked = c.MultiPending;
+    e.app.mbRemovePlayer(2);
+    c.master.accessTokenFB = 'gone';
+    c.MultiTokenReady(asked, true);
+    check('    ... a removed unit takes no answer', p2.tokens.join() === 'fb-token,fresh' && c.lmMbPlayers.tokenSlot === 0);
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
