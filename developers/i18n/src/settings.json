@@ -3188,6 +3188,24 @@
     "ja": "虹色のマップ境界",
     "it": "Bordi della mappa arcobaleno"
   },
+  "settings.hudBlur": {
+    "en": "HUD background blur (0 = off)",
+    "el": "Θόλωμα φόντου HUD (0 = ανενεργό)",
+    "es": "Desenfoque del fondo del HUD (0 = desactivado)",
+    "bg": "Размазване на фона на HUD (0 = изключено)",
+    "fr": "Flou de fond du HUD (0 = désactivé)",
+    "ar": "تمويه خلفية HUD (0 = إيقاف)",
+    "zh": "HUD 背景模糊（0 = 關閉）",
+    "ru": "Размытие фона HUD (0 = выкл.)",
+    "de": "HUD-Hintergrundunschärfe (0 = aus)",
+    "tr": "HUD arka plan bulanıklığı (0 = kapalı)",
+    "pl": "Rozmycie tła HUD (0 = wył.)",
+    "nl": "Vervaging HUD-achtergrond (0 = uit)",
+    "pt": "Desfoque do fundo do HUD (0 = desligado)",
+    "id": "Blur latar belakang HUD (0 = nonaktif)",
+    "ja": "HUD背景のぼかし（0 = オフ）",
+    "it": "Sfocatura sfondo HUD (0 = off)"
+  },
   "settings.showStatsPPS": {
     "en": "PPS: Packets per second",
     "el": "PPS: Πακέτα ανά δευτερόλεπτο",

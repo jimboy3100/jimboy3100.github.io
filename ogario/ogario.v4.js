@@ -21043,6 +21043,7 @@ var defaultmapsettings = {
     mergeRings: true,             /* merge progress rings on own cells (shown before this setting existed) */
     /* mentionNotify (desktop notification on a nick mention) is gone: a saved value is skipped on load */
     rainbowMapBorders: false,     /* map border colour cycles through the rainbow */
+    hudBlur: 0,                   /* frosted-glass blur behind HUD panels, px (0 = off) */
     /* timeFormat (clock format) is gone: the clock always shows the browser's date and time; saved values are skipped on load */
     showStatsPPS: true,
     showStatsServerHz: true,
@@ -21126,6 +21127,7 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     gamepadTrigger: [0.1, 0.95, 0.05],
     /* 0 ("as Short mass") of older versions is folded before the check (lmFoldLegacySettings) */
     massFormat: [1, 3, 1],
+    hudBlur: [0, 8, 1],
     animation: [5, 200, 1],
     macroFeeding: [1, 160, 1],
     macroSplitDelay: [20, 120, 1],
@@ -24075,6 +24077,14 @@ function thelegendmodproject() {
                 }
             }
         },
+        /* "HUD background blur": frosted-glass panels (leaderboard, minimap, stats, team...) */
+        applyHudBlur() {
+            var px = Math.max(0, Math.min(8, +defaultmapsettings.hudBlur || 0));
+            var st = document.getElementById('lm-hud-blur');
+            if (!px) { if (st) st.parentNode.removeChild(st); return; }
+            if (!st) { st = document.createElement('style'); st.id = 'lm-hud-blur'; document.head.appendChild(st); }
+            st.textContent = '.hud,.hud-b,.hud-c{-webkit-backdrop-filter:blur(' + px + 'px);backdrop-filter:blur(' + px + 'px)}';
+        },
         displayTime() {
             if (defaultmapsettings.showTime) {
                 this.timeHUD.textContent = new Date().toLocaleString();
@@ -26255,7 +26265,7 @@ function thelegendmodproject() {
                     /* with the switches its options need: Stats for FPS / PPS; Cursor tracking (its
                      * line, with split prediction, or bubble look stays the player's) */
                     competitive: { key: 'lmPresetCompetitive', en: 'Competitive', set: { oppColors: true, oppRings: true, virColors: true, splitRange: true, virusesRange: true, virMassShots: true, showMass: true, mergeRings: true, showStats: true, showStatsFPS: true, showStatsPPS: true, cursorTracking: true } },
-                    battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, highDPI: false, showBgSectors: false } },
+                    battery: { key: 'lmPresetBattery', en: 'Battery saver', set: { fpsLimit: 60, jellyPhisycs: false, videoSkins: false, animatedRainbowColor: false, rainbowMapBorders: false, borderGlow: false, virusGlow: false, suckAnimation: false, showGhostCells: false, hudBlur: 0, highDPI: false, showBgSectors: false } },
                     /* tip: what it changes and what it leaves (not a privacy guarantee: nothing drawn
                      * in the game is hidden) */
                     streamer: { key: 'lmPresetStreamer', en: 'Streamer', tip: 'pkg.pt.streamerTip', set: { hidecountry: true, showChat: false, showChatImages: false, showChatVideos: false, showDevConsole: false, streamMode: true, hideSkinUrl: true }, lbl: { streamMode: 'pkg.pt.streamMode', hideSkinUrl: 'pkg.pt.hideSkinUrl' } },
@@ -26439,6 +26449,8 @@ function thelegendmodproject() {
             this.addSliderBox(".animationGroup", "fpsLimit", 0, 240, 10);
             /* one choice for the mass text ("Short mass" was a second switch for the same) */
             this.addChoiceBox(".massGroup", "massFormat", "settings.massFormat", [[1, 'pkg.mg.massExact'], [2, 'pkg.mg.massShort'], [3, 'pkg.mg.massAuto']]);
+            this.addSliderBox(".hudGroup", "hudBlur", 0, 8, 1, "applyHudBlur");
+            this.applyHudBlur();
 
             this.addSliderBox(".zoomGroup", "zoomSpeedValue2", -0.90, 0.90, 0.01);
             this.addSliderBox(".skinsGroup", "videoSkinSoundLevel", 0, 1, 0.01);

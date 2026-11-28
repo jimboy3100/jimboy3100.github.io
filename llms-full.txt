@@ -125,6 +125,7 @@ Full visual customization of the game interface using CSS variables and theme pr
 - **Rainbow food**: Coloured food pellets
 - **Rainbow map borders**: Animated colour-cycling map edge
 - **Virus effects**: Spikes, glow, and jelly physics on virus cells
+- **HUD blur**: Frosted-glass backdrop behind HUD panels (configurable px, off by default)
 - **Grid and sector display**: Toggle grid lines and sector labels
 URL: https://www.legendmod.ml/themes/
 

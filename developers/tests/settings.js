@@ -98,7 +98,21 @@ ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();
 const S = ctx.defaultmapsettings;
 check('load: off-range/off-step values fitted, invalid choice keeps the default, valid values kept', S.fpsLimit === 150 && S.massFormat === 2 && S.macroFeeding === 3 && S.showMass === !D.showMass && S.positionClass === D.positionClass && S.messageSound === 'spam.mp3');
-check('the removed HUD background blur: an old saved value is ignored quietly', !('hudBlur' in D) && !('hudBlur' in SCH) && !('hudBlur' in S) && V('hudBlur', 3) === undefined);
+check('HUD background blur: off (0) by default, 0-8 px, a saved value is read again', D.hudBlur === 0 && J(SCH.hudBlur) === J([0, 8, 1]) && S.hudBlur === 3 && V('hudBlur', 9) === 8);
+/* applyHudBlur (the real method): a style only while the blur is above 0 */
+{
+  const hb = { head: { kids: [], appendChild(e) { this.kids.push(e); e.parentNode = this; }, removeChild(e) { this.kids.splice(this.kids.indexOf(e), 1); } } };
+  hb.getElementById = id => hb.head.kids.find(e => e.id === id) || null;
+  hb.createElement = () => ({ id: '', textContent: '' });
+  const hctx = vm.createContext({ Math, document: hb, defaultmapsettings: { hudBlur: 0 } });
+  const A = vm.runInContext('({\n' + cut('        applyHudBlur() {', '        displayTime() {') + '\n})', hctx);
+  A.applyHudBlur();
+  const off = hb.head.kids.length === 0;
+  hctx.defaultmapsettings.hudBlur = 4; A.applyHudBlur();
+  const on = hb.head.kids.length === 1 && /blur\(4px\)/.test(hb.head.kids[0].textContent);
+  hctx.defaultmapsettings.hudBlur = 0; A.applyHudBlur();
+  check('HUD background blur: no style at 0, a 4 px backdrop blur at 4, gone again at 0', off && on && hb.head.kids.length === 0);
+}
 check('load: old saved Scan Trick settings are skipped quietly', SCAN_OLD.every(k => !(k in S)) || (console.log('   kept: ' + SCAN_OLD.filter(k => k in S).join(', ')), false));
 // ── one video skin volume: the removed second slider (volVideo) is folded into the level once
 check('volVideo is no setting any more (no second video volume)', !('volVideo' in D) && !('volVideo' in SCH) && V('volVideo', 0.5) === undefined);
