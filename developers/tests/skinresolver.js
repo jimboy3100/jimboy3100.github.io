@@ -80,7 +80,12 @@ const enc = (p) => p.split('/').map(encodeURIComponent).join('/');
         if (c !== p) { n++; if (sha(p) !== sha(c)) bad.push(p); }
         else if (!lr.has(p.slice(12))) bad.push(p + ' (canonical but not in lr)');
     }
-    check('every lowresskins copy (' + n + ') resolves to a byte-identical canonical file', bad.length === 0 && n > 1000, bad.slice(0, 5).join(', '));
+    check('every lowresskins copy (' + n + ') resolves to a byte-identical canonical file', bad.length === 0, bad.slice(0, 5).join(', '));
+    /* the 1,799 lowres sync copies are deleted: their old addresses still resolve to the kept file */
+    const gone = JSON.parse(fs.readFileSync(path.join(ROOT, 'developers', 'audit', 'manifest.json'), 'utf8')).records
+        .filter((r) => r.deleted === true && /^lowresskins\//.test(r.oldPath));
+    bad = gone.filter((r) => exists(r.oldPath) || R.canonicalPath(r.oldPath) !== r.canonicalPath || !exists(r.canonicalPath)).map((r) => r.oldPath);
+    check('every deleted lowresskins copy (' + gone.length + ') is gone and resolves to its kept canonical file', bad.length === 0 && gone.length >= 1799, bad.slice(0, 5).join(', '));
     check('no file of the mirror differs from the file at the same path here', res.conflicts.length === 0, res.conflicts.join(', '));
     check('no skin image file was deleted or added by this package (registry built from what is tracked)', res.local.every((f) => exists(f.p)));
     /* the deletion manifest: every duplicate has a record, and each record's old path resolves to
