@@ -9,7 +9,9 @@
  * view around its server camera (measured size; settled views that overlap drawn up to the middle
  * of the overlap), "Viewport# n moving" = the same on its way to its tile, "Viewport# n stale" = its
  * socket closed or its camera (1 s) or world (3 s) not fresh, "... unverified" = its
- * orientation not verified, "Viewport# n food" = no camera yet, its food box, "map". No box
+ * orientation not verified, "Viewport# n not drawn" = a settled view that covers its place while
+ * the frame leaves its cells out (lmSrcContributes: world late against the main socket or older
+ * than 1 s), "Viewport# n food" = no camera yet, its food box, "map". No box
  * without a real view (no planned tile, nothing for a connecting or closed spectator).
  * Cases: no box changes with zoom, window size or the controlled unit; units are found by role
  * and number (a spectator before a unit in spects), 0 is a valid unit centre; the food box is
@@ -62,6 +64,9 @@ const dv = block('        drawViewport: function (ctx, text');
 const obs0 = src.indexOf('var _lmSrcObs = new Map();'), obs1 = src.indexOf('/* Speed of a cell', obs0);
 /* a player's slot (lmMbSlotOf) and the slot colours (LM_MB_RING_DEFAULT_COLORS) the unit boxes are labelled and drawn in */
 const slotOf = block('function lmMbSlotOf(p) {'), slotCol = (src.match(/\nvar LM_MB_RING_DEFAULT_COLORS = \{[^}]*\};/) || [null])[0];
+/* the frame's hide step test (lmSrcContributes and what it calls): a settled box whose cells the frame leaves out says so */
+const contribSrc = [/var LM_MB_STALL_MS = \d+;/, /var LM_SRC_STALE_MS = \d+;/].map((re) => (src.match(re) || [''])[0])
+    .concat(['function lmSrcMainFresh(', 'function lmSrcStale(', 'function lmSrcFeeds(', 'function _lmMbStalled(', 'function lmSrcContributes('].map((m) => block(m) || '')).join('\n');
 const missing = methods.concat(spectMethods).filter((m) => !m[1]).map((m) => m[0].trim()).concat(dv ? [] : ['drawViewport'])
     .concat(head0 >= 0 && head1 > head0 ? [] : ['spect.js lmServerViewSize / lmFullMapPlan'])
     .concat(xf0 >= 0 && xf1 > xf0 ? [] : ['spect.js coordinate contract'])
@@ -88,7 +93,7 @@ function env(o) {
     const c = { window: win, LM, legendmod: LM, spects: win.spects, defaultSettings: { foodSize: 5, bordersColor: '#ff0000' },
         defaultmapsettings: { multiboxAmount: 3 }, Math, Number, String, console, document: { hidden: false }, Date: FDate };
     vm.createContext(c);
-    vm.runInContext(src.slice(obs0, obs1) + slotCol + '\n' + slotOf + '\n' + spectSrc.slice(xf0, xf1) + spectSrc.slice(head0, head1) +
+    vm.runInContext(src.slice(obs0, obs1) + slotCol + '\n' + slotOf + '\n' + contribSrc + '\n' + spectSrc.slice(xf0, xf1) + spectSrc.slice(head0, head1) +
         'var drawRender = {' + methods.map((m) => m[1]).concat([dv]).join(',\n') + '};' +
         /* a spectator connection with spect.js's own coordinate and tile code */
         'var SpectXY = class { constructor(p) { this.sent = []; this.socket = null; Object.assign(this, p); }\n' +
@@ -340,6 +345,16 @@ const covers = (plan, vw, vh, half) => {
     /* freshness: a camera, world or socket that stopped is drawn where it was, as "stale" (a
      * camera a minute old was the settled white box and counted as coverage) */
     check('fresh camera and world, socket open: coverage (_lmCoverageOk) and the settled box', s._lmCoverageOk(NOW) && !!byLabel(e.frame(), 'Viewport# 1'));
+    /* covering is not contributing: its world 600 ms behind the main socket's fresh updates, the
+     * frame (lmSrcContributes) leaves its cells out while its view still covers its place */
+    e.LM._lmLastWorldUpdate = NOW; s._lmWorldAt = NOW - 600;
+    const nd = e.frame(), ndBox = byLabel(nd, 'Viewport# 1 not drawn');
+    check('covering, world 600 ms behind the main socket: the settled box as "Viewport# 1 not drawn" (it read as a view whose cells are drawn)',
+        s._lmCoverageOk(NOW) && !e.c.lmSrcContributes(s, NOW) && !!ndBox && Math.abs(ndBox.maxX - box.maxX) < 1e-6 && !byLabel(nd, 'Viewport# 1') && nd.length === 2 &&
+        Math.abs(ndBox.minX - box.minX) < 1e-6, JSON.stringify(nd.map((b) => b.label)));
+    e.LM._lmLastWorldUpdate = NOW - 450;
+    check('    ... the main socket late too (busy page): contributing again, "Viewport# 1"', e.c.lmSrcContributes(s, NOW) && !!byLabel(e.frame(), 'Viewport# 1'));
+    e.LM._lmLastWorldUpdate = 0; s._lmWorldAt = NOW;
     s._lmCamAt = NOW - 1500;
     const old = e.frame();
     check('camera 1.5 s old: "Viewport# 1 stale" (not settled, not arrived, no coverage), still at the old camera', !!byLabel(old, 'Viewport# 1 stale') && !byLabel(old, 'Viewport# 1') &&

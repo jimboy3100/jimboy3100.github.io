@@ -570,17 +570,34 @@ function addFullSpectator(index) {
 }
 
 /* Full Map state per tile, for the console: lmFullMapHealth() counts the tiles per state
- * (Spect._lmTileStateNow) and lists them; perTile ages are ms (-1: none yet). crowd / reason:
- * the grid is held closed (LM._lmSpecReconcile) by the player limit (LM._lmFullMapCrowdCheck),
- * by Teams / Battle Royale, by a replay or Practice (no game server) or until the main border
- * is known, so the planned tiles are not open. What is really seen: covering = the tiles whose
- * view counts as coverage now (Spect._lmCoverageOk, the test the ghost cells use; a moving tile
- * covers where it is), missing = planned tiles with no spectator at all. A replay or Practice
- * showed 15 planned with no tile and no reason. */
+ * (Spect._lmTileStateNow: live / moving / calibrating / stalled / connecting / failed / refused /
+ * captcha) and lists them; perTile ages are ms (-1: none yet). crowd / reason: the grid is held
+ * closed (LM._lmSpecReconcile) by the player limit (LM._lmFullMapCrowdCheck), by Teams / Battle
+ * Royale, by a replay or Practice (no game server) or until the main border is known, so the
+ * planned tiles are not open. A replay or Practice showed 15 planned with no tile and no reason.
+ * Four different tests, counted and listed per tile (perTile connected / calibrated / covers /
+ * contributes), each the predicate the code that uses it runs; they are not the same:
+ * - connected: the socket is open (isSocketOpen).
+ * - calibrated: border known and orientation VERIFIED (_lmFeedOk; nothing to verify on private
+ *   servers).
+ * - covering (perTile covers): the view stands for what is there (_lmCoverageOk, the settled
+ *   viewport boxes' test and the first of the ghost cells' coverage tests): calibrated, socket
+ *   open, a fresh server camera (a moving tile covers where it is) and a world update within
+ *   LM_TILE_STALE_MS (3 s). The ghost cells also need it contributing and its world update near
+ *   the ghost list's time (LM_GHOST_COV_SLACK / LM_GHOST_COV_MAX_AGE), not counted here.
+ * - contributing (perTile contributes): the frame's hide step draws its cells and lets them hide
+ *   other copies (ogario.v4.js lmSrcContributes, the very function lmMbFrameHide uses: lmSrcFeeds
+ *   and not _lmMbStalled: world updates at most 400 ms behind the main socket's and at most 1 s
+ *   old). A covering tile may not contribute, and a contributing one may not cover (the frame
+ *   does not test the camera); null when that function is not loaded.
+ * The state counts are the tile lifecycle, not these tests: live = fresh, calibrated and arrived;
+ * stalled = open with no fresh view for LM_TILE_STALE_MS (not the frame's 400 ms / 1 s stall).
+ * missing = planned tiles with no spectator at all. */
 window.lmFullMapHealth = function () {
     var plan = window.lmSpecMode === 'full' ? lmFullMapTilePlan() : null, now = Date.now();
+    var contrib = typeof lmSrcContributes === 'function' ? lmSrcContributes : null;
     var h = { planned: plan ? plan.tiles.length : 0, live: 0, moving: 0, calibrating: 0, stalled: 0, connecting: 0, failed: 0, refused: 0, captcha: 0,
-        covering: 0, missing: 0, crowd: false, reason: '', perTile: [] };
+        connected: 0, calibrated: 0, covering: 0, contributing: contrib ? 0 : null, missing: 0, crowd: false, reason: '', perTile: [] };
     var LM = window.legendmod;
     if (plan && LM && typeof LM._lmSpecLocal === 'function' && LM._lmSpecLocal()) h.reason = 'replay or Practice (no game server)';
     else if (plan && LM && typeof LM._lmFullMapModeOff === 'function' && LM._lmFullMapModeOff()) h.reason = 'Teams / Battle Royale';
@@ -594,12 +611,17 @@ window.lmFullMapHealth = function () {
         var s = list[i];
         if (!s || s.player || s.tile == null || typeof s._lmTileStateNow !== 'function') continue;
         var st = s._lmTileStateNow(now), w = s._lmWorldStamp();
+        var connected = s.isSocketOpen(), calibrated = !!s._lmFeedOk();
         var covers = typeof s._lmCoverageOk === 'function' && s._lmCoverageOk(now);
+        var contributes = contrib ? !!contrib(s, now) : null;
         h[st]++;
+        if (connected) h.connected++;
+        if (calibrated) h.calibrated++;
         if (covers) h.covering++;
+        if (contributes) h.contributing++;
         if (seen && s.tile >= 0 && s.tile < h.planned) seen[s.tile] = true;
-        h.perTile.push({ tile: s.tile, number: s.number, state: st, reason: s._lmTileReason || '', covers: covers,
-            camAge: s._lmCamAt > 0 ? now - s._lmCamAt : -1, worldAge: w > 0 ? now - w : -1 });
+        h.perTile.push({ tile: s.tile, number: s.number, state: st, reason: s._lmTileReason || '', connected: connected, calibrated: calibrated,
+            covers: covers, contributes: contributes, camAge: s._lmCamAt > 0 ? now - s._lmCamAt : -1, worldAge: w > 0 ? now - w : -1 });
     }
     for (var t = 0; t < h.planned; t++) if (!seen[t]) h.missing++;
     h.perTile.sort(function (a, b) { return a.tile - b.tile; });

@@ -341,6 +341,10 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
         tiles.every((t) => !t.closed), seen.join());
 }
 
+/* the frame's hide step test, cut out of ogario.v4.js (lmSrcContributes and what it calls):
+ * lmFullMapHealth counts "contributing" with it (an older file without it: contributing null) */
+const contribSrc = [/var LM_MB_STALL_MS = \d+;/, /var LM_SRC_STALE_MS = \d+;/].map((re) => (src.match(re) || [''])[0])
+    .concat(['function lmSrcMainFresh(', 'function lmSrcStale(', 'function lmSrcFeeds(', 'function _lmMbStalled(', 'function lmSrcContributes('].map((m) => block(m) || '')).join('\n');
 /* the real ogario/spect.js under the core toggles: sockets and timers are counted */
 function realEnv() {
     const spectSrc = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'spect.js'), 'utf8');
@@ -374,6 +378,7 @@ function realEnv() {
         ' mapOffsetX: 0, mapOffsetY: 0, vector: null, vnr: 0, playerCellsMulti: [], indexedCells: {}, cells: [], foodMulti: [], play: false,' +
         lmMethods.map((m) => m[1]).join(',\n') + ',\n' + sendNick + '}; var LM = legendmod; var ogario = legendmod;' +
         'var application = Object.assign(window.application, {' + appMethods.map((m) => m[1]).join(',\n') + '});', ctx);
+    vm.runInContext(contribSrc, ctx);
     vm.runInContext(spectSrc, ctx);
     const app = ctx.application, LM = ctx.legendmod;
     const open = () => sockets.filter((s) => !s.closed).length;
@@ -900,6 +905,44 @@ for (const withUnit of [false, true]) {
         check('    ... Practice: every tile closed (no spectator of the live server kept), 15 missing, the reason says why, the unit kept' + tag,
             e.tiles().length === 0 && t.every((s) => s === t[3] || !s.socket) && h.missing === 15 && h.covering === 0 && /Practice/.test(h.reason) && e.ctx.lmSpecMode === 'full' && e.unitOk(), JSON.stringify([h.missing, h.reason]));
         t[3].closeConnection();
+    }
+    /* (28) lmFullMapHealth's four tests are four predicates, each the one its user runs, not one:
+     * connected (socket open), calibrated (_lmFeedOk), covering (_lmCoverageOk: the settled
+     * viewport boxes, world within 3 s) and contributing (lmSrcContributes, the frame's hide
+     * step: world at most 400 ms behind the fresh main socket and at most 1 s old). A tile that
+     * covers while the frame leaves its cells out was counted as if it were seen. */
+    {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        const t = e.tiles().slice().sort((a, b) => a.tile - b.tile), now = Date.now();
+        t.slice(0, 5).forEach((s) => { s.socket.readyState = 1; s.socket.onopen(); s.mapOffsetFixed = true; s._lmOffsetFixedAt = now - 6000; });
+        /* 0: connected, fresh camera and world, orientation not verified */
+        Object.assign(t[0], { viewX: 0, viewY: 0, scale: 0.4, _lmCamAt: now, time: now, _lmWorldAt: now });
+        /* 1: calibrated, its camera on its way (off its target, last opcode 17 1.5 s ago): no fresh view,
+         * no coverage; its world updates are fresh, so the frame draws its cells (no camera test there) */
+        e.live(t[1], now); t[1].viewX += 500; t[1]._lmCamAt = now - 1500;
+        /* 2: covering, its world 600 ms behind the main socket's fresh updates: the frame leaves it out */
+        e.live(t[2], now); t[2].time = t[2]._lmWorldAt = now - 600;
+        /* 3: covering, no world update for 1.5 s (within the tile's 3 s): left out by the absolute stall too */
+        e.live(t[3], now); t[3].time = t[3]._lmWorldAt = now - 1500;
+        /* 4: contributing */
+        e.live(t[4], now);
+        e.LM._lmLastWorldUpdate = now;
+        const h = e.ctx.lmFullMapHealth(), p = (i) => h.perTile.find((x) => x.tile === t[i].tile) || {};
+        const flags = (i) => [p(i).connected, p(i).calibrated, p(i).covers, p(i).contributes].map((b) => (b ? 1 : 0)).join('');
+        const same = t.every((s) => p(t.indexOf(s)).contributes === e.ctx.lmSrcContributes(s, Date.now()));
+        check('(28) health buckets: connected 5, calibrated 4, covering 3, contributing 2 (connected only / calibrated, camera moving: no coverage, cells drawn / covering, stalled / contributing)' + tag,
+            h.connected === 5 && h.calibrated === 4 && h.covering === 3 && h.contributing === 2 && flags(0) === '1000' && flags(1) === '1101' && flags(2) === '1110' &&
+            flags(3) === '1110' && flags(4) === '1111' && flags(5) === '0000' && same, JSON.stringify([h.connected, h.calibrated, h.covering, h.contributing, [0, 1, 2, 3, 4, 5].map(flags)]));
+        check('    ... the tile states stay as they were: the stalled covering tiles are "live", live is not contributing' + tag,
+            h.live === 3 && h.calibrating === 1 && h.connecting === 11 && p(2).state === 'live' && p(3).state === 'live', JSON.stringify(h, (k, v) => (k === 'perTile' ? undefined : v)));
+        /* the main socket's updates late too (a busy page): only the absolute 1 s stall is left */
+        e.LM._lmLastWorldUpdate = now - 450;
+        const busy = e.ctx.lmFullMapHealth();
+        check('    ... main socket late too: the 600 ms tile contributes again, the 1.5 s one not (the frame\'s rule)' + tag,
+            busy.contributing === 3 && busy.perTile.find((x) => x.tile === t[2].tile).contributes === true && busy.perTile.find((x) => x.tile === t[3].tile).contributes === false && busy.covering === 3);
+        e.LM._lmLastWorldUpdate = 0;
+        e.app.setShowFullSpectator();
     }
 }
 

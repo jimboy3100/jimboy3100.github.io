@@ -2034,9 +2034,9 @@ function lmMbOwnUnitCell(cell, rawId) {
  * connection that is not there (closed, removed from window.spects while its cells are still
  * listed) does not feed: nothing says where its cells are. A spect.js without _lmFeedOk (an
  * older cached copy) feeds as before. A stalled spectator or tile (lmSrcStale) does not feed
- * either until its updates come again. */
-function lmSrcFeeds(sp) {
-    return !!sp && (typeof sp._lmFeedOk !== 'function' || !!sp._lmFeedOk()) && !lmSrcStale(sp, Date.now());
+ * either until its updates come again. `now` (optional): the caller's clock (lmSrcContributes). */
+function lmSrcFeeds(sp, now) {
+    return !!sp && (typeof sp._lmFeedOk !== 'function' || !!sp._lmFeedOk()) && !lmSrcStale(sp, now || Date.now());
 }
 /* A connection whose socket is open but whose last whole world update is older than this is
  * stalled: its cells stay where they were last seen (a cell eaten or gone since is still listed).
@@ -2477,6 +2477,18 @@ function _lmMbStalled(sp, now) {
     var w = typeof sp._lmWorldStamp === 'function' ? sp._lmWorldStamp() : 0;
     return w > 0 && now - w > LM_MB_STALL_MS;
 }
+/* Does this connection's view take part in the frame now: are its cells drawn, do they hide
+ * another connection's copies and stand for a player under a ghost? The frame's hide step
+ * (lmMbFrameHide) decides it with this, and the Full Map health (spect.js lmFullMapHealth,
+ * "contributing") and the debug viewports report it with this, so they cannot disagree: verified
+ * and not stale against the main socket (lmSrcFeeds, 400 ms) and a world update within
+ * LM_MB_STALL_MS (1 s). Not the tile's coverage (spect.js _lmCoverageOk: a fresh camera, world
+ * within 3 s): a tile can cover its place while its cells are not drawn, and its cells can be
+ * drawn while its camera is not fresh. */
+function lmSrcContributes(sp, now) {
+    now = now || Date.now();
+    return lmSrcFeeds(sp, now) && !_lmMbStalled(sp, now);
+}
 /* the speed taken for a copy with one packet so far, when the other copy has none either
  * (units per ms; a small cell moves about 0.4) */
 var LM_MB_NEW_SPEED = 0.3;
@@ -2823,7 +2835,7 @@ function lmMbFrameHide() {
          * stand for a player's cell under a ghost (they would stay frozen, or draw an eaten
          * cell for good). A unit's own cells stay drawn and steered as before. */
         var stalled = _lmMbStalled(sp, now);
-        _lmMbFeed[sp.number] = lmSrcFeeds(sp) && !stalled;
+        _lmMbFeed[sp.number] = lmSrcContributes(sp, now);
         /* a multibox unit placed on this map (transformReady: CONFLICTED, steered and followed by
          * the camera while it is checked again) but not feeding: the cells round it are drawn (else
          * the player could be eaten by a cell he does not see) but take no part in the matching;
@@ -84726,7 +84738,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var r = typeof sp._lmServerViewDisplay === 'function' ? sp._lmServerViewDisplay(rs, true) : null;
                 if (r && arrived && covered && !stale && !unv) {
                     var gb = grid[gn] || (grid[gn] = { name: '', r: [0, 0, 0, 0], d: [0, 0, 0, 0] });
-                    gb.name = name;
+                    /* the settled view covers its place (_lmCoverageOk), but the frame may still
+                     * leave its cells out (lmSrcContributes: world updates late against the main
+                     * socket or older than 1 s): "not drawn", not the same as contributing */
+                    gb.name = typeof lmSrcContributes === 'function' && !lmSrcContributes(sp, now) ? name + ' not drawn' : name;
                     for (var q = 0; q < 4; q++) gb.r[q] = gb.d[q] = r[q];
                     gn++;
                 } else if (r) {

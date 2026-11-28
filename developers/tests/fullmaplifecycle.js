@@ -353,8 +353,10 @@ now = load(); G = groups();
     frame(now + 16);
     const c1 = LM.cells.filter((c) => c && !c.removed && c.spectator === 1 && !c.isPlayerCellMulti);
     const behind = LM.cells.filter((c) => c && !c.removed && c.invisible === true && c._lmMbTwin && c._lmMbTwin.spectator === 1).length;
+    /* the Full Map health's "contributing" (spect.js lmFullMapHealth) is this very test */
+    const absAgree = g._lmMbFeed[1] === false && g.lmSrcContributes(sp, Date.now()) === false;
     delete sp._lmWorldStamp;
-    check('stalled connection (no world update for 5 s): its cells not drawn, no copy hidden behind them', c1.length > 0 && c1.every((c) => c.invisible === true) && behind === 0,
+    check('stalled connection (no world update for 5 s): its cells not drawn, no copy hidden behind them; lmSrcContributes (the health contributing test) says the same', c1.length > 0 && c1.every((c) => c.invisible === true) && behind === 0 && absAgree,
         c1.filter((c) => c.invisible !== true).length + ' of ' + c1.length + ' drawn, ' + behind + ' hidden behind them');
     /* a tile 500 ms behind the main socket's world updates while those are fresh (lmSrcStale):
      * stalled too; a page that was busy (every socket late, the main one too) drops nothing */
@@ -363,11 +365,11 @@ now = load(); G = groups();
     LM._lmLastWorldUpdate = Date.now();
     frame(now + 16);
     const r1 = LM.cells.filter((c) => c && !c.removed && c.spectator === 1 && !c.isPlayerCellMulti);
-    const relStalled = r1.length > 0 && r1.every((c) => c.invisible === true && !c._lmMbTwin) && g._lmMbFeed[1] === false;
+    const relStalled = r1.length > 0 && r1.every((c) => c.invisible === true && !c._lmMbTwin) && g._lmMbFeed[1] === false && g.lmSrcContributes(sp, Date.now()) === false;
     LM._lmLastWorldUpdate = Date.now() - 450;
     frame(now + 32);
     /* feeds again: each of its cells drawn or hidden behind its twin */
-    const busyDrawn = g._lmMbFeed[1] === true && r1.every((c) => c.invisible !== true || !!c._lmMbTwin);
+    const busyDrawn = g._lmMbFeed[1] === true && g.lmSrcContributes(sp, Date.now()) === true && r1.every((c) => c.invisible !== true || !!c._lmMbTwin);
     delete sp._lmWorldStamp;
     LM._lmLastWorldUpdate = 0;
     check('tile 500 ms behind the fresh main socket: its cells not drawn (was drawn, frozen, as a second cell)', relStalled, r1.filter((c) => c.invisible !== true).length + ' of ' + r1.length + ' drawn');
