@@ -475,7 +475,12 @@ now = load(); G = groups();
     check('ghost of me: my own unnamed cell hides it', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true })]) === 0);
     check('ghost: another named player inside its radius does not hide it', drawn(top(), [cell(2400, 1000, 300, { _lmSrvName: 'someone' })]) === 1);
     check('ghost: a cell of an unverified spectator does not hide it', drawn(top(), [cell(2050, 980, 700, { spectator: 3, _lmSrvName: 'Top' })], () => { g._lmMbFeed[3] = false; }) === 1);
-    check('ghost: a verified spectator\'s copy hidden behind its twin still hides it', drawn(top(), [cell(2100, 1050, 700, { spectator: 4, invisible: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[4] = true; }) === 0);
+    /* a copy hidden behind its twin is that cell: it counts while the twin is drawn; alone (no drawn
+     * copy in front of it) it is a late or stale copy */
+    check('ghost: a verified spectator\'s copy hidden behind its drawn twin hides it',
+        drawn(top(), [cell(2100, 1050, 700, { spectator: 4, invisible: true, _lmSrvName: 'Top', _lmMbTwin: cell(2100, 1050, 700, { _lmSrvName: 'Top' }) })], () => { g._lmMbFeed[4] = true; }) === 0);
+    check('ghost: a verified spectator\'s hidden copy with no drawn copy in front does not hide it',
+        drawn(top(), [cell(2100, 1050, 700, { spectator: 4, invisible: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[4] = true; }) === 1);
     check('ghost of me: my own cell hides it whatever its server name', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true, _lmSrvName: 'srv' })]) === 0);
     check('ghost of a verified unit: the unit\'s own cell hides it whatever its server name', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'srv' })], () => { g._lmMbFeed[2] = true; }) === 0);
     check('ghost of an unverified unit: the unit\'s own cell with the ghost\'s name hides it', drawn(top(), [cell(2030, 1000, 700, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'Top' })], () => { g._lmMbFeed[2] = false; }) === 0);
@@ -591,7 +596,8 @@ now = load(); G = groups();
     check('ghost with a name: pieces within the reach far heavier than the ghost: drawn',
         drawn(top(), [cell(2000, 1000, 458, { _lmSrvName: 'Top' }), cell(3000, 1000, 520, { _lmSrvName: 'Top' }), cell(1000, 1000, 520, { _lmSrvName: 'Top' }), cell(2000, 2000, 520, { _lmSrvName: 'Top' })]) === 1);
     /* he ate since the list: 1.36 of the ghost's mass 0.6 s later (one cell) is still him */
-    check('ghost with a name: the player 36 % heavier than the ghost (he ate since the list): hidden', drawn(top(), [cell(2050, 1000, 825, { _lmSrvName: 'Top' })]) === 0);
+    check('ghost with a name: the player 36 % heavier than the ghost 0.6 s after the list (he ate since): hidden',
+        drawn(top(), [cell(2050, 1000, 825, { _lmSrvName: 'Top' })], () => { LM.ghostCellsTime = Date.now() - 600; }) === 0);
     check('ghost: my own much smaller cell inside another player\'s ghost does not hide it', drawn(top(), [cell(2100, 1000, 200, { isPlayerCell: true, _lmSrvName: 'me' })]) === 1);
     check('ghost: a verified unit\'s much smaller own cell inside it does not hide it',
         drawn(top(), [cell(2100, 1000, 200, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'u' })], () => { g._lmMbFeed[2] = true; }) === 1);
@@ -604,6 +610,61 @@ now = load(); G = groups();
     check('ghost: the drawn copy changes to the tile\'s (main copy hidden): still hidden', drawn(top(), [copy(0, true), copy(3)], feed) === 0);
     check('ghost: only the tile\'s copy left: still hidden', drawn(top(), [copy(3)], feed) === 0);
     check('ghost: the player seen by three connections (not three times his mass): hidden', drawn(top(), [copy(0), copy(3, true), copy(4, true)], feed) === 0);
+    check('ghost: the player seen by three connections, each copy drawn (not three times his mass): hidden',
+        drawn(top(), [copy(0), copy(3), copy(4)], feed) === 0);
+    /* removed, stale and hidden observations: a copy the hide step hid counts only behind a drawn
+     * copy (the same cell); a late or stale tile copy (hidden, no copy in front) is not the player */
+    const twinOf = (tw, extra) => Object.assign(cell(tw.x, tw.y, tw.size, { spectator: 3, _lmSrvName: 'Top', invisible: true, _lmMbPosDup: true, _lmMbTwin: tw }), extra || {});
+    check('ghost: a removed cell of his still in the list does not hide it', drawn(top(), [cell(2050, 1000, 700, { _lmSrvName: 'Top', removed: true })]) === 1);
+    check('ghost: a stale tile copy (hidden by the hide step, no drawn copy in front) does not hide it',
+        drawn(top(), [cell(2050, 1000, 700, { spectator: 3, _lmSrvName: 'Top', invisible: true, _lmMbPosDup: true, _lmMbTwin: null })], feed) === 1);
+    check('ghost: a hidden copy whose drawn copy was removed does not hide it',
+        drawn(top(), [twinOf(cell(2050, 1000, 700, { _lmSrvName: 'Top', removed: true }))], feed) === 1);
+    {
+        /* the main socket draws the piece inside, the tile hides its copy of it behind that one
+         * and draws the three pieces only it sees: the tile's sum is his mass */
+        const sp = spread({ _lmSrvName: 'Top' }), mainPiece = sp[0];
+        const tile = [twinOf(mainPiece)].concat(sp.slice(1).map((c) => Object.assign(c, { spectator: 3 })));
+        check('ghost: a tile\'s hidden copy behind the main copy, with the pieces only the tile sees: hidden', drawn(top(), [mainPiece].concat(tile), feed) === 0);
+        check('ghost: those pieces without the hidden copy (none with his mass on one connection): drawn', drawn(top(), [mainPiece].concat(tile.slice(1)), feed) === 1);
+    }
+    /* identity: one name is not one player. Two pieces are one player's when they lie within half
+     * a ghost radius (353 here) of each other's edge; groups are summed per connection */
+    check('ghost with a name: a lighter same-nick player at it and another lighter one 1450 away (each under half its mass): drawn',
+        drawn(top(), [cell(2000, 1000, 387, { _lmSrvName: 'Top' }), cell(3450, 1000, 316, { _lmSrvName: 'Top' }), cell(3550, 1100, 316, { _lmSrvName: 'Top' })]) === 1);
+    check('ghost with a name: two players of the nick, each about its mass (one at it, one split 1500 away): drawn',
+        drawn(top(), [cell(2000, 1000, 592, { _lmSrvName: 'Top' }), cell(3500, 1000, 447, { _lmSrvName: 'Top' }), cell(3500, 1600, 447, { _lmSrvName: 'Top' })]) === 1);
+    check('ghost with a name: the same two players, the second seen only by a tile: drawn',
+        drawn(top(), [cell(2000, 1000, 592, { _lmSrvName: 'Top' }), cell(3500, 1000, 447, { spectator: 3, _lmSrvName: 'Top' }), cell(3500, 1600, 447, { spectator: 3, _lmSrvName: 'Top' })], feed) === 1);
+    check('ghost with a name: the player at it, a much lighter same-nick player in the reach: hidden',
+        drawn(top(), [cell(2000, 1000, 592, { _lmSrvName: 'Top' }), cell(3500, 1000, 200, { _lmSrvName: 'Top' })]) === 0);
+    check('ghost with a name: his split chained piece to piece from the one inside out to the reach: hidden',
+        drawn(top(), [cell(2000, 1000, 400, { _lmSrvName: 'Top' }), cell(2800, 1000, 300, { _lmSrvName: 'Top' }), cell(3500, 1000, 300, { _lmSrvName: 'Top' }), cell(2000, 1700, 260, { _lmSrvName: 'Top' })]) === 0);
+    check('ghost with a name: a same-nick piece out in the reach not chained to his (another player) is not added: drawn',
+        drawn(top(), [cell(2000, 1000, 458, { _lmSrvName: 'Top' }), cell(2000, 1700, 150, { _lmSrvName: 'Top' }), cell(3600, 1000, 330, { _lmSrvName: 'Top' })]) === 1);
+    check('ghost with a name: a same-nick cell heavier than the ghost beside a lighter one at it is not his split: drawn',
+        drawn(top(), [cell(2000, 1000, 400, { _lmSrvName: 'Top' }), cell(2900, 1000, 760, { _lmSrvName: 'Top' })]) === 1);
+    check('ghost with a name: he ate since the list (one cell heavier than the ghost) and a piece of the nick beside him: hidden',
+        drawn(top(), [cell(2000, 1000, 760, { _lmSrvName: 'Top' }), cell(2000, 1900, 200, { _lmSrvName: 'Top' })], () => { LM.ghostCellsTime = Date.now() - 1000; }) === 0);
+    check('ghost with a name: that heavier cell seen by two connections (copies, not two players): hidden',
+        drawn(top(), [cell(2000, 1000, 760, { _lmSrvName: 'Top' }), cell(2010, 1000, 760, { spectator: 3, _lmSrvName: 'Top' })], () => { feed(); LM.ghostCellsTime = Date.now() - 1000; }) === 0);
+    check('ghost without a name: two unnamed players inside it far apart, each 0.3 of its mass: drawn',
+        drawn(top(), [cell(1400, 1000, 387), cell(2600, 1000, 387)], unnamed) === 1);
+    check('ghost without a name: an unnamed player split in two touching pieces inside it: hidden',
+        drawn(top(), [cell(1800, 1000, 500), cell(2300, 1000, 500)], unnamed) === 0);
+    check('ghost of me: my own cells hide it with a same-nick player beside me', drawn(top(), [cell(2030, 1000, 700, { isPlayerCell: true, _lmSrvName: 'Top' }), cell(3400, 1000, 680, { _lmSrvName: 'Top' })]) === 0);
+    check('ghost with a name: ejected mass of a lighter same-nick player at it does not make up his mass: drawn',
+        drawn(top(), [cell(2000, 1000, 470, { _lmSrvName: 'Top' })].concat(Array.from({ length: 20 }, (_, i) => cell(1500 + 50 * i, 1300, 120, { isEjected: true, _lmSrvName: 'Top' })))) === 1);
+    /* the list's age: what he ate since. 1.25 of the ghost's mass for a list just come, up to 1.5 */
+    const aged = (ms) => () => { LM.ghostCellsTime = Date.now() - ms; };
+    check('ghost list just come: a same-nick player 1.4 times its mass at it is not him: drawn', drawn(top(), [cell(2000, 1000, 837, { _lmSrvName: 'Top' })], aged(0)) === 1);
+    check('ghost list just come: my own cell 1.4 times its mass: drawn', drawn(top(), [cell(2000, 1000, 837, { isPlayerCell: true })], aged(0)) === 1);
+    check('ghost list just come: the player 1.2 times its mass: hidden', drawn(top(), [cell(2000, 1000, 775, { _lmSrvName: 'Top' })], aged(0)) === 0);
+    check('ghost list 1 s old: the player 1.45 times its mass (he ate since): hidden', drawn(top(), [cell(2000, 1000, 851, { _lmSrvName: 'Top' })], aged(1000)) === 0);
+    check('ghost list 2.5 s old: a same-nick player 1.6 times its mass: drawn', drawn(top(), [cell(2000, 1000, 894, { _lmSrvName: 'Top' })], aged(2500)) === 1);
+    check('ghost list without a time (other servers): the bound is 1.5', drawn(top(), [cell(2000, 1000, 851, { _lmSrvName: 'Top' })], () => { LM.ghostCellsTime = 0; }) === 0);
+    check('ghost bound by the list\'s age: 1.25 fresh, 1.4 at 0.6 s, 1.5 from 1 s',
+        typeof g.lmGhostMassMax === 'function' && g.lmGhostMassMax(0) === 1.25 && Math.abs(g.lmGhostMassMax(600) - 1.4) < 1e-9 && Math.abs(g.lmGhostMassMax(1000) - 1.5) < 1e-9 && g.lmGhostMassMax(5000) === 1.5 && g.lmGhostMassMax(NaN) === 1.5);
     /* one pass over the cells: 50 ghosts and 4000 cells */
     {
         let s = 11;
