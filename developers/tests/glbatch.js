@@ -1434,6 +1434,10 @@ async function main() {
             const okOff = off.ok && off.glError === 0 && off.pictured === 0 && off.glPictured === 0 && off.over8 === 0;
             if (!okOff) dlFailed++;
             console.log((okOff ? 'ok   ' : 'FAIL ') + 'Dying Light off: the virus body is its colour only in both (' + off.glPictured + ' px pictured on WebGL)');
+        } else {
+            /* the factory's end changed: the virus picture checks would silently not run */
+            dlFailed++;
+            console.log('FAIL Dying Light virus picture: lmDlSync / lmDlVirusDraw could not be exposed from the renderer factory');
         }
         if (DLVIRUS) {
             if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); dlFailed++; }
