@@ -132,9 +132,9 @@
     }
 
     function apply(g, zombie, scene) {
-        /* the older readers in ogario.v4.js still look at the global flag and the zombie picture */
+        /* the global flag older scripts may read (cleared by teardown); the zombie picture is drawn
+         * through getFallbackSkinKey, no global image is left behind after disable */
         W.dyinglight1load = 'yes';
-        if (zombie && !(W.cimgDyingLight && W.cimgDyingLight.naturalWidth > 0)) W.cimgDyingLight = zombie;
         bg = scene ? Object.freeze({ url: SCENE_URL, img: scene, alpha: 1 }) : null;
         addStyle();
         for (var i = 0; i < parts.length; i++) startPart(parts[i], g);

@@ -177,8 +177,8 @@ async function dyingLightLifecycle() {
     check('no second script load', scripts.length === 0 && ctx.LMDyingLight.state === 'loading');
     flushPics(true);
     check('on after the pictures', (await p) === true && ctx.LMDyingLight.isEnabled() && D.dyingLight === true && JSON.parse(store.ogarioSettings).dyingLight === true);
-    check('on: the old readers see the flag, the scoped style is there, the banner turns it off',
-        ctx.dyinglight1load === 'yes' && cls.has('lm-dl') && head.kids.some(n => n.id === 'lm-dl-style') && /dyinglightbanner3/.test(box.innerHTML));
+    check('on: the old readers see the flag (no global zombie picture), the scoped style is there, the banner turns it off',
+        ctx.dyinglight1load === 'yes' && ctx.cimgDyingLight === undefined && cls.has('lm-dl') && head.kids.some(n => n.id === 'lm-dl-style') && /dyinglightbanner3/.test(box.innerHTML));
     const L = ctx.LMDyingLight;
     const other = { mass: 200, targetNick: 'enemy' };
     check('fallback skin only for another real player body', !!L.getFallbackSkinKey(other) && L.getFallbackSkinKey(other) === L.getFallbackSkinKey({ mass: 50, targetNick: 'x' }) &&
@@ -193,7 +193,7 @@ async function dyingLightLifecycle() {
     const gen = L.generation;
     await vm.runInContext('stopdyinglight()', ctx);
     check('off: stored settings identical to before, no style, flag cleared, no listener, no background',
-        snap() === before && L.state === 'off' && !cls.has('lm-dl') && !head.kids.some(n => n.id === 'lm-dl-style') && ctx.dyinglight1load === null &&
+        snap() === before && L.state === 'off' && !cls.has('lm-dl') && !head.kids.some(n => n.id === 'lm-dl-style') && ctx.dyinglight1load === null && ctx.cimgDyingLight === undefined &&
         !ctx.LMEvents._has('settingsChange') && L.getBackground() === null && L.getFallbackSkinKey(other) === null && L.generation > gen);
     check('states sent: loading, on, disabling, off', states.join() === 'loading,on,disabling,off');
 
