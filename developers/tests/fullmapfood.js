@@ -550,8 +550,31 @@ reset();
     so.active = true;
     so.updateCells(packet([], [{ id: 54, x: 500, y: 100, size: 60, food: false, name: 'Me', color: 0xff0000 }], []), 0);
     check('Teams, one colour for spectator cells: the own cell of the unit in its team colour', col(54) === hex(0xff0000) && so.playerColor === hex(0xff0000), [col(54), so.playerColor]);
-    g.defaultmapsettings.oneColoredSpectator = false;
     LM.gameMode = ':ffa';
+    /* "Simplified cell colors" (oneColoredSpectator) is drawn by the renderers
+     * (lmBodyColorOverride), never written into the observation: a connection's cells keep the
+     * server colour, the nick colour and the own colour, so turning it off needs no new packet */
+    reset();
+    LM.cellcolors = Object.create(null);
+    g.profiles[0] = { color: '#ff00ff' };
+    g.application.selectedProfile = 0;
+    g.defaultmapsettings.myCustomColor = true;
+    const s1 = spect(5);
+    s1.playerCellIDs = [s1.newID(64)];
+    s1.active = true;
+    s1.updateCells(packet([], [{ id: 60, x: 100, y: 100, size: 60, food: false, name: 'Foe', color: 0x00c800 },
+        { id: 61, x: 300, y: 100, size: 60, food: false, color: 0xc80000 },
+        { id: 62, x: 500, y: 100, size: 100, food: false, virus: true, color: 0x33ff33 },
+        { id: 64, x: 700, y: 100, size: 60, food: false, name: 'Me', color: 0x00c8c8 }], []), 0);
+    check('simplified cell colours on: another player\'s cell keeps its server colour (and is remembered with it)', col(60) === hex(0x00c800) && LM.cellcolors.Foe === hex(0x00c800), [col(60), LM.cellcolors.Foe]);
+    check('simplified cell colours on: an unnamed cell keeps its server colour', col(61) === hex(0xc80000), col(61));
+    check('simplified cell colours on: a virus keeps its colour', col(62) === hex(0x33ff33), col(62));
+    check('simplified cell colours on: the unit\'s own cell keeps the profile colour', col(64) === '#ff00ff', col(64));
+    /* a later colour for a known cell is applied as it is */
+    s1.updateCells(packet([], [{ id: 61, x: 300, y: 100, size: 60, food: false, color: 0x0000c8 }], []), 0);
+    check('simplified cell colours on: a later server colour is applied as it is', col(61) === hex(0x0000c8), col(61));
+    g.defaultmapsettings.myCustomColor = false;
+    g.defaultmapsettings.oneColoredSpectator = false;
 }
 
 /* 7. Canvas2D and Expanding Land WebGL draw the same list */

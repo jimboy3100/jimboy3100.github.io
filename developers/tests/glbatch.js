@@ -16,6 +16,7 @@
  * Usage:
  *   node developers/tests/glbatch.js              visual comparison (quick)
  *   node developers/tests/glbatch.js --bench      + benchmark table
+ *   node developers/tests/glbatch.js --bench --simplified   + the working copy with Simplified cell colors off -> on
  *   node developers/tests/glbatch.js --fx         only the GL marks, FB badge / effects, merge timer, selected ring and cell contours
  *                                                 against Canvas2D (quick)
  *   node developers/tests/glbatch.js --dlvirus    only the Dying Light virus picture, WebGL against Canvas2D (a few seconds)
@@ -83,7 +84,7 @@ const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag'
     'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch', 'lmSkinUnpremulLut', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinSlack', 'lmClockMs', 'lmSkinLayersGrow',
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing', 'lmUnitCellsInto',
     'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages', 'lmTextAtlasBankCap', 'lmTextAtlasUnit',
-    'lmSkinsShown', 'lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmDlVirusKey', 'lmDlVirusDraw', 'lmWorldSkinKey', 'lmDlBackground', 'lmBgReady', 'lmBgKeepTheme', 'lmBgAlpha'];
+    'lmSkinsShown', 'lmOwnColorPlaying', 'lmOwnBodyColor', 'lmBodyColorOverride', 'lmMbShadowOn', 'lmMbShadowColor', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmDlVirusKey', 'lmDlVirusDraw', 'lmWorldSkinKey', 'lmDlBackground', 'lmBgReady', 'lmBgKeepTheme', 'lmBgAlpha'];
 const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache', '_lmDl', '_lmDlVirus', '_lmDlThr', 'LM_BG_FADE_MS', 'LM_BG_BACK_FADE_MS'];
 
 function rendererFactory(src) {
@@ -584,6 +585,24 @@ function pageLib() {
         var err = gl.getError();
         gl.getExtension('WEBGL_lose_context').loseContext();
         return { ok: ok, px: Array.prototype.slice.call(px), glError: err };
+    }
+    /* One cell's body colour on WebGL: cfg.cell is laid over a plain cell (spectator, own,
+     * virus, nick), cfg.mode is the game mode. The middle of the body, labels off. */
+    function cellPixel(src, defaults, cfg) {
+        var pts = [], n = 64, r = 120;
+        for (var i = 0; i < n; i++) pts.push(Math.cos(i / n * 2 * Math.PI) * r, Math.sin(i / n * 2 * Math.PI) * r);
+        var o = setup(src, defaults, cfg, [{ id: 1, x: 0, y: 0, size: r, isVirus: false, maxPointRad: r, pts: pts, color: '#ff3b3b', nick: '' }]);
+        var c = o.env.LM.cells[0];
+        Object.assign(c, cfg.cell || {});
+        if (c.isPlayerCellMulti) o.env.LM.playerCellsMulti.push(c);
+        if (cfg.mode) o.env.LM.gameMode = o.env.application.gameMode = cfg.mode;
+        if (cfg.mates) o.env.window._lmTeammateNickSet = new Set(cfg.mates);
+        frame(o);
+        var ok = frame(o), gl = o.R.gl, px = new Uint8Array(4);
+        gl.readPixels(W / 2 + 40, H / 2 + 30, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px);
+        var err = gl.getError();
+        gl.getExtension('WEBGL_lose_context').loseContext();
+        return { ok: ok, px: Array.prototype.slice.call(px), glError: err, color: c.color };
     }
     /* The Dying Light virus picture: one virus (cfg.jelly: on its spiky jelly perimeter) drawn by
      * the real WebGL batch with the picture in a skin layer (found by the real _lmDlVirusLayer
@@ -1301,6 +1320,7 @@ function pageLib() {
         atlasCapacity: atlasCapacity,
         atlasOracle: atlasOracle,
         virusPixel: virusPixel,
+        cellPixel: cellPixel,
         dlVirus: dlVirus,
         skinUploads: skinUploads,
         /* for other page tests (developers/tests/skinbanks.js) */
@@ -1330,6 +1350,8 @@ function pageLib() {
         },
         bench: function (src, defaults, cfg, scene, frames) {
             var o = setup(src, defaults, cfg, scene), gl = o.R.gl;
+            /* spect: the other players' cells seen through another connection (Simplified cell colors) */
+            if (cfg.spect) o.env.LM.cells.forEach(function (c) { if (!c.isPlayerCell && !c.isPlayerCellMulti) c.spectator = 2; });
             /* churn: the smallest body loses or gets back a point in every frame, so the point
              * counts of the whole frame change (the worst case for reusing index lists) */
             var c0 = o.env.LM.cells[0], spare = null;
@@ -1599,6 +1621,31 @@ async function main() {
                 check('jelly ' + (jelly ? 'on' : 'off') + ': a virus coloured ' + col + ' is drawn in that colour on WebGL', nw.ok && nw.glError === 0 && near);
             }
         }
+        /* "Simplified cell colors" (setting oneColoredSpectator): another player's cell seen through
+         * another connection in the food colour, in both WebGL paths (jelly on / off); the main
+         * connection's cells, a unit's own cells, viruses, teammates and Teams keep their colour,
+         * and the cell's colour is not changed (Canvas2D: cellcolors.js) */
+        const FOODC = [0x50, 0x00, 0xff], REDC = [255, 59, 59], VIRC = [0x33, 0xff, 0x33], OWNC = [0x01, 0xd9, 0xcc];
+        const SCOL = [['another player\'s cell of a unit', true, ':ffa', { spectator: 2, targetNick: 'Foe' }, FOODC],
+            ['another player\'s cell of a Full Map tile', true, ':ffa', { spectator: 17 }, FOODC],
+            ['the main connection\'s cell', true, ':ffa', { spectator: 0, targetNick: 'Foe' }, REDC],
+            ['a unit\'s own cell (my custom colour)', true, ':ffa', { spectator: 2, isPlayerCell: true, isPlayerCellMulti: true }, OWNC],
+            ['a virus of a unit', true, ':ffa', { spectator: 2, isVirus: true, color: '#33ff33' }, VIRC],
+            ['a teammate of a unit', true, ':ffa', { spectator: 2, targetNick: 'Mate' }, REDC],
+            ['another player\'s cell of a unit in Teams', true, ':teams', { spectator: 2, targetNick: 'Foe' }, REDC],
+            ['another player\'s cell of a unit, setting off', false, ':ffa', { spectator: 2, targetNick: 'Foe' }, REDC]];
+        for (const jelly of [false, true]) {
+            for (const [nm0, on, mode, cl, want] of SCOL) {
+                const cfg = { scale: 1, jelly: jelly, mode: mode, cell: cl, mates: ['Mate'],
+                    map: { oneColoredSpectator: on, noNames: true, showMass: false, virColors: false, virusGlow: false, transparentViruses: false, transparentCells: false, customSkins: false },
+                    settings: { foodColor: '#5000ff', virusColor: '#33ff33', virusStrokeColor: '#33ff33' } };
+                const r = await evaluate('__glb.cellPixel(__glbNew, __glbDefaults, ' + JSON.stringify(cfg) + ')');
+                const near = r.px.slice(0, 3).every((v, i) => Math.abs(v - want[i]) <= 3);
+                check('jelly ' + (jelly ? 'on' : 'off') + ', simplified cell colours ' + (on ? 'on' : 'off') + ': ' + nm0 + ' drawn ' + JSON.stringify(want) + ' on WebGL, its colour unchanged',
+                    r.ok && r.glError === 0 && near && r.color === (cl.color || '#ff3b3b'));
+                if (!near) console.log('     got ' + r.px.join(','));
+            }
+        }
         const su = await evaluate('__glb.skinUploads(__glbOld, __glbNew, __glbDefaults)');
         console.log('     skin layers: ' + su.uploadedNew + '/' + su.skins + ' uploaded (reference ' + su.uploadedOld + '), texels differing from the reference ' + su.differing + ' (max ' + su.max + ', ' +
             su.partial + ' semi-transparent texels) [' + su.perSkin.join(' ') + '], uploads from a CPU canvas: reference ' + su.cpuReadsOld + ', now ' + su.cpuReadsNew +
@@ -1672,6 +1719,32 @@ async function main() {
                     f(r.o.submit, r.nw.submit, 2).padEnd(13), '|', (f(r.o.cells, r.nw.cells, 2) + ' / ' + f(r.o.text, r.nw.text, 2)).padEnd(26), '|', f(r.o.sync, r.nw.sync, 2)].join(' '));
             }
             if (args.indexOf('--json') >= 0) console.log(JSON.stringify(rows));
+            /* --simplified: the working copy with "Simplified cell colors" off -> on, the other
+             * players' cells seen through another connection (the most it can change) */
+            if (args.indexOf('--simplified') >= 0) {
+                const srows = [];
+                for (const jelly of [true, false]) {
+                    for (const n of bodies) {
+                        const sc = await scene(n, 4242 + n);
+                        const base = { scale: 0.35, jelly: jelly, spect: true, settings: { foodColor: '#5000ff' } };
+                        let o = null, nw = null;
+                        for (let r = 0; r < repeats; r++) {
+                            o = best(o, await evaluate('__glb.bench(__glbNew, __glbDefaults, ' + JSON.stringify(Object.assign({ map: { oneColoredSpectator: false } }, base)) + ', ' + JSON.stringify(sc) + ', ' + frames + ')'));
+                            nw = best(nw, await evaluate('__glb.bench(__glbNew, __glbDefaults, ' + JSON.stringify(Object.assign({ map: { oneColoredSpectator: true } }, base)) + ', ' + JSON.stringify(sc) + ', ' + frames + ')'));
+                        }
+                        srows.push({ jelly: jelly ? 'on ' : 'off', n, cells: sc.length, o, nw });
+                    }
+                }
+                console.log('\nSimplified cell colors off -> on (working copy, other players\' cells from another connection), per frame, labels on');
+                console.log('jelly bodies cells | draw calls     | GL calls        | upload KB         | CPU ms        | (bodies / labels)          | sync ms');
+                for (const r of srows) {
+                    const f = (a, b, d) => (d !== undefined ? a.toFixed(d) : a) + ' -> ' + (d !== undefined ? b.toFixed(d) : b);
+                    console.log([r.jelly.padEnd(5), String(r.n).padStart(6), String(r.cells).padStart(5), '|',
+                        f(r.o.draws, r.nw.draws).padEnd(14), '|', f(r.o.calls, r.nw.calls).padEnd(15), '|', f(r.o.bytes / 1024, r.nw.bytes / 1024, 0).padEnd(17), '|',
+                        f(r.o.submit, r.nw.submit, 2).padEnd(13), '|', (f(r.o.cells, r.nw.cells, 2) + ' / ' + f(r.o.text, r.nw.text, 2)).padEnd(26), '|', f(r.o.sync, r.nw.sync, 2)].join(' '));
+                }
+                if (args.indexOf('--json') >= 0) console.log(JSON.stringify(srows));
+            }
         }
         if (failed) { console.log(failed + ' check(s) failed'); return done(1); }
         console.log('glbatch ok' + (BENCH ? '' : ' (run with --bench for draw calls, upload bytes and CPU time)'));

@@ -3149,9 +3149,8 @@ class Spect {
             if (isFood && !defaultmapsettings.rainbowFood) {
                 color = defaultSettings.foodColor
             }
-            if (defaultmapsettings.oneColoredSpectator && !isFood) {
-                color = defaultSettings.foodColor
-            }
+            /* "Simplified cell colors" (oneColoredSpectator) is drawn by the renderers
+             * (lmBodyColorOverride in ogario.v4.js): the cell keeps the colours above */
             cell = null;
             /* every list push stores the cell's slot, so removeCell() never scans */
             var _idx = lmSpectIdx();

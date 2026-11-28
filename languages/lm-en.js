@@ -2920,7 +2920,7 @@
 "settings.showMass": "Show mass",
 "settings.showChat": "Show chat on cells",
 "settings.showChatMyOwn": "Show chat on my cells",
-"settings.oneColoredSpectator": "Multibox: lighter rendering (one-color cells)",
+"settings.oneColoredSpectator": "Simplified cell colors",
 "settings.multiBoxShadow": "Players glow (profile colors)",
 "settings.multiKeepMoving": "Inactive unit keeps moving",
 "settings.middleMultiView": "View on middle of all players (always, also when far apart)",

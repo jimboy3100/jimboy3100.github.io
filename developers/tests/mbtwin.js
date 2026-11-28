@@ -152,6 +152,19 @@ for (const order of ['main first', 'unit first']) {
     run(ctx.window.legendmod.cells, 2, ctx);
     check('party: main copy drawn in its own colour, the copy takes it', !m.invisible && a.invisible && m.color === '#06e575' && a.color === '#06e575', [m.color, a.color]);
 }
+/* 6e. "Simplified cell colors" (oneColoredSpectator) is a drawing rule (lmBodyColorOverride): the
+ * copies of one cell still share the colour shown first, so turning it off shows one colour per
+ * player at once (the share stopped while it was on, and each copy kept its own colour) */
+{
+    const ctx = env(2);
+    ctx.defaultmapsettings = { oneColoredSpectator: true };
+    const a = cell({ spectator: 1, color: '#7de506', _lmRawColor: '#7de506' });
+    run([a], 2, ctx);
+    const b = cell({ spectator: 2, x: 1004, color: '#5106e5', _lmRawColor: '#5106e5' });
+    ctx.window.legendmod.cells.push(b);
+    run(ctx.window.legendmod.cells, 2, ctx);
+    check('simplified cell colours on: one copy drawn, both keep the colour shown first', drawn([a, b]) === 1 && a.color === '#7de506' && b.color === '#7de506', [a.color, b.color]);
+}
 /* 6c. The kept link (the copy it hid behind last frame) reaches 1.5 times the tolerance; a new
  * link only the tolerance */
 {
@@ -719,6 +732,40 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     check('glow: Cell.draw has no nick match left, the WebGL batch falls back only for a glowing cell',
         src.indexOf('this.targetNick === profiles[application.selectedOldProfile].nick') < 0 && /lmMbShadowColor\(this\)/.test(src) &&
         /_glMbShadow && lmMbShadowColor\(cell\)/.test(src) && gate.indexOf('MB_SHADOW') < 0);
+}
+
+/* "Simplified cell colors" (setting oneColoredSpectator) and "No colors": the body colour rule
+ * both renderers use (lmBodyColorOverride). Only other players' cells seen through another
+ * connection (a unit's or a Full Map tile's) take the food colour; own and unit cells, viruses,
+ * food, ejected mass, teammates and Teams keep theirs. Nothing is written into the cell. */
+{
+    const fnSrc = (n) => { const a = src.indexOf('\nfunction ' + n + '('); return a < 0 ? '' : src.slice(a + 1, src.indexOf('\n}\n', a) + 3); };
+    const ok = !!fnSrc('lmBodyColorOverride');
+    const LM = { gameMode: ':ffa' };
+    const ms = { oneColoredSpectator: true, noColors: false };
+    const win = { legendmod: LM, _lmTeammateNickSet: new Set(['Mate']) };
+    const c = vm.createContext({ window: win, defaultmapsettings: ms, defaultSettings: { foodColor: '#5000ff' } });
+    if (ok) vm.runInContext(fnSrc('lmBodyColorOverride'), c);
+    const O = (x) => (ok ? c.lmBodyColorOverride(x) : undefined);
+    const foe = cell({ spectator: 2, targetNick: 'Foe', color: '#ff0000' });
+    const tile = cell({ spectator: 17, targetNick: '', color: '#00ff00' });
+    const mainFoe = cell({ spectator: 0, targetNick: 'Foe', color: '#ff0000' });
+    const unit = cell({ spectator: 2, isPlayerCell: true, isPlayerCellMulti: true, color: '#0000ff' });
+    const virus = cell({ spectator: 2, isVirus: true, color: '#33ff33' });
+    const food = cell({ spectator: 2, isFood: true, color: '#33ff33' });
+    const ejected = cell({ spectator: 2, isEjected: true, color: '#ff0000' });
+    const mate = cell({ spectator: 2, targetNick: 'Mate', color: '#ff0000' });
+    check('simplified cell colours: another player\'s cell seen by a unit or a Full Map tile in the food colour', ok && O(foe) === '#5000ff' && O(tile) === '#5000ff', [O(foe), O(tile)]);
+    check('simplified cell colours: the main connection\'s cells, unit cells, viruses, food, ejected mass and teammates keep their colour',
+        O(mainFoe) === null && O(unit) === null && O(virus) === null && O(food) === null && O(ejected) === null && O(mate) === null);
+    LM.gameMode = ':teams';
+    check('simplified cell colours: Teams keeps the team colours', O(foe) === null);
+    LM.gameMode = ':ffa';
+    ms.oneColoredSpectator = false;
+    check('simplified cell colours off: every cell its own colour again (nothing was written into it)', O(foe) === null && foe.color === '#ff0000');
+    ms.noColors = true;
+    check('no colors: every player cell grey (own cells too), viruses, food and ejected mass keep theirs',
+        O(foe) === '#808080' && O(mainFoe) === '#808080' && O(unit) === '#808080' && O(virus) === null && O(food) === null && O(ejected) === null);
 }
 
 /* 17. Three or more connections, and late, new or stalled copies */

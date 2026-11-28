@@ -204,7 +204,7 @@ const lateSrc = block(src, lateA);
 const textClassSrc = block(src, src.indexOf('function irenderfromagario()'));
 const autoHideSrc = block(src, src.indexOf('setAutoHideCellInfo(t) {'));
 /* the multibox ring rule and the skin gate cell.draw uses (absent in older versions) */
-const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRing', 'lmSkinsShown', 'lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmDlVirusKey', 'lmDlVirusDraw', 'lmWorldSkinKey'].map((n) => {
+const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRing', 'lmSkinsShown', 'lmOwnColorPlaying', 'lmOwnBodyColor', 'lmBodyColorOverride', 'lmMbShadowOn', 'lmMbShadowColor', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmDlVirusKey', 'lmDlVirusDraw', 'lmWorldSkinKey'].map((n) => {
     const i = src.indexOf('\nfunction ' + n + '(');
     return i < 0 ? '' : block(src, i + 1);
 }).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache', '_lmDl', '_lmDlVirus'].map((n) => {

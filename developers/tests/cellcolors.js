@@ -308,7 +308,7 @@ const protoSrc = '(function (env) {\n' +
     '  SpecialEffectPlayers = {}, profiles = env.profiles || [], dyinglight1load = "no", _EAT_PULSE_DURATION = 150, _EAT_PULSE_MAGNITUDE = 0.08;\n' +
     block('\nfunction lmSkinsShown(').slice(1) + '\n' + lmc.slice(1) + '\nvar _lmColorIntCache = new Map(), _lmColorCtx = null;\n' +
     /* the own colour and "Player 1 & 2" glow rules (absent in older versions) */
-    ['lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor'].map((n) => src.includes('\nfunction ' + n + '(') ? block('\nfunction ' + n + '(').slice(1) + '\n' : '').join('') +
+    ['lmOwnColorPlaying', 'lmOwnBodyColor', 'lmBodyColorOverride', 'lmMbShadowOn', 'lmMbShadowColor'].map((n) => src.includes('\nfunction ' + n + '(') ? block('\nfunction ' + n + '(').slice(1) + '\n' : '').join('') +
     /* the world skin key, Dying Light off: the cell's own key, no virus picture (absent in older versions) */
     (src.includes('\nfunction lmWorldSkinKey(') ? block('\nfunction lmWorldSkinKey(').slice(1) + '\nvar _lmDl = false, _lmDlVirus = null;\n' : '') +
     /* the gradient avatar of a cell without colour: stubbed to the plain grey under it */
@@ -604,6 +604,31 @@ async function chromePart() {
             const tag = 'Battle Royale, jelly ' + (jelly ? 'on' : 'off');
             check(tag + ': a cell in its colour in WebGL and Canvas2D', near(a.px, [255, 59, 59]) && near(b.px, [255, 59, 59]), [a.px, b.px, a.gl]);
             check(tag + ': the own cell in my custom colour in WebGL and Canvas2D', near(a.px2, [0x12, 0x34, 0x56]) && near(b.px2, [0x12, 0x34, 0x56]), [a.px2, b.px2]);
+        }
+        /* "Simplified cell colors" (setting oneColoredSpectator): another player's cell seen through
+         * another connection (spectator > 0: a unit's or a Full Map tile's) is drawn in the food
+         * colour by both renderers; the main connection's cells, a unit's own cells, viruses,
+         * teammates and Teams keep their colour, and no cell's colour is changed (turning it off
+         * shows the colours again in the next frame). */
+        {
+            const FOOD = [0x50, 0x00, 0xff], RED = [255, 59, 59], VIR = [0x33, 0xff, 0x33];
+            const foe = { id: 21, x: -50, y: 0, size: 40, color: '#ff3b3b', targetNick: 'Foe', spectator: 2 };
+            const SC = [
+                ['on, another player\'s cell of a unit', true, ':ffa', foe, FOOD, { id: 22, x: 50, y: 0, size: 40, color: '#ff3b3b', targetNick: 'Foe' }, RED, 'the main connection\'s copy keeps its colour'],
+                ['on, a unit\'s own cell', true, ':ffa', foe, FOOD, { id: 23, x: 50, y: 0, size: 40, color: '#ff3b3b', isPlayerCell: true, isPlayerCellMulti: true, spectator: 2 }, RED, 'the unit\'s own cell keeps its colour'],
+                ['on, a virus of a unit', true, ':ffa', foe, FOOD, { id: 24, x: 50, y: 0, size: 40, color: '#33ff33', isVirus: true, spectator: 2 }, VIR, 'the virus keeps its colour'],
+                ['on, a teammate of a unit', true, ':ffa', foe, FOOD, { id: 25, x: 50, y: 0, size: 40, color: '#ff3b3b', targetNick: 'Mate', spectator: 2 }, RED, 'the teammate keeps its colour'],
+                ['on, Teams', true, ':teams', foe, RED, null, null, ''],
+                ['off', false, ':ffa', foe, RED, null, null, '']];
+            for (const jelly of [false, true]) for (const [name, on, mode, c1, want1, c2, want2, what2] of SC) {
+                const cfg = { jelly, mode, play: true, at: [-50, 0], at2: [50, 0], mates: ['Mate'], cells: [c1].concat(c2 ? [c2] : []),
+                    map: { oneColoredSpectator: on, virColors: false }, settings: { foodColor: '#5000ff', virusColor: '#33ff33', virusStrokeColor: '#33ff33' } };
+                const a = await draw(Object.assign({ gl: true }, cfg)), b = await draw(Object.assign({ gl: false }, cfg));
+                const tag = 'simplified cell colours ' + name + ', jelly ' + (jelly ? 'on' : 'off');
+                check(tag + ': another player\'s cell of a unit ' + (want1 === FOOD ? 'in the food colour' : 'in its colour') + ' in WebGL and Canvas2D', near(a.px, want1) && near(b.px, want1), [a.px, b.px, a.gl, a.why]);
+                if (c2) check(tag + ': ' + what2 + ' in WebGL and Canvas2D', near(a.px2, want2) && near(b.px2, want2), [a.px2, b.px2]);
+                check(tag + ': no cell\'s colour changed', a.colors.join() === b.colors.join() && b.colors[0] === '#ff3b3b', [a.colors, b.colors]);
+            }
         }
         /* skins: a cell with a valid colour is drawn in it while its skin is not drawable (loading,
          * failed or refused by CORS, dropped from the cache, a video not started, an animated skin

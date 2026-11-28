@@ -2553,12 +2553,11 @@ function _lmMbTwinTest(cell, other, anyOrder, keep, radius) {
  * colour whenever another copy came to be drawn. An own cell keeps its profile colour, and its
  * copies take it. Viruses keep their own colour. The colour taken is kept in _lmMbLook: the
  * main connection's next packet keeps it while the server's colour for that cell is the same.
- * Not with "one colour for spectator cells" (oneColoredSpectator: they are meant to look
- * different).
+ * Also with "Simplified cell colors" (oneColoredSpectator): that is drawn by the renderers
+ * (lmBodyColorOverride), the copies keep their shared colour for when it is turned off.
  */
 function lmMbShareLook(hidden, drawn) {
     if (hidden.isVirus || drawn.isVirus || !hidden.color || !drawn.color) return;
-    if (typeof defaultmapsettings !== 'undefined' && defaultmapsettings && defaultmapsettings.oneColoredSpectator) return;
     var t = _lmMbBuildT || 1;
     if (!hidden._lmMbLookT) hidden._lmMbLookT = t;
     if (!drawn._lmMbLookT) drawn._lmMbLookT = t;
@@ -7346,6 +7345,27 @@ function lmOwnBodyColor(cell) {
     var ms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null;
     var own = typeof ogarcopythelb !== 'undefined' ? ogarcopythelb : null;
     return ms && ms.myCustomColor && own && own.color && window.legendmod.gameMode != ':teams' ? own.color : null;
+}
+/* The colour a setting draws a cell's body in instead of its own, or null. One rule for Canvas2D
+ * (Cell.draw) and both WebGL batch paths, applied as the cell is drawn (after the colour
+ * caches): no cell's colour is changed, so a setting turned off shows the cells' own colours in
+ * the next frame, without waiting for packets. Viruses, food and ejected mass keep theirs.
+ *  - "No colors" (noColors): every player cell in the renderers' neutral grey.
+ *  - "Simplified cell colors" (oneColoredSpectator, the id saved settings and imports use):
+ *    another player's cell seen through another connection (spectator > 0: a multibox player's
+ *    or a Full Map tile's) in the food colour. Not own or unit cells, not teammates (a nick on
+ *    the team list) and not in Teams (the team colours). It used to write the food colour into
+ *    the connection's cells (spect.js) and stop the copies of a cell sharing one colour. */
+function lmBodyColorOverride(cell) {
+    var ms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null;
+    if (!ms || !(ms.noColors || ms.oneColoredSpectator) || cell.isVirus || cell.isFood || cell.isEjected) return null;
+    if (ms.noColors) return '#808080';
+    if (!(cell.spectator > 0) || cell.isPlayerCell || cell.isPlayerCellMulti) return null;
+    var lm = window.legendmod, mates = window._lmTeammateNickSet;
+    if (lm && lm.gameMode === ':teams') return null;
+    if (mates && cell.targetNick && mates.has(cell.targetNick)) return null;
+    var ds = typeof defaultSettings !== 'undefined' ? defaultSettings : null;
+    return (ds && ds.foodColor) || null;
 }
 /* "Player 1 & 2" glow (multiBoxShadow), on while a multibox unit is alive. lmMbShadowColor: an
  * own cell (the main player's, or a unit's on its own connection) glows in its player's profile
@@ -41009,11 +41029,12 @@ function thelegendmodproject() {
                             this._colorResolved = color2;
                             this._colorFallback = _useFallbackGradient;
                         }
-                        /* No colors: player cells in the renderer's neutral grey (after the cache, so
-                         * switching it off shows the real colours again). Viruses, food and ejected
-                         * mass keep theirs. Same rule in both WebGL paths. */
-                        if (defaultmapsettings.noColors && !this.isVirus && !this.isFood && !this.isEjected) {
-                            color2 = "#808080";
+                        /* No colors / Simplified cell colors (lmBodyColorOverride): after the cache,
+                         * so switching them off shows the real colours again. Same rule in both
+                         * WebGL paths. */
+                        var _lmOvColor = lmBodyColorOverride(this);
+                        if (_lmOvColor) {
+                            color2 = _lmOvColor;
                             _useFallbackGradient = false;
                         }
 
@@ -79405,10 +79426,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             /* Opponent colours do not replace the body colour (one colour per
                              * player, as on Canvas2D); Cell.draw adds them as a ring. */
                         }
-                        /* No colors: neutral grey (as the Canvas2D path) */
-                        if (defaultmapsettings.noColors && !cell.isFood && !cell.isEjected) {
-                            bodyHex = '#808080';
-                        }
+                        /* No colors / Simplified cell colors (as the Canvas2D path) */
+                        bodyHex = lmBodyColorOverride(cell) || bodyHex;
 
 
                         strokeHex =
@@ -80614,10 +80633,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         /* Opponent colours do not replace the body colour (one colour per
                          * player, as on Canvas2D); Cell.draw adds them as a ring. */
                     }
-                    /* No colors: neutral grey (as the Canvas2D path) */
-                    if (defaultmapsettings.noColors && !cell.isFood && !cell.isEjected) {
-                        colorHex = '#808080';
-                    }
+                    /* No colors / Simplified cell colors (as the Canvas2D path) */
+                    colorHex = lmBodyColorOverride(cell) || colorHex;
 
                     strokeHex =
                         colorHex;
