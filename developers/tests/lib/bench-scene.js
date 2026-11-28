@@ -243,6 +243,7 @@
     Writer.prototype.u32 = function (v) { this.room(4); for (var i = 0; i < 4; i++) this.b[this.n++] = (v >>> (8 * i)) & 255; };
     Writer.prototype.i32 = function (v) { this.u32(v | 0); };
     Writer.prototype.f64 = function (v) { this.room(8); new DataView(this.b.buffer, this.n, 8).setFloat64(0, v, true); this.n += 8; };
+    Writer.prototype.f32 = function (v) { this.room(4); new DataView(this.b.buffer, this.n, 4).setFloat32(0, v, true); this.n += 4; };
     Writer.prototype.str = function (s) {
         s = String(s || '');
         this.room(s.length + 1);
@@ -253,6 +254,9 @@
 
     function encodeClear() { return new Uint8Array([18]).buffer; }
     function encodeBorder() { var b = new Writer(); b.u8(64); b.f64(-MAP_HALF); b.f64(-MAP_HALF); b.f64(MAP_HALF); b.f64(MAP_HALF); return b.done(); }
+    /* opcode 17, a spectator's server camera: agar.io sends it to a free spectator with its
+     * updates; without it spect.js counts the tile as stalled (no fresh camera) and leaves it out */
+    function encodeCamera(x, y, scale) { var b = new Writer(); b.u8(17); b.f32(x); b.f32(y); b.f32(scale); return b.done(); }
     function encodeAddOwn(id) { var b = new Writer(); b.u8(32); b.u32(id); return b.done(); }
     /* the id of a cell on this socket (socketIds: units number cells on their own) */
     var UNIT_ID_SHIFT = 1000000;
@@ -498,7 +502,10 @@
     function sendTick(s) {
         step(s.w);
         feedMain(encodeUpdate(s.w, 0, false));
-        for (var i = 0; i < s.units.length; i++) feedUnit(s.units[i], encodeUpdate(s.w, i + 1, false));
+        for (var i = 0; i < s.units.length; i++) {
+            feedUnit(s.units[i], encodeUpdate(s.w, i + 1, false));
+            if (s.units[i]._lmBenchCam) feedUnit(s.units[i], s.units[i]._lmBenchCam);
+        }
     }
     function loop() {
         var s = ses;
@@ -568,6 +575,8 @@
                 s.units.push(sp);
                 try { sp.socket.onopen(); } catch (e) { console.warn('[bench] spectator open', e); }
                 feedUnit(sp, encodeBorder());
+                sp._lmBenchCam = encodeCamera(tile.x, tile.y, typeof LM_SPECT_FREE_SCALE === 'number' ? LM_SPECT_FREE_SCALE : 0.4);
+                feedUnit(sp, sp._lmBenchCam);
                 feedUnit(sp, encodeUpdate(s.w, t + 1, true));
             }
             if (prevCreateF === undefined) try { delete window.createLegendWebSocket; } catch (e) { }
