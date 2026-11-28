@@ -168,7 +168,7 @@
      * card parts -> the card's one switch, the Scan Trick / line split status switches -> their
      * sections, Ghost cells info -> Ghost cells); without this the star was dropped silently. '' = gone
      * with nothing in its place (the Skin collections window and its Collections button switch: the
-     * player profiles have its favourites and search now), the star is dropped quietly */
+     * skin links it kept became player profiles), the star is dropped quietly */
     var RENAMED = {
         'opt:shortMass': 'set:massFormat', 'opt:fpsAtTop': 'set:statsPosition', 'opt:statsAtCenter': 'set:statsPosition',
         'hk:hk-screenshotMode': 'hk:hk-showHUD', 'hk:hk-zoomRecall1': 'hk:hk-zoom1', 'hk:hk-zoomRecall2': 'hk:hk-zoom2', 'hk:hk-zoomRecall3': 'hk:hk-zoom3',
