@@ -1,0 +1,11 @@
+{
+  "pkg.hor9w.aaRefused": {
+    "en": "Anti-aliasing is on, but this browser or graphics card gave the game none. A reload does not change that."
+  },
+  "pkg.hor9w.importNotApplied": {
+    "en": "Imported, but these settings could not be applied: {0}."
+  },
+  "pkg.hor9w.notApplied": {
+    "en": "These settings could not be applied: {0}."
+  }
+}

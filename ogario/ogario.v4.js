@@ -23277,11 +23277,25 @@ function lmFoldVideoVolume(s) {
     s.videoSkinSoundLevel = lmSchemaFit(LM_SETTINGS_SCHEMA.videoSkinSoundLevel, lv * Math.max(0, f));
     return true;
 }
-/* Anti-aliasing (glAntialias) is fixed when the WebGL context is made (drawRender._lmGlAA):
- * true while the setting differs from it, so only a reload applies it (also before a context) */
-function lmGlAAPending() {
+/* Anti-aliasing (glAntialias) is fixed when the WebGL context is made: drawRender._lmGlAA is what
+ * was asked for, _lmGlAAGot what the browser gave (getContextAttributes; a GPU or browser can refuse
+ * MSAA). 'reload': the setting differs from the context (or there is none yet), only a reload applies
+ * it; 'refused': on and asked for, but the context has none (a reload does not help); '': applied */
+function lmGlAAState() {
     var dr = window.drawRender;
-    return !(dr && dr.gl && typeof dr._lmGlAA === 'boolean' && dr._lmGlAA === (defaultmapsettings.glAntialias !== false));
+    if (!(dr && dr.gl && typeof dr._lmGlAA === 'boolean')) return 'reload';
+    var want = defaultmapsettings.glAntialias !== false;
+    var got = typeof dr._lmGlAAGot === 'boolean' ? dr._lmGlAAGot : dr._lmGlAA;
+    if (want === got) return '';
+    return want && dr._lmGlAA ? 'refused' : 'reload';
+}
+function lmGlAAPending() { return lmGlAAState() === 'reload'; }
+/* the names of settings for a message (their Settings label, else the key), HTML-escaped */
+function lmSettingNames(keys) {
+    return keys.map(function (k) {
+        var t = typeof textLanguage !== 'undefined' && textLanguage[k];
+        return String(typeof t === 'string' && t ? t : k).replace(/<[^>]*>/g, '').trim().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }).join(', ');
 }
 /* Settings that became one choice: "Short mass" and "Mass format" are massFormat (1 exact, 2 12.3k,
  * 3 auto; the 0 of older versions meant "as Short mass"). The old key stays as a copy that follows
@@ -27125,10 +27139,11 @@ function thelegendmodproject() {
                 /* Applied at once, without reloading the page (owner, 2026-11-28): what was just
                  * written is put into the running game (_lmImportLive); a part that only takes
                  * effect at the next load offers a Reload button (_lmImportDone) */
-                var _impNeed = this._lmImportLive(importValue, _impSelected, _impBackup, _impTouched);
+                var _impFailed = [];
+                var _impNeed = this._lmImportLive(importValue, _impSelected, _impBackup, _impTouched, _impFailed);
                 if (Array.isArray(window._lmImportReload)) _impNeed = _impNeed.concat(window._lmImportReload);
                 window._lmImportReload = null;
-                this._lmImportDone(_impNeed);
+                this._lmImportDone(_impNeed, _impFailed);
             }
         },
         /* Import without a reload: the written values into the running game. Gameplay settings
@@ -27136,9 +27151,13 @@ function thelegendmodproject() {
          * window (commands newer than the export get their default keys), commands and player
          * profiles read again, the phone controls and their layout through their reload. Returns
          * what takes effect only at the next load: anti-aliasing, the gamepad buttons, the voice
-         * prefix / language and HUD layouts when they changed. */
-        _lmImportLive(v, sel, backup, touched) {
+         * prefix / language and HUD layouts when they changed. failed (optional array): the
+         * settings that threw while applied (stored, so also read at the next load) and an
+         * anti-aliasing the browser refused. */
+        _lmImportLive(v, sel, backup, touched, failed) {
             var app = this, need = [];
+            if (!Array.isArray(failed)) failed = [];
+            var fail = function (k) { if (failed.indexOf(k) === -1) failed.push(k); if (need.indexOf(k) === -1) need.push(k); };
             var changed = function (k) {
                 if (touched.indexOf(k) === -1) return false;
                 var now = null;
@@ -27166,18 +27185,25 @@ function thelegendmodproject() {
                         app.setSettings(k, sv[k]);
                     } catch (e) {
                         defaultmapsettings[k] = sv[k];
+                        fail(k);
                     } finally {
                         app._lmImporting = false;
                     }
                     if (k === 'glAntialias') aa = true;
-                    if (AFTER[k] && typeof app[AFTER[k]] === 'function') { try { app[AFTER[k]](); } catch (e) { } }
+                    if (AFTER[k] && typeof app[AFTER[k]] === 'function') { try { app[AFTER[k]](); } catch (e) { fail(k); } }
                 });
                 app._lmBatchSave = wasB;
                 try { this.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (e) { }
                 /* the Undo preset copy the import wrote or removed (lmImportExtras) */
                 if (typeof app._lmPresetUndoSync === 'function') { try { app._lmPresetUndoSync(); } catch (e) { } }
                 /* anti-aliasing is fixed when the WebGL canvas is made */
-                if (aa) { try { if (typeof window.lmGlAAPending !== 'function' || window.lmGlAAPending()) need.push('glAntialias'); } catch (e) { need.push('glAntialias'); } }
+                if (aa) {
+                    var aaSt = 'reload';
+                    try { if (typeof window.lmGlAAState === 'function') aaSt = window.lmGlAAState(); } catch (e) { }
+                    if (aaSt === 'reload') { if (need.indexOf('glAntialias') === -1) need.push('glAntialias'); }
+                    /* on, but the browser or GPU gave the context none: a reload does not help */
+                    else if (aaSt === 'refused' && failed.indexOf('glAntialias') === -1) failed.push('glAntialias');
+                }
                 var MH = window._lmMobileHost, ME = window.LMMobileEditor;
                 if (changed('lm-mobile-prefs') && MH) {
                     if (typeof MH.reloadPrefs === 'function') { try { MH.reloadPrefs(); } catch (e) { need.push('lm-mobile-prefs'); } }
@@ -27267,8 +27293,9 @@ function thelegendmodproject() {
             this.profiling();
         },
         /* Import finished without a reload. need: the parts that take effect at the next load
-         * (a Reload button) */
-        _lmImportDone(need) {
+         * (a Reload button); failed: settings that could not be applied now (named, no "done") */
+        _lmImportDone(need, failed) {
+            if (failed && failed.length) toastr.warning(_lmG1tag('game1.tag.settings', 'pkg.hor9w.importNotApplied', [lmSettingNames(failed)]), '', { timeOut: 15000, extendedTimeOut: 5000 });
             if (need && need.length) {
                 toastr.info(_lmG1tag('game1.tag.settings', 'game1.import.needsReload') +
                     ' <button type="button" class="btn btn-xs lm-import-reload" style="margin-left:4px;padding:0 6px;color:inherit;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);">' +
@@ -27277,7 +27304,7 @@ function thelegendmodproject() {
                     window._lmSettingsReload = true;
                     window.location.reload();
                 });
-            } else {
+            } else if (!(failed && failed.length)) {
                 toastr.success(_lmG1tag('game1.tag.settings', 'game1.import.done'));
             }
         },
@@ -27484,7 +27511,12 @@ function thelegendmodproject() {
                     case 'glAntialias':
                         /* switched back to what the running GPU context has, no reload is needed;
                          * an import names it in its own Reload notice */
-                        if (!_lmSame && window.toastr && !this._lmImporting && lmGlAAPending()) toastr.info(lmT('game1.perf.aaReload'));
+                        if (!_lmSame && window.toastr && !this._lmImporting) {
+                            var _lmAA = lmGlAAState();
+                            if (_lmAA === 'reload') toastr.info(lmT('game1.perf.aaReload'));
+                            /* on, but the browser or GPU gave the context none */
+                            else if (_lmAA === 'refused') toastr.warning(lmT('pkg.hor9w.aaRefused'));
+                        }
                         break;
                 }
                 /* a setting with a slider (addSliderBox): the slider and its value show the value
@@ -28592,9 +28624,15 @@ function thelegendmodproject() {
                     /* one save for the whole preset (not one per key) */
                     var wasB = application._lmBatchSave;
                     application._lmBatchSave = true;
-                    try { keys.forEach(function (k) { setOpt(k, p.set[k]); }); }
-                    finally { application._lmBatchSave = wasB; application.saveSettings(defaultmapsettings, 'ogarioSettings'); }
-                    undoBtn.show();
+                    /* each key on its own: one that throws does not drop the rest; it is named */
+                    var pFailed = [];
+                    try { keys.forEach(function (k) { try { setOpt(k, p.set[k]); } catch (e) { pFailed.push(k); } }); }
+                    finally {
+                        application._lmBatchSave = wasB;
+                        undoBtn.show();
+                        try { application.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (e) { }
+                    }
+                    if (pFailed.length && window.toastr) toastr.warning(lmT('pkg.hor9w.notApplied', [lmSettingNames(pFailed)]));
                     return false;
                 });
                 undoBtn.on('click', function () {
@@ -28618,6 +28656,7 @@ function thelegendmodproject() {
                     if (nFailed) {
                         undoSnap = failed;
                         try { window.localStorage.setItem(undoKey, JSON.stringify(failed)); } catch (e) { }
+                        if (window.toastr) toastr.warning(lmT('pkg.hor9w.notApplied', [lmSettingNames(Object.keys(failed))]));
                         return false;
                     }
                     undoSnap = null;
@@ -64881,6 +64920,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* what the context was made with: a context restored after a loss keeps it, so a
                  * change of Anti-aliasing needs a reload only while it differs (lmGlAAPending) */
                 if (this._lmGlAA === undefined) this._lmGlAA = defaultmapsettings.glAntialias !== false;
+                try { var _ca = gl.getContextAttributes(); if (_ca && typeof _ca.antialias === 'boolean') this._lmGlAAGot = _ca.antialias; } catch (e) { }
 
                 var vsSource = `#version 300 es
                 in vec2 a_unitPos;

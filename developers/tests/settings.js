@@ -441,6 +441,24 @@ check('setSettings on and off: two events, the new value each time', J(events) =
   const gNow = S.showGrid;
   undo.handlers[0].call({});
   check('an import without a copy: the Undo button hides and Undo changes nothing', undo.shown === false && S.showGrid === gNow);
+  /* a key whose setSettings throws: the rest still applied, Undo offered, the key named (it was dropped in silence with the rest) */
+  {
+    const pt = [], oldT = ctx.toastr, realSet = app2.setSettings, oldLmT = ctx.lmT;
+    ctx.lmT = (k, v) => k + ':' + (v || []).join(',');
+    ctx.toastr = { warning: t => pt.push(t), info() { }, success() { } };
+    ctx.textLanguage = { showGrid: 'Show <b>grid</b>' };
+    S.showGrid = g0; S.macroFeeding = m0;
+    ctx.localStorage.removeItem('lmPresetUndo'); app2._lmPresetUndoSync();
+    app2.setSettings = function (id) { if (id === 'showGrid') throw new Error('x'); return realSet.apply(this, arguments); };
+    let threw = false;
+    try { row.handlers[0].call({ _preset: 't' }); } catch (e) { threw = true; }
+    check('preset: a key that throws does not drop the rest; Undo shown; the key named', !threw && S.macroFeeding !== m0 && undo.shown === true && pt.length === 1 && pt[0].indexOf('Show grid') >= 0 && pt[0].indexOf('<b>') < 0, pt);
+    pt.length = 0; S.showGrid = !g0;
+    undo.handlers[0].call({});
+    check('Undo preset: a key that throws is named and kept for another Undo', S.macroFeeding === m0 && undo.shown === true && pt.length === 1 && pt[0].indexOf('Show grid') >= 0, pt);
+    app2.setSettings = realSet; ctx.toastr = oldT; ctx.textLanguage = {}; ctx.lmT = oldLmT;
+    ctx.localStorage.removeItem('lmPresetUndo'); app2._lmPresetUndoSync();
+  }
   S.showGrid = g0; S.macroFeeding = m0; app2.saveSettings = realSave; realSave.call(app2, S, 'ogarioSettings');
   ctx.$ = old$; ctx.document = oldDoc; delete app2.lmPresets.t;
 }
@@ -557,6 +575,17 @@ S.glAntialias = true;
 app2.setSettings('glAntialias', false); app2.setSettings('glAntialias', true);
 check('anti-aliasing off then on again: "reload" once (the context has it on), not twice', J(sToasts) === J([['info', 'game1.perf.aaReload']]));
 check('anti-aliasing: a reload is pending while it differs from the context, or before any context', typeof ctx.lmGlAAPending === 'function' && ctx.lmGlAAPending() === false && (S.glAntialias = false, ctx.lmGlAAPending()) && (ctx.drawRender = { gl: null }, ctx.lmGlAAPending()));
+/* asked for, refused by the browser / GPU (getContextAttributes().antialias false): on is "refused",
+ * no reload offered; off matches the context, nothing to do (it showed "reload" both times) */
+ctx.drawRender = { gl: {}, _lmGlAA: true, _lmGlAAGot: false };
+S.glAntialias = true; sToasts.length = 0;
+const aaR = [ctx.lmGlAAState(), ctx.lmGlAAPending()];
+app2.setSettings('glAntialias', false);
+const aaOff = [ctx.lmGlAAState(), ctx.lmGlAAPending()];
+app2.setSettings('glAntialias', true);
+check('anti-aliasing refused by the GPU: on warns that it is not there (no reload), off needs nothing', J(aaR) === J(['refused', false]) && J(aaOff) === J(['', false]) && J(sToasts) === J([['warning', 'pkg.hor9w.aaRefused']]), { aaR, aaOff, sToasts });
+ctx.drawRender = { gl: {}, _lmGlAA: false, _lmGlAAGot: false };
+check('anti-aliasing asked off, then on: a reload is pending', ctx.lmGlAAState() === 'reload' && ctx.lmGlAAPending());
 S.glAntialias = true;
 /* Mention notifications: the browser is asked only right after the player's click or key */
 let asked = 0, rejectHandled = false;

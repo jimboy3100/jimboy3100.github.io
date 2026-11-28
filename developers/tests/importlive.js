@@ -27,15 +27,15 @@ const cut = (src, start, end) => { const a = src.indexOf(start); const b = src.i
 const imp = cut(og, '        importSettings() {', '        restoreSettings() {');
 check('importSettings found', imp.length > 0);
 check('import: writes everything first, then applies it live', imp.includes("var importKeys = ['ogarioCommands', 'ogarioHotkeys', 'ogarioPlayerProfiles', 'ogarioSettings', 'ogarioThemeSettings'];") &&
-    imp.indexOf('var _impNeed = this._lmImportLive(importValue, _impSelected, _impBackup, _impTouched);') > imp.indexOf('fullRolledBack'));
+    imp.indexOf('var _impNeed = this._lmImportLive(importValue, _impSelected, _impBackup, _impTouched, _impFailed);') > imp.indexOf('fullRolledBack'));
 check('import: no reload by itself, only from the Reload now button', (imp.match(/location\.reload\(\)/g) || []).length === 1 &&
     /'\.lm-import-reload', function \(\) \{\s*window\._lmSettingsReload = true;\s*window\.location\.reload\(\);/.test(imp));
-check('import: settings through setSettings, theme, hotkeys with new defaults, commands, player profiles', imp.includes('        _lmImportLive(v, sel, backup, touched) {') &&
+check('import: settings through setSettings, theme, hotkeys with new defaults, commands, player profiles', imp.includes('        _lmImportLive(v, sel, backup, touched, failed) {') &&
     imp.includes('app.setSettings(k, sv[k]);') && !imp.includes('performanceMode') && !imp.includes('lmPerfBackup') && imp.includes('Settings.setTheme(); Settings.saveThemeSettings();') &&
     imp.includes("if (typeof dk === 'string' && dk && !own(h, dk)) h[dk] = c;") && imp.includes('this._lmImportCommandsLive()') && imp.includes('this._lmImportProfilesLive()'));
 check('import: anti-aliasing, gamepad, voice and HUD layouts offer Reload when they changed', imp.includes("need.push('glAntialias')") &&
     imp.includes("['lmGamepad', 'prefix', 'lang', 'lmHudLayouts'].forEach(function (k) { if (changed(k)) need.push(k); });"));
-check('import: a part read at the next load offers Reload (button), else a done notice', imp.includes('        _lmImportDone(need) {') && imp.includes("'game1.import.needsReload'") && imp.includes("'game1.import.done'"));
+check('import: a part read at the next load offers Reload (button), else a done notice', imp.includes('        _lmImportDone(need, failed) {') && imp.includes("'game1.import.needsReload'") && imp.includes("'game1.import.done'"));
 check('no settings profiles module to depend on', !og.includes('LMProfiles') && !fs.existsSync(path.join(repo, 'ogario', 'modules', 'profiles.js')));
 
 /* lmImportExtras */
@@ -83,14 +83,14 @@ check('Legend: the list starts with each Legend Mod import, none without it', lm
  * (need), setSettings's own "reload for anti-aliasing" toast is not shown during the import.
  * The real _lmImportLive and the real glAntialias case of setSettings run here. */
 {
-    const liveCut = cut(og, '        _lmImportLive(v, sel, backup, touched) {', '        _lmImportCommandsLive() {');
+    const liveCut = cut(og, '        _lmImportLive(v, sel, backup, touched, failed) {', '        _lmImportCommandsLive() {');
     const liveSrc = liveCut.slice(0, liveCut.lastIndexOf('return need;')) + 'return need; }';
     const caseSrc = cut(og, "                    case 'glAntialias':", '                        break;').replace("case 'glAntialias':", '');
     const toasts = [];
     const c2 = {
         window: {}, toasts, clearTimeout: () => { },
         toastr: { info: (t) => toasts.push(t) },
-        lmT: (k) => k, lmGlAAPending: () => true,
+        lmT: (k) => k, lmGlAAPending: () => true, lmGlAAState: () => 'reload',
         defaultmapsettings: { glAntialias: true, jellyPhisycs: true }
     };
     c2.window.toastr = c2.toastr; c2.window.lmGlAAPending = c2.lmGlAAPending;
@@ -104,6 +104,32 @@ check('Legend: the list starts with each Legend Mod import, none without it', lm
         c2.defaultmapsettings.glAntialias === false && c2.defaultmapsettings.jellyPhisycs === false && !c2.app._lmImporting, { need, toasts });
     c2.app.setSettings('glAntialias', true);
     check('switch after an import: the anti-aliasing toast is shown again', toasts.length === 1 && toasts[0] === 'game1.perf.aaReload', toasts);
+    /* a setting whose setSettings throws, an eye button callback that throws, an anti-aliasing the
+     * GPU refused: named as not applied (they were swallowed and the import said "done") */
+    c2.defaultmapsettings.streamMode = false; c2.defaultmapsettings.glAntialias = false;
+    c2.window.lmGlAAState = () => 'refused';
+    vm.runInContext('var _realSet = app.setSettings; app.setSettings = function (id, v) { if (id === "jellyPhisycs") throw new Error("x"); return _realSet.call(this, id, v); };' +
+        ' app.setStreamMode = function () { throw new Error("y"); };', c2);
+    const failed = [];
+    const need2 = c2.app._lmImportLive({ ogarioSettings: { glAntialias: true, jellyPhisycs: true, streamMode: true } }, k => k === 'ogarioSettings', {}, [], failed);
+    check('live import: a setting that throws and a callback that throws are named (and offered a Reload), a refused anti-aliasing named without Reload',
+        failed.slice().sort().join() === 'glAntialias,jellyPhisycs,streamMode' && need2.indexOf('jellyPhisycs') !== -1 && need2.indexOf('streamMode') !== -1 && need2.indexOf('glAntialias') === -1 &&
+        c2.defaultmapsettings.jellyPhisycs === true && c2.defaultmapsettings.streamMode === true, { failed, need2 });
+    /* the real _lmImportDone: a warning naming them, never "done" */
+    const doneSrc = cut(og, '        _lmImportDone(need, failed) {', '        restoreSettings() {');
+    const shown = [];
+    const c3 = {
+        toastr: { warning: (t) => shown.push(['warning', t]), info: (t) => shown.push(['info', t]), success: (t) => shown.push(['success', t]) },
+        _lmG1tag: (tag, k, v) => k + (v ? ':' + v.join() : ''), _lmTH: (k) => k, lmSettingNames: (a) => a.join('+'),
+        $: () => ({ off() { return this; }, on() { return this; } }), window: {}, document: {}
+    };
+    vm.createContext(c3);
+    vm.runInContext('this.app = { ' + doneSrc + ' };', c3);
+    c3.app._lmImportDone(['jellyPhisycs'], ['jellyPhisycs']);
+    c3.app._lmImportDone([], ['glAntialias']);
+    c3.app._lmImportDone([], []);
+    check('import done: failures warned by name (with the Reload notice when a reload helps), "done" only without them',
+        doneSrc.length > 0 && JSON.stringify(shown.map(x => x[0])) === '["warning","info","warning","success"]' && shown[0][1] === 'pkg.hor9w.importNotApplied:jellyPhisycs' && shown[2][1] === 'pkg.hor9w.importNotApplied:glAntialias', shown);
 }
 
 console.log(fail ? fail + ' failed' : 'all import checks passed');
