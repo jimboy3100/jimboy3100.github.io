@@ -111,7 +111,9 @@
   $('#og-options .lm-dep-off[data-lm-why]').each(function () { if (!greek(this.getAttribute('data-lm-why'))) stale.push('note ' + this.getAttribute('data-lm-why').slice(0, 24)); });
   info.settingsStale = stale.length;
   need('Settings rows in Greek at once' + (stale.length ? ': ' + stale.slice(0, 5).join(', ') : ''), !stale.length);
-  /* the Teamboard logo text field follows the language too */
+  /* Theme > HUD text size keeps the ": " before its value; the Teamboard logo text field follows too */
+  var hts = $('#a11yHudTextScale-slider').closest('.slider-box').find('.value-label');
+  need('Theme > HUD text size keeps the ": " before its value', !hts.length || /:\s*$/.test(hts.text()));
   need('Theme > Teamboard logo text field Greek', !$('#teambtext').length || greek($('#teambtext').attr('placeholder')));
   /* the Leaderboard logo text field is named as the leaderboard's, not as the teamboard's */
   need('Theme > Leaderboard logo text field named as the leaderboard one: ' + $('#leadbtext').attr('placeholder'), !$('#leadbtext').length || $('#leadbtext').attr('placeholder') === lmT('pack.leaderboardLogoText'));

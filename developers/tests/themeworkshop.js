@@ -88,10 +88,10 @@ r = C.parsePackage(pkg({ theme: { bgColor: 'red;background:url(javascript:x)', m
 check('colour check: CSS injection refused, plain colours kept', r.ok && !('bgColor' in r.pkg.body.theme) && !('mainColor' in r.pkg.body.theme) && !('borderGlowColor' in r.pkg.body.theme) && r.pkg.body.theme.hudColor === 'rgba(0,0,0,0.4)' && r.pkg.body.theme.virusColor === 'blue');
 r = C.parsePackage(pkg({ theme: { bgColor: '#000', namesFont: 'Comic Sans; }', namesFontFamily: 'x}*{display:none', preset: 'constructor', menuPreset: 'legendv2', graphics: 'high' } }));
 check('fonts must be known names; old Theme preset / Menu theme names dropped', r.ok && !('namesFont' in r.pkg.body.theme) && !('namesFontFamily' in r.pkg.body.theme) && !('preset' in r.pkg.body.theme) && !('menuPreset' in r.pkg.body.theme) && r.pkg.body.theme.graphics === 'high');
-/* theme options removed since (chat position, sector symbol, game brightness / saturation, HUD text
- * size): a stored or imported value of them is not a theme value */
+/* theme options removed since (chat position, sector symbol) and the HUD text size (a gameplay setting,
+ * not a theme value) are refused; game brightness / saturation are theme values again */
 r = C.parsePackage(pkg({ theme: { bgColor: '#000', chatPos: 'topright', sectorsSymbol: '*', gameBrightness: 90, gameSaturation: 90, a11yHudTextScale: 1.2 } }));
-check('removed theme options are refused', r.ok && J(Object.keys(r.pkg.body.theme)) === J(['bgColor']));
+check('removed theme options are refused, brightness / saturation kept', r.ok && J(Object.keys(r.pkg.body.theme).sort()) === J(['bgColor', 'gameBrightness', 'gameSaturation']) && r.pkg.body.theme.gameBrightness === 90);
 r = C.parsePackage(pkg({ theme: { bgColor: '#000', hudScale: 'NaN', chatScale: Infinity, namesScale: { valueOf: 1 }, cellsAlpha: [1], darkTheme: 1, checkonetimeLc2: true, lbTeammateColor: '#fff', commanderImage: 'https://x.com/a.png', customCursor: 'https://www.legendmod.ml/c.cur' } }));
 check('NaN, Infinity, objects, arrays and wrong types dropped', r.ok && !('hudScale' in r.pkg.body.theme) && !('chatScale' in r.pkg.body.theme) && !('namesScale' in r.pkg.body.theme) && !('cellsAlpha' in r.pkg.body.theme) && !('darkTheme' in r.pkg.body.theme));
 check('flag, LMexpress marker and commander images are not theme values', r.ok && !('checkonetimeLc2' in r.pkg.body.theme) && !('lbTeammateColor' in r.pkg.body.theme) && !('commanderImage' in r.pkg.body.theme) && r.pkg.body.theme.customCursor === 'https://www.legendmod.ml/c.cur');

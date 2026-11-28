@@ -39,6 +39,7 @@
     "ogario/modules/deathrecap.js",
     "ogario/modules/analytics.js",
     "ogario/modules/smalltools.js",
+    "ogario/modules/accessibility.js",
     "ogario/modules/hudhelpers.js",
     "ogario/modules/plugins.js",
     "ogario/modules/gamepad-ui.js",

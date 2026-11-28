@@ -156,7 +156,8 @@
       "Alpha values (cellsAlpha, skinsAlpha, backgroundAlpha)",
       "Menu theming",
       "Custom background image URL",
-      "Custom cursor URL"
+      "Custom cursor URL",
+      "Brightness and saturation"
     ]
   }
 }

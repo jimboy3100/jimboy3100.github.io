@@ -56,8 +56,6 @@ const GONE = ['hudMergeCountdown', 'menuFpsCap', 'adaptivePerfTarget', 'adaptive
   'splitPrediction', 'lbHideBots',
   /* line split: its own delay (the split macros' one is used) and its aim line switch (always drawn) */
   'lineSplitDelay', 'lineSplitGuide',
-  /* the menu text size (Settings > Accessibility; the browser zoom does it) */
-  'a11yTextScale',
   /* the stopwatch above the minimap (Settings > Stats "Show stopwatch") */
   'showStopwatch',
   /* Settings > Performance and network: Performance mode and its automatic choice */
@@ -66,7 +64,7 @@ check('removed settings are no settings any more (a saved value is ignored)', GO
 check('line split: 2-4 splits per press, a saved 1 is read as 2', V('lineSplitCount', 1) === 2 && V('lineSplitCount', 4) === 4 && V('lineSplitCount', 9) === 4 && SCH.lineSplitCount[0] === 2);
 check('gamepadMoveCurve 100 -> 3', V('gamepadMoveCurve', 100) === 3);
 check('massFormat 1.7 -> 2 (a mode, not a fraction)', V('massFormat', 1.7) === 2);
-check('fractional step values snap to the slider step', V('zoomSpeedValue2', -0.134) === -0.13 && V('volMaster', 0.123) === 0.12 && V('gamepadTrigger', 0.93) === 0.95);
+check('fractional step values snap to the slider step', V('zoomSpeedValue2', -0.134) === -0.13 && V('volMaster', 0.123) === 0.12 && V('a11yTextScale', 1.12) === 1.1 && V('a11yHudTextScale', 1.12) === 1.1 && V('gamepadTrigger', 0.93) === 0.95);
 check('the top of a range that is not a whole number of steps stays reachable (gamepadTrigger 0.95)', V('gamepadTrigger', 0.95) === 0.95 && V('gamepadTrigger', 5) === 0.95);
 check('zero where the range allows it', V('lineSplitHold', 0) === 0 && V('zoomSpeedValue2', 0) === 0 && V('volMaster', 0) === 0);
 check('NaN, Infinity, -Infinity refused (the default stays)', [NaN, Infinity, -Infinity].every(x => V('animation', x) === undefined && V('volMaster', x) === undefined));

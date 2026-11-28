@@ -268,6 +268,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 
 ### 19. Accessibility
 - **Reduced motion** (Settings > Expanding Land): Disables the Expanding Land death screen shake, death particles and entrance spin
+- **Text scale**: Adjust menu text size (1.0-1.6x) independently from HUD scale
 - **Colour-blind safe theme preset**: Okabe-Ito palette with opaque HUD, bigger minimap marks
 - **Clean HUD preset**: Strips non-essential HUD elements
 - **Focus warning**: Toast notification when keyboard/mouse input is not reaching the game
@@ -316,6 +317,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Merge**: Sound, progress rings
 - **Indicators**: Opponent colours, rings, virus colours, split range (single/double/quad), virus range, cursor tracking (with split prediction), bubble indicators, teammates indicators
 - **Expanding Land**: Reduced motion (no Expanding Land death shake, death particles or entrance spin)
+- **Accessibility**: Menu text scale (1.0-1.6x)
 - **Grid/Borders**: Grid, sectors, map borders, border glow, rainbow borders
 - **Effects**: No colours, custom colour, transparent skins/cells/viruses, virus glow, cell contours, cell shadows, animated rainbow, death particles, eat pulse
 - **Zoom**: Auto zoom, mass-weighted camera
@@ -337,7 +339,7 @@ Each language has: core language pack (lm-XX.js), plus separate translation pack
 
 - **Rendering**: WebGL2 with per-frame preflight and atomic Canvas2D fallback
 - **Storage**: localStorage for settings/hotkeys/profiles/history; IndexedDB for skin caching (1,000 skins, 600 audio, LRU eviction)
-- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, analytics.js (1159), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), replaystudio.js (1615), practice.js (707), plugins.js (940), smalltools.js (444), themeworkshop.js (1233), hotkeysCommand.js (2056)
+- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, accessibility.js (111), analytics.js (1159), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), replaystudio.js (1615), practice.js (707), plugins.js (940), smalltools.js (444), themeworkshop.js (1233), hotkeysCommand.js (2056)
 - **PWA**: Progressive Web App with fullscreen game mode, manifest.json ("Legend Mod - Expanding Land"), landscape orientation, theme_color #00243e; no service worker on this site (the old one is unregistered by play.html; the Expanding Land app at expanding.land has its own)
 - **Extension**: Chrome extension "Legend Express" (manifest v3, version 1.8.5, author Jimboy3100). Permissions: storage, declarativeNetRequest. Host permissions: agar.io, jimboy3100.github.io, legendmod.ml, sigmally.com, senpa.io, mi.com. Content scripts run on agar.io at document_start. Background: service worker. Does NOT collect, store or transmit personal data externally.
 - **Userscript**: Legend Express userscript for Tampermonkey / Greasemonkey (https://www.legendmod.ml/LMexpress/LMexpress.user.js), version 1.9.
