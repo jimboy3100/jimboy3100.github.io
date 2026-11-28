@@ -688,6 +688,55 @@ function death(o) {
     const regSnap = (reg) => JSON.stringify({ slots: reg.slots.map((u) => (u ? u.number + '@' + u.slotEpoch : null)), reserved: reg.reserved.slice(),
         src: Array.from(reg.bySource, (e) => e[0] + '>' + e[1].slotId + '@' + e[1].slotEpoch), ord: reg.ordered.map((u) => u.slotId + ':' + u.number),
         tok: reg.tokenSlot, busy: reg._busy, count: reg.count() });
+    /* Settings "Maximum Multibox players" at the public entry (spect.js addBox, which scripts and
+     * older code call directly, not only Add Player): refused before a slot is held or a unit (its
+     * socket) made; P1 and the slots taken or being opened count, Full Map tiles never */
+    for (const fm of [false, true]) {
+        const tag = 'addBox and the maximum (Full Map ' + (fm ? 'on' : 'off') + ')';
+        const s = MB.scene(Object.assign({ players: 1, fullMap: fm }, opt));
+        const reg = s.ctx.lmMbPlayers, app = s.ctx.application, units = () => s.ctx.spects.filter((x) => x && x.player);
+        const tiles = () => s.ctx.spects.filter((x) => x && !x.player && !x.closed).length, t0n = tiles();
+        let made = 0;
+        const counting = () => { made++; };
+        s.ctx.defaultmapsettings.multiboxAmount = 2;
+        const p2 = s.ctx.addBox();
+        check(tag + ': maximum 2, P2 by a direct addBox (the tiles do not count)', !!p2 && p2.slotId === 2 && reg.count() === 2 && units().length === 1 && tiles() === t0n && (!fm || t0n > 0),
+            reg.count() + ' / ' + t0n + ' tiles');
+        let before = regSnap(reg), ep = reg._epoch, n = s.ctx.spects.length;
+        s.ctx.spectHook = counting;
+        const p3 = s.ctx.addBox();
+        check(tag + ': maximum 2: a second direct addBox gives null, no unit (socket) made, no slot held, the registry as it was',
+            p3 === null && made === 0 && s.ctx.spectHook === counting && regSnap(reg) === before && reg._epoch === ep && s.ctx.spects.length === n && tiles() === t0n, regSnap(reg));
+        s.ctx.spectHook = null;
+        s.ctx.defaultmapsettings.multiboxAmount = 6;
+        const more = [];
+        for (let i = 0; i < 6; i++) more.push(s.ctx.addBox());
+        check(tag + ': maximum 6: five units at most (P2..P6), then null', more.filter(Boolean).length === 4 && more.slice(4).every((x) => x === null) && units().length === 5 &&
+            reg.count() === 6 && units().map((x) => x.slotId).join() === '2,3,4,5,6' && tiles() === t0n, units().map((x) => x.slotId).join());
+        /* lowered with six open: nobody closes, direct creation refused until they are within it */
+        s.ctx.defaultmapsettings.multiboxAmount = 3;
+        before = regSnap(reg); ep = reg._epoch; n = s.ctx.spects.length; made = 0;
+        s.ctx.spectHook = counting;
+        const low = s.ctx.addBox();
+        s.ctx.spectHook = null;
+        check(tag + ': maximum lowered 6 -> 3: the five units stay open, addBox refuses (no socket, no reservation)',
+            low === null && made === 0 && units().length === 5 && units().every((x) => !x.closed) && regSnap(reg) === before && reg._epoch === ep && s.ctx.spects.length === n);
+        app.mbRemovePlayer(3); app.mbRemovePlayer(4); app.mbRemovePlayer(5);
+        check(tag + ': ... three removed (P1, P2, P6 open = 3): still refused', s.ctx.addBox() === null && reg.count() === 3 && reg.get(6) && reg.get(2));
+        app.mbRemovePlayer(6);
+        const back = s.ctx.addBox();
+        check(tag + ': ... within it again: the lowest free slot (3) opens, then the maximum holds', !!back && back.slotId === 3 && reg.count() === 3 && s.ctx.addBox() === null);
+        /* a unit whose making fails: its reservation is released, the maximum counts it no more */
+        s.ctx.defaultmapsettings.multiboxAmount = 4;
+        before = regSnap(reg);
+        s.ctx.spectThrows = true;
+        let threw = false;
+        try { s.ctx.addBox(); } catch (e) { threw = /socket refused/.test(e.message); }
+        const rolled = regSnap(reg) === before && reg.count() === 3;
+        const again = s.ctx.addBox();
+        check(tag + ': maximum 4, the unit\'s making fails: the slot held for it is released (count 3, not busy), the next addBox gets that slot (4), then null',
+            threw && rolled && !reg._busy && !!again && again.slotId === 4 && reg.count() === 4 && s.ctx.addBox() === null && tiles() === t0n, before + ' -> ' + regSnap(reg));
+    }
     {
         const { s, app, reg } = fresh(6);
         app.mbEnable(); app.mbAddPlayer();

@@ -584,10 +584,14 @@
         /* multibox units: real spect.js units on stand-in sockets */
         if (spec.layout !== 'fullmap' && spec.sockets > 1 && typeof window.addBox === 'function' && window.spects) {
             var prevCreate = window.createLegendWebSocket;
+            /* addBox keeps Settings "Maximum Multibox players" (2 as shipped): the scene's
+             * players are allowed while they are made, the setting is back right after */
+            var mset = window.defaultmapsettings || null, prevMax = mset ? mset.multiboxAmount : undefined;
             for (var u = 1; u < spec.sockets && u < 3; u++) {
                 window.createLegendWebSocket = function (url) { return fakeSocket(url); };
                 var unit = null;
-                try { unit = window.addBox(); } finally { window.createLegendWebSocket = prevCreate; }
+                if (mset) mset.multiboxAmount = 6;
+                try { unit = window.addBox(); } finally { window.createLegendWebSocket = prevCreate; if (mset) mset.multiboxAmount = prevMax; }
                 /* no free player slot: the scene runs with the units it has (s.units[i] is world unit i + 1) */
                 if (!unit) break;
                 unit._lmBench = true;

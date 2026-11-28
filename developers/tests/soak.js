@@ -10,7 +10,8 @@
  *    the death-menu listeners of a unit are added once only;
  * 1b. Multibox 2.0 (the real lmMbPlayers, application.mbEnable / mbAddPlayer / mbRemovePlayer /
  *    mbDisable, spect.js addBox and the units' own cells, LM.flushCellsData of a server change):
- *    with Full Map off and on by turns, enable, Add Player up to six, a seventh refused, a middle
+ *    with Full Map off and on by turns, enable, Add Player up to six, a seventh refused (also by a
+ *    direct addBox, and with the maximum lowered to 3 the six stay open), a middle
  *    slot (P4) removed and used again, multibox off, three players again and a server change: the
  *    sockets, timeouts, intervals, listeners, the registry (slots, reserved, bySource, ordered),
  *    window.spects, legendmod.playerCellsMulti and each unit's own index are back to none each
@@ -292,6 +293,13 @@ const M = (() => {
         need(r, 'six players: slots 2..6, one socket each', slotsOf() === '2,3,4,5,6' && reg.count() === 6 && bySourceOk() && live() === tiles + 5 &&
             LM.playerCellsMulti.length === 5 * CELLS && ctx.window.spects.length === tiles + 5);
         need(r, 'a seventh: none, no socket, no reservation', app.mbAddPlayer() === null && live() === tiles + 5 && reg._epoch === epoch && units().length === 5);
+        /* the maximum at the public entry too (spect.js addBox), and lowered to 3 with six open:
+         * nobody closes, nothing opens, no slot is held */
+        need(r, 'a direct addBox at six: none, no socket, no reservation', ctx.addBox() === null && live() === tiles + 5 && reg._epoch === epoch);
+        ctx.defaultmapsettings.multiboxAmount = 3;
+        need(r, 'maximum lowered to 3: the six stay, addBox / Add Player refuse, no socket', ctx.addBox() === null && app.mbAddPlayer() === null &&
+            units().length === 5 && live() === tiles + 5 && reg._epoch === epoch && reg.count() === 6);
+        ctx.defaultmapsettings.multiboxAmount = 6;
         /* P3..P6 of Add Player never take the focus at their spawn (decision 1), P2 of enable does */
         need(r, 'P2 may take the focus at its spawn, P3..P6 may not', units().map((u) => (u._lmFocusClaimed ? 'c' : '-') + u.slotId).join() === '-2,c3,c4,c5,c6');
         C.advance(200); /* the units' cursor loops (and the tiles') run */

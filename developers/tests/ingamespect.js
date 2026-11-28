@@ -1325,5 +1325,108 @@ for (const withUnit of [false, true]) {
     }
 }
 
+/* 25. a unit's nick and the maximum, with the real spect.js: each unit spawns with its slot profile's
+ *     nick whatever "Players glow (profile colors)" (multiBoxShadow) is (the nick read back from its
+ *     spawn packet, opcode 0), the main nick only for a profile without one; its own cells show the
+ *     nick it spawned with, keep the server's name (_lmSrvName) and carry their profile's skin. A
+ *     profile chosen, a middle slot removed and added again, the maximum lowered / raised, a
+ *     reconnect and a server change keep that. window.addBox keeps Settings "Maximum Multibox
+ *     players": a refused unit opens no socket, the Full Map tiles never count, a unit whose socket
+ *     cannot be made frees its slot */
+for (const glow of [false, true]) {
+    const tag = '25. glow ' + (glow ? 'on' : 'off');
+    const e = realEnv();
+    const c = e.ctx;
+    Object.assign(c, { ogarcopythelb: {}, core: null, played: 0, play: () => { c.played++; } });
+    vm.runInContext('Object.assign(application, {' + mbMethods.map((m) => m[1]).join(',\n') + '}); application.hideMenu = function () {};', c);
+    c.legendmod.play = true;
+    c.nick = 'Alpha'; /* the main nick field (#nick) */
+    c.defaultmapsettings.multiBoxShadow = glow;
+    c.defaultmapsettings.multiboxAmount = 6;
+    /* profile 3 has no nick (the main nick is sent), profile 5 has the main player's nick */
+    [['Alpha', 'skA'], ['Beta', 'skB'], ['Gamma', 'skC'], ['', 'skD'], ['Delta', 'skE'], ['Alpha', 'skF'], ['Omega', 'skG']]
+        .forEach(([nick, skinURL]) => c.profiles.push({ nick, skinURL }));
+    c.application.mbSlots = [0, 1, 2, 3, 4, 5];
+    let cellId = 7000;
+    /* a spawn: the nick in the spawn packet, then the first own cell (opcode 32, then its record
+     * with the server's name); returns what was sent and what that cell shows */
+    const spawn = (u) => {
+        const sent = [];
+        u.sendMessage = (v) => { if (v.getUint8(0) === 0) { let s = ''; for (let i = 1; i < v.byteLength && v.getUint8(i); i++) s += String.fromCharCode(v.getUint8(i)); sent.push(s); } };
+        u.active = false;
+        u.handleSendNick();
+        const id = ++cellId, cell = { id, x: 0, y: 0, size: 50, targetSize: 50, spectator: u.number, _lmGen: u.connectionGeneration, _lmSrvName: 'srv:' + sent[0], targetNick: 'srv:' + sent[0] };
+        c.legendmod.indexedCells['' + id] = cell;
+        u._lmOwnAdd(id);
+        return { sent: sent.join('|'), shown: cell.targetNick, nick: u.nick, srv: cell._lmSrvName, skin: cell.skin, own: cell._lmOwner === u };
+    };
+    const ok = (r, nick, skin) => !!r && r.sent === nick && r.shown === nick && r.nick === nick && r.srv === 'srv:' + nick && r.skin === skin && r.own;
+    const units = () => c.spects.filter((x) => x && x.player);
+    const p2 = e.app.mbEnable(), more = [e.app.mbAddPlayer(), e.app.mbAddPlayer(), e.app.mbAddPlayer(), e.app.mbAddPlayer()];
+    const all = [p2].concat(more);
+    const got = all.map((u) => u && spawn(u));
+    const want = [['Beta', 'skB'], ['Gamma', 'skC'], ['Alpha', 'skD'], ['Delta', 'skE'], ['Alpha', 'skF']];
+    check(tag + ': P2..P6 spawn with their slot profiles\' nicks (no nick: the main one; the same nick as P1 too), the cells show the nick sent, the server name kept, each its own skin',
+        all.every(Boolean) && all.map((u) => u.slotId).join() === '2,3,4,5,6' && got.every((r, i) => ok(r, want[i][0], want[i][1])), JSON.stringify(got));
+    /* a profile chosen for P2 / P3 (their slots swapped): their next spawn */
+    c.application.mbSlots[1] = 2; c.application.mbSlots[2] = 1;
+    const sw = [spawn(p2), spawn(more[0])];
+    check(tag + ': profiles chosen (P2 <-> P3): the next spawns send and show the new nicks', ok(sw[0], 'Gamma', 'skC') && ok(sw[1], 'Beta', 'skB'), JSON.stringify(sw));
+    c.application.mbSlots[1] = 1; c.application.mbSlots[2] = 2;
+    /* the middle slot (P4) removed and opened again */
+    const p4 = more[1];
+    e.app.mbRemovePlayer(4);
+    const q4 = e.app.mbAddPlayer();
+    const r4 = q4 && spawn(q4);
+    check(tag + ': P4 removed and added again: slot 4, its profile (no nick: the main one) and skin', !!q4 && q4 !== p4 && q4.slotId === 4 && ok(r4, 'Alpha', 'skD'), JSON.stringify(r4));
+    /* the maximum lowered: nobody closes, each keeps its profile, nothing opens */
+    const sockets0 = e.sockets.length;
+    c.defaultmapsettings.multiboxAmount = 2;
+    const refused = [c.addBox(), e.app.mbAddPlayer()];
+    const r5 = spawn(more[2]);
+    check(tag + ': maximum lowered 6 -> 2: the five stay, P5 respawns as Delta, addBox / Add Player refuse with no socket made',
+        refused.every((x) => x === null) && units().length === 5 && e.sockets.length === sockets0 && ok(r5, 'Delta', 'skE'), JSON.stringify(r5));
+    c.defaultmapsettings.multiboxAmount = 6;
+    e.app.mbRemovePlayer(6);
+    const q6 = c.addBox(), r6 = q6 && spawn(q6);
+    check(tag + ': raised again, P6 removed: a direct addBox opens slot 6 with its profile (P1\'s nick, its own skin), then nothing more',
+        !!q6 && q6.slotId === 6 && ok(r6, 'Alpha', 'skF') && c.addBox() === null && e.sockets.length === sockets0 + 1, JSON.stringify(r6));
+    /* a reconnect (a new socket, the nick of the old one forgotten): the same nick again */
+    const gen = p2.connectionGeneration;
+    p2.connect();
+    const rr = spawn(p2);
+    check(tag + ': P2 reconnects: spawns again as Beta, shown as Beta', p2.connectionGeneration !== gen && ok(rr, 'Beta', 'skB'), JSON.stringify(rr));
+    /* a server change: every unit closes; multibox started again on the new server */
+    c.legendmod.flushSpecsData();
+    const n2 = e.app.mbEnable(), n3 = e.app.mbAddPlayer();
+    const rs = [n2 && spawn(n2), n3 && spawn(n3)];
+    check(tag + ': a server change, then P2 / P3 again: Beta and Gamma, as before', units().length === 2 && n2 !== p2 && ok(rs[0], 'Beta', 'skB') && ok(rs[1], 'Gamma', 'skC'), JSON.stringify(rs));
+}
+{
+    /* the maximum at window.addBox with real sockets and Full Map open */
+    const e = realEnv();
+    const c = e.ctx;
+    c.legendmod.play = true;
+    e.app.setShowFullSpectator();
+    const tiles = e.fullOf().length, s0 = e.sockets.length;
+    c.defaultmapsettings.multiboxAmount = 2;
+    const a = c.addBox(), b = c.addBox();
+    check('25. Full Map on (' + tiles + ' tiles), maximum 2: addBox opens P2 (the tiles do not count), a second one gives null and opens no socket',
+        tiles === 15 && !!a && a.slotId === 2 && b === null && e.sockets.length === s0 + 1 && c.lmMbPlayers.count() === 2, e.sockets.length - s0);
+    c.defaultmapsettings.multiboxAmount = 6;
+    const six = [];
+    for (let i = 0; i < 6; i++) six.push(c.addBox());
+    check('    ... maximum 6: four more (five units), then null, one socket each, the tiles untouched',
+        six.filter(Boolean).length === 4 && six.slice(4).every((x) => x === null) && e.sockets.length === s0 + 5 && c.lmMbPlayers.count() === 6 && e.fullOf().length === 15);
+    c.lmMbPlayers.release(6, c.lmMbPlayers.get(6).slotEpoch);
+    const cls = c.createLegendWebSocket;
+    c.createLegendWebSocket = () => { throw new Error('socket refused'); };
+    let threw = false;
+    try { c.addBox(); } catch (err) { threw = /socket refused/.test(err.message); }
+    c.createLegendWebSocket = cls;
+    check('    ... a socket that cannot be made: addBox throws, the slot held for it is free again (count 5, not busy)',
+        threw && c.lmMbPlayers.count() === 5 && !c.lmMbPlayers._busy && !c.lmMbPlayers.reserved[6], c.lmMbPlayers.count());
+}
+
 console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
 process.exit(failed ? 1 : 0);

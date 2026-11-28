@@ -411,12 +411,16 @@ function lmFoodReference(now) {
 }
 
 /* Opens one multibox unit (a playing connection) in the lowest free player slot and returns it;
- * null when six players are there (slots being opened count) or another one is being made. Its
- * number is max + 1 of what spects holds now (Full Map tiles included), so callers take
+ * null when Settings "Maximum Multibox players" is reached (lmMbCapacity, P1 and the slots taken
+ * or being opened count, Full Map tiles never; checked before a slot is held or a socket made,
+ * so a lower maximum closes no open player, it only refuses the next one; the same check as
+ * application.mbAddPlayer, for direct callers), when six players are there or another one is
+ * being made. Its number is max + 1 of what spects holds now (Full Map tiles included), so callers take
  * unit.number from the object returned, never a guessed 1. The slot is held before the unit is
  * made and freed again when making it fails. */
 function addBox() {
     const reg = typeof lmMbPlayers !== 'undefined' ? lmMbPlayers : null;
+    if (reg && typeof lmMbCapacity === 'function' && reg.count() >= lmMbCapacity()) return null;
     const r = reg ? reg.reserve() : null;
     if (reg && !r) return null;
     let spect;
@@ -2245,17 +2249,22 @@ class Spect {
         }
     }
 
+    /*
+     * The nick a unit spawns with: its player slot's profile (lmUnitProfileIdx: P2 mbSlots[1],
+     * P3 mbSlots[2] ...), whatever Settings "Players glow (profile colors)" (multiBoxShadow) is;
+     * the main nick (#nick) only when that profile has none. The glow is how the cells look and
+     * nothing else: it used to choose the nick too (the 2020 "Player 1 & 2" option), so with it
+     * off a unit spawned with P1's nick while its own cells showed its profile's (_lmAdoptOwn).
+     * this.nick is the nick sent: its own cells show it (_lmAdoptOwn), the server's name stays
+     * in cell._lmSrvName.
+     */
     handleSendNick() {
         var prof = profiles[lmUnitProfileIdx(this)] || profiles[0];
-        if (prof && prof.nick && defaultmapsettings.multiBoxShadow) {
-            this.sendNick(prof.nick);
-            this.nick = prof.nick;
-            if (prof.skinURL) {
-                lmPreloadUnitSkin(prof.skinURL);
-            }
-        } else {
-            this.sendNick($("#nick").val());
-            this.nick = $("#nick").val();
+        var nick = prof && prof.nick ? prof.nick : $("#nick").val();
+        this.sendNick(nick);
+        this.nick = nick;
+        if (prof && prof.nick && prof.skinURL) {
+            lmPreloadUnitSkin(prof.skinURL);
         }
     }
 
@@ -3547,11 +3556,11 @@ class Spect {
             else if (cell._lmRawColor) cell.color = cell._lmRawColor;
             if (cell.color) this.playerColor = cell.color;
         }
+        /* the nick shown is the one this unit spawned with (handleSendNick); the profile's
+         * only when none was sent (a unit spawned by an older caller) */
+        if (this.nick == null && _mbProf && _mbProf.nick) this.nick = _mbProf.nick;
+        if (this.nick) cell.targetNick = this.nick;
         if (_mbProf) {
-            if (_mbProf.nick) {
-                this.nick = _mbProf.nick;
-                cell.targetNick = _mbProf.nick;
-            }
             if (_mbProf.skinURL) {
                 cell.skin = _mbProf.skinURL;
                 cell._lmProfileSkin = true;

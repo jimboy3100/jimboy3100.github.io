@@ -96,7 +96,9 @@ The same calls as the keys and the roster, on `application`:
 | `mbSelectPlayer(slot)` | controls that player (a dead one spawns again). `true`, or `false` for an empty slot |
 | `mbSelectAdjacent(dir)` | controls the next (`1`) or previous (`-1`) player in slot order, as the switch keys (with more than two players dead and connecting ones are passed). `true`, or `false` while multibox is off |
 
-Only `mbEnable()` and `mbAddPlayer()` open connections.
+Only `mbEnable()` and `mbAddPlayer()` open connections. The lower-level `window.addBox()` they use keeps the same "Maximum Multibox players" limit: it returns `null` and opens no connection once the open players (the main one and any being opened included, Full Map tiles never) reach it.
+
+Each unit spawns with the nick of its slot's profile (the main nick only when that profile has none), and its own cells show the nick it spawned with; "Players glow (profile colors)" changes only the glow.
 
 ## Examples
 

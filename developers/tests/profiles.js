@@ -497,6 +497,19 @@ tplIds.forEach(id => {
       J2(adopt({ nick: 'P2' }, '#00ff00', null)) === J2(['#00ff00', '#00ff00']));
     check('unit colour: Teams keeps the server team colour', J2(adopt({ nick: 'P2', color: '#12ab34' }, '#0000ff', '#0000ee', ':teams')) === J2(['#0000ee', '#0000ee']));
     check('unit colour: no explicit black fallback left in spect.js', !/_mbProf\.color \|\| ['"]#000000['"]/.test(sp));
+    /* the nick an own cell shows: the one the unit spawned with (handleSendNick sets unit.nick), not
+     * the profile's when they differ; the profile's only when none was sent; the server's name stays */
+    const nickOf = (sent) => {
+      c.profiles[0] = { nick: 'Prof', skinURL: 'skP' }; c.legendmod.gameMode = ':ffa';
+      const u = new Unit(), cell = { id: 1, spectator: 2, _lmGen: 1, targetNick: 'srv', _lmSrvName: 'srv' };
+      if (sent !== undefined) u.nick = sent;
+      u._lmAdoptOwn(cell);
+      return [cell.targetNick, u.nick, cell._lmSrvName, cell.skin];
+    };
+    check('unit nick: an own cell shows the nick sent (not the profile\'s), keeps the server name and the profile skin', J2(nickOf('Sent')) === J2(['Sent', 'Sent', 'srv', 'skP']));
+    check('unit nick: no nick sent (an older caller): the profile\'s', J2(nickOf()) === J2(['Prof', 'Prof', 'srv', 'skP']));
+    const hsn = (sp.match(/    handleSendNick\(\) \{[\s\S]*?\n    \}/) || [''])[0];
+    check('unit nick: the spawn nick does not depend on "Players glow" (multiBoxShadow is the glow only)', !!hsn && !/multiBoxShadow/.test(hsn));
   }
 }
 
