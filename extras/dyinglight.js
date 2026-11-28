@@ -699,13 +699,14 @@
         shadow: { cooldownMs: 120000, visual: true, sudden: true, w: { dusk: 1, night: 2, deepNight: 3 } },
         watcher: { cooldownMs: 180000, visual: true, w: { night: 1, deepNight: 2 } },
         /* made sounds (synthesized, they need the audio context); nw: Nightmare's weights (more
-         * kinds, breathing and impacts only then, each in a fuller variant) */
-        scream: { cooldownMs: 90000, made: true, w: { night: 1, deepNight: 2 }, nw: { dusk: 1, night: 2, deepNight: 3 } },
-        growl: { cooldownMs: 150000, made: true, w: { night: 1, deepNight: 1 }, nw: { dusk: 1, night: 2, deepNight: 2 } },
+         * kinds, breathing and impacts only then, each in a fuller variant); jolt: a startling one,
+         * off with the Scares switch */
+        scream: { cooldownMs: 90000, made: true, jolt: true, w: { night: 1, deepNight: 2 }, nw: { dusk: 1, night: 2, deepNight: 3 } },
+        growl: { cooldownMs: 150000, made: true, jolt: true, w: { night: 1, deepNight: 1 }, nw: { dusk: 1, night: 2, deepNight: 2 } },
         footsteps: { cooldownMs: 150000, made: true, w: { dusk: 1, night: 1, deepNight: 1 }, nw: { dusk: 1, night: 2, deepNight: 2 } },
         'static': { cooldownMs: 120000, made: true, w: { day: 1, dusk: 1, night: 1, deepNight: 1, dawn: 1 }, nw: { day: 1, dusk: 1, night: 2, deepNight: 2, dawn: 1 } },
         breathing: { cooldownMs: 240000, made: true, w: {}, nw: { night: 1, deepNight: 2 } },
-        impact: { cooldownMs: 180000, made: true, w: {}, nw: { night: 1, deepNight: 2 } }
+        impact: { cooldownMs: 180000, made: true, jolt: true, w: {}, nw: { night: 1, deepNight: 2 } }
     };
     var NIGHTFALL_MS = 300000, SPAWN_QUIET_MS = 8000, DEATH_GAP_MS = 10000, SIGNAL_GAP_MS = 30000, MAX_SOUNDS = 2;
     /* the handoff's palette over the player's menu / HUD colours */
@@ -927,7 +928,7 @@
     }
     function weight(k, E, ph, scares, calm, made, rich) {
         var ev = EVENTS[k], w = ((rich && ev.nw) || ev.w)[ph.id] || 0;
-        if (!w || (ev.made && !made) || (ev.visual && !scares) || (ev.sudden && calm) || (lastAt[k] != null && E - lastAt[k] < ev.cooldownMs)) return 0;
+        if (!w || (ev.made && !made) || (ev.jolt && setting('dyingLightScares') === false) || (ev.visual && !scares) || (ev.sudden && calm) || (lastAt[k] != null && E - lastAt[k] < ev.cooldownMs)) return 0;
         return w;
     }
     function nightfall(E, p) {

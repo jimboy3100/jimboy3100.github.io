@@ -525,6 +525,15 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
             check('events (Nightmare): richer, not only more often: breathing and impacts too, more kinds, the 75 s gap kept',
                 kindsN.length >= 5 && (kindsN.includes('breathing') || kindsN.includes('impact')) && atN.length > atI.length && gapsOk(atN, 75000), JSON.stringify(evN) + ' ' + atN.length);
             /* suppressed */
+            {
+                D.dyingLightScares = false;
+                const b = Object.assign({}, A().events);
+                sim(60 * 60);
+                const grew = Object.keys(A().events).filter(k => A().events[k] > (b[k] || 0));
+                D.dyingLightScares = true;
+                check('events: the Scares switch off silences the startling ones (scream, growl, impact), the others stay',
+                    grew.length >= 2 && grew.every(k => ['footsteps', 'static', 'breathing', 'radioStatic'].includes(k)), grew.join());
+            }
             document.activeElement = { tagName: 'INPUT' };
             let m0 = total();
             sim(20 * 60);
