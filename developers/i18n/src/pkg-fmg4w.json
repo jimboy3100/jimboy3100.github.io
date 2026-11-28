@@ -1,11 +1,56 @@
 {
   "pkg.fmg4w.spRefused": {
-    "en": "The server takes no more spectators: a Full Map or in-game spectator connection was closed. Turn it off and on to try again."
+    "en": "The server takes no more spectators: a Full Map or in-game spectator connection was closed. Turn it off and on to try again.",
+    "el": "Ο server δεν δέχεται άλλους θεατές: μια σύνδεση του Full Map ή του θεατή εντός παιχνιδιού έκλεισε. Απενεργοποίησέ το και ενεργοποίησέ το ξανά για νέα προσπάθεια.",
+    "es": "El servidor no admite más espectadores: se cerró una conexión de Full Map o del espectador en partida. Desactívalo y vuelve a activarlo para intentarlo de nuevo.",
+    "bg": "Сървърът не приема повече наблюдатели: връзка на Full Map или на наблюдателя в играта беше затворена. Изключи го и го включи отново, за да опиташ пак.",
+    "fr": "Le serveur n'accepte plus de spectateurs : une connexion de Full Map ou du spectateur en jeu a été fermée. Désactive-le puis réactive-le pour réessayer.",
+    "ar": "لا يقبل الخادم مشاهدين آخرين: أُغلق اتصال لـ Full Map أو للمشاهد داخل اللعبة. أوقفه ثم شغّله مجددًا للمحاولة مرة أخرى.",
+    "zh": "伺服器不再接受觀戰者：一個 Full Map 或遊戲內觀戰連線已被關閉。請將其關閉後再開啟以重試。",
+    "ru": "Сервер больше не принимает наблюдателей: подключение Full Map или наблюдателя в игре закрыто. Выключите и снова включите его, чтобы попробовать ещё раз.",
+    "de": "Der Server nimmt keine weiteren Zuschauer an: Eine Verbindung von Full Map oder dem Ingame-Zuschauer wurde geschlossen. Schalte es aus und wieder ein, um es erneut zu versuchen.",
+    "tr": "Sunucu daha fazla izleyici kabul etmiyor: bir Full Map veya oyun içi izleyici bağlantısı kapatıldı. Tekrar denemek için kapatıp yeniden aç.",
+    "pl": "Serwer nie przyjmuje więcej obserwatorów: połączenie Full Map lub obserwacji w grze zostało zamknięte. Wyłącz je i włącz ponownie, aby spróbować jeszcze raz.",
+    "nl": "De server laat geen toeschouwers meer toe: een verbinding van Full Map of de toeschouwer in het spel is gesloten. Zet het uit en weer aan om het opnieuw te proberen.",
+    "pt": "O servidor não aceita mais espectadores: uma conexão do Full Map ou do espectador na partida foi fechada. Desligue e ligue de novo para tentar outra vez.",
+    "id": "Server tidak menerima penonton lagi: koneksi Full Map atau spectate dalam game ditutup. Matikan lalu nyalakan lagi untuk mencoba kembali.",
+    "ja": "サーバーがこれ以上観戦者を受け付けません：Full Map またはゲーム内観戦の接続が閉じられました。オフにしてからもう一度オンにして再試行してください。",
+    "it": "Il server non accetta altri spettatori: una connessione di Full Map o dello spettatore in partita è stata chiusa. Disattivalo e riattivalo per riprovare."
   },
   "pkg.fmg4w.fullMapModeOff": {
-    "en": "Full Map is not available in Teams and Battle Royale yet."
+    "en": "Full Map is not available in Teams and Battle Royale yet.",
+    "el": "Το Full Map δεν είναι ακόμη διαθέσιμο σε Teams και Battle Royale.",
+    "es": "Full Map aún no está disponible en Teams ni en Battle Royale.",
+    "bg": "Full Map все още не е достъпна в Teams и Battle Royale.",
+    "fr": "Full Map n'est pas encore disponible en Teams et en Battle Royale.",
+    "ar": "Full Map غير متاح بعد في Teams وBattle Royale.",
+    "zh": "Full Map 目前尚不支援 Teams 與 Battle Royale。",
+    "ru": "Full Map пока недоступна в Teams и Battle Royale.",
+    "de": "Full Map ist in Teams und Battle Royale noch nicht verfügbar.",
+    "tr": "Full Map henüz Teams ve Battle Royale modlarında kullanılamıyor.",
+    "pl": "Full Map nie jest jeszcze dostępna w trybach Teams i Battle Royale.",
+    "nl": "Full Map is nog niet beschikbaar in Teams en Battle Royale.",
+    "pt": "O Full Map ainda não está disponível em Teams e Battle Royale.",
+    "id": "Full Map belum tersedia di Teams dan Battle Royale.",
+    "ja": "Full Map は Teams と Battle Royale ではまだ使えません。",
+    "it": "Full Map non è ancora disponibile in Teams e Battle Royale."
   },
   "pkg.fmg4w.spCaptcha": {
-    "en": "The server asked a Full Map or in-game spectator connection for a captcha: it was closed. Turn it off and on to try again."
+    "en": "The server asked a Full Map or in-game spectator connection for a captcha: it was closed. Turn it off and on to try again.",
+    "el": "Ο server ζήτησε captcha από μια σύνδεση του Full Map ή του θεατή εντός παιχνιδιού: η σύνδεση έκλεισε. Απενεργοποίησέ το και ενεργοποίησέ το ξανά για νέα προσπάθεια.",
+    "es": "El servidor pidió un captcha a una conexión de Full Map o del espectador en partida: se cerró. Desactívalo y vuelve a activarlo para intentarlo de nuevo.",
+    "bg": "Сървърът поиска captcha от връзка на Full Map или на наблюдателя в играта: тя беше затворена. Изключи го и го включи отново, за да опиташ пак.",
+    "fr": "Le serveur a demandé un captcha à une connexion de Full Map ou du spectateur en jeu : elle a été fermée. Désactive-le puis réactive-le pour réessayer.",
+    "ar": "طلب الخادم captcha من اتصال لـ Full Map أو للمشاهد داخل اللعبة: أُغلق الاتصال. أوقفه ثم شغّله مجددًا للمحاولة مرة أخرى.",
+    "zh": "伺服器要求一個 Full Map 或遊戲內觀戰連線輸入驗證碼：該連線已被關閉。請將其關閉後再開啟以重試。",
+    "ru": "Сервер запросил капчу у подключения Full Map или наблюдателя в игре: оно закрыто. Выключите и снова включите его, чтобы попробовать ещё раз.",
+    "de": "Der Server hat von einer Verbindung von Full Map oder dem Ingame-Zuschauer ein Captcha verlangt: Sie wurde geschlossen. Schalte es aus und wieder ein, um es erneut zu versuchen.",
+    "tr": "Sunucu bir Full Map veya oyun içi izleyici bağlantısından captcha istedi: bağlantı kapatıldı. Tekrar denemek için kapatıp yeniden aç.",
+    "pl": "Serwer zażądał captchy od połączenia Full Map lub obserwacji w grze: zostało zamknięte. Wyłącz je i włącz ponownie, aby spróbować jeszcze raz.",
+    "nl": "De server vroeg een verbinding van Full Map of de toeschouwer in het spel om een captcha: die is gesloten. Zet het uit en weer aan om het opnieuw te proberen.",
+    "pt": "O servidor pediu um captcha a uma conexão do Full Map ou do espectador na partida: ela foi fechada. Desligue e ligue de novo para tentar outra vez.",
+    "id": "Server meminta captcha dari koneksi Full Map atau spectate dalam game: koneksi itu ditutup. Matikan lalu nyalakan lagi untuk mencoba kembali.",
+    "ja": "サーバーが Full Map またはゲーム内観戦の接続にキャプチャを要求したため、その接続は閉じられました。オフにしてからもう一度オンにして再試行してください。",
+    "it": "Il server ha chiesto un captcha a una connessione di Full Map o dello spettatore in partita: è stata chiusa. Disattivalo e riattivalo per riprovare."
   }
 }

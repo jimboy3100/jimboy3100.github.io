@@ -1602,7 +1602,22 @@
     "it": "Minimappa"
   },
   "modules.hudeditor.comp.stats": {
-    "en": "Game stats (frame time, ping, mass)"
+    "en": "Game stats (frame time, ping, mass)",
+    "el": "Στατιστικά (χρόνος καρέ, ping, μάζα)",
+    "es": "Estadísticas (tiempo de fotograma, ping, masa)",
+    "bg": "Статистика (време за кадър, пинг, маса)",
+    "fr": "Statistiques (temps d'image, ping, masse)",
+    "ar": "إحصاءات اللعبة (زمن الإطار، ping، الكتلة)",
+    "zh": "遊戲數據（影格時間、ping、質量）",
+    "ru": "Статистика (время кадра, пинг, масса)",
+    "de": "Spielwerte (Framezeit, Ping, Masse)",
+    "tr": "Oyun istatistikleri (kare süresi, ping, kütle)",
+    "pl": "Statystyki (czas klatki, ping, masa)",
+    "nl": "Spelstatistieken (frametijd, ping, massa)",
+    "pt": "Estatísticas do jogo (tempo de frame, ping, massa)",
+    "id": "Statistik game (waktu frame, ping, massa)",
+    "ja": "ゲーム情報（フレーム時間、Ping、質量）",
+    "it": "Statistiche di gioco (tempo per frame, ping, massa)"
   },
   "modules.hudeditor.comp.phoneStats": {
     "en": "Phone stats",
@@ -2757,7 +2772,22 @@
     "it": "Chiudi"
   },
   "modules.replaystudio.noRecYet": {
-    "en": "No recording yet. Play a game."
+    "en": "No recording yet. Play a game.",
+    "el": "Δεν υπάρχει ακόμη εγγραφή. Παίξε ένα παιχνίδι.",
+    "es": "Aún no hay grabaciones. Juega una partida.",
+    "bg": "Още няма запис. Изиграй игра.",
+    "fr": "Pas encore d'enregistrement. Joue une partie.",
+    "ar": "لا يوجد تسجيل بعد. العب مباراة.",
+    "zh": "尚無錄影。請進行一場遊戲。",
+    "ru": "Записей пока нет. Сыграйте игру.",
+    "de": "Noch keine Aufnahme. Spiele eine Runde.",
+    "tr": "Henüz kayıt yok. Bir oyun oyna.",
+    "pl": "Brak nagrania. Rozegraj grę.",
+    "nl": "Nog geen opname. Speel een potje.",
+    "pt": "Ainda não há gravação. Jogue uma partida.",
+    "id": "Belum ada rekaman. Mainkan satu game.",
+    "ja": "まだ録画がありません。ゲームをプレイしてください。",
+    "it": "Ancora nessuna registrazione. Gioca una partita."
   },
   "modules.replaystudio.play": {
     "en": "Play",
@@ -6018,7 +6048,22 @@
     "it": "più"
   },
   "modules.analytics.coachNoneYet": {
-    "en": "No Coach reports yet. Play a game."
+    "en": "No Coach reports yet. Play a game.",
+    "el": "Δεν υπάρχουν ακόμη αναφορές του Προπονητή. Παίξε ένα παιχνίδι.",
+    "es": "Aún no hay informes del coach. Juega una partida.",
+    "bg": "Още няма отчети от треньора. Изиграй игра.",
+    "fr": "Pas encore de rapport du coach. Joue une partie.",
+    "ar": "لا توجد تقارير من المدرب بعد. العب مباراة.",
+    "zh": "尚無教練報告。請進行一場遊戲。",
+    "ru": "Отчётов тренера пока нет. Сыграйте игру.",
+    "de": "Noch keine Coach-Berichte. Spiele eine Runde.",
+    "tr": "Henüz koç raporu yok. Bir oyun oyna.",
+    "pl": "Brak raportów trenera. Rozegraj grę.",
+    "nl": "Nog geen coachrapporten. Speel een potje.",
+    "pt": "Ainda não há relatórios do Treinador. Jogue uma partida.",
+    "id": "Belum ada laporan Pelatih. Mainkan satu game.",
+    "ja": "コーチのレポートはまだありません。ゲームをプレイしてください。",
+    "it": "Ancora nessun report del Coach. Gioca una partita."
   },
   "modules.analytics.overall": {
     "en": "Overall",

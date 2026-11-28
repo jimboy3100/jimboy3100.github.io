@@ -1,5 +1,20 @@
 {
   "pkg.rptab.stale": {
-    "en": "This page still runs the game stats of an older version. Reload the page to see them here."
+    "en": "This page still runs the game stats of an older version. Reload the page to see them here.",
+    "el": "Αυτή η σελίδα τρέχει ακόμη τα στατιστικά παιχνιδιού μιας παλαιότερης έκδοσης. Φόρτωσε ξανά τη σελίδα για να τα δεις εδώ.",
+    "es": "Esta página aún usa las estadísticas del juego de una versión anterior. Recarga la página para verlas aquí.",
+    "bg": "Тази страница все още използва статистиката на играта от по-стара версия. Презареди страницата, за да я видиш тук.",
+    "fr": "Cette page utilise encore les stats du jeu d'une ancienne version. Recharge la page pour les voir ici.",
+    "ar": "لا تزال هذه الصفحة تشغّل إحصائيات اللعبة من إصدار أقدم. أعد تحميل الصفحة لتراها هنا.",
+    "zh": "此頁面仍在執行舊版的遊戲統計。請重新載入頁面以在此查看。",
+    "ru": "Эта страница всё ещё использует статистику игры старой версии. Перезагрузите страницу, чтобы увидеть её здесь.",
+    "de": "Diese Seite verwendet noch die Spielstatistik einer älteren Version. Lade die Seite neu, um sie hier zu sehen.",
+    "tr": "Bu sayfa hâlâ eski bir sürümün oyun istatistiklerini çalıştırıyor. Burada görmek için sayfayı yenile.",
+    "pl": "Ta strona wciąż używa statystyk gry ze starszej wersji. Odśwież stronę, aby zobaczyć je tutaj.",
+    "nl": "Deze pagina draait nog de spelstatistieken van een oudere versie. Herlaad de pagina om ze hier te zien.",
+    "pt": "Esta página ainda usa as estatísticas do jogo de uma versão antiga. Recarregue a página para vê-las aqui.",
+    "id": "Halaman ini masih menjalankan statistik game versi lama. Muat ulang halaman untuk melihatnya di sini.",
+    "ja": "このページはまだ古いバージョンのゲーム統計を使っています。ここで見るにはページを再読み込みしてください。",
+    "it": "Questa pagina usa ancora le statistiche di gioco di una versione precedente. Ricarica la pagina per vederle qui."
   }
 }

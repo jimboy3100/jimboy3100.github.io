@@ -1080,7 +1080,22 @@
     "it": "Rivedi le tue partite e condividile."
   },
   "site.features.recordsYourGamesLatest": {
-    "en": "Records your games (only the latest game stays in memory; save a replay to the library to keep it)"
+    "en": "Records your games (only the latest game stays in memory; save a replay to the library to keep it)",
+    "el": "Καταγράφει τα παιχνίδια σου (μόνο το τελευταίο παιχνίδι μένει στη μνήμη· αποθήκευσε ένα replay στη βιβλιοθήκη για να το κρατήσεις)",
+    "es": "Graba tus partidas (solo la última partida se queda en memoria; guarda una repetición en la biblioteca para conservarla)",
+    "bg": "Записва игрите ти (в паметта остава само последната игра; запази повторение в библиотеката, за да го задържиш)",
+    "fr": "Enregistre tes parties (seule la dernière partie reste en mémoire ; enregistre un replay dans la bibliothèque pour le garder)",
+    "ar": "يسجّل مبارياتك (تبقى آخر مباراة فقط في الذاكرة؛ احفظ الإعادة في المكتبة للاحتفاظ بها)",
+    "zh": "錄製你的遊戲（記憶體中只保留最近一場；將重播存入資料庫即可保留）",
+    "ru": "Записывает ваши игры (в памяти остаётся только последняя игра; сохраните реплей в библиотеку, чтобы оставить его)",
+    "de": "Nimmt deine Spiele auf (nur das letzte Spiel bleibt im Speicher; speichere ein Replay in der Bibliothek, um es zu behalten)",
+    "tr": "Oyunlarını kaydeder (bellekte yalnızca son oyun kalır; saklamak için bir tekrarı kitaplığa kaydet)",
+    "pl": "Nagrywa twoje gry (w pamięci zostaje tylko ostatnia gra; zapisz powtórkę w bibliotece, aby ją zachować)",
+    "nl": "Neemt je potjes op (alleen het laatste potje blijft in het geheugen; sla een replay op in de bibliotheek om hem te bewaren)",
+    "pt": "Grava suas partidas (só a última partida fica na memória; salve um replay na biblioteca para guardá-lo)",
+    "id": "Merekam game kamu (hanya game terakhir yang tetap di memori; simpan replay ke pustaka untuk menyimpannya)",
+    "ja": "ゲームを録画します（メモリーに残るのは最新のゲームだけです。残したいリプレイはライブラリに保存してください）",
+    "it": "Registra le tue partite (in memoria resta solo l'ultima partita; salva un replay nella libreria per tenerlo)"
   },
   "site.features.pauseFasterSlowerAnd": {
     "en": "Pause, faster / slower and seek hotkeys",
@@ -1263,7 +1278,22 @@
     "it": "Riga opzionale <i>Mangiato da</i> con il nick e la massa di chi ti ha mangiato"
   },
   "site.features.matchHistoryReplaysWindow": {
-    "en": "Match history: your last 50 games in the Replays window, next to the Dashboard and Heatmaps"
+    "en": "Match history: your last 50 games in the Replays window, next to the Dashboard and Heatmaps",
+    "el": "Ιστορικό αγώνων: τα τελευταία 50 παιχνίδια σου στο παράθυρο Replays, δίπλα στον Πίνακα και τους Θερμικούς χάρτες",
+    "es": "Historial de partidas: tus últimas 50 partidas en la ventana Repeticiones, junto al Panel y los Mapas de calor",
+    "bg": "История на игрите: последните ти 50 игри в прозореца Повторения, до Таблото и Топлинните карти",
+    "fr": "Historique des parties : tes 50 dernières parties dans la fenêtre Replays, à côté du Tableau de bord et des Cartes de chaleur",
+    "ar": "سجل المباريات: آخر 50 مباراة لك في نافذة الإعادات، بجوار اللوحة والخرائط الحرارية",
+    "zh": "對戰記錄：在重播視窗中查看你最近 50 場遊戲，就在儀表板與熱圖旁邊",
+    "ru": "История матчей: ваши последние 50 игр в окне Реплеи, рядом с Панелью и Тепловыми картами",
+    "de": "Spielverlauf: deine letzten 50 Spiele im Replays-Fenster, neben Dashboard und Heatmaps",
+    "tr": "Maç geçmişi: son 50 oyunun Tekrarlar penceresinde, Panel ve Isı haritalarının yanında",
+    "pl": "Historia meczów: twoje ostatnie 50 gier w oknie Powtórki, obok Pulpitu i Map cieplnych",
+    "nl": "Speelgeschiedenis: je laatste 50 potjes in het Replays-venster, naast het Dashboard en de Heatmaps",
+    "pt": "Histórico de partidas: suas últimas 50 partidas na janela Replays, ao lado do Painel e dos Mapas de calor",
+    "id": "Riwayat pertandingan: 50 game terakhirmu di jendela Replay, di samping Dasbor dan Heatmap",
+    "ja": "対戦履歴：リプレイウィンドウで直近50ゲームを、ダッシュボードやヒートマップと並べて表示",
+    "it": "Cronologia partite: le tue ultime 50 partite nella finestra Replay, accanto a Panoramica e Heatmap"
   },
   "site.features.sessionSummaryUnderThe": {
     "en": "Session summary under the menu",
@@ -1339,21 +1369,21 @@
   },
   "site.features.optionalClickAPlayer": {
     "en": "Click to follow while spectating: click a player cell or a leaderboard mass to follow that player, click empty space to stop (on a phone: a short tap on a player cell)",
-    "el": "Κλικ για ακολούθηση στο spectate: κάνε κλικ σε ένα κύτταρο παίκτη ή σε μια μάζα του πίνακα κατάταξης για να ακολουθήσεις αυτόν τον παίκτη, κλικ σε κενό χώρο για διακοπή",
-    "es": "Clic para seguir al espectar: haz clic en una célula de jugador o en una masa de la clasificación para seguir a ese jugador, clic en un espacio vacío para parar",
-    "bg": "Клик за следване при наблюдение: кликни върху клетка на играч или маса в класацията, за да следваш този играч, клик на празно място спира",
-    "fr": "Cliquer pour suivre en spectateur : cliquez sur une cellule de joueur ou une masse du classement pour suivre ce joueur, clic dans le vide pour arrêter",
-    "ar": "انقر للمتابعة أثناء المشاهدة: انقر على خلية لاعب أو كتلة في لوحة الصدارة لمتابعة ذلك اللاعب، وانقر على مكان فارغ للتوقف",
-    "zh": "觀戰時點擊跟隨：點擊玩家細胞或排行榜上的質量即可跟隨該玩家，點擊空白處停止",
-    "ru": "Следование по клику при наблюдении: нажмите на клетку игрока или массу в таблице лидеров, чтобы следовать за ним, нажатие на пустое место останавливает",
-    "de": "Klicken zum Folgen beim Zuschauen: eine Spielerzelle oder eine Masse in der Rangliste anklicken, um diesem Spieler zu folgen, Klick ins Leere stoppt",
-    "tr": "İzlerken tıkla ve takip et: bir oyuncu hücresine veya liderlik tablosundaki bir kütleye tıklayarak o oyuncuyu takip et, durdurmak için boş bir yere tıkla",
-    "pl": "Kliknij, aby śledzić podczas obserwowania: kliknij komórkę gracza lub masę w rankingu, aby śledzić tego gracza, kliknięcie w puste miejsce zatrzymuje",
-    "nl": "Klik om te volgen tijdens het toeschouwen: klik op een spelerscel of een massa in het klassement om die speler te volgen, klik op een lege plek om te stoppen",
-    "pt": "Clique para seguir ao espectar: clique numa célula de jogador ou numa massa do ranking para seguir esse jogador, clique num espaço vazio para parar",
-    "id": "Klik untuk mengikuti saat menonton: klik sel pemain atau massa di papan peringkat untuk mengikuti pemain itu, klik tempat kosong untuk berhenti",
-    "ja": "観戦中のクリック追従：プレイヤーのセルかリーダーボードの質量をクリックするとそのプレイヤーを追いかけ、何もない所をクリックで停止",
-    "it": "Clicca per seguire da spettatore: clicca una cellula di un giocatore o una massa in classifica per seguire quel giocatore, clic su uno spazio vuoto per smettere"
+    "el": "Κλικ για ακολούθηση στο spectate: κάνε κλικ σε ένα κύτταρο παίκτη ή σε μια μάζα του πίνακα κατάταξης για να ακολουθήσεις αυτόν τον παίκτη, κλικ σε κενό χώρο για διακοπή (στο κινητό: ένα σύντομο πάτημα σε ένα κύτταρο παίκτη)",
+    "es": "Clic para seguir al espectar: haz clic en una célula de jugador o en una masa de la clasificación para seguir a ese jugador, clic en un espacio vacío para parar (en el móvil: un toque corto en una célula de jugador)",
+    "bg": "Клик за следване при наблюдение: кликни върху клетка на играч или маса в класацията, за да следваш този играч, клик на празно място спира (на телефон: кратко докосване на клетка на играч)",
+    "fr": "Cliquer pour suivre en spectateur : cliquez sur une cellule de joueur ou une masse du classement pour suivre ce joueur, clic dans le vide pour arrêter (sur téléphone : un appui court sur une cellule de joueur)",
+    "ar": "انقر للمتابعة أثناء المشاهدة: انقر على خلية لاعب أو كتلة في لوحة الصدارة لمتابعة ذلك اللاعب، وانقر على مكان فارغ للتوقف (على الهاتف: لمسة قصيرة على خلية لاعب)",
+    "zh": "觀戰時點擊跟隨：點擊玩家細胞或排行榜上的質量即可跟隨該玩家，點擊空白處停止（手機上：輕觸玩家細胞一下）",
+    "ru": "Следование по клику при наблюдении: нажмите на клетку игрока или массу в таблице лидеров, чтобы следовать за ним, нажатие на пустое место останавливает (на телефоне: короткое касание клетки игрока)",
+    "de": "Klicken zum Folgen beim Zuschauen: eine Spielerzelle oder eine Masse in der Rangliste anklicken, um diesem Spieler zu folgen, Klick ins Leere stoppt (am Handy: kurz auf eine Spielerzelle tippen)",
+    "tr": "İzlerken tıkla ve takip et: bir oyuncu hücresine veya liderlik tablosundaki bir kütleye tıklayarak o oyuncuyu takip et, durdurmak için boş bir yere tıkla (telefonda: bir oyuncu hücresine kısa dokunuş)",
+    "pl": "Kliknij, aby śledzić podczas obserwowania: kliknij komórkę gracza lub masę w rankingu, aby śledzić tego gracza, kliknięcie w puste miejsce zatrzymuje (na telefonie: krótkie dotknięcie komórki gracza)",
+    "nl": "Klik om te volgen tijdens het toeschouwen: klik op een spelerscel of een massa in het klassement om die speler te volgen, klik op een lege plek om te stoppen (op een telefoon: kort tikken op een spelerscel)",
+    "pt": "Clique para seguir ao espectar: clique numa célula de jogador ou numa massa do ranking para seguir esse jogador, clique num espaço vazio para parar (no celular: um toque rápido numa célula de jogador)",
+    "id": "Klik untuk mengikuti saat menonton: klik sel pemain atau massa di papan peringkat untuk mengikuti pemain itu, klik tempat kosong untuk berhenti (di HP: ketuk singkat sel pemain)",
+    "ja": "観戦中のクリック追従：プレイヤーのセルかリーダーボードの質量をクリックするとそのプレイヤーを追いかけ、何もない所をクリックで停止（スマホでは：プレイヤーのセルを短くタップ）",
+    "it": "Clicca per seguire da spettatore: clicca una cellula di un giocatore o una massa in classifica per seguire quel giocatore, clic su uno spazio vuoto per smettere (sul telefono: un tocco breve su una cellula di un giocatore)"
   },
   "site.features.expandingLandWorldSpectate": {
     "en": "Expanding Land World Spectate: optional minimap click moves the camera there",

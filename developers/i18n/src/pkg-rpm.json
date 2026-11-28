@@ -1,14 +1,74 @@
 {
   "pkg.rpm.noGames": {
-    "en": "No games yet. Play a game."
+    "en": "No games yet. Play a game.",
+    "el": "Δεν υπάρχουν ακόμη παιχνίδια. Παίξε ένα παιχνίδι.",
+    "es": "Aún no hay partidas. Juega una partida.",
+    "bg": "Още няма игри. Изиграй игра.",
+    "fr": "Pas encore de parties. Joue une partie.",
+    "ar": "لا توجد مباريات بعد. العب مباراة.",
+    "zh": "尚無遊戲。請進行一場遊戲。",
+    "ru": "Игр пока нет. Сыграйте игру.",
+    "de": "Noch keine Spiele. Spiele eine Runde.",
+    "tr": "Henüz oyun yok. Bir oyun oyna.",
+    "pl": "Brak gier. Rozegraj grę.",
+    "nl": "Nog geen potjes. Speel een potje.",
+    "pt": "Ainda não há partidas. Jogue uma partida.",
+    "id": "Belum ada game. Mainkan satu game.",
+    "ja": "まだゲームがありません。ゲームをプレイしてください。",
+    "it": "Ancora nessuna partita. Gioca una partita."
   },
   "pkg.rpm.noTracks": {
-    "en": "No heatmap data yet. Play a game."
+    "en": "No heatmap data yet. Play a game.",
+    "el": "Δεν υπάρχουν ακόμη δεδομένα θερμικού χάρτη. Παίξε ένα παιχνίδι.",
+    "es": "Aún no hay datos de mapas de calor. Juega una partida.",
+    "bg": "Още няма данни за топлинна карта. Изиграй игра.",
+    "fr": "Pas encore de données de carte de chaleur. Joue une partie.",
+    "ar": "لا توجد بيانات للخرائط الحرارية بعد. العب مباراة.",
+    "zh": "尚無熱圖資料。請進行一場遊戲。",
+    "ru": "Данных для тепловых карт пока нет. Сыграйте игру.",
+    "de": "Noch keine Heatmap-Daten. Spiele eine Runde.",
+    "tr": "Henüz ısı haritası verisi yok. Bir oyun oyna.",
+    "pl": "Brak danych mapy cieplnej. Rozegraj grę.",
+    "nl": "Nog geen heatmapgegevens. Speel een potje.",
+    "pt": "Ainda não há dados de mapa de calor. Jogue uma partida.",
+    "id": "Belum ada data heatmap. Mainkan satu game.",
+    "ja": "ヒートマップのデータはまだありません。ゲームをプレイしてください。",
+    "it": "Ancora nessun dato per le heatmap. Gioca una partita."
   },
   "pkg.rpm.mhClearAsk": {
-    "en": "Clear the match history list of this device? Its games also leave the Dashboard, except the ones recorded with their full stats. Your account's history on the server is kept."
+    "en": "Clear the match history list of this device? Its games also leave the Dashboard, except the ones recorded with their full stats. Your account's history on the server is kept.",
+    "el": "Εκκαθάριση της λίστας ιστορικού αγώνων αυτής της συσκευής; Τα παιχνίδια της φεύγουν και από τον Πίνακα, εκτός από όσα καταγράφηκαν με όλα τα στατιστικά τους. Το ιστορικό του λογαριασμού σου στον server διατηρείται.",
+    "es": "¿Borrar la lista del historial de partidas de este dispositivo? Sus partidas también salen del Panel, salvo las grabadas con todas sus estadísticas. El historial de tu cuenta en el servidor se conserva.",
+    "bg": "Да се изчисти ли списъкът с историята на игрите на това устройство? Игрите от него изчезват и от Таблото, освен записаните с пълната си статистика. Историята на акаунта ти на сървъра се запазва.",
+    "fr": "Vider la liste de l'historique des parties de cet appareil ? Ses parties quittent aussi le Tableau de bord, sauf celles enregistrées avec toutes leurs stats. L'historique de ton compte sur le serveur est conservé.",
+    "ar": "هل تريد مسح قائمة سجل المباريات على هذا الجهاز؟ ستُزال مبارياتها من اللوحة أيضًا، ما عدا المسجّلة بإحصائياتها الكاملة. يبقى سجل حسابك على الخادم محفوظًا.",
+    "zh": "要清除此裝置上的對戰記錄清單嗎？其中的遊戲也會從儀表板移除，但已錄下完整統計的遊戲除外。你帳號在伺服器上的紀錄會保留。",
+    "ru": "Очистить список истории матчей на этом устройстве? Его игры пропадут и с Панели, кроме записанных с полной статистикой. История аккаунта на сервере сохранится.",
+    "de": "Die Spielverlauf-Liste dieses Geräts leeren? Ihre Spiele verschwinden auch aus dem Dashboard, außer denen, die mit vollständiger Statistik aufgenommen wurden. Der Verlauf deines Kontos auf dem Server bleibt erhalten.",
+    "tr": "Bu cihazdaki maç geçmişi listesi temizlensin mi? İçindeki oyunlar, tüm istatistikleriyle kaydedilenler dışında Panel'den de kalkar. Hesabının sunucudaki geçmişi korunur.",
+    "pl": "Wyczyścić listę historii meczów na tym urządzeniu? Jej gry znikną też z Pulpitu, oprócz tych nagranych z pełnymi statystykami. Historia twojego konta na serwerze zostaje.",
+    "nl": "De lijst met speelgeschiedenis op dit apparaat wissen? De potjes verdwijnen dan ook uit het Dashboard, behalve die met hun volledige statistieken zijn opgenomen. De geschiedenis van je account op de server blijft bewaard.",
+    "pt": "Limpar a lista do histórico de partidas deste dispositivo? As partidas também saem do Painel, exceto as gravadas com as estatísticas completas. O histórico da sua conta no servidor é mantido.",
+    "id": "Hapus daftar riwayat pertandingan di perangkat ini? Game-nya juga hilang dari Dasbor, kecuali yang direkam dengan statistik lengkapnya. Riwayat akunmu di server tetap disimpan.",
+    "ja": "この端末の対戦履歴リストを消去しますか？そのゲームはダッシュボードからも消えます（全統計付きで記録されたものを除く）。サーバー上のアカウントの履歴は残ります。",
+    "it": "Cancellare l'elenco della cronologia partite di questo dispositivo? Le sue partite spariscono anche dalla Panoramica, tranne quelle registrate con tutte le statistiche. La cronologia del tuo account sul server resta."
   },
   "pkg.rpm.loadFailed": {
-    "en": "The game stats could not be loaded. Check your connection and try again."
+    "en": "The game stats could not be loaded. Check your connection and try again.",
+    "el": "Δεν ήταν δυνατή η φόρτωση των στατιστικών παιχνιδιού. Έλεγξε τη σύνδεσή σου και δοκίμασε ξανά.",
+    "es": "No se pudieron cargar las estadísticas del juego. Revisa tu conexión e inténtalo de nuevo.",
+    "bg": "Статистиката на играта не можа да се зареди. Провери връзката си и опитай отново.",
+    "fr": "Impossible de charger les stats du jeu. Vérifie ta connexion et réessaie.",
+    "ar": "تعذّر تحميل إحصائيات اللعبة. تحقّق من اتصالك وحاول مرة أخرى.",
+    "zh": "無法載入遊戲統計。請檢查網路連線後再試一次。",
+    "ru": "Не удалось загрузить статистику игры. Проверьте подключение и попробуйте снова.",
+    "de": "Die Spielstatistik konnte nicht geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+    "tr": "Oyun istatistikleri yüklenemedi. Bağlantını kontrol edip tekrar dene.",
+    "pl": "Nie udało się wczytać statystyk gry. Sprawdź połączenie i spróbuj ponownie.",
+    "nl": "De spelstatistieken konden niet worden geladen. Controleer je verbinding en probeer het opnieuw.",
+    "pt": "Não foi possível carregar as estatísticas do jogo. Verifique sua conexão e tente de novo.",
+    "id": "Statistik game tidak bisa dimuat. Periksa koneksimu dan coba lagi.",
+    "ja": "ゲーム統計を読み込めませんでした。接続を確認してもう一度お試しください。",
+    "it": "Impossibile caricare le statistiche di gioco. Controlla la connessione e riprova."
   }
 }

@@ -7234,7 +7234,7 @@
     "id": "{0} DNA",
     "ja": "{0} DNA",
     "it": "{0} DNA"
-  },
+  },
   "lmx.sd.promoOnlyTipLong": {
     "en": "This skin is available only through Agar.io's rotating promotional offers (like The Doctor's Curiosities). Check in-game for active offers!",
     "el": "Αυτό το skin διατίθεται μόνο μέσω των εναλλασσόμενων προσφορών του Agar.io (όπως The Doctor's Curiosities). Δες μέσα στο παιχνίδι για ενεργές προσφορές!",
@@ -9000,6 +9000,7 @@
     "it": "L'URL di configurazione non ha restituito un GameConfiguration valido."
   },
   "lmx.ex.updateAvailable": {
+    "note": "Update notice on load (a toast) for players whose Legend Express userscript or browser extension is older than the newest one. {0} = the newest version (e.g. 1.9), {1} = the version the player has. Legend Express is the product name.",
     "en": "Legend Express {0} is available! Your installed version: {1}. Update for faster and more reliable Agar.io loading, improved browser compatibility and prevention of conflicting game execution.",
     "el": "Το Legend Express {0} είναι διαθέσιμο! Η έκδοση που έχεις: {1}. Κάνε ενημέρωση για πιο γρήγορη και πιο αξιόπιστη φόρτωση του Agar.io, καλύτερη συμβατότητα με τους browsers και για να μην τρέχει το παιχνίδι δύο φορές μαζί.",
     "es": "¡Ya está disponible Legend Express {0}! Tu versión instalada: {1}. Actualiza para que Agar.io cargue más rápido y de forma más fiable, con mejor compatibilidad con los navegadores y sin que el juego se ejecute dos veces a la vez.",
@@ -9015,10 +9016,10 @@
     "pt": "O Legend Express {0} está disponível! Sua versão instalada: {1}. Atualize para o Agar.io carregar mais rápido e de forma mais confiável, ter melhor compatibilidade com os navegadores e evitar que o jogo rode duas vezes ao mesmo tempo.",
     "id": "Legend Express {0} sudah tersedia! Versi yang terpasang: {1}. Perbarui agar Agar.io dimuat lebih cepat dan lebih andal, kompatibilitas browser lebih baik, dan game tidak berjalan dua kali bersamaan.",
     "ja": "Legend Express {0} が公開されました！インストール済みのバージョン：{1}。更新すると Agar.io の読み込みがより速く安定し、ブラウザの互換性が向上し、ゲームが二重に起動しなくなります。",
-    "it": "Legend Express {0} è disponibile! La tua versione installata: {1}. Aggiorna per un caricamento di Agar.io più veloce e affidabile, una migliore compatibilità con i browser e per evitare che il gioco giri due volte insieme.",
-    "note": "Update notice on load (a toast) for players whose Legend Express userscript or browser extension is older than the newest one. {0} = the newest version (e.g. 1.9), {1} = the version the player has. Legend Express is the product name."
+    "it": "Legend Express {0} è disponibile! La tua versione installata: {1}. Aggiorna per un caricamento di Agar.io più veloce e affidabile, una migliore compatibilità con i browser e per evitare che il gioco giri due volte insieme."
   },
   "lmx.ex.updateLink": {
+    "note": "Link at the end of the update notice: opens the new userscript (the userscript manager offers to update) or downloads the new extension.",
     "en": "Update Legend Express",
     "el": "Ενημέρωση του Legend Express",
     "es": "Actualizar Legend Express",
@@ -9034,10 +9035,10 @@
     "pt": "Atualizar o Legend Express",
     "id": "Perbarui Legend Express",
     "ja": "Legend Express を更新",
-    "it": "Aggiorna Legend Express",
-    "note": "Link at the end of the update notice: opens the new userscript (the userscript manager offers to update) or downloads the new extension."
+    "it": "Aggiorna Legend Express"
   },
   "lmx.ex.updateExtension": {
+    "note": "Second line of the update notice for players who load Legend Mod through the Legend Express browser extension (installed from a zip file, not from a store). Use the browser's own word for the Reload button of an unpacked extension.",
     "en": "Browser extension: download the new Legend Express extension, unzip it over your old extension folder and press Reload on it in your browser's extensions page.",
     "el": "Επέκταση browser: κατέβασε τη νέα επέκταση Legend Express, αποσυμπίεσέ την πάνω στον παλιό φάκελο της επέκτασης και πάτησε Επαναφόρτωση σε αυτήν στη σελίδα επεκτάσεων του browser.",
     "es": "Extensión del navegador: descarga la nueva extensión Legend Express, descomprímela sobre la carpeta de la extensión antigua y pulsa Recargar en ella en la página de extensiones del navegador.",
@@ -9053,8 +9054,7 @@
     "pt": "Extensão do navegador: baixe a nova extensão Legend Express, descompacte-a por cima da pasta da extensão antiga e clique em Recarregar nela na página de extensões do navegador.",
     "id": "Ekstensi browser: unduh ekstensi Legend Express yang baru, ekstrak di atas folder ekstensi lama, lalu tekan Muat ulang pada ekstensi itu di halaman ekstensi browser.",
     "ja": "ブラウザ拡張機能：新しい Legend Express 拡張機能をダウンロードし、古い拡張機能のフォルダに上書きで展開してから、ブラウザの拡張機能ページでその拡張機能の「再読み込み」を押してください。",
-    "it": "Estensione del browser: scarica la nuova estensione Legend Express, decomprimila sopra la cartella della vecchia estensione e premi Ricarica su di essa nella pagina delle estensioni del browser.",
-    "note": "Second line of the update notice for players who load Legend Mod through the Legend Express browser extension (installed from a zip file, not from a store). Use the browser's own word for the Reload button of an unpacked extension."
+    "it": "Estensione del browser: scarica la nuova estensione Legend Express, decomprimila sopra la cartella della vecchia estensione e premi Ricarica su di essa nella pagina delle estensioni del browser."
   },
   "lmx.ex.giveawayEnded": {
     "en": "<b>[SERVER]:</b> Your giveaway licence has ended. Thank you for using our mod!",
@@ -10318,21 +10318,21 @@
   },
   "lmx.ex.updatedNews": {
     "en": "• Expanding Land: daily challenges, server events with a countdown, match history on your account<br>• Settings presets (with Undo); settings in 12 languages<br>• Team pings (Help, Danger, Go here, Virus here) and gamepad support<br>• Replays: pause, speed, seek and a progress bar; Game Over card extras<br>• New options are off: type a word in the settings search to find them",
-    "el": "• Expanding Land: καθημερινές προκλήσεις, events με αντίστροφη μέτρηση, ιστορικό αγώνων στον λογαριασμό σου<br>• Έτοιμες ρυθμίσεις (με Αναίρεση) και σήματα NEW· ρυθμίσεις σε 12 γλώσσες<br>• Σήματα ομάδας (Βοήθεια, Κίνδυνος, Πήγαινε εδώ, Ιός εδώ) και υποστήριξη χειριστηρίου<br>• Replays: παύση, ταχύτητα, μετάβαση και μπάρα προόδου· extras στην κάρτα Game Over<br>• Οι νέες επιλογές είναι κλειστές: γράψε μια λέξη στην αναζήτηση ρυθμίσεων για να τις βρεις",
-    "es": "• Expanding Land: retos diarios, eventos de servidor con cuenta atrás, historial de partidas en tu cuenta<br>• Ajustes predefinidos (con Deshacer) e insignias NEW; ajustes en 12 idiomas<br>• Avisos de equipo (Ayuda, Peligro, Ve aquí, Virus aquí) y soporte de mando<br>• Repeticiones: pausa, velocidad, salto y barra de progreso; extras en la tarjeta de Game Over<br>• Las opciones nuevas vienen desactivadas: escribe una palabra en la búsqueda de ajustes para encontrarlas",
-    "bg": "• Expanding Land: дневни предизвикателства, сървърни събития с обратно броене, история на мачовете в акаунта<br>• Готови настройки (с Отмяна) и значки NEW; настройки на 12 езика<br>• Отборни сигнали (Помощ, Опасност, Ела тук, Вирус тук) и поддръжка на геймпад<br>• Повторения: пауза, скорост, превъртане и лента за напредък; екстри в картата Game Over<br>• Новите опции са изключени: напиши дума в търсенето на настройки, за да ги намериш",
-    "fr": "• Expanding Land : défis quotidiens, événements serveur avec compte à rebours, historique des parties sur ton compte<br>• Préréglages (avec Annuler) et badges NEW ; paramètres en 12 langues<br>• Signaux d'équipe (Aide, Danger, Va ici, Virus ici) et prise en charge de la manette<br>• Replays : pause, vitesse, avance et barre de progression ; extras sur la carte Game Over<br>• Les nouvelles options sont désactivées : tape un mot dans la recherche des paramètres pour les trouver",
-    "ar": "• Expanding Land: تحديات يومية، أحداث خادم مع عد تنازلي، سجل المباريات في حسابك<br>• إعدادات جاهزة (مع تراجع) وشارات NEW؛ الإعدادات بـ 12 لغة<br>• إشارات الفريق (مساعدة، خطر، اذهب هنا، فيروس هنا) ودعم يد التحكم<br>• الإعادات: إيقاف مؤقت، سرعة، تقديم وشريط تقدم؛ إضافات في بطاقة Game Over<br>• الخيارات الجديدة معطّلة: اكتب كلمة في بحث الإعدادات للعثور عليها",
-    "zh": "• Expanding Land：每日挑戰、帶倒數的伺服器活動、帳號內的對戰紀錄<br>• 設定預設（可復原）與 NEW 標記；設定支援 12 種語言<br>• 隊伍標記（求救、危險、去這裡、病毒在這）與手把支援<br>• 重播：暫停、速度、跳轉與進度條；Game Over 卡片新內容<br>• 新選項預設關閉：在設定搜尋中輸入關鍵字即可找到",
-    "ru": "• Expanding Land: ежедневные задания, серверные события с отсчётом, история матчей в аккаунте<br>• Пресеты настроек (с отменой) и значки NEW; настройки на 12 языках<br>• Командные метки (Помощь, Опасность, Иди сюда, Вирус тут) и поддержка геймпада<br>• Повторы: пауза, скорость, перемотка и полоса прогресса; новое в карточке Game Over<br>• Новые опции выключены: введи слово в поиске настроек, чтобы найти их",
-    "de": "• Expanding Land: tägliche Herausforderungen, Server-Events mit Countdown, Spielverlauf in deinem Konto<br>• Einstellungs-Presets (mit Rückgängig) und NEU-Abzeichen; Einstellungen in 12 Sprachen<br>• Team-Pings (Hilfe, Gefahr, Hierher, Virus hier) und Gamepad-Unterstützung<br>• Replays: Pause, Tempo, Springen und Fortschrittsbalken; Extras auf der Game-Over-Karte<br>• Neue Optionen sind aus: gib ein Wort in die Einstellungssuche ein, um sie zu finden",
-    "tr": "• Expanding Land: günlük görevler, geri sayımlı sunucu etkinlikleri, hesabında maç geçmişi<br>• Ayar hazırları (Geri Al ile) ve NEW rozetleri; 12 dilde ayarlar<br>• Takım işaretleri (Yardım, Tehlike, Buraya gel, Burada virüs) ve oyun kolu desteği<br>• Tekrarlar: duraklatma, hız, atlama ve ilerleme çubuğu; Game Over kartında ekstralar<br>• Yeni seçenekler kapalı: bulmak için ayar aramasına bir kelime yaz",
-    "pl": "• Expanding Land: codzienne wyzwania, wydarzenia serwerowe z odliczaniem, historia meczów na koncie<br>• Gotowe ustawienia (z Cofnij) i odznaki NEW; ustawienia w 12 językach<br>• Sygnały drużyny (Pomoc, Niebezpieczeństwo, Idź tutaj, Wirus tutaj) i obsługa pada<br>• Powtórki: pauza, prędkość, przewijanie i pasek postępu; dodatki na karcie Game Over<br>• Nowe opcje są wyłączone: wpisz słowo w wyszukiwarce ustawień, aby je znaleźć",
-    "nl": "• Expanding Land: dagelijkse uitdagingen, serverevents met aftelling, wedstrijdgeschiedenis op je account<br>• Instellingspresets (met Ongedaan maken) en NEW-badges; instellingen in 12 talen<br>• Teampings (Help, Gevaar, Ga hierheen, Virus hier) en controllerondersteuning<br>• Replays: pauze, snelheid, spoelen en een voortgangsbalk; extra's op de Game Over-kaart<br>• Nieuwe opties staan uit: typ een woord in het zoekveld van de instellingen om ze te vinden",
-    "pt": "• Expanding Land: desafios diários, eventos de servidor com contagem regressiva, histórico de partidas na sua conta<br>• Predefinições de configurações (com Desfazer) e selos NEW; configurações em 12 idiomas<br>• Avisos para a equipe (Ajuda, Perigo, Vá aqui, Vírus aqui) e suporte a controle<br>• Replays: pausa, velocidade, avanço e barra de progresso; extras no card de Game Over<br>• As opções novas vêm desligadas: digite uma palavra na busca das configurações para encontrá-las",
-    "id": "• Expanding Land: tantangan harian, event server dengan hitung mundur, riwayat pertandingan di akunmu<br>• Preset pengaturan (dengan Batalkan) dan lencana NEW; pengaturan dalam 12 bahasa<br>• Ping tim (Bantu, Bahaya, Ke sini, Ada virus) dan dukungan gamepad<br>• Replay: jeda, kecepatan, lompat, dan bilah progres; tambahan di kartu Game Over<br>• Opsi baru dalam keadaan mati: ketik kata di pencarian pengaturan untuk menemukannya",
-    "ja": "• Expanding Land：デイリーチャレンジ、カウントダウン付きのサーバーイベント、アカウントの対戦履歴<br>• 設定プリセット（元に戻す機能付き）とNEWバッジ、12言語対応の設定<br>• チームピン（助けて、危険、ここへ行こう、ここにウイルス）とゲームパッド対応<br>• リプレイ：一時停止、速度、シーク、進行バー、Game Overカードの追加情報<br>• 新しいオプションはオフになっています。設定の検索に単語を入力して探してください",
-    "it": "• Expanding Land: sfide giornaliere, eventi del server con conto alla rovescia, cronologia partite sul tuo account<br>• Preset delle impostazioni (con Annulla) e badge NEW; impostazioni in 12 lingue<br>• Ping di squadra (Aiuto, Pericolo, Vai qui, Virus qui) e supporto gamepad<br>• Replay: pausa, velocità, salto e barra di avanzamento; extra nella scheda Game Over<br>• Le nuove opzioni sono disattivate: scrivi una parola nella ricerca delle impostazioni per trovarle"
+    "el": "• Expanding Land: καθημερινές προκλήσεις, events με αντίστροφη μέτρηση, ιστορικό αγώνων στον λογαριασμό σου<br>• Έτοιμες ρυθμίσεις (με Αναίρεση)· ρυθμίσεις σε 12 γλώσσες<br>• Σήματα ομάδας (Βοήθεια, Κίνδυνος, Πήγαινε εδώ, Ιός εδώ) και υποστήριξη χειριστηρίου<br>• Replays: παύση, ταχύτητα, μετάβαση και μπάρα προόδου· extras στην κάρτα Game Over<br>• Οι νέες επιλογές είναι κλειστές: γράψε μια λέξη στην αναζήτηση ρυθμίσεων για να τις βρεις",
+    "es": "• Expanding Land: retos diarios, eventos de servidor con cuenta atrás, historial de partidas en tu cuenta<br>• Ajustes predefinidos (con Deshacer); ajustes en 12 idiomas<br>• Avisos de equipo (Ayuda, Peligro, Ve aquí, Virus aquí) y soporte de mando<br>• Repeticiones: pausa, velocidad, salto y barra de progreso; extras en la tarjeta de Game Over<br>• Las opciones nuevas vienen desactivadas: escribe una palabra en la búsqueda de ajustes para encontrarlas",
+    "bg": "• Expanding Land: дневни предизвикателства, сървърни събития с обратно броене, история на мачовете в акаунта<br>• Готови настройки (с Отмяна); настройки на 12 езика<br>• Отборни сигнали (Помощ, Опасност, Ела тук, Вирус тук) и поддръжка на геймпад<br>• Повторения: пауза, скорост, превъртане и лента за напредък; екстри в картата Game Over<br>• Новите опции са изключени: напиши дума в търсенето на настройки, за да ги намериш",
+    "fr": "• Expanding Land : défis quotidiens, événements serveur avec compte à rebours, historique des parties sur ton compte<br>• Préréglages (avec Annuler) ; paramètres en 12 langues<br>• Signaux d'équipe (Aide, Danger, Va ici, Virus ici) et prise en charge de la manette<br>• Replays : pause, vitesse, avance et barre de progression ; extras sur la carte Game Over<br>• Les nouvelles options sont désactivées : tape un mot dans la recherche des paramètres pour les trouver",
+    "ar": "• Expanding Land: تحديات يومية، أحداث خادم مع عد تنازلي، سجل المباريات في حسابك<br>• إعدادات جاهزة (مع تراجع)؛ الإعدادات بـ 12 لغة<br>• إشارات الفريق (مساعدة، خطر، اذهب هنا، فيروس هنا) ودعم يد التحكم<br>• الإعادات: إيقاف مؤقت، سرعة، تقديم وشريط تقدم؛ إضافات في بطاقة Game Over<br>• الخيارات الجديدة معطّلة: اكتب كلمة في بحث الإعدادات للعثور عليها",
+    "zh": "• Expanding Land：每日挑戰、帶倒數的伺服器活動、帳號內的對戰紀錄<br>• 設定預設（可復原）；設定支援 12 種語言<br>• 隊伍標記（求救、危險、去這裡、病毒在這）與手把支援<br>• 重播：暫停、速度、跳轉與進度條；Game Over 卡片新內容<br>• 新選項預設關閉：在設定搜尋中輸入關鍵字即可找到",
+    "ru": "• Expanding Land: ежедневные задания, серверные события с отсчётом, история матчей в аккаунте<br>• Пресеты настроек (с отменой); настройки на 12 языках<br>• Командные метки (Помощь, Опасность, Иди сюда, Вирус тут) и поддержка геймпада<br>• Повторы: пауза, скорость, перемотка и полоса прогресса; новое в карточке Game Over<br>• Новые опции выключены: введи слово в поиске настроек, чтобы найти их",
+    "de": "• Expanding Land: tägliche Herausforderungen, Server-Events mit Countdown, Spielverlauf in deinem Konto<br>• Einstellungs-Presets (mit Rückgängig); Einstellungen in 12 Sprachen<br>• Team-Pings (Hilfe, Gefahr, Hierher, Virus hier) und Gamepad-Unterstützung<br>• Replays: Pause, Tempo, Springen und Fortschrittsbalken; Extras auf der Game-Over-Karte<br>• Neue Optionen sind aus: gib ein Wort in die Einstellungssuche ein, um sie zu finden",
+    "tr": "• Expanding Land: günlük görevler, geri sayımlı sunucu etkinlikleri, hesabında maç geçmişi<br>• Ayar hazırları (Geri Al ile); 12 dilde ayarlar<br>• Takım işaretleri (Yardım, Tehlike, Buraya gel, Burada virüs) ve oyun kolu desteği<br>• Tekrarlar: duraklatma, hız, atlama ve ilerleme çubuğu; Game Over kartında ekstralar<br>• Yeni seçenekler kapalı: bulmak için ayar aramasına bir kelime yaz",
+    "pl": "• Expanding Land: codzienne wyzwania, wydarzenia serwerowe z odliczaniem, historia meczów na koncie<br>• Gotowe ustawienia (z Cofnij); ustawienia w 12 językach<br>• Sygnały drużyny (Pomoc, Niebezpieczeństwo, Idź tutaj, Wirus tutaj) i obsługa pada<br>• Powtórki: pauza, prędkość, przewijanie i pasek postępu; dodatki na karcie Game Over<br>• Nowe opcje są wyłączone: wpisz słowo w wyszukiwarce ustawień, aby je znaleźć",
+    "nl": "• Expanding Land: dagelijkse uitdagingen, serverevents met aftelling, wedstrijdgeschiedenis op je account<br>• Instellingspresets (met Ongedaan maken); instellingen in 12 talen<br>• Teampings (Help, Gevaar, Ga hierheen, Virus hier) en controllerondersteuning<br>• Replays: pauze, snelheid, spoelen en een voortgangsbalk; extra's op de Game Over-kaart<br>• Nieuwe opties staan uit: typ een woord in het zoekveld van de instellingen om ze te vinden",
+    "pt": "• Expanding Land: desafios diários, eventos de servidor com contagem regressiva, histórico de partidas na sua conta<br>• Predefinições de configurações (com Desfazer); configurações em 12 idiomas<br>• Avisos para a equipe (Ajuda, Perigo, Vá aqui, Vírus aqui) e suporte a controle<br>• Replays: pausa, velocidade, avanço e barra de progresso; extras no card de Game Over<br>• As opções novas vêm desligadas: digite uma palavra na busca das configurações para encontrá-las",
+    "id": "• Expanding Land: tantangan harian, event server dengan hitung mundur, riwayat pertandingan di akunmu<br>• Preset pengaturan (dengan Batalkan); pengaturan dalam 12 bahasa<br>• Ping tim (Bantu, Bahaya, Ke sini, Ada virus) dan dukungan gamepad<br>• Replay: jeda, kecepatan, lompat, dan bilah progres; tambahan di kartu Game Over<br>• Opsi baru dalam keadaan mati: ketik kata di pencarian pengaturan untuk menemukannya",
+    "ja": "• Expanding Land：デイリーチャレンジ、カウントダウン付きのサーバーイベント、アカウントの対戦履歴<br>• 設定プリセット（元に戻す機能付き）、12言語対応の設定<br>• チームピン（助けて、危険、ここへ行こう、ここにウイルス）とゲームパッド対応<br>• リプレイ：一時停止、速度、シーク、進行バー、Game Overカードの追加情報<br>• 新しいオプションはオフになっています。設定の検索に単語を入力して探してください",
+    "it": "• Expanding Land: sfide giornaliere, eventi del server con conto alla rovescia, cronologia partite sul tuo account<br>• Preset delle impostazioni (con Annulla); impostazioni in 12 lingue<br>• Ping di squadra (Aiuto, Pericolo, Vai qui, Virus qui) e supporto gamepad<br>• Replay: pausa, velocità, salto e barra di avanzamento; extra nella scheda Game Over<br>• Le nuove opzioni sono disattivate: scrivi una parola nella ricerca delle impostazioni per trovarle"
   },
   "lmx.ex.serverNotFound": {
     "en": "Server not found!",
@@ -11343,6 +11343,7 @@
     "it": "MP4, skin video"
   },
   "lmx.us.restartOnce": {
+    "note": "Line on the Legend Express userscript's loading screen, shown for a moment before the page reloads once: the userscript started after agar.io's own game had already started, and the one reload makes only Legend Mod run.",
     "en": "Agar.io started first: restarting once so that only Legend Mod runs",
     "el": "Το Agar.io ξεκίνησε πρώτο: γίνεται μία επανεκκίνηση ώστε να τρέχει μόνο το Legend Mod",
     "es": "Agar.io arrancó primero: reiniciando una vez para que solo funcione Legend Mod",
@@ -11358,7 +11359,6 @@
     "pt": "O Agar.io iniciou primeiro: reiniciando uma vez para que só o Legend Mod rode",
     "id": "Agar.io berjalan lebih dulu: memulai ulang sekali agar hanya Legend Mod yang berjalan",
     "ja": "Agar.ioが先に起動しました：Legend Modだけが動くよう一度だけ再起動します",
-    "it": "Agar.io è partito per primo: riavvio una volta perché giri solo Legend Mod",
-    "note": "Line on the Legend Express userscript's loading screen, shown for a moment before the page reloads once: the userscript started after agar.io's own game had already started, and the one reload makes only Legend Mod run."
+    "it": "Agar.io è partito per primo: riavvio una volta perché giri solo Legend Mod"
   }
 }

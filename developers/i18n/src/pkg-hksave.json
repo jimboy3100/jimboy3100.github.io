@@ -1,5 +1,20 @@
 {
   "pkg.hksave.resetAsk": {
-    "en": "Restore all hotkeys, mouse buttons and gamepad buttons to the defaults? This cannot be undone."
+    "en": "Restore all hotkeys, mouse buttons and gamepad buttons to the defaults? This cannot be undone.",
+    "el": "Επαναφορά όλων των πλήκτρων συντόμευσης, των κουμπιών ποντικιού και των κουμπιών χειριστηρίου στις προεπιλογές; Αυτό δεν αναιρείται.",
+    "es": "¿Restablecer todos los atajos, los botones del ratón y los botones del mando a los valores por defecto? No se puede deshacer.",
+    "bg": "Да се върнат ли всички клавиши, бутони на мишката и бутони на геймпада към стандартните? Това не може да се отмени.",
+    "fr": "Rétablir tous les raccourcis, boutons de souris et boutons de manette par défaut ? Cette action est irréversible.",
+    "ar": "هل تريد إعادة كل مفاتيح الاختصار وأزرار الفأرة وأزرار يد التحكم إلى الإعدادات الافتراضية؟ لا يمكن التراجع عن ذلك.",
+    "zh": "要將所有快捷鍵、滑鼠按鍵與手把按鍵還原為預設值嗎？此操作無法復原。",
+    "ru": "Вернуть все горячие клавиши, кнопки мыши и кнопки геймпада к значениям по умолчанию? Это нельзя отменить.",
+    "de": "Alle Hotkeys, Maustasten und Gamepad-Tasten auf die Standardwerte zurücksetzen? Das kann nicht rückgängig gemacht werden.",
+    "tr": "Tüm kısayol tuşları, fare düğmeleri ve oyun kolu düğmeleri varsayılana döndürülsün mü? Bu işlem geri alınamaz.",
+    "pl": "Przywrócić domyślne ustawienia wszystkich skrótów klawiszowych, przycisków myszy i przycisków pada? Tego nie można cofnąć.",
+    "nl": "Alle sneltoetsen, muisknoppen en controllerknoppen terugzetten naar de standaardwaarden? Dit kan niet ongedaan worden gemaakt.",
+    "pt": "Restaurar todos os atalhos, botões do mouse e botões do controle para o padrão? Isso não pode ser desfeito.",
+    "id": "Kembalikan semua hotkey, tombol mouse, dan tombol gamepad ke default? Ini tidak bisa dibatalkan.",
+    "ja": "すべてのショートカットキー、マウスボタン、ゲームパッドのボタンを初期設定に戻しますか？元に戻せません。",
+    "it": "Ripristinare tutti i tasti rapidi, i pulsanti del mouse e quelli del gamepad ai valori predefiniti? L'operazione non si può annullare."
   }
 }
