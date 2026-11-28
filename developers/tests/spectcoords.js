@@ -23,7 +23,9 @@
  * border before the main one waits for it (applied by LM.addSpect), a tile target waits for the orientation;
  * Rotate Map flips while a connection reconnects (section 13); Rotate Map with units open through the
  * real flip of ogario.v4.js: a connection without its border is not flipped, the cursor, unit centres
- * and a line split target keep their server point, calibration goes on across a flip (section 14).
+ * and a line split target keep their server point, so does the paused main player's hold point (a live
+ * teammate target is not flipped), calibration goes on across a flip (section 14). The drawn result
+ * (Canvas2D and WebGL frames of every orientation) is checked in the page by probes/zzz-rotate.js.
  * node developers/tests/spectcoords.js [spect.js] [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -931,6 +933,20 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         F._applyAbsoluteVnr(0);
         check('  ... and back: the same raw again', aim() === before);
         ctx.window.multiboxPlayerEnabled = 0;
+        /* Pause: the main player's hold point (targetX/Y, drawn coordinates, set once by
+         * resetTargetPosition) is sent every 40 ms as its raw place (sendPosition translates it
+         * with the flip of now); a live teammate target is the teammate's position (not flipped) */
+        const sentRaw = () => [LM.vector[LM.vnr][0] ? LM.translateX(LM.targetX) : LM.targetX, LM.vector[LM.vnr][1] ? LM.translateY(LM.targetY) : LM.targetY];
+        LM.pause = true; LM.targeting = false; LM.targetX = uc.x - 700.5; LM.targetY = uc.y + 300.25;
+        const held = sentRaw(), heldAt = [];
+        for (const v of [1, 2, 3, 0]) { F._applyAbsoluteVnr(v); heldAt.push(sentRaw()); }
+        check('Rotate Map while paused (every orientation): the hold point keeps its raw place (it ran to the mirrored place)',
+            heldAt.every((r) => near(r[0], held[0], 1e-9) && near(r[1], held[1], 1e-9)), JSON.stringify(held) + ' / ' + JSON.stringify(heldAt));
+        LM.pause = false; LM.targeting = true; LM.targetX = 1234; LM.targetY = -567;
+        F._applyAbsoluteVnr(2);
+        check('  ... a live teammate target is not flipped (it is the teammate\'s position, set again with each update)', LM.targetX === 1234 && LM.targetY === -567);
+        F._applyAbsoluteVnr(0);
+        LM.targeting = false;
     }
     {
         /* food calibration across a flip: the residual d = 3 is measured on raw evidence (snap 1),

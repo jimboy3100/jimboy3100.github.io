@@ -36020,6 +36020,15 @@ function thelegendmodproject() {
                 if (xFlipped && Number.isFinite(lst.x)) lst.x = legendmod.translateX(lst.x);
                 if (yFlipped && Number.isFinite(lst.y)) lst.y = legendmod.translateY(lst.y);
             }
+            /* the hold point (targetX/Y, drawn coordinates, set once from the player's centre by
+             * Pause or a dead target: resetTargetPosition), which sendPosition sends every 40 ms
+             * while paused: left, the paused player ran to the mirrored place. A live teammate
+             * target is the teammate's position (not flipped, as application.teamPlayers) and is
+             * set again with each of its updates. */
+            if (legendmod.pause || !legendmod.targeting || this.targetStatus === 2) {
+                if (xFlipped && Number.isFinite(legendmod.targetX)) legendmod.targetX = legendmod.translateX(legendmod.targetX);
+                if (yFlipped && Number.isFinite(legendmod.targetY)) legendmod.targetY = legendmod.translateY(legendmod.targetY);
+            }
             for (si = 0; sps && si < sps.length; si++) {
                 var sp = sps[si];
                 if (!sp || !sp.mapOffsetFixed) continue;
