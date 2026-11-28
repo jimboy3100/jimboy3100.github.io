@@ -18,6 +18,9 @@
 // socket (18 / 20: flushCellsData(false)) and the respawn flush (true) keep every tile open and its
 // observations (cells, viruses, the objects themselves), the main player's cells go; the
 // connection's own flush (server change, lost socket: no argument) closes every tile with its cells.
+// Rotate Map with 3 to 6 players and Full Map tiles open (lib/mbplayers.js, the real flip): every copy
+// and each unit's centre mirrored at once, a unit without its border yet kept as it came, and the
+// next frames draw every entity once by the rule.
 // Usage: node developers/tests/fullmaplifecycle.js [ogario.v4.js]
 'use strict';
 const fs = require('fs');
@@ -735,6 +738,57 @@ now = load(); G = groups();
         L.flushCellsData();
         check('connection flush (server change, lost socket): every tile closed, spects empty', w.tiles.every((t) => t.closed) && f.window.spects.length === 0);
         check('connection flush: no cell of any connection left', L.cells.length === 0 && Object.keys(L.indexedCells).length === 0 && L.viruses.length === 0 && L.food.length === 0);
+    }
+}
+
+/* ---------- Rotate Map with 3 to 6 players and Full Map tiles open (lib/mbplayers.js) ----------
+ * The real _applyAbsoluteVnr / _retranslateAllOnFlip run in the scene over the real hide step and the
+ * units' beforecalculation: right after the flip every copy (main, units, tiles) is mirrored and each
+ * unit's centre with it (its cursor loop sends that centre before the next frame); the next frames
+ * draw every entity once by the same rule with each player's own mass; a unit that reconnected
+ * before the flip (its border back) moves with the map, one whose new socket has no border yet keeps
+ * its cells as they came (spect.js getX is the identity until then). */
+{
+    const MB = require('./lib/mbplayers');
+    const v4 = process.argv[2] || path.join(__dirname, '../../ogario/ogario.v4.js');
+    const blk = (start) => { const i = src.indexOf(start); if (i < 0) return null; let d = 0; for (let k = src.indexOf('{', i); k < src.length; k++) { if (src[k] === '{') d++; else if (src[k] === '}' && !--d) return src.slice(i, k + 1); } return null; };
+    const flipSrc = ['        _getRotationMatrix(vnr) {', '        _resetRotationVectorTable() {', '        _applyAbsoluteVnr(newVnr) {', '        _retranslateAllOnFlip('].map(blk);
+    for (const K of [3, 4, 5, 6]) {
+        const s = MB.scene({ players: K, fullMap: true, v4 });
+        MB.populate(s);
+        const LM = s.LM;
+        Object.assign(LM, { mapMinX: -7071, mapMaxX: 7071, mapMinY: -7071, mapMaxY: 7071, vector: [[0, 0], [1, 0], [1, 1], [0, 1]], vnr: 0 });
+        LM.translateX = (v) => LM.mapMaxX - (v - LM.mapMinX);
+        LM.translateY = (v) => LM.mapMaxY - (v - LM.mapMinY);
+        /* every connection has its border (the stand-in units have no transform of their own) */
+        for (const u of s.ctx.spects) u.mapOffsetFixed = true;
+        const F = vm.runInContext('({ deathLocations: [],\n' + flipSrc.join(',\n') + '\n})', s.ctx);
+        s.step(3);
+        const base = s.audit();
+        /* P3 reconnects before the flip (its border back), P4 (with 4+ players) has a new socket without its border yet */
+        s.reconnect(3);
+        const p4 = K >= 4 ? s.player(4) : null;
+        if (p4) { s.reconnect(4); p4.unit.mapOffsetFixed = false; }
+        s.step(1);
+        const listed = LM.cells.filter((c) => c && !c.removed);
+        const unplaced = (c) => !!p4 && c._lmSrc === p4.src && c._lmGen === p4.unit.connectionGeneration;
+        const was = new Map(listed.map((c) => [c, [c.x, c.y, c.targetX]]));
+        const centres = s.ctx.spects.filter((u) => u.player && u.mapOffsetFixed && Number.isFinite(u.playerX)).map((u) => [u, u.playerX, u.playerY]);
+        F._applyAbsoluteVnr(1);
+        const badCell = listed.filter((c) => { const w = was.get(c); return unplaced(c) ? c.x !== w[0] || c.targetX !== w[2] : c.x !== LM.translateX(w[0]) || c.targetX !== LM.translateX(w[2]) || c.y !== w[1]; });
+        const badCentre = centres.filter((q) => q[0].playerX !== LM.translateX(q[1]) || q[0].playerY !== q[2]);
+        check(K + ' players + 4 tiles, Rotate Map: every copy mirrored at once (' + listed.length + '; P3 reconnected moved too' + (p4 ? ', P4 without its border kept as it came' : '') + ')',
+            base.ok && !badCell.length && centres.length >= K - 2, base.text + ' ' + badCell.slice(0, 3).map((c) => c.id + '@' + c._lmSrc).join(' '));
+        check('  ... each placed unit\'s centre mirrored with it (sent before the next frame)', !badCentre.length, badCentre.map((q) => q[0].number + ':' + q[0].playerX + '/' + q[1]).join(' '));
+        /* P4's border: spect.js places its cells from raw under the flip of now (_lmReproject; raw = world here) */
+        if (p4) {
+            p4.unit.mapOffsetFixed = true;
+            for (const c of LM.cells.concat(LM.foodMulti)) if (c && unplaced(c)) { c.x = c.targetX = LM.translateX(c.x); }
+        }
+        s.step(3);
+        const r = s.audit();
+        const recomputed = centres.every((q) => Math.abs(q[0].playerX - LM.translateX(q[1])) < 1e-6 || q[0] === (p4 && p4.unit));
+        check('  ... the next frames: every entity drawn once by the rule, each player\'s own mass, the centres the flip left', r.ok && recomputed, r.text);
     }
 }
 

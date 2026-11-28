@@ -21,7 +21,8 @@
  * neighbours meet; on FFA, Experimental and Party captures every pellet is inside its view and the
  * farthest one per axis is within LM_FULLMAP_EDGE of the planned view, and no pellet of the
  * captures is out of view by the radius-aware model of what the server sends (outsideServerView
- * below: the pellet box grown by radius - 10).
+ * below: the pellet box grown by radius - 10); Rotate Map with a tile open through the real flip
+ * (section 14): its box still holds its cells, its target stays, box 1 is mirrored.
  * node developers/tests/debugviewports.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -612,6 +613,60 @@ const covers = (plan, vw, vh, half) => {
     const covUse = at('._lmServerViewDisplay(').filter((i) => !inside(i, dvp));
     check('the trimmed boxes are read nowhere but drawViewPorts / _lmViewTrim; the other coverage readers (' + covUse.length + ') use the server view',
         gridUse.length === 0 && covUse.length >= 3, gridUse.map((i) => src.slice(src.lastIndexOf('\n', i) + 1, src.indexOf('\n', i)).trim()).join(' | '));
+}
+
+/* 14. Rotate Map with a Full Map tile open, through the real _applyAbsoluteVnr / _retranslateAllOnFlip
+ *     (the drawn cells and pellets move, nothing is recomputed from raw): the tile's box drawn under
+ *     the new flip holds exactly the cells its view holds, its raw target does not move, the main
+ *     food box (1) is mirrored with the main pellets and the view centre */
+{
+    const flipSrc = ['        _getRotationMatrix(vnr) {', '        _resetRotationVectorTable() {', '        _applyAbsoluteVnr(newVnr) {', '        _retranslateAllOnFlip('].map((m) => block(m));
+    if (flipSrc.some((b) => !b)) check('the flip code is in ogario.v4.js', false);
+    else {
+        let bad = [], n = 0;
+        for (const to of [1, 2, 3]) {
+            const e = env({ full: true, mb: false, vector: [[0, 0], [1, 0], [1, 1], [0, 1]] });
+            const LM = e.LM;
+            LM.indexedCells = {};
+            LM.translateX = (v) => LM.mapMaxX - (v - LM.mapMinX);
+            LM.translateY = (v) => LM.mapMaxY - (v - LM.mapMinY);
+            const F = vm.runInContext('({ deathLocations: [],\n' + flipSrc.join(',\n') + '\n})', e.c);
+            NOW = 5e11;
+            const s = e.spect(spectAt(1, -4714, 5656.8, { mapOffsetFixed: true, mapOffsetX: 1764, mapOffsetY: -2040, fixX: -1, fixY: 1, _lmKX: 0.995453, _lmKY: 1.004765,
+                scale: 0.4, _lmCamAt: NOW, time: NOW, _lmWorldAt: NOW }));
+            /* settled on its tile */
+            const cam = [s.worldToRawX(-4714), s.worldToRawY(5656.8)];
+            s.viewX = cam[0]; s.viewY = cam[1];
+            const target = s._lmTileRaw(NOW);
+            /* the tile's cells just inside / outside its server view, drawn by getX before the flip */
+            const hw = 5071.75 / 2 / 0.995453, hh = 2972 / 2 / 1.004765, cells = [];
+            for (const [ox, oy, inside] of [[hw - 1, 0, true], [-hw + 1, hh - 1, true], [0, -hh + 1, true], [hw + 1, 0, false], [0, -hh - 1, false], [-hw - 1, hh + 1, false]]) {
+                const c = { id: 100 + cells.length, spectator: 1, _lmSrc: 1, x: s.getX(cam[0] + ox), y: s.getY(cam[1] + oy), inside };
+                c.targetX = c.x; c.targetY = c.y;
+                LM.indexedCells[c.id] = c;
+                cells.push(c);
+            }
+            food(LM.food, 100, 200, 300, 0);
+            LM.food.forEach((f, i) => { LM.indexedCells[9000 + i] = f; });
+            const b1 = byLabel(e.frame(), '1');
+            F._applyAbsoluteVnr(to);
+            const fr = e.frame(), b = byLabel(fr, 'Viewport# 1'), a1 = byLabel(fr, '1'), m = LM.vector[to];
+            if (!b || !b1) { bad.push('no box around the flip to ' + to + ': ' + fr.map((x) => x.label).join()); NOW = null; continue; }
+            for (const c of cells) {
+                const isIn = c.x >= b.minX && c.x <= b.maxX && c.y >= b.minY && c.y <= b.maxY;
+                n++;
+                if (isIn !== c.inside) bad.push(['flip to ' + to, c.id, c.inside, isIn].join());
+            }
+            const t2 = s._lmTileRaw(NOW);
+            if (!target || !t2 || t2[0] !== target[0] || t2[1] !== target[1]) bad.push('tile target moved ' + [target, t2].join(' / '));
+            const mx = (v) => (m[0] ? LM.translateX(v) : v), my = (v) => (m[1] ? LM.translateY(v) : v);
+            const want1 = { minX: Math.min(mx(b1.minX), mx(b1.maxX)), maxX: Math.max(mx(b1.minX), mx(b1.maxX)), minY: Math.min(my(b1.minY), my(b1.maxY)), maxY: Math.max(my(b1.minY), my(b1.maxY)) };
+            if (!a1 || ['minX', 'maxX', 'minY', 'maxY'].some((k) => Math.abs(a1[k] - want1[k]) > 1e-6)) bad.push('box 1 after the flip to ' + to + ': ' + JSON.stringify(a1) + ' want ' + JSON.stringify(want1));
+            NOW = null;
+        }
+        check('Rotate Map with a tile open (real flip, 3 orientations): its box holds exactly the cells in its view (' + n + ' cells), its raw target stays, box 1 mirrored with the main food',
+            !bad.length, bad.slice(0, 4).join(' | '));
+    }
 }
 
 console.log(failed ?'FAILED ' + failed : 'all debugviewports checks passed');

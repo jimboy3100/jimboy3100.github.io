@@ -21,8 +21,10 @@
  * clusters, d only from verified d, liveness in the cached reference, per-transform snaps, the
  * whole anchor ring); a reversed / NaN border is refused, a camera before the border kept, a unit
  * border before the main one waits for it (applied by LM.addSpect), a tile target waits for the orientation;
- * Rotate Map flips while a connection reconnects (section 13).
- * node developers/tests/spectcoords.js [spect.js] */
+ * Rotate Map flips while a connection reconnects (section 13); Rotate Map with units open through the
+ * real flip of ogario.v4.js: a connection without its border is not flipped, the cursor, unit centres
+ * and a line split target keep their server point, calibration goes on across a flip (section 14).
+ * node developers/tests/spectcoords.js [spect.js] [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const src = fs.readFileSync(process.argv[2] || path.join(__dirname, '..', '..', 'ogario', 'spect.js'), 'utf8').replace(/\r\n/g, '\n');
@@ -818,6 +820,130 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     check('  ... flips on both sides of the next border: the next socket\'s cell lands right too', !!c2 && near(c2.targetX, w[0], 1) && near(c2.targetY, w[1], 1) && sp.convertX(c2.targetX) === Math.round(cx + wx),
         c2 && [c2.targetX, w[0]].join());
     LM.vnr = 0;
+}
+
+/* 14. Rotate Map with units and tiles open, through the real _applyAbsoluteVnr /
+ *     _retranslateAllOnFlip of ogario.v4.js (argv[3]): a connection whose border is not known yet
+ *     holds its cells as they came (getX is the identity until then): they are not flipped, and its
+ *     border then places them from raw under the flip of that moment (flipped, the border took the
+ *     flipped place for the raw one: drawn across the map); a placed one's cells and the removal fade
+ *     of an earlier socket move with the map; what is sent between frames keeps its server point
+ *     (each unit's centre for hold / freeze / provisional, the cursor, a line split's locked target);
+ *     the food calibration (raw evidence, two snaps) goes on across a flip and its reprojection lands
+ *     under the new flip */
+{
+    const core = fs.readFileSync(process.argv[3] || path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+    const cut = (start) => { const i = core.indexOf(start); if (i < 0) throw new Error('not found in ogario.v4.js: ' + start); let d = 0; for (let k = core.indexOf('{', i); k < core.length; k++) { if (core[k] === '{') d++; else if (core[k] === '}' && !--d) return core.slice(i, k + 1); } return null; };
+    const flipperOf = (ctx) => vm.runInContext('({ deathLocations: [],\n' + ['        _getRotationMatrix(vnr) {', '        _resetRotationVectorTable() {', '        _applyAbsoluteVnr(newVnr) {',
+        '        _retranslateAllOnFlip('].map(cut).join(',\n') + '\n})', ctx);
+    const bare = (ctx, n, extra) => { const sp = Object.create(ctx.window.Spect.prototype); Object.assign(sp, { number: n, player: false, integrity: true, connectionGeneration: 1, staticX: null, staticY: null }, extra || {}); sp.resetConnectionState(); ctx.window.spects.push(sp); return sp; };
+    const W2 = W / 2;
+    {
+        const LM = mainClient(-3021.0678118654755, 5000.5), ctx = load(LM), F = flipperOf(ctx);
+        /* unit 2: placed (verified, mirrored on x); unit 3: its earlier socket placed a cell, then it
+         * dropped and the new socket sends cells before its border */
+        const c2 = [4321.5, -987.25], c3 = [-1500.25, 2200.75];
+        const u2 = bare(ctx, 2, { player: true });
+        u2.setMapOffset(c2[0] - W2, c2[1] - W2, c2[0] + W2, c2[1] + W2);
+        u2.setOrientation(-1, 1);
+        const u3 = bare(ctx, 3, { player: true });
+        u3.setMapOffset(c3[0] - W2, c3[1] - W2, c3[0] + W2, c3[1] + W2);
+        u3.setOrientation(1, 1);
+        u2.time = u3.time = Date.now();
+        u2.updateCells(packet([{ id: 21, x: Math.round(c2[0] + 2500), y: Math.round(c2[1] + 1800), size: 80 }]), 0);
+        u3.updateCells(packet([{ id: 30, x: Math.round(c3[0] - 700), y: Math.round(c3[1] + 400), size: 70 }]), 0);
+        const placed = LM.indexedCells[21 + 2 * STEP], fade = LM.indexedCells[30 + 3 * STEP];
+        /* the drop: the old socket's cell plays its removal, the new socket has no border yet */
+        u3.connectionGeneration++;
+        u3.resetConnectionState();
+        u3._lmDropOtherGenerations(u3.connectionGeneration);
+        const fadeX = fade.x, fadeY = fade.y;
+        const raw = [Math.round(c3[0] + 900), Math.round(c3[1] - 1100)], rawF = [Math.round(c3[0] - 3000), Math.round(c3[1] + 2500)];
+        u3.time = Date.now();
+        u3.updateCells(packet([{ id: 31, x: raw[0], y: raw[1], size: 90 }, { id: 32, x: rawF[0], y: rawF[1], size: 11, food: true }]), 0);
+        const early = LM.indexedCells[31 + 3 * STEP], pellet = LM.indexedCells[32 + 3 * STEP];
+        const asCame = !!early && early.x === raw[0] && early.targetX === raw[0] && !!pellet && pellet.x === rawF[0];
+        F._applyAbsoluteVnr(3);
+        check('Rotate Map (flip y) with a unit whose new socket has no border yet: its cells stay as they came (not drawn positions, getX the identity)',
+            asCame && early.x === raw[0] && early.y === raw[1] && early.startY === raw[1] && pellet.y === rawF[1], early && [early.x, early.y, early.startY, raw].join());
+        check('  ... a placed unit\'s cell moved with the map: at its placement from raw under the flip', near(placed.targetX, u2.getX(Math.round(c2[0] + 2500)), 1e-6) &&
+            near(placed.y, u2.getY(Math.round(c2[1] + 1800)), 1e-6) && near(placed.y, LM.translateY(LM.worldY(1800)), 1), [placed.y, u2.getY(Math.round(c2[1] + 1800))].join());
+        check('  ... the removal fade of its earlier socket (drawn) moved with the map', fade.removed && fade.x === fadeX && near(fade.y, LM.translateY(fadeY), 1e-9), [fade.y, LM.translateY(fadeY)].join());
+        /* its border comes (mirrored on x): its cells are placed from raw under the flip of now */
+        u3.setMapOffset(c3[0] - W2, c3[1] - W2, c3[0] + W2, c3[1] + W2);
+        u3.setOrientation(-1, 1);
+        const want = [u3.getX(raw[0]), u3.getY(raw[1])], wantF = [u3.getX(rawF[0]), u3.getY(rawF[1])];
+        check('  ... then its border: the cell drawn at its placement from raw under the flip (drawn, start and target), the same raw back',
+            near(early.x, want[0], 1e-6) && near(early.y, want[1], 1e-6) && near(early.startY, want[1], 1e-6) && near(early.targetY, want[1], 1e-6) &&
+            near(early.y, LM.translateY(LM.worldY(-1100)), 1) && u3.convertY(early.y) === raw[1], [early.x, early.y, early.startY, early.targetY, want].join());
+        check('  ... and its pellet (it never moves by itself: drawn at the mirrored place for good before)', near(pellet.x, wantF[0], 1e-6) && near(pellet.y, wantF[1], 1e-6),
+            [pellet.x, pellet.y, wantF].join());
+        F._applyAbsoluteVnr(0);
+        check('  ... the flip back: every cell at its placement from raw without the flip', near(early.y, u3.getY(raw[1]), 1e-6) && near(placed.y, u2.getY(Math.round(c2[1] + 1800)), 1e-6) &&
+            near(pellet.y, u3.getY(rawF[1]), 1e-6) && near(early.y, LM.worldY(-1100), 1));
+    }
+    {
+        const LM = mainClient(-3021.0678118654755, 5000.5), ctx = load(LM), F = flipperOf(ctx);
+        const cx = 4321.5, cy = -987.25;
+        const u = bare(ctx, 2, { player: true }), p = bare(ctx, 4, { player: true });
+        u.setMapOffset(cx - W2, cy - W2, cx + W2, cy + W2);
+        u.setOrientation(-1, 1);
+        /* a provisional unit holds on its own centre (_lmAimSend) */
+        p.setMapOffset(cx - W2, cy - W2, cx + W2, cy + W2);
+        u.time = p.time = Date.now();
+        u.updateCells(packet([{ id: 5, x: Math.round(cx - 2000), y: Math.round(cy + 1500), size: 120 }]), 0);
+        p.updateCells(packet([{ id: 6, x: Math.round(cx + 800), y: Math.round(cy - 600), size: 100 }]), 0);
+        const uc = LM.indexedCells[5 + 2 * STEP], pc = LM.indexedCells[6 + 4 * STEP];
+        u.calculatePlayerMassAndPosition([uc]);
+        p.calculatePlayerMassAndPosition([pc]);
+        const sent = [];
+        u.sendPosition = p.sendPosition = function (x, y) { sent.push([this.number, x, y]); return true; };
+        LM.cursorX = uc.x + 900; LM.cursorY = uc.y - 400;
+        LM.lineSplitTarget = { x: Math.round(uc.x - 3000), y: Math.round(uc.y + 2000) };
+        const aim = () => { sent.length = 0; ctx.window.multiboxPlayerEnabled = 2; u._lmAimSend(); p._lmAimSend(); return JSON.stringify(sent); };
+        const before = aim(), hold = [u.convertX(u.playerX), u.convertY(u.playerY)], line = [u.convertX(LM.lineSplitTarget.x), u.convertY(LM.lineSplitTarget.y)];
+        F._applyAbsoluteVnr(2);
+        const after = aim();
+        check('Rotate Map (flip x and y) before the next frame: the controlled unit\'s cursor and the provisional unit\'s hold send the same raw as before',
+            after === before && sent.length === 2 && sent[1][1] === Math.round(cx + 800), before + ' / ' + after);
+        check('  ... a frozen / keep-moving unit\'s centre (convertX(playerX), every 40 ms) and a line split\'s locked target: the same raw',
+            u.convertX(u.playerX) === hold[0] && u.convertY(u.playerY) === hold[1] && u.convertX(LM.lineSplitTarget.x) === line[0] && u.convertY(LM.lineSplitTarget.y) === line[1],
+            [u.convertX(u.playerX), hold[0], u.convertX(LM.lineSplitTarget.x), line[0]].join());
+        const px = u.playerX, py = u.playerY;
+        u.calculatePlayerMassAndPosition([uc]);
+        check('  ... the centre the next frame computes from the moved cells is the one the flip left', near(u.playerX, px, 1e-9) && near(u.playerY, py, 1e-9), [u.playerX, px].join());
+        F._applyAbsoluteVnr(0);
+        check('  ... and back: the same raw again', aim() === before);
+        ctx.window.multiboxPlayerEnabled = 0;
+    }
+    {
+        /* food calibration across a flip: the residual d = 3 is measured on raw evidence (snap 1),
+         * the map flips, the second snap confirms it: d corrected, the cells reprojected under the flip */
+        const LM = mainClient(-7071.067811865476, -7071.067811865476), ctx = load(LM), F = flipperOf(ctx);
+        const S = [-1, 1], cx = -2500, cy = 9000, d = 3;
+        const sp = bare(ctx, 4, { player: true });
+        sp.setMapOffset(cx - W2, cy - W2, cx + W2, cy + W2);
+        sp.setOrientation(S[0], S[1]);
+        const pellets = [];
+        for (let i = 0; i < 60; i++) pellets.push([-3000 + (i * 7919 % 2500), 1500 + (i * 104729 % 1500), 10 + i % 6]);
+        LM.food = pellets.map((q, i) => { const c = { id: 900 + i, x: LM.worldX(q[0]), y: LM.worldY(q[1]), targetX: LM.worldX(q[0]), targetY: LM.worldY(q[1]),
+            _lmRawX: LM.worldX(q[0]), _lmRawY: LM.worldY(q[1]), size: q[2], targetSize: q[2], isFood: true }; LM.indexedCells[c.id] = c; return c; });
+        const body = [Math.round(cx + S[0] * (-2000 - d)), Math.round(cy + S[1] * (2000 - d))];
+        sp.updateCells(packet(pellets.map((q, i) => ({ id: 5000 + i, x: Math.round(cx + S[0] * (q[0] - d)), y: Math.round(cy + S[1] * (q[1] - d)), size: q[2], food: true }))
+            .concat([{ id: 9, x: body[0], y: body[1], size: 90 }])), 0);
+        /* the world update ran the first check (snap 1) */
+        const cell = LM.indexedCells[9 + 4 * STEP], t0 = sp.time;
+        const snaps = sp._lmCalibSnaps.length, rev = sp._lmXfRev, early = sp.foodCalibrated || sp.fix3x !== 0;
+        F._applyAbsoluteVnr(1);
+        const kept = !early && sp._lmCalibSnaps.length === snaps && sp._lmXfRev === rev;
+        sp._lmCalibrate(t0 + 3100);
+        check('food calibration across a flip: the first snap kept (raw evidence, the same transform), the second confirms it: d corrected (fix3 ' + sp.fix3x.toFixed(2) + ', ' + sp.fix3y.toFixed(2) + ')',
+            snaps === 1 && kept && sp.foodCalibrated && near(sp.fix3x, d, 0.51) && near(sp.fix3y, d, 0.51), [snaps, kept, sp.foodCalibrated, sp.fix3x].join());
+        check('  ... its cell reprojected onto the main copy under the flip, the same raw back',
+            near(cell.targetX, LM.translateX(LM.worldX(-2000)), 1) && near(cell.x, LM.translateX(LM.worldX(-2000)), 1) && near(cell.targetY, LM.worldY(2000), 1) &&
+            sp.convertX(cell.targetX) === body[0], [cell.x, cell.targetX, LM.translateX(LM.worldX(-2000))].join());
+        LM.vnr = 0;
+    }
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all spectcoords checks passed');

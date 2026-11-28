@@ -35413,6 +35413,43 @@ function thelegendmodproject() {
             }
 
             /*
+             * 0. A connection whose border is not known yet (connecting,
+             * reconnecting, waiting for the main border) holds its cells as
+             * they came: spect.js getX is the identity until then, without
+             * the flip, and its border places them from that frame
+             * (_lmReproject). They are not drawn positions, so they are not
+             * flipped (flipped, the border took the flipped place as the raw
+             * one: drawn across the map, a pellet for good). Cells of its
+             * earlier socket (removal fade) were drawn: they are flipped.
+             */
+            var sps =
+                typeof window.spects !== 'undefined' && window.spects ? window.spects : null;
+            var unplaced = null;
+            for (var si = 0; sps && si < sps.length; si++) {
+                if (sps[si] && sps[si].number > 0 && !sps[si].mapOffsetFixed) {
+                    (unplaced || (unplaced = {}))[sps[si].number] = sps[si].connectionGeneration;
+                }
+            }
+            var isUnplaced = function (c) {
+                if (!unplaced) return false;
+                var n = c._lmSrc > 0 ? c._lmSrc : (c.spectator > 0 ? c.spectator : 0);
+                return n > 0 && Object.prototype.hasOwnProperty.call(unplaced, n) && c._lmGen === unplaced[n];
+            };
+            /* the jelly perimeter (its points and the centre of its last step) is drawn too:
+             * left, the next step laid it out and dented it at the old place */
+            var flipJelly = function (c) {
+                var pts = c.points;
+                for (var pj = 0; pts && pj < pts.length; pj++) {
+                    var jp = pts[pj];
+                    if (!jp) continue;
+                    if (xFlipped && jp.x != null) jp.x = legendmod.translateX(jp.x);
+                    if (yFlipped && jp.y != null) jp.y = legendmod.translateY(jp.y);
+                }
+                if (xFlipped && Number.isFinite(c._lmJellyCX)) c._lmJellyCX = legendmod.translateX(c._lmJellyCX);
+                if (yFlipped && Number.isFinite(c._lmJellyCY)) c._lmJellyCY = legendmod.translateY(c._lmJellyCY);
+            };
+
+            /*
              * 1. ALL indexed live/removed world cells.
              *
              * Update both interpolated and target positions.
@@ -35440,9 +35477,11 @@ function thelegendmodproject() {
                             id
                         ];
 
-                    if (!cell) {
+                    if (!cell || isUnplaced(cell)) {
                         continue;
                     }
+
+                    flipJelly(cell);
 
                     if (xFlipped) {
                         if (
@@ -35538,7 +35577,8 @@ function thelegendmodproject() {
             ) {
                 for (var ri = 0; ri < legendmod.removedCells.length; ri++) {
                     var rc = legendmod.removedCells[ri];
-                    if (!rc) continue;
+                    if (!rc || isUnplaced(rc)) continue;
+                    flipJelly(rc);
                     if (xFlipped) {
                         if (rc.x != null) rc.x = legendmod.translateX(rc.x);
                         if (rc.targetX != null) rc.targetX = legendmod.translateX(rc.targetX);
@@ -35775,6 +35815,35 @@ function thelegendmodproject() {
                         );
                 }
             }
+            /*
+             * 5b. What is sent between frames: the cursor (getCursorPosition, each
+             * frame), a running line split's locked target, and each placed unit's
+             * centre (spect.js calculatePlayerMassAndPosition, each frame), which its
+             * cursor loop sends every 40 ms (hold, freeze, keep moving, pause). Left,
+             * the main socket and the units aimed at the mirrored place until the
+             * next frame; a hidden tab draws none (teammate orientation still runs).
+             * Flipped, they keep aiming at the same server point.
+             */
+            if (xFlipped && Number.isFinite(legendmod.cursorX)) legendmod.cursorX = legendmod.translateX(legendmod.cursorX);
+            if (yFlipped && Number.isFinite(legendmod.cursorY)) legendmod.cursorY = legendmod.translateY(legendmod.cursorY);
+            var lst = legendmod.lineSplitTarget;
+            if (lst) {
+                if (xFlipped && Number.isFinite(lst.x)) lst.x = legendmod.translateX(lst.x);
+                if (yFlipped && Number.isFinite(lst.y)) lst.y = legendmod.translateY(lst.y);
+            }
+            for (si = 0; sps && si < sps.length; si++) {
+                var sp = sps[si];
+                if (!sp || !sp.mapOffsetFixed) continue;
+                if (xFlipped && Number.isFinite(sp.playerX)) sp.playerX = legendmod.translateX(sp.playerX);
+                if (yFlipped && Number.isFinite(sp.playerY)) sp.playerY = legendmod.translateY(sp.playerY);
+            }
+            /* 5c. the minimap trail (drawn positions of the last minute) */
+            var trail = this._lmTrail;
+            for (var ti = 0; trail && ti < trail.length; ti++) {
+                if (!trail[ti]) continue;
+                if (xFlipped && Number.isFinite(trail[ti].x)) trail[ti].x = legendmod.translateX(trail[ti].x);
+                if (yFlipped && Number.isFinite(trail[ti].y)) trail[ti].y = legendmod.translateY(trail[ti].y);
+            }
             /* 6. the reconciled food list: its pellets are placed again where they are now */
             if (typeof lmFoodReplaceAll === 'function') lmFoodReplaceAll();
         },
@@ -35944,31 +36013,11 @@ function thelegendmodproject() {
             }
 
             /*
-             * Multi-viewports already own several coordinate consumers.
-             * Preserve the existing safety restriction.
+             * Multibox units and Full Map tiles do not stop it: their
+             * coordinates are raw per connection and the orientation is a
+             * display flip of the main frame on top (_retranslateAllOnFlip,
+             * spect.js getX / convertX), as for Rotate Map.
              */
-            if (
-                typeof spects !==
-                    'undefined' &&
-                spects &&
-                spects.length
-            ) {
-                if (
-                    !window.announceSpectNotifOnce
-                ) {
-                    window.announceSpectNotifOnce =
-                        true;
-
-                    toastr.warning(
-                        "<b>[" +
-                        Premadeletter123 +
-                        "]:</b> " +
-                        lmT('game1.mb.rotation')
-                    );
-                }
-
-                return;
-            }
 
             /*
              * setvnr() now computes the ABSOLUTE transform. Calling it again
@@ -89967,33 +90016,13 @@ function opennamechars() {
 function rotateminimapsectors() {
 
     /*
-     * Rotation is intentionally unavailable after Multi-Viewports exist.
-     *
-     * Each additional viewport owns coordinate state derived from the
-     * orientation active when that viewport was created. Reorienting only
-     * the main world afterwards would desynchronise those views.
+     * Multibox units and Full Map tiles stay open: every connection keeps
+     * its raw coordinates and its own raw -> world transform; Rotate Map
+     * is a display flip of the main frame on top of them (spect.js getX /
+     * convertX read it, _retranslateAllOnFlip moves what was drawn already,
+     * a tile target is world -> raw and does not move). It was refused while
+     * any of them was open.
      */
-    if (
-        typeof spects !== "undefined" &&
-        spects &&
-        spects.length
-    ) {
-        if (
-            !window.announceSpectNotifOnce
-        ) {
-            window.announceSpectNotifOnce =
-                true;
-
-            toastr.warning(
-                "<b>[" +
-                Premadeletter123 +
-                "]:</b> " +
-                lmT('game2.rotationBeforeViewports')
-            );
-        }
-
-        return;
-    }
 
 
     /*

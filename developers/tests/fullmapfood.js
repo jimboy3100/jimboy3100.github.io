@@ -21,14 +21,16 @@
  * a tile stalled behind the main socket gives up its pellets until it is fresh; past
  * LM_FOOD_COMP_MAX copies around a change the copies grouped again do not depend on the order of
  * the entries in the grid buckets, and dense pellets every connection sees are drawn once in any
- * history and over a Rotate Map flip. Prints the food observations against the pellets drawn and
- * the cost of the list and of a dense place.
- * node developers/tests/fullmapfood.js */
+ * history and over a Rotate Map flip; a flip moves jelly perimeters and the minimap trail, and a
+ * flip while a tile reconnects (no border yet) leaves that tile's pellets as they came, so its
+ * border places them where they are drawn (section 6g). Prints the food observations against the
+ * pellets drawn and the cost of the list and of a dense place.
+ * node developers/tests/fullmapfood.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
 const read = (p) => fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
-const src = read(path.join(root, 'ogario', 'ogario.v4.js'));
+const src = read(process.argv[2] || path.join(root, 'ogario', 'ogario.v4.js'));
 const spectSrc = read(path.join(root, 'ogario', 'spect.js'));
 let fail = 0;
 const check = (n, c, info) => { console.log((c ? 'ok   ' : 'FAIL ') + n + (c || info === undefined ? '' : '  [' + info + ']')); if (!c) fail++; };
@@ -289,6 +291,19 @@ reset();
     g.flipper._retranslateAllOnFlip(true, false, [0, 0]);
     check('flip: the velocity of a moving cell changes sign with x, not with y (live cell, removed cell)',
         mover._lmVX === -0.5 && mover._lmVY === 0.2 && dying._lmVX === -0.5 && dying._lmVY === 0.2, [mover._lmVX, mover._lmVY, dying._lmVX, dying._lmVY]);
+    /* a jelly cell's perimeter (its points, the centre of its last step) and the minimap trail are
+     * drawn positions too: left, the next jelly step laid the perimeter out and dented it at the old
+     * place, and the trail stayed on the other side of the map */
+    const jel = { id: 79, x: 200, y: 50, targetX: 200, targetY: 50, startX: 200, startY: 50, _lmJellyCX: 200, _lmJellyCY: 50,
+        points: [{ x: 230, y: 50, rl: 30 }, { x: 200, y: 80, rl: 30 }, { x: 170, y: 50, rl: 30 }] };
+    LM.indexedCells[79] = jel;
+    g.flipper._lmTrail = [{ x: 100, y: 10 }, { x: 150, y: 20 }];
+    g.flipper._retranslateAllOnFlip(false, false, [1, 0]);
+    check('flip: a jelly cell\'s perimeter points and the centre of its last step move with it (x only)',
+        jel.x === -200 && jel.points.map((p) => p.x + ',' + p.y).join(' ') === '-230,50 -200,80 -170,50' && jel._lmJellyCX === -200 && jel._lmJellyCY === 50,
+        jel.points.map((p) => p.x + ',' + p.y).join(' ') + ' / ' + jel._lmJellyCX);
+    check('flip: the minimap trail moves with the map', g.flipper._lmTrail.map((p) => p.x + ',' + p.y).join(' ') === '-100,10 -150,20', JSON.stringify(g.flipper._lmTrail));
+    delete g.flipper._lmTrail;
     delete LM.translateX; delete LM.translateY; LM.vector = null; LM.vnr = 0;
 }
 /* 6b. A spectator whose orientation is not verified (PROVISIONAL, CONFLICTED: _lmFeedOk false) does
@@ -420,6 +435,42 @@ reset();
     check('flip: every observation placed once (' + n1 + ' of ' + before.observations + '), none in the frame after', n1 === before.observations && n2 === 0, n1 + '/' + n2);
     check('flip: as many pellets as before', after.pellets === before.pellets && after.observations === before.observations, before.pellets + '/' + after.pellets);
     delete LM.translateX; delete LM.translateY; LM.vector = null; LM.vnr = 0;
+}
+/* 6g. Rotate Map while a Full Map tile reconnects: its new socket's pellets came before its border
+ *     (held as they came: spect.js getX is the identity until then) and stay out of the list; the map
+ *     flips; its border comes and it is verified: each of its pellets is drawn where it is under the
+ *     flip, once, beside the main socket's and a placed tile's (flipped while unplaced, the border
+ *     took the flipped place for the raw one: drawn on the other side of the map for good) */
+reset();
+{
+    Object.assign(LM, { _lmBorderCX: 0, _lmBorderCY: 0, _lmBorderKX: 1, _lmBorderKY: 1, mapOffsetX: 0, mapOffsetY: 0, mapOffsetFixed: true, ghostCells: [],
+        mapMinX: -7071, mapMaxX: 7071, mapMinY: -7071, mapMaxY: 7071, vector: [[0, 0], [1, 0]], vnr: 0 });
+    LM.translateX = (v) => LM.mapMaxX - (v - LM.mapMinX);
+    LM.translateY = (v) => v;
+    const m = mainFood(1, 1000, 500, hex(0x40a0f0));
+    const t1 = Object.assign(spect(1), { mapOffsetFixed: true, mapOffsetX: 0, mapOffsetY: 0, fixX: 1, fixY: 1, fix3x: 0, fix3y: 0, _lmKX: 1, _lmKY: 1, _lmSameFrame: false });
+    t1.updateCells(packet([], [{ id: 9, x: 1000, y: 500 }, { id: 10, x: 1500, y: 500 }], []), 0);
+    /* tile 2: the real feed test (border and verified orientation), a new socket without its border */
+    const t2 = spect(2);
+    delete t2._lmFeedOk;
+    t2.resetConnectionState();
+    t2.connectionGeneration = 2;
+    t2.updateCells(packet([], [{ id: 20, x: 1000, y: 500 }, { id: 21, x: 2500, y: -3000 }, { id: 22, x: -4000, y: 1200 }], []), 0);
+    const pellets = [20, 21, 22].map((id) => LM.indexedCells[id + 2 * 4294967296]);
+    const n0 = drawList().length;
+    g.flipper._retranslateAllOnFlip(false, false, [1, 0]);
+    LM.vnr = 1;
+    drawList();
+    t2.setMapOffset(-7071, -7071, 7071, 7071);
+    t2.setOrientation(1, 1);
+    const list = drawList(), at = (x, y) => list.filter((c) => Math.abs(c.x - x) < 1 && Math.abs(c.y - y) < 1).length;
+    check('Rotate Map while a tile reconnects: before its border its pellets are not drawn (it does not feed the list)', n0 === 2, n0);
+    check('  ... after its border: each of its pellets drawn once where it is under the flip (drawn and listed place agree)',
+        list.length === 4 && at(-1000, 500) === 1 && at(-1500, 500) === 1 && at(-2500, -3000) === 1 && at(4000, 1200) === 1 &&
+        pellets.every((c) => Math.abs(c.x - c.targetX) < 1 && Math.abs(c.x - t2.getX(c._lmRawX)) < 1e-6),
+        list.map((c) => Math.round(c.x) + ',' + c.y + '/' + (c.spectator || 0)).join(' ') + ' | ' + pellets.map((c) => Math.round(c.x) + '~' + Math.round(c.targetX)).join(' '));
+    check('  ... the main pellet moved with the map, still the drawn copy of its pellet', m.x === -1000 && list.includes(m));
+    delete LM.translateX; delete LM.translateY; LM.vector = null; LM.vnr = 0; LM.mapOffsetFixed = false;
 }
 /* 6b. a spectator's named cells: the colour first seen for the nick (LM.cellcolors, shared with
  * the main connection), teammates only with a colour they sent, own cells the profile colour

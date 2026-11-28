@@ -15,6 +15,7 @@
  * Sections 9b and 23: multibox with Full Map on (the tiles stay, the unit is controlled by its own
  * number), Full Map off / on while multibox runs, multibox off (LM._lmMbStop), a refused unit; 23b:
  * the switch keys during the real first-spawn hold (Spect._lmSpawnHold) are not undone by that spawn.
+ * Section 24: Rotate Map and the teammate orientation with Full Map off / on and 1, 2 and 6 players open.
  * node developers/tests/ingamespect.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -1228,6 +1229,43 @@ for (const withUnit of [false, true]) {
     c.master.accessTokenFB = 'gone';
     c.MultiTokenReady(asked, true);
     check('    ... a removed unit takes no answer', p2.tokens.join() === 'fb-token,fresh' && c.lmMbPlayers.tokenSlot === 0);
+}
+
+/* 24. Rotate Map (rotateminimapsectors) and the teammate orientation (updatevnr) with Full Map off and
+ *     on and with 1, 2 and 6 players open: both go to the display flip (settechvnr / setvnr), the same
+ *     as with nothing open (they were refused with a toast while any unit or tile was open); a
+ *     manual rotation still wins over the teammate orientation; the old orientation server is not
+ *     back (no setting, no call) */
+{
+    const rot = block('function rotateminimapsectors() {'), upd = block('        updatevnr() {');
+    if (!rot || !upd) check('rotateminimapsectors / updatevnr found in ogario.v4.js', false);
+    else {
+        const tile = (n) => ({ number: n, player: false, staticX: 0, staticY: 0 }), unitP = (n) => ({ number: n, player: true });
+        const cases = [['nothing open (1 player)', []], ['Full Map on (15 tiles)', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map(tile)],
+            ['2 players', [unitP(1)]], ['6 players', [1, 2, 18, 5, 9].map(unitP)], ['6 players and Full Map on', [1, 2, 18, 5, 9].map(unitP).concat([3, 4, 20, 21].map(tile))]];
+        for (const [name, open] of cases) {
+            const r = { manual: [], auto: [], toasts: 0 };
+            const c = { console: { log() { } }, Number, Math, toastr: { warning() { r.toasts++; } }, lmT: (k) => k, Premadeletter123: 'LM', consoleMsgLM: '' };
+            c.window = c;
+            c.spects = open;
+            c.legendmod = { vnr: 0, ws: 'wss://live-arena-1.agar.io:443', bgpi: 0, play: false, playerMass: 0, setrot: 0, rotcnt: 0 };
+            c.application = { settechvnr(v) { r.manual.push(v); return true; } };
+            vm.createContext(c);
+            vm.runInContext(rot + '\nvar __upd = ({' + upd + '});', c);
+            c.rotateminimapsectors();
+            check('Rotate Map, ' + name + ': applied as a display flip (vnr 0 -> 3), no refusal', r.manual.join() === '3' && r.toasts === 0 && c.manualRotationLocked === true, JSON.stringify(r));
+            const app = { teamPlayers: [{ alive: true, lbgpi: 2, mass: 9000 }], setvnr(b) { r.auto.push(b); return true; } };
+            c.manualRotationLocked = false;
+            c.__upd.updatevnr.call(app);
+            check('  ... teammate orientation, ' + name + ': applied (setvnr from the teammate\'s quadrant), no refusal', r.auto.join() === '2' && r.toasts === 0, JSON.stringify(r));
+            const nAuto = r.auto.length;
+            c.manualRotationLocked = true;
+            c.__upd.updatevnr.call(app);
+            check('  ... after a manual rotation it does not undo it', r.auto.length === nAuto);
+        }
+        check('the retired orientation server is not back: no setting or call for it in rotateminimapsectors / updatevnr',
+            !/orientationServer|rotateMapServer|rotationServer/i.test(rot + upd));
+    }
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');
