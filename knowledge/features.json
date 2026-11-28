@@ -11,7 +11,7 @@
     {
       "id": "skins",
       "name": "Custom skins, video skins and skin tools",
-      "description": "Apply custom image URLs (PNG, JPG, GIF, SVG) as cell skins. Video skins play MP4/WebM/OGV files with a configurable audio level. Skin checker tests URL validity. Skin rotator cycles through skins automatically. IndexedDB cache stores up to 1,000 skins and 600 audio entries with LRU eviction.",
+      "description": "Apply custom image URLs (PNG, JPG, GIF, SVG) as cell skins. Video skins play MP4/WebM/OGV files with a configurable audio level. Player profiles in the skins panel can be starred as favourites and, with many profiles, searched by nick, clan tag or skin link. Skin checker tests URL validity. Skin rotator cycles through skins automatically. IndexedDB cache stores up to 1,000 skins and 600 audio entries with LRU eviction.",
       "url": "https://www.legendmod.ml/skins/"
     },
     {

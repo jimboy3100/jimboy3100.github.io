@@ -556,6 +556,7 @@ ctx.application = P;
 P.setSkinPreview = function () { };
 P.profiling = function () { };
 P.setProfileboxShadow = function () { };
+P._lmProfileTools = function () { };
 P.setProfile = function () { this.setProfileCalls = (this.setProfileCalls || 0) + 1; };
 P.saveProfileFields = function () { this.savedFields = (this.savedFields || 0) + 1; };
 const named = n => Array.from({ length: n }, (_, i) => ({ nick: 'P' + i, clanTag: 'T', skinURL: 'https://i.imgur.com/s' + i + '.png', color: '#00ff00' }));
@@ -614,26 +615,14 @@ vm.runInContext('profiles = []', ctx);
 P.loadProfiles();
 const allP = () => vm.runInContext('profiles', ctx).concat(JSON.parse(ctx.localStorage.getItem('ogarioPlayerProfilesExtra') || '[]'));
 const stored = JSON.parse(ctx.localStorage.getItem('ogarioPlayerProfiles'));
-check('skin collections on load: the new link is a hidden profile, no fav field, the old key is gone',
+check('skin collections on load: the new link is a hidden profile, the kept favourite stars its profile, the old key is gone',
   ctx.localStorage.getItem('lmSkinCollections') === null && allP().filter(p => p.skinURL === 'https://k.example/new.png' && p.nick === 'Fun').length === 1 &&
-  stored.every(p => !('fav' in p)) && allP().length === 55);
+  stored[3].fav === true && allP().length === 55);
 P.loadProfiles();
 check('skin collections on load: a second load adds nothing', allP().length === 55);
 ctx.localStorage.setItem('lmSkinCollections', '{broken');
 P.loadProfiles();
 check('skin collections on load: a broken value is just removed', ctx.localStorage.getItem('lmSkinCollections') === null && allP().length === 55);
-/* profiles saved or imported with the removed favourite star load as before; the load's save drops the field */
-{
-  const old = JSON.parse(ctx.localStorage.getItem('ogarioPlayerProfiles'));
-  old[0].fav = true; old[2].fav = 'x';
-  ctx.localStorage.setItem('ogarioPlayerProfiles', J(old));
-  vm.runInContext('profiles = []', ctx);
-  let err = null;
-  try { P.loadProfiles(); } catch (e) { err = e; }
-  const again = JSON.parse(ctx.localStorage.getItem('ogarioPlayerProfiles'));
-  check('old fav field: loads without error, same profiles, field dropped on the save', !err && again.length === old.length && again.every(p => !('fav' in p)) &&
-    J(again.map(p => p.skinURL)) === J(old.map(p => p.skinURL)));
-}
 
 /* ── Settings dimmed while they have no effect (the real refresh of the menu's dependency list):
  * every row is a fake element; a dimmed one gets lm-dep-off and names the switch it needs */
