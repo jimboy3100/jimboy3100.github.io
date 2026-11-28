@@ -270,8 +270,10 @@ const run = (kind, pkts) => { reset(L, kind); const out = []; for (const p of pk
 
 /* ---- 1. golden packets: the same world as the parser before these checks ---- */
 const JIM = jimPackets();
+/* expandingland: the kept identities also hold the server's unscaled colour (srv) since then;
+ * without it the world is the one before (b9657b526225ee96) */
 const GOLDEN = {
-    jim: 'cef000da50f4a2d2', agario: '4bc3eda8a9df831f', expandingland: 'b9657b526225ee96', private: '90ca56fe22df407e', board: 'e3c0a026c75535fc'
+    jim: 'cef000da50f4a2d2', agario: '4bc3eda8a9df831f', expandingland: 'aac74d720d4b719e', private: '90ca56fe22df407e', board: 'e3c0a026c75535fc'
 };
 const goldens = {};
 {

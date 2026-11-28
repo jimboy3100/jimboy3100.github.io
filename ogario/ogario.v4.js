@@ -38397,7 +38397,7 @@ function thelegendmodproject() {
          * in another order per connection and per path, they gave some 25 object shapes and the
          * hide step's reads went generic (each one a new heap number). */
         this.spectator = this._lmSrc = this._lmGen = this._lmRawId = undefined;
-        this._lmRawColor = this.rawServerColor = this._lmSrvName = this._lmRawX = this._lmRawY = undefined;
+        this._lmRawColor = this.rawServerColor = this._lmServerColor = this._lmSrvName = this._lmRawX = this._lmRawY = undefined;
         this._lmVX = this._lmVY = this.startX = this.startY = this.startSize = this.updateTime = undefined;
         this.isEjected = this.invisible = this.isPlayerCellMulti = this._lmAnchored = undefined;
         this._lmMbSeenF = this._lmMbLookT = this._lmMbSticky = this._lmMbTwin = this._lmMbAmb = this._lmMbPosDup = undefined;
@@ -38539,7 +38539,7 @@ function thelegendmodproject() {
             /* and without the old cell's observation and hide-step fields (the constructor's list;
              * startX / startY / startSize / updateTime are set above) */
             this.spectator = this._lmSrc = this._lmGen = this._lmRawId = undefined;
-            this._lmRawColor = this.rawServerColor = this._lmSrvName = this._lmRawX = this._lmRawY = undefined;
+            this._lmRawColor = this.rawServerColor = this._lmServerColor = this._lmSrvName = this._lmRawX = this._lmRawY = undefined;
             this._lmVX = this._lmVY = undefined;
             this.isEjected = this.invisible = this.isPlayerCellMulti = this._lmAnchored = undefined;
             this._lmMbSeenF = this._lmMbLookT = this._lmMbSticky = this._lmMbTwin = this._lmMbAmb = this._lmMbPosDup = undefined;
@@ -56338,6 +56338,8 @@ function thelegendmodproject() {
                 }
                 //128 & d && (f = t.readUInt8(i++));	
                 var color = null;
+                /* the colour exactly as the packet gave it (color is 0.9 of it, as always) */
+                var serverColor = null;
                 var skin = null;
                 var name = '';
                 var namePresent = false;
@@ -56350,7 +56352,7 @@ function thelegendmodproject() {
                     var g = view.readUInt8(offset++);
                     var b = view.readUInt8(offset++);
                     color = this.rgb2Hex(~~(0.9 * r), ~~(0.9 * g), ~~(0.9 * b));
-                    //console.log(color)
+                    serverColor = this.rgb2Hex(r, g, b);
                 }
 
                 if (4 & flags) {
@@ -56392,13 +56394,13 @@ function thelegendmodproject() {
                 if (_lmIdMem && !(extendedFlags & 1)) {
                     var _lmId = _lmIdMem.get(id);
                     if (color || skin !== null || namePresent) {
-                        if (!_lmId) _lmIdMem.set(id, _lmId = { color: null, skin: null, name: '', named: false });
-                        if (color) _lmId.color = color;
+                        if (!_lmId) _lmIdMem.set(id, _lmId = { color: null, srv: null, skin: null, name: '', named: false });
+                        if (color) { _lmId.color = color; _lmId.srv = serverColor; }
                         if (skin !== null) _lmId.skin = skin;
                         if (namePresent) { _lmId.name = name; _lmId.named = true; }
                     }
                     if (_lmId && !this.indexedCells[id]) {
-                        if (!color) color = _lmId.color;
+                        if (!color) { color = _lmId.color; serverColor = _lmId.srv; }
                         if (skin === null) skin = _lmId.skin;
                         if (!namePresent && _lmId.named) { name = _lmId.name; namePresent = true; }
                     }
@@ -56588,6 +56590,8 @@ function thelegendmodproject() {
                 /* the server's colour (multibox copies are compared by it, lmMultiboxPositionTwin)
                  * and the speed from the last packet (copies are compared at one time) */
                 if (rawServerColor) cellUpdateCells._lmRawColor = rawServerColor;
+                /* and the server's own RGB, unscaled; a record without colour keeps the last one */
+                if (serverColor) cellUpdateCells._lmServerColor = serverColor;
                 if (!isFood && typeof lmObsVelocity === 'function') lmObsVelocity(cellUpdateCells, x, y, this.time || Date.now());
                 cellUpdateCells.startX = cellUpdateCells.x;
                 cellUpdateCells.startY = cellUpdateCells.y;

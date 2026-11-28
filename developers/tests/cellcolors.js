@@ -136,6 +136,16 @@ const pk = packet([{ id: 11, color: [0, 255, 0] }, { id: 15, color: [1, 2, 3], n
 L.handleMessage(new DataView(pk.buffer.slice(0, pk.byteLength - 12)));
 check('a cut packet changes no colour', C(11) === hex(0, 255, 0) || C(11) === hex(255, 0, 0), C(11));
 check('the cut record makes no half cell with a wrong colour', C(15) === '(no cell)' || C(15) === hex(1, 2, 3), C(15));
+/* the server's RGB unscaled (_lmServerColor) beside the shown 0.9 colour and _lmRawColor */
+const S = id => L.indexedCells[id] ? L.indexedCells[id]._lmServerColor : '(no cell)';
+feed([{ id: 16, color: [255, 10, 200], name: 'True', skin: '' }]);
+check('the server colour is the packet RGB, unscaled', S(16) === '#ff0ac8' && C(16) === hex(255, 10, 200) && L.indexedCells[16]._lmRawColor === hex(255, 10, 200), [S(16), C(16)]);
+feed([{ id: 16, size: 120 }]);
+check('a record without colour keeps the server colour', S(16) === '#ff0ac8', S(16));
+feed([{ id: 16, color: [1, 2, 3] }]);
+check('a later server colour replaces it', S(16) === '#010203', S(16));
+feed([{ id: 17, size: 90 }]);
+check('a new cell without colour has no server colour (not black)', S(17) == null, S(17));
 
 /* section: Battle Royale (':battleroyale'): only the main connection's parser draws there (Full Map
  * is refused in it), with the same colour rules as FFA */
