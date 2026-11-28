@@ -335,10 +335,15 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
         w.run('languages/lm-i18n.js');
         w.run('languages/lm-en.js');
         ok(!w.LMi18n.loaded('el') && refused === 1 && w.Languageletter0 === 'Home', rel + ': the written Greek file was refused (English for now)');
+        /* the menus filled by id (LanguagePackHandler.js) already ran in English: they run again in Greek */
+        const byId = [];
+        w.lmApplyLanguagePack = () => byId.push(w.Languageletter0);
         vm.runInContext(inline[1], w);
         ok(sync.length === 0, rel + ': no synchronous request for the language: ' + sync.join(' '));
         for (let i = 0; i < 20 && !w.LMi18n.loaded('el'); i++) await tick();
         ok(w.LMi18n.lang() === 'el' && w.Languageletter0 === tx(all.packs['pack.home'], 'el') && w.store.languagemod === '2', rel + ': Greek applied when it arrives (old globals too), the choice kept');
+        for (let i = 0; i < 5 && !byId.length; i++) await tick();
+        ok(byId.length === 1 && byId[0] === tx(all.packs['pack.home'], 'el'), rel + ': the menus filled by id are filled again in Greek: ' + JSON.stringify(byId));
     }
     /* ---------- 4. the mod without a stored language: English, nothing written ---------- */
     {

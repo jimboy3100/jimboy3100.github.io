@@ -101,7 +101,10 @@
             if (!L) return;
             if (!L.loaded('en')) need('lm-en.js');
             var c = L.lang();
-            if (c !== 'en' && !L.loaded(c)) L.setLang(c, { save: false, force: true });
+            /* the menus filled by id (languages/LanguagePackHandler.js) too, when it ran before the file came */
+            if (c !== 'en' && !L.loaded(c)) L.setLang(c, { save: false, force: true }, function () {
+                if (typeof window.lmApplyLanguagePack === 'function') { try { window.lmApplyLanguagePack(); } catch (e) { } }
+            });
         })();
     </script>
   <script src="https://www.legendmod.ml/LMexpress/LMexpress.sniff2.js"></script>
