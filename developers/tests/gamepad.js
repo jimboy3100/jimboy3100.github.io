@@ -100,7 +100,10 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   c.G.setSuspended(false);c.step();
   check('suspended: a press held from the window does not fire on close',!c.calls.includes('split'));
   c.G.setButton(1,'hk-macroFeed');c.pads=[gp({1:true})];c.step();c.pads=[gp()];c.step();
-  check('hold: hk-macroFeed on a button is held, then released',c.calls.join().indexOf('mf:down,mf:up')>=0&&!c.calls.includes('feed:true')); }
+  check('hold: hk-macroFeed on a button is held, then released',c.calls.join().indexOf('mf:down,mf:up')>=0&&!c.calls.includes('feed:true'));
+  /* the pad unplugged while a hold button is down: released (no pad left stops the loop) */
+  c.pads=[gp({3:true})];c.step();const u0=n('hold:up');c.pads=[];c.step();
+  check('hold: the pad unplugged while held releases it',n('hold:down')===4&&n('hold:up')===u0+1); }
 { const c=page({settings:{gamepadInvertX:true,gamepadInvertY:true}});
   c.pads=[gp({},[1,0.5,0,0])];c.go();
   const p=c.moves[c.moves.length-1];

@@ -63,6 +63,40 @@ LM.setScanTrickHeld(true); LM.setScanTrickLMB(true);
 LM.releaseScanTrickInput();
 check('window loses focus: key and LMB released, real cursor back', !LM.scanTrickHeld && !LM.scanTrickLMB && !LM.scanTrickActive && near(LM.cursorX, 700));
 
+/* a death or a multibox switch with the key held: the hold is the key, so it stays until the key
+ * is let go (no new press needed after the respawn); the far aim goes from the view meanwhile */
+LM.setScanTrickHeld(true); at(800, 300);
+LM.play = false; LM.playerCells = [];
+at(800, 300);
+check('died with the key held: the hold stays, the far aim goes from the view centre', LM.scanTrickHeld && LM.scanTrickActive && near(LM.cursorX, 100 + D) && near(LM.cursorY, -200));
+LM.play = true; LM.playerCells = [{}];
+at(800, 300);
+check('respawned with the key still held: from the cell again, no second press', LM.scanTrickHeld && near(LM.cursorX, 150 + D) && near(LM.cursorY, -180));
+LM.setScanTrickHeld(false);
+at(800, 300);
+check('then let go: the real cursor', !LM.scanTrickActive && near(LM.cursorX, 700));
+
+/* line split (the real lineSplitStillValid / stopLineSplit): the lock ends at once when its unit
+ * dies or the multibox unit is switched, and the real cursor is sent */
+{
+  const ls = vm.runInContext('({\n' + cut('        lineSplitStillValid() {', '        /* Hotkey action (hk-lineSplit). */') + cut('        stopLineSplit() {', '        /* Line split status') + '\n})', ctx);
+  Object.assign(LM, ls);
+  let sent = 0;
+  LM.lineSplitSeq = 0; LM._unit = 0; LM._cells = { 0: {}, 1: {} };
+  LM.getLineSplitUnitNumber = () => LM._unit; LM.getLineSplitCell = n => LM._cells[n] || null;
+  LM.sendPosition = () => { sent++; }; LM.updateLineSplitStatus = () => { };
+  const lock = () => { LM.lineSplitActive = true; LM.lineSplitTarget = { x: 5, y: 6 }; LM.lineSplitUnit = 0; LM._unit = 0; LM._cells = { 0: {}, 1: {} }; sent = 0; };
+  lock(); at(800, 300);
+  check('line split: the locked spot while its unit lives', LM.cursorX === 5 && LM.cursorY === 6);
+  LM._unit = 1; at(800, 300);
+  check('line split: switched to the other multibox unit, the lock ends and the real cursor is sent', !LM.lineSplitActive && LM.lineSplitTarget === null && near(LM.cursorX, 700) && sent === 1);
+  lock(); delete LM._cells[0]; at(800, 300);
+  check('line split: its unit died, the lock ends and the real cursor is sent', !LM.lineSplitActive && near(LM.cursorX, 700) && sent === 1);
+  lock(); LM.stopLineSplit(); LM.stopLineSplit();
+  check('line split: stopped twice (blur after the end) sends once', sent === 1);
+  LM.lineSplitActive = false;
+}
+
 /* no settings: the movement code reads none, the defaults, schema and Settings tab have none */
 const engine = cut('        SCAN_TRICK_DIRECTIONS:', '        getScanTrickDirection() {') + cut('        getCursorPosition() {', '        getLineSplitSettings() {');
 check('the Scan Trick code reads no setting', !/defaultmapsettings\s*\.\s*scanTrick|defaultmapsettings\s*\[\s*['"]scanTrick/.test(engine));
