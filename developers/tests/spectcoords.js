@@ -18,7 +18,8 @@
  * the calibration evidence (section 11: one entity per pellet, second
  * clusters, d only from verified d, liveness in the cached reference, per-transform snaps, the
  * whole anchor ring); a reversed / NaN border is refused, a camera before the border kept, a unit
- * border before the main one waits for it (applied by LM.addSpect), a tile target waits for the orientation.
+ * border before the main one waits for it (applied by LM.addSpect), a tile target waits for the orientation;
+ * Rotate Map flips while a connection reconnects (section 13).
  * node developers/tests/spectcoords.js [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -686,6 +687,68 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         const raw = t._lmTileRaw();
         check('  ... VERIFIED mirrored on x: the mirrored raw target', !!raw && raw[0] === Math.round(t.worldToRawX(-4714)) && near(raw[0], cx + 4714, 1) && near(raw[1], cy + 5656.8, 1), raw);
     }
+}
+
+/* 13. Rotate Map flips while a connection reconnects: the socket drops, the map flips (every
+ *     listed cell moved as _retranslateAllOnFlip moves it, then vnr), the new socket comes with its
+ *     own border and orientation (mirrored the other way) and sends the same world point: drawn
+ *     where the main client has it under the new flip, sent back as the same raw; a flip back
+ *     returns it to the unflipped place exactly, and a second drop with a flip on each side of the
+ *     new border lands right again */
+{
+    const LM = mainClient(-3021.0678118654755, 5000.5), ctx = load(LM);
+    const flip = (vnr) => {
+        const o = LM.vector[LM.vnr], m = LM.vector[vnr];
+        for (const id in LM.indexedCells) {
+            const c = LM.indexedCells[id];
+            if (!o[0] !== !m[0]) { c.x = LM.translateX(c.x); c.targetX = LM.translateX(c.targetX); }
+            if (!o[1] !== !m[1]) { c.y = LM.translateY(c.y); c.targetY = LM.translateY(c.targetY); }
+        }
+        LM.vnr = vnr;
+    };
+    const cx = 4321.5, cy = -987.25, wx = -2500, wy = 1800;
+    const sp = unit(ctx, cx, cy, { number: 2 });
+    sp.setOrientation(1, 1);
+    sp.time = Date.now();
+    sp.updateCells(packet([{ id: 41, x: Math.round(cx + wx), y: Math.round(cy + wy), size: 80 }]), 0);
+    const old = LM.indexedCells[41 + 2 * STEP];
+    const placedOld = !!old && near(old.targetX, LM.worldX(wx), 1) && near(old.targetY, LM.worldY(wy), 1);
+    /* the drop and the flip while it reconnects (Rotate Map on: x flipped) */
+    sp.connectionGeneration++;
+    sp.resetConnectionState();
+    flip(1);
+    const getXDown = sp.getX(1234) === 1234;
+    /* the new socket: another border, mirrored on x */
+    const ncx = -1500.25, ncy = 2200.75, raw = [Math.round(ncx - wx), Math.round(ncy + wy)];
+    sp.setMapOffset(ncx - W / 2, ncy - W / 2, ncx + W / 2, ncy + W / 2);
+    sp.setOrientation(-1, 1);
+    sp.time = Date.now();
+    sp.updateCells(packet([{ id: 41, x: raw[0], y: raw[1], size: 80 }]), 0);
+    const nc = LM.indexedCells[41 + 2 * STEP];
+    const want = () => [LM.vector[LM.vnr][0] ? LM.translateX(LM.worldX(wx)) : LM.worldX(wx), LM.worldY(wy)];
+    let w = want();
+    check('Rotate Map flip during a reconnect: the old socket\'s cell was right, the dropped connection draws nothing as placed (no border)', placedOld && getXDown);
+    check('  ... the new socket\'s cell lands where the main client has the point under the new flip, and sends the same raw',
+        !!nc && nc._lmGen === sp.connectionGeneration && near(nc.targetX, w[0], 1) && near(nc.targetY, w[1], 1) && sp.convertX(nc.targetX) === raw[0] && sp.convertY(nc.targetY) === raw[1],
+        nc && [nc.targetX, nc.targetY, w, sp.convertX(nc.targetX), raw[0]].join());
+    flip(0);
+    check('  ... the flip back: at the unflipped placement from its raw exactly, the same raw', near(nc.targetX, sp.getX(raw[0]), 1e-6) && near(nc.targetY, sp.getY(raw[1]), 1e-6) &&
+        near(nc.targetX, LM.worldX(wx), 1) && sp.convertX(nc.targetX) === raw[0], [nc.targetX, sp.getX(raw[0])].join());
+    /* a second drop: flipped before the new border and back right after it, before its first cell */
+    sp.connectionGeneration++;
+    sp.resetConnectionState();
+    flip(1);
+    sp.setMapOffset(cx - W / 2, cy - W / 2, cx + W / 2, cy + W / 2);
+    sp.setOrientation(1, 1);
+    flip(0);
+    flip(1);
+    sp.time = Date.now();
+    sp.updateCells(packet([{ id: 42, x: Math.round(cx + wx), y: Math.round(cy + wy), size: 80 }]), 0);
+    const c2 = LM.indexedCells[42 + 2 * STEP];
+    w = want();
+    check('  ... flips on both sides of the next border: the next socket\'s cell lands right too', !!c2 && near(c2.targetX, w[0], 1) && near(c2.targetY, w[1], 1) && sp.convertX(c2.targetX) === Math.round(cx + wx),
+        c2 && [c2.targetX, w[0]].join());
+    LM.vnr = 0;
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all spectcoords checks passed');

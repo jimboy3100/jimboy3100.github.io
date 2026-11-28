@@ -284,6 +284,25 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     run(ctx.window.legendmod.cells, 1, ctx);
     check('representative gone: one survivor drawn at once', before === 1 && drawn([b, c]) === 1 && !b.invisible && c.invisible, before + '/' + drawn([b, c]));
 }
+/* 14b. Six connections see one cell (the main one and five others, listed in any order): the drawn
+ * copy goes while five copies remain, then again while four remain: each time exactly one is drawn
+ * in the very next frame, the lowest number left */
+{
+    const ctx = env(5);
+    const copies = [0, 1, 2, 3, 4, 5].map((n) => cell({ spectator: n, x: 1000 + n, color: '#2468ac' }));
+    run([copies[3], copies[5], copies[0], copies[1], copies[4], copies[2]], 2, ctx);
+    const before = drawn(copies), rep0 = copies.find((c) => !c.invisible);
+    copies[0].removed = true;
+    run(ctx.window.legendmod.cells, 1, ctx);
+    const left5 = copies.slice(1), after1 = drawn(left5), rep1 = left5.find((c) => !c.invisible);
+    copies[1].removed = true;
+    run(ctx.window.legendmod.cells, 1, ctx);
+    const left4 = copies.slice(2), after2 = drawn(left4), rep2 = left4.find((c) => !c.invisible);
+    run(ctx.window.legendmod.cells, 2, ctx);
+    check('six connections: the drawn copy goes with five left, then with four left: one drawn at once each time, the lowest number',
+        before === 1 && rep0 === copies[0] && after1 === 1 && rep1 === copies[1] && after2 === 1 && rep2 === copies[2] && drawn(left4) === 1 && !copies[2].invisible,
+        [before, after1, after2, rep1 && rep1.spectator, rep2 && rep2.spectator].join());
+}
 
 /* 15. A connection whose transform is not verified (spect.js _lmFeedOk false: PROVISIONAL,
  * CONFLICTED): its cells are not drawn, hide nothing and nothing hides behind them, except its own
@@ -526,6 +545,18 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
         s.kill(1); s.step(2); at('P1 dies');
         MB.verdict(check, 'K=' + K + ' (' + K + ' playing, Full Map ' + (fm ? 'on' : 'off') + '): every cell drawn once, own cells drawn, own mass counted once, through death / respawn / reconnect / removal',
             !bad.length, bad.join(' / '), KNOWN[K + (fm ? '/fm' : '')]);
+    }
+    /* the audit's stats check sees a unit's broken numbers (it holds above for every configuration) */
+    {
+        const s = MB.scene({ players: 3, v4: process.argv[2] });
+        MB.populate(s);
+        s.step(2);
+        const ok0 = s.audit().ok, u = s.player(3).unit;
+        u.playerSize = NaN; const r1 = s.audit();
+        u.playerSize = 10; u.playerMinMass = -1; const r2 = s.audit();
+        u.playerMinMass = u.playerMaxMass + 1; const r3 = s.audit();
+        check('scene audit: a unit\'s playerMass / Size / Min / Max must be finite, 0 or more, min <= max (NaN, -1, min > max caught)',
+            ok0 && !r1.ok && /playerSize NaN/.test(r1.text) && !r2.ok && /playerMinMass -1/.test(r2.text) && !r3.ok && /> max/.test(r3.text), [r1.text, r2.text, r3.text].join(' / '));
     }
     /* Own cells of the last two players stacked (same server name and size, same place), seen by
      * every connection: each drawn once (two cells, not three or four). With two players only the

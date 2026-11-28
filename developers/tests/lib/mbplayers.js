@@ -299,11 +299,12 @@ function scene(o) {
      * copy drawn last frame stays drawn, so this holds for a scene built before its first frame);
      * mass: per player own mass (main: LM.playerCells, units: spect.js playerMass from
      * calculatePlayerMassAndPosition and getOwnPlayerCells) against sum r^2 / 100 of its cells;
-     * doubleOwned: a cell in two players' own lists or in the wrong one's; food: copies listed per
-     * source and pellets the hide step touched. */
+     * doubleOwned: a cell in two players' own lists or in the wrong one's; stats: a unit's playerMass /
+     * playerSize / playerMinMass / playerMaxMass not a finite number of 0 or more, or its smallest
+     * cell above its biggest; food: copies listed per source and pellets the hide step touched. */
     s.audit = () => {
         const listed = new Set(LM.cells.filter((c) => c && !c.removed));
-        const r = { dup: [], missing: [], hiddenOwn: [], wrongRep: [], mass: [], massErr: [], doubleOwned: [], food: [], drawn: 0 };
+        const r = { dup: [], missing: [], hiddenOwn: [], wrongRep: [], mass: [], massErr: [], doubleOwned: [], stats: [], food: [], drawn: 0 };
         for (const e of s.ents) {
             if (e.gone || e.kind === 'food') continue;
             const copies = [...e.copies.values()].filter((c) => listed.has(c));
@@ -334,14 +335,19 @@ function scene(o) {
             const m = { slot: p.slot, src: p.src, got, want: ~~(want / 100), cells: list.length };
             r.mass.push(m);
             if (m.got !== m.want) r.massErr.push('P' + p.slot + ' (source ' + p.src + ') mass ' + m.got + ', its cells ' + m.want);
+            if (p.unit) {
+                const u = p.unit, bad = ['playerMass', 'playerSize', 'playerMinMass', 'playerMaxMass'].filter((k) => !(Number.isFinite(u[k]) && u[k] >= 0));
+                if (bad.length) r.stats.push('P' + p.slot + ' ' + bad.map((k) => k + ' ' + u[k]).join(', '));
+                else if (u.playerMinMass > u.playerMaxMass) r.stats.push('P' + p.slot + ' min ' + u.playerMinMass + ' > max ' + u.playerMaxMass);
+            }
         }
         for (const so of s.sources.values()) {
             const lst = so.src ? LM.foodMulti.filter((c) => c._lmSrc === so.src) : LM.food;
             const want = s.ents.filter((e) => !e.gone && e.kind === 'food' && e.copies.has(so.src)).length;
             if (lst.length !== want || lst.some((c) => c.invisible || c._lmMbPosDup)) r.food.push('source ' + so.src + ': ' + lst.length + ' pellets listed, ' + want + ' seen');
         }
-        r.ok = !r.dup.length && !r.missing.length && !r.hiddenOwn.length && !r.wrongRep.length && !r.massErr.length && !r.doubleOwned.length && !r.food.length;
-        r.text = ['dup', 'missing', 'hiddenOwn', 'wrongRep', 'massErr', 'doubleOwned', 'food'].filter((k) => r[k].length).map((k) => k + ': ' + r[k].join('; ')).join(' | ');
+        r.ok = !r.dup.length && !r.missing.length && !r.hiddenOwn.length && !r.wrongRep.length && !r.massErr.length && !r.doubleOwned.length && !r.stats.length && !r.food.length;
+        r.text = ['dup', 'missing', 'hiddenOwn', 'wrongRep', 'massErr', 'doubleOwned', 'stats', 'food'].filter((k) => r[k].length).map((k) => k + ': ' + r[k].join('; ')).join(' | ');
         return r;
     };
     return s;
