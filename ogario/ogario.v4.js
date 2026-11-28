@@ -36331,6 +36331,17 @@ function thelegendmodproject() {
                 if (xFlipped && Number.isFinite(sp.playerX)) sp.playerX = legendmod.translateX(sp.playerX);
                 if (yFlipped && Number.isFinite(sp.playerY)) sp.playerY = legendmod.translateY(sp.playerY);
             }
+            /* the last Limit position direction (_lmLineDir: 0 up, then clockwise in eighths, drawn
+             * coordinates), kept while the cursor rests on the cell: mirrored with the map, or the
+             * cell turned to the mirrored server direction. The keep-moving offsets (distX/Y) are
+             * server / world units and stay as they are. */
+            var flipDir = function (o) {
+                if (!o || !Number.isInteger(o._lmLineDir)) return;
+                if (xFlipped) o._lmLineDir = (8 - o._lmLineDir) % 8;
+                if (yFlipped) o._lmLineDir = (12 - o._lmLineDir) % 8;
+            };
+            flipDir(legendmod);
+            for (si = 0; sps && si < sps.length; si++) flipDir(sps[si]);
             /* 5c. the minimap trail (drawn positions of the last minute) */
             var trail = this._lmTrail;
             for (var ti = 0; trail && ti < trail.length; ti++) {
@@ -46317,7 +46328,9 @@ function thelegendmodproject() {
             this.sendMessage(view);
         },
         sendPosition(cell, target2, specialcommand, periodic) {
-            var cursorX, cursorY;
+            /* _lmKeep: this send is a movement of the controlled main player, its offset is what
+             * "Keep moving" runs on by once it is inactive (distX/Y) */
+            var cursorX, cursorY, _lmKeep = false;
             /* Replay Studio cursor overlay: the mouse target in world space (at most 10/s) */
             if (window._lmRecLive && this.play && this === window.legendmod) window._lmRecCur(this.cursorX, this.cursorY);
             if (this.isSocketOpen() && this.connectionOpened && (this.clientKey || !legendmod.integrity)) {
@@ -46325,6 +46338,9 @@ function thelegendmodproject() {
                     /* Server-space view centre (viewXTrue is client space; mirrored maps differ). */
                     var _viewServerX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue;
                     var _viewServerY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue;
+                    /* no view centre yet (no view or own cell since the connection): nothing to
+                     * hold or run from; NaN went out as (0, 0) and the cells ran to the corner */
+                    if (!Number.isFinite(_viewServerX) || !Number.isFinite(_viewServerY)) return false;
                     /* "Inactive players" (lmMbInactiveMoves, as the inactive units in spect.js
                      * sendCursor): Keep moving runs on toward the last aim, Stay still holds; Pause
                      * holds too (the unit holds on Pause as well): it kept running. */
@@ -46396,6 +46412,10 @@ function thelegendmodproject() {
                     }
                     cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(cursorX) : cursorX; //Sonia3
                     cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(cursorY) : cursorY; //Sonia3	
+                    /* Keep moving (distX/Y, server space) runs on where the player was going: the
+                     * Limit position / dance aim that went out, not the cursor (it kept the offset
+                     * from before Limit position, so the inactive main cell turned off its line) */
+                    _lmKeep = true;
                 } else {
                     //if (specialcommand) {
                     //console.log('hi')
@@ -46471,9 +46491,20 @@ function thelegendmodproject() {
                     //for multi
                     //this.distX  = cursorX - this.playerX	
                     //this.distY  = cursorY - this.playerY
-                    /* Keep distX/distY in server space, matching cursorX/cursorY. */
-                    this.distX = cursorX - (window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue)
-                    this.distY = cursorY - (window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue)
+                    /* Keep distX/distY in server space, matching cursorX/cursorY. Pause is a hold
+                     * of every player, not a direction: Keep moving goes on with the one from
+                     * before it (as the units, spect.js sendCursor). */
+                    _lmKeep = !this.pause;
+                }
+                if (_lmKeep) {
+                    /* the aim that goes out now, minus the view centre; only finite values (no
+                     * view centre yet: the last offset stays) */
+                    var _lmKdx = cursorX - (window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.viewXTrue) : this.viewXTrue);
+                    var _lmKdy = cursorY - (window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.viewYTrue) : this.viewYTrue);
+                    if (Number.isFinite(_lmKdx) && Number.isFinite(_lmKdy)) {
+                        this.distX = _lmKdx;
+                        this.distY = _lmKdy;
+                    }
                 }
                 /* The periodic timer now runs every 40 ms (the official client's rate). An unchanged
                  * cursor is skipped only if it went out less than 35 ms ago: with "< 40", timer

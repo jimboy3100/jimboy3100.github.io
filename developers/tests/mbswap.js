@@ -176,9 +176,11 @@ for (const how of ['terminate', 'beforecalculation']) {
     const mm = st < 0 ? null : /\n        [A-Za-z_$][\w$]*\([^)]*\) \{\n/.exec(v4.slice(st + head.length));
     const sendPos = mm ? v4.slice(st, st + head.length + mm.index).trim().replace(/,\s*$/, '') : null;
     const cursorM = block(sp, '    sendCursor() {'), rule = block(v4, 'function lmMbInactiveMoves() {');
-    if (!sendPos || !cursorM || !rule) check('sendPosition / sendCursor / lmMbInactiveMoves found', false);
+    /* the unit's real aim (_lmAimSend, _lmKeepAim, _lmAimTarget): Keep moving runs on by the aim it sent */
+    const aimM = ['    _lmAimSend() {', '    _lmKeepAim(rx, ry) {', '    _lmCentreOk() {', '    _lmAimTarget() {'].map((m) => block(sp, m));
+    if (!sendPos || !cursorM || !rule || aimM.some((m) => !m)) check('sendPosition / sendCursor / _lmAimSend / lmMbInactiveMoves found', false);
     else {
-        const run = (choice) => {
+        const run = (choice, straight) => {
             const e = env({ focus: null, mainAlive: true, units: 1 }), c = e.ctx, sent = [];
             c.defaultmapsettings = choice === undefined ? {} : { mbInactive: choice };
             c.sent = sent;
@@ -190,8 +192,9 @@ for (const how of ['terminate', 'beforecalculation']) {
                 ' createView(n) { return new DataView(new ArrayBuffer(n)); }, sendBuffer(v) { sent.push("P1 " + v.getInt32(3, true) + "," + v.getInt32(7, true)); },\n' +
                 ' playerX: 1000, playerY: 1000, viewXTrue: 1000, viewYTrue: 1000, cursorX: 4000, cursorY: 1000, distX: 0, distY: 0 });\n' +
                 'window.userBots = {};\n' +
-                'var _lmC = (class { ' + cursorM + ' }).prototype; Unit.prototype.sendCursor = _lmC.sendCursor;\n' +
-                'Object.assign(Unit.prototype, { _lmAimSend() { return true; }, convertX(x) { return x; }, convertY(y) { return y; }, rawToWorldX(x) { return x; }, rawToWorldY(y) { return y; },\n' +
+                'var _lmC = (class { ' + cursorM + '\n' + aimM.join('\n') + ' }).prototype; Unit.prototype.sendCursor = _lmC.sendCursor;\n' +
+                'Unit.prototype._lmAimSend = _lmC._lmAimSend; Unit.prototype._lmKeepAim = _lmC._lmKeepAim; Unit.prototype._lmAimTarget = _lmC._lmAimTarget; Unit.prototype._lmCentreOk = _lmC._lmCentreOk;\n' +
+                'Object.assign(Unit.prototype, { convertX(x) { return x; }, convertY(y) { return y; }, rawToWorldX(x) { return x; }, rawToWorldY(y) { return y; },\n' +
                 ' worldToRawX(x) { return x; }, worldToRawY(y) { return y; }, sendPosition(x, y) { sent.push("P2 " + Math.round(x) + "," + Math.round(y)); return true; } });', c);
             const u = e.unit(1);
             u.playerX = 2000; u.playerY = 2000;
@@ -200,21 +203,27 @@ for (const how of ['terminate', 'beforecalculation']) {
             u.sendCursor();
             c.application.multiboxchange();
             c.legendmod.cursorX = 2500; c.legendmod.cursorY = 2300;
+            /* straight: P2 steered with Limit position (down-right of it: +50000, +50000) */
+            c.followStraight = !!straight;
+            sent.length = 0;
             tick();
+            const p2 = sent.join();
             sent.length = 0;
             c.legendmod.sendPosition();
             const main = sent.join();
             c.application.multiboxchange();
             sent.length = 0;
             tick();
-            return [main, sent.join(), e.got.join()];
+            return [main, sent.join(), e.got.join(), p2];
         };
-        const mv = run('move'), st = run('stay'), def = run(undefined);
+        const mv = run('move'), st = run('stay'), def = run(undefined), ls = run('move', true);
         check('Keep moving: after the swap to P2, P1 runs on toward its cursor point (+3000, 0)', mv[0] === 'P1 4000,1000' && mv[2] === '1<0,0<1', mv.join(' | '));
         check('Keep moving: after the swap back, P2 runs on by its offset (+500, +300)', mv[1] === 'P2 2500,2300', mv[1]);
         check('Stay still: after the swap to P2, P1 holds at its centre', st[0] === 'P1 1000,1000', st[0]);
         check('Stay still: after the swap back, P2 holds at its centre', st[1] === 'P2 2000,2000', st[1]);
         check('no saved choice: Keep moving (the shipped behaviour)', def[0] === mv[0] && def[1] === mv[1], def.join(' | '));
+        check('Keep moving: P2 steered with Limit position runs on along the line it sent after the swap back (52000,52000), not toward the cursor (2500,2300)',
+            ls[3] === 'P2 52000,52000' && ls[1] === 'P2 52000,52000' && ls[0] === mv[0], ls.join(' | '));
     }
 }
 /* the event data is the documented one */

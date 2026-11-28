@@ -1193,6 +1193,11 @@ class Spect {
     sendCursor() {
         if (this.positionController) clearInterval(this.positionController);
         this.positionController = setInterval(() => {
+            /* a playing unit without the centre of this life (_lmCentreOk: its first own cell came
+             * by opcode 32 and no world update computed it yet; playerX/Y are still where the
+             * last life ended, or none): nothing goes out until the next update, the hold, pause,
+             * line lock and keep-moving targets all start from that centre */
+            if (this.player === true && !this._lmCentreOk()) return;
             /* orientation not verified (transformReady): no cursor or keep-moving offset goes
              * out through the guessed transform, the unit holds on its centre (_lmAimSend) */
             var held = this.player === true && typeof this.transformReady === 'function' && !this.transformReady();
@@ -1201,22 +1206,21 @@ class Spect {
             } else if (window.multiboxPlayerEnabled === this.number || this.isFreeSpectate || window.multiboxFollowMouse) {
                 /* Only the controlled unit follows the cursor (any truthy value moved every unit).
                  * Same rules as the main cell: line lock / dance aim, and no update while a crazy
-                 * double split holds the position (window.lockPosition). */
+                 * double split holds the position (window.lockPosition). The keep-moving offset
+                 * is the aim that went out (_lmAimSend, _lmKeepAim), not the raw cursor. */
                 this._lmAimSend();
-
-                /* Keep-moving offset in world units (playerX/Y are client space): a raw delta of
-                 * this socket ran the other way after a background reconnect on a mirrored socket. */
-                this.distX = held ? 0 : this.rawToWorldX(this.convertX(legendmod.cursorX)) - this.rawToWorldX(this.convertX(this.playerX))
-                this.distY = held ? 0 : this.rawToWorldY(this.convertY(legendmod.cursorY)) - this.rawToWorldY(this.convertY(this.playerY))
             } else {
                 /* "Inactive players" (lmMbInactiveMoves, the rule of the inactive main player in
                  * LM.sendPosition): Stay still holds it at its own centre, Keep moving runs on by
-                 * the offset it had to the cursor. Stay still without a centre yet sends nothing
-                 * (with both old switches on it sent the keep-moving aim then). */
-                var moves = lmMbInactiveMoves() && !held;
-                if (!moves && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
+                 * the offset of the last aim it sent while controlled (distX/Y, world units). No
+                 * centre yet: nothing is sent; Keep moving with no offset yet (never controlled):
+                 * it holds (the offset was NaN: nothing went out). */
+                var moves = lmMbInactiveMoves() && !held && Number.isFinite(this.distX) && Number.isFinite(this.distY);
+                if (!Number.isFinite(this.playerX) || !Number.isFinite(this.playerY)) {
+                    /* no centre of this life yet: no target to hold or run from */
+                } else if (!moves) {
                     this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
-                } else if (moves) {
+                } else {
                     this.sendPosition(Math.round(this.worldToRawX(this.rawToWorldX(this.convertX(this.playerX)) + this.distX)),
                         Math.round(this.worldToRawY(this.rawToWorldY(this.convertY(this.playerY)) + this.distY)));
                 }
@@ -1230,16 +1234,43 @@ class Spect {
      * main player's): line lock / dance aim, nothing while a crazy double split holds the
      * position of the controlled unit. */
     _lmAimSend() {
+        /* a crazy double split holds the position: nothing goes out, the keep-moving offset stays */
         if (window.lockPosition && window.multiboxPlayerEnabled === this.number) return false;
         /* orientation not verified: the cursor would go out through a guessed (maybe mirrored)
          * transform and steer the unit away from it; it holds on its own centre (exact: that
          * centre comes from its own raw positions through the same transform) */
         if (this.player === true && typeof this.transformReady === 'function' && !this.transformReady()) {
-            if (!Number.isFinite(this.playerX) || !Number.isFinite(this.playerY)) return false;
-            return this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
+            if (!this._lmCentreOk()) return false;
+            var h = this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
+            /* what it did is hold: no offset through the guessed transform */
+            if (h === true && this.active) this.distX = this.distY = 0;
+            return h;
         }
-        var aim = this._lmAimTarget();
-        return this.sendPosition(this.convertX(aim[0]), this.convertY(aim[1]));
+        var aim = this._lmAimTarget(), rx = this.convertX(aim[0]), ry = this.convertY(aim[1]);
+        var ok = this.sendPosition(rx, ry);
+        if (ok === true) this._lmKeepAim(rx, ry);
+        return ok;
+    }
+
+    /* "Keep moving" (lmMbInactiveMoves): the offset of the aim this unit just sent (raw rx, ry of
+     * this socket) to its centre, in world units (the same for every socket of the unit, so a
+     * background reconnect on a mirrored socket keeps the direction; Rotate Map does not touch it).
+     * The effective aim, not the raw cursor: with Limit position, dance or a line split the unit
+     * runs on where it was going. Only a send that went out as this unit's own target counts (a
+     * not living unit sends its last target instead, sendPosition), and only finite values. */
+    _lmKeepAim(rx, ry) {
+        if (!this.active || !this._lmCentreOk()) return;
+        var dx = this.rawToWorldX(rx) - this.rawToWorldX(this.convertX(this.playerX));
+        var dy = this.rawToWorldY(ry) - this.rawToWorldY(this.convertY(this.playerY));
+        if (!Number.isFinite(dx) || !Number.isFinite(dy)) return;
+        this.distX = dx;
+        this.distY = dy;
+    }
+
+    /* the unit's centre (playerX/Y) is finite and of its current life (_lmLife): set by
+     * calculatePlayerMassAndPosition from this life's own cells, not left from the last one */
+    _lmCentreOk() {
+        return Number.isFinite(this.playerX) && Number.isFinite(this.playerY) && this._lmCentreLife === this._lmLife;
     }
 
     /* LMEvents 'split' for a split of this unit, as LM.sendSplit for the main player's, with unit:
@@ -1256,8 +1287,9 @@ class Spect {
      * a running line split keeps its locked cursor (legendmod.cursorX/Y) over both. */
     _lmAimTarget() {
         var cx = legendmod.cursorX, cy = legendmod.cursorY;
+        /* (the line and the spin start from this life's centre: none yet, the cursor as before) */
         if ((window.followStraight || legendmod.dance) && !legendmod.lineSplitActive && window.multiboxPlayerEnabled === this.number &&
-            Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
+            Number.isFinite(this.playerX) && Number.isFinite(this.playerY) && this._lmCentreLife === this._lmLife) {
             var d;
             if (window.followStraight) {
                 var dx = cx - this.playerX, dy = cy - this.playerY;
@@ -2486,6 +2518,16 @@ class Spect {
             if (live && Number.isFinite(cell._lmRawY)) cell.targetY = lmXfFwd(cell._lmRawY, 1, newT);
             else if (Number.isFinite(cell.targetY)) cell.targetY = mapY(cell.targetY);
         });
+        /* the unit's centre (the mean of its own cells, drawn under the old transform) moves with
+         * them (affine: exact): left, the cursor loop sent it (hold, keep moving, pause) through
+         * the new transform until the next update recomputed it, the mirrored place for a
+         * provisional guess turned round. A centre of an earlier life or socket (no own cell of
+         * this socket now) stays as it is. */
+        var own = this.player && typeof this.getOwnPlayerCells === 'function' ? this.getOwnPlayerCells() : null;
+        if (own && own.length && own[0] && own[0]._lmGen === gen && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
+            this.playerX = mapX(this.playerX);
+            this.playerY = mapY(this.playerY);
+        }
     }
 
     /* Every cell of this unit, including those still animating their removal: its own
@@ -3695,6 +3737,8 @@ class Spect {
          * main view centre too, differently from what the camera showed. */
         this.playerX = x;
         this.playerY = y;
+        /* the centre of this life (_lmCentreOk): the cursor loop does not aim from the last one's */
+        this._lmCentreLife = this._lmLife;
 
         if (!this.openThird) {
             this.openThird = true

@@ -169,7 +169,7 @@ function death(o) {
     };
     const mainM = ['        sendPosition(cell, target2, specialcommand, periodic) {', '        sendEject() {', '        sendSplit() {', '        sendDoubleSplit() {',
         '        sendTripleSplit() {', '        sendQuadSplit() {'].map(lmMethod);
-    const unitM = ['    sendCursor() {', '    _lmAimSend() {', '    _lmEmitSplit(count) {', '    _lmAimTarget() {', '    sendEject() {', '    sendSplit() {', '    _usesMultiSplitOpcodes() {',
+    const unitM = ['    sendCursor() {', '    _lmAimSend() {', '    _lmKeepAim(rx, ry) {', '    _lmCentreOk() {', '    _lmEmitSplit(count) {', '    _lmAimTarget() {', '    sendEject() {', '    sendSplit() {', '    _usesMultiSplitOpcodes() {',
         '    sendDoubleSplit() {', '    sendTripleSplit() {', '    sendQuadSplit() {'].map((m) => block(sp, m));
     if (mainM.concat(unitM).some((m) => !m)) check('feed / split aim code found', false);
     else {
@@ -248,6 +248,71 @@ function death(o) {
             ctx.defaultmapsettings.mbInactive = 'stay';
             ctx.sent.length = 0; tick();
             check('    ... Stay still before the unit has a centre: nothing is sent', ctx.sent.length === 0, ctx.sent.join());
+            ctx.defaultmapsettings.mbInactive = 'move';
+            ctx.sent.length = 0; tick();
+            check('    ... Keep moving before the unit has a centre: nothing is sent either (no NaN / (0, 0) target)', ctx.sent.length === 0, ctx.sent.join());
+        }
+        /* Keep moving runs on where the player was going: the aim that went out while controlled
+         * (Limit position: right, +50000; dance at Date.now 1000: up-right), not the raw cursor
+         * (+3000, +300); a crazy split's held position sends nothing and leaves the offset; a unit
+         * never controlled (no offset yet) holds at its centre. Main player and unit alike. */
+        {
+            const unitKeep = (o, between) => {
+                const ctx = env(Object.assign({ server: 'garix', keep: true }, o));
+                let tick = null;
+                ctx.setInterval = (f) => { tick = f; return 1; };
+                ctx.clearInterval = noop;
+                const u = new ctx.Unit();
+                ctx.multiboxPlayerEnabled = 2;
+                u.sendCursor(); tick();
+                if (between) between(ctx, u, tick);
+                const active = ctx.sent.join(' ');
+                ctx.multiboxPlayerEnabled = null;
+                ctx.sent.length = 0; tick();
+                return [active, ctx.sent.join(' ')];
+            };
+            const ls = unitKeep({ straight: true }), dn = unitKeep({ dance: true });
+            check('inactive unit, Keep moving after Limit position: runs on along the line it sent (51000,1000), not toward the cursor (4000,1300)',
+                ls[0] === '51000,1000' && ls[1] === '51000,1000', ls.join(' | '));
+            check('inactive unit, Keep moving after dance: runs on in the last direction it sent (51000,-49000)', dn[0] === '51000,-49000' && dn[1] === '51000,-49000', dn.join(' | '));
+            /* controlled with a plain cursor (+3000, +300), then a crazy split holds the position while the cursor moves */
+            const lk = unitKeep({}, (ctx, u, tick) => { ctx.lockPosition = true; ctx.legendmod.cursorX = 1000; ctx.legendmod.cursorY = 5000; tick(); ctx.lockPosition = false; });
+            check('inactive unit, Keep moving after a held position (lockPosition): nothing sent while held, the offset from the last sent aim stays (4000,1300, not 1000,5000)',
+                lk[0] === '4000,1300' && lk[1] === '4000,1300', lk.join(' | '));
+            /* a unit that never was controlled: no offset yet */
+            const ctx = env({ server: 'garix', keep: true });
+            let tick = null;
+            ctx.setInterval = (f) => { tick = f; return 1; };
+            ctx.clearInterval = noop;
+            ctx.multiboxPlayerEnabled = null;
+            new ctx.Unit().sendCursor(); tick();
+            check('inactive unit never controlled, Keep moving: holds at its centre (sent nothing: a NaN target)', ctx.sent.join() === '1000,1000', ctx.sent.join());
+
+            const mainKeep = (o, between) => {
+                const ctx = env(Object.assign({ server: 'garix', keep: true }, o));
+                ctx.multiboxPlayerEnabled = null;
+                ctx.legendmod.sendPosition();
+                if (between) between(ctx);
+                const active = ctx.sent.join(' ');
+                ctx.multiboxPlayerEnabled = 2;
+                ctx.followStraight = false; ctx.legendmod.dance = false;
+                ctx.sent.length = 0; ctx.legendmod.sendPosition();
+                return [active, ctx.sent.join(' ')];
+            };
+            const mls = mainKeep({ straight: true }), mdn = mainKeep({ dance: true });
+            check('inactive main player, Keep moving after Limit position: runs on along the line it sent (51000,1000; kept the offset from before, 1000,1000)',
+                mls[0] === '51000,1000' && mls[1] === '51000,1000', mls.join(' | '));
+            check('inactive main player, Keep moving after dance: the last direction it sent', mdn[0] === '51000,-49000' && mdn[1] === '51000,-49000', mdn.join(' | '));
+            const mlk = mainKeep({}, (ctx) => { ctx.lockPosition = true; ctx.legendmod.cursorX = 1000; ctx.legendmod.cursorY = 5000; ctx.legendmod.sendPosition(); ctx.lockPosition = false; });
+            check('inactive main player after a held position: nothing sent while held, the offset from the last sent aim stays', mlk[0] === '4000,1300' && mlk[1] === '4000,1300', mlk.join(' | '));
+            const mps = mainKeep({}, (ctx) => { ctx.legendmod.pause = true; ctx.legendmod.sendPosition(); ctx.legendmod.pause = false; });
+            check('inactive main player after Pause (its hold 1000,1000 went out): runs on by the direction from before the pause, as a unit does',
+                mps[0] === '4000,1300 1000,1000' && mps[1] === '4000,1300', mps.join(' | '));
+            const nv = env({ server: 'garix', keep: true });
+            nv.legendmod.viewXTrue = undefined; nv.legendmod.viewYTrue = undefined;
+            nv.multiboxPlayerEnabled = 2;
+            const nvRet = nv.legendmod.sendPosition();
+            check('inactive main player with no view centre yet: nothing is sent (NaN went out as 0,0)', nv.sent.length === 0 && nvRet === false, nv.sent.join());
         }
     }
 }

@@ -295,6 +295,11 @@ function packet(cells) {
     check('    ... the next update: verified as mirrored on both axes', mb._lmOri === 'VERIFIED' && mb.fixX === -1 && mb.fixY === -1 && mb.transformReady());
     check('    ... the own cell reprojected from raw onto the main copy', near(cell.targetX, LM.worldX(-5000), 1) && near(cell.targetY, LM.worldY(2000), 1) && near(cell.x, LM.worldX(-5000), 1),
         [cell.x, cell.targetX, LM.worldX(-5000)].join());
+    /* the centre the cursor loop holds / keeps moving from moved with it: the raw of its own cell,
+     * not the mirrored place of the guess (until the next update it sent the guess turned round) */
+    check('    ... and the unit\'s centre with it: its hold sends the raw of its own cell under the verified transform',
+        near(mb.playerX, cell.x, 1e-6) && near(mb.playerY, cell.y, 1e-6) && mb.convertX(mb.playerX) === Math.round(cx + 5000) && mb.convertY(mb.playerY) === Math.round(cy - 2000),
+        [mb.playerX, cell.x, mb.convertX(mb.playerX), Math.round(cx + 5000)].join());
     mb._lmWorldAt = 1080;
     mb._lmOwnCellVote(1);
     check('verified: an own-cell vote changes nothing (no conflict from it)', mb._lmOri === 'VERIFIED' && mb.fixX === -1);
@@ -493,7 +498,10 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     sp.setOrientation(1, 1);
     const sent = [];
     sp.sendPosition = (x, y) => { sent.push([x, y]); return true; };
-    sp.playerX = LM.worldX(1000); sp.playerY = LM.worldY(0);
+    /* a living unit (the cursor loop runs from its first own cell, active) */
+    sp.active = true; sp._lmLife = 1;
+    sp._lmOwn = [{ x: LM.worldX(1000), y: LM.worldY(0), size: 100, targetSize: 100, _lmGen: sp.connectionGeneration }];
+    sp.calculatePlayerMassAndPosition();
     /* controlled: the cursor 500 right and 300 down of the unit */
     ctx.window.multiboxPlayerEnabled = 1; LM.cursorX = sp.playerX + 500; LM.cursorY = sp.playerY + 300;
     sp.sendCursor(); tick();
@@ -501,14 +509,37 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     ctx.window.multiboxPlayerEnabled = 0; ctx.defaultmapsettings.mbInactive = 'move';
     const dir = () => {
         sent.length = 0; tick();
+        if (!sent.length) return 'nothing sent';
         return [sp.rawToWorldX(sent[0][0]) - sp.rawToWorldX(sp.convertX(sp.playerX)), sp.rawToWorldY(sent[0][1]) - sp.rawToWorldY(sp.convertY(sp.playerY))].map((v) => Math.round(v)).join(',');
     };
     const a = dir();
+    /* the drop and the background respawn: a new socket (mirrored on x), a new life whose first own
+     * cell came by opcode 32 (sendCursor at once), before any world update computed its centre */
+    const deadAt = [sp.playerX, sp.playerY];
     sp.connectionGeneration++; sp.resetConnectionState(); sp.setMapOffset(-7100, -7000, 7042.1356, 7142.1356); sp.setOrientation(-1, 1);
+    sp.active = true; sp._lmLife = 2;
     sp.sendCursor();
+    const early = dir();
+    /* the next world update: the centre of this life (at world 2000, -1500) */
+    sp._lmOwn = [{ x: LM.worldX(2000), y: LM.worldY(-1500), size: 100, targetSize: 100, _lmGen: sp.connectionGeneration }];
+    sp.calculatePlayerMassAndPosition();
     const b = dir();
     check('Keep moving: the unit runs toward where the cursor was (world +500, +300)', a === '500,300', a);
-    check('Keep moving after a background reconnect on a mirrored socket: the same world direction (ran the opposite way)', b === '500,300', b);
+    check('Keep moving after a background respawn, before its first world update: nothing is sent (it ran from the place the last life ended, ' +
+        deadAt.map(Math.round).join(',') + ')', early === 'nothing sent', early);
+    check('Keep moving after a background reconnect on a mirrored socket: the same world direction from the new centre (ran the opposite way)',
+        b === '500,300' && near(sp.rawToWorldX(sent[0][0]), 2500, 1) && near(sp.rawToWorldY(sent[0][1]), -1200, 1), b + ' ' + sent[0]);
+    /* never controlled (no offset yet), Keep moving: holds at its centre, no NaN target */
+    const fresh = unitB(ctx, [-7000, -7100, 7142.1356, 7042.1356], { number: 2, player: true });
+    fresh.setOrientation(1, 1);
+    const fs2 = [];
+    fresh.sendPosition = (x, y) => { fs2.push([x, y]); return true; };
+    fresh.active = true; fresh._lmLife = 1;
+    fresh._lmOwn = [{ x: LM.worldX(-300), y: LM.worldY(400), size: 100, targetSize: 100, _lmGen: fresh.connectionGeneration }];
+    fresh.calculatePlayerMassAndPosition();
+    fresh.sendCursor(); tick();
+    check('Keep moving, a unit never controlled (no offset yet): holds at its centre (no NaN / 0,0 target)',
+        fs2.length === 1 && fs2[0].every(Number.isFinite) && fs2[0][0] === fresh.convertX(fresh.playerX) && fs2[0][1] === fresh.convertY(fresh.playerY), JSON.stringify(fs2));
 }
 
 /* 12. a new orientation or offset (_lmReproject): a moving cell's velocity (extrapolated between
@@ -932,6 +963,52 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         check('  ... the centre the next frame computes from the moved cells is the one the flip left', near(u.playerX, px, 1e-9) && near(u.playerY, py, 1e-9), [u.playerX, px].join());
         F._applyAbsoluteVnr(0);
         check('  ... and back: the same raw again', aim() === before);
+        /* the cursor loop (every 40 ms) of the verified unit (mirrored on x) under every Rotate Map
+         * state: controlled with Limit position (also with the cursor resting on the cell: the kept
+         * direction), left alone with Keep moving, paused, a running line split, and Keep moving
+         * after it: the same raw each time (the offsets are world units, not flipped; the centre,
+         * cursor and line split target are flipped once) */
+        {
+            u.active = true;
+            let tu = null;
+            const setI = ctx.setInterval;
+            ctx.setInterval = (f) => { tu = f; return 1; };
+            u.sendCursor();
+            ctx.setInterval = setI;
+            const one = (prep) => { if (prep) prep(); sent.length = 0; tu(); return JSON.stringify(sent); };
+            const everyVnr = (prep) => { const r = []; for (const v of [1, 2, 3, 0]) { F._applyAbsoluteVnr(v); r.push(one(prep)); } return r; };
+            const sameAll = (r, b) => r.every((x) => x === b);
+            LM.cursorX = uc.x + 900; LM.cursorY = uc.y - 400; LM.lineSplitActive = false;
+            ctx.window.multiboxPlayerEnabled = 2; ctx.window.followStraight = true;
+            const act = one(), actR = everyVnr();
+            check('Rotate Map, controlled unit with Limit position: the same raw in every orientation', sent.length === 1 && sameAll(actR, act), act + ' / ' + actR.join(' '));
+            const rest = () => { LM.cursorX = u.playerX; LM.cursorY = u.playerY; };
+            const rs = one(rest), rsR = everyVnr(rest);
+            check('  ... the cursor resting on the cell: the kept line direction, the same raw in every orientation (it turned to the mirrored direction)',
+                rs === act && sameAll(rsR, rs), rs + ' / ' + rsR.join(' '));
+            ctx.window.followStraight = false;
+            ctx.window.multiboxPlayerEnabled = 0;
+            const km = one(), kmR = everyVnr();
+            check('  ... left alone, Keep moving: runs on along that line, the same raw in every orientation (no double inversion of the offset)',
+                km === act && sameAll(kmR, km), km + ' / ' + kmR.join(' '));
+            LM.pause = true;
+            const ps = one(), psR = everyVnr();
+            check('  ... Pause: holds at its centre (its own raw), the same raw in every orientation',
+                ps === JSON.stringify([[2, u.convertX(u.playerX), u.convertY(u.playerY)]]) && sameAll(psR, ps), ps + ' / ' + psR.join(' '));
+            LM.pause = false;
+            check('  ... after Pause, Keep moving runs on along the same line again', one() === km);
+            /* a running line split: the locked cursor is its target (flipped with the map) */
+            ctx.window.multiboxPlayerEnabled = 2; ctx.window.followStraight = true; LM.lineSplitActive = true;
+            const lock = () => { LM.cursorX = LM.lineSplitTarget.x; LM.cursorY = LM.lineSplitTarget.y; };
+            const ls = one(lock), lsR = everyVnr(lock), lsRaw = JSON.stringify([[2, u.convertX(LM.lineSplitTarget.x), u.convertY(LM.lineSplitTarget.y)]]);
+            check('  ... a running line split (Limit position on): its locked target, the same raw in every orientation', ls === lsRaw && sameAll(lsR, ls), ls + ' / ' + lsR.join(' ') + ' / ' + lsRaw);
+            LM.lineSplitActive = false; ctx.window.followStraight = false;
+            ctx.window.multiboxPlayerEnabled = 0;
+            const kl = one(), klR = everyVnr();
+            check('  ... left alone after it, Keep moving runs on toward the line split target (the aim it sent), in every orientation',
+                kl === ls && sameAll(klR, kl), kl + ' / ' + klR.join(' '));
+            u.active = false;
+        }
         ctx.window.multiboxPlayerEnabled = 0;
         /* Pause: the main player's hold point (targetX/Y, drawn coordinates, set once by
          * resetTargetPosition) is sent every 40 ms as its raw place (sendPosition translates it

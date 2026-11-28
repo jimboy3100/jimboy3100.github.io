@@ -21,6 +21,26 @@ check('line split on a multibox unit with dance on: the locked spot', U._lmAimTa
 sctx.legendmod.lineSplitActive = false;
 check('no line split: dance steers as before', U._lmAimTarget().join() !== '7069,2356');
 
+/* "Keep moving" after a line split: the unit's sent aim (_lmAimSend -> _lmKeepAim) is the offset it
+ * runs on by once left alone: the locked spot, also with Limit position on; a crazy split's held
+ * position (lockPosition) sends nothing and keeps it */
+{
+  const spN = sp.replace(/\r\n/g, '\n');
+  const aimSrc = ['    _lmAimSend() {', '    _lmKeepAim(rx, ry) {', '    _lmCentreOk() {'].map((m) => cut(spN, m, '\n    }\n') + '\n    },').join('\n');
+  const kctx = { Math, Number, Date, legendmod: { cursorX: 7069, cursorY: 2356, lineSplitActive: true, dance: false }, window: { followStraight: true, multiboxPlayerEnabled: 1 }, sent: [] };
+  vm.createContext(kctx);
+  const K = vm.runInContext('({number:1,player:true,active:true,playerX:1000,playerY:-500,transformReady(){return true;},convertX(x){return x;},convertY(y){return y;},rawToWorldX(x){return x;},rawToWorldY(y){return y;},' +
+    'sendPosition(x,y){sent.push(x+","+y);return true;},\n' + aimSrc + '\n' + cut(sp, '    _lmAimTarget() {', '    sendSpectate() {') + '})', kctx);
+  K._lmAimSend();
+  check('line split with Limit position on: the unit sends the locked spot and keeps its offset (6069, 2856) for Keep moving',
+    kctx.sent.join() === '7069,2356' && K.distX === 6069 && K.distY === 2856);
+  kctx.legendmod.lineSplitActive = false; kctx.legendmod.cursorY = -400;
+  K._lmAimSend();
+  check('  ... the line split over, Limit position: the offset of the line it sent (right, +50000), not the cursor', kctx.sent[1] === '51000,-500' && K.distX === 50000 && K.distY === 0);
+  kctx.window.lockPosition = true; kctx.legendmod.cursorX = -9000;
+  check('  ... a crazy split holds the position: nothing sent, the offset stays', K._lmAimSend() === false && kctx.sent.length === 2 && K.distX === 50000 && K.distY === 0);
+}
+
 /* settings and status line */
 const helper = cut(main, 'window._lmSplitDelay = function (n) {', 'window._lmPopSplitDelay');
 const ctx = { Math, Number, window: {}, defaultmapsettings: { macroSplitDelay: 60, lineSplitCount: 1, lineSplitDelay: 0, lineSplitHold: 700 },
