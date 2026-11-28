@@ -626,10 +626,10 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
         /emit\('kill'/.test(eat) && /_lmRecEv\('k'/.test(eat) && (eat.match(/!lmMbOwnUnitCell\(victimID, victimRawID\)/g) || []).length === 2 && eat.indexOf('!victimID.isPlayerCellMulti') < 0);
 }
 
-/* "My custom colour" and the "Player 1 & 2" glow (multiBoxShadow), the rules both renderers use */
+/* "My custom colour" and the players' glow (multiBoxShadow), the rules both renderers use */
 {
     const fnSrc = (n) => { const a = src.indexOf('\nfunction ' + n + '('); return a < 0 ? '' : src.slice(a + 1, src.indexOf('\n}\n', a) + 3); };
-    const names = ['lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor'];
+    const names = ['lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor', 'lmMbSlotOf', 'lmMbProfileIdx'];
     const ok = names.every((n) => fnSrc(n));
     const LM = { play: true, playerCells: [], playerCellsMulti: [], gameMode: ':ffa' };
     const app = { selectedProfile: 0, selectedOldProfile: 1, mbSlots: [0, 1] };
@@ -649,9 +649,13 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     LM.play = true; LM.playerCells = [mainCell]; LM.playerCellsMulti = [unitCell];
     check('glow: main player in profile 1\'s colour, the unit in its slot\'s', F('lmMbShadowColor')(mainCell) === '#aa0000' && F('lmMbShadowColor')(unitCell) === '#00bb00');
     check('glow: enemies with my nicks do not glow', F('lmMbShadowColor')(enemyMe) === null && F('lmMbShadowColor')(enemyMe2) === null);
-    const unit2 = cell({ spectator: 2, isPlayerCell: true, isPlayerCellMulti: true });
+    /* slots, not connection numbers: P3 on connection 17 (Full Map tiles took 1-16) glows in P3's
+     * profile, P2 on connection 18 in P2's */
+    const unit2 = cell({ spectator: 17, isPlayerCell: true, isPlayerCellMulti: true, _lmOwner: { number: 17, player: true, slotId: 3 } });
+    const unitP2 = cell({ spectator: 18, isPlayerCell: true, isPlayerCellMulti: true, _lmOwner: { number: 18, player: true, slotId: 2 } });
     app.mbSlots = [0, 1, 2];
-    check('glow: a third player in its own slot\'s colour', F('lmMbShadowColor')(unit2) === '#0000cc');
+    check('glow: a third player in its own slot\'s colour, whatever its connection number',
+        F('lmMbShadowColor')(unit2) === '#0000cc' && F('lmMbShadowColor')(unitP2) === '#00bb00', [F('lmMbShadowColor')(unit2), F('lmMbShadowColor')(unitP2)]);
     LM.play = false; LM.playerCells = [];
     check('glow: main player dead, the unit still glows', F('lmMbShadowColor')(unitCell) === '#00bb00');
     LM.playerCellsMulti = [];

@@ -7062,8 +7062,11 @@ function lmMbShadowColor(cell) {
     if (unit ? !cell.isPlayerCellMulti : !cell.isPlayerCell) return null;
     var app = window.application, pr = typeof profiles !== 'undefined' ? profiles : null;
     if (!app || !pr) return null;
-    var idx = !unit ? app.selectedProfile :
-        (app.mbSlots && cell.spectator < app.mbSlots.length ? app.mbSlots[cell.spectator] : app.selectedOldProfile);
+    /* a unit's cell glows in its player's slot profile (mbSlots by slot, P2..P6), not by its
+     * connection number (which grows past the slots with Full Map tiles) */
+    var idx = !unit ? app.selectedProfile : (typeof lmMbProfileIdx === 'function' ?
+        lmMbProfileIdx(cell._lmOwner || (typeof getActiveSpect === 'function' && getActiveSpect(cell.spectator)) || {}) :
+        app.selectedOldProfile);
     var p = pr[idx];
     return (p && p.color) || null;
 }
