@@ -84790,7 +84790,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
     /* #canvas, not the first <canvas>: the background layer (pointer-events:none) is inserted before it. */
     window.canvasElem = document.getElementById("canvas") || document.querySelector("canvas");
     window.canvasElem.addEventListener('contextmenu', openContextMenu, false);
-    document.getElementById("server-token").addEventListener('contextmenu', openContextMenu3, false);
     document.getElementById("skin").addEventListener('contextmenu', openContextMenu4, false);
     PreLcCelebration();
     consoleNotice();
@@ -85296,17 +85295,6 @@ const menuLeft = new ContextMenu({
     },
     ]
 });
-const menuLeft3 = new ContextMenu({
-    'theme': 'default', // or 'blue'
-    'items': [{
-        'icon': 'download',
-        get name() { return lmT('game2.ctxOpen'); },
-        action: () => {
-            leftClickOpen2()
-            menuLeft3.hide();
-        }
-    }]
-});
 const menuLeft4 = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
@@ -85318,12 +85306,6 @@ const menuLeft4 = new ContextMenu({
         }
     }]
 });
-
-function leftClickOpen2() {
-    var temp11 = document.getElementById("server-token").value
-    var temp12 = "https://glitch.com/~" + temp11.replace("wss://", "").replace(".glitch.me", "")
-    window.open(temp12, '_blank');
-}
 
 function leftClickOpen3() {
     var temp11 = document.getElementById("skin").value
@@ -85376,18 +85358,6 @@ function openContextMenu(evt) {
     }
 }
 
-function openContextMenu3(evt) {
-    if (document.getElementById("server-token").value.includes('.glitch.me')) {
-        evt.preventDefault();
-        const time = menuLeft3.isOpen() ? 100 : 0;
-        menuLeft3.hide();
-        setTimeout(() => {
-            menuLeft3.show(evt.pageX, evt.pageY)
-        }, time);
-        document.getElementById("server-token").addEventListener('click', hideContextMenu3, false);
-    }
-}
-
 function openContextMenu4(evt) {
     if (document.getElementById("skin").value.includes('.github.io/')) {
         evt.preventDefault();
@@ -85403,11 +85373,6 @@ function openContextMenu4(evt) {
 function hideContextMenu(evt) {
     menuLeft.hide();
     window.canvasElem.removeEventListener('click', hideContextMenu);
-}
-
-function hideContextMenu3(evt) {
-    menuLeft3.hide();
-    document.getElementById("server-token").removeEventListener('click', hideContextMenu3);
 }
 
 function hideContextMenu4(evt) {
