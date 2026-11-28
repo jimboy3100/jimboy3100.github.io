@@ -110,7 +110,7 @@ const J = o => JSON.parse(JSON.stringify(o));
   check('offsets and scale clamped to their ranges', tm.x === 10000 && tm.y === -10000 && tm.s === core.S_MAX);
   check('lock / hide only entries kept, only true counts', JSON.stringify(st.list[2].c) === JSON.stringify({ stats: { lock: true }, team: { hide: true } }));
   check('bad grid falls back to off, snap off kept', st.prefs.grid === 0 && st.prefs.snap === false);
-  check('links: only valid ids to saved layouts', JSON.stringify(st.links) === JSON.stringify({ p1: 'bStream/b', p3: 'Flags' }));
+  check('links to the removed settings profiles dropped', !('links' in st));
 
   const many = { list: [] };
   for (let i = 0; i < 30; i++) many.list.push({ name: 'L' + i, c: {} });
@@ -250,15 +250,8 @@ const J = o => JSON.parse(JSON.stringify(o));
   check('preview wins while editing', (api.setPreview({ c: { leaderboard: { h: 'r', x: 0, v: 'b', y: 0, s: 1, hide: true } }, editing: true }), (b.css() || '').includes('right:0px') && (b.css() || '').includes('opacity:.35')));
   api.setPreview(null);
   check('preview ended: active layout back', (b.css() || '').includes('left:50px'));
-  check('link a settings profile', api.linkProfile('pAbc', 'Competitive') && api.profileLayout('pAbc') === 'Competitive');
-  check('bad profile id refused', api.linkProfile('bad id', 'Competitive') === false);
-  api.applyLayout('', true);
-  api.onProfileApplied('pAbc');
-  check('profile applied: its layout comes with it', api.active() === 'Competitive');
-  api.onProfileApplied('pOther');
-  check('profile without a layout: nothing changes', api.active() === 'Competitive');
+  check('settings profiles are removed: no profile links', ['linkProfile', 'links', 'profileLayout', 'onProfileApplied', 'storeText'].every(k => !(k in api)));
   check('delete', api.deleteLayout('Competitive') && api.list().length === 0 && api.active() === '' && b.css() === null);
-  check('links to a deleted layout dropped', api.profileLayout('pAbc') === '');
   for (let i = 0; i < 20; i++) api.saveLayout('L' + i, {});
   check('21st layout refused', api.saveLayout('One more', {}) === '' && api.list().length === 20);
   check('prefs saved', api.setPrefs({ grid: 16, snap: false }) && api.prefs().grid === 16 && api.prefs().snap === false && api.setPrefs({ grid: 5 }) && api.prefs().grid === 16);
@@ -284,18 +277,14 @@ const J = o => JSON.parse(JSON.stringify(o));
   api.saveLayout('A', { leaderboard: { h: 'l', x: 11, v: 't', y: 10, s: 1 } });
   api.saveLayout('B', { leaderboard: { h: 'l', x: 22, v: 't', y: 10, s: 1 } });
   api.applyLayout('A', true);
-  api.linkProfile('p1', 'A');
   const disk = storage.getItem('lmHudLayouts');
   const setItem = storage.setItem;
   storage.setItem = () => { const e = new Error('blocked'); e.name = 'SecurityError'; throw e; };
   check('blocked: apply refused, the active layout stays', api.applyLayout('B', true) === false && api.active() === 'A' && (b.css() || '').includes('left:11px'));
-  check('blocked: delete refused, list, active and links unchanged', api.deleteLayout('A') === false && api.list().join('|') === 'A|B' && api.active() === 'A' && api.profileLayout('p1') === 'A');
-  check('blocked: link refused, links unchanged', api.linkProfile('p2', 'B') === false && !('p2' in api.links()) && api.linkProfile('p1', '') === false && api.profileLayout('p1') === 'A');
+  check('blocked: delete refused, list and active unchanged', api.deleteLayout('A') === false && api.list().join('|') === 'A|B' && api.active() === 'A');
   check('blocked: the saved layouts are as before', storage.getItem('lmHudLayouts') === disk);
   storage.setItem = setItem;
   check('storage back: apply works again', api.applyLayout('B', true) === true && api.active() === 'B');
-  const txt = typeof api.storeText === 'function' ? api.storeText('a') : undefined;
-  check('storeText: the stored layouts with another active one, nothing changed', typeof txt === 'string' && JSON.parse(txt).active === 'A' && api.active() === 'B' && api.storeText('Nope') === null && JSON.parse(api.storeText('')).active === '');
 }
 
 /* ── frame stacking: a smaller box above a bigger one, so a box inside another can be grabbed ── */

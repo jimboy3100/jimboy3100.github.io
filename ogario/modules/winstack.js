@@ -1,7 +1,7 @@
 /* Legend Mod window stacking: the window opened or touched last is in front.
  * Each module window has a fixed z-index tier (999990 standard, 999992 stacking windows, panels at
  * 100000-100005; the menu #overlays 100), so a window opened later could open behind one already
- * open (User Scripts, a menu page, behind Custom Macros; Profiles behind Custom Macros).
+ * open (User Scripts, a menu page, behind another window).
  * While two or more of these windows are open, their z-index follows the order they were opened or
  * touched in: the last one gets the highest value among the open ones, each older one stays at most
  * at its own value and below the newer ones. Nothing goes above 999992, so the full-screen editors

@@ -11,7 +11,6 @@
     var HE = W.LMHudEditor;
     if (W.LMHudEditorUI || !HE || !HE.core) return;
     var core = HE.core;
-    var own = Object.prototype.hasOwnProperty;
 
     /* texts: the shared language packs (developers/i18n/src); the box names and the words shared
      * with the Theme > HUD row come from hudeditor.js's keys */
@@ -90,7 +89,7 @@
     var root = null, panel = null, frames = {}, guideX = null, guideY = null;
     var draft = {}, curName = '', baseSig = '', selected = '', drag = null, pdrag = null;
     var menuWasOpen = false, hint = null, escAt = 0, delArm = 0, userMoved = false;
-    var listEl = null, layoutSel = null, nameIn = null, profSel = null, snapCb = null, gridSel = null, delBtn = null;
+    var listEl = null, layoutSel = null, nameIn = null, snapCb = null, gridSel = null, delBtn = null;
 
     function isOpen() { return !!(root && root.parentNode); }
     function sig() { return JSON.stringify(core.cleanComps(draft)); }
@@ -394,26 +393,6 @@
         });
         layoutSel.value = curName && HE.get(curName) ? HE.get(curName).name : '';
         delBtn.disabled = !layoutSel.value;
-        fillProfiles();
-    }
-    function fillProfiles() {
-        if (!profSel) return;
-        var list = [];
-        try { list = W.LMProfiles && W.LMProfiles.list ? W.LMProfiles.list() : []; } catch (e) { }
-        var row = profSel.parentNode;
-        row.style.display = list.length && layoutSel.value ? '' : 'none';
-        while (profSel.firstChild) profSel.removeChild(profSel.firstChild);
-        var o = mk('option', null, t('none'));
-        o.value = '';
-        profSel.appendChild(o);
-        var links = HE.links(), cur = '';
-        list.forEach(function (p) {
-            var q = mk('option', null, p.name);
-            q.value = p.id;
-            profSel.appendChild(q);
-            if (!cur && links[p.id] && links[p.id] === layoutSel.value) cur = p.id;
-        });
-        profSel.value = cur;
     }
     function renderList() {
         if (!listEl) return;
@@ -557,20 +536,6 @@
         gridSel.addEventListener('change', function () { HE.setPrefs({ grid: Number(gridSel.value) }); showGrid(); });
         r3.appendChild(gridSel);
         body.appendChild(r3);
-
-        var r4 = mk('div', 'lm-he-row');
-        r4.appendChild(mk('span', null, t('profile') + ':'));
-        profSel = mk('select', 'lm-he-prof');
-        profSel.addEventListener('change', function () {
-            var name = layoutSel.value, links = HE.links();
-            if (!name) return;
-            var ok = true;
-            for (var pid in links) if (own.call(links, pid) && links[pid] === name) ok = HE.linkProfile(pid, '') && ok;
-            if (profSel.value) ok = HE.linkProfile(profSel.value, name) && ok;
-            if (!ok) { fillProfiles(); toast('warning', t('saveFail')); }
-        });
-        r4.appendChild(profSel);
-        body.appendChild(r4);
 
         listEl = mk('div', 'lm-he-list');
         body.appendChild(listEl);

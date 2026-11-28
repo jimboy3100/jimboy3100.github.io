@@ -95,7 +95,7 @@
     function cleanStore(raw) {
         var o = raw;
         if (typeof raw === 'string') { try { o = JSON.parse(raw); } catch (e) { o = null; } }
-        var st = { v: 1, active: '', list: [], prefs: { snap: true, grid: 0 }, links: {} };
+        var st = { v: 1, active: '', list: [], prefs: { snap: true, grid: 0 } };
         if (!o || typeof o !== 'object' || Array.isArray(o)) return st;
         if (Array.isArray(o.list)) {
             for (var i = 0; i < o.list.length && st.list.length < MAX_LAYOUTS; i++) {
@@ -112,14 +112,7 @@
             st.prefs.snap = o.prefs.snap !== false;
             st.prefs.grid = GRIDS.indexOf(o.prefs.grid) >= 0 ? o.prefs.grid : 0;
         }
-        if (o.links && typeof o.links === 'object' && !Array.isArray(o.links)) {
-            var n = 0;
-            for (var pid in o.links) {
-                if (!own.call(o.links, pid) || !/^[A-Za-z0-9_-]{1,40}$/.test(pid)) continue;
-                var li = findIndex(st.list, o.links[pid]);
-                if (li >= 0 && n++ < 100) st.links[pid] = st.list[li].name;
-            }
-        }
+        /* the links to settings profiles of older versions (removed) are dropped */
         return st;
     }
 
@@ -485,7 +478,7 @@
         if (p && GRIDS.indexOf(p.grid) >= 0) st.prefs.grid = p.grid;
         return save();
     };
-    /* Applies a saved layout by name; '' or null: the normal HUD. For scripts and settings profiles.
+    /* Applies a saved layout by name; '' or null: the normal HUD. For scripts.
      * false (nothing changes) when there is no such layout or it cannot be saved. */
     api.applyLayout = function (name, quiet) {
         var st = load(), l = name ? layoutByName(name) : null;
@@ -498,15 +491,6 @@
         syncSelect();
         if (!quiet && W.toastr) { try { W.toastr.info(esc(tx('applied', l ? l.name : tx('defaultHud')))); } catch (e) { } }
         return true;
-    };
-    /* the stored layouts as text with another active one ('' the normal HUD), or null when there
-     * is no such layout; nothing changes (settings profiles write it in their own transaction) */
-    api.storeText = function (name) {
-        var l = name ? layoutByName(name) : null;
-        if (name && !l) return null;
-        var o = clone(load());
-        o.active = l ? l.name : '';
-        return JSON.stringify(o);
     };
     /* Saves (or replaces) a layout; returns its stored name or '' (bad name, full list, storage full). */
     api.saveLayout = function (name, c) {
@@ -527,31 +511,13 @@
     api.deleteLayout = function (name) {
         var st = load(), i = findIndex(st.list, name);
         if (i < 0) return false;
-        var n = st.list[i].name, before = { list: st.list.slice(), active: st.active, links: clone(st.links) };
+        var n = st.list[i].name, before = { list: st.list.slice(), active: st.active };
         st.list.splice(i, 1);
         if (st.active === n) st.active = '';
-        for (var pid in st.links) if (own.call(st.links, pid) && st.links[pid] === n) delete st.links[pid];
-        if (!save()) { st.list = before.list; st.active = before.active; st.links = before.links; return false; }
+        if (!save()) { st.list = before.list; st.active = before.active; return false; }
         if (!preview) refresh();
         syncSelect();
         return true;
-    };
-    /* settings profiles: a profile can bring a layout with it (LMProfiles calls onProfileApplied) */
-    api.linkProfile = function (profileId, name) {
-        var st = load();
-        if (typeof profileId !== 'string' || !/^[A-Za-z0-9_-]{1,40}$/.test(profileId)) return false;
-        var l = name ? layoutByName(name) : null;
-        var had = own.call(st.links, profileId), old = st.links[profileId];
-        if (l) st.links[profileId] = l.name; else delete st.links[profileId];
-        if (save()) return true;
-        if (had) st.links[profileId] = old; else delete st.links[profileId];
-        return false;
-    };
-    api.links = function () { return clone(load().links); };
-    api.profileLayout = function (profileId) { var n = load().links[profileId]; return typeof n === 'string' ? n : ''; };
-    api.onProfileApplied = function (profileId) {
-        var n = api.profileLayout(profileId);
-        if (n && layoutByName(n)) api.applyLayout(n, true);
     };
     /* true when the drawn layout moves this box (runtime code that places it itself then defers) */
     api.owns = function (id) { var c = comps(); return !!(c && c[id] && c[id].h); };

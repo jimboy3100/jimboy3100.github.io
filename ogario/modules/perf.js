@@ -246,7 +246,7 @@
                 return found;
             },
             /* the player sets k (called before the new value is stored); byHand: not a value of a
-             * settings profile or of Performance mode itself */
+             * preset Undo or of Performance mode itself */
             userChanged: function (k, byHand) {
                 if (!hasOwn(saved, k)) {
                     if (!byHand || active.indexOf(k) < 0) return false;
@@ -1752,8 +1752,8 @@
                     value: function () {
                         if (overrides && overrides.size()) return overrides.userView(this);
                         /* return a shallow copy even when nothing is lowered: consumers could
-                           mutate a live reference (the JSON serializer is safe, but profiles.js
-                           reads individual keys and would see changes made by later code). */
+                           mutate a live reference (the JSON serializer is safe, but a caller
+                           that reads individual keys would see changes made by later code). */
                         var copy = {}, kk; for (kk in this) if (hasOwn(this, kk)) copy[kk] = this[kk]; return copy;
                     },
                     enumerable: false, configurable: true, writable: true
@@ -2423,13 +2423,13 @@
         setNet(diagOpen);
     }
 
-    /* setSettings(id, value) calls this first, before the value is stored; so do the presets and
-     * settings profiles for a value the setting has already */
+    /* setSettings(id, value) calls this first, before the value is stored; so do the presets
+     * for a value the setting has already */
     function onSetting(id, value) {
         if (!overrides) return;
         if (id === 'performanceMode') {
             /* Performance mode switched backs up the current values: they must be the player's own.
-             * The same value again (a profile with the mode as it is) switches nothing, and the
+             * The same value again (a script with the mode as it is) switches nothing, and the
              * lowered values put back would stay up until the next level change. */
             var s = dms();
             if (value === undefined || (s && s.performanceMode === value)) return;
@@ -2438,8 +2438,8 @@
             sideEffects(ch);
             return;
         }
-        /* a settings profile and Performance mode set their values with _lmPerfApplying (a
-         * profile's value the setting has already comes without a value) */
+        /* Performance mode sets its values with _lmPerfApplying (a value the setting has
+         * already comes without a value) */
         var a = app();
         overrides.userChanged(id, value !== undefined && !(a && a._lmPerfApplying));
     }

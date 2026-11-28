@@ -80,7 +80,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
 
 ### Hotkeys Without Default Keys (All Configurable)
-Triple split, crazy double split, line split, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, replay pause/speed/seek, gamepad window, profiles window, copy server link, net graph, performance diagnostics, chat sounds toggle, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), limit position (hold), multibox swap, middle multi-view, auto zoom toggle, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
+Triple split, crazy double split, line split, performance mode toggle, merge rings toggle, analytics window, practice arena, Replay Studio, replay pause/speed/seek, gamepad window, copy server link, net graph, performance diagnostics, chat sounds toggle, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), limit position (hold), multibox swap, middle multi-view, auto zoom toggle, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
 
 ### Mouse
 | Button | Default Action |
@@ -134,15 +134,6 @@ The Theme tab starts with the Theme preset list (and Menu theme in its Menu part
 - **Pick to apply**: picking a theme applies and saves it at once, like a preset
 - **Versions**: Update keeps the last 5 versions; picking an older version brings it back
 - **Validation**: All values checked against LM_THEME_DEFAULTS schema; URLs must be HTTPS
-
-### 4. Settings Profiles
-Save and load up to 30 named settings profiles. Each profile stores gameplay settings, theme, hotkeys and phone controls. Features:
-- **Built-in starter templates**: Pre-configured profile sets
-- **Auto-switching**: Automatically change profile per server type, game mode, or input device (keyboard/gamepad/touch) — off by default
-- **Comparison**: Side-by-side comparison of any two profiles
-- **5 automatic backups**: Last 5 settings snapshots, recoverable
-- **Hotkey**: open the window
-- Import/export as JSON blob
 
 ### 5. Multiboxing
 Control up to 4 game connections simultaneously. Features:
@@ -345,7 +336,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Mass**: Show mass, optimized, auto-hide, hide mine, hide enemies, mass format (exact / 12.3k / auto), virus spikes, virus mass shots, stroke, relative mass
 - **Replay**: Record replays, match history, analytics
 - **Macro**: Feeding speed, split delay, pop-split delay
-- **Config**: Settings profiles
+- **Config**: Profile count (player profiles), presets, export / import, restore default settings
 
 ## Supported Languages
 
@@ -358,7 +349,7 @@ Each language has: core language pack (lm-XX.js), plus separate translation pack
 
 - **Rendering**: WebGL2 with per-frame preflight and atomic Canvas2D fallback
 - **Storage**: localStorage for settings/hotkeys/profiles/history; IndexedDB for skin caching (1,000 skins, 600 audio, LRU eviction)
-- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, accessibility.js (246), analytics.js (1159), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), replaystudio.js (1615), profiles.js (1386), practice.js (707), plugins.js (940), smalltools.js (444), perf.js (1848), mythemes.js (484), hotkeysCommand.js (2056)
+- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, accessibility.js (246), analytics.js (1159), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), replaystudio.js (1615), practice.js (707), plugins.js (940), smalltools.js (444), perf.js (1848), mythemes.js (484), hotkeysCommand.js (2056)
 - **PWA**: Progressive Web App with fullscreen game mode, manifest.json ("Legend Mod - Expanding Land"), landscape orientation, theme_color #00243e; no service worker on this site (the old one is unregistered by play.html; the Expanding Land app at expanding.land has its own)
 - **Extension**: Chrome extension "Legend Express" (manifest v3, version 1.8.5, author Jimboy3100). Permissions: storage, declarativeNetRequest. Host permissions: agar.io, jimboy3100.github.io, legendmod.ml, sigmally.com, senpa.io, mi.com. Content scripts run on agar.io at document_start. Background: service worker. Does NOT collect, store or transmit personal data externally.
 - **Userscript**: Legend Express userscript for Tampermonkey / Greasemonkey (https://www.legendmod.ml/LMexpress/LMexpress.user.js), version 1.9.
@@ -476,9 +467,6 @@ An offline mode where you practice against bots without connecting to a server. 
 **How do I save my own themes?**
 Part of the Theme presets in the Theme tab: under the Theme preset list, save the current theme under a name (up to 30), apply one by picking it, Update it with the current theme (the last 5 versions are kept and an older version can be picked to bring it back) or delete it. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS.
 
-**What are Settings Profiles?**
-Named sets of all gameplay and visual settings that can be switched instantly. Supports up to 30 profiles, auto-switching per server/mode/input device, and 5 automatic backups.
-
 **What are User Scripts / Plugins?**
 Legend Mod supports 5 user script slots for custom JavaScript extensions. Plugins use a standard header format and can register settings via the LMPlugins API. A catalogue of example plugins is available.
 
@@ -553,7 +541,6 @@ Settings > Sounds has each sound's switch, sound file and volume: chat message a
 - **Spectator**: 200+ slots with free-roam camera in Expanding Land
 - **Coordinate scrambling**: Anti-cheat system giving different position offsets per player
 - **My themes**: Your own saved themes under the Theme preset list (up to 30, 5 versions each)
-- **Settings Profile**: Named snapshot of all settings, switchable instantly
 - **Practice Arena**: Offline mode for practising against bots
 - **Replay Studio**: Full playback tool for recorded game replays
 - **LMEvents**: Hook API for user scripts to listen to game events

@@ -1979,24 +1979,6 @@
     "ja": "プリセットを元に戻す",
     "it": "Annulla preset"
   },
-  "lmSettingsProfiles": {
-    "en": "Settings profiles",
-    "el": "Προφίλ ρυθμίσεων",
-    "es": "Perfiles de ajustes",
-    "bg": "Профили с настройки",
-    "fr": "Profils de réglages",
-    "ar": "ملفات الإعدادات",
-    "zh": "設定檔",
-    "ru": "Профили настроек",
-    "de": "Einstellungsprofile",
-    "tr": "Ayar profilleri",
-    "pl": "Profile ustawień",
-    "nl": "Instellingsprofielen",
-    "pt": "Perfis de configurações",
-    "id": "Profil pengaturan",
-    "ja": "設定プロファイル",
-    "it": "Profili impostazioni"
-  },
   "lmPresetConfirm": {
     "en": "Apply this preset? These settings change (Undo puts them back):",
     "el": "Εφαρμογή αυτής της προρύθμισης; Αλλάζουν αυτές οι ρυθμίσεις (η Αναίρεση τις επαναφέρει):",

@@ -295,7 +295,7 @@
         /* ── Phone visuals: a fainter grid and smaller food than the theme says. The core calls
          * window._lmPhoneVis(true) right before it draws a frame and (false) right after it, so the
          * theme keeps the player's own values: this wrote the reduced ones into the theme itself, so a
-         * save, Theme Workshop preview / Revert or a settings profile kept them (and each load reduced
+         * save or a Theme Workshop preview / Revert kept them (and each load reduced
          * them again), and the player's "Sectors background" setting was turned off. ── */
         (function phoneVisuals() {
             var inGrid = null, outGrid = null, keep = false, grid = null, food = 0;
@@ -461,7 +461,7 @@
         var PREF_KEY = 'lm-mobile-prefs';
         var prefs = { btnOpacity: 0.65, btnScale: 1.0, hudFade: 0.35, targetMode: false, swipeSplit: false, muteVibration: false, tapHaptic: false, quickCmds: false, mbButton: false, stopOnRelease: false, pingBtn: false, fixedJoystick: false, joystickDeadZone: 0, lbCompact: false, zoomBtns: false, freeSpecBtn: false, jsSize: 1, jsOpacity: 1, respawnBtn: false };
         /* the built-in values; readPrefs() starts from them, so a key missing in storage (a
-         * settings profile or its Undo that removed the store) falls back to its default */
+         * removed or older store) falls back to its default */
         var PREF_DEFAULTS = JSON.parse(JSON.stringify(prefs));
         /* reads lm-mobile-prefs into the same prefs object (the host API hands it out) */
         function readPrefs() {
@@ -970,7 +970,7 @@
 
         /* apply initial prefs */
         applyPrefs();
-        /* lm-mobile-prefs changed from outside (settings profile, its Undo, an import): read it
+        /* lm-mobile-prefs changed from outside (a script or check): read it
          * again and apply all of it at once, including the switches of this panel */
         function reloadPrefs() {
             releaseHeld();
@@ -1237,7 +1237,7 @@
         /* Every input the phone controls hold (a held Feed, the joystick, a pinch, a flick, the ping
          * choice) is let go from this one place whenever something takes the screen or the game away:
          * the menu, a hidden tab, the window losing focus or being left (a call, the app switcher,
-         * the page shade), a rotation, a settings profile changing the controls, the control editor,
+         * the page shade), a rotation, the stored controls read again, the control editor,
          * a replay starting or ending. Only the menu and the hidden tab did that before (the menu only
          * through a 2 s check when its change was missed), so a Feed held there kept feeding. Keys and
          * gamepad buttons are not touched (feedStop only ends the feed the Feed button started). */
@@ -2086,7 +2086,7 @@
                 if (lb.style.getPropertyValue('transform') !== t) lb.style.setProperty('transform', t, 'important');
             }
         }
-        /* the compact leaderboard preference, from one place (its switch, a settings profile, the start):
+        /* the compact leaderboard preference, from one place (its switch, the stored preferences read again, the start):
          * with it on a tap on the leaderboard changes its rows, so the leaderboard takes taps then */
         function applyLbCompact() {
             if (!document.getElementById('leaderboard-hud')) return;
@@ -2187,7 +2187,7 @@
             setJoyZone: function (z) { joyZone = z || null; },
             setHook: function (fn) { layoutHook = typeof fn === 'function' ? fn : null; },
             reposition: function () { repositionButtons(); },
-            /* settings profiles: the stored preferences changed, apply them now */
+            /* the stored preferences changed (a script or check): apply them now */
             reloadPrefs: function () { reloadPrefs(); },
             /* the editor covers the screen: no held feed, no joystick, the cell stops */
             pauseInput: function () {

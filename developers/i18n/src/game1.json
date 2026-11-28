@@ -2465,24 +2465,6 @@
     "ja": "ボット開始",
     "it": "Avvia i bot"
   },
-  "game1.set.profilesLoading": {
-    "en": "Settings profiles are loading, try again in a moment.",
-    "el": "Τα προφίλ ρυθμίσεων φορτώνουν, δοκιμάστε ξανά σε λίγο.",
-    "es": "Los perfiles de ajustes se están cargando, inténtalo en un momento.",
-    "bg": "Профилите с настройки се зареждат, опитайте след малко.",
-    "fr": "Les profils de paramètres se chargent, réessayez dans un instant.",
-    "ar": "ملفات الإعدادات قيد التحميل، حاول بعد لحظة.",
-    "zh": "設定檔正在載入，請稍後再試。",
-    "ru": "Профили настроек загружаются, попробуйте чуть позже.",
-    "de": "Einstellungsprofile werden geladen, versuche es gleich noch einmal.",
-    "tr": "Ayar profilleri yükleniyor, biraz sonra tekrar deneyin.",
-    "pl": "Profile ustawień się wczytują, spróbuj za chwilę.",
-    "nl": "Instellingenprofielen worden geladen, probeer het zo opnieuw.",
-    "pt": "Os perfis de configurações estão carregando, tente de novo daqui a pouco.",
-    "id": "Profil pengaturan sedang dimuat, coba lagi sebentar lagi.",
-    "ja": "設定プロファイルを読み込み中です。少ししてからもう一度お試しください。",
-    "it": "I profili delle impostazioni si stanno caricando, riprova tra poco."
-  },
   "game1.set.unavailable": {
     "en": "(unavailable)",
     "el": "(μη διαθέσιμο)",

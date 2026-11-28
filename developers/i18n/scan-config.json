@@ -30,7 +30,6 @@
     "languages/lm-i18n.js",
     "lib/lm-i18n.js",
     "developers/i18n/runtime.js",
-    "ogario/modules/profiles.js",
     "ogario/modules/mythemes.js",
     "ogario/modules/hudeditor.js",
     "ogario/modules/hudeditor-ui.js",

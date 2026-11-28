@@ -1646,10 +1646,10 @@ for (const file of ['server.js', 'server-fast.js']) {
         q.server(false, ':ffa');
         check('bots button: hidden on other servers', !q.btn('bots'));
         q.app.setQuickPanel('menu');
-        q.s.showQuickBots = true; q.app.setShowQuickBots(); // a settings profile with the bots panel open (profiles.js: s[k] = v, then setShowQuickBots; no sync follows)
-        check('bots button: a profile with the bots panel open: it stays closed at once, its flag off, the quick menu stays', !q.s.showQuickBots && q.open().join() === 'menu' && q.consistent());
-        q.s.showQuickMenu = false; q.app.setShowQuickMenu(); q.s.showQuickBots = true; q.app.setShowQuickBots(); // a profile with the menu off and the bots panel open
-        check('bots button: a profile with only the bots panel open: no HUD open, flags = what is shown', !q.s.showQuickBots && q.open().length === 0 && q.consistent());
+        q.s.showQuickBots = true; q.app.setShowQuickBots(); // a script or import with the bots panel open (s[k] = v, then setShowQuickBots; no sync follows)
+        check('bots button: a stored open bots panel: it stays closed at once, its flag off, the quick menu stays', !q.s.showQuickBots && q.open().join() === 'menu' && q.consistent());
+        q.s.showQuickMenu = false; q.app.setShowQuickMenu(); q.s.showQuickBots = true; q.app.setShowQuickBots(); // the menu off and the bots panel open
+        check('bots button: only the bots panel stored open: no HUD open, flags = what is shown', !q.s.showQuickBots && q.open().length === 0 && q.consistent());
         // Battle Royale: its button on agar.io Battle Royale only; the HUD opens by itself and the one before comes back
         q = make();
         q.app.setShowQuickMenu();
@@ -1703,9 +1703,9 @@ for (const file of ['server.js', 'server-fast.js']) {
         q.app.setQuickPanel(null);
         q.server(true, ':battleroyale');
         q.app.toggleQuickPanel('br');
-        q.s.showQuickMenu = true; q.app.setShowQuickMenu(); // a settings profile with the menu open, applied in Battle Royale
+        q.s.showQuickMenu = true; q.app.setShowQuickMenu(); // a script or import with the menu open, applied in Battle Royale
         q.server(true, ':ffa');
-        check('Battle Royale: a profile opened the menu after the HUD was closed: leaving keeps it', q.open().join() === 'menu' && q.consistent());
+        check('Battle Royale: the menu opened from outside after the HUD was closed: leaving keeps it', q.open().join() === 'menu' && q.consistent());
         q = make();
         q.app.setShowQuickMenu();
         q.server(true, ':battleroyale');
@@ -1752,7 +1752,6 @@ for (const file of ['server.js', 'server-fast.js']) {
         q.app.toggleQuickPanel('bots');
         check('quick HUDs: opening the bots panel writes its players line', plBefore === 0 && plRef === 1);
         check('quick HUDs: one click handler for the three buttons, blurred after a click', /on\("click", "\.quick-menu, \.quick-bots, \.quick-br", function \(event\) \{[\s\S]{0,120}this\.blur\(\)[\s\S]{0,200}app\.toggleQuickPanel\(/.test(ogSrc));
-        check('quick HUDs: settings profiles re-apply the flags', fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'modules', 'profiles.js'), 'utf8').includes("showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots'"));
         check('quick HUDs: the open button\'s ring in the theme colour', ogSrc.includes(".quick.lm-quick-on{box-shadow:0 0 0 2px ' + defaultSettings.menuMainColor + '}"));
         check('bots button: LM.connect still stops running bots on a server switch (they follow, serverChange)', /window\._lmBotsStop\(true\)\s*\r?\n\s*window\.userBots\.isAlive = false/.test(ogSrc));
     }

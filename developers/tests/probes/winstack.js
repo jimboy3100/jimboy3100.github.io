@@ -1,13 +1,13 @@
 // Window stacking (ogario/modules/winstack.js): the window opened or touched last is in front.
 // Analytics (999992) open, then User Scripts (a menu page) from its hotkey path: User Scripts is
-// on top (it opened behind). Profiles (999990) opened over Analytics is on top; a touch on
+// on top (it opened behind). The private room window (999990) opened over Analytics is on top; a touch on
 // Analytics brings it back. The toasts stay above, and
 // with one window left every z-index is back to its own. Everything is closed again at the end.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
   if (!window.LMWinStack) fail.push('LMWinStack missing (ogario/modules/winstack.js not loaded)');
-  if (!window.LMAnalytics || !window.LMPlugins || !window.LMProfiles) return { skip: 'windows missing' };
+  if (!window.LMAnalytics || !window.LMPlugins || typeof window._lmRoomOpen !== 'function') return { skip: 'windows missing' };
   /* what is drawn at a point inside an element (its upper middle, clear of other windows' edges) */
   var onTop = function (el) {
     if (!el) return false;
@@ -25,7 +25,8 @@
     if (!mePanel) return { fail: ['Analytics did not open'] };
     await sleep(100);
     info.meAlone = zOf(me);
-    if (me.style.zIndex) fail.push('one window open: its z-index was changed (' + me.style.zIndex + ')');
+    /* Analytics sets its own 999992 inline: alone, it keeps exactly that */
+    if (info.meAlone !== '999992') fail.push('one window open: its z-index was changed (' + info.meAlone + ')');
 
     window.LMPlugins.open('plugins');
     await sleep(400);
@@ -41,36 +42,36 @@
     window.LMPlugins.close();
     await sleep(200);
 
-    window.LMProfiles.open();
-    for (i = 0; i < 30 && !document.querySelector('#lm-sp-overlay .lm-modal-container'); i++) await sleep(100);
-    var sp = document.getElementById('lm-sp-overlay'), spPanel = sp && sp.querySelector('.lm-modal-container');
+    window._lmRoomOpen();
+    for (i = 0; i < 30 && !document.getElementById('lm-room-modal'); i++) await sleep(100);
+    var sp = document.getElementById('lm-room-modal'), spPanel = sp;
     await sleep(150);
-    if (!spPanel) fail.push('Profiles did not open');
+    if (!spPanel) fail.push('the private room window did not open');
     else {
       info.z = [zOf(sp), zOf(me), zOf(ov)];
-      if (!onTop(spPanel)) fail.push('Profiles opened behind Analytics (' + info.z.join(' / ') + ')');
+      if (!onTop(spPanel)) fail.push('the private room window opened behind Analytics (' + info.z.join(' / ') + ')');
       pd(mePanel);
       await sleep(50);
       if (!onTop(mePanel)) fail.push('a touch on Analytics did not bring it to the front');
       pd(spPanel);
       await sleep(50);
-      if (!onTop(spPanel)) fail.push('a touch on Profiles did not bring it back to the front');
+      if (!onTop(spPanel)) fail.push('a touch on the private room window did not bring it back to the front');
       [sp, me].forEach(function (w) { if (+zOf(w) > 999992) fail.push(w.id + ' raised above the window tiers (' + zOf(w) + ')'); });
       var tc = document.getElementById('toast-container');
       if (tc && +zOf(tc) <= +zOf(sp)) fail.push('toasts below a window');
-      window.LMProfiles.close();
+      sp._lmClose(true);
       await sleep(300);
-      if (document.getElementById('lm-sp-overlay') && onTop(document.getElementById('lm-sp-overlay'))) info.profilesLeft = true;
+      if (document.getElementById('lm-room-modal') && onTop(document.getElementById('lm-room-modal'))) info.roomLeft = true;
     }
     /* Analytics (and the menu, if open) left: values back to their own once only one is open */
-    if (!onTop(mePanel) && !menuWas) fail.push('Analytics not in front after Profiles closed');
+    if (!onTop(mePanel) && !menuWas) fail.push('Analytics not in front after the private room window closed');
   } finally {
     try { window.LMPlugins.close(); } catch (e) { }
     try { window.LMAnalytics.close(); } catch (e) { }
-    try { window.LMProfiles.close(); } catch (e) { }
+    try { var rm = document.getElementById('lm-room-modal'); if (rm && rm._lmClose) rm._lmClose(true); } catch (e) { }
     await sleep(300);
   }
-  ['lm-analytics', 'lm-sp-overlay', 'overlays'].forEach(function (id) {
+  ['lm-analytics', 'lm-room-modal', 'overlays'].forEach(function (id) {
     var el = document.getElementById(id);
     if (el && /99999/.test(el.style.zIndex)) fail.push(id + ' kept a raised z-index after closing (' + el.style.zIndex + ')');
   });

@@ -22,7 +22,7 @@
   };
   var before = KEYS.map(function (k) { return defaultSettings[k]; });
   /* selects that windows build only when opened sit in their window's box: one of each kind, removed after */
-  var boxes = ['lm-dir-panel', 'lm-he-p', 'lm-sp-overlay', 'lm-ed', 'lm-gp-modal', 'lm-me-p', 'lm-pr', 'lm-tw', 'specialShopModal'];
+  var boxes = ['lm-dir-panel', 'lm-he-p', 'lm-ed', 'lm-gp-modal', 'lm-me-p', 'lm-pr', 'lm-tw', 'specialShopModal'];
   var tmp = document.createElement('div');
   tmp.className = 'agario-panel';
   try {

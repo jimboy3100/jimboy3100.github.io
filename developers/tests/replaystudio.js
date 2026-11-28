@@ -712,7 +712,7 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
 }
 
 /* the instant replay and the replay hotkeys are removed: a key a player had on one is free again
- * (lmRenameOldHotkeys, run by loadHotkeys and for settings profiles); other hotkeys keep their keys */
+ * (lmRenameOldHotkeys, run by loadHotkeys); other hotkeys keep their keys */
 {
   const v4 = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
   const a = v4.indexOf('function lmRenameOldHotkeys(map) {'), b = v4.indexOf('\n}', a);

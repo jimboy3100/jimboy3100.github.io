@@ -73,7 +73,7 @@ lower case inside a sentence.
 | HUD | HUD | EN. packs: Περίγυρος παιχνιδιού - HUD' |
 | theme | θέμα | |
 | preset | προρύθμιση | packs: Προεπιλογές (that word means "defaults") |
-| profile / settings profile | προφίλ / προφίλ ρυθμίσεων | |
+| profile | προφίλ | |
 | import / export | εισαγωγή / εξαγωγή | |
 | upload / download | ανέβασμα / κατέβασμα | buttons: Ανέβασε / Κατέβασε. packs: Ανεβάστε, Κατεβάστε (formal) |
 | cloud | cloud | EN. Σύννεφο sounds literal |
@@ -177,7 +177,7 @@ are short nouns. Sentence case, not Title Case.
 | HUD | HUD | EN |
 | theme | tema | |
 | preset | preajuste | |
-| profile / settings profile | perfil / perfil de ajustes | |
+| profile | perfil | |
 | import / export | importar / exportar | |
 | upload / download | subir / descargar | |
 | cloud | nube | |
@@ -281,7 +281,7 @@ in Cyrillic (скин, сплит, сървър, пинг, бот); keep FPS and
 | HUD | HUD | packs: Надписи |
 | theme | тема | |
 | preset | готови настройки | |
-| profile / settings profile | профил / профил с настройки | |
+| profile | профил | |
 | import / export | импорт / експорт | |
 | upload / download | качи / изтегли | |
 | cloud | облак | |
@@ -385,7 +385,7 @@ French players keep split, feed, skin, ping, lag, bot, multibox and replay in En
 | HUD | HUD | |
 | theme | thème | |
 | preset | préréglage | |
-| profile / settings profile | profil / profil de réglages | |
+| profile | profil | |
 | import / export | importer / exporter | |
 | upload / download | envoyer / télécharger | packs: [IMPORT] for upload. Use ENVOI |
 | cloud | cloud | EN in gaming UI. Nuage is literal |
@@ -492,7 +492,7 @@ for headings (الإعدادات). Pick one form per window. Arab agar.io player
 | HUD | HUD | packs: Hud |
 | theme | الثيم | packs: السمة, السمات. verify: gamers say ثيم |
 | preset | إعداد جاهز | |
-| profile / settings profile | الملف / ملف الإعدادات | packs: البروفايل, الملف الشخصي |
+| profile | الملف | packs: البروفايل, الملف الشخصي |
 | import / export | استيراد / تصدير | |
 | upload / download | رفع / تنزيل | packs: تحميل for download (ambiguous: means both) |
 | cloud | السحابة | |
@@ -598,7 +598,7 @@ No second-person pronoun needed; where one is used, 你.
 | HUD | HUD | packs: 螢幕資訊. verify |
 | theme | 主題 | |
 | preset | 預設組合 | |
-| profile / settings profile | 設定檔 | |
+| profile | 設定檔 | |
 | import / export | 匯入 / 匯出 | |
 | upload / download | 上傳 / 下載 | |
 | cloud | 雲端 | |
@@ -703,7 +703,7 @@ the packs already do.
 | HUD | HUD | |
 | theme | тема | |
 | preset | пресет | |
-| profile / settings profile | профиль / профиль настроек | |
+| profile | профиль | |
 | import / export | импорт / экспорт | |
 | upload / download | загрузить / скачать | |
 | cloud | облако | |
@@ -808,7 +808,7 @@ English is involved (Clan-Tag, Party-Code, Streamer-Modus).
 | HUD | HUD | |
 | theme | Theme | packs: Design, Designs |
 | preset | Voreinstellung | |
-| profile / settings profile | Profil / Einstellungsprofil | |
+| profile | Profil | |
 | import / export | Importieren / Exportieren | packs: Import, Export |
 | upload / download | Hochladen / Herunterladen | |
 | cloud | Cloud | |
@@ -913,7 +913,7 @@ skin'ler) and take an apostrophe only after an abbreviation or a name (FPS'i, Di
 | HUD | HUD | packs: Gösterge, Göstergeler |
 | theme | tema | |
 | preset | hazır ayar | |
-| profile / settings profile | profil / ayar profili | |
+| profile | profil | |
 | import / export | içe aktar / dışa aktar | |
 | upload / download | yükle / indir | |
 | cloud | bulut | |
@@ -1018,7 +1018,7 @@ skin, ping, lag, bot and multibox and inflect them (skiny, splitem).
 | HUD | HUD | |
 | theme | motyw | packs: Wyglad |
 | preset | preset | verify: gotowe ustawienia |
-| profile / settings profile | profil / profil ustawień | |
+| profile | profil | |
 | import / export | import / eksport | buttons: Importuj / Eksportuj |
 | upload / download | wyślij / pobierz | packs: Przekazać plik, Ściągnij |
 | cloud | chmura | |
@@ -1123,7 +1123,7 @@ it reads better (clantag, partycode, streamermodus).
 | HUD | HUD | |
 | theme | thema | |
 | preset | preset | verify: voorinstelling |
-| profile / settings profile | profiel / instellingenprofiel | |
+| profile | profiel | |
 | import / export | importeren / exporteren | |
 | upload / download | uploaden / downloaden | |
 | cloud | cloud | |
@@ -1228,7 +1228,7 @@ them ("dar split", "dar feed", "respawnar"), so keep the loan word and build the
 | HUD | HUD | EN |
 | theme | tema | |
 | preset | predefinição | verify: preset is also used |
-| profile / settings profile | perfil / perfil de configurações | |
+| profile | perfil | |
 | import / export | importar / exportar | |
 | upload / download | enviar / baixar | |
 | cloud | nuvem | |
@@ -1334,7 +1334,7 @@ English verbs work in sentences as they are: "untuk split", "jangan feed".
 | HUD | HUD | EN |
 | theme | tema | |
 | preset | preset | EN |
-| profile / settings profile | profil / profil pengaturan | |
+| profile | profil | |
 | import / export | impor / ekspor | |
 | upload / download | unggah / unduh | |
 | cloud | cloud | EN |
@@ -1441,7 +1441,7 @@ FPS, Ping, XP, DNA and key names.
 | HUD | HUD | EN |
 | theme | テーマ | |
 | preset | プリセット | |
-| profile / settings profile | プロフィール / 設定プロファイル | プロフィール for a player, プロファイル for saved settings |
+| profile | プロフィール | |
 | import / export | インポート / エクスポート | |
 | upload / download | アップロード / ダウンロード | |
 | cloud | クラウド | |
@@ -1546,7 +1546,7 @@ noun, in sentences the Italian verb form is fine.
 | HUD | HUD | EN |
 | theme | tema | |
 | preset | preset | EN |
-| profile / settings profile | profilo / profilo impostazioni | |
+| profile | profilo | |
 | import / export | importa / esporta | |
 | upload / download | carica / scarica | |
 | cloud | cloud | EN |

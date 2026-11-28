@@ -120,7 +120,7 @@
         if (info.serverNote !== application._lmMenuText('lmDepServer') + ' (Senpa)') fail.push('server note: ' + info.serverNote);
         LMc.serverType = 'private';
         application._lmDepRefresh();
-        if (spWhy() !== application._lmMenuText('lmDepServer') + ' (' + lmT('modules.profiles.serverPrivate') + ')') fail.push('private server note: ' + spWhy());
+        if (spWhy() !== application._lmMenuText('lmDepServer') + ' (' + lmT('pkg.n56.protoPriv') + ')') fail.push('private server note: ' + spWhy());
         /* replays work on private servers: no note there */
         if ($('#recordReplays').closest('label').attr('data-lm-why')) fail.push('replays dimmed on a private server');
         LMc.serverType = 'agario';
@@ -139,11 +139,11 @@
   // the Streamer preset and the Stream mode button say what they do (language packs)
   var stTip = $('.lm-preset-btn[data-preset="streamer"]').attr('title') || '';
   if (!stTip || stTip !== lmT('pkg.pt.streamerTip')) fail.push('Streamer preset has no tip from the language pack');
-  // one list of starter setups: the row's buttons are the presets Settings profiles create from
+  // one list of starter setups: the row's buttons are the published presets
   var ids = $('.lm-presets-row .lm-preset-btn').map(function () { return $(this).attr('data-preset'); }).get();
   info.presets = ids.join(',');
   if (ids.join(',') !== 'competitive,battery,streamer,reducedMotion,cleanHud,ffa,teams,multibox') fail.push('presets row: ' + info.presets);
-  if (!application.lmPresets || Object.keys(application.lmPresets).join(',') !== ids.join(',')) fail.push('the presets are not published for Settings profiles');
+  if (!application.lmPresets || Object.keys(application.lmPresets).join(',') !== ids.join(',')) fail.push('the presets are not published (application.lmPresets)');
   $('.lm-presets-row .lm-preset-btn').each(function () {
     var b = this.getBoundingClientRect(), row = this.parentNode.getBoundingClientRect();
     if (b.width && (b.right > row.right + 1 || b.left < row.left - 1)) fail.push('preset button outside its row: ' + $(this).attr('data-preset'));

@@ -137,7 +137,7 @@ check('number out of range clamped', P.cleanValues(schema, { n: 100 }).n === 5 &
 check('lab: lab.js gone and not loaded', !fs.existsSync(path.join(root, 'ogario', 'modules', 'lab.js')) && fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8').indexOf('modules/lab.js') < 0);
 
 /* ---- the old "Open the Lab" hotkey and the removed User Scripts hotkey: their keys are free again
- * (ogario.v4.js lmRenameOldHotkeys, which loadHotkeys and the settings profiles use) ---- */
+ * (ogario.v4.js lmRenameOldHotkeys, which loadHotkeys uses) ---- */
 (function () {
     const v4src = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
     const a = v4src.indexOf('function lmRenameOldHotkeys(map) {'), b = v4src.indexOf('\n}', a);

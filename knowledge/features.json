@@ -57,12 +57,6 @@
       "url": "https://www.legendmod.ml/features.html"
     },
     {
-      "id": "profiles",
-      "name": "Settings profiles",
-      "description": "Up to 30 named profiles storing gameplay settings, theme, hotkeys and phone controls. 6 built-in starter templates (FFA, teams, multibox, streaming, mobile, competitive). Auto-switching per server type, game mode or input device. Side-by-side comparison. 5 automatic backups. Import/export as JSON. Hotkeys for open/next/prev/undo.",
-      "url": "https://www.legendmod.ml/features.html"
-    },
-    {
       "id": "chat",
       "name": "Chat system",
       "description": "In-game text chat with image/video sharing, emoticons, auto-translation, universal cross-server chat, coloured nicks, word filter, player ID display. 50 customizable chat command slots. Voice chat (push-to-talk). Team pings (Help, Danger, Go here, Virus). Chat message and command sounds with their own volumes (Settings > Sounds).",

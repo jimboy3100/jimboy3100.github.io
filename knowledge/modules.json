@@ -64,13 +64,6 @@
       "feature": "Replay Studio"
     },
     {
-      "id": "profiles",
-      "file": "ogario/modules/profiles.js",
-      "lines": 1386,
-      "description": "Settings profiles management. Up to 30 named profiles, auto-switching per server/mode/input device, 5 automatic backups.",
-      "feature": "Settings Profiles"
-    },
-    {
       "id": "practice",
       "file": "ogario/modules/practice.js",
       "lines": 707,

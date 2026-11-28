@@ -361,11 +361,9 @@
     {
       "id": "config",
       "name": "Config",
-      "description": "Settings profiles management.",
+      "description": "Player profile count; the presets, export / import and Restore default settings buttons.",
       "settings": [
-        "settingsProfiles",
-        "autoSwitchProfile",
-        "profileBackups"
+        "profileNumber"
       ]
     }
   ]

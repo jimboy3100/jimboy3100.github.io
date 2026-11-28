@@ -460,7 +460,7 @@
     function boot() {
         if (ready() && build()) {
             if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () { try { relabel(); } catch (e) { } });
-            /* Export / Import, a settings profile or another tab can change the stored themes: the
+            /* Export / Import or another tab can change the stored themes: the
              * list is read again when the Theme tab is shown */
             jq()(D).on('click.lmMyThemes', 'a[href="#theme"]', function () { setTimeout(render, 0); });
             return;

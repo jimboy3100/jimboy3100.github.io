@@ -128,11 +128,6 @@
       "category": "el-specific"
     },
     {
-      "term": "Settings Profile",
-      "definition": "A named snapshot of all gameplay and visual settings that can be switched instantly. Supports up to 30 profiles, auto-switching per server/mode/input device.",
-      "category": "el-specific"
-    },
-    {
       "term": "Practice Arena",
       "definition": "Offline mode for practising against bots without connecting to a server. Uses MultiOgar protocol. Tracks personal bests and replays ghost of best run.",
       "category": "el-specific"

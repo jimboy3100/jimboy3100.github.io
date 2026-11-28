@@ -62,7 +62,6 @@
   if (!tt) fail.push('test tab missing');
   else { tt.click(); if (!document.getElementById('lm-gp-stick-l')) fail.push('stick view missing'); }
   try { if (stored === null) localStorage.removeItem('lmGamepad'); else localStorage.setItem('lmGamepad', stored); } catch (e) { }
-  G._reload();
   document.getElementById('lm-gp-close').click();
   await sleep(50);
   if (document.getElementById('lm-gp-modal') || document.getElementById('lm-gp-backdrop')) fail.push('close button did not close the window');

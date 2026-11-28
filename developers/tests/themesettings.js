@@ -1,8 +1,8 @@
 /* Theme settings checks with the real code of ogario/ogario.v4.js and its modules: the theme
  * schema (LM_THEME_SCHEMA + lmThemeValue: type, range, step, choices, colour format) and every
  * path that stores theme values (loadThemeSettings, the settings import, the theme presets
- * through Settings.changePreset, the Theme tab sliders through Settings.addSliderBox, settings
- * profiles and My themes). Valid values and the defaults never change.
+ * through Settings.changePreset, the Theme tab sliders through Settings.addSliderBox and
+ * My themes). Valid values and the defaults never change.
  * node developers/tests/themesettings.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -156,18 +156,15 @@ check('slider input: a value the slider shows is kept exactly', DS.bordersWidth 
 s.v = 'abc'; s.trigger('input');
 check('slider input: not a number changes nothing', DS.bordersWidth === 40 && cb === 2);
 
-// ── settings profiles and My themes use the same schema
+// ── My themes uses the same schema
 const pc = { console, JSON, Math, Date, Object, Array, Number, String, isFinite, setTimeout() { }, clearTimeout() { }, lmT: k => k };
 pc.window = pc; pc.localStorage = makeStorage();
 vm.createContext(pc);
 vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), pc);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), pc);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), pc);
-vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'profiles.js'), 'utf8'), pc);
 vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'mythemes.js'), 'utf8'), pc);
-const P = pc.LMProfiles.core, W = pc.LMMyThemes.core;
-const pb = P.cleanBundle({ t: { bordersWidth: 13, hudScale: 1.2, bgColor: 'x;y', namesFont: 'bad', menuPreset: 'agario', virusAlpha: 0.25 } });
-check('profiles: theme values fitted, unusable ones dropped, valid ones kept', pb && J(pb.t) === J({ bordersWidth: 14, hudScale: 1.2, menuPreset: 'agario', virusAlpha: 0.25 }));
+const W = pc.LMMyThemes.core;
 check('my themes: the same schema (fitted, choices, colours)', W.themeValue('bordersWidth', 13) === 14 && W.themeValue('namesScale', 99) === 2 && W.themeValue('namesFont', 'bad') === undefined && W.themeValue('preset', 'legendv1') === 'legendv1' && W.themeValue('bgColor', 'url(x)') === undefined && W.themeValue('bgColor', '#010203') === '#010203');
 check('my themes: every default it takes is kept exactly', Object.keys(TD).every(k => { const v = W.themeValue(k, TD[k]); return v === undefined || v === TD[k]; }));
 

@@ -19852,7 +19852,7 @@ var LM_THEME_DEFAULTS = Object.freeze(Object.assign({}, defaultSettings));
 var LM_THEME_COLOR = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|[a-z]+)$/i;
 /* The valid theme values, as LM_SETTINGS_SCHEMA is for the gameplay settings: [min, max, step]
  * (step 0 = any value in the range), { choices: [...] } or { color: true }. It is the one schema
- * for loading, importing, settings profiles, My themes, the theme presets and the Theme
+ * for loading, importing, My themes, the theme presets and the Theme
  * tab sliders (Settings.addSliderBox builds its range from it). Ranges and steps are those of the
  * Theme tab sliders, the lists those of its selects. */
 var LM_THEME_SCHEMA = (function () {
@@ -21767,8 +21767,8 @@ function lmFoldClickFollow(s) {
  * current zoom as zoom level 1-5; Skin collections, part of the player profiles now; the Command
  * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled; the old Multibox toggle back;
  * Open the Lab; the keys that only opened a window or a panel or switched a rarely changed setting
- * (their window, panel or switch stays); Reconnect to the previous server) is free. For the stored hotkeys (loadHotkeys) and a settings
- * profile's (profiles.js), so an older set keeps those keys. Returns true when map changed. */
+ * (their window, panel or switch stays); Reconnect to the previous server; the Settings profiles
+ * window, deleted with the settings profiles) is free. For the stored hotkeys (loadHotkeys). Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
     var gone = /^hk-(?:lmLab|analytics|performanceMode|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|middleMultiView|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer)$/;
@@ -21824,7 +21824,7 @@ function lmKillerShown(now) {
     return k ? { nick: String(k.nick || ''), virus: !!k.virus, mass: Number(k.mass) || 0 } : null;
 }
 /* S5: one place announces gameplay setting changes. Every path that changes one (switch,
- * slider, text box, select, hotkey toggle, profile, preset, gamepad, import of a part) saves
+ * slider, text box, select, hotkey toggle, preset, gamepad, import of a part) saves
  * through application.saveSettings(defaultmapsettings, 'ogarioSettings'); the save compares
  * the player's values (perf.js toJSON leaves out Adaptive performance's temporary ones) with
  * the last saved ones and sends one 'settingsChange' per changed key. A slider is announced
@@ -21877,8 +21877,6 @@ var LM_EXPORT_KEYS = [
     { key: 'lm-mobile-prefs', type: 'o' },
     { key: 'lmGamepad', type: 'o' },
     { key: 'lm-mobile-layouts', type: 'o' },
-    { key: 'lmSettingsProfiles', type: 'a' },
-    { key: 'lmSettingsProfilesRules', type: 'o' },
     { key: 'lmHudLayouts', type: 'o' },
     { key: 'lmThemeWorkshop', type: 'o' },     /* My themes (ogario/modules/mythemes.js) */
     { key: 'lmPracticeCfg', type: 'o' },
@@ -21909,12 +21907,6 @@ function lmExportExtras(ls) {
             if (lmExportFits(e, v)) out[e.key] = lmExportPick(e, v);
         } catch (err) { }
     });
-    /* old Gamepad window setups still waiting for a free profile go with the buttons, in the old
-     * list (ogario/modules/profiles.js moves them again after the import) */
-    try {
-        var P = window.LMProfiles, gp = P && typeof P.exportGamepad === 'function' ? P.exportGamepad(out.lmGamepad) : null;
-        if (lmExportFits({ type: 'o' }, gp)) out.lmGamepad = gp;
-    } catch (err) { }
     return out;
 }
 /* writes the registered keys of an import through set(key, text) / remove(key) (the import's
@@ -25639,8 +25631,7 @@ function thelegendmodproject() {
          * value is stored (after Adaptive performance put its lowered values back), presets and
          * their Undo call it for their keys.
          * - One of the keys set while the mode is on (switch, hotkey, preset): the value is the
-         *   player's, it leaves the copy. Not for the mode's own changes, nor for a settings
-         *   profile (it brings its own copy).
+         *   player's, it leaves the copy. Not for the mode's own changes.
          * - The mode turned off: a key that no longer has the value the mode gave it was changed
          *   meanwhile some other way (a slider, a script), so it leaves the copy too. */
         _lmPerfModeOwn(id, value) {
@@ -25849,7 +25840,7 @@ function thelegendmodproject() {
             }
             if (extraChanged) this.saveSettings(extra, 'ogarioPlayerProfilesExtra');
         },
-        /* Profile count slider (and a settings profile that sets the count): the list changes at
+        /* Profile count slider: the list changes at
          * once (it changed only on the next load). The typed nick/skin are kept first; a selected
          * profile that is cut off gives way to the first one, as at loading, and is selected again
          * when a higher count brings it back in the same session (30 -> 10 -> 30 while dragging);
@@ -26684,9 +26675,8 @@ function thelegendmodproject() {
                  * their side effects run); the old values are kept for Undo. Nothing changes
                  * without a click. */
                 var _lmTx = function (k, en) { var s = window.lmT && window.lmT(k); return (!s || s === k) ? en : s; };
-                /* The one list of starter setups: this row applies one, and Settings profiles
-                 * (ogario/modules/profiles.js, application.lmPresets) create a profile from one.
-                 * lbl: text keys of settings that have no menu label. */
+                /* The one list of starter setups: this row applies one (application.lmPresets for
+                 * scripts and checks). lbl: text keys of settings that have no menu label. */
                 var presets = {
                     /* with the switches its options need: Stats for FPS / PPS, Cursor tracking for
                      * split prediction (its line or bubble look stays the player's) */
@@ -26722,7 +26712,7 @@ function thelegendmodproject() {
                     if (after && typeof application[after] === 'function') application[after]();
                 };
                 /* The values from before the first of consecutive presets, for Undo (a reset and an
-                 * import reload the page; a settings profile updates it, _lmPresetUndoSet). Undo puts
+                 * import reload the page). Undo puts
                  * back the keys the presets set, also over a change by hand made since (the
                  * confirmation says so: "Undo puts them back"). */
                 var undoKey = 'lmPresetUndo';
@@ -26738,20 +26728,7 @@ function thelegendmodproject() {
                 });
                 var undoBtn = $('<button type="button" class="btn btn-xs lm-preset-undo" data-i18n="lmPresetUndo"></button>').text(_lmTx('lmPresetUndo', 'Undo preset')).appendTo(row);
                 var newBtn = $('<button type="button" class="btn btn-xs lm-new-toggle" data-i18n="lmShowNewOptions"></button>').text(_lmTx('lmShowNewOptions', 'Show new options')).appendTo(row);
-                /* named sets of all settings, theme and hotkeys (ogario/modules/profiles.js) */
-                $('<button type="button" class="btn btn-xs lm-profiles-open" data-i18n="lmSettingsProfiles"></button>').text(_lmTx('lmSettingsProfiles', 'Settings profiles')).appendTo(row).on('click', function () {
-                    if (window.LMProfiles) window.LMProfiles.open();
-                    else if (window.toastr) toastr.info(lmT('game1.set.profilesLoading'));
-                    return false;
-                });
                 undoBtn.toggle(!!undoSnap);
-                /* a settings profile, its Undo or a backup replaces settings: profiles.js stores what is
-                 * left of the values from before the preset (null: none) and the row follows it, else
-                 * Undo preset would put the replaced values back over the profile's */
-                application._lmPresetUndoSet = function (rest) {
-                    undoSnap = rest && typeof rest === 'object' && Object.keys(rest).length ? rest : null;
-                    undoBtn.toggle(!!undoSnap);
-                };
                 box.append(row);
                 row.on('click', '.lm-preset-btn', function () {
                     var p = presets[$(this).attr('data-preset')];
@@ -27001,7 +26978,7 @@ function thelegendmodproject() {
                  * recorded in _lmHandlePacket, which Sigmally and Senpa packets never reach */
                 var SRV_AGARIO = ['agario'], SRV_REPLAYS = ['agario', 'expandingland', 'garix', 'imsolo', 'agar2', 'deltio', 'private'];
                 var SRV = { hudMergeSound: SRV_AGARIO, splitPrediction: SRV_AGARIO, recordReplays: SRV_REPLAYS };
-                /* server type (window.legendmod.serverType) -> its name; private servers: modules.profiles.serverPrivate */
+                /* server type (window.legendmod.serverType) -> its name; private servers: pkg.n56.protoPriv */
                 // i18n-ok: server proper names
                 var SRV_NAMES = { agario: 'agar.io', expandingland: 'Expanding Land', senpa: 'Senpa', garix: 'Garix', sigmally: 'Sigmally', imsolo: 'Imsolo', agar2: 'Agar2', deltio: 'delt.io', private: '' };
                 var parentOf = {}, keys = [];
@@ -27031,7 +27008,7 @@ function thelegendmodproject() {
                 var srvNote = function (types) {
                     var type = srvType(window.legendmod);
                     if (!type || types.indexOf(type) >= 0) return '';
-                    return app._lmMenuText('lmDepServer') + ' (' + (SRV_NAMES[type] || lmT('modules.profiles.serverPrivate')) + ')';
+                    return app._lmMenuText('lmDepServer') + ' (' + (SRV_NAMES[type] || lmT('pkg.n56.protoPriv')) + ')';
                 };
                 var mark = function (it, why) {
                     var was = it.hasClass('lm-dep-off');
@@ -27858,8 +27835,8 @@ function thelegendmodproject() {
             }
         },
         setHideSkinUrl() {
-            /* the eye button is shown while the address is hidden: the Streamer preset or a
-             * settings profile turns this on, and nothing else in the menu turns it off */
+            /* the eye button is shown while the address is hidden: the Streamer preset
+             * turns this on, and nothing else in the menu turns it off */
             if (defaultmapsettings.hideSkinUrl) {
                 $("#hide-url").addClass("ogicon-eye-blocked").show();
                 $("#skin").addClass("hide-url");
@@ -83254,7 +83231,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             ) {
                 hotkeys = storedHotkeys;
                 /* commands merged into others or removed: their keys go to the new command or are
-                 * free again (lmRenameOldHotkeys, also for settings profiles) */
+                 * free again (lmRenameOldHotkeys) */
                 lmRenameOldHotkeys(hotkeys);
                 this.migrateBrowserSpecificHotkeys();
                 this.addMissingDefaultHotkeys();
@@ -87760,17 +87737,9 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading gamepad script:', e);
     }
-    /* Settings profiles window (Settings > Settings profiles);
-     * its automatic switching is off until turned on there */
-    try {
-        var profilesScript = document.createElement('script');
-        profilesScript.type = 'text/javascript';
-        profilesScript.src = 'https://www.legendmod.ml/ogario/modules/profiles.js?v=' + (window.OgVer || '');
-        profilesScript.charset = 'utf-8';
-        document.body.appendChild(profilesScript);
-    } catch (e) {
-        console.warn('[LM] Error loading settings profiles script:', e);
-    }
+    /* Settings profiles are removed: the named sets, the automatic switching rules, the automatic
+     * backups, the profile Undo and the old gamepad setups waiting for a profile are deleted from this browser */
+    try { ['lmSettingsProfiles', 'lmSettingsProfilesRules', 'lmSettingsBackups', 'lmSettingsProfilesUndo', 'lmSettingsProfilesLast', 'lmGamepadPending'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* The notification centre is removed: its list of past toasts and its muted categories are
      * deleted from this browser */
     try { localStorage.removeItem('lmNotifications'); localStorage.removeItem('lmNotificationPrefs'); } catch (e) { }

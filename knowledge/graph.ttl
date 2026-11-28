@@ -9,7 +9,7 @@
   schema:operatingSystem "Web browser" ;
   schema:softwareVersion "3.702" ;
   schema:inLanguage "en", "ar", "bg", "de", "el", "es", "fr", "id", "it", "ja", "nl", "pl", "pt", "ru", "tr", "zh" ;
-  schema:featureList "Custom skins", "Video skins", "Themes", "Configurable controls", "Multiboxing", "Replay tools", "Gamepad support", "Mobile touch controls", "Settings profiles", "Performance diagnostics", "Adaptive performance", "Chat system", "HUD helpers", "Accessibility features", "Streamer mode" ;
+  schema:featureList "Custom skins", "Video skins", "Themes", "Configurable controls", "Multiboxing", "Replay tools", "Gamepad support", "Mobile touch controls", "Performance diagnostics", "Adaptive performance", "Chat system", "HUD helpers", "Accessibility features", "Streamer mode" ;
   schema:offers [ a schema:Offer ; schema:price "0" ; schema:priceCurrency "USD" ] ;
   schema:isRelatedTo <https://expanding.land/#game> ;
   lm:hasFeature <https://www.legendmod.ml/knowledge/#feature-controls>, <https://www.legendmod.ml/knowledge/#feature-skins>, <https://www.legendmod.ml/knowledge/#feature-themes>, <https://www.legendmod.ml/knowledge/#feature-multibox>, <https://www.legendmod.ml/knowledge/#feature-replays>, <https://www.legendmod.ml/knowledge/#feature-gamepad>, <https://www.legendmod.ml/knowledge/#feature-performance>, <https://www.legendmod.ml/knowledge/#feature-accessibility> .

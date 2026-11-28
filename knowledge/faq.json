@@ -70,10 +70,6 @@
       "answer": "Part of the Theme presets in the Theme tab: under the Theme preset list, save the current theme under a name (up to 30), apply one by picking it, Update it with the current theme (the last 5 versions are kept and an older version can be picked to bring it back) or delete it. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS."
     },
     {
-      "question": "What are Settings Profiles?",
-      "answer": "Named sets of all gameplay and visual settings (up to 30 profiles) that can be switched instantly. Auto-switching per server type, game mode or input device. 5 automatic backups."
-    },
-    {
       "question": "What are User Scripts / Plugins?",
       "answer": "5 script slots for custom JavaScript extensions with plugin header format, settings API (up to 20 settings), version compatibility checking, and a catalogue of example plugins."
     },
@@ -99,7 +95,7 @@
     },
     {
       "question": "How do I export or import settings?",
-      "answer": "Open Settings → Profiles → Export to save all your settings, themes and player profiles as a JSON file. Use Import to load them on another device. Settings Profiles (up to 30) can also auto-switch per server type, game mode or input device."
+      "answer": "Open Settings → Profiles → Export to save all your settings, themes and player profiles as a JSON file. Use Import to load them on another device."
     },
     {
       "question": "What is the LMEvents API?",

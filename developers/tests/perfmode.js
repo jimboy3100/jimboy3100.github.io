@@ -1,5 +1,5 @@
 /* Performance mode's copy of the settings it turns off, with Adaptive performance, presets,
- * settings profiles and changes by hand (ogario/ogario.v4.js: _lmPerfModeOwn, setSettings and its
+ * and changes by hand (ogario/ogario.v4.js: _lmPerfModeOwn, setSettings and its
  * performanceMode case, the presets row; ogario/modules/perf.js loaded as it is).
  * Precedence: what the player sets while the mode is on wins over the copy; the copy holds the
  * player's own values, never one Adaptive performance has lowered for now.
@@ -192,20 +192,6 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     check('Undo then adaptive back to 0: the player\'s values', p.S.jellyPhisycs === true && p.S.suckAnimation === true);
 }
 
-/* 7. a settings profile applied while the mode is on (its own copy), then the mode off */
-{
-    const p = page({ settings: ON });
-    p.user('performanceMode', true);
-    /* what profiles.js does: the profile's copy written, its values set with _lmPerfApplying */
-    const profCopy = Object.assign({}, ON, { jellyPhisycs: false, highDPI: false });
-    p.store.lmPerfBackup = JSON.stringify(profCopy);
-    p.A._lmPerfApplying = true;
-    try { p.user('eatPulse', false); } finally { p.A._lmPerfApplying = false; }
-    check('profile values do not change the profile\'s copy', JSON.stringify(p.backup()) === JSON.stringify(profCopy));
-    p.user('performanceMode', false);
-    check('mode off: the profile\'s copy comes back', p.S.jellyPhisycs === false && p.S.highDPI === false && p.S.videoSkins === true && p.S.eatPulse === true);
-}
-
 /* 8. a reload while on: the copy in storage still gives way to later hand changes */
 {
     const first = page({ settings: Object.assign({}, ON, { showBgSectors: false }) });
@@ -264,15 +250,15 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     check('Streamer preset Undo: Stream mode and Hide skin URL off again, the eye buttons follow', q.S.streamMode === false && q.S.hideSkinUrl === false && q.S.hidecountry === false && eyes.slice(2).sort().join() === 'stream:false,url:false');
 }
 
-/* 11b. the merged presets: the profiles' templates are presets now (one list) */
+/* 11b. the merged presets: the old profile templates are presets (one list) */
 {
     const q = page();
-    check('one list: the menu publishes the presets for Settings profiles', !!q.A.lmPresets && Object.keys(q.A.lmPresets).join() === 'competitive,battery,streamer,reducedMotion,cleanHud,ffa,teams,multibox');
+    check('one list: the menu publishes the presets', !!q.A.lmPresets && Object.keys(q.A.lmPresets).join() === 'competitive,battery,streamer,reducedMotion,cleanHud,ffa,teams,multibox');
     q.preset('battery');
     check('Battery saver: also High DPI and background sectors off (from the Mobile template)', q.S.highDPI === false && q.S.showBgSectors === false && q.S.jellyPhisycs === false);
     q.undo();
     q.preset('competitive');
-    check('Competitive: also split prediction (from the profiles template)', q.S.splitPrediction === true && q.S.oppColors === true);
+    check('Competitive: also split prediction (from the old profiles template)', q.S.splitPrediction === true && q.S.oppColors === true);
     q.undo();
     check('Competitive Undo: split prediction back off', q.S.splitPrediction === false);
     q.preset('multibox');
@@ -280,12 +266,12 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     q.undo();
 }
 
-/* 11c. Adaptive performance and changes by hand, profiles and the same Performance mode value */
+/* 11c. Adaptive performance and changes by hand, the mode's own changes and the same Performance mode value */
 {
     const AD = { adaptivePerf: true, adaptivePerfToasts: false };
     const p = page({ settings: Object.assign({}, ON, AD) });
     p.ctx.LMPerf._setLevel(2);
-    /* a settings profile with the mode as it is (profiles.js, same value), and a switch sending the same value */
+    /* a script with the mode as it is (same value), and a switch sending the same value */
     p.ctx.LMPerf.onSetting('performanceMode', false);
     p.ctx.LMPerf.onSetting('performanceMode');
     p.user('performanceMode', false);
@@ -295,11 +281,11 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     const q = page({ settings: Object.assign({}, ON, AD, { showBgSectors: false, videoSkins: false }) });
     q.ctx.LMPerf._setLevel(2);
     q.user('showBgSectors', true);
-    /* a settings profile's value is not such a choice (the mode's own changes neither) */
+    /* a value set with _lmPerfApplying (the mode's own changes) is not such a choice */
     q.A._lmPerfApplying = true;
     try { q.user('videoSkins', true); } finally { q.A._lmPerfApplying = false; }
     q.ctx.LMPerf._setLevel(2);
-    check('a key turned on by hand while its level is on stays on; a profile value is lowered for now', q.S.showBgSectors === true && q.S.videoSkins === false && q.ctx.LMPerf.userValue('videoSkins') === true);
+    check('a key turned on by hand while its level is on stays on; a value of the mode itself is lowered for now', q.S.showBgSectors === true && q.S.videoSkins === false && q.ctx.LMPerf.userValue('videoSkins') === true);
     /* Adaptive performance off and on again starts afresh: the choice no longer blocks it */
     q.S.adaptivePerf = false; q.ctx.LMPerf.configChanged();
     q.S.adaptivePerf = true; q.ctx.LMPerf.configChanged();
@@ -359,7 +345,7 @@ const vals = (S) => KEYS.map((k) => k + '=' + S[k]).join(',');
     check('Competitive Undo: Cursor tracking and Stats back off', q.S.cursorTracking === false && q.S.showStats === false);
 }
 
-/* 11f. the preset Undo: its copy goes only when everything is back (after a profile: profiles.js) */
+/* 11f. the preset Undo: its copy goes only when everything is back */
 {
     const q = page({ settings: ON });
     let fails = false;

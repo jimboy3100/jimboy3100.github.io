@@ -130,43 +130,26 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('trigger: digital trigger (pressed, value 0) counts',c.G._buttonDown({pressed:true,value:0},6,0.9)===true);
   check('trigger: other buttons ignore the threshold',c.G._buttonDown({pressed:true,value:0.3},0,0.9)===true); }
 { const G=page().G;
-  const bad=G._cleanConfig({map:{0:'<script>',1:5,2:'hk-a b',3:'hk-ok',4:'none',99:'split'},profiles:[
-    {name:' My  <pad> ',map:{0:'menu'},opts:{gamepadDeadzone:9,gamepadMoveCurve:'2',gamepadInvertX:'true',gamepadVibrate:true,evil:1}},
-    {name:'my pad',map:{}},{name:''},{name:'x'.repeat(50)},null,[],'str',{name:7}]});
+  const bad=G._cleanConfig({map:{0:'<script>',1:5,2:'hk-a b',3:'hk-ok',4:'none',99:'split'},profiles:[{name:'My pad',map:{0:'menu'}}]});
   check('validate: bad map entries keep their default',bad.map[0]==='hk-split'&&bad.map[1]==='hk-macroFeed'&&bad.map[2]==='hk-doubleSplit'&&bad.map[3]==='hk-ok'&&bad.map[4]==='none'&&!(99 in bad.map));
-  const p0=bad.profiles[0];
-  check('validate: names cleaned, duplicates and unusable profiles dropped',bad.profiles.length===2&&p0.name==='My pad'&&bad.profiles[1].name.length===32);
-  check('validate: opts clamped, wrong types and unknown keys (also the removed invert / vibrate) dropped',same(p0.opts,{gamepadDeadzone:0.5}));
-  check('validate: profile map filled to 16 buttons',p0.map[0]==='menu'&&p0.map[1]==='hk-macroFeed'&&Object.keys(p0.map).length===16);
-  check('validate: not an object gives the defaults',same(G._cleanConfig('x').map,G.defaultMap())&&same(G._cleanConfig([1]).profiles,[]));
-  const many=[];for(let i=0;i<30;i++)many.push({name:'p'+i});
-  check('validate: at most 20 profiles',G._cleanConfig({profiles:many}).profiles.length===20);
+  check('validate: the named setups of older versions are not kept (settings profiles are removed)',!('profiles' in bad)&&Object.keys(bad).join()==='v,map');
+  check('validate: not an object gives the defaults',same(G._cleanConfig('x').map,G.defaultMap())&&same(G._cleanConfig([1]).map,G.defaultMap()));
   check('validate: NaN / Infinity refused',G._cleanOpt('gamepadZoomSens',NaN)===undefined&&G._cleanOpt('gamepadZoomSens',Infinity)===undefined);
   const broken=page({store:{lmGamepad:'{not json'}});
   check('validate: broken JSON in storage gives the defaults',same(broken.G.getMap(),G.defaultMap())); }
-/* named profiles are Settings profiles now (ogario/modules/profiles.js moves the old list):
- * this file has no profile functions, but keeps an old list in storage until it is moved */
+/* no named setups any more: the old list in storage is deleted once at the load, the buttons in use stay */
 { const c=page();
-  check('profiles: no named-profile functions here any more',['profiles','saveProfile','loadProfile','deleteProfile'].every(k=>!(k in c.G)));
+  check('profiles: no named-profile functions here',['profiles','saveProfile','loadProfile','deleteProfile','release','_reload','_dropLegacy','_cleanProfile'].every(k=>!(k in c.G)));
   c.G.setButton(0,'hk-tripleSplit');
   const s2=JSON.parse(c.store.lmGamepad);
-  check('profiles: a save without an old list stores none',s2.v===1&&s2.map[0]==='hk-tripleSplit'&&!('profiles' in s2));
-  const old=page({store:{lmGamepad:JSON.stringify({v:1,map:{0:'split'},profiles:[{name:'Phone',map:{0:'hk-tripleSplit'},opts:{gamepadMoveRange:0.7}}]})}});
-  old.G.setButton(1,'hk-doubleSplit');
-  const s3=JSON.parse(old.store.lmGamepad);
-  check('profiles: an old list not moved yet survives a button change',s3.map[1]==='hk-doubleSplit'&&s3.profiles.length===1&&s3.profiles[0].name==='Phone'&&s3.profiles[0].opts.gamepadMoveRange===0.7);
-  old.store.lmGamepad=JSON.stringify({v:1,map:s3.map});old.G._reload();old.G.setButton(2,'none');
-  check('profiles: once moved (gone from storage), a save does not bring it back',!('profiles' in JSON.parse(old.store.lmGamepad))); }
-/* the old list kept until profiles.js has it: unusual names are names, the move keeps the buttons in use */
-{ const names=['constructor','toString','__proto__','hasOwnProperty'];
-  const o={store:{lmGamepad:JSON.stringify({v:1,map:{0:'split'},profiles:names.map(n=>({name:n,map:{0:'menu'}}))})}};
-  const c=page(o);
-  check('profiles: old setups named like built-in object properties are kept',c.G._cleanConfig(JSON.parse(o.store.lmGamepad)).profiles.map(p=>p.name).join()===names.join());
-  o.full=true;c.G.setButton(1,'hk-tripleSplit');o.full=false;
-  check('profiles: a button changed while the storage is full is in use',c.G.getMap()[1]==='hk-tripleSplit'&&JSON.parse(o.store.lmGamepad).map[1]!=='hk-tripleSplit');
-  check('profiles: once profiles.js has the old list, this copy goes and the buttons in use are saved',typeof c.G._dropLegacy==='function'&&c.G._dropLegacy()===true&&!('profiles' in JSON.parse(o.store.lmGamepad))&&JSON.parse(o.store.lmGamepad).map[1]==='hk-tripleSplit'&&JSON.parse(o.store.lmGamepad).map[0]==='hk-split');
-  c.G.setButton(2,'none');
-  check('profiles: a later save does not bring the old list back',!('profiles' in JSON.parse(o.store.lmGamepad))); }
+  check('profiles: a save stores the buttons only',s2.v===1&&s2.map[0]==='hk-tripleSplit'&&!('profiles' in s2));
+  const o={store:{lmGamepad:JSON.stringify({v:1,map:{0:'hk-tripleSplit'},profiles:[{name:'Phone',map:{0:'hk-split'}}]})}};
+  const old=page(o);
+  const s3=JSON.parse(o.store.lmGamepad);
+  check('profiles: an old list is deleted at the load, the buttons in use stay',!('profiles' in s3)&&s3.map[0]==='hk-tripleSplit'&&old.G.getMap()[0]==='hk-tripleSplit');
+  const of={full:true,store:{lmGamepad:JSON.stringify({v:1,map:{0:'hk-tripleSplit'},profiles:[{name:'Phone',map:{0:'hk-split'}}]})}};
+  const full=page(of);
+  check('profiles: storage full at the load: no error, the stored buttons are in use',full.G.getMap()[0]==='hk-tripleSplit'); }
 /* the button map is part of the Hotkeys window (merged from the Gamepad window's Buttons tab) */
 { const old=page({store:{lmGamepad:JSON.stringify({v:1,map:{0:'split',1:'feed',2:'doubleSplit',3:'respawn',4:'multiboxSwap',5:'split16',6:'hk-tripleSplit',9:'menu',10:'none'}})}});
   check('merge: old own actions are read as their hotkey commands',same(old.G.getMap(),{0:'hk-split',1:'hk-macroFeed',2:'hk-doubleSplit',3:'hk-quickResp',4:'hk-multiboxswap',5:'hk-split16',6:'hk-tripleSplit',7:'none',8:'none',9:'menu',10:'none',11:'none',12:'none',13:'none',14:'none',15:'none'}));

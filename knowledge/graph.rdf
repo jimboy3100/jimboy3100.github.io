@@ -33,7 +33,6 @@
     <schema:featureList>Replay tools</schema:featureList>
     <schema:featureList>Gamepad support</schema:featureList>
     <schema:featureList>Mobile touch controls</schema:featureList>
-    <schema:featureList>Settings profiles</schema:featureList>
     <schema:featureList>Performance diagnostics</schema:featureList>
     <schema:featureList>Adaptive performance</schema:featureList>
     <schema:featureList>Chat system</schema:featureList>

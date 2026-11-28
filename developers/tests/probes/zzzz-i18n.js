@@ -104,7 +104,7 @@
     if (greek(want) && norm(t.textContent).indexOf(norm(want)) !== 0 && !greek(t.textContent)) stale.push(f.id + ': ' + norm(t.textContent).slice(0, 24));
   });
   $('#og-options .options-box > h5').each(function () { if (greek(textLanguage[this.getAttribute('data-lm-head')]) && !greek(this.textContent)) stale.push('heading ' + norm(this.textContent).slice(0, 24)); });
-  var pre = [['.lm-presets-title', 'lmPresets'], ['.lm-preset-undo', 'lmPresetUndo'], ['.lm-new-toggle', 'lmShowNewOptions'], ['.lm-profiles-open', 'lmSettingsProfiles']];
+  var pre = [['.lm-presets-title', 'lmPresets'], ['.lm-preset-undo', 'lmPresetUndo'], ['.lm-new-toggle', 'lmShowNewOptions']];
   $('.lm-preset-btn').each(function () { var p = application.lmPresets && application.lmPresets[this.getAttribute('data-preset')]; if (p && p.key) pre.push([this, p.key]); });
   pre.forEach(function (p) { var e = $(p[0]).first(); if (e.length && norm(e.text()).replace(/:$/, '') !== norm(lmT(p[1]))) stale.push('presets: ' + norm(e.text()).slice(0, 24)); });
   if (!greek($('#lm-settings-search').attr('placeholder'))) stale.push('search box');

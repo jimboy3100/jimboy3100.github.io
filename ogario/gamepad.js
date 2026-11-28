@@ -1,13 +1,12 @@
 /* Legend Mod gamepad / controller support (standard browser Gamepad API).
  * Always on: it reads the pads only while one is connected (gamepadconnected starts the frame
  * loop, which ends when none is left), so without a controller it costs nothing. The old option
- * "gamepadEnabled" is ignored (old profiles and imports may still have it).
+ * "gamepadEnabled" is ignored (old imports may still have it).
  * The buttons are bound in the Hotkeys window like keys and mouse buttons: a key field takes a
  * pad button pressed while it has the focus ('PAD A' ... next to its key), Save keeps it, Close
  * undoes it, Restore gives the default buttons. Stick sensitivity, triggers and the live test
  * are in the Gamepad window (Hotkeys window > Gamepad; ogario/modules/gamepad-ui.js, loaded the
- * first time it opens). Named gamepad setups are
- * Settings profiles (gamepad-only ones, ogario/modules/profiles.js).
+ * first time it opens).
  * The button map is kept in localStorage 'lmGamepad' (JSON, checked on load); the sliders
  * are ordinary gameplay settings (gamepad* in defaultmapsettings).
  */
@@ -45,7 +44,7 @@
         9: 'menu'             // Start (toggle menu, like Esc)
     };
     /* The gamepad's own actions of older versions are the hotkey commands that do the same: a
-     * stored, imported or profile map is read with these (saved again only when it changes). */
+     * stored or imported map is read with these (saved again only when it changes). */
     var OLD_ACTIONS = { split: 'hk-split', feed: 'hk-macroFeed', doubleSplit: 'hk-doubleSplit', split16: 'hk-split16', multiboxSwap: 'hk-multiboxswap', respawn: 'hk-quickResp' };
     /* what a button runs when the command is not there (the hotkeys file not loaded yet) */
     var APP_FALLBACK = { 'hk-split': 'split', 'hk-doubleSplit': 'doubleSplit', 'hk-split16': 'split16' };
@@ -57,7 +56,6 @@
     /* actions that still work while the menu is open */
     var MENU_ACTIONS = { menu: 1, 'hk-quickResp': 1 };
     var STORE_KEY = 'lmGamepad';
-    var MAX_PROFILES = 20;
     /* the tuning settings: [min, max, default]. The
      * defaults give the behaviour from before they existed (stick range 0.45 of the screen,
      * linear, zoom 24 per step, triggers at half way). The sticks and the zoom are never inverted. */
@@ -77,9 +75,6 @@
     var announced = {};
     var suspended = false;   // the Gamepad window is open: buttons are tested there, not used
     var map = null;          // current button map (from storage, else the defaults)
-    /* the named profiles of older versions ({ name, map, opts }): only kept in storage until
-     * ogario/modules/profiles.js has made Settings profiles of them */
-    var legacyProfiles = [];
 
     function hasOwn(o, k) {
         return Object.prototype.hasOwnProperty.call(o, k);
@@ -143,33 +138,11 @@
         return out;
     }
 
-    /* profile names are shown with textContent, but keep them short and printable */
-    function cleanName(n) {
-        if (typeof n !== 'string') return '';
-        return n.replace(/[\u0000-\u001f\u007f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, 32);
-    }
-
-    function cleanProfile(p) {
-        if (!p || typeof p !== 'object' || Array.isArray(p)) return null;
-        var name = cleanName(p.name);
-        if (!name) return null;
-        return { name: name, map: cleanMap(p.map), opts: cleanOpts(p.opts) };
-    }
-
-    /* the stored config ({ v, map, profiles }) checked: anything else gives the defaults */
+    /* the stored config ({ v, map }) checked: anything else gives the defaults */
     function cleanConfig(c) {
-        var out = { v: 1, map: cleanMap(null), profiles: [] };
+        var out = { v: 1, map: cleanMap(null) };
         if (!c || typeof c !== 'object' || Array.isArray(c)) return out;
         out.map = cleanMap(c.map);
-        /* no prototype: a profile named "constructor" is a name like any other */
-        var seen = Object.create(null);
-        var list = Array.isArray(c.profiles) ? c.profiles : [];
-        for (var i = 0; i < list.length && out.profiles.length < MAX_PROFILES; i++) {
-            var p = cleanProfile(list[i]);
-            if (!p || seen[p.name.toLowerCase()]) continue;
-            seen[p.name.toLowerCase()] = true;
-            out.profiles.push(p);
-        }
         return out;
     }
 
@@ -184,9 +157,10 @@
             var raw = ls ? ls.getItem(STORE_KEY) : null;
             if (raw) c = JSON.parse(raw);
         } catch (e) { c = null; }
-        c = cleanConfig(c);
-        map = c.map;
-        legacyProfiles = c.profiles;
+        /* the named setups of older versions (settings profiles are removed): dropped once */
+        var old = !!(c && typeof c === 'object' && Object.prototype.hasOwnProperty.call(c, 'profiles'));
+        map = cleanConfig(c).map;
+        if (old) save();
     }
 
     /* false when the storage is full or blocked (the change still applies until a reload) */
@@ -194,9 +168,7 @@
         try {
             var ls = storage();
             if (!ls) return false;
-            var out = { v: 1, map: map };
-            if (legacyProfiles.length) out.profiles = legacyProfiles;
-            ls.setItem(STORE_KEY, JSON.stringify(out));
+            ls.setItem(STORE_KEY, JSON.stringify({ v: 1, map: map }));
             return true;
         } catch (e) { return false; }
     }
@@ -566,7 +538,7 @@
         var h = hkSetup();
         try { if (h && typeof h.setHotkey === 'function') h.setHotkey('PAD ' + KEY_NAMES[i], field.id); } catch (e) { }
     }
-    /* the fields show the buttons again (a settings profile, this file loaded after the window) */
+    /* the fields show the buttons again (this file loaded after the window) */
     function fieldsChanged() {
         var h = hkSetup();
         try { if (h && typeof h.showAllKeys === 'function') h.showAllKeys(); } catch (e) { }
@@ -684,8 +656,6 @@
             suspended = !!on;
             if (suspended) { setHolds({}); lastMove = null; }
         },
-        /* lets go of everything held (before the buttons are replaced from outside, e.g. a settings profile) */
-        release: function () { setHolds({}); },
         buttonDown: function (b, i) { return buttonDown(b, i, opt('gamepadTrigger')); },
         /* true while a button holds this hotkey command */
         isHeld: function (id) { return !!(hasOwn(holdActive, id) && holdActive[id]); },
@@ -694,14 +664,9 @@
         openWindow: openWindow,
         /* checks and pure helpers (developers/tests/gamepad.js) */
         _cleanConfig: cleanConfig,
-        _cleanProfile: cleanProfile,
         _cleanOpt: cleanOpt,
         _stickOffset: stickOffset,
-        _buttonDown: buttonDown,
-        /* a settings profile with other buttons: the Hotkeys window fields follow them */
-        _reload: function () { load(); fieldsChanged(); },
-        /* profiles.js has the old list now: it leaves this file's copy, the buttons in use are saved */
-        _dropLegacy: function () { if (!map) load(); legacyProfiles = []; return save(); }
+        _buttonDown: buttonDown
     };
     /* the Hotkeys window built before this file loaded shows the buttons now */
     fieldsChanged();

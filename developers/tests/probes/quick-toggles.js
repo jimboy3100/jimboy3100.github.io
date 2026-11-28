@@ -46,7 +46,7 @@
   $('.quick.quick-menu').trigger('click'); $('.quick.quick-menu').trigger('click');
   var q = document.getElementById('quick-menu');
   need('double click: closed again at once, no fade queued', !shown('quick-menu') && !$(q).is(':animated') && !defaultmapsettings.showQuickMenu);
-  // the bots panel cannot open while its button is hidden: a settings profile sets the flag, then setShowQuickBots (no sync follows)
+  // the bots panel cannot open while its button is hidden: a script or import sets the flag, then setShowQuickBots (no sync follows)
   app.syncQuickPanels = realSync;
   if (!agar) {
     defaultmapsettings.showQuickBots = true; app.setShowQuickBots();

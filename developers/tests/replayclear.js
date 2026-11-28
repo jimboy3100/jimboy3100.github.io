@@ -1,4 +1,4 @@
-/* "Record replays" switched off (by hand, a settings profile, a preset or an auto rule) must not
+/* "Record replays" switched off (by hand, a preset or a script) must not
  * free the recordings already in memory: only new packets stop, for the rest of this connection.
  * Freeing them is the explicit, confirmed "Clear recordings in memory" (window._lmRecClearMemory),
  * which keeps a replay that is playing, one being saved and the one still being recorded.
@@ -101,7 +101,7 @@ const pk = () => new DataView(new ArrayBuffer(8));
     check('on again: the next connection records', ctx.RecordedProtocol.next.length === 1);
 }
 
-/* joined with recording off, switched on during that game (a settings profile, a script or the
+/* joined with recording off, switched on during that game (a preset, a script or the
  * switch): nothing is recorded from the middle of the connection (it would have no map border, no
  * own cells and no times); the next connection records */
 {
@@ -136,7 +136,7 @@ const pk = () => new DataView(new ArrayBuffer(8));
     check('switch off again in the same game: told it is not recorded, not "next server" (' + t.join(' | ') + ')', t.length === 1 && /not recorded/i.test(t[0]));
     t = press(true);
     check('switch on again: only the next-server notice (' + t.join(' | ') + ')', t.length === 1 && /next server/i.test(t[0]));
-    /* a script or settings profile giving the value it already has: no notice */
+    /* a script or preset giving the value it already has: no notice */
     const n = toasts.length;
     ctx.setRec(true);
     check('the same value again: no notice', toasts.length === n);

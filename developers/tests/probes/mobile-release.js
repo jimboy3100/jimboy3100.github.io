@@ -1,5 +1,5 @@
 // Phone run: a held Feed button and the joystick are let go when the window loses focus or is left
-// (blur, pagehide), on a rotation and when a settings profile changes the phone controls, not only when
+// (blur, pagehide), on a rotation and when the stored phone controls are read again, not only when
 // the menu opens or the tab is hidden (up to 3.698 a Feed held through those kept feeding: the finger's
 // touchend never arrives there). The game's own feed (application.macroFeed) is counted, not run.
 (async () => {
@@ -25,7 +25,7 @@
     var cases = [['blur', function () { window.dispatchEvent(new Event('blur')); }],
       ['pagehide', function () { window.dispatchEvent(new Event('pagehide')); }],
       ['orientationchange', function () { window.dispatchEvent(new Event('orientationchange')); }],
-      ['settings profile', function () { H.reloadPrefs(); }]];
+      ['stored preferences read again', function () { H.reloadPrefs(); }]];
     info.feed = {};
     for (var i = 0; i < cases.length; i++) {
       calls = [];
