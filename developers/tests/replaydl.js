@@ -22,11 +22,15 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 /* ---- recording side ---- */
 let now = 1000000;
 const listeners = {};
+const visListeners = [], timers = [];
+let queued = 0;
 const ctx = {
     Math, isFinite, JSON,
     Date: { now: () => now },
     LMEvents: { on(n, f) { (listeners[n] || (listeners[n] = [])).push(f); } },
     defaultmapsettings: { dyingLightCycle: true },
+    document: { addEventListener(n, f) { if (n === 'visibilitychange') visListeners.push(f); } },
+    setTimeout(f) { timers.push(f); queued++; },
     catholicCalculator: 0, _lmRecSlotBytes: 0, _lmRecFull: false, _lmRecLive: true,
     RecordedProtocol: {}, temporaryRecordedProtocol: 'k'
 };
@@ -99,6 +103,18 @@ ctx.LMDyingLightDirector = null; m = newRec();
 check('no director: on without a clock', same(m.dl, [{ t: 0, on: 1, i: m.dl[0].i, cy: 1 }]));
 tick(30000); ctx._lmRecSample(lm);
 check('no director: no clock drift entries', m.dl.length === 1);
+/* a hidden tab: no frames, so no samples; the director pauses in its own visibilitychange handler */
+const runTimers = () => { while (timers.length) timers.shift()(); };
+const visChange = (hidden) => { visListeners.forEach(f => f()); running = !hidden; runTimers(); };
+ctx.LMDyingLightDirector = DIR; dlOn = true; running = true; clock = 0; m = newRec();
+tick(10000); visChange(true); const tHide = now - m.t0;
+tick(60000); visChange(false); const tShow = now - m.t0;
+check('hidden tab without frames: the stop and the start are recorded at their times',
+    same(m.dl.slice(1), [{ t: tHide, on: 1, i: m.dl[0].i, cy: 1, ck: 10000, ps: 1 }, { t: tShow, on: 1, i: m.dl[0].i, cy: 1, ck: 10000 }]));
+tick(5000); ctx._lmRecSample(lm);
+check('after the return: clock in step, no drift entry', m.dl.length === 3);
+dlOn = false; m = newRec(); queued = 0; visChange(true); visChange(false);
+check('theme never on in this recording: a visibility change does nothing', m.dl === undefined && queued === 0);
 
 /* ---- Replay Studio sidecar, library and .lm files ---- */
 const rsSrc = fs.readFileSync(path.join(root, 'ogario', 'modules', 'replaystudio.js'), 'utf8');

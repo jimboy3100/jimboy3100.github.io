@@ -5822,10 +5822,13 @@ function lmRecDlNext(list, t, st) {
     if (st.ps) e.ps = 1;
     return e;
 }
-window._lmRecDl = function () {
+/* at: the time of the change (Date.now() when absent) */
+window._lmRecDl = function (at) {
     var m = window._lmRecM();
     if (!m) return;
-    var e = lmRecDlNext(m.dl, Math.max(0, Date.now() - m.t0), lmRecDlState());
+    var t = Math.max(0, (at > 0 ? at : Date.now()) - m.t0);
+    if (m.dl && m.dl.length && t < m.dl[m.dl.length - 1].t) t = m.dl[m.dl.length - 1].t;
+    var e = lmRecDlNext(m.dl, t, lmRecDlState());
     if (!e) return;
     if (!m.dl) m.dl = [];
     if (m.dl.length < LM_REC_DL_MAX) m.dl.push(e);
@@ -5833,6 +5836,17 @@ window._lmRecDl = function () {
 if (window.LMEvents && typeof window.LMEvents.on === 'function') {
     window.LMEvents.on('dyingLightChange', function () { window._lmRecDl(); });
     window.LMEvents.on('settingsChange', function (d) { if (d && d.key === 'dyingLightCycle') window._lmRecDl(); });
+}
+/* A hidden tab gets no frames, so no 4/s sample sees the director's clock stop there: the stop
+ * and the start again are taken at the visibility change itself, read after the director's own
+ * handler has paused or resumed it (only once the theme was on in this recording). */
+if (typeof document !== 'undefined' && document && typeof document.addEventListener === 'function') {
+    document.addEventListener('visibilitychange', function () {
+        var m = window._lmRecM();
+        if (!m || !m.dl) return;
+        var at = Date.now();
+        setTimeout(function () { window._lmRecDl(at); }, 0);
+    });
 }
 //window.fpsloopsetter=60
 window.renderDelay = 0;
