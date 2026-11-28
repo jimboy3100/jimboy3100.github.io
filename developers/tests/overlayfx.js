@@ -1426,6 +1426,30 @@ reset(); chat('talk'); setSettings({ map: { noNames: true, showMass: false } });
     const n4 = drawReal(sm, false, 1).length + drawReal(sm, true, 1).length;
     check('cell of size 40 or less: no bubble (as before)', n4 === 0, n4);
 }
+/* the special effect (hat) and the FB friend badge in both branches of the real cell.draw follow
+ * the same switch: custom skins (the Canvas2D branch drew them with only Vanilla skins on, WebGL
+ * not, so they came and went as frames changed renderer) */
+{
+    const hatImg = window.iconSpecialSkinEffectsHat3;
+    let ok = true, info = '';
+    for (const cs of [true, false]) {
+        const n = [], f = [];
+        for (const gl of [false, true]) {
+            reset(); SEP.hatty = 'Hat';
+            setSettings({ map: { customSkins: cs, vanillaSkins: true, ownVanillaSkin: true, FBTracking: true } });
+            application.customSkinsMap = { 'hattyfacebookskin': 'fbk' }; application.customSkinsCache = { 'fbk_cached4': fbImage };
+            application.skins = { hatty: img('hattySkin', 64, 64) };
+            const c = makeCell({ x: 5, y: 8, size: 60, targetNick: 'hatty' });
+            LM.cells = [c];
+            drawReal(c, gl, 1);
+            n.push(recCtx.calls.filter((k) => k.im === hatImg).length);
+            f.push(recCtx.calls.filter((k) => k.im === fbImage).length);
+        }
+        info += ' [custom skins ' + cs + ': hat Canvas2D ' + n[0] + ' / WebGL ' + n[1] + ', badge ' + f[0] + ' / ' + f[1] + ']';
+        if (n[0] !== n[1] || n[0] !== (cs ? 1 : 0) || f[0] !== f[1] || f[0] !== (cs ? 1 : 0)) ok = false;
+    }
+    check('real cell.draw: hat and FB badge in both branches with custom skins on, in neither with them off (vanilla skins on)', ok, info);
+}
 check('real cell.draw: no draw errors', drawErrors === 0, drawErrors);
 console.error = errLog;
 

@@ -41272,9 +41272,12 @@ function thelegendmodproject() {
                                      * it is unrelated to jelly perimeter
                                      * simulation.
                                      */
+                                    /* with custom skins on, as lmFbBadge (the WebGL rule) */
                                     if (
                                         defaultmapsettings
-                                            .FBTracking
+                                            .FBTracking &&
+                                        defaultmapsettings
+                                            .customSkins
                                     ) {
                                         var nodeFb =
                                             application
@@ -41370,7 +41373,9 @@ function thelegendmodproject() {
                                     }
                                 }
                             }
-                            this.drawSpecialSkin(style, y)
+                            /* effects only with custom skins on, as in the WebGL renderer (skins
+                             * shown by Vanilla skins alone drew them here only) */
+                            if (defaultmapsettings.customSkins) this.drawSpecialSkin(style, y)
                         }
                         /* Multibox ring: over the skin, under the nick and mass.
                          * Cells drawn by WebGL get theirs in drawWebGLMultiboxRings(). */
