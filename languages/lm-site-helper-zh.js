@@ -13,7 +13,7 @@
 "site.helper.tabsTitle": "面板分頁",
 "site.helper.tabs": "HOME：更改名稱、密碼、地區與模式，或登入、遊玩、觀戰等<br>USER：個人資料、任務、造型、登出等<br>API：工具；建議開啟淺藍色按鈕，紫色的可自選<br>SETTINGS：畫布繪製工具，對遊戲非常有幫助！<br>THEME：介面自訂設定，包含 6 個小分頁<br>HOTKEYS：指令快捷鍵",
 "site.helper.moreTitle": "更多內容",
-"site.helper.more": "<i>Hide/Show everything 與 Timer calculator 是應 YouTuber 和任務玩家的要求加入的</i><br>可用圖片網址更換小地圖、排行榜、隊伍排行榜或主畫布，自訂訊息圖示（例如 http://i.imgur.com/RVBi3T1.gif），或更改聊天位置<br>建議在 TOOLS 分頁開啟 Shortcuts 按鈕。觀戰時可用望遠鏡（或按 Q）、複製工具、YouTube 按鈕或全螢幕<br>另有 Chat 按鈕可隱藏或顯示隊伍聊天，還有 6 個訊息圖示可傳送預設的 imgur 圖示或你自己的圖示",
+"site.helper.more": "<i>Hide/Show everything 與 Timer calculator 是應 YouTuber 和任務玩家的要求加入的</i><br>可用圖片網址更換小地圖、排行榜、隊伍排行榜或主畫布，自訂訊息圖示與 YouTube 影片（例如 http://i.imgur.com/RVBi3T1.gif），或更改聊天位置<br>建議在 TOOLS 分頁開啟 Shortcuts 按鈕。觀戰時可用望遠鏡（或按 Q）、複製工具、YouTube 按鈕或全螢幕<br>另有 Chat 按鈕可隱藏或顯示隊伍聊天，6 個訊息圖示可傳送預設的 imgur 圖示或你自己的圖示，還有 6 個訊息指令可直接對隊友的腳本下指令",
 "site.helper.more2": "另外還有 2 個側邊面板：左邊是一些小工具，右邊用來放你的設定檔。<br>在 SETTINGS -> IMPORT/EXPORT SETTINGS 匯入或匯出你的設定：貼上你的代碼（再匯入）或匯出<br>",
 "site.helper.faqTitle": "常見問題",
 "site.helper.thanksTitle": "使用的腳本 - 特別感謝",
