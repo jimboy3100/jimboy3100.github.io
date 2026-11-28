@@ -12,6 +12,8 @@
  *   particlePalette(), effect(name), setEffect(name, on): the themed death particle colours,
  *     the spawn burst and the Game Over card, each can be suppressed on its own
  *   getBackground(): { url, img, alpha } of the map scene while on, else null
+ *   virusTexture(): the infected virus picture the renderers draw inside every virus while on
+ *     (effect 'virus'), else null
  *   hasForegroundFx(), needsThreatData(), addPart({ name, start(gen, api), stop(), fx, threat, background(), replay(), changed(),
  *     essential }): an essential part that cannot start undoes the whole activation, another one fails alone
  *     changed(): an effect was allowed or suppressed, or the intensity changed, while on
@@ -47,7 +49,10 @@
     var PARTICLES = Object.freeze(['#a12b30', '#6e1a1d', '#3b0d10']);
     var SPAWN_COLOUR = '#a12b30';
     /* each effect can be suppressed on its own (setEffect); none of them does any work while off */
-    var FX = { variants: true, particles: true, spawn: true, gameOver: true, threat: true };
+    var FX = { variants: true, particles: true, spawn: true, gameOver: true, threat: true, virus: true };
+    /* the infected virus picture (manifest effects: virus, 150 px), drawn by the renderers
+     * inside the virus body over its colour; the virus shape, colour, mass and ranges stay */
+    var VIRUS_URL = IMG + 'dyinglight/effects/virus-150.webp';
     var SCENE_URL = IMG + 'dyinglight/backgrounds/back0-1920.webp', SCENE_SMALL = IMG + 'dyinglight/backgrounds/back0-1280.webp';
     /* the WebP copy of dyinglightbabyteamboard.png (manifest: teamboard, 3 KB instead of 73 KB) */
     var MINIMAP_URL = IMG + 'dyinglight/interface/teamboard-323.webp';
@@ -731,6 +736,8 @@
         },
         /* the zombie designs { id, key } (the keys getFallbackSkinKey gives) */
         variants: VARIANTS,
+        /* the virus picture's URL while on (unless suppressed), else null; asked once a frame */
+        virusTexture: function () { return state === 'on' && FX.virus ? VIRUS_URL : null; },
         /* the death particles' colours while on (unless suppressed), else null: the renderer
          * then keeps each victim's colour. Not in Teams (the team colours tell the sides apart;
          * no skins there either); the renderer keeps viruses and our own cells as they are. */
@@ -738,7 +745,8 @@
             var lm = W.legendmod;
             return state === 'on' && FX.particles && !(lm && lm.gameMode === ':teams') ? PARTICLES : null;
         },
-        /* an effect is on: variants, particles, spawn, gameOver, threat (the director's red edge) */
+        /* an effect is on: variants, particles, spawn, gameOver, threat (the director's red edge),
+         * virus (the virus picture) */
         effect: function (name) { return state === 'on' && FX[name] === true; },
         /* suppress (false) or allow (true) one effect; it applies at once, the theme stays on */
         setEffect: function (name, on) {

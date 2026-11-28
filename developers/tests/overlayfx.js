@@ -204,10 +204,10 @@ const lateSrc = block(src, lateA);
 const textClassSrc = block(src, src.indexOf('function irenderfromagario()'));
 const autoHideSrc = block(src, src.indexOf('setAutoHideCellInfo(t) {'));
 /* the multibox ring rule and the skin gate cell.draw uses (absent in older versions) */
-const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRing', 'lmSkinsShown', 'lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmWorldSkinKey'].map((n) => {
+const ringSrc = ['lmMultiboxRingPlayer', 'lmMultiboxRing', 'lmSkinsShown', 'lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmDlVirusKey', 'lmDlVirusDraw', 'lmWorldSkinKey'].map((n) => {
     const i = src.indexOf('\nfunction ' + n + '(');
     return i < 0 ? '' : block(src, i + 1);
-}).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache', '_lmDl'].map((n) => {
+}).join('\n') + '\n' + ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache', '_lmDl', '_lmDlVirus'].map((n) => {
     const m = new RegExp('\\nvar ' + n + ' = [^\\n]*').exec(src);
     return m ? m[0].slice(1) : '';
 }).join('\n');
@@ -1882,7 +1882,7 @@ const OWN = 'https://own.test/a.png', PEND = 'https://own.test/pending.png', ZOM
 const app = { customSkinsCache: { [OWN]: { width: 9 } }, _lmSkinCacheKey(u) { return u; }, loadSkin(c, u) { loads.push(u); } };
 const win = { legendmod: LMd, application: app };
 const env = { window: win, LM: LMd, application: app, defaultSettings: D.defaultSettings, defaultmapsettings: D.defaultmapsettings, ogarcopythelb: {}, ogario: {} };
-const R = new Function('return (' + F.factory.replace(/return R;\n\}$/, 'R.__dl = { sync: lmDlSync, key: lmWorldSkinKey }; return R;\n}') + ')')()(env);
+const R = new Function('return (' + F.factory.replace(/return R;\n\}$/, 'R.__dl = { sync: lmDlSync, key: lmWorldSkinKey, virus: function () { return _lmDlVirus; }, vdraw: lmDlVirusDraw }; return R;\n}') + ')')()(env);
 const X = R.__dl;
 const cell = (o) => Object.assign({ x: 0, y: 0, size: 60, targetNick: 'enemy', isPlayerCell: false, isPlayerCellMulti: false, isFood: false, isEjected: false, isVirus: false, removed: false, invisible: false }, o);
 const enemy = cell({});
@@ -1915,6 +1915,51 @@ check('  none for ' + Object.keys(no).join(', '), wrong.length === 0, wrong.join
 LMd.gameMode = ':teams';
 check('  none in Teams (no skins there)', X.key(enemy, null) === null);
 LMd.gameMode = ':ffa';
+
+/* the infected virus picture: its key once per frame (lmDlSync), loaded once; Cell.draw's
+ * lmDlVirusDraw clips it to the body path just filled, over the whole virus, at the body
+ * alpha times LM_DL_VIRUS_A, without the cell shadow, the context state given back */
+{
+    const VT = 'https://www.legendmod.ml/banners/dyinglight/effects/virus-150.webp';
+    let vtOn = true;
+    const n0 = loads.length;
+    check('virus picture: none while LMDyingLight has none to give', X.sync() === true && X.virus() === null && loads.length === n0);
+    dl.virusTexture = () => (vtOn ? VT : null);
+    check('  Dying Light on: its key, loaded once through loadSkin', X.sync() === true && X.virus() === VT && loads.length === n0 + 1 && loads[n0] === VT, loads.join());
+    app.customSkinsCache[VT] = { width: 9 };
+    X.sync();
+    check('  ... and not loaded again once in the skin cache', loads.length === n0 + 1);
+    vtOn = false;
+    check('  suppressed (setEffect virus): none', X.sync() === true && X.virus() === null);
+    vtOn = true;
+    X.sync();
+    const tex = { width: 256, name: 'virusTex' };
+    const rec = () => {
+        const c = { ops: [], globalAlpha: 0.4, shadowColor: 'rgba(0,0,0,0.35)', shadowBlur: 20, st: [] };
+        c.save = function () { this.st.push([this.globalAlpha, this.shadowColor, this.shadowBlur]); this.ops.push('save'); };
+        c.restore = function () { const t = this.st.pop(); this.globalAlpha = t[0]; this.shadowColor = t[1]; this.shadowBlur = t[2]; this.ops.push('restore'); };
+        c.clip = function () { this.ops.push('clip'); };
+        c.drawImage = function (im, x, y, w, h) { this.ops.push('draw ' + im.name + ' ' + [x, y, w, h].join(',') + ' a' + Math.round(this.globalAlpha * 1000) / 1000 + ' ' + this.shadowColor + ' ' + this.shadowBlur); };
+        return c;
+    };
+    app.getCachedSkin = (cache, key) => (key === VT ? tex : null);
+    const vir = cell({ x: 100, y: -50, size: 120, isVirus: true, maxPointRad: 128 });
+    let c = rec();
+    X.vdraw(c, vir, 120, false);
+    const A = Math.round(0.4 * 0.55 * 1000) / 1000;
+    check('  Cell.draw: clipped to the body path, the picture over the whole body at the body alpha x 0.55, no shadow, state back',
+        c.ops.join('|') === 'save|clip|draw virusTex -20,-170,240,240 a' + A + ' rgba(0,0,0,0) 0|restore' && c.globalAlpha === 0.4 && c.shadowBlur === 20, c.ops.join('|'));
+    c = rec();
+    X.vdraw(c, vir, 120, true);
+    check('  jelly perimeter: across its largest point (maxPointRad), as a jelly skin', c.ops.join('|') === 'save|clip|draw virusTex -28,-178,256,256 a' + A + ' rgba(0,0,0,0) 0|restore', c.ops.join('|'));
+    app.getCachedSkin = () => null;
+    c = rec();
+    X.vdraw(c, vir, 120, false);
+    check('  not loaded yet: nothing drawn, no clip', c.ops.length === 0, c.ops.join('|'));
+    delete app.getCachedSkin;
+    delete dl.virusTexture;
+    delete app.customSkinsCache[VT];
+}
 
 /* off again: as before */
 dl.on = false;

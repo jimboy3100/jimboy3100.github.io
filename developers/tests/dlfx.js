@@ -95,7 +95,7 @@ async function theme() {
         L.variants.every(v => fs.existsSync(path.join(root, v.key.replace('https://www.legendmod.ml/', '')))));
     E.emit('spawn', { time: 1 });
     check('off: no palette, no effect, no burst, no class, no spawn listener',
-        L.particlePalette() === null && !L.effect('spawn') && !fx.active && !cls.has('lm-dl-go') && !E._has('spawn'));
+        L.particlePalette() === null && !L.effect('spawn') && !fx.active && !cls.has('lm-dl-go') && !E._has('spawn') && L.virusTexture() === null);
 
     const p = L.enable({ confirm: false });
     flush();
@@ -124,6 +124,18 @@ async function theme() {
     check('Teams: no themed colours (the team colours tell the sides apart)', L.particlePalette() === null && L.isEnabled());
     ctx.legendmod.gameMode = ':ffa';
     check('...back in FFA: the themed colours', L.particlePalette() !== null);
+
+    /* the infected virus picture (drawn by the renderers inside every virus) */
+    const VT = 'https://www.legendmod.ml/banners/dyinglight/effects/virus-150.webp';
+    check('virus picture while on: the virus effect of the manifest, the file exists', L.virusTexture() === VT && L.effect('virus') &&
+        fs.existsSync(path.join(root, 'banners/dyinglight/effects/virus-150.webp')));
+    L.setIntensity('competitive');
+    check('  also in Competitive (a still look, like the skins and the scene)', L.virusTexture() === VT);
+    L.setIntensity('immersive');
+    L.setEffect('virus', false);
+    check('virus picture suppressed: none, the rest stays on', L.virusTexture() === null && L.isEnabled() && L.particlePalette() !== null);
+    L.setEffect('virus', true);
+    check('...and back', L.virusTexture() === VT);
 
     /* Game Over card */
     const css = head.kids.find(n => n.id === 'lm-dl-style');
@@ -170,7 +182,8 @@ async function theme() {
     setPos(7, 7);
     await wait(170);
     check('off: our burst ended, the pending try cancelled, no listener, no class, no palette, no design',
-        ours && !fx.active && !E._has('spawn') && !cls.has('lm-dl-go') && L.particlePalette() === null && L.getFallbackSkinKey(cell('alpha')) === null);
+        ours && !fx.active && !E._has('spawn') && !cls.has('lm-dl-go') && L.particlePalette() === null && L.getFallbackSkinKey(cell('alpha')) === null &&
+        L.virusTexture() === null);
     fx.active = true; fx.color = '#00ccff'; fx.startTime = 99;
     E.emit('spawn', { time: 7 });
     check('off: another burst is left alone, a spawn does nothing', fx.active && fx.color === '#00ccff' && fx.startTime === 99);

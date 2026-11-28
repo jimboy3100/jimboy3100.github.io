@@ -309,8 +309,8 @@ const protoSrc = '(function (env) {\n' +
     block('\nfunction lmSkinsShown(').slice(1) + '\n' + lmc.slice(1) + '\nvar _lmColorIntCache = new Map(), _lmColorCtx = null;\n' +
     /* the own colour and "Player 1 & 2" glow rules (absent in older versions) */
     ['lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor'].map((n) => src.includes('\nfunction ' + n + '(') ? block('\nfunction ' + n + '(').slice(1) + '\n' : '').join('') +
-    /* the world skin key, Dying Light off: the cell's own key (absent in older versions) */
-    (src.includes('\nfunction lmWorldSkinKey(') ? block('\nfunction lmWorldSkinKey(').slice(1) + '\nvar _lmDl = false;\n' : '') +
+    /* the world skin key, Dying Light off: the cell's own key, no virus picture (absent in older versions) */
+    (src.includes('\nfunction lmWorldSkinKey(') ? block('\nfunction lmWorldSkinKey(').slice(1) + '\nvar _lmDl = false, _lmDlVirus = null;\n' : '') +
     /* the gradient avatar of a cell without colour: stubbed to the plain grey under it */
     'function _getFallbackGradient() { return null; }\n' +
     /* the multibox ring of the cell you control (unit 1 while multiboxPlayerEnabled is set) */

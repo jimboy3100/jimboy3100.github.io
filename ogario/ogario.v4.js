@@ -7268,6 +7268,45 @@ function lmSkinsShown() {
  * check. Without LMDyingLight (only the old expansion script) its saved switch gives its one
  * zombie icon. */
 var _lmDl = false, _lmDlApi = null;
+/* _lmDlVirus: the customSkinsCache key of its infected virus picture (LMDyingLight.virusTexture)
+ * while it is on, else null (set by lmDlSync). Cell.draw (lmDlVirusDraw) and both WebGL virus
+ * paths draw it inside the virus body over the virus colour, at the body's alpha times
+ * LM_DL_VIRUS_A (the colour, and so the size colours of Virus colours, stays visible), under
+ * the stroke, the spikes, the glow and the mass. */
+var _lmDlVirus = null, LM_DL_VIRUS_A = 0.55;
+/* The cache key of the infected virus picture (loaded through loadSkin when needed, as
+ * lmDlSkinKey), or null: LMDyingLight's while it is on and not suppressed (setEffect('virus')),
+ * without it (only the old expansion's saved switch) its old virus icon. */
+function lmDlVirusKey(api) {
+    var app = window.application, url = null;
+    try {
+        if (api) url = typeof api.virusTexture === 'function' ? api.virusTexture() : null;
+        else url = typeof defaultSettings !== 'undefined' && defaultSettings ? defaultSettings.commanderImageDyingLightvirus : null;
+    } catch (e) { url = null; }
+    if (!url || typeof url !== 'string' || !app || !app.customSkinsCache || typeof app._lmSkinCacheKey !== 'function') return null;
+    var key = app._lmSkinCacheKey(url);
+    if (!app.customSkinsCache.hasOwnProperty(key)) app.loadSkin(app.customSkinsCache, url, undefined, true);
+    return key;
+}
+/* Cell.draw of a virus while _lmDlVirus is set, right after the body is filled: the picture
+ * clipped to that same body path (the jelly perimeter, the static spikes or the circle), r
+ * the virus radius (the jelly perimeter: its largest point, as a jelly skin), at the alpha of
+ * the body times LM_DL_VIRUS_A, without the cell shadow (the body already casts it). */
+function lmDlVirusDraw(ctx, cell, r, jelly) {
+    var app = window.application;
+    var node = app && app.customSkinsCache ? app.getCachedSkin(app.customSkinsCache, _lmDlVirus) : null;
+    if (!node) return;
+    var vr = jelly && cell.maxPointRad > 0 ? cell.maxPointRad : r;
+    ctx.save();
+    try {
+        ctx.clip();
+        ctx.shadowColor = 'rgba(0,0,0,0)';
+        ctx.shadowBlur = 0;
+        ctx.globalAlpha *= LM_DL_VIRUS_A;
+        ctx.drawImage(node, cell.x - vr, cell.y - vr, 2 * vr, 2 * vr);
+    } catch (e) { }
+    ctx.restore();
+}
 /* Its threat look asks for this (LMDyingLight.needsThreatData, _lmDlThr per frame): compareCells
  * then judges, in its own pass over the cells, how close the nearest danger to the player you
  * control is, and keeps only these numbers (read-only for others, window.lmDlThreat()):
@@ -7289,6 +7328,7 @@ function lmDlSync() {
     } catch (e) { on = false; api = null; thr = false; }
     _lmDl = on;
     _lmDlApi = api;
+    _lmDlVirus = on ? lmDlVirusKey(api) : null;
     if (!thr && _lmDlThr) { _lmDlThreat.valid = false; _lmDlThreat.level = 0; }
     _lmDlThr = thr;
     return on;
@@ -41006,6 +41046,12 @@ function thelegendmodproject() {
                              */
                             style.fill();
 
+                            /* Dying Light: its virus picture inside this body, before the
+                             * body alpha is restored (lmDlVirusDraw) */
+                            if (_lmDlVirus) {
+                                lmDlVirusDraw(style, this, y, _useDynamicJellyPath);
+                            }
+
 
                             if (
                                 s
@@ -65920,6 +65966,72 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         float outAlpha =
                             bodyAlpha;
 
+                        /*
+                         * Dying Light virus picture (skin layer = -3 - layer):
+                         * over the body inside it, at the body alpha times
+                         * LM_DL_VIRUS_A, as Cell.draw (lmDlVirusDraw).
+                         */
+                        if (
+                            v_skinLayer <
+                            -2.5
+                        ) {
+                            float vLayer =
+                                -v_skinLayer -
+                                3.0;
+                            vec2 vUV =
+                                clamp(
+                                    v_localWorld /
+                                    max(
+                                        v_radius,
+                                        0.0001
+                                    ) *
+                                    0.5 +
+                                    0.5,
+                                    vec2(0.0),
+                                    vec2(1.0)
+                                );
+                            vec4 vTex =
+                                vLayer >= 128.0 ?
+                                texture(
+                                    u_skinArray2,
+                                    vec3(
+                                        vUV,
+                                        vLayer - 128.0
+                                    )
+                                ) :
+                                texture(
+                                    u_skinArray,
+                                    vec3(
+                                        vUV,
+                                        vLayer
+                                    )
+                                );
+                            float vTexA =
+                                clamp(
+                                    vTex.a *
+                                    ${LM_DL_VIRUS_A.toFixed(4)} *
+                                    virusAlpha,
+                                    0.0,
+                                    1.0
+                                ) *
+                                bodyCoverage;
+                            premultiplied =
+                                vTex.rgb *
+                                vTexA +
+                                premultiplied *
+                                (
+                                    1.0 -
+                                    vTexA
+                                );
+                            outAlpha =
+                                vTexA +
+                                outAlpha *
+                                (
+                                    1.0 -
+                                    vTexA
+                                );
+                        }
+
                         premultiplied =
                             u_virusGlowColor *
                             glowAlpha +
@@ -68343,6 +68455,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* a layer is drawn in this frame: it is not reused before the frame after next */
         _lmSkinLayerUsed(layer) {
             lmSkinLayerTouch(this._glSkinLayers, layer, this._glSkinFrame || 0);
+        },
+        /* The skin layer of the Dying Light virus picture (_lmDlVirus) for a virus of the cell
+         * batch or the jelly batch, uploaded like a skin when it is not there yet, or -1 (not
+         * loaded yet, or not uploadable: the virus is then drawn without it). The caller checks
+         * glSkinArray afterwards, as after any skin upload. */
+        _lmDlVirusLayer() {
+            var key = _lmDlVirus, cache = application.customSkinsCache;
+            if (!key || !cache) return -1;
+            var layer = this.glSkinMap[key];
+            if (layer === undefined) {
+                var node = cache[key + '_cached'] || cache[key];
+                if (node && !node._failed && (node.naturalWidth > 0 || node.width > 0)) layer = this.uploadSkinTexture(key, node, false);
+            }
+            if (!(layer >= 0)) return -1;
+            application._lmTouchSkin(key);
+            this._lmSkinLayerUsed(layer);
+            return layer;
         },
         /* after an upload: the layer now holds node (looked up by keys); the skin that held it
          * before loses only its own mappings and is uploaded again when next drawn */
@@ -79290,6 +79419,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                                 true
                             )
                             : 0;
+                    /* a virus with the Dying Light picture: that layer over its body at
+                     * the body alpha times LM_DL_VIRUS_A, across its largest point
+                     * (textureRadius, as Cell.draw's lmDlVirusDraw) */
+                    var dlVirusLayer = -1;
+                    if (cell.isVirus && _lmDlVirus) {
+                        dlVirusLayer = this._lmDlVirusLayer();
+                        if (this.glSkinArray !== skinArrayAtStart) {
+                            return abortJellyLayout();
+                        }
+                    }
                     var fillStart =
                         this._lmJellyWriteFill(
                             cell,
@@ -79297,8 +79436,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             textureRadius,
                             bodyRGB,
                             jellyRing ? 0 : bodyAlpha,
-                            skinRes.layer,
-                            skinRes.alpha,
+                            dlVirusLayer >= 0 ? dlVirusLayer : skinRes.layer,
+                            dlVirusLayer >= 0 ? bodyAlpha * LM_DL_VIRUS_A : skinRes.alpha,
                             z
                         );
 
@@ -80550,9 +80689,17 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * No extra instance attributes and no larger VBO required.
                  */
 
+                /* a virus with the Dying Light picture: -3 - its layer (still < -1.5) */
+                var _dlVirusLayer = -1;
+                if (cell.isVirus && _lmDlVirus) {
+                    _dlVirusLayer = this._lmDlVirusLayer();
+                    if (this.glSkinArray !== skinArrayAtStart) {
+                        return abortCellBatch();
+                    }
+                }
                 data[idx + 7] =
                     cell.isVirus
-                        ? -2.0
+                        ? (_dlVirusLayer >= 0 ? -3.0 - _dlVirusLayer : -2.0)
                         : skinLayer;
 
                 data[idx + 8] =

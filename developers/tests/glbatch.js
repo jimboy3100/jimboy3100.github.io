@@ -18,6 +18,7 @@
  *   node developers/tests/glbatch.js --bench      + benchmark table
  *   node developers/tests/glbatch.js --fx         only the GL marks, FB badge / effects, merge timer, selected ring and cell contours
  *                                                 against Canvas2D (quick)
+ *   node developers/tests/glbatch.js --dlvirus    only the Dying Light virus picture, WebGL against Canvas2D (a few seconds)
  *     --ref REF      git revision of the reference version (default c677d1ba = 3.608)
  *     --old FILE     reference ogario.v4.js from a file instead of git
  *     --bodies a,b   body counts for --bench (default 100,500,1000,2000)
@@ -38,6 +39,7 @@ const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf(name); return i >= 0 && i + 1 < args.length ? args[i + 1] : def; };
 const BENCH = args.indexOf('--bench') >= 0;
 const FX = args.indexOf('--fx') >= 0;
+const DLVIRUS = args.indexOf('--dlvirus') >= 0;
 
 function findChrome() {
     if (process.env.CHROME_PATH) return process.env.CHROME_PATH;
@@ -81,8 +83,8 @@ const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag'
     'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch', 'lmSkinUnpremulLut', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinSlack', 'lmClockMs', 'lmSkinLayersGrow',
     'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing', 'lmUnitCellsInto',
     'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages', 'lmTextAtlasBankCap', 'lmTextAtlasUnit',
-    'lmSkinsShown', 'lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmWorldSkinKey', 'lmDlBackground', 'lmBgReady', 'lmBgKeepTheme', 'lmBgAlpha'];
-const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache', '_lmDl', '_lmDlThr', 'LM_BG_FADE_MS', 'LM_BG_BACK_FADE_MS'];
+    'lmSkinsShown', 'lmOwnColorPlaying', 'lmOwnBodyColor', 'lmMbShadowOn', 'lmMbShadowColor', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmDlVirusKey', 'lmDlVirusDraw', 'lmWorldSkinKey', 'lmDlBackground', 'lmBgReady', 'lmBgKeepTheme', 'lmBgAlpha'];
+const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache', '_lmDl', '_lmDlVirus', '_lmDlThr', 'LM_BG_FADE_MS', 'LM_BG_BACK_FADE_MS'];
 
 function rendererFactory(src) {
     src = src.replace(/\r\n/g, '\n');
@@ -582,6 +584,91 @@ function pageLib() {
         var err = gl.getError();
         gl.getExtension('WEBGL_lose_context').loseContext();
         return { ok: ok, px: Array.prototype.slice.call(px), glError: err };
+    }
+    /* The Dying Light virus picture: one virus (cfg.jelly: on its spiky jelly perimeter) drawn by
+     * the real WebGL batch with the picture in a skin layer (found by the real _lmDlVirusLayer
+     * through lmDlSync), and on a 2D canvas the way Cell.draw does it (the body path filled in
+     * the virus colour at the body alpha, then the real lmDlVirusDraw). The inside of the body,
+     * away from the stroke, is compared (premultiplied, as the GL canvas holds it). The factory
+     * must expose R.__dl = { sync: lmDlSync, draw: lmDlVirusDraw }. cfg.off: Dying Light off. */
+    function dlVirus(src, defaults, cfg) {
+        var r = 120, n = 96, pts = [];
+        /* alternating points a little further out, like movePoints for a virus */
+        for (var i = 0; i < n; i++) {
+            var pr = r + (i & 1 ? 0 : 5), an = i / n * 2 * Math.PI;
+            pts.push(Math.cos(an) * pr, Math.sin(an) * pr);
+        }
+        var o = setup(src, defaults, cfg, [{ id: 1, x: 0, y: 0, size: r, isVirus: true, maxPointRad: r + 5, pts: pts }]);
+        var R = o.R, env = o.env, gl = R.gl, VT = 'https://dl.test/virus.webp';
+        /* the picture as cacheSkin leaves it: 512 px cut to a circle; big colour fields, a hole
+         * and a half-transparent band */
+        var tex = document.createElement('canvas');
+        tex.width = tex.height = 512;
+        var t = tex.getContext('2d');
+        t.beginPath(); t.arc(256, 256, 256, 0, 2 * Math.PI); t.clip();
+        var cols = ['#e03030', '#30c040', '#3060f0', '#f0d030'];
+        for (var q = 0; q < 4; q++) { t.fillStyle = cols[q]; t.fillRect((q & 1) * 256, (q >> 1) * 256, 256, 256); }
+        t.clearRect(200, 200, 112, 112);
+        t.globalCompositeOperation = 'destination-out';
+        t.fillStyle = 'rgba(0,0,0,0.5)';
+        t.fillRect(0, 380, 512, 60);
+        tex._lmCircle = true;
+        var app = env.application;
+        app.customSkinsCache[VT] = tex;
+        app._lmSkinCacheKey = function (u) { return u; };
+        app.getCachedSkin = function (c, k) { return k ? c[k] || null : null; };
+        env.window.application = app;
+        env.window.LMDyingLight = { isEnabled: function () { return !cfg.off; }, virusTexture: function () { return VT; } };
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, R.glSkinArray);
+        gl.texSubImage3D(gl.TEXTURE_2D_ARRAY, 0, 0, 0, 4, 512, 512, 1, gl.RGBA, gl.UNSIGNED_BYTE, tex);
+        gl.bindTexture(gl.TEXTURE_2D_ARRAY, null);
+        R.glSkinMap[VT] = 4;
+        R.__dl.sync();
+        frame(o);
+        var ok = frame(o), px = pixels(R), err = gl.getError();
+        var c = document.createElement('canvas');
+        c.width = W; c.height = H;
+        var x = c.getContext('2d'), sc = cfg.scale, cell = env.LM.cells[0], ds = env.defaultSettings, dm = env.defaultmapsettings;
+        x.setTransform(sc, 0, 0, sc, W / 2 - R.camX * sc, H / 2 - R.camY * sc);
+        x.beginPath();
+        if (cfg.jelly) {
+            x.moveTo(cell.points[0].x, cell.points[0].y);
+            for (var k = 1; k < cell.points.length; k++) x.lineTo(cell.points[k].x, cell.points[k].y);
+        } else x.arc(cell.x, cell.y, r, 0, 2 * Math.PI, false);
+        x.closePath();
+        x.globalAlpha = dm.transparentViruses && ds.virusAlpha < 0.99 ? ds.virusAlpha : 1;
+        x.fillStyle = ds.virusColor;
+        x.fill();
+        R.__dl.draw(x, cell, r, !!cfg.jelly);
+        var ref = x.getImageData(0, 0, W, H).data;
+        /* the plain body colour (premultiplied), to tell that the picture is there */
+        var b = document.createElement('canvas').getContext('2d');
+        b.fillStyle = ds.virusColor; b.fillRect(0, 0, 1, 1);
+        var bc = b.getImageData(0, 0, 1, 1).data, ba = Math.round(x.globalAlpha * 255);
+        var res = { ok: ok, glError: err, n: 0, over8: 0, max: 0, sum: 0, pictured: 0, glPictured: 0 };
+        var cx = W / 2 - R.camX * sc, cy = H / 2 - R.camY * sc, lim = (r - 20) * sc;
+        for (var yy = Math.floor(cy - lim); yy <= cy + lim; yy++) {
+            for (var xx = Math.floor(cx - lim); xx <= cx + lim; xx++) {
+                var dx = xx + 0.5 - cx, dy = yy + 0.5 - cy;
+                if (dx * dx + dy * dy > lim * lim) continue;
+                var ci = (yy * W + xx) * 4, gi = ((H - 1 - yy) * W + xx) * 4, a = ref[ci + 3], d = Math.abs(a - px[gi + 3]), pd = 0, gd = 0;
+                for (var ch = 0; ch < 3; ch++) {
+                    var pre = ref[ci + ch] * a / 255;
+                    d = Math.max(d, Math.abs(pre - px[gi + ch]));
+                    pd = Math.max(pd, Math.abs(pre - bc[ch] * ba / 255));
+                    gd = Math.max(gd, Math.abs(px[gi + ch] - bc[ch] * ba / 255));
+                }
+                res.n++; res.sum += d;
+                if (d > res.max) res.max = d;
+                if (d > 8) res.over8++;
+                if (pd > 24) res.pictured++;
+                if (gd > 24) res.glPictured++;
+            }
+        }
+        res.mean = res.sum / Math.max(1, res.n);
+        if (cfg.dump) { res.pngGl = png(px); res.pngRef = c.toDataURL("image/png"); }
+        gl.getExtension('WEBGL_lose_context').loseContext();
+        return res;
     }
     /* Skin layer uploads: the same skins go through uploadSkinTexture of the reference and of the
      * working copy (decoded off the main thread, cut to the circle, put into a layer from a
@@ -1214,6 +1301,7 @@ function pageLib() {
         atlasCapacity: atlasCapacity,
         atlasOracle: atlasOracle,
         virusPixel: virusPixel,
+        dlVirus: dlVirus,
         skinUploads: skinUploads,
         /* for other page tests (developers/tests/skinbanks.js) */
         setup: setup,
@@ -1324,13 +1412,41 @@ async function main() {
             'window.__glbOld = ' + JSON.stringify(OLD.factory) + '; window.__glbNew = ' + JSON.stringify(NEW.factory) + '; ' +
             'window.__glbDefaults = ' + NEW.defaults + '; true');
 
+        /* ---- the Dying Light virus picture: WebGL against Canvas2D (--dlvirus: only this) ---- */
+        const dlFactory = NEW.factory.replace(/return R;\n\}$/, 'R.__dl = { sync: lmDlSync, draw: lmDlVirusDraw }; return R;\n}');
+        let dlFailed = 0;
+        if (dlFactory !== NEW.factory) {
+            await evaluate('window.__glbNewDl = ' + JSON.stringify(dlFactory) + '; true');
+            for (const jelly of [false, true]) {
+                for (const tr of [false, true]) {
+                    const cfg = { scale: 1, jelly: jelly, map: { virColors: false, virusGlow: false, showMass: false, transparentViruses: tr }, settings: { virusAlpha: 0.4 } };
+                    const nm = 'Dying Light virus picture, jelly ' + (jelly ? 'on' : 'off') + (tr ? ', transparent viruses 0.4' : '');
+                    if (opt('--dump', null)) cfg.dump = true;
+                    const v = await evaluate('__glb.dlVirus(__glbNewDl, __glbDefaults, ' + JSON.stringify(cfg) + ')');
+                    if (v.pngGl) { for (const k of ['pngGl', 'pngRef']) { fs.writeFileSync(path.join(opt('--dump'), 'dlvirus-' + (jelly ? 'j' : 'n') + (tr ? 't' : 'o') + '-' + k.slice(3).toLowerCase() + '.png'), Buffer.from(v[k].split(',')[1], 'base64')); delete v[k]; } }
+                    console.log('     ' + nm + ': ' + v.n + ' px inside, pictured ' + v.pictured + ' (WebGL ' + v.glPictured + '), differing > 8: ' + v.over8 + ', mean ' + v.mean.toFixed(2) + ', max ' + v.max.toFixed(0));
+                    const okv = v.ok && v.glError === 0 && v.pictured > v.n * 0.5 && v.over8 <= v.n * 0.01 && v.mean <= 1.5;
+                    if (!okv) dlFailed++;
+                    console.log((okv ? 'ok   ' : 'FAIL ') + nm + ': WebGL draws it as Canvas2D (inside the body, over 1 % differing by more than 8 fails)');
+                }
+            }
+            const off = await evaluate('__glb.dlVirus(__glbNewDl, __glbDefaults, ' + JSON.stringify({ scale: 1, jelly: false, off: true, map: { virColors: false, virusGlow: false, showMass: false } }) + ')');
+            const okOff = off.ok && off.glError === 0 && off.pictured === 0 && off.glPictured === 0 && off.over8 === 0;
+            if (!okOff) dlFailed++;
+            console.log((okOff ? 'ok   ' : 'FAIL ') + 'Dying Light off: the virus body is its colour only in both (' + off.glPictured + ' px pictured on WebGL)');
+        }
+        if (DLVIRUS) {
+            if (errors.length) { console.log('page errors:\n  ' + errors.join('\n  ')); dlFailed++; }
+            console.log(dlFailed ? dlFailed + ' check(s) failed' : 'glbatch ok (--dlvirus)');
+            return done(dlFailed ? 1 : 0);
+        }
         const sceneCache = new Map();
         const scene = async (n, seed) => {
             const k = n + ':' + seed;
             if (!sceneCache.has(k)) sceneCache.set(k, await buildScene(J, n, seed));
             return sceneCache.get(k);
         };
-        let failed = 0;
+        let failed = dlFailed;
         const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) failed++; };
 
         /* ---- visual comparison ---- */
