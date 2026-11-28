@@ -737,9 +737,23 @@
         /* Active player indicator: P1 / P2 while a multibox unit exists, else the swap sign. The swap
          * event comes for every change of the unit you control; the last unit closing while the main
          * player has control sends none, so the 500 ms button timer (syncAiPause) checks it too. */
+        /* the number of the player you control: 1 = the main player, else 1 + the unit's place among
+         * the multibox units in window.spects (Full Map / in-game spectators skipped). Not the unit
+         * number: that is shared with the spectators and grows with each new connection, so every
+         * unit showed P2. Two players: P1 / P2 as before (the player slot later). */
+        function mbPlayerNo() {
+            var n = window.multiboxPlayerEnabled, list = window.spects, k = 1;
+            if (!n) return 1;
+            for (var i = 0; list && i < list.length; i++) {
+                if (!list[i] || !list[i].player) continue;
+                k++;
+                if (list[i].number === n) return k;
+            }
+            return 2;
+        }
         function syncMbIndicator() {
             if (!bMb) return;
-            var lm = window.legendmod, p = window.multiboxPlayerEnabled ? 2 : 1;
+            var lm = window.legendmod, p = mbPlayerNo();
             var want = lm && lm.multiBoxPlayerExists ? 'P' + p : '\u21C4';
             if (want === _mbShown && bMb.textContent === want) return;
             _mbShown = want;
@@ -1224,9 +1238,11 @@
         /* a death (with auto respawn it fed the new life) or another server ends a held Feed; the
          * game events are listened to only while it is held (nothing listens otherwise) */
         var feedWatched = false;
-        function feedDeath() {
-            /* a multibox unit still playing keeps the held Feed (it feeds that unit) */
-            if (!(window.legendmod && window.legendmod.multiBoxPlayerExists)) feedStop();
+        function feedDeath(e) {
+            /* a multibox unit still playing keeps the held Feed (it feeds that unit): the death's
+             * scope 'unit' (lmDeathScope). The game over ('all', also with a connected unit that is
+             * dead) ends it; multiBoxPlayerExists stayed true for a dead unit */
+            if (!(e && e.scope === 'unit')) feedStop();
         }
         function feedWatch(on) {
             var E = window.LMEvents;
@@ -2024,6 +2040,10 @@
                     cells = legendmod.playerCells.length;
                 else if (typeof LM !== 'undefined' && LM.playerCells)
                     cells = LM.playerCells.length;
+                /* steering a multibox unit: that unit's mass and cells (lmActiveUnit), not the
+                 * main player's (0 after the main player died) */
+                var mbSel = window.multiboxPlayerEnabled && typeof window.lmActiveUnit === 'function' ? window.lmActiveUnit() : null;
+                if (mbSel && mbSel.number) { mass = mbSel.mass; cells = mbSel.cells.length; }
 
                 /* write only on change (500 ms timer; an unchanged write still relayouts) */
                 var massText = mass > 0 ? mass + ' \u00b7 ' + cells + '/' + maxCells : '';

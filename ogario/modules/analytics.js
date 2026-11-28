@@ -531,14 +531,18 @@
     var life = null, listening = false;
     function lm() { return window.legendmod || null; }
     /* Own position as a 0-1 share of the map, the same projection as the minimap:
-     * (playerX + mapOffsetX + mapOffset) / mapSize, without mapOffset on Expanding Land. */
+     * (playerX + mapOffsetX + mapOffset) / mapSize, without mapOffset on Expanding Land.
+     * The position is the core's lmMyPosition (the player you control, not the camera, which
+     * follows a multibox unit or the middle of both); playerX/Y with an older core. */
     function curPos() {
         var o = lm();
         if (!o) return null;
         var size = +o.mapSize;
         if (!(size > 0)) return null;
+        var me = typeof window.lmMyPosition === 'function' ? window.lmMyPosition() : null;
+        var px = me ? me.x : o.playerX, py = me ? me.y : o.playerY;
         var off = o.isLegendWorld ? 0 : (+o.mapOffset || 0);
-        var x = (+o.playerX + (+o.mapOffsetX || 0) + off) / size, y = (+o.playerY + (+o.mapOffsetY || 0) + off) / size;
+        var x = (+px + (+o.mapOffsetX || 0) + off) / size, y = (+py + (+o.mapOffsetY || 0) + off) / size;
         if (!isFinite(x) || !isFinite(y)) return null;
         return { x: clamp01(x), y: clamp01(y), map: Math.round(size), shape: o.isLegendWorld ? 'c' : 's' };
     }

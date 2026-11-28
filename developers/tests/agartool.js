@@ -14,7 +14,7 @@ const path = require('path');
 const vm = require('vm');
 
 const repo = path.resolve(__dirname, '..', '..');
-const src = fs.readFileSync(path.join(repo, 'ogario', 'modules', 'agartool.js'), 'utf8');
+const src = fs.readFileSync(process.argv[2] || path.join(repo, 'ogario', 'modules', 'agartool.js'), 'utf8');
 let fail = 0;
 function check(name, ok, info) {
     console.log((ok ? 'ok   ' : 'FAIL ') + name + (ok || info === undefined ? '' : ' -> ' + JSON.stringify(info)));
@@ -99,6 +99,25 @@ check('state: nothing sent when nothing changed', ws.sent.length === n0, ws.sent
 p.w.ogario.playerMass = 150;
 p.intervals[0]();
 check('state: only the mass when only the mass changed', JSON.stringify(ws.sent[n0]) === JSON.stringify([0xa1, 64].concat(u32(150))), ws.sent[n0]);
+/* the position is where you are (the core's lmMyPosition, the player you control), not the camera
+ * (getPlayerX: 100, -200 here) */
+{
+    const v4 = fs.readFileSync(path.join(repo, 'ogario', 'ogario.v4.js'), 'utf8');
+    const fnSrc = (head) => { const i = v4.indexOf(head); if (i < 0) return ''; let d = 0, k = v4.indexOf('{', i); for (; k < v4.length; k++) { if (v4[k] === '{') d++; else if (v4[k] === '}' && --d === 0) break; } return v4.slice(i, k + 1); };
+    vm.runInContext(fnSrc('function getActiveSpect(') + '\n' + fnSrc('function lmMyPosition() {') + '\nif (typeof lmMyPosition === "function") window.lmMyPosition = lmMyPosition;', p.w);
+    const xy = () => { const s = ws.sent[ws.sent.length - 1]; const v = new DataView(new Uint8Array(s).buffer); return s[1] === 48 ? [v.getInt32(2, true), v.getInt32(6, true)] : s; };
+    Object.assign(p.w.legendmod, { play: true, playerCells: [{}], viewXTrue: 300, viewYTrue: -400, playerX: 100, playerY: -200 });
+    p.intervals[0]();
+    check('state: the main player\'s own cells, not the camera', JSON.stringify(xy()) === JSON.stringify([297, -404]), xy());
+    p.w.spects = [{ number: 1, player: false }, { number: 4, player: true, playerCellIDs: [9], playerX: 500, playerY: 600 }];
+    p.w.multiboxPlayerEnabled = 4;
+    p.intervals[0]();
+    check('state: the multibox unit you control', JSON.stringify(xy()) === JSON.stringify([495, 606]), xy());
+    p.w.multiboxPlayerEnabled = null; delete p.w.spects;
+    Object.assign(p.w.legendmod, { play: false, playerCells: [] });
+    p.intervals[0]();
+    check('state: nothing of ours alive in the core (ogario.play still set): the camera, as before', JSON.stringify(xy()) === JSON.stringify([99, -202]), xy());
+}
 
 /* teammates */
 const player = (id, nick, alive, x, y, mass, og) => nul(id).concat(nul(nick), nul(''), nul(''), [alive ? 1 : 0], u32(x), u32(y), u32(mass), nul(og || ''));

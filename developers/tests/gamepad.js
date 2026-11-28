@@ -211,4 +211,15 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('always on: a pad connected again works again',c.calls.filter(x=>x==='split').length===2); }
 { const c=page({pads:[gp()]});
   check('always on: a pad connected before the file loaded is read',c.raf.length===1&&c.tick===undefined); }
+/* Y (hk-quickResp) with quick respawn off: the main player alive and the multibox unit you control
+ * dead: that unit spawns again (as the swap key does); a living unit is left alone */
+{ const c=page();const u={number:4,player:true,active:false,respawn(){c.calls.push('unit-respawn');}};
+  c.w.legendmod={play:true};c.w.spects=[{number:1,player:false},u];c.w.multiboxPlayerEnabled=4;
+  c.w.getActiveSpect=n=>c.w.spects.find(s=>s.number===n)||null;
+  c.pads=[gp({3:true})];c.go();c.step();
+  check('Y: the dead unit you control respawns while the main player lives',c.calls.filter(x=>x==='unit-respawn').length===1);
+  u.active=true;c.pads=[gp()];c.step();c.pads=[gp({3:true})];c.step();
+  check('Y: a living unit is not respawned',c.calls.filter(x=>x==='unit-respawn').length===1);
+  c.w.multiboxPlayerEnabled=null;u.active=false;c.pads=[gp()];c.step();c.pads=[gp({3:true})];c.step();
+  check('Y: the main player controlled and alive: nothing, as before',c.calls.filter(x=>x==='unit-respawn').length===1); }
 console.log(fail?fail+' failed':'all gamepad checks passed');process.exit(fail?1:0);

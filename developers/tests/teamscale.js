@@ -10,6 +10,8 @@
  * teammate marker and the wave within 2 units of the true spot; the op30 packet stays 17
  * bytes with the same fields; an older build's positions and waves placed exactly as before;
  * private servers and Expanding Land unchanged (scale 1); a Delta wave on such a border.
+ * With multibox the position sent (and LMEvents.api.getPosition) is the player you control
+ * (lmMyPosition), not the camera centre.
  * node developers/tests/teamscale.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs');
@@ -46,6 +48,8 @@ const OPT = ['lmTeamScale(', 'lmTeamWorldOut(', 'lmTeamWorldIn('].map(h => metho
 const LMSRC = ['sendWaves(', 'setMapOffset(', '_lmBorderValid(', '_lmApplyFullBorder(', '_lmFullBorderNow()', 'translateX(x)', 'translateY(x)']
     .map(h => need(method(h), h));
 const cellSrc = need(block(src.indexOf('function minimapCell(')), 'minimapCell');
+/* "my position" (the player you control, else the main player, else the camera); an older source has none */
+const myPosSrc = [block(src.indexOf('function getActiveSpect(')), block(src.indexOf('function lmMyPosition() {'))].filter(Boolean).join('\n');
 
 const W = 14142.135623730952;
 const VNR = { '1,1': 0, '-1,1': 1, '-1,-1': 2, '1,-1': 3 }; /* vnr of a mirror [sx, sy] */
@@ -67,6 +71,7 @@ function page(conn, opts) {
     };
     ctx.window = ctx;
     vm.createContext(ctx);
+    vm.runInContext(myPosSrc, ctx);
     const LM = vm.runInContext('({' + LMSRC.join(',\n') + ', addSpect() { } })', ctx);
     Object.assign(LM, {
         Waves: [], _lmPings: [], mapSize: 14142, mapOffset: 7071, mapOffsetX: 0, mapOffsetY: 0, mapOffsetFixed: false,
@@ -217,6 +222,41 @@ safe('Delta wave', () => {
     const w = B.LM.Waves[B.LM.Waves.length - 1];
     const d = w ? dist(w, B.local(wx, wy)) : Infinity;
     check('a Delta wave on a 14189.6 wide border: within 2 units of its spot', d < 2, d.toFixed(2));
+});
+
+/* ---------- 6. multibox: the team position is where you are (the player you control), not the camera ---------- */
+safe('multibox position', () => {
+    const A = page({ kind: 'private', s: [1, 1], w: 12000, h: 10000, cx: 3000, cy: -3000 }, { playerID: 41 });
+    const sent = () => { A.app.sendPlayerPosition(); const v = A.relay.sent[A.relay.sent.length - 1]; return [v.getInt32(5, true) - A.LM.mapOffsetX, v.getInt32(9, true) - A.LM.mapOffsetY]; };
+    const near = (p, x, y) => Math.abs(p[0] - x) < 1.01 && Math.abs(p[1] - y) < 1.01;
+    /* the camera between both players (middle view), the main player and a unit elsewhere */
+    Object.assign(A.LM, { playerX: 0, playerY: 0, playerCells: [{}], viewXTrue: 1234.7, viewYTrue: -2345.2 });
+    A.ctx.spects = [{ number: 1, player: false }, { number: 2, player: true, playerCellIDs: [3], playerX: -4000.4, playerY: 3999.6 }];
+    let p = sent();
+    check('multibox: main player controlled: its own cells, not the camera', near(p, 1234.7, -2345.2), p);
+    A.ctx.multiboxPlayerEnabled = 2;
+    p = sent();
+    check('multibox: a unit controlled: that unit', near(p, -4000.4, 3999.6), p);
+    A.ctx.spects[1].playerCellIDs = [];
+    p = sent();
+    check('multibox: the controlled unit dead: the main player', near(p, 1234.7, -2345.2), p);
+});
+
+/* ---------- 7. LMEvents.api.getPosition: the same position (map offset added as before) ---------- */
+safe('LMEvents getPosition', () => {
+    const evSrc = need(src.slice(src.indexOf('/* LMEvents: hooks for user scripts'), src.indexOf('window.spects = window.spects || [];')), 'LMEvents');
+    const ctx = { console, Object, Math, Number, String, Array, Date, WeakSet };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    vm.runInContext(evSrc + '\n' + myPosSrc, ctx);
+    ctx.legendmod = { mapOffsetX: 7000, mapOffsetY: -7000, play: true, playerX: 0, playerY: 0, playerCells: [{}], viewXTrue: 100.4, viewYTrue: 200.6 };
+    ctx.spects = [{ number: 5, player: true, playerCellIDs: [1], playerX: -300, playerY: 400 }];
+    const g = () => { const q = ctx.LMEvents.api.getPosition(); return q.x + ',' + q.y; };
+    check('getPosition: the main player\'s own cells, not the camera', g() === '7100,-6799', g());
+    ctx.multiboxPlayerEnabled = 5;
+    check('getPosition: the multibox unit you control', g() === '6700,-6600', g());
+    ctx.multiboxPlayerEnabled = null; ctx.legendmod.play = false; ctx.legendmod.playerX = 50;
+    check('getPosition: not playing: the camera, as before', g() === '7050,-7000', g());
 });
 
 console.log(failed ? 'RESULT: FAIL (' + failed + ')' : 'RESULT: PASS');

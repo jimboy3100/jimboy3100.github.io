@@ -845,23 +845,8 @@
     "ja": "メインのセルの隣に2体目のユニット",
     "it": "Una seconda unità accanto alla tua cellula principale"
   },
-  "site.features.nextBackSwapAnd": {
-    "en": "Next / back swap and follow-mouse hotkeys",
-    "el": "Πλήκτρα για εναλλαγή επόμενης / προηγούμενης μονάδας και ακολούθηση του ποντικιού",
-    "es": "Atajos de cambio siguiente / anterior y de seguir el ratón",
-    "bg": "Клавиши за напред / назад смяна и следване на мишката",
-    "fr": "Raccourcis de bascule suivant / précédent et de suivi de la souris",
-    "ar": "مفاتيح التبديل التالي / السابق واتباع الفأرة",
-    "zh": "下一個 / 上一個切換與跟隨滑鼠快速鍵",
-    "ru": "Горячие клавиши переключения вперёд / назад и следования за мышью",
-    "de": "Hotkeys für Weiter-/Zurück-Wechsel und Maus folgen",
-    "tr": "İleri / geri değiştirme ve fareyi takip etme kısayolları",
-    "pl": "Skróty przełączania dalej / wstecz i podążania za myszą",
-    "nl": "Sneltoetsen voor volgende / vorige wisselen en muis volgen",
-    "pt": "Atalhos para trocar para a próxima / anterior e para seguir o mouse",
-    "id": "Hotkey ganti unit maju / mundur dan ikuti mouse",
-    "ja": "次へ/前へ切り替え、マウス追従のショートカットキー",
-    "it": "Tasti rapidi per passare all'unità successiva / precedente e per seguire il mouse"
+  "site.features.swapAndFollowMouse": {
+    "en": "Swap and follow-mouse hotkeys"
   },
   "site.features.optionalViewOnThe": {
     "en": "Optional view on the middle of both units",
@@ -881,23 +866,8 @@
     "ja": "両ユニットの中心に視点を合わせる表示（任意）",
     "it": "Visuale opzionale centrata tra le due unità"
   },
-  "site.features.optionalUnitRingsAnd": {
-    "en": "Optional unit rings and freeze for the inactive unit",
-    "el": "Προαιρετικά δαχτυλίδια μονάδων και πάγωμα της ανενεργής μονάδας",
-    "es": "Anillos de unidad opcionales y congelación de la unidad inactiva",
-    "bg": "Незадължителни пръстени около единиците и замразяване на неактивната единица",
-    "fr": "Anneaux d'unité optionnels et gel de l'unité inactive",
-    "ar": "حلقات اختيارية حول الوحدات وتجميد الوحدة غير النشطة",
-    "zh": "可選的單位圓環，以及凍結未使用的單位",
-    "ru": "Кольца вокруг юнитов и заморозка неактивного юнита по желанию",
-    "de": "Optionale Einheitenringe und Einfrieren der inaktiven Einheit",
-    "tr": "İsteğe bağlı birim halkaları ve aktif olmayan birimi dondurma",
-    "pl": "Opcjonalne pierścienie jednostek i zamrożenie nieaktywnej jednostki",
-    "nl": "Optionele ringen om units en bevriezen van de inactieve unit",
-    "pt": "Anéis nas unidades e congelamento da unidade inativa (opcionais)",
-    "id": "Lingkaran unit opsional dan bekukan unit yang tidak aktif",
-    "ja": "ユニットのリング表示と、操作していないユニットの固定（任意）",
-    "it": "Anelli opzionali sulle unità e blocco dell'unità inattiva"
+  "site.features.aRingOnThe": {
+    "en": "A ring on the cells of the player you control, optional freeze for the inactive unit"
   },
   "site.features.itsOwnSkinProfile": {
     "en": "Its own skin profile for each unit",

@@ -106,5 +106,27 @@ check('no seek without a replay playing', cmds.length === 2);
 const sync = body(mob, 'function syncAiPause() {');
 check('the buttons show only while the replay bar shows', !!sync && /bRwd\.style\.display = rd; bFwd\.style\.display = rd;/.test(sync));
 
+// ── held Feed and a death: the death's scope decides (a connected but dead unit kept it feeding)
+let stops = 0;
+ctx.feedStop = () => { stops++; };
+vm.runInContext(body(mob, 'function feedDeath('), ctx);
+ctx.legendmod = { multiBoxPlayerExists: true };
+ctx.feedDeath({ unit: 0, scope: 'all' });
+check('game over (scope all) with a dead unit still connected: the held Feed stops', stops === 1, stops);
+ctx.feedDeath({ unit: 0, scope: 'unit' });
+check('main player died, a unit still plays (scope unit): the held Feed goes on', stops === 1, stops);
+ctx.legendmod = { multiBoxPlayerExists: false };
+ctx.feedDeath({ unit: 0, scope: 'all' });
+check('no multibox: a death stops it as before', stops === 2, stops);
+
+// ── multibox indicator: the number of the player you control, not "P2" for every unit
+const mbNo = body(mob, 'function mbPlayerNo() {');
+vm.runInContext((mbNo || '') + '\n' + body(mob, 'function syncMbIndicator() {') + '\nvar bMb = { textContent: "", style: {} }, _mbShown = null;', ctx);
+const ind = (enabled, list) => { ctx.multiboxPlayerEnabled = enabled; ctx.spects = list; ctx.legendmod = { multiBoxPlayerExists: true }; vm.runInContext('syncMbIndicator()', ctx); return vm.runInContext('bMb.textContent', ctx); };
+const spec = (n) => ({ number: n, player: false }), unit = (n) => ({ number: n, player: true });
+check('two players, main controlled: P1', ind(null, [unit(1)]) === 'P1');
+check('two players, the unit controlled: P2 (also when a Full Map spectator took number 1)', ind(1, [unit(1)]) === 'P2' && ind(2, [spec(1), unit(2)]) === 'P2');
+check('three players: the second unit (number 5) is P3, not P2', ind(5, [spec(1), unit(2), spec(3), unit(5)]) === 'P3', ind(5, [spec(1), unit(2), spec(3), unit(5)]));
+
 console.log(fail ? fail + ' check(s) failed' : 'all phone extras checks passed');
 process.exit(fail ? 1 : 0);

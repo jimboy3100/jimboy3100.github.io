@@ -184,9 +184,10 @@
     var _lmEvChatAt = 0;
     var api = {
         getMass: function () { var o = lm(); return o ? Math.round(+o.playerMass || 0) : 0; },
+        /* where you are (lmMyPosition: the player you control), not the camera centre */
         getPosition: function () {
-            var o = lm();
-            return o ? { x: Math.round(+o.playerX + (+o.mapOffsetX || 0)) || 0, y: Math.round(+o.playerY + (+o.mapOffsetY || 0)) || 0 } : { x: 0, y: 0 };
+            var o = lm(), p = o && lmMyPosition();
+            return p ? { x: Math.round(+p.x + (+o.mapOffsetX || 0)) || 0, y: Math.round(+p.y + (+o.mapOffsetY || 0)) || 0 } : { x: 0, y: 0 };
         },
         isPlaying: function () { var o = lm(); return !!(o && o.play); },
         getContext: context,
@@ -3124,6 +3125,23 @@ function lmUnitCellsInto(n, out) {
     }
     return out;
 }
+/* "My position" for what says where you are (Analytics heatmap, LMEvents.api.getPosition, the
+ * team position, Agar Tool): the centre of the own cells of the player you control while it is
+ * alive, else the main player's, else the camera. LM.playerX/Y is the camera (setView), which
+ * follows the focused unit or the middle of both players. Same frame as LM.playerX/Y (add
+ * mapOffsetX/Y as before); a multibox unit counts only once it has a place on this map, as in
+ * getMultiboxFrame. null when there is no client. */
+function lmMyPosition() {
+    var LM = window.legendmod;
+    if (!LM) return null;
+    var n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null;
+    if (sp && sp.player && sp.playerCellIDs && sp.playerCellIDs.length && Number.isFinite(sp.playerX) && Number.isFinite(sp.playerY) &&
+        (typeof sp.transformReady !== 'function' || sp.transformReady())) return { x: sp.playerX, y: sp.playerY };
+    if (LM.play && LM.playerCells && LM.playerCells.length && Number.isFinite(LM.viewXTrue) && Number.isFinite(LM.viewYTrue))
+        return { x: LM.viewXTrue, y: LM.viewYTrue };
+    return { x: LM.playerX, y: LM.playerY };
+}
+window.lmMyPosition = lmMyPosition;
 /* C2: what the page shows now: 'practice' (practice arena), 'replay' (a replay plays),
  * 'live' (a real online game with the player you control alive: never a replay or practice),
  * 'worldSpectate' (Expanding Land World Spectate), 'spectate' (spectate / free spectate),
@@ -32587,10 +32605,13 @@ function thelegendmodproject() {
         /* An opcode 30 position in world units, as integers whose sum is even: x is rounded to
          * the nearer of its two neighbours that gives that (less than 1 unit off, the old code
          * truncated up to 1). Older builds send this connection's own units with no such rule,
-         * so the receiver can tell them apart (lmTeamWorldIn) without a change of the packet. */
+         * so the receiver can tell them apart (lmTeamWorldIn) without a change of the packet.
+         * The position is where you are (lmMyPosition, the player you control), as getPlayerX()
+         * plus mapOffsetX: teammates put you there on their minimap, not at your camera. */
         lmTeamWorldOut(view) {
-            var wx = this.getPlayerX() * this.lmTeamScale(0);
-            var x = Math.round(wx), y = Math.round(this.getPlayerY() * this.lmTeamScale(1));
+            var me = lmMyPosition();
+            var wx = (me.x + ogario.mapOffsetX) * this.lmTeamScale(0);
+            var x = Math.round(wx), y = Math.round((me.y + ogario.mapOffsetY) * this.lmTeamScale(1));
             if ((x + y) & 1) x += wx >= x ? 1 : -1;
             view.setInt32(5, x, true);
             view.setInt32(9, y, true);

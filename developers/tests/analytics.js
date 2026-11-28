@@ -321,5 +321,33 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     check('no switch: an old recordReplays false keeps the listeners', ['spawn', 'massUpdate', 'split', 'leaderboard', 'death'].every(n => LMEvents._has(n)));
 }
 
+/* ---------- the heatmap records where you are (the core's lmMyPosition), not the camera centre */
+{
+    const v4 = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+    const fnSrc = head => { const i = v4.indexOf(head); if (i < 0) return ''; let d = 0, k = v4.indexOf('{', i); for (; k < v4.length; k++) { if (v4[k] === '{') d++; else if (v4[k] === '}' && --d === 0) break; } return v4.slice(i, k + 1); };
+    vm.runInContext(fnSrc('function getActiveSpect(') + '\n' + fnSrc('function lmMyPosition() {') + '\nif (typeof lmMyPosition === "function") window.lmMyPosition = lmMyPosition;', ctx);
+    const life = () => {
+        LMEvents.emit('spawn', { time: clock });
+        for (let i = 0; i < 12; i++) { clock += 250; LMEvents.emit('massUpdate', { mass: 400, cells: 1 }); }
+        LMEvents.emit('death', { time: clock, mass: 400, msAlive: 3000 });
+        const t = JSON.parse(store.get('lmAnalyticsTracks')).tracks;
+        return C.decodeCells(t[t.length - 1].s)[0][0];
+    };
+    tickFn();
+    /* the camera in the middle (between two multibox players), the main player at the left edge */
+    ctx.legendmod = { mapSize: 14142, mapOffset: 7071, mapOffsetX: 0, mapOffsetY: 0, playerX: 0, playerY: 0, isLegendWorld: false, ws: 'wss://live.example:443', serverType: 'agario',
+        play: true, playerCells: [{}], viewXTrue: -7071, viewYTrue: 0 };
+    ctx.spects = [{ number: 1, player: false }, { number: 2, player: true, playerCellIDs: [5], playerX: 7000, playerY: 0 }];
+    ctx.multiboxPlayerEnabled = null;
+    check('main player controlled: its own cells at the left edge, not the camera in the middle', life() === 0);
+    ctx.multiboxPlayerEnabled = 2;
+    check('a multibox unit controlled: its cells at the right edge', life() === 63);
+    ctx.spects[1].playerCellIDs = [];
+    check('the controlled unit dead: the main player\'s position', life() === 0);
+    ctx.legendmod.play = false; ctx.legendmod.playerCells = [];
+    check('nothing of ours alive: the camera, as before', life() === 32);
+    ctx.multiboxPlayerEnabled = null; delete ctx.spects;
+}
+
 console.log(fail ? fail + ' failed' : 'all analytics checks passed');
 process.exit(fail ? 1 : 0);

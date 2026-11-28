@@ -374,8 +374,14 @@
         var s = window.legendmod5 || {};
         var L = window.legendmod;
         if (s.quickResp && a && a.quickResp) { a.quickResp(); return; }
-        /* quick respawn off: Play when not in a game */
-        if (L && L.play) return;
+        /* quick respawn off: Play when not in a game. The main player alive while the multibox
+         * unit you control is dead: that unit spawns again, as the swap key does for a dead unit
+         * (multiboxchange: respawn() when it is not active) */
+        if (L && L.play) {
+            var n = window.multiboxPlayerEnabled, u = n && typeof window.getActiveSpect === 'function' ? window.getActiveSpect(n) : null;
+            if (u && u.player && !u.active && typeof u.respawn === 'function') u.respawn();
+            return;
+        }
         var b = document.querySelector('.btn-play-guest');
         if (!b || !(b.offsetWidth || b.offsetHeight)) b = document.querySelector('.btn-play');
         if (b) b.click();
