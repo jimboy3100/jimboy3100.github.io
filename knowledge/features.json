@@ -95,7 +95,7 @@
     {
       "id": "plugins",
       "name": "User scripts and plugins",
-      "description": "5 script slots for custom JavaScript. Plugin header format: ==LMPlugin== with name, version, author, permissions (8 types). Settings API: up to 20 settings per plugin. Catalogue of example plugins. Version compatibility checking. Third-party URL confirmation prompt.",
+      "description": "5 script slots for custom JavaScript. Plugin header format: ==LMPlugin== with name, version, author, permissions (8 types). Settings API: up to 20 settings per plugin. Version compatibility checking. Third-party URL confirmation prompt.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

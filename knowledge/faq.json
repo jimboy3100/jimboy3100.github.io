@@ -71,7 +71,7 @@
     },
     {
       "question": "What are User Scripts / Plugins?",
-      "answer": "5 script slots for custom JavaScript extensions with plugin header format, settings API (up to 20 settings), version compatibility checking, and a catalogue of example plugins."
+      "answer": "5 script slots for custom JavaScript extensions with plugin header format, settings API (up to 20 settings), and version compatibility checking."
     },
     {
       "question": "What is the death recap?",

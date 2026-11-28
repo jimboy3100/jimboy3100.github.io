@@ -290,7 +290,6 @@ Extend Legend Mod with custom JavaScript. Features:
 - **Plugin header format**: `// ==LMPlugin== ... // ==/LMPlugin==`
 - **Plugin fields**: name, version, description, author, minVersion, maxVersion, permissions
 - **Settings API**: `LMPlugins.ready({ settings, onSettingsChange, onEnable, onDisable })`
-- **Catalogue**: Browse example plugins
 - **Version compatibility checking**: minVersion/maxVersion enforcement
 
 ### 27. Additional Presets
@@ -462,7 +461,7 @@ An offline mode where you practice against bots without connecting to a server. 
 Part of the Theme presets in the Theme tab: under the Theme preset list, save the current theme under a name (up to 30), apply one by picking it, Update it with the current theme (the last 5 versions are kept and an older version can be picked to bring it back) or delete it. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS.
 
 **What are User Scripts / Plugins?**
-Legend Mod supports 5 user script slots for custom JavaScript extensions. Plugins use a standard header format and can register settings via the LMPlugins API. A catalogue of example plugins is available.
+Legend Mod supports 5 user script slots for custom JavaScript extensions. Plugins use a standard header format and can register settings via the LMPlugins API.
 
 **How does mass decay work in Expanding Land?**
 Cells lose approximately 0.8% of mass every 4 seconds. Bigger cells decay proportionally faster, making extreme size difficult to maintain. The anti-teaming system can accelerate decay further via its exponential multiplier.
