@@ -59,6 +59,7 @@
 - 🔄 Skin rotator — auto-switch while playing
 - 🖌️ Full theme customization (colors, HUD, minimap, backgrounds)
 - 📦 Import/export themes — [browse free themes](https://www.legendmod.ml/themes/)
+- 🧟 Dying Light expansion (Tools tab banner) — an optional night look: zombie skins on other players without a skin, a day / night scene cycle, rare radio calls and a red screen edge when a bigger player is close; Competitive, Immersive or Nightmare; it turns on and off without a reload and never changes your own theme, settings or profiles
 
 ### Performance & Anti-Lag
 - ⚡ Smooth WebGL rendering engine

@@ -5,13 +5,45 @@
     <link>https://www.legendmod.ml/changelog.html</link>
     <description>Release notes of Legend Mod, the browser client and extension for agar.io-style cell games: new features and fixes of every build.</description>
     <language>en</language>
-    <lastBuildDate>Fri, 27 Nov 2026 12:51:48 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 28 Nov 2026 02:51:55 +0000</lastBuildDate>
     <atom:link href="https://www.legendmod.ml/rss.xml" rel="self" type="application/rss+xml"/>
     <image>
       <url>https://jimboy3100.github.io/banners/icon128.png</url>
       <title>Legend Mod</title>
       <link>https://www.legendmod.ml/</link>
     </image>
+
+    <item>
+      <title>v3.706 — Mod Info window, Theme options removal leftovers &amp; Website</title>
+      <link>https://www.legendmod.ml/changelog.html#v3706</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3706</guid>
+      <pubDate>Sat, 28 Nov 2026 02:51:55 +0000</pubDate>
+      <description>Mod Info window — the Templates, Manual templates, Languages and Information buttons are removed · Theme options removal leftovers — the knowledge files and llms-full.txt still described the removed HUD text size (features, modules, the Accessibility section and the settings categories), the removed game brightness / saturation (theme properties) and the… · Website — the 'use https' warning toast is removed · Nick easter eggs removed — typing EasterEgg1, EasterEgg2 or EasterEgg3 as the nick renamed you to 'Easter Egg' (or 'Video'), pressed Play and loaded a script with no off switch until a…</description>
+    </item>
+
+    <item>
+      <title>v3.705 — Main menu server finder, Notification centre removed &amp; Shortcut bar</title>
+      <link>https://www.legendmod.ml/changelog.html#v3705</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3705</guid>
+      <pubDate>Sat, 28 Nov 2026 00:08:07 +0000</pubDate>
+      <description>Main menu server finder — the small line under the finder row (&quot;4 London FFA servers · counts refresh every 20 s&quot;, &quot;Looking for London FFA servers 4/12…&quot;, &quot;Press Scan…&quot;, &quot;Waiting for the connection…&quot;, &quot;Scan stopped.&quot;) is removed with its element, its CSS… · Notification centre removed — ogario/modules/notifications.js (the bell with its unread count, the list of the last 200 toasts with its filters, Mark read, Clear and the per-category mute switches), its option in Settings &gt; HUD, its hotkey and its HUD editor… · Shortcut bar — the 'Message Script Commands' row is removed with its commands ·…</description>
+    </item>
+
+    <item>
+      <title>v3.704 — Profile badges removed, Replay recording &amp; HUD</title>
+      <link>https://www.legendmod.ml/changelog.html#v3704</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3704</guid>
+      <pubDate>Fri, 27 Nov 2026 23:44:49 +0000</pubDate>
+      <description>Profile badges removed — the Badges line in the profile stats (18 badges in tiers from the account stats: games, highest mass, mass consumed, time alive, level, and on Expanding Land #1 and players eaten), its badge window, the &quot;Badge unlocked&quot; toast and… · Replay recording — the fix for a replay token typed into the Join box only worked when a connect happened while the player was typing (the held value) · HUD — the &quot;Show NO FOCUS when the game window is not active&quot; switch (noFocusHud) is removed with its functionality · Settings &gt; Zoom — &quot;Zoom glide speed&quot; (zoomSmooth) is removed · Bots…</description>
+    </item>
+
+    <item>
+      <title>v3.703 — Settings, Choose Language &amp; Game Over card</title>
+      <link>https://www.legendmod.ml/changelog.html#v3703</link>
+      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3703</guid>
+      <pubDate>Fri, 27 Nov 2026 23:15:36 +0000</pubDate>
+      <description>Garix cell updates (opcode 16) with a malformed packet — every section and record is checked against the bytes left before it is read or applied · Sigmally cell updates (opcode 16) with a malformed packet — every record is checked against the bytes left before it is read or applied · Settings — the note under a setting that does not work on the connected server names that server (&quot;Not available on this server (Senpa)&quot;) · Choose Language — the rest of the Settings tab takes the new language at once, as after a reload: the named fields (Hide chat messages containing, Snapped directions), the…</description>
+    </item>
 
     <item>
       <title>v3.702 — Phones, Legend Clan announcements &amp; Library copies nothing loads are removed</title>
@@ -139,38 +171,6 @@
       <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3687</guid>
       <pubDate>Thu, 26 Nov 2026 16:16:26 +0000</pubDate>
       <description>Theme &gt; HUD leaderboard, team list and minimap image URL — emptying the URL gives the box its normal look back (it kept an empty image at 0.8 opacity for the rest of the session, also after the Team5 and troll chat commands put the image back) · Every language but English — the Settings tab's Copy debug info link keeps its own name (the language pack handler counted the restore links by position, so it was called Restore theme default settings while the Theme tab's restore link stayed in English) · A long leaderboard (20 rows on a 1366 x 768 window, e.g. on Expanding Land) no longer reaches…</description>
-    </item>
-
-    <item>
-      <title>v3.686 — Settings profiles</title>
-      <link>https://www.legendmod.ml/changelog.html#v3686</link>
-      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3686</guid>
-      <pubDate>Thu, 26 Nov 2026 16:14:12 +0000</pubDate>
-      <description>Settings profiles — a profile's changes list names Game stats position by its label in every language (it showed the raw key statsPosition)</description>
-    </item>
-
-    <item>
-      <title>v3.685 — HUD text size</title>
-      <link>https://www.legendmod.ml/changelog.html#v3685</link>
-      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3685</guid>
-      <pubDate>Thu, 26 Nov 2026 16:12:35 +0000</pubDate>
-      <description>HUD text size — the slider is in Theme &gt; HUD right after HUD scale (it multiplies the HUD scale) instead of Settings &gt; Accessibility · Fix 16 bot code defects (P0 crashes, P1 functional, P2 design)</description>
-    </item>
-
-    <item>
-      <title>v3.684 — Show/hide HUD</title>
-      <link>https://www.legendmod.ml/changelog.html#v3684</link>
-      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3684</guid>
-      <pubDate>Thu, 26 Nov 2026 15:58:11 +0000</pubDate>
-      <description>Show/hide HUD — Alt+H is the one HUD hide and does what Screenshot mode did: it hides the whole HUD (also Legend Mod boxes, windows and popups) and keeps the game view with a small Capture / x chip</description>
-    </item>
-
-    <item>
-      <title>v3.683 — Game stats position</title>
-      <link>https://www.legendmod.ml/changelog.html#v3683</link>
-      <guid isPermaLink="true">https://www.legendmod.ml/changelog.html#v3683</guid>
-      <pubDate>Thu, 26 Nov 2026 15:47:17 +0000</pubDate>
-      <description>Game stats position — the &quot;Game stats at the top&quot; and &quot;Game stats at the bottom centre&quot; switches are one &quot;Game stats position&quot; choice in Settings &gt; HUD: Top left (the default as before), Bottom left or Bottom centre</description>
     </item>
 
   </channel>
