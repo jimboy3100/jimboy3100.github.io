@@ -472,6 +472,10 @@ reset();
     sl.updateCells(rec(40, null, null), 0);
     sl.updateCells(rec(40, [255, 0, 0], 'Late'), 0);
     check('spectator: a colour sent after the first record is applied', col(40) === LM.rgb2Hex(229, 0, 0), col(40));
+    /* the other way round: a later record without a colour keeps the known colour (no default black) */
+    sl.updateCells(rec(43, [255, 0, 0], 'X'), 0);
+    sl.updateCells(rec(43, null, null), 0);
+    check('spectator: a later record without a colour keeps the known colour', col(43) === LM.rgb2Hex(229, 0, 0), col(43));
     /* sent later without the name: the cell's name finds its nick colour and its shared look */
     LM.cellcolors = Object.create(null);
     LM.cellcolors.Known = '#abcdef';
