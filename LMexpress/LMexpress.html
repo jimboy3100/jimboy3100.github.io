@@ -78,8 +78,10 @@
     <script src="https://www.legendmod.ml/languages/lm-i18n.js" charset="utf-8"></script>
     <script src="https://www.legendmod.ml/languages/lm-en.js" charset="utf-8"></script>
     <script>
-        /* On agar.io this page is written with document.write and Chrome may refuse such scripts: then the
-         * texts come synchronously (the mod reads them while it starts). Nothing happens when they are there. */
+        /* On agar.io this page is written with document.write and Chrome may refuse such scripts. The runtime and
+         * the English texts (the fallback of every text, read while the mod starts) then come synchronously; the
+         * chosen language comes asynchronously and is applied when it is there, like a language picked in the
+         * menu (LMi18n.setLang: texts, old globals, the menus). Nothing happens when they are there. */
         (function () {
             var en = document.querySelector('script[src*="/languages/lm-en.js"]');
             var q = en ? (/\?v=[^&#]+/.exec(en.src) || [''])[0] : '';
@@ -99,7 +101,7 @@
             if (!L) return;
             if (!L.loaded('en')) need('lm-en.js');
             var c = L.lang();
-            if (c !== 'en' && !L.loaded(c)) need('lm-' + c + '.js');
+            if (c !== 'en' && !L.loaded(c)) L.setLang(c, { save: false, force: true });
         })();
     </script>
   <script src="https://jimboy3100.github.io/LMexpress/LMexpress.sniff2.js"></script>

@@ -322,6 +322,24 @@ const tick = () => new Promise((r) => setTimeout(r, 5));
             ok(wb.LMi18n.lang() === code, code + ': browser language still detected');
         }
     }
+    /* ---------- 3b. play.html / LMexpress.html: the language file written after lm-i18n.js was refused (Chrome
+     * may refuse document.write scripts on agar.io): it comes asynchronously, no synchronous request ---------- */
+    for (const rel of ['play.html', 'LMexpress/LMexpress.html']) {
+        const inline = /<script>\s*(\/\* On agar\.io this page is written[\s\S]*?)<\/script>/.exec(fs.readFileSync(path.join(repo, rel), 'utf8'));
+        ok(!!inline, rel + ': the texts fallback script found');
+        if (!inline) continue;
+        let refused = 0;
+        const w = page({ storage: { languagemod: '2' }, failUrl: (src) => /lm-el\.js/.test(src) && !refused++ });
+        const sync = [];
+        w.XMLHttpRequest = function () { this.open = (m, u, async) => { if (async === false) sync.push(u); }; this.send = () => { }; this.status = 0; };
+        w.run('languages/lm-i18n.js');
+        w.run('languages/lm-en.js');
+        ok(!w.LMi18n.loaded('el') && refused === 1 && w.Languageletter0 === 'Home', rel + ': the written Greek file was refused (English for now)');
+        vm.runInContext(inline[1], w);
+        ok(sync.length === 0, rel + ': no synchronous request for the language: ' + sync.join(' '));
+        for (let i = 0; i < 20 && !w.LMi18n.loaded('el'); i++) await tick();
+        ok(w.LMi18n.lang() === 'el' && w.Languageletter0 === tx(all.packs['pack.home'], 'el') && w.store.languagemod === '2', rel + ': Greek applied when it arrives (old globals too), the choice kept');
+    }
     /* ---------- 4. the mod without a stored language: English, nothing written ---------- */
     {
         const w = page({});
