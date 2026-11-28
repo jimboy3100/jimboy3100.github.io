@@ -397,6 +397,76 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     check('provisional unit: an own cell a copy hid behind stays drawn (else neither is drawn)', drawn([tw, twM]) === 1, [tw.invisible, twM.invisible].join());
     delete LM.mapMinX; delete LM.mapMinY; delete LM.mapMaxX; delete LM.mapMaxY;
 }
+/* 15d. The main copy drawn for a PROVISIONAL unit's hidden own cell (its one mirrored place) is ours
+ * for that frame (_lmOwnProxy = the unit's own cell, set again by every hide step, so the drawing and
+ * Dying Light do not take our unit for an enemy) and nothing else: not an own cell (isPlayerCell /
+ * isPlayerCellMulti, playerCellsMulti unchanged). Once the unit is verified its own cell is drawn,
+ * the main copy hides behind it, the mark goes, and the physical cell keeps its key
+ * (lmCellIdentity) across that switch of the drawn copy; another cell has its own key. */
+{
+    const ctx = env(2);
+    const LM = ctx.window.legendmod;
+    LM.mapMinX = LM.mapMinY = -7071; LM.mapMaxX = LM.mapMaxY = 7071;
+    const u = ctx.window.spects[1];
+    u._lmFeedOk = () => false; u.transformReady = () => false; u._lmOwnCellVote = () => { };
+    const own = cell({ spectator: 2, isPlayerCellMulti: true, x: -5000, y: -900, color: '#123123', _lmSrvName: 'U2' });
+    const ownM = cell({ spectator: 0, x: 5000, y: -900, color: '#321321', _lmSrvName: 'U2' });
+    const enemy = cell({ spectator: 0, x: 0, y: 3000, color: '#999999', _lmSrvName: 'E' });
+    const enemy2 = cell({ spectator: 2, x: 0, y: -3000, color: '#888888', _lmSrvName: 'E2' });
+    LM.playerCellsMulti = [own];
+    run([own, ownM, enemy, enemy2], 1, ctx);
+    check('provisional unit: its own cell hidden, the main copy drawn instead and marked ours for the frame (_lmOwnProxy)',
+        own.invisible && !ownM.invisible && ownM._lmOwnProxy === own && !own._lmOwnProxy && !enemy._lmOwnProxy && !enemy2._lmOwnProxy);
+    check('...the mark makes it no own cell: not isPlayerCell / isPlayerCellMulti, playerCellsMulti unchanged',
+        !ownM.isPlayerCell && !ownM.isPlayerCellMulti && LM.playerCellsMulti.length === 1 && LM.playerCellsMulti[0] === own);
+    check('...lmMbOwnUnitCell ("Eaten by", the death particles) counts it as my unit', ctx.lmMbOwnUnitCell(ownM) === true && ctx.lmMbOwnUnitCell(enemy) === false);
+    let every = true;
+    for (let f = 0; f < 3; f++) { run(LM.cells, 1, ctx); every = every && ownM._lmOwnProxy === own && !ownM.invisible; }
+    check('...marked again in every frame while unverified', every);
+    const idM = ctx.lmCellIdentity(ownM), idE = ctx.lmCellIdentity(enemy), idE2 = ctx.lmCellIdentity(enemy2);
+    /* verified: its place is right now, its own cell on the main copy */
+    u._lmFeedOk = () => true; u.transformReady = () => true;
+    own.x = 5002;
+    run(LM.cells, 1, ctx);
+    check('verified: its own cell drawn, the main copy hidden behind it, the mark gone', !own.invisible && ownM.invisible && ownM._lmMbTwin === own && !ownM._lmOwnProxy);
+    check('...lmCellIdentity: the physical cell keeps its key across that switch of the drawn copy (main copy -> own cell)',
+        idM > 0 && ctx.lmCellIdentity(own) === idM && ctx.lmCellIdentity(ownM) === idM, ctx.lmCellIdentity(own) + ' / ' + idM);
+    check('...distinct cells keep distinct keys', new Set([idM, idE, idE2]).size === 3 && ctx.lmCellIdentity(enemy) === idE && ctx.lmCellIdentity(enemy2) === idE2);
+    /* no connection left: the marks of the last frame go once */
+    u._lmFeedOk = () => false; u.transformReady = () => false; own.x = -5000;
+    run(LM.cells, 1, ctx);
+    const marked = ownM._lmOwnProxy === own;
+    const sps = ctx.window.spects.splice(0);
+    run(LM.cells, 1, ctx);
+    check('...the last connection closed: the mark is cleared', marked && !ownM._lmOwnProxy);
+    ctx.window.spects.push(...sps);
+    delete LM.mapMinX; delete LM.mapMinY; delete LM.mapMaxX; delete LM.mapMaxY;
+}
+/* 15e. lmCellIdentity across a switch of the drawn copy in the hide step: a copy drawn last frame
+ * that hides behind another copy now hands its key to it; a copy hidden behind a drawn one takes the
+ * drawn one's key; a new cell never gets a key in use. */
+{
+    const ctx = env(3);
+    const a = cell({ spectator: 1, x: 2000, y: 2000, _lmSrvName: 'P' });
+    const lone = cell({ spectator: 0, x: -2000, y: 2000, _lmSrvName: 'Q' });
+    run([a, lone], 2, ctx);
+    const ka = ctx.lmCellIdentity(a), kl = ctx.lmCellIdentity(lone);
+    /* the main connection gets the cell too: whichever copy is drawn now has the key */
+    const m = cell({ spectator: 0, x: 2003, y: 2000, _lmSrvName: 'P' });
+    run([a, lone, m], 1, ctx);
+    const d1 = [a, m].filter((c) => !c.invisible);
+    check('identity: the cell seen by a second connection: one copy drawn, both copies carry its key', d1.length === 1 &&
+        ctx.lmCellIdentity(d1[0]) === ka && m._lmCanonId === ka && a._lmCanonId === ka, d1.length + ' / ' + m._lmCanonId + ' / ' + ka);
+    /* the first copy goes (the other one draws it): the key stays */
+    a.removed = true;
+    run([lone, m], 1, ctx);
+    check('identity: ...the first copy gone, the copy drawn now keeps the key; another cell keeps its own', !m.invisible && ctx.lmCellIdentity(m) === ka && ctx.lmCellIdentity(lone) === kl && kl !== ka);
+    const fresh = cell({ spectator: 2, x: 0, y: -4000, _lmSrvName: 'R' });
+    run([lone, m, fresh], 1, ctx);
+    const kf = ctx.lmCellIdentity(fresh);
+    check('identity: a new cell gets a new key (never one in use)', kf > 0 && kf !== ka && kf !== kl);
+    check('identity: window.lmCellIdentity is the same function', ctx.window.lmCellIdentity === ctx.lmCellIdentity);
+}
 /* 15b. A multibox unit not verified yet but steered (transformReady: the camera follows it): the
  * cells only it sees are drawn (the player could be eaten by a cell he does not see), they hide
  * nothing and nothing hides behind them; inside the main server view the main copy draws them

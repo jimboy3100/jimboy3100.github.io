@@ -148,6 +148,30 @@ frame(now + 16);
 const oneC = G.filter((grp) => live(grp) === 1).length;
 check('drawn copy leaves its view: next frame exactly one live copy', oneC === G.length, oneC + ' of ' + G.length);
 
+/* lmCellIdentity (the per-cell key Dying Light picks a zombie design by) on the live capture, asked
+ * for every drawn cell each frame as Dying Light does: distinct cells distinct keys; a drawn copy that
+ * leaves its view hands its key to the copy shown in its place (removeCell, _lmMbHandTo), kept in the
+ * next frames */
+{
+    now = load(); G = groups();
+    const id = g.lmCellIdentity;
+    const drawnNow = () => LM.cells.filter((c) => !c.removed && c.invisible !== true);
+    const ask = () => { for (const c of drawnNow()) id(c); };
+    ask(); frame(now + 16); ask();
+    G = groups();
+    const keys = drawnNow().map(id);
+    check('identity: distinct drawn cells, distinct keys', keys.length > 50 && new Set(keys).size === keys.length && keys.every((k) => k > 0), keys.length + ' cells');
+    const before = G.map((grp) => id(grp[0]));
+    for (const grp of G) grp[0].removeCell();
+    const shownKey = (grp) => { const d = grp.find((c) => !c.removed && c.invisible !== true); return d ? id(d) : -1; };
+    const handed = G.filter((grp, i) => shownKey(grp) === before[i]).length;
+    check('identity: the drawn copy leaves its view: the copy shown in its place has its key (hand-over)', handed === G.length, handed + ' of ' + G.length);
+    frame(now + 32); ask(); frame(now + 48); ask();
+    const kept = G.filter((grp, i) => shownKey(grp) === before[i]).length;
+    const keys2 = drawnNow().map(id);
+    check('identity: ...kept in the next frames, still one key per drawn cell', kept === G.length && new Set(keys2).size === keys2.length, kept + ' of ' + G.length);
+}
+
 now = load(); G = groups();
 const animD = [], gapsD = [];
 for (const grp of G) {

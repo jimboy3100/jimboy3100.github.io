@@ -3519,8 +3519,10 @@ class Spect {
             if (cell._lmRawColor) cell.color = cell._lmRawColor;
             this.playerColor = cell.color;
         } else if (_mbProf) {
-            this.playerColor = _mbProf.color || '#000000';
-            cell.color = _mbProf.color || '#000000';
+            /* a profile without a colour: the server's colour (it was drawn black) */
+            if (_mbProf.color) cell.color = _mbProf.color;
+            else if (cell._lmRawColor) cell.color = cell._lmRawColor;
+            if (cell.color) this.playerColor = cell.color;
         }
         if (_mbProf) {
             if (_mbProf.nick) {

@@ -1111,6 +1111,33 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
             check('matrix: representation switch: one drawn copy each frame, the same zombie design; a unit\'s own cell and the main copy hidden behind it: none',
                 k1.length === 1 && k2.length === 1 && k1[0] && k1[0] === k2[0] && !ctx.lmDlSkinCell(own) && L.getFallbackSkinKey(own) === null && !ctx.lmDlSkinCell(ownMain));
         }
+        /* the design is kept for the physical cell (lmCellIdentity of the core, carried by its hide
+         * step from the copy drawn last frame to the copy drawn now), also when the new copy's name
+         * differs; another cell has its own key and the design of its name (one design per name) */
+        {
+            vm.runInContext('var _lmMbFrame = 7;\n' + cutIn(main, 'var _lmCanonNext = 0;', '\n/* May this connection'), ctx);
+            const keyOf = (c) => (ctx.lmDlSkinCell(c) ? L.getFallbackSkinKey(c) : null);
+            const kA = keyOf({ x: 0, y: 0, size: 200, targetNick: 'walker', spectator: 0 });
+            let n2 = null;
+            for (let i = 0; i < 60 && !n2; i++) if (keyOf({ x: 0, y: 0, size: 200, targetNick: 'w' + i, spectator: 0 }) !== kA) n2 = 'w' + i;
+            const a = { x: 500, y: 0, size: 200, targetNick: 'walker', spectator: 0, _lmMbSticky: 7 };
+            const b = { x: 500, y: 0, size: 200, targetNick: n2, spectator: 5 };
+            const k1 = keyOf(a);
+            /* this frame a hides behind b (one physical cell) */
+            ctx._lmCanonCarry(b, a);
+            Object.assign(a, { _lmMbPosDup: true, invisible: true });
+            const k2 = keyOf(b), k3 = keyOf(b);
+            const other = { x: 900, y: 0, size: 200, targetNick: n2, spectator: 0 };
+            check('matrix: the drawn copy switches (lmCellIdentity carried): the same design, also when its name differs; another cell keeps its own key and its name\'s design',
+                n2 && k1 === kA && k2 === k1 && k3 === k1 && ctx.lmCellIdentity(b) === ctx.lmCellIdentity(a) && ctx.lmCellIdentity(other) !== ctx.lmCellIdentity(b) &&
+                keyOf(other) !== k1 && keyOf({ x: 0, y: 0, size: 200, targetNick: 'walker', spectator: 3 }) === kA);
+            /* an unverified unit: its own cell hidden, the main copy drawn for it (_lmOwnProxy) */
+            const unitOwn = { x: -500, y: 0, size: 200, targetNick: 'me', spectator: 17, isPlayerCellMulti: true, invisible: true, _lmMbPosDup: true };
+            const proxy = { x: 500, y: 0, size: 200, targetNick: 'me', spectator: 0, _lmOwnProxy: unitOwn };
+            const plain = { x: 500, y: 0, size: 200, targetNick: 'me', spectator: 0 };
+            check('matrix: an unverified unit: the main copy drawn for its hidden own cell is never zombified (the same cell unmarked would be)',
+                !ctx.lmDlSkinCell(proxy) && L.getFallbackSkinKey(proxy) === null && keyOf(plain) !== null);
+        }
         /* all six die (the controlled P3 in the middle: the focus moves on) */
         advance(11000);
         died.length = 0; plays.length = 0;

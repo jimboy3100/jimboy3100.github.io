@@ -467,5 +467,38 @@ tplIds.forEach(id => {
     !/\baddBox\(\)/.test(src));
 }
 
+// ── a multibox unit's own cell takes its profile's colour; a profile without one keeps the server's
+//    colour (spect.js _lmAdoptOwn stored an explicit black, black-cells [10])
+{
+  const sp = fs.readFileSync(path.join(root, 'ogario', 'spect.js'), 'utf8').replace(/\r\n/g, '\n');
+  const a = sp.indexOf('    _lmAdoptOwn(cell) {');
+  let i = sp.indexOf('{', a), depth = 0, body = null;
+  for (; a >= 0 && i < sp.length; i++) {
+    if (sp[i] === '{') depth++;
+    else if (sp[i] === '}' && --depth === 0) { body = sp.slice(a, i + 1); break; }
+  }
+  check('unit colour: _lmAdoptOwn found in spect.js', !!body);
+  if (body) {
+    const noop = () => { };
+    const c = { console: { log: noop }, legendmod: { gameMode: ':ffa', playerCellsMulti: [] }, profiles: [], lmUnitProfileIdx: () => 0,
+      lmSpectIdx: () => ({ push: (arr, x) => arr.push(x) }), lmPreloadUnitSkin: noop, loadMultiCellSkin: noop };
+    vm.createContext(c);
+    const Unit = vm.runInContext('(class { constructor() { this.number = 2; this.connectionGeneration = 1; this.active = true; this._own = []; }\n' +
+      'getOwnPlayerCells() { return this._own; }\n_lmOwnsId() { return true; }\nsendCursor() { }\n' + body + '\n})', c);
+    const adopt = (prof, cellColor, raw, mode) => {
+      c.profiles[0] = prof; c.legendmod.gameMode = mode || ':ffa';
+      const u = new Unit(), cell = { id: 1, spectator: 2, _lmGen: 1, color: cellColor, _lmRawColor: raw };
+      u._lmAdoptOwn(cell);
+      return [cell.color, u.playerColor];
+    };
+    const J2 = (v) => JSON.stringify(v);
+    check('unit colour: the profile colour when it has one', J2(adopt({ nick: 'P2', color: '#12ab34' }, '#ff0000', '#ff0000')) === J2(['#12ab34', '#12ab34']));
+    check('unit colour: a profile without a colour: the server colour, never black', J2(adopt({ nick: 'P2', color: '' }, '#ff0000', '#ee0000')) === J2(['#ee0000', '#ee0000']) &&
+      J2(adopt({ nick: 'P2' }, '#00ff00', null)) === J2(['#00ff00', '#00ff00']));
+    check('unit colour: Teams keeps the server team colour', J2(adopt({ nick: 'P2', color: '#12ab34' }, '#0000ff', '#0000ee', ':teams')) === J2(['#0000ee', '#0000ee']));
+    check('unit colour: no explicit black fallback left in spect.js', !/_mbProf\.color \|\| ['"]#000000['"]/.test(sp));
+  }
+}
+
 console.log(fail ? fail + ' failed' : 'all profiles checks passed');
 process.exit(fail ? 1 : 0);

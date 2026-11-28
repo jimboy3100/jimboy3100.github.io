@@ -92,6 +92,17 @@ check('smaller players: 0', s.level === 0, s.level);
 s = frame([cell(400, 500, { isPlayerCell: true }), cell(400, 500, { isPlayerCellMulti: true }), cell(400, 500, { _lmMbPosDup: true }),
     cell(400, 500, { isEjected: true }), cell(400, 500, { isFood: true }), cell(400, 500, { isVirus: true }), cell(400, 500, { invisible: true })]);
 check('own cells of any unit, hidden copies, ejected mass, food and viruses: no threat', s.level === 0, s.level);
+/* an unverified unit's own cell is hidden and the main connection's copy drawn for it (lmMbFrameHide,
+ * _lmOwnProxy): our own unit, no threat; nor a ring of the opponent indicators */
+ctx.defaultmapsettings.splitRange = true;
+const unitOwn = { x: 500, y: 0, size: 200, spectator: 2, isPlayerCellMulti: true, invisible: true };
+s = frame([cell(400, 500, { _lmOwnProxy: unitOwn })]);
+check('the main copy drawn for an unverified unit own cell (_lmOwnProxy): no threat, no opponent ring', s.level === 0 &&
+    [L.biggerSTEDCellsCache, L.biggerSTECellsCache, L.biggerCellsCache].every((a) => a.length === 0), s.level);
+s = frame([cell(400, 500)]);
+check('...the same cell without the mark is a threat and gets its ring', s.level === 2 &&
+    [L.biggerSTEDCellsCache, L.biggerSTECellsCache, L.biggerCellsCache].reduce((n, a) => n + a.length, 0) === 1, s.level);
+ctx.defaultmapsettings.splitRange = false;
 /* several own cells: the smallest one decides what can eat it */
 L.playerCells = [own, { x: 5000, y: 0, size: 50 }];
 s = frame([cell(100, 5000 + 50 + 500)]);

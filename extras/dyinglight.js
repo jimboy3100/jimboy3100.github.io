@@ -8,7 +8,8 @@
  *   state 'off' | 'loading' | 'on' | 'disabling', generation (a new number on every enable/disable)
  *   isEnabled(), enable({ confirm }), disable(), intensity(), setIntensity(name)
  *   getFallbackSkinKey(cell): the skin key for an eligible other player's body (one of the six
- *     zombie designs in variants, the same for every cell of one name), else null
+ *     zombie designs in variants, chosen by its name, then kept for that physical cell while the
+ *     copy that draws it changes: window.lmCellIdentity), else null
  *   particlePalette(), effect(name), setEffect(name, on): the themed death particle colours,
  *     the spawn burst and the Game Over card, each can be suppressed on its own
  *   getBackground(): { url, img, alpha } of the map scene while on, else null
@@ -87,6 +88,7 @@
     var running = [];         /* the parts started by this activation, stopped in reverse order */
     var styleEl = null, onSettings = null;
     var byNick = new Map();   /* nick -> design key, at most 512 names, emptied on disable */
+    var byCell = new Map();   /* lmCellIdentity -> design key, at most 4096 cells, emptied with byNick */
     var onSpawn = null, spawnEv = 'spawn', spawnTimer = 0, burstAt = 0;
     /* A replay recorded with the theme on (replayLook): rp is its recorded look { i, cy, ck } (the
      * intensity, the Day and night setting, the director's clock at the replay position), read by
@@ -298,6 +300,7 @@
         var f = onSpawn;
         onSpawn = null;
         byNick.clear();
+        byCell.clear();
         safeCleanup('spawn listener', function () { if (f && W.LMEvents && typeof W.LMEvents.off === 'function') W.LMEvents.off(spawnEv, f); });
         if (spawnTimer) clearTimeout(spawnTimer);
         spawnTimer = 0;
@@ -319,6 +322,21 @@
         k = lite ? v.small : v.key;
         if (byNick.size >= 512) byNick.clear();
         byNick.set(nick, k);
+        return k;
+    }
+
+    /* a cell's design: the one of its name, kept for the physical cell (window.lmCellIdentity of
+     * ogario.v4.js: one key while the drawn copy changes between the main socket, multibox units
+     * and Full Map tiles), so a switch to a copy whose name differs or comes later keeps it. Without
+     * lmCellIdentity (an older core) or with the designs suppressed: by name only. */
+    function cellDesign(cell, nick) {
+        var idf = W.lmCellIdentity, id = FX.variants && typeof idf === 'function' ? idf(cell) : 0;
+        if (!id) return designKey(nick);
+        var k = byCell.get(id);
+        if (k) return k;
+        k = designKey(nick);
+        if (byCell.size >= 4096) byCell.clear();
+        byCell.set(id, k);
         return k;
     }
 
@@ -684,12 +702,12 @@
         /* the mass from the size (cell.mass is only kept while its mass label is drawn) */
         var mass = cell && cell.size > 0 ? ~~(cell.size * cell.size / 100) : cell && cell.mass;
         if (state !== 'on' || !cell || cell.isFood || cell.isVirus || cell.isEjected || cell.removed ||
-            cell.isPlayerCell || cell.isPlayerCellMulti || !(mass > 12) || !cell.targetNick) return null;
+            cell.isPlayerCell || cell.isPlayerCellMulti || cell._lmOwnProxy || !(mass > 12) || !cell.targetNick) return null;
         if (typeof W.lmSkinsShown === 'function' && !W.lmSkinsShown()) return null;
         var lm = W.legendmod;
         if (lm && lm.gameMode === ':teams') return null;
         var nick = cell.targetNick;
-        return designKey(typeof nick === 'string' ? nick : String(nick));
+        return cellDesign(cell, typeof nick === 'string' ? nick : String(nick));
     }
     function anyRunning(flag) {
         if (state !== 'on') return false;
@@ -752,7 +770,7 @@
         setEffect: function (name, on) {
             if (!Object.prototype.hasOwnProperty.call(FX, name)) return false;
             FX[name] = !!on;
-            if (name === 'variants') byNick.clear();
+            if (name === 'variants') { byNick.clear(); byCell.clear(); }
             if (name === 'gameOver') syncGameOver();
             changed();
             return true;

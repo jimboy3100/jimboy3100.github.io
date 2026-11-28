@@ -99,7 +99,8 @@ check('no team list: nothing changes', ctx.lmTeamSkinFor(null, 'bait', false, nu
 /* both WebGL skin lookups (cell batch and the per-cell helper) call the one shared lookup,
  * application.customSkinKey (behind getCustomSkin, i.e. Canvas2D and the teamboard), which asks
  * the team list exactly and loosely; no renderer keeps its own copy that can drift */
-const shared = src.split('application.customSkinKey(cell.targetNick, cell.color, cell.skin').length - 1;
+/* (_lk: the cell, or the own cell a main copy is drawn for, cell._lmOwnProxy) */
+const shared = src.split(/application\.customSkinKey\(_lk\.targetNick, _lk\.color, _lk\.skin/).length - 1;
 const keyFn = method('customSkinKey');
 check('both WebGL skin lookups use the shared lookup', shared === 2 && src.indexOf('teamSkinUrl(cell.targetNick') < 0);
 check('the shared lookup uses the team list skins (exact and loose)', /this\.teamSkinUrl\(nick\)/.test(keyFn) && /this\.teamSkinUrl\(nick, true\)/.test(keyFn));

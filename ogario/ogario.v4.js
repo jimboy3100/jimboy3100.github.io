@@ -2018,6 +2018,7 @@ function lmMbOwnUnitCell(cell, rawId) {
     if (cell.spectator > 0) return false;
     var tw = cell._lmMbTwin;
     if (tw && tw.spectator > 0 && tw.isPlayerCellMulti) return true;
+    if (cell._lmOwnProxy) return true;
     var sps = window.spects, LM = window.legendmod;
     if (rawId == null || !sps || !sps.length || !LM || !LM.indexedCells) return false;
     for (var i = 0; i < sps.length; i++) {
@@ -2025,6 +2026,39 @@ function lmMbOwnUnitCell(cell, rawId) {
         if (c && c.isPlayerCellMulti) return true;
     }
     return false;
+}
+/* cell._lmOwnProxy: the own cell of a multibox unit that this drawn main-connection copy stands
+ * for this frame, else null / undefined. While a unit's transform is not verified, the hide step
+ * (lmMbFrameHide) hides its own cell where the main connection has its copy at a mirrored place
+ * only, and draws that main copy instead; the main copy then carries _lmOwnProxy = the unit's own
+ * cell (set only to a live own cell, cleared by the next hide step). It is drawn as ours
+ * (lmOwnBodyColor, the skin, the glow, no opponent ring: the look of (cell._lmOwnProxy || cell))
+ * and is never an enemy (Dying Light's skin and threat, compareCells, "Eaten by"), but it counts
+ * nowhere else: not in playerCells / playerCellsMulti, the unit's own index, its mass or the stats. */
+/*
+ * lmCellIdentity(cell): a stable, read-only key (a positive integer) for the physical cell a
+ * drawn world cell shows, while the copy that draws it changes (the main socket, multibox units,
+ * Full Map tiles). The key is given once per physical cell (lazily, the first time it is asked or
+ * carried) and goes with the cell from copy to copy: when the hide step hides a copy behind
+ * another one (_lmMbTwin: one physical cell) the copy drawn last frame hands its key to the one
+ * drawn now (_lmCanonCarry), a copy hidden behind a drawn one takes the drawn one's key, and a
+ * removed drawn copy hands it to the hidden copy shown in its place (removeCell, _lmMbHandTo).
+ * A cell that never matched another copy keeps its own key; a key is never given to a new cell
+ * (a pooled cell's reset drops it). No allocation: one counter and one field per cell.
+ */
+var _lmCanonNext = 0;
+function lmCellIdentity(cell) {
+    if (!cell) return 0;
+    return cell._lmCanonId || (cell._lmCanonId = ++_lmCanonNext);
+}
+if (typeof window !== 'undefined') window.lmCellIdentity = lmCellIdentity;
+/* cell is hidden behind tw this frame (the same physical cell): a switch of the drawn copy (cell
+ * was drawn last frame, tw was not) carries cell's key to tw, else cell takes tw's key */
+function _lmCanonCarry(tw, cell) {
+    var a = cell._lmCanonId, b = tw._lmCanonId;
+    if (a === b) return;
+    if (a && (!b || (cell._lmMbSticky === _lmMbFrame && tw._lmMbSticky !== _lmMbFrame))) tw._lmCanonId = a;
+    else if (b) cell._lmCanonId = b;
 }
 /* May this connection's pellets and cells take part in the reconciliation (spect.js _lmFeedOk:
  * border known and orientation VERIFIED)? A PROVISIONAL or CONFLICTED spectator's cells and
@@ -2746,6 +2780,7 @@ function _lmMbNoteHide(tw, cell) {
     }
     tw._lmMbHidN++;
     tw._lmMbHides = cell;
+    _lmCanonCarry(tw, cell);
 }
 /* kept between frames: count per drawing rank, the rank of each cell, the cells in rank order */
 var _lmMbOrdCnt = new Int32Array(64), _lmMbOrdKey = new Int32Array(1024), _lmMbOrdIdx = new Int32Array(1024);
@@ -2805,6 +2840,7 @@ function lmMbFrameHide() {
                     cell.invisible = false;
                 }
                 cell._lmMbTwin = null;
+                if (cell._lmOwnProxy) cell._lmOwnProxy = null;
             }
         }
         return;
@@ -2875,6 +2911,8 @@ function lmMbFrameHide() {
             cell._lmMbPosDup = false;
             cell.invisible = false;
         }
+        /* a main copy drawn for an unverified unit's own cell last frame: decided again below */
+        if (cell._lmOwnProxy) cell._lmOwnProxy = null;
         if (cell.removed || cell.isFood) continue;
         /* a cell of a connection whose transform is not verified (not its own cell): not drawn
          * this frame (shown again by the next frame's first step) */
@@ -2975,8 +3013,17 @@ function lmMbFrameHide() {
                 cell._lmMbPosDup = true;
                 cell.invisible = true;
                 cell._lmMbTwin = null;
+                /* the main copy drawn instead of an unverified unit's own cell (its one mirrored
+                 * place): ours for this frame (_lmOwnProxy), and the same physical cell */
+                var px = key[i] === -3 ? _lmMbOwnHit : null;
+                if (px && !px.removed && !px.invisible) {
+                    px._lmOwnProxy = cell;
+                    if (cell._lmCanonId && !px._lmCanonId) px._lmCanonId = cell._lmCanonId;
+                }
             }
         }
+        /* (no cell kept referenced until the next search) */
+        _lmMbOwnHit = _lmMbCopyHit = null;
     }
     /* a copy that left its connection's view while another connection has the cell (it came
      * into that one's view between two frames, or a frame later, so nothing hid behind the copy
@@ -3095,6 +3142,7 @@ var _lmMbOwnEv = [];
  * 8 on both about the map centre; 0 none (or no name). Four searches of the frame's index, only
  * for such cells. */
 function _lmMbOwnPlaces(cell) {
+    _lmMbOwnHit = null;
     var LM = window.legendmod, nm = _lmMbSrvName(cell), radius = _lmMbCellRadius(cell);
     if (!nm || !radius || !LM) return 0;
     var p = _lmMbPosOf(cell, _lmMbPosC), px = p.x, py = p.y;
@@ -3103,10 +3151,17 @@ function _lmMbOwnPlaces(cell) {
     /* no map border yet: no mirrored place */
     var x0 = LM.mapMinX, x1 = LM.mapMaxX, y0 = LM.mapMinY, y1 = LM.mapMaxY;
     if (!(x1 > x0) || !(y1 > y0) || !Number.isFinite(x0 + x1 + y0 + y1)) return own;
-    var mx = x0 + x1 - px, my = y0 + y1 - py;
-    return own | (_lmMbCopyAt(cell, nm, radius, mx, py, reach, 0) ? 2 : 0) |
-        (_lmMbCopyAt(cell, nm, radius, px, my, reach, 0) ? 4 : 0) | (_lmMbCopyAt(cell, nm, radius, mx, my, reach, 0) ? 8 : 0);
+    var mx = x0 + x1 - px, my = y0 + y1 - py, m = 0, hit = null;
+    if (_lmMbCopyAt(cell, nm, radius, mx, py, reach, 0)) { m |= 2; hit = _lmMbCopyHit; }
+    if (_lmMbCopyAt(cell, nm, radius, px, my, reach, 0)) { hit = m ? null : _lmMbCopyHit; m |= 4; }
+    if (_lmMbCopyAt(cell, nm, radius, mx, my, reach, 0)) { hit = m ? null : _lmMbCopyHit; m |= 8; }
+    /* the main copy at its one mirrored place (none when at its own place too, or at two) */
+    if (!own) _lmMbOwnHit = hit;
+    return own | m;
 }
+/* set by _lmMbOwnPlaces: the main copy of an unverified unit's own cell at its one mirrored place
+ * (the copy drawn instead of it), else null; _lmMbCopyHit: the copy _lmMbCopyAt found last */
+var _lmMbOwnHit = null, _lmMbCopyHit = null;
 /* a cell of the kind and size of cell within 1.5 times the twin tolerance of (px, py): conn 0
  * a main-connection cell (not the main player's own) named nm; conn -1 a verified connection's
  * cell other than cell's own connection's, of the same name when both have one */
@@ -3132,7 +3187,7 @@ function _lmMbCopyAt(cell, nm, radius, px, py, reach, conn) {
             if (conn === 0 ? o.isPlayerCell || on !== nm : !_lmMbFeeds(o) || (nm && on && on !== nm)) continue;
             if (!_lmMbSizeNear(_lmMbCellRadius(o), radius)) continue;
             var tol = 1.5 * _lmMbTwinTol(radius, cell, o), dx = xs[a] - px, dy = ys[a] - py;
-            if (dx * dx + dy * dy <= tol * tol) return true;
+            if (dx * dx + dy * dy <= tol * tol) { _lmMbCopyHit = o; return true; }
         }
         lo = a;
     }
@@ -7388,10 +7443,12 @@ function lmOwnColorPlaying() {
     return !!(lm && (lm.play || (lm.playerCellsMulti && lm.playerCellsMulti.length)));
 }
 function lmOwnBodyColor(cell) {
-    if (!cell || !(cell.isPlayerCell || cell.isPlayerCellMulti) || !lmOwnColorPlaying()) return null;
+    /* a main copy drawn for a unit's own cell (_lmOwnProxy): that cell's colour */
+    var px = cell ? cell._lmOwnProxy : null;
+    if (!cell || !(cell.isPlayerCell || cell.isPlayerCellMulti || px) || !lmOwnColorPlaying()) return null;
     var ms = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null;
     var own = typeof ogarcopythelb !== 'undefined' ? ogarcopythelb : null;
-    return ms && ms.myCustomColor && own && own.color && window.legendmod.gameMode != ':teams' ? own.color : null;
+    return ms && ms.myCustomColor && own && own.color && window.legendmod.gameMode != ':teams' ? own.color : (px && px.color) || null;
 }
 /* The colour a setting draws a cell's body in instead of its own, or null. One rule for Canvas2D
  * (Cell.draw) and both WebGL batch paths, applied as the cell is drawn (after the colour
@@ -7426,6 +7483,8 @@ function lmMbShadowOn() {
 }
 function lmMbShadowColor(cell) {
     if (!cell || !lmMbShadowOn()) return null;
+    /* a main copy drawn for a unit's own cell (_lmOwnProxy) glows as that cell */
+    cell = cell._lmOwnProxy || cell;
     var unit = cell.spectator > 0;
     if (unit ? !cell.isPlayerCellMulti : !cell.isPlayerCell) return null;
     var app = window.application, pr = typeof profiles !== 'undefined' ? profiles : null;
@@ -7543,13 +7602,13 @@ function lmDlThreatLevel(cell, size, own, domRate) {
 }
 /* The cells that may get the Dying Light skin: real player bodies only (no food, ejected mass,
  * virus, removed cell or hidden copy of a cell another connection draws), never an own cell of
- * the main player or of a multibox unit, mass more than 12 as before, a cell with a name (a cell
+ * the main player or of a multibox unit (nor the main copy drawn for one, _lmOwnProxy), mass more than 12 as before, a cell with a name (a cell
  * without one shows no skin in any path) and no Teams (no skins there). */
 function lmDlSkinCell(cell) {
     var lm = window.legendmod;
     return !!(cell && !cell.removed && !cell.invisible && !cell._lmMbPosDup &&
         !cell.isFood && !cell.isEjected && !cell.isVirus &&
-        !cell.isPlayerCell && !cell.isPlayerCellMulti &&
+        !cell.isPlayerCell && !cell.isPlayerCellMulti && !cell._lmOwnProxy &&
         cell.size * cell.size >= 1300 &&
         cell.targetNick && String(cell.targetNick).trim() &&
         !(lm && lm.gameMode === ':teams'));
@@ -38957,6 +39016,8 @@ function thelegendmodproject() {
         this._lmMbLookSS = this._lmMbLookSG = undefined;
         this._lmMbHidF = this._lmMbHidN = this._lmMbHides = this._lmMbHandTo = this._lmMbHandF = this._lmMbGoneT = undefined;
         this._lmEaten = this._lmEatenT = this._lmJellyFromSrc = this._lmJellyFromGen = this._lmJellyFromRaw = undefined;
+        /* the own cell a main copy stands for this frame (lmOwnProxy) and the physical cell's key (lmCellIdentity) */
+        this._lmOwnProxy = this._lmCanonId = undefined;
         /* and the drawing's caches (nick and chat textures, colour, virus path and sound, effects) */
         this._lmNickW = this._lmNickH = this._lmNickR = this._lmNickS = this._lmNickT = this._lmNickQ = this._lmFbNick = this._lmFbKey = undefined;
         this._lmChatAt = this._lmChatW = this._lmChatH = this._lmChatDy = undefined;
@@ -39099,6 +39160,8 @@ function thelegendmodproject() {
             this._lmMbLookSS = this._lmMbLookSG = undefined;
             this._lmMbHidF = this._lmMbHidN = this._lmMbHides = this._lmMbHandTo = this._lmMbHandF = this._lmMbGoneT = undefined;
             this._lmEaten = this._lmEatenT = this._lmJellyFromSrc = this._lmJellyFromGen = this._lmJellyFromRaw = undefined;
+            /* a new cell: not the old one's physical cell (lmCellIdentity) */
+            this._lmOwnProxy = this._lmCanonId = undefined;
 
             return this;
         };
@@ -39719,6 +39782,8 @@ function thelegendmodproject() {
                     _mbPosHidden._lmMbHides = null;
                 }
                 if (this.redrawed > (_mbPosHidden.redrawed || 0)) _mbPosHidden.redrawed = this.redrawed;
+                /* the physical cell's key goes on with the copy that draws it now (lmCellIdentity) */
+                if (this._lmCanonId) _mbPosHidden._lmCanonId = this._lmCanonId;
                 this._lmMbHandTo = _mbPosHidden;
                 this._lmMbHandF = _lmMbFrame;
             }
@@ -40947,7 +41012,7 @@ function thelegendmodproject() {
                          * Opponent colours: the GPU body keeps the player's own colour (a split
                          * player showed two colours, one per cell size), the class is a ring as on
                          * Canvas2D; the body is already drawn, so the ring is a band just outside it. */
-                        if ((LM.play || LM.playerCellsMulti.length) && !this.isPlayerCell && !this.isPlayerCellMulti &&
+                        if ((LM.play || LM.playerCellsMulti.length) && !this.isPlayerCell && !this.isPlayerCellMulti && !this._lmOwnProxy &&
                             LM.play && defaultmapsettings.oppColors && !defaultmapsettings.oppRings && !this.isFood && !defaultmapsettings.cellContours && LM.gameMode != ":teams" && this.oppColor) {
                             style.save();
                             style.beginPath();
@@ -41018,7 +41083,9 @@ function thelegendmodproject() {
                         var node = null, _lmSkinKey = null, _lmDlFb = false;
                         if (lmSkinsShown() && !this.isEjected) {
                             /* getCustomSkin in two steps: the key also names the video skin below */
-                            var _lmOwnKey = application.customSkinKey(this.targetNick, this.color, this.skin, false, !!(this.isPlayerCell || this.isPlayerCellMulti));
+                            /* a main copy drawn for a unit's own cell: that cell's skin (_lmOwnProxy) */
+                            var _lmLk = this._lmOwnProxy || this;
+                            var _lmOwnKey = application.customSkinKey(_lmLk.targetNick, _lmLk.color, _lmLk.skin, false, !!(_lmLk.isPlayerCell || _lmLk.isPlayerCellMulti));
                             /* no own skin: the Dying Light skin while it is on (as the WebGL paths);
                              * _lmDlFb: that skin hides no name (Hide teammates' names) */
                             _lmSkinKey = lmWorldSkinKey(this, _lmOwnKey);
@@ -41072,7 +41139,7 @@ function thelegendmodproject() {
                          * "my custom colour" turned off the cell shows its server colour again */
                         var _lmBodyColor = this.color;
                         if (lmOwnColorPlaying()) {
-                            if (this.isPlayerCell || this.isPlayerCellMulti) {
+                            if (this.isPlayerCell || this.isPlayerCellMulti || this._lmOwnProxy) {
                                 _lmBodyColor = lmOwnBodyColor(this) || _lmBodyColor;
                             }
                             else {
@@ -58265,7 +58332,7 @@ function thelegendmodproject() {
                         /* the threat: another real player's cell (no own cell of any unit, no hidden
                          * copy, food or ejected mass) bigger than the smallest own cell */
                         if (_dlThr && _dlLvl < 2 && size >= _dlMin * _domRate && !cell.isPlayerCell && !cell.isPlayerCellMulti &&
-                            !cell._lmMbPosDup && !cell.isFood && !cell.isEjected && !cell.removed) {
+                            !cell._lmOwnProxy && !cell._lmMbPosDup && !cell.isFood && !cell.isEjected && !cell.removed) {
                             var _dl = lmDlThreatLevel(cell, size, _dlOwn, _domRate);
                             if (_dl > _dlLvl) _dlLvl = _dl;
                         }
@@ -58284,7 +58351,8 @@ function thelegendmodproject() {
                             }
                         }
                         /* Inline cacheCells — reuse pooled objects, zero allocation */
-                        if (!cell.isPlayerCell && _splitOrRings) {
+                        /* (a main copy drawn for a unit's own cell, _lmOwnProxy, is ours: no ring) */
+                        if (!cell.isPlayerCell && !cell._lmOwnProxy && _splitOrRings) {
                             var _arr, _wi;
                             if (fixMass >= _thr4) { _arr = this.biggerSTEDCellsCache; _wi = _wBSTED++; }
                             else if (fixMass >= _thr2) { _arr = this.biggerSTECellsCache; _wi = _wBSTE++; }
@@ -58308,7 +58376,7 @@ function thelegendmodproject() {
                             _obj.targetX = cell.targetX; _obj.targetY = cell.targetY;
                             _obj.size = _cs;
                         }
-                        if (_triple && !cell.isPlayerCell && fixMass >= _thr8) {
+                        if (_triple && !cell.isPlayerCell && !cell._lmOwnProxy && fixMass >= _thr8) {
                             if (!_tsteArr._pool) _tsteArr._pool = [];
                             var _tObj = _tsteArr._pool[_wTSTE] || (_tsteArr._pool[_wTSTE] = { x: 0, y: 0, targetX: 0, targetY: 0, size: 0 });
                             _tsteArr[_wTSTE++] = _tObj;
@@ -64001,12 +64069,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             try {
                 /* the same key as Cell.draw and the cell batch (lmWorldSkinKey) */
+                var _wLk = cell._lmOwnProxy || cell;
                 var _wKey = lmWorldSkinKey(cell, application.customSkinKey(
-                    cell.targetNick,
-                    cell.color,
-                    cell.skin,
+                    _wLk.targetNick,
+                    _wLk.color,
+                    _wLk.skin,
                     false,
-                    !!(cell.isPlayerCell || cell.isPlayerCellMulti)
+                    !!(_wLk.isPlayerCell || _wLk.isPlayerCellMulti)
                 ));
                 node = _wKey ? application.getCachedSkin(application.customSkinsCache, _wKey) : null;
             } catch (error) { }
@@ -78566,8 +78635,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
              * (application.customSkinKey: team list skins, chat socket skins, the cell's own
              * URL, vanilla skins, and the cache key loadSkin really used); no own skin: the
              * Dying Light skin while it is on (lmWorldSkinKey, as Cell.draw). */
+            var _lk = cell._lmOwnProxy || cell;
             var skinUrl = lmWorldSkinKey(cell,
-                application.customSkinKey(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti)));
+                application.customSkinKey(_lk.targetNick, _lk.color, _lk.skin, false, !!(_lk.isPlayerCell || _lk.isPlayerCellMulti)));
 
 
             if (
@@ -80915,7 +80985,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * loadSkin really used. This copy had its own lookup that missed those, so
                      * such skins showed only in frames drawn by Canvas2D. No own skin: the Dying
                      * Light skin while it is on (lmWorldSkinKey, as Cell.draw). */
-                    var skinUrl = lmWorldSkinKey(cell, application.customSkinKey(cell.targetNick, cell.color, cell.skin, false, !!(cell.isPlayerCell || cell.isPlayerCellMulti)));
+                    var _lk = cell._lmOwnProxy || cell;
+                    var skinUrl = lmWorldSkinKey(cell, application.customSkinKey(_lk.targetNick, _lk.color, _lk.skin, false, !!(_lk.isPlayerCell || _lk.isPlayerCellMulti)));
                     if (skinUrl) {
                         /* A video URL found through an alternate skin-map key must
                          * also force the complete batch to Canvas2D. */
