@@ -721,5 +721,27 @@ if (Object.keys(coreSrc).every(k => coreSrc[k])) {
   if (a > 0 && b > a) changed = vm.runInNewContext(v4.slice(a, b + 2) + '\nlmRenameOldHotkeys(hotkeys);', { hotkeys: hk });
   check('instant replay and replay hotkeys: their saved keys are freed, the feed key stays', changed === true && same(hk, { '70': 'hk-feed' }));
 }
+/* "Back to game" joins the last real server of this session, kept in memory only: the stored
+ * 10-server list of the removed previous-server hotkey is dropped at start, replays and private
+ * room tickets are never the server to go back to */
+{
+  const v4 = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
+  const a = v4.indexOf('var _lmLastServer = null;'), b = v4.indexOf('/* on a private room connection', a);
+  const store = { lmServerHistory: '[{"ws":"wss://old"}]' }, joined = [], toasts = [];
+  const c = { String, JSON, window: {}, localStorage: { removeItem(k) { delete store[k]; }, setItem(k, v) { store[k] = v; }, getItem(k) { return store[k] || null; } },
+    $: () => ({ val() { return ':ffa'; }, filter() { return { length: 1 }; } }), toastr: { info(t) { toasts.push(t); } }, _lmTH: (k, d) => d,
+    _lmIsRoomUrl: u => u.indexOf('/el-room/') !== -1 };
+  c.window = c; c.application = { gameServerJoin(ws) { joined.push(ws); } };
+  vm.createContext(c);
+  if (a > 0 && b > a) vm.runInContext(v4.slice(a, b), c);
+  check('back to game: the old stored server list is removed', a > 0 && !('lmServerHistory' in store));
+  c.legendmod = { ws: 'wss://live-arena-x.agar.io' };
+  c._lmLastServerSet('wss://live-arena-x.agar.io');
+  c._lmLastServerSet('wss://imsolo.pro.replay');
+  c._lmLastServerSet('wss://api.legendmod.ml/el-room/ABCDEF?t=x');
+  check('back to game: nothing while still on that server', c._lmJoinPrevServer() === false && joined.length === 0 && toasts.length === 1);
+  c.legendmod.ws = 'wss://imsolo.pro.replay';
+  check('back to game: from a replay joins the last real server, nothing is stored', c._lmJoinPrevServer() === true && joined[0] === 'wss://live-arena-x.agar.io' && Object.keys(store).length === 0);
+}
 console.log(fail ? fail + ' failed' : 'all replay studio checks passed');
 process.exit(fail ? 1 : 0);

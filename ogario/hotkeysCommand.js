@@ -217,18 +217,6 @@
 				keyUp: null,
 				type: 'normal'
 			},
-			'hk-prevServer': {
-				get label() {
-					return lmT('settings.hk-prevServer');
-				},
-				defaultKey: '',
-				keyDown() {
-					/* the last different server that opened (no replays or private room tickets), joined like the Join button */
-					if (typeof window._lmJoinPrevServer === 'function') window._lmJoinPrevServer();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			'hk-scanTrick': {
 				get label() {
 					return lmT('settings.hk-scanTrick');

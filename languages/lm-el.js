@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "Ping ομάδας: Πήγαινε εδώ",
 "settings.hk-pingVirus": "Ping ομάδας: Ιός εδώ",
 "settings.hk-specNextTop": "Ελεύθερο spectate: ακολούθησε τον επόμενο παίκτη της κατάταξης",
-"settings.hk-prevServer": "Επανασύνδεση στον προηγούμενο server",
 "settings.hk-showTargeting": "Εμφάνιση/απόκρυψη πάνελ στόχευσης",
 "settings.hk-voiceChat": "Φωνή σε κείμενο",
 "settings.hk-GhostCellsInfo": "Κύτταρα-φαντάσματα on / off",

@@ -199,7 +199,7 @@
 "site.index.expandingLandTeamsTeams": "<b>Expanding Land Teams</b>：按下 Play、回到分頁或地圖擴大時，Teams 模式（圓餅圖、隊伍顏色、排行榜）不再被關閉；圓餅圖也能適應手機螢幕。",
 "site.index.expandingLandTeamsLeaderboard": "<b>Expanding Land Teams 排行榜</b>：排行榜框會依佔地比例由大到小列出各隊伍，並醒目標示你的隊伍。",
 "site.index.privateRoomsAShare": "<b>私人房間</b>：房間視窗中的分享按鈕會開啟手機的分享選單（WhatsApp、Discord...），附上房間連結。",
-"site.index.gameOverCardA": "<b>遊戲結束卡片</b>：新增分享按鈕（手機分享選單或推文），附上你的質量與存活時間。新快速鍵 <b>重新連線到上一個伺服器</b>（未綁定；會記住最近 10 個伺服器，不含重播或私人房間票券）。<b>在聊天暱稱前顯示玩家 ID（#id）</b>（聊天設定，預設關閉）。",
+"site.index.gameOverCardA": "<b>在聊天暱稱前顯示玩家 ID（#id）</b>（聊天設定，預設關閉）。",
 "site.index.expandingLandInTeams": "<b>Expanding Land</b>：在 Teams 中，隊伍聊天（Enter 與手機快速聊天按鈕）不需戰隊標籤即可傳給隊友；遊戲結束卡片的「被吃掉」列新增 <b>觀看擊殺者</b>按鈕，可觀戰並跟隨吃掉你的細胞。",
 "site.index.leaguesTheLeaderboardsWindow": "<b>聯賽</b>：排行榜視窗會倒數至每週重設（「Resets in 2d 5h」），玩家個人資料統計會顯示你的平均質量，「passed you」提示會說明是哪個排行榜（World、Country、你的聯賽或 Friends）。",
 "site.index.directionOnTouchMobile": "<b>觸控方向</b>（行動版，齒輪面板，預設關閉）：如同 agar.io，細胞會朝手指觸碰的位置移動，而不是使用搖桿；拖曳即可轉向，放開後繼續前進。",

@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "Teamping: Ga hierheen",
 "settings.hk-pingVirus": "Teamping: Virus hier",
 "settings.hk-specNextTop": "Vrij toekijken: volgende speler uit de ranglijst volgen",
-"settings.hk-prevServer": "Opnieuw verbinden met de vorige server",
 "settings.hk-showTargeting": "Doelvolgingspaneel tonen/verbergen",
 "settings.hk-voiceChat": "Spraak naar tekst",
 "settings.hk-GhostCellsInfo": "Spookcellen aan / uit",

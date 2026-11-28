@@ -4913,24 +4913,6 @@
     "ja": "自由観戦：ランキングの次のプレイヤーを追跡",
     "it": "Spettatore libero: segui il prossimo giocatore in classifica"
   },
-  "settings.hk-prevServer": {
-    "en": "Reconnect to the previous server",
-    "el": "Επανασύνδεση στον προηγούμενο server",
-    "es": "Reconectar al servidor anterior",
-    "bg": "Свържи се отново с предишния сървър",
-    "fr": "Se reconnecter au serveur précédent",
-    "ar": "إعادة الاتصال بالسيرفر السابق",
-    "zh": "重新連線到上一個伺服器",
-    "ru": "Переподключиться к предыдущему серверу",
-    "de": "Erneut mit dem vorherigen Server verbinden",
-    "tr": "Önceki sunucuya yeniden bağlan",
-    "pl": "Połącz ponownie z poprzednim serwerem",
-    "nl": "Opnieuw verbinden met de vorige server",
-    "pt": "Reconectar ao servidor anterior",
-    "id": "Sambung ulang ke server sebelumnya",
-    "ja": "前のサーバーに再接続",
-    "it": "Riconnetti al server precedente"
-  },
   "settings.hk-showTargeting": {
     "en": "Show/hide targeting panel",
     "el": "Εμφάνιση/απόκρυψη πάνελ στόχευσης",

@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "Team-Ping: Hierher",
 "settings.hk-pingVirus": "Team-Ping: Virus hier",
 "settings.hk-specNextTop": "Freies Zuschauen: dem nächsten Spieler der Bestenliste folgen",
-"settings.hk-prevServer": "Erneut mit dem vorherigen Server verbinden",
 "settings.hk-showTargeting": "Zielverfolgungs-Panel ein-/ausblenden",
 "settings.hk-voiceChat": "Sprache zu Text",
 "settings.hk-GhostCellsInfo": "Geisterzellen an / aus",

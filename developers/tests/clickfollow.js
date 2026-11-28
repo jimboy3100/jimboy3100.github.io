@@ -198,12 +198,13 @@ const cursorOut = lm => { lm.sent.length = 0; lm._lmLastCursorAt = 0; lm.sendPos
   check('hotkey when not spectating: nothing', lm2.sent.length === 0 && lm2._lmSpecLb == null);
   const ids = Object.keys(hctx.hotkeysCommand);
   check('hotkeys: no spectator director or camera lock commands', !ids.some(id => /^hk-dir/.test(id) || id === 'hk-director' || id === 'hk-cameraLock'));
+  check('hotkeys: the previous server command is gone', ids.indexOf('hk-prevServer') < 0);
   const rs = main.indexOf('function lmRenameOldHotkeys(map) {'), re = main.indexOf('\n}', rs);
   const rctx = { JSON, Object, String };
   vm.createContext(rctx);
   vm.runInContext(main.slice(rs, re + 2), rctx);
-  const map = { D: 'hk-director', A: 'hk-dirAuto', B: 'hk-dirBroadcast', N: 'hk-dirWatchNext', P: 'hk-dirWatchPrev', W: 'hk-dirWatchAdd', S: 'hk-dirMarkSave', '1': 'hk-dirMark1', '5': 'hk-dirMark5', L: 'hk-cameraLock', Q: 'hk-feed', T: 'hk-specNextTop' };
-  check('saved keys on the removed director commands are free again, the others stay', rctx.lmRenameOldHotkeys(map) === true && JSON.stringify(map) === JSON.stringify({ Q: 'hk-feed', T: 'hk-specNextTop' }));
+  const map = { D: 'hk-director', A: 'hk-dirAuto', B: 'hk-dirBroadcast', N: 'hk-dirWatchNext', P: 'hk-dirWatchPrev', W: 'hk-dirWatchAdd', S: 'hk-dirMarkSave', '1': 'hk-dirMark1', '5': 'hk-dirMark5', L: 'hk-cameraLock', Q: 'hk-feed', T: 'hk-specNextTop', R: 'hk-prevServer' };
+  check('saved keys on the removed director commands and the previous server are free again, the others stay', rctx.lmRenameOldHotkeys(map) === true && JSON.stringify(map) === JSON.stringify({ Q: 'hk-feed', T: 'hk-specNextTop' }));
   const exp = vm.runInContext('LM_EXPORT_KEYS', (() => { const c = { console }; vm.createContext(c); vm.runInContext(cut('var LM_EXPORT_KEYS = [', '];') + '];', c); return c; })());
   check('settings export: no director configuration', !exp.some(e => /^lm-director/.test(e.key)));
   check('the director module is not loaded any more', main.indexOf('modules/director.js') < 0 && !fs.existsSync(path.join(root, 'ogario', 'modules', 'director.js')));

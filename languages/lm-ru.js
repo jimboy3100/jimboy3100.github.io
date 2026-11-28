@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "Командный пинг: Иди сюда",
 "settings.hk-pingVirus": "Командный пинг: Здесь вирус",
 "settings.hk-specNextTop": "Свободное наблюдение: следить за следующим игроком из топа",
-"settings.hk-prevServer": "Переподключиться к предыдущему серверу",
 "settings.hk-showTargeting": "Показать/скрыть панель слежения",
 "settings.hk-voiceChat": "Голосовой ввод",
 "settings.hk-GhostCellsInfo": "Клетки-призраки вкл. / выкл.",

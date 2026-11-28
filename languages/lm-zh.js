@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "隊伍標記：到這裡",
 "settings.hk-pingVirus": "隊伍標記：這裡有刺球",
 "settings.hk-specNextTop": "自由觀戰：跟隨排行榜上的下一位玩家",
-"settings.hk-prevServer": "重新連線到上一個伺服器",
 "settings.hk-showTargeting": "顯示/隱藏目標追蹤面板",
 "settings.hk-voiceChat": "語音轉文字",
 "settings.hk-GhostCellsInfo": "幽靈細胞 開 / 關",

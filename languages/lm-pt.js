@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "Ping da equipe: Vá para cá",
 "settings.hk-pingVirus": "Ping da equipe: Vírus aqui",
 "settings.hk-specNextTop": "Espectar livre: seguir o próximo jogador do ranking",
-"settings.hk-prevServer": "Reconectar ao servidor anterior",
 "settings.hk-showTargeting": "Mostrar/ocultar painel de alvo",
 "settings.hk-voiceChat": "Voz para texto",
 "settings.hk-GhostCellsInfo": "Células fantasma liga / desliga",

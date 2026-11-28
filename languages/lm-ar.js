@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "تنبيه الفريق: اذهب هنا",
 "settings.hk-pingVirus": "تنبيه الفريق: فيروس هنا",
 "settings.hk-specNextTop": "المشاهدة الحرة: متابعة اللاعب التالي في لوحة الصدارة",
-"settings.hk-prevServer": "إعادة الاتصال بالسيرفر السابق",
 "settings.hk-showTargeting": "إظهار/إخفاء لوحة التتبع",
 "settings.hk-voiceChat": "تحويل الصوت إلى نص",
 "settings.hk-GhostCellsInfo": "الخلايا الشبحية تشغيل / إيقاف",

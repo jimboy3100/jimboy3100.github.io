@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "Takım pingi: Buraya git",
 "settings.hk-pingVirus": "Takım pingi: Burada virüs var",
 "settings.hk-specNextTop": "Serbest izleme: sıralamadaki sonraki oyuncuyu takip et",
-"settings.hk-prevServer": "Önceki sunucuya yeniden bağlan",
 "settings.hk-showTargeting": "Hedefleme panelini göster/gizle",
 "settings.hk-voiceChat": "Sesi yazıya çevir",
 "settings.hk-GhostCellsInfo": "Hayalet hücreler aç / kapat",

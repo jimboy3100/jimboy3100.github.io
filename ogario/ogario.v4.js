@@ -773,28 +773,21 @@ var _lmRoomState = { code: '', pass: '', url: '', mode: '', name: '', lost: fals
 window._lmRoomState = _lmRoomState;
 function _lmIsRoomUrl(u) { return typeof u === 'string' && u.indexOf('/el-room/') !== -1; }
 window._lmIsRoomUrl = _lmIsRoomUrl;
-/* Server history for the previous server hotkey: the last 10 game servers that opened (newest first,
- * localStorage 'lmServerHistory'). Replays and private room tickets (single use) are never stored. */
-window._lmSrvHistRead = function () { try { var a = JSON.parse(localStorage.getItem('lmServerHistory') || '[]'); return Array.isArray(a) ? a.filter(function (h) { return h && typeof h.ws === 'string' && h.ws; }) : []; } catch (e) { return window._lmSrvHistMem || []; } };
-window._lmSrvHistAdd = function (ws) {
+/* The last game server that opened in this session (never a replay or a private room ticket, which
+ * is single use), kept in memory only: Replay Studio's "Back to game" and the practice arena go back
+ * to it. The 10-server list an older version stored (lmServerHistory) is dropped. */
+var _lmLastServer = null;
+try { localStorage.removeItem('lmServerHistory'); } catch (e) { }
+window._lmLastServerSet = function (ws) {
     ws = String(ws || '');
     if (!/^wss?:\/\//.test(ws) || ws.length > 600 || ws.indexOf('replay') !== -1 || _lmIsRoomUrl(ws)) return;
-    var gm = '', rg = '';
-    try { gm = String($('#gamemode').val() || ''); rg = String($('#region').val() || ''); } catch (e) { }
-    var a = window._lmSrvHistRead().filter(function (h) { return h.ws !== ws; });
-    a.unshift({ ws: ws, gm: gm, rg: rg, at: Date.now() });
-    window._lmSrvHistMem = a = a.slice(0, 10);
-    try { localStorage.setItem('lmServerHistory', JSON.stringify(a)); } catch (e) { }
-};
-/* the newest stored server that is not the current one */
-window._lmPrevServer = function () {
-    var cur = window.legendmod && window.legendmod.ws, a = window._lmSrvHistRead();
-    for (var i = 0; i < a.length; i++) if (a[i].ws !== cur) return a[i];
-    return null;
+    var gm = '';
+    try { gm = String($('#gamemode').val() || ''); } catch (e) { }
+    _lmLastServer = { ws: ws, gm: gm };
 };
 /* joins through the Join button path (gameServerJoin), so Expanding Land and private servers keep working */
 window._lmJoinPrevServer = function () {
-    var h = window._lmPrevServer();
+    var cur = window.legendmod && window.legendmod.ws, h = _lmLastServer && _lmLastServer.ws !== cur ? _lmLastServer : null;
     if (!h) { if (window.toastr) toastr.info(_lmTH('noPrevServer', 'No previous server')); return false; }
     try { if (h.gm && $('#gamemode option').filter(function () { return this.value === h.gm; }).length) $('#gamemode').val(h.gm); } catch (e) { }
     if (window.application && application.gameServerJoin) application.gameServerJoin(h.ws);
@@ -21790,11 +21783,11 @@ function lmFoldClickFollow(s) {
  * current zoom as zoom level 1-5; Skin collections, part of the player profiles now; the Command
  * Centre, deleted; precision zoom; enlarge the minimap; next / previous profile and Undo profile; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled; the old Multibox toggle back;
  * Open the Lab; the keys that only opened a window or a panel or switched a rarely changed setting
- * (their window, panel or switch stays)) is free. For the stored hotkeys (loadHotkeys) and a settings
+ * (their window, panel or switch stays); Reconnect to the previous server) is free. For the stored hotkeys (loadHotkeys) and a settings
  * profile's (profiles.js), so an older set keeps those keys. Returns true when map changed. */
 function lmRenameOldHotkeys(map) {
     if (!map || typeof map !== 'object') return false;
-    var gone = /^hk-(?:lmLab|analytics|performanceMode|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|middleMultiView|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor)$/;
+    var gone = /^hk-(?:lmLab|analytics|performanceMode|mergeRings|el(?:Leagues|Shop|Challenges|Potions|ClaimAll)|replay(?:Pause|Faster|Slower|Fwd|Back|Studio)|middleMultiView|gamepadWindow|lmProfilesWindow|copyServerLink|chatSounds|lmPlugins|hudEditor|prevServer)$/;
     var own = function (k) { return Object.prototype.hasOwnProperty.call(map, k); };
     var bound = function (cmd) {
         for (var x in map) if (own(x) && map[x] === cmd) return true;
@@ -41291,7 +41284,7 @@ function thelegendmodproject() {
                 if (url.indexOf('/el-room/') !== -1 && typeof window._lmRoomOnOpen === 'function') {
                     try { window._lmRoomOnOpen(url); } catch (e) { }
                 }
-                try { window._lmSrvHistAdd && window._lmSrvHistAdd(url); } catch (e) { }
+                try { window._lmLastServerSet && window._lmLastServerSet(url); } catch (e) { }
             };
             /* a message still queued from a replaced socket (map border, cells) is not this server's */
             var _lmSock = this.socket;

@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "Ping drużyny: Idź tutaj",
 "settings.hk-pingVirus": "Ping drużyny: Tu jest wirus",
 "settings.hk-specNextTop": "Wolna obserwacja: śledź następnego gracza z rankingu",
-"settings.hk-prevServer": "Połącz ponownie z poprzednim serwerem",
 "settings.hk-showTargeting": "Pokaż/ukryj panel namierzania",
 "settings.hk-voiceChat": "Głos na tekst",
 "settings.hk-GhostCellsInfo": "Komórki-duchy wł. / wył.",

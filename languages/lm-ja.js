@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "チームピン：ここへ",
 "settings.hk-pingVirus": "チームピン：ここにウイルス",
 "settings.hk-specNextTop": "自由観戦：ランキングの次のプレイヤーを追跡",
-"settings.hk-prevServer": "前のサーバーに再接続",
 "settings.hk-showTargeting": "ターゲットパネルの表示/非表示",
 "settings.hk-voiceChat": "音声入力",
 "settings.hk-GhostCellsInfo": "ゴーストセル オン / オフ",

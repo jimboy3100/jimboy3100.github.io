@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "Ping tim: Ke sini",
 "settings.hk-pingVirus": "Ping tim: Virus di sini",
 "settings.hk-specNextTop": "Spectate bebas: ikuti pemain berikutnya di leaderboard",
-"settings.hk-prevServer": "Sambung ulang ke server sebelumnya",
 "settings.hk-showTargeting": "Tampilkan/sembunyikan panel target",
 "settings.hk-voiceChat": "Suara ke teks",
 "settings.hk-GhostCellsInfo": "Sel hantu nyala / mati",

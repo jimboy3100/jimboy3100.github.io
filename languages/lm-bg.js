@@ -3069,7 +3069,6 @@
 "settings.hk-pingGoHere": "Отборен пинг: Иди тук",
 "settings.hk-pingVirus": "Отборен пинг: Вирус тук",
 "settings.hk-specNextTop": "Свободно наблюдение: следи следващия играч от класацията",
-"settings.hk-prevServer": "Свържи се отново с предишния сървър",
 "settings.hk-showTargeting": "Покажи/скрий панела за проследяване",
 "settings.hk-voiceChat": "Глас в текст",
 "settings.hk-GhostCellsInfo": "Клетки призраци вкл. / изкл.",
