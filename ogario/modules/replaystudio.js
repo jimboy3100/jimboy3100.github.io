@@ -1867,13 +1867,17 @@
         if (tab === 'games') { if (typeof window._lmMatchHistoryPaint === 'function') window._lmMatchHistoryPaint(host); return; }
         var A = window.LMAnalytics;
         if (A && typeof A.paint === 'function') { A.paint(host, tab); return; }
+        /* stats without paint are the file from before the merge (it had a window of its own): this
+         * file loads on first open, so a page loaded before an update can run the new window with the
+         * old stats file. Waiting would end in "could not be loaded"; a page reload brings the current one */
+        if (A) { host.appendChild(el('div', 'padding:16px;text-align:center;', TF('pkg.rptab.stale'), { 'class': 'lm-rs-dim' })); return; }
         if (window._lmAnalyticsLoadFailed && typeof window._lmAnalyticsLoad === 'function') window._lmAnalyticsLoad();
         var msg = el('div', 'padding:16px;text-align:center;', TF('mhLoading'), { 'class': 'lm-rs-dim' });
         host.appendChild(msg);
         var start = Date.now();
         (function wait() {
             if (!isOpen() || (tab !== 'dash' && tab !== 'heat')) return;
-            if (window.LMAnalytics && typeof window.LMAnalytics.paint === 'function') { drawView(); return; }
+            if (window.LMAnalytics) { drawView(); return; }
             if (window._lmAnalyticsLoadFailed || Date.now() - start > 15000) { msg.textContent = TF('pkg.rpm.loadFailed'); return; }
             drawView.t = setTimeout(wait, 500);
         })();
