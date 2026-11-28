@@ -1828,7 +1828,7 @@
      * read 4 times a second, shown once it held 250 ms, gone 1.5 s after the danger. Not in
      * Competitive, a replay or the practice arena; nothing while spectating, in the menu or on the
      * Game Over window (no valid level then) or from an old frame; reset at once by a switch of
-     * the player you control, a death, a spawn, a server change and a dropped connection.
+     * the player you control, its death or spawn, a server change and a dropped connection.
      * LMDyingLight.setEffect('threat', false) turns it off. In Competitive or suppressed its timer does
  * not run (again at once on a change: the part's changed()); while the page is busy (the
  * director's late ticks) the level is not asked for. Decorative, under the HUD, no clicks;
@@ -1897,11 +1897,17 @@
         if (want !== tLvl && t - tSince >= (want > tLvl ? THR_RISE : THR_FALL)) tShow(want, false);
         tArm();
     }
-    function tSub(name) {
+    function tSub(name, fn) {
         var ev = W.LMEvents;
         if (!ev || typeof ev.on !== 'function') return;
-        ev.on(name, tReset);
-        tSubs.push(name);
+        ev.on(name, fn || tReset);
+        tSubs.push([name, fn || tReset]);
+    }
+    /* playerDied / playerSpawned: only the player you control resets it (the main player's death
+     * or spawn left the level of the unit you control blank for half a second) */
+    function tLife(d) {
+        if (d && d.role && !d.active) return;
+        tReset();
     }
     function tStart() {
         var d = W.document;
@@ -1911,7 +1917,10 @@
         tUnit = -1;
         tVis = function () { if (hidden()) { clearTimeout(tTimer); tTimer = 0; tReset(); } else if (!tTimer) tArm(); };
         d.addEventListener('visibilitychange', tVis);
-        tSub('multiboxSwap'); tSub('death'); tSub('spawn'); tSub('serverChange'); tSub('disconnect');
+        /* every player's life (playerDied / playerSpawned); an older core: the main player's */
+        var mb = typeof W.lmMbPlayerEvent === 'function';
+        tSub('multiboxSwap'); tSub(mb ? 'playerDied' : 'death', tLife); tSub(mb ? 'playerSpawned' : 'spawn', tLife);
+        tSub('serverChange'); tSub('disconnect');
         tArm(true);
     }
     function tStop() {
@@ -1919,7 +1928,7 @@
         clearTimeout(tTimer);
         tTimer = 0;
         var ev = W.LMEvents;
-        while (tSubs.length) { try { ev.off(tSubs.pop(), tReset); } catch (e) { } }
+        while (tSubs.length) { var s = tSubs.pop(); try { ev.off(s[0], s[1]); } catch (e) { } }
         var d = W.document;
         if (tVis && d && typeof d.removeEventListener === 'function') d.removeEventListener('visibilitychange', tVis);
         tVis = null;

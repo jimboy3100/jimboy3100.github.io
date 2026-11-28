@@ -467,6 +467,25 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
         p = L.enable(); flushPics(true); await p;
         const E = ctx.LMEvents;
         check('lifecycle: listens to playerDied / playerSpawned, not death / spawn', info().listeners === 6 && E._has('playerDied') && E._has('playerSpawned'));
+        {
+            /* the threat look of the unit you control: only its own death or spawn resets it */
+            let snap = null;
+            ctx.lmDlThreat = () => snap;
+            const run = ms => { for (let e = 0; e < ms; e += 250) { snap = { t: T, unit: 4, level: 2, valid: true }; advance(250); } };
+            const lvl = () => info().threat.level;
+            check('lifecycle: the threat look neither on death nor on spawn', !E._has('death') && !E._has('spawn') && info().threat.listeners === 6);
+            run(750);
+            const shown = lvl();
+            E.emit('playerDied', { scope: 'unit', role: 'main', living: 1, active: false });
+            E.emit('playerSpawned', { role: 'main', living: 2, active: false });
+            check('lifecycle: the main player dying or spawning keeps the threat look of the unit you control', shown === 2 && lvl() === 2);
+            E.emit('playerDied', { scope: 'unit', role: 'unit', living: 1, active: true });
+            check('lifecycle: the death of the unit you control resets it at once', lvl() === 0);
+            run(750);
+            E.emit('playerSpawned', { role: 'unit', living: 2, active: true });
+            check('lifecycle: the spawn of the player you control resets it at once', lvl() === 0);
+            delete ctx.lmDlThreat;
+        }
         const rWas = ctx.__r;
         ctx.__r = () => 0; plays.length = 0; toasts.length = 0;
         ctx.legendmod.play = false;
