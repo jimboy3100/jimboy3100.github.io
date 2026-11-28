@@ -4,14 +4,14 @@
   var fail = [], info = {};
   function need(name, ok) { if (!ok) fail.push(name); }
   need('LMBotsWorkerSocket', typeof window.LMBotsWorkerSocket === 'function');
-  need('connectionBots.isBrowserHost', window.connectionBots && window.connectionBots.isBrowserHost('browser') && window.connectionBots.isBrowserHost('') && !window.connectionBots.isBrowserHost('ws://localhost:1337'));
+  need('connectionBots', !!(window.connectionBots && typeof window.connectionBots.connect === 'function' && typeof window.LMBotsWorkerSocket === 'function'));
   if (fail.length) return { fail: fail, info: info };
   // the panel: Start and Stop only (no Connect, no captcha tokens, no address tip), title Bots, players row; the trophy button is hidden on every server
   need('no Connect button', !document.getElementById('connectBots'));
   need('no captcha tokens row', !document.getElementById('captchatokens'));
   need('Start button', !!document.getElementById('startBots') && !document.getElementById('startBots').disabled);
   need('players row', !!document.getElementById('botsServerPlayers'));
-  need('no help tip on the address field', !document.getElementById('botsRemoteIP').getAttribute('title'));
+  need('no bot server address field', !document.getElementById('botsRemoteIP'));
   var title = document.getElementById('botsAuthor');
   info.title = title && title.textContent;
   need('title is the language pack text, no party', !!title && title.textContent.trim() === lmT('game1.bots.title') && !/party/i.test(title.textContent));

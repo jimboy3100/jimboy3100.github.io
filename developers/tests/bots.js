@@ -1113,12 +1113,13 @@ for (const file of ['server.js', 'server-fast.js']) {
         const ops = s => s.sent.filter(p => typeof p !== 'string').map(p => p[0]);
         return { w, lm, cb, els, toasts, socks, removed, flush, ops, start: () => w._lmBotsStart(), fill: () => w._lmBrFill(), stop: () => w._lmBotsStop() };
     };
-    for (const [path, host] of [['worker', 'browser'], ['ws', 'ws://localhost:1337']]) {
+    /* the bots always run in the browser worker; a SERVER_HOST left by an older version changes nothing */
+    for (const [path, host] of [['worker', 'browser'], ['worker, old address', 'ws://localhost:1337']]) {
         const f = flow({ host });
         f.start();
         const s = f.socks[0];
-        check('Start (' + path + '): one click connects: ' + (path === 'worker' ? 'the browser worker with the bot core' : 'the bot server of the address field'), f.socks.length === 1 && s.kind === path &&
-            s.url === (path === 'worker' ? 'https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=9.9' : 'ws://localhost:1337'));
+        check('Start (' + path + '): one click connects: the browser worker with the bot core', f.socks.length === 1 && s.kind === 'worker' &&
+            s.url === 'https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=9.9');
         check('Start (' + path + '): while connecting: status Connecting, Stop shown, Start hidden, nothing sent yet', f.els.userStatus.i18n === 'game1.bots.connecting' && f.cb.pending === 'start' &&
             f.els.startBots.style.display === 'none' && f.els.startBots.disabled && f.els.stopBots.style.display === 'inline' && !f.els.stopBots.disabled && s.sent.length === 0 && !f.w.userBots.startSent);
         f.start(); f.start();
@@ -1160,48 +1161,26 @@ for (const file of ['server.js', 'server-fast.js']) {
         const f = flow({ host: 'browser' });
         f.start();
         f.socks[0].fail();
-        check('Start: connection failed: Disconnected, Start shown, notice to check the address', f.els.userStatus.i18n === 'game1.bots.disconnected' && f.cb.pending === null &&
-            f.els.startBots.style.display === 'inline' && f.toasts.length === 1 && f.toasts[0].includes('game1.bots.connectFailed'));
-        const g = flow({ host: 'localhost:1337' });
-        g.w.application = { _lmQuickBotsShown: () => true };
-        g.start();
-        check('Start: an address that is not ws:// fails without throwing (address field shown: the notice)', g.socks.length === 0 && g.cb.ws === null && g.toasts.some(t => t.includes('game1.bots.connectFailed')) && g.els.startBots.style.display === 'inline');
+        check('Start: the worker failed: Disconnected, Start shown, the notice that the bots could not start', f.els.userStatus.i18n === 'game1.bots.disconnected' && f.cb.pending === null &&
+            f.els.startBots.style.display === 'inline' && f.toasts.length === 1 && f.toasts[0].includes('pkg.bots.workerFailed'));
     }
     {
-        // a bot server address saved by an earlier version while the bots panel (its only editor) is hidden
-        for (const host of ['wss://party-bots--legendmod.repl.co', 'ws://localhost:1337', 'localhost:1337']) {
-            const f = flow({ host, lm: { gameMode: ':battleroyale', battleRoyale: { players: 5, started: false, countdown: false } } });
-            f.w.application = { _lmQuickBotsShown: () => false };
-            f.fill();
-            if (f.socks[0] && f.socks[0].kind === 'ws') f.socks[0].fail();
-            const wk = f.socks.find(x => x.kind === 'worker');
-            check('Saved bot address ' + host + ' that does not answer, bots panel hidden: Fill lobby goes on with the browser bots, no "check the address" notice', !!wk && f.cb.ws === wk &&
-                f.cb.pending === 'fill' && f.w.SERVER_HOST === 'browser' && f.w.bots.remoteIP === 'browser' && f.removed.includes('localstoredBotsRemoteIP') && f.els.botsRemoteIP.value === 'browser' &&
-                !f.toasts.some(t => t.includes('game1.bots.connectFailed')));
-            if (wk) { wk.open(); f.flush(); }
-            const pk = wk && wk.sent.find(p => typeof p !== 'string' && p[0] === 0);
-            check('... the same click fills the lobby (10 bots)', !!pk && pk[pk.length - 1] === 10 && f.w._brFilling === true);
-        }
-        const g = flow({ host: 'ws://localhost:1337' });
-        g.w.application = { _lmQuickBotsShown: () => true };
-        g.start(); g.socks[0].fail();
-        check('Bot address that does not answer, address field shown: kept, the notice to check it, no fallback', g.socks.length === 1 && g.w.SERVER_HOST === 'ws://localhost:1337' &&
-            !g.removed.length && g.toasts.some(t => t.includes('game1.bots.connectFailed')));
+        // an address saved by an older version: ignored, the bots run in the browser
+        const f = flow({ host: 'wss://party-bots--legendmod.repl.co', lm: { gameMode: ':battleroyale', battleRoyale: { players: 5, started: false, countdown: false } } });
+        f.fill();
+        const wk = f.socks[0];
+        check('Old saved address: Fill lobby connects the browser worker', f.socks.length === 1 && wk.kind === 'worker' && f.cb.pending === 'fill');
+        wk.open(); f.flush();
+        const pk = wk.sent.find(p => typeof p !== 'string' && p[0] === 0);
+        check('... the same click fills the lobby (10 bots)', !!pk && pk[pk.length - 1] === 10 && f.w._brFilling === true);
         const w = flow({ host: 'browser' });
         w.start(); w.socks[0].fail();
-        check('Browser bots that fail: the notice, no retry loop', w.socks.length === 1 && w.toasts.some(t => t.includes('game1.bots.connectFailed')));
-        // a changed address takes effect on the next Start when no bots run (the open socket was kept until a reload)
-        const c = flow({ host: 'ws://localhost:1337' });
+        check('Browser bots that fail: the notice, no retry loop', w.socks.length === 1 && w.toasts.some(t => t.includes('pkg.bots.workerFailed')));
+        const c = flow({ host: 'browser' });
         c.start(); c.socks[0].open(); c.flush(); c.socks[0].push([0]);
-        c.w.SERVER_HOST = 'browser';
-        c.start();
-        check('Changed address while bots run: nothing reconnects', c.socks.length === 1);
         c.stop(); c.socks[0].push([1]); c.socks[0].push([2]);
         c.start();
-        check('Changed address, no bots running: the next Start uses the new address, the old socket closed quietly', c.socks.length === 2 && c.socks[1].kind === 'worker' &&
-            c.socks[0].readyState === 3 && c.socks[0].onclose === null && c.cb.pending === 'start' && !c.toasts.some(t => t.includes('game1.bots.wsClosed')));
-        c.start();
-        check('Same address: the open connection is reused', c.socks.length === 2);
+        check('Start again after Stop: the open worker connection is reused', c.socks.length === 1 && c.cb.pending === null);
     }
     {
         const f = flow({ lm: { integrity: false, ws: 'wss://eu.expanding.land' } });
@@ -1356,7 +1335,7 @@ for (const file of ['server.js', 'server-fast.js']) {
         check('panel: Start enabled, Stop hidden until a Start', /<button id="startBots" class="btn btn-primary btn" data-i18n/.test(panel) && /<button id="stopBots" class="btn btn-danger" disabled/.test(panel));
         check('panel: no captcha tokens row or counter', !panel.includes('captchatokens') && !ogSrc.includes('captchatokens') && !panel.includes('game1.bots.tokens'));
         check('panel: no Installation / tutorial links / tokens tip', !/game1\.bots\.(install|tutPc|tutRepl|tip)\b/.test(ogSrc) && !panel.includes('repl.it') && !panel.includes('youtube'));
-        check('panel: Status, Bots AI, name, amount and address (browser / ws://) stay', ['id="userStatus"', 'id="botsAI"', 'id="botsNameLM"', 'id="botsAmount"', 'id="botsRemoteIP"', 'list="botsRemoteIPList"'].every(x => panel.includes(x)));
+        check('panel: Status, Bots AI, name and amount stay; no bot server address field', ['id="userStatus"', 'id="botsAI"', 'id="botsNameLM"', 'id="botsAmount"'].every(x => panel.includes(x)) && !panel.includes('botsRemoteIP'));
         check('panel: Start and Fill buttons call botsStart / brFill', ogSrc.includes("getElementById('startBots').addEventListener('click', () => botsStart())") && ogSrc.includes("getElementById('brFillLobby').addEventListener('click', () => brFill())") &&
             ogSrc.includes('window._lmBotsStart = botsStart') && ogSrc.includes('window._lmBrFill = brFill'));
     }
@@ -1929,9 +1908,9 @@ for (const file of ['server.js', 'server-fast.js']) {
     for (const area of Object.keys(all)) for (const key of Object.keys(all[area])) if (/party[ -]?bots/i.test(all[area][key].en || '')) partyBots.push(key);
     check('i18n: no English text says "Party bots" (' + partyBots.join(', ') + ')', partyBots.length === 0);
     check('i18n: the obsolete "Party bots only available for Party mode" is gone', !g2['game2.botsPartyOnly']);
-    for (const gone of ['tokens', 'install', 'tutPc', 'tutRepl', 'tip', 'connect', 'slots', 'captchaOpen', 'captchaTip', 'outdated', 'visit'])
+    for (const gone of ['tokens', 'install', 'tutPc', 'tutRepl', 'tip', 'connect', 'slots', 'captchaOpen', 'captchaTip', 'outdated', 'visit', 'connectFailed', 'hostBrowser'])
         check('i18n: game1.bots.' + gone + ' removed', !g1['game1.bots.' + gone]);
-    for (const key of ['onServer', 'connecting', 'connectFailed', 'captchaNeeded', 'captchaWait'])
+    for (const key of ['onServer', 'connecting', 'captchaNeeded', 'captchaWait'])
         check('i18n: game1.bots.' + key + ' in all 16 languages', !!g1['game1.bots.' + key] && I.CODES.every(c => typeof g1['game1.bots.' + key][c] === 'string' && g1['game1.bots.' + key][c].trim() !== ''));
     for (const c of ['en', 'el']) {
         const pack = fs.readFileSync(path.join(__dirname, '..', '..', 'languages', 'lm-' + c + '.js'), 'utf8');
@@ -2059,11 +2038,10 @@ async function browserBots() {
     vm.runInContext(cbSrc, cbCtx);
     const CB = cbw.connectionBots;
     const pick = host => { cbw.SERVER_HOST = host; CB.ws = null; made.length = 0; CB.connect(); return made[0] && made[0][0]; };
-    check('browser: connect uses the worker for "", "browser", " Browser ", null', ['', 'browser', ' Browser ', null].every(h => pick(h) === 'worker' && CB.inBrowser === true));
+    check('browser: connect always uses the worker (also with an address left by an older version)', ['', 'browser', null, 'ws://localhost:1337', 'wss://party-bots--x.repl.co'].every(h => pick(h) === 'worker'));
     check('browser: worker code from the bots folder on legendmod.ml', (pick('browser'), made[0][1] === 'https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=9.9'));
-    check('browser: connect uses the WebSocket for a bot server address', ['ws://localhost:1337', 'wss://party-bots--x.repl.co'].every(h => pick(h) === 'ws' && made[0][1] === h && CB.inBrowser === false));
-    check('browser: Bots address default is "browser" when none was saved', /if \(storedbotsRemoteIP == null \|\| storedbotsRemoteIP === ""\) \{\s*storedbotsRemoteIP = "browser";/.test(ogSrc) &&
-        ogSrc.includes('list="botsRemoteIPList"') && ogSrc.includes('<option value="browser" data-i18n="game1.bots.hostBrowser">'));
+    check('browser: no bot server address: no field, no WebSocket path, an address saved before is removed at start', !ogSrc.includes('botsRemoteIP') && !ogSrc.includes('window.SERVER_HOST') &&
+        ogSrc.includes("try { localStorage.removeItem('localstoredBotsRemoteIP') } catch (e) { }"));
     // browser mode: message 12 is the wait notice (no captcha button)
     {
         const toasts = [];

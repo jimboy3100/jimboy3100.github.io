@@ -1731,15 +1731,7 @@ input.hide-url::selection,input.stream-mode::selection{
     outline: none;
     margin-left: 10px;
 }
-#botsRemoteIP{
-    margin-top: 6px;
-    width: 280px;
-    padding: 8px;
-    outline: none;
-    margin-left: 10px;
-    margin-right: 10px;
-}
-#botsNameLM:focus, #botsAmount:focus, #botsRemoteIP:focus, #captchaSpeed:focus {
+#botsNameLM:focus, #botsAmount:focus, #captchaSpeed:focus {
     border-color: #7D7D7D;
 }
 #startBots, #stopBots, #captchaBots {

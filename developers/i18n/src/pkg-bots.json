@@ -150,5 +150,24 @@
     "id": "Server ini punya {0} pemain: bot hanya ditambahkan selama pemain, bot, dan kamu paling banyak {1}.",
     "ja": "このサーバーには {0} 人のプレイヤーがいます：プレイヤー・ボット・あなたの合計が {1} 以下の間だけボットを追加します。",
     "it": "Questo server ha {0} giocatori: i bot si aggiungono solo finché giocatori, bot e tu restate al massimo {1}."
+  },
+  "pkg.bots.workerFailed": {
+    "note": "toast: the bots' Web Worker (botcore.js) could not be loaded or started",
+    "en": "The bots could not start in this browser. Reload the page and try again.",
+    "el": "Τα bots δεν μπόρεσαν να ξεκινήσουν σε αυτόν τον browser. Φόρτωσε ξανά τη σελίδα και δοκίμασε πάλι.",
+    "es": "Los bots no pudieron iniciarse en este navegador. Recarga la página e inténtalo de nuevo.",
+    "bg": "Ботовете не успяха да стартират в този браузър. Презареди страницата и опитай отново.",
+    "fr": "Les bots n'ont pas pu démarrer dans ce navigateur. Recharge la page et réessaie.",
+    "ar": "تعذّر تشغيل البوتات في هذا المتصفح. أعد تحميل الصفحة وحاول مجددًا.",
+    "zh": "機器人無法在此瀏覽器中啟動。請重新載入頁面再試一次。",
+    "ru": "Ботам не удалось запуститься в этом браузере. Перезагрузи страницу и попробуй снова.",
+    "de": "Die Bots konnten in diesem Browser nicht starten. Lade die Seite neu und versuche es nochmal.",
+    "tr": "Botlar bu tarayıcıda başlatılamadı. Sayfayı yenileyip tekrar dene.",
+    "pl": "Boty nie mogły wystartować w tej przeglądarce. Odśwież stronę i spróbuj ponownie.",
+    "nl": "De bots konden niet starten in deze browser. Laad de pagina opnieuw en probeer het nog eens.",
+    "pt": "Os bots não conseguiram iniciar neste navegador. Recarregue a página e tente de novo.",
+    "id": "Bot tidak bisa dimulai di browser ini. Muat ulang halaman lalu coba lagi.",
+    "ja": "このブラウザではボットを開始できませんでした。ページを再読み込みしてもう一度試してください。",
+    "it": "I bot non sono riusciti ad avviarsi in questo browser. Ricarica la pagina e riprova."
   }
 }

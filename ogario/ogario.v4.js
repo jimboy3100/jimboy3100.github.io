@@ -7839,7 +7839,9 @@ const standardDeviation = (arr, usePopulation = false) => {
 */
 //bots
 
-window.SERVER_HOST = 'browser' // 'browser' (or empty): browser bots in a Web Worker; else the address of a bot server, e.g. ws://localhost:1337 (start.bat)
+/* The bots run in this browser, in a Web Worker (LMBotsWorkerSocket + ExampleScripts/agario-bots2/botcore.js).
+   There is no bot server address any more (owner, 2026-11-28); the Node bot server in
+   ExampleScripts/agario-bots2 is for its own userscript. */
 //window.SERVER_PORT = 1337 // Port number used on the server where the bots are running [Default = 1337]
 class Writer {
     constructor(size) {
@@ -8003,30 +8005,16 @@ window.LMBotsWorkerSocket = LMBotsWorkerSocket
    once the connection is open (pending). Stop while connecting cancels it (cancel()). */
 window.connectionBots = {
     ws: null,
-    /* browser bots (Web Worker) for an empty Bots address or "browser", else a bot server */
-    inBrowser: false,
     /* the action waiting for the connection: 'start' (Start bots), 'fill' (Fill lobby) or null */
     pending: null,
     /* the current socket has opened (a close before that is a failed connection) */
     opened: false,
-    isBrowserHost(host) {
-        host = host == null ? '' : String(host).trim().toLowerCase()
-        return host === '' || host === 'browser'
-    },
-    hostKey(host) {
-        return this.isBrowserHost(host) ? 'browser' : String(host).trim()
-    },
     /* Stop was sent and its end (message 2) has not come yet: the bot core keeps the old session
        for about 2 s and drops a start sent meanwhile. 5 s at most, so a bot server that never
        answers cannot hold Start / Fill lobby back. */
     stopping() {
         var t = window.userBots.stopSentAt
         return !!t && Date.now() - t < 5000
-    },
-    /* the Bots address field can be opened (the bots panel and its button are shown) */
-    addressEditable() {
-        var app = window.application
-        return !!(app && typeof app._lmQuickBotsShown === 'function' && app._lmQuickBotsShown())
     },
     /* run a Start / Fill lobby that waited for the connection or for the previous bots to stop */
     runAction(action) {
@@ -8042,14 +8030,12 @@ window.connectionBots = {
             old.onopen = old.onmessage = old.onclose = null
             try { old.close() } catch (e) { }
         }
-        this.inBrowser = this.isBrowserHost(window.SERVER_HOST)
-        this.host = this.hostKey(window.SERVER_HOST)
         this.opened = false
         var ws
         try {
-            ws = this.inBrowser ? new window.LMBotsWorkerSocket('https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=' + (window.OgVer || '')) : new WebSocket(`${window.SERVER_HOST}`)
+            ws = new window.LMBotsWorkerSocket('https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=' + (window.OgVer || ''))
         } catch (e) {
-            /* not a WebSocket address (e.g. no ws://): a failed connection */
+            /* the browser cannot make the worker: a failed connection */
             this.ws = null
             this.onclose({})
             return
@@ -8069,14 +8055,7 @@ window.connectionBots = {
        needed) and onopen runs the action ('start' or 'fill') again; the last action asked wins. */
     ensure(action) {
         var open = this.ws
-        if (open && open.readyState === WebSocket.OPEN) {
-            /* a changed Bots address takes effect on the next Start / Fill lobby (no bots running):
-               the open connection to the old one used to stay until a reload */
-            if (this.host === this.hostKey(window.SERVER_HOST) || window.userBots.startedBots || window.userBots.startSent || this.stopping()) return true
-            this.ws = null
-            open.onopen = open.onmessage = open.onclose = null
-            try { open.close() } catch (e) { }
-        }
+        if (open && open.readyState === WebSocket.OPEN) return true
         this.pending = action
         this.connect()
         return false
@@ -8225,19 +8204,8 @@ window.connectionBots = {
         // Clean up Battle Royale fill state on bot server disconnect
         if (typeof window._brStopFilling === 'function') window._brStopFilling()
         if (typeof window._brUpdateSection === 'function') window._brUpdateSection()
-        /* A bot server address saved earlier that does not answer while the Bots address field
-           cannot be opened (the bots panel is hidden): nobody could change it, so every Start /
-           Fill lobby failed. Forget it and use the bots in this browser, for this click too. */
-        if (failed && !this.inBrowser && !this.addressEditable()) {
-            window.SERVER_HOST = window.bots.remoteIP = 'browser'
-            try { localStorage.removeItem('localstoredBotsRemoteIP') } catch (e) { }
-            var field = document.getElementById('botsRemoteIP')
-            if (field) field.value = 'browser'
-            if (action) { this.pending = action; this.connect() }
-            return
-        }
-        /* never opened: the browser bots' code did not load, or no bot server at that address */
-        if (failed) toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('game1.bots.connectFailed', 'The bots cannot connect. Check the address: browser, or your bot server (ws://localhost:1337).'))
+        /* never opened: the browser bots' code did not load */
+        if (failed) toastr.warning('<b>[' + Premadeletter123 + ']:</b> ' + _lmTH('pkg.bots.workerFailed', 'The bots could not start in this browser. Reload the page and try again.'))
         else toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game1.bots.wsClosed'))
     }
 }
@@ -26635,8 +26603,6 @@ function thelegendmodproject() {
 					<br>
 					<input type="text" id="botsNameLM" ${_lmG1a('placeholder', 'game1.bots.namePh')} maxlength="15" spellcheck="false" style="display:inline-block;">
 					<input type="number" id="botsAmount" ${_lmG1a('placeholder', 'game1.bots.amountPh')} min="0" max="20" spellcheck="false">
-					<input type="text" id="botsRemoteIP" placeholder="browser" list="botsRemoteIPList" maxlength="100" spellcheck="false">
-					<datalist id="botsRemoteIPList"><option value="browser" data-i18n="game1.bots.hostBrowser">${_lmG1e(lmT('game1.bots.hostBrowser'))}</option><option value="ws://localhost:1337" data-i18n="game1.bots.hostServer">${_lmG1e(lmT('game1.bots.hostServer'))}</option></datalist>
 					<br>
 					<button id="startBots" class="btn btn-primary btn" data-i18n="game1.bots.start">${_lmG1e(lmT('game1.bots.start'))}</button>
 					<button id="stopBots" class="btn btn-danger" disabled data-i18n="game1.bots.stop">${_lmG1e(lmT('game1.bots.stop'))}</button>
@@ -85379,7 +85345,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
     /* #canvas, not the first <canvas>: the background layer (pointer-events:none) is inserted before it. */
     window.canvasElem = document.getElementById("canvas") || document.querySelector("canvas");
     window.canvasElem.addEventListener('contextmenu', openContextMenu, false);
-    document.getElementById("botsRemoteIP").addEventListener('contextmenu', openContextMenu2, false);
     document.getElementById("server-token").addEventListener('contextmenu', openContextMenu3, false);
     document.getElementById("skin").addEventListener('contextmenu', openContextMenu4, false);
     PreLcCelebration();
@@ -85392,14 +85357,8 @@ function setGUIEvents() {
     document.getElementById('botsAmount').addEventListener('keypress', e => {
         e.preventDefault()
     })
-    var storedbotsRemoteIP = localStorage.getItem("localstoredBotsRemoteIP");
-    /* never saved (or emptied): browser bots; a saved bot server address keeps working */
-    if (storedbotsRemoteIP == null || storedbotsRemoteIP === "") {
-        storedbotsRemoteIP = "browser";
-    }
-    window.bots.remoteIP = storedbotsRemoteIP
-    window.SERVER_HOST = storedbotsRemoteIP;
-    $('#botsRemoteIP').val(storedbotsRemoteIP)
+    /* the bot server address is gone: forget one saved before */
+    try { localStorage.removeItem('localstoredBotsRemoteIP') } catch (e) { }
     var storedbotsname = localStorage.getItem("localStoredBotsName");
     if (storedbotsname == null || storedbotsname === "") {
         storedbotsname = "Legendmod|ml";
@@ -85415,11 +85374,6 @@ function setGUIEvents() {
        the 20 limit (50, 190) is brought down to 20. */
     window.bots.amount = window._lmBotsClampAmount(storedbotsamount);
     $('#botsAmount').val(window.bots.amount)
-    document.getElementById('botsRemoteIP').addEventListener('change', function () {
-        window.bots.remoteIP = this.value
-        localStorage.setItem('localstoredBotsRemoteIP', window.bots.remoteIP)
-        window.SERVER_HOST = window.bots.remoteIP
-    })
     document.getElementById('botsNameLM').addEventListener('change', function () {
         document.getElementById('botsNameLM').value = document.getElementById('botsNameLM').value.replace(/[^\x20-\x7E]/g, '');
         window.bots.nameLM = this.value
@@ -85897,17 +85851,6 @@ const menuLeft = new ContextMenu({
     },
     ]
 });
-const menuLeft2 = new ContextMenu({
-    'theme': 'default', // or 'blue'
-    'items': [{
-        'icon': 'download',
-        get name() { return lmT('game2.ctxOpen'); },
-        action: () => {
-            leftClickOpen()
-            menuLeft2.hide();
-        }
-    }]
-});
 const menuLeft3 = new ContextMenu({
     'theme': 'default', // or 'blue'
     'items': [{
@@ -85930,18 +85873,6 @@ const menuLeft4 = new ContextMenu({
         }
     }]
 });
-
-function leftClickOpen() {
-    if (document.getElementById("botsRemoteIP").value.includes('.repl.co')) {
-        var temp11 = document.getElementById("botsRemoteIP").value
-        var temp12 = "https://repl.it/@" + temp11.split('--')[1].split('.repl.co')[0] + "/" + temp11.split('wss://')[1].split('--')[0]
-        window.open(temp12, '_blank');
-    } else if (document.getElementById("botsRemoteIP").value.includes('.glitch.me')) {
-        var temp11 = document.getElementById("botsRemoteIP").value
-        var temp12 = "https://glitch.com/~" + temp11.replace("wss://", "").replace(".glitch.me", "")
-        window.open(temp12, '_blank');
-    }
-}
 
 function leftClickOpen2() {
     var temp11 = document.getElementById("server-token").value
@@ -86000,18 +85931,6 @@ function openContextMenu(evt) {
     }
 }
 
-function openContextMenu2(evt) {
-    if (document.getElementById("botsRemoteIP").value.includes('.repl.co') || document.getElementById("botsRemoteIP").value.includes('.glitch.me')) {
-        evt.preventDefault();
-        const time = menuLeft2.isOpen() ? 100 : 0;
-        menuLeft2.hide();
-        setTimeout(() => {
-            menuLeft2.show(evt.pageX, evt.pageY)
-        }, time);
-        document.getElementById("botsRemoteIP").addEventListener('click', hideContextMenu2, false);
-    }
-}
-
 function openContextMenu3(evt) {
     if (document.getElementById("server-token").value.includes('.glitch.me')) {
         evt.preventDefault();
@@ -86039,11 +85958,6 @@ function openContextMenu4(evt) {
 function hideContextMenu(evt) {
     menuLeft.hide();
     window.canvasElem.removeEventListener('click', hideContextMenu);
-}
-
-function hideContextMenu2(evt) {
-    menuLeft2.hide();
-    document.getElementById("botsRemoteIP").removeEventListener('click', hideContextMenu2);
 }
 
 function hideContextMenu3(evt) {
