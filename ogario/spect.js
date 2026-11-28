@@ -2601,8 +2601,11 @@ class Spect {
             cell = null;
             /* every list push stores the cell's slot, so removeCell() never scans */
             var _idx = lmSpectIdx();
-            if (legendmod.indexedCells.hasOwnProperty(id)) {
-                cell = legendmod.indexedCells[id];
+            /* A unit id (id + number * 2^32) is no array index: each use as a key turned the number
+             * into a string again (a has, a read and a store per cell per packet). Made once. */
+            const idKey = '' + id;
+            cell = legendmod.indexedCells[idKey] || null;
+            if (cell) {
                 /* a cell of an earlier socket of this unit under the same id is another cell */
                 if (cell._lmGen !== undefined && cell._lmGen !== this.connectionGeneration) {
                     cell.removeCell();
@@ -2668,7 +2671,7 @@ class Spect {
                     _idx.push(legendmod.foodMulti, cell, '_foodMultiIdx');
                 }
                 if (!isFood && !remove) _idx.push(legendmod.cells, cell, '_cellsIdx');
-                legendmod.indexedCells[id] = cell;
+                legendmod.indexedCells[idKey] = cell;
             }
 
             if (name) {

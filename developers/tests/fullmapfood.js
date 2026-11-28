@@ -510,5 +510,45 @@ reset();
     check('a closed connection\'s shared colours are forgotten, the others\' kept', !look(2) && !!look(12) && !!look(0));
 }
 
+/* The Canvas2D food pass (drawCachedFood) on the Full Map list: the same pellets drawn, but a
+ * pellet far off screen is culled by its entry (same slot), not read as a cell: each of the
+ * ~10000 pellets of the map was read every frame (~2 ms) to draw the few hundred on screen. */
+reset();
+{
+    const fr = vm.runInContext('({ canvasWidth: 1600, canvasHeight: 900, camX: 0, camY: 0, scale: 1, isLegendWorldMapDeformationVisible: function () { return false; },\n' +
+        src.slice(src.indexOf('        drawCachedFood(ctx, food, scale, reset) {'), src.indexOf('        drawCircle(ctx, x, y, radius, color) {')).trim().replace(/,$/, '') + '})', g);
+    const sp = spect(1);
+    sp.getX = (x) => x; sp.getY = (y) => y;
+    const cells = [];
+    for (let i = 0; i < 60; i++) for (let j = 0; j < 40; j++) cells.push({ id: 5000 + i * 40 + j, x: -6000 + i * 200, y: -4000 + j * 200 });
+    sp.updateCells(packet([], cells, []), 0);
+    mainFood(9, 100, 100);
+    const list = drawList();
+    let reads = 0;
+    const drawnAt = (rainbow) => {
+        g.defaultmapsettings.rainbowFood = rainbow;
+        const pts = [];
+        const ctx = { save() { }, restore() { }, beginPath() { }, stroke() { }, fill() { }, lineTo() { }, arc() { }, moveTo(x, y) { pts.push(x + ',' + y); } };
+        for (const c of list) {
+            const inv = c.invisible;
+            Object.defineProperty(c, 'invisible', { configurable: true, get() { reads++; return inv; } });
+        }
+        reads = 0;
+        fr.drawCachedFood(ctx, list, 1);
+        const n = reads;
+        for (const c of list) { const inv = c.invisible; delete c.invisible; c.invisible = inv; }
+        reads = n;
+        return pts;
+    };
+    /* the screen at zoom 1 is -800..800 x -450..450, 200 more for the cull */
+    const want = list.filter((c) => c.x >= -1000 && c.x <= 1000 && c.y >= -650 && c.y <= 650).length;
+    for (const rainbow of [false, true]) {
+        const pts = drawnAt(rainbow);
+        check('Full Map food pass (' + (rainbow ? 'rainbow' : 'one colour') + '): the pellets near the screen drawn, once each', pts.length === want && new Set(pts).size === want, pts.length + ' / ' + want);
+        check('Full Map food pass (' + (rainbow ? 'rainbow' : 'one colour') + '): only pellets near the screen read (' + reads + ' of ' + list.length + ')', reads < list.length / 4, reads);
+    }
+    g.defaultmapsettings.rainbowFood = true;
+}
+
 console.log(fail ? fail + ' check(s) failed' : 'all fullmapfood checks passed');
 process.exit(fail ? 1 : 0);

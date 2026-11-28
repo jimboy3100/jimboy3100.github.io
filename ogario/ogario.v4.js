@@ -37810,6 +37810,11 @@ function thelegendmodproject() {
             var _dpr = window.LM_DPR || 1;
             this._lmNickW = ~~(nickImg.width / (this.scale * _dpr));
             this._lmNickH = ~~(nickImg.height / (this.scale * _dpr));
+            /* what it was laid out for: the Canvas2D cull scales the width by the cell's growth
+             * and the zoom out since (the nick font has a minimum screen size) */
+            this._lmNickR = this.size;
+            this._lmNickS = this.scale;
+            this._lmNickT = this.nick;
             this.margin = ~~(this._lmNickH / 2);
             return nickImg;
         };
@@ -69022,12 +69027,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var point =
                 this._elMapScratch;
 
+            /* the Full Map food list: its entries culled first, as in drawCachedFood */
+            var _fEnts = (typeof _lmFood !== 'undefined' && cellsArray === _lmFood.list) ? _lmFood.ents : null;
+            var _fePad = _fEnts ? LM_FOOD_TOL + 100 : 0;
+            var _feMinX = minX - _fePad, _feMaxX = maxX + _fePad, _feMinY = minY - _fePad, _feMaxY = maxY + _fePad;
+
             for (
                 var foodIndex = 0;
                 foodIndex <
                     cellsArray.length;
                 foodIndex++
             ) {
+                if (_fEnts) {
+                    var _fe = _fEnts[foodIndex];
+                    if (_fe && (_fe.x < _feMinX || _fe.x > _feMaxX || _fe.y < _feMinY || _fe.y > _feMaxY)) continue;
+                }
                 var food =
                     cellsArray[
                         foodIndex
@@ -79693,11 +79707,14 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* A cell far off screen (body, nick, mass, effects and rings all outside it) is not
                  * drawn: with Full Map the world holds the cells of the whole map, and each was
                  * drawn in Canvas2D every frame (the GL batch leaves out the cells off screen),
-                 * hundreds of arcs, skins and texts nobody sees. The margin: 4 radii (long nicks,
-                 * hats) plus 600 screen pixels, 1000 more units with the Expanding Land map
-                 * deformation (it moves cells up to ~700); a cell with a chat bubble is drawn as
-                 * before (the bubble can be wide). */
-                var _dcScale = this.scale || 1, _dcPad = 600 / _dcScale +
+                 * hundreds of arcs, skins and texts nobody sees. The margin of a cell: 4 radii
+                 * (hats, rings), its radius + 160 (the teammate indicator above it), half its nick
+                 * width as last laid out (grown with the cell and the zoom out since), 600 screen
+                 * pixels only for a nick not laid out yet; 1000 more units with the Expanding Land
+                 * map deformation (it moves cells up to ~700). A blanket 600 screen pixels for every
+                 * cell kept ~120 off-screen cells of the map in the Canvas2D pass each frame. A cell
+                 * with a chat bubble is drawn as before (the bubble can be wide). */
+                var _dcScale = this.scale || 1, _dcNoNick = 600 / _dcScale, _dcPad =
                     ((this.isLegendWorldMapDeformationVisible && this.isLegendWorldMapDeformationVisible()) ? 1000 : 0);
                 var _dcMinX = LM.camMinX - _dcPad, _dcMaxX = LM.camMaxX + _dcPad, _dcMinY = LM.camMinY - _dcPad, _dcMaxY = LM.camMaxY + _dcPad;
                 var _dcCull = Number.isFinite(_dcMinX) && Number.isFinite(_dcMaxX) && Number.isFinite(_dcMinY) && Number.isFinite(_dcMaxY);
@@ -79719,7 +79736,16 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         continue;
                     }
                     if (_dcCull && !drawCell._webglRendered) {
-                        var _dcR = 4 * drawCell.size;
+                        var _dcS = drawCell.size, _dcR = _dcS + 160, _dcNw = drawCell._lmNickW;
+                        if (4 * _dcS > _dcR) _dcR = 4 * _dcS;
+                        if (drawCell.nick) {
+                            if (_dcNw > 0 && drawCell._lmNickT === drawCell.nick) {
+                                _dcNw *= 0.5;
+                                if (_dcS > drawCell._lmNickR) _dcNw *= _dcS / drawCell._lmNickR;
+                                if (_dcScale < drawCell._lmNickS) _dcNw *= drawCell._lmNickS / _dcScale;
+                                if (_dcNw > _dcR) _dcR = _dcNw;
+                            } else _dcR += _dcNoNick;
+                        }
                         if ((drawCell.x + _dcR < _dcMinX || drawCell.x - _dcR > _dcMaxX || drawCell.y + _dcR < _dcMinY || drawCell.y - _dcR > _dcMaxY) &&
                             !drawCell.lmChatLine()) {
                             /* counted as drawn when draw() would have counted it (its removal still fades) */
@@ -81557,8 +81583,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
         },
         calMinMaxMulti() {
             if (legendmod.multiBoxPlayerExists && LM.foodMulti && LM.foodMulti.length) {
-                var food = LM.foodMulti;
-                var len = food.length;
                 var foodOffset = 10 + defaultSettings.foodSize;
                 /* Like calMinMax: start from the multi camera rectangle and
                  * only grow it with the food box. The old seed (playerXMulti/
@@ -81572,20 +81596,30 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 var minY = _camMultiFresh && Number.isFinite(LM.camMinMultiY) ? LM.camMinMultiY : Infinity;
                 var maxY = _camMultiFresh && Number.isFinite(LM.camMaxMultiY) ? LM.camMaxMultiY : -Infinity;
                 /* only the multibox units' food: a Full Map or in-game spectator's food is in
-                 * foodMulti too and stretched the units' view over the whole map */
-                var units = this._lmMbUnitSet || (this._lmMbUnitSet = {});
-                for (var k in units) units[k] = false;
+                 * foodMulti too and stretched the units' view over the whole map. Read from each
+                 * unit's own cells (lmObsOfSource): foodMulti holds every Full Map spectator's
+                 * pellets (~11000), scanned every frame for the unit's few hundred (~1 ms). */
+                var box = this._lmMbFoodBox || (this._lmMbFoodBox = {
+                    n: 0, fx: 0, fy: 0, gx: 0, gy: 0,
+                    add: function (f) {
+                        if (!f || f.spectator !== this.n || LM.foodMulti[f._foodMultiIdx] !== f) return;
+                        var x = f.x, y = f.y;
+                        if (x < this.fx) this.fx = x; if (x > this.gx) this.gx = x;
+                        if (y < this.fy) this.fy = y; if (y > this.gy) this.gy = y;
+                    }
+                });
+                box.fx = box.fy = Infinity;
+                box.gx = box.gy = -Infinity;
                 var sp = window.spects || [], anyUnit = false;
-                for (var u = 0; u < sp.length; u++) if (sp[u] && sp[u].player && sp[u].number != null) { units[sp[u].number] = true; anyUnit = true; }
-                if (!anyUnit) return;
-                var fx = Infinity, fy = Infinity, gx = -Infinity, gy = -Infinity;
-                for (var i = 0; i < len; i++) {
-                    var f = food[i];
-                    if (!f || !units[f.spectator]) continue;
-                    var x = f.x, y = f.y;
-                    if (x < fx) fx = x; if (x > gx) gx = x;
-                    if (y < fy) fy = y; if (y > gy) gy = y;
+                for (var u = 0; u < sp.length; u++) {
+                    if (!sp[u] || !sp[u].player || sp[u].number == null) continue;
+                    anyUnit = true;
+                    var own = lmObsOfSource(sp[u].number);
+                    box.n = sp[u].number;
+                    if (own) own.forEach(box.add, box);
                 }
+                if (!anyUnit) return;
+                var fx = box.fx, fy = box.fy, gx = box.gx, gy = box.gy;
                 if (Number.isFinite(fx) && Number.isFinite(gx)) {
                     /* padded on both sides (the max side was shifted down by the radius) */
                     minX = Math.min(minX, fx - foodOffset); maxX = Math.max(maxX, gx + foodOffset);
@@ -81803,6 +81837,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var cullY = (this.camY != null) ? this.camY : (LM.viewY || 0);
             minX = cullX - halfW; maxX = cullX + halfW;
             minY = cullY - halfH; maxY = cullY + halfH;
+            /* The Full Map food list holds every pellet of the map (~10000): its entries (same
+             * slots, a few small fields) are culled first, and only the pellets near the screen are
+             * read as cells (large objects: reading each one every frame cost ~2 ms). An entry is
+             * at most LM_FOOD_TOL from its pellet; 100 more for the pellet still gliding. */
+            var _fEnts = (typeof _lmFood !== 'undefined' && food === _lmFood.list) ? _lmFood.ents : null;
+            var _fePad = _fEnts ? LM_FOOD_TOL + 100 : 0;
+            var _feMinX = minX - _fePad, _feMaxX = maxX + _fePad, _feMinY = minY - _fePad, _feMaxY = maxY + _fePad;
             var twoPi = Math.PI * 2;
             var defaultFoodColor = defaultSettings.foodColor || "#FF0000";
 
@@ -81819,6 +81860,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 ctx.strokeStyle = defaultFoodColor;
                 ctx.beginPath();
                 for (var length = 0; length < food.length; length++) {
+                    if (_fEnts) {
+                        var _fe = _fEnts[length];
+                        if (_fe && (_fe.x < _feMinX || _fe.x > _feMaxX || _fe.y < _feMinY || _fe.y > _feMaxY)) continue;
+                    }
                     var f = food[length];
                     if (!f || f.invisible) continue;
                     if (f.x < minX || f.x > maxX || f.y < minY || f.y > maxY) continue;
@@ -81845,6 +81890,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this._rainbowBatchCount = 0;
                 }
                 for (var length = 0; length < food.length; length++) {
+                    if (_fEnts) {
+                        var _fe = _fEnts[length];
+                        if (_fe && (_fe.x < _feMinX || _fe.x > _feMaxX || _fe.y < _feMinY || _fe.y > _feMaxY)) continue;
+                    }
                     var f = food[length];
                     if (!f || f.invisible) continue;
                     if (f.x < minX || f.x > maxX || f.y < minY || f.y > maxY) continue;

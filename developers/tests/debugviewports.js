@@ -49,9 +49,12 @@ const xf0 = spectSrc.indexOf('var LM_WORLD_SIZE'), xf1 = spectSrc.indexOf('/* or
 /* the server view estimate and the planner: top of spect.js, up to addFullSpectator */
 const head0 = spectSrc.indexOf('var LM_VIEW_BASE_W'), head1 = spectSrc.indexOf('function addFullSpectator() {');
 const dv = block('        drawViewport: function (ctx, text');
+/* the per-connection observation index (lmObsTrack, lmObsOfSource) calMinMaxMulti reads */
+const obs0 = src.indexOf('var _lmSrcObs = new Map();'), obs1 = src.indexOf('/* Speed of a cell', obs0);
 const missing = methods.concat(spectMethods).filter((m) => !m[1]).map((m) => m[0].trim()).concat(dv ? [] : ['drawViewport'])
     .concat(head0 >= 0 && head1 > head0 ? [] : ['spect.js lmServerViewSize / lmFullMapPlan'])
-    .concat(xf0 >= 0 && xf1 > xf0 ? [] : ['spect.js coordinate contract']);
+    .concat(xf0 >= 0 && xf1 > xf0 ? [] : ['spect.js coordinate contract'])
+    .concat(obs0 >= 0 && obs1 > obs0 ? [] : ['lmObsTrack / lmObsOfSource']);
 if (missing.length) { console.log('FAIL code not found: ' + missing.join(', ')); process.exit(1); }
 
 function env(o) {
@@ -73,20 +76,26 @@ function env(o) {
     const c = { window: win, LM, legendmod: LM, spects: win.spects, defaultSettings: { foodSize: 5, bordersColor: '#ff0000' },
         defaultmapsettings: { multiboxAmount: 3 }, Math, Number, String, console, document: { hidden: false } };
     vm.createContext(c);
-    vm.runInContext(spectSrc.slice(xf0, xf1) + spectSrc.slice(head0, head1) +
+    vm.runInContext(src.slice(obs0, obs1) + spectSrc.slice(xf0, xf1) + spectSrc.slice(head0, head1) +
         'var drawRender = {' + methods.map((m) => m[1]).concat([dv]).join(',\n') + '};' +
         /* a spectator connection with spect.js's own coordinate and tile code */
         'var SpectXY = class { constructor(p) { this.sent = []; Object.assign(this, p); }\n' +
         'sendPosition(x, y) { if (this.offline) return; this.sent.push([x, y, this.clock]); return true; }\n' +
         spectMethods.map((m) => m[1]).join('\n') + '\n};', c);
     const dr = c.drawRender;
+    /* pellets put into foodMulti go into their connection's index too, as in spect.js */
+    Object.defineProperty(LM.foodMulti, 'track', { value: (cell, n) => c.lmObsTrack(cell, n) });
     dr.ctx = ctx2d; dr.canvasWidth = 1600; dr.canvasHeight = 900; dr.scale = o.scale || 0.5;
     return { c, LM, dr, win, boxes, spect(p) { const sp = vm.runInContext('(p) => new SpectXY(p)', c)(p); win.spects.push(sp); return sp; },
         frame() { boxes.length = 0; dr.calMinMax(); dr.drawViewPorts(ctx2d); return boxes.slice(); } };
 }
 /* food spread +-r around (cx, cy), owned by connection `spectator` (0 = main) */
 function food(list, cx, cy, r, spectator) {
-    for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) list.push({ x: cx - r + i * r / 5, y: cy - r + j * r / 5, spectator });
+    for (let i = 0; i <= 10; i++) for (let j = 0; j <= 10; j++) {
+        const f = { x: cx - r + i * r / 5, y: cy - r + j * r / 5, spectator, isFood: true, _foodMultiIdx: list.length };
+        list.push(f);
+        if (list.track && spectator > 0) list.track(f, spectator);
+    }
 }
 const unit = (number, x, y) => ({ number, player: true, playerCellIDs: [number * 1e9 + 1], playerX: x, playerY: y, playerSize: 100 });
 const byLabel = (bs, l) => bs.find((b) => b.label === l);
@@ -163,6 +172,22 @@ const MAP = 15957;
     e.dr.calMinMaxMulti();
     check('calMinMaxMulti: the units\' food only, padded on both sides', e.LM.camMinMultiX === 2000 - 1500 - 15 && e.LM.camMaxMultiX === 2000 + 1500 + 15 && e.LM.camMinMultiY === 1000 - 1500 - 15,
         [e.LM.camMinMultiX, e.LM.camMaxMultiX, e.LM.camMinMultiY]);
+    /* a Full Map world (14 more spectators' pellets in foodMulti): only the unit's own pellets
+     * are read, not the whole list (it was scanned every frame); a pellet of the unit that left
+     * foodMulti no longer counts */
+    for (let n = 3; n <= 16; n++) food(e.LM.foodMulti, -6000 + n * 700, 5000, 600, n);
+    const fm = e.LM.foodMulti;
+    let reads = 0;
+    e.LM.foodMulti = new Proxy(fm, { get(t, k) { if (typeof k === 'string' && /^\d+$/.test(k)) reads++; return t[k]; } });
+    e.LM.camMinMultiX = e.LM.camMaxMultiX = e.LM.camMinMultiY = e.LM.camMaxMultiY = NaN;
+    e.dr.calMinMaxMulti();
+    check('calMinMaxMulti with Full Map: same box, reads only the unit\'s pellets', e.LM.camMinMultiX === 2000 - 1500 - 15 && e.LM.camMaxMultiY === 1000 + 1500 + 15 && reads <= 121,
+        [e.LM.camMinMultiX, e.LM.camMaxMultiY, reads, fm.length]);
+    for (const f of fm) if (f.spectator === 1 && f.x === 2000 - 1500) fm[f._foodMultiIdx] = null;
+    e.LM.foodMulti = fm;
+    e.LM.camMinMultiX = e.LM.camMaxMultiX = e.LM.camMinMultiY = e.LM.camMaxMultiY = NaN;
+    e.dr.calMinMaxMulti();
+    check('calMinMaxMulti: pellets gone from foodMulti are left out', e.LM.camMinMultiX === 2000 - 1500 + 300 - 15, e.LM.camMinMultiX);
 }
 
 /* ---- Full Map ---- */
