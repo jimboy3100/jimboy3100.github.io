@@ -92,6 +92,13 @@
       "feature": "User Scripts"
     },
     {
+      "id": "discovery",
+      "file": "ogario/modules/discovery.js",
+      "lines": 613,
+      "description": "Feature guide cards introducing Legend Mod features. One-tap option switches; opened from the \"What's new\" toast link (never by itself).",
+      "feature": "Discovery"
+    },
+    {
       "id": "smalltools",
       "file": "ogario/modules/smalltools.js",
       "lines": 1219,

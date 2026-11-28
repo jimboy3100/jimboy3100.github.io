@@ -148,7 +148,7 @@ async function runNodeTests(n) {
     '  while (!(window.legendmod && window.application && window.jQuery && jQuery("#og-options").children().length) && (Date.now() - t0 < 20000 || (document.readyState === "loading" && Date.now() - t0 < 60000))) await new Promise(function (r) { setTimeout(r, 250); });\n' +
     /* then until the module scripts the game added at its start have loaded (smoke.js records each
      * script's load or error): a probe run first in its part found its module not there yet
-     * (hudeditor, winstack-dom). Bounded, at most 60 s from the start */
+     * (hudeditor, winstack-dom, discover-esc). Bounded, at most 60 s from the start */
     '  var lmModsLeft = function () { var d = window.__lmScriptsDone; return d ? Array.prototype.filter.call(document.querySelectorAll("script[src*=\\"/ogario/modules/\\"]"), function (s) { return !d[s.src]; }).length : 0; };\n' +
     '  while (lmModsLeft() && Date.now() - t0 < 60000) await new Promise(function (r) { setTimeout(r, 100); });\n' +
     list.map(f => '  console.debug("[lm-probe]", ' + JSON.stringify(f.replace(/\.js$/, '')) + ');\n' +

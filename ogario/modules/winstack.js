@@ -5,7 +5,7 @@
  * While two or more of these windows are open, their z-index follows the order they were opened or
  * touched in: the last one gets the highest value among the open ones, each older one stays at most
  * at its own value and below the newer ones. Nothing goes above 999992, so the full-screen editors
- * (999993: HUD editor), the gamepad window, the toasts and the notification
+ * (999993: HUD editor, Discover), the gamepad window, the toasts and the notification
  * bell stay above as before; with one window open every value is back to its own.
  * Windows: direct children of <body> that are or hold a .lm-modal-container, z-index up to 999992.
  * The menu takes part only when a page of it is opened from outside it (LMWinStack.front from the
@@ -224,7 +224,7 @@
     function escFor(el, e) {
         if (e && e._lmEscTaken) return false;
         var r = rootOf(el), mine = true;
-        /* a full-screen window above all of these (the HUD editor: root._lmEscTop) that is open takes the Esc
+        /* a full-screen window above all of these (Discover: root._lmEscTop) that is open takes the Esc
          * first: a window opened under it is hidden there, and that Esc closed the hidden one */
         var kids = D.body ? D.body.children : [];
         for (var k = 0; k < kids.length; k++) {

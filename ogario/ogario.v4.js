@@ -88522,9 +88522,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading spectator director script:', e);
     }
-    /* The stream companion and Discover features are removed:
-     * what they kept is deleted from this browser */
-    try { ['lmCompanionPrivacy', 'lmDiscover'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
+    /* The stream companion is removed: what it kept is deleted from this browser */
+    try { localStorage.removeItem('lmCompanionPrivacy'); } catch (e) { }
     /* The Mega FFA giveaway (mass counted on imsolo.pro:2102) is removed: its counter and start date are deleted */
     try { ['totalPlayerMassBigFFA', 'PremiumLimitedDateStart'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* AgarTool team: AgarTool players with my tag on the same agar.io server as teammates (no socket or timer while its option is off) */
@@ -88675,6 +88674,16 @@ Object.defineProperty(Array.prototype, 'stDev', {
     }
     /* The custom macros are removed: the macros kept in this browser are deleted */
     try { localStorage.removeItem('lmCustomMacros'); } catch (e) { }
+    /* Discover features guide and "What works on this server" (the link of the "What's new" toast) */
+    try {
+        var discoveryScript = document.createElement('script');
+        discoveryScript.type = 'text/javascript';
+        discoveryScript.src = 'https://www.legendmod.ml/ogario/modules/discovery.js?v=' + (window.OgVer || '');
+        discoveryScript.charset = 'utf-8';
+        document.body.appendChild(discoveryScript);
+    } catch (e) {
+        console.warn('[LM] Error loading discovery script:', e);
+    }
     /* Theme workshop window (its button at the top of the Theme tab);
      * nothing runs until it is opened */
     try {
