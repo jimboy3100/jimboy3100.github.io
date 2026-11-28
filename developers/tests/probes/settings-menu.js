@@ -89,10 +89,11 @@
   /* Performance and network is removed with its options (Performance mode, its automatic choice, the diagnostics window) */
   if ($('#og-options .perfGroup').length) fail.push('Performance and network section still in the menu');
   if (window.LMPerf || document.querySelector('script[src*="modules/perf.js"]')) fail.push('performance diagnostics still loaded');
-  ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'lm-director-btn', 'instantReplaySecs-slider', 'hudMergeCountdown', 'lm-rec-clear', 'performanceMode', 'adaptivePerf', 'lm-perf-diag-btn'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
+  ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'instantReplaySecs-slider', 'hudMergeCountdown', 'lm-rec-clear', 'performanceMode', 'adaptivePerf', 'lm-perf-diag-btn'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
   /* the NEW badges with Show new options, the info notes and the Accessibility section are removed */
   if ($('.lm-new-toggle, .lm-new-badge, #og-options .lm-group-note').length) fail.push('NEW badges, Show new options or an info note still in the menu');
-  if (window.LMDirector || document.querySelector('script[src*="modules/director.js"]')) fail.push('spectator director still loaded');
+  /* the spectator director is back: its module is loaded (its panel opens from its hotkey and the Command Centre) */
+  if (!document.querySelector('script[src*="modules/director.js"]')) fail.push('spectator director not loaded');
   $('#og-options > .options-box > h5').each(function () {
     var t = $(this).text().trim();
     if (!t || t === 'undefined') fail.push('empty heading in .' + $(this).parent().attr('class'));

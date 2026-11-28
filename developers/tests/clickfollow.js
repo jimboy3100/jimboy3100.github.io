@@ -12,7 +12,7 @@
  *   - phones (real tap handlers of LMmobile/LMmobile.js): a short single tap on a player cell while
  *     spectating follows it through the desktop click path; drags, pinches, a second finger, long
  *     presses, buttons, the fixed joystick, the menu, the chat box and playing never do
- *   - the director's hotkeys, camera lock and saved data stay gone
+ *   - camera lock stays gone; the spectator director (its hotkeys, saved data and module) is back
  * node developers/tests/clickfollow.js   (LM_ROOT=<other checkout> runs it on another version) */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = process.env.LM_ROOT || path.join(__dirname, '..', '..');
@@ -220,24 +220,20 @@ const cursorOut = lm => { lm.sent.length = 0; lm._lmLastCursorAt = 0; lm.sendPos
   hk.keyDown();
   check('hotkey when not spectating: nothing', lm2.sent.length === 0 && lm2._lmSpecLb == null);
   const ids = Object.keys(hctx.hotkeysCommand);
-  check('hotkeys: no spectator director or camera lock commands', !ids.some(id => /^hk-dir/.test(id) || id === 'hk-director' || id === 'hk-cameraLock'));
+  check('hotkeys: the spectator director commands are back without default keys, no camera lock',
+    ['hk-director', 'hk-dirAuto', 'hk-dirBroadcast', 'hk-dirWatchNext', 'hk-dirWatchPrev', 'hk-dirWatchAdd', 'hk-dirMarkSave', 'hk-dirMark1', 'hk-dirMark5'].every(id => hctx.hotkeysCommand[id] && hctx.hotkeysCommand[id].defaultKey === '') && ids.indexOf('hk-cameraLock') < 0);
   check('hotkeys: the previous server command is gone', ids.indexOf('hk-prevServer') < 0);
   const rs = main.indexOf('function lmRenameOldHotkeys(map) {'), re = main.indexOf('\n}', rs);
   const rctx = { JSON, Object, String };
   vm.createContext(rctx);
   vm.runInContext(main.slice(rs, re + 2), rctx);
   const map = { D: 'hk-director', A: 'hk-dirAuto', B: 'hk-dirBroadcast', N: 'hk-dirWatchNext', P: 'hk-dirWatchPrev', W: 'hk-dirWatchAdd', S: 'hk-dirMarkSave', '1': 'hk-dirMark1', '5': 'hk-dirMark5', L: 'hk-cameraLock', Q: 'hk-feed', T: 'hk-specNextTop', R: 'hk-prevServer' };
-  check('saved keys on the removed director commands and the previous server are free again, the others stay', rctx.lmRenameOldHotkeys(map) === true && JSON.stringify(map) === JSON.stringify({ Q: 'hk-feed', T: 'hk-specNextTop' }));
+  check('saved keys on camera lock and the previous server are free again, the director keys and the others stay', rctx.lmRenameOldHotkeys(map) === true &&
+    JSON.stringify(map) === JSON.stringify({ D: 'hk-director', A: 'hk-dirAuto', B: 'hk-dirBroadcast', N: 'hk-dirWatchNext', P: 'hk-dirWatchPrev', W: 'hk-dirWatchAdd', S: 'hk-dirMarkSave', '1': 'hk-dirMark1', '5': 'hk-dirMark5', Q: 'hk-feed', T: 'hk-specNextTop' }));
   const exp = vm.runInContext('LM_EXPORT_KEYS', (() => { const c = { console }; vm.createContext(c); vm.runInContext(cut('var LM_EXPORT_KEYS = [', '];') + '];', c); return c; })());
-  check('settings export: no director configuration', !exp.some(e => /^lm-director/.test(e.key)));
-  check('the director module is not loaded any more', main.indexOf('modules/director.js') < 0 && !fs.existsSync(path.join(root, 'ogario', 'modules', 'director.js')));
-  const ln = main.split(/\r?\n/).find(l => l.indexOf("'lm-director-watch'") >= 0 && l.indexOf('removeItem') >= 0);
-  const sctx = { localStorage: makeStorage() };
-  ['lm-director', 'lm-director-bookmarks', 'lm-director-watch', 'lmHudLayouts'].forEach(k => sctx.localStorage.setItem(k, '{}'));
-  vm.createContext(sctx);
-  if (ln) vm.runInContext(ln, sctx);
-  check('startup: the director\'s saved camera settings, bookmarks and watchlist are deleted, other data stays',
-    !!ln && ['lm-director', 'lm-director-bookmarks', 'lm-director-watch'].every(k => sctx.localStorage.getItem(k) === null) && sctx.localStorage.getItem('lmHudLayouts') === '{}');
+  check('settings export: the director configuration and bookmarks again (not its watchlist)', exp.some(e => e.key === 'lm-director') && exp.some(e => e.key === 'lm-director-bookmarks') && !exp.some(e => e.key === 'lm-director-watch'));
+  check('the director module is loaded again', main.indexOf("'https://www.legendmod.ml/ogario/modules/director.js?v='") >= 0 && fs.existsSync(path.join(root, 'ogario', 'modules', 'director.js')));
+  check('startup: the director\'s saved data is no longer deleted', !main.split(/\r?\n/).some(l => l.indexOf("'lm-director-watch'") >= 0 && l.indexOf('removeItem') >= 0));
 }
 { // Expanding Land minimap click, with the real defaults (no option to turn on)
   const app = vm.runInContext('({' + method('_lmMmSpecPE') + ',' + method('_lmMmSpecClick') + '})', ctx);

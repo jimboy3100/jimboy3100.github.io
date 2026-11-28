@@ -95,8 +95,8 @@ tplIds.forEach(id => {
     const src = makeStorage(0);
     const conf = {
       lmHudLayouts: { v: 1, active: 'A', list: [{ name: 'A', c: {} }] },
-      lmThemeWorkshop: { v: 1, themes: [] },
-      lmPracticeCfg: { bots: 4 }, lmAnalyticsGoals: { v: 1, custom: [] },
+      lmThemeWorkshop: { v: 1, themes: [] }, 'lm-director': { speed: 3 },
+      'lm-director-bookmarks': [{ x: 1, y: 2 }], lmPracticeCfg: { bots: 4 }, lmAnalyticsGoals: { v: 1, custom: [] },
       lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPresetUndo: { s: {} },
       /* the radial menu's commands and the screenshot options */
       lmRadialMenu: { v: 1, items: ['hk-feed'] }, lmSmallTools: { shot: { lb: true, map: false } }
@@ -108,7 +108,6 @@ tplIds.forEach(id => {
     check('export: no history, statistics, watch list or backups', Object.keys(priv).every(k => !(k in out)));
     src.setItem('lm-zoom-bookmarks', '[1,0,3]');
     check('export: the removed zoom bookmarks are not carried', !('lm-zoom-bookmarks' in exp(src)));
-    src.setItem('lm-director', J({ speed: 3 })); src.setItem('lm-director-bookmarks', J([{ x: 1, y: 2 }]));
     /* settings profiles are removed: what an older version kept is neither exported nor imported */
     const srcP = makeStorage(0);
     ['lmSettingsProfiles', 'lmSettingsProfilesRules', 'lmSettingsBackups', 'lmGamepadPending'].forEach(k => srcP.setItem(k, J(k === 'lmSettingsProfilesRules' ? { enabled: true } : [{ id: 'p1', name: 'P', data: { s: { showMass: true } } }])));
@@ -117,7 +116,6 @@ tplIds.forEach(id => {
     const dstP = makeStorage(0);
     imp({ lmSettingsProfiles: [{ id: 'p1', name: 'P', data: { s: { showMass: true } } }], lmSettingsProfilesRules: { enabled: true } }, (k, t) => dstP.setItem(k, t), k => dstP.removeItem(k));
     check('import: the settings profiles of an older export are not written', dstP.getItem('lmSettingsProfiles') === null && dstP.getItem('lmSettingsProfilesRules') === null);
-    check('export: the removed spectator director is not carried', !('lm-director' in exp(src)) && !('lm-director-bookmarks' in exp(src)));
     /* the removed custom macros */
     src.setItem('lmCustomMacros', J({ v: 1, slots: [{ name: 'm', steps: [{ a: 'split' }] }] }));
     check('export: the custom macros are not carried', !('lmCustomMacros' in exp(src)));

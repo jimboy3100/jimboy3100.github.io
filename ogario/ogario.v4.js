@@ -21790,8 +21790,8 @@ function lmRenameOldHotkeys(map) {
         if (!own(k)) continue;
         var v = String(map[k]), to = '', z;
         if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode|showQuest|multiboxback)$/.test(v) || gone.test(v)) { delete map[k]; changed = true; continue; }
-        /* the spectator director's commands and camera lock (removed) */
-        if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
+        /* camera lock (removed) */
+        if (v === 'hk-cameraLock') { delete map[k]; changed = true; continue; }
         /* removed: the custom macros */
         if (/^hk-customMacro[1-3]$/.test(v)) { delete map[k]; changed = true; continue; }
         /* the Theme workshop hotkey (removed: the window opens from its button in the Theme tab) */
@@ -21873,6 +21873,8 @@ var LM_EXPORT_KEYS = [
     { key: 'lm-mobile-layouts', type: 'o' },
     { key: 'lmHudLayouts', type: 'o' },
     { key: 'lmThemeWorkshop', type: 'o' },     /* the Theme workshop's saved themes (ogario/modules/themeworkshop.js) */
+    { key: 'lm-director', type: 'o' },
+    { key: 'lm-director-bookmarks', type: 'a' },
     { key: 'lmPracticeCfg', type: 'o' },
     /* Analytics: the Coach's objectives (ogario/modules/analytics.js) */
     { key: 'lmAnalyticsGoals', type: 'o' },
@@ -43623,7 +43625,15 @@ function thelegendmodproject() {
                         cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.cursorY) : this.cursorY; //Sonia3
                         /* a free spectate follow (leaderboard / clicked player) wins over teammate targeting */
                         var _lmSpFol = !this.play && this.isFreeSpectate && (this._lmSpecLb != null || !!this._lmSpecCell);
-                        if (!this.play && this.targeting && !_lmSpFol || this.pause) {
+                        /* Spectator director (ogario/modules/director.js): the point its camera looks at, local
+                         * coordinates like the follows below; null while it leaves the camera alone (always while
+                         * playing, and while one of the follows below runs) */
+                        var _lmDirP = !this.play && this.isFreeSpectate && this === window.legendmod && window.LMDirector && window.LMDirector.enabled ? window.LMDirector.camPoint(this) : null;
+                        if (_lmDirP) {
+                            cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(_lmDirP.x) : _lmDirP.x;
+                            cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(_lmDirP.y) : _lmDirP.y;
+                        }
+                        else if (!this.play && this.targeting && !_lmSpFol || this.pause) {
                             /* targetX/Y are local (rotated) coordinates: translate like the cursor. */
                             cursorX = window.legendmod.vector[window.legendmod.vnr][0] ? this.translateX(this.targetX) : this.targetX;
                             cursorY = window.legendmod.vector[window.legendmod.vnr][1] ? this.translateY(this.targetY) : this.targetY;
@@ -78058,6 +78068,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 targetCamX += LM._worldSpecPanX;
                 targetCamY += LM._worldSpecPanY;
             }
+            /* Spectator director (ogario/modules/director.js) in World Spectate: its camera replaces the
+             * mouse pan; the pan follows it, so handing the camera back does not jump */
+            var _lmDirWS = null;
+            if (LM._isWorldSpectating && LM.isLegendWorld && !LM.play && window.LMDirector && window.LMDirector.enabled &&
+                Number.isFinite(LM.viewX) && Number.isFinite(LM.viewY)) {
+                _lmDirWS = window.LMDirector.camPoint(LM);
+                if (_lmDirWS) {
+                    LM._worldSpecPanX = _lmDirWS.x - LM.viewX;
+                    LM._worldSpecPanY = _lmDirWS.y - LM.viewY;
+                    targetCamX = _lmDirWS.x;
+                    targetCamY = _lmDirWS.y;
+                }
+            }
 
 
             /*
@@ -78103,6 +78126,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.camX += (targetCamX - this.camX) * _lmKCam;
                     this.camY += (targetCamY - this.camY) * _lmKCam;
                 }
+            } else if (_lmDirWS) {
+                /* the director eases its own moves (transition time / easing in its panel) */
+                this.camX = targetCamX;
+                this.camY = targetCamY;
             } else {
                 /* was (29*camX + target)/30 per frame: same at 60 fps */
                 var _lmKSpec = 1 - Math.pow(29 / 30, this._lmFrameF || 1);
@@ -88443,8 +88470,17 @@ Object.defineProperty(Array.prototype, 'stDev', {
     }
     /* The Command Centre is removed: what it kept (stars, recently used) is deleted from this browser */
     try { localStorage.removeItem('lmCommandCentre'); } catch (e) { }
-    /* The spectator director is removed: its camera settings, bookmarks and watchlist are deleted from this browser */
-    try { ['lm-director', 'lm-director-bookmarks', 'lm-director-watch'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
+    /* Spectator director (auto camera, watchlist, camera bookmarks, broadcast HUD, leaderboard history):
+     * does nothing until its panel is opened or one of its hotkeys (no default keys) is used */
+    try {
+        var directorScript = document.createElement('script');
+        directorScript.type = 'text/javascript';
+        directorScript.src = 'https://www.legendmod.ml/ogario/modules/director.js?v=' + (window.OgVer || '');
+        directorScript.charset = 'utf-8';
+        document.body.appendChild(directorScript);
+    } catch (e) {
+        console.warn('[LM] Error loading spectator director script:', e);
+    }
     /* The stream companion and Discover features are removed:
      * what they kept is deleted from this browser */
     try { ['lmCompanionPrivacy', 'lmDiscover'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }

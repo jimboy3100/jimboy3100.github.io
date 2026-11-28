@@ -78,6 +78,13 @@
       "feature": "Practice Arena"
     },
     {
+      "id": "director",
+      "file": "ogario/modules/director.js",
+      "lines": 1598,
+      "description": "Spectator Director: auto-camera following action, watchlist (20), map bookmarks (20), cinematic camera, broadcast HUD, leaderboard history.",
+      "feature": "Spectator Director"
+    },
+    {
       "id": "plugins",
       "file": "ogario/modules/plugins.js",
       "lines": 940,

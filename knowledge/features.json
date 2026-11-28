@@ -99,6 +99,12 @@
       "url": "https://www.legendmod.ml/features.html"
     },
     {
+      "id": "director",
+      "name": "Spectator Director",
+      "description": "Automatic camera follows most interesting action (scoring: big cells, proximity, mass changes, splits, #1 player). Watchlist of up to 20 players. Map bookmarks (up to 20 positions with zoom). 5 cinematic easing functions. Broadcast HUD with player info and leaderboard ticker (50 items). Leaderboard history (600 entries).",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
       "id": "radialmenu",
       "name": "Radial menu",
       "description": "Hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot. Radial editor for customization. Quick access to frequent commands without memorising keys.",

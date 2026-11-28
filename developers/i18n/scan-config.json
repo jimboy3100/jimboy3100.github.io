@@ -35,6 +35,7 @@
     "ogario/modules/notifications.js",
     "ogario/modules/hudeditor.js",
     "ogario/modules/hudeditor-ui.js",
+    "ogario/modules/director.js",
     "ogario/modules/replaystudio.js",
     "ogario/modules/practice.js",
     "ogario/modules/practice-sim.js",

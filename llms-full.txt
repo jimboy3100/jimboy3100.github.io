@@ -293,6 +293,16 @@ Offline practice mode against bots (no server needed). Features:
 - Useful for practising split tricks, virus shots, and movement techniques
 - Opens via hotkey (no default key)
 
+### 21. Spectator Director
+Automatic camera system for spectating. Features:
+- **Auto-camera**: Follows most interesting action (scoring: big cells near each other, mass changes, splits, #1 player)
+- **Watchlist**: Track players by nick, cycle with hotkeys
+- **Map bookmarks**: Save/recall up to 20 positions with zoom level
+- **Cinematic camera**: Transition time, easing, follow smoothing
+- **Broadcast HUD**: Clean overlay for viewers with player info and leaderboard ticker
+- **Leaderboard history**: Positions over time while spectating
+- Opens from its hotkey or the Command Centre; 12 spectator director hotkeys (all configurable, no default keys)
+
 ### 23. Radial Menu
 Hold-point-release radial command menu. Features:
 - **Up to 8 slots**: Assign any hotkey command to a slot
@@ -516,6 +526,9 @@ A tool to drag and resize 15 HUD components (leaderboard, minimap, stats, chat, 
 
 **Where are my match history and game stats?**
 In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) Heatmaps (position history, 3,600 samples per game, 50 games), Coach (scores for survival, growth, splits, movement and retention with tips) and Objectives (three daily ones and up to 8 of your own). Every game is recorded (no switch); only the latest game's replay stays in memory, save it to the library to keep it.
+
+**What is the Spectator Director?**
+An automatic camera system that follows the most interesting action while spectating. Includes watchlist, map bookmarks (up to 20), cinematic camera, broadcast HUD, and leaderboard history.
 
 **What is the Radial Menu?**
 A hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot for quick access without memorising keys. Hold the radial menu key, point to a slot, and release to activate.
