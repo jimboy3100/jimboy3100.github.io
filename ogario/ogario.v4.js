@@ -56130,7 +56130,10 @@ function thelegendmodproject() {
                             _victimStartSize,
                             victimID.color ||
                             '#808080',
-                            !!victimID.isVirus
+                            /* a virus, an own cell and a multibox unit's cell keep their colour
+                             * (Dying Light's colours are for the other players, as its skins) */
+                            !!victimID.isVirus || _victimWasPlayer || !!victimID.isPlayerCellMulti ||
+                            lmMbOwnUnitCell(victimID, victimRawID)
                         );
                     }
 
@@ -56863,7 +56866,8 @@ function thelegendmodproject() {
                             _removeStartSize,
                             cell.color ||
                             '#808080',
-                            !!cell.isVirus
+                            /* as above: a virus or a cell of ours keeps its colour */
+                            !!cell.isVirus || !!cell.isPlayerCell || !!cell.isPlayerCellMulti
                         );
                     }
 

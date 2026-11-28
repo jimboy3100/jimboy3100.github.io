@@ -42,6 +42,18 @@ h = burstHarness({ particlePalette: () => pal });
 h.defaultmapsettings.deathParticles = false;
 vm.runInContext('_spawnDeathBurst(0, 0, 100, "#00ff00")', h);
 check('Death particles setting off: none, also with Dying Light', h._deathParticles.length === 0);
+h = burstHarness({ particlePalette: () => pal });
+h.defaultmapsettings.reducedMotion = true;
+vm.runInContext('_spawnDeathBurst(0, 0, 100, "#00ff00")', h);
+check('Reduced motion: none, also with Dying Light', h._deathParticles.length === 0);
+/* the two callers (eat events, removal fallback) keep a virus's colour and the colour of our own
+ * cells and multibox units' cells: only the other players get the themed colours */
+{
+    const calls = main.split('_spawnDeathBurst(').slice(1).filter(c => /^\s*_(victim|remove)StartX/.test(c)).map(c => c.slice(0, c.indexOf(');')));
+    check('burst callers: viruses, own cells and multibox unit cells keep their colour', calls.length === 2 &&
+        /isVirus \|\| _victimWasPlayer \|\| !!victimID\.isPlayerCellMulti \|\|\s*lmMbOwnUnitCell\(victimID, victimRawID\)/.test(calls[0]) &&
+        /cell\.isVirus \|\| !!cell\.isPlayerCell \|\| !!cell\.isPlayerCellMulti/.test(calls[1]));
+}
 
 /* 2. the theme: dyinglight.js with the real LMEvents */
 async function theme() {
@@ -99,6 +111,10 @@ async function theme() {
     L.setEffect('particles', false);
     check('particles suppressed: palette null, the rest stays on', L.particlePalette() === null && L.isEnabled() && L.effect('spawn'));
     L.setEffect('particles', true);
+    ctx.legendmod.gameMode = ':teams';
+    check('Teams: no themed colours (the team colours tell the sides apart)', L.particlePalette() === null && L.isEnabled());
+    ctx.legendmod.gameMode = ':ffa';
+    check('...back in FFA: the themed colours', L.particlePalette() !== null);
 
     /* Game Over card */
     const css = head.kids.find(n => n.id === 'lm-dl-style');

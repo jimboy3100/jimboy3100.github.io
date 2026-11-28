@@ -705,8 +705,12 @@
         /* the zombie designs { id, key } (the keys getFallbackSkinKey gives) */
         variants: VARIANTS,
         /* the death particles' colours while on (unless suppressed), else null: the renderer
-         * then keeps each victim's colour */
-        particlePalette: function () { return state === 'on' && FX.particles ? PARTICLES : null; },
+         * then keeps each victim's colour. Not in Teams (the team colours tell the sides apart;
+         * no skins there either); the renderer keeps viruses and our own cells as they are. */
+        particlePalette: function () {
+            var lm = W.legendmod;
+            return state === 'on' && FX.particles && !(lm && lm.gameMode === ':teams') ? PARTICLES : null;
+        },
         /* an effect is on: variants, particles, spawn, gameOver, threat (the director's red edge) */
         effect: function (name) { return state === 'on' && FX[name] === true; },
         /* suppress (false) or allow (true) one effect; it applies at once, the theme stays on */
