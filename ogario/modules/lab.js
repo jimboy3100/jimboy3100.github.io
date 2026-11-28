@@ -158,8 +158,8 @@
     };
 
     /* ---------- built-in experiments ----------
-     * none now: "Frame time in the FPS counter" became the stats option showStatsFrameTime
-     * (Settings > Stats, next to FPS); ogario.v4.js loadSettings carries a switch left on here */
+     * none now: the old "Frame time in the FPS counter" experiment is gone, the stats line shows
+     * the frame time in place of the FPS (a switch left on here is ignored) */
 
     /* the User Scripts window may be drawn already (the two files load in any order) */
     notify();

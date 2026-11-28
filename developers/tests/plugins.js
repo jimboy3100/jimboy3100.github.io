@@ -155,7 +155,7 @@ check('lab experiment needs an id and a name', !L.validateExperiment({ id: '1a',
     i18n(ctx);
     vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'lab.js'), 'utf8'), ctx);
     const Lab = ctx.LMLab;
-    /* the frame time experiment is the stats option showStatsFrameTime now (developers/tests/frametime.js) */
+    /* the old frame time experiment is gone: the stats line shows the frame time (developers/tests/frametime.js) */
     check('lab: no built-in experiment left', Lab.list().length === 0 && !Lab.isEnabled('frameTime'));
     let on = 0, off = 0;
     check('lab: register', Lab.register({ id: 'demo', name: 'Demo', onEnable: () => on++, onDisable: () => off++ }) === true);
