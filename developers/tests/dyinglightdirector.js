@@ -197,6 +197,15 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     ctx.LMEvents.emit('death', { scope: 'all' });
     check('replay: no death signal', plays.length === 1);
     ctx.legendmod._isReplay = false;
+    ctx.LMPractice = { on: true };
+    ctx.LMEvents.emit('death', { scope: 'all' });
+    ctx.LMEvents.emit('disconnect', { playing: true });
+    check('practice arena: no death or signal-lost sound', plays.length === 1);
+    ctx.LMPractice = { on: false };
+    ctx._lmEvReplayOn = true;
+    ctx.LMEvents.emit('death', { scope: 'all' });
+    check('Replay Studio replay: no death sound', plays.length === 1);
+    ctx._lmEvReplayOn = false;
     D.dyingLightVolume = 0.5;
     ctx.LMEvents.emit('death', { scope: 'all' });
     check('its sound level halves the gain', plays.length === 2 && plays[1].id === 'death-2' && Math.abs(plays[1].g - 1 * 0.42 * 0.5) < 1e-9);

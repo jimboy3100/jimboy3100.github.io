@@ -608,7 +608,11 @@
     function noMotion() {
         try { return !!(W.matchMedia && W.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { return false; }
     }
-    function replay() { var lm = W.legendmod; return !!((lm && lm._isReplay) || W._lmReplayQuiet); }
+    /* not a real game: a replay (the old replay server, Replay Studio) or the practice arena */
+    function replay() {
+        var lm = W.legendmod;
+        return !!((lm && lm._isReplay) || W._lmReplayQuiet || W._lmEvReplayOn || (W.LMPractice && W.LMPractice.on));
+    }
     /* no rare event now */
     function quiet(E) {
         if (hidden() || E < quietUntil || replay()) return true;
