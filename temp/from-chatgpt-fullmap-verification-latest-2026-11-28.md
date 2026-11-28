@@ -1,0 +1,41 @@
+# Full Map verification: latest findings for Antigravity / Opus
+2026-11-28. Published baseline: ogario/ogario.v4.js blob 338dae95e3b322b606c03d4597364a64081d39dc; ogario/spect.js blob c6d1bf14baebde5c335ba9c4f66d745e51270629. Re-locate functions at current HEAD before edits. This supplements earlier Full Map handoffs, does not reopen corrected systems without evidence.
+
+## Verdict
+Substantially improved, not completely fixed or verified. Four synthetic ghost-matching failure cases were reproduced by executing the published functions with controlled observations. Remaining work concerns ambiguity and freshness of ghost evidence, consistency of existing health reporting, and targeted performance/live validation. No production edits made.
+
+## Preserve corrections
+- drawGhostCells 86731–86747 uses actual LM.camMin/Max viewport, fallback only if invalid. Main coverage 86858–86862 requires lmSrcMainFresh and current world timestamp relative to ghost list. Auxiliary coverage 86874–86883 checks _lmCoverageOk, lmSrcFeeds, _lmMbStalled and world timestamp. Keep these changes.
+- Food _lmFoodGather 3452–3528 and _lmFoodLvlCmp 3531–3542 now use breadth levels and deterministic sorting for the capped level (64 observations), rather than bucket insertion order. Retain bounded local workload, specialised food index, representative spatial update and rotation rebuild. Existing fullmapfood.js:1295,1327 includes dense 300-change/capped searches and multiple histories; line 1030 covers six connection orders. Do not rewrite without evidence.
+- _lmGhostMatch 2122–2200 replaces old per-ghost whole-world scan. Age-aware upper mass ratio lmGhostMassMax 2104–2106: 1.25 fresh, +0.00025 per ms, capped 1.5. Keep efficiency and age handling.
+- Rotation restored: settechvnr 35933, existing display flip and cursor/camera/ghost/player/trail updates 35705–35917, lmFoodReplaceAll on flip. Preserve local orientation and canonical tile positions, no retired orientation server. ingamespect.js:1248–1281 tests routing for 1,2,6 players and Full Map; this does not prove complete rendered geometry.
+- _lmFullMapCrowdCheck 55015 distinguishes known empty leaderboard from unknown with _lmLbSeq/_connectSeq. Keep population hysteresis (>180 suspend, <=170 resume), Teams/BR and private server restrictions. _lmSpecReconcile 55043–55114 closes passive sources during Practice/Replay and preserves playing clients. Spawn/respawn preserve eligible Full Map sockets; _lmMbStop 55120 closes only secondary playing connections. No circumvention of server refusals, CAPTCHA or connection limits.
+- Preserve unique calibration anchors, residual p95All/alternative clusters, transform and generation isolation, settled camera freshness, successful world timestamps, validated packet structure, passive-only malformed packet recovery (spect.js:3320). Do not alter playing ownership, input, physics or renderer to fix ghost display.
+
+## P1: ghost identity bugs reproduced
+Extracted current _lmGhostMatch/_lmGhostGroups and ran with minimal stubs for _lmMbGrow and _lmMbFeeds; ghost at (0,0), radius 100, named X, hiR=1.25, 4 source slots. Cell helper c(x,size,spectator=0,extra={}) returns {x,y:0,size,spectator,_lmSrvName:"X",...extra}. _lmGhostHit[0] = 1 means hidden; 0 means retained. These synthetic cases demonstrate algorithm behavior, not frequency in live games. Distinct player identities in fixtures are assumed as ground truth, not information necessarily transmitted by protocol.
+
+| Fixture | Observed hit | Expected conservative policy |
+|---|---:|---|
+| c(0,100) | 1 | hide correct match |
+| no cells | 0 | retain |
+| c(-60,60), c(60,60), distinct same-source players sharing X | 1 | do not assert common player solely from proximity |
+| c(-45,80,1), c(45,80,2), distinct players across sources | 1 | retain ambiguous ghost |
+| c(0,100,0,{isPlayerCell:true,_lmSrvName:"Y"}) | 1 | named X must not be hidden solely by ownership of unrelated Y |
+| c(0,100,2,{isPlayerCellMulti:true,feeds:false}) | 1 | stale/unverified own evidence must not hide ghost |
+
+1. _lmGhostGroups 2206–2258 joins spatially close cells (2214–2229). Same-source distinct touching players can be treated as split pieces; combined relative mass .72 in first reproduction. Protocol may not distinguish every split from two nearby players. Preserve conservative uncertainty instead of claiming identity. Do not simply change LM_GHOST_LINK. Maintain existing legitimate split coverage where evidence supports it.
+2. Cross-source spatial union (2221–2224) can conflate distinct players; later ambiguity check 2253 only rejects different roots. Use validated observation reconciliation evidence where available instead of proximity-only links. Avoid transitive false associations and double-counted observations. A confirmed physical twin relationship is not automatically proof of common player ownership for all other cells.
+3. Own cells bypass named ghost compatibility at 2166–2170 before ordinary name check 2172. Ownership of a cell is not evidence that a specific ghost belongs to that player. Require appropriate identity evidence; preserve distinction between reliable authoritative identity and mere nickname equality.
+4. _lmGhostMatch 2149 allows own secondary cells through when source is not feeding; 2165 allows named match despite this. Stale/unverified own world position must not suppress a ghost. Separate gameplay drawing/control eligibility from ghost evidence. Check main freshness as appropriate, current generation, removed state and verified transform; do not make a user's own cells disappear simply to fix ghost suppression. Stale and unverified are distinct conditions; fixture uses nonfeeding stub, actual integration must cover both.
+5. Existing fresh coverage absence suppression is separate from identity matching; test both so a ghost is not incorrectly hidden through an alternate path. Retain opcode69 expiry and meaningful conservative uncertainty. No redundant matching system.
+
+## P2: Full Map health and performance
+spect.js:580–606 lmFullMapHealth counts covers using _lmCoverageOk alone (597); spect.js:1374–1375 uses _lmFresh and _lmFeedOk (world age up to 3000ms). Renderer lmMbFrameHide 2825–2826 also uses lmSrcFeeds and !_lmMbStalled (relative 400ms/absolute 1000ms policies). Ghost coverage also uses list-age limits. Distinguish connected, calibrated, geometrically covering, actively contributing; do not claim those different predicates are identical. Correct existing health reporting, no new diagnostic subsystem.
+_lmGhostGroups bounded quadratic at 128 candidates: 8128 pairs per ghost plus grouping passes. Benchmark worst-case dense groups and realistic mixed scenes; retain cap and conservative behavior. Do not add worker/renderer/global index absent measured need. Compare median/P95/P99 frame times and allocation/GC, not just average FPS.
+
+## Focused acceptance
+Extend fullmaplifecycle.js existing ghost tests (642–682) with four synthetic cases and integration freshness checks, while preserving positive split/identity and age-aware cases. Existing tests may encode assumptions about ambiguous cases; distinguish unavoidable protocol ambiguity from proven identity and revise expectations only with clear rationale. Run affected existing tests before pushing. Review fullmapfood.js, fullmaptwin.js, spectcoords.js, ingamespect.js, debugviewports.js as relevant, no duplicate test infrastructure. Verify rotation geometry (cells, ghosts, camera, velocity, food, viewports, inverse input) and actual corner coverage/seams under permitted gameplay. Local fixtures for 1–6 playing sources and passive sources; actual server eligibility remains authoritative. Maintain single-player and default two-player performance, independent lifecycle, no new automation or server circumvention.
+
+## Verification limits
+Inspected both published source files and six existing regression test files. Executed six isolated ghost-matching scenarios using actual extracted functions with stubs; did not run complete repository tests or live gameplay. Desktop Commander offline; unpublished local changes not inspected. Source changes and test presence are not claims of passing suites. No production code modified.
