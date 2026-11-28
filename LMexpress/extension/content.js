@@ -55,10 +55,26 @@ const isCaptchaPath = path === '/captcha' || path === '/captcha/';
 let mirroredOn = true;
 try { mirroredOn = localStorage.getItem(ENABLED_KEY) !== '0'; } catch (e) { }
 let stopped = false;
+/*
+ * Stages and diagnostics, the same as the userscript's (LMexpress.user.js): ROUTING -> TAKEOVER -> LOADING ->
+ * INITIALIZING -> READY, or FAILED / RECOVERY, with their times in sessionStorage "lmx-boot" (written only
+ * while this extension handles the page, so the userscript's record of its own pages stays). A static
+ * document_start content script always starts before agar.io's scripts: the only late start is a switch
+ * turned on since the last visit, which gets one guarded reload (below).
+ */
+const now = () => { try { return performance.now(); } catch (e) { return 0; } };
+const startedAt = now();
+const diag = { loader: 'extension', version: modVersion, mode: path, timing: 'early', states: [], source: '', release: '', conflict: '' };
+function go(next, info) {
+    diag.states.push([next, Math.round(now() - startedAt)]);
+    if (info) diag.info = String(info);
+    try { sessionStorage.setItem('lmx-boot', JSON.stringify(diag)); } catch (e) { }
+}
 /* agar.io without the mod, asked for at agar.io/normal by the Legend Express userscript: it writes agar.io's
  * page here (the same note and rule as LMexpress.user.js vanillaWanted), so this page is left to it */
 const vanilla = isLegendPath && vanillaWanted();
 if (!otherLoaderOwned && !vanilla && (isLegendPath || isCaptchaPath) && mirroredOn) {
+    go('ROUTING');
     claimOwner();
     stopAgario();
     if (isLegendPath) showLoading();
@@ -78,9 +94,11 @@ chrome.storage.local.get({ enabled: true }, (result) => {
             /* the agar.io/ rule must be off first, or agar.io/ comes straight back here; at most once
              * in 10 s, so a rule that could not be switched off never makes a reload loop */
             const target = 'https://agar.io/' + (path === '/legendmod/' ? location.search : '') + location.hash;
+            if (stopped) go('RECOVERY', 'switched off');
             if (!recentlyDone('lmExpressLeft')) chrome.runtime.sendMessage({ type: 'syncRules' }, () => { void chrome.runtime.lastError; location.href = target; });
         } else if (stopped) {
             /* stopped on an out-of-date "on": agar.io's page again, now left alone */
+            go('RECOVERY', 'switched off');
             location.reload();
         }
         return;
@@ -92,10 +110,14 @@ chrome.storage.local.get({ enabled: true }, (result) => {
          * have started its game. Taking over now would leave its scripts, timers and connections running
          * beside Legend Mod, so the page is loaded once more, now taken over at its start. At most once
          * in 10 s: if the mirror could not be saved, the page is taken over late instead of reloading again. */
+        go('ROUTING');
         if (!recentlyDone('lmExpressReload')) {
+            go('RECOVERY', 'late');
             location.reload();
             return;
         }
+        diag.timing = 'late';
+        diag.conflict = 'late-start';
         claimOwner();
     }
     if (isLegendPath) {
@@ -153,6 +175,7 @@ function recentlyDone(key) {
 function stopAgario() {
     if (stopped) return;
     stopped = true;
+    go('TAKEOVER');
     /* document.open() drops the rest of agar.io's page and its scripts. Not window.stop(): it marks the
      * page's parser as aborted, and the browser then ignores the later document.open()/write() of the
      * Legend page (the player got a white page) */
@@ -198,6 +221,7 @@ function loadPage(pageUrl, isLegendPage, retried) {
     /* the tab stayed white while the page was fetched; play.html shows its own loading screen next */
     if (isLegendPage && !wasStopped) showLoading();
 
+    go('LOADING', retried ? 'retry' : '');
     chrome.runtime.sendMessage({ type: 'fetch', url: pageUrl }, (response) => {
         /* lastError: the background worker could not answer (e.g. the extension was just reloaded) */
         const problem = chrome.runtime.lastError ? chrome.runtime.lastError.message
@@ -210,10 +234,33 @@ function loadPage(pageUrl, isLegendPage, retried) {
                 setTimeout(() => loadPage(pageUrl, isLegendPage, true), 1500);
                 return;
             }
+            go('FAILED', problem);
             showLoadError(pageUrl, problem);
             return;
         }
-        writePage(isLegendPage ? addInitCall(response.data) : response.data);
+        diag.source = 'network';
+        if (!isLegendPage) {
+            writePage(response.data);
+            go('READY');
+            return;
+        }
+        go('INITIALIZING', 'network');
+        writePage(addInitCall(response.data));
+        /* the init call's readiness signal (as the userscript's); document.open() dropped every listener, so
+         * they are added after the write (the call comes after the page's script files: it has not run yet) */
+        let settled = false;
+        const started = (ok) => {
+            if (settled) return;
+            settled = true;
+            go(ok ? 'READY' : 'FAILED', ok ? '' : 'init missing');
+        };
+        try {
+            document.addEventListener('lmx-init-ok', () => started(true));
+            document.addEventListener('lmx-init-missing', () => started(false));
+            /* a page whose init call ran while it was written (no script files before it) */
+            const seen = document.documentElement.getAttribute('data-lmx-init');
+            if (seen) started(seen === 'ok');
+        } catch (e) { }
     });
 }
 
@@ -222,8 +269,9 @@ function addInitCall(html) {
     /* JSON quoting, with "<" escaped so the version text can never close the script tag */
     const version = JSON.stringify(modVersion).replace(/</g, '\\u003c');
     const call = '<script>' +
-        'if (typeof init === "function") { init(' + version + ', "extension"); }' +
-        ' else { console.error("[LMexpress] init() is missing: LMexpress.js did not load"); }' +
+        'var lmxInit = function (s) { document.documentElement.setAttribute("data-lmx-init", s); document.dispatchEvent(new Event("lmx-init-" + s)); };' +
+        'if (typeof init === "function") { try { init(' + version + ', "extension"); } finally { lmxInit("ok"); } }' +
+        ' else { console.error("[LMexpress] init() is missing: LMexpress.js did not load"); lmxInit("missing"); }' +
         '</script>';
     const bodyEnd = html.toLowerCase().lastIndexOf('</body>');
     if (bodyEnd === -1) {

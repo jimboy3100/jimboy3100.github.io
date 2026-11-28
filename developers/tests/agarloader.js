@@ -76,7 +76,7 @@ async function runLoader(name, url) {
       ' if (!document.documentElement) return; __o.disconnect();' +
       ' (0, eval)(' + JSON.stringify(loaders[name]) + '); }); __o.observe(document, { childList: true }); }' });
     const state = async () => JSON.parse((await send('Runtime.evaluate', { returnByValue: true, expression:
-      'JSON.stringify({ legend: !!document.getElementById("lm-ok"), script: window.__lmScript || 0, init: window.__lmInit || "", vanilla: window.__vanilla || 0, at: location.href })' })).result.value);
+      'JSON.stringify({ legend: !!document.getElementById("lm-ok"), script: window.__lmScript || 0, init: window.__lmInit || "", vanilla: window.__vanilla || 0, at: location.href, boot: JSON.parse(sessionStorage.getItem("lmx-boot") || "{}") })' })).result.value);
     await send('Page.navigate', { url: url || 'https://agar.io/' });
     await sleep(4000);
     const r = await state();
@@ -97,6 +97,7 @@ async function runLoader(name, url) {
     check(name + ': the Legend page is written over agar.io (no white page)', r.legend);
     check(name + ': its scripts run and get the init call', r.script === 1 && r.init === '9.9.9');
     check(name + ': agar.io\'s own scripts do not run', r.vanilla === 0);
+    check(name + ': its stages end READY (the init call\'s readiness signal)', (r.boot.states || []).map(x => x[0]).pop() === 'READY' && r.boot.loader === name.split('+')[0], JSON.stringify(r.boot));
   }
   /* agar.io/normal: agar.io's own page at agar.io/, not written over by the loader */
   const n = await runLoader('userscript', 'https://agar.io/normal');

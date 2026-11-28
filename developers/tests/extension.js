@@ -17,7 +17,7 @@ const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (
 function run(pathname, stored, enabled, opts) {
     opts = opts || {};
     const log = [], ls = Object.assign({}, stored || {}), ss = Object.assign({}, opts.session || {});
-    let storageCb = null, msgCb = null, written = '', attr = opts.attr || null, fails = opts.fails || 0;
+    let storageCb = null, msgCb = null, written = '', attr = opts.attr || null, fails = opts.fails || 0, docListeners = {};
     const timers = [];
     const docEl = {
         set innerHTML(v) { log.push('clear'); },
@@ -38,7 +38,8 @@ function run(pathname, stored, enabled, opts) {
         document: {
             documentElement: docEl,
             createElement: () => ({ style: {}, set innerHTML(v) { }, firstChild: { lastChild: {} } }),
-            open() { log.push('open'); }, write(h) { written += h; log.push('write'); }, close() { }
+            open() { log.push('open'); docListeners = {}; }, write(h) { written += h; log.push('write'); }, close() { },
+            addEventListener: (t, fn) => { docListeners[t] = fn; }
         },
         chrome: {
             runtime: {
@@ -67,7 +68,7 @@ function run(pathname, stored, enabled, opts) {
         cb(fails-- > 0 ? { error: 'status 503' } : { data: '<html><body>LEGEND</body></html>' });
         while (timers.length) timers.shift()();
     }
-    return { log, sync, ls, ss, written, ctx, attr: () => attr };
+    return { log, sync, ls, ss, written, ctx, attr: () => attr, fire: (t) => docListeners[t] && docListeners[t](), boot: () => JSON.parse(ss['lmx-boot'] || '{}') };
 }
 const ORIGIN = 1700000000123.5;
 
@@ -117,6 +118,29 @@ r = run('/', {}, true, { fails: 1 });
 check('a failed download is tried once more, then the page is written', r.log.filter(x => x === 'fetch').length === 2 && /LEGEND/.test(r.written) && !/Legend Express<\/title>/.test(r.written));
 r = run('/', {}, true, { fails: 5 });
 check('two failed downloads: the error page (with Try again), no endless retries', r.log.filter(x => x === 'fetch').length === 2 && /<title>Legend Express<\/title>/.test(r.written) && /status 503/.test(r.written));
+
+/* stages and diagnostics in sessionStorage lmx-boot, the same as the userscript's; the init call's readiness signal */
+const stages = (x) => (x.boot().states || []).map((s) => s[0]).join(' ');
+r = run('/', {}, true);
+check('stages: ROUTING TAKEOVER LOADING INITIALIZING, the extension named, an early start', stages(r) === 'ROUTING TAKEOVER LOADING INITIALIZING' && r.boot().loader === 'extension' && r.boot().timing === 'early' && r.boot().source === 'network');
+check('the init call signals readiness (lmx-init-ok / lmx-init-missing, as the userscript\'s)', /finally \{ lmxInit\("ok"\); \}/.test(r.written) && /lmxInit\("missing"\)/.test(r.written));
+r.fire('lmx-init-ok');
+check('...READY when init ran', stages(r) === 'ROUTING TAKEOVER LOADING INITIALIZING READY');
+r = run('/', {}, true);
+r.fire('lmx-init-missing');
+check('...FAILED (init missing) when LMexpress.js did not load', / FAILED$/.test(stages(r)) && r.boot().info === 'init missing');
+r = run('/', {}, true, { fails: 5 });
+check('two failed downloads: FAILED with the reason', / FAILED$/.test(stages(r)) && /status 503/.test(r.boot().info));
+r = run('/', { lmExpressEnabled: '0' }, true);
+check('switched on since the last visit: RECOVERY (one reload)', stages(r) === 'ROUTING RECOVERY' && r.boot().info === 'late');
+r = run('/', { lmExpressEnabled: '0' }, true, { session: { lmExpressReload: String(Date.now()) } });
+check('...taken over late after it: a late start recorded', r.boot().timing === 'late' && r.boot().conflict === 'late-start' && /TAKEOVER LOADING INITIALIZING$/.test(stages(r)));
+r = run('/captcha', {}, true);
+check('captcha page: READY once written', / READY$/.test(stages(r)));
+r = run('/', {}, true, { session: { 'lm-loader-owner': 'userscript:' + ORIGIN, 'lmx-boot': '{"loader":"userscript"}' } });
+check('a page of the userscript: its own lmx-boot record is left as it is', r.ss['lmx-boot'] === '{"loader":"userscript"}');
+r = run('/shop', {}, true);
+check('other agar.io pages: no lmx-boot record', !('lmx-boot' in r.ss));
 
 /* the single-owner record: "<extension|userscript>:<performance.timeOrigin>" */
 r = run('/', {}, true, { session: { 'lm-loader-owner': 'userscript:' + ORIGIN } });
