@@ -198,7 +198,7 @@ function boot() {
   check('slow apply: reverted by itself after its time', !b.TW.previewing() && d.bgColor === base);
 }
 
-/* 5. a preview started without the window (a script, Discover): its bar's resize listener goes with it */
+/* 9. a preview started without the window (a script, Discover): its bar's resize listener goes with it */
 {
   const b = boot(), on = new Set();
   b.ctx.addEventListener = (t, f) => { if (t === 'resize') on.add(f); };
