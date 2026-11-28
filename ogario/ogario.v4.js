@@ -257,7 +257,7 @@ function lmDeathScope(unit) {
 }
 window.lmDeathScope = lmDeathScope;
 window.lmSetMbUnit = lmSetMbUnit;
-window.OgVer = 3.705;
+window.OgVer = 3.706;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
