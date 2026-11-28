@@ -2995,6 +2995,7 @@ class Spect {
     }
 
     updateCells(view, offset) {
+        if (typeof lmMbWorldPacket === 'function') lmMbWorldPacket(); /* the multibox search index is built again (ogario.v4.js _lmMbGridFor) */
         let cell;
         let length;
         let id;

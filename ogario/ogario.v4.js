@@ -2488,6 +2488,24 @@ var _lmMbGoneT = 0;
 var LM_MB_GONE_MS = 250;
 var _lmMbGridTime = -1;
 var _lmMbGridBuilt = false;
+/* The search index is built from the cells' packet data (targetX/Y, updateTime, speed), so it is
+ * kept from frame to frame until a world packet comes (_lmMbPktRev: the main updateCells and
+ * spect.js updateCells count them, lmMbWorldPacket), the hide step finds a cell it does not
+ * hold, holds a cell that went or a cell whose packet data changed (its check of every cell, the
+ * stamps _lmMbG* of the build), or it is LM_MB_GRID_MAX_AGE old. Every test still takes the
+ * positions at the frame's time (_lmMbBuildT = LM.time: positions are moved on every frame without
+ * packets too); only the stored ones (px / py, the buckets) are from the build (_lmMbGridT0). A
+ * cell moves at most its speed (<= _lmMbMaxSpeed) times that age away from them, so a search
+ * reaches that much farther into the index (_lmMbDrift) and applies its own reach to each cell's
+ * position now; of equal matches it takes the one a new build would list first (_lmMbListedFirst).
+ * The same matches as with a new build every frame. */
+var _lmMbPktRev = 0, _lmMbGridRev = -1, _lmMbGridId = 0, _lmMbGridT0 = 0, _lmMbGridOkT = NaN, _lmMbStale = false;
+var _lmMbDrift = new Float64Array(1);
+var _lmMbGU = new Float64Array(64), _lmMbGX = new Float64Array(64), _lmMbGY = new Float64Array(64), _lmMbGVX = new Float64Array(64), _lmMbGVY = new Float64Array(64);
+var LM_MB_GRID_MAX_AGE = 100;
+function lmMbWorldPacket() {
+    _lmMbPktRev++;
+}
 function _lmMbCellRadius(cell) {
     var r = Number(cell.targetSize);
     if (!Number.isFinite(r) || r <= 0) r = Number(cell.size);
@@ -2596,8 +2614,11 @@ function _lmMbSpeed(c) {
 }
 function _lmMbBuildGrid() {
     var LM = window.legendmod;
-    var cells = LM && LM.cells, count = 0, i, p = _lmMbPos, maxSpeed = 0;
-    _lmMbBuildT = (LM && LM.time) || 0;
+    var cells = LM && LM.cells, count = 0, i, p = _lmMbPos, maxSpeed = 0, id = ++_lmMbGridId;
+    _lmMbGridT0 = _lmMbBuildT = (LM && LM.time) || 0;
+    _lmMbGridRev = _lmMbPktRev;
+    _lmMbStale = false;
+    _lmMbDrift[0] = 0;
     for (i = 0; cells && i < cells.length; i++) {
         var c = cells[i];
         if (!c || c.removed || c.isFood || !Number.isFinite(c.x) || !Number.isFinite(c.y)) continue;
@@ -2619,6 +2640,24 @@ function _lmMbBuildGrid() {
         if (count >= _lmMbTmpKeys.length) _lmMbTmpKeys = _lmMbGrow(_lmMbTmpKeys, count + 1);
         _lmMbTmpKeys[count] = Math.floor(p.x / LM_MB_BUCKET) * 65536 + Math.floor(p.y / LM_MB_BUCKET);
         _lmMbTmpCells[count++] = c;
+        /* what the stored position was made of (the hide step's check, _lmMbGridKept): numbers in
+         * typed arrays at this slot (a number stored on the cell was a new heap number each time);
+         * a speed not known yet (undefined) as NaN */
+        if (count > _lmMbGU.length) {
+            _lmMbGU = _lmMbGrow(_lmMbGU, count);
+            _lmMbGX = _lmMbGrow(_lmMbGX, count);
+            _lmMbGY = _lmMbGrow(_lmMbGY, count);
+            _lmMbGVX = _lmMbGrow(_lmMbGVX, count);
+            _lmMbGVY = _lmMbGrow(_lmMbGVY, count);
+        }
+        _lmMbGU[count - 1] = c.updateTime;
+        _lmMbGX[count - 1] = c.targetX;
+        _lmMbGY[count - 1] = c.targetY;
+        _lmMbGVX[count - 1] = c._lmVX === undefined ? NaN : c._lmVX;
+        _lmMbGVY[count - 1] = c._lmVY === undefined ? NaN : c._lmVY;
+        c._lmMbGB = id;
+        c._lmMbGS = count - 1;
+        c._lmMbGO = !!c.isPlayerCellMulti;
     }
     _lmMbMaxSpeed[0] = maxSpeed;
     _lmMbSortInto(_lmMbAll, count, false);
@@ -2815,13 +2854,29 @@ var LM_MB_LOOKS_MAX = 4096;
 function _lmMbLookKey(src, gen, raw, name) {
     return raw ? src + '.' + (gen || 0) + '|' + raw + '|' + (name || '') : null;
 }
+/* An entry still in the map under its key has ep === _lmMbLooksEp: one taken out here gets 0, and
+ * all of them a new number when the map is emptied or another script took keys out (spect.js
+ * _lmDropLooks; its size is then not the one left here, _lmMbLooksN), so an unchanged look is
+ * passed over without a map read. */
+var _lmMbLooksEp = 1, _lmMbLooksN = 0;
 function _lmMbLookSet(c) {
+    if (_lmMbLooks.size !== _lmMbLooksN) {
+        _lmMbLooksEp++;
+        _lmMbLooksN = _lmMbLooks.size;
+    }
     /* stored already under this key with this colour and time, and still there (no key string
-     * each frame; one map read). The key's server colour and name are part of it, as the name
-     * can come later; a look dropped at the cap or with the world is stored again. */
-    var raw = c._lmRawColor, nm = c._lmSrvName;
+     * each frame; no map read while its entry is known to be there). The key's server colour and
+     * name are part of it, as the name can come later; a look dropped at the cap or with the world
+     * is stored again. */
+    var raw = c._lmRawColor, nm = c._lmSrvName, se = c._lmMbLookSE;
     if (c._lmMbLookSC === c.color && c._lmMbLookST === c._lmMbLookT && c._lmMbLookSR === raw &&
-        c._lmMbLookSN === nm && c._lmMbLookSE && _lmMbLooks.get(c._lmMbLookSK) === c._lmMbLookSE) return;
+        c._lmMbLookSN === nm && se) {
+        if (se.ep === _lmMbLooksEp) return;
+        if (_lmMbLooks.get(c._lmMbLookSK) === se) {
+            se.ep = _lmMbLooksEp;
+            return;
+        }
+    }
     var src = c.spectator > 0 ? c.spectator : 0, gen = c._lmGen;
     /* the key string of the last store, while its parts are the same (two pieces of one player
      * on one connection store their looks in turn, each frame) */
@@ -2840,9 +2895,18 @@ function _lmMbLookSet(c) {
     /* a look stored again goes to the young end; at the cap only the oldest goes (clear()
      * also dropped every live player's look) */
     if (e) _lmMbLooks.delete(k);
-    else if (_lmMbLooks.size >= LM_MB_LOOKS_MAX) _lmMbLooks.delete(_lmMbLooks.keys().next().value);
-    if (!(e && e.c === c.color && e.t === c._lmMbLookT)) e = { c: c.color, t: c._lmMbLookT };
+    else if (_lmMbLooks.size >= LM_MB_LOOKS_MAX) {
+        var old = _lmMbLooks.keys().next().value, oe = _lmMbLooks.get(old);
+        if (oe) oe.ep = 0;
+        _lmMbLooks.delete(old);
+    }
+    if (!(e && e.c === c.color && e.t === c._lmMbLookT)) {
+        if (e) e.ep = 0;
+        e = { c: c.color, t: c._lmMbLookT, ep: 0 };
+    }
     _lmMbLooks.set(k, e);
+    e.ep = _lmMbLooksEp;
+    _lmMbLooksN = _lmMbLooks.size;
     c._lmMbLookSE = e;
 }
 /* the shared colour ({c: colour, t: when it was first shown}) of a cell made with this server
@@ -2858,6 +2922,8 @@ function lmMbLookOf(src, gen, raw, name) {
 }
 function lmMbLooksReset() {
     _lmMbLooks.clear();
+    _lmMbLooksEp++;
+    _lmMbLooksN = 0;
 }
 /* Nearest copy to `cell` in idx (cells of connection `conn` only, or of any other connection
  * than `notConn`), within `reach` of matching position (px, py): _lmMbQ = [px, py, reach], set
@@ -2866,13 +2932,23 @@ function lmMbLooksReset() {
  * drawn at a wrong place: a verified copy hid behind it instead of behind its own player's cell).
  * _lmMbAmbig: the copy found is an own cell and an own cell of another connection matches too
  * (two players of one nick stacked): which player this copy shows is not known. */
-var _lmMbQ = new Float64Array(3), _lmMbAmbig = false;
+var _lmMbQ = new Float64Array(3), _lmMbAmbig = false, _lmMbPosD = { x: 0, y: 0 }, _lmMbPosE = { x: 0, y: 0 };
+/* Of two equal matches (distance, id) in a kept index: is a the one a new build lists first (its
+ * bucket now, then its place in LM.cells this frame, _lmMbCI), the one its search finds first? */
+function _lmMbListedFirst(a, b) {
+    var p = _lmMbPosOf(a, _lmMbPosE), ka = Math.floor(p.x / LM_MB_BUCKET) * 65536 + Math.floor(p.y / LM_MB_BUCKET);
+    p = _lmMbPosOf(b, _lmMbPosE);
+    var kb = Math.floor(p.x / LM_MB_BUCKET) * 65536 + Math.floor(p.y / LM_MB_BUCKET);
+    return ka !== kb ? ka < kb : a._lmMbCI < b._lmMbCI;
+}
 function _lmMbNearest(idx, cell, conn, notConn, anyOrder, asOther) {
     var n = idx.n, px = _lmMbQ[0], py = _lmMbQ[1], reach = _lmMbQ[2];
     _lmMbAmbig = false;
     if (!n) return null;
+    /* an index kept from an earlier frame: its stored positions are up to _lmMbDrift away */
+    var stale = _lmMbStale, wide = stale ? reach + _lmMbDrift[0] : reach, q = _lmMbPosD;
     var gx = Math.floor(px / LM_MB_BUCKET), gy = Math.floor(py / LM_MB_BUCKET);
-    var rb = Math.max(1, Math.ceil(reach / LM_MB_BUCKET));
+    var rb = Math.max(1, Math.ceil(wide / LM_MB_BUCKET));
     var keys = idx.keys, list = idx.cells, conns = idx.conns, xs = idx.px, ys = idx.py, lo = 0, best = null, bestD = Infinity;
     /* bestU: the copy found is an unverified unit's own cell; own0 / own1: the connection of the
      * first own cell matched (verified / not), amb0 / amb1: one of another connection too */
@@ -2890,8 +2966,12 @@ function _lmMbNearest(idx, cell, conn, notConn, anyOrder, asOther) {
         }
         for (; a < n && keys[a] <= k1; a++) {
             if (conn >= 0 ? conns[a] !== conn : conns[a] === notConn) continue;
-            if (Math.abs(xs[a] - px) > reach || Math.abs(ys[a] - py) > reach) continue;
+            if (Math.abs(xs[a] - px) > wide || Math.abs(ys[a] - py) > wide) continue;
             var o = list[a];
+            if (stale) {
+                _lmMbPosOf(o, q);
+                if (Math.abs(q.x - px) > reach || Math.abs(q.y - py) > reach) continue;
+            }
             if (asOther ? !_lmMbCellRadius(o) || !_lmMbTwinTest(o, cell, anyOrder, false) : !_lmMbTwinTest(cell, o, anyOrder, false)) continue;
             var d = _lmMbD2[0];
             var u = 0;
@@ -2905,7 +2985,8 @@ function _lmMbNearest(idx, cell, conn, notConn, anyOrder, asOther) {
                     else if (own0 !== conns[a]) amb0 = true;
                 }
             }
-            if (!best || u < bestU || (u === bestU && (d < bestD || (d === bestD && o.id < best.id)))) { best = o; bestD = d; bestU = u; }
+            if (!best || u < bestU || (u === bestU && (d < bestD || (d === bestD && (o.id < best.id ||
+                (stale && o.id === best.id && _lmMbListedFirst(o, best))))))) { best = o; bestD = d; bestU = u; }
         }
         lo = a;
     }
@@ -3035,6 +3116,9 @@ function lmMbFrameHide() {
         _lmMbView[3] = vy1;
     }
     var n = cells.length, maxConn = 0, late = 0;
+    /* the search index kept from an earlier frame (_lmMbGridFor): only while no world packet came
+     * since, and it holds exactly the cells it would hold now (held: their count), unchanged */
+    var kept = _lmMbGridBuilt && _lmMbGridRev === _lmMbPktRev && _lmMbGridTime !== LM.time, held = 0;
     if (_lmMbOrdKey.length < n) {
         _lmMbOrdKey = new Int32Array(n * 2);
         _lmMbOrdIdx = new Int32Array(n * 2);
@@ -3078,6 +3162,11 @@ function lmMbFrameHide() {
             cell._lmMbTwin = null;
             continue;
         }
+        /* a cell a new search index would hold: is the kept one still right for it (_lmMbGridFor)?
+         * Its place in LM.cells for equal matches (_lmMbListedFirst) */
+        cell._lmMbCI = i;
+        held++;
+        if (kept && !_lmMbGridKept(cell)) kept = false;
         /* own cells of the main player or a unit are always drawn: no search (an unverified
          * unit's own cell is looked at below) */
         if (cell.invisible || (cell.spectator > 0 ? cell.isPlayerCellMulti : cell.isPlayerCell)) {
@@ -3091,6 +3180,7 @@ function lmMbFrameHide() {
         if (s > maxConn) maxConn = s;
         key[i] = s;
     }
+    _lmMbGridOkT = kept && held === _lmMbAll.n ? LM.time : NaN;
     /* rank: 0 main, 1..M drawn last frame (by number), M+1..2M the others (by number) */
     var nb = 2 * maxConn + 2;
     if (_lmMbOrdCnt.length < nb) _lmMbOrdCnt = new Int32Array(nb * 2);
@@ -3198,13 +3288,31 @@ function _lmMbSeenElsewhere(cell, mainView, vx0, vy0, vx1, vy1) {
     return false;
 }
 var _lmMbPosC = { x: 0, y: 0 };
-/* the search index of this frame (built once per LM.time) */
+/* the search index of this frame (at most once per LM.time; kept from an earlier frame while no
+ * world packet came, the hide step found it still holds exactly the cells it would hold with
+ * their packet data then, and it is at most LM_MB_GRID_MAX_AGE old; see _lmMbGridTime) */
 function _lmMbGridFor(LM) {
-    if (_lmMbGridTime !== LM.time || !_lmMbGridBuilt) {
-        _lmMbBuildGrid();
-        _lmMbGridBuilt = true;
-        _lmMbGridTime = LM.time;
-    }
+    var t = LM.time;
+    if (_lmMbGridTime === t && _lmMbGridBuilt) return;
+    if (_lmMbGridBuilt && _lmMbGridOkT === t && _lmMbGridRev === _lmMbPktRev && t && _lmMbGridT0 &&
+        Math.abs(t - _lmMbGridT0) <= LM_MB_GRID_MAX_AGE) {
+        /* the frame's time for every test; the stored positions are at most the fastest
+         * cell's speed times the age away (plus rounding) */
+        _lmMbBuildT = t;
+        _lmMbStale = t !== _lmMbGridT0;
+        _lmMbDrift[0] = _lmMbMaxSpeed[0] * Math.abs(t - _lmMbGridT0) * (1 + 1e-9) + 1e-6;
+    } else _lmMbBuildGrid();
+    _lmMbGridBuilt = true;
+    _lmMbGridTime = t;
+}
+/* The hide step's check of one cell that a new index would hold (not removed, not food, fed or a
+ * unit's own cell): does the kept index hold it with the packet data it holds now? */
+function _lmMbGridKept(c) {
+    if (c._lmMbGB !== _lmMbGridId || c._lmMbGO !== !!c.isPlayerCellMulti) return false;
+    var s = c._lmMbGS, vx = c._lmVX, vy = c._lmVY, sx = _lmMbGVX[s], sy = _lmMbGVY[s];
+    return _lmMbGU[s] === c.updateTime && _lmMbGX[s] === c.targetX && _lmMbGY[s] === c.targetY &&
+        (vx === undefined ? sx !== sx : sx === vx) && (vy === undefined ? sy !== sy : sy === vy) &&
+        Number.isFinite(c.targetX) && Number.isFinite(c.targetY) && Number.isFinite(c.x) && Number.isFinite(c.y);
 }
 /* Has a verified connection a copy of this cell (same kind, size and name, in any drawing
  * order, within 1.5 times the twin tolerance: a draw-only unit's offset is known, only its
@@ -3231,7 +3339,9 @@ function _lmMbResent(rc) {
     var p = _lmMbPosOf(rc, _lmMbPosC), px = p.x, py = p.y, nm = _lmMbSrvName(rc);
     if (!Number.isFinite(px) || !Number.isFinite(py)) return false;
     var reach = 1.5 * _lmMbTwinReach(radius, _lmMbReachSpeed(rc));
-    var gx = Math.floor(px / LM_MB_BUCKET), gy = Math.floor(py / LM_MB_BUCKET), rb = Math.max(1, Math.ceil(reach / LM_MB_BUCKET));
+    /* a kept index (_lmMbNearest): reach its stored positions that much farther, test the ones now */
+    var stale = _lmMbStale, wide = stale ? reach + _lmMbDrift[0] : reach, q = _lmMbPosD;
+    var gx = Math.floor(px / LM_MB_BUCKET), gy = Math.floor(py / LM_MB_BUCKET), rb = Math.max(1, Math.ceil(wide / LM_MB_BUCKET));
     var keys = idx.keys, list = idx.cells, conns = idx.conns, xs = idx.px, ys = idx.py, lo = 0;
     for (var ox = -rb; ox <= rb; ox++) {
         var base = (gx + ox) * 65536 + gy, k0 = base - rb, k1 = base + rb;
@@ -3244,12 +3354,18 @@ function _lmMbResent(rc) {
             else b = m;
         }
         for (; a < n && keys[a] <= k1; a++) {
-            if (conns[a] !== mine || Math.abs(xs[a] - px) > reach || Math.abs(ys[a] - py) > reach) continue;
-            var o = list[a], on = _lmMbSrvName(o);
+            if (conns[a] !== mine || Math.abs(xs[a] - px) > wide || Math.abs(ys[a] - py) > wide) continue;
+            var o = list[a], on = _lmMbSrvName(o), ox2 = xs[a], oy2 = ys[a];
+            if (stale) {
+                _lmMbPosOf(o, q);
+                ox2 = q.x;
+                oy2 = q.y;
+                if (Math.abs(ox2 - px) > reach || Math.abs(oy2 - py) > reach) continue;
+            }
             if (o === rc || o.removed || o._cellsIdx === -1 || !(o.time >= rc._lmMbGoneT) || !_lmMbFeeds(o)) continue;
             if (!!o.isVirus !== !!rc.isVirus || !!o.isEjected !== !!rc.isEjected || (nm && on && on !== nm)) continue;
             if (!_lmMbSizeNear(_lmMbCellRadius(o), radius)) continue;
-            var tol = 1.5 * _lmMbTwinTol(radius, rc, o), dx = xs[a] - px, dy = ys[a] - py;
+            var tol = 1.5 * _lmMbTwinTol(radius, rc, o), dx = ox2 - px, dy = oy2 - py;
             if (dx * dx + dy * dy <= tol * tol) return true;
         }
         lo = a;
@@ -3309,7 +3425,10 @@ var _lmMbOwnHit = null, _lmMbCopyHit = null;
 function _lmMbCopyAt(cell, nm, radius, px, py, reach, conn) {
     var idx = _lmMbAll, n = idx.n, mine = cell.spectator > 0 ? cell.spectator : 0;
     if (!n) return false;
-    var gx = Math.floor(px / LM_MB_BUCKET), gy = Math.floor(py / LM_MB_BUCKET), rb = Math.max(1, Math.ceil(reach / LM_MB_BUCKET));
+    /* a kept index (_lmMbNearest): reach its stored positions that much farther, test the ones now,
+     * and of several copies take the one a new build lists first (the one found first then) */
+    var stale = _lmMbStale, wide = stale ? reach + _lmMbDrift[0] : reach, q = _lmMbPosD, hit = null;
+    var gx = Math.floor(px / LM_MB_BUCKET), gy = Math.floor(py / LM_MB_BUCKET), rb = Math.max(1, Math.ceil(wide / LM_MB_BUCKET));
     var keys = idx.keys, list = idx.cells, conns = idx.conns, xs = idx.px, ys = idx.py, lo = 0;
     for (var ox = -rb; ox <= rb; ox++) {
         var base = (gx + ox) * 65536 + gy, k0 = base - rb, k1 = base + rb;
@@ -3322,15 +3441,28 @@ function _lmMbCopyAt(cell, nm, radius, px, py, reach, conn) {
             else b = m;
         }
         for (; a < n && keys[a] <= k1; a++) {
-            if ((conn === 0 ? conns[a] !== 0 : conns[a] === mine) || Math.abs(xs[a] - px) > reach || Math.abs(ys[a] - py) > reach) continue;
-            var o = list[a], on = _lmMbSrvName(o);
+            if ((conn === 0 ? conns[a] !== 0 : conns[a] === mine) || Math.abs(xs[a] - px) > wide || Math.abs(ys[a] - py) > wide) continue;
+            var o = list[a], on = _lmMbSrvName(o), ox2 = xs[a], oy2 = ys[a];
+            if (stale) {
+                _lmMbPosOf(o, q);
+                ox2 = q.x;
+                oy2 = q.y;
+                if (Math.abs(ox2 - px) > reach || Math.abs(oy2 - py) > reach) continue;
+            }
             if (o.removed || !!o.isVirus !== !!cell.isVirus || !!o.isEjected !== !!cell.isEjected) continue;
             if (conn === 0 ? o.isPlayerCell || on !== nm : !_lmMbFeeds(o) || (nm && on && on !== nm)) continue;
             if (!_lmMbSizeNear(_lmMbCellRadius(o), radius)) continue;
-            var tol = 1.5 * _lmMbTwinTol(radius, cell, o), dx = xs[a] - px, dy = ys[a] - py;
-            if (dx * dx + dy * dy <= tol * tol) { _lmMbCopyHit = o; return true; }
+            var tol = 1.5 * _lmMbTwinTol(radius, cell, o), dx = ox2 - px, dy = oy2 - py;
+            if (dx * dx + dy * dy <= tol * tol) {
+                if (!stale) { _lmMbCopyHit = o; return true; }
+                if (!hit || _lmMbListedFirst(o, hit)) hit = o;
+            }
         }
         lo = a;
+    }
+    if (hit) {
+        _lmMbCopyHit = hit;
+        return true;
     }
     return false;
 }
@@ -39180,6 +39312,7 @@ function thelegendmodproject() {
         this._lmMbSeenF = this._lmMbLookT = this._lmMbSticky = this._lmMbTwin = this._lmMbAmb = this._lmMbPosDup = undefined;
         this._lmMbLook = this._lmMbLookSC = this._lmMbLookST = this._lmMbLookSR = this._lmMbLookSN = this._lmMbLookSE = this._lmMbLookSK = undefined;
         this._lmMbLookSS = this._lmMbLookSG = undefined;
+        this._lmMbGB = this._lmMbGS = this._lmMbGO = this._lmMbCI = undefined;
         this._lmMbHidF = this._lmMbHidN = this._lmMbHides = this._lmMbHandTo = this._lmMbHandF = this._lmMbGoneT = undefined;
         this._lmEaten = this._lmEatenT = this._lmJellyFromSrc = this._lmJellyFromGen = this._lmJellyFromRaw = undefined;
         /* the own cell a main copy stands for this frame (lmOwnProxy) and the physical cell's key (lmCellIdentity) */
@@ -39324,6 +39457,7 @@ function thelegendmodproject() {
             this._lmMbSeenF = this._lmMbLookT = this._lmMbSticky = this._lmMbTwin = this._lmMbAmb = this._lmMbPosDup = undefined;
             this._lmMbLook = this._lmMbLookSC = this._lmMbLookST = this._lmMbLookSR = this._lmMbLookSN = this._lmMbLookSE = this._lmMbLookSK = undefined;
             this._lmMbLookSS = this._lmMbLookSG = undefined;
+            this._lmMbGB = this._lmMbGS = this._lmMbGO = this._lmMbCI = undefined;
             this._lmMbHidF = this._lmMbHidN = this._lmMbHides = this._lmMbHandTo = this._lmMbHandF = this._lmMbGoneT = undefined;
             this._lmEaten = this._lmEatenT = this._lmJellyFromSrc = this._lmJellyFromGen = this._lmJellyFromRaw = undefined;
             /* a new cell: not the old one's physical cell (lmCellIdentity) */
@@ -56635,6 +56769,8 @@ function thelegendmodproject() {
          * The death check is at the end of the update and the next packet resets
          * removePlayerCell, so the death was lost: play stayed on with no cell. */
         updateCells(view, offset) {
+            /* a world packet: the multibox search index is built again (_lmMbGridFor) */
+            if (typeof lmMbWorldPacket === 'function') lmMbWorldPacket();
             this._lmDeathDue = false;
             try {
                 this._lmUpdateCellsRun(view, offset);
