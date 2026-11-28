@@ -438,7 +438,6 @@ function loadersettings() {
                 extendedTimeOut: 20000
     }).css("width", "450px");	
 	
-        //LMadvertisementMegaFFA();
     //if($("#SHOSHOBtn").attr('aria-pressed') == "false"){
     toastr.info('<center><b>'+
     'IF HOTKEYS <font color="yellow"><span style="text-shadow: 0px 0px 10px #0DA9C7;background: transparent url(https://www.legendmod.ml/banners/particles.gif);">NOT WORKING</font></span>:<br>'+
@@ -7126,27 +7125,6 @@ function LMLegendFFAPromo() {
 
 
 
-function VideoSkinsPromo() {
-    $('#helloContainer').after('<div class="modal fade in" id="LMPromo" aria-hidden="false" style="display: block;">' +
-        '<div class="modal-backdrop fade in"></div>' +
-        '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 922px;">' +
-        '<div class="modal-content">' +
-        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-        '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' + _lmxE('lmx.ex.videoSkinPromo') + '</h4>' +
-        '</div>' +
-        '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/developers/videoskins.html" width="920" height="550" >' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>');
-    lmPromoChrome("#LMPromo");
-    $("#CloseLMPromo").click(function () {
-        $("#LMPromo").remove();
-    });
-    $("#FAQLMPromo").click(function () {
-        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
-    });
-}
 /* Shared look of the Legend windows (Profiles, Performance, Custom Macros, ... and the
  * lm_extended_ui dialogs). Every window module calls lmUiKit() before it builds its window,
  * so the window never depends on another script having added these rules first.
@@ -7337,24 +7315,3 @@ function administrationtools() {
     $("#administrationtools").hide();
 }
 
-function LMadvertisementMegaFFA() {
-    $('#helloContainer').after('<div class="modal fade in" id="LMPromo" aria-hidden="false" style="display: block;">' +
-        '<div class="modal-backdrop fade in"></div>' +
-        '<div class="modal-dialog" style="top: calc(50vh - 241.5px); width: 622px;">' +
-        '<div class="modal-content">' +
-        '<div id="CloseLMPromo2" class="modal-header"><button id="CloseLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&#10005;</span><span class="sr-only">' + Premadeletter113 + '</span></button> <button id="FAQLMPromo" type="button" class="close" data-dismiss="modal"><span aria-hidden="true">?</span><span class="sr-only">' + Premadeletter113 + '</span></button>' +
-        '<h4 class="modal-title" style="font-family: var(--lm-hud-font, Roboto Condensed, sans-serif)">' + _lmxE('lmx.ex.dev2020') + '</h4>' +
-        '</div>' +
-        '<div id="LMadvertisement3"><iframe id="customskinsIframe2" src="https://www.legendmod.ml/extras/2020.html" width="620" height="490" >' +
-        '</div>' +
-        '</div>' +
-        '</div>' +
-        '</div>');
-    lmPromoChrome("#LMPromo");
-    $("#CloseLMPromo").click(function () {
-        $("#LMPromo").remove();
-    });
-    $("#FAQLMPromo").click(function () {
-        window.open(lmThemeUrl('https://www.legendmod.ml/'), '_blank');
-    });
-}
