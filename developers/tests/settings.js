@@ -214,11 +214,17 @@ check('load: the mass-loss alert, its threshold and the HUD arrows are read agai
 /* "Optimized mass (+/-2%) OR Merge timer (BETA)" is back (the original seconds merge timer, ogario/mergetimer.js):
  * on by default, and a saved off is read again; the agent-made Merge countdown stays removed */
 check('optimizedMass is a setting again, on by default', D.optimizedMass === true && V('optimizedMass', false) === false);
-check('fold: optimizedMass is kept as saved, Merge countdown is not turned on', J(lfold({ optimizedMass: false })) === J({ optimizedMass: false }));
-ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { optimizedMass: false, hudMergeCountdown: true })));
+check('fold: optimizedMass is kept as saved, Merge countdown is not turned on', J(lfold({ optimizedMass: false, mergeRings: false })) === J({ optimizedMass: false, mergeRings: false }));
+/* an older set with the timer and the rings both on keeps the timer (one or the other) */
+check('fold: optimizedMass off with the merge rings on (or not saved) turns the rings off; timer off leaves them',
+  J(lfold({ optimizedMass: false, mergeRings: true })) === J({ optimizedMass: false, mergeRings: false }) &&
+  J(lfold({ optimizedMass: false })) === J({ optimizedMass: false, mergeRings: false }) &&
+  J(lfold({ optimizedMass: true, mergeRings: true })) === J({ optimizedMass: true, mergeRings: true }) &&
+  J(lfold({ mergeRings: true })) === J({ mergeRings: true }));
+ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { optimizedMass: false, mergeRings: true, hudMergeCountdown: true })));
 app.loadSettings();
-check('load: a saved optimizedMass off is read again, hudMergeCountdown ignored', S.optimizedMass === false && !('hudMergeCountdown' in S));
-S.optimizedMass = D.optimizedMass;
+check('load: a saved optimizedMass off is read again (the rings saved on go off), hudMergeCountdown ignored', S.optimizedMass === false && S.mergeRings === false && !('hudMergeCountdown' in S));
+S.optimizedMass = D.optimizedMass; S.mergeRings = D.mergeRings;
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();

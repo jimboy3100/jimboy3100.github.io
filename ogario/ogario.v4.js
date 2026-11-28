@@ -21651,6 +21651,13 @@ function lmFoldLegacySettings(s) {
         changed = true;
     }
     if (lmFoldClickFollow(s)) changed = true;
+    /* the seconds merge timer (optimizedMass off) and the merge progress rings are one or the other:
+     * an older set with both on (they ran together before) keeps the timer, which is what is drawn */
+    if (has('optimizedMass') && lmSettingValue('optimizedMass', s.optimizedMass) === false
+        && (!has('mergeRings') || lmSettingValue('mergeRings', s.mergeRings) !== false)) {
+        s.mergeRings = false;
+        changed = true;
+    }
     /* the virus pop / eat sounds are part of the virus sound: either one on turns it on, once */
     if (has('virusPopSound') || has('virusEatSound')) {
         if (s.virusPopSound === true || s.virusEatSound === true) s.virusSound = true;
