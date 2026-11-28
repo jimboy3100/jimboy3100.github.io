@@ -400,35 +400,50 @@ const covers = (plan, vw, vh, half) => {
             });
             check('live: the full grid is drawn as before, within half a unit (' + worst.toFixed(2) + ', borders meet in one line)' + tag, oldTrim.length === 15 && !diff.length, diff.map((x) => x[0]).join(' '));
         }
-        /* tiles missing (reconnecting, given up): every point a real view covers is inside a drawn
-         * box. Each pair was cut across its overlap, a diagonal pair too: the strip one corner view
-         * gave up along a whole edge was covered only by the edge neighbour now missing (live: a
-         * 4000 x 44..87 strip drawn as a hole next to it, where the map was seen) */
-        for (const gone of [[4], [7], [1], [3, 5]]) {
+        /* tiles missing (reconnecting, given up), and settled cameras off their targets by up to
+         * the settle distance (LM_TILE_SETTLED, a tile counts as arrived within it): every point a
+         * real view covers is inside a drawn box, within the trim's tolerance (pass 2 moves an edge
+         * by at most 1, a cut edge pair gives up at most the cameras' offset at its ends), and no
+         * seam is drawn twice. Each pair was cut across its overlap, a diagonal pair too: the strip
+         * one corner view gave up along a whole edge was covered only by the edge neighbour now
+         * missing (live: a 4000 x 44..87 strip drawn as a hole next to it, where the map was seen);
+         * and with a fixed 2-unit test for edge neighbours, cameras 3 units apart drew the whole
+         * seam (175 / 529 units) twice. */
+        const settled = vm.runInContext('LM_TILE_SETTLED', e.c);
+        for (const [gone, jit] of [[[4], 0], [[7], 0], [[1], 0], [[3, 5], 0], [[], 3], [[], 8], [[], settled], [[4], settled]]) {
             const e2 = liveEnv();
             const s2 = L.sp.filter((q) => gone.indexOf(q.tile) < 0).map((q) => liveSpect(e2, q));
+            /* cameras alternately +-jit off their tile targets, per axis */
+            if (jit) s2.forEach((sp, i) => { const t = sp._lmTileRaw(); sp.viewX = t[0] + (i % 2 ? jit : -jit); sp.viewY = t[1] + ((i >> 1) % 2 ? jit : -jit); });
             const d2 = e2.frame().filter((b) => b.label !== 'map'), r2 = s2.map(real);
-            let holes = 0, pts = 0, over = 0;
+            const tol = 1 + 2 * jit;
+            let holes = 0, strict = 0, pts = 0, over = 0;
             for (let x = mapB.minX + 4; x < mapB.maxX; x += 8) {
                 for (let y = mapB.minY + 4; y < mapB.maxY; y += 8) {
                     let seen = false;
                     for (const r of r2) if (x >= r.minX && x <= r.maxX && y >= r.minY && y <= r.maxY) { seen = true; break; }
                     if (!seen) continue;
                     pts++;
-                    let drawnHere = false;
-                    for (const b of d2) if (x >= b.minX && x <= b.maxX && y >= b.minY && y <= b.maxY) { drawnHere = true; break; }
-                    if (!drawnHere) holes++;
+                    let inBox = false, near = false;
+                    for (const b of d2) {
+                        if (x >= b.minX && x <= b.maxX && y >= b.minY && y <= b.maxY) { inBox = near = true; break; }
+                        if (x >= b.minX - tol && x <= b.maxX + tol && y >= b.minY - tol && y <= b.maxY + tol) near = true;
+                    }
+                    if (!inBox) strict++;
+                    if (!near) holes++;
                 }
             }
             for (let i = 0; i < d2.length; i++) for (let j = i + 1; j < d2.length; j++) {
                 const o = Math.min(ov(d2[i], d2[j], 0), ov(d2[i], d2[j], 1));
                 if (o > 1e-9) over = Math.max(over, o);
             }
-            check('live, tile ' + gone.join(' and ') + ' missing: every point seen by a real view is inside a drawn box (' + pts + ' points)' + tag,
+            const what = 'live, ' + (gone.length ? 'tile ' + gone.join(' and ') + ' missing' : 'full grid') + (jit ? ', cameras +-' + jit + ' off' : '');
+            check(what + ': every point seen by a real view is inside a drawn box, within ' + tol + ' (' + pts + ' points, ' + strict + ' outside the boxes themselves)' + tag,
                 d2.length === 15 - gone.length && pts > 2e6 && holes === 0, holes + ' holes');
             /* where views stay apart only at a corner next to the hole, those corners overlap (up to
-             * the seam width; real coverage), never more */
-            check('live, tile ' + gone.join(' and ') + ' missing: drawn boxes overlap at most a seam (' + over.toFixed(1) + ')' + tag, over <= 360, over);
+             * the seam width; real coverage); with the whole grid no seam is drawn twice */
+            const maxOver = gone.length ? 360 : 2 * jit + 2;
+            check(what + ': drawn boxes overlap at most ' + maxOver + ' (' + over.toFixed(1) + ')' + tag, over <= maxOver, over);
         }
     }
 }

@@ -2552,7 +2552,14 @@ class Spect {
             let ownOrTeamColor = false;
             const teamsMode = legendmod.gameMode === ':teams';
             const nickColours = !teamsMode && legendmod.gameMode !== ':party';
-            if (!isVirus && !isFood && name !== "") {
+            /* a colour sent later without the name (agar.io sends the name once): the name this
+             * cell already has, under which its nick colour and shared look are kept */
+            let colName = name;
+            if (!colName && rawColor && !isVirus && !isFood) {
+                const known = legendmod.indexedCells['' + id];
+                if (known && known._lmGen === this.connectionGeneration && known._lmSrvName) colName = known._lmSrvName;
+            }
+            if (!isVirus && !isFood && colName !== "") {
                 let ownCustom = false;
                 if (this.playerCellIDs.indexOf(id) !== -1) {
                     if (!teamsMode && defaultmapsettings.myCustomColor && profiles[application.selectedProfile]) {
@@ -2562,22 +2569,22 @@ class Spect {
                 } else if (nickColours) {
                     const mates = application.teamPlayers;
                     for (let t = 0; mates && t < mates.length; t++) {
-                        if (mates[t] && mates[t].nick === name && mates[t].color && mates[t]._lmColorSent) {
+                        if (mates[t] && mates[t].nick === colName && mates[t].color && mates[t]._lmColorSent) {
                             color = mates[t].color
                             ownOrTeamColor = true
                         }
                     }
                 }
-                if (nickColours && !ownOrTeamColor && legendmod.cellcolors[name]) {
-                    color = legendmod.cellcolors[name]
+                if (nickColours && !ownOrTeamColor && legendmod.cellcolors[colName]) {
+                    color = legendmod.cellcolors[colName]
                     ownOrTeamColor = true
                 }
                 /* the profile colour is no colour of the nick (main _lmOwnColorsRestore) */
-                if (nickColours && !ownCustom && !legendmod.cellcolors[name] && color) legendmod.cellcolors[name] = color
+                if (nickColours && !ownCustom && !legendmod.cellcolors[colName] && color) legendmod.cellcolors[colName] = color
             }
             let look = null;
             if (!isVirus && !isFood && !ownOrTeamColor && rawColor && typeof lmMbLookOf === 'function') {
-                look = lmMbLookOf(this.number, this.connectionGeneration, rawColor, name);
+                look = lmMbLookOf(this.number, this.connectionGeneration, rawColor, colName);
                 if (look) color = look.c;
             }
             //
@@ -2638,9 +2645,12 @@ class Spect {
                         var _mbPIdx = (application.mbSlots && this.number < application.mbSlots.length)
                             ? application.mbSlots[this.number] : application.selectedOldProfile;
                         var _mbProf = profiles[_mbPIdx];
-                        /* Teams: the server's team colour, like the main connection */
-                        if (teamsMode) this.playerColor = cell.color;
-                        else if (_mbProf) {
+                        /* Teams: the server's team colour, like the main connection (not the
+                         * food colour of "one colour for spectator cells") */
+                        if (teamsMode) {
+                            if (rawColor) cell.color = rawColor;
+                            this.playerColor = cell.color;
+                        } else if (_mbProf) {
                             this.playerColor = _mbProf.color || '#000000';
                             cell.color = _mbProf.color || '#000000';
                         }

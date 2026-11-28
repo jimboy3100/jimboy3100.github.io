@@ -1786,44 +1786,47 @@ function lmMbShareLook(hidden, drawn) {
  */
 var _lmMbLooks = new Map();
 var LM_MB_LOOKS_MAX = 4096;
-/* bumped whenever entries leave the map (cap, reset), so cells stored before store again */
-var _lmMbLooksRev = 1;
 function _lmMbLookKey(src, gen, raw, name) {
     return raw ? src + '.' + (gen || 0) + '|' + raw + '|' + (name || '') : null;
 }
 function _lmMbLookSet(c) {
-    /* stored already under this key with this colour and time (no key string each frame);
-     * the key's server colour and name are part of it, as the name can come later */
+    /* stored already under this key with this colour and time, and still there (no key string
+     * each frame; one map read). The key's server colour and name are part of it, as the name
+     * can come later; a look dropped at the cap or with the world is stored again. */
     var raw = c._lmRawColor, nm = c._lmSrvName;
     if (c._lmMbLookSC === c.color && c._lmMbLookST === c._lmMbLookT && c._lmMbLookSR === raw &&
-        c._lmMbLookSN === nm && c._lmMbLookSV === _lmMbLooksRev) return;
+        c._lmMbLookSN === nm && c._lmMbLookSE && _lmMbLooks.get(c._lmMbLookSK) === c._lmMbLookSE) return;
     c._lmMbLookSC = c.color;
     c._lmMbLookST = c._lmMbLookT;
     c._lmMbLookSR = raw;
     c._lmMbLookSN = nm;
-    c._lmMbLookSV = _lmMbLooksRev;
+    c._lmMbLookSE = null;
     var src = c.spectator > 0 ? c.spectator : 0;
     var k = _lmMbLookKey(src, c._lmGen, raw, nm);
+    c._lmMbLookSK = k;
     if (!k) return;
     var e = _lmMbLooks.get(k);
-    /* a look stored again goes to the young end, so the cap drops looks nobody stores any
-     * more; at the cap only the oldest goes (clear() also dropped every live player's look) */
+    /* a look stored again goes to the young end; at the cap only the oldest goes (clear()
+     * also dropped every live player's look) */
     if (e) _lmMbLooks.delete(k);
-    else if (_lmMbLooks.size >= LM_MB_LOOKS_MAX) {
-        _lmMbLooks.delete(_lmMbLooks.keys().next().value);
-        _lmMbLooksRev++;
-    }
-    _lmMbLooks.set(k, e && e.c === c.color && e.t === c._lmMbLookT ? e : { c: c.color, t: c._lmMbLookT });
+    else if (_lmMbLooks.size >= LM_MB_LOOKS_MAX) _lmMbLooks.delete(_lmMbLooks.keys().next().value);
+    if (!(e && e.c === c.color && e.t === c._lmMbLookT)) e = { c: c.color, t: c._lmMbLookT };
+    _lmMbLooks.set(k, e);
+    c._lmMbLookSE = e;
 }
 /* the shared colour ({c: colour, t: when it was first shown}) of a cell made with this server
- * colour and name on this connection (number and socket generation), or null */
+ * colour and name on this connection (number and socket generation), or null. A look read
+ * goes to the young end too (only when a cell is made): a player still seen keeps it. */
 function lmMbLookOf(src, gen, raw, name) {
     var k = _lmMbLookKey(src, gen, raw, name);
-    return k ? _lmMbLooks.get(k) || null : null;
+    var e = k ? _lmMbLooks.get(k) : undefined;
+    if (!e) return null;
+    _lmMbLooks.delete(k);
+    _lmMbLooks.set(k, e);
+    return e;
 }
 function lmMbLooksReset() {
     _lmMbLooks.clear();
-    _lmMbLooksRev++;
 }
 /* Nearest copy to `cell` in idx (cells of connection `conn` only, or of any other connection
  * than `notConn`), within `reach` of matching position (px, py). Ties: the lower id. */
@@ -79835,16 +79838,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * as two parallel lines that read as a band) are each drawn up to the middle of the
          * overlap, so neighbouring borders meet in one line and the grid has no crossing borders.
          * Drawing only: g[i].r is the real view and stays, g[i].d the box drawn. Pass 1 cuts only
-         * edge neighbours (each within the other's span on the other axis, +-2), across their
-         * overlap between their centres: the strip one gives up lies inside the other's real view.
-         * Diagonal neighbours (sharing a corner only) are not cut: that took a whole edge strip
-         * off one view, which only the edge neighbour between them covered, so a missing tile
-         * left a drawn hole where the map was seen. Pass 2 resolves what is still drawn over
-         * each other by at most 2 units. */
+         * edge neighbours (each within the other's span on the other axis, up to the camera
+         * offset two settled tiles can have: 2 x LM_TILE_SETTLED + 2), across their overlap
+         * between their centres: the strip one gives up lies inside the other's real view, but
+         * for at most that offset at its ends. Diagonal neighbours (sharing a corner only) are not
+         * cut: that took a whole edge strip off one view, which only the edge neighbour between
+         * them covered, so a missing tile left a drawn hole where the map was seen. Pass 2
+         * resolves what is still drawn over each other by at most 2 units. */
         _lmViewTrim(g, n) {
             var TOL = 2, i, j, a, b, ox, oy, k, o, m, aLow, lo, hi;
+            /* tiles count as arrived within LM_TILE_SETTLED of their target (spect.js): with a
+             * fixed 2, two tiles off by more were not cut and their seam was drawn twice */
+            var EDGE = 2 * (typeof LM_TILE_SETTLED === 'number' && LM_TILE_SETTLED > 0 ? LM_TILE_SETTLED : 16) + 2;
             /* 1: edge neighbours only (each lies within the other on the other axis): the strip
-             * one gives up is inside the other real view, so no real coverage disappears */
+             * one gives up is inside the other real view (up to EDGE at its ends) */
             for (i = 0; i < n; i++) {
                 a = g[i].r;
                 for (j = i + 1; j < n; j++) {
@@ -79852,7 +79859,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     ox = Math.min(a[2], b[2]) - Math.max(a[0], b[0]); oy = Math.min(a[3], b[3]) - Math.max(a[1], b[1]);
                     if (!(ox > 0 && oy > 0)) continue;
                     k = ox <= oy ? 0 : 1; o = 1 - k;
-                    if (!(a[o] >= b[o] - TOL && a[o + 2] <= b[o + 2] + TOL && b[o] >= a[o] - TOL && b[o + 2] <= a[o + 2] + TOL)) continue;
+                    if (!(a[o] >= b[o] - EDGE && a[o + 2] <= b[o + 2] + EDGE && b[o] >= a[o] - EDGE && b[o + 2] <= a[o + 2] + EDGE)) continue;
                     m = (Math.max(a[k], b[k]) + Math.min(a[k + 2], b[k + 2])) / 2;
                     aLow = a[k] + a[k + 2] <= b[k] + b[k + 2];
                     lo = aLow ? g[i].d : g[j].d; hi = aLow ? g[j].d : g[i].d;

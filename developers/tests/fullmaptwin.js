@@ -158,6 +158,16 @@ check('the drawn colour of a cell does not change', colourLinked > 200 && colour
     check('colour cache past 4096 keys: the 20 live players keep their shared colour, the map stays capped', kept === 20 && size <= 4096, kept + ' of 20, size ' + size);
     const oldest = vm.runInContext('!!lmMbLookOf(4, 1, "#a0", "o0")', ctx);
     check('colour cache past 4096 keys: the oldest unused look is the one dropped', !oldest);
+    /* a look only read (a player stored once, whose new pieces read it) stays; a pair stored
+     * every frame is not stored again whenever another look is dropped (no global churn) */
+    vm.runInContext('lmMbLooksReset(); var _P = { spectator: 7, _lmGen: 1, _lmRawColor: "#aa0000", _lmSrvName: "P", color: "#00ff00", _lmMbLookT: 5 }; _lmMbLookSet(_P);' +
+        'var _Q = { spectator: 8, _lmGen: 1, _lmRawColor: "#bb0000", _lmSrvName: "Q", color: "#0000ff", _lmMbLookT: 6 }; _lmMbLookSet(_Q);' +
+        'var _qSets = 0, _set = _lmMbLooks.set; _lmMbLooks.set = function (k, v) { if (k === "8.1|#bb0000|Q") _qSets++; return _set.call(this, k, v); };' +
+        'for (var i = 0; i < 4100; i++) { _lmMbLookSet({ spectator: 2, _lmGen: 1, _lmRawColor: "#c" + i, _lmSrvName: "n" + i, color: "#123456", _lmMbLookT: i });' +
+        ' _lmMbLookSet(_Q); if (i % 1000 === 999) lmMbLookOf(7, 1, "#aa0000", "P"); } delete _lmMbLooks.set;', ctx);
+    check('colour cache: a live look that is only read survives 4100 new keys', !!vm.runInContext('lmMbLookOf(7, 1, "#aa0000", "P")', ctx));
+    const qSets = vm.runInContext('_qSets', ctx);
+    check('colour cache: a pair stored every frame is stored again only when its own look is dropped (' + qSets + ' of 4100 frames)', qSets <= 1 && !!vm.runInContext('lmMbLookOf(8, 1, "#bb0000", "Q")', ctx), qSets);
     vm.runInContext('var _late = { spectator: 5, _lmGen: 1, _lmRawColor: "#010203", _lmSrvName: null, color: "#0a0b0c", _lmMbLookT: 20 };' +
         '_lmMbLookSet(_late); _late._lmSrvName = "carol"; _lmMbLookSet(_late);', ctx);
     check('colour cache: a server name that arrives later is stored under the name', !!vm.runInContext('lmMbLookOf(5, 1, "#010203", "carol")', ctx));

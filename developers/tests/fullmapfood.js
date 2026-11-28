@@ -462,6 +462,28 @@ reset();
     sl.updateCells(rec(40, null, null), 0);
     sl.updateCells(rec(40, [255, 0, 0], 'Late'), 0);
     check('spectator: a colour sent after the first record is applied', col(40) === LM.rgb2Hex(229, 0, 0), col(40));
+    /* sent later without the name: the cell's name finds its nick colour and its shared look */
+    LM.cellcolors = Object.create(null);
+    LM.cellcolors.Known = '#abcdef';
+    sl.updateCells(rec(41, null, 'Known'), 0);
+    sl.updateCells(rec(41, [0, 255, 0], null), 0);
+    check('spectator: a later colour without the name takes the nick colour of the name it has', col(41) === '#abcdef', col(41));
+    vm.runInContext('_lmMbLookSet({ spectator: 3, _lmGen: 1, _lmRawColor: "' + LM.rgb2Hex(0, 0, 229) + '", _lmSrvName: "Seen", color: "#fedcba", _lmMbLookT: 1 })', g);
+    LM.gameMode = ':party';
+    sl.updateCells(rec(42, null, 'Seen'), 0);
+    sl.updateCells(rec(42, [0, 0, 255], null), 0);
+    check('spectator: a later colour without the name takes the shared look of the name it has', col(42) === '#fedcba', col(42));
+    /* Teams with "one colour for spectator cells": the unit's own cells keep the team colour */
+    reset();
+    LM.gameMode = ':teams';
+    g.defaultmapsettings.oneColoredSpectator = true;
+    const so = spect(4);
+    so.playerCellIDs = [so.newID(54)];
+    so.active = true;
+    so.updateCells(packet([], [{ id: 54, x: 500, y: 100, size: 60, food: false, name: 'Me', color: 0xff0000 }], []), 0);
+    check('Teams, one colour for spectator cells: the own cell of the unit in its team colour', col(54) === hex(0xff0000) && so.playerColor === hex(0xff0000), [col(54), so.playerColor]);
+    g.defaultmapsettings.oneColoredSpectator = false;
+    LM.gameMode = ':ffa';
 }
 
 /* 7. Canvas2D and Expanding Land WebGL draw the same list */
