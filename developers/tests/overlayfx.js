@@ -624,6 +624,20 @@ for (const jelly of [true, false]) {
     const off = R.canUseWebGLScene(LM.cells), wOff = why();
     check('cell shadows: Canvas2D (reason "cellShadows") only when the canvas shadow paints something (colour alpha > 0 and a blur or offset); off: WebGL',
         bad.length === 0 && off && wOff === 'webgl', bad.join('; ') + ' / off ' + wOff);
+    /* a virus with Virus glow: cell.draw keeps the shadow offsets under the glow colour and
+     * blur, so a transparent shadow colour still shifts its glow (the GL band is not shifted) */
+    const keep = LM.cells, vir = makeCell({ x: 40, y: 20, size: 100, isVirus: true });
+    LM.cells = keep.concat([vir]);
+    const vbad = [];
+    for (const [set, glow, gl] of [[{ cellShadowColor: 'transparent' }, true, false], [{ cellShadowColor: 'transparent', cellShadowOffsetX: 0, cellShadowOffsetY: 0 }, true, true],
+        [{ cellShadowColor: 'transparent' }, false, true], [{ cellShadowBlur: 0, cellShadowOffsetX: 0, cellShadowOffsetY: 0 }, true, true]]) {
+        setSettings({ map: { showCellShadows: true, virusGlow: glow }, set: set });
+        const ok = R.canUseWebGLScene(LM.cells), w = why();
+        if (ok !== gl || w !== (gl ? 'webgl' : 'cellShadows')) vbad.push(JSON.stringify(set) + ' glow ' + glow + ' -> ' + w);
+    }
+    LM.cells = keep;
+    check('  a virus with Virus glow and a transparent shadow colour: Canvas2D while an offset shifts its glow; WebGL without offset or glow',
+        vbad.length === 0, vbad.join('; '));
 }
 setSettings({ map: { FBTracking: true } });
 LM.gameMode = ':teams';

@@ -63692,8 +63692,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* Cell shadows are the Canvas2D drop shadow of cell.draw and the GPU batch has no
              * shadow pass, so a frame with a shadowed cell on screen stays on Canvas2D (food
              * and ejected mass cast none). Fallback reason: 'cellShadows'. Settings that
-             * make that shadow paint nothing keep WebGL (_lmShadowSeen). */
+             * make that shadow paint nothing keep WebGL (_lmShadowSeen). A virus with Virus
+             * glow keeps the shadow offsets under the glow colour and blur: shifted, unlike the
+             * GL glow band, so a virus on screen still stays on Canvas2D then. */
             var _glShadows = !!defaultmapsettings.showCellShadows && this._lmShadowSeen();
+            var _glShadowVir = !_glShadows && !!defaultmapsettings.showCellShadows && !!defaultmapsettings.virusGlow && this._lmShadowSeen(true);
 
 
             for (
@@ -63780,7 +63783,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     }
                 }
 
-                if (_glShadows && !cell.isEjected) {
+                if ((_glShadows && !cell.isEjected) || (_glShadowVir && cell.isVirus)) {
                     this._lmGlFallback = 'cellShadows';
                     return this._lmNoGL(this.GLW.SHADOWS);
                 }
@@ -63901,8 +63904,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* Cell shadows on: does cell.draw's Canvas2D shadow paint anything? It paints none
          * with a fully transparent colour, or with blur 0 and both offsets 0 (the canvas
          * shadow rule); the values are those cell.draw sets. A colour this cannot read
-         * counts as seen. The colour test is kept per colour string (no work per frame). */
-        _lmShadowSeen() {
+         * counts as seen. The colour test is kept per colour string (no work per frame).
+         * virus: only whether an offset shifts it (Virus glow replaces colour and blur). */
+        _lmShadowSeen(virus) {
+            var ox = +(defaultSettings.cellShadowOffsetX || 0), oy = +(defaultSettings.cellShadowOffsetY || 0);
+            /* a non-finite offset is ignored by the canvas (it keeps 0) */
+            var shift = (ox !== 0 && isFinite(ox)) || (oy !== 0 && isFinite(oy));
+            if (virus) return shift;
             var col = defaultSettings.cellShadowColor || 'rgba(0,0,0,0.35)';
             if (col !== this._lmShColK) {
                 var s = String(col).trim().toLowerCase(), a0 = s === 'transparent', m;
@@ -63921,9 +63929,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var b = defaultSettings.cellShadowBlur;
             b = b === '' || b == null ? NaN : +b;
             b = b >= 0 && b < Infinity ? b : 20;
-            var ox = +(defaultSettings.cellShadowOffsetX || 0), oy = +(defaultSettings.cellShadowOffsetY || 0);
-            /* a non-finite offset is ignored by the canvas (it keeps 0) */
-            return b !== 0 || (ox !== 0 && isFinite(ox)) || (oy !== 0 && isFinite(oy));
+            return b !== 0 || shift;
         },
         /* one frame, drawn by WebGL (GLW.WEBGL) or kept on Canvas2D for that reason */
         _lmGlCount(why) {
