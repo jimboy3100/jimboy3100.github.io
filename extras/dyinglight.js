@@ -799,7 +799,14 @@
         if (el.parentNode) el.parentNode.removeChild(el);
     }
 
-    /* -- sounds: the Legend mixer, at most MAX_SOUNDS elements, reused -- */
+    /* -- sounds: the Legend mixer, at most MAX_SOUNDS elements, reused --
+     * Not application.setSound (the shared loader of the chat / gameplay sounds): it gives an
+     * Audio element at once and sets its source later (IndexedDB, then a fetch and a FileReader),
+     * with no sign of when it is ready and no way to call it off, so a load still running after
+     * the turn-off would set its source anyway; and it keeps every file as a data URL in
+     * LMSkinStorage, the player's persistent cache, where these sounds would stay after the
+     * turn-off. Plain elements use the browser's HTTP cache, play again without a new load, and
+     * releaseSounds lets them go (no load left running). */
     function userGain() {
         var v = Number(setting('dyingLightVolume'));
         return Number.isFinite(v) ? Math.max(0, Math.min(1, v)) : 1;
@@ -808,7 +815,7 @@
     function play(id, level, force) {
         var mix = W.LMNotifications;
         if (!on || !mix || typeof mix.play !== 'function' || hidden() || !SOUNDS[id]) return false;
-        var gain = SOUNDS[id] * level * userGain();
+        var base = SOUNDS[id] * level, gain = base * userGain();
         if (!(gain > 0)) return false;
         var a = null;
         for (var i = 0; i < audios.length; i++) if (audios[i].paused || audios[i].ended) { a = audios[i]; break; }
@@ -824,8 +831,33 @@
         }
         var url = BASE + 'sounds/dyinglight/' + id + '.mp3';
         if (a._lmUrl !== url) { a.src = url; a._lmUrl = url; }
+        /* its level inside the Dying Light sound level, for a volume change while it plays */
+        a._lmGain = base;
         mix.play(a, 'gameplay', gain);
         return true;
+    }
+    /* the mixer's volume of a Gameplay sound of this gain: soundVolume('gameplay') x gain, as
+     * LMNotifications.play sets it */
+    function mixVolume(g) {
+        var mix = W.LMNotifications, v = NaN;
+        try { if (mix && typeof mix.soundVolume === 'function') v = Number(mix.soundVolume('gameplay')); } catch (e) { }
+        if (!Number.isFinite(v)) return NaN;
+        var n = Number(g);
+        n = Number.isFinite(n) ? Math.max(0, Math.min(1, n)) : 1;
+        return Math.max(0, Math.min(1, v * n));
+    }
+    /* Settings > Sounds (master, Gameplay) or the Dying Light sound level changed while a sound
+     * plays: it goes on at the new volume (a slider is announced when it rests) */
+    var VOL_KEYS = { volMaster: 1, volGameplay: 1, dyingLightVolume: 1 };
+    function onVolume(d) {
+        if (!on || !d || VOL_KEYS[d.key] !== 1) return;
+        var u = userGain();
+        for (var i = 0; i < audios.length; i++) {
+            var a = audios[i];
+            if (a.paused || a.ended || !(a._lmGain >= 0)) continue;
+            var v = mixVolume(a._lmGain * u);
+            try { if (v === v && a.volume !== v) a.volume = v; } catch (e) { }
+        }
     }
     function stopSounds() {
         for (var i = 0; i < audios.length; i++) { try { audios[i].pause(); } catch (e) { } }
@@ -834,7 +866,7 @@
         stopSounds();
         for (var i = 0; i < audios.length; i++) {
             var a = audios[i];
-            try { a.removeAttribute('src'); a._lmUrl = null; a.load(); } catch (e) { }
+            try { a.removeAttribute('src'); a._lmUrl = null; a._lmGain = null; a.load(); } catch (e) { }
         }
         audios.length = 0;
     }
@@ -907,6 +939,7 @@
         sub('spawn', onSpawn);
         sub('disconnect', onDisconnect);
         sub('serverChange', onServer);
+        sub('settingsChange', onVolume);
         if (!hidden()) resume(now());
     }
     function stop() {

@@ -66,7 +66,11 @@ const endSounds = () => audios.forEach(a => { a.paused = true; });
 const ctx = {
     document, Image: Img, Audio: Aud, console: { warn() { }, log() { } }, Promise, Object, JSON, Array, String, Number, Error, Map,
     setTimeout: setTimeout_, clearTimeout: clearTimeout_, performance: { now: () => T },
-    LMNotifications: { play: (a, ch, g) => { plays.push({ t: T, id: /([\w-]+)\.mp3$/.exec(a.src)[1], ch, g }); a.volume = g; a.play(); } },
+    /* the mixer: Gameplay channel x master x the sound's gain, as ogario/modules/notifications.js */
+    LMNotifications: {
+        soundVolume: ch => ch === 'gameplay' ? ctx.defaultmapsettings.volGameplay * ctx.defaultmapsettings.volMaster : 1,
+        play: (a, ch, g) => { plays.push({ t: T, id: /([\w-]+)\.mp3$/.exec(a.src)[1], ch, g }); a.volume = ctx.LMNotifications.soundVolume(ch) * g; a.play(); }
+    },
     toastr: { info: (m, t, o) => toasts.push({ t: T, m, o }), warning() { } },
     legendmod: { play: true }, lmT: k => k
 };
@@ -97,7 +101,7 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     let p = L.enable({ confirm: false });
     flushPics(true);
     await p;
-    check('on: the director runs with one timer (and the threat look its own)', L.isEnabled() && info().running && timers.size === 2 && info().listeners === 5 &&
+    check('on: the director runs with one timer (and the threat look its own)', L.isEnabled() && info().running && timers.size === 2 && info().listeners === 6 &&
         info().threat.timer && info().threat.listeners === 6);
     check('theme: its colours painted over the player\'s, the player\'s theme unchanged',
         painted.length === 1 && painted[0].menuMainColor === '#a12b30' && painted[0].hudColor === 'rgba(9,12,13,0.55)' && painted[0].chatColor === '#abc' &&
@@ -210,6 +214,25 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     D.dyingLightVolume = 0.5;
     ctx.LMEvents.emit('death', { scope: 'all' });
     check('its sound level halves the gain', plays.length === 2 && plays[1].id === 'death-2' && Math.abs(plays[1].g - 1 * 0.42 * 0.5) < 1e-9);
+    {
+        /* a volume change while it plays: the sound goes on at the new volume (no restart) */
+        const a = audios.find(x => !x.paused), v0 = a && a.volume;
+        const set = (k, v) => { D[k] = v; ctx.LMEvents.emit('settingsChange', { key: k, value: v }); };
+        set('volGameplay', 0.5);
+        const v1 = a.volume;
+        set('dyingLightVolume', 1);
+        const v2 = a.volume;
+        set('volMaster', 0);
+        const v3 = a.volume;
+        set('volMaster', 1); set('volGameplay', 1); set('dyingLightVolume', 0.5);
+        check('volume: a playing sound follows the Gameplay, master and Dying Light levels live', a && Math.abs(v0 - 0.21) < 1e-9 &&
+            Math.abs(v1 - 0.105) < 1e-9 && Math.abs(v2 - 0.21) < 1e-9 && v3 === 0 && Math.abs(a.volume - 0.21) < 1e-9 && !a.paused &&
+            plays.length === 2, [v0, v1, v2, v3, a && a.volume].join());
+        a.paused = true;
+        set('volGameplay', 0.2);
+        check('volume: a sound that ended is left alone', Math.abs(a.volume - 0.21) < 1e-9);
+        set('volGameplay', 1);
+    }
     D.dyingLightVolume = 0;
     advance(11000);
     ctx.LMEvents.emit('death', { scope: 'all' });
@@ -333,7 +356,7 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     /* on / off / on: nothing grows */
     for (let i = 0; i < 3; i++) { p = L.enable(); flushPics(true); await p; await L.disable(); }
     p = L.enable(); flushPics(true); await p;
-    check('on again after toggles: one timer (and one of the threat look), the same listeners', timers.size === 2 && info().listeners === 5 && info().threat.listeners === 6 && head.kids.filter(n => n.id === 'lm-dl-director-style').length === 1);
+    check('on again after toggles: one timer (and one of the threat look), the same listeners', timers.size === 2 && info().listeners === 6 && info().threat.listeners === 6 && head.kids.filter(n => n.id === 'lm-dl-director-style').length === 1);
     await L.disable();
     check('off again: nothing left', timers.size === 0 && docCount() === lsBefore && info().listeners === 0);
 
