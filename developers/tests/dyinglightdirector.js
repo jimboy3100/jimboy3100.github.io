@@ -742,6 +742,19 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
         L.setIntensity('immersive');
         for (let i = 0; i < 3; i++) { p = L.enable(); flushPics(true); await p; advance(2000); await L.disable(); }
         check('on / off: one context per activation, every one closed', acs.length === 4 && acs.every(a => a.state === 'closed'));
+        /* the browser refuses a context: asked once in the activation, not every second (each with a warning) */
+        let tries = 0;
+        ctx.AudioContext = function () { tries++; throw new Error('refused'); };
+        const w0 = warns.length;
+        p = L.enable(); flushPics(true); await p;
+        advance(10000);
+        check('a refused context: asked once, one warning, no sound, not every second', tries === 1 && warns.length - w0 === 1 && A().ctx === null, tries + ' tries');
+        await L.disable();
+        p = L.enable(); flushPics(true); await p;
+        advance(2000);
+        check('...asked again by the next activation', tries === 2);
+        await L.disable();
+        warns.length = w0;
         delete ctx.lmDlThreat;
         delete ctx.AudioContext;
         delete ctx.navigator;

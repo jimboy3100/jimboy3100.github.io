@@ -1303,10 +1303,12 @@
     /* acVol: the output level set last (only a change is handed to the audio clock); held: resting */
     var ac = null, acOut = null, acNoise = null, acVol = -1, held = false, bed = null, oldBeds = [];
     var hb = { lvl: 0, bpm: HB_BPM[0], vol: 0, next: 0, offAt: 0, beats: 0, g: null };
+    /* the browser refused a context: not asked again (and no warning) each second of this activation */
+    var acFailed = false;
 
     function acMake() {
         var C = W.AudioContext || W.webkitAudioContext;
-        if (typeof C !== 'function') return null;
+        if (acFailed || typeof C !== 'function') return null;
         /* the browser keeps a context silent until the page was touched: wait for that */
         var ua = W.navigator && W.navigator.userActivation;
         if (ua && ua.hasBeenActive === false) return null;
@@ -1319,7 +1321,7 @@
             var sr = ac.sampleRate || 44100, n = Math.max(1, Math.floor(sr)), b = ac.createBuffer(1, n, sr), d = b.getChannelData(0), x = 0x9e3779b9;
             for (var i = 0; i < n; i++) { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; d[i] = (x >>> 0) / 2147483648 - 1; }
             acNoise = b;
-        } catch (e) { warn('audio', e); acClose(); return null; }
+        } catch (e) { warn('audio', e); acClose(); acFailed = true; return null; }
         return ac;
     }
     function acClose() {
@@ -1763,7 +1765,7 @@
         timer = 0; acc = 0; runAt = 0; live = false; lastTick = 0; late = 0; okTicks = 0; busy = false;
         phase = null; wasRec = false; nextRollAt = 0; lastEventAt = -Infinity; lastAt = {}; lastMajorAt = -Infinity;
         quietUntil = 0; lastDeathAt = -Infinity; lastSignalAt = -Infinity; deathN = 0; radioN = 0;
-        shown = null; look = null; dropPend(); failed = {}; sfxN = {};
+        shown = null; look = null; dropPend(); failed = {}; sfxN = {}; acFailed = false;
     }
     function start(g) {
         var d = W.document;
