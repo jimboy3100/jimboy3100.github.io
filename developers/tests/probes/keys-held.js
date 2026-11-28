@@ -1,6 +1,6 @@
 // Keyboard state: one Space is one split even when agar.io's own key handler (window.addKeyListeners,
 // left in the window when agar.io's page ran before the loader replaced it) is there and Play is
-// pressed; a key released inside a window that stops keyup (dialogs with text boxes)
+// pressed; a key released inside a window that stops keyup (Command Centre after Ctrl+K, dialogs)
 // is released for the hotkeys too (Ctrl no longer stays down, macro feed stops); Q free spectate
 // keeps working after the hotkeys window and after a death.
 (async () => {
@@ -87,6 +87,19 @@
       kev('keyup', document.body, 69, 'e');
       await sleep(30);
       if (feeds.join(',') !== 'true,false') fail.push('normal E press/release: ' + feeds.join(','));
+    }
+    /* the real Command Centre: Ctrl+K, keys released in its search box */
+    if (window.LMCommandCentre && typeof LMCommandCentre.isOpen === 'function' && !LMCommandCentre.isOpen()) {
+      inp.blur();
+      kev('keydown', document.body, 17, 'Control', true);
+      kev('keydown', document.body, 75, 'k', true);
+      info.ccOpen = LMCommandCentre.isOpen();
+      var t = document.activeElement || document.body;
+      kev('keyup', t, 75, 'k', true);
+      kev('keyup', t, 17, 'Control', false);
+      await sleep(30);
+      if (info.ccOpen && keyBlind.CTRL) fail.push('Ctrl stays held after Ctrl+K');
+      if (LMCommandCentre.isOpen()) LMCommandCentre.close();
     }
   } catch (e) { fail.push('keyup path: ' + e); }
   app.macroFeed = saved.macroFeed;

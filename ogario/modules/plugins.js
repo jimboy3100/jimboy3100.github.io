@@ -1,4 +1,5 @@
 /* Legend Mod plugins, inside the User Scripts panel (its 5 slots: a URL or pasted code each).
+ * The Command Centre opens it too.
  *
  * A user script can start with a header that makes it a plugin:
  *
@@ -862,8 +863,8 @@
         return true;
     }
 
-    /* opens the User Scripts panel (LMLab.open: 'experiments' shows the plugins view scrolled to
-     * the experiments) */
+    /* opens the User Scripts panel (from the Command Centre, LMLab.open: 'experiments' shows the
+     * plugins view scrolled to the experiments) */
     function open(v) {
         var $ = jq();
         /* the list of slots unless a view is asked for */

@@ -70,5 +70,23 @@
     "id": "Semua eksperimen sudah dimatikan.",
     "ja": "実験的な機能をすべてオフにしました。",
     "it": "Tutti gli esperimenti sono disattivati."
+  },
+  "pkg.lb2.ccPlugins": {
+    "en": "User Scripts (plugins, catalogue, experiments)",
+    "el": "Scripts χρήστη (plugins, κατάλογος, πειράματα)",
+    "es": "Scripts de usuario (plugins, catálogo, experimentos)",
+    "bg": "Потребителски скриптове (плъгини, каталог, експерименти)",
+    "fr": "Scripts utilisateur (plugins, catalogue, expériences)",
+    "ar": "سكربتات المستخدم (إضافات، كتالوج، تجارب)",
+    "zh": "使用者腳本（擴充功能、目錄、實驗性功能）",
+    "ru": "Пользовательские скрипты (плагины, каталог, эксперименты)",
+    "de": "Benutzerskripte (Plugins, Katalog, Experimente)",
+    "tr": "Kullanıcı scriptleri (eklentiler, katalog, deneyler)",
+    "pl": "Skrypty użytkownika (wtyczki, katalog, eksperymenty)",
+    "nl": "Gebruikersscripts (plug-ins, catalogus, experimenten)",
+    "pt": "Scripts (plugins, catálogo, experimentos)",
+    "id": "Script (plugin, katalog, eksperimen)",
+    "ja": "スクリプト（プラグイン、カタログ、実験的な機能）",
+    "it": "Script (plugin, catalogo, esperimenti)"
   }
 }

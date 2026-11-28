@@ -123,6 +123,11 @@
       "category": "community"
     },
     {
+      "term": "Command Centre",
+      "definition": "A fuzzy-search palette activated with Ctrl+K. Search and activate any setting, hotkey, theme option, or window in Legend Mod. Supports multi-language queries.",
+      "category": "el-specific"
+    },
+    {
       "term": "Theme Workshop",
       "definition": "The window of your own saved themes (Theme tab, button at its top): up to 30 themes with 5 versions each, live preview with auto-revert, Compare and a gallery.",
       "category": "el-specific"

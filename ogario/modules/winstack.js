@@ -5,11 +5,11 @@
  * While two or more of these windows are open, their z-index follows the order they were opened or
  * touched in: the last one gets the highest value among the open ones, each older one stays at most
  * at its own value and below the newer ones. Nothing goes above 999992, so the full-screen editors
- * (999993: HUD editor, Discover), the gamepad window, the toasts and the notification
+ * (999993: Command Centre, HUD editor, Discover), the gamepad window, the toasts and the notification
  * bell stay above as before; with one window open every value is back to its own.
  * Windows: direct children of <body> that are or hold a .lm-modal-container, z-index up to 999992.
  * The menu takes part only when a page of it is opened from outside it (LMWinStack.front from the
- * script API LMPlugins.open). It keeps its own value (the Hotkeys window, colour
+ * script API LMPlugins.open, the Command Centre). It keeps its own value (the Hotkeys window, colour
  * pickers and tooltips stay above it): the older windows go just under it until it closes or
  * another window is opened or touched, or Esc is pressed in the menu, then everything is as usual
  * again. Opened from the menu's own tabs, Esc or menu button, the menu stays under the windows.
@@ -184,11 +184,11 @@
         };
         D.addEventListener('pointerdown', touched, true);
         D.addEventListener('focusin', touched, true);
-        /* Esc while a menu page is in front of windows (opened over them from
+        /* Esc while a menu page is in front of windows (opened over them from the Command Centre or
          * a hotkey): the windows come back in front, instead of one of them closing unseen under the
          * menu (their own Esc handlers on window are added when they open, after this one). Only
          * for a key in the menu or on the page: not while typing in a field (a search box clears),
-         * nor with the Hotkeys window or anything above the windows open (HUD
+         * nor with the Hotkeys window or anything above the windows open (Command Centre, HUD
          * editor, gamepad window), whose Esc is their own. */
         W.addEventListener('keydown', function (e) {
             if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;

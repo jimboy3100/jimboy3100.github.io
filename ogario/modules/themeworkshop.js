@@ -3,8 +3,8 @@
  * live preview (Keep / Revert, back by itself after 15 s), comparison of any two themes and a gallery
  * of themes shipped in the repo (ogario/themes/catalogue.json). No import / export tab of its own
  * (it confused players next to Settings > Export / Import, which also carries the theme);
- * importText stays for the tests. Opened from its button in the Theme tab (no hotkey).
- * Nothing runs until the window is opened.
+ * importText stays for the tests. Opened from its button in the Theme tab (no hotkey) or the
+ * Command Centre. Nothing runs until the window is opened.
  *
  * A theme package is data only:
  *   { format: "lm-theme", version: 1, name, author, description, created,

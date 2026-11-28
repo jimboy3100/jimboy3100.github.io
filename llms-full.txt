@@ -31,6 +31,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 | Y | Quick response (send preset message) |
 | Escape | Open menu / enter free spectate |
 | Tab | Toggle leaderboard / team panel |
+| Ctrl+K | Open Command Centre (fuzzy search palette) |
 | J | Autoplay |
 | Z | Reset zoom (hold) |
 | + | Quit game (respawn) |
@@ -139,7 +140,18 @@ The Theme tab starts with the Theme workshop button. The window is the one place
 - **Gallery**: the built-in presets (8 game presets, 3 menu presets) and themes shipped with Legend Mod, to preview, apply or install
 - **Validation**: All values checked against LM_THEME_DEFAULTS schema; URLs must be HTTPS
 
-### 5. Multiboxing
+### 5. Command Centre
+A fuzzy-search palette (Ctrl+K) for every hotkey command, gameplay setting, theme option and menu window in Legend Mod. Features:
+- Multi-language search (normalised, accent-insensitive, works with Greek tonos)
+- Scoring: exact match (1000), prefix (900), word-start (750), substring (500), multi-word (400-500), fuzzy letter-order (1-349)
+- **Favourites**: Star up to 30 items for quick access
+- **Recent items**: Last 12 accessed items shown when no query
+- **Quick bar**: Optional in-game floating toolbar of favourite commands, automatically placed to avoid HUD overlap
+- **Item types**: hk (hotkey commands), opt (options/checkboxes), set (settings/sliders), sec (sections), tab (menu tabs), win (windows)
+- **Actions**: Toggle switches, run hotkey commands (brief press for hold-actions), open menu sections, navigate tabs
+Activated by: Ctrl+K, assignable hotkey, or its button under User Scripts in the Tools tab
+
+### 6. Multiboxing
 Control up to 4 game connections simultaneously. Features:
 - **Control ring**: a ring inside the cell edges of the player you control (no settings)
 - **Middle camera view**: Frame both players on screen, with a "when close" option
@@ -150,7 +162,7 @@ Control up to 4 game connections simultaneously. Features:
 - **Multibox shadow**: Visual indicator on inactive player's cells
 - **Bot controls**: Bot feed, bot split, bot macro feed, double/pop/16 bot split hotkeys
 
-### 6. Replay System
+### 7. Replay System
 Record and replay game sessions. Features:
 - **Packet recording**: Captures all server packets for faithful replay
 - **Replay Studio**: Full playback with timeline, automatic bookmarks at key events, variable speed (0.25x-4x), pause, packet-by-packet stepping, forward/backward seeking, timeline scrubbing
@@ -160,14 +172,14 @@ Record and replay game sessions. Features:
 - **Match history**: Last 50 lives stored in localStorage with mass, time alive, killer, server and mode, in the Replays window (every game is recorded)
 - **Personal bests**: Best mass, longest life and game count tracked per browser (Game Over card; best mass and longest life also on the Replays window's Dashboard)
 
-### 7. Performance and Rendering
+### 8. Performance and Rendering
 - **WebGL2 acceleration**: Enabled by default with automatic Canvas2D fallback when unsupported or visually ambiguous
 - **High DPI rendering**: Optional crisp rendering on high-density screens
 - **FPS cap**: Limit frames per second (0-240 in steps of 10) to reduce heat/battery
 - **Antialiasing**: WebGL MSAA toggle
 - **Unlocked FPS**: Remove frame rate limits
 
-### 8. Animation and Visual Effects
+### 9. Animation and Visual Effects
 - **Animation speed**: Configurable animation delay slider (0-120)
 - **Jelly physics**: Wobbly cell deformation
 - **Animated rainbow colour**: Cycling colour effect on cells
@@ -178,7 +190,7 @@ Record and replay game sessions. Features:
 - **Mass-weighted camera**: Camera target at mass-weighted centre of own cells (Delta-style)
 - **Zoom speed and smoothness**: Configurable zoom speed and glide rate
 
-### 9. Chat System
+### 10. Chat System
 In-game text chat with rich features:
 - **Image sharing**: Paste and display images in chat
 - **Video sharing**: Embed videos in chat messages
@@ -212,7 +224,7 @@ Settings > Sounds: each sound's switch, file and volume, all multiplied by the m
 
 Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one), x16Sound, non16Sound, audioDucking (off by default: a chat, command or other alert sound lowers the video skins for a moment, 0.3 volume, at most 10 s).
 
-### 11. Minimap Features
+### 12. Minimap Features
 - **Rotating minimap**: Rotates to match camera orientation
 - **Grid overlay**: Optional grid on the minimap
 - **Guides**: Lines showing cardinal directions and cell position
@@ -225,7 +237,7 @@ Sound switches: chatSounds, virusSound (a virus is shot, or you pop or eat one),
 - **One-coloured teammates**: All teammates shown in same colour on minimap
 - **Customizable theming**: Sections colour, sector colour, guides colour, nick colour/stroke, cell colours, death location colour, font, sizes
 
-### 12. HUD Helpers
+### 13. HUD Helpers
 - **Split range circles**: Rings showing split distance around enemies (single, double, triple, and quad split)
 - **Split prediction**: Cursor tracking's lines are dimmed on own cells that cannot split (agar.io)
 - **Merge sound**: Audio cue when cells can merge
@@ -247,9 +259,9 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Snapping**: Snap to grid (8/16/32px options)
 - **Lock/unlock**: Lock layout to prevent accidental moves
 - **Responsive positioning**: Positions relative to nearest screen edge
-- Opens via hotkey (no default key)
+- Opens via hotkey (no default key) or Command Centre
 
-### 14. Leaderboard Features
+### 15. Leaderboard Features
 - **Configurable limit**: Show top 5-20 entries
 - **Top 5 skins**: Display skins of leaderboard leaders
 - **Centred leaderboard**: Position leaderboard at centre-right
@@ -274,7 +286,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Line split**: Straight-line rapid split (2-4 splits per press; 3 = x8, 4 = x16) with a configurable aim lock time; the splits are as far apart as the split macros'
 - **Guide**: Visual guide line showing the line split direction while the aim is locked (always on)
 
-### 18. Privacy and Streamer Mode
+### 19. Privacy and Streamer Mode
 - **Streamer preset**: One-click preset that hides country, chat, chat images/videos, dev console
 - **Stream mode**: Blurs nick, clan tag, and skin URL fields in menu
 - **Hide skin URL**: Remove the skin URL from the settings display
@@ -287,15 +299,15 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Colour-blind safe theme preset**: Okabe-Ito palette with opaque HUD, bigger minimap marks
 - **Clean HUD preset**: Strips non-essential HUD elements
 
-### 20. Practice Arena
+### 21. Practice Arena
 Offline practice mode against bots (no server needed). Features:
 - Uses MultiOgar protocol to feed packets to the normal renderer
 - Personal bests tracked and ghost of your best run
 - All keyboard/mouse/touch/gamepad controls work unchanged
 - Useful for practising split tricks, virus shots, and movement techniques
-- Opens via hotkey (no default key)
+- Opens via hotkey (no default key) or Command Centre
 
-### 21. Spectator Director
+### 22. Spectator Director
 Automatic camera system for spectating. Features:
 - **Auto-camera**: Follows most interesting action (scoring: big cells near each other, mass changes, splits, #1 player)
 - **Watchlist**: Track players by nick, cycle with hotkeys
@@ -305,14 +317,14 @@ Automatic camera system for spectating. Features:
 - **Leaderboard history**: Positions over time while spectating
 - Opens from its hotkey or the Command Centre; 12 spectator director hotkeys (all configurable, no default keys)
 
-### 23. Radial Menu
+### 24. Radial Menu
 Hold-point-release radial command menu. Features:
 - **Up to 8 slots**: Assign any hotkey command to a slot
 - **Quick access**: Hold radial menu key, point to slot, release to activate
 - **Radial editor**: Customize slot assignments
 - Opens via hotkey (no default key)
 
-### 24. User Scripts / Plugins
+### 25. User Scripts / Plugins
 Extend Legend Mod with custom JavaScript. Features:
 - **5 script slots**: Load by URL or paste code
 - **Plugin header format**: `// ==LMPlugin== ... // ==/LMPlugin==`
@@ -320,20 +332,20 @@ Extend Legend Mod with custom JavaScript. Features:
 - **Settings API**: `LMPlugins.ready({ settings, onSettingsChange, onEnable, onDisable })`
 - **Version compatibility checking**: minVersion/maxVersion enforcement
 
-### 25. Lab (Experimental Features)
+### 26. Lab (Experimental Features)
 Toggle experimental features with on/off switches. Features:
 - Modules register experiments via `LMLab.register({ id, name, description, onEnable, onDisable })`
 - Stored separately from settings in localStorage `lmLab`
 - Reset Lab button to disable all experiments
-- Opens via hotkey (no default key)
+- Opens via hotkey (no default key) or Command Centre
 
-### 26. Discovery / Feature Guide
+### 27. Discovery / Feature Guide
 Feature guide cards that introduce Legend Mod features. Features:
 - **One-tap option switches**: Try features directly from guide cards
-- **Opened from**: the link in the "What's new" toast after an update (never by itself)
+- **Auto-opens**: Shows after updates for returning players
 - **Server compatibility table**: "What works on this server" per server type (agar.io, Expanding Land, private servers)
 
-### 27. Additional Presets
+### 28. Additional Presets
 Beyond Streamer, Legend Mod offers one-click presets:
 - **Competitive**: Enables opponent colours, rings, virus colours, split range, merge rings, mass, frame time/PPS stats
 - **Battery saver**: FPS cap 60, no jelly physics, no video skins, no animated rainbow colour
@@ -485,6 +497,9 @@ Yes. Legend Mod and Expanding Land are free to use with no subscription required
 
 **Does Legend Mod collect personal data?**
 The Chrome extension does NOT collect, store or transmit personal data externally. See the privacy policy at legendmod.ml/privacy.html.
+
+**What is the Command Centre?**
+A fuzzy-search palette (Ctrl+K) that lets you search and activate any setting, hotkey, theme option or window in Legend Mod. It supports multi-language queries and can be pinned as a quick bar during gameplay.
 
 **What is a scan trick?**
 A movement technique: while its key is held the cell heads far out toward the cursor at the exact angle; with the left mouse button held too, the direction snaps to one of 16 (22.5 degrees each). This allows precise cell positioning for split tricks and other advanced gameplay. It has no settings.

@@ -280,7 +280,7 @@
         return out;
     }
 
-    var HIDE_KEYS = ['hudButtons', 'bell', 'follow', 'netGraph'];
+    var HIDE_KEYS = ['hudButtons', 'bell', 'quickBar', 'follow', 'netGraph'];
     var NUM_CFG = {
         transitionMs: [1200, 0, 5000],
         followMs: [250, 0, 1500],
@@ -996,7 +996,7 @@
         '#lm-dir-bc .lmd-bc-main b{color:var(--lm-hud-mc,var(--lmd-mc))}' +
         '#lm-dir-bc .lmd-bc-tick{font-size:.86em;font-weight:400;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
         'body.lm-dir-hide-hudButtons #target-panel-hud,body.lm-dir-hide-bell #lm-notif-bell,' +
-        'body.lm-dir-hide-follow #lm-spec-follow,' +
+        'body.lm-dir-hide-quickBar #lm-cc-bar,body.lm-dir-hide-quickBar #lm-cc-bar-open,body.lm-dir-hide-follow #lm-spec-follow,' +
         'body.lm-dir-hide-netGraph #lm-net-graph{visibility:hidden!important;pointer-events:none!important}';
     function css() {
         /* the shared window look (LMexpress.js) */
@@ -1184,6 +1184,7 @@
             var r3 = mk('div');
             this.check(r3, 'hudButtons', t('hHudButtons'), true);
             this.check(r3, 'bell', t('hBell'), true);
+            this.check(r3, 'quickBar', t('hQuickBar'), true);
             this.check(r3, 'follow', t('hFollow'), true);
             this.check(r3, 'netGraph', t('hNetGraph'), true);
             s.appendChild(r3);
@@ -1229,12 +1230,12 @@
             this.open = false;
             if (st.picking) setPicking(false);
         },
-        /* away from the notification bell; full height on phones */
+        /* away from the notification bell and the Command Centre quick bar; full height on phones */
         place: function () {
             var r = this.root;
             if (!r || !this.open) return;
             var vw = W.innerWidth || 915, vh = W.innerHeight || 412;
-            var avoid = visibleRect('#lm-notif-bell');
+            var avoid = visibleRect('#lm-notif-bell, #lm-cc-bar, #lm-cc-bar-open');
             var w = Math.min(460, vw - 16), tops = [8], best = null, i;
             for (i = 0; i < avoid.length; i++) tops.push(Math.ceil(avoid[i].bottom) + 6);
             for (i = 0; i < tops.length; i++) {
@@ -1473,7 +1474,7 @@
     var bc = { el: null, main: null, tick: null, sig: '', placedSig: '', placedAt: 0, hidden: '' };
     var BC_AVOID = '#overlays-hud > *, #leaderboard-hud, #minimap-hud, #chat-box, #messages, #message-box, #top5-hud, #stats-hud, #time-hud, ' +
         '#target-hud, #target-panel-hud, #pause-hud, #quest-hud, #lm-event-banner, #lm-net-graph, #lm-stats, #lm-mc-l, #lm-mc-r, #lm-mc-sm, ' +
-        '#lm-drawer, #lm-sp, #lm-replay-bar, #lm-spec-follow, #lm-notif-bell';
+        '#lm-drawer, #lm-sp, #lm-replay-bar, #lm-spec-follow, #lm-notif-bell, #lm-cc-bar, #lm-cc-bar-open';
     function setHidden(on) {
         var want = '';
         if (on) for (var i = 0; i < HIDE_KEYS.length; i++) if (cfg.hide[HIDE_KEYS[i]]) want += HIDE_KEYS[i] + ' ';

@@ -19143,8 +19143,8 @@ var emoticonicons = {
 }
 
 /* Settings, theme and hotkey labels: the "settings." texts of developers/i18n/src/settings.json
- * (languages/lm-<code>.js). displayText.en is the English set: the fallback of _lmMenuText.
- * textLanguage (below) is the chosen language. */
+ * (languages/lm-<code>.js). displayText.en is the English set: the fallback of _lmMenuText and the
+ * text Command Centre searches in every language. textLanguage (below) is the chosen language. */
 var displayText = { en: window.LMi18n ? window.LMi18n.prefixed('settings.', 'en') : {} };
 var themePresets = {
     legendv2: {
@@ -21551,6 +21551,7 @@ var defaultmapsettings = {
     /* matchHistory, analytics and recordReplays are gone: every game is recorded with its stats (the
      * replay, match history, Dashboard and Heatmaps in the Replays window; only the latest game's
      * replay stays in memory, window._lmRecKeepLatest); saved values are skipped on load */
+    commandCentreBar: false,      /* quick bar with the Command Centre favourites in game (ogario/modules/commandcentre.js) */
     streamMode: false,
     hideSkinUrl: false,
     showQuickMenu: true,
@@ -21848,7 +21849,7 @@ function lmEndPerfMode(s) {
  * "Screenshot mode" is Show/hide HUD. An old command's key goes to the new one when that has no
  * key of its own, else it is free again; the key of a removed command (Hotkey conflicts, a list in
  * the Hotkeys window now; Save the current zoom as zoom level 1-5; Skin collections, part of the
- * player profiles now; the Command Centre, deleted; next / previous profile and Undo profile, deleted
+ * player profiles now; next / previous profile and Undo profile, deleted
  * with the settings profiles; the instant replay; Switch server [public/private], whose private relay never had an address; Show/hide quest, whose box nothing filled; the old Multibox toggle back;
  * Open the Lab; the keys that only opened a window or a panel or switched a rarely changed setting
  * (their window, panel or switch stays); Reconnect to the previous server; the Settings profiles
@@ -21866,7 +21867,7 @@ function lmRenameOldHotkeys(map) {
     for (var k in map) {
         if (!own(k)) continue;
         var v = String(map[k]), to = '', z;
-        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode|showQuest|multiboxback)$/.test(v) || gone.test(v)) { delete map[k]; changed = true; continue; }
+        if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode|showQuest|multiboxback)$/.test(v) || gone.test(v)) { delete map[k]; changed = true; continue; }
         /* camera lock (removed) */
         if (v === 'hk-cameraLock') { delete map[k]; changed = true; continue; }
         /* removed: the custom macros */
@@ -21962,6 +21963,9 @@ var LM_EXPORT_KEYS = [
      * the import's reload); an older export still brings its skins in, a new one has none */
     { key: 'lmSkinCollections', type: 'o', importOnly: true },
     { key: 'lmSmallTools', type: 'o' },
+    /* only: just these fields of the object (the Command Centre's starred commands, also its quick
+     * bar, are configuration; its recently used list is history and stays on the device) */
+    { key: 'lmCommandCentre', type: 'o', only: ['fav'] },
     /* the muted notification categories (the read mark and the list filter stay on the device) */
     { key: 'lmNotificationPrefs', type: 'o', only: ['muted'] },
     /* Settings > Voice (LMexpress/LMexpress.sniff3.js): the chat prefix and the speech language */
@@ -22099,6 +22103,8 @@ displayText[lang] = textLanguage;
  * read the labels. A language change updates this same object (rows built later, hotkey names and
  * tooltips read it anew); the rows already built are renamed by the handlers below. */
 window.textLanguage = textLanguage;
+/* English labels for the Command Centre search (it matches the English text in every language) */
+window._lmEnglishLabels = displayText['en'] || {};
 if (window.LMi18n) window.LMi18n.onChange(function (code) {
     var fresh = _lmBuildLabels(code), k;
     for (k in fresh) if (fresh.hasOwnProperty(k) && !/^comm\d+$/.test(k)) textLanguage[k] = fresh[k];
@@ -22921,9 +22927,9 @@ function thelegendmodproject() {
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
             this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
                 /* the newer in-game parts are added to body, not #overlays-hud: same HUD font and weight
-                 * (bell, mass-loss alert lines, broadcast, practice HUD, radial menu, screenshot chip);
+                 * (bell, quick command bar, mass-loss alert lines, broadcast, practice HUD, radial menu, screenshot chip);
                  * the notification list is a window (menu theme, lmUiKit in LMexpress.js) */
-                '#lm-notif-bell,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
+                '#lm-notif-bell,#lm-cc-bar,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
         },
         setHudScale() {
             /* Issue #8: a value saved on a bigger screen is shown at most at this screen's slider
@@ -26390,7 +26396,7 @@ function thelegendmodproject() {
             return textLanguage[key] || (typeof displayText !== 'undefined' && displayText.en && displayText.en[key]) || key;
         },
         /* head: optional text key for the heading. The box keeps 'section' as its class, which
-         * the probes and the modules use to find it. */
+         * Command Centre, the probes and the modules use to find it. */
         addOptions(options, section, head) {
             if (options) {
                 $('#og-options').append('<div class=\"options-box ' + section + '\"><h5 class=\"menu-main-color\" data-lm-key=\"' + (head || section) + '\">' + this._lmMenuText(head || section) + '</h5></div>');
@@ -26496,7 +26502,7 @@ function thelegendmodproject() {
             });
         },
         /* A setting with a few named values as one dropdown (Mass format, Game stats position). The select has the
-         * setting's id, so the Settings search, the presets and the profiles
+         * setting's id, so the Command Centre, the Settings search, the presets and the profiles
          * find it as they find a slider, and a change goes through setSettings like a switch.
          * choices: [[value, text key], ...]; label: the text key of its title. */
         addChoiceBox(id, name, label, choices) {
@@ -26850,7 +26856,7 @@ function thelegendmodproject() {
                     return s.toLowerCase();
                 };
                 /* the mouse buttons and gamepad are in the Hotkeys window: a match there is listed
-                 * under the box, and a click opens that window at it (LMSmallTools.jump) */
+                 * under the box, and a click opens that window at it (Command Centre reveal, else LMSmallTools.jump) */
                 var hkHint = $('<div id="lm-ss-hk" style="display:none;padding:4px 0 0;font-size:11px;line-height:1.9;"></div>');
                 box.append(hkHint);
                 var hkMatches = function (q) {
@@ -26884,7 +26890,9 @@ function thelegendmodproject() {
                 };
                 hkHint.on('click', '.lm-ss-hk-go', function (e) {
                     e.preventDefault();
+                    var CC = window.LMCommandCentre;
                     var id = this.getAttribute('data-hk-id');
+                    if (CC && typeof CC.reveal === 'function' && CC.reveal(id)) return;
                     var sl = document.getElementById(id + '-slider');
                     if (sl && $(sl).closest('#theme').length) $('.menu-tabs a[href="#theme"]').first().trigger('click');
                     else if (window.LMSmallTools && typeof window.LMSmallTools.jump === 'function') window.LMSmallTools.jump(id);
@@ -27072,7 +27080,7 @@ function thelegendmodproject() {
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre", "commandCentreBar"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "massLossAlert", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Line split section; its key is set in Hotkeys ("Line split"). */
@@ -27093,7 +27101,7 @@ function thelegendmodproject() {
             this.addSliderBox(".accessibilityGroup", "a11yTextScale", 1, 1.6, 0.05);
             /* HUD text size is in Theme > HUD, next to the HUD scale (setThemeMenu) */
             this.addOptions([], "macroGroup");
-            /* Configuration: keeps the 'profiles' class (the probes find the section by it) */
+            /* Configuration: keeps the 'profiles' class (Command Centre section id) */
             this.addOptions([], "profiles", "configGroup");
             if (!this.protocolMode) {
                 this.addOptions(["blockPopups"], "extrasGroup");
@@ -85026,8 +85034,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
         }
     }
-    /* A window that keeps keyup events from reaching the document (dialogs with text boxes,
-     * editor windows) left a key the game had taken held: Ctrl stayed
+    /* A window that keeps keyup events from reaching the document (the Command Centre opened
+     * with Ctrl+K, dialogs with text boxes) left a key the game had taken held: Ctrl stayed
      * down for the hotkeys, and a hold command (macro feed) kept running until that key was
      * pressed and released again. Such a keyup is released here after the event is done. */
     window.addEventListener('keyup', function (event) {
@@ -85075,7 +85083,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         hotkeysCommand[command].keyDown();
     }
     /* true while a key, mouse button or gamepad button holds this hotkey command: the input
-     * that pressed a hold command owns its release (radial menu presses check it) */
+     * that pressed a hold command owns its release (Command Centre / radial menu presses check it) */
     window._lmHotkeyHeld = function (command) {
         if (!command) return false;
         for (var k in keyBlind) {
@@ -85192,7 +85200,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         if (_lmMouseCmdWas && hotkeysCommand[_lmMouseCmdWas] && hotkeysCommand[_lmMouseCmdWas].keyUp) hotkeysCommand[_lmMouseCmdWas].keyUp();
     };
     /* A button pressed on the game and released over a layer that keeps mouseup from the window
-     * (the radial menu its own press opened, editor windows) was never
+     * (the radial menu its own press opened, the Command Centre, editor windows) was never
      * released: the radial menu stayed open without running its command, macro feed kept going.
      * Like the keyup above, such a mouseup is released here after the event is done. */
     window.addEventListener('mouseup', function (event) {
@@ -88539,8 +88547,16 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading notifications script:', e);
     }
-    /* The Command Centre is removed: what it kept (stars, recently used) is deleted from this browser */
-    try { localStorage.removeItem('lmCommandCentre'); } catch (e) { }
+    /* Command Centre: Ctrl+K search for commands, settings and windows; its quick bar is off by default */
+    try {
+        var commandCentreScript = document.createElement('script');
+        commandCentreScript.type = 'text/javascript';
+        commandCentreScript.src = 'https://www.legendmod.ml/ogario/modules/commandcentre.js?v=' + (window.OgVer || '');
+        commandCentreScript.charset = 'utf-8';
+        document.body.appendChild(commandCentreScript);
+    } catch (e) {
+        console.warn('[LM] Error loading command centre script:', e);
+    }
     /* Spectator director (auto camera, watchlist, camera bookmarks, broadcast HUD, leaderboard history):
      * does nothing until its panel is opened or one of its hotkeys (no default keys) is used */
     try {
@@ -88626,7 +88642,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
         }
     };
     /* HUD editor: saved HUD layouts (applied only when one is active); the editor itself loads
-     * when it is first opened (Theme > HUD, a hotkey with no default key) */
+     * when it is first opened (Theme > HUD, a hotkey with no default key, the Command Centre) */
     try {
         var hudEditorScript = document.createElement('script');
         hudEditorScript.type = 'text/javascript';

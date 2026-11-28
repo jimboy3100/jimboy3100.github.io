@@ -1,6 +1,6 @@
 /* Legend Mod Lab: experimental features with a switch each, shown in the User Scripts window
  * (plugins.js: next to the plugin that added one, the others under "Experiments"; its hotkey,
- * and the Tools tab button open it).
+ * the Tools tab button and the Command Centre open it).
  *
  * Every experiment is off until the player turns it on. The switches are kept in their own
  * localStorage key 'lmLab' ({ v: 1, on: { id: true } }, checked on read), apart from the

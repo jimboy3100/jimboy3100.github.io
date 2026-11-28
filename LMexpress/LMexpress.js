@@ -5662,6 +5662,9 @@ function initializeLM(modVersion) {
         '<div class="input-box" style="text-align: center; font-size: 12px; margin-top: 4px; padding: 0px 0 0px 0;"><span id="legendotherscripts" class="title" style="">' + _lmxE('pack.expansions') + ': </span>' +
         '</div><div id="LEGENDAds2"></div><div id="LEGENDAds3"></div>' +
         '</div></div>');
+    /* the Command Centre button goes under User Scripts once the Tools tab exists (commandcentre.js
+     * adds it itself when it loads after this) */
+    try { if (window.LMCommandCentre && typeof window.LMCommandCentre.addMenuButton === 'function') window.LMCommandCentre.addMenuButton(); } catch (e) { }
     /* The images and titles of the minimap, leaderboard and teamboard and the screen background image
      * are appearance settings: they are in the Theme tab next to the other settings of the same part
      * (they were a "Manual background" chooser in the Tools tab). Same ids, storage and handlers.
@@ -7882,7 +7885,7 @@ function lmUiKit() {
         '.lm-modal-container{border-radius:var(--lm-radius,6px);box-shadow:0 8px 32px rgba(0,0,0,.5);' +
         'border:1px solid var(--lm-pc2,rgba(255,255,255,.12));border-top:3px solid var(--lm-mc,#01d9cc);box-sizing:border-box}' +
         /* windows keep the menu's text font (most set font-family:inherit; on the others this rule
-         * gave Profiles, Theme Workshop, Custom Macros and Discover the HUD font);
+         * gave Profiles, Theme Workshop, Command Centre, Custom Macros and Discover the HUD font);
          * the dialogs in a .lm-modal-overlay (lm_extended_ui, skin packs) keep the HUD font */
         '.lm-modal-overlay .lm-modal-container{font-family:var(--lm-hud-font,\'Ubuntu\',\'Inter\',sans-serif)}' +
         /* low priority (:where): a window's own rules stay in charge */

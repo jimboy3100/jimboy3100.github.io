@@ -5,7 +5,7 @@
     {
       "id": "controls",
       "name": "Configurable controls and hotkeys",
-      "description": "Fully rebindable keyboard, mouse and gamepad controls. 146 hotkey commands covering gameplay, toggles, zoom levels, chat commands and windows. Default: Space=split, W=eject, E=macro, Q=double-split. Mouse buttons and scroll wheel are configurable. All hotkeys can be rebound or left unassigned.",
+      "description": "Fully rebindable keyboard, mouse and gamepad controls. 146 hotkey commands covering gameplay, toggles, zoom levels, chat commands and windows. Default: Space=split, W=eject, E=macro, Q=double-split, Ctrl+K=Command Centre. Mouse buttons and scroll wheel are configurable. All hotkeys can be rebound or left unassigned.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -54,6 +54,12 @@
       "id": "performance",
       "name": "WebGL rendering",
       "description": "WebGL2 acceleration with Canvas2D fallback. High DPI rendering, anti-aliasing, FPS cap (0-240), Battery saver preset for weak devices.",
+      "url": "https://www.legendmod.ml/features.html"
+    },
+    {
+      "id": "commandcentre",
+      "name": "Command Centre",
+      "description": "Fuzzy-search palette (Ctrl+K) for every setting, hotkey, theme option and window. Multi-language search with accent-insensitive matching. Scoring: exact(1000)/prefix(900)/word-start(750)/substring(500)/fuzzy(1-349). Favourites (up to 30), recent (last 12). Quick bar with in-game floating toolbar. Item types: hk, opt, set, sec, tab, win.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -125,7 +131,7 @@
     {
       "id": "discovery",
       "name": "Discovery / Feature Guide",
-      "description": "17 feature guide cards with one-tap option switches. Opened from the link in the \"What's new\" toast after an update (never by itself). Server compatibility table: 9 server types × 14 capabilities (replays, multibox, merge countdown, spectate, chat, etc.). Shows 'What works on this server' per connection.",
+      "description": "19 feature guide cards with one-tap option switches. Opened from the Command Centre or the link in the \"What's new\" toast after an update (never by itself). Server compatibility table: 9 server types × 14 capabilities (replays, multibox, merge countdown, spectate, chat, etc.). Shows 'What works on this server' per connection.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

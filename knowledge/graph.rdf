@@ -29,6 +29,7 @@
     <schema:featureList>Video skins</schema:featureList>
     <schema:featureList>Themes</schema:featureList>
     <schema:featureList>Configurable controls</schema:featureList>
+    <schema:featureList>Command Centre</schema:featureList>
     <schema:featureList>Multiboxing</schema:featureList>
     <schema:featureList>Replay tools</schema:featureList>
     <schema:featureList>Gamepad support</schema:featureList>
@@ -47,6 +48,7 @@
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-controls"/>
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-skins"/>
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-themes"/>
+    <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-commandcentre"/>
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-multibox"/>
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-replays"/>
     <lm:hasFeature rdf:resource="https://www.legendmod.ml/knowledge/#feature-gamepad"/>
@@ -145,7 +147,7 @@
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Configurable controls and hotkeys</schema:name>
-    <schema:description>Fully rebindable keyboard, mouse and gamepad controls.</schema:description>
+    <schema:description>Fully rebindable keyboard, mouse and gamepad controls with Command Centre search.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-skins">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
@@ -158,6 +160,12 @@
     <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
     <schema:name>Themes and HUD customization</schema:name>
     <schema:description>CSS variable-based themes, 8 presets, Theme Workshop with live preview and Compare.</schema:description>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-commandcentre">
+    <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>
+    <rdf:type rdf:resource="https://www.legendmod.ml/knowledge/vocabulary.ttl#Feature"/>
+    <schema:name>Command Centre</schema:name>
+    <schema:description>Fuzzy-search palette (Ctrl+K) for every setting, hotkey, theme and window.</schema:description>
   </rdf:Description>
   <rdf:Description rdf:about="https://www.legendmod.ml/knowledge/#feature-multibox">
     <rdf:type rdf:resource="https://schema.org/DefinedTerm"/>

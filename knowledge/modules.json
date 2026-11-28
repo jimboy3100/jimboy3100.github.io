@@ -8,6 +8,13 @@
   },
   "modules": [
     {
+      "id": "commandcentre",
+      "file": "ogario/modules/commandcentre.js",
+      "lines": 1069,
+      "description": "Fuzzy-search palette (Ctrl+K) for all settings, hotkeys, theme options and windows. Multi-language search with accent normalisation.",
+      "feature": "Command Centre"
+    },
+    {
       "id": "themebridge",
       "file": "ogario/modules/themebridge.js",
       "lines": null,
@@ -102,7 +109,7 @@
       "id": "discovery",
       "file": "ogario/modules/discovery.js",
       "lines": 613,
-      "description": "Feature guide cards introducing Legend Mod features. One-tap option switches; opened from the \"What's new\" toast link (never by itself).",
+      "description": "Feature guide cards introducing Legend Mod features. One-tap option switches; opened from the Command Centre or the \"What's new\" toast link (never by itself).",
       "feature": "Discovery"
     },
     {
@@ -134,6 +141,6 @@
       "feature": "Extension"
     }
   ],
-  "totalModules": 18,
+  "totalModules": 19,
   "totalHotkeyBindings": "146+"
 }

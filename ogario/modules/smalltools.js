@@ -81,7 +81,7 @@
         'CTRL+L': ['info', 'addressBar'], 'CTRL+D': ['info', 'bookmark'], 'CTRL+F': ['info', 'find'],
         'CTRL+P': ['info', 'print'], 'CTRL+S': ['info', 'save'], 'CTRL+O': ['info', 'openFile'],
         'CTRL+H': ['info', 'history'], 'CTRL+J': ['info', 'downloads'], 'CTRL+U': ['info', 'source'],
-        'CTRL+E': ['info', 'search'], 'CTRL+K': ['info', 'search'],
+        'CTRL+E': ['info', 'search'], 'CTRL+K': ['warn', 'commandCentre'],
         'CTRL+=': ['info', 'zoom'], 'CTRL+-': ['info', 'zoom'], 'CTRL+0': ['info', 'zoomReset'],
         'CTRL+PGUP': ['info', 'switchTabs'], 'CTRL+PGDN': ['info', 'switchTabs'],
         'ALT+LEFT': ['info', 'back'], 'ALT+RIGHT': ['info', 'forward'], 'ALT+HOME': ['info', 'home']
@@ -249,17 +249,15 @@
         for (var k in hk) if (own(hk, k) && k !== 'spec-messageKey' && hk[k] === cmd) return k;
         return '';
     }
-    /* a key, mouse button or gamepad button holding the command (ogario.v4.js, gamepad.js) */
-    function heldElsewhere(id) { try { return typeof W._lmHotkeyHeld === 'function' && !!W._lmHotkeyHeld(id); } catch (e) { return false; } }
-    /* press a hotkey command briefly (hold commands get their release after 250 ms). The input that
-     * holds a hold command owns its release: then this neither presses it again nor releases it */
+    /* press a hotkey command briefly (hold commands get their release, like the Command Centre) */
     function runHotkey(id) {
+        /* the Command Centre's press: never releases a command a key or gamepad button holds */
+        var CC = W.LMCommandCentre;
+        if (CC && typeof CC.tapHotkey === 'function') { CC.tapHotkey(id); return; }
         var hc = W.hotkeysCommand, c = hc && hc[id];
         if (!c || typeof c.keyDown !== 'function') return;
-        var hold = typeof c.keyUp === 'function';
-        if (hold && heldElsewhere(id)) return;
         try { c.keyDown(); } catch (e) { console.warn('[LM tools] ' + id, e); }
-        if (hold) setTimeout(function () { if (!heldElsewhere(id)) { try { c.keyUp(); } catch (e) { } } }, 250);
+        if (typeof c.keyUp === 'function') setTimeout(function () { try { c.keyUp(); } catch (e) { } }, 250);
     }
 
     var styleDone = false;

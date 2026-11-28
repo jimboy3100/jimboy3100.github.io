@@ -42,6 +42,7 @@
         "Video skins",
         "Themes",
         "Configurable controls",
+        "Command Centre",
         "Multiboxing",
         "Replay tools",
         "Gamepad support",
@@ -69,6 +70,9 @@
         },
         {
           "@id": "https://www.legendmod.ml/knowledge/#feature-themes"
+        },
+        {
+          "@id": "https://www.legendmod.ml/knowledge/#feature-commandcentre"
         },
         {
           "@id": "https://www.legendmod.ml/knowledge/#feature-multibox"
@@ -242,7 +246,7 @@
         "lm:Feature"
       ],
       "name": "Configurable controls and hotkeys",
-      "description": "Fully rebindable keyboard, mouse and gamepad controls."
+      "description": "Fully rebindable keyboard, mouse and gamepad controls with Command Centre search."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-skins",
@@ -261,6 +265,15 @@
       ],
       "name": "Themes and HUD customization",
       "description": "CSS variable-based themes, 8 presets, Theme Workshop with live preview and Compare."
+    },
+    {
+      "@id": "https://www.legendmod.ml/knowledge/#feature-commandcentre",
+      "@type": [
+        "DefinedTerm",
+        "lm:Feature"
+      ],
+      "name": "Command Centre",
+      "description": "Fuzzy-search palette (Ctrl+K) for every setting, hotkey, theme and window."
     },
     {
       "@id": "https://www.legendmod.ml/knowledge/#feature-multibox",
