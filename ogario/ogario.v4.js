@@ -64028,10 +64028,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 n = this._lmCellFx(cell, n, teamSet, teamList, chatMap, spFx);
                 if (n < 0) return n;
             }
-            if (merge && cell.isPlayerCell && !cell.isVirus) {
-                n = this._lmCellMerge(cell, n);
-                if (n < 0) return n;
-            }
             var x = cell.x, y = cell.y, nick = cell.targetNick, W = this.GLW.MB_SHADOW;
             /* the body with jelly bulge and eat pulse (as _lmFxCovered), its FB badge and ring
              * inside it, or the reach of its special effect */
@@ -64044,8 +64040,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (this._lmExtW > 0) n = this._lmFxPush(n, x - this._lmExtW, y - this._lmExtH, x + this._lmExtW, y + this._lmExtH, W);
             var s = this.scale || 1, g = 60 / (s * (this.dpr || 1));
             var hw = this.canvasWidth / s / 2, hh = this.canvasHeight / s / 2;
-            var b = this._lmFxBoxes, kinds = this._lmFxKinds, on = false;
-            for (var k = n0; k < n; k += 4) {
+            var b = this._lmFxBoxes, k;
+            /* The merge timer, on the body by the mass: its place is known once the cell pass drew
+             * it (_lmCellMerge), which it does not for a cell off screen (culled), so only while the
+             * body, labels or marks are on screen; else none of the timer is (and it is not drawn),
+             * and asking would keep every frame on Canvas2D (MERGE). */
+            if (merge && cell.isPlayerCell && !cell.isVirus) {
+                for (k = n0; k < n; k += 4) {
+                    if (b[k] < this.camX + hw && b[k + 2] > this.camX - hw && b[k + 1] < this.camY + hh && b[k + 3] > this.camY - hh) {
+                        n = this._lmCellMerge(cell, n);
+                        if (n < 0) return n;
+                        b = this._lmFxBoxes;
+                        break;
+                    }
+                }
+            }
+            var kinds = this._lmFxKinds, on = false;
+            for (k = n0; k < n; k += 4) {
                 b[k] -= g;
                 b[k + 1] -= g;
                 b[k + 2] += g;

@@ -1283,6 +1283,38 @@ reset();
     scene([under, away]);
     r = frame(S1);
     check('glowing cell far off screen: WebGL, no overlay, equal', r.gl && !r.shown && r.d.n === 0, 'gl ' + r.gl + ' shown ' + r.shown + ' ' + r.d.n + ' px');
+    /* far off screen, split, with the merge timer: the cell pass never draws it, so its timer
+     * place is never known; that must not keep every frame on Canvas2D (merge) */
+    {
+        setSettings({ map: { multiBoxShadow: true, mergeTimer: true } });
+        window.ExternalScripts = true; window.legendmod5 = ms;
+        const s1 = makeCell({ x: 900, y: 0, size: 55, targetNick: 'me2', isPlayerCell: true });
+        const s2 = makeCell({ x: 1000, y: 40, size: 50, targetNick: 'me2', isPlayerCell: true });
+        window.playerCellsId = { [s1.id]: { mergeTime: 25, historyMass: [] }, [s2.id]: { mergeTime: 25, historyMass: [] } };
+        LM.playerCells = [s1, s2];
+        scene([under, s1, s2]);
+        r = frame(S1);
+        const r2 = frame(S1);
+        check('glowing split cells far off screen with the merge timer: WebGL, no overlay, equal', r.gl && r2.gl && !r2.shown && r2.d.n === 0,
+            'gl ' + r.gl + '/' + r2.gl + ' (' + why() + ') shown ' + r2.shown + ' ' + r2.d.n + ' px');
+        /* on screen the timer still gets its box: a later cell over the timer only (not the
+         * glow of the body or labels) gives Canvas2D */
+        const o1 = makeCell({ x: -40, y: 0, size: 55, targetNick: 'me2', isPlayerCell: true });
+        const o2 = makeCell({ x: 60, y: 20, size: 50, targetNick: 'me2', isPlayerCell: true });
+        window.playerCellsId = { [o1.id]: { mergeTime: 25, historyMass: [] }, [o2.id]: { mergeTime: 25, historyMass: [] } };
+        LM.playerCells = [o1, o2];
+        scene([under, o1, o2]);
+        frame(S1);
+        r = frame(S1);
+        check('  on screen with the merge timer: WebGL, both on the overlay, equal', r.gl && r.shown && r.d.n === 0 && o1._lmMgF > 0,
+            'gl ' + r.gl + ' (' + why() + ') shown ' + r.shown + ' ' + r.d.n + ' px');
+        /* (the timer box is asked for: an unknown timer place gives merge) */
+        o1._lmMgF = undefined;
+        r = frame(S1);
+        check('  on screen, timer place unknown: Canvas2D, reason merge, equal', !r.gl && why() === 'merge' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+        window.ExternalScripts = false; window.playerCellsId = null; LM.playerCells = [];
+        setSettings({ map: { multiBoxShadow: true } });
+    }
     setSettings();
     scene([under, far, me]);
     r = frame(S1);
