@@ -43247,13 +43247,17 @@ function thelegendmodproject() {
         /* Spawning ends every spectate mode (follow, free spectate, World Spectate) on every
          * protocol. A free spectate flag left on after the spawn was the wrong way round after the
          * next death: Q there started free spectate on the server while the flag went off, and
-         * Watch killer and the leaderboard / click follows judged by the stale flag. */
+         * Watch killer and the leaderboard / click follows judged by the stale flag.
+         * The in-game spectator ends with them (its follow / free camera cannot drive the playing
+         * camera): closed with its socket through the mode, as a toggle does (Play once cleared
+         * only its flag, it ran on unseen and the next toggle did nothing). Full Map stays on. */
         _lmSpawnEndsSpectate() {
             this.isSpectateEnabled = false;
             this.isFreeSpectate = false;
             this._isWorldSpectating = false;
             this._worldSpecPanX = 0;
             this._worldSpecPanY = 0;
+            if (this === window.legendmod && window.lmSpecMode === 'ingame') this._lmSpecSetMode('off');
         },
         sendFreeSpectate() {
             this._lmSpecLb = null;
@@ -43423,11 +43427,11 @@ function thelegendmodproject() {
                 /* Play also resumes the game from the menu: no client-made "[SERVER]" chat line each time */
                 return;
             }
-            /* Spawning ends the in-game and full spectator: close their sockets with the flags. Since
-             * spawn flushes keep the multibox sockets only the flags were cleared here, the spectator
-             * stayed open unseen and the next toggle did nothing (it found a socket, added none). */
-            this._lmSpecSetMode('off');
-            this.fullSpectator = false;
+            /* Full Map keeps running through the spawn (owner: play with or without it): its tiles
+             * stay open, the same sockets, and only add the rest of the map; the camera, the input
+             * and the own cells stay the main connection's. The in-game spectator ends when the
+             * player is in the world (_lmSpawnEndsSpectate), not here: a spawn the server ignores
+             * or that is never sent (no handshake, no socket, captcha) tears nothing down. */
 
             // ===== Garix join: [0x00][tabID LE16][nick UTF-8 null-terminated] =====
             if (this.serverType === 'garix') {

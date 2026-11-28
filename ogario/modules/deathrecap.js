@@ -258,7 +258,8 @@
         var best = null, bestSize = 0, cells = lm.cells;
         for (i = 0; cells && i < cells.length; i++) {
             var c = cells[i];
-            if (!c || c.isFood || c.isVirus || c.isEjected || c.isPlayerCell || c.isPlayerCellMulti) continue;
+            /* a Full Map tile's copy hidden behind its twin (my own cell seen by a tile) is no threat */
+            if (!c || c.isFood || c.isVirus || c.isEjected || c.isPlayerCell || c.isPlayerCellMulti || c._lmMbPosDup || c.invisible) continue;
             var sz = c.size;
             if (!(sz > bestSize) || sz < 40 || sz < minOwn * 1.1) continue;
             for (j = 0; j < n; j++) {

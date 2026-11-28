@@ -9,6 +9,10 @@
 // again (a ClearAll flush keeping the other connections' cells is tested in fullmapfood.js).
 // Ghost cells (opcode 69): hidden only by the player's own cells (same server name, not another
 // player's, not an unverified spectator's) or, without them, inside verified coverage.
+// Playing with Full Map on, with the real flushCellsData / flushSpecsData: a ClearAll on the same
+// socket (18 / 20: flushCellsData(false)) and the respawn flush (true) keep every tile open and its
+// observations (cells, viruses, the objects themselves), the main player's cells go; the
+// connection's own flush (server change, lost socket: no argument) closes every tile with its cells.
 // Usage: node developers/tests/fullmaplifecycle.js [ogario.v4.js]
 'use strict';
 const fs = require('fs');
@@ -410,6 +414,64 @@ now = load(); G = groups();
     check('ghost list within its max age outside every view: drawn', drawn([gh(-2000, 1000, 5000)], [], () => { mainView(); LM.ghostCellsTime = Date.now() - 2500; }) === 1);
     check('ghost: the cell of a stalled spectator (no world update for 5 s) does not hide it', drawn(top(), [cell(2100, 1050, 700, { spectator: 3, _lmSrvName: 'Top' })], () => {
         g.window.spects = [{ number: 3, _lmFeedOk: () => true, isSocketOpen: () => true, _lmWorldStamp: () => Date.now() - 5000 }]; g.lmMbFrameHide(); }) === 1);
+}
+
+/* ---------- playing with Full Map: the main socket's flushes ---------- */
+{
+    const flushBody = cut('        flushCellsData(preserveMapGeometry) {', '        /* Spectator toggles', 'flushCellsData').trim().replace(/,$/, '');
+    const specBody = cut('        flushSpecsData() {', '        /* A map border is four finite numbers', 'flushSpecsData').trim().replace(/,$/, '');
+    const f = { window: {}, Number, Math, Object, Array, Date, console };
+    f.window.window = f.window;
+    vm.createContext(f);
+    vm.runInContext(helpers + '\nfunction lmSetMbUnit(u) { window.multiboxPlayerEnabled = +u || null; }\nfunction lmTimeAlive() {}\n' +
+        'function lmFoodRebuild() { window.rebuilt = (window.rebuilt || 0) + 1; }\nfunction lmObsResetAll() { window.obsReset = (window.obsReset || 0) + 1; }\n' +
+        'var spects = window.spects = [];\n' +
+        'var LM = window.legendmod = { isLegendWorld: false, connectionIntegrity: true, serverType: "agario", play: true, mapOffsetFixed: true,\n' +
+        '  _lmFullBorderNow: function () { return { minX: -7071, minY: -7071, maxX: 7071, maxY: 7071 }; },\n' +
+        '  _lmApplyFullBorder: function () { this.fullBorderApplied = (this.fullBorderApplied || 0) + 1; },\n' +
+        flushBody + ',\n' + specBody + ' };\nvar ogario = LM;', f);
+    const L = f.window.legendmod;
+    /* the player's cells (main socket, spectator 0), 15 tiles each with a cell, a pellet and a virus */
+    function world() {
+        const tiles = [];
+        for (let k = 1; k <= 15; k++) tiles.push({ number: k, tile: k - 1, player: false, closed: false, closeConnection() { this.closed = true; } });
+        f.window.spects = tiles;
+        vm.runInContext('spects = window.spects;', f);
+        Object.assign(L, { cells: [], indexedCells: {}, playerCells: [], playerCellsMulti: [], food: [], viruses: [], playerCellIDs: [1, 2], ghostCells: [], removedCells: [] });
+        const mk = (id, sp, kind) => {
+            const c = { id, spectator: sp, isFood: kind === 'food', isVirus: kind === 'virus', removed: false };
+            if (kind !== 'food') { f.indexedPush(L.cells, c, '_cellsIdx'); L.indexedCells[id] = c; }
+            if (kind === 'food') f.indexedPush(L.food, c, '_foodIdx');
+            if (kind === 'virus') f.indexedPush(L.viruses, c, '_virusIdx');
+            if (kind === 'own') f.indexedPush(L.playerCells, c, '_playerIdx');
+            return c;
+        };
+        const own = [mk(1, 0, 'own'), mk(2, 0, 'own')], mainOther = mk(3, 0, 'cell'), mainVirus = mk(4, 0, 'virus');
+        const obs = [];
+        for (const t of tiles) {
+            const base = t.number * 4294967296;
+            obs.push(mk(base + 10, t.number, 'cell'), mk(base + 11, t.number, 'virus'));
+            mk(base + 12, t.number, 'food');
+        }
+        return { tiles, own, main: [mainOther, mainVirus].concat(own), obs };
+    }
+    for (const arg of [false, true]) {
+        const w = world();
+        L.flushCellsData(arg);
+        const name = arg ? 'respawn flush (true)' : 'same-socket ClearAll (false)';
+        check(name + ': every tile open, none closed, the same objects', f.window.spects.length === 15 && w.tiles.every((t, i) => f.window.spects[i] === t && !t.closed));
+        check(name + ': the tiles\' cells and viruses kept (the same objects, indexed), the main socket\'s gone',
+            w.obs.every((c) => L.cells.includes(c) && L.indexedCells[c.id] === c) && w.main.every((c) => !L.cells.includes(c) && !L.indexedCells[c.id]) &&
+            L.viruses.length === 15 && L.viruses.every((c) => c.spectator > 0), L.cells.length + ' cells, ' + L.viruses.length + ' viruses');
+        check(name + ': no own cell left, no tile cell made an own cell', L.playerCells.length === 0 && L.playerCellIDs.length === 0 && L.playerCellsMulti.length === 0);
+        if (!arg) check(name + ': agar.io full border kept (no new calibration from view rects)', L.mapOffsetFixed === true && L.fullBorderApplied >= 1);
+    }
+    {
+        const w = world();
+        L.flushCellsData();
+        check('connection flush (server change, lost socket): every tile closed, spects empty', w.tiles.every((t) => t.closed) && f.window.spects.length === 0);
+        check('connection flush: no cell of any connection left', L.cells.length === 0 && Object.keys(L.indexedCells).length === 0 && L.viruses.length === 0 && L.food.length === 0);
+    }
 }
 
 console.log(failed ? failed + ' FAILED' : 'all passed');
