@@ -246,7 +246,7 @@
 "site.index.expandingLandHotkeysFor": "<b>Expanding Land:</b> Claim All muncul saat ada yang siap diklaim. <b>Mobile:</b> tombol quick chat opsional, tombol multibox, dan pengaturan getar.",
 "site.index.new": "Baru:",
 "site.index.replayPauseSpeedAnd": "suara opsional untuk 16 bagian dan virus; tombol salin di kartu Game Over. Replay tidak lagi langsung lompat ke akhir saat Start.",
-"site.index.newReplayProgressBar": "<b>Baru:</b> bar progres replay (klik untuk melompat), hotkey untuk memperbesar minimap. <b>Opsi baru</b> (nonaktif secara default): gabungkan nama bot yang berulang di leaderboard, grafik massa di kartu Game Over. Suara virus sekarang berfungsi di semua server.",
+"site.index.newReplayProgressBar": "<b>Baru:</b> bar progres replay (klik untuk melompat), hotkey untuk memperbesar minimap. <b>Opsi baru</b> (nonaktif secara default): gabungkan nama bot yang berulang di leaderboard, notifikasi saat kamu naik peringkat, grafik massa di kartu Game Over. Suara virus sekarang berfungsi di semua server.",
 "site.index.newUpDownIn": "<b>Baru:</b> Atas/Bawah di kotak chat memanggil pesan terakhirmu. <b>Opsi baru</b> (nonaktif secara default): kamera di pusat massa, statistik di tengah bawah. Menempel link party di pencarian tidak lagi meninggalkan lapisan gelap.",
 "site.index.newOptionsOffBy2": "<b>Opsi baru</b> (nonaktif secara default): rekor pribadi sepanjang masa dengan lencana Rekor baru! di kartu Game Over dan Stop saat dilepas di mobile.",
 "site.index.newOptionOffBy": "<b>Opsi baru</b> (nonaktif secara default): <b>Riwayat match</b>, 50 game terakhirmu (massa, waktu hidup, siapa yang memakanmu, server, mode) di jendela di bawah menu.",

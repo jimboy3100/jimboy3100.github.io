@@ -147,7 +147,8 @@
         "leaderboardLimit",
         "top5Skins",
         "centredLeaderboard",
-        "hideBots"
+        "hideBots",
+        "passToast"
       ]
     },
     {

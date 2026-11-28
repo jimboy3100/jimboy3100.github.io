@@ -246,7 +246,7 @@
 "site.index.expandingLandHotkeysFor": "<b>Expanding Land:</b> Claim All bir şey hazır olduğunda görünüyor. <b>Mobil:</b> isteğe bağlı hızlı sohbet düğmeleri, multibox düğmesi ve titreşim ayarları.",
 "site.index.new": "Yeni:",
 "site.index.replayPauseSpeedAnd": "16 parça ve virüsler için isteğe bağlı sesler; Oyun Sonu kartında kopyalama düğmesi. Tekrarlar artık başlangıçta sona atlamıyor.",
-"site.index.newReplayProgressBar": "<b>Yeni:</b> tekrar ilerleme çubuğu (sarmak için tıklayın), mini haritayı büyütmek için kısayol tuşu. <b>Yeni seçenekler</b> (varsayılan olarak kapalı): sıralamada tekrarlanan bot adlarını daraltma, Oyun Sonu kartında kütle grafiği. Virüs sesleri artık her sunucuda çalışıyor.",
+"site.index.newReplayProgressBar": "<b>Yeni:</b> tekrar ilerleme çubuğu (sarmak için tıklayın), mini haritayı büyütmek için kısayol tuşu. <b>Yeni seçenekler</b> (varsayılan olarak kapalı): sıralamada tekrarlanan bot adlarını daraltma, sıralamada yükseldiğinizde bildirim, Oyun Sonu kartında kütle grafiği. Virüs sesleri artık her sunucuda çalışıyor.",
 "site.index.newUpDownIn": "<b>Yeni:</b> sohbet kutusunda Yukarı/Aşağı son mesajlarınızı geri getiriyor. <b>Yeni seçenekler</b> (varsayılan olarak kapalı): kütle merkezine odaklanan kamera, alt ortada istatistikler. Aramaya parti bağlantısı yapıştırmak artık karanlık bir katman bırakmıyor.",
 "site.index.newOptionsOffBy2": "<b>Yeni seçenekler</b> (varsayılan olarak kapalı): Oyun Sonu kartında New best! rozetiyle tüm zamanların kişisel rekorları ve mobilde Stop on release.",
 "site.index.newOptionOffBy": "<b>Yeni seçenek</b> (varsayılan olarak kapalı): <b>Maç geçmişi</b>, menünün altındaki bir pencerede son 50 oyununuz (kütle, hayatta kalma süresi, sizi kimin yediği, sunucu, mod).",

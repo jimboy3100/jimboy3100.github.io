@@ -246,7 +246,7 @@
 "site.index.expandingLandHotkeysFor": "<b>Expanding Land:</b> Claim All verschijnt als er iets klaarstaat. <b>Mobiel:</b> optionele snelchatknoppen, multiboxknop en trilinstellingen.",
 "site.index.new": "Nieuw:",
 "site.index.replayPauseSpeedAnd": "optionele geluiden voor 16 stukken en virussen; een kopieerknop op de Game Over-kaart. Replays springen bij Start niet meer naar het einde.",
-"site.index.newReplayProgressBar": "<b>Nieuw:</b> voortgangsbalk voor replays (klik om te spoelen), sneltoets om de minimap te vergroten. <b>Nieuwe opties</b> (standaard uit): herhaalde botnamen in het leaderboard samenvoegen, een massagrafiek op de Game Over-kaart. Virusgeluiden werken nu op elke server.",
+"site.index.newReplayProgressBar": "<b>Nieuw:</b> voortgangsbalk voor replays (klik om te spoelen), sneltoets om de minimap te vergroten. <b>Nieuwe opties</b> (standaard uit): herhaalde botnamen in het leaderboard samenvoegen, een melding als je stijgt in het leaderboard, een massagrafiek op de Game Over-kaart. Virusgeluiden werken nu op elke server.",
 "site.index.newUpDownIn": "<b>Nieuw:</b> Omhoog/Omlaag in het chatvak haalt je laatste berichten terug. <b>Nieuwe opties</b> (standaard uit): camera op het massamiddelpunt, stats onderaan in het midden. Een partylink in de zoekbalk plakken laat geen donkere overlay meer achter.",
 "site.index.newOptionsOffBy2": "<b>Nieuwe opties</b> (standaard uit): persoonlijke records aller tijden met een New best!-badge op de Game Over-kaart en Stop on release op mobiel.",
 "site.index.newOptionOffBy": "<b>Nieuwe optie</b> (standaard uit): <b>Wedstrijdgeschiedenis</b>, je laatste 50 games (massa, overlevingstijd, wie je opat, server, modus) in een venster onder het menu.",

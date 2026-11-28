@@ -3311,6 +3311,24 @@
     "ja": "ランキング：重複した名前（ボット）をまとめる",
     "it": "Classifica: raggruppa i nomi ripetuti (bot)"
   },
+  "settings.lbPassToast": {
+    "en": "Leaderboard: notify when you move up",
+    "el": "Κατάταξη: ειδοποίηση όταν ανεβαίνεις",
+    "es": "Clasificación: avisar cuando subas de puesto",
+    "bg": "Класация: известие, когато се изкачиш",
+    "fr": "Classement : prévenir quand tu montes",
+    "ar": "لوحة الصدارة: إشعار عند تقدمك",
+    "zh": "排行榜：名次上升時通知",
+    "ru": "Топ: уведомлять, когда поднимаешься",
+    "de": "Bestenliste: melden, wenn du aufsteigst",
+    "tr": "Sıralama: yükseldiğinde bildir",
+    "pl": "Ranking: powiadom, gdy awansujesz",
+    "nl": "Ranglijst: melding als je stijgt",
+    "pt": "Ranking: avisar quando você subir",
+    "id": "Leaderboard: beri tahu saat kamu naik",
+    "ja": "ランキング：順位が上がったら通知",
+    "it": "Classifica: avvisa quando sali"
+  },
   "settings.centeredLb": {
     "en": "Centered leaderboard",
     "el": "Κατάταξη στο κέντρο",

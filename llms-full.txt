@@ -254,6 +254,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Top 5 skins**: Display skins of leaderboard leaders
 - **Centred leaderboard**: Position leaderboard at centre-right
 - **Hide bots**: Collapse repeated (bot) names on the leaderboard into one row
+- **Pass toast**: Notification when climbing the leaderboard
 - **Click-to-spectate**: Click a leaderboard entry or a player cell to follow that player in spectate; on a phone a short tap on a player cell does the same
 
 ### 15. Stats and Analytics
@@ -350,7 +351,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, edge arrows, stats display, indicators, online status, sticky cell
 - **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, coloured nicks, hide country, AgarTool team, player ID
 - **Sounds**: Volume per sound and master volume, sound switches and files
-- **Leaderboard**: Limit, top 5 skins, centred, hide bots
+- **Leaderboard**: Limit, top 5 skins, centred, hide bots, pass toast
 - **Multibox**: Amount (2-4), freeze, auto-respawn, switch after death, camera view, shadow
 - **Line Split**: Splits per press, aim lock time
 - **Mouse**: Button bindings (left, right, middle, mouse4, mouse5), invert

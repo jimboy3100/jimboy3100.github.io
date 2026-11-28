@@ -136,15 +136,31 @@ check('load: folded only once (the next load keeps 0.3)', S.videoSkinSoundLevel 
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { reverseTrick: true })));
 app.loadSettings();
 check('reverseTrick is no setting: refused, and a saved "on" is skipped on load', !('reverseTrick' in D) && V('reverseTrick', true) === undefined && !('reverseTrick' in S));
-// ── the virus pop / eat sounds are the virus sound; the notification volume, ducking and the pass toast are gone
-check('removed sound / toast settings are no settings any more', ['virusPopSound', 'virusEatSound', 'lbPassToast'].every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined));
+// ── the virus pop / eat sounds are the virus sound; the leaderboard pass toast is back (off by default)
+check('removed sound settings are no settings any more', ['virusPopSound', 'virusEatSound'].every(k => !(k in D) && !(k in SCH) && V(k, true) === undefined));
+check('the leaderboard pass toast is a setting again, off by default', D.lbPassToast === false && V('lbPassToast', true) === true);
 const lfold = (o) => { ctx._f = o; vm.runInContext('lmFoldLegacySettings(_f)', ctx); return ctx._f; };
 check('fold: pop or eat sound on turns the virus sound on', lfold({ virusSound: false, virusPopSound: true }).virusSound === true && lfold({ virusEatSound: true }).virusSound === true);
 check('fold: both off keep the virus sound as it was, the old keys go', J(lfold({ virusSound: false, virusPopSound: false, virusEatSound: false })) === J({ virusSound: false }) && J(lfold({ virusSound: true, virusPopSound: false })) === J({ virusSound: true }));
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { virusSound: false, virusPopSound: true, audioDucking: true, volNotifications: 0.2, lbPassToast: true })));
 app.loadSettings();
 const reSaved2 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
-check('load: an old save with the pop sound on has the virus sound on, the old keys are not loaded', S.virusSound === true && !('virusPopSound' in reSaved2) && !('virusPopSound' in S) && !('lbPassToast' in S));
+check('load: an old save with the pop sound on has the virus sound on, the old keys are not loaded, the pass toast is read', S.virusSound === true && !('virusPopSound' in reSaved2) && !('virusPopSound' in S) && S.lbPassToast === true);
+S.lbPassToast = D.lbPassToast;
+/* the pass toast itself: the real lines of the leaderboard update, a climb of 1-3 places while playing */
+{
+  const src = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
+  const a = src.indexOf('            /* optional: toast when you move up 1-3 places while playing'), b = src.indexOf('            application.displayLeaderboard(teamText, text);', a);
+  const toasts = [];
+  const pctx = { defaultmapsettings: { lbPassToast: true }, window: { toastr: true }, toastr: { info: m => toasts.push(m) }, application: { escapeHTML: s => s } };
+  vm.createContext(pctx);
+  const step = (pos, play) => { pctx.me.playerPosition = pos; pctx.me.play = play !== false; vm.runInContext('(function () { ' + src.slice(a, b) + ' }).call(me)', pctx); };
+  pctx.me = { leaderboard: [{ nick: 'A' }, { nick: 'B' }, { nick: 'C' }, { nick: 'D' }, { nick: 'E' }, { nick: 'F' }, { nick: 'G' }] };
+  step(6); step(5); step(5); step(1); step(3, false); step(2);
+  check('pass toast: one toast per climb of 1-3 places while playing (not for a jump of 4, not right after not playing)', a > 0 && b > a && toasts.length === 1 && toasts[0] === '\u25B2 #5 (F)');
+  pctx.defaultmapsettings.lbPassToast = false; step(6); step(5);
+  check('pass toast off: nothing', toasts.length === 1);
+}
 check('sound mixer: the notification sounds volume (1) and audio ducking (off) are settings again, a saved value is read', D.volNotifications === 1 && D.audioDucking === false && J(SCH.volNotifications) === J([0, 1, 0.01]) && S.audioDucking === true && S.volNotifications === 0.2);
 vm.runInContext(cut('/* Settings > Sounds: a volume setting is a number', 'function checkIfPlayerIsInView'), ctx);
 S.volMaster = 0.5; S.volChat = 0.4; S.volGameplay = 1;

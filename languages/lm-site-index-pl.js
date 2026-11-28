@@ -246,7 +246,7 @@
 "site.index.expandingLandHotkeysFor": "<b>Expanding Land:</b> Odbierz wszystko pojawia się, gdy coś jest gotowe. <b>Telefony:</b> opcjonalne przyciski szybkiego czatu, przycisk multiboxa i ustawienia wibracji.",
 "site.index.new": "Nowość:",
 "site.index.replayPauseSpeedAnd": "opcjonalne dźwięki dla 16 części i wirusów; przycisk kopiowania na karcie Game Over. Powtórki nie przeskakują już na koniec przy starcie.",
-"site.index.newReplayProgressBar": "<b>Nowość:</b> pasek postępu powtórki (kliknij, aby przewinąć), skrót do powiększenia minimapy. <b>Nowe opcje</b> (domyślnie wyłączone): zwijanie powtarzających się nazw botów w rankingu, wykres masy na karcie Game Over. Dźwięki wirusów działają teraz na każdym serwerze.",
+"site.index.newReplayProgressBar": "<b>Nowość:</b> pasek postępu powtórki (kliknij, aby przewinąć), skrót do powiększenia minimapy. <b>Nowe opcje</b> (domyślnie wyłączone): zwijanie powtarzających się nazw botów w rankingu, powiadomienie, gdy awansujesz w rankingu, wykres masy na karcie Game Over. Dźwięki wirusów działają teraz na każdym serwerze.",
 "site.index.newUpDownIn": "<b>Nowość:</b> strzałki w górę/w dół w polu czatu przywołują ostatnie wiadomości. <b>Nowe opcje</b> (domyślnie wyłączone): kamera w środku masy, statystyki na dole pośrodku. Wklejenie linku party do wyszukiwarki nie zostawia już ciemnej nakładki.",
 "site.index.newOptionsOffBy2": "<b>Nowe opcje</b> (domyślnie wyłączone): rekordy wszech czasów z odznaką Nowy rekord! na karcie Game Over i mobilne Zatrzymanie po puszczeniu.",
 "site.index.newOptionOffBy": "<b>Nowa opcja</b> (domyślnie wyłączona): <b>Historia meczów</b> — twoje ostatnie 50 gier (masa, czas życia, kto cię zjadł, serwer, tryb) w oknie pod menu.",

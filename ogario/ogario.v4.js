@@ -21452,6 +21452,7 @@ var defaultmapsettings = {
     showTargeting: true,
     showLbData: true,
     lbHideBots: false,
+    lbPassToast: false,           /* small toast "#3 (passed nick)" when you climb the leaderboard */
     showTime: false,
     showDevConsole: false,        /* developer console: render time by the FPS, profiler box, packet log (Settings > Stats) */
     //normalLb: true,
@@ -27037,7 +27038,7 @@ function thelegendmodproject() {
             /* The mouse buttons, sticky cells and gamepad support are in the Hotkeys window
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
-            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre"], "hudGroup");
+            this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "lbPassToast", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre"], "hudGroup");
             this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "massLossAlert", "showDevConsole"], "statsGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
             /* Line split section; its key is set in Hotkeys ("Line split"). */
@@ -52329,6 +52330,17 @@ function thelegendmodproject() {
                     text += '<span class=\"hud-main-color\">[' + application.calculateMapSector(w + legendmod.mapOffsetX, u + legendmod.mapOffsetY) + ']</span>', text += '</span>';
                 }
             }
+            /* optional: toast when you move up 1-3 places while playing (bigger jumps are
+             * respawns, multibox swaps or server changes, not passes) */
+            if (defaultmapsettings.lbPassToast) {
+                var _lmLbPos = this.play ? (this.playerPosition | 0) : 0;
+                var _lmLbPrev = this._lmPrevLbPos | 0;
+                if (_lmLbPos > 0 && _lmLbPrev > 0 && _lmLbPos < _lmLbPrev && _lmLbPrev - _lmLbPos <= 3 && window.toastr) {
+                    var _lmLbBelow = this.leaderboard[_lmLbPos];
+                    toastr.info('\u25B2 #' + _lmLbPos + (_lmLbBelow && _lmLbBelow.nick ? ' (' + application.escapeHTML(_lmLbBelow.nick) + ')' : ''));
+                }
+                this._lmPrevLbPos = _lmLbPos;
+            } else this._lmPrevLbPos = 0;
             application.displayLeaderboard(teamText, text);
             if (this._lmSpecLb != null) this._lmSpecLbCheck();
             //application['displayPartyBots']();

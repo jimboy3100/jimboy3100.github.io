@@ -8304,9 +8304,27 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
         var st = btn.querySelector('.lm-claim-st');
         if (!st) { st = document.createElement('span'); st.className = 'lm-claim-st'; btn.appendChild(st); }
         if (st.textContent !== extra) st.textContent = extra;
+        /* optional reminder (bell next to Claim All): one toast each time something becomes ready */
+        var nowReady = extra === ' \u25CF';
+        var remind = false;
+        try { remind = localStorage.getItem('lmClaimRemind') === '1'; } catch (e) { }
+        var playing = !!(window.legendmod && window.legendmod.play);
+        /* first check after load: remember the state only (no toast for what was already ready);
+         * while playing the toast waits for the menu */
+        if (window._lmClaimWasReady === undefined) { window._lmClaimWasReady = nowReady; return; }
+        if (playing && nowReady && !window._lmClaimWasReady) return;
+        if (nowReady && !window._lmClaimWasReady && remind && window.toastr && !force) {
+            toastr.info('<b>[' + _lmUE('claimAll') + ']:</b> ' + _lmUE('rewardReady'));
+        }
+        window._lmClaimWasReady = nowReady;
     };
-    /* the reward reminder bell next to Claim All is gone: its saved on / off is dropped */
-    try { localStorage.removeItem('lmClaimRemind'); } catch (e) { }
+    $(document).off('click.lmClaimRemind').on('click.lmClaimRemind', '#lm-claim-remind', function (e) {
+        e.preventDefault();
+        var on = false;
+        try { on = localStorage.getItem('lmClaimRemind') !== '1'; localStorage.setItem('lmClaimRemind', on ? '1' : '0'); } catch (er) { }
+        this.textContent = on ? '\uD83D\uDD14' : '\uD83D\uDD15';
+        if (window.toastr) toastr.info(on ? _lmUE('remindOn') : _lmUE('remindOff'));
+    });
     setInterval(function () { if (!document.hidden) window._lmUpdateClaimLabel(false); }, 30000);
     setTimeout(function () { window._lmUpdateClaimLabel(false); }, 4000);
     /* Choose Language: the menu buttons' texts follow through their data-i18n attributes (LMi18n.apply);
@@ -10877,6 +10895,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
             <button id="lm-claim-all-btn" class="btn btn-primary btn-shop" style="flex: 1; font-weight: 700; padding: 6px 2px; font-size: 11px; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;" title="${_lmUE('lmx.ui.claimAllTitle')}" data-i18n-title="lmx.ui.claimAllTitle">
                 \uD83C\uDF81 <span data-i18n="claimAll">${_lmUE('claimAll')}</span>
             </button>
+            <button id="lm-claim-remind" class="btn btn-default" style="flex: 0 0 auto; padding: 6px 7px; font-size: 11px; cursor: pointer;" title="${_lmUE('lmx.ui.remindTitle')}" data-i18n-title="lmx.ui.remindTitle">${(function () { try { return localStorage.getItem('lmClaimRemind') === '1' ? '\uD83D\uDD14' : '\uD83D\uDD15'; } catch (e) { return '\uD83D\uDD15'; } })()}</button>
 
         `;
 
@@ -11133,7 +11152,7 @@ window._lmRestoreWhenPurchaseSettled = function (purchaseId, restore) {
 
         var menuBtns = $(
             '#SpecialDealsBtn, ' +
-            '#lm-extended-menu-btns button'
+            '#lm-extended-menu-btns button:not(#lm-claim-remind)' /* the reminder bell is a local setting */
         );
 
         menuBtns
