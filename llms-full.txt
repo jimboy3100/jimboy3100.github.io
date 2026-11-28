@@ -311,7 +311,7 @@ Legend Mod organises its 300+ settings into the following categories accessible 
 - **Performance and Network**: WebGL, High DPI, FPS cap, performance mode (with its automatic choice), anti-aliasing
 - **Minimap**: Show/rotate, grid, guides, ghost cells, one-coloured teammates
 - **HUD**: Names, mass, contours, split ranges, merge rings, relative mass, stats display, indicators, online status, sticky cell
-- **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, word filter, coloured nicks, hide country, AgarTool team, player ID
+- **Chat**: Enable/disable, images, videos, emoticons, translation, mentions, sounds, popups, coloured nicks, hide country, AgarTool team
 - **Sounds**: Volume per sound and master volume, sound switches and files
 - **Leaderboard**: Limit, top 5 skins, centred, hide bots
 - **Multibox**: Amount (2-4), freeze, auto-respawn, switch after death, camera view, shadow
