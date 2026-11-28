@@ -6942,19 +6942,47 @@ function lmSkinsShown() {
  * check. Without LMDyingLight (only the old expansion script) its saved switch gives its one
  * zombie icon. */
 var _lmDl = false, _lmDlApi = null;
+/* Its threat look asks for this (LMDyingLight.needsThreatData, _lmDlThr per frame): compareCells
+ * then judges, in its own pass over the cells, how close the nearest danger to the player you
+ * control is, and keeps only these numbers (read-only for others, window.lmDlThreat()):
+ * t (performance.now of that frame), unit (the multibox unit, 0 = main player), level (0 none,
+ * 1 a bigger player near, 2 one that can split onto one of your cells from where it is), valid
+ * (false while not playing or not asked). Nobody asks while Dying Light is off. */
+var _lmDlThr = false, _lmDlThreat = { t: 0, unit: 0, level: 0, valid: false };
+window.lmDlThreat = function () { return _lmDlThreat; };
 function lmDlSync() {
-    var dl = window.LMDyingLight, on = false, api = null;
+    var dl = window.LMDyingLight, on = false, api = null, thr = false;
     try {
         if (dl && typeof dl.isEnabled === 'function') {
             on = !!dl.isEnabled();
             api = on ? dl : null;
+            thr = !!(api && typeof api.needsThreatData === 'function' && api.needsThreatData());
         } else {
             on = typeof dyinglight1load !== 'undefined' && dyinglight1load === 'yes';
         }
-    } catch (e) { on = false; api = null; }
+    } catch (e) { on = false; api = null; thr = false; }
     _lmDl = on;
     _lmDlApi = api;
+    if (!thr && _lmDlThr) { _lmDlThreat.valid = false; _lmDlThreat.level = 0; }
+    _lmDlThr = thr;
     return on;
+}
+/* The threat level of one other player's cell (size = its mass) for the own cells: 2 when it can
+ * split onto one of them and that cell is inside its split reach (its size + 760, or 2 x size +
+ * 760 for a double split, the split range rings), 1 when it is bigger than one of them and that
+ * cell is within its size + 1520 (two split distances), else 0. The ratios are the opponent colours' (Domination rate). */
+function lmDlThreatLevel(cell, size, own, domRate) {
+    var lvl = 0, cs = cell.size;
+    for (var i = 0; i < own.length; i++) {
+        var c = own[i];
+        if (!c || c.removed || !(c.size > 0)) continue;
+        var r = size / (~~(c.size * c.size * 0.01) || 1);
+        if (r < domRate) continue;
+        var dx = cell.x - c.x, dy = cell.y - c.y, gap = Math.sqrt(dx * dx + dy * dy) - c.size;
+        if ((r >= domRate * 2 && gap <= cs + 760) || (r >= domRate * 4 && gap <= 2 * cs + 760)) return 2;
+        if (gap <= cs + 1520) lvl = 1;
+    }
+    return lvl;
 }
 /* The cells that may get the Dying Light skin: real player bodies only (no food, ejected mass,
  * virus, removed cell or hidden copy of a cell another connection draws), never an own cell of
@@ -57192,7 +57220,10 @@ function thelegendmodproject() {
             var _isPlaying = (window.multiboxPlayerEnabled && getActiveSpect && getActiveSpect(window.multiboxPlayerEnabled)) ?
                 lmUnitCellsInto(window.multiboxPlayerEnabled, this._lmActCells || (this._lmActCells = [])).length > 0 :
                 !!(this.play && this.playerCells && this.playerCells.length > 0);
-            if (_isPlaying && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange || defaultmapsettings.tripleSplitRange)) {
+            /* Dying Light's threat look asked for the threat level (lmDlSync): judged in this pass */
+            var _dlThr = _lmDlThr;
+            if (_dlThr && !_isPlaying) { _lmDlThreat.valid = false; _lmDlThreat.level = 0; }
+            if (_isPlaying && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange || defaultmapsettings.tripleSplitRange || _dlThr)) {
                 var _splitOrRings = defaultmapsettings.splitRange || defaultmapsettings.oppRings;
                 /* Triple split range: separate pooled cache of enemies >= 8x (can triple-split onto you) */
                 var _triple = !!defaultmapsettings.tripleSplitRange, _wTSTE = 0;
@@ -57258,6 +57289,15 @@ function thelegendmodproject() {
                     _cullMaxX = Math.max(_cullMaxX, LM.srvViewMaxX + 800); _cullMaxY = Math.max(_cullMaxY, LM.srvViewMaxY + 800);
                 }
                 var _cells = this.cells, _len = _cells.length;
+                /* the threat: the own cells of the player you control, the smallest one's mass */
+                var _dlOwn = null, _dlMin = Infinity, _dlLvl = 0;
+                if (_dlThr) {
+                    _dlOwn = _activeSpect2 ? this._lmActCells : this.playerCells;
+                    for (var _di = 0; _di < _dlOwn.length; _di++) {
+                        var _dc = _dlOwn[_di];
+                        if (_dc && _dc.size > 0) _dlMin = Math.min(_dlMin, ~~(_dc.size * _dc.size * 0.01));
+                    }
+                }
 
                 for (var t = 0; t < _len; t++) {
                     var cell = _cells[t];
@@ -57271,6 +57311,13 @@ function thelegendmodproject() {
 
                     if (size > _sizeThreshold) {
                         var fixMass = size * _invMass;
+                        /* the threat: another real player's cell (no own cell of any unit, no hidden
+                         * copy, food or ejected mass) bigger than the smallest own cell */
+                        if (_dlThr && _dlLvl < 2 && size >= _dlMin * _domRate && !cell.isPlayerCell && !cell.isPlayerCellMulti &&
+                            !cell._lmMbPosDup && !cell.isFood && !cell.isEjected && !cell.removed) {
+                            var _dl = lmDlThreatLevel(cell, size, _dlOwn, _domRate);
+                            if (_dl > _dlLvl) _dlLvl = _dl;
+                        }
                         /* Inline setCellOppColor — eliminates function call per cell */
                         if (_oppColors) {
                             if (cell.isPlayerCell) {
@@ -57321,6 +57368,12 @@ function thelegendmodproject() {
                     }
                 }
                 _tsteArr.length = _wTSTE;
+                if (_dlThr) {
+                    _lmDlThreat.t = window.performance.now();
+                    _lmDlThreat.unit = _activeSpect2 ? +window.multiboxPlayerEnabled || 0 : 0;
+                    _lmDlThreat.level = _dlLvl;
+                    _lmDlThreat.valid = _dlOwn.length > 0 && _mass > 0;
+                }
                 /* Truncate arrays to actual count (no splice, just length assignment) */
                 if (_splitOrRings) {
                     this.biggerSTEDCellsCache.length = _wBSTED;

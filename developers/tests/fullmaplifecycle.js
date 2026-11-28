@@ -44,7 +44,7 @@ const helpers = cut('    function quickSwapDelete(', '    var ogarCellPool = [];
 const rmBody = (() => { const s = cut('this.removeCell = function (', '        this.moveCell = function', 'removeCell'); return s.slice('this.removeCell = '.length).trim().replace(/;$/, ''); })();
 const ghostBody = cut('        drawGhostCells() {', '        preDrawPellet() {', 'drawGhostCells').trim().replace(/,$/, '');
 
-const g = { window: { legendmod: null, spects: [] }, Number, Math, Map, Set, Float64Array, Int32Array, Array, Object, Date, console };
+const g = { window: { legendmod: null, spects: [] }, Number, Math, Map, Set, Float64Array, Int32Array, Array, Object, Date, console, _lmDlThr: false };
 vm.createContext(g);
 vm.runInContext('var LM = { cells: [], indexedCells: {}, time: 0, removedCells: [], viruses: [], food: [], foodMulti: [], playerCells: [], playerCellsMulti: [], playerCellIDs: [], leaderboard: [] };\n' +
     'window.legendmod = LM;\nfunction lmFoodRemove() {}\n' +

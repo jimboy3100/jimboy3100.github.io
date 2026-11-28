@@ -120,8 +120,8 @@ async function dyingLightLifecycle() {
     check('extras/dyinglight.js has none of the old payloads',
         !/import-settings|pushState|[Ff]ullscreen|core\.disconnect|olddeath|btnmgs|aab\d|createElement\(['"]audio|legenddefaultsettings|discord|webhook|playSound|toastr\["error"\]/i.test(dl) &&
         /* the picture wait and the spawn burst's one later try (dlfx.js); the director (after
-         * LMDyingLight) has its one-shot clock */
-        (dl.slice(0, dl.indexOf('/* The Dying Light director')).match(/setTimeout\(/g) || []).length === 2 && (dl.match(/setTimeout\(/g) || []).length === 3);
+         * LMDyingLight) has its one-shot clock, its threat look one of its own (4 a second) */
+        (dl.slice(0, dl.indexOf('/* The Dying Light director')).match(/setTimeout\(/g) || []).length === 2 && (dl.match(/setTimeout\(/g) || []).length === 4);
     check('old banner files: static markup, no ga() or inline script',
         ['banners/bannerDyingLight', 'banners/bannerStopDyingLight'].every(f => { const t = rd(f); return /data-lm-dl="toggle"/.test(t) && !/ga\(|<script|onclick/.test(t); }));
 

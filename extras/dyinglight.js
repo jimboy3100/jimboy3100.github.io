@@ -43,7 +43,7 @@
     var PARTICLES = Object.freeze(['#a12b30', '#6e1a1d', '#3b0d10']);
     var SPAWN_COLOUR = '#a12b30';
     /* each effect can be suppressed on its own (setEffect); none of them does any work while off */
-    var FX = { variants: true, particles: true, spawn: true, gameOver: true };
+    var FX = { variants: true, particles: true, spawn: true, gameOver: true, threat: true };
     var SCENE_URL = IMG + 'dyinglight/backgrounds/back0-1920.webp';
     /* the WebP copy of dyinglightbabyteamboard.png (manifest: teamboard, 3 KB instead of 73 KB) */
     var MINIMAP_URL = IMG + 'dyinglight/interface/teamboard-323.webp';
@@ -463,7 +463,7 @@
         /* the death particles' colours while on (unless suppressed), else null: the renderer
          * then keeps each victim's colour */
         particlePalette: function () { return state === 'on' && FX.particles ? PARTICLES : null; },
-        /* an effect is on: variants, particles, spawn, gameOver */
+        /* an effect is on: variants, particles, spawn, gameOver, threat (the director's red edge) */
         effect: function (name) { return state === 'on' && FX[name] === true; },
         /* suppress (false) or allow (true) one effect; it applies at once, the theme stays on */
         setEffect: function (name, on) {
@@ -506,7 +506,7 @@
  * (paused, no catch-up after), in a replay, in the menu or spectating, while typing or on the Game
  * Over window, just after a spawn; no scares with the system's reduced motion or a busy page (ticks
  * coming late, or under 30 FPS when the FPS counter is on), which also keeps the scene as it is, and
- * only the slow watcher with Legend's Reduced motion. While on, the
+ * only the slow watcher with Legend's Reduced motion; no figures and no story lines in Stream mode. While on, the
  * menu and HUD show its colours over the player's theme (lmThemeOverride, never saved). */
 (function () {
     'use strict';
@@ -533,9 +533,9 @@
     /* ... times the level of its kind (inside the Gameplay channel and master volume) */
     var LEVEL = { radio: 0.32, nightfall: 0.38, death: 0.42 };
     var PROFILES = {
-        competitive: { cycle: false, events: false, toasts: false },
-        immersive: { cycle: true, events: true, toasts: true, rollMs: 30000, chance: 0.35, gapMs: 150000 },
-        nightmare: { cycle: true, events: true, toasts: true, rollMs: 20000, chance: 0.6, gapMs: 75000 }
+        competitive: { cycle: false, events: false, toasts: false, threat: false },
+        immersive: { cycle: true, events: true, toasts: true, threat: true, rollMs: 30000, chance: 0.35, gapMs: 150000 },
+        nightmare: { cycle: true, events: true, toasts: true, threat: true, rollMs: 20000, chance: 0.6, gapMs: 75000 }
     };
     /* cooldown of each event and its weight in each phase (none = not then); visual = a scare */
     var EVENTS = {
@@ -732,7 +732,8 @@
     }
     function roll(E, p, ph, constrained) {
         if (E - lastEventAt < p.gapMs || quiet(E) || rnd() >= p.chance) return;
-        var scares = setting('dyingLightScares') !== false && !constrained && !noMotion();
+        /* Stream mode (what viewers see stays plain): no figures */
+        var scares = setting('dyingLightScares') !== false && !setting('streamMode') && !constrained && !noMotion();
         /* Legend's Reduced motion (on by default): no sudden figure, only the slow faint watcher */
         var calm = !!setting('reducedMotion');
         var total = 0, k, pick = null;
@@ -767,7 +768,8 @@
     /* a short story line in the Legend toasts (info, its own colours while on) */
     function toast(text) {
         var t = W.toastr;
-        if (!t || typeof t.info !== 'function' || !text) return;
+        /* none in Stream mode (the sound alone) */
+        if (!t || typeof t.info !== 'function' || !text || setting('streamMode')) return;
         var s = String(text).slice(0, 200).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         try { t.info(s, '', { toastClass: 'toast lm-dl-toast', timeOut: 6000 }); } catch (e) { }
     }
@@ -929,6 +931,95 @@
         live = false;
     }
 
+    /* -- the threat look: the edge of the screen turns dark red while a bigger player is near (1)
+     * or one can split onto you (2). compareCells judges it in its own pass over the cells only
+     * while this asks (needsThreatData), and keeps the level of that frame (window.lmDlThreat);
+     * read 4 times a second, shown once it held 250 ms, gone 1.5 s after the danger. Not in
+     * Competitive, a replay or the practice arena; nothing while spectating, in the menu or on the
+     * Game Over window (no valid level then) or from an old frame; reset at once by a switch of
+     * the player you control, a death, a spawn, a server change and a dropped connection.
+     * LMDyingLight.setEffect('threat', false) turns it off. Decorative, under the HUD, no clicks;
+     * the element is made only when first needed. -- */
+    var THR_TICK = 250, THR_RISE = 250, THR_FALL = 1500, THR_STALE = 1000, THR_A = [0, 0.45, 0.85];
+    var tOn = false, tTimer = 0, tEl = null, tLvl = 0, tWant = 0, tSince = 0, tUnit = -1, tSubs = [], tVis = null;
+    function tAsk() {
+        return tOn && DL.effect('threat') && !!profile().threat && !replay();
+    }
+    function tShow(l, fast) {
+        var prev = tLvl;
+        tLvl = l;
+        if (!tEl) {
+            var d = W.document;
+            if (!l || !d || !d.body || typeof d.createElement !== 'function') return;
+            tEl = d.createElement('div');
+            tEl.className = 'lm-dl-threat';
+            tEl.setAttribute('aria-hidden', 'true');
+            /* i18n-ok: CSS */
+            tEl.style.cssText = 'position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;z-index:1;opacity:0;' +
+                'background:radial-gradient(ellipse at center,rgba(161,43,48,0) 55%,rgba(161,43,48,.55) 100%)';
+            d.body.appendChild(tEl);
+        }
+        tEl.style.transition = fast || noMotion() ? 'none' : 'opacity ' + (l > prev ? '.25s' : '.9s') + ' ease-out';
+        tEl.style.opacity = String(THR_A[l] || 0);
+    }
+    function tReset() {
+        tWant = 0;
+        tSince = now();
+        if (tLvl || tEl) tShow(0, true);
+    }
+    function tArm() {
+        clearTimeout(tTimer);
+        tTimer = tOn && !hidden() ? setTimeout(tTick, THR_TICK) : 0;
+    }
+    function tTick() {
+        tTimer = 0;
+        if (!tOn) return;
+        if (hidden()) { tReset(); return; }
+        var t = now(), s = null, want = 0;
+        if (tAsk()) {
+            try { s = typeof W.lmDlThreat === 'function' ? W.lmDlThreat() : null; } catch (e) { s = null; }
+        }
+        if (s && s.valid && t - s.t >= 0 && t - s.t <= THR_STALE) {
+            /* another player to control: its own level from zero */
+            if (s.unit !== tUnit) { tUnit = s.unit; tReset(); }
+            want = s.level >= 2 ? 2 : s.level === 1 ? 1 : 0;
+        }
+        if (want !== tWant) { tWant = want; tSince = t; }
+        if (want !== tLvl && t - tSince >= (want > tLvl ? THR_RISE : THR_FALL)) tShow(want, false);
+        tArm();
+    }
+    function tSub(name) {
+        var ev = W.LMEvents;
+        if (!ev || typeof ev.on !== 'function') return;
+        ev.on(name, tReset);
+        tSubs.push(name);
+    }
+    function tStart() {
+        var d = W.document;
+        if (!(W.performance && typeof W.performance.now === 'function') || !d || typeof d.addEventListener !== 'function') return;
+        tStop();
+        tOn = true;
+        tUnit = -1;
+        tVis = function () { if (hidden()) { clearTimeout(tTimer); tTimer = 0; tReset(); } else if (!tTimer) tArm(); };
+        d.addEventListener('visibilitychange', tVis);
+        tSub('multiboxSwap'); tSub('death'); tSub('spawn'); tSub('serverChange'); tSub('disconnect');
+        tArm();
+    }
+    function tStop() {
+        tOn = false;
+        clearTimeout(tTimer);
+        tTimer = 0;
+        var ev = W.LMEvents;
+        while (tSubs.length) { try { ev.off(tSubs.pop(), tReset); } catch (e) { } }
+        var d = W.document;
+        if (tVis && d && typeof d.removeEventListener === 'function') d.removeEventListener('visibilitychange', tVis);
+        tVis = null;
+        if (tEl && tEl.parentNode) tEl.parentNode.removeChild(tEl);
+        tEl = null;
+        tLvl = tWant = 0;
+        tUnit = -1;
+    }
+
     DL.addPart({
         name: 'director',
         start: function (g) { start(g); },
@@ -942,6 +1033,7 @@
         start: function () { if (typeof W.lmThemeOverride === 'function') W.lmThemeOverride('dyinglight', COLORS); },
         stop: function () { if (typeof W.lmThemeOverride === 'function') W.lmThemeOverride('dyinglight', null); }
     });
+    DL.addPart({ name: 'threat', start: tStart, stop: tStop, threat: tAsk });
     /* read-only view for diagnostics and tests */
     W.LMDyingLightDirector = Object.freeze({
         phaseAt: function (ms) { return phaseAt(+ms || 0).id; },
@@ -949,7 +1041,8 @@
             return {
                 running: on && live, on: on, clock: on ? clock(now()) : 0, phase: phase ? phase.id : null, replay: !!(on && rec()),
                 busy: busy, scene: shown ? shown.url : null, loading: pend ? pend.url : null,
-                sounds: audios.length, timer: !!timer, listeners: subs.length + (onVis ? 1 : 0), ghost: !!ghostEl
+                sounds: audios.length, timer: !!timer, listeners: subs.length + (onVis ? 1 : 0), ghost: !!ghostEl,
+                threat: { on: tOn, level: tLvl, asked: tOn && tAsk(), timer: !!tTimer, listeners: tSubs.length + (tVis ? 1 : 0), shown: !!tEl }
             };
         }
     });

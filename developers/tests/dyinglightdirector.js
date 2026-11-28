@@ -97,7 +97,8 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     let p = L.enable({ confirm: false });
     flushPics(true);
     await p;
-    check('on: the director runs with one timer', L.isEnabled() && info().running && timers.size === 1 && info().listeners === 5);
+    check('on: the director runs with one timer (and the threat look its own)', L.isEnabled() && info().running && timers.size === 2 && info().listeners === 5 &&
+        info().threat.timer && info().threat.listeners === 6);
     check('theme: its colours painted over the player\'s, the player\'s theme unchanged',
         painted.length === 1 && painted[0].menuMainColor === '#a12b30' && painted[0].hudColor === 'rgba(9,12,13,0.55)' && painted[0].chatColor === '#abc' &&
         ctx.defaultSettings.menuMainColor === '#01d9cc' && !Object.prototype.hasOwnProperty.call(ctx.defaultSettings, 'hudColor') === false);
@@ -178,7 +179,7 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     check('hidden: no timer, sounds paused, clock stopped', timers.size === 0 && !info().running && audios.every(a => a.paused));
     T += 25 * 60000;
     document.hidden = false; fireVis();
-    check('back: same clock and phase as when hidden', Math.abs(info().clock - cl) < 1 && info().phase === ph && timers.size === 1);
+    check('back: same clock and phase as when hidden', Math.abs(info().clock - cl) < 1 && info().phase === ph && timers.size === 2);
     advance(1000); flushPics(true); advance(1000);
     check('back: no burst of events', plays.length === nPlays && toasts.length === nToasts);
 
@@ -240,6 +241,80 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     check('day and night off: the fixed scene', L.getBackground() === fixed);
     D.dyingLightCycle = true;
 
+    /* ═══ Stream mode: no figures and no story lines (the sounds stay) ═══ */
+    D.streamMode = true;
+    plays.length = 0; toasts.length = 0;
+    {
+        const n0 = body.kids.length;
+        let added = 0;
+        const bodyAppend = body.appendChild.bind(body);
+        body.appendChild = n => { added++; return bodyAppend(n); };
+        /* each sound comes to its end before the next roll */
+        for (let i = 0; i < 180; i++) { endSounds(); advance(10000); }
+        body.appendChild = bodyAppend;
+        check('Stream mode: no figure or toast in 30 min, the radio still heard', added === 0 && toasts.length === 0 && body.kids.length === n0 && plays.some(p => /^radio-/.test(p.id)));
+    }
+    D.streamMode = false;
+
+    /* ═══ the threat look: compareCells' level, 4 Hz, up after 250 ms, down after 1.5 s ═══ */
+    {
+        let snap = null;
+        ctx.lmDlThreat = () => snap;
+        const thr = () => info().threat;
+        const vig = () => body.kids.find(n => n.className === 'lm-dl-threat');
+        /* a fresh level from the frames before each tick */
+        const run = (ms, level, unit, valid) => { for (let e = 0; e < ms; e += 250) { snap = { t: T, unit: unit || 0, level, valid: valid !== false }; advance(250); } };
+        check('threat: asked while on (Immersive)', thr().asked && L.needsThreatData() === true && !thr().shown);
+        run(250, 2);
+        check('threat: not shown before it held 250 ms', thr().level === 0 && !vig());
+        run(250, 2);
+        const v = vig();
+        check('threat: shown after 250 ms, decorative (no clicks, under the HUD)', thr().level === 2 && v && v.style.opacity === '0.85' &&
+            /pointer-events:none/.test(v.style.cssText) && /z-index:1;/.test(v.style.cssText) && v.attrs['aria-hidden'] === 'true');
+        run(500, 0); run(500, 2);
+        check('threat: a short gap keeps it (hysteresis)', thr().level === 2);
+        run(1250, 0);
+        check('threat: still shown 1.25 s after the danger', thr().level === 2);
+        run(500, 0);
+        check('threat: gone 1.5 s after the danger', thr().level === 0 && v.style.opacity === '0');
+        run(500, 1);
+        check('threat: a bigger player near is level 1', thr().level === 1 && v.style.opacity === '0.45');
+        snap = { t: T - 5000, unit: 0, level: 2, valid: true };
+        advance(2000);
+        check('threat: the level of an old frame is not used', thr().level === 0);
+        run(2000, 2, 0, false);
+        check('threat: not valid (spectating, menu) shows nothing', thr().level === 0);
+        run(500, 2);
+        ctx.LMEvents.emit('death', { scope: 'all' });
+        check('threat: a death resets it at once', thr().level === 0 && v.style.opacity === '0' && v.style.transition === 'none');
+        run(500, 2);
+        run(250, 2, 4);
+        check('threat: another player to control starts from zero', thr().level === 0);
+        run(250, 2, 4);
+        check('...and shows its own level after 250 ms', thr().level === 2);
+        ['spawn', 'serverChange', 'multiboxSwap', 'disconnect'].forEach(n => { run(500, 2, 4); ctx.LMEvents.emit(n, {}); check('threat: reset by ' + n, thr().level === 0); });
+        L.setIntensity('competitive');
+        run(1000, 2, 4);
+        check('threat: not in Competitive (not asked)', thr().level === 0 && L.needsThreatData() === false);
+        L.setIntensity('immersive');
+        L.setEffect('threat', false);
+        run(1000, 2, 4);
+        check('threat: suppressed on its own', thr().level === 0 && L.needsThreatData() === false);
+        L.setEffect('threat', true);
+        ctx._lmEvReplayOn = true;
+        run(1000, 2, 4);
+        check('threat: nothing in a replay', thr().level === 0 && L.needsThreatData() === false);
+        ctx._lmEvReplayOn = false;
+        run(500, 2, 4);
+        document.hidden = true; fireVis();
+        check('threat: a hidden tab stops it (no timer, nothing shown)', thr().level === 0 && !thr().timer);
+        document.hidden = false; fireVis();
+        check('threat: back, its timer again', thr().timer);
+        run(500, 2, 4);
+        check('threat: shown again before the turn-off', thr().level === 2 && !!vig());
+        delete ctx.lmDlThreat;
+    }
+
     /* ═══ teardown ═══ */
     advance(1000);
     const late = pics.slice();
@@ -258,7 +333,7 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
     /* on / off / on: nothing grows */
     for (let i = 0; i < 3; i++) { p = L.enable(); flushPics(true); await p; await L.disable(); }
     p = L.enable(); flushPics(true); await p;
-    check('on again after toggles: one timer, the same listeners', timers.size === 1 && info().listeners === 5 && head.kids.filter(n => n.id === 'lm-dl-director-style').length === 1);
+    check('on again after toggles: one timer (and one of the threat look), the same listeners', timers.size === 2 && info().listeners === 5 && info().threat.listeners === 6 && head.kids.filter(n => n.id === 'lm-dl-director-style').length === 1);
     await L.disable();
     check('off again: nothing left', timers.size === 0 && docCount() === lsBefore && info().listeners === 0);
 

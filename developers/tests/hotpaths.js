@@ -180,7 +180,8 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
 /* ---- opponent colours (LM.compareCells) with a multibox unit selected: "playing" is the selected
  * unit's own cells, not any unit's cells (a dead selected unit compared every cell with mass 0) ---- */
 {
-    const ctx = vm.createContext({ window: {}, Math, Number,
+    /* _lmDlThr: no Dying Light threat look asking (developers/tests/dlthreat.js) */
+    const ctx = vm.createContext({ window: {}, Math, Number, _lmDlThr: false,
         defaultmapsettings: { oppColors: true, dominationRate: 4 / 3, dominatedRate: 3 / 4 },
         defaultSettings: { enemyBSTEDColor: 'BSTED', enemyBSTEColor: 'BSTE', enemyBColor: 'B', enemySColor: 'S', enemySSTEColor: 'SSTE', enemySSTEDColor: 'SSTED' } });
     ctx.window = ctx;
