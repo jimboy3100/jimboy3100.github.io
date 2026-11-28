@@ -16,7 +16,9 @@
  * the grouping is the same in any arrival order (each hidden copy within LM_FOOD_TOL of its drawn
  * copy) and equal to the groups made from scratch; a drawn copy placed again moves its entry; a
  * feed state that changes and changes back between two frames is followed; Rainbow food keeps a
- * pellet's colour when another connection's copy is drawn. Prints the food
+ * pellet's colour when another connection's copy is drawn; an unverified steered unit's pellet
+ * is left to another connection only where it has a copy, whatever the order of two such units;
+ * a tile stalled behind the main socket gives up its pellets until it is fresh. Prints the food
  * observations against the pellets drawn and the cost of the list.
  * node developers/tests/fullmapfood.js */
 'use strict';
@@ -1054,8 +1056,10 @@ reset();
 }
 /* 14. a steered multibox unit not verified yet (lmMbFrameHide marks it _lmMbDrawOnly): its pellets
  *     outside the main server view and every verified spectator's fresh view are drawn once, from a
- *     separate list in the same food pass, not in the reconciled list; once it is verified they are
- *     in the list, once each (before: none of its pellets were drawn) */
+ *     separate list in the same food pass, not in the reconciled list; inside such a view only
+ *     where that connection has a copy of the pellet (one inside the main view that the main
+ *     socket has no copy of was not drawn by anyone); once it is verified they are in the list,
+ *     once each (before: none of its pellets were drawn) */
 reset();
 {
     const R = g.renderer, ids = (l) => (l || []).filter((c) => c.spectator === 3).map((c) => c._lmRawId).sort().join(',');
@@ -1064,9 +1068,10 @@ reset();
     u.player = true;
     u._lmServerViewDisplay = () => null;
     u._lmCoverageOk = () => false;
-    u.updateCells(packet([], [{ id: 1, x: 5000, y: 5000 }, { id: 2, x: 100, y: 100 }, { id: 3, x: 3000, y: 3000 }], []), 0);
+    u.updateCells(packet([], [{ id: 1, x: 5000, y: 5000 }, { id: 2, x: 100, y: 100 }, { id: 3, x: 3000, y: 3000 }, { id: 4, x: 600, y: 600 }], []), 0);
     const v = spect(1);
-    v.updateCells(packet([], [{ id: 9, x: 6000, y: 100 }], []), 0);
+    v.updateCells(packet([], [{ id: 9, x: 6000, y: 100 }, { id: 10, x: 3002, y: 3001 }], []), 0);
+    mainFood(11, 101, 100, hex(0x40a0f0));
     v._lmServerViewDisplay = (o) => { o[0] = 2500; o[1] = 2500; o[2] = 3500; o[3] = 3500; return o; };
     v._lmCoverageOk = () => true;
     v.time = Date.now();
@@ -1074,8 +1079,9 @@ reset();
     const hide = (drawOnly) => vm.runInContext('_lmMbFeed.length = 0; _lmMbFeed[1] = true; _lmMbFeed[3] = ' + !drawOnly + '; _lmMbDrawOnly.length = 0;' + (drawOnly ? ' _lmMbDrawOnly[3] = true;' : '') + ' _lmMbDrawOnlyCover(window.spects, Date.now());', g);
     hide(true);
     R.got = []; R._el = false; R.drawFood();
-    check('unverified steered unit: its pellet outside every view drawn once, from its own list after the food list', R.got.length === 2 && ids(R.got[1][1]) === '1' && ids(R.got[0][1]) === '', R.got.map((x) => ids(x[1])).join(' | '));
-    check('unverified steered unit: its pellets inside the main view or a verified spectator\'s view are not drawn by it', R.got.length === 2 && !R.got[1][1].some((c) => c._lmRawId === 2 || c._lmRawId === 3));
+    check('unverified steered unit: its pellet outside every view drawn once, from its own list after the food list', R.got.length === 2 && ids(R.got[1][1]).split(',').includes('1') && ids(R.got[0][1]) === '', R.got.map((x) => ids(x[1])).join(' | '));
+    check('unverified steered unit: its pellets inside the main view or a verified spectator\'s view that connection has are not drawn by it', R.got.length === 2 && !R.got[1][1].some((c) => c._lmRawId === 2 || c._lmRawId === 3));
+    check('unverified steered unit: its pellet inside the main view that the main socket has no copy of is drawn (was drawn by nobody)', R.got.length === 2 && ids(R.got[1][1]) === '1,4', R.got.length === 2 ? ids(R.got[1][1]) : R.got.length);
     vm.runInContext('_lmMbDrawOnly.length = 0;', g);
     R.got = []; R.drawFood();
     check('no draw-only unit: one food pass only', R.got.length === 1, R.got.length);
@@ -1085,9 +1091,61 @@ reset();
     u._testFeed = true;
     hide(false);
     R.got = []; R.drawFood();
-    check('the unit verified: its 3 pellets drawn once each, from the food list', R.got.length === 1 && ids(R.got[0][1]) === '1,2,3', R.got.map((x) => ids(x[1])).join(' | '));
+    check('the unit verified: its 4 pellets in the food list, 2 and 3 with the copies of the other connections (5 pellets)', R.got.length === 1 && R.got[0][1].length === 5 && ids(R.got[0][1]) === '1,4', R.got.map((x) => ids(x[1]) + ' of ' + x[1].length).join(' | '));
     Object.assign(LM, { srvViewMinX: NaN, srvViewMinY: NaN, srvViewMaxX: NaN, srvViewMaxY: NaN });
     vm.runInContext('_lmMbFeed.length = 0; _lmMbDrawOnly.length = 0; _lmMbDoCov.length = 0;', g);
+}
+/* 14b. two steered units not verified yet, unit 4 listed first, its view (from its unverified
+ *     transform) over the place of unit 3's pellets: unit 3's pellets are drawn in either order
+ *     (they were left to unit 4, which has none there); the main socket has no food (no list) and
+ *     its view holds one of unit 3's pellets it has a copy of (not drawn by unit 3) */
+for (const order of ['unit 4 first', 'unit 3 first']) {
+    reset();
+    const R = g.renderer;
+    const mk = (n, rect) => {
+        const s = spect(n);
+        s._testFeed = false;
+        s.player = true;
+        s._lmServerViewDisplay = (o) => { o[0] = rect[0]; o[1] = rect[1]; o[2] = rect[2]; o[3] = rect[3]; return o; };
+        s._lmCoverageOk = () => false;
+        return s;
+    };
+    const w = order === 'unit 4 first' ? mk(4, [4800, 4800, 5600, 5600]) : null;
+    const u = mk(3, [7000, 7000, 8000, 8000]);
+    const w2 = w || mk(4, [4800, 4800, 5600, 5600]);
+    u.updateCells(packet([], [{ id: 1, x: 5000, y: 5000 }, { id: 2, x: 5100, y: 5000 }, { id: 3, x: 200, y: 200 }], []), 0);
+    w2.updateCells(packet([], [{ id: 5, x: 9000, y: 9000 }], []), 0);
+    mainFood(12, 201, 200, hex(0x40a0f0));
+    Object.assign(LM, { srvViewMinX: 0, srvViewMinY: 0, srvViewMaxX: 1000, srvViewMaxY: 1000 });
+    vm.runInContext('_lmMbFeed.length = 0; _lmMbDrawOnly.length = 0; _lmMbDrawOnly[3] = _lmMbDrawOnly[4] = true; _lmMbDrawOnlyCover(window.spects, Date.now());', g);
+    R.got = []; R._el = false; R.drawFood();
+    const own = (n) => (R.got[1] ? R.got[1][1] : []).filter((c) => c.spectator === n).map((c) => c._lmRawId).sort().join(',');
+    check('two unverified units (' + order + '): each one\'s pellets drawn, none left to the other unit\'s unverified view', R.got.length === 2 && own(3) === '1,2' && own(4) === '5', own(3) + ' / ' + own(4));
+    Object.assign(LM, { srvViewMinX: NaN, srvViewMinY: NaN, srvViewMaxX: NaN, srvViewMaxY: NaN });
+    vm.runInContext('_lmMbFeed.length = 0; _lmMbDrawOnly.length = 0; _lmMbDoCov.length = 0;', g);
+}
+/* 14c. a Full Map tile 500 ms behind the main socket's fresh world updates (stalled): its pellets
+ *     leave the list, so a pellet the player ate (the main copy gone) is not drawn from the tile's
+ *     frozen copy for the whole stall; fresh again, its pellets are back; a busy page (every
+ *     socket late, the main one too) drops nothing */
+reset();
+{
+    const t = spect(2);
+    t.updateCells(packet([], [{ id: 1, x: 3000, y: 3000 }, { id: 2, x: 4000, y: 3000 }], []), 0);
+    const m = mainFood(13, 3001, 3000, hex(0x40a0f0));
+    LM._lmLastWorldUpdate = Date.now();
+    const before = drawList().length;
+    t._lmWorldAt = Date.now() - 500;
+    m.removeCell();
+    const stalled = drawList().length;
+    t._lmWorldAt = Date.now();
+    const back = drawList().length;
+    t._lmWorldAt = Date.now() - 500;
+    LM._lmLastWorldUpdate = Date.now() - 450;
+    const busy = drawList().length;
+    LM._lmLastWorldUpdate = 0;
+    check('tile 500 ms behind the fresh main socket: its pellets not drawn (a pellet the player ate stayed drawn), back once fresh', before === 2 && stalled === 0 && back === 2, before + ' / ' + stalled + ' / ' + back);
+    check('every socket late (busy page): the tile\'s pellets still drawn', busy === 2, busy);
 }
 /* 15. the list built again (lmFoodRebuild) while a connection is not verified, verified again
  *     before the next frame: its pellets are drawn (were left out: its feed state was kept) */

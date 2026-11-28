@@ -478,6 +478,20 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
         many.forEach((p) => put(g, p.x + 1, p.y - 1, 10, 0));
         const rm = res(g, many, 24, 3);
         check('11a 3000 pellets: every observation matched once, residual (1, -1)', g.n === 3000 && rm.length === 3000 && rm.every((r, i) => r[0] === 1 && r[1] === -1 && r[2] === i), g.n + ' / ' + rm.length);
+        /* copies are measured against an entity's first record, not any member: one pellet seen by
+         * the main socket and 5 units, each copy 3 further along, chained into one entity 15 wide,
+         * and two real pellets became one */
+        g = G();
+        for (let s = 0; s <= 5; s++) put(g, 100 + 3 * s, 100, 10, s, null, s ? { foodCalibrated: true } : null, s ? null : { removed: false });
+        let span = 0;
+        for (let i = 0; i < 6; i++) if (g.ent[i] === g.ent[0]) span = Math.max(span, g.x[i] - 100);
+        check('11a copies on 6 connections 3 apart each: an entity at most LM_ANCHOR_COPY wide (was 15 by chaining)', span <= 4, 'span ' + span);
+        g = G();
+        put(g, 100, 100, 10, 0, null, null, { removed: false });
+        put(g, 103, 100, 10, 1, null, { foodCalibrated: true }, null);
+        put(g, 107, 100, 10, 2, null, { foodCalibrated: true }, null);
+        const rb = res(g, [{ x: 104, y: 100, size: 10 }], 24, 6, false);
+        check('11a pellet P (main 100, unit 1 103) and pellet Q (unit 2 107): an observation at 104 between them is ambiguous (was matched through one entity)', rb.length === 0, JSON.stringify(rb));
     }
     /* 11b. lmRobustOffset: a second cluster of nearly the same support is not one offset */
     {

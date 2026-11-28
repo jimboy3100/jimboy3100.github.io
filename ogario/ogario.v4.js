@@ -1714,9 +1714,33 @@ function lmMbOwnUnitCell(cell, rawId) {
  * are always drawn, and so are the other cells of a unit already steered (lmMbFrameHide). A
  * connection that is not there (closed, removed from window.spects while its cells are still
  * listed) does not feed: nothing says where its cells are. A spect.js without _lmFeedOk (an
- * older cached copy) feeds as before. */
+ * older cached copy) feeds as before. A stalled spectator or tile (lmSrcStale) does not feed
+ * either until its updates come again. */
 function lmSrcFeeds(sp) {
-    return !!sp && (typeof sp._lmFeedOk !== 'function' || !!sp._lmFeedOk());
+    return !!sp && (typeof sp._lmFeedOk !== 'function' || !!sp._lmFeedOk()) && !lmSrcStale(sp, Date.now());
+}
+/* A connection whose socket is open but whose last whole world update is older than this is
+ * stalled: its cells stay where they were last seen (a cell eaten or gone since is still listed).
+ * agar.io sends a world update about every 40 ms. */
+var LM_MB_STALL_MS = 1000;
+/* A spectator or Full Map tile (not a played unit) whose last whole world update is this much
+ * older than the main socket's, while the main socket's are fresh (its last one at most this
+ * long ago), is stalled too: its frozen copies drew the player's own cell a second time and kept
+ * a pellet the player ate drawn for the whole stall. Measured against the main socket, so a busy
+ * page that delays every socket at once drops nothing; with the main socket not fresh, the
+ * absolute LM_MB_STALL_MS. Played units keep the absolute rule of the hide step (their own cells
+ * stay drawn and steered). */
+var LM_SRC_STALE_MS = 400;
+function lmSrcMainFresh(now) {
+    var LMs = window.legendmod, mw = LMs ? LMs._lmLastWorldUpdate : 0;
+    return mw > 0 && now - mw <= LM_SRC_STALE_MS;
+}
+function lmSrcStale(sp, now) {
+    if (sp.player === true) return false;
+    var w = typeof sp._lmWorldStamp === 'function' ? sp._lmWorldStamp() : 0;
+    if (!(w > 0)) return false;
+    if (lmSrcMainFresh(now)) return window.legendmod._lmLastWorldUpdate - w > LM_SRC_STALE_MS;
+    return now - w > LM_MB_STALL_MS;
 }
 /* Ghost cells (drawGhostCells): an agar.io ghost list older than this is not drawn; a spectator's
  * server view counts as coverage when its last update came at most LM_GHOST_COV_SLACK ms before
@@ -1769,6 +1793,11 @@ function _lmMbFeeds(c) {
  * _lmMbSticky === _lmMbFrame (set where every hidden copy is shown again, before the search);
  * removeCell() reads it too (the copies hidden behind a cell this frame). */
 var _lmMbFrame = 0;
+/* copies that left their connection's view and play the removal fade: removeCell notes when
+ * (_lmMbGoneT on the copy, and the last one here); while the fade can run (LM_MB_GONE_MS) each
+ * hide step looks whether another connection has the cell (then the fade is not drawn) */
+var _lmMbGoneT = 0;
+var LM_MB_GONE_MS = 250;
 var _lmMbGridTime = -1;
 var _lmMbGridBuilt = false;
 function _lmMbCellRadius(cell) {
@@ -1895,6 +1924,8 @@ function _lmMbBuildGrid() {
         _lmMbTmpPX[count] = p.x;
         _lmMbTmpPY[count] = p.y;
         var sp = _lmMbSpeed(c);
+        /* a copy with no speed yet is matched as moving (_lmMbTwinTol): searches reach that far */
+        if (c._lmVX === undefined && sp < LM_MB_NEW_SPEED) sp = LM_MB_NEW_SPEED;
         if (sp > maxSpeed) maxSpeed = sp;
         if (count >= _lmMbTmpKeys.length) _lmMbTmpKeys = _lmMbGrow(_lmMbTmpKeys, count + 1);
         _lmMbTmpKeys[count] = Math.floor(p.x / LM_MB_BUCKET) * 65536 + Math.floor(p.y / LM_MB_BUCKET);
@@ -1921,25 +1952,38 @@ var LM_MB_SPEED_MS = 40;
  * second eat animation). */
 var LM_MB_EAT_HOLD_MS = 200;
 /* how far apart two connections' packets of one cell may be for the size test to use the size
- * before the newer packet (a split seen by one connection first; 99 % of packet ages within
+ * before a packet (a split or an eat seen by one connection first; 99 % of packet ages within
  * 119 ms in the live capture) */
 var LM_MB_SIZE_LAG_MS = 120;
-/* A connection whose socket is open but whose last whole world update is older than this is
- * stalled: its cells stay where they were last seen (a cell eaten or gone since is still listed).
- * agar.io sends a world update about every 40 ms. */
-var LM_MB_STALL_MS = 1000;
+/* two sizes of one cell (within 10 %, at least 4) */
+function _lmMbSizeNear(a, b) {
+    return Number.isFinite(a) && Math.abs(a - b) <= Math.max(4, 0.1 * Math.max(a, b));
+}
 function _lmMbStalled(sp, now) {
     var w = typeof sp._lmWorldStamp === 'function' ? sp._lmWorldStamp() : 0;
     return w > 0 && now - w > LM_MB_STALL_MS;
 }
+/* the speed taken for a copy with one packet so far, when the other copy has none either
+ * (units per ms; a small cell moves about 0.4) */
+var LM_MB_NEW_SPEED = 0.3;
 function _lmMbTwinTol(radius, a, b) {
-    var speed = (a ? _lmMbSpeed(a) : 0) + (b ? _lmMbSpeed(b) : 0);
-    return Math.max(8, 0.12 * radius) + Math.min(60, speed * LM_MB_SPEED_MS);
+    var sa = a ? _lmMbSpeed(a) : 0, sb = b ? _lmMbSpeed(b) : 0;
+    /* a copy with one packet so far has no speed yet (lmObsVelocity): it may move as fast as the
+     * other copy, and at least LM_MB_NEW_SPEED (a cell coming into a second connection's view
+     * was 8 or 20 from the matching place and drawn twice, or the copy that left faded over it) */
+    var na = !!a && a._lmVX === undefined, nb = !!b && b._lmVX === undefined;
+    if (na) sa = Math.max(sa, sb, LM_MB_NEW_SPEED);
+    if (nb) sb = Math.max(sb, na ? 0 : sa, LM_MB_NEW_SPEED);
+    return Math.max(8, 0.12 * radius) + Math.min(60, (sa + sb) * LM_MB_SPEED_MS);
 }
 /* the largest tolerance of a cell of this radius and speed against any indexed cell (a new
  * match; the kept link of last frame is tested without a search) */
 function _lmMbTwinReach(radius, speed) {
     return Math.max(8, 0.12 * radius) + Math.min(60, ((speed || 0) + _lmMbMaxSpeed) * LM_MB_SPEED_MS);
+}
+/* the speed a search from this copy reaches with: a copy with no speed yet may take the other's */
+function _lmMbReachSpeed(c) {
+    return c._lmVX === undefined ? _lmMbMaxSpeed : _lmMbSpeed(c);
 }
 /* Is copy a (connection ca) drawn rather than copy b (connection cb)? Own cells are decided by
  * the caller. Main connection first, then the copy drawn last frame (hysteresis), then the
@@ -1952,8 +1996,10 @@ function _lmMbOutranks(a, ca, b, cb) {
 }
 /* Squared distance between two copies of one cell, or -1 when they are not copies of one
  * cell. With anyOrder the drawing order (which copy is drawn, hidden copies) is not checked:
- * used for the mutual nearest test. keep: the copy it hid behind last frame (1.5 times the
- * tolerance, so a copy does not flicker in and out at the edge of it). */
+ * used for the mutual nearest test. anyOrder 2: is other a verified connection's copy of cell
+ * (_lmMbVerifiedNear: cell may be a draw-only cell or a copy that just left; 1.5 times the
+ * tolerance). keep: the copy it hid behind last frame (1.5 times the tolerance, so a copy does
+ * not flicker in and out at the edge of it). */
 var _lmMbPosB = { x: 0, y: 0 };
 function _lmMbTwinDist2(cell, other, radius, anyOrder, keep) {
     /* _cellsIdx -1: dropped from LM.cells without removeCell() (spawn gate, a dead main player
@@ -1971,10 +2017,14 @@ function _lmMbTwinDist2(cell, other, radius, anyOrder, keep) {
      * for another connection's copy only when both server names are known and the same (at a
      * wrong place it hid unnamed cells of other players). */
     var feedsO = _lmMbFeeds(other), feedsC = _lmMbFeeds(cell);
-    if ((!feedsO && !otherOwn) || (!feedsC && !cellOwn)) return -1;
-    if (!feedsO || !feedsC) {
-        var nu = _lmMbSrvName(cell);
-        if (!nu || nu !== _lmMbSrvName(other)) return -1;
+    if (anyOrder === 2) {
+        if (!feedsO) return -1;
+    } else {
+        if ((!feedsO && !otherOwn) || (!feedsC && !cellOwn)) return -1;
+        if (!feedsO || !feedsC) {
+            var nu = _lmMbSrvName(cell);
+            if (!nu || nu !== _lmMbSrvName(other)) return -1;
+        }
     }
     if (otherOwn && cellOwn) return -1; /* own cells of two connections: two players */
     if (!anyOrder && !otherOwn && !_lmMbOutranks(other, theirs, cell, mine)) return -1; /* this copy is the one drawn */
@@ -1988,19 +2038,21 @@ function _lmMbTwinDist2(cell, other, radius, anyOrder, keep) {
     if (nc && no && nc !== no) return -1;
     var r2 = _lmMbCellRadius(other);
     if (!(Math.abs(radius - r2) <= Math.max(4, 0.1 * Math.max(radius, r2)))) {
-        /* A split (or a merge) reaches the connections one packet apart: one copy has the new
-         * size, the other not yet. When the two packets are at most LM_MB_SIZE_LAG_MS apart, the
-         * copy with the newer packet is compared with its size before that packet (startSize);
-         * otherwise (or when that size differs too) these are two cells. */
+        /* A split, a merge or an eat reaches the connections one packet apart: one copy has the
+         * new size, the other not yet. When the two packets are at most LM_MB_SIZE_LAG_MS apart,
+         * each copy's size before its last packet (startSize) is compared with the other's size:
+         * the newer packet changed the size, or the older one did and the newer packet is a tick
+         * behind (a cell that grew by an eat on one connection was drawn twice for 1-2 frames);
+         * otherwise (or when those sizes differ too) these are two cells. */
         var nw = (cell.updateTime || 0) > (other.updateTime || 0) ? cell : other, ol = nw === cell ? other : cell;
-        var rs = Number(nw.startSize), ro = nw === cell ? r2 : radius;
-        if (!(Number.isFinite(rs) && Math.abs(rs - ro) <= Math.max(4, 0.1 * Math.max(rs, ro)) &&
-            nw.updateTime - (ol.updateTime || 0) <= LM_MB_SIZE_LAG_MS)) return -1;
+        var rn = nw === cell ? radius : r2, ro = nw === cell ? r2 : radius;
+        if (!(nw.updateTime - (ol.updateTime || 0) <= LM_MB_SIZE_LAG_MS &&
+            (_lmMbSizeNear(Number(nw.startSize), ro) || _lmMbSizeNear(Number(ol.startSize), rn)))) return -1;
     }
     var a = _lmMbPosOf(cell, _lmMbPos), b = _lmMbPosOf(other, _lmMbPosB);
     var dx = a.x - b.x, dy = a.y - b.y, d2 = dx * dx + dy * dy;
     if (!Number.isFinite(d2)) return -1;
-    var tol = _lmMbTwinTol(radius, cell, other) * (keep ? 1.5 : 1);
+    var tol = _lmMbTwinTol(radius, cell, other) * (keep || anyOrder === 2 ? 1.5 : 1);
     return d2 <= tol * tol ? d2 : -1;
 }
 /*
@@ -2090,15 +2142,23 @@ function lmMbLooksReset() {
     _lmMbLooks.clear();
 }
 /* Nearest copy to `cell` in idx (cells of connection `conn` only, or of any other connection
- * than `notConn`), within `reach` of matching position (px, py). Ties: the lower id. */
-var _lmMbBestD = 0;
+ * than `notConn`), within `reach` of matching position (px, py). Ties: the lower id. A verified
+ * connection's copy comes before the own cell of a unit that is not verified yet (it may be
+ * drawn at a wrong place: a verified copy hid behind it instead of behind its own player's cell).
+ * _lmMbAmbig: the copy found is an own cell and an own cell of another connection matches too
+ * (two players of one nick stacked): which player this copy shows is not known. */
+var _lmMbBestD = 0, _lmMbAmbig = false;
 function _lmMbNearest(idx, cell, radius, px, py, reach, conn, notConn, anyOrder, asOther) {
     var n = idx.n;
     _lmMbBestD = Infinity;
+    _lmMbAmbig = false;
     if (!n) return null;
     var gx = Math.floor(px / LM_MB_BUCKET), gy = Math.floor(py / LM_MB_BUCKET);
     var rb = Math.max(1, Math.ceil(reach / LM_MB_BUCKET));
     var keys = idx.keys, list = idx.cells, conns = idx.conns, xs = idx.px, ys = idx.py, lo = 0, best = null, bestD = Infinity;
+    /* bestU: the copy found is an unverified unit's own cell; own0 / own1: the connection of the
+     * first own cell matched (verified / not), amb0 / amb1: one of another connection too */
+    var bestU = 0, own0 = -1, own1 = -1, amb0 = false, amb1 = false;
     for (var ox = -rb; ox <= rb; ox++) {
         /* buckets (gx + ox, gy - rb .. gy + rb): consecutive keys */
         var base = (gx + ox) * 65536 + gy, k0 = base - rb, k1 = base + rb;
@@ -2118,11 +2178,24 @@ function _lmMbNearest(idx, cell, radius, px, py, reach, conn, notConn, anyOrder,
                 var orad = _lmMbCellRadius(o);
                 d = orad ? _lmMbTwinDist2(o, cell, orad, anyOrder) : -1;
             } else d = _lmMbTwinDist2(cell, o, radius, anyOrder);
-            if (d >= 0 && (d < bestD || (d === bestD && best && o.id < best.id))) { best = o; bestD = d; }
+            if (d < 0) continue;
+            var u = 0;
+            if (!asOther) {
+                u = _lmMbFeeds(o) ? 0 : 1;
+                if (o.spectator > 0 ? o.isPlayerCellMulti : o.isPlayerCell) {
+                    if (u) {
+                        if (own1 < 0) own1 = conns[a];
+                        else if (own1 !== conns[a]) amb1 = true;
+                    } else if (own0 < 0) own0 = conns[a];
+                    else if (own0 !== conns[a]) amb0 = true;
+                }
+            }
+            if (!best || u < bestU || (u === bestU && (d < bestD || (d === bestD && o.id < best.id)))) { best = o; bestD = d; bestU = u; }
         }
         lo = a;
     }
     _lmMbBestD = bestD;
+    _lmMbAmbig = !!best && (bestU ? amb1 : amb0) && (best.spectator > 0 ? !!best.isPlayerCellMulti : !!best.isPlayerCell);
     return best;
 }
 /* A copy hidden behind `tw` this frame: the count of them (per frame) tells removeCell() whether
@@ -2203,10 +2276,12 @@ function lmMbFrameHide() {
     _lmMbHideOn = true;
     _lmMbFeed.length = 0;
     _lmMbDrawOnly.length = 0;
+    _lmMbTile.length = 0;
     var drawOnly = false, now = Date.now();
     for (i = 0; i < sps.length; i++) {
         var sp = sps[i];
         if (!sp || !(sp.number > 0)) continue;
+        if (sp.player !== true) _lmMbTile[sp.number] = true;
         /* a stalled connection (no world update for LM_MB_STALL_MS while its socket is open)
          * feeds nothing: its cells are not drawn, hide no copy of another connection and do not
          * stand for a player's cell under a ghost (they would stay frozen, or draw an eaten
@@ -2222,7 +2297,10 @@ function lmMbFrameHide() {
     else _lmMbDoCov.length = 0;
     var vx0 = LM.srvViewMinX, vy0 = LM.srvViewMinY, vx1 = LM.srvViewMaxX, vy1 = LM.srvViewMaxY;
     var mainView = Number.isFinite(vx0) && Number.isFinite(vy0) && Number.isFinite(vx1) && Number.isFinite(vy1);
-    var n = cells.length, maxConn = 0;
+    /* agar.io sends the main socket every cell in its view: while its updates are fresh, a tile
+     * copy well inside that view that matches no copy there is late or stale */
+    var mainAll = mainView && !!LM.integrity && lmSrcMainFresh(now);
+    var n = cells.length, maxConn = 0, late = 0;
     if (_lmMbOrdKey.length < n) {
         _lmMbOrdKey = new Int32Array(n * 2);
         _lmMbOrdIdx = new Int32Array(n * 2);
@@ -2249,14 +2327,30 @@ function lmMbFrameHide() {
              * Inside the main server view (grown by its radius: the server sends a cell that
              * touches the view) or a verified spectator's fresh view (shrunk a little: at the
              * edge it is drawn twice rather than not at all) that connection draws it. */
-            if (_lmMbDrawOnly[cell.spectator] === true && !_lmMbSeenElsewhere(cell, mainView, vx0, vy0, vx1, vy1)) continue;
+            if (_lmMbDrawOnly[cell.spectator] === true) {
+                /* where another connection could see it, it is left to that connection only
+                 * once the grid shows a copy there (below): could see is not did see (its
+                 * view may reach past the other's, or its unverified place is wrong) */
+                if (_lmMbSeenElsewhere(cell, mainView, vx0, vy0, vx1, vy1)) {
+                    key[i] = -2;
+                    late++;
+                }
+                continue;
+            }
             cell._lmMbPosDup = true;
             cell.invisible = true;
             cell._lmMbTwin = null;
             continue;
         }
-        /* own cells of the main player or a unit are always drawn: no search */
-        if (cell.invisible || (cell.spectator > 0 ? cell.isPlayerCellMulti : cell.isPlayerCell)) continue;
+        /* own cells of the main player or a unit are always drawn: no search (an unverified
+         * unit's own cell is looked at below) */
+        if (cell.invisible || (cell.spectator > 0 ? cell.isPlayerCellMulti : cell.isPlayerCell)) {
+            if (cell.spectator > 0 && !cell.invisible && !_lmMbFeeds(cell)) {
+                key[i] = -3;
+                late++;
+            }
+            continue;
+        }
         var s = cell.spectator > 0 ? cell.spectator | 0 : 0;
         if (s > maxConn) maxConn = s;
         key[i] = s;
@@ -2285,10 +2379,54 @@ function lmMbFrameHide() {
             cell._lmMbPosDup = true;
             cell.invisible = true;
             _lmMbNoteHide(tw, cell);
-            /* one colour for the copies (the one shown first) */
-            lmMbShareLook(cell, tw);
+            /* one colour for the copies (the one shown first); not for a copy whose player is
+             * not known (_lmMbAmb: it took the colour of another player's cell, and that
+             * player's other pieces on its connection were made in it) */
+            if (!cell._lmMbAmb) lmMbShareLook(cell, tw);
+        } else if (mainAll && _lmMbTile[cell.spectator] === true && _lmMbInMainView(cell, vx0, vy0, vx1, vy1)) {
+            /* a tile's copy with no match, more than LM_MB_MAINVIEW_EDGE inside the main server
+             * view: the main socket has every cell there, so this one is late or stale (a stalled
+             * tile's frozen copy of the player's own cell, the size before a split, an eaten own
+             * cell whose eat comes later on the tile): not drawn */
+            cell._lmMbPosDup = true;
+            cell.invisible = true;
+            cell._lmMbTwin = null;
         }
     }
+    if (late) {
+        _lmMbGridFor(LM);
+        for (i = 0; i < n; i++) {
+            if (key[i] !== -2 && key[i] !== -3) continue;
+            cell = cells[i];
+            /* -2: a draw-only cell where a verified connection could see it, hidden only when one
+             * has a copy of it there or at a mirrored place; -3: an unverified unit's own cell
+             * drawn at a mirrored place of the main connection's copy of it (that copy draws it) */
+            if (key[i] === -2 ? _lmMbVerifiedNear(cell) || _lmMbMirrored(cell, -1) : _lmMbMirrored(cell, 0)) {
+                cell._lmMbPosDup = true;
+                cell.invisible = true;
+                cell._lmMbTwin = null;
+            }
+        }
+    }
+    /* a copy that left its connection's view while another connection has the cell (it came
+     * into that one's view between two frames, or a frame later, so nothing hid behind the copy
+     * that left): its removal fade would be drawn over the live cell */
+    if (_lmMbGoneT && LM.time - _lmMbGoneT <= LM_MB_GONE_MS) {
+        var gone = LM.removedCells;
+        for (i = 0; gone && i < gone.length; i++) {
+            var rc = gone[i];
+            if (!rc || !rc._lmMbGoneT || !(LM.time - rc._lmMbGoneT <= LM_MB_GONE_MS) || rc.invisible === true) continue;
+            _lmMbGridFor(LM);
+            if (_lmMbVerifiedNear(rc)) rc.invisible = true;
+        }
+    }
+}
+/* per connection number: a spectator or Full Map tile, not a played unit (this frame) */
+var _lmMbTile = [];
+var LM_MB_MAINVIEW_EDGE = 100;
+function _lmMbInMainView(cell, vx0, vy0, vx1, vy1) {
+    var e = LM_MB_MAINVIEW_EDGE, x = cell.x, y = cell.y;
+    return x > vx0 + e && x < vx1 - e && y > vy0 + e && y < vy1 - e;
 }
 /* Does the main connection or a verified spectator (_lmMbDoCov) see this cell? */
 function _lmMbSeenElsewhere(cell, mainView, vx0, vy0, vx1, vy1) {
@@ -2300,6 +2438,73 @@ function _lmMbSeenElsewhere(cell, mainView, vx0, vy0, vx1, vy1) {
     return false;
 }
 var _lmMbPosC = { x: 0, y: 0 };
+/* the search index of this frame (built once per LM.time) */
+function _lmMbGridFor(LM) {
+    if (_lmMbGridTime !== LM.time || !_lmMbGridBuilt) {
+        _lmMbBuildGrid();
+        _lmMbGridBuilt = true;
+        _lmMbGridTime = LM.time;
+    }
+}
+/* Has a verified connection a copy of this cell (same kind, size and name, in any drawing
+ * order, within 1.5 times the twin tolerance: a draw-only unit's offset is known, only its
+ * orientation is a guess)? One search of the frame's index. */
+function _lmMbVerifiedNear(cell) {
+    var radius = _lmMbCellRadius(cell);
+    if (!radius || !Number.isFinite(cell.x) || !Number.isFinite(cell.y)) return false;
+    var p = _lmMbPosOf(cell, _lmMbPosC);
+    if (!Number.isFinite(p.x) || !Number.isFinite(p.y)) return false;
+    return !!_lmMbNearest(_lmMbAll, cell, radius, p.x, p.y, 1.5 * _lmMbTwinReach(radius, _lmMbReachSpeed(cell)), -1, cell.spectator > 0 ? cell.spectator : 0, 2, false);
+}
+/* An unverified unit's cell that another connection has not at its place but at a mirrored one
+ * (the unit's orientation guessed wrong: mirrored on x, on y or both about the map centre): it
+ * is drawn there twice, once at the wrong place. conn 0: an own cell, found on the main
+ * connection with the same server name, and not at its own place (there the main copy hides
+ * behind it); conn -1: a draw-only cell, found on any verified connection. Up to four searches
+ * of the frame's index, only for such cells. */
+function _lmMbMirrored(cell, conn) {
+    var LM = window.legendmod, nm = _lmMbSrvName(cell), radius = _lmMbCellRadius(cell);
+    if ((!nm && conn === 0) || !radius || !LM) return false;
+    var x0 = LM.mapMinX, x1 = LM.mapMaxX, y0 = LM.mapMinY, y1 = LM.mapMaxY;
+    if (!(x1 > x0) || !(y1 > y0) || !Number.isFinite(x0 + x1 + y0 + y1)) return false;
+    var p = _lmMbPosOf(cell, _lmMbPosC), px = p.x, py = p.y;
+    if (!Number.isFinite(px) || !Number.isFinite(py)) return false;
+    var reach = 1.5 * _lmMbTwinReach(radius, _lmMbSpeed(cell));
+    if (conn === 0 && _lmMbCopyAt(cell, nm, radius, px, py, reach, 0)) return false;
+    return _lmMbCopyAt(cell, nm, radius, x0 + x1 - px, py, reach, conn) || _lmMbCopyAt(cell, nm, radius, px, y0 + y1 - py, reach, conn) ||
+        _lmMbCopyAt(cell, nm, radius, x0 + x1 - px, y0 + y1 - py, reach, conn);
+}
+/* a cell of the kind and size of cell within 1.5 times the twin tolerance of (px, py): conn 0
+ * a main-connection cell (not the main player's own) named nm; conn -1 a verified connection's
+ * cell other than cell's own connection's, of the same name when both have one */
+function _lmMbCopyAt(cell, nm, radius, px, py, reach, conn) {
+    var idx = _lmMbAll, n = idx.n, mine = cell.spectator > 0 ? cell.spectator : 0;
+    if (!n) return false;
+    var gx = Math.floor(px / LM_MB_BUCKET), gy = Math.floor(py / LM_MB_BUCKET), rb = Math.max(1, Math.ceil(reach / LM_MB_BUCKET));
+    var keys = idx.keys, list = idx.cells, conns = idx.conns, xs = idx.px, ys = idx.py, lo = 0;
+    for (var ox = -rb; ox <= rb; ox++) {
+        var base = (gx + ox) * 65536 + gy, k0 = base - rb, k1 = base + rb;
+        if (k1 < idx.minKey) continue;
+        if (k0 > idx.maxKey) break;
+        var a = lo, b = n;
+        while (a < b) {
+            var m = (a + b) >> 1;
+            if (keys[m] < k0) a = m + 1;
+            else b = m;
+        }
+        for (; a < n && keys[a] <= k1; a++) {
+            if ((conn === 0 ? conns[a] !== 0 : conns[a] === mine) || Math.abs(xs[a] - px) > reach || Math.abs(ys[a] - py) > reach) continue;
+            var o = list[a], on = _lmMbSrvName(o);
+            if (o.removed || !!o.isVirus !== !!cell.isVirus || !!o.isEjected !== !!cell.isEjected) continue;
+            if (conn === 0 ? o.isPlayerCell || on !== nm : !_lmMbFeeds(o) || (nm && on && on !== nm)) continue;
+            if (!_lmMbSizeNear(_lmMbCellRadius(o), radius)) continue;
+            var tol = 1.5 * _lmMbTwinTol(radius, cell, o), dx = xs[a] - px, dy = ys[a] - py;
+            if (dx * dx + dy * dy <= tol * tol) return true;
+        }
+        lo = a;
+    }
+    return false;
+}
 function lmMultiboxPositionTwin(cell) {
     var LM = window.legendmod;
     if (!cell || cell.removed || cell.isFood || !LM || !window.spects || !window.spects.length) return null;
@@ -2308,11 +2513,7 @@ function lmMultiboxPositionTwin(cell) {
     if (!Number.isFinite(cell.x) || !Number.isFinite(cell.y)) return null;
     var radius = _lmMbCellRadius(cell);
     if (!radius) return null;
-    if (_lmMbGridTime !== LM.time || !_lmMbGridBuilt) {
-        _lmMbBuildGrid();
-        _lmMbGridBuilt = true;
-        _lmMbGridTime = LM.time;
-    }
+    _lmMbGridFor(LM);
     var mine = cell.spectator > 0 ? cell.spectator : 0;
     var best = null;
     /* the copy it hid behind was eaten (removeCell(true)): this copy shows a cell that is gone
@@ -2327,17 +2528,29 @@ function lmMultiboxPositionTwin(cell) {
     /* the copy it hid behind last frame, while it is still a match (no search; 1.5 times the
      * tolerance) */
     var kept = false;
-    if (cell._lmMbTwin && _lmMbTwinDist2(cell, cell._lmMbTwin, radius, false, true) >= 0) {
+    /* not for a copy whose player was not known (searched again, so it is one to one once the
+     * two players' cells are apart) */
+    if (cell._lmMbTwin && !cell._lmMbAmb && _lmMbTwinDist2(cell, cell._lmMbTwin, radius, false, true) >= 0) {
         best = cell._lmMbTwin;
         kept = true;
     }
     cell._lmMbTwin = null;
-    var p = _lmMbPosOf(cell, _lmMbPosC);
+    var p = _lmMbPosOf(cell, _lmMbPosC), amb = false;
     if (!best) {
         /* main-connection cell: only units' own cells can match (see _lmMbOwn) */
-        best = _lmMbNearest(mine ? _lmMbAll : _lmMbOwn, cell, radius, p.x, p.y, _lmMbTwinReach(radius, _lmMbSpeed(cell)), -1, mine, false, false);
+        best = _lmMbNearest(mine ? _lmMbAll : _lmMbOwn, cell, radius, p.x, p.y, _lmMbTwinReach(radius, _lmMbReachSpeed(cell)), -1, mine, false, false);
+        amb = _lmMbAmbig && !!_lmMbSrvName(cell);
     }
+    cell._lmMbAmb = amb;
     if (!best) return null;
+    /* Own cells of two players of one nick, stacked (within the tolerance of both): this copy is
+     * one of them, but which is not known. It hides behind the nearest without the one to one
+     * test (each copy of one connection took the same own cell, and the other copy stayed drawn:
+     * the cell drawn twice) and takes no colour from it (lmMbShareLook). */
+    if (amb) {
+        cell._lmMbTwin = best;
+        return best;
+    }
     /* one to one: hidden only if this is the nearest cell of its connection to that copy
      * (only cells nearer to it than this one can be, so the search reaches no farther) */
     var bp = _lmMbPosOf(best, _lmMbPosC), bd = _lmMbTwinDist2(cell, best, radius, true, kept);
@@ -2396,17 +2609,19 @@ function lmObsOfSource(src) {
     return _lmSrcObs.get(src) || null;
 }
 /* Speed of a cell from its last two packet positions (units per ms), before the new
- * position is stored. Copies on two connections are compared at one time with it. */
+ * position is stored. Copies on two connections are compared at one time with it. Not known
+ * (undefined) before a second packet or after a gap of more than 1 s: the twin test then takes
+ * the other copy's speed (_lmMbTwinTol; with 0 a moving cell's new copy was not matched). */
 function lmObsVelocity(cell, x, y, now) {
     var t = cell.updateTime;
     if (!t || !Number.isFinite(cell.targetX) || !Number.isFinite(cell.targetY)) {
-        cell._lmVX = cell._lmVY = 0;
+        cell._lmVX = cell._lmVY = undefined;
         return;
     }
     var dt = now - t;
     if (dt < 8) return; /* two packets in one tick: keep the speed */
     if (dt > 1000) {
-        cell._lmVX = cell._lmVY = 0;
+        cell._lmVX = cell._lmVY = undefined;
         return;
     }
     cell._lmVX = (x - cell.targetX) / dt;
@@ -2443,18 +2658,49 @@ function _lmFoodPosX(c) {
 function _lmFoodPosY(c) {
     return Number.isFinite(c.targetY) ? c.targetY : c.y;
 }
-/* The connections that have a copy of a pellet: bits of an integer for connections 0 to 30 (no
- * Set made per pellet: a Full Map start places some 10000 of them at once), a Set past that. */
+/* The connections that have a copy of a pellet: bits of an integer (no Set made per pellet: a
+ * Full Map start places some 10000 of them at once), one bit per connection with listed copies,
+ * its rank (_lmFoodRk, by connection number): connection numbers grow past 30 with Full Map
+ * turned off and on (tiles 19-34, a unit 35) and put a Set on every entry. A Set past 31 such
+ * connections at once (main + 15 tiles + 6 units is 22). The rank is the connection's while it
+ * has a copy in the list (_lmFoodRkN counts them), so no entry keeps the bit of a rank given to
+ * another connection. */
+var _lmFoodRk = [], _lmFoodRkN = [], _lmFoodRkUsed = 0;
+function _lmFoodRankIn(src) {
+    if (_lmFoodRkN[src] > 0) {
+        _lmFoodRkN[src]++;
+        return;
+    }
+    var free = ~_lmFoodRkUsed & 0x7fffffff, r = free ? 31 - Math.clz32(free & -free) : 31 + src;
+    if (r < 31) _lmFoodRkUsed |= 1 << r;
+    _lmFoodRk[src] = r;
+    _lmFoodRkN[src] = 1;
+}
+function _lmFoodRankOut(src) {
+    if (!(_lmFoodRkN[src] > 0) || --_lmFoodRkN[src]) return;
+    var r = _lmFoodRk[src];
+    if (r < 31) _lmFoodRkUsed &= ~(1 << r);
+    _lmFoodRk[src] = undefined;
+}
+function _lmFoodRankReset() {
+    _lmFoodRk.length = 0;
+    _lmFoodRkN.length = 0;
+    _lmFoodRkUsed = 0;
+}
 function _lmFoodHasSrc(e, src) {
-    return src < 31 ? (e.mask & (1 << src)) !== 0 : !!(e.maskX && e.maskX.has(src));
+    var r = _lmFoodRk[src];
+    if (r === undefined) return false;
+    return r < 31 ? (e.mask & (1 << r)) !== 0 : !!(e.maskX && e.maskX.has(r));
 }
 function _lmFoodSrcSet(e, src, on) {
-    if (src < 31) {
-        if (on) e.mask |= 1 << src;
-        else e.mask &= ~(1 << src);
+    var r = _lmFoodRk[src];
+    if (r === undefined) return;
+    if (r < 31) {
+        if (on) e.mask |= 1 << r;
+        else e.mask &= ~(1 << r);
     } else if (on) {
-        (e.maskX || (e.maskX = new Set())).add(src);
-    } else if (e.maskX) e.maskX.delete(src);
+        (e.maskX || (e.maskX = new Set())).add(r);
+    } else if (e.maskX) e.maskX.delete(r);
 }
 /* The grouping does not depend on the order the copies came in. Each copy keeps the place it was
  * put with (_lmFoodX/_lmFoodY/_lmFoodS/_lmFoodInv). A change groups again only the copies
@@ -2702,6 +2948,7 @@ function _lmFoodAttach(cell) {
     cell._lmFoodInv = !!cell.invisible;
     cell._lmFoodSrcN = src;
     cell._lmFoodEnt = null;
+    _lmFoodRankIn(src);
     if (src > 0) {
         F.spectObs++;
         /* the transform it was placed with (lmFoodFrame) */
@@ -2798,6 +3045,7 @@ function _lmFoodDetach(cell) {
     /* the connection it was put in with */
     var src = cell._lmFoodSrcN;
     _lmFoodSrcSet(ent, src, false);
+    _lmFoodRankOut(src);
     if (src > 0) F.spectObs--;
     var W, comp, i;
     if (ent.lone) {
@@ -2855,6 +3103,7 @@ function _lmFoodOff(keepFeed) {
     F.list.length = 0;
     F.ents.length = 0;
     F.spectObs = 0;
+    _lmFoodRankReset();
     F.sig.clear();
     /* each connection's feed state too: the next frame looks at every connection again */
     if (!keepFeed) F.feed.clear();
@@ -2918,6 +3167,7 @@ function _lmFoodReplaceAllNow() {
     F.list.length = 0;
     F.ents.length = 0;
     F.spectObs = 0;
+    _lmFoodRankReset();
     for (i = 0; i < cells.length; i++) _lmFoodAttach(cells[i]);
     /* each connection's transform its pellets are placed with now */
     F.sig.forEach(function (old, src) { _lmFoodSigOf(_lmFoodSpect(src), old); });
@@ -3026,17 +3276,71 @@ function lmFoodDrawList() {
  * join no list and no reference (they could be mirrored or shifted), but the ones no other
  * connection sees are drawn from this separate list in the same food pass, so the player sees the
  * food round his unit. Inside the main server view or a verified spectator's fresh view
- * (_lmMbSeenElsewhere) that connection draws them; a second such unit leaves the pellets in the
- * first one's view to it. Once the unit is verified its pellets join the list (lmFoodFrame looks
- * at them again when its feed state changes). null, and no work, without such a unit.
+ * (_lmMbSeenElsewhere) that connection draws them, but only where it has a copy of the pellet
+ * (_lmFoodDoSeen): could see is not did see (the unit's view reaches past the other's, or its
+ * unverified place is wrong), and a pellet left to nobody was not drawn. Two such units both draw
+ * their pellets (a unit's view rectangle from its unverified transform left the pellets of a unit
+ * listed after it to it, in the order of window.spects). Once the unit is verified its pellets
+ * join the list (lmFoodFrame looks at them again when its feed state changes). null, and no
+ * work, without such a unit.
  */
-var _lmFoodDo = { list: [], rects: [], rect: [0, 0, 0, 0], main: false, x0: 0, y0: 0, x1: 0, y1: 0, nr: 0 };
+var _lmFoodDo = { list: [], main: false, x0: 0, y0: 0, x1: 0, y1: 0, built: false, idx: new Map(), pool: [] };
 function _lmFoodDoAdd(c) {
     var D = _lmFoodDo;
     if (!c.isFood || c.removed || c.invisible || !Number.isFinite(c.x) || !Number.isFinite(c.y)) return;
-    if (_lmMbSeenElsewhere(c, D.main, D.x0, D.y0, D.x1, D.y1)) return;
-    for (var k = 0; k < D.nr; k += 4) if (c.x > D.rects[k] && c.y > D.rects[k + 1] && c.x < D.rects[k + 2] && c.y < D.rects[k + 3]) return;
+    if (_lmMbSeenElsewhere(c, D.main, D.x0, D.y0, D.x1, D.y1) && _lmFoodDoSeen(c)) return;
     D.list.push(c);
+}
+/* Is there a verified copy of this pellet within 1.5 x LM_FOOD_TOL (size +-1)? In the food list's
+ * grid (3 x 3 buckets); without the list (no other connection's pellets are listed: the main
+ * socket's are drawn from LM.food) in buckets of the main socket's pellets, made once per frame
+ * and only when a pellet needs them. */
+function _lmFoodDoSeen(c) {
+    var F = _lmFood, x = _lmFoodPosX(c), y = _lmFoodPosY(c), s = Number.isFinite(c.targetSize) ? c.targetSize : c.size;
+    var r = 1.5 * LM_FOOD_TOL, r2 = r * r, bx = Math.floor(x / LM_FOOD_BUCKET), by = Math.floor(y / LM_FOOD_BUCKET), ox, oy, b, k, dx, dy;
+    var grid = F.on ? F.grid : _lmFoodDoMain();
+    for (ox = -1; ox <= 1; ox++) {
+        for (oy = -1; oy <= 1; oy++) {
+            b = grid.get(_lmFoodKey(bx + ox, by + oy));
+            if (!b) continue;
+            if (F.on) {
+                for (k = 0; k < b.length; k++) {
+                    var e = b[k];
+                    dx = e.x - x;
+                    dy = e.y - y;
+                    if (dx * dx + dy * dy <= r2 && Math.abs(e.size - s) <= 1) return true;
+                }
+            } else {
+                for (k = 0; k < b.length; k += 3) {
+                    dx = b[k] - x;
+                    dy = b[k + 1] - y;
+                    if (dx * dx + dy * dy <= r2 && Math.abs(b[k + 2] - s) <= 1) return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+/* the main socket's pellets in 16-unit buckets (x, y, size per pellet), kept between frames */
+function _lmFoodDoMain() {
+    var D = _lmFoodDo, idx = D.idx, LM = window.legendmod, food = LM && LM.food;
+    if (D.built) return idx;
+    D.built = true;
+    idx.forEach(function (b) { b.length = 0; D.pool.push(b); });
+    idx.clear();
+    for (var i = 0; food && i < food.length; i++) {
+        var p = food[i];
+        if (!p || p.removed) continue;
+        var x = _lmFoodPosX(p), y = _lmFoodPosY(p);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+        var key = _lmFoodKey(Math.floor(x / LM_FOOD_BUCKET), Math.floor(y / LM_FOOD_BUCKET)), b = idx.get(key);
+        if (!b) {
+            b = D.pool.length ? D.pool.pop() : [];
+            idx.set(key, b);
+        }
+        b.push(x, y, Number.isFinite(p.targetSize) ? p.targetSize : p.size);
+    }
+    return idx;
 }
 function lmFoodDrawOnlyList() {
     var D = _lmFoodDo, sps = window.spects, LM = window.legendmod;
@@ -3047,19 +3351,12 @@ function lmFoodDrawOnlyList() {
     D.x1 = LM.srvViewMaxX;
     D.y1 = LM.srvViewMaxY;
     D.main = Number.isFinite(D.x0) && Number.isFinite(D.y0) && Number.isFinite(D.x1) && Number.isFinite(D.y1);
-    D.nr = 0;
+    D.built = false;
     for (var i = 0; i < sps.length; i++) {
         var sp = sps[i];
         if (!sp || !(sp.number > 0) || _lmMbDrawOnly[sp.number] !== true || lmSrcFeeds(sp)) continue;
         var set = _lmSrcObs.get(sp.number);
         if (set && set.size) set.forEach(_lmFoodDoAdd);
-        var r = typeof sp._lmServerViewDisplay === 'function' ? sp._lmServerViewDisplay(D.rect) : null;
-        if (r && r[2] - r[0] > 2 * LM_MB_DRAWONLY_EDGE && r[3] - r[1] > 2 * LM_MB_DRAWONLY_EDGE) {
-            D.rects[D.nr++] = r[0] + LM_MB_DRAWONLY_EDGE;
-            D.rects[D.nr++] = r[1] + LM_MB_DRAWONLY_EDGE;
-            D.rects[D.nr++] = r[2] - LM_MB_DRAWONLY_EDGE;
-            D.rects[D.nr++] = r[3] - LM_MB_DRAWONLY_EDGE;
-        }
     }
     return D.list.length ? D.list : null;
 }
@@ -38029,6 +38326,11 @@ function thelegendmodproject() {
                 this._lmMbHandF = _lmMbFrame;
             }
             this._lmMbHides = null;
+            /* a copy the hide step hid is not drawn (unless it is the last copy, above): a packet
+             * since that frame set invisible = false on it (spect.js keeps a unit's cells
+             * visible), so its removal fade was drawn over the live copy */
+            var _mbHid = !!this._lmMbPosDup && !_mbLast;
+            if (_mbHid) this.invisible = true;
 
 
             /*
@@ -38079,9 +38381,16 @@ function thelegendmodproject() {
              * only the last copy of a cell does.
              */
             if (
-                (this.redrawed && !_mbTakes) || _mbLast ||
+                (this.redrawed && !_mbTakes && !_mbHid) || _mbLast ||
                 this._deathSlowMo
             ) {
+                /* it left this connection's view (not eaten) while other connections are open: the
+                 * next hide step drops its fade when another connection has the cell (it came
+                 * into that view between two frames, with no copy hidden behind this one) */
+                if (!eaten && !this._deathSlowMo && !this.isFood && !(this.spectator > 0 ? this.isPlayerCellMulti : this.isPlayerCell) &&
+                    window.spects && window.spects.length) {
+                    this._lmMbGoneT = _lmMbGoneT = LM.time || 1;
+                }
                 if (
                     this._removedIdx == null ||
                     this._removedIdx < 0 ||

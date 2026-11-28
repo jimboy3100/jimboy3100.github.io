@@ -6,6 +6,9 @@
 // split piece, a cell with the same raw id) is never hidden. The drawn copy keeps the colour the
 // cell was shown with first, and the copy drawn last frame stays drawn (no switching).
 // Section 16: the same rules with 1 to 6 playing clients x Full Map off / on (lib/mbplayers.js).
+// Section 17: cases that need three or more connections (two players' own cells stacked, an
+// unverified unit's own cell), and late, new or stalled copies (a size change one packet apart, a
+// copy with no speed yet, a tile copy inside the main view, a stalled tile).
 // Usage: node developers/tests/mbtwin.js [ogario.v4.js]
 const fs = require('fs');
 const path = require('path');
@@ -30,9 +33,10 @@ function check(name, ok, info) {
 }
 
 let nextId = 1;
+/* a copy not moving, with that speed known (_lmVX undefined: one packet so far) */
 function cell(o) {
     return Object.assign({ id: nextId++, x: 1000, y: 1000, size: 100, targetSize: 100, color: '#ff0000', spectator: 0,
-        isPlayerCell: false, isPlayerCellMulti: false, isVirus: false, isEjected: false, isFood: false, removed: false, invisible: false }, o);
+        isPlayerCell: false, isPlayerCellMulti: false, isVirus: false, isEjected: false, isFood: false, removed: false, invisible: false, _lmVX: 0, _lmVY: 0 }, o);
 }
 function env(units) {
     const spects = [];
@@ -309,7 +313,9 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
 }
 /* 15b. A multibox unit not verified yet but steered (transformReady: the camera follows it): the
  * cells only it sees are drawn (the player could be eaten by a cell he does not see), they hide
- * nothing and nothing hides behind them; inside the main server view the main copy draws them */
+ * nothing and nothing hides behind them; inside the main server view the main copy draws them
+ * where the main connection has a copy (also at a mirrored place: the unit's orientation is a
+ * guess); one it has no copy of there is drawn (could see is not did see: it was hidden) */
 {
     const ctx = env(2);
     const unit = ctx.window.spects[1];
@@ -325,7 +331,17 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     const inMain = cell({ spectator: 2, x: 0, y: 0, color: '#444444' });
     /* centre 50 outside the main view, radius 100: the main connection gets it too */
     const nearMain = cell({ spectator: 2, x: 1050, y: 0, color: '#555555' });
-    run([enemy, virus, v, u, inMain, nearMain], 3, ctx);
+    const inMainM = cell({ spectator: 0, x: 3, y: 0, color: '#444445' });
+    const nearMainM = cell({ spectator: 0, x: 1053, y: 0, color: '#555556' });
+    /* inside the main view, no main copy anywhere near it or its mirrored places */
+    const lone = cell({ spectator: 2, x: -500, y: 300, size: 140, targetSize: 140, color: '#666666' });
+    /* inside the main view, the main copy at its place mirrored on both axes (map -7071..7071) */
+    LM.mapMinX = LM.mapMinY = -7071; LM.mapMaxX = LM.mapMaxY = 7071;
+    const mir = cell({ spectator: 2, x: -600, y: 600, size: 60, targetSize: 60, color: '#777777' });
+    const mirM = cell({ spectator: 0, x: 600, y: -600, size: 60, targetSize: 60, color: '#777778' });
+    run([enemy, virus, v, u, inMain, nearMain, inMainM, nearMainM, lone, mir, mirM], 3, ctx);
+    check('unverified unit: its cell inside the main server view with no main copy there is drawn (was hidden)', !lone.invisible);
+    check('unverified unit: its cell inside the main server view whose main copy is at its mirrored place is hidden', mir.invisible && !mirM.invisible);
     check('unverified unit: an enemy only it sees is drawn', !enemy.invisible && !virus.invisible);
     check('unverified unit: its cells hide nothing and hide behind nothing', !v.invisible && !v._lmMbTwin && !u.invisible && !u._lmMbTwin);
     check('unverified unit: its cell inside the main server view is left to the main connection', inMain.invisible);
@@ -349,6 +365,7 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     unit.transformReady = () => false;
     run(LM.cells, 1, ctx);
     check('unit not steered yet: its cells are not drawn', enemy.invisible && virus.invisible && u.invisible);
+    delete LM.mapMinX; delete LM.mapMinY; delete LM.mapMaxX; delete LM.mapMaxY;
 }
 
 /* 10. Search against a scan of every cell (same rule, nearest + mutual nearest), frame by frame,
@@ -483,7 +500,9 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
  * player dies (onPlayerDeath's switch). After each: no cell drawn twice or not at all, every own
  * cell drawn (its owner's copy), the drawn copy by the rule (own, main, lowest number), own mass
  * of each player = sum r^2 / 100 of its cells, no cell owned twice. Configurations today's code
- * fails go in KNOWN ('KNOWN N>2: what, why, file:line'); none does. */
+ * fails go in KNOWN ('KNOWN N>2: what, why, file:line'); none does. Stacked own cells of two
+ * players (below) were KNOWN for every configuration but 2 players without Full Map: an
+ * observer's copies were paired greedily and one stayed drawn; they hold now (section 17). */
 {
     const MB = require('./lib/mbplayers');
     const KNOWN = {};
@@ -512,17 +531,13 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
      * every connection: each drawn once (two cells, not three or four). With two players only the
      * Full Map tiles see both (the main player owns one), from three players on the main socket
      * and the other units do too. */
-    const STACK = 'KNOWN N>2: an observer\'s copies of two stacked own cells are paired greedily (each takes the nearest own cell, ' +
-        'ogario.v4.js:2274 lmMultiboxPositionTwin, then the mutual-nearest test at 2281): when both copies pick the same own cell ' +
-        'the other copy stays drawn (one cell drawn twice); only the main player\'s copies of its own never search, so 2 players without Full Map hold';
     for (let K = 2; K <= 6; K++) for (const fm of [false, true]) {
         const s = MB.scene({ players: K, fullMap: fm, v4: process.argv[2] });
         MB.populate(s);
         for (const p of s.players.slice(-2)) s.own(p.slot, { x: 5000, y: 0, size: 70, name: 'Same', seenBy: s.allSources() });
         s.step(3);
         const r = s.audit();
-        MB.verdict(check, 'K=' + K + ' (Full Map ' + (fm ? 'on' : 'off') + '): own cells of two players stacked, each drawn once', r.ok, r.text,
-            K === 2 && !fm ? undefined : STACK);
+        MB.verdict(check, 'K=' + K + ' (Full Map ' + (fm ? 'on' : 'off') + '): own cells of two players stacked, each drawn once', r.ok, r.text);
     }
     /* K = 2: the same cells give the same result in the two-player harness above */
     {
@@ -615,6 +630,127 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     check('glow: Cell.draw has no nick match left, the WebGL batch falls back only for a glowing cell',
         src.indexOf('this.targetNick === profiles[application.selectedOldProfile].nick') < 0 && /lmMbShadowColor\(this\)/.test(src) &&
         /_glMbShadow && lmMbShadowColor\(cell\)/.test(src) && gate.indexOf('MB_SHADOW') < 0);
+}
+
+/* 17. Three or more connections, and late, new or stalled copies */
+{
+    /* connections by number: [number, played unit, extra fields] */
+    const envOf = (list) => {
+        const ctx = env(1);
+        ctx.window.spects = list.map(([number, player, o]) => Object.assign({ number, player }, o));
+        return ctx;
+    };
+    const unverified = { _lmFeedOk: () => false, transformReady: () => true };
+    /* Own cells of two players of one nick stacked (units 1 and 2: A and B; the main connection and
+     * unit 3 see both, each owner the other's): two cells drawn, and no copy takes the colour of
+     * the other player's cell (its connection's other pieces of that player were made in it) */
+    const twoOwners = (name, dx, crossIds, rev) => {
+        const ctx = envOf([[1, true], [2, true], [3, true]]);
+        const A = cell({ spectator: 1, isPlayerCellMulti: true, x: 3000, y: 3000, size: 150, targetSize: 150, _lmSrvName: 'mb', color: '#aa0000', _lmRawColor: '#aa0000' });
+        const B = cell({ spectator: 2, isPlayerCellMulti: true, x: 3000 + dx, y: 3000, size: 150, targetSize: 150, _lmSrvName: 'mb', color: '#0000aa', _lmRawColor: '#0000aa' });
+        if (crossIds) { const t = A.id; A.id = B.id; B.id = t; }
+        const mk = (s, of, x, rc) => Object.assign(cell({ spectator: s, x, y: 3000, size: 150, targetSize: 150, _lmSrvName: 'mb', color: rc, _lmRawColor: rc, _lmGen: 1 }), { _of: of });
+        const obs = [mk(0, A, 3000, '#110000'), mk(0, B, 3000 + dx, '#000011'), mk(3, A, 3000, '#220000'), mk(3, B, 3000 + dx, '#000022'), mk(1, B, 3000 + dx, '#000033'), mk(2, A, 3000, '#330000')];
+        const all = rev ? [B, A].concat(obs.slice().reverse()) : [A, B].concat(obs);
+        run(all, 3, ctx);
+        const vis = [A, B].concat(obs).filter((c) => !c.invisible);
+        const leaked = obs.filter((c) => c._lmMbLook && c._lmMbLook === (c._of === A ? B : A).color);
+        check('two players\' own cells stacked (' + name + '): drawn twice, the own cells', vis.length === 2 && !A.invisible && !B.invisible, vis.length);
+        check('two players\' own cells stacked (' + name + '): no copy takes the other player\'s colour', leaked.length === 0, leaked.length);
+    };
+    twoOwners('A first', 0);
+    twoOwners('B first', 0, false, true);
+    twoOwners('B\'s own cell with the lower id', 0, true);
+    twoOwners('3 apart, B\'s own cell with the lower id', 3, true);
+    twoOwners('6 apart', 6);
+    {
+        /* the main player's own cell, unit 1's own cell and unit 2 seeing both, all at one place */
+        const ctx = envOf([[1, true], [2, true]]);
+        const at = (o) => cell(Object.assign({ x: 3000, y: 3000, size: 150, targetSize: 150, _lmSrvName: 'mb' }, o));
+        const l = [at({ spectator: 0, isPlayerCell: true }), at({ spectator: 1, isPlayerCellMulti: true }), at({ spectator: 0 }), at({ spectator: 1 }), at({ spectator: 2 }), at({ spectator: 2 })];
+        run(l, 3, ctx);
+        check('the main player\'s and a unit\'s own cells stacked, a third unit sees both: drawn twice', drawn(l) === 2 && !l[0].invisible && !l[1].invisible, drawn(l));
+    }
+    {
+        /* unit 3 is not verified yet (steered), its own cell drawn at a wrong place, right on the
+         * main copy of verified unit 2's own cell (one nick): that copy hides behind unit 2's cell */
+        const ctx = envOf([[1, true], [2, true], [3, true, unverified]]);
+        const O3 = cell({ spectator: 3, isPlayerCellMulti: true, x: 1700, y: 1000, size: 90, targetSize: 90, _lmSrvName: 'mb' });
+        const O2 = cell({ spectator: 2, isPlayerCellMulti: true, x: 1705, y: 1000, size: 90, targetSize: 90, _lmSrvName: 'mb' });
+        const O2m = cell({ spectator: 0, x: 1700, y: 1000, size: 90, targetSize: 90, _lmSrvName: 'mb' });
+        run([O3, O2, O2m], 3, ctx);
+        check('an unverified unit\'s own cell hides no verified copy that has its own player\'s cell (behind that one)', O2m.invisible && O2m._lmMbTwin === O2 && !O3.invisible && !O2.invisible,
+            O2m._lmMbTwin === O3 ? 'behind the unverified own cell' : String(O2m.invisible));
+    }
+    {
+        /* an unverified unit's own cell at its place mirrored on both axes of the main copy (its
+         * orientation guessed wrong): the main copy draws it; at its own place the main copy hides
+         * behind it as before; with no main copy it is drawn */
+        const ctx = envOf([[2, true, unverified]]);
+        Object.assign(ctx.window.legendmod, { mapMinX: -7071, mapMinY: -7071, mapMaxX: 7071, mapMaxY: 7071 });
+        const own = cell({ spectator: 2, isPlayerCellMulti: true, x: -1200, y: 800, size: 90, targetSize: 90, _lmSrvName: 'Me' });
+        const m = cell({ spectator: 0, x: 1200, y: -800, size: 90, targetSize: 90, _lmSrvName: 'Me' });
+        const own2 = cell({ spectator: 2, isPlayerCellMulti: true, x: 4000, y: 4000, size: 50, targetSize: 50, _lmSrvName: 'Me' });
+        const own3 = cell({ spectator: 2, isPlayerCellMulti: true, x: 300, y: 300, size: 70, targetSize: 70, _lmSrvName: 'Me' });
+        const m3 = cell({ spectator: 0, x: 302, y: 300, size: 70, targetSize: 70, _lmSrvName: 'Me' });
+        run([own, m, own2, own3, m3], 3, ctx);
+        check('unverified unit, its own cell mirrored from the main copy: not drawn twice (the main copy drawn)', own.invisible && !m.invisible);
+        check('  with no main copy: its own cell drawn; at its own place: the main copy hidden behind it', !own2.invisible && !own3.invisible && m3.invisible);
+    }
+    {
+        /* a cell grows by an eat: connection 1 has the new size (328, 256 before), connection 2's
+         * newer packet is a tick behind (256): drawn once */
+        const a = cell({ spectator: 1, size: 328, targetSize: 328, startSize: 256, updateTime: 1000 });
+        const b = cell({ spectator: 2, x: 1003, size: 256, targetSize: 256, startSize: 256, updateTime: 1030 });
+        run([a, b], 2);
+        check('a cell that grew by an eat on one connection, the other\'s newer packet a tick behind: drawn once', drawn([a, b]) === 1, drawn([a, b]));
+    }
+    {
+        /* a copy with one packet so far (no speed yet) next to a copy moving at 0.45 units/ms, 30
+         * apart; two such copies 20 apart: drawn once */
+        const a = cell({ spectator: 1, x: 3000, y: 3000, size: 35, targetSize: 35, _lmVX: 0.45, _lmVY: 0 });
+        const b = cell({ spectator: 2, x: 3030, y: 3000, size: 35, targetSize: 35, _lmVX: undefined, _lmVY: undefined });
+        const c = cell({ spectator: 1, x: 5000, y: 3000, size: 35, targetSize: 35, _lmVX: undefined, _lmVY: undefined });
+        const d = cell({ spectator: 2, x: 5020, y: 3000, size: 35, targetSize: 35, _lmVX: undefined, _lmVY: undefined });
+        run([a, b, c, d], 2);
+        check('a new copy (no speed yet) 30 from a copy moving at 0.45 units/ms: drawn once', drawn([a, b]) === 1, drawn([a, b]));
+        check('two new copies 20 apart: drawn once', drawn([c, d]) === 1, drawn([c, d]));
+    }
+    {
+        /* Full Map tiles 3 and 4, unit 5, the main server view -1000..1000 with fresh world
+         * updates on agar.io: a tile copy that matches nothing, well inside that view, is late or
+         * stale (the main socket has every cell there) */
+        const ctx = envOf([[3, false], [4, false], [5, true]]);
+        const LM = ctx.window.legendmod;
+        Object.assign(LM, { srvViewMinX: -1000, srvViewMinY: -1000, srvViewMaxX: 1000, srvViewMaxY: 1000, integrity: true, _lmLastWorldUpdate: Date.now() });
+        const stale = cell({ spectator: 3, x: 0, y: 0, size: 100, targetSize: 100, _lmSrvName: 'Me' });
+        const edge = cell({ spectator: 3, x: 950, y: 0, size: 60, targetSize: 60 });
+        const unitC = cell({ spectator: 5, x: -300, y: 0, size: 80, targetSize: 80 });
+        const m = cell({ spectator: 0, x: 400, y: 400, size: 70, targetSize: 70 });
+        const t4 = cell({ spectator: 4, x: 402, y: 400, size: 70, targetSize: 70 });
+        const far = cell({ spectator: 4, x: 3000, y: 0, size: 70, targetSize: 70 });
+        const l = [stale, edge, unitC, m, t4, far];
+        run(l, 2, ctx);
+        check('tile copy matching nothing well inside the fresh main view (agar.io): not drawn (a frozen or pre-split own cell was drawn twice)', stale.invisible === true);
+        check('  near the main view\'s edge, a played unit\'s copy, outside the view, a copy with its main twin: as before', !edge.invisible && !unitC.invisible && !far.invisible && t4.invisible && t4._lmMbTwin === m && !m.invisible);
+        LM._lmLastWorldUpdate = Date.now() - 2000;
+        run(l, 1, ctx);
+        const oldMain = !stale.invisible;
+        LM._lmLastWorldUpdate = Date.now();
+        LM.integrity = false;
+        run(l, 1, ctx);
+        check('  the main socket\'s updates not fresh, or not agar.io: drawn', oldMain && !stale.invisible);
+        /* a tile 500 ms behind the fresh main socket: stalled, its cells not drawn; every socket
+         * late (the main one 450 ms too, a busy page): drawn */
+        LM.integrity = true;
+        ctx.window.spects[1]._lmWorldStamp = () => Date.now() - 500;
+        LM._lmLastWorldUpdate = Date.now();
+        run(l, 1, ctx);
+        const stalled = far.invisible === true;
+        LM._lmLastWorldUpdate = Date.now() - 450;
+        run(l, 1, ctx);
+        check('a tile 500 ms behind the fresh main socket: its cells not drawn; with every socket late: drawn', stalled && !far.invisible, stalled + ' / ' + far.invisible);
+    }
 }
 
 if (failed) {

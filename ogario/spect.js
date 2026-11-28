@@ -238,7 +238,10 @@ function lmAnchorPut(grid, x, y, size, src, a, u, f) {
     for (var ix = gx - 1; ix <= gx + 1 && ent < 0; ix++) {
         for (var iy = gy - 1; iy <= gy + 1 && ent < 0; iy++) {
             for (var j = grid.head[lmAnchorSlot(ix, iy)]; j >= 0; j = grid.next[j]) {
-                if (grid.gx[j] !== ix || grid.gy[j] !== iy || Math.abs(grid.size[j] - size) > 1 ||
+                /* measured against the entity's first record, not any member: copies a few units
+                 * apart chained one entity through each other (15 units wide with 6 sources), and
+                 * two real pellets became one */
+                if (grid.gx[j] !== ix || grid.gy[j] !== iy || grid.ent[j] !== j || Math.abs(grid.size[j] - size) > 1 ||
                     Math.abs(grid.x[j] - x) > LM_ANCHOR_COPY || Math.abs(grid.y[j] - y) > LM_ANCHOR_COPY) continue;
                 /* a source is in an entity at most once */
                 var e = grid.ent[j], k = e;

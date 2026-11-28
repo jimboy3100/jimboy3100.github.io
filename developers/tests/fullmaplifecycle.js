@@ -348,6 +348,74 @@ now = load(); G = groups();
     delete sp._lmWorldStamp;
     check('stalled connection (no world update for 5 s): its cells not drawn, no copy hidden behind them', c1.length > 0 && c1.every((c) => c.invisible === true) && behind === 0,
         c1.filter((c) => c.invisible !== true).length + ' of ' + c1.length + ' drawn, ' + behind + ' hidden behind them');
+    /* a tile 500 ms behind the main socket's world updates while those are fresh (lmSrcStale):
+     * stalled too; a page that was busy (every socket late, the main one too) drops nothing */
+    now = load();
+    sp._lmWorldStamp = () => Date.now() - 500;
+    LM._lmLastWorldUpdate = Date.now();
+    frame(now + 16);
+    const r1 = LM.cells.filter((c) => c && !c.removed && c.spectator === 1 && !c.isPlayerCellMulti);
+    const relStalled = r1.length > 0 && r1.every((c) => c.invisible === true && !c._lmMbTwin) && g._lmMbFeed[1] === false;
+    LM._lmLastWorldUpdate = Date.now() - 450;
+    frame(now + 32);
+    /* feeds again: each of its cells drawn or hidden behind its twin */
+    const busyDrawn = g._lmMbFeed[1] === true && r1.every((c) => c.invisible !== true || !!c._lmMbTwin);
+    delete sp._lmWorldStamp;
+    LM._lmLastWorldUpdate = 0;
+    check('tile 500 ms behind the fresh main socket: its cells not drawn (was drawn, frozen, as a second cell)', relStalled, r1.filter((c) => c.invisible !== true).length + ' of ' + r1.length + ' drawn');
+    check('every socket late (busy page, main 450 ms old too): the tile\'s cells still drawn', busyDrawn);
+}
+/* a copy hidden behind its twin gets a packet (spect.js sets invisible = false on a unit's cells)
+ * and leaves its view before the next frame: no removal fade over the live copy (it was drawn
+ * fading on top of it) */
+{
+    const mk = (sp, x, o) => {
+        const c = Object.assign({ id: sp * 4294967296 + 21, spectator: sp, x, y: 0, targetX: x, targetY: 0, size: 60, targetSize: 60, color: '#3333ff', _lmRawColor: '#3333ff',
+            isFood: false, removed: false, invisible: false, redrawed: 0, isVirus: false, isEjected: false, isPlayerCell: false, isPlayerCellMulti: false,
+            updateTime: now, _lmVX: 0, _lmVY: 0, _cellsIdx: LM.cells.length, _lmSrvName: 'Q' }, o);
+        c.removeCell = g._removeCell; LM.cells.push(c); return c;
+    };
+    LM.cells.length = 0; LM.removedCells.length = 0;
+    const a = mk(1, 0), b = mk(2, 2);
+    b.redrawed = 3; /* drawn on an earlier frame */
+    frame(now + 16); frame(now + 32);
+    const hid = b.invisible === true && b._lmMbTwin === a;
+    b.invisible = false; /* its packet */
+    b.removeCell();
+    check('hidden copy, a packet, then it leaves before the next frame: no removal fade', hid && !LM.removedCells.includes(b) && b.invisible === true && !a.invisible,
+        'hidden ' + hid + ', in the removed list ' + LM.removedCells.includes(b));
+    /* a seam: connection 1 drops the cell and connection 2 gets it between two frames (nothing hid
+     * behind the copy that left): its fade is not drawn over connection 2's copy */
+    LM.cells.length = 0; LM.removedCells.length = 0;
+    const c = mk(1, 500);
+    c.id += 1;
+    frame(now + 48); frame(now + 64);
+    c.removeCell();
+    const d = mk(2, 503, { id: 2 * 4294967296 + 23, _lmVX: undefined, _lmVY: undefined });
+    const pushed = LM.removedCells.includes(c);
+    frame(now + 80);
+    check('seam: a copy leaves while another connection gets the cell between two frames: no fade over it', pushed && c.invisible === true && !d.invisible,
+        'in the removed list ' + pushed + ', fade drawn ' + (c.invisible !== true));
+    /* the same, the other connection's copy one frame later */
+    LM.cells.length = 0; LM.removedCells.length = 0;
+    const e = mk(1, 900);
+    e.id += 2;
+    frame(now + 96); frame(now + 112);
+    e.removeCell();
+    frame(now + 128);
+    const fadeFirst = e.invisible !== true;
+    const f = mk(2, 902, { id: 2 * 4294967296 + 25 });
+    frame(now + 144);
+    check('seam, the other copy a frame later: its fade drawn while no copy is there, not over the copy', fadeFirst && e.invisible === true && !f.invisible, fadeFirst + ' / ' + e.invisible);
+    /* no other copy: the fade plays */
+    LM.cells.length = 0; LM.removedCells.length = 0;
+    const h = mk(1, 1300);
+    h.id += 3;
+    frame(now + 160); frame(now + 176);
+    h.removeCell();
+    frame(now + 192);
+    check('a copy that leaves with no other copy of the cell: its fade plays', LM.removedCells.includes(h) && h.invisible !== true);
+    LM.cells.length = 0; LM.removedCells.length = 0;
 }
 
 /* ---------- ghost cells ---------- */
