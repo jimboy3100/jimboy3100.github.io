@@ -1,10 +1,8 @@
-/* Legend Mod small tools: radial command menu, the key check and the conflict list of the Hotkeys
- * window, the HUD hide of Show/hide HUD (Alt+H, the former screenshot mode) with its capture and the
+/* Legend Mod small tools: radial command menu, the key check of the Hotkeys window, the HUD hide of Show/hide HUD (Alt+H, the former screenshot mode) with its capture and the
  * screenshot window. (The skin collections window is gone: its kept skin links became player profiles
  * in the skins panel.)
  * Everything is off until used: windows and hotkeys without default keys
  * (all listed in the Hotkeys window). Nothing runs per frame while no tool is open.
- * The conflict list of the Hotkeys window is built when its button is pressed (LMSmallTools.renderConflicts).
  * Stored data, each in its own localStorage key, checked when read:
  *   lmRadialMenu      the commands of the radial menu (hotkey ids, up to 8)
  *   lmSmallTools      screenshot options
@@ -24,7 +22,7 @@
      * language, else English. vars fill {0} {1}. A few labels are the same as settings / hotkey labels
      * and use those keys. */
     var TP = 'modules.smalltools.';
-    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-showHUD', shotHelp: 'pkg.mg.shotHelp', shotTainted: 'pkg.mg.shotTainted', cMouseOff: 'pkg.mb.cMouseOff', cMoved: 'pkg.mb.cMoved', cMovedOk: 'pkg.mb.cMovedOk' };
+    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-showHUD', shotHelp: 'pkg.mg.shotHelp', shotTainted: 'pkg.mg.shotTainted' };
     function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(own(SHARED, k) ? SHARED[k] : TP + k, vars) : k; }
     function langDir() { return W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'; }
 
@@ -66,9 +64,7 @@
 
     /* Key names as the hotkeys window stores them (CTRL+ / ALT+ prefixes).
      * 'block': the browser keeps the shortcut, the game never gets the key.
-     * 'warn': the browser may still act (some systems, full screen, Alt menus).
-     * 'info': the game takes the key while it is bound (its keydown cancels the shortcut), but the
-     * browser acts while typing in a text field or before the page has focus. */
+     * 'warn': the browser may still act (some systems, full screen, Alt menus). */
     var BROWSER_KEYS = {
         'CTRL+W': ['block', 'closeTab'], 'CTRL+T': ['block', 'newTab'], 'CTRL+N': ['block', 'newWindow'],
         'CTRL+TAB': ['block', 'switchTabs'], 'ALT+TAB': ['block', 'switchWindows'], 'ALT+F4': ['block', 'closeWindow'],
@@ -76,83 +72,12 @@
         'F11': ['warn', 'fullscreen'], 'F12': ['warn', 'devtools'],
         'ALT': ['warn', 'menuBar'], 'META': ['warn', 'systemMenu'], 'MENU': ['warn', 'contextMenu'],
         'ALT+D': ['warn', 'addressBar'], 'ALT+F': ['warn', 'browserMenu'], 'ALT+E': ['warn', 'browserMenu'],
-        'F5': ['info', 'reload'], 'CTRL+R': ['info', 'reload'], 'CTRL+F5': ['info', 'reload'],
-        'F1': ['info', 'help'], 'F3': ['info', 'find'], 'F6': ['info', 'addressBar'], 'F7': ['info', 'caret'],
-        'CTRL+L': ['info', 'addressBar'], 'CTRL+D': ['info', 'bookmark'], 'CTRL+F': ['info', 'find'],
-        'CTRL+P': ['info', 'print'], 'CTRL+S': ['info', 'save'], 'CTRL+O': ['info', 'openFile'],
-        'CTRL+H': ['info', 'history'], 'CTRL+J': ['info', 'downloads'], 'CTRL+U': ['info', 'source'],
-        'CTRL+E': ['info', 'search'], 'CTRL+K': ['warn', 'commandCentre'],
-        'CTRL+=': ['info', 'zoom'], 'CTRL+-': ['info', 'zoom'], 'CTRL+0': ['info', 'zoomReset'],
-        'CTRL+PGUP': ['info', 'switchTabs'], 'CTRL+PGDN': ['info', 'switchTabs'],
-        'ALT+LEFT': ['info', 'back'], 'ALT+RIGHT': ['info', 'forward'], 'ALT+HOME': ['info', 'home']
+        'CTRL+K': ['warn', 'commandCentre']
     };
-    for (var _bk = 1; _bk <= 9; _bk++) BROWSER_KEYS['CTRL+' + _bk] = ['info', 'tabN', _bk];
     /* what the browser does with a key of BROWSER_KEYS, in the chosen language ("closes the tab") */
-    function browserWhat(b) { return t('bk.' + b[1], b.length > 2 ? b[2] : undefined); }
+    function browserWhat(b) { return t('bk.' + b[1]); }
     /* keys Legend Mod itself uses outside the hotkeys list (name of their use: a text key) */
     var BUILTIN_KEYS = { 'ESC': 'menuEsc' };
-    function builtinKeys() {
-        var o = {};
-        for (var k in BUILTIN_KEYS) if (own(BUILTIN_KEYS, k)) o[k] = t(BUILTIN_KEYS[k]);
-        return o;
-    }
-    /* the gamepad's own actions and the hotkey that does the same */
-    var PAD_SAME = { split: 'hk-split', doubleSplit: 'hk-doubleSplit', split16: 'hk-split16', feed: 'hk-macroFeed', multiboxSwap: 'hk-multiboxswap' };
-
-    /* Conflicts of the key / mouse / gamepad bindings.
-     * inp.keys: [[keyName, commandId], ...] (the hotkeys map, mouse buttons included ('MOUSE
-     * RIGHT'...); may hold the same key twice), inp.mouseOff: { mouseKey: { what, opt } } (buttons
-     * another setting uses instead: sticky cells), inp.moved: [{ key, from, to }] (buttons the old
-     * mouse settings gave to another command), inp.pad: { buttonIndex: action },
-     * inp.padNames: [name per button], inp.builtin: { key: label } (default BUILTIN_KEYS),
-     * inp.exists(cmd): command still defined.
-     * Result: [{ kind: 'dup'|'browser'|'mouseOff'|'moved'|'pad', level: 'error'|'warn'|'info', key, cmds, ... }] */
-    function findConflicts(inp) {
-        inp = inp || {};
-        var out = [], byKey = {}, keyOfCmd = {}, order = [];
-        var keys = Array.isArray(inp.keys) ? inp.keys : [];
-        var exists = typeof inp.exists === 'function' ? inp.exists : function () { return true; };
-        for (var i = 0; i < keys.length; i++) {
-            var p = keys[i];
-            if (!Array.isArray(p) || typeof p[0] !== 'string' || typeof p[1] !== 'string') continue;
-            var k = p[0].trim(), c = p[1];
-            if (!k || k === 'spec-messageKey' || !c || !exists(c)) continue;
-            /* key names are upper case; an imported lower case letter is the same key */
-            var nk = k.length === 1 ? k.toUpperCase() : k;
-            if (!own(byKey, nk)) { byKey[nk] = []; order.push(nk); }
-            if (byKey[nk].indexOf(c) < 0) byKey[nk].push(c);
-            if (!own(keyOfCmd, c)) keyOfCmd[c] = nk;
-        }
-        var builtin = isObj(inp.builtin) ? inp.builtin : builtinKeys();
-        order.forEach(function (key) {
-            var cmds = byKey[key];
-            if (cmds.length > 1) out.push({ kind: 'dup', level: 'error', key: key, cmds: cmds.slice() });
-            if (own(builtin, key)) out.push({ kind: 'dup', level: 'error', key: key, cmds: cmds.slice(), builtin: builtin[key] });
-            if (own(BROWSER_KEYS, key)) {
-                var b = BROWSER_KEYS[key];
-                out.push({ kind: 'browser', level: b[0] === 'block' ? 'error' : b[0], key: key, cmds: cmds.slice(), what: browserWhat(b) });
-            }
-            var off = isObj(inp.mouseOff) && own(inp.mouseOff, key) && isObj(inp.mouseOff[key]) ? inp.mouseOff[key] : null;
-            if (off) out.push({ kind: 'mouseOff', level: 'warn', key: key, cmds: cmds.slice(), what: String(off.what || ''), opt: typeof off.opt === 'string' ? off.opt : '' });
-        });
-        (Array.isArray(inp.moved) ? inp.moved : []).forEach(function (m) {
-            if (!isObj(m) || typeof m.key !== 'string' || typeof m.to !== 'string' || typeof m.from !== 'string') return;
-            /* only while the button still runs what the old setting gave it */
-            if (!own(byKey, m.key) || byKey[m.key].indexOf(m.to) < 0) return;
-            out.push({ kind: 'moved', level: 'warn', key: m.key, cmds: exists(m.from) && m.from !== m.to ? [m.to, m.from] : [m.to], from: m.from, to: m.to });
-        });
-        if (isObj(inp.pad)) {
-            var names = Array.isArray(inp.padNames) ? inp.padNames : [];
-            Object.keys(inp.pad).sort(function (a, b) { return a - b; }).forEach(function (bi) {
-                var a = inp.pad[bi];
-                if (typeof a !== 'string') return;
-                var cmd = HK_RE.test(a) ? a : (own(PAD_SAME, a) ? PAD_SAME[a] : null);
-                if (!cmd || !own(keyOfCmd, cmd)) return;
-                out.push({ kind: 'pad', level: 'info', key: keyOfCmd[cmd], cmds: [cmd], button: +bi, name: names[bi] || t('padButton', bi) });
-            });
-        }
-        return out;
-    }
 
     /* Report text without private data: the strings in secrets (nicks, clan tags, skin URLs,
      * ids) wherever they appear, key=value pairs of tokens / passwords / ids, JWTs, long hex or
@@ -189,7 +114,6 @@
     }
 
     var core = {
-        findConflicts: findConflicts,
         cleanRadial: cleanRadial, pickSector: pickSector, sectorAngle: sectorAngle, RADIAL_MAX: RADIAL_MAX,
         BROWSER_KEYS: BROWSER_KEYS, redact: redact,
         cleanShotOpts: cleanShotOpts
@@ -288,11 +212,6 @@
             '#lm-shot-chip{position:fixed;right:8px;bottom:8px;z-index:999996;display:flex;gap:6px;transition:opacity .4s;font-size:calc(12px * var(--lm-hud-scale,1));}' +
             '#lm-shot-chip div{cursor:pointer;min-width:max(30px,calc(34px * var(--lm-hud-scale,1)));height:max(30px,calc(34px * var(--lm-hud-scale,1)));line-height:max(30px,calc(34px * var(--lm-hud-scale,1)));padding:0 10px;border-radius:17px;text-align:center;background:rgba(0,0,0,0.55);color:#fff;border:1px solid rgba(255,255,255,0.35);box-sizing:border-box;}' +
             '#lm-shot-chip.idle{opacity:.18;}' +
-            /* the conflict list (Hotkeys window) */
-            // i18n-ok: CSS
-            '#lm-hk-conf-list a.lm-st-link{color:' + c.mc + ';cursor:pointer;text-decoration:underline;white-space:nowrap;}' +
-            '.lm-st-conf{padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.08);line-height:1.45;}' +
-            '.lm-st-lvl{display:inline-block;min-width:44px;margin-right:6px;padding:0 4px;border-radius:var(--lm-radius-s,3px);font-size:10px;font-weight:700;text-align:center;text-transform:uppercase;}' +
             /* a setting or hotkey row found by LMSmallTools.jump */
             // i18n-ok: CSS
             '.lm-st-flash{outline:3px solid ' + c.mc + ' !important;outline-offset:1px;}' +
@@ -849,107 +768,6 @@
         setTimeout(function () { var n = D.getElementById(id); flash(n && n.closest ? n.closest('.preset-box, label, div') || n : n); }, 300);
     }
 
-    /* ═══ Hotkey conflicts (the list in the Hotkeys window) ═══ */
-
-    function padMap() {
-        var g = W.LMGamepad;
-        if (g && typeof g.getMap === 'function') { try { return g.getMap(); } catch (e) { } }
-        /* read only: the stored map, when the gamepad file is not loaded */
-        var raw = lsGet('lmGamepad');
-        return isObj(raw) && isObj(raw.map) ? raw.map : null;
-    }
-    function currentConflicts() {
-        var hk = W.hotkeys, s = settings(), tl = W.textLanguage || {}, keys = [];
-        if (isObj(hk)) for (var k in hk) if (own(hk, k) && typeof hk[k] === 'string') keys.push([k, hk[k]]);
-        var g = W.LMGamepad, hs = W.legendmod6, moved = [];
-        try { if (hs && typeof hs.mouseNotes === 'function') moved = hs.mouseNotes(); } catch (e) { }
-        /* sticky cells take the left and right button on the game */
-        var off = {}, offBy = s.stickyCell ? 'stickyCell' : '';
-        if (offBy) off['MOUSE LEFT'] = off['MOUSE RIGHT'] = { what: plain(tl[offBy]) || offBy, opt: offBy };
-        return findConflicts({
-            keys: keys,
-            exists: hkExists,
-            mouseOff: off,
-            moved: moved,
-            pad: padMap(),
-            padNames: g && g.BUTTON_NAMES ? g.BUTTON_NAMES : ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'Back', 'Start', 'LS', 'RS', t('dpadUp'), t('dpadDown'), t('dpadLeft'), t('dpadRight')]
-        });
-    }
-    function conflictText(c) {
-        var labels = c.cmds.map(hkLabel).join(', ');
-        if (c.kind === 'dup' && c.builtin) return [c.key, t('cBuiltin', [c.builtin, labels])];
-        if (c.kind === 'dup') return [c.key, t('cDup', labels)];
-        if (c.kind === 'browser') return [c.key, t(c.level === 'error' ? 'cBrowserBlock' : c.level === 'warn' ? 'cBrowserWarn' : 'cBrowserInfo', [c.what, labels])];
-        if (c.kind === 'mouseOff') return [c.key, t('cMouseOff', [labels, c.what])];
-        if (c.kind === 'moved') return [c.key, t('cMoved', [hkLabel(c.to), hkLabel(c.from)])];
-        return [t('padName', c.name), t('cMouse', [c.key, labels])];
-    }
-    /* The list of all conflicts, shown in the Hotkeys window (its "Hotkey conflicts" button,
-     * ogario.v4.js buildHotkeysControls): keys bound twice or kept by the browser, and mouse
-     * buttons / gamepad buttons that run a command a key runs too, each with a jump to its row.
-     * Built again after each key change while it is shown. Returns how many there are. */
-    var confBox = null;
-    function renderConflicts(box) {
-        if (!box) return 0;
-        addStyle();
-        confBox = box;
-        while (box.firstChild) box.removeChild(box.firstChild);
-        var w = { body: box };
-        var rank = { error: 0, warn: 1, info: 2 };
-        var list = currentConflicts().sort(function (a, b) { return rank[a.level] - rank[b.level]; });
-        if (!list.length) w.body.appendChild(el('p', 'margin:6px 0;', t('noConflicts')));
-        var lv = { error: ['#c9302c', '#fff'], warn: ['#f0ad4e', '#000'], info: ['rgba(255,255,255,0.2)', '#fff'] };
-        list.forEach(function (c) {
-            var row = el('div');
-            row.className = 'lm-st-conf';
-            var b = el('span', 'background:' + lv[c.level][0] + ';color:' + lv[c.level][1] + ';', c.level === 'error' ? '!' : c.level === 'warn' ? '?' : 'i');
-            b.className = 'lm-st-lvl';
-            row.appendChild(b);
-            var tx = conflictText(c);
-            row.appendChild(el('kbd', 'margin-right:6px;', tx[0]));
-            row.appendChild(D.createTextNode(tx[1] + ' '));
-            c.cmds.forEach(function (cmd) {
-                var a = el('a', 'margin-right:8px;', c.cmds.length > 1 ? t('jumpTo', hkLabel(cmd)) : t('jump'));
-                a.className = 'lm-st-link';
-                a.href = '#';
-                a.addEventListener('click', function (e) { e.preventDefault(); jumpHotkey(cmd); });
-                row.appendChild(a);
-            });
-            /* the setting that takes the button (sticky cells is in Settings) */
-            if (c.kind === 'mouseOff' && c.opt && D.getElementById(c.opt)) {
-                var am = el('a', 'margin-right:8px;', t('jumpTo', c.what));
-                am.className = 'lm-st-link';
-                am.href = '#';
-                am.addEventListener('click', function (e) { e.preventDefault(); jumpSetting(c.opt); });
-                row.appendChild(am);
-            }
-            /* a change the old mouse settings made: listed until it is seen */
-            if (c.kind === 'moved') {
-                var ok = el('a', '', t('cMovedOk'));
-                ok.className = 'lm-st-link';
-                ok.href = '#';
-                ok.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    try { if (W.legendmod6 && W.legendmod6.dismissMouseNote) W.legendmod6.dismissMouseNote(c.key); } catch (e2) { }
-                    renderConflicts(box);
-                });
-                row.appendChild(ok);
-            }
-            if (c.kind === 'pad' && W.LMGamepad && typeof W.LMGamepad.openWindow === 'function') {
-                var ap = el('a', '', t('jumpTo', t('cPad')));
-                ap.className = 'lm-st-link';
-                ap.href = '#';
-                ap.addEventListener('click', function (e) { e.preventDefault(); W.LMGamepad.openWindow(); });
-                row.appendChild(ap);
-            }
-            w.body.appendChild(row);
-        });
-        return list.length;
-    }
-    /* the list again when it is shown (a key changed, the language changed) */
-    function refreshConflicts() {
-        if (confBox && confBox.isConnected && confBox.firstChild && confBox.style.display !== 'none') renderConflicts(confBox);
-    }
     function openShotWindow() {
         var w = openWin('lm-st-shot', t('shotTitle'), 420);
         w.body.appendChild(el('p', '', t('shotHelp'))).className = 'lm-st-help';
@@ -995,9 +813,6 @@
     api.capture = capture;
     api.compose = function () { return composeShot(shotOpts()); };
     api.redactReport = redactReport;
-    api.conflicts = currentConflicts;
-    api.renderConflicts = renderConflicts;
-    api.refreshConflicts = refreshConflicts;
     /* Checked by the hotkeys window when a key is pressed for a command (ogario.v4.js setHotkey):
      * null = fine; { level: 'block' } = the browser or Legend Mod keeps that key, so it is refused;
      * { level: 'warn' } = allowed, but the browser may still act on it. */
@@ -1021,15 +836,13 @@
         return true;
     };
 
-    /* Language change: an open window is built again in the new language, the HUD hide chip and a
-     * conflict list that is shown follow. */
+    /* Language change: an open window is built again in the new language, the HUD hide chip follows. */
     if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {
         try {
             if (win) for (var n in WIN_IDS) if (own(WIN_IDS, n) && WIN_IDS[n] === win.id) { WINS[n](); break; }
             var cap = D.getElementById('lm-shot-cap'), sx = D.getElementById('lm-shot-x');
             if (cap) cap.textContent = t('shotCapture');
             if (sx) sx.title = t('close');
-            refreshConflicts();
         } catch (e) { }
     });
 })();

@@ -1,7 +1,7 @@
 /* Hotkeys brought back as they were: Multibox middle view (hk-middleMultiView), enlarge the
- * minimap (hk-bigMinimap), precision zoom (hk-precisionZoom, hold), all without default keys,
- * and the conflict list of the Hotkeys window (its texts). The next / previous / Undo settings
- * profile hotkeys stay gone with the settings profiles. The real ogario/hotkeysCommand.js and the
+ * minimap (hk-bigMinimap), precision zoom (hk-precisionZoom, hold), all without default keys.
+ * The next / previous / Undo settings profile hotkeys stay gone with the settings profiles, the
+ * conflict list of the Hotkeys window stays removed (owner 2026-11-28). The real ogario/hotkeysCommand.js and the
  * real Settings.lmToggleBigMinimap / saveThemeSettings / setMiniMapWidth of ogario/ogario.v4.js
  * run in a vm.
  * node developers/tests/hotkeysrestore.js */
@@ -78,12 +78,14 @@ const v4 = read('ogario/ogario.v4.js');
     check('stored keys: restored hotkeys kept, settings profile ones dropped', JSON.stringify(hk) === JSON.stringify({ M: 'hk-middleMultiView', N: 'hk-bigMinimap', Z: 'hk-precisionZoom', W: 'hk-feed' }));
 }
 
-/* the texts are shipped again (English; other languages keep their old translations) */
+/* the texts of the restored hotkeys are shipped (English; other languages keep their old
+ * translations); the conflict list's are not */
 {
     const en = read('languages/lm-en.js'), el = read('languages/lm-el.js');
-    ['settings.hk-middleMultiView', 'settings.hk-bigMinimap', 'settings.hk-precisionZoom', 'settings.hk-hotkeyConflicts', 'pkg.pt.hkCheck', 'modules.smalltools.noConflicts', 'modules.smalltools.cDup', 'pkg.mb.cMoved']
+    ['settings.hk-middleMultiView', 'settings.hk-bigMinimap', 'settings.hk-precisionZoom']
         .forEach(k => check(k + ': text shipped', en.indexOf('"' + k + '"') >= 0 && el.indexOf('"' + k + '"') >= 0));
-    check('settings.hk-lmProfileNext: no text', en.indexOf('"settings.hk-lmProfileNext"') < 0);
+    ['settings.hk-lmProfileNext', 'settings.hk-hotkeyConflicts', 'pkg.pt.hkCheck', 'pkg.pt.hkLoading', 'modules.smalltools.noConflicts', 'modules.smalltools.cDup', 'pkg.mb.cMoved', 'pkg.mb.migratedNotes']
+        .forEach(k => check(k + ': no text', en.indexOf('"' + k + '"') < 0 && el.indexOf('"' + k + '"') < 0));
 }
 
 console.log(fail ? fail + ' FAILED' : 'all hotkey restore checks passed');

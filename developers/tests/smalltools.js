@@ -1,4 +1,4 @@
-/* Small tools and accessibility: conflict detection, debug info redaction, radial sector choice
+/* Small tools and accessibility: the key check, debug info redaction, radial sector choice
  * and the accessibility helpers (pure parts of ogario/modules/smalltools.js
  * and ogario/modules/accessibility.js, loaded in a vm without a document).
  * node developers/tests/smalltools.js */
@@ -64,6 +64,18 @@ check('radial store: garbage gives an empty ring', J(C.cleanRadial('x')) === '[]
     try { jumped = T.jump('showMass'); } catch (e) { jumped = 'threw ' + e.message; }
     check('jump (Settings search hints): opens the menu at the Settings tab, no error', jumped === true && c2._menu === 1 && c2._tab === 1);
     check('the windows and the ring API are back, Show/hide HUD and Capture stay', typeof T.open === 'function' && typeof T.toggle === 'function' && typeof T.radialDown === 'function' && typeof T.radialUp === 'function' && typeof T.shotToggle === 'function' && typeof T.capture === 'function');
+    /* the key check of the Hotkeys window (setHotkey): browser and Legend Mod keys */
+    const kw = T.keyCheck('CTRL+W'), kf = T.keyCheck('F11'), ke = T.keyCheck('ESC');
+    check('key check: Ctrl+W is kept by the browser (refused), reason from the language pack', !!kw && kw.level === 'block' && kw.what === i18n.t('modules.smalltools.bk.closeTab') && kw.what === 'closes the tab' && kw.msg.indexOf('CTRL+W') >= 0);
+    check('key check: F11 may still reach the browser (warning)', !!kf && kf.level === 'warn');
+    check('key check: Esc is the menu key (refused)', !!ke && ke.level === 'block' && ke.what === i18n.t('modules.smalltools.usedBy', i18n.t('modules.smalltools.menuEsc')));
+    check('key check: plain keys and shortcuts the game takes are fine', T.keyCheck('Q') === null && T.keyCheck('F5') === null && T.keyCheck('CTRL+1') === null);
+    c2.LMi18n.setLang('el', { save: false });
+    const kg = T.keyCheck('CTRL+W');
+    check('key check: the reason follows the language (Greek)', !!kg && kg.what === i18n.t('modules.smalltools.bk.closeTab', null, 'el') && kg.what !== 'closes the tab');
+    c2.LMi18n.setLang('en', { save: false });
+    /* the conflict list of the Hotkeys window is removed */
+    check('removed: the conflict list (no conflicts, renderConflicts, refreshConflicts, findConflicts)', !('conflicts' in T) && !('renderConflicts' in T) && !('refreshConflicts' in T) && !('findConflicts' in T._core));
 }
 {
     const v4 = fs.readFileSync(path.join(dir, '..', 'ogario.v4.js'), 'utf8').replace(/\r\n/g, '\n');
@@ -78,51 +90,6 @@ check('radial store: garbage gives an empty ring', J(C.cleanRadial('x')) === '[]
     const en = fs.readFileSync(path.join(dir, '..', '..', 'languages', 'lm-en.js'), 'utf8');
     check('removed: the phone custom macro buttons text is not shipped', en.indexOf('pkg.agm.') >= 0 && en.indexOf('pkg.agm.m_macroBtns') < 0);
 }
-
-/* ── hotkey conflicts ── */
-const has = (list, f) => list.some(f);
-let r = C.findConflicts({ keys: [['Q', 'hk-split'], ['W', 'hk-feed']] });
-check('conflicts: distinct plain keys = none', r.length === 0);
-r = C.findConflicts({ keys: [['Q', 'hk-split'], ['q', 'hk-feed']] });
-check('conflicts: same key twice (upper / lower case) = duplicate', has(r, c => c.kind === 'dup' && c.key === 'Q' && c.cmds.length === 2 && c.level === 'error'));
-r = C.findConflicts({ keys: [['Q', 'hk-split'], ['Q', 'hk-split']] });
-check('conflicts: the same command twice on one key is no duplicate', !has(r, c => c.kind === 'dup'));
-r = C.findConflicts({ keys: [['CTRL+W', 'hk-split'], ['F5', 'hk-feed'], ['CTRL+TAB', 'hk-x'], ['CTRL+1', 'hk-y']] });
-check('conflicts: Ctrl+W is kept by the browser (error)', has(r, c => c.kind === 'browser' && c.key === 'CTRL+W' && c.level === 'error'));
-check('conflicts: Ctrl+Tab is kept by the browser (error)', has(r, c => c.kind === 'browser' && c.key === 'CTRL+TAB' && c.level === 'error'));
-check('conflicts: F5 is a browser shortcut the game takes (note)', has(r, c => c.kind === 'browser' && c.key === 'F5' && c.level === 'info'));
-check('conflicts: Ctrl+1 switches tabs (note)', has(r, c => c.key === 'CTRL+1' && c.level === 'info'));
-check('conflicts: reason from the language pack', has(r, c => c.key === 'CTRL+W' && c.what === i18n.t('modules.smalltools.bk.closeTab') && c.what === 'closes the tab'));
-check('conflicts: tab number in the reason', has(r, c => c.key === 'CTRL+1' && c.what === i18n.t('modules.smalltools.bk.tabN', 1) && c.what.indexOf('1') !== -1));
-ctx.LMi18n.setLang('el', { save: false });
-{
-    const g = C.findConflicts({ keys: [['CTRL+W', 'hk-split'], ['ESC', 'hk-feed']] });
-    check('conflicts: reasons follow the language (Greek)', has(g, c => c.key === 'CTRL+W' && c.what === i18n.t('modules.smalltools.bk.closeTab', null, 'el') && c.what !== 'closes the tab'));
-    check('conflicts: Legend Mod key name follows the language (Greek)', has(g, c => c.key === 'ESC' && c.builtin === i18n.t('modules.smalltools.menuEsc', null, 'el')));
-}
-ctx.LMi18n.setLang('en', { save: false });
-r = C.findConflicts({ keys: [['F11', 'hk-split'], ['CTRL+Q', 'hk-feed']] });
-check('conflicts: F11 and Ctrl+Q may still reach the browser (warning)', r.length === 2 && r.every(c => c.level === 'warn'));
-r = C.findConflicts({ keys: [['ESC', 'hk-split']] });
-check('conflicts: Esc is also the menu key', has(r, c => c.kind === 'dup' && c.builtin && c.key === 'ESC'));
-r = C.findConflicts({ keys: [['spec-messageKey', 'ENTER'], ['', 'hk-split'], ['E', 'hk-gone'], [5, 'x'], 'junk'], exists });
-check('conflicts: message key entry, empty keys, removed commands and junk ignored', r.length === 0);
-/* mouse buttons are keys of the hotkeys map ('MOUSE RIGHT'...) */
-r = C.findConflicts({ keys: [['SPACE', 'hk-split'], ['MOUSE RIGHT', 'hk-split'], ['MOUSE LEFT', 'hk-feed'], ['MOUSE 4', 'hk-other']], exists,
-    mouseOff: { 'MOUSE LEFT': { what: 'Sticky cells', opt: 'stickyCell' }, 'MOUSE RIGHT': { what: 'Sticky cells', opt: 'stickyCell' } } });
-check('conflicts: a key and a mouse button of one command are no conflict', !has(r, c => c.kind === 'dup'));
-check('conflicts: a mouse button sticky cells takes is listed (warning)', has(r, c => c.kind === 'mouseOff' && c.key === 'MOUSE LEFT' && c.level === 'warn' && c.cmds.join() === 'hk-feed' && c.opt === 'stickyCell' && c.what === 'Sticky cells') && has(r, c => c.kind === 'mouseOff' && c.key === 'MOUSE RIGHT'));
-check('conflicts: an unbound taken button and other buttons are not', r.filter(c => c.kind === 'mouseOff').length === 2);
-r = C.findConflicts({ keys: [['MOUSE WHEEL', 'hk-multiboxswap'], ['MOUSE 4', 'hk-split']], exists: (c) => c !== 'hk-gone',
-    moved: [{ key: 'MOUSE WHEEL', from: 'hk-comm10', to: 'hk-multiboxswap' }, { key: 'MOUSE 4', from: 'hk-feed', to: 'hk-doubleSplit' }, { key: 'MOUSE 5', from: 'hk-gone', to: 'hk-split16' }, 'junk', { key: 3 }] });
-check('conflicts: a button the old mouse settings moved is listed with both commands', has(r, c => c.kind === 'moved' && c.key === 'MOUSE WHEEL' && c.level === 'warn' && c.cmds.join() === 'hk-multiboxswap,hk-comm10'));
-check('conflicts: a moved button rebound since (or junk) is not', r.filter(c => c.kind === 'moved').length === 1);
-r = C.findConflicts({ keys: [['SPACE', 'hk-split'], ['W', 'hk-macroFeed'], ['R', 'hk-cameraLock']], pad: { 0: 'split', 1: 'feed', 2: 'hk-cameraLock', 3: 'respawn', 4: 'none', 5: 7 }, padNames: ['A', 'B', 'X', 'Y', 'LB', 'RB'] });
-check('conflicts: gamepad Split = key split', has(r, c => c.kind === 'pad' && c.button === 0 && c.name === 'A' && c.key === 'SPACE'));
-check('conflicts: gamepad feed = macro feed key', has(r, c => c.kind === 'pad' && c.button === 1 && c.key === 'W'));
-check('conflicts: gamepad hotkey action = same key command', has(r, c => c.kind === 'pad' && c.button === 2 && c.key === 'R'));
-check('conflicts: gamepad respawn / none / junk not listed', r.filter(c => c.kind === 'pad').length === 3);
-check('conflicts: nothing given = nothing found', C.findConflicts().length === 0 && C.findConflicts({ keys: 'x', pad: [1], mouse: 3 }).length === 0);
 
 /* ── redaction ── */
 const rep = [

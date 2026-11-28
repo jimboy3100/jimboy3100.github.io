@@ -1583,24 +1583,6 @@
     "ja": "プリセット：競技、省電力、配信者、シンプルHUD、モーション軽減（元に戻す機能付き）",
     "it": "Preset: Competitivo, Risparmio batteria, Streamer, HUD pulito, Movimento ridotto (con Annulla)"
   },
-  "site.features.boundKeysListIn": {
-    "en": "Hotkey conflicts list in the Hotkeys window",
-    "el": "Λίστα συγκρούσεων πλήκτρων στο παράθυρο Πλήκτρα συντόμευσης",
-    "es": "Lista de conflictos de atajos en la ventana Atajos de teclado",
-    "bg": "Списък с конфликти на бързи клавиши в прозореца Бързи клавиши",
-    "fr": "Liste des conflits de raccourcis dans la fenêtre Raccourcis",
-    "ar": "قائمة تعارضات الاختصارات في نافذة اختصارات لوحة المفاتيح",
-    "zh": "快捷鍵視窗中的快捷鍵衝突清單",
-    "ru": "Список конфликтов горячих клавиш в окне «Горячие клавиши»",
-    "de": "Liste der Hotkey-Konflikte im Fenster Tastenbelegung",
-    "tr": "Kısayol tuşları penceresinde kısayol çakışmaları listesi",
-    "pl": "Lista konfliktów skrótów w oknie Skróty klawiszowe",
-    "nl": "Lijst met sneltoetsconflicten in het venster Sneltoetsen",
-    "pt": "Lista de conflitos de atalhos na janela Atalhos",
-    "id": "Daftar konflik hotkey di jendela Hotkey",
-    "ja": "ショートカットウィンドウのショートカットの重複一覧",
-    "it": "Elenco dei conflitti tra tasti rapidi nella finestra Tasti rapidi"
-  },
   "site.features.settingsThemeAndHotkey": {
     "en": "Settings, theme and hotkey labels in 16 languages",
     "el": "Ετικέτες ρυθμίσεων, θέματος και πλήκτρων σε 16 γλώσσες",

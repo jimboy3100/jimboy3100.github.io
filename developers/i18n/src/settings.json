@@ -4121,24 +4121,6 @@
     "ja": "スクリーンショットウィンドウ",
     "it": "Finestra screenshot"
   },
-  "settings.hk-hotkeyConflicts": {
-    "en": "Hotkey conflicts",
-    "el": "Συγκρούσεις πλήκτρων",
-    "es": "Conflictos de atajos",
-    "bg": "Конфликти на бързи клавиши",
-    "fr": "Conflits de raccourcis",
-    "ar": "تعارضات الاختصارات",
-    "zh": "快捷鍵衝突",
-    "ru": "Конфликты горячих клавиш",
-    "de": "Hotkey-Konflikte",
-    "tr": "Kısayol çakışmaları",
-    "pl": "Konflikty skrótów",
-    "nl": "Sneltoetsconflicten",
-    "pt": "Conflitos de atalhos",
-    "id": "Konflik hotkey",
-    "ja": "ショートカットの重複",
-    "it": "Conflitti tra tasti rapidi"
-  },
   "settings.hotkeys": {
     "en": "Hotkeys",
     "el": "Πλήκτρα συντόμευσης",

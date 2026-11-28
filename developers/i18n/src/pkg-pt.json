@@ -106,41 +106,5 @@
     "id": "Menyalakan mode stream (nick, tag klan, dan URL skin diburamkan di menu ini) dan sembunyikan URL skin, serta mengubah opsi tampilan ini: negaramu disembunyikan dari pemain Legend Mod lain, tanpa obrolan pada sel, tanpa gambar atau video di obrolan, tanpa konsol developer. Ini bukan jaminan privasi: tidak ada yang digambar di dalam game yang disembunyikan (nick dan skin di selmu, papan peringkat), begitu juga kotak obrolan.",
     "ja": "配信モード（このメニューのニック、クランタグ、スキンURLをぼかします）とスキンURLを隠すをオンにし、次の表示オプションを変更します：ほかの Legend Mod プレイヤーに自分の国を表示しない、セル上のチャットなし、チャットの画像や動画なし、開発者コンソールなし。プライバシーの保証ではありません：ゲーム画面に描かれるもの（自分のセルのニックとスキン、リーダーボード）もチャット欄も隠れません。",
     "it": "Attiva la modalità stream (nick, tag del clan e URL della skin sfocati in questo menu) e nascondi URL skin, e cambia queste opzioni di visualizzazione: il tuo paese nascosto agli altri giocatori di Legend Mod, niente chat sulle cellule, niente immagini o video in chat, niente console sviluppatore. Non è una garanzia di privacy: nulla di ciò che viene disegnato nel gioco viene nascosto (nick e skin sulle tue cellule, la classifica), né la finestra della chat."
-  },
-  "pkg.pt.hkCheck": {
-    "en": "Show all conflicts (keys, mouse buttons, gamepad)",
-    "el": "Εμφάνιση όλων των συγκρούσεων (πλήκτρα, κουμπιά ποντικιού, χειριστήριο)",
-    "es": "Mostrar todos los conflictos (teclas, botones del ratón, mando)",
-    "bg": "Покажи всички конфликти (клавиши, бутони на мишката, геймпад)",
-    "fr": "Afficher tous les conflits (touches, boutons de la souris, manette)",
-    "ar": "عرض كل التعارضات (المفاتيح، أزرار الفأرة، يد التحكم)",
-    "zh": "顯示所有衝突（按鍵、滑鼠按鈕、手把）",
-    "ru": "Показать все конфликты (клавиши, кнопки мыши, геймпад)",
-    "de": "Alle Konflikte zeigen (Tasten, Maustasten, Gamepad)",
-    "tr": "Tüm çakışmaları göster (tuşlar, fare düğmeleri, oyun kolu)",
-    "pl": "Pokaż wszystkie konflikty (klawisze, przyciski myszy, pad)",
-    "nl": "Alle conflicten tonen (toetsen, muisknoppen, gamepad)",
-    "pt": "Mostrar todos os conflitos (teclas, botões do mouse, controle)",
-    "id": "Tampilkan semua bentrok (tombol keyboard, tombol mouse, gamepad)",
-    "ja": "すべての重複を表示（キー、マウスボタン、ゲームパッド）",
-    "it": "Mostra tutti i conflitti (tasti, pulsanti del mouse, gamepad)"
-  },
-  "pkg.pt.hkLoading": {
-    "en": "The conflict check is still loading. Try again in a moment.",
-    "el": "Ο έλεγχος συγκρούσεων φορτώνει ακόμα. Δοκίμασε ξανά σε λίγο.",
-    "es": "La comprobación de conflictos aún se está cargando. Inténtalo de nuevo en un momento.",
-    "bg": "Проверката за конфликти още се зарежда. Опитай пак след малко.",
-    "fr": "La vérification des conflits est encore en cours de chargement. Réessayez dans un instant.",
-    "ar": "فحص التعارضات ما زال قيد التحميل. حاول مجددًا بعد لحظة.",
-    "zh": "衝突檢查仍在載入中，請稍後再試。",
-    "ru": "Проверка конфликтов ещё загружается. Попробуйте через мгновение.",
-    "de": "Die Konfliktprüfung lädt noch. Versuche es gleich noch einmal.",
-    "tr": "Çakışma denetimi hâlâ yükleniyor. Birazdan tekrar dene.",
-    "pl": "Sprawdzanie konfliktów jeszcze się ładuje. Spróbuj za chwilę.",
-    "nl": "De conflictcontrole laadt nog. Probeer het zo opnieuw.",
-    "pt": "A verificação de conflitos ainda está carregando. Tente de novo em instantes.",
-    "id": "Pemeriksaan bentrok masih dimuat. Coba lagi sebentar lagi.",
-    "ja": "重複チェックはまだ読み込み中です。少し待ってからもう一度お試しください。",
-    "it": "Il controllo dei conflitti si sta ancora caricando. Riprova tra un momento."
   }
 }

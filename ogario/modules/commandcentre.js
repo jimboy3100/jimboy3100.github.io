@@ -425,7 +425,7 @@
             var sec = inTheme ? t('theme') + ' \u00b7 ' + themePanelTitle(el) : sectionOf(el);
             add({ id: 'set:' + key, kind: 'set', label: plain(tl[key]) || boxLabel(el), en: plain(en[key]), key: key, section: sec, el: el, theme: inTheme });
         }
-        /* the gamepad and conflict blocks of the Hotkeys window (ogario.v4.js buildHotkeysControls):
+        /* the gamepad block of the Hotkeys window (ogario.v4.js buildHotkeysControls):
          * they open that window there */
         var hkHeads = D.querySelectorAll('#lm-hk-controls h5[data-lm-sec]');
         for (i = 0; i < hkHeads.length; i++) {
