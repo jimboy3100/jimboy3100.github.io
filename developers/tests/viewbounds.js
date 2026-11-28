@@ -118,23 +118,39 @@ g.fullSpectator = false; g.multiboxPlayerEnabled = false;
  * teammate indicator and nick are all off screen. Each cell had 600 screen pixels more on
  * top (1500 units at zoom 0.4), so with Full Map ~250 cells of the map were drawn in Canvas2D
  * every frame for nothing; now only a nick never laid out (or changed since) gets that margin,
- * and a laid out one its own half width, grown with the cell and the zoom out since. */
+ * and a laid out one its own half width, grown with the cell, the zoom out and the names scale
+ * since. The nick drawn is targetNick: cell.nick is only set where a nick is laid out, so a
+ * cell never drawn yet has none (it must still get the margin), and none is drawn while names
+ * are hidden for the cell (No names, auto hidden small cells). */
 {
-    const a = src.indexOf('var _dcScale = this.scale || 1'), b = src.indexOf('/* EXPANDING LAND', a);
+    const a = src.indexOf('var _dcNames = '), b = src.indexOf('/* EXPANDING LAND', a);
     if (a < 0 || b < 0) throw new Error('Canvas2D cell pass cull not found');
+    vm.runInContext('var ogario = { viewScale: 0.4 }; var application = {' + block('        setAutoHideCellInfo(t) {') + '};', g);
+    const dms = g.defaultmapsettings, ds = g.defaultSettings;
+    dms.noNames = false; dms.autoHideNames = false; ds.namesScale = 1;
     const pass = vm.runInContext('(function (LM) { var out = []; ' + src.slice(a, b) + ' out.push(drawCell); } return out; })', g);
     /* zoom 0.4, screen 1600x900: the view is -2000..2000 x -1125..1125 */
     const cam = { cells: [], camMinX: -2000, camMaxX: 2000, camMinY: -1125, camMaxY: 1125, hideSmallBots: false };
-    const cell = (o) => Object.assign({ x: 0, y: 0, size: 100, nick: '', redrawed: 0, lmChatLine() { return null; } }, o);
+    const cell = (o) => Object.assign({ x: 0, y: 0, size: 100, nick: '', targetNick: '', redrawed: 0, lmChatLine() { return null; } }, o);
     const drawn = (c, scale) => { cam.cells = [c]; return pass.call({ scale: scale || 0.4 }, cam).length === 1; };
     check('a cell without nick 500 past the screen (4 radii 400) is left out', !drawn(cell({ x: 2500 })));
     check('a cell without nick 350 past the screen is drawn', drawn(cell({ x: 2350 })));
-    check('a nick never laid out: 600 screen px kept (1500 at zoom 0.4)', drawn(cell({ x: 3000, nick: 'abc' })) && !drawn(cell({ x: 4000, nick: 'abc' })));
-    const laid = { nick: 'a long nick', size: 30, _lmNickW: 1200, _lmNickT: 'a long nick', _lmNickR: 30, _lmNickS: 0.4 };
+    /* as a cell arrives: its packets set targetNick, nick stays '' until the text pass ran */
+    check('a nick never laid out: 600 screen px kept (1500 at zoom 0.4)', drawn(cell({ x: 3000, targetNick: 'abc' })) && !drawn(cell({ x: 4000, targetNick: 'abc' })));
+    const laid = { nick: 'a long nick', targetNick: 'a long nick', size: 30, _lmNickW: 1200, _lmNickT: 'a long nick', _lmNickR: 30, _lmNickS: 0.4, _lmNickQ: 1 };
     check('a laid out nick: its half width (600)', drawn(cell(Object.assign({}, laid, { x: 2550 }))) && !drawn(cell(Object.assign({}, laid, { x: 2650 }))));
     check('the cell grew since its nick was laid out: the width grows with it', drawn(cell(Object.assign({}, laid, { x: 3150, size: 60 }))));
     check('zoomed out since the nick was laid out: the width grows with it', drawn(cell(Object.assign({}, laid, { x: 3150, _lmNickS: 0.8 }))));
-    check('the nick changed since: 600 screen px kept', drawn(cell(Object.assign({}, laid, { x: 3150, nick: 'another' }))));
+    check('the nick changed since (new targetNick, the old one laid out): 600 screen px kept', drawn(cell(Object.assign({}, laid, { x: 3150, targetNick: 'another' }))));
+    ds.namesScale = 2;
+    check('names scale raised since the nick was laid out: the width grows with it', drawn(cell(Object.assign({}, laid, { x: 3150 }))));
+    ds.namesScale = 1;
+    dms.noNames = true;
+    check('No names: no nick margin', !drawn(cell({ x: 3000, targetNick: 'abc' })) && !drawn(cell(Object.assign({}, laid, { x: 2550 }))));
+    dms.noNames = false; dms.autoHideNames = true;
+    check('a small cell whose nick is auto hidden: no nick margin, an own cell keeps it', !drawn(cell({ x: 2250, size: 30, targetNick: 'abc' })) &&
+        drawn(cell({ x: 2250, size: 30, targetNick: 'abc', isPlayerCell: true })) && drawn(cell({ x: 3000, size: 100, targetNick: 'abc' })));
+    dms.autoHideNames = false;
     check('a small cell below the screen whose teammate indicator reaches it is drawn', drawn(cell({ y: 1125 + 170, size: 20 })) && !drawn(cell({ y: 1125 + 190, size: 20 })));
     check('a cell with a chat line far off screen is drawn', drawn(cell({ x: 6000, lmChatLine() { return 'hi'; } })));
     check('a cell left out still counts as drawn (its removal fades)', (() => { const c = cell({ x: 9000 }); drawn(c); return c.redrawed === 1; })());

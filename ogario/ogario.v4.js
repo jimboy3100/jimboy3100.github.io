@@ -37340,6 +37340,7 @@ function thelegendmodproject() {
             this._lmNickR = this.size;
             this._lmNickS = this.scale;
             this._lmNickT = this.nick;
+            this._lmNickQ = this.nickScale;
             this.margin = ~~(this._lmNickH / 2);
             return nickImg;
         };
@@ -79063,6 +79064,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * map deformation (it moves cells up to ~700). A blanket 600 screen pixels for every
                  * cell kept ~120 off-screen cells of the map in the Canvas2D pass each frame. A cell
                  * with a chat bubble is drawn as before (the bubble can be wide). */
+                /* the nick the text pass draws is targetNick (cell.nick is only set where a nick is
+                 * laid out: a cell never drawn yet has none), unless names are hidden for it */
+                var _dcNames = !defaultmapsettings.noNames, _dcAuto = !!defaultmapsettings.autoHideNames, _dcNs = defaultSettings.namesScale;
                 var _dcScale = this.scale || 1, _dcNoNick = 600 / _dcScale, _dcPad =
                     ((this.isLegendWorldMapDeformationVisible && this.isLegendWorldMapDeformationVisible()) ? 1000 : 0);
                 var _dcMinX = LM.camMinX - _dcPad, _dcMaxX = LM.camMaxX + _dcPad, _dcMinY = LM.camMinY - _dcPad, _dcMaxY = LM.camMaxY + _dcPad;
@@ -79085,13 +79089,15 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         continue;
                     }
                     if (_dcCull && !drawCell._webglRendered) {
-                        var _dcS = drawCell.size, _dcR = _dcS + 160, _dcNw = drawCell._lmNickW;
+                        var _dcS = drawCell.size, _dcR = _dcS + 160, _dcNw = drawCell._lmNickW, _dcNk = drawCell.targetNick;
                         if (4 * _dcS > _dcR) _dcR = 4 * _dcS;
-                        if (drawCell.nick) {
-                            if (_dcNw > 0 && drawCell._lmNickT === drawCell.nick) {
+                        if (_dcNk && _dcNames && !(_dcAuto && !drawCell.isPlayerCell && application.setAutoHideCellInfo(_dcS))) {
+                            if (_dcNw > 0 && drawCell._lmNickT === _dcNk) {
                                 _dcNw *= 0.5;
                                 if (_dcS > drawCell._lmNickR) _dcNw *= _dcS / drawCell._lmNickR;
                                 if (_dcScale < drawCell._lmNickS) _dcNw *= drawCell._lmNickS / _dcScale;
+                                /* names scale raised since */
+                                if (_dcNs > drawCell._lmNickQ) _dcNw *= _dcNs / drawCell._lmNickQ;
                                 if (_dcNw > _dcR) _dcR = _dcNw;
                             } else _dcR += _dcNoNick;
                         }
