@@ -80613,8 +80613,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setScale(size, fit, unitPlaying) {
             if (!(fit > 0 && fit < 1)) fit = 1;
             var target = this.getTargetScale(size, unitPlaying) * fit;
-            /* the original glide: (9*scale + target)/10 per frame at 60 fps */
-            var k = 1 - Math.pow(0.9, this._lmFrameF || 1);
+            /* the original glide: (9*scale + target)/10 per frame at 60 fps. Zooming out to a
+             * multibox frame that fits more than one player (fit < 1) goes as fast as the camera
+             * centre (2/3 a frame, setView): at 10 % a frame a far unit taking the focus with "View
+             * on middle of both (when close)" stayed off screen while the centre was already there */
+            var k = 1 - Math.pow(fit < 1 && target < this.scale ? 1 / 3 : 0.9, this._lmFrameF || 1);
             this.scale += (target - this.scale) * k;
             LM.viewScale = this.scale;
         },

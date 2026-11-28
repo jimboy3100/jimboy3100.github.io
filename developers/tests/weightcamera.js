@@ -6,7 +6,8 @@
  * The multibox frame (drawRender.getMultiboxFrame) for 1..6 players: two players give exactly the
  * result of the two-player version (kept below as OLD_FRAME) on 3000 seeded cases; 3..6 players fit
  * with "View on middle of both"; the three view modes; main player dead; Full Map spectators and
- * units without a place left out; no allocation per call.
+ * units without a place left out; no allocation per call. setScale: zooming out to a frame that fits
+ * several players as fast as the camera centre (a far unit taking the focus is on screen at once).
  * node developers/tests/weightcamera.js [other ogario.v4.js] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -288,6 +289,40 @@ S.middleMultiView = true; S.middleMultiViewWhenClose = false;
     check('no list or object per call (3000 calls with 6 players: ' + gNew + ' B, ' + (gNew / 3000).toFixed(1) + ' B a call; the two-player version ' + gOld + ' B)', gNew < 3000 * 40 && gOld > 3000 * 150);
     const body = frameNow.split('\n').filter((ln) => ln.indexOf('this._lmMbCam = {') < 0).join('\n');
     check('the frame builds no candidate list (no concat / new arrays per frame)', !/concat\(|= \[\]|new Array|\.filter\(|\.map\(/.test(body));
+}
+/* a far unit takes the focus with "View on middle of both (when close)": the frame moves to the
+ * middle of both players and zooms out. The camera centre glides 2/3 a frame; the zoom glided 10 % a
+ * frame zooming out too, so the unit stayed off screen after the centre had arrived. Zooming out to a
+ * frame with fit < 1 now goes as fast as the centre; zooming in, and zooming out without such a frame,
+ * glide as before; the frame target is unchanged (the two-player reference above). */
+{
+    const offRun = (mainSize, unitSize, dist, auto, zv) => {
+        const mc = [{ x: 0, y: 0, size: mainSize, targetSize: mainSize }], uc = [{ x: dist, y: dist * 0.3, size: unitSize, targetSize: unitSize }];
+        setMain(mc, 0, 0);
+        ctx.spects.length = 0; LM.multiBoxPlayerExists = true; ctx.multiboxPlayerEnabled = 0;
+        S.middleMultiView = false; S.middleMultiViewWhenClose = true; LM.autoZoom = auto; LM.zoomValue = zv;
+        run(240);
+        ctx.spects.push(mkUnit(2, uc, { calculatePlayerMassAndPosition() { } })); ctx.multiboxPlayerEnabled = 2;
+        let off = 0, cur = 0, max = 0;
+        for (let i = 0; i < 120; i++) {
+            frame();
+            const o = Math.abs(uc[0].x - R.camX) > R.canvasWidth / 2 / R.scale || Math.abs(uc[0].y - R.camY) > R.canvasHeight / 2 / R.scale;
+            if (o) { off++; cur++; if (cur > max) max = cur; } else cur = 0;
+        }
+        return { off, max };
+    };
+    let off = 0, max = 0, cases = 0;
+    for (const ms of [32, 60, 120, 250, 500]) for (const us of [32, 60, 130, 250, 500]) for (let d = 600; d <= 4000; d += 200) for (const zv of [0.6, 1, 1.5]) {
+        const r = offRun(ms, us, d, true, zv);
+        cases++; off += r.off; if (r.max > max) max = r.max;
+    }
+    /* with the 10 % zoom-out: 13 frames in a row at most, 710 in all (now 7 and 228) */
+    check('a far unit taking the focus ("when close", ' + cases + ' cases): off screen at most ' + max + ' frames in a row, ' + off + ' frames in all', max <= 8 && off <= 400);
+    /* one frame of setScale (60 fps): the frame's zoom out at 2/3, its zoom in and a zoom out without a frame at 10 % */
+    const step = (from, fit) => { R.scale = from; R._lmFrameF = 1; const t = R.getTargetScale(100, true) * (fit > 0 && fit < 1 ? fit : 1); R.setScale(100, fit, true); return (R.scale - from) / (t - from); };
+    LM.autoZoom = true; LM.zoomValue = 1;
+    check('setScale: zooming out to a multibox frame (fit < 1) goes 2/3 of the way a frame', near(step(3, 0.8), 2 / 3, 1e-9));
+    check('setScale: zooming in to it, and zooming out with fit 1 (no frame), glide 10 % a frame as before', near(step(0.1, 0.8), 0.1, 1e-9) && near(step(3, 1), 0.1, 1e-9));
 }
 ctx.spects.length = 0; LM.multiBoxPlayerExists = false; ctx.multiboxPlayerEnabled = 0;
 S.middleMultiView = false; S.middleMultiViewWhenClose = false; LM.zoomValue = 1;
