@@ -52,6 +52,33 @@ if (window.userLanguage) {
     startTranslating()
 }
 
+/* Thanks to the players of the builds before 2026-11-28: once per browser (lmLegacyCheck = date of
+ * the check), a browser with Legend Mod data of an earlier build gets a permanent Premium licence.
+ * Every build since 2017 stored "timesopened" at each start; it is read before this build writes
+ * it. A giveaway or Mega FFA licence ends (cleared later), so it counts as no Premium. A fresh
+ * browser only gets the marker. Returns true when the licence was given (thank-you toast). */
+function _lmLegacyPremiumCheck(ls) {
+    try {
+        if (ls.getItem("lmLegacyCheck") !== null) return false;
+        var lic = ls.getItem("proLicenceUID");
+        var premium = !!lic && lic !== "null" && lic.indexOf("Give") === -1 && lic.indexOf("MegaFFA") === -1;
+        var usedBefore = ls.getItem("timesopened") !== null;
+        ls.setItem("lmLegacyCheck", new Date().toISOString().slice(0, 10));
+        if (!usedBefore || premium) return false;
+        ls.setItem("proLicenceUID", "permanent");
+        return true;
+    } catch (e) { return false; }
+}
+/* the texts and toastr are there before this file runs; a short wait covers a slow load */
+function _lmLegacyPremiumToast(tries) {
+    if (window.toastr && window.lmT) {
+        try { toastr.warning(_lmxT('pkg.legpremw.thanks'), '', { timeOut: 20000, extendedTimeOut: 20000 }).css("width", "350px"); } catch (e) { }
+    } else if (tries < 20) {
+        setTimeout(function () { _lmLegacyPremiumToast(tries + 1); }, 500);
+    }
+}
+if (_lmLegacyPremiumCheck(localStorage)) _lmLegacyPremiumToast(0);
+
 window.proLicenceUID = localStorage.getItem("proLicenceUID");
 if (window.proLicenceUID == "null") window.proLicenceUID = null
 var currentIP = "0.0.0.0:0";
