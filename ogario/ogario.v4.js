@@ -82595,6 +82595,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
     var hotkeysSetup = {
         lastPressedKey: '',
         lastKeyId: '',
+        _lmSaveT: null,
+        _lmSaveFailed: false,
         defaultMessageKey: 'ENTER',
         inputClassName: 'custom-key-in form-control input-sm',
         loadDefaultHotkeys() {
@@ -82818,6 +82820,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
             }
             return true;
         },
+        /* every change in the Hotkeys window is saved shortly after it, like the Theme tab, so the
+         * window has no Save button; the keys work at once, Close and leaving the page save a
+         * change still waiting (or one the full storage refused, which said so) */
+        queueSave() {
+            var setup = this;
+            clearTimeout(this._lmSaveT);
+            this._lmSaveT = setTimeout(function () { setup._lmSaveT = null; setup._lmSaveFailed = !setup.saveHotkeys(); }, 600);
+        },
+        flushSave() {
+            if (!this._lmSaveT && !this._lmSaveFailed) return;
+            clearTimeout(this._lmSaveT);
+            this._lmSaveT = null;
+            this._lmSaveFailed = !this.saveHotkeys();
+        },
         saveCommands() {
             defineChatCommand();
             $('#hotkeys .command-in').each(function () {
@@ -82836,6 +82852,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
             this.lastPressedKey = '';
             this.lastKeyId = '';
             this.showAllKeys();
+            this.queueSave();
+            this.flushSave();
         },
         /* every key field shows its keys, mouse and gamepad buttons again (ogario/gamepad.js calls
          * it when its buttons change from outside) */
@@ -82851,7 +82869,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         setHotkeysMenu() {
             //var t = this;
             const setup = this;
-            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"lm-hk-title\" class=\"menu-main-color\" data-i18n=\"settings.hotkeys\">' + _lmTH('settings.hotkeys', '') + '</div><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\" data-i18n=\"settings.restoreSettings\">' + _lmTH('settings.restoreSettings', '') + '</button> <button id=\"save-hotkeys\" class=\"btn btn-success\" data-i18n=\"settings.saveSett\">' + _lmTH('settings.saveSett', '') + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\" data-i18n=\"settings.close\">' + _lmTH('settings.close', '') + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li data-i18n=\"settings.hk-inst-assign\">' + _lmTH('settings.hk-inst-assign', '') + '</li><li data-i18n=\"settings.hk-inst-delete\">' + _lmTH('settings.hk-inst-delete', '') + '</li><li data-i18n=\"settings.hk-inst-keys\">' + _lmTH('settings.hk-inst-keys', '') + '</li><li data-i18n=\"pkg.mb.hkInstMouse\">' + _lmTH('pkg.mb.hkInstMouse', '') + '</li><li data-i18n=\"pkg.rm3w.hkInstPad\">' + _lmTH('pkg.rm3w.hkInstPad', '') + '</li></ul></div></div>'), hotkeysCommand)
+            for (var command in $('body').append('<div id=\"hotkeys\"><div id=\"lm-hk-title\" class=\"menu-main-color\" data-i18n=\"settings.hotkeys\">' + _lmTH('settings.hotkeys', '') + '</div><div id=\"hotkeys-menu\"><button id=\"reset-hotkeys\" class=\"btn btn-primary\" data-i18n=\"settings.restoreSettings\">' + _lmTH('settings.restoreSettings', '') + '</button> <button id=\"close-hotkeys\" class=\"btn btn-danger\" data-i18n=\"settings.close\">' + _lmTH('settings.close', '') + '</button></div><div id=\"hotkeys-cfg\"></div><div id=\"hotkeys-inst\"><ul><li data-i18n=\"settings.hk-inst-assign\">' + _lmTH('settings.hk-inst-assign', '') + '</li><li data-i18n=\"settings.hk-inst-delete\">' + _lmTH('settings.hk-inst-delete', '') + '</li><li data-i18n=\"settings.hk-inst-keys\">' + _lmTH('settings.hk-inst-keys', '') + '</li><li data-i18n=\"pkg.mb.hkInstMouse\">' + _lmTH('pkg.mb.hkInstMouse', '') + '</li><li data-i18n=\"pkg.rm3w.hkInstPad\">' + _lmTH('pkg.rm3w.hkInstPad', '') + '</li></ul></div></div>'), hotkeysCommand)
                 if (hotkeysCommand.hasOwnProperty(command)) {
                     var currentCommand = hotkeysCommand[command],
                         text = '';
@@ -82878,28 +82896,21 @@ function pickPlayerCellBySize(players, selectBiggest) {
             if (application && typeof application.buildHotkeysControls === 'function') application.buildHotkeysControls();
             $(document).on('click', '#reset-hotkeys', function (event) {
                 event.preventDefault();
-                //hotkeysSetup.resetHotkeys();
+                /* it is saved at once, so ask first */
+                if (!window.confirm(lmT('pkg.hksave.resetAsk'))) return;
                 setup.resetHotkeys();
             }),
-                $(document).on('click', '#save-hotkeys', function (event) {
-                    event.preventDefault();
-                    //hotkeysSetup.saveHotkeys();
-                    if (!setup.saveHotkeys()) return;
-                    setup.openSnapshot = null;
-                    setup.openPadSnapshot = null;
-                    $('#hotkeys').fadeOut(500);
+                /* a typed chat command text is saved like a key */
+                $(document).on('input', '#hotkeys .command-in', function () {
+                    setup.queueSave();
                 }),
                 $(document).on('click', '#close-hotkeys', function (event) {
                     event.preventDefault();
-                    setup.revertHotkeys();
+                    setup.flushSave();
                     $('#hotkeys').fadeOut(500);
                 }),
+                window.addEventListener('pagehide', function () { setup.flushSave(); }),
                 $(document).on('click', '.hotkeys-link', function (event) {
-                    if (!$('#hotkeys').is(':visible') || !setup.openSnapshot) {
-                        setup.openSnapshot = JSON.stringify(hotkeys);
-                        var gpOpen = setup.pad();
-                        setup.openPadSnapshot = gpOpen ? gpOpen.getMap() : null;
-                    }
                     $('#hotkeys').fadeIn(500);
                     $('#hotkeys-cfg').perfectScrollbar('update');
                     resetonkeydown();
@@ -83120,6 +83131,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             /* the field changed: pressing the previous key again must assign it */
             this.lastPressedKey = '';
             this.lastKeyId = '';
+            this.queueSave();
         },
         setDefaultHotkey(id) {
             var key = false;
@@ -83163,6 +83175,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                             toastr.info(_lmPadNow ? lmT('game2.hkMoved', [_lmPadLbl, $('<div>').text(_lmPadNow).html()]) : lmT('game2.hkUnbound', [_lmPadLbl]));
                         }
                     }
+                    this.queueSave();
                     return;
                 }
                 if (key === 'DEL' && _lmGp) _lmGp.free(id);
@@ -83198,6 +83211,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
                 /* also when the chat key was taken by another command or deleted */
                 this.syncMessageKey();
+                this.queueSave();
             }
         },
         /*
@@ -83228,22 +83242,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     $(this).val(chatCommand[id] == null ? '' : String(chatCommand[id]));
                 }
             });
-        },
-        /* "Close" without "Save": undo the changes made since the dialog was opened
-         * (they stayed active until a reload, then were lost) */
-        revertHotkeys() {
-            if (this.openSnapshot) {
-                try {
-                    hotkeys = JSON.parse(this.openSnapshot);
-                } catch (eSnap) { }
-            }
-            var gp = this.pad();
-            if (gp && this.openPadSnapshot) gp.restore(this.openPadSnapshot);
-            this.openSnapshot = null;
-            this.openPadSnapshot = null;
-            this.lastPressedKey = '';
-            this.lastKeyId = '';
-            this.refreshHotkeysMenu();
         },
         init() {
             this.loadHotkeys();

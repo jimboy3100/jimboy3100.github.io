@@ -1,5 +1,5 @@
 // Hotkeys window: no clear (x) button next to the key fields; DEL in a field clears its key, as the
-// window's own instructions say, and Close puts it back. The key list sits between the buttons and
+// window's own instructions say, and is saved by itself; Close keeps it (the probe puts it back). The key list sits between the buttons and
 // the instructions.
 (async () => {
   var fail = [], info = {};
@@ -15,7 +15,7 @@
   if (!wasOpen) { $('.hotkeys-link').first().trigger('click'); await sleep(700); }
   var cfg = document.getElementById('hotkeys-cfg');
   if (!cfg || !$('#hotkeys').is(':visible')) return { fail: ['hotkeys window did not open'] };
-  var cmd = 'hk-feed', bound = keyOf(cmd);
+  var cmd = 'hk-feed', bound = keyOf(cmd), keepHk = localStorage.getItem('ogarioHotkeys'), hkBefore = JSON.stringify(hotkeys);
   try {
     info.rows = $('#hotkeys-cfg .custom-key-in').length;
     if (!info.rows) fail.push('no key fields');
@@ -31,11 +31,18 @@
       key(field, 'keydown', 46); key(field, 'keyup', 46);
       info.after = keyOf(cmd) + '/' + field.value;
       if (keyOf(cmd) !== '' || field.value !== '') fail.push('DEL did not clear ' + bound + ': ' + info.after);
+      await sleep(800);
+      var st = null;
+      try { st = JSON.parse(localStorage.getItem('ogarioHotkeys')); } catch (e) { }
+      if (!st || st[bound] === cmd) fail.push('the cleared key was not saved by itself');
     } else info.skipped = cmd + ' has no key';
   } finally {
-    $('#close-hotkeys').trigger('click'); /* Close reverts the change */
+    $('#close-hotkeys').trigger('click');
     await sleep(700);
-    if (keyOf(cmd) !== bound) fail.push('Close did not put ' + bound + ' back: ' + keyOf(cmd));
+    if (bound && keyOf(cmd) !== '') fail.push('Close put the cleared key back: ' + keyOf(cmd));
+    if (keepHk === null) localStorage.removeItem('ogarioHotkeys'); else localStorage.setItem('ogarioHotkeys', keepHk);
+    hotkeys = JSON.parse(hkBefore);
+    window.legendmod6.refreshHotkeysMenu();
     if (wasOpen) { $('.hotkeys-link').first().trigger('click'); await sleep(600); }
   }
   return { fail: fail, info: info };

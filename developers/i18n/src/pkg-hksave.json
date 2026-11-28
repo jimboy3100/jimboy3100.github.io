@@ -1,0 +1,5 @@
+{
+  "pkg.hksave.resetAsk": {
+    "en": "Restore all hotkeys, mouse buttons and gamepad buttons to the defaults? This cannot be undone."
+  }
+}

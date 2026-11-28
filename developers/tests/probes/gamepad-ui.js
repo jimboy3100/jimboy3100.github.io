@@ -1,6 +1,6 @@
 // Gamepad buttons are bound in the Hotkeys window: a key field shows its pad buttons ('PAD A') next
-// to its key, a pad button pressed on a focused field goes to that command (Close puts it back,
-// nothing is stored before Save), and the instructions say how. The Gamepad window opens from the
+// to its key, a pad button pressed on a focused field goes to that command and is saved by itself
+// (Close keeps it), and the instructions say how. The Gamepad window opens from the
 // Hotkeys window, fits the screen, has only the sensitivity and test tabs and closes again.
 // Everything is put back.
 (async () => {
@@ -32,12 +32,17 @@
     if (F.value.split(' / ').indexOf('PAD B') < 0) fail.push('the hk-feed field does not show PAD B: ' + F.value);
     var fOld = /^hk-/.test(m0[1]) ? document.getElementById(m0[1]) : null;
     if (fOld && fOld.value.indexOf('PAD B') >= 0) fail.push('the old command of B still shows it');
-    if (localStorage.getItem('lmGamepad') !== stored) fail.push('bound button stored before Save');
     F.blur();
-    /* Close puts the buttons back */
+    await sleep(800);
+    var gpSt = null;
+    try { gpSt = JSON.parse(localStorage.getItem('lmGamepad')); } catch (e) { }
+    if (!gpSt || !gpSt.map || gpSt.map[1] !== 'hk-feed') fail.push('the bound button was not saved by itself');
+    /* Close keeps the buttons */
     $('#close-hotkeys').trigger('click');
     await sleep(600);
-    if (G.getMap()[1] !== m0[1]) fail.push('Close did not put B back: ' + G.getMap()[1]);
+    if (G.getMap()[1] !== 'hk-feed') fail.push('Close did not keep B on hk-feed: ' + G.getMap()[1]);
+    G.restore(m0);
+    hs.showAllKeys();
     $('.hotkeys-link').first().trigger('click');
     await sleep(700);
   }

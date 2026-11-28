@@ -8483,24 +8483,6 @@
     "ja": "スキンを追加",
     "it": "Aggiungi skin"
   },
-  "settings.saveSett": {
-    "en": "Save settings",
-    "el": "Αποθήκευση ρυθμίσεων",
-    "es": "Guardar ajustes",
-    "bg": "Запази настройките",
-    "fr": "Enregistrer les paramètres",
-    "ar": "حفظ الإعدادات",
-    "zh": "儲存設定",
-    "ru": "Сохранить настройки",
-    "de": "Einstellungen speichern",
-    "tr": "Ayarları kaydet",
-    "pl": "Zapisz ustawienia",
-    "nl": "Instellingen opslaan",
-    "pt": "Salvar configurações",
-    "id": "Simpan pengaturan",
-    "ja": "設定を保存",
-    "it": "Salva impostazioni"
-  },
   "settings.resetSett": {
     "en": "Reset to default",
     "el": "Επαναφορά προεπιλογών",

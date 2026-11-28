@@ -555,7 +555,7 @@
         for (var i = 0; i < BUTTON_COUNT; i++) if (map[i] === cmd) out.push('PAD ' + KEY_NAMES[i]);
         return out;
     }
-    /* a command's buttons are free (Start: the menu again); in memory until commit */
+    /* a command's buttons are free (Start: the menu again); in memory until commit (the Hotkeys window saves it right after) */
     function freeCommand(cmd) {
         if (!map) load();
         setHolds({});
@@ -614,7 +614,7 @@
             fieldsChanged();
             return true;
         },
-        /* the default buttons; temp: in memory only (the Hotkeys window's Restore, kept by Save) */
+        /* the default buttons; temp: in memory only (the Hotkeys window's Restore saves them itself) */
         resetMap: function (temp) {
             setHolds({});
             map = cleanMap(null);
@@ -623,7 +623,8 @@
         /* The Hotkeys window: 'PAD A' ... are the key names of the buttons. bind() puts a button on
          * a command (its other button goes: one per command, like the mouse buttons) and returns
          * what the button ran before; free() frees a command's buttons. Both only in memory until
-         * commit() (Save); restore(snapshot) puts a getMap() copy back (Close). */
+         * commit(), which the window's auto-save calls; restore(snapshot) puts a getMap() copy back
+         * and saves it. */
         padIndex: padIndex,
         keysOf: keysOf,
         bind: function (i, cmd) {
