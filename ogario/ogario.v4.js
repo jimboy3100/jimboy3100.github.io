@@ -87289,6 +87289,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     this.showKeys(id);
                     this.lastPressedKey = key;
                     this.lastKeyId = id;
+                    /* Sticky cells take the left and right button on the game (window.onmousedown):
+                     * say so at once instead of the command silently never running */
+                    if (defaultmapsettings.stickyCell && (key === this.mouseKey(1) || key === this.mouseKey(3)) && window.toastr) {
+                        toastr.warning(lmT('pkg.hor0w.stickyMouse', [$('<div>').text(key).html()]));
+                    }
                 }
                 /* also when the chat key was taken by another command or deleted */
                 this.syncMessageKey();

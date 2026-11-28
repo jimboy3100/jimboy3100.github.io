@@ -202,4 +202,44 @@ check('restore confirmed: defaults in effect and stored at once', q.asked === 1 
 gp = q.stored('lmGamepad');
 check('restore confirmed: default pad buttons stored', gp && JSON.stringify(gp.map) === JSON.stringify(q.w.LMGamepad.defaultMap()));
 
+/* Sticky cells take the left and right button on the game: binding one of them says so at once;
+ * the wheel / buttons 4-5, or Sticky cells off, bind without that warning */
+{
+    const r = page();
+    r.w.defaultmapsettings.stickyCell = true;
+    r.hs.setHotkey('MOUSE RIGHT', 'hk-split');
+    r.hs.setHotkey('MOUSE LEFT', 'hk-feed');
+    const sw = r.toasts.filter(t => t.indexOf('warn:pkg.hor0w.stickyMouse') === 0);
+    check('sticky cells on: binding the right or left button warns, the binding is kept', sw.length === 2 && r.w.hotkeys['MOUSE RIGHT'] === 'hk-split' && r.w.hotkeys['MOUSE LEFT'] === 'hk-feed', r.toasts);
+    r.toasts.length = 0;
+    r.hs.setHotkey('MOUSE 4', 'hk-chatMessage');
+    r.w.defaultmapsettings.stickyCell = false;
+    r.hs.setHotkey('F7', 'hk-split'); r.hs.setHotkey('MOUSE RIGHT', 'hk-split');
+    check('no sticky warning for button 4, nor with sticky cells off', !r.toasts.some(t => t.indexOf('stickyMouse') >= 0), r.toasts);
+}
+/* the chord itself (real window.onmousedown / onmouseup): with sticky cells on the right button
+ * holds the sticky flag and its bound command does not run; off, the command runs */
+{
+    const ma = v4.indexOf('    var _lmMouseHeld = {};'), mb = v4.indexOf('    window.onbeforeunload', ma);
+    if (ma < 0 || mb < 0) check('mouse handlers found', false);
+    else {
+        const runs = [];
+        const m = { hotkeys: { 'MOUSE RIGHT': 'hk-split' }, keyBlind: {}, defaultmapsettings: { stickyCell: true }, application: {}, drawRender: {},
+            LM: { _lmSpecClickAt() { } }, document: { addEventListener() { } }, addEventListener() { },
+            $: () => ({ is: () => false }),
+            hotkeysSetup: { inputClassName: 'custom-key-in', mouseKey: w => ({ 1: 'MOUSE LEFT', 3: 'MOUSE RIGHT' })[w] || '' },
+            hotkeysCommand: { 'hk-split': { keyDown() { runs.push('split'); }, keyUp: null } } };
+        m.window = m;
+        vm.createContext(m);
+        vm.runInContext(v4.slice(ma, mb), m);
+        const ev = { which: 3, button: 2, target: {}, preventDefault() { } };
+        m.onmousedown(ev);
+        check('sticky cells on: right button holds the sticky flag, its command does not run', m.drawRender.RMB === true && runs.length === 0, runs);
+        m.onmouseup(ev);
+        m.defaultmapsettings.stickyCell = false;
+        m.onmousedown(ev); m.onmouseup(ev);
+        check('sticky cells off: the right button runs its command', m.drawRender.RMB === false && runs.length === 1, runs);
+    }
+}
+
 process.exit(fail ? 1 : 0);
