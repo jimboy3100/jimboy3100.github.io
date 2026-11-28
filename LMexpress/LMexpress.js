@@ -1810,20 +1810,38 @@ function LegendSettingsImport(switcheryLegendSwitch2) {
             return;
         }
         //        parseLegendJSONAPI(LegendJSON);
+        /* the Legend Mod settings that take effect at the next load (the import's Reload button) */
+        window._lmImportReload = [];
         saveLegendJSONAPI();
         setTimeout(function () {
             $("#import-settings-btn").click();
         }, 100)
     } else {
+        window._lmImportReload = null;
         $("#import-settings-btn").click();
     }
 }
 
 /* Imported settings from older exports can lack keys: do not store the
  * strings "undefined"/"null" for them, keep the current value instead. */
+/* Import without a reload (ogario.v4.js importSettings): these keys only remember the last mode,
+ * nick, address and open count, and the language switches at once; any other key that changes is
+ * read when the page loads, so the import offers a Reload (window._lmImportReload). */
+var _LM_IMPORT_LIVE_KEYS = { gamemode: 1, checkonlyonce: 1, previousnickname: 1, timesopened: 1, lastIP: 1 };
 function _lmImportSet(key, value) {
     if (value === undefined || value === null) return;
+    var before = localStorage.getItem(key);
     localStorage.setItem(key, value);
+    if (String(value) === String(before == null ? '' : before)) return;
+    if (key === 'languagemod') { _lmImportLanguage(String(value)); return; }
+    if (!_LM_IMPORT_LIVE_KEYS[key] && Array.isArray(window._lmImportReload)) window._lmImportReload.push(key);
+}
+/* the Choose Language path: the menus, lmT and agar.io's texts follow at once */
+function _lmImportLanguage(n) {
+    try {
+        if ($('#legendlanguages').length) { $('#legendlanguages').val(n); changeModLanguage(false); }
+        else if (window.LMi18n && typeof window.LMi18n.setLang === 'function') window.LMi18n.setLang(n);
+    } catch (e) { }
 }
 
 /* Imported user scripts (Userscript1-5 URLs, Userscripttexture1-5 code) ran on
@@ -1853,6 +1871,8 @@ function _lmImportUserscripts(ls) {
         var v = String(ls[k]);
         if (v !== "" && v !== "null") localStorage.setItem("UserscriptEnabled" + slot, "1");
     });
+    /* a user script runs when the page loads: the import offers a Reload */
+    if (Array.isArray(window._lmImportReload)) window._lmImportReload.push('userscripts');
 }
 
 function saveLegendJSONAPI() {

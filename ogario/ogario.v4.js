@@ -24933,8 +24933,170 @@ function thelegendmodproject() {
                     toastr.error(_lmG1tag('game1.tag.settings', 'game1.import.fullRolledBack', [$('<div>').text(_impStep).html()]));
                     return;
                 }
-                window._lmSettingsReload = true;
-                window.location.reload();
+                /* Applied at once, without reloading the page (owner, 2026-11-28): what was just
+                 * written is put into the running game (_lmImportLive); a part that only takes
+                 * effect at the next load offers a Reload button (_lmImportDone) */
+                var _impNeed = this._lmImportLive(importValue, _impSelected, _impBackup, _impTouched);
+                if (Array.isArray(window._lmImportReload)) _impNeed = _impNeed.concat(window._lmImportReload);
+                window._lmImportReload = null;
+                this._lmImportDone(_impNeed);
+            }
+        },
+        /* Import without a reload: the written values into the running game. Gameplay settings
+         * through setSettings (their effects, the switch / list / slider, the save; Performance mode
+         * first, as it switches others), the theme like a theme preset, the hotkeys into the Hotkeys
+         * window (commands newer than the export get their default keys), commands and player
+         * profiles read again, the phone controls and their layout through their reload. Returns
+         * what takes effect only at the next load: anti-aliasing, the gamepad buttons, the voice
+         * prefix / language and HUD layouts when they changed. */
+        _lmImportLive(v, sel, backup, touched) {
+            var app = this, need = [];
+            var changed = function (k) {
+                if (touched.indexOf(k) === -1) return false;
+                var now = null;
+                try { now = window.localStorage.getItem(k); } catch (e) { }
+                return now !== backup[k];
+            };
+            var same = function (a, b) { return a === b || (typeof a === 'number' && typeof b === 'number' && Math.abs(a - b) < 1e-9); };
+            var own = function (o, k) { return !!o && Object.prototype.hasOwnProperty.call(o, k); };
+            clearTimeout(this._lmSettingsSaveT);
+            this._lmSettingsSaveT = null;
+            if (sel('ogarioSettings') && v.ogarioSettings && typeof v.ogarioSettings === 'object') {
+                var sv = v.ogarioSettings;
+                var keys = Object.keys(sv).filter(function (k) { return own(defaultmapsettings, k); });
+                var pi = keys.indexOf('performanceMode');
+                if (pi > 0) { keys.splice(pi, 1); keys.unshift('performanceMode'); }
+                /* Performance mode switched on here makes its own copy: the export's copy goes back after */
+                var pbText = null;
+                try { pbText = window.localStorage.getItem('lmPerfBackup'); } catch (e) { }
+                var AFTER = { streamMode: 'setStreamMode', hideSkinUrl: 'setHideSkinUrl', showQuickMenu: 'setShowQuickMenu', showQuickBots: 'setShowQuickBots', showSkinsPanel: 'setShowSkinsPanel', hideChat: 'setHideChat' };
+                var aa = false;
+                keys.forEach(function (k) {
+                    if (same(defaultmapsettings[k], sv[k])) return;
+                    try {
+                        /* one Performance mode message for the whole import */
+                        app._lmPerfApplying = k !== 'performanceMode';
+                        app.setSettings(k, sv[k]);
+                    } catch (e) {
+                        defaultmapsettings[k] = sv[k];
+                    } finally {
+                        app._lmPerfApplying = false;
+                    }
+                    if (k === 'glAntialias' || k === 'performanceMode') aa = true;
+                    if (AFTER[k] && typeof app[AFTER[k]] === 'function') { try { app[AFTER[k]](); } catch (e) { } }
+                });
+                try { this.saveSettings(defaultmapsettings, 'ogarioSettings'); } catch (e) { }
+                try {
+                    var pbNow = window.localStorage.getItem('lmPerfBackup');
+                    if (pbNow !== pbText) {
+                        if (pbText === null) window.localStorage.removeItem('lmPerfBackup');
+                        else window.localStorage.setItem('lmPerfBackup', pbText);
+                    }
+                    window._lmPerfBackupMem = null;
+                } catch (e) { }
+                /* anti-aliasing is fixed when the WebGL canvas is made */
+                if (aa) { try { if (typeof window.lmGlAAPending !== 'function' || window.lmGlAAPending()) need.push('glAntialias'); } catch (e) { need.push('glAntialias'); } }
+                var MH = window._lmMobileHost, ME = window.LMMobileEditor;
+                if (changed('lm-mobile-prefs') && MH) {
+                    if (typeof MH.reloadPrefs === 'function') { try { MH.reloadPrefs(); } catch (e) { need.push('lm-mobile-prefs'); } }
+                    else need.push('lm-mobile-prefs');
+                }
+                if (changed('lm-mobile-layouts') && MH) {
+                    if (ME && typeof ME.reload === 'function') { try { ME.reload(); } catch (e) { need.push('lm-mobile-layouts'); } }
+                    else need.push('lm-mobile-layouts');
+                }
+                ['lmGamepad', 'prefix', 'lang', 'lmHudLayouts'].forEach(function (k) { if (changed(k)) need.push(k); });
+            }
+            if (sel('ogarioThemeSettings') && v.ogarioThemeSettings && typeof v.ogarioThemeSettings === 'object') {
+                var tv = v.ogarioThemeSettings;
+                for (var name in tv) {
+                    if (!own(tv, name) || !own(defaultSettings, name) || same(defaultSettings[name], tv[name])) continue;
+                    defaultSettings[name] = tv[name];
+                    if (own(ogario, name)) ogario[name] = tv[name];
+                    try {
+                        var pk = $('#theme .' + name + '-picker');
+                        if (pk.length && pk.colorpicker) pk.colorpicker('setValue', tv[name]);
+                        var sl = $('#' + name + '-slider');
+                        if (sl.length) { sl.val(tv[name]).change(); $('#' + name + '-value').text(tv[name]); }
+                        $('#theme input[type=text]#' + name + ', #theme select#' + name).val(tv[name]);
+                    } catch (e) { }
+                    defaultSettings[name] = tv[name];
+                }
+                try { if (Settings) { Settings.setTheme(); Settings.saveThemeSettings(); } } catch (e) { need.push('theme'); }
+            }
+            if (sel('ogarioHotkeys') && v.ogarioHotkeys && typeof v.ogarioHotkeys === 'object') {
+                var h = JSON.parse(JSON.stringify(v.ogarioHotkeys));
+                var cmds = window.hotkeysCommand;
+                /* commands newer than the export: their default key, where it is free */
+                if (Array.isArray(v.ogarioHotkeysKnown) && cmds && typeof cmds === 'object') {
+                    var known = {}, bound = {};
+                    v.ogarioHotkeysKnown.forEach(function (c) { if (typeof c === 'string') known[c] = true; });
+                    for (var key in h) if (own(h, key) && key !== '' && key !== 'spec-messageKey') bound[h[key]] = true;
+                    for (var c in cmds) {
+                        if (!own(cmds, c) || known[c] || bound[c]) continue;
+                        var dk = cmds[c] && cmds[c].defaultKey;
+                        if (typeof dk === 'string' && dk && !own(h, dk)) h[dk] = c;
+                    }
+                }
+                window.hotkeys = h;
+                var hs = window.legendmod6;
+                try { if (hs && hs.migrateBrowserSpecificHotkeys) hs.migrateBrowserSpecificHotkeys(); } catch (e) { }
+                try { if (hs && hs.syncMessageKey) hs.syncMessageKey(); } catch (e) { }
+                try { if (hs && typeof hs.migrateMouseControls === 'function') hs.migrateMouseControls(); } catch (e) { }
+                try {
+                    window.localStorage.setItem('ogarioHotkeys', JSON.stringify(window.hotkeys));
+                    if (cmds && typeof cmds === 'object') window.localStorage.setItem('ogarioHotkeysKnown', JSON.stringify(Object.keys(cmds)));
+                } catch (e) { }
+                try { if (hs && hs.refreshHotkeysMenu) hs.refreshHotkeysMenu(); } catch (e) { }
+            }
+            /* chat commands, player profiles (also the skin links of an older export's skin
+             * collections, which loadProfiles moves into them) */
+            if (sel('ogarioCommands')) this._lmImportCommandsLive();
+            if (sel('ogarioPlayerProfiles') || (sel('ogarioSettings') && touched.indexOf('lmSkinCollections') !== -1)) this._lmImportProfilesLive();
+            return need;
+        },
+        /* Import: the chat commands that were just written, into the running commands and the
+         * Hotkeys window's command boxes */
+        _lmImportCommandsLive() {
+            var stored = readLocalStorageJSON('ogarioCommands', null);
+            if (!stored || typeof stored !== 'object' || Array.isArray(stored)) return;
+            for (var id in chatCommand) {
+                if (Object.prototype.hasOwnProperty.call(chatCommand, id) && Object.prototype.hasOwnProperty.call(stored, id) && typeof stored[id] === 'string') chatCommand[id] = stored[id];
+            }
+            $('#hotkeys .command-in').each(function () {
+                if (Object.prototype.hasOwnProperty.call(chatCommand, this.id)) $(this).val(chatCommand[this.id]);
+            });
+        },
+        /* Import: the player profiles that were just written, loaded again with their skins list,
+         * the selected profile's nick, tag, skin and colour, and the multibox slots */
+        _lmImportProfilesLive() {
+            this.loadProfiles();
+            var list = $('#skins');
+            if (list.length) {
+                list.find('.skin-box').remove();
+                for (var e = 0; e < profiles.length; e++) {
+                    list.append('<div class="skin-box"><a href="#profile-' + e + '" id="profile-' + e + '" data-profile="' + e + '"></a></div>');
+                    this.setSkinPreview(profiles[e].skinURL, 'profile-' + e);
+                }
+            }
+            this.mbSlots = [];
+            this.setProfile();
+            if (defaultmapsettings.multiBoxShadow) this.setProfileboxShadow();
+            this.profiling();
+        },
+        /* Import finished without a reload. need: the parts that take effect at the next load
+         * (a Reload button) */
+        _lmImportDone(need) {
+            if (need && need.length) {
+                toastr.info(_lmG1tag('game1.tag.settings', 'game1.import.needsReload') +
+                    ' <button type="button" class="btn btn-xs lm-import-reload" style="margin-left:4px;padding:0 6px;color:inherit;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);">' +
+                    _lmTH('game1.import.reloadNow', 'Reload now') + '</button>', '', { timeOut: 15000, extendedTimeOut: 5000 });
+                $(document).off('click.lmImportReload').on('click.lmImportReload', '.lm-import-reload', function () {
+                    window._lmSettingsReload = true;
+                    window.location.reload();
+                });
+            } else {
+                toastr.success(_lmG1tag('game1.tag.settings', 'game1.import.done'));
             }
         },
         restoreSettings() {
