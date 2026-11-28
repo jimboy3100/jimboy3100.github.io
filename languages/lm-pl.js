@@ -3037,7 +3037,7 @@
 "settings.rainbowMapBorders": "Tęczowe granice mapy",
 "settings.hudBlur": "Rozmycie tła HUD (0 = wył.)",
 "settings.showStatsPPS": "PPS: pakiety na sekundę",
-"settings.showStatsServerHz": "Server Hz",
+"settings.showStatsServerHz": "Hz serwera",
 "settings.blockPopups": "Blokuj popupy (reklamy/sklep/zadanie)",
 "settings.gameOverStats": "Karta końca gry (twoje statystyki, kto cię zjadł, wykres masy, ostatnie 20 s)",
 "settings.massLossAlert": "Alarm przy szybkiej utracie masy",
