@@ -2,7 +2,9 @@
  * LMEvents and the real theme override of ogario/ogario.v4.js, on a fake clock and fake timers:
  * phase selection, scenes by phase, cooldowns and the gap between events, a hidden tab (paused, no
  * burst after), death / spawn / replay, competitive, teardown (no timer, listener, sound, figure,
- * style or theme colour left after the turn-off) and the theme colours over the player's theme.
+ * style or theme colour left after the turn-off) and the theme colours over the player's theme;
+ * six players with Full Map through the core's own multibox lifecycle; on phones (headless Chrome,
+ * offline) its figures and threat look take no taps and leave the HUD as it is.
  * node developers/tests/dyinglightdirector.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -88,6 +90,181 @@ let R = 0;
 vm.runInContext('Math.random = function () { return __r(); };', Object.assign(ctx, { __r: () => R }));
 vm.runInContext(dl, ctx);
 const D = ctx.defaultmapsettings, L = ctx.LMDyingLight, Dir = ctx.LMDyingLightDirector, info = () => Dir.info();
+
+/* ═══ phones (915 x 412 and 412 x 915): the real extras/dyinglight.js and the phone controls'
+ * stylesheet of LMmobile/LMmobile.js in headless Chrome (offline: every host unresolved, a fake
+ * clock in the page; about 2 s each, skipped without Chrome). The figures, the threat look and the
+ * light of the hour (drawn on the background canvas, no element) take no tap anywhere, stand under
+ * the cells canvas and the HUD, and the figures keep clear of the HUD parts; the turn-on question
+ * is the one thing that takes taps, its buttons on the screen and over the phone controls. ═══ */
+function phones() {
+    const { findChrome } = require('./glbatch.js');
+    const chrome = findChrome();
+    if (!chrome) { console.log('skip phones: no Chrome'); return; }
+    const mob = rd('LMmobile/LMmobile.js');
+    const a = mob.indexOf('css.textContent =') + 'css.textContent ='.length, b = mob.indexOf("';\n", a) + 1;
+    const mcss = new Function('return (' + mob.slice(a, b) + ')')();
+    const os = require('os'), { execFileSync } = require('child_process');
+    /* the page: the map canvases as the renderer stacks them (background 1, grid 2, cells 3), the
+     * HUD in #overlays-hud (z-index 100), the phone controls; HUD places as on a phone */
+    const probe = function () {
+        var T = 0, Q = new Map(), seq = 0, out = { figs: [], errs: [] };
+        window.setTimeout = function (fn, ms) { var id = ++seq; Q.set(id, { fn: fn, due: T + (+ms || 0) }); return id; };
+        window.clearTimeout = function (id) { Q.delete(id); };
+        performance.now = function () { return T; };
+        function advance(ms) {
+            var end = T + ms;
+            for (;;) {
+                var best = null;
+                Q.forEach(function (t, id) { if (t.due <= end && (!best || t.due < best[1].due)) best = [id, t]; });
+                if (!best) break;
+                Q.delete(best[0]); T = Math.max(T, best[1].due);
+                try { best[1].fn(); } catch (e) { out.errs.push(String(e)); }
+            }
+            T = end;
+        }
+        var pics = [];
+        window.Image = function () { pics.push(this); };
+        function flush() { while (pics.length) { var im = pics.shift(); im.naturalWidth = 64; if (im.onload) im.onload(); } }
+        window.defaultmapsettings = { dyingLight: false, dyingLightIntensity: 'immersive', dyingLightVolume: 1, dyingLightCycle: true, dyingLightScares: true, reducedMotion: false };
+        window.application = { saveSettings: function () { } };
+        window.legendmod = { play: true };
+        var vw = innerWidth, vh = innerHeight, land = vw > vh;
+        function box(id, css) { var e = document.getElementById(id); e.style.cssText += ';position:fixed;' + css; return e; }
+        box('leaderboard-hud', 'right:6px;top:6px;width:' + (land ? 170 : 150) + 'px;height:' + (land ? 190 : 170) + 'px');
+        box('top5-hud', 'left:6px;top:6px;width:150px;height:110px');
+        box('stats-hud', 'left:6px;top:120px;width:150px;height:22px');
+        box('minimap-hud', 'right:6px;bottom:6px;width:' + (land ? 140 : 150) + 'px;height:' + (land ? 140 : 150) + 'px');
+        box('chat-box', 'left:6px;bottom:70px;width:' + (land ? 260 : 230) + 'px;height:' + (land ? 110 : 160) + 'px');
+        box('lm-mc-r', 'right:' + (land ? 160 : 20) + 'px;bottom:' + (land ? 30 : 170) + 'px');
+        box('lm-mc-sm', 'right:' + (land ? 160 : 170) + 'px;bottom:' + (land ? 150 : 20) + 'px');
+        var hudIds = ['leaderboard-hud', 'top5-hud', 'stats-hud', 'minimap-hud', 'chat-box', 'lm-mc-l', 'lm-mc-r', 'lm-mc-sm'];
+        var taps = ['lb-row', 'mm-in', 'split', 'feed', 'x4', 'x16', 'menu-btn', 'chat-in'];
+        var bg = document.getElementById('legendmod-render-background');
+        window.drawRender = { backgroundCanvas: bg, startSpawnBurst: function () { } };
+        /* an element of it (or inside one; not the page's own class for the Game Over card) */
+        var dl = function (n) {
+            for (; n && n !== document.body && n !== document.documentElement; n = n.parentNode) if (n.className && /(^|\s)lm-dl-(?!ask)/.test(String(n.className))) return true;
+            return false;
+        };
+        /* every point of a 24 x 24 grid: never a Dying Light element */
+        function grid() {
+            var bad = 0;
+            for (var i = 0; i < 24; i++) for (var j = 0; j < 24; j++) if (dl(document.elementFromPoint((i + 0.5) * vw / 24, (j + 0.5) * vh / 24))) bad++;
+            return bad;
+        }
+        /* the HUD and the phone buttons: what a tap on each hits before the theme is on (the phone
+         * stylesheet lets some HUD parts take none) is what it hits with it, also with the element
+         * forced to take taps */
+        function hitAt(id) { var r = document.getElementById(id).getBoundingClientRect(), n = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return n ? n.id || n.className || n.tagName : '-'; }
+        var base = taps.map(hitAt);
+        function hudTaps(el) {
+            var miss = [];
+            var was = el ? el.style.pointerEvents : '';
+            if (el) el.style.setProperty('pointer-events', 'auto', 'important');
+            taps.forEach(function (id, k) { var h = hitAt(id); if (h !== base[k]) miss.push(id + ':' + h + '/' + base[k]); });
+            var c = document.elementFromPoint(vw / 2, vh / 2);
+            if (el) el.style.pointerEvents = was;
+            return { miss: miss, centre: c ? c.id : '-' };
+        }
+        var rects = hudIds.map(function (id) { return document.getElementById(id).getBoundingClientRect(); });
+        var ins = Node.prototype.insertBefore;
+        document.body.insertBefore = function (n, ref) {
+            var r = ins.call(this, n, ref);
+            if (n && n.classList && n.classList.contains('lm-dl-ghost')) {
+                /* its own box (offset: without the moving transform) */
+                var x0 = n.offsetLeft, y0 = n.offsetTop, w = n.offsetWidth, h = n.offsetHeight, cs = getComputedStyle(n);
+                var hit = rects.filter(function (q) { return q.left < x0 + w && q.right > x0 && q.top < y0 + h && q.bottom > y0; }).length;
+                var cx = Math.min(vw - 2, Math.max(2, x0 + w / 2)), cy = y0 + h / 2, tapped = document.elementFromPoint(cx, cy);
+                var t = hudTaps(n);
+                n.style.setProperty('pointer-events', 'auto', 'important');
+                var above = document.elementFromPoint(cx, cy);
+                n.style.pointerEvents = '';
+                out.figs.push({ watcher: /lm-dl-watcher/.test(n.className), h: h, max: Math.min(0.34 * Math.min(vw, vh), 240) + 0.5, pe: cs.pointerEvents, hit: hit,
+                    tap: tapped ? tapped.id : '-', under: above ? above.id : '-', after: n.previousSibling === bg, z: cs.zIndex, grid: grid(), miss: t.miss });
+            }
+            return r;
+        };
+        window.__start = function () {
+        var L = window.LMDyingLight;
+        /* the turn-on question on the phone: its buttons on the screen, above the phone controls */
+        var q = L.enable({ confirm: true });
+        /* the next script: the question is on the page */
+        window.__ask = function () {
+            var ov = document.querySelector('.lm-dl-ask'), btns = ov ? [].slice.call(ov.querySelectorAll('button')) : [];
+            out.ask = btns.map(function (bt) { var r = bt.getBoundingClientRect(), n = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return { in: r.left >= 0 && r.top >= 0 && r.right <= vw && r.bottom <= vh, hit: n === bt || bt.contains(n) }; });
+            /* No (the first button of its footer) */
+            var no = ov && ov.querySelector('.lm-modal-footer button');
+            if (no) no.click();
+        };
+        q.then(function (v) {
+            out.cancelled = v === false && !document.querySelector('.lm-dl-ask');
+            L.enable({ confirm: false }).then(function (v2) { out.on = v2; });
+            flush();
+        });
+        };
+        /* the last script, once on: the figures over an hour of the cycle, then the threat look */
+        window.__go = function () {
+            flush();
+            for (var i = 0; i < 3600 && out.figs.length < 6; i++) { advance(1000); flush(); }
+            window.lmDlThreat = function () { return { t: T, unit: 0, level: 2, valid: true }; };
+            advance(1500);
+            var v = document.querySelector('.lm-dl-threat');
+            out.thr = v ? { pe: getComputedStyle(v).pointerEvents, op: getComputedStyle(v).opacity, grid: grid(), taps: hudTaps(v), bodyOnly: v.parentNode === document.body } : null;
+            out.plainGrid = grid();
+            out.base = base.join();
+            out.size = vw + 'x' + vh;
+            out.other = [].slice.call(document.body.querySelectorAll('[class*="lm-dl-"]')).filter(function (n) { return !/lm-dl-(ghost|threat|ask)/.test(n.className) && getComputedStyle(n).pointerEvents !== 'none'; }).length;
+            parent.document.body.setAttribute('data-r', encodeURIComponent(JSON.stringify(out)));
+        };
+    };
+    const hud = '<div id="overlays-hud" style="position:fixed;left:0;top:0;right:0;bottom:0;z-index:100;pointer-events:none">' +
+        '<div id="leaderboard-hud" class="hud" style="pointer-events:auto"><div id="lb-row" style="height:40px">1. player</div></div>' +
+        '<div id="top5-hud" class="hud" style="pointer-events:auto"></div><div id="stats-hud" class="hud" style="pointer-events:auto"></div>' +
+        '<div id="minimap-hud" class="hud" style="pointer-events:auto"><div id="mm-in" style="width:100%;height:100%"></div></div>' +
+        '<div id="chat-box" style="pointer-events:auto"><input id="chat-in" style="width:90%"></div></div>' +
+        '<div id="lm-mc-l"><div id="lm-drawer"><div id="menu-btn" class="lm-d">=</div></div></div>' +
+        '<div id="lm-mc-r"><div id="split" class="lm-b" style="width:64px;height:64px">S</div><div id="feed" class="lm-b" style="width:56px;height:56px">W</div></div>' +
+        '<div id="lm-mc-sm"><div id="x4" class="lm-b" style="width:44px;height:44px">4</div><div id="x16" class="lm-b" style="width:44px;height:44px">16</div></div>';
+    const canv = z => 'position:absolute;left:0;top:0;width:100vw;height:100vh;z-index:' + z;
+    const html = '<!doctype html><html><head><meta name="viewport" content="width=device-width"><style>' + mcss.replace(/<\/style/gi, '') + '</style></head>' +
+        '<body style="margin:0;overflow:hidden;background:#000">' +
+        '<canvas id="legendmod-render-background" style="' + canv(1) + ';pointer-events:none"></canvas><canvas id="grid" style="' + canv(2) + ';pointer-events:none"></canvas>' +
+        '<canvas id="canvas" style="' + canv(3) + '"></canvas>' + hud +
+        '<script>(' + probe.toString() + ')();</script><script>' + dl + '</script><script>window.__start();</script><script>window.__ask();</script><script>window.__go();</script>' +
+        '</body></html>';
+    for (const [w, h] of [[915, 412], [412, 915]]) {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'lm-dlphone-'));
+        const page = path.join(dir, 'p.html');
+        /* the probe runs before dyinglight.js (its clock first), in a frame of the phone's size
+         * (the headless window's page is smaller than the window) */
+        fs.writeFileSync(page, '<!doctype html><html><body style="margin:0"><iframe width="' + w + '" height="' + h + '" style="border:0;display:block" srcdoc="' +
+            html.replace(/&/g, '&amp;').replace(/"/g, '&quot;') + '"></iframe></body></html>');
+        let dom = '';
+        try {
+            dom = execFileSync(chrome, ['--headless=new', '--disable-gpu', '--no-first-run', '--host-resolver-rules=MAP * ~NOTFOUND', '--user-data-dir=' + path.join(dir, 'prof'),
+                '--window-size=1000,1200', '--dump-dom', require('url').pathToFileURL(page).href], { encoding: 'utf8', timeout: 40000, stdio: ['ignore', 'pipe', 'ignore'] });
+        } catch (e) { dom = String(e.stdout || ''); }
+        try { fs.rmSync(dir, { recursive: true, force: true }); } catch (e) { }
+        const m = /data-r="([^"]*)"/.exec(dom);
+        let r = null;
+        try { r = m ? JSON.parse(decodeURIComponent(m[1])) : null; } catch (e) { r = null; }
+        const n = w + 'x' + h;
+        check('phone ' + n + ': the probe ran at that size (no error in the page)', !!r && r.size === n && r.errs.length === 0, r ? r.size + ' ' + r.errs.join('; ') : 'no result');
+        if (!r) continue;
+        check('phone ' + n + ': the turn-on question: its buttons on the screen and above the phone controls; cancelled leaves nothing, then on',
+            r.ask.length >= 2 && r.ask.every(x => x.in && x.hit) && r.cancelled === true && r.on === true, JSON.stringify(r.ask));
+        check('phone ' + n + ': figures came, each its size (at most 34 % of the short side)', r.figs.length >= 2 && r.figs.some(f => f.watcher) && r.figs.some(f => !f.watcher) &&
+            r.figs.every(f => f.h > 0 && f.h <= f.max), JSON.stringify(r.figs.map(f => f.h + '/' + f.max)));
+        check('phone ' + n + ': a figure takes no tap anywhere, covers no HUD part, every HUD part and phone button hit as without it',
+            r.figs.every(f => f.pe === 'none' && f.hit === 0 && f.grid === 0 && f.tap !== '' && !/lm-dl/.test(f.tap) && f.miss.length === 0), JSON.stringify(r.figs));
+        check('phone ' + n + ': a figure stands right above the map background, under the cells canvas', r.figs.every(f => f.after && f.z === '1' && f.under === 'canvas'),
+            JSON.stringify(r.figs.map(f => f.after + ' ' + f.z + ' ' + f.under)));
+        check('phone ' + n + ': the threat look shown takes no tap anywhere; under the cells and the HUD even if it took taps',
+            !!r.thr && r.thr.pe === 'none' && +r.thr.op > 0.5 && r.thr.grid === 0 && r.thr.taps.miss.length === 0 && r.thr.taps.centre === 'canvas', JSON.stringify(r.thr));
+        check('phone ' + n + ': no other element of it takes taps (the light of the hour is on the background canvas)', r.other === 0 && r.plainGrid === 0);
+    }
+}
 
 /* ═══ phases of the 10 minute cycle ═══ */
 check('phases: day 0-3 min, dusk 3-4, night 4-8, deep night 8-9, dawn 9-10, then day again',
@@ -828,6 +1005,152 @@ check('the new settings: off by default with Dying Light, immersive, full sound,
         check('theme: team top 5 bars repainted in the HUD colour as shown, the picker\'s once cleared', on === '#a12b30' && bar === '#0f0', on + ',' + bar);
     }
 
+    /* ═══ six players with Full Map: the core's own lifecycle (lmMbPlayers, lmMbPlayerEvent,
+     * lmDeathScope, lmMbAlive, lmMbUnits, lmSetMbUnit, lmMbFallbackUnit of ogario.v4.js) in the
+     * order spect.js terminate / updateCells and application.onPlayerDeath / onPlayerSpawn call
+     * them; 15 Full Map spectators (player false) take the numbers 1-15, the units 16-20 ═══ */
+    {
+        if (L.isEnabled()) await L.disable();
+        vm.runInContext(cutIn(main, '\nwindow.spects = window.spects || [];', '\n/* Closes one unit for good'), ctx);
+        vm.runInContext(cutIn(main, 'function lmDlSkinCell(', '\n/* The customSkinsCache key'), ctx);
+        const E = ctx.LMEvents, LM = ctx.legendmod, reg = ctx.lmMbPlayers, rm = D.reducedMotion, rWas = ctx.__r;
+        for (let n = 1; n <= 15; n++) ctx.spects.push({ player: false, number: n, active: n % 2 === 1 });
+        const P = [LM];
+        for (let k = 0; k < 5; k++) {
+            const r = reg.reserve();
+            const u = { player: true, number: 16 + k, slotId: r.slotId, slotEpoch: r.slotEpoch, active: false, _lmLife: 0, connectionGeneration: 1, cells: [],
+                getOwnPlayerCells() { return this.cells; }, transformReady() { return true; } };
+            reg.attach(u); ctx.spects.push(u); P.push(u);
+        }
+        LM.play = false; LM._lmLife = 0; LM.playerCells = []; ctx.multiboxPlayerEnabled = null;
+        /* what the core does: a spawn (LM.play, then onPlayerSpawn; a unit's first own cell), a death */
+        const spawn = (i, x, y) => {
+            const p = P[i], c = [{ x, y, size: 100 }, { x: x + 20, y: y - 20, size: 50 }];
+            if (p === LM) { LM.playerCells = c; LM.play = true; LM._lmLife++; } else { p.cells = c; p.active = true; p._lmLife++; }
+            ctx.lmMbPlayerEvent('playerSpawned', p);
+        };
+        const die = i => {
+            const p = P[i];
+            if (p === LM) {
+                const scope = ctx.lmDeathScope(0);
+                E.emit('death', { unit: 0, scope });
+                ctx.lmMbPlayerEvent('playerDied', LM, 'death', { scope });
+                LM.play = false; LM.playerCells = [];
+                /* Auto-switch focus after death: the living unit you control keeps it, else the first living one */
+                if (!ctx.lmMbAlive(ctx.getActiveSpect(+ctx.multiboxPlayerEnabled || 0))) {
+                    const u = ctx.lmMbUnits([]).find(s => ctx.lmMbAlive(s));
+                    if (u) ctx.lmSetMbUnit(u.number);
+                }
+            } else {
+                const was = ctx.multiboxPlayerEnabled === p.number;
+                p.active = false; p.cells = [];
+                ctx.lmMbPlayerEvent('playerDied', p, 'death', { scope: ctx.lmDeathScope(p.number) });
+                if (was) ctx.lmSetMbUnit(ctx.lmMbFallbackUnit(p, 'death'));
+            }
+        };
+        /* compareCells' snapshot: the player you control, valid while it lives */
+        let thrLvl = 2;
+        ctx.lmDlThreat = () => ({ t: T, unit: +ctx.multiboxPlayerEnabled || 0, level: thrLvl, valid: ctx.lmMbAlive(ctx.lmMbFocused()) });
+        const bursts = [];
+        ctx.drawRender = { startSpawnBurst(x, y, color) { this._spawnEffect = { active: true, x, y, color, startTime: T, el: false }; bursts.push({ x, y }); } };
+        const died = [];
+        const onDied = d => died.push(d);
+        E.on('playerDied', onDied);
+        const deaths = () => plays.filter(q => /^death-/.test(q.id)).length;
+        const thr = () => info().threat.level;
+        D.reducedMotion = false; D.dyingLightIntensity = 'immersive'; L.setIntensity('immersive');
+        ctx.__r = () => 0;
+        p = L.enable(); flushPics(true); await p;
+        plays.length = 0;
+        for (let i = 0; i < 6; i++) spawn(i, 1000 * i, -500 * i);
+        check('matrix: six players spawned, the bursts at each one\'s own cells', bursts.length === 6 && bursts.every((b, i) => b.x === 1000 * i + 10 && b.y === -500 * i - 10),
+            JSON.stringify(bursts));
+        advance(31000);
+        check('matrix: the main player alive (controlled): a game (the rare event comes), its threat look', plays.some(q => /^radio-/.test(q.id)) && thr() === 2);
+        /* the main player dies, P2-P6 live: the focus goes to P2 */
+        plays.length = 0;
+        die(0);
+        const thrAfter = thr();
+        check('matrix: main dead, P2 alive: scope unit, no death signal, the focus on P2, the threat look from zero',
+            died.length === 1 && died[0].scope === 'unit' && died[0].role === 'main' && deaths() === 0 && ctx.multiboxPlayerEnabled === 16 && thrAfter === 0);
+        advance(750);
+        check('...P2\'s own threat level after 250 ms', thr() === 2);
+        /* the next roll past the 150 s gap after the first event */
+        advance(190000);
+        check('matrix: main dead, P2 alive: the game goes on (rare events still come)', plays.some(q => /^radio-/.test(q.id)) && deaths() === 0);
+        /* switch P2 -> P3 */
+        ctx.lmSetMbUnit(17);
+        check('matrix: switch P2 -> P3 resets the threat look at once', thr() === 0 && info().threat.level === 0);
+        advance(750);
+        check('...P3\'s own level after', thr() === 2);
+        /* P4 dies while P3 is controlled and others live */
+        audios.forEach(a => { if (a.src) a.paused = false; });
+        const playing = audios.filter(a => a.src && !a.paused).length;
+        die(3);
+        check('matrix: P4 dies, others alive: scope unit, no global death sequence, P3 keeps its threat look and the sounds play on',
+            died[died.length - 1].scope === 'unit' && died[died.length - 1].active === false && deaths() === 0 && thr() === 2 && ctx.multiboxPlayerEnabled === 17 &&
+            playing > 0 && audios.filter(a => a.src && !a.paused).length === playing);
+        /* P5 dies and spawns again elsewhere (not controlled) */
+        die(4);
+        bursts.length = 0;
+        spawn(4, 7000, -2500);
+        check('matrix: P5 spawns: the burst at P5\'s own cells (not at P3 nor the main player), P3\'s threat look kept',
+            bursts.length === 1 && bursts[0].x === 7010 && bursts[0].y === -2510 && thr() === 2 && deaths() === 0);
+        /* the Full Map's drawn copy of one opponent switches from the main connection to a tile */
+        {
+            const a = { x: 500, y: 0, size: 200, targetNick: 'walker', color: '#f00', spectator: 0 };
+            const b = { x: 500, y: 0, size: 200, targetNick: 'walker', color: '#0f0', spectator: 5, _lmMbPosDup: true, invisible: true };
+            const drawn = () => [a, b].filter(c => ctx.lmDlSkinCell(c)).map(c => L.getFallbackSkinKey(c));
+            const k1 = drawn();
+            Object.assign(a, { _lmMbPosDup: true, invisible: true }); Object.assign(b, { _lmMbPosDup: false, invisible: false });
+            const k2 = drawn();
+            const own = { x: 1, y: 1, size: 200, targetNick: 'me', spectator: 17, isPlayerCell: true, isPlayerCellMulti: true };
+            const ownMain = { x: 1, y: 1, size: 200, targetNick: 'me', spectator: 0, _lmMbPosDup: true, invisible: true };
+            check('matrix: representation switch: one drawn copy each frame, the same zombie design; a unit\'s own cell and the main copy hidden behind it: none',
+                k1.length === 1 && k2.length === 1 && k1[0] && k1[0] === k2[0] && !ctx.lmDlSkinCell(own) && L.getFallbackSkinKey(own) === null && !ctx.lmDlSkinCell(ownMain));
+        }
+        /* all six die (the controlled P3 in the middle: the focus moves on) */
+        advance(11000);
+        died.length = 0; plays.length = 0;
+        audios.forEach(a => { if (a.src) a.paused = false; });
+        let early = 0;
+        /* P4 is dead already, the main player too: P5, P3 (controlled), P2 die, P6 lives on */
+        [4, 2, 1].forEach(i => { die(i); early += deaths(); });
+        check('matrix: all but the last die: no death signal yet, the focus moved on to P6', early === 0 && died.length === 3 && died.every(d => d.scope === 'unit') &&
+            ctx.multiboxPlayerEnabled === 20, died.map(d => d.scope).join());
+        const last = ctx.lmMbUnits([]).concat([LM]).filter(s => ctx.lmMbAlive(s));
+        die(P.indexOf(last[0]));
+        check('matrix: all six dead: exactly one global death sequence, at the last death', last.length === 1 && deaths() === 1 &&
+            died.filter(d => d.scope === 'all').length === 1 && died[died.length - 1].scope === 'all' && thr() === 0);
+        /* rapid respawn: the death sound and the threat look of the last life go at the first spawn */
+        audios.forEach(a => { if (a.src) a.paused = false; });
+        bursts.length = 0;
+        advance(100);
+        spawn(3, 300, 300);
+        const stopped = audios.filter(a => a.src).every(a => a.paused);
+        [0, 1, 2, 4, 5].forEach((i, k) => { advance(100); spawn(i, 100 * k, 0); });
+        check('matrix: rapid respawn: the previous sounds stopped at the first spawn, no figure, one burst per spawn at its player',
+            stopped && !info().ghost && bursts.length === 6 && bursts[0].x === 310 && bursts[5].x === 410, JSON.stringify(bursts));
+        plays.length = 0;
+        advance(5000);
+        check('...a short calm after (no rare event at once)', plays.length === 0);
+        /* again, the main player last: one death signal (the core's death and playerDied together) */
+        advance(11000);
+        died.length = 0; plays.length = 0;
+        [1, 2, 3, 4, 5].forEach(die);
+        const before = deaths();
+        die(0);
+        check('matrix: all six dead, the main player last: exactly one death sequence, at its death', before === 0 && deaths() === 1 &&
+            died.filter(d => d.scope === 'all').length === 1 && died[died.length - 1].role === 'main');
+        await L.disable();
+        check('matrix: off: no listener, timer or threat look left', info().listeners === 0 && info().threat.listeners === 0 && timers.size === 0 &&
+            !body.kids.some(n => n.className === 'lm-dl-threat'));
+        E.off('playerDied', onDied);
+        delete ctx.lmDlThreat; delete ctx.drawRender;
+        D.reducedMotion = rm; ctx.__r = rWas;
+    }
+
+    phones();
     if (fail) { console.log(fail + ' failure(s)'); process.exit(1); }
     console.log('all Dying Light director checks passed');
 })().catch(e => { console.log('FAIL threw: ' + (e && e.stack)); process.exit(1); });
