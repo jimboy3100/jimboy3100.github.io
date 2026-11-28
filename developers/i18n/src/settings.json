@@ -1349,6 +1349,24 @@
     "ja": "味方の名前を隠す",
     "it": "Nascondi i nomi dei compagni"
   },
+  "settings.optimizedMass": {
+    "en": "Optimized mass (+/-2%) OR Merge timer (BETA)",
+    "el": "Βελτιστοποιημένη μάζα (+/-2%) Ή χρονόμετρο συγχώνευσης (BETA)",
+    "es": "Masa optimizada (+/-2%) O temporizador de fusión (BETA)",
+    "bg": "Оптимизирана маса (+/-2%) ИЛИ таймер за сливане (BETA)",
+    "fr": "Masse optimisée (+/-2%) OU minuteur de fusion (BETA)",
+    "ar": "كتلة محسّنة (+/-2%) أو مؤقت الدمج (BETA)",
+    "zh": "最佳化質量（+/-2%）或合併計時器（BETA）",
+    "ru": "Оптимизированная масса (+/-2%) ИЛИ таймер слияния (BETA)",
+    "de": "Optimierte Masse (+/-2%) ODER Merge-Timer (BETA)",
+    "tr": "Optimize kütle (+/-2%) VEYA birleşme sayacı (BETA)",
+    "pl": "Zoptymalizowana masa (+/-2%) LUB licznik łączenia (BETA)",
+    "nl": "Geoptimaliseerde massa (+/-2%) OF merge-timer (BETA)",
+    "pt": "Massa otimizada (+/-2%) OU timer de fusão (BETA)",
+    "id": "Massa dioptimalkan (+/-2%) ATAU timer gabung (BETA)",
+    "ja": "質量表示の最適化（±2%）または合体タイマー（BETA）",
+    "it": "Massa ottimizzata (+/-2%) O timer di fusione (BETA)"
+  },
   "settings.shortMass": {
     "en": "Short mass (k)",
     "el": "Συντομευμένη μάζα (k)",

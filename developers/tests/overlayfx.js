@@ -180,7 +180,7 @@ function cellMethod(name) {
     const at = src.indexOf('function', m.index);
     return block(src, at);
 }
-const CELL_METHODS = ['draw', 'drawChat', 'lmChatLine', 'lmChatBubble', 'drawMass', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick', 'lmFbBadge',
+const CELL_METHODS = ['draw', 'drawChat', 'lmChatLine', 'lmChatBubble', 'drawMass', 'drawSpecialSkin', 'drawImageSpecialSkin', 'layoutNick', 'drawNick', 'lmLabels', 'lmFbBadge',
     'setNick', 'setMass', 'setDrawing', 'setDrawingScale', 'setScale', 'setFontSize', 'setStrokeSize'];
 const haveMethods = CELL_METHODS.filter((n) => cellMethod(n));
 const frameA = src.indexOf('/* whether this frame was drawn by WebGL (the pie overlay below, the benches) */');
@@ -206,7 +206,7 @@ const ds = D.defaultSettings, ms = D.defaultmapsettings;
 function img(name, w, h) { return { _id: nextId++, name: name, width: w, height: h, naturalWidth: w, naturalHeight: h, complete: true, color: colorFor(nextId * 13) }; }
 const LM = { cells: [], playerCells: [], playerCellsMulti: [], play: false, showCustomSkins: true, gameMode: ':ffa', hideSmallBots: false, indexedCells: {}, selected: null, time: 100000, arrowFB: null, cursorX: 0, cursorY: 0 };
 const ogario = { viewScale: 1 };
-const window = { teammatenicks: [], _lmTeammateNickSet: new Set(), LM_DPR: 1, legendmod5: {}, innerWidth: 240, innerHeight: 160, legendmod: LM };
+const window = { teammatenicks: [], _lmTeammateNickSet: new Set(), LM_DPR: 1, legendmod5: { optimizedMass: true }, innerWidth: 240, innerHeight: 160, legendmod: LM };
 /* an Array, as SpecialEffectPlayers in ogario.v4.js */
 const SEP = [];
 const document = { createElement: () => new SoftCanvas(0, 0, 'txt') };
@@ -279,7 +279,7 @@ function makeCell(o) {
     Object.assign(c, {
         id: cellIds++, x: 0, y: 0, size: 50, targetNick: '', nick: '', color: '#888', skin: '', isPlayerCell: false, isPlayerCellMulti: false,
         isVirus: false, isFood: false, isEjected: false, invisible: false, removed: false, alpha: 0, redrawed: 0, _eatPulseTime: 0, margin: 0,
-        chatCanvas: null, nickCanvas: null, massCanvas: null, mass: 0, scale: 1, redrawNick: true, redrawMass: true, redrawChat: true,
+        chatCanvas: null, nickCanvas: null, massCanvas: null, mergeCanvas: null, mass: 0, scale: 1, redrawNick: true, redrawMass: true, redrawChat: true,
         pi2: 2 * Math.PI, virMassSize: 0, nickScale: 1, massScale: 3, strokeScale: 1, body: colorFor(nextId++ * 7), labelCol: colorFor(nextId++ * 11)
     }, o);
     return c;
@@ -1172,18 +1172,18 @@ const noReset = (log) => log.filter((x, i) => !(x === 'globalAlpha=1' && log[i +
 }
 }
 
-/* the cell mass text is drawn again only after a 2% change (fixed: the Optimized mass switch is gone);
+/* Optimized mass on (the default): the cell mass text is drawn again only after a 2% change;
  * Mass format 12.3k -> exact shows the exact number at once (4f44055b) */
 if (haveMethods.includes('setMass')) {
     reset();
     ms.massFormat = 1; ms.hudRelativeMass = false;
-    const c = makeCell({ size: 400, shortMass: false });
+    const c = makeCell({ size: 400, shortMass: false, optimizedMass: true });
     c.setMass(400); c.lastMass = c.mass;
     c.setMass(402);
     const small = c.redrawMass;
     c.setMass(410);
     check('mass text: a 1% change keeps the drawn text, a 5% change redraws it', !small && c.redrawMass === true && c.massTxt === '1681', small + ' ' + c.redrawMass + ' ' + c.massTxt);
-    const k = makeCell({ size: 400, shortMass: true });
+    const k = makeCell({ size: 400, shortMass: true, optimizedMass: true });
     k.setMass(400); k.lastMass = k.mass;
     const kTxt = k.massTxt;
     k.shortMass = false;

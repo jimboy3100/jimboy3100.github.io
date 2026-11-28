@@ -314,7 +314,7 @@
 "site.index.names": "Ονόματα (",
 "site.index.disableNamesOrUse": "απενεργοποιήστε τα ονόματα ή χρησιμοποιήστε την επιλογή «Auto hide name»",
 "site.index.someTipsToGet": "Μερικές συμβουλές για πιο σταθερά FPS:",
-"site.index.useOptimizedNamesAnd": "Χρησιμοποιήστε την επιλογή «Optimized names»",
+"site.index.useOptimizedNamesAnd": "Χρησιμοποιήστε τις επιλογές «Optimized names» και «Optimized mass»",
 "site.index.useAutoHideMass": "Χρησιμοποιήστε την επιλογή «Auto hide mass»",
 "site.index.useShortMassOption": "Ορίστε τη «Μορφή μάζας» σε «Συντομευμένη (12.3k)»",
 "site.index.disableAutoZoom": "Απενεργοποιήστε το αυτόματο zoom",

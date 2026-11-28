@@ -18,7 +18,7 @@
 
     /* ───────────────────────── pure parts (developers/tests/hudhelpers.js) ───────────────────────── */
 
-    /* Merge time estimate (agar.io): 29 s + 8/300 s per mass */
+    /* Merge time estimate, the formula of ogario/mergetimer.js (agar.io): 29 s + 8/300 s per mass */
     function mergeDuration(mass) {
         return 29 + (8 / 300) * (mass > 0 ? mass : 0);
     }

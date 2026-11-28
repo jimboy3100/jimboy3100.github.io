@@ -50,7 +50,7 @@ check('mass auto: 1.2M', P.formatMass(1234567, 3) === '1.2M');
 check('mass bad values', P.formatMass(-5, 1) === '0' && P.formatMass(NaN, 3) === '0' && P.formatMass(12.9, 1) === '12');
 
 // merge timing (the merge sound); the merge countdown in seconds is removed
-check('merge duration (agar.io formula)', near(P.mergeDuration(300), 37) && near(P.mergeDuration(0), 29));
+check('merge duration (mergetimer.js formula)', near(P.mergeDuration(300), 37) && near(P.mergeDuration(0), 29));
 check('the merge countdown in seconds is gone', !('countdownText' in P) && !('mergeLeft' in H) && !('worldActive' in H));
 {
     const owner = { prevCount: 0, beep: false };

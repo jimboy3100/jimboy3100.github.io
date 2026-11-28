@@ -10046,6 +10046,24 @@
     "ja": "検索をキャンセル",
     "it": "Annulla ricerca"
   },
+  "lmx.ex.optimizedMassTip": {
+    "en": "When ON: optimized mass (+/-2%) on, merge timer BETA off. Recommended ON to reduce lag.",
+    "el": "Όταν είναι ενεργό: βελτιστοποιημένη μάζα (+/-2%) ενεργή, merge timer BETA ανενεργό. Προτείνεται ενεργό για λιγότερο lag.",
+    "es": "Si está activo: masa optimizada (+/-2%) activada, temporizador de fusión BETA desactivado. Recomendado activo para reducir el lag.",
+    "bg": "Когато е включено: оптимизирана маса (+/-2%) вкл., таймер за сливане BETA изкл. Препоръчва се за по-малко лаг.",
+    "fr": "Si activé : masse optimisée (+/-2 %) activée, minuteur de fusion BETA désactivé. Conseillé pour réduire le lag.",
+    "ar": "عند التفعيل: الكتلة المحسّنة (+/-2%) مفعّلة، ومؤقت الدمج BETA معطّل. يُنصح بتفعيله لتقليل التأخير.",
+    "zh": "開啟時：優化質量 (+/-2%) 開啟、合併計時 BETA 關閉。建議開啟以減少延遲。",
+    "ru": "Если включено: оптимизированная масса (+/-2%) вкл., таймер слияния BETA выкл. Рекомендуется для уменьшения лагов.",
+    "de": "Wenn AN: optimierte Masse (+/-2%) an, Merge-Timer BETA aus. Empfohlen gegen Lag.",
+    "tr": "AÇIK olduğunda: optimize kütle (+/-2%) açık, birleşme sayacı BETA kapalı. Gecikmeyi azaltmak için açık önerilir.",
+    "pl": "Gdy WŁ.: zoptymalizowana masa (+/-2%) wł., licznik łączenia BETA wył. Zalecane, by zmniejszyć lagi.",
+    "nl": "Als AAN: geoptimaliseerde massa (+/-2%) aan, samensmelttimer BETA uit. Aanbevolen tegen lag.",
+    "pt": "Quando LIGADO: massa otimizada (+/-2%) ligada, timer de merge BETA desligado. Recomendado LIGADO para reduzir o lag.",
+    "id": "Saat AKTIF: massa teroptimasi (+/-2%) aktif, timer merge BETA mati. Disarankan AKTIF untuk mengurangi lag.",
+    "ja": "オンにすると：質量の最適化（+/-2%）がオン、合体タイマーBETAがオフになります。ラグを減らすためオン推奨。",
+    "it": "Se ATTIVO: massa ottimizzata (+/-2%) attiva, timer di merge BETA disattivato. Consigliato ATTIVO per ridurre il lag."
+  },
   "lmx.ex.videoSkinsTip": {
     "en": "How to use video skins: {0}",
     "el": "Πώς χρησιμοποιείς τα video skins: {0}",

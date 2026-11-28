@@ -1,0 +1,204 @@
+// Time Merger v3.2 — split detection from player-cell ids, re-armed on every split
+window.ExternalScripts = true;
+
+(function () {
+    "use strict";
+
+    var intervalId = null;
+    /*
+     * Polled every 100 ms. Previously the split edge was looked for in a
+     * 10-frame historyMass window once per second, so most splits were missed,
+     * new pieces (fresh ids) never got a timer and a re-split was ignored.
+     */
+    var TICK_MS = 100;
+    var prevMass = {};   // id -> mass at the previous tick
+    var prevCount = 0;
+
+    function clearCellMergeState(cellData) {
+        if (!cellData) {
+            return;
+        }
+
+        cellData.mergeTime = null;
+        cellData._mergeDeadline = null;
+        cellData._mergeState = "idle";
+        cellData._mergeTriggerActive = false;
+    }
+
+    function armCellMergeTimer(cellData, mass, now) {
+        var mergeDurationSec =
+            29 + (8 / 300) * mass;
+
+        cellData._mergeDeadline =
+            now + mergeDurationSec * 1000;
+
+        /* total length, read by the merge ring in ogario.v4.js so both show the same time */
+        cellData._mergeDurationSec = mergeDurationSec;
+
+        cellData._mergeState = "counting";
+    }
+
+    function updateCellMergeTimer(cellData, now) {
+        if (!cellData) {
+            return;
+        }
+
+        if (cellData._mergeState === "counting" &&
+            Number.isFinite(cellData._mergeDeadline)) {
+
+            var remainingMs =
+                cellData._mergeDeadline - now;
+
+            if (remainingMs <= 0) {
+                clearCellMergeState(cellData);
+                return;
+            }
+
+            cellData.mergeTime =
+                Math.ceil(remainingMs / 1000);
+            return;
+        }
+
+        cellData.mergeTime = null;
+    }
+
+    /* Drop the entries of cells that are gone (eaten, merged, dead, another
+     * server): one was added for every own cell id ever seen and none was
+     * removed, so the table grew with every split for the whole session. */
+    function pruneTable(playerCellsId) {
+        var live = window.legendmod && window.legendmod.indexedCells;
+        if (!playerCellsId || !live) {
+            return;
+        }
+
+        for (var id in playerCellsId) {
+            if (!Object.prototype.hasOwnProperty.call(playerCellsId, id)) {
+                continue;
+            }
+
+            var cell = live[id];
+            if (!cell || !(cell.isPlayerCell || cell.isPlayerCellMulti)) {
+                delete playerCellsId[id];
+            }
+        }
+    }
+
+    /* death or a closed connection: the next life starts with no merge state */
+    function reset() {
+        prevMass = {};
+        prevCount = 0;
+        pruneTable(window.playerCellsId);
+    }
+
+    function CellTimer() {
+        if (!window.ExternalScripts ||
+            !window.legendmod ||
+            !window.legendmod5 ||
+            window.legendmod5.optimizedMass ||
+            !window.playerCellsId) {
+            return;
+        }
+
+        var now = performance.now();
+        var playerCells =
+            window.legendmod.playerCells || [];
+
+        var playerCellsId =
+            window.playerCellsId;
+
+        var count = playerCells.length;
+        var grew = prevCount > 0 && count > prevCount;
+        var nextMass = {};
+
+        for (var i = 0;
+            i < count;
+            i++) {
+
+            var cell = playerCells[i];
+
+            if (!cell ||
+                cell.id === undefined ||
+                cell.id === null) {
+                continue;
+            }
+
+            var mass = Number(cell.mass);
+            if (!Number.isFinite(mass) || mass <= 0) {
+                continue;
+            }
+            nextMass[cell.id] = mass;
+
+            var cellData =
+                playerCellsId[cell.id];
+
+            if (!cellData) {
+                cellData = playerCellsId[cell.id] = { historyMass: [mass] };
+            }
+
+            if (count <= 1) {
+                // back to one cell: nothing left to merge
+                clearCellMergeState(cellData);
+                continue;
+            }
+
+            var lastMass = prevMass[cell.id];
+            var isNewPiece = grew && lastMass === undefined;
+            var lostMass = lastMass !== undefined && lastMass > mass * 1.4;
+
+            // a split (or virus pop) arms both the new pieces and the piece
+            // that lost mass, also while it is already counting
+            if (isNewPiece || (grew && lostMass)) {
+                armCellMergeTimer(cellData, mass, now);
+            }
+
+            updateCellMergeTimer(
+                cellData,
+                now
+            );
+        }
+
+        prevMass = nextMass;
+        prevCount = count;
+        pruneTable(playerCellsId);
+    }
+
+    function start() {
+        if (intervalId !== null) {
+            return;
+        }
+
+        intervalId =
+            setInterval(CellTimer, TICK_MS);
+    }
+
+    function stop() {
+        if (intervalId === null) {
+            return;
+        }
+
+        clearInterval(intervalId);
+        intervalId = null;
+    }
+
+    // true while CellTimer owns playerCellsId[id].mergeTime (same gate as
+    // CellTimer); other writers must not overwrite it then
+    function isActive() {
+        return intervalId !== null &&
+            !!window.ExternalScripts &&
+            !!window.legendmod &&
+            !!window.legendmod5 &&
+            !window.legendmod5.optimizedMass &&
+            !!window.playerCellsId;
+    }
+
+    window.MergeTimerController = {
+        start: start,
+        stop: stop,
+        reset: reset,
+        isActive: isActive,
+        clearCellState: clearCellMergeState,
+        updateCell: updateCellMergeTimer
+    };
+
+    start();
+})();

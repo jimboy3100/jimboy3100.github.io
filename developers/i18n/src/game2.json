@@ -3437,6 +3437,24 @@
     "ja": "<font color='yellow'>発射：<font> {name} ({x}, {y}) にウイルス {vx}, {vy} から",
     "it": "<font color='yellow'>Tiro: <font> {name} ({x}, {y}) dal virus {vx}, {vy}"
   },
+  "game2.antiBeat": {
+    "en": "PAUSE! Anti beat: {0}%",
+    "el": "ΠΑΥΣΗ! Anti beat: {0}%",
+    "es": "¡PAUSA! Anti beat: {0}%",
+    "bg": "ПАУЗА! Anti beat: {0}%",
+    "fr": "PAUSE ! Anti beat : {0}%",
+    "ar": "إيقاف مؤقت! Anti beat: {0}%",
+    "zh": "暫停！Anti beat: {0}%",
+    "ru": "ПАУЗА! Anti beat: {0}%",
+    "de": "PAUSE! Anti beat: {0}%",
+    "tr": "DURAKLAT! Anti beat: {0}%",
+    "pl": "PAUZA! Anti beat: {0}%",
+    "nl": "PAUZE! Anti beat: {0}%",
+    "pt": "PAUSA! Anti beat: {0}%",
+    "id": "JEDA! Anti beat: {0}%",
+    "ja": "一時停止！Anti beat：{0}%",
+    "it": "PAUSA! Anti beat: {0}%"
+  },
   "game2.captchaLoadFailed": {
     "en": "The captcha could not load. Check your connection or ad blocker, then press Play again.",
     "el": "Το captcha δεν φορτώθηκε. Ελέγξτε τη σύνδεση ή το ad blocker και πατήστε ξανά Παίξε.",

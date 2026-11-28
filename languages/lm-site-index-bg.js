@@ -314,7 +314,7 @@
 "site.index.names": "Имена (",
 "site.index.disableNamesOrUse": "изключете имената или използвайте опцията „Auto hide name“",
 "site.index.someTipsToGet": "Няколко съвета за по-стабилен FPS:",
-"site.index.useOptimizedNamesAnd": "Използвайте опцията „Optimized names“",
+"site.index.useOptimizedNamesAnd": "Използвайте опциите „Optimized names“ и „Optimized mass“",
 "site.index.useAutoHideMass": "Използвайте опцията „Auto hide mass“",
 "site.index.useShortMassOption": "Задайте „Формат на масата“ на „Съкратена (12.3k)“",
 "site.index.disableAutoZoom": "Изключете автоматичното мащабиране",

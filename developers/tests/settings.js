@@ -187,13 +187,14 @@ const reSaved3 = JSON.parse(ctx.localStorage.getItem('ogarioSettings'));
 /* the size symbols were removed, not merged: an old saved value changes nothing (Relative mass stays off) */
 check('load: an old save with the size symbols on keeps Relative mass off, removed settings ignored', S.hudRelativeMass === false && !('a11yIndicators' in S) && reSaved3.hudRelativeMass !== true && GONE.every(k => !(k in S)));
 S.hudRelativeMass = D.hudRelativeMass;
-/* "Optimized mass OR Merge timer" and "Merge countdown in seconds" are gone: saved values are ignored,
- * nothing is turned on */
-check('optimizedMass is no setting: refused', !('optimizedMass' in D) && !('optimizedMass' in SCH) && V('optimizedMass', false) === undefined);
-check('fold: optimizedMass off turns nothing on (Merge countdown is removed)', !('hudMergeCountdown' in lfold({ optimizedMass: false })) && !('hudMergeCountdown' in lfold({ optimizedMass: 'false' })));
+/* "Optimized mass (+/-2%) OR Merge timer (BETA)" is back (the original seconds merge timer, ogario/mergetimer.js):
+ * on by default, and a saved off is read again; the agent-made Merge countdown stays removed */
+check('optimizedMass is a setting again, on by default', D.optimizedMass === true && V('optimizedMass', false) === false);
+check('fold: optimizedMass is kept as saved, Merge countdown is not turned on', J(lfold({ optimizedMass: false })) === J({ optimizedMass: false }));
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(Object.assign({}, saved, { optimizedMass: false, hudMergeCountdown: true })));
 app.loadSettings();
-check('load: saved optimizedMass off / hudMergeCountdown on are ignored, the merge sound keeps its value', !('optimizedMass' in S) && !('hudMergeCountdown' in S) && S.hudMergeSound === saved.hudMergeSound);
+check('load: a saved optimizedMass off is read again, hudMergeCountdown ignored', S.optimizedMass === false && !('hudMergeCountdown' in S));
+S.optimizedMass = D.optimizedMass;
 /* the loaded values of the checks below */
 ctx.localStorage.setItem('ogarioSettings', JSON.stringify(saved));
 app.loadSettings();
@@ -300,6 +301,23 @@ check('setSettings with the current value: no event', events.length === 0);
 app2.setSettings('showGrid', !before);
 app2.setSettings('showGrid', before);
 check('setSettings on and off: two events, the new value each time', J(events) === J([['settingsChange', 'showGrid', !before], ['settingsChange', 'showGrid', before]]));
+/* the seconds merge timer (optimizedMass off) and the merge rings are one or the other; a switch
+ * press first sends its old value, which changes nothing */
+{
+  const om = S.optimizedMass, mr = S.mergeRings;
+  S.optimizedMass = true; S.mergeRings = true;
+  app2.setSettings('optimizedMass', true);
+  app2.setSettings('optimizedMass', false);
+  const a = [S.optimizedMass, S.mergeRings];
+  app2.setSettings('mergeRings', false);
+  app2.setSettings('mergeRings', true);
+  const b = [S.optimizedMass, S.mergeRings];
+  app2.setSettings('optimizedMass', true);
+  app2.setSettings('mergeRings', false);
+  const c = [S.optimizedMass, S.mergeRings];
+  check('merge timer on turns the merge rings off, the rings on turn the timer off, off leaves the other', J(a) === J([false, false]) && J(b) === J([true, true]) && J(c) === J([true, false]));
+  S.optimizedMass = om; S.mergeRings = mr;
+}
 
 // ── S5b sliders (the real addSliderBox): one way with setSettings, the callback once, the save when the slider rests
 {

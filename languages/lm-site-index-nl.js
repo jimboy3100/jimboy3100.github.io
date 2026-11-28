@@ -314,7 +314,7 @@
 "site.index.names": "Namen (",
 "site.index.disableNamesOrUse": "schakel namen uit of gebruik de optie “Auto hide name”",
 "site.index.someTipsToGet": "Enkele tips voor stabielere FPS:",
-"site.index.useOptimizedNamesAnd": "Gebruik de optie “Optimized names”",
+"site.index.useOptimizedNamesAnd": "Gebruik de opties “Optimized names” en “Optimized mass”",
 "site.index.useAutoHideMass": "Gebruik de optie “Auto hide mass”",
 "site.index.useShortMassOption": "Zet “Massanotatie” op “Verkort (12.3k)”",
 "site.index.disableAutoZoom": "Schakel automatisch zoomen uit",
