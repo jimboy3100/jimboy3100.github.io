@@ -497,6 +497,38 @@ async function dyingLightLifecycle() {
     }
 }
 
+/* ═══ Dying Light texts: every text it shows has its English text (the other languages fall back
+ * to English until a translation pass) and is in the English pack the game loads ═══ */
+{
+    const dlSrc = rd('extras/dyinglight.js');
+    const dlLmx = cutIn(lmx, '/* Dying Light expansion (extras/dyinglight.js, window.LMDyingLight)', '\nfunction bluebtns()');
+    const used = new Set();
+    for (const s of [dlSrc, dlLmx]) {
+        for (const m of s.matchAll(/(?:\btx|_lmxE|_lmxT|lmT)\(\s*(['"])([A-Za-z0-9_.]+)\1\s*[,)]/g)) used.add(m[2]);
+        /* and every whole text key written out (a choice between texts: a ? 'x' : 'y') */
+        for (const m of s.matchAll(/(['"])(pkg\.dl[a-z0-9]+\.[A-Za-z0-9_]+)\1(?!\s*\+)/g)) used.add(m[2]);
+        /* keys put together from a part and a name: every name it can take */
+        for (const m of s.matchAll(/(?:\btx|_lmxE|_lmxT|lmT)\(\s*(['"])([A-Za-z0-9_.]+)\1\s*\+/g)) used.add(m[2] + '*');
+    }
+    const expand = { 'pkg.dlv3dir.*': ['competitive', 'immersive', 'nightmare'], 'pkg.dlv3dir.radio*': ['1', '2', '3'] };
+    const keys = [];
+    used.forEach(k => {
+        if (!k.endsWith('*')) { keys.push(k); return; }
+        if (k === 'pkg.dlv4p.*') ['competitive', 'immersive', 'nightmare'].forEach(v => keys.push('pkg.dlv4p.' + v + 'Tip'));
+        else if (expand[k]) expand[k].forEach(v => keys.push(k.slice(0, -1) + v));
+        else keys.push(k);
+    });
+    /* the opt() helper of the banner controls passes its key as a variable */
+    keys.push('pkg.dlv3dir.competitive', 'pkg.dlv3dir.immersive', 'pkg.dlv3dir.nightmare', 'pkg.dlv3dir.cycle', 'pkg.dlv3dir.scares');
+    const srcDir = path.join(root, 'developers', 'i18n', 'src'), all = {};
+    for (const f of fs.readdirSync(srcDir).filter(f => f.endsWith('.json'))) Object.assign(all, JSON.parse(fs.readFileSync(path.join(srcDir, f), 'utf8')));
+    const enPack = rd('languages/lm-en.js');
+    const uniq = [...new Set(keys)];
+    const missing = uniq.filter(k => k.endsWith('*') || !all[k] || typeof all[k].en !== 'string' || !all[k].en.trim() || enPack.indexOf(JSON.stringify(k) + ': ') < 0);
+    check('Dying Light texts: all ' + uniq.length + ' keys it shows have English and are in the English pack' + (missing.length ? ' (missing: ' + missing.join(', ') + ')' : ''),
+        uniq.length >= 20 && missing.length === 0);
+}
+
 dyingLightLifecycle().catch(e => { check('Dying Light lifecycle ran: ' + (e && e.stack), false); }).then(() => {
     if (fail) { console.log(fail + ' failure(s)'); process.exit(1); }
     console.log('all legacy extras checks passed');
