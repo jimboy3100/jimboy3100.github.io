@@ -2177,50 +2177,6 @@ class Spect {
         return x < v[0] - pad || y < v[1] - pad || x > v[2] + pad || y > v[3] + pad;
     }
 
-    isInViewCustom(x, y, size) {
-        // Use MAIN PLAYER's actual position, not display camera (which follows active multibox)
-        var mainX = ogario.playerX || 0;
-        var mainY = ogario.playerY || 0;
-        var _invScale = 1.0 / (legendmod.scale || 1);
-        var halfW = (legendmod.canvasWidth || 1920) * 0.5 * _invScale;
-        var halfH = (legendmod.canvasHeight || 1080) * 0.5 * _invScale;
-        var distance = size;
-        return !(x + distance < mainX - halfW ||
-            y + distance < mainY - halfH ||
-            x - distance > mainX + halfW ||
-            y - distance > mainY + halfH)
-    }
-
-    isInViewCustom2(x, y, size) {
-        const x2s = legendmod.canvasWidth / 2 / legendmod.scale;
-        const y2s = legendmod.canvasHeight / 2 / legendmod.scale;
-        const randomNum = 0; // randomNum=40
-        const distance = size + randomNum;
-        return !(x + distance < legendmod.viewXTrue - x2s || //<legendmod.camMinX
-            y + distance < legendmod.viewYTrue - y2s || //<legendmod.camMinY
-            x - distance > legendmod.viewXTrue + x2s || //>legendmod.camMaxX
-            y - distance > legendmod.viewYTrue + y2s) //>legendmod.camMaxY
-    }
-
-    isInViewCustom3(x, y, size) {
-        const randomNum = 0; // randomNum=-20
-        const distance = size + randomNum;
-        //var distance = size + randomNum + this.playerSize
-        return !(x + distance < legendmod.camMinMultiX ||
-            y + distance < legendmod.camMinMultiY ||
-            x - distance > legendmod.camMaxMultiX ||
-            y - distance > legendmod.camMaxMultiY)
-    }
-
-    isInViewCustom4(x, y, size) {
-        const randomNum = 20; // randomNum=40
-        const distance = size + randomNum;
-        return !(x + distance < legendmod.camMinMultiX ||
-            y + distance < legendmod.camMinMultiY ||
-            x - distance > legendmod.camMaxMultiX ||
-            y - distance > legendmod.camMaxMultiY)
-    }
-
     /*
      * This connection's map offset, from its own border packet (opcode 64).
      *
@@ -2907,13 +2863,4 @@ function MultiTokenReady(spector) {
     } else if (master.context === "google" && master.accessTokenFB) {
         spector.sendFbToken(master.accessTokenFB)
     }
-}
-
-function checkIfMultiPlayerIsInView(b) {
-    for (let i = 0; i < legendmod.cells.length; i++) {
-        if (b !== "" && legendmod.cells[i].nick === b && !legendmod.cells[i].isPlayerCell) {
-            return true
-        }
-    }
-    return false
 }

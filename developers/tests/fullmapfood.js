@@ -36,7 +36,7 @@ vm.runInContext([
     slice('var LM_UNIT_ID_STEP = ', 'var _lmMbGridTime = -1;'),
     slice('var _lmSrcObs = new Map();', 'var LM_MB_RING_MIN_SCREEN_PX'),
     /* the shared colours per connection (forgotten when one closes) */
-    slice('var _lmMbLooks = new Map();', 'function _lmMbIsPreferredTwin('),
+    slice('var _lmMbLooks = new Map();', '/* Nearest copy to `cell` in idx'),
     'var _DEATH_SLOWMO_ANIM = 600;',
     'var defaultmapsettings = { virusesRange: true, animation: 120, shortMass: false, virMassShots: false, rainbowFood: true };',
     'var defaultSettings = { foodColor: "#5000ff", foodSize: 0 };',

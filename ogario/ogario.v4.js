@@ -1827,9 +1827,6 @@ function lmMbLookOf(src, gen, raw, name) {
 function lmMbLooksReset() {
     _lmMbLooks.clear();
 }
-function _lmMbIsPreferredTwin(cell, other, radius) {
-    return _lmMbTwinDist2(cell, other, radius) >= 0;
-}
 /* Nearest copy to `cell` in idx (cells of connection `conn` only, or of any other connection
  * than `notConn`), within `reach` of matching position (px, py). Ties: the lower id. */
 var _lmMbBestD = 0;
