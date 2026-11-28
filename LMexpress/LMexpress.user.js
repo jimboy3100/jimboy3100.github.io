@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Legend Express Agar.io Extension
 // @namespace    Legend Express Agario Mod
-// @version      1.9
+// @version      1.9.1
 // @description  Agario Mod - Legend,Ogario,Kitty,Old Skins,Animated Skins,Language Packs,Manual User Scripts,Chat,60++ Macros/Hotkeys(Tricksplit,Doublesplit,Quick Feeding,Popsplit,Auto Coins,Freeze Cell Macro,Auto respawn)
 // @homepage     https://jimboy3100.github.io
 // @author       Jimboy3100
@@ -52,7 +52,7 @@
  *   lifecycle    init exactly once, its readiness signal
  *   recovery     a takeover that came after agar.io had started, a cached page that does not start
  *   diagnostics  sessionStorage "lmx-boot": the stages with their times, the source, any conflict
- * The owner records, the agar.io/normal note, the stage records and the init call with its signal are the
+ * The owner records, the agar.io/normal note, the stage records, the init call with its signal and the release record are the
  * extension's code too (extension/content.js): developers/loader-build.js writes developers/loader/shared.js
  * into both, between the lmx-shared markers. Everything else here is this loader's own adapter.
  */
@@ -129,6 +129,33 @@ function lmxEscapeHtml(text) {
     return String(text).replace(/[&<>"']/g, function (ch) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
     });
+}
+
+/* ---- release cache: the record of a saved play.html, the same in both loaders (each keeps it in its own
+ * storage). A saved copy is used only when it is whole (length and FNV-1a checksum), is a Legend page and is
+ * of this page address; LMX_FRESH_WAIT_MS is how long a fresh download may take before the saved copy runs,
+ * LMX_CACHE_MAX_MS how old a saved copy may be to run before the download (older: only when it fails). ---- */
+var LMX_CACHE_FORMAT = 1, LMX_FRESH_WAIT_MS = 400, LMX_CACHE_MAX_MS = 3 * 24 * 3600 * 1000;
+function lmxChecksum(text) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < text.length; i++) {
+        h ^= text.charCodeAt(i);
+        h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+    }
+    return h;
+}
+function lmxIsLegendHtml(html) {
+    return typeof html === 'string' && html.length > 1000 && html.indexOf('/LMexpress/LMexpress.js') >= 0 && /<\/html>/i.test(html);
+}
+/* the record to save for a downloaded page, or null when it is not a Legend page (a portal or error page) */
+function lmxMakeRelease(html, page) {
+    if (!lmxIsLegendHtml(html)) return null;
+    var v = /\?v=(\d+(?:\.\d+)*)/.exec(html);
+    return { format: LMX_CACHE_FORMAT, page: page, release: v ? v[1] : '', length: html.length, sum: lmxChecksum(html), time: Date.now(), html: html };
+}
+function lmxUsableRelease(r, page) {
+    return !!r && typeof r === 'object' && r.format === LMX_CACHE_FORMAT && r.page === page && lmxIsLegendHtml(r.html) &&
+        r.html.length === r.length && lmxChecksum(r.html) === r.sum;
 }
 /* lmx-shared:end */
 
@@ -313,10 +340,10 @@ setLoadingText('lmx-loading-text', lmxText('boot.loading'));
 
 /* ---- environment: GM_* (Tampermonkey, Violentmonkey), GM.* (Greasemonkey 4, Safari managers) ---- */
 var hasGM = typeof GM !== 'undefined' && GM;
-var gmInfo = typeof GM_info !== 'undefined' ? GM_info : (hasGM && GM.info) || { script: { version: '1.9' } };
+var gmInfo = typeof GM_info !== 'undefined' ? GM_info : (hasGM && GM.info) || { script: { version: '1.9.1' } };
 var gmXhr = typeof GM_xmlhttpRequest === 'function' ? GM_xmlhttpRequest
     : hasGM && typeof GM.xmlHttpRequest === 'function' ? function (o) { return GM.xmlHttpRequest(o); } : null;
-var modVersion = String((gmInfo.script && gmInfo.script.version) || '1.9');
+var modVersion = String((gmInfo.script && gmInfo.script.version) || '1.9.1');
 var requestTimeoutMs = 30000;
 /* The /neo and /mobile add-on scripts run this long after the Legend page is written */
 var extraScriptDelayMs = 5000;
@@ -430,6 +457,12 @@ if (menu) {
  * so a later visit to agar.io/legendmod re-applied the previous link's server or replay.
  */
 if (mode.legend) {
+    /* agar.io/ sent to agar.io/legendmod/ by the Legend Express extension's redirect rule (both loaders
+     * installed, this one first): the address bar shows agar.io/ again with its ?query and #hash, as the
+     * extension does, before the launch link is saved */
+    if (location.pathname === '/legendmod/') {
+        try { history.replaceState(history.state, '', '/' + location.search + location.hash); } catch (e) { }
+    }
     try {
         localStorage.setItem('url', launchUrl());
     } catch (e) {
@@ -440,8 +473,7 @@ if (mode.legend) {
 }
 
 /* the release cache (below) */
-var CACHE_KEY = 'release-' + pageVersion, CACHE_FORMAT = 1;
-var FRESH_WAIT_MS = 400, CACHE_MAX_MS = 3 * 24 * 3600 * 1000;
+var CACHE_KEY = 'release-' + pageVersion;
 
 go('LOADING');
 if (mode.notice) {
@@ -456,39 +488,18 @@ if (mode.notice) {
 }
 
 /* ---- release cache: the last play.html, checked on every visit. A fresh copy that answers within
- * FRESH_WAIT_MS is used (a new release at once); a slower one is saved for the next visit while the saved
- * copy runs. A saved copy that is damaged (its checksum), older than CACHE_MAX_MS or not a Legend page is
+ * LMX_FRESH_WAIT_MS is used (a new release at once); a slower one is saved for the next visit while the saved
+ * copy runs. A saved copy that is damaged (its checksum), older than LMX_CACHE_MAX_MS or not a Legend page is
  * not used; one that does not start the mod (no init) is dropped and the page loaded once more. ---- */
-/* FNV-1a checksum of a text */
-function checksum(text) {
-    var h = 0x811c9dc5;
-    for (var i = 0; i < text.length; i++) {
-        h ^= text.charCodeAt(i);
-        h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
-    }
-    return h;
-}
-function isLegendHtml(html) {
-    return typeof html === 'string' && html.length > 1000 && html.indexOf('/LMexpress/LMexpress.js') >= 0 && /<\/html>/i.test(html);
-}
-function makeRelease(html) {
-    if (!isLegendHtml(html)) return null;
-    var v = /\?v=(\d+(?:\.\d+)*)/.exec(html);
-    return { format: CACHE_FORMAT, page: legendPage, release: v ? v[1] : '', length: html.length, sum: checksum(html), time: Date.now(), html: html };
-}
-function usableRelease(r) {
-    return !!r && typeof r === 'object' && r.format === CACHE_FORMAT && r.page === legendPage && isLegendHtml(r.html) &&
-        r.html.length === r.length && checksum(r.html) === r.sum;
-}
-
+/* the release record (lmxMakeRelease, lmxUsableRelease) is the shared part's */
 function loadLegendPage() {
     store.get(CACHE_KEY, function (saved) {
-        var cached = usableRelease(saved) ? saved : null;
+        var cached = lmxUsableRelease(saved, legendPage) ? saved : null;
         if (saved && !cached) {
             diag.conflict = diag.conflict || 'cache-damaged';
             store.remove(CACHE_KEY);
         }
-        var recent = cached && Date.now() - cached.time < CACHE_MAX_MS;
+        var recent = cached && Date.now() - cached.time < LMX_CACHE_MAX_MS;
         var written = false;
         var write = function (html, source, release) {
             if (written) return;
@@ -498,12 +509,12 @@ function loadLegendPage() {
             diag.release = release ? release.release : '';
             writeLegendPage(html, source);
         };
-        var wait = recent ? setTimeout(function () { write(cached.html, 'cache', cached); }, FRESH_WAIT_MS) : null;
+        var wait = recent ? setTimeout(function () { write(cached.html, 'cache', cached); }, LMX_FRESH_WAIT_MS) : null;
         var tries = 0;
         var fetchFresh = function () {
             tries++;
             fetchText(legendPage, true, function (html) {
-                var fresh = makeRelease(html);
+                var fresh = lmxMakeRelease(html, legendPage);
                 if (fresh && (!cached || fresh.sum !== cached.sum || Date.now() - cached.time > 3600000)) store.set(CACHE_KEY, fresh);
                 /* not a Legend page (a portal or error page): the saved release, when there is one */
                 if (!fresh && cached) { write(cached.html, 'cache', cached); return; }

@@ -28,6 +28,7 @@ function notice(version, loaderName, owner, ls) {
 const us = notice('1.8.7', undefined, null);
 check('an old userscript (1.8.7) is told about 1.9', us.kind === 'userscript' && /LMexpress\.user\.js/.test(us.html), JSON.stringify(us));
 check('userscript 1.9 gets no notice', notice('1.9', 'userscript', 'userscript:1700000000123.5').kind === '');
+check('userscript 1.9.1 gets no notice, 1.9 neither (its manager updates it by @version)', notice('1.9.1', 'userscript', 'userscript:1700000000123.5').kind === '' && notice('1.9', 'userscript', 'userscript:1700000000123.5').kind === '');
 const ext = notice('1.8.5', undefined, null, { lmExpressEnabled: '1' });
 check('the store extension (1.8.5) is not told to unzip a new package', ext.kind === '' && ext.html === '', JSON.stringify(ext));
 check('extension 1.9.0 (the zip) gets no notice', notice('1.9.0', 'extension', 'extension:1700000000123.5').kind === '');

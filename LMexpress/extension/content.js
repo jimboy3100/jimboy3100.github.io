@@ -2,7 +2,7 @@
 /*MIT License*/
 
 /*
- * The owner records, the agar.io/normal note, the stage records and the init call with its signal are the
+ * The owner records, the agar.io/normal note, the stage records, the init call with its signal and the release record are the
  * userscript's code too (LMexpress.user.js): developers/loader-build.js writes developers/loader/shared.js into
  * both, between the lmx-shared markers. Everything else here is this extension's own adapter.
  */
@@ -77,6 +77,33 @@ function lmxEscapeHtml(text) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
     });
 }
+
+/* ---- release cache: the record of a saved play.html, the same in both loaders (each keeps it in its own
+ * storage). A saved copy is used only when it is whole (length and FNV-1a checksum), is a Legend page and is
+ * of this page address; LMX_FRESH_WAIT_MS is how long a fresh download may take before the saved copy runs,
+ * LMX_CACHE_MAX_MS how old a saved copy may be to run before the download (older: only when it fails). ---- */
+var LMX_CACHE_FORMAT = 1, LMX_FRESH_WAIT_MS = 400, LMX_CACHE_MAX_MS = 3 * 24 * 3600 * 1000;
+function lmxChecksum(text) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < text.length; i++) {
+        h ^= text.charCodeAt(i);
+        h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+    }
+    return h;
+}
+function lmxIsLegendHtml(html) {
+    return typeof html === 'string' && html.length > 1000 && html.indexOf('/LMexpress/LMexpress.js') >= 0 && /<\/html>/i.test(html);
+}
+/* the record to save for a downloaded page, or null when it is not a Legend page (a portal or error page) */
+function lmxMakeRelease(html, page) {
+    if (!lmxIsLegendHtml(html)) return null;
+    var v = /\?v=(\d+(?:\.\d+)*)/.exec(html);
+    return { format: LMX_CACHE_FORMAT, page: page, release: v ? v[1] : '', length: html.length, sum: lmxChecksum(html), time: Date.now(), html: html };
+}
+function lmxUsableRelease(r, page) {
+    return !!r && typeof r === 'object' && r.format === LMX_CACHE_FORMAT && r.page === page && lmxIsLegendHtml(r.html) &&
+        r.html.length === r.length && lmxChecksum(r.html) === r.sum;
+}
 /* lmx-shared:end */
 
 /*
@@ -99,12 +126,14 @@ const otherLoaderOwned = otherLoaderOwns();
  * browser never downloads or starts them.
  *
  * The page is fetched by background.js, which checks it came over https with a
- * 2xx status, and is then written over agar.io.
+ * 2xx status, and is then written over agar.io. The last Legend page is kept in chrome.storage.local
+ * (the release cache, as the userscript's: a fast start from it, and a start when the server is down).
  */
 
-/* Change to make browsers fetch a fresh play.html instead of a cached copy */
+/* Change to make browsers fetch a fresh play.html instead of a cached copy (also starts a new release cache) */
 const pageVersion = 2;
 const legendPage = 'https://www.legendmod.ml/play.html?' + pageVersion;
+const CACHE_KEY = 'release-' + pageVersion;
 const captchaPage = 'https://www.legendmod.ml/ogario/captcha.html';
 const modVersion = chrome.runtime.getManifest().version;
 /* The texts (texts.js, generated from developers/i18n/src) in the language chosen in Legend Mod
@@ -152,7 +181,8 @@ if (!otherLoaderOwned && !vanilla && (isLegendPath || isCaptchaPath) && mirrored
     if (isLegendPath) showLoading();
 }
 
-chrome.storage.local.get({ enabled: true }, (result) => {
+/* the saved release comes with the switch (one answer), on the Legend page only */
+chrome.storage.local.get(isLegendPath ? { enabled: true, [CACHE_KEY]: null } : { enabled: true }, (result) => {
     const isEnabled = result.enabled !== false;
     console.log('[Legend Express] Extension status:', isEnabled ? 'Enabled' : 'Disabled');
     try { localStorage.setItem(ENABLED_KEY, isEnabled ? '1' : '0'); } catch (e) { }
@@ -193,7 +223,7 @@ chrome.storage.local.get({ enabled: true }, (result) => {
         claimOwner();
     }
     if (isLegendPath) {
-        loadLegendPage();
+        loadLegendPage(result[CACHE_KEY]);
     } else if (isCaptchaPath) {
         /* The bots open agar.io/captcha and expect the captcha helper page there. */
         loadPage(captchaPage, false);
@@ -253,7 +283,7 @@ function writePage(html) {
     markPage();
 }
 
-function loadLegendPage() {
+function loadLegendPage(saved) {
     /*
      * LMexpress.js reads the launch link (?sip=, ?pass=, ?replay=...) from localStorage "url".
      * Save it on every Legend load. It used to be saved on agar.io/ only, so a later
@@ -266,58 +296,126 @@ function loadLegendPage() {
     }
     /* per tab too: "url" is shared by every agar.io tab, so two tabs loading at once took each other's link */
     try { sessionStorage.setItem('lm-launch-url', JSON.stringify({ o: performance.timeOrigin, url: location.href })); } catch (e) { }
-    loadPage(legendPage, true);
+    loadPage(legendPage, true, saved);
 }
 
-/* Fetch a page through background.js and write it over agar.io; a failed download is tried once more */
-function loadPage(pageUrl, isLegendPage, retried) {
+/* the release cache in chrome.storage.local (the record is the shared part's: lmxMakeRelease, lmxUsableRelease) */
+function saveRelease(release) {
+    try { chrome.storage.local.set({ [CACHE_KEY]: release }, () => { void chrome.runtime.lastError; }); } catch (e) { }
+}
+function dropRelease(then) {
+    try { chrome.storage.local.remove(CACHE_KEY, () => { void chrome.runtime.lastError; if (then) then(); }); return; } catch (e) { }
+    if (then) then();
+}
+
+/*
+ * Fetch a page through background.js and write it over agar.io; a failed download is tried once more.
+ * The Legend page has the release cache, as the userscript's: a download that answers within
+ * LMX_FRESH_WAIT_MS is used (a new release at once); a slower one is saved for the next visit while the saved
+ * copy runs. A saved copy that is damaged, of another page address or not a Legend page is dropped; one older
+ * than LMX_CACHE_MAX_MS runs only when the download fails ("stale"). A download that is not a Legend page (a
+ * portal or error page) gives way to the saved copy.
+ */
+function loadPage(pageUrl, isLegendPage, saved) {
     /* Stop agar.io's own page (already done at document_start unless the switch was just turned on) */
     const wasStopped = stopped;
     stopAgario();
     /* the tab stayed white while the page was fetched; play.html shows its own loading screen next */
     if (isLegendPage && !wasStopped) showLoading();
 
-    go('LOADING', retried ? 'retry' : '');
-    chrome.runtime.sendMessage({ type: 'fetch', url: pageUrl }, (response) => {
-        /* lastError: the background worker could not answer (e.g. the extension was just reloaded) */
-        const problem = chrome.runtime.lastError ? chrome.runtime.lastError.message
-            : !response ? text('lmx.ext.noAnswer')
-            : response.error ? response.error
-            : '';
-        if (problem) {
-            console.error('[LMexpress] Could not load page ' + pageUrl + ' (' + problem + ')');
-            if (!retried) {
-                setTimeout(() => loadPage(pageUrl, isLegendPage, true), 1500);
+    const cached = isLegendPage && lmxUsableRelease(saved, pageUrl) ? saved : null;
+    if (isLegendPage && saved && !cached) {
+        diag.conflict = diag.conflict || 'cache-damaged';
+        dropRelease();
+    }
+    const recent = !!cached && Date.now() - cached.time < LMX_CACHE_MAX_MS;
+    let written = false, tries = 0, wait = null;
+    const write = (html, source, release) => {
+        if (written) return;
+        written = true;
+        if (wait) clearTimeout(wait);
+        diag.source = source;
+        diag.release = release ? release.release : '';
+        if (isLegendPage) {
+            writeLegendPage(html, source);
+        } else {
+            writePage(html);
+            go('READY');
+        }
+    };
+    if (recent) wait = setTimeout(() => write(cached.html, 'cache', cached), LMX_FRESH_WAIT_MS);
+    const attempt = () => {
+        go('LOADING', tries++ ? 'retry' : '');
+        chrome.runtime.sendMessage({ type: 'fetch', url: pageUrl }, (response) => {
+            /* lastError: the background worker could not answer (e.g. the extension was just reloaded) */
+            const problem = chrome.runtime.lastError ? chrome.runtime.lastError.message
+                : !response ? text('lmx.ext.noAnswer')
+                : response.error ? response.error
+                : '';
+            if (problem) {
+                if (written) return;
+                console.error('[LMexpress] Could not load page ' + pageUrl + ' (' + problem + ')');
+                if (cached) {
+                    write(cached.html, recent ? 'cache' : 'stale', cached);
+                    return;
+                }
+                if (tries < 2) {
+                    setTimeout(attempt, 1500);
+                    return;
+                }
+                go('FAILED', problem);
+                showLoadError(pageUrl, problem);
                 return;
             }
-            go('FAILED', problem);
-            showLoadError(pageUrl, problem);
-            return;
-        }
-        diag.source = 'network';
-        if (!isLegendPage) {
-            writePage(response.data);
+            if (!isLegendPage) {
+                write(response.data, 'network', null);
+                return;
+            }
+            const fresh = lmxMakeRelease(response.data, pageUrl);
+            if (fresh && (!cached || fresh.sum !== cached.sum || Date.now() - cached.time > 3600000)) saveRelease(fresh);
+            if (!fresh && cached) {
+                write(cached.html, 'cache', cached);
+                return;
+            }
+            write(response.data, 'network', fresh);
+        });
+    };
+    attempt();
+}
+
+/* the Legend page with the init call, then its readiness signal (as the userscript's) */
+function writeLegendPage(html, source) {
+    go('INITIALIZING', source);
+    writePage(lmxAddInitCall(html, modVersion, 'extension'));
+    /* document.open() dropped every listener, so they are added after the write (the call comes after the
+     * page's script files: it has not run yet) */
+    let settled = false;
+    const started = (ok) => {
+        if (settled) return;
+        settled = true;
+        if (ok) {
             go('READY');
             return;
         }
-        go('INITIALIZING', 'network');
-        writePage(lmxAddInitCall(response.data, modVersion, 'extension'));
-        /* the init call's readiness signal (as the userscript's); document.open() dropped every listener, so
-         * they are added after the write (the call comes after the page's script files: it has not run yet) */
-        let settled = false;
-        const started = (ok) => {
-            if (settled) return;
-            settled = true;
-            go(ok ? 'READY' : 'FAILED', ok ? '' : 'init missing');
-        };
-        try {
-            document.addEventListener('lmx-init-ok', () => started(true));
-            document.addEventListener('lmx-init-missing', () => started(false));
-            /* a page whose init call ran while it was written (no script files before it) */
-            const seen = document.documentElement.getAttribute('data-lmx-init');
-            if (seen) started(seen === 'ok');
-        } catch (e) { }
-    });
+        /* a saved page that does not start the mod: dropped, and the page loaded once more from the server
+         * (at most once in 10 s) */
+        if (source !== 'network') {
+            if (!recentlyDone('lmExpressCacheReload')) {
+                go('RECOVERY', 'cache');
+                dropRelease(() => location.reload());
+                return;
+            }
+            dropRelease();
+        }
+        go('FAILED', 'init missing');
+    };
+    try {
+        document.addEventListener('lmx-init-ok', () => started(true));
+        document.addEventListener('lmx-init-missing', () => started(false));
+        /* a page whose init call ran while it was written (no script files before it) */
+        const seen = document.documentElement.getAttribute('data-lmx-init');
+        if (seen) started(seen === 'ok');
+    } catch (e) { }
 }
 
 /* Same look as play.html's loading screen (#lm-boot), shown until the page is written */

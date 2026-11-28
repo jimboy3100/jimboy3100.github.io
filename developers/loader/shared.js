@@ -4,7 +4,7 @@
  * their lmx-shared markers: edit it here and run
  *   node developers/loader-build.js
  * Each loader keeps its own browser adapter around it (how it is switched on, fetches the page, writes it
- * over agar.io's and stores its release). Plain ES5 that only declares things and reads the page load's
+ * over agar.io's and where it keeps its saved release; the release record itself is shared). Plain ES5 that only declares things and reads the page load's
  * time, so it can come first in both.
  */
 
@@ -77,4 +77,31 @@ function lmxEscapeHtml(text) {
     return String(text).replace(/[&<>"']/g, function (ch) {
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
     });
+}
+
+/* ---- release cache: the record of a saved play.html, the same in both loaders (each keeps it in its own
+ * storage). A saved copy is used only when it is whole (length and FNV-1a checksum), is a Legend page and is
+ * of this page address; LMX_FRESH_WAIT_MS is how long a fresh download may take before the saved copy runs,
+ * LMX_CACHE_MAX_MS how old a saved copy may be to run before the download (older: only when it fails). ---- */
+var LMX_CACHE_FORMAT = 1, LMX_FRESH_WAIT_MS = 400, LMX_CACHE_MAX_MS = 3 * 24 * 3600 * 1000;
+function lmxChecksum(text) {
+    var h = 0x811c9dc5;
+    for (var i = 0; i < text.length; i++) {
+        h ^= text.charCodeAt(i);
+        h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+    }
+    return h;
+}
+function lmxIsLegendHtml(html) {
+    return typeof html === 'string' && html.length > 1000 && html.indexOf('/LMexpress/LMexpress.js') >= 0 && /<\/html>/i.test(html);
+}
+/* the record to save for a downloaded page, or null when it is not a Legend page (a portal or error page) */
+function lmxMakeRelease(html, page) {
+    if (!lmxIsLegendHtml(html)) return null;
+    var v = /\?v=(\d+(?:\.\d+)*)/.exec(html);
+    return { format: LMX_CACHE_FORMAT, page: page, release: v ? v[1] : '', length: html.length, sum: lmxChecksum(html), time: Date.now(), html: html };
+}
+function lmxUsableRelease(r, page) {
+    return !!r && typeof r === 'object' && r.format === LMX_CACHE_FORMAT && r.page === page && lmxIsLegendHtml(r.html) &&
+        r.html.length === r.length && lmxChecksum(r.html) === r.sum;
 }

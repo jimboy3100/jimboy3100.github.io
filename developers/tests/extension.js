@@ -13,12 +13,15 @@ let fail = 0;
 const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (!ok) fail++; };
 
 /* opts: session (sessionStorage), attr (html[data-lm-loader] at the start), search, hash, writer (writer.js
- * is loaded: it takes the pages), fails (how many downloads fail) */
+ * is loaded: it takes the pages), fails (how many downloads fail), release (the saved release in
+ * chrome.storage.local), data (the downloaded page), slow (the download answers after the timers ran) */
 function run(pathname, stored, enabled, opts) {
     opts = opts || {};
     const log = [], ls = Object.assign({}, stored || {}), ss = Object.assign({}, opts.session || {});
     let storageCb = null, msgCb = null, written = '', attr = opts.attr || null, fails = opts.fails || 0, docListeners = {};
+    let asked = [], saved = null;
     const timers = [];
+    const runTimers = () => { while (timers.length) { const t = timers.shift(); if (t.f) t.f(); } };
     const docEl = {
         set innerHTML(v) { log.push('clear'); },
         appendChild() { log.push('loading'); },
@@ -29,7 +32,7 @@ function run(pathname, stored, enabled, opts) {
     const ctx = {
         console: { log() { }, error() { } }, JSON, Object, String, Number, Date, parseInt, navigator: { language: 'en-US' },
         performance: { timeOrigin: 1700000000123.5 },
-        setTimeout: (f) => { timers.push(f); },
+        setTimeout: (f) => { const t = { f }; timers.push(t); return t; }, clearTimeout: (t) => { if (t) t.f = null; },
         location: { pathname, search, hash, href: 'https://agar.io' + pathname + search + hash, reload() { log.push('reload'); } },
         history: { state: null, replaceState: (s, t, u) => { log.push('replace ' + u); ctx.location.href = 'https://agar.io' + u; } },
         localStorage: { getItem: (k) => (k in ls ? ls[k] : null), setItem: (k, v) => { ls[k] = String(v); } },
@@ -46,7 +49,7 @@ function run(pathname, stored, enabled, opts) {
                 getManifest: () => ({ version: '1.8.4' }), lastError: null,
                 sendMessage: (m, cb) => { log.push(m.type === 'fetch' ? 'fetch' : m.type); msgCb = cb; }
             },
-            storage: { local: { get: (d, cb) => { storageCb = cb; }, set() { } } }
+            storage: { local: { get: (d, cb) => { storageCb = cb; asked = Object.keys(d); }, set: (o) => { if ('release-2' in o) { log.push('save'); saved = o; } }, remove: (k, cb) => { log.push('drop'); if (cb) cb(); } } }
         }
     };
     ctx.window = ctx;
@@ -61,14 +64,15 @@ function run(pathname, stored, enabled, opts) {
     vm.runInContext(texts, ctx);
     vm.runInContext(src, ctx);
     const sync = log.slice();
-    if (storageCb) storageCb({ enabled: enabled });
+    if (storageCb) storageCb({ enabled: enabled, 'release-2': opts.release === undefined ? null : opts.release });
+    if (opts.slow) runTimers();
     /* the downloads: the failed ones, each followed by the timer of the next try */
     for (let i = 0; i < 4 && msgCb; i++) {
         const cb = msgCb; msgCb = null;
-        cb(fails-- > 0 ? { error: 'status 503' } : { data: '<html><body>LEGEND</body></html>' });
-        while (timers.length) timers.shift()();
+        cb(fails-- > 0 ? { error: 'status 503' } : { data: opts.data || '<html><body>LEGEND</body></html>' });
+        runTimers();
     }
-    return { log, sync, ls, ss, written, ctx, attr: () => attr, fire: (t) => docListeners[t] && docListeners[t](), boot: () => JSON.parse(ss['lmx-boot'] || '{}') };
+    return { log, sync, ls, ss, written, ctx, asked, saved: () => saved, attr: () => attr, fire: (t) => docListeners[t] && docListeners[t](), boot: () => JSON.parse(ss['lmx-boot'] || '{}') };
 }
 const ORIGIN = 1700000000123.5;
 
@@ -141,6 +145,45 @@ r = run('/', {}, true, { session: { 'lm-loader-owner': 'userscript:' + ORIGIN, '
 check('a page of the userscript: its own lmx-boot record is left as it is', r.ss['lmx-boot'] === '{"loader":"userscript"}');
 r = run('/shop', {}, true);
 check('other agar.io pages: no lmx-boot record', !('lmx-boot' in r.ss));
+
+/* the release cache (as the userscript's): the last Legend page in chrome.storage.local, record from the shared part */
+const sharedSrc = fs.readFileSync(path.join(__dirname, '..', 'loader', 'shared.js'), 'utf8');
+const sharedCtx = { performance: { timeOrigin: 1 }, Date, String, JSON };
+vm.runInNewContext(sharedSrc, sharedCtx);
+const PAGE = 'https://www.legendmod.ml/play.html?2';
+const legendHtml = (tag, v) => '<!doctype html><html><head><script src="https://www.legendmod.ml/LMexpress/LMexpress.js?v=' + v + '"></script></head><body>' + tag + 'x'.repeat(1200) + '</body></html>';
+const savedRelease = (tag, extra) => Object.assign(sharedCtx.lmxMakeRelease(legendHtml(tag, '3.700'), PAGE), extra || {});
+const FRESH = legendHtml('FRESHPAGE', '3.701');
+r = run('/', {}, true, { data: FRESH });
+check('release cache: the saved release is asked for with the switch on the Legend page only', r.asked.join() === 'enabled,release-2' && run('/captcha', {}, true).asked.join() === 'enabled');
+check('release cache: no saved release: the download is written and saved for the next visit', /FRESHPAGE/.test(r.written) && r.boot().source === 'network' && r.boot().release === '3.701' &&
+    r.saved() && r.saved()['release-2'].html === FRESH && sharedCtx.lmxUsableRelease(r.saved()['release-2'], PAGE));
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE'), data: FRESH, slow: true });
+check('release cache: a download slower than ' + sharedCtx.LMX_FRESH_WAIT_MS + ' ms: the saved release starts at once (fast init)', /CACHEDPAGE/.test(r.written) && !/FRESHPAGE/.test(r.written) && r.boot().source === 'cache' && r.boot().release === '3.700' && /init\("1\.8\.4", "extension"\)/.test(r.written));
+check('...and the new release is saved for the next visit', r.saved() && r.saved()['release-2'].html === FRESH);
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE'), data: FRESH });
+check('release cache: a quick download wins: a new release at once', /FRESHPAGE/.test(r.written) && !/CACHEDPAGE/.test(r.written) && r.boot().source === 'network' && !!r.saved());
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE'), fails: 5 });
+check('release cache: server down (network failure): the saved release, no error page, no second try', /CACHEDPAGE/.test(r.written) && !/Legend Express<\/title>/.test(r.written) && r.log.filter(x => x === 'fetch').length === 1 && r.boot().source === 'cache');
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE', { time: Date.now() - 4 * 24 * 3600 * 1000 }), data: FRESH, slow: true });
+check('release cache: a saved release older than 3 days does not run before the download', /FRESHPAGE/.test(r.written) && !/CACHEDPAGE/.test(r.written));
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE', { time: Date.now() - 4 * 24 * 3600 * 1000 }), fails: 5 });
+check('...but still when the download fails (stale)', /CACHEDPAGE/.test(r.written) && r.boot().source === 'stale');
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE', { sum: 1 }), data: FRESH, slow: true });
+check('release cache: a damaged saved release (checksum) is dropped, never run', r.log.indexOf('drop') >= 0 && /FRESHPAGE/.test(r.written) && !/CACHEDPAGE/.test(r.written) && r.boot().conflict === 'cache-damaged');
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE', { page: 'https://www.legendmod.ml/play.html?1' }), fails: 5 });
+check('release cache: a release of another page address (pageVersion) is not used', !/CACHEDPAGE/.test(r.written) && /<title>Legend Express<\/title>/.test(r.written));
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE'), data: '<html><body>portal login</body></html>' });
+check('release cache: a download that is not a Legend page (a portal) gives way to the saved release', /CACHEDPAGE/.test(r.written) && !/portal/.test(r.written) && !r.saved());
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE'), fails: 5 });
+r.fire('lmx-init-missing');
+check('release cache: a saved release that does not start the mod is dropped and the page loaded once more', r.log.slice(-2).join() === 'drop,reload' && / RECOVERY$/.test(stages(r)) && r.boot().info === 'cache');
+r = run('/', {}, true, { release: savedRelease('CACHEDPAGE'), fails: 5, session: { lmExpressCacheReload: String(Date.now()) } });
+r.fire('lmx-init-missing');
+check('...at most once in 10 s (no reload loop): dropped, FAILED', r.log.indexOf('reload') < 0 && r.log.indexOf('drop') >= 0 && / FAILED$/.test(stages(r)));
+r = run('/', {}, true, { data: FRESH });
+r.fire('lmx-init-missing');
+check('...a downloaded page that does not start: no reload, nothing dropped', r.log.indexOf('reload') < 0 && r.log.indexOf('drop') < 0 && / FAILED$/.test(stages(r)));
 
 /* the single-owner record: "<extension|userscript>:<performance.timeOrigin>" */
 r = run('/', {}, true, { session: { 'lm-loader-owner': 'userscript:' + ORIGIN } });
@@ -225,6 +268,8 @@ if (usLang) {
 function runUs(pathname, scripts, opts) {
     opts = opts || {};
     const ss = Object.assign({}, opts.session || {}), gets = [], writes = [];
+    const loc = { pathname, href: 'https://agar.io' + pathname + (opts.search || ''), origin: 'https://agar.io', search: opts.search || '', hash: '',
+        reload() { gets.push('reload'); }, replace(u) { gets.push('replace ' + u); } };
     const storage = { getItem: (k) => (k in ss ? ss[k] : null), setItem: (k, v) => { ss[k] = String(v); }, removeItem: (k) => { delete ss[k]; } };
     const blocked = () => { throw new Error('SecurityError'); };
     const session = opts.noSession ? { getItem: blocked, setItem: blocked, removeItem: blocked } : storage;
@@ -234,12 +279,12 @@ function runUs(pathname, scripts, opts) {
         open() { }, write(h) { writes.push(h); }, close() { } };
     html.parentNode = doc;
     const agarPage = '<!doctype html><html><head><script>window.aiptag = {};</script><base href=""><script src="bundle_commons.js"></script></head><body></body></html>';
-    vm.runInNewContext(us, { document: doc, location: { pathname, href: 'https://agar.io' + pathname, origin: 'https://agar.io', search: '', hash: '',
-        reload() { gets.push('reload'); }, replace(u) { gets.push('replace ' + u); } },
+    vm.runInNewContext(us, { document: doc, location: loc,
+        history: { state: null, replaceState: (st, t, u) => { gets.push('address ' + u); loc.href = 'https://agar.io' + u; loc.pathname = u.split('?')[0]; } },
         localStorage: storage, sessionStorage: session, navigator: { language: 'en' },
         performance: { timeOrigin: 1, now: () => 0, getEntriesByType: () => [{ type: opts.nav || 'navigate' }] },
         console: { log() { }, warn() { }, error() { } }, setTimeout: () => 0, clearTimeout() { }, JSON, Date, Math, String, Object, RegExp, parseInt,
-        GM_info: { script: { version: '1.9' } }, GM_getValue: () => null, GM_setValue() { }, GM_deleteValue() { },
+        GM_info: { script: { version: '1.9' } }, GM_getValue: (k) => (k === 'release-2' && opts.saved) || null, GM_setValue() { }, GM_deleteValue() { gets.push('drop'); },
         GM_xmlhttpRequest: (o) => { gets.push(o.url); o.onload({ status: 200, finalUrl: o.url, responseText: o.url === 'https://agar.io/' ? agarPage : '' }); } });
     return { gets, writes, ss, boot: JSON.parse(ss['lmx-boot'] || '{}') };
 }
@@ -291,6 +336,24 @@ check('userscript: a record of an earlier page load: taken over, record replaced
 /* the shared init call: the same readiness signal as the extension's, without a loader name */
 const legendWrite = back.writes[back.writes.length - 1] || '';
 check('userscript: the init call signals readiness like the extension\'s', /try \{ init\("1\.9"\); \} finally \{ lmxInit\("ok"\); \}/.test(legendWrite) && /lmxInit\("missing"\)/.test(legendWrite) && /data-lmx-init/.test(legendWrite));
+
+/* both loaders, the userscript first, at the extension's redirect target agar.io/legendmod/: the address is agar.io/ again */
+const both = runUs('/legendmod/', null, { search: '?sip=1.2.3.4:1500' });
+check('userscript at agar.io/legendmod/ (the extension\'s redirect): the address is agar.io/?query again before the link is saved',
+    both.gets[0] === 'address /?sip=1.2.3.4:1500' && JSON.parse(both.ss['lm-launch-url']).url === 'https://agar.io/?sip=1.2.3.4:1500' && both.gets.indexOf(PAGE) > 0);
+check('userscript at agar.io/legendmod (typed, no slash) and agar.io/: the address is left as it is', ['/legendmod', '/'].every((p) => !runUs(p).gets.some((g) => /^address /.test(g))));
+/* the userscript's release cache with the shared record (its download here is not a Legend page) */
+const usCached = runUs('/', null, { saved: savedRelease('CACHEDPAGE') });
+check('userscript: the saved release (shared record) is used when the download is not a Legend page', /CACHEDPAGE/.test(usCached.writes[usCached.writes.length - 1] || '') && usCached.boot.source === 'cache' && usCached.boot.release === '3.700');
+const usDamaged = runUs('/', null, { saved: savedRelease('CACHEDPAGE', { sum: 1 }) });
+check('userscript: a damaged saved release is dropped, never run', usDamaged.gets.indexOf('drop') >= 0 && !/CACHEDPAGE/.test(usDamaged.writes.join('')) && usDamaged.boot.conflict === 'cache-damaged');
+/* the userscript's version: managers update an install by @version; the fallbacks name the same version */
+const usVersion = (/\/\/ @version\s+(\S+)/.exec(us) || [])[1];
+check('userscript @version 1.9.1 (after the 1.9 fixes), the same in its GM_info fallbacks', usVersion === '1.9.1' &&
+    (us.match(/version: '([\d.]+)' \}/g) || []).join() === "version: '1.9.1' }" && /\|\| '1\.9\.1'\);/.test(us));
+/* git keeps the extension packages byte for byte (no line-ending conversion of the zips) */
+const attrs = fs.readFileSync(path.join(__dirname, '..', '..', '.gitattributes'), 'utf8');
+check('.gitattributes: *.zip binary', /^\*\.zip\s+binary\s*$/m.test(attrs));
 
 console.log(fail ? fail + ' FAILED' : 'all extension checks passed');
 process.exit(fail ? 1 : 0);
