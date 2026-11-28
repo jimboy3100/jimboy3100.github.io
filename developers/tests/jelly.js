@@ -389,6 +389,9 @@ function maxDiff(a, b) {
         check('the other cells are the ones the previous inline pass prepared', inline.length === jc.length && inline.every((c, i) => c === jc[i]));
         J.LM.updateQuadtree(jc);
         check('hidden cells are no colliders', hidden.every((c) => J.LM.quadtree.ordOf(c) === -1));
+        /* settings audit (jelly off screen): a cell outside the view is neither prepared, simulated nor a collider */
+        const off = J.LM.cells.filter((c) => c && !c.isFood && !c.invisible && !c.isInView());
+        check('cells outside the view get no physics (not prepared, no colliders)', off.length > 0 && off.every((c) => jc.indexOf(c) < 0 && J.LM.quadtree.ordOf(c) === -1), off.length);
         if (small) {
             J.LM.hideSmallBots = true;
             const jc2 = J.LM.prepareJellyCells(J.LM.cells, []);

@@ -222,6 +222,19 @@ check('far and small cells are not "near"', last.nick == null, last);
   check('replay life: no recap built', D.last() === liveRecap);
 }
 
+// --- a server change drops the previous server's recap, samples and eats (settings audit: resets on a server change)
+{
+  const had = !!D.last();
+  lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm.cells = [lm.playerCells[0], enemy];
+  for (let i = 0; i < 8; i++) { now += 250; D._test.tick(); }
+  D.eat({ size: 2500, targetNick: 'OldSrv' }, lm.playerCells[0], false, true, 1500);
+  const k0 = D.killer();
+  (listeners.serverChange || []).forEach(f => f({ host: 'b.example' }));
+  const k1 = D.killer();
+  check('server change: the recap, the samples and the eats of the previous server are gone', had && !!k0 && k0.nick === 'OldSrv' && D.last() === null && !(k1 && k1.nick === 'OldSrv'), { had, k0, k1 });
+  lm.playerCells = []; lm.play = false;
+}
+
 // --- off again: everything stops
 ctx.legendmod5.gameOverStats = false; D.sync();
 check('off again: listeners removed, flag off', !(listeners.spawn || []).length && !(listeners.death || []).length && ctx._lmDROn === false);
