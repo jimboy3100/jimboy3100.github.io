@@ -40,7 +40,9 @@ function loadTheme(storedTheme, oldKey, full) {
     const ctx = {
         window: { localStorage: ls }, JSON, Object, $: { extend: Object.assign },
         defaultSettings: d, ogario: {}, defaultmapsettings: undefined,
-        readLocalStorageJSON: readJSON(ls), lmThemeValue: valueCtx.lmThemeValue
+        readLocalStorageJSON: readJSON(ls), lmThemeValue: valueCtx.lmThemeValue,
+        /* the old Chat Position move into the HUD layout (settingsmerge.js tests it): nothing to move here */
+        lmHudAdoptOld: () => false
     };
     vm.createContext(ctx);
     const St = vm.runInContext('({\n' + cut('        loadThemeSettings() {', '        restoreThemeSettings() {') + '\n})', ctx);
@@ -112,7 +114,7 @@ function load(stored, oldKey) {
         defaultmapsettings: ms, defaultSettings: {}, ogario: {},
         readLocalStorageJSON: readJSON(ls),
         lmSettingValue: (k, v) => (typeof v === typeof defs[k] ? v : undefined),
-        lmFoldVideoVolume: () => false, lmFoldLegacySettings: () => false, lmSettingsUserView: () => ms, lmSettingsCommit: () => { }, _lmSettingsSeen: null
+        lmFoldVideoVolume: () => false, lmFoldLegacySettings: () => false, lmHudAdoptOld: () => false, lmSettingsUserView: () => ms, lmSettingsCommit: () => { }, _lmSettingsSeen: null
     };
     vm.createContext(ctx);
     const app = vm.runInContext('({\n' + cut('        loadSettings() {', '        exportSettings() {') + '\n})', ctx);

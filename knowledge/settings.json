@@ -251,7 +251,6 @@
       "description": "Accessibility settings.",
       "settings": [
         "textScale",
-        "indicatorSize",
         "colourBlindSafe"
       ]
     },

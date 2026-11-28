@@ -107,7 +107,7 @@
     {
       "id": "accessibility",
       "name": "Accessibility features",
-      "description": "Reduced motion in Settings > Expanding Land (no Expanding Land death shake, particles, entrance spin). Menu text scale (1.0-1.6x). HUD text scale (independent). Colour-blind safe theme preset (Okabe-Ito). Clean HUD preset. Focus warning toast.",
+      "description": "Reduced motion in Settings > Expanding Land (no Expanding Land death shake, particles, entrance spin). Menu text scale (1.0-1.6x). Colour-blind safe theme preset (Okabe-Ito). Clean HUD preset. Focus warning toast.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
