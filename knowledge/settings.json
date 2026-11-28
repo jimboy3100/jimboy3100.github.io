@@ -1,6 +1,6 @@
 {
   "entity": "https://www.legendmod.ml/#app",
-  "updated": "2026-11-27",
+  "updated": "2026-11-28",
   "totalSettings": "300+",
   "categories": [
     {
@@ -13,7 +13,9 @@
         "Streamer",
         "Reduced Motion",
         "Clean HUD",
-        "Custom HUD"
+        "FFA",
+        "Teams",
+        "Multibox"
       ]
     },
     {
@@ -97,7 +99,6 @@
         "indicators",
         "onlineStatus",
         "stickyCell",
-        "massInTab",
         "hudMoveDir",
         "commandCentreBar"
       ]
@@ -115,7 +116,6 @@
         "chatMentions",
         "chatSounds",
         "chatPopups",
-        "wordFilter",
         "colouredNicks",
         "hideCountry",
         "agarToolTeam",
