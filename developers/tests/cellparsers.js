@@ -83,6 +83,7 @@ function makeCtx() {
         indexedPush(arr, cell, k) { cell[k] = arr.length; arr.push(cell); },
         lmIdxOf(arr, cell, k) { return arr.indexOf(cell); },
         lmTimeAlive() { return 0; }, /* the time alive (timealive.js tests it) */
+        lmMbSteersLiving() { return false; }, /* no multibox unit here (mbdeath.js tests it) */
         ogarbasicassembly: function (id, x, y, size, color, isFood, isVirus) {
             this.id = id; this.x = x; this.y = y; this.size = size; this.color = color; this.isFood = isFood; this.isVirus = isVirus;
             this.targetNick = ''; this.skin = null; this.isPlayerCell = false;
