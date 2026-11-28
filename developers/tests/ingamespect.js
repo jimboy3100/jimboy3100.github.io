@@ -737,14 +737,21 @@ for (const withUnit of [false, true]) {
         e.LM._lmFullMapCrowd = undefined;
         e.app.setShowFullSpectator(); e.LM.addSpect();
         check('(22) no leaderboard yet: Full Map on, nothing opened' + tag, e.ctx.lmSpecMode === 'full' && e.tiles().length === 0 && !e.ctx.toasts && !(e.ctx.warnings || []).length);
+        check('    ... lmFullMapHealth: waiting for the player count, not the crowd' + tag, e.ctx.lmFullMapHealth().crowd === false && /player count/.test(e.ctx.lmFullMapHealth().reason));
         lb(0);
         check('    ... an empty leaderboard decides nothing' + tag, e.LM._lmFullMapCrowd === undefined && e.tiles().length === 0);
         lb(181); e.LM.addSpect();
         check('    ... 181 players: no tile, no toast, mode full' + tag, e.tiles().length === 0 && e.ctx.lmSpecMode === 'full' && !e.ctx.toasts && !(e.ctx.warnings || []).length);
+        /* lmFullMapHealth said planned 15 with no tile and no reason while the count held the grid closed */
+        const h = () => e.ctx.lmFullMapHealth();
+        const held = h();
+        check('    ... 181 players: lmFullMapHealth says the player limit holds the grid closed (crowd, reason)' + tag,
+            held.planned === 15 && held.perTile.length === 0 && held.crowd === true && /180 players/.test(held.reason), JSON.stringify([held.planned, held.crowd, held.reason]));
         lb(175); e.LM.addSpect();
-        check('    ... down to 175: still none (opens at 170)' + tag, e.tiles().length === 0);
+        check('    ... down to 175: still none (opens at 170)' + tag, e.tiles().length === 0 && h().crowd === true);
         lb(170);
         check('    ... down to 170: the 15 tiles open (from the leaderboard update)' + tag, e.tiles().length === 15 && e.unitOk());
+        check('    ... open: lmFullMapHealth has no crowd and no reason' + tag, h().crowd === false && h().reason === '' && h().perTile.length === 15);
         const n0 = e.sockets.length;
         lb(178); lb(180); e.LM.addSpect();
         check('    ... 178 and 180: kept open, nothing reopened' + tag, e.tiles().length === 15 && e.sockets.length === n0);

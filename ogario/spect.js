@@ -535,10 +535,19 @@ function addFullSpectator(index) {
 }
 
 /* Full Map state per tile, for the console: lmFullMapHealth() counts the tiles per state
- * (Spect._lmTileStateNow) and lists them; perTile ages are ms (-1: none yet). */
+ * (Spect._lmTileStateNow) and lists them; perTile ages are ms (-1: none yet). crowd / reason:
+ * the grid is held closed (LM._lmSpecReconcile) by the player limit (LM._lmFullMapCrowdCheck)
+ * or by Teams / Battle Royale, so the planned tiles are not open. */
 window.lmFullMapHealth = function () {
     var plan = window.lmSpecMode === 'full' ? lmFullMapTilePlan() : null, now = Date.now();
-    var h = { planned: plan ? plan.tiles.length : 0, live: 0, moving: 0, calibrating: 0, stalled: 0, connecting: 0, failed: 0, refused: 0, captcha: 0, perTile: [] };
+    var h = { planned: plan ? plan.tiles.length : 0, live: 0, moving: 0, calibrating: 0, stalled: 0, connecting: 0, failed: 0, refused: 0, captcha: 0,
+        crowd: false, reason: '', perTile: [] };
+    var LM = window.legendmod;
+    if (plan && LM && typeof LM._lmFullMapModeOff === 'function' && LM._lmFullMapModeOff()) h.reason = 'Teams / Battle Royale';
+    else if (plan && LM && LM.integrity && LM._lmFullMapCrowd !== false) {
+        h.crowd = LM._lmFullMapCrowd === true;
+        h.reason = h.crowd ? 'more than ' + LM_FULLMAP_MAX_PLAYERS + ' players (opens again at ' + LM_FULLMAP_REOPEN_PLAYERS + ' or fewer)' : 'waiting for the player count';
+    }
     var list = window.spects || [];
     for (var i = 0; i < list.length; i++) {
         var s = list[i];
@@ -1181,6 +1190,7 @@ class Spect {
         if (this.staticX == null || this.staticY == null) return;
         this._lmTileSentAt = 0;
         this._lmTileChangedAt = 0;
+        this._lmTileSentOn = false;
         this._lmTileSentX = this._lmTileSentY = NaN;
         this.staticPositionController = setInterval(() => this._lmTileTick(), 100);
     }
@@ -1241,15 +1251,16 @@ class Spect {
 
     /* Is the server camera (opcode 17) current? It is at most LM_CAM_FRESH_MS old, or it is a
      * Full Map tile camera that sits on the last target sent, reported after that target was
-     * set, while the socket is open and world updates keep coming (LM_TILE_STALE_MS). How often
-     * agar.io sends 17 to a camera that does not move is not measured (live, settled cameras sit
-     * exactly on their integer target): if only on change, the age alone made every settled tile
-     * stalled after a second. */
+     * set (or that already sat on that target when it was sent: no newer 17 comes for a camera
+     * that does not move), while the socket is open and world updates keep coming
+     * (LM_TILE_STALE_MS). How often agar.io sends 17 to a camera that does not move is not
+     * measured (live, settled cameras sit exactly on their integer target): if only on change,
+     * the age alone made every settled tile stalled after a second. */
     _lmCamFresh(now) {
         if (!(this._lmCamAt > 0)) return false;
         now = now || Date.now();
         if (now - this._lmCamAt <= LM_CAM_FRESH_MS) return true;
-        if (this.tile == null || !(this._lmCamAt > (this._lmTileChangedAt || 0)) || !this.isSocketOpen()) return false;
+        if (this.tile == null || !(this._lmCamAt > (this._lmTileChangedAt || 0) || this._lmTileSentOn === true) || !this.isSocketOpen()) return false;
         var w = this._lmWorldStamp();
         return w > 0 && now - w <= LM_TILE_STALE_MS &&
             Math.abs(this.viewX - this._lmTileSentX) <= LM_TILE_SETTLED && Math.abs(this.viewY - this._lmTileSentY) <= LM_TILE_SETTLED;
@@ -1320,11 +1331,16 @@ class Spect {
         if (!raw) return;
         var changed = raw[0] !== this._lmTileSentX || raw[1] !== this._lmTileSentY;
         /* a camera reported after the target was set (a refresh of the same target does not count:
-         * with 17 only on change, comparing with the last send made a settled tile unsettled) */
-        var settled = !changed && this._lmCamAt > (this._lmTileChangedAt || 0) && this._lmTileArrived(raw, now);
+         * with 17 only on change, comparing with the last send made a settled tile unsettled), or
+         * one already on the target when it was set (the centre tile's camera starts there) */
+        var settled = !changed && (this._lmCamAt > (this._lmTileChangedAt || 0) || this._lmTileSentOn === true) && this._lmTileArrived(raw, now);
         if (!changed && now - this._lmTileSentAt < (settled ? LM_TILE_REFRESH_MS : LM_TILE_MOVING_MS)) return;
         if (this.sendPosition(raw[0], raw[1])) {
-            if (changed) this._lmTileChangedAt = now;
+            if (changed) {
+                this._lmTileChangedAt = now;
+                this._lmTileSentOn = this._lmCamAt > 0 && Number.isFinite(this.viewX) && Number.isFinite(this.viewY) &&
+                    Math.abs(this.viewX - raw[0]) <= LM_TILE_SETTLED && Math.abs(this.viewY - raw[1]) <= LM_TILE_SETTLED;
+            }
             this._lmTileSentAt = now;
             this._lmTileSentX = raw[0];
             this._lmTileSentY = raw[1];
@@ -2742,13 +2758,16 @@ class Spect {
             message =
                 this.decompressMessage(message);
         } catch (error) {
-            /* counted, one warning a minute (see _lmDecodeError) */
+            /* counted, one warning a minute (see _lmDecodeError); a block that cannot be decoded
+             * is a world update lost like a cut one (agar.io sends its updates as opcode 255) */
             this._lmDecodeError(error);
+            this._lmBadWorldUpdate();
             return;
         }
 
         if (!message || message.length < 1) {
             this._lmDecodeError('empty decompressed packet');
+            this._lmBadWorldUpdate();
             return;
         }
 
@@ -2809,15 +2828,7 @@ class Spect {
          * on. Only for the agar.io / Expanding Land layout the pass knows (legacy MultiOgar /
          * Garix: as before). */
         if (lmSpectAgarLayout(this.integrity) && lmWorldUpdateEnd(view, offset) < 0) {
-            this._lmBadUpdates = (this._lmBadUpdates || 0) + 1;
-            this._lmBadRun = (this._lmBadRun || 0) + 1;
-            const s = this.socket;
-            if (this._lmBadRun === 3 && !this.player && s && !(s.readyState > 1)) {
-                /* every renewal counts: no reset of the budget for a socket open > 60 s, so a
-                 * server sending garbage after a minute backs off and gives up too */
-                this._openedAt = 0;
-                try { s.close(); } catch (e) { }
-            }
+            this._lmBadWorldUpdate();
             return;
         }
         this.time = Date.now();
@@ -3146,6 +3157,22 @@ class Spect {
         /* a whole world update arrived (Full Map coverage reads it) */
         this._lmWorldAt = Date.now();
         this._lmBadRun = 0;
+    }
+
+    /* A world update that could not be used (cut short, or an opcode 255 block that does not
+     * decode or decodes to nothing): counted, and the third in a row renews a spectator's / Full
+     * Map tile's socket (see updateCells). Only for the agar.io / Expanding Land layout. */
+    _lmBadWorldUpdate() {
+        if (!lmSpectAgarLayout(this.integrity)) return;
+        this._lmBadUpdates = (this._lmBadUpdates || 0) + 1;
+        this._lmBadRun = (this._lmBadRun || 0) + 1;
+        const s = this.socket;
+        if (this._lmBadRun === 3 && !this.player && s && !(s.readyState > 1)) {
+            /* every renewal counts: no reset of the budget for a socket open > 60 s, so a
+             * server sending garbage after a minute backs off and gives up too */
+            this._openedAt = 0;
+            try { s.close(); } catch (e) { }
+        }
     }
 
     beforecalculation() {

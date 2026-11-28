@@ -268,6 +268,36 @@ const covers = (plan, vw, vh, half) => {
     for (let t = 0; t < 20000; t += 100) s2._lmTileTick(t);
     check('a camera that never arrives: at most 2 targets a second (it was 20)', n <= 41, n);
 }
+/* 8b. opcode 17 only on change: a tile camera that already sat on its target when the target was
+ * first sent (the centre tile: the camera starts at the map centre) gets no newer 17, and stayed
+ * stale for good (stalled, no coverage, "Viewport# n stale") */
+{
+    const e = env({ full: true, mb: false });
+    const run = (off) => {
+        const s = e.spect(spectAt(e.win.spects.length + 1, 0, 0, { mapOffsetFixed: true, tile: 7, scale: 0.4 }));
+        const raw = s._lmTileRaw(1e12);
+        NOW = 1e12; s.viewX = raw[0] + off; s.viewY = raw[1] - 1; s._lmCamAt = NOW - 300; /* reported once, before the target */
+        s._lmTileTick(NOW);
+        const sent = s.sent.length;
+        let fresh = true, arrived = true, cover = true, ticks = 0;
+        for (let t = 100; t <= 5000; t += 100) {
+            NOW = 1e12 + t; s.time = s._lmWorldAt = NOW;
+            const before = s.sent.length; s._lmTileTick(NOW); if (s.sent.length > before) ticks++;
+            fresh = fresh && s._lmCamFresh(NOW); arrived = arrived && s._lmTileArrived(null, NOW); cover = cover && s._lmCoverageOk(NOW);
+        }
+        const labels = e.frame().filter((b) => /^Viewport# /.test(b.label)).map((b) => b.label);
+        return { s, sent, fresh, arrived, cover, ticks, labels };
+    };
+    const on = run(2);
+    check('camera already on its target when it was sent, no newer opcode 17: fresh, arrived and coverage for 5 s, refreshed once a second, "Viewport# n"',
+        on.sent === 1 && on.fresh && on.arrived && on.cover && on.ticks === 5 && on.labels.length === 1 && on.labels[0] === 'Viewport# ' + on.s.number,
+        JSON.stringify([on.sent, on.fresh, on.arrived, on.cover, on.ticks, on.labels]));
+    e.win.spects.length = 0;
+    const away = run(30);
+    check('camera 30 off its target when it was sent, no newer opcode 17: not fresh after a second (an old camera elsewhere is no view)',
+        !away.fresh && !away.cover && !away.s._lmCamFresh(NOW) && away.labels[0] === 'Viewport# ' + away.s.number + ' stale', JSON.stringify([away.fresh, away.cover, away.labels]));
+    NOW = null;
+}
 /* 9. spectator boxes: none while connecting, the tile and "moving" on the way, one box when there */
 {
     const e = env({ full: true, mb: false });

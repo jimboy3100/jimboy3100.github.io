@@ -880,6 +880,23 @@ reset();
         sp = world();
         sp.handleMessage(new DataView(z(block)));
         check('opcode 255 whole block: applied (main decoder and the copy)', okCopy && LM.indexedCells[g.lmUnitCellId(102, 1)] && LM.indexedCells[g.lmUnitCellId(102, 1)].accID === 777 && !sp._lmDecodeErrors);
+        /* opcode 255 (agar.io's normal world update) cut short three times in a row: the socket is
+         * renewed as for opcode 16 (the decode error returned before the bad run was counted) */
+        const sock = () => ({ readyState: 1, closes: 0, close() { this.closes++; this.readyState = 2; } });
+        sp = world(); sp.socket = sock();
+        sp.handleMessage(new DataView(short)); sp.handleMessage(new DataView(short));
+        const two = sp.socket.closes === 0 && sp._lmBadRun === 2;
+        sp.handleMessage(new DataView(z(block)));
+        const reset255 = sp._lmBadRun === 0 && sp.socket.closes === 0;
+        for (let k = 0; k < 3; k++) sp.handleMessage(new DataView(short));
+        check('opcode 255 blocks that do not decode: counted as bad world updates, a whole one resets the run, the third in a row renews the socket',
+            two && reset255 && sp.socket.closes === 1 && sp._lmBadUpdates === 5 && sp._lmDecodeErrors === 5,
+            [two, reset255, sp.socket.closes, sp._lmBadUpdates, sp._lmDecodeErrors].join());
+        /* a block that decodes to nothing: the same */
+        sp = world(); sp.socket = sock();
+        sp.decompressMessage = () => g.buffer.Buffer.alloc(0);
+        for (let k = 0; k < 3; k++) sp.handleMessage(new DataView(z(block)));
+        check('opcode 255 blocks that decode to nothing, three in a row: the socket is renewed', sp.socket.closes === 1 && sp._lmBadRun === 3, [sp.socket.closes, sp._lmBadRun].join());
     }
     /* cost of the check on a dense update (600 records, a third named) */
     {
