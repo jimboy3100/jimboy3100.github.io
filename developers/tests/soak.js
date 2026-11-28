@@ -177,7 +177,7 @@ const E = (() => {
         localStorage: { getItem: (k) => (k in store ? store[k] : null), setItem: (k, v) => { store[k] = String(v); } },
         document: { getElementById: (id) => (byId[id] && byId[id].parentNode ? byId[id] : null), createElement: () => new El(), body },
         innerWidth: 915, innerHeight: 412, lmT: (k) => k,
-        legendmod5: { gameOverStats: true, massLossAlert: true, massLossPct: 30 },
+        legendmod5: { gameOverStats: true },
         legendmod: { play: false, playerCells: [], cells: [], playerMass: 0, ws: 'wss://x' }
     };
     ctx.window = ctx;
@@ -201,7 +201,7 @@ const E = (() => {
         ev.emit('death', { time: C.now, mass: 100, msAlive: 1200, unit: 0, scope: 'all' });
         ivAfterDeath = Math.max(ivAfterDeath, C.count().iv);
         if (r % 5 === 0) ev.emit('serverChange', { from: 'a', to: 'b' });
-        if (r % 7 === 0) { ctx.legendmod5.gameOverStats = ctx.legendmod5.massLossAlert = false; ctx.LMDeathRecap.sync(); ctx.legendmod5.gameOverStats = ctx.legendmod5.massLossAlert = true; ctx.LMDeathRecap.sync(); }
+        if (r % 7 === 0) { ctx.legendmod5.gameOverStats = false; ctx.LMDeathRecap.sync(); ctx.legendmod5.gameOverStats = true; ctx.LMDeathRecap.sync(); }
         C.advance(10000);
         if (JSON.stringify(counts()) !== base) listOk = false;
     }
