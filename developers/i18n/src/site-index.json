@@ -4410,7 +4410,7 @@
     "it": "<b>Novità:</b> Su/Giù nella casella della chat richiama i tuoi ultimi messaggi; slider per luminosità e saturazione del gioco, velocità di scorrimento dello zoom e velocità del bordo arcobaleno; simbolo personalizzato per i settori dello sfondo. <b>Nuove opzioni</b> (disattivate di base): telecamera sul centro di massa, avviso NESSUN FOCUS, statistiche in basso al centro. Incollare un link del party nella ricerca non lascia più un velo scuro."
   },
   "site.index.newOptionsOffBy2": {
-    "en": "<b>New options</b> (off by default): all-time personal bests with a New best! badge on the Game Over card, ping jitter next to PING, mobile Stop on release.",
+    "en": "<b>New options</b> (off by default): all-time personal bests with a New best! badge on the Game Over card and mobile Stop on release.",
     "el": "<b>Νέες επιλογές</b> (απενεργοποιημένες από προεπιλογή): προσωπικά ρεκόρ όλων των εποχών με σήμα New best! στην κάρτα Game Over, διακύμανση ping δίπλα στο PING, Stop on release στο κινητό. Hotkey για αντιγραφή του συνδέσμου server.",
     "es": "<b>Nuevas opciones</b> (desactivadas por defecto): récords personales históricos con la insignia New best! en la tarjeta de Game Over, variación del ping junto a PING, Stop on release en móvil. Hotkey para copiar el enlace del servidor.",
     "bg": "<b>Нови опции</b> (изключени по подразбиране): лични рекорди за всички времена със значка Нов рекорд! на картата Game Over, колебание на пинга до PING, мобилно Спиране при пускане. Клавиш за копиране на връзката към сървъра.",
