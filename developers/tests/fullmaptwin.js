@@ -143,6 +143,32 @@ check('a cell seen by one connection only is never hidden', hiddenAlone <= (grou
 check('the drawn copy does not switch while the same connections see the cell', linked > 200 && switches === 0, switches + ' of ' + linked);
 check('the drawn colour of a cell does not change', colourLinked > 200 && colourChanges === 0, colourChanges + ' of ' + colourLinked);
 
+/* The shared colour cache (_lmMbLooks, real _lmMbLookSet / lmMbLookOf): at its cap of 4096 keys
+ * it was cleared whole, and a live player's look, stamped on the cell as stored, was never stored
+ * again (its copies' split pieces lost the shared colour); a server name that came after the first
+ * store was never stored under the name either. */
+{
+    vm.runInContext('lmMbLooksReset()', ctx);
+    ctx._live = [];
+    vm.runInContext('for (var p = 0; p < 20; p++) _live.push({ spectator: 3, _lmGen: 1, _lmRawColor: "#1122" + (10 + p), _lmSrvName: "p" + p, color: "#4455" + (10 + p), _lmMbLookT: 10 });' +
+        /* 5000 other looks, one per frame, while the 20 live ones are stored each frame (lmMbShareLook) */
+        'for (var i = 0; i < 5000; i++) { _lmMbLookSet({ spectator: 4, _lmGen: 1, _lmRawColor: "#a" + i, _lmSrvName: "o" + i, color: "#b" + i, _lmMbLookT: 11 }); for (var q = 0; q < 20; q++) _lmMbLookSet(_live[q]); }', ctx);
+    const kept = vm.runInContext('_live.filter(function (c, p) { var e = lmMbLookOf(3, 1, "#1122" + (10 + p), "p" + p); return e && e.c === c.color; }).length', ctx);
+    const size = vm.runInContext('_lmMbLooks.size', ctx);
+    check('colour cache past 4096 keys: the 20 live players keep their shared colour, the map stays capped', kept === 20 && size <= 4096, kept + ' of 20, size ' + size);
+    const oldest = vm.runInContext('!!lmMbLookOf(4, 1, "#a0", "o0")', ctx);
+    check('colour cache past 4096 keys: the oldest unused look is the one dropped', !oldest);
+    vm.runInContext('var _late = { spectator: 5, _lmGen: 1, _lmRawColor: "#010203", _lmSrvName: null, color: "#0a0b0c", _lmMbLookT: 20 };' +
+        '_lmMbLookSet(_late); _late._lmSrvName = "carol"; _lmMbLookSet(_late);', ctx);
+    check('colour cache: a server name that arrives later is stored under the name', !!vm.runInContext('lmMbLookOf(5, 1, "#010203", "carol")', ctx));
+    vm.runInContext('_lmMbLookSet({ spectator: 6, _lmGen: 1, _lmRawColor: "#111111", _lmSrvName: "same", color: "#aa0000", _lmMbLookT: 30 });' +
+        '_lmMbLookSet({ spectator: 6, _lmGen: 1, _lmRawColor: "#222222", _lmSrvName: "same", color: "#00aa00", _lmMbLookT: 31 });', ctx);
+    const a = vm.runInContext('lmMbLookOf(6, 1, "#111111", "same")', ctx), b = vm.runInContext('lmMbLookOf(6, 1, "#222222", "same")', ctx);
+    check('colour cache: two players of one name with other server colours keep their own looks', !!a && !!b && a.c === '#aa0000' && b.c === '#00aa00');
+    vm.runInContext('lmMbLooksReset(); _lmMbLookSet(_live[0])', ctx);
+    check('colour cache: a cell stored before a reset is stored again after it', !!vm.runInContext('lmMbLookOf(3, 1, "#112210", "p0")', ctx));
+}
+
 if (failed) {
     console.log(failed + ' check(s) failed');
     process.exit(1);

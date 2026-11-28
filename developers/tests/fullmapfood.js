@@ -267,6 +267,15 @@ reset();
     check('after the flip: the main pellets moved', m1.x === -100 && m2.x === 100, m1.x + ',' + m2.x);
     check('after the flip: every pellet drawn once where it now is', list.length === 3 && at(-100, 100) === 1 && at(100, 300) === 1 && at(-100, 300) === 1,
         list.map((c) => c.x + ',' + c.y + '/' + (c.spectator || 0)).join(' '));
+    /* a moving cell's velocity (extrapolated between packets) turns with the x axis: kept, it
+     * went on the old way, 40 units off after 40 ms at 1000 units/s */
+    const mover = { id: 77, x: 50, y: 50, targetX: 50, targetY: 50, startX: 50, startY: 50, _lmVX: 0.5, _lmVY: 0.2 };
+    const dying = { id: 78, x: 60, y: 60, targetX: 60, targetY: 60, startX: 60, startY: 60, _lmVX: 0.5, _lmVY: 0.2 };
+    LM.indexedCells[77] = mover;
+    LM.removedCells.push(dying);
+    g.flipper._retranslateAllOnFlip(true, false, [0, 0]);
+    check('flip: the velocity of a moving cell changes sign with x, not with y (live cell, removed cell)',
+        mover._lmVX === -0.5 && mover._lmVY === 0.2 && dying._lmVX === -0.5 && dying._lmVY === 0.2, [mover._lmVX, mover._lmVY, dying._lmVX, dying._lmVY]);
     delete LM.translateX; delete LM.translateY; LM.vector = null; LM.vnr = 0;
 }
 /* 6b. A spectator whose orientation is not verified (PROVISIONAL, CONFLICTED: _lmFeedOk false) does
@@ -424,8 +433,35 @@ reset();
     check('spectator: a teammate that sent a colour is drawn in it', col(22) === '#3366ff', col(22));
     check('spectator: a new nick keeps its server colour and is remembered with it', col(23) === hex(0x0000c8) && LM.cellcolors.New === hex(0x0000c8), [col(23), LM.cellcolors.New]);
     check('spectator: own cell in the profile colour, not remembered as the nick colour', col(24) === '#ff00ff' && !LM.cellcolors.Me, [col(24), LM.cellcolors.Me]);
+    /* Teams: the server's colours are the team colours (main applies no nick, teammate or
+     * profile colour there): a nick's colour from another team, or a teammate's sent colour,
+     * painted a spectator's cell of that nick in the wrong team colour */
+    reset();
+    LM.gameMode = ':teams';
+    const st = spect(2);
+    st.playerCellIDs = [st.newID(34)];
+    st.active = true;
+    g.application.teamPlayers = [{ nick: 'Sent', color: '#3366ff', _lmColorSent: true }];
+    st.updateCells(packet([], [{ id: 30, x: 100, y: 100, size: 60, food: false, name: 'Bob', color: 0x0000ff },
+        { id: 31, x: 300, y: 100, size: 60, food: false, name: 'Sent', color: 0x00ff00 },
+        { id: 34, x: 500, y: 100, size: 60, food: false, name: 'Me', color: 0xff0000 }], []), 0);
+    check('Teams: a nick seen in another colour keeps its team colour', col(30) === hex(0x0000ff) && LM.cellcolors.Bob === '#123456', [col(30), LM.cellcolors.Bob]);
+    check('Teams: a teammate that sent a colour keeps the server team colour', col(31) === hex(0x00ff00), col(31));
+    check('Teams: the own cell of the unit keeps its team colour', col(34) === hex(0xff0000), col(34));
+    LM.gameMode = ':ffa';
     g.application.teamPlayers = [];
     g.defaultmapsettings.myCustomColor = false;
+    /* a colour sent after the cell's first record (main: "a later colour is applied") */
+    reset();
+    const sl = spect(3);
+    const rec = (id, rgb, name) => {
+        const h = Buffer.alloc(16); h.writeUInt32LE(id, 0); h.writeInt32LE(500, 4); h.writeInt32LE(500, 8); h.writeUInt16LE(120, 12);
+        h.writeUInt8(128 | (rgb ? 2 : 0) | (name ? 8 : 0), 14); h.writeUInt8(0, 15);
+        return Buffer.concat([Buffer.from([0, 0]), h, rgb ? Buffer.from(rgb) : Buffer.alloc(0), name ? Buffer.from(name + '\0', 'latin1') : Buffer.alloc(0), Buffer.from([0, 0, 0, 0, 0, 0])]);
+    };
+    sl.updateCells(rec(40, null, null), 0);
+    sl.updateCells(rec(40, [255, 0, 0], 'Late'), 0);
+    check('spectator: a colour sent after the first record is applied', col(40) === LM.rgb2Hex(229, 0, 0), col(40));
 }
 
 /* 7. Canvas2D and Expanding Land WebGL draw the same list */

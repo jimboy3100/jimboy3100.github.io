@@ -1786,21 +1786,34 @@ function lmMbShareLook(hidden, drawn) {
  */
 var _lmMbLooks = new Map();
 var LM_MB_LOOKS_MAX = 4096;
+/* bumped whenever entries leave the map (cap, reset), so cells stored before store again */
+var _lmMbLooksRev = 1;
 function _lmMbLookKey(src, gen, raw, name) {
     return raw ? src + '.' + (gen || 0) + '|' + raw + '|' + (name || '') : null;
 }
 function _lmMbLookSet(c) {
-    /* stored already with this colour and time (no key string each frame) */
-    if (c._lmMbLookSC === c.color && c._lmMbLookST === c._lmMbLookT) return;
+    /* stored already under this key with this colour and time (no key string each frame);
+     * the key's server colour and name are part of it, as the name can come later */
+    var raw = c._lmRawColor, nm = c._lmSrvName;
+    if (c._lmMbLookSC === c.color && c._lmMbLookST === c._lmMbLookT && c._lmMbLookSR === raw &&
+        c._lmMbLookSN === nm && c._lmMbLookSV === _lmMbLooksRev) return;
     c._lmMbLookSC = c.color;
     c._lmMbLookST = c._lmMbLookT;
+    c._lmMbLookSR = raw;
+    c._lmMbLookSN = nm;
+    c._lmMbLookSV = _lmMbLooksRev;
     var src = c.spectator > 0 ? c.spectator : 0;
-    var k = _lmMbLookKey(src, c._lmGen, c._lmRawColor, c._lmSrvName);
+    var k = _lmMbLookKey(src, c._lmGen, raw, nm);
     if (!k) return;
     var e = _lmMbLooks.get(k);
-    if (e && e.c === c.color && e.t === c._lmMbLookT) return;
-    if (!e && _lmMbLooks.size >= LM_MB_LOOKS_MAX) _lmMbLooks.clear();
-    _lmMbLooks.set(k, { c: c.color, t: c._lmMbLookT });
+    /* a look stored again goes to the young end, so the cap drops looks nobody stores any
+     * more; at the cap only the oldest goes (clear() also dropped every live player's look) */
+    if (e) _lmMbLooks.delete(k);
+    else if (_lmMbLooks.size >= LM_MB_LOOKS_MAX) {
+        _lmMbLooks.delete(_lmMbLooks.keys().next().value);
+        _lmMbLooksRev++;
+    }
+    _lmMbLooks.set(k, e && e.c === c.color && e.t === c._lmMbLookT ? e : { c: c.color, t: c._lmMbLookT });
 }
 /* the shared colour ({c: colour, t: when it was first shown}) of a cell made with this server
  * colour and name on this connection (number and socket generation), or null */
@@ -1810,6 +1823,7 @@ function lmMbLookOf(src, gen, raw, name) {
 }
 function lmMbLooksReset() {
     _lmMbLooks.clear();
+    _lmMbLooksRev++;
 }
 /* Nearest copy to `cell` in idx (cells of connection `conn` only, or of any other connection
  * than `notConn`), within `reach` of matching position (px, py). Ties: the lower id. */
@@ -32689,6 +32703,9 @@ function thelegendmodproject() {
                                 );
                         }
 
+                        /* extrapolation velocity changes sign with the axis */
+                        if (cell._lmVX) cell._lmVX = -cell._lmVX;
+
                         /* interpolation runs from startX/startY (cells have no oldX/oldY) */
                         if (
                             cell.startX != null
@@ -32728,6 +32745,9 @@ function thelegendmodproject() {
                                 );
                         }
 
+                        /* extrapolation velocity changes sign with the axis */
+                        if (cell._lmVY) cell._lmVY = -cell._lmVY;
+
                         /* interpolation runs from startX/startY (cells have no oldX/oldY) */
                         if (
                             cell.startY != null
@@ -32754,11 +32774,13 @@ function thelegendmodproject() {
                         if (rc.x != null) rc.x = legendmod.translateX(rc.x);
                         if (rc.targetX != null) rc.targetX = legendmod.translateX(rc.targetX);
                         if (rc.startX != null) rc.startX = legendmod.translateX(rc.startX);
+                        if (rc._lmVX) rc._lmVX = -rc._lmVX;
                     }
                     if (yFlipped) {
                         if (rc.y != null) rc.y = legendmod.translateY(rc.y);
                         if (rc.targetY != null) rc.targetY = legendmod.translateY(rc.targetY);
                         if (rc.startY != null) rc.startY = legendmod.translateY(rc.startY);
+                        if (rc._lmVY) rc._lmVY = -rc._lmVY;
                     }
                 }
             }
@@ -79812,20 +79834,43 @@ function pickPlayerCellBySize(players, selectBiggest) {
         /* Show viewports: settled views that overlap (the Full Map seams, 528 / 175 units, drawn
          * as two parallel lines that read as a band) are each drawn up to the middle of the
          * overlap, so neighbouring borders meet in one line and the grid has no crossing borders.
-         * Drawing only: g[i].r is the real view and stays, g[i].d the box drawn. Each pair is cut
-         * across the shorter side of its overlap, between their centres, so no two drawn boxes
-         * overlap whatever the order. */
+         * Drawing only: g[i].r is the real view and stays, g[i].d the box drawn. Pass 1 cuts only
+         * edge neighbours (each within the other's span on the other axis, +-2), across their
+         * overlap between their centres: the strip one gives up lies inside the other's real view.
+         * Diagonal neighbours (sharing a corner only) are not cut: that took a whole edge strip
+         * off one view, which only the edge neighbour between them covered, so a missing tile
+         * left a drawn hole where the map was seen. Pass 2 resolves what is still drawn over
+         * each other by at most 2 units. */
         _lmViewTrim(g, n) {
-            for (var i = 0; i < n; i++) {
-                var a = g[i].r;
-                for (var j = i + 1; j < n; j++) {
-                    var b = g[j].r;
-                    var ox = Math.min(a[2], b[2]) - Math.max(a[0], b[0]), oy = Math.min(a[3], b[3]) - Math.max(a[1], b[1]);
+            var TOL = 2, i, j, a, b, ox, oy, k, o, m, aLow, lo, hi;
+            /* 1: edge neighbours only (each lies within the other on the other axis): the strip
+             * one gives up is inside the other real view, so no real coverage disappears */
+            for (i = 0; i < n; i++) {
+                a = g[i].r;
+                for (j = i + 1; j < n; j++) {
+                    b = g[j].r;
+                    ox = Math.min(a[2], b[2]) - Math.max(a[0], b[0]); oy = Math.min(a[3], b[3]) - Math.max(a[1], b[1]);
                     if (!(ox > 0 && oy > 0)) continue;
-                    var k = ox <= oy ? 0 : 1;
-                    var m = (Math.max(a[k], b[k]) + Math.min(a[k + 2], b[k + 2])) / 2;
-                    var aLow = a[k] + a[k + 2] <= b[k] + b[k + 2];
-                    var lo = aLow ? g[i].d : g[j].d, hi = aLow ? g[j].d : g[i].d;
+                    k = ox <= oy ? 0 : 1; o = 1 - k;
+                    if (!(a[o] >= b[o] - TOL && a[o + 2] <= b[o + 2] + TOL && b[o] >= a[o] - TOL && b[o + 2] <= a[o + 2] + TOL)) continue;
+                    m = (Math.max(a[k], b[k]) + Math.min(a[k + 2], b[k + 2])) / 2;
+                    aLow = a[k] + a[k + 2] <= b[k] + b[k + 2];
+                    lo = aLow ? g[i].d : g[j].d; hi = aLow ? g[j].d : g[i].d;
+                    if (lo[k + 2] > m) lo[k + 2] = m;
+                    if (hi[k] < m) hi[k] = m;
+                }
+            }
+            /* 2: what is left drawn over each other by at most TOL (cameras settle within 0.5) */
+            for (i = 0; i < n; i++) {
+                a = g[i].d;
+                for (j = i + 1; j < n; j++) {
+                    b = g[j].d;
+                    ox = Math.min(a[2], b[2]) - Math.max(a[0], b[0]); oy = Math.min(a[3], b[3]) - Math.max(a[1], b[1]);
+                    if (!(ox > 0 && oy > 0) || Math.min(ox, oy) > TOL) continue;
+                    k = ox <= oy ? 0 : 1;
+                    m = (Math.max(a[k], b[k]) + Math.min(a[k + 2], b[k + 2])) / 2;
+                    aLow = a[k] + a[k + 2] <= b[k] + b[k + 2];
+                    lo = aLow ? a : b; hi = aLow ? b : a;
                     if (lo[k + 2] > m) lo[k + 2] = m;
                     if (hi[k] < m) hi[k] = m;
                 }

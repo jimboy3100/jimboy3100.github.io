@@ -324,10 +324,12 @@ const covers = (plan, vw, vh, half) => {
     const L = JSON.parse(fs.readFileSync(path.join(__dirname, 'lib', 'fullmap-views-live.json'), 'utf8'));
     for (const rot of [null, [[true, true]]]) {
         const mb = L.main.border, W = 14142.135623730952;
-        const e = env({ full: true, mb: false, vector: rot, main: { mapOffsetX: -(mb[0] + mb[2]) / 2, mapOffsetY: -(mb[1] + mb[3]) / 2, _lmBorderCX: (mb[0] + mb[2]) / 2, _lmBorderCY: (mb[1] + mb[3]) / 2,
+        const liveEnv = () => env({ full: true, mb: false, vector: rot, main: { mapOffsetX: -(mb[0] + mb[2]) / 2, mapOffsetY: -(mb[1] + mb[3]) / 2, _lmBorderCX: (mb[0] + mb[2]) / 2, _lmBorderCY: (mb[1] + mb[3]) / 2,
             _lmBorderKX: W / (mb[2] - mb[0]), _lmBorderKY: W / (mb[3] - mb[1]), mapMinX: mb[0], mapMinY: mb[1], mapMaxX: mb[2], mapMaxY: mb[3] } });
-        const sps = L.sp.map((q) => e.spect(spectAt(q.n, q.staticX, q.staticY, { mapOffsetFixed: true, mapOffsetX: -(q.border[0] + q.border[2]) / 2, mapOffsetY: -(q.border[1] + q.border[3]) / 2,
-            fixX: q.s[0], fixY: q.s[1], _lmKX: W / (q.border[2] - q.border[0]), _lmKY: W / (q.border[3] - q.border[1]), viewX: q.cam[0], viewY: q.cam[1], scale: q.cam[2], _lmCamAt: 1 })));
+        const liveSpect = (e, q) => e.spect(spectAt(q.n, q.staticX, q.staticY, { mapOffsetFixed: true, mapOffsetX: -(q.border[0] + q.border[2]) / 2, mapOffsetY: -(q.border[1] + q.border[3]) / 2,
+            fixX: q.s[0], fixY: q.s[1], _lmKX: W / (q.border[2] - q.border[0]), _lmKY: W / (q.border[3] - q.border[1]), viewX: q.cam[0], viewY: q.cam[1], scale: q.cam[2], _lmCamAt: 1 }));
+        const e = liveEnv();
+        const sps = L.sp.map((q) => liveSpect(e, q));
         const bs = e.frame();
         const tag = rot ? ' (Rotate Map)' : '';
         check('live: 15 spectators on their tiles, 15 boxes labelled Viewport# n, no tile or moving boxes' + tag,
@@ -375,6 +377,59 @@ const covers = (plan, vw, vh, half) => {
         check('live: no two drawn boxes overlap (the seams were drawn as two parallel lines)' + tag, drawn.length === 15 && !crossing.length, drawn.length + ' ' + crossing.length + ' ' + crossing.slice(0, 4).join(' '));
         check('live: every drawn box is a real view and inside it' + tag, !notInView.length, notInView.join(' '));
         check('live: neighbouring drawn boxes meet (gap or overlap at most 1 unit)' + tag, meetX <= 1 && meetY <= 1, [meetX.toFixed(2), meetY.toFixed(2)]);
+        /* the full grid is drawn as before (each overlapping pair cut in the middle of its overlap,
+         * one pass over the real views): borders that meet, the look the owner asked for */
+        const oldTrim = drawn.map((b) => [b.label, [b.minX, b.minY, b.maxX, b.maxY]]);
+        {
+            const g = sps.map((sp) => ({ name: 'Viewport# ' + sp.number, r: sp._lmServerViewDisplay(), d: sp._lmServerViewDisplay().slice() }));
+            for (let i = 0; i < g.length; i++) for (let j = i + 1; j < g.length; j++) {
+                const a = g[i].r, b = g[j].r;
+                const ox = Math.min(a[2], b[2]) - Math.max(a[0], b[0]), oy = Math.min(a[3], b[3]) - Math.max(a[1], b[1]);
+                if (!(ox > 0 && oy > 0)) continue;
+                const k = ox <= oy ? 0 : 1, m = (Math.max(a[k], b[k]) + Math.min(a[k + 2], b[k + 2])) / 2;
+                const aLow = a[k] + a[k + 2] <= b[k] + b[k + 2], lo = aLow ? g[i].d : g[j].d, hi = aLow ? g[j].d : g[i].d;
+                if (lo[k + 2] > m) lo[k + 2] = m;
+                if (hi[k] < m) hi[k] = m;
+            }
+            /* (a diagonal pair is no longer cut: it moved a corner by its cameras' offset, < 0.5) */
+            let worst = 0;
+            const diff = oldTrim.filter(([l, d]) => {
+                const o = g.find((x) => x.name === l);
+                if (o) worst = Math.max(worst, ...d.map((v, q) => Math.abs(v - o.d[q])));
+                return !o || d.some((v, q) => Math.abs(v - o.d[q]) > 0.5);
+            });
+            check('live: the full grid is drawn as before, within half a unit (' + worst.toFixed(2) + ', borders meet in one line)' + tag, oldTrim.length === 15 && !diff.length, diff.map((x) => x[0]).join(' '));
+        }
+        /* tiles missing (reconnecting, given up): every point a real view covers is inside a drawn
+         * box. Each pair was cut across its overlap, a diagonal pair too: the strip one corner view
+         * gave up along a whole edge was covered only by the edge neighbour now missing (live: a
+         * 4000 x 44..87 strip drawn as a hole next to it, where the map was seen) */
+        for (const gone of [[4], [7], [1], [3, 5]]) {
+            const e2 = liveEnv();
+            const s2 = L.sp.filter((q) => gone.indexOf(q.tile) < 0).map((q) => liveSpect(e2, q));
+            const d2 = e2.frame().filter((b) => b.label !== 'map'), r2 = s2.map(real);
+            let holes = 0, pts = 0, over = 0;
+            for (let x = mapB.minX + 4; x < mapB.maxX; x += 8) {
+                for (let y = mapB.minY + 4; y < mapB.maxY; y += 8) {
+                    let seen = false;
+                    for (const r of r2) if (x >= r.minX && x <= r.maxX && y >= r.minY && y <= r.maxY) { seen = true; break; }
+                    if (!seen) continue;
+                    pts++;
+                    let drawnHere = false;
+                    for (const b of d2) if (x >= b.minX && x <= b.maxX && y >= b.minY && y <= b.maxY) { drawnHere = true; break; }
+                    if (!drawnHere) holes++;
+                }
+            }
+            for (let i = 0; i < d2.length; i++) for (let j = i + 1; j < d2.length; j++) {
+                const o = Math.min(ov(d2[i], d2[j], 0), ov(d2[i], d2[j], 1));
+                if (o > 1e-9) over = Math.max(over, o);
+            }
+            check('live, tile ' + gone.join(' and ') + ' missing: every point seen by a real view is inside a drawn box (' + pts + ' points)' + tag,
+                d2.length === 15 - gone.length && pts > 2e6 && holes === 0, holes + ' holes');
+            /* where views stay apart only at a corner next to the hole, those corners overlap (up to
+             * the seam width; real coverage), never more */
+            check('live, tile ' + gone.join(' and ') + ' missing: drawn boxes overlap at most a seam (' + over.toFixed(1) + ')' + tag, over <= 360, over);
+        }
     }
 }
 

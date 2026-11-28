@@ -422,5 +422,27 @@ for (const [d, vnr] of [[0, 0], [3, 2]]) {
     check('Keep moving after a background reconnect on a mirrored socket: the same world direction (ran the opposite way)', b === '500,300', b);
 }
 
+/* 12. a new orientation or offset (_lmReproject): a moving cell's velocity (extrapolated between
+ *     packets, lmObsVelocity) follows the linear part of the change: a mirror turns it round, a
+ *     shift leaves it. Kept as it was, a cell verified mirrored ran the wrong way until its next
+ *     two packets (40 units off after 40 ms at 1000 units/s, 200 at the extrapolation limit). */
+{
+    const LM = mainClient(-3021.0678118654755, 5000.5), ctx = load(LM);
+    const sp = unit(ctx, 4321.5, -987.25, { number: 2 });
+    sp.time = Date.now();
+    sp.updateCells(packet([{ id: 91, x: 4000, y: -500, size: 80 }]), 0);
+    const cell = LM.indexedCells[91 + 2 * STEP];
+    cell._lmVX = -0.5; cell._lmVY = 0.25;
+    sp.setOrientation(-1, 1);
+    const v1 = [cell._lmVX, cell._lmVY];
+    sp.setOrientation(-1, -1);
+    const v2 = [cell._lmVX, cell._lmVY];
+    sp._lmApplyTransform(-1, -1, 2.5, 3);
+    const v3 = [cell._lmVX, cell._lmVY];
+    check('mirror in x: velocity x turned round, y kept', near(v1[0], 0.5) && near(v1[1], 0.25), v1.join());
+    check('mirror in y as well: velocity y turned round', near(v2[0], 0.5) && near(v2[1], -0.25), v2.join());
+    check('offset only (d): velocity unchanged', near(v3[0], 0.5) && near(v3[1], -0.25), v3.join());
+}
+
 console.log(failed ? 'FAILED ' + failed : 'all spectcoords checks passed');
 process.exit(failed ? 1 : 0);

@@ -1936,7 +1936,12 @@ class Spect {
         var newT = this._lmXf(), gen = this.connectionGeneration;
         var mapX = function (v) { return lmXfFwd(lmXfInv(v, 0, oldT), 0, newT); };
         var mapY = function (v) { return lmXfFwd(lmXfInv(v, 1, oldT), 1, newT); };
+        /* velocity (units per ms, used to extrapolate between packets) follows the linear
+         * part of the map only: a flip negates it, a scale scales it, a shift leaves it */
+        var kvx = mapX(1) - mapX(0), kvy = mapY(1) - mapY(0);
         this._lmForEachUnitCell(function (cell) {
+            if (cell._lmVX) cell._lmVX *= kvx;
+            if (cell._lmVY) cell._lmVY *= kvy;
             var live = !cell.removed && cell._lmGen === gen;
             if (Number.isFinite(cell.x)) cell.x = mapX(cell.x);
             if (Number.isFinite(cell.y)) cell.y = mapY(cell.y);
@@ -2541,16 +2546,20 @@ class Spect {
              * draw a nick in one colour). Cells without such a colour take the colour this
              * player's copies on the other connections are shown with (lmMbLookOf below,
              * lmMbShareLook in ogario.v4.js): each connection gets its own server colour for one
-             * player. */
+             * player. As on the main connection, Teams keeps the server's (team) colours and
+             * Teams / Party take no nick or teammate colour: a nick's colour from another team
+             * painted an enemy, and lmMbShareLook spread it to the main copy. */
             let ownOrTeamColor = false;
+            const teamsMode = legendmod.gameMode === ':teams';
+            const nickColours = !teamsMode && legendmod.gameMode !== ':party';
             if (!isVirus && !isFood && name !== "") {
                 let ownCustom = false;
                 if (this.playerCellIDs.indexOf(id) !== -1) {
-                    if (defaultmapsettings.myCustomColor && profiles[application.selectedProfile]) {
+                    if (!teamsMode && defaultmapsettings.myCustomColor && profiles[application.selectedProfile]) {
                         color = profiles[application.selectedProfile].color
                         ownOrTeamColor = ownCustom = true
                     }
-                } else {
+                } else if (nickColours) {
                     const mates = application.teamPlayers;
                     for (let t = 0; mates && t < mates.length; t++) {
                         if (mates[t] && mates[t].nick === name && mates[t].color && mates[t]._lmColorSent) {
@@ -2559,12 +2568,12 @@ class Spect {
                         }
                     }
                 }
-                if (!ownOrTeamColor && legendmod.cellcolors[name]) {
+                if (nickColours && !ownOrTeamColor && legendmod.cellcolors[name]) {
                     color = legendmod.cellcolors[name]
                     ownOrTeamColor = true
                 }
                 /* the profile colour is no colour of the nick (main _lmOwnColorsRestore) */
-                if (!ownCustom && !legendmod.cellcolors[name] && color) legendmod.cellcolors[name] = color
+                if (nickColours && !ownCustom && !legendmod.cellcolors[name] && color) legendmod.cellcolors[name] = color
             }
             let look = null;
             if (!isVirus && !isFood && !ownOrTeamColor && rawColor && typeof lmMbLookOf === 'function') {
@@ -2593,6 +2602,14 @@ class Spect {
                     cell = null;
                 } else {
                     cell.spectator = this.number;
+                    /* a colour sent after the cell's first record, or another one, is applied
+                     * (as on the main connection); the same server colour again changes nothing
+                     * (a shared look or nick colour stays), the unit's own cells keep theirs */
+                    if (rawColor && rawColor !== cell._lmRawColor && !isFood && !isVirus && !cell.isPlayerCell) {
+                        cell.color = color;
+                        cell._lmMbLook = look ? look.c : null;
+                        if (look) cell._lmMbLookT = look.t;
+                    }
                 }
             }
             if (!cell) {
@@ -2621,9 +2638,13 @@ class Spect {
                         var _mbPIdx = (application.mbSlots && this.number < application.mbSlots.length)
                             ? application.mbSlots[this.number] : application.selectedOldProfile;
                         var _mbProf = profiles[_mbPIdx];
-                        if (_mbProf) {
+                        /* Teams: the server's team colour, like the main connection */
+                        if (teamsMode) this.playerColor = cell.color;
+                        else if (_mbProf) {
                             this.playerColor = _mbProf.color || '#000000';
                             cell.color = _mbProf.color || '#000000';
+                        }
+                        if (_mbProf) {
                             if (_mbProf.nick) {
                                 this.nick = _mbProf.nick;
                                 cell.targetNick = _mbProf.nick;
