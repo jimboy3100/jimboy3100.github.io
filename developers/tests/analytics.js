@@ -167,22 +167,48 @@ check('track validation', C.sanitizeTrack({ t: 1, p: 'AAB' }) === null && C.sani
 /* ---------- objectives */
 check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.niceFloor(87) === 87 && C.niceFloor(0) === 0 && C.niceFloor(5.5) === 5);
 {
+    /* daily objectives are for experienced players in long sessions: targets from their own history */
+    const T3 = d => JSON.stringify(d.map(g => g.type + g.target + (g.mass ? 'x' + g.mass : '')));
     const d0 = C.generateDaily([], '2026-11-25');
-    check('no history: play 3, survive 2 min, reach 500', JSON.stringify(d0.map(g => g.type + g.target)) === JSON.stringify(['games3', 'survive2', 'mass500']));
+    check('fresh player: 3 games of 2,500+, survive 5 min, reach 5,000', T3(d0) === JSON.stringify(['big3x2500', 'survive5', 'mass5000']));
+    const dp = C.generateDaily([G({ t: clock - DAYMS, peak: 900, ms: MIN })], '2026-11-25', { m: 20000, t: 20 * MIN });
+    check('little history: from the all-time bests', T3(dp) === JSON.stringify(['big3x7000', 'survive12', 'mass14000']));
+    /* strong player: 5 days of 10 games, peaks 8,000-17,800, 6-15 min alive, often 1st or 2nd */
     const hist = [];
-    for (let i = 0; i < 30; i++) hist.push(G({ t: clock - (30 - i) * DAYMS / 3, peak: 1000 + i * 100, ms: (2 + (i % 6)) * MIN, bestPos: i % 2 ? 4 : 0 }));
+    for (let i = 0; i < 50; i++) hist.push(G({ t: clock - (5 - Math.floor(i / 10)) * DAYMS - (10 - i % 10) * 20 * MIN, peak: 8000 + i * 200, ms: (6 + i % 10) * MIN, bestPos: i % 3 === 0 ? 1 : i % 3 === 1 ? 2 : 0 }));
     const d1 = C.generateDaily(hist, '2026-11-25'), d2 = C.generateDaily(hist, '2026-11-25');
-    check('3 daily objectives, games first, ids carry the day', d1.length === 3 && d1[0].type === 'games' && d1.every(g => g.id.indexOf('2026-11-25:') === 0));
+    check('3 daily objectives, the session one first, ids carry the day', d1.length === 3 && d1[0].type === 'big' && d1.every(g => g.id.indexOf('2026-11-25:') === 0));
     check('same day, same objectives', JSON.stringify(d1) === JSON.stringify(d2));
-    check('games target = median games per day (3)', d1[0].target === 3);
+    check('session: half the games per day (5), each above the median peak (12,000)', d1[0].target === 5 && d1[0].mass === 12000);
     const all = C.generateDaily(hist, 'x'), types = {};
     ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'].forEach(k => C.generateDaily(hist, k).forEach(g => { types[g.type] = g.target; }));
-    check('mass target = median peak rounded down (2400)', types.mass === 2400);
-    check('mass target is reached by at least half the games', hist.filter(g => g.peak >= types.mass).length >= 15);
-    check('survive target = median minutes (4)', types.survive === 4);
-    check('top target from the leaderboard history (5)', types.top === 5);
-    check('beat average = average peak (2450)', types.beatAvg === 2450);
+    check('mass target = 1.25 x average peak, rounded down (16,000)', types.mass === 16000);
+    check('mass target is a step up: under a quarter of the games reach it, some do', hist.filter(g => g.peak >= types.mass).length === 10);
+    check('survive target = better quarter of lives (13 min)', types.survive === 13);
+    check('playtime target = minutes alive per day (105)', types.playtime === 105);
+    check('top target from the better quarter of places (1st)', types.top === 1);
+    check('no beginner objectives (games, beat average) in the daily set', !('games' in types) && !('beatAvg' in types));
     check('different days rotate the other two', Object.keys(types).length === 5 && all.length === 3);
+    /* weak numbers never give trivially easy objectives */
+    const weak = [];
+    for (let i = 0; i < 30; i++) weak.push(G({ t: clock - (10 - Math.floor(i / 3)) * DAYMS, peak: 500 + i * 20, ms: MIN + i * 1000, bestPos: 0 }));
+    const wt = {};
+    ['a', 'b', 'c', 'd', 'e', 'f'].forEach(k => C.generateDaily(weak, k).forEach(g => { wt[g.type] = g.mass ? g.target + 'x' + g.mass : g.target; }));
+    check('minimums: 3 x 2,500, 5,000 mass, 5 min, 30 min in total, no top', wt.big === '3x2500' && wt.mass === 5000 && wt.survive === 5 && wt.playtime === 30 && !('top' in wt));
+    /* a long session today */
+    const sess = [];
+    for (let i = 0; i < 6; i++) sess.push(G({ t: clock + i, peak: i < 5 ? 13000 : 9000, ms: 20 * MIN }));
+    const big = C.goalProgress(d1[0], sess, clock - 1000), big4 = C.goalProgress(d1[0], sess.slice(0, 4), clock - 1000);
+    check('session progress counts the games above the mass', big.done && big.value === 5 && !big4.done && near(big4.frac, 0.8));
+    const pt = C.goalProgress({ id: 'x', type: 'playtime', target: 105 }, sess, clock - 1000), pt5 = C.goalProgress({ id: 'x', type: 'playtime', target: 105 }, sess.slice(0, 5), clock - 1000);
+    check('playtime adds up every life of the day', pt.done && pt.value === 120 && !pt5.done && pt5.value === 100);
+    check('session objective: mass is required and kept', C.sanitizeGoal({ type: 'big', target: 5 }, false) === null && C.sanitizeGoal({ id: 'k:big', type: 'big', target: 5, mass: 12000 }, false).mass === 12000);
+    check('texts', C.goalText(d1[0]) === 'Reach 12,000 mass in 5 games' && C.goalText({ type: 'playtime', target: 105 }) === 'Stay alive 105 min in total');
+    store.set('lmPersonalBests', JSON.stringify({ m: 20000, t: 20 * MIN }));
+    const stp = { day: '', daily: [], custom: [], done: {} };
+    C.ensureDaily(stp, [], clock);
+    check('a new day reads the all-time bests', stp.daily[2].type === 'mass' && stp.daily[2].target === 14000);
+    store.delete('lmPersonalBests');
     const from = clock - 1000;
     const today = [G({ t: clock, peak: 3000, ms: 6.5 * MIN, bestPos: 4 }), G({ t: clock + 1, peak: 1000, ms: MIN, bestPos: 0 })];
     const P = (type, target) => C.goalProgress({ id: 'x', type, target }, today, from);
@@ -246,6 +272,7 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     check('listeners there', ['spawn', 'massUpdate', 'split', 'leaderboard', 'death'].every(n => LMEvents._has(n)));
     store.clear();
     toasts.length = 0;
+    store.set('lmAnalyticsGoals', JSON.stringify({ v: 1, day: '', daily: [], custom: [{ id: 'c1', type: 'mass', target: 3000, since: clock - 1 }], done: {} }));
     ctx.legendmod = { mapSize: 14142, mapOffset: 7071, mapOffsetX: 0, mapOffsetY: 0, playerX: -7071, playerY: 0, isLegendWorld: false, ws: 'wss://live.example:443/?token=secret', serverType: 'agario' };
     const t0 = clock;
     LMEvents.emit('spawn', { time: clock });
@@ -275,7 +302,7 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     check('spawn at the left edge, death further right', C.decodeCells(tracks[0].s)[0][0] === 0 && C.decodeCells(tracks[0].d)[0][0] > 40 && tracks[0].shape === 's' && tracks[0].map === 14142);
     check('end mass is the last update', g.end === mass);
     check('coach toast after the game', toasts.some(t => t[0] === 'info' && t[1].indexOf('Coach: ') !== -1));
-    check('objective toast for the completed objective only', toasts.filter(t => t[0] === 'success').length === 1 && toasts.some(t => t[0] === 'success' && t[1].indexOf('Reach 500 mass') !== -1));
+    check('objective toast for the completed own objective only (a 1 min game completes no daily one)', toasts.filter(t => t[0] === 'success').length === 1 && toasts.some(t => t[0] === 'success' && t[1].indexOf('Reach 3,000 mass in one game') !== -1));
     const goals = JSON.parse(store.get('lmAnalyticsGoals'));
     check('daily objectives stored for today', goals.v === 1 && goals.day === C.dayKey(clock) && goals.daily.length === 3);
     store.set('lmAnalyticsTracks', '{"v":1,"tracks":[{"t":1,"p":"<script>"}]}');

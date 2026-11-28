@@ -346,61 +346,79 @@
     }
 
     /* ------------------------------------------------------------------ objectives
-     * Objective: { id, type, target } (daily) or { id, type, target, since } (custom).
+     * Objective: { id, type, target } (daily) or { id, type, target, since } (custom); big also has mass.
      * Types: mass (reach target peak mass in one game), survive (live target minutes in one game),
      * top (reach place target or better), games (play target games), beatAvg (peak mass above target,
-     * the average peak when the objective was made). Progress counts games from the start of the day
-     * (daily) or from `since` (custom). */
-    var GOAL_TYPES = ['mass', 'survive', 'top', 'games', 'beatAvg'];
-    var GOAL_MAX = { mass: 1e7, survive: 360, top: 100, games: 100, beatAvg: 1e9 };
+     * the average peak when the objective was made), big (target games that each reach mass),
+     * playtime (target minutes alive in all games together). Progress counts games from the start of
+     * the day (daily) or from `since` (custom). */
+    var GOAL_TYPES = ['mass', 'survive', 'top', 'games', 'beatAvg', 'big', 'playtime'];
+    var GOAL_MAX = { mass: 1e7, survive: 360, top: 100, games: 100, beatAvg: 1e9, big: 100, playtime: 1440 };
     function sanitizeGoal(r, custom) {
         if (!r || typeof r !== 'object' || GOAL_TYPES.indexOf(r.type) === -1) return null;
         var target = Number(r.target);
         if (!(target >= 1)) return null;
         target = Math.round(Math.min(target, GOAL_MAX[r.type]));
         var g = { id: str(r.id, 40) || (r.type + ':' + target), type: r.type, target: target };
+        if (r.type === 'big') {
+            g.mass = Math.round(num(r.mass, 0, 1e9, 0));
+            if (!(g.mass >= 1)) return null;
+        }
         if (custom) g.since = num(r.since, 0, 4102444800000, 0);
         return g;
     }
-    /* Daily objectives from the last 30 games so they are reachable:
-     *   games   = median games per day played (days with games), 2-10
-     *   mass    = median peak mass, rounded down to 2 significant digits (half the games reach it)
-     *   survive = median minutes alive, whole minutes, at least 1
-     *   top     = smallest of 1/3/5/10 not below the median best place, only when 20 % or more of the
-     *             recorded games reached the leaderboard
-     *   beatAvg = average peak mass
-     * "games" is always one of the three; the other two rotate with the date. Under 3 games: play 3,
-     * survive 2 min and reach 80 % of the best mass so far (500 without any). */
-    function generateDaily(games, key) {
-        var recent = games.slice(-30);
-        var mk = function (type, target) { return { id: key + ':' + type, type: type, target: Math.max(1, Math.round(target)) }; };
-        if (recent.length < 3) {
-            var best = maxOf(recent.map(function (g) { return g.peak; }));
-            return [mk('games', 3), mk('survive', 2), mk('mass', best > 0 ? niceFloor(best * 0.8) : 500)];
+    /* Daily objectives for experienced players in long sessions, from their own last 50 games (and the
+     * all-time bests), so they are a real step up and never trivially easy:
+     *   big      = (median games per day) / 2 games, 3-10, each reaching the median peak mass (2,500+)
+     *   mass     = peak mass of the better quarter of games, at least 1.25 x the average peak, at most
+     *              the best peak so far, 5,000+
+     *   survive  = minutes alive of the better quarter of games, at least 5
+     *   playtime = median minutes alive per day (days with games), in steps of 5, at least 30
+     *   top      = smallest of 1/3/5 not below the better quarter of best places, only when 25 % or
+     *              more of the recorded games reached the leaderboard
+     * "big" is always one of the three; the other two rotate with the date. Under 5 games the targets
+     * come from the all-time bests (pb { m, t }) with the same minimums. */
+    var DAILY_RECENT = 50, MIN_MASS = 5000, MIN_BIG_MASS = 2500, MIN_BIG_N = 3, MIN_SURVIVE = 5, MIN_PLAYTIME = 30;
+    function generateDaily(games, key, pb) {
+        var recent = games.slice(-DAILY_RECENT);
+        pb = pb || {};
+        var pbM = num(pb.m, 0, 1e9, 0), pbMin = num(pb.t, 0, 6 * 3600000, 0) / 60000;
+        var mk = function (type, target, mass) {
+            var g = { id: key + ':' + type, type: type, target: Math.max(1, Math.round(Math.min(target, GOAL_MAX[type]))) };
+            if (type === 'big') g.mass = Math.max(1, Math.round(mass));
+            return g;
+        };
+        if (recent.length < 5) {
+            var best = Math.max(pbM, maxOf(recent.map(function (g) { return g.peak; })));
+            var longest = Math.max(pbMin, maxOf(recent.map(function (g) { return g.ms / 60000; })));
+            return [mk('big', MIN_BIG_N, Math.max(MIN_BIG_MASS, niceFloor(best * 0.35))),
+                mk('survive', Math.max(MIN_SURVIVE, Math.floor(longest * 0.6))),
+                mk('mass', Math.max(MIN_MASS, niceFloor(best * 0.7)))];
         }
         var peaks = sortNum(recent.map(function (g) { return g.peak; }));
         var mins = sortNum(recent.map(function (g) { return g.ms / 60000; }));
-        var perDay = {}, days = [];
-        recent.forEach(function (g) { var k = dayKey(g.t); if (!perDay[k]) { perDay[k] = 0; days.push(k); } perDay[k]++; });
-        var gamesT = Math.max(2, Math.min(10, Math.round(quantile(sortNum(days.map(function (k) { return perDay[k]; })), 0.5))));
+        var perDay = {}, playDay = {}, days = [];
+        recent.forEach(function (g) {
+            var k = dayKey(g.t);
+            if (!perDay[k]) { perDay[k] = 0; playDay[k] = 0; days.push(k); }
+            perDay[k]++;
+            playDay[k] += g.ms / 60000;
+        });
+        var bigN = Math.max(MIN_BIG_N, Math.min(10, Math.round(quantile(sortNum(days.map(function (k) { return perDay[k]; })), 0.5) / 2)));
+        var bigMass = Math.max(MIN_BIG_MASS, niceFloor(quantile(peaks, 0.5)));
         var cand = [];
-        var massT = niceFloor(quantile(peaks, 0.5));
-        if (massT > 0) cand.push(mk('mass', massT));
-        cand.push(mk('survive', Math.max(1, Math.floor(quantile(mins, 0.5)))));
+        var massCap = Math.max(pbM, peaks[peaks.length - 1]);
+        cand.push(mk('mass', Math.max(MIN_MASS, niceFloor(Math.min(massCap, Math.max(quantile(peaks, 0.75), avg(peaks) * 1.25))))));
+        cand.push(mk('survive', Math.max(MIN_SURVIVE, Math.floor(quantile(mins, 0.75)))));
+        cand.push(mk('playtime', Math.max(MIN_PLAYTIME, Math.floor(quantile(sortNum(days.map(function (k) { return playDay[k]; })), 0.5) / 5) * 5)));
         var lm = recent.filter(function (g) { return g.src === 'lm'; });
         var pos = sortNum(lm.map(function (g) { return g.bestPos; }).filter(function (p) { return p > 0; }));
-        if (lm.length && pos.length >= Math.max(2, lm.length * 0.2)) {
-            var q = quantile(pos, 0.5), t = 10;
-            [1, 3, 5, 10].some(function (x) { if (x >= q) { t = x; return true; } return false; });
+        if (lm.length && pos.length >= Math.max(2, lm.length * 0.25)) {
+            var q = quantile(pos, 0.25), t = 5;
+            [1, 3, 5].some(function (x) { if (x >= q) { t = x; return true; } return false; });
             cand.push(mk('top', t));
         }
-        var avgPeak = Math.round(avg(peaks));
-        if (avgPeak > 0) cand.push(mk('beatAvg', avgPeak));
-        /* P2 fix #92: when fewer than 2 candidates exist, the rotation loop
-         * could produce fewer than 3 daily objectives. Guard against empty cand
-         * and pad with the survive objective if needed. */
-        if (!cand.length) cand.push(mk('survive', Math.max(1, Math.floor(quantile(mins, 0.5)))));
-        var rot = hashStr(key) % cand.length, out = [mk('games', gamesT)];
+        var rot = hashStr(key) % cand.length, out = [mk('big', bigN, bigMass)];
         for (var i = 0; i < cand.length && out.length < 3; i++) out.push(cand[(rot + i) % cand.length]);
         return out;
     }
@@ -408,6 +426,12 @@
         var list = games.filter(function (g) { return g.t >= from; }), v = 0, done = false, frac = 0;
         if (goal.type === 'games') { v = list.length; frac = v / goal.target; done = v >= goal.target; }
         else if (goal.type === 'survive') { v = Math.floor(maxOf(list.map(function (g) { return g.ms; })) / 6000) / 10; frac = v / goal.target; done = v >= goal.target; }
+        else if (goal.type === 'big') { v = list.filter(function (g) { return g.peak >= goal.mass; }).length; frac = v / goal.target; done = v >= goal.target; }
+        else if (goal.type === 'playtime') {
+            v = 0;
+            list.forEach(function (g) { v += g.ms; });
+            v = Math.floor(v / 6000) / 10; frac = v / goal.target; done = v >= goal.target;
+        }
         else if (goal.type === 'top') {
             v = 0;
             list.forEach(function (g) { if (g.src === 'lm' && g.bestPos > 0 && (!v || g.bestPos < v)) v = g.bestPos; });
@@ -428,7 +452,7 @@
     var TP = 'modules.analytics.';
     function T(key, vals) { return typeof window.lmT === 'function' ? window.lmT(TP + key, vals) : key; }
     /* texts by their full key (developers/i18n/src/pkg-rpm.json) */
-    function TF(key) { return typeof window.lmT === 'function' ? window.lmT(key) : key; }
+    function TF(key, vals) { return typeof window.lmT === 'function' ? window.lmT(key, vals) : key; }
     /* dates in the chosen language (zh is Traditional Chinese) */
     function locale() { var c = window.LMi18n && window.LMi18n.lang ? window.LMi18n.lang() : 'en'; return c === 'zh' ? 'zh-TW' : c; }
     function goalText(goal) {
@@ -437,6 +461,8 @@
         if (goal.type === 'survive') return T('gSurvive', [t]);
         if (goal.type === 'top') return t === 1 ? T('gTop1') : T('gTop', [t]);
         if (goal.type === 'games') return T('gGames', [t]);
+        if (goal.type === 'big') return TF('pkg.coachobj.big', [t, fmtNum(goal.mass)]);
+        if (goal.type === 'playtime') return TF('pkg.coachobj.playtime', [t]);
         return T('gBeatAvg', [fmtNum(t)]);
     }
     function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
@@ -496,7 +522,7 @@
         s.daily.forEach(function (g) { delete s.done[g.id]; });
         s.day = key;
         var start = dayStart(now);
-        s.daily = generateDaily(games.filter(function (g) { return g.t < start; }), key);
+        s.daily = generateDaily(games.filter(function (g) { return g.t < start; }), key, personalBests());
         return true;
     }
     function goalFrom(goal, custom, now) { return custom ? goal.since : dayStart(now); }
@@ -1007,7 +1033,7 @@
         mid.appendChild(bar);
         row.appendChild(mid);
         var val = goal.type === 'top' ? (prog.value ? '#' + prog.value : '—') + ' / #' + goal.target
-            : goal.type === 'survive' ? T('surviveVal', [prog.value, goal.target]) : fmtNum(prog.value) + ' / ' + fmtNum(goal.target);
+            : goal.type === 'survive' || goal.type === 'playtime' ? T('surviveVal', [prog.value, goal.target]) : fmtNum(prog.value) + ' / ' + fmtNum(goal.target);
         row.appendChild(el('div', 'flex:0 0 auto;color:' + t.tc2 + ';white-space:nowrap;', val));
         if (onDelete) {
             var x = btn('✕', 'min-width:32px;padding:0;', onDelete);
@@ -1092,7 +1118,7 @@
             sanitizeGame: sanitizeGame, sanitizeTrack: sanitizeTrack, parseStore: parseStore, fromMatchHistory: fromMatchHistory,
             mergeGames: mergeGames, aggregate: aggregate, weekStart: weekStart, coachScores: coachScores, recentAverages: recentAverages,
             coachSuggestions: coachSuggestions, generateDaily: generateDaily, goalProgress: goalProgress, sanitizeGoal: sanitizeGoal,
-            niceFloor: niceFloor, quantile: quantile, dayKey: dayKey, ensureDaily: ensureDaily, text: T
+            niceFloor: niceFloor, quantile: quantile, dayKey: dayKey, ensureDaily: ensureDaily, goalText: goalText, text: T
         })
     });
     tick();

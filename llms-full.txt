@@ -275,7 +275,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Killer display**: "Eaten by: nick (mass)" on the Game Over card
 - **Share**: Share button (a 1200x630 match card with your numbers and link through the share sheet), Download match card, and an invite link (https://www.legendmod.ml/?ref=nick) on the Game Over card
 - **Badges**: 18 badges in tiers from the profile stats (Badges button, "Badge unlocked" toast)
-- **Game stats**: the Dashboard, Heatmaps, Coach (play pattern analysis with tips) and Objectives (three daily, up to 8 custom) views of the Replays window, next to the match history: up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis. Every game is recorded (no switch).
+- **Game stats**: the Dashboard, Heatmaps, Coach (play pattern analysis with tips) and Objectives (three daily ones scaled to your own game history for long sessions, up to 8 custom) views of the Replays window, next to the match history: up to 500 game summaries, 50 heatmap tracks (3600 position samples each). Split analysis: groups, mass lost per split, final 20s analysis. Every game is recorded (no switch).
 - **Notification centre**: Bell icon with unread count, filterable list by category (achievements, bests, party, replay, connection, settings, chat, other), mark read, clear, suppress toasts by category. Up to 200 notifications, max 120KB in localStorage.
 - **Session stats**: Games played, best mass, time played per tab session (sessionStorage)
 

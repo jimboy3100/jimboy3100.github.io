@@ -1,0 +1,8 @@
+{
+  "pkg.coachobj.big": {
+    "en": "Reach {1} mass in {0} games"
+  },
+  "pkg.coachobj.playtime": {
+    "en": "Stay alive {0} min in total"
+  }
+}
