@@ -6,7 +6,11 @@
  * The multibox frame (drawRender.getMultiboxFrame) for 1..6 players: two players give exactly the
  * result of the two-player version (kept below as OLD_FRAME) on 3000 seeded cases; 3..6 players fit
  * with "View on middle of both"; the three view modes; main player dead; Full Map spectators and
- * units without a place left out; no allocation per call. setScale: zooming out to a frame that fits
+ * units without a place left out; no allocation per call; 3..6 players: the same places in other
+ * slots give the same frame bit for bit, the controlled player on screen (focused, "when close"),
+ * "always" fits all within the 80 % zoom limit, no jump or back and forth, a unit stalled over
+ * LM_MB_STALL_MS does not pull the frame (a shorter gap and the controlled one do), Rotate Map flips
+ * mirror the frame; wide / tall screens, manual and Auto zoom, split players. setScale: zooming out to a frame that fits
  * several players as fast as the camera centre (a far unit taking the focus is on screen at once).
  * node developers/tests/weightcamera.js [other ogario.v4.js] */
 const fs = require('fs'), vm = require('vm'), path = require('path');
@@ -36,6 +40,8 @@ let t = 1000;
 ctx.window = ctx;
 vm.createContext(ctx);
 vm.runInContext(cut('var LM_MB_CAMERA_NEAR = ', '/* OgVer set above'), ctx);
+/* the stall rule of the frame's hide step, which the camera reuses (a unit without _lmWorldStamp never stalls) */
+vm.runInContext(cut('var LM_MB_STALL_MS = ', '/* A spectator or Full Map tile') + cut('function _lmMbStalled(sp, now) {', '/* Does this connection'), ctx);
 vm.runInContext('var playersLength = 0, spects = [], defaultmapsettings = {}; function getActiveSpect(n) { for (var i = 0; i < spects.length; i++) if (spects[i] && spects[i].number === n && spects[i].player !== false) return spects[i]; return null; }', ctx);
 ctx.LMEvents = { _has: () => false };
 const LM = vm.runInContext('({\n' + cut('        calculatePlayerMassAndPosition() {', '        recalculatePlayerMass() {') +
@@ -289,6 +295,173 @@ S.middleMultiView = true; S.middleMultiViewWhenClose = false;
     check('no list or object per call (3000 calls with 6 players: ' + gNew + ' B, ' + (gNew / 3000).toFixed(1) + ' B a call; the two-player version ' + gOld + ' B)', gNew < 3000 * 40 && gOld > 3000 * 150);
     const body = frameNow.split('\n').filter((ln) => ln.indexOf('this._lmMbCam = {') < 0).join('\n');
     check('the frame builds no candidate list (no concat / new arrays per frame)', !/concat\(|= \[\]|new Array|\.filter\(|\.map\(/.test(body));
+}
+/* 3..6 players: the same places in other slots give the same frame (bit for bit), the player you
+ * control stays on screen, the frame moves smoothly, a stalled unit does not pull it, Rotate Map
+ * flips mirror it. Wide and tall screens, manual zoom, Auto zoom, split players (several cells,
+ * radius in the box). */
+const NUMS = [5, 2, 18, 9, 3];
+{
+    const screens = [[1920, 1080], [1080, 1920], [2560, 1080], [800, 1280], [1280, 720]];
+    const shuffle = (a) => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+    const STALL = { _lmWorldStamp: () => Date.now() - 5000 }, SHORT = { _lmWorldStamp: () => Date.now() - 500 };
+    /* a scene: groups[0] is the main player's (none: dead), the others go to the unit numbers in nums;
+     * ctrl = the group you control; stall[k]: group k's unit is stalled (5 s) / short (0.5 s) */
+    const place = (groups, nums, ctrl, stall, mainDead) => {
+        setMain(mainDead ? [] : groups[0], groups[0][0].x, groups[0][0].y);
+        ctx.spects.length = 0;
+        for (let k = 1; k < groups.length; k++) ctx.spects.push(mkUnit(nums[k - 1], groups[k], stall[k] === 2 ? STALL : stall[k] === 1 ? SHORT : {}));
+        shuffle(ctx.spects);
+        ctx.multiboxPlayerEnabled = ctrl === 0 ? 0 : nums[ctrl - 1];
+        const f = R.getMultiboxFrame(sizeOf(LM.playerCells));
+        return f && Object.assign({}, f);
+    };
+    let perm = 0, permDiff = 0, blendedP = 0, firstP = '', vis = 0, offN = 0, firstOff = '', fitAll = 0, fitBad = 0;
+    for (let k = 0; k < 1500; k++) {
+        const n = 3 + (k % 4), spread = [400, 900, 1600, 2600, 4000][Math.floor(rnd() * 5)];
+        const groups = Array.from({ length: n }, () => blob((rnd() - 0.5) * spread * 2, (rnd() - 0.5) * spread * 2, 1 + Math.floor(rnd() * 6), 20 + rnd() * 300));
+        const mainDead = rnd() < 0.15, ctrl = mainDead ? 1 + Math.floor(rnd() * (n - 1)) : Math.floor(rnd() * n);
+        const stall = groups.map((_, i) => (i === 0 ? 0 : rnd() < 0.15 ? 2 : rnd() < 0.15 ? 1 : 0));
+        const scr = screens[k % screens.length];
+        R.canvasWidth = scr[0]; R.canvasHeight = scr[1];
+        LM.autoZoom = rnd() < 0.5; LM.zoomValue = 0.3 + rnd() * 1.2;
+        const mode = k % 3;
+        S.middleMultiView = mode === 2; S.middleMultiViewWhenClose = mode >= 1;
+        const nums = NUMS.slice(0, n - 1);
+        const f = place(groups, nums, ctrl, stall, mainDead);
+        /* the same groups in other slots: the controlled group keeps the focus */
+        for (let r = 0; r < 3; r++) {
+            const order = shuffle(nums.slice()), g2 = [groups[0]], st2 = [0], map = {};
+            const others = shuffle(groups.slice(1).map((g, i) => i + 1));
+            others.forEach((gi, j) => { g2[j + 1] = groups[gi]; st2[j + 1] = stall[gi]; map[gi] = j + 1; });
+            const f2 = place(g2, order, ctrl === 0 ? 0 : map[ctrl], st2, mainDead);
+            perm++;
+            if (!same(f, f2)) { permDiff++; if (!firstP) firstP = k + ': ' + JSON.stringify(f) + ' vs ' + JSON.stringify(f2); }
+        }
+        if (f && f.both > 0 && f.both < 1) blendedP++;
+        /* the controlled player's centre on screen at the frame's zoom (focused view and "when close") */
+        place(groups, nums, ctrl, stall, mainDead);
+        const scale = R.getTargetScale(f.size, true) * f.zoom, hw = R.canvasWidth / 2 / scale, hh = R.canvasHeight / 2 / scale;
+        const cu = ctrl === 0 ? { x: LM.viewXTrue, y: LM.viewYTrue } : ctx.spects.find((u) => u.number === nums[ctrl - 1]);
+        if (mode < 2) {
+            vis++;
+            if (Math.abs(cu.playerX !== undefined ? cu.playerX - f.x : cu.x - f.x) > hw || Math.abs((cu.playerY !== undefined ? cu.playerY : cu.y) - f.y) > hh) {
+                offN++; if (!firstOff) firstOff = k + ' mode ' + mode;
+            }
+        }
+        /* every placed, not stalled player at weight 1 ("when close" all close, or "always"): when
+         * the box around all of them fits at 80 % or more, every cell of them is on screen */
+        if (mode >= 1 && f.both === 1 && f.zoom > NEAR) {
+            const cells = [].concat(...groups.filter((g, i) => (i === 0 ? !mainDead : stall[i] !== 2 || i === ctrl)));
+            const x0 = Math.min(...cells.map((c) => c.x - c.size)), x1 = Math.max(...cells.map((c) => c.x + c.size));
+            const y0 = Math.min(...cells.map((c) => c.y - c.size)), y1 = Math.max(...cells.map((c) => c.y + c.size));
+            const allFit = Math.min(R.canvasWidth * 0.9 / (x1 - x0), R.canvasHeight * 0.9 / (y1 - y0)) / R.getTargetScale(f.size, true) >= NEAR;
+            if (allFit && mode === 2) { fitAll++; if (!visible(f, cells)) fitBad++; }
+        }
+    }
+    check('3..6 players: the same places in other slots give the same frame, bit for bit (' + perm + ' permutations, ' + blendedP + ' blended scenes)' + (firstP ? ' ' + firstP : ''), permDiff === 0 && blendedP > 50);
+    check('3..6 players, focused view and "when close": the controlled player is on screen (' + vis + ' scenes, wide / tall screens, manual / Auto zoom)' + (firstOff ? ' first off: ' + firstOff : ''), offN === 0 && vis > 900);
+    check('"View on middle of all players": when all fit within 80 % of the zoom, every cell is on screen (' + fitAll + ' scenes)', fitAll > 50 && fitBad === 0);
+    R.canvasWidth = 1920; R.canvasHeight = 1080; LM.autoZoom = false; LM.zoomValue = 0.5;
+}
+{
+    /* the frame moves smoothly: P2 and P3 on both sides of the main player cross the point where
+     * they are as far from it (an order by distance would jump there), and drift apart / together */
+    S.middleMultiView = false; S.middleMultiViewWhenClose = true; ctx.multiboxPlayerEnabled = 0;
+    const m = [{ x: 0, y: 0, size: 80, targetSize: 80 }];
+    let maxStep = 0, blendedS = 0, prev = null;
+    for (const D of [1600, 2000, 2400]) {
+        prev = null;
+        for (let t = -300; t <= 300; t += 2) {
+            setMain(m, 0, 0);
+            ctx.spects.length = 0;
+            ctx.spects.push(mkUnit(2, [{ x: D + t, y: 100, size: 90, targetSize: 90 }]), mkUnit(3, [{ x: -(D - t), y: -100, size: 90, targetSize: 90 }]));
+            const f = Object.assign({}, R.getMultiboxFrame(80));
+            if (f.both > 0 && f.both < 1) blendedS++;
+            if (prev) maxStep = Math.max(maxStep, Math.abs(f.x - prev.x) / 2, Math.abs(f.y - prev.y) / 2, Math.abs(f.zoom - prev.zoom) * 1000);
+            prev = f;
+        }
+    }
+    check('"when close": no jump when two players cross the same distance (' + blendedS + ' blended, at most ' + maxStep.toFixed(2) + ' per unit moved)', blendedS > 100 && maxStep < 3);
+    /* the camera with its glide: units drift apart and together at a combat speed, no back and forth */
+    const u2 = [{ x: 600, y: 0, size: 90, targetSize: 90 }], u3 = [{ x: 0, y: 500, size: 90, targetSize: 90 }];
+    setMain(m, 0, 0);
+    ctx.spects.length = 0;
+    const U2 = mkUnit(2, u2, { calculatePlayerMassAndPosition() { } }), U3 = mkUnit(3, u3, { calculatePlayerMassAndPosition() { } });
+    ctx.spects.push(U2, U3);
+    run(120);
+    /* the frame follows the middle while they are close and goes back to the main player as they part
+     * (and the other way back): the camera turns only where its target turns, never back and forth */
+    const turns = () => ({ n: 0, dir: 0, last: NaN, at: -1, gap: Infinity });
+    const turn = (o, v, i) => {
+        const d = v - o.last, dir = !(Math.abs(d) > 1e-3) ? o.dir : Math.sign(d);
+        if (o.dir && dir !== o.dir) { o.n++; if (o.at >= 0) o.gap = Math.min(o.gap, i - o.at); o.at = i; }
+        o.dir = dir; o.last = v;
+    };
+    const cam = turns(), tgt = turns();
+    let worst = 0, lastX = R.camX;
+    for (let i = 0; i < 600; i++) {
+        const d = 600 + 2400 * (0.5 - 0.5 * Math.cos(i / 600 * 2 * Math.PI));
+        u2[0].x = U2.playerX = d; u3[0].y = U3.playerY = d * 0.8;
+        frame();
+        turn(cam, R.camX, i); turn(tgt, R.getMultiboxFrame(80).x, i);
+        worst = Math.max(worst, Math.abs(R.camX - lastX)); lastX = R.camX;
+    }
+    check('"when close", players drifting apart and back: the camera turns ' + cam.n + ' times as its target (' + tgt.n + '), ' + cam.gap + '+ frames apart, at most ' + worst.toFixed(1) + ' a frame',
+        cam.n === tgt.n && cam.n <= 4 && cam.gap >= 30 && worst < 30);
+}
+{
+    /* a stalled unit (no world update for more than 1 s) does not pull the frame; a short gap does */
+    const m = blob(0, 0, 2, 150), u2 = blob(700, 0, 2, 150), u3 = blob(-900, 400, 2, 150);
+    const STALE = () => Date.now() - 1500, SHORT = () => Date.now() - 600, FRESH = () => Date.now() - 20;
+    const scene = (s3, focus, mainDead, s2) => {
+        setMain(mainDead ? [] : m, m[0].x, m[0].y);
+        ctx.spects.length = 0;
+        ctx.spects.push(mkUnit(2, u2, { _lmWorldStamp: s2 || FRESH }), mkUnit(3, u3, { _lmWorldStamp: s3 }));
+        ctx.multiboxPlayerEnabled = focus;
+        const f = R.getMultiboxFrame(sizeOf(LM.playerCells));
+        return f && Object.assign({}, f);
+    };
+    for (const mode of [1, 2]) {
+        S.middleMultiView = mode === 2; S.middleMultiViewWhenClose = true;
+        const fresh = scene(FRESH, 0), short = scene(SHORT, 0), stale = scene(STALE, 0);
+        setMain(m, m[0].x, m[0].y); ctx.spects.length = 0; ctx.spects.push(mkUnit(2, u2)); ctx.multiboxPlayerEnabled = 0;
+        const without = Object.assign({}, R.getMultiboxFrame(sizeOf(m)));
+        const ref2 = R0.getMultiboxFrame(sizeOf(m));
+        check((mode === 2 ? '"always"' : '"when close"') + ': a unit stalled 1.5 s is left out of the frame (main + P2 as the two-player frame), one 0.6 s late still counts',
+            same(stale, without) && same(without, ref2) && same(short, fresh) && !same(fresh, stale));
+    }
+    S.middleMultiView = false; S.middleMultiViewWhenClose = true;
+    const own = scene(STALE, 3), u3s = ctx.spects[1], ownFresh = scene(FRESH, 3);
+    check('the stalled unit you control: the camera stays on it (its last place) with the others framed as when it is fresh', !!own && own.size === u3s.playerSize && own.both > 0 && same(own, ownFresh));
+    const dead = scene(FRESH, 0, true, STALE), u3d = ctx.spects[1];
+    check('main dead, the focus not placed: the camera starts on the first unit that is not stalled (P3, not the stalled P2)', !!dead && dead.size === u3d.playerSize && dead.both === 0);
+    const only = scene(STALE, 0, true, STALE), u2o = ctx.spects[0];
+    check('main dead, every unit stalled: the camera keeps the first placed one (no jump to the map)', !!only && only.x === u2o.playerX && only.size === u2o.playerSize);
+    ctx.multiboxPlayerEnabled = 0;
+}
+{
+    /* Rotate Map flips the world on an axis (the camera works in the flipped frame): the frame of a
+     * flipped scene is the flipped frame, every mode, 3..6 players */
+    let bad = 0, cases = 0;
+    for (let k = 0; k < 300; k++) {
+        const n = 3 + (k % 4), groups = Array.from({ length: n }, () => blob((rnd() - 0.5) * 5000, (rnd() - 0.5) * 3000, 1 + Math.floor(rnd() * 4), 200));
+        const fx = k % 4 !== 1 ? -1 : 1, fy = k % 4 >= 1 ? -1 : 1, cx = 7071, cy = -3000;
+        const flip = (g) => g.map((c) => ({ x: fx < 0 ? 2 * cx - c.x : c.x, y: fy < 0 ? 2 * cy - c.y : c.y, size: c.size, targetSize: c.size }));
+        S.middleMultiView = k % 3 === 2; S.middleMultiViewWhenClose = k % 3 >= 1;
+        const ctrl = k % n, put = (gs) => {
+            setMain(gs[0], gs[0][0].x, gs[0][0].y);
+            ctx.spects.length = 0; gs.slice(1).forEach((g, i) => ctx.spects.push(mkUnit(NUMS[i], g)));
+            ctx.multiboxPlayerEnabled = ctrl ? NUMS[ctrl - 1] : 0;
+            return Object.assign({}, R.getMultiboxFrame(sizeOf(gs[0])));
+        };
+        const a = put(groups), b = put(groups.map(flip));
+        const ex = fx < 0 ? 2 * cx - a.x : a.x, ey = fy < 0 ? 2 * cy - a.y : a.y;
+        cases++;
+        if (!(near(b.x, ex, 1e-6) && near(b.y, ey, 1e-6) && near(b.zoom, a.zoom, 1e-12) && near(b.both, a.both, 1e-12))) bad++;
+    }
+    check('Rotate Map: a flipped scene gives the flipped frame (' + cases + ' scenes, x / y / both flips)', bad === 0);
+    ctx.multiboxPlayerEnabled = 0;
 }
 /* a far unit takes the focus with "View on middle of both (when close)": the frame moves to the
  * middle of both players and zooms out. The camera centre glides 2/3 a frame; the zoom glided 10 % a

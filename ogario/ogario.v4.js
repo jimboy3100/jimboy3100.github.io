@@ -4614,10 +4614,12 @@ function lmMultiboxRing(cell, radius, scale) {
 }
 
 /*
- * Multibox camera (drawRender.getMultiboxFrame): both players are kept on
- * screen when the zoom that fits them both is at least NEAR x the normal
- * zoom; at FAR or less the camera only follows the player you control; in
- * between it blends.
+ * Multibox camera (drawRender.getMultiboxFrame): another player is kept on
+ * screen with the one you control when the zoom that fits them both is at
+ * least NEAR x the normal zoom; at FAR or less the camera only follows the
+ * player you control; in between it blends. NEAR is also the furthest the
+ * frame zooms out (the combat zoom stays): "View on middle of all players"
+ * centres on all of them, it does not zoom out further to fit them all.
  */
 var LM_MB_CAMERA_NEAR = 0.8;
 var LM_MB_CAMERA_FAR = 0.6;
@@ -4701,11 +4703,16 @@ function lmMbCameraBox(p, out) {
     out.size = p.playerSize;
     return lmMbBoxCells(cells, out);
 }
-/* lmMbEachPlayer step of drawRender.getMultiboxFrame: the placed players' boxes, in slot order */
+/* lmMbEachPlayer step of drawRender.getMultiboxFrame: the placed players' boxes, in slot order.
+ * stall: a unit whose world updates stopped for more than LM_MB_STALL_MS (_lmMbStalled, the rule
+ * of the frame's hide step): its cells are where they were last seen, so it does not pull the
+ * camera towards it (getMultiboxFrame); the camera may still start on it (the player you
+ * control, or the only one placed), and a shorter gap changes nothing. w: getMultiboxFrame's. */
 function lmMbCameraCollect(p, slot, f) {
-    var b = f.boxes[f.n] || (f.boxes[f.n] = { x: 0, y: 0, size: 0, minX: 0, maxX: 0, minY: 0, maxY: 0 });
+    var b = f.boxes[f.n] || (f.boxes[f.n] = { x: 0, y: 0, size: 0, minX: 0, maxX: 0, minY: 0, maxY: 0, stall: false, w: 0 });
     b.size = f.mainSize;
     if (!lmMbCameraBox(p, b)) return;
+    b.stall = p !== window.legendmod && typeof _lmMbStalled === 'function' && _lmMbStalled(p, f.now);
     f.who[f.n++] = p;
     if (p !== window.legendmod) f.units++;
 }
@@ -81892,31 +81899,44 @@ function pickPlayerCellBySize(players, selectBiggest) {
          *
          *  - the camera starts on the player you control (the main player
          *    while the focused unit has no place on the map; the first placed
-         *    unit when the main player is dead and the focused one is not);
-         *  - "View on middle of both (when close)": each other player in slot
-         *    order is taken in when the box around it and the players taken so
-         *    far fits: the camera moves to the middle of that box and zooms out
-         *    (as far as 80 % of the normal zoom) by its weight, smoothstep of
-         *    the fit between FAR and NEAR, so it never jumps when players drift
-         *    apart or together. With two players this is the two-player rule
-         *    as it was;
-         *  - "View on middle of both": every placed player (weight 1), zoom out
-         *    at most to 80 % (players further apart may stay off screen);
+         *    unit that is not stalled when the main player is dead and the
+         *    focused one is not placed);
+         *  - "View on middle of the players (when close)": each other player
+         *    has its weight with the player you control alone, smoothstep of
+         *    the fit of the box around both between FAR and NEAR. The camera
+         *    moves from the controlled player by the largest weight to the
+         *    middle of the box around the controlled player and every other
+         *    one, each pulled in from the controlled player's box by its weight
+         *    against the largest, and zooms out by that weight to fit that box
+         *    (as far as 80 % of the normal zoom). It never jumps when players
+         *    drift apart or together, gives the same frame whichever slots
+         *    the same places are in, and with two players it is the two-player
+         *    rule as it was, bit for bit;
+         *  - "View on middle of all players (always, also when far apart)":
+         *    every placed player at weight 1: the middle of the box around all
+         *    of them, zoomed out at most to 80 % (players further apart stay
+         *    off screen: it centres, it does not fit; legacy middleMultiView
+         *    centred without any zoom);
          *  - neither: only the player you control.
          *
-         * both = the largest weight used (0 = only the controlled player).
-         * size: the controlled player's size, for Auto zoom.
+         * A stalled unit (lmMbCameraCollect: no world update for
+         * LM_MB_STALL_MS) is never one of the others: its last seen place does
+         * not pull the camera. both = the largest weight used (0 = only the
+         * controlled player). size: the controlled player's size, for Auto zoom.
          */
         getMultiboxFrame(mainSize) {
             if (!LM.multiBoxPlayerExists || typeof spects === 'undefined' || !spects || !spects.length) return null;
-            var f = this._lmMbCam || (this._lmMbCam = { boxes: [], who: [], n: 0, units: 0, mainSize: 0, out: { x: 0, y: 0, zoom: 1, both: 0, size: 0 } });
+            var f = this._lmMbCam || (this._lmMbCam = { boxes: [], who: [], n: 0, units: 0, mainSize: 0, now: 0, out: { x: 0, y: 0, zoom: 1, both: 0, size: 0 } });
             f.n = f.units = 0;
             f.mainSize = mainSize;
+            f.now = Date.now();
             lmMbEachPlayer(lmMbCameraCollect, f);
             for (var i = f.n; i < f.who.length; i++) f.who[i] = null;
             if (!f.units) return null;
-            var focus = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null, a = 0;
+            var focus = window.multiboxPlayerEnabled ? getActiveSpect(window.multiboxPlayerEnabled) : null, a = -1;
             for (i = 0; focus && i < f.n; i++) if (f.who[i] === focus) a = i;
+            for (i = 0; a < 0 && i < f.n; i++) if (!f.boxes[i].stall) a = i;
+            if (a < 0) a = 0;
             var act = f.boxes[a], out = f.out;
             var x = act.x, y = act.y, zoom = 1, both = 0;
             /* one choice in two switches: "middle of both" always (middleMultiView, also its hotkey)
@@ -81925,24 +81945,45 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var mode = defaultmapsettings.middleMultiView ? 2 : defaultmapsettings.middleMultiViewWhenClose ? 1 : 0;
             if (mode && f.n > 1) {
                 var baseScale = this.getTargetScale(act.size, true);
-                var minX = act.minX, maxX = act.maxX, minY = act.minY, maxY = act.maxY;
+                var cw = (this.canvasWidth || 1) * 0.9, ch = (this.canvasHeight || 1) * 0.9, bs = baseScale > 0 ? baseScale : 1;
+                var b, x0, x1, y0, y1, fit, w;
+                /* each other player's weight with the controlled one alone: no slot order */
                 for (i = 0; i < f.n; i++) {
-                    if (i === a) continue;
-                    var b = f.boxes[i];
-                    var x0 = Math.min(minX, b.minX), x1 = Math.max(maxX, b.maxX);
-                    var y0 = Math.min(minY, b.minY), y1 = Math.max(maxY, b.maxY);
+                    b = f.boxes[i];
+                    b.w = 0;
+                    if (i === a || b.stall) continue;
+                    x0 = Math.min(act.minX, b.minX); x1 = Math.max(act.maxX, b.maxX);
+                    y0 = Math.min(act.minY, b.minY); y1 = Math.max(act.maxY, b.maxY);
                     /* zoom factor that fits the box (with a 5 % margin each side); >= 1: it already fits */
-                    var fit = Math.min(
-                        (this.canvasWidth || 1) * 0.9 / Math.max(1, x1 - x0),
-                        (this.canvasHeight || 1) * 0.9 / Math.max(1, y1 - y0)
-                    ) / (baseScale > 0 ? baseScale : 1);
-                    var w = mode === 2 ? 1 : lmSmoothstep(LM_MB_CAMERA_FAR, LM_MB_CAMERA_NEAR, fit);
+                    fit = Math.min(cw / Math.max(1, x1 - x0), ch / Math.max(1, y1 - y0)) / bs;
+                    w = mode === 2 ? 1 : lmSmoothstep(LM_MB_CAMERA_FAR, LM_MB_CAMERA_NEAR, fit);
                     if (!(w > 0)) continue;
-                    x += ((x0 + x1) / 2 - x) * w;
-                    y += ((y0 + y1) / 2 - y) * w;
-                    zoom += (Math.min(1, Math.max(LM_MB_CAMERA_NEAR, fit)) - zoom) * w;
+                    b.w = w;
                     if (w > both) both = w;
-                    minX = x0; maxX = x1; minY = y0; maxY = y1;
+                }
+                if (both > 0) {
+                    /* the box: the controlled player's, widened towards each other player by its
+                     * weight against the largest (all of it at the largest) */
+                    var minX = act.minX, maxX = act.maxX, minY = act.minY, maxY = act.maxY, r;
+                    for (i = 0; i < f.n; i++) {
+                        b = f.boxes[i];
+                        if (!(b.w > 0)) continue;
+                        x0 = Math.min(act.minX, b.minX); x1 = Math.max(act.maxX, b.maxX);
+                        y0 = Math.min(act.minY, b.minY); y1 = Math.max(act.maxY, b.maxY);
+                        r = b.w / both;
+                        if (r < 1) {
+                            x0 = act.minX + (x0 - act.minX) * r; x1 = act.maxX + (x1 - act.maxX) * r;
+                            y0 = act.minY + (y0 - act.minY) * r; y1 = act.maxY + (y1 - act.maxY) * r;
+                        }
+                        if (x0 < minX) minX = x0;
+                        if (x1 > maxX) maxX = x1;
+                        if (y0 < minY) minY = y0;
+                        if (y1 > maxY) maxY = y1;
+                    }
+                    fit = Math.min(cw / Math.max(1, maxX - minX), ch / Math.max(1, maxY - minY)) / bs;
+                    x += ((minX + maxX) / 2 - x) * both;
+                    y += ((minY + maxY) / 2 - y) * both;
+                    zoom += (Math.min(1, Math.max(LM_MB_CAMERA_NEAR, fit)) - zoom) * both;
                 }
             }
             out.x = x;
