@@ -124,7 +124,9 @@ const PNG = {
     'Lc/PROJETOX.HTML/dragon.png': [1920, 1080, 1139307], 'Lc/PROJETOX.HTML/junk.png': [2509, 1314, 2532971],
     'Lc/PROJETOX.HTML/junk1.png': [2509, 1314, 2384050], 'Lc/PROJETOX.HTML/logo.png': [1536, 1024, 1207122],
     'Lc/PROJETOX.HTML/mido.png': [2850, 1694, 4018182], 'Lc/PROJETOX.HTML/prod.png': [1920, 1052, 1878864],
-    'Lc/PROJETOX.HTML/weare.png': [1920, 1080, 1434942], 'banners/Lc2026.png': [1536, 1024, 2817139]
+    'Lc/PROJETOX.HTML/weare.png': [1920, 1080, 1434942], 'banners/Lc2026.png': [1536, 1024, 2817139],
+    'banners/LM_Marquee_Tile_1400x560.png': [1400, 560, 1797485], 'banners/LM_Screenshot_1280x800.png': [1280, 800, 877985],
+    'banners/LM_Promo_Small_440x280.png': [440, 280, 161062], 'banners/iconretro.png': [1000, 1000, 1206498]
 };
 Object.keys(PNG).forEach((f) => {
     const [w, h, before] = PNG[f];
