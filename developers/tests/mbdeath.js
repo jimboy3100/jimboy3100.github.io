@@ -16,6 +16,9 @@
  *   profiles, enabling, Add Player (section 5); the player calls (enable, add, remove, select) against
  *   the Multibox 2.0 cases: six at most with the slot being made, remove / reuse a slot, stale epochs,
  *   the login slot, P1 dying while P4 plays, a reconnect while P5 plays, the last death's menu (5b).
+ *   lmMbPlayers.attach refuses a slot taken, a stale slotEpoch, a source registered; addBox's refusals
+ *   (six players, a unit being made, attach refusing the unit made, a server change meanwhile) give
+ *   null and leave the registry as it was; a Spect constructor that throws rolls the reservation back.
  * - A spectator with its active flag set is no living player (lmMbAlive): never focused, and the
  *   last unit's death still shows the menu.
  * node developers/tests/mbdeath.js [ogario.v4.js] [spect.js] */
@@ -490,6 +493,123 @@ function death(o) {
         let threw = false;
         try { s.ctx.addBox(); } catch (e) { threw = true; }
         check('making a unit fails: its slot is freed again (rollback)', threw && reg.count() === 2 && reg.reserve().slotId === 3);
+    }
+    /* the registry's refusals and addBox's: what is refused leaves lmMbPlayers as it was (slots,
+     * reservations, sources, the slot order, the login slot, busy, revision) */
+    const regSnap = (reg) => JSON.stringify({ slots: reg.slots.map((u) => (u ? u.number + '@' + u.slotEpoch : null)), reserved: reg.reserved.slice(),
+        src: Array.from(reg.bySource, (e) => e[0] + '>' + e[1].slotId + '@' + e[1].slotEpoch), ord: reg.ordered.map((u) => u.slotId + ':' + u.number),
+        tok: reg.tokenSlot, busy: reg._busy, count: reg.count() });
+    {
+        const { s, app, reg } = fresh(6);
+        app.mbEnable(); app.mbAddPlayer();
+        const p2 = reg.get(2), p3 = reg.get(3), fake = (o) => Object.assign({ player: true, number: 90 }, o);
+        let before = regSnap(reg), rev = reg.revision;
+        const taken = [fake({ slotId: 2, slotEpoch: p2.slotEpoch }), fake({ slotId: 3, slotEpoch: p3.slotEpoch, number: 91 }), fake({ slotId: 2, slotEpoch: reg._epoch + 1 })];
+        check('attach: a slot already taken is refused (also with its occupant\'s slotEpoch), the registry as it was',
+            taken.every((u) => reg.attach(u) === false) && regSnap(reg) === before && reg.revision === rev && reg.get(2) === p2 && reg.get(3) === p3, regSnap(reg));
+        /* the slot test on its own: a reservation for the taken slot (only possible by hand) still leaves the occupant there */
+        reg.reserved[2] = 77;
+        const forced = reg.attach(fake({ slotId: 2, slotEpoch: 77 }));
+        reg.reserved[2] = 0;
+        check('    ... also with a matching reservation for that slot: the occupant stays', forced === false && regSnap(reg) === before && reg.get(2) === p2 && reg.getBySource(p2.number) === p2);
+        /* P3 goes, its slot is held for the next unit: the old P3 (a late callback) has a stale slotEpoch */
+        const e3 = p3.slotEpoch;
+        app.mbRemovePlayer(3);
+        const r = reg.reserve();
+        before = regSnap(reg); rev = reg.revision;
+        const stale = [p3, fake({ slotId: 3, slotEpoch: e3 }), fake({ slotId: 3, slotEpoch: r.slotEpoch - 1 }), fake({ slotId: 3, slotEpoch: r.slotEpoch + 1 }), fake({ slotId: 3, slotEpoch: 0 })];
+        check('attach: a stale slotEpoch (the removed unit\'s, an older or unknown one, none) is refused, the slot stays held for its unit',
+            r.slotId === 3 && stale.every((u) => reg.attach(u) === false) && regSnap(reg) === before && reg.revision === rev && reg.reserved[3] === r.slotEpoch && !reg.isCurrent(p3), regSnap(reg));
+        /* a source already registered: another object under P2's number, or P2 itself in a second slot */
+        const dup = fake({ number: p2.number, slotId: 3, slotEpoch: r.slotEpoch });
+        const slot2 = p2.slotId, ep2 = p2.slotEpoch;
+        p2.slotId = 3; p2.slotEpoch = r.slotEpoch;
+        const twice = reg.attach(p2);
+        p2.slotId = slot2; p2.slotEpoch = ep2;
+        check('attach: a source already registered is refused (another unit under its number, the same unit in a second slot), the registry as it was',
+            reg.attach(dup) === false && twice === false && regSnap(reg) === before && reg.revision === rev && reg.getBySource(p2.number) === p2 && reg.get(2) === p2, regSnap(reg));
+        const ok3 = fake({ number: 92, slotId: 3, slotEpoch: r.slotEpoch });
+        check('    ... after the refusals the unit holding the reservation attaches', reg.attach(ok3) === true && reg.get(3) === ok3 && reg.reserved[3] === 0 && reg.getBySource(92) === ok3);
+    }
+    {
+        /* reserve() refuses (spect.js addBox: null before anything is made): six players, or a unit being made */
+        const { s, app, reg, units } = fresh(6);
+        app.mbEnable();
+        for (let i = 0; i < 4; i++) app.mbAddPlayer();
+        const before = regSnap(reg), rev = reg.revision, ep = reg._epoch, n = s.ctx.spects.length;
+        let made = 0;
+        const hook = () => { made++; };
+        s.ctx.spectHook = hook;
+        const got = [s.ctx.addBox(), app.mbAddPlayer()];
+        check('addBox / Add Player with six players: null, no unit made, no reservation, the registry as it was',
+            got[0] === null && got[1] === null && made === 0 && s.ctx.spectHook === hook && regSnap(reg) === before && reg.revision === rev && reg._epoch === ep && s.ctx.spects.length === n && units().length === 5,
+            regSnap(reg));
+        s.ctx.spectHook = null;
+    }
+    {
+        const { s, app, reg, units } = fresh(6);
+        app.mbEnable();
+        let inside = null;
+        s.ctx.spectHook = () => {
+            const b = regSnap(reg), rv = reg.revision, ep = reg._epoch, n = s.ctx.spects.length;
+            const x = s.ctx.addBox(), y = app.mbAddPlayer();
+            inside = { ok: x === null && y === null && regSnap(reg) === b && reg.revision === rv && reg._epoch === ep && s.ctx.spects.length === n, held: reg.reserved[3] > 0 && reg._busy };
+        };
+        const u = s.ctx.addBox();
+        check('addBox / Add Player while a unit is being made: null, the registry as it was (the slot being made stays held), then that unit is attached',
+            !!inside && inside.ok && inside.held && !!u && u.slotId === 3 && reg.get(3) === u && !reg._busy && reg.reserved[3] === 0 && units().length === 2, JSON.stringify(inside));
+    }
+    {
+        /* attach refuses the unit just made (spect.js addBox: a slot or source taken twice): it is
+         * closed and left out of spects, its reservation freed, null, no playerAdded */
+        const { s, app, reg, units } = fresh(6);
+        app.mbEnable();
+        const r = reg.reserve(), next = s.ctx.spects.reduce((m, x) => (x && x.number > m ? x.number : m), 0) + 1;
+        /* a unit a script registered under the number the next connection gets, never put in spects */
+        const ghost = { player: true, number: next, slotId: r.slotId, slotEpoch: r.slotEpoch };
+        reg.attach(ghost);
+        const before = regSnap(reg), n = s.ctx.spects.length, added = [];
+        s.ctx.LMEvents.on('playerAdded', (d) => added.push(d.slot));
+        let made = null;
+        s.ctx.spectHook = (sp) => { made = sp; };
+        const got = s.ctx.addBox();
+        check('addBox: a unit attach refuses (its source registered already) is closed and left out of spects, null, the registry as it was, no playerAdded',
+            got === null && !!made && made.number === next && made.slotId === 4 && made.closed === true && made._lmRemoved === true && !s.ctx.spects.includes(made) &&
+            s.ctx.spects.length === n && regSnap(reg) === before && reg.getBySource(next) === ghost && !added.length && !reg._busy, regSnap(reg));
+        reg.release(ghost.slotId, ghost.slotEpoch);
+        const u = s.ctx.addBox();
+        check('    ... the refused slot (4) was freed: with the ghost gone the next unit gets slot 3 under that number, slot 4 is free', !!u && u.slotId === 3 && u.number === next &&
+            reg.getBySource(next) === u && reg.reserved[4] === 0 && reg.count() === 3 && added.join() === '3', added.join());
+    }
+    {
+        /* a server change while the unit is being made (LM.flushSpecsData from inside its constructor) */
+        const { s, app, reg, units } = fresh(6);
+        app.mbEnable();
+        const p2 = reg.get(2);
+        let made = null;
+        s.ctx.spectHook = (sp) => { made = sp; s.LM.flushSpecsData(); };
+        const got = s.ctx.addBox();
+        check('addBox: a server change while the unit is made: null, that unit closed and not in spects, every slot free',
+            got === null && !!made && made.closed === true && !s.ctx.spects.length && p2.closed && reg.count() === 1 && reg.reserved.every((x) => !x) && !reg.bySource.size && !reg._busy, regSnap(reg));
+    }
+    {
+        /* the Spect constructor throws: the reservation is rolled back */
+        const { s, app, reg, units } = fresh(6);
+        app.mbEnable(); app.mbAddPlayer();
+        const before = regSnap(reg), n = s.ctx.spects.length, added = [];
+        s.ctx.LMEvents.on('playerAdded', (d) => added.push(d.slot));
+        s.ctx.spectThrows = true;
+        let err = null;
+        try { s.ctx.addBox(); } catch (e) { err = e; }
+        const viaAddBox = !!err && /socket refused/.test(err.message) && regSnap(reg) === before && s.ctx.spects.length === n && !reg._busy && reg.reserved[4] === 0;
+        s.ctx.spectThrows = true;
+        const viaApp = app.mbAddPlayer();
+        const appOk = viaApp === null && regSnap(reg) === before && s.ctx.spects.length === n && !reg._busy;
+        const u = app.mbAddPlayer();
+        check('the Spect constructor throws: addBox throws on, the slot held for it is released, registry and spects as before, not busy',
+            viaAddBox, regSnap(reg) + ' ' + (err && err.message));
+        check('    ... Add Player catches it and gives null, same rollback; the next Add Player gets that slot (4)', appOk && !!u && u.slotId === 4 && reg.get(4) === u && added.join() === '4' && units().length === 3,
+            added.join() + ' ' + regSnap(reg));
     }
     {
         const { s, app, reg, units } = fresh(6);

@@ -6,6 +6,13 @@
  *    tiles dropped by the server and reconnected, in-game spectator, a multibox unit that dies,
  *    a server switch, Full Map off: back to no socket, timer, interval or spectator each round;
  *    the death-menu listeners of a unit are added once only;
+ * 1b. Multibox 2.0 (the real lmMbPlayers, application.mbEnable / mbAddPlayer / mbRemovePlayer /
+ *    mbDisable, spect.js addBox and the units' own cells, LM.flushCellsData of a server change):
+ *    with Full Map off and on by turns, enable, Add Player up to six, a seventh refused, a middle
+ *    slot (P4) removed and used again, multibox off, three players again and a server change: the
+ *    sockets, timeouts, intervals, listeners, the registry (slots, reserved, bySource, ordered),
+ *    window.spects, legendmod.playerCellsMulti and each unit's own index are back to none each
+ *    round, and the peak and the unit numbers are the same every round;
  * 2. LMEvents (ogario.v4.js) with the death recap module: spawn / death / server change and its
  *    switch off and on: the listener lists keep their size, at most one sampling interval, none
  *    after a death;
@@ -155,6 +162,163 @@ const S = (() => {
         get maxTiles() { return maxTiles; }, get sentOk() { return sentOk; }, menus: () => ctx.application.menuShown };
 })();
 
+/* ============ 1b. Multibox 2.0: up to six players through the player calls, then a server change ============ */
+const M = (() => {
+    const C = clock(), docL = listeners(), sockets = new Set();
+    class WS {
+        constructor(url) { this.url = url; this.readyState = 0; this.sent = 0; sockets.add(this); }
+        send() { this.sent++; }
+        close() { if (this.readyState !== 3) { this.readyState = 3; sockets.delete(this); } }
+    }
+    WS.prototype.CONNECTING = WS.CONNECTING = 0; WS.prototype.OPEN = WS.OPEN = 1; WS.prototype.CLOSING = WS.CLOSING = 2; WS.prototype.CLOSED = WS.CLOSED = 3;
+    class FakeDate extends Date { static now() { return C.now; } }
+    const W = 14142.135623730952, h = W / 2;
+    /* the border the main connection's handshake gives (a server change clears it, the new server's sets it again) */
+    const border = { mapOffsetFixed: true, mapOffsetX: 0, mapOffsetY: 0, mapMinX: -h, mapMaxX: h, mapMinY: -h, mapMaxY: h };
+    const LM = Object.assign({
+        ws: 'wss://live-arena-abcde.agar.io:443', integrity: true, isLegendWorld: false, _lmFullMapCrowd: false, gameMode: ':ffa', play: true,
+        _lmBorderCX: 0, _lmBorderCY: 0, _lmBorderKX: 1, _lmBorderKY: 1,
+        vector: [[0, 0], [1, 0], [1, 1], [0, 1]], vnr: 0, indexedCells: {}, removedCells: [], cells: [], food: [], foodMulti: [], viruses: [],
+        playerCells: [], playerCellsMulti: [], ghostCells: [], cellcolors: {}, fbOnline: [], cursorX: 0, cursorY: 0, rgb2Hex: () => '#ffffff', vanillaskins() { }
+    }, border);
+    const jq = { val: () => '', show() { return jq; }, hide() { return jq; } };
+    const ctx = {
+        legendmod: LM, LM, console: { log() { }, warn() { }, error() { } }, Math, Number, String, Array, Object, Map, Set, WeakSet, JSON, Uint8Array, DataView, ArrayBuffer,
+        Float64Array, Int32Array, Buffer, URL, Date: FakeDate, WebSocket: WS, Infinity, NaN, isFinite, parseInt, parseFloat,
+        setTimeout: C.setTimeout, setInterval: C.setInterval, clearTimeout: C.clear, clearInterval: C.clear,
+        document: { addEventListener: (t, f) => docL.add(t, f), removeEventListener: (t, f) => docL.remove(t, f) },
+        master: { clientVersion: 31100, protocolVersion: 23 }, proLicenceUID: 'x', clanTagLc: '',
+        defaultmapsettings: { multiboxAmount: 6 }, defaultSettings: { foodColor: '#5000ff' }, profiles: [], Premadeletter123: 'LM',
+        application: { teamPlayers: [], menuShown: 0, showMenu() { this.menuShown++; }, writeUint32(a, v) { a.push(v & 255, (v >> 8) & 255, (v >> 16) & 255, v >>> 24); } },
+        toastr: { warning() { }, error() { }, info() { } }, lmT: (k) => k, $: () => jq,
+        play() { LM.play = true; }
+    };
+    ctx.window = ctx;
+    vm.createContext(ctx);
+    /* the real core: LMEvents (its listener table where the test can count it) .. lmMbPlayers and
+     * the multibox functions, lmTimeAlive, the indexed lists (window.lmCellIdx, as the core sets it) */
+    const evSrc = cut(src, '/* LMEvents: hooks for user scripts', 'window.OgVer');
+    if (evSrc.indexOf('var L = Object.create(null)') < 0) throw new Error('LMEvents listener table not found');
+    vm.runInContext(evSrc.replace('var L = Object.create(null)', 'var L = window._lmSoakL = Object.create(null)') + '\n' +
+        cut(src, 'function lmTimeAlive(p, n, now) {', '/* Session summary') + '\n' + cut(src, '    function quickSwapDelete(arr, index, idxProp) {', '    var ogarCellPool') +
+        '\nwindow.lmCellIdx = { push: indexedPush, of: lmIdxOf, remove: lmIdxRemove, filter: lmIdxFilter };', ctx);
+    vm.runInContext(spectSrc + '\n;window.Spect = Spect;', ctx);
+    const m = (name, next) => { const b = cut(src, '        ' + name + '(', next); return b.slice(0, b.lastIndexOf('\n        }') + 10); };
+    const lmMethods = [
+        m('_lmSpecSetMode', '        _lmFullMapCrowdCheck('), m('_lmFullMapModeOff', '        _lmSpecLocal('), m('_lmSpecLocal', '        _lmSpecReconcile('),
+        m('_lmSpecReconcile', '        _lmMbStop('), m('_lmMbStop', '        flushSpecsData('), m('flushSpecsData', '        _lmBorderValid('), m('addSpect', '        isInView('),
+        m('flushCellsData', '        /* Spectator toggles')
+    ];
+    const appMethods = [m('_lmMbStart', '        /* Multibox players, one implementation'), m('mbEnable', '        mbDisable('), m('mbDisable', '        mbAddPlayer('),
+        m('mbAddPlayer', '        mbRemovePlayer('), m('mbRemovePlayer', '        mbSelectPlayer(')];
+    vm.runInContext('Object.assign(legendmod, {\n' + lmMethods.join(',\n') + '\n});\nObject.assign(application, {\n' + appMethods.join(',\n') + '\n});', ctx);
+    const app = ctx.application, reg = ctx.lmMbPlayers;
+    function handshake(sp) {
+        if (!sp.socket || sp.socket.readyState !== 0) return;
+        sp.socket.readyState = 1; sp.socket.onopen();
+        const k = new DataView(new ArrayBuffer(9)); k.setUint8(0, 241); k.setUint32(1, 12345, true);
+        sp.handleMessage(k);
+        if (sp.player) return; /* a unit's login (242) is not part of this */
+        const t = new DataView(new ArrayBuffer(5)); t.setUint8(0, 242); t.setUint32(1, 1700000000, true);
+        sp.handleMessage(t);
+        sp.setMapOffset(-h, -h, h, h);
+    }
+    const live = () => [...sockets].filter((s) => s.onmessage).length;
+    /* a unit's life: its socket opens and the server gives it CELLS own cells (opcode 32 after their records) */
+    const CELLS = 3, made = [], cells = [];
+    function bring(u) {
+        if (!u) return null;
+        made.push(u);
+        handshake(u);
+        for (let j = 0; j < CELLS; j++) {
+            const id = u.number * 1000 + j + 1;
+            const c = { id, spectator: u.number, _lmGen: u.connectionGeneration, removed: false, isFood: false, x: 0, y: 0, size: 60 };
+            LM.indexedCells['' + id] = c;
+            cells.push(c);
+            u._lmOwnAdd(id);
+        }
+        return u;
+    }
+    /* per round: the players, their events, what was open at the peak */
+    const ev = { playerAdded: 0, playerRemoved: 0, playerSpawned: 0 };
+    Object.keys(ev).forEach((t) => ctx.LMEvents.on(t, () => { ev[t]++; }));
+    const evL = () => JSON.stringify(Object.keys(ctx._lmSoakL).sort().map((k) => k + ':' + ctx._lmSoakL[k].length));
+    const evBase = evL(), docBase = docL.size();
+    const slotsOf = () => reg.ordered.map((u) => u.slotId).join();
+    const bySourceOk = () => reg.bySource.size === reg.ordered.length && reg.ordered.every((u) => reg.bySource.get(u.number) === u);
+    const units = () => ctx.window.spects.filter((s) => s && s.player);
+    const bad = [], rounds = [];
+    let roundsOk = 0;
+    const need = (r, what, ok) => { if (!ok) bad.push('round ' + r + ': ' + what); return ok; };
+    function round(r) {
+        const fm = r % 2 === 1, b0 = bad.length;
+        made.length = 0; cells.length = 0;
+        Object.keys(ev).forEach((t) => { ev[t] = 0; });
+        if (fm) {
+            LM._lmSpecSetMode('full');
+            ctx.window.spects.forEach(handshake);
+            C.advance(300);
+        }
+        const tiles = live();
+        if (fm) need(r, 'Full Map on: 15 tiles', tiles === 15);
+        /* enable: one unit (P2), controlled; enable again opens nothing */
+        const u2 = bring(app.mbEnable());
+        need(r, 'enable: P2 in slot 2, controlled', !!u2 && u2.slotId === 2 && ctx.multiboxPlayerEnabled === u2.number && app.mbEnable() === u2 && units().length === 1);
+        /* Add Player up to six players (Settings "Multibox slots" 6), then no more */
+        for (let i = 0; i < 4; i++) bring(app.mbAddPlayer());
+        const epoch = reg._epoch, nums = units().map((u) => u.number).join();
+        need(r, 'six players: slots 2..6, one socket each', slotsOf() === '2,3,4,5,6' && reg.count() === 6 && bySourceOk() && live() === tiles + 5 &&
+            LM.playerCellsMulti.length === 5 * CELLS && ctx.window.spects.length === tiles + 5);
+        need(r, 'a seventh: none, no socket, no reservation', app.mbAddPlayer() === null && live() === tiles + 5 && reg._epoch === epoch && units().length === 5);
+        C.advance(200); /* the units' cursor loops (and the tiles') run */
+        const peak = { sockets: live(), intervals: C.count().iv, timeouts: C.count().to, nums };
+        /* remove a middle slot (P4): the others keep their slots and numbers */
+        const p4 = reg.get(4), n4 = p4.number, e4 = p4.slotEpoch;
+        need(r, 'remove P4', app.mbRemovePlayer(4) === true && reg.get(4) === null && !reg.bySource.has(n4) && slotsOf() === '2,3,5,6' && bySourceOk() &&
+            !p4.socket && !ctx.window.spects.includes(p4) && p4._lmOwn.length === 0 && LM.playerCellsMulti.length === 4 * CELLS && live() === tiles + 4 &&
+            units().map((u) => u.number).join() === nums.split(',').filter((n) => +n !== n4).join());
+        /* Add Player again: the free slot 4 with a new slotEpoch */
+        const q4 = bring(app.mbAddPlayer());
+        need(r, 'add again: slot 4 reused with a new slotEpoch', !!q4 && q4.slotId === 4 && q4.slotEpoch > e4 && reg.get(4) === q4 && slotsOf() === '2,3,4,5,6' && bySourceOk() &&
+            live() === tiles + 5 && LM.playerCellsMulti.length === 5 * CELLS);
+        /* multibox off: every unit closes, the tiles stay */
+        need(r, 'disable: five units closed, the tiles stay', app.mbDisable() === 5 && !reg.ordered.length && !reg.bySource.size && live() === tiles &&
+            !units().length && LM.playerCellsMulti.length === 0 && ctx.multiboxPlayerEnabled == null && LM.multiBoxPlayerExists === false);
+        /* three players again, the focus on P3, then a server change (LM.connect: the connection's own flush) */
+        bring(app.mbEnable()); bring(app.mbAddPlayer()); bring(app.mbAddPlayer());
+        const p3 = reg.get(3);
+        if (need(r, 'P3 there for the focus', !!p3)) ctx.lmSetMbUnit(p3.number);
+        C.advance(100);
+        need(r, 'three players again in slots 2..4', slotsOf() === '2,3,4' && bySourceOk() && live() === tiles + 3 && LM.playerCellsMulti.length === 3 * CELLS);
+        LM.flushCellsData();
+        need(r, 'server change: every socket closed, the slots free, focus on P1', live() === 0 && !ctx.window.spects.length && !reg.ordered.length &&
+            ctx.multiboxPlayerEnabled == null && reg.activeSlot === 1);
+        Object.assign(LM, border); /* the next server's handshake */
+        if (fm) LM._lmSpecSetMode('off');
+        C.advance(60000); /* a late reconnect or retry would show up now */
+        const cnt = C.count();
+        const end = {
+            sockets: live(), timeouts: cnt.to, intervals: cnt.iv, spects: ctx.window.spects.length, doc: docL.size() - docBase, ev: evL() === evBase,
+            reg: reg.slots.every((s) => s === null) && reg.reserved.every((x) => x === 0) && reg.bySource.size === 0 && reg.ordered.length === 0 &&
+                reg._busy === false && reg.tokenSlot === 0 && reg.activeSlot === 1,
+            multi: LM.playerCellsMulti.length, focus: ctx.multiboxPlayerEnabled == null && LM.multiBoxPlayerExists === false,
+            own: made.every((u) => u._lmOwn.length === 0 && (!u._lmOwnIds || u._lmOwnIds.size === 0) && (!u.playerCellIDs || !u.playerCellIDs.length) && !u.socket && !u.positionController && !u.pingInterval),
+            cells: cells.every((c) => c._lmOwner == null && !(c._playerMultiIdx >= 0)),
+            events: ev.playerAdded === 9 && ev.playerRemoved === 9 && ev.playerSpawned === 9
+        };
+        need(r, 'back to the baseline ' + JSON.stringify(end), !end.sockets && !end.timeouts && !end.intervals && !end.spects && !end.doc && end.ev && end.reg &&
+            !end.multi && end.focus && end.own && end.cells && end.events);
+        rounds.push({ fm, peak });
+        if (bad.length === b0) roundsOk++;
+    }
+    /* nothing grows from round to round: the same peak (sockets, intervals, timeouts) and unit numbers per Full Map state */
+    function steady() {
+        const ref = {};
+        return rounds.every((x) => { const k = x.fm ? 'fm' : 'off', s = JSON.stringify(x.peak); if (!(k in ref)) ref[k] = s; return ref[k] === s; });
+    }
+    return { round, bad, rounds, steady, get roundsOk() { return roundsOk; } };
+})();
+
 /* ============ 2. LMEvents + death recap: spawn / death / server change ============ */
 const E = (() => {
     const C = clock();
@@ -210,10 +374,10 @@ const E = (() => {
 
 /* ============ the soak ============ */
 const N = 40;
-S.round(0); E.round(0);
+S.round(0); E.round(0); M.round(0);
 gc(); const heap0 = heapMB();
 /* a round that leaves something behind ends the soak (leaked intervals would only slow the later rounds down) */
-for (let r = 1; r <= N && S.roundsOk === r && E.listOk; r++) { S.round(r); E.round(r); }
+for (let r = 1; r <= N && S.roundsOk === r && M.roundsOk === r && E.listOk; r++) { S.round(r); E.round(r); M.round(r); }
 gc(); const heap1 = heapMB();
 
 const a = S.after;
@@ -221,6 +385,10 @@ check('Full Map on opens the planned tiles (' + S.maxTiles + '), each sends its 
 check('while on: at most the 15 tiles + 1 unit open (peak ' + S.peakSockets + ' sockets, ' + S.peakIntervals + ' intervals)', S.peakSockets <= 16 && S.peakSockets >= 15 && S.peakIntervals >= 15 && S.peakIntervals <= 33);
 check('every round ends with no socket, timeout, interval or spectator left (' + S.roundsOk + '/' + a.length + ' of ' + (N + 1) + ')', S.roundsOk === a.length, JSON.stringify(a.find((x) => x.sockets || x.timeouts || x.intervals || x.spects)));
 check('a dying unit adds the death-menu listeners once (5), not once per death', a.every((x) => x.doc === 5) && S.menus() === a.length, a.map((x) => x.doc).join(','));
+check('multibox: ' + M.roundsOk + '/' + M.rounds.length + ' rounds of six players (enable, add, a seventh refused, remove P4, add again, off, a server change) end with no socket, timer, listener, slot, reservation, source, spect, playerCellsMulti or own cell left',
+    M.roundsOk === M.rounds.length && M.rounds.length === N + 1, M.bad.slice(0, 3).join(' / '));
+check('multibox: the peak and the unit numbers are the same every round, nothing grows (off ' + JSON.stringify(M.rounds[0] && M.rounds[0].peak) + ', Full Map ' + JSON.stringify(M.rounds[1] && M.rounds[1].peak) + ')', M.steady() && M.rounds.some((x) => x.fm) && M.rounds.some((x) => !x.fm),
+    JSON.stringify(M.rounds.slice(0, 2).map((x) => x.peak)));
 check('LMEvents: spawn / death / server change listener lists keep their size over ' + (N + 1) + ' lives and switch toggles (' + E.base + ')', E.listOk && E.base === '[1,1,1]', JSON.stringify(E.listeners()));
 check('death recap: one sampling interval while alive, none after the death or at the end', E.maxIv === 1 && E.ivAfterDeath === 0 && E.pending().iv === 0, E.maxIv + '/' + E.ivAfterDeath + '/' + E.pending().iv);
 check('heap after GC: +' + (heap1 - heap0).toFixed(2) + ' MB over ' + N + ' rounds (< 4 MB)', heap1 - heap0 < 4);
