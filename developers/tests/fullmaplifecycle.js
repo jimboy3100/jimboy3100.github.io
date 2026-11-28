@@ -8,7 +8,8 @@
 // on top of the live copy; a copy that sat behind a main cell dropped without removeCell() is drawn
 // again (a ClearAll flush keeping the other connections' cells is tested in fullmapfood.js).
 // Ghost cells (opcode 69): hidden only by cells that can be the player's (his server name, or his
-// own cells, with about his mass on one connection; not another player's of the same nick or none,
+// own cells, with about his mass on one connection, a split one's pieces flown out of the ghost
+// too when one is inside it; not another player's of the same nick or none,
 // not an unverified or stalled spectator's) or, without them, inside verified fresh coverage (the
 // main view only while the main socket's world updates are fresh, a spectator's only while the
 // reconciliation takes its cells); culled by the frame's view box, also with the camera on a
@@ -570,6 +571,27 @@ now = load(); G = groups();
     const four = (extra) => [cell(1850, 850, 350, extra), cell(2150, 850, 350, extra), cell(1850, 1150, 350, extra), cell(2150, 1150, 350, extra)];
     check('ghost with a name: the player split in four (his mass together) hides it', drawn(top(), four({ _lmSrvName: 'Top' })) === 0);
     check('ghost of me split in four: my own cells hide it', drawn(top(), four({ isPlayerCell: true })) === 0);
+    /* split with the pieces flown apart: the biggest piece at the ghost holds 0.42 of its mass,
+     * three pieces 900 away (out of its radius 707) the rest */
+    const spread = (extra) => [cell(2000, 1000, 458, extra), cell(2900, 1000, 311, extra), cell(1100, 1000, 311, extra), cell(2000, 1900, 311, extra)];
+    check('ghost with a name: the player split, pieces 900 apart (0.42 inside): hidden', drawn(top(), spread({ _lmSrvName: 'Top' })) === 0);
+    check('ghost of me split, pieces 900 apart: my own cells hide it', drawn(top(), spread({ isPlayerCell: true })) === 0);
+    check('ghost of a verified unit split, pieces 900 apart: its own cells hide it',
+        drawn(top(), spread({ spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'u' }), () => { g._lmMbFeed[2] = true; }) === 0);
+    check('ghost with a name: those pieces on two connections (none with his mass): drawn',
+        drawn(top(), spread({ _lmSrvName: 'Top' }).map((c, i) => Object.assign(c, { spectator: i ? 3 : 0 })), () => { g._lmMbFeed[3] = true; }) === 1);
+    check('ghost with a name: only the pieces out of it (none inside): drawn', drawn(top(), spread({ _lmSrvName: 'Top' }).slice(1).concat([cell(2000, 1000, 458)])) === 1);
+    check('ghost without a name: unnamed pieces out of it do not count (inside only): drawn', drawn(top(), spread(), unnamed) === 1);
+    check('ghost with a name: the pieces of another nick do not count: drawn', drawn(top(), spread({ _lmSrvName: 'Top' }).slice(0, 1).concat(spread({ _lmSrvName: 'other' }).slice(1))) === 1);
+    /* two players of one nick: one at the ghost lighter than 0.5, the other away */
+    check('ghost with a name: a lighter same-nick player at it, a bigger one 1300 away (within the reach): drawn',
+        drawn(top(), [cell(2000, 1000, 400, { _lmSrvName: 'Top' }), cell(3300, 1000, 500, { _lmSrvName: 'Top' })]) === 1);
+    check('ghost with a name: a lighter same-nick player at it, another far away (3000): drawn',
+        drawn(top(), [cell(2000, 1000, 400, { _lmSrvName: 'Top' }), cell(5000, 1000, 600, { _lmSrvName: 'Top' })]) === 1);
+    check('ghost with a name: pieces within the reach far heavier than the ghost: drawn',
+        drawn(top(), [cell(2000, 1000, 458, { _lmSrvName: 'Top' }), cell(3000, 1000, 520, { _lmSrvName: 'Top' }), cell(1000, 1000, 520, { _lmSrvName: 'Top' }), cell(2000, 2000, 520, { _lmSrvName: 'Top' })]) === 1);
+    /* he ate since the list: 1.36 of the ghost's mass 0.6 s later (one cell) is still him */
+    check('ghost with a name: the player 36 % heavier than the ghost (he ate since the list): hidden', drawn(top(), [cell(2050, 1000, 825, { _lmSrvName: 'Top' })]) === 0);
     check('ghost: my own much smaller cell inside another player\'s ghost does not hide it', drawn(top(), [cell(2100, 1000, 200, { isPlayerCell: true, _lmSrvName: 'me' })]) === 1);
     check('ghost: a verified unit\'s much smaller own cell inside it does not hide it',
         drawn(top(), [cell(2100, 1000, 200, { spectator: 2, isPlayerCellMulti: true, _lmSrvName: 'u' })], () => { g._lmMbFeed[2] = true; }) === 1);
