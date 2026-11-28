@@ -2486,23 +2486,33 @@ var _lmMbFrame = 0;
  * hide step looks whether another connection has the cell (then the fade is not drawn) */
 var _lmMbGoneT = 0;
 var LM_MB_GONE_MS = 250;
+/* the hide step (_lmMbFrame) the search index was last made ready in (with _lmMbBuildT, its time):
+ * once per hide step, not once per LM.time (two frames of one time, a coarse clock, had a packet
+ * between them: the index of the frame before was used without its new cells) */
 var _lmMbGridTime = -1;
 var _lmMbGridBuilt = false;
 /* The search index is built from the cells' packet data (targetX/Y, updateTime, speed), so it is
  * kept from frame to frame until a world packet comes (_lmMbPktRev: the main updateCells and
  * spect.js updateCells count them, lmMbWorldPacket), the hide step finds a cell it does not
- * hold, holds a cell that went or a cell whose packet data changed (its check of every cell, the
- * stamps _lmMbG* of the build), or it is LM_MB_GRID_MAX_AGE old. Every test still takes the
+ * hold, holds a cell that went or a cell whose packet data or connection changed (its check of
+ * every cell, the stamps _lmMbG* of the build), it is LM_MB_GRID_MAX_AGE old (either way: the
+ * clock can go back) or its drift would pass LM_MB_GRID_MAX_DRIFT. Every test still takes the
  * positions at the frame's time (_lmMbBuildT = LM.time: positions are moved on every frame without
  * packets too); only the stored ones (px / py, the buckets) are from the build (_lmMbGridT0). A
  * cell moves at most its speed (<= _lmMbMaxSpeed) times that age away from them, so a search
  * reaches that much farther into the index (_lmMbDrift) and applies its own reach to each cell's
- * position now; of equal matches it takes the one a new build would list first (_lmMbListedFirst).
+ * position now; of equal matches it takes the one a new build would list first (_lmMbListedFirst:
+ * its bucket and its place in LM.cells now, also at age 0, as LM.cells is sorted every frame).
  * The same matches as with a new build every frame. */
-var _lmMbPktRev = 0, _lmMbGridRev = -1, _lmMbGridId = 0, _lmMbGridT0 = 0, _lmMbGridOkT = NaN, _lmMbStale = false;
+var _lmMbPktRev = 0, _lmMbGridRev = -1, _lmMbGridId = 0, _lmMbGridT0 = 0, _lmMbGridOkF = -1, _lmMbStale = false;
 var _lmMbDrift = new Float64Array(1);
 var _lmMbGU = new Float64Array(64), _lmMbGX = new Float64Array(64), _lmMbGY = new Float64Array(64), _lmMbGVX = new Float64Array(64), _lmMbGVY = new Float64Array(64);
+var _lmMbGC = new Float64Array(64);
 var LM_MB_GRID_MAX_AGE = 100;
+/* one bucket (LM_MB_BUCKET): a kept index is searched at most one bucket wider each way; more
+ * (a speed no cell has, e.g. a raw id taken by a cell elsewhere: thousands of buckets) is built
+ * again. Kept frames of the Full Map and Multibox simulations drift less than 20. */
+var LM_MB_GRID_MAX_DRIFT = 64;
 function lmMbWorldPacket() {
     _lmMbPktRev++;
 }
@@ -2649,7 +2659,10 @@ function _lmMbBuildGrid() {
             _lmMbGY = _lmMbGrow(_lmMbGY, count);
             _lmMbGVX = _lmMbGrow(_lmMbGVX, count);
             _lmMbGVY = _lmMbGrow(_lmMbGVY, count);
+            _lmMbGC = _lmMbGrow(_lmMbGC, count);
         }
+        /* its connection (idx.conns): an object listed again under another one is another cell */
+        _lmMbGC[count - 1] = c.spectator > 0 ? c.spectator : 0;
         _lmMbGU[count - 1] = c.updateTime;
         _lmMbGX[count - 1] = c.targetX;
         _lmMbGY[count - 1] = c.targetY;
@@ -3118,7 +3131,7 @@ function lmMbFrameHide() {
     var n = cells.length, maxConn = 0, late = 0;
     /* the search index kept from an earlier frame (_lmMbGridFor): only while no world packet came
      * since, and it holds exactly the cells it would hold now (held: their count), unchanged */
-    var kept = _lmMbGridBuilt && _lmMbGridRev === _lmMbPktRev && _lmMbGridTime !== LM.time, held = 0;
+    var kept = _lmMbGridBuilt && _lmMbGridRev === _lmMbPktRev, held = 0;
     if (_lmMbOrdKey.length < n) {
         _lmMbOrdKey = new Int32Array(n * 2);
         _lmMbOrdIdx = new Int32Array(n * 2);
@@ -3180,7 +3193,7 @@ function lmMbFrameHide() {
         if (s > maxConn) maxConn = s;
         key[i] = s;
     }
-    _lmMbGridOkT = kept && held === _lmMbAll.n ? LM.time : NaN;
+    _lmMbGridOkF = kept && held === _lmMbAll.n ? _lmMbFrame : -1;
     /* rank: 0 main, 1..M drawn last frame (by number), M+1..2M the others (by number) */
     var nb = 2 * maxConn + 2;
     if (_lmMbOrdCnt.length < nb) _lmMbOrdCnt = new Int32Array(nb * 2);
@@ -3288,29 +3301,32 @@ function _lmMbSeenElsewhere(cell, mainView, vx0, vy0, vx1, vy1) {
     return false;
 }
 var _lmMbPosC = { x: 0, y: 0 };
-/* the search index of this frame (at most once per LM.time; kept from an earlier frame while no
- * world packet came, the hide step found it still holds exactly the cells it would hold with
- * their packet data then, and it is at most LM_MB_GRID_MAX_AGE old; see _lmMbGridTime) */
+/* the search index of this frame (at most once per hide step; kept from an earlier frame while no
+ * world packet came, this hide step found it still holds exactly the cells it would hold with
+ * their packet data then (_lmMbGridOkF), it is at most LM_MB_GRID_MAX_AGE old and its drift at
+ * most LM_MB_GRID_MAX_DRIFT; see _lmMbGridTime) */
 function _lmMbGridFor(LM) {
     var t = LM.time;
-    if (_lmMbGridTime === t && _lmMbGridBuilt) return;
-    if (_lmMbGridBuilt && _lmMbGridOkT === t && _lmMbGridRev === _lmMbPktRev && t && _lmMbGridT0 &&
-        Math.abs(t - _lmMbGridT0) <= LM_MB_GRID_MAX_AGE) {
-        /* the frame's time for every test; the stored positions are at most the fastest
-         * cell's speed times the age away (plus rounding) */
+    if (_lmMbGridTime === _lmMbFrame && _lmMbBuildT === t && _lmMbGridBuilt) return;
+    /* the stored positions are at most the fastest cell's speed times the age away (plus rounding) */
+    var age = Math.abs(t - _lmMbGridT0), drift = _lmMbMaxSpeed[0] * age * (1 + 1e-9) + 1e-6;
+    if (_lmMbGridBuilt && _lmMbGridOkF === _lmMbFrame && _lmMbGridRev === _lmMbPktRev && t && _lmMbGridT0 &&
+        age <= LM_MB_GRID_MAX_AGE && drift <= LM_MB_GRID_MAX_DRIFT) {
+        /* the frame's time for every test; searched with the drift and the order of a new build
+         * also at age 0 (LM.cells was sorted since the build) */
         _lmMbBuildT = t;
-        _lmMbStale = t !== _lmMbGridT0;
-        _lmMbDrift[0] = _lmMbMaxSpeed[0] * Math.abs(t - _lmMbGridT0) * (1 + 1e-9) + 1e-6;
+        _lmMbStale = true;
+        _lmMbDrift[0] = drift;
     } else _lmMbBuildGrid();
     _lmMbGridBuilt = true;
-    _lmMbGridTime = t;
+    _lmMbGridTime = _lmMbFrame;
 }
 /* The hide step's check of one cell that a new index would hold (not removed, not food, fed or a
- * unit's own cell): does the kept index hold it with the packet data it holds now? */
+ * unit's own cell): does the kept index hold it with the packet data and connection it holds now? */
 function _lmMbGridKept(c) {
     if (c._lmMbGB !== _lmMbGridId || c._lmMbGO !== !!c.isPlayerCellMulti) return false;
     var s = c._lmMbGS, vx = c._lmVX, vy = c._lmVY, sx = _lmMbGVX[s], sy = _lmMbGVY[s];
-    return _lmMbGU[s] === c.updateTime && _lmMbGX[s] === c.targetX && _lmMbGY[s] === c.targetY &&
+    return _lmMbGC[s] === (c.spectator > 0 ? c.spectator : 0) && _lmMbGU[s] === c.updateTime && _lmMbGX[s] === c.targetX && _lmMbGY[s] === c.targetY &&
         (vx === undefined ? sx !== sx : sx === vx) && (vy === undefined ? sy !== sy : sy === vy) &&
         Number.isFinite(c.targetX) && Number.isFinite(c.targetY) && Number.isFinite(c.x) && Number.isFinite(c.y);
 }

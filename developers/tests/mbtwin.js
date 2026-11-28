@@ -959,6 +959,105 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     }
 }
 
+/* 18. The search index kept between world packets (_lmMbGridFor) against a new build in every
+ * hide step (the reference: _lmMbGridBuilt cleared before each frame), frame by frame on the same
+ * cells: what each copy shows (hidden, twin, colour, look time, proxy, key, place in LM.cells)
+ * must be the same. The steps change what the index holds without a world packet (a stall and its
+ * end, a tile verified, an own cell adopted, Rotate Map, a tile's offset corrected, a cell listed
+ * under another connection,
+ * removed, taken out, made, LM.cells sorted again), its age (at and after the limit, the clock
+ * going back, two frames at one time with a packet between them, a jump) and the speeds (moving
+ * copies across buckets, copies at the exact tolerance, equal matches, a speed no cell has). */
+{
+    const T0 = 100000, specs = [];
+    const mk = (o) => { const c = cell(Object.assign({ updateTime: T0 }, o)); c.targetX = c.x; c.targetY = c.y; specs.push(c); return specs.length - 1; };
+    /* moving copies on the main connection, unit 1 and tiles 2, 3 starting a unit before bucket
+     * edges (up to 0.6 units/ms: 60 at the age limit, within LM_MB_GRID_MAX_DRIFT), two of them
+     * drifting apart */
+    for (let k = 0; k < 6; k++) {
+        const x = -2500 + 640 * k - 1, y = 1279 - 128 * k, vx = [0.3, -0.25, 0.2, 0, 0.15, -0.3][k], vy = [0.25, 0.1, -0.2, 0.3, -0.35, 0][k], r = 40 + 25 * k;
+        mk({ spectator: 0, x, y, size: r, targetSize: r, _lmVX: vx, _lmVY: vy, _lmSrvName: 'p' + k });
+        mk({ spectator: 1 + (k % 3), x: x + 3, y: y - 2, size: r, targetSize: r, _lmVX: vx + (k === 2 ? 0.2 : 0), _lmVY: vy, _lmSrvName: 'p' + k });
+        mk({ spectator: 2 + (k % 2), x: x - 2, y: y + 4, size: r, targetSize: r, _lmVX: vx, _lmVY: vy + (k === 4 ? -0.1 : 0), _lmSrvName: 'p' + k });
+    }
+    /* copies exactly at the tolerance (radius 100, standing: 12) */
+    mk({ spectator: 0, x: 640, y: -640, _lmSrvName: 'edge' }); mk({ spectator: 3, x: 652, y: -640, _lmSrvName: 'edge' });
+    /* Y (unit 1) with X1 (tile 3) behind it; X2 (tile 3, nearer to Y) comes with a packet at the time of the frame before */
+    mk({ spectator: 1, x: 2000, y: 2000 }); mk({ spectator: 3, x: 2006, y: 2000 });
+    const X2 = mk({ spectator: 3, x: 2002, y: 2000, _later: true });
+    /* equal matches (distance and id): Q (tile 3) between two main cells of one bucket */
+    mk({ spectator: 3, x: 5000, y: 5000 });
+    const M1 = mk({ spectator: 0, x: 4997, y: 5000, id: 777777 }), M2 = mk({ spectator: 0, x: 5003, y: 5000, id: 777777 });
+    /* unit 4 placed, not verified: its own cell mirrored from two main copies of one bucket (one is its proxy), a draw-only cell */
+    mk({ spectator: 4, isPlayerCellMulti: true, x: -1200, y: 800, size: 90, targetSize: 90, _lmSrvName: 'Me' });
+    const M3 = mk({ spectator: 0, x: 1200, y: -800, size: 90, targetSize: 90, _lmSrvName: 'Me' }), M4 = mk({ spectator: 0, x: 1203, y: -800, size: 90, targetSize: 90, _lmSrvName: 'Me' });
+    mk({ spectator: 4, x: 500, y: 500, size: 60, targetSize: 60 }); mk({ spectator: 0, x: 502, y: 500, size: 60, targetSize: 60 });
+    /* tile 5 not verified yet; tile 2 stalls; unit 1's cell adopted as its own */
+    mk({ spectator: 5, x: -2000, y: -2000 }); mk({ spectator: 0, x: -2003, y: -2000 });
+    mk({ spectator: 2, x: 3000, y: -3000 }); mk({ spectator: 0, x: 3004, y: -3000 });
+    const O1 = mk({ spectator: 1, x: -4000, y: 3000, size: 70, targetSize: 70, _lmSrvName: 'u1' }); mk({ spectator: 0, x: -4003, y: 3000, size: 70, targetSize: 70, _lmSrvName: 'u1' });
+    /* R1 and Z (tile 3) at a main cell, R1 the nearer; R1 is then listed under tile 2 (same packet
+     * data: an object used again without the reset), removed and taken out; N comes */
+    mk({ spectator: 0, x: 0, y: -5000 });
+    const R1 = mk({ spectator: 3, x: 2, y: -5000 }), N = (mk({ spectator: 3, x: 7, y: -5000 }), mk({ spectator: 2, x: 1, y: -5001, _later: true }));
+    /* tile 2's offset corrected (+60 after the flip, its speeds kept): its copy comes onto tile 3's */
+    mk({ spectator: 3, x: -5000, y: 5500 }); mk({ spectator: 2, x: -4940, y: 5500 });
+    /* V (tile 3, its packet 150 ms old) turns without a packet (a reprojection about its place) onto P (unit 1), nearer than V2 */
+    mk({ spectator: 1, x: -104, y: 6500 }); mk({ spectator: 3, x: -96, y: 6500 });
+    const V = mk({ spectator: 3, x: -45, y: 6500, _lmVX: 0.3, updateTime: T0 - 150 });
+    const fast = mk({ spectator: 2, x: -6000, y: -6000, size: 30, targetSize: 30 });
+    const world = (fresh) => {
+        const ctx = env(1), LM = ctx.window.legendmod, w = { ctx, LM, fresh, stall: false, feed5: false, log: [] };
+        ctx.window.spects = [{ number: 1, player: true }, { number: 2, player: false, _lmWorldStamp: () => Date.now() - (w.stall ? 1500 : 0) },
+            { number: 3, player: false }, { number: 4, player: true, _lmFeedOk: () => false, transformReady: () => true }, { number: 5, player: false, _lmFeedOk: () => w.feed5 }];
+        Object.assign(LM, { mapMinX: -7071, mapMinY: -7071, mapMaxX: 7071, mapMaxY: 7071, srvViewMinX: -3000, srvViewMinY: -3000, srvViewMaxX: 3000, srvViewMaxY: 3000 });
+        w.all = specs.map((s) => Object.assign({}, s));
+        LM.cells = w.all.filter((c) => !c._later);
+        for (const c of w.all) LM.indexedCells[c.id] = c;
+        w.c = (i) => w.all[i];
+        return w;
+    };
+    const A = world(false), B = world(true);
+    const snap = (w) => w.all.map((c) => [c.invisible ? 1 : 0, c._lmMbPosDup ? 1 : 0, w.all.indexOf(c._lmMbTwin), c.color, c._lmMbAmb ? 1 : 0, c._lmMbLookT || 0,
+        w.all.indexOf(c._lmOwnProxy), c._lmCanonId || 0, w.LM.cells.indexOf(c)].join(':'));
+    const frame = (w, t) => {
+        const id0 = vm.runInContext('_lmMbGridId', w.ctx);
+        w.LM.time = T0 + t;
+        if (w.fresh) vm.runInContext('_lmMbGridBuilt = false', w.ctx);
+        w.ctx._frame();
+        /* b: built in this hide step, k: kept (searched with its drift) */
+        w.log.push(vm.runInContext('_lmMbGridId', w.ctx) !== id0 ? 'b' : vm.runInContext('_lmMbBuildT === window.legendmod.time && _lmMbStale', w.ctx) ? 'k' : '-');
+    };
+    const packet = (w) => vm.runInContext('lmMbWorldPacket()', w.ctx);
+    const swap = (w, i, j) => { const l = w.LM.cells, a = l.indexOf(w.c(i)), b = l.indexOf(w.c(j)); l[a] = w.c(j); l[b] = w.c(i); };
+    const flip = (w) => { for (const c of w.all) { c.x = -c.x; c.targetX = -c.targetX; if (c._lmVX) c._lmVX = -c._lmVX; } };
+    /* [time (ms after T0), what changes before the frame] */
+    const steps = [[0], [16], [32], [48, (w) => swap(w, M1, M2)], [64], [100], [101], [99], [99, (w) => { packet(w); w.LM.cells.push(w.c(X2)); }],
+        [99, (w) => { swap(w, M1, M2); swap(w, M3, M4); }], [115, (w) => { w.stall = true; }], [131, (w) => { w.c(V)._lmVX = -0.3; }], [147, (w) => { w.stall = false; }],
+        [163, (w) => { w.feed5 = true; }], [179, (w) => { w.c(O1).isPlayerCellMulti = w.c(O1).isPlayerCell = true; }], [195, flip],
+        [203, (w) => { for (const c of w.all) if (c.spectator === 2) { c.x += 60; c.targetX += 60; } }],
+        [211, (w) => { w.c(R1).spectator = 2; }], [227, (w) => { w.c(R1).removed = true; }],
+        [243, (w) => { w.LM.cells.splice(w.LM.cells.indexOf(w.c(R1)), 1); w.LM.cells.push(w.c(N)); }],
+        [259, (w) => { packet(w); for (const c of w.all) if (c._lmVX || c._lmVY) { c.targetX += c._lmVX * 259; c.targetY += c._lmVY * 259; c.updateTime = T0 + 259; } }],
+        [275], [291], [307, (w) => swap(w, M3, M4)], [323], [339], [355, (w) => { packet(w); w.c(fast)._lmVX = 300; }], [371], [387], [5387], [5403]];
+    let bad = null;
+    steps.forEach(([t, fn], s) => {
+        for (const w of [A, B]) { if (fn) fn(w); frame(w, t); }
+        const a = snap(A), b = snap(B);
+        if (!bad && a.join() !== b.join()) bad = 'step ' + s + ' t=' + t + ': ' + a.map((x, i) => (x === b[i] ? '' : 'cell ' + i + ' kept ' + x + ' new ' + b[i])).filter(Boolean).join(' | ');
+    });
+    const at = (t) => A.log[steps.findIndex((s) => s[0] === t)];
+    check('kept search index: every frame the result of a new build in every hide step (' + steps.length + ' frames)', !bad, bad);
+    check('kept search index: kept between packets up to its age limit (also with the clock going back), the reference never',
+        A.log.filter((x) => x === 'k').length >= 8 && at(100) === 'k' && at(101) === 'b' && A.log[7] === 'k' && B.log.every((x) => x === 'b'), A.log.join(''));
+    check('kept search index: a packet between two frames at one time, an own cell adopted, a cell listed under another connection: built again',
+        A.log[8] === 'b' && at(179) === 'b' && at(211) === 'b', A.log.join(''));
+    /* a speed far beyond any cell's (300 units/ms: a raw id taken by a cell elsewhere) or a clock
+     * jump: built again, not searched thousands of buckets wide */
+    check('kept search index: built again while its drift would pass LM_MB_GRID_MAX_DRIFT, and after a clock jump',
+        at(371) === 'b' && at(387) === 'b' && at(5387) === 'b', A.log.join(''));
+}
+
 if (failed) {
     console.log(failed + ' check(s) failed');
     process.exit(1);
