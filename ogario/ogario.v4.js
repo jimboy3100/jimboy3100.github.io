@@ -3103,6 +3103,18 @@ function lmActiveUnit() {
     };
 }
 window.lmActiveUnit = lmActiveUnit;
+/* The own cells of one multibox unit (its number) into out, a list the caller keeps (nothing
+ * allocated per frame). LM.playerCellsMulti holds the cells of every unit together. */
+function lmUnitCellsInto(n, out) {
+    var all = window.legendmod && window.legendmod.playerCellsMulti, i, c;
+    out.length = 0;
+    if (!n || !all) return out;
+    for (i = 0; i < all.length; i++) {
+        c = all[i];
+        if (c && !c.removed && c.spectator === n) out.push(c);
+    }
+    return out;
+}
 /* C2: what the page shows now: 'practice' (practice arena), 'replay' (a replay plays),
  * 'live' (a real online game with the player you control alive: never a replay or practice),
  * 'worldSpectate' (Expanding Land World Spectate), 'spectate' (spectate / free spectate),
@@ -56193,7 +56205,11 @@ function thelegendmodproject() {
 
         },
         compareCells() {
-            var _isPlaying = (this.play && this.playerCells && this.playerCells.length > 0) || (window.multiboxPlayerEnabled && getActiveSpect && getActiveSpect(window.multiboxPlayerEnabled) && LM.playerCellsMulti && LM.playerCellsMulti.length > 0);
+            /* the selected player's own cells: a unit when one is selected (any unit's cells in
+             * playerCellsMulti counted, so a dead selected unit compared everything with mass 0) */
+            var _isPlaying = (window.multiboxPlayerEnabled && getActiveSpect && getActiveSpect(window.multiboxPlayerEnabled)) ?
+                lmUnitCellsInto(window.multiboxPlayerEnabled, this._lmActCells || (this._lmActCells = [])).length > 0 :
+                !!(this.play && this.playerCells && this.playerCells.length > 0);
             if (_isPlaying && (defaultmapsettings.oppColors || defaultmapsettings.oppRings || defaultmapsettings.splitRange || defaultmapsettings.tripleSplitRange)) {
                 var _splitOrRings = defaultmapsettings.splitRange || defaultmapsettings.oppRings;
                 /* Triple split range: separate pooled cache of enemies >= 8x (can triple-split onto you) */
@@ -81234,8 +81250,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     if (!window.multiboxFollowMouse) {
                         if (!window.multiboxPlayerEnabled) {
                             if (LM.playerCells && LM.playerCells.length) this.drawSplitVectorGuide(ctx, LM.playerCells);
-                        } else if (window.multiboxPlayerEnabled && LM.playerCellsMulti && LM.playerCellsMulti.length) {
-                            this.drawSplitVectorGuide(ctx, LM.playerCellsMulti);
+                        } else {
+                            /* the selected unit's own cells (the list holds every unit's) */
+                            this.drawSplitVectorGuide(ctx, lmUnitCellsInto(window.multiboxPlayerEnabled, this._lmOwnCells || (this._lmOwnCells = [])));
                         }
                     } else {
                         if (LM.playerCells && LM.playerCells.length) this.drawSplitVectorGuide(ctx, LM.playerCells);
@@ -81246,7 +81263,13 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * timer (optimizedMass off): one merge countdown or the other */
                     if (defaultmapsettings.mergeRings !== false && !(window.ExternalScripts && defaultmapsettings.optimizedMass === false)) {
                         if (LM.playerCells && LM.playerCells.length) this.drawMergeProgressRings(ctx, LM.playerCells);
-                        if (LM.playerCellsMulti && LM.playerCellsMulti.length) this.drawMergeProgressRings(ctx, LM.playerCellsMulti);
+                        /* each unit's own cells apart: two units with one cell each are no split */
+                        if (LM.playerCellsMulti && LM.playerCellsMulti.length && typeof spects !== 'undefined' && spects) {
+                            var _own = this._lmOwnCells || (this._lmOwnCells = []);
+                            for (var _mr = 0; _mr < spects.length; _mr++) {
+                                if (spects[_mr] && lmUnitCellsInto(spects[_mr].number, _own).length) this.drawMergeProgressRings(ctx, _own);
+                            }
+                        }
                     }
                 }
             }
@@ -81364,7 +81387,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  */
                 /* the bubble look of Cursor tracking (drawPostCellOverlays draws its line look) */
                 if (defaultmapsettings.cursorTracking && defaultmapsettings.bubbleCursorTracker) {
-                    this.drawBCursorTracking(this.ctx, LM.playerCells, LM.cursorX, LM.cursorY);
+                    /* the selected player's cells (was always the main player's, also with a unit selected) */
+                    this.drawBCursorTracking(this.ctx, window.multiboxPlayerEnabled ? lmUnitCellsInto(window.multiboxPlayerEnabled, this._lmOwnCells || (this._lmOwnCells = [])) : LM.playerCells, LM.cursorX, LM.cursorY);
                 }
                 if (defaultmapsettings.FBTracking && LM.arrowFB && LM.arrowFB[0] && LM.arrowFB[0].visible) {
                     /* When WebGL drew the cells, the main canvas is below the GL layer:

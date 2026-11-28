@@ -176,5 +176,33 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
     check('a truncated unit message is still swallowed', !thrown);
 }
 
+/* ---- opponent colours (LM.compareCells) with a multibox unit selected: "playing" is the selected
+ * unit's own cells, not any unit's cells (a dead selected unit compared every cell with mass 0) ---- */
+{
+    const ctx = vm.createContext({ window: {}, Math, Number,
+        defaultmapsettings: { oppColors: true, dominationRate: 4 / 3, dominatedRate: 3 / 4 },
+        defaultSettings: { enemyBSTEDColor: 'BSTED', enemyBSTEColor: 'BSTE', enemyBColor: 'B', enemySColor: 'S', enemySSTEColor: 'SSTE', enemySSTEDColor: 'SSTED' } });
+    ctx.window = ctx;
+    const ui = src.indexOf('function lmUnitCellsInto('), unitFn = ui < 0 ? '' : src.slice(ui, src.indexOf('\n}\n', ui) + 3);
+    vm.runInContext(unitFn + 'var _cmp = ({\n' + slice('        compareCells() {', '        setCellOppColor(isPlayer, mass) {') + '});', ctx);
+    const units = { 2: { number: 2, playerMinMass: 0, playerMaxMass: 0 }, 3: { number: 3, playerMinMass: 900, playerMaxMass: 900 } };
+    ctx.getActiveSpect = (n) => units[n] || null;
+    const enemy = () => ({ x: 0, y: 0, size: Math.sqrt(90000), isPlayerCell: false });
+    const L = ctx.legendmod = ctx.LM = Object.assign(ctx._cmp, { play: false, playerCells: [], selectBiggestCell: false, camMinX: -1e4, camMinY: -1e4, camMaxX: 1e4, camMaxY: 1e4 });
+    /* unit 2 selected and dead, unit 3 alive */
+    L.playerCellsMulti = [{ x: 50, y: 0, size: 300, spectator: 3 }];
+    ctx.multiboxPlayerEnabled = 2;
+    L.cells = [enemy()];
+    L.compareCells();
+    const deadSel = L.cells[0].oppColor;
+    /* unit 3 selected (900 mass): the 900 enemy is about its size */
+    ctx.multiboxPlayerEnabled = 3;
+    L.cells = [enemy()];
+    L.compareCells();
+    const liveSel = L.cells[0].oppColor;
+    check('compareCells: a dead selected unit is not playing (another unit\'s cells made every enemy "much smaller")', deadSel === undefined, deadSel);
+    check('compareCells: the selected live unit is the reference (900 vs 900)', liveSel === '#FFDC00', liveSel);
+}
+
 console.log(failed ? 'FAILED: ' + failed : 'all hotpaths checks passed');
 process.exit(failed ? 1 : 0);

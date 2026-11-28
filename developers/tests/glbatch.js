@@ -76,7 +76,7 @@ function grabVar(src, name) {
  * on timing). */
 const HELPERS = ['lmTextTexBudget', 'lmTextCacheEvict', 'lmMassDue', 'lmMassLag', 'lmMassPoolTrim',
     'lmSkinLayersNew', 'lmSkinLayerPick', 'lmSkinLayerTake', 'lmSkinLayerTouch', 'lmSkinUnpremulLut', 'lmSkinJobPick', 'lmSkinJobsRun', 'lmSkinSlack', 'lmSkinLayersGrow',
-    'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing',
+    'lmMultiboxRingPlayer', 'lmMultiboxRingColor', 'lmMultiboxRing', 'lmUnitCellsInto',
     'lmJellyFanIndices', 'lmJellyBandIndices', 'lmTextAtlasNew', 'lmTextAtlasAlloc', 'lmTextAtlasFree', 'lmTextAtlasLayers', 'lmTextAtlasStep', 'lmTextAtlasMaxPages', 'lmTextAtlasBankCap', 'lmTextAtlasUnit',
     'lmSkinsShown', 'lmColorInt', 'lmDlSync', 'lmDlSkinCell', 'lmDlSkinKey', 'lmWorldSkinKey', 'lmDlBackground', 'lmBgReady', 'lmBgAlpha'];
 const VARS = ['LM_MB_RING_DEFAULT_COLORS', 'LM_MB_RING_MIN_SCREEN_PX', 'LM_MB_RING_SIZE', '_lmMbRingOut', '_lmColorIntCache', '_lmDl', 'LM_BG_FADE_MS'];

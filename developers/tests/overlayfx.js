@@ -1177,6 +1177,20 @@ const noReset = (log) => log.filter((x, i) => !(x === 'globalAlpha=1' && log[i +
     check('Cursor tracking on, line look: the line only', run(true, false) === 'line', run(true, false));
     check('Cursor tracking on, bubble look: the bubble only', run(true, true) === 'bubble', run(true, true));
     check('Cursor tracking off, bubble look chosen: nothing (the bubble is a look of Cursor tracking)', run(false, true) === 'nothing', run(false, true));
+    /* a multibox unit selected: the bubble follows its own cells (it took the main player's) */
+    let bubbleCells = null;
+    R.drawBCursorTracking = (c, cells) => { bubbleCells = cells; };
+    env.window.legendmod.playerCellsMulti = [{ x: 5, y: 5, size: 40, spectator: 2 }, { x: 9, y: 9, size: 40, spectator: 3 }];
+    env.window.multiboxPlayerEnabled = 2;
+    S.cursorTracking = true; S.bubbleCursorTracker = true;
+    R.drawMiscRings();
+    check('bubble look, unit 2 selected: drawn on unit 2\'s own cells only', !!bubbleCells && bubbleCells.length === 1 && bubbleCells[0].spectator === 2,
+        bubbleCells && bubbleCells.map((x) => x.spectator).join('+'));
+    env.window.multiboxPlayerEnabled = 0;
+    R.drawMiscRings();
+    check('bubble look, main player selected: drawn on the main player\'s cells', bubbleCells === LM.playerCells);
+    delete env.window.legendmod.playerCellsMulti;
+    S.cursorTracking = false; S.bubbleCursorTracker = false;
 }
 }
 

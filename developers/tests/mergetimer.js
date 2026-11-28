@@ -87,6 +87,24 @@ check('first tick after reset arms no timer', !win.playerCellsId[80] || win.play
     rings = 0; dctx.defaultmapsettings.optimizedMass = false;
     R.drawPostCellOverlays({});
     check('merge rings drawn with the merge timer off, none with it on', withRings === 1 && rings === 0);
+
+    /* two multibox units with one cell each, unit 1 selected: the split guide gets only unit 1's
+     * cell, the merge rings get each unit's cells apart (the list of every unit's cells made two
+     * single cells look split) */
+    const u = core.indexOf('function lmUnitCellsInto('), ue = core.indexOf('\n}', u) + 2;
+    const LM2 = { play: false, playerCells: [], playerCellsMulti: [{ spectator: 1 }, { spectator: 2 }, { spectator: 2, removed: true }] };
+    const d2 = { window: { ExternalScripts: true, multiboxPlayerEnabled: 1, legendmod: LM2 }, LM: LM2, defaultmapsettings: { cursorTracking: true, mergeRings: true, optimizedMass: true },
+        spects: [{ number: 1 }, { number: 2 }] };
+    vm.createContext(d2);
+    vm.runInContext(u < 0 ? '' : core.slice(u, ue), d2);
+    const R2 = vm.runInContext('({' + body + '})', d2);
+    const guide = [], ringLists = [];
+    R2.markSplitPrediction = () => { };
+    R2.drawSplitVectorGuide = (c, cells) => { guide.push(cells.map((x) => x.spectator).join('+')); };
+    R2.drawMergeProgressRings = (c, cells) => { ringLists.push(cells.map((x) => x.spectator).join('+')); };
+    R2.drawPostCellOverlays({});
+    check('multibox: the split guide gets the selected unit\'s own cells only', guide.join(',') === '1', guide.join(','));
+    check('multibox: merge rings get each unit\'s own cells apart (one cell each: no split)', ringLists.join(',') === '1,2', ringLists.join(','));
 }
 
 console.log(fail ? fail + ' failed' : 'all merge timer checks passed');
