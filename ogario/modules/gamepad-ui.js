@@ -29,6 +29,7 @@
         ['gamepadZoomSens', 0.2, 4, 0.1],
         ['gamepadTrigger', 0.1, 0.95, 0.05]
     ];
+    var TOGGLES = ['gamepadInvertX', 'gamepadInvertY', 'gamepadInvertZoom', 'gamepadVibrate'];
 
     var modal = null, backdrop = null, body = null, tabsEl = null, msgEl = null;
     var tab = 'tuning';
@@ -87,6 +88,7 @@
             // i18n-ok: CSS
             '#lm-gp-modal select,#lm-gp-modal input[type=text]{background:var(--lm-w-field,' + c.pc2 + ');color:' + c.tc + ';border:1px solid ' + c.pc2 + ';border-radius:var(--lm-radius-s,4px);height:var(--lm-w-ctl,30px);font-size:var(--lm-w-fs,12px);padding:0 6px;min-width:0;}' +
             '#lm-gp-modal input[type=range]{width:100%;height:28px;margin:0;}' +
+            '#lm-gp-modal input[type=checkbox]{width:18px;height:18px;margin:0 8px 0 0;flex:none;}' +
             '#lm-gp-modal .btn{min-height:var(--lm-w-ctl,30px);font-size:var(--lm-w-fs,12px);}' +
             '#lm-gp-modal label{font-weight:400;margin:0;}' +
             '#lm-gp-modal .lm-gp-chip{flex:none;min-width:62px;box-sizing:border-box;padding:0 6px;height:26px;line-height:26px;border-radius:var(--lm-radius-s,4px);text-align:center;font-size:var(--lm-w-fs-s,11px);font-weight:700;background:var(--lm-w-btn-h,rgba(255,255,255,0.08));transition:background .05s;}' +
@@ -131,10 +133,35 @@
             grid.appendChild(box);
         });
         wrap.appendChild(grid);
+        var tg = el('div', 'display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:6px 16px;margin-top:8px;');
+        TOGGLES.forEach(function (k) {
+            var lab = el('label', 'display:flex;align-items:center;cursor:pointer;font-size:12px;min-height:28px;');
+            var cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.id = 'lm-gp-' + k;
+            cb.checked = !!o[k];
+            cb.addEventListener('change', function () {
+                var p = {};
+                p[k] = cb.checked;
+                g.setOpts(p);
+            });
+            lab.appendChild(cb);
+            lab.appendChild(el('span', '', t(k)));
+            tg.appendChild(lab);
+        });
+        wrap.appendChild(tg);
         var foot = el('div', 'display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;');
+        var vib = btn(t('testVibration'), 'btn-primary');
+        vib.id = 'lm-gp-vibrate';
+        vib.addEventListener('click', function () {
+            var any = false;
+            g.pads().forEach(function (p) { if (g.testRumble(p)) any = true; });
+            if (!any) note(t('noVibration'));
+        });
         var reset = btn(t('resetTuning'), 'btn-warning');
         reset.id = 'lm-gp-reset-tuning';
         reset.addEventListener('click', function () { g.resetOpts(); show('tuning'); });
+        foot.appendChild(vib);
         foot.appendChild(reset);
         wrap.appendChild(foot);
         live = null;
@@ -247,7 +274,7 @@
             row.appendChild(el('span', 'color:' + c.mc + ';font-weight:700;flex:none;', t('pad', [p.index + 1])));
             row.appendChild(el('span', 'min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', String(p.id || '').slice(0, 120)));
             row.appendChild(el('span', 'flex:none;font-size:11px;color:' + c.tc2 + ';',
-                (p.mapping === 'standard' ? t('standard') : t('otherMapping'))));
+                (p.mapping === 'standard' ? t('standard') : t('otherMapping')) + ', ' + t(g.canVibrate(p) ? 'vibrationYes' : 'vibrationNo')));
             info.appendChild(row);
         });
     }

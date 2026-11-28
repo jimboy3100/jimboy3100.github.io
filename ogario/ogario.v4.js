@@ -20966,8 +20966,11 @@ var defaultmapsettings = {
     gamepadMoveCurve: 1, /* stick response curve (0.5-3), 1 = linear */
     gamepadZoomSens: 1, /* right stick zoom speed multiplier (0.2-4) */
     gamepadTrigger: 0.5, /* LT/RT count as pressed from this pull (0.1-0.95) */
-    /* gamepadEnabled (support is always on), gamepadInvertX / Y / Zoom (never inverted) and gamepadVibrate
-     * (removed) are gone: saved values are skipped on load */
+    gamepadInvertX: false, /* left stick left/right inverted */
+    gamepadInvertY: false, /* left stick up/down inverted */
+    gamepadInvertZoom: false, /* right stick zoom direction inverted */
+    gamepadVibrate: false, /* rumble on split and death where the pad supports it */
+    /* gamepadEnabled (support is always on) is gone: a saved value is skipped on load */
     //showPartyBots: false,
     showMiniMap: true,
     rotateMap: true,              /* retired: it only started the removed map orientation server (no switch; kept so saved settings and scripts stay valid) */
@@ -25778,7 +25781,7 @@ function thelegendmodproject() {
                 return $('<h5 class="lm-hk-head menu-main-color"></h5>').attr({ 'data-i18n': key, 'data-lm-sec': sec }).text(lmT(key));
             };
             box.append(head('modules.gamepadui.title', 'lmHkGamepad'));
-            /* Gamepad window: sensitivity, dead zone, triggers and a live test (the
+            /* Gamepad window: sensitivity, dead zone, triggers, vibration and a live test (the
              * buttons are bound in the key fields below; ogario/gamepad.js loads
              * ogario/modules/gamepad-ui.js the first time it opens) */
             var gpRow = $('<div class="row lm-hk-ctl lm-hk-btnrow"></div>');
