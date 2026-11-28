@@ -450,7 +450,7 @@ const report = {};
         for (const p of pages) {
             if (!exists(p)) continue;
             const s = fs.readFileSync(path.join(ROOT, p), 'utf8');
-            const miss = new Set();
+            const miss = new Set(), alias = new Set();
             let m, n = 0;
             while ((m = re.exec(s))) {
                 n++;
@@ -458,8 +458,12 @@ const report = {};
                 try { rel = decodeURIComponent(rel); } catch (e) { }
                 const c = R.canonicalPath(rel);
                 if (!exists(rel) && !exists(c)) miss.add(rel);
+                /* the gallery, the rotator and the shop name skins by the registry's canonical path, so
+                   an alias copy (same bytes, other name) is never what a player copies into a profile */
+                if (/^(vanillaskins2?|lowresskins|agario\/live\/flags)\//.test(rel) && c !== rel) alias.add(rel + ' (is ' + c + ')');
             }
             check(p + ': all ' + n + ' linked images of this site exist', miss.size === 0, [...miss].slice(0, 8).join(', '));
+            check(p + ': its skin pictures use the canonical path of ogario/skinregistry.js', alias.size === 0, [...alias].slice(0, 8).join(', '));
         }
         const old = (fs.readFileSync(path.join(ROOT, 'skins', 'index.html'), 'utf8').match(/https:\/\/jimboy3100\.github\.io\/(?:vanilla|lowres)skins\//g) || []).length;
         check('skins/index.html asks www.legendmod.ml directly (no 301 hop per picture)', old === 0, old + ' links still on jimboy3100.github.io');
