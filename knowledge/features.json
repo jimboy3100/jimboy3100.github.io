@@ -65,7 +65,7 @@
     {
       "id": "hud",
       "name": "HUD helpers",
-      "description": "Split range circles (single/double/triple/quad), merge sound and progress rings, relative mass display. Mass format modes (short/exact/12.3k/auto).",
+      "description": "Split range circles (single/double/triple/quad), merge sound and progress rings, relative mass display, edge arrows for teammates and threats, move direction arrow. Mass format modes (short/exact/12.3k/auto).",
       "url": "https://www.legendmod.ml/features.html"
     },
     {
@@ -77,7 +77,7 @@
     {
       "id": "stats",
       "name": "Stats and analytics",
-      "description": "Live stats HUD (mass, frame time, ping, PPS, server Hz, alive time, 16-cell count). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. The game stats (Dashboard, Heatmaps, Coach, Objectives, match history) are in the Replays window.",
+      "description": "Live stats HUD (mass, frame time, ping, PPS, server Hz, alive time, 16-cell count). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. Mass loss alerts (10-90% threshold). The game stats (Dashboard, Heatmaps, Coach, Objectives, match history) are in the Replays window.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

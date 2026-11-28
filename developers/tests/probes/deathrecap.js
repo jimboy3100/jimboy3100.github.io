@@ -11,10 +11,11 @@
   need('module loaded', !!D);
   if (!D || !s || !lm) return { fail: fail, info: info };
   need('option off by default', s.gameOverStats === false);
-  /* also no mass-loss alert (removed) */
-  need('no switch per card part', ['massGraph', 'showKiller', 'deathRecap', 'massLossAlert', 'massLossPct'].every(function (k) { return !document.getElementById(k) && !(k in LM_SETTINGS_DEFAULTS); }));
+  need('no switch per card part', ['massGraph', 'showKiller', 'deathRecap'].every(function (k) { return !document.getElementById(k) && !(k in LM_SETTINGS_DEFAULTS); }));
+  need('mass-loss alert: off by default, its switch and threshold slider in Settings > Stats', s.massLossAlert === false && LM_SETTINGS_DEFAULTS.massLossPct === 30 &&
+    !!document.getElementById('massLossAlert') && !!document.getElementById('massLossPct-slider'));
   need('nothing runs while off', window._lmDROn === false && !window.LMEvents._has('death') && !window.LMEvents._has('spawn'));
-  need('menu switch', !!document.getElementById('gameOverStats') && !document.getElementById('massLossPct-slider'));
+  need('menu switch', !!document.getElementById('gameOverStats'));
   need('no kill feed setting or switch', !('killFeed' in s) && !('killFeed' in LM_SETTINGS_DEFAULTS) && !document.getElementById('killFeed'));
   var keep = { gameOverStats: s.gameOverStats }, keepK = lm._lmKiller, keepH = window.application && application._lmMassHist;
   var inBox = function (r) { return r.width > 0 && r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1; };

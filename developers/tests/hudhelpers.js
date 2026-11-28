@@ -1,5 +1,6 @@
-/* HUD helpers checks: the pure parts of ogario/modules/hudhelpers.js (ratio and
- * mass formatting, merge timing for the merge sound) and the mass text it gives the game.
+/* HUD helpers checks: the pure parts of ogario/modules/hudhelpers.js (direction smoothing, ratio and
+ * mass formatting, merge timing for the merge sound, edge arrows), the movement and edge arrows
+ * drawn, and the mass text it gives the game.
  * node developers/tests/hudhelpers.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const i18n = require('./lib/i18n-env');
@@ -25,8 +26,38 @@ let fail = 0;
 const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail++; };
 const near = (a, b, e) => Math.abs(a - b) <= (e || 1e-6);
 
-// the movement arrow, edge arrows and cell panel are removed
-check('removed helpers are gone (movement arrow, edge arrows)', !('updateDirection' in P) && !('edgePoint' in P));
+// direction smoothing
+{
+    const st = { has: false };
+    P.updateDirection(st, 0, 0, 1, 0, 150);
+    check('direction: first sample has no speed', st.has && st.vx === 0 && st.vy === 0);
+    for (let t = 16; t <= 1600; t += 16) P.updateDirection(st, t * 0.5, 0, 1, t, 150); /* 500 units/s to the right */
+    check('direction: steady movement converges to its speed', near(st.vx, 500, 5) && near(st.vy, 0, 1e-9));
+    const before = st.vx;
+    P.updateDirection(st, st.x + 3000, 0, 2, 1616, 150); /* split: centre jumps, count changes */
+    check('direction: count change re-anchors without a speed spike', st.vx === before && st.x > 3000);
+    P.updateDirection(st, st.x + 10, 0, 2, 2400, 150); /* 784 ms gap */
+    check('direction: long gap starts over', st.vx === 0 && st.vy === 0);
+    P.updateDirection(st, st.x, st.y + 5000, 2, 2416, 150);
+    check('direction: teleport starts over', st.vx === 0 && st.vy === 0);
+    const st2 = { has: false };
+    P.updateDirection(st2, 0, 0, 1, 0, 150);
+    P.updateDirection(st2, 0, -8, 1, 16, 150);
+    check('direction: one step moves only part of the way (smoothed)', st2.vy < 0 && st2.vy > -500);
+    P.updateDirection(st2, NaN, 0, 1, 32, 150);
+    check('direction: NaN position ignored', Number.isFinite(st2.vx) && Number.isFinite(st2.vy));
+}
+
+// edge arrows
+{
+    const out = {};
+    P.edgePoint(500, 400, 3000, 400, 1000, 800, 20, out);
+    check('edge: right', near(out.x, 980) && near(out.y, 400) && near(out.a, 0));
+    P.edgePoint(500, 400, 500, -5000, 1000, 800, 20, out);
+    check('edge: top', near(out.x, 500) && near(out.y, 20));
+    P.edgePoint(500, 400, -1000, 1900, 1000, 800, 20, out);
+    check('edge: corner direction stays inside', out.x >= 20 - 1e-9 && out.y <= 780 + 1e-9 && near(out.y - 400, -(out.x - 500)));
+}
 
 // ratio text
 check('ratio 1.75x', P.ratioText(1.75) === '1.75x');
@@ -51,7 +82,7 @@ check('mass bad values', P.formatMass(-5, 1) === '0' && P.formatMass(NaN, 3) ===
 
 // merge timing (the merge sound); the merge countdown in seconds is removed
 check('merge duration (mergetimer.js formula)', near(P.mergeDuration(300), 37) && near(P.mergeDuration(0), 29));
-check('the merge countdown in seconds is gone', !('countdownText' in P) && !('mergeLeft' in H) && !('worldActive' in H));
+check('the merge countdown in seconds is gone', !('countdownText' in P) && !('mergeLeft' in H));
 {
     const owner = { prevCount: 0, beep: false };
     const big = { size: 200, targetSize: 200 }; /* mass 400 */
@@ -196,17 +227,46 @@ check('the merge countdown in seconds is gone', !('countdownText' in P) && !('me
     nowT = 0;
 }
 
+// the movement arrow on the world context, the edge arrows on their own canvas
+{
+    const s = ctx.legendmod5;
+    const ops = [];
+    const g = { save() {}, restore() {}, beginPath() {}, closePath() {}, moveTo(x, y) { ops.push(['m', x, y]); }, lineTo(x, y) { ops.push(['l', x, y]); },
+        stroke() { ops.push(['s']); }, fill() { ops.push(['f']); }, translate() {}, rotate(a) { ops.push(['r', a]); }, setTransform() {}, clearRect() {},
+        strokeText() {}, fillText(t) { ops.push(['t', t]); } };
+    const edgeCv = { style: {}, width: 0, height: 0, getContext: () => g };
+    let made = 0;
+    ctx.document = { body: { appendChild() {} }, getElementById: () => null, createElement: () => { made++; return edgeCv; } };
+    const R = { scale: 1, camX: 0, camY: 0, canvasWidth: 1000, canvasHeight: 800, dpr: 1, canvas: { parentNode: { appendChild() {} } } };
+    const LM = { play: true, playerCells: [{ x: 0, y: 0, size: 100 }], playerCellsMulti: [], cells: [], mapOffsetX: 0, mapOffsetY: 0 };
+    s.hudMoveDir = true;
+    check('movement arrow: the overlay canvas is asked for while playing (worldActive)', H.worldActive(LM) === true && H.worldActive({ play: false, playerCellsMulti: [] }) === false);
+    for (let i = 0; i <= 30; i++) { nowT = 1000 + i * 16; LM.playerCells[0].x = i * 16; H.frame(R, g, LM); } /* 1000 units/s to the right */
+    const strokes = ops.filter(o => o[0] === 's').length, last = ops.filter(o => o[0] === 'm').pop();
+    check('movement arrow: drawn from the cells\' centre toward the movement', strokes > 0 && !!last && last[1] > LM.playerCells[0].x + 100 && Math.abs(last[2]) < 1e-6);
+    ops.length = 0; s.hudMoveDir = false;
+    s.hudEdgeThreats = true;
+    LM.cells = [{ id: 7, x: 3000, y: 0, size: 200, nick: 'Big' }];
+    H.frame(R, g, LM);
+    check('threat arrow: a big cell off the screen gets an arrow on the edge canvas', made === 1 && edgeCv.style.display === 'block' && ops.some(o => o[0] === 'f') && ops.some(o => o[0] === 't' && o[1] === '4.00x'));
+    s.hudEdgeThreats = false;
+    H.frame(R, g, LM);
+    check('edge arrows off: the canvas is hidden and its memory freed', edgeCv.style.display === 'none' && edgeCv.width === 0);
+    ctx.document = { body: null, getElementById: () => null, createElement: () => ({ style: {} }) };
+    nowT = 0;
+}
+
 // all off: frame does nothing
 {
     const s = ctx.legendmod5;
     Object.keys(s).forEach(k => { if (typeof s[k] === 'boolean') s[k] = false; });
     s.massFormat = 0;
-    /* saved values of the removed helpers (an older script may still set them) do nothing */
-    s.hudMoveDir = true; s.hudEdgeTeammates = true; s.hudEdgeThreats = true; s.hudCellPanel = true;
+    /* a saved value of the removed cell panel (an older script may still set it) does nothing */
+    s.hudCellPanel = true;
     let touched = false;
     const LM = new Proxy({}, { get() { touched = true; return undefined; } });
     H.frame({}, null, LM);
-    check('all options off (removed ones set): frame reads no game state', !touched);
+    check('all options off (removed cell panel set): frame reads no game state', !touched);
 }
 
 console.log(fail ? fail + ' failed' : 'all HUD helper checks passed');

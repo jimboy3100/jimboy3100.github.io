@@ -46,7 +46,7 @@
       "id": "hudhelpers",
       "file": "ogario/modules/hudhelpers.js",
       "lines": 826,
-      "description": "Split range circles, merge sound, relative mass, mass format modes, virus range circles.",
+      "description": "Split range circles, merge sound, relative mass, edge arrows, move direction arrow, mass format modes, virus range circles.",
       "feature": "HUD Helpers"
     },
     {

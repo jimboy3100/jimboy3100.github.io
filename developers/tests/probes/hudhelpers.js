@@ -1,7 +1,7 @@
 // HUD helpers: module loaded, options off by default and in the menu, hotkeys without keys; the
-// removed movement arrow, edge arrows and cell panel have no switch and make nothing even when an
-// old value sets them; with the options on, one simulated game runs the merge timing (merge sound) and the
-// relative mass without throwing; the removed merge countdown in seconds has no switch.
+// removed cell panel has no switch and makes nothing even when an old value sets it; with the options
+// on, one simulated game runs the movement arrow, the merge timing (merge sound), the relative mass and
+// the edge arrows (their canvas) without throwing; the removed merge countdown in seconds has no switch.
 (async () => {
   var fail = [], info = {};
   var sleep = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
@@ -9,7 +9,7 @@
   var H = window.LMHudHelpers;
   if (!H) return { fail: ['LMHudHelpers not loaded'] };
   var S = window.legendmod5;
-  var keys = ['hudMergeSound', 'hudRelativeMass'], gone = ['hudMergeCountdown', 'hudMoveDir', 'hudEdgeTeammates', 'hudEdgeThreats', 'hudCellPanel'];
+  var keys = ['hudMoveDir', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats'], gone = ['hudMergeCountdown', 'hudCellPanel'];
   keys.forEach(function (k) {
     if (LM_SETTINGS_DEFAULTS[k] !== false) fail.push(k + ' default is not false');
     if (!document.getElementById(k)) fail.push(k + ' has no switch in the menu');
@@ -58,7 +58,8 @@
     info.frameMs = Math.round(performance.now() - t0);
     if (!(own[0]._lmHHEnd > 0)) fail.push('merge timing not armed after a split');
     if (H.massText(700, { isPlayerCell: false }) === '700') fail.push('relative mass not applied');
-    if (document.getElementById('lm-hh-edge') || document.getElementById('lm-hh-cells')) fail.push('edge arrows or cell panel still made');
+    if (!document.getElementById('lm-hh-edge')) fail.push('edge arrows canvas not made');
+    if (document.getElementById('lm-hh-cells')) fail.push('cell panel still made');
   } catch (e) {
     fail.push('run: ' + String(e && e.stack || e).split('\n').slice(0, 3).join(' | '));
   } finally {

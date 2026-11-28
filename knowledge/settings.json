@@ -92,11 +92,13 @@
         "cellContours",
         "splitRanges",
         "mergeRings",
+        "edgeArrows",
         "statsDisplay",
         "indicators",
         "onlineStatus",
         "stickyCell",
-        "massInTab"
+        "massInTab",
+        "hudMoveDir"
       ]
     },
     {
@@ -210,7 +212,8 @@
       "description": "Statistics and analytics settings.",
       "settings": [
         "gameOverCard",
-        "notificationCentre"
+        "notificationCentre",
+        "massLossAlerts"
       ]
     },
     {

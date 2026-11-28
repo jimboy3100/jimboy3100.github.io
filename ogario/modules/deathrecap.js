@@ -1,7 +1,8 @@
-/* Legend Mod death recap.
- * Option (Settings > Stats, off by default): gameOverStats (the Game Over card, which shows the
- * recap of the last 20 s).
- * While it is off this file registers no listeners and runs no timers. While it is on it
+/* Legend Mod death recap and mass-loss alerts.
+ * Options (Settings > Stats, both off by default): gameOverStats (the Game Over card, which shows the
+ * recap of the last 20 s) and massLossAlert (+ massLossPct: a line at the top right, left of the
+ * leaderboard, when you lose that share of your mass within 2 s).
+ * While both are off this file registers no listeners and runs no timers. While one is on it
  * samples your own mass and cell count
  * 4 times a second while you are alive (fixed ring buffers, nothing allocated per sample), and the
  * eat loop of ogario.v4.js reports exact eats of and by your cells. Only data the client already
@@ -20,6 +21,8 @@
     var LOSS_WIN = 2000;        /* a loss is a drop within 2 s ... */
     var LOSS_PCT = 15;          /* ... of at least 15 % (recap) ... */
     var LOSS_MIN = 100;         /* ... and at least 100 mass */
+    var FEED_MS = 6000;         /* alert lines stay 6 s */
+    var FEED_MAX = 5;
 
     /* ---------- pure helpers (also used by developers/tests/deathrecap.js) ---------- */
 
@@ -183,7 +186,7 @@
 
     var R = makeRing(CAP);
     var EV = new Array(EV_CAP), evHead = 0, evLen = 0;
-    for (var _i = 0; _i < EV_CAP; _i++) EV[_i] = { type: '', t: 0, t2: 0, a: 0, peak: 0, low: 0, nick: null, near: null, v: false };
+    for (var _i = 0; _i < EV_CAP; _i++) EV[_i] = { type: '', t: 0, t2: 0, a: 0, peak: 0, low: 0, nick: null, near: null, v: false, alerted: false };
     var timer = null, listening = false, prevCells = 0, recSlot = null, lastAlive = 0;
     var recap = null;       /* last recap: { steps, spark, deathAt, slot } */
     var recapEl = null;     /* recap panel on the open Game Over card */
@@ -191,14 +194,19 @@
 
     function opts() {
         var s = window.legendmod5;
-        return s ? { recap: !!s.gameOverStats } : { recap: false };
+        return s ? { recap: !!s.gameOverStats, alert: !!s.massLossAlert } : { recap: false, alert: false };
+    }
+    /* mass-loss alert threshold in %, 0 while the alert is off */
+    function alertPct() {
+        var s = window.legendmod5;
+        return s && s.massLossAlert ? Math.min(90, Math.max(10, +s.massLossPct || 30)) : 0;
     }
 
     function evAdd(type, t) {
         var e = EV[evHead];
         evHead = (evHead + 1) % EV_CAP;
         if (evLen < EV_CAP) evLen++;
-        e.type = type; e.t = t; e.t2 = t; e.a = 0; e.peak = 0; e.low = 0; e.nick = null; e.near = null; e.v = false;
+        e.type = type; e.t = t; e.t2 = t; e.a = 0; e.peak = 0; e.low = 0; e.nick = null; e.near = null; e.v = false; e.alerted = false;
         return e;
     }
     /* the newest event of this type still open at 'since' (t2 >= since); nick compared when given.
@@ -274,12 +282,13 @@
          * (eject mass is tracked as small eats on the other side) or no 'eaten' events
          * exist in the loss window, attribute() will return null and we fall back to
          * the nearest visible enemy (which is an inexact attribution, not a confident one). */
+        var apct = alertPct();
         var L = evFind('loss', now - 2500);
         if (L) {
             if (mass < L.low) { L.low = mass; L.a = L.peak - mass; L.t2 = now; }
         } else {
             var peak = peakSince(R, now - LOSS_WIN);
-            var drop = lossCheck(peak, mass, LOSS_PCT, LOSS_MIN);
+            var drop = lossCheck(peak, mass, apct ? Math.min(LOSS_PCT, apct) : LOSS_PCT, LOSS_MIN);
             if (drop) {
                 L = evAdd('loss', now);
                 L.peak = peak; L.low = mass; L.a = drop;
@@ -292,6 +301,13 @@
                     if (L.near == null) { var ni = sampleAt(R, now - LOSS_WIN); if (ni >= 0) L.near = R.nn[ni]; }
                 }
             }
+        }
+        if (L && apct && !L.alerted && L.a * 100 >= apct * L.peak) {
+            L.alerted = true;
+            var w = attribute(evList(), L.t - LOSS_WIN - 500, now + 500), pct = Math.round(L.a * 100 / L.peak);
+            if (w) feedAdd('alert', tr('alertTo', [pct, fmtNum(L.a), who(w.nick, w.virus)]));
+            else if (L.near != null) feedAdd('alert', tr('alertNear', [pct, fmtNum(L.a), who(L.near, false)]));
+            else feedAdd('alert', tr('alert', [pct, fmtNum(L.a)]));
         }
     }
 
@@ -372,6 +388,87 @@
             }
         }
         return { steps: steps, spark: spark, first: first, deathAt: deathAt, slot: slot, killer: killer };
+    }
+
+    /* ---------- mass-loss alert lines (the box of the former kill feed, only these lines now) ---------- */
+
+    var feedTimer = null;
+    function feedBox() {
+        var el = document.getElementById('lm-killfeed');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'lm-killfeed';
+            el.style.cssText = 'position:fixed;top:8px;right:8px;z-index:120;pointer-events:none;display:flex;flex-direction:column;align-items:flex-end;' +
+                /* HUD font weight and scale (Theme > HUD) */
+                'max-width:min(calc(220px * var(--lm-hud-scale,1)),40vw);font-weight:var(--lm-hud-fw,600);font-size:calc(12px * var(--lm-hud-scale,1));line-height:1.35;font-family:inherit;';
+            document.body.appendChild(el);
+        }
+        /* left of the leaderboard (top right), never over it; the minimap and chat are at the bottom */
+        var lb = document.getElementById('leaderboard-hud'), r = null;
+        /* (offsetParent is null for the fixed leaderboard of the phone layout: use its box) */
+        var left = Infinity, top = 8;
+        try {
+            r = lb ? lb.getBoundingClientRect() : null;
+            if (r && r.width > 0 && r.height > 0) {
+                left = r.left; top = r.top;
+                /* the mass/sector column (showLbData) sticks out to the left of the board */
+                var d = document.getElementById('leaderboard-data'), dc = d && d.firstElementChild;
+                for (var q = 0, b = [d, dc]; q < 2; q++) {
+                    var dr = b[q] && b[q].getBoundingClientRect();
+                    if (dr && dr.width > 0 && dr.left < left) left = dr.left;
+                }
+            }
+        } catch (e) { }
+        var vw = window.innerWidth || 1000;
+        if (left !== Infinity && left > vw / 2) { el.style.right = Math.round(vw - left + 8) + 'px'; el.style.top = Math.round(Math.max(4, top)) + 'px'; }
+        else { el.style.right = '8px'; el.style.top = '8px'; }
+        return el;
+    }
+    function feedAdd(kind, text, key) {
+        var box = feedBox(), now = Date.now(), row = box.lastChild;
+        if (key !== undefined && row && row._lmKind === kind && row._lmKey === key && now - row._lmAt < 2000) {
+            row.textContent = text;
+        } else {
+            row = document.createElement('div');
+            row._lmKind = kind; row._lmKey = key;
+            row.dir = dir();
+            row.style.cssText = 'margin-top:2px;padding:1px 8px;border-radius:var(--lm-radius-s,4px);background:var(--lm-hud-bg,rgba(0,0,0,.55));color:#ffb347' +
+                ';white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;text-shadow:0 1px 2px #000;transition:opacity .6s;';
+            row.textContent = text;
+            box.appendChild(row);
+            while (box.childNodes.length > FEED_MAX) box.removeChild(box.firstChild);
+        }
+        row._lmAt = now;
+        row.style.opacity = '1';
+        feedSchedule();
+    }
+    /* one timer for the next line to fade or go, nothing while the box is empty */
+    function feedSchedule() {
+        if (feedTimer) return;
+        var box = document.getElementById('lm-killfeed');
+        if (!box || !box.firstChild) return;
+        var due = Infinity;
+        for (var n = box.firstChild; n; n = n.nextSibling) {
+            var d = n._lmAt + (n.style.opacity === '0' ? FEED_MS + 600 : FEED_MS);
+            if (d < due) due = d;
+        }
+        feedTimer = setTimeout(feedSweep, Math.max(50, due - Date.now()));
+    }
+    function feedSweep() {
+        feedTimer = null;
+        var b = document.getElementById('lm-killfeed'), now = Date.now();
+        if (!b) return;
+        for (var n = b.firstChild, nx; n; n = nx) {
+            nx = n.nextSibling;
+            if (now - n._lmAt >= FEED_MS + 600) b.removeChild(n);
+            else if (now - n._lmAt >= FEED_MS) n.style.opacity = '0';
+        }
+        feedSchedule();
+    }
+    function feedRemove() {
+        if (feedTimer) { clearTimeout(feedTimer); feedTimer = null; }
+        var el = document.getElementById('lm-killfeed');
+        if (el && el.parentNode) el.parentNode.removeChild(el);
     }
 
     /* ---------- Game Over card ---------- */
@@ -504,9 +601,9 @@
     }
     function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
 
-    /* Start or stop everything from the option; ogario.v4.js calls it when it changes. */
+    /* Start or stop everything from the options; ogario.v4.js calls it when one of them changes. */
     function sync() {
-        var o = opts(), on = o.recap, E = window.LMEvents;
+        var o = opts(), on = o.recap || o.alert, E = window.LMEvents;
         window._lmDROn = on;
         if (on && !listening && E) {
             E.on('spawn', onSpawn); E.on('death', onDeath);
@@ -520,11 +617,13 @@
             listening = false;
             stopTimer(); ringClear(R); evClear(); recapEl = null; recap = null;
         }
+        if (!o.alert) feedRemove();
     }
     function onServerChange() {
         stopTimer(); ringClear(R); evClear();
         prevCells = 0; recSlot = null; lastAlive = 0;
         recapEl = null; recap = null;
+        feedRemove();
     }
 
     window.LMDeathRecap = {
@@ -539,7 +638,7 @@
         _pure: { fmtNum: fmtNum, makeRing: makeRing, ringPush: ringPush, sampleAt: sampleAt, peakSince: peakSince, lossCheck: lossCheck, attribute: attribute, summarise: summarise, stepText: stepText, stepLabel: stepLabel },
         /* for developers/tests (unit test and smoke probe): feed samples and events by hand */
         _test: {
-            tick: tick, onSpawn: onSpawn, onDeath: onDeath, build: buildRecap,
+            tick: tick, onSpawn: onSpawn, onDeath: onDeath, build: buildRecap, feed: feedAdd,
             sample: function (t, m, c, nick) { ringPush(R, t, m, c, -1, nick == null ? null : nick, 0); lastAlive = Math.max(lastAlive, t); },
             event: function (type, t, a, nick, peak) { var e = evAdd(type, t); e.a = a || 0; e.nick = nick == null ? null : nick; e.peak = peak || 0; e.low = e.peak - e.a; return e; },
             reset: function () { ringClear(R); evClear(); prevCells = 0; recSlot = null; lastAlive = 0; recapEl = null; recap = null; }

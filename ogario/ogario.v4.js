@@ -21390,8 +21390,11 @@ var defaultmapsettings = {
     qdsplitRange: true, //Sonia2
     sdsplitRange: false, //Sonia2
     tripleSplitRange: false,      /* rings at 3*size+760 around enemies that can triple-split onto you */
-    hudMergeSound: false,         /* HUD helpers (ogario/modules/hudhelpers.js): short sound when two own cells can merge (agar.io estimate) */
+    hudMoveDir: false,            /* HUD helpers (ogario/modules/hudhelpers.js): arrow toward the real movement */
+    hudMergeSound: false,         /* short sound when two own cells can merge (agar.io estimate) */
     hudRelativeMass: false,       /* other players' mass as a ratio to your biggest cell */
+    hudEdgeTeammates: false,      /* screen-edge arrows toward teammates */
+    hudEdgeThreats: false,        /* screen-edge arrows toward big cells that just left the screen */
     massFormat: 2,                /* mass text: 1 exact, 2 12.3k from 1000 (was Short mass), 3 auto; 0 of older versions = Short mass */
     virusesRange: false,
     textStroke: false,            /* legacy: no switch and no effect (namesStroke / massStroke are used); kept for saved settings and old scripts */
@@ -21457,6 +21460,8 @@ var defaultmapsettings = {
      * the mass graph and the last 20 s (ogario/modules/deathrecap.js). massGraph, showKiller and
      * deathRecap were a switch per part; they are gone (saved values of them are skipped on load). */
     gameOverStats: false,
+    massLossAlert: false,         /* a line at the top right when you lose massLossPct % of your mass within 2 s */
+    massLossPct: 30,              /* mass-loss alert threshold in % (10-90) */
     /* personalBests is gone: the all-time personal bests are always kept (localStorage) and shown on the
      * Game Over card, so a saved value of the old switch is skipped on load */
     /* matchHistory and analytics are gone: "Record replays" (recordReplays) records the game and its
@@ -21540,6 +21545,7 @@ var LM_SETTINGS_SCHEMA = Object.freeze({
     /* 0 ("as Short mass") of older versions is folded before the check (lmFoldLegacySettings) */
     massFormat: [1, 3, 1],
     hudBlur: [0, 8, 1],
+    massLossPct: [10, 90, 5],
     animation: [5, 200, 1],
     macroFeeding: [1, 160, 1],
     macroSplitDelay: [20, 120, 1],
@@ -22815,9 +22821,9 @@ function thelegendmodproject() {
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
             this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
                 /* the newer in-game parts are added to body, not #overlays-hud: same HUD font and weight
-                 * (bell, broadcast, practice HUD, screenshot chip);
+                 * (bell, mass-loss alert lines, broadcast, practice HUD, screenshot chip);
                  * the notification list is a window (menu theme, lmUiKit in LMexpress.js) */
-                '#lm-notif-bell,#lm-dir-bc,#lm-pr-hud,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
+                '#lm-notif-bell,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
         },
         setHudScale() {
             /* Issue #8: a value saved on a bigger screen is shown at most at this screen's slider
@@ -25576,6 +25582,7 @@ function thelegendmodproject() {
                         if (!checked && _lmSetWas && window.legendmod && legendmod._lmOwnColorsRestore) legendmod._lmOwnColorsRestore();
                         break;
                     case 'gameOverStats':
+                    case 'massLossAlert':
                         if (window.LMDeathRecap) LMDeathRecap.sync();
                         break;
                     case 'autoResp':
@@ -26951,7 +26958,7 @@ function thelegendmodproject() {
             this.addOptions(["showMiniMap", "showMiniMapGrid", "showMiniMapGuides", "showExtraMiniMapGuides", "showMiniMapGhostCells", "showMiniMapTrail", "oneColoredTeammates"], "miniMapGroup");
             //            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "reverseTrick", "showPartyBots"], "helpersGroup"); //Sonia2
             //this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "virusesRange", "cursorTracking", "FBTracking", "bubbleInd", "bubbleCursorTracker", "onlineStatus", "teammatesInd", "showGhostCells", "showGhostCellsInfo", "showPartyBots"], "helpersGroup"); //Sonia2
-            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "bubbleCursorTracker", "FBTracking", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells"], "helpersGroup"); //Sonia2
+            this.addOptions(["oppColors", "oppRings", "virColors", "splitRange", "qdsplitRange", "sdsplitRange", "tripleSplitRange", "virusesRange", "cursorTracking", "bubbleCursorTracker", "FBTracking", "bubbleInd", "onlineStatus", "teammatesInd", "showGhostCells", "hudMoveDir", "hudEdgeTeammates", "hudEdgeThreats"], "helpersGroup"); //Sonia2
             /* Sticky cells: what the left and right button do on cells (a behaviour, not a binding,
              * so here and not in the Hotkeys window) */
             this.addOptionTo('.helpersGroup', 'stickyCell');
@@ -26961,7 +26968,7 @@ function thelegendmodproject() {
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins", "notificationCentre"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showDevConsole"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "massLossAlert", "showDevConsole"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays"], "replayGroup");
             this.addOptions(["oneColoredSpectator", "multiBoxShadow", "multiKeepMoving", "middleMultiViewWhenClose", "middleMultiView", "mbSwitchAfterDeath", "mbFreeze", "mbAutoRespawn", "cameraSmoothLerp"], "multiBox");
@@ -27020,6 +27027,7 @@ function thelegendmodproject() {
             this.addSliderBox(".macroGroup", "macroPopSplitDelay", 100, 400, 10);
             /* no Hotkeys, mouse or gamepad controls here: they are only in the Hotkeys window (the
              * gamepad dead zone only in the Gamepad window) */
+            this.addSliderBox(".statsGroup", "massLossPct", 10, 90, 5);
             /* Options that do something only while another option is on, or only on some servers.
              * They stay saved and can still be changed; while they have no effect they are dimmed
              * and say why. Nothing here changes a setting. */
@@ -27031,6 +27039,7 @@ function thelegendmodproject() {
                      * mass texts (shortMassFormat), which show with the cell mass off too */
                     showMass: ['autoHideMass', 'hideMyMass', 'hideEnemiesMass', 'hudRelativeMass'],
                     videoSkins: ['videoDestorted', 'videoSkinsMusic2', 'videoOthersSkinSoundLevelproportion', 'videoSkinSoundLevel'],
+                    massLossAlert: ['massLossPct'],
                     /* Settings > Helpers: the bubble style of the opponent rings and the bubble look of
                      * Cursor tracking are drawn only with these on */
                     oppRings: ['bubbleInd'],
@@ -79956,7 +79965,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active) &&
                     (this._lmFgFxN > 0 || this._lmRingFg || this._glFbArrowActive ||
                         ((LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) && defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) ||
-                        (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length)));
+                        (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length) ||
+                        (window.LMHudHelpers && window.LMHudHelpers.worldActive && window.LMHudHelpers.worldActive(LM))));
                 if (_lmFgOn) {
                     this._lmFitOverlay();
                     _lmFxCtx = this.overlayCtx;
@@ -80093,8 +80103,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 /* The main canvas is below the WebGL canvas: in WebGL frames the above-cell
                  * effects go on the overlay prepared before the cell pass (_lmFxCtx). */
                 this.drawPostCellOverlays(_lmFxCtx);
-                /* HUD helpers (ogario/modules/hudhelpers.js): the merge sound; returns at once
-                 * while all are off */
+                /* HUD helpers (ogario/modules/hudhelpers.js): the movement arrow on the same
+                 * context, the merge sound and the edge arrows; returns at once while all are off */
                 if (window.LMHudHelpers) window.LMHudHelpers.frame(this, _lmFxCtx, LM);
                 /* Expanding Land: spawn burst effect (drawn above cells) */
                 if (this._spawnEffect && this._spawnEffect.active) {
@@ -88270,7 +88280,7 @@ Object.defineProperty(Array.prototype, 'stDev', {
     } catch (e) {
         console.warn('[LM] Error loading AgarTool script:', e);
     }
-    /* Death recap (no listeners or timers while its option is off) */
+    /* Death recap and mass-loss alerts (no listeners or timers while their options are off) */
     try {
         var deathRecapScript = document.createElement('script');
         deathRecapScript.type = 'text/javascript';
