@@ -415,6 +415,26 @@ now = load(); G = groups();
     h.removeCell();
     frame(now + 192);
     check('a copy that leaves with no other copy of the cell: its fade plays', LM.removedCells.includes(h) && h.invisible !== true);
+    /* opcode 18: the connection's world is cleared and the server sends every cell again under a
+     * new id a tick later: the old copy fades while the cell is not there, not over the new copy */
+    LM.cells.length = 0; LM.removedCells.length = 0;
+    const k = mk(1, 1700);
+    k.id += 4;
+    frame(now + 208); frame(now + 224);
+    k.removeCell();
+    frame(now + 240);
+    const fadeK = k.invisible !== true;
+    const k2 = mk(1, 1702, { id: 4294967296 + 40, time: now + 250, _lmVX: undefined, _lmVY: undefined });
+    frame(now + 256);
+    check('opcode 18, the same connection sends the cell again under a new id: the fade of the old copy not drawn over it', fadeK && k.invisible === true && !k2.invisible,
+        fadeK + ' / ' + k.invisible + ' / ' + k2.invisible);
+    /* a cell of that connection that was there before the copy left is another cell: the fade plays */
+    LM.cells.length = 0; LM.removedCells.length = 0;
+    const q1 = mk(1, 2100, { id: 4294967296 + 41, time: now + 260 }), q2 = mk(1, 2104, { id: 4294967296 + 42, time: now + 260 });
+    frame(now + 272); frame(now + 288);
+    q1.removeCell();
+    frame(now + 304);
+    check('a cell of the same connection there before the copy left: the fade plays', LM.removedCells.includes(q1) && q1.invisible !== true && !q2.invisible);
     LM.cells.length = 0; LM.removedCells.length = 0;
 }
 

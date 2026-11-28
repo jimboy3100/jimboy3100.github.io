@@ -475,7 +475,7 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     /* candidate tests per frame in a crowded bucket: 300 ejected blobs on 2 connections */
     const cells = scene(0, 300, 0);
     const ctx = run(cells, 3, env(1));
-    vm.runInContext('var _lmTests = 0; var _lmD0 = _lmMbTwinDist2; _lmMbTwinDist2 = function (a, b, r, o, k) { _lmTests++; return _lmD0(a, b, r, o, k); };', ctx);
+    vm.runInContext('var _lmTests = 0; var _lmD0 = _lmMbTwinTest; _lmMbTwinTest = function (a, b, o, k, r) { _lmTests++; return _lmD0(a, b, o, k, r); };', ctx);
     run(cells, 1, ctx);
     const tests = vm.runInContext('_lmTests', ctx);
     check('crowded bucket, no own cells: main copies test no candidates (' + tests + ' tests for ' + cells.length + ' cells)', tests <= cells.length * 4, tests);
