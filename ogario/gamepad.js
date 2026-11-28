@@ -304,10 +304,6 @@
         return window.application || null;
     }
 
-    function isSplit(action) {
-        return /^hk-/.test(action) && /split/i.test(action) && !/^hk-show/.test(action);
-    }
-
     /* one held command down or up; macro feed without the hotkeys file goes to the game itself */
     function holdHk(id, up) {
         if (hk(id, up) || id !== 'hk-macroFeed') return;
