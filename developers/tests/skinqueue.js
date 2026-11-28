@@ -348,12 +348,22 @@ function pageLib() {
     async function fallback(factorySrc, defaults) {
         var list = await images(3);
         var R = make(factorySrc, defaults), gl = R.gl;
-        var inDraw = 0, drawing = false, t3 = gl.texSubImage3D;
-        gl.texSubImage3D = function () { if (drawing) inDraw++; return t3.apply(gl, arguments); };
+        var inDraw = 0, drawing = false, t3 = gl.texSubImage3D, upMs = [];
+        /* upMs: main-thread time of each upload from the picture itself, with the GPU wait it
+         * causes (a 1-pixel readback right after it, which waits for the upload to finish) */
+        gl.texSubImage3D = function () {
+            if (drawing) inDraw++;
+            var ts = performance.now(), r = t3.apply(gl, arguments);
+            gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(4));
+            upMs.push(+(performance.now() - ts).toFixed(2));
+            return r;
+        };
         var res = [];
         for (var k = 0; k < 3; k++) {
             var node = list[k];
             node._lmBmpFail = true;
+            /* the second one (512 x 512): a picture whose width reads 0 (it has its natural size) */
+            if (k === 1) Object.defineProperty(node, 'width', { configurable: true, get: function () { return 0; } });
             var url = 'https://skins.test/f' + k + '.png', got, f = 0;
             for (; f < 100; f++) {
                 R._glSkinFrame = (R._glSkinFrame || 0) + 1;
@@ -365,11 +375,12 @@ function pageLib() {
             }
             res.push(got >= 0 ? hash(texels(R, got)) : -1);
             delete node._lmBmpFail;
+            if (k === 1) delete node.width;
         }
         gl.texSubImage3D = t3;
         var err = gl.getError();
         gl.getExtension('WEBGL_lose_context').loseContext();
-        return { hashes: res, inDraw: inDraw, glError: err };
+        return { hashes: res, inDraw: inDraw, glError: err, upMs: upMs };
     }
     /* decodes started, then the context is lost before they finish */
     async function lost(factorySrc, defaults) {
@@ -470,7 +481,8 @@ async function browser() {
         check('stale skins: asked for again later, they are uploaded', sn.again === 14 && sn.closed === sn.made);
 
         const ko = await evaluate('__sq.fallback(__sqOld, __sqDefaults)'), kn = await evaluate('__sq.fallback(__sqNew, __sqDefaults)');
-        console.log('     undecodable image: texSubImage3D inside the draw: previous version ' + ko.inDraw + ', now ' + kn.inDraw);
+        console.log('     undecodable image: texSubImage3D inside the draw: previous version ' + ko.inDraw + ', now ' + kn.inDraw +
+            '; ms per upload with its GPU wait: previous version ' + ko.upMs.join(', ') + ', now ' + kn.upMs.join(', '));
         check('undecodable image: uploaded from the frame job, not inside the draw', kn.inDraw === 0);
         check('undecodable image: the same texels as the synchronous upload, no GL error', kn.hashes.every((h) => h !== -1) && kn.hashes.join() === ko.hashes.join() && kn.glError === 0);
 

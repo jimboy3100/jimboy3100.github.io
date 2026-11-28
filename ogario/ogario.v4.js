@@ -66036,8 +66036,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * frame and its next draw asks again. Any other picture (an image createImageBitmap cannot
          * decode, or no createImageBitmap) is uploaded as before, texSubImage3D from the picture,
          * but from the same frame job instead of inside the draw (it waits for the GPU: 15-65 ms,
-         * once for every such skin of a frame before). Returns false when the node has no size
-         * (the synchronous upload is used then). */
+         * once for every such skin of a frame before; measured again with skinqueue.js: 3-10 ms
+         * each, the first one into a new skin array 70-330 ms). A picture whose width reads 0
+         * but that has a natural size is uploaded the same way (it was uploaded inside the draw).
+         * Returns false when the node has no size at all (the synchronous upload is used then). */
         _lmSkinBmpMax: 8,
         _lmSkinQueueBytesMax: 32 * 1048576,
         _lmQueueSkinUpload(node, key, own) {
@@ -66046,7 +66048,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
             var bitmap = typeof createImageBitmap === 'function' && !node._lmBmpFail && typeof HTMLImageElement !== 'undefined' &&
                 src instanceof HTMLImageElement && src.complete && src.naturalWidth > 0 && !src._failed;
             var canvas = !bitmap && typeof HTMLCanvasElement !== 'undefined' && node instanceof HTMLCanvasElement && node.width > 0 && node.height > 0;
-            var sync = !bitmap && !canvas && node.width > 0 && node.height > 0;
+            var sync = !bitmap && !canvas && (node.width > 0 && node.height > 0 || node.naturalWidth > 0 && node.naturalHeight > 0);
             if (!bitmap && !canvas && !sync) return false;
             var size = this.glSkinTexSize || 512;
             /* same intermediate size as before: the cacheSkin canvas (512 / graphics) */
