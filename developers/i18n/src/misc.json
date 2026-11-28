@@ -666,22 +666,7 @@
     "it": "Pulsanti chat rapida (comandi 1-4)"
   },
   "misc.mobile.mbButton": {
-    "en": "Multibox button (second player; uses more data)",
-    "el": "Κουμπί multibox (δεύτερος παίκτης· χρησιμοποιεί περισσότερα δεδομένα)",
-    "es": "Botón de multibox (segundo jugador; usa más datos)",
-    "bg": "Бутон за мултибокс (втори играч; използва повече данни)",
-    "fr": "Bouton multibox (second joueur ; utilise plus de données)",
-    "ar": "زر Multibox (لاعب ثانٍ؛ يستهلك بيانات أكثر)",
-    "zh": "多開按鈕（第二位玩家；使用更多流量）",
-    "ru": "Кнопка мультибокса (второй игрок; больше трафика)",
-    "de": "Multibox-Taste (zweiter Spieler; braucht mehr Daten)",
-    "tr": "Multibox düğmesi (ikinci oyuncu; daha fazla veri kullanır)",
-    "pl": "Przycisk multiboxa (drugi gracz; zużywa więcej danych)",
-    "nl": "Multiboxknop (tweede speler; gebruikt meer data)",
-    "pt": "Botão de multibox (segundo jogador; usa mais dados)",
-    "id": "Tombol multibox (pemain kedua; memakai lebih banyak data)",
-    "ja": "マルチボックスボタン（2人目のプレイヤー、通信量が増えます）",
-    "it": "Pulsante multibox (secondo giocatore; usa più dati)"
+    "en": "Multibox button (starts a second player, then switches players; uses more data)"
   },
   "misc.mobile.pingButton": {
     "en": "Team ping button (tap = Go here; hold and slide = Help, Danger, Virus here)",

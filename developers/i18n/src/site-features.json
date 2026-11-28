@@ -810,82 +810,22 @@
     "it": "Multibox"
   },
   "site.features.playTwoCellsAt": {
-    "en": "Play two cells at once from one tab.",
-    "el": "Παίξτε με δύο κύτταρα ταυτόχρονα από μία καρτέλα.",
-    "es": "Juega con dos células a la vez desde una sola pestaña.",
-    "bg": "Играйте с две клетки едновременно от един раздел.",
-    "fr": "Jouez deux cellules à la fois depuis un seul onglet.",
-    "ar": "العب بخليتين معًا من تبويب واحد.",
-    "zh": "在一個分頁中同時操控兩個細胞。",
-    "ru": "Играйте двумя клетками одновременно из одной вкладки.",
-    "de": "Spiel zwei Zellen gleichzeitig in einem Tab.",
-    "tr": "Tek sekmeden aynı anda iki hücre oynayın.",
-    "pl": "Graj dwiema komórkami naraz z jednej karty.",
-    "nl": "Speel met twee cellen tegelijk vanuit één tabblad.",
-    "pt": "Jogue com duas células ao mesmo tempo em uma aba só.",
-    "id": "Mainkan dua sel sekaligus dari satu tab.",
-    "ja": "1つのタブで2つのセルを同時に操作できます。",
-    "it": "Gioca con due cellule insieme da una sola scheda."
+    "en": "Play 2 to 6 players at once from one tab."
   },
   "site.features.aSecondUnitNext": {
-    "en": "A second unit next to your main cell",
-    "el": "Μια δεύτερη μονάδα δίπλα στο κύριο κύτταρό σας",
-    "es": "Una segunda unidad junto a tu célula principal",
-    "bg": "Втора единица до основната ви клетка",
-    "fr": "Une deuxième unité à côté de votre cellule principale",
-    "ar": "وحدة ثانية بجوار خليتك الرئيسية",
-    "zh": "在主細胞旁的第二個單位",
-    "ru": "Второй юнит рядом с основной клеткой",
-    "de": "Eine zweite Einheit neben deiner Hauptzelle",
-    "tr": "Ana hücrenizin yanında ikinci bir birim",
-    "pl": "Druga jednostka obok twojej głównej komórki",
-    "nl": "Een tweede unit naast je hoofdcel",
-    "pt": "Uma segunda unidade ao lado da sua célula principal",
-    "id": "Unit kedua di samping sel utamamu",
-    "ja": "メインのセルの隣に2体目のユニット",
-    "it": "Una seconda unità accanto alla tua cellula principale"
+    "en": "Up to five more players next to your main cell, added and picked in the stats HUD"
   },
   "site.features.swapAndFollowMouse": {
     "en": "Swap and follow-mouse hotkeys"
   },
   "site.features.optionalViewOnThe": {
-    "en": "Optional view on the middle of both units",
-    "el": "Προαιρετική προβολή στο μέσο των δύο μονάδων",
-    "es": "Vista opcional centrada entre ambas unidades",
-    "bg": "Незадължителен изглед към средата между двете единици",
-    "fr": "Vue optionnelle centrée entre les deux unités",
-    "ar": "عرض اختياري لمنتصف الوحدتين",
-    "zh": "可選擇將視角置於兩個單位中間",
-    "ru": "Вид на центр между обоими юнитами по желанию",
-    "de": "Optionale Ansicht auf die Mitte beider Einheiten",
-    "tr": "İsteğe bağlı olarak iki birimin ortasına odaklanan görünüm",
-    "pl": "Opcjonalny widok na środek między obiema jednostkami",
-    "nl": "Optioneel beeld op het midden van beide units",
-    "pt": "Visão opcional centralizada entre as duas unidades",
-    "id": "Tampilan opsional di titik tengah kedua unit",
-    "ja": "両ユニットの中心に視点を合わせる表示（任意）",
-    "it": "Visuale opzionale centrata tra le due unità"
+    "en": "Optional view on the middle of all players"
   },
   "site.features.aRingOnThe": {
-    "en": "A ring on the cells of the player you control, optional freeze for the inactive unit"
+    "en": "A ring on the cells of the player you control, optional freeze for the players you do not control"
   },
   "site.features.itsOwnSkinProfile": {
-    "en": "Its own skin profile for each unit",
-    "el": "Δικό του προφίλ skin για κάθε μονάδα",
-    "es": "Perfil de skin propio para cada unidad",
-    "bg": "Собствен профил на скинове за всяка единица",
-    "fr": "Un profil de skin propre à chaque unité",
-    "ar": "ملف سكنات خاص لكل وحدة",
-    "zh": "每個單位都有自己的造型設定檔",
-    "ru": "Свой профиль скинов для каждого юнита",
-    "de": "Ein eigenes Skin-Profil für jede Einheit",
-    "tr": "Her birim için ayrı skin profili",
-    "pl": "Własny profil skinów dla każdej jednostki",
-    "nl": "Een eigen skinprofiel voor elke unit",
-    "pt": "Perfil de skin próprio para cada unidade",
-    "id": "Profil skin sendiri untuk tiap unit",
-    "ja": "ユニットごとに専用のスキンプロファイル",
-    "it": "Un profilo skin diverso per ogni unità"
+    "en": "Its own skin profile for each player"
   },
   "site.features.gamepadControllerExclusive": {
     "en": "Gamepad & Controller",

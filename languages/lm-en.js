@@ -1430,7 +1430,7 @@
 "misc.mobile.stopRelease": "Stop on release (cell stops when you lift the joystick thumb)",
 "misc.mobile.tapHaptic": "Short vibration on Split / Feed",
 "misc.mobile.quickChat": "Quick chat buttons (commands 1-4)",
-"misc.mobile.mbButton": "Multibox button (second player; uses more data)",
+"misc.mobile.mbButton": "Multibox button (starts a second player, then switches players; uses more data)",
 "misc.mobile.pingButton": "Team ping button (tap = Go here; hold and slide = Help, Danger, Virus here)",
 "misc.mobile.touchDir": "Direction on touch (no joystick): the cell moves toward where your finger touches",
 "misc.mobile.fixedJoystick": "Fixed joystick: stays in place instead of appearing where your thumb lands",
