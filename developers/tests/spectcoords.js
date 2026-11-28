@@ -12,7 +12,9 @@
  * _lmSrc/_lmGen/_lmRawId/_lmRawX/_lmRawY, and the food check finds the orientation and
  * verifies (d = 0, also on live food) or corrects d with reprojection; votes need independent
  * evidence (top-player lists 1.5 s apart, other pellets); a CONFLICTED source is not fed to the
- * reconciliation (_lmFeedOk); anchors die with their pellet or socket; live pellet pairs of FFA,
+ * reconciliation (_lmFeedOk); a PROVISIONAL unit has no place (camera, first spawn and cursor wait),
+ * a CONFLICTED one keeps it, its own cell where the main connection has it verifies it in two updates;
+ * anchors die with their pellet or socket; live pellet pairs of FFA,
  * Experimental, Party and FFA with Rotate Map agree per mode; ClearAll and later borders keep a
  * connection's transform; "Keep moving" keeps the world direction across a reconnect on a mirrored socket;
  * the calibration evidence (section 11: one entity per pellet, second
@@ -238,7 +240,73 @@ function packet(cells) {
         [{ x: 1000, y: 1000, mass: 5000 }, { x: 1100, y: 1000, mass: 5010 }, { x: -3000, y: 2000, mass: 8000 }], 200, 0.03, true);
     check('distinct matches: a player with two candidates of its mass in reach is not counted', amb[0] === 1, amb.join());
     const mb = unit(ctx, 10, 20, { number: 3, player: true });
-    check('multibox unit: usable (controls, camera) while provisional', mb._lmOri === 'PROVISIONAL' && mb.transformReady());
+    check('multibox unit: no place on this map while provisional (camera, minimap, first spawn, cursor)', mb._lmOri === 'PROVISIONAL' && !mb.transformReady());
+    mb.setOrientation(1, 1);
+    mb._lmOriSet('CONFLICTED');
+    check('multibox unit: keeps its place while CONFLICTED (it was verified on this socket), not fed to the reconciliation', mb.transformReady() && !mb._lmFeedOk());
+    sp._lmOriSet('CONFLICTED');
+    check('a CONFLICTED spectator is not placed', !sp.transformReady());
+}
+
+/* 4b. a unit mirrored on both axes: its own cell, which the main connection has at the mirrored place
+ *     (lmMbFrameHide _lmMbOwnPlaces), verifies it within two of its world updates and reprojects it;
+ *     its first spawn waits for that (3 s at most) and its cursor holds meanwhile */
+{
+    const LM = mainClient(-3021.0678118654755, 5000.5), ctx = load(LM);
+    const cx = 4321.5, cy = -987.25;
+    const mb = unit(ctx, cx, cy, { number: 6, player: true });
+    mb.time = Date.now();
+    /* raw of world (-5000, 2000) on a socket mirrored on x and y, drawn as not mirrored */
+    mb.updateCells(packet([{ id: 55, x: Math.round(cx + 5000), y: Math.round(cy - 2000), size: 120 }]), 0);
+    const cell = LM.indexedCells[55 + 6 * STEP];
+    check('own cell: provisional, drawn at the place mirrored on both axes', mb._lmOri === 'PROVISIONAL' && near(cell.targetX, LM.worldX(5000), 2) && near(cell.targetY, LM.worldY(-2000), 2),
+        [cell.targetX, LM.worldX(5000)].join());
+    check('provisional: the first spawn waits (focus, death menu)', mb._lmSpawnHold(1000) === true && mb._lmSpawnHold(3999) === true);
+    check('    ... 3 s at most: then it goes on unverified', mb._lmSpawnHold(4000) === false && mb._lmSpawnHold(4001) === true);
+    mb._lmSpawnSeenAt = 0;
+    /* the cursor: toward the mouse through the guessed transform would steer it the other way */
+    const sent = [];
+    mb.sendPosition = (x, y) => { sent.push([x, y]); return true; };
+    mb.playerX = cell.targetX; mb.playerY = cell.targetY;
+    LM.cursorX = cell.targetX + 800; LM.cursorY = cell.targetY - 300;
+    mb._lmAimSend();
+    check('provisional: the cursor holds the unit on its own centre (its raw place), not the mirrored aim', sent.length === 1 && sent[0][0] === Math.round(cx + 5000) && sent[0][1] === Math.round(cy - 2000), JSON.stringify(sent));
+    /* beforecalculation: its first own cell takes the focus only once it is placed */
+    let focus = 0;
+    ctx.lmSetMbUnit = (n) => { focus = n; };
+    mb._lmOwn = [cell];
+    mb.beforecalculation();
+    check('provisional: its first own cell does not take the focus (beforecalculation)', focus === 0 && !mb.openSecond, focus);
+    mb._lmWorldAt = 1000;
+    mb._lmOwnCellVote(3);
+    mb._lmOwnCellVote(3);
+    check('own cell at the mirrored place of the main copy: one vote per world update (the same update twice is one)', mb._lmOri === 'PROVISIONAL' && mb._lmOriStreakN === 1);
+    mb._lmWorldAt = 1040;
+    mb._lmOwnCellVote(3);
+    check('    ... the next update: verified as mirrored on both axes', mb._lmOri === 'VERIFIED' && mb.fixX === -1 && mb.fixY === -1 && mb.transformReady());
+    check('    ... the own cell reprojected from raw onto the main copy', near(cell.targetX, LM.worldX(-5000), 1) && near(cell.targetY, LM.worldY(2000), 1) && near(cell.x, LM.worldX(-5000), 1),
+        [cell.x, cell.targetX, LM.worldX(-5000)].join());
+    mb._lmWorldAt = 1080;
+    mb._lmOwnCellVote(1);
+    check('verified: an own-cell vote changes nothing (no conflict from it)', mb._lmOri === 'VERIFIED' && mb.fixX === -1);
+    mb.beforecalculation();
+    check('verified: the next update of its own cell takes the focus', focus === 6 && mb.openSecond === true, focus);
+    check('verified: the first spawn does not wait', mb._lmSpawnHold(5000) === false);
+    sent.length = 0;
+    mb._lmAimSend();
+    check('verified: the cursor goes to the mouse again', sent.length === 1 && sent[0][0] === mb.convertX(LM.cursorX) && sent[0][0] !== Math.round(cx + 5000) - 800, JSON.stringify(sent));
+    /* the main copy at the unit's own place (m 0): its guess is right, verified without a move */
+    const ok = unit(ctx, cx, cy, { number: 7, player: true });
+    ok._lmWorldAt = 1; ok._lmOwnCellVote(0); ok._lmWorldAt = 2; ok._lmOwnCellVote(0);
+    check('own cell where the main copy is: verified as not mirrored', ok._lmOri === 'VERIFIED' && ok.fixX === 1 && ok.fixY === 1);
+    /* never verified: the focus after 3 s all the same */
+    const late = unit(ctx, cx, cy, { number: 9, player: true });
+    late._lmOwn = [cell];
+    late.beforecalculation();
+    check('provisional for 3 s: still no focus before', focus === 6);
+    late._lmSpawnSeenAt -= 3000;
+    late.beforecalculation();
+    check('    ... then its spawn takes the focus unverified (not lost for good)', focus === 9 && late._lmOri === 'PROVISIONAL', focus);
 }
 
 /* 5. shared food: orientation and d, matched by place and size (not by id), with reprojection;

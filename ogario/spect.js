@@ -511,6 +511,8 @@ var LM_TILE_SETTLED = 4, LM_TILE_MOVING_MS = 500, LM_TILE_REFRESH_MS = 1000;
 var LM_CAM_FRESH_MS = 1000, LM_TILE_STALE_MS = 3000;
 /* a tile target waits this long after the border for the orientation (Spect._lmTileRaw) */
 var LM_TILE_UNVERIFIED_MS = 5000;
+/* a unit's first spawn waits this long at most for its orientation (Spect._lmSpawnHold) */
+var LM_MB_SPAWN_HOLD_MS = 3000;
 /* tiles on one axis: the fewest views of length view covering map + 2 * edge with seams >= seam */
 function lmFullMapAxis(map, view, seam) {
     var span = map + 2 * LM_FULLMAP_EDGE;
@@ -733,6 +735,8 @@ class Spect {
         this._lmGhostTime = 0
         this._lmGhostPair = null
         this._lmGhostVoteT = 0
+        this._lmOwnVoteW = 0
+        this._lmSpawnSeenAt = 0
         /* the old socket's anchors are no evidence any more (also in the reference grid) */
         if (this._lmAnchors) for (var _a = 0; _a < this._lmAnchors.length; _a++) {
             if (this._lmAnchors[_a]) { this._lmAnchors[_a].alive = false; this._lmAnchors[_a].cell = null; }
@@ -1146,7 +1150,9 @@ class Spect {
     sendCursor() {
         if (this.positionController) clearInterval(this.positionController);
         this.positionController = setInterval(() => {
-
+            /* orientation not verified (transformReady): no cursor or keep-moving offset goes
+             * out through the guessed transform, the unit holds on its centre (_lmAimSend) */
+            var held = this.player === true && typeof this.transformReady === 'function' && !this.transformReady();
             if (legendmod.pause) {
                 this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
             } else if (window.multiboxPlayerEnabled === this.number || this.isFreeSpectate || window.multiboxFollowMouse) {
@@ -1157,13 +1163,13 @@ class Spect {
 
                 /* Keep-moving offset in world units (playerX/Y are client space): a raw delta of
                  * this socket ran the other way after a background reconnect on a mirrored socket. */
-                this.distX = this.rawToWorldX(this.convertX(legendmod.cursorX)) - this.rawToWorldX(this.convertX(this.playerX))
-                this.distY = this.rawToWorldY(this.convertY(legendmod.cursorY)) - this.rawToWorldY(this.convertY(this.playerY))
+                this.distX = held ? 0 : this.rawToWorldX(this.convertX(legendmod.cursorX)) - this.rawToWorldX(this.convertX(this.playerX))
+                this.distY = held ? 0 : this.rawToWorldY(this.convertY(legendmod.cursorY)) - this.rawToWorldY(this.convertY(this.playerY))
             } else {
                 /* "Freeze inactive multibox unit": hold it at its own centre. With "Keep moving"
                  * off too it holds as well, as the inactive main player does (LM.sendPosition): it
                  * sent nothing and kept running to the last target. */
-                if ((defaultmapsettings.mbFreeze || !defaultmapsettings.multiKeepMoving) && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
+                if ((defaultmapsettings.mbFreeze || !defaultmapsettings.multiKeepMoving || held) && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
                     this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
                 } else if (defaultmapsettings.multiKeepMoving) {
                     this.sendPosition(Math.round(this.worldToRawX(this.rawToWorldX(this.convertX(this.playerX)) + this.distX)),
@@ -1180,6 +1186,13 @@ class Spect {
      * position of the controlled unit. */
     _lmAimSend() {
         if (window.lockPosition && window.multiboxPlayerEnabled === this.number) return false;
+        /* orientation not verified: the cursor would go out through a guessed (maybe mirrored)
+         * transform and steer the unit away from it; it holds on its own centre (exact: that
+         * centre comes from its own raw positions through the same transform) */
+        if (this.player === true && typeof this.transformReady === 'function' && !this.transformReady()) {
+            if (!Number.isFinite(this.playerX) || !Number.isFinite(this.playerY)) return false;
+            return this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
+        }
         var aim = this._lmAimTarget();
         return this.sendPosition(this.convertX(aim[0]), this.convertY(aim[1]));
     }
@@ -2212,16 +2225,22 @@ class Spect {
 
     /*
      * Offset and orientation known: positions (and the camera) can be trusted.
-     * A multibox unit is played as soon as its border is known (PROVISIONAL or
-     * CONFLICTED: it keeps the controls and the camera while the orientation is
-     * checked); a spectator connection only once its orientation is VERIFIED. No
-     * timeout ever accepts an unverified orientation: it was taken for good after
-     * 10 s without top-player data, and a wrong guess was never corrected.
+     * A spectator connection only once its orientation is VERIFIED (or nothing to verify);
+     * a multibox unit also while CONFLICTED (it was verified on this socket: it keeps its
+     * place, controls and camera while it is checked again). A PROVISIONAL unit (not
+     * verified yet, the orientation a guess) has no place on this map: not for the camera,
+     * the minimap and the cells round it, its own cells are drawn only where the main
+     * connection confirms them (most unit sockets have a mirrored frame: the camera and its
+     * cells were at the mirrored place until it was verified, 0.2 - 2.8 s), its first spawn
+     * waits for it (_lmSpawnHold) and its cursor holds (_lmAimSend). Its own cell seen by the
+     * main connection verifies it within two updates (lmMbFrameHide, _lmOwnCellVote). No
+     * timeout ever accepts an unverified orientation: it was taken for good after 10 s
+     * without top-player data, and a wrong guess was never corrected.
      */
     transformReady() {
         if (!this.mapOffsetFixed) return false;
-        if (!this.integrity || this._lmOri === 'VERIFIED') return true;
-        return this.player === true;
+        if (!this.integrity || this._lmSameFrame || this._lmOri === 'VERIFIED') return true;
+        return this.player === true && this._lmOri === 'CONFLICTED';
     }
 
     /*
@@ -2230,7 +2249,8 @@ class Spect {
      * transform verified: border known and orientation VERIFIED (or nothing to verify:
      * private servers, Expanding Land). PROVISIONAL and CONFLICTED sources must not
      * hide, replace or be matched with another connection's copies; a multibox unit in
-     * those states keeps its controls and camera (transformReady) and draws its own cells.
+     * those states draws its own cells (PROVISIONAL: only where the main connection has a
+     * copy at its place; CONFLICTED: not where it has one at a mirrored place, lmMbFrameHide).
      */
     _lmFeedOk() {
         if (!this.mapOffsetFixed) return false;
@@ -2279,6 +2299,22 @@ class Spect {
         this._lmOriVerifiedC = c;
         this._lmOriSet('VERIFIED');
         console.log('[SPECT] Unit ' + this.number + ' orientation vs main (x, y):', LM_ORI[c][0], LM_ORI[c][1], '(verified by ' + why + ')');
+    }
+
+    /*
+     * Its own cells as the main connection sees them (lmMbFrameHide): a main copy of the same
+     * server name and size only at its own place (m 0) or only at the place mirrored on x (1),
+     * on y (2) or on both (3), and every own cell with such a copy agreeing. One vote for that
+     * orientation per world update of this unit while it is not VERIFIED: a unit's new cell is
+     * in the main view whenever the players are close, so it is verified within two updates
+     * (top players and shared food took 0.2 - 2.8 s).
+     */
+    _lmOwnCellVote(m) {
+        if (!this.mapOffsetFixed || !this.integrity || this._lmSameFrame || this._lmOri === 'VERIFIED' || !(m >= 0 && m <= 3)) return;
+        var w = this._lmWorldAt || 0;
+        if (!w || w === this._lmOwnVoteW) return;
+        this._lmOwnVoteW = w;
+        this._lmOriVote(this._lmOriIndex() ^ m, 'its own cell on the main connection');
     }
 
     /*
@@ -3286,8 +3322,10 @@ class Spect {
     beforecalculation() {
         if (!this.player) return;
         const ownCells = this.getOwnPlayerCells();
+        /* a life that ended while its spawn waited (_lmSpawnHold): the next one waits anew */
+        if (!ownCells.length && !this.openSecond) this._lmSpawnSeenAt = 0;
         if (ownCells.length) {
-            if (!this.openSecond) {
+            if (!this.openSecond && !(typeof this._lmSpawnHold === 'function' && this._lmSpawnHold(Date.now()))) {
                 this.openSecond = true;
                 /* only the first spawn after that death may hide its menu, a unit still in its
                  * slot, and not long after (the player may have gone on with the menu) */
@@ -3331,6 +3369,21 @@ class Spect {
         }
         /* also without own cells: its numbers are 0 then (kept the last cells' until terminate) */
         this.calculatePlayerMassAndPosition(ownCells);
+    }
+
+    /* The first spawn of a life (its focus, the death menu it hides) waits while the unit has no
+     * place on this map yet (transformReady: orientation not verified, the camera would show it
+     * at a mirrored place), at most LM_MB_SPAWN_HOLD_MS from its first own cell (then it takes
+     * the focus unverified: the camera stays on the placed players, the unit holds). */
+    _lmSpawnHold(now) {
+        if (this.transformReady()) {
+            this._lmSpawnSeenAt = 0;
+            return false;
+        }
+        if (!this._lmSpawnSeenAt) this._lmSpawnSeenAt = now;
+        if (now - this._lmSpawnSeenAt < LM_MB_SPAWN_HOLD_MS) return true;
+        this._lmSpawnSeenAt = 0;
+        return false;
     }
 
     /* This unit's own cells: its own index, kept by _lmAdoptOwn / _lmOwnDrop (no scan of

@@ -2027,6 +2027,9 @@ var _lmMbFeed = [];
 /* per connection number: a multibox unit whose cells are drawn while it is not verified
  * (lmMbFrameHide) */
 var _lmMbDrawOnly = [];
+/* per connection number: a multibox unit with no place on this map yet (PROVISIONAL: transformReady
+ * false), filled by the hide step: its own cells are drawn only where the main connection confirms */
+var _lmMbUnplaced = [];
 function _lmMbFeeds(c) {
     return !(c.spectator > 0) || _lmMbFeed[c.spectator] === true;
 }
@@ -2566,8 +2569,17 @@ function lmMbFrameHide() {
     _lmMbHideOn = true;
     _lmMbFeed.length = 0;
     _lmMbDrawOnly.length = 0;
+    _lmMbUnplaced.length = 0;
     _lmMbTile.length = 0;
     var drawOnly = false, now = Date.now();
+    /* the orientation the own cells of an unverified unit showed last frame: a vote, here between
+     * two frames (verified in the middle of the hide step, its cells hidden as unverified were
+     * neither drawn nor matched in that frame) */
+    for (i = 0; _lmMbOwnEv.length && i < sps.length; i++) {
+        sp = sps[i];
+        if (sp && sp.number > 0 && _lmMbOwnEv[sp.number] >= 0 && typeof sp._lmOwnCellVote === 'function') sp._lmOwnCellVote(_lmMbOwnEv[sp.number]);
+    }
+    _lmMbOwnEv.length = 0;
     for (i = 0; i < sps.length; i++) {
         var sp = sps[i];
         if (!sp || !(sp.number > 0)) continue;
@@ -2578,10 +2590,13 @@ function lmMbFrameHide() {
          * cell for good). A unit's own cells stay drawn and steered as before. */
         var stalled = _lmMbStalled(sp, now);
         _lmMbFeed[sp.number] = lmSrcFeeds(sp) && !stalled;
-        /* a multibox unit not verified yet is steered and followed by the camera already
-         * (transformReady): the cells round it are drawn (else the player could be eaten by a
-         * cell he does not see) but take no part in the matching; not while it is stalled */
+        /* a multibox unit placed on this map (transformReady: CONFLICTED, steered and followed by
+         * the camera while it is checked again) but not feeding: the cells round it are drawn (else
+         * the player could be eaten by a cell he does not see) but take no part in the matching;
+         * not while it is stalled. A PROVISIONAL unit has no place yet (the camera is not on it):
+         * the cells round it are not drawn */
         if (!_lmMbFeed[sp.number] && !stalled && sp.player === true && typeof sp.transformReady === 'function' && sp.transformReady()) _lmMbDrawOnly[sp.number] = drawOnly = true;
+        else if (!_lmMbFeed[sp.number] && sp.player === true && typeof sp.transformReady === 'function' && !sp.transformReady()) _lmMbUnplaced[sp.number] = true;
     }
     if (drawOnly) _lmMbDrawOnlyCover(sps, now);
     else _lmMbDoCov.length = 0;
@@ -2695,9 +2710,22 @@ function lmMbFrameHide() {
             if (key[i] !== -2 && key[i] !== -3) continue;
             cell = cells[i];
             /* -2: a draw-only cell where a verified connection could see it, hidden only when one
-             * has a copy of it there or at a mirrored place; -3: an unverified unit's own cell
-             * drawn at a mirrored place of the main connection's copy of it (that copy draws it) */
-            if (key[i] === -2 ? _lmMbVerifiedNear(cell) || _lmMbMirrored(cell, -1) : _lmMbMirrored(cell, 0)) {
+             * has a copy of it there or at a mirrored place; -3: an unverified unit's own cell,
+             * hidden where the main connection has a copy of it at a mirrored place and not at its
+             * own (that copy draws it); a PROVISIONAL unit's (not placed, _lmMbUnplaced: its place
+             * is a guess, the camera is not on it) also with no main copy at its place; never
+             * one a copy hid behind this frame (nothing would draw the cell). The place of the main
+             * copy is the unit's orientation (_lmMbOwnEv) */
+            var hide;
+            if (key[i] === -2) hide = _lmMbVerifiedNear(cell) || _lmMbMirrored(cell, -1);
+            else {
+                var pl = _lmMbOwnPlaces(cell), sn = cell.spectator;
+                hide = !(pl & 1) && (pl > 1 || _lmMbUnplaced[sn] === true) && cell._lmMbHidF !== _lmMbFrame;
+                /* the one place of a main copy: 1 own, 2 mirrored on x, 4 on y, 8 on both */
+                var ev = pl === 1 ? 0 : pl === 2 ? 1 : pl === 4 ? 2 : pl === 8 ? 3 : -1;
+                if (ev >= 0) _lmMbOwnEv[sn] = _lmMbOwnEv[sn] === undefined || _lmMbOwnEv[sn] === ev ? ev : -1;
+            }
+            if (hide) {
                 cell._lmMbPosDup = true;
                 cell.invisible = true;
                 cell._lmMbTwin = null;
@@ -2811,6 +2839,27 @@ function _lmMbMirrored(cell, conn) {
     if (conn === 0 && _lmMbCopyAt(cell, nm, radius, px, py, reach, 0)) return false;
     return _lmMbCopyAt(cell, nm, radius, x0 + x1 - px, py, reach, conn) || _lmMbCopyAt(cell, nm, radius, px, y0 + y1 - py, reach, conn) ||
         _lmMbCopyAt(cell, nm, radius, x0 + x1 - px, y0 + y1 - py, reach, conn);
+}
+/* per connection number: the orientation an unverified unit's own cells showed in the last frame
+ * (the mirror of the one place where the main connection has a copy: 0 none, 1 x, 2 y, 3 both; -1
+ * cells disagreeing), filled by the hide step, voted (Spect._lmOwnCellVote) by the next one */
+var _lmMbOwnEv = [];
+/* Where does the main connection have a copy of an unverified unit's own cell (same server name
+ * and size, within 1.5 times the twin tolerance)? A mask: 1 at its place, 2 mirrored on x, 4 on y,
+ * 8 on both about the map centre; 0 none (or no name). Four searches of the frame's index, only
+ * for such cells. */
+function _lmMbOwnPlaces(cell) {
+    var LM = window.legendmod, nm = _lmMbSrvName(cell), radius = _lmMbCellRadius(cell);
+    if (!nm || !radius || !LM) return 0;
+    var p = _lmMbPosOf(cell, _lmMbPosC), px = p.x, py = p.y;
+    if (!Number.isFinite(px) || !Number.isFinite(py)) return 0;
+    var reach = 1.5 * _lmMbTwinReach(radius, _lmMbSpeed(cell)), own = _lmMbCopyAt(cell, nm, radius, px, py, reach, 0) ? 1 : 0;
+    /* no map border yet: no mirrored place */
+    var x0 = LM.mapMinX, x1 = LM.mapMaxX, y0 = LM.mapMinY, y1 = LM.mapMaxY;
+    if (!(x1 > x0) || !(y1 > y0) || !Number.isFinite(x0 + x1 + y0 + y1)) return own;
+    var mx = x0 + x1 - px, my = y0 + y1 - py;
+    return own | (_lmMbCopyAt(cell, nm, radius, mx, py, reach, 0) ? 2 : 0) |
+        (_lmMbCopyAt(cell, nm, radius, px, my, reach, 0) ? 4 : 0) | (_lmMbCopyAt(cell, nm, radius, mx, my, reach, 0) ? 8 : 0);
 }
 /* a cell of the kind and size of cell within 1.5 times the twin tolerance of (px, py): conn 0
  * a main-connection cell (not the main player's own) named nm; conn -1 a verified connection's
@@ -25708,11 +25757,11 @@ function thelegendmodproject() {
         multiboxswap() {
             this.multiboxchange();
         },
-        /* Starts multibox: one unit (a playing connection) beside the main player, controlled at
-         * once. The in-game spectator ends (a mode change, LM._lmSpecSetMode: its camera cannot sit
-         * beside a playing one, and its switch goes off with its socket); Full Map tiles stay open
-         * as they are (same sockets, same numbers). The focus goes to the unit addBox returned: its
-         * number is whatever spects held before (16 or more while Full Map runs), it was always 1
+        /* Starts multibox: one unit (a playing connection) beside the main player, controlled from
+         * its first spawn on. The in-game spectator ends (a mode change, LM._lmSpecSetMode: its
+         * camera cannot sit beside a playing one, and its switch goes off with its socket); Full Map
+         * tiles stay open as they are (same sockets, same numbers). The focus goes to the unit addBox
+         * returned: its number is whatever spects held before (16 or more while Full Map runs), it was always 1
          * only because every spectator socket was closed first (LM.flushSpecsData, which is the
          * server change / lost connection shutdown, not this). No unit (addBox missing or the
          * connection could not be made): nothing changes, the main session goes on. */
@@ -25725,7 +25774,9 @@ function thelegendmodproject() {
                 console.error('[MULTIBOX] The multibox unit could not be opened:', e);
             }
             if (!unit || !unit.number) return null;
-            lmSetMbUnit(unit.number);
+            /* the focus goes to it at its first spawn (Spect.beforecalculation), once it has a place
+             * on this map (orientation verified, Spect._lmSpawnHold, 3 s at most): given here the
+             * camera sat on its mirrored place, or on the main player that was no longer steered */
             if (!legendmod.play) {
                 play();
             }

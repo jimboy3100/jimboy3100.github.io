@@ -306,7 +306,8 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
 
 /* 15. A connection whose transform is not verified (spect.js _lmFeedOk false: PROVISIONAL,
  * CONFLICTED): its cells are not drawn, hide nothing and nothing hides behind them, except its own
- * cells (a multibox unit's), which stay drawn with the main copy hidden behind them */
+ * cells (a multibox unit's), which stay drawn with the main copy hidden behind them (here an older
+ * spect.js without transformReady; a CONFLICTED unit keeps its place: 15b; a PROVISIONAL one: 15c) */
 {
     const ctx = env(2);
     ctx.window.spects[1]._lmFeedOk = () => false;
@@ -329,6 +330,59 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     ctx.window.spects[1]._lmFeedOk = () => true;
     run(ctx.window.legendmod.cells, 2, ctx);
     check('verified again: one copy drawn', drawn([a, b]) === 1);
+}
+/* 15c. A PROVISIONAL unit (not verified yet: no place on this map, transformReady false): its own
+ * cell is drawn only where the main connection has a copy of it (same server name) at its place, the
+ * main copy hidden behind it; at a place mirrored on x, y or both of the main copy, and with no main
+ * copy at all, it is hidden (its place is a guess) and the main copy drawn; a cell a copy hid behind
+ * stays drawn. The one place where the main copy is, the same for each of its own cells, is the
+ * orientation it shows (_lmOwnCellVote with the mirror: 0 none, 1 x, 2 y, 3 both), voted by the
+ * next frame; cells that disagree, or a main copy at two places (near a centre line), vote nothing. */
+{
+    const votes = [];
+    const ctx = env(4);
+    const LM = ctx.window.legendmod;
+    LM.mapMinX = LM.mapMinY = -7071; LM.mapMaxX = LM.mapMaxY = 7071;
+    for (const u of ctx.window.spects.slice(1)) { u._lmFeedOk = () => false; u.transformReady = () => false; u._lmOwnCellVote = (m) => votes.push(u.number + ':' + m); }
+    /* unit 2: its own cell where the main copy is */
+    const at = cell({ spectator: 2, isPlayerCellMulti: true, x: 3000, y: 2000, color: '#333333', _lmSrvName: 'U2' });
+    const atM = cell({ spectator: 0, x: 3002, y: 2000, color: '#444444', _lmSrvName: 'U2' });
+    /* unit 3: two own cells, both at the place mirrored on x and y of the main copies */
+    const mx = cell({ spectator: 3, isPlayerCellMulti: true, x: -3000, y: -2000, color: '#333334', _lmSrvName: 'U3' });
+    const mxM = cell({ spectator: 0, x: 3001, y: 2600, color: '#444445', _lmSrvName: 'U3' });
+    const mx2 = cell({ spectator: 3, isPlayerCellMulti: true, x: -1500, y: -4000, size: 60, targetSize: 60, color: '#333335', _lmSrvName: 'U3' });
+    const mx2M = cell({ spectator: 0, x: 1500, y: 4000, size: 60, targetSize: 60, color: '#444446', _lmSrvName: 'U3' });
+    mxM.y = 2000;
+    /* unit 4: one own cell mirrored on x of its main copy, one with no main copy anywhere */
+    const dx = cell({ spectator: 4, isPlayerCellMulti: true, x: -5000, y: -900, color: '#333336', _lmSrvName: 'U4' });
+    const dxM = cell({ spectator: 0, x: 5000, y: -900, color: '#444447', _lmSrvName: 'U4' });
+    const lone = cell({ spectator: 4, isPlayerCellMulti: true, x: 200, y: 6000, size: 40, targetSize: 40, color: '#333337', _lmSrvName: 'U4' });
+    run([at, atM, mx, mxM, mx2, mx2M, dx, dxM, lone], 1, ctx);
+    check('provisional unit: its own cell where the main copy (same name) is: drawn, the main copy hidden behind it', !at.invisible && atM.invisible);
+    check('provisional unit: its own cells at the place mirrored on both axes of the main copies: hidden, the main copies drawn',
+        mx.invisible && mx2.invisible && !mxM.invisible && !mx2M.invisible);
+    check('provisional unit: its own cell mirrored on x: hidden, the main copy drawn; with no main copy anywhere: hidden', dx.invisible && !dxM.invisible && lone.invisible);
+    check('the orientation its own cells show is not voted in the frame that found it (no state change in the hide step)', votes.length === 0, votes.join());
+    run(LM.cells, 1, ctx);
+    check('... the next frame votes it: unit 2 none, unit 3 both axes (its two cells agree); unit 4 x (its other cell, with no main copy, shows nothing)',
+        votes.join() === '2:0,3:3,4:1', votes.join());
+    /* a second own cell of unit 4 that shows y: the cells disagree, no vote */
+    votes.length = 0;
+    const dy = cell({ spectator: 4, isPlayerCellMulti: true, x: -2000, y: 3000, size: 70, targetSize: 70, color: '#333338', _lmSrvName: 'U4' });
+    const dyM = cell({ spectator: 0, x: -2000, y: -3000, size: 70, targetSize: 70, color: '#444448', _lmSrvName: 'U4' });
+    /* unit 2 at the x centre line: the main copy fits its place and the mirrored one, no vote */
+    at.x = 2; atM.x = 4;
+    run(LM.cells.concat([dy, dyM]), 1, ctx);
+    votes.length = 0;
+    run(LM.cells, 1, ctx);
+    check('own cells that disagree (x and y), or a main copy at two of its places (centre line): no vote', votes.filter((v) => v[0] === '4' || v[0] === '2').length === 0 && !at.invisible, votes.join());
+    /* a copy hid behind an own cell (twin match) that the name test does not find: it stays drawn */
+    votes.length = 0;
+    const tw = cell({ spectator: 2, isPlayerCellMulti: true, x: -6000, y: 5000, color: '#33333a', _lmSrvName: 'U2' });
+    const twM = cell({ spectator: 0, x: -5998, y: 5000, color: '#44444a' });
+    run([tw, twM], 2, ctx);
+    check('provisional unit: an own cell a copy hid behind stays drawn (else neither is drawn)', drawn([tw, twM]) === 1, [tw.invisible, twM.invisible].join());
+    delete LM.mapMinX; delete LM.mapMinY; delete LM.mapMaxX; delete LM.mapMaxY;
 }
 /* 15b. A multibox unit not verified yet but steered (transformReady: the camera follows it): the
  * cells only it sees are drawn (the player could be eaten by a cell he does not see), they hide

@@ -437,8 +437,9 @@ function death(o) {
             s.ctx.defaultmapsettings.multiboxAmount = K; /* Settings "Multibox slots" */
             app.multiboxchange();
             const u = units(), open = s.ctx.spects.filter((x) => x && !x.player && !x.closed).length;
-            MB.verdict(check, tag + ': enabling multibox opens one unit, controlled, and keeps Full Map',
-                u.length === 1 && s.focus() === u[0].number && open === tiles, u.length + ' unit, focus ' + s.focus() + ', tiles ' + open + ' of ' + tiles);
+            /* it takes the focus at its first spawn (spect.js beforecalculation, once it has a place on the map) */
+            MB.verdict(check, tag + ': enabling multibox opens one unit (controlled from its first spawn) and keeps Full Map',
+                u.length === 1 && s.focus() === 0 && open === tiles, u.length + ' unit, focus ' + s.focus() + ', tiles ' + open + ' of ' + tiles);
             app.multiboxchange();
             check(tag + ': the switch key again: no second unit (it switches)', units().length === 1);
             if (K > 2) {
@@ -468,7 +469,12 @@ function death(o) {
     {
         const { s, app, units } = fresh(3);
         app.mbEnable(); app.mbEnable();
-        check('repeated enable: one unit (P2), controlled', units().length === 1 && units()[0].slotId === 2 && s.focus() === units()[0].number);
+        check('repeated enable: one unit (P2), the main player controlled until its first spawn', units().length === 1 && units()[0].slotId === 2 && s.focus() === 0);
+        /* its first own cell (spect.js beforecalculation): it takes the focus */
+        const p2 = units()[0];
+        p2._lmOwn = [{ x: 0, y: 0, size: 60, targetSize: 60, spectator: p2.number }]; p2.active = true;
+        p2.beforecalculation();
+        check('    ... its first spawn: P2 controlled', s.focus() === p2.number, s.focus());
         const u3 = app.mbAddPlayer();
         check('add one: P3 opens in slot 3 and the focus stays where it was (it takes it at its first spawn)', !!u3 && u3.slotId === 3 && units().length === 2 && s.focus() === units()[0].number);
         check('Settings "Multibox slots" 3 (the shipped default): no fourth player', app.mbAddPlayer() === null && units().length === 2);
