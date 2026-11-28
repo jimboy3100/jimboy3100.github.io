@@ -5009,6 +5009,54 @@
         "external": "kept published: named by older engine versions; expandingland, legendworld-help, LegendWorld and deltav4 do not name it"
       },
       "approvedForDeletion": false
+    },
+    {
+      "oldPath": "extras/banneranimatedFayiz1.html",
+      "canonicalPath": null,
+      "reason": "unreachable promo page of 2017 (a three.js picture animation): no live page, script or menu links it; in the whole git history only extras/banneranimatedFayiz3.html (deleted) named it. Removed with its own two pictures",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: settings, profiles, cloud configs and replays keep skin, picture, sound and theme addresses, never an extras/ page, and no version of the live code (ogario/, LMexpress/, LMmobile/, lib/, themes/, skins/, play.html, index.html) ever opened it",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK loads it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/FAYiz/FayizPromoCar.jpg",
+      "canonicalPath": null,
+      "reason": "used only by extras/banneranimatedFayiz1.html (deleted) and, in 2017, extras/banneranimated1Fayiz.html (long gone)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history only the two promo pages name it, never a theme, preset, setting default or picture list a player could have picked and saved",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
+    },
+    {
+      "oldPath": "banners/FAYiz/FayizPromoBusstop.jpg",
+      "canonicalPath": null,
+      "reason": "used only by extras/banneranimatedFayiz1.html (deleted) and, in 2017, extras/banneranimated1Fayiz.html (long gone)",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": false,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": false,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data cannot hold it: in the whole git history only the two promo pages name it, never a theme, preset, setting default or picture list a player could have picked and saved",
+        "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it; no version in the git history of a userscript, of the two extension zips or of the Expanding Land APK names it; not in sitemap.xml"
+      },
+      "approvedForDeletion": true
     }
   ]
 }
