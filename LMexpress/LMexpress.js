@@ -480,31 +480,6 @@ function loadericon() {
     }, 1600); */
 }
 
-function PremiumUsersFFAScore() {
-    if (window.proLicenceUID && window.proLicenceUID.includes("MegaFFA")) {
-        if (PremiumLimitedDateStart && !isNaN(parseInt(PremiumLimitedDateStart, 10))) {
-            /* Parse YYYYMMDD start date into a proper Date object */
-            var startStr = String(PremiumLimitedDateStart);
-            var startDate = new Date(
-                parseInt(startStr.slice(0, 4)),
-                parseInt(startStr.slice(4, 6)) - 1, /* months are 0-indexed */
-                parseInt(startStr.slice(6, 8))
-            );
-            /* Giveaway lasts 6 days from start */
-            var expiryDate = new Date(startDate.getTime());
-            expiryDate.setDate(expiryDate.getDate() + 6);
-
-            if (new Date() > expiryDate && window.proLicenceUID) {
-                window.proLicenceUID = null;
-                toastr.warning(_lmxT('lmx.ex.giveawayEnded')).css("width", "350px");
-            }
-        }
-        else {
-            window.proLicenceUID = null
-        }
-        localStorage.setItem("proLicenceUID", window.proLicenceUID);
-    }
-}
 function PremiumUsers() {
     /* ProLicenceUsersTableJS.js failed to load: this threw and the ban check after it never ran */
     if (typeof ProLicenceUsersTable === "undefined" || !ProLicenceUsersTable || !ProLicenceUsersTable.ProLicenceUsers) return;
@@ -4831,7 +4806,11 @@ function init(modVersion, loaderName) {
 }
 
 function initializeLM(modVersion) {
-    PremiumUsersFFAScore()
+    /* the Mega FFA giveaway is removed: a licence left from it is dropped (it lasted 6 days) */
+    if (window.proLicenceUID && String(window.proLicenceUID).includes("MegaFFA")) {
+        window.proLicenceUID = null;
+        localStorage.setItem("proLicenceUID", window.proLicenceUID);
+    }
 
 
     /* by their agar.io text key too: those texts are in the chosen language now, not always English */

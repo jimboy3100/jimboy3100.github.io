@@ -5356,8 +5356,6 @@ function deleteGamemode(temp, restoreLast) {
 
 
 
-//var MassBigFFAAnnouncement = localStorage.getItem("MassBigFFAAnnouncement");
-var PremiumLimitedDateStart = localStorage.getItem("PremiumLimitedDateStart");
 
 var _RE_EMOJI = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|\ud83c[\ude32-\ude3a]|\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/g;
 /* Hoisted clan-tag strip regex — compiled once instead of per-cell per-frame */
@@ -39695,7 +39693,6 @@ function thelegendmodproject() {
         playerYMulti: 0,
         playerSize: 0,
         playerMass: 0,
-        totalPlayerMassBigFFA: 0,
         totalPlayerMass: 0,
         playerMaxMass: 0,
         playerMinMass: 0,
@@ -40669,11 +40666,6 @@ function thelegendmodproject() {
             this.play = false //fix
 
             this.totalPlayerMass = parseInt(localStorage.getItem("totalPlayerMass"), 10) || 0;
-            /* a changed total of the previous connection is stored before it is read back */
-            this.flushMegaFFAscore();
-            if (this.ws.includes("imsolo.pro:2102")) { //4 times bigger 600 users limit
-                this.totalPlayerMassBigFFA = parseInt(localStorage.getItem("totalPlayerMassBigFFA"), 10) || 0;
-            }
             this.replayfunctions();
         },
         onOpen() {
@@ -41706,7 +41698,6 @@ function thelegendmodproject() {
             if (window.LMPerf && this === window.legendmod) {
                 try { window.LMPerf.netEvent('close', { code: t && t.code, reason: t && t.reason, wasClean: t && t.wasClean, openMs: this._connOpenTime ? Date.now() - this._connOpenTime : 0 }); } catch (e) { }
             }
-            this.flushMegaFFAscore();
             this.flushCellsData();
             /* the closed socket's border must not outlive it (beacon / tab-return restore) */
             this._lmServerBorder = null;
@@ -51992,45 +51983,6 @@ function thelegendmodproject() {
             if (this.connectionIntegrity) {
                 this.totalPlayerMass += this.playerMass
             }
-            if (this.ws && this.ws.includes("imsolo.pro:2102")) {
-                this.totalPlayerMassBigFFA += this.playerMass
-                var temp = 20000 * 25 * 60 * 60 //1800000000 total mass
-                if (this.totalPlayerMassBigFFA > temp && !window.proLicenceUID) {
-                    this.totalPlayerMassBigFFA = 0
-                    //localStorage.setItem("MassBigFFAAnnouncement", true);															
-                    window.proLicenceUID = "MegaFFA"
-                    localStorage.setItem("proLicenceUID", window.proLicenceUID);
-                    var dateNow = parseInt(new Date().toISOString().slice(0, new Date().toISOString().indexOf("T")).replace(/-/g, ""));
-                    localStorage.setItem("PremiumLimitedDateStart", dateNow);
-                    /* Calculate expiration date: 7 days from now using proper Date math */
-                    var expiryDate = new Date();
-                    expiryDate.setDate(expiryDate.getDate() + 7);
-                    var expiryDay = expiryDate.getDate();
-                    var expiryMonth = expiryDate.toLocaleString('default', { month: 'long' });
-                    var daySuffix = (expiryDay === 1 || expiryDay === 21 || expiryDay === 31) ? "st" :
-                        (expiryDay === 2 || expiryDay === 22) ? "nd" :
-                            (expiryDay === 3 || expiryDay === 23) ? "rd" : "th";
-                    /* the date in the chosen language (day and month name) */
-                    var tempdateNow2 = expiryDate.toLocaleDateString(window.LMi18n ? (LMi18n.lang() === 'zh' ? 'zh-TW' : LMi18n.lang()) : undefined, { day: 'numeric', month: 'long' });
-                    toastr.warning("<b>[" + Premadeletter123 + "]:</b> " + lmT('game2.megaFfaWin', [tempdateNow2])).css("width", "350px");
-                    /* the reset to 0 is stored at once, with the licence */
-                    this._lmBigFFADirty = true;
-                    this.flushMegaFFAscore();
-                    return;
-                }
-                /* Was a synchronous localStorage write on every world update (many per second).
-                 * Now the total is marked changed and stored at most every 5 s, and on socket
-                 * close, before a reconnect reads it and on pagehide (flushMegaFFAscore). */
-                if (this.playerMass) this._lmBigFFADirty = true;
-                if (this._lmBigFFADirty && !(Date.now() - (this._lmBigFFASavedAt || 0) < 5000)) this.flushMegaFFAscore();
-            }
-        },
-        /* stores the FFA PowerUp mass total when it changed since it was last stored */
-        flushMegaFFAscore() {
-            if (!this._lmBigFFADirty) return;
-            this._lmBigFFADirty = false;
-            this._lmBigFFASavedAt = Date.now();
-            try { localStorage.setItem("totalPlayerMassBigFFA", this.totalPlayerMassBigFFA); } catch (e) { }
         },
         sendWaves(x1, y1, color1, length, sender, moreAnimation) {
             var wave = {
@@ -55413,8 +55365,6 @@ function thelegendmodproject() {
         }
     };
     window.legendmod = LM; // look at this
-    /* the FFA PowerUp mass total is stored every 5 s (megaFFAscore): also when the page goes away */
-    window.addEventListener('pagehide', function () { try { LM.flushMegaFFAscore(); } catch (e) { } });
     /* Network back while an auto-reconnect is waiting: connect now instead of
      * sitting out the backoff; after the retries gave up, reopen that server
      * (still the current one). Never when a socket is already connecting/open
@@ -87194,6 +87144,8 @@ Object.defineProperty(Array.prototype, 'stDev', {
     try { ['lmCompanionPrivacy', 'lmDiscover', 'lmAnalyticsGoals', 'lmBadges'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* The Dying Light theme is removed: its saved on/off state is deleted from this browser */
     try { localStorage.removeItem('dyinglight1load'); } catch (e) { }
+    /* The Mega FFA giveaway (mass counted on imsolo.pro:2102) is removed: its counter and start date are deleted */
+    try { ['totalPlayerMassBigFFA', 'PremiumLimitedDateStart'].forEach(function (k) { localStorage.removeItem(k); }); } catch (e) { }
     /* AgarTool team: AgarTool players with my tag on the same agar.io server as teammates (no socket or timer while its option is off) */
     try {
         var agarToolScript = document.createElement('script');
