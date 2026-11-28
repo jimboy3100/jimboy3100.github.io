@@ -43,7 +43,7 @@ function makeDom() {
     const looks = ['agariowhitesettings', 'nosoups', 'vanillabetter', 'galaxysettings', 'legenddefaultsettings', 'vanillalike'];
     check('Templates page offers the six looks', looks.every(f => page.indexOf('onclick="' + f + '()') !== -1));
     check('Templates page shows the Dying Light expansion banner (bound by LMexpress: no inline click, no second #LEGENDAds2)',
-        page.indexOf('data-lm-dl="on"') !== -1 && page.indexOf('dyinglightbanner2.jpg') !== -1 && page.indexOf('LEGENDAds2') === -1 && page.indexOf('onclick="opendyinglight') === -1);
+        page.indexOf('data-lm-dl="on"') !== -1 && page.indexOf('dyinglight/interface/banner2-950.webp') !== -1 && page.indexOf('LEGENDAds2') === -1 && page.indexOf('onclick="opendyinglight') === -1);
     for (const f of looks) {
         d.els['import-settings'].value = ''; d.log.clicks.length = 0;
         vm.runInContext(f + '()', ctx);
@@ -170,7 +170,7 @@ async function dyingLightLifecycle() {
     const before = snap();
     vm.runInContext('lmDyingLightStartup()', ctx);
     check('start with it off: no script, no listener, the turn-on banner', scripts.length === 0 && !ctx.LMEvents._has('settingsChange') &&
-        /data-lm-dl="toggle"/.test(box.innerHTML) && /dyinglightbanner2/.test(box.innerHTML) && snap() === before);
+        /data-lm-dl="toggle"/.test(box.innerHTML) && /interface\/banner2-950\.webp/.test(box.innerHTML) && snap() === before);
 
     /* a new activation asks first; No leaves everything as it was */
     ctx.answer = false;
@@ -178,7 +178,7 @@ async function dyingLightLifecycle() {
     check('the script is loaded once, with the release version', scripts.length === 1 && /extras\/dyinglight\.js\?v=3\.7$/.test(scripts[0].src) && /aria-busy/.test(box.innerHTML));
     await runScript();
     check('refused at the question: off, nothing saved', (await p) === false && ctx.LMDyingLight.state === 'off' && snap() === before && pics.length === 0);
-    check('refused at the question: the banner offers it again (not left loading)', !/aria-busy/.test(box.innerHTML) && /dyinglightbanner2/.test(box.innerHTML));
+    check('refused at the question: the banner offers it again (not left loading)', !/aria-busy/.test(box.innerHTML) && /interface\/banner2-950\.webp/.test(box.innerHTML));
 
     ctx.answer = true;
     p = vm.runInContext('opendyinglight()', ctx);
@@ -187,7 +187,8 @@ async function dyingLightLifecycle() {
     flushPics(true);
     check('on after the pictures', (await p) === true && ctx.LMDyingLight.isEnabled() && D.dyingLight === true && JSON.parse(store.ogarioSettings).dyingLight === true);
     check('on: the old readers see the flag (no global zombie picture), the scoped style is there, the banner turns it off',
-        ctx.dyinglight1load === 'yes' && ctx.cimgDyingLight === undefined && cls.has('lm-dl') && head.kids.some(n => n.id === 'lm-dl-style') && /dyinglightbanner3/.test(box.innerHTML));
+        ctx.dyinglight1load === 'yes' && ctx.cimgDyingLight === undefined && cls.has('lm-dl') && head.kids.some(n => n.id === 'lm-dl-style') && /interface\/banner3-950\.webp/.test(box.innerHTML) &&
+        /interface\/teamboard-323\.webp/.test(head.kids.find(n => n.id === 'lm-dl-style').textContent));
     check('on: its controls under the banner with the saved values', /data-lm-dl-opt="dyingLightIntensity"/.test(box.innerHTML) &&
         /value="immersive" selected/.test(box.innerHTML) && /data-lm-dl-opt="dyingLightCycle" checked/.test(box.innerHTML) &&
         /data-lm-dl-opt="dyingLightScares" checked/.test(box.innerHTML) && /value="100" data-lm-dl-opt="dyingLightVolume"/.test(box.innerHTML));

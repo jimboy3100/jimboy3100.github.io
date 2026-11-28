@@ -3983,7 +3983,8 @@ function lmDyingLightBanner() {
     var tip = _lmxE(on ? "pkg.dlv3life.turnOff" : busy ? "pkg.dlv3life.loading" : "pkg.dlv3life.turnOn");
     box.innerHTML = '<a class="lm-dl-banner" href="#" role="button" data-lm-dl="toggle" title="' + tip + '" aria-label="' + tip + '"' +
         (busy ? ' aria-busy="true" style="opacity:.6"' : '') + '><img src="https://www.legendmod.ml/banners/' +
-        (on ? 'dyinglightbanner3.jpg' : 'dyinglightbanner2.jpg') + '" alt="Dying Light" height="70" style="width:100%"></a>' +
+        /* the WebP copies of dyinglightbanner3.jpg / banner2.jpg (banners/dyinglight/manifest.json) */
+        (on ? 'dyinglight/interface/banner3-950.webp' : 'dyinglight/interface/banner2-950.webp') + '" alt="Dying Light" height="70" style="width:100%"></a>' +
         (on ? lmDyingLightOpts() : '');
 }
 /* its few controls, under the banner while it is on (gameplay settings dyingLightIntensity,

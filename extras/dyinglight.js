@@ -45,7 +45,8 @@
     /* each effect can be suppressed on its own (setEffect); none of them does any work while off */
     var FX = { variants: true, particles: true, spawn: true, gameOver: true };
     var SCENE_URL = IMG + 'dyinglight/backgrounds/back0-1920.webp';
-    var MINIMAP_URL = IMG + 'dyinglightbabyteamboard.png';
+    /* the WebP copy of dyinglightbabyteamboard.png (manifest: teamboard, 3 KB instead of 73 KB) */
+    var MINIMAP_URL = IMG + 'dyinglight/interface/teamboard-323.webp';
     /* a picture that does not come is skipped, it never holds the theme back */
     var ASSET_WAIT_MS = 8000;
     var INTENSITIES = { competitive: 1, immersive: 1, nightmare: 1 };

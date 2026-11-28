@@ -85,7 +85,7 @@ $("#Userscriptshud3").html('<div id="tutorial9" style="display:block;" width="82
 	'<p style="color:var(--lm-mc,#fff); font-size:15px; margin:6px 0;" align="middle"><b>' + _lmHTx('pack.orChooseAnExpansion') + '</b></p></div>'+
 	/* the click is bound once by LMexpress.js (lmDyingLightStartup): data-lm-dl="on" turns it on */
 	/* i18n-ok: Dying Light is the game's name */
-	'<div class="lm-dl-template"><a class="lm-dl-banner" href="#" role="button" data-lm-dl="on"><img height="70" src="https://www.legendmod.ml/banners/dyinglightbanner2.jpg" alt="Dying Light" style="width: 40%"></a><a href="#" role="button" data-lm-dl="on" style="color:var(--lm-tc,#fff); font-size:13px; text-decoration:underline;">Dying Light</a></div>'+	   
+	'<div class="lm-dl-template"><a class="lm-dl-banner" href="#" role="button" data-lm-dl="on"><img height="70" src="https://www.legendmod.ml/banners/dyinglight/interface/banner2-950.webp" alt="Dying Light" style="width: 40%"></a><a href="#" role="button" data-lm-dl="on" style="color:var(--lm-tc,#fff); font-size:13px; text-decoration:underline;">Dying Light</a></div>'+	   
 	'<br><br></div></div>');
 //$('#TemplatesBtn').hide();	
 }
