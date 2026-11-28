@@ -19,10 +19,6 @@ function _lmxLanguageOptions() {
 
 loadericon();
 
-//Authenticate Mod Script
-
-getaccesstoken();
-
 /*
 var CutNameConflictwithMessage=false;
 (function(){
@@ -607,26 +603,6 @@ function PremiumUsersLMscore() {
         toastr.warning(_lmxT('lmx.ex.premiumByLevel', [_lmEscHtml(window.LMscore)])).css("width", "350px");
     }
 }
-function getaccesstoken() {
-    $.ajax({
-        type: "GET",
-        url: "https://www.legendmod.ml/AjaxData/accesstoken.html",
-        datatype: "json",
-        success: function (info) {
-            if (info && info[17]) {
-                getaccesstoken2(info[17]);
-            }
-        },
-        error: function () { }
-    });
-}
-
-function getaccesstoken2(accesstomod) {
-    if (accesstomod != "a" && accesstomod != null) {
-        toastr.error('<b>[' + Premadeletter123 + ']:</b> ' + Premadeletter88 + ', <br>' + Premadeletter118 + ': <a target="_blank" href="https://jimboy3100.github.io"><font color="blue"><b><u>jimboy3100.github.io</u></b></font></a><br>' + Premadeletter89).css("width", "300px");
-    }
-}
-
 function enableshortcuts() {
     if ($("#IPBtn").attr('aria-pressed') == "false") {
         $("#IPBtn").click();
