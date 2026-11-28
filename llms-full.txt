@@ -263,7 +263,7 @@ Drag and resize HUD elements with named layouts (the one place for HUD positions
 - **Click-to-spectate**: Click a leaderboard entry to follow that player in spectate
 
 ### 15. Stats and Analytics
-- **Live stats HUD**: Mass, FPS, ping, PPS (packets per second), server Hz, alive time, world size, decay info, 16-cell count
+- **Live stats HUD**: Mass, frame time, ping, PPS (packets per second), server Hz, alive time, world size, decay info, 16-cell count
 - **Game Over card**: Displays session statistics after death
 - **Mass graph**: Graph of mass over your life on the Game Over card
 - **Death recap**: Last 20 seconds as 3-6 summarised steps with mass sparkline, showing splits, virus pops, being eaten. Attributes killer from eat events. Expanding Land uses server-provided killer info.
@@ -309,7 +309,7 @@ Extend Legend Mod with custom JavaScript. Features:
 
 ### 27. Additional Presets
 Beyond Streamer, Legend Mod offers one-click presets:
-- **Competitive**: Enables opponent colours, rings, virus colours, split range, merge rings, mass, FPS/PPS stats
+- **Competitive**: Enables opponent colours, rings, virus colours, split range, merge rings, mass, frame time/PPS stats
 - **Battery saver**: FPS cap 60, no jelly physics, no video skins, no animated rainbow colour
 - **Reduced motion**: No motion effects, no jelly, no suck animation
 - **Custom HUD / Clean HUD**: Strips non-essential HUD elements

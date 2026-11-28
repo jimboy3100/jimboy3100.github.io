@@ -19,7 +19,7 @@
       window.__lmInput(JSON.stringify({ id: id, type: window.LM_IS_MOBILE ? 'tap' : 'click', x: x, y: y }));
     });
   };
-  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['cursorTracking', 'bubbleCursorTracker'], ['showStatsFPS', 'showStatsFrameTime']];
+  var pairs = [['oppRings', 'bubbleInd'], ['cursorTracking', 'splitPrediction'], ['cursorTracking', 'bubbleCursorTracker']];
   var keep = { showStats: defaultmapsettings.showStats, bubbleCursorTracker: defaultmapsettings.bubbleCursorTracker };
   pairs.forEach(function (p) { keep[p[0]] = defaultmapsettings[p[0]]; keep[p[1]] = defaultmapsettings[p[1]]; });
   var needs = application._lmMenuText('lmDepNeeds');
@@ -65,11 +65,11 @@
       if (off.indexOf(needs) !== 0 || off.indexOf(plain(parent)) < 0) fail.push(child + ' does not say it needs ' + parent + ' while it is off (' + (off || 'not dimmed') + ')');
       if (on.indexOf(needs) === 0 || back.indexOf(needs) === 0) fail.push(child + ' says it needs ' + parent + ' while it is on');
     }
-    /* Stats off, FPS on: the frame time needs Stats */
+    /* Stats off: the frame time (showStatsFPS) needs Stats */
     defaultmapsettings.showStats = false;
     application._lmDepRefresh();
-    info.statsOff = { showStatsFrameTime: why('showStatsFrameTime') };
-    ['showStatsFrameTime'].forEach(function (k) {
+    info.statsOff = { showStatsFPS: why('showStatsFPS') };
+    ['showStatsFPS'].forEach(function (k) {
       if (info.statsOff[k] !== needs + ': ' + plain('showStats')) fail.push(k + ' with Stats off says ' + (info.statsOff[k] || 'nothing'));
     });
     /* the bubble look of Cursor tracking: while it is on, Split prediction (it dims the line) says

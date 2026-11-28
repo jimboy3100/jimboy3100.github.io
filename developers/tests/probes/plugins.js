@@ -103,10 +103,8 @@
     info.settingsChange = got.length;
     if (got.length !== 2 || got[0].key !== 'showGrid' || got[0].value !== !before || got[1].value !== before) fail.push('settingsChange events: ' + JSON.stringify(got));
     if (got[0] && !Object.isFrozen(got[0])) fail.push('settingsChange data not frozen');
-    /* the frame time switch (it was a Lab experiment) is the stats option showStatsFrameTime */
-    var ft = document.getElementById('showStatsFrameTime');
-    if (!ft || !$(ft).closest('#og-options').length) fail.push('Settings > Stats: no frame time switch');
-    else if (ft.checked || defaultmapsettings.showStatsFrameTime) fail.push('frame time switch on by default');
+    /* the old frame time switch is gone: the stats line shows the frame time instead of the FPS */
+    if (document.getElementById('showStatsFrameTime')) fail.push('the old frame time switch still exists');
     LMPlugins.open('plugins');
     await wait(50);
     if (document.querySelector('#lm-us-exps, .lm-us-labs, #lm-lab-reset')) fail.push('User Scripts still has a Lab experiments group');

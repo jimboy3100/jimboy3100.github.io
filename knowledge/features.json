@@ -83,7 +83,7 @@
     {
       "id": "stats",
       "name": "Stats and analytics",
-      "description": "Live stats HUD (mass, FPS, ping, PPS, server Hz, alive time, 16-cell count). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. Analytics dashboard with heatmaps, 500 game summaries and the match history.",
+      "description": "Live stats HUD (mass, frame time, ping, PPS, server Hz, alive time, 16-cell count). Death recap (last 20s, 3-6 steps, mass sparkline, killer attribution). Mass graph on Game Over card. Analytics dashboard with heatmaps, 500 game summaries and the match history.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

@@ -21495,7 +21495,6 @@ var defaultmapsettings = {
     rainbowBorderSpeed: 5,        /* 5 = the original speed */
     /* timeFormat (clock format) is gone: the clock always shows the browser's date and time; saved values are skipped on load */
     showStatsPPS: true,
-    showStatsFrameTime: false,    /* frame time next to the FPS: FPS: 60 (16.7 ms) (was the Lab experiment "frameTime") */
     showStatsServerHz: true,
 
     blockPopups: false,
@@ -24497,8 +24496,9 @@ function thelegendmodproject() {
                     }
                 }
                 if (defaultmapsettings.showStatsFPS) {
-                    t += 'FPS: ' + drawRender.fps;
-                    if (defaultmapsettings.showStatsFrameTime && drawRender.fps > 0) t += ' (' + (1000 / drawRender.fps).toFixed(1) + ' ms)';
+                    /* the frame time instead of the FPS: the average over the frames counted in the last
+                     * second (countFps), e.g. 16.7 ms; -- until the first second is counted */
+                    t += drawRender.fps > 0 ? (1000 / drawRender.fps).toFixed(1) + ' ms' : '-- ms';
                     var activeSpect = (window.multiboxPlayerEnabled && typeof spects !== "undefined" && getActiveSpect(window.multiboxPlayerEnabled)) ? getActiveSpect(window.multiboxPlayerEnabled) : null;
                     var currentPing = (activeSpect && activeSpect.ping != null) ? activeSpect.ping : drawRender.ping;
                     if (currentPing) t += ' | PING: ' + currentPing;
@@ -25179,17 +25179,8 @@ function thelegendmodproject() {
                     }
                 }
             }
-            /* the removed Lab's experiment "Frame time in the FPS counter" became the stats option
-             * showStatsFrameTime: a switch left on there comes along once, then the Lab's key
-             * (lmLab) goes; a broken one goes too */
-            var _lmLabRaw = null;
-            try { _lmLabRaw = window.localStorage.getItem('lmLab'); } catch (eLab) { }
-            if (_lmLabRaw !== null) {
-                try {
-                    var _lmLabS = JSON.parse(_lmLabRaw);
-                    if (_lmLabS && _lmLabS.on && typeof _lmLabS.on === 'object' && _lmLabS.on.frameTime === true && !(settings && Object.prototype.hasOwnProperty.call(settings, 'showStatsFrameTime'))) defaultmapsettings.showStatsFrameTime = true;
-                } catch (eLab1) { }
-            }
+            /* the key of the removed Lab (lmLab) is not used any more */
+            try { window.localStorage.removeItem('lmLab'); } catch (eLab) { }
             /* the Tools tab button "Show Timer Calc." (localStorage TIMEcalBtn) became the stats option
              * showStopwatch: a stopwatch left shown comes along once */
             var _lmOldTimer = null;
@@ -25198,13 +25189,6 @@ function thelegendmodproject() {
             /* the loaded values are the ones later changes are compared with (settingsChange) */
             _lmSettingsSeen = null;
             lmSettingsCommit(lmSettingsUserView());
-            /* saved first, then the Lab's key removed */
-            if (_lmLabRaw !== null) {
-                try {
-                    if (defaultmapsettings.showStatsFrameTime) this.saveSettings(defaultmapsettings, 'ogarioSettings');
-                    window.localStorage.removeItem('lmLab');
-                } catch (eLab2) { }
-            }
             /* the same for the old stopwatch key */
             if (_lmOldTimer !== null) {
                 try {
@@ -26818,7 +26802,7 @@ function thelegendmodproject() {
                 });
                 /* Recently added options: a NEW badge for one build (until the settings were
                  * opened with the badges shown), and a toggle that lists only them. */
-                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics', 'showStatsFrameTime'];
+                var NEW_KEYS = ['showStatsAlive', 'mergeRings', 'rainbowMapBorders', 'fpsLimit', 'x16Sound', 'non16Sound', 'showMiniMapTrail', 'lbHideBots', 'centerWeightCamera', 'rainbowBorderSpeed', 'chatHideWords', 'reducedMotion', 'matchHistory', 'gamepadDeadzone', 'performanceMode', 'recordReplays', 'glAntialias', 'macroSplitDelay', 'macroPopSplitDelay', 'splitPrediction', 'tripleSplitRange', 'chatShowId', 'hudMergeSound', 'hudRelativeMass', 'massFormat', 'volMaster', 'volChat', 'volCommands', 'volGameplay', 'adaptivePerf', 'analytics'];
                 newBtn.on('click', function () {
                     newOnly = !newOnly;
                     newBtn.toggleClass('active', newOnly);
@@ -26924,7 +26908,7 @@ function thelegendmodproject() {
              * (buildHotkeysControls): all input bindings live there, none in Settings. */
             //this.addOptions(["showTop5", "showTargeting", "showLbData", "centeredLb", "normalLb", "fpsAtTop", "tweenMaxEffect"], "hudGroup"),
             this.addOptions(["showTop5", "showTargeting", "showLbData", "lbHideBots", "centeredLb", "tweenMaxEffect", "top5skins"], "hudGroup");
-            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsFrameTime", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showStopwatch", "analytics"], "statsGroup");
+            this.addOptions(["showStats", "showStatsMass", "showStatsESTE", "showStatsEMTE", "showStatsMTE", "showStatsSTE", "showStatsTTE", "showStatsPTE", "showStatsN16", "showStatsFPS", "showStatsPPS", "showStatsAlive", "gameOverStats", "showTime", "showStopwatch", "analytics"], "statsGroup");
             /* Replays and history */
             this.addOptions(["recordReplays", "matchHistory"], "replayGroup");
             /* turning recording off keeps the recordings in memory: freeing them is this explicit, confirmed action */
@@ -27001,7 +26985,6 @@ function thelegendmodproject() {
             (function (app) {
                 var DEPS = {
                     showStats: ['showStatsMass', 'showStatsWorldSize', 'showStatsDecayInfo', 'showStatsServerHz', 'showStatsESTE', 'showStatsEMTE', 'showStatsMTE', 'showStatsSTE', 'showStatsTTE', 'showStatsPTE', 'showStatsN16', 'showStatsFPS', 'showStatsPPS', 'showStatsAlive'],
-                    showStatsFPS: ['showStatsFrameTime'],
                     showMiniMap: ['showMiniMapGrid', 'showMiniMapGuides', 'showExtraMiniMapGuides', 'showMiniMapGhostCells', 'showMiniMapTrail'],
                     /* not Mass format: it also sets the team list, leaderboard and target
                      * mass texts (shortMassFormat), which show with the cell mass off too */
