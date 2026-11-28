@@ -12,6 +12,8 @@
  *   does not. A dead unit's score, mass and split / eat numbers are 0, the next life shows its own score.
  * - The whole spect.js: a unit's split / eat numbers equal the main player's (recalculatePlayerMass)
  *   for one mass; the opcode 87 token is sent only on the socket that asked (not after a reconnect).
+ * - 1 to 6 playing clients x Full Map off / on (lib/mbplayers.js): deaths, focus, switch keys,
+ *   profiles, enabling; what today's code can not do yet is listed as known (section 6).
  * node developers/tests/mbdeath.js [ogario.v4.js] [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -246,6 +248,96 @@ function death(o) {
     answer('tok');
     check('opcode 87: the token goes to the socket that asked', same, sent.length + ' sent');
     check('opcode 87: after a reconnect the late token is not sent on the new socket', sent.length === 0, sent.length + ' sent');
+}
+
+/* 6. 1 to 6 playing clients x Full Map off / on (lib/mbplayers.js: the main player and units 1, 2,
+ * 18, 5, 9; Full Map tiles 3, 4, 20, 21), with the real onPlayerDeath switch, terminate,
+ * beforecalculation, respawn, lmDeathScope, multiboxchange / multiboxback / ensureMbSlots:
+ * - deaths one by one, the main player first, then always the controlled unit: the focus goes to a
+ *   living player (never a Full Map tile), the death scope is 'unit' while another one lives, the
+ *   death menu comes once, at the last death; the last unit's respawn takes the focus and hides
+ *   that menu; after each, every cell is drawn once and each player's own mass is right.
+ * - the switch keys visit every player once, in order, both ways; each unit plays its own profile.
+ * - enabling multibox opens one controlled unit and keeps Full Map; K playing clients can be opened.
+ * Configurations today's code fails are marked KNOWN with the reason (lib/mbplayers.js verdict). */
+{
+    const MB = require('./lib/mbplayers');
+    const opt = { v4: process.argv[2], sp: process.argv[3], app: true };
+    const PROFILES = 'KNOWN N>2: the third and later units play the second profile: ensureMbSlots keeps 2 slots (ogario.v4.js:26538 ' +
+        'Math.min(multiboxAmount, 2)) and the slot is looked up by unit number with selectedOldProfile as fallback (ogario.v4.js:24585 / 24640, spect.js:2080 / 3032)';
+    const ADD = 'KNOWN N>2: no Add Player: spect.js:391 addBox() runs only from multiboxchange / multiboxback while no unit exists ' +
+        '(ogario.v4.js:24543 / 24599), so a third to sixth player can not be opened';
+    const t0 = Date.now();
+    for (let K = 1; K <= 6; K++) for (const fm of [false, true]) {
+        const tag = 'K=' + K + ' (Full Map ' + (fm ? 'on' : 'off') + ')';
+        const tiles = fm ? MB.TILE_IDS.length : 0;
+        {
+            const s = MB.scene(Object.assign({ players: K, fullMap: fm }, opt));
+            MB.populate(s);
+            s.step(2);
+            const app = s.ctx.application, scope = s.ctx.lmDeathScope, bad = [];
+            const note = (what, ok) => { if (!ok) bad.push(what); };
+            const audit = (what) => { const r = s.audit(); note(what + ': ' + r.text, r.ok); };
+            const living = () => s.players.filter((p) => p && p.alive && p.unit).map((p) => p.src);
+            s.kill(1); s.step(1);
+            if (K > 1) note('main died: focus ' + s.focus() + ', menu ' + app.menuShown + ', scope ' + scope(0),
+                living().includes(s.focus()) && app.menuShown === 0 && app.autoResps === 0 && scope(0) === 'unit');
+            else note('main died alone: ' + app.autoResps + ' auto-respawn, scope ' + scope(0), app.autoResps === 1 && s.focus() === 0 && scope(0) === 'all');
+            audit('main died');
+            let lastSlot = 0;
+            while (living().length) {
+                const src = s.focus(), p = s.players.find((q) => q && q.src === src && q.alive);
+                if (!p) { note('focus ' + src + ' is on no living player', false); break; }
+                s.kill(p.slot); s.step(1);
+                lastSlot = p.slot;
+                const left = living().length;
+                note('P' + p.slot + ' died (' + left + ' left): focus ' + s.focus() + ', menu ' + app.menuShown + ', scope ' + scope(src), left
+                    ? living().includes(s.focus()) && app.menuShown === 0 && scope(src) === 'unit'
+                    : s.focus() === 0 && app.menuShown === 1 && scope(src) === 'all');
+                audit('P' + p.slot + ' died');
+            }
+            if (lastSlot) {
+                const hidden = app.menuHidden;
+                s.respawn(lastSlot); s.step(1);
+                note('P' + lastSlot + ' respawned: focus ' + s.focus() + ', menu hidden ' + (app.menuHidden - hidden),
+                    s.focus() === s.player(lastSlot).src && app.menuHidden === hidden + 1 && app.menuShown === 1);
+                audit('P' + lastSlot + ' respawned');
+            }
+            MB.verdict(check, tag + ': deaths one by one: the focus to a living player, one death menu at the last, the respawn takes the focus, cells and mass right',
+                !bad.length, bad.join(' / '));
+        }
+        if (K < 2) continue;
+        {
+            const s = MB.scene(Object.assign({ players: K, fullMap: fm }, opt));
+            MB.populate(s);
+            s.step(1);
+            const app = s.ctx.application;
+            app.ensureMbSlots();
+            s.ctx.lmSetMbUnit(0); /* each unit took the focus at its first spawn: start on the main player */
+            const units = s.players.slice(1).map((p) => p.src), fwd = [], back = [];
+            for (let i = 0; i < K; i++) { app.multiboxchange(); fwd.push(s.focus()); }
+            const skins = app.skins.slice();
+            for (let i = 0; i < K; i++) { app.multiboxback(); back.push(s.focus()); }
+            check(tag + ': the switch keys visit every player once, in order, both ways',
+                fwd.join() === units.concat([0]).join() && back.join() === units.slice().reverse().concat([0]).join(), fwd + ' / ' + back);
+            MB.verdict(check, tag + ': each unit plays its own profile', skins.length === K - 1 && new Set(skins).size === skins.length && !skins.includes('prof0'),
+                skins.join(','), K > 2 ? PROFILES : undefined);
+        }
+        {
+            const s = MB.scene(Object.assign({ players: 1, fullMap: fm }, opt));
+            const app = s.ctx.application, units = () => s.ctx.spects.filter((u) => u && u.player);
+            app.multiboxchange();
+            const u = units(), open = s.ctx.spects.filter((x) => x && !x.player && !x.closed).length;
+            MB.verdict(check, tag + ': enabling multibox opens one unit, controlled, and keeps Full Map',
+                u.length === 1 && s.focus() === u[0].number && open === tiles, u.length + ' unit, focus ' + s.focus() + ', tiles ' + open + ' of ' + tiles);
+            if (K > 2) {
+                /* the switch key is the only control that opens a unit */
+                for (let i = 2; i < K; i++) app.multiboxchange();
+                MB.verdict(check, tag + ': ' + K + ' playing clients can be opened', units().length === K - 1, (units().length + 1) + ' playing', ADD);
+            }
+        }
+    }
+    console.log('info 1 to 6 players x Full Map off / on: ' + (Date.now() - t0) + ' ms');
 }
 
 console.log(failed ? failed + ' failed' : 'all multibox death checks passed');

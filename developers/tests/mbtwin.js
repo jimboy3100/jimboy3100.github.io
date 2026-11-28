@@ -5,6 +5,7 @@
 // one cell). A different cell next to a copy (enemy of the same size with another name, virus, a
 // split piece, a cell with the same raw id) is never hidden. The drawn copy keeps the colour the
 // cell was shown with first, and the copy drawn last frame stays drawn (no switching).
+// Section 16: the same rules with 1 to 6 playing clients x Full Map off / on (lib/mbplayers.js).
 // Usage: node developers/tests/mbtwin.js [ogario.v4.js]
 const fs = require('fs');
 const path = require('path');
@@ -473,6 +474,69 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     run([c, d], 2);
     check('  a cell of 71 next to one of 100 (no size change): both drawn', drawn([c, d]) === 2, drawn([c, d]));
 }
+/* 16. 1 to 6 playing clients (the main player and K - 1 units with the sparse numbers 1, 2, 18, 5,
+ * 9) with Full Map off / on (tiles 3, 4, 20, 21 with shifted and mirrored transforms), built by
+ * lib/mbplayers.js over this hide step and the units' real beforecalculation: own cells seen by
+ * every connection, shared enemies, a virus, ejected mass, cells only one unit or only the tiles
+ * see, pellets. Then the last unit dies, respawns (a new life), P2 reconnects (a new socket and
+ * new raw ids), the last unit is removed, the drawn copy of a shared enemy leaves and the main
+ * player dies (onPlayerDeath's switch). After each: no cell drawn twice or not at all, every own
+ * cell drawn (its owner's copy), the drawn copy by the rule (own, main, lowest number), own mass
+ * of each player = sum r^2 / 100 of its cells, no cell owned twice. Configurations today's code
+ * fails go in KNOWN ('KNOWN N>2: what, why, file:line'); none does. */
+{
+    const MB = require('./lib/mbplayers');
+    const KNOWN = {};
+    const t0 = Date.now();
+    for (let K = 1; K <= 6; K++) for (const fm of [false, true]) {
+        const s = MB.scene({ players: K, fullMap: fm, v4: process.argv[2] });
+        MB.populate(s);
+        const bad = [];
+        const at = (what) => { const r = s.audit(); if (!r.ok) bad.push(what + ': ' + r.text); };
+        s.step(3); at('start');
+        const last = s.players[K - 1].slot;
+        if (K > 1) {
+            s.kill(last); s.step(2); at('P' + last + ' dies');
+            s.respawn(last); s.step(2); at('P' + last + ' respawns');
+            s.reconnect(2); s.step(2); at('P2 reconnects');
+        }
+        if (K > 2) { s.remove(last); s.step(2); at('P' + last + ' removed'); }
+        const e = s.ents.find((x) => x.kind === 'enemy' && !x.gone && x.copies.size > 2);
+        const rep = e && [...e.copies.values()].find((c) => !c.invisible && s.LM.cells.includes(c));
+        if (rep) { s.unobserve(e, rep._lmSrc); s.step(1); at('the drawn copy of a shared enemy leaves'); }
+        s.kill(1); s.step(2); at('P1 dies');
+        MB.verdict(check, 'K=' + K + ' (' + K + ' playing, Full Map ' + (fm ? 'on' : 'off') + '): every cell drawn once, own cells drawn, own mass counted once, through death / respawn / reconnect / removal',
+            !bad.length, bad.join(' / '), KNOWN[K + (fm ? '/fm' : '')]);
+    }
+    /* Own cells of the last two players stacked (same server name and size, same place), seen by
+     * every connection: each drawn once (two cells, not three or four). With two players only the
+     * Full Map tiles see both (the main player owns one), from three players on the main socket
+     * and the other units do too. */
+    const STACK = 'KNOWN N>2: an observer\'s copies of two stacked own cells are paired greedily (each takes the nearest own cell, ' +
+        'ogario.v4.js:2274 lmMultiboxPositionTwin, then the mutual-nearest test at 2281): when both copies pick the same own cell ' +
+        'the other copy stays drawn (one cell drawn twice); only the main player\'s copies of its own never search, so 2 players without Full Map hold';
+    for (let K = 2; K <= 6; K++) for (const fm of [false, true]) {
+        const s = MB.scene({ players: K, fullMap: fm, v4: process.argv[2] });
+        MB.populate(s);
+        for (const p of s.players.slice(-2)) s.own(p.slot, { x: 5000, y: 0, size: 70, name: 'Same', seenBy: s.allSources() });
+        s.step(3);
+        const r = s.audit();
+        MB.verdict(check, 'K=' + K + ' (Full Map ' + (fm ? 'on' : 'off') + '): own cells of two players stacked, each drawn once', r.ok, r.text,
+            K === 2 && !fm ? undefined : STACK);
+    }
+    /* K = 2: the same cells give the same result in the two-player harness above */
+    {
+        const s = MB.scene({ players: 2, v4: process.argv[2] });
+        MB.populate(s);
+        const copies = s.LM.cells.map((c) => Object.assign({}, c, { _ent: null }));
+        run(copies, 3, env(1));
+        s.step(3);
+        const diff = s.LM.cells.filter((c, i) => c.invisible !== copies[i].invisible || c.id !== copies[i].id).length;
+        check('K=2: the scene gives the two-player harness\'s result on the same ' + copies.length + ' cells', diff === 0 && copies.length === s.LM.cells.length, diff);
+    }
+    console.log('info 1 to 6 players x Full Map off / on: ' + (Date.now() - t0) + ' ms');
+}
+
 if (failed) {
     console.log(failed + ' check(s) failed');
     process.exit(1);
