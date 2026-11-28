@@ -322,10 +322,29 @@ for (const raw of [false, true]) for (const order of ['own first', 'copy first']
     const v = cell({ spectator: 1, x: 7000, y: 6000, color: '#222222' });
     const u = cell({ spectator: 2, x: 7002, y: 6000, color: '#333333' });
     const inMain = cell({ spectator: 2, x: 0, y: 0, color: '#444444' });
-    run([enemy, virus, v, u, inMain], 3, ctx);
+    /* centre 50 outside the main view, radius 100: the main connection gets it too */
+    const nearMain = cell({ spectator: 2, x: 1050, y: 0, color: '#555555' });
+    run([enemy, virus, v, u, inMain, nearMain], 3, ctx);
     check('unverified unit: an enemy only it sees is drawn', !enemy.invisible && !virus.invisible);
     check('unverified unit: its cells hide nothing and hide behind nothing', !v.invisible && !v._lmMbTwin && !u.invisible && !u._lmMbTwin);
     check('unverified unit: its cell inside the main server view is left to the main connection', inMain.invisible);
+    check('unverified unit: its cell inside the main server view grown by its radius is left to the main connection', nearMain.invisible);
+    /* the verified spectator 1 sees x 6800..7200, y 5800..6200 (fresh view) */
+    const sp1 = ctx.window.spects[0];
+    sp1._lmServerViewDisplay = (o) => { o[0] = 6800; o[1] = 5800; o[2] = 7200; o[3] = 6200; return o; };
+    sp1.isSocketOpen = () => true;
+    sp1.time = Date.now();
+    run(LM.cells, 1, ctx);
+    check('unverified unit: its cell inside a verified spectator\'s fresh view is left to that spectator (drawn once)',
+        u.invisible && !v.invisible && drawn([u, v]) === 1 && !enemy.invisible && !virus.invisible);
+    sp1.time = Date.now() - 2000;
+    run(LM.cells, 1, ctx);
+    check('unverified unit: a spectator\'s stalled view (2 s old) does not take its cell', !u.invisible && !v.invisible);
+    sp1.time = Date.now();
+    sp1._lmCoverageOk = () => false;
+    run(LM.cells, 1, ctx);
+    check('unverified unit: a spectator whose own coverage test says stale does not take its cell', !u.invisible);
+    delete sp1._lmServerViewDisplay;
     unit.transformReady = () => false;
     run(LM.cells, 1, ctx);
     check('unit not steered yet: its cells are not drawn', enemy.invisible && virus.invisible && u.invisible);

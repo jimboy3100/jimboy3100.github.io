@@ -259,6 +259,29 @@ check('eaten on one connection only: shown again after the animation', backF >= 
     g.window.spects = sp;
     check('no connection left: the search index holds no cell', held > 100 && left === 0 && all.n === 0, held + ' then ' + left);
 }
+/* the main copy hidden behind a unit's own cell; the unit's socket closes in the same tick (its
+ * cells dropped, no spectator left): the main copy is drawn again at the next frame */
+{
+    LM.cells.length = 0; LM.removedCells.length = 0;
+    const mk = (sp, x, own) => {
+        const c = { id: sp * 4294967296 + 7, spectator: sp, x, y: 0, targetX: x, targetY: 0, size: 80, targetSize: 80, color: '#33ff33', _lmRawColor: '#33ff33',
+            isFood: false, removed: false, invisible: false, redrawed: 0, isVirus: false, isEjected: false, isPlayerCell: false, isPlayerCellMulti: own,
+            updateTime: now, _lmVX: 0, _lmVY: 0, _cellsIdx: LM.cells.length, _lmSrvName: 'P' };
+        c.removeCell = g._removeCell; LM.cells.push(c); return c;
+    };
+    const M = mk(0, 0, false), U = mk(2, 2, true);
+    g._lmMbFeed[2] = true;
+    frame(now + 16); frame(now + 32);
+    const before = (M.invisible ? 'H' : 'D') + (U.invisible ? 'H' : 'D');
+    const sp = g.window.spects;
+    LM.cells = g.lmIdxFilter(LM.cells, '_cellsIdx', (c) => c && !(c.spectator > 0));
+    g.window.spects = [];
+    frame(now + 48);
+    const after = M.invisible ? 'H' : 'D';
+    frame(now + 64);
+    g.window.spects = sp;
+    check('last connection closes with a copy hidden behind its cell: the copy is drawn again', before === 'HD' && after === 'D' && !M.invisible && !M._lmMbTwin, before + ' then ' + after);
+}
 
 /* ---------- ghost cells ---------- */
 {
@@ -315,6 +338,8 @@ check('eaten on one connection only: shown again after the animation', backF >= 
     /* coverage only from a spectator whose view is fresh: its last update at (about) the list's time or later, and recent */
     check('ghost inside a stalled spectator\'s view (last update 550 ms ago, after the list): drawn', drawn(top(), [], () => { g.window.spects = [sp(true, true, 550)]; LM.ghostCellsTime = Date.now() - 600; }) === 1);
     check('ghost inside a spectator\'s view last updated well before the list: drawn', drawn(top(), [], () => { g.window.spects = [sp(true, true, 400)]; }) === 1);
+    /* 25 packets per second with a gap of 2.5 ticks: its last update 150 ms before the list still counts */
+    check('ghost inside a spectator\'s view last updated 150 ms before the list: stale, not drawn', drawn(top(), [], () => { g.window.spects = [sp(true, true, 150)]; }) === 0);
     check('ghost inside the view of a spectator whose own coverage test says stale: drawn', drawn(top(), [], () => { const o = sp(true, true); o._lmCoverageOk = () => false; g.window.spects = [o]; }) === 1);
     check('ghost: a spectator\'s own coverage test is used when it has one (fresh, covers it)', drawn(top(), [], () => { const o = sp(false, false); o._lmCoverageOk = () => true; g.window.spects = [o]; }) === 0);
     /* the list has not come again for over 3 s: its players may be anywhere */

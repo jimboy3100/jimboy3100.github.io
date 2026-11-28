@@ -1684,7 +1684,7 @@ function lmSrcFeeds(sp) {
 /* Ghost cells (drawGhostCells): an agar.io ghost list older than this is not drawn; a spectator's
  * server view counts as coverage when its last update came at most LM_GHOST_COV_SLACK ms before
  * the list and less than LM_GHOST_COV_MAX_AGE ms ago. */
-var LM_GHOST_LIST_MAX_AGE = 3000, LM_GHOST_COV_SLACK = 100, LM_GHOST_COV_MAX_AGE = 500;
+var LM_GHOST_LIST_MAX_AGE = 3000, LM_GHOST_COV_SLACK = 200, LM_GHOST_COV_MAX_AGE = 500;
 /* per connection number, whether it feeds this frame (filled by the frame's hide step); a
  * connection number not filled in is not in window.spects and does not feed */
 var _lmMbFeed = [];
@@ -2074,6 +2074,30 @@ function _lmMbNoteHide(tw, cell) {
 }
 /* kept between frames: count per drawing rank, the rank of each cell, the cells in rank order */
 var _lmMbOrdCnt = new Int32Array(64), _lmMbOrdKey = new Int32Array(1024), _lmMbOrdIdx = new Int32Array(1024);
+/* the hide step ran last frame with a connection open (its marks are cleared once when none is left) */
+var _lmMbHideOn = false;
+/* Where a verified spectator draws the cells (its fresh server view, minX minY maxX maxY per
+ * spectator, shrunk by LM_MB_DRAWONLY_EDGE): a steered unit's draw-only cell there is left to it.
+ * Filled once per frame, only while a draw-only unit is there; kept between frames. */
+var _lmMbDoCov = [], _lmMbDoRect = [0, 0, 0, 0];
+var LM_MB_DRAWONLY_EDGE = 20;
+function _lmMbDrawOnlyCover(sps, now) {
+    var n = 0;
+    for (var i = 0; i < sps.length; i++) {
+        var sp = sps[i];
+        if (!sp || !(sp.number > 0) || _lmMbFeed[sp.number] !== true || typeof sp._lmServerViewDisplay !== 'function') continue;
+        /* the same test as the ghost cells' coverage: its view is fresh */
+        if (typeof sp._lmCoverageOk === 'function' ? !sp._lmCoverageOk(now) : (typeof sp.isSocketOpen === 'function' && !sp.isSocketOpen())) continue;
+        if (!(now - sp.time < LM_GHOST_COV_MAX_AGE)) continue;
+        var r = sp._lmServerViewDisplay(_lmMbDoRect);
+        if (!r || !(r[2] - r[0] > 2 * LM_MB_DRAWONLY_EDGE) || !(r[3] - r[1] > 2 * LM_MB_DRAWONLY_EDGE)) continue;
+        _lmMbDoCov[n++] = r[0] + LM_MB_DRAWONLY_EDGE;
+        _lmMbDoCov[n++] = r[1] + LM_MB_DRAWONLY_EDGE;
+        _lmMbDoCov[n++] = r[2] - LM_MB_DRAWONLY_EDGE;
+        _lmMbDoCov[n++] = r[3] - LM_MB_DRAWONLY_EDGE;
+    }
+    _lmMbDoCov.length = n;
+}
 /*
  * The frame's hide step (drawRender, right after sortCells and before compareCells, so opponent
  * colours, rings, split and virus ranges see this frame's hidden copies). Every copy hidden last
@@ -2092,13 +2116,31 @@ function lmMbFrameHide() {
             _lmMbSortInto(_lmMbOwn, 0, true);
             _lmMbGridBuilt = false;
         }
+        /* once: the copies hidden last frame are shown again (one hidden behind a unit cell
+         * that left in the same tick as the last connection stayed hidden for good), and the
+         * hidden-copy counts of that frame end */
+        if (_lmMbHideOn) {
+            _lmMbHideOn = false;
+            _lmMbFrame++;
+            for (i = 0; cells && i < cells.length; i++) {
+                cell = cells[i];
+                if (!cell) continue;
+                if (cell._lmMbPosDup) {
+                    cell._lmMbPosDup = false;
+                    cell.invisible = false;
+                }
+                cell._lmMbTwin = null;
+            }
+        }
         return;
     }
     /* a copy drawn last frame (it was in LM.cells then and not hidden) is kept drawn before a
      * copy that only came now (_lmMbOutranks) */
     var prevF = _lmMbFrame++;
+    _lmMbHideOn = true;
     _lmMbFeed.length = 0;
     _lmMbDrawOnly.length = 0;
+    var drawOnly = false;
     for (i = 0; i < sps.length; i++) {
         var sp = sps[i];
         if (!sp || !(sp.number > 0)) continue;
@@ -2106,8 +2148,10 @@ function lmMbFrameHide() {
         /* a multibox unit not verified yet is steered and followed by the camera already
          * (transformReady): the cells round it are drawn (else the player could be eaten by a
          * cell he does not see) but take no part in the matching */
-        if (!_lmMbFeed[sp.number] && sp.player === true && typeof sp.transformReady === 'function' && sp.transformReady()) _lmMbDrawOnly[sp.number] = true;
+        if (!_lmMbFeed[sp.number] && sp.player === true && typeof sp.transformReady === 'function' && sp.transformReady()) _lmMbDrawOnly[sp.number] = drawOnly = true;
     }
+    if (drawOnly) _lmMbDrawOnlyCover(sps, Date.now());
+    else _lmMbDoCov.length = 0;
     var vx0 = LM.srvViewMinX, vy0 = LM.srvViewMinY, vx1 = LM.srvViewMaxX, vy1 = LM.srvViewMaxY;
     var mainView = Number.isFinite(vx0) && Number.isFinite(vy0) && Number.isFinite(vx1) && Number.isFinite(vy1);
     var n = cells.length, maxConn = 0;
@@ -2132,10 +2176,12 @@ function lmMbFrameHide() {
         /* a cell of a connection whose transform is not verified (not its own cell): not drawn
          * this frame (shown again by the next frame's first step) */
         if (!_lmMbFeeds(cell) && !cell.isPlayerCellMulti) {
-            /* a unit's draw-only cell outside the main server view (inside it the main
-             * connection draws that cell): drawn, never searched, hides nothing (not in the
-             * search grid, _lmMbTwinDist2 rejects it) */
-            if (_lmMbDrawOnly[cell.spectator] === true && !(mainView && cell.x > vx0 && cell.x < vx1 && cell.y > vy0 && cell.y < vy1)) continue;
+            /* a unit's draw-only cell where no verified connection sees it: drawn, never
+             * searched, hides nothing (not in the search grid, _lmMbTwinDist2 rejects it).
+             * Inside the main server view (grown by its radius: the server sends a cell that
+             * touches the view) or a verified spectator's fresh view (shrunk a little: at the
+             * edge it is drawn twice rather than not at all) that connection draws it. */
+            if (_lmMbDrawOnly[cell.spectator] === true && !_lmMbSeenElsewhere(cell, mainView, vx0, vy0, vx1, vy1)) continue;
             cell._lmMbPosDup = true;
             cell.invisible = true;
             cell._lmMbTwin = null;
@@ -2175,6 +2221,15 @@ function lmMbFrameHide() {
             lmMbShareLook(cell, tw);
         }
     }
+}
+/* Does the main connection or a verified spectator (_lmMbDoCov) see this cell? */
+function _lmMbSeenElsewhere(cell, mainView, vx0, vy0, vx1, vy1) {
+    var x = cell.x, y = cell.y, r = cell.size > 0 ? cell.size : 0;
+    if (mainView && x > vx0 - r && x < vx1 + r && y > vy0 - r && y < vy1 + r) return true;
+    for (var k = 0; k < _lmMbDoCov.length; k += 4) {
+        if (x > _lmMbDoCov[k] && y > _lmMbDoCov[k + 1] && x < _lmMbDoCov[k + 2] && y < _lmMbDoCov[k + 3]) return true;
+    }
+    return false;
 }
 var _lmMbPosC = { x: 0, y: 0 };
 function lmMultiboxPositionTwin(cell) {
