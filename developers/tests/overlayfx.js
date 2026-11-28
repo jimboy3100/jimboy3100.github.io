@@ -1512,6 +1512,9 @@ const noReset = (log) => log.filter((x, i) => !(x === 'globalAlpha=1' && log[i +
     let bubbleCells = null;
     R.drawBCursorTracking = (c, cells) => { bubbleCells = cells; };
     env.window.legendmod.playerCellsMulti = [{ x: 5, y: 5, size: 40, spectator: 2 }, { x: 9, y: 9, size: 40, spectator: 3 }];
+    /* each unit's own-cell index (lmUnitCellsInto reads the selected unit's own list) */
+    const ownOf = (n) => env.window.legendmod.playerCellsMulti.filter((c) => c.spectator === n);
+    globalThis.getActiveSpect = (n) => (n === 2 || n === 3) ? { number: n, player: true, getOwnPlayerCells: () => ownOf(n) } : null;
     env.window.multiboxPlayerEnabled = 2;
     S.cursorTracking = true; S.bubbleCursorTracker = true;
     R.drawMiscRings();
@@ -1521,6 +1524,7 @@ const noReset = (log) => log.filter((x, i) => !(x === 'globalAlpha=1' && log[i +
     R.drawMiscRings();
     check('bubble look, main player selected: drawn on the main player\'s cells', bubbleCells === LM.playerCells);
     delete env.window.legendmod.playerCellsMulti;
+    delete globalThis.getActiveSpect;
     S.cursorTracking = false; S.bubbleCursorTracker = false;
 }
 }
