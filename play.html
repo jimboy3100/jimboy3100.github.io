@@ -232,7 +232,15 @@
     <script src="https://www.legendmod.ml/extras/key-event.js?v=3.706"></script>
     <script src="https://www.legendmod.ml/extras/foggy.js?v=3.706"></script>
     <!-- Texts in the language chosen in Legend Mod (built from developers/i18n/src): lm-i18n.js writes the
-         chosen language's file right after itself; English (lm-en.js) is the fallback for missing texts. -->
+         chosen language's file right after itself; English (lm-en.js) is the fallback for missing texts.
+         These two stay parser-blocking on purpose (not async / defer): the scripts after them read the texts
+         while they run, not later. LMexpress/i18n.js copies agar.io's texts at once, ogario.v4.js builds its
+         labels (textLanguage) as it is parsed and builds the menus at its end (Settings.init, application.init).
+         Waiting for them would mean holding back every later script of this page, LMexpress.js too, and the
+         installed 1.8 userscripts call init() unguarded right after the page's scripts: with no init yet
+         Legend Mod would not start for them (the 1.9 loaders would count a failed start and drop their saved
+         page). Nor would it be sooner: the next scripts need the texts. The synchronous requests below run
+         only when one of the two files did not come. -->
     <script src="https://www.legendmod.ml/languages/lm-i18n.js?v=3.706" charset="utf-8"></script>
     <script src="https://www.legendmod.ml/languages/lm-en.js?v=3.706" charset="utf-8"></script>
     <script>

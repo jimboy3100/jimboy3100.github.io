@@ -187,8 +187,13 @@ reason on the line (or on a comment line just above), or an entry in `scan-confi
 
 - Loading: play.html loads `languages/lm-i18n.js` and `lm-en.js`; the runtime writes the chosen
   language's file right after itself while the page is parsed (`document.write`, also on agar.io
-  where play.html is written with `document.write`). An inline guard after them loads what is missing
-  synchronously (Chrome may refuse document.write scripts). Files created at run time use absolute
+  where play.html is written with `document.write`). An inline guard after them loads a runtime or
+  English file that did not come synchronously, and a refused chosen-language file asynchronously
+  (applied like a language picked in the menu; Chrome may refuse document.write scripts). The runtime
+  and English stay parser-blocking: the scripts after them read the texts while they run
+  (`LMexpress/i18n.js` copies agar.io's texts, `ogario.v4.js` builds `textLanguage` and the menus as it
+  is parsed), and holding those back would also hold back `LMexpress.js`, whose `init()` the installed
+  1.8 userscripts call unguarded right after the page's scripts (see the comment in play.html). Files created at run time use absolute
   `https://www.legendmod.ml/` URLs, `charset="utf-8"`, and fall back to jimboy3100.github.io.
 - Which language: the mod and the pages use (1) a language passed with the Theme Bridge (`#lm=`), saved,
   (2) localStorage `languagemod` (Choose Language), (3) the browser's language when it is one of the

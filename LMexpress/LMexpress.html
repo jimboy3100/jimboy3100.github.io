@@ -74,7 +74,8 @@
   <script src="https://www.legendmod.ml/extras/foggy.js"></script>
   <!-- the same start as play.html (the old LanguagePackEnglish.js switched the saved language back to English) -->
     <!-- Texts in the language chosen in Legend Mod (built from developers/i18n/src): lm-i18n.js writes the
-         chosen language's file right after itself; English (lm-en.js) is the fallback for missing texts. -->
+         chosen language's file right after itself; English (lm-en.js) is the fallback for missing texts.
+         Both stay parser-blocking on purpose: the scripts after them read the texts while they run (see play.html). -->
     <script src="https://www.legendmod.ml/languages/lm-i18n.js" charset="utf-8"></script>
     <script src="https://www.legendmod.ml/languages/lm-en.js" charset="utf-8"></script>
     <script>
