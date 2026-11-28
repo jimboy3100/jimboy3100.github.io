@@ -549,7 +549,7 @@ function lmMbTokenSlot(sp) {
     return true;
 }
 window.lmMbTokenSlot = lmMbTokenSlot;
-window.OgVer = 3.707;
+window.OgVer = 3.708;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
  * player saw "Purchase request sent..." and nothing after it. Same result codes as the potion
  * handler: 2 = not enough currency, 3 = not available. */
