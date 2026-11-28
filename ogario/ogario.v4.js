@@ -35477,20 +35477,9 @@ function thelegendmodproject() {
             if (!(Date.now() - this.lastMessageSentTime < 500 || 0 === message.length)) {
                 var activeNick = ogarcopythelb.nick || 'Unnamed';
                 if (window.multiboxPlayerEnabled && typeof profiles !== 'undefined' && profiles) {
-                    var mbSlot = window.multiboxPlayerEnabled;
-                    var pIdx;
-                    /* the profile of the unit's slot (lmMbProfileIdx, as spect.js), else the second
-                     * profile */
-                    var _lmMbU = getActiveSpect(mbSlot);
-                    if (_lmMbU && typeof lmMbProfileIdx === 'function') {
-                        pIdx = lmMbProfileIdx(_lmMbU);
-                    } else if (application.mbSlots && application.mbSlots[mbSlot] != null) {
-                        pIdx = application.mbSlots[mbSlot];
-                    } else if (application.selectedOldProfile != null) {
-                        pIdx = application.selectedOldProfile;
-                    } else {
-                        pIdx = ((application.selectedProfile || 0) + mbSlot) % profiles.length;
-                    }
+                    /* the profile of the controlled unit's slot (lmMbProfileIdx, as spect.js); a unit
+                     * not found counts as P2 (the second profile) */
+                    var pIdx = lmMbProfileIdx(getActiveSpect(window.multiboxPlayerEnabled) || {});
                     if (profiles[pIdx] && profiles[pIdx].nick) {
                         activeNick = profiles[pIdx].nick;
                     }
