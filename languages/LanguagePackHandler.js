@@ -429,7 +429,6 @@ $("#MorefpsText").text(Languageletter361);
 setTimeout(function () {
 $("#Backtomenu").text(Languageletter283);
 $("#userscripter1").text(Externalletter6);
-$("#userscripter2").text(Externalletter13);
 $("#userscriptBtn1").text(Externalletter7);
 $("#userscriptpages").text(Externalletter8);
 $("#EraseScripter").text(Externalletter9);

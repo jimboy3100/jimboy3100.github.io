@@ -584,7 +584,7 @@
              * black border and white text; now the current menu theme (the menu opacity is on #helloContainer) */
             '#userscripts{background-color:var(--lm-pc,#00243e) !important;background-image:var(--lm-menu-bg,none) !important;background-size:cover !important;background-position:center !important;' + // i18n-ok: CSS
             'border:1px solid var(--lm-pc2,#002f52) !important;border-top:3px solid var(--lm-mc,#01d9cc) !important;border-radius:var(--lm-radius,6px);max-width:calc(100vw - 16px);box-sizing:border-box;color:var(--lm-tc,#fff);font-size:var(--lm-w-fs,12px)}' +
-            '#userscripter1,#userscripter2,#Userscriptshud2>.input-box{color:var(--lm-tc2,#fff) !important;font-size:var(--lm-w-fs,12px) !important}' +
+            '#userscripter1,#Userscriptshud2>.input-box{color:var(--lm-tc2,#fff) !important;font-size:var(--lm-w-fs,12px) !important}' +
             '#Userscriptshud2>h5{font-size:var(--lm-w-title,14px);font-weight:700;letter-spacing:1px;text-transform:uppercase}' +
             '#Userscriptshud2.lm-us-alt > :not(h5):not(#lm-us-bar):not(#lm-us-ext){display:none !important}' +
             '#lm-us-bar{display:flex;gap:4px;justify-content:center;flex-wrap:wrap;margin:0 0 6px}' +

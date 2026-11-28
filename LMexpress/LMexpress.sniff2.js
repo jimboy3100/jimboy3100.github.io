@@ -188,7 +188,6 @@ var _legbgcolor = String((typeof legbgcolor !== 'undefined') ? legbgcolor : ($("
 		names + urls +
 		'</div>' +
 		/* the address is not translated: it is typed into the browser */
-		'<p id="userscripter2" style="color:white; font-size:12px;" align="middle"><span data-i18n="pack.importantNoticeDoNot">' + _lmsnE('pack.importantNoticeDoNot') + '</span>: <u>chrome://settings/clearBrowserData</u></p>' + // i18n-ok: browser address
 		'</div>' +
 		'</div>');
 	$("#Userscriptshud").after('<button id="Backtomenu" onclick="closeuserscripts(); return false" class="btn btn-danger" style="margin-left: 10px;" data-original-title="" title="" data-i18n="close">' + _lmsnE('close') + '</button>');
