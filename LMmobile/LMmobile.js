@@ -1609,10 +1609,14 @@
         canvas.addEventListener('touchend', function (e) {
             var st = tapSt, t = st && tById(e.changedTouches, st.id);
             tapSt = null;
-            if (!t || !tapFollowOk(st, t.clientX, t.clientY, Date.now(), e.touches.length) || tapOnFixedJoy(t.clientX, t.clientY)) return;
             var L = window.legendmod;
-            /* taken: no emulated mouse click after it (it would run the same follow again) */
-            if (L && typeof L._lmSpecClickAt === 'function' && L._lmSpecClickAt(e.target, t.clientX, t.clientY) && e.cancelable) e.preventDefault();
+            if (!L || typeof L._lmSpecClickAt !== 'function') return;
+            var isTap = !!t && tapFollowOk(st, t.clientX, t.clientY, Date.now(), e.touches.length) && !tapOnFixedJoy(t.clientX, t.clientY);
+            /* taken: no emulated mouse click after it (it would run the same follow again). The last
+             * finger lifted after a touch that was no tap (held, moved a few px, on the fixed joystick)
+             * where a click would follow: the browser still sent its emulated left click, which followed
+             * through the desktop click. Never while playing (_lmSpecClickAt is false then). */
+            if ((isTap ? L._lmSpecClickAt(e.target, t.clientX, t.clientY) : e.touches.length === 0 && L._lmSpecClickAt(e.target, NaN, NaN, true)) && e.cancelable) e.preventDefault();
         }, { passive: false });
         canvas.addEventListener('touchcancel', function () { tapSt = null; }, { passive: true });
 

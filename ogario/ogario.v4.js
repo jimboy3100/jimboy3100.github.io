@@ -51639,10 +51639,13 @@ function thelegendmodproject() {
         /* A left click on the game canvas (desktop) or a short single tap on it (phone, LMmobile) while
          * spectating: the player cell under it is followed, empty space stops (_lmSpecCellPick). Never
          * while playing, on the HUD or with the menu open. A tap passes its screen point (a phone has
-         * no mouse cursor). True when the click or tap was taken. */
-        _lmSpecClickAt(target, clientX, clientY) {
+         * no mouse cursor). True when the click or tap was taken. With onlyCheck nothing is picked: true
+         * when a click there would be taken (LMmobile blocks the browser's emulated click of a touch that
+         * was not a tap). */
+        _lmSpecClickAt(target, clientX, clientY, onlyCheck) {
             if (this.play || !(this.isFreeSpectate || this.isSpectateEnabled || this._isWorldSpectating)) return false;
             if (!target || target.tagName !== 'CANVAS' || (target.closest && target.closest('.hud, .hud-b, #overlays')) || $("#overlays").is(":visible")) return false;
+            if (onlyCheck) return true;
             if (Number.isFinite(clientX) && Number.isFinite(clientY)) {
                 this.clientX = clientX; this.clientY = clientY;
                 this.getCursorPosition();

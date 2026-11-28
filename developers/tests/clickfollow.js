@@ -307,23 +307,24 @@ const cursorOut = lm => { lm.sent.length = 0; lm._lmLastCursorAt = 0; lm.sendPos
 
     lm = phone({ isSpectateEnabled: true });
     tap(800, 650, { moveTo: [840, 650], endAt: [800, 650] });
-    check('a drag (40 px, back to the start) never follows', !lm._lmSpecCell && lm.isFreeSpectate === false && lm.sent.length === 0 && prevented === 0);
+    /* a touch that was no tap blocks the browser's emulated left click (it ran the desktop click follow) */
+    check('a drag (40 px, back to the start) never follows, its emulated click is blocked', !lm._lmSpecCell && lm.isFreeSpectate === false && lm.sent.length === 0 && prevented === 1);
     tap(800, 650, { endAt: [815, 650] });
-    check('lifted 15 px away: no follow', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    check('lifted 15 px away: no follow, its emulated click is blocked', !lm._lmSpecCell && lm.isFreeSpectate === false && prevented === 1);
     tap(800, 650, { ms: 600 });
-    check('a long press (600 ms) never follows', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    check('a long press (600 ms) never follows, its emulated click is blocked', !lm._lmSpecCell && lm.isFreeSpectate === false && prevented === 1);
     prevented = 0;
     fire('touchstart', 800, 650); fire('touchstart', 600, 300, { id: 1, touches: 2 }); clock += 50;
     fire('touchend', 800, 650, { touches: 1 }); fire('touchend', 600, 300, { id: 1, touches: 0 });
-    check('a pinch (two fingers) never follows', !lm._lmSpecCell && lm.isFreeSpectate === false && prevented === 0);
+    check('a pinch (two fingers) never follows', !lm._lmSpecCell && lm.isFreeSpectate === false && prevented === 1);
     tap(800, 650, { left: 1 });
-    check('another finger still down (a thumb on a button) when lifted: no follow', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    check('another finger still down (a thumb on a button) when lifted: no follow', !lm._lmSpecCell && lm.isFreeSpectate === false && prevented === 0);
     tap(800, 650, { target: { tagName: 'DIV', closest: () => null } });
     check('a touch on a button or the joystick ring (not the canvas) never follows', !lm._lmSpecCell && lm.isFreeSpectate === false);
     mctx.prefs.fixedJoystick = true;
     lm.cells.push({ x: -300, y: 100, size: 100, nick: 'joy', color: '#00f' }); /* screen (200, 350): the fixed joystick */
     tap(200, 350);
-    check('a tap on the fixed joystick never follows', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    check('a tap on the fixed joystick never follows, its emulated click is blocked', !lm._lmSpecCell && lm.isFreeSpectate === false && prevented === 1);
     tap(800, 650);
     check('with a fixed joystick a tap elsewhere still follows', !!lm._lmSpecCell && lm._lmSpecCell.nick === 'bob');
     mctx.prefs.fixedJoystick = false;
@@ -332,12 +333,14 @@ const cursorOut = lm => { lm.sent.length = 0; lm._lmLastCursorAt = 0; lm.sendPos
     tap(800, 650);
     check('playing: a tap changes nothing (no follow, nothing sent, cursor kept, the touch not consumed)',
       !lm._lmSpecCell && lm.isFreeSpectate === false && lm.sent.length === 0 && lm.cursorX === 111 && lm.cursorY === 222 && prevented === 0);
+    tap(800, 650, { ms: 600 });
+    check('playing: a long press is not consumed either', prevented === 0);
     lm = phone({ cursorX: 111, cursorY: 222 });
     tap(800, 650);
     check('not spectating: a tap changes nothing', !lm._lmSpecCell && lm.sent.length === 0 && lm.cursorX === 111 && prevented === 0);
     lm = phone({ isSpectateEnabled: true });
     ctx._ovVisible = true; tap(800, 650); ctx._ovVisible = false;
-    check('menu open: a tap changes nothing', !lm._lmSpecCell && lm.isFreeSpectate === false);
+    check('menu open: a tap changes nothing', !lm._lmSpecCell && lm.isFreeSpectate === false && prevented === 0);
     mctx.chatOn = true; tap(800, 650); mctx.chatOn = false;
     check('chat box open: the tap only closes it, no follow', !lm._lmSpecCell && lm.isFreeSpectate === false);
 
