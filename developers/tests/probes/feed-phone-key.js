@@ -30,7 +30,8 @@
   };
   var origFeed = app.feed, feeds = 0, ov = document.getElementById('overlays'), menuWas = !!(ov && ov.getClientRects().length);
   try {
-    app.feed = function () { feeds++; };
+    /* true: the feed was sent (a held feed ends when the feed is refused: its player is gone) */
+    app.feed = function () { feeds++; return true; };
     app.hideMenu();
     await sleep(400);
     if (document.activeElement && document.activeElement.blur) document.activeElement.blur();

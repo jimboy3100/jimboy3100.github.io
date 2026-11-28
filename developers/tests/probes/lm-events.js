@@ -6,7 +6,13 @@
   need('LMEvents', !!E && typeof E.on === 'function' && typeof E.off === 'function' && typeof E.once === 'function' && !!E.api);
   if (!E) return { fail: fail, info: info };
   ['getMass', 'getPosition', 'isPlaying', 'getServerType', 'sendChat', 'toast'].forEach(function (f) { need('api.' + f, typeof E.api[f] === 'function'); });
-  need('nobody listens at start', ['spawn', 'death', 'chat', 'serverChange', 'massUpdate', 'leaderboard', 'split'].every(function (n) { return !E._has(n); }));
+  /* at start only the features on by default listen: Record replays (analytics.js, the game stats)
+   * and Game over stats (deathrecap.js); nothing else */
+  var S = window.legendmod5 || {}, may = {};
+  if (S.recordReplays !== false) ['spawn', 'massUpdate', 'split', 'leaderboard', 'death', 'serverChange'].forEach(function (n) { may[n] = 1; });
+  if (S.gameOverStats) ['spawn', 'death', 'serverChange'].forEach(function (n) { may[n] = 1; });
+  var extra = ['spawn', 'death', 'chat', 'serverChange', 'massUpdate', 'leaderboard', 'split'].filter(function (n) { return E._has(n) && !may[n]; });
+  need('nobody else listens at start' + (extra.length ? ': ' + extra.join(', ') : ''), !extra.length);
   var name = '_probe', got = [], ow = console.warn, warns = 0;
   console.warn = function () { warns++; };
   var bad = function (d) { d.v = 99; throw new Error('probe'); };

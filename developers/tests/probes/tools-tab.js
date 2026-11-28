@@ -1,6 +1,6 @@
 // Tools tab in the real menu: row 1 is Hide Shortcuts | Hide Everything (red), the Rounded / Square
 // HUD and Show Timer Calc. buttons are gone; Rounded / Square HUD is Theme > HUD "Rounded corners"
-// (square by default; the switch rounds the menu and HUD corners and is saved). The stopwatch is
+// (rounded by default; the switch rounds the menu and HUD corners and is saved). The stopwatch is
 // removed: no "Show stopwatch" switch and no stopwatch above the minimap.
 // Stored settings and the values are put back.
 (async () => {
@@ -31,7 +31,7 @@
     }
     /* Theme > HUD: Rounded corners */
     var rc = document.getElementById('hudRoundedCorners');
-    need('theme default: square', LM_THEME_DEFAULTS.hudRoundedCorners === false);
+    need('theme default: rounded', LM_THEME_DEFAULTS.hudRoundedCorners === true);
     need('Theme > HUD: Rounded corners switch', !!rc && rc.type === 'checkbox' && $(rc).closest('#theme-hud').length === 1 && !!(rc.nextElementSibling && /switchery/.test(rc.nextElementSibling.className)));
     if (rc) {
       var radius = function () { return getComputedStyle(document.documentElement).getPropertyValue('--lm-radius').trim(); };

@@ -55,6 +55,9 @@
     if (got[0] && !Object.isFrozen(got[0])) fail.push('settingsChange data not frozen');
     /* the old frame time switch is gone: the stats line shows the frame time instead of the FPS */
     if (document.getElementById('showStatsFrameTime')) fail.push('the old frame time switch still exists');
+    /* a registered experiment shows its switch in the Experiments group */
+    var probeOn = 0;
+    LMLab.register({ id: 'probeDemo', name: 'Probe demo', onEnable: function () { probeOn++; }, onDisable: function () { probeOn--; } });
     LMPlugins.open('plugins');
     await wait(50);
     var cb = document.getElementById('lmLab-probeDemo');
