@@ -561,6 +561,19 @@
          * language; a language change fills them again (LMi18n.setLang applies the whole page) */
         if (window.LMi18n) window.LMi18n.apply(document.body);
     </script>
+    <!-- ═══ Referral System ═══ -->
+    <script>
+    (function() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var ref = params.get('ref');
+        if (ref && /^[A-Za-z0-9_\-]{1,40}$/.test(ref)) {
+          localStorage.setItem('lm_referrer', ref);
+          localStorage.setItem('lm_ref_time', Date.now());
+        }
+      } catch(e) {}
+    })();
+    </script>
 </body>
 
 </html>

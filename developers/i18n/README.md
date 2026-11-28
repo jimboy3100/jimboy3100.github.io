@@ -59,7 +59,7 @@ script sets (phrase arrays) or SVG text: open the page and look for English that
 
 ```js
 lmT('core.langChanged')                    // the chosen language, else English, else the key
-lmT('some.key', { name: n })              // placeholders
+lmT('site.index.invitedBy', { name: n })   // placeholders
 LMi18n.lang()        // 'el'      LMi18n.num() -> '2'      LMi18n.dir() -> 'rtl' for Arabic
 LMi18n.onChange(function (code, prev) { /* re-render your window */ });   // returns an unsubscribe fn
 LMi18n.apply(rootElement)   // fills data-i18n* elements inside rootElement
