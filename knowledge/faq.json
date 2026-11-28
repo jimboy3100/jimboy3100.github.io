@@ -50,10 +50,6 @@
       "answer": "Press Escape while alive to enter free spectate. Up to 200+ spectator slots with free-roam camera. Click the minimap to move the camera."
     },
     {
-      "question": "What is the Command Centre?",
-      "answer": "A fuzzy-search palette (Ctrl+K) that lets you search and activate any setting, hotkey, theme option or window in Legend Mod. It supports multi-language queries and can be pinned as a quick bar during gameplay."
-    },
-    {
       "question": "What is the dynamic map?",
       "answer": "Expanding Land's circular arena auto-resizes from 0.25x to 8x based on player count. The server controls expansion and contraction of the boundary."
     },

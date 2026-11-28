@@ -382,18 +382,6 @@
 				},
 				type: 'normal'
 			},
-			/* Command Centre search box (ogario/modules/commandcentre.js); Ctrl+K opens it too */
-			'hk-commandCentre': {
-				get label() {
-					return lmT('settings.hk-commandCentre');
-				},
-				defaultKey: '',
-				keyDown() {
-					if (window.LMCommandCentre && typeof window.LMCommandCentre.toggle === 'function') window.LMCommandCentre.toggle();
-				},
-				keyUp: null,
-				type: 'normal'
-			},
 			/* Small tools (ogario/modules/smalltools.js), no default keys. Radial menu: hold, point, release */
 			'hk-radialMenu': {
 				get label() {
@@ -408,6 +396,17 @@
 				},
 				type: 'normal'
 			},
+			'hk-radialEditor': {
+				get label() {
+					return lmT('settings.hk-radialEditor');
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMSmallTools) window.LMSmallTools.toggle('radial');
+				},
+				keyUp: null,
+				type: 'normal'
+			},
 			'hk-screenshotCapture': {
 				get label() {
 					return lmT('settings.hk-screenshotCapture');
@@ -415,6 +414,17 @@
 				defaultKey: '',
 				keyDown() {
 					if (window.LMSmallTools) window.LMSmallTools.capture();
+				},
+				keyUp: null,
+				type: 'normal'
+			},
+			'hk-screenshotTool': {
+				get label() {
+					return lmT('settings.hk-screenshotTool');
+				},
+				defaultKey: '',
+				keyDown() {
+					if (window.LMSmallTools) window.LMSmallTools.toggle('screenshot');
 				},
 				keyUp: null,
 				type: 'normal'
@@ -1466,14 +1476,14 @@
                 type: 'command'
             }			
         };
-        /* "Go to zoom bookmark 1-3" (removed) were the zoom level hotkeys 1-3: a mouse button, gamepad button,
-         * radial menu or Command Centre star still naming them runs the zoom level (not listed: not
+        /* "Go to zoom bookmark 1-3" (removed) were the zoom level hotkeys 1-3: a mouse button, gamepad button
+         * or radial menu still naming them runs the zoom level (not listed: not
          * enumerable). Keyboard keys bound to them are moved in loadHotkeys (ogario.v4.js). */
         [1, 2, 3].forEach(function (n) {
             Object.defineProperty(hotkeysCommand, 'hk-zoomRecall' + n, { value: hotkeysCommand['hk-zoom' + n], enumerable: false, configurable: true });
         });
-        /* "Screenshot mode" is part of Show/hide HUD (Alt+H) now: a mouse button, gamepad button, radial
-         * menu or Command Centre star still naming it hides the HUD the same way (not listed). Its
+        /* "Screenshot mode" is part of Show/hide HUD (Alt+H) now: a mouse button, gamepad button or radial
+         * menu still naming it hides the HUD the same way (not listed). Its
          * keyboard key moves in loadHotkeys (ogario.v4.js). */
         Object.defineProperty(hotkeysCommand, 'hk-screenshotMode', { value: hotkeysCommand['hk-showHUD'], enumerable: false, configurable: true });
 	

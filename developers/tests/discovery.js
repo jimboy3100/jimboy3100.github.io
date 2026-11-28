@@ -67,7 +67,7 @@ check('no server tab or table code', !/renderServer|lm-dc-caps|lm-dc-type|openSe
   check('every card option is a boolean in defaultmapsettings' + (missing.length ? ' (missing ' + missing.join(', ') + ')' : ''), missing.length === 0);
   check('show keys are card options', C.CARDS.every(c => !c.show || Object.keys(c.show).every(k => c.opts.includes(k))));
   check('every card can do something', C.CARDS.every(c => c.opts.length || c.win));
-  ['commandCentre', 'hudHelpers', 'replayStudio', 'analytics', 'deathRecap', 'gamepad', 'notifications', 'hudEditor', 'director', 'touchEditor']
+  ['hudHelpers', 'replayStudio', 'analytics', 'deathRecap', 'gamepad', 'notifications', 'hudEditor', 'director', 'touchEditor']
     .forEach(id => check('card ' + id, C.CARDS.some(c => c.id === id)));
   /* features removed since have no card (Performance mode, settings profiles, stream companion, custom macros) */
   check('no card of a removed feature', !['adaptivePerf', 'profiles', 'companion', 'macroEditor'].some(id => C.CARDS.some(c => c.id === id)));
@@ -87,14 +87,12 @@ check('no server tab or table code', !/renderServer|lm-dc-caps|lm-dc-type|openSe
   check('game stats: the Replays window at its Dashboard (lmReplayStudio("view", "dash"))', rsArg === 'view:dash');
 }
 
-/* 7. wiring: loader, Command Centre entry */
+/* 7. wiring: loader; no card or entry of the deleted Command Centre */
 {
   const v4 = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
   check('loaded from ogario.v4.js', /ogario\/modules\/discovery\.js\?v=' \+ \(window\.OgVer/.test(v4));
-  const cc = fs.readFileSync(path.join(root, 'ogario', 'modules', 'commandcentre.js'), 'utf8');
-  check('Command Centre lists Discover features', /id: 'discover'/.test(cc) && /W\.LMDiscovery\.open\(\)/.test(cc));
-  check('Command Centre: no What works on this server entry', !/id: 'serverCaps'/.test(cc) && !/openServer/.test(cc));
-  check('Command Centre reveal API', /api\.reveal = function/.test(cc));
+  check('no Command Centre card', !C.CARDS.some(c => c.id === 'commandCentre'));
+  check('the Command Centre module is gone', !fs.existsSync(path.join(root, 'ogario', 'modules', 'commandcentre.js')));
   const lx = fs.readFileSync(path.join(root, 'LMexpress', 'LMexpress.js'), 'utf8');
   check("What's new toast: no Discover link", !/lm-dc-toast-link|lmx\.ex\.discoverFeatures/.test(lx) && !/lm-dc-toast-link/.test(src));
 }
@@ -135,12 +133,12 @@ check('no server tab or table code', !/renderServer|lm-dc-caps|lm-dc-type|openSe
   /* seen keys: unchanged cards keep their id (old stores still count), a changed card is NEW again */
   check('seenKey: plain id without cv', C.seenKey({ id: 'analytics' }) === 'analytics' && C.seenKey({ id: 'analytics', cv: 1 }) === 'analytics');
   check('seenKey: version suffix, valid stored id', C.seenKey({ id: 'analytics', cv: 2 }) === 'analytics-v2' && C.parseStore(JSON.stringify({ seen: ['analytics-v2'] })).seen[0] === 'analytics-v2');
-  const old = C.parseStore(JSON.stringify({ v: '3.580', seen: ['commandCentre', 'analytics', 'companion'] }));
-  const cards = [{ id: 'commandCentre' }, { id: 'analytics', cv: 2 }, { id: 'companion' }, { id: 'practice' }];
+  const old = C.parseStore(JSON.stringify({ v: '3.580', seen: ['gamepad', 'analytics', 'companion'] }));
+  const cards = [{ id: 'gamepad' }, { id: 'analytics', cv: 2 }, { id: 'companion' }, { id: 'practice' }];
   const unseen = C.unseenIds(old, cards.map(C.seenKey));
   check('changed and new cards only are NEW', unseen.join() === 'analytics-v2,practice');
   C.markSeen(old, cards);
-  check('markSeen: old version replaced, nothing else lost', old.seen.indexOf('analytics') < 0 && ['commandCentre', 'analytics-v2', 'companion', 'practice'].every(k => old.seen.includes(k)) && old.seen.length === 4);
+  check('markSeen: old version replaced, nothing else lost', old.seen.indexOf('analytics') < 0 && ['gamepad', 'analytics-v2', 'companion', 'practice'].every(k => old.seen.includes(k)) && old.seen.length === 4);
   check('after marking: nothing NEW', C.unseenIds(old, cards.map(C.seenKey)).length === 0);
   check('markSeen keeps ids of other cards with a common prefix', C.markSeen({ seen: ['labX', 'lab'] }, [{ id: 'lab', cv: 2 }]).seen.join() === 'labX,lab-v2');
   const rt = C.parseStore(C.serializeStore(old));

@@ -9,7 +9,7 @@
       "status": "primary",
       "support": "full",
       "note": "Original target game. All features supported.",
-      "features": ["skins", "themes", "controls", "multibox", "replays", "chat", "gamepad", "command-centre", "performance"]
+      "features": ["skins", "themes", "controls", "multibox", "replays", "chat", "gamepad", "performance"]
     },
     {
       "name": "Expanding Land",
@@ -17,7 +17,7 @@
       "status": "primary",
       "support": "full",
       "note": "Official partner game by the same developer. Full integration with Legend Mod client.",
-      "features": ["skins", "themes", "controls", "chat", "gamepad", "command-centre", "performance"],
+      "features": ["skins", "themes", "controls", "chat", "gamepad", "performance"],
       "exclusiveFeatures": ["dynamic-circular-map", "ghost-cells", "server-status-bar"]
     },
     {
@@ -109,10 +109,6 @@
     },
     "chat": {
       "description": "In-game text chat",
-      "games": ["agar.io", "expanding-land"]
-    },
-    "command-centre": {
-      "description": "Central settings and macro management",
       "games": ["agar.io", "expanding-land"]
     },
     "performance": {

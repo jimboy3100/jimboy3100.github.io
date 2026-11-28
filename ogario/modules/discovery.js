@@ -1,17 +1,17 @@
 /* Legend Mod "Discover features" guide.
  *
- * Discover features: one short card per optional feature (Command Centre, HUD helpers, Replay Studio,
+ * Discover features: one short card per optional feature (HUD helpers, Replay Studio,
  * Analytics, ...) with what it does, one-tap switches for its options (the real menu checkboxes, so
  * setSettings, saving and the NEW badges stay as they are), "Open" for its window and "Show in
- * settings", which opens the menu at the option and makes it blink (the Command Centre reveal). A
- * switch with a HUD part (quick bar, bell, cell panel) highlights where it appeared.
+ * settings", which opens the menu at the option and makes it blink (LMSmallTools.jump). A
+ * switch with a HUD part (bell, cell panel) highlights where it appeared.
  *
  * It never opens by itself (it used to open once after an update, with a "Show after updates"
  * switch, and from a link in the "What's new" toast).
  * Cards the player has not seen are marked NEW (a card changed since gets cv: 2, 3... and is NEW
  * again); the card ids seen and the last version are in localStorage 'lmDiscover' (validated on read).
- * Reachable from the Command Centre. (Its "What works on this server" table window is removed;
- * Settings keeps its own table for the dimmed "Not available on this server" notes.)
+ * It has no menu entry; scripts open it with LMDiscovery.open(). (Its "What works on this
+ * server" table window is removed; Settings keeps its own table for the dimmed "Not available on this server" notes.)
  *
  * The pure parts are in LMDiscovery.core (developers/tests/discovery.js runs this file in a vm).
  */
@@ -91,7 +91,6 @@
      * Analytics switches (every game is recorded), the kill feed and the mass-loss alert, Performance mode and its window,
      * the settings profiles window, the stream companion and the custom macros) */
     var CARDS = [
-        { id: 'commandCentre', opts: ['commandCentreBar'], show: { commandCentreBar: '#lm-cc-bar' }, win: opener('LMCommandCentre.open') },
         { id: 'hudHelpers', opts: ['hudMoveDir', 'hudMergeSound', 'hudRelativeMass', 'hudEdgeTeammates', 'hudEdgeThreats'] },
         { id: 'replayStudio', opts: [], win: opener('lmReplayStudio', 'open') },
         { id: 'analytics', opts: [], win: statsWin },
@@ -109,7 +108,7 @@
     ];
     var CARD_IDS = CARDS.map(function (c) { return c.id; });
 
-    /* a switch goes through the real checkbox, as the Command Centre and the presets do: the
+    /* a switch goes through the real checkbox, as the presets do: the
      * bubbling change runs setSettings (side effects, save) and moves the Switchery. A switch the
      * menu shows as unavailable (disabled, read-only) is refused: null */
     function toggleBox(cb) {
@@ -302,9 +301,10 @@
         chip.appendChild(D.createTextNode(optLabel(key)));
     }
     function revealOpt(key) {
-        var CC = W.LMCommandCentre;
-        if (CC && typeof CC.reveal === 'function' && CC.reveal(key)) { close(); return true; }
-        return false;
+        var ST = W.LMSmallTools;
+        if (!ST || typeof ST.jump !== 'function') return false;
+        close();
+        return ST.jump(key);
     }
     function renderFeatures() {
         body.innerHTML = '';
@@ -352,7 +352,7 @@
                 });
                 acts.appendChild(ob);
             }
-            if (c.opts.length && checkbox(c.opts[0]) && W.LMCommandCentre && typeof W.LMCommandCentre.reveal === 'function') {
+            if (c.opts.length && checkbox(c.opts[0]) && W.LMSmallTools && typeof W.LMSmallTools.jump === 'function') {
                 var sb = mk('button', 'lm-dc-btn', t('showMe'));
                 sb.type = 'button';
                 sb.setAttribute('data-act', 'reveal');
@@ -367,8 +367,8 @@
     function isOpen() { return !!(root && root.parentNode); }
     W.addEventListener('keydown', function (e) {
         if (!(e.key === 'Escape' || e.keyCode === 27) || e.ctrlKey || e.altKey || e.metaKey || !isOpen()) return;
-        /* the Command Centre opened over it closes first (its own Esc) */
-        if (e._lmEscTaken || (W.LMCommandCentre && typeof W.LMCommandCentre.isOpen === 'function' && W.LMCommandCentre.isOpen())) return;
+        /* a window opened over it that took this Esc closes first */
+        if (e._lmEscTaken) return;
         e._lmEscTaken = true;
         e.preventDefault();
         e.stopPropagation();

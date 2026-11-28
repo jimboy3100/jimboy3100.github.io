@@ -24,18 +24,13 @@
     need('menu controls', ['a11yTextScale-slider', 'a11yHudTextScale-slider', 'gameBrightness-slider', 'gameSaturation-slider'].every(function (id) { return !!document.getElementById(id); }));
     need('removed duplicates are gone', !('hk-bugReport' in hotkeysCommand) && !('a11yPalette' in LM_SETTINGS_DEFAULTS) && !('a11yHighContrast' in LM_SETTINGS_DEFAULTS) && !('a11yNoFlash' in LM_SETTINGS_DEFAULTS) && !('a11yIndicators' in LM_SETTINGS_DEFAULTS) && !document.getElementById('a11yIndicators') && !('_lmA11yPal' in window));
     HK.forEach(function (id) { need(id + ' without a default key', hotkeysCommand[id] && hotkeysCommand[id].defaultKey === ''); });
-    if (window.LMCommandCentre) {
-      var ids = window.LMCommandCentre.items().map(function (it) { return it.id; });
-      need('reachable from the Command Centre', HK.concat([]).every(function (h) { return ids.indexOf('hk:' + h) >= 0; }) && ids.indexOf('set:a11yTextScale') >= 0);
-    }
     var allOff = s.a11yTextScale === 1 && s.a11yHudTextScale === 1;
     if (allOff) need('accessibility off: nothing added', !document.getElementById('lm-a11y-text') && !document.getElementById('lm-a11y-ind'));
     /* Skin collections are part of the player profiles: no window, button, setting or
      * hotkey of their own */
     T.open('skins');
     need('Skin collections: no window, button, setting, hotkey or command', !T.isOpen() && !document.getElementById('lm-st-skins') && !document.getElementById('lm-skin-collections') &&
-      !('skinCollections' in LM_SETTINGS_DEFAULTS) && !('hk-skinCollections' in hotkeysCommand) &&
-      !(window.LMCommandCentre && window.LMCommandCentre.items().some(function (it) { return /skinCollections/.test(it.id); })));
+      !('skinCollections' in LM_SETTINGS_DEFAULTS) && !('hk-skinCollections' in hotkeysCommand));
     /* no favourite stars, gold ring or profile search in the skins panel (removed) */
     need('no profile stars or search', !document.querySelector('#skins .lm-prof-star, #skins .lm-prof-fav, #lm-prof-search, #lm-prof-none, #lm-prof-css'));
     /* the conflict list of the Hotkeys window is removed (section, button, list and API) */

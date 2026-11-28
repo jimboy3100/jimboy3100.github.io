@@ -87,12 +87,6 @@
       "category": "core"
     },
     {
-      "input": "Ctrl+K",
-      "action": "Command Centre",
-      "notes": "Fuzzy search palette for settings and commands",
-      "category": "core"
-    },
-    {
       "input": "J",
       "action": "Autoplay",
       "notes": "Toggle autoplay mode",

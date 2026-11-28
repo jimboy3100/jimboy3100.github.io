@@ -65,7 +65,7 @@
 
 <https://www.legendmod.ml/knowledge/#feature-controls> a schema:DefinedTerm, lm:Feature ;
   schema:name "Configurable controls and hotkeys" ;
-  schema:description "Fully rebindable keyboard, mouse and gamepad controls with Command Centre search." .
+  schema:description "Fully rebindable keyboard, mouse and gamepad controls." .
 
 <https://www.legendmod.ml/knowledge/#feature-skins> a schema:DefinedTerm, lm:Feature ;
   schema:name "Custom skins, video skins and skin tools" ;
@@ -74,10 +74,6 @@
 <https://www.legendmod.ml/knowledge/#feature-themes> a schema:DefinedTerm, lm:Feature ;
   schema:name "Themes and HUD customization" ;
   schema:description "CSS variable-based themes, 8 presets, Theme Workshop with live preview and Compare." .
-
-<https://www.legendmod.ml/knowledge/#feature-commandcentre> a schema:DefinedTerm, lm:Feature ;
-  schema:name "Command Centre" ;
-  schema:description "Fuzzy-search palette (Ctrl+K) for every setting, hotkey, theme and window." .
 
 <https://www.legendmod.ml/knowledge/#feature-multibox> a schema:DefinedTerm, lm:Feature ;
   schema:name "Multibox controls" ;

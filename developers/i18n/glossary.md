@@ -99,7 +99,6 @@ lower case inside a sentence.
 | editor | editor | EN. packs: Επεξεργασία (means "editing"). Επεξεργαστής also fine. verify |
 | workshop | εργαστήριο | |
 | gallery | συλλογή | |
-| command centre | κέντρο εντολών | |
 | notification | ειδοποίηση | |
 | diagnostics | διαγνωστικά | |
 | accessibility | προσβασιμότητα | |
@@ -202,7 +201,6 @@ are short nouns. Sentence case, not Title Case.
 | editor | editor | |
 | workshop | taller | |
 | gallery | galería | |
-| command centre | centro de comandos | |
 | notification | notificación | |
 | diagnostics | diagnóstico | |
 | accessibility | accesibilidad | |
@@ -305,7 +303,6 @@ in Cyrillic (скин, сплит, сървър, пинг, бот); keep FPS and
 | editor | редактор | |
 | workshop | работилница | |
 | gallery | галерия | |
-| command centre | команден център | |
 | notification | известие | |
 | diagnostics | диагностика | |
 | accessibility | достъпност | |
@@ -408,7 +405,6 @@ French players keep split, feed, skin, ping, lag, bot, multibox and replay in En
 | editor | éditeur | |
 | workshop | atelier | |
 | gallery | galerie | |
-| command centre | centre de commandes | |
 | notification | notification | |
 | diagnostics | diagnostic | |
 | accessibility | accessibilité | |
@@ -514,7 +510,6 @@ for headings (الإعدادات). Pick one form per window. Arab agar.io player
 | editor | المحرر | |
 | workshop | الورشة | |
 | gallery | المعرض | |
-| command centre | مركز الأوامر | |
 | notification | إشعار | |
 | diagnostics | التشخيص | |
 | accessibility | إمكانية الوصول | |
@@ -619,7 +614,6 @@ No second-person pronoun needed; where one is used, 你.
 | editor | 編輯器 | |
 | workshop | 工作坊 | |
 | gallery | 圖庫 | |
-| command centre | 指令中心 | |
 | notification | 通知 | |
 | diagnostics | 診斷 | |
 | accessibility | 無障礙 | |
@@ -723,7 +717,6 @@ the packs already do.
 | editor | редактор | |
 | workshop | мастерская | |
 | gallery | галерея | |
-| command centre | командный центр | |
 | notification | уведомление | |
 | diagnostics | диагностика | |
 | accessibility | доступность | |
@@ -827,7 +820,6 @@ English is involved (Clan-Tag, Party-Code, Streamer-Modus).
 | editor | Editor | |
 | workshop | Werkstatt | |
 | gallery | Galerie | |
-| command centre | Kommandozentrale | |
 | notification | Benachrichtigung | |
 | diagnostics | Diagnose | |
 | accessibility | Barrierefreiheit | |
@@ -931,7 +923,6 @@ skin'ler) and take an apostrophe only after an abbreviation or a name (FPS'i, Di
 | editor | düzenleyici | |
 | workshop | atölye | |
 | gallery | galeri | |
-| command centre | komuta merkezi | |
 | notification | bildirim | |
 | diagnostics | tanılama | |
 | accessibility | erişilebilirlik | |
@@ -1035,7 +1026,6 @@ skin, ping, lag, bot and multibox and inflect them (skiny, splitem).
 | editor | edytor | |
 | workshop | warsztat | |
 | gallery | galeria | |
-| command centre | centrum dowodzenia | |
 | notification | powiadomienie | |
 | diagnostics | diagnostyka | |
 | accessibility | dostępność | |
@@ -1139,7 +1129,6 @@ it reads better (clantag, partycode, streamermodus).
 | editor | editor | |
 | workshop | werkplaats | |
 | gallery | galerij | |
-| command centre | commandocentrum | |
 | notification | melding | |
 | diagnostics | diagnose | |
 | accessibility | toegankelijkheid | |
@@ -1243,7 +1232,6 @@ them ("dar split", "dar feed", "respawnar"), so keep the loan word and build the
 | editor | editor | |
 | workshop | oficina | |
 | gallery | galeria | |
-| command centre | central de comandos | |
 | notification | notificação | |
 | diagnostics | diagnóstico | |
 | accessibility | acessibilidade | |
@@ -1348,7 +1336,6 @@ English verbs work in sentences as they are: "untuk split", "jangan feed".
 | editor | editor | |
 | workshop | workshop | EN |
 | gallery | galeri | |
-| command centre | pusat komando | |
 | notification | notifikasi | |
 | diagnostics | diagnostik | |
 | accessibility | aksesibilitas | |
@@ -1454,7 +1441,6 @@ FPS, Ping, XP, DNA and key names.
 | editor | エディター | |
 | workshop | ワークショップ | |
 | gallery | ギャラリー | |
-| command centre | コマンドセンター | |
 | notification | 通知 | |
 | diagnostics | 診断 | |
 | accessibility | アクセシビリティ | |
@@ -1558,7 +1544,6 @@ noun, in sentences the Italian verb form is fine.
 | editor | editor | |
 | workshop | workshop | EN |
 | gallery | galleria | |
-| command centre | centro comandi | |
 | notification | notifica | |
 | diagnostics | diagnostica | |
 | accessibility | accessibilità | |

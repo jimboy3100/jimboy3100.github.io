@@ -146,16 +146,16 @@ tplIds.forEach(id => {
     /* the removed Performance mode: its copy is neither exported nor imported */
     { const srcPm = makeStorage(0); srcPm.setItem('lmPerfBackup', J({ jellyPhisycs: true })); check('export: no Performance mode copy', !('lmPerfBackup' in exp(srcPm))); }
     { const dstPm = makeStorage(0); imp({ lmPerfBackup: { jellyPhisycs: true } }, (k, t) => dstPm.setItem(k, t), k => dstPm.removeItem(k)); check('import: the Performance mode copy of an older export is not written', dstPm.getItem('lmPerfBackup') === null); }
-    /* Command Centre: the starred commands (also its quick bar) are configuration, the recently
-     * used ones history: only the stars go, the importing device keeps its own recent list */
+    /* the removed Command Centre: stars left in this browser are not exported, and an older
+     * export that has them writes nothing (and no error) */
     const src3 = makeStorage(0);
     src3.setItem('lmCommandCentre', J({ fav: ['hk:hk-feed', 'opt:showMass'], recent: ['hk:hk-split'] }));
     const out3 = JSON.parse(J(exp(src3)));
-    check('export: the Command Centre stars, not its recently used list', J(out3.lmCommandCentre) === J({ fav: ['hk:hk-feed', 'opt:showMass'] }));
+    check('export: no Command Centre stars', !('lmCommandCentre' in out3));
     const dst3 = makeStorage(0);
-    dst3.setItem('lmCommandCentre', J({ fav: ['opt:x'], recent: ['hk:hk-menu'] }));
-    imp(out3, (k, t) => dst3.setItem(k, t), k => dst3.removeItem(k), null, k => dst3.getItem(k));
-    check('import: the stars come in, this device keeps its recently used list', dst3.getItem('lmCommandCentre') === J({ fav: ['hk:hk-feed', 'opt:showMass'], recent: ['hk:hk-menu'] }));
+    let impErr = null;
+    try { imp({ lmCommandCentre: { fav: ['hk:hk-feed'] } }, (k, t) => dst3.setItem(k, t), k => dst3.removeItem(k), null, k => dst3.getItem(k)); } catch (e) { impErr = e; }
+    check('import: old Command Centre stars are ignored', !impErr && dst3.getItem('lmCommandCentre') === null);
     /* Notifications: the muted categories go, the read mark and the list filter stay per device */
     const src4 = makeStorage(0);
     src4.setItem('lmNotificationPrefs', J({ readId: 40, muted: { chat: true }, cat: 'chat', type: 'all' }));

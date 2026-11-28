@@ -11,7 +11,6 @@
   var TW = window.LMThemeWorkshop;
   if (!TW || !TW.open) return { fail: ['LMThemeWorkshop not loaded'] };
   if (window.hotkeysCommand && hotkeysCommand['hk-lmThemeWorkshop']) fail.push('the removed hotkey hk-lmThemeWorkshop is back');
-  if (window.LMCommandCentre && LMCommandCentre.items && !LMCommandCentre.items().some(function (it) { return it.id === 'win:themeWorkshop'; })) fail.push('not in the Command Centre windows');
   var openBtn = $('#theme .lm-tw-open');
   if (openBtn.length !== 1 || !openBtn.is($('#theme-main').children().first())) fail.push('workshop button not at the top of the Theme tab');
   if ($('#themePreset, #menuPreset').length) fail.push('the removed Theme preset / Menu theme list is still there');

@@ -15,7 +15,7 @@
 
 | # | Check | Theme | Status |
 |---|-------|-------|--------|
-| 1.1 | Theme > HUD font Bold / regular changes the weight of the leaderboard (`#overlays-hud`) and of the bell and quick bar (`--lm-hud-fw`) | Dark/Light | ☐ |
+| 1.1 | Theme > HUD font Bold / regular changes the weight of the leaderboard (`#overlays-hud`) and of the bell (`--lm-hud-fw`) | Dark/Light | ☐ |
 | 1.2 | Theme > HUD scale grows and shrinks the leaderboard and the HUD parts on body (`--lm-hud-scale`; each sizes its own text from it) | Dark/Light | ☐ |
 | 1.3 | Minimap HUD respects `--lm-hud-font` | Dark/Light | ☐ |
 | 1.4 | Stats HUD respects `--lm-hud-font` | Dark/Light | ☐ |

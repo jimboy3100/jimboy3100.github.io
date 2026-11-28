@@ -73,6 +73,17 @@ records.forEach((r, i) => {
     }
 });
 
+/* Deleted for good by the owner's order (never bring it back): the Command Centre. Its module, its
+ * loader, its button under User Scripts in the Tools tab and its hotkey must not exist again. */
+{
+    const fs = require('fs');
+    const rd = (p) => { try { return fs.readFileSync(path.join(repo, p), 'utf8'); } catch (e) { return ''; } };
+    if (fs.existsSync(path.join(repo, 'ogario', 'modules', 'commandcentre.js'))) fail('ogario/modules/commandcentre.js is back (the Command Centre is deleted for good)');
+    if (/commandcentre\.js/.test(rd('ogario/ogario.v4.js'))) fail('ogario/ogario.v4.js loads the deleted Command Centre');
+    if (/LMCommandCentre|lm-cc-open/.test(rd('LMexpress/LMexpress.js'))) fail('LMexpress/LMexpress.js has the deleted Command Centre button');
+    if (/'hk-commandCentre'\s*:/.test(rd('ogario/hotkeysCommand.js'))) fail('ogario/hotkeysCommand.js has the deleted Command Centre hotkey');
+}
+
 const crossInfo = ctx.cross.map((c) => c.name + (c.present ? '' : ' (not found)')).join(', ');
 console.log('repo-integrity: ' + ctx.scan.size + ' files read, ' + live.length + ' references to missing files (' + known +
     ' known, ' + defects + ' of them broken links still to fix), ' + missing.filter((m) => m.comment).length + ' more in comments, ' +

@@ -5089,6 +5089,22 @@
         "external": "expandingland, legendworld-help, LegendWorld and deltav4 do not name it (also not in their git history); no version in the git history of a userscript, of the two extension zips (15 revisions) or of the Expanding Land APK names lib/jquery.min.js; the @require lines of old userscripts point to ajax.googleapis.com / cdnjs copies"
       },
       "approvedForDeletion": true
+    },
+    {
+      "oldPath": "ogario/modules/commandcentre.js",
+      "canonicalPath": null,
+      "reason": "The Command Centre (Ctrl+K search window over hotkey commands, settings and windows, with its stars, recent list and in-game quick bar) is deleted by the owner's order (first in 6e4a009e7, restored without an order in 5ca9c13d6, deleted again); it must not come back. Its loader, Tools tab button, hotkey, quick bar option, texts, tests and probe are gone with it; developers/tests/ccremoved.js and repo-integrity.js fail if it is restored.",
+      "internalReferencesMigrated": true,
+      "legacyResolverSupported": true,
+      "externalUrlSupported": false,
+      "legacyResolverNeeded": true,
+      "externalUrlNeeded": false,
+      "verification": {
+        "on": "2026-11-28",
+        "legacy": "saved data: lmCommandCentre is removed at start (ogario.v4.js), a stored key on hk-commandCentre is dropped (lmRenameOldHotkeys), an older settings export with lmCommandCentre imports without error and writes nothing (LM_EXPORT_KEYS has no entry); the saved commandCentreBar setting is not in the defaults and is ignored",
+        "external": "only ogario/ogario.v4.js of this site loaded it (a script tag with ?v=OgVer); an older cached copy that still adds the tag gets a 404 for an optional script and goes on; the two extension zips, the userscripts, expandingland, legendworld-help, LegendWorld and deltav4 do not load it (their knowledge copies only name a feature anchor)"
+      },
+      "approvedForDeletion": true
     }
   ]
 }

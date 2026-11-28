@@ -71,8 +71,7 @@
         'CTRL+Q': ['warn', 'quit'], 'CTRL+SHIFT': ['warn', 'layout'],
         'F11': ['warn', 'fullscreen'], 'F12': ['warn', 'devtools'],
         'ALT': ['warn', 'menuBar'], 'META': ['warn', 'systemMenu'], 'MENU': ['warn', 'contextMenu'],
-        'ALT+D': ['warn', 'addressBar'], 'ALT+F': ['warn', 'browserMenu'], 'ALT+E': ['warn', 'browserMenu'],
-        'CTRL+K': ['warn', 'commandCentre']
+        'ALT+D': ['warn', 'addressBar'], 'ALT+F': ['warn', 'browserMenu'], 'ALT+E': ['warn', 'browserMenu']
     };
     /* what the browser does with a key of BROWSER_KEYS, in the chosen language ("closes the tab") */
     function browserWhat(b) { return t('bk.' + b[1]); }
@@ -173,15 +172,17 @@
         for (var k in hk) if (own(hk, k) && k !== 'spec-messageKey' && hk[k] === cmd) return k;
         return '';
     }
-    /* press a hotkey command briefly (hold commands get their release, like the Command Centre) */
+    /* a key, mouse button or gamepad button holding the command (ogario.v4.js, gamepad.js) */
+    function heldElsewhere(id) { try { return typeof W._lmHotkeyHeld === 'function' && !!W._lmHotkeyHeld(id); } catch (e) { return false; } }
+    /* press a hotkey command briefly (hold commands get their release after 250 ms). The input that
+     * holds a hold command owns its release: then this neither presses it again nor releases it */
     function runHotkey(id) {
-        /* the Command Centre's press: never releases a command a key or gamepad button holds */
-        var CC = W.LMCommandCentre;
-        if (CC && typeof CC.tapHotkey === 'function') { CC.tapHotkey(id); return; }
         var hc = W.hotkeysCommand, c = hc && hc[id];
         if (!c || typeof c.keyDown !== 'function') return;
+        var hold = typeof c.keyUp === 'function';
+        if (hold && heldElsewhere(id)) return;
         try { c.keyDown(); } catch (e) { console.warn('[LM tools] ' + id, e); }
-        if (typeof c.keyUp === 'function') setTimeout(function () { try { c.keyUp(); } catch (e) { } }, 250);
+        if (hold) setTimeout(function () { if (!heldElsewhere(id)) { try { c.keyUp(); } catch (e) { } } }, 250);
     }
 
     var styleDone = false;

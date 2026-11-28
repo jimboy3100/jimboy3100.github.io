@@ -7,9 +7,12 @@
   if (info.inputs < 50) fail.push('#og-options has only ' + info.inputs + ' inputs');
   ['.settings-tab a', '.theme-tab a', '.hotkeys-link', '.profile-tab a', '#main-panel', '#og-settings', '#theme', '#profile']
     .forEach(function (s) { if (!$(s).length) fail.push('missing ' + s); });
-  // keyboard hotkeys live in the Hotkeys tab only: no Hotkeys or Command Centre button in Settings
-  // (the Command Centre stays on Ctrl+K and its own hotkey; the settings search stays)
-  if ($('#og-settings #lm-open-hotkeys-btn, #og-settings #lm-cc-open, #og-settings .lm-cc-open-btn').length) fail.push('hotkeys / Command Centre button in the Settings tab');
+  // keyboard hotkeys live in the Hotkeys tab only: no Hotkeys button in Settings (the settings search stays)
+  if ($('#og-settings #lm-open-hotkeys-btn').length) fail.push('hotkeys button in the Settings tab');
+  // the Command Centre is deleted: no module, button, hotkey or quick bar, and Ctrl+K opens nothing
+  if (window.LMCommandCentre || document.getElementById('lm-cc-open') || document.getElementById('lm-cc-bar') || ('hk-commandCentre' in hotkeysCommand) || ('commandCentreBar' in defaultmapsettings)) fail.push('Command Centre parts left');
+  document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', keyCode: 75, ctrlKey: true, bubbles: true }));
+  if (document.getElementById('lm-cc')) fail.push('Ctrl+K opened a Command Centre');
   if (!$('#lm-settings-search').closest('#og-settings').length) fail.push('settings search missing');
   // no control bindings in Settings: mouse buttons are keys of the Hotkeys window, the gamepad is there
   // too; Sticky cells (a behaviour of the buttons, not a binding) is in Settings > Helpers, once
@@ -89,7 +92,7 @@
   ['clickSpectate', 'lbClickSpectate', 'minimapClickSpectate', 'instantReplaySecs-slider', 'hudMergeCountdown', 'lm-rec-clear', 'performanceMode', 'adaptivePerf', 'lm-perf-diag-btn'].forEach(function (id) { if (document.getElementById(id)) fail.push('#' + id + ' still in the menu'); });
   /* the NEW badges with Show new options, the info notes and the Accessibility section are removed */
   if ($('.lm-new-toggle, .lm-new-badge, #og-options .lm-group-note').length) fail.push('NEW badges, Show new options or an info note still in the menu');
-  /* the spectator director is back: its module is loaded (its panel opens from its hotkey and the Command Centre) */
+  /* the spectator director is back: its module is loaded (its panel opens from its hotkey) */
   if (!document.querySelector('script[src*="modules/director.js"]')) fail.push('spectator director not loaded');
   $('#og-options > .options-box > h5').each(function () {
     var t = $(this).text().trim();

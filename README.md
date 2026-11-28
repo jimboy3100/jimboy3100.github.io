@@ -81,7 +81,6 @@
 - 👾 Multibox — 2 to 6 players from one tab, added, picked and removed in the stats HUD; Full Map (Premium) can stay on while you play, also with multibox
 - 🎮 Full gamepad/controller support (PS, Xbox, generic)
 - 📱 Mobile touch controls
-- ⌨️ Command Centre (Ctrl+K) — search 220+ settings
 - 🌐 16 language packs (English, Greek, Spanish, Bulgarian, French, Arabic, Traditional Chinese, Russian, German, Turkish, Polish, Dutch, Brazilian Portuguese, Indonesian, Japanese, Italian)
 
 ---

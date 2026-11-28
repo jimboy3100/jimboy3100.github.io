@@ -580,7 +580,7 @@
         var tag = e.target && e.target.tagName, typing = (tag === 'INPUT' && e.target.type === 'text') || tag === 'SELECT' || tag === 'TEXTAREA';
         /* key releases go through: a key held when the editor opened is released in the game too */
         if (e.type !== 'keydown') return;
-        /* keys typed in another window over the editor (the Command Centre opened with Ctrl+K)
+        /* keys typed in another window over the editor (a dialog with a text box)
          * are that window's: Enter there closed the editor, Esc and the arrows never reached it.
          * Only a window in front of the editor: with the focus left on a page element under it (a
          * clicked minimap icon) the arrows did nothing and Esc opened the menu over the editor. */

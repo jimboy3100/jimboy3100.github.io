@@ -99,8 +99,7 @@
         "indicators",
         "onlineStatus",
         "stickyCell",
-        "hudMoveDir",
-        "commandCentreBar"
+        "hudMoveDir"
       ]
     },
     {

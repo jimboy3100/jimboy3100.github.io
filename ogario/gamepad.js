@@ -724,7 +724,7 @@
             if (suspended) { setHolds({}); lastMove = null; }
         },
         buttonDown: function (b, i) { return buttonDown(b, i, opt('gamepadTrigger')); },
-        /* true while a button holds this hotkey command (the Command Centre and the radial menu do not release it) */
+        /* true while a button holds this hotkey command (the radial menu does not release it) */
         isHeld: function (id) { return !!(hasOwn(holdActive, id) && holdActive[id]); },
         suggestDeadzone: suggestDeadzone,
         testRumble: function (pad) { return rumble(pad, 250, 0.7, true); },

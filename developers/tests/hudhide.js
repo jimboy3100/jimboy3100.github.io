@@ -1,8 +1,8 @@
 /* One HUD hide: Show/hide HUD (Alt+H) hides the whole HUD with the capture chip of the former
  * Screenshot mode; the real ogario/hotkeysCommand.js, application.setShowHUD and loadHotkeys of
  * ogario.v4.js in a vm.
- *   - Screenshot mode is not listed any more; a stored reference to it (mouse, gamepad, radial,
- *     Command Centre star) runs Show/hide HUD
+ *   - Screenshot mode is not listed any more; a stored reference to it (mouse, gamepad, radial)
+ *     runs Show/hide HUD
  *   - Show/hide HUD toggles the full hide of ogario/modules/smalltools.js; without it the HUD box
  *   - a keyboard key on Screenshot mode moves to Show/hide HUD when that has no key
  * node developers/tests/hudhide.js */
@@ -34,7 +34,7 @@ function load(withTools) {
 {
     const { hc, calls } = load(true);
     check('Screenshot mode is not listed any more', Object.keys(hc).indexOf('hk-screenshotMode') < 0);
-    check('Show/hide HUD keeps Alt+H; Capture stays, the Screenshot window hotkey is gone', hc['hk-showHUD'].defaultKey === 'ALT+H' && !!hc['hk-screenshotCapture'] && !hc['hk-screenshotTool']);
+    check('Show/hide HUD keeps Alt+H; Capture and the Screenshot window hotkey stay', hc['hk-showHUD'].defaultKey === 'ALT+H' && !!hc['hk-screenshotCapture'] && !!hc['hk-screenshotTool']);
     hc['hk-showHUD'].keyDown();
     check('Alt+H hides the whole HUD (the former Screenshot mode, with its Capture chip)', J(calls) === J([['hide all']]));
     calls.length = 0;
