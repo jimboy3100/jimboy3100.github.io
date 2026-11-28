@@ -12,6 +12,8 @@
  * starting multibox turns the spectator switch off with its socket. The in-game spectator and Full
  * Map are one exclusive mode (LM._lmSpecSetMode / _lmSpecReconcile); section 11 runs the real spect.js
  * tile lifecycle (failed / refused / captcha slots, lmFullMapHealth, lmFullMapRetry, opcode 18, replay).
+ * Sections 9b and 23: multibox with Full Map on (the tiles stay, the unit is controlled by its own
+ * number), Full Map off / on while multibox runs, multibox off (LM._lmMbStop), a refused unit.
  * node developers/tests/ingamespect.js [ogario.v4.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -30,7 +32,7 @@ function block(start, from) {
     return null;
 }
 const appMethods = ['        setShowIngameSpectator() {', '        setShowFullSpectator() {', '        setIngameSpectator() {', '        setFullSpectator() {'].map((m) => [m, block(m)]);
-const lmMethods = ['        addSpect() {', '        _lmSpecSetMode(mode) {', '        _lmFullMapModeOff() {', '        _lmFullMapCrowdCheck() {', '        _lmSpecLocal() {', '        _lmSpecReconcile() {', '        flushSpecsData() {', '        _lmSpawnEndsSpectate() {'].map((m) => [m, block(m)]);
+const lmMethods = ['        addSpect() {', '        _lmSpecSetMode(mode) {', '        _lmFullMapModeOff() {', '        _lmFullMapCrowdCheck() {', '        _lmSpecLocal() {', '        _lmSpecReconcile() {', '        flushSpecsData() {', '        _lmSpawnEndsSpectate() {', '        _lmMbStop() {'].map((m) => [m, block(m)]);
 /* sendNick up to the first server-specific join (everything after it only builds the spawn packet) */
 const nickStart = src.indexOf('        sendNick(nick) {'), nickEnd = src.indexOf('            // ===== Garix join', nickStart);
 /* the helpers are new: an older file without them still runs (and shows the old failures) */
@@ -190,7 +192,9 @@ for (const withUnit of [false, true]) {
 /* 7-9. a multibox unit and an in-game spectator open together (since the unit no longer blocks the
  * spectator): the multibox switch keys (application.multiboxchange / multiboxback) and the
  * spectator's Follow / Free mode (changeSpectatorMode), cut out of ogario.v4.js */
-const mbMethods = ['        multiboxchange() {', '        multiboxback() {', '        changeSpectatorMode() {'].map((m) => [m, block(m)]);
+const mbMethods = ['        multiboxchange() {', '        multiboxback() {', '        changeSpectatorMode() {', '        _lmMbStart() {'].map((m) => [m, block(m)]);
+/* _lmMbStart is new: an older file without it still runs (its multiboxchange does not call it) */
+if (!mbMethods[3][1]) mbMethods[3][1] = '_lmMbStart() { }';
 if (mbMethods.some((m) => !m[1])) { console.log('FAIL code not found: ' + mbMethods.filter((m) => !m[1]).map((m) => m[0].trim()).join(', ')); process.exit(1); }
 function mbEnv() {
     const e = env();
@@ -301,6 +305,25 @@ const addSpectatorOf = (e, extra) => { e.ctx.addSpectator(); const s = spectator
     check('multibox start: the in-game spectator switch is off with it', e.win.ingameSpectator === false);
     e.app.setShowIngameSpectator();
     check('the first press afterwards starts the spectator again', e.win.ingameSpectator === true && spectators(e.win).length === 1);
+}
+/* 9b. starting multibox while Full Map runs: the tiles stay (same objects, none closed, Full Map still
+ * on) and the focus goes to the unit addBox returned, whatever number it got (here 4: tiles hold 1-3;
+ * it was set to 1, a tile) */
+{
+    const e = mbEnv();
+    e.app.setShowFullSpectator();
+    const tiles = spectators(e.win);
+    e.app.multiboxchange();
+    const unit = e.win.spects.filter((s) => s.player)[0];
+    check('9b. multibox start with Full Map on: the 3 tiles kept open, Full Map still on', tiles.length === 3 && tiles.every((t) => !t.closed && e.win.spects.includes(t)) &&
+        e.win.lmSpecMode === 'full' && e.win.fullSpectator === true);
+    check('    ... one unit added, the focus on its own number (not 1, a tile)', !!unit && unit.number === 4 && e.win.multiboxPlayerEnabled === unit.number && e.ctx.played === 1,
+        unit && unit.number + ' / ' + e.win.multiboxPlayerEnabled);
+    if (unit) unit.active = true;
+    const seen = [];
+    for (let i = 0; i < 4; i++) { e.app.multiboxchange(); seen.push(e.win.multiboxPlayerEnabled || 0); }
+    check('    ... the switch goes main / unit only, never to a tile, no second unit', seen.join() === [0, 4, 0, 4].join() && e.win.spects.filter((s) => s.player).length === 1 &&
+        tiles.every((t) => !t.closed), seen.join());
 }
 
 /* the real ogario/spect.js under the core toggles: sockets and timers are counted */
@@ -822,6 +845,134 @@ for (const withUnit of [false, true]) {
     check('every spawn handler (play = true) calls _lmSpawnEndsSpectate next', sites.length >= 4 && sites.every((l) => /_lmSpawnEndsSpectate\(\)/.test(l)), sites.length);
     const death = block('        onPlayerDeath() {'), sp = block('        onPlayerSpawn() {');
     check('onPlayerDeath and onPlayerSpawn close no spectator', !!death && !!sp && ![death, sp].some((b) => /_lmSpecSetMode|flushSpecsData|closeConnection/.test(b)));
+}
+/* 23. multibox and Full Map together, with the real ogario/spect.js and the real multibox start / switch /
+ * stop: starting multibox keeps the tile sockets and controls the new unit by its own number (16 while
+ * the tiles hold 1-15); Full Map off / on while multibox runs keeps the unit, its number and the focus;
+ * multibox off (LM._lmMbStop) closes the unit only; a unit the server closes or one that cannot be
+ * opened leaves the main session as it was. getActiveSpect / lmMultiboxControlledPlayer / lmActiveUnit
+ * are the real ones. */
+{
+    const fns = ['function getActiveSpect(', 'function lmMultiboxControlledPlayer(', 'function lmActiveUnit('].map((m) => block(m));
+    if (fns.some((f) => !f)) check('23. getActiveSpect / lmMultiboxControlledPlayer / lmActiveUnit found', false);
+    const mk = (o) => {
+        o = o || {};
+        const e = realEnv();
+        const c = e.ctx;
+        Object.assign(c, { ogarcopythelb: {}, core: null, played: 0 });
+        c.play = () => { c.played++; };
+        vm.runInContext('Object.assign(application, {' + mbMethods.map((m) => m[1]).join(',\n') + '}); application.hideMenu = function () {};' +
+            'application.cacheCustomSkin = function () {};\n' + fns.filter(Boolean).join('\n'), c);
+        e.LM.play = o.mainAlive !== false; e.LM.playerCells = [];
+        const tiles = () => c.spects.filter((s) => !s.player && s.tile != null);
+        const units = () => c.spects.filter((s) => s.player);
+        const sockOf = (list) => list.map((s) => s.socket);
+        const same = (list, socks) => list.length === socks.length && tiles().length === list.length && tiles().every((t, i) => t === list[i] && t.socket === socks[i] && !t.closedByUser && !t.socket.closed);
+        return Object.assign(e, { tiles, units, sockOf, same, focus: () => c.multiboxPlayerEnabled || 0 });
+    };
+    for (const mainAlive of [true, false]) {
+        const tag = mainAlive ? ' (main player alive)' : ' (main player in the menu)';
+        const e = mk({ mainAlive });
+        e.app.setShowFullSpectator();
+        e.tiles().forEach(e.handshake);
+        const grid = e.tiles(), socks = e.sockOf(grid), n0 = e.sockets.length;
+        e.app.multiboxchange();
+        const unit = e.units()[0];
+        check('23. multibox start with Full Map on: the same 15 tile objects and sockets, none closed, Full Map on' + tag, grid.length === 15 && e.same(grid, socks) &&
+            e.ctx.lmSpecMode === 'full' && e.ctx.fullSpectator === true);
+        check('    ... one unit with one new socket, numbered after the tiles, controlled' + tag, e.units().length === 1 && e.sockets.length === n0 + 1 && !!unit && unit.number === 16 &&
+            grid.every((t) => t.number !== unit.number) && e.focus() === unit.number && e.ctx.lmMultiboxControlledPlayer() === 2 &&
+            e.ctx.getActiveSpect(unit.number) === unit && e.LM.multiBoxPlayerExists === true, unit && unit.number + ' focus ' + e.focus());
+        check('    ... a tile number is never the controlled unit (getActiveSpect)' + tag, grid.every((t) => e.ctx.getActiveSpect(t.number) === null));
+        check('    ... the main player is spawned only from the menu' + tag, e.ctx.played === (mainAlive ? 0 : 1), e.ctx.played);
+        unit.socket.readyState = 1; unit.active = true;
+        const au = e.ctx.lmActiveUnit();
+        check('    ... lmActiveUnit is the unit, by its number' + tag, !!au && au.index === 1 && au.number === unit.number, au && JSON.stringify({ index: au.index, number: au.number }));
+        /* Full Map off and on while multibox runs */
+        e.app.setShowFullSpectator();
+        check('    ... Full Map off with multibox running: the tiles close, the unit, its socket, number and focus stay' + tag, e.tiles().length === 0 && grid.every((t) => t.closedByUser) &&
+            e.units().length === 1 && e.units()[0] === unit && !unit.socket.closed && !unit.closedByUser && unit.number === 16 && e.focus() === 16 && e.LM.multiBoxPlayerExists === true);
+        e.app.setShowFullSpectator(); e.LM.addSpect();
+        const grid2 = e.tiles();
+        check('    ... Full Map on again: 15 new tiles beside it (the unit not counted as a tile), unit and focus kept' + tag, grid2.length === 15 &&
+            e.ctx.spects.filter((s) => !s.player).length === 15 && e.units().length === 1 && e.units()[0] === unit && !unit.socket.closed && unit.number === 16 && e.focus() === 16 &&
+            grid2.every((t) => t.number > 16), grid2.length);
+        grid2.forEach(e.handshake);
+        const socks2 = e.sockOf(grid2);
+        /* switch back and forth: the tiles are untouched */
+        const seen = [];
+        e.app.multiboxchange(); seen.push(e.focus());
+        e.app.multiboxchange(); seen.push(e.focus());
+        e.app.multiboxback(); seen.push(e.focus());
+        e.app.multiboxback(); seen.push(e.focus());
+        check('    ... switch / back: main and unit only, the tiles untouched, no second unit' + tag, seen.join() === '0,16,0,16' && e.units().length === 1 && e.same(grid2, socks2), seen.join());
+        /* multibox off: the unit only */
+        const menus = e.ctx.menuShown || 0;
+        const closed = e.LM._lmMbStop();
+        check('    ... multibox off: the unit closed and removed, the 15 tiles kept (same sockets), Full Map on, focus on the main player' + tag, closed === 1 && unit.closedByUser &&
+            unit.socket === null && e.units().length === 0 && e.same(grid2, socks2) && e.ctx.lmSpecMode === 'full' && e.focus() === 0 && e.LM.multiBoxPlayerExists === false &&
+            e.ctx.lmMultiboxControlledPlayer() === 1);
+        check('    ... the menu opens only when the main player is not in a game' + tag, (e.ctx.menuShown || 0) - menus === (mainAlive ? 0 : 1), (e.ctx.menuShown || 0) - menus);
+        e.LM._lmMbStop();
+        check('    ... multibox off again: nothing more closes' + tag, e.same(grid2, socks2));
+        /* start again: a new unit, numbered after everything open now */
+        e.app.multiboxback();
+        const unit2 = e.units()[0];
+        const top = Math.max.apply(null, grid2.map((t) => t.number));
+        check('    ... multibox started again (back key): a new unit, number max + 1, controlled, the tiles kept' + tag, !!unit2 && unit2 !== unit && unit2.number === top + 1 &&
+            e.focus() === unit2.number && e.same(grid2, socks2), unit2 && unit2.number);
+    }
+    /* unit first, Full Map after: unit 1, tiles 2-16; the unit stays controlled */
+    {
+        const e = mk();
+        e.app.multiboxchange();
+        const unit = e.units()[0];
+        e.app.setShowFullSpectator(); e.LM.addSpect();
+        check('23. unit first, Full Map after: unit 1 controlled, tiles 2-16 (numbering independent of the roles)', !!unit && unit.number === 1 && e.focus() === 1 &&
+            e.tiles().map((t) => t.number).sort((a, b) => a - b).join() === Array.from({ length: 15 }, (_, i) => i + 2).join() && e.ctx.lmMultiboxControlledPlayer() === 2);
+        e.app.setShowFullSpectator();
+        check('    ... Full Map off: only the tiles close, unit 1 and its focus stay', e.tiles().length === 0 && e.units()[0] === unit && !unit.closedByUser && e.focus() === 1);
+    }
+    /* the in-game spectator ends when multibox starts (a mode change; real spect.js) */
+    {
+        const e = mk();
+        e.app.setShowIngameSpectator();
+        const ig = e.ctx.spects.filter((s) => !s.player)[0];
+        e.app.multiboxchange();
+        const unit = e.units()[0];
+        check('23. in-game spectator on, multibox start: the spectator closed, mode off, the unit controlled by its number', !!ig && ig.closedByUser && e.ctx.lmSpecMode === 'off' &&
+            !e.ctx.ingameSpectator && e.ctx.spects.length === 1 && !!unit && e.focus() === unit.number);
+    }
+    /* the unit cannot be opened (the socket throws): nothing changes */
+    {
+        const e = mk({ mainAlive: false });
+        e.app.setShowFullSpectator();
+        const grid = e.tiles(), socks = e.sockOf(grid), create = e.ctx.createLegendWebSocket;
+        e.ctx.createLegendWebSocket = () => { throw new Error('refused'); };
+        const err = e.ctx.console.error;
+        e.ctx.console.error = () => { };
+        let threw = null;
+        try { e.app.multiboxchange(); } catch (x) { threw = x; }
+        e.ctx.console.error = err;
+        e.ctx.createLegendWebSocket = create;
+        check('23. the unit cannot be opened: no throw, no unit, focus and main session unchanged (no spawn), the tiles kept', !threw && e.units().length === 0 && e.focus() === 0 &&
+            e.ctx.played === 0 && e.LM.multiBoxPlayerExists !== true && e.same(grid, socks), threw);
+    }
+    /* the server closes the unit, or asks it for a captcha: the main player keeps playing, the tiles stay */
+    for (const how of ['close', 'captcha']) {
+        const e = mk();
+        e.app.setShowFullSpectator();
+        e.tiles().forEach(e.handshake);
+        const grid = e.tiles(), socks = e.sockOf(grid);
+        e.app.multiboxchange();
+        const unit = e.units()[0];
+        unit.socket.readyState = 1; unit.socket.onopen();
+        if (how === 'close') { unit.socket.readyState = 3; unit.socket.closed = true; unit.socket.onclose(); }
+        else unit.handleMessage(new DataView(Uint8Array.of(85).buffer));
+        check('23. the server ' + (how === 'close' ? 'closes the new unit' : 'asks the new unit for a captcha') + ': focus back on the main player, it keeps playing, no menu, the tiles untouched',
+            e.focus() === 0 && e.LM.play === true && !e.ctx.menuShown && e.same(grid, socks) &&
+            (how === 'close' || (e.units().length === 0 && e.LM.multiBoxPlayerExists === false)), [e.focus(), e.ctx.menuShown, e.units().length].join());
+    }
 }
 
 console.log(failed ? 'FAILED ' + failed : 'all ingamespect checks passed');

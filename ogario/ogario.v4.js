@@ -224,11 +224,13 @@ window.spects = window.spects || [];
 var spects = window.spects;
 /* Look up a multibox unit by its .number property.
  * Unit numbers are max(existing)+1, NOT necessarily array index+1.
- * After deleting a middle unit the indices drift. */
+ * After deleting a middle unit the indices drift. Full Map tiles and the in-game spectator
+ * share the numbering (a unit opened while Full Map runs gets 16 or more), but a spectator
+ * (player false) is never the unit you control. */
 function getActiveSpect(unitNumber) {
     if (!unitNumber || typeof spects === 'undefined' || !spects) return null;
     for (var i = 0; i < spects.length; i++) {
-        if (spects[i] && spects[i].number === unitNumber) return spects[i];
+        if (spects[i] && spects[i].number === unitNumber && spects[i].player !== false) return spects[i];
     }
     return null;
 }
@@ -24530,27 +24532,41 @@ function thelegendmodproject() {
         multiboxswap() {
             this.multiboxchange();
         },
+        /* Starts multibox: one unit (a playing connection) beside the main player, controlled at
+         * once. The in-game spectator ends (a mode change, LM._lmSpecSetMode: its camera cannot sit
+         * beside a playing one, and its switch goes off with its socket); Full Map tiles stay open
+         * as they are (same sockets, same numbers). The focus goes to the unit addBox returned: its
+         * number is whatever spects held before (16 or more while Full Map runs), it was always 1
+         * only because every spectator socket was closed first (LM.flushSpecsData, which is the
+         * server change / lost connection shutdown, not this). No unit (addBox missing or the
+         * connection could not be made): nothing changes, the main session goes on. */
+        _lmMbStart() {
+            if (window.lmSpecMode === 'ingame' || window.ingameSpectator) LM._lmSpecSetMode('off');
+            var add = typeof window.addBox === "function" ? window.addBox : (typeof addBox === "function" ? addBox : null), unit = null;
+            try {
+                unit = add ? add() : null;
+            } catch (e) {
+                console.error('[MULTIBOX] The multibox unit could not be opened:', e);
+            }
+            if (!unit || !unit.number) return null;
+            lmSetMbUnit(unit.number);
+            window.multiboxPlayerEnabledSaved = null;
+            if (!legendmod.play) {
+                play();
+            }
+            return unit;
+        },
         multiboxchange() {
             this.hideMenu();
-            if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
-                /* starting multibox ends the spectator mode: its switch goes off with its sockets
-                 * (left on, the next press only turned it off and opened nothing) */
-                LM._lmSpecSetMode('off');
-                LM.flushSpecsData();
-                if (typeof window.addBox === "function") window.addBox();
-                else if (typeof addBox === "function") addBox();
-                lmSetMbUnit(1);
-                window.multiboxPlayerEnabledSaved = null;
-                if (!legendmod.play) {
-                    play();
-                }
-                return;
-            }
-
             /* multiboxPlayerEnabled is the unit NUMBER (spect.js, getActiveSpect); a unit can be
              * removed from the middle of spects, so walk by position but store the number.
              * Only the units: an in-game or full spectator open beside them is in spects too. */
-            var units = spects.filter(function (s) { return s && s.player; });
+            var units = typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }) : [];
+            /* no unit yet (Full Map tiles do not count): start multibox */
+            if (!units.length) {
+                this._lmMbStart();
+                return;
+            }
             var totalUnits = 1 + units.length;
             var currentIdx = 0;
             if (window.multiboxPlayerEnabled) {
@@ -24588,23 +24604,12 @@ function thelegendmodproject() {
         },
         multiboxback() {
             this.hideMenu();
-            if (typeof spects === "undefined" || !spects || !spects.length || !legendmod.multiBoxPlayerExists) {
-                /* starting multibox ends the spectator mode: its switch goes off with its sockets
-                 * (left on, the next press only turned it off and opened nothing) */
-                LM._lmSpecSetMode('off');
-                LM.flushSpecsData();
-                if (typeof window.addBox === "function") window.addBox();
-                else if (typeof addBox === "function") addBox();
-                lmSetMbUnit(1);
-                window.multiboxPlayerEnabledSaved = null;
-                if (!legendmod.play) {
-                    play();
-                }
+            /* only the units, as in multiboxchange; none yet: start multibox */
+            var units = typeof spects !== "undefined" && spects ? spects.filter(function (s) { return s && s.player; }) : [];
+            if (!units.length) {
+                this._lmMbStart();
                 return;
             }
-
-            /* only the units, as in multiboxchange */
-            var units = spects.filter(function (s) { return s && s.player; });
             var totalUnits = 1 + units.length;
             /* Same as multiboxchange: find the position of the current unit NUMBER. */
             var currentIdx = 0;
@@ -26532,7 +26537,7 @@ function thelegendmodproject() {
         },
         /* ─── mbSlots: multibox slot → profile index mapping ─── */
         ensureMbSlots() {
-            /* Only one multibox unit is created (addBox runs only while spects is empty and the
+            /* Only one multibox unit is created (addBox runs only while spects holds no unit and the
              * multiboxAmount slider is disabled), so a value 3-4 saved by an older version means 2. */
             var maxMb = Math.min((defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2, 2);
             if (!this.mbSlots || !Array.isArray(this.mbSlots)) {
@@ -26617,7 +26622,7 @@ function thelegendmodproject() {
 
             // Check if idx is already in a slot
             var existingSlot = this.mbSlots.indexOf(idx);
-            /* Only one multibox unit is created (addBox runs only while spects is empty and the
+            /* Only one multibox unit is created (addBox runs only while spects holds no unit and the
              * multiboxAmount slider is disabled), so a value 3-4 saved by an older version means 2. */
             var maxMb = Math.min((defaultmapsettings && defaultmapsettings.multiboxAmount) ? defaultmapsettings.multiboxAmount : 2, 2);
 
@@ -29019,7 +29024,7 @@ function thelegendmodproject() {
             // Auto-switch to surviving multibox spect if any (only when "Auto-switch focus after death" is on)
             if (defaultmapsettings.mbSwitchAfterDeath && typeof spects !== 'undefined' && spects && spects.length > 0) {
                 for (var _i = 0; _i < spects.length; _i++) {
-                    if (spects[_i] && spects[_i].active) {
+                    if (spects[_i] && spects[_i].player && spects[_i].active) {
                         /* multiboxPlayerEnabled is the unit number, not index + 1 (units can be spliced) */
                         lmSetMbUnit(spects[_i].number || (_i + 1));
                         console.log('[MB] Main player died, auto-switched to spect ' + window.multiboxPlayerEnabled);
@@ -34398,10 +34403,12 @@ function thelegendmodproject() {
                 if (window.multiboxPlayerEnabled && typeof profiles !== 'undefined' && profiles) {
                     var mbSlot = window.multiboxPlayerEnabled;
                     var pIdx;
-                    /* mbSlots[unit number] is the profile of that multibox unit (same as spect.js) */
+                    /* mbSlots[unit number] is the profile of that multibox unit, else the second
+                     * profile (same as spect.js): a unit opened while Full Map runs is number 16 or
+                     * more, and only number 1 got the second profile (the others a profile by number) */
                     if (application.mbSlots && application.mbSlots[mbSlot] != null) {
                         pIdx = application.mbSlots[mbSlot];
-                    } else if (mbSlot === 1 && application.selectedOldProfile != null) {
+                    } else if (application.selectedOldProfile != null) {
                         pIdx = application.selectedOldProfile;
                     } else {
                         pIdx = ((application.selectedProfile || 0) + mbSlot) % profiles.length;
@@ -53129,6 +53136,28 @@ function thelegendmodproject() {
                 addFullSpectator(plan.tiles[i].index);
                 open++;
             }
+        },
+        /* Ends multibox: closes the multibox units only (player true) and gives the focus back to
+         * the main player. Full Map tiles and the in-game spectator stay open, and so does the
+         * main connection's own state (flushSpecsData, which closes everything, is for a server
+         * change or a lost main connection). With the main player not in a game the menu opens,
+         * as after the death of the last player. */
+        _lmMbStop() {
+            var sp = window.spects || [], keep = [], closed = 0;
+            for (var i = 0; i < sp.length; i++) {
+                var s = sp[i];
+                if (!s) continue;
+                if (!s.player) { keep.push(s); continue; }
+                if (typeof s.closeConnection === 'function') s.closeConnection();
+                closed++;
+            }
+            if (keep.length !== sp.length) window.spects = keep;
+            this.multiBoxPlayerExists = false;
+            if (window.legendmod) window.legendmod.multiBoxPlayerExists = false;
+            lmSetMbUnit(0);
+            window.multiboxPlayerEnabledSaved = null;
+            if (closed && !this.play && window.application && typeof window.application.showMenu === 'function') window.application.showMenu();
+            return closed;
         },
         flushSpecsData() {
             this.isSpectateEnabled = false;

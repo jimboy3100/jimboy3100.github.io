@@ -5,7 +5,8 @@
  * controlled unit died or a unit took the focus at its spawn.
  * Cases: a focused unit dies while the main player lives (back to 0) or is dead (to the next living
  * unit, one event, not 0 and then the unit), the first spawn of a unit takes the focus, a unit dying
- * without the focus and a respawn of the focused unit send nothing, swap / back send one event each.
+ * without the focus and a respawn of the focused unit send nothing, swap / back send one event each,
+ * a Full Map tile (player false) is never taken for a surviving unit.
  * node developers/tests/mbswap.js [ogario.v4.js] [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -65,6 +66,20 @@ function env(o) {
     const e = env({ focus: 1, mainAlive: false });
     e.unit(1).terminate();
     check('focused unit dies, main dead: one event to the next living unit', e.got.join() === '2<1' && e.ctx.multiboxPlayerEnabled === 2, e.got.join() + ' focus=' + e.ctx.multiboxPlayerEnabled);
+}
+/* a Full Map tile / in-game spectator (player false) is never a surviving unit: with the main player
+ * dead, the only unit dying (focused, or found without cells) leaves the focus on the main player and
+ * opens the menu, even with a spectator flagged active in spects before it */
+for (const how of ['terminate', 'beforecalculation']) {
+    const e = env({ focus: 16, mainAlive: false });
+    const tile = new e.ctx.Unit(1); tile.player = false; tile.tile = 0;
+    const unit = new e.ctx.Unit(16);
+    e.ctx.spects.length = 0;
+    e.ctx.spects.push(tile, unit);
+    if (how === 'terminate') unit.terminate();
+    else { unit.active = false; unit.beforecalculation(); }
+    check('only unit (16, after tile 1) dies via ' + how + ', main dead: focus back to the main player, never the tile' + (how === 'terminate' ? ', menu shown' : ''),
+        e.got.join() === '0<16' && !e.ctx.multiboxPlayerEnabled && (how !== 'terminate' || e.ctx.menuShown === 1), e.got.join() + ' menu=' + e.ctx.menuShown);
 }
 /* a unit without the focus dies: nothing changes, no event */
 {

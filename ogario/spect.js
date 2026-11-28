@@ -388,10 +388,14 @@ function lmFoodReference(now) {
     return R;
 }
 
+/* Opens one multibox unit (a playing connection) and returns it. Its number is max + 1 of what
+ * spects holds now (Full Map tiles included), so callers take unit.number from the object
+ * returned, never a guessed 1. */
 function addBox() {
     let spect = new Spect({ player: true });
-    legendmod.multiBoxPlayerExists = true;
     spects.push(spect);
+    legendmod.multiBoxPlayerExists = true;
+    return spect;
 }
 window.addBox = addBox;
 
@@ -2662,7 +2666,7 @@ class Spect {
             var nextUnit = 0;
             if (!legendmod.play) {
                 for (var s = 0; s < spects.length; s++) {
-                    if (spects[s] && spects[s] !== this && spects[s].active) {
+                    if (spects[s] && spects[s] !== this && spects[s].player && spects[s].active) {
                         nextUnit = spects[s].number;
                         break;
                     }
@@ -2671,11 +2675,11 @@ class Spect {
             lmSetMbUnit(nextUnit);
         }
 
-        // Check if any unit is still alive (main player or other spects)
+        // Check if any unit is still alive (main player or other units; a spectator is no player)
         var anyAlive = legendmod.play;
         if (!anyAlive) {
             for (var i = 0; i < spects.length; i++) {
-                if (spects[i] && spects[i].active) { anyAlive = true; break; }
+                if (spects[i] && spects[i].player && spects[i].active) { anyAlive = true; break; }
             }
         }
 
@@ -3194,7 +3198,7 @@ class Spect {
             !(this._lmWantFocusAt && Date.now() - this._lmWantFocusAt < 25000)) {
             let nextUnit = 0;
             for (let i = 0; i < spects.length; i++) {
-                if (spects[i] && spects[i] !== this && spects[i].active) {
+                if (spects[i] && spects[i] !== this && spects[i].player && spects[i].active) {
                     nextUnit = spects[i].number;
                     break;
                 }
