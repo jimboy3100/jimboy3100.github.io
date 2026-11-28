@@ -349,5 +349,29 @@ check('niceFloor keeps 2 digits, rounds down', C.niceFloor(3456) === 3400 && C.n
     ctx.multiboxPlayerEnabled = null; delete ctx.spects;
 }
 
+/* ---------- every multibox unit life is a record with its slot (LMEvents playerDied, role 'unit') */
+{
+    const games = () => JSON.parse(store.get('lmAnalyticsGames')).games;
+    check('listens to the players\' deaths (playerDied)', LMEvents._has('playerDied'));
+    const n0 = games().length, t0 = toasts.length;
+    clock += 60000;
+    LMEvents.emit('playerDied', { slot: 3, source: 18, role: 'unit', active: true, living: 1, life: 2, reason: 'death', mass: 4200, msAlive: 95000, scope: 'unit', context: 'live' });
+    const g = games()[games().length - 1];
+    check('a unit life: one record with its slot, time alive and best mass', games().length === n0 + 1 && g.slot === 3 && g.ms === 95000 && g.peak === 4200 && g.src === 'lm', JSON.stringify(g));
+    check('    ... its unmeasured numbers are 0 and it is no traced life (no Coach for it)', g.n === 0 && g.spl === 0 && g.end === 0 && !C.traced(g) && !toasts.slice(t0).some(t => t[1].indexOf('Coach: ') !== -1));
+    LMEvents.emit('playerDied', { slot: 1, role: 'main', active: true, mass: 900, msAlive: 9000, scope: 'all', context: 'live' });
+    check('the main player\'s playerDied adds nothing (its life is the spawn ... death record)', games().length === n0 + 1);
+    LMEvents.emit('playerDied', { slot: 2, role: 'unit', active: false, mass: 3000, msAlive: 20000, scope: 'unit', context: 'practice' });
+    check('a practice life of a unit: nothing', games().length === n0 + 1);
+    LMEvents.emit('playerDied', { slot: 2, role: 'unit', active: false, mass: 3000, msAlive: 20000, scope: 'unit', context: 'live' });
+    check('a background unit life is recorded too (slot 2)', games().length === n0 + 2 && games()[games().length - 1].slot === 2);
+    check('slot only 2-6: junk is dropped', C.sanitizeGame({ t: clock, slot: 9 }).slot === undefined && C.sanitizeGame({ t: clock, slot: 1 }).slot === undefined && C.sanitizeGame({ t: clock, slot: '4' }).slot === 4);
+    /* the match history (also P2-P6 lives, with slot) merged in: the same life only for the same player */
+    const mh = C.fromMatchHistory(JSON.stringify([{ t: g.t + 500, mass: 4200, ms: 95000, slot: 3 }, { t: g.t + 800, mass: 700, ms: 4000 }]));
+    const merged = C.mergeGames([g], mh);
+    check('match history: its slot is read, a record of the same unit life is not counted twice, the main player\'s death at that moment is',
+        mh[0].slot === 3 && merged.length === 2 && merged.filter(x => x.slot === 3).length === 1 && merged.some(x => x.src === 'mh' && !x.slot));
+}
+
 console.log(fail ? fail + ' failed' : 'all analytics checks passed');
 process.exit(fail ? 1 : 0);

@@ -569,9 +569,12 @@
         for (var k in prevPressed) if (k.indexOf(pre) === 0) delete prevPressed[k];
     });
     /* vibration on death (option, off by default). Listens only while the option is on and a
-     * pad is read: the game skips building an event nobody listens to. */
+     * pad is read: the game skips building an event nobody listens to. With multibox the death of
+     * the player you control ('playerDied' active: the main player or a unit), or the last of your
+     * players (scope 'all'); a background player's death while you steer another one does not. */
     var deathOn = false;
-    function onDeath() {
+    function onDeath(e) {
+        if (e && !e.active && e.scope !== 'all') return;
         if (!suspended && pads().length) rumble(padByIndex(lastPadIndex), 300, 0.8);
     }
     function watchDeath() {
@@ -580,7 +583,7 @@
         try {
             var E = window.LMEvents;
             if (!E || typeof E.on !== 'function') return;
-            if (want) E.on('death', onDeath); else E.off('death', onDeath);
+            if (want) E.on('playerDied', onDeath); else E.off('playerDied', onDeath);
             deathOn = want;
         } catch (e) { }
     }

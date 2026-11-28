@@ -106,18 +106,27 @@ check('no seek without a replay playing', cmds.length === 2);
 const sync = body(mob, 'function syncAiPause() {');
 check('the buttons show only while the replay bar shows', !!sync && /bRwd\.style\.display = rd; bFwd\.style\.display = rd;/.test(sync));
 
-// ── held Feed and a death: the death's scope decides (a connected but dead unit kept it feeding)
+// ── held Feed and a death (LMEvents playerDied): the death of the player you control or the game
+// over ends it, another player's death while you steer a living one does not
 let stops = 0;
 ctx.feedStop = () => { stops++; };
 vm.runInContext(body(mob, 'function feedDeath('), ctx);
+check('the held Feed listens to the deaths of all players (playerDied), not the main-only death',
+  /\('playerDied', feedDeath\)/.test(mob) && !/\('death', feedDeath\)/.test(mob));
 ctx.legendmod = { multiBoxPlayerExists: true };
-ctx.feedDeath({ unit: 0, scope: 'all' });
+ctx.feedDeath({ slot: 1, role: 'main', active: false, scope: 'all' });
 check('game over (scope all) with a dead unit still connected: the held Feed stops', stops === 1, stops);
-ctx.feedDeath({ unit: 0, scope: 'unit' });
-check('main player died, a unit still plays (scope unit): the held Feed goes on', stops === 1, stops);
+ctx.feedDeath({ slot: 1, role: 'main', active: false, scope: 'unit' });
+check('main player died while you steer a living unit: the held Feed goes on', stops === 1, stops);
+ctx.feedDeath({ slot: 3, role: 'unit', active: true, scope: 'unit' });
+check('the unit you control (P3) dies, the main player still plays: the held Feed stops', stops === 2, stops);
+ctx.feedDeath({ slot: 1, role: 'main', active: true, scope: 'unit' });
+check('the main player you control dies, a unit still plays: the held Feed stops', stops === 3, stops);
+ctx.feedDeath({ slot: 2, role: 'unit', active: false, scope: 'unit' });
+check('a background unit dies: the held Feed goes on', stops === 3, stops);
 ctx.legendmod = { multiBoxPlayerExists: false };
-ctx.feedDeath({ unit: 0, scope: 'all' });
-check('no multibox: a death stops it as before', stops === 2, stops);
+ctx.feedDeath({ slot: 1, role: 'main', active: true, scope: 'all' });
+check('no multibox: a death stops it as before', stops === 4, stops);
 
 // ── held Feed and a multibox switch, with the game's real macro feed (application.macroFeed,
 // window.core.act): a held E stays with the player it started on, the phone's Feed button keeps

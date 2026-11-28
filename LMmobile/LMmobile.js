@@ -1248,16 +1248,16 @@
          * game events are listened to only while it is held (nothing listens otherwise) */
         var feedWatched = false;
         function feedDeath(e) {
-            /* a multibox unit still playing keeps the held Feed (it feeds that unit): the death's
-             * scope 'unit' (lmDeathScope). The game over ('all', also with a connected unit that is
-             * dead) ends it; multiBoxPlayerExists stayed true for a dead unit */
-            if (!(e && e.scope === 'unit')) feedStop();
+            /* the held Feed feeds the player you control: its death ('playerDied' active, the main
+             * player or a multibox unit) or the game over (scope 'all') ends it; another player's
+             * death while you steer a living one keeps it */
+            if (!e || e.active || e.scope === 'all') feedStop();
         }
         function feedWatch(on) {
             var E = window.LMEvents;
             if (on === feedWatched || !E || typeof E.on !== 'function') return;
             feedWatched = on;
-            E[on ? 'on' : 'off']('death', feedDeath);
+            E[on ? 'on' : 'off']('playerDied', feedDeath);
             E[on ? 'on' : 'off']('serverChange', feedStop);
         }
         /* true while the Feed button holds the game's macro feed: letting E go must not stop it */

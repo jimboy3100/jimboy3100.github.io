@@ -128,7 +128,10 @@
      *   cov    visited cells of an 8x8 map grid (0-64)     edge     share of samples near the border (0-1)
      *   n      position samples          loss20  mass lost in the final 20 s as a share of the peak (0-1)
      * Track record (schema 1), the last MAX_TRACKS lives: { v, t, map, shape 's'|'c', p, s, d } with
-     * p = position samples, s = spawn cell, d = death cell, each 2 characters of ALPH per cell. */
+     * p = position samples, s = spawn cell, d = death cell, each 2 characters of ALPH per cell.
+     * slot (2-6, absent for the main player): a multibox unit's life. It has only its time alive and
+     * best mass (no positions, splits, leaderboard or final mass are measured for a unit), so its
+     * other numbers are 0 and it is no traced life (traced()). */
     function sanitizeGame(r) {
         if (!r || typeof r !== 'object' || Array.isArray(r)) return null;
         var t = num(r.t, 0, 4102444800000, 0);
@@ -153,8 +156,13 @@
             g.n = Math.round(num(r.n, 0, MAX_SAMPLES, 0));
             g.loss20 = num(r.loss20, 0, 1, 0);
         }
+        var sl = Math.floor(num(r.slot, 0, 99, 0));
+        if (sl >= 2 && sl <= 6) g.slot = sl;
         return g;
     }
+    /* a life recorded here with its whole trace (positions, splits, leaderboard, final mass): the
+     * Coach, the top-10 share and the leaderboard objective use only these */
+    function traced(g) { return g.src === 'lm' && !g.slot; }
     function sanitizeTrack(r) {
         if (!r || typeof r !== 'object' || Array.isArray(r)) return null;
         var t = num(r.t, 0, 4102444800000, 0);
@@ -189,7 +197,7 @@
             for (var i = 0; i < o.length; i++) {
                 var r = o[i];
                 if (!r || typeof r !== 'object') continue;
-                var g = sanitizeGame({ src: 'mh', t: r.t, ms: r.ms, peak: r.mass, srv: r.server, mode: r.mode });
+                var g = sanitizeGame({ src: 'mh', t: r.t, ms: r.ms, peak: r.mass, srv: r.server, mode: r.mode, slot: r.slot });
                 if (g) out.push(g);
             }
         } catch (e) { }
@@ -201,7 +209,8 @@
         var out = lm.slice();
         for (var i = 0; i < legacy.length; i++) {
             var dup = false;
-            for (var j = 0; j < lm.length && !dup; j++) if (Math.abs(lm[j].t - legacy[i].t) < 3000) dup = true;
+            /* the same life: about the same time and the same player (slot; two players may die together) */
+            for (var j = 0; j < lm.length && !dup; j++) if (Math.abs(lm[j].t - legacy[i].t) < 3000 && (lm[j].slot || 1) === (legacy[i].slot || 1)) dup = true;
             if (!dup) out.push(legacy[i]);
         }
         out.sort(function (a, b) { return a.t - b.t; });
@@ -210,7 +219,7 @@
 
     /* ------------------------------------------------------------------ dashboard aggregation */
     function summary(list) {
-        var lm = list.filter(function (g) { return g.src === 'lm'; });
+        var lm = list.filter(function (g) { return traced(g); });
         return {
             games: list.length,
             avgPeak: Math.round(avg(list.map(function (g) { return g.peak; }))),
@@ -245,7 +254,7 @@
         var sumPeak = 0, sumMin = 0, first = 0;
         games.forEach(function (g) {
             if (g.ms >= 10000) { sumPeak += g.peak; sumMin += g.ms / 60000; }
-            if (g.src === 'lm') first += g.first;
+            if (traced(g)) first += g.first;
         });
         res.perMin = sumMin > 0 ? Math.round(sumPeak / sumMin) : 0;
         res.firstMs = first;
@@ -289,7 +298,7 @@
          * survives longer, even if they maintained high mass throughout. */
         var rate = g.peak / Math.max(Math.min(min, 5), 0.5);
         s.growth = Math.round(100 * clamp01(Math.log(1 + rate / 50) / Math.LN10 / 2));
-        var lm = g.src === 'lm';
+        var lm = traced(g);
         s.splits = lm && g.spl > 0 ? Math.round(100 * clamp01(1 - 2 * g.splLoss)) : null;
         if (lm && g.n >= 5) {
             var cover = Math.min(1, g.cov / Math.min(24, 3 + 3 * min));
@@ -323,7 +332,7 @@
     /* Suggestions, deterministic: problems in a fixed order (at most 3), then good news, then a tip for
      * the lowest part, so a report has 2-4 lines. Each line is [key, values] for the text table. */
     function coachSuggestions(g, s, rec) {
-        var bad = [], good = [], min = g.ms / 60000, lm = g.src === 'lm';
+        var bad = [], good = [], min = g.ms / 60000, lm = traced(g);
         var finalLoss = lm && g.peak >= 200 && g.loss20 >= 0.25;
         if (finalLoss) bad.push(['sgFinal', [pct(g.loss20)]]);
         if (lm && g.spl >= 2 && g.splLoss >= 0.2) bad.push(['sgSplits', [g.splBad, g.spl, pct(g.splLoss)]]);
@@ -411,7 +420,7 @@
         cand.push(mk('mass', Math.max(MIN_MASS, niceFloor(Math.min(massCap, Math.max(quantile(peaks, 0.75), avg(peaks) * 1.25))))));
         cand.push(mk('survive', Math.max(MIN_SURVIVE, Math.floor(quantile(mins, 0.75)))));
         cand.push(mk('playtime', Math.max(MIN_PLAYTIME, Math.floor(quantile(sortNum(days.map(function (k) { return playDay[k]; })), 0.5) / 5) * 5)));
-        var lm = recent.filter(function (g) { return g.src === 'lm'; });
+        var lm = recent.filter(function (g) { return traced(g); });
         var pos = sortNum(lm.map(function (g) { return g.bestPos; }).filter(function (p) { return p > 0; }));
         if (lm.length && pos.length >= Math.max(2, lm.length * 0.25)) {
             var q = quantile(pos, 0.25), t = 5;
@@ -434,7 +443,7 @@
         }
         else if (goal.type === 'top') {
             v = 0;
-            list.forEach(function (g) { if (g.src === 'lm' && g.bestPos > 0 && (!v || g.bestPos < v)) v = g.bestPos; });
+            list.forEach(function (g) { if (traced(g) && g.bestPos > 0 && (!v || g.bestPos < v)) v = g.bestPos; });
             done = v > 0 && v <= goal.target;
             frac = done ? 1 : 0;
         } else {
@@ -661,16 +670,36 @@
             cov: f.cov, edge: f.edge, n: f.n, loss20: peak > 0 ? clamp01((top20 - L.end) / peak) : 0
         });
         if (!g) return;
-        var games = loadGames();
-        games.push(g);
-        if (games.length > MAX_GAMES) games = games.slice(games.length - MAX_GAMES);
-        lsSetList(KEY_GAMES, 'games', games);
+        keepGame(g);
         if (cells.length) {
             var tracks = loadTracks();
             tracks.push({ v: SCHEMA, t: now, map: L.map, shape: L.shape, p: L.pos.join(''), s: L.spawn, d: L.pos[L.pos.length - 1] });
             if (tracks.length > MAX_TRACKS) tracks = tracks.slice(tracks.length - MAX_TRACKS);
             lsSetList(KEY_TRACKS, 'tracks', tracks);
         }
+        afterGame(g);
+    }
+    function keepGame(g) {
+        var games = loadGames();
+        games.push(g);
+        if (games.length > MAX_GAMES) games = games.slice(games.length - MAX_GAMES);
+        lsSetList(KEY_GAMES, 'games', games);
+    }
+    /* A multibox unit's life (LMEvents 'playerDied' with role 'unit'; the main player's life is the
+     * spawn ... death above): one record with its slot, time alive and best mass. Its own mass
+     * updates, splits, leaderboard place and positions are not measured. */
+    function onPlayerDied(e) {
+        if (!e || e.role !== 'unit' || notLive(e)) return;
+        var now = Date.now(), ms = Math.max(0, Math.min(+e.msAlive || 0, 6 * 3600000)), peak = Math.max(0, +e.mass || 0);
+        if (peak <= 0 && ms < 1000) return;
+        var o = lm();
+        var g = sanitizeGame({
+            src: 'lm', t: now, ms: ms, peak: peak, slot: e.slot, mode: modeText(),
+            srv: typeof window._lmHostOnly === 'function' && o ? window._lmHostOnly(o.ws) : '',
+            st: o ? String(o.serverType || '').slice(0, 20) : ''
+        });
+        if (!g || !g.slot) return;
+        keepGame(g);
         afterGame(g);
     }
     function toast(kind, html, onclick) {
@@ -685,11 +714,14 @@
     function afterGame(g) {
         var games = allGames();
         var i = games.length - 1;
-        for (var j = games.length - 1; j >= 0; j--) if (games[j].t === g.t && games[j].src === 'lm') { i = j; break; }
-        var s = coachScores(g), rec = recentAverages(games, i);
-        var tips = coachSuggestions(g, s, rec);
-        toast('info', '<b>📊</b> ' + esc(T('coachToast', [s.overall, T(tips[0][0], tips[0][1])])) + ' <i>' + esc(T('coachToastMore')) + '</i>',
-            function () { open('coach'); });
+        for (var j = games.length - 1; j >= 0; j--) if (games[j].t === g.t && games[j].src === 'lm' && (games[j].slot || 1) === (g.slot || 1)) { i = j; break; }
+        /* the Coach looks at traced lives only (a multibox unit's life: objectives only) */
+        if (traced(g)) {
+            var s = coachScores(g), rec = recentAverages(games, i);
+            var tips = coachSuggestions(g, s, rec);
+            toast('info', '<b>📊</b> ' + esc(T('coachToast', [s.overall, T(tips[0][0], tips[0][1])])) + ' <i>' + esc(T('coachToastMore')) + '</i>',
+                function () { open('coach'); });
+        }
         var st = loadGoals(), now = Date.now();
         ensureDaily(st, games, now);
         st.daily.concat(st.custom).forEach(function (goal) {
@@ -710,7 +742,7 @@
         listening = on;
         var f = on ? E.on : E.off;
         f('spawn', onSpawn); f('massUpdate', onMass); f('split', onSplit); f('leaderboard', onLeaderboard); f('death', onDeath);
-        f('serverChange', onServerChange);
+        f('serverChange', onServerChange); f('playerDied', onPlayerDied);
         if (!on) life = null;
     }
     /* the life ends with the connection: joining another server or losing the connection drops
@@ -978,7 +1010,7 @@
     function paintCoach(body) {
         var t = theme(), games = allGames();
         var idxs = [];
-        games.forEach(function (g, i) { if (g.src === 'lm') idxs.push(i); });
+        games.forEach(function (g, i) { if (traced(g)) idxs.push(i); });
         if (!idxs.length) { note(body, T('coachNoneYet')); return; }
         idxs = idxs.slice(-50);
         if (coachIdx < 0 || coachIdx >= idxs.length) coachIdx = idxs.length - 1;
@@ -1122,7 +1154,7 @@
         /* pure parts, for the tests */
         core: Object.freeze({
             SCHEMA: SCHEMA, GRID: GRID, encodeCell: encodeCell, decodeCells: decodeCells, trackFacts: trackFacts, binHeat: binHeat,
-            sanitizeGame: sanitizeGame, sanitizeTrack: sanitizeTrack, parseStore: parseStore, fromMatchHistory: fromMatchHistory,
+            sanitizeGame: sanitizeGame, sanitizeTrack: sanitizeTrack, parseStore: parseStore, fromMatchHistory: fromMatchHistory, traced: traced,
             mergeGames: mergeGames, aggregate: aggregate, weekStart: weekStart, coachScores: coachScores, recentAverages: recentAverages,
             coachSuggestions: coachSuggestions, generateDaily: generateDaily, goalProgress: goalProgress, sanitizeGoal: sanitizeGoal,
             niceFloor: niceFloor, quantile: quantile, dayKey: dayKey, ensureDaily: ensureDaily, goalText: goalText, text: T

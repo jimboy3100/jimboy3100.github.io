@@ -7,6 +7,11 @@
  * eat loop of ogario.v4.js reports exact eats of and by your cells. Only data the client already
  * receives is used: the biggest visible enemy near you, the eat events and, on Expanding Land, the
  * server's killer info in the game over packet (legendmod._lmKiller with server: true).
+ * With multibox the recap is of the player you control: one life at a time (slot, slotEpoch and
+ * life), the main player's or a unit's (its own cells and mass). It follows the player you switch
+ * to while that one lives and stays on the last one while the one you control is dead. A unit's
+ * life has no eat events (the eat loop is the main connection's) and no server killer report; the
+ * Game Over card (the main player's) shows only the main player's life.
  */
 (function () {
     'use strict';
@@ -185,7 +190,11 @@
     var EV = new Array(EV_CAP), evHead = 0, evLen = 0;
     for (var _i = 0; _i < EV_CAP; _i++) EV[_i] = { type: '', t: 0, t2: 0, a: 0, peak: 0, low: 0, nick: null, near: null, v: false };
     var timer = null, listening = false, prevCells = 0, recSlot = null, lastAlive = 0;
-    var recap = null;       /* last recap: { steps, spark, deathAt, slot } */
+    var recap = null;       /* last recap of the main player: { steps, spark, deathAt, slot, player } */
+    var unitRecap = null;   /* last recap of a multibox unit's life (player: its slot) */
+    /* the life the ring follows: its player (window.legendmod or a unit), slot and key
+     * ('slot:slotEpoch:life'); recapKey: the main player's life of recap */
+    var trackP = null, trackSlot = 0, trackKey = '', recapKey = '';
     var recapEl = null;     /* recap panel on the open Game Over card */
     var cardTheme = null;
 
@@ -232,14 +241,43 @@
         return window.catholicCalculator | 0;
     }
 
+    /* a player of ours alive: the main client while it plays, a multibox unit (player) with a life */
+    function alive(p) {
+        var lm = window.legendmod;
+        return !!p && (p === lm ? !!lm.play : p.player === true && p.active === true);
+    }
+    function keyOf(p) {
+        var lm = window.legendmod;
+        if (p === lm) return '1:0:' + (+lm._lmLife || 0);
+        return (p.slotId >= 2 ? p.slotId : 2) + ':' + (+p.slotEpoch || 0) + ':' + (+p._lmLife || 0);
+    }
+    /* the player the recap follows now: the one you control while it lives, else the one followed
+     * so far while it still lives (the same life), else none */
+    function followed() {
+        var lm = window.legendmod, n = +window.multiboxPlayerEnabled || 0;
+        var c = n ? (typeof window.getActiveSpect === 'function' ? window.getActiveSpect(n) : null) : lm;
+        if (alive(c)) return c;
+        return trackP && alive(trackP) && keyOf(trackP) === trackKey ? trackP : null;
+    }
+    /* the ring starts over for another life (another player, or the next life of the same one) */
+    function follow(p) {
+        var k = keyOf(p);
+        if (k === trackKey && p === trackP) return;
+        if (trackKey) { ringClear(R); evClear(); prevCells = 0; recSlot = null; lastAlive = 0; }
+        trackP = p; trackKey = k; trackSlot = p === window.legendmod ? 1 : (p.slotId >= 2 ? p.slotId : 2);
+    }
     function tick() {
         var lm = window.legendmod;
-        if (!lm || !lm.play || !liveNow()) return;
-        /* the main player's life (its spawn and death events): a multibox branch here read
-         * lm.multiboxPlayerEnabled and lm.playerMassMulti, which never exist, so it never ran */
-        var pc = lm.playerCells, n = pc ? pc.length : 0;
+        if (!lm || !liveNow()) return;
+        var me = followed();
+        /* nothing of ours to follow: the timer starts again with a spawn or a switch */
+        if (!me) { stopTimer(); return; }
+        follow(me);
+        /* the main player's cells and mass, or the unit's own (spect.js getOwnPlayerCells) */
+        var unit = me !== lm;
+        var pc = unit ? (typeof me.getOwnPlayerCells === 'function' ? me.getOwnPlayerCells() : null) : lm.playerCells, n = pc ? pc.length : 0;
         if (!n) return;
-        var now = Date.now(), mass = +lm.playerMass || 0, i, j;
+        var now = Date.now(), mass = +me.playerMass || 0, i, j;
         lastAlive = now;
         /* biggest visible enemy cell near me that could eat at least my smallest cell */
         var minOwn = Infinity;
@@ -298,6 +336,8 @@
         /* Replay Studio handling packets again to rebuild a seek or a step backwards (ogario.v4.js
          * lmReplayChatCut): those eats were shown already or are skipped over */
         if (!eater || !victim || window._lmReplayQuiet) return;
+        /* the eat loop's cells are the main player's: a unit's life followed gets none */
+        if (trackSlot > 1) return;
         var now = Date.now(), vm = ~~(vSize * vSize / 100), e;
         if (eaterMine && victimMine) {
             e = evFind('merge', now - 1500);
@@ -328,7 +368,8 @@
     }
 
     function killerNow() {
-        var lm = window.legendmod, k = lm && lm._lmKiller, now = Date.now();
+        /* the server's report (_lmKiller) is of the main player's death */
+        var lm = window.legendmod, k = trackSlot > 1 ? null : lm && lm._lmKiller, now = Date.now();
         /* Expanding Land: the server's own report */
         if (k && k.server && now - (k.at || 0) < 15000) return { nick: String(k.nick || ''), virus: !!k.virus, exact: true };
         /* find the eaten event with the LARGEST mass in the 2-second death window,
@@ -369,7 +410,7 @@
                 steps[s].pkt = si >= 0 && R.p[si] >= 0 ? R.p[si] : -1;
             }
         }
-        return { steps: steps, spark: spark, first: first, deathAt: deathAt, slot: slot, killer: killer };
+        return { steps: steps, spark: spark, first: first, deathAt: deathAt, slot: slot, killer: killer, player: trackSlot || 1 };
     }
 
     /* ---------- Game Over card ---------- */
@@ -401,8 +442,11 @@
     /* again: the same recap in the new language (no rebuild: the killer info may have expired since) */
     function renderPanel(again) {
         if (!recapEl || !recapEl.parentNode || !document.body.contains(recapEl)) { recapEl = null; return; }
-        var rc = again && recap ? recap : buildRecap();
-        recap = rc || recap;
+        /* the card is the main player's: the ring while it follows that life, else (multibox: it
+         * follows a unit since) the recap made at that death */
+        var lmKey = window.legendmod ? keyOf(window.legendmod) : '', live = !trackKey || trackKey === lmKey;
+        var rc = again && recap ? recap : live ? buildRecap() : recapKey === lmKey ? recap : null;
+        if (live) recap = rc || recap;
         var th = cardTheme;
         recapEl.dir = dir();
         while (recapEl.firstChild) recapEl.removeChild(recapEl.firstChild);
@@ -455,7 +499,11 @@
         var o = opts();
         cardTheme = themeOf(theme);
         if (!o.recap) return;
-        if (!R.len) return;
+        /* the card is the main player's game over: only its life's recap (with multibox the ring
+         * may follow a unit by now) */
+        var lmKey = window.legendmod ? keyOf(window.legendmod) : '';
+        if (trackKey && trackKey !== lmKey && recapKey !== lmKey) return;
+        if (!R.len && !recap) return;
         var th = cardTheme, el = document.createElement('div'), wide = (window.innerWidth || 0) >= 830;
         el.id = 'lm-go-recap';
         el._lmWide = wide;
@@ -482,23 +530,41 @@
     /* practice arena and replay lives get no recap (LMEvents context; older cores: the flags) */
     function liveNow() { return !(window.LMPractice && window.LMPractice.on) && !window._lmEvReplayOn; }
     function liveEvent(e) { return e && e.context ? e.context === 'live' : liveNow(); }
+    /* the main player's spawn: a new life (not while you control another player that lives:
+     * that life is followed on) */
     function onSpawn(e) {
-        ringClear(R); evClear();
-        prevCells = 0; recSlot = null; lastAlive = 0;
         recapEl = null;
         if (!liveEvent(e)) { stopTimer(); return; }
+        if (!(trackSlot > 1 && alive(trackP) && trackP === followed())) {
+            ringClear(R); evClear();
+            prevCells = 0; recSlot = null; lastAlive = 0;
+            trackP = window.legendmod || null; trackKey = trackP ? keyOf(trackP) : ''; trackSlot = trackP ? 1 : 0;
+        }
         start();
     }
-    function onDeath(e) {
-        stopTimer();
-        if (!liveEvent(e)) return;
+    /* the recap of the life followed, at its death */
+    function ended() {
+        if (trackSlot > 1) { if (opts().recap) unitRecap = buildRecap(); return; }
+        recapKey = trackKey;
         /* the card can come before the last eat packet: show the final state */
         if (recapEl) renderPanel();
         else if (opts().recap) recap = buildRecap();
     }
+    function onDeath(e) {
+        if (!liveEvent(e)) { stopTimer(); return; }
+        if (trackSlot <= 1) ended();
+        if (!followed()) stopTimer();
+    }
+    /* a multibox unit's death (the main player's comes as 'death'): its recap when it is the life
+     * followed; a spawn or a switch (re)starts the timer */
+    function onPlayerDied(e) {
+        if (e && e.role === 'unit' && liveEvent(e) && trackSlot > 1 && trackKey === e.slot + ':' + (+e.slotEpoch || 0) + ':' + (+e.life || 0)) ended();
+        if (!followed()) stopTimer();
+    }
+    function onPlayerStart(e) { if (liveEvent(e)) start(); }
     function start() {
         var lm = window.legendmod;
-        if (!timer && lm && lm.play && liveNow()) timer = setInterval(function () { try { tick(); } catch (e) { } }, SAMPLE_MS);
+        if (!timer && lm && (lm.play || followed()) && liveNow()) timer = setInterval(function () { try { tick(); } catch (e) { } }, SAMPLE_MS);
     }
     function stopTimer() { if (timer) { clearInterval(timer); timer = null; } }
 
@@ -508,39 +574,47 @@
         window._lmDROn = on;
         if (on && !listening && E) {
             E.on('spawn', onSpawn); E.on('death', onDeath);
+            E.on('playerDied', onPlayerDied); E.on('playerSpawned', onPlayerStart); E.on('multiboxSwap', onPlayerStart);
             /* P1 fix: listen for server changes to flush stale buffers and prevent
              * cross-server killer attribution bleed */
             E.on('serverChange', onServerChange);
             listening = true; start();
         }
         else if (!on && listening) {
-            if (E) { E.off('spawn', onSpawn); E.off('death', onDeath); E.off('serverChange', onServerChange); }
+            if (E) {
+                E.off('spawn', onSpawn); E.off('death', onDeath); E.off('serverChange', onServerChange);
+                E.off('playerDied', onPlayerDied); E.off('playerSpawned', onPlayerStart); E.off('multiboxSwap', onPlayerStart);
+            }
             listening = false;
-            stopTimer(); ringClear(R); evClear(); recapEl = null; recap = null;
+            stopTimer(); ringClear(R); evClear(); recapEl = null; recap = unitRecap = null;
+            trackP = null; trackSlot = 0; trackKey = recapKey = '';
         }
     }
     function onServerChange() {
         stopTimer(); ringClear(R); evClear();
         prevCells = 0; recSlot = null; lastAlive = 0;
-        recapEl = null; recap = null;
+        recapEl = null; recap = unitRecap = null;
+        trackP = null; trackSlot = 0; trackKey = recapKey = '';
     }
 
     window.LMDeathRecap = {
         sync: sync,
         eat: eat,
         card: card,
-        /* the recap of the last death (steps as shown on the card), or null */
+        /* the recap of the main player's last death (steps as shown on the card), or null */
         last: function () { return recap; },
+        /* the recap of the last death of a player slot (1 the main player, 2-6 a multibox unit) */
+        lastOf: function (slot) { return slot > 1 ? (unitRecap && unitRecap.player === slot ? unitRecap : null) : recap; },
         /* who ate me by the recap's rule (the server's report, else the most mass taken in the last
          * 2 s): the Game Over card's "Eaten by" and the match history name the same player */
         killer: function () { return killerNow(); },
         _pure: { fmtNum: fmtNum, makeRing: makeRing, ringPush: ringPush, sampleAt: sampleAt, peakSince: peakSince, lossCheck: lossCheck, attribute: attribute, summarise: summarise, stepText: stepText, stepLabel: stepLabel },
         /* for developers/tests (unit test and smoke probe): feed samples and events by hand */
         _test: {
-            tick: tick, onSpawn: onSpawn, onDeath: onDeath, build: buildRecap,
+            tick: tick, onSpawn: onSpawn, onDeath: onDeath, onPlayerDied: onPlayerDied, build: buildRecap,
             sample: function (t, m, c, nick) { ringPush(R, t, m, c, -1, nick == null ? null : nick, 0); lastAlive = Math.max(lastAlive, t); },
             event: function (type, t, a, nick, peak) { var e = evAdd(type, t); e.a = a || 0; e.nick = nick == null ? null : nick; e.peak = peak || 0; e.low = e.peak - e.a; return e; },
-            reset: function () { ringClear(R); evClear(); prevCells = 0; recSlot = null; lastAlive = 0; recapEl = null; recap = null; }
+            reset: function () { ringClear(R); evClear(); prevCells = 0; recSlot = null; lastAlive = 0; recapEl = null; recap = unitRecap = null; trackP = null; trackSlot = 0; trackKey = recapKey = ''; }
         }
     };
     /* a language change redraws the open recap panel */

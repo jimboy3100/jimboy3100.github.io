@@ -583,6 +583,23 @@ function death(o) {
         check('last death: one menu; ' + (how === 'spawn' ? 'the unit spawning again hides it and takes the focus' : how === 'used' ? 'the player clicked into it: it stays' : 'older than 30 s: it stays'),
             shown === 1 && s.focus() === s.player(3).src && app.menuHidden - hidden === (how === 'spawn' ? 1 : 0), shown + ' / ' + (app.menuHidden - hidden));
     }
+    /* the game over (session): the main player dies first, then the units; only the last death has
+     * scope 'all', once, and each death says whether it was the player you controlled (sent before
+     * the focus moves on); a background unit's death is 'unit' and not active */
+    {
+        const s = MB.scene(Object.assign({ players: 4 }, opt));
+        MB.populate(s); s.step(2);
+        const ev = [];
+        s.ctx.LMEvents.on('playerDied', (d) => ev.push(d.slot + ':' + d.scope + ':' + (d.active ? 'a' : '-') + ':' + d.living));
+        s.ctx.lmSetMbUnit(0);
+        s.kill(1); s.step(1);
+        s.kill(4); s.step(1);
+        s.kill(2); s.step(1);
+        s.kill(3); s.step(1);
+        s.player(3).unit.terminate();
+        check('game over after the main player died first: the last unit\'s death is the one scope all, the controlled ones are active',
+            ev.join() === '4:unit:-:2,2:unit:a:1,3:all:a:0', ev.join());
+    }
     /* a lost socket is no death: no menu, the others' scores stay */
     {
         const s = MB.scene(Object.assign({ players: 3 }, opt));

@@ -160,7 +160,9 @@
     function sendState() {
         if (!S.ready || !S.joined) return;
         var g = root.ogario, a = app();
-        var alive = !!(g && g.play);
+        /* alive while the main player or the multibox unit you control plays (lmActiveUnit) */
+        var au = typeof root.lmActiveUnit === 'function' ? root.lmActiveUnit(true) : null;
+        var alive = !!(g && (g.play || (au && au.transport === 'spect' && au.alive)));
         var next = { nick: nick(), skin: skinUrl(), skinName: '', alive: alive, mass: 0, og: '{}' };
         if (alive && a && typeof a.getPlayerX === 'function') {
             /* where you are, as the Legend Mod team position (lmMyPosition: the player you

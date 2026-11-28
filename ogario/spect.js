@@ -2752,6 +2752,10 @@ class Spect {
      * later spawn does not hide it). */
     terminate(reason) {
         reason = reason === 'disconnect' || reason === 'removed' ? reason : 'death';
+        /* a life of this unit ends here (once: a second call finds it inactive); wasActive: it was
+         * the player you control */
+        var wasAlive = this.player === true && this.active === true, wasActive = window.multiboxPlayerEnabled === this.number;
+        var died = wasAlive && reason === 'death';
         this.active = false;
         this._lmFocusOnSpawn = false;
         /* the next life on this socket is a new spawn for beforecalculation: with the main player
@@ -2760,6 +2764,17 @@ class Spect {
         this.playerCellIDs = [];
         if (this.positionController) clearInterval(this.positionController);
         this.positionController = null;
+        /* its time alive stops (also a lost socket or a removal); a death counts that life as the
+         * main player's do (session line, personal bests, match history while controlled) */
+        if (typeof lmTimeAlive === 'function') lmTimeAlive(this, 0);
+        var life = died && typeof lmMbUnitLifeEnd === 'function' ? lmMbUnitLifeEnd(this, wasActive) : null;
+        /* before the focus moves on: 'active' says whether it was the player you control */
+        if (died && typeof lmMbPlayerEvent === 'function') {
+            lmMbPlayerEvent('playerDied', this, reason, {
+                mass: life ? life.mass : Math.round(+this.playerScore || 0), msAlive: life ? life.msAlive : 0,
+                scope: typeof lmDeathScope === 'function' ? lmDeathScope(this.number) : 'unit'
+            });
+        }
         /* the life ended, as application.onPlayerDeath resets the main player: the HUD kept the
          * dead unit's score (the next life showed the best score of all lives) and mass numbers */
         if (this.player) {
@@ -2790,7 +2805,6 @@ class Spect {
             }
             lmSetMbUnit(nextUnit);
         }
-        if (this.player && reason === 'death' && typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerDied', this, reason);
         /* a lost socket is no game over */
         if (reason === 'disconnect') return;
 
@@ -2801,6 +2815,9 @@ class Spect {
                 if (lmMbAlive(spects[i])) { anyAlive = true; break; }
             }
         }
+        /* the player you control died, or nothing of ours lives: its Pause, permanent feed and keys
+         * end with it (a background unit's death leaves the ones of the player you steer) */
+        if (died && (wasActive || !anyAlive) && typeof application !== 'undefined' && application && typeof application._lmLifeInputEnd === 'function') application._lmLifeInputEnd();
 
         if (!anyAlive) {
             // Last unit died — show menu
@@ -3398,6 +3415,8 @@ class Spect {
             this.active = true
             /* a new life of this unit (lifeGeneration) */
             this._lmLife = (this._lmLife || 0) + 1
+            /* its time alive starts with its first own cell (until terminate) */
+            if (typeof lmTimeAlive === 'function') lmTimeAlive(this, 1)
             this._lmWantFocusAt = 0
             this.sendCursor()
             loadMultiCellSkin(this)
@@ -3447,6 +3466,8 @@ class Spect {
         let y = 0;
         ownCells = ownCells || this.getOwnPlayerCells();
         const playersLength = ownCells.length;
+        /* optional 16-pieces sounds of this unit, by its own cells (lmPieceSound) */
+        if (this.player && typeof lmPieceSound === 'function') lmPieceSound(this, playersLength, this.active === true);
         /* no own cell (none yet, or all gone before terminate): no stale mass, size or split numbers */
         if (!playersLength) {
             this.playerSize = this.playerMass = this.playerMinMass = this.playerMaxMass = this.playerSplitCells = 0;

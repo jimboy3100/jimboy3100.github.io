@@ -1,6 +1,8 @@
 /* Settings > Sounds "Sound at 16 pieces" / "back below 16" (x16Sound / non16Sound, off by default)
- * with the real calculatePlayerMassAndPosition of ogario/ogario.v4.js: each plays once when the
- * own cell count crosses 16, and a new life does not count as a merge.
+ * with the real calculatePlayerMassAndPosition of ogario/ogario.v4.js and of a multibox unit
+ * (ogario/spect.js), both through lmPieceSound: each plays once when that player's own cell count
+ * crosses 16 (a unit's own cells, not the main player's or all units' together), and a new life
+ * does not count as a merge.
  * node developers/tests/x16sound.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const main = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'ogario.v4.js'), 'utf8');
@@ -33,6 +35,34 @@ LM._lmPrevCells = 0; /* death: the core's frame with no own cells */
 check('a new life after 16 pieces is no merge below 16', played.join() === 'x16', played.join());
 const core = cut('LM.calculatePlayerMassAndPosition(); /* includes the units */', 'LM.updateMultiboxUnitPositions();');
 check('the core frame with no own cells resets the count', /LM\._lmPrevCells = 0;/.test(core));
+
+/* a multibox unit: its own cells (getOwnPlayerCells), its own count, once per crossing */
+{
+    const sp = fs.readFileSync(path.join(__dirname, '..', '..', 'ogario', 'spect.js'), 'utf8').replace(/\r\n/g, '\n');
+    const i = sp.indexOf('    calculatePlayerMassAndPosition(ownCells) {'), j = sp.indexOf('    recalculatePlayerMass(ownCells) {', i);
+    if (i < 0 || j < 0) check('unit mass code found', false);
+    else {
+        const Unit = vm.runInContext('(class Unit { constructor() { this.player = true; this.active = true; this.openThird = true; this._own = []; }\n' +
+            'getOwnPlayerCells() { return this._own; }\nrecalculatePlayerMass() { }\n' + sp.slice(i, j) + '\n})', ctx);
+        const u = new Unit(), u2 = new Unit();
+        const uframe = (p, n) => { p._own = cells(n); p.calculatePlayerMassAndPosition(); };
+        played.length = 0;
+        LM.playerCells = cells(4); LM.calculatePlayerMassAndPosition();
+        [1, 8, 16, 16].forEach((n) => uframe(u, n));
+        check('unit: 16 pieces once when its own cells reach 16 (the main player at 4)', played.join() === 'x16', played.join());
+        uframe(u2, 12);
+        check('another unit at 12 pieces: nothing (no count of all units together)', played.join() === 'x16', played.join());
+        LM.calculatePlayerMassAndPosition();
+        check('the count of the main player is its own (still 4, no sound)', played.join() === 'x16' && LM._lmPrevCells === 4, played.join());
+        uframe(u, 15);
+        check('unit back below 16 once', played.join() === 'x16,non16', played.join());
+        uframe(u, 16); played.length = 0;
+        u.active = false; uframe(u, 0); u.active = true; uframe(u, 3);
+        check('unit death after 16 pieces (no own cell) then a new life: no merge below 16', played.length === 0 && u._lmPrevCells === 3, played.join());
+        u.active = false; uframe(u, 16);
+        check('a unit without a life (inactive): no sound', played.length === 0, played.join());
+    }
+}
 
 console.log(fail ? fail + ' check(s) failed' : 'all 16 pieces sound checks passed');
 process.exit(fail ? 1 : 0);

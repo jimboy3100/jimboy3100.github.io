@@ -276,9 +276,19 @@ safe('LMEvents getPosition', () => {
     ctx.legendmod = { mapOffsetX: 7000, mapOffsetY: -7000, play: true, playerX: 0, playerY: 0, playerCells: [{}], viewXTrue: 100.4, viewYTrue: 200.6 };
     ctx.spects = [{ number: 5, player: true, playerCellIDs: [1], playerX: -300, playerY: 400 }];
     const g = () => { const q = ctx.LMEvents.api.getPosition(); return q.x + ',' + q.y; };
+    /* getMass: the mass of the same player (the unit you control while it lives, else the main one) */
+    ctx.legendmod.playerMass = 1500.4; ctx.spects[0].playerMass = 820.6;
+    const m = () => ctx.LMEvents.api.getMass();
     check('getPosition: the main player\'s own cells, not the camera', g() === '7100,-6799', g());
+    check('getMass: the main player\'s mass', m() === 1500, m());
     ctx.multiboxPlayerEnabled = 5;
     check('getPosition: the multibox unit you control', g() === '6700,-6600', g());
+    check('getMass: the mass of the multibox unit you control (as getPosition)', m() === 821, m());
+    ctx.legendmod.play = false; ctx.legendmod.playerMass = 0;
+    check('getMass: the main player dead, the unit you control alive: its mass', m() === 821, m());
+    ctx.spects[0].playerCellIDs = []; ctx.legendmod.play = true; ctx.legendmod.playerMass = 1500;
+    check('getMass: the unit you control dead: the main player\'s mass', m() === 1500, m());
+    ctx.spects[0].playerCellIDs = [1];
     ctx.multiboxPlayerEnabled = null; ctx.legendmod.play = false; ctx.legendmod.playerX = 50;
     check('getPosition: not playing: the camera, as before', g() === '7050,-7000', g());
 });

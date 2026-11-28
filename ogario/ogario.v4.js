@@ -183,7 +183,8 @@
     function lm() { return window.legendmod || null; }
     var _lmEvChatAt = 0;
     var api = {
-        getMass: function () { var o = lm(); return o ? Math.round(+o.playerMass || 0) : 0; },
+        /* the mass of the player getPosition reports (lmMyPosition: the player you control) */
+        getMass: function () { var o = lm(), p = o && lmMyPosition(); return p ? Math.round(+p.mass || 0) : 0; },
         /* where you are (lmMyPosition: the player you control), not the camera centre */
         getPosition: function () {
             var o = lm(), p = o && lmMyPosition();
@@ -448,9 +449,10 @@ window.lmMbStatus = lmMbStatus;
 /* LMEvents for one player's change, each once per change of what it is about: 'playerAdded' /
  * 'playerRemoved' (the slot's occupancy, slotEpoch), 'playerSpawned' / 'playerDied' (the life,
  * _lmLife), 'playerDisconnected' (the socket, connectionGeneration). p: the main client or a
- * unit. Nothing is built while nobody listens. */
+ * unit. Nothing is built while nobody listens. extra: fields added to the data ('playerDied':
+ * mass, msAlive and scope of that life). */
 var _lmMbEvBy = { playerAdded: 'slotEpoch', playerRemoved: 'slotEpoch', playerSpawned: '_lmLife', playerDied: '_lmLife', playerDisconnected: 'connectionGeneration' };
-function lmMbPlayerEvent(type, p, reason) {
+function lmMbPlayerEvent(type, p, reason, extra) {
     var by = _lmMbEvBy[type];
     if (!p || !by) return;
     var v = p[by] || 0, seen = p._lmEvSeen || (p._lmEvSeen = {});
@@ -458,12 +460,14 @@ function lmMbPlayerEvent(type, p, reason) {
     seen[type] = v;
     if (!window.LMEvents._has(type)) return;
     var main = p === window.legendmod, slot = lmMbSlotOf(p);
-    window.LMEvents.emit(type, {
+    var d = {
         slot: slot, source: main ? 0 : +p.number || 0, slotEpoch: main ? 0 : +p.slotEpoch || 0,
         socketGeneration: main ? +p._connectSeq || 0 : +p.connectionGeneration || 0, life: +p._lmLife || 0,
         role: main ? 'main' : 'unit', active: lmMbFocused() === p,
         living: lmMbLiving(), reason: reason || ''
-    });
+    };
+    if (extra) for (var k in extra) if (!(k in d)) d[k] = extra[k];
+    window.LMEvents.emit(type, d);
 }
 window.lmMbPlayerEvent = lmMbPlayerEvent;
 /* Closes one unit for good (removePlayer, a captcha): its life ends ('removed': no death menu
@@ -732,6 +736,43 @@ function _lmHostOnly(u) {
     return m ? m[1].slice(0, 80) : '';
 }
 window._lmHostOnly = _lmHostOnly;
+/* A multibox unit's life ended in a death (spect.js terminate, before its numbers are reset): it
+ * counts as the main player's lives do, by itself: the session line and the personal bests (with
+ * 'personalBest', slot 2-6), and, while it was the player you control (active), a match history
+ * record with its slot. Its best mass is its playerScore, its time alive runs from its first own
+ * cell to none left (lmTimeAlive). Practice and replays record nothing. Once per life (_lmLife).
+ * Returns { mass, msAlive } of that life. */
+function lmMbUnitLifeEnd(sp, active, now) {
+    if (!sp || sp.player !== true) return null;
+    now = now || Date.now();
+    var ms = lmTimeAlive(sp, 0, now), mass = Math.round(+sp.playerScore || 0), slot = lmMbSlotOf(sp);
+    var res = { mass: mass, msAlive: ms };
+    if (sp._lmLifeEnded === (sp._lmLife || 0)) return res;
+    sp._lmLifeEnded = sp._lmLife || 0;
+    if ((window.LMPractice && window.LMPractice.on) || window._lmEvReplayOn) return res;
+    try { _lmSessionStats({ best: mass, ms: ms }); } catch (e) { }
+    try {
+        var b = _lmPersonalBests({ best: mass, ms: ms });
+        if ((b.mass || b.time) && window.LMEvents._has('personalBest')) {
+            window.LMEvents.emit('personalBest', { time: now, mass: mass, msAlive: ms, massRecord: !!b.mass, timeRecord: !!b.time, slot: slot });
+        }
+        if (window.legendmod && typeof legendmod._lmRefreshBestRow === 'function') legendmod._lmRefreshBestRow();
+    } catch (e) { }
+    if (active) {
+        try {
+            /* no killer: the server reports it for the main connection only (_lmKiller) */
+            _lmMatchHistory({
+                t: now, mass: mass, ms: Math.min(ms, 6 * 3600 * 1000), killer: null,
+                server: _lmHostOnly(window.legendmod && legendmod.ws),
+                mode: String(($('#gamemode option:selected').text() || '').trim() || $('#gamemode').val() || '').slice(0, 30),
+                slot: slot
+            });
+            _lmMatchHistoryRefreshOpen();
+        } catch (e) { }
+    }
+    return res;
+}
+window.lmMbUnitLifeEnd = lmMbUnitLifeEnd;
 function _lmMhT(k, en) { var s = window.lmT && window.lmT(k); return s && s !== k ? s : en; }
 /* another language: the session line and the private room link under the menu footer are
  * written again (they kept the language they were first written in) */
@@ -846,7 +887,9 @@ function _lmMatchHistoryPaint(host) {
             var kt = !k ? '—' : k.virus ? lmT('game1.mh.virus') : (String(k.nick || '') || '?') + (+k.mass ? ' (' + Math.round(+k.mass).toLocaleString() + ')' : '');
             var row = el('tr');
             row.className = 'lm-mh-row';
-            [d && !isNaN(d.getTime()) ? d.toLocaleString() : '—', Math.round(+r.mass || 0).toLocaleString(), fmtTime(r.ms), kt, String(r.server || '') || '—', String(r.mode || '') || '—'].forEach(function (v, i) {
+            /* a multibox unit's life: its player slot after the mode (P2 ... P6) */
+            var sl = Math.floor(+r.slot) >= 2 && Math.floor(+r.slot) <= 6 ? ' · P' + Math.floor(+r.slot) : '';
+            [d && !isNaN(d.getTime()) ? d.toLocaleString() : '—', Math.round(+r.mass || 0).toLocaleString(), fmtTime(r.ms), kt, String(r.server || '') || '—', (String(r.mode || '') || '—') + sl].forEach(function (v, i) {
                 row.appendChild(el('td', 'padding:3px 6px;border-bottom:1px solid rgba(255,255,255,0.05);' + (i === 1 ? 'color:' + mc + ';font-weight:700;' : '') + (i === 3 || i === 4 ? 'max-width:150px;overflow:hidden;text-overflow:ellipsis;' : ''), v));
             });
             tb.appendChild(row);
@@ -4044,6 +4087,20 @@ function lmMbLeaderboardRows(lb, out) {
     _lmMbLb.lb = _lmMbLb.out = null;
     return out;
 }
+/* Optional 16-pieces sounds (like Delta, Settings > Sounds x16Sound / non16Sound), for each
+ * player by its own cells (the main client's LM.playerCells, a multibox unit's own cells): played
+ * once when that count crosses 16. n: its own-cell count now; alive: it plays. No cell (none yet,
+ * a death) sets the count to 0, so a new life is no merge below 16. */
+function lmPieceSound(p, n, alive) {
+    var d = typeof defaultmapsettings !== 'undefined' ? defaultmapsettings : null;
+    if (alive && n > 0 && d && (d.x16Sound || d.non16Sound) && window.application) {
+        var prev = p._lmPrevCells | 0;
+        if (d.x16Sound && prev < 16 && n >= 16) application.playSound(application._lmOptSound('x16'));
+        else if (d.non16Sound && prev >= 16 && n < 16) application.playSound(application._lmOptSound('non16'));
+    }
+    p._lmPrevCells = n;
+}
+window.lmPieceSound = lmPieceSound;
 /* OgVer set above at 3.554 (HEAD version) */
 
 
@@ -25928,14 +25985,8 @@ function thelegendmodproject() {
         displayStats() {
             if (defaultmapsettings.showStats) {
                 var t = '';
-                /* multibox units: spect.js keeps their own cells as playerCellIDs (alive while active);
-                 * their time alive is taken here, at each refresh */
-                if (defaultmapsettings.showStatsAlive && typeof spects !== 'undefined' && spects) {
-                    for (var _lmSu = 0; _lmSu < spects.length; _lmSu++) {
-                        var _lmU = spects[_lmSu];
-                        if (_lmU) lmTimeAlive(_lmU, _lmU.active && _lmU.playerCellIDs ? _lmU.playerCellIDs.length : 0);
-                    }
-                }
+                /* a multibox unit's time alive runs from its first own cell to its death or lost
+                 * socket (spect.js _lmAdoptOwn / terminate), whether this line is shown or not */
                 if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
                     if (defaultmapsettings.showStatsMass && getActiveSpect(window.multiboxPlayerEnabled).playerMass) {
                         //t += textLanguage.mass + ': ' + i.playerMass + ' | '
@@ -30168,7 +30219,10 @@ function thelegendmodproject() {
                     scope: lmDeathScope(0)
                 });
             }
-            if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerDied', window.legendmod, 'death');
+            if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerDied', window.legendmod, 'death', { mass: Math.round(+ogario.playerScore || 0), msAlive: _lmAliveMs, scope: lmDeathScope(0) });
+            /* steering a living multibox unit: Pause, permanent feed and the keys go on with it */
+            var _lmSteer = +window.multiboxPlayerEnabled ? getActiveSpect(+window.multiboxPlayerEnabled) : null;
+            var _lmSteerOn = !!(_lmSteer && lmMbAlive(_lmSteer));
             this._lmLifeStartAt = 0;
             ogario.play = false;
             ogario.playerColor = null;
@@ -30176,24 +30230,11 @@ function thelegendmodproject() {
             ogario.playerMass = 0;
             ogario.playerScore = 0;
             ogario.playerSplitCells = 0;
-            /* Pause (R) ends with the life: after a respawn the new cell was still
-             * held at the old target, with the pause HUD shown. */
-            if (this.pause) {
-                this.pause = false;
-                ogario.pause = false;
-                $('#pause-hud').hide();
-            }
-            /* Permanent feed (toggle) ends with the life too: it kept ejecting while dead
-             * and fed the new cell away right after respawn */
-            if (this.feedIntervalPerm) {
-                clearTimeout(this.feedIntervalPerm);
-                this.feedIntervalPerm = null;
-            }
+            if (!_lmSteerOn) this._lmLifeInputEnd();
             //this.showMenu(300);
             this.sendPlayerDeath();
             this.updateDeathLocations(ogario.playerX, ogario.playerY);
             this.unlockButtons();
-            resetonkeydown();
             if (typeof celltimerstop === 'function') celltimerstop();
             if (window.MergeTimerController && typeof window.MergeTimerController.reset === 'function') window.MergeTimerController.reset();
 
@@ -30252,6 +30293,26 @@ function thelegendmodproject() {
 
             // No surviving spects — solo death handling
             this.autoResp();
+        },
+        /* The life of the player you control ended (the main player's or a multibox unit's,
+         * spect.js terminate), or nothing of ours lives any more: Pause (R) and permanent feed end
+         * with it and the spectate key handler is set again. Not called while you steer another
+         * player that still lives: its Pause, feed and keys go on. */
+        _lmLifeInputEnd() {
+            /* Pause (R) ends with the life: after a respawn the new cell was still
+             * held at the old target, with the pause HUD shown. */
+            if (this.pause) {
+                this.pause = false;
+                ogario.pause = false;
+                $('#pause-hud').hide();
+            }
+            /* Permanent feed (toggle) ends with the life too: it kept ejecting while dead
+             * and fed the new cell away right after respawn */
+            if (this.feedIntervalPerm) {
+                clearTimeout(this.feedIntervalPerm);
+                this.feedIntervalPerm = null;
+            }
+            resetonkeydown();
         },
         findOwnedVanillaSkin() {
             let player, freeImage = '';
@@ -57225,13 +57286,8 @@ function thelegendmodproject() {
             var y = 0;
             var minSize = Infinity, maxSize = 0;
             playersLength = this.playerCells.length;
-            /* optional 16-pieces sounds (like Delta): played once when the count crosses 16 */
-            if (this.play && window.application && (defaultmapsettings.x16Sound || defaultmapsettings.non16Sound)) {
-                var _lmPrev16 = this._lmPrevCells | 0;
-                if (defaultmapsettings.x16Sound && _lmPrev16 < 16 && playersLength >= 16) application.playSound(application._lmOptSound('x16'));
-                else if (defaultmapsettings.non16Sound && _lmPrev16 >= 16 && playersLength < 16 && playersLength > 0) application.playSound(application._lmOptSound('non16'));
-            }
-            this._lmPrevCells = playersLength;
+            /* optional 16-pieces sounds of the main player (its own cells; the units: spect.js) */
+            lmPieceSound(this, playersLength, this.play);
             /* LMEvents 'merge': own merges counted in updateCells(), reported here once per frame */
             if (this._lmEvMergeN) {
                 var _lmEvMn = this._lmEvMergeN;

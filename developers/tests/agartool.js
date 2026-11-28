@@ -119,6 +119,19 @@ check('state: only the mass when only the mass changed', JSON.stringify(ws.sent[
     Object.assign(p.w.legendmod, { play: false, playerCells: [] });
     p.intervals[0]();
     check('state: nothing of ours alive in the core (ogario.play still set): the camera and the main player\'s mass, as before', JSON.stringify(xy(true)) === JSON.stringify([99, -202, 150]), xy(true));
+    /* the main player dead, the multibox unit you control alive (lmActiveUnit): still alive, with
+     * the unit's place and mass (only while the main player played it was sent) */
+    vm.runInContext(fnSrc('function lmActiveUnit(lite) {') + '\nwindow.lmActiveUnit = lmActiveUnit;', p.w);
+    p.w.spects = [{ number: 4, player: true, active: true, playerCellIDs: [9], playerX: 700, playerY: 800, playerMass: 444 }];
+    p.w.multiboxPlayerEnabled = 4;
+    p.w.ogario.play = false;
+    p.intervals[0]();
+    check('state: main player dead, the unit you control alive: alive, its position and mass', JSON.stringify(xy(true)) === JSON.stringify([693, 808, 444]), xy(true));
+    p.w.spects[0].active = false; p.w.spects[0].playerCellIDs = [];
+    p.intervals[0]();
+    const dead = ws.sent[ws.sent.length - 1];
+    check('state: the unit you control dead too: not alive', dead[0] === 0xa1 && (dead[1] & 8) === 8, dead);
+    p.w.multiboxPlayerEnabled = null; delete p.w.spects; p.w.ogario.play = true;
 }
 
 /* teammates */

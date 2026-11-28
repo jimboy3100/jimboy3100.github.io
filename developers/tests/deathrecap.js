@@ -341,5 +341,59 @@ check('no alert line code left (no feed hook for tests)', typeof D._test.feed ==
   }
 }
 
+/* multibox: the recap is of the player you control, one life at a time (slot, slotEpoch, life):
+ * a unit's own cells and mass while you steer it, its recap at its death (playerDied), the main
+ * player's life again when you go back to it; the main player's Game Over card shows only its own */
+{
+  ctx.legendmod5.gameOverStats = true; D.sync(); D._test.reset();
+  check('multibox: listens to playerDied / playerSpawned / multiboxSwap', ['playerDied', 'playerSpawned', 'multiboxSwap'].every(n => (listeners[n] || []).length === 1));
+  const ucell = (x, size) => ({ x, y: 0, size, isPlayerCellMulti: true });
+  const unit = { number: 7, player: true, active: true, slotId: 3, slotEpoch: 2, _lmLife: 1, playerMass: 5000, _cells: [ucell(10000, 700)] };
+  unit.getOwnPlayerCells = function () { return this._cells; };
+  ctx.getActiveSpect = (n) => (n === 7 ? unit : null);
+  const near = { x: 11500, y: 0, size: 1400, targetNick: 'NearUnit' };
+  lm.play = true; lm.playerCells = [own(0, 1500)]; lm.playerMass = 22500; lm._lmLife = 4;
+  lm.cells = [lm.playerCells[0], unit._cells[0], near];
+  listeners.spawn[0]({ time: now });
+  for (let i = 0; i < 4; i++) { now += 250; D._test.tick(); }
+  /* steer the unit: its life from here */
+  ctx.multiboxPlayerEnabled = 7;
+  for (let i = 0; i < 8; i++) { now += 250; D._test.tick(); }
+  /* an eat of the main connection while the unit's life is followed is not its eat */
+  D.eat({ x: 0, y: 0, size: 2000, targetNick: 'MainEater' }, lm.playerCells[0], false, true, 600);
+  unit.active = false; unit._cells = [];
+  listeners.playerDied[0]({ slot: 3, slotEpoch: 2, life: 1, role: 'unit', active: true, scope: 'unit', context: 'live' });
+  const ur = D.lastOf(3), first = ur && ur.steps[0], dstep = ur && ur.steps[ur.steps.length - 1];
+  check('the controlled unit dies: its recap (player 3) from its own mass, the threat near its cells, no eat of the main connection',
+    !!ur && ur.player === 3 && first.kind === 'mass' && first.m === 5000 && first.c === 1 && dstep.kind === 'death' && dstep.nick === 'NearUnit' && !ur.steps.some(s => s.nick === 'MainEater'), JSON.stringify(ur && ur.steps));
+  check('    ... the recap of the main player is not replaced', D.last() === null && D.lastOf(1) === null);
+  check('    ... no exact killer for that life (the server report and the eats are the main player ones)', !(D.killer() && D.killer().exact), D.killer());
+  /* back on the main player: its life again (the ring starts over), its death its recap */
+  ctx.multiboxPlayerEnabled = null;
+  for (let i = 0; i < 8; i++) { now += 250; D._test.tick(); }
+  lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now, scope: 'all' });
+  const mr = D.last();
+  check('back on the main player: its recap from its own mass only (no sample of the unit)', !!mr && mr.player === 1 && mr.steps[0].m === 22500 && mr.spark.every(m => m === 22500), JSON.stringify(mr && mr.spark));
+  /* the main player dies while you steer a living unit: no recap of that life, its card shows none of the unit's */
+  D._test.reset();
+  unit.active = true; unit._lmLife = 2; unit._cells = [ucell(10000, 700)];
+  lm.play = true; lm.playerCells = [own(0, 1500)]; lm._lmLife = 5;
+  listeners.spawn[0]({ time: now });
+  ctx.multiboxPlayerEnabled = 7;
+  for (let i = 0; i < 6; i++) { now += 250; D._test.tick(); }
+  lm.playerCells = []; lm.play = false; listeners.death[0]({ time: now, scope: 'unit' });
+  for (let i = 0; i < 2; i++) { now += 250; D._test.tick(); }
+  const modal = new El();
+  D.card(modal, {});
+  check('main player dies while you steer a living unit: no recap of it, its Game Over card shows nothing of the unit life', D.last() === null && modal.children.length === 0, modal.children.length);
+  lm.play = true; lm.playerCells = [own(0, 1500)]; lm._lmLife = 6;
+  listeners.spawn[0]({ time: now });
+  const b = D._test.build();
+  check('    ... a background spawn of the main player does not reset the unit life followed', !!b && b.player === 3 && b.steps[0].m === 5000, JSON.stringify(b && b.steps));
+  ctx.multiboxPlayerEnabled = null; delete ctx.getActiveSpect;
+  ctx.legendmod5.gameOverStats = false; D.sync();
+  check('off: the multibox listeners are removed', ['playerDied', 'playerSpawned', 'multiboxSwap'].every(n => !(listeners[n] || []).length));
+}
+
 console.log(fail ? fail + ' failed' : 'all death recap checks passed');
 process.exit(fail ? 1 : 0);

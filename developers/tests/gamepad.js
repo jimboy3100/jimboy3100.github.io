@@ -190,16 +190,24 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('calibration: suggested dead zone',G.suggestDeadzone(0)===0.05&&G.suggestDeadzone(0.06)===0.11&&G.suggestDeadzone(0.071)===0.13&&G.suggestDeadzone(0.9)===0.5&&G.suggestDeadzone('x')===0.05); }
 { const c=page();let rum=[];const p=gp({0:true});p.vibrationActuator={playEffect(t,o){rum.push(o.duration);return Promise.resolve();}};
   c.pads=[p];c.go();
-  check('vibration off: no rumble on split, no death listener',c.calls.includes('split')&&rum.length===0&&!(c.ev.death||[]).length);
+  check('vibration off: no rumble on split, no death listener',c.calls.includes('split')&&rum.length===0&&!(c.ev.playerDied||[]).length);
   c.G.setOpts({gamepadVibrate:true});
-  check('vibration on: listens to death',(c.ev.death||[]).length===1);
+  check('vibration on: listens to the deaths of all players (playerDied), not the main-only death',(c.ev.playerDied||[]).length===1&&!(c.ev.death||[]).length);
   c.pads=[gp()];c.step();const q=gp({0:true});q.vibrationActuator=p.vibrationActuator;c.pads=[q];c.step();
   check('vibration on: rumble on split',rum.length===1);
-  c.ev.death[0]({});
-  check('vibration on: rumble on death',rum.length===2&&rum[1]===300);
+  c.ev.playerDied[0]({slot:1,role:'main',active:true,scope:'all'});
+  check('vibration on: rumble on the death of the player you control',rum.length===2&&rum[1]===300);
+  /* multibox: the main player dies in the background while you steer a living unit: no rumble;
+   * the unit you control dies: rumble; a background unit dies as the last of your players: rumble */
+  c.ev.playerDied[0]({slot:1,role:'main',active:false,scope:'unit'});
+  check('vibration on: no rumble when a background player dies while you steer another one',rum.length===2);
+  c.ev.playerDied[0]({slot:3,role:'unit',active:true,scope:'unit'});
+  check('vibration on: rumble when the unit you control dies (P3)',rum.length===3);
+  c.ev.playerDied[0]({slot:2,role:'unit',active:false,scope:'all'});
+  check('vibration on: rumble at the game over (the last player, not controlled)',rum.length===4);
   c.G.setOpts({gamepadVibrate:false});
-  check('vibration off again: death listener removed',!(c.ev.death||[]).length);
-  check('test button rumbles with the option off',c.G.testRumble(q)===true&&rum.length===3); }
+  check('vibration off again: death listener removed',!(c.ev.playerDied||[]).length);
+  check('test button rumbles with the option off',c.G.testRumble(q)===true&&rum.length===5); }
 /* always on: the old gamepadEnabled option is ignored, nothing polls while no pad is connected */
 { const c=page({settings:{gamepadEnabled:false}});
   check('always on: no timer and no frame loop without a pad',c.tick===undefined&&c.raf.length===0);
