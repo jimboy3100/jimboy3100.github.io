@@ -162,6 +162,10 @@
       "answer": "In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) Heatmaps (position history, 3,600 samples per game, 50 games), Coach (scores for survival, growth, splits, movement and retention with tips) and Objectives (three daily ones and up to 8 of your own). Every game is recorded (no switch); only the latest game's replay stays in memory, save it to the library to keep it."
     },
     {
+      "question": "What is the Radial Menu?",
+      "answer": "A hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot for quick access without memorising keys. Hold the radial menu key, point to a slot, and release to activate."
+    },
+    {
       "question": "How do presets work?",
       "answer": "Legend Mod offers one-click presets: Competitive (enables rings, mass, split range), Battery Saver (caps FPS, disables effects), Streamer (hides personal info), Reduced Motion (no animations), and Clean HUD (minimal interface). 8 built-in theme presets and 3 menu presets are in the Theme workshop's Gallery."
     },

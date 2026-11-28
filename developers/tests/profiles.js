@@ -97,7 +97,9 @@ tplIds.forEach(id => {
       lmHudLayouts: { v: 1, active: 'A', list: [{ name: 'A', c: {} }] },
       lmThemeWorkshop: { v: 1, themes: [] },
       lmPracticeCfg: { bots: 4 }, lmAnalyticsGoals: { v: 1, custom: [] },
-      lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPresetUndo: { s: {} }
+      lmGamepad: { v: 1, map: [] }, 'lm-mobile-prefs': { btnScale: 1 }, 'lm-mobile-layouts': { v: 1 }, lmPresetUndo: { s: {} },
+      /* the radial menu's commands and the screenshot options */
+      lmRadialMenu: { v: 1, items: ['hk-feed'] }, lmSmallTools: { shot: { lb: true, map: false } }
     };
     const priv = { lmAnalyticsGames: [{ m: 1 }], lmAnalyticsTracks: [{ t: 1 }], lmPracticeStore: { best: 1 }, 'lm-director-watch': ['nick'], lmSettingsBackups: [{ t: 1 }], ogarioPlayerProfiles: [1] };
     Object.keys(conf).concat(Object.keys(priv)).forEach(k => src.setItem(k, J(conf[k] || priv[k])));
@@ -116,9 +118,6 @@ tplIds.forEach(id => {
     imp({ lmSettingsProfiles: [{ id: 'p1', name: 'P', data: { s: { showMass: true } } }], lmSettingsProfilesRules: { enabled: true } }, (k, t) => dstP.setItem(k, t), k => dstP.removeItem(k));
     check('import: the settings profiles of an older export are not written', dstP.getItem('lmSettingsProfiles') === null && dstP.getItem('lmSettingsProfilesRules') === null);
     check('export: the removed spectator director is not carried', !('lm-director' in exp(src)) && !('lm-director-bookmarks' in exp(src)));
-    /* the removed radial menu and screenshot window */
-    src.setItem('lmRadialMenu', J({ v: 1, items: ['hk-feed'] })); src.setItem('lmSmallTools', J({ shot: { lb: true } }));
-    { const o2 = exp(src); check('export: the radial menu and screenshot options are not carried', !('lmRadialMenu' in o2) && !('lmSmallTools' in o2)); }
     /* the removed custom macros */
     src.setItem('lmCustomMacros', J({ v: 1, slots: [{ name: 'm', steps: [{ a: 'split' }] }] }));
     check('export: the custom macros are not carried', !('lmCustomMacros' in exp(src)));
@@ -139,8 +138,6 @@ tplIds.forEach(id => {
     imp({ lmHudLayouts: [1, 2], 'lm-zoom-bookmarks': [1, 0, 3] }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
     check('import: a value of the wrong type is not written', dst2.getItem('lmHudLayouts') === '{"keep":1}');
     check('import: the zoom bookmarks of an older export are not written', dst2.getItem('lm-zoom-bookmarks') === null);
-    imp({ lmRadialMenu: { v: 1, items: ['hk-feed'] }, lmSmallTools: { shot: { lb: true } } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
-    check('import: the radial menu and screenshot options of an older export are not written', dst2.getItem('lmRadialMenu') === null && dst2.getItem('lmSmallTools') === null);
     imp({ lmCustomMacros: { v: 1, slots: [{ name: 'm', steps: [] }] } }, (k, t) => dst2.setItem(k, t), k => dst2.removeItem(k));
     check('import: the custom macros of an older export are not written', dst2.getItem('lmCustomMacros') === null);
     /* the removed Performance mode: its copy is neither exported nor imported */

@@ -1,9 +1,13 @@
-/* Legend Mod small tools: the key check and the conflict list of the Hotkeys window, the HUD hide of Show/hide HUD
- * (Alt+H, the former screenshot mode) with its capture. (The skin collections window is gone: its
- * favourites and search are part of the player profiles in the skins panel. The radial command
- * menu and the screenshot window are removed: lmRadialMenu and lmSmallTools are deleted at start.)
+/* Legend Mod small tools: radial command menu, the key check and the conflict list of the Hotkeys
+ * window, the HUD hide of Show/hide HUD (Alt+H, the former screenshot mode) with its capture and the
+ * screenshot window. (The skin collections window is gone: its favourites and search are part of the
+ * player profiles in the skins panel.)
+ * Everything is off until used: windows and hotkeys without default keys
+ * (all listed in the Hotkeys window). Nothing runs per frame while no tool is open.
  * The conflict list of the Hotkeys window is built when its button is pressed (LMSmallTools.renderConflicts).
- * Nothing runs per frame while the HUD is shown.
+ * Stored data, each in its own localStorage key, checked when read:
+ *   lmRadialMenu      the commands of the radial menu (hotkey ids, up to 8)
+ *   lmSmallTools      screenshot options
  * It also takes private data out of the text of Settings > "Copy debug info" (redactReport).
  */
 (function () {
@@ -20,13 +24,45 @@
      * language, else English. vars fill {0} {1}. A few labels are the same as settings / hotkey labels
      * and use those keys. */
     var TP = 'modules.smalltools.';
-    var SHARED = { close: 'settings.close', shotTainted: 'pkg.mg.shotTainted', cMouseOff: 'pkg.mb.cMouseOff', cMoved: 'pkg.mb.cMoved', cMovedOk: 'pkg.mb.cMovedOk' };
+    var SHARED = { close: 'settings.close', shotStart: 'settings.hk-showHUD', shotHelp: 'pkg.mg.shotHelp', shotTainted: 'pkg.mg.shotTainted', cMouseOff: 'pkg.mb.cMouseOff', cMoved: 'pkg.mb.cMoved', cMovedOk: 'pkg.mb.cMovedOk' };
     function t(k, vars) { return typeof W.lmT === 'function' ? W.lmT(own(SHARED, k) ? SHARED[k] : TP + k, vars) : k; }
     function langDir() { return W.LMi18n && W.LMi18n.dir ? W.LMi18n.dir() : 'ltr'; }
 
     /* ═══ Pure helpers (developers/tests/smalltools.js) ═══ */
 
     var HK_RE = /^hk-[A-Za-z0-9_-]{1,40}$/;
+    var RADIAL_MAX = 8;
+    /* commands that cannot be put on the ring (the ring itself) */
+    var RADIAL_SKIP = { 'hk-radialMenu': 1 };
+
+    /* the stored ring: up to 8 distinct hotkey ids; exists(id) drops commands that are gone */
+    function cleanRadial(raw, exists) {
+        var list = isObj(raw) && Array.isArray(raw.items) ? raw.items : (Array.isArray(raw) ? raw : []);
+        var out = [], seen = {};
+        for (var i = 0; i < list.length && out.length < RADIAL_MAX; i++) {
+            var id = list[i];
+            if (typeof id !== 'string' || !HK_RE.test(id) || own(RADIAL_SKIP, id) || own(seen, id)) continue;
+            if (exists && !exists(id)) continue;
+            seen[id] = 1;
+            out.push(id);
+        }
+        return out;
+    }
+
+    /* Which of n ring sectors the offset (dx, dy) points at (screen y grows down). Sector 0 is at
+     * the top, then clockwise. -1 inside the dead zone or without sectors. */
+    function pickSector(dx, dy, n, dead) {
+        dx = +dx || 0; dy = +dy || 0; n = n | 0;
+        if (n < 1) return -1;
+        if (Math.sqrt(dx * dx + dy * dy) < (dead > 0 ? dead : 0)) return -1;
+        if (n === 1) return 0;
+        var a = Math.atan2(dx, -dy);
+        if (a < 0) a += Math.PI * 2;
+        var step = Math.PI * 2 / n;
+        return Math.floor((a + step / 2) / step) % n;
+    }
+    /* centre angle of sector i (radians, 0 = up, clockwise) */
+    function sectorAngle(i, n) { return n > 0 ? i * Math.PI * 2 / n : 0; }
 
     /* Key names as the hotkeys window stores them (CTRL+ / ALT+ prefixes).
      * 'block': the browser keeps the shortcut, the game never gets the key.
@@ -148,8 +184,15 @@
         return s;
     }
 
+    function cleanShotOpts(raw) {
+        return { lb: isObj(raw) && raw.lb === true, map: isObj(raw) && raw.map === true };
+    }
+
     var core = {
-        findConflicts: findConflicts, BROWSER_KEYS: BROWSER_KEYS, redact: redact
+        findConflicts: findConflicts,
+        cleanRadial: cleanRadial, pickSector: pickSector, sectorAngle: sectorAngle, RADIAL_MAX: RADIAL_MAX,
+        BROWSER_KEYS: BROWSER_KEYS, redact: redact,
+        cleanShotOpts: cleanShotOpts
     };
     var api = W.LMSmallTools = { _core: core };
     if (!D || !D.createElement) return;
@@ -165,6 +208,9 @@
     }
     function lsGet(k) {
         try { var r = W.localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch (e) { return null; }
+    }
+    function lsSet(k, v) {
+        try { W.localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; }
     }
     function el(tag, css, text) {
         var e = D.createElement(tag);
@@ -197,6 +243,25 @@
         return l || id;
     }
     function hkExists(id) { var hc = W.hotkeysCommand; return !!(hc && own(hc, id) && hc[id] && typeof hc[id].keyDown === 'function'); }
+    function keyOf(cmd) {
+        var hk = W.hotkeys;
+        if (!isObj(hk)) return '';
+        for (var k in hk) if (own(hk, k) && k !== 'spec-messageKey' && hk[k] === cmd) return k;
+        return '';
+    }
+    /* a key, mouse button or gamepad button holding the command (ogario.v4.js, gamepad.js) */
+    function heldElsewhere(id) { try { return typeof W._lmHotkeyHeld === 'function' && !!W._lmHotkeyHeld(id); } catch (e) { return false; } }
+    /* press a hotkey command briefly (hold commands get their release after 250 ms). The input that
+     * holds a hold command owns its release: then this neither presses it again nor releases it */
+    function runHotkey(id) {
+        var hc = W.hotkeysCommand, c = hc && hc[id];
+        if (!c || typeof c.keyDown !== 'function') return;
+        var hold = typeof c.keyUp === 'function';
+        if (hold && heldElsewhere(id)) return;
+        try { c.keyDown(); } catch (e) { console.warn('[LM tools] ' + id, e); }
+        if (hold) setTimeout(function () { if (!heldElsewhere(id)) { try { c.keyUp(); } catch (e) { } } }, 250);
+    }
+
     var styleDone = false;
     function addStyle() {
         if (styleDone) return;
@@ -208,10 +273,16 @@
         s.id = 'lm-st-style';
         s.textContent =
             // i18n-ok: CSS
+            '.lm-st-win select,.lm-st-win input[type=text],.lm-st-win input[type=search]{background:var(--lm-w-field,' + c.pc2 + ');color:' + c.tc + ';border:1px solid ' + c.pc2 + ';border-radius:var(--lm-radius-s,4px);height:var(--lm-w-ctl,30px);font-size:var(--lm-w-fs,12px);padding:0 6px;min-width:0;box-sizing:border-box;}' +
+            '.lm-st-win input[type=checkbox]{width:18px;height:18px;margin:0 8px 0 0;flex:none;}' +
+            '.lm-st-win label{font-weight:400;margin:0;display:flex;align-items:center;min-height:var(--lm-w-ctl,30px);cursor:pointer;}' +
+            // i18n-ok: CSS
             '.lm-st-win .lm-st-btn{flex:none;cursor:pointer;min-height:var(--lm-w-ctl,30px);padding:0 12px;border-radius:var(--lm-radius-s,4px);border:1px solid ' + c.pc2 + ';background:var(--lm-w-btn,rgba(255,255,255,0.05));color:inherit;font-size:var(--lm-w-fs,12px);font-family:inherit;}' +
             '.lm-st-win .lm-st-btn:hover{background:var(--lm-w-btn-h,rgba(255,255,255,0.12));}' +
             // i18n-ok: CSS
             '.lm-st-win .lm-st-btn.main{background:' + c.mc + ';color:' + c.pc + ';border-color:' + c.mc + ';font-weight:700;}' +
+            '.lm-st-win .lm-st-help{opacity:.8;font-size:var(--lm-w-fs-s,11px);line-height:1.45;margin:0 0 8px;}' +
+            '.lm-st-row{display:flex;align-items:center;gap:8px;margin:0 0 6px;}' +
             /* screenshot mode: only the game view and the exit chip stay visible */
             '.lm-shot-hide{visibility:hidden !important;}' +
             'body.lm-shot-on #toast-container{visibility:hidden !important;}' +
@@ -226,10 +297,72 @@
             '.lm-st-lvl{display:inline-block;min-width:44px;margin-right:6px;padding:0 4px;border-radius:var(--lm-radius-s,3px);font-size:10px;font-weight:700;text-align:center;text-transform:uppercase;}' +
             /* a setting or hotkey row found by LMSmallTools.jump */
             // i18n-ok: CSS
-            '.lm-st-flash{outline:3px solid ' + c.mc + ' !important;outline-offset:1px;}';
+            '.lm-st-flash{outline:3px solid ' + c.mc + ' !important;outline-offset:1px;}' +
+            '#lm-radial{position:fixed;left:0;top:0;right:0;bottom:0;z-index:999994;cursor:crosshair;touch-action:none;}' +
+            '#lm-radial .lm-rd-item{position:absolute;transform:translate(-50%,-50%);max-width:calc(120px * var(--lm-hud-scale,1));padding:4px 8px;border-radius:var(--lm-radius,6px);background:rgba(0,0,0,0.72);color:#fff;font-family:inherit;font-weight:var(--lm-hud-fw,600);font-size:calc(12px * var(--lm-hud-scale,1));text-align:center;border:2px solid rgba(255,255,255,0.25);white-space:normal;line-height:1.25;pointer-events:none;}' +
+            '#lm-radial .lm-rd-item.on{background:' + c.mc + ';color:' + c.pc + ';border-color:#fff;}' +
+            '#lm-radial .lm-rd-ring{position:absolute;border-radius:50%;border:2px dashed rgba(255,255,255,0.35);pointer-events:none;box-sizing:border-box;}' +
+            '#lm-radial .lm-rd-dot{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#fff;pointer-events:none;}';
         D.head.appendChild(s);
     }
 
+    /* One window at a time; a tap outside or Esc closes it. Fits a 915x412 phone. */
+    var win = null;
+    function closeWin() {
+        if (!win) return;
+        var w = win;
+        win = null;
+        W.removeEventListener('keydown', onWinKey, true);
+        [w.backdrop, w.root].forEach(function (n) { if (n && n.parentNode) n.parentNode.removeChild(n); });
+        if (w.onClose) try { w.onClose(); } catch (e) { }
+    }
+    function onWinKey(e) {
+        if (!win) return;
+        /* Esc closes the window only (it does not open the menu as well); typing in the window's
+         * fields runs no hotkeys anyway (the key handler skips text fields) */
+        if (!(e.key === 'Escape' || e.keyCode === 27)) return;
+        /* with another window open that closes on Esc, only the one in front closes (winstack.js) */
+        if (W.LMWinStack && typeof W.LMWinStack.escFor === 'function' && !W.LMWinStack.escFor(win.root, e)) return;
+        e.preventDefault(); e.stopPropagation(); closeWin();
+    }
+    function openWin(id, title, width) {
+        closeWin();
+        addStyle();
+        var c = colors();
+        var backdrop = el('div', 'position:fixed;left:0;top:0;right:0;bottom:0;z-index:999991;background:rgba(0,0,0,0.55);');
+        backdrop.id = id + '-backdrop';
+        backdrop.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); closeWin(); });
+        var root = el('div', 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:' + (width || 560) + 'px;max-width:calc(100vw - 16px);' +
+            'max-height:calc(100vh - 16px);display:flex;flex-direction:column;box-sizing:border-box;z-index:999992;' +
+            'background:var(--lm-w-bg,' + c.pc + ');border:1px solid ' + c.pc2 + ';border-top:3px solid ' + c.mc + ';border-radius:var(--lm-radius,6px);' +
+            'box-shadow:0 8px 32px rgba(0,0,0,0.5);color:' + c.tc + ';font-family:inherit;font-size:var(--lm-w-fs,12px);overflow:hidden;text-align:left;');
+        root.id = id;
+        root._lmEsc = true;
+        root.classList.add('lm-modal-container', 'lm-w', 'lm-st-win');
+        root.dir = langDir();
+        var head = el('div', 'flex:none;display:flex;align-items:center;gap:8px;padding:var(--lm-w-hpad,4px 6px 4px 12px);border-bottom:1px solid ' + c.pc2 + ';background:var(--lm-w-head,linear-gradient(180deg,' + c.pc2 + ' 0%,' + c.pc + ' 100%));');
+        head.appendChild(el('div', 'flex:1;min-width:0;font-size:var(--lm-w-title,15px);font-weight:700;color:' + c.mc + ';letter-spacing:1px;text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;', title));
+        var x = el('div', 'flex:none;cursor:pointer;font-size:18px;color:' + c.tc2 + ';width:var(--lm-w-x,36px);height:var(--lm-w-x,36px);display:flex;align-items:center;justify-content:center;border-radius:var(--lm-radius-s,4px);background:var(--lm-w-btn,rgba(255,255,255,0.06));', '✕');
+        x.className = 'lm-st-close';
+        x.title = t('close');
+        x.setAttribute('role', 'button');
+        x.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); closeWin(); });
+        head.appendChild(x);
+        root.appendChild(head);
+        var body = el('div', 'flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:var(--lm-w-pad,8px 12px 12px);');
+        root.appendChild(body);
+        var foot = el('div', 'flex:none;display:flex;flex-wrap:wrap;gap:var(--lm-w-gap,6px);justify-content:flex-end;padding:6px 12px;border-top:1px solid ' + c.pc2 + ';');
+        root.appendChild(foot);
+        /* clicks inside must not reach the game (mouse split / feed) */
+        ['mousedown', 'pointerdown', 'touchstart', 'wheel'].forEach(function (ev) {
+            root.addEventListener(ev, function (e) { e.stopPropagation(); }, { passive: true });
+        });
+        D.body.appendChild(backdrop);
+        D.body.appendChild(root);
+        W.addEventListener('keydown', onWinKey, true);
+        win = { id: id, root: root, body: body, foot: foot, backdrop: backdrop };
+        return win;
+    }
     function button(text, main, onClick) {
         var b = el('button', '', text);
         b.type = 'button';
@@ -237,10 +370,161 @@
         b.addEventListener('click', function (e) { e.preventDefault(); onClick(e); });
         return b;
     }
-    /* ═══ HUD hide (Show/hide HUD, Alt+H: application.setShowHUD) + capture ═══ */
+    function check(text, on, onChange) {
+        var l = el('label'), cb = el('input');
+        cb.type = 'checkbox';
+        cb.checked = !!on;
+        cb.addEventListener('change', function () { onChange(cb.checked); });
+        l.appendChild(cb);
+        l.appendChild(D.createTextNode(text));
+        return l;
+    }
+    function isOpen(id) { return !!(win && win.id === id); }
 
-    /* what the removed radial menu (its commands) and screenshot window (its options) kept */
-    try { W.localStorage.removeItem('lmRadialMenu'); W.localStorage.removeItem('lmSmallTools'); } catch (e) { }
+    /* ═══ 1. Radial command menu ═══ */
+
+    var RADIAL_KEY = 'lmRadialMenu';
+    function radialItems() { return cleanRadial(lsGet(RADIAL_KEY), hkExists); }
+    var ring = null;
+    function ringPos(e) {
+        if (e && e.touches && e.touches[0]) return [e.touches[0].clientX, e.touches[0].clientY];
+        if (e && e.changedTouches && e.changedTouches[0]) return [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
+        return [e.clientX, e.clientY];
+    }
+    function ringSelect(i) {
+        if (!ring || ring.sel === i) return;
+        ring.sel = i;
+        for (var k = 0; k < ring.els.length; k++) ring.els[k].className = 'lm-rd-item' + (k === i ? ' on' : '');
+    }
+    function ringPoint(x, y) {
+        if (!ring) return;
+        ring.mx = x; ring.my = y;
+        ringSelect(pickSector(x - ring.cx, y - ring.cy, ring.items.length, ring.dead));
+    }
+    function ringClose(run) {
+        if (!ring) return;
+        var r = ring;
+        ring = null;
+        if (r.raf) cancelAnimationFrame(r.raf);
+        W.removeEventListener('keydown', ringKey, true);
+        if (r.root.parentNode) r.root.parentNode.removeChild(r.root);
+        if (run && r.sel >= 0 && r.items[r.sel]) runHotkey(r.items[r.sel]);
+    }
+    function ringKey(e) {
+        if (ring && (e.key === 'Escape' || e.keyCode === 27)) { e.preventDefault(); e.stopPropagation(); ringClose(false); }
+    }
+    /* the right stick of the first connected pad (window.LMGamepad) */
+    function ringPad() {
+        if (!ring) return;
+        ring.raf = requestAnimationFrame(ringPad);
+        var g = W.LMGamepad;
+        if (!g || typeof g.pads !== 'function') return;
+        var p = g.pads()[0];
+        if (!p || !p.axes || p.axes.length < 4) return;
+        var x = +p.axes[2] || 0, y = +p.axes[3] || 0;
+        if (Math.sqrt(x * x + y * y) < 0.5) return;
+        ringSelect(pickSector(x, y, ring.items.length, 0));
+    }
+    function ringOpen(hold) {
+        if (ring) { ringClose(false); return; }
+        var items = radialItems();
+        if (!items.length) { toast('info', t('radialEmpty')); openRadialEditor(); return; }
+        addStyle();
+        var vw = W.innerWidth, vh = W.innerHeight;
+        var R = Math.max(70, Math.min(130, Math.min(vw, vh) / 2 - 50));
+        var lm = W.legendmod || {};
+        var cx = typeof lm.clientX === 'number' && lm.clientX > 0 ? lm.clientX : vw / 2;
+        var cy = typeof lm.clientY === 'number' && lm.clientY > 0 ? lm.clientY : vh / 2;
+        cx = Math.min(vw - R - 50, Math.max(R + 50, cx));
+        cy = Math.min(vh - R - 24, Math.max(R + 24, cy));
+        var root = el('div');
+        root.id = 'lm-radial';
+        var rg = el('div');
+        rg.className = 'lm-rd-ring';
+        rg.style.cssText = 'left:' + (cx - R) + 'px;top:' + (cy - R) + 'px;width:' + (2 * R) + 'px;height:' + (2 * R) + 'px;';
+        root.appendChild(rg);
+        var dot = el('div');
+        dot.className = 'lm-rd-dot';
+        dot.style.left = cx + 'px';
+        dot.style.top = cy + 'px';
+        root.appendChild(dot);
+        var els = items.map(function (id, i) {
+            var a = sectorAngle(i, items.length);
+            var it = el('div', 'left:' + Math.round(cx + Math.sin(a) * R) + 'px;top:' + Math.round(cy - Math.cos(a) * R) + 'px;', hkLabel(id));
+            it.className = 'lm-rd-item';
+            root.appendChild(it);
+            return it;
+        });
+        ring = { root: root, els: els, items: items, cx: cx, cy: cy, dead: Math.min(28, R * 0.3), sel: -1, hold: !!hold, t0: Date.now(), raf: 0 };
+        /* the layer takes the mouse: the game cursor stays where it was while choosing */
+        root.addEventListener('mousemove', function (e) { ringPoint(e.clientX, e.clientY); });
+        root.addEventListener('pointerdown', function (e) {
+            e.preventDefault(); e.stopPropagation();
+            var p = ringPos(e);
+            ringPoint(p[0], p[1]);
+            if (!ring.hold) ringClose(true);
+        });
+        ['mousedown', 'mouseup', 'click', 'contextmenu', 'touchstart', 'wheel'].forEach(function (ev) {
+            root.addEventListener(ev, function (e) { e.stopPropagation(); if (ev !== 'wheel' && ev !== 'touchstart') e.preventDefault(); }, ev === 'touchstart' || ev === 'wheel' ? { passive: true } : false);
+        });
+        D.body.appendChild(root);
+        W.addEventListener('keydown', ringKey, true);
+        ring.raf = requestAnimationFrame(ringPad);
+    }
+    /* key released: run the command pointed at; a short tap leaves the ring open for a click */
+    function ringRelease() {
+        if (!ring || !ring.hold) return;
+        if (ring.sel >= 0) { ringClose(true); return; }
+        if (Date.now() - ring.t0 < 350) { ring.hold = false; return; }
+        ringClose(false);
+    }
+
+    function openRadialEditor() {
+        var w = openWin('lm-st-radial', t('radialTitle'), 620);
+        w.body.appendChild(el('p', '', t('radialHelp'))).className = 'lm-st-help';
+        var hc = W.hotkeysCommand || {};
+        var ids = Object.keys(hc).filter(function (id) { return HK_RE.test(id) && !own(RADIAL_SKIP, id) && hkExists(id); });
+        var opts = ids.map(function (id) { return [id, hkLabel(id)]; }).sort(function (a, b) { return a[1].localeCompare(b[1]); });
+        var cur = radialItems();
+        var grid = el('div', 'display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:6px 12px;');
+        var sels = [];
+        for (var i = 0; i < RADIAL_MAX; i++) {
+            var row = el('div');
+            row.className = 'lm-st-row';
+            row.style.margin = '0';
+            row.appendChild(el('span', 'flex:none;width:52px;opacity:.8;', t('slot', i + 1)));
+            var s = el('select', 'flex:1;');
+            s.id = 'lm-st-radial-' + i;
+            var o0 = el('option', '', t('none'));
+            o0.value = '';
+            s.appendChild(o0);
+            opts.forEach(function (o) { var op = el('option', '', o[1]); op.value = o[0]; s.appendChild(op); });
+            s.value = cur[i] || '';
+            row.appendChild(s);
+            grid.appendChild(row);
+            sels.push(s);
+        }
+        w.body.appendChild(grid);
+        w.foot.appendChild(button(t('reset'), false, function () { sels.forEach(function (s) { s.value = ''; }); }));
+        w.foot.appendChild(button(t('save'), true, function () {
+            var list = cleanRadial(sels.map(function (s) { return s.value; }), hkExists);
+            if (!lsSet(RADIAL_KEY, { v: 1, items: list })) { toast('error', t('storageFull')); return; }
+            toast('success', t('radialSaved'));
+            closeWin();
+        }));
+        w.foot.appendChild(button(t('close'), false, closeWin));
+    }
+
+    /* ═══ 3. HUD hide (Show/hide HUD, Alt+H: application.setShowHUD) + capture ═══ */
+
+    var SHOT_KEY = 'lmSmallTools';
+    function shotOpts() { var r = lsGet(SHOT_KEY); return cleanShotOpts(r && r.shot); }
+    function saveShotOpts(o) {
+        var r = lsGet(SHOT_KEY);
+        r = isObj(r) ? r : {};
+        r.shot = cleanShotOpts(o);
+        lsSet(SHOT_KEY, r);
+    }
     var shot = null;
     function gameCanvases() {
         var dr = W.drawRender, list = [];
@@ -268,6 +552,7 @@
     function shotOn() {
         if (shot) return;
         addStyle();
+        closeWin();
         var keep = gameCanvases();
         var h = hideAround(keep);
         var chip = el('div');
@@ -382,6 +667,49 @@
         var r = n.getBoundingClientRect();
         return r.width > 0 && r.height > 0;
     }
+    function drawHudBox(ctx, node, base, sx, sy) {
+        var cs = W.getComputedStyle(node), r = rectIn(node.getBoundingClientRect(), base, sx, sy);
+        var bg = cs.backgroundColor;
+        ctx.save();
+        ctx.fillStyle = bg && bg !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(bg) ? bg : 'rgba(0,0,0,0.4)';
+        ctx.fillRect(r[0], r[1], r[2], r[3]);
+        ctx.restore();
+        return r;
+    }
+    function drawLeaderboard(ctx, base, sx, sy) {
+        var lb = D.getElementById('leaderboard-hud');
+        if (!shown(lb)) return;
+        var r = drawHudBox(ctx, lb, base, sx, sy);
+        var lines = [], h5 = lb.querySelector('h5'), data = D.getElementById('leaderboard-data');
+        if (h5) lines.push([plain(h5.textContent), W.getComputedStyle(h5)]);
+        if (data) for (var c = data.firstElementChild; c; c = c.nextElementSibling) lines.push([plain(c.textContent), W.getComputedStyle(c)]);
+        var y = r[1] + 4 * sy, pad = 8 * sx;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(r[0], r[1], r[2], r[3]);
+        ctx.clip();
+        ctx.textBaseline = 'top';
+        lines.forEach(function (l, i) {
+            var fs = (parseFloat(l[1].fontSize) || 14) * sy;
+            ctx.font = (i === 0 ? '700 ' : '400 ') + fs + 'px ' + (l[1].fontFamily || 'sans-serif');
+            ctx.fillStyle = l[1].color || '#fff';
+            ctx.textAlign = i === 0 ? 'center' : 'left';
+            ctx.fillText(l[0], i === 0 ? r[0] + r[2] / 2 : r[0] + pad, y, r[2] - pad * 2);
+            y += fs * 1.35;
+        });
+        ctx.restore();
+    }
+    function drawMinimap(ctx, base, sx, sy) {
+        var hud = D.getElementById('minimap-hud');
+        if (!shown(hud)) return;
+        drawHudBox(ctx, hud, base, sx, sy);
+        var cs = hud.querySelectorAll('canvas');
+        for (var i = 0; i < cs.length; i++) {
+            if (!shown(cs[i])) continue;
+            var r = rectIn(cs[i].getBoundingClientRect(), base, sx, sy);
+            try { ctx.drawImage(cs[i], r[0], r[1], r[2], r[3]); } catch (e) { }
+        }
+    }
     function stamp() {
         var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
         return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '-' + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
@@ -390,9 +718,10 @@
     function capture(done) {
         if (capturing) return;
         capturing = true;
+        var opts = shotOpts();
         afterFrame(function () {
             var out = null, err = null;
-            try { out = composeShot(); } catch (e) { err = e; }
+            try { out = composeShot(opts); } catch (e) { err = e; }
             if (!out) {
                 capturing = false;
                 toast('error', t('shotFailed'));
@@ -415,7 +744,7 @@
         });
     }
     /* All game layers in their stacking order onto one canvas of the main canvas' pixel size. */
-    function composeShot() {
+    function composeShot(opts) {
         var layers = gameCanvases().filter(shown);
         if (!layers.length) return null;
         var main = (W.drawRender && W.drawRender.canvas) || layers[0];
@@ -438,6 +767,8 @@
             ctx.drawImage(c, r[0], r[1], r[2], r[3]);
             ctx.restore();
         });
+        if (opts.map) drawMinimap(ctx, base, sx, sy);
+        if (opts.lb) drawLeaderboard(ctx, base, sx, sy);
         return out;
     }
     var lastShotUrl = null;
@@ -621,6 +952,16 @@
     function refreshConflicts() {
         if (confBox && confBox.isConnected && confBox.firstChild && confBox.style.display !== 'none') renderConflicts(confBox);
     }
+    function openShotWindow() {
+        var w = openWin('lm-st-shot', t('shotTitle'), 420);
+        w.body.appendChild(el('p', '', t('shotHelp'))).className = 'lm-st-help';
+        var o = shotOpts();
+        w.body.appendChild(check(t('shotLb'), o.lb, function (v) { o.lb = v; saveShotOpts(o); }));
+        w.body.appendChild(check(t('shotMap'), o.map, function (v) { o.map = v; saveShotOpts(o); }));
+        w.foot.appendChild(button(t('shotStart'), false, function () { shotOn(); }));
+        w.foot.appendChild(button(t('shotCapture'), true, function () { closeWin(); capture(); }));
+        w.foot.appendChild(button(t('close'), false, closeWin));
+    }
 
     /* ═══ Private data out of Settings > "Copy debug info" ═══ */
 
@@ -638,12 +979,23 @@
 
     /* ═══ Wiring ═══ */
 
+    var WINS = { radial: openRadialEditor, screenshot: openShotWindow };
+    var WIN_IDS = { radial: 'lm-st-radial', screenshot: 'lm-st-shot' };
+    api.open = function (name) { if (own(WINS, name)) WINS[name](); };
+    api.toggle = function (name) { if (!own(WINS, name)) return; if (isOpen(WIN_IDS[name])) closeWin(); else WINS[name](); };
+    api.close = closeWin;
+    api.isOpen = function (name) { return name ? isOpen(WIN_IDS[name]) : !!win; };
+    api.radialDown = function () { ringOpen(true); };
+    api.radialUp = ringRelease;
+    api.radialOpen = function () { return !!ring; };
+    api.radialPoint = ringPoint;
+    api.radialClose = function () { ringClose(false); };
     api.shotToggle = function () { if (shot) shotOff(); else shotOn(); };
     api.shotOn = shotOn;
     api.shotOff = shotOff;
     api.shotActive = function () { return !!shot; };
     api.capture = capture;
-    api.compose = function () { return composeShot(); };
+    api.compose = function () { return composeShot(shotOpts()); };
     api.redactReport = redactReport;
     api.conflicts = currentConflicts;
     api.renderConflicts = renderConflicts;
@@ -671,9 +1023,11 @@
         return true;
     };
 
-    /* Language change: the HUD hide chip and a conflict list that is shown follow. */
+    /* Language change: an open window is built again in the new language, the HUD hide chip and a
+     * conflict list that is shown follow. */
     if (W.LMi18n && typeof W.LMi18n.onChange === 'function') W.LMi18n.onChange(function () {
         try {
+            if (win) for (var n in WIN_IDS) if (own(WIN_IDS, n) && WIN_IDS[n] === win.id) { WINS[n](); break; }
             var cap = D.getElementById('lm-shot-cap'), sx = D.getElementById('lm-shot-x');
             if (cap) cap.textContent = t('shotCapture');
             if (sx) sx.title = t('close');

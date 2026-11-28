@@ -1,8 +1,8 @@
 /* One HUD hide: Show/hide HUD (Alt+H) hides the whole HUD with the capture chip of the former
  * Screenshot mode; the real ogario/hotkeysCommand.js, application.setShowHUD and loadHotkeys of
  * ogario.v4.js in a vm.
- *   - Screenshot mode is not listed any more; a stored reference to it (mouse, gamepad) runs
- *     Show/hide HUD; the screenshot window and its Capture hotkey are removed (Alt+H's chip captures)
+ *   - Screenshot mode is not listed any more; a stored reference to it (mouse, gamepad, radial)
+ *     runs Show/hide HUD
  *   - Show/hide HUD toggles the full hide of ogario/modules/smalltools.js; without it the HUD box
  *   - a keyboard key on Screenshot mode moves to Show/hide HUD when that has no key
  * node developers/tests/hudhide.js */
@@ -24,7 +24,7 @@ function load(withTools) {
     const ctx = { console, Object, String, Array, JSON, Math, lmT: k => k, textLanguage: {}, chatCommand: {}, toastr: { info() { } } };
     ctx.window = ctx;
     ctx.$ = sel => ({ toggle() { calls.push(['toggle', sel]); }, trigger() { }, val() { return ''; } });
-    if (withTools) ctx.LMSmallTools = { shotToggle() { calls.push(['hide all']); }, capture() { calls.push(['capture']); } };
+    if (withTools) ctx.LMSmallTools = { shotToggle() { calls.push(['hide all']); }, toggle(n) { calls.push(['window', n]); }, capture() { calls.push(['capture']); } };
     vm.createContext(ctx);
     ctx.application = vm.runInContext('({\n' + ogSrc.slice(sStart, sEnd) + '\n})', ctx);
     vm.runInContext(hkSrc, ctx);
@@ -34,11 +34,11 @@ function load(withTools) {
 {
     const { hc, calls } = load(true);
     check('Screenshot mode is not listed any more', Object.keys(hc).indexOf('hk-screenshotMode') < 0);
-    check('Show/hide HUD keeps Alt+H; the Capture and Screenshot window hotkeys are gone', hc['hk-showHUD'].defaultKey === 'ALT+H' && !hc['hk-screenshotCapture'] && !hc['hk-screenshotTool']);
+    check('Show/hide HUD keeps Alt+H; Capture and the Screenshot window stay', hc['hk-showHUD'].defaultKey === 'ALT+H' && !!hc['hk-screenshotCapture'] && !!hc['hk-screenshotTool']);
     hc['hk-showHUD'].keyDown();
     check('Alt+H hides the whole HUD (the former Screenshot mode, with its Capture chip)', J(calls) === J([['hide all']]));
     calls.length = 0;
-    check('a stored Screenshot mode reference (mouse / gamepad) runs Show/hide HUD', hc.hasOwnProperty('hk-screenshotMode') && (hc['hk-screenshotMode'].keyDown(), J(calls) === J([['hide all']])));
+    check('a stored Screenshot mode reference (mouse / gamepad / radial) runs Show/hide HUD', hc.hasOwnProperty('hk-screenshotMode') && (hc['hk-screenshotMode'].keyDown(), J(calls) === J([['hide all']])));
 }
 {
     const { hc, calls } = load(false);

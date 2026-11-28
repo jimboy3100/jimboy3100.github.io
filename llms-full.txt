@@ -54,7 +54,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 | G | Toggle grid |
 | Alt+G | Toggle minimap guides |
 | H | Hide/show chat |
-| Alt+H | Show/hide HUD (hides the whole HUD, with a Capture button for a screenshot) |
+| Alt+H | Toggle HUD |
 | K | Toggle ghost cells info |
 | L | Copy leaderboard |
 | Alt+L | Toggle leaderboard |
@@ -80,7 +80,7 @@ Legend Mod (entity: https://www.legendmod.ml/#app) is a SoftwareApplication and 
 Keys 1-9, 0, arrow keys (Left/Up/Right/Down), Ctrl+1-5, Ctrl+7-9, Ctrl+0, Ctrl+Z, Ctrl+X, Ctrl+Q, Ctrl+M, Ctrl+B, Ctrl+L, Ctrl+D, plus 20 additional unbound slots (comm31-50). Each slot holds a customizable message sent with one keypress.
 
 ### Hotkeys Without Default Keys (All Configurable)
-Triple split, crazy double split, line split, merge rings toggle, practice arena, Replay Studio, replay pause/speed/seek, gamepad window, copy server link, chat sounds toggle, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), limit position (hold), multibox swap, middle multi-view, auto zoom toggle, precision zoom (hold), enlarge minimap, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
+Triple split, crazy double split, line split, merge rings toggle, practice arena, Replay Studio, replay pause/speed/seek, radial menu, radial editor, gamepad window, copy server link, chat sounds toggle, team pings (Help/Danger/Go here/Virus), spectate next top player, scan trick (hold), screenshot capture/window, limit position (hold), multibox swap, middle multi-view, auto zoom toggle, precision zoom (hold), enlarge minimap, HUD editor, user scripts/plugins, transparent skins, hide teammates names, private minimap, in-game spectator, zoom save/recall 1-3, bot controls (feed/split/macro/double/pop/16-split).
 
 ### Mouse
 | Button | Default Action |
@@ -290,6 +290,13 @@ Offline practice mode against bots (no server needed). Features:
 - Personal bests tracked and ghost of your best run
 - All keyboard/mouse/touch/gamepad controls work unchanged
 - Useful for practising split tricks, virus shots, and movement techniques
+- Opens via hotkey (no default key)
+
+### 23. Radial Menu
+Hold-point-release radial command menu. Features:
+- **Up to 8 slots**: Assign any hotkey command to a slot
+- **Quick access**: Hold radial menu key, point to slot, release to activate
+- **Radial editor**: Customize slot assignments
 - Opens via hotkey (no default key)
 
 ### 24. User Scripts / Plugins
@@ -508,6 +515,9 @@ A tool to drag and resize 15 HUD components (leaderboard, minimap, stats, chat, 
 
 **Where are my match history and game stats?**
 In the Replays window (Replay Studio), next to the Player and the Library: Match history (your last 50 games), Dashboard (games, highest mass, survival, top-10 rate, weekly chart, best modes, from up to 500 game summaries) Heatmaps (position history, 3,600 samples per game, 50 games), Coach (scores for survival, growth, splits, movement and retention with tips) and Objectives (three daily ones and up to 8 of your own). Every game is recorded (no switch); only the latest game's replay stays in memory, save it to the library to keep it.
+
+**What is the Radial Menu?**
+A hold-point-release radial command menu with up to 8 slots. Assign any hotkey command to a slot for quick access without memorising keys. Hold the radial menu key, point to a slot, and release to activate.
 
 **How do presets work?**
 Legend Mod offers one-click presets: Competitive (enables rings, mass, split range), Battery Saver (caps FPS, disables effects), Streamer (hides personal info), Reduced Motion (no animations), and Clean HUD (minimal interface). 8 built-in theme presets and 3 menu presets are in the Theme workshop's Gallery.

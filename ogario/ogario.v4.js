@@ -21792,9 +21792,8 @@ function lmRenameOldHotkeys(map) {
         if (v === 'hk-hotkeyConflicts' || v === 'hk-skinCollections' || v === 'hk-commandCentre' || v === 'hk-mbRings' || /^hk-zoomSave[1-5]$/.test(v) || /^hk-(lmProfile(Next|Prev|Undo)|instantReplay|switchServerMode|showQuest|multiboxback)$/.test(v) || gone.test(v)) { delete map[k]; changed = true; continue; }
         /* the spectator director's commands and camera lock (removed) */
         if (v === 'hk-cameraLock' || /^hk-dir(?:ector|Auto|Broadcast|WatchNext|WatchPrev|WatchAdd|MarkSave|Mark[1-5])$/.test(v)) { delete map[k]; changed = true; continue; }
-        /* removed: the radial menu and its editor, the screenshot window and its Capture hotkey,
-         * the custom macros */
-        if (/^hk-(?:radialMenu|radialEditor|screenshotTool|screenshotCapture|customMacro[1-3])$/.test(v)) { delete map[k]; changed = true; continue; }
+        /* removed: the custom macros */
+        if (/^hk-customMacro[1-3]$/.test(v)) { delete map[k]; changed = true; continue; }
         /* the Theme workshop hotkey (removed: the window opens from its button in the Theme tab) */
         if (v === 'hk-lmThemeWorkshop') { delete map[k]; changed = true; continue; }
         if ((z = /^hk-zoomRecall([1-3])$/.exec(v))) to = 'hk-zoom' + z[1];
@@ -21877,9 +21876,13 @@ var LM_EXPORT_KEYS = [
     { key: 'lmPracticeCfg', type: 'o' },
     /* Analytics: the Coach's objectives (ogario/modules/analytics.js) */
     { key: 'lmAnalyticsGoals', type: 'o' },
+    /* the small tools (ogario/modules/smalltools.js): the radial menu's commands and the
+     * screenshot options */
+    { key: 'lmRadialMenu', type: 'o' },
     /* importOnly: the old skin collections are player profiles now (lmMergeSkinCollections after
      * the import's reload); an older export still brings its skins in, a new one has none */
     { key: 'lmSkinCollections', type: 'o', importOnly: true },
+    { key: 'lmSmallTools', type: 'o' },
     /* the muted notification categories (the read mark and the list filter stay on the device) */
     { key: 'lmNotificationPrefs', type: 'o', only: ['muted'] },
     /* Settings > Voice (LMexpress/LMexpress.sniff3.js): the chat prefix and the speech language */
@@ -22831,9 +22834,9 @@ function thelegendmodproject() {
             var ff = String(defaultSettings.hudFontFamily || 'Ubuntu').replace(/[^a-zA-Z0-9 ,'-]/g, '');
             this.addCustomCSS('hudFontVarCSS', ':root{--lm-hud-font:' + (ff || 'Ubuntu') + ';--lm-hud-fw:' + _lmCssNum(defaultSettings.hudFontWeight, 100, 900, 700) + '}' +
                 /* the newer in-game parts are added to body, not #overlays-hud: same HUD font and weight
-                 * (bell, mass-loss alert lines, broadcast, practice HUD, screenshot chip);
+                 * (bell, mass-loss alert lines, broadcast, practice HUD, radial menu, screenshot chip);
                  * the notification list is a window (menu theme, lmUiKit in LMexpress.js) */
-                '#lm-notif-bell,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
+                '#lm-notif-bell,#lm-killfeed,#lm-dir-bc,#lm-pr-hud,#lm-radial,#lm-shot-chip{font-family:var(--lm-hud-font,Ubuntu)!important;font-weight:var(--lm-hud-fw,700)}');
         },
         setHudScale() {
             /* Issue #8: a value saved on a bigger screen is shown at most at this screen's slider
@@ -84863,6 +84866,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
      * Hiding the tab (Ctrl+Tab, Alt+Tab, a phone app switch) releases them too.
      */
     function _lmReleaseHeldInputs() {
+        /* the radial menu closes without running anything: released below, its key ran the
+         * command pointed at as if the player had let go there */
+        if (window.LMSmallTools && typeof window.LMSmallTools.radialClose === 'function') {
+            try { window.LMSmallTools.radialClose(); } catch (e) { }
+        }
         for (var heldKey in keyBlind) {
             if (!keyBlind[heldKey]) continue;
             var heldCommand = _lmHeldCmdOf(heldKey);
@@ -84890,6 +84898,19 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmMouseCmdHeld[which] = command;
         hotkeysCommand[command].keyDown();
     }
+    /* true while a key, mouse button or gamepad button holds this hotkey command: the input
+     * that pressed a hold command owns its release (radial menu presses check it) */
+    window._lmHotkeyHeld = function (command) {
+        if (!command) return false;
+        for (var k in keyBlind) {
+            if (keyBlind[k] && hotkeys[k] === command) return true;
+        }
+        for (var w in _lmMouseCmdHeld) {
+            if (_lmMouseCmdHeld[w] === command) return true;
+        }
+        try { if (window.LMGamepad && typeof window.LMGamepad.isHeld === 'function' && window.LMGamepad.isHeld(command)) return true; } catch (e) { }
+        return false;
+    };
     /* true while a key, mouse button, gamepad button or the phone Feed button bound to macro feed is
      * still held (the gamepad and the phone button clear their own hold before they release: letting
      * E go stopped a feed the pad or the Feed button held) */
@@ -84995,7 +85016,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
         if (_lmMouseCmdWas && hotkeysCommand[_lmMouseCmdWas] && hotkeysCommand[_lmMouseCmdWas].keyUp) hotkeysCommand[_lmMouseCmdWas].keyUp();
     };
     /* A button pressed on the game and released over a layer that keeps mouseup from the window
-     * (editor windows) was never released: macro feed kept going.
+     * (the radial menu its own press opened, editor windows) was never
+     * released: the radial menu stayed open without running its command, macro feed kept going.
      * Like the keyup above, such a mouseup is released here after the event is done. */
     window.addEventListener('mouseup', function (event) {
         if (!_lmMouseHeld[event.which]) return;
@@ -88464,8 +88486,9 @@ Object.defineProperty(Array.prototype, 'stDev', {
             console.warn('[LM] Error loading the practice arena:', e);
         }
     };
-    /* Small tools: the Hotkeys window's key check and conflict list, and the HUD hide of Show/hide
-     * HUD (Alt+H) with its capture (nothing runs until one is used) */
+    /* Small tools: radial command menu, the screenshot window, the Hotkeys window's key check and
+     * conflict list, and the HUD hide of Show/hide HUD (Alt+H) with its capture (windows and hotkeys
+     * without default keys; nothing runs until one is used) */
     try {
         var smallToolsScript = document.createElement('script');
         smallToolsScript.type = 'text/javascript';
