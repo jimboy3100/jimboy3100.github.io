@@ -2,7 +2,7 @@
  * schema (LM_THEME_SCHEMA + lmThemeValue: type, range, step, choices, colour format) and every
  * path that stores theme values (loadThemeSettings, the settings import, the theme presets
  * through Settings.changePreset, the Theme tab sliders through Settings.addSliderBox and
- * My themes). Valid values and the defaults never change.
+ * the Theme Workshop). Valid values and the defaults never change.
  * node developers/tests/themesettings.js */
 const fs = require('fs'), vm = require('vm'), path = require('path');
 const root = path.join(__dirname, '..', '..');
@@ -98,12 +98,16 @@ check('colours: CSS / HTML injection and non-colours refused', ['red;}body{displ
 check('lbTeammateColor (a marker, not drawn) is left as stored', V('lbTeammateColor', 'anything') === 'anything');
 check('free text kept (URLs), booleans as before, unknown and removed keys (sector symbol) refused', V('menuBg', 'https://x.com/a.png') === 'https://x.com/a.png' && V('sectorsSymbol', '*') === undefined && V('darkTheme', 'false') === false && V('darkTheme', 1) === undefined && V('noSuchKey', 1) === undefined && V('__proto__', {}) === undefined);
 
-// ── shipped data is kept exactly: the theme presets, the menu themes
+// ── shipped data is kept exactly: the theme presets, the menu themes, the gallery themes
 const presetOff = [];
 [['themePresets', ctx.themePresets], ['themeMenus', ctx.themeMenus]].forEach(([n, m]) => {
   Object.keys(m).forEach(p => Object.keys(m[p]).forEach(k => { if (own(TD, k) && V(k, m[p][k]) !== m[p][k]) presetOff.push(n + '.' + p + '.' + k + '=' + m[p][k]); }));
 });
 check('every theme preset / menu theme value is kept exactly', presetOff.length === 0 || (console.log('   ' + presetOff.join(', ')), false));
+const cat = JSON.parse(fs.readFileSync(path.join(root, 'ogario', 'themes', 'catalogue.json'), 'utf8'));
+const catOff = [];
+cat.themes.forEach(t => Object.keys(t.theme || {}).forEach(k => { if (!own(TD, k) || V(k, t.theme[k]) !== t.theme[k]) catOff.push(t.name + '.' + k); }));
+check('every gallery theme value (catalogue.json) is a theme setting and kept exactly', catOff.length === 0 || (console.log('   ' + catOff.join(', ')), false));
 
 // ── loading (the real loadThemeSettings)
 const DS = ctx.defaultSettings;
@@ -156,17 +160,17 @@ check('slider input: a value the slider shows is kept exactly', DS.bordersWidth 
 s.v = 'abc'; s.trigger('input');
 check('slider input: not a number changes nothing', DS.bordersWidth === 40 && cb === 2);
 
-// ── My themes uses the same schema
+// ── the Theme Workshop uses the same schema
 const pc = { console, JSON, Math, Date, Object, Array, Number, String, isFinite, setTimeout() { }, clearTimeout() { }, lmT: k => k };
 pc.window = pc; pc.localStorage = makeStorage();
 vm.createContext(pc);
 vm.runInContext(cut('var themePresets = {', 'var defaultSettings = {'), pc);
 vm.runInContext(cut('var defaultSettings = {', 'cimg2 = new Image;'), pc);
 vm.runInContext(cut('var defaultmapsettings = {', '/* ─── §3.3 profiles'), pc);
-vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'mythemes.js'), 'utf8'), pc);
-const W = pc.LMMyThemes.core;
-check('my themes: the same schema (fitted, choices, colours)', W.themeValue('bordersWidth', 13) === 14 && W.themeValue('namesScale', 99) === 2 && W.themeValue('namesFont', 'bad') === undefined && W.themeValue('preset', 'legendv1') === 'legendv1' && W.themeValue('bgColor', 'url(x)') === undefined && W.themeValue('bgColor', '#010203') === '#010203');
-check('my themes: every default it takes is kept exactly', Object.keys(TD).every(k => { const v = W.themeValue(k, TD[k]); return v === undefined || v === TD[k]; }));
+vm.runInContext(fs.readFileSync(path.join(root, 'ogario', 'modules', 'themeworkshop.js'), 'utf8'), pc);
+const W = pc.LMThemeWorkshop.core;
+check('workshop: the same schema (fitted, choices, colours)', W.themeValue('bordersWidth', 13) === 14 && W.themeValue('namesScale', 99) === 2 && W.themeValue('namesFont', 'bad') === undefined && W.themeValue('preset', 'legendv1') === 'legendv1' && W.themeValue('bgColor', 'url(x)') === undefined && W.themeValue('bgColor', '#010203') === '#010203');
+check('workshop: every default it takes is kept exactly', Object.keys(TD).every(k => { const v = W.themeValue(k, TD[k]); return v === undefined || v === TD[k]; }));
 
 console.log(fail ? fail + ' theme settings check(s) FAILED' : 'all theme settings checks passed');
 process.exit(fail ? 1 : 0);

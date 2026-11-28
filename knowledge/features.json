@@ -21,9 +21,9 @@
       "url": "https://www.legendmod.ml/themes/"
     },
     {
-      "id": "mythemes",
-      "name": "My themes",
-      "description": "Part of the Theme presets in the Theme tab: under the Theme preset list, save the current theme under a name (up to 30), apply one by picking it, Update it with the current theme (the last 5 versions are kept and an older version can be picked to bring it back) or delete it. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS.",
+      "id": "themeworkshop",
+      "name": "Theme Workshop",
+      "description": "Theme tab, the Theme workshop button under the Theme preset list: My themes (save the current theme, rename, copy, delete, up to 30 themes with their last 5 saved versions, restore a version), a small picture of each theme, live preview with Keep / Revert (back by itself after 15 s), Compare any two themes setting by setting, and a Gallery of the built-in presets and of themes shipped with Legend Mod. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS.",
       "url": "https://www.legendmod.ml/features.html"
     },
     {

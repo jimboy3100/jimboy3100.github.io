@@ -66,8 +66,8 @@
       "answer": "An offline mode with 8 exercise types (free, split, virus, dodge, path, escape, feed, merge) where you practice against bots without connecting to a server. Personal bests and ghost replay of your best run."
     },
     {
-      "question": "How do I save my own themes?",
-      "answer": "Part of the Theme presets in the Theme tab: under the Theme preset list, save the current theme under a name (up to 30), apply one by picking it, Update it with the current theme (the last 5 versions are kept and an older version can be picked to bring it back) or delete it. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS."
+      "question": "What is the Theme Workshop?",
+      "answer": "A window opened from the Theme workshop button in the Theme tab (under the Theme preset list): save the current theme (up to 30 themes, 5 versions each), rename, copy and delete themes, restore an older version, live preview with 15-second auto-revert, side-by-side comparison of any two themes, and a gallery of built-in presets and shipped themes."
     },
     {
       "question": "What are User Scripts / Plugins?",

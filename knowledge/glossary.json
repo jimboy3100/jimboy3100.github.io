@@ -123,8 +123,8 @@
       "category": "community"
     },
     {
-      "term": "My themes",
-      "definition": "Your own saved themes, under the Theme preset list in the Theme tab: up to 30, each with its last 5 versions.",
+      "term": "Theme Workshop",
+      "definition": "The window of your own saved themes (Theme tab, button under the Theme preset list): up to 30 themes with 5 versions each, live preview with auto-revert, Compare and a gallery.",
       "category": "el-specific"
     },
     {

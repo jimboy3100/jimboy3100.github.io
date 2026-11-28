@@ -50,7 +50,7 @@ const pruneDays = argVal('--prune', '');
  * (any other probe counts as 2 s). Update when a probe gets much slower or faster. */
 const SLOW = {
   'smalltools': 10, 'themebridge': 8, 'winstack': 6, 'replaystudio': 6,
-  'perf': 5, 'server-token-typing': 31, 'conn-drop-menu': 10
+  'themeworkshop': 5, 'perf': 5, 'server-token-typing': 31, 'conn-drop-menu': 10
 };
 const weight = name => SLOW[name] || 2;
 

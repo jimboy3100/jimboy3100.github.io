@@ -128,11 +128,13 @@ Full visual customization of the game interface using CSS variables and theme pr
 - **Grid and sector display**: Toggle grid lines and sector labels
 URL: https://www.legendmod.ml/themes/
 
-### 3. Theme presets and My themes
-The Theme tab starts with the Theme preset list (and Menu theme in its Menu part). Under it, My themes:
-- **Save current as theme**: your own themes, up to 30, kept in this browser (Export / Import settings carries them)
-- **Pick to apply**: picking a theme applies and saves it at once, like a preset
-- **Versions**: Update keeps the last 5 versions; picking an older version brings it back
+### 3. Theme Workshop
+The Theme tab starts with the Theme preset list (and Menu theme in its Menu part). Under it, the Theme workshop button opens the window:
+- **My themes**: save the current theme, rename, copy and delete; up to 30 themes, kept in this browser (Export / Import settings carries them), each with a small picture
+- **Versions**: Update keeps the last 5 versions; any one can be previewed, compared or restored
+- **Live preview**: shows a theme for 15 seconds (Keep / Revert), then your theme comes back by itself
+- **Compare**: any two themes (current, saved, a version, a preset, a gallery theme) setting by setting
+- **Gallery**: the built-in presets and themes shipped with Legend Mod, to preview, apply or install
 - **Validation**: All values checked against LM_THEME_DEFAULTS schema; URLs must be HTTPS
 
 ### 5. Multiboxing
@@ -342,7 +344,7 @@ Each language has: core language pack (lm-XX.js), plus separate translation pack
 
 - **Rendering**: WebGL2 with per-frame preflight and atomic Canvas2D fallback
 - **Storage**: localStorage for settings/hotkeys/profiles/history; IndexedDB for skin caching (1,000 skins, 600 audio, LRU eviction)
-- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, analytics.js (1159), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), replaystudio.js (1615), practice.js (707), plugins.js (940), smalltools.js (444), perf.js (1848), mythemes.js (484), hotkeysCommand.js (2056)
+- **Architecture**: Main script (ogario.v4.js, ~85,000 lines) plus 20+ modular scripts: themebridge.js, analytics.js (1159), deathrecap.js (685), gamepad.js (748), gamepad-ui.js, hudhelpers.js (826), hudeditor.js (588), replaystudio.js (1615), practice.js (707), plugins.js (940), smalltools.js (444), perf.js (1848), themeworkshop.js (1233), hotkeysCommand.js (2056)
 - **PWA**: Progressive Web App with fullscreen game mode, manifest.json ("Legend Mod - Expanding Land"), landscape orientation, theme_color #00243e; no service worker on this site (the old one is unregistered by play.html; the Expanding Land app at expanding.land has its own)
 - **Extension**: Chrome extension "Legend Express" (manifest v3, version 1.8.5, author Jimboy3100). Permissions: storage, declarativeNetRequest. Host permissions: agar.io, jimboy3100.github.io, legendmod.ml, sigmally.com, senpa.io, mi.com. Content scripts run on agar.io at document_start. Background: service worker. Does NOT collect, store or transmit personal data externally.
 - **Userscript**: Legend Express userscript for Tampermonkey / Greasemonkey (https://www.legendmod.ml/LMexpress/LMexpress.user.js), version 1.9.
@@ -457,8 +459,8 @@ A Game Over card feature showing the last 20 seconds of your life as 3-6 summari
 **What is the Practice Arena?**
 An offline mode where you practice against bots without connecting to a server. Uses MultiOgar protocol. Tracks personal bests and replays ghost of your best run.
 
-**How do I save my own themes?**
-Part of the Theme presets in the Theme tab: under the Theme preset list, save the current theme under a name (up to 30), apply one by picking it, Update it with the current theme (the last 5 versions are kept and an older version can be picked to bring it back) or delete it. Kept in this browser; Export / Import settings carries them. Values are checked against the theme schema; URLs must be HTTPS.
+**What is the Theme Workshop?**
+A window opened from the Theme workshop button in the Theme tab (under the Theme preset list): save the current theme (up to 30 themes, 5 versions each), rename, copy and delete themes, restore an older version, live preview with 15-second auto-revert, side-by-side comparison of any two themes, and a gallery of built-in presets and shipped themes.
 
 **What are User Scripts / Plugins?**
 Legend Mod supports 5 user script slots for custom JavaScript extensions. Plugins use a standard header format and can register settings via the LMPlugins API.
@@ -533,7 +535,7 @@ Settings > Sounds has each sound's switch, sound file and volume: chat message a
 - **Multiboxing**: Controlling multiple game connections simultaneously (up to 4 in EL)
 - **Spectator**: 200+ slots with free-roam camera in Expanding Land
 - **Coordinate scrambling**: Anti-cheat system giving different position offsets per player
-- **My themes**: Your own saved themes under the Theme preset list (up to 30, 5 versions each)
+- **Theme Workshop**: Window for your own saved themes (up to 30, 5 versions each) with preview, Compare and a gallery
 - **Practice Arena**: Offline mode for practising against bots
 - **Replay Studio**: Full playback tool for recorded game replays
 - **LMEvents**: Hook API for user scripts to listen to game events
