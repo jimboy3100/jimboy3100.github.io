@@ -31,7 +31,8 @@ All three return `LMEvents`, so calls can be chained.
 | Event | Data | When |
 | --- | --- | --- |
 | `spawn` | `{ time }` | you spawn (once per life) |
-| `death` | `{ time, mass, msAlive }` | you die; `mass` is the best mass of that life, `msAlive` its length in ms (from the first own cell to none left) |
+| `death` | `{ time, mass, msAlive, unit, scope }` | you die; `mass` is the best mass of that life, `msAlive` its length in ms (from the first own cell to none left). `unit` is `0` for the main player. `scope` is `'unit'` while one of your multibox units still lives (only that player was lost, the game goes on) and `'all'` when nothing of yours lives any more |
+| `disconnect` | `{ time, server, code, clean, playing }` | the game server closed your connection, or it could not be opened; `server` is the host name only, `code` the WebSocket close code (0 = not known), `clean` whether it closed cleanly, `playing` whether you were alive then. Not sent when you switch servers yourself or leave a replay (`serverChange` / `replayStop` say that) |
 | `chat` | `{ nick, text, type, own }` | a chat line is shown; `type` is `'chat'` or `'command'`, `own` is true for your own lines. `text` is the raw text (not HTML): escape it before putting it into the page. Lines hidden by the chat word filter are not sent |
 | `serverChange` | `{ host }` | you join another server; `host` is the host name only (no tokens) |
 | `massUpdate` | `{ mass, cells }` | while playing, at most 4 times per second |

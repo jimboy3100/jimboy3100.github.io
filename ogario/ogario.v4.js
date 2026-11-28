@@ -241,6 +241,21 @@ function lmSetMbUnit(unit) {
     window.multiboxPlayerEnabled = unit || null;
     if (unit !== prev && window.LMEvents._has('multiboxSwap')) window.LMEvents.emit('multiboxSwap', { unit: unit, previous: prev });
 }
+/* scope of a death for LMEvents 'death' (unit: 0 = the main player, else a multibox unit number):
+ * 'unit' while the main player or another multibox unit still lives (only that one is lost, the
+ * game goes on), 'all' when nothing of ours lives any more. Full Map / in-game spectators are no
+ * units (player false) and never count. */
+function lmDeathScope(unit) {
+    unit = +unit || 0;
+    var lm = window.legendmod, list = window.spects;
+    if (unit && lm && lm.play) return 'unit';
+    for (var i = 0; list && i < list.length; i++) {
+        var s = list[i];
+        if (s && s.player && s.active && (+s.number || 0) !== unit) return 'unit';
+    }
+    return 'all';
+}
+window.lmDeathScope = lmDeathScope;
 window.lmSetMbUnit = lmSetMbUnit;
 window.OgVer = 3.705;
 /* Failed soft purchases (boost, potion skip, timed event) only logged to the console, so the
@@ -28673,10 +28688,14 @@ function thelegendmodproject() {
             }
             if (window._lmRecLive) window._lmRecEv('d', +ogario.playerScore || 0);
             if (window.LMEvents._has('death')) {
+                /* unit 0: the main player; scope 'unit' while a multibox unit still lives (no Game
+                 * Over: only the main player was lost), 'all' when nothing of ours lives */
                 window.LMEvents.emit('death', {
                     time: _lmNow,
                     mass: Math.round(+ogario.playerScore || 0),
-                    msAlive: _lmAliveMs
+                    msAlive: _lmAliveMs,
+                    unit: 0,
+                    scope: lmDeathScope(0)
                 });
             }
             this._lmLifeStartAt = 0;
@@ -42550,9 +42569,21 @@ function thelegendmodproject() {
              * back with Play, as after a death. It stayed hidden over the reconnected world, with
              * the player no longer in the game, until Esc. The multibox units end with it:
              * flushCellsData() above closed them all (flushSpecsData), so none lives on here. */
+            var _lmClosedAlive = !!this.play;
             if (this === window.legendmod && this.play && !window._lmReplayQuiet) {
                 this.play = false;
                 if (window.application && typeof application.showMenu === 'function') application.showMenu(300);
+            }
+            /* LMEvents 'disconnect': the game server closed the main connection (or it failed to
+             * open). Not sent for a server switch or a closed replay: those drop onclose first */
+            if (this === window.legendmod && window.LMEvents._has('disconnect')) {
+                window.LMEvents.emit('disconnect', {
+                    time: Date.now(),
+                    server: typeof _lmHostOnly === 'function' ? _lmHostOnly(this.ws) : '',
+                    code: t && +t.code || 0,
+                    clean: !!(t && t.wasClean),
+                    playing: _lmClosedAlive
+                });
             }
             this.isLegendWorld = false;
             LM.isLegendWorld = false;

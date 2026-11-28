@@ -97,6 +97,7 @@ check('dead / spectating: nothing shown', shown() === null);
     const g = { Math, Date: ctx.Date, JSON, Object, Array, String, Number, console: { log: noop, warn: noop } };
     g.window = g; g.legendmod = LM;
     g.lmTimeAlive = ctx.lmTimeAlive;
+    g.lmDeathScope = (u) => 'scope-of-' + u;
     g.LMEvents = { _has: () => true, emit: (n, e) => { calls[n] = e; } };
     g.defaultmapsettings = { matchHistory: true };
     g.ogario = { playerScore: 900, play: true };
@@ -111,6 +112,7 @@ check('dead / spectating: nothing shown', shown() === null);
     h.onPlayerDeath();
     check('death handling records the life (18 s, not 18.6 s): session, best, history, death event',
         calls.session === 18000 && calls.best === 18000 && calls.history === 18000 && calls.death && calls.death.msAlive === 18000, JSON.stringify(calls));
+    check('death event: the main player (unit 0) with its scope', calls.death && calls.death.unit === 0 && calls.death.scope === 'scope-of-0', JSON.stringify(calls.death));
     /* the game-over packet before the last own cell is removed: the life ends at the handler */
     T += 1000;
     spawn(); const g1 = addOwn(); T += 4000;

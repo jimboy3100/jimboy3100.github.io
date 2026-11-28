@@ -198,6 +198,61 @@ const v4 = fs.readFileSync(path.join(root, 'ogario', 'ogario.v4.js'), 'utf8');
     });
     check(name + ': every emit is guarded by _has(\'' + name + '\')', guarded);
 });
+check('disconnect: every emit is guarded by _has(\'disconnect\')', (function () {
+    const i = v4.indexOf("LMEvents.emit('disconnect'");
+    return i > 0 && v4.slice(i - 300, i).indexOf("_has('disconnect')") !== -1;
+})());
+/* death scope (unit / scope) and the disconnect event, with the real code */
+(function () {
+    const a = v4.indexOf('/* LMEvents: hooks for user scripts');
+    const b = v4.indexOf('window.spects = window.spects');
+    const s = v4.indexOf('function lmDeathScope(unit) {'), e = v4.indexOf('window.lmDeathScope = lmDeathScope;', s);
+    const c0 = v4.indexOf('var _lmClosedAlive = !!this.play;'), c1 = v4.indexOf('this.isLegendWorld = false;', c0);
+    if (a < 0 || b < 0 || s < 0 || e < 0 || c0 < 0 || c1 < 0) { check('death scope / disconnect code found', false); return; }
+    const ctx = { console, menus: 0 };
+    ctx.window = ctx;
+    vm.runInNewContext(v4.slice(a, b) + '\n' + v4.slice(s, e) +
+        '\nfunction _lmHostOnly(u) { return String(u || "").replace(/^wss?:\\/\\//, "").split(/[/?]/)[0]; }' +
+        '\nvar application = { showMenu: function () { window.menus++; } };' +
+        '\nwindow.onCloseTail = function (t) {\n' + v4.slice(c0, c1) + '\n};', ctx);
+    const scope = ctx.lmDeathScope;
+    const unit = (n, active, player) => ({ number: n, active: active, player: player !== false });
+    ctx.legendmod = { play: false };
+    ctx.spects = [];
+    check('death scope: main player, no units: all', scope(0) === 'all');
+    ctx.spects = [unit(1, true), unit(2, false)];
+    check('death scope: main player, a unit alive: unit (no Game Over)', scope(0) === 'unit');
+    ctx.spects = [unit(1, false), unit(2, false)];
+    check('death scope: main player, every unit dead: all', scope(0) === 'all');
+    ctx.spects = [unit(1, true, false), unit(2, true, false)];
+    check('death scope: Full Map / in-game spectators are no units', scope(0) === 'all');
+    ctx.spects = [unit(1, true), unit(2, false)];
+    check('death scope: unit 1 itself does not count for its own death', scope(1) === 'all');
+    ctx.legendmod.play = true;
+    check('death scope: a unit dies, the main player lives: unit', scope(2) === 'unit');
+    /* disconnect */
+    const got = []; const f = d => got.push(d);
+    ctx.LMEvents.on('disconnect', f);
+    const main = ctx.legendmod = { play: true, ws: 'wss://live-arena-abc.agar.io:443/?token=x' };
+    ctx.onCloseTail.call(main, { code: 1006, wasClean: false, reason: 'secret' });
+    const d = got[0];
+    check('disconnect: sent for the main connection with host, code, clean, playing',
+        got.length === 1 && d.server === 'live-arena-abc.agar.io:443' && d.code === 1006 && d.clean === false && d.playing === true && d.context === 'live' && !('reason' in d) && Object.isFrozen(d));
+    check('disconnect: the life still ends (menu)', main.play === false && ctx.menus === 1);
+    ctx.onCloseTail.call({ play: true, ws: 'wss://x' }, { code: 1000, wasClean: true });
+    check('disconnect: not for another connection (units, spectators)', got.length === 1);
+    ctx.onCloseTail.call(main, undefined);
+    check('disconnect: no close event object: code 0, not clean, not playing', got.length === 2 && got[1].code === 0 && got[1].clean === false && got[1].playing === false);
+    ctx._lmReplayQuiet = true;
+    ctx.onCloseTail.call(main, { code: 1000 });
+    ctx._lmReplayQuiet = false;
+    check('disconnect: none while Replay Studio rebuilds', got.length === 2);
+    ctx.LMPractice = { on: true };
+    ctx.onCloseTail.call(main, { code: 1000, wasClean: true });
+    ctx.LMPractice = null;
+    check('disconnect: practice arena context is reported', got.length === 3 && got[2].context === 'practice');
+    ctx.LMEvents.off('disconnect', f);
+})();
 /* the data of 'split' and 'merge' is only collected while someone listens */
 check('merges are only counted while someone listens', /window\.LMEvents\._has\('merge'\) && \(eaterID\.isPlayerCell/.test(v4));
 check('one split emitter: every split emit carries the cell count before it', (v4.match(/LMEvents\.emit\('split'/g) || []).length === 4 && (v4.match(/LMEvents\.emit\('split', \{ time: Date\.now\(\), count: \d, before: this\.playerCells \? this\.playerCells\.length : 0 \}\)/g) || []).length === 4);
