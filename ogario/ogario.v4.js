@@ -24544,6 +24544,13 @@ function thelegendmodproject() {
                 if ($('#skipStats').prop('checked')) $('#skipStats').click();
             }
         },
+        /* agar.io's own stats panel (#stats) after a death: it lists the same game stats as the
+         * Game Over card, so with the card on it is skipped (one stats screen, not the card on
+         * top of the panel and a second click on its Continue); with the card off the vanilla
+         * "Skip stats after death" box decides as before */
+        agarStatsAfterDeath() {
+            return !this.skipStats && !defaultmapsettings.gameOverStats;
+        },
         toggleAutoResp() {
             /* setSettings runs setAutoResp */
             this.setSettings('autoResp', !defaultmapsettings.autoResp);
@@ -25578,7 +25585,7 @@ function thelegendmodproject() {
             if (window.MC && window.MC.showNickDialog) {
                 $('.ogario-menu').show();
 
-                if (!ogario.play && !this.skipStats) {
+                if (!ogario.play && this.agarStatsAfterDeath()) {
                     $('#stats').show();
                 }
                 window.MC.showNickDialog(300);
@@ -55910,8 +55917,8 @@ function thelegendmodproject() {
                                     .show();
 
                                 if (
-                                    !application
-                                        .skipStats
+                                    application
+                                        .agarStatsAfterDeath()
                                 ) {
                                     $('#stats')
                                         .stop(

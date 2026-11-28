@@ -76,5 +76,14 @@ const check = (n, c) => { console.log((c ? 'ok   ' : 'FAIL ') + n); if (!c) fail
 });
 check('the stored inviter is no longer deleted at start', main.indexOf("['lm_referrer', 'lm_ref_time'].forEach(function (k) { localStorage.removeItem(k); })") < 0);
 
+/* one stats screen after a death: agar.io's own stats panel (same game stats) only with the card off
+ * and its "Skip stats after death" box off; both callers (showMenu, the Expanding Land death) use it */
+{
+  const src = cut('        agarStatsAfterDeath() {', '        toggleAutoResp() {');
+  const want = (skip, card) => vm.runInNewContext('var o = {' + src + '}; o.skipStats = ' + skip + '; o.agarStatsAfterDeath();', { defaultmapsettings: { gameOverStats: card } });
+  check('agar.io stats panel: shown only with the card off and Skip stats off', want(false, false) === true && want(false, true) === false && want(true, false) === false && want(true, true) === false);
+  check('agar.io stats panel: both death paths ask the same rule', (main.match(/\.agarStatsAfterDeath\(\)/g) || []).length === 2 && !/!\s*(this|application)\s*\.skipStats\s*\)/.test(main));
+}
+
 console.log(fail ? fail + ' failed' : 'all game over share checks passed');
 process.exit(fail ? 1 : 0);
