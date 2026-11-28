@@ -282,7 +282,13 @@ R._lmGlRingOne = function (c) {
 };
 const realDeformed = R.drawLegendWorldDeformedCanvasCell;
 /* Canvas2D cells: the test model painter; WebGL cells: the real cell.draw (its WebGL branch) */
-R.drawLegendWorldDeformedCanvasCell = function (cell, ctx) { return cell._webglRendered ? realDeformed.call(this, cell, ctx) : paintCellCanvas(cell, ctx); };
+R.drawLegendWorldDeformedCanvasCell = function (cell, ctx) {
+    return cell._webglRendered ? realDeformed.call(this, cell, ctx) : paintCellCanvas(cell, ctx, R._lmFrameGL && R._lmLabelsOnFg(cell));
+};
+/* the "Player 1 & 2" glow of the model (lmMbShadowColor: own cells while a unit plays): a disc
+ * as far as the blur reaches (60 canvas pixels) under the body, in its own colour */
+const glowCol = [0.98, 0.02, 0.97];
+const glowModel = (c) => !!(ms.multiBoxShadow && LM.playerCellsMulti.length && (c.spectator > 0 ? c.isPlayerCellMulti : c.isPlayerCell));
 
 function setSettings(over) {
     const base = new Function('return ' + F.defaults)();
@@ -342,6 +348,7 @@ function paintCellCanvas(c, ctx, realText) {
     if ((LM.hideSmallBots && c.size <= 36) || c.invisible) return;
     ctx.save();
     const y = c.size;
+    if (glowModel(c)) ctx.disc(c.x, c.y, y + 60 / (R.scale * (R.dpr || 1)), glowCol);
     ctx.disc(c.x, c.y, y, c.body);
     const pre = ctx.globalAlpha;
     if (ms.transparentSkins && !(c.isPlayerCell && !ms.myTransparentSkin) || c.isPlayerCell && ms.myTransparentSkin && ds.skinsAlpha < 0.99) ctx.globalAlpha *= ds.skinsAlpha;
@@ -425,6 +432,8 @@ function frame(s) {
         for (const c of LM.cells) {
             if (!drawable(c)) continue;
             if (c.x + c.size < s.camX - vx || c.x - c.size > s.camX + vx || c.y + c.size < s.camY - vy || c.y - c.size > s.camY + vy) continue;
+            /* and the glowing own cells (_lmCellGlow: cell.draw draws them on the overlay) */
+            if (c._lmGlowFg > 0 && c._lmGlowFg === R._glSkinFrame) continue;
             c._webglRendered = true;
             gctx.disc(c.x, c.y, c.size, c.body);
             const pre = gctx.globalAlpha;
@@ -957,10 +966,12 @@ reset(); strokes.on = true; R.drawRings = realDrawRings;
     r = frame(S1);
     check('  with a teammate indicator: WebGL, ring over the indicator, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') ' + r.d.n + ' px');
     team([]);
+    /* the entrance while it fades the world in keeps the overlay (_lmFgHeld) */
     LM._elWorldEntrance = { active: true };
+    R._elEntranceAlpha = 0.5;
     r = frame(S1);
     const glRingPx = diff(r.out, frame(Object.assign({}, S1)).out).n;
-    check('  join entrance (keeps the overlay): WebGL, the GL scene draws the ring last (over the later cell), no overlay, equal',
+    check('  join entrance fading in (keeps the overlay): WebGL, the GL scene draws the ring last (over the later cell), no overlay, equal',
         r.gl && why() === 'webgl' && !r.shown && R._lmRingGl && r.d.n === 0 && !r.ops.includes('main:stroke') && !r.ops.includes('overlay:stroke') && r.ops.includes('gl:stroke'),
         'gl ' + r.gl + ' ' + why() + ' shown ' + r.shown + ' ' + r.d.n + ' px ' + r.ops.filter((o) => /stroke/.test(o)).join(' '));
     {
@@ -974,9 +985,18 @@ reset(); strokes.on = true; R.drawRings = realDrawRings;
     globalThis._elDeathVisual = { active: true };
     LM._elWorldEntrance = null;
     r = frame({ W: 200, H: 140, dpr: 2, zoom: 0.8, camX: 0, camY: 0 });
-    check('  death cinematic, DPR 2, zoom 0.8: WebGL, GL ring, equal', r.gl && R._lmRingGl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
+    /* the death cinematic is drawn over the overlay later: the ring on the overlay, under it */
+    check('  death cinematic, DPR 2, zoom 0.8: WebGL, the ring on the overlay, equal', r.gl && !R._lmRingGl && r.shown && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' shown ' + r.shown + ' ' + r.d.n + ' px, max ' + r.d.max.toFixed(3));
     globalThis._elDeathVisual = null;
     LM._elWorldEntrance = { active: true };
+    R._elEntranceAlpha = 1;
+    r = frame(S1);
+    check('  join entrance faded in: WebGL, the ring on the overlay (it turns with the world), equal', r.gl && !R._lmRingGl && r.shown && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' shown ' + r.shown + ' ' + r.d.n + ' px');
+    globalThis._elDeathVisual = { active: true };
+    r = frame({ W: 200, H: 140, dpr: 2, zoom: 0.8, camX: 0, camY: 0 });
+    check('  join entrance with the death cinematic: the GL ring again (the overlay stays still)', r.gl && R._lmRingGl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    globalThis._elDeathVisual = null;
+    R._elEntranceAlpha = 0.5;
     team(['over']);
     r = frame(S1);
     check('  join entrance with a teammate indicator (GL text pass): WebGL, ring over it, equal', r.gl && R._lmRingGl && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') ' + r.d.n + ' px');
@@ -1144,6 +1164,140 @@ reset(); strokes.on = true; window.legendmod = LM; LM.multiBoxPlayerExists = tru
     check('  with the ring program: WebGL (GL ring pass), equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
 }
 LM.multiBoxPlayerExists = false; strokes.on = false;
+
+/* ---- marks during the Expanding Land death cinematic and join entrance ----
+ * The death cinematic is drawn on the overlay after the frame, over what the cell pass put
+ * there, as over the Canvas2D world: marks stay WebGL. The entrance turns and fades the world
+ * layers, the overlay with them; while it fades them in (or with the cinematic, which stays
+ * still) it keeps the overlay and marks need Canvas2D (reason cinematic). */
+reset(); SEP.hatter2 = 'Gladiator';
+{
+    scene([makeCell({ x: 0, y: 10, size: 50, targetNick: 'hatter2' }), makeCell({ x: -80, y: -40, size: 30, targetNick: 'b' })]);
+    globalThis._elDeathVisual = { active: true };
+    r = frame(S1);
+    check('death cinematic, helmet on the overlay: WebGL, helmet drawn there, equal', r.gl && r.shown && r.ops.includes('overlay:draw:gladiator') && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') shown ' + r.shown + ' ' + r.d.n + ' px');
+    globalThis._elDeathVisual = null;
+    LM._elWorldEntrance = { active: true };
+    R._elEntranceAlpha = 1;
+    r = frame(S1);
+    check('join entrance faded in, helmet: WebGL, on the overlay, equal', r.gl && r.shown && r.ops.includes('overlay:draw:gladiator') && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') ' + r.d.n + ' px');
+    R._elEntranceAlpha = 0.4;
+    r = frame(S1);
+    check('join entrance fading in, helmet: Canvas2D, reason cinematic, equal', !r.gl && why() === 'cinematic' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    R._elEntranceAlpha = 1;
+    globalThis._elDeathVisual = { active: true };
+    r = frame(S1);
+    check('join entrance with the death cinematic, helmet: Canvas2D, reason cinematic, equal', !r.gl && why() === 'cinematic' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    globalThis._elDeathVisual = null;
+    LM._elWorldEntrance = null;
+    r = frame(S1);
+    check('entrance over: WebGL, equal', r.gl && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    delete SEP.hatter2;
+    /* the overlay's CSS in renderFrame: with the world layers during the entrance, still with the cinematic */
+    const cssA = src.indexOf('var _elOverlayWorld =');
+    const cssB = src.indexOf('} /* end of the layer styles (_elLayersIdle) */', cssA);
+    check('overlay layer style lines found', cssA > 0 && cssB > cssA);
+    if (cssA > 0 && cssB > cssA) {
+        const css = new Function('_elEntranceRunning', '_elDeathVisual', '_worldCssTransform', '_shakeCssTransform', '_worldOpacity', '_elTransformOrigin', src.slice(cssA, cssB));
+        const o = { overlayCanvas: { style: { transform: '', transformOrigin: '', opacity: '1' } } }, st = o.overlayCanvas.style;
+        css.call(o, true, null, 'translate3d(1px, 0px, 0) rotate(0.1rad) scale(0.9)', 'translate3d(1px, 0px, 0)', '0.5', '10px 20px');
+        check('  entrance: the overlay turns and fades with the world layers', st.transform === 'translate3d(1px, 0px, 0) rotate(0.1rad) scale(0.9)' && st.transformOrigin === '10px 20px' && st.opacity === '0.5', JSON.stringify(st));
+        css.call(o, true, { active: true }, 'rotate(0.1rad) scale(0.9)', '', '0.5', '10px 20px');
+        check('  entrance with the death cinematic: only the shake, opaque', st.transform === '' && st.opacity === '1', JSON.stringify(st));
+        css.call(o, false, null, 'translate3d(2px, 0px, 0)', 'translate3d(2px, 0px, 0)', '1', '10px 20px');
+        check('  no entrance: the shake, opaque', st.transform === 'translate3d(2px, 0px, 0)' && st.opacity === '1', JSON.stringify(st));
+    }
+}
+
+/* ---- the "Player 1 & 2" glow (multiBoxShadow) ----
+ * A glowing own cell is drawn whole by cell.draw on the overlay in the cell order (the GL batch
+ * leaves it out); a later cell reaching its glow keeps the frame on Canvas2D (mbShadow). */
+reset();
+{
+    const keepApp = window.application;
+    globalThis.profiles = [{ color: '#ff00ff' }, { color: '#00ffff' }];
+    window.application = { selectedProfile: 0, mbSlots: [0, 1] };
+    setSettings({ map: { multiBoxShadow: true } });
+    LM.playerCellsMulti = [{}];
+    const me = makeCell({ x: -40, y: 0, size: 40, targetNick: 'me', isPlayerCell: true });
+    const under = makeCell({ x: 5, y: 30, size: 20, targetNick: 'u' });
+    const far = makeCell({ x: 90, y: -60, size: 30, targetNick: 'far' });
+    scene([under, far, me]);
+    r = frame(S1);
+    const glowPx = marked(r.out, glowCol);
+    check('glow: WebGL frame, the glowing cell on the overlay over the earlier cell, equal', r.gl && r.shown && glowPx > 0 && r.d.n === 0,
+        'gl ' + r.gl + ' (' + why() + ') shown ' + r.shown + ' glow px ' + glowPx + ' ' + r.d.n + ' px');
+    {
+        /* sensitivity: drawn by the GL batch (no glow, under nothing) the frame differs */
+        const keep = R._lmCellGlow;
+        R._lmCellGlow = function (cell, n) { return n; };
+        const bad = frame(S1);
+        R._lmCellGlow = keep;
+        check('  (the comparison sees a glowing cell left to the GL batch)', bad.gl && bad.d.n > 0, bad.d.n + ' px');
+    }
+    r = frame({ W: 200, H: 140, dpr: 2, zoom: 0.8, camX: 0, camY: 0 });
+    check('  DPR 2, zoom 0.8: WebGL, equal', r.gl && r.shown && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') ' + r.d.n + ' px');
+    /* a later bigger cell over the glow only (not the body) */
+    /* (no nick or mass on it: only its body can reach the glow) */
+    const meS = makeCell({ x: -40, y: 0, size: 30, targetNick: 'me', isPlayerCell: true });
+    const big = makeCell({ x: 55, y: 20, size: 38, targetNick: '' });
+    scene([under, meS, big]);
+    r = frame(S1);
+    check('later bigger cell over the glow: Canvas2D, reason mbShadow, equal', !r.gl && why() === 'mbShadow' && r.d.n === 0, 'gl ' + r.gl + ' ' + why() + ' ' + r.d.n + ' px');
+    /* two glowing players overlapping: both on the overlay, in the cell order */
+    const unit = makeCell({ x: 20, y: 10, size: 45, targetNick: 'unit', isPlayerCellMulti: true, spectator: 1 });
+    scene([under, me, unit]);
+    r = frame(S1);
+    check('two glowing players overlapping: WebGL, equal', r.gl && r.shown && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') ' + r.d.n + ' px');
+    /* after an overlay mark of an earlier cell: over it, as in Canvas2D */
+    SEP.u = 'Gladiator';
+    scene([under, me]);
+    r = frame(S1);
+    check('glowing cell over an earlier helmet (overlay mark): WebGL, the helmet on the overlay under the glow, equal', r.gl && r.ops.includes('overlay:draw:gladiator') && r.d.n === 0, 'gl ' + r.gl + ' (' + why() + ') ' + r.d.n + ' px');
+    delete SEP.u;
+    /* far off screen: nothing of it reaches the screen, no overlay for it */
+    const away = makeCell({ x: 900, y: 0, size: 40, targetNick: 'me2', isPlayerCell: true });
+    scene([under, away]);
+    r = frame(S1);
+    check('glowing cell far off screen: WebGL, no overlay, equal', r.gl && !r.shown && r.d.n === 0, 'gl ' + r.gl + ' shown ' + r.shown + ' ' + r.d.n + ' px');
+    setSettings();
+    scene([under, far, me]);
+    r = frame(S1);
+    check('glow off: WebGL, the cell in the GL batch, no overlay, equal', r.gl && !r.shown && me._lmGlowFg !== R._glSkinFrame && r.d.n === 0, 'gl ' + r.gl + ' shown ' + r.shown + ' ' + r.d.n + ' px');
+    LM.playerCellsMulti = [];
+    window.application = keepApp;
+    delete globalThis.profiles;
+}
+
+/* ---- the real cell batch (stub WebGL context) leaves out the glowing cells of this frame ---- */
+for (const jelly of [false, true]) {
+    const LMs = { cells: [], playerCells: [], playerCellsMulti: [], play: false, showCustomSkins: true, gameMode: ':ffa' };
+    const app = { gameMode: ':ffa', customSkinsCache: {}, customSkinsMap: {}, customSkinKey() { return null; }, loadSkin() { }, _lmTouchSkin() { }, _lmSkinCacheKey(u) { return u; },
+        setVirusColor() { return '#33ff33'; }, setVirusStrokeColor() { return '#33ff33'; }, playSound() { } };
+    const Db = new Function('return ' + F.defaults)();
+    const envB = { window: { legendmod: LMs, application: app }, LM: LMs, application: app, defaultSettings: Db.defaultSettings,
+        defaultmapsettings: Object.assign(Db.defaultmapsettings, { jellyPhisycs: jelly, customSkins: false }), ogarcopythelb: { color: '#01d9cc' }, ogario: { viewScale: 1 } };
+    const B = new Function('return (' + F.factory + ')')()(envB);
+    /* any GL call is a no-op, constants are 1; the buffers initWebGL makes */
+    B.gl = new Proxy({}, { get: (t, k) => typeof k === 'string' && /^[A-Z0-9_]+$/.test(k) ? 1 : function () { return {}; } });
+    Object.assign(B, { glCellProgram: {}, glCellInstanceData: new Float32Array(64 * 32), glCellMaxInstances: 64, glJellyStride: 11, glJellyStrokeStride: 7,
+        glJellyVertexCapacity: 4096, glJellyVertexData: new Float32Array(4096 * 11), glJellyStrokeCapacity: 4096, glJellyStrokeData: new Float32Array(4096 * 7),
+        glJellyIndexCapacity: 16384, glJellyIndexData: new Uint32Array(16384), glJellyDrawCapacity: 64, glJellyProgram: {}, glJellyStrokeProgram: {},
+        glJellyVAO: {}, glJellyVBO: {}, glJellyStrokeVAO: {}, glJellyStrokeVBO: {}, glSkinArray: {}, glSkinMap: {},
+        _glSkinLayers: { max: 128, next: 0, used: new Array(128).fill(-1), owner: new Array(128).fill(null) },
+        scale: 1, camX: 0, camY: 0, canvasWidth: 1920, canvasHeight: 1080, _glSkinFrame: 7 });
+    /* the per-cell draw lists of the jelly batch, by their names in the source */
+    for (const m of src.matchAll(/this\.(glJelly\w+) =\s*new Int32Array\(\s*this\.glJellyDrawCapacity/g)) B[m[1]] = new Int32Array(64);
+    const pts = (n, rr) => Array.from({ length: n }, (_, i) => ({ x: Math.cos(i / n * 2 * Math.PI) * rr, y: Math.sin(i / n * 2 * Math.PI) * rr }));
+    const mk = (o) => Object.assign({ x: 0, y: 0, size: 60, color: '#3388ff', targetNick: 'a', skin: '', isPlayerCell: false, isPlayerCellMulti: false,
+        isFood: false, isEjected: false, isVirus: false, removed: false, invisible: false, isInView() { return true; }, points: pts(24, 60), maxPointRad: 60 }, o);
+    /* glowing this frame (7), in an earlier frame (6) */
+    const cs = [mk({}), mk({ isPlayerCell: true, _lmGlowFg: 7 }), mk({ isPlayerCell: true, _lmGlowFg: 6 })];
+    let okB;
+    try { okB = B.drawWebGLCellBatch(cs) === true; } catch (e) { okB = false; console.log('     ' + e.message); }
+    check('cell batch, jelly ' + (jelly ? 'on' : 'off') + ': the glowing cell of this frame left out, the others drawn', okB && cs[0]._webglRendered === true && !cs[1]._webglRendered && cs[2]._webglRendered === true,
+        okB + ' ' + cs.map((c) => c._webglRendered).join());
+}
 
 /* ---- no marks: no clear, overlay hidden ---- */
 reset(); SEP.mate = 'Gladiator';

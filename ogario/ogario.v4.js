@@ -38274,6 +38274,8 @@ function thelegendmodproject() {
         this._virusCachedPath = this._virusCachedPathKey = this._virusCachedPathRatio = this._virusCachedPathX = this._virusCachedPathY = undefined;
         this._virusSoundAt = this._virusSoundMass = this.SpecialEffect = this.SpecialEffect2 = this._specialEffectNick = this._specialEffectRaw = undefined;
         this.splitTime = undefined;
+        /* the frame canUseWebGLScene put its "Player 1 & 2" glow on the overlay (_lmCellGlow) */
+        this._lmGlowFg = 0;
         //this.nHeight = 6;
     }
     /* Methods live on the prototype (they only use `this`), so creating a
@@ -63571,9 +63573,10 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
 
             /*
-             * "Player 1 & 2" is a Canvas2D shadow glow (the GPU batch has no shadow
-             * pass): a frame with a glowing own cell on screen stays on Canvas2D,
-             * checked per cell below (lmMbShadowColor, the rule cell.draw uses).
+             * "Player 1 & 2" is a Canvas2D shadow glow (the GPU passes have no blur):
+             * a glowing own cell (lmMbShadowColor, the rule cell.draw uses) is drawn
+             * whole by cell.draw on the overlay in the cell order (_lmCellGlow), the
+             * rest of the frame stays WebGL while no later cell reaches its glow.
              * Multibox rings no longer need Canvas2D (drawWebGLMultiboxRings), so
              * multiboxing keeps WebGL: the ring used to put every multibox frame on
              * Canvas2D.
@@ -63686,10 +63689,23 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     continue;
                 }
 
+                /* a glowing own cell goes on the overlay itself, after the marks there */
+                var _glGlow = _glMbShadow && lmMbShadowColor(cell);
                 /* drawn after the cells with marks so far: it must not reach one */
-                var _glCov = _glFxN ? this._lmFxCovered(cell, _glFxN) : 0;
+                var _glCov = _glFxN && !_glGlow ? this._lmFxCovered(cell, _glFxN) : 0;
                 if (_glCov) {
                     return this._lmNoGL(_glCov);
+                }
+
+                /* (its FB badge and effect too: Canvas2D draws the whole cell) */
+                if (_glGlow) {
+                    _glFxN = this._lmCellGlow(cell, _glFxN, _glTeamNicks, _glTeamList, _glChatMap, _glSpFx, _glMerge);
+                    if (_glFxN < 0) {
+                        /* _lmCellGlow set the reason */
+                        return false;
+                    }
+                    if (cell._lmGlowFg === this._glSkinFrame) visibleBodyCount++;
+                    continue;
                 }
 
                 /* outside the view the GL batch draws (200 around the screen): cell.draw draws
@@ -63730,10 +63746,6 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 if (_glShadows && !cell.isEjected) {
                     this._lmGlFallback = 'cellShadows';
                     return this._lmNoGL(this.GLW.SHADOWS);
-                }
-
-                if (_glMbShadow && lmMbShadowColor(cell)) {
-                    return this._lmNoGL(this.GLW.MB_SHADOW);
                 }
 
                 if (_glFxCheck && !_glOut) {
@@ -63786,21 +63798,20 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 return this._lmNoGL(this.GLW.NO_BODIES);
             }
 
-            /* the rings need the overlay too (the join entrance and the death cinematic
-             * keep it for themselves, renderFrame needs the main transform for it). Then the
+            /* the rings need the overlay too (the join entrance can keep it for itself,
+             * _lmFgHeld; renderFrame needs the main transform for it). Then the
              * GL scene strokes it last, over every GL cell and label (drawWebGLSelectedRing):
              * no overlay mark can be above it then (CINEMATIC / NOT_READY below). */
-            if (_glRing && ((LM._elWorldEntrance && LM._elWorldEntrance.active) ||
-                (typeof _elDeathVisual !== 'undefined' && _elDeathVisual && _elDeathVisual.active) ||
+            var _glHeld = this._lmFgHeld();
+            if (_glRing && (_glHeld ||
                 !this.overlayCanvas || !this.ctx || typeof this.ctx.getTransform !== 'function')) {
                 if (!this.glMbRingProgram || !this.glMbRingVAO) return this._lmNoGL(this.GLW.SEL_RING);
                 this._lmRingGl = true;
                 _glRing = false;
             }
-            /* the join entrance and the death cinematic keep the overlay for themselves
-             * (renderFrame does not prepare it then): marks need Canvas2D */
-            if (_glFxN && ((LM._elWorldEntrance && LM._elWorldEntrance.active) ||
-                (typeof _elDeathVisual !== 'undefined' && _elDeathVisual && _elDeathVisual.active))) {
+            /* the join entrance keeps the overlay for itself (renderFrame does not prepare
+             * it then): marks need Canvas2D */
+            if (_glFxN && _glHeld) {
                 return this._lmNoGL(this.GLW.CINEMATIC);
             }
             /* renderFrame needs the main transform to set up the overlay */
@@ -63832,6 +63843,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
          * overlay mark (COVER_LABELS: the ring / labels moved onto the overlay with a badge
          * or effect). MERGE: a merge timer box is needed but its place is not known yet
          * (_lmCellMerge); SEL_RING / MB_RING_PROG: no ring program (it failed to build).
+         * MB_SHADOW: a later cell may cover a glowing own cell on the overlay (_lmCellGlow);
+         * CINEMATIC: overlay marks while the join entrance holds the overlay (_lmFgHeld);
+         * BODY_FX is no longer given (the Dying Light gate is gone), its number stays.
          * GLW_IDS[n] names reason n. */
         GLW: {
             WEBGL: 0, OFF: 1, RESET: 2, NOT_READY: 3, SEL_RING: 4, NO_CELLS: 5, CONTOURS: 6, TEAMS: 7,
@@ -63981,6 +63995,69 @@ function pickPlayerCellBySize(players, selectBiggest) {
         _lmLabelsOnFg(cell) {
             /* (never true for a cell no frame marked, nor before the first frame) */
             return this._glSkinFrame > 0 && cell._lmFgLab === this._glSkinFrame;
+        },
+        /* The join entrance keeps the overlay canvas for itself this frame (renderFrame does not
+         * prepare it for marks): while it fades the world layers in (the overlay would fade its
+         * marks a second time, over cells already faded) and while the death cinematic is on the
+         * overlay too (the cinematic stays still, the entrance turns the world). Otherwise the
+         * overlay turns and fades with the world layers (renderFrame) and holds the marks, and
+         * the death cinematic is drawn over them, as over the Canvas2D world. */
+        _lmFgHeld() {
+            if (!(LM && LM._elWorldEntrance && LM._elWorldEntrance.active)) return false;
+            return !(this._elEntranceAlpha >= 1) ||
+                !!(typeof _elDeathVisual !== 'undefined' && _elDeathVisual && _elDeathVisual.active);
+        },
+        /* canUseWebGLScene: an own cell with the "Player 1 & 2" glow (lmMbShadowColor). cell.draw
+         * paints it in Canvas2D with a 40 px shadow (in canvas pixels at any zoom) over all it draws
+         * after the body: skin, jelly rim, special effect, multibox ring, nick, mass, merge timer,
+         * chat bubble. The GPU passes have no blur, so the GL batch leaves the cell out (_lmGlowFg)
+         * and the cell pass draws all of it with cell.draw's Canvas2D branch on the overlay
+         * (_lmLabelsOnFg), in its place in the cell order: above the cells before it, as in
+         * Canvas2D. Its boxes grow by the reach of the blur (3 sigma, sigma = blur / 2: 60 canvas
+         * pixels), so a later cell or label reaching them keeps the frame on Canvas2D (MB_SHADOW).
+         * Nothing of it on screen: left as it was, no boxes. -1 (reason in _lmGlWhy): Canvas2D. */
+        _lmCellGlow(cell, n, teamSet, teamList, chatMap, spFx, merge) {
+            var f = this._glSkinFrame, was = cell._lmFgLab, n0 = n;
+            cell._lmFgLab = f;
+            if (teamSet || teamList || chatMap) {
+                n = this._lmCellFx(cell, n, teamSet, teamList, chatMap, spFx);
+                if (n < 0) return n;
+            }
+            if (merge && cell.isPlayerCell && !cell.isVirus) {
+                n = this._lmCellMerge(cell, n);
+                if (n < 0) return n;
+            }
+            var x = cell.x, y = cell.y, nick = cell.targetNick, W = this.GLW.MB_SHADOW;
+            /* the body with jelly bulge and eat pulse (as _lmFxCovered), its FB badge and ring
+             * inside it, or the reach of its special effect */
+            var r = cell.size * 1.15;
+            if (spFx && nick && typeof spFx[nick] === 'string' && spFx[nick] && defaultmapsettings.customSkins && LM.showCustomSkins) {
+                r = Math.max(r, this._lmSpFxReach(spFx[nick]) * cell.size * (1 + _EAT_PULSE_MAGNITUDE));
+            }
+            n = this._lmFxPush(n, x - r, y - r, x + r, y + r, W);
+            this._lmLabelExt2D(cell);
+            if (this._lmExtW > 0) n = this._lmFxPush(n, x - this._lmExtW, y - this._lmExtH, x + this._lmExtW, y + this._lmExtH, W);
+            var s = this.scale || 1, g = 60 / (s * (this.dpr || 1));
+            var hw = this.canvasWidth / s / 2, hh = this.canvasHeight / s / 2;
+            var b = this._lmFxBoxes, kinds = this._lmFxKinds, on = false;
+            for (var k = n0; k < n; k += 4) {
+                b[k] -= g;
+                b[k + 1] -= g;
+                b[k + 2] += g;
+                b[k + 3] += g;
+                kinds[k >> 2] = W;
+                if (b[k] < this._lmFxMinX) this._lmFxMinX = b[k];
+                if (b[k + 1] < this._lmFxMinY) this._lmFxMinY = b[k + 1];
+                if (b[k + 2] > this._lmFxMaxX) this._lmFxMaxX = b[k + 2];
+                if (b[k + 3] > this._lmFxMaxY) this._lmFxMaxY = b[k + 3];
+                if (!on) on = b[k] < this.camX + hw && b[k + 2] > this.camX - hw && b[k + 1] < this.camY + hh && b[k + 3] > this.camY - hh;
+            }
+            if (!on) {
+                cell._lmFgLab = was;
+                return n0;
+            }
+            cell._lmGlowFg = f;
+            return n;
         },
         /* How far from the cell centre, in drawn radii, drawSpecialSkin may draw this effect
          * string: 2.5 holds every effect image (Santa hat, Splash, USA reach furthest), the
@@ -78265,6 +78342,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                         continue;
                     }
 
+                    /* a glowing own cell: cell.draw draws it on the overlay (_lmCellGlow) */
+                    if (cell._lmGlowFg > 0 && cell._lmGlowFg === this._glSkinFrame) {
+                        continue;
+                    }
+
 
                     if (
                         typeof cell
@@ -79384,6 +79466,11 @@ function pickPlayerCellBySize(players, selectBiggest) {
                     LM.hideSmallBots &&
                     cell.size <= 36
                 ) {
+                    continue;
+                }
+
+                /* a glowing own cell: cell.draw draws it on the overlay (_lmCellGlow) */
+                if (cell._lmGlowFg > 0 && cell._lmGlowFg === this._glSkinFrame) {
                     continue;
                 }
 
@@ -81204,22 +81291,47 @@ function pickPlayerCellBySize(players, selectBiggest) {
 
             /*
              * ============================================================
-             * FOREGROUND OVERLAY IS NOT PART OF THE WORLD ENTRANCE
+             * FOREGROUND OVERLAY AND THE WORLD ENTRANCE
              * ============================================================
              *
-             * Death cinematic/UI overlay keeps only its existing shake.
+             * While the death cinematic is on it, the overlay keeps only its
+             * existing shake. Otherwise during the join entrance it turns and
+             * fades with the world layers: it holds world marks and cells of
+             * a WebGL frame (_lmFgHeld), which Canvas2D draws on this.canvas.
              */
+            var _elOverlayWorld =
+                _elEntranceRunning &&
+                !(_elDeathVisual && _elDeathVisual.active);
+            var _elOverlayTransform =
+                _elOverlayWorld ? _worldCssTransform : _shakeCssTransform;
+            var _elOverlayOpacity =
+                _elOverlayWorld ? _worldOpacity : '1';
             if (
                 this.overlayCanvas &&
                 this.overlayCanvas
                     .style
                     .transform !==
-                    _shakeCssTransform
+                    _elOverlayTransform
             ) {
                 this.overlayCanvas
                     .style
                     .transform =
-                    _shakeCssTransform;
+                    _elOverlayTransform;
+            }
+
+
+            if (
+                this.overlayCanvas &&
+                _elOverlayWorld &&
+                this.overlayCanvas
+                    .style
+                    .transformOrigin !==
+                    _elTransformOrigin
+            ) {
+                this.overlayCanvas
+                    .style
+                    .transformOrigin =
+                    _elTransformOrigin;
             }
 
 
@@ -81228,12 +81340,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 this.overlayCanvas
                     .style
                     .opacity !==
-                    '1'
+                    _elOverlayOpacity
             ) {
                 this.overlayCanvas
                     .style
                     .opacity =
-                    '1';
+                    _elOverlayOpacity;
             }
             } /* end of the layer styles (_elLayersIdle) */
             this._elLayersReset = _elLayersIdle;
@@ -82377,12 +82489,12 @@ function pickPlayerCellBySize(players, selectBiggest) {
                  * FB arrow). Prepared HERE, before the cell pass draws on it: sized, cleared
                  * once, DPR + world transform. Nothing clears it again this frame. Frames
                  * without any of it keep this.ctx and the overlay hidden: no clear, no
-                 * compositing. The join entrance / death cinematic keep this.ctx as before.
+                 * compositing. While the join entrance holds the overlay (_lmFgHeld) they stay
+                 * on this.ctx as before; the death cinematic is drawn over them later.
                  */
                 var _lmFxCtx = this.ctx;
                 var _lmFgOn = !!(unifiedWebGLWorldOK && this.overlayCanvas && this.overlayCtx &&
-                    typeof this.ctx.getTransform === 'function' &&
-                    !_elEntranceRunning && !(_elDeathVisual && _elDeathVisual.active) &&
+                    typeof this.ctx.getTransform === 'function' && !this._lmFgHeld() &&
                     (this._lmFgFxN > 0 || this._lmRingFg || this._glFbArrowActive ||
                         ((LM.play || (LM.playerCellsMulti && LM.playerCellsMulti.length)) && defaultmapsettings.cursorTracking && !defaultmapsettings.bubbleCursorTracker) ||
                         (this._spawnEffect && this._spawnEffect.active) || _deathParticles.length > 0 || (LM._lmPings && LM._lmPings.length) ||
