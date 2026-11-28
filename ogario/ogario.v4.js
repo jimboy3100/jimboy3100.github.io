@@ -7354,6 +7354,11 @@ function lmBgReady(pic) {
         (pic.naturalWidth > 0 && pic.naturalHeight > 0) ||
         (pic.width > 0 && pic.height > 0)));
 }
+/* The Theme image that was fading back in over a Dying Light scene, given up because the scene
+ * is wanted again: kept loaded for the next way back (else it would be asked for anew). */
+function lmBgKeepTheme(lm, pic) {
+    if (lm._lmMidDl && !lm._lmMidNextDl && pic && pic._src && lmBgReady(pic)) lm._lmMidPicTheme = pic;
+}
 /* A CSS colour as 0xRRGGBB for the WebGL renderers, -1 when it is no colour. Canvas2D draws every
  * colour the Theme tab accepts (#rgb, #rgba, #rrggbb, #rrggbbaa, rgb()/rgba(), names); WebGL read
  * only #rgb and #rrggbb and drew the others grey (a green virus became grey whenever no skin made
@@ -83969,6 +83974,8 @@ function pickPlayerCellBySize(players, selectBiggest) {
                      * skipped and the shown one stays */
                     next = legendmod._lmMidPicNext;
                     if (!next || (next !== src && next._src !== src)) {
+                        /* a scene again during the fade back: the Theme image stays kept */
+                        if (dlBg && next) lmBgKeepTheme(legendmod, next);
                         /* back to the Theme: its image shown before the scene (kept loaded while
                          * the scene was on) comes back at once; a scene there now is dropped */
                         var kept = dlBg ? null : legendmod._lmMidPicTheme;
@@ -84014,7 +84021,9 @@ function pickPlayerCellBySize(players, selectBiggest) {
                 }
             }
             else if (legendmod._lmMidPicNext) {
-                /* back to the shown one before the next one came: it is let go */
+                /* back to the shown one before the next one came: it is let go (the Theme image
+                 * on its way back from a scene stays kept for the next way back) */
+                lmBgKeepTheme(legendmod, legendmod._lmMidPicNext);
                 legendmod._lmMidPicNext = null;
             }
 

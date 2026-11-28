@@ -2071,6 +2071,38 @@ try {
     R.drawCustomBackgrounds(ctx);
     check('  after the short fade: the Theme image alone, nothing of the theme kept', ctx.draws.join('|') === 'slow@0.8 -500,-500,1000,1000' &&
         LMd.customMidPic === slow && !LMd._lmMidPicNext && !LMd._lmMidDl && !LMd._lmMidPicTheme, ctx.draws.join('|'));
+    /* turned on again during the short fade back, then off: the Theme image is still the kept
+     * one (back at once, no new download that could stall), for the same scene and for a new one */
+    const toScene = (bg) => { dl.on = true; dl.bg = bg; X.sync(); R.drawCustomBackgrounds(bgCtx()); LMd._lmMidFadeAt -= 5000; R.drawCustomBackgrounds(bgCtx()); };
+    const offHalf = () => { dl.on = false; X.sync(); R.drawCustomBackgrounds(bgCtx()); LMd._lmMidFadeAt -= 400; R.drawCustomBackgrounds(bgCtx()); };
+    toScene({ img: night2, alpha: 0.5 });
+    offHalf();
+    dl.on = true; X.sync();
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('on again during the fade back: the scene alone, the Theme image kept for the way back',
+        ctx.draws.join('|') === 'night2@0.5 -500,-500,1000,1000' && !LMd._lmMidPicNext && LMd._lmMidDl && LMd._lmMidPicTheme === slow, ctx.draws.join('|'));
+    dl.on = false; X.sync();
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  off again: the kept Theme image comes back at once', LMd._lmMidPicNext === slow && ctx.draws.join('|') === 'night2@0.5 -500,-500,1000,1000|slow@0 -500,-500,1000,1000', ctx.draws.join('|'));
+    LMd._lmMidFadeAt -= 400;
+    R.drawCustomBackgrounds(bgCtx());
+    const night3 = pic('night3', true);
+    dl.on = true; dl.bg = { img: night3, alpha: 0.5 }; X.sync();
+    R.drawCustomBackgrounds(bgCtx());
+    check('on again during the fade back with a new scene: it fades in, the Theme image kept', LMd._lmMidPicNext === night3 && LMd._lmMidPicTheme === slow);
+    LMd._lmMidFadeAt -= 5000;
+    R.drawCustomBackgrounds(bgCtx());
+    dl.on = false; X.sync();
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  off after it: the kept Theme image comes back at once', LMd.customMidPic === night3 && LMd._lmMidPicNext === slow && ctx.draws.join('|') === 'night3@0.5 -500,-500,1000,1000|slow@0 -500,-500,1000,1000', ctx.draws.join('|'));
+    LMd._lmMidFadeAt -= 1000;
+    ctx = bgCtx();
+    R.drawCustomBackgrounds(ctx);
+    check('  after its fade: the Theme image alone, nothing kept', ctx.draws.join('|') === 'slow@0.8 -500,-500,1000,1000' &&
+        LMd.customMidPic === slow && !LMd._lmMidPicNext && !LMd._lmMidDl && !LMd._lmMidPicTheme, ctx.draws.join('|'));
 } finally {
     globalThis.legendmod = keepLm;
     globalThis.Image = keepImage;
