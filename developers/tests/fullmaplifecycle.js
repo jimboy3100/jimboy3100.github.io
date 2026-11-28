@@ -283,6 +283,69 @@ check('eaten on one connection only: shown again after the animation', backF >= 
     check('last connection closes with a copy hidden behind its cell: the copy is drawn again', before === 'HD' && after === 'D' && !M.invisible && !M._lmMbTwin, before + ' then ' + after);
 }
 
+/* eats of one cell up to 120 ms apart (live capture: 99 % of packet ages within 119 ms), the eat
+ * animation 80 ms: the other connections' copies stay hidden until their own eat comes (not drawn
+ * again in between, no second eat animation) */
+now = load(); G = groups();
+{
+    const liveL = [], animL = [];
+    for (const grp of G) {
+        grp[0].removeCell(true);
+        let shown = 0;
+        for (let t = 16; t <= 112; t += 16) {
+            /* its eat animation is over (the removed-cell loop drops it) */
+            if (t === 96 && LM.removedCells[grp[0]._removedIdx] === grp[0]) g.lmIdxRemove(LM.removedCells, grp[0], '_removedIdx');
+            frame(now + t);
+            if (live(grp) > 0) shown++;
+        }
+        for (const c of grp.slice(1)) c.removeCell(true);
+        liveL.push(shown); animL.push(anims(grp));
+    }
+    check('eaten, the other connections\' eats 120 ms later (after the eat animation): not drawn again in between, no second eat animation',
+        liveL.every((n) => n === 0) && animL.every((n) => n === 0), 'frames drawn ' + hist(liveL) + ', eat animations ' + hist(animL));
+}
+/* the drawn copy goes first and the copy it showed goes in the same task (two connections' packets
+ * between two frames): no fade while a third copy still sees the cell; all three go: one fade */
+{
+    const mk = (sp, x) => {
+        const c = { id: sp * 4294967296 + 9, spectator: sp, x, y: 0, targetX: x, targetY: 0, size: 60, targetSize: 60, color: '#33ff33', _lmRawColor: '#33ff33',
+            isFood: false, removed: false, invisible: false, redrawed: 0, isVirus: false, isEjected: false, isPlayerCell: false, isPlayerCellMulti: false,
+            updateTime: now, _lmVX: 0, _lmVY: 0, _cellsIdx: LM.cells.length, _lmSrvName: 'P' };
+        c.removeCell = g._removeCell; LM.cells.push(c); return c;
+    };
+    const three = (drawnBefore) => {
+        LM.cells.length = 0; LM.removedCells.length = 0;
+        const all = [mk(1, 0), mk(2, 1), mk(3, 2)];
+        frame(now + 16); frame(now + 32);
+        /* the hidden copies were drawn on some earlier frame (a split or first-packet double draw) */
+        if (drawnBefore) all[1].redrawed = all[2].redrawed = 3;
+        return all;
+    };
+    let all = three(true);
+    const st = all.map((c) => c.invisible ? 'H' : 'D').join('');
+    all[0].removeCell(); all[2].removeCell();
+    const fades = anims(all);
+    frame(now + 48);
+    check('drawn copy, then the copy it showed leave in one task: no fade, the third copy drawn', st === 'DHH' && fades === 0 && live(all) === 1 && !all[1].invisible, st + ' fades=' + fades + ' live=' + live(all));
+    all = three(false);
+    all[0].removeCell(); all[2].removeCell(); all[1].removeCell();
+    check('every copy leaves in one task, the drawn copy first: one fade', anims(all) === 1, anims(all));
+}
+/* a connection whose world updates stopped while its socket stays open (stalled): its copies are
+ * not drawn and hide no copy of another connection (they would stay frozen, or draw an eaten cell
+ * for good) */
+{
+    now = load();
+    const sp = g.window.spects[0];
+    sp._lmWorldStamp = () => Date.now() - 5000;
+    frame(now + 16);
+    const c1 = LM.cells.filter((c) => c && !c.removed && c.spectator === 1 && !c.isPlayerCellMulti);
+    const behind = LM.cells.filter((c) => c && !c.removed && c.invisible === true && c._lmMbTwin && c._lmMbTwin.spectator === 1).length;
+    delete sp._lmWorldStamp;
+    check('stalled connection (no world update for 5 s): its cells not drawn, no copy hidden behind them', c1.length > 0 && c1.every((c) => c.invisible === true) && behind === 0,
+        c1.filter((c) => c.invisible !== true).length + ' of ' + c1.length + ' drawn, ' + behind + ' hidden behind them');
+}
+
 /* ---------- ghost cells ---------- */
 {
     const R = g._ghostR;
@@ -345,6 +408,8 @@ check('eaten on one connection only: shown again after the animation', backF >= 
     /* the list has not come again for over 3 s: its players may be anywhere */
     check('ghost list past its max age: no ghost drawn', drawn([gh(2000, 1000, 5000), gh(-2000, 1000, 5000)], [], () => { LM.ghostCellsTime = Date.now() - 3500; }) === 0);
     check('ghost list within its max age outside every view: drawn', drawn([gh(-2000, 1000, 5000)], [], () => { mainView(); LM.ghostCellsTime = Date.now() - 2500; }) === 1);
+    check('ghost: the cell of a stalled spectator (no world update for 5 s) does not hide it', drawn(top(), [cell(2100, 1050, 700, { spectator: 3, _lmSrvName: 'Top' })], () => {
+        g.window.spects = [{ number: 3, _lmFeedOk: () => true, isSocketOpen: () => true, _lmWorldStamp: () => Date.now() - 5000 }]; g.lmMbFrameHide(); }) === 1);
 }
 
 console.log(failed ? failed + ' FAILED' : 'all passed');

@@ -1885,6 +1885,19 @@ function _lmMbSrvName(c) {
  * packet age (25 ms apart at 90 %, 119 ms at 99 %); with 25 ms of the speeds 99.4 % were in
  * reach, with 40 ms all of them, and no second cell of that connection was. */
 var LM_MB_SPEED_MS = 40;
+/* The connections' eats of one cell come up to about 120 ms apart (live capture: 99 % of packet
+ * ages within 119 ms) and the eat animation lasts 80 ms: a copy whose twin was eaten stays hidden
+ * for this long after that eat, so it is not drawn again before its own eat comes (and plays no
+ * second eat animation). */
+var LM_MB_EAT_HOLD_MS = 200;
+/* A connection whose socket is open but whose last whole world update is older than this is
+ * stalled: its cells stay where they were last seen (a cell eaten or gone since is still listed).
+ * agar.io sends a world update about every 40 ms. */
+var LM_MB_STALL_MS = 1000;
+function _lmMbStalled(sp, now) {
+    var w = typeof sp._lmWorldStamp === 'function' ? sp._lmWorldStamp() : 0;
+    return w > 0 && now - w > LM_MB_STALL_MS;
+}
 function _lmMbTwinTol(radius, a, b) {
     var speed = (a ? _lmMbSpeed(a) : 0) + (b ? _lmMbSpeed(b) : 0);
     return Math.max(8, 0.12 * radius) + Math.min(60, speed * LM_MB_SPEED_MS);
@@ -2147,17 +2160,22 @@ function lmMbFrameHide() {
     _lmMbHideOn = true;
     _lmMbFeed.length = 0;
     _lmMbDrawOnly.length = 0;
-    var drawOnly = false;
+    var drawOnly = false, now = Date.now();
     for (i = 0; i < sps.length; i++) {
         var sp = sps[i];
         if (!sp || !(sp.number > 0)) continue;
-        _lmMbFeed[sp.number] = lmSrcFeeds(sp);
+        /* a stalled connection (no world update for LM_MB_STALL_MS while its socket is open)
+         * feeds nothing: its cells are not drawn, hide no copy of another connection and do not
+         * stand for a player's cell under a ghost (they would stay frozen, or draw an eaten
+         * cell for good). A unit's own cells stay drawn and steered as before. */
+        var stalled = _lmMbStalled(sp, now);
+        _lmMbFeed[sp.number] = lmSrcFeeds(sp) && !stalled;
         /* a multibox unit not verified yet is steered and followed by the camera already
          * (transformReady): the cells round it are drawn (else the player could be eaten by a
-         * cell he does not see) but take no part in the matching */
-        if (!_lmMbFeed[sp.number] && sp.player === true && typeof sp.transformReady === 'function' && sp.transformReady()) _lmMbDrawOnly[sp.number] = drawOnly = true;
+         * cell he does not see) but take no part in the matching; not while it is stalled */
+        if (!_lmMbFeed[sp.number] && !stalled && sp.player === true && typeof sp.transformReady === 'function' && sp.transformReady()) _lmMbDrawOnly[sp.number] = drawOnly = true;
     }
-    if (drawOnly) _lmMbDrawOnlyCover(sps, Date.now());
+    if (drawOnly) _lmMbDrawOnlyCover(sps, now);
     else _lmMbDoCov.length = 0;
     var vx0 = LM.srvViewMinX, vy0 = LM.srvViewMinY, vx1 = LM.srvViewMaxX, vy1 = LM.srvViewMaxY;
     var mainView = Number.isFinite(vx0) && Number.isFinite(vy0) && Number.isFinite(vx1) && Number.isFinite(vy1);
@@ -2254,12 +2272,15 @@ function lmMultiboxPositionTwin(cell) {
     }
     var mine = cell.spectator > 0 ? cell.spectator : 0;
     var best = null;
-    /* the copy it hid behind was eaten (removeCell(true)) and its eat animation still runs:
-     * this copy shows a cell that is gone until its own connection's eat comes (a few ms
-     * later), so it stays hidden; shown again after the animation if no eat comes */
+    /* the copy it hid behind was eaten (removeCell(true)): this copy shows a cell that is gone
+     * until its own connection's eat comes (up to about 120 ms later), so it stays hidden while
+     * the eat animation runs and for LM_MB_EAT_HOLD_MS after the eat (the animation alone is
+     * 80 ms: it was drawn again after it and played a second eat animation); shown again after
+     * that if no eat comes */
     var _mbEatenTw = cell._lmMbTwin;
-    if (_mbEatenTw && _mbEatenTw.removed && _mbEatenTw._lmEaten && _mbEatenTw._removedIdx >= 0 &&
-        LM.removedCells && LM.removedCells[_mbEatenTw._removedIdx] === _mbEatenTw) return _mbEatenTw;
+    if (_mbEatenTw && _mbEatenTw.removed && _mbEatenTw._lmEaten && ((_mbEatenTw._removedIdx >= 0 &&
+        LM.removedCells && LM.removedCells[_mbEatenTw._removedIdx] === _mbEatenTw) ||
+        LM.time - _mbEatenTw._lmEatenT < LM_MB_EAT_HOLD_MS)) return _mbEatenTw;
     /* the copy it hid behind last frame, while it is still a match (no search; 1.5 times the
      * tolerance) */
     var kept = false;
@@ -37653,16 +37674,28 @@ function thelegendmodproject() {
         this.removeCell = function (eaten) {
             this.removed = true;
             this._lmEaten = !!eaten;
+            /* when it was eaten (its twins stay hidden for LM_MB_EAT_HOLD_MS after that) */
+            if (eaten) this._lmEatenT = LM.time;
             /* Multibox: a copy hidden because it sat on this cell (lmMultiboxPositionTwin) is
              * shown right now; the next frame's search hides it again behind another copy
              * of its cell, if one is still there (no frame without the cell). Not after an
              * eat: the other copies show a cell that is gone until their own eat comes, so
              * they stay hidden behind this one while its eat animation runs. */
-            /* a hidden copy that goes: one copy fewer behind the drawn one this frame */
+            /* a hidden copy that goes: one copy fewer behind the drawn one this frame. When the
+             * drawn copy left earlier in this frame, the count went to the copy shown in its place
+             * (_lmMbHandTo). When that takes a drawn copy that left (not eaten) to none, this is
+             * the last copy of the cell: it plays the removal fade (else every copy left in one
+             * task and none faded). */
             var _mbTw = this._lmMbTwin;
+            if (_mbTw && _mbTw.removed && _mbTw._lmMbHandF === _lmMbFrame && _mbTw._lmMbHandTo) _mbTw = _mbTw._lmMbHandTo;
+            var _mbLast = false;
             if (this._lmMbPosDup && _mbTw && _mbTw._lmMbHidF === _lmMbFrame && _mbTw._lmMbHidN > 0) {
                 _mbTw._lmMbHidN--;
                 if (_mbTw._lmMbHides === this) _mbTw._lmMbHides = null;
+                if (_mbTw.removed && !_mbTw._lmEaten && _mbTw._lmMbHidN === 0 && _mbTw.redrawed) {
+                    _mbLast = true;
+                    this.invisible = false;
+                }
             }
             var _mbPosHidden = this._lmMbHides;
             /* A live copy goes on drawing the cell: this one plays no removal fade. Counted (every
@@ -37674,6 +37707,18 @@ function thelegendmodproject() {
                 _mbPosHidden._lmMbTwin = null;
                 _mbPosHidden.invisible = false;
                 _mbTakes = _mbTakes || !_mbPosHidden.removed;
+                /* the copy shown takes over: the other copies still hidden behind this one count
+                 * behind it this frame, and it counts as drawn (so when it leaves in the same task
+                 * it plays no fade while another copy still shows the cell, and the last copy
+                 * does) */
+                if (this._lmMbHidF === _lmMbFrame && this._lmMbHidN > 1) {
+                    _mbPosHidden._lmMbHidF = _lmMbFrame;
+                    _mbPosHidden._lmMbHidN = this._lmMbHidN - 1;
+                    _mbPosHidden._lmMbHides = null;
+                }
+                if (this.redrawed > (_mbPosHidden.redrawed || 0)) _mbPosHidden.redrawed = this.redrawed;
+                this._lmMbHandTo = _mbPosHidden;
+                this._lmMbHandF = _lmMbFrame;
             }
             this._lmMbHides = null;
 
@@ -37723,7 +37768,7 @@ function thelegendmodproject() {
              * only the last copy of a cell does.
              */
             if (
-                (this.redrawed && !_mbTakes) ||
+                (this.redrawed && !_mbTakes) || _mbLast ||
                 this._deathSlowMo
             ) {
                 if (
