@@ -27560,14 +27560,14 @@ function thelegendmodproject() {
             } catch (e) { }
         },
         /* The buttons and the automatic Battle Royale HUD follow the game server. The bots button
-         * shows on agar.io arenas only (legendmod.integrity: the bots cannot join other servers);
-         * elsewhere it is hidden, its panel closed and its flag off (the owner hid it on every
-         * server on 2026-11-27 and showed it again on agar.io on 2026-11-28: the panel is the
-         * only place to start the bots). The Battle Royale button shows on agar.io Battle Royale only.
+         * is hidden on every server (the owner's choice, 2026-11-27 and again 2026-11-28; the bots
+         * work on agar.io arenas only: legendmod.integrity), so the bots panel stays closed and its
+         * flag off; the bot connection still serves Fill lobby. The Battle Royale button shows on
+         * agar.io Battle Royale only.
          * No timer: runs on every connect (displayPartyBots, right where integrity is set) and when
          * the agar.io mode changes (the mode select, setParty); a Battle Royale lobby packet updates
          * the Battle Royale HUD itself (brUpdateSection). */
-        _lmQuickBotsButton: true,
+        _lmQuickBotsButton: false,
         /* the bots button is shown: only with _lmQuickBotsButton, on agar.io */
         _lmQuickBotsShown() {
             var lm = window.legendmod;

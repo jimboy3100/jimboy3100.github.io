@@ -18,7 +18,7 @@
   var trophy = document.querySelector('.quick.quick-bots.ogicon-trophy');
   info.agar = !!(window.legendmod && window.legendmod.integrity);
   info.trophy = !!trophy && trophy.style.display !== 'none';
-  need('trophy button shown on agar.io only', !!trophy && info.trophy === info.agar && (getComputedStyle(trophy).display !== 'none') === info.agar);
+  need('trophy button hidden on every server', !!trophy && !info.trophy && getComputedStyle(trophy).display === 'none');
   var got = [], t0 = Date.now();
   var s = new window.LMBotsWorkerSocket('https://www.legendmod.ml/ExampleScripts/agario-bots2/botcore.js?v=probe');
   s.onmessage = function (e) { got.push(Array.prototype.join.call(new Uint8Array(e.data), ',')); };

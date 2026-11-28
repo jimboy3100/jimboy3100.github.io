@@ -15,7 +15,7 @@
   var trophy = document.querySelector('.quick.quick-bots.ogicon-trophy');
   var brBtn = document.querySelector('.quick.quick-br');
   var agar = !!(window.legendmod && window.legendmod.integrity);
-  need('bots button shown on agar.io only', !!trophy && (getComputedStyle(trophy).display !== 'none') === agar);
+  need('bots button hidden on every server', !!trophy && getComputedStyle(trophy).display === 'none');
   info.server = window.legendmod && window.legendmod.ws ? (window.legendmod.integrity ? 'agar.io' : 'other') : 'none';
   info.mode = window.legendmod && window.legendmod.gameMode;
   var inBR = !!(window.legendmod && window.legendmod.integrity && window.legendmod.ws && window.legendmod.gameMode === ':battleroyale');
@@ -48,10 +48,8 @@
   need('double click: closed again at once, no fade queued', !shown('quick-menu') && !$(q).is(':animated') && !defaultmapsettings.showQuickMenu);
   // the bots panel cannot open while its button is hidden: a script or import sets the flag, then setShowQuickBots (no sync follows)
   app.syncQuickPanels = realSync;
-  if (!agar) {
-    defaultmapsettings.showQuickBots = true; app.setShowQuickBots();
-    need('bots panel closed and its flag off while its button is hidden', !shown('quick-bots') && !defaultmapsettings.showQuickBots);
-  }
+  defaultmapsettings.showQuickBots = true; app.setShowQuickBots();
+  need('bots panel closed and its flag off while its button is hidden', !shown('quick-bots') && !defaultmapsettings.showQuickBots);
   // back to the state before the probe
   app.setQuickPanel(saved.br ? 'br' : saved.menu ? 'menu' : null);
   return { fail: fail, info: info };

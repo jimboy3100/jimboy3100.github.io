@@ -1611,7 +1611,7 @@ for (const file of ['server.js', 'server-fast.js']) {
             const server = (integrity, mode) => { lm.ws = integrity == null ? '' : 'wss://x'; lm.integrity = !!integrity; lm.gameMode = mode || ':ffa'; app.displayPartyBots(); };
             return { app, s, lm, w: sb.window, open, consistent, server, store, node, saves: () => saves, btn: k => node(BTNS[k]).shown };
         };
-        check('quick HUDs: the bots button is on (shown on agar.io arenas only)', /_lmQuickBotsButton: true,/.test(ogSrc) && /return !!this\._lmQuickBotsButton && !!\(lm && lm\.integrity\);/.test(ogSrc));
+        check('quick HUDs: the bots button is off on every server (owner), the switch still limited to agar.io', /_lmQuickBotsButton: false,/.test(ogSrc) && /return !!this\._lmQuickBotsButton && !!\(lm && lm\.integrity\);/.test(ogSrc));
         // tabs: A = quick menu, B = Battle Royale HUD (a build with the bots panel's button off)
         let q = make();
         q.app.setShowQuickMenu();
