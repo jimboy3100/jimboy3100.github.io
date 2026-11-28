@@ -1103,18 +1103,17 @@ class Spect {
                 /* Only the controlled unit follows the cursor (any truthy value moved every unit).
                  * Same rules as the main cell: line lock / dance aim, and no update while a crazy
                  * double split holds the position (window.lockPosition). */
-                if (!(window.lockPosition && window.multiboxPlayerEnabled === this.number)) {
-                    var _lmAim = this._lmAimTarget();
-                    this.sendPosition(this.convertX(_lmAim[0]), this.convertY(_lmAim[1]));
-                }
+                this._lmAimSend();
 
                 /* Keep-moving offset in world units (playerX/Y are client space): a raw delta of
                  * this socket ran the other way after a background reconnect on a mirrored socket. */
                 this.distX = this.rawToWorldX(this.convertX(legendmod.cursorX)) - this.rawToWorldX(this.convertX(this.playerX))
                 this.distY = this.rawToWorldY(this.convertY(legendmod.cursorY)) - this.rawToWorldY(this.convertY(this.playerY))
             } else {
-                /* "Freeze inactive multibox unit": hold it at its own centre. */
-                if (defaultmapsettings.mbFreeze && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
+                /* "Freeze inactive multibox unit": hold it at its own centre. With "Keep moving"
+                 * off too it holds as well, as the inactive main player does (LM.sendPosition): it
+                 * sent nothing and kept running to the last target. */
+                if ((defaultmapsettings.mbFreeze || !defaultmapsettings.multiKeepMoving) && Number.isFinite(this.playerX) && Number.isFinite(this.playerY)) {
                     this.sendPosition(this.convertX(this.playerX), this.convertY(this.playerY));
                 } else if (defaultmapsettings.multiKeepMoving) {
                     this.sendPosition(Math.round(this.worldToRawX(this.rawToWorldX(this.convertX(this.playerX)) + this.distX)),
@@ -1124,6 +1123,24 @@ class Spect {
         }, 40); /* 40 ms like the main cell's cursor (was 50) */
         //this.sendSpectate()
         //this.sendFreeSpectate()
+    }
+
+    /* The aim sent by the cursor loop and before a split or feed (as LM.sendPosition() before the
+     * main player's): line lock / dance aim, nothing while a crazy double split holds the
+     * position of the controlled unit. */
+    _lmAimSend() {
+        if (window.lockPosition && window.multiboxPlayerEnabled === this.number) return false;
+        var aim = this._lmAimTarget();
+        return this.sendPosition(this.convertX(aim[0]), this.convertY(aim[1]));
+    }
+
+    /* LMEvents 'split' for a split of this unit, as LM.sendSplit for the main player's, with unit:
+     * its number (count: pieces asked for, before: its own cells then) */
+    _lmEmitSplit(count) {
+        var E = window.LMEvents;
+        if (!this.player || !this.active || !E || typeof E._has !== 'function' || !E._has('split')) return;
+        var own = typeof this.getOwnPlayerCells === 'function' ? this.getOwnPlayerCells() : null;
+        E.emit('split', { time: Date.now(), count: count, before: own ? own.length : 0, unit: this.number });
     }
 
     /* Cursor target for the controlled unit, in client space (like legendmod.cursorX/Y).
@@ -1356,16 +1373,15 @@ class Spect {
     }
 
     sendEject() {
-        this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+        /* aim like the split (it sent the raw cursor: no line lock / dance, no held position) */
+        this._lmAimSend();
         this.sendAction(21);
     }
 
     sendSplit() {
         /* aim like the cursor loop (line lock / dance); a crazy split keeps the held position */
-        if (!(window.lockPosition && window.multiboxPlayerEnabled === this.number)) {
-            var _lmAim = this._lmAimTarget();
-            this.sendPosition(this.convertX(_lmAim[0]), this.convertY(_lmAim[1]));
-        }
+        this._lmAimSend();
+        this._lmEmitSplit(1);
         this.sendAction(17);
     }
 
@@ -1379,9 +1395,12 @@ class Spect {
         return type === 'imsolo' || type === 'agar2' || type === 'garix' || type === 'private';
     }
 
+    /* the atomic opcodes aim as sendSplit does (they sent the raw cursor) and send one 'split'
+     * event for all pieces, as the main player's; the fallback's single splits send their own */
     sendDoubleSplit() {
         if (this._usesMultiSplitOpcodes()) {
-            this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+            this._lmAimSend();
+            this._lmEmitSplit(2);
             this.sendAction(28);
         } else {
             this.sendSplit(); this.sendSplit();
@@ -1390,7 +1409,8 @@ class Spect {
 
     sendTripleSplit() {
         if (this._usesMultiSplitOpcodes()) {
-            this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+            this._lmAimSend();
+            this._lmEmitSplit(3);
             this.sendAction(26);
         } else {
             this.sendSplit(); this.sendSplit(); this.sendSplit();
@@ -1399,7 +1419,8 @@ class Spect {
 
     sendQuadSplit() {
         if (this._usesMultiSplitOpcodes()) {
-            this.sendPosition(this.convertX(legendmod.cursorX), this.convertY(legendmod.cursorY));
+            this._lmAimSend();
+            this._lmEmitSplit(4);
             this.sendAction(27);
         } else {
             this.sendSplit(); this.sendSplit(); this.sendSplit(); this.sendSplit();

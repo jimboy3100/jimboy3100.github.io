@@ -617,6 +617,8 @@
         sample(now);
     }
     function onSplit(e) {
+        /* a multibox unit's split (unit: its number): the life measured here is the main player's */
+        if (e && e.unit) return;
         checkSession();
         if (!life) return;
         var now = +e.time || Date.now();

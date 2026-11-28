@@ -223,5 +223,27 @@ check('reversed time test is gone', !/lastUpdatedTime\) - tempTime < 6000/.test(
         new Set(pool).size === pool.length && !a.points.some((p) => pool.indexOf(p) >= 0));
 }
 
+/* ---- the action resolver (lmActiveUnit(true), up to 100 calls a second from macro feed): no copy of
+ * the own cells (getOwnPlayerCells / playerCells are not read), the full form still has them ---- */
+{
+    const fnOf = (name) => { const i = src.indexOf('\nfunction ' + name + '('); return i < 0 ? '' : src.slice(i + 1, src.indexOf('\n}\n', i) + 3); };
+    const ctx = vm.createContext({ Math, Number });
+    ctx.window = ctx;
+    vm.runInContext(fnOf('getActiveSpect') + fnOf('lmActiveUnit'), ctx);
+    let reads = 0;
+    const u = { number: 2, player: true, active: true, socket: {}, connectionGeneration: 3, playerCellIDs: [1], playerMass: 50, getOwnPlayerCells() { reads++; return [{ size: 100 }]; } };
+    ctx.spects = [u];
+    ctx.legendmod = { play: true, socket: {}, get playerCells() { reads++; return []; } };
+    ctx.multiboxPlayerEnabled = 2;
+    const lite = ctx.lmActiveUnit(true);
+    ctx.multiboxPlayerEnabled = 0;
+    const liteMain = ctx.lmActiveUnit(true);
+    const litereads = reads;
+    ctx.multiboxPlayerEnabled = 2;
+    const full = ctx.lmActiveUnit();
+    check('lmActiveUnit(true) copies no cells (unit and main player); the full form still does', litereads === 0 && lite.target === u && liteMain.target === ctx.legendmod &&
+        !('cells' in lite) && full.cells.length === 1 && full.index === 1, litereads);
+}
+
 console.log(failed ? 'FAILED: ' + failed : 'all hotpaths checks passed');
 process.exit(failed ? 1 : 0);

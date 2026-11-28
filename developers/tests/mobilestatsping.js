@@ -39,7 +39,7 @@ const massBody = src.slice(ma, mb);
 function massLine(lm, enabled, spects) {
   const ctx = { spects: spects || [], ogario: lm, legendmod: lm, LM: lm };
   ctx.window = ctx; ctx.window.legendmod = lm; ctx.multiboxPlayerEnabled = enabled || null;
-  vm.runInNewContext(fnSrc(v4, 'function getActiveSpect(') + '\n' + fnSrc(v4, 'function lmActiveUnit() {') + '\nwindow.lmActiveUnit = lmActiveUnit;\n' + massBody + '; out = mass + "/" + cells;', ctx);
+  vm.runInNewContext(fnSrc(v4, 'function getActiveSpect(') + '\n' + fnSrc(v4, 'function lmActiveUnit(') + '\nwindow.lmActiveUnit = lmActiveUnit;\n' + massBody + '; out = mass + "/" + cells;', ctx);
   return ctx.out;
 }
 const unitCells = [{ size: 100 }, { size: 120 }, { size: 80 }];

@@ -146,5 +146,44 @@ for (const how of ['terminate', 'beforecalculation']) {
     }
 }
 
+/* quick respawn (Y, the pad's Y and the phone button: application.quickResp) with multibox units
+ * open: only the player you control spawns again (a dead unit: its respawn(); the dead main
+ * player: Play), the units stay. It reconnected the main socket, a connection-level flush that
+ * closed every unit. Without units it reconnects as before. */
+{
+    const fns = ['function getActiveSpect(', 'function lmActiveUnit('].map((m) => block(v4, m));
+    const meths = ['        quickResp() {', '        tryResp() {'].map((m) => block(v4, m));
+    if (fns.concat(meths).some((f) => !f)) check('quick respawn code found', false);
+    else {
+        const run = (o) => {
+            const log = [];
+            const ctx = { console, clicks: 0 };
+            ctx.window = ctx;
+            vm.createContext(ctx);
+            vm.runInContext('var spects = window.spects = [];\n' + fns.join('\n') +
+                '\nvar defaultmapsettings = { quickResp: true };\nvar ogario, legendmod;\n' +
+                'var $ = function (s) { return { is() { return false; }, click() { window.clicks++; } }; };\n' +
+                'var application = window.application = { ws: "wss://x", hideMenu() { }, gameServerConnect(u) { window.log.push("reconnect " + u); },\n' + meths.join(',\n') + '};', ctx);
+            ctx.log = log;
+            ctx.setTimeout = (f) => { log.push('tryResp'); return 1; };
+            ctx.clearTimeout = () => { };
+            ctx.legendmod = { play: o.mainAlive, socket: {} };
+            vm.runInContext('ogario = legendmod = window.legendmod;', ctx);
+            (o.units || []).forEach((u) => ctx.spects.push(Object.assign({ player: true, active: true, socket: {}, playerCellIDs: [], respawn() { log.push('respawn ' + this.number); } }, u)));
+            ctx.multiboxPlayerEnabled = o.focus || null;
+            ctx.application.quickResp();
+            return { log: log.join(), units: ctx.spects.length, play: ctx.legendmod.play };
+        };
+        let r = run({ mainAlive: true, focus: 2, units: [{ number: 2, active: false }, { number: 3 }] });
+        check('quick respawn, a dead unit selected: only that unit respawns, no reconnect, the units stay', r.log === 'respawn 2' && r.units === 2 && r.play === true, r.log);
+        r = run({ mainAlive: false, focus: null, units: [{ number: 2 }] });
+        check('quick respawn, the dead main player selected: Play (tryResp), no reconnect, the unit stays', r.log === 'tryResp' && r.units === 1, r.log);
+        r = run({ mainAlive: true, focus: 2, units: [{ number: 2 }] });
+        check('quick respawn, the selected unit alive: nothing (no reconnect of everything)', r.log === '', r.log);
+        r = run({ mainAlive: true, focus: null, units: [{ number: 2, player: false }] });
+        check('quick respawn without units (a spectator only): reconnects as before', r.log === 'reconnect wss://x,tryResp' && r.play === false, r.log);
+    }
+}
+
 console.log(failed ? failed + ' failed' : 'all multiboxSwap checks passed');
 process.exit(failed ? 1 : 0);

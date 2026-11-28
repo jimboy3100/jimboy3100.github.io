@@ -37,7 +37,7 @@ All three return `LMEvents`, so calls can be chained.
 | `serverChange` | `{ host }` | you join another server; `host` is the host name only (no tokens) |
 | `massUpdate` | `{ mass, cells }` | while playing, at most 4 times per second |
 | `leaderboard` | `{ position, entries: [{ nick, pos }] }` | the leaderboard updates; `position` is your place (0 = not listed) |
-| `split` | `{ time, count, before }` | you split while alive (keys, mouse, phone button, macros). `count` is the number of splits sent at once; macros that send single splits give one event per split, a few ms apart. `before` is your cell count when the split was sent (the server adds the new cells a moment later; a split at 16 cells adds none) |
+| `split` | `{ time, count, before, unit }` | you split while alive (keys, mouse, phone button, macros). `count` is the number of splits sent at once; macros that send single splits give one event per split, a few ms apart. `before` is your cell count when the split was sent (the server adds the new cells a moment later; a split at 16 cells adds none). `unit` is only there when the multibox unit you control split (its unit number, `before` is its cell count); the main player's splits have none |
 | `kill` | `{ time, nick, mass }` | one of your cells ate a cell of another player (not food, ejected mass, viruses or your multibox units); `nick` and `mass` are the eaten cell's. A player with several cells can count more than once |
 | `personalBest` | `{ time, mass, msAlive, massRecord, timeRecord }` | a life ended with a new all-time best mass and / or time alive (always kept, there is no option for it); sent just before `death` |
 | `gameStats` | `{ time, playersEaten, topPosition, highestMass, finalMass, secondsAlive }` | the server's Game Over numbers arrived (servers that send them) |
@@ -103,7 +103,7 @@ Count your splits in each life:
 
 ```js
 var splits = 0;
-LMEvents.on('split', function (e) { if (e.before < 16) splits += e.count; });
+LMEvents.on('split', function (e) { if (!e.unit && e.before < 16) splits += e.count; });
 LMEvents.on('death', function () { LMEvents.api.toast(splits + ' splits'); splits = 0; });
 ```
 

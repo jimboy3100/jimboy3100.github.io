@@ -222,4 +222,15 @@ const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
   check('Y: a living unit is not respawned',c.calls.filter(x=>x==='unit-respawn').length===1);
   c.w.multiboxPlayerEnabled=null;u.active=false;c.pads=[gp()];c.step();c.pads=[gp({3:true})];c.step();
   check('Y: the main player controlled and alive: nothing, as before',c.calls.filter(x=>x==='unit-respawn').length===1); }
+/* Y with quick respawn on runs the real application.quickResp: with multibox units open only the dead
+ * unit you control respawns; the main socket is not reconnected (that closed every unit) */
+{ const cutFn=(s,h)=>{const i=s.indexOf(h);if(i<0)return null;let d=0;for(let k=s.indexOf('{',i);k<s.length;k++){if(s[k]==='{')d++;else if(s[k]==='}'&&!--d)return s.slice(i,k+1);}return null;};
+  const parts=['function getActiveSpect(','function lmActiveUnit(','        quickResp() {','        tryResp() {'].map(h=>cutFn(v4.replace(/\r\n/g,'\n'),h));
+  if(parts.some(p=>!p)) check('Y: quick respawn code found',false);
+  else { const c=page({settings:{quickResp:true}});const u={number:4,player:true,active:false,socket:{},playerCellIDs:[],respawn(){c.calls.push('unit-respawn');}};
+    c.w.legendmod={play:true,socket:{}};c.w.spects=[u];c.w.multiboxPlayerEnabled=4;c.w.defaultmapsettings={quickResp:true};
+    vm.runInContext('var spects=window.spects;'+parts[0]+'\n'+parts[1]+'\nvar ogario=window.legendmod;Object.assign(application,{'+parts[2]+','+parts[3]+
+      ',hideMenu(){},gameServerConnect(){window.lmCalls.push("reconnect");}});',Object.assign(c.w,{lmCalls:c.calls}));
+    c.pads=[gp({3:true})];c.go();c.step();
+    check('Y with quick respawn on, units open: only the dead unit you control respawns, no reconnect',c.calls.join().indexOf('unit-respawn')>=0&&c.calls.indexOf('reconnect')<0&&c.w.spects.length===1,c.calls.join()); } }
 console.log(fail?fail+' failed':'all gamepad checks passed');process.exit(fail?1:0);

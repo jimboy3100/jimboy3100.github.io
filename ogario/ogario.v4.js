@@ -3105,11 +3105,19 @@ function lmMultiboxControlledPlayer() {
  *   refMass: the one opponents are compared with (maxMass with "biggest cell" selected, else
  *   minMass, as compareCells) }. min / max are measured from the cells here (the cached
  *   playerMin/MaxMass are only kept up while a colouring option is on). null when there is no
- *   client, or no unit is selected and the main player is not in a game. */
-function lmActiveUnit() {
+ *   client, or no unit is selected and the main player is not in a game.
+ * lite (actions, up to 100 per second from macro feed): no cells copy, only who gets the action,
+ *   also for a dead main player: { target: the unit or legendmod (the object with the send*
+ *   methods), transport: 'spect' | 'lm', slotId, sourceId: unit number (0 main), sock, gen:
+ *   connection number, life: changes with each life, alive }. */
+function lmActiveUnit(lite) {
     var LM = window.legendmod;
     if (!LM) return null;
     var n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null, src, cells = [], i;
+    if (lite === true) {
+        if (sp) return { target: sp, transport: 'spect', slotId: sp.slotId || n, sourceId: n, sock: sp.socket, gen: sp.connectionGeneration, life: sp.playerCellIDs, alive: sp.player === true && sp.active === true };
+        return { target: LM, transport: 'lm', slotId: LM.slotId || 1, sourceId: 0, sock: LM.socket, gen: LM._connectSeq || 0, life: window.application ? window.application._lmLifeStartAt : 0, alive: !!LM.play };
+    }
     if (sp) src = typeof sp.getOwnPlayerCells === 'function' ? sp.getOwnPlayerCells() : [];
     else src = LM.playerCells || [];
     for (i = 0; i < src.length; i++) if (src[i] && !src[i].removed) cells.push(src[i]);
@@ -24122,10 +24130,21 @@ function thelegendmodproject() {
             return this.ghostY;
         },
         //
-        feed() {
-            if (window.core && window.core.eject) {
-                window.core.eject();
-            }
+        feed(bound) {
+            return !!(window.core && window.core.eject && window.core.eject(bound));
+        },
+        /* One feed of a held or permanent feed. It feeds the player it started on (bind.to,
+         * lmActiveUnit(true) at the press) and ends (false) when that player is gone: switched
+         * away, dead, reconnected (window.core.act refuses). The phone's held Feed button keeps
+         * following the player you control (the main player died while a unit plays: it feeds
+         * that unit); it ends on its own at a game over or server change (LMmobile.js feedDeath). */
+        _lmFeedTick(bind, mode) {
+            var send = mode === 'bot' ? 'Botseject' : 'feed';
+            if (this[send](bind.to)) return true;
+            if (mode !== 'held' || typeof window._lmMobileFeedHeld !== 'function' || !window._lmMobileFeedHeld()) return false;
+            bind.to = lmActiveUnit(true);
+            this[send](bind.to);
+            return true;
         },
         macroFeedPerm(on) {
             if (on) {
@@ -24134,7 +24153,7 @@ function thelegendmodproject() {
                     this.feedIntervalPerm = null
                     return;
                 }
-                var app = this;
+                var app = this, bind = { to: lmActiveUnit(true) };
                 this.feed();
                 /* at most one feed per 10 ms: the 1 ms setting reached ~250 feeds/s,
                  * about 500 packets/s with the cursor packet each feed sends.
@@ -24146,7 +24165,7 @@ function thelegendmodproject() {
                 };
                 var permTick = function () {
                     if (!app.feedIntervalPerm) return;
-                    app.feed();
+                    if (!app._lmFeedTick(bind, 'perm')) { app.feedIntervalPerm = null; return; }
                     app.feedIntervalPerm = setTimeout(permTick, permDelay());
                 };
                 this.feedIntervalPerm = setTimeout(permTick, permDelay());
@@ -24160,7 +24179,7 @@ function thelegendmodproject() {
 
                 this.macrobotFeedActive = true;
 
-                var app = this;
+                var app = this, bind = { to: lmActiveUnit(true) };
                 /* the first feed was just sent: time the next one from now */
                 var lastFeedTime = performance.now();
 
@@ -24183,7 +24202,11 @@ function thelegendmodproject() {
                         /* advance by the delay (not to now): the slider rate is kept instead of
                          * snapping to whole frames (20 ms at 60 fps fed 30/s); resync after a stall */
                         lastFeedTime = (now - lastFeedTime > 4 * delay) ? now : lastFeedTime + delay;
-                        app.Botseject();
+                        if (!app._lmFeedTick(bind, 'bot')) {
+                            app.macrobotFeedActive = false;
+                            app.macrobotFeedFrame = null;
+                            return;
+                        }
                     }
 
                     app.macrobotFeedFrame =
@@ -24216,7 +24239,7 @@ function thelegendmodproject() {
 
                 this.macroFeedActive = true;
 
-                var app = this;
+                var app = this, bind = { to: lmActiveUnit(true) };
                 /* the first feed was just sent: time the next one from now */
                 var lastFeedTime = performance.now();
 
@@ -24239,7 +24262,11 @@ function thelegendmodproject() {
                         /* advance by the delay (not to now): the slider rate is kept instead of
                          * snapping to whole frames (20 ms at 60 fps fed 30/s); resync after a stall */
                         lastFeedTime = (now - lastFeedTime > 4 * delay) ? now : lastFeedTime + delay;
-                        app.feed();
+                        if (!app._lmFeedTick(bind, 'held')) {
+                            app.macroFeedActive = false;
+                            app.macroFeedFrame = null;
+                            return;
+                        }
                     }
 
                     app.macroFeedFrame =
@@ -24277,32 +24304,26 @@ function thelegendmodproject() {
             }
         },
 
-        Botsplit() {
-            if (window.core && window.core.Botsplit) window.core.Botsplit();
+        Botsplit(bound) {
+            return !!(window.core && window.core.Botsplit && window.core.Botsplit(bound));
         },
-        Botseject() {
-            if (window.core && window.core.Botseject) window.core.Botseject();
+        Botseject(bound) {
+            return !!(window.core && window.core.Botseject && window.core.Botseject(bound));
         },
         /*Botsmacroeject() {
             if (window.core && window.core.Botsmacroeject) window.core.Botsmacroeject();
         },*/
 
-        /* Who a split macro acts for, as window.core.split picks it (the selected multibox unit
-         * when it exists, else the main player): unit number and object, its socket and
-         * connection number, the main socket, its life and the session type. */
+        /* Who a split macro acts for, as window.core picks it: lmActiveUnit(true) (the player,
+         * its socket, connection and life) with the main socket and the session type. */
         _lmMacroId() {
-            var lm = window.legendmod || null, n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null;
-            return {
-                n: n, unit: sp || lm,
-                sock: sp ? sp.socket : (lm ? lm.socket : null),
-                gen: sp ? sp.connectionGeneration : (lm ? lm._connectSeq : 0),
-                main: lm ? lm.socket : null,
-                life: sp ? sp.playerCellIDs : this._lmLifeStartAt,
-                session: typeof window.lmSessionType === 'function' ? window.lmSessionType() : ''
-            };
+            var lm = window.legendmod || null, id = lmActiveUnit(true) || { target: null };
+            id.main = lm ? lm.socket : null;
+            id.session = typeof window.lmSessionType === 'function' ? window.lmSessionType() : '';
+            return id;
         },
         _lmMacroSame(a, b) {
-            return a.n === b.n && a.unit === b.unit && a.sock === b.sock && a.gen === b.gen && a.main === b.main &&
+            return a.target === b.target && a.sock === b.sock && a.gen === b.gen && a.main === b.main &&
                 a.life === b.life && a.session === b.session;
         },
         /* The splits of a split macro, one after the other. gaps[k]: ms from the first split to
@@ -24323,29 +24344,29 @@ function thelegendmodproject() {
                 var tn = now(), due = dueOf(k);
                 if (tn < due) { setTimeout(step, Math.max(1, Math.ceil(due - tn))); return; }
                 if (tn - due > 150) { end(); return; }
-                send();
+                send(id);
                 last = tn;
                 if (++k >= gaps.length) { end(); return; }
                 setTimeout(step, Math.max(0, dueOf(k) - now()));
             };
-            send();
+            send(id);
             if (gaps.length < 2) { end(); return; }
             setTimeout(step, gaps[1]);
         },
         doubleBotSplit() {
             var app = this;
-            this._lmSplitRun([0, window._lmSplitDelay(1)], function () { app.Botsplit(); }, false);
+            this._lmSplitRun([0, window._lmSplitDelay(1)], function (id) { app.Botsplit(id); }, true);
         },
         popBotSplit() {
             var app = this;
-            this._lmSplitRun([0, window._lmPopSplitDelay()], function () { app.Botsplit(); }, false);
+            this._lmSplitRun([0, window._lmPopSplitDelay()], function (id) { app.Botsplit(id); }, true);
         },
         splitBot16() {
             var app = this;
-            this._lmSplitRun([0, window._lmSplitDelay(1), window._lmSplitDelay(2), window._lmSplitDelay(3)], function () { app.Botsplit(); }, false);
+            this._lmSplitRun([0, window._lmSplitDelay(1), window._lmSplitDelay(2), window._lmSplitDelay(3)], function (id) { app.Botsplit(id); }, true);
         },
-        split() {
-            if (window.core && window.core.split) window.core.split();
+        split(bound) {
+            if (window.core && window.core.split) window.core.split(bound);
         },
         doubleSplit() {
             var app = this;
@@ -24355,7 +24376,7 @@ function thelegendmodproject() {
                 return;
             }
             /* another unit, socket or life since the macro started: the rest is not sent */
-            this._lmSplitRun([0, window._lmSplitDelay(1)], function () { app.split(); }, true);
+            this._lmSplitRun([0, window._lmSplitDelay(1)], function (id) { app.split(id); }, true);
         },
         crazyDoubleSplit() {
             var app = this;
@@ -24367,11 +24388,11 @@ function thelegendmodproject() {
                 return;
             }
             window.lockPosition = true
-            this._lmSplitRun([0, window._lmSplitDelay(1)], function () { app.split(); }, true, function () { window.lockPosition = false; });
+            this._lmSplitRun([0, window._lmSplitDelay(1)], function (id) { app.split(id); }, true, function () { window.lockPosition = false; });
         },
         popSplit() {
             var app = this;
-            this._lmSplitRun([0, window._lmPopSplitDelay()], function () { app.split(); }, true);
+            this._lmSplitRun([0, window._lmPopSplitDelay()], function (id) { app.split(id); }, true);
         },
         tripleSplit() {
             var app = this;
@@ -24380,7 +24401,7 @@ function thelegendmodproject() {
                 if (window.core && window.core.tripleSplit) window.core.tripleSplit();
                 return;
             }
-            this._lmSplitRun([0, window._lmSplitDelay(1), window._lmSplitDelay(2)], function () { app.split(); }, true);
+            this._lmSplitRun([0, window._lmSplitDelay(1), window._lmSplitDelay(2)], function (id) { app.split(id); }, true);
         },
         split16() {
             var app = this;
@@ -24389,7 +24410,7 @@ function thelegendmodproject() {
                 if (window.core && window.core.quadSplit) window.core.quadSplit();
                 return;
             }
-            this._lmSplitRun([0, window._lmSplitDelay(1), window._lmSplitDelay(2), window._lmSplitDelay(3)], function () { app.split(); }, true);
+            this._lmSplitRun([0, window._lmSplitDelay(1), window._lmSplitDelay(2), window._lmSplitDelay(3)], function (id) { app.split(id); }, true);
         },
         /* ─── §4.3 UI Toggle Methods ─── */
         toggleSkins() {
@@ -24622,6 +24643,23 @@ function thelegendmodproject() {
         quickResp() {
             if (defaultmapsettings.quickResp) {
                 this.hideMenu();
+                /* multibox units open: the reconnect below (a connection-level flush) closed every
+                 * unit. Only the player you control spawns again, when it is dead: a unit with its
+                 * own respawn(), the main player with Play (as tryResp); the others stay as they are */
+                var sp = typeof spects !== 'undefined' && spects ? spects : [], i;
+                for (i = 0; i < sp.length && !(sp[i] && sp[i].player); i++);
+                if (i < sp.length) {
+                    var u = lmActiveUnit(true);
+                    if (!u || u.alive) return;
+                    if (u.transport === 'spect') {
+                        if (typeof u.target.respawn === 'function') u.target.respawn();
+                        return;
+                    }
+                    clearTimeout(this._lmTryRespT);
+                    this.retryResp = 0;
+                    this.tryResp();
+                    return;
+                }
                 this.gameServerConnect(this.ws);
                 ogario.play = false;
                 clearTimeout(this._lmTryRespT);
@@ -56512,8 +56550,17 @@ function thelegendmodproject() {
             /*
              * While alive, movement should be projected from the controlled
              * player's center rather than from a delayed camera position.
+             * A multibox unit you control: from its own centre (client space,
+             * like the cursor), the view while it is dead, never the main player.
              */
-            if (
+            var unit = typeof lmActiveUnit === 'function' ? lmActiveUnit(true) : null;
+            if (unit && unit.transport === 'spect') {
+                var sp = unit.target;
+                if (unit.alive && sp.playerCellIDs && sp.playerCellIDs.length && Number.isFinite(sp.playerX) && Number.isFinite(sp.playerY)) {
+                    originX = sp.playerX;
+                    originY = sp.playerY;
+                }
+            } else if (
                 this.play &&
                 this.playerCells &&
                 this.playerCells.length
@@ -56968,11 +57015,11 @@ function thelegendmodproject() {
                 hold: num(defaultmapsettings.lineSplitHold, 0, 5000, 1000)
             };
         },
-        /* The unit a split goes to, as window.core routes it: the active
+        /* The unit a split goes to, as window.core routes it (lmActiveUnit): the active
          * multibox unit, or 0 for the main player. */
         getLineSplitUnitNumber() {
-            var unitNumber = window.multiboxPlayerEnabled;
-            return unitNumber && getActiveSpect(unitNumber) ? unitNumber : 0;
+            var unit = lmActiveUnit(true);
+            return unit && unit.transport === 'spect' ? unit.sourceId : 0;
         },
         /* Biggest cell of that unit, or null when it has none. */
         getLineSplitCell(unitNumber) {
@@ -57087,7 +57134,7 @@ function thelegendmodproject() {
             if (this.serverType === 'imsolo' || this.serverType === 'agar2') {
                 atomic = { 2: 'doubleSplit', 3: 'tripleSplit', 4: 'quadSplit' }[settings.splits] || null;
             }
-            var fired = 0;
+            var fired = 0, bound = lmActiveUnit(true), sent;
             var release = function () {
                 if (app.lineSplitSeq === seq) app.stopLineSplit();
             };
@@ -57098,13 +57145,18 @@ function thelegendmodproject() {
                     return;
                 }
                 /* window.core sends the split to the unit chosen above; its
-                 * sendSplit() sends the (locked) cursor first. */
+                 * sendSplit() sends the (locked) cursor first. Refused (another
+                 * socket, connection or life of it since the lock): the lock ends. */
                 if (core && atomic && typeof core[atomic] === 'function') {
-                    core[atomic]();
+                    sent = core[atomic](bound);
                     fired = settings.splits;
                 } else {
-                    if (core && typeof core.split === 'function') core.split();
+                    sent = core && typeof core.split === 'function' ? core.split(bound) : true;
                     fired++;
+                }
+                if (sent === false) {
+                    app.stopLineSplit();
+                    return;
                 }
                 if (fired < settings.splits) {
                     setTimeout(step, settings.delay);
@@ -85862,69 +85914,42 @@ function pickPlayerCellBySize(players, selectBiggest) {
         sendSpectate() {
             LM.sendSpectate();
         },
-        Botseject() {
-            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                getActiveSpect(window.multiboxPlayerEnabled).sendBotEject()
-            } else {
-                LM.sendBotEject();
-            }
+        /* The one way a manual action reaches a player: the player you control, looked up once
+         * (lmActiveUnit), gets method m (its own protocol: LM.send* or the unit's send*). Refused
+         * (false, nothing sent) when its socket is not open, when it is not alive (bot commands
+         * excepted: the bots play without you) or, with bound (lmActiveUnit(true) taken when a held
+         * or timed action started), when it is another player, socket, connection or life now:
+         * a held feed or the rest of a split macro never goes to the player switched to. */
+        act(m, bound) {
+            var u = typeof lmActiveUnit === 'function' ? lmActiveUnit(true) : null, t = u && u.target;
+            if (!t || typeof t[m] !== 'function') return false;
+            if (bound && !(u.target === bound.target && u.sock === bound.sock && u.gen === bound.gen && u.life === bound.life)) return false;
+            if (!t.socket || (typeof t.isSocketOpen === 'function' && !t.isSocketOpen())) return false;
+            if (!u.alive && m !== 'sendBotEject' && m !== 'sendBotSplit') return false;
+            t[m]();
+            return true;
         },
-        /*Botsmacroeject() {
-            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                getActiveSpect(window.multiboxPlayerEnabled).sendBotEject()
-            } else {
-                LM.sendBotEject();
-            }
-        },	*/
-        Botsplit() {
-            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                getActiveSpect(window.multiboxPlayerEnabled).sendBotSplit()
-            } else {
-                LM.sendBotSplit();
-            }
+        Botseject(bound) {
+            return this.act('sendBotEject', bound);
         },
-        eject() {
-            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                getActiveSpect(window.multiboxPlayerEnabled).sendEject()
-            } else {
-                LM.sendEject();
-            }
+        Botsplit(bound) {
+            return this.act('sendBotSplit', bound);
+        },
+        eject(bound) {
             window.lastejected = true;
+            return this.act('sendEject', bound);
         },
-        split() {
-            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                getActiveSpect(window.multiboxPlayerEnabled).sendSplit()
-            } else {
-                LM.sendSplit();
-            }
+        split(bound) {
+            return this.act('sendSplit', bound);
         },
-        doubleSplit() {
-            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                getActiveSpect(window.multiboxPlayerEnabled).sendDoubleSplit();
-            } else {
-                LM.sendDoubleSplit();
-            }
+        doubleSplit(bound) {
+            return this.act('sendDoubleSplit', bound);
         },
-        tripleSplit() {
-            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                getActiveSpect(window.multiboxPlayerEnabled).sendTripleSplit();
-            } else {
-                LM.sendTripleSplit();
-            }
+        tripleSplit(bound) {
+            return this.act('sendTripleSplit', bound);
         },
-        quadSplit() {
-            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                getActiveSpect(window.multiboxPlayerEnabled).sendQuadSplit();
-            } else {
-                LM.sendQuadSplit();
-            }
-        },
-        playerFreeze() {
-            if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
-                getActiveSpect(window.multiboxPlayerEnabled).sendPlayerFreeze();
-            } else {
-                LM.sendPlayerFreeze();
-            }
+        quadSplit(bound) {
+            return this.act('sendQuadSplit', bound);
         },
         specialOn() {
             LM.sendFreeSpectate();

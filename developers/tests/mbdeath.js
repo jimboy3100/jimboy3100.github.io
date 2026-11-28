@@ -112,6 +112,79 @@ function death(o) {
     check('no Pause, focus on the unit: the main player keeps moving (Keep moving on)', sendFor(1, false) === '4000,1000', sendFor(1, false));
 }
 
+/* 2b. the same feed / split with the same settings: the selected unit (spect.js sendEject, sendSplit,
+ *     the atomic double / triple / quad split) aims as the main player (LM.sendEject / sendSplit /
+ *     sendDoubleSplit... through LM.sendPosition): Limit position (followStraight), dance, a crazy
+ *     split's held position (lockPosition). The unit's feed and atomic splits sent the raw cursor.
+ *     And the inactive player with "Freeze inactive" and "Keep moving" both off: the unit holds at
+ *     its centre like the main player (it sent nothing and ran on to the last target). */
+{
+    const lmMethod = (head) => {
+        const st = v4.indexOf(head);
+        const mm = st < 0 ? null : /\n        [A-Za-z_$][\w$]*\([^)]*\) \{\n/.exec(v4.slice(st + head.length));
+        return mm ? v4.slice(st, st + head.length + mm.index).trim().replace(/,\s*$/, '') : null;
+    };
+    const mainM = ['        sendPosition(cell, target2, specialcommand, periodic) {', '        sendEject() {', '        sendSplit() {', '        sendDoubleSplit() {',
+        '        sendTripleSplit() {', '        sendQuadSplit() {'].map(lmMethod);
+    const unitM = ['    sendCursor() {', '    _lmAimSend() {', '    _lmEmitSplit(count) {', '    _lmAimTarget() {', '    sendEject() {', '    sendSplit() {', '    _usesMultiSplitOpcodes() {',
+        '    sendDoubleSplit() {', '    sendTripleSplit() {', '    sendQuadSplit() {'].map((m) => block(sp, m));
+    if (mainM.concat(unitM).some((m) => !m)) check('feed / split aim code found', false);
+    else {
+        const env = (o) => {
+            const ctx = { console: { log: noop }, Date: { now: () => 1000 }, Math, Number };
+            ctx.window = ctx;
+            vm.createContext(ctx);
+            vm.runInContext('var defaultmapsettings = { multiKeepMoving: ' + !!o.keep + ', mbFreeze: false };\n' +
+                'var sent = window.sent = []; window.userBots = {}; window.LMEvents = { _has() { return false; } };\n' +
+                'var LM = window.legendmod = { ' + mainM.join(',\n') + ',\n' +
+                ' isSocketOpen() { return true; }, connectionOpened: true, clientKey: 1, integrity: false, vector: [[0, 0]], vnr: 0, serverType: "' + o.server + '", play: true, pause: false,\n' +
+                ' createView(n) { return new DataView(new ArrayBuffer(n)); }, sendBuffer(v) { sent.push(v.getInt32(3, true) + "," + v.getInt32(7, true)); }, sendAction(a) { sent.push("op" + a); },\n' +
+                ' sendMessage(v) { sent.push(v.getInt32(1, true) + "," + v.getInt32(5, true)); }, protocolKey: 0,\n' +
+                ' playerX: 1000, playerY: 1000, viewXTrue: 1000, viewYTrue: 1000, targetX: 1000, targetY: 1000, cursorX: 4000, cursorY: 1300, distX: 0, distY: 0, dance: false };\n' +
+                'var legendmod = LM;\n' +
+                'window.Unit = class Unit { constructor() { this.number = 2; this.player = true; this.active = true; this.playerX = 1000; this.playerY = 1000; }\n' +
+                'convertX(x) { return x; } convertY(y) { return y; } rawToWorldX(x) { return x; } rawToWorldY(y) { return y; } worldToRawX(x) { return x; } worldToRawY(y) { return y; }\n' +
+                'sendPosition(x, y) { sent.push(Math.round(x) + "," + Math.round(y)); return true; } sendAction(a) { sent.push("op" + a); } getOwnPlayerCells() { return []; }\n' +
+                unitM.join('\n') + '\n};', ctx);
+            ctx.followStraight = !!o.straight; ctx.legendmod.dance = !!o.dance; ctx.lockPosition = !!o.lock;
+            return ctx;
+        };
+        const mainSeq = (o, m) => { const ctx = env(o); ctx.multiboxPlayerEnabled = null; ctx.legendmod[m](); return ctx.sent.join(' '); };
+        const unitSeq = (o, m) => { const ctx = env(o); ctx.multiboxPlayerEnabled = 2; new ctx.Unit()[m](); return ctx.sent.join(' '); };
+        const cases = [['plain', {}], ['Limit position', { straight: true }], ['dance', { dance: true }], ['crazy split hold', { lock: true }]];
+        for (const [name, o] of cases) {
+            for (const [m, server] of [['sendEject', 'garix'], ['sendSplit', 'garix'], ['sendDoubleSplit', 'imsolo'], ['sendTripleSplit', 'agar2'], ['sendQuadSplit', 'private']]) {
+                const so = Object.assign({ server }, o), mm = mainSeq(so, m), uu = unitSeq(so, m);
+                check('unit ' + m + ' (' + server + ', ' + name + '): same aim and opcode as the main player [' + mm + ']', mm === uu && mm.length > 0, 'main ' + mm + ' / unit ' + uu);
+            }
+        }
+        /* a unit's split sends LMEvents 'split' with its number */
+        {
+            const ctx = env({ server: 'garix' }), got = [];
+            ctx.LMEvents = { _has: () => true, emit: (n, d) => got.push(n + ':' + d.count + ':' + d.unit) };
+            ctx.multiboxPlayerEnabled = 2;
+            const u = new ctx.Unit();
+            u.sendSplit(); u.sendQuadSplit();
+            check('unit split: LMEvents split with unit (one per split, one for an atomic quad split)', got.join() === 'split:1:2,split:4:2', got.join());
+        }
+        /* inactive unit, both settings off: holds its centre (the inactive main player holds the view centre) */
+        {
+            const ctx = env({ server: 'garix', keep: false });
+            let tick = null;
+            ctx.setInterval = (f) => { tick = f; return 1; };
+            ctx.clearInterval = noop;
+            ctx.multiboxPlayerEnabled = null;
+            const u = new ctx.Unit();
+            u.sendCursor(); tick();
+            check('inactive unit, Freeze inactive and Keep moving off: holds at its centre', ctx.sent.join() === '1000,1000', ctx.sent.join());
+            ctx.sent.length = 0;
+            ctx.multiboxPlayerEnabled = 2;
+            ctx.legendmod.sendPosition();
+            check('inactive main player, both off: holds at the view centre (unchanged)', ctx.sent.join() === '1000,1000', ctx.sent.join());
+        }
+    }
+}
+
 /* 3. the main socket's opcode 17 while no multibox frame drives the camera */
 {
     const i0 = v4.indexOf('window.testobjectsOpcode17 = data;');

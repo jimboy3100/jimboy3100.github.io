@@ -119,6 +119,44 @@ ctx.legendmod = { multiBoxPlayerExists: false };
 ctx.feedDeath({ unit: 0, scope: 'all' });
 check('no multibox: a death stops it as before', stops === 2, stops);
 
+// ── held Feed and a multibox switch, with the game's real macro feed (application.macroFeed,
+// window.core.act): a held E stays with the player it started on, the phone's Feed button keeps
+// following the player you control (its own death / server change listeners end it)
+{
+  let fnow = 0, frames = [];
+  const fctx = { Math, Number, performance: { now: () => fnow }, defaultmapsettings: { macroFeeding: 10 }, spects: [] };
+  fctx.window = fctx;
+  fctx.requestAnimationFrame = (f) => { frames.push(f); return frames.length; };
+  fctx.cancelAnimationFrame = () => { frames = []; };
+  fctx.setInterval = () => 1; fctx.clearInterval = () => { };
+  vm.createContext(fctx);
+  const mainLf = main.replace(/\r\n/g, '\n');
+  const ca = mainLf.indexOf('\n        act(m, bound) {'), cb = mainLf.indexOf('\n        specialOn() {', ca);
+  const parts = ['function getActiveSpect(', 'function lmActiveUnit(', '        feed(bound) {', '        _lmFeedTick(bind, mode) {', '        macroFeed(on) {'].map((h) => body(mainLf, h));
+  const fs2 = [body(mob, 'function feedStart() {'), body(mob, 'function feedStop() {')];
+  if (ca < 0 || cb < 0 || parts.concat(fs2).some((p) => !p)) check('feed code found', false);
+  else {
+    vm.runInContext(parts[0] + '\n' + parts[1] + '\nwindow.core = {' + mainLf.slice(ca, cb) + '\n};\nvar application = window.application = {\n' + parts.slice(2).join(',\n') + '\n};\n' +
+      'var feedIv = null, feedMacroOn = false;\nfunction feedWatch() { }\nfunction emitKey() { }\n' + fs2.join('\n') + '\nwindow._lmMobileFeedHeld = function () { return feedMacroOn; };', fctx);
+    const sent = [];
+    const p = (name, o) => Object.assign({ socket: { readyState: 1, OPEN: 1 }, isSocketOpen() { return true; }, sendEject() { sent.push(name); } }, o);
+    fctx.legendmod = p('main', { play: true, _connectSeq: 1 });
+    fctx.spects.push(p('unit', { number: 2, player: true, active: true, connectionGeneration: 1, playerCellIDs: [1] }));
+    fctx.application._lmLifeStartAt = 1;
+    const frame = (t) => { while (fnow < t) { fnow += 16; const f = frames; frames = []; f.forEach((cb2) => cb2(fnow)); } };
+    const n = (who) => sent.filter((s) => s === who).length;
+    vm.runInContext('feedStart()', fctx); frame(100);
+    fctx.multiboxPlayerEnabled = 2; frame(300);
+    check('phone Feed held across a switch: it feeds the player switched to (its old behaviour)', n('main') >= 5 && n('unit') >= 5, n('main') + '/' + n('unit'));
+    vm.runInContext('feedStop()', fctx); sent.length = 0; frame(500);
+    check('phone Feed let go: no more feeding', sent.length === 0 && !fctx.application.macroFeedActive, sent.length);
+    fctx.multiboxPlayerEnabled = null;
+    fctx.application.macroFeed(true); frame(700);
+    fctx.multiboxPlayerEnabled = 2; frame(900);
+    check('held E (no phone button) across the same switch: the unit is not fed', n('main') >= 5 && n('unit') === 0 && !fctx.application.macroFeedActive, n('main') + '/' + n('unit'));
+  }
+}
+
 // ── multibox indicator: the number of the player you control, not "P2" for every unit
 const mbNo = body(mob, 'function mbPlayerNo() {');
 vm.runInContext((mbNo || '') + '\n' + body(mob, 'function syncMbIndicator() {') + '\nvar bMb = { textContent: "", style: {} }, _mbShown = null;', ctx);
