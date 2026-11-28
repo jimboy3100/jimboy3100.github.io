@@ -37,7 +37,7 @@ const src = {
     flush: block('if (_connectionLevelFlush && this === window.legendmod) {'),
     spawn: (v4.match(/\n\s*(if \(window\.legendmod && legendmod\._lmAliveEnd\) lmTimeAlive\(legendmod, -1\);)/) || [])[1],
     death: block('        onPlayerDeath() {'),
-    inputEnd: block('        _lmLifeInputEnd() {'),
+    inputEnd: block('        _lmLifeInputEnd('),
     lifeEnd: block('function lmMbUnitLifeEnd(sp, active, now) {'),
     session: block('function _lmSessionStats(update) {'),
     bests: block('function _lmPersonalBests(update) {'),

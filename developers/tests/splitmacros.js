@@ -63,6 +63,16 @@ const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (
     check('macro: crazy double split ended early still unlocks the aim', ctx.lockPosition === false && ctx.sent.length === 1);
     reset(); ctx.app.popSplit(); run(1000);
     check('macro: pop split 0/200', JSON.stringify(ctx.sent) === '[0,200]');
+    /* the aim lock is the last crazy double split's: the first one's end (40 ms) does not unlock
+     * the one pressed at 20 ms (its second split at 60 ms) */
+    for (const server of ['agario', 'imsolo']) {
+        reset(); ctx.LM.serverType = server; ctx.core = server === 'imsolo' ? { doubleSplit() { ctx.sent.push(Math.round(now)); } } : undefined;
+        ctx.app.crazyDoubleSplit(); now = 20; ctx.app.crazyDoubleSplit(); run(45);
+        const held = ctx.lockPosition; run(1000);
+        check('macro (' + server + '): crazy double split pressed again 20 ms after the first: the end of the first leaves the aim lock of the second, which ends with it',
+            held === true && ctx.lockPosition === false && ctx.sent.length === (server === 'imsolo' ? 2 : 4));
+    }
+    ctx.LM.serverType = 'agario'; ctx.core = undefined;
 })();
 
 /* One dispatch point (window.core.act) with the real window.core actions, the application's feed
@@ -201,6 +211,27 @@ const check = (name, ok) => { console.log((ok ? 'ok   ' : 'FAIL ') + name); if (
     check('16 split: switched after two splits: the other two are not sent to the unit', ctx.sent.join() === 'main:split,main:split');
     reset(); ctx.multiboxPlayerEnabled = 2; ctx.app.split16(); runTimers(50); unit().playerCellIDs = [9]; runTimers(1000);
     check('16 split on a unit: a new life of the unit ends it', ctx.sent.join() === 'u2:split,u2:split');
+    /* the unit's life list is replaced at its death and its next life fills the same list: the life
+     * counter (_lmLife, lmActiveUnit lifeGen) tells the lives apart */
+    reset(); ctx.multiboxPlayerEnabled = 2; unit().active = false; unit().playerCellIDs = []; unit()._lmLife = 1;
+    ctx.app.split16(); runTimers(50);
+    unit().active = true; unit()._lmLife = 2; unit().playerCellIDs.push(11); runTimers(1000);
+    check('16 split pressed on the selected unit while it is dead: its respawn meanwhile (same id list, a new life) gets none of the rest', ctx.sent.length === 0, ctx.sent.join());
+    reset(); ctx.multiboxPlayerEnabled = 2; unit()._lmLife = 3; bound = ctx.lmActiveUnit(true); unit()._lmLife = 4;
+    check('act: bound to a unit, its life counter changed since (a new life in the same id list): refused', bound.lifeGen === 3 && core().act('sendSplit', bound) === false && ctx.sent.length === 0);
+    reset(); ctx.app._lmLifeStartAt = 5; ctx.legendmod._lmLife = 1; bound = ctx.lmActiveUnit(true);
+    check('lmActiveUnit(true): lifeGen of the main player is its _lmLife', bound.lifeGen === 1 && core().act('sendSplit', bound) === true);
+    /* away and back between two splits (P1 -> P2 -> P1 before the next one is due): the identity is
+     * the one when each split is sent, so the rest still goes to P1, the player it started on and
+     * controlled again; nothing reaches P2. A switch seen at a split's time ends the macro (above). */
+    reset(); ctx.app.split16(); runTimers(50); ctx.multiboxPlayerEnabled = 2; ctx.multiboxPlayerEnabled = 0; runTimers(1000);
+    check('16 split: away to the unit and back to P1 between two splits: the rest to P1 only, none to the unit', ctx.sent.join() === 'main:split,main:split,main:split,main:split', ctx.sent.join());
+    /* the phone's held Feed follows the focus, never to a player the focus does not name */
+    reset(); ctx._lmMobileFeedHeld = () => true; ctx.multiboxPlayerEnabled = 2; ctx.app.macroFeed(true); runFrames(100);
+    const u2fed = count('u2'); ctx.spects.length = 0; runFrames(300);
+    check('phone held Feed: the selected unit gone (its number stale): P1 is not fed in its place, the hold stays', u2fed >= 5 && count('main') === 0 && ctx.app.macroFeedActive, count('main'));
+    ctx.multiboxPlayerEnabled = 0; runFrames(500);
+    check('    ... the focus on P1 again: it feeds P1', count('main') >= 5);
 })();
 
 /* Decision 8 (manual split / feed parity): the main player (P1) dead or spectating does not take the

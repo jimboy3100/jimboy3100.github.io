@@ -2949,12 +2949,14 @@ class Spect {
                 if (lmMbAlive(spects[i])) { anyAlive = true; break; }
             }
         }
+        /* the life of the player you control ended (a death, a lost socket, a removal), or nothing
+         * of ours lives: its Pause, permanent feed and keys end with it, before the early return of
+         * a lost socket below (the player the focus moved to kept its Pause and permanent feed).
+         * A background unit's end leaves the ones of the player you steer. */
+        if (wasAlive && (wasActive || !anyAlive) && typeof application !== 'undefined' && application && typeof application._lmLifeInputEnd === 'function') application._lmLifeInputEnd(!died);
         /* a lost socket is no game over while something else of ours lives; the last living
          * player's lost socket left no menu at all (also when it never reconnected) */
         if (reason === 'disconnect' && (anyAlive || !wasAlive)) return;
-        /* the player you control died, or nothing of ours lives: its Pause, permanent feed and keys
-         * end with it (a background unit's death leaves the ones of the player you steer) */
-        if (died && (wasActive || !anyAlive) && typeof application !== 'undefined' && application && typeof application._lmLifeInputEnd === 'function') application._lmLifeInputEnd();
 
         if (!anyAlive) {
             // Last unit died — show menu

@@ -27,6 +27,9 @@
  *   null and leave the registry as it was; a Spect constructor that throws rolls the reservation back.
  * - A spectator with its active flag set is no living player (lmMbAlive): never focused, and the
  *   last unit's death still shows the menu.
+ * - The input state at the end of a life (section 9): the controlled unit's death, lost socket,
+ *   removal, Multibox off or a server change ends its Pause, permanent feed, aim lock and phone
+ *   Feed, nothing reaches the next player; a background player's end leaves them.
  * node developers/tests/mbdeath.js [ogario.v4.js] [spect.js] */
 'use strict';
 const fs = require('fs'), path = require('path'), vm = require('vm');
@@ -1411,6 +1414,161 @@ function death(o) {
             const want = o.captcha ? '1,1,1' : '1,0,1';
             check(p + ': P2 selected but dead, P1 selected (P2 alive), no unit: ' + (o.captcha ? 'the menu as before' : 'the menu, none while P2 lives, the menu'),
                 rest.join() === want, rest.join());
+        }
+    }
+}
+
+/* 9. the input state at the end of a life (lib/mbplayers.js scene, P1 + P2 + P3, with the real
+ * lmActiveUnit, window.core.act, application._lmLifeInputEnd, feed / permanent feed / held feed,
+ * 16 split and crazy double split, on a virtual clock): the life of the player you control (P2)
+ * ends by death, lost socket (spect.js terminate 'disconnect'), removal (lmMbRemoveUnit), Multibox
+ * off (LM._lmMbStop) or a server change (LM.flushSpecsData) while Pause, permanent feed, a 16 split
+ * and a crazy double split's aim lock run: Pause, the permanent feed and the lock end, and nothing
+ * more is sent to anyone (none of it reaches the player the focus moves to). A background player's
+ * (P3's) death, lost socket or removal leaves the inputs of P2 as they were; the phone's held Feed
+ * ends with P2's lost socket and goes on at P3's. */
+{
+    const MB = require('./lib/mbplayers');
+    const opt = { v4: process.argv[2], sp: process.argv[3], app: true };
+    const ca = v4.indexOf('\n        act(m, bound) {'), cb = v4.indexOf('\n        specialOn() {', ca);
+    const ms = ['_lmLifeInputEnd(', 'feed(', '_lmFeedTick(', 'macroFeedPerm(', 'macroFeed(', '_lmMacroId(', '_lmMacroSame(', '_lmSplitRun(', 'split(', 'split16(', 'crazyDoubleSplit(']
+        .map((m) => block(v4, '\n        ' + m));
+    const au = block(v4, 'function lmActiveUnit(');
+    if (ca < 0 || cb < 0 || !au || ms.some((m) => !m)) check('input code found (lmActiveUnit, window.core.act, _lmLifeInputEnd, feeds, split macros)', false);
+    else {
+        const code = au + '\nwindow.core = {' + v4.slice(ca, cb) + '\n};\nObject.assign(application, {\n' + ms.map((m) => m.trim()).join(',\n') + '\n});\n' +
+            'window._lmSplitDelay = function (n) { return 40 * n; };';
+        const make = () => {
+            const s = MB.scene(Object.assign({ players: 3 }, opt));
+            MB.populate(s); s.step(2);
+            const ctx = s.ctx, LM = s.LM, log = [], timers = [];
+            let now = 0, frames = [], tid = 0;
+            ctx.performance = { now: () => now };
+            ctx.setTimeout = (f, d) => { timers.push({ id: ++tid, f, at: now + Math.max(0, +d || 0) }); return tid; };
+            ctx.clearTimeout = (id) => { const i = timers.findIndex((t) => t.id === id); if (i >= 0) timers.splice(i, 1); };
+            ctx.requestAnimationFrame = (f) => { frames.push(f); return frames.length; };
+            ctx.cancelAnimationFrame = () => { frames = []; };
+            ctx.$ = () => ({ hide: noop, show: noop });
+            ctx.ogario = LM; ctx.resetonkeydown = noop; ctx.defaultmapsettings.macroFeeding = 10;
+            vm.runInContext(code, ctx);
+            const units = ctx.spects.filter((u) => u && u.player);
+            const name = (p) => p === LM ? 'P1' : 'P' + p.slotId;
+            for (const p of [LM].concat(units)) {
+                p.sendEject = function () { log.push(name(this) + ':eject'); };
+                p.sendSplit = function () { log.push(name(this) + ':split'); };
+                p._lmLife = 1;
+            }
+            LM.socket = {}; LM._connectSeq = 1; LM.serverType = 'agario';
+            ctx.application._lmLifeStartAt = 5;
+            const advance = (ms2) => {
+                const end = now + ms2;
+                for (let g = 0; g < 100000 && now < end; g++) {
+                    timers.sort((x, y) => x.at - y.at);
+                    const nf = (Math.floor(now / 16) + 1) * 16, nt = timers.length ? timers[0].at : Infinity;
+                    now = Math.max(now, Math.min(nt, nf, end));
+                    if (timers.length && timers[0].at <= now) { timers.shift().f(); continue; }
+                    if (now === nf) { const f = frames; frames = []; f.forEach((cb2) => cb2(now)); }
+                }
+            };
+            const W = { s, ctx, LM, app: ctx.application, log, advance, unit: (slot) => s.player(slot).unit, n: (who, from) => log.slice(from || 0).filter((x) => x.indexOf(who + ':') === 0).length };
+            /* the player in slot `slot` controlled: Pause on, permanent feed, a 16 split at 0 ms and a
+             * crazy double split at 30 ms (its second split and its aim unlock due at 70 ms); at 50 ms */
+            W.busy = (slot) => {
+                ctx.lmSetMbUnit(slot === 1 ? 0 : W.unit(slot).number);
+                W.app.pause = true; LM.pause = true;
+                W.app.macroFeedPerm(true);
+                W.app.split16();
+                advance(30); W.app.crazyDoubleSplit(); advance(20);
+            };
+            return W;
+        };
+        const ends = {
+            death: (W) => W.s.kill(2),
+            'lost socket': (W) => W.s.reconnect(2, { respawn: false }),
+            removal: (W) => W.ctx.lmMbRemoveUnit(W.unit(2), 'removed'),
+            'Multibox off': (W) => W.app.mbDisable(),
+            /* the main connection's flushCellsData: the focus to P1, P1's life over, then flushSpecsData */
+            'server change': (W) => { W.ctx.lmSetMbUnit(0); W.app._lmLifeStartAt = 0; W.LM.flushSpecsData(); }
+        };
+        for (const what of Object.keys(ends)) {
+            const W = make();
+            W.busy(2);
+            const fedP2 = W.n('P2');
+            ends[what](W);
+            const lockNow = W.ctx.lockPosition, next = W.ctx.multiboxPlayerEnabled ? 'P' + W.ctx.getActiveSpect(W.ctx.multiboxPlayerEnabled).slotId : 'P1';
+            const at = W.log.length;
+            W.advance(1000);
+            check('P2 controlled, its life ends (' + what + ') during Pause, permanent feed, a 16 split and a crazy double split: Pause, permanent feed and the aim lock end, nothing more sent (focus now ' + next + ')',
+                fedP2 >= 5 && !W.app.pause && !W.LM.pause && W.app.feedIntervalPerm === null && lockNow === false && W.ctx.lockPosition === false && W.log.length === at,
+                'P2 fed ' + fedP2 + ', pause ' + W.app.pause + ', perm ' + !!W.app.feedIntervalPerm + ', lock ' + lockNow + ', after: ' + W.log.slice(at).join());
+            const before = W.log.length;
+            W.ctx.core.split();
+            check('    ... the player the focus went to (' + next + ') takes a new split', W.log.slice(before).join() === next + ':split', W.log.slice(before).join());
+        }
+        const bg = {
+            death: (W) => W.s.kill(3),
+            'lost socket': (W) => W.s.reconnect(3, { respawn: false }),
+            removal: (W) => W.ctx.lmMbRemoveUnit(W.unit(3), 'removed')
+        };
+        for (const what of Object.keys(bg)) {
+            const W = make();
+            W.busy(2);
+            W.app.macroFeed(true); /* a held E too */
+            W.advance(5);
+            const at = W.log.length;
+            bg[what](W);
+            const lockNow = W.ctx.lockPosition, focus = W.ctx.multiboxPlayerEnabled === W.unit(2).number;
+            W.advance(300);
+            check('P2 controlled, the background P3\'s ' + what + ': its Pause, permanent feed, held feed, 16 split and aim lock go on, nothing to anyone else',
+                focus && W.app.pause && W.LM.pause && !!W.app.feedIntervalPerm && W.app.macroFeedActive && lockNow === true && W.n('P2', at) >= 20 &&
+                W.log.filter((x) => x === 'P2:split').length === 6 && W.n('P1') === 0 && W.n('P3') === 0,
+                'focus ' + W.ctx.multiboxPlayerEnabled + ', pause ' + W.app.pause + ', perm ' + !!W.app.feedIntervalPerm + ', held ' + W.app.macroFeedActive + ', lock ' + lockNow +
+                ', P2 ' + W.n('P2', at) + ' / splits ' + W.log.filter((x) => x === 'P2:split').length + ', P1 ' + W.n('P1') + ', P3 ' + W.n('P3'));
+        }
+        {
+            /* P1 controlled: Multibox off closes only background units */
+            const W = make();
+            W.busy(1);
+            const at = W.log.length;
+            W.app.mbDisable();
+            W.advance(300);
+            check('P1 controlled, Multibox off (the units were in the background): P1 keeps its Pause, permanent feed and split', W.app.pause && !!W.app.feedIntervalPerm &&
+                W.n('P1', at) >= 10 && W.log.filter((x) => x === 'P1:split').length === 6 && W.n('P2') === 0 && W.n('P3') === 0,
+                'pause ' + W.app.pause + ', perm ' + !!W.app.feedIntervalPerm + ', P1 ' + W.n('P1', at));
+        }
+        /* the phone's held Feed (LMmobile.js: _lmMobileFeedHeld, _lmMobileFeedStop = feedStop) */
+        const phone = (W) => {
+            let held = true;
+            W.ctx._lmMobileFeedHeld = () => held;
+            W.ctx._lmMobileFeedStop = () => { held = false; W.app.macroFeed(false); };
+            W.ctx.lmSetMbUnit(W.unit(2).number);
+            W.app.macroFeed(true);
+            W.advance(100);
+            return () => held;
+        };
+        {
+            const W = make(), held = phone(W), fed = W.n('P2');
+            W.s.reconnect(2, { respawn: false });
+            const at = W.log.length;
+            W.advance(300);
+            check('phone Feed held on P2, P2\'s socket closes (the focus to P1): the held Feed ends, P1 is not fed', fed >= 5 && !held() && !W.app.macroFeedActive && W.log.length === at,
+                'P2 ' + fed + ', held ' + held() + ', after: ' + W.log.slice(at).join());
+        }
+        {
+            const W = make(), held = phone(W);
+            W.s.reconnect(3, { respawn: false });
+            const at = W.log.length;
+            W.advance(300);
+            check('phone Feed held on P2, the background P3\'s socket closes: it goes on feeding P2', held() && W.app.macroFeedActive && W.n('P2', at) >= 10 && W.n('P1') === 0 && W.n('P3') === 0,
+                'held ' + held() + ', P2 ' + W.n('P2', at));
+        }
+        {
+            /* a switch by hand keeps the phone Feed's old behaviour: it feeds the player switched to */
+            const W = make(), held = phone(W);
+            W.ctx.lmSetMbUnit(W.unit(3).number);
+            const at = W.log.length;
+            W.advance(300);
+            check('phone Feed held on P2, switched to P3 by hand: it feeds P3 (its old behaviour)', held() && W.n('P3', at) >= 10 && W.n('P2', at) === 0, 'P3 ' + W.n('P3', at));
         }
     }
 }

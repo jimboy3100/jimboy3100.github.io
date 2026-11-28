@@ -141,12 +141,13 @@ check('no multibox: a death stops it as before', stops === 4, stops);
   vm.createContext(fctx);
   const mainLf = main.replace(/\r\n/g, '\n');
   const ca = mainLf.indexOf('\n        act(m, bound) {'), cb = mainLf.indexOf('\n        specialOn() {', ca);
-  const parts = ['function getActiveSpect(', 'function lmActiveUnit(', '        feed(bound) {', '        _lmFeedTick(bind, mode) {', '        macroFeed(on) {'].map((h) => body(mainLf, h));
+  const parts = ['function getActiveSpect(', 'function lmActiveUnit(', '        feed(bound) {', '        _lmFeedTick(bind, mode) {', '        macroFeed(on) {', '        _lmLifeInputEnd('].map((h) => body(mainLf, h));
   const fs2 = [body(mob, 'function feedStart() {'), body(mob, 'function feedStop() {')];
   if (ca < 0 || cb < 0 || parts.concat(fs2).some((p) => !p)) check('feed code found', false);
   else {
     vm.runInContext(parts[0] + '\n' + parts[1] + '\nwindow.core = {' + mainLf.slice(ca, cb) + '\n};\nvar application = window.application = {\n' + parts.slice(2).join(',\n') + '\n};\n' +
-      'var feedIv = null, feedMacroOn = false;\nfunction feedWatch() { }\nfunction emitKey() { }\n' + fs2.join('\n') + '\nwindow._lmMobileFeedHeld = function () { return feedMacroOn; };', fctx);
+      'var feedIv = null, feedMacroOn = false;\nfunction feedWatch() { }\nfunction emitKey() { }\n' + fs2.join('\n') + '\nwindow._lmMobileFeedHeld = function () { return feedMacroOn; };\nwindow._lmMobileFeedStop = feedStop;\n' +
+      'var ogario = {};\nfunction resetonkeydown() { }\nfunction $() { return { hide: function () { } }; }', fctx);
     const sent = [];
     const p = (name, o) => Object.assign({ socket: { readyState: 1, OPEN: 1 }, isSocketOpen() { return true; }, sendEject() { sent.push(name); } }, o);
     fctx.legendmod = p('main', { play: true, _connectSeq: 1 });
@@ -163,6 +164,26 @@ check('no multibox: a death stops it as before', stops === 4, stops);
     fctx.application.macroFeed(true); frame(700);
     fctx.multiboxPlayerEnabled = 2; frame(900);
     check('held E (no phone button) across the same switch: the unit is not fed', n('main') >= 5 && n('unit') === 0 && !fctx.application.macroFeedActive, n('main') + '/' + n('unit'));
+    /* the unit the held Feed feeds leaves (a removed or closed unit) with its number still in the
+     * focus: lmActiveUnit gives the main player then; the held Feed is not moved to it, it feeds
+     * nobody until the focus names a player again */
+    fctx.multiboxPlayerEnabled = 2; sent.length = 0;
+    vm.runInContext('feedStart()', fctx); frame(1100);
+    const gone = fctx.spects.pop();
+    const m0 = n('main'), u0 = n('unit'); frame(1400);
+    check('phone Feed held on a unit that leaves, its number still selected: nothing fed, P1 not in its place, still held', u0 >= 5 && n('main') === m0 && n('unit') === u0 && fctx.application.macroFeedActive, n('main') - m0);
+    fctx.multiboxPlayerEnabled = null; frame(1700);
+    check('    ... the focus on P1 again: it feeds P1', n('main') >= m0 + 5, n('main') - m0);
+    fctx.spects.push(gone);
+    /* the end of the life of the player you control: by a death the phone's own listener ends it
+     * (feedDeath above), _lmLifeInputEnd() leaves it; by a lost socket, a removal, Multibox off
+     * (_lmLifeInputEnd(true)) it ends here: the player the focus goes to is not fed */
+    fctx.application._lmLifeInputEnd();
+    check('_lmLifeInputEnd() (a death): the phone Feed is left to its own death listener', fctx._lmMobileFeedHeld() && fctx.application.macroFeedActive);
+    fctx.application._lmLifeInputEnd(true); fctx.multiboxPlayerEnabled = null;
+    const m1 = n('main'); frame(2000);
+    check('_lmLifeInputEnd(true) (the unit you control lost its socket / was removed): the phone Feed ends, P1 the focus went to is not fed',
+      !fctx._lmMobileFeedHeld() && !fctx.application.macroFeedActive && n('main') === m1, n('main') - m1);
   }
   /* no simulated W key loop any more: without the game's macroFeed the button starts nothing */
   if (fs2.every(Boolean)) {

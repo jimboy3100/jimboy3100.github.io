@@ -4556,14 +4556,17 @@ function lmMultiboxControlledPlayer() {
  * lite (actions, up to 100 per second from macro feed): no cells copy, only who gets the action,
  *   also for a dead main player: { target: the unit or legendmod (the object with the send*
  *   methods), transport: 'spect' | 'lm', slotId, sourceId: unit number (0 main), sock, gen:
- *   connection number, life: changes with each life, alive }. */
+ *   connection number, life: changes with each life, lifeGen: the life counter (_lmLife, one more
+ *   at each spawn), alive }. A unit's life list (playerCellIDs) is replaced at its death and its
+ *   next life fills the same list, so a split macro started while it was dead went on into its
+ *   next life: lifeGen changes there (the main player's life, _lmLifeStartAt, already did). */
 function lmActiveUnit(lite) {
     var LM = window.legendmod;
     if (!LM) return null;
     var n = window.multiboxPlayerEnabled || 0, sp = n ? getActiveSpect(n) : null, src, i;
     if (lite === true) {
-        if (sp) return { target: sp, transport: 'spect', slotId: sp.slotId >= 2 ? sp.slotId : 2, sourceId: n, sock: sp.socket, gen: sp.connectionGeneration, life: sp.playerCellIDs, alive: sp.player === true && sp.active === true };
-        return { target: LM, transport: 'lm', slotId: LM.slotId || 1, sourceId: 0, sock: LM.socket, gen: LM._connectSeq || 0, life: window.application ? window.application._lmLifeStartAt : 0, alive: !!LM.play };
+        if (sp) return { target: sp, transport: 'spect', slotId: sp.slotId >= 2 ? sp.slotId : 2, sourceId: n, sock: sp.socket, gen: sp.connectionGeneration, life: sp.playerCellIDs, lifeGen: +sp._lmLife || 0, alive: sp.player === true && sp.active === true };
+        return { target: LM, transport: 'lm', slotId: LM.slotId || 1, sourceId: 0, sock: LM.socket, gen: LM._connectSeq || 0, life: window.application ? window.application._lmLifeStartAt : 0, lifeGen: +LM._lmLife || 0, alive: !!LM.play };
     }
     /* one result and one cells list per client, filled again on each call (they were made new
      * on every call) */
@@ -26016,12 +26019,17 @@ function thelegendmodproject() {
          * lmActiveUnit(true) at the press) and ends (false) when that player is gone: switched
          * away, dead, reconnected (window.core.act refuses). The phone's held Feed button keeps
          * following the player you control (the main player died while a unit plays: it feeds
-         * that unit); it ends on its own at a game over or server change (LMmobile.js feedDeath). */
+         * that unit); it ends on its own at a game over or server change (LMmobile.js feedDeath)
+         * and when the life of the player you control ends otherwise (_lmLifeInputEnd(true)). It
+         * moves only to the player the focus names: a unit number no one has any more (a removed
+         * or closed unit) feeds nobody until the focus is on a player again. */
         _lmFeedTick(bind, mode) {
             var send = mode === 'bot' ? 'Botseject' : 'feed';
             if (this[send](bind.to)) return true;
             if (mode !== 'held' || typeof window._lmMobileFeedHeld !== 'function' || !window._lmMobileFeedHeld()) return false;
-            bind.to = lmActiveUnit(true);
+            var n = +window.multiboxPlayerEnabled || 0, to = lmActiveUnit(true);
+            if (!to || to.target !== (n ? getActiveSpect(n) : window.legendmod)) return true;
+            bind.to = to;
             this[send](bind.to);
             return true;
         },
@@ -26203,7 +26211,7 @@ function thelegendmodproject() {
         },
         _lmMacroSame(a, b) {
             return a.target === b.target && a.sock === b.sock && a.gen === b.gen && a.main === b.main &&
-                a.life === b.life && a.session === b.session;
+                a.life === b.life && a.lifeGen === b.lifeGen && a.session === b.session;
         },
         /* The splits of a split macro, one after the other. gaps[k]: ms from the first split to
          * split k (gaps[0] = 0). Split k is due at its time from the start, as when all timers
@@ -26211,7 +26219,9 @@ function thelegendmodproject() {
          * to the split really sent before it. A split more than 150 ms late (a stalled tab) ends
          * the macro instead of sending the rest at once; with guard, so does another unit,
          * socket, connection, life or session (a reconnect, server switch, death or replay).
-         * done() runs once at the end, also when the macro is ended early. */
+         * That is checked when each split is due: switched away and back between two splits (the
+         * same player, socket and life again) the rest still goes to that player, never to
+         * another one. done() runs once at the end, also when the macro is ended early. */
         _lmSplitRun(gaps, send, guard, done) {
             var app = this, id = guard ? this._lmMacroId() : null;
             var now = function () { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); };
@@ -26257,17 +26267,21 @@ function thelegendmodproject() {
             /* another unit, socket or life since the macro started: the rest is not sent */
             this._lmSplitRun([0, window._lmSplitDelay(1)], function (id) { app.split(id); }, true);
         },
+        /* The aim lock (window.lockPosition) is the last crazy double split's (window._lmLockBy):
+         * an earlier one that ends after it started does not unlock it; the end of the life of
+         * the player you control releases it (_lmLifeInputEnd) */
         crazyDoubleSplit() {
-            var app = this;
+            var app = this, lock = window._lmLockBy = {};
+            var unlock = function () { if (window._lmLockBy !== lock) return; window._lmLockBy = null; window.lockPosition = false; };
             // Imsolo/Agar2: use dedicated server-side atomic double split opcode
             if (LM.serverType === 'imsolo' || LM.serverType === 'agar2') {
                 window.lockPosition = true;
                 if (window.core && window.core.doubleSplit) window.core.doubleSplit();
-                setTimeout(function () { window.lockPosition = false; }, window._lmSplitDelay(1));
+                setTimeout(unlock, window._lmSplitDelay(1));
                 return;
             }
             window.lockPosition = true
-            this._lmSplitRun([0, window._lmSplitDelay(1)], function (id) { app.split(id); }, true, function () { window.lockPosition = false; });
+            this._lmSplitRun([0, window._lmSplitDelay(1)], function (id) { app.split(id); }, true, unlock);
         },
         popSplit() {
             var app = this;
@@ -31389,8 +31403,14 @@ function thelegendmodproject() {
         /* The life of the player you control ended (the main player's or a multibox unit's,
          * spect.js terminate), or nothing of ours lives any more: Pause (R) and permanent feed end
          * with it and the spectate key handler is set again. Not called while you steer another
-         * player that still lives: its Pause, feed and keys go on. */
-        _lmLifeInputEnd() {
+         * player that still lives: its Pause, feed and keys go on. Also when that life ends without
+         * a death (lost: its socket closed, it was removed, Multibox turned off or the server
+         * changed, spect.js terminate / LM._lmMbStop / LM.flushSpecsData): the player the focus
+         * moved to does not take them over. A crazy double split's aim lock goes too, and with
+         * lost the phone's held Feed (a death ends that one itself, LMmobile.js feedDeath; it
+         * would have followed the focus to that player). Held keys and buttons stay held: their
+         * actions are bound to the player they started on (window.core.act). */
+        _lmLifeInputEnd(lost) {
             /* Pause (R) ends with the life: after a respawn the new cell was still
              * held at the old target, with the pause HUD shown. */
             if (this.pause) {
@@ -31403,6 +31423,13 @@ function thelegendmodproject() {
             if (this.feedIntervalPerm) {
                 clearTimeout(this.feedIntervalPerm);
                 this.feedIntervalPerm = null;
+            }
+            if (window._lmLockBy) {
+                window._lmLockBy = null;
+                window.lockPosition = false;
+            }
+            if (lost === true && typeof window._lmMobileFeedHeld === 'function' && window._lmMobileFeedHeld() && typeof window._lmMobileFeedStop === 'function') {
+                try { window._lmMobileFeedStop(); } catch (e) { }
             }
             resetonkeydown();
         },
@@ -55706,10 +55733,14 @@ function thelegendmodproject() {
          * as after the death of the last player. Their slots are freed (application.mbDisable). */
         _lmMbStop() {
             var sp = window.spects || [], keep = [], closed = 0, gone = [];
+            /* the units' lives end here without terminate: lifeEnd when one was the player you
+             * steer, or a unit lived and the main player does not (nothing of ours lives after) */
+            var lifeEnd = typeof lmMbSteersLiving === 'function' && lmMbSteersLiving();
             for (var i = 0; i < sp.length; i++) {
                 var s = sp[i];
                 if (!s) continue;
                 if (!s.player) { keep.push(s); continue; }
+                if (s.player === true && s.active === true && !this.play) lifeEnd = true;
                 s._lmRemoved = true;
                 if (typeof s.closeConnection === 'function') s.closeConnection();
                 gone.push(s);
@@ -55721,6 +55752,8 @@ function thelegendmodproject() {
             if (typeof lmMbSyncExists === 'function') lmMbSyncExists();
             else { this.multiBoxPlayerExists = false; if (window.legendmod) window.legendmod.multiBoxPlayerExists = false; }
             lmSetMbUnit(0);
+            /* Pause, permanent feed, the aim lock, the phone's held Feed: not taken over by P1 */
+            if (lifeEnd && window.application && typeof window.application._lmLifeInputEnd === 'function') window.application._lmLifeInputEnd(true);
             for (var g = 0; g < gone.length; g++) if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerRemoved', gone[g], 'disabled');
             if (closed && !this.play && window.application && typeof window.application.showMenu === 'function') window.application.showMenu();
             return closed;
@@ -55749,6 +55782,12 @@ function thelegendmodproject() {
             /* every unit is closed: a focus left on one froze the main cell and camera
              * (HUD "[MB 2/1]") */
             lmSetMbUnit(0);
+            /* a server change or a lost main connection (flushCellsData of the main connection, which
+             * also ends the main player's life and already gave it the focus) with multibox units:
+             * every life of ours ended, so the Pause, permanent feed, aim lock and the phone's held
+             * Feed of the unit you steered are not taken over by the next life (a main player alone
+             * keeps its old behaviour) */
+            if (gone.length && window.application && typeof window.application._lmLifeInputEnd === 'function') window.application._lmLifeInputEnd(true);
             for (var g = 0; g < gone.length; g++) if (typeof lmMbPlayerEvent === 'function') lmMbPlayerEvent('playerRemoved', gone[g], 'closed');
         },
         /* A map border is four finite numbers with max above min on both axes. */
@@ -89342,7 +89381,7 @@ function pickPlayerCellBySize(players, selectBiggest) {
         act(m, bound) {
             var u = typeof lmActiveUnit === 'function' ? lmActiveUnit(true) : null, t = u && u.target;
             if (!t || typeof t[m] !== 'function') return false;
-            if (bound && !(u.target === bound.target && u.sock === bound.sock && u.gen === bound.gen && u.life === bound.life)) return false;
+            if (bound && !(u.target === bound.target && u.sock === bound.sock && u.gen === bound.gen && u.life === bound.life && u.lifeGen === bound.lifeGen)) return false;
             if (!t.socket || (typeof t.isSocketOpen === 'function' && !t.isSocketOpen())) return false;
             if (!u.alive && m !== 'sendBotEject' && m !== 'sendBotSplit') return false;
             t[m]();
