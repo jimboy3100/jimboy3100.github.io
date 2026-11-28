@@ -345,6 +345,22 @@ window.lmHudBg = (function () {
     });
     return { apply: apply, restore: restore };
 })();
+/* Time alive of a player (window.legendmod or a multibox unit): from the moment it has its first
+ * own cell to the moment it has none left. The value then stays (death handling) until a first
+ * own cell starts the next life from 0. Two timestamps on the player, no timer. n: its own-cell
+ * count now (> 0 alive, 0 none left, < 0 forget the life: its connection is gone), omitted to
+ * only read. Called where the own cells are added or removed, at a death and a connection
+ * change; the stats line reads it. */
+function lmTimeAlive(p, n, now) {
+    if (!p) return 0;
+    if (now == null) now = Date.now();
+    if (n > 0) {
+        if (!p._lmAliveAt || p._lmAliveEnd) { p._lmAliveAt = now; p._lmAliveEnd = 0; }
+    } else if (n === 0) {
+        if (p._lmAliveAt && !p._lmAliveEnd) p._lmAliveEnd = now;
+    } else if (n < 0) p._lmAliveAt = p._lmAliveEnd = 0;
+    return p._lmAliveAt ? Math.max(0, (p._lmAliveEnd || now) - p._lmAliveAt) : 0;
+}
 /* Session summary under the menu footer: games, best mass and time played in this tab
  * (sessionStorage: resets when the tab closes). Display only. */
 function _lmSessionStats(update) {
@@ -24355,9 +24371,22 @@ function thelegendmodproject() {
                 this.leaderboardDataHUD._lmHtml = data;
             }
         },
+        /* ' | m:ss' time alive of a player for the stats line (lmTimeAlive; n: its own-cell count) */
+        _lmAliveText(p, n) {
+            var s = Math.floor(lmTimeAlive(p, n) / 1000);
+            return ' | \u23F1 ' + Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+        },
         displayStats() {
             if (defaultmapsettings.showStats) {
                 var t = '';
+                /* multibox units: spect.js keeps their own cells as playerCellIDs (alive while active);
+                 * their time alive is taken here, at each refresh */
+                if (defaultmapsettings.showStatsAlive && typeof spects !== 'undefined' && spects) {
+                    for (var _lmSu = 0; _lmSu < spects.length; _lmSu++) {
+                        var _lmU = spects[_lmSu];
+                        if (_lmU) lmTimeAlive(_lmU, _lmU.active && _lmU.playerCellIDs ? _lmU.playerCellIDs.length : 0);
+                    }
+                }
                 if (window.multiboxPlayerEnabled && getActiveSpect(window.multiboxPlayerEnabled)) {
                     if (defaultmapsettings.showStatsMass && getActiveSpect(window.multiboxPlayerEnabled).playerMass) {
                         //t += textLanguage.mass + ': ' + i.playerMass + ' | '
@@ -24366,6 +24395,10 @@ function thelegendmodproject() {
                     if (getActiveSpect(window.multiboxPlayerEnabled).playerScore) {
                         //t += textLanguage.score + ': ' + i.playerScore
                         t += Languageletter366 + ': ' + getActiveSpect(window.multiboxPlayerEnabled).playerScore
+                    }
+                    /* the controlled unit's own time alive */
+                    if (defaultmapsettings.showStatsAlive && getActiveSpect(window.multiboxPlayerEnabled)._lmAliveAt && !getActiveSpect(window.multiboxPlayerEnabled)._lmAliveEnd) {
+                        t += this._lmAliveText(getActiveSpect(window.multiboxPlayerEnabled));
                     }
                     if (defaultmapsettings.showStatsN16 && getActiveSpect(window.multiboxPlayerEnabled).playerSplitCells) {
                         t += ' | ' + getActiveSpect(window.multiboxPlayerEnabled).playerSplitCells + '/16'
@@ -24401,9 +24434,9 @@ function thelegendmodproject() {
                         //t += textLanguage.score + ': ' + i.playerScore
                         t += Languageletter366 + ': ' + ogario.playerScore
                     }
-                    if (defaultmapsettings.showStatsAlive && this._lmLifeStartAt && ogario.play) {
-                        var _lmAs = Math.max(0, Math.floor((Date.now() - this._lmLifeStartAt) / 1000));
-                        t += ' | \u23F1 ' + Math.floor(_lmAs / 60) + ':' + ('0' + (_lmAs % 60)).slice(-2);
+                    /* from the first own cell; nothing before it (spawning, spectating, menu) */
+                    if (defaultmapsettings.showStatsAlive && ogario.playerCells && ogario.playerCells.length) {
+                        t += this._lmAliveText(ogario);
                     }
                     if (defaultmapsettings.showStatsN16 && ogario.playerSplitCells) {
                         t += ' | ' + ogario.playerSplitCells + '/16'
@@ -28316,6 +28349,8 @@ function thelegendmodproject() {
             if (window.legendmod) legendmod._lmKiller = null;
             if (window.legendmod) { legendmod._lmSpecLb = null; legendmod._lmSpecCell = null; }
             if (!this._lmLifeStartAt) { this._lmLifeStartAt = Date.now(); this._lmMassHist = []; this._lmMassStride = 1; this._lmMassAcc = 0; this._lmMassAccN = 0; }
+            /* the previous life's time alive is over: this one counts from its first own cell */
+            if (window.legendmod && legendmod._lmAliveEnd) lmTimeAlive(legendmod, -1);
 
             /* The Game Over card (screen centre, top z-index) took the mouse and stayed for 12 s
              * after a quick respawn. Keep it readable but let the mouse through to the game (its
@@ -28518,6 +28553,9 @@ function thelegendmodproject() {
             var _lmNow = Date.now();
             if (this._lmLastDeathAt && _lmNow - this._lmLastDeathAt < 3000 && !ogario.play) return;
             this._lmLastDeathAt = _lmNow;
+            /* this life's time alive: first own cell to none left (the game-over packet can come
+             * before the last cell goes; the life ends here then) */
+            var _lmAliveMs = lmTimeAlive(window.legendmod, 0, _lmNow);
             //
             pauseVideos();
             /* a practice arena life (ogario/modules/practice.js) is not a game: no session stats,
@@ -28525,14 +28563,14 @@ function thelegendmodproject() {
              * handles it again at every seek and every step played backwards) */
             var _lmPracticeLife = !!(window.LMPractice && window.LMPractice.on) || !!window._lmEvReplayOn;
             /* session summary: this life's best mass and time alive */
-            if (!_lmPracticeLife) try { _lmSessionStats({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 }); } catch (e) { }
+            if (!_lmPracticeLife) try { _lmSessionStats({ best: ogario.playerScore, ms: _lmAliveMs }); } catch (e) { }
             if (!_lmPracticeLife) {
                 try {
-                    this._lmNewBest = _lmPersonalBests({ best: ogario.playerScore, ms: this._lmLifeStartAt ? Date.now() - this._lmLifeStartAt : 0 });
+                    this._lmNewBest = _lmPersonalBests({ best: ogario.playerScore, ms: _lmAliveMs });
                     this._lmNewBest.at = Date.now();
                     if ((this._lmNewBest.mass || this._lmNewBest.time) && window.LMEvents._has('personalBest')) {
                         window.LMEvents.emit('personalBest', {
-                            time: _lmNow, mass: Math.round(+ogario.playerScore || 0), msAlive: this._lmLifeStartAt ? Math.max(0, _lmNow - this._lmLifeStartAt) : 0,
+                            time: _lmNow, mass: Math.round(+ogario.playerScore || 0), msAlive: _lmAliveMs,
                             massRecord: !!this._lmNewBest.mass, timeRecord: !!this._lmNewBest.time
                         });
                     }
@@ -28546,7 +28584,7 @@ function thelegendmodproject() {
                     _lmMatchHistory({
                         t: _lmNow,
                         mass: Math.round(+ogario.playerScore || 0),
-                        ms: this._lmLifeStartAt ? Math.max(0, Math.min(_lmNow - this._lmLifeStartAt, 6 * 3600 * 1000)) : 0,
+                        ms: Math.min(_lmAliveMs, 6 * 3600 * 1000),
                         /* mass 0: not known (the recap named another player than _lmKiller) */
                         killer: _lmMhK ? { nick: _lmMhK.nick.slice(0, 40), mass: ~~_lmMhK.mass, virus: _lmMhK.virus } : null,
                         server: _lmHostOnly(window.legendmod && legendmod.ws),
@@ -28560,7 +28598,7 @@ function thelegendmodproject() {
                 window.LMEvents.emit('death', {
                     time: _lmNow,
                     mass: Math.round(+ogario.playerScore || 0),
-                    msAlive: this._lmLifeStartAt ? Math.max(0, _lmNow - this._lmLifeStartAt) : 0
+                    msAlive: _lmAliveMs
                 });
             }
             this._lmLifeStartAt = 0;
@@ -37256,6 +37294,8 @@ function thelegendmodproject() {
             /* Main player's cells. */
             if (lmIdxRemove(LM.playerCells, this, '_playerIdx')) {
                 LM.removePlayerCell = true;
+                /* the last own cell gone: the time alive stops here (not at the later death handling) */
+                if (!LM.playerCells.length) lmTimeAlive(LM, 0);
                 var cells = LM.playerCellIDs.indexOf(this.id);
                 if (cells !== -1) {
                     quickSwapDelete(LM.playerCellIDs, cells);
@@ -41870,6 +41910,7 @@ function thelegendmodproject() {
                                         cell.isPlayerCell = true;
                                         self.playerColor = cellColor;
                                         indexedPush(self.playerCells, cell, '_playerIdx');
+                                        lmTimeAlive(self, self.playerCells.length); /* the first own cell starts the time alive */
                                     }
                                 } else {
                                     indexedPush(self.food, cell, '_foodIdx');
@@ -44153,6 +44194,7 @@ function thelegendmodproject() {
                     this.playerCells = lmIdxClear(this.playerCells, '_playerIdx');
                     this.playerCellIDs = [];
                     if (this._playerCellIDSet) this._playerCellIDSet.clear();
+                    lmTimeAlive(this, 0); /* no own cell left: the time alive stops */
                     break;
                 case 32:
                     if (data.byteLength < 5) {
@@ -51814,6 +51856,7 @@ function thelegendmodproject() {
                 this.playerScore = 0;
                 this.playerMass = 0;
                 if (window.application) window.application._lmLifeStartAt = 0;
+                lmTimeAlive(this, -1);
             }
             /* cell identities (updateCells _lmIdMem) belong to this connection; the Expanding Land
              * respawn wipe (true) keeps them: the server still counts those cells as ours */
@@ -52746,6 +52789,7 @@ function thelegendmodproject() {
                             this.playerColor = color;
                             cellObj.color = color;
                             indexedPush(this.playerCells, cellObj, '_playerIdx');
+                            lmTimeAlive(this, this.playerCells.length); /* the first own cell starts the time alive */
                         }
                     } else {
                         indexedPush(this.food, cellObj, '_foodIdx');
@@ -53033,6 +53077,7 @@ function thelegendmodproject() {
                             cellObj.color = this.playerColor || color;
                             this.playerRawServerColor = color;
                             indexedPush(this.playerCells, cellObj, '_playerIdx');
+                            lmTimeAlive(this, this.playerCells.length); /* the first own cell starts the time alive */
                         }
                     } else {
                         indexedPush(this.food, cellObj, '_foodIdx');
@@ -53999,6 +54044,7 @@ function thelegendmodproject() {
                             }
                             this.playerRawServerColor = rawServerColor;
                             indexedPush(this.playerCells, cellUpdateCells, '_playerIdx');
+                            lmTimeAlive(this, this.playerCells.length); /* the first own cell starts the time alive */
                         }
                     } else if (isFood) {
                         indexedPush(this.food, cellUpdateCells, '_foodIdx');

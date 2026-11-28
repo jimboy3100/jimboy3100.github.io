@@ -31,7 +31,7 @@ All three return `LMEvents`, so calls can be chained.
 | Event | Data | When |
 | --- | --- | --- |
 | `spawn` | `{ time }` | you spawn (once per life) |
-| `death` | `{ time, mass, msAlive }` | you die; `mass` is the best mass of that life, `msAlive` its length in ms |
+| `death` | `{ time, mass, msAlive }` | you die; `mass` is the best mass of that life, `msAlive` its length in ms (from the first own cell to none left) |
 | `chat` | `{ nick, text, type, own }` | a chat line is shown; `type` is `'chat'` or `'command'`, `own` is true for your own lines. `text` is the raw text (not HTML): escape it before putting it into the page. Lines hidden by the chat word filter are not sent |
 | `serverChange` | `{ host }` | you join another server; `host` is the host name only (no tokens) |
 | `massUpdate` | `{ mass, cells }` | while playing, at most 4 times per second |
